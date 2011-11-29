@@ -1,0 +1,163 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+<p>There are three different Nikon MakerNote formats. Exiv2 will automatically detect the correct format for the Exif data from a particular Nikon camera model.</p>
+<h2>Nikon (format 1) MakerNote Tags defined in Exiv2</h2>
+<div>
+<p>Tags found in the MakerNote of images taken with Nikon cameras, such as the E990 and D1. These tags are defined by Exiv2 in accordance with <a href="makernote.html#R3">[3]</a>.</p>
+<p>Click on a column header to sort the table.</p>
+</div>
+__Nikon1__
+<br>
+
+<h2>Nikon (format 2) MakerNote Tags defined in Exiv2</h2>
+<div>
+<p>Tags found in the MakerNote of images taken with Nikon cameras, including the E700, E800, E900, E900S, E910, E950. These tags are defined by Exiv2 in accordance with <a href="makernote.html#R1">[1]</a>.</p>
+<p>Click on a column header to sort the table.</p>
+</div>
+__Nikon2__
+<br>
+
+<h2>Nikon (format 3) MakerNote Tags defined in Exiv2</h2>
+<div>
+<p>Tags found in the MakerNote of images taken with newer Nikon cameras, e.g., the E5400, SQ, D2H, D70.</p>
+<p>Click on a column header to sort the table.</p>
+</div>
+__Nikon3__
+<br>
+
+<h3>Nikon Vibration Reduction Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonVr__
+<br>
+
+<h3>Nikon Picture Control Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonPc__
+<br>
+
+<h3>Nikon World Time Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonWt__
+<br>
+
+<h3>Nikon ISO Info Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonIi__
+<br>
+
+<h3>Nikon Auto Focus Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonAf__
+<br>
+
+<h3>Nikon Auto Focus 2 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonAf2__
+<br>
+
+<h3>Nikon File Info Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonFi__
+<br>
+
+<h3>Nikon Multi Exposure Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonMe__
+<br>
+
+<h3>Nikon Flash Info 1 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonFl1__
+<br>
+
+<h3>Nikon Flash Info 2 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonFl2__
+<br>
+
+<h3>Nikon Flash Info 3 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonFl3__
+<br>
+
+<h3>Nikon Shot Info D80 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonSiD80__
+<br>
+
+<h3>Nikon Shot Info D40 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonSiD40__
+<br>
+
+<h3>Nikon Shot Info D300a Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonSiD300a__
+<br>
+
+<h3>Nikon Shot Info D300b Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonSiD300b__
+<br>
+
+<h3>Nikon Shot Info Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonSi01xx__
+<br>
+
+<h3>Nikon Color Balance 1 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonCb1__
+<br>
+
+<h3>Nikon Color Balance 2 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonCb2__
+<br>
+
+<h3>Nikon Color Balance 2a Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonCb2a__
+<br>
+
+<h3>Nikon Color Balance 2b Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonCb2b__
+<br>
+
+<h3>Nikon Color Balance 3 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonCb3__
+<br>
+
+<h3>Nikon Color Balance 4 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonCb4__
+<br>
+
+<h3>Nikon Lens Data 1 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonLd1__
+<br>
+
+<h3>Nikon Lens Data 2 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonLd2__
+<br>
+
+<h3>Nikon Lens Data 3 Tags</h3>
+<p>Click on a column header to sort the table.</p>
+__NikonLd3__
+<br>
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

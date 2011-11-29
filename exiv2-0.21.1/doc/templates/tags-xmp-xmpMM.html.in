@@ -1,0 +1,34 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>XMP Media Management Schema</h2>
+<p>The XMP Media Management Schema is primarily for use by digital asset management (DAM) systems.</p>
+<p>The following XMP properties are "owned" by the DAM system and should be set by applications
+under their direction; they should not be used by unmanaged files: xmpMM:ManagedFrom,
+xmpMM:Manager, xmpMM:ManageTo, xmpMM:ManageUI, xmpMM:ManagerVariant.</p>
+<p>The following properties are owned by the DAM system for managed files, but can also be
+used by applications for unmanaged files: xmpMM:DerivedFrom, xmpMM:DocumentID,
+xmpMM:RenditionClass, xmpMM:RenditionParams, xmpMM:VersionID, xmpMM:Versions.</p>
+<p>The xmpMM:History property is always owned by the application.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.xmpMM.&lt;Property&gt;</code></b>
+  <li>The schema namespace URI is <b><code>http://ns.adobe.com/xap/1.0/mm/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>xmpMM</code></b></li>
+ </ul>
+Reference: <a href="http://www.adobe.com/devnet/xmp/pdfs/xmp_specification.pdf" title="XMP specification">XMP specification</a>
+</p>
+<p>Click on a column header to sort the table.</p>
+
+__xmp_xmpMM__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+
+__index1__
+
+<h1>MakerNote Formats and Specifications</h1>
+
+<p>
+The Makernote is tag 0x927c in the Exif IFD. According to the 
+<a title="The Exif 2.2 standard (PDF)" href="http://www.exif.org/Exif2-2.PDF">
+Exif 2.2 standard</a>, the makernote is <i>"a tag for manufacturers of
+Exif writers to record any desired information. The contents are up to
+the manufacturer, but this tag should not be used for any other than
+its intended purpose."</i></p> 
+
+<p>Most vendors do not publish their makernote specifications. Most of the 
+<a href="#R0">specifications available on the Internet</a> 
+were reverse-engineered. Judging from the size of many makernote
+fields, manufacturers store a lot of information there and from the
+available specifications, some of this is certainly quite
+interesting. For example, makernotes may contain information about the
+lens used, contrast, saturation and sharpness settings, image quality
+settings, etc. For some more advanced camera settings, the Exif
+standard doesn't define a standard tag, so camera vendors have to
+resort to using the makernote. Unfortunately, in some cases, camera
+vendors store important information only in proprietary makernote
+fields, instead of using available Exif standard tags. The most
+infamous example for this is Nikon's ISO settings tag.</p>
+
+<p>Most vendors write the makernote in TIFF format, i.e., in the same
+format as the rest of the Exif information is encoded. This appears to
+be a sensible thing at first glance. Unfortunately, in general it
+means that <i>any</i> change of an Exif tag, which moves the
+makernote field, will corrupt it. It is an inherent problem of the
+TIFF format that a writer must know the format and all extensions
+used, in order to be able to write changes correctly; unknown tags are
+potentially corrupted when they are moved (rearranged). But since
+makernotes are usually proprietary, Exif writers often don't know
+these details. The reason to write to the Exif data could be as simple
+as to add copyright information, an Exif comment, etc. Some camera
+manufacturers seem to have recognized this problem and now use a
+modified TIFF format with offsets relative to somewhere at the
+beginning of the makernote field for the makernote IFD to address the
+issue.</p>
+
+<p>The following table summarizes the structures of the makernote
+field used by some vendors.  Please let me know if you have additional
+information.</p>
+
+__makernotes__
+
+<p><a href="http://www.exif.org/">Exif.org</a> has another table with similar 
+  info and sample pictures: <a href="http://www.exif.org/samples.html">Digital 
+  Camera Sample Images</a>. According to this source, (at least some) Ricoh and 
+  Kodak cameras do not write the makernote in IFD format.</p>
+<h2><a name="R0">References</a></h2>
+<p><a name="R1">[1]</a> <a href="http://park2.wakwak.com/%7Etsuruzoh/Computer/Digicams/exif-e.html">Exif 
+  file format</a> by TsuruZoh Tachibanaya<br>
+  <a name="R2">[2]</a> <a href="http://www.burren.cx/david/canon.html">EXIF Makernote 
+  of Canon</a> by David Burren<br>
+  <a name="R3">[3]</a> <a href="http://www.tawbaware.com/990exif.htm">Makernote 
+  EXIF Tag of the Nikon 990</a> by Max Lyons<br>
+  <a name="R4">[4]</a> <a href="http://www.dicasoft.de/casiomn.htm">&quot;Makernote&quot; 
+  Exif tag of Casio</a> by Eckhard Henkel<br>
+  <a name="R5">[5]</a> <a href="http://www.dalibor.cz/minolta/makernote.htm">Minolta 
+  MakerNote</a> by Dalibor Jelinek<br>
+  <a name="R6">[6]</a> <a href="http://www.exif.org/makernotes/SanyoMakerNote.html">Sanyo 
+  MakerNote</a> by John Hawkins<br>
+  <a name="R7">[7]</a> <a href="http://www.x3f.info/technotes/FileDocs/MakerNoteDoc.html">
+  SIGMA and FOVEON EXIF MakerNote Documentation</a> by Foveon<br>
+  <a name="R8">[8]</a> <a href="http://www.compton.nu/panasonic.html">Panasonic 
+  MakerNote Information</a> by Tom Hughes<br>
+  <a name="R9">[9]</a> <a href="http://www.ozhiker.com/electronics/pjmt/jpeg_info/makernotes.html">
+  Various Makernote specifications</a> from the <a href="http://www.ozhiker.com/electronics/pjmt/index.html">
+  PHP JPEG Metadata Toolkit</a> by Evan Hunter<br>
+  <a name="R10">[10]</a> <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/">ExifTool</a>, the most complete and up-to-date tool for reading and writing meta information in image files, by Phil Harvey<br>
+  <a name="R11">[11]</a> <a href="http://www.gvsoft.homedns.org/exif/makernote-pentax-type3.html">EXIF: Pentax type3 Makernotes</a> by Ger Vermeulen</p>
+</div>
+<!-- closes content -->
+
+</body>
+</html>

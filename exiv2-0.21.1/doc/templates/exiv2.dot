@@ -1,0 +1,66 @@
+################################################################################
+# File     : exiv2.dot
+# Version  : $Rev: 572 $
+# Author(s): Andreas Huggel (ahu) <ahuggel@gmx.net>
+# History  : 18-Feb-04, ahu: created
+#            19-Mar-05, ahu: updated after inside-out change
+#
+# Description:
+#  Dot file for a graph showing the component dependencies ("uses in the 
+#  interface") of the Exiv2 library.
+#  Run the following command to get the image: 
+#  $ dot -Tgif -oexiv2.gif exiv2.dot
+################################################################################
+
+digraph "Exiv2 component dependencies" {
+
+	L1 [shape=plaintext] ;
+	L2 [shape=plaintext] ;
+	L3 [shape=plaintext] ;
+	L4 [shape=plaintext] ;
+	L5 [shape=plaintext] ;
+	L6 [shape=plaintext] ;
+
+	"L6" -> "L5" -> "L4" -> "L3" -> "L2" -> "L1" [style=invis] ;
+
+	"exif"      [shape=box] ;
+	"iptc"      [shape=box] ;
+	"metadatum" [shape=box] ;
+	"ifd"       [shape=box] ;
+	"image"     [shape=box] ;
+	"tags"      [shape=box] ;
+	"datasets"  [shape=box] ;
+	"value"     [shape=box] ;
+	"types"     [shape=box] ;
+	"error"     [shape=box] ;
+	"makernote" [shape=box] ;
+	"basicio"   [shape=box] ;
+	"*mn"       [shape=box] ;
+	"jpgimage"  [shape=box] ;
+
+	clusterrank="local";
+	"basicio" -> "error"
+	"basicio" -> "types"
+	"*mn" -> "makernote"
+	"*mn" -> "tags"
+	"datasets" -> "metadatum"
+	"exif" -> "ifd"
+	"exif" -> "tags"
+        "exif" -> "error"
+	"ifd" -> "types"
+	"image" -> "basicio"
+	"iptc" -> "datasets"
+	"iptc" -> "error"
+	"jpgimage" -> "exif"
+	"jpgimage" -> "image"
+	"jpgimage" -> "iptc"
+	"makernote" -> "ifd"
+	"metadatum" -> "value"
+	"tags" -> "metadatum"
+	"value" -> "types"
+
+	{ rank=same; L1 "types" }
+	{ rank=same; L2 "value" "ifd" }
+	{ rank=same; L5 "image" "iptc" }
+
+}

@@ -1,0 +1,50 @@
+# Sample Exiv2 command file
+# -------------------------
+#
+# $ exiv2 -m cmd.txt file ...
+#
+# to apply the commands in cmd.txt to each file. Alternatively, commands can be
+# run from the command line directly, without a command file: 
+#
+# $ exiv2 -M"add Iptc.Application2.Credit String mee too!" file ...
+#
+# Note the quotes. Multiple -m and -M options are allowed and can be combined.
+# 
+# Command file format
+# -------------------
+# Empty lines and lines starting with # are ignored
+# Each remaining line is a command. The format for command lines is
+# <cmd> <key> [[<type>] <value>] 
+# cmd = set|add|del
+#    set will set the value of an existing tag of the given key or add a tag
+#    add will add a tag (unless the key is a non-repeatable Iptc key)
+#    del will delete a tag 
+# key = Exiv2 Exif or Iptc key
+# type = 
+#    Byte|Ascii|Short|Long|Rational|Undefined|SShort|SLong|SRational|Comment
+#       for Exif keys, and
+#    String|Date|Time|Short|Undefined  for Iptc keys
+#    The format for Iptc Date values is YYYY-MM-DD (year, month, day) and
+#    for Iptc Time values it is HH:MM:SS±HH:MM where HH:MM:SS refers to local 
+#    hour, minute and seconds and ±HH:MM refers to hours and minutes ahead or 
+#    behind Universal Coordinated Time.
+#    A default type is used if none is explicitely given. The default type is 
+#    determined based on the key.
+# value 
+#    The remaining text on the line is the value. It can optionally be enclosed
+#    in double quotes ("value")
+#
+
+add  Iptc.Application2.Credit	String	"mee too! (1)"   
+add  Iptc.Application2.Credit		mee too! (2)	        
+del  Iptc.Application2.Headline	 
+
+set Iptc.Application2.Headline	 Filename
+
+add   Exif.Image.WhitePoint	Short	32 12 4 5 6 
+
+set  Exif.Image.DateTime	Ascii	"Zwanzig nach fuenf"
+  set Exif.Image.Artist		Ascii	nobody
+ set Exif.Image.Artist			"Vincent van Gogh"
+
+set Exif.Photo.UserComment      Comment charset=Ascii This is an ASCII Exif comment

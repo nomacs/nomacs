@@ -1,0 +1,109 @@
+<h2><a href="namespaces.html">Namespaces</a></h2>
+
+<p>The <a href="index.html">Exiv2 library</a> is made up of all
+elements defined in the <a href="namespaceExiv2.html">Exiv2
+namespace</a>.</p>
+
+<h2><a href="classes.html">Classes</a></h2>
+
+<p>The top-level class of the Exiv2 library is <a class="el"
+href="classExiv2_1_1Image.html">Exiv2::Image</a>.  Exiv2::Image
+defines the interface to access image metadata.  Derived from
+Exiv2::Image are implementations for different image formats. Most
+importantly, they contain the logic to read metadata from the image
+into Exiv2 metadata containers and write it back to the image.
+Most applications will use
+<a class="el" href="classExiv2_1_1ImageFactory.html">Exiv2::ImageFactory</a> 
+to access images in files or memory, in which case the image format 
+is transparent to them. The factory determines the image format from the
+data (not the file extension) and creates an object of the corresponding
+Image subclass.</p>
+
+<p>Exif and IPTC metadata is manipulated through the classes
+<a class="el" href="classExiv2_1_1ExifData.html">Exiv2::ExifData</a> 
+and <a class="el" href="classExiv2_1_1IptcData.html">Exiv2::IptcData</a>.
+They hold a container of Exif and IPTC metadata, respectively, and define
+related methods to access and manipulate the metadata.
+<br>
+Exif tag and IPTC dataset reference information for the standard tags
+and datasets is available in the two static classes
+<a class="el" href="classExiv2_1_1ExifTags.html">Exiv2::ExifTags</a> and
+<a class="el" href="classExiv2_1_1IptcDataSets.html">Exiv2::IptcDataSets</a>.
+<br>
+The metadata containers hold objects derived from
+<a class="el" href="classExiv2_1_1Metadatum.html">Exiv2::Metadatum</a>.
+Interface class Exiv2::Metadatum defines methods to access the
+information of one metadatum. It models the tag data as a key and
+value pair.
+The abstract base class 
+<a class="el" href="classExiv2_1_1Key.html">Exiv2::Key</a> defines the 
+interface for a key. Concrete keys implement Exif and IPTC keys.
+The abstract base class 
+<a class="el" href="classExiv2_1_1Value.html">Exiv2::Value</a> defines 
+the interface to access tag information, from which concrete values are
+derived. The actual value used in a metadatum depends on the type of
+the Exif tag or IPTC dataset. It is usually determined when the Exif or
+IPTC metadata is read from an image. It is also possible to manually create
+a Value and together with a key add it to an ExifData or IptcData 
+container.</p>
+
+The classes to access XMP metadata are 
+<a class="el" href="classExiv2_1_1XmpData.html">Exiv2::XmpData</a>,
+<a class="el" href="classExiv2_1_1Xmpdatum.html">Exiv2::Xmpdatum</a> 
+and <a class="el" href="classExiv2_1_1XmpKey.html">Exiv2::XmpKey</a>.
+They work similar to the corresponding Exif and IPTC classes.
+The property reference information is in
+<a class="el" href="classExiv2_1_1XmpProperties.html">Exiv2::XmpProperties</a>.
+In addition to the expected new members, class
+<a class="el" href="classExiv2_1_1Image.html">Exiv2::Image</a>
+now also has an interface to access the raw XMP packet.
+<br>
+All XMP value types are supported: Simple types, structures,
+arrays, property qualifiers and language alternatives.
+<br>
+XMP properties are accessed through keys of the form
+"Xmp.&lt;Prefix&gt;.&lt;PropertyPath&gt;", where &lt;Prefix&gt; is the preferred 
+(or rather, registered) prefix for a schema namespace and 
+&lt;PropertyPath&gt; is the path of the XMP node. In its most basic
+form, to address simple properties, &lt;PropertyPath&gt; is the name
+of the property. In general, &lt;PropertyPath&gt; can be used to 
+address any XMP node, including array items, structure fields
+qualifiers and deeply nested properties.
+<br>
+Any properties in known namespaces are supported and additional
+namespaces can be registered.
+<br>
+The specialized Exiv2 values 
+<a class="el" href="classExiv2_1_1XmpTextValue.html">Exiv2::XmpTextValue</a>,
+<a class="el" href="classExiv2_1_1XmpArrayValue.html">Exiv2::XmpArrayValue</a>
+and <a class="el" href="classExiv2_1_1LangAltValue.html">Exiv2::LangAltValue</a> are
+provided to simplify the use of XMP properties.
+<br>
+Note: Unlike Exif and IPTC tags, XMP properties do not have
+a tag number.
+
+<h2><a href="examples.html">Examples</a></h2>
+
+<p>There are several simple examples that demonstrate the basic use of Exiv2
+functionality: <a href="exifprint_8cpp-example.html">Exifprint</a> 
+shows how the Exif data of an image can be read and written to the screen.
+<a href="iptcprint_8cpp-example.html">Iptcprint</a> is a similar 
+example to print IPTC data.
+<a href="addmoddel_8cpp-example.html">Addmoddel</a> shows how to
+add, modify and delete Exif metadata. 
+<a href="exifcomment_8cpp-example.html">Exifcomment</a> shows how to
+set the exif comment of an image. 
+<a href="xmpsample_8cpp-example.html">Xmpsample.cpp</a> contains examples
+of how to set various types of XMP properties.
+<br>
+For more real-world code have a look at the implementation of the
+different actions of the Exiv2 utility (actions.cpp).</p>
+
+<h2><a href="makernote.html">Makernotes</a></h2>
+
+<p>Exif Makernote data can be accessed through ExifData in the same
+way as the standard Exif tags. In other words, for each entry of a
+known Makernote, there is a corresponding Metadatum in the ExifData
+container. Makernote taglists are available in classes
+Exiv2::&lt;Make&gt;MakerNote (e.g.,
+<a class="el" href="classExiv2_1_1CanonMakerNote.html">Exiv2::CanonMakerNote</a>.)

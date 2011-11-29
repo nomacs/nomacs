@@ -1,0 +1,28 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>iView Media Pro schema</h2>
+<p>iView Media Pro schema tags. See also its successor, the
+   <a href="tags-xmp-expressionmedia.html" title="Microsoft Expression Media schema">Microsoft Expression Media schema</a>.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.mediapro.&lt;Property&gt;</code></b></li>
+  <li>The schema namespace URI is <b><code>http://ns.iview-multimedia.com/mediapro/1.0/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>mediapro</code></b></li>
+ </ul>
+Reference: ?</p>
+
+<p>Click on a column header to sort the table.</p>
+
+__xmp_mediapro__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+<h2>Samsung MakerNote Tags defined in Exiv2</h2>
+<div>
+<p>Tags found in the MakerNote of images taken with Samsung cameras.</a>.</p> 
+<p>Click on a column header to sort the table.</p>
+</div>
+__Samsung2__
+</div>
+<!-- closes content -->
+
+</body>
+</html>
