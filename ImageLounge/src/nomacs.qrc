@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/nomacs">
+        <file>img/next.png</file>
+        <file>img/previous.png</file>
+        <file>img/rotate-cc.png</file>
+        <file>img/rotate-cw.png</file>
+        <file>img/lena.jpg</file>
+        <file>img/lena-full.jpg</file>
+        <file>img/splash-screen.png</file>
+        <file>img/dummy-img.png</file>
+        <file>img/label-end.png</file>
+        <file>img/fullscreen.png</file>
+        <file>img/zoom100.png</file>
+        <file>img/zoomReset.png</file>
+        <file>img/nomacs.png</file>
+        <file>img/player-back.png</file>
+        <file>img/player-next.png</file>
+        <file>img/player-pause.png</file>
+        <file>img/player-play.png</file>
+        <file>img/label-gradient.png</file>
+        <file>img/nomacs-bg.png</file>
+        <file>img/star-dark.png</file>
+        <file>img/star-white.png</file>
+        <file>img/dir.png</file>
+        <file>img/save.png</file>
+        <file>img/open.png</file>
+        <file>img/thumbs-move.png</file>
+        <file>img/gps-globe.png</file>
+        <file>img/lock.png</file>
+        <file>img/lock-unlocked.png</file>
+    </qresource>
+</RCC>
