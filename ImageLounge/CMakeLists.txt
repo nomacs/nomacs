@@ -186,7 +186,15 @@ IF (${COMPILEWITHOPENCV})
 					message(WARNING "OpenCV include dir  not found")		
 			ENDIF()
 		ELSE()
-			message(WARNING "OpenCV build path not found")		
+			message(WARNING "OpenCV build directory not found. Needs path which contains 
+			/bin/Release/opencv_core231.dll, 
+			/bin/Debug/opencv_core231d.dll,
+			/bin/Release/opencv_imgproc231.dll,
+			/bin/Debug/opencv_imgproc231d.dll,
+			/lib/Release/opencv_core231.lib 
+			/lib/Debug/opencv_core231d.lib, 
+			/lib/Release/opencv_imgproc231.lib,
+			/lib/Debug/opencv_imgproc231d.lib")
 		ENDIF()	
 	ENDIF()
 	add_definitions(-DWITH_OPENCV)
