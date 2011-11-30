@@ -676,6 +676,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_transfrom]->setEnabled(enable);
 	editActions[menu_edit_copy]->setEnabled(enable);
 
+	viewActions[menu_view_show_info]->setEnabled(enable);
 	viewActions[menu_view_show_preview]->setEnabled(enable);
 	viewActions[menu_view_show_exif]->setEnabled(enable);
 	viewActions[menu_view_show_overview]->setEnabled(enable);
