@@ -23,3 +23,7 @@ LibRaw-0.13.5
 
 cmake
 	Where is the source code: choose the trunk/ImageLounge folder
+	
+	
+nomacs
+	Solution 'nomacs' -> Properties -> Startup Project select nomacs
