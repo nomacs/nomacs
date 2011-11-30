@@ -1,0 +1,25 @@
+expat-2.0.1
+	open expat.dsw -> convert 'yes to all'
+	for "expat" project
+	rename output dll for debug configuration (add d) (Linker Options, General, Output File -> "..\win32\bin\Debug/libexpatd.dll")
+	rename outout lib for debug configuration (add d) (Linker Options, Advanced, Import Library -> ".\..\win32\bin\Debug/libexpatd.lib")
+	build "expat" project with debug and release configuration
+	
+zlib-1.2.3
+	open projects/visualc6/zlib.dsw -> convert 'yes to all'
+	build "zlib" project with DLL Debug and DLL Release configuration
+	
+exiv2-0.21.1
+	open msvc/exiv2.sln -> convert yes
+	in project exiv2lib
+	change for DebugDLL Configuration: "Configuration Properties" -> "Linker" -> "Input" -> "Additional Dependencies" libexpat.lib to libexpatd.lib
+	build "exiv2lib" project with debugDLL and releaseDLL configuration
+	
+LibRaw-0.13.5
+	open LibRaw.sln
+	rename output dll for debug configuration (add d) (Linker Options, General, Output File -> "debug\librawd.dll")
+	build "libraw" project with debug and release configuration
+	
+
+cmake
+	Where is the source code: choose the trunk/ImageLounge folder

@@ -68,9 +68,9 @@ IF (NOT EXIV2_FOUND AND MSVC)
 					
 	find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" PATHS "exiv2-0.21.1/msvc/include" DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 
-	find_path(EXPAT_BUILD_PATH NAMES "Release/libexpat.dll" "Debug/libexpatd.dll" PATH "../expat-2.0.1/win32/bin/" DOC "Path to the expat build directory" NO_DEFAULT_PATH)
+	find_path(EXPAT_BUILD_PATH NAMES "release/libexpat.dll" "debug/libexpatd.dll" PATHS "../expat-2.0.1/win32/bin/" DOC "Path to the expat build directory" NO_DEFAULT_PATH)
 	
-	find_path(ZLIB_BUILD_PATH NAMES "/Win32_DLL_Release/zlib1.dll" "/Win32_DLL_Debug/zlib1d.dll" PATH "../zlib-1.2.3/projects/visualc6/" DOC "Path to the zlib build directory" NO_DEFAULT_PATH)
+	find_path(ZLIB_BUILD_PATH NAMES "Win32_DLL_Release/zlib1.dll" "Win32_DLL_Debug/zlib1d.dll" PATHS "../zlib-1.2.3/projects/visualc6/" DOC "Path to the zlib build directory" NO_DEFAULT_PATH)
 	
     IF(  EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll AND 
