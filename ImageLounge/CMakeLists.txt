@@ -7,7 +7,7 @@
 # mkdir build
 # cd build
 # cmake ../ImageLounge -DCMAKE_INSTALL_PREFIX=../release -DCMAKE_BUILD_TYPE=debug (or release, by default)
-#       on windows there should be -G "generator name" required as well...
+# on windows there should be -G "generator name" required as well...
 # make
 # make install
 #
@@ -111,7 +111,7 @@ IF (NOT EXIV2_FOUND AND MSVC)
 ENDIF()
 
 # LibRaw
-pkg_check_modules(LIBRAW  libraw>=0.13.8)
+pkg_check_modules(LIBRAW  libraw>=0.13.5)
 IF (NOT LIBRAW_FOUND AND MSVC)
 	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "LibRaw-0.1.3.5" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 	
@@ -295,7 +295,6 @@ IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 
 
 	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-		message("im if")
 		SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
 	ENDIF()
 
@@ -332,8 +331,8 @@ IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 		# installation
 		#  binary
 		install(TARGETS ${EXE_NAME} RUNTIME DESTINATION bin LIBRARY DESTINATION lib${LIB_SUFFIX})
-		#  TODO/FIXME: desktop file
-		#install(FILES nomacs.desktop DESTINATION share/applications)
+		#  desktop file
+		install(FILES nomacs.desktop DESTINATION share/applications)
 		#  icon
 		install(FILES src/img/nomacs.png DESTINATION share/pixmaps)
 
@@ -342,7 +341,7 @@ IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 		SET(CPACK_PACKAGE_VERSION "${NOMACS_VERSION}")
 		SET(CPACK_SOURCE_GENERATOR "TBZ2")
 		SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-		SET(CPACK_IGNORE_FILES "/CVS/;/\\\\.svn/;\\\\.swp$;\\\\.#;/#;\\\\.tar.gz$;/CMakeFiles/;CMakeCache.txt;refresh-copyright-and-license.pl;\\\\.git$;build;release;")
+		SET(CPACK_IGNORE_FILES "/CVS/;/\\\\.svn/;/\\\\.git/;\\\\.swp$;\\\\.#;/#;\\\\.tar.gz$;/CMakeFiles/;CMakeCache.txt;refresh-copyright-and-license.pl;build;release;")
 		SET(CPACK_SOURCE_IGNORE_FILES ${CPACK_IGNORE_FILES})
 		INCLUDE(CPack)
 		# simulate autotools' "make dist"
