@@ -257,6 +257,31 @@ enum viewIcons {
 	icon_view_end,	// nothing beyond this point
 };
 
+
+/*! QApplication wrapper.
+Its main purpose is to provide Mac OS X "open file from finder"
+functionality for nomacs. It *has* to be catched on the
+QApplication level in the event().
+
+Also QSettings presets are handled here
+*/
+class DllExport DkNoMacsApp : public QApplication {
+	Q_OBJECT
+
+public:
+	DkNoMacsApp(int argc, char** argv);
+
+signals:
+	void loadFile(const QFileInfo &fi);
+
+private:
+#ifdef Q_WS_MAC
+	/*! Handle QFileOpenEvent for mac here */
+	bool event(QEvent *event);
+#endif
+
+};
+
 class DkViewPort;
 class DkViewPortGt;
 class DkMenuBar;
@@ -351,7 +376,6 @@ protected:
 	bool eventFilter(QObject *obj, QEvent *event);
 	void resizeEvent(QResizeEvent *event);
 	void closeEvent(QCloseEvent *event);
-	//bool event(QEvent* event);
 
 	// TODO: put to android class
 	bool gestureEvent(QGestureEvent *event);

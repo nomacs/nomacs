@@ -253,7 +253,8 @@ void DkSettings::setToDefaultSettings() {
 
 DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 
-	this->setFixedSize(600,400);
+	// this causes prefs unusable on mac and on linux with larger fonts
+	// this->setFixedSize(600,400);
 	
 	s = new DkSettings();
 

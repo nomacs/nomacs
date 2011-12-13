@@ -57,22 +57,24 @@ int main(int argc, char *argv[]) {
 #ifdef linux
 	QApplication::setGraphicsSystem("raster");
 #endif
-
-	// init app
-	QApplication a(argc, argv);
-	
+	//! \warning those QSettings setup *must* go before QApplication object
+    //           to prevent random crashes (well, crashes are regular on mac
+    //           opening from Finder)
 	// register our organization
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
 
+	DkNoMacsApp a(argc, argv);
+
 	DkNoMacsIpl w;
 	if (argc > 1)
 		w.viewport()->loadFile(QFileInfo(argv[1]), true, true);	// update folder + be silent
-	//else {
-	//	// load default image...
-	//	w.viewport()->loadFile(QFileInfo("C:\\VsProjects\\img\\imgs\\img0001.tif"));
-	//}
+#ifdef Q_WS_MAC
+	QObject::connect(&a, SIGNAL(loadFile(const QFileInfo&)),
+	                 w.viewport(), SLOT(loadFile(const QFileInfo&)));
+#endif
 
 	return a.exec();
 }
+

@@ -7,7 +7,7 @@
 # mkdir build
 # cd build
 # cmake ../ImageLounge -DCMAKE_INSTALL_PREFIX=../release -DCMAKE_BUILD_TYPE=debug (or release, by default)
-# on windows there should be -G "generator name" required as well...
+#       on windows there should be -G "generator name" required as well...
 # make
 # make install
 #
@@ -45,7 +45,7 @@ ENDIF(MSVC)
 set(QT_MIN_VERSION "4.7.2")
 set(QT_USE_GUI 1)
 set(QT_USE_QTNETWORK 1)
-find_package(Qt4 REQUIRED)
+find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
 include(${QT_USE_FILE})
 
 
@@ -198,6 +198,18 @@ IF (${COMPILEWITHOPENCV})
 		ENDIF()	
 	ENDIF()
 	add_definitions(-DWITH_OPENCV)
+	
+	if (APPLE)
+		# OpenCV has really draconian dependencies on mac (generating bundle greater tha 105MB)
+		# so I play bad games here - expecting all will work with manually updated library names
+		message(STATUS "")
+		message(STATUS "APPLE: some hacks with OpenCV libraries linking will be performed (only limited set of libs will be used)")
+		message(STATUS "APPLE:    originals: ${OpenCV_LIBRARIES}")
+		set(OpenCV_LIBRARIES "opencv_core;opencv_imgproc")
+        	message(STATUS "APPLE:          new: ${OpenCV_LIBRARIES}")
+		message(STATUS "")
+	endif (APPLE)
+
 ENDIF()
 	
 include_directories (
@@ -226,6 +238,10 @@ set (NOMACS_SOURCES
         src/DkMenu.cpp
         src/main.cpp
 )
+if (APPLE)
+	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
+endif (APPLE)
+
 
 set (NOMACS_MOCS
         #src/DkError.h
@@ -287,21 +303,37 @@ QT4_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
 QT4_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
 
 IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
-	# TODO/FIXMe: name conflict nomacs dir vs executable
+
 	set(EXE_NAME ${CMAKE_PROJECT_NAME})
 	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
-	add_executable(${EXE_NAME} ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC})
-	target_link_libraries(${EXE_NAME} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB})
+	add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC})
+	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB})
 
 
 	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 		SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
 	ENDIF()
 
+	IF (APPLE)
+        	# mac's bundle install
+	        SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/macosx/Info.plist.in")
+        	SET(MACOSX_BUNDLE_ICON_FILE nomacs.icns)
+        	SET(MACOSX_BUNDLE_INFO_STRING "${EXE_NAME} ${NOMACS_VERSION}")
+        	SET(MACOSX_BUNDLE_GUI_IDENTIFIER "org.nomacs")
+        	SET(MACOSX_BUNDLE_LONG_VERSION_STRING "${NOMACS_VERSION}")
+        	SET(MACOSX_BUNDLE_BUNDLE_NAME "${EXE_NAME}")
+        	SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${NOMACS_VERSION}")
+        	SET(MACOSX_BUNDLE_BUNDLE_VERSION "${NOMACS_VERSION}")
+        	SET(MACOSX_BUNDLE_COPYRIGHT "(c) Nomacs team")
+        	SET_SOURCE_FILES_PROPERTIES(${CMAKE_SOURCE_DIR}/macosx/nomacs.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
+		INSTALL(TARGETS ${EXE_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
 
+		# create a "transportable" bundle - all libs into the bundle: "make bundle" after make install
+		configure_file(macosx/bundle.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake @ONLY)
+		add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake)
 
-	IF (MSVC) # copy qt dlls and change settings for different projects
+	ELSEIF (MSVC) # copy qt dlls and change settings for different projects
 		SET (QTLIBLIST QtCore QtGui QtNetwork)
 		
 		FOREACH(qtlib ${QTLIBLIST})
@@ -326,7 +358,7 @@ IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 			SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
 		ENDIF(${CREATE_DLL_PROJECT})
 		
-	ELSE()	
+	ELSE(UNIX)	
 	
 		# installation
 		#  binary

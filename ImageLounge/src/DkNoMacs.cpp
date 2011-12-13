@@ -27,6 +27,24 @@
 
 #include "DkNoMacs.h"
 
+
+DkNoMacsApp::DkNoMacsApp(int argc, char** argv)
+	: QApplication(argc, argv)
+{
+}
+
+#ifdef Q_WS_MAC
+bool DkNoMacsApp::event(QEvent *event) {
+	if (event->type() == QEvent::FileOpen) {
+	   	emit loadFile(QFileInfo(static_cast<QFileOpenEvent*>(event)->file()));
+		return true;
+	}
+	return QApplication::event(event);
+}
+#endif
+
+
+
 DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags) {
 
@@ -127,7 +145,7 @@ void DkNoMacs::registerFileVersion() {
 	// this function is based on code from:
 	// http://stackoverflow.com/questions/316626/how-do-i-read-from-a-version-resource-in-visual-c
 
-	QString version = "0.1.0.xx";	// default version (we do not know the build)
+	QString version(NOMACS_VERSION);	// default version (we do not know the build)
 
 	try {
 		// get the filename of the executable containing the version resource
@@ -173,7 +191,7 @@ void DkNoMacs::registerFileVersion() {
 }
 #else
 	void DkNoMacs::registerFileVersion() {
-		QString version = "0.1.0.xx";	// default version (we do not know the build)
+		QString version(NOMACS_VERSION);	// default version (we do not know the build)
 		QApplication::setApplicationVersion(version);
 	}
 #endif

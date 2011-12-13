@@ -24,7 +24,7 @@ nomacs ships with an installer. The installer copies all library dll's and the e
 
 ------------------------------------------------------------
 
-Compile Instructions
+Compile Instructions - MS Windows
 
 If you want to compile nomacs on your own, you need Visual Studio 2010. The source-code ships with a solution file for MSVC 2010.
 
@@ -54,4 +54,19 @@ Install Qt (set 'Default Qt/Win Version' to '4.7.2').
 Install and Compile libraw and exiv2 as DLL (for detailed instructions see www.exiv2.org and www.libraw.org). Copy 
 exiv2{d}.lib, expat{d}.lib, libraw{d}.lib and zlib1{d}.lib to ImageLounge\lib. Additionally copy the DLL's to the Release and Debug Folder.
 
+
+-------------------------------------------------------------
+
+Compile Instructions - Linux
+
+All required libraries should be available in any modern Linux distribution. Just install their -devel packages.
+Cmake is used to build Nomacs.
+cmake;make;make install
+
+
+------------------------------------------------------------
+
+Compile Installations - Mac OS X
+
+See README.MacOSX
 
