@@ -1278,8 +1278,8 @@ void DkThumbsLoader::setLoadLimits(int start, int end) {
 	//QMutexLocker(&this->mutex);
 	//if (start < startIdx || startIdx == -1)	startIdx = (start >= 0 && start < thumbs->size()) ? start : 0;
 	//if (end > endIdx || endIdx == -1)		endIdx = (end > 0 && end < thumbs->size()) ? end : thumbs->size();
-	startIdx = (start >= 0 && start < thumbs->size()) ? start : 0;
-	endIdx = (end > 0 && end < thumbs->size()) ? end : thumbs->size();
+	startIdx = (start >= 0 && (unsigned int) start < thumbs->size()) ? start : 0;
+	endIdx = (end > 0 && (unsigned int) end < thumbs->size()) ? end : thumbs->size();
 
 	somethingTodo = true;
 }

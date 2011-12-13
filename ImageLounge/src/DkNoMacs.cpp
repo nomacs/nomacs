@@ -702,7 +702,7 @@ DkViewPort* DkNoMacs::viewport() {
 void DkNoMacs::updateAll() {
 
 	QWidgetList w = QApplication::topLevelWidgets();
-	for (unsigned int idx = 0; idx < w.size(); idx++) {
+	for (int idx = 0; idx < w.size(); idx++) {
 		if (w[idx]->objectName().contains(QString("DkNoMacs")))
 			w[idx]->update();
 	}
@@ -1646,7 +1646,7 @@ int DkNoMacs::dialog(QString msg, QWidget* parent, QString title) {
 	if (!parent) {
 		QWidgetList w = QApplication::topLevelWidgets();
 
-		for (unsigned int idx = 0; idx < w.size(); idx++) {
+		for (int idx = 0; idx < w.size(); idx++) {
 
 			if (w[idx]->objectName().contains(QString("DkNoMacs"))) {
 				parent = w[idx];

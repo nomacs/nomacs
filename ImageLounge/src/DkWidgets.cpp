@@ -272,7 +272,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 	DkTimer dt;
 
-	for (int idx = 0; idx < thumbs.size(); idx++) {
+	for (unsigned int idx = 0; idx < thumbs.size(); idx++) {
 
 		DkThumbNail thumb = thumbs.at(idx);
 		
@@ -2637,7 +2637,7 @@ void DkMetaDataInfo::createLabels() {
 	pLabels.clear();
 	pValues.clear();
 
-	int commentWidth;
+	//int commentWidth;
 
 	//pLabels.resize(camDTags.size() + descTags.size());
 	//6 Lines...
@@ -2860,7 +2860,7 @@ void DkMetaDataInfo::resizeEvent(QResizeEvent *resizeW) {
 
 void DkMetaDataInfo::draw(QPainter* painter) {
 
-	QImage* img;
+	//QImage* img;
 
 	if (!painter)
 		return;

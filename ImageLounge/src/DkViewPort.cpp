@@ -873,7 +873,7 @@ void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
 
 	QPoint lastPoint;
 
-	for (unsigned int idx = 0; idx < polygon->size(); idx++) {
+	for (int idx = 0; idx < polygon->size(); idx++) {
 
 		QPoint p = polygon->at(idx);
 
