@@ -715,7 +715,7 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	broadcasting = false;
 }
 
-void DkLANUdpSocket::startBroadcast(quint16 tcpServerPort) {
+	void DkLANUdpSocket::startBroadcast(quint16 tcpServerPort) {
 	this->tcpServerPort = tcpServerPort;
 
 	sendBroadcast(); // send first broadcast 
@@ -738,9 +738,18 @@ void DkLANUdpSocket::sendBroadcast() {
 	datagram.append(QByteArray::number(tcpServerPort));
 	// datagram.append(serverport) + clientname
 
-	for (quint16 port = startPort; port < endPort; port++) 
-		writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, port);
-	qDebug() << "sent broadcast:" << datagram << "--- " << tcpServerPort;
+	
+	for (quint16 port = startPort; port < endPort; port++) {
+		foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+			foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+				if (entry.broadcast().isNull())
+					continue;
+				writeDatagram(datagram.data(), datagram.size(), entry.broadcast(), port);
+			}
+		}
+	}
+
+
 }
 
 void DkLANUdpSocket::sendNewClientBroadcast() {
