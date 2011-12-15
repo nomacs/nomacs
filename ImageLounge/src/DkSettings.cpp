@@ -56,6 +56,7 @@ int DkSettings::SlideShowSettings::filter = 0;
 int DkSettings::SlideShowSettings::time = 3;
 QBitArray DkSettings::SlideShowSettings::display = QBitArray(DkSlideshowSettingsWidget::display_end, false);
 QColor DkSettings::SlideShowSettings::backgroundColor = QColor(200, 200, 200);
+bool DkSettings::SlideShowSettings::silentFullscreen = true;
 
 QBitArray DkSettings::MetaDataSettings::metaDataBits = QBitArray(DkMetaDataSettingsWidget::desc_end, false);
 
@@ -119,6 +120,7 @@ void DkSettings::load() {
 	SlideShowSettings::filter = settings.value("SlideShowSettings/filter", DkSettings::SlideShowSettings::filter).toInt();
 	SlideShowSettings::time = settings.value("SlideShowSettings/time", DkSettings::SlideShowSettings::time).toInt();
 	SlideShowSettings::backgroundColor = settings.value("SlideShowSettings/backgroundColor", DkSettings::SlideShowSettings::backgroundColor).value<QColor>();
+	SlideShowSettings::silentFullscreen = settings.value("SlideShowSettings/silentFullscreen", DkSettings::SlideShowSettings::silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("SlideShowSettings/display", DkSettings::SlideShowSettings::display).toBitArray();
 
 	if (tmpDisplay.size() == SlideShowSettings::display.size())
@@ -166,6 +168,7 @@ void DkSettings::save() {
 	settings.setValue("SlideShowSettings/time", SlideShowSettings::time);
 	settings.setValue("SlideShowSettings/display", SlideShowSettings::display);
 	settings.setValue("SlideShowSettings/backgroundColor", SlideShowSettings::backgroundColor);
+	settings.setValue("SlideShowSettings/silentFullscreen", SlideShowSettings::silentFullscreen);
 
 	settings.setValue("SynchronizeSettings/enableNetworkSync", DkSettings::SynchronizeSettings::enableNetworkSync);
 	settings.setValue("SynchronizeSettings/allowTransformation", DkSettings::SynchronizeSettings::allowTransformation);
@@ -207,6 +210,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::SlideShowSettings::time = 3;
 	DkSettings::SlideShowSettings::display = QBitArray(DkSlideshowSettingsWidget::display_end, false);
 	DkSettings::SlideShowSettings::backgroundColor = QColor(217, 219, 228, 100);
+	DkSettings::SlideShowSettings::silentFullscreen = true;
 
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_size] = false;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_orientation] = false;

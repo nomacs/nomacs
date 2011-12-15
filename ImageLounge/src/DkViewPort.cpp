@@ -1257,9 +1257,6 @@ void DkViewPort::loadFile(QFileInfo file, bool updateFolder, bool silent) {
 		loader->setDir(dir);
 	} else if (loader)
 		loader->load(file, updateFolder, silent);
-	
-	if (silent)
-		qDebug() << "I did load it silent...";
 }
 
 void DkViewPort::reloadFile() {
@@ -1282,7 +1279,7 @@ void DkViewPort::loadNextFile(bool silent) {
 	unloadImage();
 
 	if (loader != 0 && !testLoaded)
-		loader->nextFile(silent);
+		loader->nextFile(silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(1);
@@ -1294,7 +1291,9 @@ void DkViewPort::loadPrevFile(bool silent) {
 	unloadImage();
 
 	if (loader != 0 && !testLoaded)
-		loader->previousFile(silent);
+		loader->previousFile(silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+
+	// TODO: what happens if a file cannot be loaded?? (currently nothing happens -> no information no loading)
 	
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(-1);
@@ -1318,7 +1317,7 @@ void DkViewPort::loadLast() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->lastFile();
+		loader->lastFile();		// TODO: add silent in DkImage
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(SHRT_MAX);
@@ -1330,7 +1329,7 @@ void DkViewPort::loadSkipPrev10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(-DkSettings::GlobalSettings::skipImgs);
+		loader->changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(-DkSettings::GlobalSettings::skipImgs);
@@ -1341,7 +1340,7 @@ void DkViewPort::loadSkipNext10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(DkSettings::GlobalSettings::skipImgs);
+		loader->changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(DkSettings::GlobalSettings::skipImgs);

@@ -101,6 +101,7 @@ class DkSettings : public QObject {
 		struct SlideShowSettings {
 			static int filter;
 			static int time;
+			static bool silentFullscreen;
 			static QBitArray display;
 			static QColor backgroundColor;
 		};
