@@ -45,14 +45,14 @@
 
 int main(int argc, char *argv[]) {
 
-	// DEBUG --------------------------------------------------------------------
-	printf("number of arguments: %i\n", argc);
+	//// DEBUG --------------------------------------------------------------------
+	//printf("number of arguments: %i\n", argc);
 
-	for (int idx = 0; idx < argc; idx++)
-		printf("%s\n", argv[idx]);
+	//for (int idx = 0; idx < argc; idx++)
+	//	printf("%s\n", argv[idx]);
 
-	DkUtils::setDebug(DK_DEBUG_A);
-	// DEBUG --------------------------------------------------------------------
+	//DkUtils::setDebug(DK_DEBUG_A);
+	//// DEBUG --------------------------------------------------------------------
 
 #ifdef linux
 	QApplication::setGraphicsSystem("raster");
