@@ -27,6 +27,12 @@
 
 #pragma once
 
+#include <QString>
+#include <QFileInfo>
+#include <QDate>
+#include <QRegExp>
+#include <QStringList>
+
 #include <cmath>
 #include <sstream>
 #include <stdarg.h>
@@ -253,6 +259,31 @@ public:
 
 		return stringify(rounded/std::pow(10,n));
 	};
+
+	static QString convertDate(QString& date, QFileInfo& file = QFileInfo()) {
+		// convert date
+		QString dateConverted;
+		QStringList dateSplit = date.split(QRegExp("[: \t]"));
+
+		if (date.size() >= 3) {
+
+			QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
+			dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
+
+			if (date.size() >= 6) {
+				QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
+				dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
+			}
+		}
+		else if (file.exists()) {
+			QDateTime dateCreated = file.created();
+			dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
+		}
+		else
+			dateConverted = "unknown date";
+
+		return dateConverted;
+	}
 
 #ifdef WIN32
 	static LPCWSTR stringToWchar(std::string str) {

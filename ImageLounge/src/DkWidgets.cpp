@@ -2541,13 +2541,66 @@ void DkMetaDataInfo::readTags() {
 				QString tmp, Value;
 
 				if (mapIptcExif[i] == 0) {
+					
 					//tmp = preExifI + camDTags.at(i);
 					tmp = camSearchTags.at(i);
-					//special treatment for Tag size
-					if (i!=DkMetaDataSettingsWidget::camData_size) {	
-						if (i==DkMetaDataSettingsWidget::camData_exposuretime)
-							qDebug() << "exposure time";
-						Value = QString(metaData.getExifValue(tmp.toStdString()).c_str());
+					
+					//special treatments
+					// aperture
+					if (i == DkMetaDataSettingsWidget::camData_aperture) {
+						
+						QString aValue = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						QStringList sList = aValue.split('/');
+
+						if (sList.size() == 2) {
+							double val = std::pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
+							Value = QString::fromStdString(DkUtils::stringify(val,1));
+						}
+						else
+							Value = aValue;
+
+					}
+					// focal length
+					else if (i == DkMetaDataSettingsWidget::camData_focallength) {
+
+						QString aValue = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						QStringList sList = aValue.split('/');
+
+						if (sList.size() == 2) {
+							double val = sList[0].toDouble()/sList[1].toDouble();
+							Value = QString::fromStdString(DkUtils::stringify(val,1)) + " mm";
+						}
+						else
+							Value = aValue;
+
+					}
+					// exposure time
+					else if (i == DkMetaDataSettingsWidget::camData_exposuretime) {
+
+						QString aValue = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						QStringList sList = aValue.split('/');
+
+						if (sList.size() == 2) {
+							int nom = sList[0].toInt();		// nominator
+							int denom = sList[1].toInt();	// denominator
+
+							// if exposure time is less than a second -> compute the gcd for nice values (1/500 instead of 2/1000)
+							if (nom <= denom) {
+								int gcd = DkMath::gcd(denom, nom);
+								Value = QString::number(nom/gcd) % QString("/") % QString::number(denom/gcd);
+							}
+							else
+								Value = QString::fromStdString(DkUtils::stringify((float)nom/(float)denom,1));
+
+							Value += " sec";
+						}
+						else
+							Value = aValue;
+
+					}
+					else if (i == DkMetaDataSettingsWidget::camData_size) {	
+						Value = QString::number(imgSize.width()) + " x " + QString::number(imgSize.height());
+
 					} else {
 						//tag size -> search for width and Length
 						//tmp = QString(metaData.getExifValue("ImageWidth").c_str());
@@ -2557,7 +2610,7 @@ void DkMetaDataInfo::readTags() {
 						//if (!tmp.compare("")) Value = "X";
 						//Value = tmp + Value;
 						qDebug() << "size" << imgSize.width() << imgSize.height();
-						Value = QString::number(imgSize.width()) + " x " + QString::number(imgSize.height());
+						Value = QString(metaData.getExifValue(tmp.toStdString()).c_str());
 					}
 				} else if (mapIptcExif[i] == 1) {
 					tmp = preIptc + camSearchTags.at(i);
@@ -2580,8 +2633,14 @@ void DkMetaDataInfo::readTags() {
 				if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 0) {
 					//tmp = preExifI + camDTags.at(i);
 					tmp = descSearchTags.at(i);
-
+					qDebug() << tmp;
 					Value = QString(metaData.getExifValue(tmp.toStdString()).c_str());
+
+					if (tmp.contains("Date")) {
+						
+						Value = DkUtils::convertDate(Value, file);
+					}
+
 
 				} else if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 1) {
 					tmp = preIptc + descSearchTags.at(i);

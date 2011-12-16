@@ -111,6 +111,22 @@ public:
 	}
 
 	/**
+	 * Returns the greatest common divisor (GGT).
+	 * Where a must be greater than b.
+	 * @param a the greater number.
+	 * @param b the smaller number.
+	 * @return int the greatest common divisor.
+	 **/ 
+	static int gcd(int a, int b) {
+		// zu deutsch: ggt
+
+		if (b==0)
+			return a;
+		else
+			return gcd(b, a%b);
+	}
+
+	/**
 	 * Computes the normalized angle in radians.
 	 * The normalized angle is in this case defined as the
 	 * corresponding angle within [0 pi].
