@@ -368,7 +368,6 @@ protected:
 	DkRatingLabel* rating;
 	
 	void paintEvent(QPaintEvent *event);
-	void updateCanvas();
 };
 
 class DkPlayer : public DkWidget {

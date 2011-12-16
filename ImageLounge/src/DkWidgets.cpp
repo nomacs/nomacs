@@ -43,7 +43,7 @@ void DkWidget::init() {
 
 	//  widget starts on hide
 	opacityEffect = new QGraphicsOpacityEffect(this);
-	//opacityEffect->setOpacity(0);
+	opacityEffect->setOpacity(0);
 	setGraphicsEffect(opacityEffect);
 	QWidget::hide();
 }
@@ -74,7 +74,7 @@ void DkWidget::setVisible(bool visible) {
 		return;
 	}
 
-	if (visible && !showing)
+	if (visible && !isVisible() && !showing)
 		opacityEffect->setOpacity(100);
 
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
@@ -1140,23 +1140,23 @@ void DkRatingLabel::init() {
 	
 	stars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
 	stars[rating_1]->setCheckable(true);
-	connect(stars[rating_1], SIGNAL(pressed()), this, SLOT(rating1()));
+	connect(stars[rating_1], SIGNAL(released()), this, SLOT(rating1()));
 
 	stars[rating_2] = new DkButton(starWhite, starDark, tr("two stars"), this);
 	stars[rating_2]->setCheckable(true);
-	connect(stars[rating_2], SIGNAL(pressed()), this, SLOT(rating2()));
+	connect(stars[rating_2], SIGNAL(released()), this, SLOT(rating2()));
 
 	stars[rating_3] = new DkButton(starWhite, starDark, tr("three star"), this);
 	stars[rating_3]->setCheckable(true);
-	connect(stars[rating_3], SIGNAL(pressed()), this, SLOT(rating3()));
+	connect(stars[rating_3], SIGNAL(released()), this, SLOT(rating3()));
 
 	stars[rating_4] = new DkButton(starWhite, starDark, tr("four star"), this);
 	stars[rating_4]->setCheckable(true);
-	connect(stars[rating_4], SIGNAL(pressed()), this, SLOT(rating4()));
+	connect(stars[rating_4], SIGNAL(released()), this, SLOT(rating4()));
 
 	stars[rating_5] = new DkButton(starWhite, starDark, tr("five star"), this);
 	stars[rating_5]->setCheckable(true);
-	connect(stars[rating_5], SIGNAL(pressed()), this, SLOT(rating5()));
+	connect(stars[rating_5], SIGNAL(released()), this, SLOT(rating5()));
 
 }
 
@@ -1227,7 +1227,7 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkWidget(parent) {
 
 void DkFileInfoLabel::setVisible(bool visible) {
 
-	// TODO: unbalanced warning makes me feel uncomfortable
+	// TODO: unbalanced warning (in DkRatingLabel) makes me feel uncomfortable
 
 	// nothing to display??
 	if (!DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_name) &&
@@ -1241,12 +1241,7 @@ void DkFileInfoLabel::setVisible(bool visible) {
 	title->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_name));
 	date->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_creation_date));
 	rating->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
-	
-	//if (DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating))
-	//	/*rating->setVisible(true);*/rating->show();
-	//else
-	//	rating->setVisible(false);//rating->hide();
-	
+		
 	adjustSize();
 }
 
@@ -1274,7 +1269,6 @@ void DkFileInfoLabel::updatePos(const QPoint& pos) {
 	if (pos.x() != -1 && pos.y() != -1)
 		this->offset = pos;
 	move(m+offset);
-
 }
 
 void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& date, const int rating) {
