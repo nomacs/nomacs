@@ -30,12 +30,12 @@ If you want to compile nomacs on your own, you need Visual Studio 2010. The sour
 
 nomacs uses the following libraries:
 
-Open Source Computer Vision Library 2.2:
-http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.2/
+Open Source Computer Vision Library 2.3.1:
+http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3.1/
 -------------------------------------------------------------
-Qt 4.7.2:
-ftp://ftp.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.2.zip or
-ftp://ftp.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.2.tar.gz
+Qt 4.7.4:
+ftp://ftp.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip or
+ftp://ftp.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.tar.gz
 
 -------------------------------------------------------------
 exiv2-0.21.1 library:
