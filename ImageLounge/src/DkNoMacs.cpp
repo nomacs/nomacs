@@ -200,6 +200,10 @@ void DkNoMacs::createToolbar() {
 
 	toolbar = addToolBar(tr("Edit"));
 	toolbar->setObjectName("EditToolBar");
+
+// play with themes only on windows - users used to look at it there ;)
+// all other platforms have "native look and feel"
+#ifdef Q_WS_WIN
 	toolbar->setIconSize(QSize(16, 16));
 	toolbar->setStyleSheet(
 					//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
@@ -208,7 +212,7 @@ void DkNoMacs::createToolbar() {
 					//+ QString("QToolButton{border: none; margin: 3px;}")
 					//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
 					);
-
+#endif
 	// file
 	//DkButton* test = new DkButton(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
 	//test->addAction(fileActions[menu_file_prev]);
@@ -249,24 +253,26 @@ void DkNoMacs::createStatusbar() {
 	this->setStatusBar(statusbar);
 }
 
+#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
+
 void DkNoMacs::createIcons() {
 
 	fileIcons.resize(icon_file_end);
-	fileIcons[icon_file_dir] = QIcon(":/nomacs/img/dir.png");
-	fileIcons[icon_file_open] = QIcon(":/nomacs/img/open.png");
-	fileIcons[icon_file_save] = QIcon(":/nomacs/img/save.png");
-	fileIcons[icon_file_prev] = QIcon(":/nomacs/img/previous.png");
-	fileIcons[icon_file_next] = QIcon(":/nomacs/img/next.png");
+	fileIcons[icon_file_dir] = ICON("document-open-folder", ":/nomacs/img/dir.png");
+	fileIcons[icon_file_open] = ICON("document-open", ":/nomacs/img/open.png");
+	fileIcons[icon_file_save] = ICON("document-save", ":/nomacs/img/save.png");
+	fileIcons[icon_file_prev] = ICON("go-previous", ":/nomacs/img/previous.png");
+	fileIcons[icon_file_next] = ICON("go-next", ":/nomacs/img/next.png");
 
 	editIcons.resize(icon_edit_end);
-	editIcons[icon_edit_rotate_cw] = QIcon(":/nomacs/img/rotate-cw.png");
-	editIcons[icon_edit_rotate_ccw] = QIcon(":/nomacs/img/rotate-cc.png");
+	editIcons[icon_edit_rotate_cw] = ICON("object-rotate-right", ":/nomacs/img/rotate-cw.png");
+	editIcons[icon_edit_rotate_ccw] = ICON("object-rotate-left", ":/nomacs/img/rotate-cc.png");
 
 	viewIcons.resize(icon_view_end);
-	viewIcons[icon_view_fullscreen] = QIcon(":/nomacs/img/fullscreen.png");
-	viewIcons[icon_view_reset] = QIcon(":/nomacs/img/zoomReset.png");
-	viewIcons[icon_view_100] = QIcon(":/nomacs/img/zoom100.png");
-	viewIcons[icon_view_gps] = QIcon(":/nomacs/img/gps-globe.png");
+	viewIcons[icon_view_fullscreen] = ICON("view-fullscreen", ":/nomacs/img/fullscreen.png");
+	viewIcons[icon_view_reset] = ICON("zoom-draw", ":/nomacs/img/zoomReset.png");
+	viewIcons[icon_view_100] = ICON("zoom-original", ":/nomacs/img/zoom100.png");
+	viewIcons[icon_view_gps] = ICON("", ":/nomacs/img/gps-globe.png");
 
 }
 
