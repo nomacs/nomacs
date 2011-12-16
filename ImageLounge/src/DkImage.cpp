@@ -1760,7 +1760,7 @@ std::string DkMetaData::getNativeExifValue(std::string key) {
 		}
 
 		if (pos == exifData.end() || pos->count() == 0) {
-			qDebug() << "Information is not set in the Exif Data";
+			//qDebug() << "Information is not set in the Exif Data";
 		} else {
 			Exiv2::Value::AutoPtr v = pos->getValue();
 			info = pos->toString();
@@ -1803,7 +1803,7 @@ std::string DkMetaData::getExifValue(std::string key) {
 		}
 
 		if (pos == exifData.end() || pos->count() == 0) {
-			qDebug() << "Information is not set in the Exif Data";
+			//qDebug() << "Information is not set in the Exif Data";
 		} else {
 			Exiv2::Value::AutoPtr v = pos->getValue();
 			//Exiv2::StringValue* prv = dynamic_cast<Exiv2::StringValue*>(v.release());

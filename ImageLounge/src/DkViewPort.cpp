@@ -830,7 +830,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// the labels must not be 0 !!
 	//if (!imgQt.isNull()) centerLabel->show();
-	bottomLabel->block(imgQt.isNull()/* || ratingLabel->isVisible()*/);
+	bottomLabel->block(imgQt.isNull());
 	
 	// TODO: correct this...
 	/*if (bottomRightLabel && parent && (!parent->isFullScreen() || imgQt.isNull()))*/ bottomRightLabel->hide();
@@ -838,6 +838,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	//if (!mouseTrace.empty())
 	//	drawPolygon(&painter, &mouseTrace);
+
+	painter.end();
 
 	// propagate
 	QGraphicsView::paintEvent(event);
@@ -929,7 +931,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	metaDataInfo->resizeEvent(event);
 
 	overviewWindow->resize(size()*overviewSize);
-	//overviewWindow->setGeometry(QRect(QPoint(10, 10), size()*overviewSize));
 	overviewWindow->setViewPortRect(geometry());
 
 	topOffset.setX(overviewWindow->width()+10);

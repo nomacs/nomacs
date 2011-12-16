@@ -43,13 +43,13 @@ void DkWidget::init() {
 
 	//  widget starts on hide
 	opacityEffect = new QGraphicsOpacityEffect(this);
-	opacityEffect->setOpacity(0);
+	//opacityEffect->setOpacity(0);
 	setGraphicsEffect(opacityEffect);
 	QWidget::hide();
 }
 
 void DkWidget::show() {
-	qDebug() << "blocked: " << blocked;
+	
 	if (!blocked && !showing) {
 		hiding = false;
 		showing = true;
@@ -59,7 +59,7 @@ void DkWidget::show() {
 }
 
 void DkWidget::hide() {
-
+	
 	if (!hiding) {
 		hiding = true;
 		showing = false;
@@ -73,6 +73,9 @@ void DkWidget::setVisible(bool visible) {
 		QWidget::setVisible(false);
 		return;
 	}
+
+	if (visible && !showing)
+		opacityEffect->setOpacity(100);
 
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 	QWidget::setVisible(visible);
@@ -1076,6 +1079,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	}
 
 	painter.drawPixmap(r, pm2draw);
+	painter.end();
 }
 
 QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
@@ -1236,11 +1240,13 @@ void DkFileInfoLabel::setVisible(bool visible) {
 	DkWidget::setVisible(visible);
 	title->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_name));
 	date->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_creation_date));
+	rating->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
 	
-	if (DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating))
-		rating->show();
-	else
-		rating->hide();
+	//if (DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating))
+	//	/*rating->setVisible(true);*/rating->show();
+	//else
+	//	rating->setVisible(false);//rating->hide();
+	
 	adjustSize();
 }
 
