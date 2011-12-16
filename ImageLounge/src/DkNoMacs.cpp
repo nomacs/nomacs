@@ -1630,6 +1630,9 @@ void DkNoMacs::openSettings() {
 
 void DkNoMacs::settingsChanged() {
 	
+	showMenuBar(DkSettings::AppSettings::showMenuBar);
+	showToolbar(DkSettings::AppSettings::showToolBar);
+	showStatusBar(DkSettings::AppSettings::showStatusBar);
 }
 
 void DkNoMacs::checkForUpdate() {
@@ -1918,6 +1921,8 @@ void DkNoMacsIpl::tcpConnectAll() {
 
 void DkNoMacsIpl::settingsChanged() {
 	initLanClient();
+
+	DkNoMacs::settingsChanged();
 }
 
 void DkNoMacsIpl::clientInitialized() {

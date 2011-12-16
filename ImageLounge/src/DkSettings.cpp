@@ -54,7 +54,7 @@ int DkSettings::DisplaySettings::interpolateZoomLevel = 200;
 
 int DkSettings::SlideShowSettings::filter = 0;
 int DkSettings::SlideShowSettings::time = 3;
-QBitArray DkSettings::SlideShowSettings::display = QBitArray(DkSlideshowSettingsWidget::display_end, false);
+QBitArray DkSettings::SlideShowSettings::display = QBitArray(DkSlideshowSettingsWidget::display_end, true);
 QColor DkSettings::SlideShowSettings::backgroundColor = QColor(200, 200, 200);
 bool DkSettings::SlideShowSettings::silentFullscreen = true;
 
@@ -208,7 +208,7 @@ void DkSettings::setToDefaultSettings() {
 
 	DkSettings::SlideShowSettings::filter = 0;
 	DkSettings::SlideShowSettings::time = 3;
-	DkSettings::SlideShowSettings::display = QBitArray(DkSlideshowSettingsWidget::display_end, false);
+	DkSettings::SlideShowSettings::display = QBitArray(DkSlideshowSettingsWidget::display_end, true);
 	DkSettings::SlideShowSettings::backgroundColor = QColor(217, 219, 228, 100);
 	DkSettings::SlideShowSettings::silentFullscreen = true;
 
