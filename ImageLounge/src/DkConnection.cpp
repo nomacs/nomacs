@@ -134,7 +134,8 @@ void DkConnection::sendNewGoodbyeMessage() {
 	QByteArray ba = "GoodBye"; 
 	QByteArray data = "GOODBYE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
-	bool x = write(data);
+	write(data);
+	this->waitForBytesWritten();
 }
 
 void DkConnection::synchronizedPeersListChanged(QList<quint16> newList) {

@@ -553,7 +553,9 @@ void DkDisplaySettingsWidget::init() {
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::DisplaySettings::thumbSize);
 	cbSaveThumb->setChecked(DkSettings::DisplaySettings::saveThumb);
 	interpolateWidget->setSpinBoxValue(DkSettings::DisplaySettings::interpolateZoomLevel);
-
+	cbShowMenu->setChecked(DkSettings::AppSettings::showMenuBar);
+	cbShowStatusbar->setChecked(DkSettings::AppSettings::showStatusBar);
+	cbShowToolbar->setChecked(DkSettings::AppSettings::showToolBar);
 
 	connect(highlightColorButton, SIGNAL(clicked()), this, SLOT(highlightButtonClicked()));
 	connect(highlightColorResetButton, SIGNAL(clicked()), this, SLOT(resetHighlightColor()));
@@ -584,7 +586,6 @@ void DkDisplaySettingsWidget::createLayout() {
 	cbKeepZoom = new QCheckBox(tr("Keep Zoom"));
 	vbCheckBoxLayout->addWidget(cbInvertZoom);
 	vbCheckBoxLayout->addWidget(cbKeepZoom);
-	vbCheckBoxLayout->addStretch();
 
 	colorDialog = new QColorDialog(QColor("gray"), this);
 	QWidget* highlightColorWidget = new QWidget(this);
@@ -609,6 +610,10 @@ void DkDisplaySettingsWidget::createLayout() {
 
 	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
 
+	cbShowMenu = new QCheckBox(tr("show Menu"));
+	cbShowToolbar = new QCheckBox(tr("show Toolbar"));
+	cbShowStatusbar = new QCheckBox(tr("show Statusbar"));
+
 	QGroupBox* gbThumb = new QGroupBox(tr("Thumbnails"));
 	QGridLayout* gbHbox = new QGridLayout(gbThumb);
 
@@ -624,10 +629,15 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbHbox->setColumnStretch(1,5);
 
 	gbLeftLayout->addWidget(highlightColorWidget);
+	gbLeftLayout->addStretch();
 	gbLeftLayout->addWidget(checkBoxWidget);
 	gbLeftLayout->addStretch();
+	
 
 	gbRightLayout->addWidget(interpolateWidget);
+	gbRightLayout->addWidget(cbShowMenu);
+	gbRightLayout->addWidget(cbShowToolbar);
+	gbRightLayout->addWidget(cbShowStatusbar);
 	gbRightLayout->addStretch();
 
 	gbLayout->addWidget(leftGroupBoxWidget, 0, 0);
@@ -646,6 +656,9 @@ void DkDisplaySettingsWidget::writeSettings() {
 	DkSettings::DisplaySettings::thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
 	DkSettings::DisplaySettings::saveThumb = cbSaveThumb->isChecked();
 	DkSettings::DisplaySettings::interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
+	DkSettings::AppSettings::showMenuBar = cbShowMenu->isChecked();
+	DkSettings::AppSettings::showStatusBar = cbShowStatusbar->isChecked();
+	DkSettings::AppSettings::showToolBar = cbShowToolbar->isChecked();
 
 }
 

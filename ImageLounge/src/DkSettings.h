@@ -294,6 +294,10 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 
 		DkSpinBoxWidget* interpolateWidget;
 
+		QCheckBox* cbShowMenu;
+		QCheckBox* cbShowToolbar;
+		QCheckBox* cbShowStatusbar;
+
 		QColorDialog* colorDialog;
 		QLabel* highlightColorLabel;
 		QPushButton* highlightColorButton;
