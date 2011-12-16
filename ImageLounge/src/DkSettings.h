@@ -350,6 +350,7 @@ Q_OBJECT
 		QCheckBox* cbCreationDate;
 		QCheckBox* cbName;
 		QCheckBox* cbRating;
+		QCheckBox* cbSilentFullscreen;
 
 		int filter;
 		int time;

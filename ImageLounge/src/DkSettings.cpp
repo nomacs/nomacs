@@ -257,9 +257,8 @@ void DkSettings::setToDefaultSettings() {
 
 DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 
-	// this causes prefs unusable on mac and on linux with larger fonts
-	// this->setFixedSize(600,400);
-	
+	this->resize(600,400);
+
 	s = new DkSettings();
 
 	createLayout();
@@ -671,6 +670,7 @@ void DkSlideshowSettingsWidget::init() {
 	cbName->setChecked(DkSettings::SlideShowSettings::display.testBit(display_file_name));
 	cbCreationDate->setChecked(DkSettings::SlideShowSettings::display.testBit(display_creation_date));
 	cbRating->setChecked(DkSettings::SlideShowSettings::display.testBit(display_file_rating));
+	cbSilentFullscreen->setChecked(DkSettings::SlideShowSettings::silentFullscreen);
 
 	connect(buttonBackgroundColor, SIGNAL(clicked()), this, SLOT(backgroundButtonClicked()));
 	connect(buttonResetBackground, SIGNAL(clicked()), this, SLOT(resetBackground()));
@@ -685,12 +685,15 @@ void DkSlideshowSettingsWidget::createLayout() {
 	vBoxLayout = new QVBoxLayout(this);
 	//vBoxLayout->setMargin(0);
 
+	// slideshow settings
 	QGroupBox* gbSlideShow = new QGroupBox(tr("Slideshow Settings"), this);
 	QVBoxLayout* gbSlideShowLayout = new QVBoxLayout(gbSlideShow);
 
-	// display time
 	timeWidget = new DkSpinBoxWidget(tr("Display Time:"), tr("sec"), 1, 99, this );
 	
+	// fullscreen groupbox
+	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen Settings"), this);
+	QHBoxLayout* gbFullscreenLayout = new QHBoxLayout(gbFullscreen);
 
 	colorDialog = new QColorDialog(QColor("gray"), this);
 	QWidget* backgroundWidget = new QWidget(this);
@@ -700,15 +703,19 @@ void DkSlideshowSettingsWidget::createLayout() {
 	buttonBackgroundColor->setFlat(true);
 	buttonResetBackground = new QPushButton(tr("Reset"));
 	backgroundVLayout->addWidget(labelBackgroundText);
-	
+
 	QWidget* backgroundColWidget = new QWidget(this);
 	QHBoxLayout* backgroundLayout = new QHBoxLayout(backgroundColWidget);
-	
+
 	backgroundLayout->addWidget(buttonBackgroundColor);
 	backgroundLayout->addWidget(buttonResetBackground);
 	backgroundLayout->addStretch();
 	backgroundVLayout->addWidget(backgroundColWidget);
 
+	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
+
+
+	// display information
 	gbInfo = new QGroupBox(tr("Display Information"));
 	QVBoxLayout* gbLayout = new QVBoxLayout(gbInfo);
 
@@ -722,8 +729,12 @@ void DkSlideshowSettingsWidget::createLayout() {
 	gbLayout->addWidget(cbRating);
 
 	gbSlideShowLayout->addWidget(timeWidget);
-	gbSlideShowLayout->addWidget(backgroundWidget);
+	gbFullscreenLayout->addWidget(backgroundWidget);
+	gbFullscreenLayout->addStretch();
+	gbFullscreenLayout->addWidget(cbSilentFullscreen);
+	gbFullscreenLayout->addStretch();
 	vBoxLayout->addWidget(gbSlideShow);
+	vBoxLayout->addWidget(gbFullscreen);
 	vBoxLayout->addWidget(gbInfo);
 	vBoxLayout->addStretch();
 }
@@ -735,6 +746,8 @@ void DkSlideshowSettingsWidget::writeSettings() {
 	DkSettings::SlideShowSettings::display.setBit(display_file_name, cbName->isChecked());
 	DkSettings::SlideShowSettings::display.setBit(display_creation_date, cbCreationDate->isChecked());
 	DkSettings::SlideShowSettings::display.setBit(display_file_rating, cbRating->isChecked());
+
+	DkSettings::SlideShowSettings::silentFullscreen = cbSilentFullscreen->isChecked();
 }
 
 void DkSlideshowSettingsWidget::backgroundButtonClicked() {
