@@ -1221,7 +1221,7 @@ void DkViewPort::settingsChanged() {
 	reloadFile();
 
 	// update the title label
-	if (fileInfoLabel)
+	if (fileInfoLabel && fileInfoLabel->isVisible())
 		fileInfoLabel->show();
 
 	if (parent->isFullScreen())
