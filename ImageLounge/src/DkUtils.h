@@ -260,7 +260,7 @@ public:
 		return stringify(rounded/std::pow(10,n));
 	};
 
-	static QString convertDate(QString& date, QFileInfo& file = QFileInfo()) {
+	static QString convertDate(QString& date, const QFileInfo& file = QFileInfo()) {
 		// convert date
 		QString dateConverted;
 		QStringList dateSplit = date.split(QRegExp("[: \t]"));

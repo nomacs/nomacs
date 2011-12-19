@@ -217,7 +217,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_make] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_model] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_aperture] = true;
-	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = true;
+	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = true;

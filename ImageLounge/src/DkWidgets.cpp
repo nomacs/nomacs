@@ -547,11 +547,16 @@ void DkFilePreview::moveImages() {
 	if (worldMatrix.dx() >= width()*0.5 && currentDx > 0 || worldMatrix.dx() <= -(bufferDim.right()-width()*0.5+xOffset) && currentDx < 0)
 		return;
 
+	// set the last step to match the center of the screen...	(nicer if user scrolls very fast)
+	if (worldMatrix.dx() < width()*0.5 && currentDx > 0 && worldMatrix.dx()+currentDx > width()*0.5 && currentDx > 0)
+		currentDx = width()*0.5-worldMatrix.dx();
+	else if (worldMatrix.dx() > -(bufferDim.right()-width()*0.5+xOffset) && worldMatrix.dx()+currentDx <= -(bufferDim.right()-width()*0.5+xOffset) && currentDx < 0)
+		currentDx = -(bufferDim.right()-width()*0.5+xOffset+worldMatrix.dx());
+
 	qDebug() << "currentDx: " << currentDx;
 	worldMatrix.translate(currentDx, 0);
 	update();
 }
-
 
 void DkFilePreview::updateDir(QFileInfo file, bool force) {
 

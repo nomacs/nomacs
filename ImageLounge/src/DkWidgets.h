@@ -333,9 +333,6 @@ protected:
 	QTimer* hideTimer;
 	int timeToDisplay;
 	
-	
-	//void init();
-
 	virtual void paintEvent(QPaintEvent *event);
 };
 
