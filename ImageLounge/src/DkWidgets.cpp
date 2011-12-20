@@ -553,7 +553,7 @@ void DkFilePreview::moveImages() {
 	else if (worldMatrix.dx() > -(bufferDim.right()-width()*0.5+xOffset) && worldMatrix.dx()+currentDx <= -(bufferDim.right()-width()*0.5+xOffset) && currentDx < 0)
 		currentDx = -(bufferDim.right()-width()*0.5+xOffset+worldMatrix.dx());
 
-	qDebug() << "currentDx: " << currentDx;
+	//qDebug() << "currentDx: " << currentDx;
 	worldMatrix.translate(currentDx, 0);
 	update();
 }
