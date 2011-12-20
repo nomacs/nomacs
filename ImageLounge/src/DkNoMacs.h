@@ -79,6 +79,7 @@ enum {
 	// file
 	shortcut_open_preview	= Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
+	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
 	shortcut_first_file		= Qt::Key_Home, 
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
@@ -142,6 +143,7 @@ enum {
 enum fileActions {
 	menu_file_open,
 	menu_file_open_dir,
+	menu_file_open_with,
 	menu_file_save,
 	menu_file_print,
 	menu_file_reload,
@@ -332,6 +334,7 @@ public slots:
 	void showMenuBar(bool show);
 	void showToolbar(bool show);
 	void showGpsCoordinates();
+	void openFileWith();
 	void aboutDialog();
 	void bugReport();
 	void featureRequest();
@@ -435,6 +438,8 @@ protected:
 	DkUpdater* updater;
 
 	QRect oldGeometry;
+
+	QProcess process;
 
 	// functions
 	DkNoMacs(QWidget *parent = 0, Qt::WFlags flags = 0);

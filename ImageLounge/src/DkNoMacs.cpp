@@ -282,6 +282,7 @@ void DkNoMacs::createMenu() {
 	fileMenu = menu->addMenu(tr("&File"));
 	fileMenu->addAction(fileActions[menu_file_open]);
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
+	fileMenu->addAction(fileActions[menu_file_open_with]);
 	fileMenu->addAction(fileActions[menu_file_save]);
 
 	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::GlobalSettings::recentFiles);
@@ -399,6 +400,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_open_dir]->setShortcut(QKeySequence(shortcut_open_dir));
 	fileActions[menu_file_open_dir]->setStatusTip(tr("Open a directory and load its first image"));
 	connect(fileActions[menu_file_open_dir], SIGNAL(triggered()), this, SLOT(openDir()));
+
+	fileActions[menu_file_open_with] = new QAction(tr("Open &With"), this);
+	fileActions[menu_file_open_with]->setShortcut(QKeySequence(shortcut_open_with));
+	fileActions[menu_file_open_with]->setStatusTip(tr("Open an image in a different Program"));
+	connect(fileActions[menu_file_open_with], SIGNAL(triggered()), this, SLOT(openFileWith()));
 
 	fileActions[menu_file_save] = new QAction(fileIcons[icon_file_save], tr("&Save"), this);
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
@@ -711,11 +717,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	viewActions[menu_view_zoom_in]->setEnabled(enable);
 	viewActions[menu_view_zoom_out]->setEnabled(enable);
 
-	// this is the wrong place -> do it in the meta datainfo panel...
-	//bool hasGps = !viewport()->getMetaDataWidget()->getMetaData()->getNativeExifValue("Exif.GPSInfo.GPSLatitude").empty();
-	//qDebug() << "hasGps:" << QString::fromStdString(viewport()->getMetaDataWidget()->getMetaData()->getNativeExifValue("Exif.GPSInfo.GPSLatitude"));
-	//printf("has gps: %s\n", viewport()->getMetaDataWidget()->getMetaData()->getNativeExifValue("Exif.GPSInfo.GPSLatitude").c_str());
-	//viewActions[menu_view_gps_map]->setEnabled(hasGps && enable);
 }
 
 
@@ -1563,6 +1564,23 @@ void DkNoMacs::showStatusBar(bool show) {
 void DkNoMacs::showStatusMessage(QString msg) {
 
 	statusbarMsg->setText(msg);
+}
+
+void DkNoMacs::openFileWith() {
+
+	QStringList args;
+	args << viewport()->getImageLoader()->getFile().absoluteFilePath();
+	args[0].replace("/", "\\");	// photoshop needs backslashes
+
+	bool started = process.startDetached("psOpenImages.exe", args);
+
+	if (started)
+		qDebug() << "starting photoshop";
+	else
+		errorDialog("Sorry, I could not start Photoshop");
+
+	qDebug() << "I'm trying to execute: " << args[0];
+
 }
 
 void DkNoMacs::showGpsCoordinates() {
