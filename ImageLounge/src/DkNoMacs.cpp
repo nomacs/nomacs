@@ -1568,6 +1568,8 @@ void DkNoMacs::showStatusMessage(QString msg) {
 
 void DkNoMacs::openFileWith() {
 
+	// TODO: dialog where user can choose his preferred software to open images...
+
 	QStringList args;
 	args << viewport()->getImageLoader()->getFile().absoluteFilePath();
 	args[0].replace("/", "\\");	// photoshop needs backslashes
