@@ -339,6 +339,9 @@ Section "MainSection" SEC01
   File "ReallyRelease\QtGui4.dll"
   File "ReallyRelease\QtNetwork4.dll"
   File "ReallyRelease\zlib1.dll"
+  
+  File "psOpenImages.exe"
+  
   File "Readme\COPYRIGHT"
   File "Readme\LICENSE.GPLv2"
   File "Readme\LICENSE.GPLv3"
@@ -417,6 +420,8 @@ Section Uninstall
   Delete "$INSTDIR\libexpat.dll"
   Delete "$INSTDIR\exiv2.dll"
   Delete "$INSTDIR\nomacs.exe"
+  
+  Delete "$INSTDIR\psOpenImages.exe"
   
   Delete "$INSTDIR\COPYRIGHT"
   Delete "$INSTDIR\LICENSE.GPLv2"
