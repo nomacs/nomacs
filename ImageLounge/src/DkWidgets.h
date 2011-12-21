@@ -42,6 +42,7 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QComboBox>
 #include <QStringBuilder>
+#include <QBuffer>	// winapi??
 #include <QPointer>
 #include <QTimer>
 #include <QMap>
@@ -49,6 +50,11 @@
 #include "DkImage.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
+
+#ifdef WIN32
+#include <ShObjIdl.h>
+#include <ShlObj.h>
+#endif
 
 class DkThumbNail;
 
@@ -917,8 +923,14 @@ public:
 		return appPaths[defaultApp];
 	};
 
-public slots:
-	void on_neverAgainBox_toggled(bool checked);
+	bool wasOkClicked() {
+		return userClickedOk;
+	};
+
+protected slots:
+	void softwareSelectionChanged();
+	void okClicked();
+	void cancelClicked();
 
 protected:
 
@@ -929,15 +941,20 @@ protected:
 	QStringList exeNames;
 	QStringList screenNames;
 
+	QList<QPixmap> appIcons;
+
 	QStringList appPaths;
 
 	QBoxLayout* layout;
+	QCheckBox* neverAgainBox;
 
 	// output
 	int defaultApp;
+	bool userClickedOk;
 
 	// functions
 	void init();
 	void createLayout();
 	QString searchForSoftware(int softwareIdx);
+	QPixmap getIcon(QFileInfo path);
 };

@@ -3016,20 +3016,22 @@ DkOpenWithDialog::DkOpenWithDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 
 void DkOpenWithDialog::init() {
 
-	defaultApp = 2;
+	defaultApp = DkSettings::GlobalSettings::defaultAppIdx;
+	userClickedOk = false;
 
 	// TODO: add GIMP & other software
 
 	// the order must be correct!
-	organizations = (QStringList()	<< "Adobe"				<< "Google"			<< "IrfanView");
-	applications =	(QStringList()	<< "Photoshop"			<< "Picasa"			<< "shell");
-	pathKeys =		(QStringList()	<< "ApplicationPath"	<< "Directory"		<< "");
-	exeNames =		(QStringList()	<< ""					<< ""				<< "");
-	screenNames =	(QStringList()	<< tr("&Photoshop")		<< tr("Pi&casa")	<< tr("&IrfanView"));
+	organizations = (QStringList()	<< "Adobe"				<< "Google"			<< "Google"						<< "IrfanView");
+	applications =	(QStringList()	<< "Photoshop"			<< "Picasa"			<< "Picasa"						<< "shell");
+	pathKeys =		(QStringList()	<< "ApplicationPath"	<< "Directory"		<< "Directory"					<< "");
+	exeNames =		(QStringList()	<< ""					<< ""				<< "PicasaPhotoViewer.exe"		<< "");
+	screenNames =	(QStringList()	<< tr("&Photoshop")		<< tr("Pi&casa")	<< tr("Picasa Ph&oto Viewer")	<< tr("&IrfanView"));
 	
 	// find paths to pre-defined software
 	for (int idx = 0; idx < organizations.size(); idx++) {
 		appPaths.append(searchForSoftware(idx));
+		appIcons.append(getIcon(appPaths[idx]));
 	}
 
 	createLayout();
@@ -3051,6 +3053,7 @@ void DkOpenWithDialog::createLayout() {
 	}
 
 	QGroupBox* groupBox = new QGroupBox(tr("3rd Party Software"));
+	groupBox->setObjectName("softwareGroupBox");
 	QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
 
 	// add default applications
@@ -3061,46 +3064,87 @@ void DkOpenWithDialog::createLayout() {
 		for (int idx = 0; idx < appPaths.size(); idx++) {
 
 			if (!appPaths[idx].isEmpty()) {
+				
+				// create
 				QRadioButton* radio = new QRadioButton(screenNames[idx]);
+				radio->setObjectName(screenNames[idx]);
+				radio->setIcon(appIcons[idx]);
+
+				qDebug() << "appPath: " << appPaths[idx];
+
+				connect(radio, SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));			
 				
 				// always check first one
-				if (first) {
+				if (DkSettings::GlobalSettings::defaultAppIdx == -1 && first ||
+					DkSettings::GlobalSettings::defaultAppIdx == idx ) {
 					radio->setChecked(true);
 					first = false;
+					defaultApp = idx;	// set to default app
 				}
 
 				bl->addWidget(radio);
-				qDebug() << "adding button";
 			}
 		}
 	}
 
-
-	QCheckBox* neverAgainBox = new QCheckBox(tr("Never show this dialog again"));
+	// never again checkbox
+	neverAgainBox = new QCheckBox(tr("Never show this dialog again"));
 	neverAgainBox->setObjectName("neverAgainBox");
+	neverAgainBox->setChecked(!DkSettings::GlobalSettings::showDefaultAppDialog);
+	
+	// ok, cancel button
+	QWidget* bottomWidget = new QWidget(this);
+	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
 
+	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
+	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okClicked()));
+	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
+	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelClicked()));
 
-
+	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+	bottomWidgetHBoxLayout->addStretch();
+	bottomWidgetHBoxLayout->addWidget(buttonOk);
+	bottomWidgetHBoxLayout->addWidget(buttonCancel);
 	
 	groupBox->setLayout(bl);
 	layout->addWidget(groupBox);
 	layout->addWidget(neverAgainBox);
 	layout->addStretch();
-	
-	//layout->setContentsMargins(margin.x(), margin.y(), margin.x(), margin.y());
-	//layout->addStretch();
-
-	//for (int idx = 0; idx < stars.size(); idx++) {
-	//	stars[idx]->setFixedSize(QSize(iconSize, iconSize));
-	//	layout->addWidget(stars[idx]);
-	//}
+	layout->addWidget(bottomWidget);
 
 	setLayout(layout);
-
 }
 
-void DkOpenWithDialog::on_neverAgainBox_toggled(bool checked) {
-	qDebug() << "never again...";
+void DkOpenWithDialog::okClicked() {
+
+	userClickedOk = true;
+
+	// store everything
+	DkSettings::GlobalSettings::showDefaultAppDialog = !neverAgainBox->isChecked();
+	DkSettings::GlobalSettings::defaultAppIdx = defaultApp;
+	DkSettings::GlobalSettings::defaultAppPath = getPath();
+
+	close();
+}
+
+void DkOpenWithDialog::cancelClicked() {
+
+	// do not store anything
+	close();
+}
+
+void DkOpenWithDialog::softwareSelectionChanged() {
+	
+	QString sender = QObject::sender()->objectName();
+
+	for (int idx = 0; idx < screenNames.size(); idx++) {
+
+		if (screenNames[idx] == sender) {
+			defaultApp = idx;
+		}
+	}
+
+	//qDebug() << "group box..." << sender;
 }
 
 QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
@@ -3134,7 +3178,7 @@ QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
 	if (!appPath.isEmpty() && exeNames[softwareIdx].isEmpty()) {
 
 		// locate the exe
-		QDir appFile = QDir(appPath);
+		QDir appFile = appPath.replace("\"", "");	// the string must not have extra quotes
 		QFileInfoList apps = appFile.entryInfoList(QStringList() << "*.exe");
 
 		for (int idx = 0; idx < apps.size(); idx++) {
@@ -3144,12 +3188,55 @@ QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
 				break;
 			}
 		}
+
+		qDebug() << appPath;
 	}
 	else
-		appPath = appPath % exeNames[softwareIdx];
+		appPath = QFileInfo(appPath, exeNames[softwareIdx]).absoluteFilePath();	// for correct separators
 
 	// clean up
 	delete softwareSettings;
 
 	return appPath;
+}
+
+QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
+
+
+#ifdef WIN32
+#include <windows.h>
+
+	// icon extraction should take between 2ms and 13ms
+	QPixmap appIcon;
+	QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
+
+	WCHAR* wDirName = new WCHAR[winPath.length()];
+	
+	//// TODO: for CMakeLists.txt:
+	//// if compile error that toWCharArray is not recognized:
+	//// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
+	int dirLength = winPath.toWCharArray(wDirName);
+	wDirName[dirLength] = L'\0';	// append null character
+
+	int nIcons = ExtractIconExW(wDirName, 0, NULL, NULL, 0);
+
+	if (!nIcons)
+		return appIcon;
+
+	HICON largeIcon;
+	HICON smallIcon;
+	int err = ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
+
+	if (nIcons != 0 && largeIcon != NULL) {
+		appIcon = QPixmap::fromWinHICON(largeIcon);
+	}      
+
+	DestroyIcon(largeIcon);
+	DestroyIcon(smallIcon);
+
+	return appIcon;
+
+#endif
+	
+	return QPixmap();
 }

@@ -97,6 +97,11 @@ class DkSettings : public QObject {
 			static QStringList recentFolders;
 			static bool useTmpPath;
 			static QString tmpPath;
+
+			// open with
+			static QString defaultAppPath;
+			static int defaultAppIdx;
+			static bool showDefaultAppDialog;
 		};
 		struct SlideShowSettings {
 			static int filter;

@@ -43,6 +43,10 @@ QStringList DkSettings::GlobalSettings::recentFolders = QStringList();
 bool DkSettings::GlobalSettings::useTmpPath = false;
 QString DkSettings::GlobalSettings::tmpPath = QString();
 
+// open with settings
+QString DkSettings::GlobalSettings::defaultAppPath = QString();
+int DkSettings::GlobalSettings::defaultAppIdx = -1;
+bool DkSettings::GlobalSettings::showDefaultAppDialog = true;
 
 bool DkSettings::DisplaySettings::keepZoom = true;
 bool DkSettings::DisplaySettings::invertZoom = false;
@@ -106,6 +110,10 @@ void DkSettings::load() {
 	GlobalSettings::useTmpPath= settings.value("GlobalSettings/useTmpPath", DkSettings::GlobalSettings::useTmpPath).toBool();
 	GlobalSettings::tmpPath = settings.value("GlobalSettings/tmpPath", DkSettings::GlobalSettings::tmpPath).toString();
 
+	GlobalSettings::defaultAppPath = settings.value("GlobalSettings/defaultAppPath", DkSettings::GlobalSettings::defaultAppPath).toString();
+	GlobalSettings::defaultAppIdx = settings.value("GlobalSettings/defaultAppIdx", DkSettings::GlobalSettings::defaultAppIdx).toInt();
+	GlobalSettings::showDefaultAppDialog = settings.value("GlobalSettings/showDefaultAppDialog", DkSettings::GlobalSettings::showDefaultAppDialog).toBool();
+
 	DisplaySettings::keepZoom = settings.value("DisplaySettings/resetMatrix", DkSettings::DisplaySettings::keepZoom).toBool();
 	DisplaySettings::invertZoom = settings.value("DisplaySettings/invertZoom", DkSettings::DisplaySettings::invertZoom).toBool();
 	DisplaySettings::highlightColor = settings.value("DisplaySettings/highlightColor", DkSettings::DisplaySettings::highlightColor).value<QColor>();
@@ -153,6 +161,9 @@ void DkSettings::save() {
 	settings.setValue("GlobalSettings/recentFiles", DkSettings::GlobalSettings::recentFiles);
 	settings.setValue("GlobalSettings/useTmpPath", DkSettings::GlobalSettings::useTmpPath);
 	settings.setValue("GlobalSettings/tmpPath", DkSettings::GlobalSettings::tmpPath);
+	settings.setValue("GlobalSettings/defaultAppIdx", DkSettings::GlobalSettings::defaultAppIdx);
+	settings.setValue("GlobalSettings/defaultAppPath", DkSettings::GlobalSettings::defaultAppPath);
+	settings.setValue("GlobalSettings/showDefaultAppDialog", DkSettings::GlobalSettings::showDefaultAppDialog);
 
 	settings.setValue("DisplaySettings/resetMatrix",DisplaySettings::keepZoom);
 	settings.setValue("DisplaySettings/invertZoom",DisplaySettings::invertZoom);
@@ -198,6 +209,9 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::GlobalSettings::recentFolders = QStringList();
 	DkSettings::GlobalSettings::useTmpPath = false;
 	DkSettings::GlobalSettings::tmpPath = QString();
+	DkSettings::GlobalSettings::defaultAppIdx = -1;
+	DkSettings::GlobalSettings::defaultAppPath = QString();
+	DkSettings::GlobalSettings::showDefaultAppDialog = true;
 
 	DkSettings::DisplaySettings::keepZoom = true;
 	DkSettings::DisplaySettings::invertZoom = false;

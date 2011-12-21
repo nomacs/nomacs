@@ -1588,23 +1588,26 @@ void DkNoMacs::openFileWith() {
 
 	//appPath.replace("/", "\\");	// photoshop needs backslashes
 
-	DkOpenWithDialog owDialog = DkOpenWithDialog(this);
-	owDialog.exec();
-	QString appPath = owDialog.getPath();
+	if (DkSettings::GlobalSettings::showDefaultAppDialog) {
+		DkOpenWithDialog owDialog = DkOpenWithDialog(this);
+		owDialog.exec();
 
-	// TODO: dialog where user can choose his preferred software to open images...
+		if (!owDialog.wasOkClicked())
+			return;
+	}
 
 	QStringList args;
-	args << viewport()->getImageLoader()->getFile().absoluteFilePath();
-	args[0].replace("/", "\\");	// photoshop needs backslashes
+	args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
 
-	////bool started = process.startDetached("psOpenImages.exe", args);
-	//bool started = process.startDetached(appPath, args);
+	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
+	bool started = process.startDetached(DkSettings::GlobalSettings::defaultAppPath, args);
 
-	//if (started)
-	//	qDebug() << "starting photoshop";
-	//else
-	//	errorDialog("Sorry, I could not start: " % appPath);
+	if (started)
+		qDebug() << "starting: " << DkSettings::GlobalSettings::defaultAppPath;
+	else {
+		viewport()->setCenterInfo("Sorry, I could not start: " % DkSettings::GlobalSettings::defaultAppPath);
+		DkSettings::GlobalSettings::showDefaultAppDialog = true;
+	}
 
 	qDebug() << "I'm trying to execute: " << args[0];
 
