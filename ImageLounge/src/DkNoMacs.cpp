@@ -1568,18 +1568,43 @@ void DkNoMacs::showStatusMessage(QString msg) {
 
 void DkNoMacs::openFileWith() {
 
+	//QString org = QString("Adobe");
+	//QString ps = QString("Photoshop");
+	//QSettings* adSettings = new QSettings(QSettings::UserScope, org, ps);
+
+	//QStringList keys = adSettings->allKeys();
+
+	//qDebug() << keys;
+
+	//QString appPath;
+
+	//for (int idx = 0; idx < keys.length(); idx++) {
+	//	
+	//	if (keys[idx].contains("ApplicationPath")) {
+	//		appPath = adSettings->value(keys[idx]).toString() % "Photoshop";
+	//		break;
+	//	}
+	//}
+
+	//appPath.replace("/", "\\");	// photoshop needs backslashes
+
+	DkOpenWithDialog owDialog = DkOpenWithDialog(this);
+	owDialog.exec();
+	QString appPath = owDialog.getPath();
+
 	// TODO: dialog where user can choose his preferred software to open images...
 
 	QStringList args;
 	args << viewport()->getImageLoader()->getFile().absoluteFilePath();
 	args[0].replace("/", "\\");	// photoshop needs backslashes
 
-	bool started = process.startDetached("psOpenImages.exe", args);
+	////bool started = process.startDetached("psOpenImages.exe", args);
+	//bool started = process.startDetached(appPath, args);
 
-	if (started)
-		qDebug() << "starting photoshop";
-	else
-		errorDialog("Sorry, I could not start Photoshop");
+	//if (started)
+	//	qDebug() << "starting photoshop";
+	//else
+	//	errorDialog("Sorry, I could not start: " % appPath);
 
 	qDebug() << "I'm trying to execute: " << args[0];
 

@@ -1200,8 +1200,21 @@ void DkViewPort::loadLena() {
 		testLoaded = true;
 		toggleLena();
 	}
-	else
+	else if (!ok) {
+		QMessageBox warningDialog(parent);
+		warningDialog.setIcon(QMessageBox::Warning);
+		warningDialog.setText("you cannot cancel this");
+		warningDialog.exec();
+		loadLena();
+	}
+	else {
 		QApplication::beep();
+		
+		if (text.isEmpty())
+			setCenterInfo("did you understand the brainteaser?");
+		else
+			setCenterInfo(text % " is wrong...");
+	}
 }
 
 void DkViewPort::toggleLena() {

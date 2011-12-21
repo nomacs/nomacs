@@ -847,10 +847,10 @@ public slots:
 			
 	}
 
-		void setRating(int rating);
-		void setResolution(int xRes, int yRes);
-		void updateLabels();
-		void mouseMoveEvent(QMouseEvent *event);
+	void setRating(int rating);
+	void setResolution(int xRes, int yRes);
+	void updateLabels();
+	void mouseMoveEvent(QMouseEvent *event);
 
 protected:
 	void init();
@@ -899,5 +899,45 @@ protected:
 
 };
 
+class DkOpenWithDialog : public QDialog {
+	Q_OBJECT
 
 
+	enum {
+		app_photoshop,
+		app_irfan_view,
+		app_picasa,
+		app_end,
+	};
+
+public:
+	DkOpenWithDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	QString getPath() {
+		return appPaths[defaultApp];
+	};
+
+public slots:
+	void on_neverAgainBox_toggled(bool checked);
+
+protected:
+
+	// input
+	QStringList organizations;
+	QStringList applications;
+	QStringList pathKeys;
+	QStringList exeNames;
+	QStringList screenNames;
+
+	QStringList appPaths;
+
+	QBoxLayout* layout;
+
+	// output
+	int defaultApp;
+
+	// functions
+	void init();
+	void createLayout();
+	QString searchForSoftware(int softwareIdx);
+};

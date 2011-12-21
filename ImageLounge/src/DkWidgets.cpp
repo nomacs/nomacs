@@ -3007,3 +3007,149 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 }
 
 
+// OpenWithDialog --------------------------------------------------------------------
+DkOpenWithDialog::DkOpenWithDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+
+
+	init();
+}
+
+void DkOpenWithDialog::init() {
+
+	defaultApp = 2;
+
+	// TODO: add GIMP & other software
+
+	// the order must be correct!
+	organizations = (QStringList()	<< "Adobe"				<< "Google"			<< "IrfanView");
+	applications =	(QStringList()	<< "Photoshop"			<< "Picasa"			<< "shell");
+	pathKeys =		(QStringList()	<< "ApplicationPath"	<< "Directory"		<< "");
+	exeNames =		(QStringList()	<< ""					<< ""				<< "");
+	screenNames =	(QStringList()	<< tr("&Photoshop")		<< tr("Pi&casa")	<< tr("&IrfanView"));
+	
+	// find paths to pre-defined software
+	for (int idx = 0; idx < organizations.size(); idx++) {
+		appPaths.append(searchForSoftware(idx));
+	}
+
+	createLayout();
+}
+
+void DkOpenWithDialog::createLayout() {
+
+
+	layout = new QBoxLayout(QBoxLayout::TopToBottom);
+	
+	bool iFoundSoftware = false;
+
+	for (int idx = 0; idx < appPaths.size(); idx++) {
+		
+		if (!appPaths[idx].isEmpty()) {
+			iFoundSoftware = true;
+			break;
+		}
+	}
+
+	QGroupBox* groupBox = new QGroupBox(tr("3rd Party Software"));
+	QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
+
+	// add default applications
+	if (appPaths.size() > 0) {
+
+		bool first = true;
+
+		for (int idx = 0; idx < appPaths.size(); idx++) {
+
+			if (!appPaths[idx].isEmpty()) {
+				QRadioButton* radio = new QRadioButton(screenNames[idx]);
+				
+				// always check first one
+				if (first) {
+					radio->setChecked(true);
+					first = false;
+				}
+
+				bl->addWidget(radio);
+				qDebug() << "adding button";
+			}
+		}
+	}
+
+
+	QCheckBox* neverAgainBox = new QCheckBox(tr("Never show this dialog again"));
+	neverAgainBox->setObjectName("neverAgainBox");
+
+
+
+	
+	groupBox->setLayout(bl);
+	layout->addWidget(groupBox);
+	layout->addWidget(neverAgainBox);
+	layout->addStretch();
+	
+	//layout->setContentsMargins(margin.x(), margin.y(), margin.x(), margin.y());
+	//layout->addStretch();
+
+	//for (int idx = 0; idx < stars.size(); idx++) {
+	//	stars[idx]->setFixedSize(QSize(iconSize, iconSize));
+	//	layout->addWidget(stars[idx]);
+	//}
+
+	setLayout(layout);
+
+}
+
+void DkOpenWithDialog::on_neverAgainBox_toggled(bool checked) {
+	qDebug() << "never again...";
+}
+
+QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
+
+	if (softwareIdx < 0 || softwareIdx >= organizations.size())
+		return "";
+
+	qDebug() << "searching for: " << organizations[softwareIdx] << " " << applications[softwareIdx];
+
+	// locate the settings entry
+	QSettings* softwareSettings = new QSettings(QSettings::UserScope, organizations[softwareIdx], applications[softwareIdx]);
+	QStringList keys = softwareSettings->allKeys();
+
+	// debug
+	//for (int idx = 0; idx < keys.size(); idx++) {
+	//	qDebug() << keys[idx] << " - " << softwareSettings->value(keys[idx]).toString();
+	//}
+	// debug
+
+	QString appPath;
+
+	for (int idx = 0; idx < keys.length(); idx++) {
+
+		// find the path
+		if (keys[idx].contains(pathKeys[softwareIdx])) {
+			appPath = softwareSettings->value(keys[idx]).toString();
+			break;
+		}
+	}
+
+	if (!appPath.isEmpty() && exeNames[softwareIdx].isEmpty()) {
+
+		// locate the exe
+		QDir appFile = QDir(appPath);
+		QFileInfoList apps = appFile.entryInfoList(QStringList() << "*.exe");
+
+		for (int idx = 0; idx < apps.size(); idx++) {
+			
+			if (apps[idx].fileName().contains(applications[softwareIdx])) {
+				appPath = apps[idx].absoluteFilePath();
+				break;
+			}
+		}
+	}
+	else
+		appPath = appPath % exeNames[softwareIdx];
+
+	// clean up
+	delete softwareSettings;
+
+	return appPath;
+}

@@ -31,6 +31,7 @@
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QGraphicsView>
 #include <QtGui/QPrintDialog>
+#include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QtGui/QInputDialog>
