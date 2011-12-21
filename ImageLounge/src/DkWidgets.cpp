@@ -3054,7 +3054,8 @@ void DkOpenWithDialog::createLayout() {
 
 	QGroupBox* groupBox = new QGroupBox(tr("3rd Party Software"));
 	groupBox->setObjectName("softwareGroupBox");
-	QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
+	QGridLayout* bl = new QGridLayout();
+	int rbIdx = 0;
 
 	// add default applications
 	if (appPaths.size() > 0) {
@@ -3082,9 +3083,20 @@ void DkOpenWithDialog::createLayout() {
 					defaultApp = idx;	// set to default app
 				}
 
-				bl->addWidget(radio);
+				bl->addWidget(radio, rbIdx, 0);
+				rbIdx++;
 			}
 		}
+	}
+
+	// TODO: connect browse buttons -> then update ui
+	for (unsigned int idx = 0; idx < 3; idx++) {
+		userRadios.append(new QRadioButton("No Application Set"));
+		QPushButton* userBrowse = new QPushButton("Browse...");
+		userRadios[idx]->setDisabled(true);
+		bl->addWidget(userRadios[idx], rbIdx, 0);
+		bl->addWidget(userBrowse, rbIdx, 1);
+		rbIdx++;
 	}
 
 	// never again checkbox

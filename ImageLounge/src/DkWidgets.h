@@ -942,7 +942,7 @@ protected:
 	QStringList screenNames;
 
 	QList<QPixmap> appIcons;
-
+	QList<QRadioButton*> userRadios;
 	QStringList appPaths;
 
 	QBoxLayout* layout;
