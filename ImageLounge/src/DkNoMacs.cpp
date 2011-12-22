@@ -694,6 +694,7 @@ void DkNoMacs::createShortcuts() {
 void DkNoMacs::enableNoImageActions(bool enable) {
 
 	fileActions[menu_file_save]->setEnabled(enable);
+	fileActions[menu_file_open_with]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
 	fileActions[menu_file_reload]->setEnabled(enable);
 	fileActions[menu_file_prev]->setEnabled(enable);

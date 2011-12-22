@@ -42,10 +42,10 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QComboBox>
 #include <QStringBuilder>
-#include <QBuffer>	// winapi??
 #include <QPointer>
 #include <QTimer>
 #include <QMap>
+#include <QDesktopServices>
 
 #include "DkImage.h"
 #include "DkNetwork.h"
@@ -919,10 +919,6 @@ class DkOpenWithDialog : public QDialog {
 public:
 	DkOpenWithDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	QString getPath() {
-		return appPaths[defaultApp];
-	};
-
 	bool wasOkClicked() {
 		return userClickedOk;
 	};
@@ -931,6 +927,7 @@ protected slots:
 	void softwareSelectionChanged();
 	void okClicked();
 	void cancelClicked();
+	void browseAppFile();
 
 protected:
 
@@ -943,12 +940,14 @@ protected:
 
 	QList<QPixmap> appIcons;
 	QList<QRadioButton*> userRadios;
+	QStringList userAppPaths;
 	QStringList appPaths;
 
 	QBoxLayout* layout;
 	QCheckBox* neverAgainBox;
 
 	// output
+	int numDefaultApps;
 	int defaultApp;
 	bool userClickedOk;
 
@@ -957,4 +956,13 @@ protected:
 	void createLayout();
 	QString searchForSoftware(int softwareIdx);
 	QPixmap getIcon(QFileInfo path);
+
+	QString getPath() {
+
+		if (defaultApp < numDefaultApps)
+			return appPaths[defaultApp];
+		else
+			return userAppPaths[defaultApp-numDefaultApps];
+	};
+
 };

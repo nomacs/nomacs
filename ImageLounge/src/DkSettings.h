@@ -102,6 +102,8 @@ class DkSettings : public QObject {
 			static QString defaultAppPath;
 			static int defaultAppIdx;
 			static bool showDefaultAppDialog;
+			static int numUserChoices;
+			static QStringList userAppPaths;
 		};
 		struct SlideShowSettings {
 			static int filter;
@@ -250,6 +252,8 @@ Q_OBJECT
 			qDebug() << "apply default pressed...";
 			emit applyDefault();
 		};
+
+		void openWithDialog();
 
 	private:
 		void init();

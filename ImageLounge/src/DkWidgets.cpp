@@ -3017,6 +3017,7 @@ DkOpenWithDialog::DkOpenWithDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 void DkOpenWithDialog::init() {
 
 	defaultApp = DkSettings::GlobalSettings::defaultAppIdx;
+	numDefaultApps = 0;
 	userClickedOk = false;
 
 	// TODO: add GIMP & other software
@@ -3055,7 +3056,6 @@ void DkOpenWithDialog::createLayout() {
 	QGroupBox* groupBox = new QGroupBox(tr("3rd Party Software"));
 	groupBox->setObjectName("softwareGroupBox");
 	QGridLayout* bl = new QGridLayout();
-	int rbIdx = 0;
 
 	// add default applications
 	if (appPaths.size() > 0) {
@@ -3063,7 +3063,7 @@ void DkOpenWithDialog::createLayout() {
 		bool first = true;
 
 		for (int idx = 0; idx < appPaths.size(); idx++) {
-
+						
 			if (!appPaths[idx].isEmpty()) {
 				
 				// create
@@ -3078,31 +3078,64 @@ void DkOpenWithDialog::createLayout() {
 				// always check first one
 				if (DkSettings::GlobalSettings::defaultAppIdx == -1 && first ||
 					DkSettings::GlobalSettings::defaultAppIdx == idx ) {
+		
 					radio->setChecked(true);
 					first = false;
 					defaultApp = idx;	// set to default app
 				}
 
-				bl->addWidget(radio, rbIdx, 0);
-				rbIdx++;
+				bl->addWidget(radio, numDefaultApps, 0);
+				numDefaultApps++;
 			}
 		}
 	}
 
 	// TODO: connect browse buttons -> then update ui
-	for (unsigned int idx = 0; idx < 3; idx++) {
-		userRadios.append(new QRadioButton("No Application Set"));
-		QPushButton* userBrowse = new QPushButton("Browse...");
+	QStringList tmpUserPaths = DkSettings::GlobalSettings::userAppPaths; // shortcut
+	for (int idx = 0; idx < DkSettings::GlobalSettings::numUserChoices; idx++) {
+
+		// default initialization
+		userRadios.append(new QRadioButton("Choose Application"));
+		connect(userRadios[idx], SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));
 		userRadios[idx]->setDisabled(true);
-		bl->addWidget(userRadios[idx], rbIdx, 0);
-		bl->addWidget(userBrowse, rbIdx, 1);
-		rbIdx++;
+
+		QPushButton* userBrowse = new QPushButton("Browse...");
+		userBrowse->setObjectName("browse-" % QString::number(idx));
+		connect(userBrowse, SIGNAL(clicked()), this, SLOT(browseAppFile()));
+
+		screenNames.append("");
+		userAppPaths.append("");
+
+		int userIdx = idx + numDefaultApps;
+
+		if (DkSettings::GlobalSettings::defaultAppIdx == userIdx)
+			userRadios[idx]->setChecked(true);
+		
+		// is an application set & is it still installed?
+		if (idx < tmpUserPaths.size() &&
+			QFileInfo(tmpUserPaths[idx]).exists()) {
+
+				// remove file extension for GUI
+				QFileInfo filePathInfo = QFileInfo(tmpUserPaths[idx]);
+				screenNames[userIdx] = filePathInfo.fileName();
+				screenNames[userIdx].replace("." + filePathInfo.suffix(), "");	
+
+				userAppPaths[idx] = tmpUserPaths[idx];
+				userRadios[idx]->setObjectName(screenNames[userIdx]);
+				userRadios[idx]->setText(screenNames[userIdx]);
+				userRadios[idx]->setIcon(getIcon(tmpUserPaths[idx]));
+				userRadios[idx]->setEnabled(true);
+		}
+
+		bl->addWidget(userRadios[idx], numDefaultApps+idx, 0);
+		bl->addWidget(userBrowse, numDefaultApps+idx, 1);
 	}
 
 	// never again checkbox
 	neverAgainBox = new QCheckBox(tr("Never show this dialog again"));
 	neverAgainBox->setObjectName("neverAgainBox");
 	neverAgainBox->setChecked(!DkSettings::GlobalSettings::showDefaultAppDialog);
+	neverAgainBox->setToolTip(tr("Do not be scared, you can always open this window in Preferences -> Global Settings"));
 	
 	// ok, cancel button
 	QWidget* bottomWidget = new QWidget(this);
@@ -3127,6 +3160,63 @@ void DkOpenWithDialog::createLayout() {
 	setLayout(layout);
 }
 
+void DkOpenWithDialog::browseAppFile() {
+
+	QString sender = QObject::sender()->objectName();
+
+	if (!sender.contains("browse"))
+		return;
+
+	// identify the browse button
+	QStringList splitSender = sender.split("-");
+
+	// was it really a browse button?
+	if (splitSender.size() != 2)
+		return;
+
+	int senderIdx = splitSender[1].toInt();
+
+	// is the sender valid?
+	if (senderIdx < 0 || senderIdx >= userRadios.size())
+		return;
+
+	// load system default open dialog
+	QString appFilter;
+	QString defaultPath = userAppPaths[senderIdx];
+#ifdef WIN32
+	appFilter += tr("Executable Files (*.exe);;");
+	if (!QFileInfo(defaultPath).exists())
+		defaultPath = getenv("PROGRAMFILES");
+#else
+	defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
+#endif
+
+	
+	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Application"),
+		defaultPath, 
+		appFilter);
+
+	if (filePath.isEmpty())
+		return;
+
+	int userIdx = senderIdx+numDefaultApps;
+
+	// remove file extension for GUI
+	QFileInfo filePathInfo = QFileInfo(filePath);
+	screenNames[userIdx] = filePathInfo.fileName();
+	screenNames[userIdx].replace("." % filePathInfo.suffix(), "");	
+
+	userAppPaths[senderIdx] = filePath;
+	userRadios[senderIdx]->setObjectName(screenNames[userIdx]);	// needed for slot	
+	userRadios[senderIdx]->setText(screenNames[userIdx]);
+	userRadios[senderIdx]->setIcon(getIcon(filePath));
+	userRadios[senderIdx]->setEnabled(true);
+	userRadios[senderIdx]->setChecked(true);
+	defaultApp = userIdx;
+
+	qDebug() << "default app idx: " << defaultApp;
+}
+
 void DkOpenWithDialog::okClicked() {
 
 	userClickedOk = true;
@@ -3135,6 +3225,7 @@ void DkOpenWithDialog::okClicked() {
 	DkSettings::GlobalSettings::showDefaultAppDialog = !neverAgainBox->isChecked();
 	DkSettings::GlobalSettings::defaultAppIdx = defaultApp;
 	DkSettings::GlobalSettings::defaultAppPath = getPath();
+	DkSettings::GlobalSettings::userAppPaths = userAppPaths;
 
 	close();
 }
@@ -3151,12 +3242,13 @@ void DkOpenWithDialog::softwareSelectionChanged() {
 
 	for (int idx = 0; idx < screenNames.size(); idx++) {
 
-		if (screenNames[idx] == sender) {
+		qDebug() << screenNames[idx] << " - " << sender;
+
+		if (screenNames[idx] == sender)
 			defaultApp = idx;
-		}
 	}
 
-	//qDebug() << "group box..." << sender;
+	qDebug() << "default app idx..." << defaultApp;
 }
 
 QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
@@ -3187,7 +3279,11 @@ QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
 		}
 	}
 
-	if (!appPath.isEmpty() && exeNames[softwareIdx].isEmpty()) {
+	// if we did not find it -> return
+	if (appPath.isEmpty())
+		return appPath;
+
+	if (exeNames[softwareIdx].isEmpty()) {
 
 		// locate the exe
 		QDir appFile = appPath.replace("\"", "");	// the string must not have extra quotes

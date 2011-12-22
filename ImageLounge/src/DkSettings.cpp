@@ -26,7 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkSettings.h"
-
+#include "DkWidgets.h"
 
 bool DkSettings::AppSettings::showToolBar = true;
 bool DkSettings::AppSettings::showMenuBar = true;
@@ -47,6 +47,8 @@ QString DkSettings::GlobalSettings::tmpPath = QString();
 QString DkSettings::GlobalSettings::defaultAppPath = QString();
 int DkSettings::GlobalSettings::defaultAppIdx = -1;
 bool DkSettings::GlobalSettings::showDefaultAppDialog = true;
+int DkSettings::GlobalSettings::numUserChoices = 3;
+QStringList DkSettings::GlobalSettings::userAppPaths = QStringList();
 
 bool DkSettings::DisplaySettings::keepZoom = true;
 bool DkSettings::DisplaySettings::invertZoom = false;
@@ -113,6 +115,8 @@ void DkSettings::load() {
 	GlobalSettings::defaultAppPath = settings.value("GlobalSettings/defaultAppPath", DkSettings::GlobalSettings::defaultAppPath).toString();
 	GlobalSettings::defaultAppIdx = settings.value("GlobalSettings/defaultAppIdx", DkSettings::GlobalSettings::defaultAppIdx).toInt();
 	GlobalSettings::showDefaultAppDialog = settings.value("GlobalSettings/showDefaultAppDialog", DkSettings::GlobalSettings::showDefaultAppDialog).toBool();
+	GlobalSettings::numUserChoices = settings.value("GlobalSettings/numUserChoices", DkSettings::GlobalSettings::numUserChoices).toInt();
+	GlobalSettings::userAppPaths = settings.value("GlobalSettings/userAppPaths", DkSettings::GlobalSettings::userAppPaths).toStringList();
 
 	DisplaySettings::keepZoom = settings.value("DisplaySettings/resetMatrix", DkSettings::DisplaySettings::keepZoom).toBool();
 	DisplaySettings::invertZoom = settings.value("DisplaySettings/invertZoom", DkSettings::DisplaySettings::invertZoom).toBool();
@@ -164,6 +168,8 @@ void DkSettings::save() {
 	settings.setValue("GlobalSettings/defaultAppIdx", DkSettings::GlobalSettings::defaultAppIdx);
 	settings.setValue("GlobalSettings/defaultAppPath", DkSettings::GlobalSettings::defaultAppPath);
 	settings.setValue("GlobalSettings/showDefaultAppDialog", DkSettings::GlobalSettings::showDefaultAppDialog);
+	settings.setValue("GlobalSettings/numUserChoices", DkSettings::GlobalSettings::numUserChoices);
+	settings.setValue("GlobalSettings/userAppPaths", DkSettings::GlobalSettings::userAppPaths);
 
 	settings.setValue("DisplaySettings/resetMatrix",DisplaySettings::keepZoom);
 	settings.setValue("DisplaySettings/invertZoom",DisplaySettings::invertZoom);
@@ -212,6 +218,8 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::GlobalSettings::defaultAppIdx = -1;
 	DkSettings::GlobalSettings::defaultAppPath = QString();
 	DkSettings::GlobalSettings::showDefaultAppDialog = true;
+	DkSettings::GlobalSettings::numUserChoices = 3;
+	DkSettings::GlobalSettings::userAppPaths = QStringList();
 
 	DkSettings::DisplaySettings::keepZoom = true;
 	DkSettings::DisplaySettings::invertZoom = false;
@@ -452,11 +460,15 @@ void DkGlobalSettingsWidget::createLayout() {
 	
 	// wrap images
 	QWidget* checkBoxWidget = new QWidget(this);
-	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(checkBoxWidget);
+	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	//vbCheckBoxLayout->setContentsMargins(11,0,11,0);
 	cbWrapImages = new QCheckBox(tr("Wrap Images"));
-	vbCheckBoxLayout->addWidget(cbWrapImages);
-	vbCheckBoxLayout->addStretch();
+	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"));
+	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
+
+	vbCheckBoxLayout->addWidget(cbWrapImages, 0, 0);
+	vbCheckBoxLayout->addWidget(pbOpenWith, 0, 1, 1, 1, Qt::AlignRight);
+	//vbCheckBoxLayout->addStretch();
 
 
 	QGroupBox* gbDragDrop = new QGroupBox(tr("Drag && Drop"));
@@ -511,6 +523,12 @@ void DkGlobalSettingsWidget::createLayout() {
 	vboxLayout->addWidget(gbDragDrop);
 	vboxLayout->addStretch();
 	vboxLayout->addWidget(defaultSettingsWidget);
+}
+
+void DkGlobalSettingsWidget::openWithDialog() {
+
+	DkOpenWithDialog openWithDialog = DkOpenWithDialog(this);
+	openWithDialog.exec();
 }
 
 void DkGlobalSettingsWidget::writeSettings() {
