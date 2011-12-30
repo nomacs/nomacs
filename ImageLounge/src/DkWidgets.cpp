@@ -3010,13 +3010,12 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 // OpenWithDialog --------------------------------------------------------------------
 DkOpenWithDialog::DkOpenWithDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
-
 	init();
 }
 
 void DkOpenWithDialog::init() {
 
-	defaultApp = DkSettings::GlobalSettings::defaultAppIdx;
+	defaultApp = (DkSettings::GlobalSettings::defaultAppIdx < 0) ? 0 : DkSettings::GlobalSettings::defaultAppIdx;
 	numDefaultApps = 0;
 	userClickedOk = false;
 
@@ -3036,62 +3035,50 @@ void DkOpenWithDialog::init() {
 	}
 
 	createLayout();
+	setWindowTitle("Open With...");
+
 }
 
 void DkOpenWithDialog::createLayout() {
 
-
 	layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	
-	bool iFoundSoftware = false;
-
-	for (int idx = 0; idx < appPaths.size(); idx++) {
-		
-		if (!appPaths[idx].isEmpty()) {
-			iFoundSoftware = true;
-			break;
-		}
-	}
-
 	QGroupBox* groupBox = new QGroupBox(tr("3rd Party Software"));
 	groupBox->setObjectName("softwareGroupBox");
 	QGridLayout* bl = new QGridLayout();
 
 	// add default applications
-	if (appPaths.size() > 0) {
+	bool first = true;
 
-		bool first = true;
-
-		for (int idx = 0; idx < appPaths.size(); idx++) {
+	for (int idx = 0; idx < appPaths.size(); idx++) {
 						
-			if (!appPaths[idx].isEmpty()) {
+		if (!appPaths[idx].isEmpty()) {
 				
-				// create
-				QRadioButton* radio = new QRadioButton(screenNames[idx]);
-				radio->setObjectName(screenNames[idx]);
-				radio->setIcon(appIcons[idx]);
+			// create
+			QRadioButton* radio = new QRadioButton(screenNames[idx]);
+			radio->setObjectName(screenNames[idx]);
+			radio->setIcon(appIcons[idx]);
 
-				qDebug() << "appPath: " << appPaths[idx];
+			qDebug() << "appPath: " << appPaths[idx];
 
-				connect(radio, SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));			
+			connect(radio, SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));			
 				
-				// always check first one
-				if (DkSettings::GlobalSettings::defaultAppIdx == -1 && first ||
-					DkSettings::GlobalSettings::defaultAppIdx == idx ) {
+			// always check first one
+			if (DkSettings::GlobalSettings::defaultAppIdx == -1 && first ||
+				DkSettings::GlobalSettings::defaultAppIdx == idx ) {
 		
-					radio->setChecked(true);
-					first = false;
-					defaultApp = idx;	// set to default app
-				}
-
-				bl->addWidget(radio, numDefaultApps, 0);
-				numDefaultApps++;
+				radio->setChecked(true);
+				first = false;
+				defaultApp = idx;	// set to default app
 			}
+
+			bl->addWidget(radio, numDefaultApps, 0);
+			numDefaultApps++;
 		}
 	}
 
-	// TODO: connect browse buttons -> then update ui
 	QStringList tmpUserPaths = DkSettings::GlobalSettings::userAppPaths; // shortcut
+
 	for (int idx = 0; idx < DkSettings::GlobalSettings::numUserChoices; idx++) {
 
 		// default initialization
@@ -3190,7 +3177,6 @@ void DkOpenWithDialog::browseAppFile() {
 #else
 	defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
 #endif
-
 	
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Application"),
 		defaultPath, 
@@ -3256,16 +3242,16 @@ QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
 	if (softwareIdx < 0 || softwareIdx >= organizations.size())
 		return "";
 
-	qDebug() << "searching for: " << organizations[softwareIdx] << " " << applications[softwareIdx];
+	qDebug() << "\n\nsearching for: " << organizations[softwareIdx] << " " << applications[softwareIdx];
 
 	// locate the settings entry
 	QSettings* softwareSettings = new QSettings(QSettings::UserScope, organizations[softwareIdx], applications[softwareIdx]);
 	QStringList keys = softwareSettings->allKeys();
 
 	// debug
-	//for (int idx = 0; idx < keys.size(); idx++) {
-	//	qDebug() << keys[idx] << " - " << softwareSettings->value(keys[idx]).toString();
-	//}
+	for (int idx = 0; idx < keys.size(); idx++) {
+		qDebug() << keys[idx] << " - " << softwareSettings->value(keys[idx]).toString();
+	}
 	// debug
 
 	QString appPath;
@@ -3280,8 +3266,11 @@ QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
 	}
 
 	// if we did not find it -> return
-	if (appPath.isEmpty())
+	if (appPath.isEmpty()) {
+		// clean up
+		delete softwareSettings;
 		return appPath;
+	}
 
 	if (exeNames[softwareIdx].isEmpty()) {
 
@@ -3335,9 +3324,8 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 	HICON smallIcon;
 	int err = ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
 
-	if (nIcons != 0 && largeIcon != NULL) {
+	if (nIcons != 0 && largeIcon != NULL)
 		appIcon = QPixmap::fromWinHICON(largeIcon);
-	}      
 
 	DestroyIcon(largeIcon);
 	DestroyIcon(smallIcon);

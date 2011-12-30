@@ -485,18 +485,14 @@ void DkGlobalSettingsWidget::createLayout() {
 	leTmpPath = new QLineEdit(this);
 	pbTmpPath = new QPushButton(tr("..."));
 	pbTmpPath->setMaximumWidth(40);
-	
 
 	hbLineEditWidget->addWidget(leTmpPath);
 	hbLineEditWidget->addWidget(pbTmpPath);
-	
 
 	vbTmpPathWidget->addWidget(cbUseTmpPath);
 	vbTmpPathWidget->addWidget(lineEditWidget);
 
 	vboxGbDragDrop->addWidget(tmpPathWidget);
-	//
-
 
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(this);
