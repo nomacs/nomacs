@@ -523,8 +523,10 @@ void DkGlobalSettingsWidget::createLayout() {
 
 void DkGlobalSettingsWidget::openWithDialog() {
 
-	DkOpenWithDialog openWithDialog = DkOpenWithDialog(this);
-	openWithDialog.exec();
+	DkOpenWithDialog* openWithDialog = new DkOpenWithDialog(this);
+	openWithDialog->exec();
+
+	delete openWithDialog;
 }
 
 void DkGlobalSettingsWidget::writeSettings() {
