@@ -968,9 +968,10 @@ void DkViewPort::keyReleaseEvent(QKeyEvent* event) {
 
 	if (!event->isAutoRepeat())	qDebug() << "got a key (release) event...";
 
-	if (!event->isAutoRepeat() && event->key() == Qt::Key_Alt) {
+	// if auto-repeat -> just load the thumbs...
+
+	if (!event->isAutoRepeat() && event->key() == Qt::Key_Alt)
 		altKeyPressed = false;
-	}
 
 #ifdef DK_DLL
 	if (!event->isAutoRepeat())
@@ -1289,7 +1290,7 @@ void DkViewPort::reloadFile() {
 
 void DkViewPort::loadNextFile(bool silent) {
 
-	saveXML();
+	saveXML();	// does nothing
 	unloadImage();
 
 	if (loader != 0 && !testLoaded)

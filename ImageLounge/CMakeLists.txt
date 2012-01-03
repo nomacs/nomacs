@@ -22,7 +22,7 @@ add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     message(STATUS "A debug build. -DDEBUG is defined")
     add_definitions(-DDEBUG)
-else ()
+elseif (NOT MSVC) # debug and release need qt debug outputs on windows
     message(STATUS "A release build (non-debug). Debugging outputs are silently ignored.")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif ()
@@ -111,7 +111,7 @@ IF (NOT EXIV2_FOUND AND MSVC)
 ENDIF()
 
 # LibRaw
-pkg_check_modules(LIBRAW  libraw>=0.13.5)
+pkg_check_modules(LIBRAW  libraw>=0.13.1)
 IF (NOT LIBRAW_FOUND AND MSVC)
 	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "LibRaw-0.1.3.5" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 	
@@ -344,9 +344,12 @@ IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 		ENDFOREACH(qtlib)
 		
 		SET(CMAKE_CONFIGURATION_TYPES "Debug;Release;ReallyRelease" CACHE STRING "limited configs" FORCE)
-		SET(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2")
-		SET(CMAKE_EXE_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
-		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS")
+		add_definitions(/Zc:wchar_t-)
+		SET(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
+		SET(CMAKE_EXE_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		
 		SET(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
 		SOURCE_GROUP("Generated Files" FILES ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC})

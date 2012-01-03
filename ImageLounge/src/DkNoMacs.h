@@ -429,6 +429,7 @@ protected:
 	QFileDialog* saveDialog;
 	DkJpgDialog* jpgDialog;
 	DkTifDialog* tifDialog;
+	DkOpenWithDialog* openWithDialog;
 
 	DkResizeDialog* resizeDialog;
 

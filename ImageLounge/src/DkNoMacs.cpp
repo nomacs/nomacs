@@ -64,6 +64,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	tifDialog = 0;
 	resizeDialog = 0;
 	updater = 0;
+	openWithDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -1590,10 +1591,10 @@ void DkNoMacs::openFileWith() {
 	//appPath.replace("/", "\\");	// photoshop needs backslashes
 
 	if (DkSettings::GlobalSettings::showDefaultAppDialog) {
-		DkOpenWithDialog owDialog = DkOpenWithDialog(this);
-		owDialog.exec();
+		if (!openWithDialog) openWithDialog = new DkOpenWithDialog(this);
+		openWithDialog->exec();
 
-		if (!owDialog.wasOkClicked())
+		if (!openWithDialog->wasOkClicked())
 			return;
 	}
 
