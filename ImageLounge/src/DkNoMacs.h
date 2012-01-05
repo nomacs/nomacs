@@ -321,7 +321,6 @@ signals:
 public slots:
 	void enterFullScreen();
 	void exitFullScreen();
-	void setFrameless();
 	void openSettings();
 	void openDir();
 	void openFile();
@@ -358,6 +357,8 @@ public slots:
 	void showUpdateDialog(QString msg, QString title);
 	void enableNoImageActions(bool enable = true);
 	void checkForUpdate();
+	void setFrameless(bool frameless);
+
 
 protected:
 	
@@ -457,7 +458,6 @@ protected:
 	virtual void createStatusbar();
 
 	virtual void readSettings();
-	void setFrameless(bool frameless);
 
 };
 
@@ -487,7 +487,6 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 
 	// functions
-	void connectClient(DkClientManager* client);
 	void initLanClient();
 
 	// gui
@@ -496,5 +495,18 @@ protected:
 	// network layer
 	DkLocalManagerThread* localClient;
 	DkLanManagerThread* lanClient;
+
+};
+
+
+class DllExport DkNoMacsFrameless : public DkNoMacsIpl {
+	Q_OBJECT
+
+public:
+	DkNoMacsFrameless(QWidget *parent = 0, Qt::WFlags flags = 0);
+	
+	virtual ~DkNoMacsFrameless();
+
+	void release();
 
 };

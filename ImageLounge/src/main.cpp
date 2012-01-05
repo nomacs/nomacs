@@ -46,10 +46,10 @@
 int main(int argc, char *argv[]) {
 
 	//// DEBUG --------------------------------------------------------------------
-	//printf("number of arguments: %i\n", argc);
+	printf("number of arguments: %i\n", argc);
 
-	//for (int idx = 0; idx < argc; idx++)
-	//	printf("%s\n", argv[idx]);
+	for (int idx = 0; idx < argc; idx++)
+		printf("%s\n", argv[idx]);
 
 	//DkUtils::setDebug(DK_DEBUG_A);
 	//// DEBUG --------------------------------------------------------------------
@@ -67,14 +67,24 @@ int main(int argc, char *argv[]) {
 
 	DkNoMacsApp a(argc, argv);
 
-	DkNoMacsIpl w;
+	DkNoMacs* w;
+
+	if (argc > 2 && !std::string(argv[2]).compare("1")) {
+		w = static_cast<DkNoMacs*> (new DkNoMacsFrameless());
+		qDebug() << "this is the frameless nomacs...";
+	}
+	else
+		w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it
+
 	if (argc > 1)
-		w.viewport()->loadFile(QFileInfo(argv[1]), true, true);	// update folder + be silent
+		w->viewport()->loadFile(QFileInfo(argv[1]), true, true);	// update folder + be silent
 #ifdef Q_WS_MAC
 	QObject::connect(&a, SIGNAL(loadFile(const QFileInfo&)),
-	                 w.viewport(), SLOT(loadFile(const QFileInfo&)));
+	                 w->viewport(), SLOT(loadFile(const QFileInfo&)));
 #endif
 
-	return a.exec();
+	int rVal = a.exec();
+	delete w;
+	return rVal;
 }
 

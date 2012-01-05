@@ -3019,6 +3019,7 @@ void DkOpenWithDialog::init() {
 	numDefaultApps = 0;
 	userClickedOk = false;
 
+	// TODO: qt obviously saves the settings if the keys are not found...
 	// TODO: add GIMP & other software
 
 	// the order must be correct!
@@ -3248,11 +3249,11 @@ QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
 	QSettings* softwareSettings = new QSettings(QSettings::UserScope, organizations[softwareIdx], applications[softwareIdx]);
 	QStringList keys = softwareSettings->allKeys();
 
-	// debug
-	for (int idx = 0; idx < keys.size(); idx++) {
-		qDebug() << keys[idx] << " - " << softwareSettings->value(keys[idx]).toString();
-	}
-	// debug
+	//// debug
+	//for (int idx = 0; idx < keys.size(); idx++) {
+	//	qDebug() << keys[idx] << " - " << softwareSettings->value(keys[idx]).toString();
+	//}
+	//// debug
 
 	QString appPath;
 

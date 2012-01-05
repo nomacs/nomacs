@@ -58,23 +58,102 @@
 #define DllExport
 #endif
 
+
+class DllExport DkBaseViewPort : public QGraphicsView {
+	Q_OBJECT
+
+public:
+	DkBaseViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
+	virtual ~DkBaseViewPort();
+
+	virtual void release();
+	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+	virtual QTransform getWorldMatrix() { 
+		return worldMatrix;
+	};
+
+#ifdef WITH_OPENCV
+	virtual void setImage(cv::Mat newImg);
+#endif
+
+	virtual QImage& getImage();
+
+signals:
+	void enableNoImageSignal(bool enable);
+
+public slots:
+	virtual void shiftLeft();
+	virtual void shiftRight();
+	virtual void shiftUp();
+	virtual void shiftDown();
+	virtual void moveView(QPointF);
+	virtual void zoomIn();
+	virtual void zoomOut();
+	virtual void resetView();
+	virtual void fullView();
+	virtual void resizeEvent(QResizeEvent* event);
+	virtual void paintEvent(QPaintEvent* event);
+
+	virtual void unloadImage();
+
+	virtual void setImage(QImage newImg);
+
+protected:
+
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
+	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void wheelEvent(QWheelEvent *event);
+	virtual void mouseDoubleClickEvent(QMouseEvent *event);
+	virtual void leaveEvent(QEvent *event);
+	virtual void focusOutEvent(QEvent *event);
+	virtual void contextMenuEvent(QContextMenuEvent *event);
+
+	QPainter* painter;
+	bool altKeyPressed;
+
+	QWidget *parent;
+	QImage imgQt;
+
+	QTransform imgMatrix;
+	QTransform worldMatrix;
+	QRectF imgViewRect;
+	QRectF viewportRect;
+	QRectF imgRect;
+
+	QPointF posGrab;
+	QPointF enterPos;
+
+	// functions
+	virtual void draw(QPainter *painter);
+	virtual bool imageInside();	// always return false?!
+	virtual void updateImageMatrix();
+	virtual QTransform getScaledImageMatrix();
+	virtual void controlImagePosition(float lb = -1, float ub = -1);
+	virtual void centerImage();
+	virtual void changeCursor();
+};
+
+
+
+
 class DkImageLoader;
 class DkLoader;
 
-class DllExport DkViewPort : public QGraphicsView {
+class DllExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
 
 public:
 	DkViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
 	virtual ~DkViewPort();
 
-	void release();
+	virtual void release();
 	
 	void setCenterInfo(QString msg, int time = 3000);
 	void setBottomInfo(QString msg, int time = 3000);
 	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
-
-	void setFrameless(bool frameless = true);
 
 	void setFullScreen(bool fullScreen);
 	QTransform getWorldMatrix() { 
@@ -92,7 +171,6 @@ public:
 	DkMetaDataInfo* getMetaDataWidget();
 	DkFilePreview* getFilePreview();
 	DkFileInfoLabel* getFileInfoWidget();
-	QImage& getImage();
 	bool isTestLoaded() { return testLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {this->visibleStatusbar = visibleStatusbar;};
 
@@ -102,7 +180,6 @@ signals:
 	void sendNewFileSignal(qint16 op, QString filename = "");
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg);
-	void enableNoImageSignal(bool enable);
 	void newClientConnectedSignal();
 
 #ifdef DK_DLL
@@ -110,28 +187,20 @@ signals:
 #endif
 
 public slots:
-	void shiftLeft();
-	void shiftRight();
-	void shiftUp();
-	void shiftDown();
-	void zoomIn();
-	void zoomOut();
 	void rotateCW();
 	void rotateCCW();
 	void rotate180();
 	void resetView();
-	QRect initialWindow();
 	void fullView();
 	void printImage();
 	void resizeEvent(QResizeEvent* event);
-	void paintEvent(QPaintEvent* event);
+	virtual void paintEvent(QPaintEvent* event);
 	void toggleResetMatrix();
 	void toggleShowOverview();
 	void toggleShowPlayer();
 	void showPreview();
 	void showExif();
 	void showInfo();
-	void moveView(QPointF);
 	
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
@@ -164,33 +233,16 @@ public slots:
 
 protected:
 	
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void wheelEvent(QWheelEvent *event);
-	void mouseDoubleClickEvent(QMouseEvent *event);
-	void leaveEvent(QEvent *event);
-	void focusOutEvent(QEvent *event);
-	void contextMenuEvent(QContextMenuEvent *event);
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
+	virtual void mouseMoveEvent(QMouseEvent *event);
 
-	QPainter* painter;
 	bool testLoaded;
-	bool isFrameless;
-	bool altKeyPressed;
 	bool visibleStatusbar;
 
-	QWidget *parent;
-	QImage imgQt;
 	QImage imgBg;
 	QLabel* wheelButton;
-
-	QTransform imgMatrix;
-	QTransform worldMatrix;
-	QRectF imgViewRect;
-	QRectF viewportRect;
-	QRectF imgRect;
 
 	DkImageLoader* loader;
 	DkInfoLabel* centerLabel;
@@ -205,11 +257,6 @@ protected:
 	DkRatingLabelBg* ratingLabel;
 	DkOverview* overviewWindow;
 
-	//DkBox imgViewRect;
-	//DkVector ratio;
-	//DkVector mouseCoord;
-	QPointF posGrab;
-	QPointF enterPos;
 	QPoint bottomOffset;
 	QPoint topOffset;
 
@@ -223,21 +270,45 @@ protected:
 	// functions
 	virtual void draw(QPainter *painter);
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
-	void drawFrame(QPainter* painter);
-	bool imageInside();
-	void updateImageMatrix();
-	QTransform getScaledImageMatrix();
 	void controlImagePosition(float lb = -1, float ub = -1);
-	void centerImage();
+	virtual void updateImageMatrix();
 	void showZoom();
-	virtual void changeCursor();
-	virtual void saveXML() {};	// dummy function
 	QPoint newCenter(QSize s);	// for frameless
-	void setFramelessGeometry(QRect r);
 	void toggleLena();
 	void getPixelInfo(const QPoint& pos);
 
 };
+
+class DllExport DkViewPortFrameless : public DkViewPort {
+	Q_OBJECT
+
+public:
+	DkViewPortFrameless(QWidget *parent = 0, Qt::WFlags flags = 0);
+	virtual ~DkViewPortFrameless();
+
+	void release();
+	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+
+public slots:
+	virtual void setImage(QImage newImg);
+	virtual void resetView();
+	virtual void paintEvent(QPaintEvent* event);
+	QRect initialWindow();
+
+
+protected:
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
+	virtual void mouseMoveEvent(QMouseEvent *event);
+	
+	// functions
+	void setFramelessGeometry(QRect r);
+	virtual void updateImageMatrix();
+	virtual void draw(QPainter *painter);
+	void drawFrame(QPainter* painter);
+
+};
+
 
 //// custom events --------------------------------------------------------------------
 //class DkInfoEvent : public QEvent {

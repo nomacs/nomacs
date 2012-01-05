@@ -27,17 +27,428 @@
 
 #include "DkViewPort.h"
 
-// DkGraphicsView --------------------------------------------------------------------
-DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
+
+// DkBaseViewport --------------------------------------------------------------------
+DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
 
 	this->parent = parent;
+	viewportRect = QRect(0, 0, width(), height());
+	worldMatrix.reset();
+	altKeyPressed = false;
+
+	setObjectName(QString::fromUtf8("DkBaseViewPort"));
+
+	setStyleSheet( "QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
+	setMouseTracking (true);
+}
+
+DkBaseViewPort::~DkBaseViewPort() {
+
+	release();
+}
+
+void DkBaseViewPort::release() {
+}
+
+// zoom - pan --------------------------------------------------------------------
+void DkBaseViewPort::resetView() {
+
+	worldMatrix.reset();
+	changeCursor();
+
+	update();
+}
+
+void DkBaseViewPort::fullView() {
+
+	worldMatrix.reset();
+	zoom(1.0f/imgMatrix.m11());
+	changeCursor();
+	
+	update();
+}
+
+void DkBaseViewPort::shiftLeft() {
+
+	float delta = 2*width()/(100.0*worldMatrix.m11());
+	moveView(QPointF(delta,0));
+}
+
+void DkBaseViewPort::shiftRight() {
+
+	float delta = -2*width()/(100.0*worldMatrix.m11());
+	moveView(QPointF(delta,0));
+}
+
+void DkBaseViewPort::shiftUp() {
+
+	float delta = 2*height()/(100.0*worldMatrix.m11());
+	moveView(QPointF(0,delta));
+}
+
+void DkBaseViewPort::shiftDown() {
+
+	float delta = -2*height()/(100.0*worldMatrix.m11());
+	moveView(QPointF(0,delta));
+}
+
+void DkBaseViewPort::moveView(QPointF delta) {
+
+	QRectF imgWorldRect = worldMatrix.mapRect(imgViewRect);
+	if (imgWorldRect.width() < this->width())
+		delta.setX(0);
+	if (imgWorldRect.height() < this->height())
+		delta.setY(0);
+
+	worldMatrix.translate(delta.x(), delta.y());
+	controlImagePosition();
+	update();
+}
+
+
+void DkBaseViewPort::zoomIn() {
+
+	zoom(1.1f);
+}
+
+void DkBaseViewPort::zoomOut() {
+
+	zoom(0.9f);
+}
+
+void DkBaseViewPort::zoom(float factor, QPointF center) {
+
+	if (imgQt.isNull())
+		return;
+
+	//factor/=5;//-0.1 <-> 0.1
+	//factor+=1;//0.9 <-> 1.1
+
+	//limit zoom out ---
+	if (worldMatrix.m11() == 1 && factor < 1)
+		return;
+
+	if (worldMatrix.m11()*factor < 1) {
+		resetView();
+		return;
+	}
+
+	//limit zoom in ---
+	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
+		return;
+
+	// if no center assigned: zoom in at the image center
+	if (center.x() == -1 || center.y() == -1)
+		center = QPointF((float)width()/2.0f, (float)height()/2.0f);
+
+	//inverse the transform
+	int a, b;
+	worldMatrix.inverted().map(center.x(), center.y(), &a, &b);
+
+	worldMatrix.translate(a-factor*a, b-factor*b);
+	worldMatrix.scale(factor, factor);
+
+	controlImagePosition();
+	changeCursor();
+
+	update();
+}
+
+// set image --------------------------------------------------------------------
+#ifdef WITH_OPENCV
+void DkBaseViewPort::setImage(cv::Mat newImg) {
+
+	//if (this->img.size() != newImg.size()) {
+	//	// do we really need a deep copy here?
+
+	// TODO: be careful with the format!
+	imgQt = QImage(newImg.data, newImg.cols, newImg.rows, newImg.step, QImage::Format_RGB888);
+	//}
+
+	this->imgRect = QRect(0, 0, newImg.cols, newImg.rows);
+
+
+	if (!DkSettings::DisplaySettings::keepZoom)
+		worldMatrix.reset();
+
+	updateImageMatrix();
+
+	if (DkSettings::DisplaySettings::keepZoom)
+		centerImage();
+
+	update();
+}
+#endif
+
+
+void DkBaseViewPort::setImage(QImage newImg) {
+
+	imgQt = newImg;
+	QRectF oldImgRect = imgRect;
+	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
+
+	emit enableNoImageSignal(!imgQt.isNull());
+
+	if (!DkSettings::DisplaySettings::keepZoom || imgRect != oldImgRect)
+		worldMatrix.reset();							
+
+	updateImageMatrix();
+	update();
+}
+
+QImage& DkBaseViewPort::getImage() {
+
+	return imgQt;
+}
+
+void DkBaseViewPort::unloadImage() {
+}
+
+// events --------------------------------------------------------------------
+void DkBaseViewPort::paintEvent(QPaintEvent* event) {
+
+	QPainter painter(viewport());
+
+	if (!imgQt.isNull()) {
+		painter.setWorldTransform(worldMatrix);
+
+		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::DisplaySettings::interpolateZoomLevel/100.0f)
+			painter.setRenderHint(QPainter::SmoothPixmapTransform);
+
+		draw(&painter);
+
+		//Now disable matrixWorld for overlay display
+		painter.setWorldMatrixEnabled(false);
+	}
+
+	painter.end();
+
+	// propagate
+	QGraphicsView::paintEvent(event);
+
+}
+
+void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
+
+	viewportRect = QRect(0, 0, width(), height());
+
+	// do we still need that??
+	QSize newSize = imgQt.size();
+	newSize.scale(event->size(), Qt::IgnoreAspectRatio);
+
+	newSize = (event->size()-newSize)/2;
+	move(newSize.width(), newSize.height());
+
+	updateImageMatrix();
+	centerImage();
+	changeCursor();
+
+	return QGraphicsView::resizeEvent(event);
+}
+
+// key events --------------------------------------------------------------------
+void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
+
+	if (event->key() == Qt::Key_Alt)
+		altKeyPressed = true;
+
+	QGraphicsView::keyPressEvent(event);
+}
+
+void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
+
+	if (!event->isAutoRepeat() && event->key() == Qt::Key_Alt)
+		altKeyPressed = false;
+
+#ifdef DK_DLL
+	if (!event->isAutoRepeat())
+		emit keyReleaseSignal(event);	// make key presses available
+#endif
+
+	QGraphicsView::keyReleaseEvent(event);
+}
+
+// mouse events --------------------------------------------------------------------
+void DkBaseViewPort::mousePressEvent(QMouseEvent *event) {
+
+	qDebug() << "mouse pressed...";
+
+	enterPos = event->pos();
+
+	// ok, start panning
+	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
+		setCursor(Qt::ClosedHandCursor);
+		posGrab = event->pos();
+	}
+
+	QWidget::mousePressEvent(event);
+}
+
+void DkBaseViewPort::mouseReleaseEvent(QMouseEvent *event) {
+
+	if (worldMatrix.m11() > 1 && !imageInside())
+		setCursor(Qt::OpenHandCursor);
+
+	QWidget::mouseReleaseEvent(event);
+}
+
+void DkBaseViewPort::mouseDoubleClickEvent(QMouseEvent *event) {
+
+	QCoreApplication::sendEvent(parent, event);
+}
+
+void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
+
+	if (worldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
+
+		QPointF cPos = event->pos();
+		QPointF dxy = (cPos - posGrab);
+		posGrab = cPos;
+		moveView(dxy/worldMatrix.m11());
+	}
+
+	QWidget::mouseMoveEvent(event);
+}
+
+void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
+
+	float factor = -event->delta();
+	if (DkSettings::DisplaySettings::invertZoom) factor *= -1.0f;
+
+	factor /= -1200.0f;
+	factor += 1.0f;
+
+	zoom( factor, event->pos());
+}
+
+void DkBaseViewPort::leaveEvent(QEvent *event) {
+
+	altKeyPressed = false;
+}
+
+void DkBaseViewPort::focusOutEvent(QEvent *event) {
+	altKeyPressed = false;
+}
+
+void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
+
+	// send this event to my parent...
+	QWidget::contextMenuEvent(event);
+}
+
+// protected functions --------------------------------------------------------------------
+void DkBaseViewPort::draw(QPainter *painter) {
+
+	painter->drawImage(imgViewRect, imgQt, imgRect);
+}
+
+bool DkBaseViewPort::imageInside() {
+
+	return viewportRect.contains(worldMatrix.mapRect(imgViewRect));
+}
+
+void DkBaseViewPort::updateImageMatrix() {
+
+	if (imgQt.isNull())
+		return;
+
+	QRectF oldImgRect = imgViewRect;
+	QTransform oldImgMatrix = imgMatrix;
+
+	imgMatrix.reset();
+
+	// if the image is smaller or zoom is active: paint the image as is
+	if (!viewportRect.contains(imgRect))
+		imgMatrix = getScaledImageMatrix();
+	else {
+		imgMatrix.translate((float)(width()-imgQt.width())*0.5f, (float)(height()-imgQt.height())*0.5f);
+		imgMatrix.scale(1.0f, 1.0f);
+	}
+
+	imgViewRect = imgMatrix.mapRect(imgRect);
+
+	// update world matrix
+	if (worldMatrix.m11() != 1) {
+
+		float scaleFactor = oldImgMatrix.m11()/imgMatrix.m11();
+		double dx = oldImgRect.x()/scaleFactor-imgViewRect.x();
+		double dy = oldImgRect.y()/scaleFactor-imgViewRect.y();
+
+		worldMatrix.scale(scaleFactor, scaleFactor);
+		worldMatrix.translate(dx, dy);
+	}
+
+	qDebug() << "image matrix updated...";
+}
+
+QTransform DkBaseViewPort::getScaledImageMatrix() {
+
+	// the image resizes as we zoom
+	float ratioImg = imgRect.width()/imgRect.height();
+	float ratioWin = (float)this->width()/(float)this->height();
+
+	QTransform imgMatrix;
+	float s;
+	if (imgRect.width() == 0 || imgRect.height() == 0)
+		s = 1.0f;
+	else
+		s = (ratioImg > ratioWin) ? (float)width()/imgRect.width() : (float)height()/imgRect.height();
+
+	imgMatrix.scale(s, s);
+
+	QRectF imgViewRect = imgMatrix.mapRect(imgRect);
+	imgMatrix.translate((width()-imgViewRect.width())*0.5f/s, (height()-imgViewRect.height())*0.5f/s);
+
+	return imgMatrix;
+}
+
+void DkBaseViewPort::controlImagePosition(float lb, float ub) {
+	// dummy method
+}
+
+void DkBaseViewPort::centerImage() {
+
+	QRectF imgWorldRect = worldMatrix.mapRect(imgViewRect);
+	float dx, dy;
+
+	// if black border - center the image
+	if (imgWorldRect.width() < (float)width()) {
+		dx = ((float)width()-imgWorldRect.width())*0.5f-imgViewRect.x()*worldMatrix.m11();
+		dx = (dx-worldMatrix.dx())/worldMatrix.m11();
+		worldMatrix.translate(dx, 0);
+	}
+	else if (imgWorldRect.left() > 0)
+		worldMatrix.translate(-imgWorldRect.left()/worldMatrix.m11(), 0);
+	else if (imgWorldRect.right() < width())
+		worldMatrix.translate((width()-imgWorldRect.right())/worldMatrix.m11(), 0);
+
+	if (imgWorldRect.height() < height()) {
+		dy = (height()-imgWorldRect.height())*0.5f-imgViewRect.y()*worldMatrix.m22();
+		dy = (dy-worldMatrix.dy())/worldMatrix.m22();
+		worldMatrix.translate(0, dy);
+	}
+	else if (imgWorldRect.top() > 0) {
+		worldMatrix.translate(0, -imgWorldRect.top()/worldMatrix.m22());
+	}
+	else if (imgWorldRect.bottom() < height()) {
+		worldMatrix.translate(0, (height()-imgWorldRect.bottom())/worldMatrix.m22());
+	}
+}
+
+void DkBaseViewPort::changeCursor() {
+
+	if (worldMatrix.m11() > 1 && !imageInside())
+		setCursor(Qt::OpenHandCursor);
+	else
+		unsetCursor();
+}
+
+// DkViewPort --------------------------------------------------------------------
+DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent) {
+
 	overviewSize = 0.15f;
 	overviewMargin = 10;
-	viewportRect = QRect(0, 0, width(), height());
 	testLoaded = false;
-	worldMatrix.reset();
-	isFrameless = false;
-	altKeyPressed = false;
 	visibleStatusbar = false;
 	rating = -1;
 
@@ -87,9 +498,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent
 	//setInteractive(false);
 
 	//no border
-	//setStyleSheet( "QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
 	setStyleSheet( "QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
-	//setInteractive(false);
 	setMouseTracking (true);//receive mouse event everytime
 	
 	loader = new DkImageLoader();
@@ -111,7 +520,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent
 	
 	//connect(player, SIGNAL(play(bool)), this, play());
 
-	qDebug() << "old viewer created...";
+	qDebug() << "viewer created...";
 
 	//// >DIR:  [7.4.2011 diem]
 	//trayIcon = new QSystemTrayIcon(this->windowIcon(), this);
@@ -139,6 +548,13 @@ void DkViewPort::release() {
 	if (bottomRightLabel) delete bottomRightLabel;
 	if (topLeftLabel) delete topLeftLabel;
 	if (fileInfoLabel) delete fileInfoLabel;
+
+	loader = 0;
+	centerLabel = 0;
+	bottomLabel = 0;
+	bottomRightLabel = 0;
+	topLeftLabel = 0;
+	fileInfoLabel = 0;
 }
 
 #ifdef WITH_OPENCV
@@ -207,11 +623,6 @@ void DkViewPort::setImage(QImage newImg) {
 	if (loader && ratingLabel)
 		ratingLabel->setRating(md.getRating());
 
-	if (isFrameless) {
-		QRect w = initialWindow();
-		setFramelessGeometry(QRect(newCenter(w.size()), w.size()));
-	}
-
 	update();
 }
 
@@ -240,112 +651,12 @@ void DkViewPort::setTitleLabel(QFileInfo file, int time) {
 	}
 }
 
-bool DkViewPort::imageInside() {
-
-	return viewportRect.contains(worldMatrix.mapRect(imgViewRect));
-}
-
-// frameless functions --------------------------------------------------------------------
-void DkViewPort::setFrameless(bool frameless) {
-
-	if (frameless) {
-		resetView();
-		setAttribute(Qt::WA_TranslucentBackground, true);
-		//setAttribute(Qt::WA_DontCreateNativeAncestors);
-		setCursor(Qt::OpenHandCursor);
-		show();
-	}
-	else {
-		//setAttribute(Qt::WA_TranslucentBackground, false);
-		//setWindowFlags(Qt::Widget);
-		//setAttribute(Qt::WA_TranslucentBackground, false);
-		//setAutoFillBackground(false);
-		resetView();
-		changeCursor();
-		// TODO: why is my background getting black??
-		//show();
-	}
-
-	isFrameless = frameless;
-}
-void DkViewPort::setFramelessGeometry(QRect r) {
-
-	QDesktopWidget* dw = QApplication::desktop();
-	QRect sRect = dw->screenGeometry();
-	QRect winRect = geometry();
-
-	if (r.left() < 0) {
-		
-
-
-	}
-
-	//float ratio = imgQt.height()/imgQt.width();
-
-	//if (ratio > 1.0f)
-	//	r.setWidth(r.width()/ratio);
-	//else if (ratio < 1.0f)
-	//	r.setHeight(r.height()*ratio);
-
-	// TODO: keep on screen (compensate with img matrix what window must not do)
-	parent->setGeometry(r);
-}
-
-QRect DkViewPort::initialWindow() {
-
-	QDesktopWidget* dw = QApplication::desktop();
-	QRect sRect = dw->screenGeometry();
-	QSize hs = sRect.size()/2;
-	QPoint offset = QPoint(hs.width(), hs.height());
-
-	QTransform t;
-	t.scale(0.5f, 0.5f);
-
-	QRect wRect = t.mapRect(sRect);
-
-	if (!imgQt.isNull() && imgQt.width() < wRect.width() && imgQt.height() < wRect.height())
-		wRect.setSize(imgQt.size());
-
-	wRect.moveCenter(offset);
-	qDebug() << "window rect: " << wRect;
-	return wRect;
-}
-
 QPoint DkViewPort::newCenter(QSize s) {
 
 	QSize dxy = (s - parent->size())/2;
 	QPoint newPos = parent->pos() - QPoint(dxy.width(), dxy.height());
 
 	return newPos;
-}
-
-// listener functions --------------------------------------------------------------------
-//Note: move 2 percent of the window
-void DkViewPort::shiftLeft() {
-
-	float delta = 2*width()/(100.0*worldMatrix.m11());
-	moveView(QPointF(delta,0));
-}
-
-//Note: move 2 percent of the window
-void DkViewPort::shiftRight() {
-
-	float delta = -2*width()/(100.0*worldMatrix.m11());
-	moveView(QPointF(delta,0));
-}
-
-//Note: move 2 percent of the window
-void DkViewPort::shiftUp() {
-
-	float delta = 2*height()/(100.0*worldMatrix.m11());
-	moveView(QPointF(0,delta));
-}
-
-//Note: move 2 percent of the window
-void DkViewPort::shiftDown() {
-
-	float delta = -2*height()/(100.0*worldMatrix.m11());
-	moveView(QPointF(0,delta));
 }
 
 void DkViewPort::toggleShowOverview() {
@@ -362,36 +673,10 @@ void DkViewPort::toggleShowPlayer() {
 		player->show();
 }
 
-void DkViewPort::zoomIn() {
-	
-		zoom(1.1f);
-}
-
-void DkViewPort::zoomOut() {
-	
-		zoom(0.9f);
-}
-
 void DkViewPort::zoom(float factor, QPointF center) {
 
 	if (imgQt.isNull())
 		return;
-
-	// TODO: within screen?
-	if (isFrameless) {
-
-		QSize newSize = parent->size()*factor;
-		
-		if (newSize.width() < 100 || newSize.height() < 100)
-			return;
-
-		QRect winRect = QRect(newCenter(newSize), newSize);
-		
-		// check size
-		setFramelessGeometry(winRect);
-		showZoom();
-		return;
-	}
 
 	//factor/=5;//-0.1 <-> 0.1
 	//factor+=1;//0.9 <-> 1.1
@@ -448,12 +733,6 @@ void DkViewPort::zoom(float factor, QPointF center) {
 
 void DkViewPort::resetView() {
 
-	if (isFrameless) {
-		QRect r = initialWindow();
-		setFramelessGeometry(r);
-		return;
-	}
-
 	worldMatrix.reset();
 	showZoom();
 	changeCursor();
@@ -471,14 +750,6 @@ void DkViewPort::fullView() {
 	showZoom();
 	changeCursor();
 	update();
-}
-
-void DkViewPort::changeCursor() {
-
-	if (worldMatrix.m11() > 1 && !imageInside())
-		setCursor(Qt::OpenHandCursor);
-	else
-		unsetCursor();
 }
 
 void DkViewPort::showZoom() {
@@ -556,21 +827,6 @@ void DkViewPort::toggleResetMatrix() {
 	DkSettings::DisplaySettings::keepZoom = !DkSettings::DisplaySettings::keepZoom;
 }
 
-void DkViewPort::moveView(QPointF delta) {
-
-	QRectF imgWorldRect = worldMatrix.mapRect(imgViewRect);
-	if (imgWorldRect.width() < this->width())
-		delta.setX(0);
-	if (imgWorldRect.height() < this->height())
-		delta.setY(0);
-
-	worldMatrix.translate(delta.x(), delta.y());
-	controlImagePosition();
-	//qDebug() << "moving view: " << delta;
-	//centerImage();
-	update();
-}
-
 void DkViewPort::controlImagePosition(float lb, float ub) {
 
 	QRectF imgRectWorld = worldMatrix.mapRect(imgViewRect);
@@ -592,36 +848,6 @@ void DkViewPort::controlImagePosition(float lb, float ub) {
 
 }
 
-void DkViewPort::centerImage() {
-
-	QRectF imgWorldRect = worldMatrix.mapRect(imgViewRect);
-	float dx, dy;
-
-	// if black border - center the image
-	if (imgWorldRect.width() < (float)width()) {
-		dx = ((float)width()-imgWorldRect.width())*0.5f-imgViewRect.x()*worldMatrix.m11();
-		dx = (dx-worldMatrix.dx())/worldMatrix.m11();
-		worldMatrix.translate(dx, 0);
-	}
-	else if (imgWorldRect.left() > 0)
-		worldMatrix.translate(-imgWorldRect.left()/worldMatrix.m11(), 0);
-	else if (imgWorldRect.right() < width())
-		worldMatrix.translate((width()-imgWorldRect.right())/worldMatrix.m11(), 0);
-
-	if (imgWorldRect.height() < height()) {
-		dy = (height()-imgWorldRect.height())*0.5f-imgViewRect.y()*worldMatrix.m22();
-		dy = (dy-worldMatrix.dy())/worldMatrix.m22();
-		worldMatrix.translate(0, dy);
-	}
-	else if (imgWorldRect.top() > 0) {
-		worldMatrix.translate(0, -imgWorldRect.top()/worldMatrix.m22());
-	}
-	else if (imgWorldRect.bottom() < height()) {
-		worldMatrix.translate(0, (height()-imgWorldRect.bottom())/worldMatrix.m22());
-	}
-
-}
-
 void DkViewPort::updateImageMatrix() {
 
 	if (imgQt.isNull())
@@ -633,7 +859,7 @@ void DkViewPort::updateImageMatrix() {
 	imgMatrix.reset();
 
 	// if the image is smaller or zoom is active: paint the image as is
-	if (!viewportRect.contains(imgRect) || isFrameless)
+	if (!viewportRect.contains(imgRect))
 		imgMatrix = getScaledImageMatrix();
 	else {
 		imgMatrix.translate((float)(width()-imgQt.width())*0.5f, (float)(height()-imgQt.height())*0.5f);
@@ -654,27 +880,6 @@ void DkViewPort::updateImageMatrix() {
 	}
 
 	qDebug() << "image matrix updated...";
-}
-
-QTransform DkViewPort::getScaledImageMatrix() {
-
-	// the image resizes as we zoom
-	float ratioImg = imgRect.width()/imgRect.height();
-	float ratioWin = (float)this->width()/(float)this->height();
-
-	QTransform imgMatrix;
-	float s;
-	if (imgRect.width() == 0 || imgRect.height() == 0)
-		s = 1.0f;
-	else
-		s = (ratioImg > ratioWin) ? (float)width()/imgRect.width() : (float)height()/imgRect.height();
-
-	imgMatrix.scale(s, s);
-
-	QRectF imgViewRect = imgMatrix.mapRect(imgRect);
-	imgMatrix.translate((width()-imgViewRect.width())*0.5f/s, (height()-imgViewRect.height())*0.5f/s);
-
-	return imgMatrix;
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize) {
@@ -765,10 +970,6 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	QPainter painter(viewport());
 
-	// draw frame
-	if (isFrameless)
-		drawFrame(&painter);
-
 	if (parent->isFullScreen())
 		painter.fillRect(QRect(QPoint(), size()), DkSettings::SlideShowSettings::backgroundColor);
 
@@ -800,7 +1001,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	}
 
 	//in mode zoom/panning
-	if (worldMatrix.m11() > 1 && !imageInside() && !isFrameless && DkSettings::GlobalSettings::showOverview) {
+	if (worldMatrix.m11() > 1 && !imageInside() && DkSettings::GlobalSettings::showOverview) {
 		
 		if (filePreview->isVisible() && overviewWindow->isVisible()) {
 			overviewWindow->move(overviewMargin, filePreview->geometry().bottom()+10);
@@ -853,21 +1054,7 @@ void DkViewPort::draw(QPainter *painter) {
 
 	//painter->setRenderHint(QPainter::SmoothPixmapTransform);	//-> uncomment for smooth aliasing
 
-	if (isFrameless && !imgQt.hasAlphaChannel()) {
-		
-		float fs = min(imgViewRect.width(), imgViewRect.height());
-		int frame = fs-(fs*0.9f);
-
-		QRectF framedImgRect = imgViewRect;
-		framedImgRect.setSize(framedImgRect.size() - QSize(frame, frame));
-
-		QPointF dxy = (imgViewRect.bottomRight() - framedImgRect.bottomRight())/2;
-		framedImgRect.moveCenter(framedImgRect.center()+dxy);
-
-		painter->drawImage(framedImgRect, imgQt, imgRect);
-	}
-	else
-		painter->drawImage(imgViewRect, imgQt, imgRect);
+	painter->drawImage(imgViewRect, imgQt, imgRect);
 
 }
 
@@ -887,25 +1074,7 @@ void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
 
 }
 
-void DkViewPort::drawFrame(QPainter* painter) {
-
-	if (!imgQt.isNull() && imgQt.hasAlphaChannel())
-		return;
-
-	painter->setBrush(QColor(255, 255, 255, 200));
-	painter->setPen(QColor(100, 100, 100, 255));
-	
-	QRectF frameRect = (!imgQt.isNull()) ? imgViewRect : QRect(QPoint(), size());
-	frameRect.setSize(frameRect.size() - QSizeF(1,1));
-	painter->drawRect(frameRect);
-
-}
-
 // event listeners --------------------------------------------------------------------
-void DkViewPort::focusOutEvent(QEvent *event) {
-	altKeyPressed = false;
-}
-
 void DkViewPort::resizeEvent(QResizeEvent *event) {
 
 	qDebug() << "resize event...";
@@ -957,31 +1126,9 @@ void DkViewPort::keyPressEvent(QKeyEvent* event) {
 		}
 		update();
 	}
-	if (event->key() == Qt::Key_Alt) {
-		altKeyPressed = true;
-	}
 
-	QGraphicsView::keyPressEvent(event);
+	DkBaseViewPort::keyPressEvent(event);
 }
-
-void DkViewPort::keyReleaseEvent(QKeyEvent* event) {
-
-	if (!event->isAutoRepeat())	qDebug() << "got a key (release) event...";
-
-	// if auto-repeat -> just load the thumbs...
-
-	if (!event->isAutoRepeat() && event->key() == Qt::Key_Alt)
-		altKeyPressed = false;
-
-#ifdef DK_DLL
-	if (!event->isAutoRepeat())
-		emit keyReleaseSignal(event);	// make key presses available
-#endif
-
-	QGraphicsView::keyReleaseEvent(event);
-
-}
-
 
 // mouse events --------------------------------------------------------------------
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
@@ -990,13 +1137,8 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
 	enterPos = event->pos();
 
-	// move the window - todo: NOT full screen, window inside...
-	if (isFrameless) {
-		setCursor(Qt::ClosedHandCursor);
-		posGrab = event->globalPos();
-	}
 	// ok, start panning
-	else if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
+	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
 		setCursor(Qt::ClosedHandCursor);
 		posGrab = event->pos();
 	}
@@ -1011,16 +1153,10 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 		wheelButton->show();
 	}
 	
-	QWidget::mousePressEvent(event);
+	QGraphicsView::mousePressEvent(event);
 }
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
-
-	if (isFrameless)
-		setCursor(Qt::OpenHandCursor);
-
-	if (worldMatrix.m11() > 1 && !imageInside())
-		setCursor(Qt::OpenHandCursor);
 
 	if (filePreview) {
 		
@@ -1033,28 +1169,10 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	
 	qDebug() << "released...";
 
-	QWidget::mouseReleaseEvent(event);
-}
-
-void DkViewPort::mouseDoubleClickEvent(QMouseEvent *event) {
-
-	QCoreApplication::sendEvent(parent, event);
+	DkBaseViewPort::mouseReleaseEvent(event);
 }
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
-
-	if (visibleStatusbar)
-		getPixelInfo(event->pos());
-
-	if (isFrameless && event->buttons() == Qt::LeftButton) {
-		
-		QPoint dxy = event->globalPos() - posGrab.toPoint();
-		//move(dxy);
-		parent->move(parent->pos() + dxy);
-		posGrab = event->globalPos();
-		qDebug() << "moving: " << dxy;
-		return;
-	}
 
 	if (worldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
 
@@ -1089,29 +1207,8 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 		filePreview->setCurrentDx(dx);	// update dx
 	}
 
+	// send to parent
 	QWidget::mouseMoveEvent(event);
-}
-
-void DkViewPort::wheelEvent(QWheelEvent *event) {
-
-	float factor = -event->delta();
-	if (DkSettings::DisplaySettings::invertZoom) factor *= -1.0f;
-
-	factor /= -1200.0f;
-	factor += 1.0f;
-
-	zoom( factor, event->pos());
-}
-
-void DkViewPort::leaveEvent(QEvent *event) {
-
-	altKeyPressed = false;
-}
-
-void DkViewPort::contextMenuEvent(QContextMenuEvent *event) {
-
-	// send this event to my parent...
-	QWidget::contextMenuEvent(event);
 }
 
 void DkViewPort::setFullScreen(bool fullScreen) {
@@ -1256,7 +1353,6 @@ void DkViewPort::unloadImage() {
 		return;
 
 	if (loader) loader->saveRating(rating);
-
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool updateFolder, bool silent) {
@@ -1264,7 +1360,6 @@ void DkViewPort::loadFile(QFileInfo file, bool updateFolder, bool silent) {
 	qDebug() << "viewport thread id: " << QThread::currentThreadId();
 
 	testLoaded = false;
-	saveXML();
 	unloadImage();
 
 	if (loader && file.isDir()) {
@@ -1276,7 +1371,6 @@ void DkViewPort::loadFile(QFileInfo file, bool updateFolder, bool silent) {
 
 void DkViewPort::reloadFile() {
 
-	saveXML();
 	unloadImage();
 
 	if (loader) {
@@ -1290,7 +1384,6 @@ void DkViewPort::reloadFile() {
 
 void DkViewPort::loadNextFile(bool silent) {
 
-	saveXML();	// does nothing
 	unloadImage();
 
 	if (loader != 0 && !testLoaded)
@@ -1302,7 +1395,6 @@ void DkViewPort::loadNextFile(bool silent) {
 
 void DkViewPort::loadPrevFile(bool silent) {
 
-	saveXML();
 	unloadImage();
 
 	if (loader != 0 && !testLoaded)
@@ -1316,7 +1408,6 @@ void DkViewPort::loadPrevFile(bool silent) {
 
 void DkViewPort::loadFirst() {
 
-	saveXML();
 	unloadImage();
 
 	if (loader && !testLoaded)
@@ -1328,7 +1419,6 @@ void DkViewPort::loadFirst() {
 
 void DkViewPort::loadLast() {
 
-	saveXML();
 	unloadImage();
 
 	if (loader && !testLoaded)
@@ -1405,11 +1495,6 @@ DkOverview* DkViewPort::getOverview() {
 	return overviewWindow;
 }
 
-QImage& DkViewPort::getImage() {
-
-	return imgQt;
-}
-
 DkFilePreview* DkViewPort::getFilePreview() {
 
 	return filePreview;
@@ -1484,6 +1569,199 @@ void DkViewPort::printImage() {
 	painter.drawImage(0, 0, imgQt);
 
 	painter.end();
+}
+
+// DkViewPortFrameless --------------------------------------------------------------------
+DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
+	
+	setAttribute(Qt::WA_TranslucentBackground, true);
+	setCursor(Qt::OpenHandCursor);
+	//show();
+
+
+	// TODO: just set the left - upper - lower offset for all labels (according to viewRect)
+	// always set the size to be full screen -> bad for OS that are not able to show transparent frames!!
+}
+
+DkViewPortFrameless::~DkViewPortFrameless() {
+
+	release();
+}
+
+void DkViewPortFrameless::release() {
+
+	DkViewPort::release();
+}
+
+void DkViewPortFrameless::setImage(QImage newImg) {
+
+	DkViewPort::setImage(newImg);
+	
+	QRect w = initialWindow();
+	setFramelessGeometry(QRect(newCenter(w.size()), w.size()));
+}
+
+void DkViewPortFrameless::setFramelessGeometry(QRect r) {
+
+	QDesktopWidget* dw = QApplication::desktop();
+	QRect sRect = dw->screenGeometry();
+	QRect winRect = geometry();
+
+	if (r.left() < 0) {
+
+	}
+
+	//float ratio = imgQt.height()/imgQt.width();
+
+	//if (ratio > 1.0f)
+	//	r.setWidth(r.width()/ratio);
+	//else if (ratio < 1.0f)
+	//	r.setHeight(r.height()*ratio);
+
+	// TODO: keep on screen (compensate with img matrix what window must not do)
+	parent->setGeometry(r);
+}
+
+void DkViewPortFrameless::zoom(float factor, QPointF center) {
+
+	if (imgQt.isNull())
+		return;
+
+	QSize newSize = parent->size()*factor;
+
+	if (newSize.width() < 100 || newSize.height() < 100)
+		return;
+
+	QRect winRect = QRect(newCenter(newSize), newSize);
+
+	// check size
+	setFramelessGeometry(winRect);
+	showZoom();
+}
+
+void DkViewPortFrameless::resetView() {
+
+	QRect r = initialWindow();
+	setFramelessGeometry(r);
+}
+
+void DkViewPortFrameless::updateImageMatrix() {
+
+	if (imgQt.isNull())
+		return;
+
+	QRectF oldImgRect = imgViewRect;
+	QTransform oldImgMatrix = imgMatrix;
+
+	imgMatrix.reset();
+
+	// if the image is smaller or zoom is active: paint the image as is
+	imgMatrix = getScaledImageMatrix();
+
+	imgViewRect = imgMatrix.mapRect(imgRect);
+
+	// update world matrix
+	if (worldMatrix.m11() != 1) {
+
+		float scaleFactor = oldImgMatrix.m11()/imgMatrix.m11();
+		double dx = oldImgRect.x()/scaleFactor-imgViewRect.x();
+		double dy = oldImgRect.y()/scaleFactor-imgViewRect.y();
+
+		worldMatrix.scale(scaleFactor, scaleFactor);
+		worldMatrix.translate(dx, dy);
+	}
+
+	qDebug() << "image matrix updated...";
+}
+
+void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
+	
+	QPainter painter(viewport());
+	drawFrame(&painter);
+	painter.end();
+
+	DkViewPort::paintEvent(event);
+}
+
+void DkViewPortFrameless::draw(QPainter *painter) {
+
+	float fs = min(imgViewRect.width(), imgViewRect.height());
+	int frame = fs-(fs*0.9f);
+
+	QRectF framedImgRect = imgViewRect;
+	framedImgRect.setSize(framedImgRect.size() - QSize(frame, frame));
+
+	QPointF dxy = (imgViewRect.bottomRight() - framedImgRect.bottomRight())/2;
+	framedImgRect.moveCenter(framedImgRect.center()+dxy);
+
+	painter->drawImage(framedImgRect, imgQt, imgRect);
+}
+
+void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
+	
+	// move the window - todo: NOT full screen, window inside...
+	setCursor(Qt::ClosedHandCursor);
+	posGrab = event->globalPos();
+
+	DkViewPort::mousePressEvent(event);
+}
+
+void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
+	
+	setCursor(Qt::OpenHandCursor);
+	DkViewPort::mouseReleaseEvent(event);
+}
+
+
+void DkViewPortFrameless::drawFrame(QPainter* painter) {
+
+	if (!imgQt.isNull() && imgQt.hasAlphaChannel())
+		return;
+
+	painter->setBrush(QColor(255, 255, 255, 200));
+	painter->setPen(QColor(100, 100, 100, 255));
+
+	QRectF frameRect = (!imgQt.isNull()) ? imgViewRect : QRect(QPoint(), size());
+	frameRect.setSize(frameRect.size() - QSizeF(1,1));
+	painter->drawRect(frameRect);
+
+}
+
+void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
+	
+	if (visibleStatusbar)
+		getPixelInfo(event->pos());
+
+	if (event->buttons() == Qt::LeftButton) {
+
+		QPoint dxy = event->globalPos() - posGrab.toPoint();
+		//move(dxy);
+		parent->move(parent->pos() + dxy);
+		posGrab = event->globalPos();
+		qDebug() << "moving: " << dxy;
+	}
+
+	QGraphicsView::mouseMoveEvent(event);
+}
+
+QRect DkViewPortFrameless::initialWindow() {
+
+	QDesktopWidget* dw = QApplication::desktop();
+	QRect sRect = dw->screenGeometry();
+	QSize hs = sRect.size()/2;
+	QPoint offset = QPoint(hs.width(), hs.height());
+
+	QTransform t;
+	t.scale(0.5f, 0.5f);
+
+	QRect wRect = t.mapRect(sRect);
+
+	if (!imgQt.isNull() && imgQt.width() < wRect.width() && imgQt.height() < wRect.height())
+		wRect.setSize(imgQt.size());
+
+	wRect.moveCenter(offset);
+	qDebug() << "window rect: " << wRect;
+	return wRect;
 }
 
 // custom events --------------------------------------------------------------------

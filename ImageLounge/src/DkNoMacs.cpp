@@ -568,7 +568,8 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_frameless]->setShortcut(QKeySequence(shortcut_frameless));
 	viewActions[menu_view_frameless]->setStatusTip(tr("shows a frameless window"));
 	viewActions[menu_view_frameless]->setCheckable(true);
-	connect(viewActions[menu_view_frameless], SIGNAL(triggered()), this, SLOT(setFrameless()));
+	viewActions[menu_view_frameless]->setChecked(false);
+	connect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
 
 	viewActions[menu_view_opacity_up] = new QAction(tr("Opacity &Up"), this);
 	viewActions[menu_view_opacity_up]->setShortcut(QKeySequence(shortcut_opacity_up));
@@ -1076,42 +1077,54 @@ void DkNoMacs::exitFullScreen() {
 		viewport()->setFullScreen(false);
 }
 
-void DkNoMacs::setFrameless() {
-
-	isFrameless = viewActions[menu_view_frameless]->isChecked();
-	setFrameless(isFrameless);
-
-}
-
 void DkNoMacs::setFrameless(bool frameless) {
 
-	isFrameless = frameless;
+	if (!viewport()) 
+		return;
 
-	if (isFrameless) {
-		setWindowFlags(Qt::FramelessWindowHint);
-		setAttribute(Qt::WA_TranslucentBackground, true);
-		menu->hide();
-		toolbar->hide();
-		statusbar->hide();
-		show();
-	}
-	else {
+	QString exe = QApplication::applicationFilePath();
+	QStringList args;
+	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
+	
+	if (frameless)
+		args.append("1");
 
-		if (DkSettings::AppSettings::showMenuBar)
-			menu->show();
-		if (DkSettings::AppSettings::showToolBar)
-			toolbar->show();
-		if (DkSettings::AppSettings::showStatusBar)
-			statusbar->show();
+	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
+	bool started = process.startDetached(exe, args);
 
-		//setAttribute(Qt::WA_TranslucentBackground, false);
-		//setAttribute(Qt::WA_OpaquePaintEvent, true);
-		setWindowFlags(Qt::Widget);
-		show();
-		//showNormal();
-	}
+	// close me if the new instance started
+	if (started)
+		close();
 
-	viewport()->setFrameless(isFrameless);
+	qDebug() << "frameless arguments: " << args;
+
+	//isFrameless = frameless;
+
+	//if (isFrameless) {
+	//	setWindowFlags(Qt::FramelessWindowHint);
+	//	setAttribute(Qt::WA_TranslucentBackground, true);
+	//	menu->hide();
+	//	toolbar->hide();
+	//	statusbar->hide();
+	//	show();
+	//}
+	//else {
+
+	//	if (DkSettings::AppSettings::showMenuBar)
+	//		menu->show();
+	//	if (DkSettings::AppSettings::showToolBar)
+	//		toolbar->show();
+	//	if (DkSettings::AppSettings::showStatusBar)
+	//		statusbar->show();
+
+	//	//setAttribute(Qt::WA_TranslucentBackground, false);
+	//	//setAttribute(Qt::WA_OpaquePaintEvent, true);
+	//	setWindowFlags(Qt::Widget);
+	//	show();
+	//	//showNormal();
+	//}
+
+	////viewport()->setFrameless(isFrameless);
 }
 
 void DkNoMacs::opacityDown() {
@@ -1769,7 +1782,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, f
 	lanClient = 0;
 
 	init();
-	setFrameless(isFrameless);
 	setAcceptDrops(true);
 	setMouseTracking (true);	//receive mouse event everytime
 
@@ -1822,25 +1834,6 @@ DkNoMacsIpl::~DkNoMacsIpl() {
 		localClient = 0;
 	}
 
-}
-
-void DkNoMacsIpl::connectClient(DkClientManager* client) {
-
-	DkViewPort* vp = viewport();
-
-	//// TCP communication
-	//connect(vp, SIGNAL(sendTransformSignal(QTransform, QTransform, QPointF)), client, SLOT(sendTransform(QTransform, QTransform, QPointF)));
-	//connect(this, SIGNAL(sendPositionSignal(QRect)), client, SLOT(sendPosition(QRect)));
-	//connect(this, SIGNAL(synchronizeWithSignal(quint16)), client, SLOT(synchronizeWith(quint16)));
-	//connect(this, SIGNAL(synchronizeWithServerPortSignal(quint16)), client, SLOT(synchronizeWithServerPort(quint16)));
-
-	//connect(this, SIGNAL(sendTitleSignal(QString)), client, SLOT(sendTitle(QString)));
-	//connect(vp, SIGNAL(sendNewFileSignal(qint16, QString)), client, SLOT(sendNewFile(qint16, QString)));
-	//connect(client, SIGNAL(receivedNewFile(qint16, QString)), vp, SLOT(tcpLoadFile(qint16, QString)));
-	//connect(client, SIGNAL(updateConnectionSignal(QList<DkPeer>)), vp, SLOT(tcpShowConnections(QList<DkPeer>)));
-
-	//connect(client, SIGNAL(receivedTransformation(QTransform, QTransform, QPointF)), vp, SLOT(tcpSetTransforms(QTransform, QTransform, QPointF)));
-	//connect(client, SIGNAL(receivedPosition(QRect, bool)), this, SLOT(tcpSetWindowRect(QRect, bool)));
 }
 
 void DkNoMacsIpl::initLanClient() {
@@ -1978,4 +1971,36 @@ void DkNoMacsIpl::settingsChanged() {
 void DkNoMacsIpl::clientInitialized() {
 	//TODO: things that need to be done after the clientManager has finished initialization
 	emit clientInitializedSignal();
+}
+
+
+// FramelessNoMacs --------------------------------------------------------------------
+DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
+	: DkNoMacsIpl(parent, flags) {
+
+		setWindowFlags(Qt::FramelessWindowHint);
+		setAttribute(Qt::WA_TranslucentBackground, true);
+		menu->hide();
+		toolbar->hide();
+		statusbar->hide();
+		show();
+		setObjectName("DkNoMacsFrameless");
+
+		// init members
+		DkViewPortFrameless* vp = new DkViewPortFrameless(this);
+		vp->setAlignment(Qt::AlignHCenter);
+		setCentralWidget(vp);
+
+
+		// TODO: this should be checked but no event should be called
+		//viewActions[menu_view_frameless]->setChecked(true);
+
+		// TODO: currently the initialization is wrong!!
+}
+
+DkNoMacsFrameless::~DkNoMacsFrameless() {
+	release();
+}
+
+void DkNoMacsFrameless::release() {
 }
