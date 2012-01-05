@@ -7,7 +7,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - image lounge"
-!define PRODUCT_VERSION "0.2.3"
+!define PRODUCT_VERSION "0.2.4 alpha"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -340,8 +340,6 @@ Section "MainSection" SEC01
   File "ReallyRelease\QtNetwork4.dll"
   File "ReallyRelease\zlib1.dll"
   
-  File "psOpenImages.exe"
-  
   File "Readme\COPYRIGHT"
   File "Readme\LICENSE.GPLv2"
   File "Readme\LICENSE.GPLv3"
@@ -420,8 +418,6 @@ Section Uninstall
   Delete "$INSTDIR\libexpat.dll"
   Delete "$INSTDIR\exiv2.dll"
   Delete "$INSTDIR\nomacs.exe"
-  
-  Delete "$INSTDIR\psOpenImages.exe"
   
   Delete "$INSTDIR\COPYRIGHT"
   Delete "$INSTDIR\LICENSE.GPLv2"
