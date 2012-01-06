@@ -1619,7 +1619,7 @@ void DkViewPortFrameless::setFramelessGeometry(QRect r) {
 	//	r.setHeight(r.height()*ratio);
 
 	// TODO: keep on screen (compensate with img matrix what window must not do)
-	parent->setGeometry(r);
+	setGeometry(r);
 }
 
 void DkViewPortFrameless::zoom(float factor, QPointF center) {
@@ -1627,16 +1627,74 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 	if (imgQt.isNull())
 		return;
 
-	QSize newSize = parent->size()*factor;
-
-	if (newSize.width() < 100 || newSize.height() < 100)
+	//limit zoom out ---
+	if (worldMatrix.m11() == 1 && factor < 1)
 		return;
 
-	QRect winRect = QRect(newCenter(newSize), newSize);
+	if (worldMatrix.m11()*factor < 1) {
+		resetView();
+		return;
+	}
 
-	// check size
-	setFramelessGeometry(winRect);
+	//limit zoom in ---
+	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
+		return;
+
+	bool blackBorder = false;
+
+	// if no center assigned: zoom in at the image center
+	if (center.x() == -1 || center.y() == -1)
+		center = QPointF((float)width()/2.0f, (float)height()/2.0f);
+	else {
+
+		// if black border - do not zoom to the mouse coordinate
+		if ((float)imgViewRect.width()*(worldMatrix.m11()*factor) < (float)width()) {
+			center.setX((float)width()/2.0f);
+			blackBorder = true;
+		}
+		if (((float)imgViewRect.height()*worldMatrix.m11()*factor) < (float)height()) {
+			center.setY((float)height()/2.0f);
+			blackBorder = true;
+		}
+	}
+
+	//inverse the transform
+	int a, b;
+	worldMatrix.inverted().map(center.x(), center.y(), &a, &b);
+
+	worldMatrix.translate(a-factor*a, b-factor*b);
+	worldMatrix.scale(factor, factor);
+
+	controlImagePosition();
+	if (blackBorder && factor < 1) centerImage();	// TODO: geht auch schöner
 	showZoom();
+	changeCursor();
+
+	update();
+
+	if (altKeyPressed && hasFocus())
+		tcpSynchronize();
+
+
+
+
+	//// do we need something different?
+	//DkViewPort::zoom(factor, center);
+
+	// old version -> resizing
+	//if (imgQt.isNull())
+	//	return;
+
+	//QSize newSize = parent->size()*factor;
+
+	//if (newSize.width() < 100 || newSize.height() < 100)
+	//	return;
+
+	//QRect winRect = QRect(newCenter(newSize), newSize);
+
+	//// check size
+	//setFramelessGeometry(winRect);
+	//showZoom();
 }
 
 void DkViewPortFrameless::resetView() {
@@ -1744,6 +1802,29 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	QGraphicsView::mouseMoveEvent(event);
 }
 
+QTransform DkViewPortFrameless::getScaledImageMatrix() {
+
+	QRect initialRect = initialWindow();
+
+	// the image resizes as we zoom
+	float ratioImg = imgRect.width()/imgRect.height();
+	float ratioWin = (float)initialRect.width()/(float)initialRect.height();
+
+	QTransform imgMatrix;
+	float s;
+	if (imgRect.width() == 0 || imgRect.height() == 0)
+		s = 1.0f;
+	else
+		s = (ratioImg > ratioWin) ? (float)width()/imgRect.width() : (float)height()/imgRect.height();
+
+	imgMatrix.scale(s, s);
+
+	QRectF imgViewRect = imgMatrix.mapRect(imgRect);
+	imgMatrix.translate((width()-imgViewRect.width())*0.5f/s, (height()-imgViewRect.height())*0.5f/s);
+
+	return imgMatrix;
+}
+
 QRect DkViewPortFrameless::initialWindow() {
 
 	QDesktopWidget* dw = QApplication::desktop();
@@ -1761,6 +1842,7 @@ QRect DkViewPortFrameless::initialWindow() {
 
 	wRect.moveCenter(offset);
 	qDebug() << "window rect: " << wRect;
+
 	return wRect;
 }
 

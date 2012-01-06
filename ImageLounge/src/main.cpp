@@ -69,12 +69,12 @@ int main(int argc, char *argv[]) {
 
 	DkNoMacs* w;
 
-	if (argc > 2 && !std::string(argv[2]).compare("1")) {
+	//if (argc > 2 && !std::string(argv[2]).compare("1")) {
 		w = static_cast<DkNoMacs*> (new DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
-	}
-	else
-		w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it
+	//}
+	//else
+	//	w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it
 
 	if (argc > 1)
 		w->viewport()->loadFile(QFileInfo(argv[1]), true, true);	// update folder + be silent

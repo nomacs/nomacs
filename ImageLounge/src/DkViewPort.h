@@ -295,17 +295,19 @@ public slots:
 	virtual void paintEvent(QPaintEvent* event);
 	QRect initialWindow();
 
-
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
-	
+	QTransform getScaledImageMatrix();
+
 	// functions
 	void setFramelessGeometry(QRect r);
 	virtual void updateImageMatrix();
 	virtual void draw(QPainter *painter);
 	void drawFrame(QPainter* painter);
+
+	QRect initWin;
 
 };
 

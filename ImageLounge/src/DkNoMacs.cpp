@@ -612,6 +612,7 @@ void DkNoMacs::createActions() {
 	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
+	//TODO: should be in DkNoMacsIpl
 	
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -1976,26 +1977,59 @@ void DkNoMacsIpl::clientInitialized() {
 
 // FramelessNoMacs --------------------------------------------------------------------
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
-	: DkNoMacsIpl(parent, flags) {
+	: DkNoMacs(parent, flags) {
 
 		setWindowFlags(Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
-		menu->hide();
-		toolbar->hide();
-		statusbar->hide();
-		show();
-		setObjectName("DkNoMacsFrameless");
 
 		// init members
 		DkViewPortFrameless* vp = new DkViewPortFrameless(this);
 		vp->setAlignment(Qt::AlignHCenter);
 		setCentralWidget(vp);
 
+		init();
+		setAcceptDrops(true);
+		setMouseTracking (true);	//receive mouse event everytime
+
+		updater = new DkUpdater();
+		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+		if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
+			updater->checkForUpdated();
+
+		// title signals
+		connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+		connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+		connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
+		connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
+		connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
+		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
+		connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+
+		vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
+		vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
+
+
+
+
+		menu->hide();
+		toolbar->hide();
+		statusbar->hide();
+		show();
+		setObjectName("DkNoMacsFrameless");
+
 
 		// TODO: this should be checked but no event should be called
 		//viewActions[menu_view_frameless]->setChecked(true);
 
 		// TODO: currently the initialization is wrong!!
+
+		// for now: set to fullscreen
+		QDesktopWidget* dw = QApplication::desktop();
+		this->setGeometry(dw->screenGeometry());
+		
+		// TODO: overload the resize dialog
 }
 
 DkNoMacsFrameless::~DkNoMacsFrameless() {

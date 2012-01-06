@@ -499,7 +499,7 @@ protected:
 };
 
 
-class DllExport DkNoMacsFrameless : public DkNoMacsIpl {
+class DllExport DkNoMacsFrameless : public DkNoMacs {
 	Q_OBJECT
 
 public:
@@ -508,5 +508,4 @@ public:
 	virtual ~DkNoMacsFrameless();
 
 	void release();
-
 };
