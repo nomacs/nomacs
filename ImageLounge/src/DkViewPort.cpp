@@ -1574,6 +1574,7 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : Dk
 	
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	setCursor(Qt::OpenHandCursor);
+
 	//show();
 
 
@@ -1598,69 +1599,49 @@ void DkViewPortFrameless::setImage(QImage newImg) {
 
 void DkViewPortFrameless::zoom(float factor, QPointF center) {
 
-	//qDebug() << "viewport size: " << geometry();
+	if (imgQt.isNull())
+		return;
 
+	//limit zoom out ---
+	if (worldMatrix.m11() == 1 && factor < 1)
+		return;
 
-	//if (imgQt.isNull())
-	//	return;
+	if (worldMatrix.m11()*factor < 1) {
+		resetView();
+		return;
+	}
 
-	////limit zoom out ---
-	//if (worldMatrix.m11() == 1 && factor < 1)
-	//	return;
+	//limit zoom in ---
+	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
+		return;
 
-	//if (worldMatrix.m11()*factor < 1) {
-	//	resetView();
-	//	return;
-	//}
+	// if no center assigned: zoom in at the image center
+	if (center.x() == -1 || center.y() == -1)
+		center = worldMatrix.mapRect(imgViewRect).center();
 
-	////limit zoom in ---
-	//if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
-	//	return;
+	if (factor < 1) {
+		
+		QRectF imgWorldRect = worldMatrix.mapRect(imgViewRect);
+		float ipl = imgViewRect.width()/imgWorldRect.width();	// size ratio
+		center = (imgViewRect.center() - imgWorldRect.center()) + imgViewRect.center();
+	}
 
-	//bool blackBorder = false;
+	//inverse the transform
+	int a, b;
+	worldMatrix.inverted().map(center.x(), center.y(), &a, &b);
 
-	//// if no center assigned: zoom in at the image center
-	//if (center.x() == -1 || center.y() == -1)
-	//	center = imgViewRect.center();
+	worldMatrix.translate(a-factor*a, b-factor*b);
+	worldMatrix.scale(factor, factor);
 
-	////inverse the transform
-	//int a, b;
-	//worldMatrix.inverted().map(center.x(), center.y(), &a, &b);
+	controlImagePosition();
+	showZoom();
+	changeCursor();
 
-	//worldMatrix.translate(a-factor*a, b-factor*b);
-	//worldMatrix.scale(factor, factor);
+	update();
 
-	//controlImagePosition();
-	//if (blackBorder && factor < 1) centerImage();	// TODO: geht auch schöner
-	//showZoom();
-	//changeCursor();
+	if (altKeyPressed && hasFocus())
+		tcpSynchronize();
 
-	//update();
-
-	//if (altKeyPressed && hasFocus())
-	//	tcpSynchronize();
-
-	DkViewPort::zoom(factor, center);
-
-
-
-	//// do we need something different?
-	//DkViewPort::zoom(factor, center);
-
-	// old version -> resizing
-	//if (imgQt.isNull())
-	//	return;
-
-	//QSize newSize = parent->size()*factor;
-
-	//if (newSize.width() < 100 || newSize.height() < 100)
-	//	return;
-
-	//QRect winRect = QRect(newCenter(newSize), newSize);
-
-	//// check size
-	//setFramelessGeometry(winRect);
-	//showZoom();
 }
 
 void DkViewPortFrameless::resetView() {
@@ -1749,20 +1730,15 @@ void DkViewPortFrameless::drawFrame(QPainter* painter) {
 
 	QRectF frameRect;
 
-	if (!imgQt.isNull()) {
+	float fs = min(imgViewRect.width(), imgViewRect.height())*0.1f;
 		
-		float fs = min(imgViewRect.width(), imgViewRect.height())*0.1f;
-		
-		// looks pretty bad if the frame is too small
-		if (fs < 4)
-			return;
+	// looks pretty bad if the frame is too small
+	if (fs < 4)
+		return;
 
-		frameRect = imgViewRect;
-		frameRect.setSize(frameRect.size() + QSize(fs, fs));
-		frameRect.moveCenter(imgViewRect.center());
-	}
-	else
-		frameRect = geometry();
+	frameRect = imgViewRect;
+	frameRect.setSize(frameRect.size() + QSize(fs, fs));
+	frameRect.moveCenter(imgViewRect.center());
 
 	painter->drawRect(frameRect);
 }
