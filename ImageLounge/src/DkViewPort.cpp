@@ -1729,21 +1729,11 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPortFrameless::resizeEvent(QResizeEvent *event) {
 
-	// for now: set to fullscreen
-	QDesktopWidget* dw = QApplication::desktop();
-	setGeometry(dw->screenGeometry());
+	//// for now: set to fullscreen
+	//QDesktopWidget* dw = QApplication::desktop();
+	//setGeometry(dw->screenGeometry());
 
-
-	//viewportRect = QRect(0, 0, width(), height());
-
-	//// do we still need that??
-	//QSize newSize = imgQt.size();
-	//newSize.scale(event->size(), Qt::IgnoreAspectRatio);
-
-	//newSize = (event->size()-newSize)/2;
-	//move(newSize.width(), newSize.height());
-
-	//changeCursor();
+	DkViewPort::resizeEvent(event);
 }
 
 void DkViewPortFrameless::moveView(QPointF delta) {
@@ -1769,11 +1759,13 @@ void DkViewPortFrameless::controlImagePosition(float lb, float ub) {
 QTransform DkViewPortFrameless::getScaledImageMatrix() {
 
 	QRectF initialRect = viewport()->geometry();
+	QPointF oldCenter = initialRect.center();
+	
 	QTransform cT;
-	cT.scale(0.5, 0.5);
+	cT.scale(400/initialRect.width(), 400/initialRect.width());
 	cT.translate(initialRect.center().x(), initialRect.center().y());
 	initialRect = cT.mapRect(initialRect);
-	//initialRect.setSize(initialRect.size()*0.5);
+	initialRect.moveCenter(oldCenter);
 
 	// the image resizes as we zoom
 	float ratioImg = imgRect.width()/imgRect.height();

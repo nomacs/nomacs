@@ -2018,7 +2018,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 
 		// in frameless, you cannot control if menu is visible...
-		viewActions[menu_view_show_menu]->setChecked(false);
 		viewActions[menu_view_show_menu]->setEnabled(false);
 		menu->setTimeToShow(5000);
 		
@@ -2080,4 +2079,18 @@ bool DkNoMacsFrameless::eventFilter(QObject *obj, QEvent *event) {
 	}
 
 	return false;
+}
+
+void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
+
+	// do not save the window size
+	if (saveSettings) {
+		DkSettings ourSettings;
+		ourSettings.save();
+	}
+
+	saveSettings = false;
+
+	DkNoMacs::closeEvent(event);
+
 }
