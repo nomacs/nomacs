@@ -285,7 +285,6 @@ private:
 };
 
 class DkViewPort;
-class DkViewPortGt;
 class DkMenuBar;
 
 class DllExport DkNoMacs : public QMainWindow {
@@ -381,9 +380,15 @@ protected:
 	void resizeEvent(QResizeEvent *event);
 	void closeEvent(QCloseEvent *event);
 
+	void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent* event);
+
 	// TODO: put to android class
 	bool gestureEvent(QGestureEvent *event);
 
+
+	bool otherKeyPressed;
+	QPoint posGrabKey;
 	bool overlaid;
 
 	// vars
@@ -467,7 +472,6 @@ public:
 	DkNoMacsIpl(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~DkNoMacsIpl();
 
-	DkViewPortGt* viewportGt();
 	qint16 getServerPort();
 	void syncWith(qint16 port);
 	

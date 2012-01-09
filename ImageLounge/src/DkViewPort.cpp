@@ -252,7 +252,7 @@ void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
 	if (event->key() == Qt::Key_Alt)
 		altKeyPressed = true;
 
-	QGraphicsView::keyPressEvent(event);
+	QWidget::keyPressEvent(event);
 }
 
 void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
@@ -265,7 +265,7 @@ void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
 		emit keyReleaseSignal(event);	// make key presses available
 #endif
 
-	QGraphicsView::keyReleaseEvent(event);
+	QWidget::keyReleaseEvent(event);
 }
 
 // mouse events --------------------------------------------------------------------
@@ -1667,40 +1667,8 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 }
 
 void DkViewPortFrameless::draw(QPainter *painter) {
-
-	//painter->drawRect(imgViewRect);
-
-	//qDebug() << "imgViewRect: " << imgViewRect;
-	//qDebug() << "imgViewRect (wt): " << worldMatrix.mapRect(imgViewRect);
-
-	//QRect pb = geometry();
-	//painter->setWorldMatrixEnabled(false);
-	//painter->drawRect(pb);
 	
 	DkViewPort::draw(painter);
-
-	//float fs = min(imgViewRect.width(), imgViewRect.height());
-	//int frame = fs-(fs*0.9f);
-
-	//QRectF framedImgRect = worldMatrix.mapRect(imgViewRect);
-	//qDebug() << "framedImgRect: " << framedImgRect;
-	////if (geometry().contains(framedImgRect.toRect())) {
-	//
-	//	framedImgRect.setSize(framedImgRect.size() - QSize(frame, frame));
-
-	//	QPointF dxy = (imgViewRect.bottomRight() - framedImgRect.bottomRight())/2;
-	//	framedImgRect.moveCenter(framedImgRect.center()+dxy);
-	////}
-	////else
-	////	framedImgRect = geometry();
-	//QRectF viewportRect = imgMatrix.mapRect(geometry());
-	//viewportRect.moveCenter(worldMatrix.map(viewportRect.center()));
-	//	// TODO: go on here...
-	//	// TODO: clip the framedImgRect
-	//painter->drawImage(imgViewRect, imgQt, imgRect);
-
-	//painter->drawRect(imgViewRect);
-	//painter->drawRect(framedImgRect);
 }
 
 void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
@@ -1757,6 +1725,25 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	QGraphicsView::mouseMoveEvent(event);
+}
+
+void DkViewPortFrameless::resizeEvent(QResizeEvent *event) {
+
+	// for now: set to fullscreen
+	QDesktopWidget* dw = QApplication::desktop();
+	setGeometry(dw->screenGeometry());
+
+
+	//viewportRect = QRect(0, 0, width(), height());
+
+	//// do we still need that??
+	//QSize newSize = imgQt.size();
+	//newSize.scale(event->size(), Qt::IgnoreAspectRatio);
+
+	//newSize = (event->size()-newSize)/2;
+	//move(newSize.width(), newSize.height());
+
+	//changeCursor();
 }
 
 void DkViewPortFrameless::moveView(QPointF delta) {

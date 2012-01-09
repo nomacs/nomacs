@@ -1512,17 +1512,31 @@ void DkNoMacs::loadRecursion() {
 //	return QMainWindow::event(event);
 //}
 
+void DkNoMacs::keyPressEvent(QKeyEvent *event) {
+	
+	if (event->key() == Qt::Key_Alt) {
+		posGrabKey = QCursor::pos();
+		otherKeyPressed = false;
+	}
+	else
+		otherKeyPressed = true;
+
+	qDebug() << "key pressed NOMACS";
+}
+
+void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
+
+	qDebug() << "key released...";
+	if (event->key() == Qt::Key_Alt && !otherKeyPressed && (posGrabKey - QCursor::pos()).manhattanLength() == 0)
+			menu->showMenu();
+}
+
 
 // >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)
 bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
 
 	if (event->type() == QEvent::ShortcutOverride) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-
-		if (keyEvent->key() == Qt::Key_Alt && !isFullScreen()) {
-			menu->showMenu();
-			return true;
-		}
 
 		// consume esc key if fullscreen is on
 		if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
@@ -2003,9 +2017,11 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 
-
-
-
+		// in frameless, you cannot control if menu is visible...
+		viewActions[menu_view_show_menu]->setChecked(false);
+		viewActions[menu_view_show_menu]->setEnabled(false);
+		menu->setTimeToShow(5000);
+		
 		menu->hide();
 		toolbar->hide();
 		statusbar->hide();
@@ -2042,17 +2058,12 @@ void DkNoMacsFrameless::exitFullScreen() {
 		viewport()->setFullScreen(false);
 }
 
-// >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)
+
+// >DIR diem: eating shortcut overrides
 bool DkNoMacsFrameless::eventFilter(QObject *obj, QEvent *event) {
 
 	if (event->type() == QEvent::ShortcutOverride) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-
-		// TODO: uncomment if menu is supported in framless mode
-		//if (keyEvent->key() == Qt::Key_Alt && !isFullScreen()) {
-		//	menu->showMenu();
-		//	return true;
-		//}
 
 		// consume esc key if fullscreen is on
 		if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
