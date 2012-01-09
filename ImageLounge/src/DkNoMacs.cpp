@@ -1972,8 +1972,8 @@ void DkNoMacsIpl::clientInitialized() {
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 	: DkNoMacs(parent, flags) {
 
-		//setWindowFlags(Qt::FramelessWindowHint);
-		//setAttribute(Qt::WA_TranslucentBackground, true);
+		setWindowFlags(Qt::FramelessWindowHint);
+		setAttribute(Qt::WA_TranslucentBackground, true);
 
 		// init members
 		DkViewPortFrameless* vp = new DkViewPortFrameless(this);

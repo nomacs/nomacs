@@ -290,11 +290,10 @@ public:
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
 public slots:
-	//virtual void moveView(QPointF);
 	virtual void setImage(QImage newImg);
 	virtual void resetView();
 	virtual void paintEvent(QPaintEvent* event);
-	QRect initialWindow();
+	virtual void moveView(QPointF);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -303,13 +302,10 @@ protected:
 	QTransform getScaledImageMatrix();
 
 	// functions
-	void setFramelessGeometry(QRect r);
 	virtual void updateImageMatrix();
 	virtual void draw(QPainter *painter);
 	void drawFrame(QPainter* painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
-
-	QRect initWin;
 
 };
 
