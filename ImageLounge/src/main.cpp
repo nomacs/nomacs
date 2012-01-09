@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 		qDebug() << "this is the frameless nomacs...";
 	//}
 	//else
-	//	w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it
+		//w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it
 
 	if (argc > 1)
 		w->viewport()->loadFile(QFileInfo(argv[1]), true, true);	// update folder + be silent

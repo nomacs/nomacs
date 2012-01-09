@@ -270,7 +270,7 @@ protected:
 	// functions
 	virtual void draw(QPainter *painter);
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
-	void controlImagePosition(float lb = -1, float ub = -1);
+	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void updateImageMatrix();
 	void showZoom();
 	QPoint newCenter(QSize s);	// for frameless
@@ -290,6 +290,7 @@ public:
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
 public slots:
+	//virtual void moveView(QPointF);
 	virtual void setImage(QImage newImg);
 	virtual void resetView();
 	virtual void paintEvent(QPaintEvent* event);
@@ -306,6 +307,7 @@ protected:
 	virtual void updateImageMatrix();
 	virtual void draw(QPainter *painter);
 	void drawFrame(QPainter* painter);
+	void controlImagePosition(float lb = -1, float ub = -1);
 
 	QRect initWin;
 

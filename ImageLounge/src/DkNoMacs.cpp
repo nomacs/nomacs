@@ -73,7 +73,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	oldGeometry = geometry();
 	overlaid = false;
 
-	isFrameless = false;
 	menu = new DkMenuBar(this, -1);
 
 	resize(850, 504);
@@ -1066,11 +1065,9 @@ void DkNoMacs::exitFullScreen() {
 
 	if (isFullScreen()) {
 		
-		if (!isFrameless) {
-			if (DkSettings::AppSettings::showMenuBar) menu->show();
-			if (DkSettings::AppSettings::showToolBar) toolbar->show();
-			if (DkSettings::AppSettings::showStatusBar) statusbar->show();
-		}
+		if (DkSettings::AppSettings::showMenuBar) menu->show();
+		if (DkSettings::AppSettings::showToolBar) toolbar->show();
+		if (DkSettings::AppSettings::showStatusBar) statusbar->show();
 		showNormal();
 	}
 
@@ -1522,7 +1519,7 @@ bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
 	if (event->type() == QEvent::ShortcutOverride) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 
-		if (keyEvent->key() == Qt::Key_Alt && !isFrameless && !isFullScreen()) {
+		if (keyEvent->key() == Qt::Key_Alt && !isFullScreen()) {
 			menu->showMenu();
 			return true;
 		}
@@ -1530,10 +1527,6 @@ bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
 		// consume esc key if fullscreen is on
 		if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
 			exitFullScreen();
-			return true;
-		}
-		else if (keyEvent->key() == Qt::Key_Escape && isFrameless) {
-			close();
 			return true;
 		}
 	}
@@ -1979,8 +1972,8 @@ void DkNoMacsIpl::clientInitialized() {
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 	: DkNoMacs(parent, flags) {
 
-		setWindowFlags(Qt::FramelessWindowHint);
-		setAttribute(Qt::WA_TranslucentBackground, true);
+		//setWindowFlags(Qt::FramelessWindowHint);
+		//setAttribute(Qt::WA_TranslucentBackground, true);
 
 		// init members
 		DkViewPortFrameless* vp = new DkViewPortFrameless(this);
@@ -2037,4 +2030,43 @@ DkNoMacsFrameless::~DkNoMacsFrameless() {
 }
 
 void DkNoMacsFrameless::release() {
+}
+
+void DkNoMacsFrameless::exitFullScreen() {
+
+	// TODO: delete this function if we support menu in frameless mode
+	if (isFullScreen())
+		showNormal();
+
+	if (viewport())
+		viewport()->setFullScreen(false);
+}
+
+// >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)
+bool DkNoMacsFrameless::eventFilter(QObject *obj, QEvent *event) {
+
+	if (event->type() == QEvent::ShortcutOverride) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+
+		// TODO: uncomment if menu is supported in framless mode
+		//if (keyEvent->key() == Qt::Key_Alt && !isFullScreen()) {
+		//	menu->showMenu();
+		//	return true;
+		//}
+
+		// consume esc key if fullscreen is on
+		if (keyEvent->key() == Qt::Key_Escape && isFullScreen()) {
+			exitFullScreen();
+			return true;
+		}
+		else if (keyEvent->key() == Qt::Key_Escape) {
+			close();
+			return true;
+		}
+	}
+	if (event->type() == QEvent::Gesture) {
+		return gestureEvent(static_cast<QGestureEvent*>(event));
+	}
+
+	return false;
 }

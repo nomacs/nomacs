@@ -384,7 +384,6 @@ protected:
 	// TODO: put to android class
 	bool gestureEvent(QGestureEvent *event);
 
-	bool isFrameless;
 	bool overlaid;
 
 	// vars
@@ -508,4 +507,11 @@ public:
 	virtual ~DkNoMacsFrameless();
 
 	void release();
+	
+public slots:
+	void exitFullScreen();
+
+protected:
+	bool eventFilter(QObject *obj, QEvent *event);
+
 };
