@@ -1084,10 +1084,9 @@ void DkNoMacs::setFrameless(bool frameless) {
 	QStringList args;
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
-	if (frameless)
+	if (objectName() != "DkNoMacsFrameless")
 		args.append("1");
 
-	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
 	bool started = process.startDetached(exe, args);
 
 	// close me if the new instance started
@@ -1095,34 +1094,6 @@ void DkNoMacs::setFrameless(bool frameless) {
 		close();
 
 	qDebug() << "frameless arguments: " << args;
-
-	//isFrameless = frameless;
-
-	//if (isFrameless) {
-	//	setWindowFlags(Qt::FramelessWindowHint);
-	//	setAttribute(Qt::WA_TranslucentBackground, true);
-	//	menu->hide();
-	//	toolbar->hide();
-	//	statusbar->hide();
-	//	show();
-	//}
-	//else {
-
-	//	if (DkSettings::AppSettings::showMenuBar)
-	//		menu->show();
-	//	if (DkSettings::AppSettings::showToolBar)
-	//		toolbar->show();
-	//	if (DkSettings::AppSettings::showStatusBar)
-	//		statusbar->show();
-
-	//	//setAttribute(Qt::WA_TranslucentBackground, false);
-	//	//setAttribute(Qt::WA_OpaquePaintEvent, true);
-	//	setWindowFlags(Qt::Widget);
-	//	show();
-	//	//showNormal();
-	//}
-
-	////viewport()->setFrameless(isFrameless);
 }
 
 void DkNoMacs::opacityDown() {
@@ -1475,7 +1446,12 @@ void DkNoMacs::newInstance() {
 
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
+
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
+
+	if (objectName() == "DkNoMacsFrameless")
+		args.append("1");	
+	
 	QProcess::startDetached(exe, args);
 }
 
@@ -2027,6 +2003,8 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		show();
 		setObjectName("DkNoMacsFrameless");
 
+		vp->addStartActions(fileActions[menu_file_open]);
+		vp->addStartActions(fileActions[menu_file_open_dir]);
 
 		// TODO: this should be checked but no event should be called
 		//viewActions[menu_view_frameless]->setChecked(true);

@@ -165,6 +165,7 @@ void DkSplashScreen::mousePressEvent(QMouseEvent* event) {
 	close();
 }
 
+
 // DkFilePreview --------------------------------------------------------------------
 DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(parent, flags) {
 

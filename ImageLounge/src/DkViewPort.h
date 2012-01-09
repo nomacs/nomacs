@@ -270,6 +270,7 @@ protected:
 	// functions
 	virtual void draw(QPainter *painter);
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
+	virtual void drawBackground(QPainter *painter);
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void updateImageMatrix();
 	void showZoom();
@@ -287,6 +288,7 @@ public:
 	virtual ~DkViewPortFrameless();
 
 	void release();
+	void addStartActions(QAction *startAction);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
 public slots:
@@ -301,12 +303,17 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void resizeEvent(QResizeEvent* event);
 
-	QTransform getScaledImageMatrix();
+	// variables
+	QVector<QAction*> startActions;
+	QVector<QRectF> startActionsRects;
+	QVector<QPixmap> startActionsIcons;
 
 	// functions
+	QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
 	virtual void draw(QPainter *painter);
 	void drawFrame(QPainter* painter);
+	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
 
 };

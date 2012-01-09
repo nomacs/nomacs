@@ -34,6 +34,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	this->parent = parent;
 	viewportRect = QRect(0, 0, width(), height());
 	worldMatrix.reset();
+	imgMatrix.reset();
 	altKeyPressed = false;
 
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
@@ -982,22 +983,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		//Now disable matrixWorld for overlay display
 		painter.setWorldMatrixEnabled (false);
 	}
-	else {
-
-		painter.setRenderHint(QPainter::SmoothPixmapTransform);
-		
-		// fit to viewport
-		QSize s = imgBg.size();
-		if (s.width() > (float)(size().width()*0.5))
-			s = s*((size().width()*0.5)/s.width());
-
-		if (s.height() > size().height()*0.6)
-			s = s*((size().height()*0.6)/s.height());
-
-		QRect bgRect(QPoint(size().width()-s.width()-size().width()*0.05, size().height()-s.height()-size().height()*0.05), s);
-
-		painter.drawImage(bgRect, imgBg, QRect(QPoint(), imgBg.size()));
-	}
+	else
+		drawBackground(&painter);
 
 	//in mode zoom/panning
 	if (worldMatrix.m11() > 1 && !imageInside() && DkSettings::GlobalSettings::showOverview) {
@@ -1054,6 +1041,23 @@ void DkViewPort::draw(QPainter *painter) {
 	//painter->setRenderHint(QPainter::SmoothPixmapTransform);	//-> uncomment for smooth aliasing
 	painter->drawImage(imgViewRect, imgQt, imgRect);
 
+}
+
+void DkViewPort::drawBackground(QPainter *painter) {
+	
+	painter->setRenderHint(QPainter::SmoothPixmapTransform);
+
+	// fit to viewport
+	QSize s = imgBg.size();
+	if (s.width() > (float)(size().width()*0.5))
+		s = s*((size().width()*0.5)/s.width());
+
+	if (s.height() > size().height()*0.6)
+		s = s*((size().height()*0.6)/s.height());
+
+	QRect bgRect(QPoint(size().width()-s.width()-size().width()*0.05, size().height()-s.height()-size().height()*0.05), s);
+
+	painter->drawImage(bgRect, imgBg, QRect(QPoint(), imgBg.size()));
 }
 
 void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
@@ -1577,7 +1581,6 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : Dk
 
 	//show();
 
-
 	// TODO: just set the left - upper - lower offset for all labels (according to viewRect)
 	// always set the size to be full screen -> bad for OS that are not able to show transparent frames!!
 }
@@ -1590,6 +1593,11 @@ DkViewPortFrameless::~DkViewPortFrameless() {
 void DkViewPortFrameless::release() {
 
 	DkViewPort::release();
+}
+
+void DkViewPortFrameless::addStartActions(QAction* startAction) {
+
+	startActions.append(startAction);
 }
 
 void DkViewPortFrameless::setImage(QImage newImg) {
@@ -1671,8 +1679,79 @@ void DkViewPortFrameless::draw(QPainter *painter) {
 	DkViewPort::draw(painter);
 }
 
+void DkViewPortFrameless::drawBackground(QPainter *painter) {
+	
+	painter->setWorldTransform(imgMatrix);
+	painter->setRenderHint(QPainter::SmoothPixmapTransform);
+	painter->setBrush(QColor(127, 144, 144, 200));
+	painter->setPen(QColor(100, 100, 100, 255));
+
+	qDebug() << "world transform: " << worldMatrix;
+
+	QRectF initialRect = viewport()->geometry();
+	QPointF oldCenter = initialRect.center();
+
+	QTransform cT;
+	cT.scale(400/initialRect.width(), 400/initialRect.width());
+	initialRect = cT.mapRect(initialRect);
+	initialRect.moveCenter(oldCenter);
+
+	// fit to viewport
+	QSize s = imgBg.size();
+	if (s.width() > (float)(initialRect.width()*0.5))
+		s = s*((initialRect.width()*0.5)/s.width());
+
+	if (s.height() > initialRect.height()*0.6)
+		s = s*((initialRect.height()*0.6)/s.height());
+
+	QRectF bgRect(QPoint(), s);
+	bgRect.moveBottomRight(initialRect.bottomRight()-(initialRect.bottomRight()*0.005));
+
+	painter->drawRect(initialRect);
+	painter->drawImage(bgRect, imgBg, QRect(QPoint(), imgBg.size()));
+
+	if (startActions.isEmpty())
+		return;
+
+	// first time?
+	if (startActionsRects.isEmpty()) {
+		float margin = 40;
+		float iconSizeMargin = (initialRect.width()-3*margin)/startActions.size();
+		QSize iconSize = QSize(iconSizeMargin - margin, iconSizeMargin - margin);
+		QPointF offset = QPointF(initialRect.left() + 2*margin, initialRect.center().y()-iconSizeMargin*0.5f);
+
+		for (int idx = 0; idx < startActions.size(); idx++) {
+
+			QRectF iconRect = QRectF(offset, iconSize);
+			QPixmap ci = startActions[idx]->icon().pixmap(iconSize);
+			startActionsRects.push_back(iconRect);
+			startActionsIcons.push_back(ci);
+
+			offset.setX(offset.x() + margin + iconSize.width());
+		}
+	}
+
+	// draw start actions
+	for (int idx = 0; idx < startActions.size(); idx++)
+		painter->drawPixmap(startActionsRects[idx], startActionsIcons[idx], QRect(QPoint(), startActionsIcons[idx].size()));
+}
+
 void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
 	
+	if (imgQt.isNull()) {
+
+		QPointF pos = imgMatrix.inverted().map(event->pos());
+
+		for (int idx = 0; idx < startActionsRects.size(); idx++) {
+			
+			if (startActionsRects[idx].contains(pos)) {
+				startActions[idx]->trigger();
+				qDebug() << "toggle...";
+				break;
+			}
+		}
+	}
+
 	// move the window - todo: NOT full screen, window inside...
 	setCursor(Qt::ClosedHandCursor);
 	posGrab = event->globalPos();
@@ -1713,6 +1792,27 @@ void DkViewPortFrameless::drawFrame(QPainter* painter) {
 
 void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	
+	if (imgQt.isNull()) {
+
+		QPointF pos = imgMatrix.inverted().map(event->pos());
+
+		int idx;
+		for (idx = 0; idx < startActionsRects.size(); idx++) {
+
+			if (startActionsRects[idx].contains(pos)) {
+				unsetCursor();
+				break;
+			}
+		}
+
+		// TODO: change if closed hand cursor is present...
+		if (idx == startActionsRects.size())
+			setCursor(Qt::OpenHandCursor);
+
+	}
+
+
+
 	if (visibleStatusbar)
 		getPixelInfo(event->pos());
 
