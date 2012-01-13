@@ -1008,7 +1008,7 @@ public:
 		return true;
 	};
 
-	void updateCorner(int cIdx, QPointF nC) {
+	void updateCorner(int cIdx, QPointF &nC) {
 
 		// index does not exist
 		if (cIdx < 0 || cIdx >= rect.size())
@@ -1051,7 +1051,7 @@ public:
 		}
 	};
 
-	void setAllCorners(QPointF p) {
+	void setAllCorners(QPointF &p) {
 		
 		for (int idx = 0; idx < rect.size(); idx++)
 			rect[idx] = p;
@@ -1059,12 +1059,12 @@ public:
 		rotated = false;
 	};
 
-	QPolygonF getPoly() {
+	QPolygonF& getPoly() {
 
 		return rect;
 	};
 
-	void setPoly(QPolygonF poly) {
+	void setPoly(QPolygonF &poly) {
 		rect = poly;
 	};
 
@@ -1084,9 +1084,10 @@ public:
 		if (rect.empty())
 			return QPointF();
 
-		//DkVector c1 = rect[]
-
-		return QPointF();
+		DkVector c1 = rect[0];
+		DkVector c2 = rect[2];
+		
+		return ((c2-c1)*0.5f + c1).getQPointF();
 	};
 
 protected:

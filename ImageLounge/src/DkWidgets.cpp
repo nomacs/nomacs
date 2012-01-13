@@ -3373,6 +3373,9 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setBrush(brush);
 	painter.drawPath(path);
 
+	// debug
+	painter.drawPoint(rect.getCenter());
+
 	painter.end();
 }
 
@@ -3382,10 +3385,13 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	if (rect.isEmpty()) {
 		state = initializing;
-		rect.setAllCorners(event->pos());
+		rect.setAllCorners(event->posF());
 	}
 	else if (rect.getPoly().containsPoint(event->pos(), Qt::OddEvenFill)) {
 		state = moving;
+	}
+	else {
+		state = rotating;
 	}
 
 	posGrab = event->pos();
@@ -3400,7 +3406,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		return;
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
-		rect.updateCorner(2, event->pos());
+		rect.updateCorner(2, event->posF());
 		update();
 		//std::cout << rect << std::endl;
 	}
@@ -3409,6 +3415,25 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		QPointF dxy = event->pos()-posGrab;
 		rTform.translate(dxy.x(), dxy.y());
 		posGrab = event->pos();
+		update();
+	}
+	else if (state == rotating && event->buttons() == Qt::LeftButton) {
+
+		DkVector c = rect.getCenter();
+		double angle = (DkVector(posGrab)-c).angle(DkVector(event->pos())-c);
+		QPolygonF p = rect.getPoly();
+
+
+		// TODO: we must do the rotating faster...
+		rTform.translate(-c.x, -c.y);
+		p = rTform.map(p); 
+		rTform.rotateRadians(angle);
+		p = rTform.map(p);
+		rTform.translate(c.x, c.y);
+		p = rTform.map(p);
+		rect.setPoly(p);
+		
+		rTform.reset();
 		update();
 	}
 
