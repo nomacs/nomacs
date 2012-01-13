@@ -28,6 +28,8 @@
 #pragma once
 
 #include <cmath>
+#include <QDebug>
+#include <QPointF>
 //#include <cfloat>
 //#include <algorithm>
 //#include <vector>
@@ -274,4 +276,545 @@ public:
 	}
 
 
+};
+
+/**
+ * A simple 2D vector class.
+ */
+class DkVector {
+
+public:
+	
+	union {
+		float x;		/**< the vector's x-coordinate*/
+		float width;	/**< the vector's x-coordinate*/
+		float r;		/**< radius for log-polar coordinates or red channel*/
+		float h;		/**< hue channel*/
+	};
+	
+	union {
+		float y;		/**< the vector's y-coordinate*/
+		float height;	/**< the vector's y-coordinate*/
+		float theta;	/**< angle for log-polar coordinates*/
+		float g;		/**< green channel*/
+		float l;		/**< luminance channel*/
+	};
+	
+	/** 
+	 * Default constructor.
+	 **/
+	DkVector() : x(0), y(0) {};
+
+	/** 
+	 * Initializes an object.
+	 * @param x the vector's x-coordinate.
+	 * @param y the vector's y-coordinate.
+	 **/
+	DkVector(float x, float y) {
+		this->x = x;
+		this->y = y;
+	};
+
+#ifdef WITH_OPENCV
+	/**
+	 * Initializes an object by means of the OpenCV size.
+	 * @param s the size.
+	 **/
+	DkVector(Size s) {
+		this->width  = (float)s.width;
+		this->height = (float)s.height;
+	};
+
+	/**
+	 * Initializes a Vector by means of a OpenCV Point.
+	 * @param p the point
+	 **/
+	DkVector(Point2f p) {
+		this->x = p.x;
+		this->y = p.y;
+	};
+
+	/**
+	 * Initializes a Vector by means of a OpenCV Point.
+	 * @param p the point
+	 **/
+	DkVector(Point p) {
+		this->x = (float)p.x;
+		this->y = (float)p.y;
+	};
+#endif
+
+	/**
+	 * Initializes the vector by means of a QPointF.
+	 * @param p a QPointF
+	 **/ 
+	DkVector(QPointF p) {
+		this->x = p.x();
+		this->y = p.y();
+	};
+
+	/** 
+	 * Default destructor.
+	 **/
+	virtual ~DkVector() {};
+
+	/**
+	 * Compares two vectors.
+	 * @return true if both vectors have the same coordinates
+	 */
+	virtual bool operator== (const DkVector &vec) const {
+
+		return (this->x == vec.x && this->y == vec.y);
+	};
+
+	/**
+	 * Compares two vectors.
+	 * @return true if both either the x or y coordinates of both
+	 * vectors are not the same.
+	 */
+	virtual bool operator!= (const DkVector &vec) const {
+
+		return (this->x != vec.x || this->y != vec.y);
+	};
+
+	/**
+	 * Decides which vector is smaller.
+	 * If y is < vec.y the function returns true.
+	 * Solely if y == vec.y the x coordinates are compared.
+	 * @param vec the vector to compare this instance with.
+	 * @return true if y < vec.y or y == vec.y && x < vec.y.
+	 **/
+	virtual bool operator< (const DkVector &vec) const {
+
+		if (y != vec.y)
+			return y < vec.y;
+		else
+			return x < vec.x;
+	};
+
+	/**  
+	 * Adds vector to the current vector.
+	 * @param vec the vector to be added
+	 */
+	virtual void operator+= (const DkVector &vec) {
+
+		this->x += vec.x;
+		this->y += vec.y;
+	};
+
+	/** 
+	 * Adds a scalar to the current vector.
+	 * @param scalar the scalar which should be added
+	 */
+	virtual void operator+= (const float &scalar) {
+
+		this->x += scalar;
+		this->y += scalar;
+	};
+
+	/** 
+	 * Computes the direction vector between this vector and vec.
+	 * Computes the direction vector pointing to the current vector
+	 * and replacing it.
+	 */
+	virtual void operator-= (const DkVector &vec) {
+
+		this->x -= vec.x;
+		this->y -= vec.y;
+	};
+	
+	/** 
+	 * Subtracts a scalar from the current vector.
+	 * @param scalar the scalar which should be subtracted.
+	 */
+	virtual void operator-= (const float &scalar) {
+		
+		this->x -= scalar;
+		this->y -= scalar;
+	};
+
+	/** 
+	 * Scalar product.
+	 * @param vec a vector which should be considered for the scalar product.
+	 * @return the scalar product of vec and the current vector.
+	 */ 
+	virtual float operator* (const DkVector &vec) const {
+
+		return this->x*vec.x + this->y*vec.y;
+	};
+
+	/** 
+	 * Scalar multiplication.
+	 * @param scalar a scalar.
+	 */
+	virtual void operator*= (const float scalar) {
+		
+		this->x *= scalar;
+		this->y *= scalar;
+	};
+
+	/** 
+	 * Scalar division.
+	 * @param scalar a scalar.
+	 */
+	virtual void operator/= (const float scalar) {
+		this->x /= scalar;
+		this->y /= scalar;
+	};
+
+	// friends ----------------
+
+	/** 
+	 * Adds a vector to the current vector.
+	 * @param vec the vector which should be added
+	 * @return the addition of the current and the given vector.
+	 */
+	friend DkVector operator+ (const DkVector &vec, const DkVector &vec2) {
+
+		return DkVector(vec.x+vec2.x, vec.y+vec2.y);
+	};
+
+	/** 
+	 * Adds a scalar to the current vector.
+	 * @param scalar the scalar which should be added
+	 * @return the addition of the current vector and the scalar given.
+	 */
+	friend DkVector operator+ (const DkVector &vec, const float &scalar) {
+
+		return DkVector(vec.x+scalar, vec.y+scalar);
+	};
+
+	/** 
+	 * Adds a scalar to the current vector.
+	 * @param scalar the scalar which should be added
+	 * @return the addition of the current vector and the scalar given.
+	 */
+	friend DkVector operator+ (const float &scalar, const DkVector &vec) {
+
+		return DkVector(vec.x+scalar, vec.y+scalar);
+	};
+
+	/** 
+	 * Computes the direction vector between the given vector and vec.
+	 * The direction vector C is computed by means of: C = B-A
+	 * where B is the current vector.
+	 * @param vec the basis vector A.
+	 * @return a direction vector that points from @param vec to the 
+	 * current vector.
+	 */
+	friend DkVector operator- (const DkVector &vec, const DkVector &vec2) {
+
+		return DkVector(vec.x-vec2.x, vec.y-vec2.y);
+	};
+
+	/** 
+	 * Subtracts a scalar from the current vector.
+	 * @param scalar the scalar which should be subtracted.
+	 * @return the subtraction of the current vector and the scalar given.
+	 */
+	friend DkVector operator- (const DkVector vec, const float &scalar) {
+
+		return DkVector(vec.x-scalar, vec.y-scalar);
+	};
+
+	/** 
+	 * Subtracts the vector from a scalar.
+	 * @param scalar the scalar which should be subtracted.
+	 * @return the subtraction of the current vector and the scalar given.
+	 */
+	friend DkVector operator- (const float &scalar, const DkVector vec) {
+
+		return DkVector(scalar-vec.x, scalar-vec.y);
+	};
+
+	/** 
+	 * Scalar multiplication.
+	 * @param scalar a scalar.
+	 * @return the current vector multiplied by a scalar.
+	 */
+	friend DkVector operator* (const DkVector& vec, const float scalar) {
+
+		return DkVector(vec.x*scalar, vec.y*scalar);
+	};
+
+	/** 
+	 * Scalar multiplication.
+	 * @param scalar a scalar.
+	 * @return the current vector multiplied by a scalar.
+	 */
+	friend DkVector operator* (const float &scalar, const DkVector& vec) {
+
+		return DkVector(vec.x*scalar, vec.y*scalar);
+	};
+
+	/** 
+	 * Scalar division.
+	 * @param vec a vector which shall be divided.
+	 * @param scalar a scalar.
+	 * @return the current vector divided by a scalar.
+	 */
+	friend DkVector operator/ (const DkVector &vec, const float &scalar) {
+
+		return DkVector(vec.x/scalar, vec.y/scalar);
+	};
+
+	/** 
+	 * Scalar division.
+	 * @param scalar a scalar.
+	 * @param vec a vector which shall be divided.
+	 * @return the current vector divided by a scalar.
+	 */
+	friend DkVector operator/ (const float &scalar, const DkVector &vec) {
+
+		return DkVector(scalar/vec.x, scalar/vec.y);
+	};
+
+	/**
+	 * Writes the vector r coordinates to the outputstream s.
+	 * @param s the outputstream
+	 * @param r the vector
+	 * @return friend std::ostream& the modified outputstream
+	 **/ 
+	friend std::ostream& operator<<(std::ostream& s, DkVector& r){
+
+		return r.put(s);
+	};
+
+	/**
+	 * Writes the vector coordinates to the stream s.
+	 * @param s the output stream
+	 * @return std::ostream& the output stream with the coordinates.
+	 **/ 
+	virtual std::ostream& put(std::ostream& s) {
+
+		return s << "[" << x << ", " << y << "]";
+	};
+
+	bool isEmpty() {
+
+		return x == 0 && y == 0;
+	};
+
+
+	/**
+	 * Returns the largest coordinate.
+	 * @return float the largest coordinate
+	 **/ 
+	virtual float maxCoord() {
+
+		return max(x, y);
+	};
+
+	/**
+	 * Returns the largest coordinate.
+	 * @return float the largest coordinate.
+	 **/ 
+	virtual float minCoord() {
+
+		return min(x, y);
+	};
+
+	/**
+	 * Creates a new vector having the
+	 * maximum coordinates of both vectors.
+	 * Thus: n.x = max(this.x, vec.x).
+	 * @param vec the second vector.
+	 * @return a vector having the maximum 
+	 * coordinates of both vectors.
+	 **/
+	virtual DkVector maxVec(const DkVector vec) const {
+
+		return DkVector(max(x, vec.x), max(y, vec.y));
+	}
+
+	/**
+	 * Creates a new vector having the
+	 * minimum coordinates of both vectors.
+	 * Thus: n.x = min(this.x, vec.x).
+	 * @param vec the second vector.
+	 * @return a vector having the minimum
+	 * coordinates of both vectors.
+	 **/
+	virtual DkVector minVec(const DkVector vec) const{
+
+		return DkVector(min(x, vec.x), min(y, vec.y));
+	}
+
+	/**
+	 * Swaps the coordinates of a vector.
+	 **/
+	void swap() {
+		float xtmp = x;
+		x = y;
+		y = xtmp;
+	}
+
+	/**
+	 * Returns the vector's angle in radians.
+	 * The angle is computed by: atan2(y,x).
+	 * @return the vector's angle in radians.
+	 **/
+	double angle() {
+		return atan2(y, x);
+	};
+
+	/**
+	 * Rotates the vector by a specified angle in radians.
+	 * The rotation matrix is: R(-theta) = [cos sin; -sin cos]
+	 * @param angle the rotation angle in radians.
+	 **/
+	void rotate(double angle) {
+		
+		float xtmp = x;
+		x = (float) ( xtmp*cos(angle)+y*sin(angle));
+		y = (float) (-xtmp*sin(angle)+y*cos(angle));
+	};
+
+	/**
+	 * Computes the absolute value of both coordinates.
+	 **/
+	virtual void abs() {
+
+		x = fabs(x);
+		y = fabs(y);
+	};
+
+	/**
+	 * Clips the vector's coordinates to the bounds given.
+	 * @param maxBound the maximum bound.
+	 * @param minBound the minimum bound.
+	 **/
+	virtual void clipTo(float maxBound = 1.0f, float minBound = 0.0f) {
+
+		if (minBound > maxBound) {
+			qDebug() << "[DkVector3] maxBound < minBound: " << maxBound << " < " << minBound;
+			return;
+		}
+
+		if (x > maxBound)		x = maxBound;
+		else if (x < minBound)	x = minBound;
+		if (y > maxBound)		y = maxBound;
+		else if (y < minBound)	y = minBound;
+
+	};
+	
+	/** 
+	 * Normal vector.
+	 * @return a vector which is normal to the current vector
+	 * (rotated by 90° counter clockwise).
+	 */
+	DkVector normalVec() const {
+
+		return DkVector(-y, x);
+	};
+
+	/** 
+	 * The vector norm.
+	 * @return the vector norm of the current vector.
+	 */
+	virtual float norm() const{
+		
+		return sqrt(this->x*this->x + this->y*this->y);
+	}
+
+	/** 
+	 * Normalizes the vector.
+	 * After normalization the vector's magnitude is |v| = 1
+	 */
+	virtual void normalize() {
+		float n = norm();
+		x /= n; 
+		y /= n;
+	};
+
+	///** 
+	// * Returns the normalized vector.
+	// * After normalization the vector's magnitude is |v| = 1
+	// * @return the normalized vector.
+	// */
+	//virtual DkVector getNormalized() const {
+	//	float n = norm();
+
+	//	return DkVector(x/n, y/n);
+	//};
+
+		
+	/** 
+	 * Returns the angle between two vectors
+	 *  @param vec vector
+	 *  @return the angle between two vectors
+	 */
+	double angle(const DkVector &vec) {
+		return acos((this->x*vec.x + this->y*vec.y) / (sqrt(this->x*this->x + this->y*this->y)*sqrt(vec.x*vec.x + vec.y*vec.y)));
+	};
+
+	/** Returns euclidean distance between two vectors
+	 *  @param vec vector
+	 *  @return the euclidean distance
+	 */
+	virtual float euclideanDistance(const DkVector &vec) {
+		return sqrt((this->x - vec.x)*(this->x - vec.x) + (this->y - vec.y)*(this->y - vec.y));
+	};
+	
+
+	/** 
+	 * Scalar product.
+	 * @param vec a vector which should be considered for the scalar product.
+	 * @return the scalar product of vec and the current vector.
+	 */ 
+	virtual float scalarProduct(DkVector vec) {
+
+		return this->x*vec.x + this->y*vec.y;
+	};
+
+	///** 
+	// * String containing the vector's values.
+	// * @return a String representing the vector's coordinates: <x, y>
+	// */
+	//virtual std::string toString();
+
+	/** 
+	 * Slope of a line connecting two vectors. 
+	 * start point is the actual vector, end point the parameter vector
+	 * @param vec a vector which should be considered for the slope.
+	 * @return the slope between the two points.
+	 */ 
+	float slope(DkVector vec) {
+		return (vec.x - this->x) != 0 ? (vec.y - this->y) / (vec.x - this->x) : FLT_MAX;
+	}
+
+	virtual QPointF getQPointF() {
+		return QPointF(x, y);
+	};
+
+#ifdef WITH_OPENCV
+	/**
+	 * Convert DkVector to cv::Point.
+	 * @return a cv::Point having the vector's coordinates.
+	 **/
+	virtual Point getCvPoint32f() const {
+
+		return Point_<float>(x, y);
+	};
+
+	/**
+	 * Convert DkVector to cv::Point.
+	 * The vectors coordinates are rounded.
+	 * @return a cv::Point having the vector's coordinates.
+	 **/
+	virtual Point getCvPoint() const {
+
+		return Point(cvRound(x), cvRound(y));
+	};
+
+	/**
+	 * Convert DkVector to cv::Size.
+	 * The vector coordinates are rounded.
+	 * @return a cv::Size having the vector's coordinates.
+	 **/
+	Size getCvSize() const {
+
+		return Size(cvRound(width), cvRound(height));
+	}
+#endif
 };

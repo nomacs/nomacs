@@ -967,22 +967,173 @@ protected:
 
 };
 
+// TODO: move to DkMath
+class DkRotatingRect {
+
+public:
+	DkRotatingRect(QRectF rect = QRect()) {
+
+		if (rect.isEmpty()) {
+
+			for (int idx = 0; idx < 4; idx++)
+				this->rect.push_back(QPointF());
+		}
+		else
+			this->rect = rect;
+
+		rotated = false;
+	};
+	
+	virtual ~DkRotatingRect() {};
+
+		friend std::ostream& operator<<(std::ostream& s, DkRotatingRect& r){
+
+		return r.put(s);
+	};
+
+	bool isEmpty() {
+
+		if (rect.size() < 4)
+			return true;
+
+		QPointF lp = rect[0]; 
+		for (int idx = 1; idx < rect.size(); idx++) {
+			
+			if (lp != rect[idx]) {
+				qDebug() << "not empty...";
+				return false;
+			}
+			lp = rect[idx];
+		}
+		return true;
+	};
+
+	void updateCorner(int cIdx, QPointF nC) {
+
+		// index does not exist
+		if (cIdx < 0 || cIdx >= rect.size())
+			return;
+
+		if (!rotated) {
+			QPointF oC = rect[(cIdx+2) % 4];	// opposite corner
+			rect[cIdx] = nC;
+			rect[(cIdx+1) % 4] = QPointF(nC.x(), oC.y());
+			rect[(cIdx+3) % 4] = QPointF(oC.x(), nC.y());
+		}
+		else {
+
+			// we have to update the n-1 and n+1 corner
+			DkVector cN = nC;
+			DkVector c0 = rect[cIdx];
+			DkVector c1 = rect[(cIdx+1) % 4];
+			DkVector c2 = rect[(cIdx+2) % 4];
+			DkVector c3 = rect[(cIdx+3) % 4];
+
+			// new diagonal
+			float diagLength = (c2-cN).norm();
+			float diagAngle = (c2-cN).angle();
+
+			// compute the idx-1 corner
+			float c1Angle = (c1-c0).angle();
+			float newLength = cos(c1Angle - diagAngle)*diagLength;
+			DkVector nc1 = DkVector(newLength, 0);
+			nc1.rotate(c1Angle);
+			rect[(cIdx+1) % 4] = (nc1+cN).getQPointF();
+
+			// compute the idx-3 corner
+			float c3Angle = (c3-c0).angle();
+			newLength = cos(c3Angle - diagAngle)*diagLength;
+			DkVector nc3 = DkVector(newLength, 0);
+			nc1.rotate(c3Angle);
+			rect[(cIdx+3) % 4] = (nc3+cN).getQPointF();
+
+			rect[cIdx] = nC;
+		}
+	};
+
+	void setAllCorners(QPointF p) {
+		
+		for (int idx = 0; idx < rect.size(); idx++)
+			rect[idx] = p;
+
+		rotated = false;
+	};
+
+	QPolygonF getPoly() {
+
+		return rect;
+	};
+
+	void setPoly(QPolygonF poly) {
+		rect = poly;
+	};
+
+	QPolygonF getClosedPoly() {
+
+		if (rect.isEmpty())
+			return QPolygonF();
+
+		QPolygonF closedPoly = rect;
+		closedPoly.push_back(closedPoly[0]);
+		
+		return closedPoly;
+	};
+
+	QPointF getCenter() {
+
+		if (rect.empty())
+			return QPointF();
+
+		//DkVector c1 = rect[]
+
+		return QPointF();
+	};
+
+protected:
+
+	virtual std::ostream& put(std::ostream& s) {
+
+		s << "DkRotatingRect: ";
+		for (int idx = 0; idx < rect.size(); idx++)
+			s << DkVector(rect[idx]) << ", ";
+
+		return s;
+	};
+
+	bool rotated;
+	QPolygonF rect;
+};
+
 class DkEditableRect : public QWidget {
 	Q_OBJECT
 
 public:
 
+	enum {
+		do_nothing,
+		initializing,
+		rotating,
+		moving,
+		scaling
+	};
+
 	DkEditableRect(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkEditableRect() {};
-
-
+	
 protected:
 	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 
 	void paintEvent(QPaintEvent *event);
 
+	int state;
+
+	QTransform rTform;
+	QPointF posGrab;
+
 	QWidget* parent;
-	QPolygonF rect;
+	DkRotatingRect rect;
 	QPen pen;
+	QBrush brush;
 };

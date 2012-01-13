@@ -1563,7 +1563,8 @@ void DkViewPort::cropImage(bool croping) {
 		editRect->show();
 	}
 	else if (editRect) {
-		delete editRect;
+		editRect->hide();
+		delete editRect;		// check that -> heap corruption!
 		editRect = 0;
 	}
 

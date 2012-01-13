@@ -1768,8 +1768,7 @@ void DkResizeDialog::createLayout() {
 	wPixelEdit = new QSpinBox();
 	wPixelEdit->setObjectName("wPixelEdit");
 	wPixelEdit->setRange(minPx, maxPx);
-
-
+	
 	lockButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
 	lockButton->setFixedSize(QSize(16,16));
 	lockButton->setObjectName("lockButton");
@@ -3346,40 +3345,79 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	this->rect = rect;
 
 	setAttribute(Qt::WA_MouseTracking);
-	setAttribute(Qt::WA_NoMousePropagation);
 
-	pen = QPen(QColor(0, 0, 0, 40), 1);
+	pen = QPen(QColor(0, 0, 0, 255), 1);
+	brush = QColor(0, 0, 0, 90);
 
+	state = do_nothing;
 	qDebug() << "my size: " << geometry();
 		
 }
 
 void DkEditableRect::paintEvent(QPaintEvent *event) {
 
-	QPainter painter(this);
 
-	// for now: we don't know how to receive all mouse events if the widget is transparent
-	painter.setPen(QPen(QColor(0,0,0,1), 0));
-	painter.drawRect(geometry());
+	// create path
+	QPainterPath path;
+	QRectF canvas = QRectF(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
+	canvas = rTform.inverted().mapRect(canvas);
+	path.addRect(canvas);
+	path.addPolygon(rect.getClosedPoly());
+
+	// now draw
+	QPainter painter(this);
+	painter.setWorldTransform(rTform);
+	painter.setViewTransformEnabled(true);
 
 	painter.setPen(pen);
-	painter.drawPolygon(rect);
-	
-	painter.end();
+	painter.setBrush(brush);
+	painter.drawPath(path);
 
+	painter.end();
 }
 
 // make events callable
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
-	//if (rect.isEmpty())
 
-		qDebug() << "mousepress edit rect";
+	if (rect.isEmpty()) {
+		state = initializing;
+		rect.setAllCorners(event->pos());
+	}
+	else if (rect.getPoly().containsPoint(event->pos(), Qt::OddEvenFill)) {
+		state = moving;
+	}
+
+	posGrab = event->pos();
+	qDebug() << "mousepress edit rect";
 
 	QWidget::mousePressEvent(event);
 }
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
+	if (event->buttons() != Qt::LeftButton)
+		return;
+
+	if (state == initializing && event->buttons() == Qt::LeftButton) {
+		rect.updateCorner(2, event->pos());
+		update();
+		//std::cout << rect << std::endl;
+	}
+	else if (state == moving && event->buttons() == Qt::LeftButton) {
+		
+		QPointF dxy = event->pos()-posGrab;
+		rTform.translate(dxy.x(), dxy.y());
+		posGrab = event->pos();
+		update();
+	}
+
 	//qDebug() << "edit rect mouse move";
+}
+
+void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
+
+	state = do_nothing;
+	rect.setPoly(rTform.map(rect.getPoly()));
+	rTform.reset();	
 }
