@@ -966,3 +966,23 @@ protected:
 	};
 
 };
+
+class DkEditableRect : public QWidget {
+	Q_OBJECT
+
+public:
+
+	DkEditableRect(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+	virtual ~DkEditableRect() {};
+
+
+protected:
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
+	void paintEvent(QPaintEvent *event);
+
+	QWidget* parent;
+	QPolygonF rect;
+	QPen pen;
+};

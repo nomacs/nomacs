@@ -3338,3 +3338,48 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 	
 	return QPixmap();
 }
+
+// DkEditableRectangle --------------------------------------------------------------------
+DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+
+	this->parent = parent;
+	this->rect = rect;
+
+	setAttribute(Qt::WA_MouseTracking);
+	setAttribute(Qt::WA_NoMousePropagation);
+
+	pen = QPen(QColor(0, 0, 0, 40), 1);
+
+	qDebug() << "my size: " << geometry();
+		
+}
+
+void DkEditableRect::paintEvent(QPaintEvent *event) {
+
+	QPainter painter(this);
+
+	// for now: we don't know how to receive all mouse events if the widget is transparent
+	painter.setPen(QPen(QColor(0,0,0,1), 0));
+	painter.drawRect(geometry());
+
+	painter.setPen(pen);
+	painter.drawPolygon(rect);
+	
+	painter.end();
+
+}
+
+// make events callable
+void DkEditableRect::mousePressEvent(QMouseEvent *event) {
+
+	//if (rect.isEmpty())
+
+		qDebug() << "mousepress edit rect";
+
+	QWidget::mousePressEvent(event);
+}
+
+void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
+
+	//qDebug() << "edit rect mouse move";
+}

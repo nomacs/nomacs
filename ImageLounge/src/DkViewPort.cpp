@@ -451,23 +451,26 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	overviewMargin = 10;
 	testLoaded = false;
 	visibleStatusbar = false;
+	isCropActive = false;
+
 	rating = -1;
 
 	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
 	loader = 0;
-	centerLabel = 0;
-	bottomLabel = 0;
-	bottomRightLabel = 0;
-	topLeftLabel = 0;
+	//centerLabel = 0;
+	//bottomLabel = 0;
+	//bottomRightLabel = 0;
+	//topLeftLabel = 0;
 
 	centerLabel = new DkInfoLabel(this, "", DkInfoLabel::center_label);
 	bottomLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_left_label);
 	bottomRightLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_right_label);
 	topLeftLabel = new DkInfoLabel(this, "", DkInfoLabel::top_left_label);
 	fileInfoLabel = new DkFileInfoLabel(this);
-	
+	editRect = 0;
+
 	// wheel label
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
 	wheelButton = new QLabel(this);
@@ -1113,6 +1116,9 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	topLeftLabel->updatePos(topOffset);	// todo: if thumbnails are shown: move/overview move
 	fileInfoLabel->updatePos(bottomOffset);
 
+	if (editRect)
+		editRect->resize(width(), height());
+
 	return QGraphicsView::resizeEvent(event);
 }
 
@@ -1155,6 +1161,7 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 		wheelButton->show();
 	}
 	
+	// should be sent to QWidget?!
 	QGraphicsView::mousePressEvent(event);
 }
 
@@ -1548,6 +1555,21 @@ void DkViewPort::setBottomInfo(QString msg, int time) {
 	update();
 }
 
+void DkViewPort::cropImage(bool croping) {
+
+	if (croping) {
+		editRect = new DkEditableRect(QRectF(), this);
+		editRect->resize(width(), height());
+		editRect->show();
+	}
+	else if (editRect) {
+		delete editRect;
+		editRect = 0;
+	}
+
+	isCropActive = croping;
+}
+
 void DkViewPort::printImage() {
 
 	QPrinter printer;
@@ -1808,10 +1830,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		// TODO: change if closed hand cursor is present...
 		if (idx == startActionsRects.size())
 			setCursor(Qt::OpenHandCursor);
-
 	}
-
-
 
 	if (visibleStatusbar)
 		getPixelInfo(event->pos());

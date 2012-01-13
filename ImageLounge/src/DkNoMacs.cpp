@@ -313,6 +313,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_rotate_180]);
 	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_transfrom]);
+	editMenu->addAction(editActions[menu_edit_crop]);
 	editMenu->addAction(editActions[menu_edit_delete]);
 	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_preferences]);
@@ -474,6 +475,13 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_transfrom]->setShortcut(shortcut_transform);
 	editActions[menu_edit_transfrom]->setStatusTip(tr("resize the current image"));
 	connect(editActions[menu_edit_transfrom], SIGNAL(triggered()), this, SLOT(resizeImage()));
+
+	editActions[menu_edit_crop] = new QAction(tr("Cr&op Image"), this);
+	editActions[menu_edit_crop]->setShortcut(shortcut_crop);
+	editActions[menu_edit_crop]->setStatusTip(tr("cut the current image"));
+	editActions[menu_edit_crop]->setCheckable(true);
+	editActions[menu_edit_crop]->setChecked(false);
+	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp, SLOT(cropImage(bool)));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
@@ -707,6 +715,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_rotate_180]->setEnabled(enable);
 	editActions[menu_edit_delete]->setEnabled(enable);
 	editActions[menu_edit_transfrom]->setEnabled(enable);
+	editActions[menu_edit_crop]->setEnabled(enable);
 	editActions[menu_edit_copy]->setEnabled(enable);
 
 	viewActions[menu_view_show_info]->setEnabled(enable);
@@ -719,7 +728,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	viewActions[menu_view_100]->setEnabled(enable);
 	viewActions[menu_view_zoom_in]->setEnabled(enable);
 	viewActions[menu_view_zoom_out]->setEnabled(enable);
-
 }
 
 
@@ -2013,7 +2021,21 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 
 		// for now: set to fullscreen
 		QDesktopWidget* dw = QApplication::desktop();
-		this->setGeometry(dw->screenGeometry());
+		
+		int sc = dw->screenCount();
+		QRect screenRects = dw->availableGeometry();
+
+		for (int idx = 0; idx < sc; idx++) {
+
+			qDebug() << "screens: " << dw->availableGeometry(idx);
+			QRect curScreen = dw->availableGeometry(idx);
+			screenRects.setLeft(min(screenRects.left(), curScreen.left()));
+			screenRects.setTop(min(screenRects.top(), curScreen.top()));
+			screenRects.setBottom(max(screenRects.bottom(), curScreen.bottom()));
+			screenRects.setRight(max(screenRects.right(), curScreen.right()));
+		}
+		
+		this->setGeometry(screenRects);
 		
 		// TODO: overload the resize dialog
 }

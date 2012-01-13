@@ -122,6 +122,7 @@ enum {
 	shortcut_transform		= Qt::CTRL + Qt::Key_T,
 	shortcut_paste			= Qt::Key_Insert,
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
+	shortcut_crop			= Qt::Key_C,
 
 	// tcp
 	shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
@@ -164,6 +165,7 @@ enum editActions {
 	menu_edit_preferences,
 	menu_edit_transfrom,
 	menu_edit_delete,
+	menu_edit_crop,
 
 	menu_edit_end,	// nothing beyond this point
 };

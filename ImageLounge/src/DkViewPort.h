@@ -226,6 +226,7 @@ public slots:
 	void loadLena();
 	void unloadImage();
 	void fileNotLoaded(QFileInfo file);
+	void cropImage(bool croping);
 
 	virtual void setImage(QImage newImg);
 
@@ -240,6 +241,7 @@ protected:
 
 	bool testLoaded;
 	bool visibleStatusbar;
+	bool isCropActive;
 
 	QImage imgBg;
 	QLabel* wheelButton;
@@ -256,6 +258,8 @@ protected:
 	DkFilePreview* filePreview;
 	DkRatingLabelBg* ratingLabel;
 	DkOverview* overviewWindow;
+
+	DkEditableRect* editRect;
 
 	QPoint bottomOffset;
 	QPoint topOffset;
