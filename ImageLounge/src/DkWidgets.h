@@ -46,6 +46,7 @@
 #include <QTimer>
 #include <QMap>
 #include <QDesktopServices>
+#include <QVector2D>
 
 #include "DkImage.h"
 #include "DkNetwork.h"
@@ -981,7 +982,6 @@ public:
 		else
 			this->rect = rect;
 
-		rotated = false;
 	};
 	
 	virtual ~DkRotatingRect() {};
@@ -1008,7 +1008,7 @@ public:
 		return true;
 	};
 
-	void updateCorner(int cIdx, QPointF &nC) {
+	void updateCorner(int cIdx, QPointF &nC, bool rotated = true) {
 
 		// index does not exist
 		if (cIdx < 0 || cIdx >= rect.size())
@@ -1056,7 +1056,6 @@ public:
 		for (int idx = 0; idx < rect.size(); idx++)
 			rect[idx] = p;
 
-		rotated = false;
 	};
 
 	QPolygonF& getPoly() {
@@ -1101,7 +1100,6 @@ protected:
 		return s;
 	};
 
-	bool rotated;
 	QPolygonF rect;
 };
 
@@ -1130,6 +1128,7 @@ protected:
 
 	int state;
 
+	QTransform tTform;
 	QTransform rTform;
 	QPointF posGrab;
 

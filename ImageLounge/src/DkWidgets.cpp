@@ -3356,18 +3356,23 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 
 void DkEditableRect::paintEvent(QPaintEvent *event) {
 
-
 	// create path
 	QPainterPath path;
 	QRectF canvas = QRectF(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
-	canvas = rTform.inverted().mapRect(canvas);
 	path.addRect(canvas);
-	path.addPolygon(rect.getClosedPoly());
+
+
+	// TODO: we must do the rotating faster...
+	QPolygonF p = rect.getClosedPoly();
+	p = tTform.map(p);
+	p = rTform.map(p); 
+	p = tTform.inverted().map(p);
+	path.addPolygon(p);
 
 	// now draw
 	QPainter painter(this);
-	painter.setWorldTransform(rTform);
-	painter.setViewTransformEnabled(true);
+	//painter.setWorldTransform(rTform);
+	//painter.setViewTransformEnabled(!rTform.isRotating());
 
 	painter.setPen(pen);
 	painter.setBrush(brush);
@@ -3406,7 +3411,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		return;
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
-		rect.updateCorner(2, event->posF());
+		rect.updateCorner(2, event->posF(), false);
 		update();
 		//std::cout << rect << std::endl;
 	}
@@ -3419,22 +3424,31 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	}
 	else if (state == rotating && event->buttons() == Qt::LeftButton) {
 
-		DkVector c = rect.getCenter();
-		double angle = (DkVector(posGrab)-c).angle(DkVector(event->pos())-c);
-		QPolygonF p = rect.getPoly();
+		QVector2D c(rect.getCenter());
+		QVector2D xt(posGrab);
+		QVector2D xn(event->pos());
 
-
-		// TODO: we must do the rotating faster...
-		rTform.translate(-c.x, -c.y);
-		p = rTform.map(p); 
-		rTform.rotateRadians(angle);
-		p = rTform.map(p);
-		rTform.translate(c.x, c.y);
-		p = rTform.map(p);
-		rect.setPoly(p);
+		// compute the direction vector;
+		xt = c-xt;
+		xn = c-xn;
 		
-		rTform.reset();
+		// compute the angle of the direction vectors
+		double angle = std::acos(QVector2D::dotProduct(xt, xn)/(xt.length()*xn.length()));
+	
+		// TODO: quadrant estimation
+		//// direction vector for quadrant estimation
+		//QVector2D dir = xn - xt;
+					
+
+		if (!tTform.isTranslating())
+			tTform.translate(-c.x(), -c.y());
+		rTform.rotateRadians(angle);
+
+		////if (!rTform.isTranslating())
+		//	rTform.translate(c.x(), c.y());
+		
 		update();
+		posGrab = event->pos();
 	}
 
 	//qDebug() << "edit rect mouse move";
@@ -3443,6 +3457,15 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
 	state = do_nothing;
-	rect.setPoly(rTform.map(rect.getPoly()));
+
+	// apply transform
+	QPolygonF p = rect.getClosedPoly();
+	p = tTform.map(p);
+	p = rTform.map(p); 
+	p = tTform.inverted().map(p);
+	rect.setPoly(p);
+
 	rTform.reset();	
+	tTform.reset();
+	update();
 }
