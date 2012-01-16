@@ -3339,12 +3339,13 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
-DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
 	this->parent = parent;
 	this->rect = rect;
 
 	setAttribute(Qt::WA_MouseTracking);
+	setFocus(Qt::ActiveWindowFocusReason);
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
 	brush = QColor(0, 0, 0, 90);
@@ -3386,8 +3387,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 
 // make events callable
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
-
-
+	
 	if (rect.isEmpty()) {
 		state = initializing;
 		rect.setAllCorners(event->posF());
@@ -3401,6 +3401,10 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	posGrab = event->pos();
 	qDebug() << "mousepress edit rect";
+	
+	// we should not need to do this?!
+	setFocus(Qt::ActiveWindowFocusReason);
+
 
 	QWidget::mousePressEvent(event);
 }
@@ -3468,4 +3472,24 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 	rTform.reset();	
 	tTform.reset();
 	update();
+}
+
+void DkEditableRect::keyPressEvent(QKeyEvent *event) {
+
+	QWidget::keyPressEvent(event);
+}
+
+void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
+
+	if (event->key() == Qt::Key_Escape)
+		emit visibleSignal(false);
+	else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+		emit enterPressedSignal(rect);
+		emit visibleSignal(false);
+		qDebug() << " enter pressed";
+	}
+
+	qDebug() << "key pressed rect";
+
+	QWidget::keyPressEvent(event);
 }

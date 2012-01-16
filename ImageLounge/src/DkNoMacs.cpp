@@ -481,7 +481,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_crop]->setStatusTip(tr("cut the current image"));
 	editActions[menu_edit_crop]->setCheckable(true);
 	editActions[menu_edit_crop]->setChecked(false);
-	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp, SLOT(cropImage(bool)));
+	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp, SLOT(toggleCropImageWidget(bool)));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);

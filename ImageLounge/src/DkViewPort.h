@@ -226,7 +226,8 @@ public slots:
 	void loadLena();
 	void unloadImage();
 	void fileNotLoaded(QFileInfo file);
-	void cropImage(bool croping);
+	void toggleCropImageWidget(bool croping);
+	void cropImage(DkRotatingRect rect);
 
 	virtual void setImage(QImage newImg);
 

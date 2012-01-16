@@ -1089,6 +1089,29 @@ public:
 		return ((c2-c1)*0.5f + c1).getQPointF();
 	};
 
+	void getTransform(QTransform& tForm, QPointF& size) {
+
+		if (rect.size() < 3)
+			return;
+
+		QPointF upperLeft = QPointF(FLT_MAX, FLT_MAX);
+		for (int idx = 0; idx < rect.size(); idx++) {
+			
+			if (rect[idx].y() <= upperLeft.y() && rect[idx].x() < upperLeft.x())
+				upperLeft = rect[idx];
+		}
+
+		DkVector xV = rect[2] - rect[1];
+		DkVector yV = rect[1] - rect[0];
+		
+		tForm.translate(upperLeft.x(), upperLeft.y());
+		tForm.rotate(min(xV.angle(), yV.angle()));
+
+		size = QPointF(xV.norm(), yV.norm());
+
+	};
+
+
 protected:
 
 	virtual std::ostream& put(std::ostream& s) {
@@ -1103,7 +1126,7 @@ protected:
 	QPolygonF rect;
 };
 
-class DkEditableRect : public QWidget {
+class DkEditableRect : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -1118,11 +1141,18 @@ public:
 
 	DkEditableRect(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkEditableRect() {};
-	
+
+signals:
+	void enterPressedSignal(DkRotatingRect cropArea);
+	void visibleSignal(bool isEsc);
+
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
+	void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent *event);
+
 
 	void paintEvent(QPaintEvent *event);
 

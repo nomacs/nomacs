@@ -1135,6 +1135,8 @@ void DkViewPort::keyPressEvent(QKeyEvent* event) {
 		update();
 	}
 
+	qDebug() << "key pressed viewport...";
+
 	DkBaseViewPort::keyPressEvent(event);
 }
 
@@ -1555,20 +1557,54 @@ void DkViewPort::setBottomInfo(QString msg, int time) {
 	update();
 }
 
-void DkViewPort::cropImage(bool croping) {
+void DkViewPort::toggleCropImageWidget(bool croping) {
 
 	if (croping) {
 		editRect = new DkEditableRect(QRectF(), this);
+
 		editRect->resize(width(), height());
 		editRect->show();
+
+		connect(editRect, SIGNAL(visibleSignal(bool)), this, SLOT(toggleCropImageWidget(bool)));
+		connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), this, SLOT(cropImage(DkRotatingRect)));
+
 	}
 	else if (editRect) {
 		editRect->hide();
-		delete editRect;		// check that -> heap corruption!
+		delete editRect;
 		editRect = 0;
 	}
 
 	isCropActive = croping;
+}
+
+void DkViewPort::cropImage(DkRotatingRect rect) {
+
+
+	QTransform tForm; 
+	QPointF cImgSize;
+
+	rect.getTransform(tForm, cImgSize);
+
+	qDebug() << "img size: " << cImgSize;
+
+	cImgSize = cImgSize/imgMatrix.m11();
+	qDebug() << "img size: " << cImgSize;
+
+	QImage img = QImage(cImgSize.x(), cImgSize.y(), imgQt.format());
+
+	QPainter painter(&img);
+	painter.setWorldTransform(tForm, true);
+	painter.setWorldTransform(imgMatrix.inverted());
+
+	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
+	painter.end();
+
+	setImage(img);
+	//imgQt = img;
+	update();
+
+	qDebug() << "croping...";
 }
 
 void DkViewPort::printImage() {
