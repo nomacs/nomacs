@@ -3312,7 +3312,7 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 
 	WCHAR* wDirName = new WCHAR[winPath.length()];
 	
-	//// TODO: for CMakeLists.txt:
+	//// CMakeLists.txt:
 	//// if compile error that toWCharArray is not recognized:
 	//// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
 	int dirLength = winPath.toWCharArray(wDirName);
@@ -3350,9 +3350,11 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	setFocus(Qt::ActiveWindowFocusReason);
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
+	pen.setCosmetic(true);
 	brush = QColor(0, 0, 0, 90);
 
 	state = do_nothing;
+	worldTform = 0;
 	qDebug() << "my size: " << geometry();
 		
 }
@@ -3374,7 +3376,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 
 	// now draw
 	QPainter painter(this);
-	//painter.setWorldTransform(rTform);
+	if (worldTform)
+		painter.setWorldTransform(*worldTform);
 	//painter.setViewTransformEnabled(!rTform.isRotating());
 
 	painter.setPen(pen);
@@ -3392,7 +3395,8 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 	
 	if (rect.isEmpty()) {
 		state = initializing;
-		rect.setAllCorners(event->posF());
+		QPointF posM = (worldTform) ? worldTform->inverted().map(event->posF()) : event->posF();
+		rect.setAllCorners(posM);
 	}
 	else if (rect.getPoly().containsPoint(event->pos(), Qt::OddEvenFill)) {
 		state = moving;
@@ -3417,13 +3421,15 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		return;
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
-		rect.updateCorner(2, event->posF(), false);
+		QPointF posM = (worldTform) ? worldTform->inverted().map(event->posF()) : event->posF();
+		rect.updateCorner(2, posM, false);
 		update();
 		//std::cout << rect << std::endl;
 	}
 	else if (state == moving && event->buttons() == Qt::LeftButton) {
 		
-		QPointF dxy = event->pos()-posGrab;
+		QPointF dxy = (event->pos()-posGrab);
+		if (worldTform)	dxy/worldTform->m11();
 		rTform.translate(dxy.x(), dxy.y());
 		posGrab = event->pos();
 		update();

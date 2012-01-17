@@ -1561,7 +1561,7 @@ void DkViewPort::toggleCropImageWidget(bool croping) {
 
 	if (croping) {
 		editRect = new DkEditableRect(QRectF(), this);
-
+		editRect->setWorldTransform(&worldMatrix);
 		editRect->resize(width(), height());
 		editRect->show();
 
@@ -1579,7 +1579,6 @@ void DkViewPort::toggleCropImageWidget(bool croping) {
 }
 
 void DkViewPort::cropImage(DkRotatingRect rect) {
-
 
 	QTransform tForm; 
 	QPointF cImgSize;

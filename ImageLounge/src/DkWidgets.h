@@ -1142,6 +1142,12 @@ public:
 	DkEditableRect(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkEditableRect() {};
 
+	void setWorldTransform(QTransform *worldTform) {
+		qDebug() << "world transform updated..." << worldTform;
+		this->worldTform = worldTform;
+		//update();
+	};
+
 signals:
 	void enterPressedSignal(DkRotatingRect cropArea);
 	void visibleSignal(bool isEsc);
@@ -1158,6 +1164,7 @@ protected:
 
 	int state;
 
+	QTransform *worldTform;
 	QTransform tTform;
 	QTransform rTform;
 	QPointF posGrab;
