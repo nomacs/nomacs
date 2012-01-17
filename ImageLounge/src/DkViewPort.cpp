@@ -616,7 +616,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	DkMetaData md = loader->getMetaData();
 	QString dateString = QString::fromStdString(md.getExifValue("DateTimeOriginal"));
-	fileInfoLabel->updateInfo(QFileInfo(), dateString, md.getRating());
+	fileInfoLabel->updateInfo(loader->getFile(), dateString, md.getRating());
 
 	if (centerLabel) centerLabel->stop();
 	if (bottomLabel) bottomLabel->stop();

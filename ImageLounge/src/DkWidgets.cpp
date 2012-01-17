@@ -1298,26 +1298,28 @@ void DkFileInfoLabel::updateTitle(const QFileInfo& file) {
 
 void DkFileInfoLabel::updateDate(const QString& date) {
 
-	// convert date
-	QString dateConverted;
-	QStringList dateSplit = date.split(QRegExp("[: \t]"));
+	//// convert date
+	//QString dateConverted;
+	//QStringList dateSplit = date.split(QRegExp("[/: \t]"));
 
-	if (date.size() >= 3) {
+	//if (dateSplit.size() >= 3) {
 
-		QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
-		dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
+	//	QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
+	//	dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
 
-		if (date.size() >= 6) {
-			QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
-			dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
-		}
-	}
-	else if (file.exists()) {
-		QDateTime dateCreated = file.created();
-		dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
-	}
-	else
-		dateConverted = "unknown date";
+	//	if (dateSplit.size() >= 6) {
+	//		QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
+	//		dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
+	//	}
+	//}
+	//else if (file.exists()) {
+	//	QDateTime dateCreated = file.created();
+	//	dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
+	//}
+	//else
+	//	dateConverted = "unknown date";
+
+	QString dateConverted = DkUtils::convertDate(date, file);
 
 	this->date->setText(dateConverted, -1);
 	this->date->setAlignment(Qt::AlignRight);

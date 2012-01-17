@@ -260,17 +260,17 @@ public:
 		return stringify(rounded/std::pow(10,n));
 	};
 
-	static QString convertDate(QString& date, const QFileInfo& file = QFileInfo()) {
+	static QString convertDate(const QString& date, const QFileInfo& file = QFileInfo()) {
 		// convert date
 		QString dateConverted;
-		QStringList dateSplit = date.split(QRegExp("[: \t]"));
+		QStringList dateSplit = date.split(QRegExp("[/: \t]"));
 
-		if (date.size() >= 3) {
+		if (dateSplit.size() >= 3) {
 
 			QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
 			dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
 
-			if (date.size() >= 6) {
+			if (dateSplit.size() >= 6) {
 				QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
 				dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
 			}

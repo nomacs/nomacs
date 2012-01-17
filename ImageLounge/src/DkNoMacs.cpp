@@ -1651,8 +1651,8 @@ QVector <QAction* > DkNoMacs::getSyncActions() {
 
 void DkNoMacs::setWindowTitle(QFileInfo file, QSize size) {
 
-	// tell the viewport
-	viewport()->setTitleLabel(file, -1);
+	////  do not tell the viewport (he should know it)
+	//viewport()->setTitleLabel(file, -1);
 
 	QString title = file.fileName();
 
