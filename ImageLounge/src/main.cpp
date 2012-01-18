@@ -65,7 +65,17 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
 
+
+#ifdef  Q_WS_MAC
+	//! \warning	this is somehow embarrassing but
+	//				even though the DkNomacsApp does not do anything
+	//				but calling the QApplication on windows/linux
+	//				it causes a segmentation fault in QMenuBar.
+	//				Thus, we call QApplication for these systems
 	DkNoMacsApp a(argc, argv);
+#else
+	QApplication a(argc, argv);
+#endif
 
 	DkNoMacs* w;
 
