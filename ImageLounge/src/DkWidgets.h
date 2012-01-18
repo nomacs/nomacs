@@ -1117,8 +1117,10 @@ protected:
 	virtual std::ostream& put(std::ostream& s) {
 
 		s << "DkRotatingRect: ";
-		for (int idx = 0; idx < rect.size(); idx++)
-			s << DkVector(rect[idx]) << ", ";
+		for (int idx = 0; idx < rect.size(); idx++) {
+			DkVector vec = DkVector(rect[idx]);
+			s << vec << ", ";
+		}
 
 		return s;
 	};
