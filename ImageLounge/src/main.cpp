@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 	//				Thus, we call QApplication for these systems
 	DkNoMacsApp a(argc, argv);
 #else
-	QApplication a(argc, NULL);
+	QApplication a(argc, (char**)argv);
 #endif
 
 	QStringList args = a.arguments();
