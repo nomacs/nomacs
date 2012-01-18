@@ -1617,7 +1617,7 @@ void DkViewPort::printImage() {
 	if (dialog->exec() != QDialog::Accepted)
 		return;
 
-	printf("%i x %i\n", printer.pageRect(QPrinter::Inch).height(), printer.pageRect(QPrinter::Inch).width());
+	qDebug() << printer.pageRect(QPrinter::Inch).height() << " x " << printer.pageRect(QPrinter::Inch).width();
 
 	// TODO: not that stupid...
 	QPainter painter(&printer);
