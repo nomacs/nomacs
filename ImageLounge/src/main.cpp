@@ -42,17 +42,11 @@
 
 //#include <QFile>
 
-
+#ifdef WIN32
+int main(int argc, wchar_t *argv[]) {
+#else
 int main(int argc, char *argv[]) {
-
-	//// DEBUG --------------------------------------------------------------------
-	printf("number of arguments: %i\n", argc);
-
-	for (int idx = 0; idx < argc; idx++)
-		printf("%s\n", argv[idx]);
-
-	//DkUtils::setDebug(DK_DEBUG_A);
-	//// DEBUG --------------------------------------------------------------------
+#endif
 
 #ifdef linux
 	QApplication::setGraphicsSystem("raster");
@@ -74,20 +68,28 @@ int main(int argc, char *argv[]) {
 	//				Thus, we call QApplication for these systems
 	DkNoMacsApp a(argc, argv);
 #else
-	QApplication a(argc, argv);
+	QApplication a(argc, NULL);
 #endif
 
+	QStringList args = a.arguments();
 	DkNoMacs* w;
 
-	if (argc > 2 && !std::string(argv[2]).compare("1")) {
+	// DEBUG --------------------------------------------------------------------
+	qDebug() << "input arguments:";
+	for (int idx = 0; idx < args.size(); idx++)
+		qDebug() << args[idx];
+	qDebug() << "\n";
+	// DEBUG --------------------------------------------------------------------
+
+	if (args.size() > 2 && !args[2].compare("1")) {
 		w = static_cast<DkNoMacs*> (new DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
 	}
 	else
 		w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it
 
-	if (argc > 1)
-		w->viewport()->loadFile(QFileInfo(argv[1]), true, true);	// update folder + be silent
+	if (args.size() > 1)
+		w->viewport()->loadFile(QFileInfo(args[1]), true, true);	// update folder + be silent
 #ifdef Q_WS_MAC
 	QObject::connect(&a, SIGNAL(loadFile(const QFileInfo&)),
 	                 w->viewport(), SLOT(loadFile(const QFileInfo&)));

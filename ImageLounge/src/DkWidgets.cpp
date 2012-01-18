@@ -3312,9 +3312,9 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 
 	WCHAR* wDirName = new WCHAR[winPath.length()];
 	
-	//// CMakeLists.txt:
-	//// if compile error that toWCharArray is not recognized:
-	//// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
+	// CMakeLists.txt:
+	// if compile error that toWCharArray is not recognized:
+	// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
 	int dirLength = winPath.toWCharArray(wDirName);
 	wDirName[dirLength] = L'\0';	// append null character
 
