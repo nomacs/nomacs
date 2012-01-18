@@ -1150,6 +1150,11 @@ public:
 		//update();
 	};
 
+	void setImageTransform(QTransform *imgTform) {
+
+		this->imgTform = imgTform;
+	};
+
 signals:
 	void enterPressedSignal(DkRotatingRect cropArea);
 	void visibleSignal(bool isEsc);
@@ -1160,12 +1165,15 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
-
-
+	
 	void paintEvent(QPaintEvent *event);
+
+	QPointF map(const QPointF &posM);
+
 
 	int state;
 
+	QTransform *imgTform;
 	QTransform *worldTform;
 	QTransform tTform;
 	QTransform rTform;

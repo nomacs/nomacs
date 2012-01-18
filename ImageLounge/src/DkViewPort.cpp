@@ -1562,6 +1562,7 @@ void DkViewPort::toggleCropImageWidget(bool croping) {
 	if (croping) {
 		editRect = new DkEditableRect(QRectF(), this);
 		editRect->setWorldTransform(&worldMatrix);
+		editRect->setImageTransform(&imgMatrix);
 		editRect->resize(width(), height());
 		editRect->show();
 
@@ -1592,9 +1593,10 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	QImage img = QImage(cImgSize.x(), cImgSize.y(), imgQt.format());
 
+	// TODO: correct transform -> we need to assign the translation
 	QPainter painter(&img);
-	painter.setWorldTransform(tForm, true);
-	painter.setWorldTransform(imgMatrix.inverted());
+	painter.setWorldTransform(tForm.inverted(), true);
+	painter.setWorldTransform(imgMatrix.inverted(), true);
 
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();

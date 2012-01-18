@@ -3355,8 +3355,18 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 
 	state = do_nothing;
 	worldTform = 0;
+	imgTform = 0;
 	qDebug() << "my size: " << geometry();
 		
+}
+
+QPointF DkEditableRect::map(const QPointF &pos) {
+
+	QPointF posM = pos;
+	if (worldTform) posM = worldTform->inverted().map(posM);
+	if (imgTform)	posM = imgTform->inverted().map(posM);
+	
+	return posM;
 }
 
 void DkEditableRect::paintEvent(QPaintEvent *event) {
@@ -3365,13 +3375,13 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	QPainterPath path;
 	QRectF canvas = QRectF(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
 	path.addRect(canvas);
-
-
+	
 	// TODO: we must do the rotating faster...
 	QPolygonF p = rect.getClosedPoly();
 	p = tTform.map(p);
 	p = rTform.map(p); 
 	p = tTform.inverted().map(p);
+	if (imgTform) p = imgTform->map(p);
 	path.addPolygon(p);
 
 	// now draw
@@ -3393,19 +3403,20 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 // make events callable
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 	
+
+	posGrab = map(event->posF());
+
 	if (rect.isEmpty()) {
 		state = initializing;
-		QPointF posM = (worldTform) ? worldTform->inverted().map(event->posF()) : event->posF();
-		rect.setAllCorners(posM);
+		rect.setAllCorners(posGrab);
 	}
-	else if (rect.getPoly().containsPoint(event->pos(), Qt::OddEvenFill)) {
+	else if (rect.getPoly().containsPoint(posGrab, Qt::OddEvenFill)) {
 		state = moving;
 	}
 	else {
 		state = rotating;
 	}
 
-	posGrab = event->pos();
 	qDebug() << "mousepress edit rect";
 	
 	// we should not need to do this?!
@@ -3418,27 +3429,27 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	if (event->buttons() != Qt::LeftButton)
-		return;
+		return QWidget::mouseMoveEvent(event);
+	
+	QPointF posM = map(event->posF());
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
-		QPointF posM = (worldTform) ? worldTform->inverted().map(event->posF()) : event->posF();
 		rect.updateCorner(2, posM, false);
 		update();
 		//std::cout << rect << std::endl;
 	}
 	else if (state == moving && event->buttons() == Qt::LeftButton) {
 		
-		QPointF dxy = (event->pos()-posGrab);
-		if (worldTform)	dxy/worldTform->m11();
+		QPointF dxy = posM-posGrab;
 		rTform.translate(dxy.x(), dxy.y());
-		posGrab = event->pos();
+		posGrab = posM;
 		update();
 	}
 	else if (state == rotating && event->buttons() == Qt::LeftButton) {
 
 		QVector2D c(rect.getCenter());
 		QVector2D xt(posGrab);
-		QVector2D xn(event->pos());
+		QVector2D xn(posM);
 
 		// compute the direction vector;
 		xt = c-xt;
@@ -3451,7 +3462,6 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		//// direction vector for quadrant estimation
 		//QVector2D dir = xn - xt;
 					
-
 		if (!tTform.isTranslating())
 			tTform.translate(-c.x(), -c.y());
 		rTform.rotateRadians(angle);
@@ -3460,7 +3470,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		//	rTform.translate(c.x(), c.y());
 		
 		update();
-		posGrab = event->pos();
+		posGrab = posM;
 	}
 
 	//qDebug() << "edit rect mouse move";

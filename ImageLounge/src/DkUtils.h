@@ -56,7 +56,6 @@ using namespace cv;
 //#define int64 long long;
 #define CV_PI 3.141592653589793238462643383279
 
-
 #endif
 
 enum morphTypes {DK_ERODE=0, DK_DILATE};
