@@ -182,9 +182,7 @@ IF (${COMPILEWITHOPENCV})
 				SET(OpenCV_LIBRARIES optimized opencv_core231.lib opencv_imgproc231.lib debug opencv_core231d.lib opencv_imgproc231d.lib)
 				
 				SET(OpenCV_FOUND true)
-				SET(OpenCV_VERSION_MAJOR 2)
-				SET(OpenCV_VERSION_MINOR 3)
-				SET(OpenCV_VERSION_PATCH 1)				
+				SET(OpenCV_VERSION "2.3.1")
 			ELSE()
 					message(WARNING "OpenCV include dir  not found")		
 			ENDIF()
@@ -214,12 +212,10 @@ IF (${COMPILEWITHOPENCV})
 	endif (APPLE)
 
 	# lanczos interpolation is not integrated in opencv 2.1 - all other things work
-	IF(OpenCV_VERSION_MAJOR EQUAL 2)
-		IF(OpenCV_VERSION_MINOR EQUAL 1)
-			add_definitions(-DDISABLE_LANCZOS)
-		ENDIF()
+	IF(${OpenCV_VERSION} EQUAL "2.1.0")
+		add_definitions(-DDISABLE_LANCZOS)
 	ENDIF()
-	
+
 ENDIF()
 	
 include_directories (
