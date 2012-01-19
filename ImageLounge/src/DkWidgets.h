@@ -903,6 +903,8 @@ protected:
 	QLinearGradient rightGradient;
 
 	QMap<int, int> mapIptcExif;
+	QStringList exposureModes;
+	QMap<int, QString> flashModes;
 
 };
 

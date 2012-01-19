@@ -1802,6 +1802,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, f
 	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 	vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
+	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 
 	initLanClient();
 	qDebug() << "lan client initialized...";

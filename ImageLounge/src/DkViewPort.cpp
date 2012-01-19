@@ -1530,6 +1530,11 @@ DkFileInfoLabel* DkViewPort::getFileInfoWidget() {
 	return fileInfoLabel;
 }
 
+DkEditableRect* DkViewPort::getEditableRect() {
+
+	return editRect;
+}
+
 void DkViewPort::setInfo(QString msg, int time, int location) {
 
 	if (location == DkInfoLabel::center_label && centerLabel)
@@ -1601,18 +1606,13 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	// TODO: correct transform -> we need to assign the translation
 	QPainter painter(&img);
-	painter.setBackground(QColor(0,0,0));
+	painter.setBackground(QColor(0,0,0,0));
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	//painter.setWorldTransform(imgScale.inverted(), true);
 	painter.setWorldTransform(tForm, true);
 
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();
-
-
-
-
-
 
 	setImage(img);
 	//imgQt = img;

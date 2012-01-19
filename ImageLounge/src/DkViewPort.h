@@ -171,6 +171,7 @@ public:
 	DkMetaDataInfo* getMetaDataWidget();
 	DkFilePreview* getFilePreview();
 	DkFileInfoLabel* getFileInfoWidget();
+	DkEditableRect* getEditableRect();
 	bool isTestLoaded() { return testLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
 		this->visibleStatusbar = visibleStatusbar;

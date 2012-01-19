@@ -2344,6 +2344,45 @@ void DkMetaDataInfo::init() {
 	camDTags = DkMetaDataSettingsWidget::scamDataDesc.split(";");
 	descTags = DkMetaDataSettingsWidget::sdescriptionDesc.split(";");
 
+	exposureModes.append("not defined");
+	exposureModes.append("manual");
+	exposureModes.append("normal");
+	exposureModes.append("aperture priority");
+	exposureModes.append("shutter priority");
+	exposureModes.append("program creative");
+	exposureModes.append("high-speed program");
+	exposureModes.append("portrait mode");
+	exposureModes.append("landscape mode");
+
+	// flash mapping is taken from: http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Flash
+	flashModes.insert(0x0, "No Flash");
+	flashModes.insert(0x1, "Fired");
+	flashModes.insert(0x5, "Fired, Return not detected");
+	flashModes.insert(0x7, "Fired, Return detected");
+	flashModes.insert(0x8, "On, Did not fire");
+	flashModes.insert(0x9, "On, Fired");
+	flashModes.insert(0xd, "On, Return not detected");
+	flashModes.insert(0xf, "On, Return detected");
+	flashModes.insert(0x10, "Off, Did not fire");
+	flashModes.insert(0x14, "Off, Did not fire, Return not detected");
+	flashModes.insert(0x18, "Auto, Did not fire");
+	flashModes.insert(0x19, "Auto, Fired");
+	flashModes.insert(0x1d, "Auto, Fired, Return not detected");
+	flashModes.insert(0x1f, "Auto, Fired, Return detected");
+	flashModes.insert(0x20, "No flash function");
+	flashModes.insert(0x30, "Off, No flash function");
+	flashModes.insert(0x41, "Fired, Red-eye reduction");
+	flashModes.insert(0x45, "Fired, Red-eye reduction, Return not detected");
+	flashModes.insert(0x47, "Fired, Red-eye reduction, Return detected");
+	flashModes.insert(0x49, "On, Red-eye reduction");
+	flashModes.insert(0x4d, "On, Red-eye reduction, Return not detected");
+	flashModes.insert(0x4f, "On, Red-eye reduction, Return detected");
+	flashModes.insert(0x50, "Off, Red-eye reduction");
+	flashModes.insert(0x58, "Auto, Did not fire, Red-eye reduction");
+	flashModes.insert(0x59, "Auto, Fired, Red-eye reduction");
+	flashModes.insert(0x5d, "Auto, Fired, Red-eye reduction, Return not detected");
+	flashModes.insert(0x5f, "Auto, Fired, Red-eye reduction, Return detected");
+
 	worldMatrix = QTransform();
 
 	if (camDTags.size() != DkMetaDataSettingsWidget::camData_end)
@@ -2611,8 +2650,23 @@ void DkMetaDataInfo::readTags() {
 					}
 					else if (i == DkMetaDataSettingsWidget::camData_size) {	
 						Value = QString::number(imgSize.width()) + " x " + QString::number(imgSize.height());
+					}
+					else if (i == DkMetaDataSettingsWidget::camData_exposuremode) {
+						qDebug() << "exposure mode was found";
+						Value = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						int mode = Value.toInt();
 
-					} else {
+						if (mode >= 0 && mode < exposureModes.size())
+							Value = exposureModes[mode];
+						
+					} 
+					else if (i == DkMetaDataSettingsWidget::camData_flash) {
+
+						Value = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						unsigned int mode = Value.toUInt();
+						Value = flashModes[mode];
+					}
+					else {
 						//tag size -> search for width and Length
 						//tmp = QString(metaData.getExifValue("ImageWidth").c_str());
 						//if (!tmp.compare("")) tmp = "X";
@@ -3463,27 +3517,15 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		// compute the direction vector;
 		xt = c-xt;
 		xn = c-xn;
-		//rv = c-xn;
-		
-		// compute the angle of the direction vectors
-		//double angle = std::acos(QVector2D::dotProduct(xt, xn)/(xt.length()*xn.length()));
-	
 		double angle = xn.angle() - xt.angle();
 
-		//qDebug() << "xt: " << xt;
-		qDebug() << "xn: " << " angle: " << angle*DK_RAD2DEG;
 
+		// just rotate in CV_PI*0.25 steps if shift is pressed
 		if (event->modifiers() == Qt::ShiftModifier) {
-			qDebug() << "shift modifier";
 			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
 			angle -= angleRound;
 		}
-
-
-		// TODO: quadrant estimation
-		//// direction vector for quadrant estimation
-		//QVector2D dir = xn - xt;
-					
+			
 		if (!tTform.isTranslating())
 			tTform.translate(-c.x, -c.y);
 		
@@ -3520,11 +3562,12 @@ void DkEditableRect::keyPressEvent(QKeyEvent *event) {
 void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 
 	if (event->key() == Qt::Key_Escape)
-		//emit visibleSignal(false);
 		hide();
 	else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-		emit enterPressedSignal(rect);
-		//emit visibleSignal(false);
+		
+		if (!rect.isEmpty())
+			emit enterPressedSignal(rect);
+
 		hide();
 		qDebug() << " enter pressed";
 	}
