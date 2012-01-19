@@ -2196,7 +2196,11 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 		case ipl_area:		ipl = CV_INTER_AREA; break;
 		case ipl_linear:	ipl = CV_INTER_LINEAR; break;
 		case ipl_cubic:		ipl = CV_INTER_CUBIC; break;
+#ifdef DISABLE_LANCZOS
+		case ipl_lanczos:	ipl = CV_INTER_CUBIC; break;
+#else
 		case ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
+#endif
 	}
 
 	Mat resizeImage = DkImage::qImage2Mat(img);
