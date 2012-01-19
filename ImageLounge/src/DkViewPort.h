@@ -172,7 +172,9 @@ public:
 	DkFilePreview* getFilePreview();
 	DkFileInfoLabel* getFileInfoWidget();
 	bool isTestLoaded() { return testLoaded; };
-	void setVisibleStatusbar(bool visibleStatusbar) {this->visibleStatusbar = visibleStatusbar;};
+	void setVisibleStatusbar(bool visibleStatusbar) {
+		this->visibleStatusbar = visibleStatusbar; 
+		qDebug() << "visible statusbar (viewport): " << visibleStatusbar;};
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);

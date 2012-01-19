@@ -1185,6 +1185,12 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
+	if (visibleStatusbar)
+		getPixelInfo(event->pos());
+
+	if (visibleStatusbar)
+		qDebug() << "visible statusbar...";
+
 	if (worldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
 
 		QPointF cPos = event->pos();
@@ -1269,6 +1275,8 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	if (imgQt.hasAlphaChannel())
 		msg = msg % " a: " % QString::number(col.alpha());
+
+	qDebug() << msg;
 
 	emit statusInfoSignal(msg);
 
@@ -1593,10 +1601,16 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	QImage img = QImage(cImgSize.x(), cImgSize.y(), imgQt.format());
 
+	//tForm.scale(1.0f/imgMatrix.m11(), 1.0f/imgMatrix.m12());
+
+	QTransform imgScale;
+	imgScale.scale(imgMatrix.m11(), imgMatrix.m11());
+
 	// TODO: correct transform -> we need to assign the translation
 	QPainter painter(&img);
-	painter.setWorldTransform(tForm.inverted(), true);
-	painter.setWorldTransform(imgMatrix.inverted(), true);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
+	painter.setWorldTransform(imgScale.inverted(), true);
+	painter.setWorldTransform(tForm, true);
 
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();

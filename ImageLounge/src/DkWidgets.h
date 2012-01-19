@@ -1103,9 +1103,11 @@ public:
 
 		DkVector xV = rect[2] - rect[1];
 		DkVector yV = rect[1] - rect[0];
-		
-		tForm.translate(upperLeft.x(), upperLeft.y());
-		tForm.rotate(min(xV.angle(), yV.angle()));
+
+		tForm.translate(-upperLeft.x(), -upperLeft.y());
+		tForm.rotate(xV.angle()*DK_RAD2DEG);
+
+		qDebug() << "rotating angle: " << xV.angle();
 
 		size = QPointF(xV.norm(), yV.norm());
 

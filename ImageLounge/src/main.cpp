@@ -68,6 +68,8 @@ int main(int argc, char *argv[]) {
 	//				Thus, we call QApplication for these systems
 	DkNoMacsApp a(argc, argv);
 #else
+
+	// the cast (char**) is just relevant for Windows (otherwise it is char** anyway)
 	QApplication a(argc, (char**)argv);
 #endif
 

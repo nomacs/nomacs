@@ -1566,6 +1566,7 @@ void DkNoMacs::showStatusBar(bool show) {
 		statusbar->hide();
 
 	viewport()->setVisibleStatusbar(show);
+	qDebug() << "visible statusbar (nomacs) " << show;
 }
 
 void DkNoMacs::showStatusMessage(QString msg) {
@@ -1777,8 +1778,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, f
 	setAcceptDrops(true);
 	setMouseTracking (true);	//receive mouse event everytime
 
-	vp->setVisibleStatusbar(statusbar->isVisible());
-
 	updater = new DkUpdater();
 	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
 	if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
@@ -1970,6 +1969,8 @@ void DkNoMacsIpl::clientInitialized() {
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 	: DkNoMacs(parent, flags) {
 
+		setObjectName("DkNoMacsFrameless");
+		
 		setWindowFlags(Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
 
@@ -2003,14 +2004,14 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 
 		// in frameless, you cannot control if menu is visible...
 		viewActions[menu_view_show_menu]->setEnabled(false);
-		menu->setTimeToShow(5000);
+		viewActions[menu_view_show_statusbar]->setEnabled(false);
+		viewActions[menu_view_show_statusbar]->setChecked(false);
+		viewActions[menu_view_show_toolbar]->setChecked(false);
 		
+		menu->setTimeToShow(5000);
 		menu->hide();
-		toolbar->hide();
-		statusbar->hide();
 		show();
-		setObjectName("DkNoMacsFrameless");
-
+		
 		vp->addStartActions(fileActions[menu_file_open]);
 		vp->addStartActions(fileActions[menu_file_open_dir]);
 
