@@ -469,8 +469,14 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	bottomRightLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_right_label);
 	topLeftLabel = new DkInfoLabel(this, "", DkInfoLabel::top_left_label);
 	fileInfoLabel = new DkFileInfoLabel(this);
-	editRect = 0;
 
+	// cropping
+	editRect = new DkEditableRect(QRectF(), this);
+	editRect->setWorldTransform(&worldMatrix);
+	editRect->setImageTransform(&imgMatrix);
+	
+	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), this, SLOT(cropImage(DkRotatingRect)));
+	
 	// wheel label
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
 	wheelButton = new QLabel(this);
@@ -1188,9 +1194,6 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 	if (visibleStatusbar)
 		getPixelInfo(event->pos());
 
-	if (visibleStatusbar)
-		qDebug() << "visible statusbar...";
-
 	if (worldMatrix.m11() > 1 && event->buttons() == Qt::LeftButton) {
 
 		QPointF cPos = event->pos();
@@ -1275,8 +1278,6 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	if (imgQt.hasAlphaChannel())
 		msg = msg % " a: " % QString::number(col.alpha());
-
-	qDebug() << msg;
 
 	emit statusInfoSignal(msg);
 
@@ -1568,26 +1569,18 @@ void DkViewPort::setBottomInfo(QString msg, int time) {
 void DkViewPort::toggleCropImageWidget(bool croping) {
 
 	if (croping) {
-		editRect = new DkEditableRect(QRectF(), this);
-		editRect->setWorldTransform(&worldMatrix);
-		editRect->setImageTransform(&imgMatrix);
+		editRect->reset();
 		editRect->resize(width(), height());
 		editRect->show();
-
-		connect(editRect, SIGNAL(visibleSignal(bool)), this, SLOT(toggleCropImageWidget(bool)));
-		connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), this, SLOT(cropImage(DkRotatingRect)));
-
-	}
-	else if (editRect) {
-		editRect->hide();
-		delete editRect;
-		editRect = 0;
 	}
 
+	// TODO: delete
 	isCropActive = croping;
 }
 
 void DkViewPort::cropImage(DkRotatingRect rect) {
+
+	qDebug() << "cropping image...";
 
 	QTransform tForm; 
 	QPointF cImgSize;
@@ -1596,7 +1589,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	qDebug() << "img size: " << cImgSize;
 
-	cImgSize = cImgSize/imgMatrix.m11();
+	//cImgSize = cImgSize/imgMatrix.m11();
 	qDebug() << "img size: " << cImgSize;
 
 	QImage img = QImage(cImgSize.x(), cImgSize.y(), imgQt.format());
@@ -1608,12 +1601,18 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	// TODO: correct transform -> we need to assign the translation
 	QPainter painter(&img);
+	painter.setBackground(QColor(0,0,0));
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
-	painter.setWorldTransform(imgScale.inverted(), true);
+	//painter.setWorldTransform(imgScale.inverted(), true);
 	painter.setWorldTransform(tForm, true);
 
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();
+
+
+
+
+
 
 	setImage(img);
 	//imgQt = img;

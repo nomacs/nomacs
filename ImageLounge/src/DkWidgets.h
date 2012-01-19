@@ -1000,7 +1000,6 @@ public:
 		for (int idx = 1; idx < rect.size(); idx++) {
 			
 			if (lp != rect[idx]) {
-				qDebug() << "not empty...";
 				return false;
 			}
 			lp = rect[idx];
@@ -1089,27 +1088,51 @@ public:
 		return ((c2-c1)*0.5f + c1).getQPointF();
 	};
 
+	double getAngle() {
+		
+		// default upper left corner is 0
+		DkVector xV = rect[3] - rect[0];
+		return xV.angle();
+	};
+
 	void getTransform(QTransform& tForm, QPointF& size) {
 
-		if (rect.size() < 3)
+		if (rect.size() < 4)
 			return;
 
-		QPointF upperLeft = QPointF(FLT_MAX, FLT_MAX);
-		for (int idx = 0; idx < rect.size(); idx++) {
-			
-			if (rect[idx].y() <= upperLeft.y() && rect[idx].x() < upperLeft.x())
-				upperLeft = rect[idx];
-		}
-
-		DkVector xV = rect[2] - rect[1];
+		// default upper left corner is 0
+		DkVector xV = rect[3] - rect[0];
 		DkVector yV = rect[1] - rect[0];
 
-		tForm.translate(-upperLeft.x(), -upperLeft.y());
-		tForm.rotate(xV.angle()*DK_RAD2DEG);
-
-		qDebug() << "rotating angle: " << xV.angle();
-
+		QPointF ul = rect[0];
 		size = QPointF(xV.norm(), yV.norm());
+
+		double angle = xV.angle();
+		angle = DkMath::normAngleRad(angle, -CV_PI, CV_PI);
+
+		// switch width/height for /\ and \/ quadrants
+		if (abs(angle) > CV_PI*0.25 && abs(angle) < CV_PI*0.75) {
+			float x = size.x();
+			size.setX(size.y());
+			size.setY(x);
+		}
+
+		// invariance -> user does not want to make a difference between an upside down rect
+		if (angle > CV_PI*0.25 && angle < CV_PI*0.75) {
+			angle -= CV_PI*0.5;
+			ul = rect[1];
+		}
+		else if (angle > -CV_PI*0.75 && angle < -CV_PI*0.25) {
+			angle += CV_PI*0.5;
+			ul = rect[3];
+		}
+		else if (angle >= CV_PI*0.75 || angle <= -CV_PI*0.75) {
+			angle += CV_PI;
+			ul = rect[2];
+		}
+
+		tForm.rotateRadians(-angle);
+		tForm.translate(-ul.x(), -ul.y());
 
 	};
 
@@ -1146,6 +1169,8 @@ public:
 	DkEditableRect(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkEditableRect() {};
 
+	void reset();
+
 	void setWorldTransform(QTransform *worldTform) {
 		qDebug() << "world transform updated..." << worldTform;
 		this->worldTform = worldTform;
@@ -1159,7 +1184,7 @@ public:
 
 signals:
 	void enterPressedSignal(DkRotatingRect cropArea);
-	void visibleSignal(bool isEsc);
+	//void visibleSignal(bool isEsc);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);

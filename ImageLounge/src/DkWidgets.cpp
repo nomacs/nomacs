@@ -3364,6 +3364,11 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 		
 }
 
+void DkEditableRect::reset() {
+
+	rect = QRectF();
+}
+
 QPointF DkEditableRect::map(const QPointF &pos) {
 
 	QPointF posM = pos;
@@ -3451,30 +3456,41 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	}
 	else if (state == rotating && event->buttons() == Qt::LeftButton) {
 
-		QVector2D c(rect.getCenter());
-		QVector2D xt(posGrab);
-		QVector2D xn(posM);
+		DkVector c(rect.getCenter());
+		DkVector xt(posGrab);
+		DkVector xn(posM);
 
 		// compute the direction vector;
 		xt = c-xt;
 		xn = c-xn;
+		//rv = c-xn;
 		
 		// compute the angle of the direction vectors
-		double angle = std::acos(QVector2D::dotProduct(xt, xn)/(xt.length()*xn.length()));
+		//double angle = std::acos(QVector2D::dotProduct(xt, xn)/(xt.length()*xn.length()));
 	
+		double angle = xn.angle() - xt.angle();
+
+		//qDebug() << "xt: " << xt;
+		qDebug() << "xn: " << " angle: " << angle*DK_RAD2DEG;
+
+		if (event->modifiers() == Qt::ShiftModifier) {
+			qDebug() << "shift modifier";
+			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
+			angle -= angleRound;
+		}
+
+
 		// TODO: quadrant estimation
 		//// direction vector for quadrant estimation
 		//QVector2D dir = xn - xt;
 					
 		if (!tTform.isTranslating())
-			tTform.translate(-c.x(), -c.y());
+			tTform.translate(-c.x, -c.y);
+		
+		rTform.reset();
 		rTform.rotateRadians(angle);
 
-		////if (!rTform.isTranslating())
-		//	rTform.translate(c.x(), c.y());
-		
 		update();
-		posGrab = posM;
 	}
 
 	//qDebug() << "edit rect mouse move";
@@ -3504,10 +3520,12 @@ void DkEditableRect::keyPressEvent(QKeyEvent *event) {
 void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 
 	if (event->key() == Qt::Key_Escape)
-		emit visibleSignal(false);
+		//emit visibleSignal(false);
+		hide();
 	else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
 		emit enterPressedSignal(rect);
-		emit visibleSignal(false);
+		//emit visibleSignal(false);
+		hide();
 		qDebug() << " enter pressed";
 	}
 
