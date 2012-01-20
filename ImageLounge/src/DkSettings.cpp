@@ -73,7 +73,7 @@ QBitArray DkSettings::MetaDataSettings::metaDataBits = QBitArray(DkMetaDataSetti
 //QString DkMetaDataSettingsWidget::sdescriptionDesc = QString("&Rating;&User Comment;&Date Time;D&ate Time Original;&Image Description;&Creator;C&reator Title;") %
 //	QString("&City;C&ountry;&Headline;Ca&ption;Copy&right;Key&words");
 
-QString DkMetaDataSettingsWidget::scamDataDesc = QString("Image Size;Orientation;Make;Model;Aperture Value;Shutter Speed Value;Flash;Focal Length;") %
+QString DkMetaDataSettingsWidget::scamDataDesc = QString("Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;") %
 	QString("Exposure Mode;Exposure Time");
 
 QString DkMetaDataSettingsWidget::sdescriptionDesc = QString("Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;") %
@@ -239,7 +239,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_make] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_model] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_aperture] = true;
-	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
+	//DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = true;

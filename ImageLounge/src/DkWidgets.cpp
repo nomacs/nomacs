@@ -2284,7 +2284,7 @@ void DkResizeDialog::showEvent(QShowEvent *event) {
 //	QString("Iptc.Application2.Headline Iptc.Application2.Caption Iptc.Application2.Copyright Iptc.Application2.Keywords");
 //QString DkMetaDataInfo::sIptcDesc = QString("Creator;Creator Title;City;Country;Headline;Caption;Copyright;Keywords");
 
-QString DkMetaDataInfo::sCamDataTags = QString("ImageSize Orientation Make Model ApertureValue ShutterSpeedValue Flash FocalLength ") %
+QString DkMetaDataInfo::sCamDataTags = QString("ImageSize Orientation Make Model ApertureValue Flash FocalLength ") %
 	QString("ExposureMode ExposureTime");
 
 QString DkMetaDataInfo::sDescriptionTags = QString("Rating UserComment DateTime DateTimeOriginal ImageDescription Byline BylineTitle City Country ") %
@@ -2318,7 +2318,7 @@ void DkMetaDataInfo::init() {
 	mapIptcExif[DkMetaDataSettingsWidget::camData_make] = 0;
 	mapIptcExif[DkMetaDataSettingsWidget::camData_model] = 0;
 	mapIptcExif[DkMetaDataSettingsWidget::camData_aperture] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_shutterspeed] = 0;
+	//mapIptcExif[DkMetaDataSettingsWidget::camData_shutterspeed] = 0;
 	mapIptcExif[DkMetaDataSettingsWidget::camData_flash] = 0;
 	mapIptcExif[DkMetaDataSettingsWidget::camData_focallength] = 0;
 	mapIptcExif[DkMetaDataSettingsWidget::camData_exposuremode] = 0;

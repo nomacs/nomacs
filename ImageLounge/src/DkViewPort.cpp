@@ -1193,7 +1193,7 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
-	qDebug() << "mouse move (DkViewPort)";
+	//qDebug() << "mouse move (DkViewPort)";
 
 	if (visibleStatusbar)
 		getPixelInfo(event->pos());

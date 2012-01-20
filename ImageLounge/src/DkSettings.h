@@ -433,7 +433,7 @@ public:
 		camData_make,
 		camData_model,
 		camData_aperture,
-		camData_shutterspeed,
+		//camData_shutterspeed,
 		camData_flash,
 		camData_focallength,
 		camData_exposuremode,
