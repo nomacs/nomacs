@@ -2667,13 +2667,6 @@ void DkMetaDataInfo::readTags() {
 						Value = flashModes[mode];
 					}
 					else {
-						//tag size -> search for width and Length
-						//tmp = QString(metaData.getExifValue("ImageWidth").c_str());
-						//if (!tmp.compare("")) tmp = "X";
-						//tmp = tmp + " x ";
-						//Value = QString(metaData.getExifValue("ImageLength").c_str());
-						//if (!tmp.compare("")) Value = "X";
-						//Value = tmp + Value;
 						qDebug() << "size" << imgSize.width() << imgSize.height();
 						Value = QString(metaData.getExifValue(tmp.toStdString()).c_str());
 					}
@@ -3398,13 +3391,60 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 	return QPixmap();
 }
 
+// DkTransformRectangle --------------------------------------------------------------------
+DkTransformRect::DkTransformRect(int idx, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+
+	this->parentIdx = idx;
+	this->size = QSize(4, 4);
+
+	init();
+
+	this->resize(size);
+}
+
+void DkTransformRect::init() {
+
+	QTransform centerT;
+	centerT.translate(-size.width()*0.5f, -size.height()*0.5f);
+	poly = centerT.mapToPolygon(QRect(QPoint(), size));
+}
+
+QPolygonF DkTransformRect::map(QTransform *worldTform, QTransform *rTform) {
+
+	// we want to map the rects' positions but not their size...
+	QPointF tP = geometry().topLeft();
+	if (worldTform) tP = worldTform->map(tP);
+
+	QTransform tTform;
+	tTform.translate(tP.x(), tP.y());
+
+	QPolygonF p = poly;
+
+	if (rTform)
+		p = rTform->map(p);
+	p = tTform.map(p);
+
+	return p;
+}
+
+void DkTransformRect::draw(QPainter *painter, QTransform *worldTform, QTransform *rTform) {
+
+
+	painter->setWorldMatrixEnabled(false);
+	painter->setRenderHint(QPainter::SmoothPixmapTransform);
+	painter->setBrush(QColor(0, 0, 0));
+	painter->drawPolygon(map(worldTform, rTform));
+	painter->setWorldMatrixEnabled(true);
+
+}
+
 // DkEditableRectangle --------------------------------------------------------------------
 DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
 	this->parent = parent;
 	this->rect = rect;
 
-	setAttribute(Qt::WA_MouseTracking);
+	//setAttribute(Qt::WA_MouseTracking);
 	setFocus(Qt::ActiveWindowFocusReason);
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
@@ -3415,12 +3455,20 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	worldTform = 0;
 	imgTform = 0;
 	qDebug() << "my size: " << geometry();
+	
+	for (int idx = 0; idx < 8; idx++) {
+		ctrlPoints.push_back(new DkTransformRect(idx, this));
+		ctrlPoints[idx]->hide();
+	}
 		
 }
 
 void DkEditableRect::reset() {
 
 	rect = QRectF();
+	for (int idx = 0; idx < ctrlPoints.size(); idx++)
+		ctrlPoints[idx]->reset();
+
 }
 
 QPointF DkEditableRect::map(const QPointF &pos) {
@@ -3457,6 +3505,17 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setBrush(brush);
 	painter.drawPath(path);
 
+	if (!rect.isEmpty()) {
+		for (int idx = 0; idx < p.size(); idx++) {
+			
+			//QPointF os = p[idx]-ctrlPoints[idx]->getCenter();
+			
+			QTransform* ctrlTform = (rTform.isRotating()) ? &rTform : 0;
+			ctrlPoints[idx]->move(p[idx].x(), p[idx].y());
+			ctrlPoints[idx]->draw(&painter, worldTform, ctrlTform);
+		}
+	}
+
 	// debug
 	painter.drawPoint(rect.getCenter());
 
@@ -3491,12 +3550,20 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
-	if (event->buttons() != Qt::LeftButton)
-		return QWidget::mouseMoveEvent(event);
+	if (event->buttons() != Qt::LeftButton) {
+		// TODO: check why QGraphicsView does not propagate the events correctly...
+		//return QWidget::mouseMoveEvent(event);
+		event->ignore();
+		return;
+	}
 	
 	QPointF posM = map(event->posF());
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
+		
+		for (int idx = 0; idx < ctrlPoints.size(); idx++)
+			ctrlPoints[idx]->show();
+		
 		rect.updateCorner(2, posM, false);
 		update();
 		//std::cout << rect << std::endl;
@@ -3543,11 +3610,15 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 	state = do_nothing;
 
 	// apply transform
-	QPolygonF p = rect.getClosedPoly();
+	QPolygonF p = rect.getPoly();
 	p = tTform.map(p);
 	p = rTform.map(p); 
 	p = tTform.inverted().map(p);
 	rect.setPoly(p);
+
+	if (rTform.isRotating())
+		for (int idx = 0; idx < ctrlPoints.size(); idx++)
+			ctrlPoints[idx]->updatePoly(&rTform);
 
 	rTform.reset();	
 	tTform.reset();
@@ -3568,11 +3639,24 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 		if (!rect.isEmpty())
 			emit enterPressedSignal(rect);
 
-		hide();
+		setVisible(false);
+		setWindowOpacity(0);
+
 		qDebug() << " enter pressed";
 	}
 
 	qDebug() << "key pressed rect";
 
 	QWidget::keyPressEvent(event);
+}
+
+void DkEditableRect::setVisible(bool visible) {
+
+	if (!visible) {
+		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
+			ctrlPoints[idx]->hide();
+		}
+	}
+
+	DkWidget::setVisible(visible);
 }

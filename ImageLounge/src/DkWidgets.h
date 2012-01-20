@@ -1065,6 +1065,7 @@ public:
 	};
 
 	void setPoly(QPolygonF &poly) {
+		
 		rect = poly;
 	};
 
@@ -1155,6 +1156,41 @@ protected:
 	QPolygonF rect;
 };
 
+class DkTransformRect : public QWidget {
+	Q_OBJECT
+
+public:
+	
+	DkTransformRect(int idx = -1, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	virtual ~DkTransformRect() {};
+
+	void reset() {
+		init();
+	};
+
+	void draw(QPainter *painter, QTransform *worldTform, QTransform *rTform);
+	
+	QPointF getCenter() {
+		return QPointF(size.width()*0.5f, size.height()*0.5f);
+	};
+
+	void updatePoly(QTransform *rTform) {
+		if (rTform)
+			poly = rTform->map(poly);
+	};
+
+protected:
+	
+	void init();
+	QPolygonF map(QTransform *worldTform, QTransform *rTform);
+	
+	int parentIdx;
+	QSize size;
+	QPointF offset;
+	QPolygonF poly;
+};
+
+
 class DkEditableRect : public DkWidget {
 	Q_OBJECT
 
@@ -1184,9 +1220,10 @@ public:
 		this->imgTform = imgTform;
 	};
 
+	void setVisible(bool visible);
+
 signals:
 	void enterPressedSignal(DkRotatingRect cropArea);
-	//void visibleSignal(bool isEsc);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
@@ -1198,7 +1235,6 @@ protected:
 	void paintEvent(QPaintEvent *event);
 
 	QPointF map(const QPointF &posM);
-
 
 	int state;
 
@@ -1212,4 +1248,6 @@ protected:
 	DkRotatingRect rect;
 	QPen pen;
 	QBrush brush;
+	QVector<DkTransformRect*> ctrlPoints;
+
 };

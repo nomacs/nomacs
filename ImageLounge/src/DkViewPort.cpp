@@ -313,6 +313,8 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 
+	qDebug() << "wheel event (DkBaseViewPort)";
+
 	float factor = -event->delta();
 	if (DkSettings::DisplaySettings::invertZoom) factor *= -1.0f;
 
@@ -1191,6 +1193,8 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
+	qDebug() << "mouse move (DkViewPort)";
+
 	if (visibleStatusbar)
 		getPixelInfo(event->pos());
 
@@ -1229,6 +1233,12 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// send to parent
 	QWidget::mouseMoveEvent(event);
+}
+
+void DkViewPort::wheelEvent(QWheelEvent *event) {
+
+	qDebug() << "DkViewPort receiving wheel event";
+	DkBaseViewPort::wheelEvent(event);
 }
 
 void DkViewPort::setFullScreen(bool fullScreen) {
@@ -1578,6 +1588,8 @@ void DkViewPort::toggleCropImageWidget(bool croping) {
 		editRect->resize(width(), height());
 		editRect->show();
 	}
+	else
+		editRect->hide();
 
 	// TODO: delete
 	isCropActive = croping;
@@ -1892,6 +1904,19 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		QPointF dxy = (cPos - posGrab);
 		posGrab = cPos;
 		moveView(dxy/worldMatrix.m11());
+	}
+
+	// scroll thumbs preview
+	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
+
+		qDebug() << "middle... move";
+		qDebug() << "enter: " << enterPos.x();
+		float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
+		dx = std::exp(dx);
+		if (enterPos.x() - event->pos().x() < 0)
+			dx = -dx;
+
+		filePreview->setCurrentDx(dx);	// update dx
 	}
 
 	QGraphicsView::mouseMoveEvent(event);
