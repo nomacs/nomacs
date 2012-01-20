@@ -1,0 +1,32 @@
+nomacs (0.2.4) unstable; urgency=low
+
+  * TODO for new release
+
+ -- Stefan Fiel <stefan@nomacs.org>  Mon, 25 Oct 2011 15:22:22 +0200
+
+nomacs (0.2.3) unstable; urgency=low
+
+   * Bug #64: network - close connection
+   * Bug #69: rating label
+   * Bug #71: Network Server - not discoverable using vms
+   * Bug #94: painter file info panel
+   * Bug #95: save jpeg dialog ignores compression value
+   * Feature #66: slideshow - player
+   * Feature #67: display information (filenames)
+   * Feature #68: silent loading
+   * Feature #79: add showMenu, showToolbar and showStatusbar to Preferences
+   * Feature #96: Format metadata
+
+ -- Stefan Fiel <stefan@nomacs.org>  Mon, 19 Dec 2011 08:22:22 +0200
+
+nomacs (0.2.0) unstable; urgency=low
+
+  * from alpha to beta
+
+ -- Stefan Fiel <stefan@nomacs.org>  Mon, 25 Oct 2011 15:22:22 +0200
+
+nomacs (0.1.2) unstable; urgency=low
+
+  * Initial release 
+
+ -- Stefan Fiel <stefan@nomacs.org>  Mon, 15 Aug 2011 08:49:22 +0200
