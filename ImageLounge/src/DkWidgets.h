@@ -1009,6 +1009,13 @@ public:
 		return true;
 	};
 
+	void setAllCorners(QPointF &p) {
+		
+		for (int idx = 0; idx < rect.size(); idx++)
+			rect[idx] = p;
+
+	};
+
 	void updateCorner(int cIdx, QPointF &nC, bool rotated = true) {
 
 		// index does not exist
@@ -1037,27 +1044,21 @@ public:
 			// compute the idx-1 corner
 			float c1Angle = (c1-c0).angle();
 			float newLength = cos(c1Angle - diagAngle)*diagLength;
-			DkVector nc1 = DkVector(newLength, 0);
-			nc1.rotate(c1Angle);
-			rect[(cIdx+1) % 4] = (nc1+cN).getQPointF();
+			DkVector nc1 = DkVector((newLength), 0);
+			nc1.rotate(-c1Angle);
 
 			// compute the idx-3 corner
 			float c3Angle = (c3-c0).angle();
 			newLength = cos(c3Angle - diagAngle)*diagLength;
-			DkVector nc3 = DkVector(newLength, 0);
-			nc1.rotate(c3Angle);
+			DkVector nc3 = DkVector((newLength), 0);
+			nc3.rotate(-c3Angle);
+			
+			rect[(cIdx+1) % 4] = (nc1+cN).getQPointF();			
 			rect[(cIdx+3) % 4] = (nc3+cN).getQPointF();
-
 			rect[cIdx] = nC;
 		}
 	};
 
-	void setAllCorners(QPointF &p) {
-		
-		for (int idx = 0; idx < rect.size(); idx++)
-			rect[idx] = p;
-
-	};
 
 	QPolygonF& getPoly() {
 
@@ -1139,7 +1140,6 @@ public:
 
 	};
 
-
 protected:
 
 	virtual std::ostream& put(std::ostream& s) {
@@ -1164,30 +1164,26 @@ public:
 	DkTransformRect(int idx = -1, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkTransformRect() {};
 
-	void reset() {
-		init();
-	};
-
-	void draw(QPainter *painter, QTransform *worldTform, QTransform *rTform);
+	void draw(QPainter *painter);
 	
 	QPointF getCenter() {
 		return QPointF(size.width()*0.5f, size.height()*0.5f);
 	};
 
-	void updatePoly(QTransform *rTform) {
-		if (rTform)
-			poly = rTform->map(poly);
-	};
+signals:
+	void ctrlMovedSignal(int, QPointF);
 
 protected:
-	
+
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
 	void init();
-	QPolygonF map(QTransform *worldTform, QTransform *rTform);
 	
+	QPointF initialPos;
+	QPointF posGrab;
 	int parentIdx;
 	QSize size;
-	QPointF offset;
-	QPolygonF poly;
 };
 
 
@@ -1224,6 +1220,9 @@ public:
 
 signals:
 	void enterPressedSignal(DkRotatingRect cropArea);
+
+public slots:
+	void updateCorner(int idx, QPointF point);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);

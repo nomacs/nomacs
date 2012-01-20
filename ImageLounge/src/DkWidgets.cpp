@@ -3395,7 +3395,7 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 DkTransformRect::DkTransformRect(int idx, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 
 	this->parentIdx = idx;
-	this->size = QSize(4, 4);
+	this->size = QSize(7, 7);
 
 	init();
 
@@ -3404,38 +3404,41 @@ DkTransformRect::DkTransformRect(int idx, QWidget* parent, Qt::WindowFlags f) : 
 
 void DkTransformRect::init() {
 
-	QTransform centerT;
-	centerT.translate(-size.width()*0.5f, -size.height()*0.5f);
-	poly = centerT.mapToPolygon(QRect(QPoint(), size));
 }
 
-QPolygonF DkTransformRect::map(QTransform *worldTform, QTransform *rTform) {
 
-	// we want to map the rects' positions but not their size...
-	QPointF tP = geometry().topLeft();
-	if (worldTform) tP = worldTform->map(tP);
+void DkTransformRect::draw(QPainter *painter) {
 
-	QTransform tTform;
-	tTform.translate(tP.x(), tP.y());
-
-	QPolygonF p = poly;
-
-	if (rTform)
-		p = rTform->map(p);
-	p = tTform.map(p);
-
-	return p;
-}
-
-void DkTransformRect::draw(QPainter *painter, QTransform *worldTform, QTransform *rTform) {
-
-
+	// draw the control point
 	painter->setWorldMatrixEnabled(false);
-	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 	painter->setBrush(QColor(0, 0, 0));
-	painter->drawPolygon(map(worldTform, rTform));
+	painter->drawRect(geometry());
 	painter->setWorldMatrixEnabled(true);
 
+}
+
+void DkTransformRect::mousePressEvent(QMouseEvent *event) {
+	
+	if (event->buttons() == Qt::LeftButton) {
+		posGrab = event->globalPos();
+		initialPos = geometry().topLeft();
+	}
+	qDebug() << "mouse pressed control point";
+}
+
+void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
+
+	if (event->buttons() == Qt::LeftButton) {
+		
+		QPointF pt = initialPos+event->globalPos()-posGrab;
+		emit ctrlMovedSignal(parentIdx, pt);
+		qDebug() << "pt" << pt;
+	}
+}
+
+void DkTransformRect::mouseReleaseEvent(QMouseEvent *event) {
+
+	qDebug() << "mouse pressed control point";
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
@@ -3456,9 +3459,10 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	imgTform = 0;
 	qDebug() << "my size: " << geometry();
 	
-	for (int idx = 0; idx < 8; idx++) {
+	for (int idx = 0; idx < 4; idx++) {
 		ctrlPoints.push_back(new DkTransformRect(idx, this));
 		ctrlPoints[idx]->hide();
+		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF)), this, SLOT(updateCorner(int, QPointF)));
 	}
 		
 }
@@ -3466,8 +3470,8 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 void DkEditableRect::reset() {
 
 	rect = QRectF();
-	for (int idx = 0; idx < ctrlPoints.size(); idx++)
-		ctrlPoints[idx]->reset();
+	//for (int idx = 0; idx < ctrlPoints.size(); idx++)
+	//	ctrlPoints[idx]->reset();
 
 }
 
@@ -3478,6 +3482,13 @@ QPointF DkEditableRect::map(const QPointF &pos) {
 	if (imgTform)	posM = imgTform->inverted().map(posM);
 	
 	return posM;
+}
+
+void DkEditableRect::updateCorner(int idx, QPointF point) {
+
+	qDebug() << "update corner: " << point;
+	rect.updateCorner(idx, map(point));
+	update();
 }
 
 void DkEditableRect::paintEvent(QPaintEvent *event) {
@@ -3506,13 +3517,13 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.drawPath(path);
 
 	if (!rect.isEmpty()) {
-		for (int idx = 0; idx < p.size(); idx++) {
+		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
 			
-			//QPointF os = p[idx]-ctrlPoints[idx]->getCenter();
-			
-			QTransform* ctrlTform = (rTform.isRotating()) ? &rTform : 0;
-			ctrlPoints[idx]->move(p[idx].x(), p[idx].y());
-			ctrlPoints[idx]->draw(&painter, worldTform, ctrlTform);
+			QPointF os = p[idx]-ctrlPoints[idx]->getCenter();
+			if (worldTform) os = worldTform->map(os);
+
+			ctrlPoints[idx]->move(os.x(), os.y());
+			ctrlPoints[idx]->draw(&painter);
 		}
 	}
 
@@ -3615,10 +3626,6 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 	p = rTform.map(p); 
 	p = tTform.inverted().map(p);
 	rect.setPoly(p);
-
-	if (rTform.isRotating())
-		for (int idx = 0; idx < ctrlPoints.size(); idx++)
-			ctrlPoints[idx]->updatePoly(&rTform);
 
 	rTform.reset();	
 	tTform.reset();
