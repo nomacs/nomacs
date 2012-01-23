@@ -246,7 +246,6 @@ protected:
 
 	bool testLoaded;
 	bool visibleStatusbar;
-	bool isCropActive;
 
 	QImage imgBg;
 	QLabel* wheelButton;

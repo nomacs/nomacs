@@ -453,7 +453,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	overviewMargin = 10;
 	testLoaded = false;
 	visibleStatusbar = false;
-	isCropActive = false;
 
 	rating = -1;
 
@@ -629,6 +628,7 @@ void DkViewPort::setImage(QImage newImg) {
 	if (centerLabel) centerLabel->stop();
 	if (bottomLabel) bottomLabel->stop();
 	if (bottomRightLabel) bottomRightLabel->stop();
+	if (editRect->isVisible()) editRect->hide();
 	//if (topLeftLabel) topLeftLabel->stop();	// top left should be always shown	(DkSnippet??)
 	
 	rating = -1;
@@ -1379,6 +1379,8 @@ void DkViewPort::updateRating(int rating) {
 
 void DkViewPort::unloadImage() {
 
+	// TODO: tell loader that his image is not up to date anymore
+	// TODO: if image is not saved... ask user?! -> resize & crop
 	if (imgQt.isNull() || rating == -1 || rating == loader->getMetaData().getRating()) 
 		return;
 
@@ -1591,8 +1593,6 @@ void DkViewPort::toggleCropImageWidget(bool croping) {
 	else
 		editRect->hide();
 
-	// TODO: delete
-	isCropActive = croping;
 }
 
 void DkViewPort::cropImage(DkRotatingRect rect) {
@@ -1626,6 +1626,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();
 
+	unloadImage();
 	setImage(img);
 	//imgQt = img;
 	update();

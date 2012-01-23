@@ -3392,10 +3392,11 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 }
 
 // DkTransformRectangle --------------------------------------------------------------------
-DkTransformRect::DkTransformRect(int idx, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+DkTransformRect::DkTransformRect(int idx, DkRotatingRect* rect, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 
 	this->parentIdx = idx;
-	this->size = QSize(9, 9);
+	this->size = QSize(11, 11);
+	this->rect = rect;
 
 	init();
 
@@ -3441,7 +3442,6 @@ void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
 		
 		QPointF pt = initialPos+event->globalPos()-posGrab;
 		emit ctrlMovedSignal(parentIdx, pt);
-		qDebug() << "pt" << pt;
 	}
 }
 
@@ -3450,12 +3450,20 @@ void DkTransformRect::mouseReleaseEvent(QMouseEvent *event) {
 	qDebug() << "mouse pressed control point";
 }
 
+void DkTransformRect::enterEvent(QEvent *event) {
+
+	if (rect)
+		setCursor(rect->cpCursor(parentIdx));
+}
+
 // DkEditableRectangle --------------------------------------------------------------------
 DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
 	this->parent = parent;
 	this->rect = rect;
 
+	rotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
+	
 	//setAttribute(Qt::WA_MouseTracking);
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
@@ -3468,7 +3476,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	qDebug() << "my size: " << geometry();
 	
 	for (int idx = 0; idx < 8; idx++) {
-		ctrlPoints.push_back(new DkTransformRect(idx, this));
+		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
 		ctrlPoints[idx]->hide();
 		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF)), this, SLOT(updateCorner(int, QPointF)));
 	}
@@ -3494,7 +3502,6 @@ QPointF DkEditableRect::map(const QPointF &pos) {
 
 void DkEditableRect::updateCorner(int idx, QPointF point) {
 
-	qDebug() << "update corner: " << point;
 	rect.updateCorner(idx, map(point));
 	update();
 }
@@ -3577,6 +3584,9 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 	if (rect.isEmpty()) {
 		state = initializing;
 		rect.setAllCorners(posGrab);
+		for (int idx = 0; idx < ctrlPoints.size(); idx++)
+			ctrlPoints[idx]->show();
+
 	}
 	else if (rect.getPoly().containsPoint(posGrab, Qt::OddEvenFill)) {
 		state = moving;
@@ -3603,15 +3613,12 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		if (rect.getPoly().containsPoint(map(event->pos()), Qt::OddEvenFill))
 			setCursor(Qt::SizeAllCursor);
 		else
-			setCursor(Qt::SizeBDiagCursor);
+			setCursor(rotatingCursor);
 	}
 
 	// why do we need to do this?
 	if (!hasFocus())
 		setFocus(Qt::ActiveWindowFocusReason);
-	
-	qDebug() << "changing mc...";
-	
 	
 	if (event->buttons() != Qt::LeftButton) {
 		// TODO: check why QGraphicsView does not propagate the events correctly...
@@ -3619,14 +3626,10 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		event->ignore();
 		return;
 	}
-	
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
-		
-		for (int idx = 0; idx < ctrlPoints.size(); idx++)
-			ctrlPoints[idx]->show();
-		
-		rect.updateCorner(2, posM, false);
+				
+		rect.updateCorner(2, posM);
 		update();
 		//std::cout << rect << std::endl;
 	}

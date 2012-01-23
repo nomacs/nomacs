@@ -1016,7 +1016,33 @@ public:
 
 	};
 
-	void updateCorner(int cIdx, QPointF &nC, bool rotated = true) {
+	QCursor cpCursor(int idx) {
+
+		DkVector edge = rect[(idx+1) % 4] - rect[idx % 4];
+		double angle = edge.normalVec().angle();	// the angle of the normal vector
+		
+		// corners
+		if (idx >= 0 && idx < 4)
+			angle += CV_PI*0.25;	// remove 45° for corners
+
+		qDebug() << "angle before: " << angle * DK_RAD2DEG;
+
+		angle = DkMath::normAngleRad(angle, -CV_PI/8.0, 7.0*CV_PI/8.0);
+
+		qDebug() << angle * DK_RAD2DEG;
+
+		if (angle > 5.0*CV_PI/8.0)
+			return QCursor(Qt::SizeBDiagCursor);
+		else if (angle > 3.0*CV_PI/8.0)
+			return QCursor(Qt::SizeVerCursor);
+		else if (angle > CV_PI/8.0)
+			return QCursor(Qt::SizeFDiagCursor);
+		else
+			return QCursor(Qt::SizeHorCursor);
+
+	};
+
+	void updateCorner(int cIdx, QPointF &nC) {
 
 		// index does not exist
 		if (cIdx < 0 || cIdx >= rect.size()*2)
@@ -1173,7 +1199,7 @@ class DkTransformRect : public QWidget {
 
 public:
 	
-	DkTransformRect(int idx = -1, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkTransformRect(int idx = -1, DkRotatingRect* rect = 0, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkTransformRect() {};
 
 	void draw(QPainter *painter);
@@ -1190,8 +1216,10 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
+	void enterEvent(QEvent *event);
 	void init();
 	
+	DkRotatingRect* rect;
 	QPointF initialPos;
 	QPointF posGrab;
 	int parentIdx;
@@ -1260,5 +1288,6 @@ protected:
 	QPen pen;
 	QBrush brush;
 	QVector<DkTransformRect*> ctrlPoints;
+	QCursor rotatingCursor;
 
 };
