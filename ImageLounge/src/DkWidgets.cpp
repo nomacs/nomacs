@@ -3395,26 +3395,35 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 DkTransformRect::DkTransformRect(int idx, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 
 	this->parentIdx = idx;
-	this->size = QSize(7, 7);
+	this->size = QSize(9, 9);
 
 	init();
 
 	this->resize(size);
+	setCursor(Qt::CrossCursor);
 }
 
 void DkTransformRect::init() {
 
 }
 
-
 void DkTransformRect::draw(QPainter *painter) {
+
+	QPen pen;
+	pen.setWidth(0);
+	pen.setColor(QColor(0,0,0,0));
+
+	float ro = 2.5f;	// rect offset
+	QRectF visibleRect(geometry().topLeft()+QPointF(ro,ro), geometry().size()-QSizeF(ro*2,ro*2));
 
 	// draw the control point
 	painter->setWorldMatrixEnabled(false);
+	painter->setPen(pen);
+	painter->setBrush(QColor(0, 0, 0, 0));
+	painter->drawRect(geometry());	// invisible rect for mouseevents...
 	painter->setBrush(QColor(0, 0, 0));
-	painter->drawRect(geometry());
+	painter->drawRect(visibleRect);
 	painter->setWorldMatrixEnabled(true);
-
 }
 
 void DkTransformRect::mousePressEvent(QMouseEvent *event) {
@@ -3448,7 +3457,6 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	this->rect = rect;
 
 	//setAttribute(Qt::WA_MouseTracking);
-	setFocus(Qt::ActiveWindowFocusReason);
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
 	pen.setCosmetic(true);
@@ -3459,7 +3467,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	imgTform = 0;
 	qDebug() << "my size: " << geometry();
 	
-	for (int idx = 0; idx < 4; idx++) {
+	for (int idx = 0; idx < 8; idx++) {
 		ctrlPoints.push_back(new DkTransformRect(idx, this));
 		ctrlPoints[idx]->hide();
 		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF)), this, SLOT(updateCorner(int, QPointF)));
@@ -3516,20 +3524,47 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setBrush(brush);
 	painter.drawPath(path);
 
-	if (!rect.isEmpty()) {
-		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
-			
-			QPointF os = p[idx]-ctrlPoints[idx]->getCenter();
-			if (worldTform) os = worldTform->map(os);
-
-			ctrlPoints[idx]->move(os.x(), os.y());
-			ctrlPoints[idx]->draw(&painter);
-		}
-	}
-
 	// debug
 	painter.drawPoint(rect.getCenter());
 
+	// this changes the painter -> do it at the end
+	if (!rect.isEmpty()) {
+		
+		// TODO: offset bug when zooming
+		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
+			
+			QPointF cp;
+			
+			if (idx < 4) {
+				QPointF c = p[idx];
+				if (worldTform) c = worldTform->map(c);
+				
+				cp = c-ctrlPoints[idx]->getCenter();
+			}
+			// paint control points in the middle of the edge
+			else if (idx >= 4) {
+				QPointF s = ctrlPoints[idx]->getCenter();//QPointF(ctrlPoints[idx % 4]->geometry().size().width(), ctrlPoints[idx % 4]->geometry().size().height());
+
+				QPointF lp = p[idx % 4];
+				QPointF rp = p[(idx+1) % 4];
+
+				if (worldTform) {
+					lp = worldTform->map(lp);
+					rp = worldTform->map(rp);
+				}
+
+				QVector2D lv = QVector2D(lp-s);
+				QVector2D rv = QVector2D(rp-s);
+
+				cp = (lv + 0.5*(rv - lv)).toPointF();
+			}
+
+
+			ctrlPoints[idx]->move(cp.x(), cp.y());
+			ctrlPoints[idx]->draw(&painter);
+		}
+	}
+ 
 	painter.end();
 }
 
@@ -3561,6 +3596,23 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
+	QPointF posM = map(event->posF());
+	
+	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
+		// show rotating - moving
+		if (rect.getPoly().containsPoint(map(event->pos()), Qt::OddEvenFill))
+			setCursor(Qt::SizeAllCursor);
+		else
+			setCursor(Qt::SizeBDiagCursor);
+	}
+
+	// why do we need to do this?
+	if (!hasFocus())
+		setFocus(Qt::ActiveWindowFocusReason);
+	
+	qDebug() << "changing mc...";
+	
+	
 	if (event->buttons() != Qt::LeftButton) {
 		// TODO: check why QGraphicsView does not propagate the events correctly...
 		//return QWidget::mouseMoveEvent(event);
@@ -3568,7 +3620,6 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 	
-	QPointF posM = map(event->posF());
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 		
@@ -3663,6 +3714,10 @@ void DkEditableRect::setVisible(bool visible) {
 		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
 			ctrlPoints[idx]->hide();
 		}
+	}
+	else {
+		setFocus(Qt::ActiveWindowFocusReason);
+		setCursor(Qt::CrossCursor);
 	}
 
 	DkWidget::setVisible(visible);

@@ -762,7 +762,7 @@ public:
 	 * @param vec a vector which should be considered for the scalar product.
 	 * @return the scalar product of vec and the current vector.
 	 */ 
-	virtual float scalarProduct(DkVector vec) {
+	virtual float scalarProduct(const DkVector vec) const {
 
 		return this->x*vec.x + this->y*vec.y;
 	};

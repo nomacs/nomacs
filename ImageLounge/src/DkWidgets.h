@@ -1019,14 +1019,27 @@ public:
 	void updateCorner(int cIdx, QPointF &nC, bool rotated = true) {
 
 		// index does not exist
-		if (cIdx < 0 || cIdx >= rect.size())
+		if (cIdx < 0 || cIdx >= rect.size()*2)
 			return;
 
-		if (!rotated) {
+		if (rect[(cIdx+1) % 4] == rect[(cIdx+3) % 4]) {
 			QPointF oC = rect[(cIdx+2) % 4];	// opposite corner
 			rect[cIdx] = nC;
 			rect[(cIdx+1) % 4] = QPointF(nC.x(), oC.y());
 			rect[(cIdx+3) % 4] = QPointF(oC.x(), nC.y());
+		}
+		// these indices indicate the control points on edges
+		else if (cIdx >= 4 && cIdx < 8) {
+
+			DkVector c0 = rect[cIdx % 4];
+			DkVector n = (rect[(cIdx+1) % 4] - c0).normalVec();
+			n.normalize();
+
+			// compute the offset vector
+			DkVector oV = n * n.scalarProduct(nC-c0);
+
+			rect[cIdx % 4] = (rect[cIdx % 4] + oV).getQPointF();
+			rect[(cIdx+1) % 4] = (rect[(cIdx+1) % 4] + oV).getQPointF();
 		}
 		else {
 
@@ -1058,7 +1071,6 @@ public:
 			rect[cIdx] = nC;
 		}
 	};
-
 
 	QPolygonF& getPoly() {
 
