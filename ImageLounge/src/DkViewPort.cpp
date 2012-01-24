@@ -187,6 +187,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	imgQt = newImg;
 	QRectF oldImgRect = imgRect;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
+	imgPyramid.clear();
 
 	emit enableNoImageSignal(!imgQt.isNull());
 
@@ -342,7 +343,11 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 // protected functions --------------------------------------------------------------------
 void DkBaseViewPort::draw(QPainter *painter) {
 
+	//QImage imgDraw = getScaledImage(imgMatrix.m11()*worldMatrix.m11());
+	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
+
 	painter->drawImage(imgViewRect, imgQt, imgRect);
+
 }
 
 bool DkBaseViewPort::imageInside() {
@@ -403,6 +408,52 @@ QTransform DkBaseViewPort::getScaledImageMatrix() {
 	imgMatrix.translate((width()-imgViewRect.width())*0.5f/s, (height()-imgViewRect.height())*0.5f/s);
 
 	return imgMatrix;
+}
+
+QImage DkBaseViewPort::getScaledImage(float factor) {
+
+// this function does not help anything if we cannot interpolate with OpenCV
+#ifndef WITH_OPENCV
+	return imgQt;
+#endif
+
+	if (factor > 0.5f)
+		return imgQt;
+
+	int divisor = DkMath::getNextPowerOfTwoDivisior(factor);
+
+	//if (divisor < 2)
+	//	return imgQt;
+
+	// is the image cached already?
+	if (imgPyramid.contains(divisor))
+		return imgPyramid.value(divisor);
+
+	QSize newSize = imgQt.size()*1.0f/(float)divisor;
+
+	//// caching should not consume more than 30 MB
+	//if (newSize.width()*newSize.height() > 30 * 2^20)
+	//	return imgQt;
+
+#ifdef WITH_OPENCV
+
+	Mat resizeImage = DkImage::qImage2Mat(imgQt);
+
+	// is the image convertible?
+	if (resizeImage.empty())
+		return imgQt;
+
+	Mat tmp;
+	cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, CV_INTER_AREA);
+	resizeImage = tmp;
+	QImage iplImg = DkImage::mat2QImage(resizeImage);
+
+	imgPyramid.insert(divisor, iplImg);
+
+	return iplImg;
+#endif
+
+	return imgQt;
 }
 
 void DkBaseViewPort::controlImagePosition(float lb, float ub) {
@@ -600,6 +651,8 @@ void DkViewPort::setImage(cv::Mat newImg) {
 
 
 void DkViewPort::setImage(QImage newImg) {
+
+	imgPyramid.clear();
 
 	overviewWindow->setImage(QImage());	// clear overview
 
@@ -1045,12 +1098,6 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 }
 
 // drawing functions --------------------------------------------------------------------
-void DkViewPort::draw(QPainter *painter) {
-
-	// in viewport we just need to set the image
-	painter->drawImage(imgViewRect, imgQt, imgRect);
-}
-
 void DkViewPort::drawBackground(QPainter *painter) {
 	
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);

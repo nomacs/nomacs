@@ -238,6 +238,18 @@ public:
 		return bC == 1;
 	}
 
+	static float getNextPowerOfTwoDivisior(float factor) {
+
+		int iv = cvRound(1.0f/factor);
+		int pt = getNextPowerOfTwo(iv);
+
+		// if the number is not yet a power of two or pt is one
+		if (pt != iv && pt != 1)
+			pt = pt >> 1;
+
+		return pt;
+	}
+
 	/**
 	 * Returns the next power of two.
 	 * @param val a number for which the next power of two needs to be computed.

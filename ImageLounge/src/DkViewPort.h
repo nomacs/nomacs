@@ -72,6 +72,8 @@ public:
 		return worldMatrix;
 	};
 
+	virtual QImage getScaledImage(float factor);
+
 #ifdef WITH_OPENCV
 	virtual void setImage(cv::Mat newImg);
 #endif
@@ -116,6 +118,7 @@ protected:
 
 	QWidget *parent;
 	QImage imgQt;
+	QMap<int, QImage> imgPyramid;
 
 	QTransform imgMatrix;
 	QTransform worldMatrix;
@@ -276,7 +279,6 @@ protected:
 	int rating;
 
 	// functions
-	virtual void draw(QPainter *painter);
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
 	virtual void drawBackground(QPainter *painter);
 	virtual void controlImagePosition(float lb = -1, float ub = -1);

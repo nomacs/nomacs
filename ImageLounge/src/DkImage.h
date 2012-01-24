@@ -79,6 +79,8 @@ class DkImage {
 
 public:
 
+	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
+
 #ifdef WITH_OPENCV
 	static Mat qImage2Mat(QImage img) {
 
@@ -127,6 +129,65 @@ public:
 		return qImg;
 	}
 #endif
+
+	static QImage resizeImage(const QImage &img, const QSize &newSize, float factor = 1.0f, int interpolation = ipl_cubic) {
+		
+		QSize nSize = newSize;
+
+		// nothing to do
+		if (img.size() == nSize && factor == 1.0f)
+			return img;
+
+		if (factor != 1.0f)
+			nSize = QSize(img.width()*factor, img.height()*factor);
+
+		// attention: we do not define a maximum, however if the machine has too view RAM this function may crash
+		if (nSize.width() < 1 || nSize.height() < 1) {
+				return QImage();
+		}
+
+		Qt::TransformationMode iplQt;
+		switch(interpolation) {
+		case ipl_nearest:	
+		case ipl_area:		iplQt = Qt::FastTransformation; break;
+		case ipl_linear:	
+		case ipl_cubic:		
+		case ipl_lanczos:	iplQt = Qt::SmoothTransformation; break;
+		}
+#ifdef WITH_OPENCV
+
+		int ipl = CV_INTER_CUBIC;
+		switch(interpolation) {
+		case ipl_nearest:	ipl = CV_INTER_NN; break;
+		case ipl_area:		ipl = CV_INTER_AREA; break;
+		case ipl_linear:	ipl = CV_INTER_LINEAR; break;
+		case ipl_cubic:		ipl = CV_INTER_CUBIC; break;
+#ifdef DISABLE_LANCZOS
+		case ipl_lanczos:	ipl = CV_INTER_CUBIC; break;
+#else
+		case ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
+#endif
+		}
+
+		Mat resizeImage = DkImage::qImage2Mat(img);
+
+		// is the image convertible?
+		if (resizeImage.empty()) {
+			return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
+		}
+		else {
+
+			Mat tmp;
+			cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
+			resizeImage = tmp;
+			return DkImage::mat2QImage(resizeImage);
+		}
+#else
+
+		return img.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
+
+#endif
+	}
 
 };
 
