@@ -92,8 +92,8 @@ void DkWidget::animateOpacityUp() {
 		return;
 	}
 
-	opacityEffect->setOpacity(opacityEffect->opacity()+0.05);
 	QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
+	opacityEffect->setOpacity(opacityEffect->opacity()+0.05);
 }
 
 void DkWidget::animateOpacityDown() {
@@ -108,8 +108,8 @@ void DkWidget::animateOpacityDown() {
 		return;
 	}
 
-	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
 	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
+	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
 }
 
 // DkSplashScreen --------------------------------------------------------------------

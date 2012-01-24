@@ -50,6 +50,8 @@ int main(int argc, char *argv[]) {
 
 #ifdef linux
 	QApplication::setGraphicsSystem("raster");
+#elif WIN32
+	QApplication::setGraphicsSystem("raster");
 #endif
 	//! \warning those QSettings setup *must* go before QApplication object
     //           to prevent random crashes (well, crashes are regular on mac

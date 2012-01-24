@@ -992,7 +992,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		
 		draw(&painter);
 		//Now disable matrixWorld for overlay display
-		painter.setWorldMatrixEnabled (false);
+		painter.setWorldMatrixEnabled(false);
 	}
 	else
 		drawBackground(&painter);
@@ -1047,11 +1047,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 // drawing functions --------------------------------------------------------------------
 void DkViewPort::draw(QPainter *painter) {
 
-	// remove this method?!
-
-	//painter->setRenderHint(QPainter::SmoothPixmapTransform);	//-> uncomment for smooth aliasing
+	// in viewport we just need to set the image
 	painter->drawImage(imgViewRect, imgQt, imgRect);
-
 }
 
 void DkViewPort::drawBackground(QPainter *painter) {
@@ -1256,8 +1253,6 @@ void DkViewPort::setFullScreen(bool fullScreen) {
 		filePreview->hide();
 		metaDataInfo->hide();
 		toggleLena();
-
-		// TODO: qSettings
 	}
 	else {
 		player->hide();
@@ -1603,26 +1598,24 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	QPointF cImgSize;
 
 	rect.getTransform(tForm, cImgSize);
-
 	qDebug() << "img size: " << cImgSize;
 
-	//cImgSize = cImgSize/imgMatrix.m11();
-	qDebug() << "img size: " << cImgSize;
+	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f) {
+		setCenterInfo(tr("I cannot crop an image that has 0 px, sorry."));
+		return;
+	}
 
-	QImage img = QImage(cImgSize.x(), cImgSize.y(), imgQt.format());
-
-	//tForm.scale(1.0f/imgMatrix.m11(), 1.0f/imgMatrix.m12());
+	QImage img = QImage(cImgSize.x(), cImgSize.y(), QImage::Format_ARGB32);
 
 	QTransform imgScale;
 	imgScale.scale(imgMatrix.m11(), imgMatrix.m11());
 
-	// TODO: correct transform -> we need to assign the translation
+	// render the image into the new coordinate system
 	QPainter painter(&img);
-	painter.setBackground(QColor(0,0,0,0));
+	painter.setBackgroundMode(Qt::TransparentMode);
+	//painter.setBackground(QColor(0,0,0,10));	// TODO: transparent background
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
-	//painter.setWorldTransform(imgScale.inverted(), true);
 	painter.setWorldTransform(tForm, true);
-
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();
 
