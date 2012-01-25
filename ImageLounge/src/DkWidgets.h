@@ -1042,7 +1042,7 @@ public:
 
 	};
 
-	void updateCorner(int cIdx, QPointF &nC) {
+	void updateCorner(int cIdx, QPointF nC) {
 
 		// index does not exist
 		if (cIdx < 0 || cIdx >= rect.size()*2)
