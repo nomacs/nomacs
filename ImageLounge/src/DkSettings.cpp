@@ -73,11 +73,11 @@ QBitArray DkSettings::MetaDataSettings::metaDataBits = QBitArray(DkMetaDataSetti
 //QString DkMetaDataSettingsWidget::sdescriptionDesc = QString("&Rating;&User Comment;&Date Time;D&ate Time Original;&Image Description;&Creator;C&reator Title;") %
 //	QString("&City;C&ountry;&Headline;Ca&ption;Copy&right;Key&words");
 
-QString DkMetaDataSettingsWidget::scamDataDesc = QString("Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;") %
-	QString("Exposure Mode;Exposure Time");
+QString DkMetaDataSettingsWidget::scamDataDesc = QString(tr("Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;")) %
+	QString(tr("Exposure Mode;Exposure Time"));
 
-QString DkMetaDataSettingsWidget::sdescriptionDesc = QString("Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;") %
-	QString("City;Country;Headline;Caption;Copyright;Keywords;Path;File Size");
+QString DkMetaDataSettingsWidget::sdescriptionDesc = QString(tr("Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;")) %
+	QString(tr("City;Country;Headline;Caption;Copyright;Keywords;Path;File Size"));
 
 
 bool DkSettings::SynchronizeSettings::enableNetworkSync = false;
@@ -276,7 +276,6 @@ void DkSettings::setToDefaultSettings() {
 }
 
 // DkSettingsDialog --------------------------------------------------------------------
-
 DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 
 	this->resize(600,400);

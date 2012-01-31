@@ -2038,6 +2038,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		}
 		
 		this->setGeometry(screenRects);
+		setObjectName("DkNoMacsFrameless");
 		
 		// TODO: overload the resize dialog
 }

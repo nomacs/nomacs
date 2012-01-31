@@ -1705,6 +1705,9 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : Dk
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	setCursor(Qt::OpenHandCursor);
 
+	imgBg.load(":/nomacs/img/splash-screen.png");
+
+
 	//show();
 
 	// TODO: just set the left - upper - lower offset for all labels (according to viewRect)
@@ -1824,16 +1827,11 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 
 	// fit to viewport
 	QSize s = imgBg.size();
-	if (s.width() > (float)(initialRect.width()*0.5))
-		s = s*((initialRect.width()*0.5)/s.width());
-
-	if (s.height() > initialRect.height()*0.6)
-		s = s*((initialRect.height()*0.6)/s.height());
 
 	QRectF bgRect(QPoint(), s);
-	bgRect.moveBottomRight(initialRect.bottomRight()-(initialRect.bottomRight()*0.005));
+	bgRect.moveCenter(initialRect.center());//moveTopLeft(QPointF(size().width(), size().height())*0.5 - initialRect.bottomRight()*0.5);
 
-	painter->drawRect(initialRect);
+	//painter->drawRect(initialRect);
 	painter->drawImage(bgRect, imgBg, QRect(QPoint(), imgBg.size()));
 
 	if (startActions.isEmpty())
@@ -1844,7 +1842,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 		float margin = 40;
 		float iconSizeMargin = (initialRect.width()-3*margin)/startActions.size();
 		QSize iconSize = QSize(iconSizeMargin - margin, iconSizeMargin - margin);
-		QPointF offset = QPointF(initialRect.left() + 2*margin, initialRect.center().y()-iconSizeMargin*0.5f);
+		QPointF offset = QPointF(bgRect.left() + 50, initialRect.center().y()+iconSizeMargin*0.25f);
 
 		for (int idx = 0; idx < startActions.size(); idx++) {
 
@@ -1858,8 +1856,14 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	}
 
 	// draw start actions
-	for (int idx = 0; idx < startActions.size(); idx++)
+	for (int idx = 0; idx < startActions.size(); idx++) {
 		painter->drawPixmap(startActionsRects[idx], startActionsIcons[idx], QRect(QPoint(), startActionsIcons[idx].size()));
+		QRectF tmpRect = startActionsRects[idx];
+		QString text = startActions[idx]->text().replace("&", "");
+		tmpRect.moveTop(tmpRect.top()+tmpRect.height()+10);
+		painter->drawText(tmpRect, text);
+		qDebug() << "action text: " << startActions[idx]->text();
+	}
 }
 
 void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
@@ -1926,7 +1930,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		for (idx = 0; idx < startActionsRects.size(); idx++) {
 
 			if (startActionsRects[idx].contains(pos)) {
-				unsetCursor();
+				setCursor(Qt::PointingHandCursor);
 				break;
 			}
 		}
