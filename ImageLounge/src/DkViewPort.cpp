@@ -35,7 +35,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	viewportRect = QRect(0, 0, width(), height());
 	worldMatrix.reset();
 	imgMatrix.reset();
-	altKeyPressed = false;
+	altKeyPressed = false;	// TODO: take a look at Qt::KeyboardModifiers -> should be safer
 
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
@@ -495,6 +495,8 @@ void DkBaseViewPort::changeCursor() {
 		setCursor(Qt::OpenHandCursor);
 	else
 		unsetCursor();
+
+	qDebug() << "changing cursor";
 }
 
 // DkViewPort --------------------------------------------------------------------
@@ -1193,9 +1195,25 @@ void DkViewPort::keyPressEvent(QKeyEvent* event) {
 }
 
 // mouse events --------------------------------------------------------------------
+bool DkViewPort::event(QEvent *event) {
+
+	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
+	if (event->type() == QEvent::MouseButtonPress || 
+		event->type() == QEvent::MouseButtonDblClick || 
+		event->type() == QEvent::MouseButtonRelease || 
+		event->type() == QEvent::MouseMove || 
+		event->type() == QEvent::Wheel || 
+		event->type() == QEvent::KeyPress || 
+		event->type() == QEvent::KeyRelease)
+		return QWidget::event(event);
+	else
+		return DkBaseViewPort::event(event);
+	
+}
+
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
-	qDebug() << "mouse pressed...";
+	qDebug() << "DkViewPort mouse pressed...";
 
 	enterPos = event->pos();
 
@@ -1216,7 +1234,8 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 	}
 	
 	// should be sent to QWidget?!
-	QGraphicsView::mousePressEvent(event);
+	DkBaseViewPort::mousePressEvent(event);
+	//QGraphicsView::mousePressEvent(event);
 }
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
@@ -1238,6 +1257,7 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	//qDebug() << "mouse move (DkViewPort)";
+	//changeCursor();
 
 	if (visibleStatusbar)
 		getPixelInfo(event->pos());
@@ -1276,7 +1296,8 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	// send to parent
-	QWidget::mouseMoveEvent(event);
+	DkBaseViewPort::mouseMoveEvent(event);
+	//QWidget::mouseMoveEvent(event);
 }
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {

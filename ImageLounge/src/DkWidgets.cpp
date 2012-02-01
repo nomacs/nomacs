@@ -3432,6 +3432,8 @@ void DkTransformRect::mousePressEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton) {
 		posGrab = event->globalPos();
 		initialPos = geometry().topLeft();
+
+		emit updateDiagonal(parentIdx);
 	}
 	qDebug() << "mouse pressed control point";
 }
@@ -3441,7 +3443,7 @@ void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton) {
 		
 		QPointF pt = initialPos+event->globalPos()-posGrab;
-		emit ctrlMovedSignal(parentIdx, pt);
+		emit ctrlMovedSignal(parentIdx, pt, event->modifiers() == Qt::ShiftModifier);
 	}
 }
 
@@ -3473,12 +3475,14 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	state = do_nothing;
 	worldTform = 0;
 	imgTform = 0;
+	oldDiag = DkVector(-1.0f, -1.0f);
 	qDebug() << "my size: " << geometry();
 	
 	for (int idx = 0; idx < 8; idx++) {
 		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
 		ctrlPoints[idx]->hide();
-		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF)), this, SLOT(updateCorner(int, QPointF)));
+		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, bool)), this, SLOT(updateCorner(int, QPointF, bool)));
+		connect(ctrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
 	}
 		
 }
@@ -3500,9 +3504,20 @@ QPointF DkEditableRect::map(const QPointF &pos) {
 	return posM;
 }
 
-void DkEditableRect::updateCorner(int idx, QPointF point) {
+void DkEditableRect::updateDiagonal(int idx) {
 
-	rect.updateCorner(idx, map(point));
+	// we need to store the old diagonal in order to enable "keep aspect ratio"
+	if (rect.isEmpty())
+		oldDiag = DkVector(-1.0f, -1.0f);
+	else
+		oldDiag = rect.getDiagonal(idx);
+}
+
+void DkEditableRect::updateCorner(int idx, QPointF point, bool isShiftDown) {
+
+	DkVector diag = (isShiftDown) ? oldDiag : DkVector();
+
+	rect.updateCorner(idx, map(point), diag);
 	update();
 }
 
@@ -3531,8 +3546,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setBrush(brush);
 	painter.drawPath(path);
 
-	// debug
-	painter.drawPoint(rect.getCenter());
+	//// debug
+	//painter.drawPoint(rect.getCenter());
 
 	// this changes the painter -> do it at the end
 	if (!rect.isEmpty()) {
@@ -3577,7 +3592,13 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 
 // make events callable
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
-	
+
+	// panning -> redirect to viewport
+	if (event->buttons() == Qt::LeftButton && event->modifiers() == Qt::AltModifier) {
+		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
+		event->ignore();
+		return;
+	}
 
 	posGrab = map(event->posF());
 
@@ -3606,6 +3627,23 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
+	// panning -> redirect to viewport
+	if (event->modifiers() == Qt::AltModifier) {
+		
+		if (event->buttons() != Qt::LeftButton)
+			setCursor(Qt::OpenHandCursor);
+		else
+			setCursor(Qt::ClosedHandCursor);
+
+		event->setModifiers(Qt::NoModifier);
+		event->ignore();
+		return;
+	}
+
+	// why do we need to do this?
+	if (!hasFocus())
+		setFocus(Qt::ActiveWindowFocusReason);
+
 	QPointF posM = map(event->posF());
 	
 	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
@@ -3615,23 +3653,15 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		else
 			setCursor(rotatingCursor);
 	}
-
-	// why do we need to do this?
-	if (!hasFocus())
-		setFocus(Qt::ActiveWindowFocusReason);
+	else if (rect.isEmpty())
+		setCursor(Qt::CrossCursor);
 	
-	if (event->buttons() != Qt::LeftButton) {
-		// TODO: check why QGraphicsView does not propagate the events correctly...
-		//return QWidget::mouseMoveEvent(event);
-		event->ignore();
-		return;
-	}
-
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
-				
-		rect.updateCorner(2, posM);
+
+		// when initializing shift should make the rect a square
+		DkVector diag = (event->modifiers() == Qt::ShiftModifier) ? DkVector(-1.0f, -1.0f) : DkVector();
+		rect.updateCorner(2, posM, diag);
 		update();
-		//std::cout << rect << std::endl;
 	}
 	else if (state == moving && event->buttons() == Qt::LeftButton) {
 		
@@ -3672,6 +3702,14 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
+	// panning -> redirect to viewport
+	if (event->buttons() == Qt::LeftButton && event->modifiers() == Qt::AltModifier) {
+		setCursor(Qt::OpenHandCursor);
+		event->setModifiers(Qt::NoModifier);
+		event->ignore();
+		return;
+	}
+
 	state = do_nothing;
 
 	// apply transform
@@ -3687,6 +3725,9 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void DkEditableRect::keyPressEvent(QKeyEvent *event) {
+
+	if (event->key() == Qt::Key_Alt)
+		setCursor(Qt::OpenHandCursor);
 
 	QWidget::keyPressEvent(event);
 }

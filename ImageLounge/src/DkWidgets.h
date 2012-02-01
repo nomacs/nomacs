@@ -1016,6 +1016,14 @@ public:
 
 	};
 
+	DkVector getDiagonal(int cIdx) {
+
+		DkVector c0 = rect[cIdx % 4];
+		DkVector c2 = rect[(cIdx+2) % 4];
+
+		return c2 - c0;
+	};
+
 	QCursor cpCursor(int idx) {
 
 		DkVector edge = rect[(idx+1) % 4] - rect[idx % 4];
@@ -1042,7 +1050,7 @@ public:
 
 	};
 
-	void updateCorner(int cIdx, QPointF nC) {
+	void updateCorner(int cIdx, QPointF nC, DkVector oldDiag = DkVector()) {
 
 		// index does not exist
 		if (cIdx < 0 || cIdx >= rect.size()*2)
@@ -1075,6 +1083,14 @@ public:
 			DkVector c1 = rect[(cIdx+1) % 4];
 			DkVector c2 = rect[(cIdx+2) % 4];
 			DkVector c3 = rect[(cIdx+3) % 4];
+			
+			if (!oldDiag.isEmpty()) {
+				DkVector dN = oldDiag.normalVec();
+				dN.normalize();
+
+				float d = dN*(cN-c2);
+				cN += (dN*-d);
+			}
 
 			// new diagonal
 			float diagLength = (c2-cN).norm();
@@ -1094,7 +1110,7 @@ public:
 			
 			rect[(cIdx+1) % 4] = (nc1+cN).getQPointF();			
 			rect[(cIdx+3) % 4] = (nc3+cN).getQPointF();
-			rect[cIdx] = nC;
+			rect[cIdx] = cN.getQPointF();
 		}
 	};
 
@@ -1209,7 +1225,8 @@ public:
 	};
 
 signals:
-	void ctrlMovedSignal(int, QPointF);
+	void ctrlMovedSignal(int, QPointF, bool);
+	void updateDiagonal(int);
 
 protected:
 
@@ -1262,7 +1279,8 @@ signals:
 	void enterPressedSignal(DkRotatingRect cropArea);
 
 public slots:
-	void updateCorner(int idx, QPointF point);
+	void updateCorner(int idx, QPointF point, bool isShiftDown);
+	void updateDiagonal(int idx);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
@@ -1282,6 +1300,7 @@ protected:
 	QTransform tTform;
 	QTransform rTform;
 	QPointF posGrab;
+	DkVector oldDiag;
 
 	QWidget* parent;
 	DkRotatingRect rect;

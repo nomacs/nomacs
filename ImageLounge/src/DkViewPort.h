@@ -246,6 +246,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void wheelEvent(QWheelEvent *event);
+	virtual bool event(QEvent *event);
 
 	bool testLoaded;
 	bool visibleStatusbar;
