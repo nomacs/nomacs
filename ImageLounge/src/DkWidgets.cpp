@@ -3475,6 +3475,8 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	state = do_nothing;
 	worldTform = 0;
 	imgTform = 0;
+	imgRect = 0;
+
 	oldDiag = DkVector(-1.0f, -1.0f);
 	qDebug() << "my size: " << geometry();
 	
@@ -3528,23 +3530,29 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	QRectF canvas = QRectF(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
 	path.addRect(canvas);
 	
-	// TODO: we must do the rotating faster...
+	// TODO: directly map the points (it's easier and not slower at all)
 	QPolygonF p = rect.getClosedPoly();
 	p = tTform.map(p);
 	p = rTform.map(p); 
 	p = tTform.inverted().map(p);
 	if (imgTform) p = imgTform->map(p);
+	if (worldTform) p = worldTform->map(p);
 	path.addPolygon(p);
 
 	// now draw
 	QPainter painter(this);
-	if (worldTform)
-		painter.setWorldTransform(*worldTform);
-	//painter.setViewTransformEnabled(!rTform.isRotating());
 
 	painter.setPen(pen);
 	painter.setBrush(brush);
 	painter.drawPath(path);
+
+	//if (imgRect) {
+	//	QRectF imgViewRect = QRectF(*imgRect);
+	//	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+	//	painter.drawRect(imgViewRect);
+	//}
+	//if (worldTform)
+	//	painter.setWorldTransform(*worldTform);
 
 	//// debug
 	//painter.drawPoint(rect.getCenter());
@@ -3559,8 +3567,6 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 			
 			if (idx < 4) {
 				QPointF c = p[idx];
-				if (worldTform) c = worldTform->map(c);
-				
 				cp = c-ctrlPoints[idx]->getCenter();
 			}
 			// paint control points in the middle of the edge
@@ -3569,11 +3575,6 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 
 				QPointF lp = p[idx % 4];
 				QPointF rp = p[(idx+1) % 4];
-
-				if (worldTform) {
-					lp = worldTform->map(lp);
-					rp = worldTform->map(rp);
-				}
 
 				QVector2D lv = QVector2D(lp-s);
 				QVector2D rv = QVector2D(rp-s);
@@ -3604,10 +3605,8 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	if (rect.isEmpty()) {
 		state = initializing;
-		rect.setAllCorners(posGrab);
-		for (int idx = 0; idx < ctrlPoints.size(); idx++)
-			ctrlPoints[idx]->show();
 
+		rect.setAllCorners(posGrab);
 	}
 	else if (rect.getPoly().containsPoint(posGrab, Qt::OddEvenFill)) {
 		state = moving;
@@ -3658,10 +3657,24 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
-		// when initializing shift should make the rect a square
-		DkVector diag = (event->modifiers() == Qt::ShiftModifier) ? DkVector(-1.0f, -1.0f) : DkVector();
-		rect.updateCorner(2, posM, diag);
-		update();
+		// TODO: we need a snap function otherwise you'll never get the bottom left corner...
+		//QRectF imgViewRect;
+		//
+		//if (imgRect) {
+		//	imgViewRect = QRectF(*imgRect);
+		//	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+		//}
+		//
+		//if (!imgRect || imgViewRect.contains(event->posF())) {
+			
+			qDebug() << "contains point...";
+			
+			// when initializing shift should make the rect a square
+			DkVector diag = (event->modifiers() == Qt::ShiftModifier) ? DkVector(-1.0f, -1.0f) : DkVector();
+			rect.updateCorner(2, posM, diag);
+			update();
+		//}
+ 
 	}
 	else if (state == moving && event->buttons() == Qt::LeftButton) {
 		
@@ -3755,11 +3768,13 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 void DkEditableRect::setVisible(bool visible) {
 
 	if (!visible) {
-		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
+		for (int idx = 0; idx < ctrlPoints.size(); idx++)
 			ctrlPoints[idx]->hide();
-		}
 	}
 	else {
+		for (int idx = 0; idx < ctrlPoints.size(); idx++)
+			ctrlPoints[idx]->show();
+
 		setFocus(Qt::ActiveWindowFocusReason);
 		setCursor(Qt::CrossCursor);
 	}

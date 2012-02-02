@@ -126,13 +126,13 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	if (worldMatrix.m11() == 1 && factor < 1)
+	if (worldMatrix.m11() <= 0.1 && factor < 1)
 		return;
 
-	if (worldMatrix.m11()*factor < 1) {
-		resetView();
-		return;
-	}
+	//if (worldMatrix.m11()*factor < 1) {
+	//	resetView();
+	//	return;
+	//}
 
 	//limit zoom in ---
 	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
@@ -748,10 +748,10 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	if (worldMatrix.m11() == 1 && factor < 1)
+	if (worldMatrix.m11() <= 0.1f && factor < 1)
 		return;
 
-	if (worldMatrix.m11()*factor < 1) {
+	if (worldMatrix.m11()*factor < 1 && worldMatrix.m11()*factor > 0.9f ) {
 		resetView();
 		return;
 	}
@@ -895,22 +895,22 @@ void DkViewPort::toggleResetMatrix() {
 
 void DkViewPort::controlImagePosition(float lb, float ub) {
 
-	//QRectF imgRectWorld = worldMatrix.mapRect(imgViewRect);
+	QRectF imgRectWorld = worldMatrix.mapRect(imgViewRect);
 
-	//if (lb == -1)	lb = viewportRect.width()/2;
-	//if (ub == -1)	ub = viewportRect.height()/2;
+	if (lb == -1)	lb = viewportRect.width()/2;
+	if (ub == -1)	ub = viewportRect.height()/2;
 
-	//if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
-	//	worldMatrix.translate((lb-imgRectWorld.left())/worldMatrix.m11(), 0);
+	if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
+		worldMatrix.translate((lb-imgRectWorld.left())/worldMatrix.m11(), 0);
 
-	//if (imgRectWorld.top() > ub && imgRectWorld.height() > height())
-	//	worldMatrix.translate(0, (ub-imgRectWorld.top())/worldMatrix.m11());
+	if (imgRectWorld.top() > ub && imgRectWorld.height() > height())
+		worldMatrix.translate(0, (ub-imgRectWorld.top())/worldMatrix.m11());
 
-	//if (imgRectWorld.right() < lb && imgRectWorld.width() > width())
-	//	worldMatrix.translate((lb-imgRectWorld.right())/worldMatrix.m11(), 0);
+	if (imgRectWorld.right() < lb && imgRectWorld.width() > width())
+		worldMatrix.translate((lb-imgRectWorld.right())/worldMatrix.m11(), 0);
 
-	//if (imgRectWorld.bottom() < ub && imgRectWorld.height() > height())
-	//	worldMatrix.translate(0, (ub-imgRectWorld.bottom())/worldMatrix.m11());
+	if (imgRectWorld.bottom() < ub && imgRectWorld.height() > height())
+		worldMatrix.translate(0, (ub-imgRectWorld.bottom())/worldMatrix.m11());
 
 }
 
@@ -1649,6 +1649,7 @@ void DkViewPort::setBottomInfo(QString msg, int time) {
 void DkViewPort::toggleCropImageWidget(bool croping) {
 
 	if (croping) {
+		editRect->setImageRect(&imgViewRect);
 		editRect->reset();
 		editRect->resize(width(), height());
 		editRect->show();
@@ -1761,13 +1762,13 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 		return;
 
 	//limit zoom out ---
-	if (worldMatrix.m11() == 1 && factor < 1)
+	if (worldMatrix.m11() <= 0.1 && factor < 1)
 		return;
 
-	if (worldMatrix.m11()*factor < 1) {
-		resetView();
-		return;
-	}
+	//if (worldMatrix.m11()*factor < 1) {
+	//	resetView();
+	//	return;
+	//}
 
 	//limit zoom in ---
 	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)

@@ -1033,11 +1033,7 @@ public:
 		if (idx >= 0 && idx < 4)
 			angle += CV_PI*0.25;	// remove 45° for corners
 
-		qDebug() << "angle before: " << angle * DK_RAD2DEG;
-
 		angle = DkMath::normAngleRad(angle, -CV_PI/8.0, 7.0*CV_PI/8.0);
-
-		qDebug() << angle * DK_RAD2DEG;
 
 		if (angle > 5.0*CV_PI/8.0)
 			return QCursor(Qt::SizeBDiagCursor);
@@ -1273,6 +1269,11 @@ public:
 		this->imgTform = imgTform;
 	};
 
+	void setImageRect(QRectF* imgRect) {
+	
+		this->imgRect = imgRect;
+	};
+
 	void setVisible(bool visible);
 
 signals:
@@ -1308,5 +1309,6 @@ protected:
 	QBrush brush;
 	QVector<DkTransformRect*> ctrlPoints;
 	QCursor rotatingCursor;
+	QRectF* imgRect;
 
 };
