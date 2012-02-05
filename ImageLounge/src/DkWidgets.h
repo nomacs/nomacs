@@ -1186,7 +1186,7 @@ public:
 		}
 
 		tForm.rotateRadians(-angle);
-		tForm.translate(-ul.x(), -ul.y());
+		tForm.translate(cvRound(-ul.x()), cvRound(-ul.y()));
 
 	};
 

@@ -1679,6 +1679,8 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 		return;
 	}
 
+	qDebug() << cImgSize;
+
 	QImage img = QImage(cImgSize.x(), cImgSize.y(), QImage::Format_ARGB32);
 
 	QTransform imgScale;
@@ -1689,7 +1691,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	painter.setBackgroundMode(Qt::TransparentMode);
 	//painter.setBackground(QColor(0,0,0,10));	// TODO: transparent background
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
-	painter.setWorldTransform(tForm, true);
+	painter.setWorldTransform(tForm);
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();
 
