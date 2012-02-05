@@ -219,7 +219,6 @@ public:
 		return *this;
 	};
 
-
 	void reloadImg();
 
 	void saveMetaDataToFile(QFileInfo fileN = QFileInfo(), int orientation = 0);
@@ -370,6 +369,8 @@ public:
 	static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList());
 
+	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
+
 	bool updateFolder;
 	bool silent;
 
@@ -408,7 +409,7 @@ public:
 	};
 
 	DkMetaData getMetaData() {
-		return dataExif;
+		return imgMetaData;
 	};
 
 signals:
@@ -438,7 +439,7 @@ protected:
 	QFileSystemWatcher *watcher;
 	bool watcherEnabled;
 
-	DkMetaData dataExif;
+	//DkMetaData dataExif;
 
 	// threads
 	QMutex mutex;

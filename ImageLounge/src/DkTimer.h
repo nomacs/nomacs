@@ -69,6 +69,12 @@ public:
 		return stringifyTime(ct);
 	};
 
+	double getTotalTime() {
+
+		lastTick = clock();
+		return (double) (lastTick-firstTick) / CLOCKS_PER_SEC;
+	}
+
 	/**
 	 * Returns a string with the time interval.
 	 * The time interval since the last call of stop(), getIvl()

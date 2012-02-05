@@ -56,6 +56,8 @@ QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bm
 // formats we can load
 QStringList DkImageLoader::openFilters = openFilter.split(QString(";;"));
 
+DkMetaData DkImageLoader::imgMetaData = DkMetaData();
+
 DkImageLoader::DkImageLoader(QFileInfo file) {
 
 	qRegisterMetaType<QFileInfo>("QFileInfo");
@@ -95,7 +97,7 @@ void DkImageLoader::clearPath() {
 	
 	img = QImage();
 	file = QFileInfo();
-	dataExif = DkMetaData(file);	// unload exif too
+	imgMetaData.setFileName(file);	// unload exif too
 	//dir = QDir();
 }
 
@@ -281,10 +283,11 @@ void DkImageLoader::load(QFileInfo file, bool updateFolder, bool silent) {
 }
 
 bool DkImageLoader::loadFile(QFileInfo file) {
-
+	
+	DkTimer dtt;
 	qDebug() << "loading...";
 	QMutexLocker locker(&mutex);
-	
+
 	if (!file.exists()) {
 		
 		if (!silent) {
@@ -301,7 +304,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		}
 		return false;
 	}
-	
+
 	DkTimer dt;
 
 	//test exif
@@ -334,14 +337,15 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 
 	if (imgLoaded) {
 		
-		dataExif = DkMetaData(file);
-		int orientation = dataExif.getOrientation();
+		DkImageLoader::imgMetaData.setFileName(file);
+		int orientation = imgMetaData.getOrientation();
 
-		if (orientation != -1 && !dataExif.isTiff() && orientation != 0) {
+		if (orientation != -1 && !imgMetaData.isTiff() && orientation != 0) {
 			QTransform rotationMatrix;
 			rotationMatrix.rotate((double)orientation);
 			img = img.transformed(rotationMatrix);
 		}
+		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
 
 		// update watcher
 		if (this->file.exists() && watcher)
@@ -373,6 +377,8 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		qDebug() << "I did load it silent: " << silent;
 		return false;
 	}
+
+	qDebug() << "total loading time: " << QString::fromStdString(dtt.getTotal());
 
 	return true;
 }
@@ -839,7 +845,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	if (saved) {
 		
 		try {
-			dataExif.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
+			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
 		} catch (...) {
 			qDebug() << "could not copy meta-data to file" << filePath;
 		}
@@ -900,7 +906,7 @@ void DkImageLoader::saveRating(int rating) {
 	QMutexLocker locker(&mutex);
 
 	try {
-		dataExif.setRating(rating);
+		imgMetaData.setRating(rating);
 	}catch(...) {
 		emit updateInfoSignal("Sorry, I destroyed your file...");
 	}
@@ -989,7 +995,7 @@ void DkImageLoader::rotateImage(double angle) {
 		mutex.lock();
 		
 		updateInfoSignal("saving...", -1);
-		dataExif.saveOrientation((int)angle);
+		imgMetaData.saveOrientation((int)angle);
 		updateInfoSignal("saving...", 1);
 		qDebug() << "exif data saved (rotation)?";
 		mutex.unlock();
@@ -2339,13 +2345,14 @@ bool DkMetaData::isRaw() {
 }
 
 void DkMetaData::readMetaData() {
-
+	
+	DkTimer dt;
 	if (!mdata) {
 	
 		try {
 
 			exifImg = Exiv2::ImageFactory::open(file.absoluteFilePath().toStdString());
-
+			qDebug() << "open exif file" << QString::fromStdString(dt.getIvl());
 		} catch (...) {
 			mdata = false;
 			qDebug() << "could not open image for exif data";
@@ -2360,7 +2367,7 @@ void DkMetaData::readMetaData() {
 
 		try {
 			exifImg->readMetadata();
-
+			qDebug() << "readMetaData: " << QString::fromStdString(dt.getIvl());
 			if (!exifImg->good()) {
 				qDebug() << "metadata could not be read";
 				mdata = false;
@@ -2376,6 +2383,12 @@ void DkMetaData::readMetaData() {
 		mdata = true;
 
 	}
+
+	if (dt.getTotalTime() != 0) {
+		qDebug() << "reading metadata: " << QString::fromStdString(dt.getTotal());
+	}
+
+	
 }
 
 void DkMetaData::reloadImg() {

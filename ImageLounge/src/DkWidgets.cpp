@@ -2417,8 +2417,8 @@ void DkMetaDataInfo::getResolution(float &xResolution, float &yResolution) {
 	try {
 
 		if (!file.absoluteFilePath().isEmpty()) {
-			metaData = DkMetaData(file);
-			xRes = QString(metaData.getExifValue("XResolution").c_str());
+			//metaData = DkImageLoader::imgMetaData;
+			xRes = QString(DkImageLoader::imgMetaData.getExifValue("XResolution").c_str());
 			QStringList res;
 			res = xRes.split("/");
 			if (res.size() != 2) {
@@ -2426,7 +2426,7 @@ void DkMetaDataInfo::getResolution(float &xResolution, float &yResolution) {
 			}
 			xR = res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72;
 
-			yRes = QString(metaData.getExifValue("YResolution").c_str());
+			yRes = QString(DkImageLoader::imgMetaData.getExifValue("YResolution").c_str());
 			res = yRes.split("/");
 
 			qDebug() << "Resolution"  << xRes << " " << yRes;
@@ -2479,11 +2479,11 @@ QString DkMetaDataInfo::getGPSCoordinates() {
 		////gps test ends...
 
 		if (!file.absoluteFilePath().isEmpty()) {
-			metaData = DkMetaData(file);
-			Lat = QString(metaData.getNativeExifValue("Exif.GPSInfo.GPSLatitude").c_str());
-			LatRef = QString(metaData.getNativeExifValue("Exif.GPSInfo.GPSLatitudeRef").c_str());
-			Lon = QString(metaData.getNativeExifValue("Exif.GPSInfo.GPSLongitude").c_str());
-			LonRef = QString(metaData.getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef").c_str());
+			//metaData = DkImageLoader::imgMetaData;
+			Lat = QString(DkImageLoader::imgMetaData.getNativeExifValue("Exif.GPSInfo.GPSLatitude").c_str());
+			LatRef = QString(DkImageLoader::imgMetaData.getNativeExifValue("Exif.GPSInfo.GPSLatitudeRef").c_str());
+			Lon = QString(DkImageLoader::imgMetaData.getNativeExifValue("Exif.GPSInfo.GPSLongitude").c_str());
+			LonRef = QString(DkImageLoader::imgMetaData.getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef").c_str());
 			//example url
 			//http://maps.google.at/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
 
@@ -2585,7 +2585,7 @@ void DkMetaDataInfo::readTags() {
 		QString preIptc = "Iptc.Application2.";
 		
 		if (!file.absoluteFilePath().isEmpty()) {
-			metaData = DkMetaData(file);
+			//metaData = DkImageLoader::imgMetaData;
 
 			for (int i=0; i<camSearchTags.size(); i++) {
 				QString tmp, Value;
@@ -2599,7 +2599,7 @@ void DkMetaDataInfo::readTags() {
 					// aperture
 					if (i == DkMetaDataSettingsWidget::camData_aperture) {
 						
-						QString aValue = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						QString aValue = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()));
 						QStringList sList = aValue.split('/');
 
 						if (sList.size() == 2) {
@@ -2613,7 +2613,7 @@ void DkMetaDataInfo::readTags() {
 					// focal length
 					else if (i == DkMetaDataSettingsWidget::camData_focallength) {
 
-						QString aValue = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						QString aValue = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()));
 						QStringList sList = aValue.split('/');
 
 						if (sList.size() == 2) {
@@ -2627,7 +2627,7 @@ void DkMetaDataInfo::readTags() {
 					// exposure time
 					else if (i == DkMetaDataSettingsWidget::camData_exposuretime) {
 
-						QString aValue = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						QString aValue = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()));
 						QStringList sList = aValue.split('/');
 
 						if (sList.size() == 2) {
@@ -2653,7 +2653,7 @@ void DkMetaDataInfo::readTags() {
 					}
 					else if (i == DkMetaDataSettingsWidget::camData_exposuremode) {
 						qDebug() << "exposure mode was found";
-						Value = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						Value = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()));
 						int mode = Value.toInt();
 
 						if (mode >= 0 && mode < exposureModes.size())
@@ -2662,24 +2662,24 @@ void DkMetaDataInfo::readTags() {
 					} 
 					else if (i == DkMetaDataSettingsWidget::camData_flash) {
 
-						Value = QString::fromStdString(metaData.getExifValue(tmp.toStdString()));
+						Value = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()));
 						unsigned int mode = Value.toUInt();
 						Value = flashModes[mode];
 					}
 					else {
 						qDebug() << "size" << imgSize.width() << imgSize.height();
-						Value = QString(metaData.getExifValue(tmp.toStdString()).c_str());
+						Value = QString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()).c_str());
 					}
 				} else if (mapIptcExif[i] == 1) {
 					tmp = preIptc + camSearchTags.at(i);
-					Value = QString(metaData.getIptcValue(tmp.toStdString()).c_str());
+					Value = QString(DkImageLoader::imgMetaData.getIptcValue(tmp.toStdString()).c_str());
 				}
 
 				camDValues << Value;
 			}
 			//use getRating for Rating Value... otherwise the value is probably not correct: also Xmp.xmp.Rating, Xmp.MicrosoftPhoto.Rating is used
 			QString rating;
-			float tmp = metaData.getRating();
+			float tmp = DkImageLoader::imgMetaData.getRating();
 			if (tmp < 0) tmp=0;
 			rating.setNum(tmp);
 			descValues << rating;
@@ -2692,7 +2692,7 @@ void DkMetaDataInfo::readTags() {
 					//tmp = preExifI + camDTags.at(i);
 					tmp = descSearchTags.at(i);
 					qDebug() << tmp;
-					Value = QString(metaData.getExifValue(tmp.toStdString()).c_str());
+					Value = QString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()).c_str());
 
 					if (tmp.contains("Date")) {
 						
@@ -2702,7 +2702,7 @@ void DkMetaDataInfo::readTags() {
 
 				} else if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 1) {
 					tmp = preIptc + descSearchTags.at(i);
-					Value = QString(metaData.getIptcValue(tmp.toStdString()).c_str());
+					Value = QString(DkImageLoader::imgMetaData.getIptcValue(tmp.toStdString()).c_str());
 				} else if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 2) {
 					//all other defined tags not in metadata
 					tmp = descSearchTags.at(i);
@@ -2914,8 +2914,8 @@ void DkMetaDataInfo::setResolution(int xRes, int yRes) {
 	x=x+"/1";
 	y=y+"/1";
 
-	metaData.setExifValue("Exif.Image.XResolution",x.toStdString());
-	metaData.setExifValue("Exif.Image.YResolution",y.toStdString());
+	DkImageLoader::imgMetaData.setExifValue("Exif.Image.XResolution",x.toStdString());
+	DkImageLoader::imgMetaData.setExifValue("Exif.Image.YResolution",y.toStdString());
 
 }
 

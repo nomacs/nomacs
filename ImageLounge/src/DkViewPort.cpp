@@ -659,6 +659,7 @@ void DkViewPort::setImage(cv::Mat newImg) {
 
 void DkViewPort::setImage(QImage newImg) {
 
+	DkTimer dt;
 	imgPyramid.clear();
 
 	overviewWindow->setImage(QImage());	// clear overview
@@ -681,9 +682,8 @@ void DkViewPort::setImage(QImage newImg) {
 
 	overviewWindow->setImage(imgQt);
 
-	DkMetaData md = loader->getMetaData();
-	QString dateString = QString::fromStdString(md.getExifValue("DateTimeOriginal"));
-	fileInfoLabel->updateInfo(loader->getFile(), dateString, md.getRating());
+	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
+	fileInfoLabel->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
 
 	if (centerLabel) centerLabel->stop();
 	if (bottomLabel) bottomLabel->stop();
@@ -693,9 +693,10 @@ void DkViewPort::setImage(QImage newImg) {
 	
 	rating = -1;
 	if (loader && ratingLabel)
-		ratingLabel->setRating(md.getRating());
+		ratingLabel->setRating(DkImageLoader::imgMetaData.getRating());
 
 	update();
+	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 }
 
 void DkViewPort::tcpSendImage() {
@@ -1447,12 +1448,12 @@ void DkViewPort::updateRating(int rating) {
 
 void DkViewPort::unloadImage() {
 
-	// TODO: tell loader that his image is not up to date anymore
 	// TODO: if image is not saved... ask user?! -> resize & crop
-	if (imgQt.isNull() || rating == -1 || rating == loader->getMetaData().getRating()) 
-		return;
+	if (!imgQt.isNull() && loader && rating != -1 && rating != loader->getMetaData().getRating()) 
+		loader->saveRating(rating);
 
-	if (loader) loader->saveRating(rating);
+	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
+
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool updateFolder, bool silent) {

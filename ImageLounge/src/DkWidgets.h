@@ -829,9 +829,9 @@ public:
 	void getResolution(float &xResolution, float &yResolution);
 	QString getGPSCoordinates();
 	
-	DkMetaData* getMetaData() {
-		return &metaData;
-	};
+	//DkMetaData* getMetaData() {
+	//	return &metaData;
+	//};
 	
 signals:
 	void enableGpsSignal(bool);
@@ -841,11 +841,15 @@ public slots:
 		this->file = file;
 		imgSize = s;
 		worldMatrix = QTransform();
+
+		DkTimer dt;
 		readTags();
-		
+		qDebug() << "reading tags: " << QString::fromStdString(dt.getTotal());
+
 		emit enableGpsSignal(!getGPSCoordinates().isEmpty());
 		
 		createLabels();
+		qDebug() << "reading tags & creating labels: " << QString::fromStdString(dt.getTotal());
 
 		//QString gpsTest = getGPSCoordinates();
 		//QString a,b;
@@ -886,7 +890,7 @@ protected:
 	QVector<int> maxLenLabel;
 
 	QFileInfo file;
-	DkMetaData metaData;
+	//DkMetaData metaData;
 	QVector<DkLabel *> pLabels;
 	QVector<DkLabel *> pValues;
 	QSize imgSize;
@@ -1186,7 +1190,7 @@ public:
 		}
 
 		tForm.rotateRadians(-angle);
-		tForm.translate(cvRound(-ul.x()), cvRound(-ul.y()));
+		tForm.translate(cvRound(-ul.x()), cvRound(-ul.y()));	// round guarantees that pixels are not interpolated
 
 	};
 

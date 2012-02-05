@@ -845,8 +845,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			
 			if (viewport()->getImageLoader()->getFile().exists())
 				mimeData->setUrls(urls);
-			
-			if (!viewport()->getImage().isNull())
+			else if (!viewport()->getImage().isNull())
 				mimeData->setImageData(viewport()->getImage());
 
 			QDrag* drag = new QDrag(this);
@@ -999,8 +998,7 @@ void DkNoMacs::copyImage() {
 	
 	if (viewport()->getImageLoader()->getFile().exists())
 		mimeData->setUrls(urls);
-
-	if (!viewport()->getImage().isNull())
+	else if (!viewport()->getImage().isNull())
 		mimeData->setImageData(viewport()->getImage());
 
 	QClipboard* clipboard = QApplication::clipboard();
@@ -1031,7 +1029,7 @@ void DkNoMacs::pasteImage() {
 
 			// delete current information
 			if (viewport()->getImageLoader()) {
-				viewport()->getImageLoader()->clearPath();
+				//viewport()->getImageLoader()->clearPath();
 				viewport()->getImageLoader()->setImage(dropImg);
 				viewport()->setImage(dropImg);
 				qDebug() << "loader path: " << viewport()->getImageLoader()->getFile().absoluteFilePath();
@@ -1412,8 +1410,8 @@ void DkNoMacs::resizeImage() {
 
 		if (resizeDialog->resample()) {
 
-			// do not load the old image -> as the transformed image is not the same anymore
-			viewport()->getImageLoader()->enableWatcher(false);
+			//// do not load the old image -> as the transformed image is not the same anymore
+			//viewport()->getImageLoader()->enableWatcher(false);
 
 			// this reloads the image -> that's not what we want!
 			if (metaData)
@@ -1421,8 +1419,10 @@ void DkNoMacs::resizeImage() {
 
 			QImage rImg = resizeDialog->getResizedImage();
 
-			if (!rImg.isNull())
+			if (!rImg.isNull()) {
+				viewport()->unloadImage();
 				viewport()->setImage(rImg);
+			}
 			else {
 				errorDialog("Sorry, I cannot transform the image.");
 			}
