@@ -80,6 +80,8 @@ public:
 
 	virtual QImage& getImage();
 
+	virtual QRectF getImageViewRect();
+
 signals:
 	void enableNoImageSignal(bool enable);
 

@@ -100,6 +100,7 @@ enum {
 	shortcut_frameless		= Qt::Key_F10,
 	shortcut_reset_view 	= Qt::CTRL + Qt::Key_0,
 	shortcut_zoom_full		= Qt::CTRL + Qt::Key_1,
+	shortcut_fit_frame		= Qt::CTRL + Qt::Key_2,
 	shortcut_zoom_in 		= Qt::Key_Plus,
 	shortcut_zoom_out		= Qt::Key_Minus,
 	shortcut_panning_left 	= Qt::CTRL + Qt::Key_Left,
@@ -177,6 +178,7 @@ enum viewActions {
 	menu_view_fullscreen,
 	menu_view_reset,
 	menu_view_100,
+	menu_view_fit_frame,
 	menu_view_zoom_in,
 	menu_view_zoom_out,
 	menu_view_show_overview,
@@ -359,7 +361,7 @@ public slots:
 	void enableNoImageActions(bool enable = true);
 	void checkForUpdate();
 	void setFrameless(bool frameless);
-
+	void fitFrame();
 
 protected:
 	

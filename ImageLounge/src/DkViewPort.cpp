@@ -203,6 +203,11 @@ QImage& DkBaseViewPort::getImage() {
 	return imgQt;
 }
 
+QRectF DkBaseViewPort::getImageViewRect() {
+	
+	return worldMatrix.mapRect(imgViewRect);
+}
+
 void DkBaseViewPort::unloadImage() {
 }
 

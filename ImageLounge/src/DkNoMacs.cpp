@@ -333,6 +333,7 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewMenu->addAction(viewActions[menu_view_reset]);
 	viewMenu->addAction(viewActions[menu_view_100]);
+	viewMenu->addAction(viewActions[menu_view_fit_frame]);
 	viewMenu->addAction(viewActions[menu_view_zoom_in]);
 	viewMenu->addAction(viewActions[menu_view_zoom_out]);
 	viewMenu->addSeparator();
@@ -372,6 +373,7 @@ void DkNoMacs::createContextMenu() {
 	viewContextMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewContextMenu->addAction(viewActions[menu_view_reset]);
 	viewContextMenu->addAction(viewActions[menu_view_100]);
+	viewContextMenu->addAction(viewActions[menu_view_fit_frame]);
 
 	QMenu* editContextMenu = contextMenu->addMenu(tr("&Edit"));
 	editContextMenu->addAction(editActions[menu_edit_rotate_cw]);
@@ -511,6 +513,11 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_statusbar]->setStatusTip(tr("Show Statusbar"));
 	viewActions[menu_view_show_statusbar]->setCheckable(true);
 	connect(viewActions[menu_view_show_statusbar], SIGNAL(toggled(bool)), this, SLOT(showStatusBar(bool)));
+
+	viewActions[menu_view_fit_frame] = new QAction(tr("&Fit Window"), this);
+	viewActions[menu_view_fit_frame]->setShortcut(QKeySequence(shortcut_fit_frame));
+	viewActions[menu_view_fit_frame]->setStatusTip(tr("Fit window to the image"));
+	connect(viewActions[menu_view_fit_frame], SIGNAL(triggered()), this, SLOT(fitFrame()));
 
 	QList<QKeySequence> scs;
 	scs.append(shortcut_full_screen_ff);
@@ -726,6 +733,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	viewActions[menu_view_fullscreen]->setEnabled(enable);
 	viewActions[menu_view_reset]->setEnabled(enable);
 	viewActions[menu_view_100]->setEnabled(enable);
+	viewActions[menu_view_fit_frame]->setEnabled(enable);
 	viewActions[menu_view_zoom_in]->setEnabled(enable);
 	viewActions[menu_view_zoom_out]->setEnabled(enable);
 }
@@ -1102,6 +1110,35 @@ void DkNoMacs::setFrameless(bool frameless) {
 		close();
 
 	qDebug() << "frameless arguments: " << args;
+}
+
+void DkNoMacs::fitFrame() {
+
+	QRectF viewRect = viewport()->getImageViewRect();
+	QRectF vpRect = viewport()->geometry();
+	QRectF nmRect = frameGeometry();
+	QSize frDiff = frameGeometry().size()-geometry().size();
+
+	// compute new size
+	QPointF c = nmRect.center();
+	nmRect.setSize(nmRect.size() + viewRect.size() - vpRect.size());
+	nmRect.moveCenter(c);
+	
+	// still fits on screen?
+	QDesktopWidget* dw = QApplication::desktop();
+	QRect screenRect = dw->availableGeometry(this);
+	QRect newGeometry = screenRect.intersected(nmRect.toRect());
+	
+	// correct frame
+	newGeometry.setSize(newGeometry.size()-frDiff);
+	newGeometry.moveTopLeft(newGeometry.topLeft() - frameGeometry().topLeft()+geometry().topLeft());
+
+	setGeometry(newGeometry);
+
+	// reset viewport if we did not clip -> compensates round-off errors
+	if (screenRect.contains(nmRect.toRect()))
+		viewport()->resetView();
+
 }
 
 void DkNoMacs::opacityDown() {
