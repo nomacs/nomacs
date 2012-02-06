@@ -1030,12 +1030,24 @@ public:
 
 	QCursor cpCursor(int idx) {
 
-		DkVector edge = rect[(idx+1) % 4] - rect[idx % 4];
-		double angle = edge.normalVec().angle();	// the angle of the normal vector
-		
-		// corners
-		if (idx >= 0 && idx < 4)
-			angle += CV_PI*0.25;	// remove 45° for corners
+		double angle = 0;
+
+		if (idx >= 0 && idx < 4) {
+
+			// this seems a bit complicated...
+			// however the points are not necessarily stored in clockwise order...
+			DkVector e1 = rect[(idx+1) % 4] - rect[idx];
+			DkVector e2 = rect[(idx+3) % rect.size()] - rect[idx];
+			e1.normalize();
+			e2.normalize();
+			DkVector rv = e1-e2;
+			rv = rv.normalVec();
+			angle = rv.angle();
+		}
+		else {
+			DkVector edge = rect[(idx+1) % 4] - rect[idx % 4];
+			angle = edge.normalVec().angle();	// the angle of the normal vector
+		}
 
 		angle = DkMath::normAngleRad(angle, -CV_PI/8.0, 7.0*CV_PI/8.0);
 
