@@ -241,6 +241,7 @@ set (NOMACS_SOURCES
         src/DkWidgets.cpp
         src/DkSettings.cpp
         src/BorderLayout.cpp
+		src/DkTransferToolBar.cpp
         src/DkMenu.cpp
         src/main.cpp
 )
@@ -262,6 +263,7 @@ set (NOMACS_MOCS
         src/DkWidgets.h
         src/DkMenu.h
         src/DkSettings.h
+		src/DkTransferToolBar.h
         #src/BorderLayout.h
         #src/resource.h
 )
@@ -279,6 +281,7 @@ set (NOMACS_HEADERS
         src/DkWidgets.h
         src/DkMenu.h
         src/DkSettings.h
+		src/DkTransferToolBar.h
         src/BorderLayout.h
         #src/resource.h
 )

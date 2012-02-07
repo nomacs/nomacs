@@ -31,6 +31,7 @@
 bool DkSettings::AppSettings::showToolBar = true;
 bool DkSettings::AppSettings::showMenuBar = true;
 bool DkSettings::AppSettings::showStatusBar = false;
+int DkSettings::AppSettings::appMode = 0;
 
 int DkSettings::GlobalSettings::skipImgs = 10;
 bool DkSettings::GlobalSettings::showOverview = true;
@@ -99,7 +100,7 @@ void DkSettings::load() {
 	AppSettings::showMenuBar = settings.value("AppSettings/showMenuBar", DkSettings::AppSettings::showMenuBar).toBool();
 	AppSettings::showToolBar = settings.value("AppSettings/showToolBar", DkSettings::AppSettings::showToolBar).toBool();
 	AppSettings::showStatusBar = settings.value("AppSettings/showStatusBar", DkSettings::AppSettings::showStatusBar).toBool();
-
+	
 	GlobalSettings::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::GlobalSettings::skipImgs).toInt();
 	GlobalSettings::showOverview = settings.value("GlobalSettings/hideOverview", DkSettings::GlobalSettings::showOverview = true).toBool();
 	GlobalSettings::showInfo = settings.value("GlobalSettings/showInfo", DkSettings::GlobalSettings::showInfo = true).toBool();
@@ -154,6 +155,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/showMenuBar", DkSettings::AppSettings::showMenuBar);
 	settings.setValue("AppSettings/showToolBar", DkSettings::AppSettings::showToolBar);
 	settings.setValue("AppSettings/showStatusBar", DkSettings::AppSettings::showStatusBar);
+	settings.setValue("AppSettings/appMode", DkSettings::AppSettings::appMode);
 
 	settings.setValue("GlobalSettings/skipImgs",GlobalSettings::skipImgs);
 	settings.setValue("GlobalSettings/hideOverview",GlobalSettings::showOverview);
@@ -204,6 +206,8 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::AppSettings::showMenuBar = true;
 	DkSettings::AppSettings::showToolBar = true;
 	DkSettings::AppSettings::showStatusBar = false;
+	DkSettings::AppSettings::appMode = 0;
+
 
 	DkSettings::GlobalSettings::skipImgs = 10;
 	DkSettings::GlobalSettings::showOverview = true;

@@ -62,6 +62,7 @@
 #include "DkWidgets.h"
 #include "DkSettings.h"
 #include "DkMenu.h"
+#include "DkTransferToolBar.h"
 
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
@@ -96,6 +97,7 @@ enum {
 	shortcut_show_toolbar	= Qt::CTRL + Qt::Key_B,
 	shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
 	shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
+	shortcut_show_transfer	= Qt::CTRL + Qt::Key_R,
 	shortcut_full_screen_ff	= Qt::Key_F11,
 	shortcut_frameless		= Qt::Key_F10,
 	shortcut_reset_view 	= Qt::CTRL + Qt::Key_0,
@@ -175,6 +177,7 @@ enum viewActions {
 	menu_view_show_menu,
 	menu_view_show_toolbar,
 	menu_view_show_statusbar,
+	menu_view_show_transfertoolbar,
 	menu_view_fullscreen,
 	menu_view_reset,
 	menu_view_100,
@@ -295,6 +298,14 @@ class DllExport DkNoMacs : public QMainWindow {
 	Q_OBJECT
 
 public:
+	enum modes {
+		mode_default = 0,
+		mode_frameless,
+		mode_contrast,
+		mode_end,
+	};
+
+
 	virtual ~DkNoMacs();
 
 	void release();
@@ -362,6 +373,7 @@ public slots:
 	void checkForUpdate();
 	void setFrameless(bool frameless);
 	void fitFrame();
+	void setContrast(bool contrast);
 
 protected:
 	
@@ -522,5 +534,21 @@ public slots:
 protected:
 	void closeEvent(QCloseEvent *event);
 	bool eventFilter(QObject *obj, QEvent *event);
+
+};
+
+class DllExport DkNoMacsContrast : public DkNoMacs {
+	Q_OBJECT
+
+public:
+	DkNoMacsContrast(QWidget *parent = 0, Qt::WFlags flags = 0);
+	
+	virtual ~DkNoMacsContrast();
+	void release();	
+
+protected:
+	void createTransferToolbar();
+
+	DkTransferToolBar* transferToolBar;
 
 };

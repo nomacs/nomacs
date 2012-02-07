@@ -75,6 +75,7 @@ int main(int argc, char *argv[]) {
 	QApplication a(argc, (char**)argv);
 #endif
 
+
 	QStringList args = a.arguments();
 	DkNoMacs* w;
 
@@ -85,9 +86,17 @@ int main(int argc, char *argv[]) {
 	qDebug() << "\n";
 	// DEBUG --------------------------------------------------------------------
 
-	if (args.size() > 2 && !args[2].compare("1")) {
+	QSettings settings;
+
+	int mode = settings.value("AppSettings/appMode", DkSettings::AppSettings::appMode).toInt();
+
+	if (mode == DkNoMacs::mode_frameless) {
 		w = static_cast<DkNoMacs*> (new DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
+	}
+	else if (mode == DkNoMacs::mode_contrast) {
+		w = static_cast<DkNoMacs*> (new DkNoMacsContrast());
+		qDebug() << "this is the contrast nomacs...";
 	}
 	else
 		w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it

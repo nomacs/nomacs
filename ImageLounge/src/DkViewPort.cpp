@@ -2057,6 +2057,244 @@ QTransform DkViewPortFrameless::getScaledImageMatrix() {
 	return imgMatrix;
 }
 
+DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
+
+	isColorPickerActive = false;
+	activeChannel = 0;
+	
+	colorTable = QVector<QRgb>(256);
+	for (int i = 0; i < colorTable.size(); i++) 
+		colorTable[i] = qRgb(i, i, i);
+	
+	drawFalseColorImg = true;
+
+}
+
+DkViewPortContrast::~DkViewPortContrast() {
+
+	release();
+}
+
+void DkViewPortContrast::release() {
+
+	DkViewPort::release();
+}
+
+void DkViewPortContrast::changeChannel(int channel) {
+
+	activeChannel = channel;
+	
+	if (!imgQt.isNull()) {
+		falseColorImg = imgs[activeChannel];
+		falseColorImg.setColorTable(colorTable);
+
+		update();
+	}
+
+}
+
+
+void DkViewPortContrast::changeColorTable(QGradientStops stops) {
+
+	
+	qreal pos = stops.at(0).first;
+	qreal fac;
+
+	qreal actPos, leftStop, rightStop;
+	QColor tmp;
+
+	int rLeft, gLeft, bLeft, rRight, gRight, bRight;
+	int rAct, gAct, bAct;
+
+	// At least one stop has to be set:
+	tmp = stops.at(0).second;
+	tmp.getRgb(&rLeft, &gLeft, &bLeft);
+	leftStop = stops.at(0).first;
+
+	// If just one stop is set, we can speed things up:
+	if (stops.size() == 1) {
+		for (int i = 0; i < colorTable.size(); i++)
+			colorTable[i] = qRgb(rLeft, gLeft, bLeft);
+	}
+	// Otherwise interpolate:
+	else {
+
+		int rightStopIdx = 1;
+		tmp = stops.at(rightStopIdx).second;
+		tmp.getRgb(&rRight, &gRight, &bRight);
+		rightStop = stops.at(rightStopIdx).first;
+	
+		for (int i = 0; i < colorTable.size(); i++) {
+			actPos = (qreal) i / colorTable.size();
+
+			if (actPos > rightStop) {
+				leftStop = rightStop;	
+
+				rLeft = rRight;
+				gLeft = gRight;
+				bLeft = bRight;
+
+				if (stops.size() > rightStopIdx + 1) {
+					rightStopIdx++;
+					rightStop = stops.at(rightStopIdx).first;
+					tmp = stops.at(rightStopIdx).second;
+					tmp.getRgb(&rRight, &gRight, &bRight);
+				}
+
+			}
+		
+			if (actPos <= leftStop)
+				colorTable[i] = qRgb(rLeft, gLeft, bLeft);
+			else if (actPos >= rightStop)
+				colorTable[i] = qRgb(rRight, gRight, bRight);
+			else {
+				fac = (actPos - leftStop) / (rightStop - leftStop);
+				rAct = cvRound(rLeft + (rRight - rLeft) * fac);
+				gAct = cvRound(gLeft + (gRight - gLeft) * fac);
+				bAct = cvRound(bLeft + (bRight - bLeft) * fac);
+				colorTable[i] = qRgb(rAct, gAct, bAct);
+			}	
+		}
+	}
+
+
+	falseColorImg.setColorTable(colorTable);
+	
+	update();
+
+	
+	
+}
+
+void DkViewPortContrast::draw(QPainter *painter) {
+
+
+	if (drawFalseColorImg)
+		painter->drawImage(imgViewRect, falseColorImg, imgRect);
+	else
+		painter->drawImage(imgViewRect, imgQt, imgRect);
+
+	update();
+}
+
+void DkViewPortContrast::setImage(QImage newImg) {
+
+	DkViewPort::setImage(newImg);
+
+	if (imgQt.format() == QImage::Format_Indexed8) {
+		imgs = QVector<QImage>(1);
+		imgs[0] = imgQt;
+		activeChannel = 0;
+	}
+	else {	
+
+		#ifdef WITH_OPENCV
+			
+			imgs = QVector<QImage>(4);
+			vector<Mat> planes;
+			Mat imgUC3;
+			int format = imgQt.format();
+			imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC4, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
+			split(imgUC3, planes);
+			
+			// Store the 3 channels in an QImage Vector.
+			//Be aware that OpenCV 'swaps' the rgb triplet, hence process it in a descending way:
+			int idx = 0;
+			for (int i = 2; i >= 0; i--) {
+
+				imgs[idx] = QImage((const unsigned char*)planes[i].data, planes[i].cols, planes[i].rows, planes[i].step,  QImage::Format_Indexed8);
+				imgs[idx] = imgs[idx].copy();
+				idx++;
+
+			}
+
+			// The last element in the vector contains the gray scale 'average' of the 3 channels:
+			Mat grayMat;
+			cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
+			imgs[3] = QImage((const unsigned char*)grayMat.data, grayMat.cols, grayMat.rows, grayMat.step,  QImage::Format_Indexed8);
+			imgs[3] = imgs[3].copy();
+			planes.clear();
+
+		#endif
+	}
+
+	
+	falseColorImg = imgs[activeChannel];
+	falseColorImg.setColorTable(colorTable);
+	
+	update();
+
+	emit imageModeSet(imgQt.isGrayscale());
+}
+
+void DkViewPortContrast::pickColor() {
+
+	isColorPickerActive = true;
+	this->setCursor(Qt::CrossCursor);
+
+}
+
+void DkViewPortContrast::enableTF(bool enable) {
+
+	drawFalseColorImg = enable;
+
+}
+
+void DkViewPortContrast::mousePressEvent(QMouseEvent *event) {
+
+
+	if (isColorPickerActive) {
+
+		QPointF imgPos = worldMatrix.inverted().map(event->pos());
+		imgPos = imgMatrix.inverted().map(imgPos);
+
+		QPoint xy = imgPos.toPoint();
+
+		bool isPointValid = true;
+
+		if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgQt.width() || xy.y() >= imgQt.height())
+			isPointValid = false;
+
+		if (isPointValid) {
+
+			int colorIdx = imgs[activeChannel].pixelIndex(xy);
+			qreal normedPos = (qreal) colorIdx / 255;
+			emit tFSliderAdded(normedPos);
+
+		}
+
+		unsetCursor();
+		isColorPickerActive = false;
+
+	} 
+	else
+		DkViewPort::mousePressEvent(event);
+
+}
+
+void DkViewPortContrast::keyPressEvent(QKeyEvent* event) {
+
+	if ((event->key() == Qt::Key_Escape) && isColorPickerActive) {
+		unsetCursor();
+		isColorPickerActive = false;
+		update();
+		return;
+	}
+	else
+		DkViewPort::keyPressEvent(event);
+}
+
+QImage& DkViewPortContrast::getImage() {
+
+	if (drawFalseColorImg)
+		return falseColorImg;
+	else
+		return imgQt;
+
+}
+
+
 // custom events --------------------------------------------------------------------
 //QEvent::Type DkInfoEvent::infoEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
 //QEvent::Type DkLoadImageEvent::eventType = static_cast<QEvent::Type>(QEvent::registerEventType());
+

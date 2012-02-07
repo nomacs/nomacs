@@ -40,6 +40,7 @@
 #include <QtGui/QApplication>
 #include <QUrl>
 #include <QPrinter>
+#include <QtGui/QGradientStops>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -51,6 +52,9 @@
 #include "DkWidgets.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
+
+#include "DkMath.h"
+
 
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
@@ -328,6 +332,46 @@ protected:
 	void drawFrame(QPainter* painter);
 	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
+
+};
+
+class DllExport DkViewPortContrast : public DkViewPort {
+	Q_OBJECT
+
+public:
+	DkViewPortContrast(QWidget *parent = 0, Qt::WFlags flags = 0);
+	virtual ~DkViewPortContrast();
+
+	void release();
+
+signals:
+	void tFSliderAdded(qreal pos);
+	void imageModeSet(bool isGrayScale);
+
+
+public slots:
+	//TODO: remove the functions, which are not used anymore:
+	void changeChannel(int channel);
+	void changeColorTable(QGradientStops stops);
+	void pickColor();
+	void enableTF(bool enable);
+	QImage& getImage();
+
+	virtual void setImage(QImage newImg);
+
+protected:
+	virtual void draw(QPainter *painter);
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void keyPressEvent(QKeyEvent *event);
+private:
+	QImage falseColorImg;
+	bool drawFalseColorImg;
+	bool isColorPickerActive;
+	int activeChannel;
+	//Mat origImg, cmImg, imgUC3;
+		
+	QVector<QImage> imgs;
+	QVector<QRgb> colorTable;
 
 };
 

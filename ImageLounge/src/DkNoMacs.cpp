@@ -323,6 +323,7 @@ void DkNoMacs::createMenu() {
 	viewToolsMenu->addAction(viewActions[menu_view_show_menu]);
 	viewToolsMenu->addAction(viewActions[menu_view_show_toolbar]);
 	viewToolsMenu->addAction(viewActions[menu_view_show_statusbar]);
+	viewToolsMenu->addAction(viewActions[menu_view_show_transfertoolbar]);
 	viewMenu->addAction(viewActions[menu_view_show_preview]);
 	viewMenu->addAction(viewActions[menu_view_show_exif]);
 	viewMenu->addAction(viewActions[menu_view_show_overview]);
@@ -513,6 +514,14 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_statusbar]->setStatusTip(tr("Show Statusbar"));
 	viewActions[menu_view_show_statusbar]->setCheckable(true);
 	connect(viewActions[menu_view_show_statusbar], SIGNAL(toggled(bool)), this, SLOT(showStatusBar(bool)));
+
+	// Added by fabian - for transferfunction:
+	viewActions[menu_view_show_transfertoolbar] = new QAction(tr("Show &Transferfunction"), this);
+	viewActions[menu_view_show_transfertoolbar]->setShortcut(QKeySequence(shortcut_show_transfer));
+	viewActions[menu_view_show_transfertoolbar]->setStatusTip(tr("Show Transferfunction"));
+	viewActions[menu_view_show_transfertoolbar]->setCheckable(true);
+	viewActions[menu_view_show_transfertoolbar]->setChecked(false);
+	connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
 
 	viewActions[menu_view_fit_frame] = new QAction(tr("&Fit Window"), this);
 	viewActions[menu_view_fit_frame]->setShortcut(QKeySequence(shortcut_fit_frame));
@@ -1099,7 +1108,9 @@ void DkNoMacs::setFrameless(bool frameless) {
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
 	if (objectName() != "DkNoMacsFrameless")
-		args.append("1");
+		DkSettings::AppSettings::appMode = mode_frameless;
+	else
+		DkSettings::AppSettings::appMode = mode_default;
 
 	bool started = process.startDetached(exe, args);
 
@@ -1506,6 +1517,33 @@ void DkNoMacs::loadRecursion() {
 	viewport()->setImage(img);
 }
 
+// Added by fabian for transfer function:
+
+void DkNoMacs::setContrast(bool contrast) {
+
+	qDebug() << "contrast: " << contrast;
+
+	if (!viewport()) 
+		return;
+
+	QString exe = QApplication::applicationFilePath();
+	QStringList args;
+	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
+	
+	if (contrast)
+		DkSettings::AppSettings::appMode = mode_contrast;
+	else
+		DkSettings::AppSettings::appMode = mode_default;
+
+	bool started = process.startDetached(exe, args);
+
+	// close me if the new instance started
+	if (started)
+		close();
+
+	qDebug() << "contrast arguments: " << args;
+}
+
 //bool DkNoMacs::event(QEvent *event) {
 //
 //	if (event->type() > QEvent::User)
@@ -1840,6 +1878,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, f
 	vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
+	DkSettings::AppSettings::appMode = 0;
 
 	initLanClient();
 	qDebug() << "lan client initialized...";
@@ -1847,6 +1886,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, f
 
 	// show it...
 	show();
+	DkSettings::AppSettings::appMode = mode_default;
 
 	qDebug() << "viewport (normal) created...";
 }
@@ -2076,6 +2116,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		
 		this->setGeometry(screenRects);
 		setObjectName("DkNoMacsFrameless");
+		DkSettings::AppSettings::appMode = mode_frameless;
 		
 		// TODO: overload the resize dialog
 }
@@ -2134,3 +2175,106 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 	DkNoMacs::closeEvent(event);
 
 }
+
+// Transfer function:
+
+DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
+	: DkNoMacs(parent, flags) {
+
+
+	setObjectName("DkNoMacsContrast");
+		
+	// init members
+	DkViewPortContrast* vp = new DkViewPortContrast(this);
+	vp->setAlignment(Qt::AlignHCenter);
+	setCentralWidget(vp);
+
+	init();
+
+	createTransferToolbar();
+
+	setAcceptDrops(true);
+	setMouseTracking (true);	//receive mouse event everytime
+
+	updater = new DkUpdater();
+	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+	if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
+		updater->checkForUpdated();	// TODO: is threaded??
+	
+	// title signals
+	connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
+	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
+	connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
+	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
+	//connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
+	connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+
+
+	vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
+	vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
+	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
+
+	//viewActions[menu_view_show_transfertoolbar]->setChecked(true);
+
+	//initLanClient();
+	//qDebug() << "lan client initialized...";
+	//emit sendTitleSignal(windowTitle());
+
+	DkSettings::AppSettings::appMode = mode_contrast;
+	setObjectName("DkNoMacsContrast");
+	
+	// show it...
+	show();
+
+	// TODO: this should be checked but no event should be called
+	disconnect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+	viewActions[menu_view_show_transfertoolbar]->setChecked(true);
+	connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+
+	qDebug() << "viewport (normal) created...";
+}
+
+DkNoMacsContrast::~DkNoMacsContrast() {
+	release();
+}
+
+void DkNoMacsContrast::release() {
+}
+
+void DkNoMacsContrast::createTransferToolbar() {
+
+	transferToolBar = new DkTransferToolBar(this);
+	
+	addToolBar(transferToolBar);
+	transferToolBar->setObjectName("TransferToolBar");
+
+	transferToolBar->setMinimumHeight(5000);
+	
+
+	transferToolBar->layout()->setSizeConstraint(QLayout::SetMinimumSize);
+	
+	connect(transferToolBar, SIGNAL(colorTableChanged(QGradientStops)),  viewport(), SLOT(changeColorTable(QGradientStops)));
+	connect(transferToolBar, SIGNAL(channelChanged(int)),  viewport(), SLOT(changeChannel(int)));
+	connect(transferToolBar, SIGNAL(pickColorRequest()),  viewport(), SLOT(pickColor()));
+	connect(transferToolBar, SIGNAL(tFEnabled(bool)), viewport(), SLOT(enableTF(bool)));
+	connect((DkViewPortContrast*)centralWidget(), SIGNAL(tFSliderAdded(qreal)), transferToolBar, SLOT(insertSlider(qreal)));
+	connect((DkViewPortContrast*)centralWidget(), SIGNAL(imageModeSet(bool)), transferToolBar, SLOT(setImageMode(bool)));
+
+// play with themes only on windows - users used to look at it there ;)
+// all other platforms have "native look and feel"
+#ifdef Q_WS_WIN
+	transferToolBar->setIconSize(QSize(16, 16));
+	transferToolBar->setStyleSheet(
+					//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
+					QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+					+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
+					//+ QString("QToolButton{border: none; margin: 3px;}")
+					//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
+					);
+#endif
+
+};

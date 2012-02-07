@@ -74,6 +74,7 @@ class DkSettings : public QObject {
 			static bool showToolBar;
 			static bool showMenuBar;
 			static bool showStatusBar;
+			static int appMode;
 		};
 
 		struct DisplaySettings {
