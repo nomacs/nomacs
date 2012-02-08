@@ -16,7 +16,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	//this->setMinimumHeight(500);
 
 	enableTFCheckBox = new QCheckBox("Enable");
-	enableTFCheckBox->setChecked(true);
+	//enableTFCheckBox->setChecked(true);
 	this->addWidget(enableTFCheckBox);
 
 	this->addSeparator();

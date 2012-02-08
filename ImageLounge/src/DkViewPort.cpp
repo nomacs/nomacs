@@ -2066,7 +2066,7 @@ DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WFlags flags) : DkVi
 	for (int i = 0; i < colorTable.size(); i++) 
 		colorTable[i] = qRgb(i, i, i);
 	
-	drawFalseColorImg = true;
+	drawFalseColorImg = false;
 
 }
 
@@ -2192,11 +2192,10 @@ void DkViewPortContrast::setImage(QImage newImg) {
 			
 			imgs = QVector<QImage>(4);
 			vector<Mat> planes;
-			Mat imgUC3;
-			int format = imgQt.format();
-			imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC4, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
-			split(imgUC3, planes);
 			
+			Mat imgUC3;
+			imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
+			split(imgUC3, planes);
 			// Store the 3 channels in an QImage Vector.
 			//Be aware that OpenCV 'swaps' the rgb triplet, hence process it in a descending way:
 			int idx = 0;
@@ -2207,7 +2206,6 @@ void DkViewPortContrast::setImage(QImage newImg) {
 				idx++;
 
 			}
-
 			// The last element in the vector contains the gray scale 'average' of the 3 channels:
 			Mat grayMat;
 			cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
