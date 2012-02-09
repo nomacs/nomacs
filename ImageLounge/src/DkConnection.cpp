@@ -27,7 +27,7 @@
 
 #include "DkConnection.h"
 
-
+namespace nmc {
 
 // DkConnection --------------------------------------------------------------------
 
@@ -736,3 +736,4 @@ void DkLANConnection::sendNewFileMessage(qint16 op , QString filename) {
 	DkConnection::sendNewFileMessage(op, filename);
 }
 
+}

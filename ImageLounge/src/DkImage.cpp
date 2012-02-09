@@ -27,6 +27,8 @@
 
 #include "DkImage.h"
 
+namespace nmc {
+
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh").split(' ');
 
@@ -2418,4 +2420,6 @@ void DkMetaData::reloadImg() {
 	}
 
 	mdata = true;
+}
+
 }

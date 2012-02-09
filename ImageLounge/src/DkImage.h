@@ -74,6 +74,8 @@ using namespace cv;
 	typedef  unsigned char byte;
 #endif
 
+namespace nmc {
+
 // basic image processing
 class DkImage {
 
@@ -454,4 +456,6 @@ protected:
 	bool loadRohFile(QString fileName);
 	void updateHistory();
 	
+};
+
 };

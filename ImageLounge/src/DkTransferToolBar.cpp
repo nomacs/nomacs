@@ -2,6 +2,7 @@
 
 #include "DkMath.h"
 
+namespace nmc {
 
 //
 DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
@@ -579,5 +580,7 @@ void DkColorSlider::mouseDoubleClickEvent(QMouseEvent *event) {
 		this->color = color;
 
 	emit colorChanged(this);
+
+}
 
 }

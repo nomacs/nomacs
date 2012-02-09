@@ -51,12 +51,14 @@
 #include "DkImage.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
+#include "DkMath.h"
 
 #ifdef WIN32
 #include <ShObjIdl.h>
 #include <ShlObj.h>
 #endif
 
+namespace nmc {
 class DkThumbNail;
 
 class DkWidget : public QWidget {
@@ -1327,4 +1329,5 @@ protected:
 	QCursor rotatingCursor;
 	QRectF* imgRect;
 
+};
 };

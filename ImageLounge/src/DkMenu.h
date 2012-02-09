@@ -39,6 +39,8 @@
 
 #include "DkNetwork.h"
 
+namespace nmc {
+
 /**
  * This class perfectly acts like a QMenuBar.
  * However, if timeToShow != -1 it is hidden
@@ -372,4 +374,5 @@ protected:
 	QList<QAction*> tcpActions;
 	DkManagerThread* clientThread;
 	bool noClientsFound;
+};
 };

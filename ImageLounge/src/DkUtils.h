@@ -58,10 +58,11 @@ using namespace cv;
 
 #endif
 
+namespace nmc {
+
 enum morphTypes {DK_ERODE=0, DK_DILATE};
 enum DebugLevel {DK_NONE=0,DK_WARNING, DK_MODULE, DK_DEBUG_A, DK_DEBUG_B, DK_DEBUG_C, DK_DEBUG_ALL};
 enum SpeedLebel {DK_NO_SPEED_UP=0, DK_SPEED_UP, DK_APPROXIMATE};
-
 
 /**
  * This class contains general functions which are useful.
@@ -390,4 +391,5 @@ public:
 	inline static void printDebug(...) {};
 #endif
 
+};
 };

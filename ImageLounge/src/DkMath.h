@@ -41,7 +41,6 @@
 //
 //#include "DkError.h"
 
-
 #ifdef WITH_OPENCV
 #include <opencv/cv.h>
 using namespace cv;
@@ -62,6 +61,9 @@ int cvFloor(float num);
 // no min max macros for windows...
 #undef min
 #undef max
+
+
+namespace nmc {
 
 /** 
  * Provides useful mathematical functions.
@@ -614,7 +616,7 @@ public:
 	 **/ 
 	virtual float maxCoord() {
 
-		return max(x, y);
+		return std::max(x, y);
 	};
 
 	/**
@@ -623,7 +625,7 @@ public:
 	 **/ 
 	virtual float minCoord() {
 
-		return min(x, y);
+		return std::min(x, y);
 	};
 
 	/**
@@ -636,7 +638,7 @@ public:
 	 **/
 	virtual DkVector maxVec(const DkVector vec) const {
 
-		return DkVector(max(x, vec.x), max(y, vec.y));
+		return DkVector(std::max(x, vec.x), std::max(y, vec.y));
 	}
 
 	/**
@@ -649,7 +651,7 @@ public:
 	 **/
 	virtual DkVector minVec(const DkVector vec) const{
 
-		return DkVector(min(x, vec.x), min(y, vec.y));
+		return DkVector(std::min(x, vec.x), std::min(y, vec.y));
 	}
 
 	/**
@@ -830,3 +832,4 @@ public:
 	}
 #endif
 };
+}

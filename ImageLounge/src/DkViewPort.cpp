@@ -27,6 +27,7 @@
 
 #include "DkViewPort.h"
 
+namespace nmc {
 
 // DkBaseViewport --------------------------------------------------------------------
 DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
@@ -270,6 +271,7 @@ void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
 #ifdef DK_DLL
 	if (!event->isAutoRepeat())
 		emit keyReleaseSignal(event);	// make key presses available
+		//emit enableNoImageSignal(true);
 #endif
 
 	QWidget::keyReleaseEvent(event);
@@ -2186,9 +2188,11 @@ void DkViewPortContrast::setImage(QImage newImg) {
 		imgs[0] = imgQt;
 		activeChannel = 0;
 	}
+
+#ifdef WITH_OPENCV
+
 	else {	
 
-		#ifdef WITH_OPENCV
 			
 			imgs = QVector<QImage>(4);
 			vector<Mat> planes;
@@ -2213,8 +2217,15 @@ void DkViewPortContrast::setImage(QImage newImg) {
 			imgs[3] = imgs[3].copy();
 			planes.clear();
 
-		#endif
 	}
+#else
+	else {
+		// TODO: fabian deactivate
+		// do nothing if RGB
+		return;
+	}
+
+#endif
 
 	
 	falseColorImg = imgs[activeChannel];
@@ -2296,3 +2307,4 @@ QImage& DkViewPortContrast::getImage() {
 //QEvent::Type DkInfoEvent::infoEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
 //QEvent::Type DkLoadImageEvent::eventType = static_cast<QEvent::Type>(QEvent::registerEventType());
 
+}

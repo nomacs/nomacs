@@ -27,7 +27,6 @@
 
 #include "DkMath.h"
 
-
 #ifndef WITH_OPENCV
 int cvRound(float num) {
 

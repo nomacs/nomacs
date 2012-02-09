@@ -39,6 +39,8 @@
 #include <QThread>
 #include "DkSettings.h"
 
+namespace nmc {
+
 static const int MaxBufferSize = 102400000;
 static const char SeparatorToken = '<';
 
@@ -216,5 +218,5 @@ class DkLANConnection : public DkConnection {
 };
 
 
-
+};
 

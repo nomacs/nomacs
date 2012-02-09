@@ -31,6 +31,9 @@
 #include <string>
 #include <DkUtils.h>
 
+
+namespace nmc {
+
 /**
  * The base exception class for the error management.
  **/
@@ -237,4 +240,5 @@ public:
 	 * @param file The filename of the error occurrence.
 	**/
 	DkIndexOutOfBoundsException(const std::string & msg, int line, const std::string & file) : DkException(msg, line, file) {exceptionName = "DkIndexOutOfBoundsException";};
+};
 };

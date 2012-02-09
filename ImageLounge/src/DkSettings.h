@@ -54,6 +54,8 @@
 
 #include "BorderLayout.h"
 
+namespace nmc {
+
 class DkSettingsWidget;
 class DkGlobalSettingsWidget;
 class DkDisplaySettingsWidget;
@@ -520,4 +522,6 @@ class DkSpinBoxWidget : public QWidget {
 		QWidget* lowerWidget;
 		QVBoxLayout* vboxLayout;
 		QHBoxLayout* hboxLowerLayout;
+};
+
 };

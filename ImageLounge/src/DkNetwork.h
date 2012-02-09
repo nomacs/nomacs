@@ -48,6 +48,8 @@
 
 #include "DkConnection.h"
 
+namespace nmc {
+
 class DkPeer;
 class DkLocalTcpServer;
 class DkLANTcpServer;
@@ -455,5 +457,5 @@ private:
 	QNetworkReply* reply;
 };
 
-
+};
 

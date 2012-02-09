@@ -27,6 +27,7 @@
 
 #include "DkWidgets.h"
 
+namespace nmc {
 
 DkWidget::DkWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
 	init();
@@ -3780,4 +3781,5 @@ void DkEditableRect::setVisible(bool visible) {
 	}
 
 	DkWidget::setVisible(visible);
+}
 }

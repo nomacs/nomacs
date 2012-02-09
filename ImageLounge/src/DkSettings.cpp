@@ -28,6 +28,8 @@
 #include "DkSettings.h"
 #include "DkWidgets.h"
 
+namespace nmc {
+
 bool DkSettings::AppSettings::showToolBar = true;
 bool DkSettings::AppSettings::showMenuBar = true;
 bool DkSettings::AppSettings::showStatusBar = false;
@@ -1040,3 +1042,4 @@ DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int s
 
 }
 
+}

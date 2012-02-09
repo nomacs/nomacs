@@ -28,5 +28,5 @@
 #include "DkUtils.h"
 
 
-int DkUtils::debugLevel = DK_MODULE;
+int nmc::DkUtils::debugLevel = DK_MODULE;
 

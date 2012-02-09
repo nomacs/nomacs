@@ -24,6 +24,7 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QGraphicsOpacityEffect>
 
+namespace nmc {
 
 class DkTransferToolBar;
 
@@ -177,4 +178,5 @@ class DkTransferToolBar : public QToolBar {
 		QGraphicsOpacityEffect *effect;
 		int imageMode;
 
+};
 };

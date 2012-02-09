@@ -62,6 +62,7 @@
 #define DllExport
 #endif
 
+namespace nmc {
 
 class DllExport DkBaseViewPort : public QGraphicsView {
 	Q_OBJECT
@@ -88,6 +89,9 @@ public:
 
 signals:
 	void enableNoImageSignal(bool enable);
+//#ifdef DK_DLL
+	void keyReleaseSignal(QKeyEvent* event);	// make key presses available
+//#endif
 
 public slots:
 	virtual void shiftLeft();
@@ -193,10 +197,6 @@ signals:
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg);
 	void newClientConnectedSignal();
-
-#ifdef DK_DLL
-	void keyReleaseSignal(QKeyEvent* event);
-#endif
 
 public slots:
 	void rotateCW();
@@ -460,3 +460,4 @@ private:
 //	QString attr;
 //};
 
+};

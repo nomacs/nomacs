@@ -30,6 +30,8 @@
 #include "DkMath.h"
 #include "DkUtils.h"
 
+namespace nmc {
+
 /**
  * A small class which measures the time.
  * This class is designed to measure the time of a method, especially
@@ -196,4 +198,5 @@ public:
 		timeIvl += cTime-lastTick;
 		lastTick = cTime;
 	};
+};
 };

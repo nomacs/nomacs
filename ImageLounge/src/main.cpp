@@ -40,8 +40,6 @@
 #include <iostream>
 #include <cassert>
 
-//#include <QFile>
-
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
 #else
@@ -77,7 +75,7 @@ int main(int argc, char *argv[]) {
 
 
 	QStringList args = a.arguments();
-	DkNoMacs* w;
+	nmc::DkNoMacs* w;
 
 	// DEBUG --------------------------------------------------------------------
 	qDebug() << "input arguments:";
@@ -88,18 +86,18 @@ int main(int argc, char *argv[]) {
 
 	QSettings settings;
 
-	int mode = settings.value("AppSettings/appMode", DkSettings::AppSettings::appMode).toInt();
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();
 
-	if (mode == DkNoMacs::mode_frameless) {
-		w = static_cast<DkNoMacs*> (new DkNoMacsFrameless());
+	if (mode == nmc::DkNoMacs::mode_frameless) {
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
 	}
-	else if (mode == DkNoMacs::mode_contrast) {
-		w = static_cast<DkNoMacs*> (new DkNoMacsContrast());
+	else if (mode == nmc::DkNoMacs::mode_contrast) {
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
 		qDebug() << "this is the contrast nomacs...";
 	}
 	else
-		w = static_cast<DkNoMacs*> (new DkNoMacsIpl());	// slice it
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
 	if (args.size() > 1)
 		w->viewport()->loadFile(QFileInfo(args[1]), true, true);	// update folder + be silent

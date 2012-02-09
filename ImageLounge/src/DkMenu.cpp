@@ -27,7 +27,7 @@
 
 #include "DkMenu.h"
 
-
+namespace nmc {
 
 // DkMenu --------------------------------------------------------------------
 
@@ -129,5 +129,7 @@ void DkMenuBar::leaveEvent(QEvent* event) {
 	timerMenu->start(timeToShow);
 
 	QMenuBar::leaveEvent(event);
+
+}
 
 }

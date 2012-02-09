@@ -70,6 +70,8 @@
 #define DllExport
 #endif
 
+namespace nmc {
+
 // keyboard shortcuts
 //we can change the keyboard shortcuts from here !
 enum {	
@@ -551,4 +553,5 @@ protected:
 
 	DkTransferToolBar* transferToolBar;
 
+};
 };

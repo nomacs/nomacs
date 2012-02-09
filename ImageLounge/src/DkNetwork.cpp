@@ -27,6 +27,7 @@
 
 #include "DkNetwork.h"
 
+namespace nmc {
 
 // DkClientManager --------------------------------------------------------------------
 DkClientManager::DkClientManager(QString title, QObject* parent) {
@@ -1042,11 +1043,15 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 	}
 }
 
-// DkManagerThread  --------------------------------------------------------------------
+}
 
+// that's a bit nasty
 #include "DkNoMacs.h"
 #include "DkViewPort.h"
 
+namespace nmc {
+
+// DkManagerThread  --------------------------------------------------------------------
 DkManagerThread::DkManagerThread(DkNoMacs* parent) {
 	this->parent = parent;
 }
@@ -1155,4 +1160,5 @@ void DkLanManagerThread::createClient(QString title) {
 		delete clientManager;
 
 	clientManager = new DkLANClientManager(title);
+}
 }

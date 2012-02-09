@@ -27,6 +27,7 @@
 
 #include "DkError.h"
 
+namespace nmc {
 using std::string;
 
 DkException::DkException(const std::string & msg) 
@@ -72,3 +73,5 @@ const string & DkException :: File() const {
 //	: DkException(msg, line, file) {
 //	exceptionName = "DkIllegalArgumentException";
 //}
+
+}

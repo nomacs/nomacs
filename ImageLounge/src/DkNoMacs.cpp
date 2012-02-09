@@ -27,6 +27,7 @@
 
 #include "DkNoMacs.h"
 
+namespace nmc {
 
 DkNoMacsApp::DkNoMacsApp(int argc, char** argv)
 	: QApplication(argc, argv)
@@ -2108,10 +2109,10 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 
 			qDebug() << "screens: " << dw->availableGeometry(idx);
 			QRect curScreen = dw->availableGeometry(idx);
-			screenRects.setLeft(min(screenRects.left(), curScreen.left()));
-			screenRects.setTop(min(screenRects.top(), curScreen.top()));
-			screenRects.setBottom(max(screenRects.bottom(), curScreen.bottom()));
-			screenRects.setRight(max(screenRects.right(), curScreen.right()));
+			screenRects.setLeft(std::min(screenRects.left(), curScreen.left()));
+			screenRects.setTop(std::min(screenRects.top(), curScreen.top()));
+			screenRects.setBottom(std::max(screenRects.bottom(), curScreen.bottom()));
+			screenRects.setRight(std::max(screenRects.right(), curScreen.right()));
 		}
 		
 		this->setGeometry(screenRects);
@@ -2277,4 +2278,5 @@ void DkNoMacsContrast::createTransferToolbar() {
 					);
 #endif
 
-};
+}
+}
