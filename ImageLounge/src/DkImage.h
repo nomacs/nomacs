@@ -43,11 +43,16 @@
 #include <QFileIconProvider>
 #include <QStringList>
 
+#ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
-#include <libraw/libraw.h>
+#else
+#include <exiv2/image.hpp>
+#include <iomanip>
+#endif
 
 // opencv
 #ifdef WITH_OPENCV
+#include <libraw/libraw.h>
 #include <opencv/cv.h>
 using namespace cv;
 #endif
@@ -271,7 +276,7 @@ public:
 		this->img = img;
 		this->file = file;
 		imgExists = true;
-		s = max(img.width(), img.height());
+		s = qMax(img.width(), img.height());
 	};
 	~DkThumbNail() {};
 

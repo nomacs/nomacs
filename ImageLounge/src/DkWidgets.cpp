@@ -130,41 +130,43 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 
 	// set the text
 	text = 
-		QString("Flo was here und wünscht<br>") %
-		QString("Stefan fiel Spaß während<br>") %
-		QString("Markus rockt... <br><br>") %
+		QString("Flo was here und wünscht<br>" 
+		"Stefan fiel Spaß während<br>" 
+		"Markus rockt... <br><br>" 
 		
-		QString("www.nomacs.org<br>") %
-		QString("developers@nomacs.org<br><br>") %
+		"<a href=\"http://www.nomacs.org\">www.nomacs.org</a><br>"
+		"<a href=\"mailto:developers@nomacs.org\">developers@nomacs.org</a><br><br>" 
 
-		QString("This program is licensed under GNU Public License v3<br>") %
-		QString("&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011<br><br>") %
+		"This program is licensed under GNU Public License v3<br>"
+		"&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011<br><br>"
 
-		QString("Press [ESC] to exit");
+		"Press [ESC] to exit");
 
 	textLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	textLabel->setScaledContents(true);
 	textLabel->setTextFormat(Qt::RichText);
 	textLabel->setText(text);
 	textLabel->move(131, 280);
 
 	QLabel* versionLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
 	versionLabel->setTextFormat(Qt::RichText);
-	versionLabel->setText("Version: " % QApplication::applicationVersion() % " &beta;");
+	versionLabel->setText("Version: " % QApplication::applicationVersion() % " &beta;<br>"
+#ifdef WITH_OPENCV
+				"RAW support: Yes"
+#else
+				"RAW support: No"
+#endif  
+			     );
+
 	versionLabel->move(390, 280);
 
 	qDebug() << "splash screen created...";
 }
 
-
-DkSplashScreen::~DkSplashScreen() {
-
-}
-
-void DkSplashScreen::mousePressEvent(QMouseEvent* event) {
-
-	qDebug() <<  "mouse clicked";
-	close();
-}
+//void DkSplashScreen::mousePressEvent(QMouseEvent* event) {
+//
+//	close();
+//}
 
 
 // DkFilePreview --------------------------------------------------------------------

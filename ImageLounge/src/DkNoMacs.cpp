@@ -2109,10 +2109,10 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 
 			qDebug() << "screens: " << dw->availableGeometry(idx);
 			QRect curScreen = dw->availableGeometry(idx);
-			screenRects.setLeft(std::min(screenRects.left(), curScreen.left()));
-			screenRects.setTop(std::min(screenRects.top(), curScreen.top()));
-			screenRects.setBottom(std::max(screenRects.bottom(), curScreen.bottom()));
-			screenRects.setRight(std::max(screenRects.right(), curScreen.right()));
+			screenRects.setLeft(qMin(screenRects.left(), curScreen.left()));
+			screenRects.setTop(qMin(screenRects.top(), curScreen.top()));
+			screenRects.setBottom(qMax(screenRects.bottom(), curScreen.bottom()));
+			screenRects.setRight(qMax(screenRects.right(), curScreen.right()));
 		}
 		
 		this->setGeometry(screenRects);

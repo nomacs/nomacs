@@ -16,6 +16,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0)
 
 project(nomacs)
 
+
+OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
+
+
 set(NOMACS_VERSION 0.2.3)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
@@ -42,7 +46,7 @@ ENDIF(MSVC)
 #set(BUILD_EXAMPLES OFF CACHE BOOL "Build all examples")
 
 # find the Qt
-set(QT_MIN_VERSION "4.7.2")
+set(QT_MIN_VERSION "4.7.0")
 set(QT_USE_GUI 1)
 set(QT_USE_QTNETWORK 1)
 find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
@@ -56,7 +60,8 @@ find_package(PkgConfig)
 
 
 # exiv2
-pkg_check_modules(EXIV2  exiv2>=0.21)
+pkg_check_modules(EXIV2  exiv2>=0.20)
+message(STATUS "exiv2 version by pkg-config: ${EXIV2_VERSION}")
 IF (NOT EXIV2_FOUND AND MSVC)
 
 	find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
@@ -110,41 +115,54 @@ IF (NOT EXIV2_FOUND AND MSVC)
 	
 ENDIF()
 
-# LibRaw
-pkg_check_modules(LIBRAW  libraw>=0.13.1)
-IF (NOT LIBRAW_FOUND AND MSVC)
-	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "LibRaw-0.1.3.5" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
-	
-	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/librawd.lib" "debug/librawd.dll"
-					PATHS "../LibRaw-0.13.5/buildfiles/" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
-		
-	IF( EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
-		EXISTS ${LIBRAW_BUILD_PATH}/debug/librawd.dll AND 
-		EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND 
-		EXISTS ${LIBRAW_BUILD_PATH}/debug/librawd.lib)
-		
-		FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-		FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-		FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-		FILE(COPY ${LIBRAW_BUILD_PATH}/debug/librawd.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-		FILE(COPY ${LIBRAW_BUILD_PATH}/debug/librawd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-	
-		SET(LIBRAW_LIBRARY_DIRS "")
-		SET(LIBRAW_LIBRARIES optimized libraw.lib debug librawd.lib)
-	
-		SET(LIBRAW_FOUND true)	
-	ELSE()
-		message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/librawd.dll and debug/librawd.lib")
-	ENDIF()	
-ENDIF()
+find_file(HAVE_EXIV2_HPP exiv2/exiv2.hpp ${EXIV2_INCLUDE_DIRS})
+if (HAVE_EXIV2_HPP)
+	message(STATUS "exiv2 contains exiv2.hpp, using it")
+	add_definitions(-DHAVE_EXIV2_HPP)
+else (HAVE_EXIV2_HPP)
+	message(STATUS "exiv2 does not contain exiv2.hpp. Using older include set")
+endif (HAVE_EXIV2_HPP)
 
 
-# OpenCV
-# TODO/FIXME: which modules?
-OPTION (COMPILEWITHOPENCV "Compile with OpenCV" ON)
+IF (${ENABLE_RAW})
 
-IF (${COMPILEWITHOPENCV})
+	# NOTE: libraw is used only when there is OpenCV found and used
+	# LibRaw
+	pkg_check_modules(LIBRAW  libraw>=0.12.0)
+        IF (NOT LIBRAW_FOUND AND NOT MSVC)
+                message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
+        ENDIF()
+	IF (NOT LIBRAW_FOUND AND MSVC)
+        	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "LibRaw-0.1.3.5" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
+
+        	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/librawd.lib" "debug/librawd.dll"
+        	                            PATHS "../LibRaw-0.13.5/buildfiles/" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
+
+	        IF( EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
+                	EXISTS ${LIBRAW_BUILD_PATH}/debug/librawd.dll AND 
+        	        EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND 
+	                EXISTS ${LIBRAW_BUILD_PATH}/debug/librawd.lib)
+
+                	FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+        	        FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+	                FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+                	FILE(COPY ${LIBRAW_BUILD_PATH}/debug/librawd.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+        	        FILE(COPY ${LIBRAW_BUILD_PATH}/debug/librawd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+
+	                SET(LIBRAW_LIBRARY_DIRS "")
+                	SET(LIBRAW_LIBRARIES optimized libraw.lib debug librawd.lib)
+
+                	SET(LIBRAW_FOUND true)
+        	ELSE()
+                	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/librawd.dll and debug/librawd.lib")
+        	ENDIF()
+	ENDIF()
+
+	# OpenCV
 	pkg_check_modules(OpenCV  opencv>=2.1.0)
+	IF (NOT OpenCV_FOUND AND NOT MSVC)
+		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
+	ENDIF()
 	IF (NOT OpenCV_FOUND AND MSVC)
 		find_path(OpenCV_BUILD_PATH NAMES "bin/Release/opencv_core231.dll" "bin/Release/opencv_imgproc231.dll" 
 										"bin/Debug/opencv_core231d.dll" "bin/Debug/opencv_imgproc231d.dll" 
@@ -198,6 +216,7 @@ IF (${COMPILEWITHOPENCV})
 			/lib/Debug/opencv_imgproc231d.lib")
 		ENDIF()	
 	ENDIF()
+
 	add_definitions(-DWITH_OPENCV)
 	
 	if (APPLE)
@@ -311,7 +330,8 @@ QT4_WRAP_UI(NOMACS_UI ${NOMACS_FORMS})
 QT4_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
 QT4_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
 
-IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
+#IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
+IF (EXIV2_FOUND)
 
 	set(EXE_NAME ${CMAKE_PROJECT_NAME})
 	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})

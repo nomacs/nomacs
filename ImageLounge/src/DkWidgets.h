@@ -589,11 +589,8 @@ class DkSplashScreen : public QDialog {
 
 public:
 	DkSplashScreen(QWidget* parent = 0, Qt::WFlags flags = 0);
-	~DkSplashScreen();
-
-protected:
-	void mousePressEvent(QMouseEvent* event);
-
+	~DkSplashScreen() {};
+	
 private:
 	QString text;
 	QLabel* textLabel;

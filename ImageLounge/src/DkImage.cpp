@@ -823,7 +823,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		else if (newSuffix.indexOf(" ") == -1)
 			endSuffix =  newSuffix.indexOf(")");
 		else
-			endSuffix = min(newSuffix.indexOf(")"), newSuffix.indexOf(" "));
+			endSuffix = qMin(newSuffix.indexOf(")"), newSuffix.indexOf(" "));
 
 		filePath.append(newSuffix.left(endSuffix));
 	}

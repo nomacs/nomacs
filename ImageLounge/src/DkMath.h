@@ -41,6 +41,7 @@
 //
 //#include "DkError.h"
 
+
 #ifdef WITH_OPENCV
 #include <opencv/cv.h>
 using namespace cv;
@@ -616,7 +617,7 @@ public:
 	 **/ 
 	virtual float maxCoord() {
 
-		return std::max(x, y);
+		return qMax(x, y);
 	};
 
 	/**
@@ -625,7 +626,7 @@ public:
 	 **/ 
 	virtual float minCoord() {
 
-		return std::min(x, y);
+		return qMin(x, y);
 	};
 
 	/**
@@ -638,7 +639,7 @@ public:
 	 **/
 	virtual DkVector maxVec(const DkVector vec) const {
 
-		return DkVector(std::max(x, vec.x), std::max(y, vec.y));
+		return DkVector(qMax(x, vec.x), qMax(y, vec.y));
 	}
 
 	/**
@@ -651,7 +652,7 @@ public:
 	 **/
 	virtual DkVector minVec(const DkVector vec) const{
 
-		return DkVector(std::min(x, vec.x), std::min(y, vec.y));
+		return DkVector(qMin(x, vec.x), qMin(y, vec.y));
 	}
 
 	/**

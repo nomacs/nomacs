@@ -1939,7 +1939,7 @@ void DkViewPortFrameless::drawFrame(QPainter* painter) {
 
 	QRectF frameRect;
 
-	float fs = min(imgViewRect.width(), imgViewRect.height())*0.1f;
+	float fs = qMin(imgViewRect.width(), imgViewRect.height())*0.1f;
 		
 	// looks pretty bad if the frame is too small
 	if (fs < 4)

@@ -35,8 +35,6 @@
 #include <QFileInfo>
 #include <QProcess>
 
-#include <exiv2/exiv2.hpp>
-#include <libraw/libraw.h>
 #include <iostream>
 #include <cassert>
 
