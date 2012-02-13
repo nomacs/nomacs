@@ -2087,8 +2087,10 @@ void DkViewPortContrast::changeChannel(int channel) {
 	activeChannel = channel;
 	
 	if (!imgQt.isNull()) {
+
 		falseColorImg = imgs[activeChannel];
 		falseColorImg.setColorTable(colorTable);
+		drawFalseColorImg = true;
 
 		update();
 	}
@@ -2184,6 +2186,7 @@ void DkViewPortContrast::setImage(QImage newImg) {
 	DkViewPort::setImage(newImg);
 
 	if (imgQt.format() == QImage::Format_Indexed8) {
+		int format = imgQt.format();
 		imgs = QVector<QImage>(1);
 		imgs[0] = imgQt;
 		activeChannel = 0;
@@ -2192,17 +2195,21 @@ void DkViewPortContrast::setImage(QImage newImg) {
 #ifdef WITH_OPENCV
 
 	else {	
-
 			
 			imgs = QVector<QImage>(4);
 			vector<Mat> planes;
 			
 			Mat imgUC3;
-			imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
+
+			int format = imgQt.format();
+			if (format == QImage::Format_RGB888)
+				imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
+			else
+				imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC4, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
 			split(imgUC3, planes);
-			// Store the 3 channels in an QImage Vector.
+			// Store the 3 channels in a QImage Vector.
 			//Be aware that OpenCV 'swaps' the rgb triplet, hence process it in a descending way:
-			int idx = 0;
+			int idx = 1;
 			for (int i = 2; i >= 0; i--) {
 
 				imgs[idx] = QImage((const unsigned char*)planes[i].data, planes[i].cols, planes[i].rows, planes[i].step,  QImage::Format_Indexed8);
@@ -2210,30 +2217,36 @@ void DkViewPortContrast::setImage(QImage newImg) {
 				idx++;
 
 			}
-			// The last element in the vector contains the gray scale 'average' of the 3 channels:
+			// The first element in the vector contains the gray scale 'average' of the 3 channels:
 			Mat grayMat;
 			cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
-			imgs[3] = QImage((const unsigned char*)grayMat.data, grayMat.cols, grayMat.rows, grayMat.step,  QImage::Format_Indexed8);
-			imgs[3] = imgs[3].copy();
+			imgs[0] = QImage((const unsigned char*)grayMat.data, grayMat.cols, grayMat.rows, grayMat.step,  QImage::Format_Indexed8);
+			imgs[0] = imgs[0].copy();
 			planes.clear();
 
 	}
 #else
+
 	else {
-		// TODO: fabian deactivate
-		// do nothing if RGB
+		drawFalseColorImg = false;
+		emit imageModeSet(mode_invalid_format);	
 		return;
 	}
 
 #endif
-
+	
 	
 	falseColorImg = imgs[activeChannel];
 	falseColorImg.setColorTable(colorTable);
 	
+	if (imgQt.isGrayscale()) 
+		emit imageModeSet(mode_gray);
+	else
+		emit imageModeSet(mode_rgb);
+
 	update();
 
-	emit imageModeSet(imgQt.isGrayscale());
+	
 }
 
 void DkViewPortContrast::pickColor() {

@@ -17,7 +17,8 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	//this->setMinimumHeight(500);
 
 	enableTFCheckBox = new QCheckBox("Enable");
-	//enableTFCheckBox->setChecked(true);
+	enableTFCheckBox->setStatusTip(tr("Disables the transfer function"));
+	
 	this->addWidget(enableTFCheckBox);
 
 	this->addSeparator();
@@ -25,19 +26,16 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	this->addWidget(new QLabel("Active channel:"));
 
 	channelComboBox = new QComboBox(this);
-	// Initialize the combo box for color images:
-	imageMode = mode_uninitialized;
-	applyImageMode(mode_rgb);
 	channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
 	this->addWidget(channelComboBox);
 
-	this->addSeparator();
+	//this->addSeparator();
 
 	gradient = new DkGradient(this);
 	gradient->setStatusTip(tr("Click into the field for a new slider"));
 	addWidget(gradient);
 
-	this->addSeparator();
+	//this->addSeparator();
 
 	effect = new QGraphicsOpacityEffect(gradient);
 	effect->setOpacity(1);
@@ -47,8 +45,17 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 		
 	pickColorButton = new QPushButton("Color picker");
 
-	connect(enableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTF(int)));
-	enableTFCheckBox->setStatusTip(tr("Disables the transfer function"));
+	// Disable the entire transfer toolbar:
+	//enableTF(Qt::Unchecked);
+
+	// Initialize the combo box for color images:
+	imageMode = mode_uninitialized;
+	applyImageMode(mode_rgb);
+	
+	enableToolBar(false);
+	enableTFCheckBox->setEnabled(true);	
+
+	connect(enableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
 	connect(gradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
 				
 	// Actions called triggered by toolbar buttons:
@@ -93,13 +100,9 @@ void DkTransferToolBar::insertSlider(qreal pos) {
 
 };
 
-void DkTransferToolBar::setImageMode(bool isGrayScale) {
+void DkTransferToolBar::setImageMode(int mode) {
 
-	// Note: We convert here from boolean to integer, since there is also a third state (mode_uninitialized), which is used at the program start.
-	if (isGrayScale)
-		applyImageMode(mode_gray);
-	else
-		applyImageMode(mode_rgb);
+	applyImageMode(mode);
 
 };
 
@@ -110,7 +113,19 @@ void DkTransferToolBar::applyImageMode(int mode) {
 	if (mode == imageMode)
 		return;
 
+	if (imageMode == mode_invalid_format) {
+		enableToolBar(true);
+		emit channelChanged(0);
+	}
+
 	imageMode = mode;
+	
+	if (imageMode == mode_invalid_format) {
+		enableToolBar(false);
+		return;
+	}
+	
+	enableTFCheckBox->setEnabled(true);	
 
 	disconnect(channelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChannel(int)));
 
@@ -120,10 +135,10 @@ void DkTransferToolBar::applyImageMode(int mode) {
 		channelComboBox->addItem("Gray");
 	}
 	else if (mode == mode_rgb) {
+		channelComboBox->addItem("RGB");
 		channelComboBox->addItem("Red");
 		channelComboBox->addItem("Green");
 		channelComboBox->addItem("Blue");
-		channelComboBox->addItem("RGB");
 	}
 
 	channelComboBox->setCurrentIndex(0);
@@ -138,7 +153,7 @@ void DkTransferToolBar::pickColor() {
 	
 };
 
-void DkTransferToolBar::enableTF(int state) {
+void DkTransferToolBar::enableTFCheckBoxClicked(int state) {
 
 	bool enabled;
 	if (state == Qt::Checked)
@@ -146,28 +161,33 @@ void DkTransferToolBar::enableTF(int state) {
 	else
 		enabled = false;
 
+	enableToolBar(enabled);
 
-	QObjectList list = this->children();
-
-	for (int i = 0; i < list.count(); i++) {
-		if (QWidget *action = qobject_cast<QWidget*>(list.at(i)))
-			action->setEnabled(enabled);
-	}
-	
-	if (enabled)
-		effect->setOpacity(1);
-	else
-		effect->setOpacity(.5);
-
-
-	
+	// At this point the checkbox is disabled, hence enable it...
 	enableTFCheckBox->setEnabled(true);
+
 	if (enabled)
 		enableTFCheckBox->setStatusTip(tr("Disables the transfer function"));
 	else
 		enableTFCheckBox->setStatusTip(tr("Enables the transfer function"));
 
 	emit tFEnabled(enabled);
+
+}
+
+void DkTransferToolBar::enableToolBar(bool enable) {
+
+	QObjectList list = this->children();
+
+	for (int i = 0; i < list.count(); i++) {
+		if (QWidget *action = qobject_cast<QWidget*>(list.at(i)))
+			action->setEnabled(enable);
+	}
+	
+	if (enable)
+		effect->setOpacity(1);
+	else
+		effect->setOpacity(.5);
 
 }
 

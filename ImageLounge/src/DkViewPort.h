@@ -55,6 +55,7 @@
 
 #include "DkMath.h"
 
+#include "DkTransferToolBar.h"
 
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
@@ -346,7 +347,7 @@ public:
 
 signals:
 	void tFSliderAdded(qreal pos);
-	void imageModeSet(bool isGrayScale);
+	void imageModeSet(int mode);
 
 
 public slots:

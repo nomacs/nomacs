@@ -122,6 +122,7 @@ enum toolBarActions {
 
 enum imageModes {
 	mode_uninitialized,
+	mode_invalid_format,
 	mode_gray,
 	mode_rgb,
 };
@@ -146,14 +147,14 @@ class DkTransferToolBar : public QToolBar {
 	public slots:
 		virtual void paintEvent(QPaintEvent* event);
 		void insertSlider(qreal pos);
-		void setImageMode(bool isGrayScale);
+		void setImageMode(int mode);
 		
 
 	private slots:
 		void applyTF();
 		void pickColor();
 		void changeChannel(int index);
-		void enableTF(int state);
+		void enableTFCheckBoxClicked(int state);
 		void reset();
 
 	protected:
@@ -162,6 +163,7 @@ class DkTransferToolBar : public QToolBar {
 	private:
 		void createIcons();
 		void applyImageMode(int mode);
+		void enableToolBar(bool enable);
 		QPushButton *applyTFButton, *pickColorButton;
 		QCheckBox *enableTFCheckBox;
 		int gradX, gradY, gradWidth, gradHeight;

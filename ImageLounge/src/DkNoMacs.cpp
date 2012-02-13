@@ -2279,7 +2279,7 @@ void DkNoMacsContrast::createTransferToolbar() {
 	connect(transferToolBar, SIGNAL(pickColorRequest()),  viewport(), SLOT(pickColor()));
 	connect(transferToolBar, SIGNAL(tFEnabled(bool)), viewport(), SLOT(enableTF(bool)));
 	connect((DkViewPortContrast*)centralWidget(), SIGNAL(tFSliderAdded(qreal)), transferToolBar, SLOT(insertSlider(qreal)));
-	connect((DkViewPortContrast*)centralWidget(), SIGNAL(imageModeSet(bool)), transferToolBar, SLOT(setImageMode(bool)));
+	connect((DkViewPortContrast*)centralWidget(), SIGNAL(imageModeSet(int)), transferToolBar, SLOT(setImageMode(int)));
 
 // play with themes only on windows - users used to look at it there ;)
 // all other platforms have "native look and feel"
@@ -2287,7 +2287,7 @@ void DkNoMacsContrast::createTransferToolbar() {
 	transferToolBar->setIconSize(QSize(16, 16));
 	transferToolBar->setStyleSheet(
 					//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-					QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+					QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 4px}")
 					+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
 					//+ QString("QToolButton{border: none; margin: 3px;}")
 					//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
