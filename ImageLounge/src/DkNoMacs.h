@@ -449,6 +449,7 @@ protected:
 	QLabel* statusbarMsg;
 
 	// file dialog
+	QFileDialog* openDialog;
 	QFileDialog* saveDialog;
 	DkJpgDialog* jpgDialog;
 	DkTifDialog* tifDialog;

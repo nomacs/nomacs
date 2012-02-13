@@ -60,6 +60,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	DkSettings* settings = new DkSettings();
 	settings->load();
 	
+	openDialog = 0;
 	saveDialog = 0;
 	jpgDialog = 0;
 	tifDialog = 0;
@@ -1289,17 +1290,31 @@ void DkNoMacs::openFile() {
 		return;
 
 	DkImageLoader* loader = viewport()->getImageLoader();
+	QStringList fileNames;
 
-	// load system default open dialog
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
-		loader->getDir().absolutePath(), 
-		DkImageLoader::openFilter);
+	if (!openDialog)
+		openDialog = new QFileDialog(this);
 
-	if (fileName.isEmpty())
+	openDialog->setWindowTitle("Open Image");
+	openDialog->setFilters(DkImageLoader::openFilters);
+	openDialog->setDirectory(loader->getDir());
+	openDialog->setOption(QFileDialog::DontResolveSymlinks);
+
+	// show the dialog
+	if(openDialog->exec())
+		fileNames = openDialog->selectedFiles();
+
+	//// load system default open dialog
+	//QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
+	//	loader->getDir().absolutePath(), 
+	//	DkImageLoader::openFilter);
+
+	if (fileNames.isEmpty())
 		return;
 
-	QFileInfo oFile = QFileInfo(fileName);
-	viewport()->loadFile(QFileInfo(fileName));
+	qDebug() << "os filename: " << fileNames[0];
+	//QFileInfo oFile = QFileInfo(fileName);
+	viewport()->loadFile(QFileInfo(fileNames[0]));
 }
 
 void DkNoMacs::saveFile() {
@@ -1732,6 +1747,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size) {
 	//viewport()->setTitleLabel(file, -1);
 
 	QString title = file.fileName();
+	title = title.remove(".lnk");
 
 	if (!file.exists())
 		title = "nomacs - Image Lounge";

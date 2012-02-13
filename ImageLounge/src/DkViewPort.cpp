@@ -679,7 +679,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	updateImageMatrix();
 
-	emit windowTitleSignal(QFileInfo(), imgQt.size());
+	//emit windowTitleSignal(QFileInfo(), imgQt.size());	// not needed?!
 	player->startTimer();
 
 	overviewWindow->setImage(imgQt);
