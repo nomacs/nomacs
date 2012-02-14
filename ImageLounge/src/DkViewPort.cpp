@@ -2178,7 +2178,7 @@ void DkViewPortContrast::draw(QPainter *painter) {
 	else
 		painter->drawImage(imgViewRect, imgQt, imgRect);
 
-	update();
+	//update();
 }
 
 void DkViewPortContrast::setImage(QImage newImg) {
@@ -2259,6 +2259,7 @@ void DkViewPortContrast::pickColor() {
 void DkViewPortContrast::enableTF(bool enable) {
 
 	drawFalseColorImg = enable;
+	update();
 
 }
 
