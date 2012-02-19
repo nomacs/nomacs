@@ -109,7 +109,7 @@ void DkSettings::load() {
 
 	GlobalSettings::loop = settings.value("GlobalSettings/loop", DkSettings::GlobalSettings::loop).toBool();
 	GlobalSettings::lastDir = settings.value("GlobalSettings/lastDir", DkSettings::GlobalSettings::lastDir).toString();
-	GlobalSettings::lastSaveDir = settings.value("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir).toString();
+	//GlobalSettings::lastSaveDir = settings.value("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir).toString();
 	GlobalSettings::recentFolders = settings.value("GlobalSettings/recentFolders", DkSettings::GlobalSettings::recentFolders).toStringList();
 	GlobalSettings::recentFiles = settings.value("GlobalSettings/recentFiles", DkSettings::GlobalSettings::recentFiles).toStringList();
 	GlobalSettings::useTmpPath= settings.value("GlobalSettings/useTmpPath", DkSettings::GlobalSettings::useTmpPath).toBool();
@@ -164,7 +164,7 @@ void DkSettings::save() {
 	settings.setValue("GlobalSettings/showInfo",GlobalSettings::showInfo);
 	settings.setValue("GlobalSettings/loop",GlobalSettings::loop);
 	settings.setValue("GlobalSettings/lastDir", DkSettings::GlobalSettings::lastDir);
-	settings.setValue("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir);
+	//settings.setValue("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir);
 	settings.setValue("GlobalSettings/recentFolders", DkSettings::GlobalSettings::recentFolders);
 	settings.setValue("GlobalSettings/recentFiles", DkSettings::GlobalSettings::recentFiles);
 	settings.setValue("GlobalSettings/useTmpPath", DkSettings::GlobalSettings::useTmpPath);
