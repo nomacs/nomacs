@@ -2655,7 +2655,7 @@ void DkMetaDataInfo::readTags() {
 						Value = QString::number(imgSize.width()) + " x " + QString::number(imgSize.height());
 					}
 					else if (i == DkMetaDataSettingsWidget::camData_exposuremode) {
-						qDebug() << "exposure mode was found";
+						//qDebug() << "exposure mode was found";
 						Value = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()));
 						int mode = Value.toInt();
 
@@ -2670,7 +2670,7 @@ void DkMetaDataInfo::readTags() {
 						Value = flashModes[mode];
 					}
 					else {
-						qDebug() << "size" << imgSize.width() << imgSize.height();
+						//qDebug() << "size" << imgSize.width() << imgSize.height();
 						Value = QString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()).c_str());
 					}
 				} else if (mapIptcExif[i] == 1) {
@@ -2694,7 +2694,7 @@ void DkMetaDataInfo::readTags() {
 				if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 0) {
 					//tmp = preExifI + camDTags.at(i);
 					tmp = descSearchTags.at(i);
-					qDebug() << tmp;
+					//qDebug() << tmp;
 					Value = QString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()).c_str());
 
 					if (tmp.contains("Date")) {
