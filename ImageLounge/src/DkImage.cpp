@@ -325,10 +325,6 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	qDebug() << "loading: " << file.absoluteFilePath();
 
-	//if (file.isSymLink())
-	//	file = QFileInfo(file.symLinkTarget());
-	//	qDebug() << "symlink";
-
 	bool imgLoaded;
 	try {
 		if (!file.isSymLink())
@@ -344,7 +340,6 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		emit updateInfoSignal("loading...", 1);	// stop showing
 
 	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
-	//qDebug() << "loader thread id: " << QThread::currentThreadId();
 	this->virtualFile = file;
 
 	if (imgLoaded) {
@@ -783,7 +778,7 @@ void DkImageLoader::saveTempFile(QImage img) {
 			//this->virtualFile = tmpFile;	// why doesn't it work out -> file does not exist (locked?)
 			//setImage(img);
 
-			emit updateFileSignal(tmpFile, img.size());
+			//emit updateFileSignal(tmpFile, img.size());
 			
 			//if (updateFolder) {
 			//	emit updateDirSignal(tmpFile);
@@ -849,10 +844,16 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	imgWriter->setCompression(compression);
 	imgWriter->setQuality(compression);
 	bool saved = imgWriter->write(sImg);
+	//imgWriter->setFileName(QFileInfo().absoluteFilePath());
 	delete imgWriter;
 	//bool saved = sImg.save(filePath, 0, compression);
 	emit updateInfoSignal("saving...", 1);
-	qDebug() << "jpg compression: " << compression;
+	//qDebug() << "jpg compression: " << compression;
+
+	if ( QFileInfo(filePath).exists())
+		qDebug() << QFileInfo(filePath).absoluteFilePath() << " (before exif) exists...";
+	else
+		qDebug() << QFileInfo(filePath).absoluteFilePath() << " (before exif) does NOT exists...";
 
 	if (saved) {
 		
@@ -871,12 +872,18 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 				
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);
-		this->virtualFile = file;
+
+		if (this->file.exists())
+			qDebug() << this->file.absoluteFilePath() << " (refreshed) exists...";
+		else
+			qDebug() << this->file.absoluteFilePath() << " (refreshed) does NOT exist...";
+
+		this->virtualFile = this->file;
 		this->img = sImg;
 		loadDir(file.absoluteDir());
 
 		emit updateImageSignal(this->img);
-		emit updateFileSignal(file, img.size());
+		emit updateFileSignal(this->file, img.size());
 
 		printf("I could save the image...\n");
 	}
@@ -885,7 +892,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		emit newErrorDialog(msg);
 	}
 
-	if (watcher) watcher->addPath(file.absoluteFilePath());
+	if (watcher) watcher->addPath(this->file.absoluteFilePath());
 
 }
 
@@ -911,6 +918,24 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		watcher->addPath(file.absoluteFilePath());
 	else if (watcher)
 		watcher->addPath(this->file.absoluteFilePath());
+
+	if (!saveImg.isNull() && saved) {
+		
+		// reload my dir (if it was changed...)
+		this->file = QFileInfo(filePath);
+
+		if (this->file.exists())
+			qDebug() << this->file.absoluteFilePath() << " exists...";
+		else
+			qDebug() << this->file.absoluteFilePath() << " does NOT exist...";
+
+		this->virtualFile = this->file;
+		this->img = saveImg;
+		loadDir(this->file.absoluteDir());
+
+		emit updateFileSignal(this->file, saveImg.size());
+	}
+
 }
 
 void DkImageLoader::saveRating(int rating) {
@@ -2363,7 +2388,8 @@ void DkMetaData::readMetaData() {
 	
 		try {
 
-			exifImg = Exiv2::ImageFactory::open(file.absoluteFilePath().toStdString());
+			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
+			exifImg = Exiv2::ImageFactory::open(filePath);
 			qDebug() << "open exif file" << QString::fromStdString(dt.getIvl());
 		} catch (...) {
 			mdata = false;
