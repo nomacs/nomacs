@@ -1305,10 +1305,14 @@ void DkThumbsLoader::loadThumbs() {
 		DkThumbNail* thumb = &(*thumbIter);
 		if (!thumb->hasImage()) {
 			thumb->setImage(getThumbNailQt(thumb->getFile()));
-			if (thumb->hasImage())	// could I load the thumb?
+			if (thumb->hasImage()) {	// could I load the thumb?
 				emit updateSignal();
-			else
+				qDebug() << "image exists...";
+			}
+			else {
 				thumb->setImgExists(false);
+				qDebug() << "image does NOT exist...";
+			}
 		}
 		mutex.unlock();
 	}
@@ -1452,7 +1456,8 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 	int tS = DkSettings::DisplaySettings::thumbSize;
 
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
-	QImageReader imageReader(file.absoluteFilePath());
+	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
+	QImageReader imageReader(filePath);
 
 	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
 
