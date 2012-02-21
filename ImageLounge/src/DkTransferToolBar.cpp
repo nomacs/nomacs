@@ -1,3 +1,30 @@
+/*******************************************************************************************************
+ DkTransferToolBar.cpp
+ Created on:	13.02.2012
+ 
+ nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
+ 
+ Copyright (C) 2011 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011 Florian Kleber <florian@nomacs.org>
+
+ This file is part of nomacs.
+
+ nomacs is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ nomacs is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ *******************************************************************************************************/
+
 #include "DkTransferToolBar.h"
 
 #include "DkMath.h"
@@ -81,6 +108,7 @@ void DkTransferToolBar::createIcons() {
 	toolBarActions.resize(toolbar_end);
 	toolBarActions[toolbar_reset] = new QAction(toolBarIcons[icon_toolbar_reset], tr("Reset"), this);
 	toolBarActions[toolbar_reset]->setStatusTip(tr("Resets the transfer function"));
+	//toolBarActions[toolbar_reset]->setToolTip("was geht?");
 
 	toolBarActions[toolbar_pipette] = new QAction(toolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
 	toolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));

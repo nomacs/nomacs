@@ -484,15 +484,18 @@ protected:
 
 };
 
-class DllExport DkNoMacsIpl : public DkNoMacs {
+class DllExport DkNoMacsSync : public DkNoMacs {
 	Q_OBJECT
 
 public:
-	DkNoMacsIpl(QWidget *parent = 0, Qt::WFlags flags = 0);
-	~DkNoMacsIpl();
-
+	DkNoMacsSync(QWidget *parent = 0, Qt::WFlags flags = 0);
+	~DkNoMacsSync();
 	qint16 getServerPort();
 	void syncWith(qint16 port);
+
+private:
+	
+	
 	
 signals:
 	void clientInitializedSignal();
@@ -520,6 +523,15 @@ protected:
 
 };
 
+class DllExport DkNoMacsIpl : public DkNoMacsSync {
+	Q_OBJECT
+
+public:
+	DkNoMacsIpl(QWidget *parent = 0, Qt::WFlags flags = 0);
+
+};
+
+
 
 class DllExport DkNoMacsFrameless : public DkNoMacs {
 	Q_OBJECT
@@ -540,7 +552,7 @@ protected:
 
 };
 
-class DllExport DkNoMacsContrast : public DkNoMacs {
+class DllExport DkNoMacsContrast : public DkNoMacsSync {
 	Q_OBJECT
 
 public:

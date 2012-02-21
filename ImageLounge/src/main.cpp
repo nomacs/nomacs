@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 	QSettings settings;
 
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();
-
+	
 	if (mode == nmc::DkNoMacs::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
