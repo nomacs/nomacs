@@ -1110,9 +1110,9 @@ void DkNoMacs::setFrameless(bool frameless) {
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
 	if (objectName() != "DkNoMacsFrameless")
-		DkSettings::AppSettings::appMode = mode_frameless;
+		DkSettings::AppSettings::appMode = DkSettings::mode_frameless;
 	else
-		DkSettings::AppSettings::appMode = mode_default;
+		DkSettings::AppSettings::appMode = DkSettings::mode_default;
 
 	bool started = process.startDetached(exe, args);
 
@@ -1547,9 +1547,9 @@ void DkNoMacs::setContrast(bool contrast) {
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
 	if (contrast)
-		DkSettings::AppSettings::appMode = mode_contrast;
+		DkSettings::AppSettings::appMode = DkSettings::mode_contrast;
 	else
-		DkSettings::AppSettings::appMode = mode_default;
+		DkSettings::AppSettings::appMode = DkSettings::mode_default;
 
 	bool started = process.startDetached(exe, args);
 
@@ -1854,125 +1854,6 @@ int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
 }
 
 
-// Transfer function:
-
-DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
-	: DkNoMacsSync(parent, flags) {
-
-
-	setObjectName("DkNoMacsContrast");
-		
-	// init members
-	DkViewPortContrast* vp = new DkViewPortContrast(this);
-	vp->setAlignment(Qt::AlignHCenter);
-	setCentralWidget(vp);
-
-	localClient = new DkLocalManagerThread(this);
-	localClient->start();
-
-	lanClient = 0;
-
-	init();
-
-	createTransferToolbar();
-
-	setAcceptDrops(true);
-	setMouseTracking (true);	//receive mouse event everytime
-
-	updater = new DkUpdater();
-	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-	if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
-		updater->checkForUpdated();	// TODO: is threaded??
-	
-	// title signals
-	connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-	connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-	connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
-	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
-	connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
-	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
-	//connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
-	connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-
-
-	vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
-	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-	vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
-	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
-
-	initLanClient();
-	qDebug() << "lan client initialized...";
-	emit sendTitleSignal(windowTitle());
-
-	DkSettings::AppSettings::appMode = mode_contrast;
-	setObjectName("DkNoMacsContrast");
-	
-	// show it...
-	show();
-
-	// TODO: this should be checked but no event should be called
-	disconnect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
-	viewActions[menu_view_show_transfertoolbar]->setChecked(true);
-	connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
-
-	qDebug() << "viewport (normal) created...";
-}
-
-DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(parent, flags) {
-
-		// init members
-	DkViewPort* vp = new DkViewPort(this);
-	vp->setAlignment(Qt::AlignHCenter);
-	setCentralWidget(vp);
-
-	localClient = new DkLocalManagerThread(this);
-	localClient->start();
-
-	lanClient = 0;
-
-	init();
-	setAcceptDrops(true);
-	setMouseTracking (true);	//receive mouse event everytime
-
-	updater = new DkUpdater();
-	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-	if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
-		updater->checkForUpdated();	// TODO: is threaded??
-	
-	// title signals
-	connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-	connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-	connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
-	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
-	connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
-	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
-	connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
-	connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-
-	//connect(vp, SIGNAL(previewVisibleSignal(bool)), viewActions[menu_view_show_preview], SLOT(setChecked(bool)));
-	//connect(vp, SIGNAL(exifVisibleSignal(bool)), viewActions[menu_view_show_exif], SLOT(setChecked(bool)));
-	//connect(vp, SIGNAL(overviewVisibleSignal(bool)), viewActions[menu_view_show_overview], SLOT(setChecked(bool)));
-	//connect(vp, SIGNAL(playerVisibleSignal(bool)), viewActions[menu_view_show_player], SLOT(setChecked(bool)));
-
-	vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
-	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-	vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
-	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
-	DkSettings::AppSettings::appMode = 0;
-
-	initLanClient();
-	qDebug() << "lan client initialized...";
-	//emit sendTitleSignal(windowTitle());
-
-	// show it...
-	show();
-	DkSettings::AppSettings::appMode = mode_default;
-
-	qDebug() << "viewport (normal) created...";
-}
-
 // DkNoMacsSync --------------------------------------------------------------------
 DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, flags) {
 
@@ -2003,9 +1884,9 @@ void DkNoMacsSync::initLanClient() {
 	}
 
 	if (!DkSettings::SynchronizeSettings::enableNetworkSync) {
-		
+
 		lanClient = 0;
-		
+
 		tcpLanMenu->setEnabled(false);
 		return;
 	}
@@ -2021,7 +1902,7 @@ void DkNoMacsSync::initLanClient() {
 	startServer->setCheckable(true);
 	startServer->setChecked(false);
 	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
-	
+
 	tcpLanMenu->setClientManager(lanClient);
 	tcpLanMenu->addTcpAction(startServer);
 	tcpLanMenu->setEnabled(true);
@@ -2058,25 +1939,25 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance() &&
 		event->modifiers() == (Qt::ControlModifier | Qt::AltModifier)) {
 
-		qDebug() << "generating a drag event...";
+			qDebug() << "generating a drag event...";
 
-		QByteArray connectionData;
-		QDataStream dataStream(&connectionData, QIODevice::WriteOnly);
-		dataStream << localClient->getServerPort();
-		qDebug() << "serverport: " << localClient->getServerPort();
+			QByteArray connectionData;
+			QDataStream dataStream(&connectionData, QIODevice::WriteOnly);
+			dataStream << localClient->getServerPort();
+			qDebug() << "serverport: " << localClient->getServerPort();
 
-		QDrag* drag = new QDrag(this);
-		QMimeData *mimeData = new QMimeData;
-		mimeData->setData("network/sync-dir", connectionData);
+			QDrag* drag = new QDrag(this);
+			QMimeData *mimeData = new QMimeData;
+			mimeData->setData("network/sync-dir", connectionData);
 
-		drag->setMimeData(mimeData);
-		drag->exec(Qt::CopyAction | Qt::MoveAction);
+			drag->setMimeData(mimeData);
+			drag->exec(Qt::CopyAction | Qt::MoveAction);
 	}
 	else
 		DkNoMacs::mouseMoveEvent(event);
 
 }
-	
+
 void DkNoMacsSync::dropEvent(QDropEvent *event) {
 
 	if (event->source() == this) {
@@ -2130,6 +2011,60 @@ void DkNoMacsSync::clientInitialized() {
 }
 
 
+DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(parent, flags) {
+
+		// init members
+	DkViewPort* vp = new DkViewPort(this);
+	vp->setAlignment(Qt::AlignHCenter);
+	setCentralWidget(vp);
+
+	localClient = new DkLocalManagerThread(this);
+	localClient->start();
+
+	lanClient = 0;
+
+	init();
+	setAcceptDrops(true);
+	setMouseTracking (true);	//receive mouse event everytime
+
+	updater = new DkUpdater();
+	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+	if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
+		updater->checkForUpdated();	// TODO: is threaded??
+	
+	// title signals
+	connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
+	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
+	connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
+	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
+	connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
+	connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+
+	//connect(vp, SIGNAL(previewVisibleSignal(bool)), viewActions[menu_view_show_preview], SLOT(setChecked(bool)));
+	//connect(vp, SIGNAL(exifVisibleSignal(bool)), viewActions[menu_view_show_exif], SLOT(setChecked(bool)));
+	//connect(vp, SIGNAL(overviewVisibleSignal(bool)), viewActions[menu_view_show_overview], SLOT(setChecked(bool)));
+	//connect(vp, SIGNAL(playerVisibleSignal(bool)), viewActions[menu_view_show_player], SLOT(setChecked(bool)));
+
+	vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
+	vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
+	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
+	DkSettings::AppSettings::appMode = 0;
+
+	initLanClient();
+	qDebug() << "lan client initialized...";
+	//emit sendTitleSignal(windowTitle());
+
+	// show it...
+	show();
+	DkSettings::AppSettings::appMode = DkSettings::mode_default;
+
+	qDebug() << "viewport (normal) created...";
+}
+
 // FramelessNoMacs --------------------------------------------------------------------
 DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 	: DkNoMacs(parent, flags) {
@@ -2172,6 +2107,8 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_show_statusbar]->setEnabled(false);
 		viewActions[menu_view_show_statusbar]->setChecked(false);
 		viewActions[menu_view_show_toolbar]->setChecked(false);
+		viewActions[menu_view_fit_frame]->setEnabled(false);
+
 		
 		menu->setTimeToShow(5000);
 		menu->hide();
@@ -2180,8 +2117,9 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->addStartActions(fileActions[menu_file_open]);
 		vp->addStartActions(fileActions[menu_file_open_dir]);
 
-		// TODO: this should be checked but no event should be called
-		//viewActions[menu_view_frameless]->setChecked(true);
+		disconnect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
+		viewActions[menu_view_frameless]->setChecked(true);
+		connect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
 
 		// TODO: currently the initialization is wrong!!
 
@@ -2190,7 +2128,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		
 		int sc = dw->screenCount();
 		QRect screenRects = dw->availableGeometry();
-
+		
 		for (int idx = 0; idx < sc; idx++) {
 
 			qDebug() << "screens: " << dw->availableGeometry(idx);
@@ -2202,8 +2140,12 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		}
 		
 		this->setGeometry(screenRects);
+
+		vp->setMainGeometry(dw->screenGeometry());
+
 		setObjectName("DkNoMacsFrameless");
-		DkSettings::AppSettings::appMode = mode_frameless;
+		DkSettings::AppSettings::appMode = DkSettings::mode_frameless;
+
 		
 		// TODO: overload the resize dialog
 }
@@ -2263,7 +2205,70 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 
 }
 
+// Transfer function:
 
+DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
+	: DkNoMacsSync(parent, flags) {
+
+
+		setObjectName("DkNoMacsContrast");
+
+		// init members
+		DkViewPortContrast* vp = new DkViewPortContrast(this);
+		vp->setAlignment(Qt::AlignHCenter);
+		setCentralWidget(vp);
+
+		localClient = new DkLocalManagerThread(this);
+		localClient->start();
+
+		lanClient = 0;
+
+		init();
+
+		createTransferToolbar();
+
+		setAcceptDrops(true);
+		setMouseTracking (true);	//receive mouse event everytime
+
+		updater = new DkUpdater();
+		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+		if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
+			updater->checkForUpdated();	// TODO: is threaded??
+
+		// title signals
+		connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+		connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+		connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
+		connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
+		connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
+		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
+		//connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
+		connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+
+
+		vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
+		vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
+		vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
+
+		initLanClient();
+		qDebug() << "lan client initialized...";
+		emit sendTitleSignal(windowTitle());
+
+		DkSettings::AppSettings::appMode = DkSettings::mode_contrast;
+		setObjectName("DkNoMacsContrast");
+
+		// show it...
+		show();
+
+		// TODO: this should be checked but no event should be called
+		disconnect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+		viewActions[menu_view_show_transfertoolbar]->setChecked(true);
+		connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+
+		qDebug() << "viewport (normal) created...";
+}
 
 DkNoMacsContrast::~DkNoMacsContrast() {
 	release();

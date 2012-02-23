@@ -69,6 +69,14 @@ class DkSettings : public QObject {
 	Q_OBJECT
 
 	public:
+
+		enum modes {
+			mode_default = 0,
+			mode_frameless,
+			mode_contrast,
+			mode_end,
+		};
+
 		DkSettings() {};
 		DkSettings(const DkSettings& settings) {}; 
 

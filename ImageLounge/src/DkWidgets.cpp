@@ -3624,7 +3624,7 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 	setFocus(Qt::ActiveWindowFocusReason);
 
 
-	QWidget::mousePressEvent(event);
+	//QWidget::mousePressEvent(event);
 }
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
@@ -3713,6 +3713,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		update();
 	}
 
+	//QWidget::mouseMoveEvent(event);
 	//qDebug() << "edit rect mouse move";
 }
 
@@ -3738,6 +3739,7 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 	rTform.reset();	
 	tTform.reset();
 	update();
+	//QWidget::mouseReleaseEvent(event);
 }
 
 void DkEditableRect::keyPressEvent(QKeyEvent *event) {

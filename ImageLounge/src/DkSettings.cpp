@@ -155,8 +155,11 @@ void DkSettings::load() {
 void DkSettings::save() {
 	QSettings settings;
 	settings.setValue("AppSettings/showMenuBar", DkSettings::AppSettings::showMenuBar);
-	settings.setValue("AppSettings/showToolBar", DkSettings::AppSettings::showToolBar);
-	settings.setValue("AppSettings/showStatusBar", DkSettings::AppSettings::showStatusBar);
+	
+	if (DkSettings::AppSettings::appMode != mode_frameless) {
+		settings.setValue("AppSettings/showToolBar", DkSettings::AppSettings::showToolBar);
+		settings.setValue("AppSettings/showStatusBar", DkSettings::AppSettings::showStatusBar);
+	}
 	settings.setValue("AppSettings/appMode", DkSettings::AppSettings::appMode);
 
 	settings.setValue("GlobalSettings/skipImgs",GlobalSettings::skipImgs);

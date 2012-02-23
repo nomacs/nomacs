@@ -300,13 +300,6 @@ class DllExport DkNoMacs : public QMainWindow {
 	Q_OBJECT
 
 public:
-	enum modes {
-		mode_default = 0,
-		mode_frameless,
-		mode_contrast,
-		mode_end,
-	};
-
 
 	virtual ~DkNoMacs();
 

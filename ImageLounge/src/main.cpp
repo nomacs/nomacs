@@ -86,11 +86,11 @@ int main(int argc, char *argv[]) {
 
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();
 	
-	if (mode == nmc::DkNoMacs::mode_frameless) {
+	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
 	}
-	else if (mode == nmc::DkNoMacs::mode_contrast) {
+	else if (mode == nmc::DkSettings::mode_contrast) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
 		qDebug() << "this is the contrast nomacs...";
 	}

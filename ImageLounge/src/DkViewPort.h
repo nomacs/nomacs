@@ -77,6 +77,9 @@ public:
 	virtual QTransform getWorldMatrix() { 
 		return worldMatrix;
 	};
+	virtual QRect getMainGeometry() {
+		return geometry();
+	};
 
 	virtual QImage getScaledImage(float factor);
 
@@ -312,6 +315,13 @@ public:
 	void release();
 	void addStartActions(QAction *startAction);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+	virtual void setMainGeometry(const QRect &geometry) {
+		mainScreen = geometry;
+	};
+
+	virtual QRect getMainGeometry() {
+		return mainScreen;
+	};
 
 public slots:
 	virtual void setImage(QImage newImg);
@@ -329,6 +339,7 @@ protected:
 	QVector<QAction*> startActions;
 	QVector<QRectF> startActionsRects;
 	QVector<QPixmap> startActionsIcons;
+	QRect mainScreen;
 
 	// functions
 	QTransform getScaledImageMatrix();
@@ -337,7 +348,7 @@ protected:
 	void drawFrame(QPainter* painter);
 	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
-
+	virtual void centerImage();
 };
 
 class DllExport DkViewPortContrast : public DkViewPort {

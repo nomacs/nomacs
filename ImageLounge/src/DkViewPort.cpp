@@ -141,6 +141,22 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	//	return;
 	//}
 
+	// reset view & block if we pass the 'image fit to screen' on zoom out
+	if (worldMatrix.m11() > 1 && worldMatrix.m11()*factor < 1) {
+
+		blockZooming = true;
+		zoomTimer->start(500);
+		resetView();
+		return;
+	}
+
+	// reset view if we pass the 'image fit to screen' on zoom in
+	if (worldMatrix.m11() < 1 && worldMatrix.m11()*factor > 1) {
+
+		resetView();
+		return;
+	}
+
 	//limit zoom in ---
 	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
 		return;
@@ -954,10 +970,10 @@ void DkViewPort::updateImageMatrix() {
 	imgMatrix.reset();
 
 	// if the image is smaller or zoom is active: paint the image as is
-	if (!viewportRect.contains(imgRect))
+	if (!viewportRect.contains(imgRect.toRect()))
 		imgMatrix = getScaledImageMatrix();
 	else {
-		imgMatrix.translate((float)(width()-imgQt.width())*0.5f, (float)(height()-imgQt.height())*0.5f);
+		imgMatrix.translate((float)(getMainGeometry().width()-imgQt.width())*0.5f, (float)(getMainGeometry().height()-imgQt.height())*0.5f);
 		imgMatrix.scale(1.0f, 1.0f);
 	}
 
@@ -1169,14 +1185,14 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 
 	viewportRect = QRect(0, 0, width(), height());
 
-	// do we still need that??
-	QSize newSize = imgQt.size();
-	newSize.scale(event->size(), Qt::IgnoreAspectRatio);
+	//// do we still need that??
+	//QSize newSize = imgQt.size();
+	//newSize.scale(event->size(), Qt::IgnoreAspectRatio);
 
-	//resize(newSize);
+	////resize(newSize);
 
-	newSize = (event->size()-newSize)/2;
-	move(newSize.width(), newSize.height());
+	//newSize = (event->size()-newSize)/2;
+	//move(newSize.width(), newSize.height());
 
 	// >DIR: diem - bug if zoom factor is large and window becomes small
 	updateImageMatrix();
@@ -1233,8 +1249,11 @@ bool DkViewPort::event(QEvent *event) {
 		event->type() == QEvent::MouseMove || 
 		event->type() == QEvent::Wheel || 
 		event->type() == QEvent::KeyPress || 
-		event->type() == QEvent::KeyRelease)
+		event->type() == QEvent::KeyRelease) {
+
+		// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
 		return QWidget::event(event);
+	}
 	else
 		return DkBaseViewPort::event(event);
 	
@@ -1760,6 +1779,7 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : Dk
 
 	imgBg.load(":/nomacs/img/splash-screen.png");
 
+	mainScreen = geometry();
 
 	//show();
 
@@ -1789,7 +1809,7 @@ void DkViewPortFrameless::setImage(QImage newImg) {
 
 void DkViewPortFrameless::zoom(float factor, QPointF center) {
 
-	if (imgQt.isNull())
+	if (imgQt.isNull() || blockZooming)
 		return;
 
 	//limit zoom out ---
@@ -1800,6 +1820,15 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 	//	resetView();
 	//	return;
 	//}
+
+	// reset view & block if we pass the 'image fit to screen' on zoom out
+	if (worldMatrix.m11() > 1 && worldMatrix.m11()*factor < 1) {
+
+		blockZooming = true;
+		zoomTimer->start(500);
+		//resetView();
+		//return;
+	}
 
 	//limit zoom in ---
 	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
@@ -1842,8 +1871,34 @@ void DkViewPortFrameless::resetView() {
 
 void DkViewPortFrameless::updateImageMatrix() {
 
-	// maybe we can delete this function...
-	DkViewPort::updateImageMatrix();
+	if (imgQt.isNull())
+		return;
+
+	QRectF oldImgRect = imgViewRect;
+	QTransform oldImgMatrix = imgMatrix;
+
+	imgMatrix.reset();
+
+	// if the image is smaller or zoom is active: paint the image as is
+	if (!getMainGeometry().contains(imgRect.toRect()))
+		imgMatrix = getScaledImageMatrix();
+	else {
+		imgMatrix.translate((float)(getMainGeometry().width()-imgQt.width())*0.5f, (float)(getMainGeometry().height()-imgQt.height())*0.5f);
+		imgMatrix.scale(1.0f, 1.0f);
+	}
+
+	imgViewRect = imgMatrix.mapRect(imgRect);
+
+	// update world matrix
+	if (worldMatrix.m11() != 1) {
+
+		float scaleFactor = oldImgMatrix.m11()/imgMatrix.m11();
+		double dx = oldImgRect.x()/scaleFactor-imgViewRect.x();
+		double dy = oldImgRect.y()/scaleFactor-imgViewRect.y();
+
+		worldMatrix.scale(scaleFactor, scaleFactor);
+		worldMatrix.translate(dx, dy);
+	}
 }
 
 void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
@@ -1870,7 +1925,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 
 	qDebug() << "world transform: " << worldMatrix;
 
-	QRectF initialRect = viewport()->geometry();
+	QRectF initialRect = mainScreen;
 	QPointF oldCenter = initialRect.center();
 
 	QTransform cT;
@@ -1921,20 +1976,6 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 
 void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
 	
-	if (imgQt.isNull()) {
-
-		QPointF pos = imgMatrix.inverted().map(event->pos());
-
-		for (int idx = 0; idx < startActionsRects.size(); idx++) {
-			
-			if (startActionsRects[idx].contains(pos)) {
-				startActions[idx]->trigger();
-				qDebug() << "toggle...";
-				break;
-			}
-		}
-	}
-
 	// move the window - todo: NOT full screen, window inside...
 	setCursor(Qt::ClosedHandCursor);
 	posGrab = event->globalPos();
@@ -1944,8 +1985,24 @@ void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
 
 void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
 	
+	if (imgQt.isNull()) {
+
+		qDebug() << "mouse released";
+		QPointF pos = imgMatrix.inverted().map(event->pos());
+
+		for (int idx = 0; idx < startActionsRects.size(); idx++) {
+
+			if (startActionsRects[idx].contains(pos)) {
+				qDebug() << "toggle..." << idx;
+				
+				startActions[idx]->trigger();
+				break;
+			}
+		}
+	}
+
 	setCursor(Qt::OpenHandCursor);
-	DkViewPort::mouseReleaseEvent(event);
+	//DkViewPort::mouseReleaseEvent(event);
 }
 
 
@@ -2049,13 +2106,19 @@ void DkViewPortFrameless::controlImagePosition(float lb, float ub) {
 	// dummy method
 }
 
+void DkViewPortFrameless::centerImage() {
+
+}
+
 QTransform DkViewPortFrameless::getScaledImageMatrix() {
 
-	QRectF initialRect = viewport()->geometry();
+	QRectF initialRect = mainScreen;
 	QPointF oldCenter = initialRect.center();
+	qDebug() << "initial rect: " << initialRect;
 	
+
 	QTransform cT;
-	cT.scale(400/initialRect.width(), 400/initialRect.width());
+	cT.scale(800/initialRect.width(), 800/initialRect.width());
 	cT.translate(initialRect.center().x(), initialRect.center().y());
 	initialRect = cT.mapRect(initialRect);
 	initialRect.moveCenter(oldCenter);
