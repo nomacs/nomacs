@@ -38,10 +38,16 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	imgMatrix.reset();
 	altKeyPressed = false;	// TODO: take a look at Qt::KeyboardModifiers -> should be safer
 
+	blockZooming = false;
+	zoomTimer = new QTimer(this);
+	zoomTimer->setSingleShot(true);
+	connect(zoomTimer, SIGNAL(timeout()), this, SLOT(stopBlockZooming()));
+
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
 	setStyleSheet( "QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
 	setMouseTracking (true);
+
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
@@ -154,6 +160,10 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	changeCursor();
 
 	update();
+}
+
+void DkBaseViewPort::stopBlockZooming() {
+	blockZooming = false;
 }
 
 // set image --------------------------------------------------------------------
@@ -749,7 +759,7 @@ void DkViewPort::toggleShowPlayer() {
 
 void DkViewPort::zoom(float factor, QPointF center) {
 
-	if (imgQt.isNull())
+	if (imgQt.isNull() || blockZooming)
 		return;
 
 	//factor/=5;//-0.1 <-> 0.1
@@ -759,7 +769,18 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	if (worldMatrix.m11() <= 0.1f && factor < 1)
 		return;
 
-	if (worldMatrix.m11()*factor < 1 && worldMatrix.m11()*factor > 0.9f ) {
+	// reset view & block if we pass the 'image fit to screen' on zoom out
+	if (worldMatrix.m11() > 1 && worldMatrix.m11()*factor < 1) {
+
+		blockZooming = true;
+		zoomTimer->start(500);
+		resetView();
+		return;
+	}
+
+	// reset view if we pass the 'image fit to screen' on zoom in
+	if (worldMatrix.m11() < 1 && worldMatrix.m11()*factor > 1) {
+		
 		resetView();
 		return;
 	}

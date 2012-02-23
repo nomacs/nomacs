@@ -106,6 +106,7 @@ public slots:
 	virtual void fullView();
 	virtual void resizeEvent(QResizeEvent* event);
 	virtual void paintEvent(QPaintEvent* event);
+	virtual void stopBlockZooming();
 
 	virtual void unloadImage();
 
@@ -139,6 +140,9 @@ protected:
 
 	QPointF posGrab;
 	QPointF enterPos;
+
+	bool blockZooming;
+	QTimer* zoomTimer;
 
 	// functions
 	virtual void draw(QPainter *painter);

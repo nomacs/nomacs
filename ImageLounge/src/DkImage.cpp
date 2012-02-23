@@ -30,7 +30,7 @@
 namespace nmc {
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.lnk").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.mpo *.lnk").split(' ');
 
 // formats we can save
 QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;") %
@@ -43,7 +43,7 @@ QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;"
 // formats we can save
 QStringList DkImageLoader::saveFilters = saveFilter.split(QString(";;"));
 
-QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.lnk);;") %
+QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.mpo *.lnk);;") %
 	QString(saveFilter) %
 	QString(";;Graphic Interchange Format (*.gif);;") %
 	QString("Portable Bitmap (*.pbm);;") %
