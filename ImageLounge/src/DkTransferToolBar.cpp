@@ -43,14 +43,14 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	this->setMinimumWidth(500);
 	//this->setMinimumHeight(500);
 
-	enableTFCheckBox = new QCheckBox("Enable");
+	enableTFCheckBox = new QCheckBox(tr("Enable"));
 	enableTFCheckBox->setStatusTip(tr("Disables the transfer function"));
 	
 	this->addWidget(enableTFCheckBox);
 
 	this->addSeparator();
 
-	this->addWidget(new QLabel("Active channel:"));
+	this->addWidget(new QLabel(tr("Active channel:")));
 
 	channelComboBox = new QComboBox(this);
 	channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
@@ -70,7 +70,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 		
 	createIcons();
 		
-	pickColorButton = new QPushButton("Color picker");
+	pickColorButton = new QPushButton(tr("Color picker"));
 
 	// Disable the entire transfer toolbar:
 	//enableTF(Qt::Unchecked);

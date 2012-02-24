@@ -341,7 +341,7 @@ void DkSettingsDialog::createLayout() {
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << "General" << "Display" << "Slideshow" << "Synchronize" << "Exif";
+	stringList << tr("General") << tr("Display") << tr("Slideshow") << tr("Synchronize") << tr("Exif");
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;

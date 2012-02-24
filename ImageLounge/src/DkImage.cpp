@@ -185,13 +185,13 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 			newFileIdx = files.size()-1;
 		}
 		else if (newFileIdx < 0) {
-			QString msg = "You have reached the beginning";
+			QString msg = tr("You have reached the beginning");
 			if (!silent)
 				updateInfoSignal(msg, 1000);
 			return QFileInfo();
 		}
 		else if (newFileIdx >= files.size()) {
-			QString msg = "You have reached the end";
+			QString msg = tr("You have reached the end");
 			
 			if (!silent)
 				updateInfoSignal(msg, 1000);
@@ -251,13 +251,13 @@ void DkImageLoader::loadFileAt(int idx) {
 
 		}
 		else if (idx < 0 && !DkSettings::GlobalSettings::loop) {
-			QString msg = "You have reached the beginning";
+			QString msg = tr("You have reached the beginning");
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
 			return;
 		}
 		else if (idx >= files.size()) {
-			QString msg = "You have reached the end";
+			QString msg = tr("You have reached the end");
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
 			return;
@@ -296,7 +296,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	if (!file.exists()) {
 		
 		if (!silent) {
-			QString msg = "Sorry, the file: " % file.fileName() % " does not exist...";
+			QString msg = tr("Sorry, the file: %1 does not exist... ").arg(file.fileName());
 			updateInfoSignal(msg);
 		}
 		return false;
@@ -304,7 +304,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	else if (!file.permission(QFile::ReadUser)) {
 		
 		if (!silent) {
-			QString msg = "Sorry, you are not allowed to read: " % file.fileName();
+			QString msg = tr("Sorry, you are not allowed to read: %1").arg(file.fileName());
 			updateInfoSignal(msg);
 		}
 		return false;
@@ -379,7 +379,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	}
 	else {
 		if (!silent) {
-			QString msg = "Sorry, I could not load: " % file.fileName();
+			QString msg = tr("Sorry, I could not load: %1").arg(file.fileName());
 			updateInfoSignal(msg);
 		}
 		fileNotLoadedSignal(file);
@@ -801,17 +801,17 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	QMutexLocker locker(&mutex);
 	
 	if (img.isNull() && saveImg.isNull()) {
-		QString msg = "I can't save an empty file, sorry...\n";
+		QString msg = tr("I can't save an empty file, sorry...\n");
 		emit newErrorDialog(msg);
 		return;
 	}
 	if (!file.absoluteDir().exists()) {
-		QString msg = QString("Sorry, the directory: ") % file.absolutePath() % QString(" does not exist\n");
+		QString msg = tr("Sorry, the directory: %1  does not exist\n").arg(file.absolutePath());
 		emit newErrorDialog(msg);
 		return;
 	}
 	if (file.exists() && !file.isWritable()) {
-		QString msg = QString("Sorry, I can't write to the file: ") % file.fileName();
+		QString msg = tr("Sorry, I can't write to the file: %1").arg(file.fileName());
 		emit newErrorDialog(msg);
 		return;
 	}
@@ -842,7 +842,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	
 	QImage sImg = (saveImg.isNull()) ? img : saveImg;
 		
-	emit updateInfoSignal("saving...", -1);
+	emit updateInfoSignal(tr("saving..."), -1);
 	QImageWriter* imgWriter = new QImageWriter(filePath);
 	imgWriter->setCompression(compression);
 	imgWriter->setQuality(compression);
@@ -850,7 +850,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	//imgWriter->setFileName(QFileInfo().absoluteFilePath());
 	delete imgWriter;
 	//bool saved = sImg.save(filePath, 0, compression);
-	emit updateInfoSignal("saving...", 1);
+	emit updateInfoSignal(tr("saving..."), 1);
 	//qDebug() << "jpg compression: " << compression;
 
 	if ( QFileInfo(filePath).exists())
@@ -891,7 +891,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		printf("I could save the image...\n");
 	}
 	else {
-		QString msg = QString("Sorry, I can't write to the file: ") % file.fileName();
+		QString msg = tr("Sorry, I can't write to the file: %1").arg(file.fileName());
 		emit newErrorDialog(msg);
 	}
 
@@ -912,10 +912,10 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 	if (this->file.exists() && watcher)
 		watcher->removePath(this->file.absoluteFilePath());
 	
-	emit updateInfoSignal("saving...", -1);
+	emit updateInfoSignal(tr("saving..."), -1);
 	QString filePath = file.absoluteFilePath();
 	bool saved = (saveImg.isNull()) ? img.save(filePath) : saveImg.save(filePath);
-	emit updateInfoSignal("saving...", 1);	// stop the label
+	emit updateInfoSignal(tr("saving..."), 1);	// stop the label
 	
 	if (saved && watcher)
 		watcher->addPath(file.absoluteFilePath());
@@ -948,7 +948,7 @@ void DkImageLoader::saveRating(int rating) {
 	try {
 		imgMetaData.setRating(rating);
 	}catch(...) {
-		emit updateInfoSignal("Sorry, I destroyed your file...");
+		emit updateInfoSignal(tr("Sorry, I destroyed your file..."));
 	}
 }
 
@@ -1005,9 +1005,9 @@ void DkImageLoader::deleteFile() {
 		}
 		
 		if (fileHandle->remove())
-			emit updateInfoSignal(fileToDelete.fileName() % " deleted...", 5000);
+			emit updateInfoSignal(tr("%1 deleted...").arg(fileToDelete.fileName()));
 		else
-			emit updateInfoSignal("Sorry, I could not delete: " % fileToDelete.fileName());
+			emit updateInfoSignal(tr("Sorry, I could not delete: %1").arg(fileToDelete.fileName()));
 	}
 
 }
@@ -1034,9 +1034,9 @@ void DkImageLoader::rotateImage(double angle) {
 		
 		mutex.lock();
 		
-		updateInfoSignal("saving...", -1);
+		updateInfoSignal(tr("saving..."), -1);
 		imgMetaData.saveOrientation((int)angle);
-		updateInfoSignal("saving...", 1);
+		updateInfoSignal(tr("saving..."), 1);
 		qDebug() << "exif data saved (rotation)?";
 		mutex.unlock();
 
@@ -1044,7 +1044,7 @@ void DkImageLoader::rotateImage(double angle) {
 	catch(DkException de) {
 
 		mutex.unlock();
-		updateInfoSignal("saving...", 1);
+		updateInfoSignal(tr("saving..."), 1);
 
 		// make a silent save -> if the image is just cached, do not save it
 		if (file.exists())
@@ -1052,7 +1052,7 @@ void DkImageLoader::rotateImage(double angle) {
 	}
 	catch(...) {	// if file is locked... or permission is missing
 		mutex.unlock();
-		QString msg = "Sorry, I could not write to: " % file.fileName();
+		QString msg = tr("Sorry, I could not write to: %1").arg(file.fileName());
 		updateInfoSignal(msg);
 	}
 
@@ -1195,7 +1195,7 @@ void DkImageLoader::setDir(QDir& dir) {
 	QStringList files = getFilteredFileList(dir, ignoreKeywords, keywords);
 	
 	if (files.empty()) {
-		emit updateInfoSignal(dir.absolutePath() % "\n does not contain any image", 4000);	// stop showing
+		emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
 		return;
 	}
 
@@ -1939,11 +1939,11 @@ void DkMetaData::saveOrientation(int o) {
 
 	readMetaData();
 	if (!mdata) {
-		throw DkFileException("could not read exif data\n", __LINE__, __FILE__);
+		throw DkFileException(QObject::tr("could not read exif data\n").toStdString(), __LINE__, __FILE__);
 	}
 	if (o!=90 && o!=-90 && o!=180 && o!=0 && o!=270) {
 		qDebug() << "wrong rotation parameter";
-		throw DkIllegalArgumentException("wrong rotation parameter\n", __LINE__, __FILE__);
+		throw DkIllegalArgumentException(QObject::tr("wrong rotation parameter\n").toStdString(), __LINE__, __FILE__);
 	}
 	if (o==-180) o=180;
 	if (o== 270) o=-90;

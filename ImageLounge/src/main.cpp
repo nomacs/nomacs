@@ -34,6 +34,7 @@
 #include <QtGui/QApplication>
 #include <QFileInfo>
 #include <QProcess>
+#include <QTranslator>
 
 #include <iostream>
 #include <cassert>
@@ -70,6 +71,10 @@ int main(int argc, char *argv[]) {
 	// the cast (char**) is just relevant for Windows (otherwise it is char** anyway)
 	QApplication a(argc, (char**)argv);
 #endif
+	QTranslator translator;
+	if (!translator.load("nomacs_de")) 
+		qDebug() << "unable to load translation";
+	a.installTranslator(&translator);
 
 
 	QStringList args = a.arguments();
