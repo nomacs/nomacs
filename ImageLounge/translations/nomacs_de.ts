@@ -23,9 +23,6 @@
 </source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>nmc</name>
     <message>
         <location filename="../src/DkSettings.cpp" line="79"/>
         <source>Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;</source>
