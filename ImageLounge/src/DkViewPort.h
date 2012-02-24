@@ -172,8 +172,8 @@ public:
 
 	virtual void release();
 	
-	void setCenterInfo(QString msg, int time = 3000);
-	void setBottomInfo(QString msg, int time = 3000);
+	virtual void setCenterInfo(QString msg, int time = 3000);
+	virtual void setBottomInfo(QString msg, int time = 3000);
 	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
 	void setFullScreen(bool fullScreen);
@@ -231,7 +231,7 @@ public slots:
 	void tcpSendImage();
 	
 	void setTitleLabel(QFileInfo file, int time = -1);
-	void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
+	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
 	void updateRating(int rating);
 	
 	// file actions
@@ -322,12 +322,14 @@ public:
 	virtual QRect getMainGeometry() {
 		return mainScreen;
 	};
+	virtual void setCenterInfo(QString msg, int time = 3000) {};
 
 public slots:
 	virtual void setImage(QImage newImg);
 	virtual void resetView();
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void moveView(QPointF);
+	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);

@@ -42,7 +42,7 @@ void DkWidget::init() {
 	hiding = false;
 	blocked = false;
 
-	//  widget starts on hide
+	// widget starts on hide
 	opacityEffect = new QGraphicsOpacityEffect(this);
 	opacityEffect->setOpacity(0);
 	setGraphicsEffect(opacityEffect);

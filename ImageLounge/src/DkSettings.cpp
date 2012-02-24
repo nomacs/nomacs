@@ -157,6 +157,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/showMenuBar", DkSettings::AppSettings::showMenuBar);
 	
 	if (DkSettings::AppSettings::appMode != mode_frameless) {
+		qDebug() << "app mode when saving: " << DkSettings::AppSettings::appMode;
 		settings.setValue("AppSettings/showToolBar", DkSettings::AppSettings::showToolBar);
 		settings.setValue("AppSettings/showStatusBar", DkSettings::AppSettings::showStatusBar);
 	}

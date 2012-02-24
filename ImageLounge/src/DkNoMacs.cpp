@@ -50,6 +50,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags) {
 
 	QMainWindow::setWindowTitle("nomacs - Image Lounge");
+	setObjectName("DkNoMacs");
 
 	qDebug() << "This is nomacs - Image Lounge " << QApplication::applicationVersion();
 	registerFileVersion();
@@ -98,7 +99,6 @@ void DkNoMacs::init() {
 	// assign icon
 	QString iconPath = ":/nomacs/img/nomacs.png";
 	QIcon dirIcon = QIcon(iconPath);
-	setObjectName("DkNoMacs");
 
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
@@ -348,9 +348,12 @@ void DkNoMacs::createMenu() {
 	
 	viewMenu->addAction(viewActions[menu_view_gps_map]);
 
-
-	syncMenu = menu->addMenu(tr("&Sync"));
-
+	// no sync menu in frameless view
+	if (DkSettings::AppSettings::appMode != DkSettings::mode_frameless)
+		syncMenu = menu->addMenu(tr("&Sync"));
+	else 
+		syncMenu = 0;
+	
 	helpMenu = menu->addMenu(tr("&?"));
 	helpMenu->addAction(helpActions[menu_help_update]);
 	helpMenu->addSeparator();
@@ -388,7 +391,8 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addSeparator();
 	contextMenu->addAction(editActions[menu_edit_preferences]);
 
-	contextMenu->addMenu(syncMenu);
+	if (syncMenu)
+		contextMenu->addMenu(syncMenu);
 }
 
 void DkNoMacs::createActions() {
@@ -2070,6 +2074,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 	: DkNoMacs(parent, flags) {
 
 		setObjectName("DkNoMacsFrameless");
+		DkSettings::AppSettings::appMode = DkSettings::mode_frameless;
 		
 		setWindowFlags(Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
@@ -2080,6 +2085,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		setCentralWidget(vp);
 
 		init();
+		
 		setAcceptDrops(true);
 		setMouseTracking (true);	//receive mouse event everytime
 
@@ -2144,9 +2150,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->setMainGeometry(dw->screenGeometry());
 
 		setObjectName("DkNoMacsFrameless");
-		DkSettings::AppSettings::appMode = DkSettings::mode_frameless;
-
-		
+				
 		// TODO: overload the resize dialog
 }
 
@@ -2244,8 +2248,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 		//connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
 		connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-
-
+		
 		vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 		vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);

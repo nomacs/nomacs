@@ -1834,16 +1834,24 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
 		return;
 
+	QRectF viewRect = worldMatrix.mapRect(imgViewRect);
+
 	// if no center assigned: zoom in at the image center
 	if (center.x() == -1 || center.y() == -1)
-		center = worldMatrix.mapRect(imgViewRect).center();
+		center = viewRect.center();
 
-	if (factor < 1) {
-		
-		QRectF imgWorldRect = worldMatrix.mapRect(imgViewRect);
-		float ipl = imgViewRect.width()/imgWorldRect.width();	// size ratio
-		center = (imgViewRect.center() - imgWorldRect.center()) + imgViewRect.center();
-	}
+	
+	//if (factor < 1) {
+	//	
+	//	QRectF imgWorldRect = worldMatrix.mapRect(imgViewRect);
+	//	float ipl = imgViewRect.width()/imgWorldRect.width();	// size ratio
+	//	center = (imgViewRect.center() - imgWorldRect.center()) + imgViewRect.center();
+	//}
+
+	if (center.x() < viewRect.left())			center.setX(viewRect.left());
+	else if (center.x() > viewRect.right())		center.setX(viewRect.right());
+	if (center.y() < viewRect.top())			center.setY(viewRect.top());
+	else if (center.y() > viewRect.bottom())	center.setY(viewRect.bottom());
 
 	//inverse the transform
 	int a, b;
@@ -1883,7 +1891,11 @@ void DkViewPortFrameless::updateImageMatrix() {
 	if (!getMainGeometry().contains(imgRect.toRect()))
 		imgMatrix = getScaledImageMatrix();
 	else {
-		imgMatrix.translate((float)(getMainGeometry().width()-imgQt.width())*0.5f, (float)(getMainGeometry().height()-imgQt.height())*0.5f);
+
+		QPointF p = (imgViewRect.isEmpty()) ? getMainGeometry().center() : imgViewRect.center();
+		p -= imgQt.rect().center();
+
+		imgMatrix.translate(p.x(), p.y());
 		imgMatrix.scale(1.0f, 1.0f);
 	}
 
@@ -2113,7 +2125,7 @@ void DkViewPortFrameless::centerImage() {
 QTransform DkViewPortFrameless::getScaledImageMatrix() {
 
 	QRectF initialRect = mainScreen;
-	QPointF oldCenter = initialRect.center();
+	QPointF oldCenter = imgViewRect.isEmpty() ? initialRect.center() : imgViewRect.center();
 	qDebug() << "initial rect: " << initialRect;
 	
 
@@ -2141,6 +2153,13 @@ QTransform DkViewPortFrameless::getScaledImageMatrix() {
 	imgMatrix.translate(initialRect.left()/s+sDiff.width(), initialRect.top()/s+sDiff.height());
 
 	return imgMatrix;
+}
+
+void DkViewPortFrameless::setInfo(QString msg, int time, int location) {
+
+	// no center info in frameless view until we fix the labels
+	if (location != DkInfoLabel::center_label)
+		DkViewPort::setInfo(msg, time, location);
 }
 
 DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
