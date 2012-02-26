@@ -99,6 +99,7 @@ void DkNoMacs::init() {
 	// assign icon
 	QString iconPath = ":/nomacs/img/nomacs.png";
 	QIcon dirIcon = QIcon(iconPath);
+	setObjectName("DkNoMacs");
 
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
@@ -1081,6 +1082,11 @@ void DkNoMacs::readSettings() {
 }
 
 void DkNoMacs::enterFullScreen() {
+	// switch off fullscreen if it's in it already
+	if (isFullScreen()) {
+		exitFullScreen();
+		return;
+	}
 
 	menuBar()->hide();
 	toolbar->hide();

@@ -41,6 +41,8 @@
 //
 //#include "DkError.h"
 
+#include <float.h>
+
 
 #ifdef WITH_OPENCV
 #include <opencv/cv.h>

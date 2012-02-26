@@ -99,9 +99,14 @@ enum {
 	shortcut_show_toolbar	= Qt::CTRL + Qt::Key_B,
 	shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
 	shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
-	shortcut_show_transfer	= Qt::CTRL + Qt::Key_R,
+	shortcut_show_transfer	= Qt::CTRL + Qt::Key_G,
+#ifdef Q_WS_MAC
+	shortcut_full_screen_ff	= Qt::CTRL + Qt::Key_F,
+	shortcut_frameless	= Qt::CTRL + Qt::Key_R,
+#else
 	shortcut_full_screen_ff	= Qt::Key_F11,
-	shortcut_frameless		= Qt::Key_F10,
+	shortcut_frameless	= Qt::Key_F10,
+#endif
 	shortcut_reset_view 	= Qt::CTRL + Qt::Key_0,
 	shortcut_zoom_full		= Qt::CTRL + Qt::Key_1,
 	shortcut_fit_frame		= Qt::CTRL + Qt::Key_2,
