@@ -377,8 +377,11 @@ void DkBaseViewPort::draw(QPainter *painter) {
 
 	//QImage imgDraw = getScaledImage(imgMatrix.m11()*worldMatrix.m11());
 	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
-	if (parent->isFullScreen())
+	if (parent->isFullScreen()) {
+		painter->setWorldMatrixEnabled(false);
 		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShowSettings::backgroundColor);
+		painter->setWorldMatrixEnabled(true);
+	}
 
 	painter->drawImage(imgViewRect, imgQt, imgRect);
 
@@ -1902,7 +1905,9 @@ void DkViewPortFrameless::draw(QPainter *painter) {
 	if (parent->isFullScreen()) {
 		QColor col = QColor(0,0,0);
 		col.setAlpha(150);
+		painter->setWorldMatrixEnabled(false);
 		painter->fillRect(QRect(QPoint(), size()), col);
+		painter->setWorldMatrixEnabled(true);
 	}
 
 	painter->drawImage(imgViewRect, imgQt, imgRect);
@@ -2281,20 +2286,22 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 	falseColorImg.setColorTable(colorTable);
 	
 	update();
-
-	
 	
 }
 
 void DkViewPortContrast::draw(QPainter *painter) {
 
+	if (parent->isFullScreen()) {
+		painter->setWorldMatrixEnabled(false);
+		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShowSettings::backgroundColor);
+		painter->setWorldMatrixEnabled(true);
+	}
 
 	if (drawFalseColorImg)
 		painter->drawImage(imgViewRect, falseColorImg, imgRect);
 	else
 		painter->drawImage(imgViewRect, imgQt, imgRect);
 
-	//update();
 }
 
 void DkViewPortContrast::setImage(QImage newImg) {
