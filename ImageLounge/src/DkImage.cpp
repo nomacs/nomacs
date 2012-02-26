@@ -324,8 +324,6 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	if (!silent)
 		emit updateInfoSignal("loading...", -1);
 
-	//bool imgLoaded = img.load(file.absoluteFilePath());
-	
 	qDebug() << "loading: " << file.absoluteFilePath();
 
 	bool imgLoaded;
@@ -347,7 +345,13 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 
 	if (imgLoaded) {
 		
+		// TODO: this is a fast fix
+		// if this thread uses the static metadata object 
+		// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
+		// currently we need to read the metadata twice (not nice either)
 		DkImageLoader::imgMetaData.setFileName(file);
+		
+		DkMetaData imgMetaData(file);		
 		int orientation = imgMetaData.getOrientation();
 
 		if (orientation != -1 && !imgMetaData.isTiff() && orientation != 0) {
@@ -364,6 +368,9 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		if (/*updateFolder && */watcher)	// diem: with updateFolder images are just updated once
 			watcher->addPath(file.absoluteFilePath());
 		
+		// TODO: the updateImageSignal is crucial:
+		// if we load images very fast, Qt won't deliver the images
+		// hence they all wait at the setImage slot
 		emit updateImageSignal(img);
 		emit updateFileSignal(file, img.size());
 
@@ -410,8 +417,6 @@ bool DkImageLoader::loadRohFile(QString fileName){
 	try{
 		pFile = fopen (fileName.toStdString().c_str(), "rb" );
 
-		
-
 		fread(pData, 2, rohW*rohH, pFile);
 
 		fclose(pFile);
@@ -430,7 +435,10 @@ bool DkImageLoader::loadRohFile(QString fileName){
 		}
 
 		img = QImage((const uchar*) buf, rohW, rohH, QImage::Format_Indexed8);
-	
+
+		if (img.isNull())
+			throw DkFileException("sorry, the roh file is empty...", __LINE__, __FILE__);
+
 		//img = img.copy();
 		QVector<QRgb> colorTable;
 
@@ -2328,6 +2336,7 @@ void DkMetaData::setRating(int r) {
 
 void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 
+	qDebug() << "saving metadata...";
 	readMetaData();	
 	if (!mdata)
 		return;
