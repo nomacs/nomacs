@@ -420,7 +420,7 @@ public:
 	};
 
 signals:
-	void updateImageSignal(QImage img);
+	void updateImageSignal();
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateFileSignal(QFileInfo file, QSize s);
 	void updateDirSignal(QFileInfo file);

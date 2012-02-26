@@ -371,7 +371,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		// TODO: the updateImageSignal is crucial:
 		// if we load images very fast, Qt won't deliver the images
 		// hence they all wait at the setImage slot
-		emit updateImageSignal(img);
+		emit updateImageSignal();
 		emit updateFileSignal(file, img.size());
 
 		if (updateFolder) {
@@ -893,7 +893,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		this->img = sImg;
 		loadDir(file.absoluteDir());
 
-		emit updateImageSignal(this->img);
+		emit updateImageSignal();
 		emit updateFileSignal(this->file, img.size());
 
 		printf("I could save the image...\n");
@@ -1009,7 +1009,7 @@ void DkImageLoader::deleteFile() {
 			load(loadFile, true, true);
 		else {
 			clearPath();
-			emit updateImageSignal(QImage());
+			emit updateImageSignal();
 		}
 		
 		if (fileHandle->remove())
@@ -1037,7 +1037,7 @@ void DkImageLoader::rotateImage(double angle) {
 		img = img.transformed(rotationMatrix);
 		mutex.unlock();
 
-		updateImageSignal(img);
+		updateImageSignal();
 		updateFileSignal(file, img.size());
 		
 		mutex.lock();

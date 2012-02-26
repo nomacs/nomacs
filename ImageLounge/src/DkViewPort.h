@@ -249,6 +249,7 @@ public slots:
 	void toggleCropImageWidget(bool croping);
 	void cropImage(DkRotatingRect rect);
 
+	virtual void updateImage();
 	virtual void setImage(QImage newImg);
 
 	void settingsChanged();

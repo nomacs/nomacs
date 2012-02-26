@@ -208,7 +208,6 @@ void DkBaseViewPort::setImage(cv::Mat newImg) {
 }
 #endif
 
-
 void DkBaseViewPort::setImage(QImage newImg) {
 
 	imgQt = newImg;
@@ -602,7 +601,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	loader = new DkImageLoader();
 
-	connect(loader, SIGNAL(updateImageSignal(QImage)), this, SLOT(setImage(QImage)));
+	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
+	//connect(loader, SIGNAL(updateImageSignal(QImage)), this, SLOT(setImage(QImage)));
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 	connect(loader, SIGNAL(updateDirSignal(QFileInfo)), filePreview, SLOT(updateDir(QFileInfo)));
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
@@ -686,6 +686,14 @@ void DkViewPort::setImage(cv::Mat newImg) {
 }
 #endif
 
+void DkViewPort::updateImage() {
+
+	// should not happen -> the loader should send this signal
+	if (!loader)
+		return;
+
+	setImage(loader->getImage());
+}
 
 void DkViewPort::setImage(QImage newImg) {
 
@@ -2109,8 +2117,7 @@ void DkViewPortFrameless::updateImageMatrix() {
 
 		QPointF p = (imgViewRect.isEmpty()) ? getMainGeometry().center() : imgViewRect.center();
 		p -= imgQt.rect().center();
-
-		imgMatrix.translate(p.x(), p.y());
+		imgMatrix.translate(p.x()-1, p.y()-1);	// -1 is needed due to float -> int
 		imgMatrix.scale(1.0f, 1.0f);
 	}
 
