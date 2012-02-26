@@ -332,6 +332,9 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_show_player]);
 	viewMenu->addAction(viewActions[menu_view_show_info]);
 	viewMenu->addSeparator();
+	
+	viewMenu->addAction(viewActions[menu_view_frameless]);	
+	viewMenu->addSeparator();
 
 	viewMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewMenu->addAction(viewActions[menu_view_reset]);
