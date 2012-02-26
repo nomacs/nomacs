@@ -490,10 +490,6 @@ public:
 	~DkNoMacsSync();
 	qint16 getServerPort();
 	void syncWith(qint16 port);
-
-private:
-	
-	
 	
 signals:
 	void clientInitializedSignal();
@@ -513,7 +509,8 @@ protected:
 	void initLanClient();
 
 	// gui
-	void createMenu();
+	virtual void createActions();
+	virtual void createMenu();
 
 	// network layer
 	DkLocalManagerThread* localClient;
@@ -543,11 +540,13 @@ public:
 	
 public slots:
 	void exitFullScreen();
+	void updateScreenSize(int screen = 0);
 
 protected:
 	void closeEvent(QCloseEvent *event);
 	bool eventFilter(QObject *obj, QEvent *event);
 
+	QDesktopWidget* dw;
 };
 
 class DllExport DkNoMacsContrast : public DkNoMacsSync {

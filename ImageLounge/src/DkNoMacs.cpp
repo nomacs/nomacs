@@ -623,29 +623,6 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_gps_map]->setStatusTip(tr("shows the GPS coordinates"));
 	viewActions[menu_view_gps_map]->setEnabled(false);
 	connect(viewActions[menu_view_gps_map], SIGNAL(triggered()), this, SLOT(showGpsCoordinates()));
-
-	// sync menu
-	syncActions.resize(menu_sync_end);
-	syncActions[menu_sync] = new QAction(tr("Synchronize &View"), this);
-	syncActions[menu_sync]->setShortcut(QKeySequence(shortcut_sync));
-	syncActions[menu_sync]->setStatusTip(tr("synchronize the current view"));
-	connect(syncActions[menu_sync], SIGNAL(triggered()), vp, SLOT(tcpSynchronize()));
-
-	syncActions[menu_sync_pos] = new QAction(tr("&Window Overlay"), this);
-	syncActions[menu_sync_pos]->setShortcut(QKeySequence(shortcut_tab));
-	syncActions[menu_sync_pos]->setStatusTip(tr("toggle the window opacity"));
-	connect(syncActions[menu_sync_pos], SIGNAL(triggered()), this, SLOT(tcpSendWindowRect()));
-
-	syncActions[menu_sync_arrange] = new QAction(tr("Arrange Instances"), this);
-	syncActions[menu_sync_arrange]->setShortcut(QKeySequence(shortcut_arrange));
-	syncActions[menu_sync_arrange]->setStatusTip(tr("arrange connected instances"));
-	connect(syncActions[menu_sync_arrange], SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
-
-	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &all"), this);
-	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
-	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
-	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
-	//TODO: should be in DkNoMacsIpl
 	
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -1921,6 +1898,36 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->setEnabled(true);
 }
 
+void DkNoMacsSync::createActions() {
+
+	DkNoMacs::createActions();
+
+	DkViewPort* vp = viewport();
+
+	// sync menu
+	syncActions.resize(menu_sync_end);
+	syncActions[menu_sync] = new QAction(tr("Synchronize &View"), this);
+	syncActions[menu_sync]->setShortcut(QKeySequence(shortcut_sync));
+	syncActions[menu_sync]->setStatusTip(tr("synchronize the current view"));
+	connect(syncActions[menu_sync], SIGNAL(triggered()), vp, SLOT(tcpSynchronize()));
+
+	syncActions[menu_sync_pos] = new QAction(tr("&Window Overlay"), this);
+	syncActions[menu_sync_pos]->setShortcut(QKeySequence(shortcut_tab));
+	syncActions[menu_sync_pos]->setStatusTip(tr("toggle the window opacity"));
+	connect(syncActions[menu_sync_pos], SIGNAL(triggered()), this, SLOT(tcpSendWindowRect()));
+
+	syncActions[menu_sync_arrange] = new QAction(tr("Arrange Instances"), this);
+	syncActions[menu_sync_arrange]->setShortcut(QKeySequence(shortcut_arrange));
+	syncActions[menu_sync_arrange]->setStatusTip(tr("arrange connected instances"));
+	connect(syncActions[menu_sync_arrange], SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
+
+	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &all"), this);
+	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
+	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
+	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
+	qDebug() << "connect all connected";
+}
+
 void DkNoMacsSync::createMenu() {
 
 	DkNoMacs::createMenu();
@@ -2123,7 +2130,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_show_statusbar]->setChecked(false);
 		viewActions[menu_view_show_toolbar]->setChecked(false);
 		viewActions[menu_view_fit_frame]->setEnabled(false);
-
 		
 		menu->setTimeToShow(5000);
 		menu->hide();
@@ -2136,31 +2142,11 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_frameless]->setChecked(true);
 		connect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
 
-		// TODO: currently the initialization is wrong!!
-
-		// for now: set to fullscreen
-		QDesktopWidget* dw = QApplication::desktop();
-		
-		int sc = dw->screenCount();
-		QRect screenRects = dw->availableGeometry();
-		
-		for (int idx = 0; idx < sc; idx++) {
-
-			qDebug() << "screens: " << dw->availableGeometry(idx);
-			QRect curScreen = dw->availableGeometry(idx);
-			screenRects.setLeft(qMin(screenRects.left(), curScreen.left()));
-			screenRects.setTop(qMin(screenRects.top(), curScreen.top()));
-			screenRects.setBottom(qMax(screenRects.bottom(), curScreen.bottom()));
-			screenRects.setRight(qMax(screenRects.right(), curScreen.right()));
-		}
-		
-		this->setGeometry(screenRects);
-
-		vp->setMainGeometry(dw->screenGeometry());
+		dw = QApplication::desktop();
+		connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
+		updateScreenSize();
 
 		setObjectName("DkNoMacsFrameless");
-				
-		// TODO: overload the resize dialog
 }
 
 DkNoMacsFrameless::~DkNoMacsFrameless() {
@@ -2168,6 +2154,33 @@ DkNoMacsFrameless::~DkNoMacsFrameless() {
 }
 
 void DkNoMacsFrameless::release() {
+}
+
+void DkNoMacsFrameless::updateScreenSize(int screen) {
+
+	if (!dw)
+		return;
+
+	// for now: set to fullscreen
+
+	int sc = dw->screenCount();
+	QRect screenRects = dw->availableGeometry();
+
+	for (int idx = 0; idx < sc; idx++) {
+
+		qDebug() << "screens: " << dw->availableGeometry(idx);
+		QRect curScreen = dw->availableGeometry(idx);
+		screenRects.setLeft(qMin(screenRects.left(), curScreen.left()));
+		screenRects.setTop(qMin(screenRects.top(), curScreen.top()));
+		screenRects.setBottom(qMax(screenRects.bottom(), curScreen.bottom()));
+		screenRects.setRight(qMax(screenRects.right(), curScreen.right()));
+	}
+
+	this->setGeometry(screenRects);
+
+	DkViewPortFrameless* vp = static_cast<DkViewPortFrameless*>(viewport());
+	vp->setMainGeometry(dw->screenGeometry());
+
 }
 
 void DkNoMacsFrameless::exitFullScreen() {

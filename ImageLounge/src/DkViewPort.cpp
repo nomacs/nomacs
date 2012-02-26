@@ -378,6 +378,8 @@ void DkBaseViewPort::draw(QPainter *painter) {
 
 	//QImage imgDraw = getScaledImage(imgMatrix.m11()*worldMatrix.m11());
 	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
+	if (parent->isFullScreen())
+		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShowSettings::backgroundColor);
 
 	painter->drawImage(imgViewRect, imgQt, imgRect);
 
@@ -1080,9 +1082,6 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	QPainter painter(viewport());
-
-	if (parent->isFullScreen())
-		painter.fillRect(QRect(QPoint(), size()), DkSettings::SlideShowSettings::backgroundColor);
 
 	if (!imgQt.isNull()) {
 		painter.setWorldTransform(worldMatrix);
@@ -1877,55 +1876,29 @@ void DkViewPortFrameless::resetView() {
 	DkViewPort::resetView();
 }
 
-void DkViewPortFrameless::updateImageMatrix() {
-
-	if (imgQt.isNull())
-		return;
-
-	QRectF oldImgRect = imgViewRect;
-	QTransform oldImgMatrix = imgMatrix;
-
-	imgMatrix.reset();
-
-	// if the image is smaller or zoom is active: paint the image as is
-	if (!getMainGeometry().contains(imgRect.toRect()))
-		imgMatrix = getScaledImageMatrix();
-	else {
-
-		QPointF p = (imgViewRect.isEmpty()) ? getMainGeometry().center() : imgViewRect.center();
-		p -= imgQt.rect().center();
-
-		imgMatrix.translate(p.x(), p.y());
-		imgMatrix.scale(1.0f, 1.0f);
-	}
-
-	imgViewRect = imgMatrix.mapRect(imgRect);
-
-	// update world matrix
-	if (worldMatrix.m11() != 1) {
-
-		float scaleFactor = oldImgMatrix.m11()/imgMatrix.m11();
-		double dx = oldImgRect.x()/scaleFactor-imgViewRect.x();
-		double dy = oldImgRect.y()/scaleFactor-imgViewRect.y();
-
-		worldMatrix.scale(scaleFactor, scaleFactor);
-		worldMatrix.translate(dx, dy);
-	}
-}
-
 void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
-	
-	QPainter painter(viewport());
-	painter.setWorldTransform(worldMatrix);
-	drawFrame(&painter);
-	painter.end();
+
+	if (!parent->isFullScreen()) {
+
+		QPainter painter(viewport());
+		painter.setWorldTransform(worldMatrix);
+		drawFrame(&painter);
+		painter.end();
+	}
 
 	DkViewPort::paintEvent(event);
 }
 
 void DkViewPortFrameless::draw(QPainter *painter) {
 	
-	DkViewPort::draw(painter);
+	if (parent->isFullScreen()) {
+		QColor col = QColor(0,0,0);
+		col.setAlpha(150);
+		painter->fillRect(QRect(QPoint(), size()), col);
+	}
+
+	painter->drawImage(imgViewRect, imgQt, imgRect);
+	//DkViewPort::draw(painter);
 }
 
 void DkViewPortFrameless::drawBackground(QPainter *painter) {
@@ -1934,8 +1907,6 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 	painter->setBrush(QColor(127, 144, 144, 200));
 	painter->setPen(QColor(100, 100, 100, 255));
-
-	qDebug() << "world transform: " << worldMatrix;
 
 	QRectF initialRect = mainScreen;
 	QPointF oldCenter = initialRect.center();
@@ -1982,7 +1953,6 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 		QString text = startActions[idx]->text().replace("&", "");
 		tmpRect.moveTop(tmpRect.top()+tmpRect.height()+10);
 		painter->drawText(tmpRect, text);
-		qDebug() << "action text: " << startActions[idx]->text();
 	}
 }
 
@@ -2120,6 +2090,42 @@ void DkViewPortFrameless::controlImagePosition(float lb, float ub) {
 
 void DkViewPortFrameless::centerImage() {
 
+}
+
+void DkViewPortFrameless::updateImageMatrix() {
+
+	if (imgQt.isNull())
+		return;
+
+	QRectF oldImgRect = imgViewRect;
+	QTransform oldImgMatrix = imgMatrix;
+
+	imgMatrix.reset();
+
+	// if the image is smaller or zoom is active: paint the image as is
+	if (!getMainGeometry().contains(imgRect.toRect()))
+		imgMatrix = getScaledImageMatrix();
+	else {
+
+		QPointF p = (imgViewRect.isEmpty()) ? getMainGeometry().center() : imgViewRect.center();
+		p -= imgQt.rect().center();
+
+		imgMatrix.translate(p.x(), p.y());
+		imgMatrix.scale(1.0f, 1.0f);
+	}
+
+	imgViewRect = imgMatrix.mapRect(imgRect);
+
+	// update world matrix
+	if (worldMatrix.m11() != 1) {
+
+		float scaleFactor = oldImgMatrix.m11()/imgMatrix.m11();
+		double dx = oldImgRect.x()/scaleFactor-imgViewRect.x();
+		double dy = oldImgRect.y()/scaleFactor-imgViewRect.y();
+
+		worldMatrix.scale(scaleFactor, scaleFactor);
+		worldMatrix.translate(dx, dy);
+	}
 }
 
 QTransform DkViewPortFrameless::getScaledImageMatrix() {
