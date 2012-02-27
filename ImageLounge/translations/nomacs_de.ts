@@ -12,13 +12,13 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/DkImage.cpp" line="1950"/>
+        <location filename="../src/DkImage.cpp" line="1954"/>
         <source>could not read exif data
 </source>
         <translation>exif Daten konnten nicht geladen werden</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1954"/>
+        <location filename="../src/DkImage.cpp" line="1958"/>
         <source>wrong rotation parameter
 </source>
         <translation>Falsche Rotationsparameter</translation>
@@ -26,22 +26,22 @@
     <message>
         <location filename="../src/DkSettings.cpp" line="80"/>
         <source>Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildgröße;Orientierung;Hersteller;Modell;Blende;Blitz;Fokale Länge;</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="81"/>
         <source>Exposure Mode;Exposure Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Belichtung;Belichtungszeit</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="83"/>
         <source>Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;</source>
-        <translation type="unfinished"></translation>
+        <translation>Bewertung;Kommentar;Datum;Erstellungsdatum;Beschreibung;Autor;Titel;</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="84"/>
         <source>City;Country;Headline;Caption;Copyright;Keywords;Path;File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Stadt;Land;Titel;Beschriftung;Copyright;Keywords;Pfad;Dateigröße</translation>
     </message>
 </context>
 <context>
@@ -55,72 +55,72 @@
 <context>
     <name>nmc::DkDisplaySettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="670"/>
+        <location filename="../src/DkSettings.cpp" line="673"/>
         <source>Display Settings</source>
         <translation>Anzeige Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="677"/>
+        <location filename="../src/DkSettings.cpp" line="680"/>
         <source>Invert Zoom</source>
         <translation>Zoom invertieren</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="678"/>
+        <location filename="../src/DkSettings.cpp" line="681"/>
         <source>Keep Zoom</source>
         <translation>Zoomstufe beibehatlen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="686"/>
+        <location filename="../src/DkSettings.cpp" line="689"/>
         <source>Highlight Color:</source>
         <translation>Farbe für Highlight:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="689"/>
+        <location filename="../src/DkSettings.cpp" line="692"/>
         <source>Reset</source>
         <translation>Zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="703"/>
+        <location filename="../src/DkSettings.cpp" line="706"/>
         <source>Stop interpolating at:</source>
         <translation>Aufhören zu Interpolieren bei:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="703"/>
+        <location filename="../src/DkSettings.cpp" line="706"/>
         <source>% zoom level</source>
         <translation>% Zoomstufe</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="705"/>
+        <location filename="../src/DkSettings.cpp" line="708"/>
         <source>show Menu</source>
         <translation>zeige Menü</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="706"/>
+        <location filename="../src/DkSettings.cpp" line="709"/>
         <source>show Toolbar</source>
         <translation>zeige Toolbar</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="707"/>
+        <location filename="../src/DkSettings.cpp" line="710"/>
         <source>show Statusbar</source>
         <translation>zeige Statusleiste</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="709"/>
+        <location filename="../src/DkSettings.cpp" line="712"/>
         <source>Thumbnails</source>
         <translation>Vorschaubilder</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="713"/>
+        <location filename="../src/DkSettings.cpp" line="716"/>
         <source>maximal size:</source>
         <translation>maximale Größe:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="713"/>
+        <location filename="../src/DkSettings.cpp" line="716"/>
         <source>pixel</source>
         <translation>Pixel</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="716"/>
+        <location filename="../src/DkSettings.cpp" line="719"/>
         <source>save Thumbnails</source>
         <translation>speichere Vorschaubilder</translation>
     </message>
@@ -148,43 +148,43 @@
         <translation>Endlosschleife</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="482"/>
+        <location filename="../src/DkSettings.cpp" line="529"/>
         <source>&amp;Open With</source>
         <translation>&amp;Öffne mit</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="493"/>
+        <location filename="../src/DkSettings.cpp" line="491"/>
         <source>choose language:</source>
         <translation>Sprache wählen:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="515"/>
+        <location filename="../src/DkSettings.cpp" line="513"/>
         <source>English</source>
         <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
         <translation>Deutsch</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="533"/>
+        <location filename="../src/DkSettings.cpp" line="535"/>
         <source>Drag &amp;&amp; Drop</source>
         <translation>Drag &amp;&amp; Drop</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="540"/>
+        <location filename="../src/DkSettings.cpp" line="542"/>
         <source>use temporary folder</source>
         <translation>benutze temporären Ordner</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="545"/>
+        <location filename="../src/DkSettings.cpp" line="547"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="561"/>
+        <location filename="../src/DkSettings.cpp" line="563"/>
         <source>Apply default settings</source>
         <translation>Zurücksetzen auf Standardeinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="603"/>
+        <location filename="../src/DkSettings.cpp" line="606"/>
         <source>Open an Image Directory</source>
         <translation></translation>
     </message>
@@ -219,67 +219,74 @@
     <message>
         <location filename="../src/DkImage.cpp" line="307"/>
         <source>Sorry, you are not allowed to read: %1</source>
-        <translation></translation>
+        <translation>Sie sind nicht berechtigt %1 zu lesen</translation>
+    </message>
+    <message>
+        <location filename="../src/DkImage.cpp" line="325"/>
+        <location filename="../src/DkImage.cpp" line="341"/>
+        <source>loading...</source>
+        <translation>lädt...</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="389"/>
         <source>Sorry, I could not load: %1</source>
-        <translation></translation>
+        <translation>%1 konnte nicht geladen werden</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="812"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
-        <translation></translation>
+        <translation>Ich kann keine leere Datei speichern...</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="817"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
-        <translation></translation>
+        <translation>Der Ordner %1 existiert nicht</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="822"/>
         <location filename="../src/DkImage.cpp" line="902"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
-        <translation></translation>
+        <translation>Die Datei %1 kann nicht geschrieben werden</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="853"/>
         <location filename="../src/DkImage.cpp" line="861"/>
         <location filename="../src/DkImage.cpp" line="923"/>
         <location filename="../src/DkImage.cpp" line="926"/>
-        <location filename="../src/DkImage.cpp" line="1045"/>
-        <location filename="../src/DkImage.cpp" line="1047"/>
-        <location filename="../src/DkImage.cpp" line="1055"/>
+        <location filename="../src/DkImage.cpp" line="1049"/>
+        <location filename="../src/DkImage.cpp" line="1051"/>
+        <location filename="../src/DkImage.cpp" line="1059"/>
         <source>saving...</source>
-        <translation></translation>
+        <translation>speichern...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="959"/>
+        <location filename="../src/DkImage.cpp" line="963"/>
         <source>Sorry, I destroyed your file...</source>
-        <translation></translation>
+        <translation>Entschuldigung, ich habe Ihre Datei zerstöhrt...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1016"/>
+        <location filename="../src/DkImage.cpp" line="1020"/>
         <source>%1 deleted...</source>
-        <translation></translation>
+        <translation>%1 gelöscht...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1018"/>
+        <location filename="../src/DkImage.cpp" line="1022"/>
         <source>Sorry, I could not delete: %1</source>
-        <translation></translation>
+        <translation>%1 konnte nicht gelöscht werden</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1063"/>
+        <location filename="../src/DkImage.cpp" line="1067"/>
         <source>Sorry, I could not write to: %1</source>
-        <translation></translation>
+        <translation>%1 konnte nicht gespeichert werden</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1206"/>
+        <location filename="../src/DkImage.cpp" line="1210"/>
         <source>%1 
  does not contain any image</source>
-        <translation></translation>
+        <translation>%1
+enthält keine Bilder</translation>
     </message>
 </context>
 <context>
@@ -318,12 +325,12 @@
 <context>
     <name>nmc::DkMetaDataSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1025"/>
+        <location filename="../src/DkSettings.cpp" line="1028"/>
         <source>Camera Data</source>
         <translation>Kamera Daten</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1026"/>
+        <location filename="../src/DkSettings.cpp" line="1029"/>
         <source>Description</source>
         <translation>Beschreibung</translation>
     </message>
@@ -1131,57 +1138,57 @@
 <context>
     <name>nmc::DkSlideshowSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="794"/>
+        <location filename="../src/DkSettings.cpp" line="797"/>
         <source>Slideshow Settings</source>
         <translation>Diashow Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="797"/>
+        <location filename="../src/DkSettings.cpp" line="800"/>
         <source>Display Time:</source>
         <translation>Anzeigezeit:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="797"/>
+        <location filename="../src/DkSettings.cpp" line="800"/>
         <source>sec</source>
         <translation>sek</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="800"/>
+        <location filename="../src/DkSettings.cpp" line="803"/>
         <source>Fullscreen Settings</source>
         <translation>Vollbild Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="806"/>
+        <location filename="../src/DkSettings.cpp" line="809"/>
         <source>Background color:</source>
         <translation>Hintergrundfarbe:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="809"/>
+        <location filename="../src/DkSettings.cpp" line="812"/>
         <source>Reset</source>
         <translation>Zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="820"/>
+        <location filename="../src/DkSettings.cpp" line="823"/>
         <source>Silent Fullscreen</source>
         <translation>keine Warnungen im Vollbildmodus</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="824"/>
+        <location filename="../src/DkSettings.cpp" line="827"/>
         <source>Display Information</source>
         <translation>Zeige Informationen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="827"/>
+        <location filename="../src/DkSettings.cpp" line="830"/>
         <source>Image Name</source>
         <translation>Bildname</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="830"/>
+        <location filename="../src/DkSettings.cpp" line="833"/>
         <source>Creation Date</source>
         <translation>Erstelldatum</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="833"/>
+        <location filename="../src/DkSettings.cpp" line="836"/>
         <source>Rating</source>
         <translation>Rating</translation>
     </message>
@@ -1189,52 +1196,52 @@
 <context>
     <name>nmc::DkSynchronizeSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="910"/>
+        <location filename="../src/DkSettings.cpp" line="913"/>
         <source>Synchronization</source>
         <translation>Synchronisation</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="913"/>
+        <location filename="../src/DkSettings.cpp" line="916"/>
         <source>synchronize absolute transformation</source>
         <translation>Synchronisiere absolute Transformationen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="914"/>
+        <location filename="../src/DkSettings.cpp" line="917"/>
         <source>synchronize relative transformation</source>
         <translation>synchronisiere relative Transformationen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="920"/>
+        <location filename="../src/DkSettings.cpp" line="923"/>
         <source>Network Synchronization</source>
         <translation>Netzwerk Synchronisation</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="923"/>
+        <location filename="../src/DkSettings.cpp" line="926"/>
         <source>enable network sync</source>
         <translation>aktiviere Netzwerksynchronisation</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="927"/>
+        <location filename="../src/DkSettings.cpp" line="930"/>
         <source>clients can:</source>
         <translation>Clients können:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="928"/>
+        <location filename="../src/DkSettings.cpp" line="931"/>
         <source>switch files</source>
         <translation>Datei wechseln</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="929"/>
+        <location filename="../src/DkSettings.cpp" line="932"/>
         <source>send new images</source>
         <translation>neues Bild schicken</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="930"/>
+        <location filename="../src/DkSettings.cpp" line="933"/>
         <source>control window position</source>
         <translation>Fensterposition kontrollieren</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="931"/>
+        <location filename="../src/DkSettings.cpp" line="934"/>
         <source>synchronize pan and zoom</source>
         <translation>synchronisation der Position und der Zoomstufe</translation>
     </message>
@@ -1280,33 +1287,33 @@
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="46"/>
         <source>Enable</source>
-        <translation></translation>
+        <translation>Aktivieren</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="47"/>
         <location filename="../src/DkTransferToolBar.cpp" line="198"/>
         <source>Disables the transfer function</source>
-        <translation></translation>
+        <translation>Schaltet die Transferfunktion aus</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="53"/>
         <source>Active channel:</source>
-        <translation></translation>
+        <translation>Kanal:</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="56"/>
         <source>Changes the displayed color channel</source>
-        <translation></translation>
+        <translation>Ändert den angezeigten Bildkanal</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="62"/>
         <source>Click into the field for a new slider</source>
-        <translation></translation>
+        <translation>Für einen neuen Slider ins Feld klicken</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="73"/>
         <source>Color picker</source>
-        <translation></translation>
+        <translation>Pipette</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="109"/>
@@ -1316,22 +1323,22 @@
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="110"/>
         <source>Resets the transfer function</source>
-        <translation></translation>
+        <translation>Transferfunktion zurücksetzen</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="113"/>
         <source>Select Color</source>
-        <translation></translation>
+        <translation>Farbauswahl</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="114"/>
         <source>Adds a slider at the selected color value</source>
-        <translation></translation>
+        <translation>Fügt einen Slider für den aktuellen Farbwert hinzu</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="200"/>
         <source>Enables the transfer function</source>
-        <translation></translation>
+        <translation>Aktiviert die Transferfunktion</translation>
     </message>
 </context>
 <context>
