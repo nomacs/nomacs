@@ -322,7 +322,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	//dataExif.saveOrientation(90);
 
 	if (!silent)
-		emit updateInfoSignal("loading...", -1);
+		emit updateInfoSignal(tr("loading..."), -1);
 
 	qDebug() << "loading: " << file.absoluteFilePath();
 
@@ -338,7 +338,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	}
 	
 	if (!silent)
-		emit updateInfoSignal("loading...", 1);	// stop showing
+		emit updateInfoSignal(tr("loading..."), 1);	// stop showing
 
 	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
 	this->virtualFile = file;
@@ -368,9 +368,6 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		if (/*updateFolder && */watcher)	// diem: with updateFolder images are just updated once
 			watcher->addPath(file.absoluteFilePath());
 		
-		// TODO: the updateImageSignal is crucial:
-		// if we load images very fast, Qt won't deliver the images
-		// hence they all wait at the setImage slot
 		emit updateImageSignal();
 		emit updateFileSignal(file, img.size());
 
@@ -932,14 +929,18 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 
 	if (!saveImg.isNull() && saved) {
 		
+		if (file.exists()) {
+			try {
+				imgMetaData.saveMetaDataToFile(QFileInfo(filePath));
+			} catch (...) {
+				qDebug() << "could not copy meta-data to file" << filePath;
+			}
+		}
+		// TODO: if we create a new file we should 
+
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);
-
-		if (this->file.exists())
-			qDebug() << this->file.absoluteFilePath() << " exists...";
-		else
-			qDebug() << this->file.absoluteFilePath() << " does NOT exist...";
-
+		
 		this->virtualFile = this->file;
 		this->img = saveImg;
 		loadDir(this->file.absoluteDir());
