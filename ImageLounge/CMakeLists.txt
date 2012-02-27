@@ -160,9 +160,6 @@ IF (${ENABLE_RAW})
 
 	# OpenCV
 	pkg_check_modules(OpenCV  opencv>=2.1.0)
-	IF (NOT OpenCV_FOUND AND NOT MSVC)
-		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
-	ENDIF()
 	IF (NOT OpenCV_FOUND AND MSVC)
 		find_path(OpenCV_BUILD_PATH NAMES "bin/Release/opencv_core231.dll" "bin/Release/opencv_imgproc231.dll" 
 										"bin/Debug/opencv_core231d.dll" "bin/Debug/opencv_imgproc231d.dll" 
@@ -216,7 +213,9 @@ IF (${ENABLE_RAW})
 			/lib/Debug/opencv_imgproc231d.lib")
 		ENDIF()	
 	ENDIF()
-
+	IF (NOT OpenCV_FOUND)
+		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
+	ENDIF()
 	add_definitions(-DWITH_OPENCV)
 	
 	if (APPLE)
