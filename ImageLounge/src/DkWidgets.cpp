@@ -2347,44 +2347,44 @@ void DkMetaDataInfo::init() {
 	camDTags = qApp->translate("nmc::DkMetaData",DkMetaDataSettingsWidget::scamDataDesc.toAscii()).split(";");
 	descTags = qApp->translate("nmc::DkMetaData",DkMetaDataSettingsWidget::sdescriptionDesc.toAscii()).split(";");
 
-	exposureModes.append("not defined");
-	exposureModes.append("manual");
-	exposureModes.append("normal");
-	exposureModes.append("aperture priority");
-	exposureModes.append("shutter priority");
-	exposureModes.append("program creative");
-	exposureModes.append("high-speed program");
-	exposureModes.append("portrait mode");
-	exposureModes.append("landscape mode");
+	exposureModes.append(tr("not defined"));
+	exposureModes.append(tr("manual"));
+	exposureModes.append(tr("normal"));
+	exposureModes.append(tr("aperture priority"));
+	exposureModes.append(tr("shutter priority"));
+	exposureModes.append(tr("program creative"));
+	exposureModes.append(tr("high-speed program"));
+	exposureModes.append(tr("portrait mode"));
+	exposureModes.append(tr("landscape mode"));
 
 	// flash mapping is taken from: http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Flash
-	flashModes.insert(0x0, "No Flash");
-	flashModes.insert(0x1, "Fired");
-	flashModes.insert(0x5, "Fired, Return not detected");
-	flashModes.insert(0x7, "Fired, Return detected");
-	flashModes.insert(0x8, "On, Did not fire");
-	flashModes.insert(0x9, "On, Fired");
-	flashModes.insert(0xd, "On, Return not detected");
-	flashModes.insert(0xf, "On, Return detected");
-	flashModes.insert(0x10, "Off, Did not fire");
-	flashModes.insert(0x14, "Off, Did not fire, Return not detected");
-	flashModes.insert(0x18, "Auto, Did not fire");
-	flashModes.insert(0x19, "Auto, Fired");
-	flashModes.insert(0x1d, "Auto, Fired, Return not detected");
-	flashModes.insert(0x1f, "Auto, Fired, Return detected");
-	flashModes.insert(0x20, "No flash function");
-	flashModes.insert(0x30, "Off, No flash function");
-	flashModes.insert(0x41, "Fired, Red-eye reduction");
-	flashModes.insert(0x45, "Fired, Red-eye reduction, Return not detected");
-	flashModes.insert(0x47, "Fired, Red-eye reduction, Return detected");
-	flashModes.insert(0x49, "On, Red-eye reduction");
-	flashModes.insert(0x4d, "On, Red-eye reduction, Return not detected");
-	flashModes.insert(0x4f, "On, Red-eye reduction, Return detected");
-	flashModes.insert(0x50, "Off, Red-eye reduction");
-	flashModes.insert(0x58, "Auto, Did not fire, Red-eye reduction");
-	flashModes.insert(0x59, "Auto, Fired, Red-eye reduction");
-	flashModes.insert(0x5d, "Auto, Fired, Red-eye reduction, Return not detected");
-	flashModes.insert(0x5f, "Auto, Fired, Red-eye reduction, Return detected");
+	flashModes.insert(0x0, tr("No Flash"));
+	flashModes.insert(0x1, tr("Fired"));
+	flashModes.insert(0x5, tr("Fired, Return not detected"));
+	flashModes.insert(0x7, tr("Fired, Return detected"));
+	flashModes.insert(0x8, tr("On, Did not fire"));
+	flashModes.insert(0x9, tr("On, Fired"));
+	flashModes.insert(0xd, tr("On, Return not detected"));
+	flashModes.insert(0xf, tr("On, Return detected"));
+	flashModes.insert(0x10, tr("Off, Did not fire"));
+	flashModes.insert(0x14, tr("Off, Did not fire, Return not detected"));
+	flashModes.insert(0x18, tr("Auto, Did not fire"));
+	flashModes.insert(0x19, tr("Auto, Fired"));
+	flashModes.insert(0x1d, tr("Auto, Fired, Return not detected"));
+	flashModes.insert(0x1f, tr("Auto, Fired, Return detected"));
+	flashModes.insert(0x20, tr("No flash function"));
+	flashModes.insert(0x30, tr("Off, No flash function"));
+	flashModes.insert(0x41, tr("Fired, Red-eye reduction"));
+	flashModes.insert(0x45, tr("Fired, Red-eye reduction, Return not detected"));
+	flashModes.insert(0x47, tr("Fired, Red-eye reduction, Return detected"));
+	flashModes.insert(0x49, tr("On, Red-eye reduction"));
+	flashModes.insert(0x4d, tr("On, Red-eye reduction, Return not detected"));
+	flashModes.insert(0x4f, tr("On, Red-eye reduction, Return detected"));
+	flashModes.insert(0x50, tr("Off, Red-eye reduction"));
+	flashModes.insert(0x58, tr("Auto, Did not fire, Red-eye reduction"));
+	flashModes.insert(0x59, tr("Auto, Fired, Red-eye reduction"));
+	flashModes.insert(0x5d, tr("Auto, Fired, Red-eye reduction, Return not detected"));
+	flashModes.insert(0x5f, tr("Auto, Fired, Red-eye reduction, Return detected"));
 
 	worldMatrix = QTransform();
 
@@ -2500,7 +2500,7 @@ QString DkMetaDataInfo::getGPSCoordinates() {
 				valS = help.at(i);
 				coordP = valS.split("/");
 				if (coordP.size() != 2)
-					throw DkException("could not parse GPS Data");
+					throw DkException(tr("could not parse GPS Data").toStdString());
 
 				val1 = coordP.at(0).toFloat();
 				val2 = coordP.at(1).toFloat();
@@ -2534,7 +2534,7 @@ QString DkMetaDataInfo::getGPSCoordinates() {
 				valS = help.at(i);
 				coordP = valS.split("/");
 				if (coordP.size() != 2)
-					throw DkException("could not parse GPS Data");
+					throw DkException(tr("could not parse GPS Data").toStdString());
 
 				val1 = coordP.at(0).toFloat();
 				val2 = coordP.at(1).toFloat();
