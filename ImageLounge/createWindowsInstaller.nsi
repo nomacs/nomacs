@@ -327,6 +327,8 @@ Section "MainSection" SEC01
   File "ReallyRelease\nomacs.exe"
   CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
   CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
+  
+  File "nomacs_*.qm"
 
   File "ReallyRelease\exiv2.dll"
   File "ReallyRelease\libexpat.dll"
@@ -418,6 +420,7 @@ Section Uninstall
   Delete "$INSTDIR\libexpat.dll"
   Delete "$INSTDIR\exiv2.dll"
   Delete "$INSTDIR\nomacs.exe"
+  Delete "$INSTDIR\*.qm"
   
   Delete "$INSTDIR\COPYRIGHT"
   Delete "$INSTDIR\LICENSE.GPLv2"
