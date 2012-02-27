@@ -51,6 +51,9 @@
 #include <QRadioButton>
 #include <QFileDialog>
 #include <QLineEdit>
+#include <QTranslator>
+#include <QComboBox>
+
 
 #include "BorderLayout.h"
 
@@ -108,6 +111,7 @@ class DkSettings : public QObject {
 			static QStringList recentFolders;
 			static bool useTmpPath;
 			static QString tmpPath;
+			static QString language;
 
 			// open with
 			static QString defaultAppPath;
@@ -280,10 +284,13 @@ Q_OBJECT
 		QLineEdit* leTmpPath;
 		QCheckBox* cbUseTmpPath;
 		QPushButton* pbTmpPath;
+		QString curLanguage;
+		QComboBox* langCombo;
 		
 	
-
 		QPushButton* buttonDefaultSettings;
+
+		QStringList languages;
 
 		bool loop;
 

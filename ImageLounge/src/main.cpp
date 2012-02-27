@@ -71,11 +71,9 @@ int main(int argc, char *argv[]) {
 	// the cast (char**) is just relevant for Windows (otherwise it is char** anyway)
 	QApplication a(argc, (char**)argv);
 #endif
-	//QTranslator translator;
-	//if (!translator.load("nomacs_de")) 
-	//	qDebug() << "unable to load translation";
-	//a.installTranslator(&translator);
 
+
+	
 
 	QStringList args = a.arguments();
 	nmc::DkNoMacs* w;
@@ -88,6 +86,12 @@ int main(int argc, char *argv[]) {
 	// DEBUG --------------------------------------------------------------------
 
 	QSettings settings;
+
+	QTranslator translator;
+	if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm")) 
+		qDebug() << "unable to load translation (" << "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm)";
+	a.installTranslator(&translator);
+
 
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();
 	

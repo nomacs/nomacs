@@ -45,6 +45,7 @@ QStringList DkSettings::GlobalSettings::recentFiles = QStringList();
 QStringList DkSettings::GlobalSettings::recentFolders = QStringList();
 bool DkSettings::GlobalSettings::useTmpPath = false;
 QString DkSettings::GlobalSettings::tmpPath = QString();
+QString DkSettings::GlobalSettings::language = "en";
 
 // open with settings
 QString DkSettings::GlobalSettings::defaultAppPath = QString();
@@ -76,11 +77,11 @@ QBitArray DkSettings::MetaDataSettings::metaDataBits = QBitArray(DkMetaDataSetti
 //QString DkMetaDataSettingsWidget::sdescriptionDesc = QString("&Rating;&User Comment;&Date Time;D&ate Time Original;&Image Description;&Creator;C&reator Title;") %
 //	QString("&City;C&ountry;&Headline;Ca&ption;Copy&right;Key&words");
 
-QString DkMetaDataSettingsWidget::scamDataDesc = QString(tr("Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;")) %
-	QString(tr("Exposure Mode;Exposure Time"));
+QString DkMetaDataSettingsWidget::scamDataDesc = QString(QObject::tr("Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;")) %
+	QString(QObject::tr("Exposure Mode;Exposure Time"));
 
-QString DkMetaDataSettingsWidget::sdescriptionDesc = QString(tr("Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;")) %
-	QString(tr("City;Country;Headline;Caption;Copyright;Keywords;Path;File Size"));
+QString DkMetaDataSettingsWidget::sdescriptionDesc = QString(QObject::tr("Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;")) %
+	QString(QObject::tr("City;Country;Headline;Caption;Copyright;Keywords;Path;File Size"));
 
 
 bool DkSettings::SynchronizeSettings::enableNetworkSync = false;
@@ -114,6 +115,7 @@ void DkSettings::load() {
 	GlobalSettings::recentFiles = settings.value("GlobalSettings/recentFiles", DkSettings::GlobalSettings::recentFiles).toStringList();
 	GlobalSettings::useTmpPath= settings.value("GlobalSettings/useTmpPath", DkSettings::GlobalSettings::useTmpPath).toBool();
 	GlobalSettings::tmpPath = settings.value("GlobalSettings/tmpPath", DkSettings::GlobalSettings::tmpPath).toString();
+	GlobalSettings::language = settings.value("GlobalSettings/language", DkSettings::GlobalSettings::language).toString();
 
 	GlobalSettings::defaultAppPath = settings.value("GlobalSettings/defaultAppPath", DkSettings::GlobalSettings::defaultAppPath).toString();
 	GlobalSettings::defaultAppIdx = settings.value("GlobalSettings/defaultAppIdx", DkSettings::GlobalSettings::defaultAppIdx).toInt();
@@ -173,6 +175,8 @@ void DkSettings::save() {
 	settings.setValue("GlobalSettings/recentFiles", DkSettings::GlobalSettings::recentFiles);
 	settings.setValue("GlobalSettings/useTmpPath", DkSettings::GlobalSettings::useTmpPath);
 	settings.setValue("GlobalSettings/tmpPath", DkSettings::GlobalSettings::tmpPath);
+	settings.setValue("GlobalSettings/language", DkSettings::GlobalSettings::language);
+
 	settings.setValue("GlobalSettings/defaultAppIdx", DkSettings::GlobalSettings::defaultAppIdx);
 	settings.setValue("GlobalSettings/defaultAppPath", DkSettings::GlobalSettings::defaultAppPath);
 	settings.setValue("GlobalSettings/showDefaultAppDialog", DkSettings::GlobalSettings::showDefaultAppDialog);
@@ -225,6 +229,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::GlobalSettings::recentFolders = QStringList();
 	DkSettings::GlobalSettings::useTmpPath = false;
 	DkSettings::GlobalSettings::tmpPath = QString();
+	DkSettings::GlobalSettings::language = QString();
 	DkSettings::GlobalSettings::defaultAppIdx = -1;
 	DkSettings::GlobalSettings::defaultAppPath = QString();
 	DkSettings::GlobalSettings::showDefaultAppDialog = true;
@@ -438,6 +443,8 @@ void DkGlobalSettingsWidget::init() {
 		leTmpPath->setDisabled(true);
 		pbTmpPath->setDisabled(true);
 	}
+	curLanguage = DkSettings::GlobalSettings::language;
+	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
 
 	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
 	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
@@ -463,7 +470,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	QGroupBox* gbNavigationSettings = new QGroupBox(tr("Global Settings"), this);
 	QGridLayout* gbNavigationLayout= new QGridLayout(gbNavigationSettings);
 	
-
+	// --- left layout of the global settings widget
 	// skip images
 	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
 	
@@ -472,12 +479,57 @@ void DkGlobalSettingsWidget::createLayout() {
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	//vbCheckBoxLayout->setContentsMargins(11,0,11,0);
 	cbWrapImages = new QCheckBox(tr("Wrap Images"));
+
+	vbCheckBoxLayout->addWidget(cbWrapImages, 0, 0);
+	//vbCheckBoxLayout->addWidget(pbOpenWith, 0, 1, 1, 1, Qt::AlignRight);
+	//vbCheckBoxLayout->addStretch();
+
+
+	// ---- right layout of the global settings widget
+	QWidget* langWidget = new QWidget(this);
+	QGridLayout* langLayout = new QGridLayout(langWidget);
+	QLabel* langLabel = new QLabel(tr("choose language:"));
+	langCombo = new QComboBox();
+
+	QDir qmDir = QDir();
+	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
+
+	langCombo->addItem("English");
+	languages << "en";
+
+	for (int i = 0; i < fileNames.size(); ++i) {
+		QString locale = fileNames[i];
+		locale.remove(0, locale.indexOf('_') + 1);
+		locale.chop(3);
+
+		QTranslator translator;
+		if (translator.load(fileNames[i], qmDir.absolutePath()))
+			qDebug() << "translation loaded";
+		else
+			qDebug() << "translation NOT loaded";
+
+
+		//: this should be the name of the language in which nomacs is translated to
+		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");
+		if (language.isEmpty())
+			continue;
+
+		langCombo->addItem(language);
+		languages << locale;
+
+		if (locale == curLanguage) {
+			langCombo->setCurrentIndex(i+1); // +1 because of english
+		}
+	}
+
+	langLayout->addWidget(langLabel,0,0);
+	langLayout->addWidget(langCombo,1,0);
+
+
 	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"));
 	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
 
-	vbCheckBoxLayout->addWidget(cbWrapImages, 0, 0);
-	vbCheckBoxLayout->addWidget(pbOpenWith, 0, 1, 1, 1, Qt::AlignRight);
-	//vbCheckBoxLayout->addStretch();
+	// ---- drag and drop groupbox
 
 
 	QGroupBox* gbDragDrop = new QGroupBox(tr("Drag && Drop"));
@@ -515,6 +567,9 @@ void DkGlobalSettingsWidget::createLayout() {
 	gbLeftLayout->addWidget(skipImgWidget);
 	gbLeftLayout->addWidget(checkBoxWidget);
 	gbLeftLayout->addStretch();
+	gbRightLayout->addWidget(langWidget);
+	gbRightLayout->addWidget(pbOpenWith, 0, Qt::AlignRight);
+	gbRightLayout->addStretch();
 	gbNavigationLayout->addWidget(leftGroupBoxWidget, 0, 0);
 	gbNavigationLayout->setColumnStretch(0, 5);
 	//gbRightLayout->addWidget(checkBoxWidget);
@@ -544,6 +599,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::GlobalSettings::loop = cbWrapImages->isChecked();
 	DkSettings::GlobalSettings::useTmpPath = cbUseTmpPath->isChecked();
 	DkSettings::GlobalSettings::tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
+	DkSettings::GlobalSettings::language = languages.at(langCombo->currentIndex());
 }
 
 void DkGlobalSettingsWidget::tmpPathButtonPressed() {
