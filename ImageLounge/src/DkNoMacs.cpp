@@ -1285,7 +1285,7 @@ void DkNoMacs::openFile() {
 	if (!openDialog)
 		openDialog = new QFileDialog(this);
 
-	openDialog->setWindowTitle("Open Image");
+	openDialog->setWindowTitle(tr("Open Image"));
 	openDialog->setFilters(DkImageLoader::openFilters);
 	openDialog->setDirectory(loader->getDir());
 	openDialog->setOption(QFileDialog::DontResolveSymlinks);

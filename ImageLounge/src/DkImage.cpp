@@ -1948,11 +1948,11 @@ void DkMetaData::saveOrientation(int o) {
 
 	readMetaData();
 	if (!mdata) {
-		throw DkFileException(QObject::tr("could not read exif data\n").toStdString(), __LINE__, __FILE__);
+		throw DkFileException(QString(QT_TR_NOOP("could not read exif data\n")).toStdString(), __LINE__, __FILE__);
 	}
 	if (o!=90 && o!=-90 && o!=180 && o!=0 && o!=270) {
 		qDebug() << "wrong rotation parameter";
-		throw DkIllegalArgumentException(QObject::tr("wrong rotation parameter\n").toStdString(), __LINE__, __FILE__);
+		throw DkIllegalArgumentException(QString(QT_TR_NOOP("wrong rotation parameter\n")).toStdString(), __LINE__, __FILE__);
 	}
 	if (o==-180) o=180;
 	if (o== 270) o=-90;

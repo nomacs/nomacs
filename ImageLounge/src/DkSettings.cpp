@@ -77,11 +77,9 @@ QBitArray DkSettings::MetaDataSettings::metaDataBits = QBitArray(DkMetaDataSetti
 //QString DkMetaDataSettingsWidget::sdescriptionDesc = QString("&Rating;&User Comment;&Date Time;D&ate Time Original;&Image Description;&Creator;C&reator Title;") %
 //	QString("&City;C&ountry;&Headline;Ca&ption;Copy&right;Key&words");
 
-QString DkMetaDataSettingsWidget::scamDataDesc = QString(QObject::tr("Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;")) %
-	QString(QObject::tr("Exposure Mode;Exposure Time"));
+QString DkMetaDataSettingsWidget::scamDataDesc = QString(QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;Exposure Mode;Exposure Time"));
 
-QString DkMetaDataSettingsWidget::sdescriptionDesc = QString(QObject::tr("Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;")) %
-	QString(QObject::tr("City;Country;Headline;Caption;Copyright;Keywords;Path;File Size"));
+QString DkMetaDataSettingsWidget::sdescriptionDesc = QString(QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;City;Country;Headline;Caption;Copyright;Keywords;Path;File Size"));
 
 
 bool DkSettings::SynchronizeSettings::enableNetworkSync = false;
@@ -786,7 +784,7 @@ void DkSlideshowSettingsWidget::init() {
 	connect(cbName, SIGNAL(clicked(bool)), this, SLOT(showFileName(bool)));
 	connect(cbCreationDate, SIGNAL(clicked(bool)), this, SLOT(showCreationDate(bool)));
 	connect(cbRating, SIGNAL(clicked(bool)), this, SLOT(showRating(bool)));
-
+	
 }
 
 void DkSlideshowSettingsWidget::createLayout() {
@@ -1040,9 +1038,7 @@ void DkMetaDataSettingsWidget::createLayout() {
 	hboxLayout->addWidget(gbCamData);
 
 	//QLabel* topLabel = new QLabel;
-
-	QStringList sDescription = scamDataDesc.split(";") + sdescriptionDesc.split(";");
-
+	QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");
 	for (int i=0; i<desc_end;i++) {
 		pCbMetaData.append(new QCheckBox(tr(sDescription.at(i).toAscii())));
 	}
