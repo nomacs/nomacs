@@ -91,8 +91,7 @@ int main(int argc, char *argv[]) {
 	if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm")) 
 		qDebug() << "unable to load translation (" << "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm)";
 	a.installTranslator(&translator);
-
-
+	
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();
 	
 	if (mode == nmc::DkSettings::mode_frameless) {

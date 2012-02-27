@@ -1537,10 +1537,14 @@ void DkViewPort::reloadFile() {
 
 void DkViewPort::loadNextFile(bool silent) {
 
+	DkTimer dt;
+	
 	unloadImage();
+	qDebug() << "unload image: " << QString::fromStdString(dt.getTotal());
 
 	if (loader != 0 && !testLoaded)
 		loader->nextFile(silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	qDebug() << "file loaded: " << QString::fromStdString(dt.getTotal());
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(1);

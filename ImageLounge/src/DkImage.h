@@ -429,6 +429,7 @@ signals:
 
 public slots:
 	void fileChanged(const QString& path);
+	void directoryChanged(const QString& path);
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
 	virtual bool loadFile(QFileInfo file);
@@ -439,12 +440,15 @@ public slots:
 
 protected:
 
+	QFileInfo lastFileLoaded;
 	QFileInfo file;
 	QFileInfo virtualFile;
 	QDir dir;
 	QDir saveDir;
 	QFileSystemWatcher *watcher;
+	QStringList files;
 	bool watcherEnabled;
+	bool folderUpdated;
 
 	//DkMetaData dataExif;
 

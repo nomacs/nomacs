@@ -44,7 +44,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	//this->setMinimumHeight(500);
 
 	enableTFCheckBox = new QCheckBox(tr("Enable"));
-	enableTFCheckBox->setStatusTip(tr("Disables the transfer function"));
+	enableTFCheckBox->setStatusTip(tr("Disables the pseudocolor function"));
 	
 	this->addWidget(enableTFCheckBox);
 
@@ -107,7 +107,7 @@ void DkTransferToolBar::createIcons() {
 	
 	toolBarActions.resize(toolbar_end);
 	toolBarActions[toolbar_reset] = new QAction(toolBarIcons[icon_toolbar_reset], tr("Reset"), this);
-	toolBarActions[toolbar_reset]->setStatusTip(tr("Resets the transfer function"));
+	toolBarActions[toolbar_reset]->setStatusTip(tr("Resets the pseudocolor function"));
 	//toolBarActions[toolbar_reset]->setToolTip("was geht?");
 
 	toolBarActions[toolbar_pipette] = new QAction(toolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
@@ -195,9 +195,9 @@ void DkTransferToolBar::enableTFCheckBoxClicked(int state) {
 	enableTFCheckBox->setEnabled(true);
 
 	if (enabled)
-		enableTFCheckBox->setStatusTip(tr("Disables the transfer function"));
+		enableTFCheckBox->setStatusTip(tr("Disables the pseudocolor function"));
 	else
-		enableTFCheckBox->setStatusTip(tr("Enables the transfer function"));
+		enableTFCheckBox->setStatusTip(tr("Enables the pseudocolor function"));
 
 	emit tFEnabled(enabled);
 

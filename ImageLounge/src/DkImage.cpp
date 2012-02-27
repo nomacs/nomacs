@@ -73,6 +73,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	dir = DkSettings::GlobalSettings::lastDir;
 	saveDir = DkSettings::GlobalSettings::lastSaveDir;
 
+	folderUpdated = true;
 	updateFolder = true;
 	silent = false;
 	 
@@ -83,6 +84,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	// init the watcher
 	watcher = new QFileSystemWatcher();
 	connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+	connect(watcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
 	if (file.exists())
 		loadDir(file.absoluteDir());
@@ -101,6 +103,7 @@ DkImageLoader::~DkImageLoader() {
 void DkImageLoader::clearPath() {
 	
 	img = QImage();
+	lastFileLoaded = file;
 	file = QFileInfo();
 	imgMetaData.setFileName(file);	// unload exif too
 	//dir = QDir();
@@ -108,11 +111,24 @@ void DkImageLoader::clearPath() {
 
 void DkImageLoader::loadDir(QDir newDir) {
 
-	if (newDir.exists())
-		dir = newDir;
+	if ((newDir.absolutePath() == dir.absolutePath() && !folderUpdated) || !newDir.exists())
+		return;
 
+	if (watcher)
+		watcher->removePath(dir.absolutePath());
+
+	dir = newDir;
 	dir.setNameFilters(fileFilters);
 	dir.setSorting(QDir::LocaleAware);
+	folderUpdated = false;
+	files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+	emit updateDirSignal(file);
+
+	if (watcher) {
+		watcher->addPath(dir.absolutePath());
+		qDebug() << "dirpath added: " << dir.absolutePath();
+	}
+
 }
 
 void DkImageLoader::nextFile(bool silent) {
@@ -148,11 +164,11 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
+	DkTimer dt;
 	QDir newDir = (virtualFile.exists()) ? virtualFile.absoluteDir() : file.absoluteDir();
 	loadDir(newDir);
 
 	// locate the current file
-	QStringList files = getFilteredFileList(dir, ignoreKeywords, keywords);
 	QString cFilename = (virtualFile.exists()) ? virtualFile.fileName() : file.fileName();
 	int cFileIdx = 0;
 	int newFileIdx = 0;
@@ -199,6 +215,8 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 		}
 		qDebug() << "idx: " << newFileIdx;
 	}
+
+	qDebug() << "file idx changed in: " << QString::fromStdString(dt.getTotal());
 
 	// file requested becomes current file
 	return (files.isEmpty()) ? QFileInfo() : QFileInfo(dir, files[newFileIdx]);
@@ -362,20 +380,23 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
 
 		// update watcher
-		if (this->file.exists() && watcher)
-			watcher->removePath(this->file.absoluteFilePath());
+		if (watcher) {
+			watcher->removePath(lastFileLoaded.absoluteFilePath());
+			qDebug() << "removing: " << this->file.absoluteFilePath();
+		}
 		
-		if (/*updateFolder && */watcher)	// diem: with updateFolder images are just updated once
+		if (watcher) {	// diem: with updateFolder images are just updated once
 			watcher->addPath(file.absoluteFilePath());
+		}
+		
+		qDebug() << "watcher files: " << watcher->files();
+		qDebug() << "watcher dirs: " << watcher->directories();
 		
 		emit updateImageSignal();
 		emit updateFileSignal(file, img.size());
 
-		if (updateFolder) {
-			emit updateDirSignal(file);
-			this->file = file;
-			loadDir(file.absoluteDir());
-		}
+		this->file = file;
+		loadDir(file.absoluteDir());
 
 		// update history
 		updateHistory();
@@ -385,6 +406,8 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		if (!silent) {
 			QString msg = tr("Sorry, I could not load: %1").arg(file.fileName());
 			updateInfoSignal(msg);
+			this->file = lastFileLoaded;	// revert to last file
+			loadDir(this->file.absoluteDir());
 		}
 		fileNotLoadedSignal(file);
 
@@ -874,9 +897,6 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		// assign the new save directory
 		saveDir = QDir(file.absoluteDir());
 		DkSettings::GlobalSettings::lastSaveDir = file.absolutePath();
-
-		DkSettings s;
-		s.save();
 				
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);
@@ -985,8 +1005,10 @@ void DkImageLoader::updateHistory() {
 	for (int idx = 0; idx < DkSettings::GlobalSettings::recentFiles.size()-20; idx++)
 		DkSettings::GlobalSettings::recentFiles.pop_back();
 
-	DkSettings s = DkSettings();
-	s.save();
+
+	// TODO: shouldn't we delete that -> it's saved when nomacs is closed anyway
+	//DkSettings s = DkSettings();
+	//s.save();
 }
 
 // image manipulation --------------------------------------------------------------------
@@ -1076,6 +1098,18 @@ void DkImageLoader::fileChanged(const QString& path) {
 		QMutexLocker locker(&mutex);
 		load(QFileInfo(path), false, true);
 	}
+}
+
+void DkImageLoader::directoryChanged(const QString& path) {
+
+	if (QDir(path) == dir.absolutePath()) {
+
+		qDebug() << "folder updated...";
+		folderUpdated = true;
+		// TODO: emit update folder signal
+	}
+
+
 }
 
 bool DkImageLoader::hasFile() {
@@ -1187,8 +1221,6 @@ int DkImageLoader::locateFile(QFileInfo& fileInfo, QDir* dir) {
 }
 
 void DkImageLoader::setFile(QFileInfo& file) {
-	
-	QDir oldDir = this->file.absoluteDir();
 	
 	this->file = file;
 	this->virtualFile = file;

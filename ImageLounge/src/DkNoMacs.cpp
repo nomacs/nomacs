@@ -526,9 +526,9 @@ void DkNoMacs::createActions() {
 	connect(viewActions[menu_view_show_statusbar], SIGNAL(toggled(bool)), this, SLOT(showStatusBar(bool)));
 
 	// Added by fabian - for transferfunction:
-	viewActions[menu_view_show_transfertoolbar] = new QAction(tr("Show &Transferfunction"), this);
+	viewActions[menu_view_show_transfertoolbar] = new QAction(tr("Show &Pseudocolor Function"), this);
 	viewActions[menu_view_show_transfertoolbar]->setShortcut(QKeySequence(shortcut_show_transfer));
-	viewActions[menu_view_show_transfertoolbar]->setStatusTip(tr("Show Transferfunction"));
+	viewActions[menu_view_show_transfertoolbar]->setStatusTip(tr("Show Pseudocolor Function"));
 	viewActions[menu_view_show_transfertoolbar]->setCheckable(true);
 	viewActions[menu_view_show_transfertoolbar]->setChecked(false);
 	connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
