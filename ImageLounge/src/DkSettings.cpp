@@ -442,7 +442,10 @@ void DkGlobalSettingsWidget::init() {
 		pbTmpPath->setDisabled(true);
 	}
 	curLanguage = DkSettings::GlobalSettings::language;
-	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
+	if (!curLanguage.isEmpty())
+		langCombo->setCurrentIndex(languages.indexOf(curLanguage));
+	else
+		langCombo->setCurrentIndex(0);
 
 	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
 	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
