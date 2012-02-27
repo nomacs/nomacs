@@ -3092,7 +3092,7 @@ void DkOpenWithDialog::init() {
 	}
 
 	createLayout();
-	setWindowTitle("Open With...");
+	setWindowTitle(tr("Open With..."));
 
 }
 
@@ -3139,11 +3139,11 @@ void DkOpenWithDialog::createLayout() {
 	for (int idx = 0; idx < DkSettings::GlobalSettings::numUserChoices; idx++) {
 
 		// default initialization
-		userRadios.append(new QRadioButton("Choose Application"));
+		userRadios.append(new QRadioButton(tr("Choose Application")));
 		connect(userRadios[idx], SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));
 		userRadios[idx]->setDisabled(true);
 
-		QPushButton* userBrowse = new QPushButton("Browse...");
+		QPushButton* userBrowse = new QPushButton(tr("Browse..."));
 		userBrowse->setObjectName("browse-" % QString::number(idx));
 		connect(userBrowse, SIGNAL(clicked()), this, SLOT(browseAppFile()));
 

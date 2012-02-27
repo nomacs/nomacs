@@ -1330,7 +1330,7 @@ void DkNoMacs::saveFile() {
 	if (!saveDialog)
 		saveDialog = new QFileDialog(this);
 
-	saveDialog->setWindowTitle("Save Image");
+	saveDialog->setWindowTitle(tr("Save Image"));
 	saveDialog->setAcceptMode(QFileDialog::AcceptSave);
 	saveDialog->setFilters(DkImageLoader::saveFilters);
 	
