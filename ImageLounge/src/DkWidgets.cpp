@@ -342,6 +342,9 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img) {
 
+	if (img && img->format() == QImage::Format_Indexed8)
+		return;
+
 	QTransform wm;
 	wm.translate(imgRect.left(), 0);
 

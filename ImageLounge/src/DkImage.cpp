@@ -1142,6 +1142,7 @@ QDir DkImageLoader::getDir() {
 
 QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywords, QStringList keywords) {
 
+	DkTimer dt;
 	dir.setSorting(QDir::LocaleAware);
 	QStringList fileList = dir.entryList(fileFilters);
 
@@ -1154,6 +1155,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	for (int idx = 0; idx < keywords.size(); idx++) {
 		fileList = fileList.filter(keywords[idx], Qt::CaseInsensitive);
 	}
+	qDebug() << "filtered file list: " << QString::fromStdString(dt.getTotal());
 
 	return fileList;
 }
