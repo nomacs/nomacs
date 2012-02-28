@@ -1297,6 +1297,29 @@ void DkThumbsLoader::init() {
 	qDebug() << "thumb stubs loaded in: " << QString::fromStdString(dt.getTotal());
 }
 
+int DkThumbsLoader::getFileIdx(QFileInfo& file) {
+
+	mutex.lock();
+
+	if (!file.exists() || !thumbs)
+		return -1;
+
+	QString cFilePath = file.absoluteFilePath();
+	unsigned int fileIdx = 0;
+	for ( ; fileIdx < thumbs->size(); fileIdx++) {
+
+		if (thumbs->at(fileIdx).getFile().absoluteFilePath() == cFilePath)
+			break;
+	}
+
+	if (fileIdx == thumbs->size()) fileIdx = -1;
+
+	mutex.unlock();
+
+	return fileIdx;
+
+}
+
 void DkThumbsLoader::run() {
 
 	if (!thumbs)

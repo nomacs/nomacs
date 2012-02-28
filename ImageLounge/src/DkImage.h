@@ -328,7 +328,7 @@ public:
 
 	void run();
 	void stop();
-	//int getFileIdx(QFileInfo& file);
+	int getFileIdx(QFileInfo& file);
 
 signals:
 	void updateSignal();

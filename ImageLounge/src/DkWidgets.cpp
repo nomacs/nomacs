@@ -572,12 +572,16 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 	dir.setNameFilters(DkImageLoader::fileFilters);
 	dir.setSorting(QDir::LocaleAware);
 	
+	if (thumbsLoader) {
+		oldFileIdx = currentFileIdx;
+		currentFileIdx = thumbsLoader->getFileIdx(file);
+		update();
+		qDebug() << "currentFileIdx: " << currentFileIdx;
+	}
+
 	if (!force && oldFile.absoluteDir() == file.absoluteDir() && !thumbs.empty() || 
 		file.absoluteFilePath().contains(":/nomacs/img/lena"))	// do not load our resources as thumbs
 		return;
-
-	oldFileIdx = currentFileIdx;
-	currentFileIdx = DkImageLoader::locateFile(file, &dir);
 
 	if (thumbsLoader) {
 		thumbsLoader->stop();
@@ -593,6 +597,10 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 		connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
 
 		thumbsLoader->start();
+		
+		oldFileIdx = currentFileIdx;
+		currentFileIdx = thumbsLoader->getFileIdx(file);
+
 		//thumbsLoader->setLoadLimits(currentFileIdx-10, currentFileIdx+10);
 	}
 }
