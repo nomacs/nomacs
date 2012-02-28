@@ -329,7 +329,11 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
 			painter->setOpacity(1.0f);
 		}
-		else if (idx == currentFileIdx && !currentImgGlow.isNull()) {
+		else if (idx == currentFileIdx) {
+
+			if (currentImgGlow.isNull() || currentFileIdx != oldFileIdx || currentImgGlow.size() != img.size())
+				createCurrentImgEffect(img.copy(), QColor(100, 214, 44));
+
 			painter->drawPixmap(r, currentImgGlow, QRect(QPoint(), img.size()));
 			painter->setOpacity(0.8);
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
@@ -581,8 +585,6 @@ void DkFilePreview::moveImages() {
 
 void DkFilePreview::updateDir(QFileInfo file, bool force) {
 
-	qDebug() << "received update dir ..............";
-
 	QFileInfo oldFile = currentFile;
 	currentFile = file;
 	QDir dir = file.absoluteDir();
@@ -592,9 +594,6 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 	if (thumbsLoader) {
 		oldFileIdx = currentFileIdx;
 		currentFileIdx = thumbsLoader->getFileIdx(file);
-		
-		if (thumbsLoader && currentFileIdx >= 0 && currentFileIdx < (int)thumbs.size())
-			createCurrentImgEffect(thumbs[currentFileIdx].getImage(), QColor(255, 222, 0));
 	}
 
 	if (!force && oldFile.absoluteDir() == file.absoluteDir() && !thumbs.empty() || 

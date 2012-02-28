@@ -133,7 +133,7 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	if (worldMatrix.m11() <= 0.1 && factor < 1)
+	if (worldMatrix.m11()*factor < 0.1 && factor < 1)
 		return;
 
 	//if (worldMatrix.m11()*factor < 1) {
@@ -795,7 +795,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	if (worldMatrix.m11() <= 0.1f && factor < 1)
+	if (worldMatrix.m11()*factor < 0.1f && factor < 1)
 		return;
 
 	// reset view & block if we pass the 'image fit to screen' on zoom out
@@ -1252,19 +1252,19 @@ void DkViewPort::keyPressEvent(QKeyEvent* event) {
 // mouse events --------------------------------------------------------------------
 bool DkViewPort::event(QEvent *event) {
 
-	//// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
-	//if (event->type() == QEvent::MouseButtonPress || 
-	//	event->type() == QEvent::MouseButtonDblClick || 
-	//	event->type() == QEvent::MouseButtonRelease || 
-	//	event->type() == QEvent::MouseMove || 
-	//	event->type() == QEvent::Wheel || 
-	//	event->type() == QEvent::KeyPress || 
-	//	event->type() == QEvent::KeyRelease) {
+	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
+	if (event->type() == QEvent::MouseButtonPress || 
+		event->type() == QEvent::MouseButtonDblClick || 
+		event->type() == QEvent::MouseButtonRelease || 
+		event->type() == QEvent::MouseMove || 
+		event->type() == QEvent::Wheel || 
+		event->type() == QEvent::KeyPress || 
+		event->type() == QEvent::KeyRelease) {
 
-	//	// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
-	//	return QWidget::event(event);
-	//}
-	//else
+		// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
+		return QWidget::event(event);
+	}
+	else
 		return DkBaseViewPort::event(event);
 	
 }
@@ -1827,7 +1827,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 		return;
 
 	//limit zoom out ---
-	if (worldMatrix.m11() <= 0.1 && factor < 1)
+	if (worldMatrix.m11()*factor <= 0.1 && factor < 1)
 		return;
 
 	//if (worldMatrix.m11()*factor < 1) {
