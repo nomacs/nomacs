@@ -2305,13 +2305,13 @@ void DkNoMacsContrast::release() {
 void DkNoMacsContrast::createTransferToolbar() {
 
 	transferToolBar = new DkTransferToolBar(this);
-	
+
+	// add this toolbar below all previous toolbars
+	addToolBarBreak();
 	addToolBar(transferToolBar);
 	transferToolBar->setObjectName("TransferToolBar");
 
 	transferToolBar->setMinimumHeight(5000);
-	
-
 	transferToolBar->layout()->setSizeConstraint(QLayout::SetMinimumSize);
 	
 	connect(transferToolBar, SIGNAL(colorTableChanged(QGradientStops)),  viewport(), SLOT(changeColorTable(QGradientStops)));

@@ -1301,7 +1301,7 @@ void DkThumbsLoader::init() {
 
 int DkThumbsLoader::getFileIdx(QFileInfo& file) {
 
-	mutex.lock();
+	//mutex.lock();
 
 	if (!file.exists() || !thumbs)
 		return -1;
@@ -1316,7 +1316,7 @@ int DkThumbsLoader::getFileIdx(QFileInfo& file) {
 
 	if (fileIdx == thumbs->size()) fileIdx = -1;
 
-	mutex.unlock();
+	//mutex.unlock();
 
 	return fileIdx;
 

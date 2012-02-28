@@ -510,6 +510,7 @@ private:
 	QLinearGradient leftGradient;
 	QLinearGradient rightGradient;
 	QPixmap selectionGlow;
+	QPixmap currentImgGlow;
 	QImage stubImg;
 	int mouseTrace;
 	DkThumbsLoader* thumbsLoader;
@@ -533,6 +534,7 @@ private:
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
+	void createCurrentImgEffect(QImage img, QColor col);
 };
 
 

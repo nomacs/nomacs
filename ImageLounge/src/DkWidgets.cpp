@@ -293,8 +293,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 
 		// center vertically
-		if (img.height() < img.width())
-			r.moveCenter(r.center() + QPoint(0, (img.width() - img.height()) / 2));
+		if (img.height() < img.width() || img.height() < DkSettings::DisplaySettings::thumbSize)
+			r.moveCenter(QPoint(r.center().x(), height()/2));
 
 		// update the buffer dim
 		bufferDim.setRight(bufferDim.right() + img.width() + xOffset/2);
@@ -325,6 +325,12 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		if (idx == selected && !selectionGlow.isNull()) {
 			painter->drawPixmap(r, selectionGlow, QRect(QPoint(), img.size()));
+			painter->setOpacity(0.8);
+			painter->drawImage(r, img, QRect(QPoint(), img.size()));
+			painter->setOpacity(1.0f);
+		}
+		else if (idx == currentFileIdx && !currentImgGlow.isNull()) {
+			painter->drawPixmap(r, currentImgGlow, QRect(QPoint(), img.size()));
 			painter->setOpacity(0.8);
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
 			painter->setOpacity(1.0f);
@@ -362,6 +368,14 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 	painter.end();
 
 	img->setAlphaChannel(mask);
+}
+
+void DkFilePreview::createCurrentImgEffect(QImage img, QColor col) {
+
+	QPixmap imgPx = QPixmap::fromImage(img);
+	currentImgGlow = imgPx;
+	currentImgGlow.fill(col);
+	currentImgGlow.setAlphaChannel(imgPx.alphaChannel());
 }
 
 void DkFilePreview::createSelectedEffect(QImage img, QColor col) {
@@ -473,7 +487,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		int oldSelection = selected;
 		selected = -1;
 
-		// find out where the mouse did click
+		// find out where is the mouse
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
 			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
@@ -578,8 +592,9 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 	if (thumbsLoader) {
 		oldFileIdx = currentFileIdx;
 		currentFileIdx = thumbsLoader->getFileIdx(file);
-		update();
-		qDebug() << "currentFileIdx: " << currentFileIdx;
+		
+		if (thumbsLoader && currentFileIdx >= 0 && currentFileIdx < (int)thumbs.size())
+			createCurrentImgEffect(thumbs[currentFileIdx].getImage(), QColor(255, 222, 0));
 	}
 
 	if (!force && oldFile.absoluteDir() == file.absoluteDir() && !thumbs.empty() || 
@@ -600,11 +615,6 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 		connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
 
 		thumbsLoader->start();
-		
-		oldFileIdx = currentFileIdx;
-		currentFileIdx = thumbsLoader->getFileIdx(file);
-
-		//thumbsLoader->setLoadLimits(currentFileIdx-10, currentFileIdx+10);
 	}
 }
 
