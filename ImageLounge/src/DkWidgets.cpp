@@ -564,18 +564,20 @@ void DkFilePreview::moveImages() {
 
 void DkFilePreview::updateDir(QFileInfo file, bool force) {
 
+	qDebug() << "received update dir ..............";
+
 	QFileInfo oldFile = currentFile;
 	currentFile = file;
 	QDir dir = file.absoluteDir();
 	dir.setNameFilters(DkImageLoader::fileFilters);
 	dir.setSorting(QDir::LocaleAware);
 	
-	oldFileIdx = currentFileIdx;
-	currentFileIdx = DkImageLoader::locateFile(file, &dir);
-
 	if (!force && oldFile.absoluteDir() == file.absoluteDir() && !thumbs.empty() || 
 		file.absoluteFilePath().contains(":/nomacs/img/lena"))	// do not load our resources as thumbs
 		return;
+
+	oldFileIdx = currentFileIdx;
+	currentFileIdx = DkImageLoader::locateFile(file, &dir);
 
 	if (thumbsLoader) {
 		thumbsLoader->stop();

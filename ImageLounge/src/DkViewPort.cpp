@@ -607,7 +607,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
 	//connect(loader, SIGNAL(updateImageSignal(QImage)), this, SLOT(setImage(QImage)));
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
-	connect(loader, SIGNAL(updateDirSignal(QFileInfo)), filePreview, SLOT(updateDir(QFileInfo)));
+	connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));
@@ -1252,19 +1252,19 @@ void DkViewPort::keyPressEvent(QKeyEvent* event) {
 // mouse events --------------------------------------------------------------------
 bool DkViewPort::event(QEvent *event) {
 
-	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
-	if (event->type() == QEvent::MouseButtonPress || 
-		event->type() == QEvent::MouseButtonDblClick || 
-		event->type() == QEvent::MouseButtonRelease || 
-		event->type() == QEvent::MouseMove || 
-		event->type() == QEvent::Wheel || 
-		event->type() == QEvent::KeyPress || 
-		event->type() == QEvent::KeyRelease) {
+	//// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
+	//if (event->type() == QEvent::MouseButtonPress || 
+	//	event->type() == QEvent::MouseButtonDblClick || 
+	//	event->type() == QEvent::MouseButtonRelease || 
+	//	event->type() == QEvent::MouseMove || 
+	//	event->type() == QEvent::Wheel || 
+	//	event->type() == QEvent::KeyPress || 
+	//	event->type() == QEvent::KeyRelease) {
 
-		// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
-		return QWidget::event(event);
-	}
-	else
+	//	// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
+	//	return QWidget::event(event);
+	//}
+	//else
 		return DkBaseViewPort::event(event);
 	
 }

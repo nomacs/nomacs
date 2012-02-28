@@ -69,25 +69,29 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	loaderThread = new QThread;
 	loaderThread->start();
 	moveToThread(loaderThread);
-	
-	dir = DkSettings::GlobalSettings::lastDir;
-	saveDir = DkSettings::GlobalSettings::lastSaveDir;
-
-	folderUpdated = true;
-	updateFolder = true;
-	silent = false;
-	 
-	this->file = file;
-	this->virtualFile = file;
 
 	//watcher = 0;
 	// init the watcher
 	watcher = new QFileSystemWatcher();
 	connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
-	connect(watcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
+	
+	dirWatcher = new QFileSystemWatcher();
+	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
+
+	folderUpdated = false;
+	updateFolder = false;
+	silent = false;
+	 
+	this->file = file;
+	this->virtualFile = file;
+
+	saveDir = DkSettings::GlobalSettings::lastSaveDir;	// loading save dir is obsolete ?!
 
 	if (file.exists())
 		loadDir(file.absoluteDir());
+	else
+		dir = DkSettings::GlobalSettings::lastDir;
+
 }
 
 DkImageLoader::~DkImageLoader() {
@@ -111,24 +115,32 @@ void DkImageLoader::clearPath() {
 
 void DkImageLoader::loadDir(QDir newDir) {
 
-	if ((newDir.absolutePath() == dir.absolutePath() && !folderUpdated) || !newDir.exists())
-		return;
-
-	if (watcher)
-		watcher->removePath(dir.absolutePath());
-
-	dir = newDir;
-	dir.setNameFilters(fileFilters);
-	dir.setSorting(QDir::LocaleAware);
-	folderUpdated = false;
-	files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-	emit updateDirSignal(file);
-
-	if (watcher) {
-		watcher->addPath(dir.absolutePath());
-		qDebug() << "dirpath added: " << dir.absolutePath();
+	// folder changed signal was emitted
+	if (folderUpdated && newDir.absolutePath() == dir.absolutePath()) {
+		
+		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		
+		//emit updateDirSignal(file, true);		// if the signal is set to true thumbs are updated if images are added to the folder (however this may be nesty)
+		emit updateDirSignal(file);
+		folderUpdated = false;
+		qDebug() << "getting file list.....";
 	}
+	else if ((newDir.absolutePath() != dir.absolutePath() || files.empty()) && newDir.exists()) {
 
+		if (dirWatcher && dir.exists())
+			dirWatcher->removePath(dir.absolutePath());
+
+		dir = newDir;
+		dir.setNameFilters(fileFilters);
+		dir.setSorting(QDir::LocaleAware);		// TODO: extend
+		folderUpdated = false;
+		
+		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		qDebug() << "getting file list.....";
+	
+		if (dirWatcher)
+			dirWatcher->addPath(dir.absolutePath());
+	}
 }
 
 void DkImageLoader::nextFile(bool silent) {
@@ -226,7 +238,10 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
 QStringList DkImageLoader::getFiles() {
 
-	return getFilteredFileList(dir, ignoreKeywords, keywords);
+	// guarantee that the file list is up-to-date
+	loadDir(dir);
+	
+	return files;
 }
 
 void DkImageLoader::firstFile() {
@@ -250,8 +265,6 @@ void DkImageLoader::loadFileAt(int idx) {
 		QDir newDir = (virtualFile.exists()) ? virtualFile.absoluteDir() : file.absolutePath();	
 		loadDir(newDir);
 	}
-
-	QStringList files = getFilteredFileList(dir, ignoreKeywords, keywords);
 
 	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
 	qDebug() << "real file " << file.absoluteFilePath();
@@ -394,6 +407,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		
 		emit updateImageSignal();
 		emit updateFileSignal(file, img.size());
+		emit updateDirSignal(file);	// this should be called updateFileSignal too
 
 		this->file = file;
 		loadDir(file.absoluteDir());
@@ -981,10 +995,10 @@ void DkImageLoader::saveRating(int rating) {
 	}
 }
 
-void DkImageLoader::enableWatcher(bool enable) {
-	
-	watcherEnabled = enable;
-}
+//void DkImageLoader::enableWatcher(bool enable) {
+//	
+//	watcherEnabled = enable;
+//}
 
 void DkImageLoader::updateHistory() {
 
@@ -1094,7 +1108,7 @@ void DkImageLoader::rotateImage(double angle) {
 void DkImageLoader::fileChanged(const QString& path) {
 
 	// ignore if watcher was disabled
-	if (path == file.absoluteFilePath() && watcherEnabled) {
+	if (path == file.absoluteFilePath()) {
 		QMutexLocker locker(&mutex);
 		load(QFileInfo(path), false, true);
 	}
@@ -1104,12 +1118,11 @@ void DkImageLoader::directoryChanged(const QString& path) {
 
 	if (QDir(path) == dir.absolutePath()) {
 
-		qDebug() << "folder updated...";
+		qDebug() << "folder updated";
 		folderUpdated = true;
 		// TODO: emit update folder signal
 	}
-
-
+	
 }
 
 bool DkImageLoader::hasFile() {

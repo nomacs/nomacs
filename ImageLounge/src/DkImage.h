@@ -328,6 +328,7 @@ public:
 
 	void run();
 	void stop();
+	//int getFileIdx(QFileInfo& file);
 
 signals:
 	void updateSignal();
@@ -406,11 +407,6 @@ public:
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
 
-
-	bool isWatcherEnabled() {
-		return watcherEnabled;
-	};
-
 	QImage getImage() {
 		return img;
 	};
@@ -423,7 +419,7 @@ signals:
 	void updateImageSignal();
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateFileSignal(QFileInfo file, QSize s);
-	void updateDirSignal(QFileInfo file);
+	void updateDirSignal(QFileInfo file, bool force = false);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
 
@@ -436,7 +432,7 @@ public slots:
 	void saveRating(int rating);
 	void deleteFile();
 	void saveTempFile(QImage img);
-	void enableWatcher(bool enable);
+	//void enableWatcher(bool enable);
 
 protected:
 
@@ -446,8 +442,8 @@ protected:
 	QDir dir;
 	QDir saveDir;
 	QFileSystemWatcher *watcher;
+	QFileSystemWatcher *dirWatcher;
 	QStringList files;
-	bool watcherEnabled;
 	bool folderUpdated;
 
 	//DkMetaData dataExif;
