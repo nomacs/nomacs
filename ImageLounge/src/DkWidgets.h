@@ -929,11 +929,13 @@ public:
 		return userClickedOk;
 	};
 
+
 protected slots:
 	void softwareSelectionChanged();
 	void okClicked();
 	void cancelClicked();
 	void browseAppFile();
+	void softwareCleanClicked();
 
 protected:
 
@@ -946,6 +948,9 @@ protected:
 
 	QList<QPixmap> appIcons;
 	QList<QRadioButton*> userRadios;
+	QList<QPushButton*> userCleanButtons;
+	QList<QLabel*> userCleanSpace;
+	QButtonGroup* userRadiosGroup;
 	QStringList userAppPaths;
 	QStringList appPaths;
 

@@ -31,5 +31,6 @@
         <file>img/lock-unlocked.png</file>
         <file>img/gradient-reset.png</file>
         <file>img/pipette.png</file>
+        <file>img/close.png</file>
     </qresource>
 </RCC>

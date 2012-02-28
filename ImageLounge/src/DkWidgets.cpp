@@ -3097,6 +3097,8 @@ void DkOpenWithDialog::init() {
 }
 
 void DkOpenWithDialog::createLayout() {
+	userRadiosGroup = new QButtonGroup;
+	userRadiosGroup->setExclusive(true);
 
 	layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	
@@ -3115,6 +3117,7 @@ void DkOpenWithDialog::createLayout() {
 			QRadioButton* radio = new QRadioButton(screenNames[idx]);
 			radio->setObjectName(screenNames[idx]);
 			radio->setIcon(appIcons[idx]);
+			userRadiosGroup->addButton(radio);
 
 			qDebug() << "appPath: " << appPaths[idx];
 
@@ -3134,6 +3137,7 @@ void DkOpenWithDialog::createLayout() {
 		}
 	}
 
+
 	QStringList tmpUserPaths = DkSettings::GlobalSettings::userAppPaths; // shortcut
 
 	for (int idx = 0; idx < DkSettings::GlobalSettings::numUserChoices; idx++) {
@@ -3142,6 +3146,21 @@ void DkOpenWithDialog::createLayout() {
 		userRadios.append(new QRadioButton(tr("Choose Application")));
 		connect(userRadios[idx], SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));
 		userRadios[idx]->setDisabled(true);
+		userRadiosGroup->addButton(userRadios[idx]);
+
+		QIcon iconX = QIcon(":/nomacs/img/close.png"); 
+		userCleanButtons.append(new QPushButton);
+		userCleanButtons[idx]->setFlat(true);
+		//userCleanButtons[idx]->setStyleSheet("QPushButton:pressed {border:0px; margin:0px;};"); // stay flat when pressed
+		userCleanButtons[idx]->setIcon(iconX);
+		userCleanButtons[idx]->setVisible(false);
+		userCleanButtons[idx]->setFixedWidth(16);
+		connect(userCleanButtons[idx], SIGNAL(clicked()), this, SLOT(softwareCleanClicked()));
+		
+		userCleanSpace.append(new QLabel);
+		userCleanSpace[idx]->setFixedWidth(16);
+		userCleanSpace[idx]->setVisible(true);
+
 
 		QPushButton* userBrowse = new QPushButton(tr("Browse..."));
 		userBrowse->setObjectName("browse-" % QString::number(idx));
@@ -3169,10 +3188,15 @@ void DkOpenWithDialog::createLayout() {
 				userRadios[idx]->setText(screenNames[userIdx]);
 				userRadios[idx]->setIcon(getIcon(tmpUserPaths[idx]));
 				userRadios[idx]->setEnabled(true);
+
+				userCleanButtons[idx]->setVisible(true);
+				userCleanSpace[idx]->setVisible(false);
 		}
 
 		bl->addWidget(userRadios[idx], numDefaultApps+idx, 0);
-		bl->addWidget(userBrowse, numDefaultApps+idx, 1);
+		bl->addWidget(userCleanButtons[idx], numDefaultApps+idx,1);
+		bl->addWidget(userCleanSpace[idx], numDefaultApps+idx,1);
+		bl->addWidget(userBrowse, numDefaultApps+idx, 2);
 	}
 
 	// never again checkbox
@@ -3257,6 +3281,8 @@ void DkOpenWithDialog::browseAppFile() {
 	userRadios[senderIdx]->setChecked(true);
 	defaultApp = userIdx;
 
+	userCleanButtons[senderIdx]->setVisible(true);
+	userCleanSpace[senderIdx]->setVisible(false);
 	qDebug() << "default app idx: " << defaultApp;
 }
 
@@ -3292,6 +3318,35 @@ void DkOpenWithDialog::softwareSelectionChanged() {
 	}
 
 	qDebug() << "default app idx..." << defaultApp;
+}
+
+void DkOpenWithDialog::softwareCleanClicked() {
+	QPushButton* button = (QPushButton*)QObject::sender();
+	int idx = userCleanButtons.indexOf(button);
+	if (idx == -1)
+		return;
+
+	userAppPaths.replace(idx, QString());
+
+	if(userRadios[idx]->isChecked()) {
+		userRadiosGroup->setExclusive(false);
+		userRadiosGroup->checkedButton()->setChecked(false);
+		userRadiosGroup->setExclusive(true);
+
+		QList<QAbstractButton*> buttons = userRadiosGroup->buttons();
+		if (buttons.size() > 0)
+			buttons[0]->setChecked(true);
+		defaultApp = 0;
+	}
+
+	userRadios[idx]->setText(tr("Choose Application"));
+	userRadios[idx]->setDisabled(true);
+	userRadios[idx]->setIcon(QIcon());
+
+
+
+	userCleanButtons[idx]->setVisible(false);
+	userCleanSpace[idx]->setVisible(true);
 }
 
 QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
