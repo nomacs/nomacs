@@ -314,6 +314,7 @@ set (NOMACS_RESOURCES
 
 set(NOMACS_TRANSLATIONS
 		translations/nomacs_de.ts
+		translations/nomacs_ru.ts
 )
 
 if (MSVC) # some settings for visual studio

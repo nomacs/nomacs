@@ -480,8 +480,8 @@ public:
 		desc_end
 	};
 
-	static QString scamDataDesc;
-	static QString sdescriptionDesc;
+	static QStringList scamDataDesc;
+	static QStringList sdescriptionDesc;
 
 	DkMetaDataSettingsWidget(QWidget* parent);
 

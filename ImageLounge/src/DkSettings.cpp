@@ -77,10 +77,37 @@ QBitArray DkSettings::MetaDataSettings::metaDataBits = QBitArray(DkMetaDataSetti
 //QString DkMetaDataSettingsWidget::sdescriptionDesc = QString("&Rating;&User Comment;&Date Time;D&ate Time Original;&Image Description;&Creator;C&reator Title;") %
 //	QString("&City;C&ountry;&Headline;Ca&ption;Copy&right;Key&words");
 
-QString DkMetaDataSettingsWidget::scamDataDesc = QString(QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;Exposure Mode;Exposure Time"));
+//QString DkMetaDataSettingsWidget::scamDataDesc = QString(QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Size;Orientation;Make;Model;Aperture Value;Flash;Focal Length;Exposure Mode;Exposure Time"));
 
-QString DkMetaDataSettingsWidget::sdescriptionDesc = QString(QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;City;Country;Headline;Caption;Copyright;Keywords;Path;File Size"));
+//QString DkMetaDataSettingsWidget::sdescriptionDesc = QString(QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating;User Comment;Date Time;Date Time Original;Image Description;Creator;Creator Title;City;Country;Headline;Caption;Copyright;Keywords;Path;File Size"));
 
+QStringList DkMetaDataSettingsWidget::scamDataDesc = QStringList() << 
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Size") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Orientation") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Make") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Model") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Aperture Value") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Flash") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Focal Length") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Mode") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Time");
+
+QStringList DkMetaDataSettingsWidget::sdescriptionDesc = QStringList() <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","User Comment") << 
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Date Time") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Date Time Original") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Description") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Creator") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Creator Title") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","City") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Country") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Headline") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Caption") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Copyright") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Keywords") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","Path") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
 
 bool DkSettings::SynchronizeSettings::enableNetworkSync = false;
 bool DkSettings::SynchronizeSettings::allowTransformation = true;
@@ -524,7 +551,6 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	langLayout->addWidget(langLabel,0,0);
 	langLayout->addWidget(langCombo,1,0);
-
 
 	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"));
 	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
@@ -1040,9 +1066,18 @@ void DkMetaDataSettingsWidget::createLayout() {
 	hboxLayout->addWidget(gbCamData);
 
 	//QLabel* topLabel = new QLabel;
-	QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");
+	QStringList sDescription;
+	for (int i = 0; i  < scamDataDesc.size(); i++) 
+		sDescription << qApp->translate("nmc::DkMetaData", scamDataDesc.at(i).toAscii());
+	
+	for (int i = 0; i  < sdescriptionDesc.size(); i++) 
+		sDescription << qApp->translate("nmc::DkMetaData", sdescriptionDesc.at(i).toAscii());
+	
+
+	//QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");
+
 	for (int i=0; i<desc_end;i++) {
-		pCbMetaData.append(new QCheckBox(tr(sDescription.at(i).toAscii())));
+		pCbMetaData.append(new QCheckBox(sDescription.at(i)));
 	}
 
 	for(int i=0; i<camData_end;i++) {

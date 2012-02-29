@@ -2366,8 +2366,12 @@ void DkMetaDataInfo::init() {
 	mapIptcExif[DkMetaDataSettingsWidget::desc_path] = 2;
 	mapIptcExif[DkMetaDataSettingsWidget::desc_filesize] = 2;
 
-	camDTags = qApp->translate("nmc::DkMetaData",DkMetaDataSettingsWidget::scamDataDesc.toAscii()).split(";");
-	descTags = qApp->translate("nmc::DkMetaData",DkMetaDataSettingsWidget::sdescriptionDesc.toAscii()).split(";");
+	for (int i = 0; i  < DkMetaDataSettingsWidget::scamDataDesc.size(); i++) 
+		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toAscii());
+
+	for (int i = 0; i  < DkMetaDataSettingsWidget::sdescriptionDesc.size(); i++)
+		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toAscii());
+
 
 	exposureModes.append(tr("not defined"));
 	exposureModes.append(tr("manual"));

@@ -1460,9 +1460,8 @@ void DkNoMacs::deleteFile() {
 
 	QFileInfo file = viewport()->getImageLoader()->getFile();
 
-	if (infoDialog("Do you want to permanently delete " % file.fileName(), this) == QMessageBox::Yes)
+	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
 		viewport()->getImageLoader()->deleteFile();
-
 }
 
 void DkNoMacs::aboutDialog() {
