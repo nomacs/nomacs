@@ -559,8 +559,16 @@ void DkGlobalSettingsWidget::createLayout() {
 		}
 	}
 
+	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs\">"+ tr("translate nomacs") + "</a>");
+	translateLabel->setToolTip(tr("if you want to help us and translate nomacs"));
+	QFont font;
+	font.setPointSize(7);
+	translateLabel->setFont(font);
+	translateLabel->setOpenExternalLinks(true);
+
 	langLayout->addWidget(langLabel,0,0);
 	langLayout->addWidget(langCombo,1,0);
+	langLayout->addWidget(translateLabel,2,0,Qt::AlignRight);
 
 	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"));
 	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
