@@ -333,6 +333,7 @@ signals:
 	void saveTempFileSignal(QImage img);
 
 public slots:
+	void restart();
 	void enterFullScreen();
 	void exitFullScreen();
 	void openSettings();

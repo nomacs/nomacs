@@ -198,6 +198,7 @@ class DkSettingsDialog : public QDialog {
 		~DkSettingsDialog();
 
 	signals:
+		void languageChanged();
 		void settingsChanged();
 		void setToDefaultSignal();
 
@@ -284,12 +285,12 @@ Q_OBJECT
 		QLineEdit* leTmpPath;
 		QCheckBox* cbUseTmpPath;
 		QPushButton* pbTmpPath;
-		QString curLanguage;
 		QComboBox* langCombo;
 		
 	
 		QPushButton* buttonDefaultSettings;
 
+		QString curLanguage;
 		QStringList languages;
 
 		bool loop;

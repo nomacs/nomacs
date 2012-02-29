@@ -1058,6 +1058,22 @@ void DkNoMacs::readSettings() {
 	restoreState(settings.value("windowState").toByteArray());
 }
 
+void DkNoMacs::restart() {
+	
+	if (!viewport()) 
+		return;
+
+	QString exe = QApplication::applicationFilePath();
+	QStringList args;
+	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
+
+	bool started = process.startDetached(exe, args);
+
+	// close me if the new instance started
+	if (started)
+		close();
+}
+
 void DkNoMacs::enterFullScreen() {
 	// switch off fullscreen if it's in it already
 	if (isFullScreen()) {
@@ -1759,6 +1775,7 @@ void DkNoMacs::openSettings() {
 	DkSettingsDialog dsd = DkSettingsDialog(this);
 	connect(&dsd, SIGNAL(setToDefaultSignal()), this, SLOT(cleanSettings()));
 	connect(&dsd, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
+	connect(&dsd, SIGNAL(languageChanged()), this, SLOT(restart()));
 	connect(&dsd, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
 	dsd.exec();
 

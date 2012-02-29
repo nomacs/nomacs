@@ -429,13 +429,22 @@ void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
 }
 
 void DkSettingsDialog::saveSettings() {
+	
+	QString curLanguage = DkSettings::GlobalSettings::language;
+	
 	foreach (DkSettingsWidget* curWidget, widgetList) {
 		curWidget->writeSettings();
 	}
+
 	DkSettings* settings = new DkSettings();
 	settings->save();
 	this->close();
-	emit settingsChanged();
+	
+	if (curLanguage != DkSettings::GlobalSettings::language)
+		emit languageChanged();
+	else
+		emit settingsChanged();
+
 	if (settings)
 		delete settings;
 }
@@ -482,9 +491,9 @@ void DkGlobalSettingsWidget::init() {
 }
 
 void DkGlobalSettingsWidget::createLayout() {
+	
 	QVBoxLayout* vboxLayout = new QVBoxLayout(this);
 	
-
 	QWidget* leftGroupBoxWidget = new QWidget(this);
 	QVBoxLayout* gbLeftLayout = new QVBoxLayout(leftGroupBoxWidget);
 	gbLeftLayout->setMargin(0);
