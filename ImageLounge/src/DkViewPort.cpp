@@ -36,9 +36,10 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	viewportRect = QRect(0, 0, width(), height());
 	worldMatrix.reset();
 	imgMatrix.reset();
-	altKeyPressed = false;	// TODO: take a look at Qt::KeyboardModifiers -> should be safer
 
 	blockZooming = false;
+	syncModifier = Qt::AltModifier;	// TODO: add setting
+
 	zoomTimer = new QTimer(this);
 	zoomTimer->setSingleShot(true);
 	connect(zoomTimer, SIGNAL(timeout()), this, SLOT(stopBlockZooming()));
@@ -282,16 +283,10 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 // key events --------------------------------------------------------------------
 void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
 
-	if (event->key() == Qt::Key_Alt)
-		altKeyPressed = true;
-
 	QWidget::keyPressEvent(event);
 }
 
 void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
-
-	if (!event->isAutoRepeat() && event->key() == Qt::Key_Alt)
-		altKeyPressed = false;
 
 #ifdef DK_DLL
 	if (!event->isAutoRepeat())
@@ -355,15 +350,6 @@ void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 	factor += 1.0f;
 
 	zoom( factor, event->pos());
-}
-
-void DkBaseViewPort::leaveEvent(QEvent *event) {
-
-	altKeyPressed = false;
-}
-
-void DkBaseViewPort::focusOutEvent(QEvent *event) {
-	altKeyPressed = false;
 }
 
 void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
@@ -693,7 +679,6 @@ void DkViewPort::updateImage() {
 	if (!loader)
 		return;
 
-
 	if (loader->hasImage())
 		setImage(loader->getImage());
 }
@@ -856,7 +841,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 
 	update();
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		tcpSynchronize();
 	
 }
@@ -869,7 +854,7 @@ void DkViewPort::resetView() {
 
 	update();
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		tcpSynchronize();
 }
 
@@ -1335,14 +1320,14 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 		// with shift also a hotkey for fast switching...
 		if ((DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
-			event->modifiers() == (Qt::AltModifier | Qt::ShiftModifier)) || 
+			event->modifiers() == (syncModifier | Qt::ShiftModifier)) || 
 			(!DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
-			event->modifiers() == (Qt::AltModifier))) {
+			event->modifiers() == (syncModifier))) {
 			QTransform relTransform;
 			relTransform.translate(dxy.x(), dxy.y());
 			tcpSynchronize(relTransform);
 		}
-		else if (event->modifiers() == Qt::AltModifier)
+		else if (event->modifiers() == syncModifier)
 			tcpSynchronize();
 	}
 
@@ -1554,7 +1539,7 @@ void DkViewPort::loadNextFile(bool silent) {
 	if (loader != 0 && !testLoaded)
 		emit changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		emit sendNewFileSignal(1);
 }
 
@@ -1565,7 +1550,7 @@ void DkViewPort::loadPrevFile(bool silent) {
 	if (loader != 0 && !testLoaded)
 		emit changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		emit sendNewFileSignal(-1);
 }
 
@@ -1576,7 +1561,7 @@ void DkViewPort::loadFirst() {
 	if (loader && !testLoaded)
 		emit changeFile(-INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1587,7 +1572,7 @@ void DkViewPort::loadLast() {
 	if (loader && !testLoaded)
 		emit changeFile(INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
@@ -1599,7 +1584,7 @@ void DkViewPort::loadSkipPrev10() {
 	if (loader && !testLoaded)
 		emit changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		emit sendNewFileSignal(-DkSettings::GlobalSettings::skipImgs);
 }
 
@@ -1610,7 +1595,7 @@ void DkViewPort::loadSkipNext10() {
 	if (loader && !testLoaded)
 		emit changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		emit sendNewFileSignal(DkSettings::GlobalSettings::skipImgs);
 }
 
@@ -1899,7 +1884,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 
 	update();
 
-	if (altKeyPressed && hasFocus())
+	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
 		tcpSynchronize();
 
 }

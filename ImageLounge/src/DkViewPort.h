@@ -180,12 +180,10 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void wheelEvent(QWheelEvent *event);
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);
-	virtual void leaveEvent(QEvent *event);
-	virtual void focusOutEvent(QEvent *event);
 	virtual void contextMenuEvent(QContextMenuEvent *event);
 
 	QPainter* painter;
-	bool altKeyPressed;
+	Qt::KeyboardModifier syncModifier;
 
 	QWidget *parent;
 	QImage imgQt;

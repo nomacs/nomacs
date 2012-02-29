@@ -456,8 +456,6 @@ protected:
 	QStringList files;
 	bool folderUpdated;
 
-	//DkMetaData dataExif;
-
 	// threads
 	QMutex mutex;
 	QThread* loaderThread;
