@@ -65,6 +65,62 @@
 
 namespace nmc {
 
+class DkDelayedInfo : public QObject {
+	Q_OBJECT
+
+public:
+	DkDelayedInfo(QString msg  = QString(), int time = 1000) {
+		this->msg = msg;
+		timer = new QTimer();
+		timer->setSingleShot(true);
+		timer->start(time);
+
+		connect(timer, SIGNAL(timeout()), this, SLOT(sendMessage()));
+	}
+
+	~DkDelayedInfo() {
+
+		if (timer && timer->isActive())
+			timer->stop();
+
+		if (timer)
+			delete timer;
+
+		timer = 0;
+	}
+
+	void stop() {
+		
+		if (timer && timer->isActive())
+			timer->stop();
+		else
+			emit infoMessageSignal(msg, 1);
+	}
+
+	void setMessage(QString& msg, int time = 1000) {
+
+		if (!timer)
+			return;
+
+		this->msg = msg;
+		timer->start(time);
+	}
+
+signals:
+	void infoMessageSignal(QString msg, int time);
+
+protected slots:
+	void sendMessage() {
+		emit infoMessageSignal(msg, -1);
+	}
+
+protected:
+	QTimer* timer;
+	QString msg;
+
+};
+
+
 class DllExport DkBaseViewPort : public QGraphicsView {
 	Q_OBJECT
 
@@ -232,6 +288,7 @@ public slots:
 	
 	void setTitleLabel(QFileInfo file, int time = -1);
 	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
+	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	void updateRating(int rating);
 	
 	// file actions
@@ -275,6 +332,7 @@ protected:
 	DkInfoLabel* bottomRightLabel;
 	DkInfoLabel* topLeftLabel;
 	DkFileInfoLabel* fileInfoLabel;
+	DkDelayedInfo* delayedInfo;
 
 	DkMetaDataInfo* metaDataInfo;
 	DkPlayer* player;

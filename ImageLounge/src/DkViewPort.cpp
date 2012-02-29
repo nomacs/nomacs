@@ -560,6 +560,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	bottomRightLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_right_label);
 	topLeftLabel = new DkInfoLabel(this, "", DkInfoLabel::top_left_label);
 	fileInfoLabel = new DkFileInfoLabel(this);
+	delayedInfo = new DkDelayedInfo();
 
 	// cropping
 	editRect = new DkEditableRect(QRectF(), this);
@@ -591,12 +592,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	overviewWindow->setTransforms(&worldMatrix, &imgMatrix);
 
 	setAcceptDrops(true);
-	//setContentsMargins(0, 0, 0, 0);
-	//setMinimumSize(1, 1);
-	
 	setObjectName(QString::fromUtf8("DkViewPort"));
-	//setDragMode(QGraphicsView::RubberBandDrag);
-	//setInteractive(false);
 
 	//no border
 	setStyleSheet( "QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
@@ -604,9 +600,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	loader = new DkImageLoader();
 
+	connect(delayedInfo, SIGNAL(infoMessageSignal(QString, int)), this, SLOT(setInfo(QString, int)));
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
-	//connect(loader, SIGNAL(updateImageSignal(QImage)), this, SLOT(setImage(QImage)));
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
+	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 	connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
@@ -699,7 +696,7 @@ void DkViewPort::updateImage() {
 }
 
 void DkViewPort::setImage(QImage newImg) {
-
+	
 	DkTimer dt;
 	imgPyramid.clear();
 
@@ -1367,7 +1364,16 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 	qDebug() << "DkViewPort receiving wheel event";
-	DkBaseViewPort::wheelEvent(event);
+
+	if (event->modifiers() == Qt::ControlModifier) {
+
+		if (event->delta() > 0)
+			loadNextFile();
+		else
+			loadPrevFile();
+	}
+	else 
+		DkBaseViewPort::wheelEvent(event);
 }
 
 void DkViewPort::setFullScreen(bool fullScreen) {
@@ -1692,6 +1698,19 @@ void DkViewPort::setInfo(QString msg, int time, int location) {
 	
 	update();
 }
+
+void DkViewPort::setInfoDelayed(QString msg, bool start, int delayTime) {
+
+	if (!centerLabel)
+		return;
+
+	if (start)
+		delayedInfo->setMessage(msg, delayTime);
+	else
+		delayedInfo->stop();
+
+}
+
 
 void DkViewPort::setCenterInfo(QString msg, int time) {
 

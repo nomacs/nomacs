@@ -353,7 +353,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	//dataExif.saveOrientation(90);
 
 	if (!silent)
-		emit updateInfoSignal(tr("loading..."), -1);
+		emit updateInfoSignalDelayed(tr("loading..."), true);
 
 	qDebug() << "loading: " << file.absoluteFilePath();
 
@@ -367,9 +367,10 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	} catch(...) {
 		imgLoaded = false;
 	}
-	
-	if (!silent)
-		emit updateInfoSignal(tr("loading..."), 1);	// stop showing
+
+	// do not stop the loading message -> the viewport will stop it anyway
+	//if (!silent)
+	//	emit updateInfoSignalDelayed(tr("loading..."), false);	// stop showing
 
 	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
 	this->virtualFile = file;
@@ -875,7 +876,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	
 	QImage sImg = (saveImg.isNull()) ? img : saveImg;
 		
-	emit updateInfoSignal(tr("saving..."), -1);
+	emit updateInfoSignalDelayed(tr("saving..."), true);
 	QImageWriter* imgWriter = new QImageWriter(filePath);
 	imgWriter->setCompression(compression);
 	imgWriter->setQuality(compression);
@@ -883,7 +884,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	//imgWriter->setFileName(QFileInfo().absoluteFilePath());
 	delete imgWriter;
 	//bool saved = sImg.save(filePath, 0, compression);
-	emit updateInfoSignal(tr("saving..."), 1);
+	emit updateInfoSignalDelayed(tr("saving..."), false);
 	//qDebug() << "jpg compression: " << compression;
 
 	if ( QFileInfo(filePath).exists())
@@ -942,10 +943,10 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 	if (this->file.exists() && watcher)
 		watcher->removePath(this->file.absoluteFilePath());
 	
-	emit updateInfoSignal(tr("saving..."), -1);
+	emit updateInfoSignalDelayed(tr("saving..."), true);
 	QString filePath = file.absoluteFilePath();
 	bool saved = (saveImg.isNull()) ? img.save(filePath) : saveImg.save(filePath);
-	emit updateInfoSignal(tr("saving..."), 1);	// stop the label
+	emit updateInfoSignalDelayed(tr("saving..."), false);	// stop the label
 	
 	if (saved && watcher)
 		watcher->addPath(file.absoluteFilePath());
@@ -1074,9 +1075,9 @@ void DkImageLoader::rotateImage(double angle) {
 		
 		mutex.lock();
 		
-		updateInfoSignal(tr("saving..."), -1);
+		updateInfoSignalDelayed(tr("saving..."), true);
 		imgMetaData.saveOrientation((int)angle);
-		updateInfoSignal(tr("saving..."), 1);
+		updateInfoSignalDelayed(tr("saving..."), false);
 		qDebug() << "exif data saved (rotation)?";
 		mutex.unlock();
 
@@ -1084,7 +1085,7 @@ void DkImageLoader::rotateImage(double angle) {
 	catch(DkException de) {
 
 		mutex.unlock();
-		updateInfoSignal(tr("saving..."), 1);
+		updateInfoSignalDelayed(tr("saving..."), false);
 
 		// make a silent save -> if the image is just cached, do not save it
 		if (file.exists())

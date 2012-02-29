@@ -147,6 +147,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 	textLabel->setTextFormat(Qt::RichText);
 	textLabel->setText(text);
 	textLabel->move(131, 280);
+	textLabel->setOpenExternalLinks(true);
 
 	QLabel* versionLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
 	versionLabel->setTextFormat(Qt::RichText);
