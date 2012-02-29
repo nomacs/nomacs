@@ -460,6 +460,7 @@ protected:
 	bool loadGeneral(QFileInfo file);
 	bool loadRohFile(QString fileName);
 	void updateHistory();
+	bool restoreFile(const QFileInfo &fileInfo);
 	
 };
 

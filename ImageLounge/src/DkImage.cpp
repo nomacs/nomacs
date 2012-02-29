@@ -127,9 +127,6 @@ void DkImageLoader::loadDir(QDir newDir) {
 	}
 	else if ((newDir.absolutePath() != dir.absolutePath() || files.empty()) && newDir.exists()) {
 
-		if (dirWatcher && dir.exists())
-			dirWatcher->removePath(dir.absolutePath());
-
 		dir = newDir;
 		dir.setNameFilters(fileFilters);
 		dir.setSorting(QDir::LocaleAware);		// TODO: extend
@@ -138,8 +135,13 @@ void DkImageLoader::loadDir(QDir newDir) {
 		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 		qDebug() << "getting file list.....";
 	
-		if (dirWatcher)
+		if (dirWatcher) {
+			if (!dirWatcher->directories().isEmpty())
+				dirWatcher->removePaths(dirWatcher->directories());
 			dirWatcher->addPath(dir.absolutePath());
+		}
+
+		qDebug() << "dir watcher: " << dirWatcher->directories();
 	}
 }
 
@@ -394,16 +396,13 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 
 		// update watcher
 		if (watcher) {
-			watcher->removePath(lastFileLoaded.absoluteFilePath());
-			qDebug() << "removing: " << this->file.absoluteFilePath();
-		}
-		
-		if (watcher) {	// diem: with updateFolder images are just updated once
+			
+			if (!watcher->files().isEmpty())
+				watcher->removePaths(watcher->files());	// remove all files previously watched
 			watcher->addPath(file.absoluteFilePath());
 		}
 		
 		qDebug() << "watcher files: " << watcher->files();
-		qDebug() << "watcher dirs: " << watcher->directories();
 		
 		emit updateImageSignal();
 		emit updateFileSignal(file, img.size());
@@ -963,7 +962,7 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 
 	if (!saveImg.isNull() && saved) {
 		
-		if (file.exists()) {
+		if (this->file.exists()) {
 			try {
 				imgMetaData.saveMetaDataToFile(QFileInfo(filePath));
 			} catch (...) {
@@ -991,7 +990,9 @@ void DkImageLoader::saveRating(int rating) {
 	try {
 		imgMetaData.setRating(rating);
 	}catch(...) {
-		emit updateInfoSignal(tr("Sorry, I destroyed your file..."));
+		
+		if (!restoreFile(this->file))
+			emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
 	}
 }
 
@@ -1065,6 +1066,8 @@ void DkImageLoader::rotateImage(double angle) {
 	if (file.exists() && watcher)
 		watcher->removePath(this->file.absoluteFilePath());
 
+	updateInfoSignal("test", 5000);
+
 	try {
 		
 		mutex.lock();
@@ -1097,12 +1100,55 @@ void DkImageLoader::rotateImage(double angle) {
 	}
 	catch(...) {	// if file is locked... or permission is missing
 		mutex.unlock();
-		QString msg = tr("Sorry, I could not write to: %1").arg(file.fileName());
-		updateInfoSignal(msg);
+		
+		// try restoring the file
+		if (!restoreFile(file))
+			emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
+		
 	}
 
 	if (watcher) watcher->addPath(this->file.absoluteFilePath());
 
+}
+
+bool DkImageLoader::restoreFile(const QFileInfo& fileInfo) {
+
+	QStringList files = fileInfo.dir().entryList();
+	QString fileName = fileInfo.fileName();
+	QRegExp filePattern(fileName + "[0-9]+");
+	QString backupFileName;
+
+	// if exif crashed it saved a backup file with the format: filename.png1232
+	for (int idx = 0; idx < files.size(); idx++) {
+
+		if (filePattern.exactMatch(files[idx])) {
+			backupFileName = files[idx];
+			break;
+		}
+	}
+
+	if (backupFileName.isEmpty()) {
+		qDebug() << "I could not locate the backup file...";
+		return false;
+	}
+
+	// delete the destroyed file
+	QFile file(fileInfo.absoluteFilePath());
+	if (file.size() == 0) {
+		
+		if (!file.remove()) {
+			qDebug() << "I could not remove the file...";
+			return false;
+		}
+	}
+	else {
+		qDebug() << "non-empty file: " << fileName << " I won't delete it...";
+		return false;
+	}
+
+	// now 
+	QFile backupFile(fileInfo.absolutePath() + QDir::separator() + backupFileName);
+	return backupFile.rename(fileInfo.absoluteFilePath());
 }
 
 void DkImageLoader::fileChanged(const QString& path) {
@@ -1769,6 +1815,7 @@ void DkMetaData::saveThumbnail(QImage thumb) {
 
 
 	} catch (...) {
+
 		qDebug() << "I could not save the thumbnail...\n";
 	}
 }

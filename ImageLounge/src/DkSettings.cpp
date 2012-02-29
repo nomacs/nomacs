@@ -440,6 +440,7 @@ void DkSettingsDialog::saveSettings() {
 	settings->save();
 	this->close();
 	
+	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
 	if (curLanguage != DkSettings::GlobalSettings::language)
 		emit languageChanged();
 	else

@@ -1452,7 +1452,7 @@ void DkViewPort::loadLena() {
 	else if (!ok) {
 		QMessageBox warningDialog(parent);
 		warningDialog.setIcon(QMessageBox::Warning);
-		warningDialog.setText("you cannot cancel this");
+		warningDialog.setText(tr("you cannot cancel this"));
 		warningDialog.exec();
 		loadLena();
 	}
@@ -1460,9 +1460,9 @@ void DkViewPort::loadLena() {
 		QApplication::beep();
 		
 		if (text.isEmpty())
-			setCenterInfo("did you understand the brainteaser?");
+			setCenterInfo(tr("did you understand the brainteaser?"));
 		else
-			setCenterInfo(text % " is wrong...");
+			setCenterInfo(tr("%1 is wrong...").arg(text));
 	}
 }
 
