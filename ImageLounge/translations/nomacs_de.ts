@@ -342,7 +342,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkSettings.cpp" line="92"/>
         <source>Exposure Mode</source>
-        <translation>Berlichtung</translation>
+        <translation>Belichtung</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="93"/>
