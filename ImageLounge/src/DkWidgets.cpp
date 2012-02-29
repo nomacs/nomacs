@@ -190,6 +190,7 @@ void DkFilePreview::init() {
 	currentDx = 0;
 	currentFileIdx = 0;
 	oldFileIdx = 0;
+	mouseTrace = 0;
 
 	winPercent = 0.1f;
 	borderTrigger = (float)width()*winPercent;
@@ -436,7 +437,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		QWidget::mouseMoveEvent(event);
 		return;
 	}
-	
+
 	if (mouseTrace < 21) {
 		mouseTrace += fabs(QPointF(lastMousePos - event->pos()).manhattanLength());
 		return;
@@ -499,6 +500,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 				DkThumbNail thumb = thumbs.at(selected);
 				createSelectedEffect(thumb.getImage(), DkSettings::DisplaySettings::highlightColor);
 				fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+				qDebug() << "selected...";
 				break;
 			}
 		}
@@ -594,6 +596,7 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 	if (thumbsLoader) {
 		oldFileIdx = currentFileIdx;
 		currentFileIdx = thumbsLoader->getFileIdx(file);
+		update();
 	}
 
 	if (!force && oldFile.absoluteDir() == file.absoluteDir() && !thumbs.empty() || 

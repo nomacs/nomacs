@@ -285,6 +285,7 @@ public:
 	}
 
 	QImage getImage() {
+		
 		return img;
 	};
 
@@ -408,6 +409,8 @@ public:
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
 
 	QImage getImage() {
+		
+		QMutexLocker locker(&mutex);
 		return img;
 	};
 

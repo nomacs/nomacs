@@ -377,13 +377,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	this->virtualFile = file;
 
 	if (imgLoaded) {
-		
-		// TODO: this is a fast fix
-		// if this thread uses the static metadata object 
-		// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
-		// currently we need to read the metadata twice (not nice either)
-		DkImageLoader::imgMetaData.setFileName(file);
-		
+				
 		DkMetaData imgMetaData(file);		
 		int orientation = imgMetaData.getOrientation();
 
@@ -1178,11 +1172,13 @@ bool DkImageLoader::hasFile() {
 
 QFileInfo DkImageLoader::getFile() {
 
+	QMutexLocker locker(&mutex);
 	return file;
 }
 
 QDir DkImageLoader::getDir() {
 
+	QMutexLocker locker(&mutex);
 	return dir;
 }
 
