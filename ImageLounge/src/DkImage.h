@@ -393,7 +393,6 @@ public:
 	void firstFile();
 	void lastFile();
 	void loadFileAt(int idx);
-	void changeFile(int skipIdx, bool silent = false);
 	void clearPath();
 	QString getCurrentFilter();
 	QDir getDir();
@@ -407,7 +406,14 @@ public:
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
 
-	QImage getImage() {
+
+	bool hasImage() {
+		
+		QMutexLocker locker(&mutex);
+		return !img.isNull();
+	};
+
+	QImage& getImage() {
 		
 		QMutexLocker locker(&mutex);
 		return img;
@@ -427,6 +433,7 @@ signals:
 	void fileNotLoadedSignal(QFileInfo file);
 
 public slots:
+	void changeFile(int skipIdx, bool silent = false);
 	void fileChanged(const QString& path);
 	void directoryChanged(const QString& path);
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());

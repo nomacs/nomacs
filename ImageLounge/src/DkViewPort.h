@@ -255,6 +255,7 @@ public:
 	};
 
 signals:
+	void changeFile(int idx, bool silent = false);
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
 	void windowTitleSignal(QFileInfo file, QSize s = QSize());
 	void sendNewFileSignal(qint16 op, QString filename = "");

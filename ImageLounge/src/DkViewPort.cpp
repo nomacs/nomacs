@@ -601,6 +601,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	loader = new DkImageLoader();
 
 	connect(delayedInfo, SIGNAL(infoMessageSignal(QString, int)), this, SLOT(setInfo(QString, int)));
+	connect(this, SIGNAL(changeFile(int, bool)), loader, SLOT(changeFile(int, bool)));
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
@@ -692,7 +693,9 @@ void DkViewPort::updateImage() {
 	if (!loader)
 		return;
 
-	setImage(loader->getImage());
+
+	if (loader->hasImage())
+		setImage(loader->getImage());
 }
 
 void DkViewPort::setImage(QImage newImg) {
@@ -1537,7 +1540,7 @@ void DkViewPort::reloadFile() {
 	unloadImage();
 
 	if (loader) {
-		loader->changeFile(0);
+		emit changeFile(0);
 
 		if (filePreview)
 			filePreview->updateDir(loader->getFile(), true);
@@ -1546,14 +1549,10 @@ void DkViewPort::reloadFile() {
 
 void DkViewPort::loadNextFile(bool silent) {
 
-	DkTimer dt;
-	
 	unloadImage();
-	qDebug() << "unload image: " << QString::fromStdString(dt.getTotal());
 
 	if (loader != 0 && !testLoaded)
-		loader->nextFile(silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
-	qDebug() << "file loaded: " << QString::fromStdString(dt.getTotal());
+		emit changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(1);
@@ -1564,10 +1563,8 @@ void DkViewPort::loadPrevFile(bool silent) {
 	unloadImage();
 
 	if (loader != 0 && !testLoaded)
-		loader->previousFile(silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		emit changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	// TODO: what happens if a file cannot be loaded?? (currently nothing happens -> no information no loading)
-	
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(-1);
 }
@@ -1577,7 +1574,7 @@ void DkViewPort::loadFirst() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->firstFile();
+		emit changeFile(-INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(SHRT_MIN);
@@ -1588,7 +1585,7 @@ void DkViewPort::loadLast() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->lastFile();		// TODO: add silent in DkImage
+		emit changeFile(INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(SHRT_MAX);
@@ -1600,7 +1597,7 @@ void DkViewPort::loadSkipPrev10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		emit changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(-DkSettings::GlobalSettings::skipImgs);
@@ -1611,7 +1608,7 @@ void DkViewPort::loadSkipNext10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		emit changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (altKeyPressed && hasFocus())
 		emit sendNewFileSignal(DkSettings::GlobalSettings::skipImgs);

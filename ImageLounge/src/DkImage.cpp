@@ -105,6 +105,7 @@ DkImageLoader::~DkImageLoader() {
 
 void DkImageLoader::clearPath() {
 	
+	QMutexLocker locker(&mutex);
 	img = QImage();
 	lastFileLoaded = file;
 	file = QFileInfo();
@@ -368,9 +369,8 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		imgLoaded = false;
 	}
 
-	// do not stop the loading message -> the viewport will stop it anyway
-	//if (!silent)
-	//	emit updateInfoSignalDelayed(tr("loading..."), false);	// stop showing
+	if (!silent)
+		emit updateInfoSignalDelayed(tr("loading..."), false);	// stop showing
 
 	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
 	this->virtualFile = file;
