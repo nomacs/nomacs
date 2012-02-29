@@ -748,11 +748,11 @@ void DkDisplaySettingsWidget::createLayout() {
 	QGroupBox* gbThumb = new QGroupBox(tr("Thumbnails"));
 	QGridLayout* gbHbox = new QGridLayout(gbThumb);
 
-
 	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 30, 160, this);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::DisplaySettings::thumbSize);
 
 	cbSaveThumb = new QCheckBox(tr("save Thumbnails"));
+	cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
 
 	gbHbox->addWidget(maximalThumbSizeWidget, 0, 0);
 	gbHbox->setColumnStretch(0,5);
@@ -763,7 +763,6 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbLeftLayout->addStretch();
 	gbLeftLayout->addWidget(checkBoxWidget);
 	gbLeftLayout->addStretch();
-	
 
 	gbRightLayout->addWidget(interpolateWidget);
 	gbRightLayout->addWidget(cbShowMenu);
