@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
 	if (args.size() > 1)
-		w->viewport()->loadFile(QFileInfo(args[1]), true, true);	// update folder + be silent
+		w->viewport()->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
 #ifdef Q_WS_MAC
 	QObject::connect(&a, SIGNAL(loadFile(const QFileInfo&)),
 	                 w->viewport(), SLOT(loadFile(const QFileInfo&)));

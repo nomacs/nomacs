@@ -380,7 +380,6 @@ public:
 
 	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
 
-	bool updateFolder;
 	bool silent;
 
 	// TODO: thread here
@@ -403,7 +402,7 @@ public:
 	void setSaveDir(QDir& dir);
 	void setImage(QImage& img);
 	void load();
-	void load(QFileInfo file, bool updateFolder = true, bool silent = false);
+	void load(QFileInfo file, bool silent = false);
 	bool hasFile();
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);

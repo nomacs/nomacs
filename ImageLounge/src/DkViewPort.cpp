@@ -1514,7 +1514,7 @@ void DkViewPort::unloadImage() {
 
 }
 
-void DkViewPort::loadFile(QFileInfo file, bool updateFolder, bool silent) {
+void DkViewPort::loadFile(QFileInfo file, bool silent) {
 
 	testLoaded = false;
 	unloadImage();
@@ -1523,7 +1523,7 @@ void DkViewPort::loadFile(QFileInfo file, bool updateFolder, bool silent) {
 		QDir dir = QDir(file.absoluteFilePath());
 		loader->setDir(dir);
 	} else if (loader)
-		loader->load(file, updateFolder, silent);
+		loader->load(file, silent);
 }
 
 void DkViewPort::reloadFile() {
@@ -1531,7 +1531,6 @@ void DkViewPort::reloadFile() {
 	unloadImage();
 
 	if (loader) {
-		loader->updateFolder = false;
 		loader->changeFile(0);
 
 		if (filePreview)

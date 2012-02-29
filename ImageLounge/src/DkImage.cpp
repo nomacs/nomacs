@@ -79,7 +79,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
 	folderUpdated = false;
-	updateFolder = false;
 	silent = false;
 	 
 	this->file = file;
@@ -173,7 +172,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 	mutex.unlock();
 
 	if (loadFile.exists())
-		load(loadFile, true, silent);
+		load(loadFile, silent);
 }
 
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
@@ -313,9 +312,8 @@ void DkImageLoader::load() {
 	load(file);
 }
 
-void DkImageLoader::load(QFileInfo file, bool updateFolder, bool silent) {
+void DkImageLoader::load(QFileInfo file, bool silent) {
 
-	this->updateFolder = updateFolder;
 	this->silent = silent;
 	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file));
 }
@@ -1038,7 +1036,7 @@ void DkImageLoader::deleteFile() {
 		QFileInfo loadFile = getChangedFileInfo(1, true);
 
 		if (loadFile.exists())
-			load(loadFile, true, true);
+			load(loadFile, true);
 		else {
 			clearPath();
 			emit updateImageSignal();
@@ -1150,7 +1148,7 @@ void DkImageLoader::fileChanged(const QString& path) {
 	// ignore if watcher was disabled
 	if (path == file.absoluteFilePath()) {
 		QMutexLocker locker(&mutex);
-		load(QFileInfo(path), false, true);
+		load(QFileInfo(path), true);
 	}
 }
 

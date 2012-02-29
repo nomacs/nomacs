@@ -235,7 +235,7 @@ public slots:
 	void updateRating(int rating);
 	
 	// file actions
-	void loadFile(QFileInfo file, bool updateFolder = true, bool silent = false);
+	void loadFile(QFileInfo file, bool silent = false);
 	void reloadFile();
 	void loadNextFile(bool silent = false);
 	void loadPrevFile(bool silent = false);
