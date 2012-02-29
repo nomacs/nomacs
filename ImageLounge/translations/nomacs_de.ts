@@ -430,188 +430,188 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2376"/>
         <source>not defined</source>
-        <translation type="unfinished"></translation>
+        <translation>unbekannt</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2377"/>
         <source>manual</source>
-        <translation type="unfinished"></translation>
+        <translation>manuell</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2378"/>
         <source>normal</source>
-        <translation type="unfinished"></translation>
+        <translation>normal</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2379"/>
         <source>aperture priority</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeitautomatik</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2380"/>
         <source>shutter priority</source>
-        <translation type="unfinished"></translation>
+        <translation>Blendenautomatik</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2381"/>
         <source>program creative</source>
-        <translation type="unfinished"></translation>
+        <translation>Kreativ Modus</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2382"/>
         <source>high-speed program</source>
-        <translation type="unfinished"></translation>
+        <translation>Sportaufnahme</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2383"/>
         <source>portrait mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Portrait</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2384"/>
         <source>landscape mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Lanschaft</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2387"/>
         <source>No Flash</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Blitz</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2388"/>
         <source>Fired</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgelöst</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2389"/>
         <source>Fired, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgelöst, jedoch nicht vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2390"/>
         <source>Fired, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgelöst</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2391"/>
         <source>On, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein, nicht ausgelöst</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2392"/>
         <source>On, Fired</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein, ausgelöst</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2393"/>
         <source>On, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein, nicht vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2394"/>
         <source>On, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein, vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2395"/>
         <source>Off, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Aus, nicht ausgelöst</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2396"/>
         <source>Off, Did not fire, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Aus, nicht ausglöst, nicht vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2397"/>
         <source>Auto, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, nicht ausgelöst</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2398"/>
         <source>Auto, Fired</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, ausgelöst</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2399"/>
         <source>Auto, Fired, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, ausgelöst, nicht vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2400"/>
         <source>Auto, Fired, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, ausgelöst, vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2401"/>
         <source>No flash function</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Blitz</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2402"/>
         <source>Off, No flash function</source>
-        <translation type="unfinished"></translation>
+        <translation>Aus, kein Blitz</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2403"/>
         <source>Fired, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausglöst, rote Augen Reduktion</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2404"/>
         <source>Fired, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgelöst, rote Augen Reduktion, nicht vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2405"/>
         <source>Fired, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgelöst, rote Augen Reduktion, vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2406"/>
         <source>On, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein, rote Augen Reduktion</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2407"/>
         <source>On, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein, rote Augen Reduktion, nicht vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2408"/>
         <source>On, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein, rote Augen Reduktion, vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2409"/>
         <source>Off, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Aus, rote Augen Reduktion</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2410"/>
         <source>Auto, Did not fire, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, nicht ausgelöst, rote Augen Reduktion</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2411"/>
         <source>Auto, Fired, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, ausgelöst, rote Augen Reduktion</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2412"/>
         <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, ausgelöst, rote Augen Reduktion, nicht vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2413"/>
         <source>Auto, Fired, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto, ausgelöst, rote Augen Reduktion, vorhanden</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2529"/>
         <location filename="../src/DkWidgets.cpp" line="2563"/>
         <source>could not parse GPS Data</source>
-        <translation type="unfinished"></translation>
+        <translation>keine GPS Daten</translation>
     </message>
 </context>
 <context>
@@ -869,7 +869,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="511"/>
         <source>Show &amp;Menu</source>
-        <translation>Zeige &amp;Menü an</translation>
+        <translation>&amp;Menü</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="512"/>
@@ -879,37 +879,37 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="516"/>
         <source>Show Tool&amp;bar</source>
-        <translation>Zeige Tool&amp;bar</translation>
+        <translation>Tool&amp;bar</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="518"/>
         <source>Show Toolbar</source>
-        <translation>Zeigt die Toolbar</translation>
+        <translation>Toolbar anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="522"/>
         <source>Show &amp;Statusbar</source>
-        <translation>Zeige &amp;Statusleiste</translation>
+        <translation>&amp;Statusleiste</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="524"/>
         <source>Show Statusbar</source>
-        <translation>Zeigt die Statusleiste</translation>
+        <translation>Statusleiste anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="529"/>
         <source>Show &amp;Pseudocolor Function</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Falschfarbenfunktion</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="531"/>
         <source>Show Pseudocolor Function</source>
-        <translation type="unfinished"></translation>
+        <translation>Falschfarbenfunktion</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1463"/>
         <source>Do you want to permanently delete %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Wollen Sie %1 dauerhaft löschen?</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="536"/>
@@ -974,62 +974,62 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="569"/>
         <source>Show O&amp;verview</source>
-        <translation>Zeige &amp;Übersicht</translation>
+        <translation>&amp;Übersicht anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="571"/>
         <source>shows the overview or not</source>
-        <translation>Zeigt die Übersicht</translation>
+        <translation>Übersicht anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="576"/>
         <source>Show Pla&amp;yer</source>
-        <translation>Zeige Pla&amp;yer</translation>
+        <translation>Pla&amp;yer anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="578"/>
         <source>shows the player or not</source>
-        <translation>Zeigt den Player oder nicht</translation>
+        <translation>Player anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="582"/>
         <source>Sho&amp;w Thumbnails</source>
-        <translation>Zeige Bild&amp;vorschau</translation>
+        <translation>&amp;Thumbnails anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="584"/>
         <source>Show thumbnails</source>
-        <translation>Zeige die Bildvorschau</translation>
+        <translation>Thumbnails anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="588"/>
         <source>Show &amp;Metadata</source>
-        <translation>Zeige &amp;Metadaten</translation>
+        <translation>&amp;Metadaten anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="590"/>
         <source>shows the metadata panel</source>
-        <translation>Zeige die Metadaten</translation>
+        <translation>Metadaten anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="594"/>
         <source>Show File &amp;Info</source>
-        <translation>Zeige Datei &amp;Informationen</translation>
+        <translation>Datei &amp;Informationen anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="596"/>
         <source>shows the info panel</source>
-        <translation>Zeige Dateiinformationen</translation>
+        <translation>Dateiinformationen anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="600"/>
         <source>&amp;Frameless</source>
-        <translation>&amp;Framelos</translation>
+        <translation>&amp;Frameless</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="602"/>
         <source>shows a frameless window</source>
-        <translation>Zeigt die Framelose ansicht</translation>
+        <translation>Zeigt die Frameless ansicht</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="607"/>
