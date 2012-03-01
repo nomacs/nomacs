@@ -96,8 +96,13 @@ void DkNoMacs::init() {
 
 	setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
 
-	// assign icon
+// assign icon -> in windows the 32px version
+#ifdef WIN32
+	QString iconPath = ":/nomacs/img/nomacs32.png";
+#else
 	QString iconPath = ":/nomacs/img/nomacs.png";
+#endif
+
 	QIcon dirIcon = QIcon(iconPath);
 	setObjectName("DkNoMacs");
 

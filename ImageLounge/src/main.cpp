@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 	//				but calling the QApplication on windows/linux
 	//				it causes a segmentation fault in QMenuBar.
 	//				Thus, we call QApplication for these systems
-	DkNoMacsApp a(argc, argv);
+	nmc::DkNoMacsApp a(argc, argv);
 #else
 
 	// the cast (char**) is just relevant for Windows (otherwise it is char** anyway)
