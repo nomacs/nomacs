@@ -107,7 +107,7 @@
     <message>
         <location filename="../src/DkSettings.cpp" line="776"/>
         <source>saves thumbnails to images (EXPERIMENTAL)</source>
-        <translation type="unfinished"></translation>
+        <translation>speicht Vorschaubilder (EXPERIMENTELL)</translation>
     </message>
 </context>
 <context>
@@ -151,12 +151,12 @@
     <message>
         <location filename="../src/DkSettings.cpp" line="575"/>
         <source>translate nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>nomacs übersetzen</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="576"/>
         <source>if you want to help us and translate nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>hilf uns nomacs zu übersetzen</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="592"/>
@@ -260,7 +260,7 @@
         <location filename="../src/DkImage.cpp" line="988"/>
         <location filename="../src/DkImage.cpp" line="1099"/>
         <source>Sorry, I could not restore: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Datei %1 konnte nicht wiederhergestellt werden</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="1047"/>
@@ -1582,7 +1582,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkSettings.cpp" line="1007"/>
         <source>switch ALT and CTRL key</source>
-        <translation type="unfinished"></translation>
+        <translation>vertausche ALT und STRG Taste</translation>
     </message>
 </context>
 <context>
@@ -1735,17 +1735,17 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkViewPort.cpp" line="1456"/>
         <source>you cannot cancel this</source>
-        <translation type="unfinished"></translation>
+        <translation>Abbrechen nicht möglich</translation>
     </message>
     <message>
         <location filename="../src/DkViewPort.cpp" line="1464"/>
         <source>did you understand the brainteaser?</source>
-        <translation type="unfinished"></translation>
+        <translation>Hinweis verstanden?</translation>
     </message>
     <message>
         <location filename="../src/DkViewPort.cpp" line="1466"/>
         <source>%1 is wrong...</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 ist falsch...</translation>
     </message>
     <message>
         <location filename="../src/DkViewPort.cpp" line="1743"/>
