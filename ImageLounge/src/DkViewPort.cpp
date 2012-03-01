@@ -38,8 +38,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	imgMatrix.reset();
 
 	blockZooming = false;
-	altMod = Qt::AltModifier;	// TODO: add setting
-	ctrlMod = Qt::ControlModifier;
+	altMod = DkSettings::GlobalSettings::altMod;
+	ctrlMod = DkSettings::GlobalSettings::ctrlMod;
 
 	zoomTimer = new QTimer(this);
 	zoomTimer->setSingleShot(true);
@@ -47,8 +47,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
-	setStyleSheet( "QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
-	setMouseTracking (true);
+	setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
+	setMouseTracking(true);
 
 }
 
@@ -1484,6 +1484,9 @@ void DkViewPort::settingsChanged() {
 
 	reloadFile();
 
+	altMod = DkSettings::GlobalSettings::altMod;
+	ctrlMod = DkSettings::GlobalSettings::ctrlMod;
+
 	// update the title label
 	if (fileInfoLabel && fileInfoLabel->isVisible())
 		fileInfoLabel->show();
@@ -1526,7 +1529,7 @@ void DkViewPort::reloadFile() {
 	unloadImage();
 
 	if (loader) {
-		emit changeFile(0);
+		loader->changeFile(0);
 
 		if (filePreview)
 			filePreview->updateDir(loader->getFile(), true);
@@ -1537,8 +1540,8 @@ void DkViewPort::loadNextFile(bool silent) {
 
 	unloadImage();
 
-	if (loader != 0 && !testLoaded)
-		emit changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	if (loader && !testLoaded)
+		loader->changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(1);
@@ -1548,8 +1551,8 @@ void DkViewPort::loadPrevFile(bool silent) {
 
 	unloadImage();
 
-	if (loader != 0 && !testLoaded)
-		emit changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	if (loader && !testLoaded)
+		loader->changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(-1);
@@ -1560,7 +1563,7 @@ void DkViewPort::loadFirst() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		emit changeFile(-INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->firstFile();
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(SHRT_MIN);
@@ -1571,7 +1574,7 @@ void DkViewPort::loadLast() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		emit changeFile(INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->lastFile();
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(SHRT_MAX);
@@ -1583,7 +1586,7 @@ void DkViewPort::loadSkipPrev10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		emit changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(-DkSettings::GlobalSettings::skipImgs);
@@ -1594,7 +1597,7 @@ void DkViewPort::loadSkipNext10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		emit changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(DkSettings::GlobalSettings::skipImgs);

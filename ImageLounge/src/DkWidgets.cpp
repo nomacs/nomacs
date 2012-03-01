@@ -692,7 +692,7 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 		QPointF dxy = (cPos - currentViewPoint)/worldMatrix->m11()*panningSpeed;
 		emit moveViewSignal(dxy);
 
-		if (event->modifiers() == Qt::AltModifier)
+		if (event->modifiers() == DkSettings::GlobalSettings::altMod)
 			emit sendTransformSignal();
 
 	}
@@ -711,7 +711,7 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 	posGrab = cPos;
 	emit moveViewSignal(dxy);
 
-	if (event->modifiers() == Qt::AltModifier)
+	if (event->modifiers() == DkSettings::GlobalSettings::altMod)
 		emit sendTransformSignal();
 
 }
@@ -3683,7 +3683,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->buttons() == Qt::LeftButton && event->modifiers() == Qt::AltModifier) {
+	if (event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::GlobalSettings::altMod) {
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
 		return;
@@ -3715,7 +3715,7 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == Qt::AltModifier) {
+	if (event->modifiers() == DkSettings::GlobalSettings::altMod) {
 		
 		if (event->buttons() != Qt::LeftButton)
 			setCursor(Qt::OpenHandCursor);
@@ -3805,7 +3805,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->buttons() == Qt::LeftButton && event->modifiers() == Qt::AltModifier) {
+	if (event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::GlobalSettings::altMod) {
 		setCursor(Qt::OpenHandCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
