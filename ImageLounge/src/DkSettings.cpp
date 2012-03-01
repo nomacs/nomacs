@@ -193,6 +193,11 @@ void DkSettings::load() {
 		DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
 		DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
 	}
+	else {
+		DkSettings::GlobalSettings::altMod = Qt::AltModifier;
+		DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
+	}
+
 }
 
 void DkSettings::save() {
@@ -1012,7 +1017,7 @@ void DkSynchronizeSettingsWidget::createLayout() {
 
 
 	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"));
-	cbSwitchModifier->setChecked(DkSettings::SynchronizeSettings::switchModifier);
+	
 
 	gbNetworkSettingsLayout->addWidget(cbEnableNetwork);
 	gbNetworkSettingsLayout->addWidget(networkSettings);
@@ -1033,6 +1038,10 @@ void DkSynchronizeSettingsWidget::writeSettings() {
 	if (DkSettings::SynchronizeSettings::switchModifier) {
 		DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
 		DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
+	}
+	else {
+		DkSettings::GlobalSettings::altMod = Qt::AltModifier;
+		DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
 	}
 }
 
