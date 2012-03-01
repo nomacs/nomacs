@@ -47,16 +47,14 @@ bool DkSettings::GlobalSettings::useTmpPath = false;
 QString DkSettings::GlobalSettings::tmpPath = QString();
 QString DkSettings::GlobalSettings::language = "en";
 
-#ifdef WIN32
-bool DkSettings::SynchronizeSettings::switchModifier = false;
-Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::AltModifier;
-Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
-
+#ifdef linux
+	bool DkSettings::SynchronizeSettings::switchModifier = true;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
 #else
-bool DkSettings::SynchronizeSettings::switchModifier = true;
-Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
-Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
-
+	bool DkSettings::SynchronizeSettings::switchModifier = false;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::AltModifier;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
 #endif
 
 // open with settings
@@ -266,8 +264,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::AppSettings::showToolBar = true;
 	DkSettings::AppSettings::showStatusBar = false;
 	DkSettings::AppSettings::appMode = 0;
-
-
+	
 	DkSettings::GlobalSettings::skipImgs = 10;
 	DkSettings::GlobalSettings::showOverview = true;
 	DkSettings::GlobalSettings::showInfo = true;
@@ -284,6 +281,18 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::GlobalSettings::showDefaultAppDialog = true;
 	DkSettings::GlobalSettings::numUserChoices = 3;
 	DkSettings::GlobalSettings::userAppPaths = QStringList();
+
+
+#ifdef linux
+	DkSettings::SynchronizeSettings::switchModifier = true;
+	DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
+	DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
+#else
+	DkSettings::SynchronizeSettings::switchModifier = false;
+	DkSettings::GlobalSettings::altMod = Qt::AltModifier;
+	DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
+#endif
+
 
 	DkSettings::DisplaySettings::keepZoom = true;
 	DkSettings::DisplaySettings::invertZoom = false;
@@ -334,7 +343,6 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::SynchronizeSettings::updateDialogShown = false;
 	DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970 , 1, 1);
 	DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
-	DkSettings::SynchronizeSettings::switchModifier = false;
 
 	qDebug() << "ok... default settings are set";
 
