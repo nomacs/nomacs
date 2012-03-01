@@ -47,14 +47,16 @@ bool DkSettings::GlobalSettings::useTmpPath = false;
 QString DkSettings::GlobalSettings::tmpPath = QString();
 QString DkSettings::GlobalSettings::language = "en";
 
-#ifdef linux
-	bool DkSettings::SynchronizeSettings::switchModifier = true;
-	Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
-	Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
+#ifdef WIN32
+bool DkSettings::SynchronizeSettings::switchModifier = false;
+Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::AltModifier;
+Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
+
 #else
-	bool DkSettings::SynchronizeSettings::switchModifier = false;
-	Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::AltModifier;
-	Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
+bool DkSettings::SynchronizeSettings::switchModifier = true;
+Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
+Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
+
 #endif
 
 // open with settings
@@ -125,7 +127,7 @@ bool DkSettings::SynchronizeSettings::allowPosition = true;
 bool DkSettings::SynchronizeSettings::allowFile = true;
 bool DkSettings::SynchronizeSettings::allowImage = true;
 bool DkSettings::SynchronizeSettings::updateDialogShown= false;
-QDate DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970 , 1, 1);
+QDate DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
 
 

@@ -72,9 +72,7 @@ int main(int argc, char *argv[]) {
 	QApplication a(argc, (char**)argv);
 #endif
 
-
 	
-
 	QStringList args = a.arguments();
 	nmc::DkNoMacs* w;
 
