@@ -113,6 +113,9 @@ class DkSettings : public QObject {
 			static QString tmpPath;
 			static QString language;
 
+			static Qt::KeyboardModifier altMod;
+			static Qt::KeyboardModifier ctrlMod;
+
 			// open with
 			static QString defaultAppPath;
 			static int defaultAppIdx;
@@ -412,7 +415,8 @@ class DkSynchronizeSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbAllowTransformation;
 		QCheckBox* cbAllowPosition;
 		QCheckBox* cbAllowImage;
-		QCheckBox* cbAllowFile;};
+		QCheckBox* cbAllowFile;
+};
 
 
 class DkSettingsListView : public QListView {

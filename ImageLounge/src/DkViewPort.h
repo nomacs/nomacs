@@ -183,7 +183,8 @@ protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event);
 
 	QPainter* painter;
-	Qt::KeyboardModifier syncModifier;
+	Qt::KeyboardModifier altMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
+	Qt::KeyboardModifier ctrlMod;
 
 	QWidget *parent;
 	QImage imgQt;

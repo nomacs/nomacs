@@ -38,7 +38,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	imgMatrix.reset();
 
 	blockZooming = false;
-	syncModifier = Qt::AltModifier;	// TODO: add setting
+	altMod = Qt::AltModifier;	// TODO: add setting
+	ctrlMod = Qt::ControlModifier;
 
 	zoomTimer = new QTimer(this);
 	zoomTimer->setSingleShot(true);
@@ -841,7 +842,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 
 	update();
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		tcpSynchronize();
 	
 }
@@ -854,7 +855,7 @@ void DkViewPort::resetView() {
 
 	update();
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		tcpSynchronize();
 }
 
@@ -1320,14 +1321,14 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 		// with shift also a hotkey for fast switching...
 		if ((DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
-			event->modifiers() == (syncModifier | Qt::ShiftModifier)) || 
+			event->modifiers() == (altMod | Qt::ShiftModifier)) || 
 			(!DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
-			event->modifiers() == (syncModifier))) {
+			event->modifiers() == (altMod))) {
 			QTransform relTransform;
 			relTransform.translate(dxy.x(), dxy.y());
 			tcpSynchronize(relTransform);
 		}
-		else if (event->modifiers() == syncModifier)
+		else if (event->modifiers() == altMod)
 			tcpSynchronize();
 	}
 
@@ -1353,7 +1354,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 	qDebug() << "DkViewPort receiving wheel event";
 
-	if (event->modifiers() == Qt::ControlModifier) {
+	if (event->modifiers() == ctrlMod) {
 
 		if (event->delta() > 0)
 			loadNextFile();
@@ -1539,7 +1540,7 @@ void DkViewPort::loadNextFile(bool silent) {
 	if (loader != 0 && !testLoaded)
 		emit changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(1);
 }
 
@@ -1550,7 +1551,7 @@ void DkViewPort::loadPrevFile(bool silent) {
 	if (loader != 0 && !testLoaded)
 		emit changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(-1);
 }
 
@@ -1561,7 +1562,7 @@ void DkViewPort::loadFirst() {
 	if (loader && !testLoaded)
 		emit changeFile(-INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1572,7 +1573,7 @@ void DkViewPort::loadLast() {
 	if (loader && !testLoaded)
 		emit changeFile(INT_MAX, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
@@ -1584,7 +1585,7 @@ void DkViewPort::loadSkipPrev10() {
 	if (loader && !testLoaded)
 		emit changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(-DkSettings::GlobalSettings::skipImgs);
 }
 
@@ -1595,7 +1596,7 @@ void DkViewPort::loadSkipNext10() {
 	if (loader && !testLoaded)
 		emit changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(DkSettings::GlobalSettings::skipImgs);
 }
 
@@ -1884,7 +1885,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 
 	update();
 
-	if (qApp->keyboardModifiers() == syncModifier && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		tcpSynchronize();
 
 }

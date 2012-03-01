@@ -47,6 +47,9 @@ bool DkSettings::GlobalSettings::useTmpPath = false;
 QString DkSettings::GlobalSettings::tmpPath = QString();
 QString DkSettings::GlobalSettings::language = "en";
 
+Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::AltModifier;
+Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
+
 // open with settings
 QString DkSettings::GlobalSettings::defaultAppPath = QString();
 int DkSettings::GlobalSettings::defaultAppIdx = -1;
