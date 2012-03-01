@@ -525,6 +525,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	// ---- right layout of the global settings widget
 	QWidget* langWidget = new QWidget(this);
 	QGridLayout* langLayout = new QGridLayout(langWidget);
+	langLayout->setMargin(0);
 	QLabel* langLabel = new QLabel(tr("choose language:"));
 	langCombo = new QComboBox();
 
