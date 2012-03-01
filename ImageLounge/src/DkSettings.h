@@ -139,6 +139,7 @@ class DkSettings : public QObject {
 			static bool updateDialogShown;
 			static QDate lastUpdateCheck;
 			static bool syncAbsoluteTransform;
+			static bool switchModifier;
 		};
 		struct MetaDataSettings {
 			static QBitArray metaDataBits;
@@ -416,8 +417,8 @@ class DkSynchronizeSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbAllowPosition;
 		QCheckBox* cbAllowImage;
 		QCheckBox* cbAllowFile;
+		QCheckBox* cbSwitchModifier;
 };
-
 
 class DkSettingsListView : public QListView {
 Q_OBJECT;

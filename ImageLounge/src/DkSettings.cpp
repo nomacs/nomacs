@@ -120,6 +120,7 @@ bool DkSettings::SynchronizeSettings::allowImage = true;
 bool DkSettings::SynchronizeSettings::updateDialogShown= false;
 QDate DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970 , 1, 1);
 bool DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
+bool DkSettings::SynchronizeSettings::switchModifier = false;
 
 void DkSettings::load() {
 	
@@ -179,7 +180,12 @@ void DkSettings::load() {
 	SynchronizeSettings::updateDialogShown = settings.value("SynchronizeSettings/updateDialogShown", DkSettings::SynchronizeSettings::updateDialogShown).toBool();
 	SynchronizeSettings::lastUpdateCheck = settings.value("SynchronizeSettings/lastUpdateCheck", DkSettings::SynchronizeSettings::lastUpdateCheck).toDate();
 	SynchronizeSettings::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::SynchronizeSettings::syncAbsoluteTransform).toBool();
+	SynchronizeSettings::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::SynchronizeSettings::switchModifier).toBool();
 	
+	if (DkSettings::SynchronizeSettings::switchModifier) {
+		DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
+		DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
+	}
 }
 
 void DkSettings::save() {
@@ -235,6 +241,7 @@ void DkSettings::save() {
 	settings.setValue("SynchronizeSettings/updateDialogShown", DkSettings::SynchronizeSettings::updateDialogShown);
 	settings.setValue("SynchronizeSettings/lastUpdateCheck", DkSettings::SynchronizeSettings::lastUpdateCheck);
 	settings.setValue("SynchronizeSettings/syncAbsoluteTransform", DkSettings::SynchronizeSettings::syncAbsoluteTransform);
+	settings.setValue("SynchronizeSettings/switchModifier", DkSettings::SynchronizeSettings::switchModifier);
 	
 	qDebug() << "settings saved";
 }
@@ -277,6 +284,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::SlideShowSettings::backgroundColor = QColor(217, 219, 228, 100);
 	DkSettings::SlideShowSettings::silentFullscreen = true;
 
+
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_size] = false;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_orientation] = false;
 	DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_make] = true;
@@ -312,6 +320,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::SynchronizeSettings::updateDialogShown = false;
 	DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970 , 1, 1);
 	DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
+	DkSettings::SynchronizeSettings::switchModifier = false;
 
 	qDebug() << "ok... default settings are set";
 
@@ -950,7 +959,8 @@ void DkSynchronizeSettingsWidget::init() {
 	cbAllowTransformation->setChecked(DkSettings::SynchronizeSettings::allowTransformation);
 	cbEnableNetwork->setChecked(DkSettings::SynchronizeSettings::enableNetworkSync);
 	DkSettings::SynchronizeSettings::syncAbsoluteTransform ? rbSyncAbsoluteTransform->setChecked(true) : rbSyncRelativeTransform->setChecked(true);
-	
+	cbSwitchModifier->setChecked(DkSettings::SynchronizeSettings::switchModifier);
+
 	enableNetworkCheckBoxChanged(0);
 }
 
@@ -993,10 +1003,14 @@ void DkSynchronizeSettingsWidget::createLayout() {
 	buttonGroup->addButton(cbAllowPosition);
 	buttonGroup->addButton(cbAllowTransformation);
 
+
+	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"));
+
 	gbNetworkSettingsLayout->addWidget(cbEnableNetwork);
 	gbNetworkSettingsLayout->addWidget(networkSettings);
 	vboxLayout->addWidget(gbSyncSettings);
 	vboxLayout->addWidget(gbNetworkSettings);
+	vboxLayout->addWidget(cbSwitchModifier);
 	vboxLayout->addStretch();
 }
 
@@ -1007,6 +1021,11 @@ void DkSynchronizeSettingsWidget::writeSettings() {
 	DkSettings::SynchronizeSettings::allowPosition = cbAllowPosition->isChecked();
 	DkSettings::SynchronizeSettings::allowTransformation = cbAllowTransformation->isChecked();
 	DkSettings::SynchronizeSettings::syncAbsoluteTransform = rbSyncAbsoluteTransform->isChecked();
+	DkSettings::SynchronizeSettings::switchModifier = cbSwitchModifier->isChecked();
+	if (DkSettings::SynchronizeSettings::switchModifier) {
+		DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
+		DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
+	}
 }
 
 void DkSynchronizeSettingsWidget::enableNetworkCheckBoxChanged(int state) {
