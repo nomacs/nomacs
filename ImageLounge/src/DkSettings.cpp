@@ -47,8 +47,15 @@ bool DkSettings::GlobalSettings::useTmpPath = false;
 QString DkSettings::GlobalSettings::tmpPath = QString();
 QString DkSettings::GlobalSettings::language = "en";
 
-Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::AltModifier;
-Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
+#ifdef linux
+	bool DkSettings::SynchronizeSettings::switchModifier = true;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
+#else
+	bool DkSettings::SynchronizeSettings::switchModifier = false;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::AltModifier;
+	Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::ControlModifier;
+#endif
 
 // open with settings
 QString DkSettings::GlobalSettings::defaultAppPath = QString();
@@ -120,7 +127,7 @@ bool DkSettings::SynchronizeSettings::allowImage = true;
 bool DkSettings::SynchronizeSettings::updateDialogShown= false;
 QDate DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970 , 1, 1);
 bool DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
-bool DkSettings::SynchronizeSettings::switchModifier = false;
+
 
 void DkSettings::load() {
 	
