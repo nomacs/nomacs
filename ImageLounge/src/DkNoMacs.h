@@ -252,6 +252,9 @@ enum fileIcons {
 	icon_file_next,
 	icon_file_dir,
 	icon_file_open,
+	icon_file_open_large,
+	icon_file_dir_large,
+
 	icon_file_save,
 
 	icon_file_end,	// nothing beyond this point
@@ -260,6 +263,8 @@ enum fileIcons {
 enum editIcons {
 	icon_edit_rotate_cw,
 	icon_edit_rotate_ccw,
+	icon_edit_crop,
+	icon_edit_resize,
 
 	icon_edit_end,	// nothing beyond this point
 };

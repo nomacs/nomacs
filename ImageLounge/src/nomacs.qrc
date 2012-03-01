@@ -2,6 +2,8 @@
     <qresource prefix="/nomacs">
         <file>img/next.png</file>
         <file>img/previous.png</file>
+        <file>img/crop.png</file>
+        <file>img/resize.png</file>
         <file>img/rotate-cc.png</file>
         <file>img/rotate-cw.png</file>
         <file>img/lena.jpg</file>
@@ -22,9 +24,11 @@
         <file>img/star-dark.png</file>
         <file>img/star-white.png</file>
         <file>img/dir.png</file>
+        <file>img/dir-large.png</file>
         <file>img/rotating-cursor.png</file>
         <file>img/save.png</file>
         <file>img/open.png</file>
+        <file>img/open-large.png</file>
         <file>img/thumbs-move.png</file>
         <file>img/gps-globe.png</file>
         <file>img/lock.png</file>

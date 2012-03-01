@@ -371,7 +371,7 @@ public:
 	virtual ~DkViewPortFrameless();
 
 	void release();
-	void addStartActions(QAction *startAction);
+	void addStartActions(QAction *startAction, QIcon *startIcon = 0);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	virtual void setMainGeometry(const QRect &geometry) {
 		mainScreen = geometry;
@@ -397,6 +397,7 @@ protected:
 
 	// variables
 	QVector<QAction*> startActions;
+	QVector<QIcon*> startIcons;
 	QVector<QRectF> startActionsRects;
 	QVector<QPixmap> startActionsIcons;
 	QRect mainScreen;

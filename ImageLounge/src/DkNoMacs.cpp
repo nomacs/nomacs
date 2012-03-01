@@ -224,14 +224,18 @@ void DkNoMacs::createToolbar() {
 	toolbar->addAction(fileActions[menu_file_next]);
 	toolbar->addSeparator();
 
-	toolbar->addAction(fileActions[menu_file_open_dir]);
 	toolbar->addAction(fileActions[menu_file_open]);
+	toolbar->addAction(fileActions[menu_file_open_dir]);
 	toolbar->addAction(fileActions[menu_file_save]);
 	toolbar->addSeparator();
 
 	// edit
 	toolbar->addAction(editActions[menu_edit_rotate_ccw]);
 	toolbar->addAction(editActions[menu_edit_rotate_cw]);
+	toolbar->addSeparator();
+
+	toolbar->addAction(editActions[menu_edit_crop]);
+	toolbar->addAction(editActions[menu_edit_transfrom]);
 	toolbar->addSeparator();
 
 	// view
@@ -264,12 +268,16 @@ void DkNoMacs::createIcons() {
 	fileIcons[icon_file_dir] = ICON("document-open-folder", ":/nomacs/img/dir.png");
 	fileIcons[icon_file_open] = ICON("document-open", ":/nomacs/img/open.png");
 	fileIcons[icon_file_save] = ICON("document-save", ":/nomacs/img/save.png");
+	fileIcons[icon_file_open_large] = ICON("document-open-large", ":/nomacs/img/open-large.png");
+	fileIcons[icon_file_dir_large] = ICON("document-open-folder-large", ":/nomacs/img/dir-large.png");
 	fileIcons[icon_file_prev] = ICON("go-previous", ":/nomacs/img/previous.png");
 	fileIcons[icon_file_next] = ICON("go-next", ":/nomacs/img/next.png");
 
 	editIcons.resize(icon_edit_end);
 	editIcons[icon_edit_rotate_cw] = ICON("object-rotate-right", ":/nomacs/img/rotate-cw.png");
 	editIcons[icon_edit_rotate_ccw] = ICON("object-rotate-left", ":/nomacs/img/rotate-cc.png");
+	editIcons[icon_edit_crop] = ICON("object-edit-crop", ":/nomacs/img/crop.png");
+	editIcons[icon_edit_resize] = ICON("object-edit-resize", ":/nomacs/img/resize.png");
 
 	viewIcons.resize(icon_view_end);
 	viewIcons[icon_view_fullscreen] = ICON("view-fullscreen", ":/nomacs/img/fullscreen.png");
@@ -484,12 +492,12 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_paste]->setStatusTip(tr("paste image"));
 	connect(editActions[menu_edit_paste], SIGNAL(triggered()), this, SLOT(pasteImage()));
 
-	editActions[menu_edit_transfrom] = new QAction(tr("R&esize Image"), this);
+	editActions[menu_edit_transfrom] = new QAction(editIcons[icon_edit_resize], tr("R&esize Image"), this);
 	editActions[menu_edit_transfrom]->setShortcut(shortcut_transform);
 	editActions[menu_edit_transfrom]->setStatusTip(tr("resize the current image"));
 	connect(editActions[menu_edit_transfrom], SIGNAL(triggered()), this, SLOT(resizeImage()));
 
-	editActions[menu_edit_crop] = new QAction(tr("Cr&op Image"), this);
+	editActions[menu_edit_crop] = new QAction(editIcons[icon_edit_crop], tr("Cr&op Image"), this);
 	editActions[menu_edit_crop]->setShortcut(shortcut_crop);
 	editActions[menu_edit_crop]->setStatusTip(tr("cut the current image"));
 	editActions[menu_edit_crop]->setCheckable(true);
@@ -2151,8 +2159,8 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		menu->hide();
 		show();
 		
-		vp->addStartActions(fileActions[menu_file_open]);
-		vp->addStartActions(fileActions[menu_file_open_dir]);
+		vp->addStartActions(fileActions[menu_file_open], &fileIcons[icon_file_open_large]);
+		vp->addStartActions(fileActions[menu_file_open_dir], &fileIcons[icon_file_dir_large]);
 
 		disconnect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
 		viewActions[menu_view_frameless]->setChecked(true);

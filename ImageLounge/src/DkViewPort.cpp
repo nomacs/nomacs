@@ -1819,9 +1819,10 @@ void DkViewPortFrameless::release() {
 	DkViewPort::release();
 }
 
-void DkViewPortFrameless::addStartActions(QAction* startAction) {
+void DkViewPortFrameless::addStartActions(QAction* startAction, QIcon* startIcon) {
 
 	startActions.append(startAction);
+	startIcons.append(startIcon);
 }
 
 void DkViewPortFrameless::setImage(QImage newImg) {
@@ -1963,7 +1964,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 		for (int idx = 0; idx < startActions.size(); idx++) {
 
 			QRectF iconRect = QRectF(offset, iconSize);
-			QPixmap ci = startActions[idx]->icon().pixmap(iconSize);
+			QPixmap ci = startIcons[idx] ? startIcons[idx]->pixmap(iconSize) : startActions[idx]->icon().pixmap(iconSize);
 			startActionsRects.push_back(iconRect);
 			startActionsIcons.push_back(ci);
 
@@ -1973,12 +1974,41 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 
 	// draw start actions
 	for (int idx = 0; idx < startActions.size(); idx++) {
-		painter->drawPixmap(startActionsRects[idx], startActionsIcons[idx], QRect(QPoint(), startActionsIcons[idx].size()));
+		
+		if (startIcons[idx])
+			painter->drawPixmap(startActionsRects[idx], startActionsIcons[idx], QRect(QPoint(), startActionsIcons[idx].size()));
+		else
+			painter->drawPixmap(startActionsRects[idx], startActionsIcons[idx], QRect(QPoint(), startActionsIcons[idx].size()));
+		
 		QRectF tmpRect = startActionsRects[idx];
 		QString text = startActions[idx]->text().replace("&", "");
 		tmpRect.moveTop(tmpRect.top()+tmpRect.height()+10);
 		painter->drawText(tmpRect, text);
 	}
+}
+
+void DkViewPortFrameless::drawFrame(QPainter* painter) {
+
+	// TODO: replace hasAlphaChannel with has alphaBorder
+	if (!imgQt.isNull() && imgQt.hasAlphaChannel())
+		return;
+
+	painter->setBrush(QColor(255, 255, 255, 200));
+	painter->setPen(QColor(100, 100, 100, 255));
+
+	QRectF frameRect;
+
+	float fs = qMin(imgViewRect.width(), imgViewRect.height())*0.1f;
+
+	// looks pretty bad if the frame is too small
+	if (fs < 4)
+		return;
+
+	frameRect = imgViewRect;
+	frameRect.setSize(frameRect.size() + QSize(fs, fs));
+	frameRect.moveCenter(imgViewRect.center());
+
+	painter->drawRect(frameRect);
 }
 
 void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
@@ -2012,30 +2042,6 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
 	//DkViewPort::mouseReleaseEvent(event);
 }
 
-
-void DkViewPortFrameless::drawFrame(QPainter* painter) {
-
-	// TODO: replace hasAlphaChannel with has alphaBorder
-	if (!imgQt.isNull() && imgQt.hasAlphaChannel())
-		return;
-
-	painter->setBrush(QColor(255, 255, 255, 200));
-	painter->setPen(QColor(100, 100, 100, 255));
-
-	QRectF frameRect;
-
-	float fs = qMin(imgViewRect.width(), imgViewRect.height())*0.1f;
-		
-	// looks pretty bad if the frame is too small
-	if (fs < 4)
-		return;
-
-	frameRect = imgViewRect;
-	frameRect.setSize(frameRect.size() + QSize(fs, fs));
-	frameRect.moveCenter(imgViewRect.center());
-
-	painter->drawRect(frameRect);
-}
 
 void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	
