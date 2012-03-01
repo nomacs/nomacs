@@ -1012,6 +1012,7 @@ void DkSynchronizeSettingsWidget::createLayout() {
 
 
 	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"));
+	cbSwitchModifier->setChecked(DkSettings::SynchronizeSettings::switchModifier);
 
 	gbNetworkSettingsLayout->addWidget(cbEnableNetwork);
 	gbNetworkSettingsLayout->addWidget(networkSettings);
