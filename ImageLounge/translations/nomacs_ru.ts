@@ -12,13 +12,13 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/DkImage.cpp" line="2068"/>
+        <location filename="../src/DkImage.cpp" line="2063"/>
         <source>could not read exif data
 </source>
         <translation>невозможно прочитать exif данные</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2072"/>
+        <location filename="../src/DkImage.cpp" line="2067"/>
         <source>wrong rotation parameter
 </source>
         <translation>неверный параметр вращения</translation>
@@ -35,136 +35,151 @@
 <context>
     <name>nmc::DkDisplaySettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="709"/>
+        <location filename="../src/DkSettings.cpp" line="730"/>
         <source>Display Settings</source>
         <translation>Настройка дисплея</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="716"/>
+        <location filename="../src/DkSettings.cpp" line="737"/>
         <source>Invert Zoom</source>
         <translation>Обратить увеличение масштаба</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="717"/>
+        <location filename="../src/DkSettings.cpp" line="738"/>
         <source>Keep Zoom</source>
         <translation>Сохранить увеличение</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="725"/>
+        <location filename="../src/DkSettings.cpp" line="746"/>
         <source>Highlight Color:</source>
-        <translation>Выделите цвет:</translation>
+        <translation>Цвет выделения:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="728"/>
+        <location filename="../src/DkSettings.cpp" line="749"/>
         <source>Reset</source>
         <translation>Сброс</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="742"/>
+        <location filename="../src/DkSettings.cpp" line="763"/>
         <source>Stop interpolating at:</source>
         <translation>Остановить интерполяцию на:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="742"/>
+        <location filename="../src/DkSettings.cpp" line="763"/>
         <source>% zoom level</source>
         <translation>% уровень увеличения</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="744"/>
+        <location filename="../src/DkSettings.cpp" line="765"/>
         <source>show Menu</source>
         <translation>Показать меню</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="745"/>
+        <location filename="../src/DkSettings.cpp" line="766"/>
         <source>show Toolbar</source>
         <translation>Показать панель инструментов</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="746"/>
+        <location filename="../src/DkSettings.cpp" line="767"/>
         <source>show Statusbar</source>
         <translation>Показать панель состояния</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="748"/>
+        <location filename="../src/DkSettings.cpp" line="769"/>
         <source>Thumbnails</source>
         <translation>Миниатюры</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="752"/>
+        <location filename="../src/DkSettings.cpp" line="772"/>
         <source>maximal size:</source>
-        <translation>максимальный размер:</translation>
+        <translation>Максимальный размер:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="752"/>
+        <location filename="../src/DkSettings.cpp" line="772"/>
         <source>pixel</source>
         <translation>пиксель</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="755"/>
+        <location filename="../src/DkSettings.cpp" line="775"/>
         <source>save Thumbnails</source>
-        <translation>сохранить Миниатюры</translation>
+        <translation>Сохранить миниатюры</translation>
+    </message>
+    <message>
+        <location filename="../src/DkSettings.cpp" line="776"/>
+        <source>saves thumbnails to images (EXPERIMENTAL)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>nmc::DkGlobalSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="507"/>
+        <location filename="../src/DkSettings.cpp" line="519"/>
         <source>Global Settings</source>
         <translation>Общие настройки</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="512"/>
+        <location filename="../src/DkSettings.cpp" line="524"/>
         <source>Skip Images:</source>
-        <translation>Пропустить изображения:</translation>
+        <translation>Пропустить изображений:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="512"/>
+        <location filename="../src/DkSettings.cpp" line="524"/>
         <source>on PgUp and PgDown</source>
         <translation>на PgUp и PgDown</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="518"/>
+        <location filename="../src/DkSettings.cpp" line="530"/>
         <source>Wrap Images</source>
         <translation>Перенос изображения</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="528"/>
+        <location filename="../src/DkSettings.cpp" line="541"/>
         <source>choose language:</source>
         <translation>Выберите язык:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="550"/>
+        <location filename="../src/DkSettings.cpp" line="563"/>
         <source>English</source>
         <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
         <translation>Русский</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="565"/>
+        <location filename="../src/DkSettings.cpp" line="575"/>
+        <source>translate nomacs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkSettings.cpp" line="576"/>
+        <source>if you want to help us and translate nomacs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkSettings.cpp" line="586"/>
         <source>&amp;Open With</source>
         <translation>&amp;Открыть с помощью</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="571"/>
+        <location filename="../src/DkSettings.cpp" line="592"/>
         <source>Drag &amp;&amp; Drop</source>
         <translation>Drag &amp;&amp; Drop</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="578"/>
+        <location filename="../src/DkSettings.cpp" line="599"/>
         <source>use temporary folder</source>
-        <translation>использовать временную папку</translation>
+        <translation>Использовать временную папку</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="583"/>
+        <location filename="../src/DkSettings.cpp" line="604"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="599"/>
+        <location filename="../src/DkSettings.cpp" line="620"/>
         <source>Apply default settings</source>
         <translation>Применить настройки по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="642"/>
+        <location filename="../src/DkSettings.cpp" line="663"/>
         <source>Open an Image Directory</source>
         <translation>Открыть каталог изображения</translation>
     </message>
@@ -192,79 +207,83 @@
         <translation>Вы достигли конца</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="332"/>
+        <location filename="../src/DkImage.cpp" line="331"/>
         <source>Sorry, the file: %1 does not exist... </source>
         <translation>Извените, файл: %1 не существует... </translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="340"/>
+        <location filename="../src/DkImage.cpp" line="339"/>
         <source>Sorry, you are not allowed to read: %1</source>
         <translation>Извените, вы не можете прочесть: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="358"/>
-        <location filename="../src/DkImage.cpp" line="374"/>
+        <location filename="../src/DkImage.cpp" line="357"/>
+        <location filename="../src/DkImage.cpp" line="373"/>
         <source>loading...</source>
         <translation>загрузка...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="420"/>
+        <location filename="../src/DkImage.cpp" line="413"/>
         <source>Sorry, I could not load: %1</source>
         <translation>Извените, я не могу загрузить: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="845"/>
+        <location filename="../src/DkImage.cpp" line="838"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
         <translation>Я не могу сохранить пустой файл, извените...
 </translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="850"/>
+        <location filename="../src/DkImage.cpp" line="843"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
         <translation>Извените, каталог: %1  не существует
 </translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="855"/>
-        <location filename="../src/DkImage.cpp" line="932"/>
+        <location filename="../src/DkImage.cpp" line="848"/>
+        <location filename="../src/DkImage.cpp" line="925"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
         <translation>Извените, я не могу записать в файл: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="886"/>
-        <location filename="../src/DkImage.cpp" line="894"/>
-        <location filename="../src/DkImage.cpp" line="953"/>
-        <location filename="../src/DkImage.cpp" line="956"/>
-        <location filename="../src/DkImage.cpp" line="1083"/>
-        <location filename="../src/DkImage.cpp" line="1085"/>
-        <location filename="../src/DkImage.cpp" line="1093"/>
+        <location filename="../src/DkImage.cpp" line="879"/>
+        <location filename="../src/DkImage.cpp" line="887"/>
+        <location filename="../src/DkImage.cpp" line="946"/>
+        <location filename="../src/DkImage.cpp" line="949"/>
+        <location filename="../src/DkImage.cpp" line="1078"/>
+        <location filename="../src/DkImage.cpp" line="1080"/>
+        <location filename="../src/DkImage.cpp" line="1088"/>
         <source>saving...</source>
         <translation>сохраняется...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="993"/>
-        <source>Sorry, I destroyed your file...</source>
-        <translation>Извените, я уничтожил вашь файл...</translation>
+        <location filename="../src/DkImage.cpp" line="988"/>
+        <location filename="../src/DkImage.cpp" line="1099"/>
+        <source>Sorry, I could not restore: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1052"/>
+        <source>Sorry, I destroyed your file...</source>
+        <translation type="obsolete">Извените, я уничтожил вашь файл...</translation>
+    </message>
+    <message>
+        <location filename="../src/DkImage.cpp" line="1047"/>
         <source>%1 deleted...</source>
         <translation>%1 удалено...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1054"/>
+        <location filename="../src/DkImage.cpp" line="1049"/>
         <source>Sorry, I could not delete: %1</source>
         <translation>Извените, я не смог удалить: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1103"/>
         <source>Sorry, I could not write to: %1</source>
-        <translation>Извените, я не смог записать в: %1</translation>
+        <translation type="obsolete">Извените, я не смог записать в: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1301"/>
+        <location filename="../src/DkImage.cpp" line="1295"/>
         <source>%1 
  does not contain any image</source>
         <translation>%1 
@@ -274,32 +293,32 @@
 <context>
     <name>nmc::DkJpgDialog</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1568"/>
+        <location filename="../src/DkWidgets.cpp" line="1572"/>
         <source>&amp;Ok</source>
         <translation>&amp;Принять</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1570"/>
+        <location filename="../src/DkWidgets.cpp" line="1574"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1582"/>
+        <location filename="../src/DkWidgets.cpp" line="1586"/>
         <source>Compression</source>
         <translation>Сжатие</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1613"/>
+        <location filename="../src/DkWidgets.cpp" line="1617"/>
         <source>Original</source>
         <translation>Оригинал</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1615"/>
+        <location filename="../src/DkWidgets.cpp" line="1619"/>
         <source>New</source>
         <translation>Новый</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1629"/>
+        <location filename="../src/DkWidgets.cpp" line="1633"/>
         <source>Background Color</source>
         <translation>Цвет заднего фона</translation>
     </message>
@@ -307,324 +326,324 @@
 <context>
     <name>nmc::DkMetaData</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="85"/>
+        <location filename="../src/DkSettings.cpp" line="88"/>
         <source>Image Size</source>
-        <translation>Размер рисунка</translation>
+        <translation>Размер изображения</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="86"/>
+        <location filename="../src/DkSettings.cpp" line="89"/>
         <source>Orientation</source>
         <translation>Ориентация</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="87"/>
+        <location filename="../src/DkSettings.cpp" line="90"/>
         <source>Make</source>
         <translation>Модель</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="88"/>
+        <location filename="../src/DkSettings.cpp" line="91"/>
         <source>Model</source>
         <translation>Марка</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="89"/>
+        <location filename="../src/DkSettings.cpp" line="92"/>
         <source>Aperture Value</source>
         <translation>Значение диафрагмы</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="90"/>
+        <location filename="../src/DkSettings.cpp" line="93"/>
         <source>Flash</source>
         <translation>Вспышка</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="91"/>
+        <location filename="../src/DkSettings.cpp" line="94"/>
         <source>Focal Length</source>
         <translation>Фокусное расстояние</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="92"/>
+        <location filename="../src/DkSettings.cpp" line="95"/>
         <source>Exposure Mode</source>
         <translation>Режим экспозиции</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="93"/>
+        <location filename="../src/DkSettings.cpp" line="96"/>
         <source>Exposure Time</source>
         <translation>Время экспозиции</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="96"/>
+        <location filename="../src/DkSettings.cpp" line="99"/>
         <source>Rating</source>
         <translation>Отценка</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="97"/>
+        <location filename="../src/DkSettings.cpp" line="100"/>
         <source>User Comment</source>
         <translation>Комментарий пользователя</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="98"/>
+        <location filename="../src/DkSettings.cpp" line="101"/>
         <source>Date Time</source>
         <translation>Дата Время</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="99"/>
+        <location filename="../src/DkSettings.cpp" line="102"/>
         <source>Date Time Original</source>
         <translation>Дата Время Оригинала</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="100"/>
+        <location filename="../src/DkSettings.cpp" line="103"/>
         <source>Image Description</source>
         <translation>Описание Рисунка</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="101"/>
+        <location filename="../src/DkSettings.cpp" line="104"/>
         <source>Creator</source>
         <translation>Автор</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="102"/>
+        <location filename="../src/DkSettings.cpp" line="105"/>
         <source>Creator Title</source>
         <translation>Подпись создателя</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="103"/>
+        <location filename="../src/DkSettings.cpp" line="106"/>
         <source>City</source>
         <translation>Город</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="104"/>
+        <location filename="../src/DkSettings.cpp" line="107"/>
         <source>Country</source>
         <translation>Страна</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="105"/>
+        <location filename="../src/DkSettings.cpp" line="108"/>
         <source>Headline</source>
         <translation>Заголовок</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="106"/>
+        <location filename="../src/DkSettings.cpp" line="109"/>
         <source>Caption</source>
         <translation>Правообладатель</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="107"/>
+        <location filename="../src/DkSettings.cpp" line="110"/>
         <source>Copyright</source>
         <translation>Ключивые слова</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="108"/>
+        <location filename="../src/DkSettings.cpp" line="111"/>
         <source>Keywords</source>
         <translation>Путь</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="109"/>
+        <location filename="../src/DkSettings.cpp" line="112"/>
         <source>Path</source>
         <translation>Размер файл</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="110"/>
+        <location filename="../src/DkSettings.cpp" line="113"/>
         <source>File Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер файла</translation>
     </message>
 </context>
 <context>
     <name>nmc::DkMetaDataInfo</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="2376"/>
-        <source>not defined</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DkWidgets.cpp" line="2377"/>
-        <source>manual</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DkWidgets.cpp" line="2378"/>
-        <source>normal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DkWidgets.cpp" line="2379"/>
-        <source>aperture priority</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/DkWidgets.cpp" line="2380"/>
-        <source>shutter priority</source>
-        <translation type="unfinished"></translation>
+        <source>not defined</source>
+        <translation>не определено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2381"/>
-        <source>program creative</source>
-        <translation type="unfinished"></translation>
+        <source>manual</source>
+        <translation>ручной</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2382"/>
-        <source>high-speed program</source>
-        <translation type="unfinished"></translation>
+        <source>normal</source>
+        <translation>нормальный</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2383"/>
-        <source>portrait mode</source>
-        <translation type="unfinished"></translation>
+        <source>aperture priority</source>
+        <translation>приоритет диафрагмы</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2384"/>
-        <source>landscape mode</source>
-        <translation type="unfinished"></translation>
+        <source>shutter priority</source>
+        <translation>приоритет выдержки</translation>
+    </message>
+    <message>
+        <location filename="../src/DkWidgets.cpp" line="2385"/>
+        <source>program creative</source>
+        <translation>творческое представление</translation>
+    </message>
+    <message>
+        <location filename="../src/DkWidgets.cpp" line="2386"/>
+        <source>high-speed program</source>
+        <translation>высокоскоростная программа</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2387"/>
-        <source>No Flash</source>
-        <translation type="unfinished"></translation>
+        <source>portrait mode</source>
+        <translation>портретный режим</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2388"/>
-        <source>Fired</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DkWidgets.cpp" line="2389"/>
-        <source>Fired, Return not detected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DkWidgets.cpp" line="2390"/>
-        <source>Fired, Return detected</source>
-        <translation type="unfinished"></translation>
+        <source>landscape mode</source>
+        <translation>ландшафтный режим</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2391"/>
-        <source>On, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <source>No Flash</source>
+        <translation>Без вспышки</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2392"/>
-        <source>On, Fired</source>
-        <translation type="unfinished"></translation>
+        <source>Fired</source>
+        <translation>Засвечено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2393"/>
-        <source>On, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <source>Fired, Return not detected</source>
+        <translation>Засвечено, отражение не обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2394"/>
-        <source>On, Return detected</source>
-        <translation type="unfinished"></translation>
+        <source>Fired, Return detected</source>
+        <translation>Засвечено, отражение обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2395"/>
-        <source>Off, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <source>On, Did not fire</source>
+        <translation>Включено, не засвечено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2396"/>
-        <source>Off, Did not fire, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <source>On, Fired</source>
+        <translation>Включено, засвечено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2397"/>
-        <source>Auto, Did not fire</source>
-        <translation type="unfinished"></translation>
+        <source>On, Return not detected</source>
+        <translation>Включено, отражение не обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2398"/>
-        <source>Auto, Fired</source>
-        <translation type="unfinished"></translation>
+        <source>On, Return detected</source>
+        <translation>Включено, отражение обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2399"/>
-        <source>Auto, Fired, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <source>Off, Did not fire</source>
+        <translation>Отключено, не засвечено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2400"/>
-        <source>Auto, Fired, Return detected</source>
-        <translation type="unfinished"></translation>
+        <source>Off, Did not fire, Return not detected</source>
+        <translation>Отключено, не засвечено, отражение не обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2401"/>
-        <source>No flash function</source>
-        <translation type="unfinished"></translation>
+        <source>Auto, Did not fire</source>
+        <translation>Авто, не засвечено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2402"/>
-        <source>Off, No flash function</source>
-        <translation type="unfinished"></translation>
+        <source>Auto, Fired</source>
+        <translation>Авто, засвечено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2403"/>
-        <source>Fired, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <source>Auto, Fired, Return not detected</source>
+        <translation>Авто, засвечено, отражение не обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2404"/>
-        <source>Fired, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <source>Auto, Fired, Return detected</source>
+        <translation>Авто, засвечено, отражение обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2405"/>
-        <source>Fired, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <source>No flash function</source>
+        <translation>Вспышка отключена</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2406"/>
-        <source>On, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <source>Off, No flash function</source>
+        <translation>Отключено, вспышка отключена</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2407"/>
-        <source>On, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <source>Fired, Red-eye reduction</source>
+        <translation>Засвечено, уменьшение эффекта красных глаз</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2408"/>
-        <source>On, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <source>Fired, Red-eye reduction, Return not detected</source>
+        <translation>Засвечено, уменьшение эффекта красных глаз, отражение не обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2409"/>
-        <source>Off, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <source>Fired, Red-eye reduction, Return detected</source>
+        <translation>Засвечено, уменьшение эффекта красных глаз, отражение обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2410"/>
-        <source>Auto, Did not fire, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <source>On, Red-eye reduction</source>
+        <translation>Включено, уменьшить эффект крассных глаз</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2411"/>
-        <source>Auto, Fired, Red-eye reduction</source>
-        <translation type="unfinished"></translation>
+        <source>On, Red-eye reduction, Return not detected</source>
+        <translation>Включено, уменьшить эффект крассных глаз, отражение не обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2412"/>
-        <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-        <translation type="unfinished"></translation>
+        <source>On, Red-eye reduction, Return detected</source>
+        <translation>Включено, уменьшить эффект крассных глаз, отражение обнаружено</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2413"/>
-        <source>Auto, Fired, Red-eye reduction, Return detected</source>
-        <translation type="unfinished"></translation>
+        <source>Off, Red-eye reduction</source>
+        <translation>Отключено, уменьшить эффект крассных глаз</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="2529"/>
-        <location filename="../src/DkWidgets.cpp" line="2563"/>
+        <location filename="../src/DkWidgets.cpp" line="2414"/>
+        <source>Auto, Did not fire, Red-eye reduction</source>
+        <translation>Авто, не засвечено, уменьшить эффект крассных глаз</translation>
+    </message>
+    <message>
+        <location filename="../src/DkWidgets.cpp" line="2415"/>
+        <source>Auto, Fired, Red-eye reduction</source>
+        <translation>Авто, засвечено, уменьшить эффект крассных глаз</translation>
+    </message>
+    <message>
+        <location filename="../src/DkWidgets.cpp" line="2416"/>
+        <source>Auto, Fired, Red-eye reduction, Return not detected</source>
+        <translation>Авто, засвечено, уменьшить эффект крассных глаз, отражение не обнаружено</translation>
+    </message>
+    <message>
+        <location filename="../src/DkWidgets.cpp" line="2417"/>
+        <source>Auto, Fired, Red-eye reduction, Return detected</source>
+        <translation>Авто, засвечено, уменьшить эффект крассных глаз, отражение обнаружено</translation>
+    </message>
+    <message>
+        <location filename="../src/DkWidgets.cpp" line="2533"/>
+        <location filename="../src/DkWidgets.cpp" line="2567"/>
         <source>could not parse GPS Data</source>
-        <translation type="unfinished"></translation>
+        <translation>не удалось проанализировать данные GPS</translation>
     </message>
 </context>
 <context>
     <name>nmc::DkMetaDataSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1064"/>
+        <location filename="../src/DkSettings.cpp" line="1094"/>
         <source>Camera Data</source>
         <translation>Данные камеры</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1065"/>
+        <location filename="../src/DkSettings.cpp" line="1095"/>
         <source>Description</source>
         <translation>Описание</translation>
     </message>
@@ -1067,7 +1086,7 @@
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1479"/>
         <source>Do you want to permanently delete %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы хотите безвозвратно удалить %1</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="629"/>
@@ -1077,12 +1096,12 @@
     <message>
         <location filename="../src/DkNoMacs.cpp" line="529"/>
         <source>Show &amp;Pseudocolor Function</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать функцию псевдо&amp;цвета</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="531"/>
         <source>Show Pseudocolor Function</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать функцию псевдоцвета</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="631"/>
@@ -1186,73 +1205,73 @@
 <context>
     <name>nmc::DkOpenWithDialog</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3112"/>
+        <location filename="../src/DkWidgets.cpp" line="3116"/>
         <source>&amp;Photoshop</source>
         <translation>&amp;Photoshop</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3112"/>
+        <location filename="../src/DkWidgets.cpp" line="3116"/>
         <source>Pi&amp;casa</source>
         <translation>Pi&amp;casa</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3112"/>
+        <location filename="../src/DkWidgets.cpp" line="3116"/>
         <source>Picasa Ph&amp;oto Viewer</source>
         <translation>Picasa фо&amp;то просмотрщик</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3112"/>
+        <location filename="../src/DkWidgets.cpp" line="3116"/>
         <source>&amp;IrfanView</source>
         <translation>&amp;IrfanView</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3121"/>
+        <location filename="../src/DkWidgets.cpp" line="3125"/>
         <source>Open With...</source>
         <translation>Открыть с помощью...</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3131"/>
+        <location filename="../src/DkWidgets.cpp" line="3135"/>
         <source>3rd Party Software</source>
         <translation>Другое программное обеспечение</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3172"/>
-        <location filename="../src/DkWidgets.cpp" line="3368"/>
+        <location filename="../src/DkWidgets.cpp" line="3176"/>
+        <location filename="../src/DkWidgets.cpp" line="3372"/>
         <source>Choose Application</source>
         <translation>Выбрать приложение</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3191"/>
+        <location filename="../src/DkWidgets.cpp" line="3195"/>
         <source>Browse...</source>
         <translation>Обзор...</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3229"/>
+        <location filename="../src/DkWidgets.cpp" line="3233"/>
         <source>Never show this dialog again</source>
         <translation>Никогда не показывать этот диалог</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3232"/>
+        <location filename="../src/DkWidgets.cpp" line="3236"/>
         <source>Do not be scared, you can always open this window in Preferences -&gt; Global Settings</source>
         <translation>Не пугайтесь, вы всегда сможете открыть это окна в Настройках -&gt; Общие настройки</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3238"/>
+        <location filename="../src/DkWidgets.cpp" line="3242"/>
         <source>&amp;Ok</source>
         <translation>&amp;Применить</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3240"/>
+        <location filename="../src/DkWidgets.cpp" line="3244"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3281"/>
+        <location filename="../src/DkWidgets.cpp" line="3285"/>
         <source>Executable Files (*.exe);;</source>
         <translation>Выполняемый файл (*.exe);;</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="3288"/>
+        <location filename="../src/DkWidgets.cpp" line="3292"/>
         <source>Open Application</source>
         <translation>Открыть приложение</translation>
     </message>
@@ -1260,18 +1279,18 @@
 <context>
     <name>nmc::DkPlayer</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1404"/>
-        <location filename="../src/DkWidgets.cpp" line="1415"/>
+        <location filename="../src/DkWidgets.cpp" line="1408"/>
+        <location filename="../src/DkWidgets.cpp" line="1419"/>
         <source>play</source>
         <translation>проиграть</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1409"/>
+        <location filename="../src/DkWidgets.cpp" line="1413"/>
         <source>previous</source>
         <translation>предыдущий</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1422"/>
+        <location filename="../src/DkWidgets.cpp" line="1426"/>
         <source>next</source>
         <translation>следующий</translation>
     </message>
@@ -1279,27 +1298,27 @@
 <context>
     <name>nmc::DkRatingLabel</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1172"/>
+        <location filename="../src/DkWidgets.cpp" line="1176"/>
         <source>one star</source>
         <translation>одна звезда</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1176"/>
+        <location filename="../src/DkWidgets.cpp" line="1180"/>
         <source>two stars</source>
         <translation>две звезды</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1180"/>
+        <location filename="../src/DkWidgets.cpp" line="1184"/>
         <source>three star</source>
         <translation>три звезды</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1184"/>
+        <location filename="../src/DkWidgets.cpp" line="1188"/>
         <source>four star</source>
         <translation>четыре звезды</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1188"/>
+        <location filename="../src/DkWidgets.cpp" line="1192"/>
         <source>five star</source>
         <translation>пять звезд</translation>
     </message>
@@ -1307,32 +1326,32 @@
 <context>
     <name>nmc::DkRatingLabelBg</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1203"/>
+        <location filename="../src/DkWidgets.cpp" line="1207"/>
         <source>no rating</source>
         <translation>нет отценки</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1207"/>
+        <location filename="../src/DkWidgets.cpp" line="1211"/>
         <source>one star</source>
         <translation>одна звезда</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1211"/>
+        <location filename="../src/DkWidgets.cpp" line="1215"/>
         <source>two stars</source>
         <translation>две звезды</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1215"/>
+        <location filename="../src/DkWidgets.cpp" line="1219"/>
         <source>three stars</source>
         <translation>три звезды</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1219"/>
+        <location filename="../src/DkWidgets.cpp" line="1223"/>
         <source>four stars</source>
         <translation>четыре звезды</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1223"/>
+        <location filename="../src/DkWidgets.cpp" line="1227"/>
         <source>five stars</source>
         <translation>пять звезд</translation>
     </message>
@@ -1340,74 +1359,74 @@
 <context>
     <name>nmc::DkResizeDialog</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1754"/>
+        <location filename="../src/DkWidgets.cpp" line="1758"/>
         <source>&amp;Ok</source>
         <translation>&amp;Применить</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1756"/>
+        <location filename="../src/DkWidgets.cpp" line="1760"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1776"/>
+        <location filename="../src/DkWidgets.cpp" line="1780"/>
         <source>Original</source>
         <translation>Оригинал</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1778"/>
+        <location filename="../src/DkWidgets.cpp" line="1782"/>
         <source>New</source>
         <translation>Новый</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1793"/>
-        <location filename="../src/DkWidgets.cpp" line="1823"/>
+        <location filename="../src/DkWidgets.cpp" line="1797"/>
+        <location filename="../src/DkWidgets.cpp" line="1827"/>
         <source>Width: </source>
         <translation>Ширина: </translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1805"/>
-        <location filename="../src/DkWidgets.cpp" line="1837"/>
+        <location filename="../src/DkWidgets.cpp" line="1809"/>
+        <location filename="../src/DkWidgets.cpp" line="1841"/>
         <source>Height: </source>
         <translation>Высота: </translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1811"/>
+        <location filename="../src/DkWidgets.cpp" line="1815"/>
         <source>pixel</source>
         <translation>пиксель</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1862"/>
+        <location filename="../src/DkWidgets.cpp" line="1866"/>
         <source>Resolution: </source>
         <translation>Разрешение: </translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1883"/>
+        <location filename="../src/DkWidgets.cpp" line="1887"/>
         <source>Resample Image:</source>
         <translation>Повторный выбор изображения:</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1890"/>
+        <location filename="../src/DkWidgets.cpp" line="1894"/>
         <source>Nearest Neighbor</source>
         <translation>Ближайший сосед</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1891"/>
+        <location filename="../src/DkWidgets.cpp" line="1895"/>
         <source>Area (best for downscaling)</source>
         <translation>Область (лучше всего для уменьшения масштаба)</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1892"/>
+        <location filename="../src/DkWidgets.cpp" line="1896"/>
         <source>Linear</source>
         <translation>Линейный</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1893"/>
+        <location filename="../src/DkWidgets.cpp" line="1897"/>
         <source>Bicubic (4x4 pixel interpolation)</source>
         <translation>Бикубическая интерполяция (4x4 пикселя)</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1894"/>
+        <location filename="../src/DkWidgets.cpp" line="1898"/>
         <source>Lanczos (8x8 pixel interpolation)</source>
         <translation>Интерполяция Ланцоша (8x8 пикселей)</translation>
     </message>
@@ -1415,47 +1434,47 @@
 <context>
     <name>nmc::DkSettingsDialog</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="351"/>
+        <location filename="../src/DkSettings.cpp" line="363"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="367"/>
+        <location filename="../src/DkSettings.cpp" line="379"/>
         <source>Categories</source>
         <translation>Категории</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="375"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>General</source>
         <translation>Основные</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="375"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Display</source>
         <translation>Отображение</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="375"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Slideshow</source>
         <translation>Слайдшоу</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="375"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Synchronize</source>
         <translation>Синхронизация</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="375"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Exif</source>
         <translation>Exif</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="388"/>
+        <location filename="../src/DkSettings.cpp" line="400"/>
         <source>Ok</source>
         <translation>Применить</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="391"/>
+        <location filename="../src/DkSettings.cpp" line="403"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
@@ -1463,57 +1482,57 @@
 <context>
     <name>nmc::DkSlideshowSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="833"/>
+        <location filename="../src/DkSettings.cpp" line="853"/>
         <source>Slideshow Settings</source>
         <translation>Настройки слайдшоу</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="836"/>
+        <location filename="../src/DkSettings.cpp" line="856"/>
         <source>Display Time:</source>
-        <translation>Отображение времени:</translation>
+        <translation>Время отображения:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="836"/>
+        <location filename="../src/DkSettings.cpp" line="856"/>
         <source>sec</source>
-        <translation>сектор</translation>
+        <translation>секунд</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="839"/>
+        <location filename="../src/DkSettings.cpp" line="859"/>
         <source>Fullscreen Settings</source>
         <translation>Полноэкранные настройки</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="845"/>
+        <location filename="../src/DkSettings.cpp" line="865"/>
         <source>Background color:</source>
         <translation>Цвет фона:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="848"/>
+        <location filename="../src/DkSettings.cpp" line="868"/>
         <source>Reset</source>
         <translation>Сброс</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="859"/>
+        <location filename="../src/DkSettings.cpp" line="879"/>
         <source>Silent Fullscreen</source>
         <translation>Тихий полноэкранный</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="863"/>
+        <location filename="../src/DkSettings.cpp" line="883"/>
         <source>Display Information</source>
         <translation>Отображение информации</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="866"/>
+        <location filename="../src/DkSettings.cpp" line="886"/>
         <source>Image Name</source>
         <translation>Имя изображения</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="869"/>
+        <location filename="../src/DkSettings.cpp" line="889"/>
         <source>Creation Date</source>
         <translation>Дата создания</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="872"/>
+        <location filename="../src/DkSettings.cpp" line="892"/>
         <source>Rating</source>
         <translation>Отценка</translation>
     </message>
@@ -1521,54 +1540,59 @@
 <context>
     <name>nmc::DkSynchronizeSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="949"/>
+        <location filename="../src/DkSettings.cpp" line="970"/>
         <source>Synchronization</source>
         <translation>Синхронизация</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="952"/>
+        <location filename="../src/DkSettings.cpp" line="973"/>
         <source>synchronize absolute transformation</source>
         <translation>Синхронизировать абсолютную трансформацию</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="953"/>
+        <location filename="../src/DkSettings.cpp" line="974"/>
         <source>synchronize relative transformation</source>
         <translation>Синхронизировать относительную трансформацию</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="959"/>
+        <location filename="../src/DkSettings.cpp" line="980"/>
         <source>Network Synchronization</source>
         <translation>Сетевая синхронизация</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="962"/>
+        <location filename="../src/DkSettings.cpp" line="983"/>
         <source>enable network sync</source>
         <translation>разрешить сетевую синхронизацию</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="966"/>
+        <location filename="../src/DkSettings.cpp" line="987"/>
         <source>clients can:</source>
-        <translation>клиенты могут:</translation>
+        <translation>Клиенты могут:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="967"/>
+        <location filename="../src/DkSettings.cpp" line="988"/>
         <source>switch files</source>
-        <translation>переключать файлы</translation>
+        <translation>Переключать файлы</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="968"/>
+        <location filename="../src/DkSettings.cpp" line="989"/>
         <source>send new images</source>
-        <translation>отправлять новые изображения</translation>
+        <translation>Отправлять новые изображения</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="969"/>
+        <location filename="../src/DkSettings.cpp" line="990"/>
         <source>control window position</source>
-        <translation>контролировать позицию окна</translation>
+        <translation>Контролировать позицию окна</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="970"/>
+        <location filename="../src/DkSettings.cpp" line="991"/>
         <source>synchronize pan and zoom</source>
-        <translation>синхронизировать панораммирование и увеличение</translation>
+        <translation>Синхронизировать панораммирование и увеличение</translation>
+    </message>
+    <message>
+        <location filename="../src/DkSettings.cpp" line="1007"/>
+        <source>switch ALT and CTRL key</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1582,27 +1606,27 @@
 <context>
     <name>nmc::DkTifDialog</name>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1494"/>
+        <location filename="../src/DkWidgets.cpp" line="1498"/>
         <source>TIF compression</source>
         <translation>TIF сжатие</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1497"/>
+        <location filename="../src/DkWidgets.cpp" line="1501"/>
         <source>&amp;no compression</source>
         <translation>&amp;без сжатия</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1498"/>
+        <location filename="../src/DkWidgets.cpp" line="1502"/>
         <source>&amp;LZW compression (lossless)</source>
         <translation>&amp;LZW сжатие (без потерь)</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1506"/>
+        <location filename="../src/DkWidgets.cpp" line="1510"/>
         <source>&amp;Ok</source>
         <translation>&amp;Применить</translation>
     </message>
     <message>
-        <location filename="../src/DkWidgets.cpp" line="1508"/>
+        <location filename="../src/DkWidgets.cpp" line="1512"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
@@ -1618,7 +1642,7 @@
         <location filename="../src/DkTransferToolBar.cpp" line="47"/>
         <location filename="../src/DkTransferToolBar.cpp" line="198"/>
         <source>Disables the pseudocolor function</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключение функции псевдоцвета</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="53"/>
@@ -1648,12 +1672,12 @@
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="110"/>
         <source>Resets the pseudocolor function</source>
-        <translation type="unfinished"></translation>
+        <translation>Сброс функции псевдоцвета</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="200"/>
         <source>Enables the pseudocolor function</source>
-        <translation type="unfinished"></translation>
+        <translation>Включение функции псевдоцвета</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="113"/>
@@ -1699,47 +1723,47 @@
 <context>
     <name>nmc::DkViewPort</name>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1071"/>
+        <location filename="../src/DkViewPort.cpp" line="1063"/>
         <source>connected with: </source>
         <translation>соединение с: </translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1075"/>
+        <location filename="../src/DkViewPort.cpp" line="1067"/>
         <source>disconnected with: </source>
         <translation>разъединение с: </translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1445"/>
+        <location filename="../src/DkViewPort.cpp" line="1446"/>
         <source>Lena</source>
         <translation>Лена</translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1445"/>
+        <location filename="../src/DkViewPort.cpp" line="1446"/>
         <source>A remarkable woman</source>
         <translation>Замечательная женьщина</translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1455"/>
+        <location filename="../src/DkViewPort.cpp" line="1456"/>
         <source>you cannot cancel this</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1463"/>
+        <location filename="../src/DkViewPort.cpp" line="1464"/>
         <source>did you understand the brainteaser?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1465"/>
+        <location filename="../src/DkViewPort.cpp" line="1466"/>
         <source>%1 is wrong...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1735"/>
+        <location filename="../src/DkViewPort.cpp" line="1743"/>
         <source>I cannot crop an image that has 0 px, sorry.</source>
         <translation>Я не могу обрезать изображение, имеющее 0 пикселей, извините.</translation>
     </message>
     <message>
-        <location filename="../src/DkViewPort.cpp" line="1768"/>
+        <location filename="../src/DkViewPort.cpp" line="1776"/>
         <source>Print Document</source>
         <translation>Напечатать документ</translation>
     </message>
