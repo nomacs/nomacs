@@ -3179,7 +3179,7 @@ void DkOpenWithDialog::createLayout() {
 		userRadiosGroup->addButton(userRadios[idx]);
 
 		QIcon iconX = QIcon(":/nomacs/img/close.png"); 
-		userCleanButtons.append(new QPushButton);
+		userCleanButtons.append(new QPushButton(this));
 		userCleanButtons[idx]->setFlat(true);
 		//userCleanButtons[idx]->setStyleSheet("QPushButton:pressed {border:0px; margin:0px;};"); // stay flat when pressed
 		userCleanButtons[idx]->setIcon(iconX);
@@ -3187,7 +3187,7 @@ void DkOpenWithDialog::createLayout() {
 		userCleanButtons[idx]->setFixedWidth(16);
 		connect(userCleanButtons[idx], SIGNAL(clicked()), this, SLOT(softwareCleanClicked()));
 		
-		userCleanSpace.append(new QLabel);
+		userCleanSpace.append(new QLabel(this));
 		userCleanSpace[idx]->setFixedWidth(16);
 		userCleanSpace[idx]->setVisible(true);
 
