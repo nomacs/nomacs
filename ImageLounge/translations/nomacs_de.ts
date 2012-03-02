@@ -29,83 +29,83 @@
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="532"/>
         <source>Drag the slider downwards for elimination</source>
-        <translation>Zum Löschen Slider nach unten ziehen</translation>
+        <translation>Zum löschen Slider nach unten ziehen</translation>
     </message>
 </context>
 <context>
     <name>nmc::DkDisplaySettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="752"/>
+        <location filename="../src/DkSettings.cpp" line="730"/>
         <source>Display Settings</source>
         <translation>Anzeige Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="770"/>
+        <location filename="../src/DkSettings.cpp" line="737"/>
         <source>Invert Zoom</source>
         <translation>Zoom invertieren</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="771"/>
+        <location filename="../src/DkSettings.cpp" line="738"/>
         <source>Keep Zoom</source>
         <translation>Zoomstufe beibehatlen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="761"/>
+        <location filename="../src/DkSettings.cpp" line="746"/>
         <source>Highlight Color:</source>
         <translation>Farbe für Highlight:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="764"/>
+        <location filename="../src/DkSettings.cpp" line="749"/>
         <source>Reset</source>
         <translation>Zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="786"/>
+        <location filename="../src/DkSettings.cpp" line="763"/>
         <source>Stop interpolating at:</source>
         <translation>Aufhören zu Interpolieren bei:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="786"/>
+        <location filename="../src/DkSettings.cpp" line="763"/>
         <source>% zoom level</source>
         <translation>% Zoomstufe</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="788"/>
+        <location filename="../src/DkSettings.cpp" line="765"/>
         <source>show Menu</source>
-        <translation>zeige Menü</translation>
+        <translation>Menü anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="789"/>
+        <location filename="../src/DkSettings.cpp" line="766"/>
         <source>show Toolbar</source>
-        <translation>zeige Toolbar</translation>
+        <translation>Toolbar anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="790"/>
+        <location filename="../src/DkSettings.cpp" line="767"/>
         <source>show Statusbar</source>
-        <translation>zeige Statusleiste</translation>
+        <translation>Statusleiste anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="792"/>
+        <location filename="../src/DkSettings.cpp" line="769"/>
         <source>Thumbnails</source>
         <translation>Vorschaubilder</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="795"/>
+        <location filename="../src/DkSettings.cpp" line="772"/>
         <source>maximal size:</source>
         <translation>maximale Größe:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="795"/>
+        <location filename="../src/DkSettings.cpp" line="772"/>
         <source>pixel</source>
         <translation>Pixel</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="798"/>
+        <location filename="../src/DkSettings.cpp" line="775"/>
         <source>save Thumbnails</source>
         <translation>speichere Vorschaubilder</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="799"/>
+        <location filename="../src/DkSettings.cpp" line="776"/>
         <source>saves thumbnails to images (EXPERIMENTAL)</source>
         <translation>speicht Vorschaubilder (EXPERIMENTELL)</translation>
     </message>
@@ -113,71 +113,72 @@
 <context>
     <name>nmc::DkGlobalSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="541"/>
+        <location filename="../src/DkSettings.cpp" line="519"/>
         <source>Global Settings</source>
         <translation>Globale Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="546"/>
+        <location filename="../src/DkSettings.cpp" line="524"/>
         <source>Skip Images:</source>
         <translation>Überspringe Bilder:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="546"/>
+        <location filename="../src/DkSettings.cpp" line="524"/>
         <source>on PgUp and PgDown</source>
         <translation>mit Bild-Auf und Bild-Ab</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="552"/>
+        <location filename="../src/DkSettings.cpp" line="530"/>
         <source>Wrap Images</source>
         <translation>Endlosschleife</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="608"/>
+        <location filename="../src/DkSettings.cpp" line="586"/>
         <source>&amp;Open With</source>
         <translation>&amp;Öffne mit</translation>
     </message>
     <message>
+        <location filename="../src/DkSettings.cpp" line="541"/>
         <source>choose language:</source>
-        <translation type="obsolete">Sprache wählen:</translation>
+        <translation>Sprache wählen:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="585"/>
+        <location filename="../src/DkSettings.cpp" line="563"/>
         <source>English</source>
-        <extracomment>this should be the name of the language in which nomacs is translated to</extracomment>
         <translation>Deutsch</translation>
     </message>
     <message>
+        <location filename="../src/DkSettings.cpp" line="575"/>
         <source>translate nomacs</source>
-        <translation type="obsolete">nomacs übersetzen</translation>
+        <translation>nomacs übersetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="598"/>
+        <location filename="../src/DkSettings.cpp" line="576"/>
         <source>if you want to help us and translate nomacs</source>
         <translation>hilf uns nomacs zu übersetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="614"/>
+        <location filename="../src/DkSettings.cpp" line="592"/>
         <source>Drag &amp;&amp; Drop</source>
         <translation>Drag &amp;&amp; Drop</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="621"/>
+        <location filename="../src/DkSettings.cpp" line="599"/>
         <source>use temporary folder</source>
         <translation>benutze temporären Ordner</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="626"/>
+        <location filename="../src/DkSettings.cpp" line="604"/>
         <source>...</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="642"/>
+        <location filename="../src/DkSettings.cpp" line="620"/>
         <source>Apply default settings</source>
         <translation>Zurücksetzen auf Standardeinstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="685"/>
+        <location filename="../src/DkSettings.cpp" line="663"/>
         <source>Open an Image Directory</source>
         <translation>Bildverzeichnis öffnen</translation>
     </message>
@@ -194,13 +195,11 @@
     <name>nmc::DkImageLoader</name>
     <message>
         <location filename="../src/DkImage.cpp" line="218"/>
-        <location filename="../src/DkImage.cpp" line="287"/>
         <source>You have reached the beginning</source>
         <translation>Sie haben den Anfang erreicht</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="224"/>
-        <location filename="../src/DkImage.cpp" line="293"/>
         <source>You have reached the end</source>
         <translation>Sie haben das Ende erreicht</translation>
     </message>
@@ -216,7 +215,6 @@
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="357"/>
-        <location filename="../src/DkImage.cpp" line="373"/>
         <source>loading...</source>
         <translation>lädt...</translation>
     </message>
@@ -239,24 +237,16 @@
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="848"/>
-        <location filename="../src/DkImage.cpp" line="925"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
         <translation>Die Datei %1 kann nicht geschrieben werden</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="879"/>
-        <location filename="../src/DkImage.cpp" line="887"/>
-        <location filename="../src/DkImage.cpp" line="946"/>
-        <location filename="../src/DkImage.cpp" line="949"/>
-        <location filename="../src/DkImage.cpp" line="1078"/>
-        <location filename="../src/DkImage.cpp" line="1080"/>
-        <location filename="../src/DkImage.cpp" line="1088"/>
         <source>saving...</source>
         <translation>speichern...</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="988"/>
-        <location filename="../src/DkImage.cpp" line="1099"/>
         <source>Sorry, I could not restore: %1</source>
         <translation>Die Datei %1 konnte nicht wiederhergestellt werden</translation>
     </message>
@@ -314,122 +304,122 @@ enthält keine Bilder</translation>
 <context>
     <name>nmc::DkMetaData</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="95"/>
+        <location filename="../src/DkSettings.cpp" line="88"/>
         <source>Image Size</source>
         <translation>Bildgröße</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="96"/>
+        <location filename="../src/DkSettings.cpp" line="89"/>
         <source>Orientation</source>
         <translation>Orientierung</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="97"/>
+        <location filename="../src/DkSettings.cpp" line="90"/>
         <source>Make</source>
         <translation>Hersteller</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="98"/>
+        <location filename="../src/DkSettings.cpp" line="91"/>
         <source>Model</source>
         <translation>Modell</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="99"/>
+        <location filename="../src/DkSettings.cpp" line="92"/>
         <source>Aperture Value</source>
         <translation>Blende</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="100"/>
+        <location filename="../src/DkSettings.cpp" line="93"/>
         <source>Flash</source>
         <translation>Blitz</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="101"/>
+        <location filename="../src/DkSettings.cpp" line="94"/>
         <source>Focal Length</source>
         <translation>Fokale Länge</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="102"/>
+        <location filename="../src/DkSettings.cpp" line="95"/>
         <source>Exposure Mode</source>
         <translation>Belichtung</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="103"/>
+        <location filename="../src/DkSettings.cpp" line="96"/>
         <source>Exposure Time</source>
         <translation>Belichtungszeit</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="106"/>
+        <location filename="../src/DkSettings.cpp" line="99"/>
         <source>Rating</source>
         <translation>Bewertung</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="107"/>
+        <location filename="../src/DkSettings.cpp" line="100"/>
         <source>User Comment</source>
         <translation>Kommentar</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="108"/>
+        <location filename="../src/DkSettings.cpp" line="101"/>
         <source>Date Time</source>
         <translation>Datum</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="109"/>
+        <location filename="../src/DkSettings.cpp" line="102"/>
         <source>Date Time Original</source>
         <translation>Erstellungsdatum</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="110"/>
+        <location filename="../src/DkSettings.cpp" line="103"/>
         <source>Image Description</source>
         <translation>Beschreibung</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="111"/>
+        <location filename="../src/DkSettings.cpp" line="104"/>
         <source>Creator</source>
         <translation>Autor</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="112"/>
+        <location filename="../src/DkSettings.cpp" line="105"/>
         <source>Creator Title</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="113"/>
+        <location filename="../src/DkSettings.cpp" line="106"/>
         <source>City</source>
         <translation>Stadt</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="114"/>
+        <location filename="../src/DkSettings.cpp" line="107"/>
         <source>Country</source>
         <translation>Land</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="115"/>
+        <location filename="../src/DkSettings.cpp" line="108"/>
         <source>Headline</source>
         <translation>Titel</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="116"/>
+        <location filename="../src/DkSettings.cpp" line="109"/>
         <source>Caption</source>
         <translation>Beschriftung</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="117"/>
+        <location filename="../src/DkSettings.cpp" line="110"/>
         <source>Copyright</source>
         <translation>Copyright</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="118"/>
+        <location filename="../src/DkSettings.cpp" line="111"/>
         <source>Keywords</source>
         <translation>Keywords</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="119"/>
+        <location filename="../src/DkSettings.cpp" line="112"/>
         <source>Path</source>
         <translation>Pfad</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="120"/>
+        <location filename="../src/DkSettings.cpp" line="113"/>
         <source>File Size</source>
         <translation>Dateigröße</translation>
     </message>
@@ -618,7 +608,6 @@ enthält keine Bilder</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="2533"/>
-        <location filename="../src/DkWidgets.cpp" line="2567"/>
         <source>could not parse GPS Data</source>
         <translation>keine GPS Daten</translation>
     </message>
@@ -626,12 +615,12 @@ enthält keine Bilder</translation>
 <context>
     <name>nmc::DkMetaDataSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1123"/>
+        <location filename="../src/DkSettings.cpp" line="1094"/>
         <source>Camera Data</source>
         <translation>Kamera Daten</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1124"/>
+        <location filename="../src/DkSettings.cpp" line="1095"/>
         <source>Description</source>
         <translation>Beschreibung</translation>
     </message>
@@ -639,495 +628,492 @@ enthält keine Bilder</translation>
 <context>
     <name>nmc::DkNoMacs</name>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="209"/>
+        <location filename="../src/DkNoMacs.cpp" line="204"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="298"/>
+        <location filename="../src/DkNoMacs.cpp" line="285"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="304"/>
+        <location filename="../src/DkNoMacs.cpp" line="291"/>
         <source>Recent &amp;Files</source>
         <translation>Zuletzt verwendete &amp;Dateien</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="307"/>
+        <location filename="../src/DkNoMacs.cpp" line="294"/>
         <source>Recent Fo&amp;lders</source>
         <translation>Zuletzt verwendete &amp;Ordner</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="323"/>
-        <location filename="../src/DkNoMacs.cpp" line="401"/>
+        <location filename="../src/DkNoMacs.cpp" line="310"/>
         <source>&amp;Edit</source>
         <translation>&amp;Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="337"/>
-        <location filename="../src/DkNoMacs.cpp" line="395"/>
+        <location filename="../src/DkNoMacs.cpp" line="324"/>
         <source>&amp;View</source>
         <translation>&amp;Anzeige</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="338"/>
+        <location filename="../src/DkNoMacs.cpp" line="325"/>
         <source>Tool&amp;bars</source>
         <translation>Tool&amp;bars</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="370"/>
+        <location filename="../src/DkNoMacs.cpp" line="357"/>
         <source>&amp;Sync</source>
         <translation>&amp;Sync</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="374"/>
+        <location filename="../src/DkNoMacs.cpp" line="361"/>
         <source>&amp;?</source>
         <translation>&amp;?</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="421"/>
+        <location filename="../src/DkNoMacs.cpp" line="408"/>
         <source>&amp;Open</source>
         <translation>&amp;Öffnen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="423"/>
+        <location filename="../src/DkNoMacs.cpp" line="410"/>
         <source>Open an image</source>
         <translation>Öffne ein Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="426"/>
+        <location filename="../src/DkNoMacs.cpp" line="413"/>
         <source>Open &amp;Directory</source>
-        <translation>Öffne &amp;Verzeichnis</translation>
+        <translation>&amp;Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="428"/>
+        <location filename="../src/DkNoMacs.cpp" line="415"/>
         <source>Open a directory and load its first image</source>
         <translation>Öffnet ein Verzeichnis und lädt das erste Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="431"/>
+        <location filename="../src/DkNoMacs.cpp" line="418"/>
         <source>Open &amp;With</source>
         <translation>Öffnen &amp;mit</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="433"/>
+        <location filename="../src/DkNoMacs.cpp" line="420"/>
         <source>Open an image in a different Program</source>
         <translation>Öffnet ein Bild in einem anderen Program</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="436"/>
+        <location filename="../src/DkNoMacs.cpp" line="423"/>
         <source>&amp;Save</source>
         <translation>&amp;Speichern</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="438"/>
+        <location filename="../src/DkNoMacs.cpp" line="425"/>
         <source>Save an image</source>
         <translation>Speichert das Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="441"/>
+        <location filename="../src/DkNoMacs.cpp" line="428"/>
         <source>&amp;Print</source>
         <translation>&amp;Drucken</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="443"/>
+        <location filename="../src/DkNoMacs.cpp" line="430"/>
         <source>Print an image</source>
         <translation>Druckt das Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="446"/>
+        <location filename="../src/DkNoMacs.cpp" line="433"/>
         <source>&amp;Reload File</source>
         <translation>E&amp;rneut laden</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="448"/>
+        <location filename="../src/DkNoMacs.cpp" line="435"/>
         <source>Reload File</source>
         <translation>lädt das aktuelle Bild erneut</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="451"/>
+        <location filename="../src/DkNoMacs.cpp" line="438"/>
         <source>Ne&amp;xt File</source>
         <translation>N&amp;ächste Datei</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="453"/>
+        <location filename="../src/DkNoMacs.cpp" line="440"/>
         <source>Load next image</source>
         <translation>Öffnet das nächste Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="456"/>
+        <location filename="../src/DkNoMacs.cpp" line="443"/>
         <source>Pre&amp;vious File</source>
         <translation>&amp;Vorherige Datei</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="458"/>
+        <location filename="../src/DkNoMacs.cpp" line="445"/>
         <source>Load previous file</source>
         <translation>Öffnet das vorherige Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="461"/>
+        <location filename="../src/DkNoMacs.cpp" line="448"/>
         <source>St&amp;art New Instance</source>
-        <translation>St&amp;arte neue Instanz</translation>
+        <translation>Neue Instanz st&amp;arten</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="463"/>
+        <location filename="../src/DkNoMacs.cpp" line="450"/>
         <source>Open file in new instance</source>
         <translation>Öffnet das aktuelle Bild in einer neuen Instanz</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="466"/>
+        <location filename="../src/DkNoMacs.cpp" line="453"/>
         <source>&amp;Exit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="468"/>
+        <location filename="../src/DkNoMacs.cpp" line="455"/>
         <source>Exit</source>
         <translation>Beendet das Program</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="473"/>
+        <location filename="../src/DkNoMacs.cpp" line="460"/>
         <source>9&amp;0° Clockwise</source>
         <translation>9&amp;0° im Uhrzeigersinn</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="475"/>
+        <location filename="../src/DkNoMacs.cpp" line="462"/>
         <source>rotate the image 90° clockwise</source>
         <translation>rotiert das Bild 90° im Uhrzeigersinn</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="478"/>
+        <location filename="../src/DkNoMacs.cpp" line="465"/>
         <source>&amp;90° Counter Clockwise</source>
         <translation>&amp;90° gegen den Uhrzeigersinn</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="480"/>
+        <location filename="../src/DkNoMacs.cpp" line="467"/>
         <source>rotate the image 90° counter clockwise</source>
         <translation>rotiert das Bild 90° gegen Uhrzeigersinn</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="483"/>
+        <location filename="../src/DkNoMacs.cpp" line="470"/>
         <source>180°</source>
         <translation>180°</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="484"/>
+        <location filename="../src/DkNoMacs.cpp" line="471"/>
         <source>rotate the image by 180°</source>
         <translation>rotiert das Bild um 180°</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="487"/>
+        <location filename="../src/DkNoMacs.cpp" line="474"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopieren</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="489"/>
+        <location filename="../src/DkNoMacs.cpp" line="476"/>
         <source>copy image</source>
         <translation>Kopiert das Bild in die Zwischenablage</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="495"/>
+        <location filename="../src/DkNoMacs.cpp" line="482"/>
         <source>&amp;Paste</source>
         <translation>&amp;Einfügen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="497"/>
+        <location filename="../src/DkNoMacs.cpp" line="484"/>
         <source>paste image</source>
         <translation>fügt ein Bild aus der Zwischenablage ein</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="500"/>
+        <location filename="../src/DkNoMacs.cpp" line="487"/>
         <source>R&amp;esize Image</source>
         <translation>Bildgröße &amp;anpassen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="502"/>
+        <location filename="../src/DkNoMacs.cpp" line="489"/>
         <source>resize the current image</source>
         <translation>Erlaubt die Größe des Bildes anzupassen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="505"/>
+        <location filename="../src/DkNoMacs.cpp" line="492"/>
         <source>Cr&amp;op Image</source>
         <translation>Bild &amp;zuschneiden</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="507"/>
+        <location filename="../src/DkNoMacs.cpp" line="494"/>
         <source>cut the current image</source>
-        <translation>Erlaubt das Zuschneiden des Bildes</translation>
+        <translation>erlaubt das Zuschneiden des Bildes</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="512"/>
+        <location filename="../src/DkNoMacs.cpp" line="499"/>
         <source>&amp;Delete</source>
         <translation>&amp;Löschen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="514"/>
+        <location filename="../src/DkNoMacs.cpp" line="501"/>
         <source>delete current file</source>
         <translation>Löscht das aktuelle Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="517"/>
+        <location filename="../src/DkNoMacs.cpp" line="504"/>
         <source>&amp;Settings</source>
         <translation>&amp;Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="519"/>
+        <location filename="../src/DkNoMacs.cpp" line="506"/>
         <source>settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="524"/>
+        <location filename="../src/DkNoMacs.cpp" line="511"/>
         <source>Show &amp;Menu</source>
         <translation>&amp;Menü</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="525"/>
+        <location filename="../src/DkNoMacs.cpp" line="512"/>
         <source>hides the menu and shows it again on ALT</source>
         <translation>versteckt das Menü und zeigt es mit der ALT Taste</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="529"/>
+        <location filename="../src/DkNoMacs.cpp" line="516"/>
         <source>Show Tool&amp;bar</source>
         <translation>Tool&amp;bar</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="531"/>
+        <location filename="../src/DkNoMacs.cpp" line="518"/>
         <source>Show Toolbar</source>
         <translation>Toolbar anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="535"/>
+        <location filename="../src/DkNoMacs.cpp" line="522"/>
         <source>Show &amp;Statusbar</source>
         <translation>&amp;Statusleiste</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="537"/>
+        <location filename="../src/DkNoMacs.cpp" line="524"/>
         <source>Show Statusbar</source>
         <translation>Statusleiste anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="542"/>
+        <location filename="../src/DkNoMacs.cpp" line="529"/>
         <source>Show &amp;Pseudocolor Function</source>
         <translation>&amp;Falschfarbenfunktion</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="544"/>
+        <location filename="../src/DkNoMacs.cpp" line="531"/>
         <source>Show Pseudocolor Function</source>
         <translation>Falschfarbenfunktion</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1492"/>
+        <location filename="../src/DkNoMacs.cpp" line="1479"/>
         <source>Do you want to permanently delete %1</source>
         <translation>Wollen Sie %1 dauerhaft löschen?</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="549"/>
+        <location filename="../src/DkNoMacs.cpp" line="536"/>
         <source>&amp;Fit Window</source>
         <translation>&amp;Fenster anpassen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="551"/>
+        <location filename="../src/DkNoMacs.cpp" line="538"/>
         <source>Fit window to the image</source>
         <translation>Passt das Fenster dem Bild an</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="557"/>
+        <location filename="../src/DkNoMacs.cpp" line="544"/>
         <source>Fu&amp;ll Screen</source>
         <translation>Vo&amp;llbild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="559"/>
+        <location filename="../src/DkNoMacs.cpp" line="546"/>
         <source>Full Screen</source>
         <translation>Vollbild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="562"/>
+        <location filename="../src/DkNoMacs.cpp" line="549"/>
         <source>&amp;Reset Canvas</source>
         <translation>Ansicht zu&amp;rücksetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="564"/>
+        <location filename="../src/DkNoMacs.cpp" line="551"/>
         <source>Shows the initial view (no zooming)</source>
         <translation>Setzt die Zoomstufe zurück (kein Zoom)</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="567"/>
+        <location filename="../src/DkNoMacs.cpp" line="554"/>
         <source>Show &amp;100%</source>
-        <translation>Zeige &amp;100%</translation>
+        <translation>&amp;100% anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="569"/>
+        <location filename="../src/DkNoMacs.cpp" line="556"/>
         <source>Shows the image at 100%</source>
         <translation>Zeigt Bild mit 100% Zoomstufe</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="572"/>
+        <location filename="../src/DkNoMacs.cpp" line="559"/>
         <source>Zoom &amp;In</source>
         <translation>H&amp;inein zoomen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="574"/>
+        <location filename="../src/DkNoMacs.cpp" line="561"/>
         <source>zoom in</source>
-        <translation>Hinein Zoomen</translation>
+        <translation>Hinein zoomen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="577"/>
+        <location filename="../src/DkNoMacs.cpp" line="564"/>
         <source>&amp;Zoom Out</source>
         <translation>Hinaus &amp;Zoomen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="579"/>
+        <location filename="../src/DkNoMacs.cpp" line="566"/>
         <source>zoom out</source>
         <translation>Hinaus zoomen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="582"/>
+        <location filename="../src/DkNoMacs.cpp" line="569"/>
         <source>Show O&amp;verview</source>
         <translation>&amp;Übersicht anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="584"/>
+        <location filename="../src/DkNoMacs.cpp" line="571"/>
         <source>shows the overview or not</source>
         <translation>Übersicht anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="589"/>
+        <location filename="../src/DkNoMacs.cpp" line="576"/>
         <source>Show Pla&amp;yer</source>
         <translation>Pla&amp;yer anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="591"/>
+        <location filename="../src/DkNoMacs.cpp" line="578"/>
         <source>shows the player or not</source>
         <translation>Player anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="595"/>
+        <location filename="../src/DkNoMacs.cpp" line="582"/>
         <source>Sho&amp;w Thumbnails</source>
         <translation>&amp;Thumbnails anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="597"/>
+        <location filename="../src/DkNoMacs.cpp" line="584"/>
         <source>Show thumbnails</source>
         <translation>Thumbnails anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="601"/>
+        <location filename="../src/DkNoMacs.cpp" line="588"/>
         <source>Show &amp;Metadata</source>
         <translation>&amp;Metadaten anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="603"/>
+        <location filename="../src/DkNoMacs.cpp" line="590"/>
         <source>shows the metadata panel</source>
         <translation>Metadaten anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="607"/>
+        <location filename="../src/DkNoMacs.cpp" line="594"/>
         <source>Show File &amp;Info</source>
         <translation>Datei &amp;Informationen anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="609"/>
+        <location filename="../src/DkNoMacs.cpp" line="596"/>
         <source>shows the info panel</source>
-        <translation>Dateiinformationen anzeigen</translation>
+        <translation>Datei Informationen anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="613"/>
+        <location filename="../src/DkNoMacs.cpp" line="600"/>
         <source>&amp;Frameless</source>
         <translation>&amp;Frameless</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="615"/>
+        <location filename="../src/DkNoMacs.cpp" line="602"/>
         <source>shows a frameless window</source>
         <translation>Zeigt die Frameless ansicht</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="620"/>
+        <location filename="../src/DkNoMacs.cpp" line="607"/>
         <source>Opacity &amp;Up</source>
         <translation>&amp;höhere Transparenz</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="622"/>
-        <location filename="../src/DkNoMacs.cpp" line="627"/>
+        <location filename="../src/DkNoMacs.cpp" line="609"/>
         <source>changes the window opacity</source>
         <translation>ändert die Transparenz des Fenster</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="625"/>
+        <location filename="../src/DkNoMacs.cpp" line="612"/>
         <source>Opacity &amp;Down</source>
         <translation>&amp;niedrigere Transparenz</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="630"/>
+        <location filename="../src/DkNoMacs.cpp" line="617"/>
         <source>To&amp;ggle Opacity</source>
         <translation>&amp;Wechsle Transparenz</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="632"/>
+        <location filename="../src/DkNoMacs.cpp" line="619"/>
         <source>toggle the window opacity</source>
         <translation>Wechselt die Transparenz des Fensters</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="635"/>
+        <location filename="../src/DkNoMacs.cpp" line="622"/>
         <source>Show G&amp;PS Coordinates</source>
-        <translation>Zeige G&amp;PS Koordinaten</translation>
+        <translation>G&amp;PS Koordinaten zeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="636"/>
+        <location filename="../src/DkNoMacs.cpp" line="623"/>
         <source>shows the GPS coordinates</source>
         <translation>Zeigt die GPS Koordinaten im Browser</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="642"/>
+        <location filename="../src/DkNoMacs.cpp" line="629"/>
         <source>&amp;About Nomacs</source>
         <translation>&amp;Über Nomacs</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="644"/>
+        <location filename="../src/DkNoMacs.cpp" line="631"/>
         <source>about</source>
         <translation>Über Nomacs</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="647"/>
+        <location filename="../src/DkNoMacs.cpp" line="634"/>
         <source>&amp;Report a Bug</source>
         <translation>&amp;Bug melden</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="648"/>
+        <location filename="../src/DkNoMacs.cpp" line="635"/>
         <source>Report a Bug</source>
         <translation>Melde einen Bug</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="651"/>
+        <location filename="../src/DkNoMacs.cpp" line="638"/>
         <source>&amp;Feature Request</source>
         <translation>&amp;Funktionalität anfragen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="652"/>
+        <location filename="../src/DkNoMacs.cpp" line="639"/>
         <source>Feature Request</source>
         <translation>Funktionalität anfragen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="655"/>
+        <location filename="../src/DkNoMacs.cpp" line="642"/>
         <source>&amp;Check for Updates</source>
         <translation>&amp;Überprüfe auf Updates</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="656"/>
+        <location filename="../src/DkNoMacs.cpp" line="643"/>
         <source>check for updates</source>
         <translation>Überprüfe auf Updates</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1295"/>
+        <location filename="../src/DkNoMacs.cpp" line="1282"/>
         <source>Open an Image Directory</source>
-        <translation>Öffne Verzeichnis mit Bildern</translation>
+        <translation>Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1317"/>
+        <location filename="../src/DkNoMacs.cpp" line="1304"/>
         <source>Open Image</source>
         <translation>Öffne Bild</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1362"/>
+        <location filename="../src/DkNoMacs.cpp" line="1349"/>
         <source>Save Image</source>
         <translation>Speichere Bild</translation>
     </message>
@@ -1135,57 +1121,57 @@ enthält keine Bilder</translation>
 <context>
     <name>nmc::DkNoMacsSync</name>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1920"/>
+        <location filename="../src/DkNoMacs.cpp" line="1907"/>
         <source>Start &amp;Server</source>
         <translation>Starte &amp;Server</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1938"/>
+        <location filename="../src/DkNoMacs.cpp" line="1925"/>
         <source>Synchronize &amp;View</source>
-        <translation>Synchronisiere &amp;Anzeige</translation>
+        <translation>&amp;Anzeige synchronisieren</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1940"/>
+        <location filename="../src/DkNoMacs.cpp" line="1927"/>
         <source>synchronize the current view</source>
         <translation>Synchronisiert die Ansicht </translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1943"/>
+        <location filename="../src/DkNoMacs.cpp" line="1930"/>
         <source>&amp;Window Overlay</source>
-        <translation>Lege Fenster &amp;übereinander</translation>
+        <translation>Fenster &amp;übereinander legen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1945"/>
+        <location filename="../src/DkNoMacs.cpp" line="1932"/>
         <source>toggle the window opacity</source>
         <translation>Wechselt die Transparenz des Fensters</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1948"/>
+        <location filename="../src/DkNoMacs.cpp" line="1935"/>
         <source>Arrange Instances</source>
-        <translation>Ordne Instanzen an</translation>
+        <translation>Instanzen anordnen</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1950"/>
+        <location filename="../src/DkNoMacs.cpp" line="1937"/>
         <source>arrange connected instances</source>
         <translation>Ordnet die Instanzen auf dem aktuellen Bildschirm an</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1953"/>
+        <location filename="../src/DkNoMacs.cpp" line="1940"/>
         <source>Connect &amp;all</source>
         <translation>Verbinde &amp;alle</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1955"/>
+        <location filename="../src/DkNoMacs.cpp" line="1942"/>
         <source>connect all instances</source>
-        <translation>Verbinde alle Instanzen</translation>
+        <translation>Alle Instanzen verbinden</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1965"/>
+        <location filename="../src/DkNoMacs.cpp" line="1952"/>
         <source>&amp;Synchronize</source>
         <translation>&amp;Synchronisation</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1973"/>
+        <location filename="../src/DkNoMacs.cpp" line="1960"/>
         <source>&amp;LAN Synchronize</source>
         <translation>&amp;LAN Synchronisation</translation>
     </message>
@@ -1224,7 +1210,6 @@ enthält keine Bilder</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="3176"/>
-        <location filename="../src/DkWidgets.cpp" line="3372"/>
         <source>Choose Application</source>
         <translation>Wähle Anwendung</translation>
     </message>
@@ -1236,7 +1221,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkWidgets.cpp" line="3233"/>
         <source>Never show this dialog again</source>
-        <translation>Zeigen diesen Dialog nicht mehr an</translation>
+        <translation>Diesen Dialog nicht mehr anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="3236"/>
@@ -1268,7 +1253,6 @@ enthält keine Bilder</translation>
     <name>nmc::DkPlayer</name>
     <message>
         <location filename="../src/DkWidgets.cpp" line="1408"/>
-        <location filename="../src/DkWidgets.cpp" line="1419"/>
         <source>play</source>
         <translation>Play</translation>
     </message>
@@ -1368,13 +1352,11 @@ enthält keine Bilder</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="1797"/>
-        <location filename="../src/DkWidgets.cpp" line="1827"/>
         <source>Width: </source>
         <translation>Breite:</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="1809"/>
-        <location filename="../src/DkWidgets.cpp" line="1841"/>
         <source>Height: </source>
         <translation>Höhe:</translation>
     </message>
@@ -1401,7 +1383,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkWidgets.cpp" line="1895"/>
         <source>Area (best for downscaling)</source>
-        <translation>Area (das Beste zum Verkleinern)</translation>
+        <translation>Area (das Beste zum kleiner machen)</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="1896"/>
@@ -1422,47 +1404,47 @@ enthält keine Bilder</translation>
 <context>
     <name>nmc::DkSettingsDialog</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="385"/>
+        <location filename="../src/DkSettings.cpp" line="363"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="401"/>
+        <location filename="../src/DkSettings.cpp" line="379"/>
         <source>Categories</source>
         <translation>Kategorien</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="410"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="410"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Display</source>
         <translation>Anzeige</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="410"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Slideshow</source>
         <translation>Slideshow</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="410"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Synchronize</source>
         <translation>Sync</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="410"/>
+        <location filename="../src/DkSettings.cpp" line="387"/>
         <source>Exif</source>
         <translation>Exif</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="422"/>
+        <location filename="../src/DkSettings.cpp" line="400"/>
         <source>Ok</source>
         <translation>Ok</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="425"/>
+        <location filename="../src/DkSettings.cpp" line="403"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -1470,57 +1452,57 @@ enthält keine Bilder</translation>
 <context>
     <name>nmc::DkSlideshowSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="876"/>
+        <location filename="../src/DkSettings.cpp" line="853"/>
         <source>Slideshow Settings</source>
         <translation>Diashow Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="879"/>
+        <location filename="../src/DkSettings.cpp" line="856"/>
         <source>Display Time:</source>
         <translation>Anzeigezeit:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="879"/>
+        <location filename="../src/DkSettings.cpp" line="856"/>
         <source>sec</source>
         <translation>sek</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="882"/>
+        <location filename="../src/DkSettings.cpp" line="859"/>
         <source>Fullscreen Settings</source>
         <translation>Vollbild Einstellungen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="889"/>
+        <location filename="../src/DkSettings.cpp" line="865"/>
         <source>Background color:</source>
         <translation>Hintergrundfarbe:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="892"/>
+        <location filename="../src/DkSettings.cpp" line="868"/>
         <source>Reset</source>
         <translation>Zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="903"/>
+        <location filename="../src/DkSettings.cpp" line="879"/>
         <source>Silent Fullscreen</source>
         <translation>keine Warnungen im Vollbildmodus</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="907"/>
+        <location filename="../src/DkSettings.cpp" line="883"/>
         <source>Display Information</source>
-        <translation>Zeige Informationen</translation>
+        <translation>Informationen zeigen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="910"/>
+        <location filename="../src/DkSettings.cpp" line="886"/>
         <source>Image Name</source>
         <translation>Bildname</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="913"/>
+        <location filename="../src/DkSettings.cpp" line="889"/>
         <source>Creation Date</source>
         <translation>Erstelldatum</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="916"/>
+        <location filename="../src/DkSettings.cpp" line="892"/>
         <source>Rating</source>
         <translation>Bewertung</translation>
     </message>
@@ -1528,57 +1510,57 @@ enthält keine Bilder</translation>
 <context>
     <name>nmc::DkSynchronizeSettingsWidget</name>
     <message>
-        <location filename="../src/DkSettings.cpp" line="994"/>
+        <location filename="../src/DkSettings.cpp" line="970"/>
         <source>Synchronization</source>
         <translation>Synchronisation</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="997"/>
+        <location filename="../src/DkSettings.cpp" line="973"/>
         <source>synchronize absolute transformation</source>
         <translation>Synchronisiere absolute Transformationen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="998"/>
+        <location filename="../src/DkSettings.cpp" line="974"/>
         <source>synchronize relative transformation</source>
-        <translation>Synchronisiere relative Transformationen</translation>
+        <translation>synchronisiere relative Transformationen</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1004"/>
+        <location filename="../src/DkSettings.cpp" line="980"/>
         <source>Network Synchronization</source>
         <translation>Netzwerk Synchronisation</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1007"/>
+        <location filename="../src/DkSettings.cpp" line="983"/>
         <source>enable network sync</source>
         <translation>aktiviere Netzwerksynchronisation</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1011"/>
+        <location filename="../src/DkSettings.cpp" line="987"/>
         <source>clients can:</source>
         <translation>Clients können:</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1012"/>
+        <location filename="../src/DkSettings.cpp" line="988"/>
         <source>switch files</source>
         <translation>Datei wechseln</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1013"/>
+        <location filename="../src/DkSettings.cpp" line="989"/>
         <source>send new images</source>
         <translation>neues Bild schicken</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1014"/>
+        <location filename="../src/DkSettings.cpp" line="990"/>
         <source>control window position</source>
         <translation>Fensterposition kontrollieren</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1015"/>
+        <location filename="../src/DkSettings.cpp" line="991"/>
         <source>synchronize pan and zoom</source>
         <translation>synchronisation der Position und der Zoomstufe</translation>
     </message>
     <message>
-        <location filename="../src/DkSettings.cpp" line="1031"/>
+        <location filename="../src/DkSettings.cpp" line="1007"/>
         <source>switch ALT and CTRL key</source>
         <translation>vertausche ALT und STRG Taste</translation>
     </message>
@@ -1628,7 +1610,6 @@ enthält keine Bilder</translation>
     </message>
     <message>
         <location filename="../src/DkTransferToolBar.cpp" line="47"/>
-        <location filename="../src/DkTransferToolBar.cpp" line="198"/>
         <source>Disables the pseudocolor function</source>
         <translation>Schaltet die Falschfarbenfunktion aus</translation>
     </message>
@@ -1663,31 +1644,6 @@ enthält keine Bilder</translation>
         <translation>Falschfarbenfunktion zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../src/DkTransferToolBar.cpp" line="163"/>
-        <source>Gray</source>
-        <translation>Grau</translation>
-    </message>
-    <message>
-        <location filename="../src/DkTransferToolBar.cpp" line="166"/>
-        <source>RGB</source>
-        <translation>RGB</translation>
-    </message>
-    <message>
-        <location filename="../src/DkTransferToolBar.cpp" line="167"/>
-        <source>Red</source>
-        <translation>Rot</translation>
-    </message>
-    <message>
-        <location filename="../src/DkTransferToolBar.cpp" line="168"/>
-        <source>Green</source>
-        <translation>Grün</translation>
-    </message>
-    <message>
-        <location filename="../src/DkTransferToolBar.cpp" line="169"/>
-        <source>Blue</source>
-        <translation>Blau</translation>
-    </message>
-    <message>
         <location filename="../src/DkTransferToolBar.cpp" line="200"/>
         <source>Enables the pseudocolor function</source>
         <translation>Schaltet die Falschfarbenfunktion ein</translation>
@@ -1712,8 +1668,6 @@ enthält keine Bilder</translation>
     </message>
     <message>
         <location filename="../src/DkNetwork.cpp" line="1024"/>
-        <location filename="../src/DkNetwork.cpp" line="1038"/>
-        <location filename="../src/DkNetwork.cpp" line="1041"/>
         <source>updates</source>
         <translation>Updates</translation>
     </message>
