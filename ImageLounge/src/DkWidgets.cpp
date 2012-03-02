@@ -1740,7 +1740,7 @@ void DkResizeDialog::init() {
 	resFactor.insert(res_ppi, 2.54f);
 	resFactor.insert(res_ppc, 1.0f);
 
-	setWindowTitle("Resize Image");
+	setWindowTitle(tr("Resize Image"));
 	setFixedSize(600, 512);
 	createLayout();
 	initBoxes();
@@ -1800,6 +1800,8 @@ void DkResizeDialog::createLayout() {
 	wPixelEdit->setObjectName("wPixelEdit");
 	wPixelEdit->setRange(minPx, maxPx);
 	
+	QWidget* lockWidget = new QWidget();
+	QHBoxLayout* boxLayout = new QHBoxLayout(); 
 	lockButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
 	lockButton->setFixedSize(QSize(16,16));
 	lockButton->setObjectName("lockButton");

@@ -40,7 +40,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	gradWidth = 1000;
 	gradHeight = 20;
 
-	this->setMinimumWidth(500);
+	this->setMinimumWidth(400);
 	//this->setMinimumHeight(500);
 
 	enableTFCheckBox = new QCheckBox(tr("Enable"));
@@ -48,9 +48,9 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	
 	this->addWidget(enableTFCheckBox);
 
-	this->addSeparator();
-
-	this->addWidget(new QLabel(tr("Active channel:")));
+	// >DIR: more compact gui [2.3.2012 markus]
+	//this->addSeparator();
+	//this->addWidget(new QLabel(tr("Active channel:")));
 
 	channelComboBox = new QComboBox(this);
 	channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
@@ -97,7 +97,8 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 
 void DkTransferToolBar::createIcons() {
 
-	this->setIconSize(QSize(16,16));
+	// user needs to decide...
+	//this->setIconSize(QSize(16,16));
 			
 	toolBarIcons.resize(icon_toolbar_end);
 
