@@ -560,8 +560,8 @@ void DkGlobalSettingsWidget::createLayout() {
 	QWidget* langWidget = new QWidget(this);
 	QGridLayout* langLayout = new QGridLayout(langWidget);
 	langLayout->setMargin(0);
-	QLabel* langLabel = new QLabel(tr("choose language:"));
-	langCombo = new QComboBox();
+	QLabel* langLabel = new QLabel("choose language:");
+	langCombo = new QComboBox(this);
 
 	QDir qmDir = QDir();
 	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
@@ -594,7 +594,7 @@ void DkGlobalSettingsWidget::createLayout() {
 		}
 	}
 
-	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs\">"+ tr("translate nomacs") + "</a>");
+	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs\">translate nomacs</a>", this);
 	translateLabel->setToolTip(tr("if you want to help us and translate nomacs"));
 	QFont font;
 	font.setPointSize(7);
@@ -605,25 +605,25 @@ void DkGlobalSettingsWidget::createLayout() {
 	langLayout->addWidget(langCombo,1,0);
 	langLayout->addWidget(translateLabel,2,0,Qt::AlignRight);
 
-	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"));
+	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"), this);
 	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
 
 	// ---- drag and drop groupbox
 
 
-	QGroupBox* gbDragDrop = new QGroupBox(tr("Drag && Drop"));
+	QGroupBox* gbDragDrop = new QGroupBox(tr("Drag && Drop"), this);
 	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
 
 	// tmp path
 	QWidget* tmpPathWidget = new QWidget(this);
 	QVBoxLayout* vbTmpPathWidget = new QVBoxLayout(tmpPathWidget);
 
-	cbUseTmpPath = new QCheckBox(tr("use temporary folder"));
+	cbUseTmpPath = new QCheckBox(tr("use temporary folder"), this);
 	
 	QWidget* lineEditWidget = new QWidget(this);
 	QHBoxLayout* hbLineEditWidget = new QHBoxLayout(lineEditWidget);
 	leTmpPath = new QLineEdit(this);
-	pbTmpPath = new QPushButton(tr("..."));
+	pbTmpPath = new QPushButton(tr("..."), this);
 	pbTmpPath->setMaximumWidth(40);
 
 	hbLineEditWidget->addWidget(leTmpPath);
@@ -639,7 +639,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	QHBoxLayout* defaultSettingsLayout = new QHBoxLayout(defaultSettingsWidget);
 	defaultSettingsLayout->setContentsMargins(11,0,11,0);
 	defaultSettingsLayout->setDirection(QHBoxLayout::RightToLeft);
-	buttonDefaultSettings = new QPushButton(tr("Apply default settings"));
+	buttonDefaultSettings = new QPushButton(tr("Apply default settings"), this);
 	defaultSettingsLayout->addWidget(buttonDefaultSettings);
 	defaultSettingsLayout->addStretch();
 
@@ -753,23 +753,24 @@ void DkDisplaySettingsWidget::createLayout() {
 	QGridLayout* gbLayout= new QGridLayout(gbDisplaySettings);
 
 
-	QWidget* checkBoxWidget = new QWidget(this);
-	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(checkBoxWidget);
-	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
-	cbInvertZoom = new QCheckBox(tr("Invert Zoom"));
-	cbKeepZoom = new QCheckBox(tr("Keep Zoom"));
-	vbCheckBoxLayout->addWidget(cbInvertZoom);
-	vbCheckBoxLayout->addWidget(cbKeepZoom);
 
 	colorDialog = new QColorDialog(QColor("gray"), this);
 	QWidget* highlightColorWidget = new QWidget(this);
 	QVBoxLayout* highlightVLayout = new QVBoxLayout(highlightColorWidget);
 	highlightVLayout->setContentsMargins(11,0,11,0);
 	highlightColorLabel = new QLabel(tr("Highlight Color:"));
-	highlightColorButton = new QPushButton("");
+	highlightColorButton = new QPushButton("", this);
 	highlightColorButton->setFlat(true);
-	highlightColorResetButton = new QPushButton(tr("Reset"));
+	highlightColorResetButton = new QPushButton(tr("Reset"), this);
 	highlightVLayout->addWidget(highlightColorLabel);
+
+	QWidget* checkBoxWidget = new QWidget(this);
+	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(checkBoxWidget);
+	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
+	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
+	cbKeepZoom = new QCheckBox(tr("Keep Zoom"), this);
+	vbCheckBoxLayout->addWidget(cbInvertZoom);
+	vbCheckBoxLayout->addWidget(cbKeepZoom);
 
 	QWidget* highlightColWidget = new QWidget(this);
 	QHBoxLayout* highlightHLayout = new QHBoxLayout(highlightColWidget);
@@ -784,9 +785,9 @@ void DkDisplaySettingsWidget::createLayout() {
 
 	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
 
-	cbShowMenu = new QCheckBox(tr("show Menu"));
-	cbShowToolbar = new QCheckBox(tr("show Toolbar"));
-	cbShowStatusbar = new QCheckBox(tr("show Statusbar"));
+	cbShowMenu = new QCheckBox(tr("show Menu"), this);
+	cbShowToolbar = new QCheckBox(tr("show Toolbar"), this);
+	cbShowStatusbar = new QCheckBox(tr("show Statusbar"), this);
 
 	QGroupBox* gbThumb = new QGroupBox(tr("Thumbnails"));
 	QGridLayout* gbHbox = new QGridLayout(gbThumb);
@@ -794,7 +795,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 30, 160, this);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::DisplaySettings::thumbSize);
 
-	cbSaveThumb = new QCheckBox(tr("save Thumbnails"));
+	cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
 	cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
 
 	gbHbox->addWidget(maximalThumbSizeWidget, 0, 0);
@@ -884,10 +885,10 @@ void DkSlideshowSettingsWidget::createLayout() {
 	colorDialog = new QColorDialog(QColor("gray"), this);
 	QWidget* backgroundWidget = new QWidget(this);
 	QVBoxLayout* backgroundVLayout = new QVBoxLayout(backgroundWidget);
-	labelBackgroundText = new QLabel(tr("Background color:"));
+	labelBackgroundText = new QLabel(tr("Background color:"), this);
 	buttonBackgroundColor = new QPushButton("");
 	buttonBackgroundColor->setFlat(true);
-	buttonResetBackground = new QPushButton(tr("Reset"));
+	buttonResetBackground = new QPushButton(tr("Reset"), this);
 	backgroundVLayout->addWidget(labelBackgroundText);
 
 	QWidget* backgroundColWidget = new QWidget(this);
@@ -1007,10 +1008,10 @@ void DkSynchronizeSettingsWidget::createLayout() {
 	QWidget* networkSettings = new QWidget(this);
 	QVBoxLayout* networkSettingsLayout = new QVBoxLayout(networkSettings);
 	QLabel* clientsCan = new QLabel(tr("clients can:"), this);
-	cbAllowFile = new QCheckBox(tr("switch files"));
-	cbAllowImage = new QCheckBox(tr("send new images"));
-	cbAllowPosition = new QCheckBox(tr("control window position"));
-	cbAllowTransformation = new QCheckBox(tr("synchronize pan and zoom"));
+	cbAllowFile = new QCheckBox(tr("switch files"), this);
+	cbAllowImage = new QCheckBox(tr("send new images"), this);
+	cbAllowPosition = new QCheckBox(tr("control window position"), this);
+	cbAllowTransformation = new QCheckBox(tr("synchronize pan and zoom"), this);
 
 	networkSettingsLayout->addWidget(clientsCan);
 	networkSettingsLayout->addWidget(cbAllowFile);
@@ -1026,7 +1027,7 @@ void DkSynchronizeSettingsWidget::createLayout() {
 	buttonGroup->addButton(cbAllowTransformation);
 
 
-	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"));
+	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"), this);
 	
 
 	gbNetworkSettingsLayout->addWidget(cbEnableNetwork);
@@ -1118,8 +1119,8 @@ void DkMetaDataSettingsWidget::createLayout() {
 
 	QHBoxLayout* hboxLayout = new QHBoxLayout(this);
 
-	QGroupBox* gbCamData = new QGroupBox(tr("Camera Data"));
-	QGroupBox* gbDescription = new QGroupBox(tr("Description"));
+	QGroupBox* gbCamData = new QGroupBox(tr("Camera Data"), this);
+	QGroupBox* gbDescription = new QGroupBox(tr("Description"), this);
 
 	QVBoxLayout* vboxLayoutLeft = new QVBoxLayout(gbCamData);
 	QVBoxLayout* vboxLayoutRight = new QVBoxLayout(gbDescription);
@@ -1144,7 +1145,7 @@ void DkMetaDataSettingsWidget::createLayout() {
 	//QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");
 
 	for (int i=0; i<desc_end;i++) {
-		pCbMetaData.append(new QCheckBox(sDescription.at(i)));
+		pCbMetaData.append(new QCheckBox(sDescription.at(i), this));
 	}
 
 	for(int i=0; i<camData_end;i++) {
