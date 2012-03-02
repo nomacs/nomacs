@@ -401,7 +401,8 @@ void DkSettingsDialog::createLayout() {
 	leftLabel->setText(tr("Categories"));
 
 	listView = new DkSettingsListView(this); 
-	listView->setMaximumWidth(80);
+	listView->setMaximumWidth(100);
+	//listView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -410,7 +411,6 @@ void DkSettingsDialog::createLayout() {
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
-	
 		
 	leftWidgetVBoxLayout->addWidget(leftLabel);
 	leftWidgetVBoxLayout->addWidget(listView);
