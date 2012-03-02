@@ -102,8 +102,8 @@ void DkTransferToolBar::createIcons() {
 			
 	toolBarIcons.resize(icon_toolbar_end);
 
-	toolBarIcons[icon_toolbar_reset] = ICON("document-open-folder", ":/nomacs/img/gradient-reset.png");
-	toolBarIcons[icon_toolbar_pipette] = ICON("document-open-folder", ":/nomacs/img/pipette.png");
+	toolBarIcons[icon_toolbar_reset] = ICON("", ":/nomacs/img/gradient-reset.png");
+	toolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.png");
 
 	
 	toolBarActions.resize(toolbar_end);
