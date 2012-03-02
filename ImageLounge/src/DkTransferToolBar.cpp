@@ -160,13 +160,13 @@ void DkTransferToolBar::applyImageMode(int mode) {
 	channelComboBox->clear();
 
 	if (mode == mode_gray) {
-		channelComboBox->addItem("Gray");
+		channelComboBox->addItem(tr("Gray"));
 	}
 	else if (mode == mode_rgb) {
-		channelComboBox->addItem("RGB");
-		channelComboBox->addItem("Red");
-		channelComboBox->addItem("Green");
-		channelComboBox->addItem("Blue");
+		channelComboBox->addItem(tr("RGB"));
+		channelComboBox->addItem(tr("Red"));
+		channelComboBox->addItem(tr("Green"));
+		channelComboBox->addItem(tr("Blue"));
 	}
 
 	channelComboBox->setCurrentIndex(0);

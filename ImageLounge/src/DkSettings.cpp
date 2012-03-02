@@ -885,6 +885,7 @@ void DkSlideshowSettingsWidget::createLayout() {
 	colorDialog = new QColorDialog(QColor("gray"), this);
 	QWidget* backgroundWidget = new QWidget(this);
 	QVBoxLayout* backgroundVLayout = new QVBoxLayout(backgroundWidget);
+	backgroundVLayout->setContentsMargins(11,0,11,0);
 	labelBackgroundText = new QLabel(tr("Background color:"), this);
 	buttonBackgroundColor = new QPushButton("");
 	buttonBackgroundColor->setFlat(true);
