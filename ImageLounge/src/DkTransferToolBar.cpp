@@ -49,7 +49,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	this->addWidget(enableTFCheckBox);
 
 	// >DIR: more compact gui [2.3.2012 markus]
-	//this->addSeparator();
+	this->addSeparator();
 	//this->addWidget(new QLabel(tr("Active channel:")));
 
 	channelComboBox = new QComboBox(this);
