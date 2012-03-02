@@ -710,6 +710,12 @@ void DkNoMacs::createShortcuts() {
 	shortcuts[sc_zoom_out] = new QShortcut(shortcut_zoom_out, this);
 	connect(shortcuts[sc_zoom_out], SIGNAL(activated()), vp, SLOT(zoomOut()));
 
+	shortcuts[sc_zoom_in_alt] = new QShortcut(shortcut_zoom_in_alt, this);
+	connect(shortcuts[sc_zoom_in_alt], SIGNAL(activated()), vp, SLOT(zoomIn()));
+
+	shortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
+	connect(shortcuts[sc_zoom_out_alt], SIGNAL(activated()), vp, SLOT(zoomOut()));
+
 	shortcuts[sc_send_img] = new QShortcut(shortcut_send_img, this);
 	connect(shortcuts[sc_send_img], SIGNAL(activated()), vp, SLOT(tcpSendImage()));
 
@@ -1309,31 +1315,38 @@ void DkNoMacs::openFile() {
 		return;
 
 	DkImageLoader* loader = viewport()->getImageLoader();
-	QStringList fileNames;
+	//QStringList fileNames;
 
-	if (!openDialog)
-		openDialog = new QFileDialog(this);
+	//if (!openDialog)
+	//	openDialog = new QFileDialog(this);
 
-	openDialog->setWindowTitle(tr("Open Image"));
-	openDialog->setFilters(DkImageLoader::openFilters);
-	openDialog->setDirectory(loader->getDir());
-	openDialog->setOption(QFileDialog::DontResolveSymlinks);
+	//openDialog->setWindowTitle(tr("Open Image"));
+	//openDialog->setFilters(DkImageLoader::openFilters);
+	//openDialog->setDirectory(loader->getDir());
+	//openDialog->setOption(QFileDialog::DontResolveSymlinks);
 
-	// show the dialog
-	if(openDialog->exec())
-		fileNames = openDialog->selectedFiles();
 
-	//// load system default open dialog
-	//QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
-	//	loader->getDir().absolutePath(), 
-	//	DkImageLoader::openFilter);
+	// load system default open dialog
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
+		loader->getDir().absolutePath(), 
+		DkImageLoader::openFilter);
 
-	if (fileNames.isEmpty())
+	//// show the dialog
+	//if(openDialog->exec())
+	//	fileNames = openDialog->selectedFiles();
+
+	if (fileName.isEmpty())
 		return;
 
-	qDebug() << "os filename: " << fileNames[0];
-	//QFileInfo oFile = QFileInfo(fileName);
-	viewport()->loadFile(QFileInfo(fileNames[0]));
+	qDebug() << "os filename: " << fileName;
+	viewport()->loadFile(QFileInfo(fileName));
+
+
+	//if (fileNames[0].isEmpty())
+	//	return;
+
+	//qDebug() << "os filename: " << fileNames[0];
+	//viewport()->loadFile(QFileInfo(fileNames[0]));
 }
 
 void DkNoMacs::saveFile() {

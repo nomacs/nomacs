@@ -588,7 +588,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	loader = new DkImageLoader();
 
 	connect(delayedInfo, SIGNAL(infoMessageSignal(QString, int)), this, SLOT(setInfo(QString, int)));
-	connect(this, SIGNAL(changeFile(int, bool)), loader, SLOT(changeFile(int, bool)));
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
@@ -1762,6 +1761,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	unloadImage();
 	setImage(img);
+	emit windowTitleSignal(QFileInfo(), imgQt.size());	// not needed?!
 	//imgQt = img;
 	update();
 
