@@ -7,7 +7,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "0.2.4 beta"
+!define PRODUCT_VERSION "0.3.0 beta"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -91,12 +91,18 @@ Var nef
 Var crw
 Var cr2
 Var arw
+Var mpo
+Var jps
+Var pns
 
 Var gif_state
 Var nef_state
 Var crw_state
 Var cr2_state
 Var arw_state
+Var mpo_state
+Var jps_state
+Var pns_state
 
 
 Function .onInit
@@ -158,11 +164,20 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 160u 80u 15% 10u "crw"
 	Pop $crw
 
+	${NSD_CreateCheckbox} 160u 95u 15% 10u "jps"
+	Pop $jps
+
 	${NSD_CreateCheckbox} 220u 50u 15% 10u "cr2"
 	Pop $cr2
 
 	${NSD_CreateCheckbox} 220u 65u 15% 10u "arw"
 	Pop $arw
+
+	${NSD_CreateCheckbox} 220u 80u 15% 10u "mpo"
+	Pop $mpo
+
+	${NSD_CreateCheckbox} 220u 95u 15% 10u "pns"
+	Pop $pns
 	
 
 	${NSD_CreateGroupBox} 150u 18u 40% 120u "Partially supported:";
@@ -241,6 +256,9 @@ Function fileAssociationFinished
 	${NSD_GetState} $crw $crw_state
 	${NSD_GetState} $cr2 $cr2_state
 	${NSD_GetState} $arw $arw_state
+	${NSD_GetState} $mpo $mpo_state
+	${NSD_GetState} $jps $jps_state
+	${NSD_GetState} $pns $pns_state
 
 	${If} $gif_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
@@ -260,6 +278,18 @@ Function fileAssociationFinished
 
 	${If} $arw_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "ARW Image"
+	${EndIf}
+
+	${If} $mpo_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
+	${EndIf}
+
+	${If} $jps_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPS Image"
+	${EndIf}
+
+	${If} $pns_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNS Image"
 	${EndIf}
 	
 	Call RefreshShellIcons
@@ -300,12 +330,18 @@ Function checkAllPartially
 		${NSD_SetState} $crw ${BST_CHECKED}
 		${NSD_SetState} $cr2 ${BST_CHECKED}
 		${NSD_SetState} $arw ${BST_CHECKED}
+		${NSD_SetState} $mpo ${BST_CHECKED}
+		${NSD_SetState} $jps ${BST_CHECKED}
+		${NSD_SetState} $pns ${BST_CHECKED}
 	${Else}
 		${NSD_SetState} $gif ${BST_UNCHECKED}
 		${NSD_SetState} $nef ${BST_UNCHECKED}
 		${NSD_SetState} $crw ${BST_UNCHECKED}
 		${NSD_SetState} $cr2 ${BST_UNCHECKED}
 		${NSD_SetState} $arw ${BST_UNCHECKED}
+		${NSD_SetState} $mpo ${BST_UNCHECKED}
+		${NSD_SetState} $jps ${BST_UNCHECKED}
+		${NSD_SetState} $pns ${BST_UNCHECKED}
 	${EndIf}
 	
 
@@ -328,7 +364,8 @@ Section "MainSection" SEC01
   CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
   CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
   
-  File "nomacs_*.qm"
+  File "build\nomacs_*.qm"
+  
 
   File "ReallyRelease\exiv2.dll"
   File "ReallyRelease\libexpat.dll"
@@ -456,6 +493,9 @@ Section Uninstall
   ${UnRegisterExtension} ".crw" "nomacs.file.crw"  
   ${UnRegisterExtension} ".cr2" "nomacs.file.cr2"  
   ${UnRegisterExtension} ".arw" "nomacs.file.arw"  
+  ${UnRegisterExtension} ".mpo" "nomacs.file.mpo"  
+  ${UnRegisterExtension} ".jps" "nomacs.file.jps"  
+  ${UnRegisterExtension} ".pns" "nomacs.file.pns"  
 
 
 
