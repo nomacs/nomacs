@@ -131,7 +131,6 @@ bool DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
 
 void DkSettings::load() {
 	
-	
 	setToDefaultSettings();
 
 	QSettings settings;
@@ -563,7 +562,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	QLabel* langLabel = new QLabel("choose language:");
 	langCombo = new QComboBox(this);
 
-	QDir qmDir = QDir();
+	QDir qmDir = qApp->applicationDirPath();
 	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
 
 	langCombo->addItem("English");
@@ -579,7 +578,6 @@ void DkGlobalSettingsWidget::createLayout() {
 			qDebug() << "translation loaded";
 		else
 			qDebug() << "translation NOT loaded";
-
 
 		//: this should be the name of the language in which nomacs is translated to
 		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");

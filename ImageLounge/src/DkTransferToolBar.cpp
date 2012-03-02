@@ -88,8 +88,6 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	// Actions called triggered by toolbar buttons:
 	connect(toolBarActions[icon_toolbar_reset], SIGNAL(triggered()), this, SLOT(reset()));
 	connect(toolBarActions[toolbar_pipette], SIGNAL(triggered()), this, SLOT(pickColor()));
-
-
 	
 };
 
