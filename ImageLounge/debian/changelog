@@ -1,8 +1,31 @@
-nomacs (0.2.4) unstable; urgency=low
+nomacs (0.3.0) unstable; urgency=low
 
-  * TODO for new release
+  * Bug #55: performance loss when loading from network
+  * Bug #97: toWCharArray
+  * Bug #98: Absturz - Open With Dialog
+  * Bug #99: nomacs.desktop: update mime types not to include directory
+  * Bug #100: zoom 100%
+  * Bug #110: date string bug
+  * Bug #114: saving files
+  * Bug #116: event echo
+  * Bug #118: image loader
+  * Bug #124: pseudo color function
+  * Bug #125: slow start-up if network drive is mounted
+  * Bug #126: thumbloader focus
+  * Bug #128: restore old "open" dialog
+  * Feature #13: Frameless
+  * Feature #34: Bildwechsel mit Scrollrad
+  * Feature #43: crop images
+  * Feature #74: open with
+  * Feature #93: add button to adjust windows size to image size
+  * Feature #113: symbolic links
+  * Feature: crop tool
+  * Feature: image resize
+  * Feature: pseudo color toolbar
+  * Feature: new icons
+  * Feature: translations
 
- -- Stefan Fiel <stefan@nomacs.org>  Mon, 25 Oct 2011 15:22:22 +0200
+ -- Stefan Fiel <stefan@nomacs.org>  Mon, 02 Mar 2012 17:30:22 +0200
 
 nomacs (0.2.3) unstable; urgency=low
 
