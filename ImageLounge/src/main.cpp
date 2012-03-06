@@ -86,8 +86,11 @@ int main(int argc, char *argv[]) {
 	QSettings settings;
 
 	QTranslator translator;
-	if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm", qApp->applicationDirPath()))
-		qDebug() << "unable to load translation (" << "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm)";
+	if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm", qApp->applicationDirPath())) {
+		QDir appDir = QDir(qApp->applicationDirPath());
+		if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm", appDir.filePath("../share/nomacs/translations/")))
+			qDebug() << "unable to load translation (" << "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm)";
+	}
 	a.installTranslator(&translator);
 	
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();

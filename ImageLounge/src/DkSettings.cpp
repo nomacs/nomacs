@@ -564,6 +564,10 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	QDir qmDir = qApp->applicationDirPath();
 	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
+	if (fileNames.isEmpty()) {
+		QDir appDir = QDir(qApp->applicationDirPath());
+		qmDir = QDir(appDir.filePath("../share/nomacs/translations/"));
+	}
 
 	langCombo->addItem("English");
 	languages << "en";
