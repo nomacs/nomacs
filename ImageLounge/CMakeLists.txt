@@ -404,6 +404,8 @@ IF (EXIV2_FOUND)
 		install(FILES nomacs.desktop DESTINATION share/applications)
 		#  icon
 		install(FILES src/img/nomacs.png DESTINATION share/pixmaps)
+		#  translations
+		install(FILES ${NOMACS_QM} DESTINATION share/nomacs/translations)
 
 		# "make dist" target
 		string(TOLOWER ${CMAKE_PROJECT_NAME} CPACK_PACKAGE_NAME)
