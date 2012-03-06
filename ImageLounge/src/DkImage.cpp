@@ -1758,47 +1758,48 @@ void DkMetaData::saveThumbnail(QImage thumb) {
 
 		Exiv2::ExifThumb eThumb(exifData);
 
-		if (isTiff()) {
-			eThumb.erase();
+		//if (isTiff()) {
+		//	eThumb.erase();
 
-			Exiv2::ExifData::const_iterator pos = exifData.findKey(Exiv2::ExifKey("Exif.Image.NewSubfileType"));
-			if (pos == exifData.end() || pos->count() != 1 || pos->toLong() != 0) {
-				 throw DkException("Exif.Image.NewSubfileType missing or not set as main image", __LINE__, __FILE__);
-			 }
-			 // Remove sub-IFD tags
-			 std::string subImage1("SubImage1");
-			 for (Exiv2::ExifData::iterator md = exifData.begin(); md != exifData.end();)
-			 {
-				 if (md->groupName() == subImage1)
-					 md = exifData.erase(md);
-				 else
-					 ++md;
-			 }
-		}
+		//	Exiv2::ExifData::const_iterator pos = exifData.findKey(Exiv2::ExifKey("Exif.Image.NewSubfileType"));
+		//	if (pos == exifData.end() || pos->count() != 1 || pos->toLong() != 0) {
+		//		 throw DkException("Exif.Image.NewSubfileType missing or not set as main image", __LINE__, __FILE__);
+		//	}
+		//	 // Remove sub-IFD tags
+		//	 std::string subImage1("SubImage1");
+		//	 for (Exiv2::ExifData::iterator md = exifData.begin(); md != exifData.end();)
+		//	 {
+		//		 if (md->groupName() == subImage1)
+		//			 md = exifData.erase(md);
+		//		 else
+		//			 ++md;
+		//	 }
+		//}
 
 		QByteArray data;
 		QBuffer buffer(&data);
 		buffer.open(QIODevice::WriteOnly);
 		thumb.save(&buffer, "JPEG");
 
-		if (isTiff()) {
-			Exiv2::DataBuf buf((Exiv2::byte *)data.data(), data.size());
-			Exiv2::ULongValue val;
-			val.read("0");
-			val.setDataArea(buf.pData_, buf.size_);
-			exifData["Exif.SubImage1.JPEGInterchangeFormat"] = val;
-			exifData["Exif.SubImage1.JPEGInterchangeFormatLength"] = uint32_t(buf.size_);
-			exifData["Exif.SubImage1.Compression"] = uint16_t(6); // JPEG (old-style)
-			exifData["Exif.SubImage1.NewSubfileType"] = uint32_t(1); // Thumbnail image
-			qDebug() << "As you told me to, I am writing the tiff thumbs...";
+		//if (isTiff()) {
+		//	Exiv2::DataBuf buf((Exiv2::byte *)data.data(), data.size());
+		//	Exiv2::ULongValue val;
+		//	val.read("0");
+		//	val.setDataArea(buf.pData_, buf.size_);
+		//	exifData["Exif.SubImage1.JPEGInterchangeFormat"] = val;
+		//	exifData["Exif.SubImage1.JPEGInterchangeFormatLength"] = uint32_t(buf.size_);
+		//	exifData["Exif.SubImage1.Compression"] = uint16_t(6); // JPEG (old-style)
+		//	exifData["Exif.SubImage1.NewSubfileType"] = uint32_t(1); // Thumbnail image
+		//	qDebug() << "As you told me to, I am writing the tiff thumbs...";
 
-		} else {
+		//} else {
 			eThumb.setJpegThumbnail((Exiv2::byte *)data.data(), data.size());
 			qDebug() << "As you told me to, I am writing the thumbs...";
-		}
+		//}
 
 		exifImg->setExifData(exifData);
 		exifImg->writeMetadata();
+		qDebug() << "thumbnail saved...";
 
 		//Exiv2::Image::AutoPtr exifImgN;
 		//
