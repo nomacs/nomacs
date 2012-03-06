@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 	QSettings settings;
 
 	QTranslator translator;
-	if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm")) 
+	if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm", qApp->applicationDirPath()))
 		qDebug() << "unable to load translation (" << "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm)";
 	a.installTranslator(&translator);
 	
