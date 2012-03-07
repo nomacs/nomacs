@@ -897,6 +897,9 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		try {
 			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
 		} catch (...) {
+
+			if (!restoreFile(QFileInfo(filePath)))
+				emit newErrorDialog("sorry, I destroyed: " + QFileInfo(filePath).fileName() + "\n remove the numbers after the file extension in order to restore the file...");
 			qDebug() << "could not copy meta-data to file" << filePath;
 		}
 
@@ -959,10 +962,10 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 			try {
 				imgMetaData.saveMetaDataToFile(QFileInfo(filePath));
 			} catch (...) {
-				qDebug() << "could not copy meta-data to file" << filePath;
+				if (!restoreFile(QFileInfo(filePath)))
+					emit newErrorDialog("sorry, I destroyed: " + QFileInfo(filePath).fileName() + "\n remove the numbers after the file extension in order to restore the file...");
 			}
 		}
-		// TODO: if we create a new file we should 
 
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);

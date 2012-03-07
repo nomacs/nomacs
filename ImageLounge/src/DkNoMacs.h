@@ -379,7 +379,7 @@ public slots:
 	void pasteImage();
 	virtual void settingsChanged();
 	void showUpdateDialog(QString msg, QString title);
-	void enableNoImageActions(bool enable = true);
+	virtual void enableNoImageActions(bool enable = true);
 	void checkForUpdate();
 	void setFrameless(bool frameless);
 	void fitFrame();
@@ -549,6 +549,7 @@ public:
 	void release();
 	
 public slots:
+	virtual void enableNoImageActions(bool enable = true);
 	void exitFullScreen();
 	void updateScreenSize(int screen = 0);
 

@@ -2171,7 +2171,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_show_statusbar]->setEnabled(false);
 		viewActions[menu_view_show_statusbar]->setChecked(false);
 		viewActions[menu_view_show_toolbar]->setChecked(false);
-		viewActions[menu_view_fit_frame]->setEnabled(false);
 		
 		menu->setTimeToShow(5000);
 		menu->hide();
@@ -2196,6 +2195,15 @@ DkNoMacsFrameless::~DkNoMacsFrameless() {
 }
 
 void DkNoMacsFrameless::release() {
+}
+
+void DkNoMacsFrameless::enableNoImageActions(bool enable) {
+
+	DkNoMacs::enableNoImageActions(enable);
+
+	// actions that should always be disabled
+	viewActions[menu_view_fit_frame]->setEnabled(false);
+
 }
 
 void DkNoMacsFrameless::updateScreenSize(int screen) {
