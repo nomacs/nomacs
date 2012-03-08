@@ -1583,7 +1583,7 @@ void DkJpgDialog::createLayout() {
 	centralWidget = new QWidget(this);
 
 	// slider
-	QLabel* compLabel = new QLabel(tr("Compression"), centralWidget);
+	QLabel* compLabel = new QLabel(tr("Image Quality"), centralWidget);
 	compLabel->move(leftSpacing, margin*3.5+10);
 	
 	// preview
