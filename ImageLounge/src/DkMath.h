@@ -784,6 +784,10 @@ public:
 		return this->x*vec.x + this->y*vec.y;
 	};
 
+	virtual DkVector round() const {
+		return DkVector(cvRound(x), cvRound(y));
+	} 
+
 	///** 
 	// * String containing the vector's values.
 	// * @return a String representing the vector's coordinates: <x, y>

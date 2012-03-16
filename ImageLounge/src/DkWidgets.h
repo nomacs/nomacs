@@ -1180,14 +1180,21 @@ public:
 			return;
 
 		// default upper left corner is 0
-		DkVector xV = rect[3] - rect[0];
-		DkVector yV = rect[1] - rect[0];
+		DkVector xV = DkVector(rect[3] - rect[0]).round();
+		DkVector yV = DkVector(rect[1] - rect[0]).round();
 
-		QPointF ul = rect[0];
+		QPointF ul = QPointF(qRound(rect[0].x()), qRound(rect[0].y()));
 		size = QPointF(xV.norm(), yV.norm());
+
+		qDebug() << xV.getQPointF();
+		qDebug() << "size: " << size;
+
 
 		double angle = xV.angle();
 		angle = DkMath::normAngleRad(angle, -CV_PI, CV_PI);
+
+		if (abs(angle) > DBL_EPSILON)
+			qDebug() << "angle is > eps...";
 
 		// switch width/height for /\ and \/ quadrants
 		if (abs(angle) > CV_PI*0.25 && abs(angle) < CV_PI*0.75) {
@@ -1195,6 +1202,8 @@ public:
 			size.setX(size.y());
 			size.setY(x);
 		}
+
+		//TODO: fix bug #132
 
 		// invariance -> user does not want to make a difference between an upside down rect
 		if (angle > CV_PI*0.25 && angle < CV_PI*0.75) {

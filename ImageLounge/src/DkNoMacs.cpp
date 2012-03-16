@@ -1481,6 +1481,7 @@ void DkNoMacs::resizeImage() {
 			if (!rImg.isNull()) {
 				viewport()->unloadImage();
 				viewport()->setImage(rImg);
+				setWindowTitle(QFileInfo(), rImg.size());
 			}
 			else {
 				errorDialog("Sorry, I cannot transform the image.");
@@ -1781,7 +1782,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size) {
 	title = title.remove(".lnk");
 
 	if (!file.exists())
-		title = "nomacs - Image Lounge";
+		title = "nomacs";
 
 	QString attributes;
 
