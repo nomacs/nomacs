@@ -467,6 +467,7 @@ protected:
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	bool loadGeneral(QFileInfo file);
 	bool loadRohFile(QString fileName);
+	bool loadRawFile(QFileInfo file);
 	void updateHistory();
 	bool restoreFile(const QFileInfo &fileInfo);
 	

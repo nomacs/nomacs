@@ -502,268 +502,277 @@ bool DkImageLoader::loadGeneral(QFileInfo file) {
 	
 	} else {
 
-		try {
+		// load raw files
+		imgLoaded = loadRawFile(file);
+	}
+	return imgLoaded;
+}
+
+
+bool DkImageLoader::loadRawFile(QFileInfo file) {
+
+	bool imgLoaded = false;
+
+	try {
 
 #ifdef WITH_OPENCV
 
-			LibRaw iProcessor;
-			QImage image;
-			int orientation = 0;
+		LibRaw iProcessor;
+		QImage image;
+		int orientation = 0;
 
-			iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
+		iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
 
-			//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
-			//iProcessor.imgdata.params.use_camera_wb = 1;
-			//// (-a) Use automatic white balance obtained after averaging over the entire image
-			//iProcessor.imgdata.params.use_auto_wb = 1;
-			//// (-q 3) Adaptive homogeneity-directed de-mosaicing algorithm (AHD)
-			//iProcessor.imgdata.params.user_qual = 3;
-			//iProcessor.imgdata.params.output_tiff = 1;
-			////iProcessor.imgdata.params.four_color_rgb = 1;
-			////iProcessor.imgdata.params.output_color = 1; //sRGB  (0...raw)
-			//// RAW data filtration mode during data unpacking and post-processing
-			//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
+		//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
+		//iProcessor.imgdata.params.use_camera_wb = 1;
+		//// (-a) Use automatic white balance obtained after averaging over the entire image
+		//iProcessor.imgdata.params.use_auto_wb = 1;
+		//// (-q 3) Adaptive homogeneity-directed de-mosaicing algorithm (AHD)
+		//iProcessor.imgdata.params.user_qual = 3;
+		//iProcessor.imgdata.params.output_tiff = 1;
+		////iProcessor.imgdata.params.four_color_rgb = 1;
+		////iProcessor.imgdata.params.output_color = 1; //sRGB  (0...raw)
+		//// RAW data filtration mode during data unpacking and post-processing
+		//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
 
-			iProcessor.unpack();
+		iProcessor.unpack();
+		//iProcessor.dcraw_process();
+		//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
+
+		unsigned short cols = iProcessor.imgdata.sizes.width,//.raw_width,
+			rows = iProcessor.imgdata.sizes.height;//.raw_height;
+
+		Mat rawMat, rgbImg;
+
+		if (iProcessor.imgdata.idata.filters == 0)
+		{
 			//iProcessor.dcraw_process();
-			//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
+			rawMat = Mat(rows, cols, CV_32FC3);
+			rawMat.setTo(0);
+			std::vector<Mat> rawCh;
+			split(rawMat, rawCh);
 
-			unsigned short cols = iProcessor.imgdata.sizes.width,//.raw_width,
-			 			   rows = iProcessor.imgdata.sizes.height;//.raw_height;
-
-			Mat rawMat, rgbImg;
-
-			if (iProcessor.imgdata.idata.filters == 0)
+			for (unsigned int row = 0; row < rows; row++)
 			{
-				//iProcessor.dcraw_process();
-				rawMat = Mat(rows, cols, CV_32FC3);
-				rawMat.setTo(0);
-				std::vector<Mat> rawCh;
-				split(rawMat, rawCh);
+				float *ptrR = rawCh[0].ptr<float>(row);
+				float *ptrG = rawCh[1].ptr<float>(row);
+				float *ptrB = rawCh[2].ptr<float>(row);
+				//float *ptrE = rawCh[3].ptr<float>(row);
 
-				for (unsigned int row = 0; row < rows; row++)
+				for (unsigned int col = 0; col < cols; col++)
 				{
-					float *ptrR = rawCh[0].ptr<float>(row);
-					float *ptrG = rawCh[1].ptr<float>(row);
-					float *ptrB = rawCh[2].ptr<float>(row);
-					//float *ptrE = rawCh[3].ptr<float>(row);
-
-					for (unsigned int col = 0; col < cols; col++)
-					{
-						ptrR[col] = (float)iProcessor.imgdata.image[cols*row + col][0]/(float)iProcessor.imgdata.color.maximum;
-						ptrG[col] = (float)iProcessor.imgdata.image[cols*row + col][1]/(float)iProcessor.imgdata.color.maximum;
-						ptrB[col] = (float)iProcessor.imgdata.image[cols*row + col][2]/(float)iProcessor.imgdata.color.maximum;
-						//ptrE[colIdx] = (float)iProcessor.imgdata.image[iProcessor.imgdata.sizes.width*row + col][3]/(float)iProcessor.imgdata.color.maximum;
-					}
+					ptrR[col] = (float)iProcessor.imgdata.image[cols*row + col][0]/(float)iProcessor.imgdata.color.maximum;
+					ptrG[col] = (float)iProcessor.imgdata.image[cols*row + col][1]/(float)iProcessor.imgdata.color.maximum;
+					ptrB[col] = (float)iProcessor.imgdata.image[cols*row + col][2]/(float)iProcessor.imgdata.color.maximum;
+					//ptrE[colIdx] = (float)iProcessor.imgdata.image[iProcessor.imgdata.sizes.width*row + col][3]/(float)iProcessor.imgdata.color.maximum;
 				}
-				merge(rawCh, rawMat);
-				rawMat.convertTo(rgbImg, CV_8U, 255);
-				
-				image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step, QImage::Format_RGB888);
-
 			}
-			else
-			{
+			merge(rawCh, rawMat);
+			rawMat.convertTo(rgbImg, CV_8U, 255);
 
-				qDebug() << "----------------";
-				qDebug() << "Bayer Pattern: " << QString::fromStdString(iProcessor.imgdata.idata.cdesc);
-				qDebug() << "Camera manufacturer: " << QString::fromStdString(iProcessor.imgdata.idata.make);
-				qDebug() << "Camera model: " << QString::fromStdString(iProcessor.imgdata.idata.model);
-				qDebug() << "canon_ev " << (float)iProcessor.imgdata.color.canon_ev;
+			image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step, QImage::Format_RGB888);
 
-				//qDebug() << "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
-				//	iProcessor.imgdata.color.cam_mul[1], iProcessor.imgdata.color.cam_mul[2],
-				//	iProcessor.imgdata.color.cam_mul[3]);
-				//qDebug() << "black: %i\n", iProcessor.imgdata.color.black);
-				//qDebug() << "maximum: %.i %i\n", iProcessor.imgdata.color.maximum,
-				//	iProcessor.imgdata.params.adjust_maximum_thr);
-				//qDebug() << "gamma: %.3f %.3f %.3f %.3f %.3f %.3f\n",
-				//	iProcessor.imgdata.params.gamm[0],
-				//	iProcessor.imgdata.params.gamm[1],
-				//	iProcessor.imgdata.params.gamm[2],
-				//	iProcessor.imgdata.params.gamm[3],
-				//	iProcessor.imgdata.params.gamm[4],
-				//	iProcessor.imgdata.params.gamm[5]);
-				
-				qDebug() << "----------------";
+		}
+		else
+		{
 
-				if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) throw DkException("Wrong Bayer Pattern (not RGBG)\n", __LINE__, __FILE__);
+			qDebug() << "----------------";
+			qDebug() << "Bayer Pattern: " << QString::fromStdString(iProcessor.imgdata.idata.cdesc);
+			qDebug() << "Camera manufacturer: " << QString::fromStdString(iProcessor.imgdata.idata.make);
+			qDebug() << "Camera model: " << QString::fromStdString(iProcessor.imgdata.idata.model);
+			qDebug() << "canon_ev " << (float)iProcessor.imgdata.color.canon_ev;
 
-				rawMat = Mat(rows, cols, CV_32FC1);
-				//rawMat.setTo(0);
-				float mulWhite[4];
-				//mulWhite[0] = iProcessor.imgdata.color.cam_mul[0] > 10 ? iProcessor.imgdata.color.cam_mul[0]/255.0f : iProcessor.imgdata.color.cam_mul[0];
-				//mulWhite[1] = iProcessor.imgdata.color.cam_mul[1] > 10 ? iProcessor.imgdata.color.cam_mul[1]/255.0f : iProcessor.imgdata.color.cam_mul[1];
-				//mulWhite[2] = iProcessor.imgdata.color.cam_mul[2] > 10 ? iProcessor.imgdata.color.cam_mul[2]/255.0f : iProcessor.imgdata.color.cam_mul[2];
-				//mulWhite[3] = iProcessor.imgdata.color.cam_mul[3] > 10 ? iProcessor.imgdata.color.cam_mul[3]/255.0f : iProcessor.imgdata.color.cam_mul[3];
-				//if (mulWhite[3] == 0)
-				//	mulWhite[3] = mulWhite[1];
+			//qDebug() << "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
+			//	iProcessor.imgdata.color.cam_mul[1], iProcessor.imgdata.color.cam_mul[2],
+			//	iProcessor.imgdata.color.cam_mul[3]);
+			//qDebug() << "black: %i\n", iProcessor.imgdata.color.black);
+			//qDebug() << "maximum: %.i %i\n", iProcessor.imgdata.color.maximum,
+			//	iProcessor.imgdata.params.adjust_maximum_thr);
+			//qDebug() << "gamma: %.3f %.3f %.3f %.3f %.3f %.3f\n",
+			//	iProcessor.imgdata.params.gamm[0],
+			//	iProcessor.imgdata.params.gamm[1],
+			//	iProcessor.imgdata.params.gamm[2],
+			//	iProcessor.imgdata.params.gamm[3],
+			//	iProcessor.imgdata.params.gamm[4],
+			//	iProcessor.imgdata.params.gamm[5]);
 
-				mulWhite[0] = iProcessor.imgdata.color.cam_mul[0];
-				mulWhite[1] = iProcessor.imgdata.color.cam_mul[1];
-				mulWhite[2] = iProcessor.imgdata.color.cam_mul[2];
-				mulWhite[3] = iProcessor.imgdata.color.cam_mul[3];
+			qDebug() << "----------------";
 
-				float dynamicRange = iProcessor.imgdata.color.maximum-iProcessor.imgdata.color.black;
+			if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) throw DkException("Wrong Bayer Pattern (not RGBG)\n", __LINE__, __FILE__);
 
-				float w = (mulWhite[0] + mulWhite[1] + mulWhite[2] + mulWhite[3])/4.0f;
-				float maxW = 1.0f;//mulWhite[0];
+			rawMat = Mat(rows, cols, CV_32FC1);
+			//rawMat.setTo(0);
+			float mulWhite[4];
+			//mulWhite[0] = iProcessor.imgdata.color.cam_mul[0] > 10 ? iProcessor.imgdata.color.cam_mul[0]/255.0f : iProcessor.imgdata.color.cam_mul[0];
+			//mulWhite[1] = iProcessor.imgdata.color.cam_mul[1] > 10 ? iProcessor.imgdata.color.cam_mul[1]/255.0f : iProcessor.imgdata.color.cam_mul[1];
+			//mulWhite[2] = iProcessor.imgdata.color.cam_mul[2] > 10 ? iProcessor.imgdata.color.cam_mul[2]/255.0f : iProcessor.imgdata.color.cam_mul[2];
+			//mulWhite[3] = iProcessor.imgdata.color.cam_mul[3] > 10 ? iProcessor.imgdata.color.cam_mul[3]/255.0f : iProcessor.imgdata.color.cam_mul[3];
+			//if (mulWhite[3] == 0)
+			//	mulWhite[3] = mulWhite[1];
 
-				if (w > 2.0f)
-					maxW = 256.0f;
-				if (w > 2.0f && QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive) == 0)
-					maxW = 512.0f;	// some cameras would even need ~800 - why?
+			mulWhite[0] = iProcessor.imgdata.color.cam_mul[0];
+			mulWhite[1] = iProcessor.imgdata.color.cam_mul[1];
+			mulWhite[2] = iProcessor.imgdata.color.cam_mul[2];
+			mulWhite[3] = iProcessor.imgdata.color.cam_mul[3];
 
-				//if (maxW < mulWhite[1])
-				//	maxW = mulWhite[1];
-				//if (maxW < mulWhite[2])
-				//	maxW = mulWhite[2];
-				//if (maxW < mulWhite[3])
-				//	maxW = mulWhite[3];
-				
-				mulWhite[0] /= maxW;
-				mulWhite[1] /= maxW;
-				mulWhite[2] /= maxW;
-				mulWhite[3] /= maxW;
+			float dynamicRange = iProcessor.imgdata.color.maximum-iProcessor.imgdata.color.black;
 
-				//if (iProcessor.imgdata.color.cmatrix[0][0] != 0) {
-				//	mulWhite[0] = iProcessor.imgdata.color.cmatrix[0][0];
-				//	mulWhite[1] = iProcessor.imgdata.color.cmatrix[0][1];
-				//	mulWhite[2] = iProcessor.imgdata.color.cmatrix[0][2];
-				//	mulWhite[3] = iProcessor.imgdata.color.cmatrix[0][3];
-				//}
+			float w = (mulWhite[0] + mulWhite[1] + mulWhite[2] + mulWhite[3])/4.0f;
+			float maxW = 1.0f;//mulWhite[0];
 
-				//if (iProcessor.imgdata.color.rgb_cam[0][0] != 0) {
-				//	mulWhite[0] = iProcessor.imgdata.color.rgb_cam[0][0];
-				//	mulWhite[1] = iProcessor.imgdata.color.rgb_cam[1][1];
-				//	mulWhite[2] = iProcessor.imgdata.color.rgb_cam[2][2];
-				//	mulWhite[3] = iProcessor.imgdata.color.rgb_cam[1][1];
-				//}
-				//if (iProcessor.imgdata.color.cam_xyz[0][0] != 0) {
-				//	mulWhite[0] = iProcessor.imgdata.color.cam_xyz[0][0];
-				//	mulWhite[1] = iProcessor.imgdata.color.cam_xyz[1][1];
-				//	mulWhite[2] = iProcessor.imgdata.color.cam_xyz[2][2];
-				//	mulWhite[3] = iProcessor.imgdata.color.cam_xyz[1][1];
-				//}
+			if (w > 2.0f)
+				maxW = 256.0f;
+			if (w > 2.0f && QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive) == 0)
+				maxW = 512.0f;	// some cameras would even need ~800 - why?
 
+			//if (maxW < mulWhite[1])
+			//	maxW = mulWhite[1];
+			//if (maxW < mulWhite[2])
+			//	maxW = mulWhite[2];
+			//if (maxW < mulWhite[3])
+			//	maxW = mulWhite[3];
 
-				if (mulWhite[3] == 0)
-					mulWhite[3] = mulWhite[1];
+			mulWhite[0] /= maxW;
+			mulWhite[1] /= maxW;
+			mulWhite[2] /= maxW;
+			mulWhite[3] /= maxW;
 
-
-
-				////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
-				////DkUtils::printDebug(DK_MODULE, "Bayer Pattern: %s\n", iProcessor.imgdata.idata.cdesc);
-				////DkUtils::printDebug(DK_MODULE, "Camera manufacturer: %s\n", iProcessor.imgdata.idata.make);
-				////DkUtils::printDebug(DK_MODULE, "Camera model: %s\n", iProcessor.imgdata.idata.model);
-				////DkUtils::printDebug(DK_MODULE, "canon_ev %f\n", (float)iProcessor.imgdata.color.canon_ev);
-
-				////DkUtils::printDebug(DK_MODULE, "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
-				////	iProcessor.imgdata.color.cam_mul[1], iProcessor.imgdata.color.cam_mul[2],
-				////	iProcessor.imgdata.color.cam_mul[3]);
-				////DkUtils::printDebug(DK_MODULE, "white (processing): [%.3f %.3f %.3f %.3f]\n", mulWhite[0],
-				////	mulWhite[1], mulWhite[2],
-				////	mulWhite[3]);
-				////DkUtils::printDebug(DK_MODULE, "black: %i\n", iProcessor.imgdata.color.black);
-				////DkUtils::printDebug(DK_MODULE, "maximum: %.i %i\n", iProcessor.imgdata.color.maximum,
-				////	iProcessor.imgdata.params.adjust_maximum_thr);
-				////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
-
-
-
-				float gamma = (float)iProcessor.imgdata.params.gamm[0];///(float)iProcessor.imgdata.params.gamm[1];
-				float gammaTable[65536];
-				for (int i = 0; i < 65536; i++) {
-					gammaTable[i] = (float)(1.099f*pow((float)i/65535.0f, gamma)-0.099f);
-				}
-
-
-				for (uint row = 0; row < rows; row++)
-				{
-					float *ptrRaw = rawMat.ptr<float>(row);
-
-					for (uint col = 0; col < cols; col++)
-					{
-						 int colorIdx = iProcessor.COLOR(row, col);
-						 ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
-						 //ptrRaw[col] = (float)iProcessor.imgdata.color.curve[(int)ptrRaw[col]];
-						 
-						 ptrRaw[col] -= iProcessor.imgdata.color.black;
-						 ptrRaw[col] /= dynamicRange;
-						 
-						 //// clip
-						 //if (ptrRaw[col] > 1.0f) ptrRaw[col] = 1.0f;
-						 //if (ptrRaw[col] < 0.0f) ptrRaw[col] = 0.0f;
-						 
-
-						 //if (ptrRaw[col] <= 1.0f)
-						ptrRaw[col] *= mulWhite[colorIdx];
-						ptrRaw[col] = ptrRaw[col] > 1.0f ? 1.0f : ptrRaw[col]; 
-						//ptrRaw[col] = (float)(pow((float)ptrRaw[col], gamma));
-						//ptrRaw[col] *= 255.0f;		
-						
-						ptrRaw[col] = ptrRaw[col] <= 0.018f ? (ptrRaw[col]*(float)iProcessor.imgdata.params.gamm[1]) *255.0f :
-							 									gammaTable[(int)(ptrRaw[col]*65535.0f)]*255;
-							//									(1.099f*(float)(pow((float)ptrRaw[col], gamma))-0.099f)*255.0f;
-						 //ptrRaw[col] *= mulWhite[colorIdx];
-						 //ptrRaw[col] = ptrRaw[col] > 255.0f ? 255.0f : ptrRaw[col];
-						 //ptrRaw[col] *=255.0f;
-					}
-				}
-
-				//Mat cropMat(rawMat, Rect(1, 1, rawMat.cols-1, rawMat.rows-1));
-				//rawMat.release();
-				//rawMat = cropMat;
-				//rawMat.setTo(0);
-
-				//normalize(rawMat, rawMat, 255, 0, NORM_MINMAX);
-
-				rawMat.convertTo(rawMat,CV_8U);
-				//cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);
-				unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
-				type = type & 255;
-
-				if (type == 180) cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) -> RG RG RG
-				//												                                                                  GB GB GB
-				else if (type == 30) cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
-				else if (type == 225) cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
-				else if (type == 75) cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
-				else throw DkException("Wrong Bayer Pattern (not BG, RG, GB, GR)\n", __LINE__, __FILE__);
-
-				if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {
-					resize(rgbImg, rawMat, Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
-					rgbImg = rawMat;
-				}
-				image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
-
-				//orientation is done in loadGeneral with libExiv
-				//orientation = iProcessor.imgdata.sizes.flip;
-				//switch (orientation) {
-				//case 0: orientation = 0; break;
-				//case 3: orientation = 180; break;
-				//case 5:	orientation = -90; break;
-				//case 6: orientation = 90; break;
-				//}
-			}
-
-			img = image.copy();
-			//if (orientation!=0) {
-			//	QTransform rotationMatrix;
-			//	rotationMatrix.rotate((double)orientation);
-			//	img = img.transformed(rotationMatrix);
+			//if (iProcessor.imgdata.color.cmatrix[0][0] != 0) {
+			//	mulWhite[0] = iProcessor.imgdata.color.cmatrix[0][0];
+			//	mulWhite[1] = iProcessor.imgdata.color.cmatrix[0][1];
+			//	mulWhite[2] = iProcessor.imgdata.color.cmatrix[0][2];
+			//	mulWhite[3] = iProcessor.imgdata.color.cmatrix[0][3];
 			//}
-			imgLoaded = true;
 
-			iProcessor.recycle();
+			//if (iProcessor.imgdata.color.rgb_cam[0][0] != 0) {
+			//	mulWhite[0] = iProcessor.imgdata.color.rgb_cam[0][0];
+			//	mulWhite[1] = iProcessor.imgdata.color.rgb_cam[1][1];
+			//	mulWhite[2] = iProcessor.imgdata.color.rgb_cam[2][2];
+			//	mulWhite[3] = iProcessor.imgdata.color.rgb_cam[1][1];
+			//}
+			//if (iProcessor.imgdata.color.cam_xyz[0][0] != 0) {
+			//	mulWhite[0] = iProcessor.imgdata.color.cam_xyz[0][0];
+			//	mulWhite[1] = iProcessor.imgdata.color.cam_xyz[1][1];
+			//	mulWhite[2] = iProcessor.imgdata.color.cam_xyz[2][2];
+			//	mulWhite[3] = iProcessor.imgdata.color.cam_xyz[1][1];
+			//}
 
-#else
-	throw DkException("Not compiled using OpenCV - could not load any RAW image", __LINE__, __FILE__);
-	qDebug() << "Not compiled using OpenCV - could not load any RAW image";
-#endif
-		} catch (...) {
-			qWarning() << "failed to load raw image...";
+
+			if (mulWhite[3] == 0)
+				mulWhite[3] = mulWhite[1];
+
+
+
+			////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
+			////DkUtils::printDebug(DK_MODULE, "Bayer Pattern: %s\n", iProcessor.imgdata.idata.cdesc);
+			////DkUtils::printDebug(DK_MODULE, "Camera manufacturer: %s\n", iProcessor.imgdata.idata.make);
+			////DkUtils::printDebug(DK_MODULE, "Camera model: %s\n", iProcessor.imgdata.idata.model);
+			////DkUtils::printDebug(DK_MODULE, "canon_ev %f\n", (float)iProcessor.imgdata.color.canon_ev);
+
+			////DkUtils::printDebug(DK_MODULE, "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
+			////	iProcessor.imgdata.color.cam_mul[1], iProcessor.imgdata.color.cam_mul[2],
+			////	iProcessor.imgdata.color.cam_mul[3]);
+			////DkUtils::printDebug(DK_MODULE, "white (processing): [%.3f %.3f %.3f %.3f]\n", mulWhite[0],
+			////	mulWhite[1], mulWhite[2],
+			////	mulWhite[3]);
+			////DkUtils::printDebug(DK_MODULE, "black: %i\n", iProcessor.imgdata.color.black);
+			////DkUtils::printDebug(DK_MODULE, "maximum: %.i %i\n", iProcessor.imgdata.color.maximum,
+			////	iProcessor.imgdata.params.adjust_maximum_thr);
+			////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
+
+
+
+			float gamma = (float)iProcessor.imgdata.params.gamm[0];///(float)iProcessor.imgdata.params.gamm[1];
+			float gammaTable[65536];
+			for (int i = 0; i < 65536; i++) {
+				gammaTable[i] = (float)(1.099f*pow((float)i/65535.0f, gamma)-0.099f);
+			}
+
+
+			for (uint row = 0; row < rows; row++)
+			{
+				float *ptrRaw = rawMat.ptr<float>(row);
+
+				for (uint col = 0; col < cols; col++)
+				{
+					int colorIdx = iProcessor.COLOR(row, col);
+					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
+					//ptrRaw[col] = (float)iProcessor.imgdata.color.curve[(int)ptrRaw[col]];
+
+					ptrRaw[col] -= iProcessor.imgdata.color.black;
+					ptrRaw[col] /= dynamicRange;
+
+					//// clip
+					//if (ptrRaw[col] > 1.0f) ptrRaw[col] = 1.0f;
+					//if (ptrRaw[col] < 0.0f) ptrRaw[col] = 0.0f;
+
+
+					//if (ptrRaw[col] <= 1.0f)
+					ptrRaw[col] *= mulWhite[colorIdx];
+					ptrRaw[col] = ptrRaw[col] > 1.0f ? 1.0f : ptrRaw[col]; 
+					//ptrRaw[col] = (float)(pow((float)ptrRaw[col], gamma));
+					//ptrRaw[col] *= 255.0f;		
+
+					ptrRaw[col] = ptrRaw[col] <= 0.018f ? (ptrRaw[col]*(float)iProcessor.imgdata.params.gamm[1]) *255.0f :
+						gammaTable[(int)(ptrRaw[col]*65535.0f)]*255;
+					//									(1.099f*(float)(pow((float)ptrRaw[col], gamma))-0.099f)*255.0f;
+					//ptrRaw[col] *= mulWhite[colorIdx];
+					//ptrRaw[col] = ptrRaw[col] > 255.0f ? 255.0f : ptrRaw[col];
+					//ptrRaw[col] *=255.0f;
+				}
+			}
+
+			//Mat cropMat(rawMat, Rect(1, 1, rawMat.cols-1, rawMat.rows-1));
+			//rawMat.release();
+			//rawMat = cropMat;
+			//rawMat.setTo(0);
+
+			//normalize(rawMat, rawMat, 255, 0, NORM_MINMAX);
+
+			rawMat.convertTo(rawMat,CV_8U);
+			//cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);
+			unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
+			type = type & 255;
+
+			if (type == 180) cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) -> RG RG RG
+			//												                                                                  GB GB GB
+			else if (type == 30) cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
+			else if (type == 225) cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
+			else if (type == 75) cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
+			else throw DkException("Wrong Bayer Pattern (not BG, RG, GB, GR)\n", __LINE__, __FILE__);
+
+			if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {
+				resize(rgbImg, rawMat, Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
+				rgbImg = rawMat;
+			}
+			image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
+
+			//orientation is done in loadGeneral with libExiv
+			//orientation = iProcessor.imgdata.sizes.flip;
+			//switch (orientation) {
+			//case 0: orientation = 0; break;
+			//case 3: orientation = 180; break;
+			//case 5:	orientation = -90; break;
+			//case 6: orientation = 90; break;
+			//}
 		}
 
+		img = image.copy();
+		//if (orientation!=0) {
+		//	QTransform rotationMatrix;
+		//	rotationMatrix.rotate((double)orientation);
+		//	img = img.transformed(rotationMatrix);
+		//}
+		imgLoaded = true;
+
+		iProcessor.recycle();
+
+#else
+		throw DkException("Not compiled using OpenCV - could not load any RAW image", __LINE__, __FILE__);
+		qDebug() << "Not compiled using OpenCV - could not load any RAW image";
+#endif
+	} catch (...) {
+		qWarning() << "failed to load raw image...";
 	}
 
 	return imgLoaded;
