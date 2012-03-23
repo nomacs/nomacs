@@ -322,6 +322,7 @@ void DkNoMacs::createMenu() {
 
 	editMenu = menu->addMenu(tr("&Edit"));
 	editMenu->addAction(editActions[menu_edit_copy]);
+	editMenu->addAction(editActions[menu_edit_copy_buffer]);
 	editMenu->addAction(editActions[menu_edit_paste]);
 	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_rotate_ccw]);
@@ -488,6 +489,11 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
 	editActions[menu_edit_copy]->setStatusTip(tr("copy image"));
 	connect(editActions[menu_edit_copy], SIGNAL(triggered()), this, SLOT(copyImage()));
+
+	editActions[menu_edit_copy_buffer] = new QAction(tr("&Copy Buffer"), this);
+	editActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
+	editActions[menu_edit_copy_buffer]->setStatusTip(tr("copy image"));
+	connect(editActions[menu_edit_copy_buffer], SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
 
 	QList<QKeySequence> pastScs;
 	pastScs.append(QKeySequence::Paste);
@@ -1020,6 +1026,23 @@ void DkNoMacs::copyImage() {
 	clipboard->setMimeData(mimeData);
 
 	qDebug() << "copying: " << fileUrl;
+}
+
+void DkNoMacs::copyImageBuffer() {
+
+	qDebug() << "copying...";
+
+	if (!viewport() || viewport()->getImage().isNull())
+		return;
+
+	QMimeData* mimeData = new QMimeData;
+
+	if (!viewport()->getImage().isNull())
+		mimeData->setImageData(viewport()->getImage());
+
+	QClipboard* clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData);
+
 }
 
 void DkNoMacs::pasteImage() {

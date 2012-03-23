@@ -135,6 +135,7 @@ enum {
 	shortcut_paste			= Qt::Key_Insert,
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
+	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
 
 	// tcp
 	shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
@@ -173,6 +174,7 @@ enum editActions {
 	menu_edit_rotate_ccw,
 	menu_edit_rotate_180,
 	menu_edit_copy,
+	menu_edit_copy_buffer,
 	menu_edit_paste,
 	menu_edit_preferences,
 	menu_edit_transfrom,
@@ -376,6 +378,7 @@ public slots:
 	void newClientConnected();
 	void showStatusMessage(QString msg);
 	void copyImage();
+	void copyImageBuffer();
 	void pasteImage();
 	virtual void settingsChanged();
 	void showUpdateDialog(QString msg, QString title);
