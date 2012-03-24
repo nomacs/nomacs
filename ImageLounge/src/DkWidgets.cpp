@@ -2238,15 +2238,33 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
 	// is the image convertable?
 	if (resizeImage.empty() || newSize.width() < 1 || newSize.height() < 1) {
+		
 		return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
 	}
 	else {
 
-		Mat tmp;
-		cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, ipl);
-		resizeImage = tmp;
-		return DkImage::mat2QImage(resizeImage);
+		
+		try{
+			Mat tmp;
+			cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, ipl);
+			return DkImage::mat2QImage(tmp);
+		
+		}catch (std::exception se) {
+
+			if (!silent) {
+				// TODO: getBufferSize (static in DkImage)
+				QMessageBox errorDialog(this);
+				errorDialog.setIcon(QMessageBox::Critical);
+				errorDialog.setText(tr("Sorry, the image is too large: %1 MB").arg(newSize.width()*newSize.height()*32.0f/(1024.0f*1024.0f)));
+				errorDialog.show();
+				errorDialog.exec();
+			}
+
+			return QImage();
+		}
 	}
+
+	return QImage();
 #else
 
 	return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
@@ -2749,7 +2767,7 @@ void DkMetaDataInfo::readTags() {
 						if ((float)file.size()/1024.0f > 1024.0f)
 							Value = QString::number((double)file.size()/(1024.0f*1024.0f), 'f', 2) + " MB";
 						else
-							Value = QString::number(file.size()/(1024)) + " KB";
+							Value = QString::number(file.size()/1024.0f) + " KB";
 					} else
 						Value = QString();
 					

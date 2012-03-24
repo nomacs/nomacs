@@ -137,6 +137,19 @@ public:
 	}
 #endif
 
+	static QString getBufferSize(const QImage &img) {
+
+		float size = img.width() * img.height() * img.depth();
+		QString sizeStr;
+
+		if (size >= 1024*1024) {
+			return QString::number(size/(1024.0f*1024.0f), 'f', 2) + " MB";
+		}
+		else if (size >= 1024) {
+			return QString::number(size/1024.0f, 'f', 2) + " KB";
+		}
+	}
+
 	static QImage resizeImage(const QImage &img, const QSize &newSize, float factor = 1.0f, int interpolation = ipl_cubic) {
 		
 		QSize nSize = newSize;

@@ -125,8 +125,11 @@ void DkImageLoader::loadDir(QDir newDir) {
 		folderUpdated = false;
 		qDebug() << "getting file list.....";
 	}
+	// new folder is loaded
 	else if ((newDir.absolutePath() != dir.absolutePath() || files.empty()) && newDir.exists()) {
 
+		// update save directory
+		if (saveDir == dir) saveDir = dir;
 		dir = newDir;
 		dir.setNameFilters(fileFilters);
 		dir.setSorting(QDir::LocaleAware);		// TODO: extend

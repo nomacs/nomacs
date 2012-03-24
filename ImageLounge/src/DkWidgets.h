@@ -41,6 +41,7 @@
 #include <QtGui/QShortcut>
 #include <QtGui/QToolButton>
 #include <QtGui/QComboBox>
+#include <QtGui/QMessageBox>
 #include <QStringBuilder>
 #include <QPointer>
 #include <QTimer>

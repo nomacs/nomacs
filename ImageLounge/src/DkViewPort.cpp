@@ -2163,7 +2163,6 @@ QTransform DkViewPortFrameless::getScaledImageMatrix() {
 	QRectF initialRect = mainScreen;
 	QPointF oldCenter = imgViewRect.isEmpty() ? initialRect.center() : imgViewRect.center();
 	qDebug() << "initial rect: " << initialRect;
-	
 
 	QTransform cT;
 	cT.scale(800/initialRect.width(), 800/initialRect.width());
