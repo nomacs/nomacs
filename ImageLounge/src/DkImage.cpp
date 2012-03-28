@@ -113,6 +113,15 @@ void DkImageLoader::clearPath() {
 	//dir = QDir();
 }
 
+void DkImageLoader::clearFileWatcher() {
+
+	if (!watcher)
+		return;
+
+	if (!watcher->files().isEmpty())
+		watcher->removePaths(watcher->files());	// remove all files previously watched
+}
+
 void DkImageLoader::loadDir(QDir newDir) {
 
 	// folder changed signal was emitted

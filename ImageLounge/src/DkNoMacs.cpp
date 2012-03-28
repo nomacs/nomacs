@@ -1494,20 +1494,19 @@ void DkNoMacs::resizeImage() {
 
 			//// do not load the old image -> as the transformed image is not the same anymore
 			//viewport()->getImageLoader()->enableWatcher(false);
+			viewport()->getImageLoader()->clearFileWatcher();
 
 			// this reloads the image -> that's not what we want!
 			if (metaData)
 				metaData->setResolution((int)resizeDialog->getExifDpi(), (int)resizeDialog->getExifDpi());
 
+			// TODO: make resize available for ARGB images (conversion CV - Qt?)
 			QImage rImg = resizeDialog->getResizedImage();
 
 			if (!rImg.isNull()) {
 				viewport()->unloadImage();
 				viewport()->setImage(rImg);
 				setWindowTitle(QFileInfo(), rImg.size());
-			}
-			else {
-				errorDialog("Sorry, I cannot transform the image.");
 			}
 		}
 		else if (metaData) {

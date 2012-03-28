@@ -717,7 +717,7 @@ public:
 	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
-	enum{unit_cm, unit_mm, unit_inch, unit_end};
+	enum{unit_cm, unit_mm, unit_inch, unit_percent, unit_end};
 	enum{res_ppi, res_ppc, res_end};  
 
 	bool wasOkPressed() {

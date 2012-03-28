@@ -1735,6 +1735,7 @@ void DkResizeDialog::init() {
 	unitFactor.insert(unit_cm, 1.0f);
 	unitFactor.insert(unit_mm, 10.0f);
 	unitFactor.insert(unit_inch, 1.0f/2.54f);
+	unitFactor.insert(unit_percent, -1.0f);		// not in use for percent
 
 	resFactor.resize(res_end);
 	resFactor.insert(res_ppi, 2.54f);
@@ -1750,20 +1751,6 @@ void DkResizeDialog::init() {
 }
 
 void DkResizeDialog::createLayout() {
-
-	// bottom widget
-	QWidget* bottomWidget = new QWidget(this);
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
-
-	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-
-	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	bottomWidgetHBoxLayout->addItem(spacer);
-	bottomWidgetHBoxLayout->addWidget(buttonOk);
-	bottomWidgetHBoxLayout->addWidget(buttonCancel);
 
 	// central widget
 	centralWidget = new QWidget(this);
@@ -1852,6 +1839,7 @@ void DkResizeDialog::createLayout() {
 	unitList.insert(unit_cm, "cm");
 	unitList.insert(unit_mm, "mm");
 	unitList.insert(unit_inch, "inch");
+	unitList.insert(unit_percent, "%");
 	unitBox->addItems(unitList);
 	unitBox->setObjectName("unitBox");
 
@@ -1906,6 +1894,21 @@ void DkResizeDialog::createLayout() {
 	gridLayout->addWidget(resampleCheck, 4, 2, 1, 3);
 	gridLayout->addWidget(resampleBox, 5, 2, 1, 3);
 
+	// bottom widget
+	QWidget* bottomWidget = new QWidget(this);
+	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
+
+	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
+	buttonOk->setDefault(true);
+	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
+	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
+	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
+
+	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+	bottomWidgetHBoxLayout->addItem(spacer);
+	bottomWidgetHBoxLayout->addWidget(buttonOk);
+	bottomWidgetHBoxLayout->addWidget(buttonCancel);
+
 	BorderLayout* borderLayout = new BorderLayout;
 	borderLayout->addWidget(bottomWidget, BorderLayout::South);
 	borderLayout->addWidget(centralWidget, BorderLayout::Center);
@@ -1924,27 +1927,37 @@ void DkResizeDialog::initBoxes() {
 	hPixelEdit->setValue(img->height());
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	float width = (float)img->width()/exifDpi * units;
+	float width = (unitBox->currentIndex() != unit_percent) ? (float)img->width()/exifDpi * units : 100.0;
 	widthEdit->setValue(width);
 
-	float height = (float)img->height()/exifDpi * units;
+	float height = (unitBox->currentIndex() != unit_percent) ? (float)img->height()/exifDpi * units : 100.0;
 	heightEdit->setValue(height);
 }
 
 void DkResizeDialog::updateWidth() {
 
 	float pWidth = wPixelEdit->text().toDouble();
-	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	float width = pWidth/exifDpi * units;
-	widthEdit->setValue(width);
+	
+	if (unitBox->currentIndex() != unit_percent) {	
+		float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
+		float width = pWidth/exifDpi * units;
+		widthEdit->setValue(width);
+	}
+	else
+		widthEdit->setValue(pWidth/(float)img->width() * 100.0f);
 }
 
 void DkResizeDialog::updateHeight() {
 
 	float pHeight = hPixelEdit->text().toDouble();
-	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	float height = pHeight/exifDpi * units;
-	heightEdit->setValue(height);
+
+	if (unitBox->currentIndex() != unit_percent) {	
+		float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
+		float height = pHeight/exifDpi * units;
+		heightEdit->setValue(height);
+	}
+	else
+		heightEdit->setValue(pHeight/(float)img->height() * 100.0f);
 }
 
 void DkResizeDialog::updateResolution() {
@@ -1956,23 +1969,32 @@ void DkResizeDialog::updateResolution() {
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
 	float resolution = wPixel/width * units;
 	resolutionEdit->setValue(resolution);
-
 }
 
 void DkResizeDialog::updatePixelHeight() {
 
 	float height = heightEdit->text().toDouble();
-	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	int pixelHeight = cvRound(height*exifDpi / units);
-	hPixelEdit->setValue(pixelHeight);
+
+	if (unitBox->currentIndex() != unit_percent) {	
+		float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
+		int pixelHeight = cvRound(height*exifDpi / units);
+		hPixelEdit->setValue(pixelHeight);
+	}
+	else
+		hPixelEdit->setValue(img->height()*height/100.0f);
 }
 
 void DkResizeDialog::updatePixelWidth() {
 
 	float width = widthEdit->text().toDouble();
-	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	int pixelWidth = cvRound(width*exifDpi / units);
-	wPixelEdit->setValue(pixelWidth);
+	
+	if (unitBox->currentIndex() != unit_percent) {	
+		float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
+		int pixelWidth = cvRound(width*exifDpi / units);
+		wPixelEdit->setValue(pixelWidth);
+	}
+	else
+		wPixelEdit->setValue(img->width()*width/100.0f);
 }
 
 void DkResizeDialog::on_lockButtonDim_clicked() {
@@ -2012,7 +2034,6 @@ void DkResizeDialog::on_wPixelEdit_valueChanged(QString text) {
 	hPixelEdit->setValue(newHeight);
 	updateHeight();
 	drawPreview();
-
 }
 
 void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
@@ -2046,8 +2067,10 @@ void DkResizeDialog::on_widthEdit_valueChanged(QString text) {
 		return;
 	}
 
-	float newHeight = text.toFloat()/(float)img->width() * (float)img->height();
-	heightEdit->setValue(newHeight);
+	if (unitBox->currentIndex() != unit_percent)
+		heightEdit->setValue(text.toFloat()/(float)img->width() * (float)img->height());
+	else
+		heightEdit->setValue(text.toFloat());
 
 	if (resampleCheck->isChecked()) 
 		updatePixelHeight();
@@ -2071,8 +2094,10 @@ void DkResizeDialog::on_heightEdit_valueChanged(QString text) {
 		return;
 	}
 	
-	int newWidth = text.toFloat()/(float)img->height() * (float)img->width();
-	widthEdit->setValue(newWidth);
+	if (unitBox->currentIndex() != unit_percent)
+		widthEdit->setValue(text.toFloat()/(float)img->height() * (float)img->width());
+	else
+		widthEdit->setValue(text.toFloat());
 
 	if (resampleCheck->isChecked()) 
 		updatePixelWidth();
@@ -2206,9 +2231,14 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
 	if (newSize.width() < wPixelEdit->minimum() || newSize.width() > wPixelEdit->maximum() || 
 		newSize.height() < hPixelEdit->minimum() || newSize.height() > hPixelEdit->maximum()) {
-		
-		// TODO: if real transform is applied: error dialog
-		return QImage();
+
+		if (!silent) {
+			QMessageBox errorDialog(this);
+			errorDialog.setIcon(QMessageBox::Critical);
+			errorDialog.setText(tr("Sorry, but the image size %1 x %2 is illegal.").arg(newSize.width()).arg(newSize.height()));
+			errorDialog.show();
+			errorDialog.exec();
+		}
 	}
 
 	Qt::TransformationMode iplQt;
@@ -2252,10 +2282,11 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 		}catch (std::exception se) {
 
 			if (!silent) {
-				// TODO: getBufferSize (static in DkImage)
+				
+				qDebug() << "image size: " << newSize;
 				QMessageBox errorDialog(this);
 				errorDialog.setIcon(QMessageBox::Critical);
-				errorDialog.setText(tr("Sorry, the image is too large: %1 MB").arg(newSize.width()*newSize.height()*32.0f/(1024.0f*1024.0f)));
+				errorDialog.setText(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(newSize, 32)));
 				errorDialog.show();
 				errorDialog.exec();
 			}

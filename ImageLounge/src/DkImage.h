@@ -137,16 +137,28 @@ public:
 	}
 #endif
 
-	static QString getBufferSize(const QImage &img) {
+	static QString getBufferSize(const QImage& img) {
 
-		float size = img.width() * img.height() * img.depth();
+		return getBufferSize(img.size(), img.depth());
+	}
+
+	static QString getBufferSize(const QSize imgSize, const int depth) {
+
+		double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
 		QString sizeStr;
+		qDebug() << "dimension: " << size;
 
-		if (size >= 1024*1024) {
+		if (size >= 1024*1024*1024) {
+			return QString::number(size/(1024.0f*1024.0f*1024.0f), 'f', 2) + " GB";
+		}
+		else if (size >= 1024*1024) {
 			return QString::number(size/(1024.0f*1024.0f), 'f', 2) + " MB";
 		}
 		else if (size >= 1024) {
 			return QString::number(size/1024.0f, 'f', 2) + " KB";
+		}
+		else {
+			return QString::number(size, 'f', 2) + " B";
 		}
 	}
 
@@ -407,6 +419,7 @@ public:
 	void lastFile();
 	void loadFileAt(int idx);
 	void clearPath();
+	void clearFileWatcher();
 	QString getCurrentFilter();
 	QDir getDir();
 	QDir getSaveDir();
