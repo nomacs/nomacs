@@ -212,9 +212,6 @@ protected:
 	virtual void changeCursor();
 };
 
-
-
-
 class DkImageLoader;
 class DkLoader;
 

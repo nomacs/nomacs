@@ -253,6 +253,7 @@ set (NOMACS_SOURCES
         src/DkConnection.cpp
         src/DkNetwork.cpp
         src/DkNoMacs.cpp
+		src/DkPong.cpp
         src/DkTimer.cpp
         src/DkUtils.cpp
         src/DkViewPort.cpp
@@ -275,6 +276,7 @@ set (NOMACS_MOCS
         src/DkConnection.h
         src/DkNetwork.h
         src/DkNoMacs.h
+		src/DkPong.h
         #src/DkTimer.h
         #src/DkUtils.h
         src/DkViewPort.h
@@ -293,6 +295,7 @@ set (NOMACS_HEADERS
         src/DkConnection.h
         src/DkNetwork.h
         src/DkNoMacs.h
+		src/DkPong.h
         src/DkTimer.h
         src/DkUtils.h
         src/DkViewPort.h

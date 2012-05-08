@@ -29,6 +29,7 @@
 
 
 #include "DkNoMacs.h"
+#include "DkPong.h"
 #include "DkImage.h"
 
 #include <QtGui/QApplication>
@@ -74,6 +75,13 @@ int main(int argc, char *argv[]) {
 
 	
 	QStringList args = a.arguments();
+
+	//// pong --------------------------------------------------------------------
+	//nmc::DkPong *p = new nmc::DkPong();
+	//int pVal = a.exec();
+	//return pVal;
+	//// pong --------------------------------------------------------------------
+
 	nmc::DkNoMacs* w;
 
 	// DEBUG --------------------------------------------------------------------

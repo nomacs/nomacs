@@ -2461,4 +2461,5 @@ QImage& DkViewPortContrast::getImage() {
 //QEvent::Type DkInfoEvent::infoEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
 //QEvent::Type DkLoadImageEvent::eventType = static_cast<QEvent::Type>(QEvent::registerEventType());
 
+
 }

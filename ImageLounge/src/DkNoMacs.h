@@ -149,6 +149,7 @@ enum {
 	shortcut_show_help		= Qt::Key_F1,
 
 	// eggs
+	shortcut_pong			= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_P,
 	shortcut_test_img		= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_L,
 	shortcut_test_rec		= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_R,
 	shortcut_shiver			= Qt::CTRL + Qt::Key_W,

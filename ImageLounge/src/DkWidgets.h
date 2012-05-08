@@ -717,7 +717,8 @@ public:
 	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
-	enum{unit_cm, unit_mm, unit_inch, unit_percent, unit_end};
+	enum{size_pixel, size_percent, size_end};
+	enum{unit_cm, unit_mm, unit_inch, unit_end};
 	enum{res_ppi, res_ppc, res_end};  
 
 	bool wasOkPressed() {
@@ -767,6 +768,7 @@ protected slots:
 	void on_heightEdit_valueChanged(QString text);
 	void on_resolutionEdit_valueChanged(QString text);
 
+	void on_sizeBox_currentIndexChanged(int idx);
 	void on_unitBox_currentIndexChanged(int idx);
 	void on_resUnitBox_currentIndexChanged(int idx);
 	void on_resampleBox_currentIndexChanged(int idx);
@@ -791,6 +793,7 @@ protected:
 	QDoubleSpinBox* widthEdit;
 	QDoubleSpinBox* heightEdit;
 	QComboBox* unitBox;
+	QComboBox* sizeBox;
 	DkButton* lockButtonDim;
 
 	QDoubleSpinBox* resolutionEdit;
