@@ -26,11 +26,15 @@
  *******************************************************************************************************/
 
 
+#ifdef WIN32
+	#include "shlwapi.h"
+	#pragma comment (lib, "shlwapi.lib")
+#endif
 
+#include "DkImage.h"
 
 #include "DkNoMacs.h"
 #include "DkPong.h"
-#include "DkImage.h"
 
 #include <QtGui/QApplication>
 #include <QFileInfo>
@@ -39,6 +43,11 @@
 
 #include <iostream>
 #include <cassert>
+
+bool mycomp(const std::wstring & lhs, const std::wstring & rhs) {
+	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
+}
+
 
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {

@@ -743,6 +743,8 @@ void DkViewPort::tcpSendImage() {
 
 void DkViewPort::fileNotLoaded(QFileInfo file) {
 
+	qDebug() << "starting timer over again...";
+
 	// things todo if a file was not loaded...
 	player->startTimer();
 }

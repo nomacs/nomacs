@@ -27,6 +27,11 @@
 
 #pragma once
 
+#ifdef WIN32
+#include "shlwapi.h"
+//#pragma comment (lib, "shlwapi.lib")
+#endif
+
 #include <QtGui/QWidget>
 #include <QImageWriter>
 #include <QFileSystemWatcher>
@@ -57,12 +62,13 @@
 using namespace cv;
 #endif
 
+#include <set>
+
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
 #else
 #define DllExport
 #endif
-
 
 // TODO: ifdef
 //#include <ShObjIdl.h>
@@ -74,12 +80,14 @@ using namespace cv;
 #include "DkTimer.h"
 #include "DkSettings.h"
 
-
 #ifdef linux
 	typedef  unsigned char byte;
 #endif
 
 namespace nmc {
+
+	bool josefder2(std::string ls, std::string rs);
+	bool mycomp(const std::wstring & lhs, const std::wstring & rhs);
 
 // basic image processing
 

@@ -29,6 +29,16 @@
 
 namespace nmc {
 
+bool mycomp(const std::wstring & lhs, const std::wstring & rhs) {
+	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
+	//return true;
+}
+
+bool josefder2(std::string ls, std::string rs) {
+	return true;
+}
+
+
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.pns *.mpo *.lnk").split(' ');
 
@@ -162,7 +172,7 @@ void DkImageLoader::loadDir(QDir newDir) {
 		if (saveDir == dir) saveDir = dir;
 		dir = newDir;
 		dir.setNameFilters(fileFilters);
-		dir.setSorting(QDir::LocaleAware);		// TODO: extend
+		dir.setSorting(QDir::LocaleAware);		// TODO: extenda
 		folderUpdated = false;
 		
 		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
@@ -209,7 +219,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 	//if (!img.isNull() && !file.exists())
 	//	return;
 	if (!file.exists() && !virtualFile.exists()) {
-		qDebug() << virtualFile.absoluteFilePath() << "does not exist...";
+		qDebug() << virtualFile.absoluteFilePath() << "does not exist...!!!";
 		return;
 	}
 
@@ -218,7 +228,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 	qDebug() << "loading: " << file.absoluteFilePath();
 	mutex.unlock();
 
-	if (loadFile.exists())
+	//if (loadFile.exists())
 		load(loadFile, silent);
 }
 
@@ -410,6 +420,14 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 			QString msg = tr("Sorry, the file: %1 does not exist... ").arg(file.fileName());
 			updateInfoSignal(msg);
 		}
+		
+		fileNotLoadedSignal(file);
+		this->file = lastFileLoaded;	// revert to last file
+
+		int fPos = files.indexOf(file.fileName());
+		if (fPos >= 0)
+			files.removeAt(fPos);
+
 		return false;
 	}
 	else if (!file.permission(QFile::ReadUser)) {
@@ -418,6 +436,10 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 			QString msg = tr("Sorry, you are not allowed to read: %1").arg(file.fileName());
 			updateInfoSignal(msg);
 		}
+		
+		fileNotLoadedSignal(file);
+		this->file = lastFileLoaded;	// revert to last file
+
 		return false;
 	}
 
@@ -448,12 +470,13 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		imgLoaded = false;
 	}
 
+	this->virtualFile = file;
+
 	if (!silent)
 		emit updateInfoSignalDelayed(tr("loading..."), false);	// stop showing
 
 	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
-	this->virtualFile = file;
-
+	
 	if (imgLoaded) {
 				
 		DkMetaData imgMetaData(file);		
@@ -1376,8 +1399,93 @@ QDir DkImageLoader::getDir() {
 QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywords, QStringList keywords) {
 
 	DkTimer dt;
+
+#ifdef WIN32
+
+	QString winPath = QDir::toNativeSeparators(dir.path()) + "\\*.*";
+
+	wchar_t* fnameT = L"C:\\VSProjects\\img\\*.*";
+	const wchar_t* fname = reinterpret_cast<const wchar_t *>(winPath.utf16());
+
+	WIN32_FIND_DATAW findFileData;
+	HANDLE MyHandle = FindFirstFileW(fname, &findFileData);
+
+	std::vector<std::wstring> fileNameList;
+	std::wstring fileName;
+
+	if( MyHandle != INVALID_HANDLE_VALUE) {
+		
+		do {
+
+			fileName = findFileData.cFileName;
+			fileNameList.push_back(fileName);	// TODO: sort correct according to numbers
+			
+		} while(FindNextFileW(MyHandle, &findFileData) != 0);
+	}
+
+	FindClose(MyHandle);
+	qDebug() << "WinAPI, indexed (" << fileNameList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
+	
+	// slow regexp
+	//QString extPattern = ".+((\\" + fileFilters.join("$)|(\\") + "$))";
+	//extPattern.replace("*", "");
+	//QRegExp exp(extPattern, Qt::CaseInsensitive);
+
+	// remove the * in fileFilters
+	QStringList fileFiltersClean = fileFilters;
+	for (int idx = 0; idx < fileFilters.size(); idx++)
+		fileFiltersClean[idx].replace("*", "");
+
+	std::sort(fileNameList.begin(), fileNameList.end(), mycomp);
+
+	//std::string test = "josef";
+	//std::string test1 = "josef1";
+
+	//std::vector<std::string> st;
+	//st.push_back(test);
+	//st.push_back(test1);
+
+	//std::sort(st.begin(), st.end(), josefder2);
+
+	//fileNameList.sort(_wcsicmp);
+
+	QStringList fileList;
+	std::vector<std::wstring>::iterator lIter = fileNameList.begin();
+
+	// convert to QStringList
+	for (unsigned int idx = 0; idx < fileNameList.size(); idx++, lIter++) {
+		
+		QString qFilename = QString::fromStdWString(*lIter);
+
+		// believe it or not, but this is 10 times faster than QRegExp
+		// drawback: we also get files that contain *.jpg*
+		for (int idx = 0; idx < fileFiltersClean.size(); idx++) {
+
+			if (qFilename.contains(fileFiltersClean[idx], Qt::CaseInsensitive)) {
+				fileList.append(qFilename);
+				break;
+			}
+		}
+	}
+
+	//for (int idx = 0; idx < fileList.size(); idx++)
+	//	qDebug() << fileList[idx];
+	//qDebug() << "-------------------end list";
+	//fileList.sort();
+	//
+	//for (int idx = 0; idx < fileList.size(); idx++)
+	//	qDebug() << fileList[idx];
+	//qDebug() << "-------------------end list sorted";
+	//qDebug() << "WinAPI, sorted (" << fileList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
+#else
+
+	// true file list
 	dir.setSorting(QDir::LocaleAware);
 	QStringList fileList = dir.entryList(fileFilters);
+	qDebug() << "Qt, sorted file list computed in: " << QString::fromStdString(dt.getIvl());
+	qDebug() << fileList;
+
+#endif
 
 	for (int idx = 0; idx < ignoreKeywords.size(); idx++) {
 		QRegExp exp = QRegExp("^((?!" + ignoreKeywords[idx] + ").)*$");
@@ -1388,10 +1496,11 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	for (int idx = 0; idx < keywords.size(); idx++) {
 		fileList = fileList.filter(keywords[idx], Qt::CaseInsensitive);
 	}
-	qDebug() << "filtered file list: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "\nfiltered file list: " << QString::fromStdString(dt.getTotal());
 
 	return fileList;
 }
+
 
 /**
  * Returns the directory where files are saved to.
