@@ -29,15 +29,10 @@
 
 namespace nmc {
 
-bool mycomp(const std::wstring & lhs, const std::wstring & rhs) {
+bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
 	//return true;
 }
-
-bool josefder2(std::string ls, std::string rs) {
-	return true;
-}
-
 
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.pns *.mpo *.lnk").split(' ');
@@ -1419,7 +1414,6 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 
 			fileName = findFileData.cFileName;
 			fileNameList.push_back(fileName);	// TODO: sort correct according to numbers
-			
 		} while(FindNextFileW(MyHandle, &findFileData) != 0);
 	}
 
@@ -1436,18 +1430,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	for (int idx = 0; idx < fileFilters.size(); idx++)
 		fileFiltersClean[idx].replace("*", "");
 
-	std::sort(fileNameList.begin(), fileNameList.end(), mycomp);
-
-	//std::string test = "josef";
-	//std::string test1 = "josef1";
-
-	//std::vector<std::string> st;
-	//st.push_back(test);
-	//st.push_back(test1);
-
-	//std::sort(st.begin(), st.end(), josefder2);
-
-	//fileNameList.sort(_wcsicmp);
+	std::sort(fileNameList.begin(), fileNameList.end(), wCompLogic);
 
 	QStringList fileList;
 	std::vector<std::wstring>::iterator lIter = fileNameList.begin();
@@ -1468,15 +1451,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 		}
 	}
 
-	//for (int idx = 0; idx < fileList.size(); idx++)
-	//	qDebug() << fileList[idx];
-	//qDebug() << "-------------------end list";
-	//fileList.sort();
-	//
-	//for (int idx = 0; idx < fileList.size(); idx++)
-	//	qDebug() << fileList[idx];
-	//qDebug() << "-------------------end list sorted";
-	//qDebug() << "WinAPI, sorted (" << fileList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "WinAPI, sorted (" << fileList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
 #else
 
 	// true file list

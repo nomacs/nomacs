@@ -86,8 +86,7 @@ using namespace cv;
 
 namespace nmc {
 
-	bool josefder2(std::string ls, std::string rs);
-	bool mycomp(const std::wstring & lhs, const std::wstring & rhs);
+	bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
 
 // basic image processing
 
