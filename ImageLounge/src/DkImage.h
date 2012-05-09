@@ -82,13 +82,25 @@ using namespace cv;
 namespace nmc {
 
 // basic image processing
+
+/**
+ * DkImage holds some basic image processing
+ * methods that are generally needed.
+ **/ 
 class DkImage {
 
 public:
 
+	/**< interpolation mapping OpenCV -> Qt */
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
 
 #ifdef WITH_OPENCV
+	
+	/**
+	 * Converts a QImage to a Mat
+	 * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
+	 * @return cv::Mat the corresponding Mat
+	 **/ 
 	static Mat qImage2Mat(QImage img) {
 
 		Mat mat2;
@@ -114,6 +126,11 @@ public:
 		return mat2; 
 	}
 
+	/**
+	 * Converts a cv::Mat to a QImage.
+	 * @param img supported formats CV8UC1 | CV_8UC3 | CV_8UC4
+	 * @return QImage the corresponding QImage
+	 **/ 
 	static QImage mat2QImage(Mat img) {
 
 		QImage qImg;
@@ -137,11 +154,22 @@ public:
 	}
 #endif
 
+	/**
+	 * Returns a string with the buffer size of an image.
+	 * @param img a QImage
+	 * @return QString a human readable string containing the buffer size
+	 **/ 
 	static QString getBufferSize(const QImage& img) {
 
 		return getBufferSize(img.size(), img.depth());
 	}
 
+	/**
+	 * Returns a string with the buffer size of an image.
+	 * @param imgSize the image size
+	 * @param depth the image depth
+	 * @return QString a human readable string containing the buffer size
+	 **/ 
 	static QString getBufferSize(const QSize imgSize, const int depth) {
 
 		double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
@@ -162,6 +190,14 @@ public:
 		}
 	}
 
+	/**
+	 * This function resizes an image according to the interpolation method specified.
+	 * @param img the image to resize
+	 * @param newSize the new size
+	 * @param factor the resize factor
+	 * @param interpolation the interpolation method
+	 * @return QImage the resized image
+	 **/ 
 	static QImage resizeImage(const QImage &img, const QSize &newSize, float factor = 1.0f, int interpolation = ipl_cubic) {
 		
 		QSize nSize = newSize;
@@ -288,6 +324,9 @@ private:
 
 };
 
+/**
+ * This class holds thumbnails.
+ **/ 
 class DkThumbNail {
 
 public:
@@ -297,27 +336,52 @@ public:
 		loaded
 	};
 	
+	/**
+	 * Default constructor.
+	 * @param file the corresponding file
+	 * @param img the thumbnail image
+	 **/ 
 	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage()) {
 		this->img = img;
 		this->file = file;
 		imgExists = true;
 		s = qMax(img.width(), img.height());
 	};
+
+	/**
+	 * Default destructor.
+	 * @return 
+	 **/ 
 	~DkThumbNail() {};
 
+	/**
+	 * Sets the thumbnail image.
+	 * @param img the thumbnail
+	 **/ 
 	void setImage(QImage img) {
 		this->img = img;
 	}
 
+	/**
+	 * Returns the thumbnail.
+	 * @return QImage the thumbnail.
+	 **/ 
 	QImage getImage() {
-		
 		return img;
 	};
 
+	/**
+	 * Returns the file information.
+	 * @return QFileInfo the thumbnail file
+	 **/ 
 	QFileInfo getFile() {
 		return file;
 	};
 
+	/**
+	 * Returns whether the thumbnail was loaded, or does not exist.
+	 * @return int a status (loaded | not loaded | exists not)
+	 **/ 
 	int hasImage() {
 		
 		if (!img.isNull())
@@ -328,10 +392,18 @@ public:
 			return exists_not;
 	};
 
+	/**
+	 * Manipulates the file loaded status.
+	 * @param exists a status (loaded | not loaded | exists not)
+	 **/ 
 	void setImgExists(bool exists) {
 		imgExists = exists;
 	}
 
+	/**
+	 * Returns the thumbnail size.
+	 * @return int the maximal side (either width or height)
+	 **/ 
 	int size() {
 		return s;
 	};
@@ -344,6 +416,13 @@ private:
 
 };
 
+/**
+ * This class provides a method for reading thumbnails.
+ * If the a thumbnail is provided in the metadata,
+ * it can be loaded very fast. Additionally,
+ * the thumbnails are loaded in a separate thread (in the 
+ * background)
+ **/ 
 class DkThumbsLoader : public QThread {
 
 	Q_OBJECT
@@ -361,7 +440,6 @@ signals:
 
 public slots:
 	void setLoadLimits(int start = 0, int end = 20);
-
 
 private:
 	std::vector<DkThumbNail>* thumbs;
@@ -382,6 +460,13 @@ private:
 
 };
 
+/**
+ * This class is a basic image loader class.
+ * It takes care of the file watches for the current folder,
+ * holds the currently displayed image,
+ * calls the load routines
+ * and saves the image or the image metadata.
+ **/ 
 class DllExport DkImageLoader : public QObject {
 
 	Q_OBJECT
@@ -400,14 +485,13 @@ public:
 	QStringList keywords;
 
 	static bool isValid(QFileInfo& fileInfo);
-	static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
+	//static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList());
 
 	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
 
 	bool silent;
 
-	// TODO: thread here
 	void rotateImage(double angle);
 	void saveFile(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
 	void setFile(QFileInfo& filename);
@@ -433,18 +517,30 @@ public:
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
 
 
+	/**
+	 * Returns if an image is loaded currently.
+	 * @return bool true if an image is loaded.
+	 **/ 
 	bool hasImage() {
 		
 		QMutexLocker locker(&mutex);
 		return !img.isNull();
 	};
 
+	/**
+	 * Returns the currently loaded image.
+	 * @return QImage& the current image
+	 **/ 
 	QImage& getImage() {
 		
 		QMutexLocker locker(&mutex);
 		return img;
 	};
 
+	/**
+	 * Returns the image's metadata.
+	 * @return nmc::DkMetaData the image metadata.
+	 **/ 
 	DkMetaData getMetaData() {
 		return imgMetaData;
 	};

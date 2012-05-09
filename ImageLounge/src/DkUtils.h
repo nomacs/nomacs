@@ -255,7 +255,7 @@ public:
 	template <typename numFmt>
 	static std::string stringify(numFmt number, double n) {
 
-		int rounded = cvRound(number * std::pow(10,n));
+		int rounded = qRound(number * std::pow(10,n));
 
 		return stringify(rounded/std::pow(10,n));
 	};

@@ -245,7 +245,7 @@ public:
 
 	static float getNextPowerOfTwoDivisior(float factor) {
 
-		int iv = cvRound(1.0f/factor);
+		int iv = qRound(1.0f/factor);
 		int pt = getNextPowerOfTwo(iv);
 
 		// if the number is not yet a power of two or pt is one
@@ -785,7 +785,7 @@ public:
 	};
 
 	virtual DkVector round() const {
-		return DkVector(cvRound(x), cvRound(y));
+		return DkVector(qRound(x), qRound(y));
 	} 
 
 	///** 
@@ -825,7 +825,7 @@ public:
 	 **/
 	virtual Point getCvPoint() const {
 
-		return Point(cvRound(x), cvRound(y));
+		return Point(qRound(x), qRound(y));
 	};
 
 	/**
@@ -835,7 +835,7 @@ public:
 	 **/
 	Size getCvSize() const {
 
-		return Size(cvRound(width), cvRound(height));
+		return Size(qRound(width), qRound(height));
 	}
 #endif
 };

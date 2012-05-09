@@ -2291,9 +2291,9 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 				colorTable[i] = qRgb(rRight, gRight, bRight);
 			else {
 				fac = (actPos - leftStop) / (rightStop - leftStop);
-				rAct = cvRound(rLeft + (rRight - rLeft) * fac);
-				gAct = cvRound(gLeft + (gRight - gLeft) * fac);
-				bAct = cvRound(bLeft + (bRight - bLeft) * fac);
+				rAct = qRound(rLeft + (rRight - rLeft) * fac);
+				gAct = qRound(gLeft + (gRight - gLeft) * fac);
+				bAct = qRound(bLeft + (bRight - bLeft) * fac);
 				colorTable[i] = qRgb(rAct, gAct, bAct);
 			}	
 		}

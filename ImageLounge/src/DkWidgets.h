@@ -786,8 +786,8 @@ protected:
 	QLabel* previewLabel;
 	
 	// resize gui:
-	QSpinBox* wPixelEdit;
-	QSpinBox* hPixelEdit;
+	QDoubleSpinBox* wPixelEdit;
+	QDoubleSpinBox* hPixelEdit;
 	DkButton* lockButton;
 
 	QDoubleSpinBox* widthEdit;
@@ -1224,7 +1224,7 @@ public:
 		}
 
 		tForm.rotateRadians(-angle);
-		tForm.translate(cvRound(-ul.x()), cvRound(-ul.y()));	// round guarantees that pixels are not interpolated
+		tForm.translate(qRound(-ul.x()), qRound(-ul.y()));	// round guarantees that pixels are not interpolated
 
 	};
 
