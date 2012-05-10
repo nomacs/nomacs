@@ -102,12 +102,12 @@
     <message>
         <location filename="../src/DkSettings.cpp" line="798"/>
         <source>save Thumbnails</source>
-        <translation>speichere Vorschaubilder</translation>
+        <translation>Vorschaubilder speichern</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="799"/>
         <source>saves thumbnails to images (EXPERIMENTAL)</source>
-        <translation>speicht Vorschaubilder (EXPERIMENTELL)</translation>
+        <translation>Vorschaubilder speichern (EXPERIMENTELL)</translation>
     </message>
 </context>
 <context>

@@ -29,10 +29,12 @@
 
 namespace nmc {
 
+#ifdef WIN32
 bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
 	//return true;
 }
+#endif
 
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.pns *.mpo *.lnk").split(' ');

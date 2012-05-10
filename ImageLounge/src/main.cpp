@@ -44,10 +44,6 @@
 #include <iostream>
 #include <cassert>
 
-bool mycomp(const std::wstring & lhs, const std::wstring & rhs) {
-	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
-}
-
 
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
