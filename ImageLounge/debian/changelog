@@ -1,3 +1,9 @@
+nomacs (0.3.1) unstable; urgency=low
+
+  * internal release
+
+ -- Stefan Fiel <stefan@nomacs.org>  Thu, 10 May 2012 16:30:22 +0200
+
 nomacs (0.3.0) unstable; urgency=low
 
   * Bug #55: performance loss when loading from network
