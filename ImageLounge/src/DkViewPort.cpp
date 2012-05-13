@@ -1602,19 +1602,22 @@ void DkViewPort::loadPrevFile(bool silent) {
 
 void DkViewPort::loadPrevFileFast(bool silent) {
 
-	unloadImage();
+	QImage thumb;
 
 	if (loader && !testLoaded)
-		loader->changeFileFast(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		thumb = loader->changeFileFast(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+
+	if (!thumb.isNull()) {
+		unloadImage();
+		setThumbImage(thumb);
+	}
+	else
+		qDebug() << "thumbnail is empty...";
+
+	QCoreApplication::sendPostedEvents();
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(-1);
-}
-
-void DkViewPort::loadFileSkip(int skip, bool silent) {
-
-	unloadImage();
-	loader->changeFile(skip, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 }
 
 void DkViewPort::loadNextFileFast(bool silent) {
@@ -1637,6 +1640,11 @@ void DkViewPort::loadNextFileFast(bool silent) {
 		emit sendNewFileSignal(1);
 }
 
+void DkViewPort::loadFileSkip(int skip, bool silent) {
+
+	unloadImage();
+	loader->changeFile(skip, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+}
 
 void DkViewPort::loadFirst() {
 
