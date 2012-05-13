@@ -529,6 +529,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	overviewSize = 0.15f;
 	overviewMargin = 10;
 	testLoaded = false;
+	thumbLoaded = false;
 	visibleStatusbar = false;
 
 	rating = -1;
@@ -691,15 +692,21 @@ void DkViewPort::setImage(QImage newImg) {
 	overviewWindow->setImage(QImage());	// clear overview
 
 	imgQt = newImg;
-	QRectF oldImgRect = imgRect;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
 	emit enableNoImageSignal(!imgQt.isNull());
 
+	qDebug() << "imgRect: " << imgRect << " oldImgRect: " << oldImgRect;
 	qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
 	if (!DkSettings::DisplaySettings::keepZoom || imgRect != oldImgRect)
-		worldMatrix.reset();							
+		worldMatrix.reset();
+	else {
+		imgViewRect = oldImgViewRect;
+		imgMatrix = oldImgMatrix;
+		worldMatrix = oldWorldMatrix;
+		qDebug() << "---------------loading matrix: " << oldWorldMatrix;
+	}
 
 	updateImageMatrix();
 
@@ -727,7 +734,11 @@ void DkViewPort::setImage(QImage newImg) {
 	if (loader && ratingLabel)
 		ratingLabel->setRating(DkImageLoader::imgMetaData.getRating());
 
+	thumbLoaded = false;
+	oldImgRect = imgRect;
+
 	update();
+	qDebug() << "---------------world matrix: " << worldMatrix;
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 }
 
@@ -746,7 +757,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 		worldMatrix.reset();							
 
 	updateImageMatrix();
-
+	
 	overviewWindow->setImage(imgQt);
 
 	//// TODO: this is a fast fix
@@ -763,6 +774,8 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	rating = -1;
 	if (loader && ratingLabel)
 		ratingLabel->setRating(DkImageLoader::imgMetaData.getRating());
+
+	thumbLoaded = true;
 
 	update();
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
@@ -1552,6 +1565,11 @@ void DkViewPort::unloadImage() {
 
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 
+	if (!thumbLoaded) { 
+		oldImgViewRect = imgViewRect;
+		oldWorldMatrix = worldMatrix;
+		oldImgMatrix = imgMatrix;
+	}
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool silent) {
@@ -1640,10 +1658,13 @@ void DkViewPort::loadNextFileFast(bool silent) {
 		emit sendNewFileSignal(1);
 }
 
-void DkViewPort::loadFileSkip(int skip, bool silent) {
+void DkViewPort::loadFullFile(bool silent) {
+
+	if (!thumbLoaded)
+		return;
 
 	unloadImage();
-	loader->changeFile(skip, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	loader->changeFile(0, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 }
 
 void DkViewPort::loadFirst() {

@@ -290,7 +290,7 @@ public slots:
 	// file actions
 	void loadFile(QFileInfo file, bool silent = false);
 	void reloadFile();
-	void loadFileSkip(int skip = 0, bool silent = false);
+	void loadFullFile(bool silent = false);
 	void loadNextFile(bool silent = false);
 	void loadPrevFile(bool silent = false);
 	void loadNextFileFast(bool silent = false);
@@ -320,8 +320,14 @@ protected:
 	virtual void wheelEvent(QWheelEvent *event);
 	virtual bool event(QEvent *event);
 
+	bool thumbLoaded;
 	bool testLoaded;
 	bool visibleStatusbar;
+
+	QRectF oldImgRect;
+	QRectF oldImgViewRect;
+	QTransform oldWorldMatrix;
+	QTransform oldImgMatrix;
 
 	QImage imgBg;
 	QLabel* wheelButton;

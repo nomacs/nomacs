@@ -230,7 +230,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 }
 
 /**
- * Loads the ancesting or subsequent file.
+ * Loads the ancesting or subsequent thumbnail file.
  * @param skipIdx the number of files that should be skipped after/before the current file.
  * @param silent if true, no status information will be displayed.
  **/ 
@@ -255,19 +255,21 @@ QImage DkImageLoader::changeFileFast(int skipIdx, bool silent) {
  **/ 
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
+	bool virtualExists = files.contains(virtualFile.fileName());
+
 	DkTimer dt;
-	QDir newDir = (virtualFile.exists()) ? virtualFile.absoluteDir() : file.absoluteDir();
+	QDir newDir = (virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir();
 	loadDir(newDir);
 
 	// locate the current file
-	QString cFilename = (virtualFile.exists()) ? virtualFile.fileName() : file.fileName();
+	QString cFilename = (virtualExists) ? virtualFile.fileName() : file.fileName();
 	int cFileIdx = 0;
 	int newFileIdx = 0;
 
 	//qDebug() << "virtual file " << virtualFile.absoluteFilePath();
 	//qDebug() << "file" << file.absoluteFilePath();
 
-	if (file.exists() || virtualFile.exists()) {
+	if (virtualExists || file.exists()) {
 
 		for ( ; cFileIdx < files.size(); cFileIdx++) {
 
@@ -311,8 +313,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
 	// file requested becomes current file
 	return (files.isEmpty()) ? QFileInfo() : QFileInfo(dir, files[newFileIdx]);
-
-
+	
 }
 
 /**
@@ -421,8 +422,10 @@ QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
 
 	if (!thumb.isNull())
 		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
-	else
+	else {
+		emit updateInfoSignal(file.fileName(), 100);
 		qDebug() << "[thumb] could not load: " << file.fileName();
+	}
 
 	virtualFile = file;
 

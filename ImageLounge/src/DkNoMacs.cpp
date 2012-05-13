@@ -1667,10 +1667,10 @@ void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 			menu->showMenu();
 	
 	if (event->key() == Qt::Key_Left && !event->isAutoRepeat() && fileActions[menu_file_prev]->isEnabled()) {
-		viewport()->loadFileSkip();
+		viewport()->loadFullFile();
 	}
 	if (event->key() == Qt::Key_Right && !event->isAutoRepeat() && fileActions[menu_file_next]->isEnabled()) {
-		viewport()->loadFileSkip();
+		viewport()->loadFullFile();
 	}
 }
 

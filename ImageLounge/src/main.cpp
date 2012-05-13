@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 
+
 #ifdef WIN32
 	#include "shlwapi.h"
 	#pragma comment (lib, "shlwapi.lib")
@@ -130,3 +131,33 @@ int main(int argc, char *argv[]) {
 	delete w;
 	return rVal;
 }
+
+//// http://stackoverflow.com/questions/8122277/getting-memory-information-with-qt
+//// memory sys info
+//MEMORYSTATUSEX memory_status;
+//ZeroMemory(&memory_status, sizeof(MEMORYSTATUSEX));
+//memory_status.dwLength = sizeof(MEMORYSTATUSEX);
+//if (GlobalMemoryStatusEx(&memory_status)) {
+//	system_info.append(
+//		QString("RAM: %1 MB")
+//		.arg(memory_status.ullTotalPhys / (1024 * 1024)));
+//} else {
+//	system_info.append("Unknown RAM");
+//}
+//
+//Linux (/proc/meminfo)
+//
+//	QProcess p;
+//p.start("awk", QStringList() << "/MemTotal/ { print $2 }" << "/proc/meminfo");
+//p.waitForFinished();
+//QString memory = p.readAllStandardOutput();
+//system_info.append(QString("; RAM: %1 MB").arg(memory.toLong() / 1024));
+//p.close();
+//
+//Mac (sysctl)
+//
+//	QProcess p;
+//p.start("sysctl", QStringList() << "kern.version" << "hw.physmem");
+//p.waitForFinished();
+//QString system_info = p.readAllStandardOutput();
+//p.close();
