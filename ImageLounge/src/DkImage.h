@@ -86,7 +86,24 @@ using namespace cv;
 
 namespace nmc {
 
+#ifdef WIN32
+	
+	/**
+	 * Logical string compare function.
+	 * This function is used to sort:
+	 * a1.png
+	 * a2.png
+	 * a10.png
+	 * instead of:
+	 * a1.png
+	 * a10.png
+	 * a2.png
+	 * @param lhs left string
+	 * @param rhs right string
+	 * @return bool true if left string < right string
+	 **/ 
 	bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
+#endif
 
 // basic image processing
 
@@ -519,6 +536,7 @@ public:
 	void setImage(QImage& img);
 	void load();
 	void load(QFileInfo file, bool silent = false);
+	QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
@@ -562,6 +580,7 @@ signals:
 	void fileNotLoadedSignal(QFileInfo file);
 
 public slots:
+	QImage changeFileFast(int skipIdx, bool silent = false);
 	void changeFile(int skipIdx, bool silent = false);
 	void fileChanged(const QString& path);
 	void directoryChanged(const QString& path);

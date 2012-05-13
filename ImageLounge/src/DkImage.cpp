@@ -230,6 +230,24 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 }
 
 /**
+ * Loads the ancesting or subsequent file.
+ * @param skipIdx the number of files that should be skipped after/before the current file.
+ * @param silent if true, no status information will be displayed.
+ **/ 
+QImage DkImageLoader::changeFileFast(int skipIdx, bool silent) {
+
+	mutex.lock();
+	QFileInfo loadFile = getChangedFileInfo(skipIdx);
+	qDebug() << "loading: " << file.absoluteFilePath();
+	mutex.unlock();
+
+	//if (loadFile.exists())
+	// no threading here
+	return loadThumb(loadFile, silent);
+}
+
+
+/**
  * Returns the file info of the ancesting/subsequent file + skipIdx.
  * @param skipIdx the number of files to be skipped from the current file.
  * @param silent if true, no status information will be displayed.
@@ -378,6 +396,37 @@ void DkImageLoader::loadFileAt(int idx) {
 	mutex.unlock();
 	load(loadFile);
 
+}
+
+
+QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
+		
+	DkTimer dt;
+
+	// see if we can read the thumbnail from the exif data
+	DkMetaData dataExif(file);
+	QImage thumb = dataExif.getThumbnail();
+	int orientation = dataExif.getOrientation();
+
+	qDebug() << "thumb size: " << thumb.size();
+
+	//// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
+	//QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
+			
+	if (orientation != -1 && !dataExif.isTiff()) {
+		QTransform rotationMatrix;
+		rotationMatrix.rotate((double)orientation);
+		thumb = thumb.transformed(rotationMatrix);
+	}
+
+	if (!thumb.isNull())
+		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
+	else
+		qDebug() << "[thumb] could not load: " << file.fileName();
+
+	virtualFile = file;
+
+	return thumb;
 }
 
 
@@ -2883,10 +2932,10 @@ void DkMetaData::readMetaData() {
 
 			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
 			exifImg = Exiv2::ImageFactory::open(filePath);
-			qDebug() << "open exif file" << QString::fromStdString(dt.getIvl());
+		
 		} catch (...) {
 			mdata = false;
-			qDebug() << "could not open image for exif data";
+			//qDebug() << "could not open image for exif data";
 			return;
 		}
 
@@ -2910,15 +2959,8 @@ void DkMetaData::readMetaData() {
 			return;
 		}
 
-
 		mdata = true;
-
 	}
-
-	if (dt.getTotalTime() != 0) {
-		qDebug() << "reading metadata: " << QString::fromStdString(dt.getTotal());
-	}
-
 	
 }
 

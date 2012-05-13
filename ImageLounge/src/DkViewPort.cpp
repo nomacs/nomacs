@@ -731,6 +731,43 @@ void DkViewPort::setImage(QImage newImg) {
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 }
 
+void DkViewPort::setThumbImage(QImage newImg) {
+
+	DkTimer dt;
+	imgPyramid.clear();
+
+	imgQt = newImg;
+	QRectF oldImgRect = imgRect;
+	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
+
+	emit enableNoImageSignal(true);
+
+	if (!DkSettings::DisplaySettings::keepZoom || imgRect != oldImgRect)
+		worldMatrix.reset();							
+
+	updateImageMatrix();
+
+	overviewWindow->setImage(imgQt);
+
+	//// TODO: this is a fast fix
+	//// if this thread uses the static metadata object 
+	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
+	//// currently we need to read the metadata twice (not nice either)
+	//DkImageLoader::imgMetaData.setFileName(loader->getFile());
+
+	if (centerLabel) centerLabel->stop();
+	if (bottomLabel) bottomLabel->stop();
+	if (bottomRightLabel) bottomRightLabel->stop();
+	if (editRect->isVisible()) editRect->hide();
+
+	rating = -1;
+	if (loader && ratingLabel)
+		ratingLabel->setRating(DkImageLoader::imgMetaData.getRating());
+
+	update();
+	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
+}
+
 void DkViewPort::tcpSendImage() {
 
 	setCenterInfo("sending image...");
@@ -1237,6 +1274,10 @@ void DkViewPort::keyPressEvent(QKeyEvent* event) {
 		update();
 	}
 
+	if (event->key() == Qt::Key_Right) {
+		qDebug() << "right key pressed...";
+	}
+
 	qDebug() << "key pressed viewport...";
 
 	DkBaseViewPort::keyPressEvent(event);
@@ -1558,6 +1599,44 @@ void DkViewPort::loadPrevFile(bool silent) {
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(-1);
 }
+
+void DkViewPort::loadPrevFileFast(bool silent) {
+
+	unloadImage();
+
+	if (loader && !testLoaded)
+		loader->changeFileFast(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
+		emit sendNewFileSignal(-1);
+}
+
+void DkViewPort::loadFileSkip(int skip, bool silent) {
+
+	unloadImage();
+	loader->changeFile(skip, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+}
+
+void DkViewPort::loadNextFileFast(bool silent) {
+
+	QImage thumb;
+
+	if (loader && !testLoaded)
+		thumb = loader->changeFileFast(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	
+	if (!thumb.isNull()) {
+		unloadImage();
+		setThumbImage(thumb);
+	}
+	else
+		qDebug() << "thumbnail is empty...";
+
+	QCoreApplication::sendPostedEvents();
+
+	if (qApp->keyboardModifiers() == altMod && hasFocus())
+		emit sendNewFileSignal(1);
+}
+
 
 void DkViewPort::loadFirst() {
 
@@ -2017,7 +2096,7 @@ void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
 	
 	// move the window - todo: NOT full screen, window inside...
 	setCursor(Qt::ClosedHandCursor);
-	posGrab = event->globalPos();
+	posGrab = event->pos();
 
 	DkViewPort::mousePressEvent(event);
 }
@@ -2041,7 +2120,7 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
 	}
 
 	setCursor(Qt::OpenHandCursor);
-	//DkViewPort::mouseReleaseEvent(event);
+	DkViewPort::mouseReleaseEvent(event);
 }
 
 

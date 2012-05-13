@@ -41,6 +41,7 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QPanGesture>
 #include <QtGui/QSplashScreen>
+#include <QtGui/QErrorMessage>
 #include <QDesktopServices>
 #include <QClipboard>
 #include <QEvent>
@@ -87,8 +88,8 @@ enum {
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
 	shortcut_skip_next		= Qt::Key_PageDown,
-	shortcut_prev_file		= Qt::Key_Left,
-	shortcut_next_file		= Qt::Key_Right,
+	shortcut_prev_file		= Qt::Key_Backspace,
+	shortcut_next_file		= Qt::Key_Enter,
 
 	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 	shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
@@ -102,10 +103,10 @@ enum {
 	shortcut_show_transfer	= Qt::CTRL + Qt::Key_G,
 #ifdef Q_WS_MAC
 	shortcut_full_screen_ff	= Qt::CTRL + Qt::Key_F,
-	shortcut_frameless	= Qt::CTRL + Qt::Key_R,
+	shortcut_frameless		= Qt::CTRL + Qt::Key_R,
 #else
 	shortcut_full_screen_ff	= Qt::Key_F11,
-	shortcut_frameless	= Qt::Key_F10,
+	shortcut_frameless		= Qt::Key_F10,
 #endif
 	shortcut_reset_view 	= Qt::CTRL + Qt::Key_0,
 	shortcut_zoom_full		= Qt::CTRL + Qt::Key_1,

@@ -290,8 +290,11 @@ public slots:
 	// file actions
 	void loadFile(QFileInfo file, bool silent = false);
 	void reloadFile();
+	void loadFileSkip(int skip = 0, bool silent = false);
 	void loadNextFile(bool silent = false);
 	void loadPrevFile(bool silent = false);
+	void loadNextFileFast(bool silent = false);
+	void loadPrevFileFast(bool silent = false);
 	void loadFirst();
 	void loadLast();
 	void loadSkipNext10();
@@ -304,6 +307,7 @@ public slots:
 
 	virtual void updateImage();
 	virtual void setImage(QImage newImg);
+	virtual void setThumbImage(QImage newImg);
 
 	void settingsChanged();
 

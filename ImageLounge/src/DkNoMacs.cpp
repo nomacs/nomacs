@@ -1650,6 +1650,13 @@ void DkNoMacs::keyPressEvent(QKeyEvent *event) {
 	else
 		otherKeyPressed = true;
 
+	if (event->key() == Qt::Key_Left && fileActions[menu_file_prev]->isEnabled()) {
+		viewport()->loadPrevFileFast();
+	}
+	if (event->key() == Qt::Key_Right && fileActions[menu_file_next]->isEnabled()) {
+		viewport()->loadNextFileFast();
+	}
+
 	qDebug() << "key pressed NOMACS";
 }
 
@@ -1658,8 +1665,14 @@ void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 	qDebug() << "key released...";
 	if (event->key() == Qt::Key_Alt && !otherKeyPressed && (posGrabKey - QCursor::pos()).manhattanLength() == 0)
 			menu->showMenu();
+	
+	if (event->key() == Qt::Key_Left && !event->isAutoRepeat() && fileActions[menu_file_prev]->isEnabled()) {
+		viewport()->loadFileSkip();
+	}
+	if (event->key() == Qt::Key_Right && !event->isAutoRepeat() && fileActions[menu_file_next]->isEnabled()) {
+		viewport()->loadFileSkip();
+	}
 }
-
 
 // >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)
 bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
@@ -2248,6 +2261,8 @@ void DkNoMacsFrameless::updateScreenSize(int screen) {
 		screenRects.setBottom(qMax(screenRects.bottom(), curScreen.bottom()));
 		screenRects.setRight(qMax(screenRects.right(), curScreen.right()));
 	}
+
+	qDebug() << "set up geometry: " << screenRects;
 
 	this->setGeometry(screenRects);
 
