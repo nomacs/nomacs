@@ -215,6 +215,22 @@ public:
 	}
 
 	/**
+	 * Returns a the buffer size of an image.
+	 * @param imgSize the image size
+	 * @param depth the image depth
+	 * @return buffer size in MB
+	 **/ 
+	static int getBufferSizeInt(const QSize imgSize, const int depth) {
+
+		double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
+		QString sizeStr;
+		qDebug() << "dimension: " << size;
+
+		return size/(1024.0f*1024.0f);
+	}
+
+
+	/**
 	 * This function resizes an image according to the interpolation method specified.
 	 * @param img the image to resize
 	 * @param newSize the new size
@@ -484,6 +500,111 @@ private:
 
 };
 
+class DkBasicLoader : public QObject {
+
+	Q_OBJECT
+
+public:
+
+	bool loadGeneral(QFileInfo file, QImage& img);
+	bool loadRohFile(QString fileName, QImage& img);
+	bool loadRawFile(QFileInfo file, QImage& img);
+
+};
+
+class DkImageCache {
+
+public:
+
+	enum cache_state {cache_not_loaded = 0, cache_loaded, cache_ignored, cache_end };
+
+	DkImageCache(QFileInfo file = QFileInfo(), QImage img = QImage()) {
+		this->file = file;
+		this->img = img;
+		cacheState = cache_not_loaded;
+	};
+
+	void setFileInfo(QFileInfo& file) {
+		this->file = file;
+	};
+
+	void setImage(QImage& img) {
+		this->img = img;
+	};
+
+	void ignore() {
+		cacheState = cache_ignored;
+	};
+
+	QFileInfo getFile() {
+		return file;
+	};
+
+	void clearImage() {
+		img = QImage();
+	};
+
+	QImage getImage() {
+		return img;
+	};
+
+	int isCached() {
+		
+		if (!img.isNull())
+			return cache_loaded;
+		else
+			return cacheState;
+	};
+
+protected:
+	QFileInfo file;
+	QImage img;
+	int cacheState;
+};
+
+
+/**
+ * This class provides a method for caching images.
+ **/ 
+class DkCacher : public QThread {
+
+	Q_OBJECT
+
+public:
+	DkCacher(std::vector<DkImageCache>* cache = 0, QDir dir = QDir(), QStringList files = QStringList());
+	~DkCacher() {};
+
+	void run();
+	void stop();
+	void pause();
+	void play();
+
+	void setCurrentFile(QFileInfo& file, QImage img = QImage());
+
+private:
+	std::vector<DkImageCache>* cache;
+	int curFileIdx;
+
+	int maxFileSize;
+	int maxCache; // TODO: Global setting
+	int curCache;
+
+	QDir dir;
+	bool isActive;
+	bool somethingTodo;
+
+	DkBasicLoader loader;
+	QStringList files;
+
+	QMutex mutex;
+
+	void init();
+	void loadCache();
+	bool cacheImage(DkImageCache* cacheImg);
+};
+
+
+
 /**
  * This class is a basic image loader class.
  * It takes care of the file watches for the current folder,
@@ -594,6 +715,7 @@ public slots:
 
 protected:
 
+	DkBasicLoader basicLoader;
 	QFileInfo lastFileLoaded;
 	QFileInfo file;
 	QFileInfo virtualFile;
@@ -613,9 +735,6 @@ protected:
 	// functions
 	void loadDir(QDir newDir);
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
-	bool loadGeneral(QFileInfo file);
-	bool loadRohFile(QString fileName);
-	bool loadRawFile(QFileInfo file);
 	void updateHistory();
 	bool restoreFile(const QFileInfo &fileInfo);
 	

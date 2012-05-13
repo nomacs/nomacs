@@ -1660,9 +1660,6 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 void DkViewPort::loadFullFile(bool silent) {
 
-	if (!thumbLoaded)
-		return;
-
 	unloadImage();
 	loader->changeFile(0, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 }
