@@ -468,6 +468,12 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	else
 		dir = DkSettings::GlobalSettings::lastDir;
 
+	cacher = 0;
+
+	// TODO: add global caching variable
+	cacher = new DkCacher(&cache);
+	cacher->start();
+
 }
 
 /**
@@ -478,6 +484,12 @@ DkImageLoader::~DkImageLoader() {
 	loaderThread->exit(0);
 	loaderThread->wait();
 	delete loaderThread;
+
+	if (cacher) {
+		cacher->stop();
+		cacher->wait();
+		delete cacher;
+	}
 
 	qDebug() << "dir open: " << dir.absolutePath();
 	qDebug() << "filepath: " << saveDir.absolutePath();
@@ -526,6 +538,10 @@ void DkImageLoader::loadDir(QDir newDir) {
 		emit updateDirSignal(file);
 		folderUpdated = false;
 		qDebug() << "getting file list.....";
+		
+		if (cacher)
+			cacher->updateDir(files);
+
 	}
 	// new folder is loaded
 	else if ((newDir.absolutePath() != dir.absolutePath() || files.empty()) && newDir.exists()) {
@@ -534,7 +550,7 @@ void DkImageLoader::loadDir(QDir newDir) {
 		if (saveDir == dir) saveDir = dir;
 		dir = newDir;
 		dir.setNameFilters(fileFilters);
-		dir.setSorting(QDir::LocaleAware);		// TODO: extenda
+		dir.setSorting(QDir::LocaleAware);		// TODO: extend
 		folderUpdated = false;
 		
 		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
@@ -545,6 +561,9 @@ void DkImageLoader::loadDir(QDir newDir) {
 				dirWatcher->removePaths(dirWatcher->directories());
 			dirWatcher->addPath(dir.absolutePath());
 		}
+
+		if (cacher)
+			cacher->setNewDir(dir, files);
 
 		qDebug() << "dir watcher: " << dirWatcher->directories();
 	}
@@ -580,10 +599,10 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 
 	//if (!img.isNull() && !file.exists())
 	//	return;
-	if (!file.exists() && !virtualFile.exists()) {
-		qDebug() << virtualFile.absoluteFilePath() << "does not exist...!!!";
-		return;
-	}
+	//if (!file.exists() && !virtualFile.exists()) {
+	//	qDebug() << virtualFile.absoluteFilePath() << "does not exist...!!!";
+	//	return;
+	//}
 
 	mutex.lock();
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
@@ -599,16 +618,16 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
  * @param skipIdx the number of files that should be skipped after/before the current file.
  * @param silent if true, no status information will be displayed.
  **/ 
-QImage DkImageLoader::changeFileFast(int skipIdx, bool silent) {
+QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent) {
 
 	mutex.lock();
-	QFileInfo loadFile = getChangedFileInfo(skipIdx);
+	fileInfo = getChangedFileInfo(skipIdx);
 	qDebug() << "loading: " << file.absoluteFilePath();
 	mutex.unlock();
 
 	//if (loadFile.exists())
 	// no threading here
-	return loadThumb(loadFile, silent);
+	return loadThumb(fileInfo, silent);
 }
 
 
@@ -622,9 +641,15 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
 	bool virtualExists = files.contains(virtualFile.fileName());
 
+	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
+	qDebug() << "file: " << file.absoluteFilePath();
+
 	DkTimer dt;
-	QDir newDir = (virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir();
-	loadDir(newDir);
+	
+	if (!file.absoluteFilePath().isEmpty() && !file.absoluteFilePath().isEmpty()) {
+		QDir newDir = (virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir();
+		loadDir(newDir);
+	}
 
 	// locate the current file
 	QString cFilename = (virtualExists) ? virtualFile.fileName() : file.fileName();
@@ -764,7 +789,6 @@ void DkImageLoader::loadFileAt(int idx) {
 
 }
 
-
 QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
 		
 	DkTimer dt;
@@ -790,7 +814,8 @@ QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
 	if (!thumb.isNull())
 		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
 
-	emit updateFileSignal(file, thumb.size());
+	if (file.exists())
+		emit updateFileSignal(file, thumb.size());
 
 	return thumb;
 }
@@ -826,7 +851,12 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	qDebug() << "loading...";
 	QMutexLocker locker(&mutex);
 
-	if (!file.exists()) {
+	// null file?
+	if (file.fileName().isEmpty()) {
+		this->file = lastFileLoaded;
+		return false;
+	}
+	else if (!file.exists()) {
 		
 		if (!silent) {
 			QString msg = tr("Sorry, the file: %1 does not exist... ").arg(file.fileName());
@@ -871,15 +901,36 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 
 	qDebug() << "loading: " << file.absoluteFilePath();
 
-	bool imgLoaded;
-	try {
-		if (!file.isSymLink())
-			imgLoaded = basicLoader.loadGeneral(file, img);
-		else 			
-			imgLoaded = basicLoader.loadGeneral(file.symLinkTarget(), img);
+	bool imgLoaded = false;
 	
-	} catch(...) {
-		imgLoaded = false;
+	
+	// critical section -> threads
+	if (cacher) {
+		
+		for (unsigned int idx = 0; idx < cache.size(); idx++) {
+
+			if (cache[idx].getFile() == file) {
+
+				if (cache[idx].getCacheState() == DkImageCache::cache_loaded) {
+					img = cache[idx].getImage();
+					imgLoaded = !img.isNull();
+					qDebug() << "loading from cache...";
+				}
+				break; 
+			}
+		}
+	}
+	
+	if (!imgLoaded) {
+		try {
+			if (!file.isSymLink())
+				imgLoaded = basicLoader.loadGeneral(file, img);
+			else 			
+				imgLoaded = basicLoader.loadGeneral(file.symLinkTarget(), img);
+	
+		} catch(...) {
+			imgLoaded = false;
+		}
 	}
 
 	this->virtualFile = file;
@@ -890,7 +941,9 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
 	
 	if (imgLoaded) {
-				
+		
+		if (cacher) cacher->setCurrentFile(file, img);
+
 		DkMetaData imgMetaData(file);		
 		int orientation = imgMetaData.getOrientation();
 
@@ -916,6 +969,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		emit updateDirSignal(file);	// this should be called updateFileSignal too
 
 		this->file = file;
+		lastFileLoaded = file;
 		loadDir(file.absoluteDir());
 
 		// update history
@@ -1406,6 +1460,21 @@ void DkImageLoader::directoryChanged(const QString& path) {
 	
 }
 
+bool DkImageLoader::isCached(QFileInfo& file) {
+
+	for (unsigned int idx = 0; idx < cache.size(); idx++) {
+
+		if (cache[idx].getFile() == file) {
+
+			if (cache[idx].getCacheState() == DkImageCache::cache_loaded) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 /**
  * Returns true if a file was specified.
  * @return bool true if a file name/path was specified
@@ -1694,26 +1763,60 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
 	this->dir = dir;
 	this->files = files;
 	this->isActive = true;
-	init();
-}
-
-void DkCacher::init() {
-
+	
 	somethingTodo = false;
 	curFileIdx = 0;
 	maxFileSize = 50;	// in MB
 	maxCache = 500;		// in MB
 	curCache = 0;
 
+	newDir = true;
+	updateFiles = false;
+
+	index();
+}
+
+void DkCacher::setNewDir(QDir& dir, QStringList& files) {
+	
+	this->dir = dir;
+	this->files = files;
+
+	newDir = true;
+
+}
+
+void DkCacher::updateDir(QStringList& files) {
+
+	this->files = files;
+	updateFiles = true;
+}
+
+void DkCacher::index() {
+
 	if (!cache)
 		return;
 
-	DkTimer dt;
-	for (int idx = 0; idx < files.size(); idx++) {
-		QFileInfo cFile = QFileInfo(dir, files[idx]);
-		cache->push_back(DkImageCache(cFile));
+	if (newDir) {
+		DkTimer dt;
+
+		cache->clear();	// critical?!
+		curCache = 0;	// clear cache size
+
+		for (int idx = 0; idx < files.size(); idx++) {
+			QFileInfo cFile = QFileInfo(dir, files[idx]);
+			cache->push_back(DkImageCache(cFile));
+		}
+		newDir = false;
+
+		qDebug() << "cache indexed in: " << QString::fromStdString(dt.getTotal());
+
 	}
-	qDebug() << "cache stubs loaded in: " << QString::fromStdString(dt.getTotal());
+
+	if (updateFiles) {
+		// TODO: update files without loosing current cache
+		updateFiles = false;
+	}
+
 }
 
 void DkCacher::run() {
@@ -1729,14 +1832,19 @@ void DkCacher::run() {
 
 		//QMutexLocker(&this->mutex);
 		if (!isActive) {
-			qDebug() << "thumbs loader stopped...";
+			qDebug() << "cacher stopped...";
 			mutex.unlock();
 			break;
 		}
+
+		// re-index folder
+		if (newDir || updateFiles)
+			index();
+
 		mutex.unlock();
 
 		if (somethingTodo)
-			loadCache();
+			load();
 	}
 
 }
@@ -1768,8 +1876,11 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 
 		if (cache->at(idx).getFile() == file) {
 			curFileIdx = idx;
-			if (!img.isNull())
+			if (!img.isNull()) {
+				curCache -= cache->at(idx).getCacheSize();
 				cache->at(idx).setImage(img);
+				curCache += cache->at(idx).getCacheSize();
+			}
 			break;
 		}
 
@@ -1778,29 +1889,69 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 	somethingTodo = true;
 }
 
-void DkCacher::loadCache() {
+void DkCacher::load() {
+
+	qDebug() << "[cache] my father told me to do something...";
+	somethingTodo = false;
 
 	for (unsigned int idx = 0; idx < cache->size(); idx++) {
 
 		// TODO: clear cache here
 		// TODO: tell thread we're done (if we're done : )
-
 		int nIdx = curFileIdx+idx;
 		int pIdx = curFileIdx-idx;
 
-		if (nIdx < (int)cache->size() && !cache->at(nIdx).isCached()) {
+		if (nIdx < (int)cache->size() && cache->at(nIdx).getCacheState() == DkImageCache::cache_not_loaded) {
 			
-			if (cacheImage(&cache->at(nIdx)))
-				break;
-		}
-		if (pIdx > 0 && !cache->at(pIdx).isCached()) {
+			if (!clean(idx))
+				break;	// we're done
 
-			if (cacheImage(&cache->at(pIdx)))
-				break;
+			if (cacheImage(&cache->at(nIdx))) {	// that might take time
+				somethingTodo = true;
+				break;	// go to thread to see if some action is waiting
+			}
+		}
+		if (pIdx > 0 && cache->at(pIdx).getCacheState() == DkImageCache::cache_not_loaded) {
+
+			if (!clean(idx))
+				break;	// we're done
+
+			if (cacheImage(&cache->at(pIdx))) {	// that might take time
+				somethingTodo = true;
+				break;	// go to thread to see if some action is waiting
+			}
 		}
 	}
 
 
+}
+
+bool DkCacher::clean(int curCacheIdx) {
+
+	// nothing todo
+	if (curCache < maxCache)
+		return true;
+	
+	for (int idx = 0; idx < (int)cache->size(); idx++) {
+
+		// skip the current cache region
+		if (idx >= curFileIdx-curCacheIdx && idx <= curFileIdx+curCacheIdx)
+			continue;
+
+		if (cache->at(idx).getCacheState() == DkImageCache::cache_loaded) {
+			
+			curCache -= cache->at(idx).getCacheSize();
+			cache->at(idx).setImage(QImage());	// clear cached image
+
+			qDebug() << "[cache] I cleared: " << cache->at(idx).getFile().fileName() << " cache volume: " << curCache << " MB";
+		}
+	}
+
+	// stop caching
+	if (curCache >= maxCache)
+		return false;
+	
+	return true;
 }
 
 bool DkCacher::cacheImage(DkImageCache* cacheImg) {
@@ -1808,9 +1959,12 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	if (!cacheImg)
 		return false;
 
+	QMutexLocker locker(&mutex);
+
 	QFileInfo file = cacheImg->getFile();
 	QFile f(file.filePath());
 
+	// TODO: maxFileSize -> extra treatment for compressed files (e.g. jpg)
 	if (f.size() > 1024*1024*maxFileSize) {
 		cacheImg->ignore();
 		return false;
@@ -1819,10 +1973,15 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	QImage img;
 	if (loader.loadGeneral(file, img)) {
 		
-		curCache += DkImage::getBufferSizeInt(img.size(), img.depth());
 		cacheImg->setImage(img);
+		curCache += cacheImg->getCacheSize();
+
+		qDebug() << "[cache] I cached: " << cacheImg->getFile().fileName() << " cache volume: " << curCache << " MB";
+
 		return true;
 	}
+	else
+		cacheImg->ignore();		// cannot cache image
 
 	return false;
 }

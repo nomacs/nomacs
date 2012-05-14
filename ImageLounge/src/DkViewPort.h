@@ -320,6 +320,7 @@ protected:
 	virtual void wheelEvent(QWheelEvent *event);
 	virtual bool event(QEvent *event);
 
+	QFileInfo thumbFile;
 	bool thumbLoaded;
 	bool testLoaded;
 	bool visibleStatusbar;

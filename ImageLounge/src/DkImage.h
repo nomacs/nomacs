@@ -224,7 +224,7 @@ public:
 
 		double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
 		QString sizeStr;
-		qDebug() << "dimension: " << size;
+		//qDebug() << "dimension: " << size;
 
 		return size/(1024.0f*1024.0f);
 	}
@@ -516,12 +516,13 @@ class DkImageCache {
 
 public:
 
-	enum cache_state {cache_not_loaded = 0, cache_loaded, cache_ignored, cache_end };
+	enum cache_state {cache_ignored = -1, cache_not_loaded = 0, cache_loaded, cache_end };
 
 	DkImageCache(QFileInfo file = QFileInfo(), QImage img = QImage()) {
 		this->file = file;
 		this->img = img;
 		cacheState = cache_not_loaded;
+		cacheSize = 0;
 	};
 
 	void setFileInfo(QFileInfo& file) {
@@ -529,6 +530,7 @@ public:
 	};
 
 	void setImage(QImage& img) {
+		cacheSize = DkImage::getBufferSizeInt(img.size(), img.depth());
 		this->img = img;
 	};
 
@@ -548,7 +550,11 @@ public:
 		return img;
 	};
 
-	int isCached() {
+	int getCacheSize() {
+		return cacheSize;
+	};
+
+	int getCacheState() {
 		
 		if (!img.isNull())
 			return cache_loaded;
@@ -560,6 +566,7 @@ protected:
 	QFileInfo file;
 	QImage img;
 	int cacheState;
+	int cacheSize;
 };
 
 
@@ -580,6 +587,8 @@ public:
 	void play();
 
 	void setCurrentFile(QFileInfo& file, QImage img = QImage());
+	void setNewDir(QDir& dir, QStringList& files);
+	void updateDir(QStringList& files);
 
 private:
 	std::vector<DkImageCache>* cache;
@@ -592,15 +601,18 @@ private:
 	QDir dir;
 	bool isActive;
 	bool somethingTodo;
+	bool newDir;
+	bool updateFiles;
 
 	DkBasicLoader loader;
 	QStringList files;
 
 	QMutex mutex;
 
-	void init();
-	void loadCache();
+	void index();
+	void load();
 	bool cacheImage(DkImageCache* cacheImg);
+	bool clean(int curCacheIdx);
 };
 
 
@@ -659,6 +671,7 @@ public:
 	void load(QFileInfo file, bool silent = false);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
+	bool isCached(QFileInfo& file);
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
 
@@ -701,7 +714,7 @@ signals:
 	void fileNotLoadedSignal(QFileInfo file);
 
 public slots:
-	QImage changeFileFast(int skipIdx, bool silent = false);
+	QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
 	void changeFile(int skipIdx, bool silent = false);
 	void fileChanged(const QString& path);
 	void directoryChanged(const QString& path);
@@ -716,6 +729,9 @@ public slots:
 protected:
 
 	DkBasicLoader basicLoader;
+	DkCacher* cacher;
+	std::vector<DkImageCache> cache;
+	
 	QFileInfo lastFileLoaded;
 	QFileInfo file;
 	QFileInfo virtualFile;
@@ -737,7 +753,6 @@ protected:
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
 	bool restoreFile(const QFileInfo &fileInfo);
-	
 };
 
 };

@@ -735,6 +735,7 @@ void DkViewPort::setImage(QImage newImg) {
 		ratingLabel->setRating(DkImageLoader::imgMetaData.getRating());
 
 	thumbLoaded = false;
+	thumbFile = QFileInfo();
 	oldImgRect = imgRect;
 
 	update();
@@ -1621,9 +1622,27 @@ void DkViewPort::loadPrevFile(bool silent) {
 void DkViewPort::loadPrevFileFast(bool silent) {
 
 	QImage thumb;
+	QFileInfo thumbFile;
 
-	if (loader && !testLoaded)
-		thumb = loader->changeFileFast(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	if (loader && !testLoaded) {
+		
+		silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
+
+		thumbFile = loader->getChangedFileInfo(-1, silent);
+		qDebug() << thumbFile.fileName();
+
+		// load full file if cached
+		if (loader->isCached(thumbFile)) {
+			unloadImage();
+			loader->load(thumbFile, silent);
+		}
+		else {
+			thumb = loader->loadThumb(thumbFile, silent);
+			
+			if (thumbFile.exists())
+				this->thumbFile = thumbFile;
+		}
+	}
 
 	if (!thumb.isNull()) {
 		unloadImage();
@@ -1641,10 +1660,27 @@ void DkViewPort::loadPrevFileFast(bool silent) {
 void DkViewPort::loadNextFileFast(bool silent) {
 
 	QImage thumb;
+	QFileInfo thumbFile;
 
-	if (loader && !testLoaded)
-		thumb = loader->changeFileFast(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
-	
+	if (loader && !testLoaded) {
+
+		silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
+
+		thumbFile = loader->getChangedFileInfo(1, silent);
+
+		// load full file if cached
+		if (loader->isCached(thumbFile)) {
+			unloadImage();
+			loader->load(thumbFile, silent);
+		}
+		else {
+			thumb = loader->loadThumb(thumbFile, silent);
+
+			if (thumbFile.exists())
+				this->thumbFile = thumbFile;
+		}
+	}
+
 	if (!thumb.isNull()) {
 		unloadImage();
 		setThumbImage(thumb);
@@ -1656,12 +1692,13 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(1);
+
 }
 
 void DkViewPort::loadFullFile(bool silent) {
 
-	unloadImage();
-	loader->changeFile(0, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	unloadImage();	// TODO: unload image clears the image -> makes an empty file
+	loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 }
 
 void DkViewPort::loadFirst() {
