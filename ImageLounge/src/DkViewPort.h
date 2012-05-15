@@ -295,6 +295,7 @@ public slots:
 	void loadPrevFile(bool silent = false);
 	void loadNextFileFast(bool silent = false);
 	void loadPrevFileFast(bool silent = false);
+	void loadFileFast(int skipIdx, bool silent = false);
 	void loadFirst();
 	void loadLast();
 	void loadSkipNext10();

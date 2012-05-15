@@ -998,7 +998,16 @@ void DkUpdater::checkForUpdated() {
 	DkSettings settings;
 	settings.save();
 
+#ifdef Q_WS_WIN
+	QUrl url ("http://www.nomacs.org/version_win");
+#elif LINUX
+	QUrl url ("http://www.nomacs.org/version_linux");
+#elif Q_WS_MAC
+	QUrl url ("http://www.nomacs.org/version_mac");
+#else
 	QUrl url ("http://www.nomacs.org/version");
+#endif
+
 	qDebug() << "checking for updates";
 	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 	reply = accessManager.get(QNetworkRequest(url));

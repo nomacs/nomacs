@@ -1724,7 +1724,6 @@ void DkNoMacs::showStatusBar(bool show) {
 		statusbar->hide();
 
 	viewport()->setVisibleStatusbar(show);
-	qDebug() << "visible statusbar (nomacs) " << show;
 }
 
 void DkNoMacs::showStatusMessage(QString msg) {
@@ -2003,7 +2002,6 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
-	qDebug() << "connect all connected";
 }
 
 void DkNoMacsSync::createMenu() {

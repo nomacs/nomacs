@@ -1297,10 +1297,8 @@ public:
 	void reset();
 
 	void setWorldTransform(QTransform *worldTform) {
-		qDebug() << "world transform updated..." << worldTform;
 		this->worldTform = worldTform;
-		//update();
-	};
+	};	
 
 	void setImageTransform(QTransform *imgTform) {
 

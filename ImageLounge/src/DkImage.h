@@ -128,11 +128,11 @@ public:
 	static Mat qImage2Mat(QImage img) {
 
 		Mat mat2;
-		if (img.format() == QImage::Format_ARGB32) {
+		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
 			qDebug() << "ARGB32 or RGB32";
 		}
-		else if (img.format() == QImage::Format_RGB888 || img.format() == QImage::Format_RGB32) {
+		else if (img.format() == QImage::Format_RGB888) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
 			qDebug() << "RGB888";
 		}
@@ -220,7 +220,7 @@ public:
 	 * @param depth the image depth
 	 * @return buffer size in MB
 	 **/ 
-	static int getBufferSizeInt(const QSize imgSize, const int depth) {
+	static float getBufferSizeFloat(const QSize imgSize, const int depth) {
 
 		double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
 		QString sizeStr;
@@ -522,7 +522,7 @@ public:
 		this->file = file;
 		this->img = img;
 		cacheState = cache_not_loaded;
-		cacheSize = 0;
+		cacheSize = 0.0f;
 	};
 
 	void setFileInfo(QFileInfo& file) {
@@ -530,7 +530,7 @@ public:
 	};
 
 	void setImage(QImage& img) {
-		cacheSize = DkImage::getBufferSizeInt(img.size(), img.depth());
+		cacheSize = DkImage::getBufferSizeFloat(img.size(), img.depth());
 		this->img = img;
 	};
 
@@ -566,7 +566,7 @@ protected:
 	QFileInfo file;
 	QImage img;
 	int cacheState;
-	int cacheSize;
+	float cacheSize;
 };
 
 
@@ -595,9 +595,9 @@ private:
 	std::vector<DkImageCache>* cache;
 	int curFileIdx;
 
-	int maxFileSize;
-	int maxCache; // TODO: Global setting
-	int curCache;
+	float maxFileSize;
+	float maxCache; // TODO: Global setting
+	float curCache;
 
 	QDir dir;
 	bool isActive;

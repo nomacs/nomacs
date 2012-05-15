@@ -1777,7 +1777,7 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
 	somethingTodo = false;
 	curFileIdx = 0;
 	maxFileSize = 50;	// in MB
-	maxCache = 500;		// in MB
+	maxCache = 250;		// in MB
 	curCache = 0;
 
 	newDir = true;
@@ -1989,7 +1989,9 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	QFile f(file.filePath());
 
 	// TODO: maxFileSize -> extra treatment for compressed files (e.g. jpg)
-	if (f.size() > 1024*1024*maxFileSize) {
+	// ignore files < 100 KB || larger than maxFileSize
+	if (f.size() < 100*1024 || f.size() > 1024*1024*maxFileSize) {
+		qDebug() << "[cache] I ignored: " << cacheImg->getFile().fileName() << " file size: " << f.size()/(1024.0f*1024.0f) << " MB";
 		cacheImg->ignore();
 		return false;
 	}

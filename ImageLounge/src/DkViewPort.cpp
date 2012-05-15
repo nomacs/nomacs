@@ -1346,17 +1346,13 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
-	if (filePreview) {
-		
-		qDebug() << "stopping...";
+	if (filePreview && filePreview->isVisible()) {
 		filePreview->setCurrentDx(0);
 		QTimer* mImgTimer = filePreview->getMoveImageTimer();
 		mImgTimer->stop();
 		wheelButton->hide();
 	}
 	
-	qDebug() << "released...";
-
 	DkBaseViewPort::mouseReleaseEvent(event);
 }
 
@@ -1391,8 +1387,6 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 	// scroll thumbs preview
 	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
 		
-		qDebug() << "middle... move";
-		qDebug() << "enter: " << enterPos.x();
 		float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
 		dx = std::exp(dx);
 		if (enterPos.x() - event->pos().x() < 0)
@@ -1408,10 +1402,11 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
-	qDebug() << "DkViewPort receiving wheel event";
+	//qDebug() << "DkViewPort receiving wheel event";
 
 	if (event->modifiers() == ctrlMod) {
 
+		// TODO: think how we can make this fast too
 		if (event->delta() > 0)
 			loadNextFile();
 		else
@@ -1621,62 +1616,43 @@ void DkViewPort::loadPrevFile(bool silent) {
 
 void DkViewPort::loadPrevFileFast(bool silent) {
 
-	QImage thumb;
-	QFileInfo thumbFile;
-
-	if (loader && !testLoaded) {
-		
-		silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
-
-		thumbFile = loader->getChangedFileInfo(-1, silent);
-		qDebug() << thumbFile.fileName();
-
-		// load full file if cached
-		if (loader->isCached(thumbFile)) {
-			unloadImage();
-			loader->load(thumbFile, silent);
-		}
-		else {
-			thumb = loader->loadThumb(thumbFile, silent);
-			
-			if (thumbFile.exists())
-				this->thumbFile = thumbFile;
-		}
-	}
-
-	if (!thumb.isNull()) {
-		unloadImage();
-		setThumbImage(thumb);
-	}
-	else
-		qDebug() << "thumbnail is empty...";
-
-	QCoreApplication::sendPostedEvents();
-
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
-		emit sendNewFileSignal(-1);
+	loadFileFast(-1, silent);
 }
 
 void DkViewPort::loadNextFileFast(bool silent) {
 
+	loadFileFast(1, silent);
+}
+
+
+void DkViewPort::loadFileFast(int skipIdx, bool silent) {
+
 	QImage thumb;
 	QFileInfo thumbFile;
 
 	if (loader && !testLoaded) {
 
 		silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
-		
-		thumbFile = loader->getChangedFileInfo(1, silent);
-		qDebug() << "loading file: " << thumbFile.fileName();
 
+		thumbFile = loader->getChangedFileInfo(skipIdx, silent);
+		qDebug() << thumbFile.fileName();
+
+		QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
+
+		// directly load images < 100 KB
+		if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
+			qDebug() << "========================= loading full image..." << f.size();
+			unloadImage();
+			loader->loadFile(thumbFile);
+		}
 		// load full file if cached
-		if (loader->isCached(thumbFile)) {
+		else if (loader->isCached(thumbFile)) {
 			unloadImage();
 			loader->load(thumbFile, silent);
 		}
 		else {
 			thumb = loader->loadThumb(thumbFile, silent);
-			
+
 			if (thumbFile.exists())
 				this->thumbFile = thumbFile;
 		}
@@ -1686,14 +1662,11 @@ void DkViewPort::loadNextFileFast(bool silent) {
 		unloadImage();
 		setThumbImage(thumb);
 	}
-	else
-		qDebug() << "thumbnail is empty...";
 
 	QCoreApplication::sendPostedEvents();
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
-		emit sendNewFileSignal(1);
-
+		emit sendNewFileSignal(skipIdx);
 }
 
 void DkViewPort::loadFullFile(bool silent) {
@@ -2224,8 +2197,6 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	// scroll thumbs preview
 	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
 
-		qDebug() << "middle... move";
-		qDebug() << "enter: " << enterPos.x();
 		float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
 		dx = std::exp(dx);
 		if (enterPos.x() - event->pos().x() < 0)
