@@ -1941,7 +1941,8 @@ bool DkCacher::clean(int curCacheIdx) {
 		if (cache->at(idx).getCacheState() == DkImageCache::cache_loaded) {
 			
 			curCache -= cache->at(idx).getCacheSize();
-			cache->at(idx).setImage(QImage());	// clear cached image
+			QImage tmpImg = QImage();
+			cache->at(idx).setImage(tmpImg);	// clear cached image
 
 			qDebug() << "[cache] I cleared: " << cache->at(idx).getFile().fileName() << " cache volume: " << curCache << " MB";
 		}
