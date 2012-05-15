@@ -2296,6 +2296,7 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 		try{
 			Mat tmp;
 			cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, ipl);
+
 			return DkImage::mat2QImage(tmp);
 		
 		}catch (std::exception se) {

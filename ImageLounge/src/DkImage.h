@@ -128,11 +128,11 @@ public:
 	static Mat qImage2Mat(QImage img) {
 
 		Mat mat2;
-		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
+		if (img.format() == QImage::Format_ARGB32) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
 			qDebug() << "ARGB32 or RGB32";
 		}
-		else if (img.format() == QImage::Format_RGB888) {
+		else if (img.format() == QImage::Format_RGB888 || img.format() == QImage::Format_RGB32) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
 			qDebug() << "RGB888";
 		}
@@ -169,7 +169,7 @@ public:
 			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888);
 		}
 		if (img.type() == CV_8UC4) {
-			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB32);
+			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_ARGB32);
 		}
 
 		qImg = qImg.copy();
