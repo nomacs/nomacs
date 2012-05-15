@@ -1665,8 +1665,9 @@ void DkViewPort::loadNextFileFast(bool silent) {
 	if (loader && !testLoaded) {
 
 		silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
-
+		
 		thumbFile = loader->getChangedFileInfo(1, silent);
+		qDebug() << "loading file: " << thumbFile.fileName();
 
 		// load full file if cached
 		if (loader->isCached(thumbFile)) {
@@ -1675,7 +1676,7 @@ void DkViewPort::loadNextFileFast(bool silent) {
 		}
 		else {
 			thumb = loader->loadThumb(thumbFile, silent);
-
+			
 			if (thumbFile.exists())
 				this->thumbFile = thumbFile;
 		}
@@ -1697,8 +1698,10 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 void DkViewPort::loadFullFile(bool silent) {
 
-	unloadImage();	// TODO: unload image clears the image -> makes an empty file
-	loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	if (thumbFile.exists()) {
+		unloadImage();	// TODO: unload image clears the image -> makes an empty file
+		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	}
 }
 
 void DkViewPort::loadFirst() {

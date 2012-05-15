@@ -562,8 +562,12 @@ void DkImageLoader::loadDir(QDir newDir) {
 			dirWatcher->addPath(dir.absolutePath());
 		}
 
-		if (cacher)
+		if (cacher) {
+			cacher->stop();
+			cacher->wait();
 			cacher->setNewDir(dir, files);
+			cacher->start();
+		}
 
 		qDebug() << "dir watcher: " << dirWatcher->directories();
 	}
@@ -630,7 +634,6 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
 	return loadThumb(fileInfo, silent);
 }
 
-
 /**
  * Returns the file info of the ancesting/subsequent file + skipIdx.
  * @param skipIdx the number of files to be skipped from the current file.
@@ -640,6 +643,9 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
 	bool virtualExists = files.contains(virtualFile.fileName());
+
+	if (!virtualExists && !file.exists())
+		return QFileInfo();
 
 	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
 	qDebug() << "file: " << file.absoluteFilePath();
@@ -692,6 +698,8 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 		else if (newFileIdx >= files.size()) {
 			QString msg = tr("You have reached the end");
 			
+			qDebug() << " you have reached the end ............";
+
 			if (!silent)
 				updateInfoSignal(msg, 1000);
 			return QFileInfo();
@@ -811,8 +819,10 @@ QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
 		thumb = thumb.transformed(rotationMatrix);
 	}
 
-	if (!thumb.isNull())
+	if (!thumb.isNull()) {
+		file = virtualFile;
 		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
+	}
 
 	if (file.exists())
 		emit updateFileSignal(file, thumb.size());
@@ -1762,8 +1772,8 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
 	this->cache = cache;
 	this->dir = dir;
 	this->files = files;
-	this->isActive = true;
 	
+	isActive = true;
 	somethingTodo = false;
 	curFileIdx = 0;
 	maxFileSize = 50;	// in MB
@@ -1776,13 +1786,19 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
 	index();
 }
 
+/**
+ * Creates cache for a new dir.
+ * NOTE: the thread needs to be stopped before calling this function!
+ * @param dir the new directory
+ * @param files	the sorted file list of this directory
+ **/ 
 void DkCacher::setNewDir(QDir& dir, QStringList& files) {
 	
 	this->dir = dir;
 	this->files = files;
-
+	
 	newDir = true;
-
+	index();
 }
 
 void DkCacher::updateDir(QStringList& files) {
@@ -1807,7 +1823,7 @@ void DkCacher::index() {
 			cache->push_back(DkImageCache(cFile));
 		}
 		newDir = false;
-
+		somethingTodo = true;
 		qDebug() << "cache indexed in: " << QString::fromStdString(dt.getTotal());
 
 	}
@@ -1837,9 +1853,9 @@ void DkCacher::run() {
 			break;
 		}
 
-		// re-index folder
-		if (newDir || updateFiles)
-			index();
+		//// re-index folder
+		//if (newDir || updateFiles)
+		//	index();
 
 		mutex.unlock();
 
@@ -1858,6 +1874,11 @@ void DkCacher::stop() {
 	//QMutexLocker(&this->mutex);
 	isActive = false;
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
+}
+
+void DkCacher::start() {
+	isActive = true;
+	QThread::start();
 }
 
 void DkCacher::pause() {
@@ -1891,7 +1912,6 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 
 void DkCacher::load() {
 
-	qDebug() << "[cache] my father told me to do something...";
 	somethingTodo = false;
 
 	for (unsigned int idx = 0; idx < cache->size(); idx++) {
@@ -1963,6 +1983,9 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	QMutexLocker locker(&mutex);
 
 	QFileInfo file = cacheImg->getFile();
+	
+	// resolve links
+	if (file.isSymLink()) file = QFileInfo(file.symLinkTarget());
 	QFile f(file.filePath());
 
 	// TODO: maxFileSize -> extra treatment for compressed files (e.g. jpg)

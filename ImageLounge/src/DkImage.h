@@ -585,6 +585,7 @@ public:
 	void stop();
 	void pause();
 	void play();
+	void start();
 
 	void setCurrentFile(QFileInfo& file, QImage img = QImage());
 	void setNewDir(QDir& dir, QStringList& files);
