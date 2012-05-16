@@ -58,15 +58,6 @@ int main(int argc, char *argv[]) {
 	qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
 	qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
 
-	int b[4];
-
-	for (int a = 0; a < 5; a++)
-	{
-		__cpuid(b,a);
-		std::cout << "The code " << a << " gives " << b[0] << std::endl;
-	}
-
-
 #ifdef linux
 	QApplication::setGraphicsSystem("raster");
 #elif WIN32
