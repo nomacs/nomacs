@@ -55,6 +55,7 @@
 #include <QComboBox>
 
 
+
 #include "BorderLayout.h"
 
 namespace nmc {
@@ -65,6 +66,7 @@ class DkDisplaySettingsWidget;
 class DkSlideshowSettingsWidget;
 class DkSynchronizeSettingsWidget;
 class DkMetaDataSettingsWidget;
+class DkResourceSettingsWidgets;
 class DkSettingsListView;
 class DkSpinBoxWidget;
 
@@ -247,6 +249,7 @@ class DkSettingsDialog : public QDialog {
 		DkSlideshowSettingsWidget* slideshowSettingsWidget;
 		DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
 		DkMetaDataSettingsWidget* exifSettingsWidget;
+		DkResourceSettingsWidgets* resourceSettingsWidget;
 };
 
 class DkSettingsWidget : public QWidget {
@@ -540,11 +543,17 @@ public:
 	void writeSettings();
 
 	private slots:
-		//void enableCachingCheckboxChanged(int state);
+		void memorySliderChanged(int newValue);
 
 private:
 	void init();
 	void createLayout();
+
+	QCheckBox* cbFastThumbnailPreview;
+	QSlider* sliderMemory;
+	QLabel* labelMemory;
+
+	int cacheMemory;
 
 };
 
@@ -567,5 +576,18 @@ class DkSpinBoxWidget : public QWidget {
 		QVBoxLayout* vboxLayout;
 		QHBoxLayout* hboxLowerLayout;
 };
+
+class DkSettingsGradient : public QWidget {
+	Q_OBJECT;
+	public:
+		DkSettingsGradient(QGradient* gradient, QWidget* parent = 0) {this->gradient = gradient;};
+		
+	protected:
+		void paintEvent(QPaintEvent *event);
+
+	private:
+		QGradient* gradient;
+};
+
 
 };

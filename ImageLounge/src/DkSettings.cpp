@@ -27,6 +27,7 @@
 
 #include "DkSettings.h"
 #include "DkWidgets.h"
+#include "DkUtils.h"
 
 namespace nmc {
 
@@ -418,7 +419,7 @@ void DkSettingsDialog::createLayout() {
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("Slideshow") << tr("Synchronize") << tr("Exif");
+	stringList << tr("General") << tr("Display") << tr("Slideshow") << tr("Synchronize") << tr("Exif") << tr("Resources");
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
@@ -457,12 +458,14 @@ void DkSettingsDialog::createLayout() {
 	slideshowSettingsWidget = new DkSlideshowSettingsWidget(this);
 	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(this);
 	exifSettingsWidget = new DkMetaDataSettingsWidget(this);
+	resourceSettingsWidget = new DkResourceSettingsWidgets(this);
 
 	widgetList.push_back(globalSettingsWidget);
 	widgetList.push_back(displaySettingsWidget);
 	widgetList.push_back(slideshowSettingsWidget);
 	widgetList.push_back(synchronizeSettingsWidget);
 	widgetList.push_back(exifSettingsWidget);
+	widgetList.push_back(resourceSettingsWidget);
 
 }
 
@@ -1182,6 +1185,75 @@ void DkMetaDataSettingsWidget::writeSettings() {
 	}
 }
 
+// DkResourceSettings --------------------------------------------------------------------
+DkResourceSettingsWidgets::DkResourceSettingsWidgets(QWidget* parent) : DkSettingsWidget(parent) {
+	createLayout();
+	init();
+}
+
+void DkResourceSettingsWidgets::init() {
+	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
+	sliderMemory->setValue(DkSettings::ResourceSettings::cacheMemory);
+	labelMemory->setText(QString::number(DkSettings::ResourceSettings::cacheMemory*DkMemory::getTotalMemory()/100,'f',0)+"MB/"+QString::number(DkMemory::getTotalMemory(),'f',0)+"MB");
+	cbFastThumbnailPreview->setChecked(DkSettings::ResourceSettings::fastThumbnailPreview);
+}
+
+void DkResourceSettingsWidgets::createLayout() {
+	QVBoxLayout* widgetVBoxLayout = new QVBoxLayout(this);
+	
+	QGroupBox* gbCache = new QGroupBox(tr("Cache Settings"));
+	QGridLayout* cacheLayout = new QGridLayout(gbCache);
+	QLabel* labelPercentage = new QLabel(tr("Percentage of memory which should be used for caching:"));
+	sliderMemory = new QSlider(Qt::Horizontal);
+	sliderMemory->setMinimum(0);
+	sliderMemory->setMaximum(25);
+	sliderMemory->setPageStep(1);
+	//QLinearGradient* gradient = new QLinearGradient();
+	//gradient->setColorAt(0, QColor(0,255,0));
+	//gradient->setColorAt(1, QColor(255,0,0));
+	//DkSettingsGradient* memoryGradient = new DkSettingsGradient(gradient);
+	QWidget* memoryGradient = new QWidget;
+	memoryGradient->setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 red, stop: 1 green");
+	////memoryGradient->setStyleSheet("background-color: red");
+	memoryGradient->setMinimumHeight(20);
+	QWidget* captionWidget = new QWidget;
+	QHBoxLayout* captionLayout = new QHBoxLayout(captionWidget);
+	QLabel* labelMinPercent = new QLabel(QString::number(sliderMemory->minimum())+"%");
+	QLabel* labelMaxPercent = new QLabel(QString::number(sliderMemory->maximum())+"%");
+	labelMaxPercent->setAlignment(Qt::AlignRight);
+	captionLayout->addWidget(labelMinPercent);
+	captionLayout->addWidget(labelMaxPercent);
+
+	labelMemory = new QLabel;
+	labelMemory->setText("xxx/XXXX");
+	labelMemory->setContentsMargins(10,-5,0,0);
+	cacheLayout->addWidget(labelPercentage,0,0);
+	cacheLayout->addWidget(sliderMemory,1,0);
+	cacheLayout->addWidget(labelMemory,1,1);
+	cacheLayout->addWidget(memoryGradient,2,0);
+	cacheLayout->addWidget(captionWidget,3,0);
+	
+	QGroupBox* gbFastPreview = new QGroupBox(tr("Fast Preview Settings"));
+	QGridLayout* fastPreviewLayuot = new QGridLayout(gbFastPreview);
+	cbFastThumbnailPreview = new QCheckBox(tr("enable fast thumbnail preview"));
+	fastPreviewLayuot->addWidget(cbFastThumbnailPreview);
+
+	widgetVBoxLayout->addWidget(gbCache);
+	widgetVBoxLayout->addWidget(gbFastPreview);
+	widgetVBoxLayout->addStretch();
+
+}
+
+void DkResourceSettingsWidgets::writeSettings() {
+	DkSettings::ResourceSettings::cacheMemory = cacheMemory;
+	DkSettings::ResourceSettings::fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
+}
+
+void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
+	
+	labelMemory->setText(QString::number(newValue*DkMemory::getTotalMemory()/100,'f',0)+"MB/"+QString::number(DkMemory::getTotalMemory(),'f',0)+"MB");
+}
+
 // DkSpinBoxWiget --------------------------------------------------------------------
 DkSpinBoxWidget::DkSpinBoxWidget(QWidget* parent) : QWidget(parent) {
 	spinBox = new QSpinBox(this);
@@ -1217,6 +1289,13 @@ DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int s
 	vboxLayout->addWidget(lowerWidget);
 
 
+}
+
+// DkSettingsGradient --------------------------------------------------------------------
+
+void DkSettingsGradient::paintEvent(QPaintEvent *event) {
+	QPainter painter(this);
+	qDebug() << "im paintEvent";
 }
 
 }
