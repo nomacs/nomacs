@@ -93,7 +93,7 @@ double DkMemory::getFreeMemory() {
 	if (!sysinfo(&info))
 		mem = info.freeram;
 
-	qDebug() << "linux ram: " << mem;
+	//qDebug() << "linux ram: " << mem;
 
 
 #elif Q_WS_MAC
