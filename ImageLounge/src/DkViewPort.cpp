@@ -1353,6 +1353,8 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 			event->modifiers() == (altMod | Qt::ShiftModifier)) || 
 			(!DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
 			event->modifiers() == (altMod))) {
+			
+			qDebug() << "relative transform...";	
 			QTransform relTransform;
 			relTransform.translate(dxy.x(), dxy.y());
 			tcpSynchronize(relTransform);

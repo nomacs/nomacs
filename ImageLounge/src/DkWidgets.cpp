@@ -588,20 +588,26 @@ void DkFilePreview::moveImages() {
 
 void DkFilePreview::updateDir(QFileInfo file, bool force) {
 
-	QFileInfo oldFile = currentFile;
 	currentFile = file;
-	QDir dir = file.absoluteDir();
+
+	if (isVisible())
+		indexDir(force);
+}
+
+void DkFilePreview::indexDir(bool force) {
+	
+	QDir dir = currentFile.absoluteDir();
 	dir.setNameFilters(DkImageLoader::fileFilters);
 	dir.setSorting(QDir::LocaleAware);
-	
+
 	if (thumbsLoader) {
 		oldFileIdx = currentFileIdx;
-		currentFileIdx = thumbsLoader->getFileIdx(file);
+		currentFileIdx = thumbsLoader->getFileIdx(currentFile);
 		update();
 	}
 
-	if (!force && oldFile.absoluteDir() == file.absoluteDir() && !thumbs.empty() || 
-		file.absoluteFilePath().contains(":/nomacs/img/lena"))	// do not load our resources as thumbs
+	if (!force && thumbsDir.absolutePath() == currentFile.absolutePath() && !thumbs.empty() || 
+		currentFile.absoluteFilePath().contains(":/nomacs/img/lena"))	// do not load our resources as thumbs
 		return;
 
 	if (thumbsLoader) {
@@ -618,7 +624,9 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 		connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
 
 		thumbsLoader->start();
+		thumbsDir = dir;
 	}
+
 }
 
 // DkOverview --------------------------------------------------------------------

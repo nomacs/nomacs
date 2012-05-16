@@ -527,7 +527,7 @@ void DkImageLoader::clearFileWatcher() {
  * Loads a given directory and the first image in this directory.
  * @param newDir the directory to be loaded.
  **/ 
-void DkImageLoader::loadDir(QDir newDir) {
+bool DkImageLoader::loadDir(QDir newDir) {
 
 	// folder changed signal was emitted
 	if (folderUpdated && newDir.absolutePath() == dir.absolutePath()) {
@@ -555,6 +555,11 @@ void DkImageLoader::loadDir(QDir newDir) {
 		
 		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 	
+		if (files.empty()) {
+			emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
+			return false;
+		}
+
 		if (dirWatcher) {
 			if (!dirWatcher->directories().isEmpty())
 				dirWatcher->removePaths(dirWatcher->directories());
@@ -562,14 +567,22 @@ void DkImageLoader::loadDir(QDir newDir) {
 		}
 
 		if (cacher) {
+			
+			DkTimer dt;
 			cacher->stop();
 			cacher->wait();
+			
+			cache.clear();
+			
 			cacher->setNewDir(dir, files);
-			cacher->start();
+			//cacher->start();
+			qDebug() << "restarting the cacher took me: " << QString::fromStdString(dt.getTotal());
 		}
 
 		//qDebug() << "dir watcher: " << dirWatcher->directories();
 	}
+
+	return true;
 }
 
 /**
@@ -885,6 +898,9 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		return false;
 	}
 
+	if (cacher)
+		cacher->pause();
+
 	DkTimer dt;
 
 	//test exif
@@ -984,9 +1000,19 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 			loadDir(this->file.absoluteDir());
 		}
 		fileNotLoadedSignal(file);
+		
+		if (cacher) {
+			cacher->start();
+			cacher->play();
+		}
 
 		qDebug() << "I did load it silent: " << silent;
 		return false;
+	}
+
+	if (cacher) {
+		cacher->start();
+		cacher->play();
 	}
 
 	qDebug() << "total loading time: " << QString::fromStdString(dtt.getTotal());
@@ -1712,19 +1738,12 @@ void DkImageLoader::setFile(QFileInfo& file) {
  **/ 
 void DkImageLoader::setDir(QDir& dir) {
 
-	QDir oldDir = file.absoluteDir();
-
-	// locate the current file
-	QStringList files = getFilteredFileList(dir, ignoreKeywords, keywords);
+	//QDir oldDir = file.absoluteDir();
 	
-	if (files.empty()) {
-		emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
-		return;
-	}
+	bool valid = loadDir(dir);
 
-	loadDir(dir);
-
-	firstFile();
+	if (valid)
+		firstFile();
 }
 
 /**
@@ -1765,8 +1784,10 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
 	somethingTodo = false;
 	curFileIdx = 0;
 	maxFileSize = 50;	// in MB
-	maxCache = 250;		// in MB
+	maxCache = 50;		// in MB
 	curCache = 0;
+	maxNumFiles = 100;
+	curNumFiles = 0;
 
 	newDir = true;
 	updateFiles = false;
@@ -1786,7 +1807,7 @@ void DkCacher::setNewDir(QDir& dir, QStringList& files) {
 	this->files = files;
 	
 	newDir = true;
-	index();
+	//index();
 }
 
 void DkCacher::updateDir(QStringList& files) {
@@ -1803,7 +1824,6 @@ void DkCacher::index() {
 	if (newDir) {
 		DkTimer dt;
 
-		cache->clear();	// critical?!
 		curCache = 0;	// clear cache size
 
 		for (int idx = 0; idx < files.size(); idx++) {
@@ -1841,9 +1861,9 @@ void DkCacher::run() {
 			break;
 		}
 
-		//// re-index folder
-		//if (newDir || updateFiles)
-		//	index();
+		// re-index folder
+		if (newDir || updateFiles)
+			index();
 
 		mutex.unlock();
 
@@ -1872,11 +1892,13 @@ void DkCacher::start() {
 void DkCacher::pause() {
 	
 	somethingTodo = false;
+	qDebug() << "[cache] pausing cacher...";
 }
 
 void DkCacher::play() {
 	
 	somethingTodo = true;
+	qDebug() << "[cache] restarting cacher...";
 }
 
 void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
@@ -1887,12 +1909,15 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 			curFileIdx = idx;
 			if (!img.isNull()) {
 				curCache -= cache->at(idx).getCacheSize();
-				cache->at(idx).setImage(img);
-				curCache += cache->at(idx).getCacheSize();
+				
+				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < maxCache) {
+					cache->at(idx).setImage(img);
+					curCache += cache->at(idx).getCacheSize();
+					curNumFiles--;
+				}
 			}
 			break;
 		}
-
 	}
 
 	somethingTodo = true;
@@ -1936,6 +1961,10 @@ void DkCacher::load() {
 
 bool DkCacher::clean(int curCacheIdx) {
 
+	// max number of file exceeded?
+	if (curNumFiles > maxNumFiles)
+		return false;
+
 	// nothing todo
 	if (curCache < maxCache)
 		return true;
@@ -1948,6 +1977,7 @@ bool DkCacher::clean(int curCacheIdx) {
 
 		if (cache->at(idx).getCacheState() == DkImageCache::cache_loaded) {
 			
+			curNumFiles--;
 			curCache -= cache->at(idx).getCacheSize();
 			QImage tmpImg = QImage();
 			cache->at(idx).setImage(tmpImg);	// clear cached image
@@ -1957,7 +1987,7 @@ bool DkCacher::clean(int curCacheIdx) {
 	}
 
 	// stop caching
-	if (curCache >= maxCache)
+	if (curCache >= maxCache || curNumFiles > maxNumFiles)
 		return false;
 	
 	return true;
@@ -1979,7 +2009,7 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	// TODO: maxFileSize -> extra treatment for compressed files (e.g. jpg)
 	// ignore files < 100 KB || larger than maxFileSize
 	if (f.size() < 100*1024 || f.size() > 1024*1024*maxFileSize) {
-		qDebug() << "[cache] I ignored: " << cacheImg->getFile().fileName() << " file size: " << f.size()/(1024.0f*1024.0f) << " MB";
+		//qDebug() << "[cache] I ignored: " << cacheImg->getFile().fileName() << " file size: " << f.size()/(1024.0f*1024.0f) << " MB";
 		cacheImg->ignore();
 		return false;
 	}
@@ -1989,9 +2019,9 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 		
 		cacheImg->setImage(img);
 		curCache += cacheImg->getCacheSize();
+		curNumFiles++;
 
 		qDebug() << "[cache] I cached: " << cacheImg->getFile().fileName() << " cache volume: " << curCache << " MB";
-
 		return true;
 	}
 	else

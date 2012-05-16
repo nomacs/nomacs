@@ -599,6 +599,9 @@ private:
 	float maxCache; // TODO: Global setting
 	float curCache;
 
+	int maxNumFiles;
+	int curNumFiles;
+
 	QDir dir;
 	bool isActive;
 	bool somethingTodo;
@@ -750,7 +753,7 @@ protected:
 	QImage img;
 	
 	// functions
-	void loadDir(QDir newDir);
+	bool loadDir(QDir newDir);
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
 	bool restoreFile(const QFileInfo &fileInfo);

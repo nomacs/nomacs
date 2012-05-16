@@ -483,7 +483,15 @@ public:
 	QTimer* getMoveImageTimer() {
 		return moveImageTimer;
 	};
-	
+
+	void setVisible(bool visible) {
+
+		if (visible)
+			indexDir();
+
+		DkWidget::setVisible(visible);
+	}
+
 public slots:
 	void paintEvent(QPaintEvent *event);
 	void resizeEvent(QResizeEvent *event);
@@ -520,6 +528,7 @@ private:
 	int oldFileIdx;
 	float currentDx;
 	QLabel* wheelButton;
+	QDir thumbsDir;
 
 	DkGradientLabel* fileLabel;
 
@@ -532,6 +541,7 @@ private:
 	int minHeight;
 	
 	void init();
+	void indexDir(bool force = true);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
@@ -846,29 +856,32 @@ signals:
 	
 public slots:
 	void setFileInfo(QFileInfo file, QSize s) {
+		
 		this->file = file;
 		imgSize = s;
 		worldMatrix = QTransform();
 
-		DkTimer dt;
+		//DkTimer dt;
 		readTags();
 			
 		emit enableGpsSignal(!getGPSCoordinates().isEmpty());
-		
-		createLabels();
-		qDebug() << "reading tags & creating labels: " << QString::fromStdString(dt.getTotal());
 
-		//QString gpsTest = getGPSCoordinates();
-		//QString a,b;
-		//getResolution(a,b);
-		//qDebug() << "GPS: " << gpsTest;
-			
+		if (isVisible())
+			createLabels();
+		//qDebug() << "reading tags & creating labels: " << QString::fromStdString(dt.getTotal());
 	}
 
 	void setRating(int rating);
 	void setResolution(int xRes, int yRes);
 	void updateLabels();
 	void mouseMoveEvent(QMouseEvent *event);
+	void setVisible(bool visible) {
+
+		if (visible)
+			createLabels();
+
+		DkWidget::setVisible(visible);
+	};
 
 protected:
 	void init();
