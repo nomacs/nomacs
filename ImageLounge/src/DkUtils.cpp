@@ -55,7 +55,7 @@ double DkMemory::getTotalMemory() {
 
 	struct sysinfo info;
 
-	if (sysinfo(&info))
+	if (!sysinfo(&info))
 		mem = info.totalram;
 
 
@@ -90,8 +90,10 @@ double DkMemory::getFreeMemory() {
 
 	struct sysinfo info;
 	
-	if (sysinfo(&info))
+	if (!sysinfo(&info))
 		mem = info.freeram;
+
+	qDebug() << "linux ram: " << mem;
 
 
 #elif Q_WS_MAC
