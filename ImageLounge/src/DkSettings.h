@@ -170,6 +170,11 @@ class DkSettings : public QObject {
 			//static bool iptcCopyRight;
 			//static bool iptcKeywords;
 		};
+		
+		struct ResourceSettings {
+			static int cacheMemory;
+			static bool fastThumbnailPreview;
+		};
 
 		void load();
 		void save();
@@ -525,6 +530,24 @@ private:
 	//Nickname
 	//Rating
 };
+
+class DkResourceSettingsWidgets: public DkSettingsWidget {
+	Q_OBJECT
+
+public:
+	DkResourceSettingsWidgets(QWidget* parent);
+
+	void writeSettings();
+
+	private slots:
+		//void enableCachingCheckboxChanged(int state);
+
+private:
+	void init();
+	void createLayout();
+
+};
+
 
 
 class DkSpinBoxWidget : public QWidget {

@@ -128,6 +128,9 @@ bool DkSettings::SynchronizeSettings::updateDialogShown= false;
 QDate DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
 
+int DkSettings::ResourceSettings::cacheMemory = 2;
+bool DkSettings::ResourceSettings::fastThumbnailPreview = true;
+
 
 void DkSettings::load() {
 	
@@ -187,6 +190,9 @@ void DkSettings::load() {
 	SynchronizeSettings::lastUpdateCheck = settings.value("SynchronizeSettings/lastUpdateCheck", DkSettings::SynchronizeSettings::lastUpdateCheck).toDate();
 	SynchronizeSettings::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::SynchronizeSettings::syncAbsoluteTransform).toBool();
 	SynchronizeSettings::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::SynchronizeSettings::switchModifier).toBool();
+
+	ResourceSettings::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::ResourceSettings::cacheMemory).toInt();
+	ResourceSettings::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::ResourceSettings::fastThumbnailPreview).toBool();
 	
 	if (DkSettings::SynchronizeSettings::switchModifier) {
 		DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
@@ -254,6 +260,9 @@ void DkSettings::save() {
 	settings.setValue("SynchronizeSettings/syncAbsoluteTransform", DkSettings::SynchronizeSettings::syncAbsoluteTransform);
 	settings.setValue("SynchronizeSettings/switchModifier", DkSettings::SynchronizeSettings::switchModifier);
 	
+	settings.setValue("ResourceSettings/cacheMemory", DkSettings::ResourceSettings::cacheMemory);
+	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::ResourceSettings::fastThumbnailPreview);
+
 	qDebug() << "settings saved";
 }
 
@@ -342,6 +351,9 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::SynchronizeSettings::updateDialogShown = false;
 	DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970 , 1, 1);
 	DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
+
+	DkSettings::ResourceSettings::cacheMemory = 0;
+	DkSettings::ResourceSettings::fastThumbnailPreview = true;
 
 	qDebug() << "ok... default settings are set";
 
