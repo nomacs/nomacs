@@ -27,6 +27,82 @@
 
 #include "DkUtils.h"
 
+#ifdef linux
+#include <sys/sysinfo.h>
+#endif
 
 int nmc::DkUtils::debugLevel = DK_MODULE;
 
+namespace nmc {
+
+// code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
+
+double DkMemory::getTotalMemory() {
+
+	double mem = -1;
+
+#ifdef Q_WS_WIN
+
+	MEMORYSTATUSEX MemoryStatus;
+	ZeroMemory(&MemoryStatus, sizeof(MEMORYSTATUSEX));
+	MemoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
+
+	if (GlobalMemoryStatusEx(&MemoryStatus)) {
+		mem = MemoryStatus.ullTotalPhys;
+	}
+
+#elif linux
+
+	struct sysinfo info;
+
+	if (sysinfo(&info))
+		mem = info.totalram;
+
+
+#elif Q_WS_MAC
+
+#endif
+
+	// convert to MB
+	if (mem > 0)
+		mem /= (1024*1024);
+
+	return mem;
+}
+
+double DkMemory::getFreeMemory() {
+
+	double mem = -1;
+	
+
+#ifdef Q_WS_WIN
+
+	MEMORYSTATUSEX MemoryStatus;
+
+	ZeroMemory(&MemoryStatus, sizeof(MEMORYSTATUSEX));
+	MemoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
+
+	if (GlobalMemoryStatusEx(&MemoryStatus)) {
+		mem = MemoryStatus.ullAvailPhys;
+	}
+
+#elif linux
+
+	struct sysinfo info;
+	
+	if (sysinfo(&info))
+		mem = info.freeram;
+
+
+#elif Q_WS_MAC
+
+#endif
+
+	// convert to MB
+	if (mem > 0)
+		mem /= (1024*1024);
+
+	return mem;
+}
+
+}

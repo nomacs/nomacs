@@ -36,6 +36,7 @@
 
 #include "DkNoMacs.h"
 #include "DkPong.h"
+#include "DkUtils.h"
 
 #include <QtGui/QApplication>
 #include <QFileInfo>
@@ -54,6 +55,16 @@ int main(int argc, char *argv[]) {
 
 	qDebug() << "nomacs - Image Lounge\n";
 
+	qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
+	qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
+
+	int b[4];
+
+	for (int a = 0; a < 5; a++)
+	{
+		__cpuid(b,a);
+		std::cout << "The code " << a << " gives " << b[0] << std::endl;
+	}
 
 
 #ifdef linux
