@@ -550,7 +550,7 @@ public:
 		return img;
 	};
 
-	int getCacheSize() {
+	float getCacheSize() {
 		return cacheSize;
 	};
 

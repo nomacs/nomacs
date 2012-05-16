@@ -52,7 +52,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	QMainWindow::setWindowTitle("nomacs - Image Lounge");
 	setObjectName("DkNoMacs");
 
-	qDebug() << "This is nomacs - Image Lounge " << QApplication::applicationVersion();
 	registerFileVersion();
 
 	saveSettings = true;
@@ -1656,13 +1655,10 @@ void DkNoMacs::keyPressEvent(QKeyEvent *event) {
 	if (event->key() == Qt::Key_Right && fileActions[menu_file_next]->isEnabled()) {
 		viewport()->loadNextFileFast();
 	}
-
-	qDebug() << "key pressed NOMACS";
 }
 
 void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 
-	qDebug() << "key released...";
 	if (event->key() == Qt::Key_Alt && !otherKeyPressed && (posGrabKey - QCursor::pos()).manhattanLength() == 0)
 			menu->showMenu();
 	
@@ -2151,7 +2147,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	DkSettings::AppSettings::appMode = 0;
 
 	initLanClient();
-	qDebug() << "lan client initialized...";
 	//emit sendTitleSignal(windowTitle());
 
 	// show it...
@@ -2364,7 +2359,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 
 		initLanClient();
-		qDebug() << "lan client initialized...";
 		emit sendTitleSignal(windowTitle());
 
 		DkSettings::AppSettings::appMode = DkSettings::mode_contrast;

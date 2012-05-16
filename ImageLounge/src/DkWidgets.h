@@ -852,8 +852,7 @@ public slots:
 
 		DkTimer dt;
 		readTags();
-		qDebug() << "reading tags: " << QString::fromStdString(dt.getTotal());
-
+			
 		emit enableGpsSignal(!getGPSCoordinates().isEmpty());
 		
 		createLabels();

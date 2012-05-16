@@ -52,6 +52,10 @@ int main(int argc, wchar_t *argv[]) {
 int main(int argc, char *argv[]) {
 #endif
 
+	qDebug() << "nomacs - Image Lounge\n";
+
+
+
 #ifdef linux
 	QApplication::setGraphicsSystem("raster");
 #elif WIN32
@@ -98,12 +102,13 @@ int main(int argc, char *argv[]) {
 	// DEBUG --------------------------------------------------------------------
 
 	QSettings settings;
+	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm";
 
 	QTranslator translator;
-	if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm", qApp->applicationDirPath())) {
+	if (!translator.load(translationName, qApp->applicationDirPath())) {
 		QDir appDir = QDir(qApp->applicationDirPath());
-		if (!translator.load("nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm", appDir.filePath("../share/nomacs/translations/")))
-			qDebug() << "unable to load translation (" << "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm)";
+		if (!translator.load(translationName, appDir.filePath("../share/nomacs/translations/")) && !translationName.contains("_en"))
+			qDebug() << "unable to load translation: " << translationName;
 	}
 	a.installTranslator(&translator);
 	

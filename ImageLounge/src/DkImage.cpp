@@ -554,7 +554,6 @@ void DkImageLoader::loadDir(QDir newDir) {
 		folderUpdated = false;
 		
 		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-		qDebug() << "getting file list.....";
 	
 		if (dirWatcher) {
 			if (!dirWatcher->directories().isEmpty())
@@ -569,7 +568,7 @@ void DkImageLoader::loadDir(QDir newDir) {
 			cacher->start();
 		}
 
-		qDebug() << "dir watcher: " << dirWatcher->directories();
+		//qDebug() << "dir watcher: " << dirWatcher->directories();
 	}
 }
 
@@ -610,7 +609,6 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 
 	mutex.lock();
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
-	qDebug() << "loading: " << file.absoluteFilePath();
 	mutex.unlock();
 
 	//if (loadFile.exists())
@@ -626,7 +624,6 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
 
 	mutex.lock();
 	fileInfo = getChangedFileInfo(skipIdx);
-	qDebug() << "loading: " << file.absoluteFilePath();
 	mutex.unlock();
 
 	//if (loadFile.exists())
@@ -673,7 +670,6 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 				break;
 		}
 
-		qDebug() << "my idx " << cFileIdx;
 		newFileIdx = cFileIdx + skipIdx;
 
 		if (DkSettings::GlobalSettings::loop) {
@@ -704,10 +700,9 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 				updateInfoSignal(msg, 1000);
 			return QFileInfo();
 		}
-		qDebug() << "idx: " << newFileIdx;
 	}
 
-	qDebug() << "file idx changed in: " << QString::fromStdString(dt.getTotal());
+	//qDebug() << "file idx changed in: " << QString::fromStdString(dt.getTotal());
 
 	// file requested becomes current file
 	return (files.isEmpty()) ? QFileInfo() : QFileInfo(dir, files[newFileIdx]);
@@ -758,9 +753,6 @@ void DkImageLoader::loadFileAt(int idx) {
 		loadDir(newDir);
 	}
 
-	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
-	qDebug() << "real file " << file.absoluteFilePath();
-
 	if (dir.exists()) {
 
 		if (idx == -1) {
@@ -790,7 +782,6 @@ void DkImageLoader::loadFileAt(int idx) {
 
 	// file requested becomes current file
 	QFileInfo loadFile = QFileInfo(dir, files[idx]);
-	qDebug() << "loading: " << loadFile.absoluteFilePath();
 
 	mutex.unlock();
 	load(loadFile);
@@ -858,7 +849,6 @@ void DkImageLoader::load(QFileInfo file, bool silent) {
 bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	DkTimer dtt;
-	qDebug() << "loading...";
 	QMutexLocker locker(&mutex);
 
 	// null file?
@@ -1551,7 +1541,6 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	}
 
 	FindClose(MyHandle);
-	qDebug() << "WinAPI, indexed (" << fileNameList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
 	
 	// slow regexp
 	//QString extPattern = ".+((\\" + fileFilters.join("$)|(\\") + "$))";
@@ -1584,7 +1573,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 		}
 	}
 
-	qDebug() << "WinAPI, sorted (" << fileList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "WinAPI, indexed (" << fileList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
 #else
 
 	// true file list
@@ -1604,7 +1593,6 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	for (int idx = 0; idx < keywords.size(); idx++) {
 		fileList = fileList.filter(keywords[idx], Qt::CaseInsensitive);
 	}
-	qDebug() << "\nfiltered file list: " << QString::fromStdString(dt.getTotal());
 
 	return fileList;
 }
@@ -2921,7 +2909,7 @@ int DkMetaData::getHorizontalFlipped() {
 		Exiv2::ExifData::iterator pos = exifData.findKey(key);
 
 		if (pos == exifData.end() || pos->count() == 0) {
-			qDebug() << "Orientation is not set in the Exif Data";
+			//qDebug() << "Orientation is not set in the Exif Data";
 			flipped = -1;
 		} else {
 			Exiv2::Value::AutoPtr v = pos->getValue();
@@ -3277,7 +3265,7 @@ void DkMetaData::readMetaData() {
 
 		try {
 			exifImg->readMetadata();
-			qDebug() << "readMetaData: " << QString::fromStdString(dt.getIvl());
+			
 			if (!exifImg->good()) {
 				qDebug() << "metadata could not be read";
 				mdata = false;

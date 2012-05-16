@@ -301,8 +301,6 @@ void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
 // mouse events --------------------------------------------------------------------
 void DkBaseViewPort::mousePressEvent(QMouseEvent *event) {
 
-	qDebug() << "mouse pressed...";
-
 	enterPos = event->pos();
 
 	// ok, start panning
@@ -341,8 +339,6 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
-
-	qDebug() << "wheel event (DkBaseViewPort)";
 
 	float factor = -event->delta();
 	if (DkSettings::DisplaySettings::invertZoom) factor *= -1.0f;
@@ -409,8 +405,6 @@ void DkBaseViewPort::updateImageMatrix() {
 		worldMatrix.scale(scaleFactor, scaleFactor);
 		worldMatrix.translate(dx, dy);
 	}
-
-	qDebug() << "image matrix updated...";
 }
 
 QTransform DkBaseViewPort::getScaledImageMatrix() {
@@ -519,8 +513,6 @@ void DkBaseViewPort::changeCursor() {
 		setCursor(Qt::OpenHandCursor);
 	else
 		unsetCursor();
-
-	qDebug() << "changing cursor";
 }
 
 // DkViewPort --------------------------------------------------------------------
@@ -696,8 +688,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	emit enableNoImageSignal(!imgQt.isNull());
 
-	qDebug() << "imgRect: " << imgRect << " oldImgRect: " << oldImgRect;
-	qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
+	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
 	if (!DkSettings::DisplaySettings::keepZoom || imgRect != oldImgRect)
 		worldMatrix.reset();
@@ -705,7 +696,6 @@ void DkViewPort::setImage(QImage newImg) {
 		imgViewRect = oldImgViewRect;
 		imgMatrix = oldImgMatrix;
 		worldMatrix = oldWorldMatrix;
-		qDebug() << "---------------loading matrix: " << oldWorldMatrix;
 	}
 
 	updateImageMatrix();
@@ -739,7 +729,6 @@ void DkViewPort::setImage(QImage newImg) {
 	oldImgRect = imgRect;
 
 	update();
-	qDebug() << "---------------world matrix: " << worldMatrix;
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 }
 
@@ -1046,8 +1035,6 @@ void DkViewPort::updateImageMatrix() {
 		worldMatrix.scale(scaleFactor, scaleFactor);
 		worldMatrix.translate(dx, dy);
 	}
-
-	qDebug() << "image matrix updated...";
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize) {
@@ -1235,8 +1222,6 @@ void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
 // event listeners --------------------------------------------------------------------
 void DkViewPort::resizeEvent(QResizeEvent *event) {
 
-	qDebug() << "resize event...";
-
 	viewportRect = QRect(0, 0, width(), height());
 
 	//// do we still need that??
@@ -1288,12 +1273,6 @@ void DkViewPort::keyPressEvent(QKeyEvent* event) {
 		update();
 	}
 
-	if (event->key() == Qt::Key_Right) {
-		qDebug() << "right key pressed...";
-	}
-
-	qDebug() << "key pressed viewport...";
-
 	DkBaseViewPort::keyPressEvent(event);
 }
 
@@ -1318,8 +1297,6 @@ bool DkViewPort::event(QEvent *event) {
 }
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
-
-	qDebug() << "DkViewPort mouse pressed...";
 
 	enterPos = event->pos();
 

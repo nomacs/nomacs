@@ -2666,7 +2666,7 @@ QString DkMetaDataInfo::getGPSCoordinates() {
 
 	} catch (...) {
 		gpsInfo = "";
-		qDebug() << "could not load Exif GPS information";
+		//qDebug() << "could not load Exif GPS information";
 	}
 
 	return gpsInfo;
@@ -3384,7 +3384,6 @@ void DkOpenWithDialog::browseAppFile() {
 
 	userCleanButtons[senderIdx]->setVisible(true);
 	userCleanSpace[senderIdx]->setVisible(false);
-	qDebug() << "default app idx: " << defaultApp;
 }
 
 void DkOpenWithDialog::okClicked() {
@@ -3608,7 +3607,6 @@ void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
 
 void DkTransformRect::mouseReleaseEvent(QMouseEvent *event) {
 
-	qDebug() << "mouse pressed control point";
 }
 
 void DkTransformRect::enterEvent(QEvent *event) {
