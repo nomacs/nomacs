@@ -60,7 +60,7 @@ double DkMemory::getTotalMemory() {
 
 
 #elif Q_WS_MAC
-
+	// TODO: could somebody (with a make please add the corresponding calls?
 #endif
 
 	// convert to MB
@@ -93,10 +93,9 @@ double DkMemory::getFreeMemory() {
 	if (!sysinfo(&info))
 		mem = info.freeram;
 
-	//qDebug() << "linux ram: " << mem;
-
-
 #elif Q_WS_MAC
+
+	// TODO: could somebody (with a make please add the corresponding calls?
 
 #endif
 

@@ -1784,7 +1784,7 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
 	somethingTodo = false;
 	curFileIdx = 0;
 	maxFileSize = 50;	// in MB
-	maxCache = 50;		// in MB
+	maxCache = 50; //DkSettings::ResourceSettings::cacheMemory;		// in MB
 	curCache = 0;
 	maxNumFiles = 100;
 	curNumFiles = 0;
@@ -1915,6 +1915,8 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 					curCache += cache->at(idx).getCacheSize();
 					curNumFiles--;
 				}
+				else
+					cache->at(idx).setImage(QImage());
 			}
 			break;
 		}
@@ -1927,7 +1929,8 @@ void DkCacher::load() {
 
 	somethingTodo = false;
 
-	for (unsigned int idx = 0; idx < cache->size(); idx++) {
+	// it's fair enough if we index about +/- 100 images
+	for (unsigned int idx = 1; idx < maxNumFiles*0.5; idx++) {
 
 		// TODO: clear cache here
 		// TODO: tell thread we're done (if we're done : )
@@ -1935,9 +1938,12 @@ void DkCacher::load() {
 		int pIdx = curFileIdx-idx;
 
 		if (nIdx < (int)cache->size() && cache->at(nIdx).getCacheState() == DkImageCache::cache_not_loaded) {
-			
+
+			qDebug() << "caching next...";
+
 			if (!clean(idx))
 				break;	// we're done
+
 
 			if (cacheImage(&cache->at(nIdx))) {	// that might take time
 				somethingTodo = true;
@@ -1949,6 +1955,7 @@ void DkCacher::load() {
 			if (!clean(idx))
 				break;	// we're done
 
+			qDebug() << "caching previous...";
 			if (cacheImage(&cache->at(pIdx))) {	// that might take time
 				somethingTodo = true;
 				break;	// go to thread to see if some action is waiting
@@ -1961,9 +1968,9 @@ void DkCacher::load() {
 
 bool DkCacher::clean(int curCacheIdx) {
 
-	// max number of file exceeded?
-	if (curNumFiles > maxNumFiles)
-		return false;
+	//// max number of file exceeded?
+	//if (curNumFiles > maxNumFiles)
+	//	return false;
 
 	// nothing todo
 	if (curCache < maxCache)
@@ -1972,7 +1979,7 @@ bool DkCacher::clean(int curCacheIdx) {
 	for (int idx = 0; idx < (int)cache->size(); idx++) {
 
 		// skip the current cache region
-		if (idx >= curFileIdx-curCacheIdx && idx <= curFileIdx+curCacheIdx)
+		if (idx > curFileIdx-curCacheIdx && idx <= curFileIdx+curCacheIdx)
 			continue;
 
 		if (cache->at(idx).getCacheState() == DkImageCache::cache_loaded) {

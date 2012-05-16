@@ -1194,7 +1194,7 @@ DkResourceSettingsWidgets::DkResourceSettingsWidgets(QWidget* parent) : DkSettin
 void DkResourceSettingsWidgets::init() {
 	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
 	sliderMemory->setValue(DkSettings::ResourceSettings::cacheMemory);
-	labelMemory->setText(QString::number(DkSettings::ResourceSettings::cacheMemory*DkMemory::getTotalMemory()/100,'f',0)+"MB/"+QString::number(DkMemory::getTotalMemory(),'f',0)+"MB");
+	labelMemory->setText(QString::number(DkSettings::ResourceSettings::cacheMemory*DkMemory::getTotalMemory()/100.0f,'f',0)+" MB/"+QString::number(DkMemory::getTotalMemory(),'f',0)+" MB");
 	cbFastThumbnailPreview->setChecked(DkSettings::ResourceSettings::fastThumbnailPreview);
 }
 
@@ -1251,7 +1251,8 @@ void DkResourceSettingsWidgets::writeSettings() {
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
 	
-	labelMemory->setText(QString::number(newValue*DkMemory::getTotalMemory()/100,'f',0)+"MB/"+QString::number(DkMemory::getTotalMemory(),'f',0)+"MB");
+	qDebug() << "slider val: " << newValue;
+	labelMemory->setText(QString::number((double)newValue*DkMemory::getTotalMemory()/100.0,'f',0) + " MB/"+QString::number(DkMemory::getTotalMemory(),'f',0) + " MB");
 }
 
 // DkSpinBoxWiget --------------------------------------------------------------------
@@ -1259,7 +1260,7 @@ DkSpinBoxWidget::DkSpinBoxWidget(QWidget* parent) : QWidget(parent) {
 	spinBox = new QSpinBox(this);
 	lowerLabel = new QLabel(this);
 	lowerWidget = new QWidget(this);
-	vboxLayout = new QVBoxLayout ;
+	vboxLayout = new QVBoxLayout;
 	hboxLowerLayout = new QHBoxLayout;
 
 	hboxLowerLayout->addWidget(spinBox);

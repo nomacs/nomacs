@@ -1606,43 +1606,48 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
-	QImage thumb;
-	QFileInfo thumbFile;
+	if (DkSettings::ResourceSettings::fastThumbnailPreview) {
 
-	if (loader && !testLoaded) {
+		QImage thumb;
+		QFileInfo thumbFile;
 
-		silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
+		if (loader && !testLoaded) {
 
-		thumbFile = loader->getChangedFileInfo(skipIdx, silent);
-		qDebug() << thumbFile.fileName();
+			silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
 
-		QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
+			thumbFile = loader->getChangedFileInfo(skipIdx, silent);
+			qDebug() << thumbFile.fileName();
 
-		// directly load images < 100 KB
-		if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
-			qDebug() << "========================= loading full image..." << f.size();
+			QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
+
+			// directly load images < 100 KB
+			if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
+				qDebug() << "========================= loading full image..." << f.size();
+				unloadImage();
+				loader->loadFile(thumbFile);
+			}
+			// load full file if cached
+			else if (loader->isCached(thumbFile)) {
+				unloadImage();
+				loader->load(thumbFile, silent);
+			}
+			else {
+				thumb = loader->loadThumb(thumbFile, silent);
+
+				if (thumbFile.exists())
+					this->thumbFile = thumbFile;
+			}
+		}
+
+		if (!thumb.isNull()) {
 			unloadImage();
-			loader->loadFile(thumbFile);
+			setThumbImage(thumb);
 		}
-		// load full file if cached
-		else if (loader->isCached(thumbFile)) {
-			unloadImage();
-			loader->load(thumbFile, silent);
-		}
-		else {
-			thumb = loader->loadThumb(thumbFile, silent);
 
-			if (thumbFile.exists())
-				this->thumbFile = thumbFile;
-		}
+		QCoreApplication::sendPostedEvents();
 	}
-
-	if (!thumb.isNull()) {
-		unloadImage();
-		setThumbImage(thumb);
-	}
-
-	QCoreApplication::sendPostedEvents();
+	else if (loader && !testLoaded)
+		loader->changeFile(skipIdx, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(skipIdx);
