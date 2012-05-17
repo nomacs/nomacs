@@ -174,7 +174,7 @@ class DkSettings : public QObject {
 		};
 		
 		struct ResourceSettings {
-			static int cacheMemory;
+			static float cacheMemory;
 			static bool fastThumbnailPreview;
 		};
 
@@ -552,9 +552,8 @@ private:
 	QCheckBox* cbFastThumbnailPreview;
 	QSlider* sliderMemory;
 	QLabel* labelMemory;
-
-	int cacheMemory;
-
+	
+	double stepSize;
 };
 
 
@@ -576,18 +575,5 @@ class DkSpinBoxWidget : public QWidget {
 		QVBoxLayout* vboxLayout;
 		QHBoxLayout* hboxLowerLayout;
 };
-
-class DkSettingsGradient : public QWidget {
-	Q_OBJECT;
-	public:
-		DkSettingsGradient(QGradient* gradient, QWidget* parent = 0) {this->gradient = gradient;};
-		
-	protected:
-		void paintEvent(QPaintEvent *event);
-
-	private:
-		QGradient* gradient;
-};
-
 
 };

@@ -1915,8 +1915,10 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 					curCache += cache->at(idx).getCacheSize();
 					curNumFiles--;
 				}
-				else
-					cache->at(idx).setImage(QImage());
+				else {
+					QImage emptyImage = QImage();
+					cache->at(idx).setImage(emptyImage);
+				}
 			}
 			break;
 		}

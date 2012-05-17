@@ -129,7 +129,7 @@ bool DkSettings::SynchronizeSettings::updateDialogShown= false;
 QDate DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
 
-int DkSettings::ResourceSettings::cacheMemory = 2;
+float DkSettings::ResourceSettings::cacheMemory = 2;
 bool DkSettings::ResourceSettings::fastThumbnailPreview = true;
 
 
@@ -192,7 +192,7 @@ void DkSettings::load() {
 	SynchronizeSettings::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::SynchronizeSettings::syncAbsoluteTransform).toBool();
 	SynchronizeSettings::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::SynchronizeSettings::switchModifier).toBool();
 
-	ResourceSettings::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::ResourceSettings::cacheMemory).toInt();
+	ResourceSettings::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::ResourceSettings::cacheMemory).toFloat();
 	ResourceSettings::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::ResourceSettings::fastThumbnailPreview).toBool();
 	
 	if (DkSettings::SynchronizeSettings::switchModifier) {
@@ -1187,14 +1187,14 @@ void DkMetaDataSettingsWidget::writeSettings() {
 
 // DkResourceSettings --------------------------------------------------------------------
 DkResourceSettingsWidgets::DkResourceSettingsWidgets(QWidget* parent) : DkSettingsWidget(parent) {
+	stepSize = 10;
 	createLayout();
 	init();
 }
 
 void DkResourceSettingsWidgets::init() {
 	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
-	sliderMemory->setValue(DkSettings::ResourceSettings::cacheMemory);
-	labelMemory->setText(QString::number(DkSettings::ResourceSettings::cacheMemory*DkMemory::getTotalMemory()/100.0f,'f',0)+" MB/"+QString::number(DkMemory::getTotalMemory(),'f',0)+" MB");
+	sliderMemory->setValue((int)(DkSettings::ResourceSettings::cacheMemory*stepSize));
 	cbFastThumbnailPreview->setChecked(DkSettings::ResourceSettings::fastThumbnailPreview);
 }
 
@@ -1206,26 +1206,26 @@ void DkResourceSettingsWidgets::createLayout() {
 	QLabel* labelPercentage = new QLabel(tr("Percentage of memory which should be used for caching:"));
 	sliderMemory = new QSlider(Qt::Horizontal);
 	sliderMemory->setMinimum(0);
-	sliderMemory->setMaximum(25);
+	sliderMemory->setMaximum(10*stepSize);
 	sliderMemory->setPageStep(1);
-	//QLinearGradient* gradient = new QLinearGradient();
-	//gradient->setColorAt(0, QColor(0,255,0));
-	//gradient->setColorAt(1, QColor(255,0,0));
-	//DkSettingsGradient* memoryGradient = new DkSettingsGradient(gradient);
+	sliderMemory->setContentsMargins(11,11,11,0);
 	QWidget* memoryGradient = new QWidget;
-	memoryGradient->setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 red, stop: 1 green");
-	////memoryGradient->setStyleSheet("background-color: red");
-	memoryGradient->setMinimumHeight(20);
+	memoryGradient->setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 green, stop: 1 red);");
+	memoryGradient->setMinimumHeight(5);
+	memoryGradient->setContentsMargins(0,0,0,0);
 	QWidget* captionWidget = new QWidget;
+	captionWidget->setContentsMargins(0,0,0,0);
 	QHBoxLayout* captionLayout = new QHBoxLayout(captionWidget);
-	QLabel* labelMinPercent = new QLabel(QString::number(sliderMemory->minimum())+"%");
-	QLabel* labelMaxPercent = new QLabel(QString::number(sliderMemory->maximum())+"%");
+	captionLayout->setContentsMargins(0,0,0,0);
+	QLabel* labelMinPercent = new QLabel(QString::number(sliderMemory->minimum()/stepSize)+"%");
+	labelMinPercent->setContentsMargins(0,0,0,0);
+	QLabel* labelMaxPercent = new QLabel(QString::number(sliderMemory->maximum()/stepSize)+"%");
+	labelMaxPercent->setContentsMargins(0,0,0,0);
 	labelMaxPercent->setAlignment(Qt::AlignRight);
 	captionLayout->addWidget(labelMinPercent);
 	captionLayout->addWidget(labelMaxPercent);
 
 	labelMemory = new QLabel;
-	labelMemory->setText("xxx/XXXX");
 	labelMemory->setContentsMargins(10,-5,0,0);
 	cacheLayout->addWidget(labelPercentage,0,0);
 	cacheLayout->addWidget(sliderMemory,1,0);
@@ -1245,14 +1245,12 @@ void DkResourceSettingsWidgets::createLayout() {
 }
 
 void DkResourceSettingsWidgets::writeSettings() {
-	DkSettings::ResourceSettings::cacheMemory = cacheMemory;
+	DkSettings::ResourceSettings::cacheMemory = sliderMemory->value()/stepSize;
 	DkSettings::ResourceSettings::fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
 }
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
-	
-	qDebug() << "slider val: " << newValue;
-	labelMemory->setText(QString::number((double)newValue*DkMemory::getTotalMemory()/100.0,'f',0) + " MB/"+QString::number(DkMemory::getTotalMemory(),'f',0) + " MB");
+	labelMemory->setText(QString::number((double)(newValue/stepSize)/100.0*DkMemory::getTotalMemory(),'f',0) + " MB/"+QString::number(DkMemory::getTotalMemory(),'f',0) + " MB");
 }
 
 // DkSpinBoxWiget --------------------------------------------------------------------
@@ -1290,13 +1288,6 @@ DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int s
 	vboxLayout->addWidget(lowerWidget);
 
 
-}
-
-// DkSettingsGradient --------------------------------------------------------------------
-
-void DkSettingsGradient::paintEvent(QPaintEvent *event) {
-	QPainter painter(this);
-	qDebug() << "im paintEvent";
 }
 
 }
