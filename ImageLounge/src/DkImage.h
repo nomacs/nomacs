@@ -596,7 +596,6 @@ private:
 	int curFileIdx;
 
 	float maxFileSize;
-	float maxCache; // TODO: Global setting
 	float curCache;
 
 	int maxNumFiles;
@@ -757,6 +756,7 @@ protected:
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
 	bool restoreFile(const QFileInfo &fileInfo);
+	void startStopCacher();
 };
 
 };

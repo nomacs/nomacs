@@ -167,6 +167,7 @@ enum fileActions {
 	menu_file_prev,
 	menu_file_new_instance,
 	menu_file_exit,
+	menu_file_share_fb,
 
 	menu_file_end,	// nothing beyond this point
 };
@@ -389,6 +390,7 @@ public slots:
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setContrast(bool contrast);
+	void shareFacebook();
 
 protected:
 	

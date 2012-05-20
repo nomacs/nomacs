@@ -30,6 +30,7 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QTcpSocket>
+#include <QWebView>
 #include <QNetworkInterface>
 #include <QList>
 #include <QThread>
@@ -456,6 +457,54 @@ private:
 	QNetworkAccessManager accessManager;
 	QNetworkReply* reply;
 };
+
+//class DkFacebook : QObject {
+//	Q_OBJECT
+//
+//public:
+//	DkFacebook() : QObject() {
+//	
+//		view = new QWebView();
+//	
+//	};
+//
+//	void login( const QString& scope ){
+//		QUrl url("https://www.facebook.com/dialog/oauth");
+//		//url.addQueryItem("client_id",YOUR_APPP_ID);
+//		url.addQueryItem("redirect_uri",
+//			"https://www.facebook.com/connect/login_success.html");
+//		url.addQueryItem("response_type","token");
+//		url.addQueryItem("scope","read_stream,publish_stream");
+//
+//		//view = new QWebView();
+//		view->load(url);
+//		view->show();
+//		connect(view,SIGNAL(loadFinished(bool)),this,SLOT(loginResponse(bool)));
+//	}
+//
+//	void loginResponse(bool status) {
+//		QUrl url= view->url();
+//		QString strUrl = url.toString();
+//
+//		int sIndex = strUrl.indexOf("access_token=");
+//		int eIndex = strUrl.indexOf("&expires_in");
+//		if( sIndex != -1 && eIndex != -1 ){
+//			mAccessToken= strUrl.mid(sIndex, eIndex - sIndex);
+//			mAccessToken = mAccessToken.remove("access_token=");
+//			emit authStatus(mAccessToken);
+//		}
+//	}
+//
+//signals:
+//	void authStatus(QString mAccessToken);
+//
+//protected:
+//
+//	QString mAccessToken;
+//	QWebView* view;
+//};
+
+
 
 };
 

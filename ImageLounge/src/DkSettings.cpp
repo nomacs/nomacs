@@ -129,7 +129,7 @@ bool DkSettings::SynchronizeSettings::updateDialogShown= false;
 QDate DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
 
-float DkSettings::ResourceSettings::cacheMemory = 2;
+float DkSettings::ResourceSettings::cacheMemory = 50;
 bool DkSettings::ResourceSettings::fastThumbnailPreview = true;
 
 
@@ -353,7 +353,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::SynchronizeSettings::lastUpdateCheck = QDate(1970 , 1, 1);
 	DkSettings::SynchronizeSettings::syncAbsoluteTransform = true;
 
-	DkSettings::ResourceSettings::cacheMemory = 0;
+	DkSettings::ResourceSettings::cacheMemory = 50;
 	DkSettings::ResourceSettings::fastThumbnailPreview = true;
 
 	qDebug() << "ok... default settings are set";
@@ -1187,14 +1187,22 @@ void DkMetaDataSettingsWidget::writeSettings() {
 
 // DkResourceSettings --------------------------------------------------------------------
 DkResourceSettingsWidgets::DkResourceSettingsWidgets(QWidget* parent) : DkSettingsWidget(parent) {
-	stepSize = 10;
+	stepSize = 1000;
 	createLayout();
 	init();
 }
 
 void DkResourceSettingsWidgets::init() {
+	
+	totalMemory = DkMemory::getTotalMemory();
+	if (totalMemory <= 0)
+		totalMemory = 512;	// assume at least 512 MB RAM
+	
+	float curCache = DkSettings::ResourceSettings::cacheMemory/totalMemory * stepSize * 100;
+
 	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
-	sliderMemory->setValue((int)(DkSettings::ResourceSettings::cacheMemory*stepSize));
+	
+	sliderMemory->setValue(curCache);
 	cbFastThumbnailPreview->setChecked(DkSettings::ResourceSettings::fastThumbnailPreview);
 }
 
@@ -1209,16 +1217,28 @@ void DkResourceSettingsWidgets::createLayout() {
 	sliderMemory->setMaximum(10*stepSize);
 	sliderMemory->setPageStep(1);
 	sliderMemory->setContentsMargins(11,11,11,0);
+
+	// widget starts on hide
+	QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(this);
+	opacityEffect->setOpacity(0.7);
+	setGraphicsEffect(opacityEffect);
+
 	QWidget* memoryGradient = new QWidget;
-	memoryGradient->setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 green, stop: 1 red);");
+	memoryGradient->setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #185a2b, stop: 1 #66131c);");
 	memoryGradient->setMinimumHeight(5);
 	memoryGradient->setContentsMargins(0,0,0,0);
+	memoryGradient->setWindowOpacity(0.3);
+	memoryGradient->setGraphicsEffect(opacityEffect);	
+
 	QWidget* captionWidget = new QWidget;
 	captionWidget->setContentsMargins(0,0,0,0);
+	
 	QHBoxLayout* captionLayout = new QHBoxLayout(captionWidget);
 	captionLayout->setContentsMargins(0,0,0,0);
+	
 	QLabel* labelMinPercent = new QLabel(QString::number(sliderMemory->minimum()/stepSize)+"%");
 	labelMinPercent->setContentsMargins(0,0,0,0);
+	
 	QLabel* labelMaxPercent = new QLabel(QString::number(sliderMemory->maximum()/stepSize)+"%");
 	labelMaxPercent->setContentsMargins(0,0,0,0);
 	labelMaxPercent->setAlignment(Qt::AlignRight);
@@ -1245,12 +1265,13 @@ void DkResourceSettingsWidgets::createLayout() {
 }
 
 void DkResourceSettingsWidgets::writeSettings() {
-	DkSettings::ResourceSettings::cacheMemory = sliderMemory->value()/stepSize;
+	
+	DkSettings::ResourceSettings::cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
 	DkSettings::ResourceSettings::fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
 }
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
-	labelMemory->setText(QString::number((double)(newValue/stepSize)/100.0*DkMemory::getTotalMemory(),'f',0) + " MB/"+QString::number(DkMemory::getTotalMemory(),'f',0) + " MB");
+	labelMemory->setText(QString::number((double)(newValue/stepSize)/100.0*totalMemory,'f',0) + " MB / "+ QString::number(totalMemory,'f',0) + " MB");
 }
 
 // DkSpinBoxWiget --------------------------------------------------------------------

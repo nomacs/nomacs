@@ -554,6 +554,7 @@ private:
 	QLabel* labelMemory;
 	
 	double stepSize;
+	double totalMemory;
 };
 
 
