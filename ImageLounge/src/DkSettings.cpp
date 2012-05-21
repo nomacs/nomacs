@@ -1203,6 +1203,7 @@ void DkResourceSettingsWidgets::init() {
 	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
 	
 	sliderMemory->setValue(curCache);
+	this->memorySliderChanged(curCache);
 	cbFastThumbnailPreview->setChecked(DkSettings::ResourceSettings::fastThumbnailPreview);
 }
 
@@ -1247,12 +1248,14 @@ void DkResourceSettingsWidgets::createLayout() {
 
 	labelMemory = new QLabel;
 	labelMemory->setContentsMargins(10,-5,0,0);
+	labelMemory->setAlignment(Qt::AlignCenter);
+
 	cacheLayout->addWidget(labelPercentage,0,0);
 	cacheLayout->addWidget(sliderMemory,1,0);
 	cacheLayout->addWidget(labelMemory,1,1);
 	cacheLayout->addWidget(memoryGradient,2,0);
 	cacheLayout->addWidget(captionWidget,3,0);
-	
+
 	QGroupBox* gbFastPreview = new QGroupBox(tr("Fast Preview Settings"));
 	QGridLayout* fastPreviewLayuot = new QGridLayout(gbFastPreview);
 	cbFastThumbnailPreview = new QCheckBox(tr("enable fast thumbnail preview"));
@@ -1261,7 +1264,6 @@ void DkResourceSettingsWidgets::createLayout() {
 	widgetVBoxLayout->addWidget(gbCache);
 	widgetVBoxLayout->addWidget(gbFastPreview);
 	widgetVBoxLayout->addStretch();
-
 }
 
 void DkResourceSettingsWidgets::writeSettings() {
