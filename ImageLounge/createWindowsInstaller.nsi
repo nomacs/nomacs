@@ -204,7 +204,7 @@ Function fileAssociationFinished
 
 
 	; RESET UPDATE FLAG
-	WriteRegStr HKCU "Software\nomacs\Image Lounge\NetworkSettings\" "updateDialogShown" "false"
+	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
 	
 	; FULLY SUPPORTED
 	${NSD_GetState} $jpg $jpg_state
