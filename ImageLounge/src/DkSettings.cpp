@@ -1216,7 +1216,8 @@ void DkResourceSettingsWidgets::createLayout() {
 	sliderMemory = new QSlider(Qt::Horizontal);
 	sliderMemory->setMinimum(0);
 	sliderMemory->setMaximum(10*stepSize);
-	sliderMemory->setPageStep(1);
+	sliderMemory->setPageStep(40);
+	sliderMemory->setSingleStep(40);
 	sliderMemory->setContentsMargins(11,11,11,0);
 
 	// widget starts on hide
