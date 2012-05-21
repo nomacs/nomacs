@@ -843,10 +843,11 @@ QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
 	if (!thumb.isNull()) {
 		file = virtualFile;
 		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
-	}
 
-	if (file.exists())
-		emit updateFileSignal(file, thumb.size());
+		if (file.exists())
+			emit updateFileSignal(file, thumb.size());
+
+	}
 
 	return thumb;
 }
@@ -868,6 +869,11 @@ void DkImageLoader::load() {
 void DkImageLoader::load(QFileInfo file, bool silent) {
 
 	this->silent = silent;
+
+	// if the locker is in load file we get dead locks if loading is not threaded
+	// is it save to lock the mutex before setting up the thread??
+	QMutexLocker locker(&mutex);
+	
 	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file));
 }
 
@@ -879,7 +885,6 @@ void DkImageLoader::load(QFileInfo file, bool silent) {
 bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	DkTimer dtt;
-	QMutexLocker locker(&mutex);
 
 	// null file?
 	if (file.fileName().isEmpty()) {

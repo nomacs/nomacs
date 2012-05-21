@@ -1622,7 +1622,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 			// directly load images < 100 KB
 			if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
-				qDebug() << "========================= loading full image..." << f.size();
+				qDebug() << "========================= loading full image: " << f.fileName() << " size: " << f.size();
 				unloadImage();
 				loader->loadFile(thumbFile);
 			}
@@ -1795,10 +1795,16 @@ void DkViewPort::setInfoDelayed(QString msg, bool start, int delayTime) {
 
 	////if (start) {
 
-	//	QMovie* m = new QMovie(":/nomacs/img/loading.gif");
-	//	centerLabel->setMovie(m);
-	//	m->start();
-	//	centerLabel->show();
+	//qDebug() << "starting animation...";
+	//QAnimationLabel* aLabel = new QAnimationLabel(":/nomacs/img/loading.gif", this);
+	////aLabel->show();
+	//aLabel->start();
+
+
+		//QMovie* m = new QMovie(":/nomacs/img/loading.gif");
+		//centerLabel->setMovie(m);
+		//m->start();
+		//centerLabel->show();
 	////}
 
 

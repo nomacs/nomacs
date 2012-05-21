@@ -38,6 +38,7 @@
 #include <QtCore/QTimer>
 
 #include "DkNetwork.h"
+#include "DkTimer.h"
 
 namespace nmc {
 
@@ -147,12 +148,16 @@ public slots:
 			if (numItems >= 10) // TODO: setting??
 				break;
 
-
+			DkTimer dt;
 			QFileInfo file = recentFiles->at(idx);
 
 			// TODO: this line is sometimes (iPhone: ducking) slow!!
-			if (!file.exists())
+			if (!file.exists()) {
+				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists " << QString::fromStdString(dt.getTotal());
 				continue;
+			}
+
+			qDebug() << "folder exists " << QString::fromStdString(dt.getTotal());
 
 			QString title = (file.isDir()) ? file.absoluteFilePath() : file.fileName();
 
@@ -161,6 +166,8 @@ public slots:
 
 			QMenu::addAction(recentFileAction);
 			numItems++;
+
+			qDebug() << "item processed in: " << QString::fromStdString(dt.getTotal());
 		}
 
 		if (numItems == 0) {
