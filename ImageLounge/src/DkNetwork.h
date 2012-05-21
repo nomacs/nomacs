@@ -30,7 +30,7 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QTcpSocket>
-#include <QWebView>
+//#include <QWebView>
 #include <QNetworkInterface>
 #include <QList>
 #include <QThread>
