@@ -1793,6 +1793,15 @@ void DkViewPort::setInfoDelayed(QString msg, bool start, int delayTime) {
 	if (!centerLabel)
 		return;
 
+	////if (start) {
+
+	//	QMovie* m = new QMovie(":/nomacs/img/loading.gif");
+	//	centerLabel->setMovie(m);
+	//	m->start();
+	//	centerLabel->show();
+	////}
+
+
 	if (start)
 		delayedInfo->setMessage(msg, delayTime);
 	else

@@ -49,6 +49,12 @@
 #include <QDesktopServices>
 #include <QVector2D>
 
+// gif animation label -----
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QMovie>
+// gif animation label -----
+
 #include "DkImage.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
@@ -1360,4 +1366,34 @@ protected:
 	QRectF* imgRect;
 
 };
+  
+///**
+// * QAnimationLabel
+// * This code is based on: http://www.developer.nokia.com/Community/Wiki/CS001434_-_Creating_a_loading_animation_with_GIF,_QMovie,_and_QLabel
+// *
+// * Uses animation from the path
+// * to display it in a QLabel.
+// */
+//class QAnimationLabel : public QWidget {
+//	Q_OBJECT
+//public:
+//	QAnimationLabel(QString animationPath,
+//	                QWidget* parent);
+//	QAnimationLabel(QString animationPath,
+//	                QSize size,
+//	                QWidget* parent);
+//	virtual ~QAnimationLabel();
+// 
+//public slots:
+//	void start();
+//	void stop();
+// 
+//private:
+//	QPointer<QLabel> _container;
+//	QPointer<QMovie> _animation;
+// 
+//	void init(const QString& animationPath,
+//	          const QSize& size);
+//};
+
 };

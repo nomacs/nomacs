@@ -458,6 +458,8 @@ private:
 	QNetworkReply* reply;
 };
 
+//// this code is based on code from: 
+//// http://www.developer.nokia.com/Community/Wiki/Capturing_image_using_QML_Camera_and_uploading_to_Facebook
 //class DkFacebook : QObject {
 //	Q_OBJECT
 //
@@ -468,9 +470,10 @@ private:
 //	
 //	};
 //
+//public slots:
 //	void login( const QString& scope ){
-//		QUrl url("https://www.facebook.com/dialog/oauth");
-//		//url.addQueryItem("client_id",YOUR_APPP_ID);
+//		QUrl url("http://www.facebook.com/dialog/oauth");
+//		url.addQueryItem("client_id", QApplication::applicationName());
 //		url.addQueryItem("redirect_uri",
 //			"https://www.facebook.com/connect/login_success.html");
 //		url.addQueryItem("response_type","token");
@@ -479,10 +482,14 @@ private:
 //		//view = new QWebView();
 //		view->load(url);
 //		view->show();
+//		qDebug() << "login should be loaded...";
 //		connect(view,SIGNAL(loadFinished(bool)),this,SLOT(loginResponse(bool)));
 //	}
 //
 //	void loginResponse(bool status) {
+//		
+//		qDebug() << "login responded...";
+//		
 //		QUrl url= view->url();
 //		QString strUrl = url.toString();
 //

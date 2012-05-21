@@ -316,8 +316,8 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_prev]);
 	fileMenu->addAction(fileActions[menu_file_next]);
 	fileMenu->addSeparator();
-	fileMenu->addAction(fileActions[menu_file_share_fb]);
-	fileMenu->addSeparator();
+	//fileMenu->addAction(fileActions[menu_file_share_fb]);
+	//fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_new_instance]);
 	fileMenu->addAction(fileActions[menu_file_exit]);
 
@@ -465,10 +465,10 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_new_instance]->setStatusTip(tr("Open file in new instance"));
 	connect(fileActions[menu_file_new_instance], SIGNAL(triggered()), this, SLOT(newInstance()));
 
-	fileActions[menu_file_share_fb] = new QAction(tr("Share on &Facebook"), this);
-	//fileActions[menu_file_share_fb]->setShortcuts(QKeySequence::Close);
-	fileActions[menu_file_share_fb]->setStatusTip(tr("Shares the image on facebook"));
-	connect(fileActions[menu_file_share_fb], SIGNAL(triggered()), this, SLOT(shareFacebook()));
+	//fileActions[menu_file_share_fb] = new QAction(tr("Share on &Facebook"), this);
+	////fileActions[menu_file_share_fb]->setShortcuts(QKeySequence::Close);
+	//fileActions[menu_file_share_fb]->setStatusTip(tr("Shares the image on facebook"));
+	//connect(fileActions[menu_file_share_fb], SIGNAL(triggered()), this, SLOT(shareFacebook()));
 
 	fileActions[menu_file_exit] = new QAction(tr("&Exit"), this);
 	fileActions[menu_file_exit]->setShortcuts(QKeySequence::Close);
@@ -1506,7 +1506,6 @@ void DkNoMacs::resizeImage() {
 			if (metaData)
 				metaData->setResolution((int)resizeDialog->getExifDpi(), (int)resizeDialog->getExifDpi());
 
-			// TODO: make resize available for ARGB images (conversion CV - Qt?)
 			QImage rImg = resizeDialog->getResizedImage();
 
 			if (!rImg.isNull()) {
@@ -1587,14 +1586,14 @@ void DkNoMacs::newInstance() {
 	QProcess::startDetached(exe, args);
 }
 
-void DkNoMacs::shareFacebook() {
-
-	//DkFacebook fb;
-
-	//fb.login(QString());
-	//qDebug() << "login called...";
-
-}
+//void DkNoMacs::shareFacebook() {
+//	
+//	DkFacebook fb;
+//
+//	fb.login(QString());
+//	qDebug() << "login called...";
+//
+//}
 
 void DkNoMacs::loadRecursion() {
 
