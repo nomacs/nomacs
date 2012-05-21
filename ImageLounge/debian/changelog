@@ -1,9 +1,29 @@
+nomacs (0.3.3) unstable; urgency=low
+
+  * internal release
+
+ -- Stefan Fiel <stefan@nomacs.org>  Thu, 21 May 2012 08:30:22 +0200
+
+nomacs (0.3.2) unstable; urgency=low
+
+  * Bug #128: restore old "open" dialog
+  * Bug #129: Frameless for multiple monitors
+  * Bug #130: rescaling transparent images
+  * Bug #132: crop tool crops wrong area
+  * Bug #133: resize
+  * Feature: percent in resize dialogue
+  * Feature: chinese translation
+  * Feature: fast file indexing (for windows only)
+  
+ -- Stefan Fiel <stefan@nomacs.org>  Thu, 15 May 2012 15:10:22 +0200
+
+
 nomacs (0.3.1) unstable; urgency=low
 
   * internal release
 
  -- Stefan Fiel <stefan@nomacs.org>  Thu, 10 May 2012 16:30:22 +0200
-
+ 
 nomacs (0.3.0) unstable; urgency=low
 
   * Bug #55: performance loss when loading from network
