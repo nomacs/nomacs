@@ -30,6 +30,13 @@
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 
+
+; silent install 
+!include FileFunc.nsh
+!insertmacro GetParameters
+!insertmacro GetOptions
+
+
 ; custom page
 Page custom fileAssociation fileAssociationFinished
 
@@ -104,13 +111,24 @@ Var mpo_state
 Var jps_state
 Var pns_state
 
+Var params
+Var fileAss 
 
 Function .onInit
 	FindProcDLL::FindProc "nomacs.exe"
+	
 	IntCmp $R0 1 0 notRunning
 		MessageBox MB_OK|MB_ICONEXCLAMATION "nomacs is running. Please close it first" /SD IDOK
 		Abort
-	notRunning:
+	notRunning:	
+	
+		IfSilent isSilent isNotSilent
+			isSilent:
+				${GetParameters} $params
+				ClearErrors
+				${GetOptions} $params /FileAssociations= $fileAss
+			isNotSilent:
+			
 FunctionEnd
 	
 Function fileAssociation
@@ -391,6 +409,56 @@ Section "MainSection" SEC01
   File "ReallyRelease\imageformats\qmng4.dll"
   File "ReallyRelease\imageformats\qsvg4.dll"
   File "ReallyRelease\imageformats\qtiff4.dll"
+  
+	IfSilent isSilent isNotSilent
+		isSilent:
+			
+			
+			${If} $fileAss S== "All"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jpg" "nomacs.file.jpg" "JPG Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jpeg" "nomacs.file.jpg" "JPG Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".png" "nomacs.file.png" "PNG Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".tif" "nomacs.file.tif"  "TIF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".tiff" "nomacs.file.tif" "TIF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".bmp" "nomacs.file.bmp" "BMP Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pbm" "nomacs.file.pbm" "PBM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pgm" "nomacs.file.pgm" "PGM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".xbm" "nomacs.file.xbm" "XBM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
+
+				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "NEF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "CRW Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "CR2 Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "ARW Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPS Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNS Image"
+				
+			${elseif} $fileAss S== "AllFullySupported"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jpg" "nomacs.file.jpg" "JPG Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jpeg" "nomacs.file.jpg" "JPG Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".png" "nomacs.file.png" "PNG Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".tif" "nomacs.file.tif"  "TIF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".tiff" "nomacs.file.tif" "TIF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".bmp" "nomacs.file.bmp" "BMP Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pbm" "nomacs.file.pbm" "PBM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pgm" "nomacs.file.pgm" "PGM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".xbm" "nomacs.file.xbm" "XBM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
+			${elseif} $fileAss S== "AllPartiallySupported"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "NEF Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "CRW Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "CR2 Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "ARW Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPS Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNS Image"
+			${endif}
+		isNotSilent:
+
+  
 SectionEnd
 
 Function finishpageaction
