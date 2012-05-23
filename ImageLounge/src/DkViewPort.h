@@ -69,16 +69,17 @@ class DkDelayedInfo : public QObject {
 	Q_OBJECT
 
 public:
-	DkDelayedInfo(QString msg  = QString(), int time = 1000) {
-		this->msg = msg;
+	DkDelayedInfo(int time = 0) {
 		timer = new QTimer();
 		timer->setSingleShot(true);
-		timer->start(time);
+		
+		if (time)
+			timer->start(time);
 
-		connect(timer, SIGNAL(timeout()), this, SLOT(sendMessage()));
+		connect(timer, SIGNAL(timeout()), this, SLOT(sendInfo()));
 	}
 
-	~DkDelayedInfo() {
+	virtual ~DkDelayedInfo() {
 
 		if (timer && timer->isActive())
 			timer->stop();
@@ -90,32 +91,69 @@ public:
 	}
 
 	void stop() {
-		
+
 		if (timer && timer->isActive())
 			timer->stop();
 		else
-			emit infoMessageSignal(msg, 1);
+			emit infoSignal(1);
 	}
 
-	void setMessage(QString& msg, int time = 1000) {
+	void setInfo(int time = 1000) {
 
 		if (!timer)
 			return;
 
-		this->msg = msg;
 		timer->start(time);
 	}
 
 signals:
-	void infoMessageSignal(QString msg, int time);
+	void infoSignal(int time);
 
 protected slots:
-	void sendMessage() {
-		emit infoMessageSignal(msg, -1);
+	virtual void sendInfo() {
+		emit infoSignal(-1);
 	}
 
 protected:
 	QTimer* timer;
+
+};
+
+
+class DkDelayedMessage : public DkDelayedInfo {
+	Q_OBJECT
+
+public:
+	DkDelayedMessage(QString msg  = QString(), int time = 0) : DkDelayedInfo(time) {
+		this->msg = msg;
+	}
+
+	~DkDelayedMessage() {}
+
+	void stop() {
+		
+		if (timer && timer->isActive())
+			timer->stop();
+		else
+			emit infoSignal(msg, 1);
+	}
+
+	void setInfo(QString& msg, int time = 1000) {
+
+		DkDelayedInfo::setInfo(time);
+		this->msg = msg;
+	}
+
+signals:
+	void infoSignal(QString msg, int time);
+
+protected slots:
+	void sendInfo() {
+		
+		emit infoSignal(msg, -1);
+	}
+
+protected:
 	QString msg;
 
 };
@@ -284,6 +322,8 @@ public slots:
 	
 	void setTitleLabel(QFileInfo file, int time = -1);
 	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
+	virtual void setSpinner(int time = 3000);
+	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	void updateRating(int rating);
 	
@@ -340,7 +380,9 @@ protected:
 	DkInfoLabel* bottomRightLabel;
 	DkInfoLabel* topLeftLabel;
 	DkFileInfoLabel* fileInfoLabel;
-	DkDelayedInfo* delayedInfo;
+	DkDelayedMessage* delayedInfo;
+	DkDelayedInfo* delayedSpinner;
+	DkAnimationLabel* spinnerLabel;
 
 	DkMetaDataInfo* metaDataInfo;
 	DkPlayer* player;

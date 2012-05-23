@@ -540,8 +540,11 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	bottomRightLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_right_label);
 	topLeftLabel = new DkInfoLabel(this, "", DkInfoLabel::top_left_label);
 	fileInfoLabel = new DkFileInfoLabel(this);
-	delayedInfo = new DkDelayedInfo();
+	delayedInfo = new DkDelayedMessage();
+	delayedSpinner = new DkDelayedInfo(0);
 
+	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
+	
 	// cropping
 	editRect = new DkEditableRect(QRectF(), this);
 	editRect->setWorldTransform(&worldMatrix);
@@ -580,10 +583,13 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	loader = new DkImageLoader();
 
-	connect(delayedInfo, SIGNAL(infoMessageSignal(QString, int)), this, SLOT(setInfo(QString, int)));
-	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()));
+	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
+	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
+	
+	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
+	connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 	connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
@@ -1253,6 +1259,12 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	centerLabel->updatePos();
 	topLeftLabel->updatePos(topOffset);	// todo: if thumbnails are shown: move/overview move
 	fileInfoLabel->updatePos(bottomOffset);
+	
+	if (spinnerLabel) {
+		QPointF center = QPointF(width()*0.5f, height()*0.5f);
+		center -= QPointF(spinnerLabel->geometry().width()*0.5f, spinnerLabel->geometry().height()*0.5f);
+		spinnerLabel->move(center.toPoint());
+	}
 
 	if (editRect)
 		editRect->resize(width(), height());
@@ -1770,6 +1782,36 @@ DkEditableRect* DkViewPort::getEditableRect() {
 	return editRect;
 }
 
+void DkViewPort::setSpinner(int time) {
+
+	if (spinnerLabel)
+		spinnerLabel->showTimed(time);
+	//spinnerLabel->getLabel()->setText("", time);
+
+	//QAnimationLabel* aLabel = new QAnimationLabel(":/nomacs/img/loading.gif", this);
+	////aLabel->show();
+	//aLabel->start();
+
+
+	//QMovie* m = new QMovie(":/nomacs/img/loading.gif");
+	//centerLabel->setMovie(m);
+	//m->start();
+	//centerLabel->show();
+	////}
+}
+
+void DkViewPort::setSpinnerDelayed(bool start, int time) {
+
+	if (!spinnerLabel) 
+		return;
+
+	if (start)
+		delayedSpinner->setInfo(time);
+	else
+		delayedSpinner->stop();
+
+}
+
 void DkViewPort::setInfo(QString msg, int time, int location) {
 
 	if (location == DkInfoLabel::center_label && centerLabel)
@@ -1793,23 +1835,16 @@ void DkViewPort::setInfoDelayed(QString msg, bool start, int delayTime) {
 	if (!centerLabel)
 		return;
 
-	////if (start) {
+	if (!spinnerLabel) 
+		return;
 
-	//qDebug() << "starting animation...";
-	//QAnimationLabel* aLabel = new QAnimationLabel(":/nomacs/img/loading.gif", this);
-	////aLabel->show();
-	//aLabel->start();
-
-
-		//QMovie* m = new QMovie(":/nomacs/img/loading.gif");
-		//centerLabel->setMovie(m);
-		//m->start();
-		//centerLabel->show();
-	////}
-
+	//if (start)
+	//	delayedSpinner->setInfo(delayTime);
+	//else
+	//	delayedSpinner->stop();
 
 	if (start)
-		delayedInfo->setMessage(msg, delayTime);
+		delayedInfo->setInfo(msg, delayTime);
 	else
 		delayedInfo->stop();
 

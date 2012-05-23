@@ -845,6 +845,23 @@ void DkLabel::setText(const QString msg, int time) {
 
 }
 
+void DkLabel::showTimed(int time) {
+
+	this->time = time;
+
+	if (!time) {
+		hide();
+		return;
+	}
+
+	show();
+
+	if (time != -1)
+		timer->start(time);
+
+}
+
+
 QString DkLabel::getText() {
 	return this->text;
 }
@@ -3963,6 +3980,69 @@ void DkEditableRect::setVisible(bool visible) {
 	DkWidget::setVisible(visible);
 }
 
+
+DkAnimationLabel::DkAnimationLabel(QString animationPath, QWidget* parent) : DkLabel(parent) {
+
+	init(animationPath, QSize());
+}
+
+DkAnimationLabel::DkAnimationLabel(QString animationPath, QSize size, QWidget* parent) : DkLabel(parent) {
+
+	init(animationPath, size);
+}
+
+DkAnimationLabel::~DkAnimationLabel() {
+
+	animation->deleteLater();
+}
+
+void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
+	
+	animation = new QMovie(animationPath);
+	
+	QSize s = size;
+	if(s.isEmpty()) {
+		animation->jumpToNextFrame();
+		s = animation->currentPixmap().size();
+		animation->jumpToFrame(0);
+
+		// padding
+		s += QSize(20, 20);
+	}
+
+	setFixedSize(s);
+	setMovie(animation);
+	hide();
+
+	setStyleSheet("QLabel {background-color: QColor(0,0,0,100); border-radius: 10px;}");
+}
+
+void DkAnimationLabel::showTimed(int time) {
+	
+	if(!this->animation.isNull() &&
+		(this->animation->state() == QMovie::NotRunning ||
+		 this->animation->state() == QMovie::Paused)) {
+		
+			this->animation->start();
+	}
+	DkLabel::showTimed(time);
+}
+
+
+void DkAnimationLabel::hide() {
+	
+	if(!this->animation.isNull()) {
+		if(this->animation->state() == QMovie::Running) {
+			
+			this->animation->stop();
+		}
+	}
+
+	DkLabel::hide();
+}
+
+
+
 QAnimationLabel::QAnimationLabel(QString animationPath,
                                  QWidget* parent) : QWidget(parent) {
 	init(animationPath, QSize());
@@ -3996,7 +4076,7 @@ void QAnimationLabel::init(const QString& animationPath,
 	/* We're not automatically shown, so lets hide. */
 	setHidden(true);
 	/* We need a container for the QMovie, let's use QLabel */
-	_container = new QLabel(this);
+	_container = new DkLabel(this);
 	/*
 	 * We'll set a fixed size to the QLabel
 	 * because we don't want to be resized

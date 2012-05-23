@@ -872,7 +872,7 @@ void DkImageLoader::load(QFileInfo file, bool silent) {
 
 	// if the locker is in load file we get dead locks if loading is not threaded
 	// is it save to lock the mutex before setting up the thread??
-	QMutexLocker locker(&mutex);
+	/*QMutexLocker locker(&mutex);*/
 	
 	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file));
 }
@@ -885,6 +885,8 @@ void DkImageLoader::load(QFileInfo file, bool silent) {
 bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	DkTimer dtt;
+
+	QMutexLocker locker(&mutex);
 
 	// null file?
 	if (file.fileName().isEmpty()) {
@@ -935,7 +937,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	//dataExif.saveOrientation(90);
 
 	if (!silent)
-		emit updateInfoSignalDelayed(tr("loading..."), true);
+		emit updateSpinnerSignalDelayed(true);
 
 	qDebug() << "loading: " << file.absoluteFilePath();
 
@@ -974,7 +976,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	this->virtualFile = file;
 
 	if (!silent)
-		emit updateInfoSignalDelayed(tr("loading..."), false);	// stop showing
+		emit updateSpinnerSignalDelayed(false);	// stop showing
 
 	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
 	

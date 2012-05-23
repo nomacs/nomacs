@@ -117,6 +117,7 @@ public:
 		timer = 0;
 	};
 
+	virtual void showTimed(int time = 3000);
 	virtual void setText(const QString msg, int time = 3000);
 	QString getText();
 	void setFontSize(int fontSize);
@@ -1366,6 +1367,32 @@ protected:
 	QRectF* imgRect;
 
 };
+
+/**
+ * DkAnimationLabel
+ * This code is based on: http://www.developer.nokia.com/Community/Wiki/CS001434_-_Creating_a_loading_animation_with_GIF,_QMovie,_and_QLabel
+ *
+ * Uses animation from the path
+ * to display it in a DkLabel.
+ */
+class DkAnimationLabel : public DkLabel {
+
+public:
+	DkAnimationLabel(QString animationPath = QString(), QWidget* parent = 0);
+	DkAnimationLabel(QString animationPath, QSize size, QWidget* parent);
+	virtual ~DkAnimationLabel();
+
+	virtual void showTimed(int time = 3000);
+	virtual void hide();
+
+private:
+	
+	QPointer<QMovie> animation;
+
+	void init(const QString& animationPath, const QSize& size);
+
+};
+
   
 /**
  * QAnimationLabel
@@ -1384,12 +1411,16 @@ public:
 	                QWidget* parent);
 	virtual ~QAnimationLabel();
  
+	DkLabel* getLabel() {
+		return _container;
+	}
+
 public slots:
 	void start();
 	void stop();
  
 private:
-	QPointer<QLabel> _container;
+	QPointer<DkLabel> _container;
 	QPointer<QMovie> _animation;
  
 	void init(const QString& animationPath,
