@@ -160,6 +160,10 @@ IF (${ENABLE_RAW})
 
 	# OpenCV
 	pkg_check_modules(OpenCV  opencv>=2.1.0)
+	SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
+	If (OpenCV_LIBS STREQUAL "") 
+		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+	ENDIF()
 	IF (NOT OpenCV_FOUND AND MSVC)
 		find_path(OpenCV_BUILD_PATH NAMES "bin/Release/opencv_core231.dll" "bin/Release/opencv_imgproc231.dll" 
 										"bin/Debug/opencv_core231d.dll" "bin/Debug/opencv_imgproc231d.dll" 
@@ -194,7 +198,7 @@ IF (${ENABLE_RAW})
 				FILE(COPY ${OpenCV_BUILD_PATH}/lib/Debug/opencv_imgproc231d.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
 				SET(OpenCV_LIBRARY_DIRS "")
-				SET(OpenCV_LIBRARIES optimized opencv_core231.lib opencv_imgproc231.lib debug opencv_core231d.lib opencv_imgproc231d.lib)
+				SET(OpenCV_LIBS optimized opencv_core231.lib opencv_imgproc231.lib debug opencv_core231d.lib opencv_imgproc231d.lib)
 				
 				SET(OpenCV_FOUND true)
 				SET(OpenCV_VERSION "2.3.1")
@@ -223,9 +227,9 @@ IF (${ENABLE_RAW})
 		# so I play bad games here - expecting all will work with manually updated library names
 		message(STATUS "")
 		message(STATUS "APPLE: some hacks with OpenCV libraries linking will be performed (only limited set of libs will be used)")
-		message(STATUS "APPLE:    originals: ${OpenCV_LIBRARIES}")
-		set(OpenCV_LIBRARIES "opencv_core;opencv_imgproc")
-        	message(STATUS "APPLE:          new: ${OpenCV_LIBRARIES}")
+		message(STATUS "APPLE:    originals: ${OpenCV_LIBS}")
+		set(OpenCV_LIBS "opencv_core;opencv_imgproc")
+        	message(STATUS "APPLE:          new: ${OpenCV_LIBS}")
 		message(STATUS "")
 	endif (APPLE)
 
@@ -343,7 +347,7 @@ IF (EXIV2_FOUND)
 	set(EXE_NAME ${CMAKE_PROJECT_NAME})
 	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
 	add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS})
-	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB})
+	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB})
 
 
 	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
