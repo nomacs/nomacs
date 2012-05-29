@@ -27,7 +27,7 @@
 
 #include "DkUtils.h"
 
-#ifdef linux
+#ifdef Q_WS_X11
 #include <sys/sysinfo.h>
 #endif
 
@@ -51,7 +51,7 @@ double DkMemory::getTotalMemory() {
 		mem = MemoryStatus.ullTotalPhys;
 	}
 
-#elif linux
+#elif defined Q_WS_X11
 
 	struct sysinfo info;
 
@@ -59,7 +59,7 @@ double DkMemory::getTotalMemory() {
 		mem = info.totalram;
 
 
-#elif Q_WS_MAC
+#elif defined Q_WS_MAC
 	// TODO: could somebody (with a make please add the corresponding calls?
 #endif
 
@@ -86,14 +86,14 @@ double DkMemory::getFreeMemory() {
 		mem = MemoryStatus.ullAvailPhys;
 	}
 
-#elif linux
+#elif defined Q_WS_X11
 
 	struct sysinfo info;
 	
 	if (!sysinfo(&info))
 		mem = info.freeram;
 
-#elif Q_WS_MAC
+#elif defined Q_WS_MAC
 
 	// TODO: could somebody (with a make please add the corresponding calls?
 

@@ -3377,7 +3377,7 @@ void DkOpenWithDialog::browseAppFile() {
 	// load system default open dialog
 	QString appFilter;
 	QString defaultPath = userAppPaths[senderIdx];
-#ifdef WIN32
+#ifdef Q_WS_WIN
 	appFilter += tr("Executable Files (*.exe);;");
 	if (!QFileInfo(defaultPath).exists())
 		defaultPath = getenv("PROGRAMFILES");
@@ -3537,7 +3537,7 @@ QString DkOpenWithDialog::searchForSoftware(int softwareIdx) {
 QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 #include <windows.h>
 
 	// icon extraction should take between 2ms and 13ms

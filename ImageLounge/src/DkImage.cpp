@@ -1017,12 +1017,12 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 
 	}
 	else {
-		if (!silent) {
+		//if (!silent) {
 			QString msg = tr("Sorry, I could not load: %1").arg(file.fileName());
 			updateInfoSignal(msg);
 			this->file = lastFileLoaded;	// revert to last file
 			loadDir(this->file.absoluteDir());
-		}
+		//}
 		fileNotLoadedSignal(file);
 		
 		startStopCacher();
@@ -1570,7 +1570,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 
 	DkTimer dt;
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 
 	QString winPath = QDir::toNativeSeparators(dir.path()) + "\\*.*";
 

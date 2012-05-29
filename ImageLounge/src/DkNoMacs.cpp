@@ -96,7 +96,7 @@ void DkNoMacs::init() {
 	setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
 
 // assign icon -> in windows the 32px version
-#ifdef WIN32
+#ifdef Q_WS_WIN
 	QString iconPath = ":/nomacs/img/nomacs32.png";
 #else
 	QString iconPath = ":/nomacs/img/nomacs.png";
@@ -140,7 +140,7 @@ void DkNoMacs::init() {
 
 }
 
-#ifdef WIN32	// windows specific versioning
+#ifdef Q_WS_WIN	// windows specific versioning
 #include <windows.h>
 #undef min
 #undef max

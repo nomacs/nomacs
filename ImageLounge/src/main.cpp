@@ -47,7 +47,7 @@
 #include <cassert>
 
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 int main(int argc, wchar_t *argv[]) {
 #else
 int main(int argc, char *argv[]) {
@@ -58,9 +58,9 @@ int main(int argc, char *argv[]) {
 	qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
 	qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
 
-#ifdef linux
+#ifdef Q_WS_X11
 	QApplication::setGraphicsSystem("raster");
-#elif WIN32
+#elifdef Q_WS_WIN
 	QApplication::setGraphicsSystem("raster");
 #endif
 	//! \warning those QSettings setup *must* go before QApplication object
@@ -138,33 +138,3 @@ int main(int argc, char *argv[]) {
 	delete w;
 	return rVal;
 }
-
-//// http://stackoverflow.com/questions/8122277/getting-memory-information-with-qt
-//// memory sys info
-//MEMORYSTATUSEX memory_status;
-//ZeroMemory(&memory_status, sizeof(MEMORYSTATUSEX));
-//memory_status.dwLength = sizeof(MEMORYSTATUSEX);
-//if (GlobalMemoryStatusEx(&memory_status)) {
-//	system_info.append(
-//		QString("RAM: %1 MB")
-//		.arg(memory_status.ullTotalPhys / (1024 * 1024)));
-//} else {
-//	system_info.append("Unknown RAM");
-//}
-//
-//Linux (/proc/meminfo)
-//
-//	QProcess p;
-//p.start("awk", QStringList() << "/MemTotal/ { print $2 }" << "/proc/meminfo");
-//p.waitForFinished();
-//QString memory = p.readAllStandardOutput();
-//system_info.append(QString("; RAM: %1 MB").arg(memory.toLong() / 1024));
-//p.close();
-//
-//Mac (sysctl)
-//
-//	QProcess p;
-//p.start("sysctl", QStringList() << "kern.version" << "hw.physmem");
-//p.waitForFinished();
-//QString system_info = p.readAllStandardOutput();
-//p.close();

@@ -1000,9 +1000,9 @@ void DkUpdater::checkForUpdated() {
 
 #ifdef Q_WS_WIN
 	QUrl url ("http://www.nomacs.org/version_win");
-#elif LINUX
+#elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
-#elif Q_WS_MAC
+#elif defined Q_WS_MAC
 	QUrl url ("http://www.nomacs.org/version_mac");
 #else
 	QUrl url ("http://www.nomacs.org/version");
@@ -1026,7 +1026,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 		QStringList cVersion = QApplication::applicationVersion().split('.');
 		QStringList nVersion = sl[0].split('.');
 
-		if (cVersion.size() < 4 || nVersion.size() < 4) {
+		if (cVersion.size() <= 4 || nVersion.size() <= 4) {
 			qDebug() << "sorry, I could not parse the version number...";
 
 			if (!silent)

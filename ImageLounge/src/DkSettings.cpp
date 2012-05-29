@@ -48,7 +48,7 @@ bool DkSettings::GlobalSettings::useTmpPath = false;
 QString DkSettings::GlobalSettings::tmpPath = QString();
 QString DkSettings::GlobalSettings::language = "en";
 
-#ifdef linux
+#ifdef Q_WS_X11
 	bool DkSettings::SynchronizeSettings::switchModifier = true;
 	Qt::KeyboardModifier DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
 	Qt::KeyboardModifier DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;
@@ -292,7 +292,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::GlobalSettings::userAppPaths = QStringList();
 
 
-#ifdef linux
+#ifdef Q_WS_X11
 	DkSettings::SynchronizeSettings::switchModifier = true;
 	DkSettings::GlobalSettings::altMod = Qt::ControlModifier;
 	DkSettings::GlobalSettings::ctrlMod = Qt::AltModifier;

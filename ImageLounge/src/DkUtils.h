@@ -43,13 +43,18 @@
 
 #include "DkError.h"
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 	#include <wtypes.h>
 	#include <windows.h>
 
 #endif
 
 #ifdef WITH_OPENCV
+
+#ifdef Q_WS_WIN
+#pragma warning(disable: 4996)
+#endif
+
 #include <opencv/cv.h>
 using namespace cv;
 #else
@@ -286,7 +291,7 @@ public:
 		return dateConverted;
 	}
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 	static LPCWSTR stringToWchar(std::string str) {
 		wchar_t *wChar = new wchar_t[(int)str.length()+1];
 		size_t convertedChars = 0;
@@ -297,7 +302,7 @@ public:
 	};
 #endif
 
-#ifdef linux
+#ifdef Q_WS_X11
 	static const char* stringToWchar(std::string str) {
 		return str.c_str();
 	};

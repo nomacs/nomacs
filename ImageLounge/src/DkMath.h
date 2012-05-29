@@ -45,6 +45,11 @@
 
 
 #ifdef WITH_OPENCV
+
+#ifdef Q_WS_WIN
+#pragma warning(disable: 4996)
+#endif
+
 #include <opencv/cv.h>
 using namespace cv;
 #else

@@ -60,7 +60,7 @@
 #include "DkSettings.h"
 #include "DkMath.h"
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 #include <ShObjIdl.h>
 #include <ShlObj.h>
 #endif

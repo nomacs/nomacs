@@ -27,7 +27,7 @@
 
 #pragma once
 
-#ifdef WIN32
+#ifdef WIN32		// why is Q_WS_WIN32 not defined here?
 #include "shlwapi.h"
 //#pragma comment (lib, "shlwapi.lib")
 #endif
@@ -57,6 +57,11 @@
 
 // opencv
 #ifdef WITH_OPENCV
+
+#ifdef Q_WS_WIN
+#pragma warning(disable: 4996)
+#endif
+
 #include <libraw/libraw.h>
 #include <opencv/cv.h>
 using namespace cv;
@@ -80,7 +85,7 @@ using namespace cv;
 #include "DkTimer.h"
 #include "DkSettings.h"
 
-#ifdef linux
+#ifdef Q_WS_X11
 	typedef  unsigned char byte;
 #endif
 
