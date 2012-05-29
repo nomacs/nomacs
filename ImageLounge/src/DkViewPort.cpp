@@ -684,6 +684,13 @@ void DkViewPort::updateImage() {
 
 void DkViewPort::setImage(QImage newImg) {
 	
+	if (!thumbLoaded) { 
+		qDebug() << "saving image matrix...";
+		oldImgViewRect = imgViewRect;
+		oldWorldMatrix = worldMatrix;
+		oldImgMatrix = imgMatrix;
+	}
+
 	DkTimer dt;
 	imgPyramid.clear();
 
@@ -739,6 +746,13 @@ void DkViewPort::setImage(QImage newImg) {
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
+
+	if (!thumbLoaded) { 
+		qDebug() << "saving image matrix...";
+		oldImgViewRect = imgViewRect;
+		oldWorldMatrix = worldMatrix;
+		oldImgMatrix = imgMatrix;
+	}
 
 	DkTimer dt;
 	imgPyramid.clear();
@@ -1047,11 +1061,9 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
 
 	// ok relative transform
 	if (canvasSize.isNull()) {
-
 		moveView(QPointF(newWorldMatrix.dx(), newWorldMatrix.dy())/worldMatrix.m11());
 	}
 	else {
-
 		worldMatrix = newWorldMatrix;
 		imgMatrix = newImgMatrix;
 		updateImageMatrix();
@@ -1082,7 +1094,6 @@ void DkViewPort::tcpSetWindowRect(QRect rect) {
 void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 	
 	if (relativeMatrix.isIdentity()) {
-
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = worldMatrix.inverted().map(size);
 		size = imgMatrix.inverted().map(size);
@@ -1091,7 +1102,6 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 		emit sendTransformSignal(worldMatrix, imgMatrix, size);
 	}
 	else {
-		qDebug() << "sending relative...";
 		emit sendTransformSignal(relativeMatrix, QTransform(), QPointF());
 	}
 }
@@ -1366,10 +1376,11 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 			(!DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
 			event->modifiers() == (altMod))) {
 			
-			qDebug() << "relative transform...";	
-			QTransform relTransform;
-			relTransform.translate(dxy.x(), dxy.y());
-			tcpSynchronize(relTransform);
+			if (dxy.x() != 0 || dxy.y() != 0) {
+				QTransform relTransform;
+				relTransform.translate(dxy.x(), dxy.y());
+				tcpSynchronize(relTransform);
+			}
 		}
 		else if (event->modifiers() == altMod)
 			tcpSynchronize();
@@ -1552,11 +1563,12 @@ void DkViewPort::unloadImage() {
 
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 
-	if (!thumbLoaded) { 
-		oldImgViewRect = imgViewRect;
-		oldWorldMatrix = worldMatrix;
-		oldImgMatrix = imgMatrix;
-	}
+	//if (!thumbLoaded) { 
+	//	qDebug() << "saving image matrix...";
+	//	oldImgViewRect = imgViewRect;
+	//	oldWorldMatrix = worldMatrix;
+	//	oldImgMatrix = imgMatrix;
+	//}
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool silent) {
@@ -1585,6 +1597,7 @@ void DkViewPort::reloadFile() {
 
 void DkViewPort::loadNextFile(bool silent) {
 
+	// this function is (more or less) deprecated -> just needed since we cannot distinguish between action triggered & action repeated
 	unloadImage();
 
 	if (loader && !testLoaded)
@@ -1618,14 +1631,14 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
+	silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
+
 	if (DkSettings::ResourceSettings::fastThumbnailPreview) {
 
 		QImage thumb;
 		QFileInfo thumbFile;
 
 		if (loader && !testLoaded) {
-
-			silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
 
 			thumbFile = loader->getChangedFileInfo(skipIdx, silent);
 			qDebug() << thumbFile.fileName();
@@ -1658,8 +1671,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 		QCoreApplication::sendPostedEvents();
 	}
-	else if (loader && !testLoaded)
-		loader->changeFile(skipIdx, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+	else if (loader && !testLoaded) {
+		unloadImage();
+		loader->changeFile(skipIdx, silent);
+	}
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(skipIdx);

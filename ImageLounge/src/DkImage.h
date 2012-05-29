@@ -604,7 +604,6 @@ private:
 	float curCache;
 
 	int maxNumFiles;
-	int curNumFiles;
 
 	QDir dir;
 	bool isActive;

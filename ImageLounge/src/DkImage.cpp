@@ -500,6 +500,8 @@ DkImageLoader::~DkImageLoader() {
  **/ 
 void DkImageLoader::clearPath() {
 	
+
+	qDebug() << "clear path - virtual file: " << virtualFile.fileName() << " real file: " << file.fileName();
 	QMutexLocker locker(&mutex);
 	img = QImage();
 	lastFileLoaded = file;
@@ -1812,7 +1814,6 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
 	maxFileSize = 50;	// in MB
 	curCache = 0;
 	maxNumFiles = 100;
-	curNumFiles = 0;
 
 	newDir = true;
 	updateFiles = false;
@@ -1938,7 +1939,6 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < DkSettings::ResourceSettings::cacheMemory) {
 					cache->at(idx).setImage(img);
 					curCache += cache->at(idx).getCacheSize();
-					curNumFiles--;
 				}
 				else {
 					QImage emptyImage = QImage();
@@ -1965,8 +1965,6 @@ void DkCacher::load() {
 		int pIdx = curFileIdx-idx;
 
 		if (nIdx < (int)cache->size() && cache->at(nIdx).getCacheState() == DkImageCache::cache_not_loaded) {
-
-			qDebug() << "caching next...";
 
 			if (!clean(idx))
 				break;	// we're done
@@ -1995,10 +1993,6 @@ void DkCacher::load() {
 
 bool DkCacher::clean(int curCacheIdx) {
 
-	//// max number of file exceeded?
-	//if (curNumFiles > maxNumFiles)
-	//	return false;
-
 	// nothing todo
 	if (curCache < DkSettings::ResourceSettings::cacheMemory)
 		return true;
@@ -2011,7 +2005,6 @@ bool DkCacher::clean(int curCacheIdx) {
 
 		if (cache->at(idx).getCacheState() == DkImageCache::cache_loaded) {
 			
-			curNumFiles--;
 			curCache -= cache->at(idx).getCacheSize();
 			QImage tmpImg = QImage();
 			cache->at(idx).setImage(tmpImg);	// clear cached image
@@ -2020,8 +2013,10 @@ bool DkCacher::clean(int curCacheIdx) {
 		}
 	}
 
+	qDebug() << "[cache] cache volume: " << curCache << " MB";
+
 	// stop caching
-	if (curCache >= DkSettings::ResourceSettings::cacheMemory || curNumFiles > maxNumFiles)
+	if (curCache >= DkSettings::ResourceSettings::cacheMemory)
 		return false;
 	
 	return true;
@@ -2053,7 +2048,6 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 		
 		cacheImg->setImage(img);
 		curCache += cacheImg->getCacheSize();
-		curNumFiles++;
 
 		qDebug() << "[cache] I cached: " << cacheImg->getFile().fileName() << " cache volume: " << curCache << " MB/ " 
 			<< DkSettings::ResourceSettings::cacheMemory << " MB";
