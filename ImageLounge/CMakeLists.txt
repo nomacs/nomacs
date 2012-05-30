@@ -20,7 +20,7 @@ project(nomacs)
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
 
 
-set(NOMACS_VERSION 0.3.3)
+set(NOMACS_VERSION 0.4.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
@@ -262,6 +262,7 @@ set (NOMACS_SOURCES
         src/DkUtils.cpp
         src/DkViewPort.cpp
         src/DkWidgets.cpp
+		src/DkDialog.cpp
         src/DkSettings.cpp
         src/BorderLayout.cpp
 		src/DkTransferToolBar.cpp
@@ -285,6 +286,7 @@ set (NOMACS_MOCS
         #src/DkUtils.h
         src/DkViewPort.h
         src/DkWidgets.h
+		src/DkDialog.h
         src/DkMenu.h
         src/DkSettings.h
 		src/DkTransferToolBar.h
@@ -304,6 +306,7 @@ set (NOMACS_HEADERS
         src/DkUtils.h
         src/DkViewPort.h
         src/DkWidgets.h
+		src/DkDialog.h
         src/DkMenu.h
         src/DkSettings.h
 		src/DkTransferToolBar.h

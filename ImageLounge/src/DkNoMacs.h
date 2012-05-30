@@ -66,6 +66,7 @@
 #include "DkViewPort.h"
 #include "DkImage.h"
 #include "DkWidgets.h"
+#include "DkDialog.h"
 #include "DkSettings.h"
 #include "DkMenu.h"
 #include "DkTransferToolBar.h"

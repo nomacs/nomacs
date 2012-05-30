@@ -26,7 +26,8 @@
  *******************************************************************************************************/
 
 #include "DkSettings.h"
-#include "DkWidgets.h"
+//#include "DkWidgets.h"
+#include "DkDialog.h"
 #include "DkUtils.h"
 
 namespace nmc {
