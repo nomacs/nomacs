@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef Q_WS_X11
 	QApplication::setGraphicsSystem("raster");
-#elifdef Q_WS_WIN
+#elif defined Q_WS_WIN
 	QApplication::setGraphicsSystem("raster");
 #endif
 	//! \warning those QSettings setup *must* go before QApplication object
