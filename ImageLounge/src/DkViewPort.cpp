@@ -37,6 +37,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	filePreview = new DkFilePreview(this, flags);
 	metaDataInfo = new DkMetaDataInfo(this);
 
+	overviewWindow = new DkOverview(this, flags);
+
 	// wheel label
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
 	wheelButton = new QLabel(this);
@@ -57,15 +59,24 @@ void DkControlWidget::init() {
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 
+	// next TODOs:
+	// overview window has a bug if height gets small
+	// overview window is currently not updated
+
+	upperLeft = new QWidget();
+	QGridLayout* ulLayout = new QGridLayout(upperLeft);
+	ulLayout->addWidget(overviewWindow, 0, 0);
+	//ulLayout->setRowStretch(1, 1);
+
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0,0,0,0);
 
 	// add elements
-	layout->addWidget(filePreview, top, left, 1, hor_pos_end-1);
-	layout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end-1);
-	
-	
+	layout->addWidget(filePreview, top, left, 1, hor_pos_end);
+	layout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 
+	layout->addWidget(upperLeft, top_info, left, 1, 1);
+	
 	//setLayout(layout);
 	show();	
 	qDebug() << "controller initialized...";
@@ -86,6 +97,8 @@ void DkControlWidget::connectWidgets() {
 	}
 
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
+	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
 
 	// TODO
 	//connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
@@ -710,9 +723,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	ratingLabel = new DkRatingLabelBg(2, this, flags);
 	addActions(ratingLabel->getActions().toList());		// register actions
 
-	overviewWindow = new DkOverview(this, flags);
-	overviewWindow->setTransforms(&worldMatrix, &imgMatrix);
-
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
 
@@ -725,6 +735,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	controller = new DkControlWidget(this, flags);
 	controller->show();
 
+	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
+
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
 	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
@@ -733,8 +745,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 	connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
-	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), this, SLOT(moveView(QPointF)));
-	connect(overviewWindow, SIGNAL(sendTransformSignal()), this, SLOT(tcpSynchronize()));
+	//connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), this, SLOT(moveView(QPointF)));	// done
+	//connect(overviewWindow, SIGNAL(sendTransformSignal()), this, SLOT(tcpSynchronize()));		// done
 	
 	connect(player, SIGNAL(previousSignal(bool)), this, SLOT(loadPrevFile(bool)));
 	connect(player, SIGNAL(nextSignal(bool)), this, SLOT(loadNextFile(bool)));
@@ -832,7 +844,7 @@ void DkViewPort::setImage(QImage newImg) {
 	DkTimer dt;
 	imgPyramid.clear();
 
-	overviewWindow->setImage(QImage());	// clear overview
+	controller->getOverview()->setImage(QImage());	// clear overview
 
 	imgQt = newImg;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
@@ -854,7 +866,7 @@ void DkViewPort::setImage(QImage newImg) {
 	//emit windowTitleSignal(QFileInfo(), imgQt.size());	// not needed?!
 	player->startTimer();
 
-	overviewWindow->setImage(imgQt);
+	controller->getOverview()->setImage(imgQt);
 
 	// TODO: this is a fast fix
 	// if this thread uses the static metadata object 
@@ -906,7 +918,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	updateImageMatrix();
 	
-	overviewWindow->setImage(imgQt);
+	controller->getOverview()->setImage(imgQt);
 
 	//// TODO: this is a fast fix
 	//// if this thread uses the static metadata object 
@@ -1039,6 +1051,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	showZoom();
 	changeCursor();
 
+	controller->update();
 	update();
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
@@ -1252,25 +1265,29 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	//in mode zoom/panning
 	if (worldMatrix.m11() > 1 && !imageInside() && DkSettings::GlobalSettings::showOverview) {
-		
+
+		if (!controller->getOverview()->isVisible())
+			controller->getOverview()->show();
 		//if (filePreview->isVisible() && overviewWindow->isVisible()) {
 		//	overviewWindow->move(overviewMargin, filePreview->geometry().bottom()+10);
 		//}
-		/*else*/ if (overviewWindow->isVisible()) {
+		/*else*/ /*if (overviewWindow->isVisible()) {
 			overviewWindow->move(overviewMargin, overviewMargin);
-		}
+		}*/
 
-		if (!overviewWindow->isVisible()) {
-			overviewWindow->show();
-			overviewWindow->update();
-			topOffset.setX(overviewWindow->width()+10);
-			topLeftLabel->updatePos(topOffset);
-		}
+		//if (!overviewWindow->isVisible()) {
+		//	overviewWindow->show();
+		//	overviewWindow->update();
+		//	topOffset.setX(overviewWindow->width()+10);
+		//	topLeftLabel->updatePos(topOffset);
+		//}
 	}
 	else { 
-		overviewWindow->hide();
-		topOffset.setX(0);
-		topLeftLabel->updatePos(topOffset);
+		controller->getOverview()->hide();
+		
+		//overviewWindow->hide();
+		//topOffset.setX(0);
+		//topLeftLabel->updatePos(topOffset);
 	}
 
 	int offset = 10;//(metaDataInfo->isVisible()) ? metaDataInfo->height()+10 : 10;
@@ -1350,11 +1367,10 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	centerImage();
 	changeCursor();
 
-	// it is not always propagated?!
-	overviewWindow->resize(size()*overviewSize);
-	overviewWindow->setViewPortRect(geometry());
+	//overviewWindow->resize(size()*overviewSize);
+	controller->getOverview()->setViewPortRect(geometry());
 
-	topOffset.setX(overviewWindow->width()+10);
+	//topOffset.setX(overviewWindow->width()+10);
 
 	ratingLabel->move(10, height()-ratingLabel->size().height()-10+bottomOffset.y());
 	bottomLabel->updatePos(bottomOffset);
@@ -1828,10 +1844,10 @@ DkPlayer* DkViewPort::getPlayer() {
 	return player;
 }
 
-DkOverview* DkViewPort::getOverview() {
-
-	return overviewWindow;
-}
+//DkOverview* DkViewPort::getOverview() {
+//
+//	return overviewWindow;
+//}
 
 DkFileInfoLabel* DkViewPort::getFileInfoWidget() {
 

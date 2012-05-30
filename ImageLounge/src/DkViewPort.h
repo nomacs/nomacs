@@ -170,8 +170,8 @@ class DllExport DkControlWidget : public QWidget {
 
 public:
 	
-	enum verPos {top=1, top_info, ver_center, bottom_info, bottom, ver_pos_end};
-	enum horPos {left=1, hor_center, right, hor_pos_end};
+	enum verPos {top=0, top_info, ver_center, bottom_info, bottom, ver_pos_end};
+	enum horPos {left= 0, hor_center, right, hor_pos_end};
 	
 	DkControlWidget(DkViewPort *parent = 0, Qt::WFlags flags = 0);
 	virtual ~DkControlWidget() {};
@@ -182,6 +182,10 @@ public:
 
 	DkMetaDataInfo* getMetaDataWidget() {
 		return metaDataInfo;
+	}
+
+	DkOverview* getOverview() {
+		return overviewWindow;
 	}
 
 public slots:
@@ -202,10 +206,15 @@ protected:
 	void init();
 	void connectWidgets();
 
+	
+	DkViewPort* viewport;
+
+	QWidget* upperLeft;
+
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
-
-	DkViewPort* viewport;
+	DkOverview* overviewWindow;
+	DkFileInfoLabel* fileInfoLabel;
 
 	QLabel* wheelButton;
 
@@ -439,7 +448,6 @@ protected:
 
 	DkPlayer* player;
 	DkRatingLabelBg* ratingLabel;
-	DkOverview* overviewWindow;
 
 	DkEditableRect* editRect;
 

@@ -124,6 +124,7 @@ void DkFilePreview::init() {
 
 	if (parent)
 		resize(parent->width(), 220);
+	//setFixedHeight(220);
 
 	setMouseTracking (true);//receive mouse event everytime
 	thumbsLoader = 0;
@@ -369,7 +370,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	rightGradient.setStart(QPoint(width()-borderTrigger, 0));
 	rightGradient.setFinalStop(QPoint(width(), 0));
 	
-	update();
+	//update();
 	QWidget::resizeEvent(event);
 	
 }
@@ -668,12 +669,25 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 
 void DkOverview::resizeEvent(QResizeEvent* event) {
 
-	if (event->size() == size())
-		return;
+	//if (event->size() == size())
+	//	return;
 
-	resizeImg();
+	QSizeF newSize = event->size();
+	
+	if (newSize.width()/newSize.height() != viewPortRect.width()/viewPortRect.height()) {
 
-	DkWidget::resizeEvent(event);
+		if (newSize.width() < newSize.height()) {
+			newSize.setHeight(newSize.width() * viewPortRect.height()/viewPortRect.width());
+		}
+		else {
+			newSize.setWidth(newSize.height() * viewPortRect.width()/viewPortRect.height());
+		}
+	}
+
+	qDebug() << "resizing overview";
+	resize(newSize.toSize());
+
+	//DkWidget::resizeEvent(event);
 }
 
 void DkOverview::resize(int w, int h) {
