@@ -1,0 +1,41 @@
+#
+# This is evil! I don't know why it works this way.
+# But it works.
+#
+# First - collect all Qt and app plugins. Then call that bloody
+# cmake FIXUP_BUNDLE macro which copis all files into MacOS directory.
+# So it's moved back to plugins tree where its expected by a) Qt b) app
+#
+# I hate it.
+#
+
+# qt_menu.nib is mandatory for mac
+if (@QT_USE_FRAMEWORKS@)
+    file(COPY @QT_LIBRARY_DIR@/QtGui.framework/Resources/qt_menu.nib
+         DESTINATION @CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app/Contents/Resources)
+else ()
+    file(COPY @QT_LIBRARY_DIR@/Resources/qt_menu.nib
+         DESTINATION @CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app/Contents/Resources)
+endif ()
+
+# the qt.conf is mandatory too
+file(WRITE @CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app/Contents/Resources/qt.conf "[Paths]
+Plugins = plugins")
+
+# copy all (required) Qt plugs into bundle
+message(STATUS "Searching for Qt plugs in: @QT_PLUGINS_DIR@/*@CMAKE_SHARED_LIBRARY_SUFFIX@")
+file(COPY @QT_PLUGINS_DIR@/
+        DESTINATION @CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app/Contents/plugins/
+        REGEX "(designer|script|debug|sql|dbg|phonon|bearer|gl|svg|accessible|race)" EXCLUDE)
+
+# try to FIXUP_BUNDLE - to change otool -L paths
+# currently it creates lots of false warnings when plugins are compiled as dylibs
+# warning: cannot resolve item 'libtepsonic_lastfmscrobbler.dylib'
+# etc. Ignore it.
+message(STATUS "Searching for plugs in bundle: @CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app/Contents/plugins/*@CMAKE_SHARED_LIBRARY_SUFFIX@")
+file(GLOB_RECURSE inplugs
+        @CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app/Contents/plugins/*@CMAKE_SHARED_LIBRARY_SUFFIX@)
+
+include(BundleUtilities)
+fixup_bundle(@CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app "${inplugs}" @CMAKE_INSTALL_PREFIX@/Contents/plugins/) 
+

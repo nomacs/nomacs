@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{614508d1-9a9b-45e7-b5b1-ddad42fb8fe7}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{60829b74-b0c8-416e-8e4c-77e1567ac566}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Really Release">
+      <UniqueIdentifier>{3bec6896-0929-4ce0-b198-506a79dc1b0e}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release DLL">
+      <UniqueIdentifier>{8221e491-8067-4a3b-a565-afe491ed594d}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug DLL">
+      <UniqueIdentifier>{885d21bd-a320-45a3-8850-3fd425380348}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkViewPort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkWidgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkNetwork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_nomacs.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkNoMacs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BorderLayout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkWidgets.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkWidgets.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkWidgets.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkWidgets.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkWidgets.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkViewPort.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkViewPort.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkViewPort.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkViewPort.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkViewPort.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkSettings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkSettings.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkSettings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkSettings.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkSettings.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkNoMacs.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkNoMacs.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkNoMacs.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkNoMacs.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkNoMacs.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkNetwork.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkNetwork.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkNetwork.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkNetwork.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkNetwork.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkMenu.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkMenu.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkMenu.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkMenu.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkMenu.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkImage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkImage.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkImage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkImage.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkImage.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DkConnection.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Really Release\moc_DkConnection.cpp">
+      <Filter>Generated Files\Really Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DkConnection.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release DLL\moc_DkConnection.cpp">
+      <Filter>Generated Files\Release DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug DLL\moc_DkConnection.cpp">
+      <Filter>Generated Files\Debug DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="DkMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DkUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="DkViewPort.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DkImage.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DkWidgets.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DkNetwork.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="nomacs.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="nomacs.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DkNoMacs.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DkSettings.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DkConnection.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DkMenu.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DkError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DkTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_nomacs.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BorderLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DkMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DkUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="nomacs.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\nomacs.ico" />
+  </ItemGroup>
+</Project>
