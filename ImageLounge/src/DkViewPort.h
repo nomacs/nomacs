@@ -188,12 +188,21 @@ public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
 
+	// events
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
 protected:
 
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
 
 	DkViewPort* viewport;
+
+	QLabel* wheelButton;
+
+	QPointF enterPos;
 
 	void init();
 	void connectWidgets();
@@ -278,7 +287,6 @@ protected:
 	QRectF imgRect;
 
 	QPointF posGrab;
-	QPointF enterPos;
 
 	bool blockZooming;
 	QTimer* zoomTimer;
@@ -323,8 +331,6 @@ public:
 	DkControlWidget* getController();
 	DkPlayer* getPlayer();
 	DkOverview* getOverview();
-	DkMetaDataInfo* getMetaDataWidget();
-	DkFilePreview* getFilePreview();
 	DkFileInfoLabel* getFileInfoWidget();
 	DkEditableRect* getEditableRect();
 	bool isTestLoaded() { return testLoaded; };
@@ -352,8 +358,8 @@ public slots:
 	void toggleResetMatrix();
 	void toggleShowOverview();
 	void toggleShowPlayer();
-	void showPreview();
-	void showExif();
+	//void showPreview();
+	//void showExif();
 	void showInfo();
 	
 	// tcp actions
@@ -416,7 +422,6 @@ protected:
 	QTransform oldImgMatrix;
 
 	QImage imgBg;
-	QLabel* wheelButton;
 
 	DkControlWidget* controller;
 	DkImageLoader* loader;
@@ -429,9 +434,7 @@ protected:
 	DkDelayedInfo* delayedSpinner;
 	DkAnimationLabel* spinnerLabel;
 
-	DkMetaDataInfo* metaDataInfo;
 	DkPlayer* player;
-	DkFilePreview* filePreview;
 	DkRatingLabelBg* ratingLabel;
 	DkOverview* overviewWindow;
 

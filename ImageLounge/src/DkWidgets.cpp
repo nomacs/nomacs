@@ -444,7 +444,6 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 				DkThumbNail thumb = thumbs.at(selected);
 				createSelectedEffect(thumb.getImage(), DkSettings::DisplaySettings::highlightColor);
 				fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
-				qDebug() << "selected...";
 				break;
 			}
 		}

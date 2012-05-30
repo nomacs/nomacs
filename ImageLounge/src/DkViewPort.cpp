@@ -37,7 +37,13 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	filePreview = new DkFilePreview(this, flags);
 	metaDataInfo = new DkMetaDataInfo(this);
 
-	//filePreview->show();
+	// wheel label
+	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
+	wheelButton = new QLabel(this);
+	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+	wheelButton->setPixmap(wp);
+	wheelButton->adjustSize();
+	wheelButton->hide();
 
 	init();
 	connectWidgets();
@@ -45,16 +51,18 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	//setStyleSheet("QWidget{background-color: QColor(0,0,0,100); border: 1px solid #000000;}");
+	//setStyleSheet("DkControlWidget{background-color: QColor(0,0,0,100); border: 1px solid #000000;}");
 	//setContentsMargins(0,0,0,0);
+	setMouseTracking(true);
 
 	QGridLayout* layout = new QGridLayout(this);
-	
+	layout->setContentsMargins(0,0,0,0);
+
+	// add elements
 	layout->addWidget(filePreview, top, left, 1, hor_pos_end-1);
 	layout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end-1);
 	
 	
-	layout->setContentsMargins(0,0,0,0);
 
 	//setLayout(layout);
 	show();	
@@ -102,6 +110,77 @@ void DkControlWidget::showMetaData(bool visible) {
 	else if (metaDataInfo->isVisible())
 		metaDataInfo->hide();
 }
+
+// DkControlWidget - Events --------------------------------------------------------------------
+void DkControlWidget::mousePressEvent(QMouseEvent *event) {
+
+	enterPos = event->pos();
+
+	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
+
+		QTimer* mImgTimer = filePreview->getMoveImageTimer();
+		mImgTimer->start(1);
+
+		// show icon
+		wheelButton->move(event->pos().x()-16, event->pos().y()-16);
+		wheelButton->show();
+	}
+
+	QWidget::mousePressEvent(event);
+}
+
+void DkControlWidget::mouseReleaseEvent(QMouseEvent *event) {
+
+	if (filePreview && filePreview->isVisible()) {
+		filePreview->setCurrentDx(0);
+		QTimer* mImgTimer = filePreview->getMoveImageTimer();
+		mImgTimer->stop();
+		wheelButton->hide();
+	}
+
+	QWidget::mouseReleaseEvent(event);
+}
+
+void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
+
+	// scroll thumbs preview
+	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
+		
+		float dx = std::fabs(enterPos.x() - event->pos().x())*0.015f;
+		dx = std::exp(dx);
+		if (enterPos.x() - event->pos().x() < 0)
+			dx = -dx;
+
+		filePreview->setCurrentDx(dx);	// update dx
+	}
+
+	QWidget::mouseMoveEvent(event);
+}
+
+
+
+//void DkControlWidget::keyPressEvent(QKeyEvent *event) {
+//	
+//	qDebug() << "controller widget -> key pressed...";
+//	
+//	if (event->key() == Qt::Key_Escape) {
+//		if (filePreview->isVisible()) {
+//			filePreview->hide();
+//		}
+//		if (metaDataInfo->isVisible()) {
+//			metaDataInfo->hide();
+//		}
+//		update();
+//	}
+//
+//	QWidget::keyPressEvent(event);
+//}
+//
+//void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
+//
+//	QWidget::keyReleaseEvent(event);
+//}
+
 
 // DkBaseViewport --------------------------------------------------------------------
 DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
@@ -375,8 +454,6 @@ void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
 // mouse events --------------------------------------------------------------------
 void DkBaseViewPort::mousePressEvent(QMouseEvent *event) {
 
-	enterPos = event->pos();
-
 	// ok, start panning
 	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
 		setCursor(Qt::ClosedHandCursor);
@@ -626,18 +703,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), this, SLOT(cropImage(DkRotatingRect)));
 	
-	// wheel label
-	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
-	wheelButton = new QLabel(this);
-	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
-	wheelButton->setPixmap(wp);
-	wheelButton->hide();
-
-	metaDataInfo = new DkMetaDataInfo(this);
-
-	filePreview = new DkFilePreview(this, flags);
-	filePreview->hide();
-
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
 
@@ -667,10 +732,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 	connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
-	connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));	// done
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
-	connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));	// done
-	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));	// done
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), this, SLOT(moveView(QPointF)));
 	connect(overviewWindow, SIGNAL(sendTransformSignal()), this, SLOT(tcpSynchronize()));
 	
@@ -678,7 +740,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(player, SIGNAL(nextSignal(bool)), this, SLOT(loadNextFile(bool)));
 	connect(ratingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
 	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
-	connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));	// done
 	
 	//connect(player, SIGNAL(play(bool)), this, play());
 
@@ -1014,28 +1075,6 @@ void DkViewPort::showZoom() {
 
 }
 
-void DkViewPort::showPreview() {
-
-	//if (imgQt.isNull())
-	//	return;
-
-	//if (filePreview && filePreview->isVisible()) {
-	//	filePreview->hide();
-	//	topOffset.setY(0);
-	//	update();
-	//	return;
-	//}
-
-	//if (filePreview) {
-	//	filePreview->show();
-	//	update();
-	//	topOffset.setY(filePreview->height());
-	//}
-
-	//topLeftLabel->updatePos(topOffset);
-
-}
-
 void DkViewPort::showInfo() {
 
 	bool showInfo;
@@ -1054,26 +1093,6 @@ void DkViewPort::showInfo() {
 
 	if (parent->isFullScreen())
 		DkSettings::GlobalSettings::showInfo = showInfo;
-}
-
-void DkViewPort::showExif() {
-
-	if (imgQt.isNull())
-		return;
-
-	if (metaDataInfo && metaDataInfo->isVisible()) {
-		metaDataInfo->hide();
-		bottomOffset = QPoint(0,0);
-	}
-	else if (metaDataInfo) {
-		metaDataInfo->show();
-		bottomOffset = QPoint(0, -metaDataInfo->height());
-	}
-
-	bottomLabel->updatePos(bottomOffset);
-	bottomRightLabel->updatePos(bottomOffset);
-	fileInfoLabel->updatePos(bottomOffset);
-	ratingLabel->move(10, height()-ratingLabel->size().height()-10+bottomOffset.y());
 }
 
 void DkViewPort::toggleResetMatrix() {
@@ -1234,10 +1253,10 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	//in mode zoom/panning
 	if (worldMatrix.m11() > 1 && !imageInside() && DkSettings::GlobalSettings::showOverview) {
 		
-		if (filePreview->isVisible() && overviewWindow->isVisible()) {
-			overviewWindow->move(overviewMargin, filePreview->geometry().bottom()+10);
-		}
-		else if (overviewWindow->isVisible()) {
+		//if (filePreview->isVisible() && overviewWindow->isVisible()) {
+		//	overviewWindow->move(overviewMargin, filePreview->geometry().bottom()+10);
+		//}
+		/*else*/ if (overviewWindow->isVisible()) {
 			overviewWindow->move(overviewMargin, overviewMargin);
 		}
 
@@ -1254,7 +1273,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		topLeftLabel->updatePos(topOffset);
 	}
 
-	int offset = (metaDataInfo->isVisible()) ? metaDataInfo->height()+10 : 10;
+	int offset = 10;//(metaDataInfo->isVisible()) ? metaDataInfo->height()+10 : 10;
 
 
 	// shouldn't we do this in resize??
@@ -1332,9 +1351,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	changeCursor();
 
 	// it is not always propagated?!
-	filePreview->resizeEvent(event);
-	metaDataInfo->resizeEvent(event);
-
 	overviewWindow->resize(size()*overviewSize);
 	overviewWindow->setViewPortRect(geometry());
 
@@ -1365,14 +1381,14 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 // key events --------------------------------------------------------------------
 void DkViewPort::keyPressEvent(QKeyEvent* event) {
 
+	qDebug() << "key press DkViewPort";
 	if (event->key() == Qt::Key_Escape) {
-		if (filePreview->isVisible()) {
-			filePreview->hide();
+		if (controller->getFilePreview()->isVisible()) {
+			controller->getFilePreview()->hide();
 		}
-		if (metaDataInfo->isVisible()) {
-			metaDataInfo->hide();
+		if (controller->getMetaDataWidget()->isVisible()) {
+			controller->getMetaDataWidget()->hide();
 		}
-		update();
 	}
 
 	DkBaseViewPort::keyPressEvent(event);
@@ -1400,22 +1416,10 @@ bool DkViewPort::event(QEvent *event) {
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
-	enterPos = event->pos();
-
 	// ok, start panning
 	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
 		setCursor(Qt::ClosedHandCursor);
 		posGrab = event->pos();
-	}
-	else if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
-		qDebug() << "middle button";
-
-		QTimer* mImgTimer = filePreview->getMoveImageTimer();
-		mImgTimer->start(1);
-
-		// show icon
-		wheelButton->move(event->pos().x()-16, event->pos().y()-16);
-		wheelButton->show();
 	}
 	
 	// should be sent to QWidget?!
@@ -1424,13 +1428,6 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 }
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
-
-	if (filePreview && filePreview->isVisible()) {
-		filePreview->setCurrentDx(0);
-		QTimer* mImgTimer = filePreview->getMoveImageTimer();
-		mImgTimer->stop();
-		wheelButton->hide();
-	}
 	
 	DkBaseViewPort::mouseReleaseEvent(event);
 }
@@ -1466,17 +1463,6 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 			tcpSynchronize();
 	}
 
-	// scroll thumbs preview
-	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
-		
-		float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
-		dx = std::exp(dx);
-		if (enterPos.x() - event->pos().x() < 0)
-			dx = -dx;
-
-		filePreview->setCurrentDx(dx);	// update dx
-	}
-
 	// send to parent
 	DkBaseViewPort::mouseMoveEvent(event);
 	//QWidget::mouseMoveEvent(event);
@@ -1509,9 +1495,10 @@ void DkViewPort::setFullScreen(bool fullScreen) {
 		}
 		else
 			fileInfoLabel->hide();
-		
-		filePreview->hide();
-		metaDataInfo->hide();
+
+		// TODO: add to controller
+		//filePreview->hide();
+		//metaDataInfo->hide();
 		toggleLena();
 	}
 	else {
@@ -1670,8 +1657,8 @@ void DkViewPort::reloadFile() {
 	if (loader) {
 		loader->changeFile(0);
 
-		if (filePreview)
-			filePreview->updateDir(loader->getFile(), true);
+		if (controller->getFilePreview())
+			controller->getFilePreview()->updateDir(loader->getFile(), true);
 	}
 }
 
@@ -1862,16 +1849,6 @@ DkOverview* DkViewPort::getOverview() {
 	return overviewWindow;
 }
 
-DkFilePreview* DkViewPort::getFilePreview() {
-
-	return filePreview;
-}
-
-DkMetaDataInfo* DkViewPort::getMetaDataWidget() {
-
-	return metaDataInfo;
-}
-
 DkFileInfoLabel* DkViewPort::getFileInfoWidget() {
 
 	return fileInfoLabel;
@@ -1886,18 +1863,6 @@ void DkViewPort::setSpinner(int time) {
 
 	if (spinnerLabel)
 		spinnerLabel->showTimed(time);
-	//spinnerLabel->getLabel()->setText("", time);
-
-	//QAnimationLabel* aLabel = new QAnimationLabel(":/nomacs/img/loading.gif", this);
-	////aLabel->show();
-	//aLabel->start();
-
-
-	//QMovie* m = new QMovie(":/nomacs/img/loading.gif");
-	//centerLabel->setMovie(m);
-	//m->start();
-	//centerLabel->show();
-	////}
 }
 
 void DkViewPort::setSpinnerDelayed(bool start, int time) {
@@ -2328,16 +2293,16 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 		moveView(dxy/worldMatrix.m11());
 	}
 
-	// scroll thumbs preview
-	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
+	//// scroll thumbs preview
+	//if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
 
-		float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
-		dx = std::exp(dx);
-		if (enterPos.x() - event->pos().x() < 0)
-			dx = -dx;
+	//	float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
+	//	dx = std::exp(dx);
+	//	if (enterPos.x() - event->pos().x() < 0)
+	//		dx = -dx;
 
-		filePreview->setCurrentDx(dx);	// update dx
-	}
+	//	filePreview->setCurrentDx(dx);	// update dx
+	//}
 
 	QGraphicsView::mouseMoveEvent(event);
 }
