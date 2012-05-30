@@ -54,6 +54,8 @@ void DkControlWidget::init() {
 	//setStyleSheet("DkControlWidget{background-color: QColor(0,0,0,100); border: 1px solid #000000;}");
 	//setContentsMargins(0,0,0,0);
 	setMouseTracking(true);
+	setFocusPolicy(Qt::StrongFocus);
+	setFocus(Qt::TabFocusReason);
 
 	QGridLayout* layout = new QGridLayout(this);
 	layout->setContentsMargins(0,0,0,0);
@@ -159,27 +161,25 @@ void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 
 
 
-//void DkControlWidget::keyPressEvent(QKeyEvent *event) {
-//	
-//	qDebug() << "controller widget -> key pressed...";
-//	
-//	if (event->key() == Qt::Key_Escape) {
-//		if (filePreview->isVisible()) {
-//			filePreview->hide();
-//		}
-//		if (metaDataInfo->isVisible()) {
-//			metaDataInfo->hide();
-//		}
-//		update();
-//	}
-//
-//	QWidget::keyPressEvent(event);
-//}
-//
-//void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
-//
-//	QWidget::keyReleaseEvent(event);
-//}
+void DkControlWidget::keyPressEvent(QKeyEvent *event) {
+	
+	if (event->key() == Qt::Key_Escape) {
+		if (filePreview->isVisible()) {
+			filePreview->hide();
+		}
+		if (metaDataInfo->isVisible()) {
+			metaDataInfo->hide();
+		}
+		update();
+	}
+
+	QWidget::keyPressEvent(event);
+}
+
+void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
+
+	QWidget::keyReleaseEvent(event);
+}
 
 
 // DkBaseViewport --------------------------------------------------------------------
@@ -1376,22 +1376,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	qDebug() << "controller geometry: " << controller->geometry();
 
 	return QGraphicsView::resizeEvent(event);
-}
-
-// key events --------------------------------------------------------------------
-void DkViewPort::keyPressEvent(QKeyEvent* event) {
-
-	qDebug() << "key press DkViewPort";
-	if (event->key() == Qt::Key_Escape) {
-		if (controller->getFilePreview()->isVisible()) {
-			controller->getFilePreview()->hide();
-		}
-		if (controller->getMetaDataWidget()->isVisible()) {
-			controller->getMetaDataWidget()->hide();
-		}
-	}
-
-	DkBaseViewPort::keyPressEvent(event);
 }
 
 // mouse events --------------------------------------------------------------------

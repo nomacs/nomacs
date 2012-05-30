@@ -188,12 +188,19 @@ public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
 
+protected:
+
 	// events
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 
-protected:
+	void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent *event);
+
+	// functions
+	void init();
+	void connectWidgets();
 
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
@@ -204,8 +211,6 @@ protected:
 
 	QPointF enterPos;
 
-	void init();
-	void connectWidgets();
 };
 
 
@@ -403,8 +408,6 @@ public slots:
 	void settingsChanged();
 
 protected:
-	
-	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
