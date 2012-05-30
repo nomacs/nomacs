@@ -29,9 +29,83 @@
 
 namespace nmc {
 
+// DkControlWidget --------------------------------------------------------------------
+DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget(parent, flags) {
+
+	viewport = parent;
+
+	filePreview = new DkFilePreview(this, flags);
+	metaDataInfo = new DkMetaDataInfo(this);
+
+	//filePreview->show();
+
+	init();
+	connectWidgets();
+}
+
+void DkControlWidget::init() {
+
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,100); border: 1px solid #000000;}");
+	//setContentsMargins(0,0,0,0);
+
+	QGridLayout* layout = new QGridLayout(this);
+	
+	layout->addWidget(filePreview, top, left, 1, hor_pos_end-1);
+	layout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end-1);
+	
+	
+	layout->setContentsMargins(0,0,0,0);
+
+	//setLayout(layout);
+	show();	
+	qDebug() << "controller initialized...";
+}
+
+void DkControlWidget::connectWidgets() {
+
+	if (!viewport)
+		return;
+
+	DkImageLoader* loader = viewport->getImageLoader();
+
+	if (loader) {
+		qDebug() << "loader slots connected";
+
+		connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
+		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
+	}
+
+	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+
+	// TODO
+	//connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
+}
+
+void DkControlWidget::showPreview(bool visible) {
+
+	if (!filePreview)
+		return;
+
+	if (visible && !filePreview->isVisible())
+		filePreview->show();
+	else if (filePreview->isVisible())
+		filePreview->hide();
+}
+
+void DkControlWidget::showMetaData(bool visible) {
+
+	if (!metaDataInfo)
+		return;
+
+	if (visible && !metaDataInfo->isVisible())
+		metaDataInfo->show();
+	else if (metaDataInfo->isVisible())
+		metaDataInfo->hide();
+}
+
 // DkBaseViewport --------------------------------------------------------------------
 DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
-
+	
 	this->parent = parent;
 	viewportRect = QRect(0, 0, width(), height());
 	worldMatrix.reset();
@@ -47,7 +121,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
-	setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
+	setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
 	setMouseTracking(true);
 
 }
@@ -583,6 +657,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	loader = new DkImageLoader();
 
+	controller = new DkControlWidget(this, flags);
+	controller->show();
+
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
 	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
@@ -590,10 +667,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 	connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
-	connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
+	connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));	// done
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
-	connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
-	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));
+	connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));	// done
+	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));	// done
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), this, SLOT(moveView(QPointF)));
 	connect(overviewWindow, SIGNAL(sendTransformSignal()), this, SLOT(tcpSynchronize()));
 	
@@ -601,7 +678,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(player, SIGNAL(nextSignal(bool)), this, SLOT(loadNextFile(bool)));
 	connect(ratingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
 	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
-	connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
+	connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));	// done
 	
 	//connect(player, SIGNAL(play(bool)), this, play());
 
@@ -939,23 +1016,23 @@ void DkViewPort::showZoom() {
 
 void DkViewPort::showPreview() {
 
-	if (imgQt.isNull())
-		return;
+	//if (imgQt.isNull())
+	//	return;
 
-	if (filePreview && filePreview->isVisible()) {
-		filePreview->hide();
-		topOffset.setY(0);
-		update();
-		return;
-	}
+	//if (filePreview && filePreview->isVisible()) {
+	//	filePreview->hide();
+	//	topOffset.setY(0);
+	//	update();
+	//	return;
+	//}
 
-	if (filePreview) {
-		filePreview->show();
-		update();
-		topOffset.setY(filePreview->height());
-	}
+	//if (filePreview) {
+	//	filePreview->show();
+	//	update();
+	//	topOffset.setY(filePreview->height());
+	//}
 
-	topLeftLabel->updatePos(topOffset);
+	//topLeftLabel->updatePos(topOffset);
 
 }
 
@@ -1278,6 +1355,9 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 
 	if (editRect)
 		editRect->resize(width(), height());
+
+	controller->resize(width(), height());
+	qDebug() << "controller geometry: " << controller->geometry();
 
 	return QGraphicsView::resizeEvent(event);
 }
@@ -1765,6 +1845,11 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 DkImageLoader* DkViewPort::getImageLoader() {
 
 	return loader;
+}
+
+DkControlWidget* DkViewPort::getController() {
+	
+	return controller;
 }
 
 DkPlayer* DkViewPort::getPlayer() {

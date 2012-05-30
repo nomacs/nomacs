@@ -163,6 +163,44 @@ protected:
 
 };
 
+class DkViewPort;
+
+class DllExport DkControlWidget : public QWidget {
+	Q_OBJECT
+
+public:
+	
+	enum verPos {top=1, top_info, ver_center, bottom_info, bottom, ver_pos_end};
+	enum horPos {left=1, hor_center, right, hor_pos_end};
+	
+	DkControlWidget(DkViewPort *parent = 0, Qt::WFlags flags = 0);
+	virtual ~DkControlWidget() {};
+
+	DkFilePreview* getFilePreview() {
+		return filePreview;
+	}
+
+	DkMetaDataInfo* getMetaDataWidget() {
+		return metaDataInfo;
+	}
+
+public slots:
+	void showPreview(bool visible);
+	void showMetaData(bool visible);
+
+protected:
+
+	DkFilePreview* filePreview;
+	DkMetaDataInfo* metaDataInfo;
+
+	DkViewPort* viewport;
+
+	void init();
+	void connectWidgets();
+};
+
+
+
 
 class DllExport DkBaseViewPort : public QGraphicsView {
 	Q_OBJECT
@@ -282,6 +320,7 @@ public:
 
 	// getter
 	DkImageLoader* getImageLoader();
+	DkControlWidget* getController();
 	DkPlayer* getPlayer();
 	DkOverview* getOverview();
 	DkMetaDataInfo* getMetaDataWidget();
@@ -379,6 +418,7 @@ protected:
 	QImage imgBg;
 	QLabel* wheelButton;
 
+	DkControlWidget* controller;
 	DkImageLoader* loader;
 	DkInfoLabel* centerLabel;
 	DkInfoLabel* bottomLabel;

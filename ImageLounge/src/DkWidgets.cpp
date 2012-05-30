@@ -543,31 +543,31 @@ void DkFilePreview::indexDir(bool force) {
 	dir.setNameFilters(DkImageLoader::fileFilters);
 	dir.setSorting(QDir::LocaleAware);
 
+	if ((force || thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
+		!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
+
+		if (thumbsLoader) {
+			thumbsLoader->stop();
+			thumbsLoader->wait();
+			delete thumbsLoader;
+		}
+
+		thumbs.clear();
+
+		if (dir.exists()) {
+
+			thumbsLoader = new DkThumbsLoader(&thumbs, dir);
+			connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
+
+			thumbsLoader->start();
+			thumbsDir = dir;
+		}
+	}
+
 	if (thumbsLoader) {
 		oldFileIdx = currentFileIdx;
 		currentFileIdx = thumbsLoader->getFileIdx(currentFile);
 		update();
-	}
-
-	if (!force && thumbsDir.absolutePath() == currentFile.absolutePath() && !thumbs.empty() || 
-		currentFile.absoluteFilePath().contains(":/nomacs/img/lena"))	// do not load our resources as thumbs
-		return;
-
-	if (thumbsLoader) {
-		thumbsLoader->stop();
-		thumbsLoader->wait();
-		delete thumbsLoader;
-	}
-
-	thumbs.clear();
-
-	if (dir.exists()) {
-
-		thumbsLoader = new DkThumbsLoader(&thumbs, dir);
-		connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
-
-		thumbsLoader->start();
-		thumbsDir = dir;
 	}
 
 }

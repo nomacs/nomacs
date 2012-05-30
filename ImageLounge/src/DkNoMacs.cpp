@@ -608,13 +608,13 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_preview]->setShortcut(QKeySequence(shortcut_open_preview));
 	viewActions[menu_view_show_preview]->setStatusTip(tr("Show thumbnails"));
 	viewActions[menu_view_show_preview]->setCheckable(true);
-	connect(viewActions[menu_view_show_preview], SIGNAL(triggered()), vp, SLOT(showPreview()));
+	connect(viewActions[menu_view_show_preview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPreview(bool)));
 
 	viewActions[menu_view_show_exif] = new QAction(tr("Show &Metadata"), this);
 	viewActions[menu_view_show_exif]->setShortcut(QKeySequence(shortcut_show_exif));
 	viewActions[menu_view_show_exif]->setStatusTip(tr("shows the metadata panel"));
 	viewActions[menu_view_show_exif]->setCheckable(true);
-	connect(viewActions[menu_view_show_exif], SIGNAL(triggered()), vp, SLOT(showExif()));
+	connect(viewActions[menu_view_show_exif], SIGNAL(toggled(bool)), vp->getController(), SLOT(showMetaData(bool)));
 
 	viewActions[menu_view_show_info] = new QAction(tr("Show File &Info"), this);
 	viewActions[menu_view_show_info]->setShortcut(QKeySequence(shortcut_show_info));
@@ -1482,7 +1482,7 @@ void DkNoMacs::resizeImage() {
 		resizeDialog = new DkResizeDialog(this);
 
 
-	DkMetaDataInfo* metaData = viewport()->getMetaDataWidget();
+	DkMetaDataInfo* metaData = viewport()->getController()->getMetaDataWidget();
 	
 	if (metaData) {
 		float xDpi, yDpi;
@@ -1791,7 +1791,7 @@ void DkNoMacs::openFileWith() {
 
 void DkNoMacs::showGpsCoordinates() {
 
-	DkMetaDataInfo* exifData = viewport()->getMetaDataWidget();
+	DkMetaDataInfo* exifData = viewport()->getController()->getMetaDataWidget();
 
 	if (!exifData || exifData->getGPSCoordinates().isEmpty()) {
 		viewport()->setInfo("Sorry, I could not find the GPS coordinates...");
@@ -2147,16 +2147,19 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
 	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 	connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
-	connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 
 	//connect(vp, SIGNAL(previewVisibleSignal(bool)), viewActions[menu_view_show_preview], SLOT(setChecked(bool)));
 	//connect(vp, SIGNAL(exifVisibleSignal(bool)), viewActions[menu_view_show_exif], SLOT(setChecked(bool)));
 	//connect(vp, SIGNAL(overviewVisibleSignal(bool)), viewActions[menu_view_show_overview], SLOT(setChecked(bool)));
 	//connect(vp, SIGNAL(playerVisibleSignal(bool)), viewActions[menu_view_show_player], SLOT(setChecked(bool)));
 
-	vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+	//vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+
 	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-	vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+	//vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 	DkSettings::AppSettings::appMode = 0;
@@ -2205,9 +2208,12 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 		connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 
-		vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		//vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		//vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+
 		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 
 		// in frameless, you cannot control if menu is visible...
@@ -2367,9 +2373,12 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		//connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
 		connect(viewport()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 		
-		vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+
+		//vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		//vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 		vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 
