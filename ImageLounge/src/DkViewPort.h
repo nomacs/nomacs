@@ -191,6 +191,7 @@ public:
 public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
+	void update();
 
 protected:
 

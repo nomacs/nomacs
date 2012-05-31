@@ -673,25 +673,19 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 
 void DkOverview::resizeEvent(QResizeEvent* event) {
 
-	//if (event->size() == size())
-	//	return;
+	//if (parent)
+	//	setMaximumWidth((float)parent->width()*0.15f);
 
-	QSizeF newSize = event->size();
-	
-	if (newSize.width()/newSize.height() != viewPortRect.width()/viewPortRect.height()) {
-
-		if (newSize.width() < newSize.height()) {
-			newSize.setHeight(newSize.width() * viewPortRect.height()/viewPortRect.width());
-		}
-		else {
-			newSize.setWidth(newSize.height() * viewPortRect.width()/viewPortRect.height());
-		}
+	if (parent) {
+		setMinimumWidth((float)parent->width()*0.15f);
+		setMinimumHeight((float)parent->height()*0.15f);
 	}
 
-	qDebug() << "resizing overview";
+	QSizeF newSize = event->size();
+	newSize.setHeight(newSize.width() * viewPortRect.height()/viewPortRect.width());
 	resize(newSize.toSize());
 
-	//DkWidget::resizeEvent(event);
+	DkWidget::resizeEvent(event);
 }
 
 void DkOverview::resize(int w, int h) {

@@ -60,12 +60,12 @@ void DkControlWidget::init() {
 	setFocus(Qt::TabFocusReason);
 
 	// next TODOs:
-	// overview window has a bug if height gets small
 	// overview window is currently not updated
 
 	upperLeft = new QWidget();
-	QGridLayout* ulLayout = new QGridLayout(upperLeft);
-	ulLayout->addWidget(overviewWindow, 0, 0);
+	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::LeftToRight, upperLeft);
+	ulLayout->addWidget(overviewWindow);
+	ulLayout->addStretch();
 	//ulLayout->setRowStretch(1, 1);
 
 	QGridLayout* layout = new QGridLayout(this);
@@ -102,6 +102,13 @@ void DkControlWidget::connectWidgets() {
 
 	// TODO
 	//connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
+}
+
+void DkControlWidget::update() {
+
+	overviewWindow->update();
+
+	QWidget::update();
 }
 
 void DkControlWidget::showPreview(bool visible) {
@@ -1051,7 +1058,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	showZoom();
 	changeCursor();
 
-	controller->update();
+	controller->update();	// why do we need to update the controller manually?
 	update();
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
@@ -1268,27 +1275,9 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 		if (!controller->getOverview()->isVisible())
 			controller->getOverview()->show();
-		//if (filePreview->isVisible() && overviewWindow->isVisible()) {
-		//	overviewWindow->move(overviewMargin, filePreview->geometry().bottom()+10);
-		//}
-		/*else*/ /*if (overviewWindow->isVisible()) {
-			overviewWindow->move(overviewMargin, overviewMargin);
-		}*/
-
-		//if (!overviewWindow->isVisible()) {
-		//	overviewWindow->show();
-		//	overviewWindow->update();
-		//	topOffset.setX(overviewWindow->width()+10);
-		//	topLeftLabel->updatePos(topOffset);
-		//}
 	}
-	else { 
+	else
 		controller->getOverview()->hide();
-		
-		//overviewWindow->hide();
-		//topOffset.setX(0);
-		//topLeftLabel->updatePos(topOffset);
-	}
 
 	int offset = 10;//(metaDataInfo->isVisible()) ? metaDataInfo->height()+10 : 10;
 
@@ -1367,7 +1356,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	centerImage();
 	changeCursor();
 
-	//overviewWindow->resize(size()*overviewSize);
 	controller->getOverview()->setViewPortRect(geometry());
 
 	//topOffset.setX(overviewWindow->width()+10);
@@ -1843,11 +1831,6 @@ DkPlayer* DkViewPort::getPlayer() {
 
 	return player;
 }
-
-//DkOverview* DkViewPort::getOverview() {
-//
-//	return overviewWindow;
-//}
 
 DkFileInfoLabel* DkViewPort::getFileInfoWidget() {
 
