@@ -122,11 +122,7 @@ DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(paren
 
 void DkFilePreview::init() {
 
-	if (parent)
-		resize(parent->width(), 220);
-	//setFixedHeight(220);
-
-	setMouseTracking (true);//receive mouse event everytime
+	setMouseTracking (true);	//receive mouse event everytime
 	thumbsLoader = 0;
 
 	xOffset = 20;
@@ -155,6 +151,8 @@ void DkFilePreview::init() {
 
 	minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
 	resize(parent->width(), minHeight);
+	setMaximumHeight(minHeight);
+
 	selected = -1;
 
 	// load a default image
@@ -168,7 +166,6 @@ void DkFilePreview::init() {
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
 	wheelButton = new QLabel(this);
 	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
-
 	wheelButton->setPixmap(wp);
 	wheelButton->hide();
 
@@ -178,10 +175,13 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
-	//else
 
-	minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
-	resize(parent->width(), minHeight);
+	if (minHeight != DkSettings::DisplaySettings::thumbSize + yOffset) {
+		minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
+		setMaximumHeight(minHeight);
+	}
+	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
+	//resize(parent->width(), minHeight);
 
 	QPainter painter(this);
 	painter.setBackground(bgCol);
@@ -189,7 +189,6 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(bgCol);
 	QRect r = this->geometry();
-	r.setHeight(minHeight);
 	painter.drawRect(r);
 
 	painter.setWorldTransform(worldMatrix);
@@ -237,13 +236,19 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage().copy() : stubImg;
 		
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
+		if (height()-yOffset < r.height())
+			r.setSize(QSizeF(r.width()*(float)(height()-yOffset)/r.height(), height()-yOffset));
+
+		// check if the size is still valid
+		if (r.width() <= 1 || r.height() <= 1)
+			continue;
 
 		// center vertically
-		if (img.height() < img.width() || img.height() < DkSettings::DisplaySettings::thumbSize)
-			r.moveCenter(QPoint(r.center().x(), height()/2));
+		r.moveCenter(QPoint(r.center().x(), height()/2));
+
 
 		// update the buffer dim
-		bufferDim.setRight(bufferDim.right() + img.width() + xOffset/2);
+		bufferDim.setRight(bufferDim.right() + r.width() + xOffset/2);
 		thumbRects.push_back(r);
 
 		QRectF imgWorldRect = worldMatrix.mapRect(r);
@@ -251,7 +256,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		// if the image was just loaded -> go to the current thumbnail
 		if (currentFileIdx != oldFileIdx && currentFileIdx == idx)
 			currentDx = -(imgWorldRect.center().x()-width()/2.0f);
-			// TODO: there is still a bug -> not centered if the thumbnails before me are not loaded yet
 
 		// is the current image within the canvas?
 		if (imgWorldRect.right() < 0)
@@ -308,11 +312,8 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 	imgGradient.setStart(imgGradient.start().x() - imgRect.left(), 0);
 	imgGradient.setFinalStop(imgGradient.finalStop().x() - imgRect.left(), 0);
 
-	//qDebug() << "gradient: " << gradient.start() << gradient.finalStop();
-	//qDebug() << "image gradient: " << imgGradient.start() << imgGradient.finalStop();
 	QImage mask = *img;
 	QPainter painter(&mask);
-	//painter.setWorldTransform(wm);
 	painter.fillRect(img->rect(), Qt::black);
 	painter.fillRect(img->rect(), imgGradient);
 	painter.end();
@@ -362,6 +363,9 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	if (event->size() == event->oldSize() && this->width() == parent->width())
 		return;
 
+	minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
+	setMaximumHeight(minHeight);
+
 	resize(parent->width(), event->size().height());
 
 	// now update...
@@ -390,12 +394,9 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 	if (event->buttons() == Qt::MiddleButton) {
 
-		qDebug() << "enterPos: " << enterPos.x();
-
 		float dx = std::fabs((float)(enterPos.x() - event->pos().x()))*0.015;
-		qDebug() << "dx: " << dx;
-		
 		dx = std::exp(dx);
+
 		if (enterPos.x() - event->pos().x() < 0)
 			dx = -dx;
 
@@ -452,6 +453,9 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		if (selected != -1 || selected != oldSelection) {
 			//QPoint pos = event->pos() + QPoint(16, 16);
 			//fileLabel->setPosition(pos);
+			
+			if (fileLabel->height() >= height())
+				fileLabel->hide();
 			update();
 		}
 		else if (selected == -1)
