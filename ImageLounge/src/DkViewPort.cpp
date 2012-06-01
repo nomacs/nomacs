@@ -92,12 +92,12 @@ void DkControlWidget::init() {
 	//oLayout->addWidget(overviewWindow);
 	//oLayout->addStretch();
 
-	// rating widget
-	QWidget* rw = new QWidget();
-	QBoxLayout* rLayout = new QBoxLayout(QBoxLayout::LeftToRight, rw);
-	rLayout->setContentsMargins(20,0,0,20);
-	rLayout->addWidget(ratingLabel);
-	rLayout->addStretch();
+	// dummy
+	QWidget* dw = new QWidget();
+	QBoxLayout* dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
+	dLayout->setContentsMargins(0,0,0,0);
+	dLayout->addWidget(bottomLabel);
+	dLayout->addStretch();
 
 	// rating & zoom widget
 	QWidget* bw = new QWidget();
@@ -107,7 +107,6 @@ void DkControlWidget::init() {
 	zLayout->setContentsMargins(0,0,0,0);
 	zLayout->addWidget(bottomLabel);
 	zLayout->addStretch();
-	zLayout->addWidget(rw);
 
 	// left column widget
 	QWidget* leftWidget = new QWidget();
@@ -116,6 +115,7 @@ void DkControlWidget::init() {
 	ulLayout->addWidget(overviewWindow);
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
+	ulLayout->addWidget(dw);
 
 	// center column
 	QWidget* cW = new QWidget();
@@ -132,25 +132,29 @@ void DkControlWidget::init() {
 	cLayout->addWidget(cW);
 	cLayout->addStretch();
 	
-	// dummy
-	QWidget* dw = new QWidget();
-	QBoxLayout* dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
-	dLayout->addStretch();
+	// rating widget
+	QWidget* rw = new QWidget();
+	QBoxLayout* rLayout = new QBoxLayout(QBoxLayout::RightToLeft, rw);
+	rLayout->setContentsMargins(0,0,0,20);
+	rLayout->addWidget(ratingLabel);
+	rLayout->addStretch();
 
 	// right column
 	QWidget* fw = new QWidget();
-	fw->setContentsMargins(0,0,0,50);
+	fw->setContentsMargins(0,0,0,30);
 	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, fw);
 	rwLayout->setContentsMargins(0,0,0,0);
 	//rwLayout->addStretch();
 	rwLayout->addWidget(fileInfoLabel);
+	//rwLayout->addWidget(ratingLabel);
 
 	QWidget* rightWidget = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
 	lrLayout->addStretch();
-	lrLayout->addWidget(dw);
+	//lrLayout->addWidget(dw);
 	lrLayout->addWidget(fw);
+	lrLayout->addWidget(rw);
 
 	// global controller layout
 	QGridLayout* layout = new QGridLayout(this);
@@ -1101,6 +1105,11 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	if (editRect->isVisible()) editRect->hide();
 
 	controller->updateRating(DkImageLoader::imgMetaData.getRating());
+
+	//if (controller->getFileInfoLabel()->isVisible()) {
+	//	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
+	//	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
+	//}
 
 	thumbLoaded = true;
 
