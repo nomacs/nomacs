@@ -1134,14 +1134,14 @@ DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags)
 	init();
 
 	int iconSize = 16;
-	QPoint margin = QPoint(10, 4);
 	int lastStarRight = 0;
 	int timeToDisplay = 3000;
 
 	layout = new QBoxLayout(QBoxLayout::LeftToRight);
-	layout->setContentsMargins(margin.x(), margin.y(), margin.x(), margin.y());
+	layout->setContentsMargins(0,0,0,0);
+	layout->setSpacing(3);
 	layout->addStretch();
-
+	
 	for (int idx = 0; idx < stars.size(); idx++) {
 		stars[idx]->setFixedSize(QSize(iconSize, iconSize));
 		layout->addWidget(stars[idx]);
@@ -1185,6 +1185,10 @@ DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags fl
 	hideTimer = new QTimer(this);
 	hideTimer->setInterval(timeToDisplay);
 	hideTimer->setSingleShot(true);
+
+	// we want a margin
+	layout->setContentsMargins(10,4,10,4);
+	layout->setSpacing(4);
 
 	actions.resize(6);
 
@@ -1235,20 +1239,36 @@ void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
 DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkLabel(parent) {
 
 	setObjectName("DkFileInfoLabel");
-	setStyleSheet("QLabel#DkFileInfoLabel{background-color: QColor(0,0,0,100);}");
-	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	setStyleSheet("QLabel#DkFileInfoLabel{background-color: QColor(0,0,0,100);} QLabel{color: white;}");
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-	setMaximumHeight(150);
-	setMaximumWidth(400);
+	//setMinimumHeight(100);
+	//setMaximumHeight(400);
+	//setMinimumWidth(150);
+	//setMaximumWidth(800);
 
 	marginParent = QPoint(10, 10);
 	
 	this->parent = parent;
-	title = new DkLabel(this);
-	date = new DkLabel(this);
+	title = new QLabel(this);
+	date = new QLabel(this);
 	rating = new DkRatingLabel(0, this);
-	
+	//title->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	//date->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	//rating->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
 	createLayout();
+}
+
+void DkFileInfoLabel::createLayout() {
+
+	layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+	layout->setSpacing(2);
+
+	layout->addWidget(title);
+	layout->addWidget(date);
+	layout->addWidget(rating);
+	//layout->addStretch();
 }
 
 void DkFileInfoLabel::setVisible(bool visible) {
@@ -1266,22 +1286,19 @@ void DkFileInfoLabel::setVisible(bool visible) {
 	date->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_creation_date));
 	rating->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
 
-	//adjustSize();
+	int height = 32;
+	if (title->isVisible())
+		height += title->sizeHint().height();
+	if (date->isVisible())
+		height += date->sizeHint().height();
+	if (rating->isVisible())
+		height += rating->sizeHint().height();
+
+	setMinimumHeight(height);
 }
 
 DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
 	return rating;
-}
-
-void DkFileInfoLabel::createLayout() {
-	
-	layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-	layout->setSpacing(5);
-	
-	layout->addWidget(title);
-	layout->addWidget(date);
-	layout->addWidget(rating);
-	layout->addStretch();
 }
 
 void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& date, const int rating) {
@@ -1297,7 +1314,7 @@ void DkFileInfoLabel::updateTitle(const QFileInfo& file) {
 	
 	this->file = file;
 	updateDate();
-	this->title->setText(file.fileName(), -1);
+	this->title->setText(file.fileName());
 	this->title->setAlignment(Qt::AlignRight);
 
 	//adjustSize();
@@ -1307,7 +1324,7 @@ void DkFileInfoLabel::updateDate(const QString& date) {
 
 	QString dateConverted = DkUtils::convertDate(date, file);
 
-	this->date->setText(dateConverted, -1);
+	this->date->setText(dateConverted);
 	this->date->setAlignment(Qt::AlignRight);
 
 	//adjustSize();

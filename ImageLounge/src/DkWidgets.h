@@ -311,6 +311,8 @@ protected:
 	QVector<DkButton*> stars;
 	QBoxLayout* layout;
 	int rating;
+	QPoint margin;
+	int spacing;
 
 	void updateRating() {
 		
@@ -375,8 +377,8 @@ protected:
 
 	QBoxLayout* layout;
 	QWidget* parent;
-	DkLabel* title;
-	DkLabel* date;
+	QLabel* title;
+	QLabel* date;
 	DkRatingLabel* rating;
 	
 	//void paintEvent(QPaintEvent *event);

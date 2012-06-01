@@ -132,15 +132,24 @@ void DkControlWidget::init() {
 	cLayout->addWidget(cW);
 	cLayout->addStretch();
 	
+	// dummy
+	QWidget* dw = new QWidget();
+	QBoxLayout* dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
+	dLayout->addStretch();
+
 	// right column
 	QWidget* fw = new QWidget();
+	fw->setContentsMargins(0,0,0,50);
 	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, fw);
-	rwLayout->addStretch();
+	rwLayout->setContentsMargins(0,0,0,0);
+	//rwLayout->addStretch();
 	rwLayout->addWidget(fileInfoLabel);
 
 	QWidget* rightWidget = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
+	lrLayout->setContentsMargins(0,0,0,0);
 	lrLayout->addStretch();
+	lrLayout->addWidget(dw);
 	lrLayout->addWidget(fw);
 
 	// global controller layout
@@ -154,7 +163,7 @@ void DkControlWidget::init() {
 	layout->addWidget(center, ver_center, hor_center, 1, 1);
 	layout->addWidget(rightWidget, ver_center, right, 1, 1);
 
-	centerLabel->setText("ich bin richtig...");
+	centerLabel->setText("ich bin richtig...", -1);
 
 	show();
 	qDebug() << "controller initialized...";
