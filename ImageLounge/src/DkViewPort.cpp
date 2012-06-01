@@ -34,11 +34,19 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 	viewport = parent;
 
+	// thumbnails, metadata
 	filePreview = new DkFilePreview(this, flags);
 	metaDataInfo = new DkMetaDataInfo(this);
 
+	// file info - overview
 	overviewWindow = new DkOverview(this, flags);
 	fileInfoLabel = new DkFileInfoLabel(this);
+
+	// info labels
+	centerLabel = new DkLabelBg(this, "");
+	bottomLabel = new DkLabelBg(this, "");
+	topLeftLabel = new DkLabelBg(this, "");
+
 
 	// wheel label
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
@@ -60,10 +68,23 @@ void DkControlWidget::init() {
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 
+	// zoom label
+	QWidget* zW = new QWidget();
+	zW->setMinimumHeight(120);
+	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::LeftToRight, zW);
+	zLayout->setContentsMargins(0,0,0,0);
+	zLayout->addWidget(bottomLabel);
+	zLayout->addStretch(0);
+	
+	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	
+	// left row
 	upperLeft = new QWidget();
 	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, upperLeft);
+	ulLayout->setContentsMargins(0,0,0,0);
 	ulLayout->addWidget(overviewWindow);
 	ulLayout->addStretch();
+	ulLayout->addWidget(zW);
 
 	lowerRight = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, lowerRight);
@@ -88,7 +109,10 @@ void DkControlWidget::init() {
 	layout->addWidget(lowerRight, ver_center, right);
 	//layout->setRowStretch(ver_pos_end, 0);
 
-	show();	
+
+	bottomLabel->setText("hello", -1);
+
+	show();
 	qDebug() << "controller initialized...";
 }
 
@@ -167,6 +191,19 @@ void DkControlWidget::showInfo(bool visible) {
 	if (viewport->isFullScreen())
 		DkSettings::GlobalSettings::showInfo = showInfo;
 }
+
+void DkControlWidget::setInfo(QString msg, int time, InfoPos location) {
+
+	if (location == center_label && centerLabel)
+		centerLabel->setText(msg, time);
+	else if (location == bottom_left_label && bottomLabel)
+		bottomLabel->setText(msg, time);
+	else if (location == top_left_label && topLeftLabel)
+		topLeftLabel->setText(msg, time);
+
+	update();
+}
+
 
 
 // DkControlWidget - Events --------------------------------------------------------------------
@@ -1110,7 +1147,6 @@ void DkViewPort::showZoom() {
 	QString zoomStr;
 	zoomStr.sprintf("%.1f%%", imgMatrix.m11()*worldMatrix.m11()*100);
 	setBottomInfo(zoomStr);
-
 }
 
 void DkViewPort::toggleResetMatrix() {

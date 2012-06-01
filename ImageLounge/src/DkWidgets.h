@@ -153,7 +153,7 @@ protected:
 	virtual void draw(QPainter* painter);
 
 	// for my children...
-	virtual void drawBackground(QPainter* painter) {/*painter->fillRect(QRect(QPoint(), size()), QColor(0, 0, 0, 100));*/};
+	virtual void drawBackground(QPainter* painter) {};
 	virtual void setTextToLabel();
 	virtual void updateStyleSheet();
 };
@@ -166,9 +166,7 @@ public:
 	virtual ~DkLabelBg() {};
 
 protected:
-
-	virtual void init();
-	virtual void drawBackground(QPainter* painter);
+	virtual void updateStyleSheet();
 };
 
 class DkGradientLabel : public DkLabel {

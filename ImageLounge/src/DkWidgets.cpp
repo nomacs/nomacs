@@ -886,20 +886,24 @@ void DkLabel::setTextToLabel() {
 }
 
 DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, text) {
-	
-	init();
-}
 
-void DkLabelBg::init() {
-
-	margin = QPoint(7, 2);
-	updateStyleSheet();
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
+	
+	setObjectName("DkLabelBg");
+	updateStyleSheet();
+
+	margin = QPoint(7,2);
+	setMargin(margin);
 }
 
-void DkLabelBg::drawBackground(QPainter* painter) {
+void DkLabelBg::updateStyleSheet() {
 
-	painter->fillRect(QRect(QPoint(), size()), QColor(0, 0, 0, 100));
+	QLabel::setStyleSheet("QLabel#DkLabelBg{color: " + textCol.name() + "; padding: " + 
+		QString::number(margin.y()) + "px " +
+		QString::number(margin.x()) + "px " +
+		QString::number(margin.y()) + "px " +
+		QString::number(margin.x()) + "px; " +
+		"background-color: QColor(0,0,0,100);}");	// background
 }
 
 // DkGradientLabel --------------------------------------------------------------------
@@ -928,7 +932,6 @@ void DkGradientLabel::updateStyleSheet() {
 		QString::number(margin.y()) + "px " +
 		QString::number(margin.x()) + "px;}");
 }
-
 
 void DkGradientLabel::drawBackground(QPainter* painter) {
 
@@ -1509,6 +1512,9 @@ DkMetaDataInfo::DkMetaDataInfo(QWidget* parent) : DkWidget(parent) {
 
 	yMargin = 6;
 	xMargin = 8;
+
+	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+
 
 }
 
@@ -2142,14 +2148,23 @@ void DkMetaDataInfo::resizeEvent(QResizeEvent *resizeW) {
 	//qDebug() << "resizeW:" << resizeW->size().width();
 	//qDebug() << parent->width();
 
-	setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
+	setMinimumHeight(1);
+	setMaximumHeight(exifHeight);
+
+	resize(parent->width(), resizeW->size().height());
+
+	//setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
 	
-	rightGradientRect.setTopLeft(QPoint(parent->width()-gradientWidth, 0));
-	rightGradientRect.setSize(QSize(gradientWidth, exifHeight));
-	leftGradientRect.setSize(QSize(gradientWidth, exifHeight));
+	int gw = qMin(gradientWidth, qRound(0.2f*resizeW->size().width()));
+
+	rightGradientRect.setTopLeft(QPoint(parent->width()-gw, 0));
+	rightGradientRect.setSize(QSize(gw, exifHeight));
+	leftGradientRect.setSize(QSize(gw, exifHeight));
 
 	rightGradient.setStart(rightGradientRect.topLeft());
 	rightGradient.setFinalStop(rightGradientRect.topRight());
+	leftGradient.setStart(leftGradientRect.topLeft());
+	leftGradient.setFinalStop(leftGradientRect.topRight());
 
 	if (parent->width() > minWidth) {
 		worldMatrix = QTransform();
