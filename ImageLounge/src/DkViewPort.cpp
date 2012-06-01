@@ -42,7 +42,12 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	overviewWindow = new DkOverview(this, flags);
 	fileInfoLabel = new DkFileInfoLabel(this);
 
+	// delayed info
+	delayedInfo = new DkDelayedMessage();
+	delayedSpinner = new DkDelayedInfo(0);
+
 	// info labels
+	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
 	centerLabel = new DkLabelBg(this, "");
 	bottomLabel = new DkLabelBg(this, "");
 	topLeftLabel = new DkLabelBg(this, "");
@@ -68,7 +73,7 @@ void DkControlWidget::init() {
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 
-	// zoom label
+	// left column
 	QWidget* zW = new QWidget();
 	zW->setMinimumHeight(120);
 	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::LeftToRight, zW);
@@ -80,7 +85,6 @@ void DkControlWidget::init() {
 	//centerLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	
-	// left row
 	upperLeft = new QWidget();
 	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, upperLeft);
 	ulLayout->setContentsMargins(0,0,0,0);
@@ -88,13 +92,14 @@ void DkControlWidget::init() {
 	ulLayout->addStretch();
 	ulLayout->addWidget(zW);	
 
-	// center row
+	// center column
 	QWidget* cW = new QWidget();
 	QBoxLayout* cwLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
 	cwLayout->setContentsMargins(0,0,0,0);
-	//cwLayout->addStretch();
+	cwLayout->addStretch();
 	cwLayout->addWidget(centerLabel);
-	//cwLayout->addStretch();
+	cwLayout->addWidget(spinnerLabel);
+	cwLayout->addStretch();
 
 	QWidget* center = new QWidget();
 	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
@@ -102,13 +107,12 @@ void DkControlWidget::init() {
 	cLayout->addWidget(cW);
 	cLayout->addStretch();
 	
+	// right column
 	QWidget* rw = new QWidget();
 	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, rw);
-	//cwLayout->setContentsMargins(0,0,0,0);
 	rwLayout->addStretch();
 	rwLayout->addWidget(fileInfoLabel);
 
-	// right row
 	lowerRight = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, lowerRight);
 	lrLayout->addStretch();
@@ -124,14 +128,6 @@ void DkControlWidget::init() {
 	layout->addWidget(upperLeft, ver_center, left, 1, 1);
 	layout->addWidget(center, ver_center, hor_center, 1, 1);
 	layout->addWidget(lowerRight, ver_center, right, 1, 1);
-
-
-	//QWidget* cW = new QWidget(this);
-	//cW->setContentsMargins(0,0,0,0);
-	//QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
-	//cLayout->addStretch();
-	//cLayout->addWidget(centerLabel);
-	//cLayout->addStretch();
 
 	centerLabel->setText("ich bin ein text...", -1);
 	bottomLabel->setText("bottom", -1);
@@ -152,12 +148,19 @@ void DkControlWidget::connectWidgets() {
 
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
+
+		connect(loader, SIGNAL(updateInfoSignal(QString, int, InfoPos)), this, SLOT(setInfo(QString, int, int)));
+		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
+		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 	}
 
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
 	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
 
+	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
+	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
+	
 	// add updateRating to controller?!
 	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), viewport, SLOT(updateRating(int)));
 
@@ -216,7 +219,7 @@ void DkControlWidget::showInfo(bool visible) {
 		DkSettings::GlobalSettings::showInfo = showInfo;
 }
 
-void DkControlWidget::setInfo(QString msg, int time, InfoPos location) {
+void DkControlWidget::setInfo(QString msg, int time, int location) {
 
 	if (location == center_label && centerLabel)
 		centerLabel->setText(msg, time);
@@ -227,6 +230,36 @@ void DkControlWidget::setInfo(QString msg, int time, InfoPos location) {
 
 	update();
 }
+
+void DkControlWidget::setInfoDelayed(QString msg, bool start, int delayTime) {
+
+	if (!centerLabel)
+		return;
+
+	if (start)
+		delayedInfo->setInfo(msg, delayTime);
+	else
+		delayedInfo->stop();
+
+}
+
+void DkControlWidget::setSpinner(int time) {
+
+	if (spinnerLabel)
+		spinnerLabel->showTimed(time);
+}
+
+void DkControlWidget::setSpinnerDelayed(bool start, int time) {
+
+	if (!spinnerLabel) 
+		return;
+
+	if (start)
+		delayedSpinner->setInfo(time);
+	else
+		delayedSpinner->stop();
+}
+
 
 void DkControlWidget::stopLabels() {
 
@@ -806,14 +839,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 
 	loader = 0;
 
-	centerLabel = new DkInfoLabel(this, "", DkInfoLabel::center_label);
 	bottomRightLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_right_label);
 	topLeftLabel = new DkInfoLabel(this, "", DkInfoLabel::top_left_label);
 	//fileInfoLabel = new DkFileInfoLabel(this);
-	delayedInfo = new DkDelayedMessage();
-	delayedSpinner = new DkDelayedInfo(0);
-
-	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
 	
 	// cropping
 	editRect = new DkEditableRect(QRectF(), this);
@@ -842,14 +870,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	controller->show();
 
 	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
-
-	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
-	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
-	connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
-	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
-	connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	
 	connect(player, SIGNAL(previousSignal(bool)), this, SLOT(loadPrevFile(bool)));
@@ -881,12 +903,10 @@ DkViewPort::~DkViewPort() {
 void DkViewPort::release() {
 
 	if (loader) delete loader;
-	if (centerLabel) delete centerLabel;
 	if (bottomRightLabel) delete bottomRightLabel;
 	if (topLeftLabel) delete topLeftLabel;
 
 	loader = 0;
-	centerLabel = 0;
 	bottomRightLabel = 0;
 	topLeftLabel = 0;
 }
@@ -913,7 +933,6 @@ void DkViewPort::setImage(cv::Mat newImg) {
 		centerImage();
 
 	controller->stopLabels();
-	if (centerLabel) centerLabel->stop();
 	if (bottomRightLabel) bottomRightLabel->stop();
 	if (topLeftLabel) topLeftLabel->stop();
 
@@ -977,7 +996,6 @@ void DkViewPort::setImage(QImage newImg) {
 	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
 	controller->stopLabels();
 
-	if (centerLabel) centerLabel->stop();
 	if (bottomRightLabel) bottomRightLabel->stop();
 	if (editRect->isVisible()) editRect->hide();
 	//if (topLeftLabel) topLeftLabel->stop();	// top left should be always shown	(DkSnippet??)
@@ -1026,7 +1044,6 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	//// currently we need to read the metadata twice (not nice either)
 	//DkImageLoader::imgMetaData.setFileName(loader->getFile());
 
-	if (centerLabel) centerLabel->stop();
 	if (bottomRightLabel) bottomRightLabel->stop();
 	if (editRect->isVisible()) editRect->hide();
 
@@ -1042,7 +1059,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 void DkViewPort::tcpSendImage() {
 
-	setCenterInfo("sending image...");
+	controller->setInfo("sending image...", 3000, DkControlWidget::center_label);
 
 	if (loader)
 		sendImageSignal(imgQt, loader->fileName());
@@ -1311,8 +1328,8 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 	}
 
 	//centerLabel->setTextFlags(Qt::AlignVCenter | Qt::TextExpandTabs);
-	if (centerLabel)	centerLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-	if (centerLabel)	centerLabel->setText(newPeers, 5000);
+	//if (centerLabel)	centerLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+	//if (centerLabel)	centerLabel->setText(newPeers, 5000);
 	update();
 }
 
@@ -1424,14 +1441,13 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 
 	ratingLabel->move(10, height()-ratingLabel->size().height()-10+bottomOffset.y());
 	bottomRightLabel->updatePos(bottomOffset);
-	centerLabel->updatePos();
 	topLeftLabel->updatePos(topOffset);	// todo: if thumbnails are shown: move/overview move
 	
-	if (spinnerLabel) {
-		QPointF center = QPointF(width()*0.5f, height()*0.5f);
-		center -= QPointF(spinnerLabel->geometry().width()*0.5f, spinnerLabel->geometry().height()*0.5f);
-		spinnerLabel->move(center.toPoint());
-	}
+	//if (spinnerLabel) {
+	//	QPointF center = QPointF(width()*0.5f, height()*0.5f);
+	//	center -= QPointF(spinnerLabel->geometry().width()*0.5f, spinnerLabel->geometry().height()*0.5f);
+	//	spinnerLabel->move(center.toPoint());
+	//}
 
 	if (editRect)
 		editRect->resize(width(), height());
@@ -1629,9 +1645,9 @@ void DkViewPort::loadLena() {
 		QApplication::beep();
 		
 		if (text.isEmpty())
-			setCenterInfo(tr("did you understand the brainteaser?"));
+			controller->setInfo(tr("did you understand the brainteaser?"));
 		else
-			setCenterInfo(tr("%1 is wrong...").arg(text));
+			controller->setInfo(tr("%1 is wrong...").arg(text));
 	}
 }
 
@@ -1899,29 +1915,9 @@ DkEditableRect* DkViewPort::getEditableRect() {
 	return editRect;
 }
 
-void DkViewPort::setSpinner(int time) {
-
-	if (spinnerLabel)
-		spinnerLabel->showTimed(time);
-}
-
-void DkViewPort::setSpinnerDelayed(bool start, int time) {
-
-	if (!spinnerLabel) 
-		return;
-
-	if (start)
-		delayedSpinner->setInfo(time);
-	else
-		delayedSpinner->stop();
-
-}
-
 void DkViewPort::setInfo(QString msg, int time, int location) {
 
-	if (location == DkInfoLabel::center_label && centerLabel)
-		centerLabel->setText(msg, time);
-	else if (location == DkInfoLabel::bottom_right_label && bottomRightLabel) {
+	if (location == DkInfoLabel::bottom_right_label && bottomRightLabel) {
 		bottomRightLabel->setText(msg, time);
 		bottomRightLabel->updatePos(bottomOffset);
 	}
@@ -1930,36 +1926,6 @@ void DkViewPort::setInfo(QString msg, int time, int location) {
 		topLeftLabel->updatePos(topOffset);
 	}
 	
-	update();
-}
-
-void DkViewPort::setInfoDelayed(QString msg, bool start, int delayTime) {
-
-	if (!centerLabel)
-		return;
-
-	if (!spinnerLabel) 
-		return;
-
-	//if (start)
-	//	delayedSpinner->setInfo(delayTime);
-	//else
-	//	delayedSpinner->stop();
-
-	if (start)
-		delayedInfo->setInfo(msg, delayTime);
-	else
-		delayedInfo->stop();
-
-}
-
-
-void DkViewPort::setCenterInfo(QString msg, int time) {
-
-	if (!centerLabel)
-		return;
-
-	centerLabel->setText(msg, time);
 	update();
 }
 
@@ -1987,7 +1953,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	qDebug() << "img size: " << cImgSize;
 
 	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f) {
-		setCenterInfo(tr("I cannot crop an image that has 0 px, sorry."));
+		controller->setInfo(tr("I cannot crop an image that has 0 px, sorry."));
 		return;
 	}
 

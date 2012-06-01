@@ -206,7 +206,11 @@ public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
 	void showInfo(bool visible);
-	void setInfo(QString msg, int time = 3000, InfoPos location = center_label);
+	void setInfo(QString msg, int time = 3000, int location = center_label);
+	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
+	virtual void setSpinner(int time = 3000);
+	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
+
 	void update();
 
 protected:
@@ -236,6 +240,10 @@ protected:
 	DkOverview* overviewWindow;
 	DkFileInfoLabel* fileInfoLabel;
 
+	DkDelayedMessage* delayedInfo;
+	DkDelayedInfo* delayedSpinner;
+
+	DkAnimationLabel* spinnerLabel;
 	DkLabelBg* centerLabel;
 	DkLabelBg* bottomLabel;
 	DkLabelBg* topLeftLabel;
@@ -351,7 +359,6 @@ public:
 
 	virtual void release();
 	
-	virtual void setCenterInfo(QString msg, int time = 3000);
 	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
 	void setFullScreen(bool fullScreen);
@@ -404,9 +411,6 @@ public slots:
 	void tcpSendImage();
 	
 	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
-	virtual void setSpinner(int time = 3000);
-	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
-	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	void updateRating(int rating);
 	
 	// file actions
@@ -455,12 +459,8 @@ protected:
 
 	DkControlWidget* controller;
 	DkImageLoader* loader;
-	DkInfoLabel* centerLabel;
 	DkInfoLabel* bottomRightLabel;
 	DkInfoLabel* topLeftLabel;
-	DkDelayedMessage* delayedInfo;
-	DkDelayedInfo* delayedSpinner;
-	DkAnimationLabel* spinnerLabel;
 
 	DkPlayer* player;
 	DkRatingLabelBg* ratingLabel;
@@ -506,7 +506,6 @@ public:
 	virtual QRect getMainGeometry() {
 		return mainScreen;
 	};
-	virtual void setCenterInfo(QString msg, int time = 3000) {};
 
 public slots:
 	virtual void setImage(QImage newImg);

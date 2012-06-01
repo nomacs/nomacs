@@ -1090,11 +1090,11 @@ void DkNoMacs::pasteImage() {
 			viewport()->loadFile(file, true);
 		}
 		else
-			viewport()->setCenterInfo("Could not find a valid file url, sorry");
+			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
 	}
 	
 	else if (viewport())
-		viewport()->setCenterInfo("Clipboard has no image...");
+		viewport()->getController()->setInfo("Clipboard has no image...");
 
 }
 
@@ -1781,7 +1781,7 @@ void DkNoMacs::openFileWith() {
 	if (started)
 		qDebug() << "starting: " << DkSettings::GlobalSettings::defaultAppPath;
 	else {
-		viewport()->setCenterInfo("Sorry, I could not start: " % DkSettings::GlobalSettings::defaultAppPath);
+		viewport()->getController()->setInfo("Sorry, I could not start: " % DkSettings::GlobalSettings::defaultAppPath);
 		DkSettings::GlobalSettings::showDefaultAppDialog = true;
 	}
 
