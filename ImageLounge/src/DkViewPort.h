@@ -200,6 +200,8 @@ public:
 		return fileInfoLabel;
 	}
 
+	void stopLabels();
+
 public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
@@ -350,7 +352,6 @@ public:
 	virtual void release();
 	
 	virtual void setCenterInfo(QString msg, int time = 3000);
-	virtual void setBottomInfo(QString msg, int time = 3000);
 	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
 	void setFullScreen(bool fullScreen);
@@ -455,7 +456,6 @@ protected:
 	DkControlWidget* controller;
 	DkImageLoader* loader;
 	DkInfoLabel* centerLabel;
-	DkInfoLabel* bottomLabel;
 	DkInfoLabel* bottomRightLabel;
 	DkInfoLabel* topLeftLabel;
 	DkDelayedMessage* delayedInfo;

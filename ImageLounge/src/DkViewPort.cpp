@@ -74,9 +74,11 @@ void DkControlWidget::init() {
 	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::LeftToRight, zW);
 	zLayout->setContentsMargins(0,0,0,0);
 	zLayout->addWidget(bottomLabel);
-	zLayout->addStretch(0);
-	
+	zLayout->addStretch();
+
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	//centerLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	centerLabel->setAlignment(Qt::AlignCenter);
 	
 	// left row
 	upperLeft = new QWidget();
@@ -84,18 +86,33 @@ void DkControlWidget::init() {
 	ulLayout->setContentsMargins(0,0,0,0);
 	ulLayout->addWidget(overviewWindow);
 	ulLayout->addStretch();
-	ulLayout->addWidget(zW);
+	ulLayout->addWidget(zW);	
 
+	// center row
+	QWidget* cW = new QWidget();
+	QBoxLayout* cwLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
+	cwLayout->setContentsMargins(0,0,0,0);
+	//cwLayout->addStretch();
+	cwLayout->addWidget(centerLabel);
+	//cwLayout->addStretch();
+
+	QWidget* center = new QWidget();
+	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
+	cLayout->addStretch();
+	cLayout->addWidget(cW);
+	cLayout->addStretch();
+	
+	QWidget* rw = new QWidget();
+	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, rw);
+	//cwLayout->setContentsMargins(0,0,0,0);
+	rwLayout->addStretch();
+	rwLayout->addWidget(fileInfoLabel);
+
+	// right row
 	lowerRight = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, lowerRight);
 	lrLayout->addStretch();
-	lrLayout->addWidget(fileInfoLabel);
-
-	QWidget* center = new QWidget();
-	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::LeftToRight, center);
-	lrLayout->addStretch();
-	//lrLayout->addWidget(fileInfoLabel);
-
+	lrLayout->addWidget(rw);
 
 	// global controller layout
 	QGridLayout* layout = new QGridLayout(this);
@@ -105,12 +122,19 @@ void DkControlWidget::init() {
 	layout->addWidget(filePreview, top, left, 1, hor_pos_end);
 	layout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 	layout->addWidget(upperLeft, ver_center, left, 1, 1);
-	layout->addWidget(center, ver_center, ver_center);
-	layout->addWidget(lowerRight, ver_center, right);
-	//layout->setRowStretch(ver_pos_end, 0);
+	layout->addWidget(center, ver_center, hor_center, 1, 1);
+	layout->addWidget(lowerRight, ver_center, right, 1, 1);
 
 
-	bottomLabel->setText("hello", -1);
+	//QWidget* cW = new QWidget(this);
+	//cW->setContentsMargins(0,0,0,0);
+	//QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
+	//cLayout->addStretch();
+	//cLayout->addWidget(centerLabel);
+	//cLayout->addStretch();
+
+	centerLabel->setText("ich bin ein text...", -1);
+	bottomLabel->setText("bottom", -1);
 
 	show();
 	qDebug() << "controller initialized...";
@@ -204,6 +228,14 @@ void DkControlWidget::setInfo(QString msg, int time, InfoPos location) {
 	update();
 }
 
+void DkControlWidget::stopLabels() {
+
+	//centerLabel->stop();
+	bottomLabel->stop();
+	topLeftLabel->stop();
+
+	// TODO: stop spinner
+}
 
 
 // DkControlWidget - Events --------------------------------------------------------------------
@@ -775,7 +807,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	loader = 0;
 
 	centerLabel = new DkInfoLabel(this, "", DkInfoLabel::center_label);
-	bottomLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_left_label);
 	bottomRightLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_right_label);
 	topLeftLabel = new DkInfoLabel(this, "", DkInfoLabel::top_left_label);
 	//fileInfoLabel = new DkFileInfoLabel(this);
@@ -851,13 +882,11 @@ void DkViewPort::release() {
 
 	if (loader) delete loader;
 	if (centerLabel) delete centerLabel;
-	if (bottomLabel) delete bottomLabel;
 	if (bottomRightLabel) delete bottomRightLabel;
 	if (topLeftLabel) delete topLeftLabel;
 
 	loader = 0;
 	centerLabel = 0;
-	bottomLabel = 0;
 	bottomRightLabel = 0;
 	topLeftLabel = 0;
 }
@@ -883,8 +912,8 @@ void DkViewPort::setImage(cv::Mat newImg) {
 	if (DkSettings::DisplaySettings::keepZoom)
 		centerImage();
 
+	controller->stopLabels();
 	if (centerLabel) centerLabel->stop();
-	if (bottomLabel) bottomLabel->stop();
 	if (bottomRightLabel) bottomRightLabel->stop();
 	if (topLeftLabel) topLeftLabel->stop();
 
@@ -946,9 +975,9 @@ void DkViewPort::setImage(QImage newImg) {
 
 	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
 	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
+	controller->stopLabels();
 
 	if (centerLabel) centerLabel->stop();
-	if (bottomLabel) bottomLabel->stop();
 	if (bottomRightLabel) bottomRightLabel->stop();
 	if (editRect->isVisible()) editRect->hide();
 	//if (topLeftLabel) topLeftLabel->stop();	// top left should be always shown	(DkSnippet??)
@@ -989,6 +1018,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	updateImageMatrix();
 	
 	controller->getOverview()->setImage(imgQt);
+	controller->stopLabels();
 
 	//// TODO: this is a fast fix
 	//// if this thread uses the static metadata object 
@@ -997,7 +1027,6 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	//DkImageLoader::imgMetaData.setFileName(loader->getFile());
 
 	if (centerLabel) centerLabel->stop();
-	if (bottomLabel) bottomLabel->stop();
 	if (bottomRightLabel) bottomRightLabel->stop();
 	if (editRect->isVisible()) editRect->hide();
 
@@ -1146,7 +1175,7 @@ void DkViewPort::showZoom() {
 
 	QString zoomStr;
 	zoomStr.sprintf("%.1f%%", imgMatrix.m11()*worldMatrix.m11()*100);
-	setBottomInfo(zoomStr);
+	controller->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
 }
 
 void DkViewPort::toggleResetMatrix() {
@@ -1321,7 +1350,6 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	// the labels must not be 0 !!
 	//if (!imgQt.isNull()) centerLabel->show();
-	bottomLabel->block(imgQt.isNull());
 	
 	// TODO: correct this...
 	/*if (bottomRightLabel && parent && (!parent->isFullScreen() || imgQt.isNull()))*/ bottomRightLabel->hide();
@@ -1395,7 +1423,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 	//topOffset.setX(overviewWindow->width()+10);
 
 	ratingLabel->move(10, height()-ratingLabel->size().height()-10+bottomOffset.y());
-	bottomLabel->updatePos(bottomOffset);
 	bottomRightLabel->updatePos(bottomOffset);
 	centerLabel->updatePos();
 	topLeftLabel->updatePos(topOffset);	// todo: if thumbnails are shown: move/overview move
@@ -1894,8 +1921,6 @@ void DkViewPort::setInfo(QString msg, int time, int location) {
 
 	if (location == DkInfoLabel::center_label && centerLabel)
 		centerLabel->setText(msg, time);
-	else if (location == DkInfoLabel::bottom_left_label && bottomLabel)
-		bottomLabel->setText(msg, time);
 	else if (location == DkInfoLabel::bottom_right_label && bottomRightLabel) {
 		bottomRightLabel->setText(msg, time);
 		bottomRightLabel->updatePos(bottomOffset);
@@ -1935,15 +1960,6 @@ void DkViewPort::setCenterInfo(QString msg, int time) {
 		return;
 
 	centerLabel->setText(msg, time);
-	update();
-}
-
-void DkViewPort::setBottomInfo(QString msg, int time) {
-
-	if (!bottomLabel)
-		return;
-
-	bottomLabel->setText(msg, time);
 	update();
 }
 
