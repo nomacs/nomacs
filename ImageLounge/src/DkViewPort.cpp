@@ -299,6 +299,13 @@ void DkControlWidget::stopLabels() {
 	// TODO: stop spinner
 }
 
+void DkControlWidget::settingsChanged() {
+
+	if (fileInfoLabel && fileInfoLabel->isVisible())
+		fileInfoLabel->show();
+
+}
+
 void DkControlWidget::updateRating(int rating) {
 
 	this->rating = rating;
@@ -1703,10 +1710,9 @@ void DkViewPort::settingsChanged() {
 	altMod = DkSettings::GlobalSettings::altMod;
 	ctrlMod = DkSettings::GlobalSettings::ctrlMod;
 
+	controller->settingsChanged();
 	// TODO: add to controller
 	//// update the title label
-	//if (fileInfoLabel && fileInfoLabel->isVisible())
-	//	fileInfoLabel->show();
 
 	//if (parent->isFullScreen())
 	//	ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));

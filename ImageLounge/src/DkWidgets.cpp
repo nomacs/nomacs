@@ -1242,20 +1242,12 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkLabel(parent) {
 	setStyleSheet("QLabel#DkFileInfoLabel{background-color: QColor(0,0,0,100);} QLabel{color: white;}");
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-	//setMinimumHeight(100);
-	//setMaximumHeight(400);
-	//setMinimumWidth(150);
-	//setMaximumWidth(800);
-
 	marginParent = QPoint(10, 10);
 	
 	this->parent = parent;
 	title = new QLabel(this);
 	date = new QLabel(this);
 	rating = new DkRatingLabel(0, this);
-	//title->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//date->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//rating->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
 	createLayout();
 }

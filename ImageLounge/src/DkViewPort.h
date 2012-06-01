@@ -208,6 +208,8 @@ public:
 
 	void stopLabels();
 
+	void settingsChanged();
+
 public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
