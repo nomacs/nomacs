@@ -188,9 +188,15 @@ public:
 		return overviewWindow;
 	}
 
+	DkFileInfoLabel* getFileInfoLabel() {
+		return fileInfoLabel;
+	}
+
 public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
+	void showInfo(bool visible);
+
 	void update();
 
 protected:
@@ -203,6 +209,8 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 
+	//void resizeEvent(QResizeEvent *event);
+
 	// functions
 	void init();
 	void connectWidgets();
@@ -210,7 +218,8 @@ protected:
 	
 	DkViewPort* viewport;
 
-	QWidget* upperLeft;
+	QWidget* upperLeft;		// contains overview + upperLeft label
+	QWidget* lowerRight;	// contains fileInfo + histogram?!
 
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
@@ -346,7 +355,6 @@ public:
 	DkControlWidget* getController();
 	DkPlayer* getPlayer();
 	DkOverview* getOverview();
-	DkFileInfoLabel* getFileInfoWidget();
 	DkEditableRect* getEditableRect();
 	bool isTestLoaded() { return testLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
@@ -373,9 +381,6 @@ public slots:
 	void toggleResetMatrix();
 	void toggleShowOverview();
 	void toggleShowPlayer();
-	//void showPreview();
-	//void showExif();
-	void showInfo();
 	
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
@@ -385,7 +390,6 @@ public slots:
 	void tcpShowConnections(QList<DkPeer> peers);
 	void tcpSendImage();
 	
-	void setTitleLabel(QFileInfo file, int time = -1);
 	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
 	virtual void setSpinner(int time = 3000);
 	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
@@ -442,7 +446,6 @@ protected:
 	DkInfoLabel* bottomLabel;
 	DkInfoLabel* bottomRightLabel;
 	DkInfoLabel* topLeftLabel;
-	DkFileInfoLabel* fileInfoLabel;
 	DkDelayedMessage* delayedInfo;
 	DkDelayedInfo* delayedSpinner;
 	DkAnimationLabel* spinnerLabel;

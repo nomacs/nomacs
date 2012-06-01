@@ -620,7 +620,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_info]->setShortcut(QKeySequence(shortcut_show_info));
 	viewActions[menu_view_show_info]->setStatusTip(tr("shows the info panel"));
 	viewActions[menu_view_show_info]->setCheckable(true);
-	connect(viewActions[menu_view_show_info], SIGNAL(triggered()), vp, SLOT(showInfo()));
+	connect(viewActions[menu_view_show_info], SIGNAL(toggled(bool)), vp->getController(), SLOT(showInfo(bool)));
 
 	viewActions[menu_view_frameless] = new QAction(tr("&Frameless"), this);
 	viewActions[menu_view_frameless]->setShortcut(QKeySequence(shortcut_frameless));
@@ -2149,18 +2149,11 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 
-	//connect(vp, SIGNAL(previewVisibleSignal(bool)), viewActions[menu_view_show_preview], SLOT(setChecked(bool)));
-	//connect(vp, SIGNAL(exifVisibleSignal(bool)), viewActions[menu_view_show_exif], SLOT(setChecked(bool)));
-	//connect(vp, SIGNAL(overviewVisibleSignal(bool)), viewActions[menu_view_show_overview], SLOT(setChecked(bool)));
-	//connect(vp, SIGNAL(playerVisibleSignal(bool)), viewActions[menu_view_show_player], SLOT(setChecked(bool)));
-
 	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-	//vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+	//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 
 	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-	//vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-	vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 	DkSettings::AppSettings::appMode = 0;
 
@@ -2210,11 +2203,11 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 		//vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		//vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 
 		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 
 		// in frameless, you cannot control if menu is visible...
 		viewActions[menu_view_show_menu]->setEnabled(false);
@@ -2375,11 +2368,9 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 
-		//vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		//vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-		vp->getFileInfoWidget()->registerAction(viewActions[menu_view_show_info]);
 		vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 
 		initLanClient();

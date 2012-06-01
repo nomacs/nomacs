@@ -123,6 +123,8 @@ DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(paren
 void DkFilePreview::init() {
 
 	setMouseTracking (true);	//receive mouse event everytime
+	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+	
 	thumbsLoader = 0;
 
 	xOffset = 20;
@@ -364,6 +366,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 		return;
 
 	minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
+	setMinimumHeight(1);
 	setMaximumHeight(minHeight);
 
 	resize(parent->width(), event->size().height());
@@ -675,6 +678,8 @@ void DkOverview::resizeEvent(QResizeEvent* event) {
 
 	//if (parent)
 	//	setMaximumWidth((float)parent->width()*0.15f);
+
+	qDebug() << "resizing overview...";
 
 	if (parent) {
 		setMinimumWidth((float)parent->width()*0.15f);
@@ -1227,36 +1232,41 @@ void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
 }
 
 // title info --------------------------------------------------------------------
-DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkWidget(parent) {
+DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkLabel(parent) {
+
+	setObjectName("DkFileInfoLabel");
+	setStyleSheet("QLabel#DkFileInfoLabel{background-color: QColor(0,0,0,100);}");
+	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+	setMaximumHeight(150);
+	setMaximumWidth(400);
 
 	marginParent = QPoint(10, 10);
-
+	
 	this->parent = parent;
 	title = new DkLabel(this);
 	date = new DkLabel(this);
 	rating = new DkRatingLabel(0, this);
-
+	
 	createLayout();
 }
 
 void DkFileInfoLabel::setVisible(bool visible) {
 
-	// TODO: unbalanced warning (in DkRatingLabel) makes me feel uncomfortable
-
 	// nothing to display??
 	if (!DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_name) &&
 		!DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_creation_date) &&
 		!DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating)) {
-			DkWidget::setVisible(false);
+			DkLabel::setVisible(false);
 			return;
 	}
 
-	DkWidget::setVisible(visible);
+	DkLabel::setVisible(visible);
 	title->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_name));
 	date->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_creation_date));
 	rating->setVisible(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
-		
-	adjustSize();
+
+	//adjustSize();
 }
 
 DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
@@ -1266,23 +1276,12 @@ DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
 void DkFileInfoLabel::createLayout() {
 	
 	layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-	layout->setSpacing(0);
+	layout->setSpacing(5);
 	
 	layout->addWidget(title);
 	layout->addWidget(date);
 	layout->addWidget(rating);
 	layout->addStretch();
-
-	adjustSize();
-}
-
-void DkFileInfoLabel::updatePos(const QPoint& pos) {
-
-	QPoint m = QPoint(parent->width() - DkWidget::geometry().width() - marginParent.x(), parent->height() - height() - marginParent.y());
-
-	if (pos.x() != -1 && pos.y() != -1)
-		this->offset = pos;
-	move(m+offset);
 }
 
 void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& date, const int rating) {
@@ -1290,9 +1289,8 @@ void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& date, con
 	updateTitle(file);
 	updateDate(date);
 	updateRating(rating);
-	
-	adjustSize();
-	updatePos();
+
+	//adjustSize();
 }
 
 void DkFileInfoLabel::updateTitle(const QFileInfo& file) {
@@ -1301,60 +1299,41 @@ void DkFileInfoLabel::updateTitle(const QFileInfo& file) {
 	updateDate();
 	this->title->setText(file.fileName(), -1);
 	this->title->setAlignment(Qt::AlignRight);
-	adjustSize();
+
+	//adjustSize();
 }
 
 void DkFileInfoLabel::updateDate(const QString& date) {
-
-	//// convert date
-	//QString dateConverted;
-	//QStringList dateSplit = date.split(QRegExp("[/: \t]"));
-
-	//if (dateSplit.size() >= 3) {
-
-	//	QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
-	//	dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
-
-	//	if (dateSplit.size() >= 6) {
-	//		QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
-	//		dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
-	//	}
-	//}
-	//else if (file.exists()) {
-	//	QDateTime dateCreated = file.created();
-	//	dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
-	//}
-	//else
-	//	dateConverted = "unknown date";
 
 	QString dateConverted = DkUtils::convertDate(date, file);
 
 	this->date->setText(dateConverted, -1);
 	this->date->setAlignment(Qt::AlignRight);
-	adjustSize();
+
+	//adjustSize();
 }
 
 void DkFileInfoLabel::updateRating(const int rating) {
 	
 	this->rating->setRating(rating);
-	adjustSize();
+
 }
 
-void DkFileInfoLabel::adjustSize() {
+//void DkFileInfoLabel::adjustSize() {
+//
+//	DkWidget::adjustSize();
+//	updatePos();
+//}
 
-	DkWidget::adjustSize();
-	updatePos();
-}
-
-void DkFileInfoLabel::paintEvent(QPaintEvent *event) {
-
-	// simply take a DkWidget??
-	QPainter painter(this);
-	painter.fillRect(QRect(QPoint(), size()), bgCol);
-	painter.end();
-
-	//DkWidget::paintEvent(event);
-}
+//void DkFileInfoLabel::paintEvent(QPaintEvent *event) {
+//
+//	// simply take a DkWidget??
+//	QPainter painter(this);
+//	painter.fillRect(QRect(QPoint(), size()), bgCol);
+//	painter.end();
+//
+//	//DkWidget::paintEvent(event);
+//}
 
 // player --------------------------------------------------------------------
 DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {

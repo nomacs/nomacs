@@ -353,7 +353,7 @@ protected:
 	virtual void paintEvent(QPaintEvent *event);
 };
 
-class DkFileInfoLabel : public DkWidget {
+class DkFileInfoLabel : public DkLabel {
 	Q_OBJECT
 
 public:
@@ -361,12 +361,12 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updatePos(const QPoint& pos = QPoint(-1, -1));
+	//void updatePos(const QPoint& pos = QPoint(-1, -1));
 	void updateInfo(const QFileInfo& file, const QString& date, const int rating);
 	void updateTitle(const QFileInfo& file);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
-	void adjustSize();
+	//void adjustSize();
 	void setVisible(bool visible);
 	DkRatingLabel* getRatingLabel();
 
@@ -381,7 +381,7 @@ protected:
 	DkLabel* date;
 	DkRatingLabel* rating;
 	
-	void paintEvent(QPaintEvent *event);
+	//void paintEvent(QPaintEvent *event);
 };
 
 class DkPlayer : public DkWidget {
