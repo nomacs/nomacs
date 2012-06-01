@@ -34,13 +34,16 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 	viewport = parent;
 
+	rating = -1;
+	
 	// thumbnails, metadata
 	filePreview = new DkFilePreview(this, flags);
 	metaDataInfo = new DkMetaDataInfo(this);
 
 	// file info - overview
-	overviewWindow = new DkOverview(this, flags);
 	fileInfoLabel = new DkFileInfoLabel(this);
+	ratingLabel = new DkRatingLabelBg(2, this, flags);
+	addActions(ratingLabel->getActions().toList());		// register actions
 
 	// delayed info
 	delayedInfo = new DkDelayedMessage();
@@ -73,24 +76,46 @@ void DkControlWidget::init() {
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 
-	// left column
-	QWidget* zW = new QWidget();
-	zW->setMinimumHeight(120);
-	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::LeftToRight, zW);
+	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	//centerLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	centerLabel->setAlignment(Qt::AlignCenter);
+
+	//// overview widget
+	//QWidget* ow = new QWidget();
+	//ow->setMinimumSize(0,0);
+	//ow->setMaximumSize(250,250);
+	//ow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	overviewWindow = new DkOverview(this);
+	//
+	//QBoxLayout* oLayout = new QBoxLayout(QBoxLayout::TopToBottom, ow);
+	//oLayout->addWidget(overviewWindow);
+	//oLayout->addStretch();
+
+	// rating widget
+	QWidget* rw = new QWidget();
+	QBoxLayout* rLayout = new QBoxLayout(QBoxLayout::LeftToRight, rw);
+	rLayout->setContentsMargins(20,0,0,20);
+	rLayout->addWidget(ratingLabel);
+	rLayout->addStretch();
+
+	// rating & zoom widget
+	QWidget* bw = new QWidget();
+	bw->setMinimumHeight(40);
+	bw->setMaximumHeight(80);
+	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::TopToBottom, bw);
 	zLayout->setContentsMargins(0,0,0,0);
 	zLayout->addWidget(bottomLabel);
 	zLayout->addStretch();
+	zLayout->addWidget(rw);
 
-	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//centerLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	centerLabel->setAlignment(Qt::AlignCenter);
-	
-	upperLeft = new QWidget();
-	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, upperLeft);
+	// left column widget
+	QWidget* leftWidget = new QWidget();
+	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, leftWidget);
 	ulLayout->setContentsMargins(0,0,0,0);
 	ulLayout->addWidget(overviewWindow);
 	ulLayout->addStretch();
-	ulLayout->addWidget(zW);	
+	ulLayout->addWidget(bw);
 
 	// center column
 	QWidget* cW = new QWidget();
@@ -108,15 +133,15 @@ void DkControlWidget::init() {
 	cLayout->addStretch();
 	
 	// right column
-	QWidget* rw = new QWidget();
-	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, rw);
+	QWidget* fw = new QWidget();
+	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, fw);
 	rwLayout->addStretch();
 	rwLayout->addWidget(fileInfoLabel);
 
-	lowerRight = new QWidget();
-	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, lowerRight);
+	QWidget* rightWidget = new QWidget();
+	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->addStretch();
-	lrLayout->addWidget(rw);
+	lrLayout->addWidget(fw);
 
 	// global controller layout
 	QGridLayout* layout = new QGridLayout(this);
@@ -125,12 +150,11 @@ void DkControlWidget::init() {
 	// add elements
 	layout->addWidget(filePreview, top, left, 1, hor_pos_end);
 	layout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
-	layout->addWidget(upperLeft, ver_center, left, 1, 1);
+	layout->addWidget(leftWidget, ver_center, left, 1, 1);
 	layout->addWidget(center, ver_center, hor_center, 1, 1);
-	layout->addWidget(lowerRight, ver_center, right, 1, 1);
+	layout->addWidget(rightWidget, ver_center, right, 1, 1);
 
-	centerLabel->setText("ich bin ein text...", -1);
-	bottomLabel->setText("bottom", -1);
+	centerLabel->setText("ich bin richtig...");
 
 	show();
 	qDebug() << "controller initialized...";
@@ -149,7 +173,7 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
 
-		connect(loader, SIGNAL(updateInfoSignal(QString, int, InfoPos)), this, SLOT(setInfo(QString, int, int)));
+		connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 	}
@@ -161,11 +185,9 @@ void DkControlWidget::connectWidgets() {
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
 	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
-	// add updateRating to controller?!
-	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), viewport, SLOT(updateRating(int)));
-
-	// TODO
-	//connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
+	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
+	connect(ratingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
+	connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
 }
 
 void DkControlWidget::update() {
@@ -203,14 +225,12 @@ void DkControlWidget::showInfo(bool visible) {
 
 	if (fileInfoLabel && visible && !fileInfoLabel->isVisible()) {
 		fileInfoLabel->show();
-		// TODO
-		//ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
+		ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
 		showInfo = true;
 	}
 	else {
 		fileInfoLabel->hide();
-		// TODO
-		//ratingLabel->block(false);
+		ratingLabel->block(false);
 		showInfo = false;
 	}
 
@@ -270,6 +290,34 @@ void DkControlWidget::stopLabels() {
 	// TODO: stop spinner
 }
 
+void DkControlWidget::updateRating(int rating) {
+
+	this->rating = rating;
+
+	ratingLabel->setRating(rating);
+
+	if (fileInfoLabel)
+		fileInfoLabel->updateRating(rating);
+}
+
+void DkControlWidget::setFullScreen(bool fullscreen) {
+
+	if (fullscreen) {
+		if (DkSettings::GlobalSettings::showInfo) {
+			fileInfoLabel->show();
+			ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
+		}
+		else
+			fileInfoLabel->hide();
+
+		filePreview->hide();
+		metaDataInfo->hide();
+	}
+	else {
+		ratingLabel->block(false);
+		fileInfoLabel->hide();
+	}
+}
 
 // DkControlWidget - Events --------------------------------------------------------------------
 void DkControlWidget::mousePressEvent(QMouseEvent *event) {
@@ -832,8 +880,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	thumbLoaded = false;
 	visibleStatusbar = false;
 
-	rating = -1;
-
 	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
@@ -852,10 +898,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
-
-	// TODO: read rating from file...
-	ratingLabel = new DkRatingLabelBg(2, this, flags);
-	addActions(ratingLabel->getActions().toList());		// register actions
 
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
@@ -876,9 +918,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	connect(player, SIGNAL(previousSignal(bool)), this, SLOT(loadPrevFile(bool)));
 	connect(player, SIGNAL(nextSignal(bool)), this, SLOT(loadNextFile(bool)));
-	connect(ratingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
-		
-	//connect(player, SIGNAL(play(bool)), this, play());
 
 	qDebug() << "viewer created...";
 
@@ -1000,9 +1039,7 @@ void DkViewPort::setImage(QImage newImg) {
 	if (editRect->isVisible()) editRect->hide();
 	//if (topLeftLabel) topLeftLabel->stop();	// top left should be always shown	(DkSnippet??)
 	
-	rating = -1;
-	if (loader && ratingLabel)
-		ratingLabel->setRating(DkImageLoader::imgMetaData.getRating());
+	controller->updateRating(DkImageLoader::imgMetaData.getRating());
 
 	thumbLoaded = false;
 	thumbFile = QFileInfo();
@@ -1047,9 +1084,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	if (bottomRightLabel) bottomRightLabel->stop();
 	if (editRect->isVisible()) editRect->hide();
 
-	rating = -1;
-	if (loader && ratingLabel)
-		ratingLabel->setRating(DkImageLoader::imgMetaData.getRating());
+	controller->updateRating(DkImageLoader::imgMetaData.getRating());
 
 	thumbLoaded = true;
 
@@ -1439,7 +1474,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 
 	//topOffset.setX(overviewWindow->width()+10);
 
-	ratingLabel->move(10, height()-ratingLabel->size().height()-10+bottomOffset.y());
 	bottomRightLabel->updatePos(bottomOffset);
 	topLeftLabel->updatePos(topOffset);	// todo: if thumbnails are shown: move/overview move
 	
@@ -1550,27 +1584,16 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 void DkViewPort::setFullScreen(bool fullScreen) {
 
-	if (fullScreen) {
-		player->show(3000);
-		
-		if (DkSettings::GlobalSettings::showInfo) {
-			controller->getFileInfoLabel()->show();	// TODO: migrate to controller?
-			ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
-		}
-		else
-			controller->getFileInfoLabel()->hide();
+	controller->setFullScreen(fullScreen);
 
-		// TODO: add to controller
-		//filePreview->hide();
-		//metaDataInfo->hide();
+	if (fullScreen) {
+		player->show(3000);		
 		toggleLena();
 	}
 	else {
 		player->hide();
 		player->play(false);
-		ratingLabel->block(false);
 		toggleLena();
-		controller->getFileInfoLabel()->hide();
 	}
 }
 
@@ -1680,15 +1703,9 @@ void DkViewPort::settingsChanged() {
 	//	ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
 }
 
-void DkViewPort::updateRating(int rating) {
-	this->rating = rating;
-	
-	// TODO: migrate?!
-	if (controller->getFileInfoLabel())
-		controller->getFileInfoLabel()->updateRating(rating);
-}
-
 void DkViewPort::unloadImage() {
+
+	int rating = controller->getRating();
 
 	// TODO: if image is not saved... ask user?! -> resize & crop
 	if (!imgQt.isNull() && loader && rating != -1 && rating != loader->getMetaData().getRating()) 
@@ -1696,12 +1713,6 @@ void DkViewPort::unloadImage() {
 
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 
-	//if (!thumbLoaded) { 
-	//	qDebug() << "saving image matrix...";
-	//	oldImgViewRect = imgViewRect;
-	//	oldWorldMatrix = worldMatrix;
-	//	oldImgMatrix = imgMatrix;
-	//}
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool silent) {

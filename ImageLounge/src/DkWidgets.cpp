@@ -582,7 +582,10 @@ void DkFilePreview::indexDir(bool force) {
 // DkOverview --------------------------------------------------------------------
 DkOverview::DkOverview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
+	setObjectName("DkOverview");
 	this->parent = parent;
+	setMinimumSize(0, 0);
+	setMaximumSize(200, 200);
 }
 
 void DkOverview::paintEvent(QPaintEvent *event) {
@@ -652,7 +655,6 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 
 		if (event->modifiers() == DkSettings::GlobalSettings::altMod)
 			emit sendTransformSignal();
-
 	}
 
 }
@@ -676,18 +678,13 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 
 void DkOverview::resizeEvent(QResizeEvent* event) {
 
-	//if (parent)
-	//	setMaximumWidth((float)parent->width()*0.15f);
-
-	qDebug() << "resizing overview...";
-
-	if (parent) {
-		setMinimumWidth((float)parent->width()*0.15f);
-		setMinimumHeight((float)parent->height()*0.15f);
-	}
-
 	QSizeF newSize = event->size();
 	newSize.setHeight(newSize.width() * viewPortRect.height()/viewPortRect.width());
+
+	// in rare cases, the window won't be resized if width = maxWidth & height is < 1
+	if (newSize.height() < 1)
+		newSize.setWidth(0);
+	
 	resize(newSize.toSize());
 
 	DkWidget::resizeEvent(event);

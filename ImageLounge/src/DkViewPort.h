@@ -184,6 +184,8 @@ public:
 	DkControlWidget(DkViewPort *parent = 0, Qt::WFlags flags = 0);
 	virtual ~DkControlWidget() {};
 
+	void setFullScreen(bool fullscreen);
+
 	DkFilePreview* getFilePreview() {
 		return filePreview;
 	}
@@ -200,6 +202,10 @@ public:
 		return fileInfoLabel;
 	}
 
+	int getRating() {
+		return rating;
+	}
+
 	void stopLabels();
 
 public slots:
@@ -210,6 +216,7 @@ public slots:
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
 	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
+	void updateRating(int rating);
 
 	void update();
 
@@ -232,13 +239,12 @@ protected:
 	
 	DkViewPort* viewport;
 
-	QWidget* upperLeft;		// contains overview + upperLeft label
-	QWidget* lowerRight;	// contains fileInfo + histogram?!
-
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
 	DkOverview* overviewWindow;
+	
 	DkFileInfoLabel* fileInfoLabel;
+	DkRatingLabelBg* ratingLabel;
 
 	DkDelayedMessage* delayedInfo;
 	DkDelayedInfo* delayedSpinner;
@@ -251,6 +257,7 @@ protected:
 	QLabel* wheelButton;
 
 	QPointF enterPos;
+	int rating;
 
 };
 
@@ -411,7 +418,6 @@ public slots:
 	void tcpSendImage();
 	
 	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
-	void updateRating(int rating);
 	
 	// file actions
 	void loadFile(QFileInfo file, bool silent = false);
@@ -463,7 +469,6 @@ protected:
 	DkInfoLabel* topLeftLabel;
 
 	DkPlayer* player;
-	DkRatingLabelBg* ratingLabel;
 
 	DkEditableRect* editRect;
 
@@ -474,8 +479,6 @@ protected:
 	QRectF cornerPos;
 	float overviewSize;
 	float overviewMargin;
-
-	int rating;
 
 	// functions
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
