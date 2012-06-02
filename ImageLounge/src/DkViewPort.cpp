@@ -39,6 +39,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	// thumbnails, metadata
 	filePreview = new DkFilePreview(this, flags);
 	metaDataInfo = new DkMetaDataInfo(this);
+	overviewWindow = new DkOverview(this);
 
 	// file info - overview
 	fileInfoLabel = new DkFileInfoLabel(this);
@@ -80,17 +81,7 @@ void DkControlWidget::init() {
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	//centerLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
-
-	//// overview widget
-	//QWidget* ow = new QWidget();
-	//ow->setMinimumSize(0,0);
-	//ow->setMaximumSize(250,250);
-	//ow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	overviewWindow = new DkOverview(this);
-	//
-	//QBoxLayout* oLayout = new QBoxLayout(QBoxLayout::TopToBottom, ow);
-	//oLayout->addWidget(overviewWindow);
-	//oLayout->addStretch();
+	overviewWindow->setContentsMargins(10, 10, 0, 0);
 
 	// dummy
 	QWidget* dw = new QWidget();
