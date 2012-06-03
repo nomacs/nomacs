@@ -396,8 +396,6 @@ public:
 	~DkPlayer() {};
 
 	void draw(QPainter* painter);
-	void setGeometry(int x, int y, int w, int h);
-	void setGeometry(const QRect& rect);
 	void setTimeToDisplay(int ms = 1000);
 	void show(int ms = 0);
 
@@ -450,6 +448,7 @@ public slots:
 
 
 protected:
+	void resizeEvent(QResizeEvent *event);
 	void init();
 	bool playing;
 
@@ -457,12 +456,10 @@ protected:
 	QTimer* displayTimer;
 	QTimer* hideTimer;
 
-	QSize maxSize;
-	QSize minSize;
-
 	DkButton* previousButton;
 	DkButton* nextButton;
 	DkButton* playButton;
+	QWidget* container;
 
 	QVector<QAction*> actions;
 

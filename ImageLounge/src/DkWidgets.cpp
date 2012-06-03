@@ -1367,9 +1367,8 @@ DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
 void DkPlayer::init() {
 	
 	// slide show
-	
 	int timeToDisplayPlayer = 3000;
-	timeToDisplay = DkSettings::SlideShowSettings::time*1000;	// TODO: settings
+	timeToDisplay = DkSettings::SlideShowSettings::time*1000;
 	playing = false;
 	displayTimer = new QTimer(this);
 	displayTimer->setInterval(timeToDisplay);
@@ -1380,10 +1379,6 @@ void DkPlayer::init() {
 	hideTimer->setInterval(timeToDisplayPlayer);
 	hideTimer->setSingleShot(true);
 	connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
-
-	// gui
-	int prevNextTopMargin = 10;
-	int spacing = 0;
 
 	actions.resize(1);
 	actions[play_action] = new QAction(tr("play"), this);
@@ -1398,53 +1393,58 @@ void DkPlayer::init() {
 	icon = QPixmap(":/nomacs/img/player-pause.png");
 	QPixmap icon2 = QPixmap(":/nomacs/img/player-play.png");
 	playButton = new DkButton(icon, icon2, tr("play"), this);
-	previousButton->keepAspectRatio = false;
-	playButton->setChecked(false);	// TODO: settings
+	playButton->keepAspectRatio = false;
+	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
 	connect(playButton, SIGNAL(toggled(bool)), this, SLOT(play(bool)));
 
 	icon = QPixmap(":/nomacs/img/player-next.png");
 	nextButton = new DkButton(icon, tr("next"), this);
-	previousButton->keepAspectRatio = false;
+	nextButton->keepAspectRatio = false;
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
 
 	// now add to layout
-	QHBoxLayout *layout = new QHBoxLayout;
-	//layout->setSpacing(-100);	// why is there no negative spacing??
-
+	container = new QWidget(this);
+	QHBoxLayout *layout = new QHBoxLayout(container);
+	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(previousButton);
 	layout->addWidget(playButton);
 	layout->addWidget(nextButton);
 
-	setLayout(layout);
-
-	//maxSize = size();
-	maxSize = QSize(315, 113);	// sorry, but we need to know this...
-	minSize = maxSize * 0.5f;
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	setMinimumSize(15, 5);
+	setMaximumSize(315, 113);
 }
 
-void DkPlayer::setGeometry(int x, int y, int width, int height) {
+void DkPlayer::resizeEvent(QResizeEvent *event) {
 
-	setGeometry(QRect(x, y, width, height));
-}
-
-void DkPlayer::setGeometry(const QRect& rect) {
-
-	if (rect.topLeft() == geometry().topLeft() && rect.width() == geometry().width())
+	if (event->oldSize() == event->size())
 		return;
 
-	QRect r = rect;
+	// always preserve the player's aspect ratio
+	QSizeF s = event->size();
+	QSizeF ms = maximumSize();
+	float aRatio = s.width()/s.height();
+	float amRatio = ms.width()/ms.height();
+	
+	if (aRatio != amRatio && s.width() / amRatio <= s.height()) {
+		s.setHeight(s.width() / amRatio);
 
-	if (rect.width() > maxSize.width())
-		r.setSize(maxSize);
-	if (rect.height() == 0)
-		r.setHeight(r.width()*maxSize.height()/maxSize.width());
+		QRect r = QRect(QPoint(), s.toSize());
+		r.moveBottom(event->size().height()-1);
+		r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
+		container->setGeometry(r);
+	}
+	else {
+		s.setWidth(s.height() * amRatio);
 
-	if (r.width() < minSize.width() || r.height() < minSize.height())
-		r.setSize(minSize);
+		QRect r = QRect(QPoint(), s.toSize());
+		r.moveBottom(event->size().height()-1);
+		r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
+		container->setGeometry(r);
+	}
 
-	QWidget::setGeometry(r);
-
+	QWidget::resizeEvent(event);
 }
 
 void DkPlayer::setTimeToDisplay(int ms) {
@@ -2172,7 +2172,6 @@ void DkMetaDataInfo::resizeEvent(QResizeEvent *resizeW) {
 	setMaximumHeight(exifHeight);
 
 	resize(parent->width(), resizeW->size().height());
-
 	//setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
 	
 	int gw = qMin(gradientWidth, qRound(0.2f*resizeW->size().width()));

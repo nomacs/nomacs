@@ -198,6 +198,10 @@ public:
 		return overviewWindow;
 	}
 
+	DkPlayer* getPlayer() {
+		return player;
+	}
+
 	DkFileInfoLabel* getFileInfoLabel() {
 		return fileInfoLabel;
 	}
@@ -214,6 +218,7 @@ public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
 	void showInfo(bool visible);
+	void showPlayer(bool visible);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -244,7 +249,8 @@ protected:
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
 	DkOverview* overviewWindow;
-	
+	DkPlayer* player;
+
 	DkFileInfoLabel* fileInfoLabel;
 	DkRatingLabelBg* ratingLabel;
 
@@ -382,8 +388,6 @@ public:
 	// getter
 	DkImageLoader* getImageLoader();
 	DkControlWidget* getController();
-	DkPlayer* getPlayer();
-	DkOverview* getOverview();
 	DkEditableRect* getEditableRect();
 	bool isTestLoaded() { return testLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
@@ -409,7 +413,6 @@ public slots:
 	virtual void paintEvent(QPaintEvent* event);
 	void toggleResetMatrix();
 	void toggleShowOverview();
-	void toggleShowPlayer();
 	
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
@@ -469,8 +472,6 @@ protected:
 	DkImageLoader* loader;
 	DkInfoLabel* bottomRightLabel;
 	DkInfoLabel* topLeftLabel;
-
-	DkPlayer* player;
 
 	DkEditableRect* editRect;
 

@@ -602,7 +602,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_player]->setShortcut(QKeySequence(shortcut_show_player));
 	viewActions[menu_view_show_player]->setStatusTip(tr("shows the player or not"));
 	viewActions[menu_view_show_player]->setCheckable(true);
-	connect(viewActions[menu_view_show_player], SIGNAL(triggered()), vp, SLOT(toggleShowPlayer()));
+	connect(viewActions[menu_view_show_player], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPlayer(bool)));
 
 	viewActions[menu_view_show_preview] = new QAction(tr("Sho&w Thumbnails"), this);
 	viewActions[menu_view_show_preview]->setShortcut(QKeySequence(shortcut_open_preview));
@@ -2151,9 +2151,8 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 
 	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-	//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
+	vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 
-	vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 	DkSettings::AppSettings::appMode = 0;
 
@@ -2203,11 +2202,11 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
+		
+		// TODO: add register action to file info
 		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-		//vp->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
-		//vp->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 
-		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 
 		// in frameless, you cannot control if menu is visible...
 		viewActions[menu_view_show_menu]->setEnabled(false);
@@ -2368,9 +2367,10 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
+		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
+		
 		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 
-		vp->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 		vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 
 		initLanClient();

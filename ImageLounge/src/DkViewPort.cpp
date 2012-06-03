@@ -40,6 +40,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	filePreview = new DkFilePreview(this, flags);
 	metaDataInfo = new DkMetaDataInfo(this);
 	overviewWindow = new DkOverview(this);
+	player = new DkPlayer(this);
+	addActions(player->getActions().toList());
 
 	// file info - overview
 	fileInfoLabel = new DkFileInfoLabel(this);
@@ -117,11 +119,19 @@ void DkControlWidget::init() {
 	cwLayout->addWidget(spinnerLabel);
 	cwLayout->addStretch();
 
+	// center player horizontally
+	QWidget* cP = new QWidget();
+	QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
+	cpLayout->setContentsMargins(0,0,0,0);
+	cpLayout->addWidget(player);
+
 	QWidget* center = new QWidget();
 	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
+	cLayout->setContentsMargins(0,0,0,0);
 	cLayout->addStretch();
 	cLayout->addWidget(cW);
 	cLayout->addStretch();
+	cLayout->addWidget(cP);
 	
 	// rating widget
 	QWidget* rw = new QWidget();
@@ -182,16 +192,23 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 	}
 
+	// overview
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
 	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
 
+	// waiting
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
 	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
+	// rating
 	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
 	connect(ratingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
 	connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
+
+	// playing
+	connect(player, SIGNAL(previousSignal(bool)), viewport, SLOT(loadPrevFile(bool)));
+	connect(player, SIGNAL(nextSignal(bool)), viewport, SLOT(loadNextFile(bool)));
 }
 
 void DkControlWidget::update() {
@@ -241,6 +258,17 @@ void DkControlWidget::showInfo(bool visible) {
 	// TODO
 	if (viewport->isFullScreen())
 		DkSettings::GlobalSettings::showInfo = showInfo;
+}
+
+void DkControlWidget::showPlayer(bool visible) {
+
+	if (!player)
+		return;
+
+	if (visible)
+		player->show();
+	else
+		player->hide();
 }
 
 void DkControlWidget::setInfo(QString msg, int time, int location) {
@@ -323,10 +351,13 @@ void DkControlWidget::setFullScreen(bool fullscreen) {
 
 		filePreview->hide();
 		metaDataInfo->hide();
+		player->show(3000);		
 	}
 	else {
 		ratingLabel->block(false);
 		fileInfoLabel->hide();
+		player->hide();
+		player->play(false);
 	}
 }
 
@@ -907,9 +938,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), this, SLOT(cropImage(DkRotatingRect)));
 	
-	player = new DkPlayer(this);
-	addActions(player->getActions().toList());
-
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
 
@@ -927,9 +955,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	
-	connect(player, SIGNAL(previousSignal(bool)), this, SLOT(loadPrevFile(bool)));
-	connect(player, SIGNAL(nextSignal(bool)), this, SLOT(loadNextFile(bool)));
-
 	qDebug() << "viewer created...";
 
 	//// >DIR:  [7.4.2011 diem]
@@ -1031,9 +1056,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	updateImageMatrix();
 
-	//emit windowTitleSignal(QFileInfo(), imgQt.size());	// not needed?!
-	player->startTimer();
-
+	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(imgQt);
 
 	// TODO: this is a fast fix
@@ -1123,7 +1146,7 @@ void DkViewPort::fileNotLoaded(QFileInfo file) {
 	qDebug() << "starting timer over again...";
 
 	// things todo if a file was not loaded...
-	player->startTimer();
+	controller->getPlayer()->startTimer();
 }
 
 QPoint DkViewPort::newCenter(QSize s) {
@@ -1136,16 +1159,9 @@ QPoint DkViewPort::newCenter(QSize s) {
 
 void DkViewPort::toggleShowOverview() {
 
+	// TODO: add to controller!
 	DkSettings::GlobalSettings::showOverview = !DkSettings::GlobalSettings::showOverview;
 	update();
-}
-
-void DkViewPort::toggleShowPlayer() {
-
-	if (player->isVisible())
-		player->hide();
-	else
-		player->show();
 }
 
 void DkViewPort::zoom(float factor, QPointF center) {
@@ -1410,22 +1426,6 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	else
 		controller->getOverview()->hide();
 
-	int offset = 10;//(metaDataInfo->isVisible()) ? metaDataInfo->height()+10 : 10;
-
-
-	// shouldn't we do this in resize??
-	if (player) player->setGeometry(width()/2-player->width()/2, height()-player->height()-offset, width()/3, 0);
-
-	// the labels must not be 0 !!
-	//if (!imgQt.isNull()) centerLabel->show();
-	
-	// TODO: correct this...
-	/*if (bottomRightLabel && parent && (!parent->isFullScreen() || imgQt.isNull()))*/ bottomRightLabel->hide();
-	//if (titleInfoLabel && parent && (!parent->isFullScreen() || imgQt.isNull())) titleInfoLabel->hide();
-
-	//if (!mouseTrace.empty())
-	//	drawPolygon(&painter, &mouseTrace);
-
 	painter.end();
 
 	// propagate
@@ -1601,16 +1601,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 void DkViewPort::setFullScreen(bool fullScreen) {
 
 	controller->setFullScreen(fullScreen);
-
-	if (fullScreen) {
-		player->show(3000);		
-		toggleLena();
-	}
-	else {
-		player->hide();
-		player->play(false);
-		toggleLena();
-	}
+	toggleLena();
 }
 
 void DkViewPort::getPixelInfo(const QPoint& pos) {
@@ -1929,11 +1920,6 @@ DkImageLoader* DkViewPort::getImageLoader() {
 DkControlWidget* DkViewPort::getController() {
 	
 	return controller;
-}
-
-DkPlayer* DkViewPort::getPlayer() {
-
-	return player;
 }
 
 DkEditableRect* DkViewPort::getEditableRect() {
