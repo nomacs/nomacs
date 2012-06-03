@@ -422,8 +422,6 @@ public slots:
 	void tcpShowConnections(QList<DkPeer> peers);
 	void tcpSendImage();
 	
-	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
-	
 	// file actions
 	void loadFile(QFileInfo file, bool silent = false);
 	void reloadFile();
@@ -470,18 +468,8 @@ protected:
 
 	DkControlWidget* controller;
 	DkImageLoader* loader;
-	DkInfoLabel* bottomRightLabel;
-	DkInfoLabel* topLeftLabel;
 
 	DkEditableRect* editRect;
-
-	QPoint bottomOffset;
-	QPoint topOffset;
-
-	// overview rendering
-	QRectF cornerPos;
-	float overviewSize;
-	float overviewMargin;
 
 	// functions
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
@@ -518,7 +506,6 @@ public slots:
 	virtual void resetView();
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void moveView(QPointF);
-	virtual void setInfo(QString msg, int time = 3000, int location = DkInfoLabel::center_label);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);

@@ -1794,7 +1794,7 @@ void DkNoMacs::showGpsCoordinates() {
 	DkMetaDataInfo* exifData = viewport()->getController()->getMetaDataWidget();
 
 	if (!exifData || exifData->getGPSCoordinates().isEmpty()) {
-		viewport()->setInfo("Sorry, I could not find the GPS coordinates...");
+		viewport()->getController()->setInfo("Sorry, I could not find the GPS coordinates...");
 		return;
 	}
 

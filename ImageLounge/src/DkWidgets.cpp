@@ -619,8 +619,6 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	viewRect = overviewImgMatrix.mapRect(viewRect);
 	viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
 
-	qDebug() << "lm: " << lm << " tm: " << tm;
-
 	//draw the image's location
 	painter.setBrush(bgCol);
 	painter.setPen(QColor(200, 200, 200));
@@ -640,7 +638,6 @@ void DkOverview::mousePressEvent(QMouseEvent *event) {
 	
 	enterPos = event->pos();
 	posGrab = event->pos();
-	// TODO: if it is just clicked -> move the view to that position
 }
 
 void DkOverview::mouseReleaseEvent(QMouseEvent *event) {

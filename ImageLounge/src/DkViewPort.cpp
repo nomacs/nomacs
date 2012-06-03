@@ -80,8 +80,8 @@ void DkControlWidget::init() {
 	setFocus(Qt::TabFocusReason);
 
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	topLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//centerLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
 
@@ -92,13 +92,14 @@ void DkControlWidget::init() {
 	dLayout->addWidget(bottomLabel);
 	dLayout->addStretch();
 
-	// rating & zoom widget
+	// zoom widget
 	QWidget* bw = new QWidget();
 	bw->setMinimumHeight(40);
 	bw->setMaximumHeight(80);
 	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::TopToBottom, bw);
 	zLayout->setContentsMargins(0,0,0,0);
 	zLayout->addWidget(bottomLabel);
+	zLayout->addWidget(topLeftLabel);
 	zLayout->addStretch();
 
 	// left column widget
@@ -125,6 +126,7 @@ void DkControlWidget::init() {
 	cpLayout->setContentsMargins(0,0,0,0);
 	cpLayout->addWidget(player);
 
+	// center column
 	QWidget* center = new QWidget();
 	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
 	cLayout->setContentsMargins(0,0,0,0);
@@ -169,7 +171,7 @@ void DkControlWidget::init() {
 	layout->addWidget(rightWidget, ver_center, right, 1, 1);
 
 	centerLabel->setText("ich bin richtig...", -1);
-
+	topLeftLabel->setText("topLeft label...", -1);
 	show();
 	qDebug() << "controller initialized...";
 }
@@ -317,7 +319,8 @@ void DkControlWidget::stopLabels() {
 
 	//centerLabel->stop();
 	bottomLabel->stop();
-	topLeftLabel->stop();
+	//topLeftLabel->stop();
+	spinnerLabel->stop();
 
 	// TODO: stop spinner
 }
@@ -916,8 +919,6 @@ void DkBaseViewPort::changeCursor() {
 // DkViewPort --------------------------------------------------------------------
 DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent) {
 
-	overviewSize = 0.15f;
-	overviewMargin = 10;
 	testLoaded = false;
 	thumbLoaded = false;
 	visibleStatusbar = false;
@@ -926,10 +927,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
 	loader = 0;
-
-	bottomRightLabel = new DkInfoLabel(this, "", DkInfoLabel::bottom_right_label);
-	topLeftLabel = new DkInfoLabel(this, "", DkInfoLabel::top_left_label);
-	//fileInfoLabel = new DkFileInfoLabel(this);
 	
 	// cropping
 	editRect = new DkEditableRect(QRectF(), this);
@@ -978,12 +975,7 @@ DkViewPort::~DkViewPort() {
 void DkViewPort::release() {
 
 	if (loader) delete loader;
-	if (bottomRightLabel) delete bottomRightLabel;
-	if (topLeftLabel) delete topLeftLabel;
-
 	loader = 0;
-	bottomRightLabel = 0;
-	topLeftLabel = 0;
 }
 
 #ifdef WITH_OPENCV
@@ -1008,8 +1000,6 @@ void DkViewPort::setImage(cv::Mat newImg) {
 		centerImage();
 
 	controller->stopLabels();
-	if (bottomRightLabel) bottomRightLabel->stop();
-	if (topLeftLabel) topLeftLabel->stop();
 
 	update();
 }
@@ -1069,9 +1059,7 @@ void DkViewPort::setImage(QImage newImg) {
 	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
 	controller->stopLabels();
 
-	if (bottomRightLabel) bottomRightLabel->stop();
 	if (editRect->isVisible()) editRect->hide();
-	//if (topLeftLabel) topLeftLabel->stop();	// top left should be always shown	(DkSnippet??)
 	
 	controller->updateRating(DkImageLoader::imgMetaData.getRating());
 
@@ -1115,7 +1103,6 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	//// currently we need to read the metadata twice (not nice either)
 	//DkImageLoader::imgMetaData.setFileName(loader->getFile());
 
-	if (bottomRightLabel) bottomRightLabel->stop();
 	if (editRect->isVisible()) editRect->hide();
 
 	controller->updateRating(DkImageLoader::imgMetaData.getRating());
@@ -1472,33 +1459,13 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 
 	viewportRect = QRect(0, 0, width(), height());
 
-	//// do we still need that??
-	//QSize newSize = imgQt.size();
-	//newSize.scale(event->size(), Qt::IgnoreAspectRatio);
-
-	////resize(newSize);
-
-	//newSize = (event->size()-newSize)/2;
-	//move(newSize.width(), newSize.height());
-
 	// >DIR: diem - bug if zoom factor is large and window becomes small
 	updateImageMatrix();
 	centerImage();
 	changeCursor();
 
 	controller->getOverview()->setViewPortRect(geometry());
-
-	//topOffset.setX(overviewWindow->width()+10);
-
-	bottomRightLabel->updatePos(bottomOffset);
-	topLeftLabel->updatePos(topOffset);	// todo: if thumbnails are shown: move/overview move
 	
-	//if (spinnerLabel) {
-	//	QPointF center = QPointF(width()*0.5f, height()*0.5f);
-	//	center -= QPointF(spinnerLabel->geometry().width()*0.5f, spinnerLabel->geometry().height()*0.5f);
-	//	spinnerLabel->move(center.toPoint());
-	//}
-
 	if (editRect)
 		editRect->resize(width(), height());
 
@@ -1925,20 +1892,6 @@ DkControlWidget* DkViewPort::getController() {
 DkEditableRect* DkViewPort::getEditableRect() {
 
 	return editRect;
-}
-
-void DkViewPort::setInfo(QString msg, int time, int location) {
-
-	if (location == DkInfoLabel::bottom_right_label && bottomRightLabel) {
-		bottomRightLabel->setText(msg, time);
-		bottomRightLabel->updatePos(bottomOffset);
-	}
-	else if (location == DkInfoLabel::top_left_label && topLeftLabel) {
-		topLeftLabel->setText(msg, time);
-		topLeftLabel->updatePos(topOffset);
-	}
-	
-	update();
 }
 
 void DkViewPort::toggleCropImageWidget(bool croping) {
@@ -2412,13 +2365,6 @@ QTransform DkViewPortFrameless::getScaledImageMatrix() {
 	imgMatrix.translate(initialRect.left()/s+sDiff.width(), initialRect.top()/s+sDiff.height());
 
 	return imgMatrix;
-}
-
-void DkViewPortFrameless::setInfo(QString msg, int time, int location) {
-
-	// no center info in frameless view until we fix the labels
-	if (location != DkInfoLabel::center_label)
-		DkViewPort::setInfo(msg, time, location);
 }
 
 DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
