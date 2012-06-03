@@ -1105,7 +1105,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	if (editRect->isVisible()) editRect->hide();
 
-	controller->updateRating(DkImageLoader::imgMetaData.getRating());
+	//controller->updateRating(DkImageLoader::imgMetaData.getRating());
 
 	//if (controller->getFileInfoLabel()->isVisible()) {
 	//	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
@@ -1381,9 +1381,7 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 			newPeers.append(cp.title);
 	}
 
-	//centerLabel->setTextFlags(Qt::AlignVCenter | Qt::TextExpandTabs);
-	//if (centerLabel)	centerLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-	//if (centerLabel)	centerLabel->setText(newPeers, 5000);
+	controller->setInfo(newPeers);
 	update();
 }
 
@@ -1505,7 +1503,6 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 	
 	// should be sent to QWidget?!
 	DkBaseViewPort::mousePressEvent(event);
-	//QGraphicsView::mousePressEvent(event);
 }
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
@@ -1546,7 +1543,6 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// send to parent
 	DkBaseViewPort::mouseMoveEvent(event);
-	//QWidget::mouseMoveEvent(event);
 }
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
@@ -1617,8 +1613,6 @@ void DkViewPort::rotate180() {
 		loader->rotateImage(180);
 
 }
-
-
 
 // file handling --------------------------------------------------------------------
 void DkViewPort::loadLena() {
@@ -1764,7 +1758,6 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 			// directly load images < 100 KB
 			if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
-				qDebug() << "========================= loading full image: " << f.fileName() << " size: " << f.size();
 				unloadImage();
 				loader->loadFile(thumbFile);
 			}
