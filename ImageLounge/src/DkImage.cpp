@@ -504,7 +504,10 @@ void DkImageLoader::clearPath() {
 	qDebug() << "clear path - virtual file: " << virtualFile.fileName() << " real file: " << file.fileName();
 	QMutexLocker locker(&mutex);
 	img = QImage();
-	lastFileLoaded = file;
+	
+	// lastFileLoaded must exist
+	if (file.exists())
+		lastFileLoaded = file;
 	file = QFileInfo();
 	imgMetaData.setFileName(file);	// unload exif too
 	//dir = QDir();
@@ -1023,6 +1026,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 			QString msg = tr("Sorry, I could not load: %1").arg(file.fileName());
 			updateInfoSignal(msg);
 			this->file = lastFileLoaded;	// revert to last file
+			qDebug() << "reverting to: " << lastFileLoaded.fileName();
 			loadDir(this->file.absoluteDir());
 		//}
 		fileNotLoadedSignal(file);

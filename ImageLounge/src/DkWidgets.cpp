@@ -951,83 +951,6 @@ void DkGradientLabel::drawBackground(QPainter* painter) {
 	painter->drawImage(endRect, end);
 }
 
-// DkInfoLabel --------------------------------------------------------------------
-DkInfoLabel::DkInfoLabel(QWidget* parent, const QString& text, int position) : DkLabelBg(parent, text) {
-
-	this->parent = parent;
-	this->position = position;
-	init();
-	hide();
-	
-}
-
-void DkInfoLabel::init() {
-
-	DkLabelBg::init();
-	marginParent = QPoint(10, 10);
-}
-
-void DkInfoLabel::setText(const QString msg, int time) {
-
-	DkLabel::setText(msg, time);
-	updatePos(offset);
-}
-
-void DkInfoLabel::updatePos(const QPoint& offset) {
-
-	if(!parent)
-		return;
-
-	QPoint pos;
-
-	if (position == center_label)
-		pos = QPoint(parent->width()/2-width()/2, parent->height()/2-height()/2);
-	else if (position == bottom_left_label)
-		pos = QPoint(0, parent->height()-height()-50);
-	else if (position == bottom_right_label)
-		pos = QPoint(parent->width() - width() - marginParent.x(), parent->height()-height()-marginParent.y());
-	else if (position == top_left_label)
-		pos = marginParent;
-	//qDebug() << "offset: " << offset;
-
-	this->offset = offset;
-
-	move(pos+offset);
-	controlPosition();
-}
-
-void DkInfoLabel::controlPosition() {
-
-	if (!parent)
-		return;
-
-	// reset label
-	setFixedWidth(-1);
-	QLabel::adjustSize();
-
-	QTransform labelTransform;
-	
-	// check if the label fits to the parent's canvas
-	setFixedWidth( (width() > parent->width()) ? parent->width() : -1);
-	
-	QRectF sRect = labelTransform.mapRect(geometry());
-
-	// check if the label's position fits to the canvas
-	QRectF canvas = parent->geometry();
-	if (sRect.left() < canvas.left())
-		labelTransform.translate((canvas.left()-geometry().left()), 0);
-	if (sRect.right() > canvas.right())
-		labelTransform.translate((canvas.right()-geometry().right()), 0);
-
-	// control vertical position
-	if (sRect.top() < canvas.top())
-		labelTransform.translate(0, canvas.top()-geometry().top());
-	if (sRect.bottom() > canvas.bottom())
-		labelTransform.translate(0, canvas.bottom()-geometry().bottom());
-
-	setGeometry(labelTransform.mapRect(geometry()));
-}
-
 DkButton::DkButton(QWidget* parent) : QPushButton(parent) {
 
 }
@@ -2462,7 +2385,6 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	// this changes the painter -> do it at the end
 	if (!rect.isEmpty()) {
 		
-		// TODO: offset bug when zooming
 		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
 			
 			QPointF cp;
@@ -2517,8 +2439,6 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 		state = rotating;
 	}
 
-	qDebug() << "mousepress edit rect";
-	
 	// we should not need to do this?!
 	setFocus(Qt::ActiveWindowFocusReason);
 
@@ -2527,8 +2447,6 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 }
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
-
-	qDebug() << "edit mouse event...";
 
 	// panning -> redirect to viewport
 	if (event->modifiers() == DkSettings::GlobalSettings::altMod) {

@@ -186,34 +186,6 @@ protected:
 
 };
 
-class DkInfoLabel : public DkLabelBg {
-	Q_OBJECT
-
-public:
-	enum labels {
-		center_label,
-		bottom_left_label,
-		bottom_right_label,
-		top_left_label
-	};
-
-	DkInfoLabel(QWidget* parent = 0, const QString& text = QString(), int position = center_label);
-	~DkInfoLabel() {};
-
-	void setText(const QString msg, int time = 3000);
-	void updatePos(const QPoint& offset = QPoint(0, 0));
-
-private:
-	QWidget* parent;
-	QPoint marginParent;
-	QPoint offset;
-	int position;
-
-	void init();
-	virtual void controlPosition();
-
-};
-
 class DkButton : public QPushButton {
 	Q_OBJECT
 

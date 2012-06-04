@@ -61,7 +61,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	bottomLabel = new DkLabelBg(this, "");
 	bottomLeftLabel = new DkLabelBg(this, "");
 
-
 	// wheel label
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
 	wheelButton = new QLabel(this);
@@ -152,7 +151,6 @@ void DkControlWidget::init() {
 	fw->setContentsMargins(0,0,0,30);
 	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, fw);
 	rwLayout->setContentsMargins(0,0,0,0);
-	//rwLayout->addStretch();
 	rwLayout->addWidget(fileInfoLabel);
 
 	QWidget* rightWidget = new QWidget();
@@ -298,8 +296,6 @@ void DkControlWidget::showPlayer(bool visible) {
 }
 
 void DkControlWidget::showCrop(bool visible) {
-
-	qDebug() << "toggle crop...";
 
 	if (visible && !editWidget->isVisible()) {
 		editWidget->show();
@@ -1506,26 +1502,28 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 }
 
 // mouse events --------------------------------------------------------------------
-//bool DkViewPort::event(QEvent *event) {
-//
-//	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
-//	if (event->type() == QEvent::MouseButtonPress || 
-//		event->type() == QEvent::MouseButtonDblClick || 
-//		event->type() == QEvent::MouseButtonRelease || 
-//		event->type() == QEvent::MouseMove || 
-//		event->type() == QEvent::Wheel || 
-//		event->type() == QEvent::KeyPress || 
-//		event->type() == QEvent::KeyRelease) {
-//
-//		// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
-//		return QWidget::event(event);
-//	}
-//	else
-//		return DkBaseViewPort::event(event);
-//	
-//}
+bool DkViewPort::event(QEvent *event) {
+
+	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
+	if (event->type() == QEvent::MouseButtonPress || 
+		event->type() == QEvent::MouseButtonDblClick || 
+		event->type() == QEvent::MouseButtonRelease || 
+		event->type() == QEvent::MouseMove || 
+		event->type() == QEvent::Wheel || 
+		event->type() == QEvent::KeyPress || 
+		event->type() == QEvent::KeyRelease) {
+
+		// mouse events that double are now fixed, since the viewport is now overlayed by the controller
+		return QWidget::event(event);
+	}
+	else
+		return DkBaseViewPort::event(event);
+	
+}
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
+
+	qDebug() << "[DkViewPort] mouse press...";
 
 	// ok, start panning
 	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
@@ -1916,13 +1914,10 @@ DkControlWidget* DkViewPort::getController() {
 
 void DkViewPort::cropImage(DkRotatingRect rect) {
 
-	qDebug() << "cropping image...";
-
 	QTransform tForm; 
 	QPointF cImgSize;
 
 	rect.getTransform(tForm, cImgSize);
-	qDebug() << "img size: " << cImgSize;
 
 	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f) {
 		controller->setInfo(tr("I cannot crop an image that has 0 px, sorry."));
@@ -1951,7 +1946,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	//imgQt = img;
 	update();
 
-	qDebug() << "croping...";
+	qDebug() << "cropping...";
 }
 
 void DkViewPort::printImage() {
