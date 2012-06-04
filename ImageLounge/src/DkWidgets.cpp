@@ -2369,7 +2369,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 
 	rotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
 	
-	//setAttribute(Qt::WA_MouseTracking);
+	setAttribute(Qt::WA_MouseTracking);
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
 	pen.setCosmetic(true);
@@ -2381,7 +2381,6 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	imgRect = 0;
 
 	oldDiag = DkVector(-1.0f, -1.0f);
-	qDebug() << "my size: " << geometry();
 	
 	for (int idx = 0; idx < 8; idx++) {
 		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
@@ -2528,6 +2527,8 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 }
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
+
+	qDebug() << "edit mouse event...";
 
 	// panning -> redirect to viewport
 	if (event->modifiers() == DkSettings::GlobalSettings::altMod) {

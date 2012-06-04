@@ -59,7 +59,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
 	centerLabel = new DkLabelBg(this, "");
 	bottomLabel = new DkLabelBg(this, "");
-	topLeftLabel = new DkLabelBg(this, "");
+	bottomLeftLabel = new DkLabelBg(this, "");
 
 
 	// wheel label
@@ -83,11 +83,11 @@ void DkControlWidget::init() {
 	setFocus(Qt::TabFocusReason);
 
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	topLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	bottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
-	editRect->setMaximumSize(1920, 1080);
+	editRect->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	editRect->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	// dummy
@@ -104,7 +104,7 @@ void DkControlWidget::init() {
 	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::TopToBottom, bw);
 	zLayout->setContentsMargins(0,0,0,0);
 	zLayout->addWidget(bottomLabel);
-	zLayout->addWidget(topLeftLabel);
+	zLayout->addWidget(bottomLeftLabel);
 	zLayout->addStretch();
 
 	// left column widget
@@ -154,30 +154,44 @@ void DkControlWidget::init() {
 	rwLayout->setContentsMargins(0,0,0,0);
 	//rwLayout->addStretch();
 	rwLayout->addWidget(fileInfoLabel);
-	//rwLayout->addWidget(ratingLabel);
 
 	QWidget* rightWidget = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
 	lrLayout->addStretch();
-	//lrLayout->addWidget(dw);
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
 
+	// init both main widgets
+	hudWidget = new QWidget();
+	editWidget = new QWidget();
+	editWidget->hide();
+
 	// global controller layout
-	QGridLayout* layout = new QGridLayout(this);
-	layout->setContentsMargins(0,0,0,0);
+	QGridLayout* hudLayout = new QGridLayout(hudWidget);
+	hudLayout->setContentsMargins(0,0,0,0);
 
 	// add elements
-	layout->addWidget(filePreview, top, left, 1, hor_pos_end);
-	layout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
-	layout->addWidget(leftWidget, ver_center, left, 1, 1);
-	layout->addWidget(center, ver_center, hor_center, 1, 1);
-	layout->addWidget(rightWidget, ver_center, right, 1, 1);
-	layout->addWidget(editRect, top, left, ver_pos_end, hor_pos_end);
+	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
+	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
+	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
+	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
+	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
+		
+	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
+	QHBoxLayout* editLayout = new QHBoxLayout(editWidget);
+	editLayout->setContentsMargins(0,0,0,0);
+	editLayout->addWidget(editRect);
 
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0,0,0,0);
+	layout->addWidget(hudWidget);
+	layout->addWidget(editWidget);
+
+	// TODO: remove...
 	centerLabel->setText("ich bin richtig...", -1);
-	topLeftLabel->setText("topLeft label...", -1);
+	bottomLeftLabel->setText("topLeft label...", -1);
+
 	show();
 	qDebug() << "controller initialized...";
 }
@@ -283,16 +297,23 @@ void DkControlWidget::showPlayer(bool visible) {
 		player->hide();
 }
 
-void DkControlWidget::toggleCropImageWidget(bool croping) {
+void DkControlWidget::showCrop(bool visible) {
 
-	if (croping) {
+	qDebug() << "toggle crop...";
+
+	if (visible && !editWidget->isVisible()) {
+		editWidget->show();
+		hudWidget->hide();
+
 		editRect->setImageRect(&viewport->getImageViewRect());
 		editRect->reset();
-		//editRect->resize(width(), height());
 		editRect->show();
 	}
-	else
+	else if (!visible && editWidget->isVisible()) {
+		editWidget->hide();
+		hudWidget->show();
 		editRect->hide();
+	}
 
 }
 
@@ -302,8 +323,8 @@ void DkControlWidget::setInfo(QString msg, int time, int location) {
 		centerLabel->setText(msg, time);
 	else if (location == bottom_left_label && bottomLabel)
 		bottomLabel->setText(msg, time);
-	else if (location == top_left_label && topLeftLabel)
-		topLeftLabel->setText(msg, time);
+	else if (location == top_left_label && bottomLeftLabel)
+		bottomLeftLabel->setText(msg, time);
 
 	update();
 }
@@ -345,7 +366,7 @@ void DkControlWidget::stopLabels() {
 	//topLeftLabel->stop();
 	spinnerLabel->stop();
 
-	editRect->hide();
+	showCrop(false);
 }
 
 void DkControlWidget::settingsChanged() {

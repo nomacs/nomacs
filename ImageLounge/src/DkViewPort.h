@@ -223,7 +223,7 @@ public slots:
 	void showMetaData(bool visible);
 	void showInfo(bool visible);
 	void showPlayer(bool visible);
-	void toggleCropImageWidget(bool croping);
+	void showCrop(bool visible);
 
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
@@ -249,7 +249,9 @@ protected:
 	void init();
 	void connectWidgets();
 
-	
+	QWidget* editWidget;
+	QWidget* hudWidget;
+
 	DkViewPort* viewport;
 	DkEditableRect* editRect;
 
@@ -267,7 +269,7 @@ protected:
 	DkAnimationLabel* spinnerLabel;
 	DkLabelBg* centerLabel;
 	DkLabelBg* bottomLabel;
-	DkLabelBg* topLeftLabel;
+	DkLabelBg* bottomLeftLabel;
 
 	QLabel* wheelButton;
 
