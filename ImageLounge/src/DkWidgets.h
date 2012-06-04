@@ -343,7 +343,6 @@ public:
 	DkRatingLabel* getRatingLabel();
 
 protected:
-	QPoint marginParent;
 	QPoint offset;
 	QFileInfo file;
 

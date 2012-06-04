@@ -149,9 +149,10 @@ void DkControlWidget::init() {
 	// right column
 	QWidget* fw = new QWidget();
 	fw->setContentsMargins(0,0,0,30);
-	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::LeftToRight, fw);
+	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::RightToLeft, fw);
 	rwLayout->setContentsMargins(0,0,0,0);
 	rwLayout->addWidget(fileInfoLabel);
+	rwLayout->addStretch();
 
 	QWidget* rightWidget = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
@@ -186,9 +187,9 @@ void DkControlWidget::init() {
 	layout->addWidget(hudWidget);
 	layout->addWidget(editWidget);
 
-	// TODO: remove...
-	centerLabel->setText("ich bin richtig...", -1);
-	bottomLeftLabel->setText("topLeft label...", -1);
+	//// TODO: remove...
+	//centerLabel->setText("ich bin richtig...", -1);
+	//bottomLeftLabel->setText("topLeft label...", -1);
 
 	show();
 	qDebug() << "controller initialized...";
@@ -270,7 +271,7 @@ void DkControlWidget::showInfo(bool visible) {
 
 	if (fileInfoLabel && visible && !fileInfoLabel->isVisible()) {
 		fileInfoLabel->show();
-		ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
+		ratingLabel->block(fileInfoLabel->isVisible());
 		showInfo = true;
 	}
 	else {
@@ -367,8 +368,10 @@ void DkControlWidget::stopLabels() {
 
 void DkControlWidget::settingsChanged() {
 
-	if (fileInfoLabel && fileInfoLabel->isVisible())
-		fileInfoLabel->show();
+	if (fileInfoLabel && fileInfoLabel->isVisible()) {
+		showInfo(false);	// just a hack but all states are preserved this way
+		showInfo(true);
+	}
 
 }
 
@@ -1693,11 +1696,6 @@ void DkViewPort::settingsChanged() {
 	ctrlMod = DkSettings::GlobalSettings::ctrlMod;
 
 	controller->settingsChanged();
-	// TODO: add to controller
-	//// update the title label
-
-	//if (parent->isFullScreen())
-	//	ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
 }
 
 void DkViewPort::unloadImage() {
