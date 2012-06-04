@@ -36,6 +36,9 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 	rating = -1;
 	
+	// cropping
+	editRect = new DkEditableRect(QRectF(), this);
+
 	// thumbnails, metadata
 	filePreview = new DkFilePreview(this, flags);
 	metaDataInfo = new DkMetaDataInfo(this);
@@ -84,6 +87,8 @@ void DkControlWidget::init() {
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
+	editRect->setMaximumSize(1920, 1080);
+	editRect->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	// dummy
 	QWidget* dw = new QWidget();
@@ -169,6 +174,7 @@ void DkControlWidget::init() {
 	layout->addWidget(leftWidget, ver_center, left, 1, 1);
 	layout->addWidget(center, ver_center, hor_center, 1, 1);
 	layout->addWidget(rightWidget, ver_center, right, 1, 1);
+	layout->addWidget(editRect, top, left, ver_pos_end, hor_pos_end);
 
 	centerLabel->setText("ich bin richtig...", -1);
 	topLeftLabel->setText("topLeft label...", -1);
@@ -211,6 +217,10 @@ void DkControlWidget::connectWidgets() {
 	// playing
 	connect(player, SIGNAL(previousSignal(bool)), viewport, SLOT(loadPrevFile(bool)));
 	connect(player, SIGNAL(nextSignal(bool)), viewport, SLOT(loadNextFile(bool)));
+
+	// cropping
+	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), viewport, SLOT(cropImage(DkRotatingRect)));
+
 }
 
 void DkControlWidget::update() {
@@ -273,6 +283,19 @@ void DkControlWidget::showPlayer(bool visible) {
 		player->hide();
 }
 
+void DkControlWidget::toggleCropImageWidget(bool croping) {
+
+	if (croping) {
+		editRect->setImageRect(&viewport->getImageViewRect());
+		editRect->reset();
+		//editRect->resize(width(), height());
+		editRect->show();
+	}
+	else
+		editRect->hide();
+
+}
+
 void DkControlWidget::setInfo(QString msg, int time, int location) {
 
 	if (location == center_label && centerLabel)
@@ -317,12 +340,12 @@ void DkControlWidget::setSpinnerDelayed(bool start, int time) {
 
 void DkControlWidget::stopLabels() {
 
-	//centerLabel->stop();
+	centerLabel->stop();
 	bottomLabel->stop();
 	//topLeftLabel->stop();
 	spinnerLabel->stop();
 
-	// TODO: stop spinner
+	editRect->hide();
 }
 
 void DkControlWidget::settingsChanged() {
@@ -927,14 +950,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
 	loader = 0;
-	
-	// cropping
-	editRect = new DkEditableRect(QRectF(), this);
-	editRect->setWorldTransform(&worldMatrix);
-	editRect->setImageTransform(&imgMatrix);
-	
-	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), this, SLOT(cropImage(DkRotatingRect)));
-	
+			
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
 
@@ -948,7 +964,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	controller->show();
 
 	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
-	
+	controller->getEditRect()->setWorldTransform(&worldMatrix);
+	controller->getEditRect()->setImageTransform(&imgMatrix);
+
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	
@@ -1058,8 +1076,6 @@ void DkViewPort::setImage(QImage newImg) {
 	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
 	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
 	controller->stopLabels();
-
-	if (editRect->isVisible()) editRect->hide();
 	
 	controller->updateRating(DkImageLoader::imgMetaData.getRating());
 
@@ -1102,8 +1118,6 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
 	//// currently we need to read the metadata twice (not nice either)
 	//DkImageLoader::imgMetaData.setFileName(loader->getFile());
-
-	if (editRect->isVisible()) editRect->hide();
 
 	//controller->updateRating(DkImageLoader::imgMetaData.getRating());
 
@@ -1464,9 +1478,6 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 
 	controller->getOverview()->setViewPortRect(geometry());
 	
-	if (editRect)
-		editRect->resize(width(), height());
-
 	controller->resize(width(), height());
 	qDebug() << "controller geometry: " << controller->geometry();
 
@@ -1474,24 +1485,24 @@ void DkViewPort::resizeEvent(QResizeEvent *event) {
 }
 
 // mouse events --------------------------------------------------------------------
-bool DkViewPort::event(QEvent *event) {
-
-	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
-	if (event->type() == QEvent::MouseButtonPress || 
-		event->type() == QEvent::MouseButtonDblClick || 
-		event->type() == QEvent::MouseButtonRelease || 
-		event->type() == QEvent::MouseMove || 
-		event->type() == QEvent::Wheel || 
-		event->type() == QEvent::KeyPress || 
-		event->type() == QEvent::KeyRelease) {
-
-		// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
-		return QWidget::event(event);
-	}
-	else
-		return DkBaseViewPort::event(event);
-	
-}
+//bool DkViewPort::event(QEvent *event) {
+//
+//	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
+//	if (event->type() == QEvent::MouseButtonPress || 
+//		event->type() == QEvent::MouseButtonDblClick || 
+//		event->type() == QEvent::MouseButtonRelease || 
+//		event->type() == QEvent::MouseMove || 
+//		event->type() == QEvent::Wheel || 
+//		event->type() == QEvent::KeyPress || 
+//		event->type() == QEvent::KeyRelease) {
+//
+//		// TODO: this fixes the missing events from QGraphicsView but: it calls events twice if the source is the viewport itself!!
+//		return QWidget::event(event);
+//	}
+//	else
+//		return DkBaseViewPort::event(event);
+//	
+//}
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
@@ -1880,24 +1891,6 @@ DkImageLoader* DkViewPort::getImageLoader() {
 DkControlWidget* DkViewPort::getController() {
 	
 	return controller;
-}
-
-DkEditableRect* DkViewPort::getEditableRect() {
-
-	return editRect;
-}
-
-void DkViewPort::toggleCropImageWidget(bool croping) {
-
-	if (croping) {
-		editRect->setImageRect(&imgViewRect);
-		editRect->reset();
-		editRect->resize(width(), height());
-		editRect->show();
-	}
-	else
-		editRect->hide();
-
 }
 
 void DkViewPort::cropImage(DkRotatingRect rect) {

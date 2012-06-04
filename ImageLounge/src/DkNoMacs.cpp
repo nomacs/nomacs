@@ -519,7 +519,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_crop]->setStatusTip(tr("cut the current image"));
 	editActions[menu_edit_crop]->setCheckable(true);
 	editActions[menu_edit_crop]->setChecked(false);
-	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp, SLOT(toggleCropImageWidget(bool)));
+	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp->getController(), SLOT(toggleCropImageWidget(bool)));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
@@ -2152,8 +2152,8 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 	vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
+	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
 
-	vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
 	DkSettings::AppSettings::appMode = 0;
 
 	initLanClient();
@@ -2368,10 +2368,8 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		
 		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-
-		vp->getEditableRect()->registerAction(editActions[menu_edit_crop]);
+		vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
 
 		initLanClient();
 		emit sendTitleSignal(windowTitle());

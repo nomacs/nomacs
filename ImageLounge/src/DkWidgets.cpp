@@ -646,7 +646,6 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 
 	if (dxy.manhattanLength() < 4) {
 		// move to the current position
-		// now render the current view
 		QRectF viewRect = viewPortRect;
 		viewRect = worldMatrix->inverted().mapRect(viewRect);
 		viewRect = imgMatrix->inverted().mapRect(viewRect);

@@ -210,6 +210,10 @@ public:
 		return rating;
 	}
 
+	DkEditableRect* getEditRect() {
+		return editRect;
+	}
+
 	void stopLabels();
 
 	void settingsChanged();
@@ -219,6 +223,8 @@ public slots:
 	void showMetaData(bool visible);
 	void showInfo(bool visible);
 	void showPlayer(bool visible);
+	void toggleCropImageWidget(bool croping);
+
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -245,6 +251,7 @@ protected:
 
 	
 	DkViewPort* viewport;
+	DkEditableRect* editRect;
 
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
@@ -388,7 +395,6 @@ public:
 	// getter
 	DkImageLoader* getImageLoader();
 	DkControlWidget* getController();
-	DkEditableRect* getEditableRect();
 	bool isTestLoaded() { return testLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
 		this->visibleStatusbar = visibleStatusbar;
@@ -438,7 +444,6 @@ public slots:
 	void loadLena();
 	void unloadImage();
 	void fileNotLoaded(QFileInfo file);
-	void toggleCropImageWidget(bool croping);
 	void cropImage(DkRotatingRect rect);
 
 	virtual void updateImage();
@@ -452,7 +457,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void wheelEvent(QWheelEvent *event);
-	virtual bool event(QEvent *event);
+	//virtual bool event(QEvent *event);
 
 	QFileInfo thumbFile;
 	bool thumbLoaded;
@@ -468,8 +473,6 @@ protected:
 
 	DkControlWidget* controller;
 	DkImageLoader* loader;
-
-	DkEditableRect* editRect;
 
 	// functions
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
