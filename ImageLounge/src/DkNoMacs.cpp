@@ -2155,6 +2155,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 	vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
+	//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 
 	DkSettings::AppSettings::appMode = 0;
 
@@ -2205,7 +2206,8 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		
+		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
+
 		// TODO: add register action to file info
 		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 

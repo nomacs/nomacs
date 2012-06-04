@@ -32,6 +32,7 @@
 #include <QDate>
 #include <QRegExp>
 #include <QStringList>
+#include <QColor>
 
 #include <cmath>
 #include <sstream>
@@ -79,6 +80,11 @@ private:
 	static int debugLevel;
 
 public:
+
+	static QString colorToString(QColor& col) {
+
+		return "QColor(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number(col.alpha()) + ")";
+	}
 
 #ifdef WITH_OPENCV
 	/**

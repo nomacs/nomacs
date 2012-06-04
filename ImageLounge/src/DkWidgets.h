@@ -147,6 +147,7 @@ protected:
 	int fixedWidth;
 	QPoint margin;
 	bool blocked;
+	QColor bgCol;
 
 	virtual void init();
 	virtual void paintEvent(QPaintEvent *event);
@@ -174,7 +175,7 @@ class DkGradientLabel : public DkLabel {
 
 public:
 	DkGradientLabel(QWidget* parent = 0, const QString& text = QString());
-	~DkGradientLabel() {};
+	virtual ~DkGradientLabel() {};
 
 protected:
 	void init();
@@ -183,6 +184,53 @@ protected:
 
 	QImage gradient;
 	QImage end;
+
+};
+
+/**
+ * This label fakes the DkWidget behavior.
+ * (allows for registering actions + fades in and out)
+ * we need this class too, since we cannot derive from DkLabel & DkWidget
+ * at the same time -> both have QObject as common base class.
+ **/
+class DkFadeLabel : public DkLabel {
+	Q_OBJECT
+
+public:
+	DkFadeLabel(QWidget* parent = 0, const QString& text = QString());
+	virtual ~DkFadeLabel() {};
+
+	void registerAction(QAction* action) {
+		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+	};
+
+	void block(bool blocked) {
+		this->blocked = blocked;
+		setVisible(false);
+	};
+
+signals:
+	void visibleSignal(bool visible);
+
+public slots:
+	void show();
+	void hide();
+	void setVisible(bool visible);
+
+	void animateOpacityUp();
+	void animateOpacityDown();
+
+protected:
+
+	QColor bgCol;
+	bool blocked;
+	bool hiding;
+	bool showing;
+
+	QGraphicsOpacityEffect *opacityEffect;
+
+	// functions
+	void init();
 
 };
 
@@ -244,7 +292,6 @@ public:
 		rating = newRating;
 		updateRating();
 		emit newRatingSignal(rating);
-		qDebug() <<"rating changed (old)...\n";
 	};
 
 	int getRating() {
@@ -325,6 +372,7 @@ protected:
 	virtual void paintEvent(QPaintEvent *event);
 };
 
+// TODO: check why it's not working with DkFadeLabel
 class DkFileInfoLabel : public DkLabel {
 	Q_OBJECT
 
@@ -333,12 +381,10 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	//void updatePos(const QPoint& pos = QPoint(-1, -1));
 	void updateInfo(const QFileInfo& file, const QString& date, const int rating);
 	void updateTitle(const QFileInfo& file);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
-	//void adjustSize();
 	void setVisible(bool visible);
 	DkRatingLabel* getRatingLabel();
 
@@ -351,8 +397,9 @@ protected:
 	QLabel* title;
 	QLabel* date;
 	DkRatingLabel* rating;
-	
-	//void paintEvent(QPaintEvent *event);
+	int minWidth;
+
+	void updateWidth();
 };
 
 class DkPlayer : public DkWidget {
