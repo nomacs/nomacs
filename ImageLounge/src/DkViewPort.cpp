@@ -159,6 +159,7 @@ void DkControlWidget::init() {
 	QWidget* rightWidget = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
+	//lrLayout->addWidget(imageHistogram);	//TODO: tim uncomment this line
 	lrLayout->addStretch();
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
@@ -192,7 +193,7 @@ void DkControlWidget::init() {
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
 	//bottomLeftLabel->setText("topLeft label...", -1);
-	spinnerLabel->show();
+	//spinnerLabel->show();
 
 	show();
 	qDebug() << "controller initialized...";
