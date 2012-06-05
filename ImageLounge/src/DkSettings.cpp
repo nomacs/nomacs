@@ -751,18 +751,12 @@ void DkDisplaySettingsWidget::init() {
 
 	cbInvertZoom->setChecked(DkSettings::DisplaySettings::invertZoom);
 	cbKeepZoom->setChecked(DkSettings::DisplaySettings::keepZoom);
-	setHighlightColor(DkSettings::DisplaySettings::highlightColor);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::DisplaySettings::thumbSize);
 	cbSaveThumb->setChecked(DkSettings::DisplaySettings::saveThumb);
 	interpolateWidget->setSpinBoxValue(DkSettings::DisplaySettings::interpolateZoomLevel);
 	cbShowMenu->setChecked(DkSettings::AppSettings::showMenuBar);
 	cbShowStatusbar->setChecked(DkSettings::AppSettings::showStatusBar);
 	cbShowToolbar->setChecked(DkSettings::AppSettings::showToolBar);
-
-	connect(highlightColorButton, SIGNAL(clicked()), this, SLOT(highlightButtonClicked()));
-	connect(highlightColorResetButton, SIGNAL(clicked()), this, SLOT(resetHighlightColor()));
-	connect(colorDialog, SIGNAL(accepted()), this, SLOT(highlightDialogClosed()));
-
 }
 
 void DkDisplaySettingsWidget::createLayout() {
@@ -780,25 +774,8 @@ void DkDisplaySettingsWidget::createLayout() {
 	QGroupBox* gbDisplaySettings = new QGroupBox(tr("Display Settings"), this);
 	QGridLayout* gbLayout= new QGridLayout(gbDisplaySettings);
 
-	colorDialog = new QColorDialog(QColor("gray"), this);
-	QWidget* highlightColorWidget = new QWidget(this);
-	QVBoxLayout* highlightVLayout = new QVBoxLayout(highlightColorWidget);
-	highlightVLayout->setContentsMargins(11,0,11,0);
-	highlightColorLabel = new QLabel(tr("Highlight Color:"));
-	highlightColorButton = new QPushButton("", this);
-	highlightColorButton->setFlat(true);
-	highlightColorResetButton = new QPushButton(tr("Reset"), this);
-	highlightVLayout->addWidget(highlightColorLabel);
-
-	QWidget* highlightColWidget = new QWidget(this);
-	QHBoxLayout* highlightHLayout = new QHBoxLayout(highlightColWidget);
-	highlightHLayout->setContentsMargins(11,0,11,0);
-
-	highlightHLayout->addWidget(highlightColorButton);
-	highlightHLayout->addWidget(highlightColorResetButton);
-	highlightHLayout->addStretch();
-
-	highlightVLayout->addWidget(highlightColWidget);
+	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"));
+	highlightColorChooser->setColor(DkSettings::DisplaySettings::highlightColor);
 
 	bgColorChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Background Color"));
 	bgColorChooser->setColor((DkSettings::AppSettings::appMode == DkSettings::mode_frameless) ?
@@ -832,7 +809,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbHbox->addWidget(cbSaveThumb, 0, 1);
 	gbHbox->setColumnStretch(1,5);
 
-	gbLeftLayout->addWidget(highlightColorWidget);
+	gbLeftLayout->addWidget(highlightColorChooser);
 	gbLeftLayout->addWidget(bgColorChooser);
 	gbLeftLayout->addStretch();
 	gbLeftLayout->addWidget(checkBoxWidget);
@@ -861,7 +838,7 @@ void DkDisplaySettingsWidget::writeSettings() {
 
 	DkSettings::DisplaySettings::invertZoom = (cbInvertZoom->isChecked()) ? true : false;
 	DkSettings::DisplaySettings::keepZoom = (cbKeepZoom->isChecked()) ? true : false;
-	DkSettings::DisplaySettings::highlightColor = colorDialog->currentColor();
+	DkSettings::DisplaySettings::highlightColor = highlightColorChooser->getColor();
 	DkSettings::DisplaySettings::thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
 	DkSettings::DisplaySettings::saveThumb = cbSaveThumb->isChecked();
 	DkSettings::DisplaySettings::interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
@@ -869,11 +846,6 @@ void DkDisplaySettingsWidget::writeSettings() {
 	DkSettings::AppSettings::showStatusBar = cbShowStatusbar->isChecked();
 	DkSettings::AppSettings::showToolBar = cbShowToolbar->isChecked();
 
-}
-
-void DkDisplaySettingsWidget::setHighlightColor(QColor newColor) {
-	colorDialog->setCurrentColor(newColor);
-	highlightColorButton->setStyleSheet("QPushButton {background-color: " + newColor.name() + ";border:0px; min-height:24px}");
 }
 
 // DkSlideshowSettingsWidget --------------------------------------------------------------------
@@ -887,16 +859,12 @@ void DkSlideshowSettingsWidget::init() {
 
 	//spFilter->setValue(DkSettings::SlideShowSettings::filter);
 	timeWidget->setSpinBoxValue(DkSettings::SlideShowSettings::time);
-	setBackgroundColor(DkSettings::SlideShowSettings::backgroundColor);
 
 	cbName->setChecked(DkSettings::SlideShowSettings::display.testBit(display_file_name));
 	cbCreationDate->setChecked(DkSettings::SlideShowSettings::display.testBit(display_creation_date));
 	cbRating->setChecked(DkSettings::SlideShowSettings::display.testBit(display_file_rating));
 	cbSilentFullscreen->setChecked(DkSettings::SlideShowSettings::silentFullscreen);
 
-	connect(buttonBackgroundColor, SIGNAL(clicked()), this, SLOT(backgroundButtonClicked()));
-	connect(buttonResetBackground, SIGNAL(clicked()), this, SLOT(resetBackground()));
-	connect(colorDialog, SIGNAL(accepted()), this, SLOT(backgroundDialogClosed()));
 	connect(cbName, SIGNAL(clicked(bool)), this, SLOT(showFileName(bool)));
 	connect(cbCreationDate, SIGNAL(clicked(bool)), this, SLOT(showCreationDate(bool)));
 	connect(cbRating, SIGNAL(clicked(bool)), this, SLOT(showRating(bool)));
@@ -917,23 +885,11 @@ void DkSlideshowSettingsWidget::createLayout() {
 	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen Settings"), this);
 	QHBoxLayout* gbFullscreenLayout = new QHBoxLayout(gbFullscreen);
 
-	colorDialog = new QColorDialog(QColor("gray"), this);
-	QWidget* backgroundWidget = new QWidget(this);
-	QVBoxLayout* backgroundVLayout = new QVBoxLayout(backgroundWidget);
-	backgroundVLayout->setContentsMargins(11,0,11,0);
-	labelBackgroundText = new QLabel(tr("Background color:"), this);
-	buttonBackgroundColor = new QPushButton("");
-	buttonBackgroundColor->setFlat(true);
-	buttonResetBackground = new QPushButton(tr("Reset"), this);
-	backgroundVLayout->addWidget(labelBackgroundText);
+	bgColChooser = new DkColorChooser(QColor(86,86,90), "Background Color: ", this);
+	bgColChooser->setColor(DkSettings::SlideShowSettings::backgroundColor);
 
 	QWidget* backgroundColWidget = new QWidget(this);
 	QHBoxLayout* backgroundLayout = new QHBoxLayout(backgroundColWidget);
-
-	backgroundLayout->addWidget(buttonBackgroundColor);
-	backgroundLayout->addWidget(buttonResetBackground);
-	backgroundLayout->addStretch();
-	backgroundVLayout->addWidget(backgroundColWidget);
 
 	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
 
@@ -951,7 +907,7 @@ void DkSlideshowSettingsWidget::createLayout() {
 	gbLayout->addWidget(cbRating);
 
 	gbSlideShowLayout->addWidget(timeWidget);
-	gbFullscreenLayout->addWidget(backgroundWidget);
+	gbFullscreenLayout->addWidget(bgColChooser);
 	gbFullscreenLayout->addStretch();
 	gbFullscreenLayout->addWidget(cbSilentFullscreen);
 	gbFullscreenLayout->addStretch();
@@ -963,30 +919,13 @@ void DkSlideshowSettingsWidget::createLayout() {
 
 void DkSlideshowSettingsWidget::writeSettings() {
 	DkSettings::SlideShowSettings::time = timeWidget->getSpinBoxValue();
-	DkSettings::SlideShowSettings::backgroundColor = colorDialog->currentColor();
+	DkSettings::SlideShowSettings::backgroundColor = bgColChooser->getColor();
 
 	DkSettings::SlideShowSettings::display.setBit(display_file_name, cbName->isChecked());
 	DkSettings::SlideShowSettings::display.setBit(display_creation_date, cbCreationDate->isChecked());
 	DkSettings::SlideShowSettings::display.setBit(display_file_rating, cbRating->isChecked());
 
 	DkSettings::SlideShowSettings::silentFullscreen = cbSilentFullscreen->isChecked();
-}
-
-void DkSlideshowSettingsWidget::backgroundButtonClicked() {
-	colorDialog->show();
-}
-
-void DkSlideshowSettingsWidget::backgroundDialogClosed() {
-	setBackgroundColor(colorDialog->currentColor());
-}
-
-void DkSlideshowSettingsWidget::setBackgroundColor(QColor newColor) {
-	colorDialog->setCurrentColor(newColor);
-	buttonBackgroundColor->setStyleSheet("QPushButton {background-color: "+ newColor.name()+";border:0px; min-height:24px}");
-}
-
-void DkSlideshowSettingsWidget::resetBackground() {
-	setBackgroundColor(QColor(200, 200, 200));
 }
 
 void DkSlideshowSettingsWidget::showFileName(bool checked) {

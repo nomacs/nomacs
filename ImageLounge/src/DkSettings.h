@@ -321,16 +321,9 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 
 		void writeSettings();
 
-	private slots:
-		void highlightButtonClicked() {colorDialog->show();};
-		void highlightDialogClosed() {setHighlightColor(colorDialog->currentColor());};
-		void resetHighlightColor() {setHighlightColor(QColor(0, 204, 255));};
-
-
 	private:
 		void init();
 		void createLayout();
-		void setHighlightColor(QColor newColor);
 
 		QCheckBox* cbKeepZoom;
 		QCheckBox* cbInvertZoom;
@@ -341,10 +334,7 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbShowToolbar;
 		QCheckBox* cbShowStatusbar;
 
-		QColorDialog* colorDialog;
-		QLabel* highlightColorLabel;
-		QPushButton* highlightColorButton;
-		QPushButton* highlightColorResetButton;
+		DkColorChooser* highlightColorChooser;
 		DkColorChooser* bgColorChooser;
 
 		DkSpinBoxWidget* maximalThumbSizeWidget; 
@@ -373,9 +363,6 @@ Q_OBJECT
 
 
 	private slots:
-		void backgroundButtonClicked();
-		void backgroundDialogClosed();
-		void resetBackground();
 		void showFileName(bool checked);
 		void showCreationDate(bool checked);
 		void showRating(bool checked);
@@ -383,16 +370,11 @@ Q_OBJECT
 	private:
 		void init();
 		void createLayout();
-		void setBackgroundColor(QColor newColor);
 
 		QVBoxLayout* vBoxLayout;
 
 		DkSpinBoxWidget* timeWidget;
-
-		QLabel* labelBackgroundText;
-		QPushButton* buttonBackgroundColor;
-		QPushButton* buttonResetBackground;
-		QColorDialog* colorDialog;
+		DkColorChooser* bgColChooser;
 
 		QGroupBox* gbInfo;
 		QCheckBox* cbCreationDate;

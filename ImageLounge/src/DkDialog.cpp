@@ -159,7 +159,6 @@ void DkJpgDialog::init() {
 	leftSpacing = 40;
 	margin = 10;
 
-
 	colorDialog = new QColorDialog(this);
 	colorDialog->setCurrentColor(Qt::white);
 	connect(colorDialog, SIGNAL(accepted()), this, SLOT(newBgCol()));
@@ -167,7 +166,6 @@ void DkJpgDialog::init() {
 	setWindowTitle("JPG Settings");
 	setFixedSize(600, 500);
 	createLayout();
-
 }
 
 void DkJpgDialog::createLayout() {
