@@ -2511,19 +2511,20 @@ void DkViewPortContrast::setImage(QImage newImg) {
 			imgs = QVector<QImage>(4);
 			vector<Mat> planes;
 			
-			Mat imgUC3;
-
-			int format = imgQt.format();
-			if (format == QImage::Format_RGB888)
-				imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
-			else
-				imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC4, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
+			Mat imgUC3 = DkImage::qImage2Mat(imgQt);
+			//int format = imgQt.format();
+			//if (format == QImage::Format_RGB888)
+			//	imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
+			//else
+			//	imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC4, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
 			split(imgUC3, planes);
 			// Store the 3 channels in a QImage Vector.
 			//Be aware that OpenCV 'swaps' the rgb triplet, hence process it in a descending way:
 			int idx = 1;
 			for (int i = 2; i >= 0; i--) {
 
+				// dirty hack
+				if (i >= (int)planes.size()) i = 0;
 				imgs[idx] = QImage((const unsigned char*)planes[i].data, planes[i].cols, planes[i].rows, planes[i].step,  QImage::Format_Indexed8);
 				imgs[idx] = imgs[idx].copy();
 				idx++;

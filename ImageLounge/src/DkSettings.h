@@ -311,6 +311,7 @@ Q_OBJECT
 
 };
 
+class DkColorChooser;
 
 class DkDisplaySettingsWidget : public DkSettingsWidget {
 	Q_OBJECT	
@@ -344,6 +345,7 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 		QLabel* highlightColorLabel;
 		QPushButton* highlightColorButton;
 		QPushButton* highlightColorResetButton;
+		DkColorChooser* bgColorChooser;
 
 		DkSpinBoxWidget* maximalThumbSizeWidget; 
 		QCheckBox* cbSaveThumb;

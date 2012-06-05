@@ -1110,4 +1110,29 @@ private:
 
 };
 
+class DkColorChooser : public QWidget {
+	Q_OBJECT
+
+public:
+	DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	virtual ~DkColorChooser() {};
+
+	void setColor(QColor& color);
+	QColor getColor();
+
+public slots:
+	void on_resetButton_clicked();
+	void on_colorButton_clicked();
+	void on_colorDialog_accepted();
+
+protected:
+	QColorDialog* colorDialog;
+	QPushButton* colorButton;
+
+	QColor defaultColor;
+	QString text;
+
+	void init();
+};
+
 };

@@ -169,6 +169,7 @@ void DkSettings::load() {
 	DisplaySettings::invertZoom = settings.value("DisplaySettings/invertZoom", DkSettings::DisplaySettings::invertZoom).toBool();
 	DisplaySettings::highlightColor = settings.value("DisplaySettings/highlightColor", DkSettings::DisplaySettings::highlightColor).value<QColor>();
 	DisplaySettings::bgColor = settings.value("DisplaySettings/bgColor", DkSettings::DisplaySettings::bgColor).value<QColor>();
+
 	DisplaySettings::bgColorFrameless = settings.value("DisplaySettings/bgColorFrameless", DkSettings::DisplaySettings::bgColorFrameless).value<QColor>();
 	DisplaySettings::thumbSize = settings.value("DisplaySettings/thumbSize", DkSettings::DisplaySettings::thumbSize).toInt();
 	DisplaySettings::saveThumb = settings.value("DisplaySettings/saveThumb", DkSettings::DisplaySettings::saveThumb).toBool();
@@ -779,8 +780,6 @@ void DkDisplaySettingsWidget::createLayout() {
 	QGroupBox* gbDisplaySettings = new QGroupBox(tr("Display Settings"), this);
 	QGridLayout* gbLayout= new QGridLayout(gbDisplaySettings);
 
-
-
 	colorDialog = new QColorDialog(QColor("gray"), this);
 	QWidget* highlightColorWidget = new QWidget(this);
 	QVBoxLayout* highlightVLayout = new QVBoxLayout(highlightColorWidget);
@@ -790,14 +789,6 @@ void DkDisplaySettingsWidget::createLayout() {
 	highlightColorButton->setFlat(true);
 	highlightColorResetButton = new QPushButton(tr("Reset"), this);
 	highlightVLayout->addWidget(highlightColorLabel);
-
-	QWidget* checkBoxWidget = new QWidget(this);
-	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(checkBoxWidget);
-	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
-	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
-	cbKeepZoom = new QCheckBox(tr("Keep Zoom"), this);
-	vbCheckBoxLayout->addWidget(cbInvertZoom);
-	vbCheckBoxLayout->addWidget(cbKeepZoom);
 
 	QWidget* highlightColWidget = new QWidget(this);
 	QHBoxLayout* highlightHLayout = new QHBoxLayout(highlightColWidget);
@@ -809,6 +800,17 @@ void DkDisplaySettingsWidget::createLayout() {
 
 	highlightVLayout->addWidget(highlightColWidget);
 
+	bgColorChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Background Color"));
+	bgColorChooser->setColor((DkSettings::AppSettings::appMode == DkSettings::mode_frameless) ?
+		DkSettings::DisplaySettings::bgColorFrameless : DkSettings::DisplaySettings::bgColor);
+
+	QWidget* checkBoxWidget = new QWidget(this);
+	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(checkBoxWidget);
+	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
+	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
+	cbKeepZoom = new QCheckBox(tr("Keep Zoom"), this);
+	vbCheckBoxLayout->addWidget(cbInvertZoom);
+	vbCheckBoxLayout->addWidget(cbKeepZoom);
 
 	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
 
@@ -831,6 +833,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbHbox->setColumnStretch(1,5);
 
 	gbLeftLayout->addWidget(highlightColorWidget);
+	gbLeftLayout->addWidget(bgColorChooser);
 	gbLeftLayout->addStretch();
 	gbLeftLayout->addWidget(checkBoxWidget);
 	gbLeftLayout->addStretch();
@@ -850,6 +853,11 @@ void DkDisplaySettingsWidget::createLayout() {
 }
 
 void DkDisplaySettingsWidget::writeSettings() {
+
+	if (DkSettings::AppSettings::appMode == DkSettings::mode_frameless)
+		DkSettings::DisplaySettings::bgColorFrameless = bgColorChooser->getColor();
+	else
+		DkSettings::DisplaySettings::bgColor = bgColorChooser->getColor();
 
 	DkSettings::DisplaySettings::invertZoom = (cbInvertZoom->isChecked()) ? true : false;
 	DkSettings::DisplaySettings::keepZoom = (cbKeepZoom->isChecked()) ? true : false;
@@ -928,7 +936,6 @@ void DkSlideshowSettingsWidget::createLayout() {
 	backgroundVLayout->addWidget(backgroundColWidget);
 
 	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
-
 
 	// display information
 	gbInfo = new QGroupBox(tr("Display Information"));

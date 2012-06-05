@@ -2716,8 +2716,6 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 
 		setVisible(false);
 		setWindowOpacity(0);
-
-		qDebug() << " enter pressed";
 	}
 
 	qDebug() << "key pressed rect";
@@ -2812,6 +2810,73 @@ void DkAnimationLabel::hide() {
 	}
 
 	DkLabel::hide();
+}
+
+DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
+
+	this->defaultColor = defaultColor;
+	this->text = text;
+
+	init();
+
+}
+
+void DkColorChooser::init() {
+
+	colorDialog = new QColorDialog(this);
+	colorDialog->setObjectName("colorDialog");
+	colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
+
+
+	QVBoxLayout* vLayout = new QVBoxLayout(this);
+	vLayout->setContentsMargins(11,0,11,0);
+	
+	QLabel* colorLabel = new QLabel(text);
+	colorButton = new QPushButton("", this);
+	colorButton->setFlat(true);
+	colorButton->setObjectName("colorButton");
+	
+	QPushButton* resetButton = new QPushButton(tr("Reset"), this);
+	resetButton->setObjectName("resetButton");
+	resetButton->setAutoDefault(true);
+
+	QWidget* colWidget = new QWidget(this);
+	QHBoxLayout* hLayout = new QHBoxLayout(colWidget);
+	hLayout->setContentsMargins(11,0,11,0);
+
+	hLayout->addWidget(colorButton);
+	hLayout->addWidget(resetButton);
+	hLayout->addStretch();
+
+	vLayout->addWidget(colorLabel);
+	vLayout->addWidget(colWidget);
+
+	setColor(defaultColor);
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkColorChooser::setColor(QColor& color) {
+
+	colorDialog->setCurrentColor(color);
+	colorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border:0px; min-height:24px}");
+	qDebug() << "QPushButton {background-color: " << DkUtils::colorToString(color) << "; border:0px; min-height:24px}";
+}
+
+QColor DkColorChooser::getColor() {
+	return colorDialog->currentColor();
+}
+
+void DkColorChooser::on_resetButton_clicked() {
+	setColor(defaultColor);
+}
+
+void DkColorChooser::on_colorButton_clicked() {
+	colorDialog->show();
+}
+
+void DkColorChooser::on_colorDialog_accepted() {
+	
+	setColor(colorDialog->currentColor());
 }
 
 }
