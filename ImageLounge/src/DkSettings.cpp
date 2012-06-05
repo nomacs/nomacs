@@ -69,6 +69,8 @@ QStringList DkSettings::GlobalSettings::userAppPaths = QStringList();
 bool DkSettings::DisplaySettings::keepZoom = true;
 bool DkSettings::DisplaySettings::invertZoom = false;
 QColor DkSettings::DisplaySettings::highlightColor = QColor(0, 204, 255);
+QColor DkSettings::DisplaySettings::bgColor = QColor(0,0,0,100);
+QColor DkSettings::DisplaySettings::bgColorFrameless = QColor(0,0,0,180);
 int DkSettings::DisplaySettings::thumbSize = 100; // max seems to be 160 (?!)
 bool DkSettings::DisplaySettings::saveThumb = false;
 int DkSettings::DisplaySettings::interpolateZoomLevel = 200;
@@ -166,6 +168,8 @@ void DkSettings::load() {
 	DisplaySettings::keepZoom = settings.value("DisplaySettings/resetMatrix", DkSettings::DisplaySettings::keepZoom).toBool();
 	DisplaySettings::invertZoom = settings.value("DisplaySettings/invertZoom", DkSettings::DisplaySettings::invertZoom).toBool();
 	DisplaySettings::highlightColor = settings.value("DisplaySettings/highlightColor", DkSettings::DisplaySettings::highlightColor).value<QColor>();
+	DisplaySettings::bgColor = settings.value("DisplaySettings/bgColor", DkSettings::DisplaySettings::bgColor).value<QColor>();
+	DisplaySettings::bgColorFrameless = settings.value("DisplaySettings/bgColorFrameless", DkSettings::DisplaySettings::bgColorFrameless).value<QColor>();
 	DisplaySettings::thumbSize = settings.value("DisplaySettings/thumbSize", DkSettings::DisplaySettings::thumbSize).toInt();
 	DisplaySettings::saveThumb = settings.value("DisplaySettings/saveThumb", DkSettings::DisplaySettings::saveThumb).toBool();
 	DisplaySettings::interpolateZoomLevel = settings.value("DisplaySettings/interpolateZoomlevel", DkSettings::DisplaySettings::interpolateZoomLevel).toInt();
@@ -239,6 +243,8 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/resetMatrix",DisplaySettings::keepZoom);
 	settings.setValue("DisplaySettings/invertZoom",DisplaySettings::invertZoom);
 	settings.setValue("DisplaySettings/highlightColor", DisplaySettings::highlightColor);
+	settings.setValue("DisplaySettings/bgColor", DisplaySettings::bgColor);
+	settings.setValue("DisplaySettings/bgColorFrameless", DisplaySettings::bgColorFrameless);
 	settings.setValue("DisplaySettings/thumbSize", DkSettings::DisplaySettings::thumbSize);
 	settings.setValue("DisplaySettings/saveThumb", DkSettings::DisplaySettings::saveThumb);
 	settings.setValue("DisplaySettings/interpolateZoomlevel", DkSettings::DisplaySettings::interpolateZoomLevel);
@@ -307,6 +313,8 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::DisplaySettings::keepZoom = true;
 	DkSettings::DisplaySettings::invertZoom = false;
 	DkSettings::DisplaySettings::highlightColor = QColor(0, 204, 255);
+	DkSettings::DisplaySettings::bgColor = QColor(0, 0, 0, 100);
+	DkSettings::DisplaySettings::bgColorFrameless = QColor(0, 0, 0, 180);
 	DkSettings::DisplaySettings::thumbSize = 100;
 	DkSettings::DisplaySettings::saveThumb = false;
 	DkSettings::DisplaySettings::interpolateZoomLevel = 200;

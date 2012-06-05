@@ -81,6 +81,7 @@ void DkControlWidget::init() {
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 
+	// some adjustments
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	bottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -88,6 +89,7 @@ void DkControlWidget::init() {
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
 	editRect->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	editRect->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	spinnerLabel->halfSize();
 
 	// dummy
 	QWidget* dw = new QWidget();
@@ -190,6 +192,7 @@ void DkControlWidget::init() {
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
 	//bottomLeftLabel->setText("topLeft label...", -1);
+	spinnerLabel->show();
 
 	show();
 	qDebug() << "controller initialized...";
@@ -233,7 +236,6 @@ void DkControlWidget::connectWidgets() {
 
 	// cropping
 	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), viewport, SLOT(cropImage(DkRotatingRect)));
-
 }
 
 void DkControlWidget::update() {

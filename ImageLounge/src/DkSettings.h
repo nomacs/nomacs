@@ -96,6 +96,8 @@ class DkSettings : public QObject {
 			static bool keepZoom;
 			static bool invertZoom;
 			static QColor highlightColor;
+			static QColor bgColor;
+			static QColor bgColorFrameless;
 			static int thumbSize;
 			static bool saveThumb;
 			static int interpolateZoomLevel;

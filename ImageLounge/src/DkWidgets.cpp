@@ -37,7 +37,10 @@ void DkWidget::init() {
 
 	setMouseTracking(true);
 
-	bgCol = QColor(0, 0, 0, 100);
+	bgCol = (DkSettings::AppSettings::appMode == DkSettings::mode_frameless) ?
+		DkSettings::DisplaySettings::bgColorFrameless :
+		DkSettings::DisplaySettings::bgColor;
+	
 	showing = false;
 	hiding = false;
 	blocked = false;
@@ -51,6 +54,7 @@ void DkWidget::init() {
 
 void DkWidget::show() {
 	
+	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
 	if (!blocked && !showing) {
 		hiding = false;
 		showing = true;
@@ -124,6 +128,7 @@ void DkFilePreview::init() {
 
 	setMouseTracking (true);	//receive mouse event everytime
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+	setObjectName("DkFilePreview");
 	
 	thumbsLoader = 0;
 
@@ -761,7 +766,10 @@ QTransform DkOverview::getScaledImageMatrix() {
 // DkLabel --------------------------------------------------------------------
 DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
-	bgCol = QColor(0,0,0,100);
+	bgCol = (DkSettings::AppSettings::appMode == DkSettings::mode_frameless) ?
+		DkSettings::DisplaySettings::bgColorFrameless :
+		DkSettings::DisplaySettings::bgColor;
+
 	this->parent = parent;
 	this->text = text;
 	init();
@@ -895,7 +903,10 @@ void DkLabel::setTextToLabel() {
 
 DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, text) {
 
-	bgCol = QColor(0,0,0,100);
+	bgCol = (DkSettings::AppSettings::appMode == DkSettings::mode_frameless) ?
+		DkSettings::DisplaySettings::bgColorFrameless :
+		DkSettings::DisplaySettings::bgColor;
+
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
 	
 	setObjectName("DkLabelBg");
@@ -958,7 +969,10 @@ DkFadeLabel::DkFadeLabel(QWidget* parent, const QString& text) : DkLabel(parent,
 
 void DkFadeLabel::init() {
 
-	bgCol = QColor(0, 0, 0, 100);
+	bgCol = (DkSettings::AppSettings::appMode == DkSettings::mode_frameless) ?
+		DkSettings::DisplaySettings::bgColorFrameless :
+		DkSettings::DisplaySettings::bgColor;
+
 	showing = false;
 	hiding = false;
 	blocked = false;
@@ -2402,7 +2416,9 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
 	pen.setCosmetic(true);
-	brush = QColor(0, 0, 0, 90);
+	brush = (DkSettings::AppSettings::appMode == DkSettings::mode_frameless) ?
+		DkSettings::DisplaySettings::bgColorFrameless :
+		DkSettings::DisplaySettings::bgColor;
 
 	state = do_nothing;
 	worldTform = 0;
@@ -2745,7 +2761,8 @@ DkAnimationLabel::~DkAnimationLabel() {
 void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
 	
 	animation = new QMovie(animationPath);
-	
+	margin = QSize(14, 14);
+
 	QSize s = size;
 	if(s.isEmpty()) {
 		animation->jumpToNextFrame();
@@ -2753,7 +2770,7 @@ void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
 		animation->jumpToFrame(0);
 
 		// padding
-		s += QSize(20, 20);
+		s += margin;
 	}
 
 	setFixedSize(s);
@@ -2761,6 +2778,16 @@ void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
 	hide();
 
 	setStyleSheet("QLabel {background-color: " + DkUtils::colorToString(bgCol) + "; border-radius: 10px;}");
+}
+
+void DkAnimationLabel::halfSize() {
+
+	// allows for anti-aliased edges of gif animations
+	if (animation) {
+		QSize s = (size()-margin)*0.5f;
+		animation->setScaledSize(s);
+		setFixedSize(s+margin);
+	}
 }
 
 void DkAnimationLabel::showTimed(int time) {
@@ -2785,88 +2812,6 @@ void DkAnimationLabel::hide() {
 	}
 
 	DkLabel::hide();
-}
-
-
-
-QAnimationLabel::QAnimationLabel(QString animationPath,
-                                 QWidget* parent) : QWidget(parent) {
-	init(animationPath, QSize());
-}
- 
-QAnimationLabel::QAnimationLabel(QString animationPath,
-                                 QSize size,
-                                 QWidget* parent) : QWidget(parent) {
-	init(animationPath, size);
-}
- 
-QAnimationLabel::~QAnimationLabel() {
-	_container->deleteLater();
-	_animation->deleteLater();
-}
- 
-void QAnimationLabel::init(const QString& animationPath,
-                           const QSize& size) {
-	/* We'll create the QMovie for the animation */
-	_animation = new QMovie(animationPath);
-	QSize s = size;
-	/* If the size is empty we'll try to detect it.*/
-	if(s.isEmpty()) {
-		/* Go to the first frame.*/
-		_animation->jumpToNextFrame();
-		/* Take the size from there. */
-		s = _animation->currentPixmap().size();
-		/* Go back to the beginning. */
-		_animation->jumpToFrame(0);
-	}
-	/* We're not automatically shown, so lets hide. */
-	setHidden(true);
-	/* We need a container for the QMovie, let's use QLabel */
-	_container = new DkLabel(this);
-	/*
-	 * We'll set a fixed size to the QLabel
-	 * because we don't want to be resized
-	 */
-	_container->setFixedSize(s);
-	/* To get the movie displayed on the QLabel */
-	_container->setMovie(_animation);
-	/* To get the QLabel displayed we'll use a layout */
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	/* Remove the all the extra space. */
-	layout->setSpacing(0);
-	layout->setMargin(0);
-	/* Add the movie container to the layout */
-	layout->addWidget(_container);
-	/* Set the layout as our layout */
-	setLayout(layout);
-	/* Set our size fixed. */
-	setFixedSize(s);
-}
- 
- 
-void QAnimationLabel::start() {
-	/* Let's check if the movie can be started. */
-	if(!this->_animation.isNull() &&
-	   (this->_animation->state() == QMovie::NotRunning ||
-	    this->_animation->state() == QMovie::Paused)) {
-		/* It can so we'll start the animation... */
-		this->_animation->start();
-		/* ...and reveal ourself. */
-		this->setHidden(false);
-	}
-}
- 
- 
-void QAnimationLabel::stop() {
-	/* Check if the animation can be stopped. */
-	if(!this->_animation.isNull()) {
-		if(this->_animation->state() == QMovie::Running) {
-			/* It can so we'll stop the animation... */
-			this->_animation->stop();
-			/* ...and hide. */
-			this->setHidden(true);
-		}
-	}
 }
 
 }

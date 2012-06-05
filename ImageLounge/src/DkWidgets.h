@@ -1099,47 +1099,15 @@ public:
 
 	virtual void showTimed(int time = 3000);
 	virtual void hide();
+	void halfSize();
 
 private:
 	
+	QSize margin;
 	QPointer<QMovie> animation;
 
 	void init(const QString& animationPath, const QSize& size);
 
-};
-
-  
-/**
- * QAnimationLabel
- * This code is based on: http://www.developer.nokia.com/Community/Wiki/CS001434_-_Creating_a_loading_animation_with_GIF,_QMovie,_and_QLabel
- *
- * Uses animation from the path
- * to display it in a QLabel.
- */
-class QAnimationLabel : public QWidget {
-	Q_OBJECT
-public:
-	QAnimationLabel(QString animationPath,
-	                QWidget* parent);
-	QAnimationLabel(QString animationPath,
-	                QSize size,
-	                QWidget* parent);
-	virtual ~QAnimationLabel();
- 
-	DkLabel* getLabel() {
-		return _container;
-	}
-
-public slots:
-	void start();
-	void stop();
- 
-private:
-	QPointer<DkLabel> _container;
-	QPointer<QMovie> _animation;
- 
-	void init(const QString& animationPath,
-	          const QSize& size);
 };
 
 };
