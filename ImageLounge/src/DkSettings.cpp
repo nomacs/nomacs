@@ -489,6 +489,8 @@ void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
 void DkSettingsDialog::saveSettings() {
 	
 	QString curLanguage = DkSettings::GlobalSettings::language;
+	QColor curBgCol = DkSettings::DisplaySettings::bgColor;
+	QColor curBgColFrameless = DkSettings::DisplaySettings::bgColorFrameless;
 	
 	foreach (DkSettingsWidget* curWidget, widgetList) {
 		curWidget->writeSettings();
@@ -499,7 +501,9 @@ void DkSettingsDialog::saveSettings() {
 	this->close();
 	
 	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
-	if (curLanguage != DkSettings::GlobalSettings::language)
+	if (curLanguage != DkSettings::GlobalSettings::language ||
+		DkSettings::DisplaySettings::bgColor != curBgCol ||
+		DkSettings::DisplaySettings::bgColorFrameless != curBgColFrameless)
 		emit languageChanged();
 	else
 		emit settingsChanged();
