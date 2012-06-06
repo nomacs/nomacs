@@ -44,6 +44,7 @@ void DkWidget::init() {
 	showing = false;
 	hiding = false;
 	blocked = false;
+	displaySettingsBits = 0;
 
 	// widget starts on hide
 	opacityEffect = new QGraphicsOpacityEffect(this);
@@ -82,8 +83,12 @@ void DkWidget::setVisible(bool visible) {
 	if (visible && !isVisible() && !showing)
 		opacityEffect->setOpacity(100);
 
-	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 	QWidget::setVisible(visible);
+	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+
+	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::AppSettings::currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::AppSettings::currentAppMode, visible);
+	}
 }
 
 void DkWidget::animateOpacityUp() {
@@ -110,6 +115,7 @@ void DkWidget::animateOpacityDown() {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
 		QWidget::hide();	// finally hide the widget
+
 		return;
 	}
 
@@ -770,6 +776,7 @@ DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 		DkSettings::DisplaySettings::bgColorFrameless :
 		DkSettings::DisplaySettings::bgColor;
 
+	displaySettingsBits = 0;
 	this->parent = parent;
 	this->text = text;
 	init();
@@ -1405,6 +1412,8 @@ DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
 
 void DkPlayer::init() {
 	
+	setObjectName("DkPlayer");
+
 	// slide show
 	int timeToDisplayPlayer = 3000;
 	timeToDisplay = DkSettings::SlideShowSettings::time*1000;
@@ -1499,7 +1508,14 @@ void DkPlayer::show(int ms) {
 		hideTimer->start();
 	}
 
+	bool showPlayer = getCurrentDisplaySetting();
+
 	DkWidget::show();
+
+	// automatic showing, don't store it in the display bits
+	if (ms > 0 && displaySettingsBits && displaySettingsBits->size() > DkSettings::AppSettings::currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::AppSettings::currentAppMode, showPlayer);
+	}
 }
  
 // DkMetaDataInfo ------------------------------------------------------------------
@@ -1558,6 +1574,8 @@ QString DkMetaDataInfo::sDescriptionTags = QString("Rating UserComment DateTime 
 
 DkMetaDataInfo::DkMetaDataInfo(QWidget* parent) : DkWidget(parent) {
 	
+	setObjectName("DkMetaDataInfo");
+
 	this->parent = parent;
 	
 	exifHeight = 120;
@@ -1573,8 +1591,6 @@ DkMetaDataInfo::DkMetaDataInfo(QWidget* parent) : DkWidget(parent) {
 	xMargin = 8;
 
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-
 }
 
 void DkMetaDataInfo::init() {

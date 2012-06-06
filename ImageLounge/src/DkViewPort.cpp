@@ -81,6 +81,13 @@ void DkControlWidget::init() {
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 
+	// connect widgets with their settings
+	filePreview->setDisplaySettings(&DkSettings::AppSettings::showFilePreview);
+	metaDataInfo->setDisplaySettings(&DkSettings::AppSettings::showMetaData);
+	fileInfoLabel->setDisplaySettings(&DkSettings::AppSettings::showFileInfoLabel);
+	player->setDisplaySettings(&DkSettings::AppSettings::showPlayer);
+	//histogram->setDisplaySettings(&DkSettings::AppSettings::showHistogram);
+
 	// some adjustments
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	bottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -246,6 +253,25 @@ void DkControlWidget::update() {
 	QWidget::update();
 }
 
+void DkControlWidget::showWidgetsSettings() {
+
+	if (viewport->getImage().isNull()) {
+		showPreview(false);
+		showMetaData(false);
+		showInfo(false);
+		showPlayer(false);
+		//showHistogram(false);	//uncomment when histogram is added
+	}
+
+	qDebug() << "current app mode: " << DkSettings::AppSettings::currentAppMode;
+
+	showPreview(filePreview->getCurrentDisplaySetting());
+	showMetaData(metaDataInfo->getCurrentDisplaySetting());
+	showInfo(fileInfoLabel->getCurrentDisplaySetting());
+	showPlayer(player->getCurrentDisplaySetting());
+	//showHistogram(histogram->getCurrentDisplaySetting());
+}
+
 void DkControlWidget::showPreview(bool visible) {
 
 	if (!filePreview)
@@ -253,39 +279,38 @@ void DkControlWidget::showPreview(bool visible) {
 
 	if (visible && !filePreview->isVisible())
 		filePreview->show();
-	else if (filePreview->isVisible())
+	else if (!visible && filePreview->isVisible())
 		filePreview->hide();
 }
 
 void DkControlWidget::showMetaData(bool visible) {
 
+	qDebug() << "[DkMetaData] showing: " << visible;
+
 	if (!metaDataInfo)
 		return;
 
-	if (visible && !metaDataInfo->isVisible())
+	if (visible && !metaDataInfo->isVisible()) {
 		metaDataInfo->show();
-	else if (metaDataInfo->isVisible())
+		qDebug() << "showing metadata...";
+	}
+	else if (!visible && metaDataInfo->isVisible())
 		metaDataInfo->hide();
 }
 
 void DkControlWidget::showInfo(bool visible) {
 
-	bool showInfo;
+	if (!fileInfoLabel)
+		return;
 
-	if (fileInfoLabel && visible && !fileInfoLabel->isVisible()) {
+	if (visible && !fileInfoLabel->isVisible()) {
 		fileInfoLabel->show();
 		ratingLabel->block(fileInfoLabel->isVisible());
-		showInfo = true;
 	}
-	else {
+	else if (!visible && fileInfoLabel->isVisible()) {
 		fileInfoLabel->hide();
 		ratingLabel->block(false);
-		showInfo = false;
 	}
-
-	// TODO
-	if (viewport->isFullScreen())
-		DkSettings::GlobalSettings::showInfo = showInfo;
 }
 
 void DkControlWidget::showPlayer(bool visible) {
@@ -388,26 +413,17 @@ void DkControlWidget::updateRating(int rating) {
 		fileInfoLabel->updateRating(rating);
 }
 
+void DkControlWidget::imageLoaded(bool loaded) {
+
+	showWidgetsSettings();
+}
+
 void DkControlWidget::setFullScreen(bool fullscreen) {
 
-	if (fullscreen) {
-		if (DkSettings::GlobalSettings::showInfo) {
-			fileInfoLabel->show();
-			ratingLabel->block(DkSettings::SlideShowSettings::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
-		}
-		else
-			fileInfoLabel->hide();
+	showWidgetsSettings();
 
-		filePreview->hide();
-		metaDataInfo->hide();
-		player->show(3000);		
-	}
-	else {
-		ratingLabel->block(false);
-		fileInfoLabel->hide();
-		player->hide();
-		player->play(false);
-	}
+	if (fullscreen &&!player->isVisible())
+			player->show(3000);		
 }
 
 // DkControlWidget - Events --------------------------------------------------------------------
@@ -460,14 +476,17 @@ void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 
 void DkControlWidget::keyPressEvent(QKeyEvent *event) {
 	
-	if (event->key() == Qt::Key_Escape) {
-		if (filePreview->isVisible()) {
-			filePreview->hide();
-		}
-		if (metaDataInfo->isVisible()) {
-			metaDataInfo->hide();
-		}
-	}
+	// conflicting with ESC in fullscreen
+	//int mode = DkSettings::AppSettings::currentAppMode;
+	//if (event->key() == Qt::Key_Escape && 
+	//	(mode == DkSettings::mode_default || mode == DkSettings::mode_frameless || mode == DkSettings::mode_contrast)) {
+	//	if (filePreview->isVisible()) {
+	//		filePreview->hide();
+	//	}
+	//	if (metaDataInfo->isVisible()) {
+	//		metaDataInfo->hide();
+	//	}
+	//}
 
 	QWidget::keyPressEvent(event);
 }
@@ -992,6 +1011,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
+	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
 	
 	qDebug() << "viewer created...";
 

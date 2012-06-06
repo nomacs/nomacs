@@ -1129,6 +1129,12 @@ void DkNoMacs::enterFullScreen() {
 		return;
 	}
 
+	DkSettings::AppSettings::currentAppMode += DkSettings::mode_end*0.5f;
+	if (DkSettings::AppSettings::currentAppMode < 0) {
+		qDebug() << "illegal state: " << DkSettings::AppSettings::currentAppMode;
+		DkSettings::AppSettings::currentAppMode = DkSettings::mode_default;
+	}
+	
 	menuBar()->hide();
 	toolbar->hide();
 	statusbar->hide();
@@ -1143,7 +1149,12 @@ void DkNoMacs::enterFullScreen() {
 void DkNoMacs::exitFullScreen() {
 
 	if (isFullScreen()) {
-		
+		DkSettings::AppSettings::currentAppMode -= DkSettings::mode_end*0.5f;
+		if (DkSettings::AppSettings::currentAppMode < 0) {
+			qDebug() << "illegal state: " << DkSettings::AppSettings::currentAppMode;
+			DkSettings::AppSettings::currentAppMode = DkSettings::mode_default;
+		}
+
 		if (DkSettings::AppSettings::showMenuBar) menu->show();
 		if (DkSettings::AppSettings::showToolBar) toolbar->show();
 		if (DkSettings::AppSettings::showStatusBar) statusbar->show();
@@ -2155,7 +2166,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 	vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
-	//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
+	vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 
 	DkSettings::AppSettings::appMode = 0;
 
@@ -2206,11 +2217,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-
-		// TODO: add register action to file info
-		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-
+		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 
 		// in frameless, you cannot control if menu is visible...
 		viewActions[menu_view_show_menu]->setEnabled(false);
@@ -2372,7 +2379,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		//vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
+		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 		vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
 
 		initLanClient();

@@ -115,6 +115,7 @@ int main(int argc, char *argv[]) {
 	a.installTranslator(&translator);
 	
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();
+	nmc::DkSettings::AppSettings::currentAppMode = mode;	
 	
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());

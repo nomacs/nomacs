@@ -35,11 +35,16 @@ namespace nmc {
 bool DkSettings::AppSettings::showToolBar = true;
 bool DkSettings::AppSettings::showMenuBar = true;
 bool DkSettings::AppSettings::showStatusBar = false;
+QBitArray DkSettings::AppSettings::showFileInfoLabel = QBitArray(DkSettings::mode_end, false);
+QBitArray DkSettings::AppSettings::showFilePreview = QBitArray(DkSettings::mode_end, false);
+QBitArray DkSettings::AppSettings::showMetaData = QBitArray(DkSettings::mode_end, false);
+QBitArray DkSettings::AppSettings::showPlayer = QBitArray(DkSettings::mode_end, false);
+QBitArray DkSettings::AppSettings::showHistogram = QBitArray(DkSettings::mode_end, false);
 int DkSettings::AppSettings::appMode = 0;
+int DkSettings::AppSettings::currentAppMode = 0;
 
 int DkSettings::GlobalSettings::skipImgs = 10;
 bool DkSettings::GlobalSettings::showOverview = true;
-bool DkSettings::GlobalSettings::showInfo = true;
 bool DkSettings::GlobalSettings::loop = false;
 QString DkSettings::GlobalSettings::lastDir = QString();
 QString DkSettings::GlobalSettings::lastSaveDir = QString();
@@ -146,9 +151,19 @@ void DkSettings::load() {
 	AppSettings::showToolBar = settings.value("AppSettings/showToolBar", DkSettings::AppSettings::showToolBar).toBool();
 	AppSettings::showStatusBar = settings.value("AppSettings/showStatusBar", DkSettings::AppSettings::showStatusBar).toBool();
 	
+	QBitArray tmpShow = settings.value("AppSettings/showFileInfoLabel", DkSettings::AppSettings::showFileInfoLabel).toBitArray();
+	if (tmpShow.size() == AppSettings::showFileInfoLabel.size())	AppSettings::showFileInfoLabel = tmpShow;
+	tmpShow = settings.value("AppSettings/showFilePreview", DkSettings::AppSettings::showFilePreview).toBitArray();
+	if (tmpShow.size() == AppSettings::showFilePreview.size())	AppSettings::showFilePreview = tmpShow;
+	tmpShow = settings.value("AppSettings/showMetaData", DkSettings::AppSettings::showMetaData).toBitArray();
+	if (tmpShow.size() == AppSettings::showMetaData.size())	AppSettings::showMetaData = tmpShow;
+	tmpShow = settings.value("AppSettings/showPlayer", DkSettings::AppSettings::showPlayer).toBitArray();
+	if (tmpShow.size() == AppSettings::showPlayer.size())	AppSettings::showPlayer = tmpShow;
+	tmpShow = settings.value("AppSettings/showHistogram", DkSettings::AppSettings::showHistogram).toBitArray();
+	if (tmpShow.size() == AppSettings::showHistogram.size())	AppSettings::showHistogram = tmpShow;
+
 	GlobalSettings::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::GlobalSettings::skipImgs).toInt();
 	GlobalSettings::showOverview = settings.value("GlobalSettings/hideOverview", DkSettings::GlobalSettings::showOverview = true).toBool();
-	GlobalSettings::showInfo = settings.value("GlobalSettings/showInfo", DkSettings::GlobalSettings::showInfo = true).toBool();
 
 	GlobalSettings::loop = settings.value("GlobalSettings/loop", DkSettings::GlobalSettings::loop).toBool();
 	GlobalSettings::lastDir = settings.value("GlobalSettings/lastDir", DkSettings::GlobalSettings::lastDir).toString();
@@ -216,16 +231,24 @@ void DkSettings::save() {
 	QSettings settings;
 	settings.setValue("AppSettings/showMenuBar", DkSettings::AppSettings::showMenuBar);
 	
-	if (DkSettings::AppSettings::appMode != mode_frameless) {
+
+	int myAppMode = DkSettings::AppSettings::appMode;
+	if (AppSettings::currentAppMode != mode_frameless && AppSettings::currentAppMode != mode_frameless_fullscren) {
 		qDebug() << "app mode when saving: " << DkSettings::AppSettings::appMode;
 		settings.setValue("AppSettings/showToolBar", DkSettings::AppSettings::showToolBar);
 		settings.setValue("AppSettings/showStatusBar", DkSettings::AppSettings::showStatusBar);
 	}
+
+	settings.setValue("AppSettings/showFileInfoLabel", AppSettings::showFileInfoLabel);
+	settings.setValue("AppSettings/showFilePreview", AppSettings::showFilePreview);
+	settings.setValue("AppSettings/showMetaData", AppSettings::showMetaData);
+	settings.setValue("AppSettings/showPlayer", AppSettings::showPlayer);
+	settings.setValue("AppSettings/showHistogram", AppSettings::showHistogram);
+	
 	settings.setValue("AppSettings/appMode", DkSettings::AppSettings::appMode);
 
 	settings.setValue("GlobalSettings/skipImgs",GlobalSettings::skipImgs);
 	settings.setValue("GlobalSettings/hideOverview",GlobalSettings::showOverview);
-	settings.setValue("GlobalSettings/showInfo",GlobalSettings::showInfo);
 	settings.setValue("GlobalSettings/loop",GlobalSettings::loop);
 	settings.setValue("GlobalSettings/lastDir", DkSettings::GlobalSettings::lastDir);
 	//settings.setValue("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir);
@@ -280,11 +303,16 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::AppSettings::showMenuBar = true;
 	DkSettings::AppSettings::showToolBar = true;
 	DkSettings::AppSettings::showStatusBar = false;
+	DkSettings::AppSettings::showFileInfoLabel = QBitArray(DkSettings::mode_end, false);
+	DkSettings::AppSettings::showFilePreview = QBitArray(DkSettings::mode_end, false);
+	DkSettings::AppSettings::showMetaData = QBitArray(DkSettings::mode_end, false);
+	DkSettings::AppSettings::showPlayer = QBitArray(DkSettings::mode_end, false);
+	DkSettings::AppSettings::showHistogram = QBitArray(DkSettings::mode_end, false);
+	
 	DkSettings::AppSettings::appMode = 0;
 	
 	DkSettings::GlobalSettings::skipImgs = 10;
 	DkSettings::GlobalSettings::showOverview = true;
-	DkSettings::GlobalSettings::showInfo = true;
 	DkSettings::GlobalSettings::loop = false;
 	DkSettings::GlobalSettings::lastDir = QString();
 	DkSettings::GlobalSettings::lastSaveDir = QString();

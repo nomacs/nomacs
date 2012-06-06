@@ -83,6 +83,33 @@ public:
 		setVisible(false);
 	};
 
+	void setDisplaySettings(QBitArray* displayBits) {
+		displaySettingsBits = displayBits;
+	};
+
+	bool getCurrentDisplaySetting() {
+		
+		if (!displaySettingsBits)
+			return false;
+
+		if (DkSettings::AppSettings::currentAppMode < 0 || DkSettings::AppSettings::currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::AppSettings::currentAppMode;
+			return false;
+		}
+
+		qDebug() << objectName();
+		qDebug() << "default: " << displaySettingsBits->testBit(0);
+		qDebug() << "frameless: " << displaySettingsBits->testBit(1);
+		qDebug() << "contrast: " << displaySettingsBits->testBit(2);
+		qDebug() << "default F: " << displaySettingsBits->testBit(3);
+		qDebug() << "fameless F: " << displaySettingsBits->testBit(4);
+		qDebug() << "contrast F: " << displaySettingsBits->testBit(5);
+
+		return displaySettingsBits->testBit(DkSettings::AppSettings::currentAppMode);
+
+	};
+
+
 signals:
 	void visibleSignal(bool visible);
 
@@ -101,7 +128,8 @@ protected:
 	bool hiding;
 	bool showing;
 
-	QGraphicsOpacityEffect *opacityEffect;
+	QGraphicsOpacityEffect* opacityEffect;
+	QBitArray* displaySettingsBits;
 
 	// functions
 	void init();
@@ -134,7 +162,42 @@ public:
 		updateStyleSheet();
 	};
 
+	void registerAction(QAction* action) {
+		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+	};
+
+	void setDisplaySettings(QBitArray* displayBits) {
+		displaySettingsBits = displayBits;
+	};
+
+	bool getCurrentDisplaySetting() {
+
+		if (!displaySettingsBits)
+			return false;
+
+		if (DkSettings::AppSettings::currentAppMode < 0 || DkSettings::AppSettings::currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::AppSettings::currentAppMode;
+			return false;
+		}
+
+		return displaySettingsBits->testBit(DkSettings::AppSettings::currentAppMode);
+	};
+
+
+public slots:
 	virtual void hide();
+	virtual void setVisible(bool visible) {
+	
+		QLabel::setVisible(visible);
+		emit visibleSignal(visible);
+
+		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::AppSettings::currentAppMode) {
+			displaySettingsBits->setBit(DkSettings::AppSettings::currentAppMode, visible);
+		}
+	};
+
+signals:
+	bool visibleSignal(bool visible);
 
 protected:
 	QWidget* parent;
@@ -148,6 +211,7 @@ protected:
 	QPoint margin;
 	bool blocked;
 	QColor bgCol;
+	QBitArray* displaySettingsBits;
 
 	virtual void init();
 	virtual void paintEvent(QPaintEvent *event);
@@ -199,10 +263,6 @@ class DkFadeLabel : public DkLabel {
 public:
 	DkFadeLabel(QWidget* parent = 0, const QString& text = QString());
 	virtual ~DkFadeLabel() {};
-
-	void registerAction(QAction* action) {
-		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
-	};
 
 	void block(bool blocked) {
 		this->blocked = blocked;
@@ -668,6 +728,8 @@ public slots:
 
 		if (visible)
 			createLabels();
+
+		qDebug() << "[DkMetaData] setVisible: " << visible;
 
 		DkWidget::setVisible(visible);
 	};

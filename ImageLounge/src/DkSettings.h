@@ -79,6 +79,9 @@ class DkSettings : public QObject {
 			mode_default = 0,
 			mode_frameless,
 			mode_contrast,
+			mode_default_fullscreen,
+			mode_frameless_fullscren,
+			mode_contrast_fullscreen,
 			mode_end,
 		};
 
@@ -89,7 +92,13 @@ class DkSettings : public QObject {
 			static bool showToolBar;
 			static bool showMenuBar;
 			static bool showStatusBar;
+			static QBitArray showFilePreview;
+			static QBitArray showFileInfoLabel;
+			static QBitArray showPlayer;
+			static QBitArray showMetaData;
+			static QBitArray showHistogram;
 			static int appMode;
+			static int currentAppMode;
 		};
 
 		struct DisplaySettings {
@@ -106,7 +115,6 @@ class DkSettings : public QObject {
 		struct GlobalSettings {
 			static int skipImgs;
 			static bool showOverview;
-			static bool showInfo;
 			static bool loop;
 
 			static QString lastDir;

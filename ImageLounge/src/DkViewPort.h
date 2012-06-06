@@ -215,6 +215,7 @@ public:
 	}
 
 	void stopLabels();
+	void showWidgetsSettings();
 
 	void settingsChanged();
 
@@ -230,6 +231,8 @@ public slots:
 	virtual void setSpinner(int time = 3000);
 	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
 	void updateRating(int rating);
+
+	void imageLoaded(bool loaded);
 
 	void update();
 
