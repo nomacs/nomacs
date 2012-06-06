@@ -859,7 +859,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton 
 			&& dist > QApplication::startDragDistance()
 			&& viewport() 
-			&& viewport()->getWorldMatrix().m11() == 1.0f
+			&& viewport()->getWorldMatrix().m11() <= 1.0f
 			&& !viewport()->getImage().isNull()
 			&& viewport()->getImageLoader()) {
 

@@ -77,10 +77,10 @@ void DkControlWidget::init() {
 
 	//setStyleSheet("DkControlWidget{background-color: QColor(0,0,0,100); border: 1px solid #000000;}");
 	//setContentsMargins(0,0,0,0);
-	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
-
+	setMouseTracking(true);
+	
 	// connect widgets with their settings
 	filePreview->setDisplaySettings(&DkSettings::AppSettings::showFilePreview);
 	metaDataInfo->setDisplaySettings(&DkSettings::AppSettings::showMetaData);
@@ -423,11 +423,13 @@ void DkControlWidget::setFullScreen(bool fullscreen) {
 	showWidgetsSettings();
 
 	if (fullscreen &&!player->isVisible())
-			player->show(3000);		
+		player->show(3000);		
 }
 
 // DkControlWidget - Events --------------------------------------------------------------------
 void DkControlWidget::mousePressEvent(QMouseEvent *event) {
+
+	qDebug() << "has mouse tracking: " << hasMouseTracking();
 
 	enterPos = event->pos();
 
@@ -469,6 +471,7 @@ void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 		filePreview->setCurrentDx(dx);	// update dx
 	}
 
+	qDebug() << "controller move...";
 	QWidget::mouseMoveEvent(event);
 }
 
@@ -1539,6 +1542,7 @@ bool DkViewPort::event(QEvent *event) {
 		event->type() == QEvent::KeyPress || 
 		event->type() == QEvent::KeyRelease) {
 
+		qDebug() << "redirecting event...";
 		// mouse events that double are now fixed, since the viewport is now overlayed by the controller
 		return QWidget::event(event);
 	}
@@ -1548,8 +1552,6 @@ bool DkViewPort::event(QEvent *event) {
 }
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
-
-	qDebug() << "[DkViewPort] mouse press...";
 
 	// ok, start panning
 	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
@@ -1603,8 +1605,6 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
-	//qDebug() << "DkViewPort receiving wheel event";
-
 	if (event->modifiers() == ctrlMod) {
 
 		// TODO: think how we can make this fast too
@@ -1615,6 +1615,10 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 	}
 	else 
 		DkBaseViewPort::wheelEvent(event);
+
+	if (event->modifiers() == altMod)
+		tcpSynchronize();
+
 }
 
 void DkViewPort::setFullScreen(bool fullScreen) {
