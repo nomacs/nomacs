@@ -595,8 +595,8 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_overview]->setShortcut(QKeySequence(shortcut_show_overview));
 	viewActions[menu_view_show_overview]->setStatusTip(tr("shows the overview or not"));
 	viewActions[menu_view_show_overview]->setCheckable(true);
-	viewActions[menu_view_show_overview]->setChecked(DkSettings::GlobalSettings::showOverview);
-	connect(viewActions[menu_view_show_overview], SIGNAL(triggered()), vp, SLOT(toggleShowOverview()));
+	viewActions[menu_view_show_overview]->setChecked(DkSettings::AppSettings::showOverview.testBit(DkSettings::AppSettings::currentAppMode));
+	connect(viewActions[menu_view_show_overview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showOverview(bool)));
 
 	viewActions[menu_view_show_player] = new QAction(tr("Show Pla&yer"), this);
 	viewActions[menu_view_show_player]->setShortcut(QKeySequence(shortcut_show_player));

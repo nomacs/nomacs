@@ -260,6 +260,7 @@ void DkControlWidget::showWidgetsSettings() {
 		showMetaData(false);
 		showInfo(false);
 		showPlayer(false);
+		overviewWindow->hide();
 		//showHistogram(false);	//uncomment when histogram is added
 	}
 
@@ -322,6 +323,23 @@ void DkControlWidget::showPlayer(bool visible) {
 		player->show();
 	else
 		player->hide();
+}
+
+void DkControlWidget::showOverview(bool visible) {
+
+	if (!overviewWindow)
+		return;
+
+	// viewport decides whether to show overview or not
+	DkSettings::AppSettings::showOverview.setBit(DkSettings::AppSettings::currentAppMode, visible);
+
+	if (visible && !overviewWindow->isVisible()) {		
+		viewport->update();
+	}
+	else if (!visible && overviewWindow->isVisible()) {
+		overviewWindow->hide();
+	}
+
 }
 
 void DkControlWidget::showCrop(bool visible) {
@@ -1204,13 +1222,6 @@ QPoint DkViewPort::newCenter(QSize s) {
 	return newPos;
 }
 
-void DkViewPort::toggleShowOverview() {
-
-	// TODO: add to controller!
-	DkSettings::GlobalSettings::showOverview = !DkSettings::GlobalSettings::showOverview;
-	update();
-}
-
 void DkViewPort::zoom(float factor, QPointF center) {
 
 	if (imgQt.isNull() || blockZooming)
@@ -1463,7 +1474,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		drawBackground(&painter);
 
 	//in mode zoom/panning
-	if (worldMatrix.m11() > 1 && !imageInside() && DkSettings::GlobalSettings::showOverview) {
+	if (worldMatrix.m11() > 1 && !imageInside() && 
+		DkSettings::AppSettings::showOverview.testBit(DkSettings::AppSettings::currentAppMode)) {
 
 		if (!controller->getOverview()->isVisible())
 			controller->getOverview()->show();

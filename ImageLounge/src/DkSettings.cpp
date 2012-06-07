@@ -40,11 +40,11 @@ QBitArray DkSettings::AppSettings::showFilePreview = QBitArray(DkSettings::mode_
 QBitArray DkSettings::AppSettings::showMetaData = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::AppSettings::showPlayer = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::AppSettings::showHistogram = QBitArray(DkSettings::mode_end, false);
+QBitArray DkSettings::AppSettings::showOverview = QBitArray(DkSettings::mode_end, true);
 int DkSettings::AppSettings::appMode = 0;
 int DkSettings::AppSettings::currentAppMode = 0;
 
 int DkSettings::GlobalSettings::skipImgs = 10;
-bool DkSettings::GlobalSettings::showOverview = true;
 bool DkSettings::GlobalSettings::loop = false;
 QString DkSettings::GlobalSettings::lastDir = QString();
 QString DkSettings::GlobalSettings::lastSaveDir = QString();
@@ -161,9 +161,10 @@ void DkSettings::load() {
 	if (tmpShow.size() == AppSettings::showPlayer.size())	AppSettings::showPlayer = tmpShow;
 	tmpShow = settings.value("AppSettings/showHistogram", DkSettings::AppSettings::showHistogram).toBitArray();
 	if (tmpShow.size() == AppSettings::showHistogram.size())	AppSettings::showHistogram = tmpShow;
+	tmpShow = settings.value("AppSettings/showOverview", DkSettings::AppSettings::showOverview).toBitArray();
+	if (tmpShow.size() == AppSettings::showOverview.size())	AppSettings::showOverview = tmpShow;
 
 	GlobalSettings::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::GlobalSettings::skipImgs).toInt();
-	GlobalSettings::showOverview = settings.value("GlobalSettings/hideOverview", DkSettings::GlobalSettings::showOverview = true).toBool();
 
 	GlobalSettings::loop = settings.value("GlobalSettings/loop", DkSettings::GlobalSettings::loop).toBool();
 	GlobalSettings::lastDir = settings.value("GlobalSettings/lastDir", DkSettings::GlobalSettings::lastDir).toString();
@@ -244,11 +245,11 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/showMetaData", AppSettings::showMetaData);
 	settings.setValue("AppSettings/showPlayer", AppSettings::showPlayer);
 	settings.setValue("AppSettings/showHistogram", AppSettings::showHistogram);
-	
+	settings.setValue("AppSettings/showOverview", AppSettings::showOverview);
+
 	settings.setValue("AppSettings/appMode", DkSettings::AppSettings::appMode);
 
 	settings.setValue("GlobalSettings/skipImgs",GlobalSettings::skipImgs);
-	settings.setValue("GlobalSettings/hideOverview",GlobalSettings::showOverview);
 	settings.setValue("GlobalSettings/loop",GlobalSettings::loop);
 	settings.setValue("GlobalSettings/lastDir", DkSettings::GlobalSettings::lastDir);
 	//settings.setValue("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir);
@@ -303,16 +304,21 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::AppSettings::showMenuBar = true;
 	DkSettings::AppSettings::showToolBar = true;
 	DkSettings::AppSettings::showStatusBar = false;
-	DkSettings::AppSettings::showFileInfoLabel = QBitArray(DkSettings::mode_end, false);
+	DkSettings::AppSettings::showFileInfoLabel = QBitArray(DkSettings::mode_end, true);
 	DkSettings::AppSettings::showFilePreview = QBitArray(DkSettings::mode_end, false);
 	DkSettings::AppSettings::showMetaData = QBitArray(DkSettings::mode_end, false);
 	DkSettings::AppSettings::showPlayer = QBitArray(DkSettings::mode_end, false);
 	DkSettings::AppSettings::showHistogram = QBitArray(DkSettings::mode_end, false);
-	
+	DkSettings::AppSettings::showOverview = QBitArray(DkSettings::mode_end, true);
+
+	// now set default show options
+	DkSettings::AppSettings::showFileInfoLabel.setBit(DkSettings::mode_default, false);
+	DkSettings::AppSettings::showFileInfoLabel.setBit(DkSettings::mode_contrast, false);
+
+
 	DkSettings::AppSettings::appMode = 0;
 	
 	DkSettings::GlobalSettings::skipImgs = 10;
-	DkSettings::GlobalSettings::showOverview = true;
 	DkSettings::GlobalSettings::loop = false;
 	DkSettings::GlobalSettings::lastDir = QString();
 	DkSettings::GlobalSettings::lastSaveDir = QString();

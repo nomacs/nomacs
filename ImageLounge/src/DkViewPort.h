@@ -225,6 +225,7 @@ public slots:
 	void showInfo(bool visible);
 	void showPlayer(bool visible);
 	void showCrop(bool visible);
+	void showOverview(bool visible);
 
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
@@ -423,7 +424,6 @@ public slots:
 	void resizeEvent(QResizeEvent* event);
 	virtual void paintEvent(QPaintEvent* event);
 	void toggleResetMatrix();
-	void toggleShowOverview();
 	
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);

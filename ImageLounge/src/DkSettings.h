@@ -97,6 +97,7 @@ class DkSettings : public QObject {
 			static QBitArray showPlayer;
 			static QBitArray showMetaData;
 			static QBitArray showHistogram;
+			static QBitArray showOverview;
 			static int appMode;
 			static int currentAppMode;
 		};
@@ -114,7 +115,6 @@ class DkSettings : public QObject {
 
 		struct GlobalSettings {
 			static int skipImgs;
-			static bool showOverview;
 			static bool loop;
 
 			static QString lastDir;
