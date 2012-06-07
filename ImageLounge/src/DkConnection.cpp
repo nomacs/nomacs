@@ -557,10 +557,10 @@ void DkLANConnection::sendGreetingMessage(QString currentTitle) {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << QHostInfo::localHostName();
-	ds << DkSettings::SynchronizeSettings::allowFile;
-	ds << DkSettings::SynchronizeSettings::allowImage;
-	ds << DkSettings::SynchronizeSettings::allowPosition;
-	ds << DkSettings::SynchronizeSettings::allowTransformation;
+	ds << DkSettings::Sync::allowFile;
+	ds << DkSettings::Sync::allowImage;
+	ds << DkSettings::Sync::allowPosition;
+	ds << DkSettings::Sync::allowTransformation;
 
 	if (iAmServer) 
 		ds << currentTitle;
@@ -593,10 +593,10 @@ void DkLANConnection::readGreetingMessage() {
 		QDataStream ds(buffer); // only read clientname
 		ds >> clientName;
 
-		allowFile = DkSettings::SynchronizeSettings::allowFile;
-		allowImage = DkSettings::SynchronizeSettings::allowImage;
-		allowPosition = DkSettings::SynchronizeSettings::allowPosition;
-		allowTransformation = DkSettings::SynchronizeSettings::allowTransformation;
+		allowFile = DkSettings::Sync::allowFile;
+		allowImage = DkSettings::Sync::allowImage;
+		allowPosition = DkSettings::Sync::allowPosition;
+		allowTransformation = DkSettings::Sync::allowTransformation;
 		title = "";
 	}
 

@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 	// DEBUG --------------------------------------------------------------------
 
 	QSettings settings;
-	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::GlobalSettings::language).toString() + ".qm";
+	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::Global::language).toString() + ".qm";
 
 	QTranslator translator;
 	if (!translator.load(translationName, qApp->applicationDirPath())) {
@@ -114,8 +114,8 @@ int main(int argc, char *argv[]) {
 	}
 	a.installTranslator(&translator);
 	
-	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::AppSettings::appMode).toInt();
-	nmc::DkSettings::AppSettings::currentAppMode = mode;	
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
+	nmc::DkSettings::App::currentAppMode = mode;	
 	
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());

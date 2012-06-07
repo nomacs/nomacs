@@ -134,9 +134,9 @@ void DkNoMacs::init() {
 	readSettings();
 	installEventFilter(this);
 
-	showMenuBar(DkSettings::AppSettings::showMenuBar);
-	showToolbar(DkSettings::AppSettings::showToolBar);
-	showStatusBar(DkSettings::AppSettings::showStatusBar);
+	showMenuBar(DkSettings::App::showMenuBar);
+	showToolbar(DkSettings::App::showToolBar);
+	showStatusBar(DkSettings::App::showStatusBar);
 
 }
 
@@ -300,10 +300,10 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open_with]);
 	fileMenu->addAction(fileActions[menu_file_save]);
 
-	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::GlobalSettings::recentFiles);
+	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::Global::recentFiles);
 	connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
 
-	fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::GlobalSettings::recentFolders);
+	fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::Global::recentFolders);
 	connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
 
 	fileMenu->addMenu(fileFilesMenu);
@@ -368,7 +368,7 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_gps_map]);
 
 	// no sync menu in frameless view
-	if (DkSettings::AppSettings::appMode != DkSettings::mode_frameless)
+	if (DkSettings::App::appMode != DkSettings::mode_frameless)
 		syncMenu = menu->addMenu(tr("&Sync"));
 	else 
 		syncMenu = 0;
@@ -595,7 +595,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_overview]->setShortcut(QKeySequence(shortcut_show_overview));
 	viewActions[menu_view_show_overview]->setStatusTip(tr("shows the overview or not"));
 	viewActions[menu_view_show_overview]->setCheckable(true);
-	viewActions[menu_view_show_overview]->setChecked(DkSettings::AppSettings::showOverview.testBit(DkSettings::AppSettings::currentAppMode));
+	viewActions[menu_view_show_overview]->setChecked(DkSettings::App::showOverview.testBit(DkSettings::App::currentAppMode));
 	connect(viewActions[menu_view_show_overview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showOverview(bool)));
 
 	viewActions[menu_view_show_player] = new QAction(tr("Show Pla&yer"), this);
@@ -1129,10 +1129,10 @@ void DkNoMacs::enterFullScreen() {
 		return;
 	}
 
-	DkSettings::AppSettings::currentAppMode += DkSettings::mode_end*0.5f;
-	if (DkSettings::AppSettings::currentAppMode < 0) {
-		qDebug() << "illegal state: " << DkSettings::AppSettings::currentAppMode;
-		DkSettings::AppSettings::currentAppMode = DkSettings::mode_default;
+	DkSettings::App::currentAppMode += DkSettings::mode_end*0.5f;
+	if (DkSettings::App::currentAppMode < 0) {
+		qDebug() << "illegal state: " << DkSettings::App::currentAppMode;
+		DkSettings::App::currentAppMode = DkSettings::mode_default;
 	}
 	
 	menuBar()->hide();
@@ -1149,15 +1149,15 @@ void DkNoMacs::enterFullScreen() {
 void DkNoMacs::exitFullScreen() {
 
 	if (isFullScreen()) {
-		DkSettings::AppSettings::currentAppMode -= DkSettings::mode_end*0.5f;
-		if (DkSettings::AppSettings::currentAppMode < 0) {
-			qDebug() << "illegal state: " << DkSettings::AppSettings::currentAppMode;
-			DkSettings::AppSettings::currentAppMode = DkSettings::mode_default;
+		DkSettings::App::currentAppMode -= DkSettings::mode_end*0.5f;
+		if (DkSettings::App::currentAppMode < 0) {
+			qDebug() << "illegal state: " << DkSettings::App::currentAppMode;
+			DkSettings::App::currentAppMode = DkSettings::mode_default;
 		}
 
-		if (DkSettings::AppSettings::showMenuBar) menu->show();
-		if (DkSettings::AppSettings::showToolBar) toolbar->show();
-		if (DkSettings::AppSettings::showStatusBar) statusbar->show();
+		if (DkSettings::App::showMenuBar) menu->show();
+		if (DkSettings::App::showToolBar) toolbar->show();
+		if (DkSettings::App::showStatusBar) statusbar->show();
 		showNormal();
 	}
 
@@ -1175,9 +1175,9 @@ void DkNoMacs::setFrameless(bool frameless) {
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
 	if (objectName() != "DkNoMacsFrameless")
-		DkSettings::AppSettings::appMode = DkSettings::mode_frameless;
+		DkSettings::App::appMode = DkSettings::mode_frameless;
 	else
-		DkSettings::AppSettings::appMode = DkSettings::mode_default;
+		DkSettings::App::appMode = DkSettings::mode_default;
 
 	bool started = process.startDetached(exe, args);
 
@@ -1626,9 +1626,9 @@ void DkNoMacs::setContrast(bool contrast) {
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
 	if (contrast)
-		DkSettings::AppSettings::appMode = DkSettings::mode_contrast;
+		DkSettings::App::appMode = DkSettings::mode_contrast;
 	else
-		DkSettings::AppSettings::appMode = DkSettings::mode_default;
+		DkSettings::App::appMode = DkSettings::mode_default;
 
 	bool started = process.startDetached(exe, args);
 
@@ -1717,19 +1717,19 @@ bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
 
 void DkNoMacs::showMenuBar(bool show) {
 
-	DkSettings::AppSettings::showMenuBar = show;
-	int tts = (DkSettings::AppSettings::showMenuBar) ? -1 : 5000;
-	viewActions[menu_view_show_menu]->setChecked(DkSettings::AppSettings::showMenuBar);
+	DkSettings::App::showMenuBar = show;
+	int tts = (DkSettings::App::showMenuBar) ? -1 : 5000;
+	viewActions[menu_view_show_menu]->setChecked(DkSettings::App::showMenuBar);
 	menu->setTimeToShow(tts);
 	menu->showMenu();
 }
 
 void DkNoMacs::showToolbar(bool show) {
 
-	DkSettings::AppSettings::showToolBar = show;
-	viewActions[menu_view_show_toolbar]->setChecked(DkSettings::AppSettings::showToolBar);
+	DkSettings::App::showToolBar = show;
+	viewActions[menu_view_show_toolbar]->setChecked(DkSettings::App::showToolBar);
 	
-	if (DkSettings::AppSettings::showToolBar)
+	if (DkSettings::App::showToolBar)
 		toolbar->show();
 	else
 		toolbar->hide();
@@ -1737,10 +1737,10 @@ void DkNoMacs::showToolbar(bool show) {
 
 void DkNoMacs::showStatusBar(bool show) {
 
-	DkSettings::AppSettings::showStatusBar = show;
-	viewActions[menu_view_show_statusbar]->setChecked(DkSettings::AppSettings::showStatusBar);
+	DkSettings::App::showStatusBar = show;
+	viewActions[menu_view_show_statusbar]->setChecked(DkSettings::App::showStatusBar);
 
-	if (DkSettings::AppSettings::showStatusBar)
+	if (DkSettings::App::showStatusBar)
 		statusbar->show();
 	else
 		statusbar->hide();
@@ -1775,7 +1775,7 @@ void DkNoMacs::openFileWith() {
 
 	//appPath.replace("/", "\\");	// photoshop needs backslashes
 
-	if (DkSettings::GlobalSettings::showDefaultAppDialog) {
+	if (DkSettings::Global::showDefaultAppDialog) {
 		if (!openWithDialog) openWithDialog = new DkOpenWithDialog(this);
 		openWithDialog->exec();
 
@@ -1787,13 +1787,13 @@ void DkNoMacs::openFileWith() {
 	args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
-	bool started = process.startDetached(DkSettings::GlobalSettings::defaultAppPath, args);
+	bool started = process.startDetached(DkSettings::Global::defaultAppPath, args);
 
 	if (started)
-		qDebug() << "starting: " << DkSettings::GlobalSettings::defaultAppPath;
+		qDebug() << "starting: " << DkSettings::Global::defaultAppPath;
 	else {
-		viewport()->getController()->setInfo("Sorry, I could not start: " % DkSettings::GlobalSettings::defaultAppPath);
-		DkSettings::GlobalSettings::showDefaultAppDialog = true;
+		viewport()->getController()->setInfo("Sorry, I could not start: " % DkSettings::Global::defaultAppPath);
+		DkSettings::Global::showDefaultAppDialog = true;
 	}
 
 	qDebug() << "I'm trying to execute: " << args[0];
@@ -1868,9 +1868,9 @@ void DkNoMacs::openSettings() {
 void DkNoMacs::settingsChanged() {
 	
 	if (!isFullScreen()) {
-		showMenuBar(DkSettings::AppSettings::showMenuBar);
-		showToolbar(DkSettings::AppSettings::showToolBar);
-		showStatusBar(DkSettings::AppSettings::showStatusBar);
+		showMenuBar(DkSettings::App::showMenuBar);
+		showToolbar(DkSettings::App::showToolBar);
+		showStatusBar(DkSettings::App::showStatusBar);
 	}
 }
 
@@ -1887,7 +1887,7 @@ void DkNoMacs::checkForUpdate() {
 
 void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 
-	DkSettings::SynchronizeSettings::updateDialogShown = true;
+	DkSettings::Sync::updateDialogShown = true;
 
 	DkSettings settings;
 	settings.save();
@@ -1974,7 +1974,7 @@ void DkNoMacsSync::initLanClient() {
 		delete lanClient;
 	}
 
-	if (!DkSettings::SynchronizeSettings::enableNetworkSync) {
+	if (!DkSettings::Sync::enableNetworkSync) {
 
 		lanClient = 0;
 
@@ -2149,7 +2149,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 
 	updater = new DkUpdater();
 	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-	if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
+	if (!DkSettings::Sync::updateDialogShown && QDate::currentDate() > DkSettings::Sync::lastUpdateCheck)
 		updater->checkForUpdated();	// TODO: is threaded??
 	
 	// title signals
@@ -2168,14 +2168,14 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 
-	DkSettings::AppSettings::appMode = 0;
+	DkSettings::App::appMode = 0;
 
 	initLanClient();
 	//emit sendTitleSignal(windowTitle());
 
 	// show it...
 	show();
-	DkSettings::AppSettings::appMode = DkSettings::mode_default;
+	DkSettings::App::appMode = DkSettings::mode_default;
 
 	qDebug() << "viewport (normal) created...";
 }
@@ -2185,7 +2185,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 	: DkNoMacs(parent, flags) {
 
 		setObjectName("DkNoMacsFrameless");
-		DkSettings::AppSettings::appMode = DkSettings::mode_frameless;
+		DkSettings::App::appMode = DkSettings::mode_frameless;
 		
 		setWindowFlags(Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
@@ -2202,7 +2202,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 
 		updater = new DkUpdater();
 		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-		if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
+		if (!DkSettings::Sync::updateDialogShown && QDate::currentDate() > DkSettings::Sync::lastUpdateCheck)
 			updater->checkForUpdated();
 
 		// title signals
@@ -2363,7 +2363,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 
 		updater = new DkUpdater();
 		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-		if (!DkSettings::SynchronizeSettings::updateDialogShown && QDate::currentDate() > DkSettings::SynchronizeSettings::lastUpdateCheck)
+		if (!DkSettings::Sync::updateDialogShown && QDate::currentDate() > DkSettings::Sync::lastUpdateCheck)
 			updater->checkForUpdated();	// TODO: is threaded??
 
 		// title signals
@@ -2385,7 +2385,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		initLanClient();
 		emit sendTitleSignal(windowTitle());
 
-		DkSettings::AppSettings::appMode = DkSettings::mode_contrast;
+		DkSettings::App::appMode = DkSettings::mode_contrast;
 		setObjectName("DkNoMacsContrast");
 
 		// show it...

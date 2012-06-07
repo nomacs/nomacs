@@ -92,8 +92,8 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::AppSettings::currentAppMode < 0 || DkSettings::AppSettings::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::AppSettings::currentAppMode;
+		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
 			return false;
 		}
 
@@ -105,7 +105,7 @@ public:
 		qDebug() << "fameless F: " << displaySettingsBits->testBit(4);
 		qDebug() << "contrast F: " << displaySettingsBits->testBit(5);
 
-		return displaySettingsBits->testBit(DkSettings::AppSettings::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
 
 	};
 
@@ -175,12 +175,12 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::AppSettings::currentAppMode < 0 || DkSettings::AppSettings::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::AppSettings::currentAppMode;
+		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
 			return false;
 		}
 
-		return displaySettingsBits->testBit(DkSettings::AppSettings::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
 	};
 
 
@@ -191,8 +191,8 @@ public slots:
 		QLabel::setVisible(visible);
 		emit visibleSignal(visible);
 
-		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::AppSettings::currentAppMode) {
-			displaySettingsBits->setBit(DkSettings::AppSettings::currentAppMode, visible);
+		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
+			displaySettingsBits->setBit(DkSettings::App::currentAppMode, visible);
 		}
 	};
 
@@ -510,7 +510,7 @@ public slots:
 
 	void startTimer() {
 		if (playing) {
-			displayTimer->setInterval(DkSettings::SlideShowSettings::time*1000);	// if it was updated...
+			displayTimer->setInterval(DkSettings::SlideShow::time*1000);	// if it was updated...
 			displayTimer->start();
 		}
 	};

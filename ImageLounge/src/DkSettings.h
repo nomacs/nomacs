@@ -88,7 +88,7 @@ class DkSettings : public QObject {
 		DkSettings() {};
 		DkSettings(const DkSettings& settings) {}; 
 
-		struct AppSettings {
+		struct App {
 			static bool showToolBar;
 			static bool showMenuBar;
 			static bool showStatusBar;
@@ -102,7 +102,7 @@ class DkSettings : public QObject {
 			static int currentAppMode;
 		};
 
-		struct DisplaySettings {
+		struct Display {
 			static bool keepZoom;
 			static bool invertZoom;
 			static QColor highlightColor;
@@ -113,7 +113,7 @@ class DkSettings : public QObject {
 			static int interpolateZoomLevel;
 		};
 
-		struct GlobalSettings {
+		struct Global {
 			static int skipImgs;
 			static bool loop;
 
@@ -135,14 +135,14 @@ class DkSettings : public QObject {
 			static int numUserChoices;
 			static QStringList userAppPaths;
 		};
-		struct SlideShowSettings {
+		struct SlideShow {
 			static int filter;
 			static int time;
 			static bool silentFullscreen;
 			static QBitArray display;
 			static QColor backgroundColor;
 		};
-		struct SynchronizeSettings {
+		struct Sync {
 			static bool enableNetworkSync;
 			static bool allowTransformation;
 			static bool allowPosition;
@@ -153,7 +153,7 @@ class DkSettings : public QObject {
 			static bool syncAbsoluteTransform;
 			static bool switchModifier;
 		};
-		struct MetaDataSettings {
+		struct MetaData {
 			static QBitArray metaDataBits;
 
 			//static bool exifSize;
@@ -183,7 +183,7 @@ class DkSettings : public QObject {
 			//static bool iptcKeywords;
 		};
 		
-		struct ResourceSettings {
+		struct Resources {
 			static float cacheMemory;
 			static bool fastThumbnailPreview;
 		};

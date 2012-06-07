@@ -993,7 +993,7 @@ void DkPeerList::print() {
 // DkUpdater  --------------------------------------------------------------------
 
 void DkUpdater::checkForUpdated() {
-	DkSettings::SynchronizeSettings::lastUpdateCheck = QDate::currentDate();
+	DkSettings::Sync::lastUpdateCheck = QDate::currentDate();
 
 	DkSettings settings;
 	settings.save();

@@ -82,10 +82,10 @@ void DkControlWidget::init() {
 	setMouseTracking(true);
 	
 	// connect widgets with their settings
-	filePreview->setDisplaySettings(&DkSettings::AppSettings::showFilePreview);
-	metaDataInfo->setDisplaySettings(&DkSettings::AppSettings::showMetaData);
-	fileInfoLabel->setDisplaySettings(&DkSettings::AppSettings::showFileInfoLabel);
-	player->setDisplaySettings(&DkSettings::AppSettings::showPlayer);
+	filePreview->setDisplaySettings(&DkSettings::App::showFilePreview);
+	metaDataInfo->setDisplaySettings(&DkSettings::App::showMetaData);
+	fileInfoLabel->setDisplaySettings(&DkSettings::App::showFileInfoLabel);
+	player->setDisplaySettings(&DkSettings::App::showPlayer);
 	//histogram->setDisplaySettings(&DkSettings::AppSettings::showHistogram);
 
 	// some adjustments
@@ -264,7 +264,7 @@ void DkControlWidget::showWidgetsSettings() {
 		//showHistogram(false);	//uncomment when histogram is added
 	}
 
-	qDebug() << "current app mode: " << DkSettings::AppSettings::currentAppMode;
+	qDebug() << "current app mode: " << DkSettings::App::currentAppMode;
 
 	showPreview(filePreview->getCurrentDisplaySetting());
 	showMetaData(metaDataInfo->getCurrentDisplaySetting());
@@ -331,7 +331,7 @@ void DkControlWidget::showOverview(bool visible) {
 		return;
 
 	// viewport decides whether to show overview or not
-	DkSettings::AppSettings::showOverview.setBit(DkSettings::AppSettings::currentAppMode, visible);
+	DkSettings::App::showOverview.setBit(DkSettings::App::currentAppMode, visible);
 
 	if (visible && !overviewWindow->isVisible()) {		
 		viewport->update();
@@ -527,8 +527,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	imgMatrix.reset();
 
 	blockZooming = false;
-	altMod = DkSettings::GlobalSettings::altMod;
-	ctrlMod = DkSettings::GlobalSettings::ctrlMod;
+	altMod = DkSettings::Global::altMod;
+	ctrlMod = DkSettings::Global::ctrlMod;
 
 	zoomTimer = new QTimer(this);
 	zoomTimer->setSingleShot(true);
@@ -687,12 +687,12 @@ void DkBaseViewPort::setImage(cv::Mat newImg) {
 	this->imgRect = QRect(0, 0, newImg.cols, newImg.rows);
 
 
-	if (!DkSettings::DisplaySettings::keepZoom)
+	if (!DkSettings::Display::keepZoom)
 		worldMatrix.reset();
 
 	updateImageMatrix();
 
-	if (DkSettings::DisplaySettings::keepZoom)
+	if (DkSettings::Display::keepZoom)
 		centerImage();
 
 	update();
@@ -708,7 +708,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 	emit enableNoImageSignal(!imgQt.isNull());
 
-	if (!DkSettings::DisplaySettings::keepZoom || imgRect != oldImgRect)
+	if (!DkSettings::Display::keepZoom || imgRect != oldImgRect)
 		worldMatrix.reset();							
 
 	updateImageMatrix();
@@ -736,7 +736,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 	if (!imgQt.isNull()) {
 		painter.setWorldTransform(worldMatrix);
 
-		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::DisplaySettings::interpolateZoomLevel/100.0f)
+		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
 			painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
 		draw(&painter);
@@ -828,7 +828,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 
 	float factor = -event->delta();
-	if (DkSettings::DisplaySettings::invertZoom) factor *= -1.0f;
+	if (DkSettings::Display::invertZoom) factor *= -1.0f;
 
 	factor /= -1200.0f;
 	factor += 1.0f;
@@ -849,7 +849,7 @@ void DkBaseViewPort::draw(QPainter *painter) {
 	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
 	if (parent->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShowSettings::backgroundColor);
+		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShow::backgroundColor);
 		painter->setWorldMatrixEnabled(true);
 	}
 
@@ -1073,12 +1073,12 @@ void DkViewPort::setImage(cv::Mat newImg) {
 	this->imgRect = QRect(0, 0, newImg.cols, newImg.rows);
 
 
-	if (!DkSettings::DisplaySettings::keepZoom)
+	if (!DkSettings::Display::keepZoom)
 		worldMatrix.reset();
 
 	updateImageMatrix();
 
-	if (DkSettings::DisplaySettings::keepZoom)
+	if (DkSettings::Display::keepZoom)
 		centerImage();
 
 	controller->stopLabels();
@@ -1118,7 +1118,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
-	if (!DkSettings::DisplaySettings::keepZoom || imgRect != oldImgRect)
+	if (!DkSettings::Display::keepZoom || imgRect != oldImgRect)
 		worldMatrix.reset();
 	else {
 		imgViewRect = oldImgViewRect;
@@ -1169,7 +1169,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	emit enableNoImageSignal(true);
 
-	if (!DkSettings::DisplaySettings::keepZoom || imgRect != oldImgRect)
+	if (!DkSettings::Display::keepZoom || imgRect != oldImgRect)
 		worldMatrix.reset();							
 
 	updateImageMatrix();
@@ -1322,7 +1322,7 @@ void DkViewPort::showZoom() {
 
 void DkViewPort::toggleResetMatrix() {
 
-	DkSettings::DisplaySettings::keepZoom = !DkSettings::DisplaySettings::keepZoom;
+	DkSettings::Display::keepZoom = !DkSettings::Display::keepZoom;
 }
 
 void DkViewPort::controlImagePosition(float lb, float ub) {
@@ -1463,7 +1463,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	if (!imgQt.isNull()) {
 		painter.setWorldTransform(worldMatrix);
 
-		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::DisplaySettings::interpolateZoomLevel/100.0f)
+		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
 			painter.setRenderHint(QPainter::SmoothPixmapTransform);
 		
 		draw(&painter);
@@ -1475,7 +1475,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	//in mode zoom/panning
 	if (worldMatrix.m11() > 1 && !imageInside() && 
-		DkSettings::AppSettings::showOverview.testBit(DkSettings::AppSettings::currentAppMode)) {
+		DkSettings::App::showOverview.testBit(DkSettings::App::currentAppMode)) {
 
 		if (!controller->getOverview()->isVisible())
 			controller->getOverview()->show();
@@ -1596,9 +1596,9 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 		moveView(dxy/worldMatrix.m11());
 
 		// with shift also a hotkey for fast switching...
-		if ((DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
+		if ((DkSettings::Sync::syncAbsoluteTransform &&
 			event->modifiers() == (altMod | Qt::ShiftModifier)) || 
-			(!DkSettings::SynchronizeSettings::syncAbsoluteTransform &&
+			(!DkSettings::Sync::syncAbsoluteTransform &&
 			event->modifiers() == (altMod))) {
 			
 			if (dxy.x() != 0 || dxy.y() != 0) {
@@ -1731,8 +1731,8 @@ void DkViewPort::settingsChanged() {
 
 	reloadFile();
 
-	altMod = DkSettings::GlobalSettings::altMod;
-	ctrlMod = DkSettings::GlobalSettings::ctrlMod;
+	altMod = DkSettings::Global::altMod;
+	ctrlMod = DkSettings::Global::ctrlMod;
 
 	controller->settingsChanged();
 }
@@ -1779,7 +1779,7 @@ void DkViewPort::loadNextFile(bool silent) {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(1);
@@ -1790,7 +1790,7 @@ void DkViewPort::loadPrevFile(bool silent) {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
 		emit sendNewFileSignal(-1);
@@ -1809,9 +1809,9 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
-	silent |= (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen);
+	silent |= (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen);
 
-	if (DkSettings::ResourceSettings::fastThumbnailPreview) {
+	if (DkSettings::Resources::fastThumbnailPreview) {
 
 		QImage thumb;
 		QFileInfo thumbFile;
@@ -1861,7 +1861,7 @@ void DkViewPort::loadFullFile(bool silent) {
 
 	if (thumbFile.exists()) {
 		unloadImage();	// TODO: unload image clears the image -> makes an empty file
-		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	}
 }
 
@@ -1893,10 +1893,10 @@ void DkViewPort::loadSkipPrev10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(-DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->changeFile(-DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
-		emit sendNewFileSignal(-DkSettings::GlobalSettings::skipImgs);
+		emit sendNewFileSignal(-DkSettings::Global::skipImgs);
 }
 
 void DkViewPort::loadSkipNext10() {
@@ -1904,10 +1904,10 @@ void DkViewPort::loadSkipNext10() {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(DkSettings::GlobalSettings::skipImgs, (parent->isFullScreen() && DkSettings::SlideShowSettings::silentFullscreen));
+		loader->changeFile(DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && hasFocus())
-		emit sendNewFileSignal(DkSettings::GlobalSettings::skipImgs);
+		emit sendNewFileSignal(DkSettings::Global::skipImgs);
 }
 
 void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
@@ -2519,7 +2519,7 @@ void DkViewPortContrast::draw(QPainter *painter) {
 
 	if (parent->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShowSettings::backgroundColor);
+		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShow::backgroundColor);
 		painter->setWorldMatrixEnabled(true);
 	}
 

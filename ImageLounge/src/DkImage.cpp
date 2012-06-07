@@ -461,12 +461,12 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	this->file = file;
 	this->virtualFile = file;
 
-	saveDir = DkSettings::GlobalSettings::lastSaveDir;	// loading save dir is obsolete ?!
+	saveDir = DkSettings::Global::lastSaveDir;	// loading save dir is obsolete ?!
 
 	if (file.exists())
 		loadDir(file.absoluteDir());
 	else
-		dir = DkSettings::GlobalSettings::lastDir;
+		dir = DkSettings::Global::lastDir;
 
 	// init cacher
 	cacher = 0;
@@ -590,7 +590,7 @@ bool DkImageLoader::loadDir(QDir newDir) {
 void DkImageLoader::startStopCacher() {
 
 	// stop cacher
-	if (DkSettings::ResourceSettings::cacheMemory <= 0 && cacher) {
+	if (DkSettings::Resources::cacheMemory <= 0 && cacher) {
 		cacher->stop();
 		cacher->wait();
 		delete cacher;
@@ -599,7 +599,7 @@ void DkImageLoader::startStopCacher() {
 	}
 
 	// start cacher
-	if (DkSettings::ResourceSettings::cacheMemory > 0 && !cacher) {
+	if (DkSettings::Resources::cacheMemory > 0 && !cacher) {
 		cacher = new DkCacher(&cache);
 		cacher->setNewDir(dir, files);
 	}
@@ -707,7 +707,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
 		newFileIdx = cFileIdx + skipIdx;
 
-		if (DkSettings::GlobalSettings::loop) {
+		if (DkSettings::Global::loop) {
 			newFileIdx %= files.size();
 
 			while (newFileIdx < 0)
@@ -793,14 +793,14 @@ void DkImageLoader::loadFileAt(int idx) {
 		if (idx == -1) {
 			idx = files.size()-1;
 		}
-		else if (DkSettings::GlobalSettings::loop) {
+		else if (DkSettings::Global::loop) {
 			idx %= files.size();
 
 			while (idx < 0)
 				idx = files.size() + idx;
 
 		}
-		else if (idx < 0 && !DkSettings::GlobalSettings::loop) {
+		else if (idx < 0 && !DkSettings::Global::loop) {
 			QString msg = tr("You have reached the beginning");
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
@@ -1077,9 +1077,9 @@ void DkImageLoader::saveFile(QFileInfo file, QString fileFilter, QImage saveImg,
  **/ 
 void DkImageLoader::saveTempFile(QImage img) {
 
-	QFileInfo tmpPath = QFileInfo(DkSettings::GlobalSettings::tmpPath + "\\");
+	QFileInfo tmpPath = QFileInfo(DkSettings::Global::tmpPath + "\\");
 	
-	if (!DkSettings::GlobalSettings::useTmpPath || !tmpPath.exists()) {
+	if (!DkSettings::Global::useTmpPath || !tmpPath.exists()) {
 		qDebug() << tmpPath.absolutePath() << "does not exist";
 		return;
 	}
@@ -1209,7 +1209,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 
 		// assign the new save directory
 		saveDir = QDir(file.absoluteDir());
-		DkSettings::GlobalSettings::lastSaveDir = file.absolutePath();
+		DkSettings::Global::lastSaveDir = file.absolutePath();
 				
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);
@@ -1324,22 +1324,22 @@ void DkImageLoader::saveRating(int rating) {
  **/ 
 void DkImageLoader::updateHistory() {
 
-	DkSettings::GlobalSettings::lastDir = file.absolutePath();
+	DkSettings::Global::lastDir = file.absolutePath();
 
-	DkSettings::GlobalSettings::recentFiles.removeAll(file.absoluteFilePath());
-	DkSettings::GlobalSettings::recentFolders.removeAll(file.absolutePath());
+	DkSettings::Global::recentFiles.removeAll(file.absoluteFilePath());
+	DkSettings::Global::recentFolders.removeAll(file.absolutePath());
 
-	DkSettings::GlobalSettings::recentFiles.push_front(file.absoluteFilePath());
-	DkSettings::GlobalSettings::recentFolders.push_front(file.absolutePath());
+	DkSettings::Global::recentFiles.push_front(file.absoluteFilePath());
+	DkSettings::Global::recentFolders.push_front(file.absolutePath());
 
-	DkSettings::GlobalSettings::recentFiles.removeDuplicates();
-	DkSettings::GlobalSettings::recentFolders.removeDuplicates();
+	DkSettings::Global::recentFiles.removeDuplicates();
+	DkSettings::Global::recentFolders.removeDuplicates();
 
-	for (int idx = 0; idx < DkSettings::GlobalSettings::recentFiles.size()-20; idx++)
-		DkSettings::GlobalSettings::recentFiles.pop_back();
+	for (int idx = 0; idx < DkSettings::Global::recentFiles.size()-20; idx++)
+		DkSettings::Global::recentFiles.pop_back();
 
-	for (int idx = 0; idx < DkSettings::GlobalSettings::recentFiles.size()-20; idx++)
-		DkSettings::GlobalSettings::recentFiles.pop_back();
+	for (int idx = 0; idx < DkSettings::Global::recentFiles.size()-20; idx++)
+		DkSettings::Global::recentFiles.pop_back();
 
 
 	// TODO: shouldn't we delete that -> it's saved when nomacs is closed anyway
@@ -1940,7 +1940,7 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 			if (!img.isNull()) {
 				curCache -= cache->at(idx).getCacheSize();
 				
-				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < DkSettings::ResourceSettings::cacheMemory) {
+				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < DkSettings::Resources::cacheMemory) {
 					cache->at(idx).setImage(img);
 					curCache += cache->at(idx).getCacheSize();
 				}
@@ -1998,7 +1998,7 @@ void DkCacher::load() {
 bool DkCacher::clean(int curCacheIdx) {
 
 	// nothing todo
-	if (curCache < DkSettings::ResourceSettings::cacheMemory)
+	if (curCache < DkSettings::Resources::cacheMemory)
 		return true;
 	
 	for (int idx = 0; idx < (int)cache->size(); idx++) {
@@ -2020,7 +2020,7 @@ bool DkCacher::clean(int curCacheIdx) {
 	qDebug() << "[cache] cache volume: " << curCache << " MB";
 
 	// stop caching
-	if (curCache >= DkSettings::ResourceSettings::cacheMemory)
+	if (curCache >= DkSettings::Resources::cacheMemory)
 		return false;
 	
 	return true;
@@ -2054,7 +2054,7 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 		curCache += cacheImg->getCacheSize();
 
 		qDebug() << "[cache] I cached: " << cacheImg->getFile().fileName() << " cache volume: " << curCache << " MB/ " 
-			<< DkSettings::ResourceSettings::cacheMemory << " MB";
+			<< DkSettings::Resources::cacheMemory << " MB";
 		return true;
 	}
 	else
@@ -2078,7 +2078,7 @@ DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir) {
 	this->thumbs = thumbs;
 	this->dir = dir;
 	this->isActive = true;
-	this->maxThumbSize = DkSettings::DisplaySettings::thumbSize;
+	this->maxThumbSize = DkSettings::Display::thumbSize;
 	init();
 }
 
@@ -2364,7 +2364,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 	int orientation = dataExif.getOrientation();
 	int imgW = thumb.width();
 	int imgH = thumb.height();
-	int tS = DkSettings::DisplaySettings::thumbSize;
+	int tS = DkSettings::Display::thumbSize;
 
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
@@ -2410,7 +2410,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
 
 		// there seems to be a bug in exiv2
-		if ((initialSize.width() > 400 || initialSize.height() > 400) && DkSettings::DisplaySettings::saveThumb)	// TODO settings
+		if ((initialSize.width() > 400 || initialSize.height() > 400) && DkSettings::Display::saveThumb)	// TODO settings
 			dataExif.saveThumbnail(thumb);
 	}
 	else {

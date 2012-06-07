@@ -328,7 +328,7 @@ DkOpenWithDialog::DkOpenWithDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 
 void DkOpenWithDialog::init() {
 
-	defaultApp = (DkSettings::GlobalSettings::defaultAppIdx < 0) ? 0 : DkSettings::GlobalSettings::defaultAppIdx;
+	defaultApp = (DkSettings::Global::defaultAppIdx < 0) ? 0 : DkSettings::Global::defaultAppIdx;
 	numDefaultApps = 0;
 	userClickedOk = false;
 
@@ -381,8 +381,8 @@ void DkOpenWithDialog::createLayout() {
 			connect(radio, SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));			
 
 			// always check first one
-			if (DkSettings::GlobalSettings::defaultAppIdx == -1 && first ||
-				DkSettings::GlobalSettings::defaultAppIdx == idx ) {
+			if (DkSettings::Global::defaultAppIdx == -1 && first ||
+				DkSettings::Global::defaultAppIdx == idx ) {
 
 					radio->setChecked(true);
 					first = false;
@@ -395,9 +395,9 @@ void DkOpenWithDialog::createLayout() {
 	}
 
 
-	QStringList tmpUserPaths = DkSettings::GlobalSettings::userAppPaths; // shortcut
+	QStringList tmpUserPaths = DkSettings::Global::userAppPaths; // shortcut
 
-	for (int idx = 0; idx < DkSettings::GlobalSettings::numUserChoices; idx++) {
+	for (int idx = 0; idx < DkSettings::Global::numUserChoices; idx++) {
 
 		// default initialization
 		userRadios.append(new QRadioButton(tr("Choose Application")));
@@ -428,7 +428,7 @@ void DkOpenWithDialog::createLayout() {
 
 		int userIdx = idx + numDefaultApps;
 
-		if (DkSettings::GlobalSettings::defaultAppIdx == userIdx)
+		if (DkSettings::Global::defaultAppIdx == userIdx)
 			userRadios[idx]->setChecked(true);
 
 		// is an application set & is it still installed?
@@ -459,7 +459,7 @@ void DkOpenWithDialog::createLayout() {
 	// never again checkbox
 	neverAgainBox = new QCheckBox(tr("Never show this dialog again"));
 	neverAgainBox->setObjectName("neverAgainBox");
-	neverAgainBox->setChecked(!DkSettings::GlobalSettings::showDefaultAppDialog);
+	neverAgainBox->setChecked(!DkSettings::Global::showDefaultAppDialog);
 	neverAgainBox->setToolTip(tr("Do not be scared, you can always open this window in Preferences -> Global Settings"));
 
 	// ok, cancel button
@@ -547,10 +547,10 @@ void DkOpenWithDialog::okClicked() {
 	userClickedOk = true;
 
 	// store everything
-	DkSettings::GlobalSettings::showDefaultAppDialog = !neverAgainBox->isChecked();
-	DkSettings::GlobalSettings::defaultAppIdx = defaultApp;
-	DkSettings::GlobalSettings::defaultAppPath = getPath();
-	DkSettings::GlobalSettings::userAppPaths = userAppPaths;
+	DkSettings::Global::showDefaultAppDialog = !neverAgainBox->isChecked();
+	DkSettings::Global::defaultAppIdx = defaultApp;
+	DkSettings::Global::defaultAppPath = getPath();
+	DkSettings::Global::userAppPaths = userAppPaths;
 
 	close();
 }
