@@ -96,6 +96,7 @@ enum {
 	shortcut_skip_next		= Qt::Key_PageDown,
 	shortcut_prev_file		= Qt::Key_Backspace,
 	shortcut_next_file		= Qt::Key_Enter,
+	shortcut_rename			= Qt::Key_F2,
 
 	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 	shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
@@ -143,6 +144,7 @@ enum {
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
 	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
+	
 
 	// tcp
 	shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
@@ -167,6 +169,7 @@ enum fileActions {
 	menu_file_open_dir,
 	menu_file_open_with,
 	menu_file_save,
+	menu_file_rename,
 	menu_file_print,
 	menu_file_reload,
 	menu_file_next,
@@ -359,6 +362,7 @@ public slots:
 	void openSettings();
 	void openDir();
 	void openFile();
+	void renameFile();
 	void saveFile();
 	void resizeImage();
 	void deleteFile();

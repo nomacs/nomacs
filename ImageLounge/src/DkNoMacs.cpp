@@ -298,6 +298,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open]);
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
 	fileMenu->addAction(fileActions[menu_file_open_with]);
+	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addAction(fileActions[menu_file_save]);
 
 	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::Global::recentFiles);
@@ -434,6 +435,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_open_with]->setShortcut(QKeySequence(shortcut_open_with));
 	fileActions[menu_file_open_with]->setStatusTip(tr("Open an image in a different Program"));
 	connect(fileActions[menu_file_open_with], SIGNAL(triggered()), this, SLOT(openFileWith()));
+
+	fileActions[menu_file_rename] = new QAction(tr("Re&name"), this);
+	fileActions[menu_file_rename]->setShortcut(QKeySequence(shortcut_rename));
+	fileActions[menu_file_rename]->setStatusTip(tr("Rename an image"));
+	connect(fileActions[menu_file_rename], SIGNAL(triggered()), this, SLOT(renameFile()));
 
 	fileActions[menu_file_save] = new QAction(fileIcons[icon_file_save], tr("&Save"), this);
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
@@ -738,6 +744,7 @@ void DkNoMacs::createShortcuts() {
 void DkNoMacs::enableNoImageActions(bool enable) {
 
 	fileActions[menu_file_save]->setEnabled(enable);
+	fileActions[menu_file_rename]->setEnabled(enable);
 	fileActions[menu_file_open_with]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
 	fileActions[menu_file_reload]->setEnabled(enable);
@@ -751,6 +758,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_transfrom]->setEnabled(enable);
 	editActions[menu_edit_crop]->setEnabled(enable);
 	editActions[menu_edit_copy]->setEnabled(enable);
+	editActions[menu_edit_copy_buffer]->setEnabled(enable);
 
 	viewActions[menu_view_show_info]->setEnabled(enable);
 	viewActions[menu_view_show_preview]->setEnabled(enable);
@@ -1387,6 +1395,78 @@ void DkNoMacs::openFile() {
 
 	//qDebug() << "os filename: " << fileNames[0];
 	//viewport()->loadFile(QFileInfo(fileNames[0]));
+}
+
+void DkNoMacs::renameFile() {
+
+	DkImageLoader* loader = viewport()->getImageLoader();
+
+	if (!loader)
+		return;
+
+	QFileInfo file = loader->getFile();
+
+	if (!file.absoluteDir().exists()) {
+		viewport()->getController()->setInfo(tr("Sorry, the directory: %1  does not exist\n").arg(file.absolutePath()));
+		return;
+	}
+	if (file.exists() && !file.isWritable()) {
+		viewport()->getController()->setInfo(tr("Sorry, I can't write to the file: %1").arg(file.fileName()));
+		return;
+	}
+
+	bool ok;
+	QString filename = QInputDialog::getText(this, file.baseName(), tr("Rename:"), QLineEdit::Normal, file.baseName(), &ok);
+
+
+	if (ok && !filename.isEmpty() && filename != file.baseName()) {
+		
+		if (!file.suffix().isEmpty())
+			filename.append("." + file.suffix());
+		
+		qDebug() << "renaming: " << file.fileName() << " -> " << filename;
+		QFileInfo renamedFile = QFileInfo(file.absoluteDir(), filename);
+
+		// overwrite file?
+		if (renamedFile.exists()) {
+
+			QMessageBox infoDialog(this);
+			infoDialog.setWindowTitle(tr("Question"));
+			infoDialog.setText(tr("The file: %1  already exists.\n Do you want to replace it?").arg(filename));
+			infoDialog.setIcon(QMessageBox::Question);
+			infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+			infoDialog.setDefaultButton(QMessageBox::No);
+			infoDialog.show();
+			int choice = infoDialog.exec();
+
+			if (choice == QMessageBox::Yes) {
+
+				QFile oldFile(renamedFile.absoluteFilePath());
+				bool removed = oldFile.remove();
+
+				// tell user that deleting went wrong, and stop the renaming
+				if (!removed) {
+					viewport()->getController()->setInfo(tr("Sorry, I can't delete: %1").arg(file.fileName()));
+					return;
+				}
+			}
+			else
+				return;		// cancel renaming
+		}
+
+		viewport()->unloadImage();
+
+		QFile newFile(file.absoluteFilePath());
+		bool renamed = newFile.rename(renamedFile.absoluteFilePath());
+		
+		// tell user that deleting went wrong, and stop the renaming
+		if (!renamed)
+			viewport()->getController()->setInfo(tr("Sorry, I can't rename: %1").arg(file.fileName()));
+		else
+			viewport()->loadFile(renamedFile.absoluteFilePath());
+		
+	}
+
 }
 
 void DkNoMacs::saveFile() {
