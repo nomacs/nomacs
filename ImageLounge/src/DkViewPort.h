@@ -206,6 +206,10 @@ public:
 		return fileInfoLabel;
 	}
 
+	DkHistogram* getHistogram() {
+		return histogram;
+	}
+
 	int getRating() {
 		return rating;
 	}
@@ -226,6 +230,7 @@ public slots:
 	void showPlayer(bool visible);
 	void showCrop(bool visible);
 	void showOverview(bool visible);
+	void showHistogram(bool visible);
 
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
@@ -263,6 +268,7 @@ protected:
 	DkMetaDataInfo* metaDataInfo;
 	DkOverview* overviewWindow;
 	DkPlayer* player;
+	DkHistogram* histogram;
 
 	DkFileInfoLabel* fileInfoLabel;
 	DkRatingLabelBg* ratingLabel;
@@ -575,6 +581,7 @@ private:
 		
 	QVector<QImage> imgs;
 	QVector<QRgb> colorTable;
+	void drawImageHistogram();
 
 };
 

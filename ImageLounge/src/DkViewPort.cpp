@@ -69,6 +69,9 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	wheelButton->adjustSize();
 	wheelButton->hide();
 
+	// image histogram
+	histogram = new DkHistogram(this);
+
 	init();
 	connectWidgets();
 }
@@ -86,7 +89,7 @@ void DkControlWidget::init() {
 	metaDataInfo->setDisplaySettings(&DkSettings::App::showMetaData);
 	fileInfoLabel->setDisplaySettings(&DkSettings::App::showFileInfoLabel);
 	player->setDisplaySettings(&DkSettings::App::showPlayer);
-	//histogram->setDisplaySettings(&DkSettings::AppSettings::showHistogram);
+	histogram->setDisplaySettings(&DkSettings::App::showHistogram);
 
 	// some adjustments
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -155,7 +158,7 @@ void DkControlWidget::init() {
 	rLayout->addWidget(ratingLabel);
 	rLayout->addStretch();
 
-	// right column
+	// file info
 	QWidget* fw = new QWidget();
 	fw->setContentsMargins(0,0,0,30);
 	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::RightToLeft, fw);
@@ -163,10 +166,19 @@ void DkControlWidget::init() {
 	rwLayout->addWidget(fileInfoLabel);
 	rwLayout->addStretch();
 
+	// right column
+	QWidget* hw = new QWidget();
+	hw->setContentsMargins(0,10,10,0);
+	QBoxLayout* hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
+	hwLayout->setContentsMargins(0,0,0,0);
+	hwLayout->addWidget(histogram);
+	hwLayout->addStretch();
+
+	// right column
 	QWidget* rightWidget = new QWidget();
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
-	//lrLayout->addWidget(imageHistogram);	//TODO: tim uncomment this line
+	lrLayout->addWidget(hw);
 	lrLayout->addStretch();
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
@@ -261,7 +273,7 @@ void DkControlWidget::showWidgetsSettings() {
 		showInfo(false);
 		showPlayer(false);
 		overviewWindow->hide();
-		//showHistogram(false);	//uncomment when histogram is added
+		showHistogram(false);
 	}
 
 	qDebug() << "current app mode: " << DkSettings::App::currentAppMode;
@@ -270,7 +282,7 @@ void DkControlWidget::showWidgetsSettings() {
 	showMetaData(metaDataInfo->getCurrentDisplaySetting());
 	showInfo(fileInfoLabel->getCurrentDisplaySetting());
 	showPlayer(player->getCurrentDisplaySetting());
-	//showHistogram(histogram->getCurrentDisplaySetting());
+	showHistogram(histogram->getCurrentDisplaySetting());
 }
 
 void DkControlWidget::showPreview(bool visible) {
@@ -356,6 +368,22 @@ void DkControlWidget::showCrop(bool visible) {
 		editWidget->hide();
 		hudWidget->show();
 		editRect->hide();
+	}
+
+}
+
+void DkControlWidget::showHistogram(bool visible) {
+	
+	if (!histogram)
+		return;
+
+	if (visible && !histogram->isVisible()) {
+		histogram->show();
+		if(!viewport->getImage().isNull()) histogram->drawHistogram(viewport->getImage());
+		else  histogram->clearHistogram();
+	}
+	else if (!visible && histogram->isVisible()) {
+		histogram->hide();
 	}
 
 }
@@ -1149,6 +1177,9 @@ void DkViewPort::setImage(QImage newImg) {
 
 	update();
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
+
+	// draw a histogram from the image
+	if (controller->getHistogram() && controller->getHistogram()->isVisible()) controller->getHistogram()->drawHistogram(newImg);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -2440,6 +2471,8 @@ void DkViewPortContrast::changeChannel(int channel) {
 		drawFalseColorImg = true;
 
 		update();
+
+		drawImageHistogram();
 	}
 
 }
@@ -2611,6 +2644,8 @@ void DkViewPortContrast::enableTF(bool enable) {
 	drawFalseColorImg = enable;
 	update();
 
+	drawImageHistogram();
+
 }
 
 void DkViewPortContrast::mousePressEvent(QMouseEvent *event) {
@@ -2666,6 +2701,15 @@ QImage& DkViewPortContrast::getImage() {
 
 }
 
+// in contrast mode: if the histogram widget is visible redraw the histogram from the selected image channel data
+void DkViewPortContrast::drawImageHistogram() {
+
+	if (controller->getHistogram() && controller->getHistogram()->isVisible()) {
+		if(drawFalseColorImg) controller->getHistogram()->drawHistogram(falseColorImg);
+		else controller->getHistogram()->drawHistogram(imgQt);
+	}
+
+}
 
 // custom events --------------------------------------------------------------------
 //QEvent::Type DkInfoEvent::infoEventType = static_cast<QEvent::Type>(QEvent::registerEventType());

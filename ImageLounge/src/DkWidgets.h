@@ -1195,6 +1195,35 @@ protected:
 	QString text;
 
 	void init();
+
+};
+
+// Image histogram display
+class DkHistogram : public DkWidget {
+
+	Q_OBJECT
+	
+	public:
+		DkHistogram(QWidget *parent);
+		~DkHistogram();
+		void drawHistogram(QImage img);
+		void clearHistogram();
+		void setMaxHistogramValue(long maxValue);
+		void updateHistogramValues(long histValues[][256]);
+		void setPainted(bool isPainted);
+
+	protected:
+		virtual void mousePressEvent(QMouseEvent *event);
+		virtual void mouseReleaseEvent(QMouseEvent *event);
+		virtual void paintEvent(QPaintEvent* event);
+
+	private:
+		QWidget* parent;
+		long hist[3][256];
+		long maxValue;
+		bool isPainted;
+		float scaleFactor;
+				
 };
 
 };

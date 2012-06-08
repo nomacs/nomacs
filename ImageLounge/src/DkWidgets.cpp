@@ -2894,4 +2894,167 @@ void DkColorChooser::on_colorDialog_accepted() {
 	setColor(colorDialog->currentColor());
 }
 
+// Image histogram  -------------------------------------------------------------------
+DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
+	
+	setObjectName("DkHistogram");
+	this->parent = parent;
+	this->setMinimumWidth(260);
+	this->setMinimumHeight(130);
+	isPainted = false;
+	maxValue = 20;
+	scaleFactor = 1;
+}
+
+DkHistogram::~DkHistogram() {
+
+
+}
+
+/**
+ * Paints the image histogram
+ **/
+void DkHistogram::paintEvent(QPaintEvent* event) {
+
+	QPainter painter(this);
+	painter.setPen(QColor(200, 200, 200));
+	painter.fillRect(1, 1, width() - 3, height() - 2, bgCol);
+	painter.drawRect(1, 1, width() - 3, height() - 2);
+
+	if(isPainted){
+		for(int i = 0; i < 256; i++){
+			int rLineHeight = ((int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
+			int gLineHeight = ((int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
+			int bLineHeight = ((int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
+			int maxLineHeight = (rLineHeight > gLineHeight) ? ((rLineHeight > bLineHeight) ? rLineHeight : bLineHeight) :  ((gLineHeight > bLineHeight) ? gLineHeight : bLineHeight);
+
+			for(int j = 0; j <= maxLineHeight; j++) {
+				if(j <= rLineHeight && j <= gLineHeight && j <= bLineHeight) painter.setPen(Qt::gray);
+				else if(j <= rLineHeight && j <= gLineHeight) painter.setPen(Qt::yellow);
+				else if(j <= rLineHeight && j <= bLineHeight) painter.setPen(Qt::magenta);
+				else if(j <= gLineHeight && j <= bLineHeight) painter.setPen(Qt::cyan);
+				else if(j <= rLineHeight) painter.setPen(Qt::red);
+				else if(j <= gLineHeight) painter.setPen(Qt::green);
+				else if(j <= bLineHeight) painter.setPen(Qt::blue);
+				else painter.setPen(bgCol);
+
+				painter.drawPoint(2 + i, height() - j - 2);
+			}
+		}
+	}
+}
+
+/**
+ * Goes through the image and counts pixels values. They are used to create the image histogram.
+ * @param currently displayed image
+ **/ 
+void DkHistogram::drawHistogram(QImage imgQt) {
+
+	#ifdef WITH_OPENCV
+
+	Mat imgMat = DkImage::qImage2Mat(imgQt);
+	
+	vector<Mat> imgChannels;
+	split(imgMat, imgChannels);
+
+	int noChannels = (imgChannels.size() < 3) ? 1 : 3;
+
+	// Set the number of bins
+	int histSize = 256;
+	// Set the ranges for B,G,R
+	float range[] = { 0, 256 } ;
+	const float* histRange = { range };
+
+	vector<Mat> hist (noChannels);
+	long histValues[3][256];
+	long maxHistValue = 0;
+
+	for (int i = 0; i < noChannels; i++) {
+
+		calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist[i], 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
+			
+		float *ptrChannel = hist[i].ptr<float>(0);
+		for (int j = 0; j < 256; j++) histValues[i][j] = (long) ptrChannel[j];
+	}
+
+	if (noChannels == 1) {
+
+		for (int i = 0; i < 256; i++) {
+			histValues[2][i] = histValues[1][i] = histValues[0][i];
+			
+			if(histValues[0][i] > maxHistValue) maxHistValue = histValues[0][i];
+		}
+	}
+	else {
+
+		for (int i = 0; i < 256; i++) {
+			long maxRGB = (histValues[0][i] > histValues[1][i]) ? 
+				((histValues[0][i] > histValues[2][i]) ? histValues[0][i] : histValues[2][i]) :  
+				((histValues[1][i] > histValues[2][i]) ? histValues[1][i] : histValues[2][i]);
+
+			if(maxRGB > maxHistValue) maxHistValue = maxRGB;
+		}
+	}
+
+	setMaxHistogramValue(maxHistValue);
+	updateHistogramValues(histValues);
+	setPainted(true);
+
+	#else
+
+	setPainted(false);
+
+	#endif
+	
+	update();
+}
+
+/**
+ * Clears the histogram panel
+ **/ 
+void DkHistogram::clearHistogram() {
+
+	setPainted(false);
+	update();
+}
+
+void DkHistogram::setPainted(bool isPainted) {
+
+	this->isPainted = isPainted;
+}
+
+void DkHistogram::setMaxHistogramValue(long maxValue) {
+
+	this->maxValue = maxValue;
+}
+
+/**
+ * Updates histogram values.
+ * @param values to be copied
+ **/ 
+void DkHistogram::updateHistogramValues(long histValues[][256]) {
+
+	for(int i = 0; i < 256; i++) {
+		this->hist[0][i] = histValues[0][i];
+		this->hist[1][i] = histValues[1][i];
+		this->hist[2][i] = histValues[2][i];
+	}
+}
+
+/**
+ * Mouse events for scaling the histogram - enlarge the histogram between the bottom axis and the cursor position
+ **/ 
+void DkHistogram::mousePressEvent(QMouseEvent *event) {
+
+	QPointF clickedPos = event->pos();
+	scaleFactor = height() / (height() - clickedPos.y());
+	update();
+}
+
+void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
+	
+	scaleFactor = 1;
+	update();
+}
+
 }

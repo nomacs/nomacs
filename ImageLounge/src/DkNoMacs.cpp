@@ -348,6 +348,7 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_show_overview]);
 	viewMenu->addAction(viewActions[menu_view_show_player]);
 	viewMenu->addAction(viewActions[menu_view_show_info]);
+	viewMenu->addAction(viewActions[menu_view_show_histogram]);
 	viewMenu->addSeparator();
 	
 	viewMenu->addAction(viewActions[menu_view_frameless]);	
@@ -393,6 +394,7 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(viewActions[menu_view_show_overview]);
 	contextMenu->addAction(viewActions[menu_view_show_player]);
 	contextMenu->addAction(viewActions[menu_view_show_info]);
+	contextMenu->addAction(viewActions[menu_view_show_histogram]);
 	contextMenu->addSeparator();
 
 	QMenu* viewContextMenu = contextMenu->addMenu(tr("&View"));
@@ -628,6 +630,12 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_info]->setCheckable(true);
 	connect(viewActions[menu_view_show_info], SIGNAL(toggled(bool)), vp->getController(), SLOT(showInfo(bool)));
 
+	viewActions[menu_view_show_histogram] = new QAction(tr("Show &Histogram"), this);
+	viewActions[menu_view_show_histogram]->setShortcut(QKeySequence(shortcut_show_histogram));
+	viewActions[menu_view_show_histogram]->setStatusTip(tr("shows the image histogram panel"));
+	viewActions[menu_view_show_histogram]->setCheckable(true);
+	connect(viewActions[menu_view_show_histogram], SIGNAL(toggled(bool)), vp->getController(), SLOT(showHistogram(bool)));
+
 	viewActions[menu_view_frameless] = new QAction(tr("&Frameless"), this);
 	viewActions[menu_view_frameless]->setShortcut(QKeySequence(shortcut_frameless));
 	viewActions[menu_view_frameless]->setStatusTip(tr("shows a frameless window"));
@@ -761,6 +769,11 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
 
 	viewActions[menu_view_show_info]->setEnabled(enable);
+	#ifdef WITH_OPENCV
+		viewActions[menu_view_show_histogram]->setEnabled(enable);
+	#else
+		viewActions[menu_view_show_histogram]->setEnabled(false);
+	#endif
 	viewActions[menu_view_show_preview]->setEnabled(enable);
 	viewActions[menu_view_show_exif]->setEnabled(enable);
 	viewActions[menu_view_show_overview]->setEnabled(enable);
@@ -2247,7 +2260,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-
+	vp->getController()->getHistogram()->registerAction(viewActions[menu_view_show_histogram]);
 	DkSettings::App::appMode = 0;
 
 	initLanClient();
@@ -2298,6 +2311,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
+		vp->getController()->getHistogram()->registerAction(viewActions[menu_view_show_histogram]);
 
 		// in frameless, you cannot control if menu is visible...
 		viewActions[menu_view_show_menu]->setEnabled(false);
@@ -2461,6 +2475,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
 		vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
+		vp->getController()->getHistogram()->registerAction(viewActions[menu_view_show_histogram]);
 
 		initLanClient();
 		emit sendTitleSignal(windowTitle());
