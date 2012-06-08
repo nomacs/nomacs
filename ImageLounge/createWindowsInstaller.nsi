@@ -7,7 +7,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "0.3.1 beta"
+!define PRODUCT_VERSION "0.3.3 beta"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -219,7 +219,8 @@ Function fileAssociationFinished
 	; DELETE OLD DLLs
 	Delete "$INSTDIR\opencv_imgproc220.dll"
 	Delete "$INSTDIR\opencv_core220.dll"
-
+	Delete "$INSTDIR\opencv_imgproc231.dll"
+	Delete "$INSTDIR\opencv_core231.dll"
 
 	; RESET UPDATE FLAG
 	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
@@ -390,8 +391,8 @@ Section "MainSection" SEC01
   File "ReallyRelease\libraw.dll"
   File "ReallyRelease\msvcp100.dll"
   File "ReallyRelease\msvcr100.dll"
-  File "ReallyRelease\opencv_core231.dll"
-  File "ReallyRelease\opencv_imgproc231.dll"
+  File "ReallyRelease\opencv_core240.dll"
+  File "ReallyRelease\opencv_imgproc240.dll"
   File "ReallyRelease\QtCore4.dll"
   File "ReallyRelease\QtGui4.dll"
   File "ReallyRelease\QtNetwork4.dll"
@@ -517,6 +518,8 @@ Section Uninstall
   Delete "$INSTDIR\opencv_core220.dll"
   Delete "$INSTDIR\opencv_imgproc231.dll"
   Delete "$INSTDIR\opencv_core231.dll"
+  Delete "$INSTDIR\opencv_imgproc240.dll"
+  Delete "$INSTDIR\opencv_core240.dll"
   Delete "$INSTDIR\msvcr100.dll"
   Delete "$INSTDIR\msvcp100.dll"
   Delete "$INSTDIR\libraw.dll"
