@@ -50,7 +50,7 @@ void DkWidget::init() {
 	opacityEffect = new QGraphicsOpacityEffect(this);
 	opacityEffect->setOpacity(0);
 	setGraphicsEffect(opacityEffect);
-	QWidget::hide();
+	setVisible(false);
 }
 
 void DkWidget::show() {
@@ -59,7 +59,7 @@ void DkWidget::show() {
 	if (!blocked && !showing) {
 		hiding = false;
 		showing = true;
-		QWidget::show();
+		setVisible(true);
 		animateOpacityUp();
 	}
 }
@@ -114,8 +114,7 @@ void DkWidget::animateOpacityDown() {
 	if (opacityEffect->opacity() <= 0.0f) {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
-		QWidget::hide();	// finally hide the widget
-
+		setVisible(false);	// finally hide the widget
 		return;
 	}
 
@@ -988,7 +987,7 @@ void DkFadeLabel::init() {
 	opacityEffect = new QGraphicsOpacityEffect(this);
 	opacityEffect->setOpacity(0);
 	setGraphicsEffect(opacityEffect);
-	QLabel::hide();
+	setVisible(false);
 }
 
 void DkFadeLabel::show() {
@@ -996,7 +995,7 @@ void DkFadeLabel::show() {
 	if (!blocked && !showing) {
 		hiding = false;
 		showing = true;
-		QLabel::show();
+		setVisible(true);
 		animateOpacityUp();
 	}
 }
@@ -1020,7 +1019,7 @@ void DkFadeLabel::setVisible(bool visible) {
 	if (visible && !isVisible() && !showing)
 		opacityEffect->setOpacity(100);
 
-	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+	emit visibleSignal(visible);
 	QLabel::setVisible(visible);
 }
 
@@ -1047,7 +1046,7 @@ void DkFadeLabel::animateOpacityDown() {
 	if (opacityEffect->opacity() <= 0.0f) {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
-		QLabel::hide();	// finally hide the widget
+		setVisible(false);	// finally hide the widget
 		return;
 	}
 
@@ -1137,6 +1136,8 @@ void DkButton::paintEvent(QPaintEvent *event) {
 
 	painter.drawPixmap(r, pm2draw);
 	painter.end();
+
+	QPushButton::paintEvent(event);
 }
 
 QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
@@ -1274,7 +1275,7 @@ void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
 }
 
 // title info --------------------------------------------------------------------
-DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkLabel(parent) {
+DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 
 	setObjectName("DkFileInfoLabel");
 	setStyleSheet("QLabel#DkFileInfoLabel{background-color: " + DkUtils::colorToString(bgCol) + ";} QLabel{color: white;}");
@@ -1318,7 +1319,7 @@ void DkFileInfoLabel::setVisible(bool visible) {
 			int choice = infoDialog.exec();
 
 			if (choice == QMessageBox::No) {
-				DkLabel::setVisible(false);
+				DkFadeLabel::setVisible(false);
 				return;
 			}
 			else {
@@ -1328,7 +1329,7 @@ void DkFileInfoLabel::setVisible(bool visible) {
 			}
 	}
 
-	DkLabel::setVisible(visible);
+	DkFadeLabel::setVisible(visible);
 	title->setVisible(DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_file_name));
 	date->setVisible(DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_creation_date));
 	rating->setVisible(DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
@@ -1341,6 +1342,7 @@ void DkFileInfoLabel::setVisible(bool visible) {
 	if (rating->isVisible())
 		height += rating->sizeHint().height();
 
+	qDebug() << "my minimum height: " << height;
 	setMinimumHeight(height);
 	updateWidth();
 }

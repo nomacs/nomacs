@@ -97,16 +97,7 @@ public:
 			return false;
 		}
 
-		qDebug() << objectName();
-		qDebug() << "default: " << displaySettingsBits->testBit(0);
-		qDebug() << "frameless: " << displaySettingsBits->testBit(1);
-		qDebug() << "contrast: " << displaySettingsBits->testBit(2);
-		qDebug() << "default F: " << displaySettingsBits->testBit(3);
-		qDebug() << "fameless F: " << displaySettingsBits->testBit(4);
-		qDebug() << "contrast F: " << displaySettingsBits->testBit(5);
-
 		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
-
 	};
 
 
@@ -114,9 +105,9 @@ signals:
 	void visibleSignal(bool visible);
 
 public slots:
-	void show();
-	void hide();
-	void setVisible(bool visible);
+	virtual void show();
+	virtual void hide();
+	virtual void setVisible(bool visible);
 
 	void animateOpacityUp();
 	void animateOpacityDown();
@@ -273,9 +264,9 @@ signals:
 	void visibleSignal(bool visible);
 
 public slots:
-	void show();
-	void hide();
-	void setVisible(bool visible);
+	virtual void show();
+	virtual void hide();
+	virtual void setVisible(bool visible);
 
 	void animateOpacityUp();
 	void animateOpacityDown();
@@ -433,7 +424,7 @@ protected:
 };
 
 // TODO: check why it's not working with DkFadeLabel
-class DkFileInfoLabel : public DkLabel {
+class DkFileInfoLabel : public DkFadeLabel {
 	Q_OBJECT
 
 public:
@@ -445,8 +436,10 @@ public:
 	void updateTitle(const QFileInfo& file);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
-	void setVisible(bool visible);
 	DkRatingLabel* getRatingLabel();
+
+public slots:
+	virtual void setVisible(bool visible);
 
 protected:
 	QPoint offset;
@@ -475,7 +468,6 @@ public:
 
 	void draw(QPainter* painter);
 	void setTimeToDisplay(int ms = 1000);
-	void show(int ms = 0);
 
 	QVector<QAction*> getActions() {
 		return actions;
@@ -524,6 +516,7 @@ public slots:
 		emit previousSignal();
 	};
 
+	virtual void show(int ms = 0);
 
 protected:
 	void resizeEvent(QResizeEvent *event);
