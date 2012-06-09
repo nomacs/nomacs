@@ -620,36 +620,38 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	getContentsMargins(&lm, &tm, &rm, &bm);
 
 	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the viewport....
-	QRectF imgRect = QRectF(QPoint(), img.size());
-	QRectF overviewRect = QRectF(QPoint(lm, tm), QSize(viewSize.width()-1, viewSize.height()-1));			// get the overview rect
+	
+	if (viewSize.width() > 2 && viewSize.height() > 2) {
+	
+		QRectF imgRect = QRectF(QPoint(), img.size());
+		QRectF overviewRect = QRectF(QPoint(lm, tm), QSize(viewSize.width()-1, viewSize.height()-1));			// get the overview rect
 
-	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
-	QRectF overviewImgRect = overviewImgMatrix.mapRect(imgRect);
-	overviewImgRect.setTop(overviewImgRect.top()+tm+1);
-	overviewImgRect.setLeft(overviewImgRect.left()+lm+1);
-	overviewImgRect.setWidth(overviewImgRect.width()+tm-1);			// we have a border... correct that...
-	overviewImgRect.setHeight(overviewImgRect.height()+lm-1);
+		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
+		QRectF overviewImgRect = overviewImgMatrix.mapRect(imgRect);
+		overviewImgRect.setTop(overviewImgRect.top()+tm+1);
+		overviewImgRect.setLeft(overviewImgRect.left()+lm+1);
+		overviewImgRect.setWidth(overviewImgRect.width()+tm-1);			// we have a border... correct that...
+		overviewImgRect.setHeight(overviewImgRect.height()+lm-1);
 
-	if (viewSize.width() < 2 || viewSize.height() < 2)
-		return;
+		// now render the current view
+		QRectF viewRect = viewPortRect;
+		viewRect = worldMatrix->inverted().mapRect(viewRect);
+		viewRect = imgMatrix->inverted().mapRect(viewRect);
+		viewRect = overviewImgMatrix.mapRect(viewRect);
+		viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
 
-	// now render the current view
-	QRectF viewRect = viewPortRect;
-	viewRect = worldMatrix->inverted().mapRect(viewRect);
-	viewRect = imgMatrix->inverted().mapRect(viewRect);
-	viewRect = overviewImgMatrix.mapRect(viewRect);
-	viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
+		//draw the image's location
+		painter.setBrush(bgCol);
+		painter.setPen(QColor(200, 200, 200));
+		painter.drawRect(overviewRect);
+		painter.setOpacity(0.8f);
+		painter.drawImage(overviewImgRect, imgT, QRect(0, 0, imgT.width(), imgT.height()));
 
-	//draw the image's location
-	painter.setBrush(bgCol);
-	painter.setPen(QColor(200, 200, 200));
-	painter.drawRect(overviewRect);
-	painter.setOpacity(0.8f);
-	painter.drawImage(overviewImgRect, imgT, QRect(0, 0, imgT.width(), imgT.height()));
+		painter.setPen(QColor(100, 0, 0));
+		painter.setBrush(QColor(100, 0, 0, 50));
+		painter.drawRect(viewRect);
 
-	painter.setPen(QColor(100, 0, 0));
-	painter.setBrush(QColor(100, 0, 0, 50));
-	painter.drawRect(viewRect);
+	}
 	painter.end();
 
 	DkWidget::paintEvent(event);
@@ -737,11 +739,19 @@ void DkOverview::resizeImg() {
 	QRectF imgRect = QRectF(QPoint(), img.size());
 
 	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
+	
+	// is the overviewImgMatrix empty?
+	if (overviewImgMatrix.isIdentity())
+		return;
+	
 	QRectF overviewImgRect = overviewImgMatrix.mapRect(imgRect);
 	overviewImgRect.setTop(overviewImgRect.top()+1);
 	overviewImgRect.setLeft(overviewImgRect.left()+1);
 	overviewImgRect.setWidth(overviewImgRect.width()-1);			// we have a border... correct that...
 	overviewImgRect.setHeight(overviewImgRect.height()-1);
+
+	if (overviewImgRect.width() <= 1|| overviewImgRect.height() <= 1)
+		return;
 
 	// fast downscaling
 	imgT = img.scaled(overviewImgRect.size().width()*2, overviewImgRect.size().height()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
@@ -757,6 +767,9 @@ QTransform DkOverview::getScaledImageMatrix() {
 	getContentsMargins(&lm, &tm, &rm, &bm);
 
 	QSize iSize = QSize(width()-lm-rm, height()-tm-bm);	// inner size
+
+	if (iSize.width() < 2 || iSize.height() < 2)
+		return QTransform();
 
 	// the image resizes as we zoom
 	QRectF imgRect = QRectF(QPoint(lm, tm), img.size());

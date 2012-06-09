@@ -1488,6 +1488,7 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 
 void DkViewPort::paintEvent(QPaintEvent* event) {
 
+	qDebug() << "painting nomacs...";
 	QPainter painter(viewport());
 
 	if (!imgQt.isNull()) {
@@ -1510,7 +1511,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		if (!controller->getOverview()->isVisible())
 			controller->getOverview()->show();
 	}
-	else
+	else if (controller->getOverview()->isVisible())
 		controller->getOverview()->hide();
 
 	painter.end();
@@ -2152,6 +2153,7 @@ void DkViewPortFrameless::resetView() {
 
 void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
+	qDebug() << "painting nomacs frameless...";
 	if (!parent->isFullScreen()) {
 
 		QPainter painter(viewport());
