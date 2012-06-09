@@ -153,42 +153,8 @@ public:
 		updateStyleSheet();
 	};
 
-	void registerAction(QAction* action) {
-		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
-	};
-
-	void setDisplaySettings(QBitArray* displayBits) {
-		displaySettingsBits = displayBits;
-	};
-
-	bool getCurrentDisplaySetting() {
-
-		if (!displaySettingsBits)
-			return false;
-
-		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
-			return false;
-		}
-
-		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
-	};
-
-
 public slots:
 	virtual void hide();
-	virtual void setVisible(bool visible) {
-	
-		QLabel::setVisible(visible);
-		emit visibleSignal(visible);
-
-		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
-			displaySettingsBits->setBit(DkSettings::App::currentAppMode, visible);
-		}
-	};
-
-signals:
-	bool visibleSignal(bool visible);
 
 protected:
 	QWidget* parent;
@@ -202,7 +168,6 @@ protected:
 	QPoint margin;
 	bool blocked;
 	QColor bgCol;
-	QBitArray* displaySettingsBits;
 
 	virtual void init();
 	virtual void paintEvent(QPaintEvent *event);
@@ -260,6 +225,27 @@ public:
 		setVisible(false);
 	};
 
+	void registerAction(QAction* action) {
+		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+	};
+
+	void setDisplaySettings(QBitArray* displayBits) {
+		displaySettingsBits = displayBits;
+	};
+
+	bool getCurrentDisplaySetting() {
+
+		if (!displaySettingsBits)
+			return false;
+
+		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+			return false;
+		}
+
+		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+	};
+
 signals:
 	void visibleSignal(bool visible);
 
@@ -268,15 +254,15 @@ public slots:
 	virtual void hide();
 	virtual void setVisible(bool visible);
 
+protected slots:
 	void animateOpacityUp();
 	void animateOpacityDown();
 
 protected:
 
-	QColor bgCol;
-	bool blocked;
 	bool hiding;
 	bool showing;
+	QBitArray* displaySettingsBits;
 
 	QGraphicsOpacityEffect *opacityEffect;
 

@@ -45,16 +45,20 @@ void DkWidget::init() {
 	hiding = false;
 	blocked = false;
 	displaySettingsBits = 0;
+	opacityEffect = 0;
 
+	// painter problems if the widget is a child of another that has the same graphicseffect
 	// widget starts on hide
 	opacityEffect = new QGraphicsOpacityEffect(this);
 	opacityEffect->setOpacity(0);
+	opacityEffect->setEnabled(false);
 	setGraphicsEffect(opacityEffect);
+
 	setVisible(false);
 }
 
 void DkWidget::show() {
-	
+
 	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
 	if (!blocked && !showing) {
 		hiding = false;
@@ -65,7 +69,10 @@ void DkWidget::show() {
 }
 
 void DkWidget::hide() {
-	
+
+	if (objectName() == "DkRatingLabel")
+		qDebug() << "hiding rating label...";
+
 	if (!hiding) {
 		hiding = true;
 		showing = false;
@@ -96,9 +103,11 @@ void DkWidget::animateOpacityUp() {
 	if (!showing)
 		return;
 
+	opacityEffect->setEnabled(true);
 	if (opacityEffect->opacity() >= 1.0f || !showing) {
 		opacityEffect->setOpacity(1.0f);
 		showing = false;
+		opacityEffect->setEnabled(false);
 		return;
 	}
 
@@ -111,10 +120,12 @@ void DkWidget::animateOpacityDown() {
 	if (!hiding)
 		return;
 
+	opacityEffect->setEnabled(true);
 	if (opacityEffect->opacity() <= 0.0f) {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
 		setVisible(false);	// finally hide the widget
+		opacityEffect->setEnabled(false);
 		return;
 	}
 
@@ -775,7 +786,6 @@ DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 		DkSettings::Display::bgColorFrameless :
 		DkSettings::Display::bgColor;
 
-	displaySettingsBits = 0;
 	this->parent = parent;
 	this->text = text;
 	init();
@@ -982,11 +992,14 @@ void DkFadeLabel::init() {
 	showing = false;
 	hiding = false;
 	blocked = false;
+	displaySettingsBits = 0;
 
 	// widget starts on hide
 	opacityEffect = new QGraphicsOpacityEffect(this);
 	opacityEffect->setOpacity(0);
+	opacityEffect->setEnabled(false);	// default disabled -> otherwise we get problems with children having the same effect
 	setGraphicsEffect(opacityEffect);
+	
 	setVisible(false);
 }
 
@@ -1012,7 +1025,7 @@ void DkFadeLabel::hide() {
 void DkFadeLabel::setVisible(bool visible) {
 
 	if (blocked) {
-		QLabel::setVisible(false);
+		DkLabel::setVisible(false);
 		return;
 	}
 
@@ -1020,7 +1033,13 @@ void DkFadeLabel::setVisible(bool visible) {
 		opacityEffect->setOpacity(100);
 
 	emit visibleSignal(visible);
-	QLabel::setVisible(visible);
+	DkLabel::setVisible(visible);
+
+	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
+		qDebug() << "setting visible to: " << visible;
+		displaySettingsBits->setBit(DkSettings::App::currentAppMode, visible);
+	}
+
 }
 
 void DkFadeLabel::animateOpacityUp() {
@@ -1028,8 +1047,10 @@ void DkFadeLabel::animateOpacityUp() {
 	if (!showing)
 		return;
 
+	opacityEffect->setEnabled(true);
 	if (opacityEffect->opacity() >= 1.0f || !showing) {
 		opacityEffect->setOpacity(1.0f);
+		opacityEffect->setEnabled(false);
 		showing = false;
 		return;
 	}
@@ -1042,10 +1063,12 @@ void DkFadeLabel::animateOpacityDown() {
 
 	if (!hiding)
 		return;
-
+	
+	opacityEffect->setEnabled(true);
 	if (opacityEffect->opacity() <= 0.0f) {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
+		opacityEffect->setEnabled(false);
 		setVisible(false);	// finally hide the widget
 		return;
 	}
@@ -1099,13 +1122,13 @@ void DkButton::setFixedSize(QSize size) {
 
 void DkButton::paintEvent(QPaintEvent *event) {
 
-	QPainter painter(this);
+ 	QPainter painter(this);
 	QPoint offset;
 	QSize s;
 	float opacity = 1.0f;
 
 	if (!isEnabled())
-		opacity = 0.7f;
+		opacity = 0.5f;
 	else if(!mouseOver)
 		opacity = 0.7f;
 
@@ -1136,8 +1159,6 @@ void DkButton::paintEvent(QPaintEvent *event) {
 
 	painter.drawPixmap(r, pm2draw);
 	painter.end();
-
-	QPushButton::paintEvent(event);
 }
 
 QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
@@ -1169,6 +1190,7 @@ void DkButton::leaveEvent(QEvent *event) {
 // star label --------------------------------------------------------------------
 DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
+	setObjectName("DkRatingLabel");
 	this->rating = rating;
 	init();
 

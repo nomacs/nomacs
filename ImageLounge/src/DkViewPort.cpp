@@ -270,7 +270,7 @@ void DkControlWidget::showWidgetsSettings() {
 	if (viewport->getImage().isNull()) {
 		showPreview(false);
 		showMetaData(false);
-		showInfo(false);
+		showFileInfo(false);
 		showPlayer(false);
 		overviewWindow->hide();
 		showHistogram(false);
@@ -280,7 +280,7 @@ void DkControlWidget::showWidgetsSettings() {
 
 	showPreview(filePreview->getCurrentDisplaySetting());
 	showMetaData(metaDataInfo->getCurrentDisplaySetting());
-	showInfo(fileInfoLabel->getCurrentDisplaySetting());
+	showFileInfo(fileInfoLabel->getCurrentDisplaySetting());
 	showPlayer(player->getCurrentDisplaySetting());
 	showHistogram(histogram->getCurrentDisplaySetting());
 }
@@ -311,7 +311,7 @@ void DkControlWidget::showMetaData(bool visible) {
 		metaDataInfo->hide();
 }
 
-void DkControlWidget::showInfo(bool visible) {
+void DkControlWidget::showFileInfo(bool visible) {
 
 	if (!fileInfoLabel)
 		return;
@@ -443,8 +443,8 @@ void DkControlWidget::stopLabels() {
 void DkControlWidget::settingsChanged() {
 
 	if (fileInfoLabel && fileInfoLabel->isVisible()) {
-		showInfo(false);	// just a hack but all states are preserved this way
-		showInfo(true);
+		showFileInfo(false);	// just a hack but all states are preserved this way
+		showFileInfo(true);
 	}
 
 }
@@ -1167,9 +1167,8 @@ void DkViewPort::setImage(QImage newImg) {
 
 	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
 	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
-	controller->stopLabels();
-	
 	controller->updateRating(DkImageLoader::imgMetaData.getRating());
+	controller->stopLabels();
 
 	thumbLoaded = false;
 	thumbFile = QFileInfo();
@@ -1773,8 +1772,10 @@ void DkViewPort::unloadImage() {
 	int rating = controller->getRating();
 
 	// TODO: if image is not saved... ask user?! -> resize & crop
-	if (!imgQt.isNull() && loader && rating != -1 && rating != loader->getMetaData().getRating()) 
+	if (!imgQt.isNull() && loader && rating != -1 && loader->getMetaData().getRating() != -1 && rating != loader->getMetaData().getRating()) {
+		qDebug() << "old rating: " << loader->getMetaData().getRating();
 		loader->saveRating(rating);
+	}
 
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 

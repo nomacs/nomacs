@@ -226,7 +226,7 @@ public:
 public slots:
 	void showPreview(bool visible);
 	void showMetaData(bool visible);
-	void showInfo(bool visible);
+	void showFileInfo(bool visible);
 	void showPlayer(bool visible);
 	void showCrop(bool visible);
 	void showOverview(bool visible);

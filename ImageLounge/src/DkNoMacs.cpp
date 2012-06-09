@@ -628,7 +628,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_info]->setShortcut(QKeySequence(shortcut_show_info));
 	viewActions[menu_view_show_info]->setStatusTip(tr("shows the info panel"));
 	viewActions[menu_view_show_info]->setCheckable(true);
-	connect(viewActions[menu_view_show_info], SIGNAL(toggled(bool)), vp->getController(), SLOT(showInfo(bool)));
+	connect(viewActions[menu_view_show_info], SIGNAL(toggled(bool)), vp->getController(), SLOT(showFileInfo(bool)));
 
 	viewActions[menu_view_show_histogram] = new QAction(tr("Show &Histogram"), this);
 	viewActions[menu_view_show_histogram]->setShortcut(QKeySequence(shortcut_show_histogram));
