@@ -360,7 +360,8 @@ void DkControlWidget::showCrop(bool visible) {
 		editWidget->show();
 		hudWidget->hide();
 
-		editRect->setImageRect(&viewport->getImageViewRect());
+		QRectF imgViewRect = viewport->getImageViewRect();
+		editRect->setImageRect(&imgViewRect);
 		editRect->reset();
 		editRect->show();
 	}
@@ -1488,7 +1489,6 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 
 void DkViewPort::paintEvent(QPaintEvent* event) {
 
-	qDebug() << "painting nomacs...";
 	QPainter painter(viewport());
 
 	if (!imgQt.isNull()) {
@@ -2153,7 +2153,6 @@ void DkViewPortFrameless::resetView() {
 
 void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
-	qDebug() << "painting nomacs frameless...";
 	if (!parent->isFullScreen()) {
 
 		QPainter painter(viewport());
@@ -2342,9 +2341,9 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPortFrameless::resizeEvent(QResizeEvent *event) {
 
-	//// for now: set to fullscreen
-	//QDesktopWidget* dw = QApplication::desktop();
-	//setGeometry(dw->screenGeometry());
+	// controller should only be on the main screen...
+	QDesktopWidget* dw = QApplication::desktop();
+	controller->setGeometry(dw->screenGeometry());
 
 	DkViewPort::resizeEvent(event);
 }

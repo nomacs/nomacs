@@ -1158,7 +1158,7 @@ public:
 	DkColorChooser(QColor defaultColor = QColor(), QString text = "Color", QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkColorChooser() {};
 
-	void setColor(QColor& color);
+	void setColor(QColor color);
 	QColor getColor();
 
 public slots:

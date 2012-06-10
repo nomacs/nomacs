@@ -2908,7 +2908,7 @@ void DkColorChooser::init() {
 	QMetaObject::connectSlotsByName(this);
 }
 
-void DkColorChooser::setColor(QColor& color) {
+void DkColorChooser::setColor(QColor color) {
 
 	colorDialog->setCurrentColor(color);
 	colorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border:0px; min-height:24px}");
