@@ -3002,7 +3002,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	float range[] = { 0, 256 } ;
 	const float* histRange = { range };
 
-	vector<Mat> hist (noChannels);
+	vector<MatND> hist (noChannels);
 	long histValues[3][256];
 	long maxHistValue = 0;
 
