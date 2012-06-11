@@ -307,7 +307,7 @@ public:
 };
 
 
-class DkMetaData {
+class DllExport DkMetaData {
 
 public:
 	DkMetaData(QFileInfo file = QFileInfo()) {

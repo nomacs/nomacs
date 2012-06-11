@@ -1018,7 +1018,8 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 
 		// delete current information
 		if (viewport()->getImageLoader()) {
-			viewport()->getImageLoader()->clearPath();
+			//viewport()->getImageLoader()->clearPath();
+			viewport()->unloadImage();
 			viewport()->getImageLoader()->setImage(dropImg);
 			viewport()->setImage(dropImg);
 

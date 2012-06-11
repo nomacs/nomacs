@@ -2440,6 +2440,7 @@ void DkThumbsLoader::stop() {
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
 }
 
+// DkMetaData --------------------------------------------------------------------
 DkMetaData::DkMetaData(const DkMetaData& metaData) {
 
 	//const Exiv2::Image::AutoPtr exifImg((metaData.exifImg));

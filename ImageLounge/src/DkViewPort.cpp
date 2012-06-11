@@ -2341,11 +2341,12 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPortFrameless::resizeEvent(QResizeEvent *event) {
 
+	DkViewPort::resizeEvent(event);
+
 	// controller should only be on the main screen...
 	QDesktopWidget* dw = QApplication::desktop();
 	controller->setGeometry(dw->screenGeometry());
-
-	DkViewPort::resizeEvent(event);
+	qDebug() << "controller resized to: " << controller->geometry();
 }
 
 void DkViewPortFrameless::moveView(QPointF delta) {
