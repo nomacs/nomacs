@@ -3002,16 +3002,16 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	float range[] = { 0, 256 } ;
 	const float* histRange = { range };
 
-	vector<MatND> hist (noChannels);
+	MatND hist;
+	// note: long == int if compiled with a 32bit compiler
 	long histValues[3][256];
 	long maxHistValue = 0;
 
 	for (int i = 0; i < noChannels; i++) {
 
-		calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist[i], 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
-			
-		float *ptrChannel = hist[i].ptr<float>(0);
-		for (int j = 0; j < 256; j++) histValues[i][j] = (long) ptrChannel[j];
+		calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
+		
+		for (int j = 0; j < 256; j++) histValues[i][j] = hist.at<long>(j);
 	}
 
 	if (noChannels == 1) {
