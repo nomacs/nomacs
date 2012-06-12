@@ -3009,7 +3009,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 		calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
 		
 		for (int j = 0; j < 256; j++) histValues[i][j] = hist.at<float>(j);
-		hist = 0;
+		hist.setTo(0);
 	}
 
 	if (noChannels == 1) {
