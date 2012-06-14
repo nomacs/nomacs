@@ -126,7 +126,7 @@ protected:
 	void init();
 };
 
-class DkLabel : public QLabel {
+class  DllExport DkLabel : public QLabel {
 	Q_OBJECT
 
 public:
@@ -1131,7 +1131,7 @@ protected:
  * Uses animation from the path
  * to display it in a DkLabel.
  */
-class DkAnimationLabel : public DkLabel {
+class DllExport DkAnimationLabel : public DkLabel {
 
 public:
 	DkAnimationLabel(QString animationPath = QString(), QWidget* parent = 0);

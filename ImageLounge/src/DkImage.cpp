@@ -992,6 +992,11 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		DkMetaData imgMetaData(file);		
 		int orientation = imgMetaData.getOrientation();
 
+		QStringList keys = imgMetaData.getExifKeys();
+
+		for (int idx = 0; idx < keys.size(); idx++)
+			qDebug() << keys;
+
 		if (orientation != -1 && !imgMetaData.isTiff() && orientation != 0) {
 			QTransform rotationMatrix;
 			rotationMatrix.rotate((double)orientation);
