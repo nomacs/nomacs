@@ -1010,7 +1010,6 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 		url = url.toLocalFile();
 		
 		viewport()->loadFile(QFileInfo(url.toString()), true);
-
 	}
 	else if (event->mimeData()->hasImage()) {
 

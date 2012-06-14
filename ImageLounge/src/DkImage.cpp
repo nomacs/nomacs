@@ -71,25 +71,38 @@ QStringList DkImageLoader::openFilters = openFilter.split(QString(";;"));
 DkMetaData DkImageLoader::imgMetaData = DkMetaData();
 
 
-bool DkBasicLoader::loadGeneral(QFileInfo file, QImage& img) {
+DkBasicLoader::DkBasicLoader(int mode) {
+	this->mode = mode;
+}
+
+bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 	bool imgLoaded = false;
 	QString newSuffix = file.suffix();
-
+	
+	if (file.isSymLink())
+		this->file = file.symLinkTarget();
+	else
+		this->file = file;
+	
 
 	if (newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadRohFile(file.absoluteFilePath(), img);
+		imgLoaded = loadRohFile(file.absoluteFilePath());
 
 	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive))) {
 
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
-		imgLoaded = img.load(file.absoluteFilePath());
+		imgLoaded = qImg.load(file.absoluteFilePath());
+
+	} else if (file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive))) {
+
+		// load hdr here...
 
 	} else {
 
 		// load raw files
-		imgLoaded = loadRawFile(file, img);
+		imgLoaded = loadRawFile(file);
 	}
 	return imgLoaded;
 }
@@ -100,7 +113,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, QImage& img) {
  * @param fileName the filename of the file to be loaded.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRohFile(QString fileName, QImage& img){
+bool DkBasicLoader::loadRohFile(QString fileName){
 
 	bool imgLoaded = true;
 
@@ -133,9 +146,9 @@ bool DkBasicLoader::loadRohFile(QString fileName, QImage& img){
 		
 		}
 
-		img = QImage((const uchar*) buf, rohW, rohH, QImage::Format_Indexed8);
+		qImg = QImage((const uchar*) buf, rohW, rohH, QImage::Format_Indexed8);
 
-		if (img.isNull())
+		if (qImg.isNull())
 			throw DkFileException("sorry, the roh file is empty...", __LINE__, __FILE__);
 
 		//img = img.copy();
@@ -143,7 +156,7 @@ bool DkBasicLoader::loadRohFile(QString fileName, QImage& img){
 
 		for (int i = 0; i < 256; i++)
 			colorTable.push_back(QColor(i, i, i).rgb());
-		img.setColorTable(colorTable);
+		qImg.setColorTable(colorTable);
 
 	} catch(...) {
 		imgLoaded = false;
@@ -164,7 +177,7 @@ bool DkBasicLoader::loadRohFile(QString fileName, QImage& img){
  * @param file the file to be loaded.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRawFile(QFileInfo file, QImage& img) {
+bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 	bool imgLoaded = false;
 
@@ -400,6 +413,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, QImage& img) {
 				resize(rgbImg, rawMat, Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
 				rgbImg = rawMat;
 			}
+
 			image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
 
 			//orientation is done in loadGeneral with libExiv
@@ -412,7 +426,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, QImage& img) {
 			//}
 		}
 
-		img = image.copy();
+		qImg = image.copy();
 		//if (orientation!=0) {
 		//	QTransform rotationMatrix;
 		//	rotationMatrix.rotate((double)orientation);
@@ -433,6 +447,73 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, QImage& img) {
 	return imgLoaded;
 }
 
+// image editing --------------------------------------------------------------------
+void DkBasicLoader::rotate(int orientation) {
+
+	if (orientation == 0 || orientation == -1)
+		return;
+
+	QTransform rotationMatrix;
+	rotationMatrix.rotate((double)orientation);
+	qImg = qImg.transformed(rotationMatrix);
+
+// TODO: test
+#ifdef WITH_OPENCV
+
+	if (!cvImg.empty()) {
+
+		DkVector nSz = DkVector(cvImg.size());	// *0.5f?
+		DkVector nSl = nSz;
+		DkVector nSr = nSz;
+
+		double angleRad = orientation*DK_RAD2DEG;
+		int interpolation = (orientation % 90 == 0) ? INTER_NEAREST : INTER_CUBIC;
+
+		// compute
+		nSl.rotate(angleRad);
+		nSl.abs();
+
+		nSr.swap();
+		nSr.rotate(angleRad);
+		nSr.abs();
+		nSr.swap();
+
+		nSl = nSl.maxVec(nSr);
+
+		DkVector center = nSl * 0.5f;
+
+		Mat rotMat = getRotationMatrix2D(center.getCvPoint32f(), DK_RAD2DEG*angleRad, 1.0);
+
+		// add a shift towards new center
+		DkVector cDiff = center - (nSz * 0.5f);
+		cDiff.rotate(angleRad);
+
+		double *transl = rotMat.ptr<double>();
+		transl[2] += (double)cDiff.x;
+		transl[5] += (double)cDiff.y;
+
+		// img in wrapAffine must not be overwritten
+		Mat rImg = Mat(nSl.getCvSize(), cvImg.type());
+		warpAffine(cvImg, rImg, rotMat, rImg.size(), interpolation, BORDER_CONSTANT/*, borderValue*/);
+		cvImg = rImg;
+	} 
+
+#endif
+
+}
+
+
+void DkBasicLoader::release() {
+
+	// TODO: auto save routines here
+
+	qImg = QImage();
+
+#ifdef WITH_OPENCV
+	cvImg.release();
+#endif
+
+}
 
 
 /**
@@ -503,7 +584,7 @@ void DkImageLoader::clearPath() {
 
 	qDebug() << "clear path - virtual file: " << virtualFile.fileName() << " real file: " << file.fileName();
 	QMutexLocker locker(&mutex);
-	img = QImage();
+	basicLoader.release();
 	
 	// lastFileLoaded must exist
 	if (file.exists())
@@ -778,7 +859,7 @@ void DkImageLoader::lastFile() {
  **/ 
 void DkImageLoader::loadFileAt(int idx) {
 
-	if (!img.isNull() && !file.exists())
+	if (basicLoader.hasImage() && !file.exists())
 		return;
 
 	mutex.lock();
@@ -957,8 +1038,8 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 			if (cache[idx].getFile() == file) {
 
 				if (cache[idx].getCacheState() == DkImageCache::cache_loaded) {
-					img = cache[idx].getImage();
-					imgLoaded = !img.isNull();
+					basicLoader.setImage(cache[idx].getImage(), file);
+					imgLoaded = basicLoader.hasImage();
 					qDebug() << "loading from cache...";
 				}
 				break; 
@@ -968,10 +1049,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	if (!imgLoaded) {
 		try {
-			if (!file.isSymLink())
-				imgLoaded = basicLoader.loadGeneral(file, img);
-			else 			
-				imgLoaded = basicLoader.loadGeneral(file.symLinkTarget(), img);
+			imgLoaded = basicLoader.loadGeneral(file);
 	
 		} catch(...) {
 			imgLoaded = false;
@@ -987,7 +1065,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	if (imgLoaded) {
 		
-		if (cacher) cacher->setCurrentFile(file, img);
+		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
 
 		DkMetaData imgMetaData(file);		
 		int orientation = imgMetaData.getOrientation();
@@ -995,11 +1073,9 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		//QStringList keys = imgMetaData.getExifKeys();
 		//qDebug() << keys;
 
-		if (orientation != -1 && !imgMetaData.isTiff() && orientation != 0) {
-			QTransform rotationMatrix;
-			rotationMatrix.rotate((double)orientation);
-			img = img.transformed(rotationMatrix);
-		}
+		if (!imgMetaData.isTiff())
+			basicLoader.rotate(orientation);
+		
 		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
 
 		// update watcher
@@ -1013,7 +1089,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		qDebug() << "watcher files: " << watcher->files();
 		
 		emit updateImageSignal();
-		emit updateFileSignal(file, img.size());
+		emit updateFileSignal(file, basicLoader.size());
 		emit updateDirSignal(file);	// this should be called updateFileSignal too
 
 		this->file = file;
@@ -1141,7 +1217,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	
 	QMutexLocker locker(&mutex);
 	
-	if (img.isNull() && saveImg.isNull()) {
+	if (basicLoader.hasImage() && saveImg.isNull()) {
 		QString msg = tr("I can't save an empty file, sorry...\n");
 		emit newErrorDialog(msg);
 		return;
@@ -1181,7 +1257,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	if (this->file.exists() && watcher)
 		watcher->removePath(this->file.absoluteFilePath());
 	
-	QImage sImg = (saveImg.isNull()) ? img : saveImg;
+	QImage sImg = (saveImg.isNull()) ? basicLoader.image() : saveImg;
 		
 	emit updateInfoSignalDelayed(tr("saving..."), true);
 	QImageWriter* imgWriter = new QImageWriter(filePath);
@@ -1223,11 +1299,11 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 			qDebug() << this->file.absoluteFilePath() << " (refreshed) does NOT exist...";
 
 		this->virtualFile = this->file;
-		this->img = sImg;
+		basicLoader.setImage(sImg, this->file);
 		loadDir(file.absoluteDir());
 
 		emit updateImageSignal();
-		emit updateFileSignal(this->file, img.size());
+		emit updateFileSignal(this->file, basicLoader.size());
 
 		printf("I could save the image...\n");
 	}
@@ -1266,7 +1342,7 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 	
 	emit updateInfoSignalDelayed(tr("saving..."), true);
 	QString filePath = file.absoluteFilePath();
-	bool saved = (saveImg.isNull()) ? img.save(filePath) : saveImg.save(filePath);
+	bool saved = (saveImg.isNull()) ? basicLoader.image().save(filePath) : saveImg.save(filePath);	// TODO: move to basic loader
 	emit updateInfoSignalDelayed(tr("saving..."), false);	// stop the label
 	
 	if (saved && watcher)
@@ -1289,7 +1365,7 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		this->file = QFileInfo(filePath);
 		
 		this->virtualFile = this->file;
-		this->img = saveImg;
+		basicLoader.setImage(saveImg, this->file);
 		loadDir(this->file.absoluteDir());
 
 		emit updateFileSignal(this->file, saveImg.size());
@@ -1394,7 +1470,7 @@ void DkImageLoader::deleteFile() {
  **/ 
 void DkImageLoader::rotateImage(double angle) {
 
-	if (img.isNull())
+	if (!basicLoader.hasImage())
 		return;
 
 	if (file.exists() && watcher)
@@ -1405,14 +1481,11 @@ void DkImageLoader::rotateImage(double angle) {
 	try {
 		
 		mutex.lock();
-		QTransform rotationMatrix;
-		rotationMatrix.rotate(angle);
-
-		img = img.transformed(rotationMatrix);
+		basicLoader.rotate(angle);
 		mutex.unlock();
 
 		updateImageSignal();
-		updateFileSignal(file, img.size());
+		updateFileSignal(file, basicLoader.size());
 		
 		mutex.lock();
 		
@@ -1795,7 +1868,7 @@ void DkImageLoader::setSaveDir(QDir& dir) {
  **/ 
 void DkImageLoader::setImage(QImage& img) {
 	
-	this->img = img;
+	basicLoader.setImage(img, file);
 }
 
 /**
@@ -2051,9 +2124,9 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	}
 
 	QImage img;
-	if (loader.loadGeneral(file, img)) {
+	if (loader.loadGeneral(file)) {
 		
-		cacheImg->setImage(img);
+		cacheImg->setImage(loader.image());
 		curCache += cacheImg->getCacheSize();
 
 		qDebug() << "[cache] I cached: " << cacheImg->getFile().fileName() << " cache volume: " << curCache << " MB/ " 

@@ -508,14 +508,63 @@ private:
 };
 
 class DkBasicLoader : public QObject {
-
 	Q_OBJECT
 
 public:
 
-	bool loadGeneral(QFileInfo file, QImage& img);
-	bool loadRohFile(QString fileName, QImage& img);
-	bool loadRawFile(QFileInfo file, QImage& img);
+	enum mode {
+		mode_default,
+		mode_mat_preferred,
+		mode_end
+	};
+
+	DkBasicLoader(int mode = mode_default);
+
+	bool loadGeneral(QFileInfo file);
+	
+	// editing --------------------------------------------------------------------
+	void rotate(int orientation);
+
+	void setImage(QImage& img, QFileInfo file) {
+
+		// TODO: check state
+		this->file = file;
+		qImg = img;
+	}
+
+	QImage& image() {
+	
+		return qImg;
+	};
+
+	QSize size() {
+
+		return qImg.size();
+	};
+
+	bool hasImage() {
+
+		return !qImg.isNull();
+	};
+
+	void release();
+
+#ifdef WITH_OPENCV
+	Mat getImageCv() { return cv::Mat(); };	// we should not need this
+#endif
+
+protected:
+	
+	bool loadRohFile(QString fileName);
+	bool loadRawFile(QFileInfo file);
+
+	int mode;
+	QImage qImg;
+	QFileInfo file;
+
+#ifdef WITH_OPENCV
+	cv::Mat cvImg;
+#endif
 
 };
 
@@ -692,7 +741,7 @@ public:
 	bool hasImage() {
 		
 		QMutexLocker locker(&mutex);
-		return !img.isNull();
+		return basicLoader.hasImage();
 	};
 
 	/**
@@ -702,7 +751,7 @@ public:
 	QImage& getImage() {
 		
 		QMutexLocker locker(&mutex);
-		return img;
+		return basicLoader.image();
 	};
 
 	/**
@@ -756,8 +805,6 @@ protected:
 	QMutex mutex;
 	QThread* loaderThread;
 
-	QImage img;
-	
 	// functions
 	bool loadDir(QDir newDir);
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
