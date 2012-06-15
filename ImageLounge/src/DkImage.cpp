@@ -1038,7 +1038,8 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 			if (cache[idx].getFile() == file) {
 
 				if (cache[idx].getCacheState() == DkImageCache::cache_loaded) {
-					basicLoader.setImage(cache[idx].getImage(), file);
+					QImage tmp = cache[idx].getImage();
+					basicLoader.setImage(tmp, file);
 					imgLoaded = basicLoader.hasImage();
 					qDebug() << "loading from cache...";
 				}
