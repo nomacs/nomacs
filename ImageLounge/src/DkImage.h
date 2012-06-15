@@ -258,7 +258,7 @@ public:
 
 		// attention: we do not define a maximum, however if the machine has too view RAM this function may crash
 		if (nSize.width() < 1 || nSize.height() < 1) {
-				return QImage();
+			return QImage();
 		}
 
 		Qt::TransformationMode iplQt;
@@ -552,6 +552,10 @@ public:
 #ifdef WITH_OPENCV
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
 #endif
+
+public slots:
+
+	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
 
 protected:
 	

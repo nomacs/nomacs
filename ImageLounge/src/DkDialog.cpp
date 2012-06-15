@@ -1241,13 +1241,13 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	if (newSize.width() < wPixelEdit->minimum() || newSize.width() > wPixelEdit->maximum() || 
 		newSize.height() < hPixelEdit->minimum() || newSize.height() > hPixelEdit->maximum()) {
 
-			if (!silent) {
-				QMessageBox errorDialog(this);
-				errorDialog.setIcon(QMessageBox::Critical);
-				errorDialog.setText(tr("Sorry, but the image size %1 x %2 is illegal.").arg(newSize.width()).arg(newSize.height()));
-				errorDialog.show();
-				errorDialog.exec();
-			}
+		if (!silent) {
+			QMessageBox errorDialog(this);
+			errorDialog.setIcon(QMessageBox::Critical);
+			errorDialog.setText(tr("Sorry, but the image size %1 x %2 is illegal.").arg(newSize.width()).arg(newSize.height()));
+			errorDialog.show();
+			errorDialog.exec();
+		}
 	}
 
 	Qt::TransformationMode iplQt;

@@ -1610,6 +1610,7 @@ void DkNoMacs::resizeImage() {
 			if (metaData)
 				metaData->setResolution((int)resizeDialog->getExifDpi(), (int)resizeDialog->getExifDpi());
 
+			// TODO: redirect resize to basic loader here
 			QImage rImg = resizeDialog->getResizedImage();
 
 			if (!rImg.isNull()) {

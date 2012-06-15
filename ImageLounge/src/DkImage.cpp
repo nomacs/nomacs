@@ -410,7 +410,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			else throw DkException("Wrong Bayer Pattern (not BG, RG, GB, GR)\n", __LINE__, __FILE__);
 
 			if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {
-				resize(rgbImg, rawMat, Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
+				cv::resize(rgbImg, rawMat, Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
 				rgbImg = rawMat;
 			}
 
@@ -497,6 +497,78 @@ void DkBasicLoader::rotate(int orientation) {
 		warpAffine(cvImg, rImg, rotMat, rImg.size(), interpolation, BORDER_CONSTANT/*, borderValue*/);
 		cvImg = rImg;
 	} 
+
+#endif
+
+}
+
+void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolation, bool silent) {
+	
+	bool resizeLocal = (img) ? false : true;
+
+	// resize my image, if the user did not specify anything
+	if (img == 0)
+		img = &qImg;
+	
+	// nothing to do
+	if (img->size() == size && factor == 1.0f)
+		return;
+
+	if (factor != 1.0f)
+		size = QSize(img->width()*factor, img->height()*factor);
+
+	// attention: we do not define a maximum, however if the machine has too view RAM this function may crash
+	if (size.width() < 1 || size.height() < 1)
+		return;
+
+	Qt::TransformationMode iplQt;
+	switch(interpolation) {
+	case DkImage::ipl_nearest:	
+	case DkImage::ipl_area:		iplQt = Qt::FastTransformation; break;
+	case DkImage::ipl_linear:	
+	case DkImage::ipl_cubic:		
+	case DkImage::ipl_lanczos:	iplQt = Qt::SmoothTransformation; break;
+	}
+#ifdef WITH_OPENCV
+
+	int ipl = CV_INTER_CUBIC;
+	switch(interpolation) {
+	case DkImage::ipl_nearest:	ipl = CV_INTER_NN; break;
+	case DkImage::ipl_area:		ipl = CV_INTER_AREA; break;
+	case DkImage::ipl_linear:	ipl = CV_INTER_LINEAR; break;
+	case DkImage::ipl_cubic:	ipl = CV_INTER_CUBIC; break;
+#ifdef DISABLE_LANCZOS
+	case DkImage::ipl_lanczos:	ipl = CV_INTER_CUBIC; break;
+#else
+	case DkImage::ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
+#endif
+	}
+
+	Mat resizeImage;
+
+	if (cvImg.empty() || !resizeLocal)
+		resizeImage = DkImage::qImage2Mat(*img);
+	else
+		resizeImage = cvImg;
+
+	// is the image convertible?
+	if (resizeImage.empty()) {
+		img->scaled(size, Qt::IgnoreAspectRatio, iplQt);
+	}
+	else {
+
+		Mat tmp;
+		cv::resize(resizeImage, tmp, cv::Size(size.width(), size.height()), 0, 0, ipl);
+		resizeImage.release();
+
+		if (!cvImg.empty() && resizeLocal)
+			cvImg = tmp;
+
+		qImg = DkImage::mat2QImage(tmp);
+	}
+#else
+
+	return img->scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
 
 #endif
 
