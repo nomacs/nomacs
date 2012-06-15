@@ -1284,10 +1284,16 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
 
 		try{
+						
+			QVector<QRgb> colTable = img.colorTable();
+			qDebug() << "resizing..." << colTable.size();
 			Mat tmp;
 			cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, ipl);
 
-			return DkImage::mat2QImage(tmp);
+			QImage rImg = DkImage::mat2QImage(tmp);
+					
+			rImg.setColorTable(img.colorTable());
+			return rImg;
 
 		}catch (std::exception se) {
 

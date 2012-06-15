@@ -2465,11 +2465,12 @@ void DkViewPortContrast::release() {
 
 void DkViewPortContrast::changeChannel(int channel) {
 
-	activeChannel = channel;
-	
+	if (channel < 0 || channel >= imgs.size())
+		return;
+
 	if (!imgQt.isNull()) {
 
-		falseColorImg = imgs[activeChannel];
+		falseColorImg = imgs[channel];
 		falseColorImg.setColorTable(colorTable);
 		drawFalseColorImg = true;
 
@@ -2580,7 +2581,7 @@ void DkViewPortContrast::setImage(QImage newImg) {
 #ifdef WITH_OPENCV
 
 	else {	
-			
+					
 			imgs = QVector<QImage>(4);
 			vector<Mat> planes;
 			
@@ -2625,7 +2626,8 @@ void DkViewPortContrast::setImage(QImage newImg) {
 	falseColorImg = imgs[activeChannel];
 	falseColorImg.setColorTable(colorTable);
 	
-	if (imgQt.isGrayscale()) 
+	// images with valid color table return img.isGrayScale() false...
+	if (imgs.size() == 1) 
 		emit imageModeSet(mode_gray);
 	else
 		emit imageModeSet(mode_rgb);

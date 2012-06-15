@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkImage.h"
+#include "DkNoMacs.h"
 
 namespace nmc {
 
@@ -70,11 +71,16 @@ QStringList DkImageLoader::openFilters = openFilter.split(QString(";;"));
 
 DkMetaData DkImageLoader::imgMetaData = DkMetaData();
 
-
+// Basic loader and image edit class --------------------------------------------------------------------
 DkBasicLoader::DkBasicLoader(int mode) {
 	this->mode = mode;
 }
 
+/**
+ * This function loads the images.
+ * @param file the image file that should be loaded.
+ * @return bool true if the image could be loaded.
+ **/ 
 bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 	bool imgLoaded = false;
@@ -448,6 +454,10 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 }
 
 // image editing --------------------------------------------------------------------
+/**
+ * This method rotates an image.
+ * @param orientation the orientation in degree.
+ **/ 
 void DkBasicLoader::rotate(int orientation) {
 
 	if (orientation == 0 || orientation == -1)
@@ -457,7 +467,7 @@ void DkBasicLoader::rotate(int orientation) {
 	rotationMatrix.rotate((double)orientation);
 	qImg = qImg.transformed(rotationMatrix);
 
-// TODO: test
+// TODO: test without OpenCV
 #ifdef WITH_OPENCV
 
 	if (!cvImg.empty()) {
@@ -502,6 +512,15 @@ void DkBasicLoader::rotate(int orientation) {
 
 }
 
+/**
+ * This function resizes an image.
+ * if the img assigned is a NULL pointer, the currently loaded image is resized.
+ * @param size	the target size (may be empty if factor != 1.0f)
+ * @param factor the scale ratio (can be 1.0f if QSize is not empty)
+ * @param img a pointer to the image that should be resized (if img == 0, the currently loaded image is resized)
+ * @param interpolation the interpolation method
+ * @param silent if true, no error dialog is shown
+ **/ 
 void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolation, bool silent) {
 	
 	bool resizeLocal = (img) ? false : true;
@@ -518,7 +537,7 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
 		size = QSize(img->width()*factor, img->height()*factor);
 
 	// attention: we do not define a maximum, however if the machine has too view RAM this function may crash
-	if (size.width() < 1 || size.height() < 1)
+	if (size.width() < 1 || size.height() < 1 || img->isNull())
 		return;
 
 	Qt::TransformationMode iplQt;
@@ -551,21 +570,31 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
 	else
 		resizeImage = cvImg;
 
-	// is the image convertible?
-	if (resizeImage.empty()) {
-		img->scaled(size, Qt::IgnoreAspectRatio, iplQt);
+	try {
+		// is the image convertible?
+		if (resizeImage.empty()) {
+			img->scaled(size, Qt::IgnoreAspectRatio, iplQt);
+		}
+		else {
+
+			Mat tmp;
+			cv::resize(resizeImage, tmp, cv::Size(size.width(), size.height()), 0, 0, ipl);
+			resizeImage.release();
+
+			if (!cvImg.empty() && resizeLocal)
+				cvImg = tmp;
+
+			qImg = DkImage::mat2QImage(tmp);
+		}
+
+	}catch (std::exception se) {
+
+		if (!silent)
+			DkNoMacs::dialog(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(size, 32)));
+
+		return;
 	}
-	else {
 
-		Mat tmp;
-		cv::resize(resizeImage, tmp, cv::Size(size.width(), size.height()), 0, 0, ipl);
-		resizeImage.release();
-
-		if (!cvImg.empty() && resizeLocal)
-			cvImg = tmp;
-
-		qImg = DkImage::mat2QImage(tmp);
-	}
 #else
 
 	return img->scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
@@ -575,6 +604,9 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
 }
 
 
+/**
+ * Releases the currently loaded images.
+ **/ 
 void DkBasicLoader::release() {
 
 	// TODO: auto save routines here
@@ -587,7 +619,7 @@ void DkBasicLoader::release() {
 
 }
 
-
+// DkImageLoader -> is nomacs file handling routine --------------------------------------------------------------------
 /**
  * Default constructor.
  * Creates a DkImageLoader instance with a given file.
@@ -1543,8 +1575,12 @@ void DkImageLoader::deleteFile() {
  **/ 
 void DkImageLoader::rotateImage(double angle) {
 
-	if (!basicLoader.hasImage())
+	qDebug() << "rotating image...";
+
+	if (!basicLoader.hasImage()) {
+		qDebug() << "sorry, loader has no image";
 		return;
+	}
 
 	if (file.exists() && watcher)
 		watcher->removePath(this->file.absoluteFilePath());

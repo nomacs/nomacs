@@ -1594,7 +1594,7 @@ void DkNoMacs::resizeImage() {
 		resizeDialog->setExifDpi(xDpi);
 	}
 
-	resizeDialog->setImage(&viewport()->getImage());
+	resizeDialog->setImage(&viewport()->getImageLoader()->getImage());
 
 	bool done = resizeDialog->exec();
 
@@ -1615,6 +1615,7 @@ void DkNoMacs::resizeImage() {
 
 			if (!rImg.isNull()) {
 				viewport()->unloadImage();
+				viewport()->getImageLoader()->setImage(rImg);
 				viewport()->setImage(rImg);
 				setWindowTitle(QFileInfo(), rImg.size());
 			}

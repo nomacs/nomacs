@@ -47,6 +47,7 @@
 #include <QMutex>
 #include <QFileIconProvider>
 #include <QStringList>
+#include <QMessageBox>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -147,6 +148,7 @@ public:
 			qDebug() << "indexed...";
 		}
 		else {
+			qDebug() << "image flag: " << img.format();
 			cImg = img.convertToFormat(QImage::Format_RGB888);
 			mat2 = Mat(cImg.height(), cImg.width(), CV_8UC3, (uchar*)cImg.bits(), cImg.bytesPerLine());
 			qDebug() << "I need to convert the QImage to RGB888";
@@ -167,9 +169,10 @@ public:
 		QImage qImg;
 
 		if (img.type() == CV_8UC1) {
-			Mat tmp;
-			cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
-			img = tmp;
+			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_Indexed8);
+			//Mat tmp;
+			//cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
+			//img = tmp;
 		}
 		if (img.type() == CV_8UC3) {
 			cv::cvtColor(img, img, CV_RGB2BGR);
@@ -256,7 +259,6 @@ public:
 		if (factor != 1.0f)
 			nSize = QSize(img.width()*factor, img.height()*factor);
 
-		// attention: we do not define a maximum, however if the machine has too view RAM this function may crash
 		if (nSize.width() < 1 || nSize.height() < 1) {
 			return QImage();
 		}
@@ -284,19 +286,27 @@ public:
 #endif
 		}
 
-		Mat resizeImage = DkImage::qImage2Mat(img);
 
-		// is the image convertible?
-		if (resizeImage.empty()) {
-			return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
-		}
-		else {
+		try {
+			Mat resizeImage = DkImage::qImage2Mat(img);
 
-			Mat tmp;
-			cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
-			resizeImage = tmp;
-			return DkImage::mat2QImage(resizeImage);
+			// is the image convertible?
+			if (resizeImage.empty()) {
+				return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
+			}
+			else {
+
+				Mat tmp;
+				cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
+				resizeImage = tmp;
+				return DkImage::mat2QImage(resizeImage);
+			}
+
+		}catch (std::exception se) {
+
+			return QImage();
 		}
+
 #else
 
 		return img.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
@@ -507,6 +517,10 @@ private:
 
 };
 
+/**
+ * This class provides image loading and editing capabilities.
+ * It additionally stores the currently loaded image.
+ **/ 
 class DkBasicLoader : public QObject {
 	Q_OBJECT
 
@@ -522,26 +536,39 @@ public:
 
 	bool loadGeneral(QFileInfo file);
 	
-	// editing --------------------------------------------------------------------
-	void rotate(int orientation);
-
+	/**
+	 * Sets a new image (if edited outside the basicLoader class)
+	 * @param img the new image
+	 * @param file assigns the current file name
+	 **/ 
 	void setImage(QImage& img, QFileInfo file) {
 
-		// TODO: check state
 		this->file = file;
 		qImg = img;
 	}
 
+	/**
+	 * Returns the 8-bit image, which is rendered.
+	 * @return QImage& an 8bit image
+	 **/ 
 	QImage& image() {
 	
 		return qImg;
 	};
 
+	/**
+	 * Returns the current image size.
+	 * @return QSize the image size.
+	 **/ 
 	QSize size() {
 
 		return qImg.size();
 	};
 
+	/**
+	 * Returns true if an image is currently loaded.
+	 * @return bool true if an image is loaded.
+	 **/ 
 	bool hasImage() {
 
 		return !qImg.isNull();
@@ -554,7 +581,7 @@ public:
 #endif
 
 public slots:
-
+	void rotate(int orientation);
 	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
 
 protected:
