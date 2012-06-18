@@ -91,6 +91,11 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	else
 		this->file = file;
 	
+	QImage oldImg = qImg;
+#ifdef WITH_OPENCV
+	cv::Mat oldMat = cvImg;
+#endif
+	release();
 
 	if (newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
@@ -110,6 +115,15 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 		// load raw files
 		imgLoaded = loadRawFile(file);
 	}
+
+	// ok, play back the old images
+	if (!imgLoaded) {
+		qImg = oldImg;
+#ifdef WITH_OPENCV
+		cvImg = oldMat;
+#endif
+	}
+
 	return imgLoaded;
 }
 

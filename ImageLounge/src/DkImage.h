@@ -168,6 +168,10 @@ public:
 
 		QImage qImg;
 
+		// since Mat header is copied, a new buffer should be allocated (check this!)
+		if (img.depth() == CV_32F)
+			img.convertTo(img, CV_8U, 255);
+
 		if (img.type() == CV_8UC1) {
 			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_Indexed8);
 			//Mat tmp;
@@ -175,6 +179,7 @@ public:
 			//img = tmp;
 		}
 		if (img.type() == CV_8UC3) {
+			
 			cv::cvtColor(img, img, CV_RGB2BGR);
 			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888);
 		}
