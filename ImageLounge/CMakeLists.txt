@@ -379,6 +379,16 @@ IF (EXIV2_FOUND)
 	ELSEIF (MSVC) # copy qt dlls and change settings for different projects
 		SET (QTLIBLIST QtCore QtGui QtNetwork)
 		
+		SET(OpenCV_REQUIRED_MODULES core imgproc)
+		FOREACH(opencvlib ${OpenCV_REQUIRED_MODULES})
+			FILE(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
+			FILE(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+			FILE(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+			
+			FILE(GLOB dllpath ${OpenCV_DIR}/bin/Debug/opencv_${opencvlib}*d.dll)
+			FILE(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+		ENDFOREACH(opencvlib)
+		
 		FOREACH(qtlib ${QTLIBLIST})
 			GET_FILENAME_COMPONENT(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 			FILE(COPY ${QT_DLL_PATH_tmp}/${qtlib}4.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
