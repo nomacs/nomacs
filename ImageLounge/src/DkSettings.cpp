@@ -137,7 +137,7 @@ bool DkSettings::Sync::updateDialogShown= false;
 QDate DkSettings::Sync::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::Sync::syncAbsoluteTransform = true;
 
-float DkSettings::Resources::cacheMemory = 50;
+float DkSettings::Resources::cacheMemory = 0;
 bool DkSettings::Resources::fastThumbnailPreview = true;
 
 
@@ -397,7 +397,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Sync::lastUpdateCheck = QDate(1970 , 1, 1);
 	DkSettings::Sync::syncAbsoluteTransform = true;
 
-	DkSettings::Resources::cacheMemory = 50;
+	DkSettings::Resources::cacheMemory = 0;
 	DkSettings::Resources::fastThumbnailPreview = true;
 
 	qDebug() << "ok... default settings are set";

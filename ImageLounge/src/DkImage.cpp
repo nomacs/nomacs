@@ -611,7 +611,7 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
 
 #else
 
-	return img->scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
+	return img->scaled(size, Qt::IgnoreAspectRatio, iplQt);
 
 #endif
 
@@ -2041,7 +2041,8 @@ void DkCacher::setNewDir(QDir& dir, QStringList& files) {
 
 void DkCacher::updateDir(QStringList& files) {
 
-	this->files = files;
+	// TODO: cacher bug this is the evil code!!
+	this->files = files;	// this change is done from another thread!
 	updateFiles = true;
 }
 
@@ -2183,8 +2184,12 @@ void DkCacher::load() {
 			if (!clean(idx))
 				break;	// we're done
 
+			//!! this is important:
+			// currently setting a new dir happens in the thread of DkImageLoader (?! - pretty sure)
+			// however, this thread is not synced on the vector... so if we change the vector while caching an image
+			// bad things happen...
 			qDebug() << "caching previous...";
-			if (cacheImage(&cache->at(pIdx))) {	// that might take time
+			if (cacheImage(&cache->at(pIdx))) {	// that might take time // TODO: that might crash
 				somethingTodo = true;
 				break;	// go to thread to see if some action is waiting
 			}

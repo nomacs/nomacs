@@ -556,7 +556,7 @@ public:
 	 * Returns the 8-bit image, which is rendered.
 	 * @return QImage& an 8bit image
 	 **/ 
-	QImage& image() {
+	QImage image() {
 	
 		return qImg;
 	};
@@ -784,7 +784,7 @@ public:
 	 * Returns the currently loaded image.
 	 * @return QImage& the current image
 	 **/ 
-	QImage& getImage() {
+	QImage getImage() {
 		
 		QMutexLocker locker(&mutex);
 		return basicLoader.image();

@@ -1673,7 +1673,6 @@ void DkNoMacs::cleanSettings() {
 	readSettings();
 	resize(400, 225);
 	move(100, 100);
-
 }
 
 void DkNoMacs::newInstance() {
