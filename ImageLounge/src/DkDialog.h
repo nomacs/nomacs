@@ -246,7 +246,7 @@ public:
 		return isOk;
 	};
 
-	void setImage(QImage* img) {
+	void setImage(QImage img) {
 		this->img = img;
 		initBoxes();
 		updateSnippets();
@@ -255,7 +255,7 @@ public:
 
 	QImage getResizedImage() {
 
-		return resizeImg(*img, false);
+		return resizeImg(img, false);
 	};
 
 	void setExifDpi(float exifDpi) {
@@ -300,7 +300,7 @@ protected:
 	bool isOk;
 	int leftSpacing;
 	int margin;
-	QImage* img;
+	QImage img;
 	QImage origImg;
 	QImage newImg;
 	QWidget* centralWidget;

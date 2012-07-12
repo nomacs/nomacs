@@ -131,7 +131,7 @@ public:
 	 * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
 	 * @return cv::Mat the corresponding Mat
 	 **/ 
-	static Mat qImage2Mat(QImage img) {
+	static Mat qImage2Mat(const QImage& img) {
 
 		Mat mat2;
 		QImage cImg;
@@ -253,7 +253,7 @@ public:
 	 * @param interpolation the interpolation method
 	 * @return QImage the resized image
 	 **/ 
-	static QImage resizeImage(const QImage &img, const QSize &newSize, float factor = 1.0f, int interpolation = ipl_cubic) {
+	static QImage resizeImage(const QImage& img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic) {
 		
 		QSize nSize = newSize;
 
@@ -557,7 +557,6 @@ public:
 	 * @return QImage& an 8bit image
 	 **/ 
 	QImage image() {
-	
 		return qImg;
 	};
 
@@ -566,7 +565,6 @@ public:
 	 * @return QSize the image size.
 	 **/ 
 	QSize size() {
-
 		return qImg.size();
 	};
 

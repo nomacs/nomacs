@@ -716,7 +716,6 @@ void DkResizeDialog::init() {
 
 	isOk = false;
 
-	img = 0;
 	leftSpacing = 40;
 	margin = 10;
 	exifDpi = 72;
@@ -916,12 +915,12 @@ void DkResizeDialog::createLayout() {
 
 void DkResizeDialog::initBoxes() {
 
-	if (!img || img->isNull())
+	if (img.isNull())
 		return;
 
 	if (sizeBox->currentIndex() == size_pixel) {
-		wPixelEdit->setValue(img->width());
-		hPixelEdit->setValue(img->height());
+		wPixelEdit->setValue(img.width());
+		hPixelEdit->setValue(img.height());
 	}
 	else {
 		wPixelEdit->setValue(100);
@@ -929,10 +928,10 @@ void DkResizeDialog::initBoxes() {
 	}
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	float width = (float)img->width()/exifDpi * units;
+	float width = (float)img.width()/exifDpi * units;
 	widthEdit->setValue(width);
 
-	float height = (float)img->height()/exifDpi * units;
+	float height = (float)img.height()/exifDpi * units;
 	heightEdit->setValue(height);
 }
 
@@ -941,7 +940,7 @@ void DkResizeDialog::updateWidth() {
 	float pWidth = wPixelEdit->text().toDouble();
 
 	if (sizeBox->currentIndex() == size_percent)
-		pWidth = qRound(pWidth/100 * img->width()); 
+		pWidth = qRound(pWidth/100 * img.width()); 
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
 	float width = pWidth/exifDpi * units;
@@ -953,7 +952,7 @@ void DkResizeDialog::updateHeight() {
 	float pHeight = hPixelEdit->text().toDouble();
 
 	if (sizeBox->currentIndex() == size_percent)
-		pHeight = qRound(pHeight/100 * img->height()); 
+		pHeight = qRound(pHeight/100 * img.height()); 
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
 	float height = pHeight/exifDpi * units;
@@ -977,7 +976,7 @@ void DkResizeDialog::updatePixelHeight() {
 
 	// *1000/10 is for more beautiful values
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	float pixelHeight = (sizeBox->currentIndex() != size_percent) ? qRound(height*exifDpi / units) : qRound(1000.0f*height*exifDpi / (units * img->height()))/10.0f;
+	float pixelHeight = (sizeBox->currentIndex() != size_percent) ? qRound(height*exifDpi / units) : qRound(1000.0f*height*exifDpi / (units * img.height()))/10.0f;
 
 	hPixelEdit->setValue(pixelHeight);
 }
@@ -987,7 +986,7 @@ void DkResizeDialog::updatePixelWidth() {
 	float width = widthEdit->text().toDouble();
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
-	float pixelWidth = (sizeBox->currentIndex() != size_percent) ? qRound(width*exifDpi / units) : qRound(1000.0f*width*exifDpi / (units * img->width()))/10.0f;
+	float pixelWidth = (sizeBox->currentIndex() != size_percent) ? qRound(width*exifDpi / units) : qRound(1000.0f*width*exifDpi / (units * img.width()))/10.0f;
 	wPixelEdit->setValue(pixelWidth);
 }
 
@@ -1024,7 +1023,7 @@ void DkResizeDialog::on_wPixelEdit_valueChanged(QString text) {
 		return;
 	}
 
-	int newHeight = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img->width() * img->height()) : text.toFloat();
+	int newHeight = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img.width() * img.height()) : text.toFloat();
 	hPixelEdit->setValue(newHeight);
 	updateHeight();
 	drawPreview();
@@ -1042,7 +1041,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 		return;
 	}
 
-	int newWidth = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img->height() * (float)img->width()) : text.toFloat();
+	int newWidth = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img.height() * (float)img.width()) : text.toFloat();
 	wPixelEdit->setValue(newWidth);
 	updateHeight();
 	drawPreview();
@@ -1061,7 +1060,7 @@ void DkResizeDialog::on_widthEdit_valueChanged(QString text) {
 		return;
 	}
 
-	heightEdit->setValue(text.toFloat()/(float)img->width() * (float)img->height());
+	heightEdit->setValue(text.toFloat()/(float)img.width() * (float)img.height());
 
 	if (resampleCheck->isChecked()) 
 		updatePixelHeight();
@@ -1085,7 +1084,7 @@ void DkResizeDialog::on_heightEdit_valueChanged(QString text) {
 		return;
 	}
 
-	widthEdit->setValue(text.toFloat()/(float)img->height() * (float)img->width());
+	widthEdit->setValue(text.toFloat()/(float)img.height() * (float)img.width());
 
 	if (resampleCheck->isChecked()) 
 		updatePixelWidth();
@@ -1163,24 +1162,24 @@ void DkResizeDialog::on_resampleBox_currentIndexChanged(int idx) {
 
 void DkResizeDialog::updateSnippets() {
 
-	if (!img)
+	if (img.isNull())
 		return;
 
 	QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
 	s *= 0.5;
 	origImg = QImage(s, QImage::Format_ARGB32);
 	origImg.fill(Qt::transparent);
-	QRect imgRect = QRect(QPoint(img->width()*0.5-origImg.width()*0.5, img->height()*0.5-origImg.height()*0.5), origImg.size());
+	QRect imgRect = QRect(QPoint(img.width()*0.5-origImg.width()*0.5, img.height()*0.5-origImg.height()*0.5), origImg.size());
 
 	QPainter painter(&origImg);
 	painter.setBackgroundMode(Qt::TransparentMode);
-	painter.drawImage(QRect(QPoint(), origImg.size()), *img, imgRect);
+	painter.drawImage(QRect(QPoint(), origImg.size()), img, imgRect);
 
 }
 
 void DkResizeDialog::drawPreview() {
 
-	if (!img)
+	if (img.isNull())
 		return;
 
 	newImg = resizeImg(origImg);
@@ -1210,25 +1209,25 @@ void DkResizeDialog::drawPreview() {
 
 QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
-	if (!this->img || img.isNull())
+	if (img.isNull())
 		return img;
 
 	QSize newSize;
 
 	if (sizeBox->currentIndex() == size_percent)
-		newSize = QSize(wPixelEdit->text().toFloat()/100.0f * this->img->width(), hPixelEdit->text().toFloat()/100.0f * this->img->height());
+		newSize = QSize(wPixelEdit->text().toFloat()/100.0f * this->img.width(), hPixelEdit->text().toFloat()/100.0f * this->img.height());
 	else
 		newSize = QSize(wPixelEdit->text().toInt(), hPixelEdit->text().toInt());
 
-	QSize imgSize = this->img->size();
+	QSize imgSize = this->img.size();
 
 	qDebug() << "new size: " << newSize;
 
 	// nothing to do
-	if (this->img->size() == newSize)
+	if (this->img.size() == newSize)
 		return img;
 
-	if (this->img->size() != img.size()) {
+	if (this->img.size() != img.size()) {
 		// compute relative size
 		float relWidth = (float)newSize.width()/(float)imgSize.width();
 		float relHeight = (float)newSize.height()/(float)imgSize.height();
