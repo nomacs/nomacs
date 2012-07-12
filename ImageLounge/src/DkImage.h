@@ -621,7 +621,7 @@ public:
 		this->file = file;
 	};
 
-	void setImage(QImage& img) {
+	void setImage(QImage img) {
 		cacheSize = DkImage::getBufferSizeFloat(img.size(), img.depth());
 		this->img = img;
 	};
