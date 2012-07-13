@@ -1990,7 +1990,7 @@ void DkImageLoader::setSaveDir(QDir& dir) {
  * Sets the current image to img.
  * @param img the loader's new image.
  **/ 
-void DkImageLoader::setImage(QImage& img) {
+void DkImageLoader::setImage(QImage img) {
 	
 	basicLoader.setImage(img, file);
 }

@@ -313,7 +313,7 @@ public:
 	virtual void setImage(cv::Mat newImg);
 #endif
 
-	virtual QImage& getImage();
+	virtual QImage getImage();
 
 	virtual QRectF getImageViewRect();
 
@@ -564,7 +564,7 @@ public slots:
 	void changeColorTable(QGradientStops stops);
 	void pickColor();
 	void enableTF(bool enable);
-	QImage& getImage();
+	QImage getImage();
 
 	virtual void setImage(QImage newImg);
 
@@ -638,7 +638,7 @@ private:
 //		this->title = "DkNoMacs";
 //	}
 //
-//	DkLoadImageEvent(QImage& img, QString title = QString("DkNoMacs"), QString attr = QString()) : QEvent(DkLoadImageEvent::type()) {
+//	DkLoadImageEvent(QImage img, QString title = QString("DkNoMacs"), QString attr = QString()) : QEvent(DkLoadImageEvent::type()) {
 //		this->img = img;
 //		this->title = title;
 //		this->attr = attr;

@@ -131,7 +131,7 @@ public:
 	 * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
 	 * @return cv::Mat the corresponding Mat
 	 **/ 
-	static Mat qImage2Mat(const QImage& img) {
+	static Mat qImage2Mat(const QImage img) {
 
 		Mat mat2;
 		QImage cImg;
@@ -198,7 +198,7 @@ public:
 	 * @param img a QImage
 	 * @return QString a human readable string containing the buffer size
 	 **/ 
-	static QString getBufferSize(const QImage& img) {
+	static QString getBufferSize(const QImage img) {
 
 		return getBufferSize(img.size(), img.depth());
 	}
@@ -253,7 +253,7 @@ public:
 	 * @param interpolation the interpolation method
 	 * @return QImage the resized image
 	 **/ 
-	static QImage resizeImage(const QImage& img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic) {
+	static QImage resizeImage(const QImage img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic) {
 		
 		QSize nSize = newSize;
 
@@ -546,7 +546,7 @@ public:
 	 * @param img the new image
 	 * @param file assigns the current file name
 	 **/ 
-	void setImage(QImage& img, QFileInfo file) {
+	void setImage(QImage img, QFileInfo file) {
 
 		this->file = file;
 		qImg = img;
@@ -554,7 +554,7 @@ public:
 
 	/**
 	 * Returns the 8-bit image, which is rendered.
-	 * @return QImage& an 8bit image
+	 * @return QImage an 8bit image
 	 **/ 
 	QImage image() {
 		return qImg;
@@ -758,7 +758,7 @@ public:
 	QDir getSaveDir();
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
-	void setImage(QImage& img);
+	void setImage(QImage img);
 	void load();
 	void load(QFileInfo file, bool silent = false);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
@@ -780,7 +780,7 @@ public:
 
 	/**
 	 * Returns the currently loaded image.
-	 * @return QImage& the current image
+	 * @return QImage the current image
 	 **/ 
 	QImage getImage() {
 		

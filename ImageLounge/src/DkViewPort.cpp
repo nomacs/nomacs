@@ -759,7 +759,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	update();
 }
 
-QImage& DkBaseViewPort::getImage() {
+QImage DkBaseViewPort::getImage() {
 
 	return imgQt;
 }
@@ -2725,7 +2725,7 @@ void DkViewPortContrast::keyPressEvent(QKeyEvent* event) {
 		DkViewPort::keyPressEvent(event);
 }
 
-QImage& DkViewPortContrast::getImage() {
+QImage DkViewPortContrast::getImage() {
 
 	if (drawFalseColorImg)
 		return falseColorImg;
