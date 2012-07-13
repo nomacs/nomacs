@@ -255,6 +255,7 @@ void DkNoMacs::createToolbar() {
 void DkNoMacs::createStatusbar() {
 
 	statusbarMsg = new QLabel();
+	statusbarMsg->setToolTip(tr("CTRL activates the crosshair cursor"));
 
 	statusbar = new QStatusBar(this);
 	QColor col = QColor(200, 200, 230, 100);

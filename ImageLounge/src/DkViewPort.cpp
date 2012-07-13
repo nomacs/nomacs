@@ -78,8 +78,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	//setStyleSheet("DkControlWidget{background-color: QColor(0,0,0,100); border: 1px solid #000000;}");
-	//setContentsMargins(0,0,0,0);
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -103,6 +102,7 @@ void DkControlWidget::init() {
 
 	// dummy
 	QWidget* dw = new QWidget();
+	dw->setMouseTracking(true);
 	QBoxLayout* dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
 	dLayout->setContentsMargins(0,0,0,0);
 	dLayout->addWidget(bottomLabel);
@@ -110,18 +110,22 @@ void DkControlWidget::init() {
 
 	// zoom widget
 	QWidget* bw = new QWidget();
+	bw->setMouseTracking(true);
 	bw->setMinimumHeight(40);
 	bw->setMaximumHeight(80);
 	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::TopToBottom, bw);
 	zLayout->setContentsMargins(0,0,0,0);
+	zLayout->setSpacing(0);
 	zLayout->addWidget(bottomLabel);
 	zLayout->addWidget(bottomLeftLabel);
 	zLayout->addStretch();
 
 	// left column widget
 	QWidget* leftWidget = new QWidget();
+	leftWidget->setMouseTracking(true);
 	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, leftWidget);
 	ulLayout->setContentsMargins(0,0,0,0);
+	ulLayout->setSpacing(0);
 	ulLayout->addWidget(overviewWindow);
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
@@ -129,6 +133,7 @@ void DkControlWidget::init() {
 
 	// center column
 	QWidget* cW = new QWidget();
+	cW->setMouseTracking(true);
 	QBoxLayout* cwLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
 	cwLayout->setContentsMargins(0,0,0,0);
 	cwLayout->addStretch();
@@ -138,12 +143,14 @@ void DkControlWidget::init() {
 
 	// center player horizontally
 	QWidget* cP = new QWidget();
+	cP->setMouseTracking(true);
 	QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
 	cpLayout->setContentsMargins(0,0,0,0);
 	cpLayout->addWidget(player);
 
 	// center column
 	QWidget* center = new QWidget();
+	center->setMouseTracking(true);
 	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
 	cLayout->setContentsMargins(0,0,0,0);
 	cLayout->addStretch();
@@ -153,14 +160,18 @@ void DkControlWidget::init() {
 	
 	// rating widget
 	QWidget* rw = new QWidget();
+	rw->setMouseTracking(true);
+	rw->setMinimumSize(0,0);
 	QBoxLayout* rLayout = new QBoxLayout(QBoxLayout::RightToLeft, rw);
-	rLayout->setContentsMargins(0,0,0,20);
+	rLayout->setContentsMargins(0,0,0,17);
 	rLayout->addWidget(ratingLabel);
 	rLayout->addStretch();
 
 	// file info
 	QWidget* fw = new QWidget();
 	fw->setContentsMargins(0,0,0,30);
+	fw->setMouseTracking(true);
+	fw->setMinimumSize(0,0);
 	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::RightToLeft, fw);
 	rwLayout->setContentsMargins(0,0,0,0);
 	rwLayout->addWidget(fileInfoLabel);
@@ -169,6 +180,7 @@ void DkControlWidget::init() {
 	// right column
 	QWidget* hw = new QWidget();
 	hw->setContentsMargins(0,10,10,0);
+	hw->setMouseTracking(true);
 	QBoxLayout* hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
 	hwLayout->setContentsMargins(0,0,0,0);
 	hwLayout->addWidget(histogram);
@@ -176,6 +188,7 @@ void DkControlWidget::init() {
 
 	// right column
 	QWidget* rightWidget = new QWidget();
+	rightWidget->setMouseTracking(true);
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
 	lrLayout->addWidget(hw);
@@ -184,13 +197,16 @@ void DkControlWidget::init() {
 	lrLayout->addWidget(rw);
 
 	// init both main widgets
-	hudWidget = new QWidget();
-	editWidget = new QWidget();
+	hudWidget = new QWidget(this);
+	hudWidget->setMouseTracking(true);
+	editWidget = new QWidget(this);
+	editWidget->setMouseTracking(true);
 	editWidget->hide();
 
 	// global controller layout
 	QGridLayout* hudLayout = new QGridLayout(hudWidget);
 	hudLayout->setContentsMargins(0,0,0,0);
+	hudLayout->setSpacing(0);
 
 	// add elements
 	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
@@ -213,7 +229,7 @@ void DkControlWidget::init() {
 	//centerLabel->setText("ich bin richtig...", -1);
 	//bottomLeftLabel->setText("topLeft label...", -1);
 	//spinnerLabel->show();
-
+	
 	show();
 	qDebug() << "controller initialized...";
 }
@@ -850,6 +866,17 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 		posGrab = cPos;
 		moveView(dxy/worldMatrix.m11());
 	}
+	if (event->buttons() != Qt::LeftButton && event->buttons() != Qt::RightButton) {
+
+		if (event->modifiers() == ctrlMod && event->modifiers() != altMod)
+			setCursor(Qt::CrossCursor);
+		else if (worldMatrix.m11() > 1 && !imageInside())
+			setCursor(Qt::OpenHandCursor);
+		else
+			unsetCursor();
+
+	}
+
 
 	QWidget::mouseMoveEvent(event);
 }

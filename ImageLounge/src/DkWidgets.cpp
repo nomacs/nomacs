@@ -796,6 +796,7 @@ DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 		DkSettings::Display::bgColorFrameless :
 		DkSettings::Display::bgColor;
 
+	setMouseTracking(true);
 	this->parent = parent;
 	this->text = text;
 	init();
@@ -1316,10 +1317,12 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 	minWidth = 110;
 	this->parent = parent;
 	title = new QLabel(this);
+	title->setMouseTracking(true);
 	date = new QLabel(this);
+	date->setMouseTracking(true);
 	rating = new DkRatingLabel(0, this);
 	setMinimumWidth(minWidth);
-
+	
 	createLayout();
 }
 
