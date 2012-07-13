@@ -1026,7 +1026,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 		QStringList cVersion = QApplication::applicationVersion().split('.');
 		QStringList nVersion = sl[0].split('.');
 
-		if (cVersion.size() <= 4 || nVersion.size() <= 4) {
+		if (cVersion.size() < 3 || nVersion.size() < 3) {
 			qDebug() << "sorry, I could not parse the version number...";
 
 			if (!silent)
