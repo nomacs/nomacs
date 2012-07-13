@@ -534,7 +534,6 @@ void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 		filePreview->setCurrentDx(dx);	// update dx
 	}
 
-	qDebug() << "controller move...";
 	QWidget::mouseMoveEvent(event);
 }
 
@@ -1154,7 +1153,9 @@ void DkViewPort::updateImage() {
 }
 
 void DkViewPort::setImage(QImage newImg) {
-	
+
+	DkTimer dt;
+
 	if (!thumbLoaded) { 
 		qDebug() << "saving image matrix...";
 		oldImgViewRect = imgViewRect;
@@ -1162,7 +1163,6 @@ void DkViewPort::setImage(QImage newImg) {
 		oldImgMatrix = imgMatrix;
 	}
 
-	DkTimer dt;
 	imgPyramid.clear();
 
 	controller->getOverview()->setImage(QImage());	// clear overview
@@ -1203,10 +1203,11 @@ void DkViewPort::setImage(QImage newImg) {
 	oldImgRect = imgRect;
 
 	update();
+
+	// draw a histogram from the image -> does nothing if the histobram is invisible
+	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 
-	// draw a histogram from the image
-	if (controller->getHistogram() && controller->getHistogram()->isVisible()) controller->getHistogram()->drawHistogram(newImg);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -1612,8 +1613,8 @@ bool DkViewPort::event(QEvent *event) {
 		event->type() == QEvent::KeyPress || 
 		event->type() == QEvent::KeyRelease) {
 
-		qDebug() << "redirecting event...";
-		// mouse events that double are now fixed, since the viewport is now overlayed by the controller
+		//qDebug() << "redirecting event...";
+		// mouse eventss that double are now fixed, since the viewport is now overlayed by the controller
 		return QWidget::event(event);
 	}
 	else

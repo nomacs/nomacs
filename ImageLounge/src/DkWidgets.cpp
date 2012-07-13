@@ -2965,15 +2965,24 @@ void DkHistogram::paintEvent(QPaintEvent* event) {
 			int bLineHeight = ((int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[2][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
 			int maxLineHeight = (rLineHeight > gLineHeight) ? ((rLineHeight > bLineHeight) ? rLineHeight : bLineHeight) :  ((gLineHeight > bLineHeight) ? gLineHeight : bLineHeight);
 
+			int vCombined = qMin(qMin(rLineHeight, gLineHeight), bLineHeight);
+
 			for(int j = 0; j <= maxLineHeight; j++) {
-				if(j <= rLineHeight && j <= gLineHeight && j <= bLineHeight) painter.setPen(Qt::gray);
+
+				if(j <= rLineHeight && j <= gLineHeight && j <= bLineHeight) {
+				
+					// make last pixel lighter -> enhances visual appearence
+					int c = (j == vCombined && rLineHeight == gLineHeight && gLineHeight == bLineHeight) ? 200 : 100;
+					painter.setPen(QColor(c,c,c));
+				}
 				else if(j <= rLineHeight && j <= gLineHeight) painter.setPen(Qt::yellow);
 				else if(j <= rLineHeight && j <= bLineHeight) painter.setPen(Qt::magenta);
 				else if(j <= gLineHeight && j <= bLineHeight) painter.setPen(Qt::cyan);
 				else if(j <= rLineHeight) painter.setPen(Qt::red);
 				else if(j <= gLineHeight) painter.setPen(Qt::green);
 				else if(j <= bLineHeight) painter.setPen(Qt::blue);
-				else painter.setPen(bgCol);
+				else 
+					continue;
 
 				painter.drawPoint(2 + i, height() - j - 2);
 			}
@@ -2987,63 +2996,147 @@ void DkHistogram::paintEvent(QPaintEvent* event) {
  **/ 
 void DkHistogram::drawHistogram(QImage imgQt) {
 
-	#ifdef WITH_OPENCV
+	if (!isVisible() || imgQt.isNull()) {
+		setPainted(false);
+		return;
+	}
 
-	Mat imgMat = DkImage::qImage2Mat(imgQt);
-	
-	vector<Mat> imgChannels;
-	split(imgMat, imgChannels);
+	DkTimer dt;
 
-	int noChannels = (imgChannels.size() < 3) ? 1 : 3;
+#ifdef WITH_OPENCV
 
-	// Set the number of bins
-	int histSize = 256;
-	// Set the ranges for B,G,R
-	float range[] = { 0, 256 } ;
-	const float* histRange = { range };
 
-	MatND hist;
-	// note: long == int if compiled with a 32bit compiler
 	long histValues[3][256];
-	long maxHistValue = 0;
 
-	for (int i = 0; i < noChannels; i++) {
+	for (int idx = 0; idx < 256; idx++) {
+		histValues[0][idx] = 0;
+		histValues[1][idx] = 0;
+		histValues[2][idx] = 0;
+	}
+	
 
-		calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
+	// 8 bit images
+	if (imgQt.depth() == 8) {
+
+		qDebug() << "8 bit histogram -------------------";
+
+		for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
+
+			const unsigned char* pixel = imgQt.constScanLine(rIdx);
+
+			for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
+
+				histValues[0][*pixel]++;
+				histValues[1][*pixel]++;
+				histValues[2][*pixel]++;
+			}
+		}
+	}
+	// 24 bit images
+	else if (imgQt.depth() == 24) {
 		
-		for (int j = 0; j < 256; j++) histValues[i][j] = hist.at<float>(j);
-		hist.setTo(0);
-	}
+		qDebug() << "24 bit histogram -------------------";
 
-	if (noChannels == 1) {
+		// TODO: not tested!!
+		for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
 
-		for (int i = 0; i < 256; i++) {
-			histValues[2][i] = histValues[1][i] = histValues[0][i];
-			
-			if(histValues[0][i] > maxHistValue) maxHistValue = histValues[0][i];
+			const unsigned char* pixel = imgQt.constScanLine(rIdx);
+
+			for (int cIdx = 0; cIdx < imgQt.width(); cIdx++) {
+
+				// If I understood the api correctly, the first bits are 0 if we have 24bpp & < 8 bits per channel
+				histValues[0][*pixel]++; pixel++;
+				histValues[1][*pixel]++; pixel++;
+				histValues[2][*pixel]++; pixel++;
+			}
 		}
 	}
-	else {
+	// 32 bit images
+	else if (imgQt.depth() == 32) {
+		
+		for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
+		
+			const QRgb* pixel = (QRgb*)(imgQt.constScanLine(rIdx));
+	
+			for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
 
-		for (int i = 0; i < 256; i++) {
-			long maxRGB = (histValues[0][i] > histValues[1][i]) ? 
-				((histValues[0][i] > histValues[2][i]) ? histValues[0][i] : histValues[2][i]) :  
-				((histValues[1][i] > histValues[2][i]) ? histValues[1][i] : histValues[2][i]);
-
-			if(maxRGB > maxHistValue) maxHistValue = maxRGB;
+				histValues[0][qRed(*pixel)]++;
+				histValues[1][qGreen(*pixel)]++;
+				histValues[2][qBlue(*pixel)]++;
+			}
 		}
 	}
+
+	int maxHistValue = 0;
+
+	for (int idx = 0; idx < 256; idx++) {
+		
+		if (histValues[0][idx] > maxHistValue)
+			maxHistValue = histValues[0][idx];
+		if (histValues[1][idx] > maxHistValue)
+			maxHistValue = histValues[1][idx];
+		if (histValues[2][idx] > maxHistValue)
+			maxHistValue = histValues[2][idx];
+	}
+
+	//Mat imgMat = DkImage::qImage2Mat(imgQt);
+	//
+	//vector<Mat> imgChannels;
+	//split(imgMat, imgChannels);
+
+	//int noChannels = (imgChannels.size() < 3) ? 1 : 3;
+
+	//// Set the number of bins
+	//int histSize = 256;
+	//// Set the ranges for B,G,R
+	//float range[] = { 0, 256 } ;
+	//const float* histRange = { range };
+
+	//MatND hist;
+	//// note: long == int if compiled with a 32bit compiler
+	//long histValues[3][256];
+	//long maxHistValue = 0;
+
+	//for (int i = 0; i < noChannels; i++) {
+
+	//	calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
+	//	
+	//	for (int j = 0; j < 256; j++) histValues[i][j] = hist.at<float>(j);
+	//	hist.setTo(0);
+	//}
+
+	//if (noChannels == 1) {
+
+	//	for (int i = 0; i < 256; i++) {
+	//		histValues[2][i] = histValues[1][i] = histValues[0][i];
+	//		
+	//		if(histValues[0][i] > maxHistValue) maxHistValue = histValues[0][i];
+	//	}
+	//}
+	//else {
+
+	//	for (int i = 0; i < 256; i++) {
+	//		long maxRGB = (histValues[0][i] > histValues[1][i]) ? 
+	//			((histValues[0][i] > histValues[2][i]) ? histValues[0][i] : histValues[2][i]) :  
+	//			((histValues[1][i] > histValues[2][i]) ? histValues[1][i] : histValues[2][i]);
+
+	//		if(maxRGB > maxHistValue) maxHistValue = maxRGB;
+	//	}
+	//}
+	//qDebug() << "computing the histogram took me: " << QString::fromStdString(dt.getTotal());
 
 	setMaxHistogramValue(maxHistValue);
 	updateHistogramValues(histValues);
 	setPainted(true);
 
-	#else
+#else
 
 	setPainted(false);
 
-	#endif
+#endif
 	
+	qDebug() << "drawing the histogram took me: " << QString::fromStdString(dt.getTotal());
+
 	update();
 }
 
@@ -3084,15 +3177,34 @@ void DkHistogram::updateHistogramValues(long histValues[][256]) {
  **/ 
 void DkHistogram::mousePressEvent(QMouseEvent *event) {
 
-	QPointF clickedPos = event->pos();
-	scaleFactor = height() / (height() - clickedPos.y());
-	update();
+	// always propagate mouse events
+	if (event->buttons() != Qt::LeftButton)
+		DkWidget::mousePressEvent(event);
+}
+
+void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
+
+	if (event->buttons() == Qt::LeftButton) {
+		
+		float cp = height() - event->pos().y();
+		
+		if (cp > 0) {
+			scaleFactor = height() / cp;
+			update();
+		}
+	}
+	else
+		DkWidget::mouseMoveEvent(event);
+
 }
 
 void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
 	
 	scaleFactor = 1;
 	update();
+
+	if (event->buttons() != Qt::LeftButton)
+		DkWidget::mouseReleaseEvent(event);
 }
 
 }
