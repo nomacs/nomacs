@@ -84,13 +84,14 @@ DkBasicLoader::DkBasicLoader(int mode) {
 bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 	bool imgLoaded = false;
-	QString newSuffix = file.suffix();
 	
 	if (file.isSymLink())
 		this->file = file.symLinkTarget();
 	else
 		this->file = file;
 	
+	QString newSuffix = this->file.suffix();
+
 	QImage oldImg = qImg;
 #ifdef WITH_OPENCV
 	cv::Mat oldMat = cvImg;
@@ -99,21 +100,21 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 	if (newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadRohFile(file.absoluteFilePath());
-
-	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive))) {
-
-		// if image has Indexed8 + alpha channel -> we crash... sorry for that
-		imgLoaded = qImg.load(file.absoluteFilePath());
+		imgLoaded = loadRohFile(this->file.absoluteFilePath());
 
 	} else if (file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive))) {
 
 		// load hdr here...
 
+	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive))) {
+
+		// if image has Indexed8 + alpha channel -> we crash... sorry for that
+		imgLoaded = qImg.load(this->file.absoluteFilePath());
+
 	} else {
 
 		// load raw files
-		imgLoaded = loadRawFile(file);
+		imgLoaded = loadRawFile(this->file);
 	}
 
 	// ok, play back the old images
@@ -611,7 +612,7 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
 
 #else
 
-	return img->scaled(size, Qt::IgnoreAspectRatio, iplQt);
+	img->scaled(size, Qt::IgnoreAspectRatio, iplQt);
 
 #endif
 
