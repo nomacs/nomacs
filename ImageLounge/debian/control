@@ -12,8 +12,8 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: image viewer with capability of syncing multiple instances
  nomacs is a free image viewer for windows and linux systems, which is
- licensed under the GNU General Public License v3. nomacs is small, fast and able 
- to handle the most common image formats. Additionally it is possible to 
+ licensed under the GNU General Public License v3. nomacs is small, fast and 
+ able to handle the most common image formats. Additionally it is possible to
  synchronize multiple viewers. A synchronization of viewers running on 
  the same computer or via LAN is possible. It allows one to compare images 
  and spot the differences (e.g. schemes of architects to show the 
