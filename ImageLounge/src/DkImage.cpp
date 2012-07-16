@@ -210,6 +210,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		QImage image;
 		int orientation = 0;
 
+		//use iprocessore from libraw to read the data
 		iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
 
 		//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
@@ -224,6 +225,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		//// RAW data filtration mode during data unpacking and post-processing
 		//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
 
+		//unpack the data
 		iProcessor.unpack();
 		//iProcessor.dcraw_process();
 		//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
@@ -265,12 +267,18 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		else
 		{
 
+			//GENERAL TODO
+			//check if the corrections (black, white point gamma correction) are done in the correct order
+			//check if the specific corrections are different regarding different camera models
+			//find out some general specifications of the most important raw formats
+
 			qDebug() << "----------------";
 			qDebug() << "Bayer Pattern: " << QString::fromStdString(iProcessor.imgdata.idata.cdesc);
 			qDebug() << "Camera manufacturer: " << QString::fromStdString(iProcessor.imgdata.idata.make);
 			qDebug() << "Camera model: " << QString::fromStdString(iProcessor.imgdata.idata.model);
 			qDebug() << "canon_ev " << (float)iProcessor.imgdata.color.canon_ev;
 
+			//debug outputs of the exif data read by libraw
 			//qDebug() << "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
 			//	iProcessor.imgdata.color.cam_mul[1], iProcessor.imgdata.color.cam_mul[2],
 			//	iProcessor.imgdata.color.cam_mul[3]);
@@ -299,16 +307,22 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			//if (mulWhite[3] == 0)
 			//	mulWhite[3] = mulWhite[1];
 
+			//white point of the image (metadata)
 			mulWhite[0] = iProcessor.imgdata.color.cam_mul[0];
 			mulWhite[1] = iProcessor.imgdata.color.cam_mul[1];
 			mulWhite[2] = iProcessor.imgdata.color.cam_mul[2];
 			mulWhite[3] = iProcessor.imgdata.color.cam_mul[3];
 
+			//dynamic range is defined by maximum - black
 			float dynamicRange = iProcessor.imgdata.color.maximum-iProcessor.imgdata.color.black;
 
 			float w = (mulWhite[0] + mulWhite[1] + mulWhite[2] + mulWhite[3])/4.0f;
 			float maxW = 1.0f;//mulWhite[0];
 
+			//clipping according the camera model
+			//if w > 2.0 maxW is 256, otherwise 512
+			//tested empirically
+			//check if it can be defined by some metadata settings?
 			if (w > 2.0f)
 				maxW = 256.0f;
 			if (w > 2.0f && QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive) == 0)
@@ -321,6 +335,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			//if (maxW < mulWhite[3])
 			//	maxW = mulWhite[3];
 
+			//normalize white point
 			mulWhite[0] /= maxW;
 			mulWhite[1] /= maxW;
 			mulWhite[2] /= maxW;
@@ -346,7 +361,8 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			//	mulWhite[3] = iProcessor.imgdata.color.cam_xyz[1][1];
 			//}
 
-
+			//if 3 channel is not defined (0)
+			//clone value from 1 channel
 			if (mulWhite[3] == 0)
 				mulWhite[3] = mulWhite[1];
 
@@ -370,7 +386,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
 
 
-
+			//read gamma value and create gamma table
 			float gamma = (float)iProcessor.imgdata.params.gamm[0];///(float)iProcessor.imgdata.params.gamm[1];
 			float gammaTable[65536];
 			for (int i = 0; i < 65536; i++) {
@@ -389,7 +405,9 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
 					//ptrRaw[col] = (float)iProcessor.imgdata.color.curve[(int)ptrRaw[col]];
 
+					//correct the image values according the black point defined by the camera
 					ptrRaw[col] -= iProcessor.imgdata.color.black;
+					//normalize according the dynamic range
 					ptrRaw[col] /= dynamicRange;
 
 					//// clip
@@ -398,11 +416,14 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 
 					//if (ptrRaw[col] <= 1.0f)
+					//white point correction
 					ptrRaw[col] *= mulWhite[colorIdx];
+					//clipping of the white point correction
 					ptrRaw[col] = ptrRaw[col] > 1.0f ? 1.0f : ptrRaw[col]; 
 					//ptrRaw[col] = (float)(pow((float)ptrRaw[col], gamma));
 					//ptrRaw[col] *= 255.0f;		
 
+					//apply gamma correction
 					ptrRaw[col] = ptrRaw[col] <= 0.018f ? (ptrRaw[col]*(float)iProcessor.imgdata.params.gamm[1]) *255.0f :
 						gammaTable[(int)(ptrRaw[col]*65535.0f)]*255;
 					//									(1.099f*(float)(pow((float)ptrRaw[col], gamma))-0.099f)*255.0f;
@@ -424,6 +445,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
 			type = type & 255;
 
+			//define bayer pattern
 			if (type == 180) cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) -> RG RG RG
 			//												                                                                  GB GB GB
 			else if (type == 30) cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
@@ -431,11 +453,13 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			else if (type == 75) cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
 			else throw DkException("Wrong Bayer Pattern (not BG, RG, GB, GR)\n", __LINE__, __FILE__);
 
+			//check the pixel aspect ratio of the raw image
 			if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {
 				cv::resize(rgbImg, rawMat, Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
 				rgbImg = rawMat;
 			}
 
+			//create the final image
 			image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
 
 			//orientation is done in loadGeneral with libExiv
