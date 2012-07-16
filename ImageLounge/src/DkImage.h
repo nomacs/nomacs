@@ -801,7 +801,7 @@ signals:
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
-	void updateFileSignal(QFileInfo file, QSize s);
+	void updateFileSignal(QFileInfo file, QSize s = QSize());
 	void updateDirSignal(QFileInfo file, bool force = false);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);

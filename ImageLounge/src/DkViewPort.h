@@ -232,6 +232,7 @@ public slots:
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
 
+	void setFileInfo(QFileInfo fileInfo);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -337,7 +338,7 @@ public slots:
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void stopBlockZooming();
 
-	virtual void unloadImage();
+	virtual void unloadImage(bool edited = false);
 
 	virtual void setImage(QImage newImg);
 

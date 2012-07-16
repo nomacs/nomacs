@@ -1423,9 +1423,7 @@ void DkFileInfoLabel::updateRating(const int rating) {
 
 void DkFileInfoLabel::updateWidth() {
 
-	// TODO: here or in the layout manager is a bug
 	int width = 20;		// mar
-	
 	width += qMax(qMax(title->sizeHint().width(), date->sizeHint().width()), rating->sizeHint().width());
 	
 	if (width < minimumWidth())

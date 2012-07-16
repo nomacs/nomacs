@@ -78,7 +78,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	//// debug: show invisible widgets
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -246,6 +247,7 @@ void DkControlWidget::connectWidgets() {
 
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
+		connect(loader, SIGNAL(updateFileSignal(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
 
 		connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
@@ -409,6 +411,21 @@ void DkControlWidget::showHistogram(bool visible) {
 		histogram->hide();
 	}
 
+}
+
+void DkControlWidget::setFileInfo(QFileInfo fileInfo) {
+
+	qDebug() << "file info set...";
+
+	//// TODO: this is a fast fix
+	//// if this thread uses the static metadata object 
+	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
+	//// currently we need to read the metadata twice (not nice either)
+	DkImageLoader::imgMetaData.setFileName(fileInfo);
+
+	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
+	fileInfoLabel->updateInfo(fileInfo, dateString, DkImageLoader::imgMetaData.getRating());
+	updateRating(DkImageLoader::imgMetaData.getRating());
 }
 
 void DkControlWidget::setInfo(QString msg, int time, int location) {
@@ -775,7 +792,7 @@ QRectF DkBaseViewPort::getImageViewRect() {
 	return worldMatrix.mapRect(imgViewRect);
 }
 
-void DkBaseViewPort::unloadImage() {
+void DkBaseViewPort::unloadImage(bool edited) {
 }
 
 // events --------------------------------------------------------------------
@@ -1192,19 +1209,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(imgQt);
-
-	//// TODO: this is a fast fix
-	//// if this thread uses the static metadata object 
-	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
-	//// currently we need to read the metadata twice (not nice either)
-	DkImageLoader::imgMetaData.setFileName(loader->getFile());
-
-	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
-	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
-	controller->updateRating(DkImageLoader::imgMetaData.getRating());
 	controller->stopLabels();
-	qDebug() << "file:" << loader->getFile().fileName() << "date: " << dateString << " rating: " << DkImageLoader::imgMetaData.getRating();
-
 
 	thumbLoaded = false;
 	thumbFile = QFileInfo();
@@ -1817,7 +1822,6 @@ void DkViewPort::unloadImage() {
 		qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
 
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
-
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool silent) {

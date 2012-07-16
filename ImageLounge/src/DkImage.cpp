@@ -384,6 +384,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 				for (uint col = 0; col < cols; col++)
 				{
+					
 					int colorIdx = iProcessor.COLOR(row, col);
 					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
 					//ptrRaw[col] = (float)iProcessor.imgdata.color.curve[(int)ptrRaw[col]];

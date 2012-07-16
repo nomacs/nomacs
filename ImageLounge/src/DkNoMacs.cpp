@@ -1109,11 +1109,12 @@ void DkNoMacs::pasteImage() {
 
 			// delete current information
 			if (viewport()->getImageLoader()) {
+				
 				//viewport()->getImageLoader()->clearPath();
 				viewport()->getImageLoader()->setImage(dropImg);
 				viewport()->setImage(dropImg);
-				qDebug() << "loader path: " << viewport()->getImageLoader()->getFile().absoluteFilePath();
-				
+				qDebug() << "loader path: " << viewport()->getImageLoader()->getFile().absoluteFilePath();	
+
 				saveTempFileSignal(dropImg);
 			}
 		}
