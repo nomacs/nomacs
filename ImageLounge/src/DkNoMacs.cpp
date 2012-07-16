@@ -125,6 +125,19 @@ void DkNoMacs::init() {
 	addActions(syncActions.toList());
 	addActions(helpActions.toList());
 
+	// automatically add status tip as tool tip
+	for (int idx = 0; idx < fileActions.size(); idx++)
+		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
+	for (int idx = 0; idx < editActions.size(); idx++)
+		editActions[idx]->setToolTip(editActions[idx]->statusTip());
+	for (int idx = 0; idx < viewActions.size(); idx++)
+		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
+	for (int idx = 0; idx < syncActions.size(); idx++)
+		syncActions[idx]->setToolTip(syncActions[idx]->statusTip());
+	for (int idx = 0; idx < helpActions.size(); idx++)
+		helpActions[idx]->setToolTip(helpActions[idx]->statusTip());
+
+
 	// TODO - just for android register me as a gesture recognizer
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
@@ -990,7 +1003,8 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 		// just accept image files
 		if (DkImageLoader::isValid(file))
 			event->acceptProposedAction();
-
+		else if (file.isDir())
+			event->acceptProposedAction();
 	}
 	if (event->mimeData()->hasImage()) {
 		event->acceptProposedAction();

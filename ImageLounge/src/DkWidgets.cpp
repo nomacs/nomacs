@@ -1425,17 +1425,10 @@ void DkFileInfoLabel::updateWidth() {
 
 	// TODO: here or in the layout manager is a bug
 	int width = 20;		// mar
-
-	if (title->isVisible() && title->sizeHint().width() > date->sizeHint().width())
-		width += title->sizeHint().width();
-	else if (date->isVisible())
-		width += date->sizeHint().width();
-	else if (rating->isVisible())
-		width += rating->sizeHint().width();
-
+	
+	width += qMax(qMax(title->sizeHint().width(), date->sizeHint().width()), rating->sizeHint().width());
+	
 	if (width < minimumWidth())
-		setMinimumWidth(width);
-	else
 		setMinimumWidth(width);
 	
 	setMaximumWidth(width);

@@ -548,7 +548,7 @@ public:
 	void setVisible(bool visible) {
 
 		if (visible)
-			indexDir();
+			indexDir(false);	// false = do not force refreshing the folder
 
 		DkWidget::setVisible(visible);
 	}

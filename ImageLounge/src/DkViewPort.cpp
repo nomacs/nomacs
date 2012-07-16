@@ -78,7 +78,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -383,8 +383,14 @@ void DkControlWidget::showCrop(bool visible) {
 	}
 	else if (!visible && editWidget->isVisible()) {
 		editWidget->hide();
-		hudWidget->show();
 		editRect->hide();
+		hudWidget->show();
+
+		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
+		if (fileInfoLabel->isVisible()) {
+			fileInfoLabel->hide();
+			fileInfoLabel->show();
+		}
 	}
 
 }
@@ -1187,16 +1193,18 @@ void DkViewPort::setImage(QImage newImg) {
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(imgQt);
 
-	// TODO: this is a fast fix
-	// if this thread uses the static metadata object 
-	// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
-	// currently we need to read the metadata twice (not nice either)
+	//// TODO: this is a fast fix
+	//// if this thread uses the static metadata object 
+	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
+	//// currently we need to read the metadata twice (not nice either)
 	DkImageLoader::imgMetaData.setFileName(loader->getFile());
 
 	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
 	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
 	controller->updateRating(DkImageLoader::imgMetaData.getRating());
 	controller->stopLabels();
+	qDebug() << "file:" << loader->getFile().fileName() << "date: " << dateString << " rating: " << DkImageLoader::imgMetaData.getRating();
+
 
 	thumbLoaded = false;
 	thumbFile = QFileInfo();
@@ -1801,10 +1809,12 @@ void DkViewPort::unloadImage() {
 	int rating = controller->getRating();
 
 	// TODO: if image is not saved... ask user?! -> resize & crop
-	if (!imgQt.isNull() && loader && rating != -1 && loader->getMetaData().getRating() != -1 && rating != loader->getMetaData().getRating()) {
+	if (!imgQt.isNull() && loader && rating != -1 && rating != loader->getMetaData().getRating()) {
 		qDebug() << "old rating: " << loader->getMetaData().getRating();
 		loader->saveRating(rating);
 	}
+	else
+		qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
 
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 
@@ -2040,7 +2050,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	unloadImage();
 	setImage(img);
-	emit windowTitleSignal(QFileInfo(), imgQt.size());	// not needed?!
+	emit windowTitleSignal(QFileInfo(), imgQt.size());
 	//imgQt = img;
 	update();
 
