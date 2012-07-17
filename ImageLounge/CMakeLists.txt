@@ -153,11 +153,17 @@ IF (${ENABLE_RAW})
                 	SET(LIBRAW_LIBRARIES optimized libraw.lib debug librawd.lib)
 
                 	SET(LIBRAW_FOUND true)
+                	SET(LIBRAW_VERSION 0.13.5)
         	ELSE()
                 	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/librawd.dll and debug/librawd.lib")
         	ENDIF()
 	ENDIF()
-
+        IF (LIBRAW_VERSION VERSION_GREATER 0.14.0)
+	  add_definitions(-DLIBRAW_VERSION_14)
+	endif()
+	  
+        #
+        
 	# OpenCV
 	pkg_check_modules(OpenCV  opencv>=2.1.0)
 	SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
