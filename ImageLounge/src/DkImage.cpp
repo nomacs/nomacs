@@ -228,7 +228,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		//unpack the data
 		iProcessor.unpack();
 	#ifdef LIBRAW_VERSION_14
-		iProcessor.raw2iamge();
+		iProcessor.raw2image();
 	#endif
 
 		//iProcessor.dcraw_process();
