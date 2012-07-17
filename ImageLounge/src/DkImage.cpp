@@ -227,6 +227,10 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 		//unpack the data
 		iProcessor.unpack();
+	#ifdef LIBRAW_VERSION_14
+		iProcessor.raw2iamge();
+	#endif
+
 		//iProcessor.dcraw_process();
 		//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
 
