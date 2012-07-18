@@ -273,6 +273,7 @@ public:
 		DkSettingsWidget(QWidget* parent) : QWidget(parent) { showOnlyInAdvancedMode = false;};
 		virtual void writeSettings() = 0;
 		virtual void init() = 0;
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions) = 0;
 
 		bool showOnlyInAdvancedMode;
 };
@@ -299,6 +300,9 @@ Q_OBJECT
 
 		void openWithDialog();
 
+	protected:
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
+
 	private:
 		void init();
 		void createLayout();
@@ -315,6 +319,7 @@ Q_OBJECT
 		QPushButton* pbTmpPath;
 		QComboBox* langCombo;
 		
+		QGroupBox* 	gbDragDrop;
 	
 		QPushButton* buttonDefaultSettings;
 
@@ -335,9 +340,14 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 
 		void writeSettings();
 
+	protected:
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
+	
 	private:
 		void init();
 		void createLayout();
+
+		QGroupBox* gbThumb;
 
 		QCheckBox* cbKeepZoom;
 		QCheckBox* cbInvertZoom;
@@ -375,7 +385,9 @@ Q_OBJECT
 
 		void writeSettings();
 
-
+	protected:
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
+	
 	private slots:
 		void showFileName(bool checked);
 		void showCreationDate(bool checked);
@@ -389,6 +401,7 @@ Q_OBJECT
 
 		DkSpinBoxWidget* timeWidget;
 		DkColorChooser* bgColChooser;
+
 
 		QGroupBox* gbInfo;
 		QCheckBox* cbCreationDate;
@@ -409,6 +422,9 @@ class DkSynchronizeSettingsWidget : public DkSettingsWidget {
 
 		void writeSettings();
 
+	protected:
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
+	
 	private slots:
 		void enableNetworkCheckBoxChanged(int state);
 
@@ -426,6 +442,7 @@ class DkSynchronizeSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbAllowImage;
 		QCheckBox* cbAllowFile;
 		QCheckBox* cbSwitchModifier;
+		QGroupBox* gbNetworkSettings;
 };
 
 class DkSettingsListView : public QListView {
@@ -456,82 +473,85 @@ Q_OBJECT;
 class DkMetaDataSettingsWidget : public DkSettingsWidget {
 	Q_OBJECT
 
-public:
+	public:
 
-	//enums for checkboxes - divide in camera data and description
-	enum cameraData {
-		camData_size,
-		camData_orientation,
-		camData_make,
-		camData_model,
-		camData_aperture,
-		//camData_shutterspeed,
-		camData_flash,
-		camData_focallength,
-		camData_exposuremode,
-		camData_exposuretime,
+		//enums for checkboxes - divide in camera data and description
+		enum cameraData {
+			camData_size,
+			camData_orientation,
+			camData_make,
+			camData_model,
+			camData_aperture,
+			//camData_shutterspeed,
+			camData_flash,
+			camData_focallength,
+			camData_exposuremode,
+			camData_exposuretime,
 
-		camData_end
-	};
+			camData_end
+		};
 
-	enum descriptionT {
-		desc_rating = camData_end,
-		desc_usercomment,
-		desc_date,
-		desc_datetimeoriginal,
-		desc_imagedescription,
-		desc_creator,
-		desc_creatortitle,
-		desc_city,
-		desc_country,
-		desc_headline,
-		desc_caption,
-		desc_copyright,
-		desc_keywords,
-		desc_path,
-		desc_filesize,
+		enum descriptionT {
+			desc_rating = camData_end,
+			desc_usercomment,
+			desc_date,
+			desc_datetimeoriginal,
+			desc_imagedescription,
+			desc_creator,
+			desc_creatortitle,
+			desc_city,
+			desc_country,
+			desc_headline,
+			desc_caption,
+			desc_copyright,
+			desc_keywords,
+			desc_path,
+			desc_filesize,
 		
-		desc_end
-	};
+			desc_end
+		};
 
-	static QStringList scamDataDesc;
-	static QStringList sdescriptionDesc;
+		static QStringList scamDataDesc;
+		static QStringList sdescriptionDesc;
 
-	DkMetaDataSettingsWidget(QWidget* parent);
+		DkMetaDataSettingsWidget(QWidget* parent);
 
-	void writeSettings();
+		void writeSettings();
 
-private:
-	void init();
-	void createLayout();
+	protected:
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
+
+	private:
+		void init();
+		void createLayout();
 
 
-	//Checkboxes
-	QVector<QCheckBox *> pCbMetaData;
+		//Checkboxes
+		QVector<QCheckBox *> pCbMetaData;
 
-	//Tags not used, but maybe later...
-	//Exif.Image.BitsPerSample
-	//Exif.Image.ImageDescription
-	//Exif.Image.XResolution, Exif.Image.YResolution
-	//Exif.Image.ISOSpeedRatings
-	//Exif.Image.BrightnessValue
-	//Exif.Image.ExposureBiasValue
-	//Exif.Image.MaxApertureValue
-	//Exif.Image.LightSource
-	//Exif.Image.Noise
+		//Tags not used, but maybe later...
+		//Exif.Image.BitsPerSample
+		//Exif.Image.ImageDescription
+		//Exif.Image.XResolution, Exif.Image.YResolution
+		//Exif.Image.ISOSpeedRatings
+		//Exif.Image.BrightnessValue
+		//Exif.Image.ExposureBiasValue
+		//Exif.Image.MaxApertureValue
+		//Exif.Image.LightSource
+		//Exif.Image.Noise
 
-	//IPTC
-	//Iptc.Application2.DateCreated
+		//IPTC
+		//Iptc.Application2.DateCreated
 
-	////XMP
-	//CreateDate
-	//CreatorTool
-	//Identifier
-	//Label
-	//MetaDataDate
-	//ModifyDate
-	//Nickname
-	//Rating
+		////XMP
+		//CreateDate
+		//CreatorTool
+		//Identifier
+		//Label
+		//MetaDataDate
+		//ModifyDate
+		//Nickname
+		//Rating
 };
 
 class DkResourceSettingsWidgets: public DkSettingsWidget {
@@ -542,19 +562,22 @@ public:
 
 	void writeSettings();
 
+	protected:
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
+	
 	private slots:
 		void memorySliderChanged(int newValue);
 
-private:
-	void init();
-	void createLayout();
+	private:
+		void init();
+		void createLayout();
 
-	QCheckBox* cbFastThumbnailPreview;
-	QSlider* sliderMemory;
-	QLabel* labelMemory;
+		QCheckBox* cbFastThumbnailPreview;
+		QSlider* sliderMemory;
+		QLabel* labelMemory;
 	
-	double stepSize;
-	double totalMemory;
+		double stepSize;
+		double totalMemory;
 };
 
 
