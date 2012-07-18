@@ -1981,6 +1981,15 @@ bool DkImageLoader::isValid(QFileInfo& fileInfo) {
 //	return fileIdx;
 //}
 
+void DkImageLoader::loadLastDir() {
+
+	if (DkSettings::Global::recentFolders.empty())
+		return;
+
+	QDir lastDir = DkSettings::Global::recentFolders[0];
+	setDir(lastDir);
+}
+
 /**
  * Sets the file specified and loads the directory.
  * @param file the file to be set as current file.

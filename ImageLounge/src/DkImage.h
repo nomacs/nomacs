@@ -756,6 +756,7 @@ public:
 	QString getCurrentFilter();
 	QDir getDir();
 	QDir getSaveDir();
+	void loadLastDir();
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
 	void setImage(QImage img);
