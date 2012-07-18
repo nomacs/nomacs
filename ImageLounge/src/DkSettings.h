@@ -100,6 +100,7 @@ class DkSettings : public QObject {
 			static QBitArray showOverview;
 			static int appMode;
 			static int currentAppMode;
+			static bool advancedSettings;
 		};
 
 		struct Display {
@@ -226,6 +227,7 @@ class DkSettingsDialog : public QDialog {
 	private:
 		void init();
 		void createLayout();
+		void createSettingsWidgets();
 
 	private slots:
 		void listViewSelected(const QModelIndex & qmodel);
@@ -241,6 +243,7 @@ class DkSettingsDialog : public QDialog {
 			emit setToDefaultSignal();
 			emit settingsChanged();
 		};
+		void advancedSettingsChanged(int state);
 
 	protected:
 		BorderLayout* borderLayout;
@@ -250,6 +253,7 @@ class DkSettingsDialog : public QDialog {
 		QPushButton* buttonOk;
 		QPushButton* buttonCancel;
 		DkSettings* s;
+		QCheckBox* cbAdvancedSettings;
 
 		QList<DkSettingsWidget*> widgetList;
 		QWidget* centralWidget;
@@ -266,9 +270,11 @@ class DkSettingsWidget : public QWidget {
 Q_OBJECT	
 
 public:
-		DkSettingsWidget(QWidget* parent) : QWidget(parent) {};
+		DkSettingsWidget(QWidget* parent) : QWidget(parent) { showOnlyInAdvancedMode = false;};
 		virtual void writeSettings() = 0;
 		virtual void init() = 0;
+
+		bool showOnlyInAdvancedMode;
 };
 
 class DkGlobalSettingsWidget : public DkSettingsWidget {

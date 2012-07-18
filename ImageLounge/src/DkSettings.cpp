@@ -43,6 +43,7 @@ QBitArray DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false
 QBitArray DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
 int DkSettings::App::appMode = 0;
 int DkSettings::App::currentAppMode = 0;
+bool DkSettings::App::advancedSettings = false;
 
 int DkSettings::Global::skipImgs = 10;
 bool DkSettings::Global::loop = false;
@@ -164,6 +165,8 @@ void DkSettings::load() {
 	tmpShow = settings.value("AppSettings/showOverview", DkSettings::App::showOverview).toBitArray();
 	if (tmpShow.size() == App::showOverview.size())	App::showOverview = tmpShow;
 
+	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
+
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
 
 	Global::loop = settings.value("GlobalSettings/loop", DkSettings::Global::loop).toBool();
@@ -246,6 +249,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/showPlayer", App::showPlayer);
 	settings.setValue("AppSettings/showHistogram", App::showHistogram);
 	settings.setValue("AppSettings/showOverview", App::showOverview);
+	settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
 
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
 
@@ -310,6 +314,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::App::showPlayer = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
+	DkSettings::App::advancedSettings = false;
 
 	// now set default show options
 	DkSettings::App::showFileInfoLabel.setBit(DkSettings::mode_default, false);
@@ -413,6 +418,14 @@ DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 	s = new DkSettings();
 
 	createLayout();
+	createSettingsWidgets();
+	for (int i = 0; i < widgetList.size(); i++) {
+		if (!DkSettings::App::advancedSettings) {
+			listView->setRowHidden(i, widgetList[i]->showOnlyInAdvancedMode);
+		}
+		else
+			listView->setRowHidden(i, false);
+	}
 	init();
 
 	connect(listView, SIGNAL(activated(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
@@ -423,7 +436,7 @@ DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 	connect(s, SIGNAL(setToDefaultSettingsSignal()), this, SLOT(initWidgets()));
 	connect(globalSettingsWidget, SIGNAL(applyDefault()), this, SLOT(setToDefault()));
-	
+	connect(cbAdvancedSettings, SIGNAL(stateChanged(int)), this, SLOT(advancedSettingsChanged(int)));
 }
 
 DkSettingsDialog::~DkSettingsDialog() {
@@ -444,6 +457,7 @@ void DkSettingsDialog::init() {
 		centralLayout->addWidget(curWidget);
 	}
 	widgetList[0]->show(); // display first;
+	cbAdvancedSettings->setChecked(DkSettings::App::advancedSettings);
 }
 
 void DkSettingsDialog::createLayout() {
@@ -467,7 +481,8 @@ void DkSettingsDialog::createLayout() {
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
-		
+	
+	
 	leftWidgetVBoxLayout->addWidget(leftLabel);
 	leftWidgetVBoxLayout->addWidget(listView);
 
@@ -480,7 +495,9 @@ void DkSettingsDialog::createLayout() {
 	buttonCancel = new QPushButton;
 	buttonCancel->setText(tr("Cancel"));
 
+	cbAdvancedSettings = new QCheckBox("Advanced");
 
+	bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
 	bottomWidgetHBoxLayout->addStretch();
 	bottomWidgetHBoxLayout->addWidget(buttonOk);
 	bottomWidgetHBoxLayout->addWidget(buttonCancel);
@@ -496,7 +513,9 @@ void DkSettingsDialog::createLayout() {
 	borderLayout->addWidget(centralWidget, BorderLayout::Center);
 
 	centralLayout = new QHBoxLayout(centralWidget);
+}
 
+void DkSettingsDialog::createSettingsWidgets() {
 	globalSettingsWidget = new DkGlobalSettingsWidget(this);
 	displaySettingsWidget = new DkDisplaySettingsWidget(this);
 	slideshowSettingsWidget = new DkSlideshowSettingsWidget(this);
@@ -504,13 +523,13 @@ void DkSettingsDialog::createLayout() {
 	exifSettingsWidget = new DkMetaDataSettingsWidget(this);
 	resourceSettingsWidget = new DkResourceSettingsWidgets(this);
 
+	widgetList.clear();
 	widgetList.push_back(globalSettingsWidget);
 	widgetList.push_back(displaySettingsWidget);
 	widgetList.push_back(slideshowSettingsWidget);
 	widgetList.push_back(synchronizeSettingsWidget);
 	widgetList.push_back(exifSettingsWidget);
 	widgetList.push_back(resourceSettingsWidget);
-
 }
 
 void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
@@ -553,6 +572,49 @@ void DkSettingsDialog::initWidgets() {
 		curWidget->init();
 	}
 
+}
+
+void DkSettingsDialog::advancedSettingsChanged(int state) {
+
+	DkSettings::App::advancedSettings = cbAdvancedSettings->isChecked();
+
+	//saveSettings();
+
+	QModelIndex selection = listView->currentIndex();
+
+	QLayout* layout = centralWidget->layout();
+	if (layout != 0) {
+		foreach (DkSettingsWidget* curWidget, widgetList) {
+			layout->removeWidget(curWidget);
+			delete curWidget;
+		}
+	
+		delete layout;
+	}
+
+	centralWidget->setLayout(new QHBoxLayout);
+	createSettingsWidgets();
+	init();
+	this->update();
+	
+	listViewSelected(selection);
+
+	bool wasSelected = false;
+	for (int i = 0; i < widgetList.size(); i++) {
+		if (!DkSettings::App::advancedSettings) {
+			listView->setRowHidden(i, widgetList[i]->showOnlyInAdvancedMode);
+			if (widgetList[i]->showOnlyInAdvancedMode && selection.row() == i) wasSelected = true;
+		}
+		else
+			listView->setRowHidden(i, false);
+	}
+
+	if (wasSelected) {
+		listView->setCurrentIndex(selection.model()->index(0,0)); 
+		listViewSelected(selection.model()->index(0,0));
+	};
+	
+	
 }
 
 // DkGlobalSettingsWidget --------------------------------------------------------------------
@@ -675,9 +737,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
 
 	// ---- drag and drop groupbox
-
-
-	QGroupBox* gbDragDrop = new QGroupBox(tr("Drag && Drop"), this);
+	QGroupBox* 	gbDragDrop = new QGroupBox(tr("Drag && Drop"));
 	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
 
 	// tmp path
@@ -725,7 +785,7 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	
 	vboxLayout->addWidget(gbNavigationSettings);
-	vboxLayout->addWidget(gbDragDrop);
+	if (DkSettings::App::advancedSettings) vboxLayout->addWidget(gbDragDrop);
 	vboxLayout->addStretch();
 	vboxLayout->addWidget(defaultSettingsWidget);
 }
@@ -783,6 +843,7 @@ bool DkGlobalSettingsWidget::existsDirectory(QString path) {
 DkDisplaySettingsWidget::DkDisplaySettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
 	createLayout();
 	init();
+	//showOnlyInAdvancedMode = true;
 }
 
 void DkDisplaySettingsWidget::init() {
@@ -847,9 +908,12 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbHbox->addWidget(cbSaveThumb, 0, 1);
 	gbHbox->setColumnStretch(1,5);
 
-	gbLeftLayout->addWidget(highlightColorChooser);
-	gbLeftLayout->addWidget(bgColorChooser);
-	gbLeftLayout->addStretch();
+	if (DkSettings::App::advancedSettings) {
+		gbLeftLayout->addWidget(highlightColorChooser);
+		gbLeftLayout->addWidget(bgColorChooser);
+		gbLeftLayout->addStretch();		
+	}
+
 	gbLeftLayout->addWidget(checkBoxWidget);
 	gbLeftLayout->addStretch();
 
@@ -860,10 +924,13 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbRightLayout->addStretch();
 
 	gbLayout->addWidget(leftGroupBoxWidget, 0, 0);
+	gbLayout->setColumnStretch(0,10);
 	gbLayout->addWidget(rightGroupBoxWidget, 0, 1);
+	gbLayout->setColumnStretch(1,10);
 
 	vboxLayout->addWidget(gbDisplaySettings);
-	vboxLayout->addWidget(gbThumb);
+	if (DkSettings::App::advancedSettings)
+		vboxLayout->addWidget(gbThumb);
 	vboxLayout->addStretch();
 }
 
@@ -1012,7 +1079,7 @@ void DkSynchronizeSettingsWidget::createLayout() {
 	syncSettingsLayout->addWidget(rbSyncRelativeTransform);
 
 
-	QGroupBox* gbNetworkSettings = new QGroupBox(tr("Network Synchronization"), this);
+	QGroupBox* gbNetworkSettings = new QGroupBox(tr("Network Synchronization"));
 	QVBoxLayout* gbNetworkSettingsLayout = new QVBoxLayout(gbNetworkSettings);
 
 	cbEnableNetwork = new QCheckBox(tr("enable network sync"), this);
@@ -1039,14 +1106,16 @@ void DkSynchronizeSettingsWidget::createLayout() {
 	buttonGroup->addButton(cbAllowTransformation);
 
 
-	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"), this);
+	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"));
 	
 
 	gbNetworkSettingsLayout->addWidget(cbEnableNetwork);
 	gbNetworkSettingsLayout->addWidget(networkSettings);
 	vboxLayout->addWidget(gbSyncSettings);
-	vboxLayout->addWidget(gbNetworkSettings);
-	vboxLayout->addWidget(cbSwitchModifier);
+	if (DkSettings::App::advancedSettings) {
+		vboxLayout->addWidget(gbNetworkSettings);
+		vboxLayout->addWidget(cbSwitchModifier);
+	}
 	vboxLayout->addStretch();
 }
 
@@ -1183,6 +1252,8 @@ DkResourceSettingsWidgets::DkResourceSettingsWidgets(QWidget* parent) : DkSettin
 	stepSize = 1000;
 	createLayout();
 	init();
+
+	showOnlyInAdvancedMode = true;
 }
 
 void DkResourceSettingsWidgets::init() {
