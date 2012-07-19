@@ -24,9 +24,24 @@ nomacs ships with an installer. The installer copies all library dll's and the e
 
 ------------------------------------------------------------
 
-Compile Instructions - MS Windows
+Compile Instructions:
+	MS Windows:
+		for MS Windows there is a seprate README file (compile_instructions_msvc.txt) in the SVN which explains how to compile nomacs using MS Windows and MS Visual Studio.
+		before following this instructions you have to compile Qt (>4.7.0) and (if you want to enable raw images) OpenCV (>2.1.0)
+		
+	Linux and UNIX:
+		nomacs uses cmake for generating the Makefile
+		you need following libraries:		
+			- Qt  > 4.7.0
+			- exiv2  > 0.20
+			if you want to enable raw images you need
+				- OpenCV  > 0.2.1 
+				- libraw > 0.12.0
+				
+		generate the Makefile by executing cmake (or using cmake-gui)
+		compile nomacs with "make"
+------------------------------------------------------------
 
-If you want to compile nomacs on your own, you need Visual Studio 2010. The source-code ships with a solution file for MSVC 2010.
 
 nomacs uses the following libraries:
 

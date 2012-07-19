@@ -1,7 +1,3 @@
-#
-# An initial version of the cmake build for nomacs.
-# Currently tested on unix only.
-#
 # usage:
 # cd nomacs/root/dir
 # mkdir build
@@ -51,7 +47,6 @@ set(QT_USE_GUI 1)
 set(QT_USE_QTNETWORK 1)
 find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
 include(${QT_USE_FILE})
-
 
 find_package(PkgConfig)
 #IF (NOT PkgConfig_FOUND AND NOT MSVC)
@@ -158,75 +153,22 @@ IF (${ENABLE_RAW})
                 	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/librawd.dll and debug/librawd.lib")
         	ENDIF()
 	ENDIF()
-    IF (LIBRAW_VERSION VERSION_GREATER 0.14.0)
+    IF (LIBRAW_VERSION VERSION_GREATER 0.14.0 OR LIBRAW_VERSION VERSION_EQUAL 0.14.0 )
 	  add_definitions(-DLIBRAW_VERSION_14)
 	endif()
-	  
-        #
-        
+	          
 	# OpenCV
 	pkg_check_modules(OpenCV  opencv>=2.1.0)
 	SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
 	If (OpenCV_LIBS STREQUAL "") 
 		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
 	ENDIF()
-	IF (NOT OpenCV_FOUND AND MSVC)
-		find_path(OpenCV_BUILD_PATH NAMES "bin/Release/opencv_core231.dll" "bin/Release/opencv_imgproc231.dll" 
-										"bin/Debug/opencv_core231d.dll" "bin/Debug/opencv_imgproc231d.dll" 
-										"lib/Release/opencv_core231.lib" "bin/Release/opencv_imgproc231.lib"
-										"lib/Debug/opencv_core231.lib" "bin/Debug/opencv_imgproc231d.lib"
-				DOC "Path to the OpenCV Build Directory")
-		find_path(OpenCV_INCLUDE_DIRS "opencv/cv.h" PATHS "OpenCV/include" DOC "Path to cv/cv.h")
-		
-		IF( EXISTS ${OpenCV_BUILD_PATH}/bin/Release/opencv_core231.dll AND
-			EXISTS ${OpenCV_BUILD_PATH}/bin/Release/opencv_imgproc231.dll AND
-			EXISTS ${OpenCV_BUILD_PATH}/bin/Debug/opencv_core231d.dll AND
-			EXISTS ${OpenCV_BUILD_PATH}/bin/Debug/opencv_imgproc231d.dll AND
-			EXISTS ${OpenCV_BUILD_PATH}/lib/Release/opencv_core231.lib AND
-			EXISTS ${OpenCV_BUILD_PATH}/lib/Release/opencv_imgproc231.lib AND
-			EXISTS ${OpenCV_BUILD_PATH}/lib/Debug/opencv_core231d.lib AND
-			EXISTS ${OpenCV_BUILD_PATH}/lib/Debug/opencv_imgproc231d.lib
-		)
-			if (EXISTS ${OpenCV_INCLUDE_DIRS})
-				FILE(COPY ${OpenCV_BUILD_PATH}/bin/Release/opencv_core231.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-				FILE(COPY ${OpenCV_BUILD_PATH}/bin/Release/opencv_core231.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-
-				FILE(COPY ${OpenCV_BUILD_PATH}/bin/Release/opencv_imgproc231.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-				FILE(COPY ${OpenCV_BUILD_PATH}/bin/Release/opencv_imgproc231.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-
-				FILE(COPY ${OpenCV_BUILD_PATH}/bin/Debug/opencv_core231d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-				FILE(COPY ${OpenCV_BUILD_PATH}/bin/Debug/opencv_imgproc231d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-
-				FILE(COPY ${OpenCV_BUILD_PATH}/lib/Release/opencv_core231.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-				FILE(COPY ${OpenCV_BUILD_PATH}/lib/Release/opencv_imgproc231.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-
-				FILE(COPY ${OpenCV_BUILD_PATH}/lib/Debug/opencv_core231d.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-				FILE(COPY ${OpenCV_BUILD_PATH}/lib/Debug/opencv_imgproc231d.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-
-				SET(OpenCV_LIBRARY_DIRS "")
-				SET(OpenCV_LIBS optimized opencv_core231.lib opencv_imgproc231.lib debug opencv_core231d.lib opencv_imgproc231d.lib)
-				
-				SET(OpenCV_FOUND true)
-				SET(OpenCV_VERSION "2.3.1")
-			ELSE()
-					message(WARNING "OpenCV include dir  not found")		
-			ENDIF()
-		ELSE()
-			message(WARNING "OpenCV build directory not found. Needs path which contains 
-			/bin/Release/opencv_core231.dll, 
-			/bin/Debug/opencv_core231d.dll,
-			/bin/Release/opencv_imgproc231.dll,
-			/bin/Debug/opencv_imgproc231d.dll,
-			/lib/Release/opencv_core231.lib 
-			/lib/Debug/opencv_core231d.lib, 
-			/lib/Release/opencv_imgproc231.lib,
-			/lib/Debug/opencv_imgproc231d.lib")
-		ENDIF()	
-	ENDIF()
 	IF (NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
+	ELSE()
+		add_definitions(-DWITH_OPENCV)
 	ENDIF()
-	add_definitions(-DWITH_OPENCV)
+	
 	
 	if (APPLE)
 		# OpenCV has really draconian dependencies on mac (generating bundle greater tha 105MB)
@@ -352,12 +294,10 @@ QT4_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
 
 #IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 IF (EXIV2_FOUND)
-
 	set(EXE_NAME ${CMAKE_PROJECT_NAME})
 	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
 	add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS})
 	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB})
-
 
 	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 		SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
@@ -383,9 +323,8 @@ IF (EXIV2_FOUND)
 		add_custom_target(bundle ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/bundle.cmake)
 
 	ELSEIF (MSVC) # copy qt dlls and change settings for different projects
+
 		SET (QTLIBLIST QtCore QtGui QtNetwork)
-		
-		SET(OpenCV_REQUIRED_MODULES core imgproc)
 		FOREACH(opencvlib ${OpenCV_REQUIRED_MODULES})
 			FILE(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
 			FILE(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
@@ -395,6 +334,7 @@ IF (EXIV2_FOUND)
 			FILE(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 		ENDFOREACH(opencvlib)
 		
+		SET(OpenCV_REQUIRED_MODULES core imgproc)
 		FOREACH(qtlib ${QTLIBLIST})
 			GET_FILENAME_COMPONENT(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 			FILE(COPY ${QT_DLL_PATH_tmp}/${qtlib}4.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
