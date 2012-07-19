@@ -1,6 +1,6 @@
 nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
 
-Copyright (C) 2011 Markus Diem, Stefan Fiel, Florian Kleber
+Copyright (C) 2011-2012 Markus Diem, Stefan Fiel, Florian Kleber
 
 AUTHORS
 
@@ -15,7 +15,8 @@ nomacs is free software: you can redistribute it and/or modify it under the term
 nomacs is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-License can be found in the file `/usr/share/common-licenses/GPL'
+License can be found in the file `/usr/share/common-licenses/GPL-3'
+
 ------------------------------------------------------------
 nomacs uses the Open Source Computer Vision Library 2.2:
 

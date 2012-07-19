@@ -15,7 +15,7 @@ nomacs is free software: you can redistribute it and/or modify it under the term
 nomacs is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program.  If not, see http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with this program.  If not, see http://www.gnu.org/licenses/.
 
 ------------------------------------------------------------
 Installations Instructions
@@ -29,8 +29,10 @@ Compile Instructions:
 		for MS Windows there is a seprate README file (compile_instructions_msvc.txt) in the SVN which explains how to compile nomacs using MS Windows and MS Visual Studio.
 		before following this instructions you have to compile Qt (>4.7.0) and (if you want to enable raw images) OpenCV (>2.1.0)
 		
-	Linux and UNIX:
-		nomacs uses cmake for generating the Makefile
+	Linux:
+		All required libraries should be available in any modern Linux distribution. Just install their -devel packages.
+		Cmake is used to build Nomacs.
+		
 		you need following libraries:		
 			- Qt  > 4.7.0
 			- exiv2  > 0.20
@@ -38,8 +40,11 @@ Compile Instructions:
 				- OpenCV  > 0.2.1 
 				- libraw > 0.12.0
 				
-		generate the Makefile by executing cmake (or using cmake-gui)
-		compile nomacs with "make"
+			Cmake is used to build Nomacs.
+			cmake .;make;make install
+			
+	Mac OS X:
+		See README.MacOSX
 ------------------------------------------------------------
 
 
@@ -63,25 +68,3 @@ http://www.exiv2.org/download.html
 LibRaw-0.13.5 library:
 http://www.libraw.org/download
 -------------------------------------------------------------
-
-you have to install OpenCV to C:\OpenCV2.2, or otherwise have to adapt the project settings.
-Install Qt (set 'Default Qt/Win Version' to '4.7.2').
-Install and Compile libraw and exiv2 as DLL (for detailed instructions see www.exiv2.org and www.libraw.org). Copy 
-exiv2{d}.lib, expat{d}.lib, libraw{d}.lib and zlib1{d}.lib to ImageLounge\lib. Additionally copy the DLL's to the Release and Debug Folder.
-
-
--------------------------------------------------------------
-
-Compile Instructions - Linux
-
-All required libraries should be available in any modern Linux distribution. Just install their -devel packages.
-Cmake is used to build Nomacs.
-cmake;make;make install
-
-
-------------------------------------------------------------
-
-Compile Installations - Mac OS X
-
-See README.MacOSX
-
