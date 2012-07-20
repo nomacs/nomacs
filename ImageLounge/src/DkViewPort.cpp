@@ -1359,7 +1359,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	controller->update();	// why do we need to update the controller manually?
 	update();
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		tcpSynchronize();
 	
 }
@@ -1372,7 +1372,7 @@ void DkViewPort::resetView() {
 
 	update();
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		tcpSynchronize();
 }
 
@@ -1856,8 +1856,11 @@ void DkViewPort::loadNextFile(bool silent) {
 	if (loader && !testLoaded)
 		loader->changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	// alt mod
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
 		emit sendNewFileSignal(1);
+		qDebug() << "emitting load next";
+	}
 }
 
 void DkViewPort::loadPrevFile(bool silent) {
@@ -1867,7 +1870,7 @@ void DkViewPort::loadPrevFile(bool silent) {
 	if (loader && !testLoaded)
 		loader->changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(-1);
 }
 
@@ -1928,7 +1931,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 		loader->changeFile(skipIdx, silent);
 	}
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(skipIdx);
 }
 
@@ -1947,7 +1950,7 @@ void DkViewPort::loadFirst() {
 	if (loader && !testLoaded)
 		loader->firstFile();
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1958,7 +1961,7 @@ void DkViewPort::loadLast() {
 	if (loader && !testLoaded)
 		loader->lastFile();
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
@@ -1970,7 +1973,7 @@ void DkViewPort::loadSkipPrev10() {
 	if (loader && !testLoaded)
 		loader->changeFile(-DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(-DkSettings::Global::skipImgs);
 }
 
@@ -1981,7 +1984,7 @@ void DkViewPort::loadSkipNext10() {
 	if (loader && !testLoaded)
 		loader->changeFile(DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(DkSettings::Global::skipImgs);
 }
 
@@ -2182,7 +2185,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 
 	update();
 
-	if (qApp->keyboardModifiers() == altMod && hasFocus())
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		tcpSynchronize();
 
 }
