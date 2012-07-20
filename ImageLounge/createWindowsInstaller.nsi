@@ -7,7 +7,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "0.3.3 beta"
+!define PRODUCT_VERSION "0.4.0 alpha"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -98,6 +98,8 @@ Var nef
 Var crw
 Var cr2
 Var arw
+Var rw2
+Var mrw
 Var mpo
 Var jps
 Var pns
@@ -107,6 +109,8 @@ Var nef_state
 Var crw_state
 Var cr2_state
 Var arw_state
+Var rw2_state
+Var mrw_state
 Var mpo_state
 Var jps_state
 Var pns_state
@@ -182,7 +186,10 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 160u 80u 15% 10u "crw"
 	Pop $crw
 
-	${NSD_CreateCheckbox} 160u 95u 15% 10u "jps"
+	${NSD_CreateCheckbox} 160u 95u 15% 10u "rw2"
+	Pop $rw2
+
+	${NSD_CreateCheckbox} 160u 110u 15% 10u "jps"
 	Pop $jps
 
 	${NSD_CreateCheckbox} 220u 50u 15% 10u "cr2"
@@ -191,10 +198,13 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 220u 65u 15% 10u "arw"
 	Pop $arw
 
-	${NSD_CreateCheckbox} 220u 80u 15% 10u "mpo"
+	${NSD_CreateCheckbox} 220u 80u 15% 10u "mrw"
+	Pop $mrw
+
+	${NSD_CreateCheckbox} 220u 95u 15% 10u "mpo"
 	Pop $mpo
 
-	${NSD_CreateCheckbox} 220u 95u 15% 10u "pns"
+	${NSD_CreateCheckbox} 220u 110u 15% 10u "pns"
 	Pop $pns
 	
 
@@ -276,6 +286,8 @@ Function fileAssociationFinished
 	${NSD_GetState} $cr2 $cr2_state
 	${NSD_GetState} $arw $arw_state
 	${NSD_GetState} $mpo $mpo_state
+	${NSD_GetState} $rw2 $rw2_state
+	${NSD_GetState} $mrw $mrw_state
 	${NSD_GetState} $jps $jps_state
 	${NSD_GetState} $pns $pns_state
 
@@ -284,31 +296,39 @@ Function fileAssociationFinished
 	${EndIf}
 
 	${If} $nef_state == ${BST_CHECKED}
-		${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "NEF Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "Nikon Raw"
 	${EndIf}
 
 	${If} $crw_state == ${BST_CHECKED}
-		${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "CRW Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "Canon Raw"
 	${EndIf}
 
 	${If} $cr2_state == ${BST_CHECKED}
-		${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "CR2 Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "Canon Raw"
 	${EndIf}
 
 	${If} $arw_state == ${BST_CHECKED}
-		${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "ARW Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "Sony Raw"
+	${EndIf}
+
+	${If} $rw2_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".rw2" "nomacs.file.rw2" "Panasonic Raw"
+	${EndIf}
+
+	${If} $mrw_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".mrw" "nomacs.file.mrw" "Minolta Raw"
 	${EndIf}
 
 	${If} $mpo_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
 	${EndIf}
-
+	
 	${If} $jps_state == ${BST_CHECKED}
-		${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPS Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
 	${EndIf}
-
+	
 	${If} $pns_state == ${BST_CHECKED}
-		${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNS Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
 	${EndIf}
 	
 	Call RefreshShellIcons
@@ -349,6 +369,8 @@ Function checkAllPartially
 		${NSD_SetState} $crw ${BST_CHECKED}
 		${NSD_SetState} $cr2 ${BST_CHECKED}
 		${NSD_SetState} $arw ${BST_CHECKED}
+		${NSD_SetState} $rw2 ${BST_CHECKED}
+		${NSD_SetState} $mrw ${BST_CHECKED}
 		${NSD_SetState} $mpo ${BST_CHECKED}
 		${NSD_SetState} $jps ${BST_CHECKED}
 		${NSD_SetState} $pns ${BST_CHECKED}
@@ -358,6 +380,8 @@ Function checkAllPartially
 		${NSD_SetState} $crw ${BST_UNCHECKED}
 		${NSD_SetState} $cr2 ${BST_UNCHECKED}
 		${NSD_SetState} $arw ${BST_UNCHECKED}
+		${NSD_SetState} $rw2 ${BST_UNCHECKED}
+		${NSD_SetState} $mrw ${BST_UNCHECKED}
 		${NSD_SetState} $mpo ${BST_UNCHECKED}
 		${NSD_SetState} $jps ${BST_UNCHECKED}
 		${NSD_SetState} $pns ${BST_UNCHECKED}
@@ -428,13 +452,15 @@ Section "MainSection" SEC01
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
 
 				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "NEF Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "CRW Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "CR2 Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "ARW Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "Nikon Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "Canon Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "Canon Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "Sony Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".rw2" "nomacs.file.rw2" "Panasonic Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".mrw" "nomacs.file.mrw" "Minolta Raw"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPS Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNS Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
 				
 			${elseif} $fileAss S== "AllFullySupported"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jpg" "nomacs.file.jpg" "JPG Image"
@@ -449,13 +475,15 @@ Section "MainSection" SEC01
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
 			${elseif} $fileAss S== "AllPartiallySupported"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "NEF Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "CRW Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "CR2 Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "ARW Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "Nikon Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".crw" "nomacs.file.crw" "Canon Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".cr2" "nomacs.file.cr2" "Canon Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".arw" "nomacs.file.arw" "Sony Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".rw2" "nomacs.file.rw2" "Panasonic Raw"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".mrw" "nomacs.file.mrw" "Minolta Raw"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPS Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNS Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
 			${endif}
 		isNotSilent:
 
@@ -564,6 +592,8 @@ Section Uninstall
   ${UnRegisterExtension} ".crw" "nomacs.file.crw"  
   ${UnRegisterExtension} ".cr2" "nomacs.file.cr2"  
   ${UnRegisterExtension} ".arw" "nomacs.file.arw"  
+  ${UnRegisterExtension} ".rw2" "nomacs.file.rw2"  
+  ${UnRegisterExtension} ".mrw" "nomacs.file.mrw"  
   ${UnRegisterExtension} ".mpo" "nomacs.file.mpo"  
   ${UnRegisterExtension} ".jps" "nomacs.file.jps"  
   ${UnRegisterExtension} ".pns" "nomacs.file.pns"  
