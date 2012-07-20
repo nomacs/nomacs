@@ -38,7 +38,7 @@ bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.pns *.mpo *.lnk").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.roh *.jps *.pns *.mpo *.lnk").split(' ');
 
 // formats we can save
 QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;") %
@@ -60,6 +60,8 @@ QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bm
 	QString("Nikon Raw (*.nef);;") %
 	QString("Canon Raw (*.crw *.cr2);;") %
 	QString("Sony Raw (*.arw);;") %
+	QString("Panasonic Raw (*.rw2);;") %
+	QString("Minolta Raw (*.mrw);;") %
 	QString("JPEG Stereo (*.jps);;") %
 	QString("PNG Stereo (*.pns);;") %
 	QString("Multi Picture Object (*.mpo);;") %
@@ -106,7 +108,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 		// load hdr here...
 
-	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive))) {
+	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw)", Qt::CaseInsensitive))) {
 
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		imgLoaded = qImg.load(this->file.absoluteFilePath());
