@@ -1630,10 +1630,11 @@ void DkNoMacs::resizeImage() {
 			QImage rImg = resizeDialog->getResizedImage();
 
 			if (!rImg.isNull()) {
-				viewport()->unloadImage();
-				viewport()->getImageLoader()->setImage(rImg);
-				viewport()->setImage(rImg);
-				setWindowTitle(QFileInfo(), rImg.size());
+				viewport()->setEditedImage(rImg);
+				//viewport()->unloadImage();
+				//viewport()->getImageLoader()->setImage(rImg);
+				//viewport()->setImage(rImg);
+				//setWindowTitle(QFileInfo(), rImg.size());
 			}
 		}
 		else if (metaData) {
@@ -1939,16 +1940,18 @@ QVector <QAction* > DkNoMacs::getSyncActions() {
 	return syncActions;
 }
 
-void DkNoMacs::setWindowTitle(QFileInfo file, QSize size) {
+void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 
 	////  do not tell the viewport (he should know it)
 	//viewport()->setTitleLabel(file, -1);
 
 	QString title = file.fileName();
 	title = title.remove(".lnk");
-
+	
 	if (!file.exists())
 		title = "nomacs";
+	else if (edited)
+		title.append("*");
 
 	QString attributes;
 
@@ -2263,7 +2266,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 		updater->checkForUpdated();	// TODO: is threaded??
 	
 	// title signals
-	connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
 	connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
 	connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));

@@ -422,6 +422,7 @@ public:
 	void updateTitle(const QFileInfo& file);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
+	void setEdited(bool edited);
 	DkRatingLabel* getRatingLabel();
 
 public slots:

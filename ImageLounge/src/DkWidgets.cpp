@@ -1382,6 +1382,16 @@ void DkFileInfoLabel::setVisible(bool visible) {
 	updateWidth();
 }
 
+void DkFileInfoLabel::setEdited(bool edited) {
+
+	if (!isVisible() || !edited)
+		return;
+
+	QString cFileName = title->text() + "*";
+	this->title->setText(cFileName);
+
+}
+
 DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
 	return rating;
 }

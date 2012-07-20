@@ -338,7 +338,7 @@ public slots:
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void stopBlockZooming();
 
-	virtual void unloadImage(bool edited = false);
+	virtual void unloadImage();
 
 	virtual void setImage(QImage newImg);
 
@@ -415,7 +415,7 @@ public:
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-	void windowTitleSignal(QFileInfo file, QSize s = QSize());
+	void windowTitleSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
 	void sendNewFileSignal(qint16 op, QString filename = "");
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg);
@@ -459,6 +459,7 @@ public slots:
 	void cropImage(DkRotatingRect rect);
 
 	virtual void updateImage();
+	virtual void setEditedImage(QImage newImg);
 	virtual void setImage(QImage newImg);
 	virtual void setThumbImage(QImage newImg);
 

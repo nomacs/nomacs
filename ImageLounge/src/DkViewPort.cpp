@@ -790,7 +790,7 @@ QRectF DkBaseViewPort::getImageViewRect() {
 	return worldMatrix.mapRect(imgViewRect);
 }
 
-void DkBaseViewPort::unloadImage(bool edited) {
+void DkBaseViewPort::unloadImage() {
 }
 
 // events --------------------------------------------------------------------
@@ -1812,6 +1812,19 @@ void DkViewPort::settingsChanged() {
 	controller->settingsChanged();
 }
 
+void DkViewPort::setEditedImage(QImage newImg) {
+
+	QFileInfo file = loader->getFile();
+	unloadImage();
+	setImage(newImg);
+
+	emit windowTitleSignal(file, newImg.size(), true);
+	controller->getFileInfoLabel()->setEdited(true);
+	// TODO: contrast viewport does not add * 
+
+	// TODO: add functions such as save file on unload
+}
+
 void DkViewPort::unloadImage() {
 
 	int rating = controller->getRating();
@@ -1823,7 +1836,7 @@ void DkViewPort::unloadImage() {
 	}
 	else
 		qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
-
+	
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 }
 
@@ -2058,9 +2071,8 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
 	painter.end();
 
-	unloadImage();
-	setImage(img);
-	emit windowTitleSignal(QFileInfo(), imgQt.size());
+	setEditedImage(img);
+	
 	//imgQt = img;
 	update();
 
