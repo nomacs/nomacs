@@ -2222,7 +2222,6 @@ void DkCacher::load() {
 			if (!clean(idx))
 				break;	// we're done
 
-
 			if (cacheImage(&cache->at(nIdx))) {	// that might take time
 				somethingTodo = true;
 				break;	// go to thread to see if some action is waiting
@@ -2292,10 +2291,10 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	if (file.isSymLink()) file = QFileInfo(file.symLinkTarget());
 	QFile f(file.filePath());
 
-	// TODO: maxFileSize -> extra treatment for compressed files (e.g. jpg)
+	// jpg files must be smaller than 1/4 of the max file size (as they are way larger when loaded
 	// ignore files < 100 KB || larger than maxFileSize
-	if (f.size() < 100*1024 || f.size() > 1024*1024*maxFileSize) {
-		//qDebug() << "[cache] I ignored: " << cacheImg->getFile().fileName() << " file size: " << f.size()/(1024.0f*1024.0f) << " MB";
+	if (f.size() < 100*1024 || f.size() > 1024*1024*maxFileSize || (f.size() > 1024*1024*maxFileSize*0.25f && file.suffix() == "jpg")) {
+		qDebug() << "[cache] I ignored: " << cacheImg->getFile().fileName() << " file size: " << f.size()/(1024.0f*1024.0f) << " MB";
 		cacheImg->ignore();
 		return false;
 	}
