@@ -1208,7 +1208,11 @@ void DkViewPort::setImage(QImage newImg) {
 
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(imgQt);
-	controller->stopLabels();
+	//// TODO: this is a fast fix
+	//// if this thread uses the static metadata object 
+	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
+	//// currently we need to read the metadata twice (not nice either)
+	DkImageLoader::imgMetaData.setFileName(loader->getFile());	controller->stopLabels();
 
 	thumbLoaded = false;
 	thumbFile = QFileInfo();
@@ -1216,7 +1220,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	update();
 
-	// draw a histogram from the image -> does nothing if the histobram is invisible
+	// draw a histogram from the image -> does nothing if the histogram is invisible
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 

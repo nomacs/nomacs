@@ -2386,7 +2386,7 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 DkTransformRect::DkTransformRect(int idx, DkRotatingRect* rect, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 
 	this->parentIdx = idx;
-	this->size = QSize(11, 11);
+	this->size = QSize(12, 12);
 	this->rect = rect;
 
 	init();
@@ -2401,19 +2401,28 @@ void DkTransformRect::init() {
 
 void DkTransformRect::draw(QPainter *painter) {
 
+	QPen penNoStroke;
+	penNoStroke.setWidth(0);
+	penNoStroke.setColor(QColor(0,0,0,0));
+	
 	QPen pen;
-	pen.setWidth(0);
-	pen.setColor(QColor(0,0,0,0));
+	//pen.setWidth(1);
+	pen.setColor(QColor(255,255,0,100));
 
-	float ro = 2.5f;	// rect offset
-	QRectF visibleRect(geometry().topLeft()+QPointF(ro,ro), geometry().size()-QSizeF(ro*2,ro*2));
+	QRectF visibleRect(QPointF(), QSizeF(5,5));
+	QRectF whiteRect(QPointF(), QSize(7,7));
+	visibleRect.moveCenter(geometry().center());
+	whiteRect.moveCenter(geometry().center());
 
 	// draw the control point
 	painter->setWorldMatrixEnabled(false);
-	painter->setPen(pen);
+	painter->setPen(penNoStroke);
 	painter->setBrush(QColor(0, 0, 0, 0));
 	painter->drawRect(geometry());	// invisible rect for mouseevents...
-	painter->setBrush(QColor(0, 0, 0));
+	//painter->setPen(pen);
+	painter->setBrush(QColor(255,255,255, 100));
+	painter->drawRect(whiteRect);
+	painter->setBrush(QColor(0,0,0));
 	painter->drawRect(visibleRect);
 	painter->setWorldMatrixEnabled(true);
 }
@@ -2581,7 +2590,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 			}
 			// paint control points in the middle of the edge
 			else if (idx >= 4) {
-				QPointF s = ctrlPoints[idx]->getCenter();//QPointF(ctrlPoints[idx % 4]->geometry().size().width(), ctrlPoints[idx % 4]->geometry().size().height());
+				QPointF s = ctrlPoints[idx]->getCenter();
 
 				QPointF lp = p[idx % 4];
 				QPointF rp = p[(idx+1) % 4];
@@ -2592,8 +2601,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 				cp = (lv + 0.5*(rv - lv)).toPointF();
 			}
 
-
-			ctrlPoints[idx]->move(cp.x(), cp.y());
+			ctrlPoints[idx]->move(qRound(cp.x()+0.5f), qRound(cp.y()+0.5f));
 			ctrlPoints[idx]->draw(&painter);
 		}
 	}
