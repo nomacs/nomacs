@@ -1,3 +1,7 @@
+
+you need the Qt SDK or the compiled sources ( > 4.7.0) to compile nomacs
+
+-------------------------------------
 expat-2.0.1
 	open expat.dsw -> convert 'yes to all'
 	for "expat" project
@@ -13,13 +17,20 @@ exiv2-0.21.1
 	open msvc/exiv2.sln -> convert yes
 	in project exiv2lib
 	change for DebugDLL Configuration: "Configuration Properties" -> "Linker" -> "Input" -> "Additional Dependencies" libexpat.lib to libexpatd.lib
-	build "exiv2lib" project with debugDLL and releaseDLL configuration
+	build "xmpsdk"  project with DebugDLL and ReleaseDLL configuration
+	build "exiv2lib" project with DebugDLL and ReleaseDLL configuration
+
+-------------------------------------
+needed only when raw images are enabled
+
+you need to download and compile OpenCV (> 2.2.0) using cmake
 	
 LibRaw-0.13.5
 	open LibRaw.sln
 	rename output dll for debug configuration (add d) (Linker Options, General, Output File -> "debug\librawd.dll")
 	build "libraw" project with debug and release configuration
 	
+-------------------------------------
 
 cmake
 	Where is the source code: choose the trunk/ImageLounge folder
