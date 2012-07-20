@@ -161,6 +161,10 @@ IF (${ENABLE_RAW})
 	SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
 	If (OpenCV_LIBS STREQUAL "") 
 		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+		if (OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
+			string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
+			SET(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
+		endif()
 	ENDIF()
 	IF (NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
@@ -323,7 +327,7 @@ IF (EXIV2_FOUND)
 
 	ELSEIF (MSVC) # copy qt dlls and change settings for different projects
 
-		SET (QTLIBLIST QtCore QtGui QtNetwork)
+		SET(OpenCV_REQUIRED_MODULES core imgproc)
 		FOREACH(opencvlib ${OpenCV_REQUIRED_MODULES})
 			FILE(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
 			FILE(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
@@ -333,7 +337,7 @@ IF (EXIV2_FOUND)
 			FILE(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 		ENDFOREACH(opencvlib)
 		
-		SET(OpenCV_REQUIRED_MODULES core imgproc)
+		SET (QTLIBLIST QtCore QtGui QtNetwork)
 		FOREACH(qtlib ${QTLIBLIST})
 			GET_FILENAME_COMPONENT(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 			FILE(COPY ${QT_DLL_PATH_tmp}/${qtlib}4.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
