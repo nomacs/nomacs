@@ -378,8 +378,6 @@ void DkControlWidget::showCrop(bool visible) {
 		editWidget->show();
 		hudWidget->hide();
 
-		QRectF imgViewRect = viewport->getImageViewRect();
-		editRect->setImageRect(&imgViewRect);
 		editRect->reset();
 		editRect->show();
 	}
@@ -1107,6 +1105,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
 	controller->getEditRect()->setWorldTransform(&worldMatrix);
 	controller->getEditRect()->setImageTransform(&imgMatrix);
+	controller->getEditRect()->setImageRect(&imgViewRect);
 
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));

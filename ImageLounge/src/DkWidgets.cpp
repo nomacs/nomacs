@@ -2497,6 +2497,30 @@ QPointF DkEditableRect::map(const QPointF &pos) {
 	return posM;
 }
 
+QPointF DkEditableRect::clipToImage(const QPointF &pos) {
+	
+	if (!imgRect)
+		return QPointF(pos);
+
+	QRectF imgViewRect(*imgRect);
+	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+
+	float x = pos.x();
+	float y = pos.y();
+
+	if (x < imgViewRect.left())
+		x = imgViewRect.left();
+	if (x > imgViewRect.right())
+		x = imgViewRect.right();
+
+	if (y < imgViewRect.top())
+		y = imgViewRect.top();
+	if (y > imgViewRect.bottom())
+		y = imgViewRect.bottom();
+
+	return QPointF(x,y);		// round
+}
+
 void DkEditableRect::updateDiagonal(int idx) {
 
 	// we need to store the old diagonal in order to enable "keep aspect ratio"
@@ -2521,14 +2545,18 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	QRectF canvas = QRectF(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
 	path.addRect(canvas);
 	
-	// TODO: directly map the points (it's easier and not slower at all)
-	QPolygonF p = rect.getClosedPoly();
-	p = tTform.map(p);
-	p = rTform.map(p); 
-	p = tTform.inverted().map(p);
-	if (imgTform) p = imgTform->map(p);
-	if (worldTform) p = worldTform->map(p);
-	path.addPolygon(p);
+	QPolygonF p;
+	if (!rect.isEmpty()) {
+		// TODO: directly map the points (it's easier and not slower at all)
+		p = rect.getClosedPoly();
+		p = tTform.map(p);
+		p = rTform.map(p); 
+		p = tTform.inverted().map(p);
+		if (imgTform) p = imgTform->map(p);
+		if (worldTform) p = worldTform->map(p);
+		path.addPolygon(p);
+		qDebug() << "drawing rect";
+	}
 
 	// now draw
 	QPainter painter(this);
@@ -2536,14 +2564,6 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setPen(pen);
 	painter.setBrush(brush);
 	painter.drawPath(path);
-
-	//if (imgRect) {
-	//	QRectF imgViewRect = QRectF(*imgRect);
-	//	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
-	//	painter.drawRect(imgViewRect);
-	//}
-	//if (worldTform)
-	//	painter.setWorldTransform(*worldTform);
 
 	//// debug
 	//painter.drawPoint(rect.getCenter());
@@ -2592,11 +2612,10 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 	}
 
 	posGrab = map(event->posF());
+	clickPos = event->posF();
 
 	if (rect.isEmpty()) {
 		state = initializing;
-
-		rect.setAllCorners(posGrab);
 	}
 	else if (rect.getPoly().containsPoint(posGrab, Qt::OddEvenFill)) {
 		state = moving;
@@ -2646,22 +2665,26 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
 		// TODO: we need a snap function otherwise you'll never get the bottom left corner...
-		//QRectF imgViewRect;
-		//
-		//if (imgRect) {
-		//	imgViewRect = QRectF(*imgRect);
-		//	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
-		//}
-		//
-		//if (!imgRect || imgViewRect.contains(event->posF())) {
+		
+		qDebug() << "pg: " << posGrab;
+
+		QPointF clipPos = clipToImage(event->posF());
+
+		if (!imgRect || !rect.isEmpty() || clipPos == event->posF()) {
 			
-			qDebug() << "contains point...";
+			if (rect.isEmpty()) {
+
+				for (int idx = 0; idx < ctrlPoints.size(); idx++)
+					ctrlPoints[idx]->show();
+
+				rect.setAllCorners(map(clipToImage(clickPos)));
+			}
 			
 			// when initializing shift should make the rect a square
 			DkVector diag = (event->modifiers() == Qt::ShiftModifier) ? DkVector(-1.0f, -1.0f) : DkVector();
-			rect.updateCorner(2, posM, diag);
+			rect.updateCorner(2, map(clipPos), diag);
 			update();
-		//}
+		}
  
 	}
 	else if (state == moving && event->buttons() == Qt::LeftButton) {
@@ -2770,13 +2793,12 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 void DkEditableRect::setVisible(bool visible) {
 
 	if (!visible) {
+		
+		rect = DkRotatingRect();
 		for (int idx = 0; idx < ctrlPoints.size(); idx++)
 			ctrlPoints[idx]->hide();
 	}
 	else {
-		for (int idx = 0; idx < ctrlPoints.size(); idx++)
-			ctrlPoints[idx]->show();
-
 		setFocus(Qt::ActiveWindowFocusReason);
 		setCursor(Qt::CrossCursor);
 	}

@@ -1110,10 +1110,11 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
+	QPointF clipToImage(const QPointF& pos);
 	
 	void paintEvent(QPaintEvent *event);
 
-	QPointF map(const QPointF &posM);
+	QPointF map(const QPointF &pos);
 
 	int state;
 
@@ -1122,6 +1123,7 @@ protected:
 	QTransform tTform;
 	QTransform rTform;
 	QPointF posGrab;
+	QPointF clickPos;
 	DkVector oldDiag;
 
 	QWidget* parent;
