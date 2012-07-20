@@ -227,9 +227,9 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 		//unpack the data
 		iProcessor.unpack();
-	#ifdef LIBRAW_VERSION_14
+#ifdef LIBRAW_VERSION_14
 		iProcessor.raw2image();
-	#endif
+#endif
 
 		//iProcessor.dcraw_process();
 		//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
@@ -270,6 +270,12 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		}
 		else
 		{
+			// modifications sequence for changing from raw to rgb:
+			// 1. normalize according to black point and dynamic range
+			// 2. demosaic
+			// 3. white balance
+			// 4. color correction
+			// 5. gamma correction
 
 			//GENERAL TODO
 			//check if the corrections (black, white point gamma correction) are done in the correct order
@@ -301,25 +307,73 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 			if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) throw DkException("Wrong Bayer Pattern (not RGBG)\n", __LINE__, __FILE__);
 
-			rawMat = Mat(rows, cols, CV_32FC1);
-			//rawMat.setTo(0);
-			float mulWhite[4];
-			//mulWhite[0] = iProcessor.imgdata.color.cam_mul[0] > 10 ? iProcessor.imgdata.color.cam_mul[0]/255.0f : iProcessor.imgdata.color.cam_mul[0];
-			//mulWhite[1] = iProcessor.imgdata.color.cam_mul[1] > 10 ? iProcessor.imgdata.color.cam_mul[1]/255.0f : iProcessor.imgdata.color.cam_mul[1];
-			//mulWhite[2] = iProcessor.imgdata.color.cam_mul[2] > 10 ? iProcessor.imgdata.color.cam_mul[2]/255.0f : iProcessor.imgdata.color.cam_mul[2];
-			//mulWhite[3] = iProcessor.imgdata.color.cam_mul[3] > 10 ? iProcessor.imgdata.color.cam_mul[3]/255.0f : iProcessor.imgdata.color.cam_mul[3];
-			//if (mulWhite[3] == 0)
-			//	mulWhite[3] = mulWhite[1];
 
-			//white point of the image (metadata)
+
+			// 1. read raw image and normalize it according to dynamic range and black point
+
+			//dynamic range is defined by maximum - black
+			float dynamicRange = iProcessor.imgdata.color.maximum-iProcessor.imgdata.color.black;
+
+			rawMat = Mat(rows, cols, CV_32FC1);
+
+			for (uint row = 0; row < rows; row++)
+			{
+				float *ptrRaw = rawMat.ptr<float>(row);
+
+				for (uint col = 0; col < cols; col++)
+				{
+
+					int colorIdx = iProcessor.COLOR(row, col);
+					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
+
+					//correct the image values according the black point defined by the camera
+					ptrRaw[col] -= iProcessor.imgdata.color.black;
+					//normalize according the dynamic range
+					ptrRaw[col] /= dynamicRange;
+					ptrRaw[col] *= 65535;  // for conversion to 16U
+				}
+			}
+
+
+
+			// 2. demosaic raw image
+			rawMat.convertTo(rawMat,CV_16U);
+
+			//cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);
+			unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
+			type = type & 255;
+
+			//define bayer pattern
+			if (type == 180) cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) -> RG RG RG
+			//												                                                                  GB GB GB
+			else if (type == 30) cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
+			else if (type == 225) cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
+			else if (type == 75) cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
+			else throw DkException("Wrong Bayer Pattern (not BG, RG, GB, GR)\n", __LINE__, __FILE__);
+
+
+
+			// 3.. 4., 5.: apply white balance, color correction and gamma 
+
+			// get color correction matrix
+			float colorCorrMat[3][4] = {};
+			for(int i=0;i<3;i++) for(int j=0;j<4;j++) colorCorrMat[i][j] = iProcessor.imgdata.color.rgb_cam[i][j];
+
+			// get camera white balance multipliers
+			float mulWhite[4];
 			mulWhite[0] = iProcessor.imgdata.color.cam_mul[0];
 			mulWhite[1] = iProcessor.imgdata.color.cam_mul[1];
 			mulWhite[2] = iProcessor.imgdata.color.cam_mul[2];
 			mulWhite[3] = iProcessor.imgdata.color.cam_mul[3];
 
-			//dynamic range is defined by maximum - black
-			float dynamicRange = iProcessor.imgdata.color.maximum-iProcessor.imgdata.color.black;
+			//read gamma value and create gamma table
+			float gamma = (float)iProcessor.imgdata.params.gamm[0];///(float)iProcessor.imgdata.params.gamm[1];
+			float gammaTable[65536];
+			for (int i = 0; i < 65536; i++) {
+				gammaTable[i] = (float)(1.099f*pow((float)i/65535.0f, gamma)-0.099f);
+			}
 
+			// normalize white balance multipliers
 			float w = (mulWhite[0] + mulWhite[1] + mulWhite[2] + mulWhite[3])/4.0f;
 			float maxW = 1.0f;//mulWhite[0];
 
@@ -332,45 +386,14 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			if (w > 2.0f && QString(iProcessor.imgdata.idata.make).compare("Canon", Qt::CaseInsensitive) == 0)
 				maxW = 512.0f;	// some cameras would even need ~800 - why?
 
-			//if (maxW < mulWhite[1])
-			//	maxW = mulWhite[1];
-			//if (maxW < mulWhite[2])
-			//	maxW = mulWhite[2];
-			//if (maxW < mulWhite[3])
-			//	maxW = mulWhite[3];
-
 			//normalize white point
 			mulWhite[0] /= maxW;
 			mulWhite[1] /= maxW;
 			mulWhite[2] /= maxW;
 			mulWhite[3] /= maxW;
 
-			//if (iProcessor.imgdata.color.cmatrix[0][0] != 0) {
-			//	mulWhite[0] = iProcessor.imgdata.color.cmatrix[0][0];
-			//	mulWhite[1] = iProcessor.imgdata.color.cmatrix[0][1];
-			//	mulWhite[2] = iProcessor.imgdata.color.cmatrix[0][2];
-			//	mulWhite[3] = iProcessor.imgdata.color.cmatrix[0][3];
-			//}
-
-			//if (iProcessor.imgdata.color.rgb_cam[0][0] != 0) {
-			//	mulWhite[0] = iProcessor.imgdata.color.rgb_cam[0][0];
-			//	mulWhite[1] = iProcessor.imgdata.color.rgb_cam[1][1];
-			//	mulWhite[2] = iProcessor.imgdata.color.rgb_cam[2][2];
-			//	mulWhite[3] = iProcessor.imgdata.color.rgb_cam[1][1];
-			//}
-			//if (iProcessor.imgdata.color.cam_xyz[0][0] != 0) {
-			//	mulWhite[0] = iProcessor.imgdata.color.cam_xyz[0][0];
-			//	mulWhite[1] = iProcessor.imgdata.color.cam_xyz[1][1];
-			//	mulWhite[2] = iProcessor.imgdata.color.cam_xyz[2][2];
-			//	mulWhite[3] = iProcessor.imgdata.color.cam_xyz[1][1];
-			//}
-
-			//if 3 channel is not defined (0)
-			//clone value from 1 channel
 			if (mulWhite[3] == 0)
 				mulWhite[3] = mulWhite[1];
-
-
 
 			////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
 			////DkUtils::printDebug(DK_MODULE, "Bayer Pattern: %s\n", iProcessor.imgdata.idata.cdesc);
@@ -390,52 +413,50 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
 
 
-			//read gamma value and create gamma table
-			float gamma = (float)iProcessor.imgdata.params.gamm[0];///(float)iProcessor.imgdata.params.gamm[1];
-			float gammaTable[65536];
-			for (int i = 0; i < 65536; i++) {
-				gammaTable[i] = (float)(1.099f*pow((float)i/65535.0f, gamma)-0.099f);
-			}
 
+			//apply corrections
+			std::vector<Mat> corrCh;
+			split(rgbImg, corrCh);
 
 			for (uint row = 0; row < rows; row++)
 			{
-				float *ptrRaw = rawMat.ptr<float>(row);
+				unsigned short *ptrR = corrCh[0].ptr<unsigned short>(row);
+				unsigned short *ptrG = corrCh[1].ptr<unsigned short>(row);
+				unsigned short *ptrB = corrCh[2].ptr<unsigned short>(row);
 
 				for (uint col = 0; col < cols; col++)
 				{
-					
-					int colorIdx = iProcessor.COLOR(row, col);
-					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
-					//ptrRaw[col] = (float)iProcessor.imgdata.color.curve[(int)ptrRaw[col]];
+					//apply white balance correction
+					int tempR = ptrR[col] * mulWhite[0];
+					int tempG = ptrG[col] * mulWhite[1];
+					int tempB = ptrB[col] * mulWhite[2];
 
-					//correct the image values according the black point defined by the camera
-					ptrRaw[col] -= iProcessor.imgdata.color.black;
-					//normalize according the dynamic range
-					ptrRaw[col] /= dynamicRange;
+					//apply color correction					
+					int corrR = colorCorrMat[0][0] * tempR + colorCorrMat[0][1] * tempG  + colorCorrMat[0][2] * tempB;
+					int corrG = colorCorrMat[1][0] * tempR + colorCorrMat[1][1] * tempG  + colorCorrMat[1][2] * tempB;
+					int corrB = colorCorrMat[2][0] * tempR + colorCorrMat[2][1] * tempG  + colorCorrMat[2][2] * tempB;
+					// without color correction: change above three lines to the bottom ones
+					//int corrR = tempR;
+					//int corrG = tempG;
+					//int corrB = tempB;
 
-					//// clip
-					//if (ptrRaw[col] > 1.0f) ptrRaw[col] = 1.0f;
-					//if (ptrRaw[col] < 0.0f) ptrRaw[col] = 0.0f;
-
-
-					//if (ptrRaw[col] <= 1.0f)
-					//white point correction
-					ptrRaw[col] *= mulWhite[colorIdx];
-					//clipping of the white point correction
-					ptrRaw[col] = ptrRaw[col] > 1.0f ? 1.0f : ptrRaw[col]; 
-					//ptrRaw[col] = (float)(pow((float)ptrRaw[col], gamma));
-					//ptrRaw[col] *= 255.0f;		
+					//clipping
+					ptrR[col] = (corrR > 65535) ? 65535 : (corrR < 0) ? 0 : corrR;
+					ptrG[col] = (corrG > 65535) ? 65535 : (corrG < 0) ? 0 : corrG;
+					ptrB[col] = (corrB > 65535) ? 65535 : (corrB < 0) ? 0 : corrB;
 
 					//apply gamma correction
-					ptrRaw[col] = ptrRaw[col] <= 0.018f ? (ptrRaw[col]*(float)iProcessor.imgdata.params.gamm[1]) *255.0f :
-						gammaTable[(int)(ptrRaw[col]*65535.0f)]*255;
-					//									(1.099f*(float)(pow((float)ptrRaw[col], gamma))-0.099f)*255.0f;
-					//ptrRaw[col] *= mulWhite[colorIdx];
-					//ptrRaw[col] = ptrRaw[col] > 255.0f ? 255.0f : ptrRaw[col];
-					//ptrRaw[col] *=255.0f;
+					ptrR[col] = ptrR[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrR[col]*(float)iProcessor.imgdata.params.gamm[1]/257.0f) :
+						gammaTable[ptrR[col]] * 255;
+					//									(1.099f*(float)(pow((float)ptrRaw[col], gamma))-0.099f);
+					ptrG[col] = ptrG[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrG[col]*(float)iProcessor.imgdata.params.gamm[1]/257.0f) :
+						gammaTable[ptrG[col]] * 255;
+					ptrB[col] = ptrB[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrB[col]*(float)iProcessor.imgdata.params.gamm[1]/257.0f) :
+						gammaTable[ptrB[col]] * 255;
 				}
 			}
+
+			merge(corrCh, rgbImg);
 
 			//Mat cropMat(rawMat, Rect(1, 1, rawMat.cols-1, rawMat.rows-1));
 			//rawMat.release();
@@ -444,18 +465,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 			//normalize(rawMat, rawMat, 255, 0, NORM_MINMAX);
 
-			rawMat.convertTo(rawMat,CV_8U);
-			//cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);
-			unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
-			type = type & 255;
-
-			//define bayer pattern
-			if (type == 180) cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);      //bitmask  10 11 01 00  -> 3(G) 2(B) 1(G) 0(R) -> RG RG RG
-			//												                                                                  GB GB GB
-			else if (type == 30) cvtColor(rawMat, rgbImg, CV_BayerRG2RGB);		//bitmask  00 01 11 10	-> 0 1 3 2
-			else if (type == 225) cvtColor(rawMat, rgbImg, CV_BayerGB2RGB);		//bitmask  11 10 00 01
-			else if (type == 75) cvtColor(rawMat, rgbImg, CV_BayerGR2RGB);		//bitmask  01 00 10 11
-			else throw DkException("Wrong Bayer Pattern (not BG, RG, GB, GR)\n", __LINE__, __FILE__);
+			rgbImg.convertTo(rgbImg,CV_8U);
 
 			//check the pixel aspect ratio of the raw image
 			if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {
