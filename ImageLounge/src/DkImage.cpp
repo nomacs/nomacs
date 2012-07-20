@@ -1672,7 +1672,8 @@ void DkImageLoader::rotateImage(double angle) {
 	}
 	catch(...) {	// if file is locked... or permission is missing
 		mutex.unlock();
-		
+		updateInfoSignalDelayed(tr("saving..."), false);
+
 		// try restoring the file
 		if (!restoreFile(file))
 			emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
@@ -3105,8 +3106,9 @@ bool DkMetaData::setExifValue(std::string key, std::string taginfo) {
 }
 
 void DkMetaData::saveOrientation(int o) {
-
+	
 	readMetaData();
+	
 	if (!mdata) {
 		throw DkFileException(QString(QObject::tr("could not read exif data\n")).toStdString(), __LINE__, __FILE__);
 	}
@@ -3119,7 +3121,7 @@ void DkMetaData::saveOrientation(int o) {
 
 	int orientation;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData& exifData = exifImg->exifData();
 	Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
 
 
@@ -3143,6 +3145,7 @@ void DkMetaData::saveOrientation(int o) {
 	//}
 	////----------
 
+	// this does not really work -> *.bmp images
 	if (exifData.empty()) {
 		exifData["Exif.Image.Orientation"] = uint16_t(1);
 		qDebug() << "Orientation added to Exif Data";
@@ -3203,8 +3206,15 @@ void DkMetaData::saveOrientation(int o) {
 	//////----------
 
 	pos->setValue(rv.get());
-	//metadaten schreiben
-	exifImg->setExifData(exifData);
+	
+	// this try is a fast fix -> if the image does not support exiv data -> an exception is raised here -> tell the loader to save the orientated matrix
+	try {
+		exifImg->setExifData(exifData);
+	}
+	catch(...) {
+		throw DkFileException(QString(QObject::tr("could not write exif data\n")).toStdString(), __LINE__, __FILE__);
+	}
+
 	exifImg->writeMetadata();
 	
 }
@@ -3571,7 +3581,7 @@ void DkMetaData::readMetaData() {
 		
 		} catch (...) {
 			mdata = false;
-			//qDebug() << "could not open image for exif data";
+			qDebug() << "could not open image for exif data";
 			return;
 		}
 
