@@ -1462,10 +1462,11 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		this->virtualFile = this->file;
 		basicLoader.setImage(sImg, this->file);
 		loadDir(file.absoluteDir());
+		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
 
 		emit updateImageSignal();
 		emit updateFileSignal(this->file, basicLoader.size());
-
+				
 		printf("I could save the image...\n");
 	}
 	else {
@@ -1528,6 +1529,8 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		this->virtualFile = this->file;
 		basicLoader.setImage(saveImg, this->file);
 		loadDir(this->file.absoluteDir());
+
+		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
 
 		emit updateFileSignal(this->file, saveImg.size());
 	}
@@ -1638,9 +1641,11 @@ void DkImageLoader::rotateImage(double angle) {
 		return;
 	}
 
-	if (file.exists() && watcher)
+	if (file.exists() && watcher) {
+		mutex.lock();
 		watcher->removePath(this->file.absoluteFilePath());
-
+		mutex.unlock();
+	}
 	//updateInfoSignal("test", 5000);
 
 	try {
@@ -1664,19 +1669,20 @@ void DkImageLoader::rotateImage(double angle) {
 	catch(DkException de) {
 
 		mutex.unlock();
-		updateInfoSignalDelayed(tr("saving..."), false);
 
 		// make a silent save -> if the image is just cached, do not save it
 		if (file.exists())
 			saveFileSilentThreaded(file);
+		updateInfoSignalDelayed(tr("saving..."), false);
+
 	}
 	catch(...) {	// if file is locked... or permission is missing
 		mutex.unlock();
-		updateInfoSignalDelayed(tr("saving..."), false);
 
 		// try restoring the file
 		if (!restoreFile(file))
 			emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
+		updateInfoSignalDelayed(tr("saving..."), false);
 		
 	}
 
@@ -2195,6 +2201,7 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < DkSettings::Resources::cacheMemory) {
 					cache->at(idx).setImage(img);
 					curCache += cache->at(idx).getCacheSize();
+					qDebug() << "current file set: " << QSize(img.size());
 				}
 				else {
 					QImage emptyImage = QImage();

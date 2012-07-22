@@ -1817,6 +1817,7 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	QFileInfo file = loader->getFile();
 	unloadImage();
 	setImage(newImg);
+	loader->setImage(newImg);
 
 	emit windowTitleSignal(file, newImg.size(), true);
 	controller->getFileInfoLabel()->setEdited(true);
