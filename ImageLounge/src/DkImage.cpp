@@ -750,6 +750,7 @@ void DkImageLoader::clearPath() {
 	if (file.exists())
 		lastFileLoaded = file;
 	file = QFileInfo();
+	editFile = QFileInfo();
 	imgMetaData.setFileName(file);	// unload exif too
 	//dir = QDir();
 }
@@ -1248,18 +1249,18 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		}
 		
 		qDebug() << "watcher files: " << watcher->files();
-		
-		emit updateImageSignal();
-		emit updateFileSignal(file, basicLoader.size());
-		emit updateDirSignal(file);	// this should be called updateFileSignal too
 
 		this->file = file;
 		lastFileLoaded = file;
+		editFile = QFileInfo();
 		loadDir(file.absoluteDir());
+		
+		emit updateImageSignal();
+		emit updateDirSignal(file);	// this should be called updateFileSignal too
+		sendFileSignal();
 
 		// update history
 		updateHistory();
-
 	}
 	else {
 		//if (!silent) {
@@ -1459,13 +1460,14 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		else
 			qDebug() << this->file.absoluteFilePath() << " (refreshed) does NOT exist...";
 
+		this->editFile = QFileInfo();
 		this->virtualFile = this->file;
 		basicLoader.setImage(sImg, this->file);
 		loadDir(file.absoluteDir());
 		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
 
 		emit updateImageSignal();
-		emit updateFileSignal(this->file, basicLoader.size());
+		sendFileSignal();
 				
 		printf("I could save the image...\n");
 	}
@@ -1525,14 +1527,14 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);
-		
+		this->editFile = QFileInfo();
+
 		this->virtualFile = this->file;
 		basicLoader.setImage(saveImg, this->file);
 		loadDir(this->file.absoluteDir());
 
 		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
-
-		emit updateFileSignal(this->file, saveImg.size());
+		sendFileSignal();
 	}
 
 }
@@ -1655,8 +1657,7 @@ void DkImageLoader::rotateImage(double angle) {
 		mutex.unlock();
 
 		updateImageSignal();
-		updateFileSignal(file, basicLoader.size());
-		
+		sendFileSignal();
 		mutex.lock();
 		
 		updateInfoSignalDelayed(tr("saving..."), true);
@@ -1664,7 +1665,6 @@ void DkImageLoader::rotateImage(double angle) {
 		updateInfoSignalDelayed(tr("saving..."), false);
 		qDebug() << "exif data saved (rotation)?";
 		mutex.unlock();
-
 	}
 	catch(DkException de) {
 
@@ -1787,7 +1787,7 @@ bool DkImageLoader::isCached(QFileInfo& file) {
  **/ 
 bool DkImageLoader::hasFile() {
 
-	return file.exists();
+	return file.exists() | editFile.exists();
 }
 
 /**
@@ -1797,7 +1797,7 @@ bool DkImageLoader::hasFile() {
 QFileInfo DkImageLoader::getFile() {
 
 	QMutexLocker locker(&mutex);
-	return file;
+	return (file.exists()) ? file : editFile;
 }
 
 /**
@@ -2047,9 +2047,19 @@ void DkImageLoader::setSaveDir(QDir& dir) {
  * Sets the current image to img.
  * @param img the loader's new image.
  **/ 
-void DkImageLoader::setImage(QImage img) {
+void DkImageLoader::setImage(QImage img, QFileInfo editFile) {
 	
+	if (editFile.exists())
+		this->editFile = editFile;
+
 	basicLoader.setImage(img, file);
+	sendFileSignal();
+}
+
+void DkImageLoader::sendFileSignal() {
+
+	QFileInfo f = (editFile.exists()) ? editFile : file;
+	emit updateFileSignal(f, basicLoader.image().size(), editFile.exists());
 }
 
 /**

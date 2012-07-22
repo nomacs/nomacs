@@ -247,7 +247,7 @@ void DkControlWidget::connectWidgets() {
 
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
-		connect(loader, SIGNAL(updateFileSignal(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
+		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setFileInfo(QFileInfo, QSize, bool)));
 
 		connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
@@ -388,8 +388,8 @@ void DkControlWidget::showCrop(bool visible) {
 
 		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
 		if (fileInfoLabel->isVisible()) {
-			fileInfoLabel->hide();
-			fileInfoLabel->show();
+			fileInfoLabel->setVisible(false);
+			showFileInfo(true);
 		}
 	}
 
@@ -411,7 +411,7 @@ void DkControlWidget::showHistogram(bool visible) {
 
 }
 
-void DkControlWidget::setFileInfo(QFileInfo fileInfo) {
+void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited) {
 
 	qDebug() << "file info set...";
 
@@ -423,6 +423,7 @@ void DkControlWidget::setFileInfo(QFileInfo fileInfo) {
 
 	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
 	fileInfoLabel->updateInfo(fileInfo, dateString, DkImageLoader::imgMetaData.getRating());
+	fileInfoLabel->setEdited(edited);
 	updateRating(DkImageLoader::imgMetaData.getRating());
 }
 
@@ -1817,10 +1818,8 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	QFileInfo file = loader->getFile();
 	unloadImage();
 	setImage(newImg);
-	loader->setImage(newImg);
+	loader->setImage(newImg, file);
 
-	emit windowTitleSignal(file, newImg.size(), true);
-	controller->getFileInfoLabel()->setEdited(true);
 	// TODO: contrast viewport does not add * 
 
 	// TODO: add functions such as save file on unload

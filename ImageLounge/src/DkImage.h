@@ -759,7 +759,7 @@ public:
 	void loadLastDir();
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
-	void setImage(QImage img);
+	void setImage(QImage img, QFileInfo editFile = QFileInfo());
 	void load();
 	void load(QFileInfo file, bool silent = false);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
@@ -802,7 +802,7 @@ signals:
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
-	void updateFileSignal(QFileInfo file, QSize s = QSize());
+	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
 	void updateDirSignal(QFileInfo file, bool force = false);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
@@ -826,6 +826,7 @@ protected:
 	DkCacher* cacher;
 	std::vector<DkImageCache> cache;
 	
+	QFileInfo editFile;
 	QFileInfo lastFileLoaded;
 	QFileInfo file;
 	QFileInfo virtualFile;
@@ -846,6 +847,7 @@ protected:
 	void updateHistory();
 	bool restoreFile(const QFileInfo &fileInfo);
 	void startStopCacher();
+	void sendFileSignal();
 };
 
 };
