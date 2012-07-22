@@ -698,7 +698,8 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 
 	folderUpdated = false;
 	silent = false;
-	 
+	forceLoad = false;
+
 	this->file = file;
 	this->virtualFile = file;
 
@@ -875,7 +876,7 @@ void DkImageLoader::previousFile(bool silent) {
  * @param skipIdx the number of files that should be skipped after/before the current file.
  * @param silent if true, no status information will be displayed.
  **/ 
-void DkImageLoader::changeFile(int skipIdx, bool silent) {
+void DkImageLoader::changeFile(int skipIdx, bool silent, bool force) {
 
 	//if (!img.isNull() && !file.exists())
 	//	return;
@@ -889,7 +890,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent) {
 	mutex.unlock();
 
 	//if (loadFile.exists())
-		load(loadFile, silent);
+		load(loadFile, silent, force);
 }
 
 /**
@@ -1113,9 +1114,10 @@ void DkImageLoader::load() {
  * @param file the file to be loaded.
  * @param silent if true, no status will be displayed.
  **/ 
-void DkImageLoader::load(QFileInfo file, bool silent) {
+void DkImageLoader::load(QFileInfo file, bool silent, bool force) {
 
 	this->silent = silent;
+	this->forceLoad = force;
 
 	// if the locker is in load file we get dead locks if loading is not threaded
 	// is it save to lock the mutex before setting up the thread??
@@ -1192,7 +1194,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	
 	// critical section -> threads
-	if (cacher) {
+	if (cacher && !forceLoad) {
 		
 		for (unsigned int idx = 0; idx < cache.size(); idx++) {
 
@@ -1287,6 +1289,8 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		cacher->start();
 		cacher->play();
 	}
+
+	forceLoad = false;
 
 	qDebug() << "total loading time: " << QString::fromStdString(dtt.getTotal());
 
@@ -1519,7 +1523,11 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		if (this->file.exists()) {
 			try {
 				imgMetaData.saveMetaDataToFile(QFileInfo(filePath));
+			} catch (DkException e) {
+
+				qDebug() << "can't write metadata...";
 			} catch (...) {
+				
 				if (!restoreFile(QFileInfo(filePath)))
 					emit newErrorDialog("sorry, I destroyed: " + QFileInfo(filePath).fileName() + "\n remove the numbers after the file extension in order to restore the file...");
 			}
@@ -1536,7 +1544,6 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
 		sendFileSignal();
 	}
-
 }
 
 /**
@@ -1747,7 +1754,7 @@ void DkImageLoader::fileChanged(const QString& path) {
 	// ignore if watcher was disabled
 	if (path == file.absoluteFilePath()) {
 		QMutexLocker locker(&mutex);
-		load(QFileInfo(path), true);
+		load(QFileInfo(path), true, true);
 	}
 }
 

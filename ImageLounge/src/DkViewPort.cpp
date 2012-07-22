@@ -1857,7 +1857,7 @@ void DkViewPort::reloadFile() {
 	unloadImage();
 
 	if (loader) {
-		loader->changeFile(0);
+		loader->changeFile(0, false, true);	// silent loading, but force loading
 
 		if (controller->getFilePreview())
 			controller->getFilePreview()->updateDir(loader->getFile(), true);

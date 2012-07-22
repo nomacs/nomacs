@@ -761,7 +761,7 @@ public:
 	void setSaveDir(QDir& dir);
 	void setImage(QImage img, QFileInfo editFile = QFileInfo());
 	void load();
-	void load(QFileInfo file, bool silent = false);
+	void load(QFileInfo file, bool silent = false, bool force = false);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
 	bool isCached(QFileInfo& file);
@@ -809,7 +809,7 @@ signals:
 
 public slots:
 	QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
-	void changeFile(int skipIdx, bool silent = false);
+	void changeFile(int skipIdx, bool silent = false, bool force = false);
 	void fileChanged(const QString& path);
 	void directoryChanged(const QString& path);
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
@@ -836,6 +836,7 @@ protected:
 	QFileSystemWatcher *dirWatcher;
 	QStringList files;
 	bool folderUpdated;
+	bool forceLoad;
 
 	// threads
 	QMutex mutex;
