@@ -681,6 +681,7 @@ public:
 	void setNewDir(QDir& dir, QStringList& files);
 	void updateDir(QStringList& files);
 	QVector<DkImageCache>& getCache() {
+		QMutexLocker locker(&mutex);
 		return cache;
 	};
 

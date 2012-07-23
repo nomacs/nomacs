@@ -2132,6 +2132,7 @@ void DkCacher::index() {
 		DkTimer dt;
 
 		curCache = 0;	// clear cache size
+		cache.clear();
 
 		for (int idx = 0; idx < files.size(); idx++) {
 			QFileInfo cFile = QFileInfo(dir, files[idx]);
