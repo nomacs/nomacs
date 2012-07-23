@@ -2092,7 +2092,7 @@ DkCacher::DkCacher(QDir dir, QStringList files) {
 	
 	isActive = true;
 	somethingTodo = false;
-	curFileIdx = 0;
+	curFileIdx = -1;
 	maxFileSize = 50;	// in MB
 	curCache = 0;
 	maxNumFiles = 100;
@@ -2140,8 +2140,10 @@ void DkCacher::index() {
 		}
 		newDir = false;
 		somethingTodo = true;
-		qDebug() << "cache indexed in: " << QString::fromStdString(dt.getTotal());
 
+		curFileIdx = -1;
+
+		qDebug() << "cache indexed in: " << QString::fromStdString(dt.getTotal());
 	}
 
 	if (updateFiles) {
@@ -2222,15 +2224,14 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 				curCache -= cacheIter.value().getCacheSize();
 				
 				// 4* since we are dealing with uncompressed images
-				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < 4*DkSettings::Resources::cacheMemory) {
+				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) + curCache < DkSettings::Resources::cacheMemory &&
+					DkImage::getBufferSizeFloat(img.size(), img.depth()) < 4*maxFileSize) {
 					cacheIter.value().setImage(img);
 					curCache += cacheIter.value().getCacheSize();
 					qDebug() << "current file set: " << QSize(img.size());
 				}
-				else {
-					QImage emptyImage = QImage();
-					cacheIter.value().setImage(emptyImage);
-				}
+				else
+					cacheIter.value().clearImage();
 			}
 			break;
 		}
@@ -2243,8 +2244,12 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 void DkCacher::load() {
 
 	QMutexLocker locker(&mutex);
-
 	somethingTodo = false;
+
+	// invalid file idx
+	if (curFileIdx == -1)
+		return;
+
 	QMutableVectorIterator<DkImageCache> cacheIter(cache);
 
 	// it's fair enough if we index about +/- 100 images
