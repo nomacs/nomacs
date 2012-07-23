@@ -2248,7 +2248,7 @@ void DkCacher::load() {
 	QMutableVectorIterator<DkImageCache> cacheIter(cache);
 
 	// it's fair enough if we index about +/- 100 images
-	for (unsigned int idx = 1; idx < maxNumFiles*0.5; idx++) {
+	for (int idx = 1; idx < maxNumFiles*0.5; idx++) {
 
 		int nIdx = curFileIdx+idx;
 		int pIdx = curFileIdx-idx;
@@ -2274,14 +2274,13 @@ void DkCacher::load() {
 				break;	// we're done
 
 			cacheIter.toFront();
-			for (int cIterIdx = 0; cIterIdx <= nIdx; cIterIdx++)
+			for (int cIterIdx = 0; cIterIdx <= pIdx; cIterIdx++)
 				cacheIter.next();
 
 			//!! this is important:
 			// currently setting a new dir happens in the thread of DkImageLoader (?! - pretty sure)
 			// however, this thread is not synced on the vector... so if we change the vector while caching an image
 			// bad things happen...
-			qDebug() << "caching previous...";
 			if (cacheImage(cacheIter.value())) {	// that might take time // TODO: that might crash
 				somethingTodo = true;
 				break;	// go to thread to see if some action is waiting
