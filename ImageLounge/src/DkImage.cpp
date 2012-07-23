@@ -1444,6 +1444,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	if (saved) {
 		
 		try {
+			// TODO: remove path?!
 			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
 		} catch (...) {
 
@@ -1522,6 +1523,7 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		
 		if (this->file.exists()) {
 			try {
+				// TODO: remove watcher path?!
 				imgMetaData.saveMetaDataToFile(QFileInfo(filePath));
 			} catch (DkException e) {
 
@@ -1677,6 +1679,7 @@ void DkImageLoader::rotateImage(double angle) {
 
 		mutex.unlock();
 
+		// TODO: in this case the image is reloaded (file watcher seems to be active)
 		// make a silent save -> if the image is just cached, do not save it
 		if (file.exists())
 			saveFileSilentThreaded(file);
@@ -2157,7 +2160,7 @@ void DkCacher::run() {
 
 		mutex.lock();
 		DkTimer dt;
-		usleep(10000);
+		usleep(1000);
 
 		//QMutexLocker(&this->mutex);
 		if (!isActive) {
@@ -2173,7 +2176,7 @@ void DkCacher::run() {
 		mutex.unlock();
 
 		if (somethingTodo)
-			load();
+			load();		// load locks the mutex on it's own
 	}
 
 }
@@ -2184,7 +2187,7 @@ void DkCacher::run() {
 **/ 
 void DkCacher::stop() {
 
-	//QMutexLocker(&this->mutex);
+	QMutexLocker locker(&mutex);
 	isActive = false;
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
 }
@@ -2233,6 +2236,8 @@ void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
 }
 
 void DkCacher::load() {
+
+	QMutexLocker locker(&mutex);
 
 	somethingTodo = false;
 
@@ -2310,7 +2315,7 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	if (!cacheImg)
 		return false;
 
-	QMutexLocker locker(&mutex);
+	//QMutexLocker locker(&mutex);
 
 	QFileInfo file = cacheImg->getFile();
 	
