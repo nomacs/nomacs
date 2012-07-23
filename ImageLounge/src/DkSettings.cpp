@@ -974,7 +974,7 @@ void DkSlideshowSettingsWidget::createLayout() {
 	QGroupBox* gbSlideShow = new QGroupBox(tr("Slideshow Settings"), this);
 	QVBoxLayout* gbSlideShowLayout = new QVBoxLayout(gbSlideShow);
 
-	timeWidget = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1, 99, this, 1, 1);
+	timeWidget = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
 	
 	// fullscreen groupbox
 	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen Settings"), this);

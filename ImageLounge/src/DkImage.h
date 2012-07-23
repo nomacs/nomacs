@@ -628,23 +628,23 @@ public:
 		cacheState = cache_ignored;
 	};
 
-	QFileInfo getFile() {
-		return file;
-	};
-
 	void clearImage() {
 		img = QImage();
 	};
 
-	QImage getImage() {
+	QFileInfo getFile() const {
+		return file;
+	};
+
+	QImage getImage() const {
 		return img;
 	};
 
-	float getCacheSize() {
+	float getCacheSize() const {
 		return cacheSize;
 	};
 
-	int getCacheState() {
+	int getCacheState() const {
 		
 		if (!img.isNull())
 			return cache_loaded;
@@ -668,7 +668,7 @@ class DkCacher : public QThread {
 	Q_OBJECT
 
 public:
-	DkCacher(std::vector<DkImageCache>* cache = 0, QDir dir = QDir(), QStringList files = QStringList());
+	DkCacher(QDir dir = QDir(), QStringList files = QStringList());
 	~DkCacher() {};
 
 	void run();
@@ -677,12 +677,15 @@ public:
 	void play();
 	void start();
 
-	void setCurrentFile(QFileInfo& file, QImage img = QImage());
+	void setCurrentFile(QFileInfo file, QImage img = QImage());
 	void setNewDir(QDir& dir, QStringList& files);
 	void updateDir(QStringList& files);
+	QVector<DkImageCache>& getCache() {
+		return cache;
+	};
 
 private:
-	std::vector<DkImageCache>* cache;
+	QVector<DkImageCache> cache;
 	int curFileIdx;
 
 	float maxFileSize;
@@ -703,7 +706,7 @@ private:
 
 	void index();
 	void load();
-	bool cacheImage(DkImageCache* cacheImg);
+	bool cacheImage(DkImageCache& cacheImg);
 	bool clean(int curCacheIdx);
 };
 
@@ -824,7 +827,6 @@ protected:
 
 	DkBasicLoader basicLoader;
 	DkCacher* cacher;
-	std::vector<DkImageCache> cache;
 	
 	QFileInfo editFile;
 	QFileInfo lastFileLoaded;

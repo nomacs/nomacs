@@ -814,13 +814,9 @@ bool DkImageLoader::loadDir(QDir newDir) {
 		if (cacher) {
 			
 			DkTimer dt;
-			cacher->stop();
-			cacher->wait();
-			
-			cache.clear();
 			
 			cacher->setNewDir(dir, files);
-			//cacher->start();
+			cacher->start();
 			qDebug() << "restarting the cacher took me: " << QString::fromStdString(dt.getTotal());
 		}
 
@@ -838,12 +834,11 @@ void DkImageLoader::startStopCacher() {
 		cacher->wait();
 		delete cacher;
 		cacher = 0;
-		cache.clear();
 	}
 
 	// start cacher
 	if (DkSettings::Resources::cacheMemory > 0 && !cacher) {
-		cacher = new DkCacher(&cache);
+		cacher = new DkCacher();
 		cacher->setNewDir(dir, files);
 	}
 
@@ -1196,7 +1191,9 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	// critical section -> threads
 	if (cacher && !forceLoad) {
 		
-		for (unsigned int idx = 0; idx < cache.size(); idx++) {
+		QVector<DkImageCache>& cache = cacher->getCache();
+
+		for (int idx = 0; idx < cache.size(); idx++) {
 
 			if (cache[idx].getFile() == file) {
 
@@ -1778,9 +1775,14 @@ void DkImageLoader::directoryChanged(const QString& path) {
 
 bool DkImageLoader::isCached(QFileInfo& file) {
 
-	for (unsigned int idx = 0; idx < cache.size(); idx++) {
+	if (!cacher)
+		return false;
 
-		if (cache[idx].getFile() == file) {
+	QVector<DkImageCache>& cache = cacher->getCache();
+
+	for (int idx = 0; idx < cache.size(); idx++) {
+
+		if (cache.at(idx).getFile() == file) {
 
 			if (cache[idx].getCacheState() == DkImageCache::cache_loaded) {
 				return true;
@@ -2083,9 +2085,8 @@ QString DkImageLoader::fileName() {
 
 // DkThumbsLoader --------------------------------------------------------------------
 
-DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files) {
+DkCacher::DkCacher(QDir dir, QStringList files) {
 
-	this->cache = cache;
 	this->dir = dir;
 	this->files = files;
 	
@@ -2110,6 +2111,7 @@ DkCacher::DkCacher(std::vector<DkImageCache>* cache, QDir dir, QStringList files
  **/ 
 void DkCacher::setNewDir(QDir& dir, QStringList& files) {
 	
+	//QMutexLocker locker(&mutex);
 	this->dir = dir;
 	this->files = files;
 	
@@ -2119,15 +2121,12 @@ void DkCacher::setNewDir(QDir& dir, QStringList& files) {
 
 void DkCacher::updateDir(QStringList& files) {
 
-	// TODO: cacher bug this is the evil code!!
 	this->files = files;	// this change is done from another thread!
 	updateFiles = true;
+	//index();
 }
 
 void DkCacher::index() {
-
-	if (!cache)
-		return;
 
 	if (newDir) {
 		DkTimer dt;
@@ -2136,7 +2135,7 @@ void DkCacher::index() {
 
 		for (int idx = 0; idx < files.size(); idx++) {
 			QFileInfo cFile = QFileInfo(dir, files[idx]);
-			cache->push_back(DkImageCache(cFile));
+			cache.append(DkImageCache(cFile));
 		}
 		newDir = false;
 		somethingTodo = true;
@@ -2152,9 +2151,6 @@ void DkCacher::index() {
 }
 
 void DkCacher::run() {
-
-	if (!cache)
-		return;
 
 	while (true) {
 
@@ -2187,7 +2183,7 @@ void DkCacher::run() {
 **/ 
 void DkCacher::stop() {
 
-	QMutexLocker locker(&mutex);
+	//QMutexLocker locker(&mutex);
 	isActive = false;
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
 }
@@ -2209,27 +2205,35 @@ void DkCacher::play() {
 	qDebug() << "[cache] restarting cacher...";
 }
 
-void DkCacher::setCurrentFile(QFileInfo& file, QImage img) {
+void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 
-	for (unsigned int idx = 0; idx < cache->size(); idx++) {
+	QMutexLocker locker(&mutex);
 
-		if (cache->at(idx).getFile() == file) {
+	QMutableVectorIterator<DkImageCache> cacheIter(cache);
+
+	for (int idx = 0; idx < cache.size(); idx++) {
+		
+		cacheIter.next();
+
+		if (cache.at(idx).getFile() == file) {
 			curFileIdx = idx;
 			if (!img.isNull()) {
-				curCache -= cache->at(idx).getCacheSize();
+				curCache -= cacheIter.value().getCacheSize();
 				
-				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < DkSettings::Resources::cacheMemory) {
-					cache->at(idx).setImage(img);
-					curCache += cache->at(idx).getCacheSize();
+				// 4* since we are dealing with uncompressed images
+				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) < 4*DkSettings::Resources::cacheMemory) {
+					cacheIter.value().setImage(img);
+					curCache += cacheIter.value().getCacheSize();
 					qDebug() << "current file set: " << QSize(img.size());
 				}
 				else {
 					QImage emptyImage = QImage();
-					cache->at(idx).setImage(emptyImage);
+					cacheIter.value().setImage(emptyImage);
 				}
 			}
 			break;
 		}
+
 	}
 
 	somethingTodo = true;
@@ -2240,36 +2244,44 @@ void DkCacher::load() {
 	QMutexLocker locker(&mutex);
 
 	somethingTodo = false;
+	QMutableVectorIterator<DkImageCache> cacheIter(cache);
 
 	// it's fair enough if we index about +/- 100 images
 	for (unsigned int idx = 1; idx < maxNumFiles*0.5; idx++) {
 
-		// TODO: clear cache here
-		// TODO: tell thread we're done (if we're done : )
 		int nIdx = curFileIdx+idx;
 		int pIdx = curFileIdx-idx;
 
-		if (nIdx < (int)cache->size() && cache->at(nIdx).getCacheState() == DkImageCache::cache_not_loaded) {
-
+		if (nIdx < (int)cache.size() && cache.at(nIdx).getCacheState() == DkImageCache::cache_not_loaded) {
+						
 			if (!clean(idx))
 				break;	// we're done
 
-			if (cacheImage(&cache->at(nIdx))) {	// that might take time
+			// if you know how to directly access the n-th element of a QMutableVectorIterator, please replace the next 3 lines
+			cacheIter.toFront();
+			for (int cIterIdx = 0; cIterIdx <= nIdx; cIterIdx++)
+				cacheIter.next();
+				
+			if (cacheImage(cacheIter.value())) {	// that might take time
 				somethingTodo = true;
 				break;	// go to thread to see if some action is waiting
 			}
 		}
-		if (pIdx > 0 && cache->at(pIdx).getCacheState() == DkImageCache::cache_not_loaded) {
+		if (pIdx > 0 && cache.at(pIdx).getCacheState() == DkImageCache::cache_not_loaded) {
 
 			if (!clean(idx))
 				break;	// we're done
+
+			cacheIter.toFront();
+			for (int cIterIdx = 0; cIterIdx <= nIdx; cIterIdx++)
+				cacheIter.next();
 
 			//!! this is important:
 			// currently setting a new dir happens in the thread of DkImageLoader (?! - pretty sure)
 			// however, this thread is not synced on the vector... so if we change the vector while caching an image
 			// bad things happen...
 			qDebug() << "caching previous...";
-			if (cacheImage(&cache->at(pIdx))) {	// that might take time // TODO: that might crash
+			if (cacheImage(cacheIter.value())) {	// that might take time // TODO: that might crash
 				somethingTodo = true;
 				break;	// go to thread to see if some action is waiting
 			}
@@ -2285,19 +2297,23 @@ bool DkCacher::clean(int curCacheIdx) {
 	if (curCache < DkSettings::Resources::cacheMemory)
 		return true;
 	
-	for (int idx = 0; idx < (int)cache->size(); idx++) {
+	QMutableVectorIterator<DkImageCache> cacheIter(cache);
+
+	for (int idx = 0; idx < (int)cache.size(); idx++) {
+
+		cacheIter.next();
 
 		// skip the current cache region
 		if (idx > curFileIdx-curCacheIdx && idx <= curFileIdx+curCacheIdx)
 			continue;
 
-		if (cache->at(idx).getCacheState() == DkImageCache::cache_loaded) {
+		if (cacheIter.value().getCacheState() == DkImageCache::cache_loaded) {
 			
-			curCache -= cache->at(idx).getCacheSize();
+			curCache -= cacheIter.value().getCacheSize();
 			QImage tmpImg = QImage();
-			cache->at(idx).setImage(tmpImg);	// clear cached image
+			cacheIter.value().setImage(tmpImg);	// clear cached image
 
-			qDebug() << "[cache] I cleared: " << cache->at(idx).getFile().fileName() << " cache volume: " << curCache << " MB";
+			qDebug() << "[cache] I cleared: " << cacheIter.value().getFile().fileName() << " cache volume: " << curCache << " MB";
 		}
 	}
 
@@ -2310,14 +2326,9 @@ bool DkCacher::clean(int curCacheIdx) {
 	return true;
 }
 
-bool DkCacher::cacheImage(DkImageCache* cacheImg) {
+bool DkCacher::cacheImage(DkImageCache& cacheImg) {
 	
-	if (!cacheImg)
-		return false;
-
-	//QMutexLocker locker(&mutex);
-
-	QFileInfo file = cacheImg->getFile();
+	QFileInfo file = cacheImg.getFile();
 	
 	// resolve links
 	if (file.isSymLink()) file = QFileInfo(file.symLinkTarget());
@@ -2326,23 +2337,23 @@ bool DkCacher::cacheImage(DkImageCache* cacheImg) {
 	// jpg files must be smaller than 1/4 of the max file size (as they are way larger when loaded
 	// ignore files < 100 KB || larger than maxFileSize
 	if (f.size() < 100*1024 || f.size() > 1024*1024*maxFileSize || (f.size() > 1024*1024*maxFileSize*0.25f && file.suffix() == "jpg")) {
-		qDebug() << "[cache] I ignored: " << cacheImg->getFile().fileName() << " file size: " << f.size()/(1024.0f*1024.0f) << " MB";
-		cacheImg->ignore();
+		qDebug() << "[cache] I ignored: " << cacheImg.getFile().fileName() << " file size: " << f.size()/(1024.0f*1024.0f) << " MB";
+		cacheImg.ignore();
 		return false;
 	}
 
 	QImage img;
 	if (loader.loadGeneral(file)) {
 		
-		cacheImg->setImage(loader.image());
-		curCache += cacheImg->getCacheSize();
+		cacheImg.setImage(loader.image());
+		curCache += cacheImg.getCacheSize();
 
-		qDebug() << "[cache] I cached: " << cacheImg->getFile().fileName() << " cache volume: " << curCache << " MB/ " 
+		qDebug() << "[cache] I cached: " << cacheImg.getFile().fileName() << " cache volume: " << curCache << " MB/ " 
 			<< DkSettings::Resources::cacheMemory << " MB";
 		return true;
 	}
 	else
-		cacheImg->ignore();		// cannot cache image
+		cacheImg.ignore();		// cannot cache image
 
 	return false;
 }

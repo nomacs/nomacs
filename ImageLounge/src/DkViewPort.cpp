@@ -1917,7 +1917,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 			QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
 
-			// directly load images < 100 KB
+			// directly load images < 150 KB
 			if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
 				unloadImage();
 				loader->loadFile(thumbFile);
