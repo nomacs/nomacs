@@ -2695,7 +2695,8 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 				for (int idx = 0; idx < ctrlPoints.size(); idx++)
 					ctrlPoints[idx]->show();
 
-				rect.setAllCorners(map(clipToImage(clickPos)));
+				QPointF p = map(clipToImage(clickPos));
+				rect.setAllCorners(p);
 			}
 			
 			// when initializing shift should make the rect a square

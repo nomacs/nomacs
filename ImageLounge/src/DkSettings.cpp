@@ -83,7 +83,7 @@ int DkSettings::Display::interpolateZoomLevel = 200;
 
 
 int DkSettings::SlideShow::filter = 0;
-int DkSettings::SlideShow::time = 3;
+float DkSettings::SlideShow::time = 3;
 QBitArray DkSettings::SlideShow::display = QBitArray(DkSlideshowSettingsWidget::display_end, true);
 QColor DkSettings::SlideShow::backgroundColor = QColor(200, 200, 200);
 bool DkSettings::SlideShow::silentFullscreen = true;
@@ -199,7 +199,7 @@ void DkSettings::load() {
 		MetaData::metaDataBits = tmpMetaData;
 
 	SlideShow::filter = settings.value("SlideShowSettings/filter", DkSettings::SlideShow::filter).toInt();
-	SlideShow::time = settings.value("SlideShowSettings/time", DkSettings::SlideShow::time).toInt();
+	SlideShow::time = settings.value("SlideShowSettings/time", DkSettings::SlideShow::time).toFloat();
 	SlideShow::backgroundColor = settings.value("SlideShowSettings/backgroundColor", DkSettings::SlideShow::backgroundColor).value<QColor>();
 	SlideShow::silentFullscreen = settings.value("SlideShowSettings/silentFullscreen", DkSettings::SlideShow::silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("SlideShowSettings/display", DkSettings::SlideShow::display).toBitArray();
@@ -360,7 +360,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Display::interpolateZoomLevel = 200;
 
 	DkSettings::SlideShow::filter = 0;
-	DkSettings::SlideShow::time = 3;
+	DkSettings::SlideShow::time = 3.0;
 	DkSettings::SlideShow::display = QBitArray(DkSlideshowSettingsWidget::display_end, true);
 	DkSettings::SlideShow::backgroundColor = QColor(217, 219, 228, 100);
 	DkSettings::SlideShow::silentFullscreen = true;
@@ -974,7 +974,7 @@ void DkSlideshowSettingsWidget::createLayout() {
 	QGroupBox* gbSlideShow = new QGroupBox(tr("Slideshow Settings"), this);
 	QVBoxLayout* gbSlideShowLayout = new QVBoxLayout(gbSlideShow);
 
-	timeWidget = new DkSpinBoxWidget(tr("Display Time:"), tr("sec"), 1, 99, this );
+	timeWidget = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1, 99, this, 1, 1);
 	
 	// fullscreen groupbox
 	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen Settings"), this);
@@ -1367,8 +1367,43 @@ DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int s
 	hboxLowerLayout->addStretch();
 	vboxLayout->addWidget(upperLabel);
 	vboxLayout->addWidget(lowerWidget);
+}
 
 
+// DkDoubleSpinBoxWiget --------------------------------------------------------------------
+DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) {
+	spinBox = new QDoubleSpinBox(this);
+	lowerLabel = new QLabel(this);
+	lowerWidget = new QWidget(this);
+	vboxLayout = new QVBoxLayout;
+	hboxLowerLayout = new QHBoxLayout;
+
+	hboxLowerLayout->addWidget(spinBox);
+	hboxLowerLayout->addWidget(lowerLabel);
+	hboxLowerLayout->addStretch();
+	vboxLayout->addWidget(upperLabel);
+	vboxLayout->addWidget(lowerWidget);
+
+}
+
+DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/, int decimals/* =2*/) : QWidget(parent) {
+	spinBox = new QDoubleSpinBox(this);
+	spinBox->setMaximum(spinBoxMax);
+	spinBox->setMinimum(spinBoxMin);
+	spinBox->setSingleStep(step);
+	spinBox->setDecimals(decimals);
+	upperLabel = new QLabel(upperString, this);
+	lowerLabel = new QLabel(lowerString, this);
+	lowerWidget = new QWidget(this);
+
+	vboxLayout = new QVBoxLayout(this) ;
+	hboxLowerLayout = new QHBoxLayout(lowerWidget);
+
+	hboxLowerLayout->addWidget(spinBox);
+	hboxLowerLayout->addWidget(lowerLabel);
+	hboxLowerLayout->addStretch();
+	vboxLayout->addWidget(upperLabel);
+	vboxLayout->addWidget(lowerWidget);
 }
 
 }

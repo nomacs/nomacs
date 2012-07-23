@@ -69,6 +69,7 @@ class DkMetaDataSettingsWidget;
 class DkResourceSettingsWidgets;
 class DkSettingsListView;
 class DkSpinBoxWidget;
+class DkDoubleSpinBoxWidget;
 
 class DkSettings : public QObject {
 	Q_OBJECT
@@ -138,7 +139,7 @@ class DkSettings : public QObject {
 		};
 		struct SlideShow {
 			static int filter;
-			static int time;
+			static float time;
 			static bool silentFullscreen;
 			static QBitArray display;
 			static QColor backgroundColor;
@@ -399,7 +400,7 @@ Q_OBJECT
 
 		QVBoxLayout* vBoxLayout;
 
-		DkSpinBoxWidget* timeWidget;
+		DkDoubleSpinBoxWidget* timeWidget;
 		DkColorChooser* bgColChooser;
 
 
@@ -410,7 +411,7 @@ Q_OBJECT
 		QCheckBox* cbSilentFullscreen;
 
 		int filter;
-		int time;
+		float time;
 
 };
 
@@ -598,6 +599,24 @@ class DkSpinBoxWidget : public QWidget {
 		QWidget* lowerWidget;
 		QVBoxLayout* vboxLayout;
 		QHBoxLayout* hboxLowerLayout;
+};
+
+class DkDoubleSpinBoxWidget : public QWidget {
+	Q_OBJECT;
+public:	
+	DkDoubleSpinBoxWidget(QWidget* parent = 0);
+	DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent=0, int step = 1, int decimals = 2);
+	QDoubleSpinBox* getSpinBox() { return spinBox;};
+	void setSpinBoxValue(float value) {spinBox->setValue(value);};
+	float getSpinBoxValue() {return spinBox->value();};
+
+private:
+	QDoubleSpinBox* spinBox;
+	QLabel* upperLabel;
+	QLabel* lowerLabel;
+	QWidget* lowerWidget;
+	QVBoxLayout* vboxLayout;
+	QHBoxLayout* hboxLowerLayout;
 };
 
 };
