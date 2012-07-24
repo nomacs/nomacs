@@ -252,6 +252,8 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
+
+		connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
 	}
 
 	// overview

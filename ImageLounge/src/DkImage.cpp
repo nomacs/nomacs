@@ -969,6 +969,9 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 			
 			qDebug() << " you have reached the end ............";
 
+			if (!DkSettings::Global::loop)
+				emit(setPlayer(false));
+
 			if (!silent)
 				updateInfoSignal(msg, 1000);
 			return QFileInfo();
@@ -1046,6 +1049,8 @@ void DkImageLoader::loadFileAt(int idx) {
 		}
 		else if (idx >= files.size()) {
 			QString msg = tr("You have reached the end");
+			if (!DkSettings::Global::loop)
+				emit(setPlayer(false));
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
 			return;

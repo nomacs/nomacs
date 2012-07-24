@@ -810,6 +810,7 @@ signals:
 	void updateDirSignal(QFileInfo file, bool force = false);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
+	void setPlayer(bool play);
 
 public slots:
 	QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
