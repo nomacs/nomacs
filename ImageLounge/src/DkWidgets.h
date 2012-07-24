@@ -494,6 +494,10 @@ public slots:
 		}
 	};
 
+	void autoNext() {
+		emit nextSignal();
+	};
+
 	void next() {
 		hideTimer->stop();
 		emit nextSignal();

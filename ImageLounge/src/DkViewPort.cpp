@@ -2068,7 +2068,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	QPainter painter(&img);
 	//painter.setBackgroundMode(Qt::TransparentMode);
 	painter.setBrush(QColor(0,0,0,0));
-	painter.drawRect(QRect(QPoint(-1,-1), QSize(img.width()+1, img.height()+1)));
+	painter.drawRect(QRect(QPoint(-1,-1), QSize(img.width()+1, img.height()+1)));	// he seems to interpolate at the border -> add a 1px border, it is cropped anyway
 	//painter.setBackground(QColor(0,0,0,10));	// TODO: transparent background
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	painter.setWorldTransform(tForm);

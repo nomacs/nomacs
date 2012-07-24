@@ -74,6 +74,11 @@ void DkWidget::hide() {
 		hiding = true;
 		showing = false;
 		animateOpacityDown();
+
+		// set display bit here too -> since the final call to setVisible takes a few seconds
+		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
+			displaySettingsBits->setBit(DkSettings::App::currentAppMode, false);
+		}
 	}
 }
 
@@ -1459,7 +1464,7 @@ void DkPlayer::init() {
 	displayTimer = new QTimer(this);
 	displayTimer->setInterval(timeToDisplay);
 	displayTimer->setSingleShot(true);
-	connect(displayTimer, SIGNAL(timeout()), this, SLOT(next()));
+	connect(displayTimer, SIGNAL(timeout()), this, SLOT(autoNext()));
 
 	hideTimer = new QTimer(this);
 	hideTimer->setInterval(timeToDisplayPlayer);
