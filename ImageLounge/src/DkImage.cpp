@@ -1191,7 +1191,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	// critical section -> threads
 	if (cacher && !forceLoad) {
 		
-		QVector<DkImageCache>& cache = cacher->getCache();
+		QVector<DkImageCache> cache = cacher->getCache();
 
 		for (int idx = 0; idx < cache.size(); idx++) {
 
