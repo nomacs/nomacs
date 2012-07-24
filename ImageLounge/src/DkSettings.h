@@ -484,6 +484,7 @@ class DkMetaDataSettingsWidget : public DkSettingsWidget {
 			camData_model,
 			camData_aperture,
 			//camData_shutterspeed,
+			camData_iso,
 			camData_flash,
 			camData_focallength,
 			camData_exposuremode,

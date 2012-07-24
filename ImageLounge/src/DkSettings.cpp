@@ -107,6 +107,7 @@ QStringList DkMetaDataSettingsWidget::scamDataDesc = QStringList() <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Make") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Model") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Aperture Value") <<
+												QT_TRANSLATE_NOOP("nmc::DkMetaData","ISO") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Flash") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Focal Length") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Mode") <<
@@ -371,6 +372,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_make] = true;
 	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_model] = true;
 	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_aperture] = true;
+	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_iso] = true;
 	//DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
 	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
 	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;

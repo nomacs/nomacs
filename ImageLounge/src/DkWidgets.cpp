@@ -1606,7 +1606,7 @@ void DkPlayer::show(int ms) {
 //	QString("Iptc.Application2.Headline Iptc.Application2.Caption Iptc.Application2.Copyright Iptc.Application2.Keywords");
 //QString DkMetaDataInfo::sIptcDesc = QString("Creator;Creator Title;City;Country;Headline;Caption;Copyright;Keywords");
 
-QString DkMetaDataInfo::sCamDataTags = QString("ImageSize Orientation Make Model ApertureValue Flash FocalLength ") %
+QString DkMetaDataInfo::sCamDataTags = QString("ImageSize Orientation Make Model ApertureValue ISOSpeedRatings Flash FocalLength ") %
 	QString("ExposureMode ExposureTime");
 
 QString DkMetaDataInfo::sDescriptionTags = QString("Rating UserComment DateTime DateTimeOriginal ImageDescription Byline BylineTitle City Country ") %
@@ -1929,6 +1929,12 @@ void DkMetaDataInfo::readTags() {
 					if (i == DkMetaDataSettingsWidget::camData_aperture) {
 						
 						QString aValue = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue(tmp.toStdString()));
+
+						qDebug() << aValue;
+						if (aValue.isEmpty()) qDebug() << "trying the fNumber";
+
+						if (aValue.isEmpty()) QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("FNumber"));
+
 						QStringList sList = aValue.split('/');
 
 						if (sList.size() == 2) {

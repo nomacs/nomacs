@@ -1582,6 +1582,23 @@ void DkNoMacs::saveFile() {
 	if (fileName.isEmpty())
 		return;
 
+
+	QString ext = QFileInfo(fileName).suffix();
+
+	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
+
+		QStringList sF = DkImageLoader::saveFilter.split(";;");
+
+		for (int idx = 0; idx < sF.size(); idx++) {
+
+			if (sF.at(idx).contains(ext)) {
+				selectedFilter = sF.at(idx);
+				break;
+			}
+		}
+	}
+
+
 	// TODO: if more than one file is opened -> open new threads
 	QFileInfo sFile = QFileInfo(fileName);
 	QImage saveImg = viewport()->getImage();
