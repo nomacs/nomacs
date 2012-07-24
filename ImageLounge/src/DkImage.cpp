@@ -38,7 +38,7 @@ bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.roh *.jps *.pns *.mpo *.lnk").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.roh *.jps *.pns *.mpo").split(' ');
 
 // formats we can save
 QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;") %
@@ -1211,7 +1211,6 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	if (!imgLoaded) {
 		try {
 			imgLoaded = basicLoader.loadGeneral(file);
-	
 		} catch(...) {
 			imgLoaded = false;
 		}
@@ -1965,6 +1964,13 @@ bool DkImageLoader::isValid(QFileInfo& fileInfo) {
 		exp.setPatternSyntax(QRegExp::Wildcard);
 		if (exp.exactMatch(fileName))
 			return true;
+
+		// for windows shortcuts
+		QRegExp lnkExp = QRegExp(fileFilters.at(idx) + ".lnk", Qt::CaseInsensitive);
+		lnkExp.setPatternSyntax(QRegExp::Wildcard);
+		if (lnkExp.exactMatch(fileName))
+			return true;
+
 	}
 
 	printf("I did not accept... honestly...\n");
