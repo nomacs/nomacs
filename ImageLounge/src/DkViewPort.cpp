@@ -2064,7 +2064,9 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 
 	// render the image into the new coordinate system
 	QPainter painter(&img);
-	painter.setBackgroundMode(Qt::TransparentMode);
+	//painter.setBackgroundMode(Qt::TransparentMode);
+	painter.setBrush(QColor(0,0,0,0));
+	painter.drawRect(QRect(QPoint(-1,-1), QSize(img.width()+1, img.height()+1)));
 	//painter.setBackground(QColor(0,0,0,10));	// TODO: transparent background
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	painter.setWorldTransform(tForm);
