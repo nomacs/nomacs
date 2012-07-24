@@ -697,8 +697,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
 	folderUpdated = false;
-	silent = false;
-	forceLoad = false;
 
 	this->file = file;
 	this->virtualFile = file;
@@ -1114,16 +1112,13 @@ void DkImageLoader::load() {
  * @param file the file to be loaded.
  * @param silent if true, no status will be displayed.
  **/ 
-void DkImageLoader::load(QFileInfo file, bool silent, bool force) {
-
-	this->silent = silent;
-	this->forceLoad = force;
+void DkImageLoader::load(QFileInfo file, bool silent, int cacheState) {
 
 	// if the locker is in load file we get dead locks if loading is not threaded
 	// is it save to lock the mutex before setting up the thread??
 	/*QMutexLocker locker(&mutex);*/
 	
-	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file));
+	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(bool, silent), Q_ARG(int, cacheState));
 }
 
 /**
@@ -1131,7 +1126,7 @@ void DkImageLoader::load(QFileInfo file, bool silent, bool force) {
  * @param file the file to be loaded.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkImageLoader::loadFile(QFileInfo file) {
+bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 	
 	DkTimer dtt;
 
@@ -1194,7 +1189,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	
 	// critical section -> threads
-	if (cacher && !forceLoad) {
+	if (cacher && cacheState != cache_force_load) {
 		
 		QVector<DkImageCache> cache = cacher->getCache();
 
@@ -1230,7 +1225,7 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 	
 	if (imgLoaded) {
 		
-		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
+		if (cacher && cacheState != cache_disable_update) cacher->setCurrentFile(file, basicLoader.image());
 
 		DkMetaData imgMetaData(file);		
 		int orientation = imgMetaData.getOrientation();
@@ -1290,8 +1285,6 @@ bool DkImageLoader::loadFile(QFileInfo file) {
 		cacher->start();
 		cacher->play();
 	}
-
-	forceLoad = false;
 
 	qDebug() << "total loading time: " << QString::fromStdString(dtt.getTotal());
 
@@ -2032,6 +2025,12 @@ void DkImageLoader::loadLastDir() {
 	setDir(lastDir);
 }
 
+void DkImageLoader::updateCacheIndex() {
+	
+	if (cacher)
+		cacher->setCurrentFile(file, basicLoader.image());
+}
+
 /**
  * Sets the file specified and loads the directory.
  * @param file the file to be set as current file.
@@ -2041,7 +2040,6 @@ void DkImageLoader::setFile(QFileInfo& file) {
 	this->file = file;
 	this->virtualFile = file;
 	loadDir(file.absoluteDir());
-
 }
 
 /**
@@ -2326,8 +2324,7 @@ bool DkCacher::clean(int curCacheIdx) {
 		if (cacheIter.value().getCacheState() == DkImageCache::cache_loaded) {
 			
 			curCache -= cacheIter.value().getCacheSize();
-			QImage tmpImg = QImage();
-			cacheIter.value().setImage(tmpImg);	// clear cached image
+			cacheIter.value().clearImage();	// clear cached image
 
 			qDebug() << "[cache] I cleared: " << cacheIter.value().getFile().fileName() << " cache volume: " << curCache << " MB";
 		}

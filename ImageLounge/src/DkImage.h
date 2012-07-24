@@ -725,6 +725,14 @@ class DllExport DkImageLoader : public QObject {
 	Q_OBJECT
 
 public:
+
+	enum cacheProps {
+		cache_force_load = 0,
+		cache_default = 1,
+		cache_disable_update,
+		cache_props_end
+	};
+
 	DkImageLoader(QFileInfo file = QFileInfo());
 
 	virtual ~DkImageLoader();
@@ -742,8 +750,6 @@ public:
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList());
 
 	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
-
-	bool silent;
 
 	void rotateImage(double angle);
 	void saveFile(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
@@ -765,10 +771,11 @@ public:
 	void setSaveDir(QDir& dir);
 	void setImage(QImage img, QFileInfo editFile = QFileInfo());
 	void load();
-	void load(QFileInfo file, bool silent = false, bool force = false);
+	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
 	bool isCached(QFileInfo& file);
+	void updateCacheIndex();
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
 
@@ -819,7 +826,7 @@ public slots:
 	void directoryChanged(const QString& path);
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
-	virtual bool loadFile(QFileInfo file);
+	virtual bool loadFile(QFileInfo file, bool silent, int cacheState);
 	void saveRating(int rating);
 	void deleteFile();
 	void saveTempFile(QImage img);
@@ -840,7 +847,6 @@ protected:
 	QFileSystemWatcher *dirWatcher;
 	QStringList files;
 	bool folderUpdated;
-	bool forceLoad;
 
 	// threads
 	QMutex mutex;

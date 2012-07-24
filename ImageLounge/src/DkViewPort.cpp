@@ -1922,12 +1922,12 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 			// directly load images < 150 KB
 			if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
 				unloadImage();
-				loader->loadFile(thumbFile);
+				loader->loadFile(thumbFile, silent, DkImageLoader::cache_disable_update);
 			}
 			// load full file if cached
 			else if (loader->isCached(thumbFile)) {
 				unloadImage();
-				loader->load(thumbFile, silent);
+				loader->load(thumbFile, silent, DkImageLoader::cache_disable_update);	// disable cacher on fast load
 			}
 			else {
 				thumb = loader->loadThumb(thumbFile, silent);
@@ -1959,6 +1959,9 @@ void DkViewPort::loadFullFile(bool silent) {
 		unloadImage();	// TODO: unload image clears the image -> makes an empty file
 		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	}
+	
+	if (loader)
+		loader->updateCacheIndex();
 }
 
 void DkViewPort::loadFirst() {
