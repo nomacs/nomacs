@@ -1553,6 +1553,10 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
  **/ 
 void DkImageLoader::saveRating(int rating) {
 
+	// file might be edited
+	if (!file.exists())
+		return;
+
 	QMutexLocker locker(&mutex);
 
 	try {
@@ -1666,10 +1670,12 @@ void DkImageLoader::rotateImage(double angle) {
 		sendFileSignal();
 		mutex.lock();
 		
-		updateInfoSignalDelayed(tr("saving..."), true);
-		imgMetaData.saveOrientation((int)angle);
-		updateInfoSignalDelayed(tr("saving..."), false);
-		qDebug() << "exif data saved (rotation)?";
+		if (file.exists()) {
+			updateInfoSignalDelayed(tr("saving..."), true);
+			imgMetaData.saveOrientation((int)angle);
+			updateInfoSignalDelayed(tr("saving..."), false);
+			qDebug() << "exif data saved (rotation)?";
+		}
 		mutex.unlock();
 	}
 	catch(DkException de) {
@@ -1808,6 +1814,7 @@ bool DkImageLoader::hasFile() {
  **/ 
 QFileInfo DkImageLoader::getFile() {
 
+	// don't need locker here - const ?!
 	QMutexLocker locker(&mutex);
 	return (file.exists()) ? file : editFile;
 }
@@ -2665,7 +2672,6 @@ void DkThumbsLoader::setLoadLimits(int start, int end) {
  * could be loaded at all.
  **/ 
 QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
-
 	
 	DkTimer dt;
 

@@ -333,9 +333,19 @@ public:
 	DkMetaData(const DkMetaData& metaData);
 
 	void setFileName(QFileInfo file) {
+		
+		// do nothing if the same file is set
+		if (this->file == file)
+			return;
+
 		this->file = file;
 		mdata = false;
 	};
+
+	QFileInfo getFile() const {
+		return file;
+	};
+
 	~DkMetaData() {};
 
 	DkMetaData& operator=(const DkMetaData& metadata) {
@@ -348,6 +358,7 @@ public:
 		
 		return *this;
 	};
+
 
 	void reloadImg();
 

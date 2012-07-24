@@ -1211,6 +1211,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(imgQt);
+	
 	//// TODO: this is a fast fix
 	//// if this thread uses the static metadata object 
 	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
