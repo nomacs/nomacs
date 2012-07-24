@@ -1440,7 +1440,10 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		try {
 			// TODO: remove path?!
 			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
-		} catch (...) {
+		} catch (DkException de) {
+			// do nothing -> the file type does not support meta data
+		}
+		catch (...) {
 
 			if (!restoreFile(QFileInfo(filePath)))
 				emit newErrorDialog("sorry, I destroyed: " + QFileInfo(filePath).fileName() + "\n remove the numbers after the file extension in order to restore the file...");
@@ -3590,7 +3593,12 @@ void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 
 	exifData["Exif.Image.Orientation"] = uint16_t(orientation);
 
-	exifImgN->setExifData(exifData);
+	try {
+		exifImgN->setExifData(exifData);
+	} catch (...) {
+		throw DkFileException(QString(QObject::tr("could not write exif data\n")).toStdString(), __LINE__, __FILE__);
+	}
+
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
 

@@ -1502,51 +1502,94 @@ void DkNoMacs::saveFile() {
 	
 	qDebug() << "saving...";
 
-	QStringList fileNames;
 	DkImageLoader* loader = viewport()->getImageLoader();
 
-	//QString saveName;
-	//QString saveDir;
+	QString selectedFilter;
+	QString saveName;
+	QFileInfo saveFile;
 
-	//if (loader->hasFile()) {
-	//	saveName = loader->getFile().fileName();
-	//	saveDir = loader->getSaveDir().absolutePath();
-	//}
-
-	//QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
-	//	saveName,
-	//	//saveDir,
-	//	DkImageLoader::saveFilter);
-
-	if (!saveDialog)
-		saveDialog = new QFileDialog(this);
-
-	saveDialog->setWindowTitle(tr("Save Image"));
-	saveDialog->setAcceptMode(QFileDialog::AcceptSave);
-	saveDialog->setFilters(DkImageLoader::saveFilters);
-	
 	if (loader->hasFile()) {
-		saveDialog->selectNameFilter(loader->getCurrentFilter());	// select the current file filter
-		saveDialog->setDirectory(loader->getSaveDir());
-		saveDialog->selectFile(loader->getFile().fileName());
+		saveFile = loader->getFile();
+		saveName = saveFile.fileName();
+		
+		qDebug() << "save dir: " << loader->getSaveDir();
+
+		if (loader->getSaveDir() != saveFile.absoluteDir())
+			saveFile = QFileInfo(loader->getSaveDir(), saveName);
+
+		int filterIdx = -1;
+
+		QStringList sF = DkImageLoader::saveFilter.split(";;");
+		qDebug() << sF;
+
+		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
+		exp.setPatternSyntax(QRegExp::Wildcard);
+
+		for (int idx = 0; idx < sF.size(); idx++) {
+
+			
+			qDebug() << exp;
+			qDebug() << saveFile.suffix();
+			qDebug() << sF.at(idx);
+
+			if (exp.exactMatch(sF.at(idx))) {
+				selectedFilter = sF.at(idx);
+				filterIdx = idx;
+				break;
+			}
+		}
+
+		// TODO: remove file extension
+		if (filterIdx == -1) {
+			saveName.remove("." + saveFile.suffix());
+		}
+
 	}
+
+	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveFile.baseName()).absoluteFilePath();
+	qDebug() << "selected filter: " << selectedFilter;
+
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
+		savePath, DkImageLoader::saveFilter, &selectedFilter);
+
+	//qDebug() << "selected Filter: " << selectedFilter;
+
+
+	// uncomment if you want to use native Qt dialog -> slow! ------------------------------------	
+	//if (!saveDialog)
+	//	saveDialog = new QFileDialog(this);
+
+	//saveDialog->setWindowTitle(tr("Save Image"));
+	//saveDialog->setAcceptMode(QFileDialog::AcceptSave);
+	//saveDialog->setFilters(DkImageLoader::saveFilters);
+	//
+	//if (loader->hasFile()) {
+	//	saveDialog->selectNameFilter(loader->getCurrentFilter());	// select the current file filter
+	//	saveDialog->setDirectory(loader->getSaveDir());
+	//	saveDialog->selectFile(loader->getFile().fileName());
+	//}
 
 	//saveDialog->show();
 
-	// show the dialog
-	if(saveDialog->exec())
-		fileNames = saveDialog->selectedFiles();
+	//// show the dialog
+	//if(saveDialog->exec())
+	//	fileNames = saveDialog->selectedFiles();
 
-	if (fileNames.empty())
+	//if (fileNames.empty())
+	//	return;
+	// Uncomment if you want to use native Qt dialog -> slow! ------------------------------------
+
+	if (fileName.isEmpty())
 		return;
 
 	// TODO: if more than one file is opened -> open new threads
-	QFileInfo sFile = QFileInfo(fileNames[0]);
+	QFileInfo sFile = QFileInfo(fileName);
 	QImage saveImg = viewport()->getImage();
 	int compression = -1;	// default value
 
-	if (saveDialog->selectedNameFilter().contains("jpg")) {
-		
+	//if (saveDialog->selectedNameFilter().contains("jpg")) {
+	if (selectedFilter.contains("jpg")) {
+
 		if (!jpgDialog)
 			jpgDialog = new DkJpgDialog(this);
 
@@ -1574,7 +1617,8 @@ void DkNoMacs::saveFile() {
 	//	qDebug() << "returned: " << ret;
 	}
 
-	if (saveDialog->selectedNameFilter().contains("tif")) {
+	//if (saveDialog->selectedNameFilter().contains("tif")) {
+	if (selectedFilter.contains("tif")) {
 
 		if (!tifDialog)
 			tifDialog = new DkTifDialog(this);
@@ -1589,7 +1633,7 @@ void DkNoMacs::saveFile() {
 
 
 	if (loader)
-		loader->saveFile(sFile, saveDialog->selectedNameFilter(), saveImg, compression);
+		loader->saveFile(sFile, selectedFilter, saveImg, compression);
 
 }
 
