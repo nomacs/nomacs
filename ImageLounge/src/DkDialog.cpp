@@ -68,7 +68,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 
 	QLabel* versionLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
 	versionLabel->setTextFormat(Qt::RichText);
-	versionLabel->setText("Version: " % QApplication::applicationVersion() % " &beta;<br>"
+	versionLabel->setText("Version: " % QApplication::applicationVersion() % " RC<br>"
 #ifdef WITH_OPENCV
 		"RAW support: Yes"
 #else
