@@ -2294,9 +2294,13 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 		
 		QRectF tmpRect = startActionsRects[idx];
 		QString text = startActions[idx]->text().replace("&", "");
-		tmpRect.moveTop(tmpRect.top()+tmpRect.height()+10);
+		tmpRect.moveTop(tmpRect.bottom()+10);
 		painter->drawText(tmpRect, text);
 	}
+
+	QString infoText = tr("Press F10 to exit Frameless view");
+	QRectF tmpRect(bgRect.left()+50, bgRect.bottom()-60, bgRect.width()-100, 20);
+	painter->drawText(tmpRect, infoText);
 }
 
 void DkViewPortFrameless::drawFrame(QPainter* painter) {
