@@ -149,9 +149,9 @@ public:
 		}
 		else {
 			qDebug() << "image flag: " << img.format();
-			cImg = img.convertToFormat(QImage::Format_RGB888);
-			mat2 = Mat(cImg.height(), cImg.width(), CV_8UC3, (uchar*)cImg.bits(), cImg.bytesPerLine());
-			qDebug() << "I need to convert the QImage to RGB888";
+			cImg = img.convertToFormat(QImage::Format_ARGB32);
+			mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
+			qDebug() << "I need to convert the QImage to ARGB32";
 		}
 
 		mat2 = mat2.clone();	// we need to own the pointer

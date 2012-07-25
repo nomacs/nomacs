@@ -95,7 +95,7 @@ enum {
 	shortcut_skip_prev		= Qt::Key_PageUp,
 	shortcut_skip_next		= Qt::Key_PageDown,
 	shortcut_prev_file		= Qt::Key_Backspace,
-	shortcut_next_file		= Qt::Key_Return,
+	shortcut_next_file		= Qt::Key_Enter,	// enter is on the num block -> return is a no-go -> side effects!
 	shortcut_rename			= Qt::Key_F2,
 	shortcut_goto			= Qt::CTRL + Qt::Key_G,
 
