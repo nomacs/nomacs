@@ -4,12 +4,13 @@ nomacs (0.4.0) unstable; urgency=low
   * Bug #144: can't load nef file
   * Bug #148: image is moved to left lower corner in viewport
   * Bug #150: contrast tool crash
-  * Bug #152: disable slideshow when end of directory is reached and wrap images is off
+  * Bug #152: disable slideshow when end of directory is reached 
+  *           and wrap images is off
   * Bug #131: hidden crop rectangle
   * Bug #136: end of dir
   * Bug #149: F5 does not update
   * Bug #151: subclassing DkWidget
-  * Bug #154: crop tool - background is not filled correctly (if cropped over the image border)
+  * Bug #154: crop tool - background is not filled correctly
   * Feature #137: preferences for caching
   * Feature #143: reopen widgets
   * Feature #147: How to save my setup?
