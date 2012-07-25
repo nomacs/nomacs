@@ -43,7 +43,7 @@ QBitArray DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false
 QBitArray DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
 int DkSettings::App::appMode = 0;
 int DkSettings::App::currentAppMode = 0;
-bool DkSettings::App::advancedSettings = false;
+bool DkSettings::App::advancedSettings = true;
 
 int DkSettings::Global::skipImgs = 10;
 bool DkSettings::Global::loop = false;
@@ -166,7 +166,7 @@ void DkSettings::load() {
 	tmpShow = settings.value("AppSettings/showOverview", DkSettings::App::showOverview).toBitArray();
 	if (tmpShow.size() == App::showOverview.size())	App::showOverview = tmpShow;
 
-	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
+	//App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
 
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
 
@@ -250,7 +250,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/showPlayer", App::showPlayer);
 	settings.setValue("AppSettings/showHistogram", App::showHistogram);
 	settings.setValue("AppSettings/showOverview", App::showOverview);
-	settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
+	//settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
 
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
 
@@ -315,7 +315,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::App::showPlayer = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
-	DkSettings::App::advancedSettings = false;
+	//DkSettings::App::advancedSettings = false;
 
 	// now set default show options
 	DkSettings::App::showFileInfoLabel.setBit(DkSettings::mode_default, false);
@@ -500,7 +500,7 @@ void DkSettingsDialog::createLayout() {
 
 	cbAdvancedSettings = new QCheckBox("Advanced");
 
-	bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
+	//bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
 	bottomWidgetHBoxLayout->addStretch();
 	bottomWidgetHBoxLayout->addWidget(buttonOk);
 	bottomWidgetHBoxLayout->addWidget(buttonCancel);
