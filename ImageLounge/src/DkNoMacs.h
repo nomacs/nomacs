@@ -97,6 +97,7 @@ enum {
 	shortcut_prev_file		= Qt::Key_Backspace,
 	shortcut_next_file		= Qt::Key_Enter,
 	shortcut_rename			= Qt::Key_F2,
+	shortcut_goto			= Qt::CTRL + Qt::Key_G,
 
 	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 	shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
@@ -107,7 +108,7 @@ enum {
 	shortcut_show_toolbar	= Qt::CTRL + Qt::Key_B,
 	shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
 	shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
-	shortcut_show_transfer	= Qt::CTRL + Qt::Key_G,
+	shortcut_show_transfer	= Qt::CTRL + Qt::Key_U,
 #ifdef Q_WS_MAC
 	shortcut_full_screen_ff	= Qt::CTRL + Qt::Key_F,
 	shortcut_frameless		= Qt::CTRL + Qt::Key_R,
@@ -171,6 +172,7 @@ enum fileActions {
 	menu_file_open_with,
 	menu_file_save,
 	menu_file_rename,
+	menu_file_goto,
 	menu_file_print,
 	menu_file_reload,
 	menu_file_next,
@@ -365,6 +367,7 @@ public slots:
 	void openDir();
 	void openFile();
 	void renameFile();
+	void goTo();
 	void saveFile();
 	void resizeImage();
 	void deleteFile();

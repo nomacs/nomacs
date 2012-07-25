@@ -801,6 +801,10 @@ public:
 		return basicLoader.hasImage();
 	};
 
+	int numFiles() const {
+		return files.size();
+	};
+
 	/**
 	 * Returns the currently loaded image.
 	 * @return QImage the current image

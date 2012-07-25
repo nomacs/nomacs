@@ -312,8 +312,9 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open]);
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
 	fileMenu->addAction(fileActions[menu_file_open_with]);
-	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addAction(fileActions[menu_file_save]);
+	fileMenu->addAction(fileActions[menu_file_rename]);
+	fileMenu->addSeparator();
 
 	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::Global::recentFiles);
 	connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
@@ -327,6 +328,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_print]);
 	fileMenu->addSeparator();
+	fileMenu->addAction(fileActions[menu_file_goto]);
 	fileMenu->addAction(fileActions[menu_file_reload]);
 	fileMenu->addAction(fileActions[menu_file_prev]);
 	fileMenu->addAction(fileActions[menu_file_next]);
@@ -410,6 +412,14 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(viewActions[menu_view_show_info]);
 	contextMenu->addAction(viewActions[menu_view_show_histogram]);
 	contextMenu->addSeparator();
+	
+	contextMenu->addAction(editActions[menu_edit_copy_buffer]);
+	contextMenu->addAction(editActions[menu_edit_copy]);
+	contextMenu->addAction(editActions[menu_edit_paste]);
+	contextMenu->addSeparator();
+	
+	contextMenu->addAction(viewActions[menu_view_frameless]);
+	contextMenu->addSeparator();
 
 	QMenu* viewContextMenu = contextMenu->addMenu(tr("&View"));
 	viewContextMenu->addAction(viewActions[menu_view_fullscreen]);
@@ -423,12 +433,15 @@ void DkNoMacs::createContextMenu() {
 	editContextMenu->addAction(editActions[menu_edit_rotate_180]);
 	editContextMenu->addSeparator();
 	editContextMenu->addAction(editActions[menu_edit_transfrom]);
+	editContextMenu->addAction(editActions[menu_edit_crop]);
 	editContextMenu->addAction(editActions[menu_edit_delete]);
-	contextMenu->addSeparator();
-	contextMenu->addAction(editActions[menu_edit_preferences]);
 
 	if (syncMenu)
 		contextMenu->addMenu(syncMenu);
+
+	contextMenu->addSeparator();
+	contextMenu->addAction(editActions[menu_edit_preferences]);
+
 }
 
 void DkNoMacs::createActions() {
@@ -456,6 +469,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_rename]->setShortcut(QKeySequence(shortcut_rename));
 	fileActions[menu_file_rename]->setStatusTip(tr("Rename an image"));
 	connect(fileActions[menu_file_rename], SIGNAL(triggered()), this, SLOT(renameFile()));
+
+	fileActions[menu_file_goto] = new QAction(tr("&Go To"), this);
+	fileActions[menu_file_goto]->setShortcut(QKeySequence(shortcut_goto));
+	fileActions[menu_file_goto]->setStatusTip(tr("Go To an image"));
+	connect(fileActions[menu_file_goto], SIGNAL(triggered()), this, SLOT(goTo()));
 
 	fileActions[menu_file_save] = new QAction(fileIcons[icon_file_save], tr("&Save"), this);
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
@@ -1495,6 +1513,21 @@ void DkNoMacs::renameFile() {
 			viewport()->loadFile(renamedFile.absoluteFilePath());
 		
 	}
+
+}
+
+void DkNoMacs::goTo() {
+
+	if (!viewport() || !viewport()->getImageLoader())
+		return;
+
+	DkImageLoader* loader = viewport()->getImageLoader();
+	
+	bool ok = false;
+	int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 0, 0, loader->numFiles()-1, 1, &ok);
+
+	if (ok)
+		loader->loadFileAt(fileIdx);
 
 }
 
