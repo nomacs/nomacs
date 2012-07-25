@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Stefan Fiel <stefan@nomacs.org>
 XSBC-Original-Maintainer: Stefan Fiel <stefan@nomacs.org>
 Build-Depends: debhelper (>= 7.0.50~), cdbs (>= 0.4.90~), qt4-qmake, libqt4-dev, libexiv2-dev (>= 0.21.1~), libraw-dev (>= 0.13.1~), libcv-dev, libhighgui-dev, libcvaux-dev, cmake
-Standards-Version: 3.9.1
+Standards-Version: 3.9.3
 Homepage: http://www.nomacs.org
 
 Package: nomacs
