@@ -372,7 +372,7 @@ public slots:
 	void resizeImage();
 	void deleteFile();
 	void cleanSettings();
-	void newInstance();
+	void newInstance(QFileInfo file = QFileInfo());
 	void showStatusBar(bool show);
 	void showMenuBar(bool show);
 	void showToolbar(bool show);

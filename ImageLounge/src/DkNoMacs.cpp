@@ -1043,6 +1043,11 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 		url = url.toLocalFile();
 		
 		viewport()->loadFile(QFileInfo(url.toString()), true);
+
+		QList<QUrl> urls = event->mimeData()->urls();
+		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
+			newInstance(QFileInfo(urls[idx].toLocalFile()));
+		
 	}
 	else if (event->mimeData()->hasImage()) {
 
@@ -1786,7 +1791,7 @@ void DkNoMacs::cleanSettings() {
 	move(100, 100);
 }
 
-void DkNoMacs::newInstance() {
+void DkNoMacs::newInstance(QFileInfo file) {
 
 	if (!viewport()) 
 		return;
@@ -1794,7 +1799,10 @@ void DkNoMacs::newInstance() {
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
 
-	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
+	if (!file.exists())
+		args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
+	else
+		args.append(file.absoluteFilePath());
 
 	if (objectName() == "DkNoMacsFrameless")
 		args.append("1");	
