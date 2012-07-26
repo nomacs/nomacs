@@ -16,7 +16,7 @@ project(nomacs)
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
 
 
-set(NOMACS_VERSION 0.4.0)
+set(NOMACS_VERSION 0.4.1)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
@@ -107,7 +107,7 @@ IF (NOT EXIV2_FOUND AND MSVC)
 		message(WARNING "exiv build directory not found. Needs path which contains ReleaseDLL/exiv2.dll, ReleaseDLL/exiv2.lib, DebugDLL/exiv2d.dll and DebugDLL/exiv2d.lib")
 	ENDIF()	
 	
-ENDIF()
+ENDIF(NOT EXIV2_FOUND AND MSVC)
 
 find_file(HAVE_EXIV2_HPP exiv2/exiv2.hpp ${EXIV2_INCLUDE_DIRS})
 if (HAVE_EXIV2_HPP)
@@ -151,7 +151,7 @@ IF (${ENABLE_RAW})
         	ELSE()
                 	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/librawd.dll and debug/librawd.lib")
         	ENDIF()
-	ENDIF()
+	ENDIF(NOT LIBRAW_FOUND AND MSVC)
     IF (LIBRAW_VERSION VERSION_GREATER 0.14.0 OR LIBRAW_VERSION VERSION_EQUAL 0.14.0 )
       add_definitions(-DLIBRAW_VERSION_14)
     endif()
@@ -159,12 +159,12 @@ IF (${ENABLE_RAW})
 	# OpenCV
 	pkg_check_modules(OpenCV  opencv>=2.1.0)
 	SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
-	If (OpenCV_LIBS STREQUAL "") 
+	IF (OpenCV_LIBS STREQUAL "") 
 		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
-		if (OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
-			string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
-			SET(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
-		endif()
+	ENDIF()
+	IF (OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
+		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
+		SET(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
 	ENDIF()
 	IF (NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
@@ -189,7 +189,7 @@ IF (${ENABLE_RAW})
 		add_definitions(-DDISABLE_LANCZOS)
 	ENDIF()
 
-ENDIF()
+ENDIF(${ENABLE_RAW})
 	
 include_directories (
 	${QT_INCLUDES}
@@ -384,6 +384,6 @@ IF (EXIV2_FOUND)
 	ENDIF()
 
 	
-ELSE()
+ELSE(!EXIV2_FOUND)
 	message(WARNING "At least one library has not been found")
 ENDIF()
