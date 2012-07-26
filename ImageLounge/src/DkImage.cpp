@@ -1474,7 +1474,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		printf("I could save the image...\n");
 	}
 	else {
-		QString msg = tr("Sorry, I can't write to the file: %1").arg(file.fileName());
+		QString msg = tr("Sorry, I can't save: %1").arg(file.fileName());
 		emit newErrorDialog(msg);
 	}
 
@@ -1966,6 +1966,7 @@ bool DkImageLoader::isValid(QFileInfo& fileInfo) {
 	printf("accepting file...\n");
 
 	QString fileName = fileInfo.fileName();
+	qDebug() << "filename: " << fileName;
 	for (int idx = 0; idx < fileFilters.size(); idx++) {
 
 		QRegExp exp = QRegExp(fileFilters.at(idx), Qt::CaseInsensitive);
@@ -1974,7 +1975,7 @@ bool DkImageLoader::isValid(QFileInfo& fileInfo) {
 			return true;
 
 		// for windows shortcuts
-		QRegExp lnkExp = QRegExp(fileFilters.at(idx) + ".lnk", Qt::CaseInsensitive);
+		QRegExp lnkExp = QRegExp(fileFilters.at(idx) + "*.lnk", Qt::CaseInsensitive);
 		lnkExp.setPatternSyntax(QRegExp::Wildcard);
 		if (lnkExp.exactMatch(fileName))
 			return true;
@@ -3178,6 +3179,10 @@ void DkMetaData::saveOrientation(int o) {
 		qDebug() << "wrong rotation parameter";
 		throw DkIllegalArgumentException(QString(QObject::tr("wrong rotation parameter\n")).toStdString(), __LINE__, __FILE__);
 	}
+	if (file.suffix().contains("bmp") || file.suffix().contains("gif"))
+		throw DkFileException(QString(QObject::tr("this file format does not support exif\n")).toStdString(), __LINE__, __FILE__);
+
+
 	if (o==-180) o=180;
 	if (o== 270) o=-90;
 
@@ -3270,13 +3275,7 @@ void DkMetaData::saveOrientation(int o) {
 	pos->setValue(rv.get());
 	
 	// this try is a fast fix -> if the image does not support exiv data -> an exception is raised here -> tell the loader to save the orientated matrix
-	try {
-		exifImg->setExifData(exifData);
-	}
-	catch(...) {
-		throw DkFileException(QString(QObject::tr("could not write exif data\n")).toStdString(), __LINE__, __FILE__);
-	}
-
+	exifImg->setExifData(exifData);
 	exifImg->writeMetadata();
 	
 }
@@ -3574,6 +3573,9 @@ void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 	if (!mdata)
 		return;
 
+	if (fileN.suffix().contains("bmp"))
+		return;
+
 	Exiv2::ExifData &exifData = exifImg->exifData();
 	Exiv2::XmpData &xmpData = exifImg->xmpData();
 	Exiv2::IptcData &iptcData = exifImg->iptcData();
@@ -3599,12 +3601,7 @@ void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 
 	exifData["Exif.Image.Orientation"] = uint16_t(orientation);
 
-	try {
-		exifImgN->setExifData(exifData);
-	} catch (...) {
-		throw DkFileException(QString(QObject::tr("could not write exif data\n")).toStdString(), __LINE__, __FILE__);
-	}
-
+	exifImgN->setExifData(exifData);
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
 
