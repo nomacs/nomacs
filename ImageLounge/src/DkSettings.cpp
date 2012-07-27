@@ -627,11 +627,17 @@ void DkGlobalSettingsWidget::init() {
 	displayTimeSpin->setSpinBoxValue(DkSettings::SlideShow::time);
 
 	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
+	connect(buttonDefaultSettings, SIGNAL(clicked()), highlightColorChooser, SLOT(on_resetButton_clicked()));
+	connect(buttonDefaultSettings, SIGNAL(clicked()), fullscreenColChooser, SLOT(on_resetButton_clicked()));
+	connect(buttonDefaultSettings, SIGNAL(clicked()), bgColorChooser, SLOT(on_resetButton_clicked()));
 
 }
 
 void DkGlobalSettingsWidget::createLayout() {
-	QGridLayout* widgetLayout = new QGridLayout(this);
+	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
+	QVBoxLayout* leftLayout = new QVBoxLayout();
+	QVBoxLayout* rightLayout = new QVBoxLayout();
+
 	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"));
 	highlightColorChooser->setColor(DkSettings::Display::highlightColor);
 
@@ -706,14 +712,6 @@ void DkGlobalSettingsWidget::createLayout() {
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
 
-	widgetLayout->addWidget(highlightColorChooser, 0, 0);
-	widgetLayout->addWidget(bgColorChooser, 1, 0);
-	widgetLayout->addWidget(fullscreenColChooser, 2, 0);
-	widgetLayout->addWidget(displayTimeSpin, 3, 0);
-	widgetLayout->addWidget(langWidget, 0, 1);
-	widgetLayout->addWidget(showBarsWidget, 1, 1);
-	
-
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(this);
 	QHBoxLayout* defaultSettingsLayout = new QHBoxLayout(defaultSettingsWidget);
@@ -723,9 +721,18 @@ void DkGlobalSettingsWidget::createLayout() {
 	defaultSettingsLayout->addWidget(buttonDefaultSettings);
 	defaultSettingsLayout->addStretch();
 
+	leftLayout->addWidget(highlightColorChooser);
+	leftLayout->addWidget(bgColorChooser);
+	leftLayout->addWidget(fullscreenColChooser);
+	leftLayout->addWidget(displayTimeSpin);
+	leftLayout->addStretch();
+	rightLayout->addWidget(langWidget);
+	rightLayout->addWidget(showBarsWidget);
+	rightLayout->addStretch();
+	rightLayout->addWidget(defaultSettingsWidget);
 
-	widgetLayout->addWidget(defaultSettingsWidget, 4, 1);
-
+	widgetLayout->addLayout(leftLayout);
+	widgetLayout->addLayout(rightLayout);
 }
 
 void DkGlobalSettingsWidget::writeSettings() {
@@ -745,14 +752,6 @@ void DkGlobalSettingsWidget::writeSettings() {
 
 	DkSettings::Global::language = languages.at(langCombo->currentIndex());
 }
-
-
-
-
-void DkGlobalSettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
-	// do nothing
-}
-
 
 
 // DkDisplaySettingsWidget --------------------------------------------------------------------
@@ -781,7 +780,9 @@ void DkDisplaySettingsWidget::init() {
 }
 
 void DkDisplaySettingsWidget::createLayout() {
-	QGridLayout* widgetLayout = new QGridLayout(this);
+	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
+	QVBoxLayout* leftLayout = new QVBoxLayout;
+	QVBoxLayout* rightLayout = new QVBoxLayout;
 
 	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"));
 	QVBoxLayout* gbZoomLayout = new QVBoxLayout(gbZoom);
@@ -815,14 +816,16 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbLayout->addWidget(cbRating);
 
 	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
-	widgetLayout->addWidget(gbZoom, 0, 0, Qt::AlignTop);
-	widgetLayout->addWidget(gbThumbs, 1, 0, Qt::AlignTop);
-	widgetLayout->addWidget(gbFileInfo, 0, 1, Qt::AlignTop);
-	widgetLayout->addWidget(cbSilentFullscreen, 1, 1, Qt::AlignTop);
-	widgetLayout->addLayout(new QVBoxLayout, 2, 0, 2, 0);
-	widgetLayout->setRowStretch(3, 10);
-	widgetLayout->setColumnStretch(0, 1);
-	widgetLayout->setColumnStretch(1, 1);
+
+	leftLayout->addWidget(gbZoom);
+	leftLayout->addWidget(gbThumbs);
+	leftLayout->addStretch();
+	rightLayout->addWidget(gbFileInfo);
+	rightLayout->addWidget(cbSilentFullscreen);
+	rightLayout->addStretch();
+
+	widgetLayout->addLayout(leftLayout, 1);
+	widgetLayout->addLayout(rightLayout, 1);
 }
 
 void DkDisplaySettingsWidget::writeSettings() {
@@ -840,10 +843,6 @@ void DkDisplaySettingsWidget::writeSettings() {
 	DkSettings::Display::thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
 	DkSettings::Display::saveThumb = cbSaveThumb->isChecked();
 	DkSettings::Display::interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
-}
-
-void DkDisplaySettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
-	// do nothing
 }
 
 void DkDisplaySettingsWidget::showFileName(bool checked) {
@@ -891,7 +890,10 @@ void DkFileWidget::init() {
 }
 
 void DkFileWidget::createLayout() {
-	QGridLayout* widgetLayout = new QGridLayout(this);
+	QVBoxLayout* widgetLayout = new QVBoxLayout(this);
+	QHBoxLayout* subWidgetLayout = new QHBoxLayout();
+	QVBoxLayout* leftLayout = new QVBoxLayout;
+	QVBoxLayout* rightLayout = new QVBoxLayout;
 
 	gbDragDrop = new QGroupBox(tr("Drag && Drop"));
 	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
@@ -921,14 +923,17 @@ void DkFileWidget::createLayout() {
 
 	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"), this);
 	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
+	
+	widgetLayout->addWidget(gbDragDrop);
+	leftLayout->addWidget(skipImgWidget);
+	leftLayout->addWidget(cbWrapImages);
+	leftLayout->addStretch();
+	rightLayout->addWidget(pbOpenWith);
+	rightLayout->addStretch();
+	subWidgetLayout->addLayout(leftLayout);
+	subWidgetLayout->addLayout(rightLayout);
+	widgetLayout->addLayout(subWidgetLayout);
 
-	widgetLayout->addWidget(gbDragDrop, 0, 0, 1, 2, Qt::AlignTop);
-	widgetLayout->addWidget(skipImgWidget, 1, 0, Qt::AlignTop);
-	widgetLayout->addWidget(cbWrapImages, 2, 0, Qt::AlignTop);
-	widgetLayout->addWidget(pbOpenWith, 1, 1, Qt::AlignTop);
-
-	widgetLayout->setColumnStretch(0, 1);
-	widgetLayout->setColumnStretch(1, 1);
 }
 
 void DkFileWidget::writeSettings() {
@@ -1079,10 +1084,6 @@ void DkSynchronizeSettingsWidget::enableNetworkCheckBoxChanged(int state) {
 		button->setEnabled(false);
 	}
 
-}
-
-void DkSynchronizeSettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
-	// do nothing
 }
 
 // DkSettingsListView --------------------------------------------------------------------

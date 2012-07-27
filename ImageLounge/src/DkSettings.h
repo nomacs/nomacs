@@ -274,7 +274,7 @@ public:
 		DkSettingsWidget(QWidget* parent) : QWidget(parent) { showOnlyInAdvancedMode = false;};
 		virtual void writeSettings() = 0;
 		virtual void init() = 0;
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions) = 0;
+		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
 
 		bool showOnlyInAdvancedMode;
 };
@@ -291,16 +291,13 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 
 	signals:
 		void applyDefault();
+
 	private slots:
 		void setToDefaultPressed() {
-
 			qDebug() << "apply default pressed...";
 			emit applyDefault();
 		};
 
-
-	protected:
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
 
 	private:
 		void init();
@@ -342,9 +339,6 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 
 		void writeSettings();
 
-	protected:
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
-
 	private slots:
 		void showFileName(bool checked);
 		void showCreationDate(bool checked);
@@ -383,9 +377,6 @@ Q_OBJECT
 		DkFileWidget(QWidget* parent);
 
 		void writeSettings();
-
-	protected:
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
 	
 	private slots:
 		void tmpPathButtonPressed();
@@ -420,9 +411,6 @@ class DkSynchronizeSettingsWidget : public DkSettingsWidget {
 		DkSynchronizeSettingsWidget(QWidget* parent);
 
 		void writeSettings();
-
-	protected:
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
 	
 	private slots:
 		void enableNetworkCheckBoxChanged(int state);
@@ -518,9 +506,6 @@ class DkMetaDataSettingsWidget : public DkSettingsWidget {
 
 		void writeSettings();
 
-	protected:
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
-
 	private:
 		void init();
 		void createLayout();
@@ -562,9 +547,6 @@ public:
 
 	void writeSettings();
 
-	protected:
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
-	
 	private slots:
 		void memorySliderChanged(int newValue);
 
