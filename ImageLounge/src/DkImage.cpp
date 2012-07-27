@@ -697,11 +697,12 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
 	folderUpdated = false;
+	cFileIdx = 0;
 
 	this->file = file;
 	this->virtualFile = file;
 
-	saveDir = DkSettings::Global::lastSaveDir;	// loading save dir is obsolete ?!
+	//saveDir = DkSettings::Global::lastSaveDir;	// loading save dir is obsolete ?!
 
 	if (file.exists())
 		loadDir(file.absoluteDir());
@@ -770,12 +771,26 @@ void DkImageLoader::clearFileWatcher() {
  * Loads a given directory and the first image in this directory.
  * @param newDir the directory to be loaded.
  **/ 
-bool DkImageLoader::loadDir(QDir newDir) {
+bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 	// folder changed signal was emitted
 	if (folderUpdated && newDir.absolutePath() == dir.absolutePath()) {
 		
-		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+#if 0
+		if (scanRecursive) {
+			subFolders = getFoldersRecursive(dir);
+
+			// find the first subfolder that has images
+			for (int idx = 0; idx < subFolders.size(); idx++) {
+				dir = subFolders[idx];
+				files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+				if (!files.empty())
+					break;
+			}
+		}
+		else 
+#endif
+			files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 		
 		//emit updateDirSignal(file, true);		// if the signal is set to true thumbs are updated if images are added to the folder (however this may be nesty)
 		emit updateDirSignal(file);
@@ -790,14 +805,28 @@ bool DkImageLoader::loadDir(QDir newDir) {
 	else if ((newDir.absolutePath() != dir.absolutePath() || files.empty()) && newDir.exists()) {
 
 		// update save directory
-		if (saveDir == dir) saveDir = dir;
+		if (!saveDir.exists()) saveDir = dir;
 		dir = newDir;
 		dir.setNameFilters(fileFilters);
 		dir.setSorting(QDir::LocaleAware);		// TODO: extend
 		folderUpdated = false;
 		
-		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-	
+#if 0
+		if (scanRecursive) {
+			subFolders = getFoldersRecursive(dir);
+			// find the first subfolder that has images
+			for (int idx = 0; idx < subFolders.size(); idx++) {
+				dir = subFolders[idx];
+				files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+				if (!files.empty())
+					break;
+			}
+		}
+		else 
+#endif
+			files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+			
+
 		if (files.empty()) {
 			emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
 			return false;
@@ -908,7 +937,7 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
  * @param silent if true, no status information will be displayed.
  * @return QFileInfo the file info of the demanded file
  **/ 
-QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
+QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searchFile) {
 
 	bool virtualExists = files.contains(virtualFile.fileName());
 
@@ -920,29 +949,77 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
 	DkTimer dt;
 	
-	if (!file.absoluteFilePath().isEmpty() && !file.absoluteFilePath().isEmpty()) {
-		QDir newDir = (virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir();
-		loadDir(newDir);
+	if (searchFile && !file.absoluteFilePath().isEmpty()) {
+		QDir newDir = (virtualExists || virtualFile.absoluteDir() != dir) ? virtualFile.absoluteDir() : file.absoluteDir();
+		qDebug() << "loading new dir: " << newDir;
+		qDebug() << "old dir: " << dir;
+		loadDir(newDir, false);
 	}
 
 	// locate the current file
 	QString cFilename = (virtualExists) ? virtualFile.fileName() : file.fileName();
-	int cFileIdx = 0;
 	int newFileIdx = 0;
+	
+	if (searchFile) cFileIdx = 0;
 
 	//qDebug() << "virtual file " << virtualFile.absoluteFilePath();
 	//qDebug() << "file" << file.absoluteFilePath();
 
 	if (virtualExists || file.exists()) {
 
-		for ( ; cFileIdx < files.size(); cFileIdx++) {
+		if (searchFile) {
+			for ( ; cFileIdx < files.size(); cFileIdx++) {
 
-			if (files[cFileIdx] == cFilename)
-				break;
+				if (files[cFileIdx] == cFilename)
+					break;
+			}
 		}
-
 		newFileIdx = cFileIdx + skipIdx;
 
+		qDebug() << "subfolders: " << DkSettings::Global::scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
+
+#if 0	// TODO: finish bug - when first image in folder is corrupted
+		if (DkSettings::Global::scanSubFolders && subFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= files.size())) {
+
+			int folderIdx = 0;
+
+			// locate folder
+			for (int idx = 0; idx < subFolders.size(); idx++) {
+				if (subFolders[idx] == dir.absolutePath()) {
+					folderIdx = idx;
+					break;
+				}
+			}
+
+			if (newFileIdx < 0)
+				folderIdx--;
+			else
+				folderIdx++;
+
+			if (DkSettings::Global::loop)
+				folderIdx %= subFolders.size();
+
+			if (folderIdx >= 0 && folderIdx < subFolders.size()) {
+				loadDir(QDir(subFolders[folderIdx]), false);	// don't scan recursive again
+				qDebug() << files;
+
+				if (newFileIdx >= files.size()) {
+					newFileIdx -= files.size();
+					cFileIdx = 0;
+					qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << cFileIdx << " -----------------------------";
+					getChangedFileInfo(newFileIdx, silent, false);
+				}
+				else if (newFileIdx < 0) {
+					newFileIdx += cFileIdx;
+					cFileIdx = files.size();
+					qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << cFileIdx << " -----------------------------";
+					getChangedFileInfo(newFileIdx, silent, false);
+				}
+			}
+
+		}
+#endif
+		// loop the directory
 		if (DkSettings::Global::loop) {
 			newFileIdx %= files.size();
 
@@ -950,18 +1027,22 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 				newFileIdx = files.size() + newFileIdx;
 
 		}
+		// clip to pos1 if skipIdx < -1
 		else if (cFileIdx > 0 && newFileIdx < 0) {
 			newFileIdx = 0;
 		}
+		// clip to end if skipIdx > 1
 		else if (cFileIdx < files.size()-1 && newFileIdx >= files.size()) {
 			newFileIdx = files.size()-1;
 		}
+		// tell user that there is nothing left to display
 		else if (newFileIdx < 0) {
 			QString msg = tr("You have reached the beginning");
 			if (!silent)
 				updateInfoSignal(msg, 1000);
 			return QFileInfo();
 		}
+		// tell user that there is nothing left to display
 		else if (newFileIdx >= files.size()) {
 			QString msg = tr("You have reached the end");
 			
@@ -978,43 +1059,17 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent) {
 
 	//qDebug() << "file idx changed in: " << QString::fromStdString(dt.getTotal());
 
+	cFileIdx = newFileIdx;
+
 	// file requested becomes current file
 	return (files.isEmpty()) ? QFileInfo() : QFileInfo(dir, files[newFileIdx]);
 	
 }
 
 /**
- * Returns all files of the current directory.
- * @return QStringList empty list if no directory is set.
- **/ 
-QStringList DkImageLoader::getFiles() {
-
-	// guarantee that the file list is up-to-date
-	loadDir(dir);
-	
-	return files;
-}
-
-/**
- * Loads the first file of the current directory.
- **/ 
-void DkImageLoader::firstFile() {
-
-	loadFileAt(0);
-}
-
-/**
- * Loads the last file of the current directory.
- **/ 
-void DkImageLoader::lastFile() {
-	
-	loadFileAt(-1);
-}
-
-/**
- * Loads the file at index idx.
- * @param idx the file index of the file which should be loaded.
- **/ 
+* Loads the file at index idx.
+* @param idx the file index of the file which should be loaded.
+**/ 
 void DkImageLoader::loadFileAt(int idx) {
 
 	if (basicLoader.hasImage() && !file.exists())
@@ -1062,6 +1117,34 @@ void DkImageLoader::loadFileAt(int idx) {
 	mutex.unlock();
 	load(loadFile);
 
+}
+
+/**
+ * Returns all files of the current directory.
+ * @return QStringList empty list if no directory is set.
+ **/ 
+QStringList DkImageLoader::getFiles() {
+
+	// guarantee that the file list is up-to-date
+	loadDir(dir);
+	
+	return files;
+}
+
+/**
+ * Loads the first file of the current directory.
+ **/ 
+void DkImageLoader::firstFile() {
+
+	loadFileAt(0);
+}
+
+/**
+ * Loads the last file of the current directory.
+ **/ 
+void DkImageLoader::lastFile() {
+	
+	loadFileAt(-1);
 }
 
 QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
@@ -1251,7 +1334,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		this->file = file;
 		lastFileLoaded = file;
 		editFile = QFileInfo();
-		loadDir(file.absoluteDir());
+		loadDir(file.absoluteDir(), false);
 		
 		emit updateImageSignal();
 		emit updateDirSignal(file);	// this should be called updateFileSignal too
@@ -1266,7 +1349,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 			updateInfoSignal(msg);
 			this->file = lastFileLoaded;	// revert to last file
 			qDebug() << "reverting to: " << lastFileLoaded.fileName();
-			loadDir(this->file.absoluteDir());
+			loadDir(this->file.absoluteDir(), false);
 		//}
 		fileNotLoadedSignal(file);
 		
@@ -1827,6 +1910,31 @@ QDir DkImageLoader::getDir() {
 
 	QMutexLocker locker(&mutex);
 	return dir;
+}
+
+QStringList DkImageLoader::getFoldersRecursive(QDir dir) {
+
+	QStringList folderList;
+	DkTimer dt;
+
+	qDebug() << "scanning recursively: " << dir.absolutePath();
+
+	if (DkSettings::Global::scanSubFolders) {
+
+		QDirIterator dirs(dir.absolutePath(), QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
+	
+		while (dirs.hasNext()) {
+			dirs.next();
+			folderList << dirs.filePath();
+		}
+	}	
+
+	folderList << dir.absolutePath();
+	qDebug() << folderList;
+	
+	qDebug() << "scanning folders recursively took me: " << QString::fromStdString(dt.getTotal());
+
+	return folderList;
 }
 
 /**

@@ -118,6 +118,7 @@ class DkSettings : public QObject {
 		struct Global {
 			static int skipImgs;
 			static bool loop;
+			static bool scanSubFolders;
 
 			static QString lastDir;
 			static QString lastSaveDir;
@@ -319,6 +320,9 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 
 		QString curLanguage;
 		QStringList languages;
+
+		bool loop;
+		bool scanSubFolders;
 
 };
 

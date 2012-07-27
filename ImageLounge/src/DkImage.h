@@ -48,6 +48,7 @@
 #include <QFileIconProvider>
 #include <QStringList>
 #include <QMessageBox>
+#include <QDirIterator>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -758,6 +759,7 @@ public:
 
 	static bool isValid(QFileInfo& fileInfo);
 	//static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
+	static QStringList getFoldersRecursive(QDir dir);
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList());
 
 	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
@@ -788,7 +790,7 @@ public:
 	bool isCached(QFileInfo& file);
 	void updateCacheIndex();
 	QString fileName();
-	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false);
+	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false, bool searchFile = true);
 
 
 	/**
@@ -860,15 +862,17 @@ protected:
 	QDir saveDir;
 	QFileSystemWatcher *watcher;
 	QFileSystemWatcher *dirWatcher;
+	QStringList subFolders;
 	QStringList files;
 	bool folderUpdated;
+	int cFileIdx;
 
 	// threads
 	QMutex mutex;
 	QThread* loaderThread;
 
 	// functions
-	bool loadDir(QDir newDir);
+	bool loadDir(QDir newDir, bool scanRecursive = true);
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
 	bool restoreFile(const QFileInfo &fileInfo);

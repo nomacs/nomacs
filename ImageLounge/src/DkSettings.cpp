@@ -47,6 +47,7 @@ bool DkSettings::App::advancedSettings = false;
 
 int DkSettings::Global::skipImgs = 10;
 bool DkSettings::Global::loop = false;
+bool DkSettings::Global::scanSubFolders = false;
 QString DkSettings::Global::lastDir = QString();
 QString DkSettings::Global::lastSaveDir = QString();
 QStringList DkSettings::Global::recentFiles = QStringList();
@@ -171,6 +172,7 @@ void DkSettings::load() {
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
 
 	Global::loop = settings.value("GlobalSettings/loop", DkSettings::Global::loop).toBool();
+	Global::scanSubFolders = settings.value("GlobalSettings/scanSubFolders", DkSettings::Global::scanSubFolders).toBool();
 	Global::lastDir = settings.value("GlobalSettings/lastDir", DkSettings::Global::lastDir).toString();
 	//GlobalSettings::lastSaveDir = settings.value("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir).toString();
 	Global::recentFolders = settings.value("GlobalSettings/recentFolders", DkSettings::Global::recentFolders).toStringList();
@@ -256,6 +258,7 @@ void DkSettings::save() {
 
 	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
 	settings.setValue("GlobalSettings/loop",Global::loop);
+	settings.setValue("GlobalSettings/scanSubFolders",Global::scanSubFolders);
 	settings.setValue("GlobalSettings/lastDir", DkSettings::Global::lastDir);
 	//settings.setValue("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir);
 	settings.setValue("GlobalSettings/recentFolders", DkSettings::Global::recentFolders);
@@ -326,6 +329,7 @@ void DkSettings::setToDefaultSettings() {
 	
 	DkSettings::Global::skipImgs = 10;
 	DkSettings::Global::loop = false;
+	DkSettings::Global::scanSubFolders = true;
 	DkSettings::Global::lastDir = QString();
 	DkSettings::Global::lastSaveDir = QString();
 	DkSettings::Global::recentFiles = QStringList();
