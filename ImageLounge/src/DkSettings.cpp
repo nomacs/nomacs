@@ -43,7 +43,7 @@ QBitArray DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false
 QBitArray DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
 int DkSettings::App::appMode = 0;
 int DkSettings::App::currentAppMode = 0;
-bool DkSettings::App::advancedSettings = true;
+bool DkSettings::App::advancedSettings = false;
 
 int DkSettings::Global::skipImgs = 10;
 bool DkSettings::Global::loop = false;
@@ -84,7 +84,7 @@ int DkSettings::Display::interpolateZoomLevel = 200;
 
 int DkSettings::SlideShow::filter = 0;
 float DkSettings::SlideShow::time = 3;
-QBitArray DkSettings::SlideShow::display = QBitArray(DkSlideshowSettingsWidget::display_end, true);
+QBitArray DkSettings::SlideShow::display = QBitArray(DkDisplaySettingsWidget::display_end, true);
 QColor DkSettings::SlideShow::backgroundColor = QColor(200, 200, 200);
 bool DkSettings::SlideShow::silentFullscreen = true;
 
@@ -166,7 +166,7 @@ void DkSettings::load() {
 	tmpShow = settings.value("AppSettings/showOverview", DkSettings::App::showOverview).toBitArray();
 	if (tmpShow.size() == App::showOverview.size())	App::showOverview = tmpShow;
 
-	//App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
+	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
 
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
 
@@ -250,7 +250,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/showPlayer", App::showPlayer);
 	settings.setValue("AppSettings/showHistogram", App::showHistogram);
 	settings.setValue("AppSettings/showOverview", App::showOverview);
-	//settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
+	settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
 
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
 
@@ -315,7 +315,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::App::showPlayer = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
-	//DkSettings::App::advancedSettings = false;
+	DkSettings::App::advancedSettings = false;
 
 	// now set default show options
 	DkSettings::App::showFileInfoLabel.setBit(DkSettings::mode_default, false);
@@ -362,7 +362,7 @@ void DkSettings::setToDefaultSettings() {
 
 	DkSettings::SlideShow::filter = 0;
 	DkSettings::SlideShow::time = 3.0;
-	DkSettings::SlideShow::display = QBitArray(DkSlideshowSettingsWidget::display_end, true);
+	DkSettings::SlideShow::display = QBitArray(DkDisplaySettingsWidget::display_end, true);
 	DkSettings::SlideShow::backgroundColor = QColor(217, 219, 228, 100);
 	DkSettings::SlideShow::silentFullscreen = true;
 
@@ -480,15 +480,13 @@ void DkSettingsDialog::createLayout() {
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("Slideshow") << tr("Synchronize") << tr("Exif") << tr("Resources");
+	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("Resources");
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
 	
-	
 	leftWidgetVBoxLayout->addWidget(leftLabel);
 	leftWidgetVBoxLayout->addWidget(listView);
-
 
 	// bottom widget
 	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
@@ -500,7 +498,7 @@ void DkSettingsDialog::createLayout() {
 
 	cbAdvancedSettings = new QCheckBox("Advanced");
 
-	//bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
+	bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
 	bottomWidgetHBoxLayout->addStretch();
 	bottomWidgetHBoxLayout->addWidget(buttonOk);
 	bottomWidgetHBoxLayout->addWidget(buttonCancel);
@@ -521,7 +519,7 @@ void DkSettingsDialog::createLayout() {
 void DkSettingsDialog::createSettingsWidgets() {
 	globalSettingsWidget = new DkGlobalSettingsWidget(this);
 	displaySettingsWidget = new DkDisplaySettingsWidget(this);
-	slideshowSettingsWidget = new DkSlideshowSettingsWidget(this);
+	slideshowSettingsWidget = new DkFileWidget(this);
 	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(this);
 	exifSettingsWidget = new DkMetaDataSettingsWidget(this);
 	resourceSettingsWidget = new DkResourceSettingsWidgets(this);
@@ -536,6 +534,9 @@ void DkSettingsDialog::createSettingsWidgets() {
 }
 
 void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
+	if (listView->isRowHidden(qmodel.row()))
+		return;
+
 	foreach (DkSettingsWidget* curWidget, widgetList) {
 		curWidget->hide();
 	}
@@ -614,61 +615,36 @@ DkGlobalSettingsWidget::DkGlobalSettingsWidget(QWidget* parent) : DkSettingsWidg
 }
 
 void DkGlobalSettingsWidget::init() {
+	cbShowMenu->setChecked(DkSettings::App::showMenuBar);
+	cbShowStatusbar->setChecked(DkSettings::App::showStatusBar);
+	cbShowToolbar->setChecked(DkSettings::App::showToolBar);
 
-	cbWrapImages->setChecked(DkSettings::Global::loop);
-	skipImgWidget->setSpinBoxValue(DkSettings::Global::skipImgs);
-	cbUseTmpPath->setChecked(DkSettings::Global::useTmpPath);
-	tmpPath = DkSettings::Global::tmpPath;
-	leTmpPath->setText(tmpPath);
-	if (!DkSettings::Global::useTmpPath) {
-		leTmpPath->setDisabled(true);
-		pbTmpPath->setDisabled(true);
-	}
 	curLanguage = DkSettings::Global::language;
 	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
 	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
 		langCombo->setCurrentIndex(0);
 
-	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
-	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
-	connect(cbUseTmpPath, SIGNAL(stateChanged(int)), this, SLOT(useTmpPathChanged(int)));
-	connect(leTmpPath, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+	displayTimeSpin->setSpinBoxValue(DkSettings::SlideShow::time);
 
-	lineEditChanged(tmpPath);
+	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
+
 }
 
 void DkGlobalSettingsWidget::createLayout() {
-	
-	QVBoxLayout* vboxLayout = new QVBoxLayout(this);
-	
-	QWidget* leftGroupBoxWidget = new QWidget(this);
-	QVBoxLayout* gbLeftLayout = new QVBoxLayout(leftGroupBoxWidget);
-	gbLeftLayout->setMargin(0);
+	QGridLayout* widgetLayout = new QGridLayout(this);
+	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"));
+	highlightColorChooser->setColor(DkSettings::Display::highlightColor);
 
-	QWidget* rightGroupBoxWidget = new QWidget(this);
-	QVBoxLayout* gbRightLayout = new QVBoxLayout(rightGroupBoxWidget);
-	gbRightLayout->setMargin(0);
+	bgColorChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Background Color"));
+	bgColorChooser->setColor((DkSettings::App::appMode == DkSettings::mode_frameless) ?
+		DkSettings::Display::bgColorFrameless : DkSettings::Display::bgColor);
 
+	fullscreenColChooser = new DkColorChooser(QColor(86,86,90), "Fullscreen Color: ", this);
+	fullscreenColChooser->setColor(DkSettings::SlideShow::backgroundColor);
 
-	QGroupBox* gbNavigationSettings = new QGroupBox(tr("Global Settings"), this);
-	QGridLayout* gbNavigationLayout= new QGridLayout(gbNavigationSettings);
-	
-	// --- left layout of the global settings widget
-	// skip images
-	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
-	
-	// wrap images
-	QWidget* checkBoxWidget = new QWidget(this);
-	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
-	//vbCheckBoxLayout->setContentsMargins(11,0,11,0);
-	cbWrapImages = new QCheckBox(tr("Wrap Images"));
-
-	vbCheckBoxLayout->addWidget(cbWrapImages, 0, 0);
-	//vbCheckBoxLayout->addWidget(pbOpenWith, 0, 1, 1, 1, Qt::AlignRight);
-	//vbCheckBoxLayout->addStretch();
+	displayTimeSpin = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
 
 
-	// ---- right layout of the global settings widget
 	QWidget* langWidget = new QWidget(this);
 	QGridLayout* langLayout = new QGridLayout(langWidget);
 	langLayout->setMargin(0);
@@ -721,32 +697,22 @@ void DkGlobalSettingsWidget::createLayout() {
 	langLayout->addWidget(langCombo,1,0);
 	langLayout->addWidget(translateLabel,2,0,Qt::AlignRight);
 
-	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"), this);
-	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
+	QWidget* showBarsWidget = new QWidget;
+	QVBoxLayout* showBarsLayout = new QVBoxLayout(showBarsWidget);
+	cbShowMenu = new QCheckBox(tr("show Menu"), this);
+	cbShowToolbar = new QCheckBox(tr("show Toolbar"), this);
+	cbShowStatusbar = new QCheckBox(tr("show Statusbar"), this);
+	showBarsLayout->addWidget(cbShowMenu);
+	showBarsLayout->addWidget(cbShowToolbar);
+	showBarsLayout->addWidget(cbShowStatusbar);
 
-	// ---- drag and drop groupbox
-	gbDragDrop = new QGroupBox(tr("Drag && Drop"));
-	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
-
-	// tmp path
-	QWidget* tmpPathWidget = new QWidget(this);
-	QVBoxLayout* vbTmpPathWidget = new QVBoxLayout(tmpPathWidget);
-
-	cbUseTmpPath = new QCheckBox(tr("use temporary folder"), this);
+	widgetLayout->addWidget(highlightColorChooser, 0, 0);
+	widgetLayout->addWidget(bgColorChooser, 1, 0);
+	widgetLayout->addWidget(fullscreenColChooser, 2, 0);
+	widgetLayout->addWidget(displayTimeSpin, 3, 0);
+	widgetLayout->addWidget(langWidget, 0, 1);
+	widgetLayout->addWidget(showBarsWidget, 1, 1);
 	
-	QWidget* lineEditWidget = new QWidget(this);
-	QHBoxLayout* hbLineEditWidget = new QHBoxLayout(lineEditWidget);
-	leTmpPath = new QLineEdit(this);
-	pbTmpPath = new QPushButton(tr("..."), this);
-	pbTmpPath->setMaximumWidth(40);
-
-	hbLineEditWidget->addWidget(leTmpPath);
-	hbLineEditWidget->addWidget(pbTmpPath);
-
-	vbTmpPathWidget->addWidget(cbUseTmpPath);
-	vbTmpPathWidget->addWidget(lineEditWidget);
-
-	vboxGbDragDrop->addWidget(tmpPathWidget);
 
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(this);
@@ -757,28 +723,233 @@ void DkGlobalSettingsWidget::createLayout() {
 	defaultSettingsLayout->addWidget(buttonDefaultSettings);
 	defaultSettingsLayout->addStretch();
 
-	gbLeftLayout->addWidget(skipImgWidget);
-	gbLeftLayout->addWidget(checkBoxWidget);
-	gbLeftLayout->addStretch();
-	gbRightLayout->addWidget(langWidget);
-	gbRightLayout->addWidget(pbOpenWith, 0, Qt::AlignRight);
-	gbRightLayout->addStretch();
-	gbNavigationLayout->addWidget(leftGroupBoxWidget, 0, 0);
-	gbNavigationLayout->setColumnStretch(0, 5);
-	//gbRightLayout->addWidget(checkBoxWidget);
-	gbRightLayout->addStretch();
-	
-	gbNavigationLayout->addWidget(rightGroupBoxWidget, 0, 1);
-	gbNavigationLayout->setColumnStretch(1, 5);
 
-	
-	vboxLayout->addWidget(gbNavigationSettings);
-	vboxLayout->addWidget(gbDragDrop);
-	vboxLayout->addStretch();
-	vboxLayout->addWidget(defaultSettingsWidget);
+	widgetLayout->addWidget(defaultSettingsWidget, 4, 1);
+
 }
 
-void DkGlobalSettingsWidget::openWithDialog() {
+void DkGlobalSettingsWidget::writeSettings() {
+	DkSettings::App::showMenuBar = cbShowMenu->isChecked();
+	DkSettings::App::showStatusBar = cbShowStatusbar->isChecked();
+	DkSettings::App::showToolBar = cbShowToolbar->isChecked();
+	DkSettings::SlideShow::time = displayTimeSpin->getSpinBoxValue();
+
+
+	if (DkSettings::App::appMode == DkSettings::mode_frameless)
+		DkSettings::Display::bgColorFrameless = bgColorChooser->getColor();
+	else
+		DkSettings::Display::bgColor = bgColorChooser->getColor();
+
+	DkSettings::Display::highlightColor = highlightColorChooser->getColor();
+	DkSettings::SlideShow::backgroundColor = fullscreenColChooser->getColor();
+
+	DkSettings::Global::language = languages.at(langCombo->currentIndex());
+}
+
+
+
+
+void DkGlobalSettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
+	// do nothing
+}
+
+
+
+// DkDisplaySettingsWidget --------------------------------------------------------------------
+DkDisplaySettingsWidget::DkDisplaySettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
+	showOnlyInAdvancedMode = true;
+
+	createLayout();
+	init();
+	//showOnlyInAdvancedMode = true;
+
+	connect(cbName, SIGNAL(clicked(bool)), this, SLOT(showFileName(bool)));
+	connect(cbCreationDate, SIGNAL(clicked(bool)), this, SLOT(showCreationDate(bool)));
+	connect(cbRating, SIGNAL(clicked(bool)), this, SLOT(showRating(bool)));
+}
+
+void DkDisplaySettingsWidget::init() {
+	cbName->setChecked(DkSettings::SlideShow::display.testBit(display_file_name));
+	cbCreationDate->setChecked(DkSettings::SlideShow::display.testBit(display_creation_date));
+	cbRating->setChecked(DkSettings::SlideShow::display.testBit(display_file_rating));
+
+	cbInvertZoom->setChecked(DkSettings::Display::invertZoom);
+	cbKeepZoom->setChecked(DkSettings::Display::keepZoom);
+	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::Display::thumbSize);
+	cbSaveThumb->setChecked(DkSettings::Display::saveThumb);
+	interpolateWidget->setSpinBoxValue(DkSettings::Display::interpolateZoomLevel);
+}
+
+void DkDisplaySettingsWidget::createLayout() {
+	QGridLayout* widgetLayout = new QGridLayout(this);
+
+	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"));
+	QVBoxLayout* gbZoomLayout = new QVBoxLayout(gbZoom);
+	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
+	QWidget* zoomCheckBoxes = new QWidget(this);
+	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(zoomCheckBoxes);
+	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
+	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
+	cbKeepZoom = new QCheckBox(tr("Keep Zoom"), this);
+	vbCheckBoxLayout->addWidget(cbInvertZoom);
+	vbCheckBoxLayout->addWidget(cbKeepZoom);
+	gbZoomLayout->addWidget(interpolateWidget);
+	gbZoomLayout->addWidget(zoomCheckBoxes);
+
+	QGroupBox* gbThumbs = new QGroupBox(tr("Thumbnails"));
+	QVBoxLayout* gbThumbsLayout = new QVBoxLayout(gbThumbs);
+	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 30, 160, this);
+	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::Display::thumbSize);
+	cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
+	cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
+	gbThumbsLayout->addWidget(maximalThumbSizeWidget);
+	gbThumbsLayout->addWidget(cbSaveThumb);
+
+	QGroupBox* gbFileInfo = new QGroupBox(tr("File Information"));
+	QVBoxLayout* gbLayout = new QVBoxLayout(gbFileInfo);
+	cbName = new QCheckBox(tr("Image Name"));
+	gbLayout->addWidget(cbName);
+	cbCreationDate = new QCheckBox(tr("Creation Date"));
+	gbLayout->addWidget(cbCreationDate);
+	cbRating = new QCheckBox(tr("Rating"));
+	gbLayout->addWidget(cbRating);
+
+	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
+	widgetLayout->addWidget(gbZoom, 0, 0, Qt::AlignTop);
+	widgetLayout->addWidget(gbThumbs, 1, 0, Qt::AlignTop);
+	widgetLayout->addWidget(gbFileInfo, 0, 1, Qt::AlignTop);
+	widgetLayout->addWidget(cbSilentFullscreen, 1, 1, Qt::AlignTop);
+	widgetLayout->addLayout(new QVBoxLayout, 2, 0, 2, 0);
+	widgetLayout->setRowStretch(3, 10);
+	widgetLayout->setColumnStretch(0, 1);
+	widgetLayout->setColumnStretch(1, 1);
+}
+
+void DkDisplaySettingsWidget::writeSettings() {
+
+	cbSilentFullscreen->setChecked(DkSettings::SlideShow::silentFullscreen);
+	DkSettings::Display::invertZoom = (cbInvertZoom->isChecked()) ? true : false;
+	DkSettings::Display::keepZoom = (cbKeepZoom->isChecked()) ? true : false;
+	
+	DkSettings::SlideShow::silentFullscreen = cbSilentFullscreen->isChecked();
+
+	DkSettings::SlideShow::display.setBit(display_file_name, cbName->isChecked());
+	DkSettings::SlideShow::display.setBit(display_creation_date, cbCreationDate->isChecked());
+	DkSettings::SlideShow::display.setBit(display_file_rating, cbRating->isChecked());
+
+	DkSettings::Display::thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
+	DkSettings::Display::saveThumb = cbSaveThumb->isChecked();
+	DkSettings::Display::interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
+}
+
+void DkDisplaySettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
+	// do nothing
+}
+
+void DkDisplaySettingsWidget::showFileName(bool checked) {
+	DkSettings::SlideShow::display.setBit(display_file_name, checked);
+}
+
+void DkDisplaySettingsWidget::showCreationDate(bool checked) {
+	DkSettings::SlideShow::display.setBit(display_creation_date, checked);
+}
+
+void DkDisplaySettingsWidget::showRating(bool checked) {
+	DkSettings::SlideShow::display.setBit(display_file_rating, checked);
+}
+
+
+// DkFileWidget --------------------------------------------------------------------
+
+DkFileWidget::DkFileWidget(QWidget* parent) : DkSettingsWidget(parent) {
+	showOnlyInAdvancedMode = true;
+
+	createLayout();
+	init();
+}
+
+void DkFileWidget::init() {
+
+	//spFilter->setValue(DkSettings::SlideShowSettings::filter);
+
+	cbWrapImages->setChecked(DkSettings::Global::loop);
+	skipImgWidget->setSpinBoxValue(DkSettings::Global::skipImgs);
+	cbUseTmpPath->setChecked(DkSettings::Global::useTmpPath);
+	tmpPath = DkSettings::Global::tmpPath;
+	leTmpPath->setText(tmpPath);
+	if (!DkSettings::Global::useTmpPath) {
+		leTmpPath->setDisabled(true);
+		pbTmpPath->setDisabled(true);
+	}
+
+	
+	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
+	connect(cbUseTmpPath, SIGNAL(stateChanged(int)), this, SLOT(useTmpPathChanged(int)));
+	connect(leTmpPath, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+
+		lineEditChanged(tmpPath);
+}
+
+void DkFileWidget::createLayout() {
+	QGridLayout* widgetLayout = new QGridLayout(this);
+
+	gbDragDrop = new QGroupBox(tr("Drag && Drop"));
+	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
+	QWidget* tmpPathWidget = new QWidget(this);
+	QVBoxLayout* vbTmpPathWidget = new QVBoxLayout(tmpPathWidget);
+
+	cbUseTmpPath = new QCheckBox(tr("use temporary folder"), this);
+
+	QWidget* lineEditWidget = new QWidget(this);
+	QHBoxLayout* hbLineEditWidget = new QHBoxLayout(lineEditWidget);
+	leTmpPath = new QLineEdit(this);
+	pbTmpPath = new QPushButton(tr("..."), this);
+	pbTmpPath->setMaximumWidth(40);
+	hbLineEditWidget->addWidget(leTmpPath);
+	hbLineEditWidget->addWidget(pbTmpPath);
+	vboxGbDragDrop->addWidget(tmpPathWidget);
+
+	vbTmpPathWidget->addWidget(cbUseTmpPath);
+	vbTmpPathWidget->addWidget(lineEditWidget);
+
+	
+	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
+	QWidget* checkBoxWidget = new QWidget(this);
+	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
+	cbWrapImages = new QCheckBox(tr("Wrap Images"));
+
+
+	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"), this);
+	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
+
+	widgetLayout->addWidget(gbDragDrop, 0, 0, 1, 2, Qt::AlignTop);
+	widgetLayout->addWidget(skipImgWidget, 1, 0, Qt::AlignTop);
+	widgetLayout->addWidget(cbWrapImages, 2, 0, Qt::AlignTop);
+	widgetLayout->addWidget(pbOpenWith, 1, 1, Qt::AlignTop);
+
+	widgetLayout->setColumnStretch(0, 1);
+	widgetLayout->setColumnStretch(1, 1);
+}
+
+void DkFileWidget::writeSettings() {
+	DkSettings::Global::skipImgs = skipImgWidget->getSpinBoxValue();
+
+	DkSettings::Global::loop = cbWrapImages->isChecked();
+	DkSettings::Global::useTmpPath = cbUseTmpPath->isChecked();
+	DkSettings::Global::tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
+
+}
+
+void DkFileWidget::lineEditChanged(QString path) {
+	existsDirectory(path) ? leTmpPath->setStyleSheet("color:black") : leTmpPath->setStyleSheet("color:red");
+}
+
+bool DkFileWidget::existsDirectory(QString path) {
+	QFileInfo* fi = new QFileInfo(path);
+	return fi->exists();
+}
+
+void DkFileWidget::openWithDialog() {
 
 	DkOpenWithDialog* openWithDialog = new DkOpenWithDialog(this);
 	openWithDialog->exec();
@@ -786,25 +957,16 @@ void DkGlobalSettingsWidget::openWithDialog() {
 	delete openWithDialog;
 }
 
-void DkGlobalSettingsWidget::writeSettings() {
-	
-	DkSettings::Global::skipImgs = skipImgWidget->getSpinBoxValue();
-	DkSettings::Global::loop = cbWrapImages->isChecked();
-	DkSettings::Global::useTmpPath = cbUseTmpPath->isChecked();
-	DkSettings::Global::tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
-	DkSettings::Global::language = languages.at(langCombo->currentIndex());
-}
-
-void DkGlobalSettingsWidget::tmpPathButtonPressed() {
+void DkFileWidget::tmpPathButtonPressed() {
 	tmpPath = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),tmpPath);
 
 	if (tmpPath.isEmpty())
 		return;
-	
+
 	leTmpPath->setText(tmpPath);
 }
 
-void DkGlobalSettingsWidget::useTmpPathChanged(int state) {
+void DkFileWidget::useTmpPathChanged(int state) {
 	if (cbUseTmpPath->isChecked()) {
 		lineEditChanged(tmpPath);
 		leTmpPath->setDisabled(false);
@@ -816,230 +978,11 @@ void DkGlobalSettingsWidget::useTmpPathChanged(int state) {
 	}
 }
 
-
-void DkGlobalSettingsWidget::lineEditChanged(QString path) {
-	existsDirectory(path) ? leTmpPath->setStyleSheet("color:black") : leTmpPath->setStyleSheet("color:red");
-}
-
-bool DkGlobalSettingsWidget::existsDirectory(QString path) {
-	QFileInfo* fi = new QFileInfo(path);
-	return fi->exists();
-}
-
-void DkGlobalSettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
-	gbDragDrop->setVisible(showAdvancedOptions);
-}
-
-// DkDisplaySettingsWidget --------------------------------------------------------------------
-DkDisplaySettingsWidget::DkDisplaySettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	createLayout();
-	init();
-	//showOnlyInAdvancedMode = true;
-}
-
-void DkDisplaySettingsWidget::init() {
-
-	cbInvertZoom->setChecked(DkSettings::Display::invertZoom);
-	cbKeepZoom->setChecked(DkSettings::Display::keepZoom);
-	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::Display::thumbSize);
-	cbSaveThumb->setChecked(DkSettings::Display::saveThumb);
-	interpolateWidget->setSpinBoxValue(DkSettings::Display::interpolateZoomLevel);
-	cbShowMenu->setChecked(DkSettings::App::showMenuBar);
-	cbShowStatusbar->setChecked(DkSettings::App::showStatusBar);
-	cbShowToolbar->setChecked(DkSettings::App::showToolBar);
-}
-
-void DkDisplaySettingsWidget::createLayout() {
-	QVBoxLayout* vboxLayout = new QVBoxLayout(this);
-
-	QWidget* leftGroupBoxWidget = new QWidget(this);
-	QVBoxLayout* gbLeftLayout = new QVBoxLayout(leftGroupBoxWidget);
-	gbLeftLayout->setMargin(0);
-
-	QWidget* rightGroupBoxWidget = new QWidget(this);
-	QVBoxLayout* gbRightLayout = new QVBoxLayout(rightGroupBoxWidget);
-	gbRightLayout->setMargin(0);
-
-
-	QGroupBox* gbDisplaySettings = new QGroupBox(tr("Display Settings"), this);
-	QGridLayout* gbLayout= new QGridLayout(gbDisplaySettings);
-
-	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"));
-	highlightColorChooser->setColor(DkSettings::Display::highlightColor);
-
-	bgColorChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Background Color"));
-	bgColorChooser->setColor((DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless : DkSettings::Display::bgColor);
-
-	QWidget* checkBoxWidget = new QWidget(this);
-	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(checkBoxWidget);
-	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
-	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
-	cbKeepZoom = new QCheckBox(tr("Keep Zoom"), this);
-	vbCheckBoxLayout->addWidget(cbInvertZoom);
-	vbCheckBoxLayout->addWidget(cbKeepZoom);
-
-	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
-
-	cbShowMenu = new QCheckBox(tr("show Menu"), this);
-	cbShowToolbar = new QCheckBox(tr("show Toolbar"), this);
-	cbShowStatusbar = new QCheckBox(tr("show Statusbar"), this);
-
-	gbThumb = new QGroupBox(tr("Thumbnails"));
-	QGridLayout* gbHbox = new QGridLayout(gbThumb);
-
-	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 30, 160, this);
-	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::Display::thumbSize);
-
-	cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
-	cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
-
-	gbHbox->addWidget(maximalThumbSizeWidget, 0, 0);
-	gbHbox->setColumnStretch(0,5);
-	gbHbox->addWidget(cbSaveThumb, 0, 1);
-	gbHbox->setColumnStretch(1,5);
-
-	gbLeftLayout->addWidget(highlightColorChooser);
-	gbLeftLayout->addWidget(bgColorChooser);
-	gbLeftLayout->addStretch();		
-
-	gbLeftLayout->addWidget(checkBoxWidget);
-	gbLeftLayout->addStretch();
-
-	gbRightLayout->addWidget(interpolateWidget);
-	gbRightLayout->addWidget(cbShowMenu);
-	gbRightLayout->addWidget(cbShowToolbar);
-	gbRightLayout->addWidget(cbShowStatusbar);
-	gbRightLayout->addStretch();
-
-	gbLayout->addWidget(leftGroupBoxWidget, 0, 0);
-	gbLayout->setColumnStretch(0,10);
-	gbLayout->addWidget(rightGroupBoxWidget, 0, 1);
-	gbLayout->setColumnStretch(1,10);
-
-	vboxLayout->addWidget(gbDisplaySettings);
-	vboxLayout->addWidget(gbThumb);
-	vboxLayout->addStretch();
-}
-
-void DkDisplaySettingsWidget::writeSettings() {
-
-	if (DkSettings::App::appMode == DkSettings::mode_frameless)
-		DkSettings::Display::bgColorFrameless = bgColorChooser->getColor();
-	else
-		DkSettings::Display::bgColor = bgColorChooser->getColor();
-
-	DkSettings::Display::invertZoom = (cbInvertZoom->isChecked()) ? true : false;
-	DkSettings::Display::keepZoom = (cbKeepZoom->isChecked()) ? true : false;
-	DkSettings::Display::highlightColor = highlightColorChooser->getColor();
-	DkSettings::Display::thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
-	DkSettings::Display::saveThumb = cbSaveThumb->isChecked();
-	DkSettings::Display::interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
-	DkSettings::App::showMenuBar = cbShowMenu->isChecked();
-	DkSettings::App::showStatusBar = cbShowStatusbar->isChecked();
-	DkSettings::App::showToolBar = cbShowToolbar->isChecked();
-
-}
-
-void DkDisplaySettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
-	gbThumb->setVisible(showAdvancedOptions);
-}
-
-// DkSlideshowSettingsWidget --------------------------------------------------------------------
-
-DkSlideshowSettingsWidget::DkSlideshowSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	createLayout();
-	init();
-}
-
-void DkSlideshowSettingsWidget::init() {
-
-	//spFilter->setValue(DkSettings::SlideShowSettings::filter);
-	timeWidget->setSpinBoxValue(DkSettings::SlideShow::time);
-
-	cbName->setChecked(DkSettings::SlideShow::display.testBit(display_file_name));
-	cbCreationDate->setChecked(DkSettings::SlideShow::display.testBit(display_creation_date));
-	cbRating->setChecked(DkSettings::SlideShow::display.testBit(display_file_rating));
-	cbSilentFullscreen->setChecked(DkSettings::SlideShow::silentFullscreen);
-
-	connect(cbName, SIGNAL(clicked(bool)), this, SLOT(showFileName(bool)));
-	connect(cbCreationDate, SIGNAL(clicked(bool)), this, SLOT(showCreationDate(bool)));
-	connect(cbRating, SIGNAL(clicked(bool)), this, SLOT(showRating(bool)));
-	
-}
-
-void DkSlideshowSettingsWidget::createLayout() {
-	vBoxLayout = new QVBoxLayout(this);
-	//vBoxLayout->setMargin(0);
-
-	// slideshow settings
-	QGroupBox* gbSlideShow = new QGroupBox(tr("Slideshow Settings"), this);
-	QVBoxLayout* gbSlideShowLayout = new QVBoxLayout(gbSlideShow);
-
-	timeWidget = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
-	
-	// fullscreen groupbox
-	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen Settings"), this);
-	QHBoxLayout* gbFullscreenLayout = new QHBoxLayout(gbFullscreen);
-
-	bgColChooser = new DkColorChooser(QColor(86,86,90), "Background Color: ", this);
-	bgColChooser->setColor(DkSettings::SlideShow::backgroundColor);
-
-	QWidget* backgroundColWidget = new QWidget(this);
-	QHBoxLayout* backgroundLayout = new QHBoxLayout(backgroundColWidget);
-
-	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
-
-	// display information
-	gbInfo = new QGroupBox(tr("Display Information"));
-	QVBoxLayout* gbLayout = new QVBoxLayout(gbInfo);
-
-	cbName = new QCheckBox(tr("Image Name"));
-	gbLayout->addWidget(cbName);
-
-	cbCreationDate = new QCheckBox(tr("Creation Date"));
-	gbLayout->addWidget(cbCreationDate);
-
-	cbRating = new QCheckBox(tr("Rating"));
-	gbLayout->addWidget(cbRating);
-
-	gbSlideShowLayout->addWidget(timeWidget);
-	gbFullscreenLayout->addWidget(bgColChooser);
-	gbFullscreenLayout->addStretch();
-	gbFullscreenLayout->addWidget(cbSilentFullscreen);
-	gbFullscreenLayout->addStretch();
-	vBoxLayout->addWidget(gbSlideShow);
-	vBoxLayout->addWidget(gbFullscreen);
-	vBoxLayout->addWidget(gbInfo);
-	vBoxLayout->addStretch();
-}
-
-void DkSlideshowSettingsWidget::writeSettings() {
-	DkSettings::SlideShow::time = timeWidget->getSpinBoxValue();
-	DkSettings::SlideShow::backgroundColor = bgColChooser->getColor();
-
-	DkSettings::SlideShow::display.setBit(display_file_name, cbName->isChecked());
-	DkSettings::SlideShow::display.setBit(display_creation_date, cbCreationDate->isChecked());
-	DkSettings::SlideShow::display.setBit(display_file_rating, cbRating->isChecked());
-
-	DkSettings::SlideShow::silentFullscreen = cbSilentFullscreen->isChecked();
-}
-
-void DkSlideshowSettingsWidget::showFileName(bool checked) {
-	DkSettings::SlideShow::display.setBit(display_file_name, checked);
-}
-
-void DkSlideshowSettingsWidget::showCreationDate(bool checked) {
-	DkSettings::SlideShow::display.setBit(display_creation_date, checked);
-}
-
-void DkSlideshowSettingsWidget::showRating(bool checked) {
-	DkSettings::SlideShow::display.setBit(display_file_rating, checked);
-}
-
 // DkNetworkSettingsWidget --------------------------------------------------------------------
 
 DkSynchronizeSettingsWidget::DkSynchronizeSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
+	showOnlyInAdvancedMode = true;
+
 	createLayout();
 	init();
 }
@@ -1139,8 +1082,7 @@ void DkSynchronizeSettingsWidget::enableNetworkCheckBoxChanged(int state) {
 }
 
 void DkSynchronizeSettingsWidget::toggleAdvancedOptions(bool showAdvancedOptions) {
-	gbNetworkSettings->setVisible(showAdvancedOptions);
-	cbSwitchModifier->setVisible(showAdvancedOptions);
+	// do nothing
 }
 
 // DkSettingsListView --------------------------------------------------------------------
@@ -1172,6 +1114,8 @@ void DkSettingsListView::nextIndex() {
 // DkMetaDataSettings --------------------------------------------------------------------------
 
 DkMetaDataSettingsWidget::DkMetaDataSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
+	showOnlyInAdvancedMode = true;
+
 	createLayout();
 	init();
 }
@@ -1244,11 +1188,11 @@ void DkMetaDataSettingsWidget::writeSettings() {
 
 // DkResourceSettings --------------------------------------------------------------------
 DkResourceSettingsWidgets::DkResourceSettingsWidgets(QWidget* parent) : DkSettingsWidget(parent) {
+	showOnlyInAdvancedMode = true;
+
 	stepSize = 1000;
 	createLayout();
 	init();
-
-	showOnlyInAdvancedMode = true;
 }
 
 void DkResourceSettingsWidgets::init() {

@@ -63,7 +63,7 @@ namespace nmc {
 class DkSettingsWidget;
 class DkGlobalSettingsWidget;
 class DkDisplaySettingsWidget;
-class DkSlideshowSettingsWidget;
+class DkFileWidget;
 class DkSynchronizeSettingsWidget;
 class DkMetaDataSettingsWidget;
 class DkResourceSettingsWidgets;
@@ -261,7 +261,7 @@ class DkSettingsDialog : public QDialog {
 		QHBoxLayout* centralLayout;
 		DkGlobalSettingsWidget* globalSettingsWidget;
 		DkDisplaySettingsWidget* displaySettingsWidget;
-		DkSlideshowSettingsWidget* slideshowSettingsWidget;
+		DkFileWidget* slideshowSettingsWidget;
 		DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
 		DkMetaDataSettingsWidget* exifSettingsWidget;
 		DkResourceSettingsWidgets* resourceSettingsWidget;
@@ -279,8 +279,10 @@ public:
 		bool showOnlyInAdvancedMode;
 };
 
+class DkColorChooser;
+
 class DkGlobalSettingsWidget : public DkSettingsWidget {
-Q_OBJECT
+	Q_OBJECT;
 
 	public:
 		DkGlobalSettingsWidget(QWidget* parent);
@@ -290,16 +292,12 @@ Q_OBJECT
 	signals:
 		void applyDefault();
 	private slots:
-		void tmpPathButtonPressed();
-		void useTmpPathChanged(int state);
-		void lineEditChanged(QString path);
 		void setToDefaultPressed() {
 
 			qDebug() << "apply default pressed...";
 			emit applyDefault();
 		};
 
-		void openWithDialog();
 
 	protected:
 		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
@@ -308,42 +306,50 @@ Q_OBJECT
 		void init();
 		void createLayout();
 
-		bool existsDirectory(QString path);
-
 		
-		DkSpinBoxWidget* skipImgWidget;
-		QCheckBox* cbWrapImages;
+		DkDoubleSpinBoxWidget* displayTimeSpin;
+		QCheckBox* cbShowMenu;
+		QCheckBox* cbShowToolbar;
+		QCheckBox* cbShowStatusbar;
 
-		QString tmpPath;
-		QLineEdit* leTmpPath;
-		QCheckBox* cbUseTmpPath;
-		QPushButton* pbTmpPath;
+		DkColorChooser* highlightColorChooser;
+		DkColorChooser* bgColorChooser;
+		DkColorChooser* fullscreenColChooser;
+
 		QComboBox* langCombo;
 		
-		QGroupBox* 	gbDragDrop;
-	
 		QPushButton* buttonDefaultSettings;
 
 		QString curLanguage;
 		QStringList languages;
 
-		bool loop;
-
 };
 
-class DkColorChooser;
 
 class DkDisplaySettingsWidget : public DkSettingsWidget {
 	Q_OBJECT	
 
 	public:
+		enum DisplayItems{
+			display_file_name,
+			display_creation_date,
+			display_file_rating,
+
+			display_end
+		};
+
 		DkDisplaySettingsWidget(QWidget* parent);
 
 		void writeSettings();
 
 	protected:
 		virtual void toggleAdvancedOptions(bool showAdvancedOptions);
-	
+
+	private slots:
+		void showFileName(bool checked);
+		void showCreationDate(bool checked);
+		void showRating(bool checked);
+
 	private:
 		void init();
 		void createLayout();
@@ -354,13 +360,12 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbInvertZoom;
 
 		DkSpinBoxWidget* interpolateWidget;
+		QCheckBox* cbCreationDate;
+		QCheckBox* cbName;
+		QCheckBox* cbRating;
+		QCheckBox* cbSilentFullscreen;
 
-		QCheckBox* cbShowMenu;
-		QCheckBox* cbShowToolbar;
-		QCheckBox* cbShowStatusbar;
 
-		DkColorChooser* highlightColorChooser;
-		DkColorChooser* bgColorChooser;
 
 		DkSpinBoxWidget* maximalThumbSizeWidget; 
 		QCheckBox* cbSaveThumb;
@@ -371,18 +376,11 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 };
 
 
-class DkSlideshowSettingsWidget : public DkSettingsWidget {
+class DkFileWidget : public DkSettingsWidget {
 Q_OBJECT	
 
 	public:
-		enum DisplayItems{
-			display_file_name,
-			display_creation_date,
-			display_file_rating,
-
-			display_end
-		};
-		DkSlideshowSettingsWidget(QWidget* parent);
+		DkFileWidget(QWidget* parent);
 
 		void writeSettings();
 
@@ -390,29 +388,29 @@ Q_OBJECT
 		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
 	
 	private slots:
-		void showFileName(bool checked);
-		void showCreationDate(bool checked);
-		void showRating(bool checked);
+		void tmpPathButtonPressed();
+		void useTmpPathChanged(int state);
+		void lineEditChanged(QString path);
+		void openWithDialog();
 
 	private:
 		void init();
 		void createLayout();
+		bool existsDirectory(QString path);
+
 
 		QVBoxLayout* vBoxLayout;
+		QLineEdit* leTmpPath;
+		QPushButton* pbTmpPath;
+		QCheckBox* cbUseTmpPath;
+		DkSpinBoxWidget* skipImgWidget;
+		QCheckBox* cbWrapImages;
+		
 
-		DkDoubleSpinBoxWidget* timeWidget;
-		DkColorChooser* bgColChooser;
-
-
-		QGroupBox* gbInfo;
-		QCheckBox* cbCreationDate;
-		QCheckBox* cbName;
-		QCheckBox* cbRating;
-		QCheckBox* cbSilentFullscreen;
+		QGroupBox* 	gbDragDrop;
 
 		int filter;
-		float time;
-
+		QString tmpPath;
 };
 
 class DkSynchronizeSettingsWidget : public DkSettingsWidget {

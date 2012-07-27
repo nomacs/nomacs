@@ -1345,9 +1345,9 @@ void DkFileInfoLabel::createLayout() {
 void DkFileInfoLabel::setVisible(bool visible) {
 
 	// nothing to display??
-	if (!DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_file_name) &&
-		!DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_creation_date) &&
-		!DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_file_rating) && visible) {
+	if (!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_name) &&
+		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date) &&
+		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_rating) && visible) {
 			
 			QMessageBox infoDialog(parent);
 			infoDialog.setWindowTitle(tr("Info Box"));
@@ -1363,16 +1363,16 @@ void DkFileInfoLabel::setVisible(bool visible) {
 				return;
 			}
 			else {
-				DkSettings::SlideShow::display.setBit(DkSlideshowSettingsWidget::display_file_name, true);
-				DkSettings::SlideShow::display.setBit(DkSlideshowSettingsWidget::display_creation_date, true);
-				DkSettings::SlideShow::display.setBit(DkSlideshowSettingsWidget::display_file_rating, true);
+				DkSettings::SlideShow::display.setBit(DkDisplaySettingsWidget::display_file_name, true);
+				DkSettings::SlideShow::display.setBit(DkDisplaySettingsWidget::display_creation_date, true);
+				DkSettings::SlideShow::display.setBit(DkDisplaySettingsWidget::display_file_rating, true);
 			}
 	}
 
 	DkFadeLabel::setVisible(visible);
-	title->setVisible(DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_file_name));
-	date->setVisible(DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_creation_date));
-	rating->setVisible(DkSettings::SlideShow::display.testBit(DkSlideshowSettingsWidget::display_file_rating));
+	title->setVisible(DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_name));
+	date->setVisible(DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date));
+	rating->setVisible(DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_rating));
 
 	int height = 32;
 	if (title->isVisible())
