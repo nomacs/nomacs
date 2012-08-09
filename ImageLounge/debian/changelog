@@ -1,3 +1,9 @@
+nomacs (0.4.1) unstable; urgency=low
+
+  * internal release
+
+ -- Stefan Fiel <stefan@nomacs.org>  Thu, 09 Aug 2012 08:36:22 +0200
+
 nomacs (0.4.0) unstable; urgency=low
 
   * Bug #135: translation files for linux
