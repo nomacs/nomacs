@@ -705,8 +705,112 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 	return QPixmap();
 }
 
+// DkSearchDialaog --------------------------------------------------------------------
+DkSearchDialog::DkSearchDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+
+	init();
+}
+
+void DkSearchDialog::init() {
+
+	setObjectName("DkSearchDialog");
+	setWindowTitle("Find");
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+
+	searchBar = new QLineEdit();
+	searchBar->setObjectName("searchBar");
+
+	stringModel = new QStringListModel();
+
+	resultListView = new QListView();
+	resultListView->setObjectName("resultListView");
+	resultListView->setModel(stringModel);
+	resultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	resultListView->setSelectionMode(QAbstractItemView::SingleSelection);
+	defaultStyleSheet = resultListView->styleSheet();
+	// TODO: add cursor down - cursor up action
+
+	// buttons
+	okButton = new QPushButton(tr("&Ok"), this);
+	okButton->setObjectName("okButton");
+	okButton->setDefault(true);
+
+	filterButton = new QPushButton(tr("&Filter"), this);
+	filterButton->setObjectName("filterButton");
+
+	cancelButton = new QPushButton(tr("&Cancel"), this);
+	cancelButton->setObjectName("cancelButton");
+
+	QWidget* buttonWidget = new QWidget();
+	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::RightToLeft, buttonWidget);
+	buttonLayout->addWidget(cancelButton);
+	buttonLayout->addWidget(filterButton);
+	buttonLayout->addWidget(okButton);
+
+	layout->addWidget(searchBar);
+	layout->addWidget(resultListView);
+	layout->addWidget(buttonWidget);
+
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
+
+	qDebug() << " you wrote: " << text;
+
+	if (text == currentSearch)
+		return;
+
+	QString textClean = text;
+	textClean = textClean.replace(QString(" "), QString(".*"));
+
+	// if characters are added, use the result list -> speed-up
+	// the empty check is for regular expressions (until it is valid, nothing appears)
+	resultList = (!text.contains(currentSearch) || resultList.empty()) ? fileList.filter(QRegExp(textClean)) : resultList.filter(QRegExp(textClean));
+	currentSearch = text;
+
+	if (resultList.empty()) {
+		QStringList answerList;
+		answerList.append(tr("No Matching Items"));
+
+		stringModel->setStringList(answerList);
+
+		resultListView->setStyleSheet("QListView{color: #777777; font-style: italic;}");
+		//cancelButton->setFocus();
+	}
+	else {
+		stringModel->setStringList(resultList);
+		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
+		resultListView->setStyleSheet(defaultStyleSheet);
+	}
+}
+
+void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelIndex) {
+
+	emit loadFileSignal(QFileInfo(path, modelIndex.data().toString()));
+	close();
+}
+
+void DkSearchDialog::on_okButton_pressed() {
+
+	// ok load the selected file
+	QString fileName = resultListView->selectionModel()->currentIndex().data().toString();
+	emit loadFileSignal(QFileInfo(path, fileName));
+	close();
+}
+
+void DkSearchDialog::on_filterButton_pressed() {
+
+	close();
+}
+
+void DkSearchDialog::on_cancelButton_pressed() {
+
+	close();
+}
+
 // DkResizeDialog --------------------------------------------------------------------
-//
 DkResizeDialog::DkResizeDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	init();

@@ -35,6 +35,7 @@
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QFileInfo>
+#include <QTableView>
 
 #include "DkWidgets.h"
 
@@ -228,6 +229,54 @@ protected:
 		else
 			return userAppPaths[defaultApp-numDefaultApps];
 	};
+
+};
+
+class DkSearchDialog : public QDialog {
+	Q_OBJECT
+
+public:
+
+	DkSearchDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	void setFiles(QStringList fileList) {
+		this->fileList = fileList;
+		stringModel->setStringList(fileList);
+	};
+
+	void setPath(QDir path) {
+		this->path = path;
+	};
+
+public slots:
+	void on_searchBar_textChanged(const QString& text);
+	void on_okButton_pressed();
+	void on_filterButton_pressed();
+	void on_cancelButton_pressed();
+	void on_resultListView_doubleClicked(const QModelIndex& modelIndex);
+
+signals:
+	void loadFileSignal(QFileInfo file);
+
+protected:
+
+	void init();
+
+	QStringListModel* stringModel;
+	QListView* resultListView;
+	QLineEdit* searchBar;
+
+	QPushButton* okButton;
+	QPushButton* filterButton;
+	QPushButton* cancelButton;
+
+	QString currentSearch;
+
+	QDir path;
+	QStringList fileList;
+	QStringList resultList;
+
+	QString defaultStyleSheet;
 
 };
 

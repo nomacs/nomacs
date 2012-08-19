@@ -146,7 +146,6 @@ enum {
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
 	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
-	
 
 	// tcp
 	shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
@@ -173,6 +172,7 @@ enum fileActions {
 	menu_file_save,
 	menu_file_rename,
 	menu_file_goto,
+	menu_file_find,
 	menu_file_print,
 	menu_file_reload,
 	menu_file_next,
@@ -368,6 +368,7 @@ public slots:
 	void openFile();
 	void renameFile();
 	void goTo();
+	void find();
 	void saveFile();
 	void resizeImage();
 	void deleteFile();

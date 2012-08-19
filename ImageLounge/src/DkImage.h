@@ -843,7 +843,7 @@ public slots:
 	void directoryChanged(const QString& path);
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
-	virtual bool loadFile(QFileInfo file, bool silent, int cacheState);
+	virtual bool loadFile(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	void saveRating(int rating);
 	void deleteFile();
 	void saveTempFile(QImage img);

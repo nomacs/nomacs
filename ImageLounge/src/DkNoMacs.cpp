@@ -329,6 +329,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_print]);
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_goto]);
+	fileMenu->addAction(fileActions[menu_file_find]);
 	fileMenu->addAction(fileActions[menu_file_reload]);
 	fileMenu->addAction(fileActions[menu_file_prev]);
 	fileMenu->addAction(fileActions[menu_file_next]);
@@ -474,6 +475,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_goto]->setShortcut(QKeySequence(shortcut_goto));
 	fileActions[menu_file_goto]->setStatusTip(tr("Go To an image"));
 	connect(fileActions[menu_file_goto], SIGNAL(triggered()), this, SLOT(goTo()));
+
+	fileActions[menu_file_find] = new QAction(tr("&Find"), this);
+	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
+	fileActions[menu_file_find]->setStatusTip(tr("Find an image"));
+	connect(fileActions[menu_file_find], SIGNAL(triggered()), this, SLOT(find()));
 
 	fileActions[menu_file_save] = new QAction(fileIcons[icon_file_save], tr("&Save"), this);
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
@@ -1518,6 +1524,22 @@ void DkNoMacs::renameFile() {
 			viewport()->loadFile(renamedFile.absoluteFilePath());
 		
 	}
+
+}
+
+void DkNoMacs::find() {
+
+	//if (!viewport() || !viewport()->getImageLoader() || !viewport()->getImageLoader()->hasImage())
+	//	return;
+
+	DkSearchDialog* searchDialog = new DkSearchDialog(this);
+	searchDialog->setFiles(viewport()->getImageLoader()->getFiles());
+	searchDialog->setPath(viewport()->getImageLoader()->getDir());
+
+	connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport()->getImageLoader(), SLOT(loadFile(QFileInfo)));
+
+
+	searchDialog->show();
 
 }
 
