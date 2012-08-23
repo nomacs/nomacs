@@ -150,8 +150,10 @@ void DkFilePreview::init() {
 	
 	thumbsLoader = 0;
 
-	xOffset = 20;
-	yOffset = 20;
+	xOffset = qRound(DkSettings::Display::thumbSize*0.1f);
+	yOffset = qRound(DkSettings::Display::thumbSize*0.1f);
+
+	qDebug() << "x offset: " << xOffset;
 
 	currentDx = 0;
 	currentFileIdx = 0;
@@ -202,6 +204,10 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
 	if (minHeight != DkSettings::Display::thumbSize + yOffset) {
+
+		xOffset = qRound(DkSettings::Display::thumbSize*0.1f);
+		yOffset = qRound(DkSettings::Display::thumbSize*0.1f);
+		
 		minHeight = DkSettings::Display::thumbSize + yOffset;
 		setMaximumHeight(minHeight);
 	}
@@ -229,7 +235,6 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		oldFileIdx = currentFileIdx;
 		moveImages();
 	}	
-
 }
 
 void DkFilePreview::drawThumbs(QPainter* painter) {

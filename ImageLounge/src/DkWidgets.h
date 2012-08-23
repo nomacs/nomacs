@@ -575,26 +575,32 @@ signals:
 
 private:
 	std::vector<DkThumbNail> thumbs;
+	DkThumbsLoader* thumbsLoader;
+	QDir thumbsDir;
+	
 	QWidget* parent;
 	QTransform worldMatrix;
+	
 	QPoint lastMousePos;
 	QPoint enterPos;
+	
 	QTimer* moveImageTimer;
+	
 	QRectF bufferDim;
 	QVector<QRectF> thumbRects;
+	
 	QLinearGradient leftGradient;
 	QLinearGradient rightGradient;
 	QPixmap selectionGlow;
 	QPixmap currentImgGlow;
+	
 	QImage stubImg;
 	int mouseTrace;
-	DkThumbsLoader* thumbsLoader;
 	QFileInfo currentFile;
 	int currentFileIdx;
 	int oldFileIdx;
 	float currentDx;
 	QLabel* wheelButton;
-	QDir thumbsDir;
 
 	DkGradientLabel* fileLabel;
 

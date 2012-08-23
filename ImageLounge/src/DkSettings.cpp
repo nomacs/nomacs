@@ -803,7 +803,7 @@ void DkDisplaySettingsWidget::createLayout() {
 
 	QGroupBox* gbThumbs = new QGroupBox(tr("Thumbnails"));
 	QVBoxLayout* gbThumbsLayout = new QVBoxLayout(gbThumbs);
-	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 30, 160, this);
+	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 16, 160, this);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::Display::thumbSize);
 	cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
 	cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));

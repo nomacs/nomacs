@@ -825,6 +825,8 @@ public:
 		return imgMetaData;
 	};
 
+	static bool restoreFile(const QFileInfo &fileInfo);
+
 signals:
 	void updateImageSignal();
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
@@ -875,7 +877,6 @@ protected:
 	bool loadDir(QDir newDir, bool scanRecursive = true);
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
-	bool restoreFile(const QFileInfo &fileInfo);
 	void startStopCacher();
 	void sendFileSignal();
 };

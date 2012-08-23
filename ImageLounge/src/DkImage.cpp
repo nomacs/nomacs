@@ -950,7 +950,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 	DkTimer dt;
 	
 	if (searchFile && !file.absoluteFilePath().isEmpty()) {
-		QDir newDir = (virtualExists || virtualFile.absoluteDir() != dir) ? virtualFile.absoluteDir() : file.absoluteDir();
+		QDir newDir = (virtualExists && virtualFile.absoluteDir() != dir) ? virtualFile.absoluteDir() : file.absoluteDir();
 		qDebug() << "loading new dir: " << newDir;
 		qDebug() << "old dir: " << dir;
 		loadDir(newDir, false);
@@ -2836,8 +2836,19 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
 
 		// there seems to be a bug in exiv2
-		if ((initialSize.width() > 400 || initialSize.height() > 400) && DkSettings::Display::saveThumb)	// TODO settings
-			dataExif.saveThumbnail(thumb);
+		if ((initialSize.width() > 400 || initialSize.height() > 400) && DkSettings::Display::saveThumb) {	// TODO settings
+			
+			try {
+				dataExif.saveThumbnail(thumb);
+			} catch (DkException de) {
+				// do nothing -> the file type does not support meta data
+			}
+			catch (...) {
+
+				if (!DkImageLoader::restoreFile(QFileInfo(filePath)))
+					qDebug() << "could not save thumbnail for: " << filePath;
+			}
+		}
 	}
 	else {
 		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);

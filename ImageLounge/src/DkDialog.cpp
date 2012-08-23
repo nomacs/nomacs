@@ -759,6 +759,8 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 
 	qDebug() << " you wrote: " << text;
 
+	DkTimer dt;
+
 	if (text == currentSearch)
 		return;
 
@@ -768,6 +770,8 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 	// if characters are added, use the result list -> speed-up
 	// the empty check is for regular expressions (until it is valid, nothing appears)
 	resultList = (!text.contains(currentSearch) || resultList.empty()) ? fileList.filter(QRegExp(textClean)) : resultList.filter(QRegExp(textClean));
+		
+	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
 	currentSearch = text;
 
 	if (resultList.empty()) {
@@ -780,10 +784,14 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		//cancelButton->setFocus();
 	}
 	else {
+		
+		// TODO: if size > 1000 it gets slow -> cut at 1000 and make an entry for 'expand'
 		stringModel->setStringList(resultList);
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 		resultListView->setStyleSheet(defaultStyleSheet);
 	}
+
+	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
 }
 
 void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelIndex) {

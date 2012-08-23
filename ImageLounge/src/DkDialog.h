@@ -241,6 +241,7 @@ public:
 
 	void setFiles(QStringList fileList) {
 		this->fileList = fileList;
+		// TODO: if size > 1000 it gets slow -> cut at 1000 and make an entry for 'expand'
 		stringModel->setStringList(fileList);
 	};
 
