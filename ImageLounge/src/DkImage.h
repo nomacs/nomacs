@@ -530,6 +530,7 @@ private:
 	int loadLimit;
 	int startIdx;
 	int endIdx;
+	bool loadAllThumbs;
 
 	// function
 	QImage getThumbNailQt(QFileInfo file);

@@ -635,6 +635,7 @@ public slots:
 		
 		if (pd)
 			pd->hide();
+		
 		if (thumbsLoader) {
 			thumbsLoader->stop();
 			thumbsLoader->wait();

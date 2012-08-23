@@ -2520,6 +2520,7 @@ void DkThumbsLoader::init() {
 	endIdx = -1;
 	somethingTodo = false;
 	numFilesLoaded = 0;
+	loadAllThumbs = false;
 
 	DkTimer dt;
 	for (int idx = 0; idx < files.size(); idx++) {
@@ -2568,8 +2569,10 @@ void DkThumbsLoader::run() {
 
 	while (true) {
 
-		if (numFilesLoaded >= (int)thumbs->size())
+		if (loadAllThumbs && numFilesLoaded >= (int)thumbs->size()) {
+			qDebug() << "[thumbs] thinks he has finished...";
 			break;
+		}
 
 		mutex.lock();
 		DkTimer dt;
@@ -2670,6 +2673,7 @@ void DkThumbsLoader::loadAll() {
 	if (!thumbs)
 		return;
 
+	loadAllThumbs = true;
 	setLoadLimits(0, thumbs->size());
 }
 
@@ -2862,6 +2866,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 					qDebug() << "could not save thumbnail for: " << filePath;
 			}
 		}
+
 	}
 	else {
 		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -3036,7 +3041,8 @@ void DkMetaData::saveThumbnail(QImage thumb) {
 		//	qDebug() << "As you told me to, I am writing the tiff thumbs...";
 
 		//} else {
-			eThumb.setJpegThumbnail((Exiv2::byte *)data.data(), data.size());
+		eThumb.erase();	// erase all thumbnails
+		eThumb.setJpegThumbnail((Exiv2::byte *)data.data(), data.size());
 			qDebug() << "As you told me to, I am writing the thumbs...";
 		//}
 
