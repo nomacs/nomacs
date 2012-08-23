@@ -2519,7 +2519,8 @@ void DkThumbsLoader::init() {
 	startIdx = -1;
 	endIdx = -1;
 	somethingTodo = false;
-	
+	numFilesLoaded = 0;
+
 	DkTimer dt;
 	for (int idx = 0; idx < files.size(); idx++) {
 		QFileInfo cFile = QFileInfo(dir, files[idx]);
@@ -2567,9 +2568,12 @@ void DkThumbsLoader::run() {
 
 	while (true) {
 
+		if (numFilesLoaded >= (int)thumbs->size())
+			break;
+
 		mutex.lock();
 		DkTimer dt;
-		usleep(10000);
+		msleep(100);
 
 		//QMutexLocker(&this->mutex);
 		if (!isActive) {
@@ -2612,7 +2616,6 @@ void DkThumbsLoader::run() {
  **/ 
 void DkThumbsLoader::loadThumbs() {
 
-
 	std::vector<DkThumbNail>::iterator thumbIter = thumbs->begin()+startIdx;
 
 	for (int idx = startIdx; idx < endIdx; idx++, thumbIter++) {
@@ -2637,6 +2640,7 @@ void DkThumbsLoader::loadThumbs() {
 				qDebug() << "image does NOT exist...";
 			}
 		}
+		emit numFilesSignal(++numFilesLoaded);
 		mutex.unlock();
 	}
 
@@ -2659,6 +2663,14 @@ void DkThumbsLoader::setLoadLimits(int start, int end) {
 	endIdx = (end > 0 && (unsigned int) end < thumbs->size()) ? end : thumbs->size();
 
 	somethingTodo = true;
+}
+
+void DkThumbsLoader::loadAll() {
+
+	if (!thumbs)
+		return;
+
+	setLoadLimits(0, thumbs->size());
 }
 
 //QImage DkThumbsLoader::getThumbNailWin(QFileInfo file) {

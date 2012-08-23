@@ -199,6 +199,12 @@ enum editActions {
 	menu_edit_end,	// nothing beyond this point
 };
 
+enum batchActions {
+	menu_batch_thumbs,
+
+	menu_batch_end,
+};
+
 enum viewActions {
 	menu_view_show_menu,
 	menu_view_show_toolbar,
@@ -339,10 +345,12 @@ public:
 	
 	static int infoDialog(QString msg, QWidget* parent = 0, QString title = "Question");
 	static int dialog(QString msg, QWidget* parent = 0, QString title = "Error");
+	static QWidget* getDialogParent();
 
 	virtual DkViewPort* viewport();
 	
 	QVector<QAction* > getFileActions();
+	QVector<QAction* > getBatchActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
 
@@ -408,6 +416,9 @@ public slots:
 	void setContrast(bool contrast);
 	//void shareFacebook();
 
+	// batch actions
+	void computeThumbsBatch();
+
 protected:
 	
 	// mouse events
@@ -446,6 +457,7 @@ protected:
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
 	QVector<QAction *> editActions;
+	QVector<QAction *> batchActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
 	QVector<QAction *> helpActions;
@@ -460,6 +472,7 @@ protected:
 	DkMenuBar* menu;
 	QMenu* fileMenu;	// TODO: release ?!
 	QMenu* editMenu;
+	QMenu* batchMenu;
 	QMenu* viewMenu;
 	QMenu* syncMenu;
 	QMenu* helpMenu;

@@ -49,6 +49,7 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <QDirIterator>
+#include <QProgressDialog>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -506,20 +507,24 @@ public:
 	~DkThumbsLoader() {};
 
 	void run();
-	void stop();
 	int getFileIdx(QFileInfo& file);
 
 signals:
 	void updateSignal();
+	void progressSignal(int percent);
+	void numFilesSignal(int numFiles);
 
 public slots:
 	void setLoadLimits(int start = 0, int end = 20);
+	void loadAll();
+	void stop();
 
 private:
 	std::vector<DkThumbNail>* thumbs;
 	QDir dir;
 	bool isActive;
 	bool somethingTodo;
+	int numFilesLoaded;
 	QMutex mutex;
 	int maxThumbSize;
 	int loadLimit;
@@ -531,7 +536,6 @@ private:
 	//QImage getThumbNailWin(QFileInfo file);
 	void init();
 	void loadThumbs();
-
 };
 
 /**

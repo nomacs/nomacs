@@ -256,8 +256,11 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
 	}
 
-	// overview
+	// thumbs widget
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFile(int)));
+
+	// overview
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
 	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
 
@@ -1864,6 +1867,20 @@ void DkViewPort::reloadFile() {
 
 		if (controller->getFilePreview())
 			controller->getFilePreview()->updateDir(loader->getFile(), true);
+	}
+}
+
+void DkViewPort::loadFile(int skipIdx, bool silent) {
+
+	unloadImage();
+
+	if (loader && !testLoaded)
+		loader->changeFile(skipIdx, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+
+	// alt mod
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
+		emit sendNewFileSignal(skipIdx);
+		qDebug() << "emitting load next";
 	}
 }
 

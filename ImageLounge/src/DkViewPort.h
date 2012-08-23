@@ -449,6 +449,7 @@ public slots:
 	void loadNextFileFast(bool silent = false);
 	void loadPrevFileFast(bool silent = false);
 	void loadFileFast(int skipIdx, bool silent = false);
+	void loadFile(int skipIdx, bool silent = false);
 	void loadFirst();
 	void loadLast();
 	void loadSkipNext10();

@@ -572,6 +572,7 @@ public slots:
 signals:
 	void loadFileSignal(QFileInfo file);
 	void loadThumbsSignal(int start, int end);
+	void changeFileSignal(int idx);
 
 private:
 	std::vector<DkThumbNail> thumbs;
@@ -618,6 +619,35 @@ private:
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
 	void createCurrentImgEffect(QImage img, QColor col);
+};
+
+// this class is one of the first batch processing classes -> move them to a new file in the (near) future
+class DkThumbsSaver : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkThumbsSaver() : thumbsLoader(0), pd(0) {};
+
+	void processDir(const QDir& dir);
+
+public slots:
+	void stopProgress() {
+		
+		if (pd)
+			pd->hide();
+		if (thumbsLoader) {
+			thumbsLoader->stop();
+			thumbsLoader->wait();
+			delete thumbsLoader;
+		}
+	};
+
+protected:
+	std::vector<DkThumbNail> thumbs;
+	DkThumbsLoader* thumbsLoader;
+
+	QFileInfo currentDir;
+	QProgressDialog* pd;
 };
 
 

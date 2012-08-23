@@ -27,6 +27,8 @@
 
 #include "DkWidgets.h"
 
+#include "DkNoMacs.h"
+
 namespace nmc {
 
 DkWidget::DkWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
@@ -547,25 +549,18 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkFilePreview::wheelEvent(QWheelEvent *event) {
 
-	qDebug() << "wheel event in thumbs...";
-
 	if (event->modifiers() == Qt::CTRL) {
-
-		qDebug() << "ctrl down...";
-
 
 		int newSize = DkSettings::Display::thumbSize;
 		newSize += qRound(event->delta()*0.1f);
-
-		qDebug() << "new size: " << newSize;
 
 		if (newSize > 8 && newSize < 160) {
 			DkSettings::Display::thumbSize = newSize;
 			update();
 		}
 	}
-
-	//DkWidget::wheelEvent(event);
+	else
+		emit changeFileSignal((event->delta() > 0) ? -1 : 1);
 }
 
 void DkFilePreview::leaveEvent(QEvent *event) {
@@ -634,6 +629,37 @@ void DkFilePreview::indexDir(bool force) {
 		update();
 	}
 
+}
+
+// DkThumbsSaver --------------------------------------------------------------------
+void DkThumbsSaver::processDir(const QDir& dir) {
+	
+	if (thumbsLoader) {
+		thumbsLoader->stop();
+		thumbsLoader->wait();
+		delete thumbsLoader;
+	}
+
+	thumbs.clear();
+
+	if (dir.exists()) {
+
+		thumbsLoader = new DkThumbsLoader(&thumbs, dir);
+
+		pd = new QProgressDialog(tr("Creating Thumbnails..."), tr("Cancel"), 0, thumbs.size(), DkNoMacs::getDialogParent());
+		//pd->setWindowModality(Qt::WindowModal);
+
+		connect(pd, SIGNAL(canceled()), thumbsLoader, SLOT(stop()));
+		connect(thumbsLoader, SIGNAL(numFilesSignal(int)), pd, SLOT(setValue(int)));
+		connect(thumbsLoader, SIGNAL(finished()), this, SLOT(stopProgress()));
+
+		pd->show();
+
+		thumbsLoader->start();
+
+		// add progressbar here
+		thumbsLoader->loadAll();
+	}
 }
 
 // DkOverview --------------------------------------------------------------------

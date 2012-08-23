@@ -121,6 +121,7 @@ void DkNoMacs::init() {
 	// add actions since they are ignored otherwise if the menu is hidden
 	addActions(fileActions.toList());
 	addActions(editActions.toList());
+	addActions(batchActions.toList());
 	addActions(viewActions.toList());
 	addActions(syncActions.toList());
 	addActions(helpActions.toList());
@@ -130,6 +131,8 @@ void DkNoMacs::init() {
 		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
 	for (int idx = 0; idx < editActions.size(); idx++)
 		editActions[idx]->setToolTip(editActions[idx]->statusTip());
+	for (int idx = 0; idx < batchActions.size(); idx++)
+		viewActions[idx]->setToolTip(batchActions[idx]->statusTip());
 	for (int idx = 0; idx < viewActions.size(); idx++)
 		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
 	for (int idx = 0; idx < syncActions.size(); idx++)
@@ -353,6 +356,9 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_delete]);
 	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_preferences]);
+
+	batchMenu = menu->addMenu(tr("&Batch"));
+	batchMenu->addAction(batchActions[menu_batch_thumbs]);
 
 	viewMenu = menu->addMenu(tr("&View"));
 	viewToolsMenu = viewMenu->addMenu(tr("Tool&bars"));
@@ -701,6 +707,14 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_gps_map]->setEnabled(false);
 	connect(viewActions[menu_view_gps_map], SIGNAL(triggered()), this, SLOT(showGpsCoordinates()));
 	
+	// batch actions
+	batchActions.resize(menu_batch_end);
+
+	batchActions[menu_batch_thumbs] = new QAction(tr("Compute &Thumbnails"), this);
+	batchActions[menu_batch_thumbs]->setStatusTip(tr("compute all thumbnails of the current folder"));
+	batchActions[menu_batch_thumbs]->setEnabled(false);
+	connect(batchActions[menu_batch_thumbs], SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
+
 	// help menu
 	helpActions.resize(menu_help_end);
 	helpActions[menu_help_about] = new QAction(tr("&About Nomacs"), this);
@@ -806,6 +820,8 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_copy]->setEnabled(enable);
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
 
+	batchActions[menu_batch_thumbs]->setEnabled(enable);
+
 	viewActions[menu_view_show_info]->setEnabled(enable);
 	#ifdef WITH_OPENCV
 		viewActions[menu_view_show_histogram]->setEnabled(enable);
@@ -837,6 +853,20 @@ void DkNoMacs::updateAll() {
 			w[idx]->update();
 	}
 }
+
+QWidget* DkNoMacs::getDialogParent() {
+
+	QWidget* w = 0;
+
+	QWidgetList wList = QApplication::topLevelWidgets();
+	for (int idx = 0; idx < wList.size(); idx++) {
+		if (wList[idx]->objectName().contains(QString("DkNoMacs")))
+			return wList[idx];
+	}
+
+	return 0;
+}
+
 
 // Qt how-to
 void DkNoMacs::closeEvent(QCloseEvent *event) {
@@ -1778,6 +1808,16 @@ void DkNoMacs::deleteFile() {
 		viewport()->getImageLoader()->deleteFile();
 }
 
+void DkNoMacs::computeThumbsBatch() {
+
+	if (!viewport() || !viewport()->getImageLoader())
+		return;
+
+	DkThumbsSaver* saver = new DkThumbsSaver();
+	saver->processDir(viewport()->getImageLoader()->getDir());
+
+}
+
 void DkNoMacs::aboutDialog() {
 
 	DkSplashScreen* spScreen = new DkSplashScreen(this, 0/*, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint*/);
@@ -2052,6 +2092,11 @@ void DkNoMacs::showGpsCoordinates() {
 QVector <QAction* > DkNoMacs::getFileActions() {
 
 	return fileActions;
+}
+
+QVector <QAction* > DkNoMacs::getBatchActions() {
+
+	return batchActions;
 }
 
 QVector <QAction* > DkNoMacs::getViewActions() {
