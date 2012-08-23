@@ -229,6 +229,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	if (thumbs.empty())
 		return;
 
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	drawThumbs(&painter);
 
 	if (currentFileIdx != oldFileIdx) {
@@ -276,7 +277,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		// center vertically
 		r.moveCenter(QPoint(r.center().x(), height()/2));
 
-
 		// update the buffer dim
 		bufferDim.setRight(bufferDim.right() + r.width() + xOffset/2);
 		thumbRects.push_back(r);
@@ -296,6 +296,10 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		// load the thumb!
 		if (thumb.hasImage() == DkThumbNail::not_loaded && currentFileIdx == oldFileIdx)
 			thumbsLoader->setLoadLimits(idx-10, idx+10);
+
+		////imgWorldRect = worldMatrix.mapRect(r);
+		//QRectF debugR = worldMatrix.inverted().mapRect(imgWorldRect);
+		//painter->drawRect(debugR);
 
 		// show that there are more images...
 		if (worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
@@ -322,7 +326,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		else
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
 
-
 		//painter->fillRect(QRect(0,0,200, 110), leftGradient);
 		//if (x > width())
 		//	break;
@@ -335,12 +338,15 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 	if (img && img->format() == QImage::Format_Indexed8)
 		return;
 
+	// compute current scaling
+	QPointF scale(img->width()/imgRect.width(), img->height()/imgRect.height());
 	QTransform wm;
-	wm.translate(imgRect.left(), 0);
+	wm.scale(scale.x(), scale.y());
+	wm.translate(-imgRect.left(), 0);
 
 	QLinearGradient imgGradient = gradient;
-	imgGradient.setStart(imgGradient.start().x() - imgRect.left(), 0);
-	imgGradient.setFinalStop(imgGradient.finalStop().x() - imgRect.left(), 0);
+	imgGradient.setStart(wm.map(gradient.start()).x(), 0);
+	imgGradient.setFinalStop(wm.map(gradient.finalStop()).x(), 0);
 
 	QImage mask = *img;
 	QPainter painter(&mask);
@@ -537,6 +543,29 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 	else
 		unsetCursor();
 
+}
+
+void DkFilePreview::wheelEvent(QWheelEvent *event) {
+
+	qDebug() << "wheel event in thumbs...";
+
+	if (event->modifiers() == Qt::CTRL) {
+
+		qDebug() << "ctrl down...";
+
+
+		int newSize = DkSettings::Display::thumbSize;
+		newSize += qRound(event->delta()*0.1f);
+
+		qDebug() << "new size: " << newSize;
+
+		if (newSize > 8 && newSize < 160) {
+			DkSettings::Display::thumbSize = newSize;
+			update();
+		}
+	}
+
+	//DkWidget::wheelEvent(event);
 }
 
 void DkFilePreview::leaveEvent(QEvent *event) {

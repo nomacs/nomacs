@@ -2505,7 +2505,7 @@ DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir) {
 	this->thumbs = thumbs;
 	this->dir = dir;
 	this->isActive = true;
-	this->maxThumbSize = DkSettings::Display::thumbSize;
+	this->maxThumbSize = 160;
 	init();
 }
 
@@ -2820,6 +2820,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 	}
 
 	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
+		
 		// flip size if the image is rotated by 90°
 		if (dataExif.isTiff() && abs(orientation) == 90) {
 			int tmpW = imgW;

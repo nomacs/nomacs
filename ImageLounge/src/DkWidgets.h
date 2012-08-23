@@ -564,6 +564,7 @@ public slots:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
+	void wheelEvent(QWheelEvent *event);
 	void leaveEvent(QEvent *event);
 	void moveImages();
 	void updateDir(QFileInfo file, bool force = false);
@@ -571,7 +572,6 @@ public slots:
 signals:
 	void loadFileSignal(QFileInfo file);
 	void loadThumbsSignal(int start, int end);
-
 
 private:
 	std::vector<DkThumbNail> thumbs;
