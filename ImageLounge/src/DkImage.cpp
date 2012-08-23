@@ -2521,6 +2521,7 @@ void DkThumbsLoader::init() {
 	somethingTodo = false;
 	numFilesLoaded = 0;
 	loadAllThumbs = false;
+	forceSave = false;
 
 	DkTimer dt;
 	for (int idx = 0; idx < files.size(); idx++) {
@@ -2668,12 +2669,19 @@ void DkThumbsLoader::setLoadLimits(int start, int end) {
 	somethingTodo = true;
 }
 
+/**
+ * This function is used for batch saving.
+ * If this function is called, all thumbs are saved 
+ * even if save is not checked in the preferences.
+ **/ 
 void DkThumbsLoader::loadAll() {
 
 	if (!thumbs)
 		return;
 
+	// this function is used for batch saving
 	loadAllThumbs = true;
+	forceSave = true;
 	setLoadLimits(0, thumbs->size());
 }
 
@@ -2853,7 +2861,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
 
 		// there seems to be a bug in exiv2
-		if ((initialSize.width() > 400 || initialSize.height() > 400) && DkSettings::Display::saveThumb) {	// TODO settings
+		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::Display::saveThumb)) {	// TODO settings
 			
 			try {
 				dataExif.saveThumbnail(thumb);

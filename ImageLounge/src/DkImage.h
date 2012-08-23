@@ -531,6 +531,7 @@ private:
 	int startIdx;
 	int endIdx;
 	bool loadAllThumbs;
+	bool forceSave;
 
 	// function
 	QImage getThumbNailQt(QFileInfo file);

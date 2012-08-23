@@ -1813,6 +1813,7 @@ void DkNoMacs::computeThumbsBatch() {
 	if (!viewport() || !viewport()->getImageLoader())
 		return;
 
+	// TODO: make private -> so that it gets destroyed
 	DkThumbsSaver* saver = new DkThumbsSaver();
 	saver->processDir(viewport()->getImageLoader()->getDir());
 
