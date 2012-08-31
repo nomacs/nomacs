@@ -154,6 +154,8 @@ void DkNoMacs::init() {
 	showToolbar(DkSettings::App::showToolBar);
 	showStatusBar(DkSettings::App::showStatusBar);
 
+	// connects that are needed in all viewers
+	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
 }
 
 #ifdef Q_WS_WIN	// windows specific versioning
@@ -277,7 +279,7 @@ void DkNoMacs::createStatusbar() {
 	QColor col = QColor(200, 200, 230, 100);
 	statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));
 	statusbar->addWidget(statusbarMsg);
-	statusbar->show();
+	//statusbar->addPermanentWidget()
 	this->setStatusBar(statusbar);
 }
 
@@ -2011,15 +2013,16 @@ void DkNoMacs::showToolbar(bool show) {
 		toolbar->hide();
 }
 
-void DkNoMacs::showStatusBar(bool show) {
+void DkNoMacs::showStatusBar(bool show, bool permanent) {
 
-	DkSettings::App::showStatusBar = show;
+	if (statusbar->isVisible() == show)
+		return;
+
+	if (permanent)
+		DkSettings::App::showStatusBar = show;
 	viewActions[menu_view_show_statusbar]->setChecked(DkSettings::App::showStatusBar);
 
-	if (DkSettings::App::showStatusBar)
-		statusbar->show();
-	else
-		statusbar->hide();
+	statusbar->setVisible(show);
 
 	viewport()->setVisibleStatusbar(show);
 }

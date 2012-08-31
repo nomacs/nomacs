@@ -646,7 +646,9 @@ void DkThumbsSaver::processDir(const QDir& dir) {
 
 		thumbsLoader = new DkThumbsLoader(&thumbs, dir);
 
-		pd = new QProgressDialog(tr("Creating Thumbnails..."), tr("Cancel"), 0, thumbs.size(), DkNoMacs::getDialogParent());
+		pd = new QProgressDialog(tr("\nCreating Thumbnails...\n") + dir.absolutePath(), tr("Cancel"), 0, thumbs.size(), DkNoMacs::getDialogParent());
+		pd->setWindowTitle(tr("Thumbnails"));
+		
 		//pd->setWindowModality(Qt::WindowModal);
 
 		connect(pd, SIGNAL(canceled()), thumbsLoader, SLOT(stop()));

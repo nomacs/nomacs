@@ -320,6 +320,7 @@ public:
 
 signals:
 	void enableNoImageSignal(bool enable);
+	void showStatusBar(bool show, bool permanent);
 //#ifdef DK_DLL
 	void keyReleaseSignal(QKeyEvent* event);	// make key presses available
 //#endif

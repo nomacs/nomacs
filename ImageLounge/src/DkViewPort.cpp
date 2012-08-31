@@ -894,12 +894,19 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 	}
 	if (event->buttons() != Qt::LeftButton && event->buttons() != Qt::RightButton) {
 
-		if (event->modifiers() == ctrlMod && event->modifiers() != altMod)
+		if (event->modifiers() == ctrlMod && event->modifiers() != altMod) {
 			setCursor(Qt::CrossCursor);
+			emit showStatusBar(true, false);
+		}
 		else if (worldMatrix.m11() > 1 && !imageInside())
 			setCursor(Qt::OpenHandCursor);
-		else
+		else {
+			
+			if (!DkSettings::App::showStatusBar)
+				emit showStatusBar(false, false);
+			
 			unsetCursor();
+		}
 
 	}
 

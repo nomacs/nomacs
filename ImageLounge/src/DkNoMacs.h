@@ -382,7 +382,7 @@ public slots:
 	void deleteFile();
 	void cleanSettings();
 	void newInstance(QFileInfo file = QFileInfo());
-	void showStatusBar(bool show);
+	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbar(bool show);
 	void showGpsCoordinates();
