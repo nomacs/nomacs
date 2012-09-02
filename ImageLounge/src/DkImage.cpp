@@ -1397,24 +1397,44 @@ void DkImageLoader::saveFile(QFileInfo file, QString fileFilter, QImage saveImg,
  * Saves a temporary file to the folder specified in Settings.
  * @param img the image (which was in most cases pasted to nomacs)
  **/ 
-void DkImageLoader::saveTempFile(QImage img) {
+QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt, bool force, bool threaded) {
 
 	QFileInfo tmpPath = QFileInfo(DkSettings::Global::tmpPath + "\\");
 	
-	if (!DkSettings::Global::useTmpPath || !tmpPath.exists()) {
+	if (!force && (!DkSettings::Global::useTmpPath || !tmpPath.exists())) {
 		qDebug() << tmpPath.absolutePath() << "does not exist";
-		return;
+		return QFileInfo();
+	}
+	else if (!tmpPath.exists()) {
+
+#ifdef WIN32
+		
+		// TODO: this path seems to be perfectly ok (you can copy it to windows explorer) - however Qt thinks it does not exist??
+		QString defaultPath = getenv("HOMEPATH");
+		defaultPath = "C:" + defaultPath + "\\My Pictures\\";
+		tmpPath = defaultPath;
+
+		qDebug() << "default path: " << tmpPath.absoluteFilePath();
+#endif
+
+		if (!tmpPath.exists()) {
+			// load system default open dialog
+			QString dirName = QFileDialog::getExistingDirectory(DkNoMacs::getDialogParent(), tr("Save Directory"),
+				getDir().absolutePath());
+
+			tmpPath = dirName + "/";
+
+			if (!tmpPath.exists())
+				return QFileInfo();
+		}
 	}
 
 	qDebug() << "tmpPath: " << tmpPath.absolutePath();
 	
-	// TODO: let user set filename + extension?
-	QString fileExt = ".png";
-
 	// TODO: call save file silent threaded...
 	for (int idx = 1; idx < 10000; idx++) {
 	
-		QString fileName = "img";
+		QString fileName = name;
 
 		if (idx < 10)
 			fileName += "000";
@@ -1428,8 +1448,11 @@ void DkImageLoader::saveTempFile(QImage img) {
 		QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
 
 		if (!tmpFile.exists()) {
-			saveFileSilentThreaded(tmpFile, img);
-
+			
+			if (threaded)
+				saveFileSilentThreaded(tmpFile, img);
+			else
+				saveFileSilentIntern(tmpFile, img);
 			//this->virtualFile = tmpFile;	// why doesn't it work out -> file does not exist (locked?)
 			//setImage(img);
 
@@ -1441,11 +1464,14 @@ void DkImageLoader::saveTempFile(QImage img) {
 			//	loadDir(tmpFile.absoluteDir());
 			//}
 			
+			return tmpFile;
+
 			qDebug() << tmpFile.absoluteFilePath() << "saved...";
 			break;
 		}
 	}
 
+	return QFileInfo();
 }
 
 /**

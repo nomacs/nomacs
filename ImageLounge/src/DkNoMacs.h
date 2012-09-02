@@ -195,6 +195,7 @@ enum editActions {
 	menu_edit_transfrom,
 	menu_edit_delete,
 	menu_edit_crop,
+	menu_edit_wallpaper,
 
 	menu_edit_end,	// nothing beyond this point
 };
@@ -380,6 +381,7 @@ public slots:
 	void saveFile();
 	void resizeImage();
 	void deleteFile();
+	void setWallpaper();
 	void cleanSettings();
 	void newInstance(QFileInfo file = QFileInfo());
 	void showStatusBar(bool show, bool permanent = true);

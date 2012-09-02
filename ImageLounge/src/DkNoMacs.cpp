@@ -357,6 +357,8 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_crop]);
 	editMenu->addAction(editActions[menu_edit_delete]);
 	editMenu->addSeparator();
+	editMenu->addAction(editActions[menu_edit_wallpaper]);
+	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_preferences]);
 
 	batchMenu = menu->addMenu(tr("&Batch"));
@@ -579,6 +581,10 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
 	editActions[menu_edit_delete]->setStatusTip(tr("delete current file"));
 	connect(editActions[menu_edit_delete], SIGNAL(triggered()), this, SLOT(deleteFile()));
+
+	editActions[menu_edit_wallpaper] = new QAction(tr("&Wallpaper"), this);
+	editActions[menu_edit_wallpaper]->setStatusTip(tr("set the current image as wallpaper"));
+	connect(editActions[menu_edit_wallpaper], SIGNAL(triggered()), this, SLOT(setWallpaper()));
 
 	editActions[menu_edit_preferences] = new QAction(tr("&Settings"), this);
 	editActions[menu_edit_preferences]->setShortcut(QKeySequence(shortcut_settings));
@@ -821,6 +827,12 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_crop]->setEnabled(enable);
 	editActions[menu_edit_copy]->setEnabled(enable);
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
+
+#ifdef WIN32	// TODO: remove if wallpaper for other OS are supported
+	editActions[menu_edit_wallpaper]->setEnabled(enable);
+#else
+	editActions[menu_edit_wallpaper]->setEnabled(false);
+#endif
 
 	batchActions[menu_batch_thumbs]->setEnabled(enable);
 
@@ -1808,6 +1820,63 @@ void DkNoMacs::deleteFile() {
 
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
 		viewport()->getImageLoader()->deleteFile();
+}
+
+
+void DkNoMacs::setWallpaper() {
+
+	// based on code from: http://qtwiki.org/Set_windows_background_using_QT
+
+	QImage img = viewport()->getImage();
+
+	//// for now - we just save the image as is
+	//QRect screenRect = QApplication::desktop()->screenGeometry();
+
+	//qDebug() << "screen rect size: " << screenRect;
+
+	//QImage dImg;
+
+	//if (img.size().width() > screenRect.size().width() && img.size().height() > screenRect.size().height()) {
+	//	
+	//	dImg = QImage(screenRect.size(), QImage::Format_ARGB32);
+	//	dImg.fill(QColor(0,0,0,0).rgba());
+
+	//	// do some scaling here - or just save the image as is?
+
+	//	// render the image into the new coordinate system
+	//	QPainter painter(&dImg);
+	//	painter.drawImage(QRect(QPoint(), screenRect.size()), img, QRect(QPoint(), screenRect.size()));
+	//	painter.end();
+	//	qDebug() << "resizing to: " << screenRect;
+	//	// TODO: rescale image here
+	//	//viewport()->setImage(dImg);
+	//}
+	//else
+	//	dImg = img;
+
+	QImage dImg = img;
+	QFileInfo tmpPath = viewport()->getImageLoader()->saveTempFile(dImg, "wallpaper", ".jpg", true, false);
+
+	// is there a more elegant way to see if saveTempFile returned an empty path
+	if (tmpPath.absoluteFilePath() == QFileInfo().absoluteFilePath()) {
+		errorDialog(tr("Sorry, I could not create a wallpaper..."));
+		return;
+	}
+
+#ifdef WIN32
+
+#include <stdio.h>
+#include <windows.h>
+
+	//Read current windows background image path
+	QSettings appSettings( "HKEY_CURRENT_USER\\Control Panel\\Desktop", QSettings::NativeFormat);
+	appSettings.setValue("Wallpaper", tmpPath.absoluteFilePath());
+
+	QByteArray ba = tmpPath.absoluteFilePath().toLatin1();
+	SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, (void*)ba.data(), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+#endif
+	// TODO: add functionality for unix based systems
+
 }
 
 void DkNoMacs::computeThumbsBatch() {

@@ -854,7 +854,7 @@ public slots:
 	virtual bool loadFile(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	void saveRating(int rating);
 	void deleteFile();
-	void saveTempFile(QImage img);
+	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
 	//void enableWatcher(bool enable);
 
 protected:
