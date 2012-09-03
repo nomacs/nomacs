@@ -50,7 +50,7 @@
 #pragma warning(disable: 4996)
 #endif
 
-#include <opencv/cv.h>
+#include "opencv2/core/core.hpp"
 using namespace cv;
 #else
 

@@ -49,7 +49,6 @@
 #pragma warning(disable: 4996)
 #endif
 
-#include <opencv/cv.h>
 #endif
 
 // my stuff
