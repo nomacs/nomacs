@@ -66,8 +66,13 @@
 #endif
 
 #include <libraw/libraw.h>
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
+	#include "opencv/cv.h"
+#else
+	#include "opencv2/core/core.hpp"
+	#include "opencv2/imgproc/imgproc.hpp"
+#endif
+
 using namespace cv;
 #endif
 

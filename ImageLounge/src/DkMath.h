@@ -50,7 +50,12 @@
 #pragma warning(disable: 4996)
 #endif
 
-#include "opencv2/core/core.hpp"
+#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
+	#include "opencv/cv.h"
+#else
+	#include "opencv2/core/core.hpp"
+#endif
+
 using namespace cv;
 #else
 
