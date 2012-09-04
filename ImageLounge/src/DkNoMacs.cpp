@@ -279,6 +279,7 @@ void DkNoMacs::createStatusbar() {
 	QColor col = QColor(200, 200, 230, 100);
 	statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));
 	statusbar->addWidget(statusbarMsg);
+	statusbar->hide();
 	//statusbar->addPermanentWidget()
 	this->setStatusBar(statusbar);
 }

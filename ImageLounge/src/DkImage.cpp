@@ -790,8 +790,14 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		}
 		else 
 #endif
-			files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-		
+		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+
+		// might get empty too (e.g. someone deletes all images
+		if (files.empty()) {
+			emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
+			return false;
+		}
+
 		//emit updateDirSignal(file, true);		// if the signal is set to true thumbs are updated if images are added to the folder (however this may be nesty)
 		emit updateDirSignal(file);
 		folderUpdated = false;
@@ -824,7 +830,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		}
 		else 
 #endif
-			files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 			
 
 		if (files.empty()) {
@@ -911,6 +917,16 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, bool force) {
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
 	mutex.unlock();
 
+	qDebug() << "loading: " << loadFile.absoluteFilePath();
+
+	// message when reloaded
+	if (loadFile.absoluteFilePath().isEmpty() && skipIdx == 0) {
+		QString msg = tr("sorry, %1 does not exist anymore...").arg(virtualFile.fileName());
+		if (!silent)
+			updateInfoSignal(msg, 4000);
+	}
+
+
 	//if (loadFile.exists())
 		load(loadFile, silent, force);
 }
@@ -951,9 +967,11 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 	
 	if (searchFile && !file.absoluteFilePath().isEmpty()) {
 		QDir newDir = (virtualExists && virtualFile.absoluteDir() != dir) ? virtualFile.absoluteDir() : file.absoluteDir();
-		qDebug() << "loading new dir: " << newDir;
-		qDebug() << "old dir: " << dir;
-		loadDir(newDir, false);
+		qDebug() << "loading new dir: " << newDir.absolutePath();
+		qDebug() << "old dir: " << dir.absolutePath();
+		bool loaded = loadDir(newDir, false);
+		if (!loaded)
+			return QFileInfo();
 	}
 
 	// locate the current file
