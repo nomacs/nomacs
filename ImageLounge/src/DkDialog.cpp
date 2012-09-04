@@ -716,6 +716,9 @@ void DkSearchDialog::init() {
 	setObjectName("DkSearchDialog");
 	setWindowTitle("Find");
 
+	endMessage = tr("Load All");
+	allDisplayed = true;
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
 	searchBar = new QLineEdit();
@@ -769,7 +772,8 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 
 	// if characters are added, use the result list -> speed-up
 	// the empty check is for regular expressions (until it is valid, nothing appears)
-	resultList = (!text.contains(currentSearch) || resultList.empty()) ? fileList.filter(QRegExp(textClean)) : resultList.filter(QRegExp(textClean));
+	// I think we can't do that anymore for the sake of list view cropping...
+	resultList = (!text.contains(currentSearch) || resultList.empty() || !allDisplayed) ? fileList.filter(QRegExp(textClean)) : resultList.filter(QRegExp(textClean));
 		
 	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
 	currentSearch = text;
@@ -777,30 +781,43 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 	if (resultList.empty()) {
 		QStringList answerList;
 		answerList.append(tr("No Matching Items"));
-
 		stringModel->setStringList(answerList);
 
 		resultListView->setStyleSheet("QListView{color: #777777; font-style: italic;}");
 		//cancelButton->setFocus();
 	}
 	else {
-		
-		// TODO: if size > 1000 it gets slow -> cut at 1000 and make an entry for 'expand'
-		stringModel->setStringList(resultList);
+		stringModel->setStringList(makeViewable(resultList));
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 		resultListView->setStyleSheet(defaultStyleSheet);
 	}
 
-	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "searching takes (total): " << QString::fromStdString(dt.getTotal());
 }
 
 void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelIndex) {
+
+	if (modelIndex.data().toString() == endMessage) {
+		stringModel->setStringList(makeViewable(resultList, true));
+		return;
+	}
 
 	emit loadFileSignal(QFileInfo(path, modelIndex.data().toString()));
 	close();
 }
 
+void DkSearchDialog::on_resultListView_clicked(const QModelIndex& modelIndex) {
+
+	if (modelIndex.data().toString() == endMessage)
+		stringModel->setStringList(makeViewable(resultList, true));
+}
+
 void DkSearchDialog::on_okButton_pressed() {
+
+	if (resultListView->selectionModel()->currentIndex().data().toString() == endMessage) {
+		stringModel->setStringList(makeViewable(resultList, true));
+		return;
+	}
 
 	// ok load the selected file
 	QString fileName = resultListView->selectionModel()->currentIndex().data().toString();
@@ -816,6 +833,27 @@ void DkSearchDialog::on_filterButton_pressed() {
 void DkSearchDialog::on_cancelButton_pressed() {
 
 	close();
+}
+
+QStringList DkSearchDialog::makeViewable(const QStringList& resultList, bool forceAll) {
+	
+	QStringList answerList;
+	
+	// if size > 1000 it gets slow -> cut at 1000 and make an entry for 'expand'
+	if (!forceAll && resultList.size() > 1000) {
+
+		for (int idx = 0; idx < 1000; idx++)
+			answerList.append(resultList[idx]);
+		answerList.append(endMessage);
+
+		allDisplayed = false;
+	}
+	else {
+		allDisplayed = true;
+		answerList = resultList;
+	}
+
+	return answerList;
 }
 
 // DkResizeDialog --------------------------------------------------------------------

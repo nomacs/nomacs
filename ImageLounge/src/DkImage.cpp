@@ -917,8 +917,6 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, bool force) {
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
 	mutex.unlock();
 
-	qDebug() << "loading: " << loadFile.absoluteFilePath();
-
 	// message when reloaded
 	if (loadFile.absoluteFilePath().isEmpty() && skipIdx == 0) {
 		QString msg = tr("sorry, %1 does not exist anymore...").arg(virtualFile.fileName());

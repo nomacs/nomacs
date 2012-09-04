@@ -241,8 +241,8 @@ public:
 
 	void setFiles(QStringList fileList) {
 		this->fileList = fileList;
-		// TODO: if size > 1000 it gets slow -> cut at 1000 and make an entry for 'expand'
-		stringModel->setStringList(fileList);
+		this->resultList = fileList;
+		stringModel->setStringList(makeViewable(fileList));
 	};
 
 	void setPath(QDir path) {
@@ -255,6 +255,7 @@ public slots:
 	void on_filterButton_pressed();
 	void on_cancelButton_pressed();
 	void on_resultListView_doubleClicked(const QModelIndex& modelIndex);
+	void on_resultListView_clicked(const QModelIndex& modelIndex);
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -262,6 +263,7 @@ signals:
 protected:
 
 	void init();
+	QStringList makeViewable(const QStringList& resultList, bool forceAll = false);
 
 	QStringListModel* stringModel;
 	QListView* resultListView;
@@ -278,6 +280,9 @@ protected:
 	QStringList resultList;
 
 	QString defaultStyleSheet;
+	QString endMessage;
+
+	bool allDisplayed;
 
 };
 
