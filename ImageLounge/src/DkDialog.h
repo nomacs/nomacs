@@ -184,12 +184,12 @@ public:
 	};
 
 
-	protected slots:
-		void softwareSelectionChanged();
-		void okClicked();
-		void cancelClicked();
-		void browseAppFile();
-		void softwareCleanClicked();
+protected slots:
+	void softwareSelectionChanged();
+	void okClicked();
+	void cancelClicked();
+	void browseAppFile();
+	void softwareCleanClicked();
 
 protected:
 
