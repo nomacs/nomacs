@@ -32,6 +32,10 @@
 	#pragma comment (lib, "shlwapi.lib")
 #endif
 
+#if defined(_MSC_BUILD) && !defined(QT_NO_DEBUG_OUTPUT) // fixes cmake bug - really release uses subsystem windows, debug and release subsystem console
+	#pragma comment (linker, "/SUBSYSTEM:CONSOLE")
+#endif
+
 #include "DkImage.h"
 
 #include "DkNoMacs.h"
