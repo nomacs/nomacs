@@ -157,7 +157,7 @@ public slots:
 
 			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
 			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
-			WCHAR* wDirName = new WCHAR[winPath.length()];
+			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
 
 			// CMakeLists.txt:
 			// if compile error that toWCharArray is not recognized:

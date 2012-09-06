@@ -555,9 +555,18 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 	if (event->modifiers() == Qt::CTRL) {
 
 		int newSize = DkSettings::Display::thumbSize;
-		newSize += qRound(event->delta()*0.1f);
+		newSize += qRound(event->delta()*0.05f);
 
-		if (newSize > 8 && newSize < 160) {
+		// make sure it is even
+		if (qRound(newSize*0.5f) != newSize*0.5f)
+			newSize++;
+
+		if (newSize < 8)
+			newSize = 8;
+		else if (newSize > 160)
+			newSize = 160;
+
+		if (newSize != DkSettings::Display::thumbSize) {
 			DkSettings::Display::thumbSize = newSize;
 			update();
 		}
