@@ -199,7 +199,7 @@ void DkFilePreview::init() {
 	wheelButton->hide();
 
 }
-
+#include <qmath.h>
 void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 	//if (selected != -1)
@@ -207,8 +207,8 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 	if (minHeight != DkSettings::Display::thumbSize + yOffset) {
 
-		xOffset = qRound(DkSettings::Display::thumbSize*0.1f);
-		yOffset = qRound(DkSettings::Display::thumbSize*0.1f);
+		xOffset = qCeil(DkSettings::Display::thumbSize*0.1f);
+		yOffset = qCeil(DkSettings::Display::thumbSize*0.1f);
 		
 		minHeight = DkSettings::Display::thumbSize + yOffset;
 		setMaximumHeight(minHeight);
@@ -270,17 +270,20 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 		if (height()-yOffset < r.height())
-			r.setSize(QSizeF(r.width()*(float)(height()-yOffset)/r.height(), height()-yOffset));
+			r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
 
 		// check if the size is still valid
-		if (r.width() <= 1 || r.height() <= 1)
+		if (r.width() <= 1 || r.height() <= 1) 
 			continue;
 
 		// center vertically
-		r.moveCenter(QPoint(r.center().x(), height()/2));
+		r.moveCenter(QPoint(qRound(r.center().x()), height()/2));
+
+		if (idx == selected)
+			qDebug() << "rect: " << r;
 
 		// update the buffer dim
-		bufferDim.setRight(bufferDim.right() + r.width() + xOffset/2);
+		bufferDim.setRight(qRound(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
 		thumbRects.push_back(r);
 
 		QRectF imgWorldRect = worldMatrix.mapRect(r);
