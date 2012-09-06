@@ -142,7 +142,8 @@ public:
 	static Mat qImage2Mat(const QImage img) {
 
 		Mat mat2;
-		QImage cImg;
+		QImage cImg;	// must be initialized here!	(otherwise the data is lost before clone())
+
 		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32 ) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
 			qDebug() << "ARGB32 or RGB32";
@@ -813,6 +814,10 @@ public:
 		
 		QMutexLocker locker(&mutex);
 		return basicLoader.hasImage();
+	};
+
+	bool isEdited() {
+		return editFile.exists();
 	};
 
 	int numFiles() const {

@@ -336,20 +336,29 @@ void DkOpenWithDialog::init() {
 	// TODO: add GIMP & other software
 
 	// the order must be correct!
-	organizations = (QStringList()	<< "Adobe"				<< "Google"			<< "Google"						<< "IrfanView");
-	applications =	(QStringList()	<< "Photoshop"			<< "Picasa"			<< "Picasa"						<< "shell");
-	pathKeys =		(QStringList()	<< "ApplicationPath"	<< "Directory"		<< "Directory"					<< "");
-	exeNames =		(QStringList()	<< ""					<< ""				<< "PicasaPhotoViewer.exe"		<< "");
-	screenNames =	(QStringList()	<< tr("&Photoshop")		<< tr("Pi&casa")	<< tr("Picasa Ph&oto Viewer")	<< tr("&IrfanView"));
+	organizations = (QStringList()	<< "Adobe"				<< "Google"			<< "Google"						<< "IrfanView"		<< "");
+	applications =	(QStringList()	<< "Photoshop"			<< "Picasa"			<< "Picasa"						<< "shell"			<< "");
+	pathKeys =		(QStringList()	<< "ApplicationPath"	<< "Directory"		<< "Directory"					<< ""				<< "");
+	exeNames =		(QStringList()	<< ""					<< ""				<< "PicasaPhotoViewer.exe"		<< ""				<< "");
+	screenNames =	(QStringList()	<< tr("&Photoshop")		<< tr("Pi&casa")	<< tr("Picasa Ph&oto Viewer")	<< tr("&IrfanView")	<< tr("&Explorer"));
 
 	// find paths to pre-defined software
 	for (int idx = 0; idx < organizations.size(); idx++) {
+
 		appPaths.append(searchForSoftware(idx));
 		appIcons.append(getIcon(appPaths[idx]));
 	}
 
+	// dirty hack - but locating it in the registry is not that easy
+	QFileInfo expPath("C:\\Windows\\explorer.exe");
+	if (expPath.exists() && !appPaths.empty()) {
+		appPaths.last() = expPath.absoluteFilePath();
+		appIcons.last() = getIcon(appPaths.last());
+	}
+
 	createLayout();
 	setWindowTitle(tr("Open With..."));
+
 
 }
 

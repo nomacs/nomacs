@@ -1644,7 +1644,7 @@ bool DkViewPort::event(QEvent *event) {
 		event->type() == QEvent::KeyRelease) {
 
 		//qDebug() << "redirecting event...";
-		// mouse eventss that double are now fixed, since the viewport is now overlayed by the controller
+		// mouse events that double are now fixed, since the viewport is now overlayed by the controller
 		return QWidget::event(event);
 	}
 	else

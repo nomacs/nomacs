@@ -974,7 +974,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 
 			QMimeData* mimeData = new QMimeData;
 			
-			if (viewport()->getImageLoader()->getFile().exists())
+			if (viewport()->getImageLoader()->getFile().exists() && !viewport()->getImageLoader()->isEdited())
 				mimeData->setUrls(urls);
 			else if (!viewport()->getImage().isNull())
 				mimeData->setImageData(viewport()->getImage());
@@ -1133,10 +1133,12 @@ void DkNoMacs::copyImage() {
 
 	QMimeData* mimeData = new QMimeData;
 	
-	if (viewport()->getImageLoader()->getFile().exists())
+	if (viewport()->getImageLoader()->getFile().exists() && !viewport()->getImageLoader()->isEdited())
 		mimeData->setUrls(urls);
 	else if (!viewport()->getImage().isNull())
 		mimeData->setImageData(viewport()->getImage());
+	
+	mimeData->setText(viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 	QClipboard* clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData);
@@ -1644,15 +1646,12 @@ void DkNoMacs::saveFile() {
 			}
 		}
 
-		// TODO: remove file extension
-		if (filterIdx == -1) {
+		if (filterIdx == -1)
 			saveName.remove("." + saveFile.suffix());
-		}
-
 	}
 
-	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveFile.baseName()).absoluteFilePath();
-	qDebug() << "selected filter: " << selectedFilter;
+	// note: basename removes the whole file name from the first dot...
+	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
 		savePath, DkImageLoader::saveFilter, &selectedFilter);
@@ -2133,7 +2132,12 @@ void DkNoMacs::openFileWith() {
 	}
 
 	QStringList args;
-	args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
+
+	if (QFileInfo(DkSettings::Global::defaultAppPath).fileName() == "explorer.exe") {
+		args << "/select," + QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
+	}
+	else
+		args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
 	bool started = process.startDetached(DkSettings::Global::defaultAppPath, args);

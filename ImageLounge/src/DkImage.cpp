@@ -703,6 +703,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	this->virtualFile = file;
 
 	//saveDir = DkSettings::Global::lastSaveDir;	// loading save dir is obsolete ?!
+	saveDir = "";
 
 	if (file.exists())
 		loadDir(file.absoluteDir());
@@ -2078,6 +2079,8 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
  * @return QDir the directory where the user saved the last file to.
  **/ 
 QDir DkImageLoader::getSaveDir() {
+
+	qDebug() << "save dir: " << dir;
 
 	if (!saveDir.exists())
 		return dir;

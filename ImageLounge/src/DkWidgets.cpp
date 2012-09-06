@@ -505,7 +505,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 	lastMousePos = event->pos();
 
-	QWidget::mouseMoveEvent(event);
+	//QWidget::mouseMoveEvent(event);
 }
 
 void DkFilePreview::mousePressEvent(QMouseEvent *event) {
@@ -886,6 +886,7 @@ void DkLabel::init() {
 	QFont font;
 	font.setPixelSize(fontSize);
 	QLabel::setFont(font);
+	QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse);
 	
 	QLabel::setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	updateStyleSheet();
@@ -1385,8 +1386,10 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 	this->parent = parent;
 	title = new QLabel(this);
 	title->setMouseTracking(true);
+	title->setTextInteractionFlags(Qt::TextSelectableByMouse);
 	date = new QLabel(this);
 	date->setMouseTracking(true);
+	date->setTextInteractionFlags(Qt::TextSelectableByMouse);
 	rating = new DkRatingLabel(0, this);
 	setMinimumWidth(minWidth);
 	

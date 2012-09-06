@@ -152,9 +152,11 @@ public slots:
 			QFileInfo file = recentFiles->at(idx);
 
 #ifdef WIN32
+
+			// TODO: it crashed twice here!
+
 			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
 			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
-
 			WCHAR* wDirName = new WCHAR[winPath.length()];
 
 			// CMakeLists.txt:
