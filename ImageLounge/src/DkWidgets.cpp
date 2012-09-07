@@ -212,6 +212,10 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		
 		minHeight = DkSettings::Display::thumbSize + yOffset;
 		setMaximumHeight(minHeight);
+
+		if (fileLabel->height() >= height() && fileLabel->isVisible())
+			fileLabel->hide();
+
 	}
 	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
 	//resize(parent->width(), minHeight);
@@ -296,7 +300,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		if (imgWorldRect.right() < 0)
 			continue;
 		if (imgWorldRect.left() > width()) 
-			continue;
+			break;
 
 		// load the thumb!
 		if (thumb.hasImage() == DkThumbNail::not_loaded && currentFileIdx == oldFileIdx)
@@ -332,8 +336,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
 
 		//painter->fillRect(QRect(0,0,200, 110), leftGradient);
-		//if (x > width())
-		//	break;
 	}
 
 }
@@ -480,24 +482,23 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		int oldSelection = selected;
 		selected = -1;
 
-		// find out where is the mouse
+		// find out where the mouse is
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
 			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				selected = idx;
 				DkThumbNail thumb = thumbs.at(selected);
 				createSelectedEffect(thumb.getImage(), DkSettings::Display::highlightColor);
-				fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+				
+				// important: setText shows the label - if you then hide it here again you'll get a stack overflow
+				if (fileLabel->height() < height())
+					fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
 				break;
 			}
 		}
 
 		if (selected != -1 || selected != oldSelection) {
-			//QPoint pos = event->pos() + QPoint(16, 16);
-			//fileLabel->setPosition(pos);
 			
-			if (fileLabel->height() >= height())
-				fileLabel->hide();
 			update();
 		}
 		else if (selected == -1)
@@ -614,6 +615,7 @@ void DkFilePreview::indexDir(bool force) {
 	dir.setNameFilters(DkImageLoader::fileFilters);
 	dir.setSorting(QDir::LocaleAware);
 
+	// new folder?
 	if ((force || thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
 		!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
 
