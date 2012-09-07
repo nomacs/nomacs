@@ -2666,11 +2666,18 @@ void DkThumbsLoader::run() {
 void DkThumbsLoader::loadThumbs() {
 
 	std::vector<DkThumbNail>::iterator thumbIter = thumbs->begin()+startIdx;
+	qDebug() << "start: " << startIdx << " end: " << endIdx;
 
 	for (int idx = startIdx; idx < endIdx; idx++, thumbIter++) {
 
 		mutex.lock();
-		
+
+		// jump to new start idx
+		if (startIdx > idx) {
+			thumbIter = thumbs->begin()+startIdx;
+			idx = startIdx;
+		}
+
 		// does somebody want me to stop?
 		if (!isActive) {
 			mutex.unlock();
@@ -2680,14 +2687,13 @@ void DkThumbsLoader::loadThumbs() {
 		DkThumbNail* thumb = &(*thumbIter);
 		if (!thumb->hasImage()) {
 			thumb->setImage(getThumbNailQt(thumb->getFile()));
-			if (thumb->hasImage()) {	// could I load the thumb?
+			if (thumb->hasImage())	// could I load the thumb?
 				emit updateSignal();
-				qDebug() << "image exists...";
-			}
 			else {
 				thumb->setImgExists(false);
 				qDebug() << "image does NOT exist...";
 			}
+			
 		}
 		emit numFilesSignal(++numFilesLoaded);
 		mutex.unlock();

@@ -161,6 +161,7 @@ void DkFilePreview::init() {
 	currentFileIdx = 0;
 	oldFileIdx = 0;
 	mouseTrace = 0;
+	scrollToCurrentImage = false;
 
 	winPercent = 0.1f;
 	borderTrigger = (float)width()*winPercent;
@@ -199,7 +200,7 @@ void DkFilePreview::init() {
 	wheelButton->hide();
 
 }
-#include <qmath.h>
+
 void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 	//if (selected != -1)
@@ -240,8 +241,8 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 	if (currentFileIdx != oldFileIdx) {
 		oldFileIdx = currentFileIdx;
-		moveImages();
-	}	
+		moveImageTimer->start(1);
+	}
 }
 
 void DkFilePreview::drawThumbs(QPainter* painter) {
@@ -283,8 +284,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		// center vertically
 		r.moveCenter(QPoint(qRound(r.center().x()), height()/2));
 
-		if (idx == selected)
-			qDebug() << "rect: " << r;
+		//if (idx == selected)
+		//	qDebug() << "rect: " << r;
 
 		// update the buffer dim
 		bufferDim.setRight(qRound(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
@@ -292,14 +293,16 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		QRectF imgWorldRect = worldMatrix.mapRect(r);
 		
-		// if the image was just loaded -> go to the current thumbnail
-		if (currentFileIdx != oldFileIdx && currentFileIdx == idx)
-			currentDx = -(imgWorldRect.center().x()-width()/2.0f);
+		// update file rect for move to current file timer
+		if (scrollToCurrentImage && idx == currentFileIdx)
+			newFileRect = imgWorldRect;
 
 		// is the current image within the canvas?
 		if (imgWorldRect.right() < 0)
 			continue;
-		if (imgWorldRect.left() > width()) 
+		if (imgWorldRect.left() > width() && scrollToCurrentImage) 
+			continue;
+		else if (imgWorldRect.left() > width())
 			break;
 
 		// load the thumb!
@@ -313,7 +316,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		// show that there are more images...
 		if (worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
 			drawFadeOut(leftGradient, imgWorldRect, &img);
-		if (/*worldMatrix.dx() >= -(bufferDim.right()-width()+xOffset) && */imgWorldRect.right() > rightGradient.start().x())
+		if (imgWorldRect.right() > rightGradient.start().x())
 			drawFadeOut(rightGradient, imgWorldRect, &img);
 
 		if (idx == selected && !selectionGlow.isNull()) {
@@ -455,11 +458,12 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		lastMousePos = event->pos();
 		selected = -1;
 		setCursor(Qt::ClosedHandCursor);
+		scrollToCurrentImage = false;
 		moveImages();
 		return;
 	}
-	else
-		unsetCursor();
+	
+	unsetCursor();
 
 	int ndx = width() - event->pos().x();
 	int pdx = event->pos().x();
@@ -471,9 +475,10 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		dx = std::exp((borderTrigger - dx)/borderTrigger*3);
 		currentDx = (left) ? dx : -dx;
 		
+		scrollToCurrentImage = false;
 		moveImageTimer->start(1);
 	}
-	else if (dx > borderTrigger)
+	else if (dx > borderTrigger && !scrollToCurrentImage)
 		moveImageTimer->stop();
 
 	// select the current thumbnail
@@ -520,6 +525,8 @@ void DkFilePreview::mousePressEvent(QMouseEvent *event) {
 	else if (event->buttons() == Qt::MiddleButton) {
 		
 		enterPos = event->pos();
+		qDebug() << "stop scrolling (middle button)";
+		scrollToCurrentImage = false;
 		moveImageTimer->start(1);
 
 		// show icon
@@ -534,6 +541,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 	currentDx = 0;
 	moveImageTimer->stop();
 	wheelButton->hide();
+	qDebug() << "stopping image timer (mouse release)";
 
 	if (mouseTrace < 20) {
 
@@ -579,12 +587,26 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 void DkFilePreview::leaveEvent(QEvent *event) {
 
 	selected = -1;
-	moveImageTimer->stop();
+	if (!scrollToCurrentImage) {
+		moveImageTimer->stop();
+		qDebug() << "stopping timer (leaveEvent)";
+	}
 	fileLabel->hide();
 	update();
 }
 
 void DkFilePreview::moveImages() {
+
+	if (scrollToCurrentImage) {
+		currentDx = (width()/2.0f - newFileRect.center().x())/50.0f;
+
+		// end position
+		if (fabs((width()/2.0f - newFileRect.center().x())) < 1) {
+			currentDx = width()/2.0f-newFileRect.center().x();
+			moveImageTimer->stop();
+			scrollToCurrentImage = false;
+		}
+	}
 
 	// do not scroll out of the thumbs
 	if (worldMatrix.dx() >= width()*0.5 && currentDx > 0 || worldMatrix.dx() <= -(bufferDim.right()-width()*0.5+xOffset) && currentDx < 0)
@@ -640,6 +662,7 @@ void DkFilePreview::indexDir(bool force) {
 	if (thumbsLoader) {
 		oldFileIdx = currentFileIdx;
 		currentFileIdx = thumbsLoader->getFileIdx(currentFile);
+		scrollToCurrentImage = true;
 		update();
 	}
 

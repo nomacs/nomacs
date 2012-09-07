@@ -1236,6 +1236,7 @@ void DkNoMacs::restart() {
 }
 
 void DkNoMacs::enterFullScreen() {
+	
 	// switch off fullscreen if it's in it already
 	if (isFullScreen()) {
 		exitFullScreen();

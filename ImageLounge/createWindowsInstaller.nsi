@@ -7,7 +7,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "0.4.0 alpha"
+!define PRODUCT_VERSION "0.4.0 RC"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -415,8 +415,8 @@ Section "MainSection" SEC01
   File "ReallyRelease\libraw.dll"
   File "ReallyRelease\msvcp100.dll"
   File "ReallyRelease\msvcr100.dll"
-  File "ReallyRelease\opencv_core240.dll"
-  File "ReallyRelease\opencv_imgproc240.dll"
+  File "ReallyRelease\opencv_core242.dll"
+  File "ReallyRelease\opencv_imgproc242.dll"
   File "ReallyRelease\QtCore4.dll"
   File "ReallyRelease\QtGui4.dll"
   File "ReallyRelease\QtNetwork4.dll"
@@ -550,6 +550,8 @@ Section Uninstall
   Delete "$INSTDIR\opencv_core231.dll"
   Delete "$INSTDIR\opencv_imgproc240.dll"
   Delete "$INSTDIR\opencv_core240.dll"
+  Delete "$INSTDIR\opencv_imgproc242.dll"
+  Delete "$INSTDIR\opencv_core242.dll"
   Delete "$INSTDIR\msvcr100.dll"
   Delete "$INSTDIR\msvcp100.dll"
   Delete "$INSTDIR\libraw.dll"

@@ -48,6 +48,7 @@
 #include <QMap>
 #include <QDesktopServices>
 #include <QVector2D>
+#include <qmath.h>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -543,6 +544,7 @@ public:
 	};
 
 	void setCurrentDx(float dx) {
+		scrollToCurrentImage = false;	// external move events
 		this->currentDx = dx;
 	};
 
@@ -612,6 +614,9 @@ private:
 	int xOffset;
 	int yOffset;
 	int minHeight;
+
+	QRectF newFileRect;
+	bool scrollToCurrentImage;
 	
 	void init();
 	void indexDir(bool force = true);
