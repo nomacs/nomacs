@@ -8,9 +8,12 @@
 # make install
 #
 #
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0)
+PROJECT(nomacs)
 
-project(nomacs)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+if(COMMAND cmake_policy)
+      cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 
 
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
@@ -118,7 +121,7 @@ else (HAVE_EXIV2_HPP)
 endif (HAVE_EXIV2_HPP)
 
 
-IF (${ENABLE_RAW})
+IF (ENABLE_RAW)
 
 	# NOTE: libraw is used only when there is OpenCV found and used
 	# LibRaw
@@ -157,8 +160,11 @@ IF (${ENABLE_RAW})
     endif()
 	          
 	# OpenCV
-	pkg_check_modules(OpenCV  opencv>=2.1.0)
-	SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
+	SET(OpenCV_LIBS "")
+	if (PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
+		pkg_check_modules(OpenCV  opencv>=2.1.0)
+		SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
+	endif(PKG_CONFIG_FOUND)
 	IF (OpenCV_LIBS STREQUAL "") 
 		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
 	ENDIF()
@@ -189,7 +195,7 @@ IF (${ENABLE_RAW})
 		add_definitions(-DDISABLE_LANCZOS)
 	ENDIF()
 
-ENDIF(${ENABLE_RAW})
+ENDIF(ENABLE_RAW)
 	
 include_directories (
 	${QT_INCLUDES}
