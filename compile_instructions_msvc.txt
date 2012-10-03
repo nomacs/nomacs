@@ -1,24 +1,43 @@
 
-you need the Qt SDK or the compiled sources ( > 4.7.0) to compile nomacs
+you need the Qt SDK or the compiled sources (>= 4.7.0) to compile nomacs
 
--------------------------------------
-expat-2.0.1
-	open expat.dsw -> convert 'yes to all'
-	for "expat" project
-	rename output dll for debug configuration (add d) (Linker Options, General, Output File -> "..\win32\bin\Debug/libexpatd.dll")
-	rename outout lib for debug configuration (add d) (Linker Options, Advanced, Import Library -> ".\..\win32\bin\Debug/libexpatd.lib")
-	build "expat" project with debug and release configuration
+1. compile dependencies
+opencv [only needed if raw images are enabled]
+	you need to download and compile OpenCV (>= 2.2.0) using cmake
+
+libraw-0.13.5 [only needed if raw images are enabled]
+	open LibRaw-0.13.5/LibRaw.sln [convert projects if necessary]
+	build libraw (debug & release)
+	- don't care if some projects fail
+
+exiv2-0.23
+	open exiv2-0.23/msvc64/exiv2.sln [convert projects if necessary]
+	build all (DebugDLL & ReleaseDLL)
 	
-zlib-1.2.3
-	open projects/visualc6/zlib.dsw -> convert 'yes to all'
-	build "zlib" project with DLL Debug and DLL Release configuration
+2. make project
+cmake
+	load cmake gui (http://www.cmake.org/)
+	set your ImageLounge folder to (where is the source code)
+	set the output to nomacs/build (or whatever you like)
+	press configure and generate
 	
-exiv2-0.21.1
-	open msvc/exiv2.sln -> convert yes
-	in project exiv2lib
-	change for DebugDLL Configuration: "Configuration Properties" -> "Linker" -> "Input" -> "Additional Dependencies" libexpat.lib to libexpatd.lib
-	build "xmpsdk"  project with DebugDLL and ReleaseDLL configuration
-	build "exiv2lib" project with DebugDLL and ReleaseDLL configuration
+	if anything did not work:
+	 - check if you have setup opencv (otherwise uncheck ENABLE_RAW)
+	 - check if your Qt is set correctly (otherwise set the path to qt_install_dir/bin/qmake.exe
+	 - check if your builds proceeded correctly (see 1.)
+
+3. compile nomacs
+	open nomacs.sln in your build directory (see 2.)
+	right click the solution set single startup project to nomacs
+	build all 
+	
+	nomacs should start now
+	
+	if nomacs starts but no images can be loaded (check your qt_install_dir/plugin/imageformats) 
+	if necessary copy this folder to your release/debug path
+	
+	
+
 
 -------------------------------------
 needed only when raw images are enabled
