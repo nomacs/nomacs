@@ -72,7 +72,7 @@ IF (NOT EXIV2_FOUND AND MSVC)
 
 	find_path(EXPAT_BUILD_PATH NAMES "ReleaseDLL/libexpat.dll" "DebugDLL/libexpat.dll" PATHS "../exiv2-0.23/msvc64/expat/Win32" DOC "Path to the expat build directory" NO_DEFAULT_PATH)
 	
-	find_path(ZLIB_BUILD_PATH NAMES "Win32_DLL_Release/zlib1.dll" "Win32_DLL_Debug/zlib1d.dll" PATHS "../zlib-1.2.3/projects/visualc6/" DOC "Path to the zlib build directory" NO_DEFAULT_PATH)
+	find_path(ZLIB_BUILD_PATH NAMES "ReleaseDLL/zlib1.dll" "DebugDLL/zlib1d.dll" PATHS "../exiv2-0.23/msvc64/zlib/Win32/" DOC "Path to the zlib build directory" NO_DEFAULT_PATH)
 	
     IF(  EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll AND 
@@ -80,8 +80,8 @@ IF (NOT EXIV2_FOUND AND MSVC)
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.lib)
 		IF( EXISTS ${EXPAT_BUILD_PATH}/ReleaseDLL/libexpat.dll AND 
 			EXISTS ${EXPAT_BUILD_PATH}/DebugDLL/libexpat.dll)
-			IF( EXISTS ${ZLIB_BUILD_PATH}/Win32_DLL_Release/zlib1.dll AND
-				EXISTS ${ZLIB_BUILD_PATH}/Win32_DLL_Debug/zlib1d.dll )
+			IF( EXISTS ${ZLIB_BUILD_PATH}/ReleaseDLL/zlib1.dll AND
+				EXISTS ${ZLIB_BUILD_PATH}/DebugDLL/zlib1d.dll )
 		
 				FILE(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 				FILE(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
@@ -93,15 +93,15 @@ IF (NOT EXIV2_FOUND AND MSVC)
 				FILE(COPY ${EXPAT_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
 				FILE(COPY ${EXPAT_BUILD_PATH}/DebugDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 
-				FILE(COPY ${ZLIB_BUILD_PATH}/Win32_DLL_Release/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-				FILE(COPY ${ZLIB_BUILD_PATH}/Win32_DLL_Release/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-				FILE(COPY ${ZLIB_BUILD_PATH}/Win32_DLL_Debug/zlib1d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+				FILE(COPY ${ZLIB_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+				FILE(COPY ${ZLIB_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+				FILE(COPY ${ZLIB_BUILD_PATH}/DebugDLL/zlib1d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 				
 				SET(EXIV2_LIBRARIES optimized exiv2.lib debug exiv2d.lib)
 				SET(EXIV2_LIBRARY_DIRS "")
 				SET(EXIV2_FOUND true)
 			ELSE ()
-				message(WARNING "zlib build directory not found. Needs path which contains Win32_DLL_Release/zlib1.dll and Win32_DLL_Debug/zlib1d.dll")
+				message(WARNING "zlib build directory not found. Needs path which contains ReleaseDLL/zlib1.dll and DebugDLL/zlib1d.dll")
 			ENDIF()
 		ELSE()
 			message(WARNING "expat build directory not found. Needs path which contains ReleaseDLL/libexpat.dll and DebugDLL/libexpat.dll")
