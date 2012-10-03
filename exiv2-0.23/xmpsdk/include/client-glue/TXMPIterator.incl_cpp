@@ -1,0 +1,226 @@
+// =================================================================================================
+// ADOBE SYSTEMS INCORPORATED
+// Copyright 2002-2007 Adobe Systems Incorporated
+// All Rights Reserved
+//
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in accordance with the terms
+// of the Adobe license agreement accompanying it.
+// =================================================================================================
+
+//	================================================================================================
+/// \file TXMPIterator.incl_cpp
+/// \brief The implementation of the TXMPIterator template class.
+
+#include "XMPSDK.hpp"
+#include "client-glue/WXMP_Common.hpp"
+#include "client-glue/WXMPIterator.hpp"
+
+// =================================================================================================
+// Implementation Guidelines
+// =========================
+//
+// The implementations of the template functions are very stylized. The jobs done in this code are:
+//
+//	1. Set up the xmpIter template data member in the constructors.
+//	2. Call through to the appropriate WXMPIterator function.
+//	3. Copy returned strings and release the threading lock.
+//
+// The various kinds of functions follow similar patterns, first assuming no returned string:
+//
+// Constructors - Use an initializer for the xmpIter data member to call the WXMPIterator constructor.
+// Destructor - Let the WXMPIterator destructor be implicitly called for the xmpIter data member.
+// Static function - Simply call the corresponding WXMPIterator static function.
+// Non-static function - Simply call the corresponding WXMPIterator function using xmpIter.
+//
+// If a member function has returned strings the code looks roughly like this:
+//
+//	<<<callthrough>>>
+//	<<<checkfailure>>>
+//	if ( <<<appropriate>>> ) {
+//		if ( outStr != 0 ) outStr->assign ( outPtr, outLen );
+//		<<<unlock>>>
+//	}
+//	return result;
+//
+// The <<<callthrough>>> is the call to the wrapper, and <<<checkfailure>>> is the check and throw
+// if the wrapper reports failure. The <<<appropriate>>> check is used to determine if the string
+// should actually be assigned. For example, GetProperty can't assign the value if the property
+// does not exist. There is no <<<appropriate>>> check if it isn't, well, appropriate. Outputs are
+// always passed as explicit pointers, and null can be passed if the string is not wanted. The
+// inner implementation holds the threading lock if an output string is returned, regardless of
+// whether the client wants it or not (which the implementation does not know).
+//
+// =================================================================================================
+
+#ifndef XMP_TraceCTorDTor
+	#define XMP_TraceCTorDTor 0
+#endif
+
+#if XMP_TraceCTorDTor
+	class XIPeek {	// Hack to peek at the client ref count in the internal object.
+	public:
+		XIPeek();
+		virtual ~XIPeek();
+		XMP_Int32 clientRefs;
+	};
+#endif
+
+// -------------------------------------------------------------------------------------------------
+
+#define PropIterCTor(xmpRef,schemaNS,propName,options)												\
+	WrapCheckIterRef ( newRef, zXMPIterator_PropCTor_1 ( xmpRef, schemaNS, propName, options ) );	\
+	this->iterRef = newRef
+
+// -------------------------------------------------------------------------------------------------
+
+#define TableIterCTor(schemaNS,propName,options)													\
+	WrapCheckIterRef ( newRef, zXMPIterator_TableCTor_1 ( schemaNS, propName, options ) );	\
+	this->iterRef = newRef
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPIterator)::
+TXMPIterator ( const TXMPIterator<tStringObj> & original ) : iterRef(original.iterRef)
+{
+	WXMPIterator_IncrementRefCount_1 ( this->iterRef );
+	#if XMP_TraceCTorDTor
+		XIPeek* xiPtr = (XIPeek*)this->iterRef;
+		printf ( "Copy construct TXMPIterator @ %.8X, ref = %.8X, count = %d\n", this, xiPtr, xiPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPIterator,void)::
+operator= ( const TXMPIterator<tStringObj> & rhs )
+{
+	#if XMP_TraceCTorDTor
+		XIPeek* xiLHS = (XIPeek*)this->iterRef;
+		XIPeek* xiRHS = (XIPeek*)rhs.iterRef;
+		printf ( "Assign TXMPIterator, lhs @ %.8X, rhs @ %.8X\n", this, &rhs );
+		printf ( "   original lhs ref = %.8X, count = %d\n", xiLHS, xiLHS->clientRefs );
+		printf ( "   original rhs ref = %.8X, count = %d\n", xiRHS, xiRHS->clientRefs );
+	#endif
+	XMPIteratorRef oldRef = this->iterRef;	// ! Decrement last so errors leave client object OK.
+	this->iterRef = rhs.iterRef;
+	WXMPIterator_IncrementRefCount_1 ( this->iterRef );
+	WXMPIterator_DecrementRefCount_1 ( oldRef );
+	#if XMP_TraceCTorDTor
+		printf ( "   result   lhs ref = %.8X, count = %d\n", xiLHS, xiLHS->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPIterator)::
+TXMPIterator() : iterRef(0)
+{
+	throw XMP_Error ( kXMPErr_Unavailable, "No default construction for XMP iterators" );
+	#if XMP_TraceCTorDTor
+		XIPeek* xiPtr = (XIPeek*)this->iterRef;
+		printf ( "Default construct TXMPIterator @ %.8X, ref = %.8X, count = %d\n", this, xiPtr, xiPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPIterator)::
+TXMPIterator ( const TXMPMeta<tStringObj> & xmpObj,
+			   XMP_StringPtr  schemaNS,
+			   XMP_StringPtr  propName,
+			   XMP_OptionBits options /* = 0 */ ) : iterRef(0)
+{
+	PropIterCTor ( xmpObj.GetInternalRef(), schemaNS, propName, options );
+	#if XMP_TraceCTorDTor
+		XIPeek* xiPtr = (XIPeek*)this->iterRef;
+		printf ( "Construct property TXMPIterator @ %.8X, ref = %.8X, count = %d\n", this, xiPtr, xiPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPIterator)::
+TXMPIterator ( const TXMPMeta<tStringObj> & xmpObj,
+			   XMP_StringPtr  schemaNS,
+			   XMP_OptionBits options /* = 0 */ ) : iterRef(0)
+{
+	PropIterCTor ( xmpObj.GetInternalRef(), schemaNS, "", options );
+	#if XMP_TraceCTorDTor
+		XIPeek* xiPtr = (XIPeek*)this->iterRef;
+		printf ( "Construct schema TXMPIterator @ %.8X, ref = %.8X, count = %d\n", this, xiPtr, xiPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPIterator)::
+TXMPIterator ( const TXMPMeta<tStringObj> & xmpObj,
+			   XMP_OptionBits options /* = 0 */ ) : iterRef(0)
+{
+	PropIterCTor ( xmpObj.GetInternalRef(), "", "", options );
+	#if XMP_TraceCTorDTor
+		XIPeek* xiPtr = (XIPeek*)this->iterRef;
+		printf ( "Construct tree TXMPIterator @ %.8X, ref = %.8X, count = %d\n", this, xiPtr, xiPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPIterator)::
+TXMPIterator ( XMP_StringPtr  schemaNS,
+			   XMP_StringPtr  propName,
+			   XMP_OptionBits options ) : iterRef(0)
+{
+	TableIterCTor ( schemaNS, propName, options );
+	#if XMP_TraceCTorDTor
+		XIPeek* xiPtr = (XIPeek*)this->iterRef;
+		printf ( "Construct table TXMPIterator @ %.8X, ref = %.8X, count = %d\n", this, xiPtr, xiPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPIterator)::
+~TXMPIterator () throw()
+{
+	#if XMP_TraceCTorDTor
+		XIPeek* xiPtr = (XIPeek*)this->iterRef;
+		printf ( "Destruct TXMPIterator @ %.8X, ref = %.8X, count = %d\n", this, xiPtr, xiPtr->clientRefs );
+	#endif
+	WXMPIterator_DecrementRefCount_1 ( this->iterRef );
+	this->iterRef = 0;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPIterator,bool)::
+Next ( tStringObj *		schemaNS /* = 0 */,
+	   tStringObj *		propPath /* = 0 */,
+	   tStringObj *		propValue /* = 0 */,
+	   XMP_OptionBits * options /* = 0 */ )
+{
+	XMP_StringPtr schemaPtr = 0;
+	XMP_StringLen schemaLen = 0;
+	XMP_StringPtr pathPtr = 0;
+	XMP_StringLen pathLen = 0;
+	XMP_StringPtr valuePtr = 0;
+	XMP_StringLen valueLen = 0;
+	WrapCheckBool ( found, zXMPIterator_Next_1 ( &schemaPtr, &schemaLen, &pathPtr, &pathLen, &valuePtr, &valueLen, options ) );
+	if ( found ) {
+		if ( schemaNS != 0 ) schemaNS->assign ( schemaPtr, schemaLen );
+		if ( propPath != 0 ) propPath->assign ( pathPtr, pathLen );
+		if ( propValue != 0 ) propValue->assign ( valuePtr, valueLen );
+		WXMPUtils_UnlockIter_1 ( this->iterRef, 0 );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPIterator,void)::
+Skip ( XMP_OptionBits options )
+{
+	WrapCheckVoid ( zXMPIterator_Skip_1 ( options ) );
+}
+
+// =================================================================================================

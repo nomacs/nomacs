@@ -1,0 +1,28 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>IPTC Core schema</h2>
+<p>This schema specifies the IPTC Core XMP properties.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.iptc.&lt;Property&gt;</code></b>
+  <li>The schema namespace URI is <b><code>http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>Iptc4xmpCore</code></b></li>
+ </ul>
+Reference: <a href="http://www.iptc.org/std/Iptc4xmpCore/1.0/specification/Iptc4xmpCore_1.0-spec-XMPSchema_8.pdf" title="IPTC Core Schema for XMP">"IPTC Core" Schema for XMP</a></p>
+<p>Note: Exiv2 uses <b><code>iptc</code></b> (rather than <code>Iptc4xmpCore</code>) as the group name for keys of IPTC Core schema properties.</p>
+
+<p>Click on a column header to sort the table.</p>
+
+__xmp_iptc__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

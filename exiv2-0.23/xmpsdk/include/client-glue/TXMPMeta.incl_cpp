@@ -1,0 +1,935 @@
+// =================================================================================================
+// ADOBE SYSTEMS INCORPORATED
+// Copyright 2002-2008 Adobe Systems Incorporated
+// All Rights Reserved
+//
+// NOTICE:	Adobe permits you to use, modify, and distribute this file in accordance with the terms
+// of the Adobe license agreement accompanying it.
+// =================================================================================================
+
+//	================================================================================================
+/// \file TXMPMeta.incl_cpp
+/// \brief The implementation of the TXMPMeta template class.
+
+#include "XMPSDK.hpp"
+#include "client-glue/WXMP_Common.hpp"
+#include "client-glue/WXMPMeta.hpp"
+
+// =================================================================================================
+// Implementation Guidelines
+// =========================
+//
+// The implementations of the template functions are very stylized. ...
+//
+// =================================================================================================
+	
+#ifndef XMP_TraceCTorDTor
+	#define XMP_TraceCTorDTor 0
+#endif
+
+#if XMP_TraceCTorDTor
+	class XMPeek {	// Hack to peek at the client ref count in the internal object.
+	public:
+		XMPeek();
+		virtual ~XMPeek();
+		XMP_Int32 clientRefs;
+	};
+#endif
+
+// =================================================================================================
+// Local utilities
+// ===============
+
+// -------------------------------------------------------------------------------------------------
+
+class TOPW_Info {
+public:
+	XMP_TextOutputProc clientProc;
+	void *			   clientRefCon;
+	TOPW_Info ( XMP_TextOutputProc proc, void * refCon ) : clientProc(proc), clientRefCon(refCon) {};
+private:
+	TOPW_Info() {}; // ! Hide default constructor.
+};
+
+static XMP_Status TextOutputProcWrapper ( void *        refCon,
+                                          XMP_StringPtr buffer,
+                                          XMP_StringLen bufferSize )
+{
+	try {	// Don't let client callback exceptions propagate across DLL boundaries.
+		TOPW_Info * info = (TOPW_Info*)refCon;
+		return info->clientProc ( info->clientRefCon, buffer, bufferSize );
+	} catch ( ... ) {
+		return -1;
+	}
+}
+
+// =================================================================================================
+// Initialization and termination
+// ==============================
+
+XMP_MethodIntro(TXMPMeta,void)::
+GetVersionInfo ( XMP_VersionInfo * info )
+{
+	WrapNoCheckVoid ( zXMPMeta_GetVersionInfo_1 ( info ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+Initialize()
+{
+	WrapCheckBool ( ok, zXMPMeta_Initialize_1() );
+	return ok;
+}
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+Terminate()
+{
+	WrapNoCheckVoid ( zXMPMeta_Terminate_1() );
+}
+
+// =================================================================================================
+// Constuctors, destructor, operators
+// ==================================
+
+static XMPMetaRef DefaultCTor()
+{
+	WrapCheckMetaRef ( newRef, zXMPMeta_CTor_1() );
+	return newRef;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPMeta)::
+TXMPMeta() : xmpRef(DefaultCTor())
+{
+	#if XMP_TraceCTorDTor
+		XMPeek* xmPtr = (XMPeek*)this->xmpRef;
+		printf ( "Default construct TXMPMeta @ %.8X, ref = %.8X, count = %d\n", this, xmPtr, xmPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPMeta)::
+TXMPMeta ( const TXMPMeta<tStringObj> & original ) : xmpRef(original.xmpRef)
+{
+	WXMPMeta_IncrementRefCount_1 ( this->xmpRef );
+	#if XMP_TraceCTorDTor
+		XMPeek* xmPtr = (XMPeek*)this->xmpRef;
+		printf ( "Copy construct TXMPMeta @ %.8X, ref = %.8X, count = %d\n", this, xmPtr, xmPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+operator= ( const TXMPMeta<tStringObj> & rhs )
+{
+	#if XMP_TraceCTorDTor
+		XMPeek* xmLHS = (XMPeek*)this->xmpRef;
+		XMPeek* xmRHS = (XMPeek*)rhs.xmpRef;
+		printf ( "Assign TXMPMeta, lhs @ %.8X, rhs @ %.8X\n", this, &rhs );
+		printf ( "   original lhs ref = %.8X, count = %d\n", xmLHS, xmLHS->clientRefs );
+		printf ( "   original rhs ref = %.8X, count = %d\n", xmRHS, xmRHS->clientRefs );
+	#endif
+	XMPMetaRef oldRef = this->xmpRef;	// ! Decrement last so errors leave client object OK.
+	this->xmpRef = rhs.xmpRef;
+	WXMPMeta_IncrementRefCount_1 ( this->xmpRef );	// Increment the count on the new ref.
+	WXMPMeta_DecrementRefCount_1 ( oldRef );		// Decrement the count on the old ref.
+	#if XMP_TraceCTorDTor
+		printf ( "   result   lhs ref = %.8X, count = %d\n", xmLHS, xmLHS->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPMeta)::
+TXMPMeta ( XMPMetaRef _xmpRef ) : xmpRef(_xmpRef)
+{
+	WXMPMeta_IncrementRefCount_1 ( this->xmpRef );
+	#if XMP_TraceCTorDTor
+		XMPeek* xmPtr = (XMPeek*)this->xmpRef;
+		printf ( "Ref construct TXMPMeta @ %.8X, ref = %.8X, count = %d\n", this, xmPtr, xmPtr->clientRefs );
+	#endif
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPMeta)::
+TXMPMeta ( XMP_StringPtr buffer,
+           XMP_StringLen xmpSize ) : xmpRef(DefaultCTor())
+{
+	#if XMP_TraceCTorDTor
+		XMPeek* xmPtr = (XMPeek*)this->xmpRef;
+		printf ( "Parse construct TXMPMeta @ %.8X, ref = %.8X, count = %d\n", this, xmPtr, xmPtr->clientRefs );
+	#endif
+	try {
+		this->ParseFromBuffer ( buffer, xmpSize );
+	} catch ( ... ) {
+		WXMPMeta_DecrementRefCount_1 ( this->xmpRef );
+		this->xmpRef = 0;
+		throw;
+	}
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_CTorDTorIntro(TXMPMeta)::
+~TXMPMeta() throw()
+{
+	#if XMP_TraceCTorDTor
+		XMPeek* xmPtr = (XMPeek*)this->xmpRef;
+		printf ( "Destruct TXMPMeta @ %.8X, ref = %.8X, count = %d\n", this, xmPtr, xmPtr->clientRefs );
+	#endif
+	WXMPMeta_DecrementRefCount_1 ( this->xmpRef );
+	this->xmpRef = 0;
+
+}	// ~TXMPMeta ()
+
+// =================================================================================================
+// Global state functions
+// ======================
+
+XMP_MethodIntro(TXMPMeta,XMP_OptionBits)::
+GetGlobalOptions()
+{
+	WrapCheckOptions ( options, zXMPMeta_GetGlobalOptions_1() );
+	return options;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetGlobalOptions ( XMP_OptionBits options )
+{
+	WrapCheckVoid ( zXMPMeta_SetGlobalOptions_1 ( options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,XMP_Status)::
+DumpNamespaces ( XMP_TextOutputProc outProc,
+                 void *             refCon )
+{
+	TOPW_Info info ( outProc, refCon );
+	WrapCheckStatus ( status, zXMPMeta_DumpNamespaces_1 ( TextOutputProcWrapper, &info ) );
+	return status;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,XMP_Status)::
+DumpAliases ( XMP_TextOutputProc outProc,
+              void *             refCon )
+{
+	TOPW_Info info ( outProc, refCon );
+	WrapCheckStatus ( status, zXMPMeta_DumpAliases_1 ( TextOutputProcWrapper, &info ) );
+	return status;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+RegisterNamespace ( XMP_StringPtr namespaceURI,
+                    XMP_StringPtr prefix )
+{
+	WrapCheckVoid ( zXMPMeta_RegisterNamespace_1 ( namespaceURI, prefix ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetNamespacePrefix ( XMP_StringPtr namespaceURI,
+                     tStringObj *  namespacePrefix )
+{
+	XMP_StringPtr resultPtr = 0;
+	XMP_StringLen resultLen = 0;
+	WrapCheckBool ( found, zXMPMeta_GetNamespacePrefix_1 ( namespaceURI, &resultPtr, &resultLen ) );
+	if ( found ) {
+		if ( namespacePrefix != 0 ) namespacePrefix->assign ( resultPtr, resultLen );
+		WXMPMeta_Unlock_1 ( 0 );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetNamespaceURI ( XMP_StringPtr namespacePrefix,
+                  tStringObj *  namespaceURI )
+{
+	XMP_StringPtr resultPtr = 0;
+	XMP_StringLen resultLen = 0;
+	WrapCheckBool ( found, zXMPMeta_GetNamespaceURI_1 ( namespacePrefix, &resultPtr, &resultLen ) );
+	if ( found ) {
+		if ( namespaceURI != 0 ) namespaceURI->assign ( resultPtr, resultLen );
+		WXMPMeta_Unlock_1 ( 0 );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+DeleteNamespace ( XMP_StringPtr namespaceURI )
+{
+	WrapCheckVoid ( zXMPMeta_DeleteNamespace_1 ( namespaceURI ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+RegisterAlias ( XMP_StringPtr  aliasNS,
+                XMP_StringPtr  aliasProp,
+				XMP_StringPtr  actualNS,
+				XMP_StringPtr  actualProp,
+				XMP_OptionBits arrayForm )
+{
+	WrapCheckVoid ( zXMPMeta_RegisterAlias_1 ( aliasNS, aliasProp, actualNS, actualProp, arrayForm ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+ResolveAlias ( XMP_StringPtr    aliasNS,
+               XMP_StringPtr    aliasProp,
+			   tStringObj *     actualNS,
+			   tStringObj *     actualProp,
+			   XMP_OptionBits * arrayForm )
+{
+	XMP_StringPtr nsPtr = 0;
+	XMP_StringLen nsLen = 0;
+	XMP_StringPtr propPtr = 0;
+	XMP_StringLen propLen = 0;
+	WrapCheckBool ( found, zXMPMeta_ResolveAlias_1 ( aliasNS, aliasProp, &nsPtr, &nsLen, &propPtr, &propLen, arrayForm ) );
+	if ( found ) {
+		if ( actualNS != 0 ) actualNS->assign ( nsPtr, nsLen );
+		if ( actualProp != 0 ) actualProp->assign ( propPtr, propLen );
+		WXMPMeta_Unlock_1 ( 0 );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+DeleteAlias ( XMP_StringPtr aliasNS,
+              XMP_StringPtr aliasProp )
+{
+	WrapCheckVoid ( zXMPMeta_DeleteAlias_1 ( aliasNS, aliasProp ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+RegisterStandardAliases ( XMP_StringPtr schemaNS )
+{
+	WrapCheckVoid ( zXMPMeta_RegisterStandardAliases_1 ( schemaNS ) );
+}
+
+// =================================================================================================
+// Basic property manipulation functions
+// =====================================
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetProperty ( XMP_StringPtr    schemaNS,
+              XMP_StringPtr    propName,
+			  tStringObj *     propValue,
+			  XMP_OptionBits * options ) const
+{
+	XMP_StringPtr resultPtr = 0;
+	XMP_StringLen resultLen = 0;
+	WrapCheckBool ( found, zXMPMeta_GetProperty_1 ( schemaNS, propName, &resultPtr, &resultLen, options ) );
+	if ( found ) {
+		if ( propValue != 0 ) propValue->assign ( resultPtr, resultLen );
+		WXMPMeta_UnlockObject_1 ( this->xmpRef, 0 );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetArrayItem ( XMP_StringPtr    schemaNS,
+               XMP_StringPtr    arrayName,
+               XMP_Index        itemIndex,
+			   tStringObj *     itemValue,
+			   XMP_OptionBits * options ) const
+{
+	XMP_StringPtr resultPtr = 0;
+	XMP_StringLen resultLen = 0;
+	WrapCheckBool ( found, zXMPMeta_GetArrayItem_1 ( schemaNS, arrayName, itemIndex, &resultPtr, &resultLen, options ) );
+	if ( found ) {
+		if ( itemValue != 0 ) itemValue->assign ( resultPtr, resultLen );
+		WXMPMeta_UnlockObject_1 ( this->xmpRef, 0 );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetStructField ( XMP_StringPtr    schemaNS,
+                 XMP_StringPtr    structName,
+				 XMP_StringPtr    fieldNS,
+				 XMP_StringPtr    fieldName,
+				 tStringObj *     fieldValue,
+				 XMP_OptionBits * options ) const
+{
+	XMP_StringPtr resultPtr = 0;
+	XMP_StringLen resultLen = 0;
+	WrapCheckBool ( found, zXMPMeta_GetStructField_1 ( schemaNS, structName, fieldNS, fieldName, &resultPtr, &resultLen, options ) );
+	if ( found ) {
+		if ( fieldValue != 0 ) fieldValue->assign ( resultPtr, resultLen );
+		WXMPMeta_UnlockObject_1 ( this->xmpRef, 0 );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetQualifier ( XMP_StringPtr    schemaNS,
+               XMP_StringPtr    propName,
+			   XMP_StringPtr    qualNS,
+			   XMP_StringPtr    qualName,
+			   tStringObj *     qualValue,
+			   XMP_OptionBits * options ) const
+{
+	XMP_StringPtr resultPtr = 0;
+	XMP_StringLen resultLen = 0;
+	WrapCheckBool ( found, zXMPMeta_GetQualifier_1 ( schemaNS, propName, qualNS, qualName, &resultPtr, &resultLen, options ) );
+	if ( found ) {
+		if ( qualValue != 0 ) qualValue->assign ( resultPtr, resultLen );
+		WXMPMeta_UnlockObject_1 ( this->xmpRef, 0 );
+	}
+	return found;
+}	//GetQualifier ()
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetProperty ( XMP_StringPtr  schemaNS,
+              XMP_StringPtr  propName,
+			  XMP_StringPtr  propValue,
+			  XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetProperty_1 ( schemaNS, propName, propValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetProperty ( XMP_StringPtr      schemaNS,
+              XMP_StringPtr      propName,
+			  const tStringObj & propValue,
+			  XMP_OptionBits     options /* = 0 */ )
+{
+	this->SetProperty ( schemaNS, propName, propValue.c_str(), options );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetArrayItem ( XMP_StringPtr  schemaNS,
+               XMP_StringPtr  arrayName,
+               XMP_Index      itemIndex,
+			   XMP_StringPtr  itemValue,
+			   XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetArrayItem_1 ( schemaNS, arrayName, itemIndex, itemValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetArrayItem ( XMP_StringPtr      schemaNS,
+               XMP_StringPtr      arrayName,
+               XMP_Index          itemIndex,
+			   const tStringObj & itemValue,
+			   XMP_OptionBits     options /* = 0 */ )
+{
+	this->SetArrayItem ( schemaNS, arrayName, itemIndex, itemValue.c_str(), options );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+AppendArrayItem ( XMP_StringPtr  schemaNS,
+                  XMP_StringPtr  arrayName,
+                  XMP_OptionBits arrayOptions,
+				  XMP_StringPtr  itemValue,
+				  XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_AppendArrayItem_1 ( schemaNS, arrayName, arrayOptions, itemValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+AppendArrayItem ( XMP_StringPtr      schemaNS,
+                  XMP_StringPtr      arrayName,
+                  XMP_OptionBits     arrayOptions,
+				  const tStringObj & itemValue,
+				  XMP_OptionBits     options /* = 0 */ )
+{
+	this->AppendArrayItem ( schemaNS, arrayName, arrayOptions, itemValue.c_str(), options );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetStructField ( XMP_StringPtr  schemaNS,
+                 XMP_StringPtr  structName,
+				 XMP_StringPtr  fieldNS,
+				 XMP_StringPtr  fieldName,
+				 XMP_StringPtr  fieldValue,
+				 XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetStructField_1 ( schemaNS, structName, fieldNS, fieldName, fieldValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetStructField ( XMP_StringPtr      schemaNS,
+                 XMP_StringPtr      structName,
+				 XMP_StringPtr      fieldNS,
+				 XMP_StringPtr      fieldName,
+				 const tStringObj & fieldValue,
+				 XMP_OptionBits     options /* = 0 */ )
+{
+	this->SetStructField ( schemaNS, structName, fieldNS, fieldName, fieldValue.c_str(), options );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetQualifier ( XMP_StringPtr  schemaNS,
+               XMP_StringPtr  propName,
+			   XMP_StringPtr  qualNS,
+			   XMP_StringPtr  qualName,
+			   XMP_StringPtr  qualValue,
+			   XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetQualifier_1 ( schemaNS, propName, qualNS, qualName, qualValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetQualifier ( XMP_StringPtr      schemaNS,
+               XMP_StringPtr      propName,
+			   XMP_StringPtr      qualNS,
+			   XMP_StringPtr      qualName,
+			   const tStringObj & qualValue,
+			   XMP_OptionBits     options /* = 0 */ )
+{
+	this->SetQualifier ( schemaNS, propName, qualNS, qualName, qualValue.c_str(), options );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+DeleteProperty ( XMP_StringPtr schemaNS,
+                 XMP_StringPtr propName )
+{
+	WrapCheckVoid ( zXMPMeta_DeleteProperty_1 ( schemaNS, propName ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+DeleteArrayItem ( XMP_StringPtr schemaNS,
+                  XMP_StringPtr arrayName,
+                  XMP_Index     itemIndex )
+{
+	WrapCheckVoid ( zXMPMeta_DeleteArrayItem_1 ( schemaNS, arrayName, itemIndex ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+DeleteStructField ( XMP_StringPtr schemaNS,
+                    XMP_StringPtr structName,
+					XMP_StringPtr fieldNS,
+					XMP_StringPtr fieldName )
+{
+	WrapCheckVoid ( zXMPMeta_DeleteStructField_1 ( schemaNS, structName, fieldNS, fieldName ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+DeleteQualifier ( XMP_StringPtr schemaNS,
+                  XMP_StringPtr propName,
+				  XMP_StringPtr qualNS,
+				  XMP_StringPtr qualName )
+{
+	WrapCheckVoid ( zXMPMeta_DeleteQualifier_1 ( schemaNS, propName, qualNS, qualName ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+DoesPropertyExist ( XMP_StringPtr schemaNS,
+                    XMP_StringPtr propName ) const
+{
+	WrapCheckBool ( exists, zXMPMeta_DoesPropertyExist_1 ( schemaNS, propName ) );
+	return exists;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+DoesArrayItemExist ( XMP_StringPtr schemaNS,
+                     XMP_StringPtr arrayName,
+                     XMP_Index itemIndex ) const
+{
+	WrapCheckBool ( exists, zXMPMeta_DoesArrayItemExist_1 ( schemaNS, arrayName, itemIndex ) );
+	return exists;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+DoesStructFieldExist ( XMP_StringPtr schemaNS,
+                       XMP_StringPtr structName,
+					   XMP_StringPtr fieldNS,
+					   XMP_StringPtr fieldName ) const
+{
+	WrapCheckBool ( exists, zXMPMeta_DoesStructFieldExist_1 ( schemaNS, structName, fieldNS, fieldName ) );
+	return exists;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+DoesQualifierExist ( XMP_StringPtr schemaNS,
+                     XMP_StringPtr propName,
+					 XMP_StringPtr qualNS,
+					 XMP_StringPtr qualName ) const
+{
+	WrapCheckBool ( exists, zXMPMeta_DoesQualifierExist_1 ( schemaNS, propName, qualNS, qualName ) );
+	return exists;
+}
+
+// =================================================================================================
+// Specialized Get and Set functions
+// =================================
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetLocalizedText ( XMP_StringPtr    schemaNS,
+                   XMP_StringPtr    altTextName,
+				   XMP_StringPtr    genericLang,
+				   XMP_StringPtr    specificLang,
+				   tStringObj *     actualLang,
+				   tStringObj *     itemValue,
+				   XMP_OptionBits * options ) const
+{
+	XMP_StringPtr langPtr = 0;
+	XMP_StringLen langLen = 0;
+	XMP_StringPtr itemPtr = 0;
+	XMP_StringLen itemLen = 0;
+	WrapCheckBool ( found, zXMPMeta_GetLocalizedText_1 ( schemaNS, altTextName, genericLang, specificLang,
+														 &langPtr, &langLen, &itemPtr, &itemLen, options ) );
+	if ( found ) {
+		if ( actualLang != 0 ) actualLang->assign ( langPtr, langLen );
+		if ( itemValue != 0 ) itemValue->assign ( itemPtr, itemLen );
+		WXMPMeta_UnlockObject_1 ( this->xmpRef, kXMP_NoOptions );
+	}
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetLocalizedText ( XMP_StringPtr  schemaNS,
+                   XMP_StringPtr  altTextName,
+				   XMP_StringPtr  genericLang,
+				   XMP_StringPtr  specificLang,
+				   XMP_StringPtr  itemValue,
+				   XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetLocalizedText_1 ( schemaNS, altTextName, genericLang, specificLang, itemValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetLocalizedText ( XMP_StringPtr      schemaNS,
+                   XMP_StringPtr      altTextName,
+				   XMP_StringPtr      genericLang,
+				   XMP_StringPtr      specificLang,
+				   const tStringObj & itemValue,
+				   XMP_OptionBits     options /* = 0 */ )
+{
+	this->SetLocalizedText ( schemaNS, altTextName, genericLang, specificLang, itemValue.c_str(), options );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetProperty_Bool ( XMP_StringPtr    schemaNS,
+                   XMP_StringPtr    propName,
+				   bool *           propValue,
+				   XMP_OptionBits * options ) const
+{
+	XMP_Bool binValue;
+	WrapCheckBool ( found, zXMPMeta_GetProperty_Bool_1 ( schemaNS, propName, &binValue, options ) );
+	if ( found && (propValue != 0) ) *propValue = binValue;
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetProperty_Int ( XMP_StringPtr    schemaNS,
+                  XMP_StringPtr    propName,
+				  long *           propValue,
+				  XMP_OptionBits * options ) const
+{
+	XMP_Int32 abiValue;
+	WrapCheckBool ( found, zXMPMeta_GetProperty_Int_1 ( schemaNS, propName, &abiValue, options ) );
+	if ( found && (propValue != 0) ) *propValue = abiValue;
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetProperty_Int64 ( XMP_StringPtr    schemaNS,
+                    XMP_StringPtr    propName,
+				    long long *      propValue,
+				    XMP_OptionBits * options ) const
+{
+	XMP_Int64 abiValue;
+	WrapCheckBool ( found, zXMPMeta_GetProperty_Int64_1 ( schemaNS, propName, &abiValue, options ) );
+	if ( found && (propValue != 0) ) *propValue = abiValue;
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetProperty_Float ( XMP_StringPtr    schemaNS,
+                    XMP_StringPtr    propName,
+					double *         propValue,
+					XMP_OptionBits * options ) const
+{
+	WrapCheckBool ( found, zXMPMeta_GetProperty_Float_1 ( schemaNS, propName, propValue, options ) );
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,bool)::
+GetProperty_Date ( XMP_StringPtr    schemaNS,
+                   XMP_StringPtr    propName,
+				   XMP_DateTime *   propValue,
+				   XMP_OptionBits * options ) const
+{
+	WrapCheckBool ( found, zXMPMeta_GetProperty_Date_1 ( schemaNS, propName, propValue, options ) );
+	return found;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetProperty_Bool ( XMP_StringPtr  schemaNS,
+                   XMP_StringPtr  propName,
+				   bool           propValue,
+				   XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetProperty_Bool_1 ( schemaNS, propName, propValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetProperty_Int ( XMP_StringPtr  schemaNS,
+                  XMP_StringPtr  propName,
+				  long           propValue,
+				  XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetProperty_Int_1 ( schemaNS, propName, propValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetProperty_Int64 ( XMP_StringPtr  schemaNS,
+                    XMP_StringPtr  propName,
+				    long long      propValue,
+				    XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetProperty_Int64_1 ( schemaNS, propName, propValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetProperty_Float ( XMP_StringPtr  schemaNS,
+                    XMP_StringPtr  propName,
+					double         propValue,
+					XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetProperty_Float_1 ( schemaNS, propName, propValue, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetProperty_Date ( XMP_StringPtr        schemaNS,
+                   XMP_StringPtr        propName,
+				   const XMP_DateTime &	propValue,
+				   XMP_OptionBits       options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_SetProperty_Date_1 ( schemaNS, propName, propValue, options ) );
+}
+
+// =================================================================================================
+// Miscellaneous Member Functions
+// ==============================
+
+XMP_MethodIntro(TXMPMeta,XMPMetaRef)::
+GetInternalRef() const
+{
+	return this->xmpRef;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+GetObjectName ( tStringObj * name ) const
+{
+	XMP_StringPtr namePtr = 0;
+	XMP_StringLen nameLen = 0;
+	WrapCheckVoid ( zXMPMeta_GetObjectName_1 ( &namePtr, &nameLen ) );
+	if ( name != 0 ) name->assign ( namePtr, nameLen );
+	WXMPMeta_UnlockObject_1 ( this->xmpRef, 0 );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetObjectName ( XMP_StringPtr name )
+{
+	WrapCheckVoid ( zXMPMeta_SetObjectName_1 ( name ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetObjectName ( tStringObj name )
+{
+	this->SetObjectName ( name.c_str() );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,XMP_OptionBits)::
+GetObjectOptions() const
+{
+	WrapCheckOptions ( options, zXMPMeta_GetObjectOptions_1() );
+	return options;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SetObjectOptions ( XMP_OptionBits options )
+{
+	WrapCheckVoid ( zXMPMeta_SetObjectOptions_1 ( options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+Sort()
+{
+	WrapCheckVoid ( zXMPMeta_Sort_1() );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+Erase()
+{
+	WrapCheckVoid ( zXMPMeta_Erase_1() );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,TXMPMeta<tStringObj>)::
+Clone ( XMP_OptionBits options ) const
+{
+	WrapCheckMetaRef ( cloneRef, zXMPMeta_Clone_1 ( options ) );
+	return TXMPMeta<tStringObj> ( cloneRef );	// Ref construct will increment the clientRefs.
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,XMP_Index)::
+CountArrayItems ( XMP_StringPtr schemaNS,
+                  XMP_StringPtr arrayName ) const
+{
+	WrapCheckIndex ( count, zXMPMeta_CountArrayItems_1 ( schemaNS, arrayName ) );
+	return count;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,XMP_Status)::
+DumpObject ( XMP_TextOutputProc outProc,
+             void *             refCon ) const
+{
+	TOPW_Info info ( outProc, refCon );
+	WrapCheckStatus ( status, zXMPMeta_DumpObject_1 ( TextOutputProcWrapper, &info ) );
+	return status;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+ParseFromBuffer ( XMP_StringPtr  buffer,
+                  XMP_StringLen  bufferSize,
+                  XMP_OptionBits options /* = 0 */ )
+{
+	WrapCheckVoid ( zXMPMeta_ParseFromBuffer_1 ( buffer, bufferSize, options ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SerializeToBuffer ( tStringObj *   pktString,
+                    XMP_OptionBits options,
+                    XMP_StringLen  padding,
+					XMP_StringPtr  newline,
+					XMP_StringPtr  indent,
+					XMP_Index      baseIndent /* = 0 */ ) const
+{
+	XMP_StringPtr resultPtr = 0;
+	XMP_StringLen resultLen = 0;
+	WrapCheckVoid ( zXMPMeta_SerializeToBuffer_1 ( &resultPtr, &resultLen, options, padding, newline, indent, baseIndent ) );
+	if ( pktString != 0 ) pktString->assign ( resultPtr, resultLen );
+	WXMPMeta_UnlockObject_1 ( this->xmpRef, 0 );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+XMP_MethodIntro(TXMPMeta,void)::
+SerializeToBuffer ( tStringObj *   pktString,
+					XMP_OptionBits options /* = 0 */,
+					XMP_StringLen  padding /* = 0 */ ) const
+{
+	this->SerializeToBuffer ( pktString, options, padding, "", "", 0 );
+}
+
+// -------------------------------------------------------------------------------------------------
+
+// =================================================================================================

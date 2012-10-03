@@ -1,0 +1,1116 @@
+exiv2 0.23 001700 (32 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2 0.23 001700 (32 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2 0.23 001700 (32 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2 0.23 001700 (32 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2 0.23 001700 (64 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2 0.23 001700 (64 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2 0.23 001700 (64 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2 0.23 001700 (64 bit build)
+Copyright (C) 2004-2012 Andreas Huggel.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301 USA
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Image.Make                              Ascii       6  Canon
+Exif.Image.Model                             Ascii      22  Canon PowerShot S5 IS
+Exif.Image.Orientation                       Short       1  top, left
+Exif.Image.XResolution                       Rational    1  180
+Exif.Image.YResolution                       Rational    1  180
+Exif.Image.ResolutionUnit                    Short       1  inch
+Exif.Image.DateTime                          Ascii      20  2008:09:06 14:34:23
+Exif.Image.YCbCrPositioning                  Short       1  Centered
+Exif.Image.ExifTag                           Long        1  186
+Exif.Photo.ExposureTime                      Rational    1  1/500 s
+Exif.Photo.FNumber                           Rational    1  F4
+Exif.Photo.ISOSpeedRatings                   Short       1  80
+Exif.Photo.ExifVersion                       Undefined   4  2.20
+Exif.Photo.DateTimeOriginal                  Ascii      20  2008:09:06 14:34:23
+Exif.Photo.DateTimeDigitized                 Ascii      20  2008:09:06 14:34:23
+Exif.Photo.ComponentsConfiguration           Undefined   4  YCbCr
+Exif.Photo.CompressedBitsPerPixel            Rational    1  3
+Exif.Photo.ShutterSpeedValue                 SRational   1  1/501 s
+Exif.Photo.ApertureValue                     Rational    1  F4
+Exif.Photo.ExposureBiasValue                 SRational   1  0 EV
+Exif.Photo.MaxApertureValue                  Rational    1  F3.5
+Exif.Photo.MeteringMode                      Short       1  Multi-segment
+Exif.Photo.Flash                             Short       1  No, compulsory
+Exif.Photo.FocalLength                       Rational    1  21.3 mm
+Exif.Photo.MakerNote                         Undefined 2382  (Binary value suppressed)
+Exif.MakerNote.Offset                        Long        1  680
+Exif.MakerNote.ByteOrder                     Ascii       3  MM
+Exif.CanonCs.Macro                           Short       1  Off
+Exif.CanonCs.Selftimer                       Short       1  Off
+Exif.CanonCs.Quality                         Short       1  Fine
+Exif.CanonCs.FlashMode                       Short       1  Off
+Exif.CanonCs.DriveMode                       Short       1  Single / timer
+Exif.CanonCs.FocusMode                       Short       1  Single
+Exif.CanonCs.ImageSize                       Short       1  Medium 1
+Exif.CanonCs.EasyMode                        Short       1  Manual
+Exif.CanonCs.DigitalZoom                     Short       1  None
+Exif.CanonCs.Contrast                        Short       1  Normal
+Exif.CanonCs.Saturation                      Short       1  Normal
+Exif.CanonCs.Sharpness                       Short       1  Normal
+Exif.CanonCs.ISOSpeed                        Short       1  Auto
+Exif.CanonCs.MeteringMode                    Short       1  Evaluative
+Exif.CanonCs.FocusType                       Short       1  Auto
+Exif.CanonCs.AFPoint                         Short       1  Manual AF point selection
+Exif.CanonCs.ExposureProgram                 Short       1  Program (P)
+Exif.CanonCs.LensType                        Short       1  (65535)
+Exif.CanonCs.Lens                            Short       3  6.0 - 72.0 mm
+Exif.CanonCs.MaxAperture                     Short       1  F3.6
+Exif.CanonCs.MinAperture                     Short       1  F8
+Exif.CanonCs.FlashActivity                   Short       1  Did not fire
+Exif.CanonCs.FlashDetails                    Short       1  
+Exif.CanonCs.FocusContinuous                 Short       1  Continuous
+Exif.CanonCs.AESetting                       Short       1  Normal AE
+Exif.CanonCs.ImageStabilization              Short       1  On
+Exif.CanonCs.DisplayAperture                 Short       1  0
+Exif.CanonCs.ZoomSourceWidth                 Short       1  3264
+Exif.CanonCs.ZoomTargetWidth                 Short       1  3264
+Exif.CanonCs.SpotMeteringMode                Short       1  Center
+Exif.CanonCs.PhotoEffect                     Short       1  (65535)
+Exif.CanonCs.ManualFlashOutput               Short       1  n/a
+Exif.CanonCs.ColorTone                       Short       1  32767
+Exif.Canon.FocalLength                       Short       4  21.3 mm
+Exif.CanonSi.ISOSpeed                        Short       1  100
+Exif.CanonSi.MeasuredEV                      Short       1  14.25
+Exif.CanonSi.TargetAperture                  Short       1  F4
+Exif.CanonSi.TargetShutterSpeed              Short       1  1/501 s
+Exif.CanonSi.WhiteBalance                    Short       1  Sunny
+Exif.CanonSi.Sequence                        Short       1  0
+Exif.CanonSi.AFPointUsed                     Short       1  0 focus points; none used
+Exif.CanonSi.FlashBias                       Short       1  0 EV
+Exif.CanonSi.SubjectDistance                 Short       1  503
+Exif.CanonSi.ApertureValue                   Short       1  F4
+Exif.CanonSi.ShutterSpeedValue               Short       1  1/546 s
+Exif.CanonSi.MeasuredEV2                     Short       1  -6.00
+Exif.Canon.ImageType                         Ascii      25  IMG:PowerShot S5 IS JPEG
+Exif.Canon.FirmwareVersion                   Ascii      22  Firmware Version 1.01
+Exif.Canon.FileNumber                        Long        1  100-1904
+Exif.Canon.OwnerName                         Ascii      32  Robin Mills
+Exif.Canon.CameraInfo                        Long      148  370 411 0 0 0 384 874 4294967255 0 0 0 0 577 889 4294967150 0 0 4294967287 0 0 1 0 0 0 9 10 888 888 888 384 1015 4294967148 0 0 888 888 0 0 1 3072 3072 3072 3072 3072 4294964224 4294964224 4294964224 4294964224 4294964224 0 4294964224 4294967287 0 0 0 0 0 0 0 0 0 0 164 1024 1024 40 94 0 0 0 0 0 0 525 0 40 94 0 0 3 1 0 0 921 1027 1024 1280 0 40 97 10 881 1646 1711 881 1 1014 384 888 659 4294967148 2 128 1 0 0 0 0 7532 5 0 0 0 0 0 0 7819 8252 8279 128 1 0 4294961112 3 1 7471 0 0 0 0 0 0 0 0 5345 1088 245 446 100 196 44 4091 4091 1 1 25 8 2400605383
+Exif.Canon.ModelID                           Long        1  PowerShot S5 IS
+Exif.Canon.ThumbnailImageValidArea           Short       4  0 0 0 0
+Exif.Canon.SuperMacro                        Short       1  Off
+Exif.Canon.AFInfo                            Short      48  96 2 9 1 2592 1944 1088 245 196 0 0 0 0 0 0 0 0 44 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+Exif.Photo.UserComment                       Undefined 264  (Binary value suppressed)
+Exif.Photo.FlashpixVersion                   Undefined   4  1.00
+Exif.Photo.ColorSpace                        Short       1  sRGB
+Exif.Photo.PixelXDimension                   Short       1  2592
+Exif.Photo.PixelYDimension                   Short       1  1944
+Exif.Photo.InteroperabilityTag               Long        1  3350
+Exif.Iop.InteroperabilityIndex               Ascii       4  R98
+Exif.Iop.InteroperabilityVersion             Undefined   4  1.00
+Exif.Iop.RelatedImageWidth                   Short       1  2592
+Exif.Iop.RelatedImageLength                  Short       1  1944
+Exif.Photo.FocalPlaneXResolution             Rational    1  11520
+Exif.Photo.FocalPlaneYResolution             Rational    1  11503
+Exif.Photo.FocalPlaneResolutionUnit          Short       1  inch
+Exif.Photo.SensingMethod                     Short       1  One-chip color area
+Exif.Photo.FileSource                        Undefined   1  Digital still camera
+Exif.Photo.CustomRendered                    Short       1  Normal process
+Exif.Photo.ExposureMode                      Short       1  Auto
+Exif.Photo.WhiteBalance                      Short       1  Manual
+Exif.Photo.DigitalZoomRatio                  Rational    1  1.0
+Exif.Photo.SceneCaptureType                  Short       1  Standard
+Exif.Thumbnail.Compression                   Short       1  JPEG (old-style)
+Exif.Thumbnail.XResolution                   Rational    1  180
+Exif.Thumbnail.YResolution                   Rational    1  180
+Exif.Thumbnail.ResolutionUnit                Short       1  inch
+Exif.Thumbnail.JPEGInterchangeFormat         Long        1  3498
+Exif.Thumbnail.JPEGInterchangeFormatLength   Long        1  6714
+exiv2d.dll    
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1d.dll    
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     
+zlib1d.dll    
+exiv2.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     
+zlib1.dll     
+exiv2d.dll    
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1d.dll    
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     
+zlib1d.dll    
+exiv2.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     
+zlib1.dll     
+exiv2.exe     
+exiv2d.dll    
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1d.dll    
+exiv2.exe     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     
+exiv2.dll     
+exiv2.exe     
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1.dll     
+exiv2.exe     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     
+exiv2.exe     
+exiv2d.dll    
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1d.dll    
+exiv2.exe     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     
+exiv2.dll     
+exiv2.exe     
+KERNEL32.dll  
+KERNELBASE.dll
+libexpat.dll  
+ntdll.dll     
+zlib1.dll     
+exiv2.exe     
+KERNEL32.dll  
+KERNELBASE.dll
+ntdll.dll     

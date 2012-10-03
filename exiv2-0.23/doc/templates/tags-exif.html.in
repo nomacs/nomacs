@@ -1,0 +1,20 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+<h2>Exif Tags supported by Exiv2</h2>
+<div>  
+<p>These are the Exif tags as defined in the <a title="The Exif 2.2 standard (PDF)" href="http://www.exif.org/Exif2-2.PDF">Exif 2.2 standard</a>.</p>
+<p>IFD1 tags are not listed seperately. All IFD0 tags may also be present in IFD1, according to the standard. The second part of the Exiv2 key of an IFD1 tag is <i>Thumbnail</i> (instead of <i>Image</i>), the other two parts of the key are the same as for IFD0 tags.</p>
+<p>Click on a column header to sort the table.</p>
+</div>
+__Exif__
+</div>
+<!-- closes content -->
+
+</body>
+</html>

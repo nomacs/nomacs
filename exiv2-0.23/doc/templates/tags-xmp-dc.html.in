@@ -1,0 +1,27 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>Dublin Core Schema</h2>
+<p>The Dublin Core schema provides a set of commonly used XMP properties.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.dc.&lt;Property&gt;</code></b>
+  <li>The schema namespace URI is <b><code>http://purl.org/dc/elements/1.1/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>dc</code></b></li>
+ </ul>
+Reference: <a href="http://www.adobe.com/devnet/xmp/pdfs/xmp_specification.pdf" title="XMP specification">XMP specification</a>
+</p>
+<p>Click on a column header to sort the table.</p>
+
+__xmp_dc__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

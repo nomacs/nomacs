@@ -1,0 +1,494 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" @(#) $Id: exiv2.1 2687 2012-03-23 10:41:53Z ahuggel $
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH EXIV2 1 "Mar 23, 2012"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+exiv2 \- Image metadata manipulation tool
+.SH SYNOPSIS
+.B exiv2
+[\fIoptions\fP] [\fIaction\fP] \fIfile\fP ...
+.br
+.SH DESCRIPTION
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
+.\" respectively.
+.B exiv2
+is a program to read and write Exif, IPTC and XMP image metadata and
+image comments. The following image formats are supported:
+.TS
+lB lB lB lB lB
+_	_	_	_	_
+l l l l l.
+Type	Exif	IPTC	XMP	Image comments
+JPEG	Read/Write	Read/Write	Read/Write	Read/Write
+EXV	Read/Write	Read/Write	Read/Write	Read/Write
+CR2	Read/Write	Read/Write	Read/Write	-
+CRW	Read/Write	-	-	Read/Write
+MRW	Read	Read	Read	-
+TIFF	Read/Write	Read/Write	Read/Write	-
+DNG	Read/Write	Read/Write	Read/Write	-
+NEF	Read/Write	Read/Write	Read/Write	-
+PEF	Read/Write	Read/Write	Read/Write	-
+ARW	Read	Read	Read	-
+RW2	Read	Read	Read	-
+SR2	Read	Read	Read	-
+SRW	Read/Write	Read/Write	Read/Write	-
+ORF	Read/Write	Read/Write	Read/Write	-
+PNG	Read/Write	Read/Write	Read/Write	Read/Write
+PGF	Read/Write	Read/Write	Read/Write	Read/Write
+RAF	Read	Read	Read	-
+EPS	-	-	Read/Write	-
+XMP	-	-	Read/Write	-
+GIF	-	-	-	-
+PSD	Read/Write	Read/Write	Read/Write	-
+TGA	-	-	-	-
+BMP	-	-	-	-
+JP2	Read/Write	Read/Write	Read/Write	-
+.TE
+.IP \(bu 2
+Support for GIF, TGA and BMP images is minimal: the image format is
+recognized, a MIME type assigned to it and the height and width of the
+image are determined.
+.IP \(bu 2
+Reading other TIFF-like RAW image formats, which are not listed in the
+table, may also work.
+.SH ACTIONS
+The \fIaction\fP argument is only required if it is not clear from the
+\fIoptions\fP which action is implied.
+.TP
+.B pr | print
+Print image metadata. This is the default action, i.e., the command
+\fIexiv2 image.jpg\fP will print a summary of the image Exif metadata.
+.TP
+.B ex | extract
+Extract metadata to *.exv, XMP sidecar (*.xmp) and thumbnail image files. 
+Modification commands can be applied on-the-fly.
+.TP
+.B in | insert
+Insert metadata from corresponding *.exv, XMP sidecar (*.xmp) and
+thumbnail files.  Use option \fB\-S\fP \fI.suf\fP to change the suffix
+of the input files. Since files of any supported format can be used as
+input files, this command can be used to copy the metadata between
+files of different formats. Modification commands can be applied
+on-the-fly.
+.TP
+.B rm | delete
+Delete image metadata from the files.
+.TP
+.B ad | adjust
+Adjust Exif timestamps by the given time. Requires at least one of the
+options \fB\-a\fP \fItime\fP, \fB\-Y\fP \fIyrs\fP, \fB\-O\fP
+\fImon\fP or \fB\-D\fP \fIday\fP.
+.TP
+.B mo | modify
+Apply commands to modify (add, set, delete) the Exif, IPTC and XMP
+metadata of image files. Requires option \fB\-c\fP, \fB\-m\fP or
+\fB\-M\fP.
+.TP
+.B mv | rename
+Rename files and/or set file timestamps according to the Exif create
+timestamp. Uses the value of tag Exif.Photo.DateTimeOriginal or, if
+not present, Exif.Image.DateTime to determine the timestamp. The
+filename format can be set with \fB\-r\fP \fIfmt\fP, timestamp options
+are \fB\-t\fP and \fB\-T\fP.
+.TP
+.B fi | fixiso
+Copy the ISO setting from one of the proprietary Nikon or Canon
+makernote ISO tags to the regular Exif ISO tag,
+Exif.Photo.ISOSpeedRatings. Does not overwrite an existing standard
+Exif ISO tag.
+.TP
+.B fc | fixcom
+Fix the character encoding of Exif Unicode user comments.  Decodes the
+comment using the auto-detected or specified character encoding and
+writes it back in UCS-2. Use option \fB\-n\fP to specify the current
+encoding of the comment if necessary.
+.SH OPTIONS
+.TP
+.B \-h
+Display help and exit.
+.TP
+.B \-V
+Show the program version and exit.
+.TP
+.B \-v
+Be verbose during the program run.
+.TP
+.B \-q
+Silence warnings and error messages from the Exiv2 library during the
+program run (quiet). Note that options \fB\-v\fP and \fB\-q\fP can be
+used at the same time.
+.TP
+.B \-Q \fIlvl\fP
+Set the log-level to 'd'(ebug), 'i'(nfo), 'w'(arning), 'e'(rror)
+or 'm'(ute). The default log-level is 'w'. \fB\-Qm\fP is equivalent
+to \fB\-q\fP. All log messages are written to standard error.
+.TP
+.B \-b
+Show large binary values (default is to suppress them).
+.TP
+.B \-u
+Show unknown tags (default is to suppress tags which don't have a name).
+.TP
+.B \-g \fIkey\fP
+Only output info for this Exiv2 key (grep). Multiple \fB\-g\fP options
+can be used to grep info for several keys.
+.TP
+.B \-n \fIenc\fP
+Charset to use to decode Exif Unicode user comments. \fIenc\fP is
+a name understood by \fBiconv_open\fP(3), e.g., 'UTF-8'.
+.TP
+.B \-k
+Preserve file timestamps when updating files (keep). Can be used with
+all options which update files. The flag is ignored by read-only
+options.
+.TP
+.B \-t
+Set the file timestamp according to the Exif create timestamp in
+addition to renaming the file (overrides \fB\-k\fP). This option is
+only used with the 'rename' action.
+.TP
+.B \-T
+Only set the file timestamp according to the Exif create timestamp, do
+not rename the file (overrides \fB\-k\fP). This option is only used
+with the 'rename' action. Note: On Windows you may have to set the TZ
+environment variable for this option to work correctly.
+.TP
+.B \-f
+Do not prompt before overwriting existing files (force overwrite).
+.TP
+.B \-F
+Do not prompt before renaming files (Force rename). Appends '_1' 
+('_2', ...) to the name of the new file.
+.TP
+.B \-a \fItime\fP
+Time adjustment in the format [\-]HH[:MM[:SS]]. This option is only
+used with the 'adjust' action. Examples: 1 adds one hour, 1:01 
+adds one hour and one minute, \-0:00:30 subtracts 30 seconds.
+.TP
+.B \-Y \fIyrs\fP
+Time adjustment by a positive or negative number of years, for
+the 'adjust' action.
+.TP
+.B \-O \fImon\fP
+Time adjustment by a positive or negative number of months, for
+the 'adjust' action.
+.TP
+.B \-D \fIday\fP
+Time adjustment by a positive or negative number of days, for
+the 'adjust' action.
+.TP
+.B \-p \fImode\fP
+Print mode for the 'print' action. Possible modes are:
+.br
+s : print a summary of the Exif metadata (the default)
+.br
+a : print Exif, IPTC and XMP metadata (shortcut for -Pkyct)
+.br
+t : interpreted (translated) Exif tags (-PEkyct) 
+.br
+v : plain Exif tag values (-PExgnycv)
+.br
+h : hexdump of the Exif data (-PExgnycsh)
+.br
+i : IPTC datasets (-PIkyct)
+.br
+x : XMP properties (-PXkyct)
+.br
+c : JPEG comment
+.br
+p : list available image previews, sorted by preview image size in pixels
+.TP
+.B \-P \fIflgs\fP
+Print flags for fine control of the tag list ('print' action). Allows
+control of the type of metadata as well as data columns included in
+the print output.  Valid flags are:
+.br
+E : include Exif tags in the list
+.br
+I : IPTC datasets
+.br
+X : XMP properties
+.br
+x : print a column with the tag number
+.br
+g : group name
+.br
+k : key
+.br
+l : tag label
+.br
+n : tag name
+.br
+y : type
+.br
+c : number of components (count)
+.br
+s : size in bytes
+.br
+v : plain data value
+.br
+t : interpreted (translated) data
+.br
+h : hexdump of the data
+.TP
+.B \-d \fItgt\fP
+Delete target(s) for the 'delete' action. Possible targets are:
+.br
+a : all supported metadata (the default)
+.br
+e : Exif section
+.br
+t : Exif thumbnail only
+.br
+i : IPTC data
+.br
+x : XMP packet
+.br
+c : JPEG comment
+.TP
+.B \-i \fItgt\fP
+Insert target(s) for the 'insert' action. Possible targets are the
+same as those for the \fB\-d\fP option, plus a modifier:
+.br
+X : Insert metadata from an XMP sidecar file <file>.xmp. The remaining
+insert targets determine what metadata to insert from the sidecar
+file. Possible are Exif, IPTC and XMP and the default is all of
+these. Note that the inserted XMP properties include those converted
+to Exif and IPTC.
+.br
+Only JPEG thumbnails can be inserted (not TIFF thumbnails), they need to 
+be named \fIfile\fP\-thumb.jpg.
+.TP
+.B \-e \fItgt\fP
+Extract target(s) for the 'extract' action. Possible targets are the same 
+as those for the \fB\-d\fP option, plus a target to extract preview
+images and a modifier to generate an XMP sidecar file:
+.br
+p[<n>[,<m> ...]] : Extract preview images. The optional comma separated
+list of preview image numbers is used to determine which preview images
+to extract. The available preview images and their numbers are displayed
+with the 'print' option -pp.
+.br
+X : Extract metadata to an XMP sidecar file <file>.xmp. The remaining
+extract targets determine what metadata to extract to the sidecar
+file. Possible are Exif, IPTC and XMP and the default is all of these.
+.TP
+.B \-r \fIfmt\fP
+Filename format for the 'rename' action. The format string follows
+\fBstrftime\fP(3) and supports the following keywords:
+.br
+:basename:   - original filename without extension
+.br
+:dirname:    - name of the directory holding the original file
+.br
+:parentname: - name of parent directory
+.br
+Default filename format is %Y%m%d_%H%M%S.
+.TP
+.B \-c \fItxt\fP
+JPEG comment string to set in the image ('modify' action). This option
+can also be used with the 'extract' and 'insert' actions to modify
+metadata on-the-fly.
+.TP
+.B \-m \fIfile\fP
+Command file for the 'modify' action. This option can also be used
+with the 'extract' and 'insert' actions to modify metadata on-the-fly.
+.TP
+.B \-M \fIcmd\fP
+Command line for the 'modify' action. This option can also be used
+with the 'extract' and 'insert' actions to modify metadata on-the-fly.
+The format for the commands is the same as that of the lines of a
+command file.
+.TP
+.B \-l \fIdir\fP
+Location (directory) for files to be inserted or extracted.
+.TP
+.B \-S \fI.suf\fP
+Use suffix \fI.suf\fP for source files in 'insert' action.
+.SH COMMANDS
+Commands for the 'modify' action can be read from a command file, e.g., 
+.sp 1
+.nf
+   exiv2 \-m cmd.txt image.jpg
+.fi
+.sp 1
+or given on the command line, as in
+.sp 1
+.nf
+   exiv2 \-M"add Iptc.Application2.Credit String Mr. Smith" image.jpg
+.fi
+.sp 1
+Note the quotes. Multiple \fB\-m\fP and \fB\-M\fP options can be combined.
+.sp 1
+When writing Exif, IPTC and XMP metadata, 
+.B exiv2 
+enforces only a correct
+metadata structure. It is possible to write tags with types and values
+different from those specified in the standards, duplicate Exif tags,
+undefined tags, or incomplete metadata. While 
+.B exiv2 
+is able to read
+all metadata that it can write, other programs may have difficulties
+with images that contain non standard\-conforming metadata.
+.SS Command format
+The format of a command is
+.sp 1
+.nf
+\fBset | add | del\fP \fIkey\fP [[\fItype\fP] \fIvalue\fP]
+.fi
+.TP
+.B set
+Set the \fIvalue\fP of an existing tag with a matching \fIkey\fP or
+add the tag.
+.TP
+.B add
+Add a tag (unless \fIkey\fP is a non\-repeatable IPTC key; nothing
+prevents you from adding duplicate Exif tags).
+.TP
+.B del
+Delete all occurrences of a tag (requires only a \fIkey\fP).
+.TP
+.I key
+Exiv2 Exif, IPTC or XMP key.
+.TP
+.I type
+.B Byte | Ascii | Short | Long | Rational | Undefined | SShort | SLong | SRational | Comment
+for Exif keys,
+.br
+.B String | Date | Time | Short | Undefined
+for IPTC keys, and
+.br
+.B XmpText | XmpAlt | XmpBag | XmpSeq | LangAlt
+for XMP keys.
+.sp 1
+A default \fItype\fP is used if none is explicitly given. The default
+is determined based on \fIkey\fP.
+.TP
+.I value
+The remaining text on the line is the value. It can optionally be
+enclosed in single quotes ('\fIvalue\fP') or double quotes ("\fIvalue\fP").
+.sp 1
+The value is optional. Not providing any value is equivalent to an
+empty value ("") and is mainly useful to create an XMP array property,
+e.g., a bag.
+.sp 1
+The format of Exif \fBComment\fP values includes an optional charset
+specification at the beginning:
+.sp 1
+.B   [charset=Ascii|Jis|Unicode|Undefined ]\fIcomment\fP
+.sp 1
+.B Undefined 
+is used by default if the value doesn't start with a charset
+definition.
+.sp 1
+The format for IPTC \fBDate\fP values is YYYY\-MM\-DD (year, month, day),
+that for IPTC \fBTime\fP values is HH:MM:SS+|\-HH:MM, where HH:MM:SS
+refers to local hour, minute and seconds and +|\-HH:MM refers to hours
+and minutes ahead or behind Universal Coordinated Time (+|\- means
+either a + or a \- sign is required).
+.sp 1
+The format of XMP \fBLangAlt\fP values includes an optional language
+qualifier:
+.sp 1
+.B   [lang=\fIlanguage-code\fP ]\fItext\fP
+.sp 1
+.B x-default
+is used by default if the value doesn't start with a language qualifier.
+.TP
+An additional command is available to register XMP namespaces:
+.TP
+.nf
+\fBreg\fP \fIprefix\fP \fInamespace\fP
+.fi
+.SS Command file format
+Empty lines and lines starting with \fB#\fP in a command file are
+ignored (comments). Remaining lines are commands as described above.
+.SH EXAMPLES
+.TP
+exiv2 *.jpg
+Prints a summary of the Exif information for all JPEG files in the directory.
+.TP
+exiv2 -pi image.jpg
+Prints the IPTC metadata of the image.
+.TP
+exiv2 rename img_1234.jpg
+Renames img_1234.jpg (taken on 13\-Nov\-05 at 22:58:31) to 20051113_225831.jpg
+.TP
+exiv2 -r':basename:_%Y%m' rename img_1234.jpg
+Renames img_1234.jpg to img_1234_200511.jpg
+.TP
+exiv2 \-et img1.jpg img2.jpg
+Extracts the Exif thumbnails from the two files into img1\-thumb.jpg
+and img2\-thumb.jpg.
+.TP
+exiv2 \-it img1.jpg img2.jpg
+Inserts (copies) metadata from img1.exv to img1.jpg and from img2.exv
+to img2.jpg.
+.TP
+exiv2 \-ep1,2 image.jpg
+Extracts previews 1 and 2 from the image to the files image\-preview1.jpg
+and image\-preview2.jpg.
+.TP
+exiv2 \-eiX image.jpg 
+Extracts IPTC datasets into an XMP sidecar file image.xmp and in the
+process converts them to "IPTC Core" XMP schema.
+.TP
+exiv2 \-iixX image.jpg
+Inserts IPTC and XMP metadata from an XMP sidecar file image.xmp into
+image.jpg.  The resulting IPTC datasets are converted from the "IPTC
+Core" XMP schema properties in the sidecar file to the older IPTC IIM4
+format. The inserted XMP properties include those in the "IPTC Core"
+XMP schema.
+.TP
+.nf
+exiv2 \-M"set Exif.Photo.UserComment charset=Ascii New Exif comment" image.jpg
+.fi
+Sets the Exif comment to an ASCII string.
+.TP
+.nf
+exiv2 \-M"set Exif.GPSInfo.GPSLatitude 4/1 15/1 33/1" \\
+\-M"set Exif.GPSInfo.GPSLatitudeRef N" image.jpg
+.fi
+Sets the latitude to 4 degrees, 15 minutes and 33 seconds north. The
+Exif standard stipulates that the GPSLatitude tag consists of three
+Rational numbers for the degrees, minutes and seconds of the latitude
+and GPSLatitudeRef contains either 'N' or 'S' for north or south
+latitude respectively.
+.TP
+.nf
+exiv2 insert -l/tmp -S.CRW /data/*.JPG
+.fi
+Copy all metadata from CRW files in the /tmp directory to JPG files
+with corresponding basenames in the /data directory. Note that this
+copies metadata as is, without any modifications to adapt it to the
+requirements of the target format. Some tags copied like this may not
+make sense in the target image.
+.SH SEE ALSO
+.TP
+.I http://www.exiv2.org/sample.html#modify
+Sample command files.
+.TP
+.I http://www.exiv2.org/metadata.html
+Taglists with \fIkey\fP and default \fItype\fP values.
+.SH AUTHORS
+.B exiv2 
+was written by Andreas Huggel <ahuggel@gmx.net>.
+.PP
+This manual page was originally written by KELEMEN Peter <fuji@debian.org>,
+for the Debian project.

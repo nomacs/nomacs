@@ -1,0 +1,36 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index3__
+<h2>Canon CRW files: Mapping of CIFF to Exif tags</h2>
+<div>
+
+<p> CRW files are encoded in CIFF format. CIFF format consists of a
+header and a hierarchy of directories and entries, similar to TIFF
+(but easier to deal with). In Exiv2, there is no CRW or CIFF type of
+metadata. Instead, known and suitable CIFF tags are mapped to Exif
+metadata, but not all CIFF tags are mapped. Exiv2 reads Canon CRW
+files, parses the CIFF structure and maps known and suitable tags to
+Exif metadata. Writing to CRW files entails a reverse mapping from
+Exif metadata to the CIFF tags. This way it is possible, e.g., to
+adjust the date when the image was taken by reading the CRW file,
+modifying Exif.Photo.DateTimeOriginal and writing the Exif data back
+to a CRW file. Tags for which there is no mapping defined are ignored
+during both, reading and writing.</p>
+
+<p>Reference: <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/canon_raw.html">The Canon RAW (CRW) File Format</a> by Phil Harvey.</p>
+
+<p>Exiv2 supports the mappings listed in the table below.</p> 
+<p>Click on a column header to sort the table.</p>
+
+</div>
+__CrwMapping__
+</div>
+<!-- closes content -->
+
+</body>
+</html>

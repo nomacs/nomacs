@@ -1,0 +1,146 @@
+<table class="ReportTable" id="CrwMapping" cellspacing="0">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Exif Key</th>
+<th align="right">CRW Tag</th>
+<th align="right">CRW Directory</th>
+</tr></thead>
+<tbody>
+<tr class="OddRow">
+<td>Mapped to the image comment</td>
+<td>0x0805</td>
+<td>0x300a</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Image.Make <br>
+Exif.Image.Model</td>
+<td>0x080a</td>
+<td>0x2807</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Canon.FirmwareVersion</td>
+<td>0x080b</td>
+<td>0x3004</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Canon.OwnerName</td>
+<td>0x0810</td>
+<td>0x2807</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Canon.ImageType</td>
+<td>0x0815</td>
+<td>0x2804</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Canon.0x0002</td>
+<td>0x1029</td>
+<td>0x300b</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.CanonCs2.* <br>
+Exif.Photo.FNumber (not used on write) <br>
+Exif.Photo.ExposureTime (not used on write)</td>
+<td>0x102a</td>
+<td>0x300b</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.CanonCs.*</td>
+<td>0x102d</td>
+<td>0x300b</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.CanonCf.*</td>
+<td>0x1033</td>
+<td>0x300b</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.CanonPi.*</td>
+<td>0x1038</td>
+<td>0x300b</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Canon.WhiteBalanceTable</td>
+<td>0x10a9</td>
+<td>0x300b</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Photo.ColorSpace</td>
+<td>0x10b4</td>
+<td>0x300b</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Canon.0x00b5</td>
+<td>0x10b5</td>
+<td>0x300b</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Canon.0x00c0</td>
+<td>0x10c0</td>
+<td>0x300b</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Canon.0x00c1</td>
+<td>0x10c1</td>
+<td>0x300b</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Photo.SubjectDistance</td>
+<td>0x1807</td>
+<td>0x3002</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Canon.SerialNumber</td>
+<td>0x180b</td>
+<td>0x3004</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Photo.DateTimeOriginal</td>
+<td>0x180e</td>
+<td>0x300a</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Image.Orientation <br>
+Exif.Photo.PixelXDimension <br>
+Exif.Photo.PixelYDimension</td>
+<td>0x1810</td>
+<td>0x300a</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Canon.ImageNumber</td>
+<td>0x1817</td>
+<td>0x300a</td>
+</tr>
+<tr class="OddRow">
+<td>Exif.Canon.0x0015</td>
+<td>0x183b</td>
+<td>0x300b</td>
+</tr>
+<tr class="EvenRow">
+<td>Exif.Thumbnail.Compression <br>
+Exif.Thumbnail.JPEGInterchangeFormat <br>
+Exif.Thumbnail.JPEGInterchangeFormatLength</td>
+<td>0x2008</td>
+<td>root</td>
+</tr>
+</tbody>
+</table><script type="text/javascript">
+  //
+  var CrwMapping = new SortableTable(
+    document.getElementById("CrwMapping"),
+    ["String", "String", "String"]
+  );
+  CrwMapping.onsort = function () { 
+	var rows = CrwMapping.tBody.rows;
+	var l = rows.length;
+	for (var i = 0; i < l; i++) {
+		removeClassName(rows[i], i % 2 ? "OddRow" : "EvenRow");
+		addClassName(rows[i], i % 2 ? "EvenRow" : "OddRow");
+	}
+  };
+  //
+</script>

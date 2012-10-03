@@ -1,0 +1,39 @@
+Library Features:
++ rename erase* methods that access a file to remove* 
++ add ExifData::erase(tag)
++ Thumbnail support: set (re-calculate)
++ operator>> for Value, since we already have read()?
++ Use size_t where appropriate
++ Support TIFF type ids
++ Support for broken IFD makernotes (which have corrupted IFD offsets)
++ Support non-intrusive deletion of entries from an IFD.
++ Write an example using low level IFD classes to print summary Exif info
++ Extended JPEG support (actual resolution of the image)
++ Implement proper error handling
++ Complete support to create Exif data from scratch:
+  + set thumbnail, write thumbnail tags
++ Make it possible to force write from metadata (just an optional arg to write?)
+
++ Make Image::doWriteMetadata do its work in a single pass
+
++ Revise Image and IptcData+ExifData API (aka turn it inside out)
++ Add PSD images support (and TIFF, NEF, CRW...)
++ Add support for XML metadata files
+
+Exiv2 functionality
++ Add offset to value for hexdump (requires metadata to have an offset)
+
+Bugs:
++ Handle all Todo's
++ Cleanup and fix implementation of JpegImage (must be able to read any APP0/1),
+  should be able to insert exv into extracted thumbs (usually w/o APP0/1)
++ Review Image interface. Is it really necessary to have so many functions there?
++ Review the handling of type ids? What if we encounter type 27 in an IFD?
++ Rational and other output operators (see Josuttis, p653)
++ Through ExifData::iterator and Metadatum::operator= it is possible to have 
+  multiple copies of one metadatum in the metadata container
++ Checks and non-intrusive updates must be atomic, i.e., not change anything
+  if the metadata is not compatible
++ Review: Exception safety
++ Review: Ifd1 only at Thumbnail, do we really need Thumbnail::update() ?
++ Should JpegImage differ between NO Jpeg comment and an empty Jpeg comment??
