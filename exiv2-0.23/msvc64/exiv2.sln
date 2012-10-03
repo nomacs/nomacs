@@ -1,14 +1,26 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exiv2lib", "exiv2lib\exiv2lib.vcxproj", "{831EF580-92C8-4CA8-B0CE-3D906280A54D}"
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exiv2lib", "exiv2lib\exiv2lib.vcproj", "{831EF580-92C8-4CA8-B0CE-3D906280A54D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8308C68D-E12B-4C71-96F4-7137F6BEB654} = {8308C68D-E12B-4C71-96F4-7137F6BEB654}
+		{6C4C06A3-6F8F-4067-AA4C-D5F41E1FFF9A} = {6C4C06A3-6F8F-4067-AA4C-D5F41E1FFF9A}
+		{09877CF4-83B6-44FE-A2E2-629AA5C8093E} = {09877CF4-83B6-44FE-A2E2-629AA5C8093E}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exiv2", "exiv2\exiv2.vcxproj", "{07293CAC-00DA-493E-90C9-5D010C2B1B53}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exiv2", "exiv2\exiv2.vcproj", "{07293CAC-00DA-493E-90C9-5D010C2B1B53}"
+	ProjectSection(ProjectDependencies) = postProject
+		{831EF580-92C8-4CA8-B0CE-3D906280A54D} = {831EF580-92C8-4CA8-B0CE-3D906280A54D}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmpsdk", "xmpsdk\xmpsdk.vcxproj", "{09877CF4-83B6-44FE-A2E2-629AA5C8093E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmpsdk", "xmpsdk\xmpsdk.vcproj", "{09877CF4-83B6-44FE-A2E2-629AA5C8093E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8308C68D-E12B-4C71-96F4-7137F6BEB654} = {8308C68D-E12B-4C71-96F4-7137F6BEB654}
+		{6C4C06A3-6F8F-4067-AA4C-D5F41E1FFF9A} = {6C4C06A3-6F8F-4067-AA4C-D5F41E1FFF9A}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expat", "expat\expat.vcxproj", "{6C4C06A3-6F8F-4067-AA4C-D5F41E1FFF9A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expat", "expat\expat.vcproj", "{6C4C06A3-6F8F-4067-AA4C-D5F41E1FFF9A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib1", "zlib\zlib.vcxproj", "{8308C68D-E12B-4C71-96F4-7137F6BEB654}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib1", "zlib\zlib.vcproj", "{8308C68D-E12B-4C71-96F4-7137F6BEB654}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
