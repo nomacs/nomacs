@@ -62,15 +62,15 @@ message(STATUS "exiv2 version by pkg-config: ${EXIV2_VERSION}")
 IF (NOT EXIV2_FOUND AND MSVC)
 
 	find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
-										"ReleaseDLL/exib2.dll"
+										"ReleaseDLL/exiv2.dll"
 										"DebugDLL/exiv2d.lib"
 										"DebugDLL/exiv2d.dll"
-					PATHS "../exiv2-0.21.1/msvc/bin/" 
+					PATHS "../exiv2-0.23/msvc64/exiv2lib/Win32/" 
 					DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 					
-	find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" PATHS "exiv2-0.21.1/msvc/include" DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
+	find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" PATHS "../exiv2-0.23/msvc64/include" DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 
-	find_path(EXPAT_BUILD_PATH NAMES "release/libexpat.dll" "debug/libexpatd.dll" PATHS "../expat-2.0.1/win32/bin/" DOC "Path to the expat build directory" NO_DEFAULT_PATH)
+	find_path(EXPAT_BUILD_PATH NAMES "ReleaseDLL/libexpat.dll" "DebugDLL/libexpat.dll" PATHS "../exiv2-0.23/msvc64/expat/Win32" DOC "Path to the expat build directory" NO_DEFAULT_PATH)
 	
 	find_path(ZLIB_BUILD_PATH NAMES "Win32_DLL_Release/zlib1.dll" "Win32_DLL_Debug/zlib1d.dll" PATHS "../zlib-1.2.3/projects/visualc6/" DOC "Path to the zlib build directory" NO_DEFAULT_PATH)
 	
@@ -78,8 +78,8 @@ IF (NOT EXIV2_FOUND AND MSVC)
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll AND 
 		EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.lib AND 
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.lib)
-		IF( EXISTS ${EXPAT_BUILD_PATH}/Release/libexpat.dll AND 
-			EXISTS ${EXPAT_BUILD_PATH}/Debug/libexpatd.dll)
+		IF( EXISTS ${EXPAT_BUILD_PATH}/ReleaseDLL/libexpat.dll AND 
+			EXISTS ${EXPAT_BUILD_PATH}/DebugDLL/libexpat.dll)
 			IF( EXISTS ${ZLIB_BUILD_PATH}/Win32_DLL_Release/zlib1.dll AND
 				EXISTS ${ZLIB_BUILD_PATH}/Win32_DLL_Debug/zlib1d.dll )
 		
@@ -89,9 +89,9 @@ IF (NOT EXIV2_FOUND AND MSVC)
 				FILE(COPY ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 				FILE(COPY ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
-				FILE(COPY ${EXPAT_BUILD_PATH}/Release/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-				FILE(COPY ${EXPAT_BUILD_PATH}/Release/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-				FILE(COPY ${EXPAT_BUILD_PATH}/Debug/libexpatd.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+				FILE(COPY ${EXPAT_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+				FILE(COPY ${EXPAT_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+				FILE(COPY ${EXPAT_BUILD_PATH}/DebugDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 
 				FILE(COPY ${ZLIB_BUILD_PATH}/Win32_DLL_Release/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 				FILE(COPY ${ZLIB_BUILD_PATH}/Win32_DLL_Release/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
@@ -104,7 +104,7 @@ IF (NOT EXIV2_FOUND AND MSVC)
 				message(WARNING "zlib build directory not found. Needs path which contains Win32_DLL_Release/zlib1.dll and Win32_DLL_Debug/zlib1d.dll")
 			ENDIF()
 		ELSE()
-			message(WARNING "expat build directory not found. Needs path which contains Release/libexpat.dll and Debug/libexpatd.dll")
+			message(WARNING "expat build directory not found. Needs path which contains ReleaseDLL/libexpat.dll and DebugDLL/libexpat.dll")
 		ENDIF()
 	ELSE()
 		message(WARNING "exiv build directory not found. Needs path which contains ReleaseDLL/exiv2.dll, ReleaseDLL/exiv2.lib, DebugDLL/exiv2d.dll and DebugDLL/exiv2d.lib")
@@ -130,7 +130,7 @@ IF (ENABLE_RAW)
                 message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
         ENDIF()
 	IF (NOT LIBRAW_FOUND AND MSVC)
-        	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "LibRaw-0.1.3.5" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
+        	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.13.5/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
         	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/librawd.lib" "debug/librawd.dll"
         	                            PATHS "../LibRaw-0.13.5/buildfiles/" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
