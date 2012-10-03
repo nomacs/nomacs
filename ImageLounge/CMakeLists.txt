@@ -132,27 +132,27 @@ IF (ENABLE_RAW)
 	IF (NOT LIBRAW_FOUND AND MSVC)
         	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.13.5/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
-        	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/librawd.lib" "debug/librawd.dll"
+        	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
         	                            PATHS "../LibRaw-0.13.5/buildfiles/" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
 
 	        IF( EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
-                	EXISTS ${LIBRAW_BUILD_PATH}/debug/librawd.dll AND 
+                	EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND 
         	        EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.lib AND 
-	                EXISTS ${LIBRAW_BUILD_PATH}/debug/librawd.lib)
+	                EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.lib)
 
                 	FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
         	        FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
 	                FILE(COPY ${LIBRAW_BUILD_PATH}/release/libraw.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-                	FILE(COPY ${LIBRAW_BUILD_PATH}/debug/librawd.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-        	        FILE(COPY ${LIBRAW_BUILD_PATH}/debug/librawd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+                	FILE(COPY ${LIBRAW_BUILD_PATH}/debug/libraw.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+        	        FILE(COPY ${LIBRAW_BUILD_PATH}/debug/libraw.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
 	                SET(LIBRAW_LIBRARY_DIRS "")
-                	SET(LIBRAW_LIBRARIES optimized libraw.lib debug librawd.lib)
+                	SET(LIBRAW_LIBRARIES optimized libraw.lib debug libraw.lib)
 
                 	SET(LIBRAW_FOUND true)
                 	SET(LIBRAW_VERSION 0.13.5)
         	ELSE()
-                	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/librawd.dll and debug/librawd.lib")
+                	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/libraw.dll and debug/libraw.lib")
         	ENDIF()
 	ENDIF(NOT LIBRAW_FOUND AND MSVC)
     IF (LIBRAW_VERSION VERSION_GREATER 0.14.0 OR LIBRAW_VERSION VERSION_EQUAL 0.14.0 )
