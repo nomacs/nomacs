@@ -377,6 +377,9 @@ IF (EXIV2_FOUND)
 		install(FILES src/img/nomacs.png DESTINATION share/pixmaps)
 		#  translations
 		install(FILES ${NOMACS_QM} DESTINATION share/nomacs/translations)
+                #  manpage
+                install(FILES Readme/nomacs.1 DESTINATION share/man/man1)
+
 
 		# "make dist" target
 		string(TOLOWER ${CMAKE_PROJECT_NAME} CPACK_PACKAGE_NAME)
