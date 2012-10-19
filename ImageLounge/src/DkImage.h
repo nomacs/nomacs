@@ -857,7 +857,7 @@ signals:
 
 public slots:
 	QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
-	void changeFile(int skipIdx, bool silent = false, bool force = false);
+	void changeFile(int skipIdx, bool silent = false, int force = cache_default);
 	void fileChanged(const QString& path);
 	void directoryChanged(const QString& path);
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());

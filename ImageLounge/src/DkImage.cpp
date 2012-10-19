@@ -812,7 +812,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 	else if ((newDir.absolutePath() != dir.absolutePath() || files.empty()) && newDir.exists()) {
 
 		// update save directory
-		if (!saveDir.exists()) saveDir = dir;
+		//if (!saveDir.exists()) saveDir = dir;
 		dir = newDir;
 		dir.setNameFilters(fileFilters);
 		dir.setSorting(QDir::LocaleAware);		// TODO: extend
@@ -905,7 +905,7 @@ void DkImageLoader::previousFile(bool silent) {
  * @param skipIdx the number of files that should be skipped after/before the current file.
  * @param silent if true, no status information will be displayed.
  **/ 
-void DkImageLoader::changeFile(int skipIdx, bool silent, bool force) {
+void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 
 	//if (!img.isNull() && !file.exists())
 	//	return;
@@ -927,7 +927,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, bool force) {
 
 
 	//if (loadFile.exists())
-		load(loadFile, silent, force);
+		load(loadFile, silent, cacheState);
 }
 
 /**
