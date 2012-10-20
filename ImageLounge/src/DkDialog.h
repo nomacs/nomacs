@@ -36,6 +36,7 @@
 #include <QCheckBox>
 #include <QFileInfo>
 #include <QTableView>
+#include <QCompleter>
 
 #include "DkWidgets.h"
 
@@ -262,6 +263,7 @@ signals:
 
 protected:
 
+	void updateHistory();
 	void init();
 	QStringList makeViewable(const QStringList& resultList, bool forceAll = false);
 

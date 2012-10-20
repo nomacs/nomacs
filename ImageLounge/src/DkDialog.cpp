@@ -730,8 +730,11 @@ void DkSearchDialog::init() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
+	QCompleter* history = new QCompleter(DkSettings::Global::searchHistory);
+	history->setCompletionMode(QCompleter::InlineCompletion);
 	searchBar = new QLineEdit();
 	searchBar->setObjectName("searchBar");
+	searchBar->setCompleter(history);
 
 	stringModel = new QStringListModel();
 
@@ -741,7 +744,12 @@ void DkSearchDialog::init() {
 	resultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	resultListView->setSelectionMode(QAbstractItemView::SingleSelection);
 	defaultStyleSheet = resultListView->styleSheet();
-	// TODO: add cursor down - cursor up action
+
+	//// TODO: add cursor down - cursor up action
+	//QAction* focusAction = new QAction(tr("Focus Action"), searchBar);
+	//focusAction->setShortcut(Qt::Key_Down);
+	//connect(focusAction, SIGNAL(triggered()), resultListView, SLOT(/*createSLOT*/));
+
 
 	// buttons
 	okButton = new QPushButton(tr("&Ok"), this);
@@ -775,15 +783,14 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 
 	if (text == currentSearch)
 		return;
-
-
+	
+	// white space is the magic thingy
 	QStringList queries = text.split(" ");
 	
 	if (queries.size() == 1) {
 		// if characters are added, use the result list -> speed-up
-		// the empty check is for regular expressions (until it is valid, nothing appears)
 		// I think we can't do that anymore for the sake of list view cropping...
-		resultList = (!text.contains(currentSearch) || resultList.empty() || !allDisplayed) ? fileList.filter(text, Qt::CaseInsensitive) : resultList.filter(text, Qt::CaseInsensitive);
+		resultList = (!text.contains(currentSearch) || !allDisplayed) ? fileList.filter(text, Qt::CaseInsensitive) : resultList.filter(text, Qt::CaseInsensitive);
 	}
 	else {
 		resultList = fileList;
@@ -814,6 +821,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		resultListView->setStyleSheet(defaultStyleSheet);
 	}
 
+
 	qDebug() << "searching takes (total): " << QString::fromStdString(dt.getTotal());
 }
 
@@ -841,6 +849,8 @@ void DkSearchDialog::on_okButton_pressed() {
 		return;
 	}
 
+	updateHistory();
+
 	// ok load the selected file
 	QString fileName = resultListView->selectionModel()->currentIndex().data().toString();
 	emit loadFileSignal(QFileInfo(path, fileName));
@@ -855,6 +865,18 @@ void DkSearchDialog::on_filterButton_pressed() {
 void DkSearchDialog::on_cancelButton_pressed() {
 
 	close();
+}
+
+void DkSearchDialog::updateHistory() {
+	
+	DkSettings::Global::searchHistory.append(currentSearch);
+
+	// keep the history small
+	if (DkSettings::Global::searchHistory.size() > 50)
+		DkSettings::Global::searchHistory.pop_front();
+
+	//QCompleter* history = new QCompleter(DkSettings::Global::searchHistory);
+	//searchBar->setCompleter(history);
 }
 
 QStringList DkSearchDialog::makeViewable(const QStringList& resultList, bool forceAll) {

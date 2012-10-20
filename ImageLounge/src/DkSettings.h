@@ -127,6 +127,7 @@ class DkSettings : public QObject {
 			static bool useTmpPath;
 			static QString tmpPath;
 			static QString language;
+			static QStringList searchHistory;
 
 			static Qt::KeyboardModifier altMod;
 			static Qt::KeyboardModifier ctrlMod;

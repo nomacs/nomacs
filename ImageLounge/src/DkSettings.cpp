@@ -52,6 +52,7 @@ QString DkSettings::Global::lastDir = QString();
 QString DkSettings::Global::lastSaveDir = QString();
 QStringList DkSettings::Global::recentFiles = QStringList();
 QStringList DkSettings::Global::recentFolders = QStringList();
+QStringList DkSettings::Global::searchHistory = QStringList();
 bool DkSettings::Global::useTmpPath = false;
 QString DkSettings::Global::tmpPath = QString();
 QString DkSettings::Global::language = "en";
@@ -175,6 +176,7 @@ void DkSettings::load() {
 	Global::scanSubFolders = settings.value("GlobalSettings/scanSubFolders", DkSettings::Global::scanSubFolders).toBool();
 	Global::lastDir = settings.value("GlobalSettings/lastDir", DkSettings::Global::lastDir).toString();
 	//GlobalSettings::lastSaveDir = settings.value("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir).toString();
+	Global::searchHistory = settings.value("GlobalSettings/searchHistory", DkSettings::Global::searchHistory).toStringList();
 	Global::recentFolders = settings.value("GlobalSettings/recentFolders", DkSettings::Global::recentFolders).toStringList();
 	Global::recentFiles = settings.value("GlobalSettings/recentFiles", DkSettings::Global::recentFiles).toStringList();
 	Global::useTmpPath= settings.value("GlobalSettings/useTmpPath", DkSettings::Global::useTmpPath).toBool();
@@ -261,6 +263,7 @@ void DkSettings::save() {
 	settings.setValue("GlobalSettings/scanSubFolders",Global::scanSubFolders);
 	settings.setValue("GlobalSettings/lastDir", DkSettings::Global::lastDir);
 	//settings.setValue("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir);
+	settings.setValue("GlobalSettings/searchHistory", DkSettings::Global::searchHistory);
 	settings.setValue("GlobalSettings/recentFolders", DkSettings::Global::recentFolders);
 	settings.setValue("GlobalSettings/recentFiles", DkSettings::Global::recentFiles);
 	settings.setValue("GlobalSettings/useTmpPath", DkSettings::Global::useTmpPath);
@@ -333,6 +336,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Global::lastDir = QString();
 	DkSettings::Global::lastSaveDir = QString();
 	DkSettings::Global::recentFiles = QStringList();
+	DkSettings::Global::searchHistory = QStringList();
 	DkSettings::Global::recentFolders = QStringList();
 	DkSettings::Global::useTmpPath = false;
 	DkSettings::Global::tmpPath = QString();
