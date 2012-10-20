@@ -188,7 +188,6 @@ bool DkBasicLoader::loadRohFile(QString fileName){
 	free(buf);
 	free(pData);
 
-
 	return imgLoaded;
 
 }
@@ -1556,7 +1555,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	emit updateInfoSignalDelayed(tr("saving..."), false);
 	//qDebug() << "jpg compression: " << compression;
 
-	if ( QFileInfo(filePath).exists())
+	if (QFileInfo(filePath).exists())
 		qDebug() << QFileInfo(filePath).absoluteFilePath() << " (before exif) exists...";
 	else
 		qDebug() << QFileInfo(filePath).absoluteFilePath() << " (before exif) does NOT exists...";
@@ -1578,7 +1577,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 
 		// assign the new save directory
 		saveDir = QDir(file.absoluteDir());
-		DkSettings::Global::lastSaveDir = file.absolutePath();
+		DkSettings::Global::lastSaveDir = file.absolutePath();	// we currently don't use that
 				
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);

@@ -776,14 +776,27 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 	if (text == currentSearch)
 		return;
 
-	QString textClean = text;
-	textClean = textClean.replace(QString(" "), QString(".*"));
 
-	// if characters are added, use the result list -> speed-up
-	// the empty check is for regular expressions (until it is valid, nothing appears)
-	// I think we can't do that anymore for the sake of list view cropping...
-	resultList = (!text.contains(currentSearch) || resultList.empty() || !allDisplayed) ? fileList.filter(QRegExp(textClean)) : resultList.filter(QRegExp(textClean));
-		
+	QStringList queries = text.split(" ");
+	
+	if (queries.size() == 1) {
+		// if characters are added, use the result list -> speed-up
+		// the empty check is for regular expressions (until it is valid, nothing appears)
+		// I think we can't do that anymore for the sake of list view cropping...
+		resultList = (!text.contains(currentSearch) || resultList.empty() || !allDisplayed) ? fileList.filter(text, Qt::CaseInsensitive) : resultList.filter(text, Qt::CaseInsensitive);
+	}
+	else {
+		resultList = fileList;
+		for (int idx = 0; idx < queries.size(); idx++) {
+			resultList = resultList.filter(queries[idx], Qt::CaseInsensitive);
+			qDebug() << "query: " << queries[idx];
+		}
+	}
+
+	// if string match returns nothing -> try a regexp
+	if (resultList.empty())
+		resultList = fileList.filter(QRegExp(text));
+
 	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
 	currentSearch = text;
 
