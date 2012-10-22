@@ -1989,7 +1989,7 @@ QStringList DkImageLoader::getFoldersRecursive(QDir dir) {
  * @param keywords if one of these keywords is not in the file name, the file will be ignored.
  * @return QStringList all filtered files of the current directory.
  **/ 
-QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywords, QStringList keywords) {
+QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywords, QStringList keywords, QStringList folderKeywords) {
 
 	DkTimer dt;
 
@@ -2067,6 +2067,20 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 
 	for (int idx = 0; idx < keywords.size(); idx++) {
 		fileList = fileList.filter(keywords[idx], Qt::CaseInsensitive);
+	}
+
+	if (!folderKeywords.empty()) {
+		
+		QStringList resultList = fileList;
+		for (int idx = 0; idx < folderKeywords.size(); idx++) {
+			resultList = resultList.filter(folderKeywords[idx], Qt::CaseInsensitive);
+		}
+
+		// if string match returns nothing -> try a regexp
+		if (resultList.empty())
+			resultList = fileList.filter(QRegExp(folderKeywords[0]));
+
+		fileList = resultList;
 	}
 
 	return fileList;
@@ -2192,6 +2206,16 @@ void DkImageLoader::updateCacheIndex() {
 	
 	if (cacher)
 		cacher->setCurrentFile(file, basicLoader.image());
+}
+
+void DkImageLoader::setFolderFilters(QStringList filters) {
+
+	folderKeywords = filters;
+	getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);
+
+	if (!filters.empty() && !files.contains(file.fileName()))
+		loadFileAt(0);
+
 }
 
 /**

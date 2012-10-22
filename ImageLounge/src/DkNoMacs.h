@@ -199,10 +199,10 @@ enum editActions {
 	menu_edit_end,	// nothing beyond this point
 };
 
-enum batchActions {
-	menu_batch_thumbs,
+enum toolsActions {
+	menu_tools_thumbs,
 
-	menu_batch_end,
+	menu_tools_end,
 };
 
 enum viewActions {
@@ -282,6 +282,7 @@ enum fileIcons {
 	icon_file_open,
 	icon_file_open_large,
 	icon_file_dir_large,
+	icon_file_filter,
 
 	icon_file_save,
 
@@ -376,7 +377,7 @@ public slots:
 	void openFile();
 	void renameFile();
 	void goTo();
-	void find();
+	void find(bool filterAction);
 	void saveFile();
 	void resizeImage();
 	void deleteFile();
@@ -458,7 +459,7 @@ protected:
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
 	QVector<QAction *> editActions;
-	QVector<QAction *> batchActions;
+	QVector<QAction *> toolsActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
 	QVector<QAction *> helpActions;
@@ -473,7 +474,7 @@ protected:
 	DkMenuBar* menu;
 	QMenu* fileMenu;	// TODO: release ?!
 	QMenu* editMenu;
-	QMenu* batchMenu;
+	QMenu* toolsMenu;
 	QMenu* viewMenu;
 	QMenu* syncMenu;
 	QMenu* helpMenu;

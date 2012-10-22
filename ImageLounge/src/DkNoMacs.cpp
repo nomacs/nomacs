@@ -121,7 +121,7 @@ void DkNoMacs::init() {
 	// add actions since they are ignored otherwise if the menu is hidden
 	addActions(fileActions.toList());
 	addActions(editActions.toList());
-	addActions(batchActions.toList());
+	addActions(toolsActions.toList());
 	addActions(viewActions.toList());
 	addActions(syncActions.toList());
 	addActions(helpActions.toList());
@@ -131,8 +131,8 @@ void DkNoMacs::init() {
 		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
 	for (int idx = 0; idx < editActions.size(); idx++)
 		editActions[idx]->setToolTip(editActions[idx]->statusTip());
-	for (int idx = 0; idx < batchActions.size(); idx++)
-		viewActions[idx]->setToolTip(batchActions[idx]->statusTip());
+	for (int idx = 0; idx < toolsActions.size(); idx++)
+		viewActions[idx]->setToolTip(toolsActions[idx]->statusTip());
 	for (int idx = 0; idx < viewActions.size(); idx++)
 		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
 	for (int idx = 0; idx < syncActions.size(); idx++)
@@ -296,6 +296,9 @@ void DkNoMacs::createIcons() {
 	fileIcons[icon_file_dir_large] = ICON("document-open-folder-large", ":/nomacs/img/dir-large.png");
 	fileIcons[icon_file_prev] = ICON("go-previous", ":/nomacs/img/previous.png");
 	fileIcons[icon_file_next] = ICON("go-next", ":/nomacs/img/next.png");
+	fileIcons[icon_file_filter] = QIcon();
+	fileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/filter.png"), QIcon::Normal, QIcon::On);
+	fileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/nofilter.png"), QIcon::Normal, QIcon::Off);
 
 	editIcons.resize(icon_edit_end);
 	editIcons[icon_edit_rotate_cw] = ICON("object-rotate-right", ":/nomacs/img/rotate-cw.png");
@@ -362,9 +365,6 @@ void DkNoMacs::createMenu() {
 	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_preferences]);
 
-	batchMenu = menu->addMenu(tr("&Batch"));
-	batchMenu->addAction(batchActions[menu_batch_thumbs]);
-
 	viewMenu = menu->addMenu(tr("&View"));
 	viewToolsMenu = viewMenu->addMenu(tr("Tool&bars"));
 	viewToolsMenu->addAction(viewActions[menu_view_show_menu]);
@@ -396,6 +396,9 @@ void DkNoMacs::createMenu() {
 	viewMenu->addSeparator();
 	
 	viewMenu->addAction(viewActions[menu_view_gps_map]);
+
+	toolsMenu = menu->addMenu(tr("&Tools"));
+	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -487,10 +490,12 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_goto]->setStatusTip(tr("Go To an image"));
 	connect(fileActions[menu_file_goto], SIGNAL(triggered()), this, SLOT(goTo()));
 
-	fileActions[menu_file_find] = new QAction(tr("&Find"), this);
+	fileActions[menu_file_find] = new QAction(fileIcons[icon_file_filter], tr("&Find"), this);
 	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
 	fileActions[menu_file_find]->setStatusTip(tr("Find an image"));
-	connect(fileActions[menu_file_find], SIGNAL(triggered()), this, SLOT(find()));
+	fileActions[menu_file_find]->setCheckable(true);
+	fileActions[menu_file_find]->setChecked(false);
+	connect(fileActions[menu_file_find], SIGNAL(toggled(bool)), this, SLOT(find(bool)));
 
 	fileActions[menu_file_save] = new QAction(fileIcons[icon_file_save], tr("&Save"), this);
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
@@ -717,12 +722,12 @@ void DkNoMacs::createActions() {
 	connect(viewActions[menu_view_gps_map], SIGNAL(triggered()), this, SLOT(showGpsCoordinates()));
 	
 	// batch actions
-	batchActions.resize(menu_batch_end);
+	toolsActions.resize(menu_tools_end);
 
-	batchActions[menu_batch_thumbs] = new QAction(tr("Compute &Thumbnails"), this);
-	batchActions[menu_batch_thumbs]->setStatusTip(tr("compute all thumbnails of the current folder"));
-	batchActions[menu_batch_thumbs]->setEnabled(false);
-	connect(batchActions[menu_batch_thumbs], SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
+	toolsActions[menu_tools_thumbs] = new QAction(tr("Compute &Thumbnails"), this);
+	toolsActions[menu_tools_thumbs]->setStatusTip(tr("compute all thumbnails of the current folder"));
+	toolsActions[menu_tools_thumbs]->setEnabled(false);
+	connect(toolsActions[menu_tools_thumbs], SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -835,7 +840,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_wallpaper]->setEnabled(false);
 #endif
 
-	batchActions[menu_batch_thumbs]->setEnabled(enable);
+	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 
 	viewActions[menu_view_show_info]->setEnabled(enable);
 	#ifdef WITH_OPENCV
@@ -1575,19 +1580,25 @@ void DkNoMacs::renameFile() {
 
 }
 
-void DkNoMacs::find() {
+void DkNoMacs::find(bool filterAction) {
 
-	//if (!viewport() || !viewport()->getImageLoader() || !viewport()->getImageLoader()->hasImage())
-	//	return;
+	if (!viewport() || !viewport()->getImageLoader())
+		return;
 
-	DkSearchDialog* searchDialog = new DkSearchDialog(this);
-	searchDialog->setFiles(viewport()->getImageLoader()->getFiles());
-	searchDialog->setPath(viewport()->getImageLoader()->getDir());
+	if (filterAction) {
+		DkSearchDialog* searchDialog = new DkSearchDialog(this);
+		searchDialog->setFiles(viewport()->getImageLoader()->getFiles());
+		searchDialog->setPath(viewport()->getImageLoader()->getDir());
 
-	connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport()->getImageLoader(), SLOT(loadFile(QFileInfo)));
+		connect(searchDialog, SIGNAL(filterSignal(QStringList)), viewport()->getImageLoader(), SLOT(setFolderFilters(QStringList)));
+		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport()->getImageLoader(), SLOT(loadFile(QFileInfo)));
+		searchDialog->show();
+	}
+	else {
+		// remove the filter 
+		viewport()->getImageLoader()->setFolderFilters(QStringList());
+	}
 
-
-	searchDialog->show();
 
 }
 
@@ -2175,7 +2186,7 @@ QVector <QAction* > DkNoMacs::getFileActions() {
 
 QVector <QAction* > DkNoMacs::getBatchActions() {
 
-	return batchActions;
+	return toolsActions;
 }
 
 QVector <QAction* > DkNoMacs::getViewActions() {

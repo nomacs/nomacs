@@ -260,6 +260,7 @@ public slots:
 
 signals:
 	void loadFileSignal(QFileInfo file);
+	void filterSignal(QStringList);
 
 protected:
 

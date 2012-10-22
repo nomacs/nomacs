@@ -767,13 +767,15 @@ public:
 	static QStringList fileFilters;	// just the filters
 	static QStringList openFilters;	// for open dialog
 	static QStringList saveFilters;	// for close dialog
+
 	QStringList ignoreKeywords;
 	QStringList keywords;
+	QStringList folderKeywords;		// are deleted if a new folder is opened
 
 	static bool isValid(QFileInfo& fileInfo);
 	//static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
 	static QStringList getFoldersRecursive(QDir dir);
-	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList());
+	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
 
 	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
 
@@ -866,6 +868,7 @@ public slots:
 	void saveRating(int rating);
 	void deleteFile();
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
+	void setFolderFilters(QStringList filters);
 	//void enableWatcher(bool enable);
 
 protected:

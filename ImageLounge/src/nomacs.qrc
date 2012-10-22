@@ -4,6 +4,8 @@
         <file>img/previous.png</file>
         <file>img/crop.png</file>
         <file>img/resize.png</file>
+        <file>img/filter.png</file>
+        <file>img/nofilter.png</file>
         <file>img/rotate-cc.png</file>
         <file>img/rotate-cw.png</file>
         <file>img/lena.jpg</file>

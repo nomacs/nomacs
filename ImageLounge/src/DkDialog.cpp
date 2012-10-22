@@ -813,9 +813,11 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		stringModel->setStringList(answerList);
 
 		resultListView->setStyleSheet("QListView{color: #777777; font-style: italic;}");
+		filterButton->setEnabled(false);
 		//cancelButton->setFocus();
 	}
 	else {
+		filterButton->setEnabled(true);
 		stringModel->setStringList(makeViewable(resultList));
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 		resultListView->setStyleSheet(defaultStyleSheet);
@@ -858,7 +860,7 @@ void DkSearchDialog::on_okButton_pressed() {
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
-
+	filterSignal(currentSearch.split(" "));
 	close();
 }
 
