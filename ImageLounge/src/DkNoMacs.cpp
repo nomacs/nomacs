@@ -132,7 +132,7 @@ void DkNoMacs::init() {
 	for (int idx = 0; idx < editActions.size(); idx++)
 		editActions[idx]->setToolTip(editActions[idx]->statusTip());
 	for (int idx = 0; idx < toolsActions.size(); idx++)
-		viewActions[idx]->setToolTip(toolsActions[idx]->statusTip());
+		toolsActions[idx]->setToolTip(toolsActions[idx]->statusTip());
 	for (int idx = 0; idx < viewActions.size(); idx++)
 		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
 	for (int idx = 0; idx < syncActions.size(); idx++)
@@ -249,6 +249,7 @@ void DkNoMacs::createToolbar() {
 	toolbar->addAction(fileActions[menu_file_open]);
 	toolbar->addAction(fileActions[menu_file_open_dir]);
 	toolbar->addAction(fileActions[menu_file_save]);
+	toolbar->addAction(toolsActions[menu_tools_filter]);
 	toolbar->addSeparator();
 
 	// edit
@@ -399,6 +400,7 @@ void DkNoMacs::createMenu() {
 
 	toolsMenu = menu->addMenu(tr("&Tools"));
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
+	toolsMenu->addAction(toolsActions[menu_tools_filter]);
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -490,13 +492,6 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_goto]->setStatusTip(tr("Go To an image"));
 	connect(fileActions[menu_file_goto], SIGNAL(triggered()), this, SLOT(goTo()));
 
-	fileActions[menu_file_find] = new QAction(fileIcons[icon_file_filter], tr("&Find && Filter"), this);
-	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
-	fileActions[menu_file_find]->setStatusTip(tr("Find an image"));
-	fileActions[menu_file_find]->setCheckable(true);
-	fileActions[menu_file_find]->setChecked(false);
-	connect(fileActions[menu_file_find], SIGNAL(toggled(bool)), this, SLOT(find(bool)));
-
 	fileActions[menu_file_save] = new QAction(fileIcons[icon_file_save], tr("&Save"), this);
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
 	fileActions[menu_file_save]->setStatusTip(tr("Save an image"));
@@ -526,6 +521,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_new_instance]->setShortcut(QKeySequence(shortcut_new_instance));
 	fileActions[menu_file_new_instance]->setStatusTip(tr("Open file in new instance"));
 	connect(fileActions[menu_file_new_instance], SIGNAL(triggered()), this, SLOT(newInstance()));
+
+	fileActions[menu_file_find] = new QAction(tr("&Find && Filter"), this);
+	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
+	fileActions[menu_file_find]->setStatusTip(tr("Find an image"));
+	connect(fileActions[menu_file_find], SIGNAL(triggered()), this, SLOT(find()));
 
 	//fileActions[menu_file_share_fb] = new QAction(tr("Share on &Facebook"), this);
 	////fileActions[menu_file_share_fb]->setShortcuts(QKeySequence::Close);
@@ -728,6 +728,12 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_thumbs]->setStatusTip(tr("compute all thumbnails of the current folder"));
 	toolsActions[menu_tools_thumbs]->setEnabled(false);
 	connect(toolsActions[menu_tools_thumbs], SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
+
+	toolsActions[menu_tools_filter] = new QAction(fileIcons[icon_file_filter], tr("&Find && Filter"), this);
+	toolsActions[menu_tools_filter]->setStatusTip(tr("Find an image"));
+	toolsActions[menu_tools_filter]->setCheckable(true);
+	toolsActions[menu_tools_filter]->setChecked(false);
+	connect(toolsActions[menu_tools_filter], SIGNAL(toggled(bool)), this, SLOT(find(bool)));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -1592,7 +1598,8 @@ void DkNoMacs::find(bool filterAction) {
 
 		connect(searchDialog, SIGNAL(filterSignal(QStringList)), viewport()->getImageLoader(), SLOT(setFolderFilters(QStringList)));
 		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport()->getImageLoader(), SLOT(loadFile(QFileInfo)));
-		searchDialog->show();
+		searchDialog->exec();
+		
 	}
 	else {
 		// remove the filter 
@@ -1600,6 +1607,13 @@ void DkNoMacs::find(bool filterAction) {
 	}
 
 
+}
+
+void DkNoMacs::updateFilterState(QStringList filters) {
+	
+	toolsActions[menu_tools_filter]->blockSignals(true);
+	toolsActions[menu_tools_filter]->setChecked(!filters.empty());
+	toolsActions[menu_tools_filter]->blockSignals(false);
 }
 
 void DkNoMacs::goTo() {
@@ -2533,6 +2547,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 	connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+	connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
@@ -2585,6 +2600,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
 		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 		connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+		connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
@@ -2748,7 +2764,8 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 		//connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
 		connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-		
+		connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
+
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);

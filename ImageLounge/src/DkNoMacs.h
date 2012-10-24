@@ -201,6 +201,7 @@ enum editActions {
 
 enum toolsActions {
 	menu_tools_thumbs,
+	menu_tools_filter,
 
 	menu_tools_end,
 };
@@ -377,7 +378,8 @@ public slots:
 	void openFile();
 	void renameFile();
 	void goTo();
-	void find(bool filterAction);
+	void find(bool filterAction = true);
+	void updateFilterState(QStringList filters);
 	void saveFile();
 	void resizeImage();
 	void deleteFile();

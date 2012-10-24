@@ -851,6 +851,7 @@ public:
 	static bool restoreFile(const QFileInfo &fileInfo);
 
 signals:
+	void folderFiltersChanged(QStringList filters);
 	void updateImageSignal();
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
@@ -873,6 +874,7 @@ public slots:
 	void deleteFile();
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilters(QStringList filters);
+	QStringList getFolderFilters();
 	//void enableWatcher(bool enable);
 
 protected:

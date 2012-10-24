@@ -250,6 +250,10 @@ public:
 		this->path = path;
 	};
 
+	bool filterPressed() {
+		return isFilterPressed;
+	};
+
 public slots:
 	void on_searchBar_textChanged(const QString& text);
 	void on_okButton_pressed();
@@ -272,7 +276,7 @@ protected:
 	QListView* resultListView;
 	QLineEdit* searchBar;
 
-	QPushButton* okButton;
+	QPushButton* findButton;
 	QPushButton* filterButton;
 	QPushButton* cancelButton;
 
@@ -286,7 +290,7 @@ protected:
 	QString endMessage;
 
 	bool allDisplayed;
-
+	bool isFilterPressed;
 };
 
 class DkResizeDialog : public QDialog {

@@ -727,6 +727,7 @@ void DkSearchDialog::init() {
 
 	endMessage = tr("Load All");
 	allDisplayed = true;
+	isFilterPressed = false;
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
@@ -753,9 +754,9 @@ void DkSearchDialog::init() {
 
 
 	// buttons
-	okButton = new QPushButton(tr("F&ind"), this);
-	okButton->setObjectName("okButton");
-	okButton->setDefault(true);
+	findButton = new QPushButton(tr("F&ind"), this);
+	findButton->setObjectName("okButton");
+	findButton->setDefault(true);
 
 	filterButton = new QPushButton(tr("&Filter"), this);
 	filterButton->setObjectName("filterButton");
@@ -767,7 +768,7 @@ void DkSearchDialog::init() {
 	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::RightToLeft, buttonWidget);
 	buttonLayout->addWidget(cancelButton);
 	buttonLayout->addWidget(filterButton);
-	buttonLayout->addWidget(okButton);
+	buttonLayout->addWidget(findButton);
 
 	layout->addWidget(searchBar);
 	layout->addWidget(resultListView);
@@ -815,15 +816,16 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 
 		resultListView->setStyleSheet("QListView{color: #777777; font-style: italic;}");
 		filterButton->setEnabled(false);
+		findButton->setEnabled(false);
 		//cancelButton->setFocus();
 	}
 	else {
 		filterButton->setEnabled(true);
+		findButton->setEnabled(true);
 		stringModel->setStringList(makeViewable(resultList));
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 		resultListView->setStyleSheet(defaultStyleSheet);
 	}
-
 
 	qDebug() << "searching takes (total): " << QString::fromStdString(dt.getTotal());
 }
@@ -862,6 +864,7 @@ void DkSearchDialog::on_okButton_pressed() {
 
 void DkSearchDialog::on_filterButton_pressed() {
 	filterSignal(currentSearch.split(" "));
+	isFilterPressed = true;
 	close();
 }
 

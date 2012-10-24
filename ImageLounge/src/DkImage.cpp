@@ -831,6 +831,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		else 
 #endif
 		folderKeywords.clear();	// delete key words -> otherwise user may be confused
+		emit folderFiltersChanged(folderKeywords);
 		files = getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		if (files.empty()) {
@@ -2218,6 +2219,12 @@ void DkImageLoader::setFolderFilters(QStringList filters) {
 
 	if (!filters.empty() && !files.contains(file.fileName()))
 		loadFileAt(0);
+
+	emit folderFiltersChanged(folderKeywords);
+}
+
+QStringList DkImageLoader::getFolderFilters() {
+	return folderKeywords;
 }
 
 /**
