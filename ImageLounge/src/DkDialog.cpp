@@ -723,7 +723,7 @@ DkSearchDialog::DkSearchDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog
 void DkSearchDialog::init() {
 
 	setObjectName("DkSearchDialog");
-	setWindowTitle("Find");
+	setWindowTitle(tr("Find & Filter"));
 
 	endMessage = tr("Load All");
 	allDisplayed = true;
@@ -734,6 +734,7 @@ void DkSearchDialog::init() {
 	history->setCompletionMode(QCompleter::InlineCompletion);
 	searchBar = new QLineEdit();
 	searchBar->setObjectName("searchBar");
+	searchBar->setToolTip(tr("Type a search word or a regular expression"));
 	searchBar->setCompleter(history);
 
 	stringModel = new QStringListModel();
@@ -752,7 +753,7 @@ void DkSearchDialog::init() {
 
 
 	// buttons
-	okButton = new QPushButton(tr("&Ok"), this);
+	okButton = new QPushButton(tr("F&ind"), this);
 	okButton->setObjectName("okButton");
 	okButton->setDefault(true);
 

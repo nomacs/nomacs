@@ -490,7 +490,7 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_goto]->setStatusTip(tr("Go To an image"));
 	connect(fileActions[menu_file_goto], SIGNAL(triggered()), this, SLOT(goTo()));
 
-	fileActions[menu_file_find] = new QAction(fileIcons[icon_file_filter], tr("&Find"), this);
+	fileActions[menu_file_find] = new QAction(fileIcons[icon_file_filter], tr("&Find && Filter"), this);
 	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
 	fileActions[menu_file_find]->setStatusTip(tr("Find an image"));
 	fileActions[menu_file_find]->setCheckable(true);

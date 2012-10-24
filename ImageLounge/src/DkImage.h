@@ -640,6 +640,10 @@ public:
 		cacheSize = 0.0f;
 	};
 
+	bool operator==(const DkImageCache& o) const {
+		return o.getFile() == getFile();
+	}
+
 	void setFileInfo(QFileInfo& file) {
 		this->file = file;
 	};

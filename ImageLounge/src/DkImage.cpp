@@ -790,7 +790,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		}
 		else 
 #endif
-		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		files = getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		// might get empty too (e.g. someone deletes all images
 		if (files.empty()) {
@@ -830,8 +830,8 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		}
 		else 
 #endif
-		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-			
+		folderKeywords.clear();	// delete key words -> otherwise user may be confused
+		files = getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		if (files.empty()) {
 			emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
@@ -2078,8 +2078,10 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 
 		// if string match returns nothing -> try a regexp
 		if (resultList.empty())
-			resultList = fileList.filter(QRegExp(folderKeywords[0]));
+			resultList = fileList.filter(QRegExp(folderKeywords.join(" ")));
 
+		qDebug() << "filtered file list (get)" << resultList;
+		qDebug() << "keywords: " << folderKeywords;
 		fileList = resultList;
 	}
 
@@ -2211,11 +2213,11 @@ void DkImageLoader::updateCacheIndex() {
 void DkImageLoader::setFolderFilters(QStringList filters) {
 
 	folderKeywords = filters;
-	getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);
+	folderUpdated = true;
+	loadDir(dir);	// simulate a folder update operation
 
 	if (!filters.empty() && !files.contains(file.fileName()))
 		loadFileAt(0);
-
 }
 
 /**
@@ -2319,6 +2321,8 @@ void DkCacher::updateDir(QStringList& files) {
 
 	this->files = files;	// this change is done from another thread!
 	updateFiles = true;
+	qDebug() << "cacher files num: " << files.size();
+
 	//index();
 }
 
@@ -2339,11 +2343,31 @@ void DkCacher::index() {
 
 		curFileIdx = -1;
 
-		qDebug() << "cache indexed in: " << QString::fromStdString(dt.getTotal());
+		qDebug() << "cache indexed " << files.size() << " files in: " << QString::fromStdString(dt.getTotal());
 	}
 
 	if (updateFiles) {
-		// TODO: update files without loosing current cache
+
+		QVector<DkImageCache> tmpCache;
+		curCache = 0;	// clear cache size
+
+		for (int idx = 0; idx < files.size(); idx++) {
+			
+			DkImageCache tmp(QFileInfo(dir, files[idx]));
+			int cacheIdx = cache.indexOf(tmp);
+			
+			if (cacheIdx != -1) {
+				tmpCache.append(cache[cacheIdx]);
+				curCache += cache[cacheIdx].getCacheSize();
+			}
+			else
+				tmpCache.append(tmp);
+		}
+
+		cache = tmpCache;
+
+		curFileIdx = -1;
+		somethingTodo = true;
 		updateFiles = false;
 	}
 
