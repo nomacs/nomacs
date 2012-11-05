@@ -230,13 +230,18 @@ void DkNoMacs::createToolbar() {
 // all other platforms have "native look and feel"
 #ifdef Q_WS_WIN
 	toolbar->setIconSize(QSize(16, 16));
-	toolbar->setStyleSheet(
+
+	BOOL aero = false;
+	//DwmIsCompositionEnabled(&aero);
+	if (aero) {
+		toolbar->setStyleSheet(
 					//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
 					QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
 					+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
 					//+ QString("QToolButton{border: none; margin: 3px;}")
 					//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
 					);
+	}
 #endif
 	// file
 	//DkButton* test = new DkButton(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
