@@ -5,9 +5,15 @@
 !include nsDialogs.nsh
 !include LogicLib.nsh
 
+; your install directories
+;!define BUILD_DIR "..\build2012\ReallyRelease"
+!define BUILD_DIR "..\build2012x64\ReallyRelease"
+!define TRANSLATION_DIR "translation"
+!define README_DIR "Readme"
+
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "0.4.0 RC"
+!define PRODUCT_VERSION "0.4.1 RC"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -403,37 +409,37 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "ReallyRelease\nomacs.exe"
+  File "${BUILD_DIR}\nomacs.exe"
   CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
   CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
   
-  File "build\nomacs_*.qm"
+  File "${TRANSLATION_DIR}\nomacs_*.qm"
   
 
-  File "ReallyRelease\exiv2.dll"
-  File "ReallyRelease\libexpat.dll"
-  File "ReallyRelease\libraw.dll"
-  File "ReallyRelease\msvcp100.dll"
-  File "ReallyRelease\msvcr100.dll"
-  File "ReallyRelease\opencv_core242.dll"
-  File "ReallyRelease\opencv_imgproc242.dll"
-  File "ReallyRelease\QtCore4.dll"
-  File "ReallyRelease\QtGui4.dll"
-  File "ReallyRelease\QtNetwork4.dll"
-  File "ReallyRelease\zlib1.dll"
+  File "${BUILD_DIR}\exiv2.dll"
+  File "${BUILD_DIR}\libexpat.dll"
+  File "${BUILD_DIR}\libraw.dll"
+  File "${BUILD_DIR}\msvcp*.dll"
+  File "${BUILD_DIR}\msvcr*.dll"
+  File "${BUILD_DIR}\opencv_core242.dll"
+  File "${BUILD_DIR}\opencv_imgproc242.dll"
+  File "${BUILD_DIR}\QtCore4.dll"
+  File "${BUILD_DIR}\QtGui4.dll"
+  File "${BUILD_DIR}\QtNetwork4.dll"
+  File "${BUILD_DIR}\zlib1.dll"
   
-  File "Readme\COPYRIGHT"
-  File "Readme\LICENSE.GPLv2"
-  File "Readme\LICENSE.GPLv3"
-  File "Readme\LICENSE.LGPL"
-  File "Readme\LICENSE.OPENCV"
+  File "${README_DIR}\COPYRIGHT"
+  File "${README_DIR}\LICENSE.GPLv2"
+  File "${README_DIR}\LICENSE.GPLv3"
+  File "${README_DIR}\LICENSE.LGPL"
+  File "${README_DIR}\LICENSE.OPENCV"
   SetOutPath "$INSTDIR\imageformats"
-  File "ReallyRelease\imageformats\qgif4.dll"
-  File "ReallyRelease\imageformats\qico4.dll"
-  File "ReallyRelease\imageformats\qjpeg4.dll"
-  File "ReallyRelease\imageformats\qmng4.dll"
-  File "ReallyRelease\imageformats\qsvg4.dll"
-  File "ReallyRelease\imageformats\qtiff4.dll"
+  File "${BUILD_DIR}\imageformats\qgif4.dll"
+  File "${BUILD_DIR}\imageformats\qico4.dll"
+  File "${BUILD_DIR}\imageformats\qjpeg4.dll"
+  File "${BUILD_DIR}\imageformats\qmng4.dll"
+  File "${BUILD_DIR}\imageformats\qsvg4.dll"
+  File "${BUILD_DIR}\imageformats\qtiff4.dll"
   
 	IfSilent isSilent isNotSilent
 		isSilent:
@@ -552,8 +558,8 @@ Section Uninstall
   Delete "$INSTDIR\opencv_core240.dll"
   Delete "$INSTDIR\opencv_imgproc242.dll"
   Delete "$INSTDIR\opencv_core242.dll"
-  Delete "$INSTDIR\msvcr100.dll"
-  Delete "$INSTDIR\msvcp100.dll"
+  Delete "$INSTDIR\msvcr*.dll"
+  Delete "$INSTDIR\msvcp*.dll"
   Delete "$INSTDIR\libraw.dll"
   Delete "$INSTDIR\expatw.dll"
   Delete "$INSTDIR\expat.dll"

@@ -68,7 +68,15 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 
 	QLabel* versionLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
 	versionLabel->setTextFormat(Qt::RichText);
-	versionLabel->setText("Version: " % QApplication::applicationVersion() % " RC<br>"
+
+	QString platform = "";
+#ifdef _WIN64
+	platform = " [x64] ";
+#elif defined _WIN32
+	platform = " [x86] ";
+#endif
+
+	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  " RC<br>"
 #ifdef WITH_OPENCV
 		"RAW support: Yes"
 #else
@@ -76,7 +84,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 #endif  
 		);
 
-	versionLabel->move(390, 280);
+	versionLabel->move(360, 280);
 
 	qDebug() << "splash screen created...";
 }
