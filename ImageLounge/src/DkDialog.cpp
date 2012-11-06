@@ -76,7 +76,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 	platform = " [x86] ";
 #endif
 
-	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  " RC<br>"
+	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  " &beta;<br>"
 #ifdef WITH_OPENCV
 		"RAW support: Yes"
 #else
