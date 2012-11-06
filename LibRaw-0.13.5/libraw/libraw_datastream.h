@@ -357,7 +357,7 @@ class LibRaw_buffer_datastream : public LibRaw_abstract_datastream
     {
         LibRaw_byte_buffer *ret = new LibRaw_byte_buffer(0);
         if(streampos + sz > streamsize)
-            sz = streamsize - streampos;
+            sz = (unsigned int)(streamsize - streampos);
         ret->set_buffer(buf+streampos,sz);
         return ret;
     }

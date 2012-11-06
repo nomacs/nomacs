@@ -182,7 +182,7 @@ public:
 			img.convertTo(img, CV_8U, 255);
 
 		if (img.type() == CV_8UC1) {
-			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_Indexed8);
+			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_Indexed8);	// opencv uses size_t if for scaling in x64 applications
 			//Mat tmp;
 			//cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
 			//img = tmp;
@@ -190,10 +190,10 @@ public:
 		if (img.type() == CV_8UC3) {
 			
 			cv::cvtColor(img, img, CV_RGB2BGR);
-			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888);
+			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
 		}
 		if (img.type() == CV_8UC4) {
-			qImg = QImage(img.data, img.cols, img.rows, img.step, QImage::Format_ARGB32);
+			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32);
 		}
 
 		qImg = qImg.copy();

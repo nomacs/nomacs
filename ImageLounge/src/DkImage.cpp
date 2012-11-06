@@ -266,7 +266,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			merge(rawCh, rawMat);
 			rawMat.convertTo(rgbImg, CV_8U, 255);
 
-			image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step, QImage::Format_RGB888);
+			image = QImage(rgbImg.data, (int)rgbImg.cols, (int)rgbImg.rows, (int)rgbImg.step, QImage::Format_RGB888);
 
 		}
 		else
@@ -475,7 +475,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			}
 
 			//create the final image
-			image = QImage(rgbImg.data, rgbImg.cols, rgbImg.rows, rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
+			image = QImage(rgbImg.data, (int)rgbImg.cols, (int)rgbImg.rows, (int)rgbImg.step/*rgbImg.cols*3*/, QImage::Format_RGB888);
 
 			//orientation is done in loadGeneral with libExiv
 			//orientation = iProcessor.imgdata.sizes.flip;
@@ -2769,7 +2769,7 @@ void DkThumbsLoader::setLoadLimits(int start, int end) {
 	//if (start < startIdx || startIdx == -1)	startIdx = (start >= 0 && start < thumbs->size()) ? start : 0;
 	//if (end > endIdx || endIdx == -1)		endIdx = (end > 0 && end < thumbs->size()) ? end : thumbs->size();
 	startIdx = (start >= 0 && (unsigned int) start < thumbs->size()) ? start : 0;
-	endIdx = (end > 0 && (unsigned int) end < thumbs->size()) ? end : thumbs->size();
+	endIdx = (end > 0 && (unsigned int) end < thumbs->size()) ? end : (int)thumbs->size();
 
 	somethingTodo = true;
 }
@@ -2787,7 +2787,7 @@ void DkThumbsLoader::loadAll() {
 	// this function is used for batch saving
 	loadAllThumbs = true;
 	forceSave = true;
-	setLoadLimits(0, thumbs->size());
+	setLoadLimits(0, (int)thumbs->size());
 }
 
 //QImage DkThumbsLoader::getThumbNailWin(QFileInfo file) {

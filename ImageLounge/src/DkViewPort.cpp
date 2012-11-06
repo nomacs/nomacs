@@ -752,7 +752,7 @@ void DkBaseViewPort::setImage(cv::Mat newImg) {
 	//	// do we really need a deep copy here?
 
 	// TODO: be careful with the format!
-	imgQt = QImage(newImg.data, newImg.cols, newImg.rows, newImg.step, QImage::Format_RGB888);
+	imgQt = QImage(newImg.data, (int)newImg.cols, (int)newImg.rows, (int)newImg.step, QImage::Format_RGB888);
 	//}
 
 	this->imgRect = QRect(0, 0, newImg.cols, newImg.rows);
@@ -1157,7 +1157,7 @@ void DkViewPort::setImage(cv::Mat newImg) {
 	//	// do we really need a deep copy here?
 
 	// TODO: be careful with the format!
-	imgQt = QImage(newImg.data, newImg.cols, newImg.rows, newImg.step, QImage::Format_RGB888);
+	imgQt = QImage(newImg.data, (int)newImg.cols, (int)newImg.rows, (int)newImg.step, QImage::Format_RGB888);
 	//}
 
 	this->imgRect = QRect(0, 0, newImg.cols, newImg.rows);
@@ -1553,7 +1553,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		painter.setWorldTransform(worldMatrix);
 
 		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
-			painter.setRenderHint(QPainter::SmoothPixmapTransform);
+			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		
 		draw(&painter);
 		//Now disable matrixWorld for overlay display
@@ -2688,7 +2688,7 @@ void DkViewPortContrast::setImage(QImage newImg) {
 
 				// dirty hack
 				if (i >= (int)planes.size()) i = 0;
-				imgs[idx] = QImage((const unsigned char*)planes[i].data, planes[i].cols, planes[i].rows, planes[i].step,  QImage::Format_Indexed8);
+				imgs[idx] = QImage((const unsigned char*)planes[i].data, (int)planes[i].cols, (int)planes[i].rows, (int)planes[i].step,  QImage::Format_Indexed8);
 				imgs[idx] = imgs[idx].copy();
 				idx++;
 
@@ -2696,7 +2696,7 @@ void DkViewPortContrast::setImage(QImage newImg) {
 			// The first element in the vector contains the gray scale 'average' of the 3 channels:
 			Mat grayMat;
 			cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
-			imgs[0] = QImage((const unsigned char*)grayMat.data, grayMat.cols, grayMat.rows, grayMat.step,  QImage::Format_Indexed8);
+			imgs[0] = QImage((const unsigned char*)grayMat.data, (int)grayMat.cols, (int)grayMat.rows, (int)grayMat.step,  QImage::Format_Indexed8);
 			imgs[0] = imgs[0].copy();
 			planes.clear();
 
