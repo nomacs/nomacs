@@ -726,13 +726,21 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	
 		QRectF imgRect = QRectF(QPoint(), img.size());
 		QRectF overviewRect = QRectF(QPoint(lm, tm), QSize(viewSize.width()-1, viewSize.height()-1));			// get the overview rect
+		overviewRect = overviewRect.toRect();	// force round
+
+		QRectF overviewImgRect(lm+1, tm+1, imgT.width(), imgT.height());
+		overviewImgRect.moveCenter(overviewRect.center());
 
 		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
-		QRectF overviewImgRect = overviewImgMatrix.mapRect(imgRect);
-		overviewImgRect.setTop(overviewImgRect.top()+tm+1);
-		overviewImgRect.setLeft(overviewImgRect.left()+lm+1);
-		overviewImgRect.setWidth(overviewImgRect.width()+tm-1);			// we have a border... correct that...
-		overviewImgRect.setHeight(overviewImgRect.height()+lm-1);
+		//QRectF overviewImgRect = overviewImgMatrix.mapRect(imgRect);
+		//overviewImgRect.moveTop(overviewImgRect.top()+tm+1);
+		//overviewImgRect.moveLeft(overviewImgRect.left()+lm+1);
+		//overviewImgRect = overviewImgRect.toRect();	// force round
+		//overviewImgRect.setWidth(overviewImgRect.width()-2);
+		//overviewImgRect.setHeight(overviewImgRect.height()-2);
+
+		qDebug() << "overview image rect: " << overviewImgRect;
+		qDebug() << "overview img size: " << imgT.size();
 
 		// now render the current view
 		QRectF viewRect = viewPortRect;
@@ -769,6 +777,10 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 	QPointF dxy = enterPos-QPointF(event->pos());
 
 	if (dxy.manhattanLength() < 4) {
+		
+		int lm, tm, rm, bm;
+		getContentsMargins(&lm, &tm, &rm, &bm);
+		
 		// move to the current position
 		QRectF viewRect = viewPortRect;
 		viewRect = worldMatrix->inverted().mapRect(viewRect);
@@ -778,7 +790,7 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 
 		float panningSpeed = -(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
 
-		QPointF cPos = event->pos();
+		QPointF cPos = event->pos()-QPointF(lm, tm);
 		QPointF dxy = (cPos - currentViewPoint)/worldMatrix->m11()*panningSpeed;
 		emit moveViewSignal(dxy);
 
@@ -837,7 +849,12 @@ void DkOverview::resizeImg() {
 	if (img.isNull())
 		return;
 
-	QRectF imgRect = QRectF(QPoint(), img.size());
+	int lm, tm, rm, bm;
+	getContentsMargins(&lm, &tm, &rm, &bm);
+
+	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the viewport....
+	QRectF overviewRect = QRectF(QPoint(lm, tm), QSize(viewSize.width()-2, viewSize.height()-2));			// get the overview rect
+	overviewRect = overviewRect.toRect();	// force round
 
 	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
 	
@@ -845,18 +862,12 @@ void DkOverview::resizeImg() {
 	if (overviewImgMatrix.isIdentity())
 		return;
 	
-	QRectF overviewImgRect = overviewImgMatrix.mapRect(imgRect);
-	overviewImgRect.setTop(overviewImgRect.top()+1);
-	overviewImgRect.setLeft(overviewImgRect.left()+1);
-	overviewImgRect.setWidth(overviewImgRect.width()-1);			// we have a border... correct that...
-	overviewImgRect.setHeight(overviewImgRect.height()-1);
-
-	if (overviewImgRect.width() <= 1|| overviewImgRect.height() <= 1)
+	if (overviewRect.width() <= 1|| overviewRect.height() <= 1)
 		return;
 
 	// fast downscaling
-	imgT = img.scaled(overviewImgRect.size().width()*2, overviewImgRect.size().height()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
-	imgT = imgT.scaled(overviewImgRect.size().width(), overviewImgRect.size().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	imgT = img.scaled(overviewRect.size().width()*2, overviewRect.size().height()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
+	imgT = imgT.scaled(overviewRect.size().width(), overviewRect.size().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 QTransform DkOverview::getScaledImageMatrix() {
