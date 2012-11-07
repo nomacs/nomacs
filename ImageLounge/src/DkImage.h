@@ -547,6 +547,30 @@ private:
 	void loadThumbs();
 };
 
+class DkImageStorage : public QObject {
+	Q_OBJECT
+
+public:
+	DkImageStorage(QImage img = QImage());
+
+	void setImage(QImage img);
+	QImage getImage(float factor = 1.0f/*QRectF rect = QRectF()*/);
+
+public slots:
+	void computeImage();
+
+signals:
+	void imageUpdated();
+
+protected:
+	QImage img;
+	QVector<QImage> imgs;
+
+	QMutex mutex;
+	QThread* computeThread;
+	bool busy;
+};
+
 /**
  * This class provides image loading and editing capabilities.
  * It additionally stores the currently loaded image.
@@ -836,7 +860,9 @@ public:
 	 **/ 
 	QImage getImage() {
 		
-		QMutexLocker locker(&mutex);
+		// >DIR: dead-lock if a function calls getImage() that is called by updateImageSignal or updateDirSignal 
+		// and is connected with a Qt::directConnection [7.11.2012 markus]
+		QMutexLocker locker(&mutex);	
 		return basicLoader.image();
 	};
 

@@ -2288,7 +2288,7 @@ QString DkImageLoader::fileName() {
 }
 
 
-// DkThumbsLoader --------------------------------------------------------------------
+// DkCacher --------------------------------------------------------------------
 
 DkCacher::DkCacher(QDir dir, QStringList files) {
 
@@ -3006,6 +3006,93 @@ void DkThumbsLoader::stop() {
 	//QMutexLocker(&this->mutex);
 	isActive = false;
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
+}
+
+// DkImageStorage --------------------------------------------------------------------
+DkImageStorage::DkImageStorage(QImage img) {
+	this->img = img;
+
+	computeThread = new QThread;
+	computeThread->start();
+	moveToThread(computeThread);
+
+	busy = false;
+}
+
+void DkImageStorage::setImage(QImage img) {
+	
+	imgs.clear();	// is it save (if the thread is still working?)
+	this->img = img;
+}
+
+QImage DkImageStorage::getImage(float factor) {
+
+	if (factor >= 1.0f || img.isNull())
+		return img;
+
+	// check if we have an image similar to that requested
+	for (int idx = 0; idx < imgs.size(); idx++) {
+
+		if ((float)imgs.at(idx).height()/img.height() >= factor)
+			return imgs.at(idx);
+	}
+	
+	// if the image does not exist - create it
+	if (!busy && imgs.empty()) {
+		// nobody is busy so start working
+		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);
+	}
+
+	// currently no alternative is available
+	return img;
+}
+
+void DkImageStorage::computeImage() {
+
+	DkTimer dt;
+	busy = true;
+	QImage resizedImg = img;
+
+	// down sample the image until it is twice times full HD
+	QSize iSize = img.size();
+	while (iSize.width() > 2*1542 && iSize.height() > 2*1542)	// in general we need less than 200 ms for the whole downscaling if we start at 1500 x 1500
+		iSize *= 0.5;
+
+	resizedImg = resizedImg.scaled(iSize, Qt::KeepAspectRatio, Qt::FastTransformation);
+
+	// it would be pretty strange if we needed more than 30 sub-images
+	for (int idx = 0; idx < 30; idx++) {
+
+		QSize s = resizedImg.size();
+		s *= 0.5;
+
+		if (s.width() < 32 || s.height() < 32)
+			break;
+
+#ifdef WITH_OPENCV
+		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
+		cv::Mat tmp;
+		cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
+		resizedImg = DkImage::mat2QImage(tmp);
+		resizedImg.setColorTable(img.colorTable());
+#else
+		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+#endif
+
+		qDebug() << "adding size: " << resizedImg.size();
+
+		mutex.lock();
+		imgs.push_front(resizedImg);
+		mutex.unlock();
+	}
+
+	busy = false;
+
+	// tell my caller I did something
+	emit imageUpdated();
+
+	qDebug() << "pyramid computation took me: " << QString::fromStdString(dt.getTotal());
+
 }
 
 // DkMetaData --------------------------------------------------------------------

@@ -604,12 +604,12 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	zoomTimer = new QTimer(this);
 	zoomTimer->setSingleShot(true);
 	connect(zoomTimer, SIGNAL(timeout()), this, SLOT(stopBlockZooming()));
+	connect(&imgStorage, SIGNAL(imageUpdated()), this, SLOT(update()));
 
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
 	setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
 	setMouseTracking(true);
-
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
@@ -775,7 +775,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	imgQt = newImg;
 	QRectF oldImgRect = imgRect;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
-	imgPyramid.clear();
+	//imgPyramid.clear();
 
 	emit enableNoImageSignal(!imgQt.isNull());
 
@@ -942,7 +942,9 @@ void DkBaseViewPort::draw(QPainter *painter) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
-	painter->drawImage(imgViewRect, imgQt, imgRect);
+	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+	qDebug() << "imgRect" << imgRect;
+	painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
 
 }
 
@@ -1004,51 +1006,51 @@ QTransform DkBaseViewPort::getScaledImageMatrix() {
 	return imgMatrix;
 }
 
-QImage DkBaseViewPort::getScaledImage(float factor) {
-
-// this function does not help anything if we cannot interpolate with OpenCV
-#ifndef WITH_OPENCV
-	return imgQt;
-#endif
-
-	if (factor > 0.5f)
-		return imgQt;
-
-	int divisor = DkMath::getNextPowerOfTwoDivisior(factor);
-
-	//if (divisor < 2)
-	//	return imgQt;
-
-	// is the image cached already?
-	if (imgPyramid.contains(divisor))
-		return imgPyramid.value(divisor);
-
-	QSize newSize = imgQt.size()*1.0f/(float)divisor;
-
-	//// caching should not consume more than 30 MB
-	//if (newSize.width()*newSize.height() > 30 * 2^20)
-	//	return imgQt;
-
-#ifdef WITH_OPENCV
-
-	Mat resizeImage = DkImage::qImage2Mat(imgQt);
-
-	// is the image convertible?
-	if (resizeImage.empty())
-		return imgQt;
-
-	Mat tmp;
-	cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, CV_INTER_AREA);
-	resizeImage = tmp;
-	QImage iplImg = DkImage::mat2QImage(resizeImage);
-
-	imgPyramid.insert(divisor, iplImg);
-
-	return iplImg;
-#endif
-
-	return imgQt;
-}
+//QImage DkBaseViewPort::getScaledImage(float factor) {
+//
+//// this function does not help anything if we cannot interpolate with OpenCV
+//#ifndef WITH_OPENCV
+//	return imgQt;
+//#endif
+//
+//	if (factor > 0.5f)
+//		return imgQt;
+//
+//	int divisor = DkMath::getNextPowerOfTwoDivisior(factor);
+//
+//	//if (divisor < 2)
+//	//	return imgQt;
+//
+//	// is the image cached already?
+//	if (imgPyramid.contains(divisor))
+//		return imgPyramid.value(divisor);
+//
+//	QSize newSize = imgQt.size()*1.0f/(float)divisor;
+//
+//	//// caching should not consume more than 30 MB
+//	//if (newSize.width()*newSize.height() > 30 * 2^20)
+//	//	return imgQt;
+//
+//#ifdef WITH_OPENCV
+//
+//	Mat resizeImage = DkImage::qImage2Mat(imgQt);
+//
+//	// is the image convertible?
+//	if (resizeImage.empty())
+//		return imgQt;
+//
+//	Mat tmp;
+//	cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, CV_INTER_AREA);
+//	resizeImage = tmp;
+//	QImage iplImg = DkImage::mat2QImage(resizeImage);
+//
+//	imgPyramid.insert(divisor, iplImg);
+//
+//	return iplImg;
+//#endif
+//
+//	return imgQt;
+//}
 
 void DkBaseViewPort::controlImagePosition(float lb, float ub) {
 	// dummy method
@@ -1198,10 +1200,11 @@ void DkViewPort::setImage(QImage newImg) {
 		oldImgMatrix = imgMatrix;
 	}
 
-	imgPyramid.clear();
+	//imgPyramid.clear();
 
 	controller->getOverview()->setImage(QImage());	// clear overview
 
+	imgStorage.setImage(newImg);
 	imgQt = newImg;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
@@ -1250,7 +1253,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	}
 
 	DkTimer dt;
-	imgPyramid.clear();
+	//imgPyramid.clear();
 
 	imgQt = newImg;
 	QRectF oldImgRect = imgRect;

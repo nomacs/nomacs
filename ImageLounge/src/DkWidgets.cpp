@@ -739,8 +739,8 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		//overviewImgRect.setWidth(overviewImgRect.width()-2);
 		//overviewImgRect.setHeight(overviewImgRect.height()-2);
 
-		qDebug() << "overview image rect: " << overviewImgRect;
-		qDebug() << "overview img size: " << imgT.size();
+		//qDebug() << "overview image rect: " << overviewImgRect;
+		//qDebug() << "overview img size: " << imgT.size();
 
 		// now render the current view
 		QRectF viewRect = viewPortRect;

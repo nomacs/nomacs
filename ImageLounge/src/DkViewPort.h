@@ -307,7 +307,7 @@ public:
 		return geometry();
 	};
 
-	virtual QImage getScaledImage(float factor);
+	//virtual QImage getScaledImage(float factor);
 
 #ifdef WITH_OPENCV
 	virtual void setImage(cv::Mat newImg);
@@ -359,7 +359,8 @@ protected:
 
 	QWidget *parent;
 	QImage imgQt;
-	QMap<int, QImage> imgPyramid;
+	//QMap<int, QImage> imgPyramid;
+	DkImageStorage imgStorage;
 
 	QTransform imgMatrix;
 	QTransform worldMatrix;
