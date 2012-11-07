@@ -569,6 +569,7 @@ protected:
 	QMutex mutex;
 	QThread* computeThread;
 	bool busy;
+	bool stop;
 };
 
 /**

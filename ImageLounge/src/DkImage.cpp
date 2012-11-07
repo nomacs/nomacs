@@ -3017,17 +3017,19 @@ DkImageStorage::DkImageStorage(QImage img) {
 	moveToThread(computeThread);
 
 	busy = false;
+	stop = true;
 }
 
 void DkImageStorage::setImage(QImage img) {
-	
+
+	stop = true;
 	imgs.clear();	// is it save (if the thread is still working?)
 	this->img = img;
 }
 
 QImage DkImageStorage::getImage(float factor) {
 
-	if (factor >= 1.0f || img.isNull())
+	if (factor >= 0.5f || img.isNull())
 		return img;
 
 	// check if we have an image similar to that requested
@@ -3039,6 +3041,7 @@ QImage DkImageStorage::getImage(float factor) {
 	
 	// if the image does not exist - create it
 	if (!busy && imgs.empty()) {
+		stop = false;
 		// nobody is busy so start working
 		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);
 	}
@@ -3080,6 +3083,10 @@ void DkImageStorage::computeImage() {
 #endif
 
 		qDebug() << "adding size: " << resizedImg.size();
+
+		// new image assigned?
+		if (stop)
+			break;
 
 		mutex.lock();
 		imgs.push_front(resizedImg);
