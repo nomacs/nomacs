@@ -81,6 +81,7 @@ QColor DkSettings::Display::bgColor = QColor(0,0,0,100);
 QColor DkSettings::Display::bgColorFrameless = QColor(0,0,0,180);
 int DkSettings::Display::thumbSize = 100; // max seems to be 160 (?!)
 bool DkSettings::Display::saveThumb = false;
+bool DkSettings::Display::antiAliasing = true;
 int DkSettings::Display::interpolateZoomLevel = 200;
 
 
@@ -197,6 +198,7 @@ void DkSettings::load() {
 	Display::bgColorFrameless = settings.value("DisplaySettings/bgColorFrameless", DkSettings::Display::bgColorFrameless).value<QColor>();
 	Display::thumbSize = settings.value("DisplaySettings/thumbSize", DkSettings::Display::thumbSize).toInt();
 	Display::saveThumb = settings.value("DisplaySettings/saveThumb", DkSettings::Display::saveThumb).toBool();
+	Display::antiAliasing = settings.value("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing).toBool();
 	Display::interpolateZoomLevel = settings.value("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel).toInt();
 
 	QBitArray tmpMetaData = settings.value("MetaDataSettings/metaData", DkSettings::MetaData::metaDataBits).toBitArray();
@@ -283,6 +285,7 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/bgColorFrameless", Display::bgColorFrameless);
 	settings.setValue("DisplaySettings/thumbSize", DkSettings::Display::thumbSize);
 	settings.setValue("DisplaySettings/saveThumb", DkSettings::Display::saveThumb);
+	settings.setValue("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing);
 	settings.setValue("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel);
 
 
@@ -366,6 +369,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Display::bgColorFrameless = QColor(0, 0, 0, 180);
 	DkSettings::Display::thumbSize = 100;
 	DkSettings::Display::saveThumb = false;
+	DkSettings::Display::antiAliasing = true;
 	DkSettings::Display::interpolateZoomLevel = 200;
 
 	DkSettings::SlideShow::filter = 0;

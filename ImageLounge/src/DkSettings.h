@@ -113,6 +113,7 @@ class DkSettings : public QObject {
 			static int thumbSize;
 			static bool saveThumb;
 			static int interpolateZoomLevel;
+			static bool antiAliasing;
 		};
 
 		struct Global {

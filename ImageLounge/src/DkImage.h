@@ -561,6 +561,7 @@ public:
 
 public slots:
 	void computeImage();
+	void antiAliasingChanged(bool antiAliasing);
 
 signals:
 	void imageUpdated();

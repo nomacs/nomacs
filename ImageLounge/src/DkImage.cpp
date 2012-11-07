@@ -3027,9 +3027,22 @@ void DkImageStorage::setImage(QImage img) {
 	this->img = img;
 }
 
+void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
+	
+	DkSettings::Display::antiAliasing = antiAliasing;
+
+	if (!antiAliasing) {
+		stop = true;
+		imgs.clear();
+	}
+
+	emit imageUpdated();
+
+}
+
 QImage DkImageStorage::getImage(float factor) {
 
-	if (factor >= 0.5f || img.isNull())
+	if (factor >= 0.5f || img.isNull() || !DkSettings::Display::antiAliasing)
 		return img;
 
 	// check if we have an image similar to that requested

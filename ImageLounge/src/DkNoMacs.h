@@ -222,6 +222,7 @@ enum viewActions {
 	menu_view_fit_frame,
 	menu_view_zoom_in,
 	menu_view_zoom_out,
+	menu_view_anti_aliasing,
 	menu_view_show_overview,
 	menu_view_show_player,
 	menu_view_show_preview,

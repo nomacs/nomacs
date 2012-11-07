@@ -307,6 +307,10 @@ public:
 		return geometry();
 	};
 
+	virtual DkImageStorage* getImageStorage() {
+		return &imgStorage;
+	};
+
 	//virtual QImage getScaledImage(float factor);
 
 #ifdef WITH_OPENCV

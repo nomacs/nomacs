@@ -394,6 +394,7 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_fit_frame]);
 	viewMenu->addAction(viewActions[menu_view_zoom_in]);
 	viewMenu->addAction(viewActions[menu_view_zoom_out]);
+	viewMenu->addAction(viewActions[menu_view_anti_aliasing]);
 	viewMenu->addSeparator();
 
 	viewMenu->addAction(viewActions[menu_view_opacity_up]);
@@ -661,6 +662,12 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_zoom_out]->setShortcut(QKeySequence::ZoomOut);
 	viewActions[menu_view_zoom_out]->setStatusTip(tr("zoom out"));
 	connect(viewActions[menu_view_zoom_out], SIGNAL(triggered()), vp, SLOT(zoomOut()));
+
+	viewActions[menu_view_anti_aliasing] = new QAction(tr("&Anti Aliasing"), this);
+	viewActions[menu_view_anti_aliasing]->setStatusTip(tr("if checked images are smoother"));
+	viewActions[menu_view_anti_aliasing]->setCheckable(true);
+	viewActions[menu_view_anti_aliasing]->setChecked(DkSettings::Display::antiAliasing);
+	connect(viewActions[menu_view_anti_aliasing], SIGNAL(toggled(bool)), vp->getImageStorage(), SLOT(antiAliasingChanged(bool)));
 
 	viewActions[menu_view_show_overview] = new QAction(tr("Show O&verview"), this);
 	viewActions[menu_view_show_overview]->setShortcut(QKeySequence(shortcut_show_overview));
