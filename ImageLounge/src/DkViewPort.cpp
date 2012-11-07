@@ -688,7 +688,7 @@ void DkBaseViewPort::zoomOut() {
 
 void DkBaseViewPort::zoom(float factor, QPointF center) {
 
-	if (imgQt.isNull())
+	if (imgStorage.getImage().isNull())
 		return;
 
 	//factor/=5;//-0.1 <-> 0.1
@@ -748,36 +748,18 @@ void DkBaseViewPort::stopBlockZooming() {
 #ifdef WITH_OPENCV
 void DkBaseViewPort::setImage(cv::Mat newImg) {
 
-	//if (this->img.size() != newImg.size()) {
-	//	// do we really need a deep copy here?
-
-	// TODO: be careful with the format!
-	imgQt = QImage(newImg.data, (int)newImg.cols, (int)newImg.rows, (int)newImg.step, QImage::Format_RGB888);
-	//}
-
-	this->imgRect = QRect(0, 0, newImg.cols, newImg.rows);
-
-
-	if (!DkSettings::Display::keepZoom)
-		worldMatrix.reset();
-
-	updateImageMatrix();
-
-	if (DkSettings::Display::keepZoom)
-		centerImage();
-
-	update();
+	QImage imgQt = DkImage::mat2QImage(newImg);
+	setImage(imgQt);
 }
 #endif
 
 void DkBaseViewPort::setImage(QImage newImg) {
 
-	imgQt = newImg;
+	imgStorage.setImage(newImg);
 	QRectF oldImgRect = imgRect;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
-	//imgPyramid.clear();
 
-	emit enableNoImageSignal(!imgQt.isNull());
+	emit enableNoImageSignal(!newImg.isNull());
 
 	if (!DkSettings::Display::keepZoom || imgRect != oldImgRect)
 		worldMatrix.reset();							
@@ -788,7 +770,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 QImage DkBaseViewPort::getImage() {
 
-	return imgQt;
+	return imgStorage.getImage();
 }
 
 QRectF DkBaseViewPort::getImageViewRect() {
@@ -804,7 +786,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 	QPainter painter(viewport());
 
-	if (!imgQt.isNull()) {
+	if (imgStorage.hasImage()) {
 		painter.setWorldTransform(worldMatrix);
 
 		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
@@ -828,7 +810,7 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 	viewportRect = QRect(0, 0, width(), height());
 
 	// do we still need that??
-	QSize newSize = imgQt.size();
+	QSize newSize = imgStorage.getImage().size();
 	newSize.scale(event->size(), Qt::IgnoreAspectRatio);
 
 	newSize = (event->size()-newSize)/2;
@@ -943,9 +925,9 @@ void DkBaseViewPort::draw(QPainter *painter) {
 	}
 
 	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
-	qDebug() << "imgRect" << imgRect;
-	painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
+	painter->drawImage(imgViewRect, imgQt, imgQt.rect());
 
+	qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 
 bool DkBaseViewPort::imageInside() {
@@ -955,7 +937,7 @@ bool DkBaseViewPort::imageInside() {
 
 void DkBaseViewPort::updateImageMatrix() {
 
-	if (imgQt.isNull())
+	if (imgStorage.getImage().isNull())
 		return;
 
 	QRectF oldImgRect = imgViewRect;
@@ -967,7 +949,7 @@ void DkBaseViewPort::updateImageMatrix() {
 	if (!viewportRect.contains(imgRect))
 		imgMatrix = getScaledImageMatrix();
 	else {
-		imgMatrix.translate((float)(width()-imgQt.width())*0.5f, (float)(height()-imgQt.height())*0.5f);
+		imgMatrix.translate((float)(width()-imgStorage.getImage().width())*0.5f, (float)(height()-imgStorage.getImage().height())*0.5f);
 		imgMatrix.scale(1.0f, 1.0f);
 	}
 
@@ -1155,27 +1137,8 @@ void DkViewPort::release() {
 #ifdef WITH_OPENCV
 void DkViewPort::setImage(cv::Mat newImg) {
 
-	//if (this->img.size() != newImg.size()) {
-	//	// do we really need a deep copy here?
-
-	// TODO: be careful with the format!
-	imgQt = QImage(newImg.data, (int)newImg.cols, (int)newImg.rows, (int)newImg.step, QImage::Format_RGB888);
-	//}
-
-	this->imgRect = QRect(0, 0, newImg.cols, newImg.rows);
-
-
-	if (!DkSettings::Display::keepZoom)
-		worldMatrix.reset();
-
-	updateImageMatrix();
-
-	if (DkSettings::Display::keepZoom)
-		centerImage();
-
-	controller->stopLabels();
-
-	update();
+	QImage imgQt = DkImage::mat2QImage(newImg);
+	setImage(imgQt);
 }
 #endif
 
@@ -1205,10 +1168,9 @@ void DkViewPort::setImage(QImage newImg) {
 	controller->getOverview()->setImage(QImage());	// clear overview
 
 	imgStorage.setImage(newImg);
-	imgQt = newImg;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
-	emit enableNoImageSignal(!imgQt.isNull());
+	emit enableNoImageSignal(!newImg.isNull());
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
@@ -1223,7 +1185,7 @@ void DkViewPort::setImage(QImage newImg) {
 	updateImageMatrix();
 
 	controller->getPlayer()->startTimer();
-	controller->getOverview()->setImage(imgQt);
+	controller->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
 	
 	//// TODO: this is a fast fix
 	//// if this thread uses the static metadata object 
@@ -1255,7 +1217,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	DkTimer dt;
 	//imgPyramid.clear();
 
-	imgQt = newImg;
+	imgStorage.setImage(newImg);
 	QRectF oldImgRect = imgRect;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
@@ -1266,7 +1228,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	updateImageMatrix();
 	
-	controller->getOverview()->setImage(imgQt);
+	controller->getOverview()->setImage(newImg);
 	controller->stopLabels();
 
 	//// TODO: this is a fast fix
@@ -1293,9 +1255,9 @@ void DkViewPort::tcpSendImage() {
 	controller->setInfo("sending image...", 3000, DkControlWidget::center_label);
 
 	if (loader)
-		sendImageSignal(imgQt, loader->fileName());
+		sendImageSignal(imgStorage.getImage(), loader->fileName());
 	else
-		sendImageSignal(imgQt, "nomacs - Image Lounge");
+		sendImageSignal(imgStorage.getImage(), "nomacs - Image Lounge");
 }
 
 void DkViewPort::fileNotLoaded(QFileInfo file) {
@@ -1316,7 +1278,7 @@ QPoint DkViewPort::newCenter(QSize s) {
 
 void DkViewPort::zoom(float factor, QPointF center) {
 
-	if (imgQt.isNull() || blockZooming)
+	if (imgStorage.getImage().isNull() || blockZooming)
 		return;
 
 	//factor/=5;//-0.1 <-> 0.1
@@ -1440,7 +1402,7 @@ void DkViewPort::controlImagePosition(float lb, float ub) {
 
 void DkViewPort::updateImageMatrix() {
 
-	if (imgQt.isNull())
+	if (imgStorage.getImage().isNull())
 		return;
 
 	QRectF oldImgRect = imgViewRect;
@@ -1452,7 +1414,7 @@ void DkViewPort::updateImageMatrix() {
 	if (!viewportRect.contains(imgRect.toRect()))
 		imgMatrix = getScaledImageMatrix();
 	else {
-		imgMatrix.translate((float)(getMainGeometry().width()-imgQt.width())*0.5f, (float)(getMainGeometry().height()-imgQt.height())*0.5f);
+		imgMatrix.translate((float)(getMainGeometry().width()-imgStorage.getImage().width())*0.5f, (float)(getMainGeometry().height()-imgStorage.getImage().height())*0.5f);
 		imgMatrix.scale(1.0f, 1.0f);
 	}
 
@@ -1481,7 +1443,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
 		imgMatrix = newImgMatrix;
 		updateImageMatrix();
 
-		QPointF imgPos = QPointF(canvasSize.x()*imgQt.width(), canvasSize.y()*imgQt.height());
+		QPointF imgPos = QPointF(canvasSize.x()*imgStorage.getImage().width(), canvasSize.y()*imgStorage.getImage().height());
 
 		// go to screen coordinates
 		imgPos = imgMatrix.map(imgPos);
@@ -1510,7 +1472,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = worldMatrix.inverted().map(size);
 		size = imgMatrix.inverted().map(size);
-		size = QPointF(size.x()/(float)imgQt.width(), size.y()/(float)imgQt.height());
+		size = QPointF(size.x()/(float)imgStorage.getImage().width(), size.y()/(float)imgStorage.getImage().height());
 
 		emit sendTransformSignal(worldMatrix, imgMatrix, size);
 	}
@@ -1552,7 +1514,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	QPainter painter(viewport());
 
-	if (!imgQt.isNull()) {
+	if (imgStorage.hasImage()) {
 		painter.setWorldTransform(worldMatrix);
 
 		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
@@ -1733,7 +1695,7 @@ void DkViewPort::setFullScreen(bool fullScreen) {
 
 void DkViewPort::getPixelInfo(const QPoint& pos) {
 
-	if (imgQt.isNull())
+	if (imgStorage.getImage().isNull())
 		return;
 
 	QPointF imgPos = worldMatrix.inverted().map(QPointF(pos));
@@ -1741,15 +1703,15 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	QPoint xy = imgPos.toPoint();
 
-	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgQt.width() || xy.y() >= imgQt.height())
+	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgStorage.getImage().width() || xy.y() >= imgStorage.getImage().height())
 		return;
 
-	QColor col = imgQt.pixel(xy);
+	QColor col = imgStorage.getImage().pixel(xy);
 	
 	QString msg = "<font color='grey'>x: " % QString::number(xy.x()) % " y: " % QString::number(xy.y()) % "</font>"
 		" | r: " % QString::number(col.red()) % " g: " % QString::number(col.green()) % " b: " % QString::number(col.blue());
 
-	if (imgQt.hasAlphaChannel())
+	if (imgStorage.getImage().hasAlphaChannel())
 		msg = msg % " a: " % QString::number(col.alpha());
 
 	emit statusInfoSignal(msg);
@@ -1846,7 +1808,7 @@ void DkViewPort::unloadImage() {
 	int rating = controller->getRating();
 
 	// TODO: if image is not saved... ask user?! -> resize & crop
-	if (!imgQt.isNull() && loader && rating != -1 && rating != loader->getMetaData().getRating()) {
+	if (imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) {
 		qDebug() << "old rating: " << loader->getMetaData().getRating();
 		loader->saveRating(rating);
 	}
@@ -2096,7 +2058,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	// render the image into the new coordinate system
 	QPainter painter(&img);
 	painter.setWorldTransform(tForm);
-	painter.drawImage(QRect(QPoint(), imgQt.size()), imgQt, QRect(QPoint(), imgQt.size()));
+	painter.drawImage(QRect(QPoint(), imgStorage.getImage().size()), imgStorage.getImage(), QRect(QPoint(), imgStorage.getImage().size()));
 	painter.end();
 
 	setEditedImage(img);
@@ -2113,7 +2075,7 @@ void DkViewPort::printImage() {
 
 	QPrintDialog *dialog = new QPrintDialog(&printer, this);
 	dialog->setWindowTitle(tr("Print Document"));
-	if (!imgQt.isNull())
+	if (imgStorage.hasImage())
 		dialog->addEnabledOption(QAbstractPrintDialog::PrintSelection);
 	if (dialog->exec() != QDialog::Accepted)
 		return;
@@ -2123,11 +2085,11 @@ void DkViewPort::printImage() {
 	// TODO: not that stupid...
 	QPainter painter(&printer);
 	QRect rect = painter.viewport();
-	QSize size = imgQt.size();
+	QSize size = imgStorage.getImage().size();
 	size.scale(rect.size(), Qt::KeepAspectRatio);
 	painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-	painter.setWindow(imgQt.rect());
-	painter.drawImage(0, 0, imgQt);
+	painter.setWindow(imgStorage.getImage().rect());
+	painter.drawImage(0, 0, imgStorage.getImage());
 
 	painter.end();
 }
@@ -2171,7 +2133,7 @@ void DkViewPortFrameless::setImage(QImage newImg) {
 
 void DkViewPortFrameless::zoom(float factor, QPointF center) {
 
-	if (imgQt.isNull() || blockZooming)
+	if (!imgStorage.hasImage() || blockZooming)
 		return;
 
 	//limit zoom out ---
@@ -2262,7 +2224,8 @@ void DkViewPortFrameless::draw(QPainter *painter) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
-	painter->drawImage(imgViewRect, imgQt, imgRect);
+	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+	painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
 	//DkViewPort::draw(painter);
 }
 
@@ -2333,7 +2296,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 void DkViewPortFrameless::drawFrame(QPainter* painter) {
 
 	// TODO: replace hasAlphaChannel with has alphaBorder
-	if (!imgQt.isNull() && imgQt.hasAlphaChannel())
+	if (imgStorage.hasImage() && imgStorage.getImage().hasAlphaChannel())
 		return;
 
 	painter->setBrush(QColor(255, 255, 255, 200));
@@ -2365,7 +2328,7 @@ void DkViewPortFrameless::mousePressEvent(QMouseEvent *event) {
 
 void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
 	
-	if (imgQt.isNull()) {
+	if (!imgStorage.hasImage()) {
 
 		qDebug() << "mouse released";
 		QPointF pos = imgMatrix.inverted().map(event->pos());
@@ -2388,7 +2351,7 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	
-	if (imgQt.isNull()) {
+	if (!imgStorage.hasImage()) {
 
 		QPointF pos = imgMatrix.inverted().map(event->pos());
 
@@ -2467,7 +2430,7 @@ void DkViewPortFrameless::centerImage() {
 
 void DkViewPortFrameless::updateImageMatrix() {
 
-	if (imgQt.isNull())
+	if (!imgStorage.hasImage())
 		return;
 
 	QRectF oldImgRect = imgViewRect;
@@ -2481,7 +2444,7 @@ void DkViewPortFrameless::updateImageMatrix() {
 	else {
 
 		QPointF p = (imgViewRect.isEmpty()) ? getMainGeometry().center() : imgViewRect.center();
-		p -= imgQt.rect().center();
+		p -= imgStorage.getImage().rect().center();
 		imgMatrix.translate(p.x()-1, p.y()-1);	// -1 is needed due to float -> int
 		imgMatrix.scale(1.0f, 1.0f);
 	}
@@ -2560,7 +2523,7 @@ void DkViewPortContrast::changeChannel(int channel) {
 	if (channel < 0 || channel >= imgs.size())
 		return;
 
-	if (!imgQt.isNull()) {
+	if (imgStorage.hasImage()) {
 
 		falseColorImg = imgs[channel];
 		falseColorImg.setColorTable(colorTable);
@@ -2653,9 +2616,11 @@ void DkViewPortContrast::draw(QPainter *painter) {
 	}
 
 	if (drawFalseColorImg)
-		painter->drawImage(imgViewRect, falseColorImg, imgRect);
-	else
-		painter->drawImage(imgViewRect, imgQt, imgRect);
+		painter->drawImage(imgViewRect, falseColorImg, imgRect);		// TODO: add storage class for falseColorImg
+	else {
+		QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+		painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
+	}
 
 }
 
@@ -2663,10 +2628,10 @@ void DkViewPortContrast::setImage(QImage newImg) {
 
 	DkViewPort::setImage(newImg);
 
-	if (imgQt.format() == QImage::Format_Indexed8) {
-		int format = imgQt.format();
+	if (imgStorage.getImage().format() == QImage::Format_Indexed8) {
+		int format = imgStorage.getImage().format();
 		imgs = QVector<QImage>(1);
-		imgs[0] = imgQt;
+		imgs[0] = imgStorage.getImage();
 		activeChannel = 0;
 	}
 
@@ -2677,7 +2642,7 @@ void DkViewPortContrast::setImage(QImage newImg) {
 			imgs = QVector<QImage>(4);
 			vector<Mat> planes;
 			
-			Mat imgUC3 = DkImage::qImage2Mat(imgQt);
+			Mat imgUC3 = DkImage::qImage2Mat(imgStorage.getImage());
 			//int format = imgQt.format();
 			//if (format == QImage::Format_RGB888)
 			//	imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
@@ -2757,7 +2722,7 @@ void DkViewPortContrast::mousePressEvent(QMouseEvent *event) {
 
 		bool isPointValid = true;
 
-		if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgQt.width() || xy.y() >= imgQt.height())
+		if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgStorage.getImage().width() || xy.y() >= imgStorage.getImage().height())
 			isPointValid = false;
 
 		if (isPointValid) {
@@ -2794,7 +2759,7 @@ QImage DkViewPortContrast::getImage() {
 	if (drawFalseColorImg)
 		return falseColorImg;
 	else
-		return imgQt;
+		return imgStorage.getImage();
 
 }
 
@@ -2803,7 +2768,7 @@ void DkViewPortContrast::drawImageHistogram() {
 
 	if (controller->getHistogram() && controller->getHistogram()->isVisible()) {
 		if(drawFalseColorImg) controller->getHistogram()->drawHistogram(falseColorImg);
-		else controller->getHistogram()->drawHistogram(imgQt);
+		else controller->getHistogram()->drawHistogram(imgStorage.getImage());
 	}
 
 }

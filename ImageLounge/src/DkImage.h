@@ -554,7 +554,10 @@ public:
 	DkImageStorage(QImage img = QImage());
 
 	void setImage(QImage img);
-	QImage getImage(float factor = 1.0f/*QRectF rect = QRectF()*/);
+	QImage getImage(float factor = 1.0f);
+	bool hasImage() {
+		return !img.isNull();
+	}
 
 public slots:
 	void computeImage();

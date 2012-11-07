@@ -358,7 +358,7 @@ protected:
 	Qt::KeyboardModifier ctrlMod;
 
 	QWidget *parent;
-	QImage imgQt;
+	//QImage imgQt;
 	//QMap<int, QImage> imgPyramid;
 	DkImageStorage imgStorage;
 
