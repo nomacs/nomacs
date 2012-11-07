@@ -3095,8 +3095,6 @@ void DkImageStorage::computeImage() {
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
 
-		qDebug() << "adding size: " << resizedImg.size();
-
 		// new image assigned?
 		if (stop)
 			break;
