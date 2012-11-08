@@ -3053,7 +3053,7 @@ QImage DkImageStorage::getImage(float factor) {
 	}
 	
 	// if the image does not exist - create it
-	if (!busy && imgs.empty()) {
+	if (!busy && imgs.empty() && img.colorTable().isEmpty()) {
 		stop = false;
 		// nobody is busy so start working
 		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);
@@ -3090,7 +3090,7 @@ void DkImageStorage::computeImage() {
 		cv::Mat tmp;
 		cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
 		resizedImg = DkImage::mat2QImage(tmp);
-		resizedImg.setColorTable(img.colorTable());
+		//resizedImg.setColorTable(img.colorTable());
 #else
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
