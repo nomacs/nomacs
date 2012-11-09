@@ -1219,11 +1219,17 @@ public:
 
 	void setColor(QColor color);
 	QColor getColor();
+	bool isAccepted() {
+		return accepted;
+	}
 
 public slots:
 	void on_resetButton_clicked();
 	void on_colorButton_clicked();
 	void on_colorDialog_accepted();
+
+signals:
+	void resetClicked();
 
 protected:
 	QColorDialog* colorDialog;
@@ -1231,6 +1237,7 @@ protected:
 
 	QColor defaultColor;
 	QString text;
+	bool accepted;
 
 	void init();
 

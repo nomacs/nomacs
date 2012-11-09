@@ -86,7 +86,7 @@ private:
 
 public:
 
-	static QString colorToString(QColor& col) {
+	static QString colorToString(const QColor& col) {
 
 		return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
 	}

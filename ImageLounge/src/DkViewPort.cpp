@@ -608,8 +608,23 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
-	//setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
-	setStyleSheet("QGraphicsView { border-style: none; background-color: #000;}" );
+	if (DkSettings::Display::useDefaultColor) {
+		
+		// check if windows aero is available
+		BOOL aero = false;
+
+#ifdef Q_WS_WIN
+		DwmIsCompositionEnabled(&aero);
+#endif
+
+		if (aero)
+			setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
+		else
+			setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(QPalette().color(QPalette::Window)) + ";}" );		
+	}
+	else
+		setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}" );
+	
 	setMouseTracking(true);
 }
 

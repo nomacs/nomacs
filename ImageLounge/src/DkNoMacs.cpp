@@ -226,23 +226,29 @@ void DkNoMacs::createToolbar() {
 	toolbar = addToolBar(tr("Edit"));
 	toolbar->setObjectName("EditToolBar");
 
-// play with themes only on windows - users used to look at it there ;)
-// all other platforms have "native look and feel"
+	BOOL aero = false;
+
 #ifdef Q_WS_WIN
+	DwmIsCompositionEnabled(&aero);
+#endif
+
 	toolbar->setIconSize(QSize(16, 16));
 
-	BOOL aero = false;
-	//DwmIsCompositionEnabled(&aero);
+	qDebug() << toolbar->styleSheet();
+
 	if (aero) {
+
 		toolbar->setStyleSheet(
-					//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-					QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-					+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-					//+ QString("QToolButton{border: none; margin: 3px;}")
-					//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
-					);
+			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
+			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
+			//+ QString("QToolButton{border: none; margin: 3px;}")
+			//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
+			);
 	}
-#endif
+	//else if (!DkSettings::Display::useDefaultColor)
+	//	toolbar->setStyleSheet("QToolBar#EditToolBar{background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}" );
+
 	// file
 	//DkButton* test = new DkButton(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
 	//test->addAction(fileActions[menu_file_prev]);
@@ -282,13 +288,20 @@ void DkNoMacs::createStatusbar() {
 	statusbarMsg->setToolTip(tr("CTRL activates the crosshair cursor"));
 
 	statusbar = new QStatusBar(this);
+	statusbar->setObjectName("DkStatusBar");
 	QColor col = QColor(200, 200, 230, 100);
 
 	BOOL aero = false;
-	//DwmIsCompositionEnabled(&aero);
+
+#ifdef Q_WS_WIN
+	DwmIsCompositionEnabled(&aero);
+#endif
+
 	if (aero)
-		statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));
-	
+		statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));	
+	//else if (!DkSettings::Display::useDefaultColor)
+	//	statusbar->setStyleSheet("QStatusBar#DkStatusBar{background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}");
+
 	statusbar->addWidget(statusbarMsg);
 	statusbar->hide();
 	//statusbar->addPermanentWidget()

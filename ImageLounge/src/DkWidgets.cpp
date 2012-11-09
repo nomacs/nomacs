@@ -3032,10 +3032,11 @@ DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* paren
 
 void DkColorChooser::init() {
 
+	accepted = false;
+
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
 	colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
-
 
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setContentsMargins(11,0,11,0);
@@ -3076,6 +3077,7 @@ QColor DkColorChooser::getColor() {
 
 void DkColorChooser::on_resetButton_clicked() {
 	setColor(defaultColor);
+	emit resetClicked();
 }
 
 void DkColorChooser::on_colorButton_clicked() {
@@ -3085,6 +3087,7 @@ void DkColorChooser::on_colorButton_clicked() {
 void DkColorChooser::on_colorDialog_accepted() {
 	
 	setColor(colorDialog->currentColor());
+	accepted = true;
 }
 
 // Image histogram  -------------------------------------------------------------------

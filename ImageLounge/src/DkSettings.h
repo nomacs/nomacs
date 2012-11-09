@@ -109,8 +109,9 @@ class DkSettings : public QObject {
 			static bool invertZoom;
 			static QColor highlightColor;
 			static QColor bgColorWidget;
+			static QColor bgColor;
 			static QColor bgColorFrameless;
-			//static QColor bgColor;
+			static bool useDefaultColor;
 			static int thumbSize;
 			static bool saveThumb;
 			static int interpolateZoomLevel;
@@ -301,6 +302,10 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 			qDebug() << "apply default pressed...";
 			emit applyDefault();
 		};
+		void bgColorReset() {
+			DkSettings::Display::useDefaultColor = true;
+		};
+
 
 
 	private:
@@ -314,6 +319,7 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbShowStatusbar;
 
 		DkColorChooser* highlightColorChooser;
+		DkColorChooser* bgColorWidgetChooser;
 		DkColorChooser* bgColorChooser;
 		DkColorChooser* fullscreenColChooser;
 
