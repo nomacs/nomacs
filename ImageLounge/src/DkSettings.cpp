@@ -77,13 +77,12 @@ QStringList DkSettings::Global::userAppPaths = QStringList();
 bool DkSettings::Display::keepZoom = true;
 bool DkSettings::Display::invertZoom = false;
 QColor DkSettings::Display::highlightColor = QColor(0, 204, 255);
-QColor DkSettings::Display::bgColor = QColor(0,0,0,100);
+QColor DkSettings::Display::bgColorWidget = QColor(0,0,0,100);
 QColor DkSettings::Display::bgColorFrameless = QColor(0,0,0,180);
 int DkSettings::Display::thumbSize = 100; // max seems to be 160 (?!)
 bool DkSettings::Display::saveThumb = false;
 bool DkSettings::Display::antiAliasing = true;
 int DkSettings::Display::interpolateZoomLevel = 200;
-
 
 int DkSettings::SlideShow::filter = 0;
 float DkSettings::SlideShow::time = 3;
@@ -193,7 +192,7 @@ void DkSettings::load() {
 	Display::keepZoom = settings.value("DisplaySettings/resetMatrix", DkSettings::Display::keepZoom).toBool();
 	Display::invertZoom = settings.value("DisplaySettings/invertZoom", DkSettings::Display::invertZoom).toBool();
 	Display::highlightColor = settings.value("DisplaySettings/highlightColor", DkSettings::Display::highlightColor).value<QColor>();
-	Display::bgColor = settings.value("DisplaySettings/bgColor", DkSettings::Display::bgColor).value<QColor>();
+	Display::bgColorWidget = settings.value("DisplaySettings/bgColor", DkSettings::Display::bgColorWidget).value<QColor>();
 
 	Display::bgColorFrameless = settings.value("DisplaySettings/bgColorFrameless", DkSettings::Display::bgColorFrameless).value<QColor>();
 	Display::thumbSize = settings.value("DisplaySettings/thumbSize", DkSettings::Display::thumbSize).toInt();
@@ -281,7 +280,7 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/resetMatrix",Display::keepZoom);
 	settings.setValue("DisplaySettings/invertZoom",Display::invertZoom);
 	settings.setValue("DisplaySettings/highlightColor", Display::highlightColor);
-	settings.setValue("DisplaySettings/bgColor", Display::bgColor);
+	settings.setValue("DisplaySettings/bgColor", Display::bgColorWidget);
 	settings.setValue("DisplaySettings/bgColorFrameless", Display::bgColorFrameless);
 	settings.setValue("DisplaySettings/thumbSize", DkSettings::Display::thumbSize);
 	settings.setValue("DisplaySettings/saveThumb", DkSettings::Display::saveThumb);
@@ -365,7 +364,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Display::keepZoom = true;
 	DkSettings::Display::invertZoom = false;
 	DkSettings::Display::highlightColor = QColor(0, 204, 255);
-	DkSettings::Display::bgColor = QColor(0, 0, 0, 100);
+	DkSettings::Display::bgColorWidget = QColor(0, 0, 0, 100);
 	DkSettings::Display::bgColorFrameless = QColor(0, 0, 0, 180);
 	DkSettings::Display::thumbSize = 100;
 	DkSettings::Display::saveThumb = false;
@@ -558,7 +557,7 @@ void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
 void DkSettingsDialog::saveSettings() {
 	
 	QString curLanguage = DkSettings::Global::language;
-	QColor curBgCol = DkSettings::Display::bgColor;
+	QColor curBgCol = DkSettings::Display::bgColorWidget;
 	QColor curBgColFrameless = DkSettings::Display::bgColorFrameless;
 	
 	foreach (DkSettingsWidget* curWidget, widgetList) {
@@ -571,7 +570,7 @@ void DkSettingsDialog::saveSettings() {
 	
 	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
 	if (curLanguage != DkSettings::Global::language ||
-		DkSettings::Display::bgColor != curBgCol ||
+		DkSettings::Display::bgColorWidget != curBgCol ||
 		DkSettings::Display::bgColorFrameless != curBgColFrameless)
 		emit languageChanged();
 	else
@@ -655,7 +654,7 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	bgColorChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Background Color"));
 	bgColorChooser->setColor((DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless : DkSettings::Display::bgColor);
+		DkSettings::Display::bgColorFrameless : DkSettings::Display::bgColorWidget);
 
 	fullscreenColChooser = new DkColorChooser(QColor(86,86,90), "Fullscreen Color: ", this);
 	fullscreenColChooser->setColor(DkSettings::SlideShow::backgroundColor);
@@ -757,7 +756,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	if (DkSettings::App::appMode == DkSettings::mode_frameless)
 		DkSettings::Display::bgColorFrameless = bgColorChooser->getColor();
 	else
-		DkSettings::Display::bgColor = bgColorChooser->getColor();
+		DkSettings::Display::bgColorWidget = bgColorChooser->getColor();
 
 	DkSettings::Display::highlightColor = highlightColorChooser->getColor();
 	DkSettings::SlideShow::backgroundColor = fullscreenColChooser->getColor();

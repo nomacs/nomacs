@@ -93,7 +93,7 @@ void DkNoMacs::release() {
 
 void DkNoMacs::init() {
 
-	setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
+	//setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
 
 // assign icon -> in windows the 32px version
 #ifdef Q_WS_WIN
@@ -283,7 +283,12 @@ void DkNoMacs::createStatusbar() {
 
 	statusbar = new QStatusBar(this);
 	QColor col = QColor(200, 200, 230, 100);
-	statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));
+
+	BOOL aero = false;
+	//DwmIsCompositionEnabled(&aero);
+	if (aero)
+		statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));
+	
 	statusbar->addWidget(statusbarMsg);
 	statusbar->hide();
 	//statusbar->addPermanentWidget()

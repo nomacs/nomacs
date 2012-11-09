@@ -41,7 +41,7 @@ void DkWidget::init() {
 
 	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColor;
+		DkSettings::Display::bgColorWidget;
 	
 	showing = false;
 	hiding = false;
@@ -909,7 +909,7 @@ DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
 	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColor;
+		DkSettings::Display::bgColorWidget;
 
 	setMouseTracking(true);
 	this->parent = parent;
@@ -1048,7 +1048,7 @@ DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, tex
 
 	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColor;
+		DkSettings::Display::bgColorWidget;
 
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
 	
@@ -1114,7 +1114,7 @@ void DkFadeLabel::init() {
 
 	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColor;
+		DkSettings::Display::bgColorWidget;
 
 	showing = false;
 	hiding = false;
@@ -2605,7 +2605,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	pen.setCosmetic(true);
 	brush = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColor;
+		DkSettings::Display::bgColorWidget;
 
 	state = do_nothing;
 	worldTform = 0;
