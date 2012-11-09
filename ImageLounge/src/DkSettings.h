@@ -111,7 +111,9 @@ class DkSettings : public QObject {
 			static QColor bgColorWidget;
 			static QColor bgColor;
 			static QColor bgColorFrameless;
+			static QColor iconColor;
 			static bool useDefaultColor;
+			static bool defaultIconColor;
 			static int thumbSize;
 			static bool saveThumb;
 			static int interpolateZoomLevel;
@@ -306,6 +308,9 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		void bgColorReset() {
 			DkSettings::Display::useDefaultColor = true;
 		};
+		void iconColorReset() {
+			DkSettings::Display::defaultIconColor = true;
+		};
 
 
 
@@ -323,6 +328,7 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		DkColorChooser* highlightColorChooser;
 		DkColorChooser* bgColorWidgetChooser;
 		DkColorChooser* bgColorChooser;
+		DkColorChooser* iconColorChooser;
 		DkColorChooser* fullscreenColChooser;
 
 		QComboBox* langCombo;

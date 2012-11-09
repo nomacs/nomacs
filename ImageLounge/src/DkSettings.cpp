@@ -79,12 +79,14 @@ bool DkSettings::Display::invertZoom = false;
 QColor DkSettings::Display::highlightColor = QColor(0, 204, 255);
 QColor DkSettings::Display::bgColorWidget = QColor(0,0,0,100);
 QColor DkSettings::Display::bgColor = QColor(100, 100, 100, 255);
+QColor DkSettings::Display::iconColor = QColor(219, 89, 2, 255);
 QColor DkSettings::Display::bgColorFrameless = QColor(0,0,0,180);
 int DkSettings::Display::thumbSize = 100; // max seems to be 160 (?!)
 bool DkSettings::Display::saveThumb = false;
 bool DkSettings::Display::antiAliasing = true;
 bool DkSettings::Display::smallIcons = true;
 bool DkSettings::Display::useDefaultColor = true;
+bool DkSettings::Display::defaultIconColor = true;
 int DkSettings::Display::interpolateZoomLevel = 200;
 
 int DkSettings::SlideShow::filter = 0;
@@ -197,6 +199,7 @@ void DkSettings::load() {
 	Display::highlightColor = settings.value("DisplaySettings/highlightColor", DkSettings::Display::highlightColor).value<QColor>();
 	Display::bgColorWidget = settings.value("DisplaySettings/bgColor", DkSettings::Display::bgColorWidget).value<QColor>();
 	Display::bgColor = settings.value("DisplaySettings/bgColorNoMacs", DkSettings::Display::bgColor).value<QColor>();
+	Display::iconColor = settings.value("DisplaySettings/iconColor", DkSettings::Display::iconColor).value<QColor>();
 
 	Display::bgColorFrameless = settings.value("DisplaySettings/bgColorFrameless", DkSettings::Display::bgColorFrameless).value<QColor>();
 	Display::thumbSize = settings.value("DisplaySettings/thumbSize", DkSettings::Display::thumbSize).toInt();
@@ -204,6 +207,7 @@ void DkSettings::load() {
 	Display::antiAliasing = settings.value("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing).toBool();
 	Display::smallIcons = settings.value("DisplaySettings/smallIcons", DkSettings::Display::smallIcons).toBool();
 	Display::useDefaultColor = settings.value("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor).toBool();
+	Display::defaultIconColor = settings.value("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor).toBool();
 	Display::interpolateZoomLevel = settings.value("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel).toInt();
 
 	QBitArray tmpMetaData = settings.value("MetaDataSettings/metaData", DkSettings::MetaData::metaDataBits).toBitArray();
@@ -288,12 +292,14 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/highlightColor", Display::highlightColor);
 	settings.setValue("DisplaySettings/bgColor", Display::bgColorWidget);
 	settings.setValue("DisplaySettings/bgColorNoMacs", Display::bgColor);
+	settings.setValue("DisplaySettings/iconColor", Display::iconColor);
 	settings.setValue("DisplaySettings/bgColorFrameless", Display::bgColorFrameless);
 	settings.setValue("DisplaySettings/thumbSize", DkSettings::Display::thumbSize);
 	settings.setValue("DisplaySettings/saveThumb", DkSettings::Display::saveThumb);
 	settings.setValue("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing);
 	settings.setValue("DisplaySettings/smallIcons", DkSettings::Display::smallIcons);
 	settings.setValue("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor);
+	settings.setValue("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor);
 	settings.setValue("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel);
 
 
@@ -375,12 +381,14 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Display::highlightColor = QColor(0, 204, 255);
 	DkSettings::Display::bgColorWidget = QColor(0, 0, 0, 100);
 	DkSettings::Display::bgColor = QColor(100, 100, 100, 255);
+	DkSettings::Display::bgColor = QColor(219, 89, 2, 255);
 	DkSettings::Display::bgColorFrameless = QColor(0, 0, 0, 180);
 	DkSettings::Display::thumbSize = 100;
 	DkSettings::Display::saveThumb = false;
 	DkSettings::Display::antiAliasing = true;
 	DkSettings::Display::smallIcons = true;
 	DkSettings::Display::useDefaultColor = true;
+	DkSettings::Display::defaultIconColor = true;
 	DkSettings::Display::interpolateZoomLevel = 200;
 
 	DkSettings::SlideShow::filter = 0;
@@ -571,8 +579,11 @@ void DkSettingsDialog::saveSettings() {
 	QString curLanguage = DkSettings::Global::language;
 	QColor curBgColWidget = DkSettings::Display::bgColorWidget;
 	QColor curBgCol = DkSettings::Display::bgColor;
+	QColor curIconCol = DkSettings::Display::iconColor;
 	QColor curBgColFrameless = DkSettings::Display::bgColorFrameless;
 	bool curIcons = DkSettings::Display::smallIcons;
+	bool curUseCol = DkSettings::Display::useDefaultColor;
+	bool curUseIconCol = DkSettings::Display::defaultIconColor;
 	
 	foreach (DkSettingsWidget* curWidget, widgetList) {
 		curWidget->writeSettings();
@@ -585,8 +596,11 @@ void DkSettingsDialog::saveSettings() {
 	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
 	if (curLanguage != DkSettings::Global::language ||
 		DkSettings::Display::bgColor != curBgCol ||
+		DkSettings::Display::iconColor != curIconCol ||
 		DkSettings::Display::bgColorWidget != curBgColWidget ||
 		DkSettings::Display::bgColorFrameless != curBgColFrameless ||
+		DkSettings::Display::useDefaultColor != curUseCol ||
+		DkSettings::Display::defaultIconColor != curUseIconCol ||
 		DkSettings::Display::smallIcons != curIcons)
 		emit languageChanged();
 	else
@@ -658,6 +672,7 @@ void DkGlobalSettingsWidget::init() {
 	connect(buttonDefaultSettings, SIGNAL(clicked()), highlightColorChooser, SLOT(on_resetButton_clicked()));
 	connect(buttonDefaultSettings, SIGNAL(clicked()), fullscreenColChooser, SLOT(on_resetButton_clicked()));
 	connect(buttonDefaultSettings, SIGNAL(clicked()), bgColorChooser, SLOT(on_resetButton_clicked()));
+	connect(buttonDefaultSettings, SIGNAL(clicked()), iconColorChooser, SLOT(on_resetButton_clicked()));
 	connect(buttonDefaultSettings, SIGNAL(clicked()), bgColorWidgetChooser, SLOT(on_resetButton_clicked()));
 
 }
@@ -669,6 +684,10 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"));
 	highlightColorChooser->setColor(DkSettings::Display::highlightColor);
+
+	iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"));
+	iconColorChooser->setColor(DkSettings::Display::iconColor);
+	connect(iconColorChooser, SIGNAL(resetClicked()), this, SLOT(iconColorReset()));
 
 	bgColorChooser = new DkColorChooser(QColor(100, 100, 100, 255), tr("Background Color"));
 	bgColorChooser->setColor(DkSettings::Display::bgColor);
@@ -759,6 +778,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	leftLayout->addWidget(highlightColorChooser);
 	leftLayout->addWidget(bgColorWidgetChooser);
 	leftLayout->addWidget(fullscreenColChooser);
+	leftLayout->addWidget(iconColorChooser);
 	leftLayout->addWidget(displayTimeSpin);
 	leftLayout->addStretch();
 	rightLayout->addWidget(langWidget);
@@ -786,6 +806,10 @@ void DkGlobalSettingsWidget::writeSettings() {
 	if (bgColorChooser->isAccepted())
 		DkSettings::Display::useDefaultColor = false;
 
+	if (iconColorChooser->isAccepted())
+		DkSettings::Display::defaultIconColor = false;
+
+	DkSettings::Display::iconColor = iconColorChooser->getColor();
 	DkSettings::Display::bgColor = bgColorChooser->getColor();
 	DkSettings::Display::highlightColor = highlightColorChooser->getColor();
 	DkSettings::SlideShow::backgroundColor = fullscreenColChooser->getColor();

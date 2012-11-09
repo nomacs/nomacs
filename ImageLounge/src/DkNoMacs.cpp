@@ -241,21 +241,26 @@ void DkNoMacs::createToolbar() {
 
 	if (aero) {
 
+		QColor hCol = DkSettings::Display::highlightColor;
+		hCol.setAlpha(80);
+
 		toolbar->setStyleSheet(
 			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
 			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
 			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton{border: none; margin: 3px;}")
-			//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
+			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
 			);
 	}
 	//else if (!DkSettings::Display::useDefaultColor)
 	//	toolbar->setStyleSheet("QToolBar#EditToolBar{background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}" );
 
-	// file
+	//// file
 	//DkButton* test = new DkButton(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
+	//test->setFixedSize(QSize(16,16));
 	//test->addAction(fileActions[menu_file_prev]);
 	//toolbar->addWidget(test);
+	
 	toolbar->addAction(fileActions[menu_file_prev]);
 	toolbar->addAction(fileActions[menu_file_next]);
 	toolbar->addSeparator();
@@ -311,9 +316,17 @@ void DkNoMacs::createStatusbar() {
 	this->setStatusBar(statusbar);
 }
 
-#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
 
 void DkNoMacs::createIcons() {
+
+	// this is unbelievable dirty - but for now the quickest way to turn themes off if someone uses customized icons...
+	if (DkSettings::Display::defaultIconColor) {
+		#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
+	}
+	else {
+		#undef ICON
+		#define ICON(theme, backup) QIcon(backup), QIcon(backup)
+	}
 
 	fileIcons.resize(icon_file_end);
 	fileIcons[icon_file_dir] = ICON("document-open-folder", ":/nomacs/img/dir.png");
@@ -339,6 +352,25 @@ void DkNoMacs::createIcons() {
 	viewIcons[icon_view_100] = ICON("zoom-original", ":/nomacs/img/zoom100.png");
 	viewIcons[icon_view_gps] = ICON("", ":/nomacs/img/gps-globe.png");
 
+	if (!DkSettings::Display::defaultIconColor) {
+		// now colorize all icons
+		for (int idx = 0; idx < fileIcons.size(); idx++) {
+
+			// never colorize these large icons
+			if (idx == icon_file_open_large || idx == icon_file_dir_large)
+				continue;
+
+			fileIcons[idx].addPixmap(DkUtils::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::Display::iconColor), QIcon::Normal, QIcon::On);
+			fileIcons[idx].addPixmap(DkUtils::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::Display::iconColor), QIcon::Normal, QIcon::Off);
+		}
+
+		// now colorize all icons
+		for (int idx = 0; idx < editIcons.size(); idx++)
+			editIcons[idx].addPixmap(DkUtils::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::Display::iconColor));
+
+		for (int idx = 0; idx < viewIcons.size(); idx++)
+			viewIcons[idx].addPixmap(DkUtils::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::Display::iconColor));
+	}
 }
 
 void DkNoMacs::createMenu() {
@@ -2663,6 +2695,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		updateScreenSize();
 
 		setObjectName("DkNoMacsFrameless");
+		showStatusBar(false);	// fix
 }
 
 DkNoMacsFrameless::~DkNoMacsFrameless() {

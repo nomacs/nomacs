@@ -33,6 +33,8 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QColor>
+#include <QPixmap>
+#include <QPainter>
 
 #include <cmath>
 #include <sstream>
@@ -89,6 +91,23 @@ public:
 	static QString colorToString(const QColor& col) {
 
 		return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
+	};
+
+	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col) {
+
+		if (icon.isNull())
+			return icon;
+
+		QPixmap glow = icon.copy();
+		QPixmap sGlow = glow.copy();
+		sGlow.fill(col);
+		sGlow.setAlphaChannel(glow.alphaChannel());
+
+		QPainter painter(&glow);
+		painter.setOpacity(0.5);
+		painter.drawPixmap(glow.rect(), sGlow);
+
+		return glow;
 	}
 
 #ifdef WITH_OPENCV
