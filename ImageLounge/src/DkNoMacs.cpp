@@ -232,8 +232,11 @@ void DkNoMacs::createToolbar() {
 	DwmIsCompositionEnabled(&aero);
 #endif
 
-	toolbar->setIconSize(QSize(16, 16));
-
+	if (DkSettings::Display::smallIcons)
+		toolbar->setIconSize(QSize(16, 16));
+	else
+		toolbar->setIconSize(QSize(32, 32));
+	
 	qDebug() << toolbar->styleSheet();
 
 	if (aero) {
