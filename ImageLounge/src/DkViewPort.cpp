@@ -611,7 +611,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	if (DkSettings::Display::useDefaultColor) {
 		
 		// check if windows aero is available
-		BOOL aero = false;
+		int aero = 0; // should be BOOL but problems with TYPEDEF (and linux)
 
 #ifdef Q_WS_WIN
 		DwmIsCompositionEnabled(&aero);

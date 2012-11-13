@@ -226,7 +226,7 @@ void DkNoMacs::createToolbar() {
 	toolbar = addToolBar(tr("Edit"));
 	toolbar->setObjectName("EditToolBar");
 
-	BOOL aero = false;
+	int aero = 0;
 
 #ifdef Q_WS_WIN
 	DwmIsCompositionEnabled(&aero);
@@ -299,7 +299,7 @@ void DkNoMacs::createStatusbar() {
 	statusbar->setObjectName("DkStatusBar");
 	QColor col = QColor(200, 200, 230, 100);
 
-	BOOL aero = false;
+	int aero = 0;
 
 #ifdef Q_WS_WIN
 	DwmIsCompositionEnabled(&aero);
