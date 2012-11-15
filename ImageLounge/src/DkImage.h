@@ -189,7 +189,7 @@ public:
 		}
 		if (img.type() == CV_8UC3) {
 			
-			cv::cvtColor(img, img, CV_RGB2BGR);
+			//cv::cvtColor(img, img, CV_RGB2BGR);
 			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
 		}
 		if (img.type() == CV_8UC4) {
