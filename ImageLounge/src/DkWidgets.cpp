@@ -3117,7 +3117,7 @@ void DkHistogram::paintEvent(QPaintEvent* event) {
 	painter.fillRect(1, 1, width() - 3, height() - 2, bgCol);
 	painter.drawRect(1, 1, width() - 3, height() - 2);
 
-	if(isPainted){
+	if(isPainted && maxValue > 0){
 		for(int i = 0; i < 256; i++){
 			int rLineHeight = ((int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[0][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
 			int gLineHeight = ((int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) < height() - 4) ? (int) (hist[1][i] * (height() - 4) * scaleFactor / maxValue) : height() - 4;
@@ -3314,6 +3314,9 @@ void DkHistogram::setPainted(bool isPainted) {
 }
 
 void DkHistogram::setMaxHistogramValue(long maxValue) {
+
+	if (maxValue == 0)
+		setPainted(false);
 
 	this->maxValue = maxValue;
 }
