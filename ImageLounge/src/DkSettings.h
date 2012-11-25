@@ -196,6 +196,7 @@ class DkSettings : public QObject {
 		struct Resources {
 			static float cacheMemory;
 			static bool fastThumbnailPreview;
+			static bool filterRawImages;
 		};
 
 		void load();
@@ -576,6 +577,7 @@ public:
 		void createLayout();
 
 		QCheckBox* cbFastThumbnailPreview;
+		QCheckBox* cbFilterRawImages;
 		QSlider* sliderMemory;
 		QLabel* labelMemory;
 	

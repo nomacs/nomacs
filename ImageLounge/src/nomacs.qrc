@@ -40,5 +40,6 @@
         <file>img/gradient-reset.png</file>
         <file>img/pipette.png</file>
         <file>img/close.png</file>
+        <file>img/manipulation.png</file>
     </qresource>
 </RCC>

@@ -211,6 +211,7 @@ set (NOMACS_SOURCES
         src/DkError.cpp
         src/DkImage.cpp
         src/DkMath.cpp
+		src/DkManipulationWidgets.cpp
         src/DkConnection.cpp
         src/DkNetwork.cpp
         src/DkNoMacs.cpp
@@ -235,6 +236,7 @@ set (NOMACS_MOCS
         #src/DkError.h
         src/DkImage.h
         #src/DkMath.h
+		src/DkManipulationWidgets.h
         src/DkConnection.h
         src/DkNetwork.h
         src/DkNoMacs.h

@@ -148,6 +148,7 @@ bool DkSettings::Sync::syncAbsoluteTransform = true;
 
 float DkSettings::Resources::cacheMemory = 0;
 bool DkSettings::Resources::fastThumbnailPreview = true;
+bool DkSettings::Resources::filterRawImages = true;
 
 
 void DkSettings::load() {
@@ -235,6 +236,7 @@ void DkSettings::load() {
 
 	Resources::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory).toFloat();
 	Resources::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview).toBool();
+	Resources::filterRawImages = settings.value("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages).toBool();	
 	
 	if (DkSettings::Sync::switchModifier) {
 		DkSettings::Global::altMod = Qt::ControlModifier;
@@ -323,6 +325,7 @@ void DkSettings::save() {
 	
 	settings.setValue("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory);
 	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview);
+	settings.setValue("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages);
 
 	qDebug() << "settings saved";
 }
@@ -437,6 +440,7 @@ void DkSettings::setToDefaultSettings() {
 
 	DkSettings::Resources::cacheMemory = 0;
 	DkSettings::Resources::fastThumbnailPreview = true;
+	DkSettings::Resources::filterRawImages = true;
 
 	qDebug() << "ok... default settings are set";
 
@@ -1274,6 +1278,7 @@ void DkResourceSettingsWidgets::init() {
 	sliderMemory->setValue(curCache);
 	this->memorySliderChanged(curCache);
 	cbFastThumbnailPreview->setChecked(DkSettings::Resources::fastThumbnailPreview);
+	cbFilterRawImages->setChecked(DkSettings::Resources::filterRawImages);
 }
 
 void DkResourceSettingsWidgets::createLayout() {
@@ -1331,8 +1336,14 @@ void DkResourceSettingsWidgets::createLayout() {
 	cbFastThumbnailPreview = new QCheckBox(tr("enable fast thumbnail preview"));
 	fastPreviewLayuot->addWidget(cbFastThumbnailPreview);
 
+	QGroupBox* gbRawLoader = new QGroupBox(tr("Raw Loader Settings"));
+	QGridLayout* rawLoaderLayuot = new QGridLayout(gbRawLoader);
+	cbFilterRawImages = new QCheckBox(tr("filter raw images"));
+	rawLoaderLayuot->addWidget(cbFilterRawImages);
+
 	widgetVBoxLayout->addWidget(gbCache);
 	widgetVBoxLayout->addWidget(gbFastPreview);
+	widgetVBoxLayout->addWidget(gbRawLoader);
 	widgetVBoxLayout->addStretch();
 }
 
@@ -1340,6 +1351,7 @@ void DkResourceSettingsWidgets::writeSettings() {
 	
 	DkSettings::Resources::cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
 	DkSettings::Resources::fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
+	DkSettings::Resources::filterRawImages = cbFilterRawImages->isChecked();
 }
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {

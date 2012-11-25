@@ -67,6 +67,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	resizeDialog = 0;
 	updater = 0;
 	openWithDialog = 0;
+	imgManipulationDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -278,6 +279,7 @@ void DkNoMacs::createToolbar() {
 
 	toolbar->addAction(editActions[menu_edit_crop]);
 	toolbar->addAction(editActions[menu_edit_transfrom]);
+	//toolbar->addAction(editActions[menu_edit_image_manipulation]);
 	toolbar->addSeparator();
 
 	// view
@@ -352,6 +354,9 @@ void DkNoMacs::createIcons() {
 	viewIcons[icon_view_100] = ICON("zoom-original", ":/nomacs/img/zoom100.png");
 	viewIcons[icon_view_gps] = ICON("", ":/nomacs/img/gps-globe.png");
 
+	toolsIcons.resize(icon_tools_end);
+	toolsIcons[icon_tools_manipulation] = ICON("", ":/nomacs/img/manipulation.png");
+
 	if (!DkSettings::Display::defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < fileIcons.size(); idx++) {
@@ -370,6 +375,10 @@ void DkNoMacs::createIcons() {
 
 		for (int idx = 0; idx < viewIcons.size(); idx++)
 			viewIcons[idx].addPixmap(DkUtils::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::Display::iconColor));
+
+		for (int idx = 0; idx < toolsIcons.size(); idx++)
+			toolsIcons[idx].addPixmap(DkUtils::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::Display::iconColor));
+
 	}
 }
 
@@ -460,6 +469,7 @@ void DkNoMacs::createMenu() {
 	toolsMenu = menu->addMenu(tr("&Tools"));
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
+	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -800,6 +810,11 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_filter]->setChecked(false);
 	connect(toolsActions[menu_tools_filter], SIGNAL(toggled(bool)), this, SLOT(find(bool)));
 
+	toolsActions[menu_tools_manipulation] = new QAction(toolsIcons[icon_tools_manipulation], tr("Image &Manipulation"), this);
+	toolsActions[menu_tools_manipulation]->setShortcut(shortcut_manipulation);
+	toolsActions[menu_tools_manipulation]->setStatusTip(tr("modify the current image"));
+	connect(toolsActions[menu_tools_manipulation], SIGNAL(triggered()), this, SLOT(openImgManipulationDialog()));
+
 	// help menu
 	helpActions.resize(menu_help_end);
 	helpActions[menu_help_about] = new QAction(tr("&About Nomacs"), this);
@@ -914,11 +929,11 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 
 	viewActions[menu_view_show_info]->setEnabled(enable);
-	#ifdef WITH_OPENCV
-		viewActions[menu_view_show_histogram]->setEnabled(enable);
-	#else
-		viewActions[menu_view_show_histogram]->setEnabled(false);
-	#endif
+#ifdef WITH_OPENCV
+	viewActions[menu_view_show_histogram]->setEnabled(enable);
+#else
+	viewActions[menu_view_show_histogram]->setEnabled(false);
+#endif
 	viewActions[menu_view_show_preview]->setEnabled(enable);
 	viewActions[menu_view_show_exif]->setEnabled(enable);
 	viewActions[menu_view_show_overview]->setEnabled(enable);
@@ -929,6 +944,13 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	viewActions[menu_view_fit_frame]->setEnabled(enable);
 	viewActions[menu_view_zoom_in]->setEnabled(enable);
 	viewActions[menu_view_zoom_out]->setEnabled(enable);
+
+#ifdef WITH_OPENCV
+	editActions[menu_tools_manipulation]->setEnabled(enable);
+#else
+	editActions[menu_tools_manipulation]->setEnabled(false);
+#endif
+
 }
 
 
@@ -1911,6 +1933,53 @@ void DkNoMacs::deleteFile() {
 
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
 		viewport()->getImageLoader()->deleteFile();
+}
+
+void DkNoMacs::openImgManipulationDialog() {
+
+	if (!viewport() || viewport()->getImage().isNull())
+		return;
+
+	if (!imgManipulationDialog)
+		imgManipulationDialog = new DkImageManipulationDialog(this);
+	else imgManipulationDialog->resetValues();
+
+	imgManipulationDialog->setImage(&viewport()->getImageLoader()->getImage());
+
+	bool done = imgManipulationDialog->exec();
+
+	if (imgManipulationDialog->wasOkPressed()) {
+
+#ifdef WITH_OPENCV
+/*		int brightness = DkImageManipulationWidget::getBrightness();
+		int contrast = DkImageManipulationWidget::getContrast();
+		int saturation = DkImageManipulationWidget::getSaturation();
+		int hue = DkImageManipulationWidget::getHue();
+		float gamma = DkImageManipulationWidget::getGamma();
+
+		Mat currImg = DkImage::qImage2Mat(viewport()->getImageLoader()->getImage());
+		QImage mImg;
+
+		if(brightness != 0 || contrast != 0 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeBrightnessAndContrast(currImg, brightness, contrast));
+		else if(saturation != 0 || hue != 0 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeSaturationAndHue(currImg, saturation, hue));
+		else if(gamma != 1 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeGamma(currImg, gamma));
+
+		if (!mImg.isNull()) {
+			viewport()->unloadImage();
+			viewport()->getImageLoader()->setImage(mImg);
+			viewport()->setImage(mImg);
+		}
+*/
+		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImageLoader()->getImage())));
+
+		if (!mImg.isNull()) {
+			viewport()->unloadImage();
+			viewport()->getImageLoader()->setImage(mImg);
+			viewport()->setImage(mImg);
+		}
+
+#endif
+	}
 }
 
 

@@ -458,6 +458,39 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			}
 
 			merge(corrCh, rgbImg);
+			rgbImg.convertTo(rgbImg, CV_8U);
+			
+			// filter color noise withe a median filter
+			if (DkSettings::Resources::filterRawImages) {
+
+				float isoSpeed = iProcessor.imgdata.other.iso_speed;
+				
+				if (isoSpeed > 0) {
+
+					int winSize;
+					if (isoSpeed > 6400) winSize = 13;
+					else if (isoSpeed >= 3200) winSize = 11;
+					else if (isoSpeed >= 2500) winSize = 9;
+					else if (isoSpeed >= 400) winSize = 7;
+					else winSize = 5;
+
+					DkTimer dMed;			
+
+					cvtColor(rgbImg, rgbImg, CV_RGB2YCrCb);
+					split(rgbImg, corrCh);
+
+					cv::medianBlur(corrCh[1], corrCh[1], winSize);
+					cv::medianBlur(corrCh[2], corrCh[2], winSize);
+
+					merge(corrCh, rgbImg);
+					cvtColor(rgbImg, rgbImg, CV_YCrCb2RGB);
+
+					qDebug() << "median blurred in: " << QString::fromStdString(dMed.getTotal()) << ", winSize: " << winSize;
+				}
+				else qDebug() << "median filter: unrecognizable ISO speed";
+			
+			}
+
 
 			//Mat cropMat(rawMat, Rect(1, 1, rawMat.cols-1, rawMat.rows-1));
 			//rawMat.release();
@@ -465,8 +498,6 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 			//rawMat.setTo(0);
 
 			//normalize(rawMat, rawMat, 255, 0, NORM_MINMAX);
-
-			rgbImg.convertTo(rgbImg,CV_8U);
 
 			//check the pixel aspect ratio of the raw image
 			if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {

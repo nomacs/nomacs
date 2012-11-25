@@ -58,7 +58,16 @@
 	#pragma warning(disable: 4996)
 #endif
 
+#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
+#include "opencv/cv.h"
+#else
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #endif
+
+using namespace cv;
+#endif
+
 
 #ifdef Q_WS_WIN
 	#include <dwmapi.h>	// needed to see if aero is on
@@ -74,6 +83,7 @@
 #include "DkSettings.h"
 #include "DkMenu.h"
 #include "DkTransferToolBar.h"
+#include "DkManipulationWidgets.h"
 
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
@@ -146,6 +156,7 @@ enum {
 	shortcut_rotate_cw		= Qt::Key_R,
 	shortcut_rotate_ccw		= Qt::SHIFT + Qt::Key_R,
 	shortcut_transform		= Qt::CTRL + Qt::Key_T,
+	shortcut_manipulation   = Qt::CTRL + Qt::SHIFT + Qt::Key_M,
 	shortcut_paste			= Qt::Key_Insert,
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
@@ -207,6 +218,7 @@ enum editActions {
 enum toolsActions {
 	menu_tools_thumbs,
 	menu_tools_filter,
+	menu_tools_manipulation,
 
 	menu_tools_end,
 };
@@ -313,6 +325,12 @@ enum viewIcons {
 	icon_view_end,	// nothing beyond this point
 };
 
+enum toolsIcons {
+	icon_tools_manipulation,
+
+	icon_tools_end,
+};
+
 
 /*! QApplication wrapper.
 Its main purpose is to provide Mac OS X "open file from finder"
@@ -387,6 +405,7 @@ public slots:
 	void updateFilterState(QStringList filters);
 	void saveFile();
 	void resizeImage();
+	void openImgManipulationDialog();
 	void deleteFile();
 	void setWallpaper();
 	void cleanSettings();
@@ -476,6 +495,7 @@ protected:
 	QVector<QIcon> fileIcons;
 	QVector<QIcon> editIcons;
 	QVector<QIcon> viewIcons;
+	QVector<QIcon> toolsIcons;
 
 	// menu
 	DkMenuBar* menu;
@@ -509,6 +529,8 @@ protected:
 	DkOpenWithDialog* openWithDialog;
 
 	DkResizeDialog* resizeDialog;
+
+	DkImageManipulationDialog* imgManipulationDialog;
 
 	// client managers
 	//DkLocalClientManager* localClientManager;
