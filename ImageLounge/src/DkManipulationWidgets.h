@@ -293,7 +293,7 @@ class DkUndoRedo : public DkImageManipulationWidget {
 		void undoPressed();
 		void redoPressed();
 
-	friend void DkImageManipulationWidget::prepareUndoRedoButtons();
+	//friend void DkImageManipulationWidget::prepareUndoRedoButtons();
 };
 
 // Image manipulation dialog with image manipulation tools

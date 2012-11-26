@@ -206,72 +206,77 @@ include_directories (
 	${CMAKE_SOURCE_DIR}/src
 )
 
-
-set (NOMACS_SOURCES
-        src/DkError.cpp
-        src/DkImage.cpp
-        src/DkMath.cpp
-		src/DkManipulationWidgets.cpp
-        src/DkConnection.cpp
-        src/DkNetwork.cpp
-        src/DkNoMacs.cpp
-		src/DkPong.cpp
-        src/DkTimer.cpp
-        src/DkUtils.cpp
-        src/DkViewPort.cpp
-        src/DkWidgets.cpp
-		src/DkDialog.cpp
-        src/DkSettings.cpp
-        src/BorderLayout.cpp
-		src/DkTransferToolBar.cpp
-        src/DkMenu.cpp
-        src/main.cpp
-)
+# set (NOMACS_SOURCES
+        # src/DkError.cpp
+        # src/DkImage.cpp
+        # src/DkMath.cpp
+		# src/DkManipulationWidgets.cpp
+        # src/DkConnection.cpp
+        # src/DkNetwork.cpp
+        # src/DkNoMacs.cpp
+		# src/DkPong.cpp
+        # src/DkTimer.cpp
+        # src/DkUtils.cpp
+        # src/DkViewPort.cpp
+        # src/DkWidgets.cpp
+		# src/DkDialog.cpp
+        # src/DkSettings.cpp
+        # src/BorderLayout.cpp
+		# src/DkTransferToolBar.cpp
+        # src/DkMenu.cpp
+        # src/main.cpp
+# )
 if (APPLE)
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
 endif (APPLE)
 
 
-set (NOMACS_MOCS
-        #src/DkError.h
-        src/DkImage.h
-        #src/DkMath.h
-		src/DkManipulationWidgets.h
-        src/DkConnection.h
-        src/DkNetwork.h
-        src/DkNoMacs.h
-		src/DkPong.h
-        #src/DkTimer.h
-        #src/DkUtils.h
-        src/DkViewPort.h
-        src/DkWidgets.h
-		src/DkDialog.h
-        src/DkMenu.h
-        src/DkSettings.h
-		src/DkTransferToolBar.h
-        #src/BorderLayout.h
-        #src/resource.h
-)
+# set (NOMACS_MOCS
+        # #src/DkError.h
+        # src/DkImage.h
+        # #src/DkMath.h
+		# src/DkManipulationWidgets.h
+        # src/DkConnection.h
+        # src/DkNetwork.h
+        # src/DkNoMacs.h
+		# src/DkPong.h
+        # #src/DkTimer.h
+        # #src/DkUtils.h
+        # src/DkViewPort.h
+        # src/DkWidgets.h
+		# src/DkDialog.h
+        # src/DkMenu.h
+        # src/DkSettings.h
+		# src/DkTransferToolBar.h
+        # #src/BorderLayout.h
+        # #src/resource.h
+# )
 
-set (NOMACS_HEADERS
-        src/DkError.h
-        src/DkImage.h
-        src/DkMath.h
-        src/DkConnection.h
-        src/DkNetwork.h
-        src/DkNoMacs.h
-		src/DkPong.h
-        src/DkTimer.h
-        src/DkUtils.h
-        src/DkViewPort.h
-        src/DkWidgets.h
-		src/DkDialog.h
-        src/DkMenu.h
-        src/DkSettings.h
-		src/DkTransferToolBar.h
-        src/BorderLayout.h
-        #src/resource.h
-)
+# set (NOMACS_HEADERS
+        # src/DkError.h
+        # src/DkImage.h
+        # src/DkMath.h
+        # src/DkConnection.h
+        # src/DkNetwork.h
+		# src/DkManipulationWidgets.h
+        # src/DkNoMacs.h
+		# src/DkPong.h
+        # src/DkTimer.h
+        # src/DkUtils.h
+        # src/DkViewPort.h
+        # src/DkWidgets.h
+		# src/DkDialog.h
+        # src/DkMenu.h
+        # src/DkSettings.h
+		# src/DkTransferToolBar.h
+        # src/BorderLayout.h
+        # #src/resource.h
+# )
+
+file(GLOB NOMACS_SOURCES "src/*.cpp")
+file(GLOB NOMACS_HEADERS "src/*.h")
+file(GLOB NOMACS_MOCS "src/*.h")
+
 
 set (NOMACS_FORMS
         src/nomacs.ui

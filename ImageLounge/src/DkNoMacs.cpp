@@ -1973,9 +1973,9 @@ void DkNoMacs::openImgManipulationDialog() {
 		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImageLoader()->getImage())));
 
 		if (!mImg.isNull()) {
-			viewport()->unloadImage();
-			viewport()->getImageLoader()->setImage(mImg);
-			viewport()->setImage(mImg);
+			//viewport()->unloadImage();
+			//viewport()->getImageLoader()->setImage(mImg);
+			viewport()->setEditedImage(mImg);
 		}
 
 #endif
