@@ -1944,7 +1944,7 @@ void DkNoMacs::openImgManipulationDialog() {
 		imgManipulationDialog = new DkImageManipulationDialog(this);
 	else imgManipulationDialog->resetValues();
 
-	QImage* tmpImg = &viewport()->getImageLoader()->getImage();
+	QImage* tmpImg = viewport()->getImageLoader()->getImage();
 	imgManipulationDialog->setImage(tmpImg);
 
 	bool done = imgManipulationDialog->exec();
