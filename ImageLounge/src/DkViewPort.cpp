@@ -592,6 +592,11 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
 // DkBaseViewport --------------------------------------------------------------------
 DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
 	
+	grabGesture(Qt::PanGesture);
+	grabGesture(Qt::PinchGesture);
+	setAttribute(Qt::WA_AcceptTouchEvents);
+
+
 	this->parent = parent;
 	viewportRect = QRect(0, 0, width(), height());
 	worldMatrix.reset();
@@ -837,6 +842,44 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 	changeCursor();
 
 	return QGraphicsView::resizeEvent(event);
+}
+
+bool DkBaseViewPort::event(QEvent *event) {
+
+	if (event->type() == QEvent::Gesture)
+		return gestureEvent(static_cast<QGestureEvent*>(event));
+
+	return QGraphicsView::event(event);
+
+}
+
+bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
+
+	if (QGesture *swipeG = event->gesture(Qt::SwipeGesture)) {
+		QSwipeGesture *swipe = static_cast<QSwipeGesture *>(swipeG);
+		
+		// thanks qt documentation : )
+		if (swipe->state() == Qt::GestureFinished) {
+			if (swipe->horizontalDirection() == QSwipeGesture::Left
+				|| swipe->verticalDirection() == QSwipeGesture::Up)
+				qDebug() << "here comes the previous image function...";
+			else
+				qDebug() << "here comes the next image function...";
+		}
+		qDebug() << "swipping...";
+	}
+	else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
+
+		qDebug() << "panning...";
+	}
+	else if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
+
+		qDebug() << "pinching...";
+	}
+	else
+		return false;
+
+	return true;
 }
 
 // key events --------------------------------------------------------------------
@@ -1717,7 +1760,7 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 	QPointF imgPos = worldMatrix.inverted().map(QPointF(pos));
 	imgPos = imgMatrix.inverted().map(imgPos);
 
-	QPoint xy = imgPos.toPoint();
+	QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
 
 	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgStorage.getImage().width() || xy.y() >= imgStorage.getImage().height())
 		return;

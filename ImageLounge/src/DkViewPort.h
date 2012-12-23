@@ -41,6 +41,7 @@
 #include <QUrl>
 #include <QPrinter>
 #include <QtGui/QGradientStops>
+#include <QSwipeGesture>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -353,7 +354,8 @@ public slots:
 	virtual void setImage(QImage newImg);
 
 protected:
-
+	virtual bool event(QEvent *event);
+	virtual bool gestureEvent(QGestureEvent* event);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void keyReleaseEvent(QKeyEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
