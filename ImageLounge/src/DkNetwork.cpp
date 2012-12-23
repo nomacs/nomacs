@@ -740,7 +740,7 @@ void DkLANUdpSocket::sendBroadcast() {
 	// datagram.append(serverport) + clientname
 
 	
-	for (quint16 port = startPort; port < endPort; port++) {
+	for (quint16 port = startPort; port <= endPort; port++) {
 		foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
 			foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
 				if (entry.broadcast().isNull())
