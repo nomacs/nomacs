@@ -430,17 +430,49 @@ void DkConnection::synchronizedTimerTimeout() {
 }
 
 // DkLocalConnection --------------------------------------------------------------------
+DkLocalConnection::DkLocalConnection(QObject* parent/* =0 */) {
+	this->currentLocalDataType = Undefined;
+}
+
+
 void DkLocalConnection::processReadyRead() {
+	if (currentLocalDataType == Quit) { // long message (copied from lan connection) -> does this work here correctly?
+		readWhileBytesAvailable();
+		return;
+	}
+
 	if (readDataIntoBuffer() <= 0)
 		return;
 	if (!readProtocolHeader())
 		return;
+
 	DkConnection::processReadyRead();
 }
 
 void DkLocalConnection::processData() {
+	switch (currentLocalDataType) {
+	case Quit:
+		emit connectionQuitReceived();
+		break;
+	}
+	
 	DkConnection::processData();
 }
+
+bool DkLocalConnection::readProtocolHeader() {
+	QByteArray quitBA = QByteArray("QUIT").append(SeparatorToken);
+
+	if (buffer == quitBA) {
+		currentLocalDataType = Quit;
+	} else {
+		return DkConnection::readProtocolHeader();
+	}
+
+	buffer.clear();
+	numBytesForCurrentDataType = dataLengthForCurrentDataType();
+	return true;
+}
+
 
 void DkLocalConnection::sendGreetingMessage(QString currentTitle) {
 	this->currentTitle = currentTitle;
@@ -473,6 +505,25 @@ void DkLocalConnection::readGreetingMessage() {
 	//qDebug() << "emitting readyForUse";
 	emit connectionReadyForUse(peerServerPort, title, this);
 }
+
+void DkLocalConnection::sendQuitMessage() {
+	QByteArray ba;
+	QDataStream ds(&ba, QIODevice::ReadWrite);
+	ds << "updating";
+
+	QByteArray data = "QUIT";
+	data.append(SeparatorToken);
+	data.append(QByteArray::number(ba.size()));
+	data.append(SeparatorToken);
+	data.append(ba);
+
+	if (write(data) == data.size()) {
+		isGreetingMessageSent = true;
+		qDebug() << "I did send something\n";
+	}
+}
+
+
 
 // DkLANConnection --------------------------------------------------------------------
 DkLANConnection::DkLANConnection(QObject* parent /* = 0 */) : DkConnection(parent) {

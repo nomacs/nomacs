@@ -391,6 +391,7 @@ signals:
 	void synchronizeWithServerPortSignal(quint16);
 	void closeSignal();
 	void saveTempFileSignal(QImage img);
+	void sendQuitLocalClientsSignal();
 
 public slots:
 	void restart();

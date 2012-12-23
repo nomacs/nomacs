@@ -143,19 +143,33 @@ class DkLocalConnection : public DkConnection {
 	Q_OBJECT;
 
 	public:
-		DkLocalConnection(QObject* parent=0) : DkConnection(parent) {};
+		DkLocalConnection(QObject* parent=0);
 
 		quint16 getLocalTcpServerPort() { return localTcpServerPort;};
 		void setLocalTcpServerPort(quint16 localTcpServerPort) { this->localTcpServerPort = localTcpServerPort;};
 		void sendGreetingMessage(QString currentTitle);
+		
+
+	signals:
+		void connectionQuitReceived();
 
 	protected slots:
 		void processReadyRead();
 		void processData();
+		void sendQuitMessage();
+
+	protected:
+		enum LocalDataType {
+			Quit,
+			Undefined
+		};
 
 	private:
+		bool readProtocolHeader();
 		void readGreetingMessage();
+		void readQuitMessage();
 		quint16 localTcpServerPort;
+		LocalDataType currentLocalDataType;
 
 };
 

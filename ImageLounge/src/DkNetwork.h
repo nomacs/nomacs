@@ -108,6 +108,8 @@ class DkClientManager : public QThread {
 		void sendGoodByeMessage();
 		void synchronizedPeersListChanged(QList<quint16> newList);
 		void updateConnectionSignal(QList<DkPeer> peers);
+		
+		void receivedQuit();
 
 	public slots:
 		virtual void synchronizeWith(quint16 peerId) = 0;
@@ -154,16 +156,21 @@ class DkLocalClientManager : public DkClientManager {
 		quint16 getServerPort();
 		void run();
 
+	signals:
+		void receivedQuit();
+		void sendQuitMessage();
 
 	public slots:
 		void stopSynchronizeWith(quint16 peerId);
 		void synchronizeWithServerPort(quint16 port);
 		void synchronizeWith(quint16 peerId);
 		void sendArrangeInstances(bool overlaid);
+		void sendQuitMessageToPeers();
 
 	private slots:
 		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		virtual void connectionStopSynchronized(DkConnection* connection);
+		void connectionReceivedQuit(); 
 
 	private:
 		DkLocalConnection* createConnection();

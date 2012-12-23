@@ -340,14 +340,24 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
 
 }
 
+void DkLocalClientManager::sendQuitMessageToPeers() {
+	emit sendQuitMessage();
+}
+
+void DkLocalClientManager::connectionReceivedQuit() {
+	emit receivedQuit();
+}
+
 DkLocalConnection* DkLocalClientManager::createConnection() {
 	DkLocalConnection* connection = new DkLocalConnection();
 	connection->setLocalTcpServerPort(server->serverPort());
 	connection->setTitle(currentTitle);
 	connectConnection(connection);
 	connect(this, SIGNAL(synchronizedPeersListChanged(QList<quint16>)), connection, SLOT(synchronizedPeersListChanged(QList<quint16>)));
-
+	connect(this, SIGNAL(sendQuitMessage()), connection, SLOT(sendQuitMessage()));
+	connect(connection, SIGNAL(connectionQuitReceived()), this, SLOT(connectionReceivedQuit()));
 	return connection;
+
 }
 // DkLANClientManager --------------------------------------------------------------------
 DkLANClientManager::DkLANClientManager(QString title, QObject* parent) : DkClientManager(title, parent) {
@@ -1134,7 +1144,7 @@ void DkLocalManagerThread::connectClient() {
 
 	// just for local client
 	connect(parent, SIGNAL(sendArrangeSignal(bool)), clientManager, SLOT(sendArrangeInstances(bool)));
-
+	connect(parent, SIGNAL(sendQuitLocalClientsSignal()), clientManager, SLOT(sendQuitMessageToPeers()));
 	DkManagerThread::connectClient();
 }
 
