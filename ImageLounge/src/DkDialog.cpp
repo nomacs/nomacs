@@ -358,7 +358,7 @@ void DkOpenWithDialog::init() {
 	}
 
 	// dirty hack - but locating it in the registry is not that easy
-	QFileInfo expPath("C:\\Windows\\explorer.exe");
+	QFileInfo expPath("C:/Windows/explorer.exe");
 	if (expPath.exists() && !appPaths.empty()) {
 		appPaths.last() = expPath.absoluteFilePath();
 		appIcons.last() = getIcon(appPaths.last());
@@ -407,8 +407,9 @@ void DkOpenWithDialog::createLayout() {
 			}
 
 			bl->addWidget(radio, numDefaultApps, 0);
-			numDefaultApps++;
 		}
+		numDefaultApps++;
+
 	}
 
 
@@ -569,6 +570,9 @@ void DkOpenWithDialog::okClicked() {
 	DkSettings::Global::defaultAppPath = getPath();
 	DkSettings::Global::userAppPaths = userAppPaths;
 
+	qDebug() << "default app index: " << defaultApp;
+	qDebug() << "default app path: " << DkSettings::Global::defaultAppPath;
+
 	close();
 }
 
@@ -582,9 +586,7 @@ void DkOpenWithDialog::softwareSelectionChanged() {
 
 	QString sender = QObject::sender()->objectName();
 
-	for (int idx = 0; idx < screenNames.size(); idx++) {
-
-		qDebug() << screenNames[idx] << " - " << sender;
+	for (int idx = 0, sIdx = 0; idx < screenNames.size(); idx++) {
 
 		if (screenNames[idx] == sender)
 			defaultApp = idx;

@@ -2293,9 +2293,10 @@ void DkNoMacs::openFileWith() {
 	}
 
 	QStringList args;
-
+	
 	if (QFileInfo(DkSettings::Global::defaultAppPath).fileName() == "explorer.exe") {
 		args << "/select," + QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
+		qDebug() << "explorer.exe started...";
 	}
 	else
 		args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
@@ -2756,9 +2757,9 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->addStartActions(fileActions[menu_file_open], &fileIcons[icon_file_open_large]);
 		vp->addStartActions(fileActions[menu_file_open_dir], &fileIcons[icon_file_dir_large]);
 
-		disconnect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
+		viewActions[menu_view_frameless]->blockSignals(true);
 		viewActions[menu_view_frameless]->setChecked(true);
-		connect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
+		viewActions[menu_view_frameless]->blockSignals(false);
 
 		dw = QApplication::desktop();
 		connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
@@ -2919,9 +2920,9 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		show();
 
 		// TODO: this should be checked but no event should be called
-		disconnect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+		viewActions[menu_view_show_transfertoolbar]->blockSignals(true);
 		viewActions[menu_view_show_transfertoolbar]->setChecked(true);
-		connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+		viewActions[menu_view_show_transfertoolbar]->blockSignals(false);
 
 		qDebug() << "viewport (normal) created...";
 }
