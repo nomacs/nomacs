@@ -2533,7 +2533,7 @@ void DkCacher::load() {
 		}
 		if (pIdx > 0 && cache.at(pIdx).getCacheState() == DkImageCache::cache_not_loaded) {
 
-			if (!clean(idx))
+			if (!clean(-idx))
 				break;	// we're done
 
 			cacheIter.toFront();

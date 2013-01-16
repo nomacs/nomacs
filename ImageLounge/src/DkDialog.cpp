@@ -570,9 +570,6 @@ void DkOpenWithDialog::okClicked() {
 	DkSettings::Global::defaultAppPath = getPath();
 	DkSettings::Global::userAppPaths = userAppPaths;
 
-	qDebug() << "default app index: " << defaultApp;
-	qDebug() << "default app path: " << DkSettings::Global::defaultAppPath;
-
 	close();
 }
 
@@ -586,12 +583,12 @@ void DkOpenWithDialog::softwareSelectionChanged() {
 
 	QString sender = QObject::sender()->objectName();
 
-	for (int idx = 0, sIdx = 0; idx < screenNames.size(); idx++) {
+	for (int idx = 0; idx < screenNames.size(); idx++) {
 
 		if (screenNames[idx] == sender)
 			defaultApp = idx;
 	}
-
+	
 	qDebug() << "default app idx..." << defaultApp;
 }
 
