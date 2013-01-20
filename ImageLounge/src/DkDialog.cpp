@@ -865,7 +865,10 @@ void DkSearchDialog::on_okButton_pressed() {
 
 	// ok load the selected file
 	QString fileName = resultListView->selectionModel()->currentIndex().data().toString();
-	emit loadFileSignal(QFileInfo(path, fileName));
+	qDebug() << "opening filename: " << fileName;
+
+	if (!fileName.isEmpty())
+		emit loadFileSignal(QFileInfo(path, fileName));
 	close();
 }
 
