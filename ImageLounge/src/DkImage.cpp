@@ -2478,7 +2478,7 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 
 		if (cache.at(idx).getFile() == file) {
 			curFileIdx = idx;
-			if (!img.isNull()) {
+			if (!img.isNull() && cache.at(idx).getCacheState() != DkImageCache::cache_loaded) {
 				curCache -= cacheIter.value().getCacheSize();
 				
 				// 4* since we are dealing with uncompressed images
@@ -2533,7 +2533,7 @@ void DkCacher::load() {
 		}
 		if (pIdx > 0 && cache.at(pIdx).getCacheState() == DkImageCache::cache_not_loaded) {
 
-			if (!clean(-idx))
+			if (!clean(idx))
 				break;	// we're done
 
 			cacheIter.toFront();
@@ -3311,6 +3311,9 @@ void DkMetaData::saveThumbnail(QImage thumb) {
 	} catch (...) {
 
 		qDebug() << "I could not save the thumbnail...\n";
+		// we are not sure at this place, but possibly the cacher is reading the file -> exif bug
+		// so we try to restore the file
+		DkImageLoader::restoreFile(file);
 	}
 }
 

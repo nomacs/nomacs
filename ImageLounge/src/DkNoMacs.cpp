@@ -1942,7 +1942,8 @@ void DkNoMacs::openImgManipulationDialog() {
 
 	if (!imgManipulationDialog)
 		imgManipulationDialog = new DkImageManipulationDialog(this);
-	else imgManipulationDialog->resetValues();
+	else 
+		imgManipulationDialog->resetValues();
 
 	QImage tmpImg = viewport()->getImageLoader()->getImage();
 	imgManipulationDialog->setImage(&tmpImg);
@@ -1952,32 +1953,11 @@ void DkNoMacs::openImgManipulationDialog() {
 	if (imgManipulationDialog->wasOkPressed()) {
 
 #ifdef WITH_OPENCV
-/*		int brightness = DkImageManipulationWidget::getBrightness();
-		int contrast = DkImageManipulationWidget::getContrast();
-		int saturation = DkImageManipulationWidget::getSaturation();
-		int hue = DkImageManipulationWidget::getHue();
-		float gamma = DkImageManipulationWidget::getGamma();
 
-		Mat currImg = DkImage::qImage2Mat(viewport()->getImageLoader()->getImage());
-		QImage mImg;
-
-		if(brightness != 0 || contrast != 0 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeBrightnessAndContrast(currImg, brightness, contrast));
-		else if(saturation != 0 || hue != 0 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeSaturationAndHue(currImg, saturation, hue));
-		else if(gamma != 1 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeGamma(currImg, gamma));
-
-		if (!mImg.isNull()) {
-			viewport()->unloadImage();
-			viewport()->getImageLoader()->setImage(mImg);
-			viewport()->setImage(mImg);
-		}
-*/
 		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImageLoader()->getImage())));
 
-		if (!mImg.isNull()) {
-			//viewport()->unloadImage();
-			//viewport()->getImageLoader()->setImage(mImg);
+		if (!mImg.isNull())
 			viewport()->setEditedImage(mImg);
-		}
 
 #endif
 	}
