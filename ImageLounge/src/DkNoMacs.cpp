@@ -1942,7 +1942,8 @@ void DkNoMacs::openImgManipulationDialog() {
 
 	if (!imgManipulationDialog)
 		imgManipulationDialog = new DkImageManipulationDialog(this);
-	else imgManipulationDialog->resetValues();
+	else 
+		imgManipulationDialog->resetValues();
 
 	QImage tmpImg = viewport()->getImageLoader()->getImage();
 	imgManipulationDialog->setImage(&tmpImg);
@@ -1952,32 +1953,11 @@ void DkNoMacs::openImgManipulationDialog() {
 	if (imgManipulationDialog->wasOkPressed()) {
 
 #ifdef WITH_OPENCV
-/*		int brightness = DkImageManipulationWidget::getBrightness();
-		int contrast = DkImageManipulationWidget::getContrast();
-		int saturation = DkImageManipulationWidget::getSaturation();
-		int hue = DkImageManipulationWidget::getHue();
-		float gamma = DkImageManipulationWidget::getGamma();
 
-		Mat currImg = DkImage::qImage2Mat(viewport()->getImageLoader()->getImage());
-		QImage mImg;
-
-		if(brightness != 0 || contrast != 0 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeBrightnessAndContrast(currImg, brightness, contrast));
-		else if(saturation != 0 || hue != 0 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeSaturationAndHue(currImg, saturation, hue));
-		else if(gamma != 1 ) mImg = DkImage::mat2QImage(DkImageManipulationWidget::changeGamma(currImg, gamma));
-
-		if (!mImg.isNull()) {
-			viewport()->unloadImage();
-			viewport()->getImageLoader()->setImage(mImg);
-			viewport()->setImage(mImg);
-		}
-*/
 		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImageLoader()->getImage())));
 
-		if (!mImg.isNull()) {
-			//viewport()->unloadImage();
-			//viewport()->getImageLoader()->setImage(mImg);
+		if (!mImg.isNull())
 			viewport()->setEditedImage(mImg);
-		}
 
 #endif
 	}
@@ -2293,9 +2273,10 @@ void DkNoMacs::openFileWith() {
 	}
 
 	QStringList args;
-
+	
 	if (QFileInfo(DkSettings::Global::defaultAppPath).fileName() == "explorer.exe") {
 		args << "/select," + QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
+		qDebug() << "explorer.exe started...";
 	}
 	else
 		args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
@@ -2756,9 +2737,9 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->addStartActions(fileActions[menu_file_open], &fileIcons[icon_file_open_large]);
 		vp->addStartActions(fileActions[menu_file_open_dir], &fileIcons[icon_file_dir_large]);
 
-		disconnect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
+		viewActions[menu_view_frameless]->blockSignals(true);
 		viewActions[menu_view_frameless]->setChecked(true);
-		connect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
+		viewActions[menu_view_frameless]->blockSignals(false);
 
 		dw = QApplication::desktop();
 		connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
@@ -2919,9 +2900,9 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		show();
 
 		// TODO: this should be checked but no event should be called
-		disconnect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+		viewActions[menu_view_show_transfertoolbar]->blockSignals(true);
 		viewActions[menu_view_show_transfertoolbar]->setChecked(true);
-		connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+		viewActions[menu_view_show_transfertoolbar]->blockSignals(false);
 
 		qDebug() << "viewport (normal) created...";
 }

@@ -986,7 +986,7 @@ void DkBaseViewPort::draw(QPainter *painter) {
 	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
 	painter->drawImage(imgViewRect, imgQt, imgQt.rect());
 
-	qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
+	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 
 bool DkBaseViewPort::imageInside() {
@@ -1956,6 +1956,8 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 	silent |= (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen);
 
+	bool skip = true;
+
 	if (DkSettings::Resources::fastThumbnailPreview) {
 
 		QImage thumb;
@@ -1972,23 +1974,28 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 			if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
 				unloadImage();
 				loader->loadFile(thumbFile, silent, DkImageLoader::cache_disable_update);
+				skip = false;
 			}
 			// load full file if cached
 			else if (loader->isCached(thumbFile)) {
 				unloadImage();
 				loader->load(thumbFile, silent, DkImageLoader::cache_disable_update);	// disable cacher on fast load
+				skip = false;
 			}
 			else {
 				thumb = loader->loadThumb(thumbFile, silent);
 
-				if (thumbFile.exists())
+				if (thumbFile.exists()) {
 					this->thumbFile = thumbFile;
+					skip = false;
+				}
 			}
 		}
 
 		if (!thumb.isNull()) {
 			unloadImage();
 			setThumbImage(thumb);
+			skip = false;
 		}
 
 		QCoreApplication::sendPostedEvents();
@@ -1996,6 +2003,17 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 	else if (loader && !testLoaded) {
 		unloadImage();
 		loader->changeFile(skipIdx, silent);
+		skip = false;
+	}
+
+	// could not load file? - this happens if we get dead image links
+	if (skip) {
+		int newSkipIdx = (skipIdx > 0) ? 1 : -1;
+		loadFileFast(newSkipIdx, silent);
+		
+		// TODO: probably we should let the user decide if he wants to get a warning here...
+		qDebug() << "load file fast recursive!! ";
+		return;		// no network loading in this case
 	}
 
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))

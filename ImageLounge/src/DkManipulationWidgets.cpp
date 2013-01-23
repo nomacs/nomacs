@@ -76,7 +76,7 @@ void DkImageManipulationDialog::init() {
 	previewWidth = dialogWidth - toolsWidth - 2 * previewMargin;
 	previewHeight = dialogHeight - previewMargin - 70;
 
-	setWindowTitle(tr("Image manipulation tools"));
+	setWindowTitle(tr("Image Manipulation Tools"));
 	setFixedSize(dialogWidth, dialogHeight);
 	createLayout();
 
@@ -727,6 +727,8 @@ Mat DkImageManipulationWidget::changeBrightnessAndContrast(Mat inLUT, float brig
 Mat DkImageManipulationWidget::changeSaturationAndHue(Mat inLUT, float saturationVal, float hueVal) {
 
 	Mat outLUT = inLUT.clone();
+
+	hueVal *= -1.0f;	// fix the difference between label and real hue
 
 	// make a gaussian kernel for positive saturation -> this weights bright and dark colors less -> results in uniform saturation change
 	int ks = 65536;

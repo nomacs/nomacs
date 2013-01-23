@@ -358,7 +358,7 @@ void DkOpenWithDialog::init() {
 	}
 
 	// dirty hack - but locating it in the registry is not that easy
-	QFileInfo expPath("C:\\Windows\\explorer.exe");
+	QFileInfo expPath("C:/Windows/explorer.exe");
 	if (expPath.exists() && !appPaths.empty()) {
 		appPaths.last() = expPath.absoluteFilePath();
 		appIcons.last() = getIcon(appPaths.last());
@@ -407,8 +407,9 @@ void DkOpenWithDialog::createLayout() {
 			}
 
 			bl->addWidget(radio, numDefaultApps, 0);
-			numDefaultApps++;
 		}
+		numDefaultApps++;
+
 	}
 
 
@@ -584,12 +585,10 @@ void DkOpenWithDialog::softwareSelectionChanged() {
 
 	for (int idx = 0; idx < screenNames.size(); idx++) {
 
-		qDebug() << screenNames[idx] << " - " << sender;
-
 		if (screenNames[idx] == sender)
 			defaultApp = idx;
 	}
-
+	
 	qDebug() << "default app idx..." << defaultApp;
 }
 
@@ -866,7 +865,10 @@ void DkSearchDialog::on_okButton_pressed() {
 
 	// ok load the selected file
 	QString fileName = resultListView->selectionModel()->currentIndex().data().toString();
-	emit loadFileSignal(QFileInfo(path, fileName));
+	qDebug() << "opening filename: " << fileName;
+
+	if (!fileName.isEmpty())
+		emit loadFileSignal(QFileInfo(path, fileName));
 	close();
 }
 

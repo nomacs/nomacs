@@ -225,10 +225,16 @@ protected:
 
 	QString getPath() {
 
-		if (defaultApp < numDefaultApps)
+		qDebug() << "app idx: " << defaultApp;
+
+		if (defaultApp < numDefaultApps) {
+			qDebug() << "default path...";
 			return appPaths[defaultApp];
-		else
+		}
+		else {
+			qDebug() << "user app path";
 			return userAppPaths[defaultApp-numDefaultApps];
+		}
 	};
 
 };
