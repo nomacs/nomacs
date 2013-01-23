@@ -1009,7 +1009,7 @@ void DkUpdater::checkForUpdated() {
 	settings.save();
 
 #ifdef Q_WS_WIN
-	QUrl url ("http://www.nomacs.org/version_win");
+	QUrl url ("http://www.nomacs.org/version_test");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
 #elif defined Q_WS_MAC
@@ -1019,8 +1019,8 @@ void DkUpdater::checkForUpdated() {
 #endif
 
 	qDebug() << "checking for updates";
-	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-	reply = accessManager.get(QNetworkRequest(url));
+	connect(&accessManagerVersion, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
+	reply = accessManagerVersion.get(QNetworkRequest(url));
 }
 
 void DkUpdater::replyFinished(QNetworkReply* reply) {
@@ -1030,6 +1030,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 	QString replyData = reply->readAll();
 
 	QStringList sl = replyData.split('\n', QString::SkipEmptyParts);
+	qDebug() << "reply:" << replyData;
 	if (sl.size() == 2) {
 		qDebug() << "curVer:" << QApplication::applicationVersion();
 		
@@ -1054,12 +1055,64 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 		
 			QString msg = tr("new version ") % sl[0] % tr(" available at");
 			msg = msg % "<br><a href=\"" % sl[1] % "\">http://www.nomacs.org</a>";
-			emit displayUpdateDialog(msg, tr("updates"));
+			startDownload(sl[1]);
+			//emit displayUpdateDialog(msg, tr("updates"));
 		}
 		else if (!silent)
 			emit displayUpdateDialog(tr("nomacs is up-to-date"), tr("updates"));
 
 	}
+	
+}
+
+void DkUpdater::startDownload(QUrl downloadUrl) {
+	if (downloadUrl.isEmpty())
+		emit displayUpdateDialog(tr("sorry, unable to download the new version"), tr("updates"));
+
+	qDebug() << "-----------------------------------------------------";
+	qDebug() << "starting to download update from " << downloadUrl ;
+	
+	QNetworkRequest req(downloadUrl);
+	req.setRawHeader("User-Agent", " ");
+	reply = accessManagerSetup.get(req);
+}
+
+void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
+	QUrl redirect = data->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+	qDebug() << "redirect:" << redirect;
+	if (!redirect.isEmpty() ) {
+		startDownload(redirect);
+		return;
+	}
+
+	QString basename = "nomacs-setup.exe";
+
+	if (QFile::exists(QDir::tempPath() + "/" + basename)) {
+		qDebug() << "File already exists - searching for new name";
+		// already exists, don't overwrite
+		int i = 0;
+		basename += '.';
+		while (QFile::exists(QDir::tempPath() + "/" + basename + QString::number(i)))
+			++i;
+
+		basename += QString::number(i);
+	}
+
+	QFile file(QDir::tempPath() + "/" + basename);
+	if (!file.open(QIODevice::WriteOnly)) {
+		qDebug()  << "Could not open " << QFileInfo(file).absoluteFilePath() << "for writing";
+		return;
+	}
+
+	file.write(data->readAll());
+	qDebug() << "saved new version: " << basename << " " << QFileInfo(file).absoluteFilePath();
+	file.close();
+		
+	qDebug() << "header:" << data->header(QNetworkRequest::SetCookieHeader);
+	qDebug() << "header:" << data->header(QNetworkRequest::ContentDispositionHeader);
+	qDebug() << "header:" << data->header(QNetworkRequest::ContentLengthHeader);
+		
+	//emit downloadFinished();
 }
 
 }

@@ -43,6 +43,7 @@
 #include <QDesktopWidget>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QNetworkCookieJar>
 //#include <QtCore>
 
 #include <math.h>
@@ -451,18 +452,29 @@ public:
 	
 	DkUpdater() {
 		silent = true;
+		cookie = new QNetworkCookieJar();
+		accessManagerSetup.setCookieJar(cookie);
+		connect(&accessManagerSetup, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinishedSlot(QNetworkReply*)));
 	};
 
 public slots:
 	void checkForUpdated();
 	void replyFinished(QNetworkReply*);
+	void startDownload(QUrl downloadUrl);
+	void downloadFinishedSlot(QNetworkReply* data);
+	
 
 signals:
 	void displayUpdateDialog(QString msg, QString title);
+	void downloadFinished();
 
 private:
-	QNetworkAccessManager accessManager;
+	void downloadUpdate();
+	QNetworkAccessManager accessManagerVersion;
+	QNetworkAccessManager accessManagerSetup;
 	QNetworkReply* reply;
+
+	QNetworkCookieJar* cookie;
 };
 
 //// this code is based on code from: 
