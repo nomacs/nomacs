@@ -4,6 +4,7 @@
  ${FileAssociation_VERBOSE} 4   # all verbosity
 !include nsDialogs.nsh
 !include LogicLib.nsh
+!include "nsProcess.nsh"
 
 ; your install directories
 !define BUILD_DIR "..\build2012\ReallyRelease"
@@ -125,21 +126,14 @@ Var pns_state
 Var params
 Var fileAss 
 
-Function .onInit
-	; FindProcDLL::FindProc "nomacs.exe"
-	
-	; IntCmp $R0 1 0 notRunning
-		; MessageBox MB_OK|MB_ICONEXCLAMATION "nomacs is running. Please close it first" /SD IDOK
-		; Abort
-	; notRunning:	
-	
-		IfSilent isSilent isNotSilent
-			isSilent:
-				${GetParameters} $params
-				ClearErrors
-				${GetOptions} $params /FileAssociations= $fileAss
-			isNotSilent:
-			
+Function .onInit		
+	IfSilent isSilent isNotSilent
+		isSilent:
+			${GetParameters} $params
+			ClearErrors
+			${GetOptions} $params /FileAssociations= $fileAss
+		isNotSilent:
+
 FunctionEnd
 	
 Function fileAssociation
@@ -407,7 +401,18 @@ Function RefreshShellIcons
 FunctionEnd
 
 
-Section "MainSection" SEC01
+Section "MainSection" SEC01#
+	loop:
+	${nsProcess::FindProcess} "nomacs.exe" $R0
+	StrCmp $R0 0 0 +2
+	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
+	goto next
+	end:
+		quit
+
+	next:
+		${nsProcess::Unload}
+
   SetOutPath "$INSTDIR"
   SetOverwrite on
   File "${BUILD_DIR}\nomacs.exe"
@@ -526,16 +531,19 @@ Function un.onUninstSuccess
 FunctionEnd
 
 Function un.onInit
-	FindProcDLL::FindProc "nomacs.exe"
-	IntCmp $R0 1 0 notRunning
-		MessageBox MB_OK|MB_ICONEXCLAMATION "nomacs is running. Please close it first" /SD IDOK
-		Abort
-	notRunning:
-   
-		MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
-		Abort
-    
-    
+	loop:
+	${nsProcess::FindProcess} "nomacs.exe" $R0
+	StrCmp $R0 0 0 +2
+	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
+	goto next
+	end:
+		quit
+
+	next:
+		${nsProcess::Unload}
+
+	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
+	Abort    
 FunctionEnd
 
 Section Uninstall
