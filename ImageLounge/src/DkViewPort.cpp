@@ -615,14 +615,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 
 	if (DkSettings::Display::useDefaultColor) {
 		
-		// check if windows aero is available
-		int aero = 0; // should be BOOL but problems with TYPEDEF (and linux)
-
-#ifdef Q_WS_WIN
-		DwmIsCompositionEnabled(&aero);
-#endif
-
-		if (aero)
+		if (DkSettings::Display::toolbarGradient)
 			setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
 		else
 			setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(QPalette().color(QPalette::Window)) + ";}" );		

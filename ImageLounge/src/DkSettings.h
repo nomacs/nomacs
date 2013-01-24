@@ -119,6 +119,7 @@ class DkSettings : public QObject {
 			static int interpolateZoomLevel;
 			static bool antiAliasing;
 			static bool smallIcons;
+			static bool toolbarGradient;
 		};
 
 		struct Global {
@@ -327,6 +328,7 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbShowToolbar;
 		QCheckBox* cbShowStatusbar;
 		QCheckBox* cbSmallIcons;
+		QCheckBox* cbToolbarGradient;
 
 		DkColorChooser* highlightColorChooser;
 		DkColorChooser* bgColorWidgetChooser;

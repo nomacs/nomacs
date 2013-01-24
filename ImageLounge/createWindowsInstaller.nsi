@@ -126,12 +126,12 @@ Var params
 Var fileAss 
 
 Function .onInit
-	FindProcDLL::FindProc "nomacs.exe"
+	; FindProcDLL::FindProc "nomacs.exe"
 	
-	IntCmp $R0 1 0 notRunning
-		MessageBox MB_OK|MB_ICONEXCLAMATION "nomacs is running. Please close it first" /SD IDOK
-		Abort
-	notRunning:	
+	; IntCmp $R0 1 0 notRunning
+		; MessageBox MB_OK|MB_ICONEXCLAMATION "nomacs is running. Please close it first" /SD IDOK
+		; Abort
+	; notRunning:	
 	
 		IfSilent isSilent isNotSilent
 			isSilent:
@@ -409,7 +409,7 @@ FunctionEnd
 
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
-  SetOverwrite ifnewer
+  SetOverwrite on
   File "${BUILD_DIR}\nomacs.exe"
   CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
   CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"

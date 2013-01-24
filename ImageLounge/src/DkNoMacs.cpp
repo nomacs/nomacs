@@ -229,12 +229,6 @@ void DkNoMacs::createToolbar() {
 	toolbar = addToolBar(tr("Edit"));
 	toolbar->setObjectName("EditToolBar");
 
-	int aero = 0;
-
-#ifdef Q_WS_WIN
-	DwmIsCompositionEnabled(&aero);
-#endif
-
 	if (DkSettings::Display::smallIcons)
 		toolbar->setIconSize(QSize(16, 16));
 	else
@@ -242,7 +236,7 @@ void DkNoMacs::createToolbar() {
 	
 	qDebug() << toolbar->styleSheet();
 
-	if (aero) {
+	if (DkSettings::Display::toolbarGradient) {
 
 		QColor hCol = DkSettings::Display::highlightColor;
 		hCol.setAlpha(80);
@@ -303,13 +297,7 @@ void DkNoMacs::createStatusbar() {
 	statusbar->setObjectName("DkStatusBar");
 	QColor col = QColor(200, 200, 230, 100);
 
-	int aero = 0;
-
-#ifdef Q_WS_WIN
-	DwmIsCompositionEnabled(&aero);
-#endif
-
-	if (aero)
+	if (DkSettings::Display::toolbarGradient)
 		statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));	
 	//else if (!DkSettings::Display::useDefaultColor)
 	//	statusbar->setStyleSheet("QStatusBar#DkStatusBar{background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}");

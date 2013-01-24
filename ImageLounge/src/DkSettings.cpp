@@ -86,6 +86,11 @@ int DkSettings::Display::thumbSize = 100; // max seems to be 160 (?!)
 bool DkSettings::Display::saveThumb = false;
 bool DkSettings::Display::antiAliasing = true;
 bool DkSettings::Display::smallIcons = true;
+#ifdef Q_WS_WIN
+bool DkSettings::Display::toolbarGradient = true;
+#else
+bool DkSettings::Display::toolbarGradient = false;
+#endif
 bool DkSettings::Display::useDefaultColor = true;
 bool DkSettings::Display::defaultIconColor = true;
 int DkSettings::Display::interpolateZoomLevel = 200;
@@ -209,6 +214,7 @@ void DkSettings::load() {
 	Display::saveThumb = settings.value("DisplaySettings/saveThumb", DkSettings::Display::saveThumb).toBool();
 	Display::antiAliasing = settings.value("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing).toBool();
 	Display::smallIcons = settings.value("DisplaySettings/smallIcons", DkSettings::Display::smallIcons).toBool();
+	Display::toolbarGradient = settings.value("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient).toBool();
 	Display::useDefaultColor = settings.value("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor).toBool();
 	Display::defaultIconColor = settings.value("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor).toBool();
 	Display::interpolateZoomLevel = settings.value("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel).toInt();
@@ -303,6 +309,7 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/saveThumb", DkSettings::Display::saveThumb);
 	settings.setValue("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing);
 	settings.setValue("DisplaySettings/smallIcons", DkSettings::Display::smallIcons);
+	settings.setValue("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient);
 	settings.setValue("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor);
 	settings.setValue("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor);
 	settings.setValue("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel);
@@ -394,6 +401,11 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Display::saveThumb = false;
 	DkSettings::Display::antiAliasing = true;
 	DkSettings::Display::smallIcons = true;
+#ifdef Q_WS_WIN
+	DkSettings::Display::toolbarGradient = true;
+#else
+	DkSettings::Display::toolbarGradient = false;
+#endif
 	DkSettings::Display::useDefaultColor = true;
 	DkSettings::Display::defaultIconColor = true;
 	DkSettings::Display::interpolateZoomLevel = 200;
@@ -590,6 +602,7 @@ void DkSettingsDialog::saveSettings() {
 	QColor curIconCol = DkSettings::Display::iconColor;
 	QColor curBgColFrameless = DkSettings::Display::bgColorFrameless;
 	bool curIcons = DkSettings::Display::smallIcons;
+	bool curGradient = DkSettings::Display::toolbarGradient;
 	bool curUseCol = DkSettings::Display::useDefaultColor;
 	bool curUseIconCol = DkSettings::Display::defaultIconColor;
 	
@@ -609,7 +622,8 @@ void DkSettingsDialog::saveSettings() {
 		DkSettings::Display::bgColorFrameless != curBgColFrameless ||
 		DkSettings::Display::useDefaultColor != curUseCol ||
 		DkSettings::Display::defaultIconColor != curUseIconCol ||
-		DkSettings::Display::smallIcons != curIcons)
+		DkSettings::Display::smallIcons != curIcons ||
+		DkSettings::Display::toolbarGradient != curGradient)
 		emit languageChanged();
 	else
 		emit settingsChanged();
@@ -668,6 +682,7 @@ void DkGlobalSettingsWidget::init() {
 	cbShowStatusbar->setChecked(DkSettings::App::showStatusBar);
 	cbShowToolbar->setChecked(DkSettings::App::showToolBar);
 	cbSmallIcons->setChecked(DkSettings::Display::smallIcons);
+	cbToolbarGradient->setChecked(DkSettings::Display::toolbarGradient);
 
 	curLanguage = DkSettings::Global::language;
 	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
@@ -768,10 +783,12 @@ void DkGlobalSettingsWidget::createLayout() {
 	cbShowToolbar = new QCheckBox(tr("show Toolbar"), this);
 	cbShowStatusbar = new QCheckBox(tr("show Statusbar"), this);
 	cbSmallIcons = new QCheckBox(tr("small icons"), this);
+	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), this);
 	showBarsLayout->addWidget(cbShowMenu);
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
 	showBarsLayout->addWidget(cbSmallIcons);
+	showBarsLayout->addWidget(cbToolbarGradient);
 
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(this);
@@ -803,6 +820,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::App::showStatusBar = cbShowStatusbar->isChecked();
 	DkSettings::App::showToolBar = cbShowToolbar->isChecked();
 	DkSettings::Display::smallIcons = cbSmallIcons->isChecked();
+	DkSettings::Display::toolbarGradient = cbToolbarGradient->isChecked();
 	DkSettings::SlideShow::time = displayTimeSpin->getSpinBoxValue();
 
 
