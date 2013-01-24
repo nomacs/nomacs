@@ -463,7 +463,7 @@ public slots:
 
 signals:
 	void displayUpdateDialog(QString msg, QString title);
-	void downloadFinished();
+	void downloadFinished(QString filePath);
 	void downloadProgress(qint64, qint64);
 
 private:
@@ -476,6 +476,7 @@ private:
 	QNetworkCookieJar* cookie;
 
 	QUrl nomacsSetupUrl;
+	QString setupVersion;
 	bool updateAborted;
 };
 

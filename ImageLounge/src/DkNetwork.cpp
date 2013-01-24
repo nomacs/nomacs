@@ -1017,7 +1017,7 @@ void DkUpdater::checkForUpdated() {
 	settings.save();
 
 #ifdef Q_WS_WIN
-	QUrl url ("http://www.nomacs.org/version_win");
+	QUrl url ("http://www.nomacs.org/version_test");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
 #elif defined Q_WS_MAC
@@ -1062,6 +1062,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			msg = msg % "<br><a href=\"" % sl[1] % "\">http://www.nomacs.org</a>";
 			nomacsSetupUrl = sl[1];
 			qDebug() << "version: " << sl[0];
+			setupVersion = sl[0];
 			qDebug() << "nomacs setup url:" << nomacsSetupUrl;
 			emit displayUpdateDialog(msg, tr("updates")); // TODO: delete text?
 		}
@@ -1094,20 +1095,21 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 	}
 
 	if (!updateAborted) {
-		QString basename = "nomacs-setup.exe";
-
-		if (QFile::exists(QDir::tempPath() + "/" + basename)) {
+		QString basename = "nomacs-setup";
+		QString extension = ".exe";
+		QString absoluteFilePath = QDir::tempPath() + "/" + basename + extension;
+		if (QFile::exists(absoluteFilePath)) {
 			qDebug() << "File already exists - searching for new name";
 			// already exists, don't overwrite
 			int i = 0;
-			basename += '.';
-			while (QFile::exists(QDir::tempPath() + "/" + basename + QString::number(i)))
+			while (QFile::exists(absoluteFilePath)) {
+				absoluteFilePath = QDir::tempPath() + "/" + basename + "-" + QString::number(i) + extension;
 				++i;
-
+			}
 			basename += QString::number(i);
 		}
 
-		QFile file(QDir::tempPath() + "/" + basename);
+		QFile file(absoluteFilePath);
 		if (!file.open(QIODevice::WriteOnly)) {
 			qDebug()  << "Could not open " << QFileInfo(file).absoluteFilePath() << "for writing";
 			return;
@@ -1115,8 +1117,16 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 		file.write(data->readAll());
 		qDebug() << "saved new version: " << basename << " " << QFileInfo(file).absoluteFilePath();
+
 		file.close();
-		emit downloadFinished();
+
+		DkSettings::Global::setupVersion = setupVersion;
+		DkSettings::Global::setupPath = absoluteFilePath;
+
+		DkSettings settings;
+		settings.save();
+
+		emit downloadFinished(absoluteFilePath);
 	}
 	updateAborted = false;
 	qDebug() << "downloadFinishedSlot complete";

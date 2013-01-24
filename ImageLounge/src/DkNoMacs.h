@@ -440,6 +440,7 @@ public slots:
 	void showUpdateDialog(QString msg, QString title);
 	void performUpdate();
 	void updateProgress(qint64 received, qint64 total);
+	void startSetup(QString);
 	virtual void enableNoImageActions(bool enable = true);
 	void checkForUpdate();
 	void setFrameless(bool frameless);

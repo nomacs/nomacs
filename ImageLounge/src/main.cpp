@@ -121,6 +121,7 @@ int main(int argc, char *argv[]) {
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
 	nmc::DkSettings::App::currentAppMode = mode;	
 	
+
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
@@ -138,6 +139,13 @@ int main(int argc, char *argv[]) {
 	QObject::connect(&a, SIGNAL(loadFile(const QFileInfo&)),
 	                 w->viewport(), SLOT(loadFile(const QFileInfo&)));
 #endif
+
+	
+#ifdef Q_WS_WIN
+	if (!nmc::DkSettings::Global::setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::Global::setupVersion)
+		QFile::remove(nmc::DkSettings::Global::setupPath);
+#endif // Q_WS_WIN
+
 
 	int rVal = a.exec();
 	delete w;

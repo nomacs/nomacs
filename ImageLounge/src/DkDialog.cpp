@@ -1566,6 +1566,7 @@ void DkUpdateDialog::createLayout() {
 	upperLabel->setText(tr("A new version of nomacs is available") + " <br> " + tr("Do you want to download and install it?")
 		+ " <br> " + tr("For more information see") + " <a href=\"http://www.nomacs.org\">http://www.nomacs.org</a>"
 		);
+	upperLabel->setOpenExternalLinks(true);
 
 	QWidget* lowerWidget = new QWidget;
 	QHBoxLayout* hbox = new QHBoxLayout;

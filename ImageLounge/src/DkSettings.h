@@ -140,6 +140,7 @@ class DkSettings : public QObject {
 			static Qt::KeyboardModifier ctrlMod;
 
 			static QString setupPath;
+			static QString setupVersion;
 
 			// open with
 			static QString defaultAppPath;

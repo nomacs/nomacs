@@ -2408,18 +2408,30 @@ void DkNoMacs::performUpdate() {
 		progressDialog->setWindowIcon(windowIcon());
 		connect(progressDialog, SIGNAL(canceled()), updater, SLOT(cancelUpdate()));
 		connect(updater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));
-		connect(updater, SIGNAL(downloadFinished()), progressDialog, SLOT(close()));
-		connect(updater, SIGNAL(downloadFinished()), progressDialog, SLOT(deleteLater()));
+		connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(close()));
+		connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(deleteLater()));
+		connect(updater, SIGNAL(downloadFinished(QString)), this, SLOT(startSetup(QString)));
 	}
 	progressDialog->setWindowModality(Qt::NonModal);
 	
-		
 	progressDialog->show();
 }
 
 void DkNoMacs::updateProgress(qint64 received, qint64 total) {
 	progressDialog->setMaximum(total);
 	progressDialog->setValue(received);
+}
+
+void DkNoMacs::startSetup(QString filePath) {
+	
+	qDebug() << "starting setup filePath:" << filePath;
+	
+	if (!QFile::exists(filePath))
+		qDebug() << "file does not exist";
+	//if (!QProcess::startDetached(filePath, QStringList()))
+		//DkNoMacs::dialog(tr("Unable to install new Version") + "</br><a href=\"file:///" + filePath + "\">"+ filePath +"</a></br>" + tr("Click the file to try install again"));
+	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath)))
+		DkNoMacs::dialog(tr("Unable to install new Version") + "</br><a href=\"file:///" + filePath + "\">"+ filePath +"</a></br>" + tr("Click the file to try install again"));
 }
 
 void DkNoMacs::errorDialog(QString msg, QString title) {
