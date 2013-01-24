@@ -69,10 +69,10 @@ using namespace cv;
 #endif
 
 
-#ifdef Q_WS_WIN
-	#include <dwmapi.h>	// needed to see if aero is on
-	#pragma comment (lib, "dwmapi.lib")
-#endif
+//#ifdef Q_WS_WIN
+//	#include <dwmapi.h>	// needed to see if aero is on
+//	#pragma comment (lib, "dwmapi.lib")
+//#endif
 
 // my stuff
 #include "DkNetwork.h"
