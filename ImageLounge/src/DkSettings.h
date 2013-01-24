@@ -138,6 +138,8 @@ class DkSettings : public QObject {
 			static Qt::KeyboardModifier altMod;
 			static Qt::KeyboardModifier ctrlMod;
 
+			static QString setupPath;
+
 			// open with
 			static QString defaultAppPath;
 			static int defaultAppIdx;

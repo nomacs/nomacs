@@ -1544,6 +1544,47 @@ void DkResizeDialog::showEvent(QShowEvent *event) {
 	isOk = false;
 }
 
+// DkUpdateDialog --------------------------------------------------------------------
+DkUpdateDialog::DkUpdateDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+	init();
+}
+
+void DkUpdateDialog::init() {
+	createLayout();
+
+	connect(cancelButton, SIGNAL(clicked()), this, SLOT(close()));
+	connect(okButton, SIGNAL(clicked()), this, SLOT(okButtonClicked()));
+}
+
+void DkUpdateDialog::createLayout() {
+	setFixedWidth(300);
+	setFixedHeight(150);
+	setWindowTitle(tr("nomacs updater"));
+
+	QGridLayout* gridlayout = new QGridLayout;
+	QLabel* upperLabel = new QLabel;
+	upperLabel->setText(tr("A new version of nomacs is available") + " <br> " + tr("Do you want to download and install it?")
+		+ " <br> " + tr("For more information see") + " <a href=\"http://www.nomacs.org\">http://www.nomacs.org</a>"
+		);
+
+	QWidget* lowerWidget = new QWidget;
+	QHBoxLayout* hbox = new QHBoxLayout;
+	okButton = new QPushButton(tr("Ok"));
+	cancelButton = new QPushButton(tr("Cancel"));
+	hbox->addStretch();
+	hbox->addWidget(okButton);
+	hbox->addWidget(cancelButton);
+	lowerWidget->setLayout(hbox);
+
+	gridlayout->addWidget(upperLabel, 0, 0);
+	gridlayout->addWidget(lowerWidget, 1, 0);
+	
+	setLayout(gridlayout);
 
 }
 
+void DkUpdateDialog::okButtonClicked() {
+	emit startUpdate();
+}
+
+}

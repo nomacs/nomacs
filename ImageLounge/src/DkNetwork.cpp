@@ -1002,6 +1002,14 @@ void DkPeerList::print() {
 
 // DkUpdater  --------------------------------------------------------------------
 
+DkUpdater::DkUpdater() {
+	silent = true;
+	cookie = new QNetworkCookieJar();
+	accessManagerSetup.setCookieJar(cookie);
+	connect(&accessManagerSetup, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinishedSlot(QNetworkReply*)));
+	updateAborted = false;
+}
+
 void DkUpdater::checkForUpdated() {
 	DkSettings::Sync::lastUpdateCheck = QDate::currentDate();
 
@@ -1009,7 +1017,7 @@ void DkUpdater::checkForUpdated() {
 	settings.save();
 
 #ifdef Q_WS_WIN
-	QUrl url ("http://www.nomacs.org/version_test");
+	QUrl url ("http://www.nomacs.org/version_win");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
 #elif defined Q_WS_MAC
@@ -1030,10 +1038,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 	QString replyData = reply->readAll();
 
 	QStringList sl = replyData.split('\n', QString::SkipEmptyParts);
-	qDebug() << "reply:" << replyData;
-	if (sl.size() == 2) {
-		qDebug() << "curVer:" << QApplication::applicationVersion();
-		
+	if (sl.size() == 2) {		
 		QStringList cVersion = QApplication::applicationVersion().split('.');
 		QStringList nVersion = sl[0].split('.');
 
@@ -1055,8 +1060,10 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 		
 			QString msg = tr("new version ") % sl[0] % tr(" available at");
 			msg = msg % "<br><a href=\"" % sl[1] % "\">http://www.nomacs.org</a>";
-			startDownload(sl[1]);
-			//emit displayUpdateDialog(msg, tr("updates"));
+			nomacsSetupUrl = sl[1];
+			qDebug() << "version: " << sl[0];
+			qDebug() << "nomacs setup url:" << nomacsSetupUrl;
+			emit displayUpdateDialog(msg, tr("updates")); // TODO: delete text?
 		}
 		else if (!silent)
 			emit displayUpdateDialog(tr("nomacs is up-to-date"), tr("updates"));
@@ -1075,44 +1082,57 @@ void DkUpdater::startDownload(QUrl downloadUrl) {
 	QNetworkRequest req(downloadUrl);
 	req.setRawHeader("User-Agent", " ");
 	reply = accessManagerSetup.get(req);
+	connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 }
 
 void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 	QUrl redirect = data->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-	qDebug() << "redirect:" << redirect;
 	if (!redirect.isEmpty() ) {
+		qDebug() << "redirecting: " << redirect;
 		startDownload(redirect);
 		return;
 	}
 
-	QString basename = "nomacs-setup.exe";
+	if (!updateAborted) {
+		QString basename = "nomacs-setup.exe";
 
-	if (QFile::exists(QDir::tempPath() + "/" + basename)) {
-		qDebug() << "File already exists - searching for new name";
-		// already exists, don't overwrite
-		int i = 0;
-		basename += '.';
-		while (QFile::exists(QDir::tempPath() + "/" + basename + QString::number(i)))
-			++i;
+		if (QFile::exists(QDir::tempPath() + "/" + basename)) {
+			qDebug() << "File already exists - searching for new name";
+			// already exists, don't overwrite
+			int i = 0;
+			basename += '.';
+			while (QFile::exists(QDir::tempPath() + "/" + basename + QString::number(i)))
+				++i;
 
-		basename += QString::number(i);
+			basename += QString::number(i);
+		}
+
+		QFile file(QDir::tempPath() + "/" + basename);
+		if (!file.open(QIODevice::WriteOnly)) {
+			qDebug()  << "Could not open " << QFileInfo(file).absoluteFilePath() << "for writing";
+			return;
+		}
+
+		file.write(data->readAll());
+		qDebug() << "saved new version: " << basename << " " << QFileInfo(file).absoluteFilePath();
+		file.close();
+		emit downloadFinished();
 	}
+	updateAborted = false;
+	qDebug() << "downloadFinishedSlot complete";
+}
 
-	QFile file(QDir::tempPath() + "/" + basename);
-	if (!file.open(QIODevice::WriteOnly)) {
-		qDebug()  << "Could not open " << QFileInfo(file).absoluteFilePath() << "for writing";
-		return;
-	}
+void DkUpdater::performUpdate() {
+	if(nomacsSetupUrl.isEmpty())
+		qDebug() << "unable to perform update because the nomacsSetupUrl is empty";
+	else
+		startDownload(nomacsSetupUrl);
+}
 
-	file.write(data->readAll());
-	qDebug() << "saved new version: " << basename << " " << QFileInfo(file).absoluteFilePath();
-	file.close();
-		
-	qDebug() << "header:" << data->header(QNetworkRequest::SetCookieHeader);
-	qDebug() << "header:" << data->header(QNetworkRequest::ContentDispositionHeader);
-	qDebug() << "header:" << data->header(QNetworkRequest::ContentLengthHeader);
-		
-	//emit downloadFinished();
+void DkUpdater::cancelUpdate()  {
+	qDebug() << "abort update";
+	reply->abort(); 
+	updateAborted = true; 
 }
 
 }
@@ -1233,4 +1253,6 @@ void DkLanManagerThread::createClient(QString title) {
 
 	clientManager = new DkLANClientManager(title);
 }
+
+
 }

@@ -56,6 +56,7 @@ QStringList DkSettings::Global::searchHistory = QStringList();
 bool DkSettings::Global::useTmpPath = false;
 QString DkSettings::Global::tmpPath = QString();
 QString DkSettings::Global::language = "en";
+QString DkSettings::Global::setupPath = "";
 
 #ifdef Q_WS_X11
 	bool DkSettings::Sync::switchModifier = true;
@@ -194,6 +195,7 @@ void DkSettings::load() {
 	Global::showDefaultAppDialog = settings.value("GlobalSettings/showDefaultAppDialog", DkSettings::Global::showDefaultAppDialog).toBool();
 	Global::numUserChoices = settings.value("GlobalSettings/numUserChoices", DkSettings::Global::numUserChoices).toInt();
 	Global::userAppPaths = settings.value("GlobalSettings/userAppPaths", DkSettings::Global::userAppPaths).toStringList();
+	Global::setupPath = settings.value("GlobalSettings/setupPath", DkSettings::Global::setupPath).toString();
 
 	Display::keepZoom = settings.value("DisplaySettings/resetMatrix", DkSettings::Display::keepZoom).toBool();
 	Display::invertZoom = settings.value("DisplaySettings/invertZoom", DkSettings::Display::invertZoom).toBool();
@@ -288,6 +290,7 @@ void DkSettings::save() {
 	settings.setValue("GlobalSettings/showDefaultAppDialog", DkSettings::Global::showDefaultAppDialog);
 	settings.setValue("GlobalSettings/numUserChoices", DkSettings::Global::numUserChoices);
 	settings.setValue("GlobalSettings/userAppPaths", DkSettings::Global::userAppPaths);
+	settings.setValue("GlobalSettings/setupPath", DkSettings::Global::setupPath);
 
 	settings.setValue("DisplaySettings/resetMatrix",Display::keepZoom);
 	settings.setValue("DisplaySettings/invertZoom",Display::invertZoom);
@@ -366,6 +369,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Global::showDefaultAppDialog = true;
 	DkSettings::Global::numUserChoices = 3;
 	DkSettings::Global::userAppPaths = QStringList();
+	DkSettings::Global::setupPath = "";
 
 
 #ifdef Q_WS_X11

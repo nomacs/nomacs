@@ -408,6 +408,24 @@ protected:
 	QImage resizeImg(QImage img, bool silent = true);
 };
 
+class DkUpdateDialog : public QDialog {
+	Q_OBJECT
 
+	public:
+		DkUpdateDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	signals:
+		void startUpdate();
+
+	protected slots:
+		void okButtonClicked();
+
+	protected:
+		void init();
+		void createLayout();
+
+		QPushButton* okButton;
+		QPushButton* cancelButton;
+};
 
 }

@@ -68,6 +68,8 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	updater = 0;
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
+	updateDialog = 0;
+	progressDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -2394,14 +2396,42 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 	DkSettings settings;
 	settings.save();
 	
-	QMessageBox infoDialog(this);
-	infoDialog.setWindowTitle(title);
-	infoDialog.setIcon(QMessageBox::Information);
-	infoDialog.setText(msg);
-	infoDialog.show();
+	//QMessageBox infoDialog(this);
+	//infoDialog.setWindowTitle(title);
+	//infoDialog.setIcon(QMessageBox::Information);
+	//infoDialog.setText(msg);
+	//infoDialog.show();
 
-	infoDialog.exec();
+	//infoDialog.exec();
+	if (!updateDialog) {
+		updateDialog = new DkUpdateDialog(this);
+		connect(updateDialog, SIGNAL(startUpdate()), this, SLOT(performUpdate()));
+	}
 
+	updateDialog->exec();
+}
+
+void DkNoMacs::performUpdate() {
+	updateDialog->close();	
+	updater->performUpdate();
+
+	if (!progressDialog) {
+		progressDialog = new QProgressDialog(tr("Downloading update..."), tr("Cancel Update"), 0, 100);
+		progressDialog->setWindowIcon(windowIcon());
+		connect(progressDialog, SIGNAL(canceled()), updater, SLOT(cancelUpdate()));
+		connect(updater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));
+		connect(updater, SIGNAL(downloadFinished()), progressDialog, SLOT(close()));
+		connect(updater, SIGNAL(downloadFinished()), progressDialog, SLOT(deleteLater()));
+	}
+	progressDialog->setWindowModality(Qt::NonModal);
+	
+		
+	progressDialog->show();
+}
+
+void DkNoMacs::updateProgress(qint64 received, qint64 total) {
+	progressDialog->setMaximum(total);
+	progressDialog->setValue(received);
 }
 
 void DkNoMacs::errorDialog(QString msg, QString title) {
@@ -2443,7 +2473,6 @@ int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
 	errorDialog.show();
 
 	return errorDialog.exec();
-
 }
 
 

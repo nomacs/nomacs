@@ -450,31 +450,33 @@ class DkUpdater : public QObject {
 public:
 	bool silent;
 	
-	DkUpdater() {
-		silent = true;
-		cookie = new QNetworkCookieJar();
-		accessManagerSetup.setCookieJar(cookie);
-		connect(&accessManagerSetup, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinishedSlot(QNetworkReply*)));
-	};
+	DkUpdater();
 
 public slots:
 	void checkForUpdated();
 	void replyFinished(QNetworkReply*);
-	void startDownload(QUrl downloadUrl);
+	void performUpdate();
 	void downloadFinishedSlot(QNetworkReply* data);
+	void updateDownloadProgress(qint64 received, qint64 total) { emit downloadProgress(received, total); };
+	void cancelUpdate();
 	
 
 signals:
 	void displayUpdateDialog(QString msg, QString title);
 	void downloadFinished();
+	void downloadProgress(qint64, qint64);
 
 private:
+	void startDownload(QUrl downloadUrl);
 	void downloadUpdate();
 	QNetworkAccessManager accessManagerVersion;
 	QNetworkAccessManager accessManagerSetup;
 	QNetworkReply* reply;
 
 	QNetworkCookieJar* cookie;
+
+	QUrl nomacsSetupUrl;
+	bool updateAborted;
 };
 
 //// this code is based on code from: 

@@ -438,6 +438,8 @@ public slots:
 	void pasteImage();
 	virtual void settingsChanged();
 	void showUpdateDialog(QString msg, QString title);
+	void performUpdate();
+	void updateProgress(qint64 received, qint64 total);
 	virtual void enableNoImageActions(bool enable = true);
 	void checkForUpdate();
 	void setFrameless(bool frameless);
@@ -528,8 +530,9 @@ protected:
 	DkJpgDialog* jpgDialog;
 	DkTifDialog* tifDialog;
 	DkOpenWithDialog* openWithDialog;
-
 	DkResizeDialog* resizeDialog;
+	DkUpdateDialog* updateDialog;
+	QProgressDialog* progressDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
