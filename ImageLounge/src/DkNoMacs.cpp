@@ -92,6 +92,13 @@ DkNoMacs::~DkNoMacs() {
 }
 
 void DkNoMacs::release() {
+
+	if (progressDialog) {
+		delete progressDialog;
+		progressDialog = 0;
+	}
+
+
 }
 
 void DkNoMacs::init() {
@@ -2409,7 +2416,7 @@ void DkNoMacs::performUpdate() {
 		connect(progressDialog, SIGNAL(canceled()), updater, SLOT(cancelUpdate()));
 		connect(updater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));
 		connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(close()));
-		connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(deleteLater()));
+		//connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(deleteLater()));
 		connect(updater, SIGNAL(downloadFinished(QString)), this, SLOT(startSetup(QString)));
 	}
 	progressDialog->setWindowModality(Qt::NonModal);

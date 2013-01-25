@@ -1570,7 +1570,7 @@ void DkUpdateDialog::createLayout() {
 
 	QWidget* lowerWidget = new QWidget;
 	QHBoxLayout* hbox = new QHBoxLayout;
-	okButton = new QPushButton(tr("Ok"));
+	okButton = new QPushButton(tr("Install Now"));
 	cancelButton = new QPushButton(tr("Cancel"));
 	hbox->addStretch();
 	hbox->addWidget(okButton);
@@ -1586,6 +1586,7 @@ void DkUpdateDialog::createLayout() {
 
 void DkUpdateDialog::okButtonClicked() {
 	emit startUpdate();
+	close();
 }
 
 }

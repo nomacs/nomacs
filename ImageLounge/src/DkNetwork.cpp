@@ -1080,6 +1080,7 @@ void DkUpdater::startDownload(QUrl downloadUrl) {
 	qDebug() << "-----------------------------------------------------";
 	qDebug() << "starting to download update from " << downloadUrl ;
 	
+	updateAborted = false;	// reset - it may have been canceled before
 	QNetworkRequest req(downloadUrl);
 	req.setRawHeader("User-Agent", " ");
 	reply = accessManagerSetup.get(req);
