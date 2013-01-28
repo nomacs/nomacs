@@ -2024,7 +2024,6 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 void DkViewPort::loadFullFile(bool silent) {
 
-
 	if (thumbFile.exists()) {
 		qDebug() << "loading full file-------------------------------------------------------------------------";
 

@@ -150,6 +150,7 @@ enum {
 	shortcut_opacity_up		= Qt::CTRL + Qt::SHIFT + Qt::Key_H,
 	shortcut_an_opacity		= Qt::ALT  + Qt::Key_H,
 	shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
+	shortcut_anti_aliasing	= Qt::Key_A,
 	//shortcut_play			= Qt::Key_Space,
 
 	// edit

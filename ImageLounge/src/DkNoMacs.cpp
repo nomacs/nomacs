@@ -722,6 +722,7 @@ void DkNoMacs::createActions() {
 	connect(viewActions[menu_view_zoom_out], SIGNAL(triggered()), vp, SLOT(zoomOut()));
 
 	viewActions[menu_view_anti_aliasing] = new QAction(tr("&Anti Aliasing"), this);
+	viewActions[menu_view_anti_aliasing]->setShortcut(QKeySequence(shortcut_anti_aliasing));
 	viewActions[menu_view_anti_aliasing]->setStatusTip(tr("if checked images are smoother"));
 	viewActions[menu_view_anti_aliasing]->setCheckable(true);
 	viewActions[menu_view_anti_aliasing]->setChecked(DkSettings::Display::antiAliasing);

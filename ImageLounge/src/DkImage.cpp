@@ -1199,6 +1199,9 @@ QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
 		
 	DkTimer dt;
 
+	if (cacher)
+		cacher->pause();	// loadFile re-starts the cacher again
+
 	virtualFile = file;
 
 	// see if we can read the thumbnail from the exif data
@@ -2415,9 +2418,10 @@ void DkCacher::run() {
 
 	while (true) {
 
-		mutex.lock();
 		DkTimer dt;
-		usleep(1000);
+		msleep(100);
+
+		mutex.lock();
 
 		//QMutexLocker(&this->mutex);
 		if (!isActive) {
@@ -2428,7 +2432,7 @@ void DkCacher::run() {
 
 		// re-index folder
 		if (newDir || updateFiles) {
-			usleep(1000);
+			//msleep(1000);
 			index();
 		}
 
@@ -2436,6 +2440,7 @@ void DkCacher::run() {
 
 		if (somethingTodo)
 			load();		// load locks the mutex on it's own
+
 	}
 
 }
