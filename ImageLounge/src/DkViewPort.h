@@ -457,8 +457,8 @@ public slots:
 	void loadFile(QFileInfo file, bool silent = false);
 	void reloadFile();
 	void loadFullFile(bool silent = false);
-	void loadNextFile(bool silent = false);
-	void loadPrevFile(bool silent = false);
+	//void loadNextFile(bool silent = false);
+	//void loadPrevFile(bool silent = false);
 	void loadNextFileFast(bool silent = false);
 	void loadPrevFileFast(bool silent = false);
 	void loadFileFast(int skipIdx, bool silent = false);
@@ -495,6 +495,8 @@ protected:
 	QRectF oldImgViewRect;
 	QTransform oldWorldMatrix;
 	QTransform oldImgMatrix;
+
+	QTimer* skipImageTimer;
 
 	QImage imgBg;
 

@@ -97,8 +97,6 @@ void DkNoMacs::release() {
 		delete progressDialog;
 		progressDialog = 0;
 	}
-
-
 }
 
 void DkNoMacs::init() {
@@ -1092,9 +1090,9 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 		if (vp) {
 			
 			if (swipeG->horizontalDirection() == QSwipeGesture::Left)
-				vp->loadNextFile();
+				vp->loadNextFileFast();
 			else if (swipeG->horizontalDirection() == QSwipeGesture::Right)
-				vp->loadPrevFile();
+				vp->loadPrevFileFast();
 
 			// TODO: recognize some other gestures please
 		}
@@ -1111,9 +1109,9 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 		if (panG->acceleration() > 10 && delta.x() && fabs(delta.y()/delta.x()) < 0.2) {
 			
 			if (delta.x() < 0)
-				vp->loadNextFile();
+				vp->loadNextFileFast();
 			else
-				vp->loadPrevFile();
+				vp->loadPrevFileFast();
 		}
 
 		if (vp)
@@ -2171,14 +2169,14 @@ void DkNoMacs::keyPressEvent(QKeyEvent *event) {
 void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 
 	if (event->key() == Qt::Key_Alt && !otherKeyPressed && (posGrabKey - QCursor::pos()).manhattanLength() == 0)
-			menu->showMenu();
+		menu->showMenu();
 	
-	if (event->key() == Qt::Key_Left && !event->isAutoRepeat() && fileActions[menu_file_prev]->isEnabled()) {
-		viewport()->loadFullFile();
-	}
-	if (event->key() == Qt::Key_Right && !event->isAutoRepeat() && fileActions[menu_file_next]->isEnabled()) {
-		viewport()->loadFullFile();
-	}
+	//if (event->key() == Qt::Key_Left && !event->isAutoRepeat() && fileActions[menu_file_prev]->isEnabled()) {
+	//	viewport()->loadFullFile();
+	//}
+	//if (event->key() == Qt::Key_Right && !event->isAutoRepeat() && fileActions[menu_file_next]->isEnabled()) {
+	//	viewport()->loadFullFile();
+	//}
 }
 
 // >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)

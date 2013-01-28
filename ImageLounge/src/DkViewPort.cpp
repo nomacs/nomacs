@@ -1138,7 +1138,11 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
 	loader = 0;
-			
+	
+	skipImageTimer = new QTimer();
+	skipImageTimer->setSingleShot(true);
+	connect(skipImageTimer, SIGNAL(timeout()), this, SLOT(loadFullFile()));
+
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
 
@@ -1258,7 +1262,7 @@ void DkViewPort::setImage(QImage newImg) {
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
-
+	
 	if (!thumbLoaded) { 
 		qDebug() << "saving image matrix...";
 		oldImgViewRect = imgViewRect;
@@ -1299,6 +1303,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	thumbLoaded = true;
 
 	update();
+
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 }
 
@@ -1727,9 +1732,9 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 		// TODO: think how we can make this fast too
 		if (event->delta() > 0)
-			loadNextFile();
+			loadNextFileFast();
 		else
-			loadPrevFile();
+			loadPrevFileFast();
 	}
 	else 
 		DkBaseViewPort::wheelEvent(event);
@@ -1908,31 +1913,31 @@ void DkViewPort::loadFile(int skipIdx, bool silent) {
 	}
 }
 
-void DkViewPort::loadNextFile(bool silent) {
-
-	// this function is (more or less) deprecated -> just needed since we cannot distinguish between action triggered & action repeated
-	unloadImage();
-
-	if (loader && !testLoaded)
-		loader->changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
-
-	// alt mod
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
-		emit sendNewFileSignal(1);
-		qDebug() << "emitting load next";
-	}
-}
-
-void DkViewPort::loadPrevFile(bool silent) {
-
-	unloadImage();
-
-	if (loader && !testLoaded)
-		loader->changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
-
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
-		emit sendNewFileSignal(-1);
-}
+//void DkViewPort::loadNextFile(bool silent) {
+//
+//	// this function is (more or less) deprecated -> just needed since we cannot distinguish between action triggered & action repeated
+//	unloadImage();
+//
+//	if (loader && !testLoaded)
+//		loader->changeFile(1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+//
+//	// alt mod
+//	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
+//		emit sendNewFileSignal(1);
+//		qDebug() << "emitting load next";
+//	}
+//}
+//
+//void DkViewPort::loadPrevFile(bool silent) {
+//
+//	unloadImage();
+//
+//	if (loader && !testLoaded)
+//		loader->changeFile(-1, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+//
+//	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+//		emit sendNewFileSignal(-1);
+//}
 
 void DkViewPort::loadPrevFileFast(bool silent) {
 
@@ -1946,6 +1951,8 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 
 void DkViewPort::loadFileFast(int skipIdx, bool silent) {
+
+	skipImageTimer->stop();
 
 	silent |= (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen);
 
@@ -1972,7 +1979,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 			// load full file if cached
 			else if (loader->isCached(thumbFile)) {
 				unloadImage();
-				loader->load(thumbFile, silent, DkImageLoader::cache_disable_update);	// disable cacher on fast load
+				loader->loadFile(thumbFile, silent, DkImageLoader::cache_disable_update);	// disable cacher on fast load
 				skip = false;
 			}
 			else {
@@ -2011,16 +2018,20 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(skipIdx);
+
+	skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
 }
 
 void DkViewPort::loadFullFile(bool silent) {
 
+
 	if (thumbFile.exists()) {
+		qDebug() << "loading full file-------------------------------------------------------------------------";
+
 		unloadImage();	// TODO: unload image clears the image -> makes an empty file
 		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	}
-	
-	if (loader)
+	else if (loader)	// the cacher is updated by loading anyway
 		loader->updateCacheIndex();
 }
 
@@ -2084,10 +2095,10 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 				loadLast();
 				break;
 			case 1:
-				loadNextFile();
+				loadNextFileFast();
 				break;
 			case -1:
-				loadPrevFile();
+				loadPrevFileFast();
 				break;
 			default:
 				if (loader) loader->loadFileAt(idx);

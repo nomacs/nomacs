@@ -2427,8 +2427,10 @@ void DkCacher::run() {
 		}
 
 		// re-index folder
-		if (newDir || updateFiles)
+		if (newDir || updateFiles) {
+			usleep(1000);
 			index();
+		}
 
 		mutex.unlock();
 
@@ -2490,6 +2492,9 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 				}
 				else
 					cacheIter.value().clearImage();
+			}
+			else if (!img.isNull() && cache.at(idx).getCacheState() == DkImageCache::cache_loaded) {
+				cacheIter.value().setImage(img);	// don't question the size - it might change due to editing and cause a complete re-caching
 			}
 			break;
 		}
