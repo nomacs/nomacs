@@ -574,12 +574,12 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_next] = new QAction(fileIcons[icon_file_next], tr("Ne&xt File"), this);
 	fileActions[menu_file_next]->setShortcut(QKeySequence(shortcut_next_file));
 	fileActions[menu_file_next]->setStatusTip(tr("Load next image"));
-	connect(fileActions[menu_file_next], SIGNAL(triggered()), vp, SLOT(loadNextFile()));
+	connect(fileActions[menu_file_next], SIGNAL(triggered()), vp, SLOT(loadNextFileFast()));
 
 	fileActions[menu_file_prev] = new QAction(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
 	fileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
 	fileActions[menu_file_prev]->setStatusTip(tr("Load previous file"));
-	connect(fileActions[menu_file_prev], SIGNAL(triggered()), vp, SLOT(loadPrevFile()));
+	connect(fileActions[menu_file_prev], SIGNAL(triggered()), vp, SLOT(loadPrevFileFast()));
 
 	fileActions[menu_file_new_instance] = new QAction(tr("St&art New Instance"), this);
 	fileActions[menu_file_new_instance]->setShortcut(QKeySequence(shortcut_new_instance));
@@ -873,10 +873,10 @@ void DkNoMacs::createShortcuts() {
 	QObject::connect(shortcuts[sc_last_sync], SIGNAL( activated ()), vp, SLOT( loadLast() ));
 
 	shortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
-	QObject::connect(shortcuts[sc_next_sync], SIGNAL( activated ()), vp, SLOT( loadNextFile() ));
+	QObject::connect(shortcuts[sc_next_sync], SIGNAL( activated ()), vp, SLOT( loadNextFileFast() ));
 
 	shortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
-	QObject::connect(shortcuts[sc_prev_sync], SIGNAL( activated ()), vp, SLOT( loadPrevFile() ));
+	QObject::connect(shortcuts[sc_prev_sync], SIGNAL( activated ()), vp, SLOT( loadPrevFileFast() ));
 
 	shortcuts[sc_zoom_in] = new QShortcut(shortcut_zoom_in, this);
 	connect(shortcuts[sc_zoom_in], SIGNAL(activated()), vp, SLOT(zoomIn()));
@@ -2159,12 +2159,6 @@ void DkNoMacs::keyPressEvent(QKeyEvent *event) {
 	else
 		otherKeyPressed = true;
 
-	if (event->key() == Qt::Key_Left && fileActions[menu_file_prev]->isEnabled()) {
-		viewport()->loadPrevFileFast();
-	}
-	if (event->key() == Qt::Key_Right && fileActions[menu_file_next]->isEnabled()) {
-		viewport()->loadNextFileFast();
-	}
 }
 
 void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
@@ -2172,12 +2166,6 @@ void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 	if (event->key() == Qt::Key_Alt && !otherKeyPressed && (posGrabKey - QCursor::pos()).manhattanLength() == 0)
 		menu->showMenu();
 	
-	//if (event->key() == Qt::Key_Left && !event->isAutoRepeat() && fileActions[menu_file_prev]->isEnabled()) {
-	//	viewport()->loadFullFile();
-	//}
-	//if (event->key() == Qt::Key_Right && !event->isAutoRepeat() && fileActions[menu_file_next]->isEnabled()) {
-	//	viewport()->loadFullFile();
-	//}
 }
 
 // >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)

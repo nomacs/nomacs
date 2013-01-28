@@ -274,8 +274,8 @@ void DkControlWidget::connectWidgets() {
 	connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
 
 	// playing
-	connect(player, SIGNAL(previousSignal(bool)), viewport, SLOT(loadPrevFile(bool)));
-	connect(player, SIGNAL(nextSignal(bool)), viewport, SLOT(loadNextFile(bool)));
+	connect(player, SIGNAL(previousSignal(bool)), viewport, SLOT(loadPrevFileFast(bool)));
+	connect(player, SIGNAL(nextSignal(bool)), viewport, SLOT(loadNextFileFast(bool)));
 
 	// cropping
 	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), viewport, SLOT(cropImage(DkRotatingRect)));
