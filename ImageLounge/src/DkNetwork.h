@@ -463,6 +463,7 @@ public slots:
 
 signals:
 	void displayUpdateDialog(QString msg, QString title);
+	void showUpdaterMessage(QString msg, QString title);
 	void downloadFinished(QString filePath);
 	void downloadProgress(qint64, qint64);
 

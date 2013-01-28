@@ -142,8 +142,14 @@ int main(int argc, char *argv[]) {
 
 	
 #ifdef Q_WS_WIN
-	if (!nmc::DkSettings::Global::setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::Global::setupVersion)
-		QFile::remove(nmc::DkSettings::Global::setupPath);
+	if (!nmc::DkSettings::Global::setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::Global::setupVersion) {
+		if (QFile::remove(nmc::DkSettings::Global::setupPath)) {
+			nmc::DkSettings::Global::setupPath = "";
+			nmc::DkSettings::Global::setupVersion = "";
+			nmc::DkSettings settings;
+			settings.save();
+		}
+	}
 #endif // Q_WS_WIN
 
 

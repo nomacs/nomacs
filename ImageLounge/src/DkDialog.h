@@ -413,6 +413,7 @@ class DkUpdateDialog : public QDialog {
 
 	public:
 		DkUpdateDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+		QLabel* upperLabel;
 
 	signals:
 		void startUpdate();
@@ -424,6 +425,7 @@ class DkUpdateDialog : public QDialog {
 		void init();
 		void createLayout();
 
+		
 		QPushButton* okButton;
 		QPushButton* cancelButton;
 };

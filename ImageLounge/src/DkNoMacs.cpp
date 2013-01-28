@@ -2384,22 +2384,31 @@ void DkNoMacs::checkForUpdate() {
 
 }
 
+void DkNoMacs::showUpdaterMessage(QString msg, QString title) {
+	QMessageBox infoDialog(this);
+	infoDialog.setWindowTitle(title);
+	infoDialog.setIcon(QMessageBox::Information);
+	infoDialog.setText(msg);
+	infoDialog.show();
+
+	infoDialog.exec();
+}
+
 void DkNoMacs::showUpdateDialog(QString msg, QString title) {
+	if (progressDialog != 0 && !progressDialog->isHidden()) { // check if the progress bar is already open 
+		showUpdaterMessage(tr("Already downloading update"), "update");
+		return;
+	}
 
 	DkSettings::Sync::updateDialogShown = true;
 
 	DkSettings settings;
 	settings.save();
 	
-	//QMessageBox infoDialog(this);
-	//infoDialog.setWindowTitle(title);
-	//infoDialog.setIcon(QMessageBox::Information);
-	//infoDialog.setText(msg);
-	//infoDialog.show();
-
-	//infoDialog.exec();
 	if (!updateDialog) {
 		updateDialog = new DkUpdateDialog(this);
+		updateDialog->setWindowTitle(title);
+		updateDialog->upperLabel->setText(msg);
 		connect(updateDialog, SIGNAL(startUpdate()), this, SLOT(performUpdate()));
 	}
 
@@ -2407,7 +2416,6 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 }
 
 void DkNoMacs::performUpdate() {
-	updateDialog->close();	
 	updater->performUpdate();
 
 	if (!progressDialog) {
@@ -2435,10 +2443,10 @@ void DkNoMacs::startSetup(QString filePath) {
 	
 	if (!QFile::exists(filePath))
 		qDebug() << "file does not exist";
-	//if (!QProcess::startDetached(filePath, QStringList()))
-		//DkNoMacs::dialog(tr("Unable to install new Version") + "</br><a href=\"file:///" + filePath + "\">"+ filePath +"</a></br>" + tr("Click the file to try install again"));
-	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath)))
-		DkNoMacs::dialog(tr("Unable to install new Version") + "</br><a href=\"file:///" + filePath + "\">"+ filePath +"</a></br>" + tr("Click the file to try install again"));
+	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath))) {
+		QString msg = tr("Unable to install new Version") + "<br><a href=\"file:///" + filePath + "\">"+ filePath +"</a><br>" + tr("Click the file to try install again");
+		showUpdaterMessage(msg, "update");
+	}
 }
 
 void DkNoMacs::errorDialog(QString msg, QString title) {
@@ -2687,6 +2695,8 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 
 	updater = new DkUpdater();
 	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+	connect(updater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+
 	if (!DkSettings::Sync::updateDialogShown && QDate::currentDate() > DkSettings::Sync::lastUpdateCheck)
 		updater->checkForUpdated();	// TODO: is threaded??
 	
