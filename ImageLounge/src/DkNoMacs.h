@@ -438,6 +438,7 @@ public slots:
 	void copyImageBuffer();
 	void pasteImage();
 	virtual void settingsChanged();
+	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);
 	void performUpdate();
 	void updateProgress(qint64 received, qint64 total);

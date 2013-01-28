@@ -1046,7 +1046,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			qDebug() << "sorry, I could not parse the version number...";
 
 			if (!silent)
-				emit displayUpdateDialog(tr("sorry, I could not check for newer versions"), tr("updates"));
+				emit showUpdaterMessage(tr("sorry, I could not check for newer versions"), tr("updates"));
 
 			return;
 		}
@@ -1058,8 +1058,9 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			nVersion[1].toInt() == cVersion[1].toInt() &&	// minor release
 			nVersion[2].toInt() >  cVersion[2].toInt()) {	// minor-minor release
 		
-			QString msg = tr("new version ") % sl[0] % tr(" available at");
-			msg = msg % "<br><a href=\"" % sl[1] % "\">http://www.nomacs.org</a>";
+			QString msg = tr("A new version") % " (" % sl[0] % ") " % tr("is available");
+			msg = msg % "<br>" % tr("Do you want to download and install it now?");
+			msg = msg % "<br>" % tr("For more information see ") + " <a href=\"http://www.nomacs.org\">http://www.nomacs.org</a>";
 			nomacsSetupUrl = sl[1];
 			qDebug() << "version: " << sl[0];
 			setupVersion = sl[0];
@@ -1067,7 +1068,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			emit displayUpdateDialog(msg, tr("updates")); // TODO: delete text?
 		}
 		else if (!silent)
-			emit displayUpdateDialog(tr("nomacs is up-to-date"), tr("updates"));
+			emit showUpdaterMessage(tr("nomacs is up-to-date"), tr("updates"));
 
 	}
 	
@@ -1075,12 +1076,12 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 
 void DkUpdater::startDownload(QUrl downloadUrl) {
 	if (downloadUrl.isEmpty())
-		emit displayUpdateDialog(tr("sorry, unable to download the new version"), tr("updates"));
+		emit showUpdaterMessage(tr("sorry, unable to download the new version"), tr("updates"));
 
 	qDebug() << "-----------------------------------------------------";
 	qDebug() << "starting to download update from " << downloadUrl ;
 	
-	updateAborted = false;	// reset - it may have been canceled before
+	//updateAborted = false;	// reset - it may have been canceled before
 	QNetworkRequest req(downloadUrl);
 	req.setRawHeader("User-Agent", " ");
 	reply = accessManagerSetup.get(req);
@@ -1107,7 +1108,6 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 				absoluteFilePath = QDir::tempPath() + "/" + basename + "-" + QString::number(i) + extension;
 				++i;
 			}
-			basename += QString::number(i);
 		}
 
 		QFile file(absoluteFilePath);
@@ -1117,7 +1117,7 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 		}
 
 		file.write(data->readAll());
-		qDebug() << "saved new version: " << basename << " " << QFileInfo(file).absoluteFilePath();
+		qDebug() << "saved new version: " << " " << QFileInfo(file).absoluteFilePath();
 
 		file.close();
 
@@ -1142,8 +1142,8 @@ void DkUpdater::performUpdate() {
 
 void DkUpdater::cancelUpdate()  {
 	qDebug() << "abort update";
-	reply->abort(); 
 	updateAborted = true; 
+	reply->abort(); 
 }
 
 }
