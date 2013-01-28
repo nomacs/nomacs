@@ -1,0 +1,27 @@
+# git ignore file
+*.exe
+*.sdf
+*.suo
+*.pdb
+*.filters
+*.XML
+*.htm
+build2012
+build2012-qt5
+release
+_UpgradeReport_Files
+Backup
+Backup1
+Backup2
+Backup3
+Backup4
+Backup5
+Backup6
+Backup7
+Backup8
+debug
+build
+Win32
+_UpgradeReport_Files
+Backup
+exiv2
