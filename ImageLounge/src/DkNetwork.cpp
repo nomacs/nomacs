@@ -1028,6 +1028,8 @@ void DkUpdater::checkForUpdated() {
 
 	qDebug() << "checking for updates";
 	connect(&accessManagerVersion, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
+	QNetworkRequest request = QNetworkRequest(url);
+	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	reply = accessManagerVersion.get(QNetworkRequest(url));
 }
 

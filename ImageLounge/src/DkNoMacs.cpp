@@ -2414,9 +2414,12 @@ void DkNoMacs::performUpdate() {
 		//connect(updater, SIGNAL(downloadFinished(QString)), progressDialog, SLOT(deleteLater()));
 		connect(updater, SIGNAL(downloadFinished(QString)), this, SLOT(startSetup(QString)));
 	}
-	progressDialog->setWindowModality(Qt::NonModal);
-	
+	progressDialog->setWindowModality(Qt::ApplicationModal);
+
 	progressDialog->show();
+	//progressDialog->raise();
+	//progressDialog->activateWindow();
+	progressDialog->setWindowModality(Qt::NonModal);
 }
 
 void DkNoMacs::updateProgress(qint64 received, qint64 total) {
