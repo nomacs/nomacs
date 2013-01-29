@@ -473,8 +473,10 @@ void DkNoMacs::createMenu() {
 		syncMenu = 0;
 	
 	helpMenu = menu->addMenu(tr("&?"));
+#ifndef Q_WS_X11
 	helpMenu->addAction(helpActions[menu_help_update]);
 	helpMenu->addSeparator();
+#endif // !Q_WS_X11
 	helpMenu->addAction(helpActions[menu_help_bug]);
 	helpMenu->addAction(helpActions[menu_help_feature]);
 	helpMenu->addSeparator();

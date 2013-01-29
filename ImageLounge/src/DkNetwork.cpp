@@ -1017,7 +1017,7 @@ void DkUpdater::checkForUpdated() {
 	settings.save();
 
 #ifdef Q_WS_WIN
-	QUrl url ("http://www.nomacs.org/version_test");
+	QUrl url ("http://www.nomacs.org/version_test2");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
 #elif defined Q_WS_MAC
@@ -1040,9 +1040,35 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 	QString replyData = reply->readAll();
 
 	QStringList sl = replyData.split('\n', QString::SkipEmptyParts);
-	if (sl.size() == 2) {		
+
+	QString version, x64, x86, url, mac;
+	for(int i = 0; i < sl.length();i++) {
+		QStringList values = sl[i].split(" ");
+		if (values[0] == "version") 
+			version = values[1];
+		else if (values[0] == "x64")
+			x64 = values[1];
+		else if (values[0] == "x86")
+			x86 = values[1];
+		else if (values[0] == "mac")
+			mac = values[1];
+	}
+#ifdef _WIN32
+	url = x86;
+#elif defined _WIN64
+	url = x64;
+#elif defined Q_WS_MAC
+	url = mac;
+#endif 
+
+	qDebug() << "version:" << version;
+	qDebug() << "x64:" << x64;
+	qDebug() << "x86:" << x86;
+	qDebug() << "mac:" << mac;
+
+	if (!version.isEmpty() && !x64.isEmpty() || !x86.isEmpty()) {		
 		QStringList cVersion = QApplication::applicationVersion().split('.');
-		QStringList nVersion = sl[0].split('.');
+		QStringList nVersion = version.split('.');
 
 		if (cVersion.size() < 3 || nVersion.size() < 3) {
 			qDebug() << "sorry, I could not parse the version number...";
@@ -1063,11 +1089,13 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			QString msg = tr("A new version") % " (" % sl[0] % ") " % tr("is available");
 			msg = msg % "<br>" % tr("Do you want to download and install it now?");
 			msg = msg % "<br>" % tr("For more information see ") + " <a href=\"http://www.nomacs.org\">http://www.nomacs.org</a>";
-			nomacsSetupUrl = sl[1];
+			nomacsSetupUrl = url;
 			qDebug() << "version: " << sl[0];
 			setupVersion = sl[0];
 			qDebug() << "nomacs setup url:" << nomacsSetupUrl;
-			emit displayUpdateDialog(msg, tr("updates")); // TODO: delete text?
+
+			if (!url.isEmpty())
+				emit displayUpdateDialog(msg, tr("updates")); // TODO: delete text?
 		}
 		else if (!silent)
 			emit showUpdaterMessage(tr("nomacs is up-to-date"), tr("updates"));
