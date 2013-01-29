@@ -1095,7 +1095,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			qDebug() << "nomacs setup url:" << nomacsSetupUrl;
 
 			if (!url.isEmpty())
-				emit displayUpdateDialog(msg, tr("updates")); // TODO: delete text?
+				emit displayUpdateDialog(msg, tr("updates")); 
 		}
 		else if (!silent)
 			emit showUpdaterMessage(tr("nomacs is up-to-date"), tr("updates"));
