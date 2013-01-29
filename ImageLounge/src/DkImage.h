@@ -667,6 +667,7 @@ public:
 		this->img = img;
 		cacheState = cache_not_loaded;
 		cacheSize = 0.0f;
+		rotated = false;
 	};
 
 	bool operator==(const DkImageCache& o) const {
@@ -680,6 +681,7 @@ public:
 	void setImage(QImage img) {
 		cacheSize = DkImage::getBufferSizeFloat(img.size(), img.depth());
 		this->img = img;
+		if (img.isNull()) rotated = false;
 	};
 
 	void ignore() {
@@ -688,6 +690,7 @@ public:
 
 	void clearImage() {
 		img = QImage();
+		rotated = false;
 	};
 
 	QFileInfo getFile() const {
@@ -710,11 +713,20 @@ public:
 			return cacheState;
 	};
 
+	void setRotated(bool rotated = true) {
+		this->rotated = rotated;
+	};
+
+	bool isRotated() {
+		return rotated;
+	};
+
 protected:
 	QFileInfo file;
 	QImage img;
 	int cacheState;
 	float cacheSize;
+	bool rotated;
 };
 
 

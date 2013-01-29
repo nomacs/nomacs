@@ -1968,8 +1968,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 			thumbFile = loader->getChangedFileInfo(skipIdx, silent);
 
 			// we have reached the beginning/end...
-			if (thumbFile.fileName().isEmpty())
+			if (thumbFile.fileName().isEmpty()) {
+				skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
 				return;
+			}
 
 			QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
 
@@ -2000,6 +2002,8 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 			setThumbImage(thumb);
 			skip = false;
 		}
+		else
+			controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
 
 		QCoreApplication::sendPostedEvents();
 	}

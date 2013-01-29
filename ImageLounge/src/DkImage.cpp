@@ -1320,27 +1320,44 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 	qDebug() << "loading: " << file.absoluteFilePath();
 
 	bool imgLoaded = false;
+	bool imgRotated = false;
 	
-	
+	DkTimer dtc;
+
 	// critical section -> threads
 	if (cacher && cacheState != cache_force_load) {
 		
-		QVector<DkImageCache> cache = cacher->getCache();
+		////QVector<DkImageCache> cache = cacher->getCache();
+		QMutableVectorIterator<DkImageCache> cIter(cacher->getCache());
 
-		for (int idx = 0; idx < cache.size(); idx++) {
+		while (cIter.hasNext()) {
+			
+			cIter.next();
 
-			if (cache[idx].getFile() == file) {
+			if (cIter.value().getFile() == file) {
 
-				if (cache[idx].getCacheState() == DkImageCache::cache_loaded) {
-					QImage tmp = cache[idx].getImage();
+				if (cIter.value().getCacheState() == DkImageCache::cache_loaded) {
+					DkImageCache& cCache = cIter.value();
+					QImage tmp = cCache.getImage();
 					basicLoader.setImage(tmp, file);
 					imgLoaded = basicLoader.hasImage();
+
+					// nothing todo here
+					if (!imgLoaded)
+						break;
+
+					imgRotated = cCache.isRotated();
+					cCache.setRotated();	// we'll rotated the image soon
+					//cIter.setValue();
 					qDebug() << "loading from cache...";
 				}
 				break; 
 			}
+			//cIter.next();
 		}
 	}
+
+	qDebug() << "loading from cache takes: " << QString::fromStdString(dtc.getTotal());
 	
 	if (!imgLoaded) {
 		try {
@@ -1367,7 +1384,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		//QStringList keys = imgMetaData.getExifKeys();
 		//qDebug() << keys;
 
-		if (!imgMetaData.isTiff())
+		if (!imgMetaData.isTiff() && !imgRotated)
 			basicLoader.rotate(orientation);
 		
 		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
