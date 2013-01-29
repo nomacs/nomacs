@@ -27,7 +27,7 @@
         <location filename="../src/DkImage.cpp" line="3583"/>
         <source>this file format does not support exif
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Dateiformat unterstützt kein exif</translation>
     </message>
 </context>
 <context>
@@ -43,7 +43,7 @@
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="885"/>
         <source>Brightness</source>
-        <translation type="unfinished"></translation>
+        <translation>Helligkeit</translation>
     </message>
 </context>
 <context>
@@ -67,7 +67,7 @@
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="984"/>
         <source>Contrast</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontrast</translation>
     </message>
 </context>
 <context>
@@ -102,7 +102,7 @@
     <message>
         <location filename="../src/DkSettings.cpp" line="881"/>
         <source>Zoom</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoom</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="883"/>
@@ -149,27 +149,27 @@
     <message>
         <location filename="../src/DkSettings.cpp" line="903"/>
         <source>File Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei Informationen</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="905"/>
         <source>Image Name</source>
-        <translation type="unfinished">Bildname</translation>
+        <translation>Bildname</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="907"/>
         <source>Creation Date</source>
-        <translation type="unfinished">Erstelldatum</translation>
+        <translation>Erstelldatum</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="909"/>
         <source>Rating</source>
-        <translation type="unfinished">Bewertung</translation>
+        <translation>Bewertung</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="912"/>
         <source>Silent Fullscreen</source>
-        <translation type="unfinished">keine Warnungen im Vollbildmodus</translation>
+        <translation>keine Warnungen im Vollbildmodus</translation>
     </message>
 </context>
 <context>
@@ -177,7 +177,7 @@
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="1398"/>
         <source>Exposure</source>
-        <translation type="unfinished"></translation>
+        <translation>Belichtung</translation>
     </message>
 </context>
 <context>
@@ -199,42 +199,42 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkSettings.cpp" line="992"/>
         <source>Drag &amp;&amp; Drop</source>
-        <translation type="unfinished">Drag &amp;&amp; Drop</translation>
+        <translation>Drag &amp;&amp; Drop</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="997"/>
         <source>use temporary folder</source>
-        <translation type="unfinished">benutze temporären Ordner</translation>
+        <translation>benutze temporären Ordner</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1002"/>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1012"/>
         <source>Skip Images:</source>
-        <translation type="unfinished">Überspringe Bilder:</translation>
+        <translation>Überspringe Bilder:</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1012"/>
         <source>on PgUp and PgDown</source>
-        <translation type="unfinished">mit Bild-Auf und Bild-Ab</translation>
+        <translation>mit Bild-Auf und Bild-Ab</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1015"/>
         <source>Wrap Images</source>
-        <translation type="unfinished">Endlosschleife</translation>
+        <translation>Endlosschleife</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1018"/>
         <source>&amp;Open With</source>
-        <translation type="unfinished">&amp;Öffne mit</translation>
+        <translation>&amp;Öffne mit</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1060"/>
         <source>Open an Image Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildverzeichnis öffnen</translation>
     </message>
 </context>
 <context>
@@ -242,7 +242,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="1295"/>
         <source>Gamma</source>
-        <translation type="unfinished"></translation>
+        <translation>Gamma</translation>
     </message>
 </context>
 <context>
@@ -266,32 +266,32 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkSettings.cpp" line="711"/>
         <source>Highlight Color</source>
-        <translation type="unfinished">Farbe für Highlight</translation>
+        <translation>Farbe für Highlight</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="714"/>
         <source>Icon Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Icon Farbe</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="718"/>
         <source>Background Color</source>
-        <translation type="unfinished">Hintergrundfarbe</translation>
+        <translation>Hintergrundfarbe</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="722"/>
         <source>Widget Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbe der Widgets</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="729"/>
         <source>Display Time:</source>
-        <translation type="unfinished">Anzeigezeit:</translation>
+        <translation>Anzeigezeit:</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="729"/>
         <source>sec</source>
-        <translation type="unfinished">sek</translation>
+        <translation>sek</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="760"/>
@@ -307,27 +307,27 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkSettings.cpp" line="785"/>
         <source>show Menu</source>
-        <translation type="unfinished">Menü anzeigen</translation>
+        <translation>Menü anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="786"/>
         <source>show Toolbar</source>
-        <translation type="unfinished">Toolbar anzeigen</translation>
+        <translation>Toolbar anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="787"/>
         <source>show Statusbar</source>
-        <translation type="unfinished">Statusleiste anzeigen</translation>
+        <translation>Statusleiste anzeigen</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="788"/>
         <source>small icons</source>
-        <translation type="unfinished"></translation>
+        <translation>kleine Icons</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="789"/>
         <source>Toolbar Gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Toolbar Gradient</translation>
     </message>
     <message>
         <source>&amp;Open With</source>
@@ -368,7 +368,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="1189"/>
         <source>Hue</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbton</translation>
     </message>
 </context>
 <context>
@@ -376,7 +376,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkImage.cpp" line="954"/>
         <source>sorry, %1 does not exist anymore...</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Datei %1 existiert nicht...</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="1088"/>
@@ -408,7 +408,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkImage.cpp" line="1473"/>
         <source>Save Directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Verzeichnis speichern</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="1541"/>
@@ -442,7 +442,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkImage.cpp" line="1637"/>
         <source>Sorry, I can&apos;t save: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Date %1 konnte nicht gespeichert werden</translation>
     </message>
     <message>
         <location filename="../src/DkImage.cpp" line="1727"/>
@@ -474,17 +474,17 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="79"/>
         <source>Image Manipulation Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildmanipulation </translation>
     </message>
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="122"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished">&amp;Ok</translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="124"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Abbrechen</translation>
+        <translation>&amp;Abbrechen</translation>
     </message>
 </context>
 <context>
@@ -550,7 +550,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkSettings.cpp" line="124"/>
         <source>ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>ISO</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="125"/>
@@ -897,7 +897,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="464"/>
         <source>&amp;Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Werkzeuge</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="471"/>
@@ -952,12 +952,12 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="554"/>
         <source>&amp;Go To</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Gehe zu</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="556"/>
         <source>Go To an image</source>
-        <translation type="unfinished"></translation>
+        <translation>Gehe zu einem Bild</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="559"/>
@@ -1023,13 +1023,13 @@ enthält keine Bilder</translation>
         <location filename="../src/DkNoMacs.cpp" line="589"/>
         <location filename="../src/DkNoMacs.cpp" line="803"/>
         <source>&amp;Find &amp;&amp; Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Finden &amp;&amp; Filtern</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="591"/>
         <location filename="../src/DkNoMacs.cpp" line="804"/>
         <source>Find an image</source>
-        <translation type="unfinished"></translation>
+        <translation>Bild finden</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="599"/>
@@ -1130,12 +1130,12 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="655"/>
         <source>&amp;Wallpaper</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Hintergrundbild </translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="656"/>
         <source>set the current image as wallpaper</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzt das Bild als Hintergrund</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="659"/>
@@ -1250,12 +1250,12 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="724"/>
         <source>&amp;Anti Aliasing</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Anti Aliasing</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="726"/>
         <source>if checked images are smoother</source>
-        <translation type="unfinished"></translation>
+        <translation>wenn aktiviert sind die Bilderglatter </translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="731"/>
@@ -1366,22 +1366,22 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="798"/>
         <source>Compute &amp;Thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Berechne Vorschaubilder</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="799"/>
         <source>compute all thumbnails of the current folder</source>
-        <translation type="unfinished"></translation>
+        <translation>berechnet alle Vorschaubilder des momentanen Ordners</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="809"/>
         <source>Image &amp;Manipulation</source>
-        <translation type="unfinished"></translation>
+        <translation>Bild&amp;manipulation</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="811"/>
         <source>modify the current image</source>
-        <translation type="unfinished"></translation>
+        <translation>modifiziert das momentane Bild</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="816"/>
@@ -1473,47 +1473,47 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1710"/>
         <source>Go To Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Gehe zu einem Bild</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1710"/>
         <source>Image Index:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildindex:</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1765"/>
         <source>Save File %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichere Datei %1</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1999"/>
         <source>Sorry, I could not create a wallpaper...</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte Hintergrundbild nicht erstellen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2386"/>
         <source>Already downloading update</source>
-        <translation type="unfinished"></translation>
+        <translation>Update wird bereits heruntergeladen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2409"/>
         <source>Downloading update...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lade Update herunter...</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2409"/>
         <source>Cancel Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Update abbrechen</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2437"/>
         <source>Unable to install new Version</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte Update nicht installieren</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2437"/>
         <source>Click the file to try install again</source>
-        <translation type="unfinished"></translation>
+        <translation>Klicken Sie auf die Datei um es erneut zu versuchen</translation>
     </message>
     <message>
         <source>Save Image</source>
@@ -1608,7 +1608,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="351"/>
         <source>&amp;Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Dateimanager</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="368"/>
@@ -1852,12 +1852,12 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkSettings.cpp" line="1364"/>
         <source>Raw Loader Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen zum Laden von Raw Dateien</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1366"/>
         <source>filter raw images</source>
-        <translation type="unfinished"></translation>
+        <translation>filtere raw Dateien</translation>
     </message>
 </context>
 <context>
@@ -1865,7 +1865,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="1083"/>
         <source>Saturation</source>
-        <translation type="unfinished"></translation>
+        <translation>Sättigung</translation>
     </message>
 </context>
 <context>
@@ -1873,37 +1873,37 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="733"/>
         <source>Find &amp; Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Finden &amp;&amp; Filtern</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="735"/>
         <source>Load All</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle laden</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="745"/>
         <source>Type a search word or a regular expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Geben sie das Suchwort oder eine Regular Expression ein</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="764"/>
         <source>F&amp;ind</source>
-        <translation type="unfinished"></translation>
+        <translation>F&amp;inden</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="768"/>
         <source>&amp;Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Filtern</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="771"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Abbrechen</translation>
+        <translation>&amp;Abbrechen</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="821"/>
         <source>No Matching Items</source>
-        <translation type="unfinished"></translation>
+        <translation>keine passenden Bilder gefunden</translation>
     </message>
 </context>
 <context>
@@ -1950,7 +1950,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkSettings.cpp" line="537"/>
         <source>File Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Dateiinformation</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="548"/>
@@ -2075,17 +2075,18 @@ enthält keine Bilder</translation>
         <source>
 Creating Thumbnails...
 </source>
-        <translation type="unfinished"></translation>
+        <translation>
+Erstelle Vorschaubilder</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="686"/>
         <source>Cancel</source>
-        <translation type="unfinished">Abbrechen</translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="687"/>
         <source>Thumbnails</source>
-        <translation type="unfinished">Vorschaubilder</translation>
+        <translation>Vorschaubilder</translation>
     </message>
 </context>
 <context>
@@ -2200,12 +2201,12 @@ Creating Thumbnails...
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="1506"/>
         <source>&amp;Undo</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Zurücksetzen</translation>
     </message>
     <message>
         <location filename="../src/DkManipulationWidgets.cpp" line="1508"/>
         <source>&amp;Redo</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Vorwärts</translation>
     </message>
 </context>
 <context>
@@ -2213,17 +2214,17 @@ Creating Thumbnails...
     <message>
         <location filename="../src/DkDialog.cpp" line="1562"/>
         <source>nomacs updater</source>
-        <translation type="unfinished"></translation>
+        <translation>nomacs updater</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="1570"/>
         <source>Install Now</source>
-        <translation type="unfinished"></translation>
+        <translation>Jetzt installieren</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="1571"/>
         <source>Cancel</source>
-        <translation type="unfinished">Abbrechen</translation>
+        <translation>Abbrechen</translation>
     </message>
 </context>
 <context>
@@ -2244,27 +2245,27 @@ Creating Thumbnails...
     <message>
         <location filename="../src/DkNetwork.cpp" line="1063"/>
         <source>A new version</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine neue Version</translation>
     </message>
     <message>
         <location filename="../src/DkNetwork.cpp" line="1063"/>
         <source>is available</source>
-        <translation type="unfinished"></translation>
+        <translation>ist verfügbar</translation>
     </message>
     <message>
         <location filename="../src/DkNetwork.cpp" line="1064"/>
         <source>Do you want to download and install it now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wollen Sie jetzt downloaden und installieren?</translation>
     </message>
     <message>
         <location filename="../src/DkNetwork.cpp" line="1065"/>
         <source>For more information see </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mehr Information unter </translation>
     </message>
     <message>
         <location filename="../src/DkNetwork.cpp" line="1081"/>
         <source>sorry, unable to download the new version</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte die neue Version nicht downloaden</translation>
     </message>
     <message>
         <source>new version </source>
@@ -2333,7 +2334,7 @@ Creating Thumbnails...
     <message>
         <location filename="../src/DkViewPort.cpp" line="2371"/>
         <source>Press F10 to exit Frameless view</source>
-        <translation type="unfinished"></translation>
+        <translation>Drücken Sie F10 um den Framelessmodus zu verlassen</translation>
     </message>
 </context>
 </TS>
