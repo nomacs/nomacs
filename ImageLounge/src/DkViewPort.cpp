@@ -1966,7 +1966,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 		if (loader && !testLoaded) {
 
 			thumbFile = loader->getChangedFileInfo(skipIdx, silent);
-			qDebug() << thumbFile.fileName();
+
+			// we have reached the beginning/end...
+			if (thumbFile.fileName().isEmpty())
+				return;
 
 			QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
 
