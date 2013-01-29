@@ -756,6 +756,7 @@ DkImageLoader::~DkImageLoader() {
 
 	if (cacher) {
 		cacher->stop();
+		qDebug() << "waiting for cacher to stop...";
 		cacher->wait();
 		delete cacher;
 	}
@@ -1376,8 +1377,6 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 	
 	if (imgLoaded) {
 		
-		if (cacher && cacheState != cache_disable_update) cacher->setCurrentFile(file, basicLoader.image());
-
 		DkMetaData imgMetaData(file);		
 		int orientation = imgMetaData.getOrientation();
 
@@ -1387,6 +1386,8 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		if (!imgMetaData.isTiff() && !imgRotated)
 			basicLoader.rotate(orientation);
 		
+		if (cacher && cacheState != cache_disable_update) cacher->setCurrentFile(file, basicLoader.image());
+
 		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
 
 		// update watcher

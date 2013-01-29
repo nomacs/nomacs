@@ -1994,6 +1994,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 					this->thumbFile = thumbFile;
 					skip = false;
 				}
+
+				if (thumb.isNull())
+					controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
+
 			}
 		}
 
@@ -2002,8 +2006,6 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 			setThumbImage(thumb);
 			skip = false;
 		}
-		else
-			controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
 
 		QCoreApplication::sendPostedEvents();
 	}
