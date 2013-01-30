@@ -1482,17 +1482,15 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 #endif
 	}
 
-	Mat resizeImage = DkImage::qImage2Mat(img);
+	try {
+		Mat resizeImage = DkImage::qImage2Mat(img);
 
-	// is the image convertable?
-	if (resizeImage.empty() || newSize.width() < 1 || newSize.height() < 1) {
+		// is the image convertable?
+		if (resizeImage.empty() || newSize.width() < 1 || newSize.height() < 1) {
 
-		return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
-	}
-	else {
-
-
-		try{
+			return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
+		}
+		else {
 						
 			QVector<QRgb> colTable = img.colorTable();
 			qDebug() << "resizing..." << colTable.size();
@@ -1504,20 +1502,21 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 			rImg.setColorTable(img.colorTable());
 			return rImg;
 
-		}catch (std::exception se) {
-
-			if (!silent) {
-
-				qDebug() << "image size: " << newSize;
-				QMessageBox errorDialog(this);
-				errorDialog.setIcon(QMessageBox::Critical);
-				errorDialog.setText(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(newSize, 32)));
-				errorDialog.show();
-				errorDialog.exec();
-			}
-
-			return QImage();
 		}
+
+	}catch (std::exception se) {
+
+		if (!silent) {
+
+			qDebug() << "image size: " << newSize;
+			QMessageBox errorDialog(this);
+			errorDialog.setIcon(QMessageBox::Critical);
+			errorDialog.setText(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(newSize, 32)));
+			errorDialog.show();
+			errorDialog.exec();
+		}
+
+		return QImage();
 	}
 
 	return QImage();

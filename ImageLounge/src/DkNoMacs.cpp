@@ -1898,20 +1898,19 @@ void DkNoMacs::resizeImage() {
 			//viewport()->getImageLoader()->enableWatcher(false);
 			viewport()->getImageLoader()->clearFileWatcher();
 
-			// this reloads the image -> that's not what we want!
-			if (metaData)
-				metaData->setResolution((int)resizeDialog->getExifDpi(), (int)resizeDialog->getExifDpi());
-
 			// TODO: redirect resize to basic loader here
 			QImage rImg = resizeDialog->getResizedImage();
 
 			if (!rImg.isNull()) {
 				viewport()->setEditedImage(rImg);
-				//viewport()->unloadImage();
-				//viewport()->getImageLoader()->setImage(rImg);
-				//viewport()->setImage(rImg);
-				//setWindowTitle(QFileInfo(), rImg.size());
+
+				// this reloads the image -> that's not what we want!
+				if (metaData)
+					metaData->setResolution((int)resizeDialog->getExifDpi(), (int)resizeDialog->getExifDpi());
+
 			}
+
+
 		}
 		else if (metaData) {
 			// ok, user just wants to change the resolution
