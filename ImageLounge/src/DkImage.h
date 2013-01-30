@@ -50,6 +50,9 @@
 #include <QMessageBox>
 #include <QDirIterator>
 #include <QProgressDialog>
+#include <QReadLocker>
+#include <QWriteLocker>
+#include <QReadWriteLock>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -678,10 +681,19 @@ public:
 		this->file = file;
 	};
 
-	void setImage(QImage img) {
+	void setImage(QImage img, bool rotated = false) {
+		
+		if (rotated)
+			this->rotated = rotated;
+		if (initialSize.isEmpty()) 
+			initialSize = img.size();
+		else if (img.isNull()) {
+			initialSize = QSize();
+			this->rotated = false;
+		}
+
 		cacheSize = DkImage::getBufferSizeFloat(img.size(), img.depth());
 		this->img = img;
-		if (img.isNull()) rotated = false;
 	};
 
 	void ignore() {
@@ -690,6 +702,7 @@ public:
 
 	void clearImage() {
 		img = QImage();
+		initialSize = QSize();
 		rotated = false;
 	};
 
@@ -706,24 +719,27 @@ public:
 	};
 
 	int getCacheState() const {
-		
+
 		if (!img.isNull())
 			return cache_loaded;
 		else
 			return cacheState;
 	};
 
-	void setRotated(bool rotated = true) {
-		this->rotated = rotated;
-	};
+	//void setRotated(bool rotated = true) {
+	//	this->rotated = rotated;
+	//};
 
 	bool isRotated() {
-		return rotated;
+
+		qDebug() << "rotated: " << rotated << " size bool: " << (img.size() != initialSize);
+		return rotated | img.size() != initialSize;
 	};
 
 protected:
 	QFileInfo file;
 	QImage img;
+	QSize initialSize;
 	int cacheState;
 	float cacheSize;
 	bool rotated;
@@ -750,8 +766,8 @@ public:
 	void setCurrentFile(QFileInfo file, QImage img = QImage());
 	void setNewDir(QDir& dir, QStringList& files);
 	void updateDir(QStringList& files);
-	QVector<DkImageCache>& getCache() {
-		QMutexLocker locker(&mutex);
+	QVector<DkImageCache> getCache() {
+		//QReadLocker locker(&lock);
 		return cache;
 	};
 
@@ -773,7 +789,8 @@ private:
 	DkBasicLoader loader;
 	QStringList files;
 
-	QMutex mutex;
+	//QMutex mutex;
+	//QReadWriteLock lock;
 
 	void index();
 	void load();

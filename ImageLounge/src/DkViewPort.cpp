@@ -1994,6 +1994,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 					this->thumbFile = thumbFile;
 					skip = false;
 				}
+
+				if (thumb.isNull())
+					controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
+
 			}
 		}
 
@@ -2002,8 +2006,6 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 			setThumbImage(thumb);
 			skip = false;
 		}
-		else
-			controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
 
 		QCoreApplication::sendPostedEvents();
 	}
@@ -2032,8 +2034,6 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 void DkViewPort::loadFullFile(bool silent) {
 
 	if (thumbFile.exists()) {
-		qDebug() << "loading full file-------------------------------------------------------------------------";
-
 		unloadImage();	// TODO: unload image clears the image -> makes an empty file
 		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	}
@@ -2066,10 +2066,11 @@ void DkViewPort::loadLast() {
 
 void DkViewPort::loadSkipPrev10() {
 
-	unloadImage();
+	loadFileFast(-DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+	//unloadImage();
 
-	if (loader && !testLoaded)
-		loader->changeFile(-DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+	//if (loader && !testLoaded)
+	//	loader->changeFile(-DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(-DkSettings::Global::skipImgs);
@@ -2077,10 +2078,11 @@ void DkViewPort::loadSkipPrev10() {
 
 void DkViewPort::loadSkipNext10() {
 
-	unloadImage();
+	loadFileFast(DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+	//unloadImage();
 
-	if (loader && !testLoaded)
-		loader->changeFile(DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+	//if (loader && !testLoaded)
+	//	loader->changeFile(DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(DkSettings::Global::skipImgs);
