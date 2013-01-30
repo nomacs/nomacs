@@ -50,6 +50,9 @@
 #include <QMessageBox>
 #include <QDirIterator>
 #include <QProgressDialog>
+#include <QReadLocker>
+#include <QWriteLocker>
+#include <QReadWriteLock>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -706,7 +709,7 @@ public:
 	};
 
 	int getCacheState() const {
-		
+
 		if (!img.isNull())
 			return cache_loaded;
 		else
@@ -747,11 +750,12 @@ public:
 	void play();
 	void start();
 
-	void setCurrentFile(QFileInfo file, QImage img = QImage());
+	void setCurrentFile(QFileInfo file, QImage img = QImage(), bool rotated = false);
+	void setOrientationFlag(QFileInfo file, bool rotated);
 	void setNewDir(QDir& dir, QStringList& files);
 	void updateDir(QStringList& files);
-	QVector<DkImageCache>& getCache() {
-		QMutexLocker locker(&mutex);
+	QVector<DkImageCache> getCache() {
+		//QReadLocker locker(&lock);
 		return cache;
 	};
 
@@ -773,7 +777,8 @@ private:
 	DkBasicLoader loader;
 	QStringList files;
 
-	QMutex mutex;
+	//QMutex mutex;
+	//QReadWriteLock lock;
 
 	void index();
 	void load();
