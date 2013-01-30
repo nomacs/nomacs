@@ -944,9 +944,9 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	viewActions[menu_view_zoom_out]->setEnabled(enable);
 
 #ifdef WITH_OPENCV
-	editActions[menu_tools_manipulation]->setEnabled(enable);
+	toolsActions[menu_tools_manipulation]->setEnabled(enable);
 #else
-	editActions[menu_tools_manipulation]->setEnabled(false);
+	toolsActions[menu_tools_manipulation]->setEnabled(false);
 #endif
 
 }

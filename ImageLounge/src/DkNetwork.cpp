@@ -1091,7 +1091,7 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 			msg = msg % "<br>" % tr("For more information see ") + " <a href=\"http://www.nomacs.org\">http://www.nomacs.org</a>";
 			nomacsSetupUrl = url;
 			qDebug() << "version: " << sl[0];
-			setupVersion = sl[0];
+			setupVersion = version;
 			qDebug() << "nomacs setup url:" << nomacsSetupUrl;
 
 			if (!url.isEmpty())
