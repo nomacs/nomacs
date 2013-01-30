@@ -1322,7 +1322,6 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 
 	bool imgLoaded = false;
 	bool imgRotated = false;
-	bool loadedFromCache = false;
 	
 	DkTimer dtc;
 
@@ -1349,7 +1348,6 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 						break;
 
 					imgRotated = cCache.isRotated();
-					loadedFromCache = true;
 					qDebug() << "loading from cache...";
 				}
 				break; 
@@ -1387,10 +1385,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 			basicLoader.rotate(orientation);
 		
 		if (cacher && cacheState != cache_disable_update) 
-			cacher->setCurrentFile(file, basicLoader.image(), true);
-		else if (cacher && loadedFromCache && !imgRotated)
-			cacher->setOrientationFlag(file, true);
-
+			cacher->setCurrentFile(file, basicLoader.image());
 
 		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
 
@@ -2484,6 +2479,7 @@ void DkCacher::stop() {
 }
 
 void DkCacher::start() {
+	
 	isActive = true;
 	QThread::start();
 }
@@ -2500,7 +2496,7 @@ void DkCacher::play() {
 	qDebug() << "[cache] restarting cacher...";
 }
 
-void DkCacher::setCurrentFile(QFileInfo file, QImage img, bool rotated) {
+void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 
 	//QReadLocker locker(&lock);
 
@@ -2518,8 +2514,7 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img, bool rotated) {
 				// 4* since we are dealing with uncompressed images
 				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) + curCache < DkSettings::Resources::cacheMemory &&
 					DkImage::getBufferSizeFloat(img.size(), img.depth()) < 4*maxFileSize) {
-					cacheIter.value().setImage(img);
-					if (rotated) cacheIter.value().setRotated(rotated);
+					cacheIter.value().setImage(img, true);	// if we get a new cache image here, we can safely assume, that it is already rotated
 					curCache += cacheIter.value().getCacheSize();
 					qDebug() << "current file set: " << QSize(img.size());
 				}
@@ -2528,7 +2523,6 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img, bool rotated) {
 			}
 			else if (!img.isNull() && cache.at(idx).getCacheState() == DkImageCache::cache_loaded) {
 				cacheIter.value().setImage(img);	// don't question the size - it might change due to editing and cause a complete re-caching
-				if (rotated) cacheIter.value().setRotated(rotated);
 			}
 			break;
 		}
@@ -2536,25 +2530,6 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img, bool rotated) {
 	}
 
 	somethingTodo = true;
-}
-
-void DkCacher::setOrientationFlag(QFileInfo file, bool rotated) {
-
-	//QReadLocker locker(&lock);
-
-	QMutableVectorIterator<DkImageCache> cacheIter(cache);
-
-	for (int idx = 0; idx < cache.size(); idx++) {
-
-		cacheIter.next();
-
-		if (cacheIter.value().getFile() == file) {
-			
-			cacheIter.value().setRotated(rotated);
-			break;
-		}
-
-	}
 }
 
 void DkCacher::load() {
@@ -3154,6 +3129,10 @@ QImage DkImageStorage::getImage(float factor) {
 
 void DkImageStorage::computeImage() {
 
+	// obviously, computeImage gets called multiple times in some wired cases...
+	if (!imgs.empty())
+		return;
+
 	DkTimer dt;
 	busy = true;
 	QImage resizedImg = img;
@@ -3198,7 +3177,10 @@ void DkImageStorage::computeImage() {
 	// tell my caller I did something
 	emit imageUpdated();
 
-	qDebug() << "pyramid computation took me: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "pyramid computation took me: " << QString::fromStdString(dt.getTotal()) << " layers: " << imgs.size();
+
+	if (imgs.size() > 6)
+		qDebug() << "layer size > 6: " << img.size();
 
 }
 

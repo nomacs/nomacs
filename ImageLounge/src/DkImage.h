@@ -681,10 +681,19 @@ public:
 		this->file = file;
 	};
 
-	void setImage(QImage img) {
+	void setImage(QImage img, bool rotated = false) {
+		
+		if (rotated)
+			this->rotated = rotated;
+		if (initialSize.isEmpty()) 
+			initialSize = img.size();
+		else if (img.isNull()) {
+			initialSize = QSize();
+			this->rotated = false;
+		}
+
 		cacheSize = DkImage::getBufferSizeFloat(img.size(), img.depth());
 		this->img = img;
-		if (img.isNull()) rotated = false;
 	};
 
 	void ignore() {
@@ -693,6 +702,7 @@ public:
 
 	void clearImage() {
 		img = QImage();
+		initialSize = QSize();
 		rotated = false;
 	};
 
@@ -716,17 +726,20 @@ public:
 			return cacheState;
 	};
 
-	void setRotated(bool rotated = true) {
-		this->rotated = rotated;
-	};
+	//void setRotated(bool rotated = true) {
+	//	this->rotated = rotated;
+	//};
 
 	bool isRotated() {
-		return rotated;
+
+		qDebug() << "rotated: " << rotated << " size bool: " << (img.size() != initialSize);
+		return rotated | img.size() != initialSize;
 	};
 
 protected:
 	QFileInfo file;
 	QImage img;
+	QSize initialSize;
 	int cacheState;
 	float cacheSize;
 	bool rotated;
@@ -750,8 +763,7 @@ public:
 	void play();
 	void start();
 
-	void setCurrentFile(QFileInfo file, QImage img = QImage(), bool rotated = false);
-	void setOrientationFlag(QFileInfo file, bool rotated);
+	void setCurrentFile(QFileInfo file, QImage img = QImage());
 	void setNewDir(QDir& dir, QStringList& files);
 	void updateDir(QStringList& files);
 	QVector<DkImageCache> getCache() {
