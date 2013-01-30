@@ -70,7 +70,7 @@ void DkImageManipulationDialog::init() {
 
 	isOk = false;
 	dialogWidth = 700;
-	dialogHeight = 550;
+	dialogHeight = 560;
 	toolsWidth = 200;
 	previewMargin = 20;
 	previewWidth = dialogWidth - toolsWidth - 2 * previewMargin;
