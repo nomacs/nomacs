@@ -1950,7 +1950,7 @@ enthält keine Bilder</translation>
     <message>
         <location filename="../src/DkSettings.cpp" line="537"/>
         <source>File Info</source>
-        <translation>Dateiinformation</translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="548"/>
