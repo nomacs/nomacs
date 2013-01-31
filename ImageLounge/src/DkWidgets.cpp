@@ -492,12 +492,15 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				selected = idx;
-				DkThumbNail thumb = thumbs.at(selected);
-				createSelectedEffect(thumb.getImage(), DkSettings::Display::highlightColor);
+
+				if ((size_t)selected <= thumbs.size() && selected >= 0) {
+					DkThumbNail thumb = thumbs.at(selected);
+					createSelectedEffect(thumb.getImage(), DkSettings::Display::highlightColor);
 				
-				// important: setText shows the label - if you then hide it here again you'll get a stack overflow
-				if (fileLabel->height() < height())
-					fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
+					if (fileLabel->height() < height())
+						fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+				}
 				break;
 			}
 		}
