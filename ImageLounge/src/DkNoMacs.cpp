@@ -1896,18 +1896,18 @@ void DkNoMacs::resizeImage() {
 
 			//// do not load the old image -> as the transformed image is not the same anymore
 			//viewport()->getImageLoader()->enableWatcher(false);
-			viewport()->getImageLoader()->clearFileWatcher();
+			//viewport()->getImageLoader()->clearFileWatcher();
 
 			// TODO: redirect resize to basic loader here
 			QImage rImg = resizeDialog->getResizedImage();
 
 			if (!rImg.isNull()) {
-				viewport()->setEditedImage(rImg);
 
 				// this reloads the image -> that's not what we want!
 				if (metaData)
 					metaData->setResolution((int)resizeDialog->getExifDpi(), (int)resizeDialog->getExifDpi());
 
+				viewport()->setEditedImage(rImg);
 			}
 
 

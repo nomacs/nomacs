@@ -1405,7 +1405,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		loadDir(file.absoluteDir(), false);
 		
 		emit updateImageSignal();
-		emit updateDirSignal(file);	// this should be called updateFileSignal too
+		emit updateDirSignal(file);	// this should call updateFileSignal too
 		sendFileSignal();
 
 		// update history
@@ -1951,7 +1951,7 @@ void DkImageLoader::directoryChanged(const QString& path) {
 
 		qDebug() << "folder updated";
 		folderUpdated = true;
-		// TODO: emit update folder signal
+		emit updateDirSignal(file, true);
 	}
 	
 }
