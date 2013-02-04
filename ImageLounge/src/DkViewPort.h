@@ -31,6 +31,7 @@
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QGraphicsView>
 #include <QtGui/QPrintDialog>
+#include <QtGui/QPrintPreviewDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
@@ -63,6 +64,7 @@
 #include "DkWidgets.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
+#include "DkDialog.h"
 
 #include "DkMath.h"
 

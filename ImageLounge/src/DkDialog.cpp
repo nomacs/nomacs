@@ -1586,4 +1586,244 @@ void DkUpdateDialog::okButtonClicked() {
 	close();
 }
 
+// DkPrintPreviewDialog --------------------------------------------------------------------
+
+DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) 
+		: QMainWindow(parent, flags) {
+	this->img = img;
+	this->printer = printer;
+	printDialog = 0;
+	init();
 }
+
+void DkPrintPreviewDialog::init() {
+	if (!printer) {
+		printer = new QPrinter;
+	}
+	preview = new QPrintPreviewWidget(printer, this);
+	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
+	
+	setup_Actions();
+	createLayout();
+	setMinimumHeight(600);
+	setMinimumWidth(800);
+}
+
+void DkPrintPreviewDialog::setup_Actions() {
+	fitGroup = new QActionGroup(this);
+	fitWidthAction = fitGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Fit width"));
+	fitPageAction = fitGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Fit page"));
+	fitWidthAction->setObjectName(QLatin1String("fitWidthAction"));
+	fitPageAction->setObjectName(QLatin1String("fitPageAction"));
+	fitWidthAction->setCheckable(true);
+	fitPageAction->setCheckable(true);
+	setIcon(fitWidthAction, QLatin1String("fit-width"));
+	setIcon(fitPageAction, QLatin1String("fit-page"));
+	QObject::connect(fitGroup, SIGNAL(triggered(QAction*)), this, SLOT(fitImage(QAction*)));
+
+	// Zoom
+	zoomGroup = new QActionGroup(this);
+	zoomInAction = zoomGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Zoom in"));
+	zoomOutAction = zoomGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Zoom out"));
+	setIcon(zoomInAction, QLatin1String("zoom-in"));
+	setIcon(zoomOutAction, QLatin1String("zoom-out"));
+
+	// Portrait/Landscape
+	orientationGroup = new QActionGroup(this);
+	portraitAction = orientationGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Portrait"));
+	landscapeAction = orientationGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Landscape"));
+	portraitAction->setCheckable(true);
+	landscapeAction->setCheckable(true);
+	setIcon(portraitAction, QLatin1String("layout-portrait"));
+	setIcon(landscapeAction, QLatin1String("layout-landscape"));
+	QObject::connect(portraitAction, SIGNAL(triggered(bool)), preview, SLOT(setPortraitOrientation()));
+	QObject::connect(landscapeAction, SIGNAL(triggered(bool)), preview, SLOT(setLandscapeOrientation()));
+
+	// Print
+	printerGroup = new QActionGroup(this);
+	printAction = printerGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Print"));
+	pageSetupAction = printerGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Page setup"));
+	setIcon(printAction, QLatin1String("print"));
+	setIcon(pageSetupAction, QLatin1String("page-setup"));
+	QObject::connect(printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
+	QObject::connect(pageSetupAction, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
+
+}
+
+void DkPrintPreviewDialog::createLayout() {
+	zoomFactor = new QComboBox;
+	zoomFactor->setEditable(true);
+	zoomFactor->setMinimumContentsLength(7);
+	zoomFactor->setInsertPolicy(QComboBox::NoInsert);
+	QLineEdit *zoomEditor = new QLineEdit;
+	zoomFactor->setLineEdit(zoomEditor);
+	static const short factorsX2[] = { 25, 50, 100, 200, 250, 300, 400, 800, 1600 };
+	for (int i = 0; i < int(sizeof(factorsX2) / sizeof(factorsX2[0])); ++i)
+		zoomFactor->addItem(QString::number(factorsX2[i] / 2.0));
+	QObject::connect(zoomFactor->lineEdit(), SIGNAL(editingFinished()), this, SLOT(zoomFactorChanged()));
+	QObject::connect(zoomFactor, SIGNAL(currentIndexChanged(int)), this, SLOT(zoomFactorChanged()));
+
+
+
+	QToolBar *toolbar = new QToolBar(this);
+	toolbar->addAction(fitWidthAction);
+	toolbar->addAction(fitPageAction);
+	toolbar->addSeparator();
+	toolbar->addWidget(zoomFactor);
+	toolbar->addAction(zoomOutAction);
+	toolbar->addAction(zoomInAction);
+	toolbar->addSeparator();
+	toolbar->addAction(portraitAction);
+	toolbar->addAction(landscapeAction);
+	toolbar->addSeparator();
+	//toolbar->addAction(firstPageAction);
+	//toolbar->addAction(prevPageAction);
+	//toolbar->addSeparator();
+	toolbar->addAction(pageSetupAction);
+	toolbar->addAction(printAction);
+
+	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
+	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomInAction));
+	QToolButton *zoomOutButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomOutAction));
+	zoomInButton->setAutoRepeat(true);
+	zoomInButton->setAutoRepeatInterval(200);
+	zoomInButton->setAutoRepeatDelay(200);
+	zoomOutButton->setAutoRepeat(true);
+	zoomOutButton->setAutoRepeatInterval(200);
+	zoomOutButton->setAutoRepeatDelay(200);
+	QObject::connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
+	QObject::connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
+
+
+	this->addToolBar(toolbar);
+
+	this->setCentralWidget(preview);
+}
+
+void DkPrintPreviewDialog::setIcon(QAction* action, const QLatin1String &name) {
+	QLatin1String imagePrefix(":/trolltech/dialogs/qprintpreviewdialog/images/");
+	QIcon icon;
+	icon.addFile(imagePrefix + name + QLatin1String("-24.png"), QSize(24, 24));
+	icon.addFile(imagePrefix + name + QLatin1String("-32.png"), QSize(32, 32));
+	action->setIcon(icon);
+}
+
+void DkPrintPreviewDialog::paintRequested(QPrinter* printer) {
+	QPainter painter(printer);
+	QRect rect = painter.viewport();
+	QSize size = img.size();
+	size.scale(rect.size(), Qt::KeepAspectRatio);
+	painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+	painter.setWindow(img.rect());
+	painter.drawImage(0, 0, img);
+
+	painter.end();
+
+}
+
+void DkPrintPreviewDialog::fitImage(QAction* action) {
+	setFitting(true);
+	if (action == fitPageAction)
+		preview->fitInView();
+	else
+		preview->fitToWidth();
+}
+
+void DkPrintPreviewDialog::setFitting(bool on) {
+	if (isFitting() == on)
+		return;
+	fitGroup->setExclusive(on);
+	if (on) {
+		QAction* action = fitWidthAction->isChecked() ? fitWidthAction : fitPageAction;
+		action->setChecked(true);
+		if (fitGroup->checkedAction() != action) {
+			// work around exclusitivity problem
+			fitGroup->removeAction(action);
+			fitGroup->addAction(action);
+		}
+	} else {
+		fitWidthAction->setChecked(false);
+		fitPageAction->setChecked(false);
+	}
+}
+
+void DkPrintPreviewDialog::zoomIn() {
+	setFitting(false);
+	preview->zoomIn();
+	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::zoomOut() {
+	setFitting(false);
+	preview->zoomOut();
+	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::zoomFactorChanged() {
+	QString text = zoomFactor->lineEdit()->text();
+	bool ok;
+	qreal factor = text.remove(QLatin1Char('%')).toFloat(&ok);
+	factor = qMax(qreal(1.0), qMin(qreal(1000.0), factor));
+	if (ok) {
+		preview->setZoomFactor(factor/100.0);
+		zoomFactor->setEditText(QString::fromLatin1("%1%").arg(factor));
+		setFitting(false);
+	}
+}
+
+void DkPrintPreviewDialog::updateZoomFactor()
+{
+	zoomFactor->lineEdit()->setText(QString().sprintf("%.1f%%", preview->zoomFactor()*100));
+}
+
+void DkPrintPreviewDialog::pageSetup() {
+	QPageSetupDialog pageSetup(printer, this);
+	if (pageSetup.exec() == QDialog::Accepted) {
+		// update possible orientation changes
+		if (preview->orientation() == QPrinter::Portrait) {
+			portraitAction->setChecked(true);
+			preview->setPortraitOrientation();
+		}else {
+			landscapeAction->setChecked(true);
+			preview->setLandscapeOrientation();
+		}
+	}
+}
+
+void DkPrintPreviewDialog::print() {
+	qDebug() << "im print";
+//#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
+//	if (printer->outputFormat() != QPrinter::NativeFormat) {
+//		QString title;
+//		QString suffix;
+//		if (printer->outputFormat() == QPrinter::PdfFormat) {
+//			title = QCoreApplication::translate("QPrintPreviewDialog", "Export to PDF");
+//			suffix = QLatin1String(".pdf");
+//		} else {
+//			title = QCoreApplication::translate("QPrintPreviewDialog", "Export to PostScript");
+//			suffix = QLatin1String(".ps");
+//		}
+//		QString fileName = QFileDialog::getSaveFileName(this, title, printer->outputFileName(),
+//			QLatin1Char('*') + suffix);
+//		if (!fileName.isEmpty()) {
+//			if (QFileInfo(fileName).suffix().isEmpty())
+//				fileName.append(suffix);
+//			printer->setOutputFileName(fileName);
+//		}
+//		if (!printer->outputFileName().isEmpty())
+//			preview->print();
+//		this->accept();
+//		return;
+//	}
+//#endif
+
+	if (!printDialog)
+		printDialog = new QPrintDialog(printer, this);
+	if (printDialog->exec() == QDialog::Accepted) {
+		preview->print();
+		this->close();
+	}
+}
+
+
+} // close namespace

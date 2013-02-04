@@ -25,6 +25,8 @@
 
  *******************************************************************************************************/
 
+#pragma once
+
 #include <QDialog>
 #include <QLabel>
 #include <QRadioButton>
@@ -37,6 +39,13 @@
 #include <QFileInfo>
 #include <QTableView>
 #include <QCompleter>
+#include <QMainWindow>
+
+#include <QPrintPreviewWidget>
+#include <QPageSetupDialog>
+#include <QPrintDialog>
+#include <QToolBar>
+#include <QFormLayout>
 
 #include "DkWidgets.h"
 
@@ -428,6 +437,62 @@ class DkUpdateDialog : public QDialog {
 		
 		QPushButton* okButton;
 		QPushButton* cancelButton;
+};
+
+class DkPrintPreviewDialog : public QMainWindow {
+	Q_OBJECT
+
+	public:
+		DkPrintPreviewDialog(QImage img, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+		void init();
+
+	protected:
+		void setup_Actions();
+		void createLayout();
+		void setIcon(QAction* action, const QLatin1String &name);
+
+	private slots:
+		void paintRequested(QPrinter* printer);
+		void fitImage(QAction* action);
+		void zoomIn();
+		void zoomOut();
+		void zoomFactorChanged();
+		void updateZoomFactor();
+		void pageSetup();
+		void print();
+
+	private:
+		void setFitting(bool on);
+		bool isFitting() {
+			return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
+		};
+
+		QImage img;
+
+		QActionGroup* fitGroup;
+		QAction *fitWidthAction;
+		QAction *fitPageAction;
+
+		QActionGroup* zoomGroup;
+		QAction *zoomInAction;
+		QAction *zoomOutAction;
+
+		QActionGroup* orientationGroup;
+		QAction *portraitAction;
+		QAction *landscapeAction;
+
+		QActionGroup *printerGroup;
+		QAction *printAction;
+		QAction *pageSetupAction;
+
+
+		QComboBox *zoomFactor;
+
+
+		QPrintPreviewWidget* preview;
+		QPrinter* printer;
+		QPrintDialog* printDialog;
 };
 
 }
