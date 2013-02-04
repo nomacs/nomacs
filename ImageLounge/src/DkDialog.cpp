@@ -1727,6 +1727,7 @@ void DkPrintPreviewDialog::fitImage(QAction* action) {
 		preview->fitInView();
 	else
 		preview->fitToWidth();
+	updateZoomFactor();
 }
 
 void DkPrintPreviewDialog::setFitting(bool on) {
