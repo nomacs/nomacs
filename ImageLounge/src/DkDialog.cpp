@@ -1588,10 +1588,11 @@ void DkUpdateDialog::okButtonClicked() {
 
 // DkPrintPreviewDialog --------------------------------------------------------------------
 
-DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) 
+DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) 
 		: QMainWindow(parent, flags) {
 	this->img = img;
 	this->printer = printer;
+	this->dpi = dpi;
 	printDialog = 0;
 	init();
 }
@@ -1600,7 +1601,7 @@ void DkPrintPreviewDialog::init() {
 	if (!printer) {
 		printer = new QPrinter;
 	}
-	preview = new QPrintPreviewWidget(printer, this);
+	preview = new DkPrintPreviewWidget(printer, this);
 	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
 	
 	setup_Actions();
@@ -1639,6 +1640,7 @@ void DkPrintPreviewDialog::setup_Actions() {
 	QObject::connect(portraitAction, SIGNAL(triggered(bool)), preview, SLOT(setPortraitOrientation()));
 	QObject::connect(landscapeAction, SIGNAL(triggered(bool)), preview, SLOT(setLandscapeOrientation()));
 
+
 	// Print
 	printerGroup = new QActionGroup(this);
 	printAction = printerGroup->addAction(QCoreApplication::translate("QPrintPreviewDialog", "Print"));
@@ -1656,14 +1658,24 @@ void DkPrintPreviewDialog::createLayout() {
 	zoomFactor->setMinimumContentsLength(7);
 	zoomFactor->setInsertPolicy(QComboBox::NoInsert);
 	QLineEdit *zoomEditor = new QLineEdit;
+	zoomEditor->setValidator(new DkZoomValidator(1,1000, 1, zoomEditor));
 	zoomFactor->setLineEdit(zoomEditor);
 	static const short factorsX2[] = { 25, 50, 100, 200, 250, 300, 400, 800, 1600 };
 	for (int i = 0; i < int(sizeof(factorsX2) / sizeof(factorsX2[0])); ++i)
-		zoomFactor->addItem(QString::number(factorsX2[i] / 2.0));
+		zoomFactor->addItem(QString::number(factorsX2[i] / 2.0)+"%");
 	QObject::connect(zoomFactor->lineEdit(), SIGNAL(editingFinished()), this, SLOT(zoomFactorChanged()));
 	QObject::connect(zoomFactor, SIGNAL(currentIndexChanged(int)), this, SLOT(zoomFactorChanged()));
 
-
+	// dpi selection
+	dpiFactor = new QComboBox;
+	dpiFactor->setEditable(true);
+	dpiFactor->setMinimumContentsLength(5);
+	dpiFactor->setInsertPolicy(QComboBox::NoInsert);
+	QLineEdit* dpiEditor = new QLineEdit;
+	dpiFactor->setLineEdit(dpiEditor);
+	static const short dpiFactors[] = {72, 150, 300, 600};
+	for (int i = 0; i < int(sizeof(dpiFactors) / sizeof(dpiFactors[0])); i++)
+		dpiFactor->addItem(QString::number(dpiFactors[i]));
 
 	QToolBar *toolbar = new QToolBar(this);
 	toolbar->addAction(fitWidthAction);
@@ -1672,6 +1684,8 @@ void DkPrintPreviewDialog::createLayout() {
 	toolbar->addWidget(zoomFactor);
 	toolbar->addAction(zoomOutAction);
 	toolbar->addAction(zoomInAction);
+	toolbar->addSeparator();
+	toolbar->addWidget(dpiFactor);
 	toolbar->addSeparator();
 	toolbar->addAction(portraitAction);
 	toolbar->addAction(landscapeAction);
@@ -1826,5 +1840,14 @@ void DkPrintPreviewDialog::print() {
 	}
 }
 
+// DkPrintPreviewWidget --------------------------------------------------------------------
+DkPrintPreviewWidget::DkPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewWidget(printer, parent, flags) {
+	// do nothing atm
+}
+
+void DkPrintPreviewWidget::paintEvent(QPaintEvent * event) {
+	qDebug() << "paintEvent";
+	QPrintPreviewWidget::paintEvent(event);
+}
 
 } // close namespace

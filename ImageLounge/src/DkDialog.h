@@ -439,11 +439,48 @@ class DkUpdateDialog : public QDialog {
 		QPushButton* cancelButton;
 };
 
+
+class DkPrintPreviewWidget : public QPrintPreviewWidget {
+	Q_OBJECT
+public:
+	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	public slots:
+		virtual void paintEvent(QPaintEvent* event);
+
+
+};
+
+class DkZoomValidator : public QDoubleValidator {
+	public:
+		DkZoomValidator(qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) {};
+		State validate(QString &input, int &pos) const {
+			bool replacePercent = false;
+			if (input.endsWith(QLatin1Char('%'))) {
+				input = input.left(input.length() - 1);
+				replacePercent = true;
+			}
+			State state = QDoubleValidator::validate(input, pos);
+			if (replacePercent)
+				input += QLatin1Char('%');
+			const int num_size = 4;
+			if (state == Intermediate) {
+				int i = input.indexOf(QLocale::system().decimalPoint());
+				if ((i == -1 && input.size() > num_size)
+					|| (i != -1 && i > num_size))
+					return Invalid;
+			}
+			return state;			
+		}
+};
+
+
+
 class DkPrintPreviewDialog : public QMainWindow {
 	Q_OBJECT
 
 	public:
-		DkPrintPreviewDialog(QImage img, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+		DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 		void init();
 
@@ -486,13 +523,15 @@ class DkPrintPreviewDialog : public QMainWindow {
 		QAction *printAction;
 		QAction *pageSetupAction;
 
-
 		QComboBox *zoomFactor;
+		QComboBox *dpiFactor;
 
 
-		QPrintPreviewWidget* preview;
+		DkPrintPreviewWidget* preview;
 		QPrinter* printer;
 		QPrintDialog* printDialog;
+
+		float dpi;
 };
 
 }

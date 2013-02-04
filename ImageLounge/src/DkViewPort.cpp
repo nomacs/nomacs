@@ -2182,10 +2182,16 @@ void DkViewPort::printImage() {
 	//painter.end();
 
 	qDebug() << "im print Image";
+	//DkImageLoader::imgMetaData
+	qDebug() << " x resolution: "  << DkImageLoader::imgMetaData.getExifValue("XResolution").c_str();
+	qDebug() << " y resolution: "  << DkImageLoader::imgMetaData.getExifValue("YResolution").c_str();
+	float xDpi, yDpi;
+	getController()->getMetaDataWidget()->getResolution(xDpi, yDpi);
 	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
 	QImage img = imgStorage.getImage();
-	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(img);
+	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(img, xDpi, 0, this);
 	previewDialog->show();
+	
 	//previewDialog->raise();
 	
 	//previewDialog->open();
