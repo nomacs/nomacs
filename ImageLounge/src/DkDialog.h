@@ -448,30 +448,36 @@ public:
 	public slots:
 		virtual void paintEvent(QPaintEvent* event);
 
+	protected:
+		virtual void wheelEvent(QWheelEvent *event);
+
 
 };
 
-class DkZoomValidator : public QDoubleValidator {
+class DkPrintPreviewValidator : public QDoubleValidator {
 	public:
-		DkZoomValidator(qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) {};
+		DkPrintPreviewValidator(QString suffix, qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) { this->suffix = suffix;};
 		State validate(QString &input, int &pos) const {
-			bool replacePercent = false;
-			if (input.endsWith(QLatin1Char('%'))) {
-				input = input.left(input.length() - 1);
-				replacePercent = true;
+			bool replaceSuffix = false;
+			if (input.endsWith(suffix)) {
+				input = input.left(input.length() - suffix.length());
+				replaceSuffix = true;
 			}
 			State state = QDoubleValidator::validate(input, pos);
-			if (replacePercent)
-				input += QLatin1Char('%');
-			const int num_size = 4;
+			if (replaceSuffix)
+				input += suffix;
+			const int num_size = 4+suffix.length();
 			if (state == Intermediate) {
 				int i = input.indexOf(QLocale::system().decimalPoint());
 				if ((i == -1 && input.size() > num_size)
 					|| (i != -1 && i > num_size))
 					return Invalid;
 			}
+			
 			return state;			
 		}
+	private:
+		QString suffix;
 };
 
 
@@ -489,21 +495,26 @@ class DkPrintPreviewDialog : public QMainWindow {
 		void createLayout();
 		void setIcon(QAction* action, const QLatin1String &name);
 
+
 	private slots:
 		void paintRequested(QPrinter* printer);
 		void fitImage(QAction* action);
 		void zoomIn();
 		void zoomOut();
 		void zoomFactorChanged();
+		void dpiFactorChanged();
 		void updateZoomFactor();
+		void updateDpiFactor(qreal dpi);
 		void pageSetup();
 		void print();
+		void centerImage();
 
 	private:
 		void setFitting(bool on);
 		bool isFitting() {
 			return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
 		};
+		
 
 		QImage img;
 
@@ -525,13 +536,17 @@ class DkPrintPreviewDialog : public QMainWindow {
 
 		QComboBox *zoomFactor;
 		QComboBox *dpiFactor;
+		QString dpiEditorSuffix;
 
 
 		DkPrintPreviewWidget* preview;
 		QPrinter* printer;
 		QPrintDialog* printDialog;
 
-		float dpi;
+		QTransform imgTransform;
+
+		float dpi, origdpi;
+		bool initialPaint;
 };
 
 }
