@@ -1617,16 +1617,18 @@ void DkPrintPreviewDialog::init() {
 	QRectF rect = printer->pageRect();
 	qreal scaleFactor;
 	QSizeF paperSize = printer->paperSize(QPrinter::Inch);
+	// scale image to fit on paper
 	if (rect.width()/img.width() < rect.height()/img.height()) {
 		scaleFactor = rect.width()/(img.width()+FLT_EPSILON);
-		dpi = img.width()/(paperSize.width()+FLT_EPSILON);
+		dpi = img.width()/(paperSize.width()+FLT_EPSILON)/scaleFactor;
 	} else {
 		scaleFactor = rect.height()/(img.height()+FLT_EPSILON);
-		dpi = img.height()/(paperSize.height()+FLT_EPSILON);
+		dpi = img.height()/(paperSize.height()+FLT_EPSILON)/scaleFactor;
 	}
+	qDebug() << "dpi:" << dpi;
 	
-	// use at least 150 dpi as default
-	if (dpi < 150) {
+	// use at least 150 dpi as default if image has less then 150
+	if (origdpi < 150 && scaleFactor > 1) {
 		scaleFactor = origdpi/150;
 		dpi = 150;
 	}
@@ -1652,7 +1654,10 @@ void DkPrintPreviewDialog::setup_Actions() {
 	// Zoom
 	zoomGroup = new QActionGroup(this);
 	zoomInAction = zoomGroup->addAction(tr("Zoom in"));
+	zoomInAction->setShortcut(QKeySequence(Qt::Key_Plus));
+	zoomInAction->setShortcut(QKeySequence::ZoomIn);
 	zoomOutAction = zoomGroup->addAction(tr("Zoom out"));
+	zoomOutAction->setShortcut(QKeySequence(Qt::Key_Minus));
 	setIcon(zoomInAction, QLatin1String("zoom-in"));
 	setIcon(zoomOutAction, QLatin1String("zoom-out"));
 
