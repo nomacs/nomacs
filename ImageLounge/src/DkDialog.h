@@ -445,11 +445,14 @@ class DkPrintPreviewWidget : public QPrintPreviewWidget {
 public:
 	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	public slots:
-		virtual void paintEvent(QPaintEvent* event);
+	signals:
+		void zoomChanged();
+
+	//public slots:
+		//virtual void paintEvent(QPaintEvent* event);
 
 	protected:
-		virtual void wheelEvent(QWheelEvent *event);
+		virtual void wheelEvent(QWheelEvent *event);		
 
 
 };
@@ -490,11 +493,13 @@ class DkPrintPreviewDialog : public QMainWindow {
 
 		void init();
 
+	public slots:
+		void updateZoomFactor();
+
 	protected:
 		void setup_Actions();
 		void createLayout();
 		void setIcon(QAction* action, const QLatin1String &name);
-
 
 	private slots:
 		void paintRequested(QPrinter* printer);
@@ -503,8 +508,8 @@ class DkPrintPreviewDialog : public QMainWindow {
 		void zoomOut();
 		void zoomFactorChanged();
 		void dpiFactorChanged();
-		void updateZoomFactor();
 		void updateDpiFactor(qreal dpi);
+		void resetDpi();
 		void pageSetup();
 		void print();
 		void centerImage();
@@ -533,6 +538,9 @@ class DkPrintPreviewDialog : public QMainWindow {
 		QActionGroup *printerGroup;
 		QAction *printAction;
 		QAction *pageSetupAction;
+
+		QActionGroup *dpiGroup;
+		QAction *resetDpiAction;
 
 		QComboBox *zoomFactor;
 		QComboBox *dpiFactor;
