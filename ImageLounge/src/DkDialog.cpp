@@ -1654,10 +1654,15 @@ void DkPrintPreviewDialog::setup_Actions() {
 	// Zoom
 	zoomGroup = new QActionGroup(this);
 	zoomInAction = zoomGroup->addAction(tr("Zoom in"));
-	zoomInAction->setShortcut(QKeySequence(Qt::Key_Plus));
-	zoomInAction->setShortcut(QKeySequence::ZoomIn);
+	zoomInAction->setShortcut(Qt::Key_Plus);
+	//preview->addAction(zoomInAction);
+	//addAction(zoomInAction);
+	//zoomInAction->setShortcut(QKeySequence::AddTab);
+		//addAction(zoomInAction);
 	zoomOutAction = zoomGroup->addAction(tr("Zoom out"));
 	zoomOutAction->setShortcut(QKeySequence(Qt::Key_Minus));
+	//addAction(zoomOutAction);
+	//preview->addAction(zoomOutAction);
 	setIcon(zoomInAction, QLatin1String("zoom-in"));
 	setIcon(zoomOutAction, QLatin1String("zoom-out"));
 
