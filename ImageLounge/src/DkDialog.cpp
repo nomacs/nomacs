@@ -1585,4 +1585,399 @@ void DkUpdateDialog::okButtonClicked() {
 	close();
 }
 
+// DkPrintPreviewDialog --------------------------------------------------------------------
+
+DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) 
+		: QMainWindow(parent, flags) {
+	this->img = img;
+	this->printer = printer;
+	this->dpi = dpi;
+	this->origdpi = dpi;
+	printDialog = 0;
+	imgTransform = QTransform();
+	init();
 }
+
+void DkPrintPreviewDialog::init() {
+	if (!printer) {
+		printer = new QPrinter;
+	}
+	preview = new DkPrintPreviewWidget(printer, this);
+	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
+	connect(preview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
+	
+	setup_Actions();
+	createLayout();
+	setMinimumHeight(600);
+	setMinimumWidth(800);
+
+
+
+	QRectF rect = printer->pageRect();
+	qreal scaleFactor;
+	QSizeF paperSize = printer->paperSize(QPrinter::Inch);
+	// scale image to fit on paper
+	if (rect.width()/img.width() < rect.height()/img.height()) {
+		scaleFactor = rect.width()/(img.width()+FLT_EPSILON);
+		dpi = img.width()/(paperSize.width()+FLT_EPSILON)/scaleFactor;
+	} else {
+		scaleFactor = rect.height()/(img.height()+FLT_EPSILON);
+		dpi = img.height()/(paperSize.height()+FLT_EPSILON)/scaleFactor;
+	}
+	qDebug() << "dpi:" << dpi;
+	
+	// use at least 150 dpi as default if image has less then 150
+	if (origdpi < 150 && scaleFactor > 1) {
+		scaleFactor = origdpi/150;
+		dpi = 150;
+	}
+	imgTransform.scale(scaleFactor, scaleFactor);
+
+	dpiFactor->lineEdit()->setText(QString().sprintf("%.0f", dpi)+dpiEditorSuffix);
+	centerImage();
+	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::setup_Actions() {
+	fitGroup = new QActionGroup(this);
+	fitWidthAction = fitGroup->addAction(tr("Fit width"));
+	fitPageAction = fitGroup->addAction(tr("Fit page"));
+	fitWidthAction->setObjectName(QLatin1String("fitWidthAction"));
+	fitPageAction->setObjectName(QLatin1String("fitPageAction"));
+	fitWidthAction->setCheckable(true);
+	fitPageAction->setCheckable(true);
+	setIcon(fitWidthAction, QLatin1String("fit-width"));
+	setIcon(fitPageAction, QLatin1String("fit-page"));
+	QObject::connect(fitGroup, SIGNAL(triggered(QAction*)), this, SLOT(fitImage(QAction*)));
+
+	// Zoom
+	zoomGroup = new QActionGroup(this);
+	zoomInAction = zoomGroup->addAction(tr("Zoom in"));
+	zoomInAction->setShortcut(Qt::Key_Plus);
+	//preview->addAction(zoomInAction);
+	//addAction(zoomInAction);
+	//zoomInAction->setShortcut(QKeySequence::AddTab);
+		//addAction(zoomInAction);
+	zoomOutAction = zoomGroup->addAction(tr("Zoom out"));
+	zoomOutAction->setShortcut(QKeySequence(Qt::Key_Minus));
+	//addAction(zoomOutAction);
+	//preview->addAction(zoomOutAction);
+	setIcon(zoomInAction, QLatin1String("zoom-in"));
+	setIcon(zoomOutAction, QLatin1String("zoom-out"));
+
+	// Portrait/Landscape
+	orientationGroup = new QActionGroup(this);
+	portraitAction = orientationGroup->addAction(tr("Portrait"));
+	landscapeAction = orientationGroup->addAction(tr("Landscape"));
+	portraitAction->setCheckable(true);
+	landscapeAction->setCheckable(true);
+	setIcon(portraitAction, QLatin1String("layout-portrait"));
+	setIcon(landscapeAction, QLatin1String("layout-landscape"));
+	QObject::connect(portraitAction, SIGNAL(triggered(bool)), preview, SLOT(setPortraitOrientation()));
+	QObject::connect(portraitAction, SIGNAL(triggered(bool)), this, SLOT(centerImage()));
+	QObject::connect(landscapeAction, SIGNAL(triggered(bool)), preview, SLOT(setLandscapeOrientation()));
+	QObject::connect(landscapeAction, SIGNAL(triggered(bool)), this, SLOT(centerImage()));
+
+
+	// Print
+	printerGroup = new QActionGroup(this);
+	printAction = printerGroup->addAction(tr("Print"));
+	pageSetupAction = printerGroup->addAction(tr("Page setup"));
+	setIcon(printAction, QLatin1String("print"));
+	setIcon(pageSetupAction, QLatin1String("page-setup"));
+	QObject::connect(printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
+	QObject::connect(pageSetupAction, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
+
+	dpiGroup = new QActionGroup(this);
+	resetDpiAction = dpiGroup->addAction(tr("Reset dpi"));
+	setIcon(resetDpiAction, QLatin1String("fit-width"));
+	QObject::connect(resetDpiAction, SIGNAL(triggered(bool)), this, SLOT(resetDpi()));
+
+}
+
+void DkPrintPreviewDialog::createLayout() {
+
+	zoomFactor = new QComboBox;
+	zoomFactor->setEditable(true);
+	zoomFactor->setMinimumContentsLength(7);
+	zoomFactor->setInsertPolicy(QComboBox::NoInsert);
+	QLineEdit *zoomEditor = new QLineEdit;
+	zoomEditor->setValidator(new DkPrintPreviewValidator("%", 1,1000, 1, zoomEditor));
+	zoomFactor->setLineEdit(zoomEditor);
+	static const short factorsX2[] = { 25, 50, 100, 200, 250, 300, 400, 800, 1600 };
+	for (int i = 0; i < int(sizeof(factorsX2) / sizeof(factorsX2[0])); ++i)
+		zoomFactor->addItem(QString::number(factorsX2[i] / 2.0)+"%");
+	QObject::connect(zoomFactor->lineEdit(), SIGNAL(editingFinished()), this, SLOT(zoomFactorChanged()));
+	QObject::connect(zoomFactor, SIGNAL(currentIndexChanged(int)), this, SLOT(zoomFactorChanged()));
+
+	QString zoomTip = tr("keep ALT key pressed to zoom with the mouse wheel");
+	zoomFactor->setToolTip(zoomTip);
+	zoomEditor->setToolTip(zoomTip);
+	zoomOutAction->setToolTip(zoomTip);
+	zoomInAction->setToolTip(zoomTip);
+
+	// dpi selection
+	dpiFactor = new QComboBox;
+	dpiFactor->setEditable(true);
+	dpiFactor->setMinimumContentsLength(5);
+	dpiFactor->setInsertPolicy(QComboBox::NoInsert);
+	QLineEdit* dpiEditor = new QLineEdit;
+	dpiEditorSuffix = " dpi";
+	dpiEditor->setValidator(new DkPrintPreviewValidator(dpiEditorSuffix, 1,1000, 1, zoomEditor));
+	dpiFactor->setLineEdit(dpiEditor);
+	static const short dpiFactors[] = {72, 150, 300, 600};
+	for (int i = 0; i < int(sizeof(dpiFactors) / sizeof(dpiFactors[0])); i++)
+		dpiFactor->addItem(QString::number(dpiFactors[i])+dpiEditorSuffix);
+	QObject::connect(dpiFactor->lineEdit(), SIGNAL(editingFinished()), this, SLOT(dpiFactorChanged()));
+	QObject::connect(dpiFactor, SIGNAL(currentIndexChanged(int)), this, SLOT(dpiFactorChanged()));
+
+	QToolBar *toolbar = new QToolBar(this);
+	toolbar->addAction(fitWidthAction);
+	toolbar->addAction(fitPageAction);
+	toolbar->addSeparator();
+	toolbar->addWidget(zoomFactor);
+	toolbar->addAction(zoomOutAction);
+	toolbar->addAction(zoomInAction);
+	toolbar->addSeparator();
+	toolbar->addWidget(dpiFactor);
+	toolbar->addAction(resetDpiAction);
+	toolbar->addSeparator();
+	toolbar->addAction(portraitAction);
+	toolbar->addAction(landscapeAction);
+	toolbar->addSeparator();
+	//toolbar->addAction(firstPageAction);
+	//toolbar->addAction(prevPageAction);
+	//toolbar->addSeparator();
+	toolbar->addAction(pageSetupAction);
+	toolbar->addAction(printAction);
+
+	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
+	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomInAction));
+	QToolButton *zoomOutButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomOutAction));
+	zoomInButton->setAutoRepeat(true);
+	zoomInButton->setAutoRepeatInterval(200);
+	zoomInButton->setAutoRepeatDelay(200);
+	zoomOutButton->setAutoRepeat(true);
+	zoomOutButton->setAutoRepeatInterval(200);
+	zoomOutButton->setAutoRepeatDelay(200);
+	QObject::connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
+	QObject::connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
+
+
+	this->addToolBar(toolbar);
+
+	if (DkSettings::Display::smallIcons)
+		toolbar->setIconSize(QSize(16, 16));
+	else
+		toolbar->setIconSize(QSize(32, 32));
+
+	if (DkSettings::Display::toolbarGradient) {
+		QColor hCol = DkSettings::Display::highlightColor;
+		hCol.setAlpha(80);
+
+		toolbar->setStyleSheet(
+			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
+			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
+			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			);
+	}
+
+
+	this->setCentralWidget(preview);
+}
+
+void DkPrintPreviewDialog::setIcon(QAction* action, const QLatin1String &name) {
+	QLatin1String imagePrefix(":/trolltech/dialogs/qprintpreviewdialog/images/");
+	QIcon icon;
+	icon.addFile(imagePrefix + name + QLatin1String("-24.png"), QSize(24, 24));
+	icon.addFile(imagePrefix + name + QLatin1String("-32.png"), QSize(32, 32));
+	action->setIcon(icon);
+}
+
+void DkPrintPreviewDialog::paintRequested(QPrinter* printer) {
+	QPainter painter(printer);
+	QRect rect = painter.viewport();
+	QSize size = img.size();
+	painter.setWorldTransform(imgTransform);
+	painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+	painter.setWindow(img.rect());
+	painter.drawImage(0, 0, img);
+
+	painter.end();
+
+}
+
+void DkPrintPreviewDialog::fitImage(QAction* action) {
+	setFitting(true);
+	if (action == fitPageAction)
+		preview->fitInView();
+	else
+		preview->fitToWidth();
+	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::centerImage() {
+	QRect imgRect = img.rect();
+	QRectF transRect = imgTransform.mapRect(imgRect);
+	qreal xtrans = 0, ytrans = 0;
+	xtrans = ((printer->pageRect().width() - transRect.width())/2);
+	ytrans = (printer->pageRect().height() - transRect.height())/2;
+
+	imgTransform.translate(-imgTransform.dx()/(imgTransform.m11()+DBL_EPSILON), -imgTransform.dy()/(imgTransform.m22()+DBL_EPSILON)); // reset old transformation
+
+	imgTransform.translate(xtrans/(imgTransform.m11()+DBL_EPSILON), ytrans/(imgTransform.m22()+DBL_EPSILON));
+	preview->updatePreview();
+}
+
+void DkPrintPreviewDialog::setFitting(bool on) {
+	if (isFitting() == on)
+		return;
+	fitGroup->setExclusive(on);
+	if (on) {
+		QAction* action = fitWidthAction->isChecked() ? fitWidthAction : fitPageAction;
+		action->setChecked(true);
+		if (fitGroup->checkedAction() != action) {
+			// work around exclusitivity problem
+			fitGroup->removeAction(action);
+			fitGroup->addAction(action);
+		}
+	} else {
+		fitWidthAction->setChecked(false);
+		fitPageAction->setChecked(false);
+	}
+}
+
+void DkPrintPreviewDialog::zoomIn() {
+	setFitting(false);
+	preview->zoomIn();
+	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::zoomOut() {
+	setFitting(false);
+	preview->zoomOut();
+	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::zoomFactorChanged() {
+	QString text = zoomFactor->lineEdit()->text();
+	bool ok;
+	qreal factor = text.remove(QLatin1Char('%')).toFloat(&ok);
+	factor = qMax(qreal(1.0), qMin(qreal(1000.0), factor));
+	if (ok) {
+		preview->setZoomFactor(factor/100.0);
+		zoomFactor->setEditText(QString::fromLatin1("%1%").arg(factor));
+		setFitting(false);
+		updateZoomFactor();
+	}
+	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::updateZoomFactor()
+{
+	zoomFactor->lineEdit()->setText(QString().sprintf("%.1f%%", preview->zoomFactor()*100));
+}
+
+void DkPrintPreviewDialog::dpiFactorChanged() {
+	QString text = dpiFactor->lineEdit()->text();
+	bool ok;
+	qreal factor = text.remove(dpiEditorSuffix).toFloat(&ok);
+	if (ok) {
+		imgTransform.reset();
+		imgTransform.scale(origdpi/factor, origdpi/factor);
+	}
+	centerImage();
+	preview->updatePreview();
+}
+
+void DkPrintPreviewDialog::updateDpiFactor(qreal dpi) {
+	dpiFactor->lineEdit()->setText(QString().sprintf("%.0f", dpi)+dpiEditorSuffix);
+}
+
+void DkPrintPreviewDialog::resetDpi() {
+	updateDpiFactor(origdpi);
+	dpiFactorChanged();
+}
+
+void DkPrintPreviewDialog::pageSetup() {
+	QPageSetupDialog pageSetup(printer, this);
+	if (pageSetup.exec() == QDialog::Accepted) {
+		// update possible orientation changes
+		if (preview->orientation() == QPrinter::Portrait) {
+			portraitAction->setChecked(true);
+			preview->setPortraitOrientation();
+		}else {
+			landscapeAction->setChecked(true);
+			preview->setLandscapeOrientation();
+		}
+		centerImage();
+	}
+}
+
+void DkPrintPreviewDialog::print() {
+//#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
+//	if (printer->outputFormat() != QPrinter::NativeFormat) {
+//		QString title;
+//		QString suffix;
+//		if (printer->outputFormat() == QPrinter::PdfFormat) {
+//			title = QCoreApplication::translate("QPrintPreviewDialog", "Export to PDF");
+//			suffix = QLatin1String(".pdf");
+//		} else {
+//			title = QCoreApplication::translate("QPrintPreviewDialog", "Export to PostScript");
+//			suffix = QLatin1String(".ps");
+//		}
+//		QString fileName = QFileDialog::getSaveFileName(this, title, printer->outputFileName(),
+//			QLatin1Char('*') + suffix);
+//		if (!fileName.isEmpty()) {
+//			if (QFileInfo(fileName).suffix().isEmpty())
+//				fileName.append(suffix);
+//			printer->setOutputFileName(fileName);
+//		}
+//		if (!printer->outputFileName().isEmpty())
+//			preview->print();
+//		this->accept();
+//		return;
+//	}
+//#endif
+
+	if (!printDialog)
+		printDialog = new QPrintDialog(printer, this);
+	if (printDialog->exec() == QDialog::Accepted) {
+		preview->print();
+		this->close();
+	}
+}
+
+// DkPrintPreviewWidget --------------------------------------------------------------------
+DkPrintPreviewWidget::DkPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewWidget(printer, parent, flags) {
+	// do nothing atm - bis zum bankomat
+}
+
+//void DkPrintPreviewWidget::paintEvent(QPaintEvent * event) {
+//	qDebug() << "paintEvent";
+//	QPrintPreviewWidget::paintEvent(event);
+//}
+
+void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event) {
+
+	if (event->modifiers() != Qt::AltModifier) {
+		QPrintPreviewWidget::wheelEvent(event);
+		return;
+	}
+
+
+	qreal delta = event->delta();
+	if (DkSettings::Display::invertZoom)
+		delta *= -1;
+	if (event->delta() > 0)
+		zoomIn();
+	else
+		zoomOut();
+	emit zoomChanged();
+
+	QPrintPreviewWidget::wheelEvent(event);	
+}
+
+} // close namespace

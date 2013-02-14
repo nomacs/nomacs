@@ -2159,28 +2159,42 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 }
 
 void DkViewPort::printImage() {
-
 	QPrinter printer;
 
-	QPrintDialog *dialog = new QPrintDialog(&printer, this);
-	dialog->setWindowTitle(tr("Print Document"));
-	if (imgStorage.hasImage())
-		dialog->addEnabledOption(QAbstractPrintDialog::PrintSelection);
-	if (dialog->exec() != QDialog::Accepted)
-		return;
+	//QPrintDialog *dialog = new QPrintDialog(&printer, this);
+	//dialog->setWindowTitle(tr("Print Document"));
+	//if (imgStorage.hasImage())
+	//	dialog->addEnabledOption(QAbstractPrintDialog::PrintSelection);
+	//if (dialog->exec() != QDialog::Accepted)
+	//	return;
 
-	qDebug() << printer.pageRect(QPrinter::Inch).height() << " x " << printer.pageRect(QPrinter::Inch).width();
+	//qDebug() << printer.pageRect(QPrinter::Inch).height() << " x " << printer.pageRect(QPrinter::Inch).width();
 
-	// TODO: not that stupid...
-	QPainter painter(&printer);
-	QRect rect = painter.viewport();
-	QSize size = imgStorage.getImage().size();
-	size.scale(rect.size(), Qt::KeepAspectRatio);
-	painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-	painter.setWindow(imgStorage.getImage().rect());
-	painter.drawImage(0, 0, imgStorage.getImage());
+	////// TODO: not that stupid...
+	//QPainter painter(&printer);
+	//QRect rect = painter.viewport();
+	//QSize size = imgStorage.getImage().size();
+	//size.scale(rect.size(), Qt::KeepAspectRatio);
+	//painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+	//painter.setWindow(imgStorage.getImage().rect());
+	//painter.drawImage(0, 0, imgStorage.getImage());
 
-	painter.end();
+	//painter.end();
+
+	float xDpi, yDpi;
+	getController()->getMetaDataWidget()->getResolution(xDpi, yDpi);
+	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
+	QImage img = imgStorage.getImage();
+	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(img, xDpi, 0, this);
+	
+	previewDialog->show();
+	previewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
+	
+	//previewDialog->raise();
+	
+	//previewDialog->open();
+	//previewDialog->exec();
+
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------

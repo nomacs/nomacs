@@ -25,6 +25,8 @@
 
  *******************************************************************************************************/
 
+#pragma once
+
 #include <QDialog>
 #include <QLabel>
 #include <QRadioButton>
@@ -37,6 +39,13 @@
 #include <QFileInfo>
 #include <QTableView>
 #include <QCompleter>
+#include <QMainWindow>
+
+#include <QPrintPreviewWidget>
+#include <QPageSetupDialog>
+#include <QPrintDialog>
+#include <QToolBar>
+#include <QFormLayout>
 
 #include "DkWidgets.h"
 
@@ -428,6 +437,124 @@ class DkUpdateDialog : public QDialog {
 		
 		QPushButton* okButton;
 		QPushButton* cancelButton;
+};
+
+
+class DkPrintPreviewWidget : public QPrintPreviewWidget {
+	Q_OBJECT
+public:
+	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	signals:
+		void zoomChanged();
+
+	//public slots:
+		//virtual void paintEvent(QPaintEvent* event);
+
+	protected:
+		virtual void wheelEvent(QWheelEvent *event);		
+
+
+};
+
+class DkPrintPreviewValidator : public QDoubleValidator {
+	public:
+		DkPrintPreviewValidator(QString suffix, qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) { this->suffix = suffix;};
+		State validate(QString &input, int &pos) const {
+			bool replaceSuffix = false;
+			if (input.endsWith(suffix)) {
+				input = input.left(input.length() - suffix.length());
+				replaceSuffix = true;
+			}
+			State state = QDoubleValidator::validate(input, pos);
+			if (replaceSuffix)
+				input += suffix;
+			const int num_size = 4+suffix.length();
+			if (state == Intermediate) {
+				int i = input.indexOf(QLocale::system().decimalPoint());
+				if ((i == -1 && input.size() > num_size)
+					|| (i != -1 && i > num_size))
+					return Invalid;
+			}
+			
+			return state;			
+		}
+	private:
+		QString suffix;
+};
+
+
+
+class DkPrintPreviewDialog : public QMainWindow {
+	Q_OBJECT
+
+	public:
+		DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+		void init();
+
+	public slots:
+		void updateZoomFactor();
+
+	protected:
+		void setup_Actions();
+		void createLayout();
+		void setIcon(QAction* action, const QLatin1String &name);
+
+	private slots:
+		void paintRequested(QPrinter* printer);
+		void fitImage(QAction* action);
+		void zoomIn();
+		void zoomOut();
+		void zoomFactorChanged();
+		void dpiFactorChanged();
+		void updateDpiFactor(qreal dpi);
+		void resetDpi();
+		void pageSetup();
+		void print();
+		void centerImage();
+
+	private:
+		void setFitting(bool on);
+		bool isFitting() {
+			return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
+		};
+		
+
+		QImage img;
+
+		QActionGroup* fitGroup;
+		QAction *fitWidthAction;
+		QAction *fitPageAction;
+
+		QActionGroup* zoomGroup;
+		QAction *zoomInAction;
+		QAction *zoomOutAction;
+
+		QActionGroup* orientationGroup;
+		QAction *portraitAction;
+		QAction *landscapeAction;
+
+		QActionGroup *printerGroup;
+		QAction *printAction;
+		QAction *pageSetupAction;
+
+		QActionGroup *dpiGroup;
+		QAction *resetDpiAction;
+
+		QComboBox *zoomFactor;
+		QComboBox *dpiFactor;
+		QString dpiEditorSuffix;
+
+
+		DkPrintPreviewWidget* preview;
+		QPrinter* printer;
+		QPrintDialog* printDialog;
+
+		QTransform imgTransform;
+
+		float dpi, origdpi;
+		bool initialPaint;
 };
 
 }
