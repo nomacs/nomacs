@@ -313,12 +313,15 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		//QRectF debugR = worldMatrix.inverted().mapRect(imgWorldRect);
 		//painter->drawRect(debugR);
 
-		// show that there are more images...
-		if (worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x())
-			drawFadeOut(leftGradient, imgWorldRect, &img);
-		if (imgWorldRect.right() > rightGradient.start().x())
-			drawFadeOut(rightGradient, imgWorldRect, &img);
+		bool isLeftGradient = worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x();
+		bool isRightGradient = imgWorldRect.right() > rightGradient.start().x();
 
+		// show that there are more images...
+		if (isLeftGradient)
+			drawFadeOut(leftGradient, imgWorldRect, &img);
+		if (isRightGradient)
+			drawFadeOut(rightGradient, imgWorldRect, &img);
+		
 		if (idx == selected && !selectionGlow.isNull()) {
 			painter->drawPixmap(r, selectionGlow, QRect(QPoint(), img.size()));
 			painter->setOpacity(0.8);
@@ -328,12 +331,15 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		else if (idx == currentFileIdx) {
 
 			if (currentImgGlow.isNull() || currentFileIdx != oldFileIdx || currentImgGlow.size() != img.size())
-				createCurrentImgEffect(img.copy(), QColor(100, 214, 44));
+				createCurrentImgEffect(img.copy(), DkSettings::Display::highlightColor);
+		
+			// create border
+			QRectF sr = r;
+			sr.setSize(sr.size()+QSize(2, 2));
+			sr.moveCenter(r.center());
 
-			painter->drawPixmap(r, currentImgGlow, QRect(QPoint(), img.size()));
-			painter->setOpacity(0.8);
+			painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
-			painter->setOpacity(1.0f);
 		}
 		else
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
@@ -368,11 +374,37 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 }
 
 void DkFilePreview::createCurrentImgEffect(QImage img, QColor col) {
-
+	
 	QPixmap imgPx = QPixmap::fromImage(img);
 	currentImgGlow = imgPx;
 	currentImgGlow.fill(col);
 	currentImgGlow.setAlphaChannel(imgPx.alphaChannel());
+	
+	//QPixmap glow = imgPx;
+	//// Fills the whole pixmap with a certain color
+	//// Change to whatever color you want the glow to be
+	//// However, it is now just a red box
+	//glow.fill(Qt::red);
+	//
+	//img = img.scaled(img.size()-QSize(20,20), Qt::IgnoreAspectRatio);
+	//imgPx = QPixmap::fromImage(img);
+
+	//// This masks out the transparent parts of the image
+	//// (or at least that's my understanding of it - that's how
+	//// it worked when I tried it, but I'm pretty new to this)
+	//// This makes the glow the shape of the pixmap image
+	//glow.setMask(imgPx.createHeuristicMask());
+
+	//// To apply the effect, you need to make a QGraphicsItem
+	//QGraphicsPixmapItem *glowItem = new QGraphicsPixmapItem(glow);
+
+	//// Add the blur
+	//QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
+	//// You can fiddle with the blur to get different effects
+	//blur->setBlurRadius(20);
+	//glowItem->setGraphicsEffect(blur);
+	//currentImgGlow = glowItem->pixmap();
+	////glowItem->get
 }
 
 void DkFilePreview::createSelectedEffect(QImage img, QColor col) {
