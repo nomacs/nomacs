@@ -732,6 +732,11 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	this->file = file;
 	this->virtualFile = file;
 
+	delayedUpdateTimer.moveToThread(loaderThread);
+	delayedUpdateTimer.setSingleShot(true);
+	connect(&delayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
+	timerBlockedUpdate = false;
+
 	//saveDir = DkSettings::Global::lastSaveDir;	// loading save dir is obsolete ?!
 	saveDir = "";
 
@@ -1911,20 +1916,30 @@ bool DkImageLoader::restoreFile(const QFileInfo& fileInfo) {
 
 	// delete the destroyed file
 	QFile file(fileInfo.absoluteFilePath());
-	if (file.size() == 0) {
+	QFile backupFile(fileInfo.absolutePath() + QDir::separator() + backupFileName);
+
+	if (file.size() == 0 || file.size() <= backupFile.size()) {
 		
 		if (!file.remove()) {
+
+			// ok I did not destroy the original file - so delete the back-up
+			// -> this reverts the file - but otherwise we spam to the disk 
+			// actions reverted here include meta data saving
+			if (file.size() != 0)
+				return backupFile.remove();
+
 			qDebug() << "I could not remove the file...";
 			return false;
 		}
 	}
 	else {
+		
 		qDebug() << "non-empty file: " << fileName << " I won't delete it...";
+		qDebug() << "file size: " << file.size() << " back-up file size: " << backupFile.size();
 		return false;
 	}
 
 	// now 
-	QFile backupFile(fileInfo.absolutePath() + QDir::separator() + backupFileName);
 	return backupFile.rename(fileInfo.absoluteFilePath());
 }
 
@@ -1947,11 +1962,30 @@ void DkImageLoader::fileChanged(const QString& path) {
  **/ 
 void DkImageLoader::directoryChanged(const QString& path) {
 
-	if (QDir(path) == dir.absolutePath()) {
+	if (path.isEmpty() || QDir(path) == dir.absolutePath()) {
 
 		qDebug() << "folder updated";
 		folderUpdated = true;
-		emit updateDirSignal(file, true);
+		
+		if (path.isEmpty())
+			qDebug() << "empty path -> timer update??";
+
+		// guarantee, that only every XX seconds a folder update occurs
+		// think of a folder where 100s of files are written to...
+		// as this could be pretty fast, the thumbsloader (& whoever) would create a 
+		// greater offset and slow down the system
+		if ((path.isEmpty() && timerBlockedUpdate) || (!path.isEmpty() && !delayedUpdateTimer.isActive())) {
+
+			emit updateDirSignal(file, DkThumbsLoader::dir_updated);			
+			timerBlockedUpdate = false;
+
+			if (!path.isEmpty())
+				delayedUpdateTimer.start(1000);
+		}
+		else {
+			timerBlockedUpdate = true;
+			qDebug() << "timer blocked...";
+		}
 	}
 	
 }
@@ -2663,12 +2697,13 @@ bool DkCacher::cacheImage(DkImageCache& cacheImg) {
  * caller must destroy the thumbs vector.
  * @param dir the directory where thumbnails should be loaded from.
  **/ 
-DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir) {
+DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QStringList files) {
 
 	this->thumbs = thumbs;
 	this->dir = dir;
 	this->isActive = true;
 	this->maxThumbSize = 160;
+	this->files = files;
 	init();
 }
 
@@ -2678,7 +2713,8 @@ DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir) {
  **/ 
 void DkThumbsLoader::init() {
 
-	QStringList files = DkImageLoader::getFilteredFileList(dir);
+	if (files.empty())
+		files = DkImageLoader::getFilteredFileList(dir);
 	startIdx = -1;
 	endIdx = -1;
 	somethingTodo = false;
@@ -2696,7 +2732,7 @@ void DkThumbsLoader::init() {
 
 /**
  * Returns the file idx of the file specified.
- * @param file the file to be querried.
+ * @param file the file to be queried.
  * @return int the index of the file.
  **/ 
 int DkThumbsLoader::getFileIdx(QFileInfo& file) {

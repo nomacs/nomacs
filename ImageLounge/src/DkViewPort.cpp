@@ -245,7 +245,7 @@ void DkControlWidget::connectWidgets() {
 	if (loader) {
 		qDebug() << "loader slots connected";
 
-		connect(loader, SIGNAL(updateDirSignal(QFileInfo, bool)), filePreview, SLOT(updateDir(QFileInfo, bool)));
+		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), filePreview, SLOT(updateDir(QFileInfo, int)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setFileInfo(QFileInfo, QSize, bool)));
 
@@ -1895,7 +1895,7 @@ void DkViewPort::reloadFile() {
 		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
 
 		if (controller->getFilePreview())
-			controller->getFilePreview()->updateDir(loader->getFile(), true);
+			controller->getFilePreview()->updateDir(loader->getFile(), DkThumbsLoader::user_updated);
 	}
 }
 

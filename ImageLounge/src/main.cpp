@@ -41,6 +41,7 @@
 #include "DkNoMacs.h"
 #include "DkPong.h"
 #include "DkUtils.h"
+#include "DkTimer.h"
 
 #include <QtGui/QApplication>
 #include <QFileInfo>
@@ -140,10 +141,11 @@ int main(int argc, char *argv[]) {
 	                 w->viewport(), SLOT(loadFile(const QFileInfo&)));
 #endif
 
-	
 #ifdef Q_WS_WIN
 	if (!nmc::DkSettings::Global::setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::Global::setupVersion) {
-		if (QFile::remove(nmc::DkSettings::Global::setupPath)) {
+		
+		// ask for exists - otherwise we always try to delete it if the user deleted it
+		if (!QFileInfo(nmc::DkSettings::Global::setupPath).exists() || QFile::remove(nmc::DkSettings::Global::setupPath)) {
 			nmc::DkSettings::Global::setupPath = "";
 			nmc::DkSettings::Global::setupVersion = "";
 			nmc::DkSettings settings;
@@ -151,7 +153,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 #endif // Q_WS_WIN
-
 
 	int rVal = a.exec();
 	delete w;

@@ -540,6 +540,7 @@ public:
 			thumbsLoader->stop();
 			thumbsLoader->wait();
 			delete thumbsLoader;
+			thumbsLoader = 0;
 		}
 	};
 
@@ -555,7 +556,7 @@ public:
 	void setVisible(bool visible) {
 
 		if (visible)
-			indexDir(false);	// false = do not force refreshing the folder
+			indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
 
 		DkWidget::setVisible(visible);
 	}
@@ -569,7 +570,7 @@ public slots:
 	void wheelEvent(QWheelEvent *event);
 	void leaveEvent(QEvent *event);
 	void moveImages();
-	void updateDir(QFileInfo file, bool force = false);
+	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -619,7 +620,7 @@ private:
 	bool scrollToCurrentImage;
 	
 	void init();
-	void indexDir(bool force = true);
+	void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);

@@ -53,6 +53,7 @@
 #include <QReadLocker>
 #include <QWriteLocker>
 #include <QReadWriteLock>
+#include <QTimer>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -513,11 +514,26 @@ class DkThumbsLoader : public QThread {
 	Q_OBJECT
 
 public:
-	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir());
+	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QStringList files = QStringList());
 	~DkThumbsLoader() {};
 
 	void run();
 	int getFileIdx(QFileInfo& file);
+	QStringList getFiles() {
+		return files;
+	};
+	QDir getDir() {
+		return dir;
+	};
+	bool isWorking() {
+		return somethingTodo;
+	};
+
+	enum ForceUpdate {
+		not_forced,
+		dir_updated,
+		user_updated,
+	};
 
 signals:
 	void updateSignal();
@@ -542,6 +558,7 @@ private:
 	int endIdx;
 	bool loadAllThumbs;
 	bool forceSave;
+	QStringList files;
 
 	// function
 	QImage getThumbNailQt(QFileInfo file);
@@ -917,7 +934,7 @@ signals:
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
 	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
-	void updateDirSignal(QFileInfo file, bool force = false);
+	void updateDirSignal(QFileInfo file, int force = DkThumbsLoader::not_forced);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
 	void setPlayer(bool play);
@@ -926,7 +943,7 @@ public slots:
 	QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
 	void changeFile(int skipIdx, bool silent = false, int force = cache_default);
 	void fileChanged(const QString& path);
-	void directoryChanged(const QString& path);
+	void directoryChanged(const QString& path = QString());
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
 	virtual bool loadFile(QFileInfo file, bool silent = false, int cacheState = cache_default);
@@ -941,6 +958,9 @@ protected:
 
 	DkBasicLoader basicLoader;
 	DkCacher* cacher;
+
+	QTimer delayedUpdateTimer;
+	bool timerBlockedUpdate;
 	
 	QFileInfo editFile;
 	QFileInfo lastFileLoaded;

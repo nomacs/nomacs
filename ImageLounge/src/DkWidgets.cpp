@@ -626,7 +626,7 @@ void DkFilePreview::moveImages() {
 	update();
 }
 
-void DkFilePreview::updateDir(QFileInfo file, bool force) {
+void DkFilePreview::updateDir(QFileInfo file, int force) {
 
 	currentFile = file;
 
@@ -634,31 +634,58 @@ void DkFilePreview::updateDir(QFileInfo file, bool force) {
 		indexDir(force);
 }
 
-void DkFilePreview::indexDir(bool force) {
+void DkFilePreview::indexDir(int force) {
 	
 	QDir dir = currentFile.absoluteDir();
 	dir.setNameFilters(DkImageLoader::fileFilters);
 	dir.setSorting(QDir::LocaleAware);
 
+	
+
 	// new folder?
-	if ((force || thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
+	if ((force == DkThumbsLoader::user_updated || force == DkThumbsLoader::dir_updated || 
+		thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
 		!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
 
-		if (thumbsLoader) {
-			thumbsLoader->stop();
-			thumbsLoader->wait();
-			delete thumbsLoader;
+		QStringList files;
+		bool myChanges = false;
+		if (force == DkThumbsLoader::dir_updated) {
+			files = DkImageLoader::getFilteredFileList(dir);
+
+			// this is nasty, but the exif writes to a back-up file so the index changes too if I save thumbnails
+			myChanges = thumbsLoader && DkSettings::Display::saveThumb && files.size()-1 == thumbsLoader->getFiles().size() && thumbsLoader->isWorking();
 		}
 
-		thumbs.clear();
+		
 
-		if (dir.exists()) {
+		// if a dir update was triggered, only update if the file index changed
+		if (force != DkThumbsLoader::dir_updated || 
+			(thumbsLoader && files != thumbsLoader->getFiles() && !myChanges)) {
 
-			thumbsLoader = new DkThumbsLoader(&thumbs, dir);
-			connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
+			qDebug() << "force state: " << force;
 
-			thumbsLoader->start();
-			thumbsDir = dir;
+			if (thumbsLoader && files != thumbsLoader->getFiles()) {
+				qDebug() << "file index changed..........." << " my changes: " << myChanges;
+				qDebug() << "new index: " << files.size() << " old index: " << thumbsLoader->getFiles().size();
+			}
+
+			if (thumbsLoader) {
+				thumbsLoader->stop();
+				thumbsLoader->wait();
+				delete thumbsLoader;
+				thumbsLoader = 0;
+			}
+
+			thumbs.clear();
+
+			if (dir.exists()) {
+
+				thumbsLoader = new DkThumbsLoader(&thumbs, dir, files);
+				connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
+
+				thumbsLoader->start();
+				thumbsDir = dir;
+			}
 		}
 	}
 
