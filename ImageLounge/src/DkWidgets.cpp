@@ -278,7 +278,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
 
 		// check if the size is still valid
-		if (r.width() <= 1 || r.height() <= 1) 
+		if (r.width() < 1 || r.height() < 1) 
 			continue;
 
 		// center vertically
@@ -337,8 +337,20 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			QRectF sr = r;
 			sr.setSize(sr.size()+QSize(2, 2));
 			sr.moveCenter(r.center());
-
+			painter->setOpacity(0.8);
 			painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
+
+			sr.setSize(sr.size()+QSize(2, 2));
+			sr.moveCenter(r.center());
+			painter->setOpacity(0.3);
+			painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
+
+			//sr.setSize(sr.size()+QSize(2, 2));
+			//sr.moveCenter(r.center());
+			//painter->setOpacity(0.2);
+			//painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
+
+			painter->setOpacity(1.0);
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
 		}
 		else
