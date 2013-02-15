@@ -546,8 +546,10 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
  **/ 
 void DkBasicLoader::rotate(int orientation) {
 
-	if (orientation == 0 || orientation == -1)
+	if (orientation == 0 || orientation == -1) {
+		qDebug() << "orientation is -1 !!!!!!!!!!!!!!!!";
 		return;
+	}
 
 	QTransform rotationMatrix;
 	rotationMatrix.rotate((double)orientation);
@@ -1353,6 +1355,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 						break;
 
 					imgRotated = cCache.isRotated();
+					qDebug() << "is rotated: " << cCache.isRotated() << "------------------------";
 					qDebug() << "loading from cache...";
 				}
 				break; 
@@ -1882,6 +1885,9 @@ void DkImageLoader::rotateImage(double angle) {
 	}
 
 	if (watcher) watcher->addPath(this->file.absoluteFilePath());
+	if (cacher) 
+		cacher->setCurrentFile(file, basicLoader.image());
+
 
 }
 
@@ -2556,7 +2562,7 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 					cacheIter.value().clearImage();
 			}
 			else if (!img.isNull() && cache.at(idx).getCacheState() == DkImageCache::cache_loaded) {
-				cacheIter.value().setImage(img);	// don't question the size - it might change due to editing and cause a complete re-caching
+				cacheIter.value().setImage(img, true);	// don't question the size - it might change due to editing and cause a complete re-caching
 			}
 			break;
 		}

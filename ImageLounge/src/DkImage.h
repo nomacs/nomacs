@@ -150,21 +150,21 @@ public:
 
 		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32 ) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
-			qDebug() << "ARGB32 or RGB32";
+			//qDebug() << "ARGB32 or RGB32";
 		}
 		else if (img.format() == QImage::Format_RGB888) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
-			qDebug() << "RGB888";
+			//qDebug() << "RGB888";
 		}
 		else if (img.format() == QImage::Format_Indexed8) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar*)img.bits(), img.bytesPerLine());
-			qDebug() << "indexed...";
+			//qDebug() << "indexed...";
 		}
 		else {
-			qDebug() << "image flag: " << img.format();
+			//qDebug() << "image flag: " << img.format();
 			cImg = img.convertToFormat(QImage::Format_ARGB32);
 			mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
-			qDebug() << "I need to convert the QImage to ARGB32";
+			//qDebug() << "I need to convert the QImage to ARGB32";
 		}
 
 		mat2 = mat2.clone();	// we need to own the pointer

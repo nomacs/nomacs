@@ -601,10 +601,19 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 void DkFilePreview::moveImages() {
 
 	if (scrollToCurrentImage) {
-		currentDx = (width()/2.0f - newFileRect.center().x())/50.0f;
+		
+		float cDist = width()/2.0f - newFileRect.center().x();
+		
+		if (fabs(cDist) < width())
+			currentDx = cDist/50.0f;
+		else
+			currentDx = cDist/4.0f;
+
+		if (fabs(currentDx) < 1)
+			currentDx = (currentDx < 0) ? -1.0f : 1.0f;
 
 		// end position
-		if (fabs((width()/2.0f - newFileRect.center().x())) < 1) {
+		if (fabs(cDist) < 1) {
 			currentDx = width()/2.0f-newFileRect.center().x();
 			moveImageTimer->stop();
 			scrollToCurrentImage = false;
