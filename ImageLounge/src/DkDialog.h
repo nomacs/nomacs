@@ -489,6 +489,19 @@ class DkPrintPreviewDialog : public QMainWindow {
 	Q_OBJECT
 
 	public:
+		enum icons{
+			print_fit_width,
+			print_fit_page,
+			print_zoom_out,
+			print_zoom_in,
+			print_reset_dpi,
+			print_portrait,
+			print_landscape,
+			print_setup,
+			print_printer,
+			print_end,
+		};
+
 		DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 		void init();
@@ -500,6 +513,7 @@ class DkPrintPreviewDialog : public QMainWindow {
 		void setup_Actions();
 		void createLayout();
 		void setIcon(QAction* action, const QLatin1String &name);
+		void createIcons();
 
 	private slots:
 		void paintRequested(QPrinter* printer);
@@ -550,6 +564,8 @@ class DkPrintPreviewDialog : public QMainWindow {
 		DkPrintPreviewWidget* preview;
 		QPrinter* printer;
 		QPrintDialog* printDialog;
+
+		QVector<QIcon> icons;
 
 		QTransform imgTransform;
 

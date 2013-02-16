@@ -329,6 +329,7 @@ void DkNoMacs::createIcons() {
 	fileIcons[icon_file_dir] = ICON("document-open-folder", ":/nomacs/img/dir.png");
 	fileIcons[icon_file_open] = ICON("document-open", ":/nomacs/img/open.png");
 	fileIcons[icon_file_save] = ICON("document-save", ":/nomacs/img/save.png");
+	fileIcons[icon_file_print] = ICON("document-print", ":/nomacs/img/printer.png");
 	fileIcons[icon_file_open_large] = ICON("document-open-large", ":/nomacs/img/open-large.png");
 	fileIcons[icon_file_dir_large] = ICON("document-open-folder-large", ":/nomacs/img/dir-large.png");
 	fileIcons[icon_file_prev] = ICON("go-previous", ":/nomacs/img/previous.png");
@@ -563,7 +564,7 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save]->setStatusTip(tr("Save an image"));
 	connect(fileActions[menu_file_save], SIGNAL(triggered()), this, SLOT(saveFile()));
 
-	fileActions[menu_file_print] = new QAction(tr("&Print"), this);
+	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
 	fileActions[menu_file_print]->setStatusTip(tr("Print an image"));
 	connect(fileActions[menu_file_print], SIGNAL(triggered()), vp, SLOT(printImage()));

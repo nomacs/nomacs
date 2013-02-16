@@ -41,5 +41,12 @@
         <file>img/pipette.png</file>
         <file>img/close.png</file>
         <file>img/manipulation.png</file>
+        <file>img/zoom-in.png</file>
+        <file>img/zoom-out.png</file>
+        <file>img/fit-width.png</file>
+        <file>img/landscape.png</file>
+        <file>img/portrait.png</file>
+        <file>img/printer.png</file>
+        <file>img/print-setup.png</file>
     </qresource>
 </RCC>

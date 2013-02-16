@@ -303,6 +303,7 @@ enum fileIcons {
 	icon_file_open_large,
 	icon_file_dir_large,
 	icon_file_save,
+	icon_file_print,
 	icon_file_filter,
 
 	icon_file_end,	// nothing beyond this point

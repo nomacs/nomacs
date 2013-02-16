@@ -1599,19 +1599,20 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* prin
 }
 
 void DkPrintPreviewDialog::init() {
+	
 	if (!printer) {
 		printer = new QPrinter;
 	}
+	
 	preview = new DkPrintPreviewWidget(printer, this);
 	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
 	connect(preview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
 	
+	createIcons();
 	setup_Actions();
 	createLayout();
 	setMinimumHeight(600);
 	setMinimumWidth(800);
-
-
 
 	QRectF rect = printer->pageRect();
 	qreal scaleFactor;
@@ -1638,41 +1639,65 @@ void DkPrintPreviewDialog::init() {
 	updateZoomFactor();
 }
 
+void DkPrintPreviewDialog::createIcons() {
+
+	icons.resize(print_end);
+
+	icons[print_fit_width]	= QIcon(":/nomacs/img/fit-width.png");
+	icons[print_fit_page]	= QIcon(":/nomacs/img/zoomReset.png");
+	icons[print_zoom_in]	= QIcon(":/nomacs/img/zoom-in.png");
+	icons[print_zoom_out]	= QIcon(":/nomacs/img/zoom-out.png");
+	icons[print_reset_dpi]	= QIcon(":/nomacs/img/zoom100.png");
+	icons[print_landscape]	= QIcon(":/nomacs/img/landscape.png");
+	icons[print_portrait]	= QIcon(":/nomacs/img/portrait.png");
+	icons[print_setup]		= QIcon(":/nomacs/img/print-setup.png");
+	icons[print_printer]	= QIcon(":/nomacs/img/printer.png");
+
+	if (!DkSettings::Display::defaultIconColor) {
+		// now colorize all icons
+		for (int idx = 0; idx < icons.size(); idx++)
+			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100), DkSettings::Display::iconColor));
+	}
+}
+
 void DkPrintPreviewDialog::setup_Actions() {
+	
 	fitGroup = new QActionGroup(this);
-	fitWidthAction = fitGroup->addAction(tr("Fit width"));
-	fitPageAction = fitGroup->addAction(tr("Fit page"));
+	
+	fitWidthAction = fitGroup->addAction(icons[print_fit_width], tr("Fit width"));
+	fitPageAction = fitGroup->addAction(icons[print_fit_page], tr("Fit page"));
 	fitWidthAction->setObjectName(QLatin1String("fitWidthAction"));
 	fitPageAction->setObjectName(QLatin1String("fitPageAction"));
 	fitWidthAction->setCheckable(true);
 	fitPageAction->setCheckable(true);
-	setIcon(fitWidthAction, QLatin1String("fit-width"));
-	setIcon(fitPageAction, QLatin1String("fit-page"));
+	//setIcon(fitWidthAction, QLatin1String("fit-width"));
+	//setIcon(fitPageAction, QLatin1String("fit-page"));
 	QObject::connect(fitGroup, SIGNAL(triggered(QAction*)), this, SLOT(fitImage(QAction*)));
 
 	// Zoom
 	zoomGroup = new QActionGroup(this);
-	zoomInAction = zoomGroup->addAction(tr("Zoom in"));
+	
+	zoomInAction = zoomGroup->addAction(icons[print_zoom_in], tr("Zoom in"));
 	zoomInAction->setShortcut(Qt::Key_Plus);
 	//preview->addAction(zoomInAction);
 	//addAction(zoomInAction);
 	//zoomInAction->setShortcut(QKeySequence::AddTab);
 		//addAction(zoomInAction);
-	zoomOutAction = zoomGroup->addAction(tr("Zoom out"));
+	zoomOutAction = zoomGroup->addAction(icons[print_zoom_out], tr("Zoom out"));
 	zoomOutAction->setShortcut(QKeySequence(Qt::Key_Minus));
 	//addAction(zoomOutAction);
 	//preview->addAction(zoomOutAction);
-	setIcon(zoomInAction, QLatin1String("zoom-in"));
-	setIcon(zoomOutAction, QLatin1String("zoom-out"));
+	//setIcon(zoomInAction, QLatin1String("zoom-in"));
+	//setIcon(zoomOutAction, QLatin1String("zoom-out"));
 
 	// Portrait/Landscape
 	orientationGroup = new QActionGroup(this);
-	portraitAction = orientationGroup->addAction(tr("Portrait"));
-	landscapeAction = orientationGroup->addAction(tr("Landscape"));
+	portraitAction = orientationGroup->addAction(icons[print_portrait], tr("Portrait"));
+	landscapeAction = orientationGroup->addAction(icons[print_landscape], tr("Landscape"));
 	portraitAction->setCheckable(true);
 	landscapeAction->setCheckable(true);
-	setIcon(portraitAction, QLatin1String("layout-portrait"));
-	setIcon(landscapeAction, QLatin1String("layout-landscape"));
+	//setIcon(portraitAction, QLatin1String("layout-portrait"));
+	//setIcon(landscapeAction, QLatin1String("layout-landscape"));
 	QObject::connect(portraitAction, SIGNAL(triggered(bool)), preview, SLOT(setPortraitOrientation()));
 	QObject::connect(portraitAction, SIGNAL(triggered(bool)), this, SLOT(centerImage()));
 	QObject::connect(landscapeAction, SIGNAL(triggered(bool)), preview, SLOT(setLandscapeOrientation()));
@@ -1681,16 +1706,16 @@ void DkPrintPreviewDialog::setup_Actions() {
 
 	// Print
 	printerGroup = new QActionGroup(this);
-	printAction = printerGroup->addAction(tr("Print"));
-	pageSetupAction = printerGroup->addAction(tr("Page setup"));
-	setIcon(printAction, QLatin1String("print"));
-	setIcon(pageSetupAction, QLatin1String("page-setup"));
+	printAction = printerGroup->addAction(icons[print_printer], tr("Print"));
+	pageSetupAction = printerGroup->addAction(icons[print_setup], tr("Page setup"));
+	//setIcon(printAction, QLatin1String("print"));
+	//setIcon(pageSetupAction, QLatin1String("page-setup"));
 	QObject::connect(printAction, SIGNAL(triggered(bool)), this, SLOT(print()));
 	QObject::connect(pageSetupAction, SIGNAL(triggered(bool)), this, SLOT(pageSetup()));
 
 	dpiGroup = new QActionGroup(this);
-	resetDpiAction = dpiGroup->addAction(tr("Reset dpi"));
-	setIcon(resetDpiAction, QLatin1String("fit-width"));
+	resetDpiAction = dpiGroup->addAction(icons[print_reset_dpi], tr("Reset dpi"));
+	//setIcon(resetDpiAction, QLatin1String("fit-width"));
 	QObject::connect(resetDpiAction, SIGNAL(triggered(bool)), this, SLOT(resetDpi()));
 
 }
@@ -1731,13 +1756,13 @@ void DkPrintPreviewDialog::createLayout() {
 	QObject::connect(dpiFactor->lineEdit(), SIGNAL(editingFinished()), this, SLOT(dpiFactorChanged()));
 	QObject::connect(dpiFactor, SIGNAL(currentIndexChanged(int)), this, SLOT(dpiFactorChanged()));
 
-	QToolBar *toolbar = new QToolBar(this);
+	QToolBar *toolbar = new QToolBar(tr("Print Preview"), this);
 	toolbar->addAction(fitWidthAction);
 	toolbar->addAction(fitPageAction);
 	toolbar->addSeparator();
 	toolbar->addWidget(zoomFactor);
-	toolbar->addAction(zoomOutAction);
 	toolbar->addAction(zoomInAction);
+	toolbar->addAction(zoomOutAction);
 	toolbar->addSeparator();
 	toolbar->addWidget(dpiFactor);
 	toolbar->addAction(resetDpiAction);
@@ -1750,6 +1775,26 @@ void DkPrintPreviewDialog::createLayout() {
 	//toolbar->addSeparator();
 	toolbar->addAction(pageSetupAction);
 	toolbar->addAction(printAction);
+
+	if (DkSettings::Display::toolbarGradient) {
+
+		QColor hCol = DkSettings::Display::highlightColor;
+		hCol.setAlpha(80);
+
+		toolbar->setStyleSheet(
+			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
+			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
+			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			);
+	}
+
+	if (DkSettings::Display::smallIcons)
+		toolbar->setIconSize(QSize(16, 16));
+	else
+		toolbar->setIconSize(QSize(32, 32));
+
 
 	// Cannot use the actions' triggered signal here, since it doesn't autorepeat
 	QToolButton *zoomInButton = static_cast<QToolButton *>(toolbar->widgetForAction(zoomInAction));
@@ -1765,25 +1810,6 @@ void DkPrintPreviewDialog::createLayout() {
 
 
 	this->addToolBar(toolbar);
-
-	if (DkSettings::Display::smallIcons)
-		toolbar->setIconSize(QSize(16, 16));
-	else
-		toolbar->setIconSize(QSize(32, 32));
-
-	if (DkSettings::Display::toolbarGradient) {
-		QColor hCol = DkSettings::Display::highlightColor;
-		hCol.setAlpha(80);
-
-		toolbar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
-	}
-
 
 	this->setCentralWidget(preview);
 }
