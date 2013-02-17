@@ -236,14 +236,16 @@ protected:
 
 		qDebug() << "app idx: " << defaultApp;
 
-		if (defaultApp < numDefaultApps) {
+		if (defaultApp < numDefaultApps && defaultApp >= 0 && defaultApp < appPaths.size()) {
 			qDebug() << "default path...";
 			return appPaths[defaultApp];
 		}
-		else {
+		else if (defaultApp-numDefaultApps > 0 && defaultApp-numDefaultApps < userAppPaths.size()) {
 			qDebug() << "user app path";
 			return userAppPaths[defaultApp-numDefaultApps];
 		}
+
+		return "";
 	};
 
 };

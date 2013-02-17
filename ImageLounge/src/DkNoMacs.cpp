@@ -262,7 +262,21 @@ void DkNoMacs::createToolbar() {
 	//test->setFixedSize(QSize(16,16));
 	//test->addAction(fileActions[menu_file_prev]);
 	//toolbar->addWidget(test);
-	
+
+
+	//// add this to get auto-repeat (but it is triggered twice then?)
+	//QToolButton *prevButton = static_cast<QToolButton *>(toolbar->widgetForAction(fileActions[menu_file_prev]));
+	//prevButton->setAutoRepeat(true);
+	////prevButton->setAutoRepeatInterval(100);
+	////prevButton->setAutoRepeatDelay(200);
+	//connect(prevButton, SIGNAL(pressed()), viewport(), SLOT(loadPrevFileFast()));
+
+	//QToolButton *nextButton = static_cast<QToolButton *>(toolbar->widgetForAction(fileActions[menu_file_next]));
+	//nextButton->setAutoRepeat(true);
+	////nextButton->setAutoRepeatInterval(100);
+	////nextButton->setAutoRepeatDelay(200);
+	//connect(nextButton, SIGNAL(pressed()), viewport(), SLOT(loadNextFileFast()));
+
 	toolbar->addAction(fileActions[menu_file_prev]);
 	toolbar->addAction(fileActions[menu_file_next]);
 	toolbar->addSeparator();
