@@ -1231,9 +1231,8 @@ void DkViewPort::setImage(QImage newImg) {
 	imgStorage.setImage(newImg);
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
 
-	if (loader->hasMovie()) {
+	if (loader->hasMovie())
 		loadMovie();
-	};
 
 	emit enableNoImageSignal(!newImg.isNull());
 
