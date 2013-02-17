@@ -375,6 +375,8 @@ protected:
 	//QImage imgQt;
 	//QMap<int, QImage> imgPyramid;
 	DkImageStorage imgStorage;
+	QMovie* movie;
+
 
 	QTransform imgMatrix;
 	QTransform worldMatrix;
@@ -395,6 +397,7 @@ protected:
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 	virtual void changeCursor();
+
 };
 
 class DkImageLoader;
@@ -506,6 +509,7 @@ protected:
 	DkImageLoader* loader;
 
 	// functions
+	virtual void loadMovie();
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
 	virtual void drawBackground(QPainter *painter);
 	virtual void controlImagePosition(float lb = -1, float ub = -1);

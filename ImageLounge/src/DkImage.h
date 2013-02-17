@@ -54,6 +54,7 @@
 #include <QWriteLocker>
 #include <QReadWriteLock>
 #include <QTimer>
+#include <QMovie>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -616,6 +617,10 @@ public:
 
 	DkBasicLoader(int mode = mode_default);
 
+	~DkBasicLoader() {
+		release();
+	};
+
 	bool loadGeneral(QFileInfo file);
 	
 	/**
@@ -884,6 +889,7 @@ public:
 	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
+	bool hasMovie();
 	bool isCached(QFileInfo& file);
 	void updateCacheIndex();
 	QString fileName();

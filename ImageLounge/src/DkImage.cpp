@@ -128,7 +128,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		imgLoaded = qImg.load(this->file.absoluteFilePath());
 
-	} else {
+	}  else {
 
 		// load raw files
 		imgLoaded = loadRawFile(this->file);
@@ -2067,6 +2067,13 @@ bool DkImageLoader::isCached(QFileInfo& file) {
 bool DkImageLoader::hasFile() {
 
 	return file.exists() | editFile.exists();
+}
+
+bool DkImageLoader::hasMovie() {
+
+	QString newSuffix = file.suffix();
+	return file.exists() && newSuffix.contains(QRegExp("(gif)", Qt::CaseInsensitive));
+
 }
 
 /**

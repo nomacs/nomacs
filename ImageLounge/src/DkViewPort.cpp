@@ -601,6 +601,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	viewportRect = QRect(0, 0, width(), height());
 	worldMatrix.reset();
 	imgMatrix.reset();
+	movie = 0;
 
 	blockZooming = false;
 	altMod = DkSettings::Global::altMod;
@@ -977,9 +978,13 @@ void DkBaseViewPort::draw(QPainter *painter) {
 	}
 
 	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
-	painter->drawImage(imgViewRect, imgQt, imgQt.rect());
-
-	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
+	
+	if (!movie || !movie->isValid())
+		painter->drawImage(imgViewRect, imgQt, imgQt.rect());
+	else {
+		painter->drawPixmap(imgViewRect, movie->currentPixmap(), movie->frameRect());
+	}
+		//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 
 bool DkBaseViewPort::imageInside() {
@@ -1225,6 +1230,10 @@ void DkViewPort::setImage(QImage newImg) {
 
 	imgStorage.setImage(newImg);
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
+
+	if (loader->hasMovie()) {
+		loadMovie();
+	};
 
 	emit enableNoImageSignal(!newImg.isNull());
 
@@ -1619,6 +1628,22 @@ void DkViewPort::drawBackground(QPainter *painter) {
 	painter->drawImage(bgRect, imgBg, QRect(QPoint(), imgBg.size()));
 }
 
+void DkViewPort::loadMovie() {
+
+	if (!loader)
+		return;
+
+	if (movie) {
+		movie->stop();
+		delete movie;
+		movie = 0;
+	}
+
+	movie = new QMovie(loader->getFile().absoluteFilePath());
+	connect(movie, SIGNAL(frameChanged(int)), this, SLOT(update()));
+	movie->start();
+}
+
 void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
 
 	QPoint lastPoint;
@@ -1873,6 +1898,12 @@ void DkViewPort::unloadImage() {
 		qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
 	
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
+
+	if (movie) {
+		movie->stop();
+		delete movie;
+		movie = 0;
+	}
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool silent) {
@@ -2327,9 +2358,14 @@ void DkViewPortFrameless::draw(QPainter *painter) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
-	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
-	painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
-	//DkViewPort::draw(painter);
+	if (!movie || !movie->isValid()) {
+		QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+		painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
+	}
+	else {
+		painter->drawPixmap(imgViewRect, movie->currentPixmap(), movie->frameRect());
+	}
+
 }
 
 void DkViewPortFrameless::drawBackground(QPainter *painter) {
