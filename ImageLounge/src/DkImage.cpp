@@ -31,10 +31,25 @@
 namespace nmc {
 
 #ifdef WIN32
+
 bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
 	//return true;
 }
+
+bool wCompLogicQString(const QString & lhs, const QString & rhs) {
+	
+	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
+	//return true;
+}
+#else
+bool wCompLogicQString(const QString & lhs, const QString & rhs) {
+
+	return lhs < rhs;
+	//return true;
+}
+
+
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
@@ -1003,6 +1018,12 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 
 	DkTimer dt;
 	
+	if (folderUpdated) {
+		bool loaded = loadDir((virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir(), false);
+		if (!loaded)
+			return QFileInfo();
+	}
+	
 	if (searchFile && !file.absoluteFilePath().isEmpty()) {
 		QDir newDir = (virtualExists && virtualFile.absoluteDir() != dir) ? virtualFile.absoluteDir() : file.absoluteDir();
 		qDebug() << "loading new dir: " << newDir.absolutePath();
@@ -1032,7 +1053,29 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 		}
 		newFileIdx = cFileIdx + skipIdx;
 
-		qDebug() << "subfolders: " << DkSettings::Global::scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
+		// could not locate the file -> it was deleted?!
+		if (searchFile && cFileIdx == files.size()) {
+			
+			// see if the file was deleted
+			QStringList filesTmp = files;
+			filesTmp.append(cFilename);
+			qSort(filesTmp.begin(), filesTmp.end(), wCompLogicQString);
+
+			cFileIdx = 0;
+			
+			for ( ; cFileIdx < filesTmp.size(); cFileIdx++) {
+
+				if (filesTmp[cFileIdx] == cFilename)
+					break;
+			}
+
+			if (filesTmp.size() != cFileIdx) {
+				newFileIdx = cFileIdx + skipIdx;
+				if (skipIdx > 0) newFileIdx--;	// -1 because the current file does not exist
+			}
+		}		
+
+		//qDebug() << "subfolders: " << DkSettings::Global::scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
 
 #if 0	// TODO: finish bug - when first image in folder is corrupted
 		if (DkSettings::Global::scanSubFolders && subFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= files.size())) {

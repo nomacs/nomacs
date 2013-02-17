@@ -123,6 +123,9 @@ namespace nmc {
 	bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
 #endif
 
+bool wCompLogicQString(const QString & lhs, const QString & rhs);
+
+
 // basic image processing
 
 /**
