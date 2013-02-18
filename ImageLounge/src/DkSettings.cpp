@@ -92,6 +92,7 @@ bool DkSettings::Display::toolbarGradient = true;
 #else
 bool DkSettings::Display::toolbarGradient = false;
 #endif
+bool DkSettings::Display::showBorder = true;
 bool DkSettings::Display::useDefaultColor = true;
 bool DkSettings::Display::defaultIconColor = true;
 int DkSettings::Display::interpolateZoomLevel = 200;
@@ -217,6 +218,7 @@ void DkSettings::load() {
 	Display::antiAliasing = settings.value("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing).toBool();
 	Display::smallIcons = settings.value("DisplaySettings/smallIcons", DkSettings::Display::smallIcons).toBool();
 	Display::toolbarGradient = settings.value("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient).toBool();
+	Display::showBorder = settings.value("DisplaySettings/showBorder", DkSettings::Display::showBorder).toBool();
 	Display::useDefaultColor = settings.value("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor).toBool();
 	Display::defaultIconColor = settings.value("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor).toBool();
 	Display::interpolateZoomLevel = settings.value("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel).toInt();
@@ -313,6 +315,7 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing);
 	settings.setValue("DisplaySettings/smallIcons", DkSettings::Display::smallIcons);
 	settings.setValue("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient);
+	settings.setValue("DisplaySettings/showBorder", DkSettings::Display::showBorder);
 	settings.setValue("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor);
 	settings.setValue("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor);
 	settings.setValue("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel);
@@ -409,6 +412,7 @@ void DkSettings::setToDefaultSettings() {
 #else
 	DkSettings::Display::toolbarGradient = false;
 #endif
+	DkSettings::Display::showBorder = true;
 	DkSettings::Display::useDefaultColor = true;
 	DkSettings::Display::defaultIconColor = true;
 	DkSettings::Display::interpolateZoomLevel = 200;
@@ -826,7 +830,6 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::Display::toolbarGradient = cbToolbarGradient->isChecked();
 	DkSettings::SlideShow::time = displayTimeSpin->getSpinBoxValue();
 
-
 	if (DkSettings::App::appMode == DkSettings::mode_frameless)
 		DkSettings::Display::bgColorFrameless = bgColorWidgetChooser->getColor();
 	else
@@ -871,6 +874,9 @@ void DkDisplaySettingsWidget::init() {
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::Display::thumbSize);
 	cbSaveThumb->setChecked(DkSettings::Display::saveThumb);
 	interpolateWidget->setSpinBoxValue(DkSettings::Display::interpolateZoomLevel);
+
+	cbShowBorder->setChecked(DkSettings::Display::showBorder);
+	cbSilentFullscreen->setChecked(DkSettings::SlideShow::silentFullscreen);
 }
 
 void DkDisplaySettingsWidget::createLayout() {
@@ -909,13 +915,23 @@ void DkDisplaySettingsWidget::createLayout() {
 	cbRating = new QCheckBox(tr("Rating"));
 	gbLayout->addWidget(cbRating);
 
+	QGroupBox* gbFrameless = new QGroupBox(tr("Frameless"));
+	QVBoxLayout* gbFramelessLayout = new QVBoxLayout(gbFrameless);
+	cbShowBorder = new QCheckBox(tr("Show Border"));
+	gbFramelessLayout->addWidget(cbShowBorder);
+
+	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen"));
+	QVBoxLayout* gbFullScreenLayout = new QVBoxLayout(gbFullscreen);
 	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
+	gbFullScreenLayout->addWidget(cbSilentFullscreen);
+
 
 	leftLayout->addWidget(gbZoom);
 	leftLayout->addWidget(gbThumbs);
 	leftLayout->addStretch();
 	rightLayout->addWidget(gbFileInfo);
-	rightLayout->addWidget(cbSilentFullscreen);
+	rightLayout->addWidget(gbFrameless);
+	rightLayout->addWidget(gbFullscreen);
 	rightLayout->addStretch();
 
 	widgetLayout->addLayout(leftLayout, 1);
@@ -937,6 +953,7 @@ void DkDisplaySettingsWidget::writeSettings() {
 	DkSettings::Display::thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
 	DkSettings::Display::saveThumb = cbSaveThumb->isChecked();
 	DkSettings::Display::interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
+	DkSettings::Display::showBorder = cbShowBorder->isChecked();
 }
 
 void DkDisplaySettingsWidget::showFileName(bool checked) {

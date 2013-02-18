@@ -120,6 +120,7 @@ class DkSettings : public QObject {
 			static bool antiAliasing;
 			static bool smallIcons;
 			static bool toolbarGradient;
+			static bool showBorder;
 		};
 
 		struct Global {
@@ -390,6 +391,7 @@ class DkDisplaySettingsWidget : public DkSettingsWidget {
 
 		DkSpinBoxWidget* maximalThumbSizeWidget; 
 		QCheckBox* cbSaveThumb;
+		QCheckBox* cbShowBorder;
 
 		bool keepZoom;
 		bool invertZoom;

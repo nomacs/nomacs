@@ -1000,7 +1000,6 @@ void DkResizeDialog::createLayout() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(centralWidget);
-	//layout->addStretch();
 	layout->addWidget(buttons);
 	show();
 }

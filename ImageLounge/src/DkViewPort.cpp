@@ -2434,7 +2434,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 void DkViewPortFrameless::drawFrame(QPainter* painter) {
 
 	// TODO: replace hasAlphaChannel with has alphaBorder
-	if (imgStorage.hasImage() && imgStorage.getImage().hasAlphaChannel())
+	if (imgStorage.hasImage() && imgStorage.getImage().hasAlphaChannel() || !DkSettings::Display::showBorder)
 		return;
 
 	painter->setBrush(QColor(255, 255, 255, 200));
