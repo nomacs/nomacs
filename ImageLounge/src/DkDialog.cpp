@@ -820,8 +820,6 @@ DkResizeDialog::DkResizeDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog
 
 void DkResizeDialog::init() {
 
-	isOk = false;
-
 	leftSpacing = 40;
 	margin = 10;
 	exifDpi = 72;
@@ -995,28 +993,16 @@ void DkResizeDialog::createLayout() {
 	gridLayout->addWidget(resampleCheck, 4, 2, 1, 3);
 	gridLayout->addWidget(resampleBox, 5, 2, 1, 3);
 
-	// bottom widget
-	QWidget* bottomWidget = new QWidget(this);
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
-	buttonOk->setDefault(true);
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-
-	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	bottomWidgetHBoxLayout->addItem(spacer);
-	bottomWidgetHBoxLayout->addWidget(buttonOk);
-	bottomWidgetHBoxLayout->addWidget(buttonCancel);
-
-	BorderLayout* borderLayout = new BorderLayout;
-	borderLayout->addWidget(bottomWidget, BorderLayout::South);
-	borderLayout->addWidget(centralWidget, BorderLayout::Center);
-	this->setSizeGripEnabled(false);
-
-	this->setLayout(borderLayout);
-	this->show();
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(centralWidget);
+	//layout->addStretch();
+	layout->addWidget(buttons);
+	show();
 }
 
 void DkResizeDialog::initBoxes() {
@@ -1422,21 +1408,6 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
 #endif
 
-}
-
-void DkResizeDialog::okPressed() {
-
-	isOk = true;
-	this->close();
-}
-
-void DkResizeDialog::cancelPressed() {
-
-	this->close();
-}
-
-void DkResizeDialog::showEvent(QShowEvent *event) {
-	isOk = false;
 }
 
 // DkUpdateDialog --------------------------------------------------------------------

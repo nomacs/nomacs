@@ -287,10 +287,6 @@ public:
 	enum{unit_cm, unit_mm, unit_inch, unit_end};
 	enum{res_ppi, res_ppc, res_end};  
 
-	bool wasOkPressed() {
-		return isOk;
-	};
-
 	void setImage(QImage img) {
 		this->img = img;
 		initBoxes();
@@ -320,29 +316,25 @@ public:
 		return resampleCheck->isChecked();
 	};
 
-	protected slots:
-		void okPressed();
-		void cancelPressed();
+protected slots:
+	void on_lockButtonDim_clicked();
+	void on_lockButton_clicked();
 
-		void on_lockButtonDim_clicked();
-		void on_lockButton_clicked();
+	void on_wPixelEdit_valueChanged(QString text);
+	void on_hPixelEdit_valueChanged(QString text);
 
-		void on_wPixelEdit_valueChanged(QString text);
-		void on_hPixelEdit_valueChanged(QString text);
+	void on_widthEdit_valueChanged(QString text);
+	void on_heightEdit_valueChanged(QString text);
+	void on_resolutionEdit_valueChanged(QString text);
 
-		void on_widthEdit_valueChanged(QString text);
-		void on_heightEdit_valueChanged(QString text);
-		void on_resolutionEdit_valueChanged(QString text);
+	void on_sizeBox_currentIndexChanged(int idx);
+	void on_unitBox_currentIndexChanged(int idx);
+	void on_resUnitBox_currentIndexChanged(int idx);
+	void on_resampleBox_currentIndexChanged(int idx);
 
-		void on_sizeBox_currentIndexChanged(int idx);
-		void on_unitBox_currentIndexChanged(int idx);
-		void on_resUnitBox_currentIndexChanged(int idx);
-		void on_resampleBox_currentIndexChanged(int idx);
-
-		void on_resampleCheck_clicked();
+	void on_resampleCheck_clicked();
 
 protected:
-	bool isOk;
 	int leftSpacing;
 	int margin;
 	QImage img;
@@ -374,7 +366,6 @@ protected:
 	void init();
 	void initBoxes();
 	void createLayout();
-	void showEvent(QShowEvent *event);
 	void drawPreview();
 	void updateSnippets();
 	void updateHeight();

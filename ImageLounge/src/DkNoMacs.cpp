@@ -1918,9 +1918,7 @@ void DkNoMacs::resizeImage() {
 
 	resizeDialog->setImage(viewport()->getImageLoader()->getImage());
 
-	bool done = resizeDialog->exec();
-
-	if (resizeDialog->wasOkPressed()) {
+	if (resizeDialog->exec()) {
 
 		if (resizeDialog->resample()) {
 
