@@ -149,28 +149,23 @@ protected:
 class DkOpenWithDialog : public QDialog {
 	Q_OBJECT
 
-
-		enum {
-			app_photoshop,
-			app_irfan_view,
-			app_picasa,
-			app_end,
+	enum {
+		app_photoshop,
+		app_irfan_view,
+		app_picasa,
+		app_end,
 	};
 
 public:
 	DkOpenWithDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	bool wasOkClicked() {
-		return userClickedOk;
-	};
-
-
 protected slots:
 	void softwareSelectionChanged();
-	void okClicked();
-	void cancelClicked();
+	//void okClicked();
+	//void cancelClicked();
 	void browseAppFile();
 	void softwareCleanClicked();
+	virtual void accept();
 
 protected:
 
@@ -195,7 +190,7 @@ protected:
 	// output
 	int numDefaultApps;
 	int defaultApp;
-	bool userClickedOk;
+	//bool userClickedOk;
 
 	// functions
 	void init();
@@ -208,7 +203,7 @@ protected:
 		qDebug() << "app idx: " << defaultApp;
 
 		if (defaultApp < numDefaultApps && defaultApp >= 0 && defaultApp < appPaths.size()) {
-			qDebug() << "default path...";
+			qDebug() << "default path..." << appPaths[defaultApp];
 			return appPaths[defaultApp];
 		}
 		else if (defaultApp-numDefaultApps > 0 && defaultApp-numDefaultApps < userAppPaths.size()) {

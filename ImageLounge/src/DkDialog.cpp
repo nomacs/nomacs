@@ -152,10 +152,6 @@ void DkJpgDialog::init() {
 
 void DkJpgDialog::createLayout() {
 
-	// preview
-	QSize s = QSize(width()-10, width()-10);
-	s *= 0.5;
-
 	QLabel* origLabelText = new QLabel(tr("Original"));
 	QLabel* newLabel = new QLabel(tr("New"));
 
@@ -254,7 +250,6 @@ void DkOpenWithDialog::init() {
 
 	defaultApp = (DkSettings::Global::defaultAppIdx < 0) ? 0 : DkSettings::Global::defaultAppIdx;
 	numDefaultApps = 0;
-	userClickedOk = false;
 
 	// TODO: qt obviously saves the settings if the keys are not found...
 	// TODO: add GIMP & other software
@@ -282,7 +277,6 @@ void DkOpenWithDialog::init() {
 
 	createLayout();
 	setWindowTitle(tr("Open With..."));
-
 
 }
 
@@ -327,7 +321,6 @@ void DkOpenWithDialog::createLayout() {
 		numDefaultApps++;
 
 	}
-
 
 	QStringList tmpUserPaths = DkSettings::Global::userAppPaths; // shortcut
 
@@ -400,21 +393,16 @@ void DkOpenWithDialog::createLayout() {
 	QWidget* bottomWidget = new QWidget(this);
 	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
 
-	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okClicked()));
-	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelClicked()));
-
-	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	bottomWidgetHBoxLayout->addStretch();
-	bottomWidgetHBoxLayout->addWidget(buttonOk);
-	bottomWidgetHBoxLayout->addWidget(buttonCancel);
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	groupBox->setLayout(bl);
 	layout->addWidget(groupBox);
 	layout->addWidget(neverAgainBox);
 	layout->addStretch();
-	layout->addWidget(bottomWidget);
+	layout->addWidget(buttons);
 
 	setLayout(layout);
 }
@@ -476,9 +464,7 @@ void DkOpenWithDialog::browseAppFile() {
 	userCleanSpace[senderIdx]->setVisible(false);
 }
 
-void DkOpenWithDialog::okClicked() {
-
-	userClickedOk = true;
+void DkOpenWithDialog::accept() {
 
 	// store everything
 	DkSettings::Global::showDefaultAppDialog = !neverAgainBox->isChecked();
@@ -486,13 +472,7 @@ void DkOpenWithDialog::okClicked() {
 	DkSettings::Global::defaultAppPath = getPath();
 	DkSettings::Global::userAppPaths = userAppPaths;
 
-	close();
-}
-
-void DkOpenWithDialog::cancelClicked() {
-
-	// do not store anything
-	close();
+	QDialog::accept();
 }
 
 void DkOpenWithDialog::softwareSelectionChanged() {

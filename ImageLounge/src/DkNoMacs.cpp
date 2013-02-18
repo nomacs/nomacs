@@ -2259,31 +2259,10 @@ void DkNoMacs::showStatusMessage(QString msg) {
 
 void DkNoMacs::openFileWith() {
 
-	//QString org = QString("Adobe");
-	//QString ps = QString("Photoshop");
-	//QSettings* adSettings = new QSettings(QSettings::UserScope, org, ps);
-
-	//QStringList keys = adSettings->allKeys();
-
-	//qDebug() << keys;
-
-	//QString appPath;
-
-	//for (int idx = 0; idx < keys.length(); idx++) {
-	//	
-	//	if (keys[idx].contains("ApplicationPath")) {
-	//		appPath = adSettings->value(keys[idx]).toString() % "Photoshop";
-	//		break;
-	//	}
-	//}
-
-	//appPath.replace("/", "\\");	// photoshop needs backslashes
-
 	if (DkSettings::Global::showDefaultAppDialog) {
 		if (!openWithDialog) openWithDialog = new DkOpenWithDialog(this);
-		openWithDialog->exec();
-
-		if (!openWithDialog->wasOkClicked())
+		
+		if (!openWithDialog->exec())
 			return;
 	}
 
