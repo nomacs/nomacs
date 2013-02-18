@@ -122,33 +122,12 @@ void DkTifDialog::init() {
 	vBox->addWidget(noCompressionButton);
 	vBox->addWidget(compressionButton);
 
-	QPushButton* buttonOk = new QPushButton(tr("&Ok"), this);
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"), this);
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-
-
-	QWidget* okCancelWidget = new QWidget(this);
-	QHBoxLayout* hBox = new QHBoxLayout(okCancelWidget);
-	hBox->setDirection(QBoxLayout::RightToLeft);
-	hBox->addWidget(buttonCancel);
-	hBox->addWidget(buttonOk);
-
-	hBox->addStretch();
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	layout()->addWidget(buttonWidget);
-	layout()->addWidget(okCancelWidget);
-}
-
-void DkTifDialog::okPressed() {
-
-	isOk = true;
-	this->close();
-}
-
-void DkTifDialog::cancelPressed() {
-
-	this->close();
+	layout()->addWidget(buttons);
 }
 
 

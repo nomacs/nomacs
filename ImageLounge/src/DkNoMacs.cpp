@@ -1456,10 +1456,8 @@ void DkNoMacs::showOpacityDialog() {
 		opacityDialog->setWindowTitle(tr("Change Opacity"));
 	}
 	
-	if (opacityDialog->exec()) {
+	if (opacityDialog->exec())
 		setWindowOpacity(opacityDialog->value()/100.0f);
-		qDebug() << "opacity: " << opacityDialog->value();
-	}
 }
 
 void DkNoMacs::opacityDown() {
@@ -1890,9 +1888,7 @@ void DkNoMacs::saveFile() {
 		if (!tifDialog)
 			tifDialog = new DkTifDialog(this);
 
-		bool ret = tifDialog->exec();
-
-		if (!tifDialog->wasOkPressed())
+		if (!tifDialog->exec())
 			return;
 
 		compression = tifDialog->getCompression();

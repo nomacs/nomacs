@@ -81,16 +81,7 @@ public:
 		return (noCompressionButton->isChecked()) ? 0 : 1;
 	};
 
-	bool wasOkPressed() {
-		return isOk;
-	};
-
 	// TODO: make it a bit more stylish
-
-	public slots:
-		void okPressed();
-		void cancelPressed();
-
 
 protected:
 	void init();
