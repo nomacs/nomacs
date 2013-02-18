@@ -139,100 +139,65 @@ DkJpgDialog::DkJpgDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(paren
 
 void DkJpgDialog::init() {
 
-	isOk = false;
 	hasAlpha = false;
 
 	img = 0;
-	leftSpacing = 40;
-	margin = 10;
 
-	colorDialog = new QColorDialog(this);
-	colorDialog->setCurrentColor(Qt::white);
-	connect(colorDialog, SIGNAL(accepted()), this, SLOT(newBgCol()));
+	bgCol = QColor(255,255,255);
 
 	setWindowTitle("JPG Settings");
-	setFixedSize(600, 500);
+	setFixedSize(600, 450);
 	createLayout();
 }
 
 void DkJpgDialog::createLayout() {
 
-	// bottom widget
-	QWidget* bottomWidget = new QWidget(this);
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
-
-	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-
-	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	bottomWidgetHBoxLayout->addItem(spacer);
-	bottomWidgetHBoxLayout->addWidget(buttonOk);
-	bottomWidgetHBoxLayout->addWidget(buttonCancel);
-
-	// central widget
-	centralWidget = new QWidget(this);
-
-	// slider
-	QLabel* compLabel = new QLabel(tr("Image Quality"), centralWidget);
-	compLabel->move(leftSpacing, margin*3.5+10);
-
 	// preview
-	QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
+	QSize s = QSize(width()-10, width()-10);
 	s *= 0.5;
 
-	slider = new QSlider(centralWidget);
-	slider->setMinimum(0);
-	slider->setMaximum(100);
+	QLabel* origLabelText = new QLabel(tr("Original"));
+	QLabel* newLabel = new QLabel(tr("New"));
+
+	origLabel = new QLabel();
+	origLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
+	previewLabel = new QLabel();
+	previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
+
+	// slider
+	slider = new DkSlider(tr("Image Quality"));
 	slider->setValue(80);
 	slider->setTickInterval(10);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setGeometry(QRect(leftSpacing, compLabel->geometry().bottom()-margin, s.width(), 20));
 
-	sliderValueLabel = new QSpinBox(centralWidget);
-	sliderValueLabel->setGeometry(slider->geometry().right()-45, margin*3.5, 45, 20);
-	sliderValueLabel->setMinimum(0);
-	sliderValueLabel->setMaximum(100);
+	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderValue(int)));
 
-	updateSliderLabel(slider->value());
-	//connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(updateSliderLabel(int)));
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderLabel(int)));
-	connect(sliderValueLabel, SIGNAL(valueChanged(int)), this, SLOT(updateSliderValue(int)));
+	// color chooser
+	colChooser = new DkColorChooser(bgCol, tr("Background Color"));
+	colChooser->setEnabled(hasAlpha);
+	colChooser->enableAlpha(false);
+	connect(colChooser, SIGNAL(accepted()), this, SLOT(newBgCol()));
+	
+	QWidget* previewWidget = new QWidget();
+	QGridLayout* previewLayout = new QGridLayout(previewWidget);
+	previewLayout->setAlignment(Qt::AlignHCenter);
+	previewLayout->setHorizontalSpacing(20);
 
-	QLabel* minLabel = new QLabel("0", centralWidget);
-	minLabel->move(leftSpacing, slider->geometry().bottom());
+	previewLayout->addWidget(origLabelText, 0, 0);
+	previewLayout->addWidget(newLabel, 0, 1);
+	previewLayout->addWidget(origLabel, 1, 0);
+	previewLayout->addWidget(previewLabel, 1, 1);
+	previewLayout->addWidget(slider, 2, 0);
+	previewLayout->addWidget(colChooser, 2, 1);
 
-	QLabel* maxLabel = new QLabel("100", centralWidget);
-	maxLabel->move(slider->geometry().right()-20, minLabel->geometry().top());
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	QLabel* origLabel = new QLabel(tr("Original"), centralWidget);
-	origLabel->move(QPoint(slider->geometry().left(), slider->geometry().bottom() + margin*2.5));
-	QLabel* newLabel = new QLabel(tr("New"), centralWidget);
-	newLabel->move(QPoint(s.width()+10+leftSpacing, origLabel->geometry().top()));
-	previewLabel = new QLabel(centralWidget);
-	previewLabel->setGeometry(QRect(QPoint(slider->geometry().left(), slider->geometry().bottom() + margin*4), s));
-
-	// color button
-	colButton = new QPushButton(centralWidget);
-	colButton->setFlat(true);
-	colButton->setText("");
-	colButton->move(leftSpacing, previewLabel->geometry().bottom()+margin*2);
-	newBgCol();
-	colButton->setEnabled(hasAlpha);
-	connect(colButton, SIGNAL(clicked()), this, SLOT(openColorDialog()));
-
-	colLabel = new QLabel(tr("Background Color"), centralWidget);
-	colLabel->move(leftSpacing+32, colButton->geometry().top()+7);	// dirty hack
-	colLabel->setEnabled(hasAlpha);
-
-	BorderLayout* borderLayout = new BorderLayout;
-	borderLayout->addWidget(bottomWidget, BorderLayout::South);
-	borderLayout->addWidget(centralWidget, BorderLayout::Center);
-	this->setSizeGripEnabled(false);
-
-	this->setLayout(borderLayout);
-
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(previewWidget);
+	layout->addStretch();
+	layout->addWidget(buttons);
 
 }
 
@@ -241,15 +206,17 @@ void DkJpgDialog::updateSnippets() {
 	if (!img)
 		return;
 
-	QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
+	QSize s = QSize(width()-60, width()-60);
 	s *= 0.5;
 	origImg = QImage(s, QImage::Format_ARGB32);
 	origImg.fill(Qt::transparent);
 	QRect imgRect = QRect(QPoint(img->width()*0.5-origImg.width()*0.5, img->height()*0.5-origImg.height()*0.5), origImg.size());
-
+	
 	QPainter painter(&origImg);
 	painter.setBackgroundMode(Qt::TransparentMode);
 	painter.drawImage(QRect(QPoint(), origImg.size()), *img, imgRect);
+
+	origLabel->setPixmap(QPixmap::fromImage(origImg));
 
 }
 
@@ -262,7 +229,9 @@ void DkJpgDialog::drawPreview() {
 	newImg.fill(bgCol.rgb());
 
 	QPainter bgPainter(&newImg);
-	bgPainter.drawImage(QRect(QPoint(), origImg.size()), origImg, QRect(QPoint(), origImg.size()));
+	bgPainter.setBackgroundMode(Qt::TransparentMode);
+	bgPainter.setBackground(bgCol);
+	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());
 	bgPainter.end();
 
 	// pre-compute the jpg compression
@@ -272,39 +241,7 @@ void DkJpgDialog::drawPreview() {
 	newImg.save(&buffer, "JPG", slider->value());
 	newImg.loadFromData(ba, "JPG");
 
-	QImage preview = QImage(origImg.width()*2 + 10, origImg.height(), QImage::Format_ARGB32);
-	preview.fill(Qt::transparent);
-	QRect pos = QRect(QPoint(), origImg.size());
-	QRect posM = pos;
-	posM.setSize(QSize(pos.size().width()-1, pos.size().height()-1));
-
-	QPainter painter(&preview);
-	painter.setBackgroundMode(Qt::TransparentMode);
-	painter.drawImage(pos, origImg, QRect(QPoint(), origImg.size()));
-	painter.setPen(QColor(0,0,0,30));
-	painter.drawRect(posM);
-	pos.moveTopLeft(QPoint(origImg.width()+10, 0));
-	posM.moveTopLeft(QPoint(origImg.width()+10, 0));
-	painter.drawImage(pos, newImg, QRect(QPoint(), newImg.size()));
-	painter.drawRect(posM);
-
-	previewLabel->setGeometry(QRect(QPoint(slider->geometry().left(), slider->geometry().bottom() + margin*4), preview.size()));
-	previewLabel->setPixmap(QPixmap::fromImage(preview));
-}
-
-void DkJpgDialog::okPressed() {
-
-	isOk = true;
-	this->close();
-}
-
-void DkJpgDialog::cancelPressed() {
-
-	this->close();
-}
-
-void DkJpgDialog::showEvent(QShowEvent *event) {
-	isOk = false;
+	previewLabel->setPixmap(QPixmap::fromImage(newImg));
 }
 
 // OpenWithDialog --------------------------------------------------------------------

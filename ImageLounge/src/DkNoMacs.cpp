@@ -1859,11 +1859,10 @@ void DkNoMacs::saveFile() {
 			jpgDialog = new DkJpgDialog(this);
 
 		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
-		jpgDialog->show();
+		//jpgDialog->show();
 		jpgDialog->setImage(&saveImg);
-		bool ret = jpgDialog->exec();
 		
-		if (!jpgDialog->wasOkPressed())
+		if (!jpgDialog->exec())
 			return;
 
 		compression = jpgDialog->getCompression();

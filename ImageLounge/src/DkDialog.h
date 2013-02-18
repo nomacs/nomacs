@@ -97,13 +97,9 @@ class DkJpgDialog : public QDialog {
 public:
 	DkJpgDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	bool wasOkPressed() {
-		return isOk;
-	};
 	void imageHasAlpha(bool hasAlpha) {
 		this->hasAlpha = hasAlpha;
-		colButton->setEnabled(hasAlpha);
-		colLabel->setEnabled(hasAlpha);
+		colChooser->setEnabled(hasAlpha);
 	};
 
 	QColor getBackgroundColor() {
@@ -120,49 +116,32 @@ public:
 		drawPreview();
 	};
 
-	protected slots:
-		void okPressed();
-		void cancelPressed();
-		void openColorDialog() {
-			colorDialog->show();
-		};
-		void newBgCol() {
-			bgCol = colorDialog->currentColor();
-			colButton->setStyleSheet("QPushButton {background-color: "+ bgCol.name()+";border:1px; min-height:24px;}");
-			drawPreview();
-		};
+protected slots:
 
-		void updateSliderLabel(int val) {
-			sliderValueLabel->setValue(val);
-			drawPreview();
-		};
+	void newBgCol() {
+		bgCol = colChooser->getColor();
+		qDebug() << "new bg col...";
+		drawPreview();
+	};
 
-		void updateSliderValue(int val) {
-			slider->setValue(val);
-			drawPreview();
-		};
+	void updateSliderValue(int val) {
+		drawPreview();
+	};
 
 protected:
-	bool isOk;
 	bool hasAlpha;
 	QColor bgCol;
-	int leftSpacing;
-	int margin;
-	QLabel* colLabel;
-	QSpinBox* sliderValueLabel;
-	QSlider* slider;
-	QColorDialog* colorDialog;
-	QPushButton* colButton;
+	
+	DkSlider* slider;
+	DkColorChooser* colChooser;
 	QImage* img;
 	QImage origImg;
 	QImage newImg;
-	QWidget* centralWidget;
 	QLabel* previewLabel;
-
+	QLabel* origLabel;
 
 	void init();
 	void createLayout();
-	void showEvent(QShowEvent *event);
 	void drawPreview();
 	void updateSnippets();
 };

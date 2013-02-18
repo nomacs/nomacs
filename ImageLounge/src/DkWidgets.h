@@ -1220,8 +1220,12 @@ public:
 
 	void setColor(QColor color);
 	QColor getColor();
-	bool isAccepted() {
-		return accepted;
+	bool isAccept() {
+		return accept;
+	}
+
+	void enableAlpha(bool enable = true) {
+		colorDialog->setOption(QColorDialog::ShowAlphaChannel, enable);
 	}
 
 public slots:
@@ -1231,6 +1235,7 @@ public slots:
 
 signals:
 	void resetClicked();
+	void accepted();
 
 protected:
 	QColorDialog* colorDialog;
@@ -1238,7 +1243,7 @@ protected:
 
 	QColor defaultColor;
 	QString text;
-	bool accepted;
+	bool accept;
 
 	void init();
 

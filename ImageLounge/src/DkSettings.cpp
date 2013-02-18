@@ -832,10 +832,10 @@ void DkGlobalSettingsWidget::writeSettings() {
 	else
 		DkSettings::Display::bgColorWidget = bgColorWidgetChooser->getColor();
 
-	if (bgColorChooser->isAccepted())
+	if (bgColorChooser->isAccept())
 		DkSettings::Display::useDefaultColor = false;
 
-	if (iconColorChooser->isAccepted())
+	if (iconColorChooser->isAccept())
 		DkSettings::Display::defaultIconColor = false;
 
 	DkSettings::Display::iconColor = iconColorChooser->getColor();

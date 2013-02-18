@@ -3115,7 +3115,7 @@ DkColorChooser::DkColorChooser(QColor defaultColor, QString text, QWidget* paren
 
 void DkColorChooser::init() {
 
-	accepted = false;
+	accept = false;
 
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
@@ -3151,7 +3151,7 @@ void DkColorChooser::init() {
 void DkColorChooser::setColor(QColor color) {
 
 	colorDialog->setCurrentColor(color);
-	colorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border:0px; min-height:24px}");
+	colorButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(color) + "; border: 1px solid #888; min-height: 24px}");
 }
 
 QColor DkColorChooser::getColor() {
@@ -3170,7 +3170,8 @@ void DkColorChooser::on_colorButton_clicked() {
 void DkColorChooser::on_colorDialog_accepted() {
 	
 	setColor(colorDialog->currentColor());
-	accepted = true;
+	accept = true;
+	emit accepted();
 }
 
 // Image histogram  -------------------------------------------------------------------

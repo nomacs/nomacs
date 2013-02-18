@@ -2889,11 +2889,12 @@ void DkThumbsLoader::loadThumbs() {
 		}
 
 		// does somebody want me to stop?
-		if (!isActive) {
+		if (!isActive ) {
 			mutex.unlock();
 			return;
 		}
 		
+		// TODO:  he breaks here! (crash detected)
 		DkThumbNail* thumb = &(*thumbIter);
 		if (!thumb->hasImage()) {
 			thumb->setImage(getThumbNailQt(thumb->getFile()));
