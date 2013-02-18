@@ -2017,6 +2017,7 @@ void DkOpacityDialog::createLayout() {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
 	slider = new DkSlider(tr("Window Opacity"), this);
+	slider->setMinimum(5);
 
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 

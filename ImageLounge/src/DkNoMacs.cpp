@@ -1451,13 +1451,15 @@ void DkNoMacs::fitFrame() {
 
 void DkNoMacs::showOpacityDialog() {
 
-	if (!opacityDialog)
+	if (!opacityDialog) {
 		opacityDialog = new DkOpacityDialog(this);
+		opacityDialog->setWindowTitle(tr("Change Opacity"));
+	}
 	
-	bool accepted = opacityDialog->exec();
-
-	if (accepted)
-		changeOpacity(opacityDialog->value());
+	if (opacityDialog->exec()) {
+		setWindowOpacity(opacityDialog->value()/100.0f);
+		qDebug() << "opacity: " << opacityDialog->value();
+	}
 }
 
 void DkNoMacs::opacityDown() {
