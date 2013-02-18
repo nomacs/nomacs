@@ -474,6 +474,7 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_opacity_up]);
 	viewMenu->addAction(viewActions[menu_view_opacity_down]);
 	viewMenu->addAction(viewActions[menu_view_opacity_an]);
+	viewMenu->addAction(viewActions[menu_view_lock_window]);
 	viewMenu->addSeparator();
 	
 	viewMenu->addAction(viewActions[menu_view_gps_map]);
@@ -810,6 +811,18 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_opacity_an]->setShortcut(QKeySequence(shortcut_an_opacity));
 	viewActions[menu_view_opacity_an]->setStatusTip(tr("toggle the window opacity"));
 	connect(viewActions[menu_view_opacity_an], SIGNAL(triggered()), this, SLOT(animateChangeOpacity()));
+
+	viewActions[menu_view_lock_window] = new QAction(tr("Lock &Window"), this);
+	viewActions[menu_view_lock_window]->setShortcut(QKeySequence(shortcut_lock_window));
+	viewActions[menu_view_lock_window]->setStatusTip(tr("lock the window"));
+	viewActions[menu_view_lock_window]->setCheckable(true);
+	viewActions[menu_view_lock_window]->setChecked(false);
+
+#ifndef Q_WS_WIN
+	viewActions[menu_view_lock_window]->setEnabled(false);
+#endif
+
+	connect(viewActions[menu_view_lock_window], SIGNAL(toggled(bool)), this, SLOT(lockWindow(bool)));
 
 	viewActions[menu_view_gps_map] = new QAction(viewIcons[icon_view_gps], tr("Show G&PS Coordinates"), this);
 	viewActions[menu_view_gps_map]->setStatusTip(tr("shows the GPS coordinates"));
@@ -1513,6 +1526,40 @@ void DkNoMacs::animateChangeOpacity() {
 		animateOpacityDown();
 	else
 		animateOpacityUp();
+}
+
+void DkNoMacs::lockWindow(bool lock) {
+
+	
+#ifdef Q_WS_WIN
+	
+	qDebug() << "locking: " << lock;
+
+	if (lock && windowOpacity() < 1.0f) {
+		//setAttribute(Qt::WA_TransparentForMouseEvents);
+		HWND hwnd = (HWND) winId(); // get handle of the widget
+		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
+		SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT); 
+		SetWindowPos(this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+		viewport()->getController()->setInfo(tr("Window Locked\nTo unlock: gain focus (ALT+Tab),\nthen press CTRL+SHIFT+ALT+B"), 5000);
+	}
+	else if (lock && windowOpacity() == 1.0f) {
+		viewport()->getController()->setInfo(tr("You should first reduce opacity\n before working through the window."));
+	}
+	else {
+		qDebug() << "deactivating...";
+		HWND hwnd = (HWND) winId(); // get handle of the widget
+		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
+		SetWindowLong(hwnd, GWL_EXSTYLE, styles & ~WS_EX_TRANSPARENT); 
+
+		SetWindowPos(this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+	}
+#else
+	// TODO: find corresponding command for linux etc
+
+	//setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+	//show();
+#endif
 }
 
 void DkNoMacs::newClientConnected() {

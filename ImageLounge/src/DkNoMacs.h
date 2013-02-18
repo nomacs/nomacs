@@ -152,6 +152,7 @@ enum {
 	shortcut_an_opacity		= Qt::ALT  + Qt::Key_H,
 	shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
 	shortcut_anti_aliasing	= Qt::Key_A,
+	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
 	//shortcut_play			= Qt::Key_Space,
 
 	// edit
@@ -248,6 +249,7 @@ enum viewActions {
 	menu_view_opacity_down,
 	menu_view_opacity_an,
 	menu_view_opacity_change,
+	menu_view_lock_window,
 	menu_view_gps_map,
 
 	menu_view_end,	// nothing beyond this point
@@ -433,6 +435,7 @@ public slots:
 	void animateChangeOpacity();
 	void animateOpacityUp();
 	void animateOpacityDown();
+	void lockWindow(bool lock);
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
