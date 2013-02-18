@@ -65,6 +65,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	jpgDialog = 0;
 	tifDialog = 0;
 	resizeDialog = 0;
+	opacityDialog = 0;
 	updater = 0;
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
@@ -469,6 +470,7 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_anti_aliasing]);
 	viewMenu->addSeparator();
 
+	viewMenu->addAction(viewActions[menu_view_opacity_change]);
 	viewMenu->addAction(viewActions[menu_view_opacity_up]);
 	viewMenu->addAction(viewActions[menu_view_opacity_down]);
 	viewMenu->addAction(viewActions[menu_view_opacity_an]);
@@ -788,6 +790,11 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_frameless]->setCheckable(true);
 	viewActions[menu_view_frameless]->setChecked(false);
 	connect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
+
+	viewActions[menu_view_opacity_change] = new QAction(tr("&Change Opacity"), this);
+	viewActions[menu_view_opacity_change]->setShortcut(QKeySequence(shortcut_opacity_change));
+	viewActions[menu_view_opacity_change]->setStatusTip(tr("change the window opacity"));
+	connect(viewActions[menu_view_opacity_change], SIGNAL(triggered()), this, SLOT(showOpacityDialog()));
 
 	viewActions[menu_view_opacity_up] = new QAction(tr("Opacity &Up"), this);
 	viewActions[menu_view_opacity_up]->setShortcut(QKeySequence(shortcut_opacity_up));
@@ -1440,6 +1447,17 @@ void DkNoMacs::fitFrame() {
 	if (screenRect.contains(nmRect.toRect()))
 		viewport()->resetView();
 
+}
+
+void DkNoMacs::showOpacityDialog() {
+
+	if (!opacityDialog)
+		opacityDialog = new DkOpacityDialog(this);
+	
+	bool accepted = opacityDialog->exec();
+
+	if (accepted)
+		changeOpacity(opacityDialog->value());
 }
 
 void DkNoMacs::opacityDown() {

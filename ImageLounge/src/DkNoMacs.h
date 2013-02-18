@@ -148,6 +148,7 @@ enum {
 	shortcut_show_histogram	= Qt::Key_H,
 	shortcut_opacity_down	= Qt::CTRL + Qt::Key_H,
 	shortcut_opacity_up		= Qt::CTRL + Qt::SHIFT + Qt::Key_H,
+	shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_H,
 	shortcut_an_opacity		= Qt::ALT  + Qt::Key_H,
 	shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
 	shortcut_anti_aliasing	= Qt::Key_A,
@@ -246,6 +247,7 @@ enum viewActions {
 	menu_view_opacity_up,
 	menu_view_opacity_down,
 	menu_view_opacity_an,
+	menu_view_opacity_change,
 	menu_view_gps_map,
 
 	menu_view_end,	// nothing beyond this point
@@ -424,6 +426,7 @@ public slots:
 	void errorDialog(QString msg, QString title = "Error");
 	void loadRecursion();
 	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false);
+	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();
 	void changeOpacity(float change);
@@ -533,6 +536,7 @@ protected:
 	QFileDialog* saveDialog;
 	DkJpgDialog* jpgDialog;
 	DkTifDialog* tifDialog;
+	DkOpacityDialog* opacityDialog;
 	DkOpenWithDialog* openWithDialog;
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;

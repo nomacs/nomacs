@@ -40,6 +40,7 @@
 #include <QTableView>
 #include <QCompleter>
 #include <QMainWindow>
+#include <QDialogButtonBox>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -573,6 +574,23 @@ class DkPrintPreviewDialog : public QMainWindow {
 
 		float dpi, origdpi;
 		bool initialPaint;
+};
+
+class DkOpacityDialog : public QDialog {
+
+public:
+	DkOpacityDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	int value() {
+		return slider->value();
+	};
+
+protected:
+
+	void createLayout();
+
+	DkSlider* slider;
+	QDialogButtonBox* buttons;
 };
 
 }

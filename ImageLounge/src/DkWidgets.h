@@ -1273,4 +1273,62 @@ private:
 				
 };
 
+class DkSlider : public QWidget {
+	Q_OBJECT
+
+public:
+	DkSlider(QString title = "", QWidget* parent = 0);
+
+	QSlider* getSlider() {
+		return slider;
+	};
+
+	void setMinimum(int minValue) {
+		slider->setMinimum(minValue);
+		sliderBox->setMinimum(minValue);
+		minValLabel->setText(QString::number(minValue));
+	};
+
+	void setMaximum(int maxValue) {
+		slider->setMaximum(maxValue);
+		sliderBox->setMaximum(maxValue);
+		maxValLabel->setText(QString::number(maxValue));
+	};
+
+	void setTickInterval(int ticValue) {
+		slider->setTickInterval(ticValue);
+	};
+
+	int value() {
+		return slider->value();
+	};
+
+public slots:
+	void setValue(int value) {
+		
+		slider->blockSignals(true);
+		slider->setValue(value);
+		slider->blockSignals(false);
+
+		sliderBox->blockSignals(true);
+		sliderBox->setValue(value);
+		sliderBox->blockSignals(false);
+
+		emit valueChanged(value);
+	}
+
+signals:
+	void sliderMoved(int value);
+	void valueChanged(int value);
+
+protected:
+	void createLayout();
+
+	QLabel* titleLabel;
+	QLabel* minValLabel;
+	QLabel* maxValLabel;
+	QSlider* slider;
+	QSpinBox* sliderBox;
+};
+
 };

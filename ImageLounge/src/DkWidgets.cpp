@@ -3452,4 +3452,62 @@ void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
 		DkWidget::mouseReleaseEvent(event);
 }
 
+// DkSlider --------------------------------------------------------------------
+DkSlider::DkSlider(QString title, QWidget* parent) : QWidget(parent) {
+
+	createLayout();
+	
+	// init
+	titleLabel->setText(title);
+	
+	// defaults
+	setMinimum(0);	
+	setMaximum(100);
+	setTickInterval(1);
+	setValue(50);
 }
+
+void DkSlider::createLayout() {
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setSpacing(0);
+	layout->setContentsMargins(0,0,0,0);
+	
+	QWidget* dummy = new QWidget();
+	QHBoxLayout* titleLayout = new QHBoxLayout(dummy);
+	titleLayout->setContentsMargins(0,0,0,5);
+
+	QWidget* dummyBounds = new QWidget();
+	QHBoxLayout* boundsLayout = new QHBoxLayout(dummyBounds);
+	boundsLayout->setContentsMargins(0,0,0,0);
+
+	titleLabel = new QLabel();
+	
+	sliderBox = new QSpinBox();
+
+	slider = new QSlider();
+	slider->setOrientation(Qt::Horizontal);
+
+	minValLabel = new QLabel();
+	maxValLabel = new QLabel();
+	
+	titleLayout->addWidget(titleLabel);
+	titleLayout->addStretch();
+	titleLayout->addWidget(sliderBox);
+
+	boundsLayout->addWidget(minValLabel);
+	boundsLayout->addStretch();
+	boundsLayout->addWidget(maxValLabel);
+
+	layout->addWidget(dummy);
+	layout->addWidget(slider);
+	layout->addWidget(dummyBounds);
+
+	// connect
+	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+	connect(sliderBox, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+}
+
+}
+
+

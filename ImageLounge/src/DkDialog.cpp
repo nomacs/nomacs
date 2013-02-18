@@ -2006,4 +2006,30 @@ void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event) {
 	QPrintPreviewWidget::wheelEvent(event);	
 }
 
+// DkOpacityDialog --------------------------------------------------------------------
+DkOpacityDialog::DkOpacityDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent, f) {
+
+	createLayout();
+}
+
+void DkOpacityDialog::createLayout() {
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+
+	slider = new DkSlider(tr("Window Opacity"), this);
+
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	layout->addWidget(slider);
+	layout->addWidget(buttons);
+
+	//setStandardButton 
+
+}
+
 } // close namespace
+
+
