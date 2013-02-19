@@ -1467,7 +1467,11 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* prin
 void DkPrintPreviewDialog::init() {
 	
 	if (!printer) {
+#ifdef Q_WS_WIN
 		printer = new QPrinter(QPrinter::HighResolution);
+#else
+		printer = new QPrinter;
+#endif
 	}
 	
 	preview = new DkPrintPreviewWidget(printer, this);
