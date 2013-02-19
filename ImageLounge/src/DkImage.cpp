@@ -561,10 +561,8 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
  **/ 
 void DkBasicLoader::rotate(int orientation) {
 
-	if (orientation == 0 || orientation == -1) {
-		qDebug() << "orientation is -1 !!!!!!!!!!!!!!!!";
+	if (orientation == 0 || orientation == -1)
 		return;
-	}
 
 	QTransform rotationMatrix;
 	rotationMatrix.rotate((double)orientation);
@@ -796,7 +794,6 @@ DkImageLoader::~DkImageLoader() {
 void DkImageLoader::clearPath() {
 	
 
-	qDebug() << "clear path - virtual file: " << virtualFile.fileName() << " real file: " << file.fileName();
 	QMutexLocker locker(&mutex);
 	basicLoader.release();
 	
@@ -1398,8 +1395,6 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 						break;
 
 					imgRotated = cCache.isRotated();
-					qDebug() << "is rotated: " << cCache.isRotated() << "------------------------";
-					qDebug() << "loading from cache...";
 				}
 				break; 
 			}
@@ -1447,8 +1442,6 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 				watcher->removePaths(watcher->files());	// remove all files previously watched
 			watcher->addPath(file.absoluteFilePath());
 		}
-		
-		qDebug() << "watcher files: " << watcher->files();
 
 		this->file = file;
 		lastFileLoaded = file;
@@ -2003,6 +1996,8 @@ void DkImageLoader::fileChanged(const QString& path) {
 		QMutexLocker locker(&mutex);
 		load(QFileInfo(path), true, true);
 	}
+	else
+		qDebug() << "file watcher is not up-to-date...";
 }
 
 /**
@@ -2013,11 +2008,9 @@ void DkImageLoader::directoryChanged(const QString& path) {
 
 	if (path.isEmpty() || QDir(path) == dir.absolutePath()) {
 
-		qDebug() << "folder updated";
 		folderUpdated = true;
 		
 		if (path.isEmpty())
-			qDebug() << "empty path -> timer update??";
 
 		// guarantee, that only every XX seconds a folder update occurs
 		// think of a folder where 100s of files are written to...
@@ -2029,12 +2022,10 @@ void DkImageLoader::directoryChanged(const QString& path) {
 			timerBlockedUpdate = false;
 
 			if (!path.isEmpty())
-				delayedUpdateTimer.start(1000);
+				delayedUpdateTimer.start(3000);
 		}
-		else {
+		else
 			timerBlockedUpdate = true;
-			qDebug() << "timer blocked...";
-		}
 	}
 	
 }
