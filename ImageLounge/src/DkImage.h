@@ -951,6 +951,7 @@ signals:
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
 	void setPlayer(bool play);
+	void updateFileWatcherSignal(QFileInfo file);
 
 public slots:
 	QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
@@ -965,6 +966,8 @@ public slots:
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();
+	void updateFileWatcher(QFileInfo filePath);
+
 	//void enableWatcher(bool enable);
 
 protected:

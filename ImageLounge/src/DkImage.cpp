@@ -733,11 +733,15 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	loaderThread->start();
 	moveToThread(loaderThread);
 
-	//watcher = 0;
+	watcher = 0;
 	// init the watcher
-	watcher = new QFileSystemWatcher();
-	connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+	//watcher = new QFileSystemWatcher();
+	//connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
 	
+	// this seems to be unnecessary complicated, but otherwise we create the watcher in different threads
+	// (depending on if loadFile() is called threaded) which is not a very good ides
+	connect(this, SIGNAL(updateFileWatcherSignal(QFileInfo)), this, SLOT(updateFileWatcher(QFileInfo)));
+
 	dirWatcher = new QFileSystemWatcher();
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
@@ -1436,13 +1440,8 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
 
 		// update watcher
-		if (watcher) {
+		emit updateFileWatcherSignal(file);
 			
-			if (!watcher->files().isEmpty())
-				watcher->removePaths(watcher->files());	// remove all files previously watched
-			watcher->addPath(file.absoluteFilePath());
-		}
-
 		this->file = file;
 		lastFileLoaded = file;
 		editFile = QFileInfo();
@@ -1699,7 +1698,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		emit newErrorDialog(msg);
 	}
 
-	if (watcher) watcher->addPath(this->file.absoluteFilePath());
+	emit updateFileWatcherSignal(this->file);
 
 }
 
@@ -1732,10 +1731,10 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 	bool saved = (saveImg.isNull()) ? basicLoader.image().save(filePath) : saveImg.save(filePath);	// TODO: move to basic loader
 	emit updateInfoSignalDelayed(tr("saving..."), false);	// stop the label
 	
-	if (saved && watcher)
-		watcher->addPath(file.absoluteFilePath());
-	else if (watcher)
-		watcher->addPath(this->file.absoluteFilePath());
+	if (saved)
+		emit updateFileWatcherSignal(file);
+	else 
+		emit updateFileWatcherSignal(this->file);
 
 	if (!saveImg.isNull() && saved) {
 		
@@ -1920,8 +1919,8 @@ void DkImageLoader::rotateImage(double angle) {
 		
 	}
 
-	if (watcher) watcher->addPath(this->file.absoluteFilePath());
-	if (cacher) 
+	emit updateFileWatcherSignal(this->file);
+	if (cacher)
 		cacher->setCurrentFile(file, basicLoader.image());
 
 
@@ -1985,16 +1984,29 @@ bool DkImageLoader::restoreFile(const QFileInfo& fileInfo) {
 	return backupFile.rename(fileInfo.absoluteFilePath());
 }
 
+void DkImageLoader::updateFileWatcher(QFileInfo filePath) {
+
+	if (watcher)
+		delete watcher;
+
+	watcher = new QFileSystemWatcher(QStringList(filePath.absoluteFilePath()), this);
+	connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+
+	qDebug() << "file watcher updated: " << filePath.absoluteFilePath();
+}
+
 /**
  * Reloads the currently loaded file if it was edited by another software.
  * @param path the file path of the changed file.
  **/ 
 void DkImageLoader::fileChanged(const QString& path) {
 
+	qDebug() << "file updated: " << path;
+
 	// ignore if watcher was disabled
 	if (path == file.absoluteFilePath()) {
 		QMutexLocker locker(&mutex);
-		load(QFileInfo(path), true, true);
+		load(QFileInfo(path), true, cache_force_load);
 	}
 	else
 		qDebug() << "file watcher is not up-to-date...";
