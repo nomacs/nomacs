@@ -747,6 +747,8 @@ public slots:
 		imgSize = s;
 		worldMatrix = QTransform();
 
+		DkImageLoader::imgMetaData.setFileName(file);
+
 		//DkTimer dt;
 		readTags();
 			

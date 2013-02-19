@@ -2035,8 +2035,6 @@ void DkImageLoader::directoryChanged(const QString& path) {
 
 		folderUpdated = true;
 		
-		if (path.isEmpty())
-
 		// guarantee, that only every XX seconds a folder update occurs
 		// think of a folder where 100s of files are written to...
 		// as this could be pretty fast, the thumbsloader (& whoever) would create a 
