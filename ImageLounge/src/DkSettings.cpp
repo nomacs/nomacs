@@ -473,7 +473,7 @@ void DkSettings::setToDefaultSettings() {
 // DkSettingsDialog --------------------------------------------------------------------
 DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 
-	this->resize(600,400);
+	this->resize(600,420);
 
 	s = new DkSettings();
 
