@@ -177,17 +177,17 @@
     <message>
         <location filename="../src/DkSettings.cpp" line="918"/>
         <source>Frameless</source>
-        <translation type="unfinished"></translation>
+        <translation>Nackig</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="920"/>
         <source>Show Border</source>
-        <translation type="unfinished"></translation>
+        <translation>d&apos;Rand azoaga</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="923"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>abr da ganzä</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="925"/>
@@ -1354,12 +1354,12 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="795"/>
         <source>&amp;Change Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>d&apos;Durchsichtigkeit w&amp;ächsla</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="797"/>
         <source>change the window opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>des vrändarat d&apos;Durchsichtigkeit vom nomacs</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="800"/>
@@ -1390,12 +1390,12 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="815"/>
         <source>Lock &amp;Window</source>
-        <translation type="unfinished"></translation>
+        <translation>s&apos;Fenschtar &amp;sperra</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="817"/>
         <source>lock the window</source>
-        <translation type="unfinished"></translation>
+        <translation>sperrt as Fenschtar</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="827"/>
@@ -1470,20 +1470,23 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1469"/>
         <source>Change Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>d&apos;Durchsichtigkeit wächsla</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1544"/>
         <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press CTRL+SHIFT+ALT+B</source>
-        <translation type="unfinished"></translation>
+        <translation>Fenschtar isch gesperrt
+Zerscht: Fokus kriaga (ALT+TAB)
+denna: CTRL+SHIFT+ALT+B</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1547"/>
         <source>You should first reduce opacity
  before working through the window.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zerscht d&apos;Durchsichtigkeit ändera
+bevor ma mit deam schaffat</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1631"/>
@@ -1650,7 +1653,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
         <location filename="../src/DkDialog.cpp" line="1885"/>
         <source>Window Opacity</source>
-        <translation type="unfinished"></translation>
+        <translation>d&apos;Durchsichtigkeit</translation>
     </message>
 </context>
 <context>
@@ -1805,7 +1808,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
         <location filename="../src/DkDialog.cpp" line="1625"/>
         <source>Print Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Druckvorasicht</translation>
     </message>
 </context>
 <context>
