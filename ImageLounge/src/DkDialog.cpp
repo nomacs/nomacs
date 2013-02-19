@@ -1467,7 +1467,7 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* prin
 void DkPrintPreviewDialog::init() {
 	
 	if (!printer) {
-		printer = new QPrinter;
+		printer = new QPrinter(QPrinter::HighResolution);
 	}
 	
 	preview = new DkPrintPreviewWidget(printer, this);
@@ -1483,18 +1483,29 @@ void DkPrintPreviewDialog::init() {
 	QRectF rect = printer->pageRect();
 	qreal scaleFactor;
 	QSizeF paperSize = printer->paperSize(QPrinter::Inch);
+	QRectF pageRectInch = printer->pageRect(QPrinter::Inch);
+	
 	// scale image to fit on paper
 	if (rect.width()/img.width() < rect.height()/img.height()) {
 		scaleFactor = rect.width()/(img.width()+FLT_EPSILON);
-		dpi = img.width()/(paperSize.width()+FLT_EPSILON)/scaleFactor;
+		//dpi = (img.width()/(pageRectInch.width()+FLT_EPSILON));
+		dpi = origdpi/scaleFactor;
 	} else {
 		scaleFactor = rect.height()/(img.height()+FLT_EPSILON);
-		dpi = img.height()/(paperSize.height()+FLT_EPSILON)/scaleFactor;
+		//dpi = (img.height()/(pageRectInch.height()+FLT_EPSILON));
+		dpi = origdpi/scaleFactor;
 	}
-	qDebug() << "dpi:" << dpi;
-	
+
+	//qDebug() << "img:" << img.size();
+	//qDebug() << "paperInch:" << paperSize;
+	//qDebug() << "rect:" << rect;
+	//qDebug() << "rectInch:" << pageRectInch;
+	//qDebug() << "scaleFactor:" << scaleFactor;
+	//qDebug() << "dpi:" << dpi;
+	//qDebug() << "origDpi:" << origdpi;
+
 	// use at least 150 dpi as default if image has less then 150
-	if (origdpi < 150 && scaleFactor > 1) {
+	if ((origdpi < 150 || dpi < 150) && scaleFactor > 1) {
 		scaleFactor = origdpi/150;
 		dpi = 150;
 	}
