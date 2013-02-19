@@ -555,10 +555,10 @@ public:
 
 	void setVisible(bool visible) {
 
+		DkWidget::setVisible(visible);
+
 		if (visible)
 			indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
-
-		DkWidget::setVisible(visible);
 	}
 
 public slots:

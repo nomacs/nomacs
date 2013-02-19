@@ -345,6 +345,7 @@ public:
 	DkMetaData(QFileInfo file = QFileInfo()) {
 		this->file = file;
 		mdata = false;
+		hasMetaData = true;	// initially we assume that meta data is present
 	};
 	
 	DkMetaData(const DkMetaData& metaData);
@@ -357,6 +358,7 @@ public:
 
 		this->file = file;
 		mdata = false;
+		hasMetaData = true;
 	};
 
 	QFileInfo getFile() const {
@@ -372,6 +374,7 @@ public:
 
 		this->file = metadata.file;
 		this->mdata = false;
+		this->hasMetaData = metadata.hasMetaData;
 		
 		return *this;
 	};
@@ -411,6 +414,7 @@ private:
 	QFileInfo file;
 
 	bool mdata;
+	bool hasMetaData;
 
 };
 

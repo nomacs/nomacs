@@ -1018,11 +1018,11 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 
 	DkTimer dt;
 	
-	if (folderUpdated) {
-		bool loaded = loadDir((virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir(), false);
-		if (!loaded)
-			return QFileInfo();
-	}
+	//if (folderUpdated) {
+	//	bool loaded = loadDir((virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir(), false);
+	//	if (!loaded)
+	//		return QFileInfo();
+	//}
 	
 	if (searchFile && !file.absoluteFilePath().isEmpty()) {
 		QDir newDir = (virtualExists && virtualFile.absoluteDir() != dir) ? virtualFile.absoluteDir() : file.absoluteDir();
@@ -3283,6 +3283,7 @@ DkMetaData::DkMetaData(const DkMetaData& metaData) {
 	//const Exiv2::Image::AutoPtr exifImg((metaData.exifImg));
 	this->file = metaData.file;
 	this->mdata = false;
+	this->hasMetaData = metaData.hasMetaData;
 	// TODO: not too cool...
 
 }
@@ -4159,6 +4160,11 @@ bool DkMetaData::isRaw() {
 void DkMetaData::readMetaData() {
 	
 	DkTimer dt;
+
+	// image format does not support metadata
+	if (!hasMetaData)
+		return;
+
 	if (!mdata) {
 	
 		try {
@@ -4168,6 +4174,7 @@ void DkMetaData::readMetaData() {
 		
 		} catch (...) {
 			mdata = false;
+			hasMetaData = false;
 			qDebug() << "could not open image for exif data";
 			return;
 		}
@@ -4175,6 +4182,7 @@ void DkMetaData::readMetaData() {
 		if (exifImg.get() == 0) {
 			qDebug() << "image could not be opened for exif data extraction";
 			mdata = false;
+			hasMetaData = false;
 			return;
 		}
 
@@ -4184,11 +4192,13 @@ void DkMetaData::readMetaData() {
 			if (!exifImg->good()) {
 				qDebug() << "metadata could not be read";
 				mdata = false;
+				hasMetaData = false;
 				return;
 			}
 
 		}catch (...) {
 			mdata = false;
+			hasMetaData = false;
 			return;
 		}
 
@@ -4205,6 +4215,7 @@ void DkMetaData::reloadImg() {
 
 	} catch (...) {
 		mdata = false;
+		hasMetaData = false;
 		qDebug() << "could not open image for exif data";
 		return;
 	}
@@ -4212,6 +4223,7 @@ void DkMetaData::reloadImg() {
 	if (exifImg.get() == 0) {
 		qDebug() << "image could not be opened for exif data extraction";
 		mdata = false;
+		hasMetaData = false;
 		return;
 	}
 
@@ -4220,6 +4232,7 @@ void DkMetaData::reloadImg() {
 	if (!exifImg->good()) {
 		qDebug() << "metadata could not be read";
 		mdata = false;
+		hasMetaData = false;
 		return;
 	}
 
