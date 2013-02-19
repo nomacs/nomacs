@@ -1492,28 +1492,30 @@ void DkPrintPreviewDialog::init() {
 	
 	// scale image to fit on paper
 	if (rect.width()/img.width() < rect.height()/img.height()) {
-		scaleFactor = rect.width()/(img.width()+FLT_EPSILON);
-		//dpi = (img.width()/(pageRectInch.width()+FLT_EPSILON));
-		dpi = origdpi/scaleFactor;
+		scaleFactor = rect.width()/(img.width()+FLT_EPSILON);		
 	} else {
 		scaleFactor = rect.height()/(img.height()+FLT_EPSILON);
-		//dpi = (img.height()/(pageRectInch.height()+FLT_EPSILON));
-		dpi = origdpi/scaleFactor;
 	}
 
-	//qDebug() << "img:" << img.size();
-	//qDebug() << "paperInch:" << paperSize;
-	//qDebug() << "rect:" << rect;
-	//qDebug() << "rectInch:" << pageRectInch;
-	//qDebug() << "scaleFactor:" << scaleFactor;
-	//qDebug() << "dpi:" << dpi;
-	//qDebug() << "origDpi:" << origdpi;
+	float inchW = printer->pageRect(QPrinter::Inch).width();
+	float pxW = printer->pageRect().width();
+	dpi = (pxW/inchW)/scaleFactor;
+
+
+	qDebug() << "img:" << img.size();
+	qDebug() << "paperInch:" << paperSize;
+	qDebug() << "rect:" << rect;
+	qDebug() << "rectInch:" << pageRectInch;
+	qDebug() << "scaleFactor:" << scaleFactor;
+	qDebug() << "dpi:" << dpi;
+	qDebug() << "origDpi:" << origdpi;
 
 	// use at least 150 dpi as default if image has less then 150
 	if ((origdpi < 150 || dpi < 150) && scaleFactor > 1) {
-		scaleFactor = origdpi/150;
 		dpi = 150;
+		scaleFactor = (pxW/inchW)/dpi;
 	}
+
 	imgTransform.scale(scaleFactor, scaleFactor);
 
 	dpiFactor->lineEdit()->setText(QString().sprintf("%.0f", dpi)+dpiEditorSuffix);
@@ -1789,12 +1791,19 @@ void DkPrintPreviewDialog::updateZoomFactor()
 }
 
 void DkPrintPreviewDialog::dpiFactorChanged() {
+	
 	QString text = dpiFactor->lineEdit()->text();
 	bool ok;
 	qreal factor = text.remove(dpiEditorSuffix).toFloat(&ok);
 	if (ok) {
 		imgTransform.reset();
-		imgTransform.scale(origdpi/factor, origdpi/factor);
+
+		float inchW = printer->pageRect(QPrinter::Inch).width();
+		float pxW = printer->pageRect().width();
+		float scaleFactor = (((pxW/inchW)/factor));
+
+		imgTransform.scale(scaleFactor, scaleFactor);
+
 	}
 	centerImage();
 	preview->updatePreview();
