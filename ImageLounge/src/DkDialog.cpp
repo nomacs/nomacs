@@ -1265,6 +1265,7 @@ void DkResizeDialog::updateSnippets() {
 	QPainter painter(&origImg);
 	painter.setBackgroundMode(Qt::TransparentMode);
 	painter.drawImage(QRect(QPoint(), origImg.size()), img, imgRect);
+	painter.end();
 
 }
 

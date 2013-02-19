@@ -346,24 +346,10 @@ public:
 		this->file = file;
 		mdata = false;
 		hasMetaData = true;	// initially we assume that meta data is present
+		dirty = false;
 	};
 	
 	DkMetaData(const DkMetaData& metaData);
-
-	void setFileName(QFileInfo file) {
-		
-		// do nothing if the same file is set
-		if (this->file == file)
-			return;
-
-		this->file = file;
-		mdata = false;
-		hasMetaData = true;
-	};
-
-	QFileInfo getFile() const {
-		return file;
-	};
 
 	~DkMetaData() {};
 
@@ -375,10 +361,30 @@ public:
 		this->file = metadata.file;
 		this->mdata = false;
 		this->hasMetaData = metadata.hasMetaData;
+		this->dirty = metadata.dirty;
 		
 		return *this;
 	};
 
+	void setFileName(QFileInfo file) {
+
+		// do nothing if the same file is set
+		if (this->file == file)
+			return;
+
+		this->file = file;
+		mdata = false;
+		hasMetaData = true;
+		dirty = false;
+	};
+
+	QFileInfo getFile() const {
+		return file;
+	};
+
+	bool isDirty() {
+		return dirty;
+	};
 
 	void reloadImg();
 
@@ -395,7 +401,7 @@ public:
 	int getHorizontalFlipped();
 	void saveHorizontalFlipped(int f);
 	float getRating();
-	void setRating(int r);
+	void saveRating(int r);
 	bool isTiff();
 	bool isJpg();
 	bool isRaw();
@@ -415,6 +421,7 @@ private:
 
 	bool mdata;
 	bool hasMetaData;
+	bool dirty;
 
 };
 
@@ -967,6 +974,7 @@ public slots:
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();
 	void updateFileWatcher(QFileInfo filePath);
+	void disableFileWatcher();
 
 	//void enableWatcher(bool enable);
 

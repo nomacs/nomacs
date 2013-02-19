@@ -1255,7 +1255,8 @@ void DkViewPort::setImage(QImage newImg) {
 	//// if this thread uses the static metadata object 
 	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
 	//// currently we need to read the metadata twice (not nice either)
-	DkImageLoader::imgMetaData.setFileName(loader->getFile());	controller->stopLabels();
+	DkImageLoader::imgMetaData.setFileName(loader->getFile());	
+	controller->stopLabels();
 
 	thumbLoaded = false;
 	thumbFile = QFileInfo();
@@ -1886,16 +1887,21 @@ void DkViewPort::setEditedImage(QImage newImg) {
 
 void DkViewPort::unloadImage() {
 
-	int rating = controller->getRating();
+	if (loader->getFile().exists()) {
 
-	// TODO: if image is not saved... ask user?! -> resize & crop
-	if (imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) {
-		qDebug() << "old rating: " << loader->getMetaData().getRating();
-		loader->saveRating(rating);
+		int rating = controller->getRating();
+
+		// TODO: if image is not saved... ask user?! -> resize & crop
+		if ((imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) ||
+			(imgStorage.hasImage() && loader && loader->getMetaData().isDirty())) {
+			qDebug() << "old rating: " << loader->getMetaData().getRating() << " rating: " << rating << " is dirty: " << loader->getMetaData().isDirty();
+			qDebug() << "meta file: " << loader->getMetaData().getFile().absoluteFilePath() << " loader file: " << loader->getFile().absoluteFilePath();
+			loader->saveRating(rating);
+		}
+		else
+			qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
 	}
-	else
-		qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
-	
+
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 
 	if (movie) {
@@ -2064,7 +2070,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 void DkViewPort::loadFullFile(bool silent) {
 
 	if (thumbFile.exists()) {
-		unloadImage();	// TODO: unload image clears the image -> makes an empty file
+		//unloadImage();	// TODO: unload image clears the image -> makes an empty file
 		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	}
 	else if (loader)	// the cacher is updated by loading anyway

@@ -740,7 +740,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	
 	// this seems to be unnecessary complicated, but otherwise we create the watcher in different threads
 	// (depending on if loadFile() is called threaded) which is not a very good ides
-	connect(this, SIGNAL(updateFileWatcherSignal(QFileInfo)), this, SLOT(updateFileWatcher(QFileInfo)));
+	connect(this, SIGNAL(updateFileWatcherSignal(QFileInfo)), this, SLOT(updateFileWatcher(QFileInfo)), Qt::QueuedConnection);
 
 	dirWatcher = new QFileSystemWatcher();
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
@@ -1438,11 +1438,9 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 			cacher->setCurrentFile(file, basicLoader.image());
 
 		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
-
-		// update watcher
-		emit updateFileWatcherSignal(file);
 			
-		this->file = file;
+		// update watcher
+		emit updateFileWatcherSignal(file);		this->file = file;
 		lastFileLoaded = file;
 		editFile = QFileInfo();
 		loadDir(file.absoluteDir(), false);
@@ -1778,14 +1776,20 @@ void DkImageLoader::saveRating(int rating) {
 		return;
 
 	QMutexLocker locker(&mutex);
+	// update watcher
+	if (this->file.exists() && watcher)
+		watcher->removePath(this->file.absoluteFilePath());
 
 	try {
-		imgMetaData.setRating(rating);
+		
+		imgMetaData.saveRating(rating);
 	}catch(...) {
 		
 		if (!restoreFile(this->file))
 			emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
 	}
+	emit updateFileWatcher(this->file);
+
 }
 
 //void DkImageLoader::enableWatcher(bool enable) {
@@ -1986,13 +1990,22 @@ bool DkImageLoader::restoreFile(const QFileInfo& fileInfo) {
 
 void DkImageLoader::updateFileWatcher(QFileInfo filePath) {
 
-	if (watcher)
-		delete watcher;
+	//if (watcher)
+	//	delete watcher;
 
-	watcher = new QFileSystemWatcher(QStringList(filePath.absoluteFilePath()), this);
-	connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+	//watcher = new QFileSystemWatcher(QStringList(filePath.absoluteFilePath()), this);
+	//connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
 
-	qDebug() << "file watcher updated: " << filePath.absoluteFilePath();
+	//qDebug() << "file watcher updated: " << filePath.absoluteFilePath();
+}
+
+void DkImageLoader::disableFileWatcher() {
+
+	//if (watcher) {
+	//	delete watcher;
+	//	watcher = 0;
+	//}
+
 }
 
 /**
@@ -3287,6 +3300,7 @@ DkMetaData::DkMetaData(const DkMetaData& metaData) {
 	this->file = metaData.file;
 	this->mdata = false;
 	this->hasMetaData = metaData.hasMetaData;
+	this->dirty = metaData.dirty;
 	// TODO: not too cool...
 
 }
@@ -3435,6 +3449,7 @@ void DkMetaData::saveThumbnail(QImage thumb) {
 		exifImg->setExifData(exifData);
 		exifImg->writeMetadata();
 		qDebug() << "thumbnail saved...";
+		dirty = false;
 
 		//Exiv2::Image::AutoPtr exifImgN;
 		//
@@ -3677,12 +3692,9 @@ bool DkMetaData::setExifValue(std::string key, std::string taginfo) {
 		Exiv2::Exifdatum& tag = exifData[key];
 		
 		if (!tag.setValue(taginfo)) {
-			exifImg->setExifData(exifData);
-			exifImg->writeMetadata();
+			dirty = true;
 			return true;
-		} else
-			qDebug() << "could not write Exif Data";
-			return false;
+		}
 	}
 
 	return false;
@@ -3804,6 +3816,8 @@ void DkMetaData::saveOrientation(int o) {
 	// this try is a fast fix -> if the image does not support exiv data -> an exception is raised here -> tell the loader to save the orientated matrix
 	exifImg->setExifData(exifData);
 	exifImg->writeMetadata();
+
+	dirty = false;
 	
 }
 
@@ -4036,7 +4050,7 @@ float DkMetaData::getRating() {
 	return fRating;
 }
 
-void DkMetaData::setRating(int r) {
+void DkMetaData::saveRating(int r) {
 	
 	readMetaData();	
 	if (!mdata)
@@ -4089,7 +4103,8 @@ void DkMetaData::setRating(int r) {
 	exifImg->setExifData(exifData);
 	exifImg->setXmpData(xmpData);
 	exifImg->writeMetadata();
-
+	
+	dirty = false;
 }
 
 
