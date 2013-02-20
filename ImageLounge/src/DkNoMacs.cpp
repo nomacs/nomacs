@@ -437,8 +437,10 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_crop]);
 	editMenu->addAction(editActions[menu_edit_delete]);
 	editMenu->addSeparator();
+#ifdef Q_WS_WIN
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
 	editMenu->addSeparator();
+#endif
 	editMenu->addAction(editActions[menu_edit_preferences]);
 
 	viewMenu = menu->addMenu(tr("&View"));
@@ -471,7 +473,9 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_opacity_up]);
 	viewMenu->addAction(viewActions[menu_view_opacity_down]);
 	viewMenu->addAction(viewActions[menu_view_opacity_an]);
+#ifdef Q_WS_WIN
 	viewMenu->addAction(viewActions[menu_view_lock_window]);
+#endif
 	viewMenu->addSeparator();
 	
 	viewMenu->addAction(viewActions[menu_view_gps_map]);
@@ -815,10 +819,6 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_lock_window]->setCheckable(true);
 	viewActions[menu_view_lock_window]->setChecked(false);
 
-#ifndef Q_WS_WIN
-	viewActions[menu_view_lock_window]->setEnabled(false);
-#endif
-
 	connect(viewActions[menu_view_lock_window], SIGNAL(toggled(bool)), this, SLOT(lockWindow(bool)));
 
 	viewActions[menu_view_gps_map] = new QAction(viewIcons[icon_view_gps], tr("Show G&PS Coordinates"), this);
@@ -949,12 +949,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_crop]->setEnabled(enable);
 	editActions[menu_edit_copy]->setEnabled(enable);
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
-
-#ifdef WIN32	// TODO: remove if wallpaper for other OS are supported
 	editActions[menu_edit_wallpaper]->setEnabled(enable);
-#else
-	editActions[menu_edit_wallpaper]->setEnabled(false);
-#endif
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 

@@ -3131,7 +3131,7 @@ void DkColorChooser::init() {
 	
 	QPushButton* resetButton = new QPushButton(tr("Reset"), this);
 	resetButton->setObjectName("resetButton");
-	resetButton->setAutoDefault(true);
+	//resetButton->setAutoDefault(true);
 
 	QWidget* colWidget = new QWidget(this);
 	QHBoxLayout* hLayout = new QHBoxLayout(colWidget);
