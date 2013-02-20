@@ -29,20 +29,17 @@
 
 namespace nmc {
 
-DkNoMacsApp::DkNoMacsApp(int argc, char** argv)
-	: QApplication(argc, argv)
-{
+DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {
 }
 
-#ifdef Q_WS_MAC
-bool DkNoMacsApp::event(QEvent *event) {
+/*! Handle QFileOpenEvent for mac here */
+bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 	if (event->type() == QEvent::FileOpen) {
-	   	emit loadFile(QFileInfo(static_cast<QFileOpenEvent*>(event)->file()));
+		emit loadFile(QFileInfo(static_cast<QFileOpenEvent*>(event)->file()));
 		return true;
 	}
-	return QApplication::event(event);
+	return QObject::eventFilter(obj, event);
 }
-#endif
 
 
 

@@ -337,30 +337,26 @@ enum toolsIcons {
 	icon_tools_end,
 };
 
-
-/*! QApplication wrapper.
+/*! A custom event filter for OSX.
 Its main purpose is to provide Mac OS X "open file from finder"
 functionality for nomacs. It *has* to be catched on the
 QApplication level in the event().
-
-Also QSettings presets are handled here
 */
-class DllExport DkNoMacsApp : public QApplication {
+class DkNomacsOSXEventFilter : public QObject {
 	Q_OBJECT
 
 public:
-	DkNoMacsApp(int argc, char** argv);
+	DkNomacsOSXEventFilter(QObject *parent = 0);
 
 signals:
 	void loadFile(const QFileInfo &fi);
 
-private:
-#ifdef Q_WS_MAC
+protected:
 	/*! Handle QFileOpenEvent for mac here */
-	bool event(QEvent *event);
-#endif
+	bool eventFilter(QObject *obj, QEvent *event);
 
 };
+
 
 class DkViewPort;
 class DkMenuBar;

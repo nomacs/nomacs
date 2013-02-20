@@ -76,21 +76,7 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
 
-
-#ifdef  Q_WS_MAC
-	//! \warning	this is somehow embarrassing but
-	//				even though the DkNomacsApp does not do anything
-	//				but calling the QApplication on windows/linux
-	//				it causes a segmentation fault in QMenuBar.
-	//				Thus, we call QApplication for these systems
-	nmc::DkNoMacsApp a(argc, argv);
-#else
-
-	// the cast (char**) is just relevant for Windows (otherwise it is char** anyway)
 	QApplication a(argc, (char**)argv);
-#endif
-
-	
 	QStringList args = a.arguments();
 
 	//// pong --------------------------------------------------------------------
@@ -136,11 +122,14 @@ int main(int argc, char *argv[]) {
 
 	if (args.size() > 1)
 		w->viewport()->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
-#ifdef Q_WS_MAC
-	QObject::connect(&a, SIGNAL(loadFile(const QFileInfo&)),
-	                 w->viewport(), SLOT(loadFile(const QFileInfo&)));
-#endif
 
+#ifdef Q_WS_MAC
+	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
+	a.installEventFilter(osxEventFilter);
+	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
+		w->viewport(), SLOT(loadFile(const QFileInfo&)));
+#endif
+		
 #ifdef Q_WS_WIN
 	if (!nmc::DkSettings::Global::setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::Global::setupVersion) {
 		
