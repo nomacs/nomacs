@@ -246,7 +246,9 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 }
 
 void DkFilePreview::drawThumbs(QPainter* painter) {
-	
+
+	qDebug() << "current file idx: " << currentFileIdx;
+
 	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
 	thumbRects.clear();
 
@@ -316,6 +318,10 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		bool isLeftGradient = worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x();
 		bool isRightGradient = imgWorldRect.right() > rightGradient.start().x();
 
+		// create effect before gradient (otherwise the effect might be transparent : )
+		if (idx == currentFileIdx && (currentImgGlow.isNull() || currentFileIdx != oldFileIdx || currentImgGlow.size() != img.size()))
+			createCurrentImgEffect(img.copy(), DkSettings::Display::highlightColor);
+
 		// show that there are more images...
 		if (isLeftGradient)
 			drawFadeOut(leftGradient, imgWorldRect, &img);
@@ -330,9 +336,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		}
 		else if (idx == currentFileIdx) {
 
-			if (currentImgGlow.isNull() || currentFileIdx != oldFileIdx || currentImgGlow.size() != img.size())
-				createCurrentImgEffect(img.copy(), DkSettings::Display::highlightColor);
-		
 			// create border
 			QRectF sr = r;
 			sr.setSize(sr.size()+QSize(2, 2));
@@ -344,11 +347,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			sr.moveCenter(r.center());
 			painter->setOpacity(0.3);
 			painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
-
-			//sr.setSize(sr.size()+QSize(2, 2));
-			//sr.moveCenter(r.center());
-			//painter->setOpacity(0.2);
-			//painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
 
 			painter->setOpacity(1.0);
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
@@ -693,8 +691,6 @@ void DkFilePreview::indexDir(int force) {
 	dir.setNameFilters(DkImageLoader::fileFilters);
 	dir.setSorting(QDir::LocaleAware);
 
-	
-
 	// new folder?
 	if ((force == DkThumbsLoader::user_updated || force == DkThumbsLoader::dir_updated || 
 		thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
@@ -745,7 +741,9 @@ void DkFilePreview::indexDir(int force) {
 	if (thumbsLoader) {
 		oldFileIdx = currentFileIdx;
 		currentFileIdx = thumbsLoader->getFileIdx(currentFile);
-		scrollToCurrentImage = true;
+		
+		if (currentFileIdx >= 0 && currentFileIdx < thumbsLoader->getFiles().size())
+			scrollToCurrentImage = true;
 		update();
 	}
 

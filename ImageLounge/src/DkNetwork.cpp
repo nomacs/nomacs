@@ -1018,7 +1018,7 @@ void DkUpdater::checkForUpdated() {
 	settings.save();
 
 #ifdef Q_WS_WIN
-	QUrl url ("http://www.nomacs.org/version_test2");
+	QUrl url ("http://www.nomacs.org/version_win");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
 #elif defined Q_WS_MAC
