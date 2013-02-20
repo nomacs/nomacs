@@ -1514,7 +1514,7 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 		qDebug() << tmpPath.absolutePath() << "does not exist";
 		return QFileInfo();
 	}
-	else if (!tmpPath.exists()) {
+	else if ((!DkSettings::Global::useTmpPath || !tmpPath.exists())) {
 
 #ifdef WIN32
 		
@@ -1526,7 +1526,7 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 		qDebug() << "default path: " << tmpPath.absoluteFilePath();
 #endif
 
-		if (!tmpPath.exists()) {
+		if (!tmpPath.isDir()) {
 			// load system default open dialog
 			QString dirName = QFileDialog::getExistingDirectory(DkNoMacs::getDialogParent(), tr("Save Directory"),
 				getDir().absolutePath());
