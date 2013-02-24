@@ -1989,7 +1989,7 @@ bevor die Klicks weitergegeben werden</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="629"/>
         <source>Find &amp; Filter</source>
-        <translation>Finden &amp;&amp; Filtern</translation>
+        <translation>Finden &amp; Filtern</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="631"/>
