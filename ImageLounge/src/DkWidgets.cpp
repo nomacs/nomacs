@@ -247,8 +247,6 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 void DkFilePreview::drawThumbs(QPainter* painter) {
 
-	qDebug() << "current file idx: " << currentFileIdx;
-
 	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
 	thumbRects.clear();
 

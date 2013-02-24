@@ -630,7 +630,7 @@ Mat DkImageManipulationWidget::applyLutToImage(Mat inImg, Mat inLUT, bool isMatH
 }
 
 /**
- * called from DkNoMacs.cpp: applyies manipulation history to the vieport image
+ * called from DkNoMacs.cpp: applies manipulation history to the viewport image
  * @param input image
  * @return modified image
  **/
@@ -642,11 +642,11 @@ Mat DkImageManipulationWidget::manipulateImage(Mat inImg){
 	if (historyToolsVec.size() > 0) {
 
 		QProgressDialog* progress = new QProgressDialog("Applying changes to image...", "Cancel", 0, 100);
-		int step = 100 / historyToolsVec.size();
+		int step = (int) (100 / historyToolsVec.size());
 		progress->setWindowModality(Qt::WindowModal);
 		progress->setValue(1);	// a strange behavior of the progress dialog: first setValue shows an empty dialog (setting to zero won't work)
 		progress->setValue(2);	// second setValue shows the progress bar with 2% (setting to zero won't work)
-		progress->setValue(0);	// finaly set the progress to zero
+		progress->setValue(0);	// finally set the progress to zero
 
 		outImg = inImg.clone();
 		Mat lut16 = createMatLut16();
