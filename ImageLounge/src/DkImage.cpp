@@ -3761,6 +3761,7 @@ void DkMetaData::saveOrientation(int o) {
 		qDebug() << "Orientation added to Exif Data";
 	}
 
+
 	Exiv2::Value::AutoPtr v = pos->getValue();
 	Exiv2::UShortValue* prv = dynamic_cast<Exiv2::UShortValue*>(v.release());
 	if (!prv)	throw DkFileException(QString(QObject::tr("can't save exif - due to an empty pointer\n")).toStdString(), __LINE__, __FILE__);
