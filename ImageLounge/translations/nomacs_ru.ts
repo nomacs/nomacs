@@ -145,17 +145,17 @@
     <message>
       <location filename="../src/DkSettings.cpp" line="918"/>
       <source>Frameless</source>
-      <translation>Frameless</translation>
+      <translation>Отсутствие рамки</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="920"/>
       <source>Show Border</source>
-      <translation>Show Border</translation>
+      <translation>Показать границу</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="923"/>
       <source>Fullscreen</source>
-      <translation>Fullscreen</translation>
+      <translation>Полноэкранный режим</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="925"/>
@@ -1260,12 +1260,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="795"/>
       <source>&amp;Change Opacity</source>
-      <translation>&amp;Change Opacity</translation>
+      <translation>&amp;Изменить прозрачность</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="797"/>
       <source>change the window opacity</source>
-      <translation>change the window opacity</translation>
+      <translation>изменить прозрачность окна</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="800"/>
@@ -1295,12 +1295,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="815"/>
       <source>Lock &amp;Window</source>
-      <translation>Lock &amp;Window</translation>
+      <translation>Блокировка &amp;окна</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="817"/>
       <source>lock the window</source>
-      <translation>lock the window</translation>
+      <translation>заблокировать окно</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="827"/>
@@ -1375,23 +1375,23 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1469"/>
       <source>Change Opacity</source>
-      <translation>Change Opacity</translation>
+      <translation>Изменить прозрачность</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1544"/>
       <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press CTRL+SHIFT+ALT+B</source>
-      <translation>Window Locked
-To unlock: gain focus (ALT+Tab),
-then press CTRL+SHIFT+ALT+B</translation>
+      <translation>Окно заблокировано.
+Для разблокировки:выберете окно(ALT+Tab),
+затем нажмите CTRL+SHIFT+ALT+B</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1547"/>
       <source>You should first reduce opacity
  before working through the window.</source>
-      <translation>You should first reduce opacity
- before working through the window.</translation>
+      <translation>Сначала следует уменьшить непрозрачность 
+перед началом работы в окне.</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1631"/>
@@ -1556,7 +1556,7 @@ then press CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1885"/>
       <source>Window Opacity</source>
-      <translation>Window Opacity</translation>
+      <translation>Прозрачность окна</translation>
     </message>
   </context>
   <context>
@@ -1700,7 +1700,7 @@ then press CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1625"/>
       <source>Print Preview</source>
-      <translation>Print Preview</translation>
+      <translation>Предварительный просмотр</translation>
     </message>
   </context>
   <context>
