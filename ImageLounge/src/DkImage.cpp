@@ -1503,6 +1503,16 @@ void DkImageLoader::saveFile(QFileInfo file, QString fileFilter, QImage saveImg,
 }
 
 /**
+ * Saves a file in a thread with no status information.
+ * @param file the file name/path
+ * @param img the image to be saved
+ **/ 
+void DkImageLoader::saveFileSilentThreaded(QFileInfo file, QImage img) {
+
+	QMetaObject::invokeMethod(this, "saveFileSilentIntern", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(QImage, img));
+}
+
+/**
  * Saves a temporary file to the folder specified in Settings.
  * @param img the image (which was in most cases pasted to nomacs)
  **/ 
@@ -1701,16 +1711,6 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 }
 
 /**
- * Saves a file in a thread with no status information.
- * @param file the file name/path
- * @param img the image to be saved
- **/ 
-void DkImageLoader::saveFileSilentThreaded(QFileInfo file, QImage img) {
-
-	QMetaObject::invokeMethod(this, "saveFileSilentIntern", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(QImage, img));
-}
-
-/**
  * Saves the file (not threaded!).
  * No status information will be displayed if this function is called.
  * @param file the file name/path.
@@ -1890,28 +1890,27 @@ void DkImageLoader::rotateImage(double angle) {
 		basicLoader.rotate(angle);
 		mutex.unlock();
 
-		updateImageSignal();
-		sendFileSignal();
+		emit updateImageSignal();
+		QCoreApplication::sendPostedEvents();	// update imediately as we interlock otherwise
+
 		mutex.lock();
-		
 		if (file.exists()) {
-			updateInfoSignalDelayed(tr("saving..."), true);
 			imgMetaData.saveOrientation((int)angle);
-			updateInfoSignalDelayed(tr("saving..."), false);
 			qDebug() << "exif data saved (rotation)?";
 		}
 		mutex.unlock();
+
+		sendFileSignal();
 	}
 	catch(DkException de) {
 
 		mutex.unlock();
 
+		// TODO: saveFileSilentThreaded is in the main thread (find out why)
 		// TODO: in this case the image is reloaded (file watcher seems to be active)
 		// make a silent save -> if the image is just cached, do not save it
 		if (file.exists())
 			saveFileSilentThreaded(file);
-		updateInfoSignalDelayed(tr("saving..."), false);
-
 	}
 	catch(...) {	// if file is locked... or permission is missing
 		mutex.unlock();
@@ -1919,14 +1918,12 @@ void DkImageLoader::rotateImage(double angle) {
 		// try restoring the file
 		if (!restoreFile(file))
 			emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
-		updateInfoSignalDelayed(tr("saving..."), false);
-		
 	}
 
-	emit updateFileWatcherSignal(this->file);
 	if (cacher)
 		cacher->setCurrentFile(file, basicLoader.image());
 
+	emit updateFileWatcherSignal(this->file);
 
 }
 
@@ -3766,7 +3763,11 @@ void DkMetaData::saveOrientation(int o) {
 
 	Exiv2::Value::AutoPtr v = pos->getValue();
 	Exiv2::UShortValue* prv = dynamic_cast<Exiv2::UShortValue*>(v.release());
+	if (!prv)	throw DkFileException(QString(QObject::tr("can't save exif - due to an empty pointer\n")).toStdString(), __LINE__, __FILE__);
+	
 	Exiv2::UShortValue::AutoPtr rv = Exiv2::UShortValue::AutoPtr(prv);
+	if (rv->value_.empty())	throw DkFileException(QString(QObject::tr("can't save exif - due to an empty pointer\n")).toStdString(), __LINE__, __FILE__);
+
 	orientation = (int) rv->value_[0];
 	if (orientation <= 0 || orientation > 8) orientation = 1;
 
