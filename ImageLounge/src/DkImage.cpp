@@ -53,7 +53,7 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.roh *.jps *.pns *.mpo").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.roh *.jps *.pns *.mpo *.webp").split(' ');
 
 // formats we can save
 QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;") %
@@ -66,7 +66,7 @@ QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;"
 // formats we can save
 QStringList DkImageLoader::saveFilters = saveFilter.split(QString(";;"));
 
-QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.pns *.mpo *.lnk);;") %
+QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.roh *.jps *.pns *.mpo *.webp *.lnk);;") %
 	QString(saveFilter) %
 	QString(";;Graphic Interchange Format (*.gif);;") %
 	QString("Portable Bitmap (*.pbm);;") %
@@ -122,6 +122,9 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	} else if (file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive))) {
 
 		// load hdr here...
+	} else if (file.suffix().contains(QRegExp("(webp)", Qt::CaseInsensitive))) {
+
+		imgLoaded = loadWebPFile(this->file);
 
 	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw)", Qt::CaseInsensitive))) {
 
@@ -552,6 +555,43 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 	}
 
 	return imgLoaded;
+}
+
+bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
+
+	QFile file(fileInfo.absoluteFilePath());
+	file.open(QIODevice::ReadOnly);
+	QByteArray buffer = file.readAll();
+
+	qDebug() << "file exists: " << file.exists();
+	qDebug() << "empty buffer: " << buffer.isEmpty();
+
+
+	// retrieve the image features (size, alpha etc.)
+	WebPBitstreamFeatures features;
+	int error = WebPGetFeatures((const uint8_t*)buffer.data(), buffer.size(), &features);
+	if (error) return false;
+
+	uint8_t* webData = 0;
+
+	if (features.has_alpha) {
+		webData = WebPDecodeBGRA((const uint8_t*) buffer.data(), buffer.size(), &features.width, &features.height);
+		if (!webData) return false;
+		qImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
+	}
+	else {
+		webData = WebPDecodeRGB((const uint8_t*) buffer.data(), buffer.size(), &features.width, &features.height);
+		if (!webData) return false;
+		qImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
+	}
+	
+	// clone the image so we own the buffer
+	qImg = qImg.copy();
+	if (webData) free(webData);
+
+	qDebug() << "buffer size: " << buffer.size();
+
+	return true;
 }
 
 // image editing --------------------------------------------------------------------
@@ -3132,6 +3172,36 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 
 		imageReader.setScaledSize(QSize(imgW, imgH));
 		thumb = imageReader.read();
+
+		// try to read the image
+		if (thumb.isNull()) {
+			DkBasicLoader loader;
+			
+			if (loader.loadGeneral(file)) {
+
+				thumb = loader.image();
+				imgW = thumb.width();
+				imgH = thumb.height();
+
+				if (imgW > maxThumbSize || imgH > maxThumbSize) {
+					if (imgW > imgH) {
+						imgH = (float)maxThumbSize / imgW * imgH;
+						imgW = maxThumbSize;
+					} 
+					else if (imgW < imgH) {
+						imgW = (float)maxThumbSize / imgH * imgW;
+						imgH = maxThumbSize;
+					}
+					else {
+						imgW = maxThumbSize;
+						imgH = maxThumbSize;
+					}
+				}
+
+				thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+				thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			}
+		}
 
 		// is there a nice solution to do so??
 		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
