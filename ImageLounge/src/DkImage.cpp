@@ -127,7 +127,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 		imgLoaded = loadWebPFile(this->file);
 
-	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw)", Qt::CaseInsensitive))) {
+	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive))) {
 
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		imgLoaded = qImg.load(this->file.absoluteFilePath());
