@@ -137,12 +137,11 @@ IF(ENABLE_WEBP)
 		
 		SET(WEBP_LIBRARIES optimized "webp" debug "webpd")
 	ELSE()
-		find_library(WEBP_LIBRARIES NAME webp)
+		find_library(WEBP_LIBRARIES webp)
 	ENDIF(MSVC)
 	
 	find_path(WEBP_INCLUDE_DIR NAMES "webp/decode.h" "encode.h" "types.h" HINTS "${WEBP_BUILD_PATH}../src" )
-	
-	IF(NOT WEBP_LIBRARIES STREQUAL "" AND EXISTS ${WEBP_INCLUDE_DIR})
+	IF(WEBP_LIBRARIES AND EXISTS ${WEBP_INCLUDE_DIR})
 		add_definitions(-DWITH_WEBP)
 	ELSE()
 		message(FATAL_ERROR "WebP not found. It's mandatory when used with ENABLE_WEBP enabled") 
