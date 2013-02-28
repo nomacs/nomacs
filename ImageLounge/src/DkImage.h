@@ -58,6 +58,7 @@
 
 #ifdef WITH_WEBP
 #include "webp/decode.h"
+#include "webp/encode.h"
 #endif
 
 #ifdef HAVE_EXIV2_HPP
@@ -637,6 +638,8 @@ public:
 	};
 
 	bool loadGeneral(QFileInfo file);
+
+	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
 	
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
@@ -691,8 +694,10 @@ protected:
 	
 #ifdef WITH_WEBP
 	bool loadWebPFile(QFileInfo fileInfo);
+	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
 #else
 	bool loadWebPFile(QFileInfo fileInfo) {return false};	// not supported if webP was not linked
+	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false};
 #endif
 
 	int mode;

@@ -594,6 +594,90 @@ bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 	return true;
 }
 
+bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
+
+	bool saved = false;
+
+	qDebug() << "extension: " << fileInfo.suffix();
+
+	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
+		saved = saveWebPFile(fileInfo, img, compression);
+	}
+	else {
+		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
+		imgWriter->setCompression(compression);
+		imgWriter->setQuality(compression);
+		saved = imgWriter->write(img);
+		delete imgWriter;
+	}
+
+	return saved;
+}
+
+bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {
+	
+	// currently, guarantee that the image is a ARGB image
+	//if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB888)
+		img = img.convertToFormat(QImage::Format_ARGB32);	// for now
+
+	char* buffer;
+	size_t bufSize;
+
+	if (compression < 0) {
+
+		if (!img.hasAlphaChannel())
+			qDebug() << "no alpha...";
+
+		//if (img.hasAlphaChannel())
+			bufSize = WebPEncodeLosslessBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
+		// // without alpha there is something wrong...
+		//else
+		//	bufSize = WebPEncodeLosslessBGR(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
+	}
+	else {
+		
+		//if (img.hasAlphaChannel())
+			bufSize = WebPEncodeBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
+		//else
+		//	bufSize = WebPEncodeBGR(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
+	}
+
+	if (!bufSize) return false;
+
+	QFile file(fileInfo.absoluteFilePath());
+	file.open(QIODevice::WriteOnly);
+	file.write(buffer, bufSize);
+	free(buffer);
+
+
+
+	//WebPConfig config;
+	//WebPConfigPreset(&config, WEBP_PRESET_PHOTO, compression);
+	//if (compression == 100) config.lossless = 1;
+
+	//WebPPicture webImg;
+	//if (!WebPPictureInit(&webImg)) return false;
+	//webImg.width = img.width();
+	//webImg.height = img.height();
+	//webImg.use_argb = true;		// we never use YUV
+	////webImg.argb_stride = img.bytesPerLine();
+	////webImg.argb = reinterpret_cast<uint32_t*>(img.bits());
+	//int errorCode = WebPPictureImportRGBA(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
+	//qDebug() << "import error: " << errorCode;
+
+	//// Set up a byte-writing method (write-to-memory, in this case):
+	//WebPMemoryWriter writer;
+	//WebPMemoryWriterInit(&writer);
+	//webImg.writer = WebPMemoryWrite;
+	//webImg.custom_ptr = &writer;
+
+	//int ok = WebPEncode(&config, &webImg);
+	//if (writer.size == 0) return false;
+
+
+	return true;
+}
+
 // image editing --------------------------------------------------------------------
 /**
  * This method rotates an image.
@@ -832,12 +916,7 @@ DkImageLoader::~DkImageLoader() {
 
 void DkImageLoader::initFileFilters() {
 
-#ifdef WITH_WEBP
-	fileFilters.append("*.webp");
-#endif
 	// formats we can save
-	//QString DkImageLoader::saveFilter = 
-		
 	saveFilters.append("Portable Network Graphics (*.png)");
 	saveFilters.append("JPEG (*.jpg *.jpeg)");
 	saveFilters.append("TIFF (*.tif *.tiff)");
@@ -845,7 +924,14 @@ void DkImageLoader::initFileFilters() {
 	saveFilters.append("Portable Pixmap (*.ppm)");
 	saveFilters.append("X11 Bitmap (*.xbm)");
 	saveFilters.append("X11 Pixmap (*.xpm)");
-	
+
+	// internal filters
+#ifdef WITH_WEBP
+	fileFilters.append("*.webp");
+	saveFilters.append("WebP (*.webp)");
+#endif
+
+	// formats we can load
 	openFilters.append("Image Files (" + fileFilters.join(" ") + ")");
 	openFilters += saveFilters;
 	openFilters.append("Graphic Interchange Format (*.gif)");
@@ -863,10 +949,6 @@ void DkImageLoader::initFileFilters() {
 	openFilters.append("Multi Picture Object (*.mpo)");
 	openFilters.append("Rohkost (*.roh)");
 
-	// internal filters
-#ifdef WITH_WEBP
-	openFilters.append("WebP (*.webp)");
-#endif
 }
 
 /**
@@ -1728,15 +1810,8 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	QImage sImg = (saveImg.isNull()) ? basicLoader.image() : saveImg;
 		
 	emit updateInfoSignalDelayed(tr("saving..."), true);
-	QImageWriter* imgWriter = new QImageWriter(filePath);
-	imgWriter->setCompression(compression);
-	imgWriter->setQuality(compression);
-	bool saved = imgWriter->write(sImg);
-	//imgWriter->setFileName(QFileInfo().absoluteFilePath());
-	delete imgWriter;
-	//bool saved = sImg.save(filePath, 0, compression);
+	bool saved = basicLoader.save(filePath, sImg, compression);
 	emit updateInfoSignalDelayed(tr("saving..."), false);
-	//qDebug() << "jpg compression: " << compression;
 
 	if (QFileInfo(filePath).exists())
 		qDebug() << QFileInfo(filePath).absoluteFilePath() << " (before exif) exists...";
@@ -1806,7 +1881,8 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 	
 	emit updateInfoSignalDelayed(tr("saving..."), true);
 	QString filePath = file.absoluteFilePath();
-	bool saved = (saveImg.isNull()) ? basicLoader.image().save(filePath) : saveImg.save(filePath);	// TODO: move to basic loader
+	QImage sImg = (saveImg.isNull()) ? basicLoader.image() : saveImg; 
+	bool saved = basicLoader.save(filePath, sImg);
 	emit updateInfoSignalDelayed(tr("saving..."), false);	// stop the label
 	
 	if (saved)
