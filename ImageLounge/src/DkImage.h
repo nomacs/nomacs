@@ -56,6 +56,8 @@
 #include <QTimer>
 #include <QMovie>
 
+#include "webp/decode.h"
+
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
 #else
@@ -684,6 +686,7 @@ protected:
 	
 	bool loadRohFile(QString fileName);
 	bool loadRawFile(QFileInfo file);
+	bool loadWebPFile(QFileInfo fileInfo);
 
 	int mode;
 	QImage qImg;

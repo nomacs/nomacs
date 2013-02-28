@@ -277,6 +277,9 @@ file(GLOB NOMACS_SOURCES "src/*.cpp")
 file(GLOB NOMACS_HEADERS "src/*.h")
 file(GLOB NOMACS_MOCS "src/*.h")
 
+if (APPLE)
+    SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
+endif (APPLE)
 
 set (NOMACS_FORMS
         src/nomacs.ui
