@@ -17,7 +17,7 @@ endif(COMMAND cmake_policy)
 
 
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
-
+OPTION (ENABLE_WEBP "Compile with webP support (webP)" OFF)
 
 set(NOMACS_VERSION 1.0.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
@@ -69,10 +69,13 @@ IF (NOT EXIV2_FOUND AND MSVC)
 					DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 					
 	find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" PATHS "../exiv2-0.23/msvc64/include" DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
-
+	MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
+	
 	find_path(EXPAT_BUILD_PATH NAMES "ReleaseDLL/libexpat.dll" "DebugDLL/libexpat.dll" PATHS "../exiv2-0.23/msvc64/expat/Win32" DOC "Path to the expat build directory" NO_DEFAULT_PATH)
+	MARK_AS_ADVANCED(EXPAT_BUILD_PATH)
 	
 	find_path(ZLIB_BUILD_PATH NAMES "ReleaseDLL/zlib1.dll" "DebugDLL/zlib1d.dll" PATHS "../exiv2-0.23/msvc64/zlib/Win32/" DOC "Path to the zlib build directory" NO_DEFAULT_PATH)
+	MARK_AS_ADVANCED(ZLIB_BUILD_PATH)
 	
     IF(  EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll AND 
@@ -113,12 +116,39 @@ IF (NOT EXIV2_FOUND AND MSVC)
 ENDIF(NOT EXIV2_FOUND AND MSVC)
 
 find_file(HAVE_EXIV2_HPP exiv2/exiv2.hpp ${EXIV2_INCLUDE_DIRS})
+MARK_AS_ADVANCED(HAVE_EXIV2_HPP)
 if (HAVE_EXIV2_HPP)
 	message(STATUS "exiv2 contains exiv2.hpp, using it")
 	add_definitions(-DHAVE_EXIV2_HPP)
 else (HAVE_EXIV2_HPP)
 	message(STATUS "exiv2 does not contain exiv2.hpp. Using older include set")
 endif (HAVE_EXIV2_HPP)
+
+
+#webp
+IF(ENABLE_WEBP)
+	IF (MSVC)
+		find_path(WEBP_BUILD_PATH NAMES "Release/webp.lib" "Debug/webp.lib" PATHS "../webp-0.2.1-cmake/build" DOC "Path to the WebP build directory" NO_DEFAULT_PATH)
+		IF(EXISTS "${WEBP_BUILD_PATH}/Release/webp.lib" AND EXISTS "${WEBP_BUILD_PATH}/Debug/webp.lib")
+			FILE(COPY ${WEBP_BUILD_PATH}/Debug/webp.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+			FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/libs/webp.lib ${CMAKE_CURRENT_BINARY_DIR}/libs/webpd.lib)
+			FILE(COPY ${WEBP_BUILD_PATH}/Release/webp.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		ENDIF()
+		
+		SET(WEBP_LIBRARIES optimized "webp" debug "webpd")
+	ELSE()
+		find_library(WEBP_LIBRARIES NAME webp)
+	ENDIF(MSVC)
+	
+	find_path(WEBP_INCLUDE_DIR NAMES "webp/decode.h" "encode.h" "types.h" HINTS "${WEBP_BUILD_PATH}../src" )
+	
+	IF(NOT WEBP_LIBRARIES STREQUAL "" AND EXISTS ${WEBP_INCLUDE_DIR})
+		add_definitions(-DWITH_WEBP)
+	ELSE()
+		message(FATAL_ERROR "WebP not found. It's mandatory when used with ENABLE_WEBP enabled") 
+	ENDIF()
+	
+ENDIF(ENABLE_WEBP)
 
 
 IF (ENABLE_RAW)
@@ -204,6 +234,7 @@ include_directories (
 	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}/src
+	${WEBP_INCLUDE_DIR}
 )
 
 # set (NOMACS_SOURCES
@@ -320,7 +351,7 @@ IF (EXIV2_FOUND)
 	set(EXE_NAME ${CMAKE_PROJECT_NAME})
 	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
 	add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS})
-	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB})
+	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${WEBP_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB})
 
 	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 		SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
