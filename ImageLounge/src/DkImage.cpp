@@ -53,39 +53,33 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.webp").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo").split(' ');
 
+//// formats we can save
+//QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;")
 // formats we can save
-QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;") %
-	QString("TIFF (*.tif *.tiff);;") %
-	QString("Windows Bitmap (*.bmp);;") %
-	QString("Portable Pixmap (*.ppm);;") %
-	QString("X11 Bitmap (*.xbm);;") %
-	QString("X11 Pixmap (*.xpm)");
+QStringList DkImageLoader::saveFilters = QStringList();//saveFilter.split(QString(";;"));
 
-// formats we can save
-QStringList DkImageLoader::saveFilters = saveFilter.split(QString(";;"));
-
-QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.webp *.lnk);;") %
-	QString(saveFilter) %
-	QString(";;Graphic Interchange Format (*.gif);;") %
-	QString("Portable Bitmap (*.pbm);;") %
-	QString("Portable Graymap (*.pgm);;") %
-	QString("Icon Files (*.ico);;") %
-	QString("Nikon Raw (*.nef);;") %
-	QString("Canon Raw (*.crw *.cr2);;") %
-	QString("Sony Raw (*.arw);;") %
-	QString("Digital Negativ (*.dng);;") %
-	QString("Panasonic Raw (*.rw2);;") %
-	QString("Minolta Raw (*.mrw);;") %
-	QString("JPEG Stereo (*.jps);;") %
-	QString("PNG Stereo (*.pns);;") %
-	QString("Multi Picture Object (*.mpo);;") %
-	QString("Rohkost (*.roh);;");
+//QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.webp *.lnk);;") %
+//	QString(saveFilter) %
+//	QString(";;Graphic Interchange Format (*.gif);;") %
+//	QString("Portable Bitmap (*.pbm);;") %
+//	QString("Portable Graymap (*.pgm);;") %
+//	QString("Icon Files (*.ico);;") %
+//	QString("Nikon Raw (*.nef);;") %
+//	QString("Canon Raw (*.crw *.cr2);;") %
+//	QString("Sony Raw (*.arw);;") %
+//	QString("Digital Negativ (*.dng);;") %
+//	QString("Panasonic Raw (*.rw2);;") %
+//	QString("Minolta Raw (*.mrw);;") %
+//	QString("JPEG Stereo (*.jps);;") %
+//	QString("PNG Stereo (*.pns);;") %
+//	QString("Multi Picture Object (*.mpo);;") %
+//	QString("Rohkost (*.roh);;");
 	
 
 // formats we can load
-QStringList DkImageLoader::openFilters = openFilter.split(QString(";;"));
+QStringList DkImageLoader::openFilters = QStringList();//openFilter.split(QString(";;"));
 
 DkMetaData DkImageLoader::imgMetaData = DkMetaData();
 
@@ -813,6 +807,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	// init cacher
 	cacher = 0;
 	startStopCacher();
+	initFileFilters();
 }
 
 /**
@@ -833,6 +828,45 @@ DkImageLoader::~DkImageLoader() {
 
 	qDebug() << "dir open: " << dir.absolutePath();
 	qDebug() << "filepath: " << saveDir.absolutePath();
+}
+
+void DkImageLoader::initFileFilters() {
+
+#ifdef WITH_WEBP
+	fileFilters.append("*.webp");
+#endif
+	// formats we can save
+	//QString DkImageLoader::saveFilter = 
+		
+	saveFilters.append("Portable Network Graphics (*.png)");
+	saveFilters.append("JPEG (*.jpg *.jpeg)");
+	saveFilters.append("TIFF (*.tif *.tiff)");
+	saveFilters.append("Windows Bitmap (*.bmp)");
+	saveFilters.append("Portable Pixmap (*.ppm)");
+	saveFilters.append("X11 Bitmap (*.xbm)");
+	saveFilters.append("X11 Pixmap (*.xpm)");
+	
+	openFilters.append("Image Files (" + fileFilters.join(" ") + ")");
+	openFilters += saveFilters;
+	openFilters.append("Graphic Interchange Format (*.gif)");
+	openFilters.append("Portable Bitmap (*.pbm)");
+	openFilters.append("Portable Graymap (*.pgm)");
+	openFilters.append("Icon Files (*.ico)");
+	openFilters.append("Nikon Raw (*.nef)");
+	openFilters.append("Canon Raw (*.crw *.cr2)");
+	openFilters.append("Sony Raw (*.arw)");
+	openFilters.append("Digital Negativ (*.dng)");
+	openFilters.append("Panasonic Raw (*.rw2)");
+	openFilters.append("Minolta Raw (*.mrw)");
+	openFilters.append("JPEG Stereo (*.jps)");
+	openFilters.append("PNG Stereo (*.pns)");
+	openFilters.append("Multi Picture Object (*.mpo)");
+	openFilters.append("Rohkost (*.roh)");
+
+	// internal filters
+#ifdef WITH_WEBP
+	openFilters.append("WebP (*.webp)");
+#endif
 }
 
 /**

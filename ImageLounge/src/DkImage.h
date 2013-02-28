@@ -56,7 +56,9 @@
 #include <QTimer>
 #include <QMovie>
 
+#ifdef WITH_WEBP
 #include "webp/decode.h"
+#endif
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -686,7 +688,12 @@ protected:
 	
 	bool loadRohFile(QString fileName);
 	bool loadRawFile(QFileInfo file);
+	
+#ifdef WITH_WEBP
 	bool loadWebPFile(QFileInfo fileInfo);
+#else
+	bool loadWebPFile(QFileInfo fileInfo) {return false};	// not supported if webP was not linked
+#endif
 
 	int mode;
 	QImage qImg;
@@ -863,8 +870,8 @@ public:
 
 	virtual ~DkImageLoader();
 
-	static QString saveFilter;		// for system close dialog
-	static QString openFilter;		// for system  open dialog
+	//static QString saveFilter;		// for system close dialog
+	//static QString openFilter;		// for system  open dialog
 	static QStringList fileFilters;	// just the filters
 	static QStringList openFilters;	// for open dialog
 	static QStringList saveFilters;	// for close dialog
@@ -909,6 +916,7 @@ public:
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false, bool searchFile = true);
 
+	static void initFileFilters();	// add special file filters
 
 	/**
 	 * Returns if an image is loaded currently.

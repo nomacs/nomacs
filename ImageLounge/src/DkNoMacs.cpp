@@ -1651,7 +1651,7 @@ void DkNoMacs::openFile() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
 		loader->getDir().absolutePath(), 
-		DkImageLoader::openFilter);
+		DkImageLoader::openFilters.join(";;"));
 
 	//// show the dialog
 	//if(openDialog->exec())
@@ -1809,7 +1809,7 @@ void DkNoMacs::saveFile() {
 
 		int filterIdx = -1;
 
-		QStringList sF = DkImageLoader::saveFilter.split(";;");
+		QStringList sF = DkImageLoader::saveFilters;
 		qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
@@ -1837,7 +1837,7 @@ void DkNoMacs::saveFile() {
 	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
-		savePath, DkImageLoader::saveFilter, &selectedFilter);
+		savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
 
 	//qDebug() << "selected Filter: " << selectedFilter;
 
@@ -1874,7 +1874,7 @@ void DkNoMacs::saveFile() {
 
 	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
 
-		QStringList sF = DkImageLoader::saveFilter.split(";;");
+		QStringList sF = DkImageLoader::saveFilters;
 
 		for (int idx = 0; idx < sF.size(); idx++) {
 
