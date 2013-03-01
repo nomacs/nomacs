@@ -696,8 +696,8 @@ protected:
 	bool loadWebPFile(QFileInfo fileInfo);
 	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
 #else
-	bool loadWebPFile(QFileInfo fileInfo) {return false};	// not supported if webP was not linked
-	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false};
+	bool loadWebPFile(QFileInfo fileInfo) {return false;};	// not supported if webP was not linked
+	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false;};
 #endif
 
 	int mode;

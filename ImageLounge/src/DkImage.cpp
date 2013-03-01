@@ -557,6 +557,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 	return imgLoaded;
 }
 
+#ifdef WITH_WEBP
 bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 
 	QFile file(fileInfo.absoluteFilePath());
@@ -593,6 +594,7 @@ bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 
 	return true;
 }
+#endif
 
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 
@@ -614,6 +616,7 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 	return saved;
 }
 
+#ifdef WITH_WEBP
 bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {
 	
 	// currently, guarantee that the image is a ARGB image
@@ -677,6 +680,7 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 
 	return true;
 }
+#endif
 
 // image editing --------------------------------------------------------------------
 /**
