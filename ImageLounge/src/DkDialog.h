@@ -116,6 +116,16 @@ public:
 		drawPreview();
 	};
 
+public slots:
+	
+	void setVisible(bool visible) {
+		
+		QDialog::setVisible(visible);
+
+		if (visible)
+			origView->zoomConstraints(origView->get100Factor());
+	};
+
 protected slots:
 
 	void newBgCol() {
@@ -124,9 +134,11 @@ protected slots:
 		drawPreview();
 	};
 
-	void updateSliderValue(int val) {
-		drawPreview();
-	};
+	void drawPreview();
+
+	//void updateSliderValue(int val = 0) {
+	//	drawPreview();
+	//};
 
 protected:
 	bool hasAlpha;
@@ -143,7 +155,6 @@ protected:
 
 	void init();
 	void createLayout();
-	void drawPreview();
 	void updateSnippets();
 };
 

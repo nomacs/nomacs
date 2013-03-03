@@ -835,8 +835,11 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		painter.setOpacity(0.8f);
 		painter.drawImage(overviewImgRect, imgT, QRect(0, 0, imgT.width(), imgT.height()));
 
-		painter.setPen(QColor(100, 0, 0));
-		painter.setBrush(QColor(100, 0, 0, 50));
+		QColor col = DkSettings::Display::highlightColor;
+		col.setAlpha(255);
+		painter.setPen(col);
+		col.setAlpha(50);
+		painter.setBrush(col);
 		painter.drawRect(viewRect);
 
 	}

@@ -159,6 +159,9 @@ void DkJpgDialog::createLayout() {
 	origLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 	
 	origView = new DkBaseViewPort(this);
+	//origView->setMinimumSize(500, 500);
+	origView->setForceFastRendering(true);
+	connect(origView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
 
 	//// maybe we should report this: 
 	//// if a stylesheet (with border) is set, the var
@@ -178,7 +181,7 @@ void DkJpgDialog::createLayout() {
 	slider->setValue(80);
 	slider->setTickInterval(10);
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderValue(int)));
+	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(drawPreview()));
 
 	// color chooser
 	colChooser = new DkColorChooser(bgCol, tr("Background Color"));
@@ -208,7 +211,7 @@ void DkJpgDialog::createLayout() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(previewWidget);
-	layout->addStretch();
+	//layout->addStretch();
 	layout->addWidget(buttons);
 
 }
@@ -223,17 +226,17 @@ void DkJpgDialog::updateSnippets() {
 	origView->fullView();
 	origView->zoomConstraints(origView->get100Factor());
 
-	QSize s = QSize(width()-60, width()-60);
-	s *= 0.5;
-	origImg = QImage(s, QImage::Format_ARGB32);
-	origImg.fill(Qt::transparent);
-	QRect imgRect = QRect(QPoint(img->width()*0.5-origImg.width()*0.5, img->height()*0.5-origImg.height()*0.5), origImg.size());
-	
-	QPainter painter(&origImg);
-	painter.setBackgroundMode(Qt::TransparentMode);
-	painter.drawImage(QRect(QPoint(), origImg.size()), *img, imgRect);
+	//QSize s = QSize(width()-60, width()-60);
+	//s *= 0.5;
+	//origImg = QImage(s, QImage::Format_ARGB32);
+	//origImg.fill(Qt::transparent);
+	//QRect imgRect = QRect(QPoint(img->width()*0.5-origImg.width()*0.5, img->height()*0.5-origImg.height()*0.5), origImg.size());
+	//
+	//QPainter painter(&origImg);
+	//painter.setBackgroundMode(Qt::TransparentMode);
+	//painter.drawImage(QRect(QPoint(), origImg.size()), *img, imgRect);
 
-	origLabel->setPixmap(QPixmap::fromImage(origImg));
+	//origLabel->setPixmap(QPixmap::fromImage(origImg));
 
 }
 
@@ -242,6 +245,8 @@ void DkJpgDialog::drawPreview() {
 	if (!img)
 		return;
 
+	qDebug() << "updating draw...";
+	QImage origImg = origView->getCurrentImageRegion();
 	newImg = QImage(origImg.size(), QImage::Format_ARGB32);
 	newImg.fill(bgCol.rgb());
 
@@ -258,7 +263,11 @@ void DkJpgDialog::drawPreview() {
 	newImg.save(&buffer, "JPG", slider->value());
 	newImg.loadFromData(ba, "JPG");
 
-	previewLabel->setPixmap(QPixmap::fromImage(newImg));
+	//previewLabel->setPixmap(QPixmap::fromImage(newImg));
+	previewLabel->setFixedSize(origView->size());	// fix display issues
+	//previewLabel->setScaledContents(true);
+	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+	previewLabel->setPixmap(QPixmap::fromImage(img));
 }
 
 // OpenWithDialog --------------------------------------------------------------------

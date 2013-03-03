@@ -1810,17 +1810,12 @@ void DkNoMacs::saveFile() {
 		int filterIdx = -1;
 
 		QStringList sF = DkImageLoader::saveFilters;
-		qDebug() << sF;
+		//qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
 		exp.setPatternSyntax(QRegExp::Wildcard);
 
 		for (int idx = 0; idx < sF.size(); idx++) {
-
-			
-			qDebug() << exp;
-			qDebug() << saveFile.suffix();
-			qDebug() << sF.at(idx);
 
 			if (exp.exactMatch(sF.at(idx))) {
 				selectedFilter = sF.at(idx);

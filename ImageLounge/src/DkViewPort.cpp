@@ -596,7 +596,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	grabGesture(Qt::PinchGesture);
 	setAttribute(Qt::WA_AcceptTouchEvents);
 
-
+	forceFastRendering = false;
 	this->parent = parent;
 	viewportRect = QRect(0, 0, width(), height());
 	worldMatrix.reset();
@@ -719,7 +719,10 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	if (worldMatrix.m11()*factor < minZoom && factor < 1)
+	// TODO: fix numeric for the next if ...
+	if (worldMatrix.m11() > minZoom && worldMatrix.m11()*factor < minZoom && factor < 1)
+		factor = 1.0f-(worldMatrix.m11()-minZoom);
+	else if (worldMatrix.m11()*factor < minZoom && factor < 1)
 		return;
 
 	//if (worldMatrix.m11()*factor < 1) {
@@ -802,6 +805,17 @@ QRectF DkBaseViewPort::getImageViewRect() {
 	return worldMatrix.mapRect(imgViewRect);
 }
 
+QImage DkBaseViewPort::getCurrentImageRegion() {
+
+	QRectF viewRect = QRectF(QPoint(), size());
+	viewRect = worldMatrix.inverted().mapRect(viewRect);
+	viewRect = imgMatrix.inverted().mapRect(viewRect);
+	QImage imgRegion = imgStorage.getImage().copy(viewRect.toRect());	// TODO: check round
+	imgRegion.convertToFormat(QImage::Format_ARGB32);
+
+	return imgRegion;
+}
+
 void DkBaseViewPort::unloadImage() {
 }
 
@@ -814,7 +828,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 	if (imgStorage.hasImage()) {
 		painter.setWorldTransform(worldMatrix);
 
-		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
+		if (!forceFastRendering && imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
 			painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
 		draw(&painter);
@@ -825,6 +839,8 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 	}
 
 	painter.end();
+
+	emit imageUpdated();	// TODO: delay timer is important here!
 
 	// propagate
 	QGraphicsView::paintEvent(event);

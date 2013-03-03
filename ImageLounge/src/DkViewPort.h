@@ -310,6 +310,9 @@ public:
 	virtual void release();
 	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+	void setForceFastRendering(bool fastRendering = true) {
+		this->forceFastRendering = forceFastRendering;
+	}
 	
 	/**
 	 * Returns the scale factor for 100%.
@@ -329,6 +332,8 @@ public:
 		return geometry();
 	};
 
+	QImage getCurrentImageRegion();
+
 	virtual DkImageStorage* getImageStorage() {
 		return &imgStorage;
 	};
@@ -346,6 +351,8 @@ public:
 signals:
 	void enableNoImageSignal(bool enable);
 	void showStatusBar(bool show, bool permanent);
+	void imageUpdated();	// this waits ~50 ms before triggering
+	
 //#ifdef DK_DLL
 	void keyReleaseSignal(QKeyEvent* event);	// make key presses available
 //#endif
@@ -401,6 +408,7 @@ protected:
 	float minZoom;
 	float maxZoom;
 
+	bool forceFastRendering;
 	bool blockZooming;
 	QTimer* zoomTimer;
 
@@ -454,7 +462,6 @@ signals:
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg);
 	void newClientConnectedSignal();
-	void imageUpdated();	// this waits ~50 ms before triggering
 
 public slots:
 	void rotateCW();
