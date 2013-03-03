@@ -585,7 +585,7 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
 	fileActions[menu_file_print]->setStatusTip(tr("Print an image"));
-	connect(fileActions[menu_file_print], SIGNAL(triggered()), vp, SLOT(printImage()));
+	connect(fileActions[menu_file_print], SIGNAL(triggered()), this, SLOT(printDialog()));
 
 	fileActions[menu_file_reload] = new QAction(tr("&Reload File"), this);
 	fileActions[menu_file_reload]->setShortcuts(QKeySequence::Refresh);
@@ -2081,6 +2081,21 @@ void DkNoMacs::setWallpaper() {
 	SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, (void*)ba.data(), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
 #endif
 	// TODO: add functionality for unix based systems
+
+}
+
+void DkNoMacs::printDialog() {
+
+	QPrinter printer;
+
+	float xDpi, yDpi;
+	viewport()->getController()->getMetaDataWidget()->getResolution(xDpi, yDpi);
+	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
+	QImage img = viewport()->getImage();
+	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(img, xDpi, 0, this);
+
+	previewDialog->show();
+	previewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
 
 }
 

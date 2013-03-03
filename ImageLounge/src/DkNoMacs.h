@@ -411,6 +411,7 @@ public slots:
 	void openImgManipulationDialog();
 	void deleteFile();
 	void setWallpaper();
+	void printDialog();
 	void cleanSettings();
 	void newInstance(QFileInfo file = QFileInfo());
 	void showStatusBar(bool show, bool permanent = true);

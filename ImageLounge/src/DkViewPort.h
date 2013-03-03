@@ -64,7 +64,7 @@
 #include "DkWidgets.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
-#include "DkDialog.h"
+//#include "DkDialog.h"
 
 #include "DkMath.h"
 
@@ -445,7 +445,6 @@ public slots:
 	void rotate180();
 	void resetView();
 	void fullView();
-	void printImage();
 	void resizeEvent(QResizeEvent* event);
 	virtual void paintEvent(QPaintEvent* event);
 	void toggleResetMatrix();

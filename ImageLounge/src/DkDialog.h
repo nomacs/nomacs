@@ -49,7 +49,7 @@
 #include <QFormLayout>
 
 #include "DkWidgets.h"
-
+#include "DkViewPort.h"
 
 namespace nmc {
 
@@ -139,6 +139,7 @@ protected:
 	QImage newImg;
 	QLabel* previewLabel;
 	QLabel* origLabel;
+	DkBaseViewPort* origView;
 
 	void init();
 	void createLayout();
