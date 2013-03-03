@@ -157,6 +157,10 @@ void DkJpgDialog::createLayout() {
 
 	origLabel = new QLabel();
 	origLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
+	
+	origView = new DkBaseViewPort();
+	origView->setStyleSheet("QLabel{border: 1px solid #888;}");
+
 	previewLabel = new QLabel();
 	previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
@@ -180,7 +184,7 @@ void DkJpgDialog::createLayout() {
 
 	previewLayout->addWidget(origLabelText, 0, 0);
 	previewLayout->addWidget(newLabel, 0, 1);
-	previewLayout->addWidget(origLabel, 1, 0);
+	previewLayout->addWidget(origView, 1, 0);
 	previewLayout->addWidget(previewLabel, 1, 1);
 	previewLayout->addWidget(slider, 2, 0);
 	previewLayout->addWidget(colChooser, 2, 1);
@@ -204,6 +208,8 @@ void DkJpgDialog::updateSnippets() {
 
 	if (!img)
 		return;
+
+	origView->setImage(*img);
 
 	QSize s = QSize(width()-60, width()-60);
 	s *= 0.5;

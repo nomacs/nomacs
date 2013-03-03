@@ -971,7 +971,7 @@ void DkBaseViewPort::draw(QPainter *painter) {
 
 	//QImage imgDraw = getScaledImage(imgMatrix.m11()*worldMatrix.m11());
 	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
-	if (parent->isFullScreen()) {
+	if (parent && parent->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
 		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShow::backgroundColor);
 		painter->setWorldMatrixEnabled(true);
@@ -1335,6 +1335,9 @@ void DkViewPort::fileNotLoaded(QFileInfo file) {
 }
 
 QPoint DkViewPort::newCenter(QSize s) {
+
+	if (!parent)
+		return QPoint();
 
 	QSize dxy = (s - parent->size())/2;
 	QPoint newPos = parent->pos() - QPoint(dxy.width(), dxy.height());
@@ -1833,7 +1836,7 @@ void DkViewPort::loadLena() {
 		testLoaded = true;
 		toggleLena();
 	}
-	else if (!ok) {
+	else if (!ok && parent) {
 		QMessageBox warningDialog(parent);
 		warningDialog.setIcon(QMessageBox::Warning);
 		warningDialog.setText(tr("you cannot cancel this"));
@@ -1856,7 +1859,7 @@ void DkViewPort::toggleLena() {
 		return;
 
 	if (loader) {
-		if (parent->isFullScreen())
+		if (parent && parent->isFullScreen())
 			loader->load(QFileInfo(":/nomacs/img/lena-full.jpg"));
 		else
 			loader->load(QFileInfo(":/nomacs/img/lena.jpg"));
@@ -1940,7 +1943,7 @@ void DkViewPort::loadFile(int skipIdx, bool silent) {
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(skipIdx, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+		loader->changeFile(skipIdx, silent || (parent && parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	// alt mod
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
@@ -1990,7 +1993,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 	skipImageTimer->stop();
 
-	silent |= (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen);
+	silent |= (parent && parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen);
 
 	bool skip = true;
 
@@ -2071,7 +2074,7 @@ void DkViewPort::loadFullFile(bool silent) {
 
 	if (thumbFile.exists()) {
 		//unloadImage();	// TODO: unload image clears the image -> makes an empty file
-		loader->load(thumbFile, silent || (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+		loader->load(thumbFile, silent || (parent && parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	}
 	else if (loader)	// the cacher is updated by loading anyway
 		loader->updateCacheIndex();
@@ -2102,7 +2105,7 @@ void DkViewPort::loadLast() {
 
 void DkViewPort::loadSkipPrev10() {
 
-	loadFileFast(-DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+	loadFileFast(-DkSettings::Global::skipImgs, (parent && parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	//unloadImage();
 
 	//if (loader && !testLoaded)
@@ -2114,7 +2117,7 @@ void DkViewPort::loadSkipPrev10() {
 
 void DkViewPort::loadSkipNext10() {
 
-	loadFileFast(DkSettings::Global::skipImgs, (parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
+	loadFileFast(DkSettings::Global::skipImgs, (parent && parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 	//unloadImage();
 
 	//if (loader && !testLoaded)
@@ -2303,7 +2306,7 @@ void DkViewPortFrameless::resetView() {
 
 void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
-	if (!parent->isFullScreen()) {
+	if (parent && !parent->isFullScreen()) {
 
 		QPainter painter(viewport());
 		painter.setWorldTransform(worldMatrix);
@@ -2316,7 +2319,7 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 
 void DkViewPortFrameless::draw(QPainter *painter) {
 	
-	if (parent->isFullScreen()) {
+	if (parent && parent->isFullScreen()) {
 		QColor col = QColor(0,0,0);
 		col.setAlpha(150);
 		painter->setWorldMatrixEnabled(false);
@@ -2714,7 +2717,7 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 
 void DkViewPortContrast::draw(QPainter *painter) {
 
-	if (parent->isFullScreen()) {
+	if (parent && parent->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
 		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShow::backgroundColor);
 		painter->setWorldMatrixEnabled(true);
