@@ -594,8 +594,6 @@ bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 
 	return true;
 }
-#endif
-
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 
 	bool saved = false;
@@ -619,67 +617,91 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 #ifdef WITH_WEBP
 bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {
 	
+	qDebug() << "format: " << img.format();
+
+
 	// currently, guarantee that the image is a ARGB image
-	//if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB888)
-		img = img.convertToFormat(QImage::Format_ARGB32);	// for now
+	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB888)
+		img = img.convertToFormat(QImage::Format_RGB888);	// for now
+	//char* buffer;
+	//size_t bufSize;
 
-	char* buffer;
-	size_t bufSize;
+	compression = 20;
 
-	if (compression < 0) {
+	//if (compression < 0) {
 
-		if (!img.hasAlphaChannel())
-			qDebug() << "no alpha...";
+	//	if (!img.hasAlphaChannel())
+	//		qDebug() << "no alpha...";
 
-		//if (img.hasAlphaChannel())
-			bufSize = WebPEncodeLosslessBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
-		// // without alpha there is something wrong...
-		//else
-		//	bufSize = WebPEncodeLosslessBGR(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
+
+	//	if (img.hasAlphaChannel())
+	//		bufSize = WebPEncodeLosslessBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
+	//	// // without alpha there is something wrong...
+	//	else
+	//		bufSize = WebPEncodeLosslessRGB(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
+	//}
+	//else {
+	//	
+	//	if (img.hasAlphaChannel())
+	//		bufSize = WebPEncodeBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
+	//	else
+	//		bufSize = WebPEncodeRGB(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
+	//}
+
+	//if (!bufSize) return false;
+
+	//QFile file(fileInfo.absoluteFilePath());
+	//file.open(QIODevice::WriteOnly);
+	//file.write(buffer, bufSize);
+	//free(buffer);
+
+
+
+	WebPConfig config;
+	bool lossless = false;
+	if (compression == -1) {
+		compression = 100;
+		lossless = true;
 	}
-	else {
+	if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, compression)) return false;
+	if (lossless) config.lossless = 1;
+
+	WebPPicture webImg;
+	if (!WebPPictureInit(&webImg)) return false;
+	webImg.width = img.width();
+	webImg.height = img.height();
+	webImg.use_argb = true;		// we never use YUV
+	//webImg.argb_stride = img.bytesPerLine();
+	//webImg.argb = reinterpret_cast<uint32_t*>(img.bits());
+	
+	int errorCode = 0;
+	
+	if (img.hasAlphaChannel())
+		errorCode = WebPPictureImportBGRA(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
+	else
+		errorCode = WebPPictureImportRGB(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
 		
-		//if (img.hasAlphaChannel())
-			bufSize = WebPEncodeBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
-		//else
-		//	bufSize = WebPEncodeBGR(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
-	}
+	qDebug() << "import error: " << errorCode;
 
-	if (!bufSize) return false;
+	// Set up a byte-writing method (write-to-memory, in this case):
+	WebPMemoryWriter writer;
+	WebPMemoryWriterInit(&writer);
+	webImg.writer = WebPMemoryWrite;
+	webImg.custom_ptr = &writer;
+
+	int ok = WebPEncode(&config, &webImg);
+	if (writer.size == 0) return false;
 
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::WriteOnly);
-	file.write(buffer, bufSize);
-	free(buffer);
-
-
-
-	//WebPConfig config;
-	//WebPConfigPreset(&config, WEBP_PRESET_PHOTO, compression);
-	//if (compression == 100) config.lossless = 1;
-
-	//WebPPicture webImg;
-	//if (!WebPPictureInit(&webImg)) return false;
-	//webImg.width = img.width();
-	//webImg.height = img.height();
-	//webImg.use_argb = true;		// we never use YUV
-	////webImg.argb_stride = img.bytesPerLine();
-	////webImg.argb = reinterpret_cast<uint32_t*>(img.bits());
-	//int errorCode = WebPPictureImportRGBA(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
-	//qDebug() << "import error: " << errorCode;
-
-	//// Set up a byte-writing method (write-to-memory, in this case):
-	//WebPMemoryWriter writer;
-	//WebPMemoryWriterInit(&writer);
-	//webImg.writer = WebPMemoryWrite;
-	//webImg.custom_ptr = &writer;
-
-	//int ok = WebPEncode(&config, &webImg);
-	//if (writer.size == 0) return false;
-
+	file.write(reinterpret_cast<const char*>(writer.mem), writer.size);
+	WebPPictureFree(&webImg);
+	//free(buffer);
 
 	return true;
 }
+#endif
+
 #endif
 
 // image editing --------------------------------------------------------------------
