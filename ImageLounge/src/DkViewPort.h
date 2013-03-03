@@ -308,7 +308,20 @@ public:
 	virtual ~DkBaseViewPort();
 
 	virtual void release();
+	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
+	
+	/**
+	 * Returns the scale factor for 100%.
+	 * Note this factor is only valid for the current image.
+	 * @return float 
+	 **/ 
+	float get100Factor() {
+		
+		updateImageMatrix();
+		return 1.0f/imgMatrix.m11();
+	}
+	
 	virtual QTransform getWorldMatrix() { 
 		return worldMatrix;
 	};
@@ -348,7 +361,6 @@ public slots:
 	virtual void resetView();
 	virtual void fullView();
 	virtual void resizeEvent(QResizeEvent* event);
-	virtual void paintEvent(QPaintEvent* event);
 	virtual void stopBlockZooming();
 
 	virtual void unloadImage();
@@ -366,6 +378,7 @@ protected:
 	virtual void wheelEvent(QWheelEvent *event);
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 	virtual void contextMenuEvent(QContextMenuEvent *event);
+	virtual void paintEvent(QPaintEvent* event);
 
 	QPainter* painter;
 	Qt::KeyboardModifier altMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
@@ -385,6 +398,8 @@ protected:
 	QRectF imgRect;
 
 	QPointF posGrab;
+	float minZoom;
+	float maxZoom;
 
 	bool blockZooming;
 	QTimer* zoomTimer;
@@ -415,6 +430,7 @@ public:
 	void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 
 	void setFullScreen(bool fullScreen);
+		
 	QTransform getWorldMatrix() { 
 		return worldMatrix;
 	};
@@ -438,6 +454,7 @@ signals:
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg);
 	void newClientConnectedSignal();
+	void imageUpdated();	// this waits ~50 ms before triggering
 
 public slots:
 	void rotateCW();
@@ -446,7 +463,6 @@ public slots:
 	void resetView();
 	void fullView();
 	void resizeEvent(QResizeEvent* event);
-	virtual void paintEvent(QPaintEvent* event);
 	void toggleResetMatrix();
 	
 	// tcp actions
@@ -489,6 +505,7 @@ protected:
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void wheelEvent(QWheelEvent *event);
 	virtual bool event(QEvent *event);
+	virtual void paintEvent(QPaintEvent* event);
 
 	QFileInfo thumbFile;
 	bool thumbLoaded;
@@ -541,7 +558,6 @@ public:
 public slots:
 	virtual void setImage(QImage newImg);
 	virtual void resetView();
-	virtual void paintEvent(QPaintEvent* event);
 	virtual void moveView(QPointF);
 
 protected:
@@ -549,6 +565,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void resizeEvent(QResizeEvent* event);
+	virtual void paintEvent(QPaintEvent* event);
 
 	// variables
 	QVector<QAction*> startActions;

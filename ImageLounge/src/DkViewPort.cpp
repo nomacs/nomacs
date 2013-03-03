@@ -602,6 +602,9 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	worldMatrix.reset();
 	imgMatrix.reset();
 	movie = 0;
+	
+	minZoom = 0.01f;
+	maxZoom = 50;
 
 	blockZooming = false;
 	altMod = DkSettings::Global::altMod;
@@ -630,6 +633,12 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 DkBaseViewPort::~DkBaseViewPort() {
 
 	release();
+}
+
+void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
+
+	this->minZoom = minZoom;
+	this->maxZoom = maxZoom;
 }
 
 void DkBaseViewPort::release() {
@@ -710,7 +719,7 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	if (worldMatrix.m11()*factor < 0.01 && factor < 1)
+	if (worldMatrix.m11()*factor < minZoom && factor < 1)
 		return;
 
 	//if (worldMatrix.m11()*factor < 1) {
@@ -735,7 +744,7 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	}
 
 	//limit zoom in ---
-	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
+	if (worldMatrix.m11()*imgMatrix.m11() > maxZoom && factor > 1)
 		return;
 
 	// if no center assigned: zoom in at the image center
@@ -801,6 +810,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 	QPainter painter(viewport());
 
+	qDebug() << "painting...";
 	if (imgStorage.hasImage()) {
 		painter.setWorldTransform(worldMatrix);
 
@@ -811,6 +821,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 		//Now disable matrixWorld for overlay display
 		painter.setWorldMatrixEnabled(false);
+		qDebug() << "&& storage is not empty...";
 	}
 
 	painter.end();
@@ -843,7 +854,14 @@ bool DkBaseViewPort::event(QEvent *event) {
 	if (event->type() == QEvent::Gesture)
 		return gestureEvent(static_cast<QGestureEvent*>(event));
 
-	return QGraphicsView::event(event);
+
+	if (event->type() == QEvent::Paint)
+		return QGraphicsView::event(event);
+	else
+		return QGraphicsView::event(event);
+
+	//qDebug() << "event caught..." << event->type();
+
 
 }
 
@@ -1354,7 +1372,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	if (worldMatrix.m11()*factor < 0.01f && factor < 1)
+	if (worldMatrix.m11()*factor < minZoom && factor < 1)
 		return;
 
 	// reset view & block if we pass the 'image fit to screen' on zoom out
@@ -1374,7 +1392,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	}
 
 	//limit zoom in ---
-	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
+	if (worldMatrix.m11()*imgMatrix.m11() > maxZoom && factor > 1)
 		return;
 
 	bool blackBorder = false;
@@ -1434,6 +1452,7 @@ void DkViewPort::fullView() {
 	showZoom();
 	changeCursor();
 	update();
+	if (this->visibleRegion().isEmpty()) qDebug() << "empty region...";
 }
 
 void DkViewPort::showZoom() {
@@ -2240,7 +2259,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 		return;
 
 	//limit zoom out ---
-	if (worldMatrix.m11()*factor <= 0.1 && factor < 1)
+	if (worldMatrix.m11()*factor <= minZoom && factor < 1)
 		return;
 
 	//if (worldMatrix.m11()*factor < 1) {
@@ -2258,7 +2277,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 	}
 
 	//limit zoom in ---
-	if (worldMatrix.m11()*imgMatrix.m11() > 50 && factor > 1)
+	if (worldMatrix.m11()*imgMatrix.m11() > maxZoom && factor > 1)
 		return;
 
 	QRectF viewRect = worldMatrix.mapRect(imgViewRect);

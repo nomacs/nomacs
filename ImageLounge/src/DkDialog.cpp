@@ -158,8 +158,17 @@ void DkJpgDialog::createLayout() {
 	origLabel = new QLabel();
 	origLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 	
-	origView = new DkBaseViewPort();
-	origView->setStyleSheet("QLabel{border: 1px solid #888;}");
+	origView = new DkBaseViewPort(this);
+
+	//// maybe we should report this: 
+	//// if a stylesheet (with border) is set, the var
+	//// cornerPaintingRect in QAbstractScrollArea (which we don't even need : )
+	//// is invalid which blocks re-paints unless the widget gets a focus...
+	//origView->setStyleSheet("QViewPort{border: 1px solid #888;}");
+
+	//// experimental
+	//origView->setMinimumSize(100,100);
+
 
 	previewLabel = new QLabel();
 	previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
@@ -209,7 +218,10 @@ void DkJpgDialog::updateSnippets() {
 	if (!img)
 		return;
 
+	// TODO: no pointer -> threads
 	origView->setImage(*img);
+	origView->fullView();
+	origView->zoomConstraints(origView->get100Factor());
 
 	QSize s = QSize(width()-60, width()-60);
 	s *= 0.5;
