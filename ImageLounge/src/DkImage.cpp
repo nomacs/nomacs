@@ -594,6 +594,8 @@ bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 
 	return true;
 }
+#endif
+
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 
 	bool saved = false;
