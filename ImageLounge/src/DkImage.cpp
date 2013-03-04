@@ -704,7 +704,6 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 }
 #endif
 
-#endif
 
 // image editing --------------------------------------------------------------------
 /**
