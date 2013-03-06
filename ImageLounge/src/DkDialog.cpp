@@ -918,6 +918,9 @@ void DkResizeDialog::createLayout() {
 	// central widget
 	centralWidget = new QWidget(this);
 
+	QWidget* previewWidget = new QWidget();
+	QGridLayout* previewLayout = new QGridLayout(previewWidget);
+
 	// preview
 	QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
 	s *= 0.5;
@@ -927,19 +930,37 @@ void DkResizeDialog::createLayout() {
 	int maxWidth = 500000;
 	int decimals = 2;
 
-	QLabel* origLabel = new QLabel(tr("Original"), centralWidget);
-	origLabel->move(QPoint(leftSpacing, 20));
-	QLabel* newLabel = new QLabel(tr("New"), centralWidget);
-	newLabel->move(QPoint(s.width()+10+leftSpacing, origLabel->geometry().top()));
-	previewLabel = new QLabel(centralWidget);
-	previewLabel->setGeometry(QRect(QPoint(newLabel->geometry().left(), newLabel->geometry().bottom()), s));
+	QLabel* origLabelText = new QLabel(tr("Original"));
+	QLabel* newLabel = new QLabel(tr("New"));
+
+	// shows the original image
+	origView = new DkBaseViewPort(this);
+	origView->setForceFastRendering(true);
+	origView->setPanControl(QPointF(0.0f, 0.0f));
+	connect(origView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
+
+	//// maybe we should report this: 
+	//// if a stylesheet (with border) is set, the var
+	//// cornerPaintingRect in QAbstractScrollArea (which we don't even need : )
+	//// is invalid which blocks re-paints unless the widget gets a focus...
+	//origView->setStyleSheet("QViewPort{border: 1px solid #888;}");
+
+	// shows the preview
+	previewLabel = new QLabel();
+	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
+
+	previewLayout->addWidget(origLabelText, 0, 0);
+	previewLayout->addWidget(newLabel, 0, 1);
+	previewLayout->addWidget(origView, 1, 0);
+	previewLayout->addWidget(previewLabel, 1, 1);
+
 
 	// all text dialogs... // TODO: go on here...
 	QIntValidator* intValidator = new QIntValidator(1, 100000, 0);
 	QDoubleValidator* doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
 	doubleValidator->setRange(0, 100, 2);
 
-	QWidget* resizeBoxes = new QWidget(centralWidget);
+	QWidget* resizeBoxes = new QWidget();
 	resizeBoxes->setGeometry(QRect(QPoint(leftSpacing, 300), QSize(400, 170)));
 
 	QGridLayout* gridLayout = new QGridLayout(resizeBoxes);
@@ -1070,7 +1091,9 @@ void DkResizeDialog::createLayout() {
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->addWidget(centralWidget);
+	layout->addWidget(previewWidget);
+	layout->addWidget(resizeBoxes);
+	layout->addStretch();
 	layout->addWidget(buttons);
 	show();
 }
@@ -1327,16 +1350,25 @@ void DkResizeDialog::updateSnippets() {
 	if (img.isNull())
 		return;
 
-	QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
-	s *= 0.5;
-	origImg = QImage(s, QImage::Format_ARGB32);
-	origImg.fill(Qt::transparent);
-	QRect imgRect = QRect(QPoint(img.width()*0.5-origImg.width()*0.5, img.height()*0.5-origImg.height()*0.5), origImg.size());
+	// fix layout issues - sorry
+	origView->setFixedWidth(width()*0.5f-30);
+	previewLabel->setFixedWidth(width()*0.5f-30);
+	origView->setFixedHeight(width()*0.5f-30);
+	previewLabel->setFixedHeight(width()*0.5f-30);
 
-	QPainter painter(&origImg);
-	painter.setBackgroundMode(Qt::TransparentMode);
-	painter.drawImage(QRect(QPoint(), origImg.size()), img, imgRect);
-	painter.end();
+
+	origView->setImage(img);
+
+	//QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
+	//s *= 0.5;
+	//origImg = QImage(s, QImage::Format_ARGB32);
+	//origImg.fill(Qt::transparent);
+	//QRect imgRect = QRect(QPoint(img.width()*0.5-origImg.width()*0.5, img.height()*0.5-origImg.height()*0.5), origImg.size());
+
+	//QPainter painter(&origImg);
+	//painter.setBackgroundMode(Qt::TransparentMode);
+	//painter.drawImage(QRect(QPoint(), origImg.size()), img, imgRect);
+	//painter.end();
 
 }
 
@@ -1345,29 +1377,35 @@ void DkResizeDialog::drawPreview() {
 	if (img.isNull())
 		return;
 
-	newImg = resizeImg(origImg);
+	newImg = origView->getCurrentImageRegion();
+	newImg = resizeImg(newImg);
 
-	QImage preview = QImage(origImg.width()*2 + 10, origImg.height(), QImage::Format_ARGB32);
-	preview.fill(Qt::transparent);
-	QRect pos = QRect(QPoint(), origImg.size());
-	QRect posM = pos;
-	posM.setSize(QSize(pos.size().width()-1, pos.size().height()-1));
+	previewLabel->setScaledContents(true);
+	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+	previewLabel->setPixmap(QPixmap::fromImage(img));
 
-	QPainter painter(&preview);
-	painter.setBackgroundMode(Qt::TransparentMode);
-	painter.drawImage(pos, origImg, QRect(QPoint(), origImg.size()));
-	painter.setPen(QColor(0,0,0,30));
-	painter.drawRect(posM);
-	pos.moveTopLeft(QPoint(origImg.width()+10, 0));
-	posM.moveTopLeft(QPoint(origImg.width()+10, 0));
-	painter.drawImage(pos, newImg, QRect(QPoint(), newImg.size()));
-	painter.drawRect(posM);
 
-	//previewLabel->setGeometry(QRect(QPoint(slider->geometry().left(), slider->geometry().bottom() + margin*4), preview.size()));
-	previewLabel->setGeometry(QRect(QPoint(40, margin*4), preview.size()));
-	previewLabel->setPixmap(QPixmap::fromImage(preview));
+	//QImage preview = QImage(origImg.width()*2 + 10, origImg.height(), QImage::Format_ARGB32);
+	//preview.fill(Qt::transparent);
+	//QRect pos = QRect(QPoint(), origImg.size());
+	//QRect posM = pos;
+	//posM.setSize(QSize(pos.size().width()-1, pos.size().height()-1));
 
-	updateSnippets();
+	//QPainter painter(&preview);
+	//painter.setBackgroundMode(Qt::TransparentMode);
+	//painter.drawImage(pos, origImg, QRect(QPoint(), origImg.size()));
+	//painter.setPen(QColor(0,0,0,30));
+	//painter.drawRect(posM);
+	//pos.moveTopLeft(QPoint(origImg.width()+10, 0));
+	//posM.moveTopLeft(QPoint(origImg.width()+10, 0));
+	//painter.drawImage(pos, newImg, QRect(QPoint(), newImg.size()));
+	//painter.drawRect(posM);
+
+	////previewLabel->setGeometry(QRect(QPoint(slider->geometry().left(), slider->geometry().bottom() + margin*4), preview.size()));
+	//previewLabel->setGeometry(QRect(QPoint(40, margin*4), preview.size()));
+	//previewLabel->setPixmap(QPixmap::fromImage(preview));
+
+	//updateSnippets();
 }
 
 QImage DkResizeDialog::resizeImg(QImage img, bool silent) {

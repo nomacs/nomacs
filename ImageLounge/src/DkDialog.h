@@ -372,6 +372,9 @@ protected slots:
 
 	void on_resampleCheck_clicked();
 
+	void drawPreview();
+
+
 protected:
 	int leftSpacing;
 	int margin;
@@ -380,6 +383,8 @@ protected:
 	QImage newImg;
 	QWidget* centralWidget;
 	QLabel* previewLabel;
+	
+	DkBaseViewPort* origView;
 
 	// resize gui:
 	QDoubleSpinBox* wPixelEdit;
@@ -404,7 +409,6 @@ protected:
 	void init();
 	void initBoxes();
 	void createLayout();
-	void drawPreview();
 	void updateSnippets();
 	void updateHeight();
 	void updateWidth();

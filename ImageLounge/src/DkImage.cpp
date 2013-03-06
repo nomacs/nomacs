@@ -638,8 +638,6 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 		return true;
 	}
 
-	//free(buffer);
-
 	return false;
 }
 
