@@ -1892,6 +1892,7 @@ void DkNoMacs::saveFile() {
 		if (!jpgDialog)
 			jpgDialog = new DkJpgDialog(this);
 
+		jpgDialog->setDialogMode(DkJpgDialog::jpg_dialog);
 		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
 		//jpgDialog->show();
 		jpgDialog->setImage(&saveImg);
@@ -1913,6 +1914,21 @@ void DkNoMacs::saveFile() {
 		}
 
 	//	qDebug() << "returned: " << ret;
+	}
+
+	if (selectedFilter.contains("webp")) {
+
+		if (!jpgDialog)
+			jpgDialog = new DkJpgDialog(this);
+
+		jpgDialog->setDialogMode(DkJpgDialog::webp_dialog);
+
+		jpgDialog->setImage(&saveImg);
+
+		if (!jpgDialog->exec())
+			return;
+
+		compression = jpgDialog->getCompression();
 	}
 
 	//if (saveDialog->selectedNameFilter().contains("tif")) {

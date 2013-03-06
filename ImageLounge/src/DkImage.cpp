@@ -558,12 +558,17 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 }
 
 #ifdef WITH_WEBP
+
 bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
-	QByteArray buffer = file.readAll();
+	
+	return decodeWebP(file.readAll());
 
+}
+
+bool DkBasicLoader::decodeWebP(const QByteArray& buffer) {
 	qDebug() << "file exists: " << file.exists();
 	qDebug() << "empty buffer: " << buffer.isEmpty();
 
@@ -585,7 +590,7 @@ bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 		if (!webData) return false;
 		qImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
 	}
-	
+
 	// clone the image so we own the buffer
 	qImg = qImg.copy();
 	if (webData) free(webData);
@@ -594,6 +599,7 @@ bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
 
 	return true;
 }
+
 #endif
 
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
@@ -621,14 +627,29 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 	
 	qDebug() << "format: " << img.format();
 
+	QByteArray buffer;
 
+	if (encodeWebP(buffer, img, compression)) {
+
+		QFile file(fileInfo.absoluteFilePath());
+		file.open(QIODevice::WriteOnly);
+		file.write(buffer);
+	
+		return true;
+	}
+
+	//free(buffer);
+
+	return false;
+}
+
+bool DkBasicLoader::encodeWebP(QByteArray& buffer, QImage img, int compression) {
+	
 	// currently, guarantee that the image is a ARGB image
 	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB888)
 		img = img.convertToFormat(QImage::Format_RGB888);	// for now
 	//char* buffer;
 	//size_t bufSize;
-
-	compression = 20;
 
 	//if (compression < 0) {
 
@@ -657,8 +678,6 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 	//file.write(buffer, bufSize);
 	//free(buffer);
 
-
-
 	WebPConfig config;
 	bool lossless = false;
 	if (compression == -1) {
@@ -675,14 +694,14 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 	webImg.use_argb = true;		// we never use YUV
 	//webImg.argb_stride = img.bytesPerLine();
 	//webImg.argb = reinterpret_cast<uint32_t*>(img.bits());
-	
+
 	int errorCode = 0;
-	
+
 	if (img.hasAlphaChannel())
 		errorCode = WebPPictureImportBGRA(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
 	else
 		errorCode = WebPPictureImportRGB(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
-		
+
 	qDebug() << "import error: " << errorCode;
 
 	// Set up a byte-writing method (write-to-memory, in this case):
@@ -694,11 +713,8 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 	int ok = WebPEncode(&config, &webImg);
 	if (writer.size == 0) return false;
 
-	QFile file(fileInfo.absoluteFilePath());
-	file.open(QIODevice::WriteOnly);
-	file.write(reinterpret_cast<const char*>(writer.mem), writer.size);
+	buffer = QByteArray(reinterpret_cast<const char*>(writer.mem), (int)writer.size);	// does a deep copy
 	WebPPictureFree(&webImg);
-	//free(buffer);
 
 	return true;
 }

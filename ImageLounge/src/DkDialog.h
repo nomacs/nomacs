@@ -95,6 +95,14 @@ class DkJpgDialog : public QDialog {
 	Q_OBJECT
 
 public:
+
+	enum {
+		jpg_dialog,
+		webp_dialog,
+
+		dialog_end
+	};
+
 	DkJpgDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void imageHasAlpha(bool hasAlpha) {
@@ -107,13 +115,23 @@ public:
 	};
 
 	int getCompression() {
-		return slider->value();
+
+		int compression = -1;
+		if (dialogMode == jpg_dialog || !cbLossless->isChecked())
+			compression = slider->value();
+
+		return compression;
 	};
 
 	void setImage(QImage* img) {
 		this->img = img;
 		updateSnippets();
 		drawPreview();
+	};
+
+	void setDialogMode(int dialogMode) {
+		this->dialogMode = dialogMode;
+		init();
 	};
 
 public slots:
@@ -134,23 +152,28 @@ protected slots:
 		drawPreview();
 	};
 
+	void losslessCompression(bool lossless) {
+
+		slider->setEnabled(!lossless);
+		drawPreview();
+	};
+
 	void drawPreview();
 
-	//void updateSliderValue(int val = 0) {
-	//	drawPreview();
-	//};
 
 protected:
+	int dialogMode;
 	bool hasAlpha;
 	QColor bgCol;
 	
+	QCheckBox* cbLossless;
 	DkSlider* slider;
 	DkColorChooser* colChooser;
 	QImage* img;
 	QImage origImg;
 	QImage newImg;
 	QLabel* previewLabel;
-	QLabel* origLabel;
+	//QLabel* origLabel;
 	DkBaseViewPort* origView;
 
 	void init();

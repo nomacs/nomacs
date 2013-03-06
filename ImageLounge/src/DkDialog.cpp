@@ -134,20 +134,34 @@ void DkTifDialog::init() {
 //
 DkJpgDialog::DkJpgDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
+	dialogMode = jpg_dialog;	// default
+	bgCol = QColor(255,255,255);
+
+
+	createLayout();
 	init();
 }
 
 void DkJpgDialog::init() {
 
 	hasAlpha = false;
-
 	img = 0;
 
-	bgCol = QColor(255,255,255);
+	if (dialogMode == jpg_dialog) {
+		setWindowTitle("JPG Settings");
+		cbLossless->hide();
+		slider->setEnabled(true);
+	}
+	else if (dialogMode == webp_dialog) {
+		setWindowTitle("WEBP Settings");
+		colChooser->setEnabled(false);
+		//colChooser->hide();
+		cbLossless->show();
+		losslessCompression(cbLossless->isChecked());
+	}	
 
-	setWindowTitle("JPG Settings");
 	setFixedSize(600, 450);
-	createLayout();
+
 }
 
 void DkJpgDialog::createLayout() {
@@ -155,11 +169,8 @@ void DkJpgDialog::createLayout() {
 	QLabel* origLabelText = new QLabel(tr("Original"));
 	QLabel* newLabel = new QLabel(tr("New"));
 
-	origLabel = new QLabel();
-	origLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
-	
+	// shows the original image
 	origView = new DkBaseViewPort(this);
-	//origView->setMinimumSize(500, 500);
 	origView->setForceFastRendering(true);
 	origView->setPanControl(QPointF(0.0f, 0.0f));
 	connect(origView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
@@ -170,9 +181,7 @@ void DkJpgDialog::createLayout() {
 	//// is invalid which blocks re-paints unless the widget gets a focus...
 	//origView->setStyleSheet("QViewPort{border: 1px solid #888;}");
 
-	//// experimental
-	//origView->setMinimumSize(100,100);
-
+	// shows the preview
 	previewLabel = new QLabel();
 	previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
@@ -180,8 +189,11 @@ void DkJpgDialog::createLayout() {
 	slider = new DkSlider(tr("Image Quality"));
 	slider->setValue(80);
 	slider->setTickInterval(10);
-
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(drawPreview()));
+
+	// lossless
+	cbLossless = new QCheckBox(tr("Lossless Compression"));
+	connect(cbLossless, SIGNAL(toggled(bool)), this, SLOT(losslessCompression(bool)));
 
 	// color chooser
 	colChooser = new DkColorChooser(bgCol, tr("Background Color"));
@@ -200,6 +212,7 @@ void DkJpgDialog::createLayout() {
 	previewLayout->addWidget(previewLabel, 1, 1);
 	previewLayout->addWidget(slider, 2, 0);
 	previewLayout->addWidget(colChooser, 2, 1);
+	previewLayout->addWidget(cbLossless, 3, 0);
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
@@ -211,7 +224,7 @@ void DkJpgDialog::createLayout() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(previewWidget);
-	//layout->addStretch();
+	//layout->addStretch(30);
 	layout->addWidget(buttons);
 
 }
@@ -248,19 +261,28 @@ void DkJpgDialog::drawPreview() {
 	QImage origImg = origView->getCurrentImageRegion();
 	newImg = QImage(origImg.size(), QImage::Format_ARGB32);
 
-	if (hasAlpha)
+	if (dialogMode == jpg_dialog && hasAlpha)
 		newImg.fill(bgCol.rgb());
 	
 	QPainter bgPainter(&newImg);
 	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());
 	bgPainter.end();
 
-	// pre-compute the jpg compression
-	QByteArray ba;
-	QBuffer buffer(&ba);
-	buffer.open(QIODevice::ReadWrite);
-	newImg.save(&buffer, "JPG", slider->value());
-	newImg.loadFromData(ba, "JPG");
+	if (dialogMode == jpg_dialog) {
+		// pre-compute the jpg compression
+		QByteArray ba;
+		QBuffer buffer(&ba);
+		buffer.open(QIODevice::ReadWrite);
+		newImg.save(&buffer, "JPG", slider->value());
+		newImg.loadFromData(ba, "JPG");
+	}
+	else if (dialogMode == webp_dialog && getCompression() != -1) {
+		DkBasicLoader loader;
+		QByteArray buffer;
+		loader.encodeWebP(buffer, newImg, getCompression());
+		loader.decodeWebP(buffer);
+		newImg = loader.image();
+	}
 
 	//previewLabel->setPixmap(QPixmap::fromImage(newImg));
 	previewLabel->setFixedSize(origView->size());	// fix display issues

@@ -55,6 +55,7 @@
 #include <QReadWriteLock>
 #include <QTimer>
 #include <QMovie>
+#include <QByteArray>
 
 #ifdef WITH_WEBP
 #include "webp/decode.h"
@@ -683,6 +684,19 @@ public:
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
 #endif
 
+#ifdef WITH_WEBP
+	bool loadWebPFile(QFileInfo fileInfo);
+	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
+	bool decodeWebP(const QByteArray& buffer);
+	bool encodeWebP(QByteArray& buffer, QImage img, int compression);
+#else
+	bool loadWebPFile(QFileInfo fileInfo) {return false;};	// not supported if webP was not linked
+	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false;};
+	bool decodeWebP(const QByteArray& buffer) {return false};
+	bool encodeWebP(QByteArray& buffer, QImage img, int compression) {return false};
+#endif
+
+
 public slots:
 	void rotate(int orientation);
 	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
@@ -692,14 +706,6 @@ protected:
 	bool loadRohFile(QString fileName);
 	bool loadRawFile(QFileInfo file);
 	
-#ifdef WITH_WEBP
-	bool loadWebPFile(QFileInfo fileInfo);
-	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
-#else
-	bool loadWebPFile(QFileInfo fileInfo) {return false;};	// not supported if webP was not linked
-	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false;};
-#endif
-
 	int mode;
 	QImage qImg;
 	QFileInfo file;

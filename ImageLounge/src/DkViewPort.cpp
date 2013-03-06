@@ -720,10 +720,7 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	//factor+=1;//0.9 <-> 1.1
 
 	//limit zoom out ---
-	// TODO: fix numeric for the next if ...
-	if (worldMatrix.m11() > minZoom && worldMatrix.m11()*factor < minZoom && factor < 1)
-		factor = 1.0f-(worldMatrix.m11()-minZoom);
-	else if (worldMatrix.m11()*factor < minZoom && factor < 1)
+	if (worldMatrix.m11()*factor < minZoom && factor < 1)
 		return;
 
 	//if (worldMatrix.m11()*factor < 1) {
