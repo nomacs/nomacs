@@ -714,7 +714,7 @@ bool DkBasicLoader::encodeWebP(QByteArray& buffer, QImage img, int compression, 
 	webImg.custom_ptr = &writer;
 
 	int ok = WebPEncode(&config, &webImg);
-	if (writer.size == 0) return false;
+	if (!ok || writer.size == 0) return false;
 
 	buffer = QByteArray(reinterpret_cast<const char*>(writer.mem), (int)writer.size);	// does a deep copy
 	WebPPictureFree(&webImg);
