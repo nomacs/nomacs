@@ -810,10 +810,16 @@ QImage DkBaseViewPort::getCurrentImageRegion() {
 	QRectF viewRect = QRectF(QPoint(), size());
 	viewRect = worldMatrix.inverted().mapRect(viewRect);
 	viewRect = imgMatrix.inverted().mapRect(viewRect);
-	QImage imgRegion = imgStorage.getImage().copy(viewRect.toRect());	// TODO: check round
-	imgRegion.convertToFormat(QImage::Format_ARGB32);
+	
 
-	return imgRegion;
+	QImage imgR(size(), QImage::Format_ARGB32);
+	imgR.fill(0);
+
+	QPainter painter(&imgR);
+	painter.drawImage(imgR.rect(), imgStorage.getImage(), viewRect.toRect());
+	painter.end();
+
+	return imgR;
 }
 
 void DkBaseViewPort::unloadImage() {

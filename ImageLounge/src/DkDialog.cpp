@@ -245,14 +245,13 @@ void DkJpgDialog::drawPreview() {
 	if (!img)
 		return;
 
-	qDebug() << "updating draw...";
 	QImage origImg = origView->getCurrentImageRegion();
 	newImg = QImage(origImg.size(), QImage::Format_ARGB32);
-	newImg.fill(bgCol.rgb());
 
+	if (hasAlpha)
+		newImg.fill(bgCol.rgb());
+	
 	QPainter bgPainter(&newImg);
-	bgPainter.setBackgroundMode(Qt::TransparentMode);
-	bgPainter.setBackground(bgCol);
 	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());
 	bgPainter.end();
 
@@ -265,7 +264,7 @@ void DkJpgDialog::drawPreview() {
 
 	//previewLabel->setPixmap(QPixmap::fromImage(newImg));
 	previewLabel->setFixedSize(origView->size());	// fix display issues
-	//previewLabel->setScaledContents(true);
+	previewLabel->setScaledContents(true);
 	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
 }
