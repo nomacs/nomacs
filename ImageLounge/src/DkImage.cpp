@@ -643,7 +643,7 @@ bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression
 	return false;
 }
 
-bool DkBasicLoader::encodeWebP(QByteArray& buffer, QImage img, int compression) {
+bool DkBasicLoader::encodeWebP(QByteArray& buffer, QImage img, int compression, int speed) {
 	
 	// currently, guarantee that the image is a ARGB image
 	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB888)
@@ -686,6 +686,7 @@ bool DkBasicLoader::encodeWebP(QByteArray& buffer, QImage img, int compression) 
 	}
 	if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, compression)) return false;
 	if (lossless) config.lossless = 1;
+	config.method = speed;
 
 	WebPPicture webImg;
 	if (!WebPPictureInit(&webImg)) return false;
@@ -694,6 +695,8 @@ bool DkBasicLoader::encodeWebP(QByteArray& buffer, QImage img, int compression) 
 	webImg.use_argb = true;		// we never use YUV
 	//webImg.argb_stride = img.bytesPerLine();
 	//webImg.argb = reinterpret_cast<uint32_t*>(img.bits());
+
+	qDebug() << "speed method: " << config.method;
 
 	int errorCode = 0;
 

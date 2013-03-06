@@ -688,7 +688,7 @@ public:
 	bool loadWebPFile(QFileInfo fileInfo);
 	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
 	bool decodeWebP(const QByteArray& buffer);
-	bool encodeWebP(QByteArray& buffer, QImage img, int compression);
+	bool encodeWebP(QByteArray& buffer, QImage img, int compression, int speed = 4);
 #else
 	bool loadWebPFile(QFileInfo fileInfo) {return false;};	// not supported if webP was not linked
 	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false;};

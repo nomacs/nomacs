@@ -245,8 +245,9 @@ void DkJpgDialog::updateSnippets() {
 	origView->setImage(*img);
 	origView->fullView();
 	origView->zoomConstraints(origView->get100Factor());
-	origView->setFixedWidth(width()*0.5f-30);
 
+	// fix layout issues - sorry
+	origView->setFixedWidth(width()*0.5f-30);
 	previewLabel->setFixedWidth(width()*0.5f-30);
 }
 
@@ -256,6 +257,7 @@ void DkJpgDialog::drawPreview() {
 		return;
 
 	QImage origImg = origView->getCurrentImageRegion();
+	qDebug() << "orig img size: " << origImg.size();
 	newImg = QImage(origImg.size(), QImage::Format_ARGB32);
 
 	if (dialogMode == jpg_dialog && hasAlpha)
@@ -278,7 +280,7 @@ void DkJpgDialog::drawPreview() {
 		// pre-compute the webp compression
 		DkBasicLoader loader;
 		QByteArray buffer;
-		loader.encodeWebP(buffer, newImg, getCompression());
+		loader.encodeWebP(buffer, newImg, getCompression(), 0);
 		loader.decodeWebP(buffer);
 		newImg = loader.image();
 		updateFileSizeLabel(buffer.size());
@@ -287,8 +289,6 @@ void DkJpgDialog::drawPreview() {
 		updateFileSizeLabel();
 	}
 
-	//previewLabel->setPixmap(QPixmap::fromImage(newImg));
-	//previewLabel->setFixedSize(origView->size());	// fix display issues
 	previewLabel->setScaledContents(true);
 	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));

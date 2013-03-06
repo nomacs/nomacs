@@ -808,9 +808,8 @@ QImage DkBaseViewPort::getCurrentImageRegion() {
 	QRectF viewRect = QRectF(QPoint(), size());
 	viewRect = worldMatrix.inverted().mapRect(viewRect);
 	viewRect = imgMatrix.inverted().mapRect(viewRect);
-	
 
-	QImage imgR(size(), QImage::Format_ARGB32);
+	QImage imgR(viewRect.size().toSize(), QImage::Format_ARGB32);
 	imgR.fill(0);
 
 	QPainter painter(&imgR);
