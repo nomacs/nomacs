@@ -603,6 +603,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	imgMatrix.reset();
 	movie = 0;
 	
+	panControl = QPointF(-1.0f, -1.0f);
 	minZoom = 0.01f;
 	maxZoom = 50;
 
@@ -1132,7 +1133,31 @@ QTransform DkBaseViewPort::getScaledImageMatrix() {
 //}
 
 void DkBaseViewPort::controlImagePosition(float lb, float ub) {
-	// dummy method
+	
+	QRectF imgRectWorld = worldMatrix.mapRect(imgViewRect);
+
+	if (lb == -1 && ub == -1 && panControl.x() != -1 && panControl.y() != -1) {
+		lb = panControl.x(); 
+		ub = panControl.y();
+	}
+	else {
+
+		// default behavior
+		if (lb == -1)	lb = viewportRect.width()/2;
+		if (ub == -1)	ub = viewportRect.height()/2;
+	}
+
+	if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
+		worldMatrix.translate((lb-imgRectWorld.left())/worldMatrix.m11(), 0);
+
+	if (imgRectWorld.top() > ub && imgRectWorld.height() > height())
+		worldMatrix.translate(0, (ub-imgRectWorld.top())/worldMatrix.m11());
+
+	if (imgRectWorld.right() < width()-lb && imgRectWorld.width() > width())
+		worldMatrix.translate(((width()-lb)-imgRectWorld.right())/worldMatrix.m11(), 0);
+
+	if (imgRectWorld.bottom() < height()-ub && imgRectWorld.height() > height())
+		worldMatrix.translate(0, ((height()-ub)-imgRectWorld.bottom())/worldMatrix.m11());
 }
 
 void DkBaseViewPort::centerImage() {
@@ -1487,27 +1512,6 @@ void DkViewPort::showZoom() {
 void DkViewPort::toggleResetMatrix() {
 
 	DkSettings::Display::keepZoom = !DkSettings::Display::keepZoom;
-}
-
-void DkViewPort::controlImagePosition(float lb, float ub) {
-
-	QRectF imgRectWorld = worldMatrix.mapRect(imgViewRect);
-
-	if (lb == -1)	lb = viewportRect.width()/2;
-	if (ub == -1)	ub = viewportRect.height()/2;
-
-	if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
-		worldMatrix.translate((lb-imgRectWorld.left())/worldMatrix.m11(), 0);
-
-	if (imgRectWorld.top() > ub && imgRectWorld.height() > height())
-		worldMatrix.translate(0, (ub-imgRectWorld.top())/worldMatrix.m11());
-
-	if (imgRectWorld.right() < lb && imgRectWorld.width() > width())
-		worldMatrix.translate((lb-imgRectWorld.right())/worldMatrix.m11(), 0);
-
-	if (imgRectWorld.bottom() < ub && imgRectWorld.height() > height())
-		worldMatrix.translate(0, (ub-imgRectWorld.bottom())/worldMatrix.m11());
-
 }
 
 void DkViewPort::updateImageMatrix() {

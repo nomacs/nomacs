@@ -161,6 +161,7 @@ void DkJpgDialog::createLayout() {
 	origView = new DkBaseViewPort(this);
 	//origView->setMinimumSize(500, 500);
 	origView->setForceFastRendering(true);
+	origView->setPanControl(QPointF(0.0f, 0.0f));
 	connect(origView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
 
 	//// maybe we should report this: 
@@ -171,7 +172,6 @@ void DkJpgDialog::createLayout() {
 
 	//// experimental
 	//origView->setMinimumSize(100,100);
-
 
 	previewLabel = new QLabel();
 	previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");

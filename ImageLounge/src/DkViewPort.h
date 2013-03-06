@@ -324,6 +324,10 @@ public:
 		updateImageMatrix();
 		return 1.0f/imgMatrix.m11();
 	}
+
+	void setPanControl(QPointF panControl) {
+		this->panControl = panControl;
+	};
 	
 	virtual QTransform getWorldMatrix() { 
 		return worldMatrix;
@@ -404,6 +408,7 @@ protected:
 	QRectF viewportRect;
 	QRectF imgRect;
 
+	QPointF panControl;	// controls how far we can pan outside an image
 	QPointF posGrab;
 	float minZoom;
 	float maxZoom;
@@ -535,7 +540,6 @@ protected:
 	virtual void loadMovie();
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
 	virtual void drawBackground(QPainter *painter);
-	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void updateImageMatrix();
 	void showZoom();
 	QPoint newCenter(QSize s);	// for frameless
