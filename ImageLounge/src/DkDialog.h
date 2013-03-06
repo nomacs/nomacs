@@ -160,6 +160,8 @@ protected slots:
 
 	void drawPreview();
 
+	void updateFileSizeLabel(float bufferSize = -1);
+
 
 protected:
 	int dialogMode;
@@ -173,6 +175,7 @@ protected:
 	QImage origImg;
 	QImage newImg;
 	QLabel* previewLabel;
+	QLabel* previewSizeLabel;
 	//QLabel* origLabel;
 	DkBaseViewPort* origView;
 

@@ -137,9 +137,10 @@ DkJpgDialog::DkJpgDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(paren
 	dialogMode = jpg_dialog;	// default
 	bgCol = QColor(255,255,255);
 
-
+	setFixedSize(600, 450);
 	createLayout();
 	init();
+
 }
 
 void DkJpgDialog::init() {
@@ -159,8 +160,6 @@ void DkJpgDialog::init() {
 		cbLossless->show();
 		losslessCompression(cbLossless->isChecked());
 	}	
-
-	setFixedSize(600, 450);
 
 }
 
@@ -183,7 +182,7 @@ void DkJpgDialog::createLayout() {
 
 	// shows the preview
 	previewLabel = new QLabel();
-	previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
+	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
 	// slider
 	slider = new DkSlider(tr("Image Quality"));
@@ -194,13 +193,21 @@ void DkJpgDialog::createLayout() {
 	// lossless
 	cbLossless = new QCheckBox(tr("Lossless Compression"));
 	connect(cbLossless, SIGNAL(toggled(bool)), this, SLOT(losslessCompression(bool)));
+	
+	previewSizeLabel = new QLabel();
 
 	// color chooser
 	colChooser = new DkColorChooser(bgCol, tr("Background Color"));
 	colChooser->setEnabled(hasAlpha);
 	colChooser->enableAlpha(false);
 	connect(colChooser, SIGNAL(accepted()), this, SLOT(newBgCol()));
-	
+
+	QWidget* dummy = new QWidget();
+	QHBoxLayout* dummyLayout = new QHBoxLayout(dummy);
+	dummyLayout->addWidget(colChooser);
+	dummyLayout->addStretch();
+	dummyLayout->addWidget(previewSizeLabel);
+
 	QWidget* previewWidget = new QWidget();
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
 	previewLayout->setAlignment(Qt::AlignHCenter);
@@ -211,7 +218,7 @@ void DkJpgDialog::createLayout() {
 	previewLayout->addWidget(origView, 1, 0);
 	previewLayout->addWidget(previewLabel, 1, 1);
 	previewLayout->addWidget(slider, 2, 0);
-	previewLayout->addWidget(colChooser, 2, 1);
+	previewLayout->addWidget(dummy, 2, 1);
 	previewLayout->addWidget(cbLossless, 3, 0);
 
 	// buttons
@@ -238,19 +245,9 @@ void DkJpgDialog::updateSnippets() {
 	origView->setImage(*img);
 	origView->fullView();
 	origView->zoomConstraints(origView->get100Factor());
+	origView->setFixedWidth(width()*0.5f-30);
 
-	//QSize s = QSize(width()-60, width()-60);
-	//s *= 0.5;
-	//origImg = QImage(s, QImage::Format_ARGB32);
-	//origImg.fill(Qt::transparent);
-	//QRect imgRect = QRect(QPoint(img->width()*0.5-origImg.width()*0.5, img->height()*0.5-origImg.height()*0.5), origImg.size());
-	//
-	//QPainter painter(&origImg);
-	//painter.setBackgroundMode(Qt::TransparentMode);
-	//painter.drawImage(QRect(QPoint(), origImg.size()), *img, imgRect);
-
-	//origLabel->setPixmap(QPixmap::fromImage(origImg));
-
+	previewLabel->setFixedWidth(width()*0.5f-30);
 }
 
 void DkJpgDialog::drawPreview() {
@@ -275,20 +272,43 @@ void DkJpgDialog::drawPreview() {
 		buffer.open(QIODevice::ReadWrite);
 		newImg.save(&buffer, "JPG", slider->value());
 		newImg.loadFromData(ba, "JPG");
+		updateFileSizeLabel(buffer.size());
 	}
 	else if (dialogMode == webp_dialog && getCompression() != -1) {
+		// pre-compute the webp compression
 		DkBasicLoader loader;
 		QByteArray buffer;
 		loader.encodeWebP(buffer, newImg, getCompression());
 		loader.decodeWebP(buffer);
 		newImg = loader.image();
+		updateFileSizeLabel(buffer.size());
+	}
+	else {
+		updateFileSizeLabel();
 	}
 
 	//previewLabel->setPixmap(QPixmap::fromImage(newImg));
-	previewLabel->setFixedSize(origView->size());	// fix display issues
+	//previewLabel->setFixedSize(origView->size());	// fix display issues
 	previewLabel->setScaledContents(true);
 	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
+}
+
+void DkJpgDialog::updateFileSizeLabel(float bufferSize) {
+
+	if (img == 0 || bufferSize == -1) {
+		previewSizeLabel->setText(tr("File Size: --"));
+		previewSizeLabel->setEnabled(false);
+		return;
+	}
+	previewSizeLabel->setEnabled(true);
+
+	float depth = (dialogMode == jpg_dialog) ? 24 : img->depth();	// jpg uses always 24 bit
+
+	float rawBufferSize = newImg.width()*newImg.height()*depth/8.0f;
+	float rawImgSize = img->width()*img->height()*depth/8.0f;
+
+	previewSizeLabel->setText(tr("File Size: ~%1").arg(DkUtils::readableByte(rawImgSize*bufferSize/rawBufferSize)));
 }
 
 // OpenWithDialog --------------------------------------------------------------------

@@ -110,6 +110,23 @@ public:
 		return glow;
 	}
 
+	static QString readableByte(float bytes) {
+		
+		if (bytes >= 1024*1024*1024) {
+			return QString::number(bytes/(1024.0f*1024.0f*1024.0f), 'f', 2) + " GB";
+		}
+		else if (bytes >= 1024*1024) {
+			return QString::number(bytes/(1024.0f*1024.0f), 'f', 2) + " MB";
+		}
+		else if (bytes >= 1024) {
+			return QString::number(bytes/1024.0f, 'f', 2) + " KB";
+		}
+		else {
+			return QString::number(bytes, 'f', 2) + " B";
+		}
+
+	}
+
 #ifdef WITH_OPENCV
 	/**
 	 * Prints a matrix to the standard output.
