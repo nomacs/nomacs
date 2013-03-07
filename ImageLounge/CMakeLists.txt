@@ -331,6 +331,7 @@ set(NOMACS_TRANSLATIONS
 		translations/nomacs_az.ts
 		translations/nomacs_sk.ts
 		translations/nomacs_es.ts
+		translations/nomacs_sr.ts
 )
 
 if (MSVC) # some settings for visual studio

@@ -7,8 +7,8 @@
 !include "nsProcess.nsh"
 
 ; your install directories
-; !define BUILD_DIR "..\build2012\ReallyRelease"
-!define BUILD_DIR "..\build2012x64\ReallyRelease"
+ !define BUILD_DIR "..\build2012\ReallyRelease"
+;!define BUILD_DIR "..\build2012x64\ReallyRelease"
 ; !define BUILD_DIR "..\build2010x86\ReallyRelease"
 ; !define TRANSLATION_DIR "translation"
 !define TRANSLATION_DIR "..\build2012"
@@ -90,6 +90,7 @@ Var pgm
 Var xbm
 Var xpm
 
+
 Var jpg_state
 Var png_state
 Var tif_state
@@ -112,6 +113,7 @@ Var mrw
 Var mpo
 Var jps
 Var pns
+Var dng
 
 Var gif_state
 Var nef_state
@@ -123,6 +125,7 @@ Var mrw_state
 Var mpo_state
 Var jps_state
 Var pns_state
+Var dng_state
 
 Var params
 Var fileAss 
@@ -193,6 +196,9 @@ Function fileAssociation
 
 	${NSD_CreateCheckbox} 160u 110u 15% 10u "jps"
 	Pop $jps
+
+	${NSD_CreateCheckbox} 160u 125u 15% 10u "dng"
+	Pop $dng
 
 	${NSD_CreateCheckbox} 220u 50u 15% 10u "cr2"
 	Pop $cr2
@@ -291,6 +297,7 @@ Function fileAssociationFinished
 	${NSD_GetState} $rw2 $rw2_state
 	${NSD_GetState} $mrw $mrw_state
 	${NSD_GetState} $jps $jps_state
+	${NSD_GetState} $dng $dng_state
 	${NSD_GetState} $pns $pns_state
 
 	${If} $gif_state == ${BST_CHECKED}
@@ -327,6 +334,10 @@ Function fileAssociationFinished
 	
 	${If} $jps_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
+	${EndIf}
+
+	${If} $dng_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".dng" "nomacs.file.dng" "Digital Negative"
 	${EndIf}
 	
 	${If} $pns_state == ${BST_CHECKED}
@@ -375,6 +386,7 @@ Function checkAllPartially
 		${NSD_SetState} $mrw ${BST_CHECKED}
 		${NSD_SetState} $mpo ${BST_CHECKED}
 		${NSD_SetState} $jps ${BST_CHECKED}
+		${NSD_SetState} $dng ${BST_CHECKED}
 		${NSD_SetState} $pns ${BST_CHECKED}
 	${Else}
 		${NSD_SetState} $gif ${BST_UNCHECKED}
@@ -386,6 +398,7 @@ Function checkAllPartially
 		${NSD_SetState} $mrw ${BST_UNCHECKED}
 		${NSD_SetState} $mpo ${BST_UNCHECKED}
 		${NSD_SetState} $jps ${BST_UNCHECKED}
+		${NSD_SetState} $dng ${BST_UNCHECKED}
 		${NSD_SetState} $pns ${BST_UNCHECKED}
 	${EndIf}
 	
@@ -473,6 +486,7 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".mrw" "nomacs.file.mrw" "Minolta Raw"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".dng" "nomacs.file.dng" "Digital Negative"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
 				
 			${elseif} $fileAss S== "AllFullySupported"
@@ -496,6 +510,7 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".mrw" "nomacs.file.mrw" "Minolta Raw"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".mpo" "nomacs.file.mpo" "MPO Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".dng" "nomacs.file.dng" "Digital Negative"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
 			${endif}
 		isNotSilent:
@@ -616,6 +631,7 @@ Section Uninstall
   ${UnRegisterExtension} ".mrw" "nomacs.file.mrw"  
   ${UnRegisterExtension} ".mpo" "nomacs.file.mpo"  
   ${UnRegisterExtension} ".jps" "nomacs.file.jps"  
+  ${UnRegisterExtension} ".dng" "nomacs.file.dng"  
   ${UnRegisterExtension} ".pns" "nomacs.file.pns"  
 
 
