@@ -1221,7 +1221,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 	if(!hPixelEdit->hasFocus())
 		return;
 
-	updateWidth();
+	updateHeight();
 
 	if (!lockButton->isChecked()) {
 		drawPreview();
@@ -1230,7 +1230,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 
 	int newWidth = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img.height() * (float)img.width()) : text.toFloat();
 	wPixelEdit->setValue(newWidth);
-	updateHeight();
+	updateWidth();
 	drawPreview();
 }
 
