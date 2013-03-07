@@ -166,6 +166,7 @@ enum {
 	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
 
 	// tcp
+	shortcut_shortcuts		= Qt::CTRL + Qt::Key_K,
 	shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
 	shortcut_sync			= Qt::CTRL + Qt::Key_D,
 	shortcut_tab			= Qt::CTRL + Qt::Key_Tab,
@@ -209,6 +210,7 @@ enum editActions {
 	menu_edit_copy,
 	menu_edit_copy_buffer,
 	menu_edit_paste,
+	menu_edit_shortcuts,
 	menu_edit_preferences,
 	menu_edit_transfrom,
 	menu_edit_delete,
@@ -399,6 +401,7 @@ public slots:
 	void restart();
 	void enterFullScreen();
 	void exitFullScreen();
+	void openKeyboardShortcuts();
 	void openSettings();
 	void openDir();
 	void openFile();
@@ -534,13 +537,14 @@ protected:
 	// file dialog
 	QFileDialog* openDialog;
 	QFileDialog* saveDialog;
-	DkJpgDialog* jpgDialog;
+	DkCompressDialog* jpgDialog;
 	DkTifDialog* tifDialog;
 	DkOpacityDialog* opacityDialog;
 	DkOpenWithDialog* openWithDialog;
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
+	DkShortcutsDialog* shortcutsDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 

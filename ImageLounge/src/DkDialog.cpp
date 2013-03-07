@@ -122,7 +122,11 @@ void DkTifDialog::init() {
 	vBox->addWidget(noCompressionButton);
 	vBox->addWidget(compressionButton);
 
+	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -132,7 +136,7 @@ void DkTifDialog::init() {
 
 
 //
-DkJpgDialog::DkJpgDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+DkCompressDialog::DkCompressDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	dialogMode = jpg_dialog;	// default
 	bgCol = QColor(255,255,255);
@@ -143,7 +147,7 @@ DkJpgDialog::DkJpgDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(paren
 
 }
 
-void DkJpgDialog::init() {
+void DkCompressDialog::init() {
 
 	hasAlpha = false;
 	img = 0;
@@ -163,7 +167,7 @@ void DkJpgDialog::init() {
 
 }
 
-void DkJpgDialog::createLayout() {
+void DkCompressDialog::createLayout() {
 
 	QLabel* origLabelText = new QLabel(tr("Original"));
 	QLabel* newLabel = new QLabel(tr("New"));
@@ -236,7 +240,7 @@ void DkJpgDialog::createLayout() {
 
 }
 
-void DkJpgDialog::updateSnippets() {
+void DkCompressDialog::updateSnippets() {
 
 	if (!img)
 		return;
@@ -251,7 +255,7 @@ void DkJpgDialog::updateSnippets() {
 	previewLabel->setFixedWidth(width()*0.5f-30);
 }
 
-void DkJpgDialog::drawPreview() {
+void DkCompressDialog::drawPreview() {
 
 	if (!img)
 		return;
@@ -294,7 +298,7 @@ void DkJpgDialog::drawPreview() {
 	previewLabel->setPixmap(QPixmap::fromImage(img));
 }
 
-void DkJpgDialog::updateFileSizeLabel(float bufferSize) {
+void DkCompressDialog::updateFileSizeLabel(float bufferSize) {
 
 	if (img == 0 || bufferSize == -1) {
 		previewSizeLabel->setText(tr("File Size: --"));
@@ -466,6 +470,9 @@ void DkOpenWithDialog::createLayout() {
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -1089,6 +1096,9 @@ void DkResizeDialog::createLayout() {
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -1220,8 +1230,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 
 	if(!hPixelEdit->hasFocus())
 		return;
-
-
+	
 	updateHeight();
 
 	if (!lockButton->isChecked()) {
@@ -1523,6 +1532,281 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 #endif
 
 }
+
+// DkShortcutDelegate --------------------------------------------------------------------
+DkShortcutDelegate::DkShortcutDelegate(QVector<QPair<QString, QKeySequence> >* actions, QObject* parent) : QItemDelegate(parent) {
+	this->actions = actions;
+	//cModelIndex = 0;
+}
+
+bool DkShortcutDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) {
+
+	cRow = index.row();
+	return QItemDelegate::editorEvent(event, model, option, index);
+}
+//
+//void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const {
+//
+//	qDebug() << "setting editor data...";
+//
+//}
+
+QWidget* DkShortcutDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+	
+
+	//if (!index.isValid())
+	//	return 0;
+	//QVariant::Type t = static_cast<QVariant::Type>(index.data(Qt::EditRole).userType());
+	//const QItemEditorFactory *factory = d->f;
+	//if (factory == 0)
+	//	factory = QItemEditorFactory::defaultFactory();
+	//return factory->createEditor(t, parent);
+
+	QWidget* w = QItemDelegate::createEditor(parent, option, index);
+	connect(w, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(w, SIGNAL(editingFinished()), this, SLOT(hideNotification()));
+
+	return w;
+}
+
+void DkShortcutDelegate::textChanged(QString text) {
+	qDebug() << "shortcut text is: " << text;
+
+	if (!actions)
+		return;
+
+	QKeySequence ks(text);
+
+	for (int idx = 0; idx < actions->size(); idx++) {
+		if (idx != cRow && actions->at(idx).second == ks) {
+			emit notifyDuplicate(tr("%1 already used by %2").arg(actions->at(idx).second.toString()).arg(actions->at(idx).first));
+			break;
+		}
+	}
+}
+
+void DkShortcutDelegate::hideNotification() {
+	emit notifyDuplicate("");	// remove notification
+}
+
+DkShortcutEditor::DkShortcutEditor(QWidget *widget) : QLineEdit(widget) {
+
+}
+
+QKeySequence DkShortcutEditor::shortcut() const {
+	//qDebug() << "returning: "
+	return QKeySequence(text());
+}
+
+void DkShortcutEditor::setShortcut(const QKeySequence shortcut) {
+	this->ks = shortcut;
+}
+
+void DkShortcutEditor::keyPressEvent(QKeyEvent *event) {
+
+}
+
+void DkShortcutEditor::keyReleaseEvent(QKeyEvent* event) {
+	
+	if (event->key() == Qt::Key_Control ||
+		event->key() == Qt::Key_Shift ||
+		event->key() == Qt::Key_Alt ||
+		event->key() == Qt::Key_Meta)
+		return;
+
+	int ksi = event->key();
+
+	if (event->modifiers() & Qt::ShiftModifier)
+		ksi += Qt::SHIFT;
+	if (event->modifiers() & Qt::AltModifier)
+		ksi += Qt::ALT;
+	if (event->modifiers() & Qt::ControlModifier)
+		ksi += Qt::CTRL;
+	if (event->modifiers() & Qt::MetaModifier)
+		ksi += Qt::META;
+
+	QKeySequence ks(ksi);
+	setText(ks.toString());
+}
+
+
+// DkShortcutsDialog --------------------------------------------------------------------
+DkShortcutsDialog::DkShortcutsDialog(QVector<QAction*> actions, QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+
+	this->actions = actions;
+	createLayout();
+}
+
+void DkShortcutsDialog::createLayout() {
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+
+	model = new DkShortcutsModel(convertActions(actions));
+
+	qDebug() << "rows: " << model->rowCount() << " column: " << model->columnCount();
+	
+	DkShortcutDelegate* scDelegate = new DkShortcutDelegate(model->getActions());
+
+	// register our special shortcut editor
+	QItemEditorFactory *factory = new QItemEditorFactory;
+
+	QItemEditorCreatorBase *shortcutListCreator =
+		new QStandardItemEditorCreator<DkShortcutEditor>();
+
+	factory->registerEditor(QVariant::KeySequence, shortcutListCreator);
+
+	QItemEditorFactory::setDefaultFactory(factory);
+
+	actionTable = new QTableView();
+	actionTable->setModel(model);
+	actionTable->verticalHeader()->hide();
+	actionTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+	//actionTable->setMidLineWidth(width());
+	actionTable->setItemDelegate(scDelegate);
+
+	QLabel* notificationLabel = new QLabel();
+	notificationLabel->setStyleSheet("QLabel{color: #AA4242;}");
+	//notificationLabel->setTextFormat(Qt::)
+	connect(scDelegate, SIGNAL(notifyDuplicate(QString)), notificationLabel, SLOT(setText(QString)));
+	
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	layout->addWidget(actionTable);
+	layout->addWidget(notificationLabel);
+	//layout->addSpacing()
+	layout->addWidget(buttons);
+}
+
+QVector<QPair<QString, QKeySequence> > DkShortcutsDialog::convertActions(const QVector<QAction*>& actions) {
+
+	QVector<QPair<QString, QKeySequence> > cvtActions;
+
+	for (int idx = 0; idx < actions.size(); idx++) {
+		QString text = actions[idx]->text();
+		text.remove("&");
+		cvtActions.push_back(QPair<QString, QKeySequence>(text, actions[idx]->shortcut()));
+	}
+
+	return cvtActions;
+}
+
+// DkShortcutsModel --------------------------------------------------------------------
+DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractTableModel(parent) {
+
+}
+
+DkShortcutsModel::DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent) : QAbstractTableModel(parent) {
+	this->actions = actions;
+}
+
+int DkShortcutsModel::rowCount(const QModelIndex& parent) const {
+
+	return actions.size();
+}
+
+int DkShortcutsModel::columnCount(const QModelIndex& parent) const {
+
+	return 2;
+}
+
+QVariant DkShortcutsModel::data(const QModelIndex& index, int role) const {
+
+	if (!index.isValid())
+		return QVariant();
+
+	if (index.row() > rowCount())
+		return QVariant();
+
+	if (index.column() > columnCount())
+		return QVariant();
+
+	if (role == Qt::DisplayRole || role == Qt::EditRole) {
+		QPair<QString, QKeySequence> pair = actions.at(index.row());
+
+		if (index.column() == 0)
+			return pair.first;
+		else if (index.column() == 1)
+			return pair.second;
+	}
+
+	return QVariant();
+}
+
+
+QVariant DkShortcutsModel::headerData(int section, Qt::Orientation orientation, int role) const {
+
+	if (role != Qt::DisplayRole) 
+		return QVariant();
+
+	if (orientation != Qt::Horizontal)
+		return QVariant();
+
+	switch (section) {
+	case 0:
+		return tr("Name");
+	case 1:
+		return tr("Shortcut");
+	}
+
+	return QVariant();
+} 
+
+bool DkShortcutsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+
+	if (!index.isValid() || role != Qt::EditRole || index.row() > rowCount())
+		return false;
+
+	//return false;
+	
+	QKeySequence ks = value.value<QKeySequence>();
+
+	// delete duplicates
+	for (int idx = 0; idx < actions.size(); idx++) {
+
+		if (actions.at(idx).second == ks) {
+			actions[idx].second = QKeySequence();
+			break;
+		}
+
+	}
+
+	//QVector<QPair<QString, QKeySequence> >::Iterator pair = actions.begin();
+	//pair += index.row();
+
+	//QPair<QString, QKeySequence> pair = actions.value(index.row());
+	
+	switch (index.column()) {
+		case 0: actions[index.row()].first = value.toString();		break;
+		case 1: actions[index.row()].second = ks;					break;
+		default:
+			return false;
+	}
+
+	emit dataChanged(index, index);
+	return true;
+}
+
+Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex& index) const {
+
+	if (!index.isValid())
+		return Qt::ItemIsEnabled;
+
+	Qt::ItemFlags flags;
+
+	if (index.column() == 0)
+		flags = Qt::ItemIsEnabled;
+	if (index.column() == 1)
+		flags = QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+
+	return flags;
+}
+
 
 // DkUpdateDialog --------------------------------------------------------------------
 DkUpdateDialog::DkUpdateDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
@@ -2024,8 +2308,11 @@ void DkOpacityDialog::createLayout() {
 	slider = new DkSlider(tr("Window Opacity"), this);
 	slider->setMinimum(5);
 
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 

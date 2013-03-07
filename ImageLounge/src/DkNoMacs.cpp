@@ -68,6 +68,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	imgManipulationDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
+	shortcutsDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -441,6 +442,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
 	editMenu->addSeparator();
 #endif
+	editMenu->addAction(editActions[menu_edit_shortcuts]);
 	editMenu->addAction(editActions[menu_edit_preferences]);
 
 	viewMenu = menu->addMenu(tr("&View"));
@@ -676,6 +678,11 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_wallpaper] = new QAction(tr("&Wallpaper"), this);
 	editActions[menu_edit_wallpaper]->setStatusTip(tr("set the current image as wallpaper"));
 	connect(editActions[menu_edit_wallpaper], SIGNAL(triggered()), this, SLOT(setWallpaper()));
+
+	editActions[menu_edit_shortcuts] = new QAction(tr("&Keyboard Shortcuts"), this);
+	editActions[menu_edit_shortcuts]->setShortcut(QKeySequence(shortcut_shortcuts));
+	editActions[menu_edit_shortcuts]->setStatusTip(tr("lets you customize your keyboard shortcuts"));
+	connect(editActions[menu_edit_shortcuts], SIGNAL(triggered()), this, SLOT(openKeyboardShortcuts()));
 
 	editActions[menu_edit_preferences] = new QAction(tr("&Settings"), this);
 	editActions[menu_edit_preferences]->setShortcut(QKeySequence(shortcut_settings));
@@ -1890,9 +1897,9 @@ void DkNoMacs::saveFile() {
 	if (selectedFilter.contains("jpg")) {
 
 		if (!jpgDialog)
-			jpgDialog = new DkJpgDialog(this);
+			jpgDialog = new DkCompressDialog(this);
 
-		jpgDialog->setDialogMode(DkJpgDialog::jpg_dialog);
+		jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
 		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
 		//jpgDialog->show();
 		jpgDialog->setImage(&saveImg);
@@ -1919,9 +1926,9 @@ void DkNoMacs::saveFile() {
 	if (selectedFilter.contains("webp")) {
 
 		if (!jpgDialog)
-			jpgDialog = new DkJpgDialog(this);
+			jpgDialog = new DkCompressDialog(this);
 
-		jpgDialog->setDialogMode(DkJpgDialog::webp_dialog);
+		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
 
 		jpgDialog->setImage(&saveImg);
 
@@ -2409,6 +2416,18 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 	QMainWindow::setWindowTitle(title.append(attributes));
 
 	emit sendTitleSignal(windowTitle());
+
+}
+
+void DkNoMacs::openKeyboardShortcuts() {
+
+
+	// TODO: dummy currently we just use file menu...
+	if (!shortcutsDialog)
+		shortcutsDialog = new DkShortcutsDialog(fileActions, this);
+
+	shortcutsDialog->exec();
+
 
 }
 

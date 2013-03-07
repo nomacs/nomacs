@@ -41,6 +41,10 @@
 #include <QCompleter>
 #include <QMainWindow>
 #include <QDialogButtonBox>
+#include <QStandardItemModel>
+#include <QItemDelegate>
+#include <QItemEditorFactory>
+#include <QHeaderView>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -91,7 +95,7 @@ protected:
 
 };
 
-class DkJpgDialog : public QDialog {
+class DkCompressDialog : public QDialog {
 	Q_OBJECT
 
 public:
@@ -103,7 +107,7 @@ public:
 		dialog_end
 	};
 
-	DkJpgDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkCompressDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void imageHasAlpha(bool hasAlpha) {
 		this->hasAlpha = hasAlpha;
@@ -418,26 +422,113 @@ protected:
 	QImage resizeImg(QImage img, bool silent = true);
 };
 
+class DkShortcutDelegate : public QItemDelegate {
+	Q_OBJECT
+
+public:
+	DkShortcutDelegate(QVector<QPair<QString, QKeySequence> >* actions = 0, QObject* parent = 0);
+
+	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+	
+signals:
+	void notifyDuplicate(QString info);
+	
+protected slots:
+	void textChanged(QString text);
+	void hideNotification();
+
+protected:
+	
+	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);
+	//virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
+
+	QVector<QPair<QString, QKeySequence> >* actions;
+	int cRow;
+
+};
+
+class DkShortcutEditor : public QLineEdit {
+	Q_OBJECT
+	Q_PROPERTY(QKeySequence shortcut READ shortcut WRITE setShortcut)
+
+public:
+	DkShortcutEditor(QWidget *widget = 0);
+	QKeySequence shortcut() const;
+	void setShortcut(const QKeySequence shortcut);
+
+protected:
+	void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent* event);
+
+	QKeySequence ks;
+
+};
+
+class DkShortcutsModel : public QAbstractTableModel {
+	Q_OBJECT
+
+public:
+	DkShortcutsModel(QObject* parent = 0);
+	DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent = 0);
+
+	// return item of the model
+	//virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+	//virtual QModelIndex parent(const QModelIndex& index) const;
+	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
+	virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;
+	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
+	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+
+	QVector<QPair<QString, QKeySequence> >* getActions() {
+		return &actions;
+	}
+
+protected:
+
+	QVector<QPair<QString, QKeySequence> > actions;
+
+};
+
+class DkShortcutsDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkShortcutsDialog(QVector<QAction*> actions, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+protected:
+	void createLayout();
+	QVector<QPair<QString, QKeySequence> > convertActions(const QVector<QAction*>& actions);
+	
+	QVector<QAction*> actions;
+	QTableView* actionTable;
+	DkShortcutsModel* model;
+
+
+};
+
 class DkUpdateDialog : public QDialog {
 	Q_OBJECT
 
-	public:
-		DkUpdateDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-		QLabel* upperLabel;
+public:
+	DkUpdateDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	QLabel* upperLabel;
 
-	signals:
-		void startUpdate();
+signals:
+	void startUpdate();
 
-	protected slots:
-		void okButtonClicked();
+protected slots:
+	void okButtonClicked();
 
-	protected:
-		void init();
-		void createLayout();
+protected:
+	void init();
+	void createLayout();
 
 		
-		QPushButton* okButton;
-		QPushButton* cancelButton;
+	QPushButton* okButton;
+	QPushButton* cancelButton;
 };
 
 
@@ -446,42 +537,43 @@ class DkPrintPreviewWidget : public QPrintPreviewWidget {
 public:
 	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	signals:
-		void zoomChanged();
+signals:
+	void zoomChanged();
 
-	//public slots:
-		//virtual void paintEvent(QPaintEvent* event);
+//public slots:
+	//virtual void paintEvent(QPaintEvent* event);
 
-	protected:
-		virtual void wheelEvent(QWheelEvent *event);		
+protected:
+	virtual void wheelEvent(QWheelEvent *event);		
 
 
 };
 
 class DkPrintPreviewValidator : public QDoubleValidator {
-	public:
-		DkPrintPreviewValidator(QString suffix, qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) { this->suffix = suffix;};
-		State validate(QString &input, int &pos) const {
-			bool replaceSuffix = false;
-			if (input.endsWith(suffix)) {
-				input = input.left(input.length() - suffix.length());
-				replaceSuffix = true;
-			}
-			State state = QDoubleValidator::validate(input, pos);
-			if (replaceSuffix)
-				input += suffix;
-			const int num_size = 4+suffix.length();
-			if (state == Intermediate) {
-				int i = input.indexOf(QLocale::system().decimalPoint());
-				if ((i == -1 && input.size() > num_size)
-					|| (i != -1 && i > num_size))
-					return Invalid;
-			}
-			
-			return state;			
+	
+public:
+	DkPrintPreviewValidator(QString suffix, qreal bottom, qreal top, int decimals, QObject* parent) : QDoubleValidator(bottom, top, decimals, parent) { this->suffix = suffix;};
+	State validate(QString &input, int &pos) const {
+		bool replaceSuffix = false;
+		if (input.endsWith(suffix)) {
+			input = input.left(input.length() - suffix.length());
+			replaceSuffix = true;
 		}
-	private:
-		QString suffix;
+		State state = QDoubleValidator::validate(input, pos);
+		if (replaceSuffix)
+			input += suffix;
+		const int num_size = 4+suffix.length();
+		if (state == Intermediate) {
+			int i = input.indexOf(QLocale::system().decimalPoint());
+			if ((i == -1 && input.size() > num_size)
+				|| (i != -1 && i > num_size))
+				return Invalid;
+		}
+			
+		return state;			
+	}
+private:
+	QString suffix;
 };
 
 
@@ -489,89 +581,89 @@ class DkPrintPreviewValidator : public QDoubleValidator {
 class DkPrintPreviewDialog : public QMainWindow {
 	Q_OBJECT
 
-	public:
-		enum icons{
-			print_fit_width,
-			print_fit_page,
-			print_zoom_out,
-			print_zoom_in,
-			print_reset_dpi,
-			print_portrait,
-			print_landscape,
-			print_setup,
-			print_printer,
-			print_end,
-		};
+public:
+	enum icons{
+		print_fit_width,
+		print_fit_page,
+		print_zoom_out,
+		print_zoom_in,
+		print_reset_dpi,
+		print_portrait,
+		print_landscape,
+		print_setup,
+		print_printer,
+		print_end,
+	};
 
-		DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-		void init();
+	void init();
 
-	public slots:
-		void updateZoomFactor();
+public slots:
+	void updateZoomFactor();
 
-	protected:
-		void setup_Actions();
-		void createLayout();
-		void setIcon(QAction* action, const QLatin1String &name);
-		void createIcons();
+protected:
+	void setup_Actions();
+	void createLayout();
+	void setIcon(QAction* action, const QLatin1String &name);
+	void createIcons();
 
-	private slots:
-		void paintRequested(QPrinter* printer);
-		void fitImage(QAction* action);
-		void zoomIn();
-		void zoomOut();
-		void zoomFactorChanged();
-		void dpiFactorChanged();
-		void updateDpiFactor(qreal dpi);
-		void resetDpi();
-		void pageSetup();
-		void print();
-		void centerImage();
+private slots:
+	void paintRequested(QPrinter* printer);
+	void fitImage(QAction* action);
+	void zoomIn();
+	void zoomOut();
+	void zoomFactorChanged();
+	void dpiFactorChanged();
+	void updateDpiFactor(qreal dpi);
+	void resetDpi();
+	void pageSetup();
+	void print();
+	void centerImage();
 
-	private:
-		void setFitting(bool on);
-		bool isFitting() {
-			return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
-		};
+private:
+	void setFitting(bool on);
+	bool isFitting() {
+		return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
+	};
 		
 
-		QImage img;
+	QImage img;
 
-		QActionGroup* fitGroup;
-		QAction *fitWidthAction;
-		QAction *fitPageAction;
+	QActionGroup* fitGroup;
+	QAction *fitWidthAction;
+	QAction *fitPageAction;
 
-		QActionGroup* zoomGroup;
-		QAction *zoomInAction;
-		QAction *zoomOutAction;
+	QActionGroup* zoomGroup;
+	QAction *zoomInAction;
+	QAction *zoomOutAction;
 
-		QActionGroup* orientationGroup;
-		QAction *portraitAction;
-		QAction *landscapeAction;
+	QActionGroup* orientationGroup;
+	QAction *portraitAction;
+	QAction *landscapeAction;
 
-		QActionGroup *printerGroup;
-		QAction *printAction;
-		QAction *pageSetupAction;
+	QActionGroup *printerGroup;
+	QAction *printAction;
+	QAction *pageSetupAction;
 
-		QActionGroup *dpiGroup;
-		QAction *resetDpiAction;
+	QActionGroup *dpiGroup;
+	QAction *resetDpiAction;
 
-		QComboBox *zoomFactor;
-		QComboBox *dpiFactor;
-		QString dpiEditorSuffix;
+	QComboBox *zoomFactor;
+	QComboBox *dpiFactor;
+	QString dpiEditorSuffix;
 
 
-		DkPrintPreviewWidget* preview;
-		QPrinter* printer;
-		QPrintDialog* printDialog;
+	DkPrintPreviewWidget* preview;
+	QPrinter* printer;
+	QPrintDialog* printDialog;
 
-		QVector<QIcon> icons;
+	QVector<QIcon> icons;
 
-		QTransform imgTransform;
+	QTransform imgTransform;
 
-		float dpi, origdpi;
-		bool initialPaint;
+	float dpi, origdpi;
+	bool initialPaint;
 };
 
 class DkOpacityDialog : public QDialog {
@@ -588,7 +680,6 @@ protected:
 	void createLayout();
 
 	DkSlider* slider;
-	QDialogButtonBox* buttons;
 };
 
 }
