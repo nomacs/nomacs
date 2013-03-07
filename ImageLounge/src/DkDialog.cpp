@@ -1221,6 +1221,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 	if(!hPixelEdit->hasFocus())
 		return;
 
+
 	updateHeight();
 
 	if (!lockButton->isChecked()) {
