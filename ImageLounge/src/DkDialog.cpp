@@ -954,7 +954,6 @@ void DkResizeDialog::createLayout() {
 	previewLayout->addWidget(origView, 1, 0);
 	previewLayout->addWidget(previewLabel, 1, 1);
 
-
 	// all text dialogs... // TODO: go on here...
 	QIntValidator* intValidator = new QIntValidator(1, 100000, 0);
 	QDoubleValidator* doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
@@ -995,13 +994,13 @@ void DkResizeDialog::createLayout() {
 	sizeBox->setObjectName("sizeBox");
 
 	// first row
-	int rIdx = 1;
-	gridLayout->addWidget(wPixelLabel, 1, rIdx);
-	gridLayout->addWidget(wPixelEdit, 1, ++rIdx);
-	gridLayout->addWidget(lockButton, 1, ++rIdx);
-	gridLayout->addWidget(hPixelLabel, 1, ++rIdx);
-	gridLayout->addWidget(hPixelEdit, 1, ++rIdx);
-	gridLayout->addWidget(sizeBox, 1, ++rIdx);
+	int rIdx = 0;
+	gridLayout->addWidget(wPixelLabel, 0, rIdx);
+	gridLayout->addWidget(wPixelEdit, 0, ++rIdx);
+	gridLayout->addWidget(lockButton, 0, ++rIdx);
+	gridLayout->addWidget(hPixelLabel, 0, ++rIdx);
+	gridLayout->addWidget(hPixelEdit, 0, ++rIdx);
+	gridLayout->addWidget(sizeBox, 0, ++rIdx);
 
 	// Document dimensions
 	QLabel* widthLabel = new QLabel(tr("Width: "));
@@ -1035,13 +1034,13 @@ void DkResizeDialog::createLayout() {
 	unitBox->setObjectName("unitBox");
 
 	// second row
-	rIdx = 1;
-	gridLayout->addWidget(widthLabel, 2, rIdx);
-	gridLayout->addWidget(widthEdit, 2, ++rIdx);
-	gridLayout->addWidget(lockButtonDim, 2, ++rIdx);
-	gridLayout->addWidget(heightLabel, 2, ++rIdx);
-	gridLayout->addWidget(heightEdit, 2, ++rIdx);
-	gridLayout->addWidget(unitBox, 2, ++rIdx);
+	rIdx = 0;
+	gridLayout->addWidget(widthLabel, 1, rIdx);
+	gridLayout->addWidget(widthEdit, 1, ++rIdx);
+	gridLayout->addWidget(lockButtonDim, 1, ++rIdx);
+	gridLayout->addWidget(heightLabel, 1, ++rIdx);
+	gridLayout->addWidget(heightEdit, 1, ++rIdx);
+	gridLayout->addWidget(unitBox, 1, ++rIdx);
 
 	// resolution
 	QLabel* resolutionLabel = new QLabel(tr("Resolution: "));
@@ -1059,10 +1058,10 @@ void DkResizeDialog::createLayout() {
 	resUnitBox->setObjectName("resUnitBox");
 
 	// third row
-	rIdx = 1;
-	gridLayout->addWidget(resolutionLabel, 3, rIdx);
-	gridLayout->addWidget(resolutionEdit, 3, ++rIdx);
-	gridLayout->addWidget(resUnitBox, 3, ++rIdx, 1, 2);
+	rIdx = 0;
+	gridLayout->addWidget(resolutionLabel, 2, rIdx);
+	gridLayout->addWidget(resolutionEdit, 2, ++rIdx);
+	gridLayout->addWidget(resUnitBox, 2, ++rIdx, 1, 2);
 
 	// resample
 	resampleCheck = new QCheckBox(tr("Resample Image:"));
@@ -1082,8 +1081,11 @@ void DkResizeDialog::createLayout() {
 	resampleBox->setCurrentIndex(ipl_cubic);
 
 	// last two rows
-	gridLayout->addWidget(resampleCheck, 4, 2, 1, 3);
-	gridLayout->addWidget(resampleBox, 5, 2, 1, 3);
+	gridLayout->addWidget(resampleCheck, 3, 1, 1, 3);
+	gridLayout->addWidget(resampleBox, 4, 1, 1, 3);
+
+	// add stretch
+	gridLayout->setColumnStretch(6, 1000);
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
@@ -1218,6 +1220,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 
 	if(!hPixelEdit->hasFocus())
 		return;
+
 
 	updateHeight();
 
@@ -1358,6 +1361,8 @@ void DkResizeDialog::updateSnippets() {
 
 
 	origView->setImage(img);
+	origView->fullView();
+	origView->zoomConstraints(origView->get100Factor());
 
 	//QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
 	//s *= 0.5;
