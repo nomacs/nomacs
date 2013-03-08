@@ -6,6 +6,6 @@ Exec=nomacs %F
 Terminal=false
 Icon=nomacs
 Type=Application
-Categories=Graphics;RasterGraphics;Viewer;
+Categories=Graphics;RasterGraphics;Viewer;2DGraphics;
 MimeType=image/gif;image/jpeg;image/png;image/bmp;image/x-eps;image/x-ico;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;image/x-xbitmap;image/x-xpixmap;
 
