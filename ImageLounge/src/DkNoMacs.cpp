@@ -68,7 +68,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	imgManipulationDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
-	shortcutsDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -124,6 +123,8 @@ void DkNoMacs::init() {
 	createToolbar();
 	createStatusbar();
 	enableNoImageActions(false);
+	
+
 
 	// add actions since they are ignored otherwise if the menu is hidden
 	addActions(fileActions.toList());
@@ -871,6 +872,24 @@ void DkNoMacs::createActions() {
 	helpActions[menu_help_update]->setStatusTip(tr("check for updates"));
 	connect(helpActions[menu_help_update], SIGNAL(triggered()), this, SLOT(checkForUpdate()));
 
+	assignCustomShortcuts(fileActions);
+	assignCustomShortcuts(editActions);
+	assignCustomShortcuts(viewActions);
+	assignCustomShortcuts(toolsActions);
+	assignCustomShortcuts(helpActions);
+}
+
+void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
+
+	QSettings settings;
+	settings.beginGroup("CustomShortcuts");
+
+	for (int idx = 0; idx < actions.size(); idx++) {
+		QString val = settings.value(actions[idx]->text(), "no-shortcut").toString();
+
+		if (val != "no-shortcut")
+			actions[idx]->setShortcut(val);
+	}
 }
 
 void DkNoMacs::createShortcuts() {
@@ -2423,14 +2442,16 @@ void DkNoMacs::openKeyboardShortcuts() {
 
 
 	// TODO: dummy currently we just use file menu...
-	if (!shortcutsDialog) {
-		shortcutsDialog = new DkShortcutsDialog(this);
-		shortcutsDialog->addActions(fileActions, "File");
-	}
+	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(this);
+	shortcutsDialog->addActions(fileActions, fileMenu->title());
+	shortcutsDialog->addActions(editActions, editMenu->title());
+	shortcutsDialog->addActions(viewActions, viewMenu->title());
+	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
+	shortcutsDialog->addActions(syncActions, syncMenu->title());
+	shortcutsDialog->addActions(helpActions, helpMenu->title());
+
 
 	shortcutsDialog->exec();
-
-
 }
 
 void DkNoMacs::openSettings() {
@@ -2656,6 +2677,8 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
+
+	assignCustomShortcuts(syncActions);
 }
 
 void DkNoMacsSync::createMenu() {

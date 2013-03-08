@@ -1603,11 +1603,9 @@ bool DkShortcutEditor::eventFilter(QObject *obj, QEvent *event) {
 
 		return true;
 	}
-	//else if (event->type() == QEvent::KeyPress) {	// filter keypresses to avoid any dialog action on shortcut edit
-	////	//event->ignore();
-	////	event->accept();
-	//	return true;
-	//}
+	else if (event->type() == QEvent::KeyPress) {	// filter keypresses to avoid any dialog action on shortcut edit
+		return true;
+	}
 	//else if (event->type() == QEvent::ShortcutOverride)
 	//	return true;
 
@@ -1891,7 +1889,6 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, QString name) {
 
 	TreeItem* menuItem = new TreeItem(menuData, rootItem);
 
-
 	for (int idx = 0; idx < actions.size(); idx++) {
 
 		QString text = actions[idx]->text();
@@ -1902,13 +1899,10 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, QString name) {
 
 		TreeItem* dataItem = new TreeItem(actionData, menuItem);
 		menuItem->appendChild(dataItem);
-
-		qDebug() << "adding: " << text;
-		
 	}
 
 	rootItem->appendChild(menuItem);
-
+	this->actions.append(actions);
 	qDebug() << "menu item has: " << menuItem->childCount();
 
 }
@@ -1928,16 +1922,49 @@ void DkShortcutsModel::checkDuplicate(QString text, void* item) {
 		return;
 
 	if (duplicate && duplicate->parent()) {
-		emit duplicateSignal(tr("%1 already used by %2 > %3\n Press ESC to undo changes")
+		emit duplicateSignal(tr("%1 already used by %2 > %3\nPress ESC to undo changes")
 				.arg(duplicate->data(1).toString())
 				.arg(duplicate->parent()->data(0).toString())
 				.arg(duplicate->data(0).toString()));
 	}
 	else if (duplicate) {
-		emit duplicateSignal(tr("%1 already used by %2\n Press ESC to undo changes")
+		emit duplicateSignal(tr("%1 already used by %2\nPress ESC to undo changes")
 			.arg(duplicate->data(1).toString())
 			.arg(duplicate->data(0).toString()));
 	}
+}
+
+void DkShortcutsModel::saveActions() {
+
+	if (!rootItem)
+		return;
+
+	QSettings settings;
+	settings.beginGroup("CustomShortcuts");
+
+	// loop all menu entries
+	for (int idx = 0; idx < rootItem->childCount(); idx++) {
+
+		TreeItem* cMenu = rootItem->child(idx);
+		QVector<QAction*> cActions = actions.at(idx);
+
+		// loop all action entries
+		for (int mIdx = 0; mIdx < cMenu->childCount(); mIdx++) {
+
+			TreeItem* cItem = cMenu->child(mIdx);
+			QKeySequence ks = cItem->data(1).value<QKeySequence>();
+
+			// if empty try to restore
+			if (ks.isEmpty() && !rootItem->find(cActions.at(mIdx)->shortcut(), 1))
+				continue;
+
+			if (cActions.at(mIdx)->shortcut() != ks) {
+				cActions.at(mIdx)->setShortcut(ks);		// assign new shortcut
+				settings.setValue(cActions.at(mIdx)->text(), ks.toString());	// note this works as long as you don't change the language!
+			}
+		}
+	}
+
 }
 
 // DkShortcutsDialog --------------------------------------------------------------------
@@ -1972,9 +1999,12 @@ void DkShortcutsDialog::createLayout() {
 	treeView = new QTreeView();
 	treeView->setModel(model);
 	treeView->setItemDelegate(scDelegate);
+	treeView->setAlternatingRowColors(true);
+	treeView->setIndentation(8);
+	//treeView->setStyleSheet("QTreeView{border-color: #C3C3C4; alternate-background-color: blue; background: #AAAAAA;}");
 
 	notificationLabel = new QLabel();
-	notificationLabel->setStyleSheet("QLabel{color: #AA4242;}");
+	notificationLabel->setStyleSheet("QLabel{color: #9f1d1d;}");
 	//notificationLabel->setTextFormat(Qt::)
 
 	connect(scDelegate, SIGNAL(checkDuplicateSignal(QString, void*)), model, SLOT(checkDuplicate(QString, void*)));
@@ -1994,20 +2024,11 @@ void DkShortcutsDialog::createLayout() {
 	layout->addWidget(buttons);
 }
 
-void DkShortcutsDialog::addActions(const QVector<QAction*> actions, const QString name) {
+void DkShortcutsDialog::addActions(const QVector<QAction*>& actions, const QString& name) {
 
-	// add our own 'shortcut delegate	TODO: update
-	//DkShortcutDelegate* scDelegate = new DkShortcutDelegate();
-
-	//actionTable->verticalHeader()->hide();
-	//actionTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-	//actionTable->setMidLineWidth(width());
-	//actionTable->setItemDelegate(scDelegate);
-	//connect(scDelegate, SIGNAL(notifyDuplicate(QString)), notificationLabel, SLOT(setText(QString)));
-
-	//treeView->setModel(model);
-
-	model->addDataActions(actions, name);
+	QString cleanName = name;
+	cleanName.remove("&");
+	model->addDataActions(actions, cleanName);
 
 }
 
@@ -2015,17 +2036,12 @@ void DkShortcutsDialog::contextMenu(const QPoint& cur) {
 
 }
 
-QVector<QPair<QString, QKeySequence> > DkShortcutsDialog::convertActions(const QVector<QAction*>& actions) {
+void DkShortcutsDialog::accept() {
 
-	QVector<QPair<QString, QKeySequence> > cvtActions;
+	// assign shortcuts & save them if they are changed
+	if (model) model->saveActions();
 
-	for (int idx = 0; idx < actions.size(); idx++) {
-		QString text = actions[idx]->text();
-		text.remove("&");
-		cvtActions.push_back(QPair<QString, QKeySequence>(text, actions[idx]->shortcut()));
-	}
-
-	return cvtActions;
+	QDialog::accept();
 }
 
 // DkUpdateDialog --------------------------------------------------------------------

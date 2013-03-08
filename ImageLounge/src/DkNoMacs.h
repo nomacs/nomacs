@@ -487,6 +487,7 @@ protected:
 	// TODO: put to android class
 	bool gestureEvent(QGestureEvent *event);
 
+	void assignCustomShortcuts(QVector<QAction*> actions);
 
 	bool otherKeyPressed;
 	QPoint posGrabKey;
@@ -544,7 +545,6 @@ protected:
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
-	DkShortcutsDialog* shortcutsDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 

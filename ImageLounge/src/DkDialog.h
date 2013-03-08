@@ -518,6 +518,8 @@ public:
 
 	void addDataActions(QVector<QAction*> actions, QString name);
 
+	void saveActions();
+
 public slots:
 	void checkDuplicate(QString text, void* item);
 
@@ -529,7 +531,7 @@ protected:
 	void setupModelData(const QVector<QAction*> actions, TreeItem* parent = 0);
 
 	TreeItem* rootItem;
-	//QVector<QVector<QPair<QString, QKeySequence> >> actions;
+	QVector<QVector<QAction*> > actions;
 
 };
 
@@ -539,16 +541,16 @@ class DkShortcutsDialog : public QDialog {
 public:
 	DkShortcutsDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	void addActions(const QVector<QAction*> actions, const QString name);
+	void addActions(const QVector<QAction*>& actions, const QString& name);
+
+public slots:
+	void accept();
 
 protected slots:
 	void contextMenu(const QPoint& cur);
 
-
-
 protected:
 	void createLayout();
-	QVector<QPair<QString, QKeySequence> > convertActions(const QVector<QAction*>& actions);
 	
 	QVector<QAction*> actions;
 	QTreeView* treeView;
