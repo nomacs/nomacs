@@ -1932,6 +1932,8 @@ void DkShortcutsModel::checkDuplicate(QString text, void* item) {
 			.arg(duplicate->data(1).toString())
 			.arg(duplicate->data(0).toString()));
 	}
+	else 
+		emit duplicateSignal("");
 }
 
 void DkShortcutsModel::saveActions() {

@@ -842,7 +842,7 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_thumbs]->setEnabled(false);
 	connect(toolsActions[menu_tools_thumbs], SIGNAL(triggered()), this, SLOT(computeThumbsBatch()));
 
-	toolsActions[menu_tools_filter] = new QAction(fileIcons[icon_file_filter], tr("&Find && Filter"), this);
+	toolsActions[menu_tools_filter] = new QAction(fileIcons[icon_file_filter], tr("&Filter"), this);
 	toolsActions[menu_tools_filter]->setStatusTip(tr("Find an image"));
 	toolsActions[menu_tools_filter]->setCheckable(true);
 	toolsActions[menu_tools_filter]->setChecked(false);
