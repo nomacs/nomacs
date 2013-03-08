@@ -45,6 +45,7 @@
 #include <QItemDelegate>
 #include <QItemEditorFactory>
 #include <QHeaderView>
+#include <QTreeView>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -464,12 +465,44 @@ protected:
 
 };
 
+// from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
+class TreeItem {
+
+public:
+	TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);
+	~TreeItem();
+
+	void appendChild(TreeItem *child);
+
+	TreeItem *child(int row);
+	int childCount() const;
+	int columnCount() const;
+	QVariant data(int column) const;
+	void setData(const QVariant& value, int column);
+	int row() const;
+	TreeItem* parent() const;
+	TreeItem* find(const QVariant& value, int column);
+	void setParent(TreeItem* parent);
+
+
+private:
+	QVector<TreeItem*> childItems;
+	QVector<QVariant> itemData;
+	TreeItem *parentItem;
+};
+
+
+
 class DkShortcutsModel : public QAbstractTableModel {
 	Q_OBJECT
 
 public:
 	DkShortcutsModel(QObject* parent = 0);
-	DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent = 0);
+	~DkShortcutsModel();
+	//DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent = 0);
+
+	QModelIndex index(int row, int column, const QModelIndex &parent) const;
+	QModelIndex parent(const QModelIndex &index) const;
 
 	// return item of the model
 	//virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
@@ -482,13 +515,18 @@ public:
 	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
-	QVector<QPair<QString, QKeySequence> >* getActions() {
-		return &actions;
-	}
+	//QVector<QVector<QPair<QString, QKeySequence> > >* getActions() {
+	//	return &actions;
+	//}
+
+	void addDataActions(QVector<QAction*> actions, QString name);
 
 protected:
 
-	QVector<QPair<QString, QKeySequence> > actions;
+	void setupModelData(const QVector<QAction*> actions, TreeItem* parent = 0);
+
+	TreeItem* rootItem;
+	//QVector<QVector<QPair<QString, QKeySequence> >> actions;
 
 };
 
@@ -496,15 +534,24 @@ class DkShortcutsDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	DkShortcutsDialog(QVector<QAction*> actions, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkShortcutsDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	void addActions(const QVector<QAction*> actions, const QString name);
+
+protected slots:
+	void contextMenu(const QPoint& cur);
+
+
 
 protected:
 	void createLayout();
 	QVector<QPair<QString, QKeySequence> > convertActions(const QVector<QAction*>& actions);
 	
 	QVector<QAction*> actions;
+	QTreeView* treeView;
 	QTableView* actionTable;
 	DkShortcutsModel* model;
+	QLabel* notificationLabel;
 
 
 };

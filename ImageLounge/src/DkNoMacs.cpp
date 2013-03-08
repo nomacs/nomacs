@@ -2423,8 +2423,10 @@ void DkNoMacs::openKeyboardShortcuts() {
 
 
 	// TODO: dummy currently we just use file menu...
-	if (!shortcutsDialog)
-		shortcutsDialog = new DkShortcutsDialog(fileActions, this);
+	if (!shortcutsDialog) {
+		shortcutsDialog = new DkShortcutsDialog(this);
+		shortcutsDialog->addActions(fileActions, "File");
+	}
 
 	shortcutsDialog->exec();
 

@@ -596,20 +596,26 @@ public:
 
 class DkSpinBoxWidget : public QWidget {
 	Q_OBJECT;
-	public:	
-		DkSpinBoxWidget(QWidget* parent = 0);
-		DkSpinBoxWidget(QString upperString, QString lowerString, int spinBoxMin, int spinBoxMax, QWidget* parent=0, int step = 1);
-		QSpinBox* getSpinBox() { return spinBox;};
-		void setSpinBoxValue(int value) {spinBox->setValue(value);};
-		int getSpinBoxValue() {return spinBox->value();};
+public:	
+	DkSpinBoxWidget(QWidget* parent = 0);
+	DkSpinBoxWidget(QString upperString, QString lowerString, int spinBoxMin, int spinBoxMax, QWidget* parent=0, int step = 1);
+	QSpinBox* getSpinBox() { return spinBox;};
+	void setSpinBoxValue(int value) {spinBox->setValue(value);};
+	int getSpinBoxValue() {return spinBox->value();};
 
-	private:
-		QSpinBox* spinBox;
-		QLabel* upperLabel;
-		QLabel* lowerLabel;
-		QWidget* lowerWidget;
-		QVBoxLayout* vboxLayout;
-		QHBoxLayout* hboxLowerLayout;
+	//virtual QSize sizeHint() const {
+
+	//	return optimalSize;
+	//}
+
+private:
+	QSpinBox* spinBox;
+	QLabel* upperLabel;
+	QLabel* lowerLabel;
+	QWidget* lowerWidget;
+	QVBoxLayout* vboxLayout;
+	QHBoxLayout* hboxLowerLayout;
+	QSize optimalSize;
 };
 
 class DkDoubleSpinBoxWidget : public QWidget {
@@ -621,6 +627,11 @@ public:
 	void setSpinBoxValue(float value) {spinBox->setValue(value);};
 	float getSpinBoxValue() {return spinBox->value();};
 
+	//virtual QSize sizeHint() const {
+
+	//	return optimalSize;
+	//}
+
 private:
 	QDoubleSpinBox* spinBox;
 	QLabel* upperLabel;
@@ -628,6 +639,7 @@ private:
 	QWidget* lowerWidget;
 	QVBoxLayout* vboxLayout;
 	QHBoxLayout* hboxLowerLayout;
+	QSize optimalSize;
 };
 
 };

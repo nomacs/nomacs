@@ -1579,7 +1579,7 @@ void DkShortcutDelegate::textChanged(QString text) {
 
 	for (int idx = 0; idx < actions->size(); idx++) {
 		if (idx != cRow && actions->at(idx).second == ks) {
-			emit notifyDuplicate(tr("%1 already used by %2").arg(actions->at(idx).second.toString()).arg(actions->at(idx).first));
+			emit notifyDuplicate(tr("%1 already used by %2\n Press ESC to undo changes").arg(actions->at(idx).second.toString()).arg(actions->at(idx).first));
 			break;
 		}
 	}
@@ -1630,10 +1630,280 @@ void DkShortcutEditor::keyReleaseEvent(QKeyEvent* event) {
 }
 
 
-// DkShortcutsDialog --------------------------------------------------------------------
-DkShortcutsDialog::DkShortcutsDialog(QVector<QAction*> actions, QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+// TreeItem --------------------------------------------------------------------
+TreeItem::TreeItem(const QVector<QVariant> &data, TreeItem *parent) {
+	parentItem = parent;
+	itemData = data;
+}
 
-	this->actions = actions;
+TreeItem::~TreeItem() {
+	qDeleteAll(childItems);
+}
+
+void TreeItem::appendChild(TreeItem *item) {
+	childItems.append(item);
+	//item->setParent(this);
+}
+
+TreeItem* TreeItem::child(int row) {
+	
+	if (row < 0 || row >= childItems.size())
+		return 0;
+
+	return childItems[row];
+}
+
+int TreeItem::childCount() const {
+	return childItems.size();
+}
+
+int TreeItem::row() const {
+	
+	if (parentItem)
+		return parentItem->childItems.indexOf(const_cast<TreeItem*>(this));
+
+	return 0;
+}
+
+int TreeItem::columnCount() const {
+	
+	int columns = itemData.size();
+
+	for (int idx = 0; idx < childItems.size(); idx++)
+		columns = qMax(columns, childItems[idx]->columnCount());
+	
+	return columns;
+}
+
+QVariant TreeItem::data(int column) const {
+	return itemData.value(column);
+}
+
+void TreeItem::setData(const QVariant& value, int column) {
+
+	if (column < 0 || column >= itemData.size())
+		return;
+
+	qDebug() << "replacing: " << itemData[0] << " with: " << value;
+	itemData.replace(column, value);
+}
+
+TreeItem* TreeItem::find(const QVariant& value, int column) {
+
+	if (column < 0)
+		return 0;
+
+	if (column < itemData.size() && itemData[column] == value)
+		return this;
+
+	for (int idx = 0; idx < childItems.size(); idx++) 
+		if (TreeItem* child = childItems[idx]->find(value, column))
+			return child;
+
+	return 0;
+}
+
+TreeItem* TreeItem::parent() const {
+	return parentItem;
+}
+
+void TreeItem::setParent(TreeItem* parent) {
+	parentItem = parent;
+}
+
+// DkShortcutsModel --------------------------------------------------------------------
+DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractTableModel(parent) {
+
+	// create root
+	QVector<QVariant> rootData;
+	rootData << tr("Name") << tr("Shortcut");
+
+	rootItem = new TreeItem(rootData);
+
+}
+
+DkShortcutsModel::~DkShortcutsModel() {
+	delete rootItem;
+}
+
+//DkShortcutsModel::DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent) : QAbstractTableModel(parent) {
+//	this->actions = actions;
+//}
+
+QModelIndex DkShortcutsModel::index(int row, int column, const QModelIndex &parent) const {
+	
+	if (!hasIndex(row, column, parent))
+		return QModelIndex();
+
+	TreeItem *parentItem;
+
+	if (!parent.isValid())
+		parentItem = rootItem;
+	else
+		parentItem = static_cast<TreeItem*>(parent.internalPointer());
+
+	TreeItem *childItem = parentItem->child(row);
+
+	//qDebug() << " creating index for: " << childItem->data(0) << " row: " << row;
+	if (childItem)
+		return createIndex(row, column, childItem);
+	else
+		return QModelIndex();
+}
+
+QModelIndex DkShortcutsModel::parent(const QModelIndex &index) const {
+	
+	if (!index.isValid())
+		return QModelIndex();
+
+	TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
+	TreeItem *parentItem = childItem->parent();
+
+	if (parentItem == rootItem)
+		return QModelIndex();
+
+	//qDebug() << "creating index for: " << childItem->data(0);
+
+	return createIndex(parentItem->row(), 0, parentItem);
+}
+
+int DkShortcutsModel::rowCount(const QModelIndex& parent) const {
+
+	TreeItem *parentItem;
+	if (parent.column() > 0)
+		return 0;
+
+	if (!parent.isValid())
+		parentItem = rootItem;
+	else
+		parentItem = static_cast<TreeItem*>(parent.internalPointer());
+
+	return parentItem->childCount();
+}
+
+int DkShortcutsModel::columnCount(const QModelIndex& parent) const {
+
+	if (parent.isValid())
+		return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
+	else
+		return rootItem->columnCount();
+	//return 2;
+}
+
+QVariant DkShortcutsModel::data(const QModelIndex& index, int role) const {
+
+	if (!index.isValid()) {
+		qDebug() << "invalid row: " << index.row();
+		return QVariant();
+	}
+
+	//if (index.row() > rowCount())
+	//	return QVariant();
+
+	//if (index.column() > columnCount())
+	//	return QVariant();
+
+	if (role == Qt::DisplayRole || role == Qt::EditRole) {
+
+		TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+		//qDebug() << "returning: " << item->data(0) << "row: " << index.row();
+
+		return item->data(index.column());
+	}
+
+	return QVariant();
+}
+
+
+QVariant DkShortcutsModel::headerData(int section, Qt::Orientation orientation, int role) const {
+
+	if (orientation != Qt::Horizontal || role != Qt::DisplayRole) 
+		return QVariant();
+
+	return rootItem->data(section);
+} 
+
+bool DkShortcutsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+
+	if (!index.isValid() || role != Qt::EditRole)
+		return false;
+
+	if (index.column() == 1) {
+
+		QKeySequence ks = value.value<QKeySequence>();
+		if (index.column() == 1) {
+			TreeItem* duplicate = rootItem->find(ks, index.column());
+			if (duplicate) duplicate->setData(QKeySequence(), index.column());
+			if (!duplicate) qDebug() << ks << " no duplicate found...";
+		}
+		
+		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+		item->setData(ks, index.column());
+
+	}
+	else {
+		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+		item->setData(value, index.column());
+	}
+
+	emit dataChanged(index, index);
+	return true;
+}
+
+Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex& index) const {
+
+	if (!index.isValid())
+		return Qt::ItemIsEditable;
+
+	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+
+	//// no editing on root items
+	//if (item->parent() == rootItem)
+	//	return QAbstractTableModel::flags(index);
+
+	Qt::ItemFlags flags;
+
+	if (index.column() == 0)
+		flags = QAbstractTableModel::flags(index);
+	if (index.column() == 1)
+		flags = QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+
+	return flags;
+}
+
+void DkShortcutsModel::addDataActions(QVector<QAction*> actions, QString name) {
+
+	// create root
+	QVector<QVariant> menuData;
+	menuData << name;
+
+	TreeItem* menuItem = new TreeItem(menuData, rootItem);
+
+
+	for (int idx = 0; idx < actions.size(); idx++) {
+
+		QString text = actions[idx]->text();
+		text.remove("&");
+
+		QVector<QVariant> actionData;
+		actionData << text << actions[idx]->shortcut();
+
+		TreeItem* dataItem = new TreeItem(actionData, menuItem);
+		menuItem->appendChild(dataItem);
+
+		qDebug() << "adding: " << text;
+		
+	}
+
+	rootItem->appendChild(menuItem);
+
+	qDebug() << "menu item has: " << menuItem->childCount();
+
+}
+
+// DkShortcutsDialog --------------------------------------------------------------------
+DkShortcutsDialog::DkShortcutsDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+
 	createLayout();
 }
 
@@ -1641,11 +1911,9 @@ void DkShortcutsDialog::createLayout() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
-	model = new DkShortcutsModel(convertActions(actions));
 
-	qDebug() << "rows: " << model->rowCount() << " column: " << model->columnCount();
+	//qDebug() << "rows: " << model->rowCount() << " column: " << model->columnCount();
 	
-	DkShortcutDelegate* scDelegate = new DkShortcutDelegate(model->getActions());
 
 	// register our special shortcut editor
 	QItemEditorFactory *factory = new QItemEditorFactory;
@@ -1657,17 +1925,14 @@ void DkShortcutsDialog::createLayout() {
 
 	QItemEditorFactory::setDefaultFactory(factory);
 
-	actionTable = new QTableView();
-	actionTable->setModel(model);
-	actionTable->verticalHeader()->hide();
-	actionTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-	//actionTable->setMidLineWidth(width());
-	actionTable->setItemDelegate(scDelegate);
+	model = new DkShortcutsModel();
 
-	QLabel* notificationLabel = new QLabel();
+	treeView = new QTreeView();
+	treeView->setModel(model);
+
+	notificationLabel = new QLabel();
 	notificationLabel->setStyleSheet("QLabel{color: #AA4242;}");
 	//notificationLabel->setTextFormat(Qt::)
-	connect(scDelegate, SIGNAL(notifyDuplicate(QString)), notificationLabel, SLOT(setText(QString)));
 	
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
@@ -1677,10 +1942,31 @@ void DkShortcutsDialog::createLayout() {
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	layout->addWidget(actionTable);
+	layout->addWidget(treeView);
 	layout->addWidget(notificationLabel);
 	//layout->addSpacing()
 	layout->addWidget(buttons);
+}
+
+void DkShortcutsDialog::addActions(const QVector<QAction*> actions, const QString name) {
+
+	// add our own 'shortcut delegate	TODO: update
+	//DkShortcutDelegate* scDelegate = new DkShortcutDelegate();
+
+	//actionTable->verticalHeader()->hide();
+	//actionTable->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+	//actionTable->setMidLineWidth(width());
+	//actionTable->setItemDelegate(scDelegate);
+	//connect(scDelegate, SIGNAL(notifyDuplicate(QString)), notificationLabel, SLOT(setText(QString)));
+
+	//treeView->setModel(model);
+
+	model->addDataActions(actions, name);
+
+}
+
+void DkShortcutsDialog::contextMenu(const QPoint& cur) {
+
 }
 
 QVector<QPair<QString, QKeySequence> > DkShortcutsDialog::convertActions(const QVector<QAction*>& actions) {
@@ -1695,118 +1981,6 @@ QVector<QPair<QString, QKeySequence> > DkShortcutsDialog::convertActions(const Q
 
 	return cvtActions;
 }
-
-// DkShortcutsModel --------------------------------------------------------------------
-DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractTableModel(parent) {
-
-}
-
-DkShortcutsModel::DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent) : QAbstractTableModel(parent) {
-	this->actions = actions;
-}
-
-int DkShortcutsModel::rowCount(const QModelIndex& parent) const {
-
-	return actions.size();
-}
-
-int DkShortcutsModel::columnCount(const QModelIndex& parent) const {
-
-	return 2;
-}
-
-QVariant DkShortcutsModel::data(const QModelIndex& index, int role) const {
-
-	if (!index.isValid())
-		return QVariant();
-
-	if (index.row() > rowCount())
-		return QVariant();
-
-	if (index.column() > columnCount())
-		return QVariant();
-
-	if (role == Qt::DisplayRole || role == Qt::EditRole) {
-		QPair<QString, QKeySequence> pair = actions.at(index.row());
-
-		if (index.column() == 0)
-			return pair.first;
-		else if (index.column() == 1)
-			return pair.second;
-	}
-
-	return QVariant();
-}
-
-
-QVariant DkShortcutsModel::headerData(int section, Qt::Orientation orientation, int role) const {
-
-	if (role != Qt::DisplayRole) 
-		return QVariant();
-
-	if (orientation != Qt::Horizontal)
-		return QVariant();
-
-	switch (section) {
-	case 0:
-		return tr("Name");
-	case 1:
-		return tr("Shortcut");
-	}
-
-	return QVariant();
-} 
-
-bool DkShortcutsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-
-	if (!index.isValid() || role != Qt::EditRole || index.row() > rowCount())
-		return false;
-
-	//return false;
-	
-	QKeySequence ks = value.value<QKeySequence>();
-
-	// delete duplicates
-	for (int idx = 0; idx < actions.size(); idx++) {
-
-		if (actions.at(idx).second == ks) {
-			actions[idx].second = QKeySequence();
-			break;
-		}
-
-	}
-
-	//QVector<QPair<QString, QKeySequence> >::Iterator pair = actions.begin();
-	//pair += index.row();
-
-	//QPair<QString, QKeySequence> pair = actions.value(index.row());
-	
-	switch (index.column()) {
-		case 0: actions[index.row()].first = value.toString();		break;
-		case 1: actions[index.row()].second = ks;					break;
-		default:
-			return false;
-	}
-
-	emit dataChanged(index, index);
-	return true;
-}
-
-Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex& index) const {
-
-	if (!index.isValid())
-		return Qt::ItemIsEnabled;
-
-	Qt::ItemFlags flags;
-
-	if (index.column() == 0)
-		flags = Qt::ItemIsEnabled;
-	if (index.column() == 1)
-		flags = QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
-
-	return flags;
-}
-
 
 // DkUpdateDialog --------------------------------------------------------------------
 DkUpdateDialog::DkUpdateDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {

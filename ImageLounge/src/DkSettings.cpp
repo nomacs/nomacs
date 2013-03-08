@@ -473,7 +473,7 @@ void DkSettings::setToDefaultSettings() {
 // DkSettingsDialog --------------------------------------------------------------------
 DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 
-	this->resize(600,420);
+	//this->resize(600,420);
 
 	s = new DkSettings();
 
@@ -708,6 +708,7 @@ void DkGlobalSettingsWidget::init() {
 }
 
 void DkGlobalSettingsWidget::createLayout() {
+	
 	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout();
 	QVBoxLayout* rightLayout = new QVBoxLayout();
@@ -1405,8 +1406,8 @@ DkSpinBoxWidget::DkSpinBoxWidget(QWidget* parent) : QWidget(parent) {
 	spinBox = new QSpinBox(this);
 	lowerLabel = new QLabel(this);
 	lowerWidget = new QWidget(this);
-	vboxLayout = new QVBoxLayout;
-	hboxLowerLayout = new QHBoxLayout;
+	vboxLayout = new QVBoxLayout(this);
+	hboxLowerLayout = new QHBoxLayout(lowerWidget);
 
 	hboxLowerLayout->addWidget(spinBox);
 	hboxLowerLayout->addWidget(lowerLabel);
@@ -1417,13 +1418,13 @@ DkSpinBoxWidget::DkSpinBoxWidget(QWidget* parent) : QWidget(parent) {
 }
 
 DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int spinBoxMin, int spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/) : QWidget(parent) {
-	spinBox = new QSpinBox(this);
+	spinBox = new QSpinBox();
 	spinBox->setMaximum(spinBoxMax);
 	spinBox->setMinimum(spinBoxMin);
 	spinBox->setSingleStep(step);
-	upperLabel = new QLabel(upperString, this);
-	lowerLabel = new QLabel(lowerString, this);
-	lowerWidget = new QWidget(this);
+	upperLabel = new QLabel(upperString);
+	lowerLabel = new QLabel(lowerString);
+	lowerWidget = new QWidget();
 
 	vboxLayout = new QVBoxLayout(this) ;
 	hboxLowerLayout = new QHBoxLayout(lowerWidget);
@@ -1433,6 +1434,9 @@ DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int s
 	hboxLowerLayout->addStretch();
 	vboxLayout->addWidget(upperLabel);
 	vboxLayout->addWidget(lowerWidget);
+	adjustSize();
+	//optimalSize = size();
+
 }
 
 
@@ -1441,8 +1445,8 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) 
 	spinBox = new QDoubleSpinBox(this);
 	lowerLabel = new QLabel(this);
 	lowerWidget = new QWidget(this);
-	vboxLayout = new QVBoxLayout;
-	hboxLowerLayout = new QHBoxLayout;
+	vboxLayout = new QVBoxLayout(this);
+	hboxLowerLayout = new QHBoxLayout(lowerWidget);
 
 	hboxLowerLayout->addWidget(spinBox);
 	hboxLowerLayout->addWidget(lowerLabel);
@@ -1453,16 +1457,16 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) 
 }
 
 DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/, int decimals/* =2*/) : QWidget(parent) {
-	spinBox = new QDoubleSpinBox(this);
+	spinBox = new QDoubleSpinBox();
 	spinBox->setMaximum(spinBoxMax);
 	spinBox->setMinimum(spinBoxMin);
 	spinBox->setSingleStep(step);
 	spinBox->setDecimals(decimals);
-	upperLabel = new QLabel(upperString, this);
-	lowerLabel = new QLabel(lowerString, this);
-	lowerWidget = new QWidget(this);
+	upperLabel = new QLabel(upperString);
+	lowerLabel = new QLabel(lowerString);
+	lowerWidget = new QWidget();
 
-	vboxLayout = new QVBoxLayout(this) ;
+	vboxLayout = new QVBoxLayout(this);
 	hboxLowerLayout = new QHBoxLayout(lowerWidget);
 
 	hboxLowerLayout->addWidget(spinBox);
@@ -1470,6 +1474,12 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerS
 	hboxLowerLayout->addStretch();
 	vboxLayout->addWidget(upperLabel);
 	vboxLayout->addWidget(lowerWidget);
+	vboxLayout->addStretch();
+	//adjustSize();
+	//optimalSize = size();
+
+	//setLayout(vboxLayout);
+
 }
 
 }
