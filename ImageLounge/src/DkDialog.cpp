@@ -1534,67 +1534,37 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 }
 
 // DkShortcutDelegate --------------------------------------------------------------------
-DkShortcutDelegate::DkShortcutDelegate(QVector<QPair<QString, QKeySequence> >* actions, QObject* parent) : QItemDelegate(parent) {
-	this->actions = actions;
-	//cModelIndex = 0;
+DkShortcutDelegate::DkShortcutDelegate(QObject* parent) : QItemDelegate(parent) {
+	item = 0;
 }
-
-bool DkShortcutDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) {
-
-	cRow = index.row();
-	return QItemDelegate::editorEvent(event, model, option, index);
-}
-//
-//void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const {
-//
-//	qDebug() << "setting editor data...";
-//
-//}
 
 QWidget* DkShortcutDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
 	
-
-	//if (!index.isValid())
-	//	return 0;
-	//QVariant::Type t = static_cast<QVariant::Type>(index.data(Qt::EditRole).userType());
-	//const QItemEditorFactory *factory = d->f;
-	//if (factory == 0)
-	//	factory = QItemEditorFactory::defaultFactory();
-	//return factory->createEditor(t, parent);
-
 	QWidget* w = QItemDelegate::createEditor(parent, option, index);
 	connect(w, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
-	connect(w, SIGNAL(editingFinished()), this, SLOT(hideNotification()));
+	connect(w, SIGNAL(editingFinished()), this, SLOT(textChanged()));
 
 	return w;
 }
 
+bool DkShortcutDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) {
+
+	item = index.internalPointer();
+
+	return QItemDelegate::editorEvent(event, model, option, index);
+}
+
 void DkShortcutDelegate::textChanged(QString text) {
-	qDebug() << "shortcut text is: " << text;
-
-	if (!actions)
-		return;
-
-	QKeySequence ks(text);
-
-	for (int idx = 0; idx < actions->size(); idx++) {
-		if (idx != cRow && actions->at(idx).second == ks) {
-			emit notifyDuplicate(tr("%1 already used by %2\n Press ESC to undo changes").arg(actions->at(idx).second.toString()).arg(actions->at(idx).first));
-			break;
-		}
-	}
+	emit checkDuplicateSignal(text, item);
 }
 
-void DkShortcutDelegate::hideNotification() {
-	emit notifyDuplicate("");	// remove notification
-}
-
+// DkShortcutEditor --------------------------------------------------------------------
 DkShortcutEditor::DkShortcutEditor(QWidget *widget) : QLineEdit(widget) {
 
+	installEventFilter(this);
 }
 
 QKeySequence DkShortcutEditor::shortcut() const {
-	//qDebug() << "returning: "
 	return QKeySequence(text());
 }
 
@@ -1602,33 +1572,75 @@ void DkShortcutEditor::setShortcut(const QKeySequence shortcut) {
 	this->ks = shortcut;
 }
 
-void DkShortcutEditor::keyPressEvent(QKeyEvent *event) {
+bool DkShortcutEditor::eventFilter(QObject *obj, QEvent *event) {
 
+	// TODO: we somehow need to filter events such as ALT+F4 too
+	if (event->type() == QEvent::KeyRelease) {
+		
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		
+		if (keyEvent->key() == Qt::Key_Control ||
+			keyEvent->key() == Qt::Key_Shift ||
+			keyEvent->key() == Qt::Key_Alt ||
+			keyEvent->key() == Qt::Key_Meta)
+			return true;
+
+		int ksi = keyEvent->key();
+
+		if (keyEvent->modifiers() & Qt::ShiftModifier)
+			ksi += Qt::SHIFT;
+		if (keyEvent->modifiers() & Qt::AltModifier)
+			ksi += Qt::ALT;
+		if (keyEvent->modifiers() & Qt::ControlModifier)
+			ksi += Qt::CTRL;
+		if (keyEvent->modifiers() & Qt::MetaModifier)
+			ksi += Qt::META;
+
+		QKeySequence ks(ksi);
+		setText(ks.toString());
+
+		qDebug() << "eating the event...";
+
+		return true;
+	}
+	//else if (event->type() == QEvent::KeyPress) {	// filter keypresses to avoid any dialog action on shortcut edit
+	////	//event->ignore();
+	////	event->accept();
+	//	return true;
+	//}
+	//else if (event->type() == QEvent::ShortcutOverride)
+	//	return true;
+
+	return QLineEdit::eventFilter(obj, event);
 }
 
-void DkShortcutEditor::keyReleaseEvent(QKeyEvent* event) {
-	
-	if (event->key() == Qt::Key_Control ||
-		event->key() == Qt::Key_Shift ||
-		event->key() == Qt::Key_Alt ||
-		event->key() == Qt::Key_Meta)
-		return;
 
-	int ksi = event->key();
-
-	if (event->modifiers() & Qt::ShiftModifier)
-		ksi += Qt::SHIFT;
-	if (event->modifiers() & Qt::AltModifier)
-		ksi += Qt::ALT;
-	if (event->modifiers() & Qt::ControlModifier)
-		ksi += Qt::CTRL;
-	if (event->modifiers() & Qt::MetaModifier)
-		ksi += Qt::META;
-
-	QKeySequence ks(ksi);
-	setText(ks.toString());
-}
-
+//void DkShortcutEditor::keyPressEvent(QKeyEvent *event) {
+//
+//}
+//
+//void DkShortcutEditor::keyReleaseEvent(QKeyEvent* event) {
+//	
+//	if (event->key() == Qt::Key_Control ||
+//		event->key() == Qt::Key_Shift ||
+//		event->key() == Qt::Key_Alt ||
+//		event->key() == Qt::Key_Meta)
+//		return;
+//
+//	int ksi = event->key();
+//
+//	if (event->modifiers() & Qt::ShiftModifier)
+//		ksi += Qt::SHIFT;
+//	if (event->modifiers() & Qt::AltModifier)
+//		ksi += Qt::ALT;
+//	if (event->modifiers() & Qt::ControlModifier)
+//		ksi += Qt::CTRL;
+//	if (event->modifiers() & Qt::MetaModifier)
+//		ksi += Qt::META;
+//
+//	QKeySequence ks(ksi);
+//	setText(ks.toString());
+//}
 
 // TreeItem --------------------------------------------------------------------
 TreeItem::TreeItem(const QVector<QVariant> &data, TreeItem *parent) {
@@ -1901,6 +1913,33 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, QString name) {
 
 }
 
+void DkShortcutsModel::checkDuplicate(QString text, void* item) {
+
+	if (text.isEmpty()) {
+		emit duplicateSignal("");
+		return;
+	}
+
+	QKeySequence ks(text);
+
+	TreeItem* duplicate = rootItem->find(QKeySequence(text), 1);
+
+	if (duplicate == item)
+		return;
+
+	if (duplicate && duplicate->parent()) {
+		emit duplicateSignal(tr("%1 already used by %2 > %3\n Press ESC to undo changes")
+				.arg(duplicate->data(1).toString())
+				.arg(duplicate->parent()->data(0).toString())
+				.arg(duplicate->data(0).toString()));
+	}
+	else if (duplicate) {
+		emit duplicateSignal(tr("%1 already used by %2\n Press ESC to undo changes")
+			.arg(duplicate->data(1).toString())
+			.arg(duplicate->data(0).toString()));
+	}
+}
+
 // DkShortcutsDialog --------------------------------------------------------------------
 DkShortcutsDialog::DkShortcutsDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
@@ -1925,15 +1964,22 @@ void DkShortcutsDialog::createLayout() {
 
 	QItemEditorFactory::setDefaultFactory(factory);
 
+	// create our beautiful shortcut view
 	model = new DkShortcutsModel();
+	
+	DkShortcutDelegate* scDelegate = new DkShortcutDelegate();
 
 	treeView = new QTreeView();
 	treeView->setModel(model);
+	treeView->setItemDelegate(scDelegate);
 
 	notificationLabel = new QLabel();
 	notificationLabel->setStyleSheet("QLabel{color: #AA4242;}");
 	//notificationLabel->setTextFormat(Qt::)
-	
+
+	connect(scDelegate, SIGNAL(checkDuplicateSignal(QString, void*)), model, SLOT(checkDuplicate(QString, void*)));
+	connect(model, SIGNAL(duplicateSignal(QString)), notificationLabel, SLOT(setText(QString)));
+
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default

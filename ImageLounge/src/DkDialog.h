@@ -427,24 +427,20 @@ class DkShortcutDelegate : public QItemDelegate {
 	Q_OBJECT
 
 public:
-	DkShortcutDelegate(QVector<QPair<QString, QKeySequence> >* actions = 0, QObject* parent = 0);
+	DkShortcutDelegate(QObject* parent = 0);
 
 	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-	
+
 signals:
-	void notifyDuplicate(QString info);
-	
+	void checkDuplicateSignal(QString text, void* item);
+
 protected slots:
-	void textChanged(QString text);
-	void hideNotification();
+	void textChanged(QString text = QString());
 
 protected:
-	
 	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);
+	void* item;
 	//virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
-
-	QVector<QPair<QString, QKeySequence> >* actions;
-	int cRow;
 
 };
 
@@ -458,8 +454,9 @@ public:
 	void setShortcut(const QKeySequence shortcut);
 
 protected:
-	void keyPressEvent(QKeyEvent *event);
-	void keyReleaseEvent(QKeyEvent* event);
+	//void keyPressEvent(QKeyEvent *event);
+	//void keyReleaseEvent(QKeyEvent* event);
+	bool eventFilter(QObject *obj, QEvent *event);
 
 	QKeySequence ks;
 
@@ -520,6 +517,12 @@ public:
 	//}
 
 	void addDataActions(QVector<QAction*> actions, QString name);
+
+public slots:
+	void checkDuplicate(QString text, void* item);
+
+signals:
+	void duplicateSignal(QString info);
 
 protected:
 
