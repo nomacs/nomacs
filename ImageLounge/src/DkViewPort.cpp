@@ -2024,6 +2024,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 				skip = false;
 			}
 			else {
+				unloadImage();
 				thumb = loader->loadThumb(thumbFile, silent);
 
 				if (thumbFile.exists()) {
@@ -2038,7 +2039,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 		}
 
 		if (!thumb.isNull()) {
-			unloadImage();
+			//unloadImage();
 			setThumbImage(thumb);
 			skip = false;
 		}
