@@ -1977,11 +1977,9 @@ DkShortcutsDialog::DkShortcutsDialog(QWidget* parent, Qt::WindowFlags flags) : Q
 
 void DkShortcutsDialog::createLayout() {
 
+	setWindowTitle(tr("Keyboard Shortcuts"));
+
 	QVBoxLayout* layout = new QVBoxLayout(this);
-
-
-	//qDebug() << "rows: " << model->rowCount() << " column: " << model->columnCount();
-	
 
 	// register our special shortcut editor
 	QItemEditorFactory *factory = new QItemEditorFactory;
