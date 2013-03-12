@@ -292,6 +292,8 @@ public:
 	DkTcpMenu(QWidget* parent = 0, DkManagerThread* clientThread = 0) : QMenu(parent) {
 		this->clientThread = clientThread;
 
+		connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
+
 		if (clientThread)
 			connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
 
@@ -301,6 +303,8 @@ public:
 
 	DkTcpMenu(const QString& title, QWidget* parent = 0, DkManagerThread* clientThread = 0) : QMenu(title, parent) {
 		this->clientThread = clientThread;
+
+		connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
 
 		if (clientThread)
 			connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
@@ -324,15 +328,6 @@ public:
 		noClientsFound = show;
 	};
 
-	void setVisible(bool visible) {
-
-		if (visible)
-			updatePeers();
-
-		QMenu::setVisible(visible);
-
-	};
-
 	void clear() {
 		QMenu::clear();
 		peers.clear();
@@ -344,7 +339,7 @@ public:
 signals:
 	void synchronizeWithSignal(quint16);
 
-protected:
+protected slots:
 	void updatePeers() {	// find other clients on paint
 		
 		if (!clientThread)
@@ -396,6 +391,8 @@ protected:
 		peers = newPeers;
 
 	};
+
+protected:
 
 	QList<DkPeer> peers;
 	QList<QAction*> clients;

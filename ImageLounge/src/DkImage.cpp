@@ -4199,9 +4199,13 @@ void DkMetaData::readMetaData() {
 	
 		try {
 
+			// TODO: for now we don't support unicode filenames for exif data
+			// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
+			// this is more work and should be done when updating the cacher as we should definitely
+			// not load the image twice...
 			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
 			exifImg = Exiv2::ImageFactory::open(filePath);
-		
+
 		} catch (...) {
 			mdata = false;
 			hasMetaData = false;
