@@ -63,16 +63,10 @@ int main(int argc, char *argv[]) {
 	qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
 	qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
 
-	QSettings settings;
-	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
-	nmc::DkSettings::App::currentAppMode = mode;	
-
-
 #ifndef Q_WS_MAC
 	QApplication::setGraphicsSystem("raster");
 #else
-	if (mode !=  nmc::DkSettings::mode_frameless)
-		QApplication::setGraphicsSystem("raster");
+	QApplication::setGraphicsSystem("opengl");
 #endif
 	
 
@@ -107,6 +101,8 @@ int main(int argc, char *argv[]) {
 	qDebug() << "\n";
 	// DEBUG --------------------------------------------------------------------
 
+
+	QSettings settings;
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::Global::language).toString() + ".qm";
 
 	QTranslator translator;
@@ -117,7 +113,8 @@ int main(int argc, char *argv[]) {
 	}
 	a.installTranslator(&translator);
 	
-	
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
+	nmc::DkSettings::App::currentAppMode = mode;
 
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
