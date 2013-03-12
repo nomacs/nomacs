@@ -1443,7 +1443,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		if (cacher && cacheState != cache_disable_update) 
 			cacher->setCurrentFile(file, basicLoader.image());
 
-		qDebug() << "exif loaded in: " << QString::fromStdString(dt.getIvl());
+		qDebug() << "orientation set in: " << QString::fromStdString(dt.getIvl());
 			
 		// update watcher
 		emit updateFileWatcherSignal(file);		this->file = file;
@@ -3719,8 +3719,10 @@ void DkMetaData::saveOrientation(int o) {
 		qDebug() << "wrong rotation parameter";
 		throw DkIllegalArgumentException(QString(QObject::tr("wrong rotation parameter\n")).toStdString(), __LINE__, __FILE__);
 	}
-	if (file.suffix().contains("bmp") || file.suffix().contains("gif"))
+	if (file.suffix().contains("bmp") || file.suffix().contains("gif")) {
+		qDebug() << "[Exiv2] this file format does not support exif";
 		throw DkFileException(QString(QObject::tr("this file format does not support exif\n")).toStdString(), __LINE__, __FILE__);
+	}
 
 
 	if (o==-180) o=180;
@@ -4121,8 +4123,10 @@ void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 	if (!mdata)
 		return;
 
-	if (fileN.suffix().contains("bmp"))
+	if (fileN.suffix().contains("bmp")) {
+		qDebug() << "[Exiv2] this file format does not support exif";
 		return;
+	}
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
 	Exiv2::XmpData &xmpData = exifImg->xmpData();
@@ -4186,8 +4190,10 @@ void DkMetaData::readMetaData() {
 	DkTimer dt;
 
 	// image format does not support metadata
-	if (!hasMetaData)
+	if (!hasMetaData) {
+		qDebug() << "[Exiv2] image has no metadata";
 		return;
+	}
 
 	if (!mdata) {
 	
@@ -4199,12 +4205,12 @@ void DkMetaData::readMetaData() {
 		} catch (...) {
 			mdata = false;
 			hasMetaData = false;
-			qDebug() << "could not open image for exif data";
+			qDebug() << "[Exiv2] could not open file for exif data";
 			return;
 		}
 
 		if (exifImg.get() == 0) {
-			qDebug() << "image could not be opened for exif data extraction";
+			qDebug() << "[Exiv2] image could not be opened for exif data extraction";
 			mdata = false;
 			hasMetaData = false;
 			return;
@@ -4214,7 +4220,7 @@ void DkMetaData::readMetaData() {
 			exifImg->readMetadata();
 			
 			if (!exifImg->good()) {
-				qDebug() << "metadata could not be read";
+				qDebug() << "[Exiv2] metadata could not be read";
 				mdata = false;
 				hasMetaData = false;
 				return;
@@ -4223,8 +4229,11 @@ void DkMetaData::readMetaData() {
 		}catch (...) {
 			mdata = false;
 			hasMetaData = false;
+			qDebug() << "[Exiv2] could not read metadata (exception)";
 			return;
 		}
+
+		qDebug() << "[Exiv2] metadata loaded";
 
 		mdata = true;
 	}
