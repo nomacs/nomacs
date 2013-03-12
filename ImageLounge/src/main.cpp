@@ -63,11 +63,13 @@ int main(int argc, char *argv[]) {
 	qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
 	qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
 
-#ifdef Q_WS_X11
 	QApplication::setGraphicsSystem("raster");
-#elif defined Q_WS_WIN
-	QApplication::setGraphicsSystem("raster");
-#endif
+
+//#ifdef Q_WS_X11
+//	QApplication::setGraphicsSystem("raster");
+//#elif defined Q_WS_WIN
+//	QApplication::setGraphicsSystem("raster");
+//#endif
 	//! \warning those QSettings setup *must* go before QApplication object
     //           to prevent random crashes (well, crashes are regular on mac
     //           opening from Finder)
