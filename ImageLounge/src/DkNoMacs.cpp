@@ -940,6 +940,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	fileActions[menu_file_reload]->setEnabled(enable);
 	fileActions[menu_file_prev]->setEnabled(enable);
 	fileActions[menu_file_next]->setEnabled(enable);
+	fileActions[menu_file_goto]->setEnabled(enable);
 
 	editActions[menu_edit_rotate_cw]->setEnabled(enable);
 	editActions[menu_edit_rotate_ccw]->setEnabled(enable);
@@ -952,7 +953,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_wallpaper]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
-
+	
 	viewActions[menu_view_show_info]->setEnabled(enable);
 #ifdef WITH_OPENCV
 	viewActions[menu_view_show_histogram]->setEnabled(enable);
