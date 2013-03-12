@@ -63,12 +63,12 @@ int main(int argc, char *argv[]) {
 	qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
 	qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
 
-#ifndef Q_WS_MAC
+	// NOTE: raster option destroys the frameless view on mac
+	// however, before initializing QApplication we cannot check if frameless
+	// view is requested. but raster is so much faster when zooming that
+	// we loose the beautiful about dialog & frameless for the sake of a
+	// performance increase of the 'normal' nomacs
 	QApplication::setGraphicsSystem("raster");
-#else
-	QApplication::setGraphicsSystem("opengl");
-#endif
-	
 
 //#ifdef Q_WS_X11
 //	QApplication::setGraphicsSystem("raster");

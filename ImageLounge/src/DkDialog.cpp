@@ -38,6 +38,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 	setAttribute(Qt::WA_TranslucentBackground);
 
 	imgLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	imgLabel->setAttribute(Qt::WA_TranslucentBackground);
 	imgLabel->setPixmap(img);
 	imgLabel->show();
 
