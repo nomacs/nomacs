@@ -1,4 +1,4 @@
-/*******************************************************************************************************
+﻿/*******************************************************************************************************
  main.cpp
  Created on:	21.04.2011
  
@@ -63,18 +63,6 @@ int main(int argc, char *argv[]) {
 	qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
 	qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
 
-	// NOTE: raster option destroys the frameless view on mac
-	// however, before initializing QApplication we cannot check if frameless
-	// view is requested. but raster is so much faster when zooming that
-	// we loose the beautiful about dialog & frameless for the sake of a
-	// performance increase of the 'normal' nomacs
-	QApplication::setGraphicsSystem("raster");
-
-//#ifdef Q_WS_X11
-//	QApplication::setGraphicsSystem("raster");
-//#elif defined Q_WS_WIN
-//	QApplication::setGraphicsSystem("raster");
-//#endif
 	//! \warning those QSettings setup *must* go before QApplication object
     //           to prevent random crashes (well, crashes are regular on mac
     //           opening from Finder)
@@ -82,6 +70,20 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
+
+	QSettings settings;
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
+	nmc::DkSettings::App::currentAppMode = mode;
+
+	// NOTE: raster option destroys the frameless view on mac
+	// but raster is so much faster when zooming
+#ifndef Q_WS_MAC
+	QApplication::setGraphicsSystem("raster");
+#else
+	if (mode != nmc::DkSettings::mode_frameless)
+		QApplication::setGraphicsSystem("raster");
+#endif
+
 
 	QApplication a(argc, (char**)argv);
 	QStringList args = a.arguments();
@@ -102,7 +104,7 @@ int main(int argc, char *argv[]) {
 	// DEBUG --------------------------------------------------------------------
 
 
-	QSettings settings;
+	//QSettings settings;
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::Global::language).toString() + ".qm";
 
 	QTranslator translator;
@@ -113,8 +115,8 @@ int main(int argc, char *argv[]) {
 	}
 	a.installTranslator(&translator);
 	
-	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
-	nmc::DkSettings::App::currentAppMode = mode;
+	//int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
+	//nmc::DkSettings::App::currentAppMode = mode;
 
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());

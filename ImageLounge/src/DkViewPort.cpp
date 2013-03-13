@@ -2237,8 +2237,16 @@ void DkViewPort::printImage() {
 // DkViewPortFrameless --------------------------------------------------------------------
 DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
 	
+#ifdef Q_WS_MAC
+	parent->setAttribute(Qt::WA_MacNoShadow);
+#endif
+
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	setCursor(Qt::OpenHandCursor);
+    
+//#ifdef Q_WS_MAC
+	// setAttribute( Qt::WA_MacNoShadow );
+//#endif
 
 	imgBg.load(":/nomacs/img/splash-screen.png");
 

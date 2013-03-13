@@ -1412,11 +1412,13 @@ void DkNoMacs::setFrameless(bool frameless) {
 	QStringList args;
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
-	if (objectName() != "DkNoMacsFrameless")
+	if (objectName() != "DkNoMacsFrameless") {
 		DkSettings::App::appMode = DkSettings::mode_frameless;
-	else
+        //args.append("-graphicssystem");
+        //args.append("native");
+    } else {
 		DkSettings::App::appMode = DkSettings::mode_default;
-
+    }
 	bool started = process.startDetached(exe, args);
 
 	// close me if the new instance started
@@ -2818,10 +2820,9 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_show_statusbar]->setEnabled(false);
 		viewActions[menu_view_show_statusbar]->setChecked(false);
 		viewActions[menu_view_show_toolbar]->setChecked(false);
-		
+
 		menu->setTimeToShow(5000);
 		menu->hide();
-		show();
 		
 		vp->addStartActions(fileActions[menu_file_open], &fileIcons[icon_file_open_large]);
 		vp->addStartActions(fileActions[menu_file_open_dir], &fileIcons[icon_file_dir_large]);
@@ -2831,8 +2832,10 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_frameless]->blockSignals(false);
 
 		dw = QApplication::desktop();
-		connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
 		updateScreenSize();
+		show();
+        
+        connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
 
 		setObjectName("DkNoMacsFrameless");
 		showStatusBar(false);	// fix
