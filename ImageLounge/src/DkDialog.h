@@ -719,6 +719,7 @@ private:
 };
 
 class DkOpacityDialog : public QDialog {
+	Q_OBJECT
 
 public:
 	DkOpacityDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
