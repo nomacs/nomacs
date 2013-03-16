@@ -294,7 +294,7 @@ enum shortcuts {
 	sc_zoom_out,
 	sc_zoom_in_alt,
 	sc_zoom_out_alt,
-	sc_send_img,
+	//sc_send_img,
 	sc_delete_silent,
 	//sc_play,
 

@@ -950,8 +950,8 @@ void DkNoMacs::createShortcuts() {
 	shortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
 	connect(shortcuts[sc_zoom_out_alt], SIGNAL(activated()), vp, SLOT(zoomOut()));
 
-	shortcuts[sc_send_img] = new QShortcut(shortcut_send_img, this);
-	connect(shortcuts[sc_send_img], SIGNAL(activated()), vp, SLOT(tcpSendImage()));
+	//shortcuts[sc_send_img] = new QShortcut(shortcut_send_img, this);
+	//connect(shortcuts[sc_send_img], SIGNAL(activated()), vp, SLOT(tcpSendImage()));
 
 	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
 	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), vp->getImageLoader(), SLOT(deleteFile()));
@@ -966,6 +966,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	fileActions[menu_file_reload]->setEnabled(enable);
 	fileActions[menu_file_prev]->setEnabled(enable);
 	fileActions[menu_file_next]->setEnabled(enable);
+	fileActions[menu_file_goto]->setEnabled(enable);
 
 	editActions[menu_edit_rotate_cw]->setEnabled(enable);
 	editActions[menu_edit_rotate_ccw]->setEnabled(enable);
@@ -978,7 +979,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_wallpaper]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
-
+	
 	viewActions[menu_view_show_info]->setEnabled(enable);
 #ifdef WITH_OPENCV
 	viewActions[menu_view_show_histogram]->setEnabled(enable);
@@ -1437,11 +1438,13 @@ void DkNoMacs::setFrameless(bool frameless) {
 	QStringList args;
 	args.append(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	
-	if (objectName() != "DkNoMacsFrameless")
+	if (objectName() != "DkNoMacsFrameless") {
 		DkSettings::App::appMode = DkSettings::mode_frameless;
-	else
+        //args.append("-graphicssystem");
+        //args.append("native");
+    } else {
 		DkSettings::App::appMode = DkSettings::mode_default;
-
+    }
 	bool started = process.startDetached(exe, args);
 
 	// close me if the new instance started
@@ -2645,8 +2648,14 @@ void DkNoMacsSync::initLanClient() {
 	startServer->setChecked(false);
 	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
 
+	QAction* sendImage = new QAction(tr("Send &Image"), this);
+	sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	sendImage->setToolTip(tr("Sends the current image to all clients."));
+	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
+
 	tcpLanMenu->setClientManager(lanClient);
 	tcpLanMenu->addTcpAction(startServer);
+	tcpLanMenu->addTcpAction(sendImage);
 	tcpLanMenu->setEnabled(true);
 }
 
@@ -2887,10 +2896,9 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_show_statusbar]->setEnabled(false);
 		viewActions[menu_view_show_statusbar]->setChecked(false);
 		viewActions[menu_view_show_toolbar]->setChecked(false);
-		
+
 		menu->setTimeToShow(5000);
 		menu->hide();
-		show();
 		
 		vp->addStartActions(fileActions[menu_file_open], &fileIcons[icon_file_open_large]);
 		vp->addStartActions(fileActions[menu_file_open_dir], &fileIcons[icon_file_dir_large]);
@@ -2900,8 +2908,10 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		viewActions[menu_view_frameless]->blockSignals(false);
 
 		dw = QApplication::desktop();
-		connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
 		updateScreenSize();
+		show();
+        
+        connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
 
 		setObjectName("DkNoMacsFrameless");
 		showStatusBar(false);	// fix

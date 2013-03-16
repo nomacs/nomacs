@@ -35,9 +35,15 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 
 	QPixmap img(":/nomacs/img/splash-screen.png");
 	setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+    
+#ifdef Q_WS_MAC
+    setStyleSheet("background-color:white");
+#else
 	setAttribute(Qt::WA_TranslucentBackground);
-
+#endif
+    
 	imgLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	//imgLabel->setAttribute(Qt::WA_TranslucentBackground);
 	imgLabel->setPixmap(img);
 	imgLabel->show();
 

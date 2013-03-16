@@ -2068,6 +2068,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 				skip = false;
 			}
 			else {
+				unloadImage();
 				thumb = loader->loadThumb(thumbFile, silent);
 
 				if (thumbFile.exists()) {
@@ -2082,7 +2083,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 		}
 
 		if (!thumb.isNull()) {
-			unloadImage();
+			//unloadImage();
 			setThumbImage(thumb);
 			skip = false;
 		}
@@ -2241,8 +2242,16 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 // DkViewPortFrameless --------------------------------------------------------------------
 DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
 	
+#ifdef Q_WS_MAC
+	parent->setAttribute(Qt::WA_MacNoShadow);
+#endif
+
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	setCursor(Qt::OpenHandCursor);
+    
+//#ifdef Q_WS_MAC
+	// setAttribute( Qt::WA_MacNoShadow );
+//#endif
 
 	imgBg.load(":/nomacs/img/splash-screen.png");
 
