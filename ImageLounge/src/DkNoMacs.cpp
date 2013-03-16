@@ -924,8 +924,8 @@ void DkNoMacs::createShortcuts() {
 	shortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
 	connect(shortcuts[sc_zoom_out_alt], SIGNAL(activated()), vp, SLOT(zoomOut()));
 
-	shortcuts[sc_send_img] = new QShortcut(shortcut_send_img, this);
-	connect(shortcuts[sc_send_img], SIGNAL(activated()), vp, SLOT(tcpSendImage()));
+	//shortcuts[sc_send_img] = new QShortcut(shortcut_send_img, this);
+	//connect(shortcuts[sc_send_img], SIGNAL(activated()), vp, SLOT(tcpSendImage()));
 
 	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
 	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), vp->getImageLoader(), SLOT(deleteFile()));
@@ -2580,8 +2580,14 @@ void DkNoMacsSync::initLanClient() {
 	startServer->setChecked(false);
 	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
 
+	QAction* sendImage = new QAction(tr("Send &Image"), this);
+	sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	sendImage->setToolTip(tr("Sends the current image to all clients."));
+	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tr("Send &Image")));
+
 	tcpLanMenu->setClientManager(lanClient);
 	tcpLanMenu->addTcpAction(startServer);
+	tcpLanMenu->addTcpAction(sendImage);
 	tcpLanMenu->setEnabled(true);
 }
 
