@@ -2583,7 +2583,7 @@ void DkNoMacsSync::initLanClient() {
 	QAction* sendImage = new QAction(tr("Send &Image"), this);
 	sendImage->setShortcut(QKeySequence(shortcut_send_img));
 	sendImage->setToolTip(tr("Sends the current image to all clients."));
-	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tr("Send &Image")));
+	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
 	tcpLanMenu->setClientManager(lanClient);
 	tcpLanMenu->addTcpAction(startServer);
