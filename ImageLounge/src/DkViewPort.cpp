@@ -1835,7 +1835,8 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 	QColor col = imgStorage.getImage().pixel(xy);
 	
 	QString msg = "<font color='grey'>x: " % QString::number(xy.x()) % " y: " % QString::number(xy.y()) % "</font>"
-		" | r: " % QString::number(col.red()) % " g: " % QString::number(col.green()) % " b: " % QString::number(col.blue());
+		" | r: " % QString::number(col.red()) % " g: " % QString::number(col.green()) % " b: " % QString::number(col.blue()) %
+		" | " % col.name().toUpper();
 
 	if (imgStorage.getImage().hasAlphaChannel())
 		msg = msg % " a: " % QString::number(col.alpha());
