@@ -27,6 +27,8 @@
 
 #include "DkViewPort.h"
 
+#include "DkNoMacs.h"	// currently needed for some enums
+
 namespace nmc {
 
 // DkControlWidget --------------------------------------------------------------------
@@ -1841,7 +1843,7 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 	if (imgStorage.getImage().hasAlphaChannel())
 		msg = msg % " a: " % QString::number(col.alpha());
 
-	emit statusInfoSignal(msg);
+	emit statusInfoSignal(msg, status_pixel_info);
 
 }
 

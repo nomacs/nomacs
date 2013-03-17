@@ -339,6 +339,15 @@ enum toolsIcons {
 	icon_tools_end,
 };
 
+enum statusbarLabels {
+	status_pixel_info,
+	status_filesize_info,
+	status_time_info,
+
+	status_end,
+
+};
+
 /*! A custom event filter for OSX.
 Its main purpose is to provide Mac OS X "open file from finder"
 functionality for nomacs. It *has* to be catched on the
@@ -440,7 +449,7 @@ public slots:
 	void tcpSendWindowRect();
 	void tcpSendArrange();
 	void newClientConnected();
-	void showStatusMessage(QString msg);
+	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
 	void pasteImage();
@@ -533,7 +542,8 @@ protected:
 	// toolbar
 	QToolBar* toolbar;
 	QStatusBar* statusbar;
-	QLabel* statusbarMsg;
+	QVector<QLabel*> statusbarLabels;
+	
 
 	// file dialog
 	QFileDialog* openDialog;

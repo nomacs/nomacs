@@ -123,8 +123,6 @@ void DkNoMacs::init() {
 	createToolbar();
 	createStatusbar();
 	enableNoImageActions(false);
-	
-
 
 	// add actions since they are ignored otherwise if the menu is hidden
 	addActions(fileActions.toList());
@@ -309,8 +307,11 @@ void DkNoMacs::createToolbar() {
 
 void DkNoMacs::createStatusbar() {
 
-	statusbarMsg = new QLabel();
-	statusbarMsg->setToolTip(tr("CTRL activates the crosshair cursor"));
+	statusbarLabels.resize(status_end);
+
+	statusbarLabels[status_pixel_info] = new QLabel();
+	statusbarLabels[status_pixel_info]->hide();
+	statusbarLabels[status_pixel_info]->setToolTip(tr("CTRL activates the crosshair cursor"));
 
 	statusbar = new QStatusBar(this);
 	statusbar->setObjectName("DkStatusBar");
@@ -321,8 +322,17 @@ void DkNoMacs::createStatusbar() {
 	//else if (!DkSettings::Display::useDefaultColor)
 	//	statusbar->setStyleSheet("QStatusBar#DkStatusBar{background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}");
 
-	statusbar->addWidget(statusbarMsg);
+
+
+	statusbar->addWidget(statusbarLabels[status_pixel_info]);
 	statusbar->hide();
+
+	for (int idx = 1; idx < statusbarLabels.size(); idx++) {
+		statusbarLabels[idx] = new QLabel();
+		statusbarLabels[idx]->hide();
+		statusbar->addPermanentWidget(statusbarLabels[idx]);
+	}
+
 	//statusbar->addPermanentWidget()
 	this->setStatusBar(statusbar);
 }
@@ -2344,9 +2354,13 @@ void DkNoMacs::showStatusBar(bool show, bool permanent) {
 	viewport()->setVisibleStatusbar(show);
 }
 
-void DkNoMacs::showStatusMessage(QString msg) {
+void DkNoMacs::showStatusMessage(QString msg, int which) {
 
-	statusbarMsg->setText(msg);
+	if (which < 0 || which >= statusbarLabels.size())
+		return;
+
+	statusbarLabels[which]->setVisible(!msg.isEmpty());
+	statusbarLabels[which]->setText(msg);
 }
 
 void DkNoMacs::openFileWith() {
@@ -2417,6 +2431,8 @@ QVector <QAction* > DkNoMacs::getSyncActions() {
 
 void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 
+	// TODO: rename!
+
 	////  do not tell the viewport (he should know it)
 	//viewport()->setTitleLabel(file, -1);
 
@@ -2438,6 +2454,22 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 	QMainWindow::setWindowTitle(title.append(attributes));
 
 	emit sendTitleSignal(windowTitle());
+
+	if (!viewport()->getController()->getFileInfoLabel()->isVisible() || 
+		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date)) {
+		// create statusbar info
+		DkImageLoader::imgMetaData.setFileName(file);
+		QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
+		dateString = DkUtils::convertDate(dateString, file);
+		showStatusMessage(dateString, status_time_info);
+	}
+	else 
+		showStatusMessage("", status_time_info);	// hide label
+
+	if (file.exists())
+		showStatusMessage(DkUtils::readableByte(file.size()), status_filesize_info);
+	else 
+		showStatusMessage("", status_filesize_info);
 
 }
 
@@ -2824,7 +2856,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
 	connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
-	connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
+	connect(vp, SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 	connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));

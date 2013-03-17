@@ -1959,7 +1959,7 @@ void DkMetaDataInfo::getResolution(float &xResolution, float &yResolution) {
 			yR = res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72;
 		}
 	} catch (...) {
-		qDebug() << "could not load Exif GPS information, set to 72dpi";
+		qDebug() << "could not load Exif resolution, set to 72dpi";
 		xR = 72;
 		yR = 72;
 	}
@@ -2239,12 +2239,7 @@ void DkMetaDataInfo::readTags() {
 					if (!tmp.compare("Path"))
 						Value = QString(file.absoluteFilePath());
 					else if (!tmp.compare("FileSize")) {
-						//Value = QString(file.absoluteFilePath());
-						//qDebug() << "should be size" << file.size();
-						if ((float)file.size()/1024.0f > 1024.0f)
-							Value = QString::number((double)file.size()/(1024.0f*1024.0f), 'f', 2) + " MB";
-						else
-							Value = QString::number(file.size()/1024.0f) + " KB";
+						Value = DkUtils::readableByte(file.size());
 					} else
 						Value = QString();
 					

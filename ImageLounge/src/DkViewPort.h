@@ -465,7 +465,7 @@ signals:
 	void windowTitleSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
 	void sendNewFileSignal(qint16 op, QString filename = "");
 	void sendImageSignal(QImage img, QString title);
-	void statusInfoSignal(QString msg);
+	void statusInfoSignal(QString msg, int);
 	void newClientConnectedSignal();
 
 public slots:
