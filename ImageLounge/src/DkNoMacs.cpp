@@ -330,7 +330,9 @@ void DkNoMacs::createStatusbar() {
 	for (int idx = 1; idx < statusbarLabels.size(); idx++) {
 		statusbarLabels[idx] = new QLabel();
 		statusbarLabels[idx]->hide();
+		statusbarLabels[idx]->setStyleSheet("QLabel{color: #555555;}");
 		statusbar->addPermanentWidget(statusbarLabels[idx]);
+
 	}
 
 	//statusbar->addPermanentWidget()
