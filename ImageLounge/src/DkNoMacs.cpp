@@ -1,4 +1,4 @@
-/*******************************************************************************************************
+ï»¿/*******************************************************************************************************
  DkNoMacs.cpp
  Created on:	21.04.2011
  
@@ -637,18 +637,18 @@ void DkNoMacs::createActions() {
 
 	editActions.resize(menu_edit_end);
 
-	editActions[menu_edit_rotate_cw] = new QAction(editIcons[icon_edit_rotate_cw], tr("9&0° Clockwise"), this);
+	editActions[menu_edit_rotate_cw] = new QAction(editIcons[icon_edit_rotate_cw], tr("9&0Â° Clockwise"), this);
 	editActions[menu_edit_rotate_cw]->setShortcut(QKeySequence(shortcut_rotate_cw));
-	editActions[menu_edit_rotate_cw]->setStatusTip(tr("rotate the image 90° clockwise"));
+	editActions[menu_edit_rotate_cw]->setStatusTip(tr("rotate the image 90Â° clockwise"));
 	connect(editActions[menu_edit_rotate_cw], SIGNAL(triggered()), vp, SLOT(rotateCW()));
 
-	editActions[menu_edit_rotate_ccw] = new QAction(editIcons[icon_edit_rotate_ccw], tr("&90° Counter Clockwise"), this);
+	editActions[menu_edit_rotate_ccw] = new QAction(editIcons[icon_edit_rotate_ccw], tr("&90Â° Counter Clockwise"), this);
 	editActions[menu_edit_rotate_ccw]->setShortcut(QKeySequence(shortcut_rotate_ccw));
-	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90° counter clockwise"));
+	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90Â° counter clockwise"));
 	connect(editActions[menu_edit_rotate_ccw], SIGNAL(triggered()), vp, SLOT(rotateCCW()));
 
-	editActions[menu_edit_rotate_180] = new QAction(tr("180°"), this);
-	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180°"));
+	editActions[menu_edit_rotate_180] = new QAction(tr("180Â°"), this);
+	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180Â°"));
 	connect(editActions[menu_edit_rotate_180], SIGNAL(triggered()), vp, SLOT(rotate180()));
 
 	editActions[menu_edit_copy] = new QAction(tr("&Copy"), this);
@@ -2498,7 +2498,7 @@ void DkNoMacs::openSettings() {
 	connect(&dsd, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
 	dsd.exec();
 
-	qDebug() << "hier könnte ihre werbung stehen...";
+	qDebug() << "hier kÃ¶nnte ihre werbung stehen...";
 }
 
 void DkNoMacs::settingsChanged() {
