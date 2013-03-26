@@ -62,7 +62,7 @@ class DkSplashScreen : public QDialog {
 	Q_OBJECT
 
 public:
-	DkSplashScreen(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkSplashScreen(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkSplashScreen() {};
 
 	//protected:

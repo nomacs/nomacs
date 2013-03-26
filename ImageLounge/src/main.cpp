@@ -43,7 +43,7 @@
 #include "DkUtils.h"
 #include "DkTimer.h"
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QFileInfo>
 #include <QProcess>
 #include <QTranslator>

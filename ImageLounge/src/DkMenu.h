@@ -28,8 +28,8 @@
 #pragma once
 
 
-#include <QtGui/QAction>
-#include <QtGui/QMenuBar>
+#include <QAction>
+#include <QMenuBar>
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QList>

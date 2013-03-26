@@ -32,7 +32,7 @@
 //#pragma comment (lib, "shlwapi.lib")
 #endif
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QImageWriter>
 #include <QFileSystemWatcher>
 #include <QFileInfo>

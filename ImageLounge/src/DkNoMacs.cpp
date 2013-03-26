@@ -43,7 +43,7 @@ bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 
 
 
-DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
+DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	: QMainWindow(parent, flags) {
 
 	QMainWindow::setWindowTitle("nomacs - Image Lounge");
@@ -2632,7 +2632,7 @@ int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
 
 
 // DkNoMacsSync --------------------------------------------------------------------
-DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, flags) {
+DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags) : DkNoMacs(parent, flags) {
 
 }
 
@@ -2825,7 +2825,7 @@ void DkNoMacsSync::clientInitialized() {
 }
 
 
-DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(parent, flags) {
+DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(parent, flags) {
 
 		// init members
 	DkViewPort* vp = new DkViewPort(this);
@@ -2881,7 +2881,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 }
 
 // FramelessNoMacs --------------------------------------------------------------------
-DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
+DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 	: DkNoMacs(parent, flags) {
 
 		setObjectName("DkNoMacsFrameless");
@@ -3044,7 +3044,7 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 
 // Transfer function:
 
-DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
+DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 	: DkNoMacsSync(parent, flags) {
 
 

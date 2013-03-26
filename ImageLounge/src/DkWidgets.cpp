@@ -31,7 +31,7 @@
 
 namespace nmc {
 
-DkWidget::DkWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
+DkWidget::DkWidget(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 	init();
 }
 
@@ -138,7 +138,7 @@ void DkWidget::animateOpacityDown() {
 }
 
 // DkFilePreview --------------------------------------------------------------------
-DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(parent, flags) {
+DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	this->parent = parent;
 	init();

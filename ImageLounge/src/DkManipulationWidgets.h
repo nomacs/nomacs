@@ -27,13 +27,13 @@
 
 #pragma once
 
-#include <QtGui/QWidget>
-#include <QtGui/QDockWidget>
-#include <QtGui/QSlider>
-#include <QtGui/QSpinBox>
-#include <QtGui/QLabel>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QProgressDialog>
+#include <QWidget>
+#include <QDockWidget>
+#include <QSlider>
+#include <QSpinBox>
+#include <QLabel>
+#include <QBoxLayout>
+#include <QProgressDialog>
 
 #include "DkViewPort.h"
 

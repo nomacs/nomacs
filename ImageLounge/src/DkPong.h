@@ -25,8 +25,8 @@
 
  *******************************************************************************************************/
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QGraphicsView>
+#include <QMainWindow>
+#include <QGraphicsView>
 #include <QTimer>
 #include <QDebug>
 #include <QVector2D>
@@ -40,7 +40,7 @@ class DkPongPort : public QGraphicsView {
 	Q_OBJECT
 
 public:
-	DkPongPort(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkPongPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkPongPort() {};
 
 public slots:
@@ -85,7 +85,7 @@ class DkPong : public QMainWindow {
 	Q_OBJECT
 
 public:
-	DkPong(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkPong(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkPong() {};
 
 protected slots:

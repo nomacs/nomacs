@@ -31,7 +31,7 @@
 namespace nmc {
 
 // DkPongPort --------------------------------------------------------------------
-DkPongPort::DkPongPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
+DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags flags) : QGraphicsView(parent) {
 
 	//setAttribute(Qt::WA_TranslucentBackground, true);
 
@@ -247,7 +247,7 @@ void DkPongPort::keyReleaseEvent(QKeyEvent* event) {
 
 
 
-DkPong::DkPong(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, flags) {
+DkPong::DkPong(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags) {
 
 	resize(800, 600);
 

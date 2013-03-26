@@ -32,7 +32,7 @@
 namespace nmc {
 
 // DkControlWidget --------------------------------------------------------------------
-DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget(parent, flags) {
+DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
 	viewport = parent;
 
@@ -592,7 +592,7 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
 
 
 // DkBaseViewport --------------------------------------------------------------------
-DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
+DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WindowFlags flags) : QGraphicsView(parent) {
 	
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
@@ -1196,7 +1196,7 @@ void DkBaseViewPort::changeCursor() {
 }
 
 // DkViewPort --------------------------------------------------------------------
-DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent) {
+DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(parent) {
 
 	testLoaded = false;
 	thumbLoaded = false;
@@ -2243,7 +2243,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------
-DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
+DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent) {
 	
 #ifdef Q_WS_MAC
 	parent->setAttribute(Qt::WA_MacNoShadow);
@@ -2656,7 +2656,7 @@ QTransform DkViewPortFrameless::getScaledImageMatrix() {
 	return imgMatrix;
 }
 
-DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
+DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent) {
 
 	isColorPickerActive = false;
 	activeChannel = 0;

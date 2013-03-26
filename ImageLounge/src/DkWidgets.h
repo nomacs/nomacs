@@ -28,20 +28,20 @@
 #pragma once
 
 #include <QApplication>
-#include <QtGui/QRadioButton>
-#include <QtGui/QAction>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QDialog>
-#include <QtGui/QGraphicsBlurEffect>
-#include <QtGui/QGraphicsPixmapItem>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QPushButton>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QShortcut>
-#include <QtGui/QToolButton>
-#include <QtGui/QComboBox>
-#include <QtGui/QMessageBox>
+#include <QRadioButton>
+#include <QAction>
+#include <QBoxLayout>
+#include <QDialog>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsPixmapItem>
+#include <QLabel>
+#include <QPainter>
+#include <QPushButton>
+#include <QMouseEvent>
+#include <QShortcut>
+#include <QToolButton>
+#include <QComboBox>
+#include <QMessageBox>
 #include <QStringBuilder>
 #include <QPointer>
 #include <QTimer>
@@ -73,7 +73,7 @@ class DkWidget : public QWidget {
 	Q_OBJECT
 
 public:
-	DkWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void registerAction(QAction* action) {
 		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
@@ -532,7 +532,7 @@ class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFilePreview(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkFilePreview(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	
 	~DkFilePreview() {
 		

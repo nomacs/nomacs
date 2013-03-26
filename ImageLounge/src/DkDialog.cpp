@@ -31,7 +31,7 @@
 namespace nmc {
 
 // DkSplashScreen --------------------------------------------------------------------
-DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, flags) {
+DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog(0, flags) {
 
 	QPixmap img(":/nomacs/img/splash-screen.png");
 	setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
