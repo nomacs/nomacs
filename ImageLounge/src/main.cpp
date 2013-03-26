@@ -75,6 +75,7 @@ int main(int argc, char *argv[]) {
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
 	nmc::DkSettings::App::currentAppMode = mode;
 
+#ifndef QT5
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
 #ifndef Q_WS_MAC
@@ -82,8 +83,9 @@ int main(int argc, char *argv[]) {
 #else
 	if (mode != nmc::DkSettings::mode_frameless)
 		QApplication::setGraphicsSystem("raster");
-#endif
+#endif	// MAC/NOT MAC
 
+#endif	// only in QT4
 
 	QApplication a(argc, (char**)argv);
 	QStringList args = a.arguments();

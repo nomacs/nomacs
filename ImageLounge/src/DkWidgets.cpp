@@ -386,7 +386,7 @@ void DkFilePreview::createCurrentImgEffect(QImage img, QColor col) {
 	QPixmap imgPx = QPixmap::fromImage(img);
 	currentImgGlow = imgPx;
 	currentImgGlow.fill(col);
-	currentImgGlow.setAlphaChannel(imgPx.alphaChannel());
+	//currentImgGlow.setAlphaChannel(imgPx.alphaChannel());			// >DIR: alpha [26.3.2013 markus]
 	
 	//QPixmap glow = imgPx;
 	//// Fills the whole pixmap with a certain color
@@ -420,7 +420,7 @@ void DkFilePreview::createSelectedEffect(QImage img, QColor col) {
 	QPixmap imgPx = QPixmap::fromImage(img);
 	selectionGlow = imgPx;
 	selectionGlow.fill(col);
-	selectionGlow.setAlphaChannel(imgPx.alphaChannel());
+	//selectionGlow.setAlphaChannel(imgPx.alphaChannel());		// >DIR: alpha [26.3.2013 markus]
 
 	////what about an outer glow??
 	//// To apply the effect, you need to make a QGraphicsItem
@@ -1375,7 +1375,7 @@ QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
 	QPixmap imgPx = pm->copy();
 	QPixmap imgAlpha = imgPx;
 	imgAlpha.fill(DkSettings::Display::highlightColor);
-	imgAlpha.setAlphaChannel(imgPx.alphaChannel());
+	//imgAlpha.setAlphaChannel(imgPx.alphaChannel());	// >DIR: alpha [26.3.2013 markus]
 
 	return imgAlpha;
 }
@@ -1862,10 +1862,10 @@ void DkMetaDataInfo::init() {
 	mapIptcExif[DkMetaDataSettingsWidget::desc_filesize] = 2;
 
 	for (int i = 0; i  < DkMetaDataSettingsWidget::scamDataDesc.size(); i++) 
-		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toAscii());
+		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toLatin1());
 
 	for (int i = 0; i  < DkMetaDataSettingsWidget::sdescriptionDesc.size(); i++)
-		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toAscii());
+		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toLatin1());
 
 
 	exposureModes.append(tr("not defined"));
@@ -2830,8 +2830,10 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 		return;
 	}
 
-	posGrab = map(event->posF());
-	clickPos = event->posF();
+
+	QPointF pos = event->pos();
+	posGrab = map(pos);
+	clickPos = pos;
 
 	if (rect.isEmpty()) {
 		state = initializing;
@@ -2869,7 +2871,8 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	if (!hasFocus())
 		setFocus(Qt::ActiveWindowFocusReason);
 
-	QPointF posM = map(event->posF());
+	QPointF pos = event->pos();
+	QPointF posM = map(pos);
 	
 	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
 		// show rotating - moving
@@ -2887,9 +2890,10 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		
 		qDebug() << "pg: " << posGrab;
 
-		QPointF clipPos = clipToImage(event->posF());
 
-		if (!imgRect || !rect.isEmpty() || clipPos == event->posF()) {
+		QPointF clipPos = clipToImage(pos);
+
+		if (!imgRect || !rect.isEmpty() || clipPos == pos) {
 			
 			if (rect.isEmpty()) {
 

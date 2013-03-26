@@ -101,7 +101,7 @@ public:
 		QPixmap glow = icon.copy();
 		QPixmap sGlow = glow.copy();
 		sGlow.fill(col);
-		sGlow.setAlphaChannel(glow.alphaChannel());
+		//sGlow.setAlphaChannel(glow.alphaChannel());	// >DIR: alpha [26.3.2013 markus]
 
 		QPainter painter(&glow);
 		painter.setOpacity(0.5);

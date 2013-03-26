@@ -518,6 +518,10 @@ void DkOpenWithDialog::browseAppFile() {
 	appFilter += tr("Executable Files (*.exe);;");
 	if (!QFileInfo(defaultPath).exists())
 		defaultPath = getenv("PROGRAMFILES");
+#elif defined QT5
+	
+	defaultPath = QStandardPaths::displayName(QStandardPaths::ApplicationsLocation);		// >DIR: check that [26.3.2013 markus]
+	//defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
 #else
 	defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
 #endif

@@ -50,6 +50,8 @@
 #include <QTimer>
 #include <QProcess>
 #include <QStringBuilder>
+#include <QMimeData>
+#include <QDrag>
 
 // OpenCV
 #ifdef WITH_OPENCV

@@ -33,14 +33,14 @@ namespace nmc {
 #ifdef WIN32
 
 bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
-	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
-	//return true;
+	//return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;		// >DIR: check that [26.3.2013 markus]
+	return true;
 }
 
 bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 	
-	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
-	//return true;
+	//return wCompLogic(lhs.toStdWString(), rhs.toStdWString());	// >DIR: check that [26.3.2013 markus]
+	return true;
 }
 #else
 bool wCompLogicQString(const QString & lhs, const QString & rhs) {

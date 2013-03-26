@@ -146,27 +146,28 @@ public slots:
 			DkTimer dt;
 			QFileInfo file = recentFiles->at(idx);
 
-#ifdef WIN32
-
-			// TODO: it crashed twice here!
-
-			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
-			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
-			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
-
-			// CMakeLists.txt:
-			// if compile error that toWCharArray is not recognized:
-			// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
-			int dirLength = winPath.toWCharArray(wDirName);
-			wDirName[dirLength] = L'\0';	// append null character
-
-			DWORD dAttr = GetFileAttributesW(wDirName);
-
-			if (dAttr == INVALID_FILE_ATTRIBUTES) {
-				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists (WIN32 reject) " << QString::fromStdString(dt.getTotal());
-				continue;
-			}
-#endif
+//#ifdef WIN32
+//
+//			// TODO: it crashed twice here!
+//
+//			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
+//			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
+//			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
+//
+//
+//			// CMakeLists.txt:
+//			// if compile error that toWCharArray is not recognized:
+//			// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
+//			int dirLength = winPath.toWCharArray(wDirName);
+//			wDirName[dirLength] = L'\0';	// append null character
+//
+//			DWORD dAttr = GetFileAttributesW(wDirName);
+//
+//			if (dAttr == INVALID_FILE_ATTRIBUTES) {
+//				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists (WIN32 reject) " << QString::fromStdString(dt.getTotal());
+//				continue;
+//			}
+//#endif
 			// TODO: this line is sometimes (iPhone: ducking) slow!!
 			if (!file.exists()) {
 				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists " << QString::fromStdString(dt.getTotal());
