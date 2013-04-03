@@ -2988,6 +2988,7 @@ void DkThumbsLoader::init() {
 	numFilesLoaded = 0;
 	loadAllThumbs = false;
 	forceSave = false;
+	forceLoad = false;
 
 	DkTimer dt;
 	for (int idx = 0; idx < files.size(); idx++) {
@@ -3316,7 +3317,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 		}
 	}
 
-	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
+	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad) {
 		
 		// flip size if the image is rotated by 90°
 		if (dataExif.isTiff() && abs(orientation) == 90) {
@@ -3652,7 +3653,7 @@ void DkMetaData::saveThumbnail(QImage thumb) {
 		QByteArray data;
 		QBuffer buffer(&data);
 		buffer.open(QIODevice::WriteOnly);
-		thumb.save(&buffer, "JPEG");
+		thumb.save(&buffer, "JPEG");	// here we destroy the alpha channel of thumbnails
 
 		//if (isTiff()) {
 		//	Exiv2::DataBuf buf((Exiv2::byte *)data.data(), data.size());

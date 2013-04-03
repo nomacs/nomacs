@@ -748,7 +748,7 @@ void DkFilePreview::indexDir(int force) {
 }
 
 // DkThumbsSaver --------------------------------------------------------------------
-void DkThumbsSaver::processDir(const QDir& dir) {
+void DkThumbsSaver::processDir(const QDir& dir, bool forceLoad) {
 	
 	if (thumbsLoader) {
 		thumbsLoader->stop();
@@ -761,8 +761,9 @@ void DkThumbsSaver::processDir(const QDir& dir) {
 	if (dir.exists()) {
 
 		thumbsLoader = new DkThumbsLoader(&thumbs, dir);
+		thumbsLoader->setForceLoad(forceLoad);
 
-		pd = new QProgressDialog(tr("\nCreating Thumbnails...\n") + dir.absolutePath(), tr("Cancel"), 0, (int)thumbs.size(), DkNoMacs::getDialogParent());
+		pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + dir.absolutePath(), tr("Cancel"), 0, (int)thumbs.size(), DkNoMacs::getDialogParent());
 		pd->setWindowTitle(tr("Thumbnails"));
 		
 		//pd->setWindowModality(Qt::WindowModal);
@@ -775,7 +776,6 @@ void DkThumbsSaver::processDir(const QDir& dir) {
 
 		thumbsLoader->start();
 
-		// add progressbar here
 		thumbsLoader->loadAll();
 	}
 }

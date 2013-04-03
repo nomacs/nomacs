@@ -555,6 +555,7 @@ protected:
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
+	DkForceThumbDialog* forceDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
