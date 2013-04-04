@@ -362,6 +362,7 @@ void DkOpenWithDialog::init() {
 }
 
 void DkOpenWithDialog::createLayout() {
+	
 	userRadiosGroup = new QButtonGroup;
 	userRadiosGroup->setExclusive(true);
 
