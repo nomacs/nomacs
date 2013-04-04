@@ -1054,7 +1054,11 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 		else if (values[0] == "mac")
 			mac = values[1];
 	}
-#ifdef _WIN32
+
+
+#if _MSC_VER == 1600
+	url = XPx86;	// for WinXP packages
+#elif _WIN32
 	url = x86;
 #elif defined _WIN64
 	url = x64;
