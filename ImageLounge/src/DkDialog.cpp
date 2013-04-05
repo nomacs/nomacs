@@ -60,7 +60,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 		"<a href=\"http://www.nomacs.org\">www.nomacs.org</a><br>"
 		"<a href=\"mailto:developers@nomacs.org\">developers@nomacs.org</a><br><br>" 
 
-		"This program is licensed under GNU Public License v3<br>"
+		"This program is licensed under GNU General Public License v3<br>"
 		"&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2013<br><br>"
 
 		"Press [ESC] to exit");
