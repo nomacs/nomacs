@@ -53,7 +53,7 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.tga").split(' ');
 
 // formats we can save
 QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;") %
@@ -66,7 +66,7 @@ QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;"
 // formats we can save
 QStringList DkImageLoader::saveFilters = saveFilter.split(QString(";;"));
 
-QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.lnk);;") %
+QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.tga *.lnk);;") %
 	QString(saveFilter) %
 	QString(";;Graphic Interchange Format (*.gif);;") %
 	QString("Portable Bitmap (*.pbm);;") %
@@ -81,6 +81,7 @@ QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bm
 	QString("JPEG Stereo (*.jps);;") %
 	QString("PNG Stereo (*.pns);;") %
 	QString("Multi Picture Object (*.mpo);;") %
+	QString("Targa (*.tga);;") %
 	QString("Rohkost (*.roh);;");
 	
 
