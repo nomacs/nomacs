@@ -556,6 +556,10 @@ public:
 		user_updated,
 	};
 
+	void setForceLoad(bool forceLoad) {
+		this->forceLoad = forceLoad;
+	};
+
 signals:
 	void updateSignal();
 	void progressSignal(int percent);
@@ -579,6 +583,7 @@ private:
 	int endIdx;
 	bool loadAllThumbs;
 	bool forceSave;
+	bool forceLoad;
 	QStringList files;
 
 	// function

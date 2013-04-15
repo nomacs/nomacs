@@ -68,6 +68,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	imgManipulationDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
+	forceDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -2156,9 +2157,17 @@ void DkNoMacs::computeThumbsBatch() {
 	if (!viewport() || !viewport()->getImageLoader())
 		return;
 
-	// TODO: make private -> so that it gets destroyed
+	if (!forceDialog)
+		forceDialog = new DkForceThumbDialog(this);
+	forceDialog->setWindowTitle(tr("Save Thumbnails"));
+	forceDialog->setDir(viewport()->getImageLoader()->getDir());
+
+	if (!forceDialog->exec())
+		return;
+
 	DkThumbsSaver* saver = new DkThumbsSaver();
-	saver->processDir(viewport()->getImageLoader()->getDir());
+	saver->processDir(viewport()->getImageLoader()->getDir(), forceDialog->forceSave());
+
 
 }
 

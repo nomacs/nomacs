@@ -2565,6 +2565,39 @@ void DkOpacityDialog::createLayout() {
 
 }
 
+// DkForceThumbDialog --------------------------------------------------------------------
+DkForceThumbDialog::DkForceThumbDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
+
+	createLayout();
+}
+
+void DkForceThumbDialog::createLayout() {
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+
+	infoLabel = new QLabel();
+	infoLabel->setAlignment(Qt::AlignHCenter);
+
+	cbForceSave = new QCheckBox(tr("Overwrite Existing Thumbnails"));
+	cbForceSave->setToolTip("If checked, existing thumbnails will be replaced");
+
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	layout->addWidget(infoLabel);
+	layout->addWidget(cbForceSave);
+	layout->addWidget(buttons);
+
+}
+
+void DkForceThumbDialog::setDir(const QDir& fileInfo) {
+
+	infoLabel->setText(tr("Compute thumbnails for all images in:\n %1\n").arg(fileInfo.absolutePath()));
+}
+
 } // close namespace
-
-

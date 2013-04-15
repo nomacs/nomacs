@@ -634,7 +634,7 @@ class DkThumbsSaver : public DkWidget {
 public:
 	DkThumbsSaver() : thumbsLoader(0), pd(0) {};
 
-	void processDir(const QDir& dir);
+	void processDir(const QDir& dir, bool forceLoad);
 
 public slots:
 	void stopProgress() {

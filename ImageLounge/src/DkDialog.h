@@ -735,4 +735,25 @@ protected:
 	DkSlider* slider;
 };
 
+class DkForceThumbDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkForceThumbDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	bool forceSave() {
+
+		return cbForceSave->isChecked();
+	}
+
+	void setDir(const QDir& fileInfo);
+
+protected:
+	void createLayout();
+
+	QLabel* infoLabel;
+	QCheckBox* cbForceSave;
+};
+
+
 }

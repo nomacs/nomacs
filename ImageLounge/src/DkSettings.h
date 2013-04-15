@@ -202,6 +202,7 @@ class DkSettings : public QObject {
 			static float cacheMemory;
 			static bool fastThumbnailPreview;
 			static bool filterRawImages;
+			static QString preferredExtension;
 		};
 
 		void load();
@@ -585,6 +586,8 @@ public:
 
 		QCheckBox* cbFastThumbnailPreview;
 		QCheckBox* cbFilterRawImages;
+		QCheckBox* cbRemoveDuplicates;
+		QComboBox* cmExtensions;
 		QSlider* sliderMemory;
 		QLabel* labelMemory;
 	
