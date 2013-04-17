@@ -104,6 +104,7 @@ using namespace cv;
 //#include "DkNoMacs.h"
 #include "DkTimer.h"
 #include "DkSettings.h"
+#include "../libqpsd/qpsdhandler.h"
 
 #ifdef Q_WS_X11
 	typedef  unsigned char byte;
@@ -689,6 +690,7 @@ public:
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
 #endif
 
+	bool loadPSDFile(QFileInfo fileInfo);
 #ifdef WITH_WEBP
 	bool loadWebPFile(QFileInfo fileInfo);
 	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
