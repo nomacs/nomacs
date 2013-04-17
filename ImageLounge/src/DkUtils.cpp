@@ -60,7 +60,7 @@ double DkMemory::getTotalMemory() {
 
 
 #elif defined Q_WS_MAC
-	// TODO: could somebody (with a make please add the corresponding calls?
+	// TODO: could somebody (with a mac please add the corresponding calls?
 #endif
 
 	// convert to MB
