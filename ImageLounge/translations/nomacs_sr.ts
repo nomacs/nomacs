@@ -291,24 +291,24 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="2582"/>
       <source>Overwrite Existing Thumbnails</source>
-      <translation>Overwrite Existing Thumbnails</translation>
+      <translation>Пребриши постојеће сличице</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2588"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>&amp;У реду</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2589"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Cancel</translation>
+      <translation>&amp;Откажи</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2601"/>
       <source>Compute thumbnails for all images in:
  %1
 </source>
-      <translation>Compute thumbnails for all images in:
+      <translation>Израчунај сличице за све слике у:
  %1
 </translation>
     </message>
@@ -1541,7 +1541,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2162"/>
       <source>Save Thumbnails</source>
-      <translation>Save Thumbnails</translation>
+      <translation>Сачувај сличице</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2547"/>
@@ -1584,12 +1584,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2694"/>
       <source>Send &amp;Image</source>
-      <translation>Send &amp;Image</translation>
+      <translation>Пошаљи &amp;слику</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2696"/>
       <source>Sends the current image to all clients.</source>
-      <translation>Sends the current image to all clients.</translation>
+      <translation>Пошаљи тренутну слику за све клијенте.</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2713"/>
@@ -1988,17 +1988,17 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="1391"/>
       <source>Hide Duplicates</source>
-      <translation>Hide Duplicates</translation>
+      <translation>Сакриј дупликате</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1393"/>
       <source>If checked, duplicated images are not shown (e.g. RAW+JPG</source>
-      <translation>If checked, duplicated images are not shown (e.g. RAW+JPG</translation>
+      <translation>Ако је означено, дуплиране слике се не показују (нпр. RAW+JPG</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1395"/>
       <source>Preferred Extension: </source>
-      <translation>Preferred Extension: </translation>
+      <translation>Пожељна проширења: </translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1407"/>
@@ -2229,7 +2229,7 @@ Press ESC to undo changes</source>
 Creating thumbnails...
 </source>
       <translation>
-Creating thumbnails...
+Креирање сличица...
 </translation>
     </message>
     <message>
