@@ -1435,29 +1435,26 @@ void DkNoMacs::fitFrame() {
 	QRectF nmRect = frameGeometry();
 	QSize frDiff = frameGeometry().size()-geometry().size();
 
-	if(abs((viewRect.size()-vpRect.size()).height())>1)
-	{
-	  // compute new size
-	  QPointF c = nmRect.center();
-	  nmRect.setSize(nmRect.size() + viewRect.size() - vpRect.size());
-	  nmRect.moveCenter(c);
+	// compute new size
+	QPointF c = nmRect.center();
+	nmRect.setSize(nmRect.size() + viewRect.size() - vpRect.size());
+	nmRect.moveCenter(c);
 	
-	  // still fits on screen?
-	  QDesktopWidget* dw = QApplication::desktop();
-	  QRect screenRect = dw->availableGeometry(this);
-	  QRect newGeometry = screenRect.intersected(nmRect.toRect());
+	// still fits on screen?
+	QDesktopWidget* dw = QApplication::desktop();
+	QRect screenRect = dw->availableGeometry(this);
+	QRect newGeometry = screenRect.intersected(nmRect.toRect());
 	
-	  // correct frame
-	  newGeometry.setSize(newGeometry.size()-frDiff);
-	  newGeometry.moveTopLeft(newGeometry.topLeft() - frameGeometry().topLeft()+geometry().topLeft());
+	// correct frame
+	newGeometry.setSize(newGeometry.size()-frDiff);
+	newGeometry.moveTopLeft(newGeometry.topLeft() - frameGeometry().topLeft()+geometry().topLeft());
 
-	  setGeometry(newGeometry);
+	setGeometry(newGeometry);
 
-	  // reset viewport if we did not clip -> compensates round-off errors
-	  if (screenRect.contains(nmRect.toRect()))
-	    viewport()->resetView();
+	// reset viewport if we did not clip -> compensates round-off errors
+	if (screenRect.contains(nmRect.toRect()))
+		viewport()->resetView();
 
-	}
 }
 
 void DkNoMacs::showOpacityDialog() {
