@@ -4,9 +4,9 @@
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
+ Copyright (C) 2011-2012 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2012 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2012 Florian Kleber <florian@nomacs.org>
 
  This file is part of nomacs.
 
@@ -46,6 +46,7 @@ int DkSettings::App::currentAppMode = 0;
 bool DkSettings::App::advancedSettings = false;
 
 int DkSettings::Global::skipImgs = 10;
+int DkSettings::Global::numberRecent = 20;
 bool DkSettings::Global::loop = false;
 bool DkSettings::Global::scanSubFolders = false;
 QString DkSettings::Global::lastDir = QString();
@@ -185,6 +186,7 @@ void DkSettings::load() {
 	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
 
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
+	Global::numberRecent = settings.value("GlobalSettings/numberRecent", DkSettings::Global::numberRecent).toInt();
 
 	Global::loop = settings.value("GlobalSettings/loop", DkSettings::Global::loop).toBool();
 	Global::scanSubFolders = settings.value("GlobalSettings/scanSubFolders", DkSettings::Global::scanSubFolders).toBool();
@@ -284,6 +286,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
 
 	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
+	settings.setValue("GlobalSettings/numberRecent",Global::numberRecent);
 	settings.setValue("GlobalSettings/loop",Global::loop);
 	settings.setValue("GlobalSettings/scanSubFolders",Global::scanSubFolders);
 	settings.setValue("GlobalSettings/lastDir", DkSettings::Global::lastDir);
@@ -367,6 +370,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::App::appMode = 0;
 	
 	DkSettings::Global::skipImgs = 10;
+	DkSettings::Global::numberRecent = 20;
 	DkSettings::Global::loop = false;
 	DkSettings::Global::scanSubFolders = true;
 	DkSettings::Global::lastDir = QString();
@@ -697,6 +701,7 @@ void DkGlobalSettingsWidget::init() {
 		langCombo->setCurrentIndex(0);
 
 	displayTimeSpin->setSpinBoxValue(DkSettings::SlideShow::time);
+	numberRecentWidget->setSpinBoxValue(DkSettings::Global::numberRecent);
 
 	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
 	connect(buttonDefaultSettings, SIGNAL(clicked()), highlightColorChooser, SLOT(on_resetButton_clicked()));
@@ -731,6 +736,8 @@ void DkGlobalSettingsWidget::createLayout() {
 	fullscreenColChooser->setColor(DkSettings::SlideShow::backgroundColor);
 
 	displayTimeSpin = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
+
+	numberRecentWidget = new DkDoubleSpinBoxWidget(tr("Recent Files/Folders:"), tr("Number"), 0, 50, this, 1, 0);
 
 	QWidget* langWidget = new QWidget(this);
 	QGridLayout* langLayout = new QGridLayout(langWidget);
@@ -817,6 +824,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	rightLayout->addWidget(showBarsWidget);
 	rightLayout->addStretch();
 	rightLayout->addWidget(defaultSettingsWidget);
+	rightLayout->addWidget(numberRecentWidget);
 
 	widgetLayout->addLayout(leftLayout);
 	widgetLayout->addLayout(rightLayout);
@@ -829,6 +837,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::Display::smallIcons = cbSmallIcons->isChecked();
 	DkSettings::Display::toolbarGradient = cbToolbarGradient->isChecked();
 	DkSettings::SlideShow::time = displayTimeSpin->getSpinBoxValue();
+	DkSettings::Global::numberRecent = numberRecentWidget->getSpinBoxValue();
 
 	if (DkSettings::App::appMode == DkSettings::mode_frameless)
 		DkSettings::Display::bgColorFrameless = bgColorWidgetChooser->getColor();
