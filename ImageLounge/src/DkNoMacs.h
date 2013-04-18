@@ -394,8 +394,6 @@ signals:
 	void closeSignal();
 	void saveTempFileSignal(QImage img);
 	void sendQuitLocalClientsSignal();
-	void fourthButtonPressed();
-	void fifthButtonPressed();
 
 public slots:
 	void restart();
