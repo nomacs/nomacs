@@ -4,9 +4,9 @@
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2012 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2012 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2012 Florian Kleber <florian@nomacs.org>
+ Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
 
  This file is part of nomacs.
 
@@ -53,40 +53,33 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.tga").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo").split(' ');
 
+//// formats we can save
+//QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;")
 // formats we can save
-QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;") %
-	QString("TIFF (*.tif *.tiff);;") %
-	QString("Windows Bitmap (*.bmp);;") %
-	QString("Portable Pixmap (*.ppm);;") %
-	QString("X11 Bitmap (*.xbm);;") %
-	QString("X11 Pixmap (*.xpm)");
+QStringList DkImageLoader::saveFilters = QStringList();//saveFilter.split(QString(";;"));
 
-// formats we can save
-QStringList DkImageLoader::saveFilters = saveFilter.split(QString(";;"));
-
-QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.tga *.lnk);;") %
-	QString(saveFilter) %
-	QString(";;Graphic Interchange Format (*.gif);;") %
-	QString("Portable Bitmap (*.pbm);;") %
-	QString("Portable Graymap (*.pgm);;") %
-	QString("Icon Files (*.ico);;") %
-	QString("Nikon Raw (*.nef);;") %
-	QString("Canon Raw (*.crw *.cr2);;") %
-	QString("Sony Raw (*.arw);;") %
-	QString("Digital Negativ (*.dng);;") %
-	QString("Panasonic Raw (*.rw2);;") %
-	QString("Minolta Raw (*.mrw);;") %
-	QString("JPEG Stereo (*.jps);;") %
-	QString("PNG Stereo (*.pns);;") %
-	QString("Multi Picture Object (*.mpo);;") %
-	QString("Targa (*.tga);;") %
-	QString("Rohkost (*.roh);;");
+//QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.webp *.lnk);;") %
+//	QString(saveFilter) %
+//	QString(";;Graphic Interchange Format (*.gif);;") %
+//	QString("Portable Bitmap (*.pbm);;") %
+//	QString("Portable Graymap (*.pgm);;") %
+//	QString("Icon Files (*.ico);;") %
+//	QString("Nikon Raw (*.nef);;") %
+//	QString("Canon Raw (*.crw *.cr2);;") %
+//	QString("Sony Raw (*.arw);;") %
+//	QString("Digital Negativ (*.dng);;") %
+//	QString("Panasonic Raw (*.rw2);;") %
+//	QString("Minolta Raw (*.mrw);;") %
+//	QString("JPEG Stereo (*.jps);;") %
+//	QString("PNG Stereo (*.pns);;") %
+//	QString("Multi Picture Object (*.mpo);;") %
+//	QString("Rohkost (*.roh);;");
 	
 
 // formats we can load
-QStringList DkImageLoader::openFilters = openFilter.split(QString(";;"));
+QStringList DkImageLoader::openFilters = QStringList();//openFilter.split(QString(";;"));
 
 DkMetaData DkImageLoader::imgMetaData = DkMetaData();
 
@@ -124,6 +117,9 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	} else if (file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive))) {
 
 		// load hdr here...
+	} else if (file.suffix().contains(QRegExp("(webp)", Qt::CaseInsensitive))) {
+
+		imgLoaded = loadWebPFile(this->file);
 
 	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive))) {
 
@@ -561,6 +557,171 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 	return imgLoaded;
 }
 
+#ifdef WITH_WEBP
+
+bool DkBasicLoader::loadWebPFile(QFileInfo fileInfo) {
+
+	QFile file(fileInfo.absoluteFilePath());
+	file.open(QIODevice::ReadOnly);
+	
+	return decodeWebP(file.readAll());
+
+}
+
+bool DkBasicLoader::decodeWebP(const QByteArray& buffer) {
+	qDebug() << "file exists: " << file.exists();
+	qDebug() << "empty buffer: " << buffer.isEmpty();
+
+
+	// retrieve the image features (size, alpha etc.)
+	WebPBitstreamFeatures features;
+	int error = WebPGetFeatures((const uint8_t*)buffer.data(), buffer.size(), &features);
+	if (error) return false;
+
+	uint8_t* webData = 0;
+
+	if (features.has_alpha) {
+		webData = WebPDecodeBGRA((const uint8_t*) buffer.data(), buffer.size(), &features.width, &features.height);
+		if (!webData) return false;
+		qImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
+	}
+	else {
+		webData = WebPDecodeRGB((const uint8_t*) buffer.data(), buffer.size(), &features.width, &features.height);
+		if (!webData) return false;
+		qImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
+	}
+
+	// clone the image so we own the buffer
+	qImg = qImg.copy();
+	if (webData) free(webData);
+
+	qDebug() << "buffer size: " << buffer.size();
+
+	return true;
+}
+
+#endif
+
+bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
+
+	bool saved = false;
+
+	qDebug() << "extension: " << fileInfo.suffix();
+
+	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
+		saved = saveWebPFile(fileInfo, img, compression);
+	}
+	else {
+		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
+		imgWriter->setCompression(compression);
+		imgWriter->setQuality(compression);
+		saved = imgWriter->write(img);
+		delete imgWriter;
+	}
+
+	return saved;
+}
+
+#ifdef WITH_WEBP
+bool DkBasicLoader::saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {
+	
+	qDebug() << "format: " << img.format();
+
+	QByteArray buffer;
+
+	if (encodeWebP(buffer, img, compression)) {
+
+		QFile file(fileInfo.absoluteFilePath());
+		file.open(QIODevice::WriteOnly);
+		file.write(buffer);
+	
+		return true;
+	}
+
+	return false;
+}
+
+bool DkBasicLoader::encodeWebP(QByteArray& buffer, QImage img, int compression, int speed) {
+	
+	// currently, guarantee that the image is a ARGB image
+	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB888)
+		img = img.convertToFormat(QImage::Format_RGB888);	// for now
+	//char* buffer;
+	//size_t bufSize;
+
+	//if (compression < 0) {
+
+	//	if (!img.hasAlphaChannel())
+	//		qDebug() << "no alpha...";
+
+
+	//	if (img.hasAlphaChannel())
+	//		bufSize = WebPEncodeLosslessBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
+	//	// // without alpha there is something wrong...
+	//	else
+	//		bufSize = WebPEncodeLosslessRGB(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
+	//}
+	//else {
+	//	
+	//	if (img.hasAlphaChannel())
+	//		bufSize = WebPEncodeBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
+	//	else
+	//		bufSize = WebPEncodeRGB(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
+	//}
+
+	//if (!bufSize) return false;
+
+	//QFile file(fileInfo.absoluteFilePath());
+	//file.open(QIODevice::WriteOnly);
+	//file.write(buffer, bufSize);
+	//free(buffer);
+
+	WebPConfig config;
+	bool lossless = false;
+	if (compression == -1) {
+		compression = 100;
+		lossless = true;
+	}
+	if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, compression)) return false;
+	if (lossless) config.lossless = 1;
+	config.method = speed;
+
+	WebPPicture webImg;
+	if (!WebPPictureInit(&webImg)) return false;
+	webImg.width = img.width();
+	webImg.height = img.height();
+	webImg.use_argb = true;		// we never use YUV
+	//webImg.argb_stride = img.bytesPerLine();
+	//webImg.argb = reinterpret_cast<uint32_t*>(img.bits());
+
+	qDebug() << "speed method: " << config.method;
+
+	int errorCode = 0;
+
+	if (img.hasAlphaChannel())
+		errorCode = WebPPictureImportBGRA(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
+	else
+		errorCode = WebPPictureImportRGB(&webImg, reinterpret_cast<uint8_t*>(img.bits()), img.bytesPerLine());
+
+	qDebug() << "import error: " << errorCode;
+
+	// Set up a byte-writing method (write-to-memory, in this case):
+	WebPMemoryWriter writer;
+	WebPMemoryWriterInit(&writer);
+	webImg.writer = WebPMemoryWrite;
+	webImg.custom_ptr = &writer;
+
+	int ok = WebPEncode(&config, &webImg);
+	if (!ok || writer.size == 0) return false;
+
+	buffer = QByteArray(reinterpret_cast<const char*>(writer.mem), (int)writer.size);	// does a deep copy
+	WebPPictureFree(&webImg);
+
+	return true;
+}
+#endif
+
+
 // image editing --------------------------------------------------------------------
 /**
  * This method rotates an image.
@@ -774,6 +935,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	// init cacher
 	cacher = 0;
 	startStopCacher();
+	initFileFilters();
 }
 
 /**
@@ -794,6 +956,43 @@ DkImageLoader::~DkImageLoader() {
 
 	qDebug() << "dir open: " << dir.absolutePath();
 	qDebug() << "filepath: " << saveDir.absolutePath();
+}
+
+void DkImageLoader::initFileFilters() {
+
+	// formats we can save
+	saveFilters.append("Portable Network Graphics (*.png)");
+	saveFilters.append("JPEG (*.jpg *.jpeg)");
+	saveFilters.append("TIFF (*.tif *.tiff)");
+	saveFilters.append("Windows Bitmap (*.bmp)");
+	saveFilters.append("Portable Pixmap (*.ppm)");
+	saveFilters.append("X11 Bitmap (*.xbm)");
+	saveFilters.append("X11 Pixmap (*.xpm)");
+
+	// internal filters
+#ifdef WITH_WEBP
+	fileFilters.append("*.webp");
+	saveFilters.append("WebP (*.webp)");
+#endif
+
+	// formats we can load
+	openFilters.append("Image Files (" + fileFilters.join(" ") + ")");
+	openFilters += saveFilters;
+	openFilters.append("Graphic Interchange Format (*.gif)");
+	openFilters.append("Portable Bitmap (*.pbm)");
+	openFilters.append("Portable Graymap (*.pgm)");
+	openFilters.append("Icon Files (*.ico)");
+	openFilters.append("Nikon Raw (*.nef)");
+	openFilters.append("Canon Raw (*.crw *.cr2)");
+	openFilters.append("Sony Raw (*.arw)");
+	openFilters.append("Digital Negativ (*.dng)");
+	openFilters.append("Panasonic Raw (*.rw2)");
+	openFilters.append("Minolta Raw (*.mrw)");
+	openFilters.append("JPEG Stereo (*.jps)");
+	openFilters.append("PNG Stereo (*.pns)");
+	openFilters.append("Multi Picture Object (*.mpo)");
+	openFilters.append("Rohkost (*.roh)");
+
 }
 
 /**
@@ -1655,15 +1854,8 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	QImage sImg = (saveImg.isNull()) ? basicLoader.image() : saveImg;
 		
 	emit updateInfoSignalDelayed(tr("saving..."), true);
-	QImageWriter* imgWriter = new QImageWriter(filePath);
-	imgWriter->setCompression(compression);
-	imgWriter->setQuality(compression);
-	bool saved = imgWriter->write(sImg);
-	//imgWriter->setFileName(QFileInfo().absoluteFilePath());
-	delete imgWriter;
-	//bool saved = sImg.save(filePath, 0, compression);
+	bool saved = basicLoader.save(filePath, sImg, compression);
 	emit updateInfoSignalDelayed(tr("saving..."), false);
-	//qDebug() << "jpg compression: " << compression;
 
 	if (QFileInfo(filePath).exists())
 		qDebug() << QFileInfo(filePath).absoluteFilePath() << " (before exif) exists...";
@@ -1733,7 +1925,8 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 	
 	emit updateInfoSignalDelayed(tr("saving..."), true);
 	QString filePath = file.absoluteFilePath();
-	bool saved = (saveImg.isNull()) ? basicLoader.image().save(filePath) : saveImg.save(filePath);	// TODO: move to basic loader
+	QImage sImg = (saveImg.isNull()) ? basicLoader.image() : saveImg; 
+	bool saved = basicLoader.save(filePath, sImg);
 	emit updateInfoSignalDelayed(tr("saving..."), false);	// stop the label
 	
 	if (saved)
@@ -2795,6 +2988,7 @@ void DkThumbsLoader::init() {
 	numFilesLoaded = 0;
 	loadAllThumbs = false;
 	forceSave = false;
+	forceLoad = false;
 
 	DkTimer dt;
 	for (int idx = 0; idx < files.size(); idx++) {
@@ -3123,7 +3317,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 		}
 	}
 
-	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
+	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad) {
 		
 		// flip size if the image is rotated by 90°
 		if (dataExif.isTiff() && abs(orientation) == 90) {
@@ -3136,6 +3330,36 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 
 		imageReader.setScaledSize(QSize(imgW, imgH));
 		thumb = imageReader.read();
+
+		// try to read the image
+		if (thumb.isNull()) {
+			DkBasicLoader loader;
+			
+			if (loader.loadGeneral(file)) {
+
+				thumb = loader.image();
+				imgW = thumb.width();
+				imgH = thumb.height();
+
+				if (imgW > maxThumbSize || imgH > maxThumbSize) {
+					if (imgW > imgH) {
+						imgH = (float)maxThumbSize / imgW * imgH;
+						imgW = maxThumbSize;
+					} 
+					else if (imgW < imgH) {
+						imgW = (float)maxThumbSize / imgH * imgW;
+						imgH = maxThumbSize;
+					}
+					else {
+						imgW = maxThumbSize;
+						imgH = maxThumbSize;
+					}
+				}
+
+				thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+				thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			}
+		}
 
 		// is there a nice solution to do so??
 		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
@@ -3429,7 +3653,7 @@ void DkMetaData::saveThumbnail(QImage thumb) {
 		QByteArray data;
 		QBuffer buffer(&data);
 		buffer.open(QIODevice::WriteOnly);
-		thumb.save(&buffer, "JPEG");
+		thumb.save(&buffer, "JPEG");	// here we destroy the alpha channel of thumbnails
 
 		//if (isTiff()) {
 		//	Exiv2::DataBuf buf((Exiv2::byte *)data.data(), data.size());
@@ -4204,13 +4428,9 @@ void DkMetaData::readMetaData() {
 			// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
 			// this is more work and should be done when updating the cacher as we should definitely
 			// not load the image twice...
-#ifdef EXV_UNICODE_PATH
-			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
-			exifImg = Exiv2::ImageFactory::open(filePath);
-#else
 			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
 			exifImg = Exiv2::ImageFactory::open(filePath);
-#endif
+
 		} catch (...) {
 			mdata = false;
 			hasMetaData = false;
