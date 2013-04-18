@@ -7,8 +7,8 @@
 !include "nsProcess.nsh"
 
 ; your install directories
- ; !define BUILD_DIR "..\build2012\ReallyRelease"
-!define BUILD_DIR "..\build2012x64\ReallyRelease"
+ !define BUILD_DIR "..\build2012\ReallyRelease"
+; !define BUILD_DIR "..\build2012x64\ReallyRelease"
 ; !define BUILD_DIR "..\build2010x86\ReallyRelease"
 ; !define TRANSLATION_DIR "translation"
 !define TRANSLATION_DIR "..\build2012"
@@ -21,15 +21,6 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-
-BrandingText "nomacs - Image Lounge"
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "nomacs-setup.exe"
-InstallDir "$PROGRAMFILES\nomacs"
-InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
-ShowInstDetails show
-ShowUnInstDetails show
-
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -63,10 +54,7 @@ Page custom fileAssociation fileAssociationFinished
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Create Desktop Shortcut"
 !define MUI_FINISHPAGE_SHOWREADME_FUNCTION finishpageaction
-
-!define MUI_FINISHPAGE_RUN ""
-!define MUI_FINISHPAGE_RUN_TEXT "Run ${PRODUCT_NAME}"
-!define MUI_FINISHPAGE_RUN_FUNCTION launchnomacs
+!define MUI_FINISHPAGE_RUN "$INSTDIR\nomacs.exe"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
@@ -76,6 +64,15 @@ Page custom fileAssociation fileAssociationFinished
 !insertmacro MUI_LANGUAGE "English"
 
 ; MUI end ------
+
+BrandingText "nomacs - Image Lounge"
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+OutFile "nomacs-setup.exe"
+InstallDir "$PROGRAMFILES\nomacs"
+InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+ShowInstDetails show
+ShowUnInstDetails show
+
 Var Dialog
 Var Label
 Var FullySupportedGroupBox
@@ -524,10 +521,7 @@ SectionEnd
 Function finishpageaction
 	CreateShortCut "$DESKTOP\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
 FunctionEnd
-
-Function launchnomacs
-	Exec '"$WINDIR\explorer.exe" "$INSTDIR\nomacs.exe"'
-FunctionEnd  
+  
 
 Section -AdditionalIcons
   SetOutPath $INSTDIR

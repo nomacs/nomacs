@@ -53,7 +53,7 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.psd").split(' ');
 
 //// formats we can save
 //QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;")
@@ -120,6 +120,10 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	} else if (file.suffix().contains(QRegExp("(webp)", Qt::CaseInsensitive))) {
 
 		imgLoaded = loadWebPFile(this->file);
+
+	} else if (file.suffix().contains(QRegExp("(psd)", Qt::CaseInsensitive))) {
+
+		imgLoaded = loadPSDFile(this->file);
 
 	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive))) {
 
@@ -602,6 +606,18 @@ bool DkBasicLoader::decodeWebP(const QByteArray& buffer) {
 
 #endif
 
+bool DkBasicLoader::loadPSDFile(QFileInfo fileInfo) {
+	QFile file(fileInfo.absoluteFilePath());
+	file.open(QIODevice::ReadOnly);
+	QPSDHandler psdHandler;
+	psdHandler.setDevice(&file);
+	if (!psdHandler.canRead(&file)) {
+		qDebug() << "can read = false";
+		return false;
+	}
+	return psdHandler.read(&qImg);
+}
+
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 
 	bool saved = false;
@@ -991,6 +1007,7 @@ void DkImageLoader::initFileFilters() {
 	openFilters.append("JPEG Stereo (*.jps)");
 	openFilters.append("PNG Stereo (*.pns)");
 	openFilters.append("Multi Picture Object (*.mpo)");
+	openFilters.append("Adobe Photoshop (*.psd)");
 	openFilters.append("Rohkost (*.roh)");
 
 }
@@ -4428,13 +4445,9 @@ void DkMetaData::readMetaData() {
 			// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
 			// this is more work and should be done when updating the cacher as we should definitely
 			// not load the image twice...
-#ifdef EXV_UNICODE_PATH
-			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
-			exifImg = Exiv2::ImageFactory::open(filePath);
-#else
 			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
 			exifImg = Exiv2::ImageFactory::open(filePath);
-#endif
+
 		} catch (...) {
 			mdata = false;
 			hasMetaData = false;
