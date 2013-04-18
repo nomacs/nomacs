@@ -7,8 +7,8 @@
 !include "nsProcess.nsh"
 
 ; your install directories
- ; !define BUILD_DIR "..\build2012\ReallyRelease"
-!define BUILD_DIR "..\build2012x64\ReallyRelease"
+ !define BUILD_DIR "..\build2012\ReallyRelease"
+; !define BUILD_DIR "..\build2012x64\ReallyRelease"
 ; !define BUILD_DIR "..\build2010x86\ReallyRelease"
 ; !define TRANSLATION_DIR "translation"
 !define TRANSLATION_DIR "..\build2012"
