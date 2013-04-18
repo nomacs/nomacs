@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkUtils.h"
+#include <QProcess>
 
 #ifdef Q_WS_X11
 #include <sys/sysinfo.h>
@@ -37,12 +38,12 @@ namespace nmc {
 
 // code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
 
-double DkMemory::getTotalMemory() {
+double DkMemory::getTotalMemory() 
+{
 
 	double mem = -1;
 
 #ifdef Q_WS_WIN
-
 	MEMORYSTATUSEX MemoryStatus;
 	ZeroMemory(&MemoryStatus, sizeof(MEMORYSTATUSEX));
 	MemoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
@@ -57,16 +58,23 @@ double DkMemory::getTotalMemory() {
 
 	if (!sysinfo(&info))
 		mem = info.totalram;
-
-
+	
+	
 #elif defined Q_WS_MAC
-	// TODO: could somebody (with a mac please add the corresponding calls?
+	
+	QProcess p;
+	p.start("sysctl", QStringList() << "hw.physmem");
+	p.waitForFinished();
+	QString mem_info = p.readAllStandardOutput();
+	mem = mem_info.toDouble();
+	p.close();
+	
+	  // TODO: could somebody (with a make please add the corresponding calls?
 #endif
-
+	
 	// convert to MB
 	if (mem > 0)
 		mem /= (1024*1024);
-
 	return mem;
 }
 
@@ -94,6 +102,12 @@ double DkMemory::getFreeMemory() {
 		mem = info.freeram;
 
 #elif defined Q_WS_MAC
+	QProcess p;
+	p.start("sysctl", QStringList() << "hw.usermem");
+	p.waitForFinished();
+	QString system_info = p.readAllStandardOutput();
+	mem = system_info.toDouble();
+	p.close();
 
 	// TODO: could somebody (with a make please add the corresponding calls?
 
