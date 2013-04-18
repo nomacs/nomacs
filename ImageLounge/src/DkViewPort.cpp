@@ -2036,7 +2036,8 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 					controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
 
 			}
-		}
+		} else if (testLoaded)
+			skip = false;
 
 		if (!thumb.isNull()) {
 			//unloadImage();
