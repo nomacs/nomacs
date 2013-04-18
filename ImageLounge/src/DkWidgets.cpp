@@ -828,11 +828,6 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		viewRect = overviewImgMatrix.mapRect(viewRect);
 		viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
 
-		if(viewRect.topLeft().x() < overviewRect.topLeft().x()) viewRect.setTopLeft(QPointF(overviewRect.topLeft().x(), viewRect.topLeft().y()));
-		if(viewRect.topLeft().y() < overviewRect.topLeft().y()) viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewRect.topLeft().y()));
-		if(viewRect.bottomRight().x() > overviewRect.bottomRight().x()) viewRect.setBottomRight(QPointF(overviewRect.bottomRight().x(), viewRect.bottomRight().y()));
-		if(viewRect.bottomRight().y() > overviewRect.bottomRight().y()) viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewRect.bottomRight().y()));		
-
 		//draw the image's location
 		painter.setBrush(bgCol);
 		painter.setPen(QColor(200, 200, 200));
