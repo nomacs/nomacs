@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 */
 
 #include "qpsdplugin.h"
-#include "QPSDHandler.h"
+#include "qpsdhandler.h"
 
 QPSDPlugin::QPSDPlugin(QObject *parent) :
     QImageIOPlugin(parent)
