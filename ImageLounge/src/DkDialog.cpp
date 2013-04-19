@@ -193,7 +193,7 @@ void DkJpgDialog::createLayout() {
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -405,6 +405,7 @@ void DkOpenWithDialog::createLayout() {
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 

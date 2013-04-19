@@ -1825,7 +1825,7 @@ void DkImageLoader::updateHistory() {
 		DkSettings::Global::recentFiles.pop_back();
 
 	for (int idx = 0; idx < DkSettings::Global::recentFiles.size()-20; idx++)
-		DkSettings::Global::recentFiles.pop_back();
+		DkSettings::Global::recentFolders.pop_back();
 
 
 	// TODO: shouldn't we delete that -> it's saved when nomacs is closed anyway
