@@ -60,7 +60,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 		"<a href=\"http://www.nomacs.org\">www.nomacs.org</a><br>"
 		"<a href=\"mailto:developers@nomacs.org\">developers@nomacs.org</a><br><br>" 
 
-		"This program is licensed under GNU Public License v3<br>"
+		"This program is licensed under GNU General Public License v3<br>"
 		"&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2013<br><br>"
 
 		"Press [ESC] to exit");
@@ -233,7 +233,7 @@ void DkCompressDialog::createLayout() {
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -476,9 +476,7 @@ void DkOpenWithDialog::createLayout() {
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 

@@ -53,14 +53,14 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.psd").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.tga *.psd").split(' ');
 
 //// formats we can save
 //QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;")
 // formats we can save
 QStringList DkImageLoader::saveFilters = QStringList();//saveFilter.split(QString(";;"));
 
-//QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.webp *.lnk);;") %
+//QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.webp *.tga *.lnk);;") %
 //	QString(saveFilter) %
 //	QString(";;Graphic Interchange Format (*.gif);;") %
 //	QString("Portable Bitmap (*.pbm);;") %
@@ -4445,9 +4445,13 @@ void DkMetaData::readMetaData() {
 			// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
 			// this is more work and should be done when updating the cacher as we should definitely
 			// not load the image twice...
+#ifdef EXV_UNICODE_PATH
+			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
+			exifImg = Exiv2::ImageFactory::open(filePath);
+#else
 			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
 			exifImg = Exiv2::ImageFactory::open(filePath);
-
+#endif
 		} catch (...) {
 			mdata = false;
 			hasMetaData = false;
