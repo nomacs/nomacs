@@ -536,8 +536,31 @@ void DkColorLoader::loadColor(int idx) {
 	QImage thumb = dataExif.getThumbnail();
 
 	if (!thumb.isNull()) {
+
+		int r = 0, g = 0, b = 0;
+
+		int nC = qRound(thumb.depth()/8.0f);
+		int rStep = qRound(thumb.height()/100.0f)+1;
+		int cStep = qRound(thumb.width()/100.0f)+1;
+		float n = 0;
+
+		for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
+
+			const unsigned char* pixel = thumb.constScanLine(rIdx);
+
+			for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
+				
+				b += (int)pixel[cIdx];
+				g += (int)pixel[cIdx+1];
+				r += (int)pixel[cIdx+2];
+				n++;
+			}
+		}
+
+		qDebug() << QColor(r/n, g/n, b/n) << " n: " << n << " r: " << r;
+
 		qDebug() << "color pushed back...";
-		cols.append(thumb.pixel(QPoint(0,0)));	// TODO: compute most significant color
+		cols.append(QColor(r/n, g/n, b/n));	// TODO: compute most significant color
 	}
 		
 

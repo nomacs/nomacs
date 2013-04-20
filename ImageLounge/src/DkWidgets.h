@@ -634,7 +634,9 @@ class DkFolderScrollBar : public QScrollBar {
 
 public: 
 	DkFolderScrollBar(QWidget* parent = 0);
-	
+	~DkFolderScrollBar();
+
+	virtual void setValue(int i);
 
 public slots:
 	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
@@ -647,6 +649,10 @@ signals:
 	void changeFileSignal(int idx);
 	
 protected:
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	
 	void indexDir(int force = DkThumbsLoader::not_forced);
 	
 	QDir currentDir;
@@ -654,6 +660,8 @@ protected:
 	QStringList files;
 	DkColorLoader* colorLoader;
 	QVector<QColor> colors;
+	bool sliding;
+	QLabel* handle;
 };
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
