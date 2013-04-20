@@ -482,4 +482,72 @@ void DkThumbsLoader::stop() {
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
 }
 
+// DkColorLoader --------------------------------------------------------------------
+DkColorLoader::DkColorLoader(QDir dir, QStringList files) {
+
+	this->dir = dir;
+	this->files = files;
+
+	moveToThread(this);
+
+	init();
+}
+
+void DkColorLoader::init() {
+
+	if (files.empty())
+		files = DkImageLoader::getFilteredFileList(dir);
+
+	isActive = true;
+	maxThumbs = 1920;
+}
+
+void DkColorLoader::run() {
+	
+	int updateIvl = 30;
+
+	// max full HD
+	for (int idx = 0; idx < maxThumbs && idx < files.size(); idx++) {
+
+		//mutex.lock();
+		if (!isActive) {
+			qDebug() << "color loader stopped...";
+			//mutex.unlock();
+			break;
+		}
+
+		loadColor(idx);
+
+		if ((idx % updateIvl) == 0)
+			emit updateSignal(cols);
+	}
+	
+}
+
+void DkColorLoader::loadColor(int idx) {
+
+	if (files.size() > maxThumbs)
+		idx = qRound((float)idx/files.size()*maxThumbs);
+	
+	QFileInfo file(dir, files[idx]);
+	
+	//// see if we can read the thumbnail from the exif data
+	DkMetaData dataExif(file);
+	QImage thumb = dataExif.getThumbnail();
+
+	if (!thumb.isNull()) {
+		qDebug() << "color pushed back...";
+		cols.append(thumb.pixel(QPoint(0,0)));	// TODO: compute most significant color
+	}
+		
+
+
+
+}
+
+void DkColorLoader::stop() {
+
+	isActive = false;
+}
+
 }

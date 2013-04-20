@@ -747,6 +747,140 @@ void DkFilePreview::indexDir(int force) {
 
 }
 
+// DkFolderScrollBar --------------------------------------------------------------------
+DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
+
+	setStyle(new QPlastiqueStyle());
+	//setStyleSheet(
+	//	QString("QScrollBar::sub-line:horizontal{background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #E1E1E1, stop: 0.4 #DDDDDD, stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);}") + // + DkUtils::colorToString(DkSettings::Display::bgColorWidget) + "; }") +
+	//	QString("QScrollBar::handle:horizontal{background-color: " + DkUtils::colorToString(DkSettings::Display::highlightColor) + "; };")
+	//	//QString("QScrollBar::sub-line:vertical {background: ") +
+	//	//QString("qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgba(183, 210, 192, 255), stop: 0.5 rgba(105, 165, 5, 255), stop:1 rgba(203, 225, 0, 255)); ") +
+	//	//QString("height: 20px;	subcontrol-position: top; subcontrol-origin: margin;}")
+	//	);
+	////setFixedHeight(10);
+
+	setStyleSheet(QString("QScrollBar:horizontal { ") + 
+					QString("border: none;") +
+					QString("background: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";") +
+					//QString("width: 40px;") +
+					//QString("margin: 20px 0px 20px 0px;") +
+					QString("}"));
+
+
+
+	colorLoader = 0;
+
+	connect(this, SIGNAL(valueChanged(int)), this, SLOT(emitFileSignal(int)));
+
+	qRegisterMetaType<QVector<QColor> >("QVector<QColor>");
+}
+
+void DkFolderScrollBar::updateDir(QFileInfo file, int force) {
+
+	currentFile = file;
+
+	if (isVisible())
+		indexDir(force);
+}
+
+void DkFolderScrollBar::indexDir(int force) {
+
+	QDir dir = currentFile.absoluteDir();
+	dir.setNameFilters(DkImageLoader::fileFilters);
+	dir.setSorting(QDir::LocaleAware);
+
+	// new folder?
+	if ((force == DkThumbsLoader::user_updated || force == DkThumbsLoader::dir_updated || 
+		currentDir.absolutePath() != currentFile.absolutePath() || files.empty()) &&
+		!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
+
+			QStringList files = DkImageLoader::getFilteredFileList(dir);
+
+			// if a dir update was triggered, only update if the file index changed
+			if (force != DkThumbsLoader::dir_updated || files != this->files) {
+
+					qDebug() << "force state: " << force;
+
+					if (colorLoader) {
+						colorLoader->stop();	// TODO: can't be stopped by now
+						colorLoader->wait();
+						delete colorLoader;
+						colorLoader = 0;
+					}
+
+					if (dir.exists()) {
+
+						colorLoader = new DkColorLoader(dir, files);
+						connect(colorLoader, SIGNAL(updateSignal(const QVector<QColor>&)), this, SLOT(update(const QVector<QColor>&)));
+
+						colorLoader->start();
+						currentDir = dir;
+					}
+			}
+
+			this->files = files;
+	}
+
+	// TODO: update scrollbar
+	setMaximum(files.size());
+
+	blockSignals(true);
+	setValue(files.indexOf(currentFile.fileName()));
+	blockSignals(false);
+}
+
+void DkFolderScrollBar::update(const QVector<QColor>& colors) {
+
+	QString gs = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 " + DkUtils::colorToString(DkSettings::Display::bgColorWidget); //stop: 0 rgba(183, 210, 192, 255), stop: 0.5 rgba(105, 165, 5, 255), stop:1 rgba(203, 225, 0, 255)
+
+	float maxFiles = (files.size() > 1920) ? 1920 : files.size();
+
+	for (int idx = 0; idx < colors.size(); idx++) {
+
+		gs += ", stop: " + QString::number((float)(idx+1)/(maxFiles-2)) + " " + 
+			DkUtils::colorToString(colors[idx]); 
+	}
+
+	gs += ", stop: 1 " + DkUtils::colorToString(DkSettings::Display::bgColorWidget) + ");";
+
+	setStyleSheet(QString("QScrollBar:horizontal { ") + 
+		QString("border: none;") +
+		QString("background: rgba(0,0,0,0);") +
+		//QString("width: 40px;") +
+		QString("margin: 0px 0px 0px 0px;") +
+		QString("}") +
+		QString("QScrollBar::handle:horizontal {") +
+		QString("background-color: " + DkUtils::colorToString(DkSettings::Display::bgColorWidget) + ";") +
+		QString("border-width: 1px; border-style: solid; border-color: " + DkUtils::colorToString(DkSettings::Display::highlightColor)) + ";" +
+		//QString("min-width: 20px; ") +
+		QString("}") +
+		QString("QScrollBar::add-line:horizontal {") +
+		QString("background: ") + gs +
+		QString("subcontrol-position: bottom;") +
+		QString("subcontrol-origin: margin;") +
+		QString("}") +
+		QString("QScrollBar::sub-line:horizontal {") +
+		//QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0,") +
+		//QString("stop: 0 rgba(183, 210, 192, 255), stop: 0.5 rgba(105, 165, 5, 255), stop:1 rgba(203, 225, 0, 255));") +
+		//QString("height: 20px;") +
+		QString("width: 0px;") +
+		QString("height: 0px;") +
+		QString("}"));
+
+	qDebug() << "updating style...";
+
+}
+
+void DkFolderScrollBar::emitFileSignal(int i) {
+
+	qDebug() << "value: " << i;
+	int skipIdx = i-files.indexOf(currentFile.fileName());
+	emit changeFileSignal(skipIdx);
+
+}
+
+
 // DkThumbsSaver --------------------------------------------------------------------
 void DkThumbsSaver::processDir(const QDir& dir, bool forceLoad) {
 	

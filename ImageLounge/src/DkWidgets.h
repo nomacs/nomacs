@@ -49,6 +49,8 @@
 #include <QDesktopServices>
 #include <QVector2D>
 #include <qmath.h>
+#include <QScrollBar>
+#include <QPlastiqueStyle>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -625,6 +627,33 @@ private:
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
 	void createCurrentImgEffect(QImage img, QColor col);
+};
+
+class DkFolderScrollBar : public QScrollBar {
+	Q_OBJECT
+
+public: 
+	DkFolderScrollBar(QWidget* parent = 0);
+	
+
+public slots:
+	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
+	void update(const QVector<QColor>& colors);
+
+protected slots:
+	void emitFileSignal(int i);
+
+signals:
+	void changeFileSignal(int idx);
+	
+protected:
+	void indexDir(int force = DkThumbsLoader::not_forced);
+	
+	QDir currentDir;
+	QFileInfo currentFile;
+	QStringList files;
+	DkColorLoader* colorLoader;
+	QVector<QColor> colors;
 };
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future

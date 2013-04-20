@@ -43,6 +43,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 	// thumbnails, metadata
 	filePreview = new DkFilePreview(this, flags);
+	folderScroll = new DkFolderScrollBar(this);
+	folderScroll->setVisible(true);
 	metaDataInfo = new DkMetaDataInfo(this);
 	overviewWindow = new DkOverview(this);
 	player = new DkPlayer(this);
@@ -213,6 +215,7 @@ void DkControlWidget::init() {
 
 	// add elements
 	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
+	hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
 	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
 	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
@@ -256,11 +259,18 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 
 		connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
+
+		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), folderScroll, SLOT(updateDir(QFileInfo, int)));
+		connect(loader, SIGNAL(updateFileSignal(QFileInfo)), folderScroll, SLOT(updateDir(QFileInfo)));
+
 	}
 
 	// thumbs widget
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFile(int)));
+
+	// file scroller
+	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 
 	// overview
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
@@ -1801,8 +1811,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 	if (event->modifiers() == ctrlMod) {
 
-		// TODO: think how we can make this fast too
-		if (event->delta() > 0)
+		if (event->delta() < 0)
 			loadNextFileFast();
 		else
 			loadPrevFileFast();

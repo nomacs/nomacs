@@ -203,4 +203,30 @@ private:
 	void loadThumbs();
 };
 
-}
+class DkColorLoader : public QThread {
+	Q_OBJECT
+
+public:
+	DkColorLoader(QDir dir = QDir(), QStringList files = QStringList());
+	~DkColorLoader() {};
+
+	void stop();
+	void run();
+
+signals:
+	void updateSignal(const QVector<QColor>& cols);
+
+protected:
+	void init();
+	void loadThumbs();
+	void loadColor(int idx);
+
+	QVector<QColor> cols;
+	QDir dir;
+	QStringList files;
+	bool isActive;
+	QMutex mutex;
+	int maxThumbs;
+};
+
+};

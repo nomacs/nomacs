@@ -178,7 +178,7 @@ class DllExport DkControlWidget : public QWidget {
 
 public:
 	
-	enum VerPos {top=0, top_info, ver_center, bottom_info, bottom, ver_pos_end};
+	enum VerPos {top=0, top_scroll, top_info, ver_center, bottom_info, bottom, ver_pos_end};
 	enum HorPos {left= 0, hor_center, right, hor_pos_end};
 
 	enum InfoPos {
@@ -278,6 +278,7 @@ protected:
 	DkOverview* overviewWindow;
 	DkPlayer* player;
 	DkHistogram* histogram;
+	DkFolderScrollBar* folderScroll;
 
 	DkFileInfoLabel* fileInfoLabel;
 	DkRatingLabelBg* ratingLabel;
