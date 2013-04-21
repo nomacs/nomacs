@@ -220,6 +220,7 @@ protected:
 	void init();
 	void loadThumbs();
 	void loadColor(int fileIdx);
+	QColor computeColor(QImage& thumb);
 
 	QVector<QColor> cols;
 	QVector<int> indexes;

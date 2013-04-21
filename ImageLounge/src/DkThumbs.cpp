@@ -536,91 +536,143 @@ void DkColorLoader::loadColor(int fileIdx) {
 	QImage thumb = dataExif.getThumbnail();
 
 	if (!thumb.isNull()) {
-
-		////int r = 0, g = 0, b = 0;
-
-		//int nC = qRound(thumb.depth()/8.0f);
-		//int rStep = qRound(thumb.height()/100.0f)+1;
-		//int cStep = qRound(thumb.width()/100.0f)+1;
-
-		//QVector<int> rHist; rHist.resize(100);
-		//QVector<int> gHist; gHist.resize(100);
-		//QVector<int> bHist; bHist.resize(100);
-
-		//for (int idx = 0; idx < rHist.size(); idx++) {
-		//	rHist[idx] = 0;
-		//	gHist[idx] = 0;
-		//	bHist[idx] = 0;
-		//}
-
-		//int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
-
-		//for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
-
-		//	const unsigned char* pixel = thumb.constScanLine(rIdx);
-
-		//	for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
-
-		//		rHist[qRound(pixel[cIdx+2*offset]/255.0f*rHist.size())]++;
-		//		gHist[qRound(pixel[cIdx+offset]/255.0f*gHist.size())]++;
-		//		bHist[qRound(pixel[cIdx]/255.0f*bHist.size())]++;
-		//	}
-		//}
-
-		//int rMaxVal = 0, gMaxVal = 0, bMaxVal = 0;
-		//int rMaxIdx = 0, gMaxIdx = 0, bMaxIdx = 0;
-
-		//for (int idx = 0; idx < rHist.size(); idx++) {
-
-		//	if (rHist[idx] > rMaxVal) {
-		//		rMaxVal = rHist[idx];
-		//		rMaxIdx = idx;
-		//	}
-		//	if (gHist[idx] > gMaxVal) {
-		//		gMaxVal = gHist[idx];
-		//		gMaxIdx = idx;
-		//	}
-		//	if (bHist[idx] > bMaxVal) {
-		//		bMaxVal = bHist[idx];
-		//		bMaxIdx = idx;
-		//	}
-		//}
-
-		//qDebug() << fileIdx;
-
-		//cols.append(QColor((float)rMaxIdx/rHist.size()*255, (float)gMaxIdx/gHist.size()*255, (float)bMaxIdx/bHist.size()*255));	// TODO: compute most significant color
 		
-		int r = 0, g = 0, b = 0;
-
-		int nC = qRound(thumb.depth()/8.0f);
-		int rStep = qRound(thumb.height()/100.0f)+1;
-		int cStep = qRound(thumb.width()/100.0f)+1;
-		int n = 0;
-
-		int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
-
-		for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
-
-			const unsigned char* pixel = thumb.constScanLine(rIdx);
-
-			for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
-
-				r += pixel[cIdx+2*offset];
-				g += pixel[cIdx+offset];
-				b += pixel[cIdx];
-				n++;
-			}
-		}
-
-		qDebug() << fileIdx;
-		
-		cols.append(QColor((float)r/n, g/n, b/n));	// TODO: compute most significant color
+		cols.append(computeColor(thumb));	// TODO: compute most significant color
 		indexes.append(fileIdx);
 	}
-		
+}
+
+QColor DkColorLoader::computeColor(QImage& thumb) {
+
+	////int r = 0, g = 0, b = 0;
+
+	//int nC = qRound(thumb.depth()/8.0f);
+	//int rStep = qRound(thumb.height()/100.0f)+1;
+	//int cStep = qRound(thumb.width()/100.0f)+1;
+
+	//QVector<int> rHist; rHist.resize(100);
+	//QVector<int> gHist; gHist.resize(100);
+	//QVector<int> bHist; bHist.resize(100);
+
+	//for (int idx = 0; idx < rHist.size(); idx++) {
+	//	rHist[idx] = 0;
+	//	gHist[idx] = 0;
+	//	bHist[idx] = 0;
+	//}
+
+	//int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
+
+	//for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
+
+	//	const unsigned char* pixel = thumb.constScanLine(rIdx);
+
+	//	for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
+
+	//		rHist[qRound(pixel[cIdx+2*offset]/255.0f*rHist.size())]++;
+	//		gHist[qRound(pixel[cIdx+offset]/255.0f*gHist.size())]++;
+	//		bHist[qRound(pixel[cIdx]/255.0f*bHist.size())]++;
+	//	}
+	//}
+
+	//int rMaxVal = 0, gMaxVal = 0, bMaxVal = 0;
+	//int rMaxIdx = 0, gMaxIdx = 0, bMaxIdx = 0;
+
+	//for (int idx = 0; idx < rHist.size(); idx++) {
+
+	//	if (rHist[idx] > rMaxVal) {
+	//		rMaxVal = rHist[idx];
+	//		rMaxIdx = idx;
+	//	}
+	//	if (gHist[idx] > gMaxVal) {
+	//		gMaxVal = gHist[idx];
+	//		gMaxIdx = idx;
+	//	}
+	//	if (bHist[idx] > bMaxVal) {
+	//		bMaxVal = bHist[idx];
+	//		bMaxIdx = idx;
+	//	}
+	//}
+
+	//qDebug() << fileIdx;
+
+	//cols.append(QColor((float)rMaxIdx/rHist.size()*255, (float)gMaxIdx/gHist.size()*255, (float)bMaxIdx/bHist.size()*255));	// TODO: compute most significant color
+
+	//// compute mean color
+	//int r = 0, g = 0, b = 0;
+
+	//int nC = qRound(thumb.depth()/8.0f);
+	//int rStep = qRound(thumb.height()/100.0f)+1;
+	//int cStep = qRound(thumb.width()/100.0f)+1;
+	//int n = 0;
+
+	//int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
+
+	//for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
+
+	//	const unsigned char* pixel = thumb.constScanLine(rIdx);
+
+	//	for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
+
+	//		r += pixel[cIdx+2*offset];
+	//		g += pixel[cIdx+offset];
+	//		b += pixel[cIdx];
+	//		n++;
+	//	}
+	//}
+
+	//return QColor((float)r/n, g/n, b/n);
 
 
+	// compute most common color with a lookup table
+	//int r = 0, g = 0, b = 0;
 
+	// some speed-up params
+	int nC = qRound(thumb.depth()/8.0f);
+	int rStep = qRound(thumb.height()/100.0f)+1;
+	int cStep = qRound(thumb.width()/100.0f)+1;
+	int numCols = 42;
+
+	int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
+	QMap<QRgb, int> colLookup;
+	int maxColCount = 0;
+	QRgb maxCol;
+
+	for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
+
+		const unsigned char* pixel = thumb.constScanLine(rIdx);
+
+		for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
+
+			QColor cColC(qRound(pixel[cIdx+2*offset]/255.0f*numCols), 
+				qRound(pixel[cIdx+offset]/255.0f*numCols), 
+				qRound(pixel[cIdx]/255.0f*numCols));
+			QRgb cCol = cColC.rgb();
+
+			//// skip black
+			//if (cColC.saturation() < 10)
+			//	continue;
+			if (qRed(cCol) < 3 && qGreen(cCol) < 3 && qBlue(cCol) < 3)
+				continue;
+			if (qRed(cCol) > numCols-3 && qGreen(cCol) > numCols-3 && qBlue(cCol) > numCols-3)
+				continue;
+
+
+			if (colLookup.contains(cCol)) {
+				colLookup[cCol]++;
+			}
+			else
+				colLookup[cCol] = 1;
+
+			if (colLookup[cCol] > maxColCount) {
+				maxCol = cCol;
+				maxColCount = colLookup[cCol];
+			}
+		}
+	}
+
+
+	QColor col = QColor((float)qRed(maxCol)/numCols*255, (float)qGreen(maxCol)/numCols*255, (float)qBlue(maxCol)/numCols*255);
+	return (maxColCount > 0) ? col : DkSettings::Display::bgColorWidget;
 }
 
 void DkColorLoader::stop() {

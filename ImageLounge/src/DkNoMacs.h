@@ -101,6 +101,7 @@ enum {
 	shortcut_esc			= Qt::Key_Escape,
 	
 	// file
+	shortcut_show_scroller	= Qt::Key_F,
 	shortcut_open_preview	= Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
@@ -243,6 +244,7 @@ enum viewActions {
 	menu_view_show_overview,
 	menu_view_show_player,
 	menu_view_show_preview,
+	menu_view_show_scroller,
 	menu_view_show_exif,
 	menu_view_show_info,
 	menu_view_show_histogram,

@@ -466,6 +466,7 @@ void DkNoMacs::createMenu() {
 	viewToolsMenu->addAction(viewActions[menu_view_show_statusbar]);
 	viewToolsMenu->addAction(viewActions[menu_view_show_transfertoolbar]);
 	viewMenu->addAction(viewActions[menu_view_show_preview]);
+	viewMenu->addAction(viewActions[menu_view_show_scroller]);
 	viewMenu->addAction(viewActions[menu_view_show_exif]);
 	viewMenu->addAction(viewActions[menu_view_show_overview]);
 	viewMenu->addAction(viewActions[menu_view_show_player]);
@@ -524,6 +525,7 @@ void DkNoMacs::createContextMenu() {
 	contextMenu = new QMenu(this);
 
 	contextMenu->addAction(viewActions[menu_view_show_preview]);
+	contextMenu->addAction(viewActions[menu_view_show_scroller]);
 	contextMenu->addAction(viewActions[menu_view_show_exif]);
 	contextMenu->addAction(viewActions[menu_view_show_overview]);
 	contextMenu->addAction(viewActions[menu_view_show_player]);
@@ -789,6 +791,12 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_preview]->setCheckable(true);
 	connect(viewActions[menu_view_show_preview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPreview(bool)));
 
+	viewActions[menu_view_show_scroller] = new QAction(tr("Sho&w Folder Overview"), this);
+	viewActions[menu_view_show_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
+	viewActions[menu_view_show_scroller]->setStatusTip(tr("Show folder scrollbar"));
+	viewActions[menu_view_show_scroller]->setCheckable(true);
+	connect(viewActions[menu_view_show_scroller], SIGNAL(toggled(bool)), vp->getController(), SLOT(showScroller(bool)));
+
 	viewActions[menu_view_show_exif] = new QAction(tr("Show &Metadata"), this);
 	viewActions[menu_view_show_exif]->setShortcut(QKeySequence(shortcut_show_exif));
 	viewActions[menu_view_show_exif]->setStatusTip(tr("shows the metadata panel"));
@@ -1000,6 +1008,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	viewActions[menu_view_show_histogram]->setEnabled(false);
 #endif
 	viewActions[menu_view_show_preview]->setEnabled(enable);
+	viewActions[menu_view_show_scroller]->setEnabled(enable);
 	viewActions[menu_view_show_exif]->setEnabled(enable);
 	viewActions[menu_view_show_overview]->setEnabled(enable);
 	viewActions[menu_view_show_player]->setEnabled(enable);
@@ -2874,6 +2883,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+	vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
 	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 	vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
@@ -2929,6 +2939,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
@@ -3097,6 +3108,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
+		vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
 		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);

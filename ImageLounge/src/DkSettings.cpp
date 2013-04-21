@@ -37,6 +37,7 @@ bool DkSettings::App::showMenuBar = true;
 bool DkSettings::App::showStatusBar = false;
 QBitArray DkSettings::App::showFileInfoLabel = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::App::showFilePreview = QBitArray(DkSettings::mode_end, false);
+QBitArray DkSettings::App::showScroller = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::App::showMetaData = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::App::showPlayer = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);
@@ -172,6 +173,8 @@ void DkSettings::load() {
 	
 	QBitArray tmpShow = settings.value("AppSettings/showFileInfoLabel", DkSettings::App::showFileInfoLabel).toBitArray();
 	if (tmpShow.size() == App::showFileInfoLabel.size())	App::showFileInfoLabel = tmpShow;
+	tmpShow = settings.value("AppSettings/showScroller", DkSettings::App::showScroller).toBitArray();
+	if (tmpShow.size() == App::showScroller.size())	App::showScroller = tmpShow;
 	tmpShow = settings.value("AppSettings/showFilePreview", DkSettings::App::showFilePreview).toBitArray();
 	if (tmpShow.size() == App::showFilePreview.size())	App::showFilePreview = tmpShow;
 	tmpShow = settings.value("AppSettings/showMetaData", DkSettings::App::showMetaData).toBitArray();
@@ -277,6 +280,7 @@ void DkSettings::save() {
 
 	settings.setValue("AppSettings/showFileInfoLabel", App::showFileInfoLabel);
 	settings.setValue("AppSettings/showFilePreview", App::showFilePreview);
+	settings.setValue("AppSettings/showScroller", App::showScroller);
 	settings.setValue("AppSettings/showMetaData", App::showMetaData);
 	settings.setValue("AppSettings/showPlayer", App::showPlayer);
 	settings.setValue("AppSettings/showHistogram", App::showHistogram);
@@ -356,6 +360,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::App::showStatusBar = false;
 	DkSettings::App::showFileInfoLabel = QBitArray(DkSettings::mode_end, true);
 	DkSettings::App::showFilePreview = QBitArray(DkSettings::mode_end, false);
+	DkSettings::App::showScroller = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showMetaData = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showPlayer = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);

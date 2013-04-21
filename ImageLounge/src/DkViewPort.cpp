@@ -44,7 +44,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	// thumbnails, metadata
 	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
-	folderScroll->setVisible(true);
 	metaDataInfo = new DkMetaDataInfo(this);
 	overviewWindow = new DkOverview(this);
 	player = new DkPlayer(this);
@@ -90,6 +89,7 @@ void DkControlWidget::init() {
 	
 	// connect widgets with their settings
 	filePreview->setDisplaySettings(&DkSettings::App::showFilePreview);
+	folderScroll->setDisplaySettings(&DkSettings::App::showScroller);
 	metaDataInfo->setDisplaySettings(&DkSettings::App::showMetaData);
 	fileInfoLabel->setDisplaySettings(&DkSettings::App::showFileInfoLabel);
 	player->setDisplaySettings(&DkSettings::App::showPlayer);
@@ -304,6 +304,7 @@ void DkControlWidget::showWidgetsSettings() {
 
 	if (viewport->getImage().isNull()) {
 		showPreview(false);
+		showScroller(false);
 		showMetaData(false);
 		showFileInfo(false);
 		showPlayer(false);
@@ -314,6 +315,7 @@ void DkControlWidget::showWidgetsSettings() {
 	qDebug() << "current app mode: " << DkSettings::App::currentAppMode;
 
 	showPreview(filePreview->getCurrentDisplaySetting());
+	showScroller(folderScroll->getCurrentDisplaySetting());
 	showMetaData(metaDataInfo->getCurrentDisplaySetting());
 	showFileInfo(fileInfoLabel->getCurrentDisplaySetting());
 	showPlayer(player->getCurrentDisplaySetting());
@@ -329,6 +331,17 @@ void DkControlWidget::showPreview(bool visible) {
 		filePreview->show();
 	else if (!visible && filePreview->isVisible())
 		filePreview->hide();
+}
+
+void DkControlWidget::showScroller(bool visible) {
+
+	if (!folderScroll)
+		return;
+
+	if (visible && !folderScroll->isVisible())
+		folderScroll->show();
+	else if (!visible && folderScroll->isVisible())
+		folderScroll->hide();
 }
 
 void DkControlWidget::showMetaData(bool visible) {

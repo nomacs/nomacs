@@ -638,16 +638,54 @@ public:
 
 	virtual void setValue(int i);
 
+	// DkWidget stuff
+	void registerAction(QAction* action) {
+		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+	};
+
+	void block(bool blocked) {
+		this->blocked = blocked;
+		setVisible(false);
+	};
+
+	void setDisplaySettings(QBitArray* displayBits) {
+		displaySettingsBits = displayBits;
+	};
+
+	bool getCurrentDisplaySetting() {
+
+		if (!displaySettingsBits)
+			return false;
+
+		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+			return false;
+		}
+
+		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+	};
+
 public slots:
 	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
 	void update(const QVector<QColor>& colors, const QVector<int>& indexes);
+
+	// DkWidget
+	virtual void show();
+	virtual void hide();
+	virtual void setVisible(bool visible);
+
+	void animateOpacityUp();
+	void animateOpacityDown();
 
 protected slots:
 	void emitFileSignal(int i);
 
 signals:
 	void changeFileSignal(int idx);
-	
+
+	// DkWidget
+	void visibleSignal(bool visible);
+
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
@@ -662,6 +700,19 @@ protected:
 	QVector<QColor> colors;
 	bool sliding;
 	QLabel* handle;
+	DkWidget* dummyWidget;
+
+	// DkWidget
+	QColor bgCol;
+	bool blocked;
+	bool hiding;
+	bool showing;
+
+	QGraphicsOpacityEffect* opacityEffect;
+	QBitArray* displaySettingsBits;
+
+	void init();
+
 };
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future

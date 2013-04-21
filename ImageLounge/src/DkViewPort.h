@@ -178,7 +178,7 @@ class DllExport DkControlWidget : public QWidget {
 
 public:
 	
-	enum VerPos {top=0, top_scroll, top_info, ver_center, bottom_info, bottom, ver_pos_end};
+	enum VerPos {top_scroll = 0, top, top_info, ver_center, bottom_info, bottom, ver_pos_end};
 	enum HorPos {left= 0, hor_center, right, hor_pos_end};
 
 	enum InfoPos {
@@ -196,6 +196,10 @@ public:
 
 	DkFilePreview* getFilePreview() {
 		return filePreview;
+	}
+
+	DkFolderScrollBar* getScroller() {
+		return folderScroll;
 	}
 
 	DkMetaDataInfo* getMetaDataWidget() {
@@ -233,6 +237,7 @@ public:
 
 public slots:
 	void showPreview(bool visible);
+	void showScroller(bool visible);
 	void showMetaData(bool visible);
 	void showFileInfo(bool visible);
 	void showPlayer(bool visible);

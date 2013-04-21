@@ -99,6 +99,7 @@ class DkSettings : public QObject {
 			static QBitArray showMetaData;
 			static QBitArray showHistogram;
 			static QBitArray showOverview;
+			static QBitArray showScroller;
 			static int appMode;
 			static int currentAppMode;
 			static bool advancedSettings;

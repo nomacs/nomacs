@@ -226,7 +226,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(bgCol);
-	QRect r = this->geometry();
+	QRect r = QRect(QPoint(), this->size());
 	painter.drawRect(r);
 
 	painter.setWorldTransform(worldMatrix);
@@ -757,6 +757,8 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 	QVector<int> dummyIdx;
 	update(dummy, dummyIdx);
  
+	dummyWidget = new DkWidget(this);
+	
 	colorLoader = 0;
 
 	connect(this, SIGNAL(valueChanged(int)), this, SLOT(emitFileSignal(int)));
@@ -768,6 +770,8 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 	handle->setStyleSheet(QString("QLabel{border: 1px solid ")
 		+ DkUtils::colorToString(DkSettings::Display::highlightColor) + 
 		QString("; background-color: ") + DkUtils::colorToString(DkSettings::Display::bgColorWidget) + QString(";}"));
+
+	init();
 }
 
 DkFolderScrollBar::~DkFolderScrollBar() {
@@ -824,7 +828,7 @@ void DkFolderScrollBar::indexDir(int force) {
 					}
 			}
 			
-			handle->setFixedWidth((qRound(1.0f/maximum()*this->width()) < 50) ? 50 : qRound(1.0f/maximum()*this->width()));
+			handle->setFixedWidth((qRound(1.0f/maximum()*this->width()) < 30) ? 30 : qRound(1.0f/maximum()*this->width()));
 
 			this->files = files;
 	}
@@ -860,9 +864,9 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 	setStyleSheet(QString("QScrollBar:horizontal { ") + 
 		QString("border: none;") +
 		QString("background: rgba(0,0,0,0);") +
-		//QString("width: 40px;") +
 		QString("margin: 0px 0px 0px 0px;") +
 		QString("}") +
+		// hide default handle
 		QString("QScrollBar::handle:horizontal {") +
 		QString("background-color: rgba(0,0,0,0); ") +
 		QString("border: none;") + 
@@ -874,10 +878,8 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 		QString("subcontrol-position: bottom;") +
 		QString("subcontrol-origin: margin;") +
 		QString("}") +
+		// hide arrows
 		QString("QScrollBar::sub-line:horizontal {") +
-		//QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0,") +
-		//QString("stop: 0 rgba(183, 210, 192, 255), stop: 0.5 rgba(105, 165, 5, 255), stop:1 rgba(203, 225, 0, 255));") +
-		//QString("height: 20px;") +
 		QString("width: 0px;") +
 		QString("height: 0px;") +
 		QString("}"));
@@ -919,6 +921,113 @@ void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 		setValue((float)event->pos().x()/width()*maximum());
 
 }
+
+// scrollbar - DkWidget functions
+void DkFolderScrollBar::init() {
+
+	setMouseTracking(true);
+
+	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
+		DkSettings::Display::bgColorFrameless :
+	DkSettings::Display::bgColorWidget;
+
+	showing = false;
+	hiding = false;
+	blocked = false;
+	displaySettingsBits = 0;
+	opacityEffect = 0;
+
+	// painter problems if the widget is a child of another that has the same graphicseffect
+	// widget starts on hide
+	opacityEffect = new QGraphicsOpacityEffect(this);
+	opacityEffect->setOpacity(0);
+	opacityEffect->setEnabled(false);
+	setGraphicsEffect(opacityEffect);
+
+	setVisible(false);
+}
+
+void DkFolderScrollBar::show() {
+
+	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
+	if (!blocked && !showing) {
+		hiding = false;
+		showing = true;
+		setVisible(true);
+		animateOpacityUp();
+	}
+}
+
+void DkFolderScrollBar::hide() {
+
+	if (!hiding) {
+		hiding = true;
+		showing = false;
+		animateOpacityDown();
+
+		// set display bit here too -> since the final call to setVisible takes a few seconds
+		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
+			displaySettingsBits->setBit(DkSettings::App::currentAppMode, false);
+		}
+	}
+}
+
+void DkFolderScrollBar::setVisible(bool visible) {
+
+	if (blocked) {
+		QWidget::setVisible(false);
+		return;
+	}
+
+	if (visible)
+		indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
+
+	if (visible && !isVisible() && !showing)
+		opacityEffect->setOpacity(100);
+
+	QWidget::setVisible(visible);
+	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+
+	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::App::currentAppMode, visible);
+	}
+}
+
+void DkFolderScrollBar::animateOpacityUp() {
+
+	if (!showing)
+		return;
+
+	opacityEffect->setEnabled(true);
+	if (opacityEffect->opacity() >= 1.0f || !showing) {
+		opacityEffect->setOpacity(1.0f);
+		showing = false;
+		opacityEffect->setEnabled(false);
+		return;
+	}
+
+	QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
+	opacityEffect->setOpacity(opacityEffect->opacity()+0.05);
+}
+
+void DkFolderScrollBar::animateOpacityDown() {
+
+	if (!hiding)
+		return;
+
+	opacityEffect->setEnabled(true);
+	if (opacityEffect->opacity() <= 0.0f) {
+		opacityEffect->setOpacity(0.0f);
+		hiding = false;
+		setVisible(false);	// finally hide the widget
+		opacityEffect->setEnabled(false);
+		return;
+	}
+
+	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
+	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
+}
+
 
 // DkThumbsSaver --------------------------------------------------------------------
 void DkThumbsSaver::processDir(const QDir& dir, bool forceLoad) {
