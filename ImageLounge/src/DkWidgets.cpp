@@ -754,13 +754,15 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 
 	// apply style
 	QVector<QColor> dummy;
-	update(dummy);
+	QVector<int> dummyIdx;
+	update(dummy, dummyIdx);
  
 	colorLoader = 0;
 
 	connect(this, SIGNAL(valueChanged(int)), this, SLOT(emitFileSignal(int)));
 
 	qRegisterMetaType<QVector<QColor> >("QVector<QColor>");
+	qRegisterMetaType<QVector<int> >("QVector<int>");
 
 	handle = new QLabel(this);
 	handle->setStyleSheet(QString("QLabel{border: 1px solid ")
@@ -815,7 +817,7 @@ void DkFolderScrollBar::indexDir(int force) {
 					if (dir.exists()) {
 
 						colorLoader = new DkColorLoader(dir, files);
-						connect(colorLoader, SIGNAL(updateSignal(const QVector<QColor>&)), this, SLOT(update(const QVector<QColor>&)));
+						connect(colorLoader, SIGNAL(updateSignal(const QVector<QColor>&, const QVector<int>&)), this, SLOT(update(const QVector<QColor>&, const QVector<int>&)));
 
 						colorLoader->start();
 						currentDir = dir;
@@ -835,7 +837,7 @@ void DkFolderScrollBar::indexDir(int force) {
 	blockSignals(false);
 }
 
-void DkFolderScrollBar::update(const QVector<QColor>& colors) {
+void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>& indexes) {
 
 	QString gs = "qlineargradient(x1:0, y1:0, x2:1, y2:0 ";
 	if (colors.empty()) gs += ", stop: 0 " + DkUtils::colorToString(DkSettings::Display::bgColorWidget);
@@ -846,7 +848,7 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors) {
 
 		QColor cCol = colors[idx];
 		//cCol.setAlphaF(0.7);
-		gs += ", stop: " + QString::number((float)idx/maxFiles) + " " + 
+		gs += ", stop: " + QString::number((float)indexes[idx]/files.size()) + " " + 
 			DkUtils::colorToString(cCol); 
 	}
 

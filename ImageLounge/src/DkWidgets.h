@@ -640,7 +640,7 @@ public:
 
 public slots:
 	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
-	void update(const QVector<QColor>& colors);
+	void update(const QVector<QColor>& colors, const QVector<int>& indexes);
 
 protected slots:
 	void emitFileSignal(int i);

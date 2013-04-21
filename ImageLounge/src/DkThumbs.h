@@ -214,14 +214,15 @@ public:
 	void run();
 
 signals:
-	void updateSignal(const QVector<QColor>& cols);
+	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);
 
 protected:
 	void init();
 	void loadThumbs();
-	void loadColor(int idx);
+	void loadColor(int fileIdx);
 
 	QVector<QColor> cols;
+	QVector<int> indexes;
 	QDir dir;
 	QStringList files;
 	bool isActive;

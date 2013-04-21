@@ -507,7 +507,7 @@ void DkColorLoader::run() {
 	int updateIvl = 30;
 
 	// max full HD
-	for (int idx = 0; idx < maxThumbs && idx < files.size(); idx++) {
+	for (int idx = 0; idx <= maxThumbs && idx < files.size(); idx++) {
 
 		//mutex.lock();
 		if (!isActive) {
@@ -519,17 +519,17 @@ void DkColorLoader::run() {
 		loadColor(idx);
 
 		if ((idx % updateIvl) == 0)
-			emit updateSignal(cols);
+			emit updateSignal(cols, indexes);
 	}
 	
 }
 
-void DkColorLoader::loadColor(int idx) {
+void DkColorLoader::loadColor(int fileIdx) {
 
 	if (files.size() > maxThumbs)
-		idx = qRound((float)idx/files.size()*maxThumbs);
+		fileIdx = qRound((float)fileIdx/maxThumbs*(files.size()-1));
 	
-	QFileInfo file(dir, files[idx]);
+	QFileInfo file(dir, files[fileIdx]);
 	
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
@@ -537,30 +537,85 @@ void DkColorLoader::loadColor(int idx) {
 
 	if (!thumb.isNull()) {
 
+		////int r = 0, g = 0, b = 0;
+
+		//int nC = qRound(thumb.depth()/8.0f);
+		//int rStep = qRound(thumb.height()/100.0f)+1;
+		//int cStep = qRound(thumb.width()/100.0f)+1;
+
+		//QVector<int> rHist; rHist.resize(100);
+		//QVector<int> gHist; gHist.resize(100);
+		//QVector<int> bHist; bHist.resize(100);
+
+		//for (int idx = 0; idx < rHist.size(); idx++) {
+		//	rHist[idx] = 0;
+		//	gHist[idx] = 0;
+		//	bHist[idx] = 0;
+		//}
+
+		//int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
+
+		//for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
+
+		//	const unsigned char* pixel = thumb.constScanLine(rIdx);
+
+		//	for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
+
+		//		rHist[qRound(pixel[cIdx+2*offset]/255.0f*rHist.size())]++;
+		//		gHist[qRound(pixel[cIdx+offset]/255.0f*gHist.size())]++;
+		//		bHist[qRound(pixel[cIdx]/255.0f*bHist.size())]++;
+		//	}
+		//}
+
+		//int rMaxVal = 0, gMaxVal = 0, bMaxVal = 0;
+		//int rMaxIdx = 0, gMaxIdx = 0, bMaxIdx = 0;
+
+		//for (int idx = 0; idx < rHist.size(); idx++) {
+
+		//	if (rHist[idx] > rMaxVal) {
+		//		rMaxVal = rHist[idx];
+		//		rMaxIdx = idx;
+		//	}
+		//	if (gHist[idx] > gMaxVal) {
+		//		gMaxVal = gHist[idx];
+		//		gMaxIdx = idx;
+		//	}
+		//	if (bHist[idx] > bMaxVal) {
+		//		bMaxVal = bHist[idx];
+		//		bMaxIdx = idx;
+		//	}
+		//}
+
+		//qDebug() << fileIdx;
+
+		//cols.append(QColor((float)rMaxIdx/rHist.size()*255, (float)gMaxIdx/gHist.size()*255, (float)bMaxIdx/bHist.size()*255));	// TODO: compute most significant color
+		
 		int r = 0, g = 0, b = 0;
 
 		int nC = qRound(thumb.depth()/8.0f);
 		int rStep = qRound(thumb.height()/100.0f)+1;
 		int cStep = qRound(thumb.width()/100.0f)+1;
-		float n = 0;
+		int n = 0;
+
+		int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
 
 		for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
 
 			const unsigned char* pixel = thumb.constScanLine(rIdx);
 
 			for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
-				
-				b += (int)pixel[cIdx];
-				g += (int)pixel[cIdx+1];
-				r += (int)pixel[cIdx+2];
+
+				r += pixel[cIdx+2*offset];
+				g += pixel[cIdx+offset];
+				b += pixel[cIdx];
 				n++;
 			}
 		}
 
-		qDebug() << QColor(r/n, g/n, b/n) << " n: " << n << " r: " << r;
-
-		qDebug() << "color pushed back...";
-		cols.append(QColor(r/n, g/n, b/n));	// TODO: compute most significant color
+		qDebug() << fileIdx;
+		
+		cols.append(QColor((float)r/n, g/n, b/n));	// TODO: compute most significant color
+		indexes.append(fileIdx);
 	}
 		
 
