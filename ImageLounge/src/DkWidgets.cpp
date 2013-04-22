@@ -827,8 +827,8 @@ void DkFolderScrollBar::indexDir(int force) {
 						currentDir = dir;
 					}
 			}
-			
-			handle->setFixedWidth((qRound(1.0f/maximum()*this->width()) < 30) ? 30 : qRound(1.0f/maximum()*this->width()));
+
+			handle->setFixedWidth((qRound(1.0f/files.size()*this->width()) < 30) ? 30 : qRound(1.0f/files.size()*this->width()));
 
 			this->files = files;
 	}
