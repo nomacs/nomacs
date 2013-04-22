@@ -249,7 +249,7 @@ protected:
 			qDebug() << "default path..." << appPaths[defaultApp];
 			return appPaths[defaultApp];
 		}
-		else if (defaultApp-numDefaultApps > 0 && defaultApp-numDefaultApps < userAppPaths.size()) {
+		else if (defaultApp-numDefaultApps >= 0 && defaultApp-numDefaultApps < userAppPaths.size()) {
 			qDebug() << "user app path";
 			return userAppPaths[defaultApp-numDefaultApps];
 		}
