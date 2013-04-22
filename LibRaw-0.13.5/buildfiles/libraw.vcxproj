@@ -103,7 +103,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration />
-      <OutputFile>debug\libraw.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile />
       <SubSystem>NotSet</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -141,7 +141,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <OutputFile>debug\libraw.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
       <SubSystem>NotSet</SubSystem>
@@ -179,7 +179,7 @@
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration />
-      <OutputFile>release\libraw.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile />
       <SubSystem>NotSet</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -218,7 +218,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <OutputFile>release\libraw.dll</OutputFile>
+      <OutputFile>$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
       <SubSystem>NotSet</SubSystem>
