@@ -690,6 +690,7 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
+	void resizeEvent(QResizeEvent *event);
 	
 	void indexDir(int force = DkThumbsLoader::not_forced);
 	

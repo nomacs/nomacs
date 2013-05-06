@@ -885,13 +885,18 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 		QString("}"));
 
 	qDebug() << "updating style...";
+	
+	if (!files.empty())
+		handle->setFixedWidth((qRound(1.0f/files.size()*this->width()) < 30) ? 30 : qRound(1.0f/files.size()*this->width()));
 
 }
 
 void DkFolderScrollBar::setValue(int i) {
 
-	QRect r((float)i/files.size()*this->width()-handle->width()*0.5f, 0, handle->width(), height());
-	handle->setGeometry(r);
+	if (!files.empty()) {
+		QRect r((float)i/files.size()*this->width(), 0, handle->width(), height());
+		handle->setGeometry(r);
+	}
 
 	QScrollBar::setValue(i);
 }
@@ -906,7 +911,7 @@ void DkFolderScrollBar::emitFileSignal(int i) {
 void DkFolderScrollBar::mouseMoveEvent(QMouseEvent *event) {
 
 	if (sliding && event->buttons() == Qt::LeftButton)
-		setValue((float)event->pos().x()/width()*maximum());
+		setValue((float)(event->pos().x()-handle->width()*0.5)/width()*maximum());
 
 }
 
@@ -918,8 +923,18 @@ void DkFolderScrollBar::mousePressEvent(QMouseEvent *event) {
 void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 
 	//if (!sliding)
-		setValue((float)event->pos().x()/width()*maximum());
+		setValue((float)(event->pos().x()-handle->width()*0.5)/width()*maximum());
 
+	// do not propagate these events
+
+}
+
+void DkFolderScrollBar::resizeEvent(QResizeEvent *event) {
+
+	if (handle && !files.empty())
+		handle->setFixedWidth((qRound(1.0f/files.size()*event->size().width()) < 30) ? 30 : qRound(1.0f/files.size()*event->size().width()));
+
+	QScrollBar::resizeEvent(event);
 }
 
 // scrollbar - DkWidget functions
