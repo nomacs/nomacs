@@ -1057,7 +1057,7 @@ void DkNoMacs::moveEvent(QMoveEvent *event) {
 
 void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 
-	if (event->button() != Qt::LeftButton)
+	if (event->button() != Qt::LeftButton || viewport() && viewport()->getImage().isNull())
 		return;
 
 	if (isFullScreen())
@@ -1578,12 +1578,10 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 	}
 	else {
 
-		//this->showNormal();
-		//this->raise();
-		//this->activateWindow();
+		Qt::WindowFlags flags = windowFlags();
+		setWindowFlags(Qt::WindowStaysOnTopHint);	// we need this to 'generally' (for all OSs) bring the window to front
+		setWindowFlags(flags);	// reset flags
 
-		showMinimized();
-		setWindowState(Qt::WindowActive);
 		showNormal();
 
 		oldGeometry = geometry();
