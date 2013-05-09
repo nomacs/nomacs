@@ -457,7 +457,6 @@ public:
 	~DkPlayer() {};
 
 	void draw(QPainter* painter);
-	void setTimeToDisplay(int ms = 1000);
 
 	QVector<QAction*> getActions() {
 		return actions;
@@ -466,36 +465,13 @@ public:
 signals:
 	void nextSignal(bool silent = true);
 	void previousSignal(bool silent = true);
+	void saveImageSignal();
 
 public slots:
-	void play(bool play) {
-		
-		if (play != playing)	// emulate a click
-			playButton->setChecked(play);
 
-		playing = play;
-
-		if (play) {
-			displayTimer->start();
-			hideTimer->start();
-		}
-		else
-			displayTimer->stop();
-	};
-
-	void togglePlay() {
-		
+	void printPressed() {
 		show();
-		playing = !playing;
-		playButton->click();
-	};
-
-	void startTimer() {
-	
-		if (playing) {
-			displayTimer->setInterval(DkSettings::SlideShow::time*1000);	// if it was updated...
-			displayTimer->start();
-		}
+		emit saveImageSignal();
 	};
 
 	void autoNext() {
@@ -516,10 +492,8 @@ public slots:
 protected:
 	void resizeEvent(QResizeEvent *event);
 	void init();
-	bool playing;
 
 	int timeToDisplay;
-	QTimer* displayTimer;
 	QTimer* hideTimer;
 
 	DkButton* previousButton;

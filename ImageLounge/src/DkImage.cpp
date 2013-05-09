@@ -1725,6 +1725,34 @@ void DkImageLoader::saveFile(QFileInfo file, QString fileFilter, QImage saveImg,
 			Q_ARG(int, compression));
 }
 
+void DkImageLoader::copyImageToTemp() {
+
+	QFileInfo tmpPath = QFileInfo(DkSettings::Global::tmpPath + "\\");
+
+	if (!tmpPath.exists()) {
+		// try default path specified
+		tmpPath = QFileInfo("C:\\fotobox\\print\\");
+	}
+	if (!tmpPath.exists()) {
+		emit updateInfoSignal(tr("Sorry, I could not copy the image to: \n%1").arg(tmpPath.absoluteFilePath()));
+		return;
+	}
+
+	QFileInfo destFileInfo(tmpPath.absoluteFilePath(), file.fileName());
+	
+	bool copied = true;
+	
+	if (!destFileInfo.exists()) {
+		QFile cFile(file.absoluteFilePath());
+		copied = cFile.copy(destFileInfo.absoluteFilePath());
+	}
+
+	if (!copied)
+		emit updateInfoSignal(tr("Sorry, I could not copy the image to: \n%1").arg(destFileInfo.absoluteFilePath()));
+	else
+		emit updateInfoSignal(tr("BILD WIRD GEDRUCKT"), 2000);
+}
+
 /**
  * Saves a file in a thread with no status information.
  * @param file the file name/path

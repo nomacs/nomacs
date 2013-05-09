@@ -741,6 +741,7 @@ public slots:
 	void changeFile(int skipIdx, bool silent = false, int force = cache_default);
 	void fileChanged(const QString& path);
 	void directoryChanged(const QString& path = QString());
+	void copyImageToTemp();
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
 	virtual bool loadFile(QFileInfo file, bool silent = false, int cacheState = cache_default);

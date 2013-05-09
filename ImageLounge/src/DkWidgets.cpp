@@ -1958,11 +1958,6 @@ void DkPlayer::init() {
 	// slide show
 	int timeToDisplayPlayer = 3000;
 	timeToDisplay = DkSettings::SlideShow::time*1000;
-	playing = false;
-	displayTimer = new QTimer(this);
-	displayTimer->setInterval(timeToDisplay);
-	displayTimer->setSingleShot(true);
-	connect(displayTimer, SIGNAL(timeout()), this, SLOT(autoNext()));
 
 	hideTimer = new QTimer(this);
 	hideTimer->setInterval(timeToDisplayPlayer);
@@ -1972,7 +1967,7 @@ void DkPlayer::init() {
 	actions.resize(1);
 	actions[play_action] = new QAction(tr("play"), this);
 	actions[play_action]->setShortcut(Qt::Key_Space);
-	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(togglePlay()));
+	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(printPressed()));
 
 	QPixmap icon = QPixmap(":/nomacs/img/player-back.png");
 	previousButton = new DkButton(icon, tr("previous"), this);
@@ -1982,9 +1977,9 @@ void DkPlayer::init() {
 	icon = QPixmap(":/nomacs/img/print.png");
 	playButton = new DkButton(icon, tr("play"), this);
 	playButton->keepAspectRatio = false;
-	playButton->setChecked(false);
+	//playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
-	connect(playButton, SIGNAL(toggled(bool)), this, SLOT(play(bool)));
+	connect(playButton, SIGNAL(pressed()), this, SLOT(printPressed()));
 
 	icon = QPixmap(":/nomacs/img/player-next.png");
 	nextButton = new DkButton(icon, tr("next"), this);
@@ -1999,7 +1994,6 @@ void DkPlayer::init() {
 	layout->addWidget(previousButton);
 	layout->addWidget(playButton);
 	layout->addWidget(nextButton);
-
 
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	setMinimumSize(15, 5);
@@ -2035,12 +2029,6 @@ void DkPlayer::resizeEvent(QResizeEvent *event) {
 	}
 
 	QWidget::resizeEvent(event);
-}
-
-void DkPlayer::setTimeToDisplay(int ms) {
-
-	timeToDisplay = ms;
-	displayTimer->setInterval(ms);
 }
 
 void DkPlayer::show(int ms) {		

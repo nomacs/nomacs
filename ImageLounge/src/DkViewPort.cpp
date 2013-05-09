@@ -259,11 +259,12 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 
-		connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
+		//connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
 
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), folderScroll, SLOT(updateDir(QFileInfo, int)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo)), folderScroll, SLOT(updateDir(QFileInfo)));
-
+		
+		connect(player, SIGNAL(saveImageSignal()), loader, SLOT(copyImageToTemp()));
 	}
 
 	// thumbs widget
@@ -1335,7 +1336,6 @@ void DkViewPort::setImage(QImage newImg) {
 
 	updateImageMatrix();
 
-	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
 	
 	//// TODO: this is a fast fix
@@ -1416,9 +1416,6 @@ void DkViewPort::tcpSendImage() {
 void DkViewPort::fileNotLoaded(QFileInfo file) {
 
 	qDebug() << "starting timer over again...";
-
-	// things todo if a file was not loaded...
-	controller->getPlayer()->startTimer();
 }
 
 QPoint DkViewPort::newCenter(QSize s) {
