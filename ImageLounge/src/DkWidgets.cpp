@@ -1428,29 +1428,44 @@ void DkLabel::setTextToLabel() {
 
 }
 
-DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, text) {
+DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkFadeLabel(parent, text) {
 
 	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless :
 		DkSettings::Display::bgColorWidget;
 
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
-	
+
 	setObjectName("DkLabelBg");
 	updateStyleSheet();
 
 	margin = QPoint(7,2);
 	setMargin(margin);
+	//setFont(QFont("Segoe UI"));
 }
 
-void DkLabelBg::updateStyleSheet() {
+void DkLabelBg::updateStyleSheet(bool isInfo) {
 
-	QLabel::setStyleSheet("QLabel#DkLabelBg{color: " + textCol.name() + "; padding: " + 
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px " +
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px; " +
-		"background-color: " + DkUtils::colorToString(bgCol) + ";}");	// background
+	if (isInfo) {
+		margin.setX(margin.x()+80);
+		margin.setY(margin.y()+5);
+		QLabel::setStyleSheet("QLabel#DkLabelBg{color: " + textCol.name() + "; padding: " + 
+			QString::number(margin.y()) + "px " +
+			QString::number(margin.x()) + "px " +
+			QString::number(margin.y()) + "px " +
+			QString::number(margin.x()) + "px; " +
+			"border-radius: " + QString::number(height()*0.5+margin.y()-1) +"px; font-size: 24px; " +
+			"background-color: " + DkUtils::colorToString(bgCol) + ";}");	// background
+
+	}
+	else {
+		QLabel::setStyleSheet("QLabel#DkLabelBg{color: " + textCol.name() + "; padding: " + 
+			QString::number(margin.y()) + "px " +
+			QString::number(margin.x()) + "px " +
+			QString::number(margin.y()) + "px " +
+			QString::number(margin.x()) + "px; " +
+			"background-color: " + DkUtils::colorToString(bgCol) + ";}");	// background
+	}
 }
 
 // DkGradientLabel --------------------------------------------------------------------

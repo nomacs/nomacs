@@ -1729,12 +1729,12 @@ void DkImageLoader::copyImageToTemp() {
 
 	QFileInfo tmpPath = QFileInfo(DkSettings::Global::tmpPath + "\\");
 
-	if (!tmpPath.exists()) {
+	if (!tmpPath.exists() || !DkSettings::Global::useTmpPath) {
 		// try default path specified
 		tmpPath = QFileInfo("C:\\fotobox\\print\\");
 	}
 	if (!tmpPath.exists()) {
-		emit updateInfoSignal(tr("Sorry, I could not copy the image to: \n%1").arg(tmpPath.absoluteFilePath()));
+		emit updateInfoSignal(tr("Sorry, %1 existiert nicht...").arg(tmpPath.absoluteFilePath()));
 		return;
 	}
 
@@ -1748,7 +1748,7 @@ void DkImageLoader::copyImageToTemp() {
 	}
 
 	if (!copied)
-		emit updateInfoSignal(tr("Sorry, I could not copy the image to: \n%1").arg(destFileInfo.absoluteFilePath()));
+		emit updateInfoSignal(tr("Sorry, das Bild: %1 konnte nicht kopiert werden.").arg(destFileInfo.absoluteFilePath()));
 	else
 		emit updateInfoSignal(tr("BILD WIRD GEDRUCKT"), 2000);
 }

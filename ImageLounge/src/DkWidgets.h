@@ -182,34 +182,6 @@ protected:
 	virtual void updateStyleSheet();
 };
 
-class DkLabelBg : public DkLabel {
-	Q_OBJECT
-
-public:
-	DkLabelBg(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkLabelBg() {};
-
-protected:
-	virtual void updateStyleSheet();
-};
-
-class DkGradientLabel : public DkLabel {
-	Q_OBJECT
-
-public:
-	DkGradientLabel(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkGradientLabel() {};
-
-protected:
-	void init();
-	void drawBackground(QPainter* painter);
-	void updateStyleSheet();
-
-	QImage gradient;
-	QImage end;
-
-};
-
 /**
  * This label fakes the DkWidget behavior.
  * (allows for registering actions + fades in and out)
@@ -271,6 +243,38 @@ protected:
 
 	// functions
 	void init();
+
+};
+
+class DkLabelBg : public DkFadeLabel {
+	Q_OBJECT
+
+public:
+	DkLabelBg(QWidget* parent = 0, const QString& text = QString());
+	virtual ~DkLabelBg() {};
+	virtual void updateStyleSheet(bool isInfo);
+
+protected:
+	virtual void updateStyleSheet() {
+		updateStyleSheet(false);
+	};
+
+};
+
+class DkGradientLabel : public DkLabel {
+	Q_OBJECT
+
+public:
+	DkGradientLabel(QWidget* parent = 0, const QString& text = QString());
+	virtual ~DkGradientLabel() {};
+
+protected:
+	void init();
+	void drawBackground(QPainter* painter);
+	void updateStyleSheet();
+
+	QImage gradient;
+	QImage end;
 
 };
 

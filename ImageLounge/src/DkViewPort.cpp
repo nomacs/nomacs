@@ -61,6 +61,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	// info labels
 	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
 	centerLabel = new DkLabelBg(this, "");
+	centerLabel->updateStyleSheet(true);	// dirty hack
 	bottomLabel = new DkLabelBg(this, "");
 	bottomLeftLabel = new DkLabelBg(this, "");
 
@@ -461,8 +462,10 @@ void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited) {
 
 void DkControlWidget::setInfo(QString msg, int time, int location) {
 
-	if (location == center_label && centerLabel)
+	if (location == center_label && centerLabel) {
+		centerLabel->show();
 		centerLabel->setText(msg, time);
+	}
 	else if (location == bottom_left_label && bottomLabel)
 		bottomLabel->setText(msg, time);
 	else if (location == top_left_label && bottomLeftLabel)

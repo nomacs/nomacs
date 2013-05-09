@@ -84,7 +84,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 
 	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  "<br>"
 #ifdef WITH_OPENCV
-		"RAW support: Yes"
+		"Fotobox"
 #else
 		"RAW support: No"
 #endif  
