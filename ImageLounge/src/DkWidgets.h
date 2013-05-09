@@ -491,6 +491,7 @@ public slots:
 	};
 
 	void startTimer() {
+	
 		if (playing) {
 			displayTimer->setInterval(DkSettings::SlideShow::time*1000);	// if it was updated...
 			displayTimer->start();

@@ -1954,7 +1954,6 @@ DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
 void DkPlayer::init() {
 	
 	setObjectName("DkPlayer");
-	setStyleSheet("QPushButton{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 
 	// slide show
 	int timeToDisplayPlayer = 3000;
