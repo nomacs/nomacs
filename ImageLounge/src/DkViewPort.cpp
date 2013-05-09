@@ -81,7 +81,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	//// debug: show invisible widgets
+	// debug: show invisible widgets
 	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
@@ -148,6 +148,7 @@ void DkControlWidget::init() {
 
 	// center player horizontally
 	QWidget* cP = new QWidget();
+	cP->setMaximumSize(1000, 200);
 	cP->setMouseTracking(true);
 	QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
 	cpLayout->setContentsMargins(0,0,0,0);

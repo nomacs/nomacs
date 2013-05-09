@@ -1634,6 +1634,7 @@ void DkButton::setFixedSize(QSize size) {
 void DkButton::paintEvent(QPaintEvent *event) {
 
  	QPainter painter(this);
+	
 	QPoint offset;
 	QSize s;
 	float opacity = 1.0f;
@@ -1953,6 +1954,7 @@ DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
 void DkPlayer::init() {
 	
 	setObjectName("DkPlayer");
+	setStyleSheet("QPushButton{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 
 	// slide show
 	int timeToDisplayPlayer = 3000;
@@ -1978,9 +1980,8 @@ void DkPlayer::init() {
 	previousButton->keepAspectRatio = false;
 	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
 
-	icon = QPixmap(":/nomacs/img/player-pause.png");
-	QPixmap icon2 = QPixmap(":/nomacs/img/player-play.png");
-	playButton = new DkButton(icon, icon2, tr("play"), this);
+	icon = QPixmap(":/nomacs/img/print.png");
+	playButton = new DkButton(icon, tr("play"), this);
 	playButton->keepAspectRatio = false;
 	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
@@ -1995,13 +1996,15 @@ void DkPlayer::init() {
 	container = new QWidget(this);
 	QHBoxLayout *layout = new QHBoxLayout(container);
 	layout->setContentsMargins(0,0,0,0);
+	layout->setSpacing(0);
 	layout->addWidget(previousButton);
 	layout->addWidget(playButton);
 	layout->addWidget(nextButton);
 
+
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	setMinimumSize(15, 5);
-	setMaximumSize(315, 113);
+	setMaximumSize(304, 118);
 }
 
 void DkPlayer::resizeEvent(QResizeEvent *event) {
