@@ -783,7 +783,7 @@ void DkGlobalSettingsWidget::createLayout() {
 		}
 	}
 
-	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs\">translate nomacs</a>", this);
+	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">translate nomacs</a>", this);
 	translateLabel->setToolTip(tr("if you want to help us and translate nomacs"));
 	QFont font;
 	font.setPointSize(7);
