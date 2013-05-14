@@ -931,8 +931,15 @@ void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkFolderScrollBar::resizeEvent(QResizeEvent *event) {
 
+	// resize accordingly
 	if (handle && !files.empty())
 		handle->setFixedWidth((qRound(1.0f/files.size()*event->size().width()) < 30) ? 30 : qRound(1.0f/files.size()*event->size().width()));
+
+	// reposition
+	if (!files.empty()) {
+		QRect r((float)files.indexOf(currentFile.fileName())/files.size()*this->width(), 0, handle->width(), height());
+		handle->setGeometry(r);
+	}
 
 	QScrollBar::resizeEvent(event);
 }
