@@ -499,7 +499,7 @@ void DkColorLoader::init() {
 		files = DkImageLoader::getFilteredFileList(dir);
 
 	isActive = true;
-	maxThumbs = 1920;
+	maxThumbs = 800;
 }
 
 void DkColorLoader::run() {
@@ -521,6 +521,8 @@ void DkColorLoader::run() {
 		if ((idx % updateIvl) == 0)
 			emit updateSignal(cols, indexes);
 	}
+
+	emit updateSignal(cols, indexes);
 	
 }
 
@@ -670,9 +672,10 @@ QColor DkColorLoader::computeColor(QImage& thumb) {
 		}
 	}
 
-
-	QColor col = QColor((float)qRed(maxCol)/numCols*255, (float)qGreen(maxCol)/numCols*255, (float)qBlue(maxCol)/numCols*255);
-	return (maxColCount > 0) ? col : DkSettings::Display::bgColorWidget;
+	if (maxColCount > 0)
+		return QColor((float)qRed(maxCol)/numCols*255, (float)qGreen(maxCol)/numCols*255, (float)qBlue(maxCol)/numCols*255);
+	else
+		return DkSettings::Display::bgColorWidget;
 }
 
 void DkColorLoader::stop() {

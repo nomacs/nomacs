@@ -702,6 +702,8 @@ protected:
 	bool sliding;
 	QLabel* handle;
 	DkWidget* dummyWidget;
+	int minHandleWidth;
+
 
 	// DkWidget
 	QColor bgCol;

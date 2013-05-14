@@ -213,6 +213,26 @@ public:
 	void stop();
 	void run();
 
+	const QVector<QColor>& getColors() const {
+		return cols;
+	};
+
+	const QVector<int>& getIndexes() const {
+		return indexes;
+	};
+
+	int maxFiles() const {
+		return maxThumbs;
+	};
+
+	QString getFilename(int idx) const {
+
+		if (idx < 0 || idx >= files.size())
+			return QString("");
+
+		return files.at(idx);
+	}
+
 signals:
 	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);
 
