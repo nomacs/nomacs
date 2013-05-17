@@ -2371,12 +2371,9 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 	
 	if (!file.exists())
 		title = "nomacs";
-	else if (edited) {
-		title.append("*");
-        setWindowModified(true);
-    } else if (!edited) {
-        setWindowModified(false);
-    }
+	else
+		setWindowModified(edited);
+	title.append("[*]");
 
 	QString attributes;
 
