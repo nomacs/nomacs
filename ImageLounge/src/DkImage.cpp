@@ -1821,10 +1821,10 @@ void DkImageLoader::updateHistory() {
 	DkSettings::Global::recentFiles.removeDuplicates();
 	DkSettings::Global::recentFolders.removeDuplicates();
 
-	for (int idx = 0; idx < DkSettings::Global::recentFiles.size()-20; idx++)
+	for (int idx = 0; idx < DkSettings::Global::recentFiles.size()-DkSettings::Global::numFiles-10; idx++)
 		DkSettings::Global::recentFiles.pop_back();
 
-	for (int idx = 0; idx < DkSettings::Global::recentFiles.size()-20; idx++)
+	for (int idx = 0; idx < DkSettings::Global::recentFolders.size()-DkSettings::Global::numFiles-10; idx++)
 		DkSettings::Global::recentFolders.pop_back();
 
 
