@@ -909,8 +909,8 @@ void DkNoMacs::createShortcuts() {
 	shortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
 	QObject::connect(shortcuts[sc_next_sync], SIGNAL( activated ()), vp, SLOT( loadNextFileFast() ));
 
-	QObject::connect(this, SIGNAL( fourthButtonPressed()), vp, SLOT( loadNextFileFast() ));
-	QObject::connect(this, SIGNAL( fifthButtonPressed()), vp, SLOT( loadPrevFileFast() ));
+	QObject::connect(this, SIGNAL( fourthButtonPressed()), vp, SLOT( loadPrevFileFast() ));
+	QObject::connect(this, SIGNAL( fifthButtonPressed()), vp, SLOT( loadNextFileFast() ));
 
 	shortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
 	QObject::connect(shortcuts[sc_prev_sync], SIGNAL( activated ()), vp, SLOT( loadPrevFileFast() ));
