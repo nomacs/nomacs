@@ -612,15 +612,18 @@ bool DkBasicLoader::decodeWebP(const QByteArray& buffer) {
 #endif
 
 bool DkBasicLoader::loadPSDFile(QFileInfo fileInfo) {
+
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
-	QPSDHandler psdHandler;
-	psdHandler.setDevice(&file);
-	if (!psdHandler.canRead(&file)) {
-		qDebug() << "can read = false";
-		return false;
-	}
-	return psdHandler.read(&qImg);
+
+	QPsdHandler psdHandler;
+	psdHandler.setDevice(&file);	// QFile is an IODevice
+	psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
+	
+	if (psdHandler.canRead(&file))
+		return psdHandler.read(&this->qImg);
+		
+	return false;
 }
 
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {

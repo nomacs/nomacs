@@ -23,45 +23,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "qpsdplugin.h"
 #include "qpsdhandler.h"
 
-QPSDPlugin::QPSDPlugin(QObject *parent) :
+QPsdPlugin::QPsdPlugin(QObject *parent) :
     QImageIOPlugin(parent)
 {
 }
 
-QPSDPlugin::~QPSDPlugin()
+QPsdPlugin::~QPsdPlugin()
 {
 }
 
-QStringList QPSDPlugin::keys() const
+QStringList QPsdPlugin::keys() const
 {
-    return QStringList() << "psd";//TODO: add PSB (Photoshop Big) support
+    //TODO: test PSB (Photoshop Big) support
+    return QStringList() << "psd" << "psb";
 }
 
-QImageIOPlugin::Capabilities QPSDPlugin::capabilities(
+QImageIOPlugin::Capabilities QPsdPlugin::capabilities(
     QIODevice *device, const QByteArray &format) const
 {
-    if (format == "psd")
+    if (format == "psd" || format == "psb")
         return Capabilities(CanRead);//TODO: add CanWrite support
-    if (!(format.isEmpty() && device->isOpen()))
-        return 0;
 
     Capabilities cap;
-    if (device->isReadable() && QPSDHandler::canRead(device))
+    if (device->isReadable() && QPsdHandler::canRead(device))
         cap |= CanRead;
-    // if (device->isWritable())
-    //     cap |= CanWrite;
     return cap;
 }
 
-QImageIOHandler *QPSDPlugin::create(
+QImageIOHandler *QPsdPlugin::create(
     QIODevice *device, const QByteArray &format) const
 {
-    QImageIOHandler *handler = new QPSDHandler;
+    QImageIOHandler *handler = new QPsdHandler;
     handler->setDevice(device);
     handler->setFormat(format);
     return handler;
 }
 
 #if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(QPSD, QPSDPlugin)
+Q_EXPORT_STATIC_PLUGIN(QPsdPlugin)
+Q_EXPORT_PLUGIN2(QPsd, QPsdPlugin)
 #endif // QT_VERSION < 0x050000
