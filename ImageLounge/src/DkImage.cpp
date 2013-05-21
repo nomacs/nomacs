@@ -127,8 +127,13 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive))) {
 
-		// if image has Indexed8 + alpha channel -> we crash... sorry for that
-		imgLoaded = qImg.load(this->file.absoluteFilePath());
+		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
+		QFile file(this->file.absoluteFilePath());
+		file.open(QIODevice::ReadOnly);
+		imgLoaded = qImg.loadFromData(file.readAll());
+		
+		//// if image has Indexed8 + alpha channel -> we crash... sorry for that
+		//imgLoaded = qImg.load(this->file.absoluteFilePath());
 
 	}  else {
 
