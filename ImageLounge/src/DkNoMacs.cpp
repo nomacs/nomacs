@@ -956,6 +956,9 @@ void DkNoMacs::createShortcuts() {
 	shortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
 	QObject::connect(shortcuts[sc_next_sync], SIGNAL( activated ()), vp, SLOT( loadNextFileFast() ));
 
+	QObject::connect(this, SIGNAL( fourthButtonPressed()), vp, SLOT( loadPrevFileFast() ));
+	QObject::connect(this, SIGNAL( fifthButtonPressed()), vp, SLOT( loadNextFileFast() ));
+
 	shortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
 	QObject::connect(shortcuts[sc_prev_sync], SIGNAL( activated ()), vp, SLOT( loadPrevFileFast() ));
 
@@ -1118,6 +1121,14 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 void DkNoMacs::mousePressEvent(QMouseEvent* event) {
 
 	mousePos = event->pos();
+	if(event->buttons() == Qt::XButton1)
+	  {
+	    emit fourthButtonPressed();
+	  }
+	else if(event->buttons() == Qt::XButton2)
+	  {
+	    emit fifthButtonPressed();
+	  }
 }
 
 void DkNoMacs::mouseReleaseEvent(QMouseEvent *event) {

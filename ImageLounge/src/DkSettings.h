@@ -126,6 +126,7 @@ class DkSettings : public QObject {
 
 		struct Global {
 			static int skipImgs;
+			static int numFiles;
 			static bool loop;
 			static bool scanSubFolders;
 
@@ -426,6 +427,7 @@ Q_OBJECT
 		QPushButton* pbTmpPath;
 		QCheckBox* cbUseTmpPath;
 		DkSpinBoxWidget* skipImgWidget;
+		DkSpinBoxWidget* numberFiles;
 		QCheckBox* cbWrapImages;
 		
 

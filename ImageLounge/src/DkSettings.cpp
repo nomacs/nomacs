@@ -47,6 +47,7 @@ int DkSettings::App::currentAppMode = 0;
 bool DkSettings::App::advancedSettings = false;
 
 int DkSettings::Global::skipImgs = 10;
+int DkSettings::Global::numFiles = 10;
 bool DkSettings::Global::loop = false;
 bool DkSettings::Global::scanSubFolders = false;
 QString DkSettings::Global::lastDir = QString();
@@ -189,6 +190,7 @@ void DkSettings::load() {
 	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
 
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
+	Global::numFiles = settings.value("GlobalSettings/numFiles", DkSettings::Global::numFiles).toInt();
 
 	Global::loop = settings.value("GlobalSettings/loop", DkSettings::Global::loop).toBool();
 	Global::scanSubFolders = settings.value("GlobalSettings/scanSubFolders", DkSettings::Global::scanSubFolders).toBool();
@@ -290,6 +292,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
 
 	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
+	settings.setValue("GlobalSettings/numFiles",Global::numFiles);
 	settings.setValue("GlobalSettings/loop",Global::loop);
 	settings.setValue("GlobalSettings/scanSubFolders",Global::scanSubFolders);
 	settings.setValue("GlobalSettings/lastDir", DkSettings::Global::lastDir);
@@ -375,6 +378,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::App::appMode = 0;
 	
 	DkSettings::Global::skipImgs = 10;
+	DkSettings::Global::numFiles = 10;
 	DkSettings::Global::loop = false;
 	DkSettings::Global::scanSubFolders = true;
 	DkSettings::Global::lastDir = QString();
@@ -994,6 +998,7 @@ void DkFileWidget::init() {
 
 	cbWrapImages->setChecked(DkSettings::Global::loop);
 	skipImgWidget->setSpinBoxValue(DkSettings::Global::skipImgs);
+	numberFiles->setSpinBoxValue(DkSettings::Global::numFiles);
 	cbUseTmpPath->setChecked(DkSettings::Global::useTmpPath);
 	tmpPath = DkSettings::Global::tmpPath;
 	leTmpPath->setText(tmpPath);
@@ -1001,13 +1006,12 @@ void DkFileWidget::init() {
 		leTmpPath->setDisabled(true);
 		pbTmpPath->setDisabled(true);
 	}
-
 	
 	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
 	connect(cbUseTmpPath, SIGNAL(stateChanged(int)), this, SLOT(useTmpPathChanged(int)));
 	connect(leTmpPath, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
 
-		lineEditChanged(tmpPath);
+	lineEditChanged(tmpPath);
 }
 
 void DkFileWidget::createLayout() {
@@ -1037,6 +1041,7 @@ void DkFileWidget::createLayout() {
 
 	
 	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
+	numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
 	QWidget* checkBoxWidget = new QWidget(this);
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	cbWrapImages = new QCheckBox(tr("Wrap Images"));
@@ -1047,6 +1052,7 @@ void DkFileWidget::createLayout() {
 	
 	widgetLayout->addWidget(gbDragDrop);
 	leftLayout->addWidget(skipImgWidget);
+	leftLayout->addWidget(numberFiles);
 	leftLayout->addWidget(cbWrapImages);
 	leftLayout->addStretch();
 	rightLayout->addWidget(pbOpenWith);
@@ -1059,7 +1065,7 @@ void DkFileWidget::createLayout() {
 
 void DkFileWidget::writeSettings() {
 	DkSettings::Global::skipImgs = skipImgWidget->getSpinBoxValue();
-
+	DkSettings::Global::numFiles = numberFiles->getSpinBoxValue();
 	DkSettings::Global::loop = cbWrapImages->isChecked();
 	DkSettings::Global::useTmpPath = cbUseTmpPath->isChecked();
 	DkSettings::Global::tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
