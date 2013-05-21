@@ -2404,7 +2404,7 @@ void DkNoMacs::openFileWith() {
 
 	if (started)
 		qDebug() << "starting: " << DkSettings::Global::defaultAppPath;
-	else {
+	else if (viewport()) {
 		viewport()->getController()->setInfo("Sorry, I could not start: " % DkSettings::Global::defaultAppPath);
 		DkSettings::Global::showDefaultAppDialog = true;
 	}
@@ -2459,9 +2459,10 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 	
 	if (!file.exists())
 		title = "nomacs";
-	else
+	else {
 		setWindowModified(edited);
-	title.append("[*]");
+		title.append("[*]");
+	}
 
 	QString attributes;
 
