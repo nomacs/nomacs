@@ -53,7 +53,7 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.tga *.psd").split(' ');
+QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.tga *.psd *.psb").split(' ');
 
 //// formats we can save
 //QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;")
@@ -121,7 +121,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 
 		imgLoaded = loadWebPFile(this->file);
 
-	} else if (file.suffix().contains(QRegExp("(psd)", Qt::CaseInsensitive))) {
+	} else if (file.suffix().contains(QRegExp("(psd|psb)", Qt::CaseInsensitive))) {
 
 		imgLoaded = loadPSDFile(this->file);
 
@@ -618,7 +618,7 @@ bool DkBasicLoader::loadPSDFile(QFileInfo fileInfo) {
 
 	QPsdHandler psdHandler;
 	psdHandler.setDevice(&file);	// QFile is an IODevice
-	psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
+	//psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
 	
 	if (psdHandler.canRead(&file))
 		return psdHandler.read(&this->qImg);
@@ -1015,7 +1015,9 @@ void DkImageLoader::initFileFilters() {
 	openFilters.append("JPEG Stereo (*.jps)");
 	openFilters.append("PNG Stereo (*.pns)");
 	openFilters.append("Multi Picture Object (*.mpo)");
+	openFilters.append("Targa Image File (*.tga)");
 	openFilters.append("Adobe Photoshop (*.psd)");
+	openFilters.append("Large Document Format (*.psb)");
 	openFilters.append("Rohkost (*.roh)");
 
 }

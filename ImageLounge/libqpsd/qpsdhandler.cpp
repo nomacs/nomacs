@@ -184,13 +184,13 @@ bool QPsdHandler::read(QImage *image)
 
     input >> version; //version should be 1(PSD) or 2(PSB)
     switch (version) {
-    case 1:
-    case 2:
-        break;
-    default: return false;
-        break;
-    }
-
+		case 1: setFormat("psd");
+			break;
+		case 2: setFormat("psb");
+			break;
+		default: return false;
+			break;
+	}
     input.skipRawData(6); //reserved bytes should be 6-byte in size
 
     input >> channels; //Supported range is 1 to 56
