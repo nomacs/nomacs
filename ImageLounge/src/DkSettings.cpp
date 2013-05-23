@@ -954,7 +954,6 @@ void DkDisplaySettingsWidget::createLayout() {
 
 void DkDisplaySettingsWidget::writeSettings() {
 
-	cbSilentFullscreen->setChecked(DkSettings::SlideShow::silentFullscreen);
 	DkSettings::Display::invertZoom = (cbInvertZoom->isChecked()) ? true : false;
 	DkSettings::Display::keepZoom = (cbKeepZoom->isChecked()) ? true : false;
 	
