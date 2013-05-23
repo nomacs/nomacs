@@ -1334,7 +1334,7 @@ void DkResourceSettingsWidgets::init() {
 	
 	totalMemory = DkMemory::getTotalMemory();
 	if (totalMemory <= 0)
-		totalMemory = 512;	// assume at least 512 MB RAM
+		totalMemory = 2048;	// assume at least 2048 MB RAM
 	
 	float curCache = DkSettings::Resources::cacheMemory/totalMemory * stepSize * 100;
 
