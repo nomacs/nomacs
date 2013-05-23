@@ -112,47 +112,58 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 #endif
 	release();
 
-	if (!imgLoaded && (training || newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive)))) {
+	// identify raw images:
+	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
-		imgLoaded = loadRohFile(this->file.absoluteFilePath());
-		if (imgLoaded) loader = roh_loader;
+	DkTimer dt;
 
-	} 
-	if (!imgLoaded && (training || file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive)))) {
-
-		// load hdr here...
-		if (imgLoaded) loader = hdr_loader;
-	} 
-	if (!imgLoaded && (training || file.suffix().contains(QRegExp("(webp)", Qt::CaseInsensitive)))) {
-
-		imgLoaded = loadWebPFile(this->file);
-		if (imgLoaded) loader = webp_loader;
-
-	}
-	if (!imgLoaded && (training || file.suffix().contains(QRegExp("(psd|psb)", Qt::CaseInsensitive)))) {
+	// PSD loader
+	if (!imgLoaded) {
 
 		imgLoaded = loadPSDFile(this->file);
 		if (imgLoaded) loader = psd_loader;
-
 	}
-	if (!imgLoaded && (training || !newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))) {
+	// WEBP loader
+	if (!imgLoaded) {
+
+		imgLoaded = loadWebPFile(this->file);
+		if (imgLoaded) loader = webp_loader;
+	}
+	// RAW loader
+	if (!imgLoaded) {
+
+		qDebug() << "till raw loader: " << QString::fromStdString(dt.getTotal());
+
+		// load raw files
+		imgLoaded = loadRawFile(this->file);
+		if (imgLoaded) loader = raw_loader;
+	}
+
+	// default Qt loader
+	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
 		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
 		QFile file(this->file.absoluteFilePath());
 		file.open(QIODevice::ReadOnly);
 		imgLoaded = qImg.loadFromData(file.readAll());
 		if (imgLoaded) loader = qt_loader;
-		
+
 		//// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		//imgLoaded = qImg.load(this->file.absoluteFilePath());
-
 	}  
-	if (!imgLoaded && (training || newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))) {
 
-		// load raw files
-		imgLoaded = loadRawFile(this->file);
-		if (imgLoaded) loader = raw_loader;
-	}
+	// this loader is a bit buggy -> be carefull
+	if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
+		imgLoaded = loadRohFile(this->file.absoluteFilePath());
+		if (imgLoaded) loader = roh_loader;
+
+	} 
+	//if (!imgLoaded && (training || file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive)))) {
+
+	//	// load hdr here...
+	//	if (imgLoaded) loader = hdr_loader;
+	//} 
+
 
 	// ok, play back the old images
 	if (!imgLoaded) {
@@ -246,7 +257,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		QImage image;
 		int orientation = 0;
 
-		//use iprocessore from libraw to read the data
+		//use iprocessor from libraw to read the data
 		iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
 
 		//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
