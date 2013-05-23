@@ -142,6 +142,8 @@ DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(paren
 
 	this->parent = parent;
 	init();
+	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
+
 }
 
 void DkFilePreview::init() {
@@ -165,7 +167,7 @@ void DkFilePreview::init() {
 
 	winPercent = 0.1f;
 	borderTrigger = (float)width()*winPercent;
-	fileLabel = new DkGradientLabel(this);
+	//fileLabel = new DkGradientLabel(this);
 
 	worldMatrix = QTransform();
 
@@ -214,8 +216,8 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		minHeight = DkSettings::Display::thumbSize + yOffset;
 		setMaximumHeight(minHeight);
 
-		if (fileLabel->height() >= height() && fileLabel->isVisible())
-			fileLabel->hide();
+		//if (fileLabel->height() >= height() && fileLabel->isVisible())
+		//	fileLabel->hide();
 
 	}
 	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
@@ -538,8 +540,9 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 					createSelectedEffect(thumb.getImage(), DkSettings::Display::highlightColor);
 				
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
-					if (fileLabel->height() < height())
-						fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+					//if (fileLabel->height() < height())
+					//	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+					setToolTip(thumbs.at(selected).getFile().fileName());
 				}
 				break;
 			}
@@ -549,8 +552,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 			
 			update();
 		}
-		else if (selected == -1)
-			fileLabel->hide();
+		//else if (selected == -1)
+		//	fileLabel->hide();
 	}
 	else
 		selected = -1;
@@ -634,7 +637,7 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 		moveImageTimer->stop();
 		qDebug() << "stopping timer (leaveEvent)";
 	}
-	fileLabel->hide();
+	//fileLabel->hide();
 	update();
 }
 

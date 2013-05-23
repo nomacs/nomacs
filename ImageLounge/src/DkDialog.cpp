@@ -228,7 +228,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 	}
 
 	if (DkImageLoader::fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
-		userFeedback(tr("*.%1 was already supported.").arg(fileInfo.suffix()), false);
+		userFeedback(tr("*.%1 is already supported.").arg(fileInfo.suffix()), false);
 		imgLoaded = false;
 	}
 	else

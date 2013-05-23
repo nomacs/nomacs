@@ -608,7 +608,7 @@ private:
 	float currentDx;
 	QLabel* wheelButton;
 
-	DkGradientLabel* fileLabel;
+	//DkGradientLabel* fileLabel;
 
 	int selected;
 	float winPercent;
