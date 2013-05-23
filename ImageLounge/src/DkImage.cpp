@@ -1034,7 +1034,7 @@ void DkImageLoader::initFileFilters() {
 	openFilters.append("PNG Stereo (*.pns)");
 	openFilters.append("Multi Picture Object (*.mpo)");
 	openFilters.append("Targa Image File (*.tga)");
-	//openFilters.append("Adobe Photoshop (*.psd)");
+	openFilters.append("Adobe Photoshop (*.psd)");
 	openFilters.append("Large Document Format (*.psb)");
 	openFilters.append("Rohkost (*.roh)");
 
