@@ -641,6 +641,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	connect(zoomTimer, SIGNAL(timeout()), this, SLOT(stopBlockZooming()));
 	connect(&imgStorage, SIGNAL(imageUpdated()), this, SLOT(update()));
 
+	pattern.setTexture(QPixmap(":/nomacs/img/tp-pattern.png"));
+
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
 	if (DkSettings::Display::useDefaultColor) {
@@ -685,6 +687,12 @@ void DkBaseViewPort::fullView() {
 	zoom(1.0f/imgMatrix.m11());
 	changeCursor();
 	
+	update();
+}
+
+void DkBaseViewPort::togglePattern(bool show) {
+
+	DkSettings::Display::tpPattern = show;
 	update();
 }
 
@@ -1040,7 +1048,20 @@ void DkBaseViewPort::draw(QPainter *painter) {
 	}
 
 	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
-	
+
+	if (DkSettings::Display::tpPattern && imgQt.hasAlphaChannel()) {
+
+		// don't scale the pattern...
+		QTransform scaleIv;
+		scaleIv.scale(worldMatrix.m11(), worldMatrix.m22());
+		pattern.setTransform(scaleIv.inverted());
+
+		painter->setPen(QPen(Qt::NoPen));	// no border
+		painter->setBrush(pattern);
+		painter->drawRect(imgViewRect);
+	}
+
+
 	if (!movie || !movie->isValid())
 		painter->drawImage(imgViewRect, imgQt, imgQt.rect());
 	else {

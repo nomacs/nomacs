@@ -108,6 +108,7 @@ class DkSettings : public QObject {
 		struct Display {
 			static bool keepZoom;
 			static bool invertZoom;
+			static bool tpPattern;
 			static QColor highlightColor;
 			static QColor bgColorWidget;
 			static QColor bgColor;

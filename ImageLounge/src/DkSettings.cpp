@@ -88,6 +88,7 @@ QColor DkSettings::Display::bgColorFrameless = QColor(0,0,0,180);
 int DkSettings::Display::thumbSize = 100; // max seems to be 160 (?!)
 bool DkSettings::Display::saveThumb = false;
 bool DkSettings::Display::antiAliasing = true;
+bool DkSettings::Display::tpPattern = false;
 bool DkSettings::Display::smallIcons = true;
 #ifdef Q_WS_WIN
 bool DkSettings::Display::toolbarGradient = true;
@@ -222,6 +223,7 @@ void DkSettings::load() {
 	Display::thumbSize = settings.value("DisplaySettings/thumbSize", DkSettings::Display::thumbSize).toInt();
 	Display::saveThumb = settings.value("DisplaySettings/saveThumb", DkSettings::Display::saveThumb).toBool();
 	Display::antiAliasing = settings.value("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing).toBool();
+	Display::tpPattern = settings.value("DisplaySettings/tpPattern", DkSettings::Display::tpPattern).toBool();
 	Display::smallIcons = settings.value("DisplaySettings/smallIcons", DkSettings::Display::smallIcons).toBool();
 	Display::toolbarGradient = settings.value("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient).toBool();
 	Display::showBorder = settings.value("DisplaySettings/showBorder", DkSettings::Display::showBorder).toBool();
@@ -322,6 +324,7 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/thumbSize", DkSettings::Display::thumbSize);
 	settings.setValue("DisplaySettings/saveThumb", DkSettings::Display::saveThumb);
 	settings.setValue("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing);
+	settings.setValue("DisplaySettings/tpPattern", DkSettings::Display::tpPattern);
 	settings.setValue("DisplaySettings/smallIcons", DkSettings::Display::smallIcons);
 	settings.setValue("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient);
 	settings.setValue("DisplaySettings/showBorder", DkSettings::Display::showBorder);
@@ -418,6 +421,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Display::thumbSize = 100;
 	DkSettings::Display::saveThumb = false;
 	DkSettings::Display::antiAliasing = true;
+	DkSettings::Display::tpPattern = false;
 	DkSettings::Display::smallIcons = true;
 #ifdef Q_WS_WIN
 	DkSettings::Display::toolbarGradient = true;

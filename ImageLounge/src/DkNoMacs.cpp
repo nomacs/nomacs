@@ -483,6 +483,9 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_fit_frame]);
 	viewMenu->addAction(viewActions[menu_view_zoom_in]);
 	viewMenu->addAction(viewActions[menu_view_zoom_out]);
+	viewMenu->addSeparator();
+
+	viewMenu->addAction(viewActions[menu_view_tp_pattern]);
 	viewMenu->addAction(viewActions[menu_view_anti_aliasing]);
 	viewMenu->addSeparator();
 
@@ -771,6 +774,13 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_anti_aliasing]->setCheckable(true);
 	viewActions[menu_view_anti_aliasing]->setChecked(DkSettings::Display::antiAliasing);
 	connect(viewActions[menu_view_anti_aliasing], SIGNAL(toggled(bool)), vp->getImageStorage(), SLOT(antiAliasingChanged(bool)));
+
+	viewActions[menu_view_tp_pattern] = new QAction(tr("&Transparency Pattern"), this);
+	viewActions[menu_view_tp_pattern]->setShortcut(QKeySequence(shortcut_tp_pattern));
+	viewActions[menu_view_tp_pattern]->setStatusTip(tr("if checked, a pattern will be displayed for transparent objects"));
+	viewActions[menu_view_tp_pattern]->setCheckable(true);
+	viewActions[menu_view_tp_pattern]->setChecked(DkSettings::Display::tpPattern);
+	connect(viewActions[menu_view_tp_pattern], SIGNAL(toggled(bool)), vp, SLOT(togglePattern(bool)));
 
 	viewActions[menu_view_show_overview] = new QAction(tr("Show O&verview"), this);
 	viewActions[menu_view_show_overview]->setShortcut(QKeySequence(shortcut_show_overview));

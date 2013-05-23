@@ -368,6 +368,7 @@ signals:
 //#endif
 
 public slots:
+	virtual void togglePattern(bool show);
 	virtual void shiftLeft();
 	virtual void shiftRight();
 	virtual void shiftUp();
@@ -406,6 +407,7 @@ protected:
 	//QMap<int, QImage> imgPyramid;
 	DkImageStorage imgStorage;
 	QMovie* movie;
+	QBrush pattern;
 
 
 	QTransform imgMatrix;
