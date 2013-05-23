@@ -1215,12 +1215,16 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	//	return;
 	//}
 
+	// update dir
+	if (skipIdx == 0 && cacheState == cache_force_load)
+		loadDir(dir, false);
+
 	mutex.lock();
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
 	mutex.unlock();
 
 	// message when reloaded
-	if (loadFile.absoluteFilePath().isEmpty() && skipIdx == 0) {
+	if (loadFile.isFile() && loadFile.absoluteFilePath().isEmpty() && skipIdx == 0) {
 		QString msg = tr("sorry, %1 does not exist anymore...").arg(virtualFile.fileName());
 		if (!silent)
 			updateInfoSignal(msg, 4000);
@@ -2479,7 +2483,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 		fileList = resultList;
 	}
 
-	if (DkSettings::Resources::filterRawImages) {
+	if (DkSettings::Resources::filterDuplicats) {
 
 		QString preferredExtension = DkSettings::Resources::preferredExtension;
 		preferredExtension = preferredExtension.replace("*.", "");

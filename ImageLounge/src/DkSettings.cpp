@@ -160,6 +160,7 @@ bool DkSettings::Sync::syncAbsoluteTransform = true;
 float DkSettings::Resources::cacheMemory = 0;
 bool DkSettings::Resources::fastThumbnailPreview = true;
 bool DkSettings::Resources::filterRawImages = true;
+bool DkSettings::Resources::filterDuplicats = true;
 QString DkSettings::Resources::preferredExtension = "*.jpg";
 
 
@@ -257,6 +258,7 @@ void DkSettings::load() {
 	Resources::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory).toFloat();
 	Resources::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview).toBool();
 	Resources::filterRawImages = settings.value("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages).toBool();	
+	Resources::filterDuplicats = settings.value("ResourceSettings/filterDuplicates", DkSettings::Resources::filterDuplicats).toBool();
 	Resources::preferredExtension = settings.value("ResourceSettings/preferredExtension", DkSettings::Resources::preferredExtension).toString();	
 
 	if (DkSettings::Sync::switchModifier) {
@@ -354,6 +356,7 @@ void DkSettings::save() {
 	settings.setValue("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory);
 	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview);
 	settings.setValue("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages);
+	settings.setValue("ResourceSettings/filterDuplicates", DkSettings::Resources::filterDuplicats);
 	settings.setValue("ResourceSettings/preferredExtension", DkSettings::Resources::preferredExtension);
 
 	qDebug() << "settings saved";
@@ -480,6 +483,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Resources::cacheMemory = 0;
 	DkSettings::Resources::fastThumbnailPreview = true;
 	DkSettings::Resources::filterRawImages = true;
+	DkSettings::Resources::filterDuplicats = true;
 	DkSettings::Resources::preferredExtension = "*.jpg";
 
 	qDebug() << "ok... default settings are set";
@@ -1340,6 +1344,7 @@ void DkResourceSettingsWidgets::init() {
 	this->memorySliderChanged(curCache);
 	cbFastThumbnailPreview->setChecked(DkSettings::Resources::fastThumbnailPreview);
 	cbFilterRawImages->setChecked(DkSettings::Resources::filterRawImages);
+	cbRemoveDuplicates->setChecked(DkSettings::Resources::filterDuplicats);
 }
 
 void DkResourceSettingsWidgets::createLayout() {
@@ -1437,6 +1442,7 @@ void DkResourceSettingsWidgets::writeSettings() {
 	DkSettings::Resources::cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
 	DkSettings::Resources::fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
 	DkSettings::Resources::filterRawImages = cbFilterRawImages->isChecked();
+	DkSettings::Resources::filterDuplicats = cbRemoveDuplicates->isChecked();
 	DkSettings::Resources::preferredExtension = DkImageLoader::fileFilters.at(cmExtensions->currentIndex());
 }
 

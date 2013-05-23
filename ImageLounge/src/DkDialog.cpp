@@ -143,7 +143,6 @@ void DkTrainDialog::createLayout() {
 	QPushButton* openButton = new QPushButton("&Browse");
 	connect(openButton, SIGNAL(pressed()), this, SLOT(openFile()));
 
-
 	// shows the image if it could be loaded
 	viewport = new DkBaseViewPort(this);
 	viewport->setForceFastRendering(true);

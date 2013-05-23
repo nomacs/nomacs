@@ -205,6 +205,7 @@ class DkSettings : public QObject {
 			static float cacheMemory;
 			static bool fastThumbnailPreview;
 			static bool filterRawImages;
+			static bool filterDuplicats;
 			static QString preferredExtension;
 		};
 
