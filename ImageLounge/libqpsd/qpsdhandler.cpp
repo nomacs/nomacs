@@ -37,7 +37,7 @@ const qreal ref_y = 100.00;
 const qreal ref_z = 108.91;
 const qreal e = 216/24389;
 const qreal k = 24389/27;
-const qreal gamma = 563/256; //2.19921875
+const qreal gammaPsd = 563/256; //2.19921875
 
 QRgb aXyzToRgba(quint8 alpha, qreal x, qreal y, qreal z)
 {
@@ -63,9 +63,9 @@ QRgb aXyzToRgba(quint8 alpha, qreal x, qreal y, qreal z)
     qreal var_b = (var_x * 0.0134474) + (var_y * -0.1183897) + (var_z * 1.0154096);
 
     /* gamma companding */
-    int red = pow(var_r, 1/gamma) * 255.0;
-    int green = pow(var_g, 1/gamma) * 255.0;
-    int blue = pow(var_b, 1/gamma) * 255.0;
+    int red = pow(var_r, 1/gammaPsd) * 255.0;
+    int green = pow(var_g, 1/gammaPsd) * 255.0;
+    int blue = pow(var_b, 1/gammaPsd) * 255.0;
 
     /* FIXME: there is a bug: red/green/blue sometimes fall outside the range 0-255
      * bug minimized but not totally solved and color is somewhat different
