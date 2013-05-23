@@ -241,8 +241,9 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	drawThumbs(&painter);
 
-	if (currentFileIdx != oldFileIdx) {
+	if (currentFileIdx != oldFileIdx && currentFileIdx >= 0) {
 		oldFileIdx = currentFileIdx;
+		scrollToCurrentImage = true;
 		moveImageTimer->start(1);
 	}
 }
@@ -456,6 +457,11 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	setMaximumHeight(minHeight);
 
 	resize(parent->width(), event->size().height());
+
+	if (currentFileIdx >= 0) {
+		scrollToCurrentImage = true;
+		moveImageTimer->start(1);
+	}
 
 	// now update...
 	borderTrigger = (float)width()*winPercent;
