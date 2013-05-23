@@ -160,7 +160,7 @@ bool DkSettings::Sync::syncAbsoluteTransform = true;
 float DkSettings::Resources::cacheMemory = 0;
 bool DkSettings::Resources::fastThumbnailPreview = true;
 bool DkSettings::Resources::filterRawImages = true;
-QString DkSettings::Resources::preferredExtension = "";
+QString DkSettings::Resources::preferredExtension = "*.jpg";
 
 
 void DkSettings::load() {
@@ -480,7 +480,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Resources::cacheMemory = 0;
 	DkSettings::Resources::fastThumbnailPreview = true;
 	DkSettings::Resources::filterRawImages = true;
-	DkSettings::Resources::preferredExtension = "";
+	DkSettings::Resources::preferredExtension = "*.jpg";
 
 	qDebug() << "ok... default settings are set";
 
@@ -1403,19 +1403,23 @@ void DkResourceSettingsWidgets::createLayout() {
 	QHBoxLayout* hLayout = new QHBoxLayout(dupWidget);
 	
 	cbRemoveDuplicates = new QCheckBox(tr("Hide Duplicates"));
-	cbRemoveDuplicates->setChecked(!DkSettings::Resources::preferredExtension.isEmpty());
+	cbRemoveDuplicates->setChecked(DkSettings::Resources::filterRawImages);
 	cbRemoveDuplicates->setToolTip(tr("If checked, duplicated images are not shown (e.g. RAW+JPG"));
 
 	QLabel* preferredLabel = new QLabel(tr("Preferred Extension: "));
 
+	QString pExt = DkSettings::Resources::preferredExtension;
+	if (pExt.isEmpty()) pExt = "*.jpg";	// best default
 	cmExtensions = new QComboBox();
 	cmExtensions->addItems(DkImageLoader::fileFilters);
+	cmExtensions->setCurrentIndex(DkImageLoader::fileFilters.indexOf(pExt));
 	
+	qDebug() << "preferred extension: " << pExt;
+
 	hLayout->addWidget(cbRemoveDuplicates);
 	hLayout->addWidget(preferredLabel);
 	hLayout->addWidget(cmExtensions);
 	hLayout->addStretch();
-
 
 	QGridLayout* rawLoaderLayuot = new QGridLayout(gbRawLoader);
 	cbFilterRawImages = new QCheckBox(tr("filter raw images"));
@@ -1433,6 +1437,7 @@ void DkResourceSettingsWidgets::writeSettings() {
 	DkSettings::Resources::cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
 	DkSettings::Resources::fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
 	DkSettings::Resources::filterRawImages = cbFilterRawImages->isChecked();
+	DkSettings::Resources::preferredExtension = DkImageLoader::fileFilters.at(cmExtensions->currentIndex());
 }
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
