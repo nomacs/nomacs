@@ -2466,6 +2466,42 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 		fileList = resultList;
 	}
 
+	if (DkSettings::Resources::filterRawImages) {
+
+		QString preferredExtension = DkSettings::Resources::preferredExtension;
+		preferredExtension = preferredExtension.replace("*.", "");
+		qDebug() << "preferred extension: " << preferredExtension;
+
+		QStringList resultList = fileList;
+		fileList.clear();
+		
+		for (int idx = 0; idx < resultList.size(); idx++) {
+			
+			QFileInfo cFName = QFileInfo(resultList.at(idx));
+
+			if (preferredExtension.compare(cFName.suffix(), Qt::CaseInsensitive) == 0) {
+				fileList.append(resultList.at(idx));
+				continue;
+			}
+
+			QString cFBase = cFName.baseName();
+			bool remove = false;
+
+			for (int cIdx = 0; cIdx < resultList.size(); cIdx++) {
+
+				QString ccBase = QFileInfo(resultList.at(cIdx)).baseName();
+
+				if (cIdx != idx && ccBase == cFBase && resultList.at(cIdx).contains(preferredExtension, Qt::CaseInsensitive)) {
+					remove = true;
+					break;
+				}
+			}
+			
+			if (!remove)
+				fileList.append(resultList.at(idx));
+		}
+	}
+
 	return fileList;
 }
 
