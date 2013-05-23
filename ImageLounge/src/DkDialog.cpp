@@ -100,8 +100,141 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 //	close();
 //}
 
+// file validator --------------------------------------------------------------------
+DkFileValidator::DkFileValidator(QString lastFile, QObject * parent) : QValidator(parent) {
+
+	this->lastFile = lastFile;
+}
+
+void DkFileValidator::fixup(QString& input) const {
+
+	qDebug() << "fixing...";
+
+	if(!QFileInfo(input).exists())
+		input = lastFile;
+}
+
+QValidator::State DkFileValidator::validate(QString& input, int& pos) const {
+
+	qDebug() << "validating: " << input;
+
+	if (QFileInfo(input).exists())
+		return QValidator::Acceptable;
+	else
+		return QValidator::Intermediate;
+}
+
+// train dialog --------------------------------------------------------------------
+DkTrainDialog::DkTrainDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+
+	createLayout();
+	loaderId = 0;
+}
+
+void DkTrainDialog::createLayout() {
+
+	// first row
+	QLabel* newImageLabel = new QLabel(tr("New Image Format"));
+	pathEdit = new QLineEdit();
+	pathEdit->setValidator(&fileValidator);
+	connect(pathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(pathEdit, SIGNAL(editingFinished()), this, SLOT(loadFile()));
+
+	QPushButton* openButton = new QPushButton("&Browse");
+	connect(openButton, SIGNAL(pressed()), this, SLOT(openFile()));
 
 
+	// shows the image if it could be loaded
+	viewport = new DkBaseViewPort(this);
+	viewport->setForceFastRendering(true);
+	viewport->setPanControl(QPointF(0.0f, 0.0f));
+
+	// buttons
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	//buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QWidget* trainWidget = new QWidget();
+	QGridLayout* gdLayout = new QGridLayout(trainWidget);
+	gdLayout->addWidget(newImageLabel, 0, 0);
+	gdLayout->addWidget(pathEdit, 1, 0);
+	gdLayout->addWidget(openButton, 1, 1);
+	gdLayout->addWidget(viewport, 2, 0, 1, 2);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(trainWidget);
+	layout->addWidget(buttons);
+}
+
+void DkTrainDialog::textChanged(QString text) {
+	
+	if (QFileInfo(text).exists())
+		pathEdit->setStyleSheet("color:black");
+	else
+		pathEdit->setStyleSheet("color:red");
+}
+
+void DkTrainDialog::openFile() {
+
+	// load system default open dialog
+	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"),
+		"", tr("All Files (*.*)"));
+
+	if (QFileInfo(filePath).exists()) {
+		pathEdit->setText(filePath);
+		loadFile(filePath);
+	}
+
+}
+
+void DkTrainDialog::loadFile(QString filePath) {
+
+	if (filePath.isEmpty() && !pathEdit->text().isEmpty())
+		filePath = pathEdit->text();
+	else if (filePath.isEmpty())
+		return;
+
+	QFileInfo fileInfo(filePath);
+	if (!fileInfo.exists())
+		return;	// error message?!
+
+	// update validator
+	fileValidator.setLastFile(filePath);
+
+	DkBasicLoader basicLoader;
+	basicLoader.setTraining(true);
+
+	bool imgLoaded = basicLoader.loadGeneral(fileInfo);
+	loaderId = basicLoader.getLoader();
+
+	if (!imgLoaded) {
+		viewport->setImage(QImage());	// remove the image
+		acceptedFile = QFileInfo();
+		// error message!
+		return;
+	}
+
+	viewport->setImage(basicLoader.image());
+	acceptedFile = fileInfo;
+
+	// try loading the file
+	// if loaded !
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(imgLoaded);
+}
+
+void DkTrainDialog::accept() {
+
+	// error
+	if (loaderId == DkBasicLoader::no_loader)
+		return;	
+
+	// TODO: add extension to loaders
+	QDialog::accept();
+}
 
 // tiff dialog --------------------------------------------------------------------
 DkTifDialog::DkTifDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {

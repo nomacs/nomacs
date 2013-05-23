@@ -69,6 +69,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
+	trainDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -436,6 +437,8 @@ void DkNoMacs::createMenu() {
 	fileMenu->addSeparator();
 	//fileMenu->addAction(fileActions[menu_file_share_fb]);
 	//fileMenu->addSeparator();
+	fileMenu->addAction(fileActions[menu_file_train_format]);
+	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_new_instance]);
 	fileMenu->addAction(fileActions[menu_file_exit]);
 
@@ -622,6 +625,10 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
 	fileActions[menu_file_prev]->setStatusTip(tr("Load previous file"));
 	connect(fileActions[menu_file_prev], SIGNAL(triggered()), vp, SLOT(loadPrevFileFast()));
+
+	fileActions[menu_file_train_format] = new QAction(tr("Add Image Format"), this);
+	fileActions[menu_file_train_format]->setStatusTip(tr("Add a new image format to nomacs"));
+	connect(fileActions[menu_file_train_format], SIGNAL(triggered()), this, SLOT(trainFormat()));
 
 	fileActions[menu_file_new_instance] = new QAction(tr("St&art New Instance"), this);
 	fileActions[menu_file_new_instance]->setShortcut(QKeySequence(shortcut_new_instance));
@@ -1855,6 +1862,17 @@ void DkNoMacs::goTo() {
 
 	if (ok)
 		loader->loadFileAt(fileIdx);
+
+}
+
+void DkNoMacs::trainFormat() {
+
+	if (!trainDialog)
+		trainDialog = new DkTrainDialog(this);
+
+	trainDialog->exec();
+
+
 
 }
 

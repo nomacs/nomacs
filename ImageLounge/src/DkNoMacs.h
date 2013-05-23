@@ -198,6 +198,7 @@ enum fileActions {
 	menu_file_reload,
 	menu_file_next,
 	menu_file_prev,
+	menu_file_train_format,
 	menu_file_new_instance,
 	menu_file_exit,
 	//menu_file_share_fb,
@@ -425,6 +426,7 @@ public slots:
 	void find(bool filterAction = true);
 	void updateFilterState(QStringList filters);
 	void saveFile();
+	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
 	void deleteFile();
@@ -562,6 +564,7 @@ protected:
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
 	DkForceThumbDialog* forceDialog;
+	DkTrainDialog* trainDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 

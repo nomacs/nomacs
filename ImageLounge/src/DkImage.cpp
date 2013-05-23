@@ -86,6 +86,8 @@ DkMetaData DkImageLoader::imgMetaData = DkMetaData();
 // Basic loader and image edit class --------------------------------------------------------------------
 DkBasicLoader::DkBasicLoader(int mode) {
 	this->mode = mode;
+	training = false;
+	loader = no_loader;
 }
 
 /**
@@ -110,35 +112,46 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 #endif
 	release();
 
-	if (newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
+	if (!imgLoaded && (training || newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive)))) {
 
 		imgLoaded = loadRohFile(this->file.absoluteFilePath());
+		if (imgLoaded) loader = roh_loader;
 
-	} else if (file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive))) {
+	} 
+	if (!imgLoaded && (training || file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive)))) {
 
 		// load hdr here...
-	} else if (file.suffix().contains(QRegExp("(webp)", Qt::CaseInsensitive))) {
+		if (imgLoaded) loader = hdr_loader;
+	} 
+	if (!imgLoaded && (training || file.suffix().contains(QRegExp("(webp)", Qt::CaseInsensitive)))) {
 
 		imgLoaded = loadWebPFile(this->file);
+		if (imgLoaded) loader = webp_loader;
 
-	} else if (file.suffix().contains(QRegExp("(psd|psb)", Qt::CaseInsensitive))) {
+	}
+	if (!imgLoaded && (training || file.suffix().contains(QRegExp("(psd|psb)", Qt::CaseInsensitive)))) {
 
 		imgLoaded = loadPSDFile(this->file);
+		if (imgLoaded) loader = psd_loader;
 
-	} else if (!newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive))) {
+	}
+	if (!imgLoaded && (training || !newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))) {
 
 		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
 		QFile file(this->file.absoluteFilePath());
 		file.open(QIODevice::ReadOnly);
 		imgLoaded = qImg.loadFromData(file.readAll());
+		if (imgLoaded) loader = qt_loader;
 		
 		//// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		//imgLoaded = qImg.load(this->file.absoluteFilePath());
 
-	}  else {
+	}  
+	if (!imgLoaded && (training || newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))) {
 
 		// load raw files
 		imgLoaded = loadRawFile(this->file);
+		if (imgLoaded) loader = raw_loader;
 	}
 
 	// ok, play back the old images

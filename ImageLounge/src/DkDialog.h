@@ -75,6 +75,49 @@ private:
 
 };
 
+class DkFileValidator : public QValidator {
+	Q_OBJECT
+
+public:
+	DkFileValidator(QString lastFile = "", QObject * parent = 0);
+
+	void setLastFile(QString lastFile) {
+		this->lastFile = lastFile;
+	};
+	virtual void fixup(QString& input) const;
+	virtual State validate(QString& input, int& pos) const;
+
+protected:
+	QString lastFile;
+};
+
+class DkTrainDialog : public QDialog {
+	Q_OBJECT
+	
+public:
+	DkTrainDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	QFileInfo getAcceptedFile() {
+		return acceptedFile;
+	};
+
+public slots:
+	void textChanged(QString text);
+	void loadFile(QString filePath = "");
+	void openFile();
+	void accept();
+
+protected:
+	void createLayout();
+
+	DkFileValidator fileValidator;
+	QDialogButtonBox* buttons;
+	QLineEdit* pathEdit;
+	DkBaseViewPort* viewport;
+	int loaderId;
+	QFileInfo acceptedFile;
+};
+
 class DkTifDialog : public QDialog {
 	Q_OBJECT
 

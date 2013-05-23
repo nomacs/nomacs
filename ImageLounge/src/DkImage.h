@@ -385,6 +385,16 @@ public:
 		mode_end
 	};
 
+	enum loaderID {
+		no_loader = 0,
+		qt_loader,
+		psd_loader,
+		webp_loader,
+		raw_loader,
+		roh_loader,
+		hdr_loader,
+	};
+
 	DkBasicLoader(int mode = mode_default);
 
 	~DkBasicLoader() {
@@ -404,7 +414,19 @@ public:
 
 		this->file = file;
 		qImg = img;
-	}
+	};
+
+	void setTraining(bool training) {
+		training = true;
+	};
+
+	bool getTraining() {
+		return training;
+	};
+
+	int getLoader() {
+		return loader;
+	};
 
 	/**
 	 * Returns the 8-bit image, which is rendered.
@@ -460,6 +482,8 @@ protected:
 	bool loadRohFile(QString fileName);
 	bool loadRawFile(QFileInfo file);
 	
+	int loader;
+	bool training;
 	int mode;
 	QImage qImg;
 	QFileInfo file;
