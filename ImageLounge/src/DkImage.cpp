@@ -53,7 +53,7 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QString("*.png *.jpg *.tif *.bmp *.ppm *.xbm *.xpm *.gif *.pbm *.pgm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.rw2 *.mrw *.arw *.dng *.roh *.jps *.pns *.mpo *.tga *.psd *.psb").split(' ');
+QStringList DkImageLoader::fileFilters = QStringList();
 
 //// formats we can save
 //QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;")
@@ -115,8 +115,6 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	// identify raw images:
 	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
-	DkTimer dt;
-
 	// PSD loader
 	if (!imgLoaded) {
 
@@ -131,8 +129,6 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	}
 	// RAW loader
 	if (!imgLoaded) {
-
-		qDebug() << "till raw loader: " << QString::fromStdString(dt.getTotal());
 
 		// load raw files
 		imgLoaded = loadRawFile(this->file);
@@ -1019,12 +1015,10 @@ void DkImageLoader::initFileFilters() {
 
 	// internal filters
 #ifdef WITH_WEBP
-	fileFilters.append("*.webp");
 	saveFilters.append("WebP (*.webp)");
 #endif
 
 	// formats we can load
-	openFilters.append("Image Files (" + fileFilters.join(" ") + ")");
 	openFilters += saveFilters;
 	openFilters.append("Graphic Interchange Format (*.gif)");
 	openFilters.append("Portable Bitmap (*.pbm)");
@@ -1040,9 +1034,23 @@ void DkImageLoader::initFileFilters() {
 	openFilters.append("PNG Stereo (*.pns)");
 	openFilters.append("Multi Picture Object (*.mpo)");
 	openFilters.append("Targa Image File (*.tga)");
-	openFilters.append("Adobe Photoshop (*.psd)");
+	//openFilters.append("Adobe Photoshop (*.psd)");
 	openFilters.append("Large Document Format (*.psb)");
 	openFilters.append("Rohkost (*.roh)");
+
+	// load user filters
+	QSettings settings;
+	openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
+
+	for (int idx = 0; idx < openFilters.size(); idx++) {
+
+		QString cFilter = openFilters[idx];
+		cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+		cFilter = cFilter.replace(")", "");
+		DkImageLoader::fileFilters += cFilter.split(" ");
+	}
+
+	openFilters.prepend("Image Files (" + fileFilters.join(" ") + ")");
 
 }
 

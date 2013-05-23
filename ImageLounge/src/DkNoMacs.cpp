@@ -1769,7 +1769,6 @@ void DkNoMacs::renameFile() {
 	bool ok;
 	QString filename = QInputDialog::getText(this, file.baseName(), tr("Rename:"), QLineEdit::Normal, file.baseName(), &ok);
 
-
 	if (ok && !filename.isEmpty() && filename != file.baseName()) {
 		
 		if (!file.suffix().isEmpty())
@@ -1867,11 +1866,19 @@ void DkNoMacs::goTo() {
 
 void DkNoMacs::trainFormat() {
 
+	if (!viewport())
+		return;
+
 	if (!trainDialog)
 		trainDialog = new DkTrainDialog(this);
 
-	trainDialog->exec();
+	trainDialog->setCurrentFile(viewport()->getImageLoader()->getFile());
+	bool okPressed = trainDialog->exec();
 
+	if (okPressed) {
+		viewport()->getImageLoader()->loadFile(trainDialog->getAcceptedFile());
+		restart();	// quick & dirty, but currently he messes up the filteredFileList if the same folder was already loaded
+	}
 
 
 }

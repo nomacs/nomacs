@@ -108,15 +108,11 @@ DkFileValidator::DkFileValidator(QString lastFile, QObject * parent) : QValidato
 
 void DkFileValidator::fixup(QString& input) const {
 
-	qDebug() << "fixing...";
-
 	if(!QFileInfo(input).exists())
 		input = lastFile;
 }
 
 QValidator::State DkFileValidator::validate(QString& input, int& pos) const {
-
-	qDebug() << "validating: " << input;
 
 	if (QFileInfo(input).exists())
 		return QValidator::Acceptable;
@@ -127,14 +123,15 @@ QValidator::State DkFileValidator::validate(QString& input, int& pos) const {
 // train dialog --------------------------------------------------------------------
 DkTrainDialog::DkTrainDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
+	setWindowTitle(tr("Add New Image Format"));
 	createLayout();
-	loaderId = 0;
+	setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 }
 
 void DkTrainDialog::createLayout() {
 
 	// first row
-	QLabel* newImageLabel = new QLabel(tr("New Image Format"));
+	QLabel* newImageLabel = new QLabel(tr("Load New Image Format"));
 	pathEdit = new QLineEdit();
 	pathEdit->setValidator(&fileValidator);
 	connect(pathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
@@ -143,6 +140,8 @@ void DkTrainDialog::createLayout() {
 	QPushButton* openButton = new QPushButton("&Browse");
 	connect(openButton, SIGNAL(pressed()), this, SLOT(openFile()));
 
+	feedbackLabel = new QLabel("");
+
 	// shows the image if it could be loaded
 	viewport = new DkBaseViewPort(this);
 	viewport->setForceFastRendering(true);
@@ -150,8 +149,9 @@ void DkTrainDialog::createLayout() {
 
 	// buttons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	//buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Ok)->setDefault(false);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(false);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Add"));
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -162,7 +162,8 @@ void DkTrainDialog::createLayout() {
 	gdLayout->addWidget(newImageLabel, 0, 0);
 	gdLayout->addWidget(pathEdit, 1, 0);
 	gdLayout->addWidget(openButton, 1, 1);
-	gdLayout->addWidget(viewport, 2, 0, 1, 2);
+	gdLayout->addWidget(feedbackLabel, 2, 0, 1, 2);
+	gdLayout->addWidget(viewport, 3, 0, 1, 2);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(trainWidget);
@@ -181,13 +182,23 @@ void DkTrainDialog::openFile() {
 
 	// load system default open dialog
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"),
-		"", tr("All Files (*.*)"));
+		cFile.absolutePath(), tr("All Files (*.*)"));
 
 	if (QFileInfo(filePath).exists()) {
 		pathEdit->setText(filePath);
 		loadFile(filePath);
 	}
 
+}
+
+void DkTrainDialog::userFeedback(const QString& msg, bool error) {
+
+	if (!error)
+		feedbackLabel->setStyleSheet("color:black");
+	else
+		feedbackLabel->setStyleSheet("color:red");
+
+	feedbackLabel->setText(msg);
 }
 
 void DkTrainDialog::loadFile(QString filePath) {
@@ -198,7 +209,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 		return;
 
 	QFileInfo fileInfo(filePath);
-	if (!fileInfo.exists())
+	if (!fileInfo.exists() || acceptedFile.absoluteFilePath() == fileInfo.absoluteFilePath())
 		return;	// error message?!
 
 	// update validator
@@ -208,14 +219,20 @@ void DkTrainDialog::loadFile(QString filePath) {
 	basicLoader.setTraining(true);
 
 	bool imgLoaded = basicLoader.loadGeneral(fileInfo);
-	loaderId = basicLoader.getLoader();
 
 	if (!imgLoaded) {
 		viewport->setImage(QImage());	// remove the image
 		acceptedFile = QFileInfo();
-		// error message!
+		userFeedback(tr("Sorry, currently we don't support: *.%1 files").arg(fileInfo.suffix()), true);
 		return;
 	}
+
+	if (DkImageLoader::fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
+		userFeedback(tr("*.%1 was already supported.").arg(fileInfo.suffix()), false);
+		imgLoaded = false;
+	}
+	else
+		userFeedback(tr("*.%1 is supported.").arg(fileInfo.suffix()), false);
 
 	viewport->setImage(basicLoader.image());
 	acceptedFile = fileInfo;
@@ -227,13 +244,50 @@ void DkTrainDialog::loadFile(QString filePath) {
 
 void DkTrainDialog::accept() {
 
-	// error
-	if (loaderId == DkBasicLoader::no_loader)
-		return;	
+	// add the extension to user filters
+	if (!DkImageLoader::fileFilters.join(" ").contains(acceptedFile.suffix(), Qt::CaseInsensitive)) {
 
-	// TODO: add extension to loaders
+		QString name = QInputDialog::getText(this, "Format Name", tr("Please name the new format:"), QLineEdit::Normal, "Your File Format");
+		QString tag = name + " (*." + acceptedFile.suffix() + ")";
+
+		// load user filters
+		QSettings settings;
+		QStringList userFilters = settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
+		userFilters.append(tag);
+		settings.setValue("ResourceSettings/userFilters", userFilters);
+		DkImageLoader::openFilters.append(tag);
+		DkImageLoader::fileFilters.append("*." + acceptedFile.suffix());
+	}
+
 	QDialog::accept();
 }
+
+void DkTrainDialog::dropEvent(QDropEvent *event) {
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		qDebug() << "dropping: " << url;
+		url = url.toLocalFile();
+
+		pathEdit->setText(url.toString());
+		loadFile();
+	}
+}
+
+void DkTrainDialog::dragEnterEvent(QDragEnterEvent *event) {
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+		QFileInfo file = QFileInfo(url.toString());
+
+		if (file.exists())
+			event->acceptProposedAction();
+	}
+
+}
+
+
 
 // tiff dialog --------------------------------------------------------------------
 DkTifDialog::DkTifDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {

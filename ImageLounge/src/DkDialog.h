@@ -101,6 +101,10 @@ public:
 		return acceptedFile;
 	};
 
+	void setCurrentFile(const QFileInfo& file) {
+		cFile = file;
+	};
+
 public slots:
 	void textChanged(QString text);
 	void loadFile(QString filePath = "");
@@ -108,14 +112,20 @@ public slots:
 	void accept();
 
 protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+
 	void createLayout();
+	void userFeedback(const QString& msg, bool error = false);
 
 	DkFileValidator fileValidator;
 	QDialogButtonBox* buttons;
 	QLineEdit* pathEdit;
+	QLabel* feedbackLabel;
 	DkBaseViewPort* viewport;
-	int loaderId;
+	
 	QFileInfo acceptedFile;
+	QFileInfo cFile;
 };
 
 class DkTifDialog : public QDialog {
