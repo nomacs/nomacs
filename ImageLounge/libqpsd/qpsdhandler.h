@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include <QImage>
 #include <QColor>
 #include <QVariant>
-#include <math.h>
+#include <qmath.h>
 
 class QPsdHandler : public QImageIOHandler
 {

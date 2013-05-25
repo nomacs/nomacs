@@ -34,7 +34,6 @@ QPsdPlugin::~QPsdPlugin()
 
 QStringList QPsdPlugin::keys() const
 {
-    //TODO: test PSB (Photoshop Big) support
     return QStringList() << "psd" << "psb";
 }
 
@@ -43,6 +42,9 @@ QImageIOPlugin::Capabilities QPsdPlugin::capabilities(
 {
     if (format == "psd" || format == "psb")
         return Capabilities(CanRead);//TODO: add CanWrite support
+
+    if (!(format.isEmpty() && device->isOpen()))
+        return 0;
 
     Capabilities cap;
     if (device->isReadable() && QPsdHandler::canRead(device))

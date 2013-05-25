@@ -148,7 +148,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 		//imgLoaded = qImg.load(this->file.absoluteFilePath());
 	}  
 
-	// this loader is a bit buggy -> be carefull
+	// this loader is a bit bugy -> be carefull
 	if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 		imgLoaded = loadRohFile(this->file.absoluteFilePath());
 		if (imgLoaded) loader = roh_loader;

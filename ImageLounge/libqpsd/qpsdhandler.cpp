@@ -32,14 +32,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * D50 0.9642, 1.000, 0.8249
  */
 
-const qreal ref_x = 96.05;
+const qreal ref_x = 95.05; //96.05;
 const qreal ref_y = 100.00;
-const qreal ref_z = 108.91;
+const qreal ref_z = 82.49; //108.91;
 const qreal e = 216/24389;
 const qreal k = 24389/27;
 const qreal gammaPsd = 563/256; //2.19921875
 
-QRgb aXyzToRgba(quint8 alpha, qreal x, qreal y, qreal z)
+//FIXME: processing becomes very slow
+QRgb XyzaToRgba(qreal x, qreal y, qreal z, quint8 alpha)
 {
     qreal var_x = x / 100.0;
     qreal var_y = y / 100.0;
@@ -57,15 +58,20 @@ QRgb aXyzToRgba(quint8 alpha, qreal x, qreal y, qreal z)
         -0.9787684  1.9161415  0.0334540
          0.0286869 -0.1406752  1.3487655
     */
+    /* D65 */
+    //qreal var_r = (var_x * 2.0413690) + (var_y * -0.5649464) + (var_z * -0.3446944);
+    //qreal var_g = (var_x * -0.9692660) + (var_y * 1.8760108) + (var_z * 0.0415560);
+    //qreal var_b = (var_x * 0.0134474) + (var_y * -0.1183897) + (var_z * 1.0154096);
 
-    qreal var_r = (var_x * 2.0413690) + (var_y * -0.5649464) + (var_z * -0.3446944);
-    qreal var_g = (var_x * -0.9692660) + (var_y * 1.8760108) + (var_z * 0.0415560);
-    qreal var_b = (var_x * 0.0134474) + (var_y * -0.1183897) + (var_z * 1.0154096);
+    /* D50 */
+    qreal var_r = (var_x * 1.9624274) + (var_y * -0.6105343) + (var_z * -0.3413404);
+    qreal var_g = (var_x * -0.9787684) + (var_y * 1.9161415) + (var_z * 0.0334540);
+    qreal var_b = (var_x * 0.0286869) + (var_y * -0.1406752) + (var_z * 1.3487655);
 
     /* gamma companding */
-    int red = pow(var_r, 1/gammaPsd) * 255.0;
-    int green = pow(var_g, 1/gammaPsd) * 255.0;
-    int blue = pow(var_b, 1/gammaPsd) * 255.0;
+    int red = qPow(var_r, 1/gammaPsd) * 255.0;
+    int green = qPow(var_g, 1/gammaPsd) * 255.0;
+    int blue = qPow(var_b, 1/gammaPsd) * 255.0;
 
     /* FIXME: there is a bug: red/green/blue sometimes fall outside the range 0-255
      * bug minimized but not totally solved and color is somewhat different
@@ -75,22 +81,10 @@ QRgb aXyzToRgba(quint8 alpha, qreal x, qreal y, qreal z)
     green = (green < 0)?0:((green > 255)?255:green);
     blue = (blue < 0)?0:((blue > 255)?255:blue);
 
-    /* FIXME: (for Lab color space with alpha channel)
-     * I used photoshop to check if the image is viewed correctly
-     * and found out that it is transparent at value = 255 so I assumed
-     * they inverted it but there are still differences, the algorithm is
-     * very closed and there might some kind of computation they used for
-     * the alpha and I cannot find any documentation on it */
-    alpha = 255 - alpha;
     return qRgba(red, green, blue, alpha);
 }
 
-QRgb XyzToRgb(qreal x, qreal y, qreal z)
-{
-    return aXyzToRgba(0, x, y, z);
-}
-
-QRgb aLabToRgb(quint8 alpha, qint32 L, qint32 a, qint32 b)
+QRgb LabaToRgb(qint32 L, qint32 a, qint32 b, quint8 alpha)
 {
     /* ranges:
      * L* = 0 to 100
@@ -102,7 +96,7 @@ QRgb aLabToRgb(quint8 alpha, qint32 L, qint32 a, qint32 b)
     L = L / 2.55;
     a -= 128;
     b -= 128;
-    qreal x, y, z, var_y, var_x, var_z;
+    qreal var_y, var_x, var_z;
     qreal fy = ( L + 16.0 ) / 116.0;
     qreal fx = (a / 500.0) + fy;
     qreal fz = fy - (b / 200.0);
@@ -122,16 +116,18 @@ QRgb aLabToRgb(quint8 alpha, qint32 L, qint32 a, qint32 b)
     else
         var_z = ( (116.0*fz) - 16.0 ) / k;
 
+    /*
     x = ref_x * var_x;
     y = ref_y * var_y;
     z = ref_z * var_z;
+    */
 
-    return aXyzToRgba(alpha, x, y, z);
+    return XyzaToRgba(ref_x * var_x, ref_y * var_y, ref_z * var_z, alpha);
 }
 
 QRgb LabToRgb(qint32 L, qint32 a, qint32 b)
 {
-    return aLabToRgb(255, L, a, b);
+    return LabaToRgb(L, a, b, 255);
 }
 
 QPsdHandler::QPsdHandler()
@@ -184,16 +180,25 @@ bool QPsdHandler::read(QImage *image)
 
     input >> version; //version should be 1(PSD) or 2(PSB)
     switch (version) {
-		case 1: setFormat("psd");
-			break;
-		case 2: setFormat("psb");
-			break;
-		default: return false;
-			break;
-	}
+    case 1:
+        //check if format is empty or it is not psd
+        if (format().isEmpty() || format() != "psd")
+            setFormat("psd");
+        break;
+    case 2:
+        //check if format is empty or it is not psb
+        if (format().isEmpty() || format() != "psb")
+            setFormat("psb");
+        break;
+    default: return false;
+        break;
+    }
+
     input.skipRawData(6); //reserved bytes should be 6-byte in size
 
     input >> channels; //Supported range is 1 to 56
+    //found a sample file with channels > 56 and Photoshop can still read it
+    //though the documentation says it should be within 1 to 56 channels
     if (channels < 1 || channels > 56)
         return false;
 
@@ -367,11 +372,12 @@ bool QPsdHandler::read(QImage *image)
 
     int totalBytes = width * height;
 
-    /* this section was made for verification
+    /* NOTE: this section was made for verification
      * for developers use ONLY */
     /*
     qDebug() << endl
-             <<"color mode: " << colorMode
+             << "format: " << format()
+             << "\ncolor mode: " << colorMode
              << "\ndepth: " << depth
              << "\nchannels: " << channels
              << "\ncompression: " << compression
@@ -554,6 +560,8 @@ bool QPsdHandler::read(QImage *image)
             }
             break;
         case 16:
+        {
+            const qreal scale = (qPow(2, 8) -1 ) / (qPow(2, 16) - 1);
             switch (channels) {
             case 3:
             {
@@ -567,26 +575,13 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        /* FIXME: find a cleaner, shorter method if possible
-                         * steps:
-                         * get high byte then left shift by 8 bits (color16 = *byte << 8)
-                         * move pointers (++byte)
-                         * get low byte then add it to high byte (color16 += *byte)
-                         * convert 16-bit depth color to 8-bit depth color
-                         *            by scaling it (color16 * 255 / 65535)
-                         * move pointers (++byte)
-                         */
-                        red16 = *red8 << 8;
-                        green16 = *green8 << 8;
-                        blue16 = *blue8 << 8;
-                        ++red8; ++green8; ++blue8;
-                        red16 += *red8;
-                        green16 += *green8;
-                        blue16 += *blue8;
-                        *p = qRgb(quint8(red16 * 255 / 65535),
-                                   quint8(green16 * 255 / 65535),
-                                   quint8(blue16 * 255 / 65535));
-                        ++p; ++red8; ++green8; ++blue8;
+                        red16 = (*red8 << 8) + *(red8 + 1);
+                        green16 = (*green8 << 8) + *(green8 + 1);
+                        blue16 = (*blue8 << 8) + *(blue8 + 1);
+                        *p = qRgb(quint8(red16 * scale),
+                                   quint8(green16 * scale),
+                                   quint8(blue16 * scale));
+                        ++p;  red8 += 2; green8 += 2; blue8 += 2;
                     }
                 }
                     *image = result;
@@ -605,29 +600,15 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        /* FIXME: find a cleaner, shorter method if possible
-                         * steps:
-                         * get high byte then left shift by 8 bits (color16 = *byte << 8)
-                         * move pointers (++byte)
-                         * get low byte then add it to high byte (color16 += *byte)
-                         * convert 16-bit depth color to 8-bit depth color
-                         *            by scaling it (color16 * 255 / 65535)
-                         * move pointers (++byte)
-                         */
-                        red16 = *red8 << 8;
-                        green16 = *green8 << 8;
-                        blue16 = *blue8 << 8;
-                        alpha16 = *alpha8 << 8;
-                        ++red8; ++green8; ++blue8; ++alpha8;
-                        red16 += *red8;
-                        green16 += *green8;
-                        blue16 += *blue8;
-                        alpha16 += *alpha8;
-                        *p = qRgba(quint8(red16 * 255 / 65535),
-                                   quint8(green16 * 255 / 65535),
-                                   quint8(blue16 * 255 / 65535),
-                                   quint8(alpha16 * 255 / 65535));
-                        ++p; ++red8; ++green8; ++blue8; ++alpha8;
+                        red16 = (*red8 << 8) + *(red8 + 1);
+                        green16 = (*green8 << 8) + *(green8 + 1);
+                        blue16 = (*blue8 << 8) + *(blue8 + 1);
+                        alpha16 = (*alpha8 << 8) + *(alpha8 + 1);
+                        *p = qRgba(quint8(red16 * scale),
+                                   quint8(green16 * scale),
+                                   quint8(blue16 * scale),
+                                   quint8(alpha16 * scale));
+                        ++p;  red8 += 2; green8 += 2; blue8 += 2; alpha8 += 2;
                     }
                 }
 
@@ -638,16 +619,17 @@ bool QPsdHandler::read(QImage *image)
                 return false;
                 break;
             }
+        }
             break;
-        /* Removed temporarily... incorrect
+        //32-bit support still under testing
         case 32:
+        {
+            const qreal scale = (qPow(2, 8) -1 ) / (qPow(2, 32) - 1);
             switch (channels) {
             case 3:
             {
                 QImage result(width, height, QImage::Format_RGB32);
-                quint32 red32 = 0;
-                quint32 blue32 = 0;
-                quint32 green32 = 0;
+                quint32 red32, blue32, green32;
                 quint8 *red8 = (quint8*)imageData.constData();
                 quint8 *green8 = red8 + totalBytes * 4;
                 quint8 *blue8 = green8 + totalBytes * 4;
@@ -656,19 +638,14 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        for (int i = 0; i < 3; ++i) {
-                            red32 += *red8;
-                            green32 += *green8;
-                            blue32 += *blue8;
-                            red32 <<= 8;
-                            green32 <<= 8;
-                            blue32 <<= 8;
-                            ++red8; ++green8; ++blue8;
-                        }
-                        *p = qRgb(quint8(red32 * 255 / 4294967295),
-                                  quint8(green32 * 255 / 4294967295),
-                                  quint8(blue32 * 255 / 4294967295));
-                        ++p;
+                        //still have doubt about the arrangements of bytes composing the quint32's
+                        red32 = (*red8 << 24) + (*(red8 + 1) << 16) + (*(red8 + 2) << 8) + *(red8 + 3);
+                        green32 = (*green8 << 24) + (*(green8 + 1) << 16) + (*(green8 + 2) << 8) + *(green8 + 3);
+                        blue32 = (*blue8 << 24) + (*(blue8 + 1) << 16) + (*(blue8 + 2) << 8) + *(blue8 + 3);
+                        *p = qRgb(quint8(red32 * scale),
+                                   quint8(green32 * scale),
+                                   quint8(blue32 * scale));
+                        ++p;  red8 += 4; green8 += 4; blue8 += 4;
                     }
                 }
                     *image = result;
@@ -677,46 +654,37 @@ bool QPsdHandler::read(QImage *image)
             case 4:
             {
                 QImage result(width, height, QImage::Format_ARGB32);
-                quint32 red32 = 0;
-                quint32 blue32 = 0;
-                quint32 green32 = 0;
-                quint32 alpha32 = 0;
+                quint32 red32, blue32, green32, alpha32;
                 quint8 *red8 = (quint8*)imageData.constData();
                 quint8 *green8 = red8 + totalBytes * 4;
                 quint8 *blue8 = green8 + totalBytes * 4;
-                quint8 *alpha8 = blue8 + totalBytes * 4;
+                quint8 *alpha8 = blue8 + totalBytes * 2;
                 QRgb  *p, *end;
                 for (quint32 y = 0; y < height; ++y) {
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        //4,294,967,295
-                        for (int i = 0; i < 3; ++i) {
-                            red32 += *red8;
-                            green32 += *green8;
-                            blue32 += *blue8;
-                            alpha32 += *alpha8;
-                            red32 <<= 8;
-                            green32 <<= 8;
-                            blue32 <<= 8;
-                            alpha32 <<= 8;
-                            ++red8; ++green8; ++blue8; ++alpha8;
-                        }
-                        *p = qRgba(quint8(red32 * 255 / 4294967295),
-                                   quint8(green32 * 255 / 4294967295),
-                                   quint8(blue32 * 255 / 4294967295),
-                                   quint8(alpha32 * 255 / 4294967295));
-                        ++p;
+                        red32 = (*red8 << 24) + (*(red8 + 1) << 16) + (*(red8 + 2) << 8) + *(red8 + 3);
+                        green32 = (*green8 << 24) + (*(green8 + 1) << 16) + (*(green8 + 2) << 8) + *(green8 + 3);
+                        blue32 = (*blue8 << 24) + (*(blue8 + 1) << 16) + (*(blue8 + 2) << 8) + *(blue8 + 1);
+                        alpha32 = (*alpha8 << 24) + (*(alpha8 + 1) << 16) + (*(alpha8 + 2) << 8) + *(alpha8 + 3);
+                        *p = qRgba(quint8(red32 * scale),
+                                   quint8(green32 * scale),
+                                   quint8(blue32 * scale),
+                                   quint8(alpha32 * scale));
+                        ++p;  red8 += 4; green8 += 4; blue8 += 4; alpha8 += 4;
                     }
                 }
-                    *image = result;
+
+                *image = result;
             }
                 break;
             default:
                 return false;
                 break;
             }
-            break;*/
+        }
+            break;
         default:
             break;
         }
@@ -724,7 +692,7 @@ bool QPsdHandler::read(QImage *image)
         break;
     case 4: /*CMYK*/
     {
-        if (imageData.size() != channels * totalBytes)
+        if (imageData.size() != channels * totalBytes * (depth/8))
             return false;
 
         switch (depth) {
@@ -742,8 +710,8 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        *p = QColor::fromCmyk(255-*cyan, 255-*magenta,
-                                              255-*yellow, 255-*key).rgb();
+                        *p = QColor::fromCmyk(255 - *cyan, 255 - *magenta,
+                                              255 - *yellow, 255 - *key).rgb();
                         ++p; ++cyan; ++magenta; ++yellow; ++key;
                     }
                 }
@@ -763,8 +731,8 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        *p = QColor::fromCmyk(255-*cyan, 255-*magenta,
-                                              255-*yellow, 255-*key,
+                        *p = QColor::fromCmyk(255 - *cyan, 255 - *magenta,
+                                              255 - *yellow, 255 - *key,
                                               *alpha).rgba();
                         ++p; ++alpha; ++cyan; ++magenta; ++yellow; ++key;
                     }
@@ -777,13 +745,80 @@ bool QPsdHandler::read(QImage *image)
                 break;
             }
             break;
+        case 16:
+        {
+            const qreal scale = (qPow(2, 8) -1 ) / (qPow(2, 16) - 1);
+            switch (channels) {
+            case 4:
+            {
+                QImage result(width, height, QImage::Format_RGB32);
+                quint16 cyan16, magenta16, yellow16, key16;
+                quint8 *cyan8 = (quint8*)imageData.constData();
+                quint8 *magenta8 = cyan8 + totalBytes * 2;
+                quint8 *yellow8 = magenta8 + totalBytes * 2;
+                quint8 *key8 = yellow8 + totalBytes * 2;
+                QRgb  *p, *end;
+                for (quint32 y = 0; y < height; ++y) {
+                    p = (QRgb *)result.scanLine(y);
+                    end = p + width;
+                    while (p < end) {
+                        cyan16 = (*cyan8 << 8) + *(cyan8 + 1);
+                        magenta16 = (*magenta8 << 8) + *(magenta8 + 1);
+                        yellow16 = (*yellow8 << 8) + *(yellow8 + 1);
+                        key16 = (*key8 << 8) + *(key8 + 1);
+                        *p = QColor::fromCmyk(255 - quint8(cyan16 * scale),
+                                              255 - quint8(magenta16 * scale),
+                                              255 - quint8(yellow16 * scale),
+                                              255 - quint8(key16 * scale)).rgb();
+                        ++p;  cyan8 += 2; magenta8 += 2; yellow8 += 2; key8 += 2;
+                    }
+                }
+                    *image = result;
+            }
+                break;
+            case 5:
+            {
+                QImage result(width, height, QImage::Format_ARGB32);
+                quint16 cyan16, magenta16, yellow16, key16, alpha16;
+                quint8 *cyan8 = (quint8*)imageData.constData();
+                quint8 *magenta8 = cyan8 + totalBytes * 2;
+                quint8 *yellow8 = magenta8 + totalBytes * 2;
+                quint8 *key8 = yellow8 + totalBytes * 2;
+                quint8 *alpha8 = key8 + totalBytes * 2;
+                QRgb  *p, *end;
+                for (quint32 y = 0; y < height; ++y) {
+                    p = (QRgb *)result.scanLine(y);
+                    end = p + width;
+                    while (p < end) {
+                        cyan16 = (*cyan8 << 8) + *(cyan8 + 1);
+                        magenta16 = (*magenta8 << 8) + *(magenta8 + 1);
+                        yellow16 = (*yellow8 << 8) + *(yellow8 + 1);
+                        key16 = (*key8 << 8) + *(key8 + 1);
+                        alpha16 = (*alpha8 << 8) + *(alpha8 + 1);
+                        *p = QColor::fromCmyk(255 - quint8(cyan16 * scale),
+                                              255 - quint8(magenta16 * scale),
+                                              255 - quint8(yellow16 * scale),
+                                              255 - quint8(key16 * scale),
+                                              255 - quint8(alpha16 * scale)).rgb();
+                        ++p;  cyan8 += 2; magenta8 += 2; yellow8 += 2; key8 += 2, alpha8 += 2;
+                    }
+                }
+                    *image = result;
+            }
+                break;
+            default:
+                return false;
+                break;
+            }
+        }
+            break;
         default:
             return false;
             break;
         }
     }
         break;
-    case 7: /*MULTICHANNEL - UNDER TESTING*/
+    case 7: /*MULTICHANNEL*/
     {
         if (imageData.size() != channels * totalBytes)
             return false;
@@ -806,8 +841,8 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        *p = QColor::fromCmyk(255-*cyan, 255-*magenta,
-                                              255-*yellow, 0).rgb();
+                        *p = QColor::fromCmyk(255 - *cyan, 255 - *magenta,
+                                              255 - *yellow, 0).rgb();
                         ++p; ++cyan; ++magenta; ++yellow;;
                     }
                 }
@@ -826,8 +861,8 @@ bool QPsdHandler::read(QImage *image)
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        *p = QColor::fromCmyk(255-*cyan, 255-*magenta,
-                                              255-*yellow, 255-*key).rgb();
+                        *p = QColor::fromCmyk(255 - *cyan, 255 - *magenta,
+                                              255 - *yellow, 255 - *key).rgb();
                         ++p; ++cyan; ++magenta; ++yellow; ++key;
                     }
                 }
@@ -896,8 +931,6 @@ bool QPsdHandler::read(QImage *image)
         if (imageData.size() != channels * totalBytes)
             return false;
 
-        /* FIXME: computation from Lab color mode to RGB has some minor bug
-         * which results to pixels different from the correct conversion */
         switch (depth) {
         case 8:
             switch (channels) {
@@ -923,17 +956,17 @@ bool QPsdHandler::read(QImage *image)
             case 4:
             {
                 QImage result(width, height, QImage::Format_ARGB32);
-                quint8 *alpha = (quint8*)imageData.constData();
-                quint8 *L = alpha + totalBytes;
+                quint8 *L = (quint8*)imageData.constData();
                 quint8 *a = L + totalBytes;
                 quint8 *b = a + totalBytes;
+                quint8 *alpha = b + totalBytes;
 
                 QRgb  *p, *end;
                 for (quint32 y = 0; y < height; ++y) {
                     p = (QRgb *)result.scanLine(y);
                     end = p + width;
                     while (p < end) {
-                        *p = aLabToRgb(*alpha, *L, *a, *b);
+                        *p = LabaToRgb(*L, *a, *b, *alpha);
                         ++p; ++alpha; ++L; ++a; ++b;
                     }
 
