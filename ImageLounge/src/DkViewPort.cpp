@@ -1645,13 +1645,15 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 		
 		DkPeer cp = peers.at(idx);
 
-		if (cp.getSynchronized() && newPeers.isEmpty()) {
+		if (cp.isSynchronized() && newPeers.isEmpty()) {
 			newPeers = tr("connected with: ");
-			emit newClientConnectedSignal();
+			emit newClientConnectedSignal(true);
 		}
-		else if (newPeers.isEmpty())
+		else if (newPeers.isEmpty()) {
 			newPeers = tr("disconnected with: ");
-		
+			emit newClientConnectedSignal(false);
+		}
+
 		newPeers.append("\n\t");
 
 		if (!cp.clientName.isEmpty())

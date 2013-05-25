@@ -330,7 +330,7 @@ public:
 
 		bool isActive() {return hasChangedRecently;};
 		void setSynchronized(bool flag);
-		bool getSynchronized() {return sychronized;};
+		bool isSynchronized() {return sychronized;};
 
 		quint16 peerId;
 		quint16 localServerPort;

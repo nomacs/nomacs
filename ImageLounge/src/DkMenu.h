@@ -246,7 +246,7 @@ public:
 
 	void init() {
 		setCheckable(true);
-		setChecked(peer.getSynchronized());
+		setChecked(peer.isSynchronized());
 		connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
 	};
 
@@ -328,7 +328,6 @@ public:
 		peers.clear();
 		clients.clear();
 		tcpActions.clear();
-
 	}
 
 signals:

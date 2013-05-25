@@ -241,7 +241,7 @@ void DkLocalClientManager::connectionSynchronized(QList<quint16> synchronizedPee
 		if (synchronizedPeersOfOtherClient[i]!=server->serverPort()) {
 			
 			DkPeer peer = peerList.getPeerByServerport(synchronizedPeersOfOtherClient[i]);
-			if (peer.getSynchronized())
+			if (peer.isSynchronized())
 				continue;
 
 			connect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
@@ -937,7 +937,7 @@ bool DkPeerList::setShowInMenu(quint16 peerId, bool showInMenu) {
 QList<DkPeer> DkPeerList::getSynchronizedPeers() {
 	QList<DkPeer> sychronizedPeers;
 	foreach(DkPeer peer, peerList) {
-		if (peer.getSynchronized())
+		if (peer.isSynchronized())
 			sychronizedPeers.push_back(peer);
 	}
 	return sychronizedPeers;
@@ -950,7 +950,7 @@ QList<DkPeer> DkPeerList::getPeerList() {
 QList<quint16> DkPeerList::getSynchronizedPeerServerPorts() {
 	QList<quint16> sychronizedPeerServerPorts;
 	foreach(DkPeer peer, peerList) {
-		if (peer.getSynchronized())
+		if (peer.isSynchronized())
 			sychronizedPeerServerPorts.push_back(peer.peerServerPort);
 	}
 	return sychronizedPeerServerPorts;
@@ -996,7 +996,7 @@ DkPeer DkPeerList::getPeerByAddress(QHostAddress address, quint16 port) {
 void DkPeerList::print() {
 	foreach (DkPeer peer, peerList) {
 		qDebug() << peer.peerId << 	" " << peer.clientName << " " << peer.hostAddress << " " << peer.peerServerPort << 
-			" " << peer.localServerPort << " " << peer.title << " sync:" << peer.getSynchronized() << " menu:" << peer.showInMenu;
+			" " << peer.localServerPort << " " << peer.title << " sync:" << peer.isSynchronized() << " menu:" << peer.showInMenu;
 	}
 }
 

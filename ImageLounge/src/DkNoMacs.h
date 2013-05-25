@@ -456,7 +456,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	void newClientConnected();
+	void newClientConnected(bool connected);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();

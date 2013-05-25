@@ -1633,9 +1633,14 @@ void DkNoMacs::lockWindow(bool lock) {
 #endif
 }
 
-void DkNoMacs::newClientConnected() {
+void DkNoMacs::newClientConnected(bool connected) {
 	overlaid = false;
 	// add methods if clients are connected
+
+	syncActions[menu_sync]->setEnabled(connected);
+	syncActions[menu_sync_pos]->setEnabled(connected);
+	syncActions[menu_sync_arrange]->setEnabled(connected);
+
 }
 
 void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
@@ -2749,6 +2754,7 @@ void DkNoMacsSync::initLanClient() {
 
 	QAction* sendImage = new QAction(tr("Send &Image"), this);
 	sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
 	sendImage->setToolTip(tr("Sends the current image to all clients."));
 	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
@@ -2769,16 +2775,19 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync] = new QAction(tr("Synchronize &View"), this);
 	syncActions[menu_sync]->setShortcut(QKeySequence(shortcut_sync));
 	syncActions[menu_sync]->setStatusTip(tr("synchronize the current view"));
+	syncActions[menu_sync]->setEnabled(false);
 	connect(syncActions[menu_sync], SIGNAL(triggered()), vp, SLOT(tcpSynchronize()));
 
 	syncActions[menu_sync_pos] = new QAction(tr("&Window Overlay"), this);
 	syncActions[menu_sync_pos]->setShortcut(QKeySequence(shortcut_tab));
 	syncActions[menu_sync_pos]->setStatusTip(tr("toggle the window opacity"));
+	syncActions[menu_sync_pos]->setEnabled(false);
 	connect(syncActions[menu_sync_pos], SIGNAL(triggered()), this, SLOT(tcpSendWindowRect()));
 
 	syncActions[menu_sync_arrange] = new QAction(tr("Arrange Instances"), this);
 	syncActions[menu_sync_arrange]->setShortcut(QKeySequence(shortcut_arrange));
 	syncActions[menu_sync_arrange]->setStatusTip(tr("arrange connected instances"));
+	syncActions[menu_sync_arrange]->setEnabled(false);
 	connect(syncActions[menu_sync_arrange], SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
 
 	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &all"), this);
@@ -2891,7 +2900,6 @@ void DkNoMacsSync::clientInitialized() {
 	emit clientInitializedSignal();
 }
 
-
 DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(parent, flags) {
 
 		// init members
@@ -2925,7 +2933,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(vp, SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
-	connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
+	connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
