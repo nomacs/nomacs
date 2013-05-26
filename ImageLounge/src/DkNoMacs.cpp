@@ -1473,6 +1473,7 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettings::App::showToolBar) toolbar->show();
 		if (DkSettings::App::showStatusBar) statusbar->show();
 		showNormal();
+		update();	// if no resize is triggered, the viewport won't change its color
 	}
 
 	if (viewport())

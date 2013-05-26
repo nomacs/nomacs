@@ -267,7 +267,7 @@ void DkControlWidget::connectWidgets() {
 
 	// thumbs widget
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
-	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFile(int)));
+	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 
 	// file scroller
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
