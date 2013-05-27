@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- qtjp2imagehandler.cpp -->
+<head>
+  <title>QtJP2ImageHandler Class Reference</title>
+  <link href="classic.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="left" valign="top" width="32"><img src="images/qt-logo.png" align="left" width="57" height="67" border="0" /></td>
+<td width="1">&nbsp;&nbsp;</td><td class="postheader" valign="center"><a href="index.html"><font color="#004faf">Home</font></a></td>
+</tr></table><h1 class="title">QtJP2ImageHandler Class Reference</h1>
+<p>The QtJP2ImageHandler class provides support for reading and writing JPEG 2000 image files with Qts plugin system. Currently, it only supports dynamically-loaded plugins. <a href="#details">More...</a></p>
+<pre> #include &lt;QtJP2ImageHandler&gt;</pre><p>Inherits <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html">QImageIOHandler</a>.</p>
+<ul>
+<li><a href="qtjp2imagehandler-members.html">List of all members, including inherited members</a></li>
+</ul>
+<hr />
+<a name="public-functions"></a>
+<h2>Public Functions</h2>
+<table class="alignedsummary" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td class="memItemLeft" align="right" valign="top"></td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#QtJP2ImageHandler">QtJP2ImageHandler</a></b> ( QIODevice * <i>device</i> )</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#dtor.QtJP2ImageHandler">~QtJP2ImageHandler</a></b> ()</td></tr>
+</table>
+<hr />
+<a name="reimplemented-public-functions"></a>
+<h2>Reimplemented Public Functions</h2>
+<table class="alignedsummary" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td class="memItemLeft" align="right" valign="top">virtual bool </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#canRead-2">canRead</a></b> () const</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual QByteArray </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#name">name</a></b> () const</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual QVariant </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#option">option</a></b> ( ImageOption <i>option</i> ) const</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual bool </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#read">read</a></b> ( QImage * <i>image</i> )</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#setOption">setOption</a></b> ( ImageOption <i>option</i>, const QVariant &amp; <i>value</i> )</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual bool </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#supportsOption">supportsOption</a></b> ( ImageOption <i>option</i> ) const</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual bool </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#write">write</a></b> ( const QImage &amp; <i>image</i> )</td></tr>
+</table>
+<ul>
+<li><div bar="2" class="fn"></div>18 public functions inherited from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#public-functions">QImageIOHandler</a></li>
+</ul>
+<hr />
+<a name="static-public-members"></a>
+<h2>Static Public Members</h2>
+<table class="alignedsummary" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td class="memItemLeft" align="right" valign="top">bool </td><td class="memItemRight" valign="bottom"><b><a href="qtjp2imagehandler.html#canRead">canRead</a></b> ( QIODevice * <i>iod</i>, QByteArray * <i>subType</i> )</td></tr>
+</table>
+<h3>Additional Inherited Members</h3>
+<ul>
+<li><div class="fn"></div>1 protected type inherited from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#protected-variables">QImageIOHandler</a></li>
+</ul>
+<a name="details"></a>
+<hr />
+<h2>Detailed Description</h2>
+<p>The QtJP2ImageHandler class provides support for reading and writing JPEG 2000 image files with Qts plugin system. Currently, it only supports dynamically-loaded plugins.</p>
+<p>JPEG files comes in two subtypes: the JPEG 2000 file format (<tt>.jp2</tt>) and the JPEG 2000 code stream format (<tt>.j2k</tt>, <tt>.jpc</tt>, or <tt>.j2c</tt>). QtJP2ImageHandler can read and write both types.</p>
+<p>To select a subtype, use the <a href="qtjp2imagehandler.html#setOption">setOption</a>() function with the <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#ImageOption-enum">QImageIOHandler::SubType</a> option and a parameter value of &quot;jp2&quot; or &quot;j2k&quot;.</p>
+<p>To set the image quality when writing, you can use <a href="qtjp2imagehandler.html#setOption">setOption</a>() with the <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#ImageOption-enum">QImageIOHandler::Quality</a> option, or <a href="http://qt.nokia.com/doc/4.6/qimagewriter.html#setQuality">QImageWriter::setQuality</a>() if your are using a <a href="http://qt.nokia.com/doc/4.6/qimagewriter.html">QImageWriter</a> object to write the image. The Image quality is specified as an int in the range 0 to 100. 0 means maximum compression and 99 means minimum compression. 100 selects lossless encoding, and this is the default value.</p>
+<p>The JPEG handler is only available as a plugin, and this enables you to use normal <a href="http://qt.nokia.com/doc/4.6/qimage.html">QImage</a> and <a href="http://qt.nokia.com/doc/4.6/qpixmap.html">QPixmap</a> functions to read and write images. For example:</p>
+<pre> myLabel-&gt;setPixmap(QPixmap(&quot;myimage.jp2&quot;));
+
+ QPixmap myPixmap;
+ myPixmap.save(&quot;myimage.jp2&quot;, &quot;JP2&quot;);</pre>
+<hr />
+<h2>Member Function Documentation</h2>
+<h3 class="fn"><a name="QtJP2ImageHandler"></a>QtJP2ImageHandler::QtJP2ImageHandler ( <a href="http://qt.nokia.com/doc/4.6/qiodevice.html">QIODevice</a> * <i>device</i> )</h3>
+<p>Constructs an instance of <a href="qtjp2imagehandler.html">QtJP2ImageHandler</a> initialized to use <i>device</i>.</p>
+<h3 class="fn"><a name="dtor.QtJP2ImageHandler"></a>QtJP2ImageHandler::~QtJP2ImageHandler ()&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Desctructor for <a href="qtjp2imagehandler.html">QtJP2ImageHandler</a>.</p>
+<h3 class="fn"><a name="canRead"></a>bool QtJP2ImageHandler::canRead ( <a href="http://qt.nokia.com/doc/4.6/qiodevice.html">QIODevice</a> * <i>iod</i>, <a href="http://qt.nokia.com/doc/4.6/qbytearray.html">QByteArray</a> * <i>subType</i> )&nbsp;&nbsp;<tt> [static]</tt></h3>
+<p>Verifies if some values (magic bytes) are set as expected in the header of the file. If the magic bytes were found, we assume that we can read the file. The function will assume that the <i>iod</i> is pointing to the beginning of the JPEG 2000 header. (i.e&#x2e; it will for instance not seek to the beginning of a file before reading).</p>
+<p>If <i>subType</i> is not 0, it will contain &quot;jp2&quot; or &quot;j2k&quot; upon successful return.</p>
+<h3 class="fn"><a name="canRead-2"></a>bool QtJP2ImageHandler::canRead () const&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#canRead">QImageIOHandler::canRead</a>().</p>
+<h3 class="fn"><a name="name"></a><a href="http://qt.nokia.com/doc/4.6/qbytearray.html">QByteArray</a> QtJP2ImageHandler::name () const&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler-obsolete.html#name" class="obsolete">QImageIOHandler::name</a>().</p>
+<p>Return the common identifier of the format. For JPEG 2000 this will return &quot;jp2&quot;.</p>
+<h3 class="fn"><a name="option"></a><a href="http://qt.nokia.com/doc/4.6/qvariant.html">QVariant</a> QtJP2ImageHandler::option ( <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#ImageOption-enum">ImageOption</a> <i>option</i> ) const&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#option">QImageIOHandler::option</a>().</p>
+<p>Get the value associated with <i>option</i>.</p>
+<p>See also <a href="qtjp2imagehandler.html#setOption">setOption</a>().</p>
+<h3 class="fn"><a name="read"></a>bool QtJP2ImageHandler::read ( <a href="http://qt.nokia.com/doc/4.6/qimage.html">QImage</a> * <i>image</i> )&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#read">QImageIOHandler::read</a>().</p>
+<h3 class="fn"><a name="setOption"></a>void QtJP2ImageHandler::setOption ( <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#ImageOption-enum">ImageOption</a> <i>option</i>, const <a href="http://qt.nokia.com/doc/4.6/qvariant.html">QVariant</a> &amp; <i>value</i> )&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#setOption">QImageIOHandler::setOption</a>().</p>
+<p>The JPEG 2000 handler supports two options. Set <i>option</i> to <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#ImageOption-enum">QImageIOHandler::Quality</a> to balance between quality and the compression level, where <i>value</i> should be an integer in the interval [0-100]. 0 is maximum compression (low quality) and 100 is lossless compression (high quality).</p>
+<p>Set <i>option</i> to QImageIOHandler::Subtype to choose the subtype, where <i>value</i> should be a string equal to either &quot;jp2&quot; or &quot;j2k&quot;</p>
+<p>See also <a href="qtjp2imagehandler.html#option">option</a>().</p>
+<h3 class="fn"><a name="supportsOption"></a>bool QtJP2ImageHandler::supportsOption ( <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#ImageOption-enum">ImageOption</a> <i>option</i> ) const&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#supportsOption">QImageIOHandler::supportsOption</a>().</p>
+<p>This function will return true if <i>option</i> is set to either <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#ImageOption-enum">QImageIOHandler::Quality</a> or QImageIOHandler::Subtype.</p>
+<h3 class="fn"><a name="write"></a>bool QtJP2ImageHandler::write ( const <a href="http://qt.nokia.com/doc/4.6/qimage.html">QImage</a> &amp; <i>image</i> )&nbsp;&nbsp;<tt> [virtual]</tt></h3>
+<p>Reimplemented from <a href="http://qt.nokia.com/doc/4.6/qimageiohandler.html#write">QImageIOHandler::write</a>().</p>
+<p /><address><hr /><div align="center">
+<table width="100%" cellspacing="0" border="0"><tr class="address">
+<td width="30%" align="left">Copyright &copy; 2010 Nokia Corporation and/or its subsidiary(-ies)</td>
+<td width="40%" align="center"><a href="http://qt.nokia.com/doc/trademarks.html">Trademarks</a></td>
+<td width="30%" align="right"><div align="right">Qt Solutions</div></td>
+</tr></table></div></address></body>
+</html>

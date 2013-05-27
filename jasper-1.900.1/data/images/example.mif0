@@ -1,0 +1,11 @@
+MIF
+
+# This is an example of a MIF file.
+# Comments begin with a hash symbol (i.e., '#') and proceed to the end of line.
+# The first four characters of a MIF file must be in order: M, I, F, linefeed.
+
+component tlx=0 tly=0 sampperx=4 samppery=2 width=32 height=64 prec=8 sgnd=0 data=goldenears.pgm
+component tlx=0 tly=0 sampperx=2 samppery=4 width=64 height=32 prec=8 sgnd=1 data=goldenears.pgm
+
+# This is the end of the header.
+end

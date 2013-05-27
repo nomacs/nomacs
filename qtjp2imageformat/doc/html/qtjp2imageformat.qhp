@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>com.nokia.qtsolutions.qtjp2imageformat_head</namespace>
+    <virtualFolder>qdoc</virtualFolder>
+    <customFilter name="Qt Solutions: JPEG 2000 Image Format">
+        <filterAttribute>qtjp2imageformat</filterAttribute>
+        <filterAttribute>qt</filterAttribute>
+        <filterAttribute>solutions</filterAttribute>
+    </customFilter>
+    <filterSection>
+        <filterAttribute>qtjp2imageformat</filterAttribute>
+        <filterAttribute>qt</filterAttribute>
+        <filterAttribute>solutions</filterAttribute>
+        <toc>
+            <section ref="index.html" title="Qt Solutions: JPEG 2000 Image Format Documentation">
+                <section ref="qtjp2imageformat-example-simple.html" title="A simple JPEG 2000 Image Format example."/>
+                <section ref="index.html" title="JPEG 2000 Image Format"/>
+            </section>
+        </toc>
+        <keywords>
+            <keyword name="A simple JPEG 2000 Image Format example." id="A simple JPEG 2000 Image Format example." ref="qtjp2imageformat-example-simple.html"/>
+            <keyword name="JPEG 2000 Image Format" id="JPEG 2000 Image Format" ref="index.html"/>
+            <keyword name="QJPeg2Plugin" id="QJPeg2Plugin" ref="qjpeg2plugin.html"/>
+            <keyword name="capabilities" id="QJPeg2Plugin::capabilities" ref="qjpeg2plugin.html#capabilities"/>
+            <keyword name="create" id="QJPeg2Plugin::create" ref="qjpeg2plugin.html#create"/>
+            <keyword name="keys" id="QJPeg2Plugin::keys" ref="qjpeg2plugin.html#keys"/>
+            <keyword name="QtJP2ImageHandler" id="QtJP2ImageHandler" ref="qtjp2imagehandler.html"/>
+            <keyword name="canRead" id="QtJP2ImageHandler::canRead" ref="qtjp2imagehandler.html#canRead"/>
+            <keyword name="name" id="QtJP2ImageHandler::name" ref="qtjp2imagehandler.html#name"/>
+            <keyword name="option" id="QtJP2ImageHandler::option" ref="qtjp2imagehandler.html#option"/>
+            <keyword name="read" id="QtJP2ImageHandler::read" ref="qtjp2imagehandler.html#read"/>
+            <keyword name="setOption" id="QtJP2ImageHandler::setOption" ref="qtjp2imagehandler.html#setOption"/>
+            <keyword name="supportsOption" id="QtJP2ImageHandler::supportsOption" ref="qtjp2imagehandler.html#supportsOption"/>
+            <keyword name="write" id="QtJP2ImageHandler::write" ref="qtjp2imagehandler.html#write"/>
+            <keyword name="~QtJP2ImageHandler" id="QtJP2ImageHandler::~QtJP2ImageHandler" ref="qtjp2imagehandler.html#dtor.QtJP2ImageHandler"/>
+        </keywords>
+        <files>
+            <file>index.html</file>
+            <file>qjpeg2plugin.html</file>
+            <file>qtjp2imageformat-example-simple.html</file>
+            <file>qtjp2imagehandler.html</file>
+            <file>classic.css</file>
+            <file>images/qt-logo.png</file>
+        </files>
+    </filterSection>
+</QtHelpProject>

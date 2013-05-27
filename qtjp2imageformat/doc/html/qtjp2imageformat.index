@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE QDOCINDEX>
+<INDEX url="" title="Qt Solutions: JPEG 2000 Image Format Documentation" version="">
+    <namespace access="public" threadsafety="unspecified" status="commendable" name="" href="" location="" module="">
+        <class access="public" threadsafety="unspecified" status="commendable" name="QtJP2ImageHandler" href="qtjp2imagehandler.html" location="qtjp2imagehandler.h" bases="QImageIOHandler" module="">
+            <function access="public" threadsafety="unspecified" status="commendable" name="QtJP2ImageHandler" fullname="QtJP2ImageHandler::QtJP2ImageHandler" href="qtjp2imagehandler.html#QtJP2ImageHandler" location="qtjp2imagehandler.h" virtual="non" meta="constructor" const="false" static="false" overload="false" type="" signature="QtJP2ImageHandler(QIODevice * device)">
+                <parameter left="QIODevice *" right="" name="device" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="~QtJP2ImageHandler" fullname="QtJP2ImageHandler::~QtJP2ImageHandler" href="qtjp2imagehandler.html#dtor.QtJP2ImageHandler" location="qtjp2imagehandler.h" virtual="impure" meta="destructor" const="false" static="false" overload="false" type="" signature="~QtJP2ImageHandler()"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="canRead" fullname="QtJP2ImageHandler::canRead" href="qtjp2imagehandler.html#canRead" location="qtjp2imagehandler.h" virtual="non" meta="plain" const="false" static="true" overload="false" type="bool" signature="canRead(QIODevice * iod, QByteArray * subType)">
+                <parameter left="QIODevice *" right="" name="iod" default=""/>
+                <parameter left="QByteArray *" right="" name="subType" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="canRead" fullname="QtJP2ImageHandler::canRead" href="qtjp2imagehandler.html#canRead-2" location="qtjp2imagehandler.h" virtual="impure" meta="plain" const="true" static="false" overload="true" overload-number="2" type="bool" signature="canRead() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="read" fullname="QtJP2ImageHandler::read" href="qtjp2imagehandler.html#read" location="qtjp2imagehandler.h" virtual="impure" meta="plain" const="false" static="false" overload="false" type="bool" signature="read(QImage * image)">
+                <parameter left="QImage *" right="" name="image" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="write" fullname="QtJP2ImageHandler::write" href="qtjp2imagehandler.html#write" location="qtjp2imagehandler.h" virtual="impure" meta="plain" const="false" static="false" overload="false" type="bool" signature="write(const QImage &amp; image)">
+                <parameter left="const QImage &amp;" right="" name="image" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="option" fullname="QtJP2ImageHandler::option" href="qtjp2imagehandler.html#option" location="qtjp2imagehandler.h" virtual="impure" meta="plain" const="true" static="false" overload="false" type="QVariant" signature="option(ImageOption option) const">
+                <parameter left="ImageOption" right="" name="option" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="setOption" fullname="QtJP2ImageHandler::setOption" href="qtjp2imagehandler.html#setOption" location="qtjp2imagehandler.h" virtual="impure" meta="plain" const="false" static="false" overload="false" type="void" signature="setOption(ImageOption option, const QVariant &amp; value)">
+                <parameter left="ImageOption" right="" name="option" default=""/>
+                <parameter left="const QVariant &amp;" right="" name="value" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="supportsOption" fullname="QtJP2ImageHandler::supportsOption" href="qtjp2imagehandler.html#supportsOption" location="qtjp2imagehandler.h" virtual="impure" meta="plain" const="true" static="false" overload="false" type="bool" signature="supportsOption(ImageOption option) const">
+                <parameter left="ImageOption" right="" name="option" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="name" fullname="QtJP2ImageHandler::name" href="qtjp2imagehandler.html#name" location="qtjp2imagehandler.h" virtual="impure" meta="plain" const="true" static="false" overload="false" type="QByteArray" signature="name() const"/>
+        </class>
+        <class access="public" threadsafety="unspecified" status="commendable" name="QJPeg2Plugin" href="qjpeg2plugin.html" location="qtjp2imageformatplugin.h" bases="QImageIOPlugin" module="">
+            <function access="public" threadsafety="unspecified" status="commendable" name="keys" fullname="QJPeg2Plugin::keys" href="qjpeg2plugin.html#keys" location="qtjp2imageformatplugin.h" virtual="impure" meta="plain" const="true" static="false" overload="false" type="QStringList" signature="keys() const"/>
+            <function access="public" threadsafety="unspecified" status="commendable" name="capabilities" fullname="QJPeg2Plugin::capabilities" href="qjpeg2plugin.html#capabilities" location="qtjp2imageformatplugin.h" virtual="impure" meta="plain" const="true" static="false" overload="false" type="Capabilities" signature="capabilities(QIODevice * device, const QByteArray &amp; format) const">
+                <parameter left="QIODevice *" right="" name="device" default=""/>
+                <parameter left="const QByteArray &amp;" right="" name="format" default=""/>
+            </function>
+            <function access="public" threadsafety="unspecified" status="commendable" name="create" fullname="QJPeg2Plugin::create" href="qjpeg2plugin.html#create" location="qtjp2imageformatplugin.h" virtual="impure" meta="plain" const="true" static="false" overload="false" type="QImageIOHandler *" signature="create(QIODevice * device, const QByteArray &amp; format) const">
+                <parameter left="QIODevice *" right="" name="device" default=""/>
+                <parameter left="const QByteArray &amp;" right="" name="format" default="QByteArray()"/>
+            </function>
+        </class>
+        <page access="public" status="commendable" name="index.html" href="index.html" subtype="page" title="JPEG 2000 Image Format" fulltitle="JPEG 2000 Image Format" subtitle="" location="index.qdoc">
+            <contents name="description" title="Description" level="1"/>
+            <contents name="classes" title="Classes" level="1"/>
+            <contents name="examples" title="Examples" level="1"/>
+            <contents name="tested-platforms" title="Tested platforms" level="1"/>
+            <contents name="unsupported-platforms" title="Unsupported platforms" level="1"/>
+        </page>
+        <page access="public" status="commendable" name="qtjp2imageformat-example-simple.html" href="qtjp2imageformat-example-simple.html" subtype="page" title="A simple JPEG 2000 Image Format example." fulltitle="A simple JPEG 2000 Image Format example." subtitle="" location="simple.qdoc">
+            <contents name="introduction" title="Introduction" level="1"/>
+        </page>
+    </namespace>
+</INDEX>

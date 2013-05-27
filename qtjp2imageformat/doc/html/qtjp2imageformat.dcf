@@ -1,0 +1,32 @@
+<!DOCTYPE DCF>
+<DCF ref="index.html" icon="qtjp2imageformat.png" imagedir="../../gif" title="Qt Solutions: JPEG 2000 Image Format Documentation">
+<section ref="classes.html" title="Classes">
+    <section ref="qjpeg2plugin.html" title="QJPeg2Plugin Class Reference">
+        <keyword ref="qjpeg2plugin.html">QJPeg2Plugin</keyword>
+        <keyword ref="qjpeg2plugin.html#capabilities">capabilities</keyword>
+        <keyword ref="qjpeg2plugin.html#create">create</keyword>
+        <keyword ref="qjpeg2plugin.html#keys">keys</keyword>
+        <section ref="qjpeg2plugin-members.html" title="List of all members"/>
+    </section>
+    <section ref="qtjp2imagehandler.html" title="QtJP2ImageHandler Class Reference">
+        <keyword ref="qtjp2imagehandler.html">QtJP2ImageHandler</keyword>
+        <keyword ref="qtjp2imagehandler.html#canRead">canRead</keyword>
+        <keyword ref="qtjp2imagehandler.html#name">name</keyword>
+        <keyword ref="qtjp2imagehandler.html#option">option</keyword>
+        <keyword ref="qtjp2imagehandler.html#read">read</keyword>
+        <keyword ref="qtjp2imagehandler.html#setOption">setOption</keyword>
+        <keyword ref="qtjp2imagehandler.html#supportsOption">supportsOption</keyword>
+        <keyword ref="qtjp2imagehandler.html#write">write</keyword>
+        <section ref="qtjp2imagehandler-members.html" title="List of all members"/>
+    </section>
+</section>
+<section ref="overviews.html" title="Overviews">
+    <section ref="qtjp2imageformat-example-simple.html" title="A simple JPEG 2000 Image Format example.">
+        <keyword ref="qtjp2imageformat-example-simple.html">A simple JPEG 2000 Image Format example.</keyword>
+    </section>
+    <section ref="index.html" title="JPEG 2000 Image Format">
+        <keyword ref="index.html">JPEG 2000 Image Format</keyword>
+    </section>
+</section>
+<section ref="examples.html" title="Tutorial &amp; Examples"/>
+</DCF>

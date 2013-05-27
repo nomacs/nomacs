@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- simple.qdoc -->
+<head>
+  <title>A simple JPEG 2000 Image Format example.</title>
+  <link href="classic.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="left" valign="top" width="32"><img src="images/qt-logo.png" align="left" width="57" height="67" border="0" /></td>
+<td width="1">&nbsp;&nbsp;</td><td class="postheader" valign="center"><a href="index.html"><font color="#004faf">Home</font></a></td>
+</tr></table><h1 class="title">A simple JPEG 2000 Image Format example.<br /><span class="subtitle"></span>
+</h1>
+<a name="introduction"></a>
+<h2>Introduction</h2>
+<p>This example demonstrates how to use the standard <a href="http://qt.nokia.com/doc/4.6/qpixmap.html">QPixmap</a> API to load a JPEG 2000 image. Be sure to install the plugin before running this example.</p>
+<pre><span class="comment"> /****************************************************************************
+ **
+ ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+ ** Contact: http://www.qt-project.org/legal
+ **
+ ** This file is part of the Qt Solutions component.
+ **
+ ** You may use this file under the terms of the BSD license as follows:
+ **
+ ** &quot;Redistribution and use in source and binary forms, with or without
+ ** modification, are permitted provided that the following conditions are
+ ** met:
+ **   * Redistributions of source code must retain the above copyright
+ **     notice, this list of conditions and the following disclaimer.
+ **   * Redistributions in binary form must reproduce the above copyright
+ **     notice, this list of conditions and the following disclaimer in
+ **     the documentation and/or other materials provided with the
+ **     distribution.
+ **   * Neither the name of Nokia Corporation and its Subsidiary(-ies) nor
+ **     the names of its contributors may be used to endorse or promote
+ **     products derived from this software without specific prior written
+ **     permission.
+ **
+ ** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ** &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ ** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ ** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ ** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ ** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ ** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ ** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ ** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ ** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.&quot;
+ **
+ ****************************************************************************/</span>
+
+ #include &lt;QtGui/QApplication&gt;
+ #include &lt;QtGui/QImage&gt;
+ #include &lt;QtGui/QLabel&gt;
+ #include &lt;QtGui/QPixmap&gt;
+
+<span class="comment"> // If the plugin is built statically, uncomment the following two lines</span>
+<span class="comment"> //#include &lt;QtCore/QtPlugin&gt;</span>
+<span class="comment"> //Q_IMPORT_PLUGIN(qtjp2)</span>
+
+ int main(int argc, char *argv[])
+ {
+     QApplication app(argc, argv);
+<span class="comment"> /*
+     The plugin must be installed in $(QTDIR)/plugins/imageformats in order for this
+     example to work.
+     See the QImageIO documementation for further info.
+ */</span>
+     QLabel imageLabel(0);
+     QPixmap pixmap;
+
+     if(!pixmap.load(&quot;:/logo.jp2&quot;))
+         imageLabel.setText(&quot;Could not load image&quot;);
+     else
+         imageLabel.setPixmap(pixmap);
+
+     imageLabel.show();
+     return app.exec();
+ }</pre>
+<p /><address><hr /><div align="center">
+<table width="100%" cellspacing="0" border="0"><tr class="address">
+<td width="30%" align="left">Copyright &copy; 2010 Nokia Corporation and/or its subsidiary(-ies)</td>
+<td width="40%" align="center"><a href="http://qt.nokia.com/doc/trademarks.html">Trademarks</a></td>
+<td width="30%" align="right"><div align="right">Qt Solutions</div></td>
+</tr></table></div></address></body>
+</html>
