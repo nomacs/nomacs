@@ -156,6 +156,7 @@ public:
 
 	enum {
 		jpg_dialog,
+		j2k_dialog,
 		webp_dialog,
 
 		dialog_end

@@ -1988,12 +1988,16 @@ void DkNoMacs::saveFile() {
 	int compression = -1;	// default value
 
 	//if (saveDialog->selectedNameFilter().contains("jpg")) {
-	if (selectedFilter.contains("jpg")) {
+	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
 
 		if (!jpgDialog)
 			jpgDialog = new DkCompressDialog(this);
 
-		jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
+		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
+			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
+		else
+			jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
+
 		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
 		//jpgDialog->show();
 		jpgDialog->setImage(&saveImg);

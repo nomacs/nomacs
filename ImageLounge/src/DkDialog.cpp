@@ -344,8 +344,13 @@ void DkCompressDialog::init() {
 	hasAlpha = false;
 	img = 0;
 
-	if (dialogMode == jpg_dialog) {
-		setWindowTitle("JPG Settings");
+	if (dialogMode == jpg_dialog || dialogMode == j2k_dialog) {
+		
+		if (dialogMode == jpg_dialog)
+			setWindowTitle("JPG Settings");
+		else
+			setWindowTitle("J2K Settings");
+
 		cbLossless->hide();
 		slider->setEnabled(true);
 	}
@@ -456,7 +461,7 @@ void DkCompressDialog::drawPreview() {
 	qDebug() << "orig img size: " << origImg.size();
 	newImg = QImage(origImg.size(), QImage::Format_ARGB32);
 
-	if (dialogMode == jpg_dialog && hasAlpha)
+	if (dialogMode == jpg_dialog || dialogMode == j2k_dialog && hasAlpha)
 		newImg.fill(bgCol.rgb());
 	
 	QPainter bgPainter(&newImg);
@@ -471,6 +476,16 @@ void DkCompressDialog::drawPreview() {
 		newImg.save(&buffer, "JPG", slider->value());
 		newImg.loadFromData(ba, "JPG");
 		updateFileSizeLabel(buffer.size());
+	}
+	else if (dialogMode == j2k_dialog) {
+		// pre-compute the jpg compression
+		QByteArray ba;
+		QBuffer buffer(&ba);
+		buffer.open(QIODevice::ReadWrite);
+		newImg.save(&buffer, "J2K", slider->value());
+		newImg.loadFromData(ba, "J2K");
+		updateFileSizeLabel(buffer.size());
+		qDebug() << "using j2k...";
 	}
 	else if (dialogMode == webp_dialog && getCompression() != -1) {
 		// pre-compute the webp compression
@@ -499,7 +514,7 @@ void DkCompressDialog::updateFileSizeLabel(float bufferSize) {
 	}
 	previewSizeLabel->setEnabled(true);
 
-	float depth = (dialogMode == jpg_dialog) ? 24 : img->depth();	// jpg uses always 24 bit
+	float depth = (dialogMode == jpg_dialog || dialogMode == j2k_dialog) ? 24 : img->depth();	// jpg uses always 24 bit
 
 	float rawBufferSize = newImg.width()*newImg.height()*depth/8.0f;
 	float rawImgSize = img->width()*img->height()*depth/8.0f;

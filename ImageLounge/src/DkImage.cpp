@@ -143,7 +143,6 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	//	if (imgLoaded) loader = hdr_loader;
 	//} 
 
-
 	// ok, play back the old images
 	if (!imgLoaded) {
 		qImg = oldImg;
