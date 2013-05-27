@@ -49,37 +49,16 @@ bool wCompLogicQString(const QString & lhs, const QString & rhs) {
 	//return true;
 }
 
-
 #endif
 
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QStringList();
 
-//// formats we can save
-//QString DkImageLoader::saveFilter = QString("PNG (*.png);;JPEG (*.jpg *.jpeg);;")
 // formats we can save
-QStringList DkImageLoader::saveFilters = QStringList();//saveFilter.split(QString(";;"));
-
-//QString DkImageLoader::openFilter = QString("Image Files (*.jpg *.png *.tif *.bmp *.gif *.pbm *.pgm *.xbm *.xpm *.ppm *.jpeg *.tiff *.ico *.nef *.crw *.cr2 *.arw *.dng *.roh *.jps *.pns *.mpo *.webp *.tga *.lnk);;") %
-//	QString(saveFilter) %
-//	QString(";;Graphic Interchange Format (*.gif);;") %
-//	QString("Portable Bitmap (*.pbm);;") %
-//	QString("Portable Graymap (*.pgm);;") %
-//	QString("Icon Files (*.ico);;") %
-//	QString("Nikon Raw (*.nef);;") %
-//	QString("Canon Raw (*.crw *.cr2);;") %
-//	QString("Sony Raw (*.arw);;") %
-//	QString("Digital Negativ (*.dng);;") %
-//	QString("Panasonic Raw (*.rw2);;") %
-//	QString("Minolta Raw (*.mrw);;") %
-//	QString("JPEG Stereo (*.jps);;") %
-//	QString("PNG Stereo (*.pns);;") %
-//	QString("Multi Picture Object (*.mpo);;") %
-//	QString("Rohkost (*.roh);;");
-	
+QStringList DkImageLoader::saveFilters = QStringList();
 
 // formats we can load
-QStringList DkImageLoader::openFilters = QStringList();//openFilter.split(QString(";;"));
+QStringList DkImageLoader::openFilters = QStringList();
 
 DkMetaData DkImageLoader::imgMetaData = DkMetaData();
 
@@ -138,14 +117,18 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	// default Qt loader
 	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
-		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
-		QFile file(this->file.absoluteFilePath());
-		file.open(QIODevice::ReadOnly);
-		imgLoaded = qImg.loadFromData(file.readAll());
+		// if image has Indexed8 + alpha channel -> we crash... sorry for that
+		imgLoaded = qImg.load(this->file.absoluteFilePath());
 		if (imgLoaded) loader = qt_loader;
 
-		//// if image has Indexed8 + alpha channel -> we crash... sorry for that
-		//imgLoaded = qImg.load(this->file.absoluteFilePath());
+		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
+		if (!imgLoaded) {
+			// TODO: add warning here
+			QFile file(this->file.absoluteFilePath());
+			file.open(QIODevice::ReadOnly);
+			imgLoaded = qImg.loadFromData(file.readAll());
+			if (imgLoaded) loader = qt_loader;
+		}
 	}  
 
 	// this loader is a bit bugy -> be carefull
@@ -1004,14 +987,17 @@ DkImageLoader::~DkImageLoader() {
 
 void DkImageLoader::initFileFilters() {
 
+	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+
 	// formats we can save
-	saveFilters.append("Portable Network Graphics (*.png)");
-	saveFilters.append("JPEG (*.jpg *.jpeg)");
-	saveFilters.append("TIFF (*.tif *.tiff)");
-	saveFilters.append("Windows Bitmap (*.bmp)");
-	saveFilters.append("Portable Pixmap (*.ppm)");
-	saveFilters.append("X11 Bitmap (*.xbm)");
-	saveFilters.append("X11 Pixmap (*.xpm)");
+	if (qtFormats.contains("png"))		saveFilters.append("Portable Network Graphics (*.png)");
+	if (qtFormats.contains("jpg"))		saveFilters.append("JPEG (*.jpg *.jpeg)");
+	if (qtFormats.contains("j2k"))		saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
+	if (qtFormats.contains("tif"))		saveFilters.append("TIFF (*.tif *.tiff)");
+	if (qtFormats.contains("bmp"))		saveFilters.append("Windows Bitmap (*.bmp)");
+	if (qtFormats.contains("ppm"))		saveFilters.append("Portable Pixmap (*.ppm)");
+	if (qtFormats.contains("xbm"))		saveFilters.append("X11 Bitmap (*.xbm)");
+	if (qtFormats.contains("xpm"))		saveFilters.append("X11 Pixmap (*.xpm)");
 
 	// internal filters
 #ifdef WITH_WEBP
@@ -1020,20 +1006,27 @@ void DkImageLoader::initFileFilters() {
 
 	// formats we can load
 	openFilters += saveFilters;
-	openFilters.append("Graphic Interchange Format (*.gif)");
-	openFilters.append("Portable Bitmap (*.pbm)");
-	openFilters.append("Portable Graymap (*.pgm)");
-	openFilters.append("Icon Files (*.ico)");
+	if (qtFormats.contains("gif"))		openFilters.append("Graphic Interchange Format (*.gif)");
+	if (qtFormats.contains("pbm"))		openFilters.append("Portable Bitmap (*.pbm)");
+	if (qtFormats.contains("pgm"))		openFilters.append("Portable Graymap (*.pgm)");
+	if (qtFormats.contains("ico"))		openFilters.append("Icon Files (*.ico)");
+	if (qtFormats.contains("tga"))		openFilters.append("Targa Image File (*.tga)");
+	if (qtFormats.contains("mng"))		openFilters.append("Multi-Image Network Graphics (*.mng)");
+
+	// raw format
 	openFilters.append("Nikon Raw (*.nef)");
 	openFilters.append("Canon Raw (*.crw *.cr2)");
 	openFilters.append("Sony Raw (*.arw)");
 	openFilters.append("Digital Negativ (*.dng)");
 	openFilters.append("Panasonic Raw (*.rw2)");
 	openFilters.append("Minolta Raw (*.mrw)");
+	
+	// stereo formats
 	openFilters.append("JPEG Stereo (*.jps)");
 	openFilters.append("PNG Stereo (*.pns)");
 	openFilters.append("Multi Picture Object (*.mpo)");
-	openFilters.append("Targa Image File (*.tga)");
+	
+	// other formats
 	openFilters.append("Adobe Photoshop (*.psd)");
 	openFilters.append("Large Document Format (*.psb)");
 	openFilters.append("Rohkost (*.roh)");
@@ -1048,6 +1041,17 @@ void DkImageLoader::initFileFilters() {
 		cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
 		cFilter = cFilter.replace(")", "");
 		DkImageLoader::fileFilters += cFilter.split(" ");
+	}
+
+	QString allFilters = DkImageLoader::fileFilters.join(" ");
+
+	// add unknown formats from Qt plugins
+	for (int idx = 0; idx < qtFormats.size(); idx++) {
+
+		if (!allFilters.contains(qtFormats.at(idx))) {
+			openFilters.append("Image Format (*." + qtFormats.at(idx) + ")");
+			DkImageLoader::fileFilters.append("*." + qtFormats.at(idx));
+		}
 	}
 
 	openFilters.prepend("Image Files (" + fileFilters.join(" ") + ")");
@@ -2346,7 +2350,7 @@ bool DkImageLoader::hasFile() {
 bool DkImageLoader::hasMovie() {
 
 	QString newSuffix = file.suffix();
-	return file.exists() && newSuffix.contains(QRegExp("(gif)", Qt::CaseInsensitive));
+	return file.exists() && newSuffix.contains(QRegExp("(gif|mng)", Qt::CaseInsensitive));
 
 }
 
