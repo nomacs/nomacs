@@ -15,11 +15,11 @@ win32 {
 # }
 
 
-JASPERINCLUDE = C:/VSProjects/jasper-1.900.1-dllexport/jasper-1.900.1/src/libjasper/include
+JASPERINCLUDE = ../../jasper-1.900.1/src/libjasper/include
 CONFIG(debug, debug|release): {
-   JASPERLIB = C:/VSProjects/jasper-1.900.1-dllexport/jasper-1.900.1/src/msvc/Win32_Debug
+   JASPERLIB = ../../jasper-1.900.1/src/msvc/Win32_Debug
 } else {
-   JASPERLIB = C:/VSProjects/jasper-1.900.1-dllexport/jasper-1.900.1/src/msvc/Win32_Release
+   JASPERLIB = ../../jasper-1.900.1/src/msvc/Win32_Release
 }
 
 
