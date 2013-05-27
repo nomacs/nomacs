@@ -450,6 +450,7 @@ Section "MainSection" SEC01#
   File "${BUILD_DIR}\QtGui4.dll"
   File "${BUILD_DIR}\QtNetwork4.dll"
   File "${BUILD_DIR}\zlib1.dll"
+  File "${BUILD_DIR}\libjasper.dll"
   
   File "${README_DIR}\COPYRIGHT"
   File "${README_DIR}\LICENSE.GPLv2"
@@ -463,6 +464,7 @@ Section "MainSection" SEC01#
   File "${BUILD_DIR}\imageformats\qmng4.dll"
   File "${BUILD_DIR}\imageformats\qsvg4.dll"
   File "${BUILD_DIR}\imageformats\qtiff4.dll"
+  File "${BUILD_DIR}\imageformats\qtjp22.dll"
   
 	IfSilent isSilent isNotSilent
 		isSilent:
@@ -577,7 +579,9 @@ Section Uninstall
   Delete "$INSTDIR/imageformats\qjpeg4.dll"
   Delete "$INSTDIR/imageformats\qico4.dll"
   Delete "$INSTDIR/imageformats\qgif4.dll"
+  Delete "$INSTDIR/imageformats\qtjp22.dll"
   Delete "$INSTDIR\zlib1.dll"
+  Delete "$INSTDIR\libjasper.dll"
   Delete "$INSTDIR\QtNetwork4.dll"
   Delete "$INSTDIR\QtGui4.dll"
   Delete "$INSTDIR\QtCore4.dll"
