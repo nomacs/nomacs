@@ -20,7 +20,8 @@ set(QT_USE_GUI 1)
 set(QT_USE_QTNETWORK 1)
 find_package(Qt4 REQUIRED QtCore QtGui)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../jasper-1.900.1/libjasper.cmake)
+find_file(${LIBJASPER_CMAKE} name libjasper.cmake PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../jasper-1.900.1)
+include(${LIBJASPER_CMAKE})
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/
