@@ -34,7 +34,7 @@
         <location filename="../src/DkMetaData.cpp" line="522"/>
         <source>can&apos;t save exif - due to an empty pointer
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Es ha i net speichera künna wegat am Exif</translation>
     </message>
 </context>
 <context>
@@ -74,47 +74,47 @@
     <message>
         <location filename="../src/DkDialog.cpp" line="364"/>
         <source>Original</source>
-        <translation type="unfinished">Des Echtä</translation>
+        <translation>Des Echtä</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="365"/>
         <source>New</source>
-        <translation type="unfinished">Des Neuä</translation>
+        <translation>Des Neuä</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="384"/>
         <source>Image Quality</source>
-        <translation type="unfinished">d&apos;Qualität vom Bildlä</translation>
+        <translation>d&apos;Qualität vom Bildlä</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="390"/>
         <source>Lossless Compression</source>
-        <translation type="unfinished"></translation>
+        <translation>Komprimirig ohne Verluschte</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="396"/>
         <source>Background Color</source>
-        <translation type="unfinished">d&apos;Hintergrundfarb</translation>
+        <translation>d&apos;Hintergrundfarb</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="423"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Passt da lada</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="424"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Libar doch nid</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="496"/>
         <source>File Size: --</source>
-        <translation type="unfinished"></translation>
+        <translation>so viel Platz bruchts Bildlä</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="507"/>
         <source>File Size: ~%1</source>
-        <translation type="unfinished"></translation>
+        <translation>so viel Platz bruchts Bildlä:  ~%1</translation>
     </message>
 </context>
 <context>
@@ -302,12 +302,12 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkSettings.cpp" line="1051"/>
         <source>Number of Recent Files/Folders:</source>
-        <translation type="unfinished"></translation>
+        <translation>d&apos;Anzahl dr z&apos;letscht verwändeta Bildlä:</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1051"/>
         <source>shown in Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>dia im Menü azoagat wörrand</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1054"/>
@@ -330,24 +330,25 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkDialog.cpp" line="2765"/>
         <source>Overwrite Existing Thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Übertrumpf scho exischtierende Vorasichta</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2771"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Passt da lada</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2772"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Libar doch nid</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2784"/>
         <source>Compute thumbnails for all images in:
  %1
 </source>
-        <translation type="unfinished"></translation>
+        <translation>erstellt d&apos;Vorasicht für alle Bildlä im Ordner:
+%1</translation>
     </message>
 </context>
 <context>
@@ -1118,12 +1119,12 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="629"/>
         <source>Add Image Format</source>
-        <translation type="unfinished"></translation>
+        <translation>A neuas Format dazuatoa</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="630"/>
         <source>Add a new image format to nomacs</source>
-        <translation type="unfinished"></translation>
+        <translation>Do ka ma am nomacs neue Formate beibringa</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="633"/>
@@ -1255,12 +1256,12 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="708"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Taschtatur Kürzl</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="710"/>
         <source>lets you customize your keyboard shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>do ka ma Kürzl vo da Taschtatur apassa</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="713"/>
@@ -1385,12 +1386,12 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="785"/>
         <source>&amp;Transparency Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>Muschtr vo da &amp;Transparenz</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="787"/>
         <source>if checked, a pattern will be displayed for transparent objects</source>
-        <translation type="unfinished"></translation>
+        <translation>wenn es agöklatisch, denna würd a Muschter azoagt für transparente Objekte </translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="792"/>
@@ -1425,12 +1426,12 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="811"/>
         <source>Sho&amp;w Folder Overview</source>
-        <translation type="unfinished"></translation>
+        <translation>Übrsiacht vom Ordner &amp;azoaga</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="813"/>
         <source>Show folder scrollbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoagt dr Inhalt vom Ordner in oanem Balka a</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="817"/>
@@ -1541,7 +1542,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="883"/>
         <source>&amp;Filter</source>
-        <translation type="unfinished">&amp;Filtera</translation>
+        <translation>&amp;Filtera</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="889"/>
@@ -1684,7 +1685,7 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2221"/>
         <source>Save Thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>d&apos;Vorasicht speichera</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2609"/>
@@ -1731,12 +1732,12 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2756"/>
         <source>Send &amp;Image</source>
-        <translation type="unfinished"></translation>
+        <translation>neue Bildlä &amp;schicka</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2759"/>
         <source>Sends the current image to all clients.</source>
-        <translation type="unfinished"></translation>
+        <translation>verschickt es jetziga Bildlä</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2776"/>
@@ -1799,12 +1800,12 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="2740"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Passt da lada</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2741"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Libar doch nid</translation>
     </message>
 </context>
 <context>
@@ -2037,7 +2038,7 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="1291"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Libar doch nid</translation>
+        <translation>&amp;Libar doch nid</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="1130"/>
@@ -2099,7 +2100,7 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="1290"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Passt da lada</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="1651"/>
@@ -2142,17 +2143,17 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkSettings.cpp" line="1410"/>
         <source>Hide Duplicates</source>
-        <translation type="unfinished"></translation>
+        <translation>Doppelte verstecka</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1412"/>
         <source>If checked, duplicated images are not shown (e.g. RAW+JPG</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn es agöklat isch, denna wörren dopplete Bildlä numma azogat (z.B. RAW+JPG)</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1414"/>
         <source>Preferred Extension: </source>
-        <translation type="unfinished"></translation>
+        <translation>Bevorzugte Endung:</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="1430"/>
@@ -2268,17 +2269,17 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="2170"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Taschtatur Kürzl</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2206"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Passt da lada</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2207"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Libar doch nid</translation>
     </message>
 </context>
 <context>
@@ -2286,24 +2287,26 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="1919"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nama</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="1919"/>
         <source>Shortcut</source>
-        <translation type="unfinished"></translation>
+        <translation>Kürzl</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2115"/>
         <source>%1 already used by %2 &gt; %3
 Press ESC to undo changes</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 würd scho vo %2 &gt; %3 verwendat
+ESC drucka ums rückgängig zmacha</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="2121"/>
         <source>%1 already used by %2
 Press ESC to undo changes</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 würd scho vo %2 verwendat
+ESC drucka ums rückgängig zmacha</translation>
     </message>
 </context>
 <context>
@@ -2438,7 +2441,8 @@ Erstell grad Vorasicht</translation>
         <source>
 Creating thumbnails...
 </source>
-        <translation type="unfinished"></translation>
+        <translation>
+Erstell gad Vorasichta</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="1091"/>
@@ -2466,7 +2470,7 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkDialog.cpp" line="320"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Passt da lada</translation>
     </message>
     <message>
         <source>&amp;Ok</source>
@@ -2475,7 +2479,7 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkDialog.cpp" line="321"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Libar doch nid</translation>
+        <translation>&amp;Libar doch nid</translation>
     </message>
 </context>
 <context>
@@ -2483,52 +2487,52 @@ Creating thumbnails...
     <message>
         <location filename="../src/DkDialog.cpp" line="126"/>
         <source>Add New Image Format</source>
-        <translation type="unfinished"></translation>
+        <translation>A neuas Format dazuatoa</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="134"/>
         <source>Load New Image Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Ladet a neues Format</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="154"/>
         <source>&amp;Add</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Dazutoa</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="156"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Libar doch nid</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="184"/>
         <source>Open Image</source>
-        <translation type="unfinished">A Bildlä uf tua</translation>
+        <translation>A Bildlä uf tua</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="185"/>
         <source>All Files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle Dataia (*.*)</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="226"/>
         <source>Sorry, currently we don&apos;t support: *.%1 files</source>
-        <translation type="unfinished"></translation>
+        <translation>Es tuat mar load, abr momentan wörran *.%1 Dateia net unterstützt</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="231"/>
         <source>*.%1 is already supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>*.%1 würd scho unterstützt</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="235"/>
         <source>*.%1 is supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>*.%1 würd unterstützt</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="250"/>
         <source>Please name the new format:</source>
-        <translation type="unfinished"></translation>
+        <translation>An Nama fürs neue Format</translation>
     </message>
 </context>
 <context>
