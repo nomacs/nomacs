@@ -9,6 +9,11 @@ if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
+SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
+IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
+	MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
+ENDIF()
+
 # find the Qt
 set(QT_MIN_VERSION "4.7.0")
 set(QT_USE_GUI 1)
@@ -34,19 +39,10 @@ target_link_libraries(qtjp2 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETW
 target_link_libraries(qtjp2 debug ${LIBJASPER_DEBUG_LIB})
 target_link_libraries(qtjp2 optimized ${LIBJASPER_RELEASE_LIB})
 
-
-# if(MSVC)
-	# add_custom_command(TARGET qtjp2 POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.dll\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release/imageformats\")
-	# add_custom_command(TARGET qtjp2 POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.lib\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release/imageformats\")
-	# add_custom_command(TARGET qtjp2 POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.dll\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release/imageformats\")
-	# add_custom_command(TARGET qtjp2 POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.lib\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release/imageformats\")
-# endif(MSVC)	
-
 if(MSVC)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.lib  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release/imageformats CONFIGURATIONS Release)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.lib  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../bin/Debug/imageformats CONFIGURATIONS Debug)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release/imageformats CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/ReallyRelease/imageformats CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug/imageformats CONFIGURATIONS Debug)
 endif(MSVC)	
 
-# ADD_CUSTOM_TARGET(install_qtjp2 ALL
-    # COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_install.cmake)
-# ADD_DEPENDENCIES(install_qtjp2 qtjp2)
+MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)

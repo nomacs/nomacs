@@ -4,6 +4,12 @@ PROJECT(libjasper)
 
 INCLUDE (CheckIncludeFiles)
 
+SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
+IF(${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
+	MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
+ENDIF()
+
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 # don't know if we need this
 if(COMMAND cmake_policy)
@@ -31,22 +37,12 @@ CHECK_INCLUDE_FILES(sys/time.h HAVE_SYSTIME_H)
 
 add_library(libjasper SHARED ${LIBJASPER_SOURCES} ${LIBJASPER_HEADERS})
 
-# if(MSVC)
-	# add_custom_command(TARGET libjasper POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.dll\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release\" /C)
-	# add_custom_command(TARGET libjasper POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.lib\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release\" /C)
-	# add_custom_command(TARGET libjasper POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Debug/libjasper.dll\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Debug\" /C)
-	# add_custom_command(TARGET libjasper POST_BUILD COMMAND xcopy \"${CMAKE_CURRENT_BINARY_DIR}/Debug/libjasper.lib\" \"${CMAKE_CURRENT_SOURCE_DIR}/../bin/Debug\" /C)
-# endif(MSVC)	
-
 if(MSVC)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.lib  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../bin/Release CONFIGURATIONS Release)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/libjasper.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/libjasper.lib  DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../bin/Debug CONFIGURATIONS Debug)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/libjasper.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/ReallyRelease CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/libjasper.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/libjasper.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug CONFIGURATIONS Debug)
 endif(MSVC)	
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libjasper.cmake.skeleton ${CMAKE_CURRENT_SOURCE_DIR}/libjasper.cmake @ONLY)
 
-# ADD_CUSTOM_TARGET(install_jaspar ALL
-    # COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_install.cmake)
-# ADD_DEPENDENCIES(install_jaspar libjaspar)
-
-MESSAGE(STATUS "configuration file generated")
+MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
