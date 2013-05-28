@@ -4,6 +4,7 @@ PROJECT(libjasper)
 
 INCLUDE (CheckIncludeFiles)
 
+MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
 SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
 IF(${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 	MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
@@ -45,4 +46,3 @@ endif(MSVC)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libjasper.cmake.skeleton ${CMAKE_CURRENT_SOURCE_DIR}/libjasper.cmake @ONLY)
 
-MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)

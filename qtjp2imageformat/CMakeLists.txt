@@ -9,6 +9,7 @@ if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
+MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
 SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
 IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 	MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
@@ -20,7 +21,10 @@ set(QT_USE_GUI 1)
 set(QT_USE_QTNETWORK 1)
 find_package(Qt4 REQUIRED QtCore QtGui)
 
-find_file(${LIBJASPER_CMAKE} name libjasper.cmake PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../jasper-1.900.1)
+find_file(LIBJASPER_CMAKE libjasper.cmake PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../jasper-1.900.1/ DOC "config file for jasper cmake, generated automatically when cmake is executed for jasper") 
+if(${LIBJASPER_CMAKE} STREQUAL "LIBJASPER_CMAKE-NOTFOUND")
+	message(FATAL_ERROR "you have to first execute cmake for jasper and then compile jasper")
+endif()
 include(${LIBJASPER_CMAKE})
 
 include_directories(
@@ -46,4 +50,4 @@ if(MSVC)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug/imageformats CONFIGURATIONS Debug)
 endif(MSVC)	
 
-MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
+
