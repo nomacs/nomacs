@@ -2437,6 +2437,19 @@ void DkViewPortFrameless::draw(QPainter *painter) {
 
 	if (!movie || !movie->isValid()) {
 		QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+
+		if (DkSettings::Display::tpPattern && imgQt.hasAlphaChannel()) {
+
+			// don't scale the pattern...
+			QTransform scaleIv;
+			scaleIv.scale(worldMatrix.m11(), worldMatrix.m22());
+			pattern.setTransform(scaleIv.inverted());
+
+			painter->setPen(QPen(Qt::NoPen));	// no border
+			painter->setBrush(pattern);
+			painter->drawRect(imgViewRect);
+		}
+
 		painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
 	}
 	else {
@@ -2831,12 +2844,24 @@ void DkViewPortContrast::draw(QPainter *painter) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
+	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+
+	if (DkSettings::Display::tpPattern && imgQt.hasAlphaChannel()) {
+
+		// don't scale the pattern...
+		QTransform scaleIv;
+		scaleIv.scale(worldMatrix.m11(), worldMatrix.m22());
+		pattern.setTransform(scaleIv.inverted());
+
+		painter->setPen(QPen(Qt::NoPen));	// no border
+		painter->setBrush(pattern);
+		painter->drawRect(imgViewRect);
+	}
+
 	if (drawFalseColorImg)
 		painter->drawImage(imgViewRect, falseColorImg, imgRect);		// TODO: add storage class for falseColorImg
-	else {
-		QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+	else 
 		painter->drawImage(imgViewRect, imgQt, QRect(QPoint(), imgQt.size()));
-	}
 
 }
 
