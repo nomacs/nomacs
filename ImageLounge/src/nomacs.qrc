@@ -49,5 +49,7 @@
         <file>img/portrait.png</file>
         <file>img/printer.png</file>
         <file>img/print-setup.png</file>
+        <file>img/player-first.png</file>
+        <file>img/player-last.png</file>
     </qresource>
 </RCC>

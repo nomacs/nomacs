@@ -467,6 +467,8 @@ public:
 	};
 
 signals:
+	void lastSignal(bool silent = true);
+	void firstSignal(bool silent = true);
 	void nextSignal(bool silent = true);
 	void previousSignal(bool silent = true);
 	void saveImageSignal();
@@ -486,9 +488,20 @@ public slots:
 		hideTimer->stop();
 		emit nextSignal();
 	};
+
 	void previous() {
 		hideTimer->stop();
 		emit previousSignal();
+	};
+
+	void first() {
+		hideTimer->stop();
+		emit firstSignal();
+	};
+
+	void last() {
+		hideTimer->stop();
+		emit lastSignal();
 	};
 
 	virtual void show(int ms = 0);
@@ -503,6 +516,8 @@ protected:
 	DkButton* previousButton;
 	DkButton* nextButton;
 	DkButton* playButton;
+	DkButton* firstButton;
+	DkButton* lastButton;
 	QWidget* container;
 
 	QVector<QAction*> actions;

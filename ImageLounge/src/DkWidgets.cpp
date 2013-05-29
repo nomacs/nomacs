@@ -1654,6 +1654,9 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	QSize s;
 	float opacity = 1.0f;
 
+	//// debug (show button outline)
+	//painter.drawRect(QRect(QPoint(), size()));
+
 	if (!isEnabled())
 		opacity = 0.5f;
 	else if(!mouseOver)
@@ -2001,18 +2004,30 @@ void DkPlayer::init() {
 	nextButton->keepAspectRatio = false;
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
 
+	icon = QPixmap(":/nomacs/img/player-first.png");
+	firstButton = new DkButton(icon, tr("first"), this);
+	firstButton->keepAspectRatio = false;
+	connect(firstButton, SIGNAL(pressed()), this, SLOT(first()));
+
+	icon = QPixmap(":/nomacs/img/player-last.png");
+	lastButton = new DkButton(icon, tr("last"), this);
+	lastButton->keepAspectRatio = false;
+	connect(lastButton, SIGNAL(pressed()), this, SLOT(last()));
+
 	// now add to layout
 	container = new QWidget(this);
 	QHBoxLayout *layout = new QHBoxLayout(container);
 	layout->setContentsMargins(0,0,0,0);
 	layout->setSpacing(0);
+	layout->addWidget(firstButton);
 	layout->addWidget(previousButton);
 	layout->addWidget(playButton);
 	layout->addWidget(nextButton);
+	layout->addWidget(lastButton);
 
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	setMinimumSize(15, 5);
-	setMaximumSize(304, 118);
+	setMaximumSize(476, 118);
 }
 
 void DkPlayer::resizeEvent(QResizeEvent *event) {
