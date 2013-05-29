@@ -864,8 +864,12 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 	if (imgStorage.hasImage()) {
 		painter.setWorldTransform(worldMatrix);
 
-		if (!forceFastRendering && imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
-			painter.setRenderHint(QPainter::SmoothPixmapTransform);
+		// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
+		if (!forceFastRendering && // force?
+			fabs(imgMatrix.m11()*worldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
+			imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f) {	// > max zoom level
+				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+		}
 
 		draw(&painter);
 
@@ -1675,9 +1679,13 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	if (imgStorage.hasImage()) {
 		painter.setWorldTransform(worldMatrix);
 
-		if (imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f)
+		// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
+		if (!forceFastRendering && // force?
+			fabs(imgMatrix.m11()*worldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
+			imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f) {	// > max zoom level
 			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-		
+		}
+
 		draw(&painter);
 		//Now disable matrixWorld for overlay display
 		painter.setWorldMatrixEnabled(false);

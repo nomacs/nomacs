@@ -1055,6 +1055,9 @@ void DkImageLoader::initFileFilters() {
 
 	openFilters.prepend("Image Files (" + fileFilters.join(" ") + ")");
 
+#ifdef Q_OS_WIN
+	DkImageLoader::fileFilters.append("*.lnk");
+#endif
 }
 
 /**
@@ -2582,28 +2585,26 @@ QString DkImageLoader::getCurrentFilter() {
  * @param fileInfo the file info of the file to be validated.
  * @return bool true if the file format is supported.
  **/ 
-bool DkImageLoader::isValid(QFileInfo& fileInfo) {
-
-	if (!fileInfo.exists())
-		return false;
+bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 
 	printf("accepting file...\n");
 
-	QString fileName = fileInfo.fileName();
+	QFileInfo fInfo = fileInfo;
+	if (fInfo.isSymLink())
+		fInfo = fileInfo.symLinkTarget();
+
+	if (!fInfo.exists())
+		return false;
+
+	QString fileName = fInfo.fileName();
 	qDebug() << "filename: " << fileName;
+	
 	for (int idx = 0; idx < fileFilters.size(); idx++) {
 
 		QRegExp exp = QRegExp(fileFilters.at(idx), Qt::CaseInsensitive);
 		exp.setPatternSyntax(QRegExp::Wildcard);
 		if (exp.exactMatch(fileName))
 			return true;
-
-		// for windows shortcuts
-		QRegExp lnkExp = QRegExp(fileFilters.at(idx) + "*.lnk", Qt::CaseInsensitive);
-		lnkExp.setPatternSyntax(QRegExp::Wildcard);
-		if (lnkExp.exactMatch(fileName))
-			return true;
-
 	}
 
 	printf("I did not accept... honestly...\n");

@@ -669,7 +669,7 @@ public:
 	QStringList keywords;
 	QStringList folderKeywords;		// are deleted if a new folder is opened
 
-	static bool isValid(QFileInfo& fileInfo);
+	static bool isValid(const QFileInfo& fileInfo);
 	//static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
 	static QStringList getFoldersRecursive(QDir dir);
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
