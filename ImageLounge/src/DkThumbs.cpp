@@ -65,11 +65,29 @@ void DkThumbsLoader::init() {
 	forceSave = false;
 	forceLoad = false;
 
+	// here comes hot stuff (for a better update policy)
+	std::vector<DkThumbNail> oldThumbs = *thumbs;
+	thumbs->clear();
+
 	DkTimer dt;
 	for (int idx = 0; idx < files.size(); idx++) {
 		QFileInfo cFile = QFileInfo(dir, files[idx]);
-		thumbs->push_back(DkThumbNail(cFile));
+
+		DkThumbNail cThumb = DkThumbNail(cFile);
+
+		for (unsigned int idx = 0; idx < oldThumbs.size(); idx++) {
+
+			if (cThumb == oldThumbs[idx]) {
+				cThumb = oldThumbs[idx];
+				break;
+			}
+		}
+
+		thumbs->push_back(cThumb);
 	}
+
+	//thumbs->clear();
+	//thumbs = &newThumbs;
 	qDebug() << "thumb stubs loaded in: " << QString::fromStdString(dt.getTotal());
 }
 

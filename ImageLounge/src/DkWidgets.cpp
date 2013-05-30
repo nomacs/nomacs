@@ -187,9 +187,9 @@ void DkFilePreview::init() {
 
 	// load a default image
 	QImageReader imageReader(":/nomacs/img/dummy-img.png");
-	float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
-	QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
-	imageReader.setScaledSize(newSize);
+	//float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
+	//QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
+	//imageReader.setScaledSize(newSize);
 	stubImg = imageReader.read();
 
 	// wheel label
@@ -250,15 +250,15 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
 	thumbRects.clear();
 
-	// update stub??
-	if (stubImg.width() != DkSettings::Display::thumbSize) {
-		// load a default image
-		QImageReader imageReader(":/nomacs/img/dummy-img.png");
-		float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
-		QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
-		imageReader.setScaledSize(newSize);
-		stubImg = imageReader.read();
-	}
+	//// update stub??
+	//if (stubImg.width() != DkSettings::Display::thumbSize) {
+	//	// load a default image
+	//	QImageReader imageReader(":/nomacs/img/dummy-img.png");
+	//	float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
+	//	QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
+	//	imageReader.setScaledSize(newSize);
+	//	stubImg = imageReader.read();
+	//}
 
 	DkTimer dt;
 
@@ -271,7 +271,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			continue;
 		}
 
-		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage().copy() : stubImg;
+		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage() : stubImg;
 		
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 		if (height()-yOffset < r.height())
@@ -723,7 +723,7 @@ void DkFilePreview::indexDir(int force) {
 				thumbsLoader = 0;
 			}
 
-			thumbs.clear();
+			//thumbs.clear();
 
 			if (dir.exists()) {
 
@@ -733,6 +733,8 @@ void DkFilePreview::indexDir(int force) {
 				thumbsLoader->start();
 				thumbsDir = dir;
 			}
+			else
+				thumbs.clear();
 		}
 	}
 
