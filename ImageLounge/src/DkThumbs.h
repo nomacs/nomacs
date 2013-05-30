@@ -71,6 +71,11 @@ public:
 	 **/ 
 	~DkThumbNail() {};
 
+	friend bool DkThumbNail::operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
+
+		return lt.file == rt.file;
+	};
+
 	/**
 	 * Sets the thumbnail image.
 	 * @param img the thumbnail

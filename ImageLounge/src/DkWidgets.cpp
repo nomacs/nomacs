@@ -187,11 +187,15 @@ void DkFilePreview::init() {
 
 	selected = -1;
 
+	//// load a default image
+	//QImageReader imageReader(":/nomacs/img/dummy-img.png");
+	//float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
+	//QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
+	//imageReader.setScaledSize(newSize);
+	//stubImg = imageReader.read();
+
 	// load a default image
 	QImageReader imageReader(":/nomacs/img/dummy-img.png");
-	float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
-	QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
-	imageReader.setScaledSize(newSize);
 	stubImg = imageReader.read();
 
 	// wheel label
@@ -253,16 +257,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
 	thumbRects.clear();
 
-	// update stub??
-	if (stubImg.width() != DkSettings::Display::thumbSize) {
-		// load a default image
-		QImageReader imageReader(":/nomacs/img/dummy-img.png");
-		float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
-		QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
-		imageReader.setScaledSize(newSize);
-		stubImg = imageReader.read();
-	}
-
 	DkTimer dt;
 
 	for (unsigned int idx = 0; idx < thumbs.size(); idx++) {
@@ -274,7 +268,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			continue;
 		}
 
-		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage().copy() : stubImg;
+		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage() : stubImg;
 		
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 		if (height()-yOffset < r.height())
@@ -732,8 +726,6 @@ void DkFilePreview::indexDir(int force) {
 				thumbsLoader = 0;
 			}
 
-			thumbs.clear();
-
 			if (dir.exists()) {
 
 				thumbsLoader = new DkThumbsLoader(&thumbs, dir, files);
@@ -742,6 +734,9 @@ void DkFilePreview::indexDir(int force) {
 				thumbsLoader->start();
 				thumbsDir = dir;
 			}
+			else
+				thumbs.clear();
+
 		}
 	}
 
