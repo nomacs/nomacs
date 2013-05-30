@@ -131,6 +131,8 @@ int main(int argc, char *argv[]) {
 
 	if (args.size() > 1)
 		w->viewport()->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
+	else
+		w->viewport()->loadFile(QFileInfo("C:\\fotobox\\3_gallery_nomacs.png"));
 
 #ifdef Q_WS_MAC
 	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
