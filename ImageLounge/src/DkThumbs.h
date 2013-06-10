@@ -71,7 +71,7 @@ public:
 	 **/ 
 	~DkThumbNail() {};
 
-	friend bool DkThumbNail::operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
+	friend bool operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
 
 		return lt.file == rt.file;
 	};
