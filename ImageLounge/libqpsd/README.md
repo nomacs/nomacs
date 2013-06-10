@@ -38,7 +38,7 @@ Color Mode
 
 	Duotone - SUPPORTED
 
-	Lab - SUPPORTED (minor bug on Lab to RGB computation exists)
+	Lab - SUPPORTED
 	
 Depth
 
@@ -46,17 +46,21 @@ Depth
 	
 	8-bits - SUPPORTED
 	
-	16-bits - SUPPORTED (RGB ONLY)*
+    16-bits - SUPPORTED
 	
-	32-bits - SUPPORTED (RGB ONLY)*
+	*16-bit depth is scaled down to 8-bits
 	
-	*16-bit and 32-bit depths are scaled down to 8-bits
 
+BINARIES
+
+	Binaries can be downloaded from http://sourceforge.net/projects/libqpsd/files/
 
 CONTRIBUTE
 
 	If you have an existing PSD/PSB file with different color mode or compression. Feel free to send me
 	an email at ronmarti18@gmail.com
+	
+	I need samples with zip-compressed layers (zip w/ or w/o prediction). :P
 	
 	If you want to contribute to the code, just fork the project and pull requests.
 
