@@ -27,7 +27,7 @@
         <location filename="../src/DkMetaData.cpp" line="468"/>
         <source>this file format does not support exif
 </source>
-        <translation>Es tuat mar load, abr des Bildlä: %1 unterstütz des netta...</translation>
+        <translation>Es Format vom Bildlä unterstützt kao exif</translation>
     </message>
     <message>
         <location filename="../src/DkMetaData.cpp" line="519"/>
@@ -380,7 +380,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkSettings.cpp" line="737"/>
         <source>Highlight Color</source>
-        <translation>Farb zum ussarheba:</translation>
+        <translation>Farb zum ussarheba</translation>
     </message>
     <message>
         <location filename="../src/DkSettings.cpp" line="740"/>
@@ -1456,7 +1456,7 @@ Do you want to show them again?</source>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="829"/>
         <source>Show &amp;Histogram</source>
-        <translation>s&apos;Histogramm azoaga</translation>
+        <translation>s&apos;&amp;Histogramm azoaga</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="831"/>
@@ -1613,7 +1613,7 @@ denna: CTRL+SHIFT+ALT+B</translation>
         <source>You should first reduce opacity
  before working through the window.</source>
         <translation>Zerscht d&apos;Durchsichtigkeit ändera
-bevor ma mit deam schaffat</translation>
+bevor ma mit deam schaffat.</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1706"/>
@@ -1670,7 +1670,7 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1866"/>
         <source>Image Index:</source>
-        <translation>dr Index vom Bildlä</translation>
+        <translation>dr Index vom Bildlä:</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="1935"/>
@@ -1680,7 +1680,7 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2179"/>
         <source>Sorry, I could not create a wallpaper...</source>
-        <translation>Es tuat mar load, aber dr Hintergrund ka net gesetzt wörra</translation>
+        <translation>Es tuat mar load, aber dr Hintergrund ka net gesetzt wörra...</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2221"/>
@@ -1695,7 +1695,7 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2632"/>
         <source>Downloading update...</source>
-        <translation>All dra</translation>
+        <translation>All dra...</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2632"/>
@@ -1737,7 +1737,7 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2759"/>
         <source>Sends the current image to all clients.</source>
-        <translation>verschickt es jetziga Bildlä</translation>
+        <translation>verschickt es jetziga Bildlä.</translation>
     </message>
     <message>
         <location filename="../src/DkNoMacs.cpp" line="2776"/>
@@ -2105,12 +2105,12 @@ bevor ma mit deam schaffat</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="1651"/>
         <source>Sorry, but the image size %1 x %2 is illegal.</source>
-        <translation>Es tuat mar load, abr des d&apos;Größe %1 x %2 goat net</translation>
+        <translation>Es tuat mar load, abr des d&apos;Größe %1 x %2 goat net.</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="1709"/>
         <source>Sorry, the image is too large: %1</source>
-        <translation>Es tuat mar load, abr es Bildlä isch z&apos;groß</translation>
+        <translation>Es tuat mar load, abr es Bildlä %1 isch z&apos;groß</translation>
     </message>
 </context>
 <context>
@@ -2442,7 +2442,7 @@ Erstell grad Vorasicht</translation>
 Creating thumbnails...
 </source>
         <translation>
-Erstell gad Vorasichta</translation>
+Erstell gad Vorasichta...</translation>
     </message>
     <message>
         <location filename="../src/DkWidgets.cpp" line="1091"/>
@@ -2522,17 +2522,17 @@ Erstell gad Vorasichta</translation>
     <message>
         <location filename="../src/DkDialog.cpp" line="231"/>
         <source>*.%1 is already supported.</source>
-        <translation>*.%1 würd scho unterstützt</translation>
+        <translation>*.%1 würd scho unterstützt.</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="235"/>
         <source>*.%1 is supported.</source>
-        <translation>*.%1 würd unterstützt</translation>
+        <translation>*.%1 würd unterstützt.</translation>
     </message>
     <message>
         <location filename="../src/DkDialog.cpp" line="250"/>
         <source>Please name the new format:</source>
-        <translation>An Nama fürs neue Format</translation>
+        <translation>An Nama fürs neue Format:</translation>
     </message>
 </context>
 <context>
