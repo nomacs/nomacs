@@ -328,16 +328,20 @@ set (NOMACS_RESOURCES
 )
 
 set(NOMACS_TRANSLATIONS
-		translations/nomacs_en.ts
-		translations/nomacs_de.ts
-		translations/nomacs_ru.ts
-		translations/nomacs_zh.ts
 		translations/nomacs_als.ts
-		translations/nomacs_pl.ts
 		translations/nomacs_az.ts
+		translations/nomacs_cs.ts		
+		translations/nomacs_de.ts
+		translations/nomacs_en.ts
+		translations/nomacs_es.ts		
+		translations/nomacs_it.ts
+		translations/nomacs_pl.ts
+		translations/nomacs_pt.ts
+		translations/nomacs_ru.ts
 		translations/nomacs_sk.ts
-		translations/nomacs_es.ts
-		translations/nomacs_sr.ts
+		translations/nomacs_sl.ts
+		translations/nomacs_sr.ts		
+		translations/nomacs_zh.ts		
 )
 
 if (MSVC) # some settings for visual studio
