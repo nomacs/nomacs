@@ -907,8 +907,10 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 
 bool DkBaseViewPort::event(QEvent *event) {
 
-	if (event->type() == QEvent::Gesture)
-		return gestureEvent(static_cast<QGestureEvent*>(event));
+	if (event->type() == QEvent::NativeGesture)
+		return nativeGestureEvent(static_cast<QNativeGestureEvent*>(event));
+	//else if (event->type() == QEvent::Gesture)
+	//	return gestureEvent(static_cast<QGestureEvent*>(event));
 
 
 	if (event->type() == QEvent::Paint)
@@ -920,6 +922,65 @@ bool DkBaseViewPort::event(QEvent *event) {
 
 
 }
+
+bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
+
+	qDebug() << "native gesture...";
+
+	switch (event->gestureType) {
+	case  QNativeGestureEvent::Zoom:
+
+		if (lastZoom != 0 && startZoom != 0) {
+			float scale = (event->argument-lastZoom)/startZoom;
+			
+			if (fabs(scale) > FLT_EPSILON) {
+				zoom(1.0f+scale, event->position-QWidget::mapToGlobal(pos()));
+				lastZoom = event->argument;
+			}
+		}
+		else if (startZoom == 0)
+			startZoom = event->argument;
+		else if (lastZoom == 0)
+			lastZoom = event->argument;
+
+
+
+		qDebug() << "zooming: " << event->argument << " pos: " << event->position << " angle: " << event->angle;
+		break;
+	case QNativeGestureEvent::Pan:
+		
+		
+		qDebug() << "panning....";
+		break;
+	case QNativeGestureEvent::Rotate:
+		qDebug() << "rotating: " << event->angle;
+	case QNativeGestureEvent::Swipe:
+		qDebug() << "SWIPPING..........................";
+		break;
+		//if (event->gestureType == QNativeGestureEvent::Pan) {
+		//	QPoint dxy = event->position-lastPos;
+		//	if (dxy.y() != 0)
+		//		verticalScrollBar()->setValue(verticalScrollBar()->value()-dxy.y());
+		//}
+	case QNativeGestureEvent::GestureBegin:
+		posGrab = event->position;
+		lastZoom = event->argument;
+		startZoom = event->argument;
+		qDebug() << "beginning";
+		break;
+	case QNativeGestureEvent::GestureEnd:
+		posGrab = QPoint();
+		lastZoom = 0;
+		startZoom = 0;
+		qDebug() << "ending...";
+		break;
+	default:
+		return false;	// ignored type
+	}
+
+	return true;
+}
+
 
 bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 
@@ -1031,7 +1092,7 @@ void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 	factor /= -1200.0f;
 	factor += 1.0f;
 
-	zoom( factor, event->pos());
+	zoom(factor, event->pos());
 }
 
 void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
