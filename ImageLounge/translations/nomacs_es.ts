@@ -360,7 +360,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="786"/>
       <source>English</source>
-      <translation>Inglés</translation>
+      <translation>Español</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="799"/>
