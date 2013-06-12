@@ -58,6 +58,8 @@
 //#pragma comment (lib, "dwmapi.lib")
 //#endif
 
+#include "extern/qevent_p.h"
+
 
 // my stuff
 #include "DkImage.h"
@@ -310,6 +312,20 @@ class DllExport DkBaseViewPort : public QGraphicsView {
 	Q_OBJECT
 
 public:
+	
+	enum swipes{
+		no_swipe = 0, // dummy for now
+		next_image,
+		prev_image,
+		open_thumbs,
+		close_thumbs,
+		open_metadata,
+		close_metadata,
+		
+		swipes_end
+	};
+	
+	
 	DkBaseViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
 	virtual ~DkBaseViewPort();
 
@@ -387,6 +403,7 @@ public slots:
 
 protected:
 	virtual bool event(QEvent *event);
+	virtual bool nativeGestureEvent(QNativeGestureEvent* event);
 	virtual bool gestureEvent(QGestureEvent* event);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void keyReleaseEvent(QKeyEvent *event);
@@ -397,6 +414,9 @@ protected:
 	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 	virtual void contextMenuEvent(QContextMenuEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
+
+	virtual int swipeRecognition(QNativeGestureEvent* event) { return no_swipe;};	// dummy
+	virtual void swipeAction(int swipeGesture) {};
 
 	QPainter* painter;
 	Qt::KeyboardModifier altMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
@@ -420,6 +440,9 @@ protected:
 	QPointF posGrab;
 	float minZoom;
 	float maxZoom;
+	float lastZoom;
+	float startZoom;
+	int swipeGesture;
 
 	bool forceFastRendering;
 	bool blockZooming;
@@ -545,6 +568,9 @@ protected:
 	DkImageLoader* loader;
 
 	// functions
+	virtual int swipeRecognition(QNativeGestureEvent* event);	// dummy
+	virtual void swipeAction(int swipeGesture);
+
 	virtual void loadMovie();
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
 	virtual void drawBackground(QPainter *painter);
