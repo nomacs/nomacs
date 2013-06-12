@@ -958,7 +958,8 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 		break;
 	case QNativeGestureEvent::Pan:
 
-		swipeGesture = swipeRecognition(event);
+		//if (!cZoom)	// sometimes a pan gesture is triggered at the end of a pinch gesture
+			swipeGesture = swipeRecognition(event);
 
 		qDebug() << "panning....";
 		break;
@@ -976,6 +977,7 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 		posGrab = event->position;
 		lastZoom = cZoom;
 		startZoom = cZoom;
+		swipeGesture = no_swipe;
 		qDebug() << "beginning";
 		break;
 	case QNativeGestureEvent::GestureEnd:
@@ -1954,15 +1956,17 @@ int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	DkVector vec(event->position.x()-posGrab.x(), event->position.y()-posGrab.y());
 	float length = vec.norm();
 
-	if (vec.norm() < 50)
+	if (fabs(vec.norm()) < 50) {
+		qDebug() << "ignoring, too small: " << vec.norm();
 		return no_swipe;
+	}
 
 	double angle = DkMath::normAngleRad(vec.angle(DkVector(0,1)), 0.0, CV_PI);
 	bool horizontal = false;
 
 	if (angle > CV_PI*0.3 && angle < CV_PI*0.6)
 		horizontal = true;
-	else if (angle < 0.2*CV_PI || angle >= 0.8*CV_PI)
+	else if (angle < 0.2*CV_PI || angle > 0.8*CV_PI)
 		horizontal = false;
 	else
 		return no_swipe;	// angles ~45° are not accepted
