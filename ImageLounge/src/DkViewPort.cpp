@@ -1113,6 +1113,8 @@ void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 
 void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 
+	qDebug() << "viewport event...";
+
 	// send this event to my parent...
 	QWidget::contextMenuEvent(event);
 }

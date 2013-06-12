@@ -543,20 +543,23 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 					//if (fileLabel->height() < height())
 					//	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
 					setToolTip(thumbs.at(selected).getFile().fileName());
+					setStatusTip(thumbs.at(selected).getFile().fileName());
 				}
 				break;
 			}
 		}
 
-		if (selected != -1 || selected != oldSelection) {
-			
+		if (selected != -1 || selected != oldSelection)
 			update();
-		}
 		//else if (selected == -1)
 		//	fileLabel->hide();
 	}
 	else
 		selected = -1;
+
+	if (selected == -1)
+		setToolTip(tr("CTRL+Zoom resizes the thumbnails"));
+
 
 	lastMousePos = event->pos();
 
