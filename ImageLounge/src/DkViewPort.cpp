@@ -909,8 +909,8 @@ bool DkBaseViewPort::event(QEvent *event) {
 
 	if (event->type() == QEvent::NativeGesture)
 		return nativeGestureEvent(static_cast<QNativeGestureEvent*>(event));
-	//else if (event->type() == QEvent::Gesture)
-	//	return gestureEvent(static_cast<QGestureEvent*>(event));
+	else if (event->type() == QEvent::Gesture)
+		return gestureEvent(static_cast<QGestureEvent*>(event));
 
 
 	if (event->type() == QEvent::Paint)
@@ -948,8 +948,9 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 		qDebug() << "zooming: " << event->argument << " pos: " << event->position << " angle: " << event->angle;
 		break;
 	case QNativeGestureEvent::Pan:
-		
-		
+
+		swipeGesture = swipeRecognition(event);
+
 		qDebug() << "panning....";
 		break;
 	case QNativeGestureEvent::Rotate:
@@ -969,6 +970,9 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 		qDebug() << "beginning";
 		break;
 	case QNativeGestureEvent::GestureEnd:
+		
+		swipeAction(swipeGesture);
+		
 		posGrab = QPoint();
 		lastZoom = 0;
 		startZoom = 0;
@@ -1926,6 +1930,91 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 	if (event->modifiers() == altMod)
 		tcpSynchronize();
+
+}
+
+int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
+	
+	if (posGrab.isNull()) {
+		posGrab = event->position;
+		return no_swipe;
+	}
+
+	DkVector vec(event->position.x()-posGrab.x(), event->position.y()-posGrab.y());
+	float length = vec.norm();
+
+	if (vec.norm() < 50)
+		return no_swipe;
+
+	double angle = DkMath::normAngleRad(vec.angle(DkVector(0,1)), 0.0, CV_PI);
+	bool horizontal = false;
+
+	if (angle > CV_PI*0.3 && angle < CV_PI*0.6)
+		horizontal = true;
+	else if (angle < 0.2*CV_PI || angle >= 0.8*CV_PI)
+		horizontal = false;
+	else
+		return no_swipe;	// angles ~45° are not accepted
+
+	QPoint startPos = QWidget::mapFromGlobal(posGrab.toPoint());
+
+	qDebug() << "vec: " << vec.x << ", " << vec.y;
+
+	if (horizontal) {
+
+		if (vec.x < 0)
+			return next_image;
+		else
+			return prev_image;
+
+	}
+	// upper part of the canvas is thumbs
+	else if (!horizontal && startPos.y() < height()*0.5f) {
+
+		// downward gesture is opening
+		if (vec.y > 0)
+			return open_thumbs;
+		else
+			return close_thumbs;
+	}
+	// lower part of the canvas is thumbs
+	else if (!horizontal && startPos.y() > height()*0.5f) {
+
+		// upward gesture is opening
+		if (vec.y < 0)
+			return open_metadata;
+		else
+			return close_metadata;
+	}
+
+	return no_swipe;
+
+}
+
+void DkViewPort::swipeAction(int swipeGesture) {
+
+	switch (swipeGesture) {
+	case next_image:
+		loadNextFileFast();
+		break;
+	case prev_image:
+		loadPrevFileFast();
+		break;
+	case open_thumbs:
+		controller->showPreview(true);
+		break;
+	case close_thumbs:
+		controller->showPreview(false);
+		break;
+	case open_metadata:
+		controller->showMetaData(true);
+		break;
+	case close_metadata:
+		controller->showMetaData(false);
+		break;
+	default:
+		break;
+	}
 
 }
 

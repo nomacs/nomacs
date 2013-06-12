@@ -415,6 +415,9 @@ protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
 
+	virtual int swipeRecognition(QNativeGestureEvent* event) { return no_swipe;};	// dummy
+	virtual void swipeAction(int swipeGesture) {};
+
 	QPainter* painter;
 	Qt::KeyboardModifier altMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
 	Qt::KeyboardModifier ctrlMod;
@@ -565,6 +568,9 @@ protected:
 	DkImageLoader* loader;
 
 	// functions
+	virtual int swipeRecognition(QNativeGestureEvent* event);	// dummy
+	virtual void swipeAction(int swipeGesture);
+
 	virtual void loadMovie();
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
 	virtual void drawBackground(QPainter *painter);
