@@ -164,6 +164,16 @@ void DkNoMacs::init() {
 
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
+	connect(viewport(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
+	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
+	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
+
+	connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
+	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
+
 }
 
 #ifdef Q_WS_WIN	// windows specific versioning
@@ -1133,7 +1143,7 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 	else
 		enterFullScreen();
 
-	QMainWindow::mouseDoubleClickEvent(event);
+	//QMainWindow::mouseDoubleClickEvent(event);
 }
 
 
@@ -1147,12 +1157,12 @@ void DkNoMacs::mousePressEvent(QMouseEvent* event) {
 	    emit fifthButtonPressed();
 	}
 
-	QMainWindow::mousePressEvent(event);
+	//QMainWindow::mousePressEvent(event);
 }
 
 void DkNoMacs::mouseReleaseEvent(QMouseEvent *event) {
 
-	QMainWindow::mouseReleaseEvent(event);
+	//QMainWindow::mouseReleaseEvent(event);
 }
 
 void DkNoMacs::contextMenuEvent(QContextMenuEvent *event) {
@@ -1189,7 +1199,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			qDebug() << "creating drag...\n";
 	}
 
-	QMainWindow::mouseMoveEvent(event);
+	//QMainWindow::mouseMoveEvent(event);
 }
 
 bool DkNoMacs::gestureEvent(QGestureEvent *event) {
@@ -1270,8 +1280,8 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 
 	printf("drag enter event\n");
 
-	if (event->source() == this)
-		return;
+	//if (event->source() == this)
+	//	return;
 
 	if (event->mimeData()->hasFormat("network/sync-dir")) {
 		event->accept();
@@ -1291,7 +1301,7 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 		event->acceptProposedAction();
 	}
 
-	QMainWindow::dragEnterEvent(event);
+	//QMainWindow::dragEnterEvent(event);
 
 }
 
@@ -2945,16 +2955,8 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 
 #endif
 	
-	// title signals
-	connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
-	connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
-	connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
-	connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
-	connect(vp, SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
-	connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
+	// sync signals
 	connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
-	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-	connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 	vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
@@ -3001,16 +3003,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		if (!DkSettings::Sync::updateDialogShown && QDate::currentDate() > DkSettings::Sync::lastUpdateCheck)
 			updater->checkForUpdated();
 #endif
-
-		// title signals
-		connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-		connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-		connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
-		connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
-		connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
-		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
-		connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-		connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
@@ -3169,17 +3161,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		if (!DkSettings::Sync::updateDialogShown && QDate::currentDate() > DkSettings::Sync::lastUpdateCheck)
 			updater->checkForUpdated();	// TODO: is threaded??
 #endif
-
-		// title signals
-		connect(vp, SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-		connect(vp->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-		connect(vp->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
-		connect(this, SIGNAL(saveTempFileSignal(QImage)), vp->getImageLoader(), SLOT(saveTempFile(QImage)));
-		connect(vp, SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
-		connect(vp, SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
-		//connect(vp, SIGNAL(newClientConnectedSignal()), this, SLOT(newClientConnected()));
-		connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-		connect(vp->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
