@@ -92,6 +92,8 @@ Var pbm
 Var pgm
 Var xbm
 Var xpm
+Var jp2k
+Var webp
 
 
 Var jpg_state
@@ -102,6 +104,8 @@ Var pbm_state
 Var pgm_state
 Var xbm_state
 Var xpm_state
+Var jp2k_state
+Var webp_state
 
 ; Partially Supported
 Var checkAllPartially
@@ -117,6 +121,7 @@ Var mpo
 Var jps
 Var pns
 Var dng
+Var psd
 
 Var gif_state
 Var nef_state
@@ -129,6 +134,7 @@ Var mpo_state
 Var jps_state
 Var pns_state
 Var dng_state
+Var psd_state
 
 Var params
 Var fileAss 
@@ -166,6 +172,9 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 10u 95u 15% 10u "bmp"
 	Pop $bmp
 
+	${NSD_CreateCheckbox} 10u 110u 15% 10u "webp"
+	Pop $webp
+
 	${NSD_CreateCheckbox} 70u 50u 15% 10u "pbm"
 	Pop $pbm
 
@@ -178,6 +187,9 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 70u 95u 15% 10u "xpm"
 	Pop $xpm
 
+	${NSD_CreateCheckbox} 70u 110u 15% 10u "jp2k"
+	Pop $jp2k
+	
 	${NSD_CreateGroupBox} 0 18u 40% 120u "Fully supported:";
 	Pop $FullySupportedGroupBox
 	
@@ -218,7 +230,10 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 220u 110u 15% 10u "pns"
 	Pop $pns
 	
+	${NSD_CreateCheckbox} 220u 125u 15% 10u "psd"
+	Pop $psd
 
+	
 	${NSD_CreateGroupBox} 150u 18u 40% 120u "Partially supported:";
 	Pop $PartiallySupportedGroupBox
 	
@@ -255,6 +270,8 @@ Function fileAssociationFinished
 	${NSD_GetState} $pgm $pgm_state
 	${NSD_GetState} $xbm $xbm_state
 	${NSD_GetState} $xpm $xpm_state
+	${NSD_GetState} $jp2k $jp2k_state
+	${NSD_GetState} $webp $webp_state
 
 	${If} $jpg_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".jpg" "nomacs.file.jpg" "JPG Image"
@@ -289,6 +306,15 @@ Function fileAssociationFinished
 	${If} $xpm_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"
 	${EndIf}
+
+	${If} $jp2k_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".jp2k" "nomacs.file.jp2k" "JPEG2000 Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".jp2" "nomacs.file.jp2" "JPEG2000 Image"
+	${EndIf}
+
+	${If} $webp_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.xpm" "WebP Image"
+	${EndIf}
 	
 	; PARTIALLY SUPPORTED
 	${NSD_GetState} $gif $gif_state
@@ -302,6 +328,7 @@ Function fileAssociationFinished
 	${NSD_GetState} $jps $jps_state
 	${NSD_GetState} $dng $dng_state
 	${NSD_GetState} $pns $pns_state
+	${NSD_GetState} $psd $psd_state
 
 	${If} $gif_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
@@ -346,6 +373,10 @@ Function fileAssociationFinished
 	${If} $pns_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
 	${EndIf}
+
+	${If} $psd_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".psd" "nomacs.file.psd" "Photoshop Image"
+	${EndIf}
 	
 	Call RefreshShellIcons
 	
@@ -362,6 +393,8 @@ Function checkAllFully
 		${NSD_SetState} $pgm ${BST_CHECKED}
 		${NSD_SetState} $xbm ${BST_CHECKED}
 		${NSD_SetState} $xpm ${BST_CHECKED}
+		${NSD_SetState} $jp2k ${BST_CHECKED}
+		${NSD_SetState} $webp ${BST_CHECKED}
 	${Else}
 		${NSD_SetState} $jpg ${BST_UNCHECKED}
 		${NSD_SetState} $png ${BST_UNCHECKED}
@@ -371,6 +404,8 @@ Function checkAllFully
 		${NSD_SetState} $pgm ${BST_UNCHECKED}
 		${NSD_SetState} $xbm ${BST_UNCHECKED}
 		${NSD_SetState} $xpm ${BST_UNCHECKED}	
+		${NSD_SetState} $jp2k ${BST_UNCHECKED}	
+		${NSD_SetState} $webp ${BST_UNCHECKED}	
 	${EndIf}
 	
 
@@ -391,6 +426,7 @@ Function checkAllPartially
 		${NSD_SetState} $jps ${BST_CHECKED}
 		${NSD_SetState} $dng ${BST_CHECKED}
 		${NSD_SetState} $pns ${BST_CHECKED}
+		${NSD_SetState} $psd ${BST_CHECKED}
 	${Else}
 		${NSD_SetState} $gif ${BST_UNCHECKED}
 		${NSD_SetState} $nef ${BST_UNCHECKED}
@@ -403,6 +439,7 @@ Function checkAllPartially
 		${NSD_SetState} $jps ${BST_UNCHECKED}
 		${NSD_SetState} $dng ${BST_UNCHECKED}
 		${NSD_SetState} $pns ${BST_UNCHECKED}
+		${NSD_SetState} $psd ${BST_UNCHECKED}
 	${EndIf}
 	
 
@@ -481,6 +518,8 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pgm" "nomacs.file.pgm" "PGM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xbm" "nomacs.file.xbm" "XBM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jp2k" "nomacs.file.xpm" "JPEG2000 Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.xpm" "WebP Image"
 
 				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "Nikon Raw"
@@ -493,6 +532,7 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".dng" "nomacs.file.dng" "Digital Negative"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".psd" "nomacs.file.psd" "Photoshop Image"
 				
 			${elseif} $fileAss S== "AllFullySupported"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jpg" "nomacs.file.jpg" "JPG Image"
@@ -504,7 +544,10 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pbm" "nomacs.file.pbm" "PBM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pgm" "nomacs.file.pgm" "PGM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xbm" "nomacs.file.xbm" "XBM Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
+				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jp2k" "nomacs.file.xpm" "JPEG2000 Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.xpm" "WebP Image"
+				
 			${elseif} $fileAss S== "AllPartiallySupported"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "Nikon Raw"
@@ -517,6 +560,7 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".dng" "nomacs.file.dng" "Digital Negative"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".psd" "nomacs.file.psd" "Photoshop Image"				
 			${endif}
 		isNotSilent:
 
@@ -630,7 +674,9 @@ Section Uninstall
   ${UnRegisterExtension} ".pbm" "nomacs.file.pbm"
   ${UnRegisterExtension} ".pgm" "nomacs.file.pgm"
   ${UnRegisterExtension} ".xbm" "nomacs.file.xbm"
-  ${UnRegisterExtension} ".xpm" "nomacs.file.xpm"  
+  ${UnRegisterExtension} ".xpm" "nomacs.file.xpm"
+  ${UnRegisterExtension} ".jp2k" "nomacs.file.jp2k"
+  ${UnRegisterExtension} ".webp" "nomacs.file.webp" 
 
   ${UnRegisterExtension} ".gif" "nomacs.file.gif"
   ${UnRegisterExtension} ".nef" "nomacs.file.nef"  
@@ -643,9 +689,7 @@ Section Uninstall
   ${UnRegisterExtension} ".jps" "nomacs.file.jps"  
   ${UnRegisterExtension} ".dng" "nomacs.file.dng"  
   ${UnRegisterExtension} ".pns" "nomacs.file.pns"  
-
-
-
+  ${UnRegisterExtension} ".psd" "nomacs.file.psd"  
   
   SetAutoClose true
 SectionEnd
