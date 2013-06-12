@@ -58,8 +58,9 @@
 //#pragma comment (lib, "dwmapi.lib")
 //#endif
 
+#ifndef QT_NO_GESTURES
 #include "extern/qevent_p.h"
-
+#endif
 
 // my stuff
 #include "DkImage.h"
@@ -403,8 +404,6 @@ public slots:
 
 protected:
 	virtual bool event(QEvent *event);
-	virtual bool nativeGestureEvent(QNativeGestureEvent* event);
-	virtual bool gestureEvent(QGestureEvent* event);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void keyReleaseEvent(QKeyEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -415,7 +414,11 @@ protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
 
+#ifndef QT_NO_GESTURES
+	virtual bool nativeGestureEvent(QNativeGestureEvent* event);
 	virtual int swipeRecognition(QNativeGestureEvent* event) { return no_swipe;};	// dummy
+#endif
+	virtual bool gestureEvent(QGestureEvent* event);
 	virtual void swipeAction(int swipeGesture) {};
 
 	QPainter* painter;
@@ -568,7 +571,10 @@ protected:
 	DkImageLoader* loader;
 
 	// functions
+
+#ifndef QT_NO_GESTURES
 	virtual int swipeRecognition(QNativeGestureEvent* event);	// dummy
+#endif
 	virtual void swipeAction(int swipeGesture);
 
 	virtual void loadMovie();

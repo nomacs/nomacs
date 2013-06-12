@@ -619,6 +619,7 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
+	grabGesture(Qt::SwipeGesture);
 	setAttribute(Qt::WA_AcceptTouchEvents);
 
 	forceFastRendering = false;
@@ -907,11 +908,12 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 
 bool DkBaseViewPort::event(QEvent *event) {
 
+#ifndef QT_NO_GESTURES	// for now we block all gestures on systems except for windows
 	if (event->type() == QEvent::NativeGesture)
 		return nativeGestureEvent(static_cast<QNativeGestureEvent*>(event));
 	else if (event->type() == QEvent::Gesture)
 		return gestureEvent(static_cast<QGestureEvent*>(event));
-
+#endif
 
 	if (event->type() == QEvent::Paint)
 		return QGraphicsView::event(event);
@@ -923,6 +925,7 @@ bool DkBaseViewPort::event(QEvent *event) {
 
 }
 
+#ifndef QT_NO_GESTURES
 bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 
 	qDebug() << "native gesture...";
@@ -984,6 +987,7 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 
 	return true;
 }
+#endif
 
 
 bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
@@ -1933,6 +1937,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 }
 
+#ifndef QT_NO_GESTURES
 int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	
 	if (posGrab.isNull()) {
@@ -1990,6 +1995,7 @@ int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	return no_swipe;
 
 }
+#endif
 
 void DkViewPort::swipeAction(int swipeGesture) {
 
@@ -2110,7 +2116,7 @@ void DkViewPort::toggleLena() {
 		if (parent && parent->isFullScreen())
 			loader->load(QFileInfo(":/nomacs/img/lena-full.jpg"));
 		else
-			loader->load(QFileInfo(":/nomacs/img/lena.jpg"));
+			loader->load(QFileInfo(":/nomacs/img/lena.webp"));
 	}
 }
 
