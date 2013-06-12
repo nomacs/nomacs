@@ -1663,11 +1663,15 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 	}
 	else {
 
+#ifdef Q_WS_WIN
+		showMinimized();
+		setWindowState(Qt::WindowActive);
+#else
 		Qt::WindowFlags flags = windowFlags();
 		setWindowFlags(Qt::WindowStaysOnTopHint);	// we need this to 'generally' (for all OSs) bring the window to front
 		setWindowFlags(flags);	// reset flags
-
 		showNormal();
+#endif
 
 		oldGeometry = geometry();
 		
@@ -1686,10 +1690,9 @@ void DkNoMacs::tcpSendWindowRect() {
 
 	overlaid = !overlaid;
 
+	qDebug() << "overlaying";
 	// change my geometry
 	tcpSetWindowRect(this->frameGeometry(), !overlaid, overlaid);
-
-	qDebug() << "overlaying";
 
 	emit sendPositionSignal(frameGeometry(), overlaid);
 
