@@ -930,25 +930,31 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 
 	qDebug() << "native gesture...";
 
+#ifdef Q_WS_WIN
+	float cZoom = event->argument;
+#else
+	float cZoom = 0;	// ignore on other os
+#endif
+
 	switch (event->gestureType) {
 	case  QNativeGestureEvent::Zoom:
 
 		if (lastZoom != 0 && startZoom != 0) {
-			float scale = (event->argument-lastZoom)/startZoom;
+			float scale = (cZoom-lastZoom)/startZoom;
 			
 			if (fabs(scale) > FLT_EPSILON) {
 				zoom(1.0f+scale, event->position-QWidget::mapToGlobal(pos()));
-				lastZoom = event->argument;
+				lastZoom = cZoom;
 			}
 		}
 		else if (startZoom == 0)
-			startZoom = event->argument;
+			startZoom = cZoom;
 		else if (lastZoom == 0)
-			lastZoom = event->argument;
+			lastZoom = cZoom;
 
 
 
-		qDebug() << "zooming: " << event->argument << " pos: " << event->position << " angle: " << event->angle;
+		qDebug() << "zooming: " << cZoom << " pos: " << event->position << " angle: " << event->angle;
 		break;
 	case QNativeGestureEvent::Pan:
 
@@ -968,8 +974,8 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 		//}
 	case QNativeGestureEvent::GestureBegin:
 		posGrab = event->position;
-		lastZoom = event->argument;
-		startZoom = event->argument;
+		lastZoom = cZoom;
+		startZoom = cZoom;
 		qDebug() << "beginning";
 		break;
 	case QNativeGestureEvent::GestureEnd:
