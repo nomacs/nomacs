@@ -3208,7 +3208,6 @@ void DkNoMacsContrast::createTransferToolbar() {
 	addToolBar(transferToolBar);
 	transferToolBar->setObjectName("TransferToolBar");
 
-	transferToolBar->setMinimumHeight(5000);
 	transferToolBar->layout()->setSizeConstraint(QLayout::SetMinimumSize);
 	
 	connect(transferToolBar, SIGNAL(colorTableChanged(QGradientStops)),  viewport(), SLOT(changeColorTable(QGradientStops)));
@@ -3218,18 +3217,26 @@ void DkNoMacsContrast::createTransferToolbar() {
 	connect((DkViewPortContrast*)centralWidget(), SIGNAL(tFSliderAdded(qreal)), transferToolBar, SLOT(insertSlider(qreal)));
 	connect((DkViewPortContrast*)centralWidget(), SIGNAL(imageModeSet(int)), transferToolBar, SLOT(setImageMode(int)));
 
-// play with themes only on windows - users used to look at it there ;)
-// all other platforms have "native look and feel"
-#ifdef Q_WS_WIN
-	transferToolBar->setIconSize(QSize(16, 16));
-	transferToolBar->setStyleSheet(
-					//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-					QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 4px}")
-					+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-					//+ QString("QToolButton{border: none; margin: 3px;}")
-					//+ QString("QToolButton:hover{border: 1px solid gray; color: rgba(0,0,0,127);} QToolButton:pressed{left: 1px; top: 1px; border: 1px;}")
-					);
-#endif
+	if (DkSettings::Display::smallIcons)
+		transferToolBar->setIconSize(QSize(16, 16));
+	else
+		transferToolBar->setIconSize(QSize(32, 32));
+
+
+	if (DkSettings::Display::toolbarGradient) {
+
+		QColor hCol = DkSettings::Display::highlightColor;
+		hCol.setAlpha(80);
+
+		transferToolBar->setStyleSheet(
+			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
+			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
+			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			);
+	}
+
 
 }
 }

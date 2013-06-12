@@ -68,6 +68,7 @@ class DkColorSlider : public QWidget {
 		qreal getNormedPos();
 		void setNormedPos(qreal pos);
 		void setActive(bool isActive);
+		void updatePos(int parentWidth);
 
 		//void paintSlider(QPainter *painter);
 
@@ -116,6 +117,7 @@ class DkGradient : public QWidget {
 	protected:
 		virtual void mousePressEvent(QMouseEvent *event);
 		virtual void mouseReleaseEvent(QMouseEvent *event);
+		virtual void resizeEvent ( QResizeEvent * event );
 		
 	private:
 		void init();
@@ -185,15 +187,14 @@ class DkTransferToolBar : public QToolBar {
 		void reset();
 
 	protected:
-		//void mousePressEvent(QMouseEvent *event);
+		virtual void resizeEvent ( QResizeEvent * event );
+
 
 	private:
 		void createIcons();
 		void applyImageMode(int mode);
 		void enableToolBar(bool enable);
-		QPushButton *applyTFButton, *pickColorButton;
 		QCheckBox *enableTFCheckBox;
-		int gradX, gradY, gradWidth, gradHeight;
 		
 		QImage m_shade;
 		QImage sliderImg, activeSliderImg;

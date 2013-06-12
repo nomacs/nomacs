@@ -26,8 +26,9 @@
  *******************************************************************************************************/
 
 #include "DkTransferToolBar.h"
-
+#include "DkSettings.h"
 #include "DkMath.h"
+#include "DkUtils.h"
 
 namespace nmc {
 
@@ -35,13 +36,6 @@ namespace nmc {
 DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
 	: QToolBar(parent) {
 
-	gradX = 100;
-	gradY = 0;
-	gradWidth = 1000;
-	gradHeight = 20;
-
-	this->setMinimumWidth(400);
-	//this->setMinimumHeight(500);
 
 	enableTFCheckBox = new QCheckBox(tr("Enable"));
 	enableTFCheckBox->setStatusTip(tr("Disables the pseudocolor function"));
@@ -56,22 +50,18 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
 	this->addWidget(channelComboBox);
 
-	//this->addSeparator();
+	createIcons();
+
 
 	gradient = new DkGradient(this);
 	gradient->setStatusTip(tr("Click into the field for a new slider"));
-	addWidget(gradient);
-
-	//this->addSeparator();
+	this->addWidget(gradient);
 
 	effect = new QGraphicsOpacityEffect(gradient);
 	effect->setOpacity(1);
 	gradient->setGraphicsEffect(effect);
 		
-	createIcons();
 		
-	pickColorButton = new QPushButton(tr("Color picker"));
-
 	// Disable the entire transfer toolbar:
 	//enableTF(Qt::Unchecked);
 
@@ -103,6 +93,11 @@ void DkTransferToolBar::createIcons() {
 	toolBarIcons[icon_toolbar_reset] = ICON("", ":/nomacs/img/gradient-reset.png");
 	toolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.png");
 
+	if (!DkSettings::Display::defaultIconColor) {
+		// now colorize the icons
+		toolBarIcons[icon_toolbar_reset].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::Display::iconColor), QIcon::Normal, QIcon::Off);
+		toolBarIcons[icon_toolbar_pipette].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::Display::iconColor), QIcon::Normal, QIcon::Off);
+	}
 	
 	toolBarActions.resize(toolbar_end);
 	toolBarActions[toolbar_reset] = new QAction(toolBarIcons[icon_toolbar_reset], tr("Reset"), this);
@@ -118,6 +113,12 @@ void DkTransferToolBar::createIcons() {
 
 DkTransferToolBar::~DkTransferToolBar() {
 
+
+};
+
+void DkTransferToolBar::resizeEvent( QResizeEvent * event ) {
+
+	gradient->resize(event->size().width() - gradient->x(), 40);
 
 };
 
@@ -254,9 +255,13 @@ void DkTransferToolBar::paintEvent(QPaintEvent* event) {
 DkGradient::DkGradient(QWidget *parent) 
 	: QWidget(parent){
 
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
 
-	this->setMinimumWidth(parent->minimumWidth());
-	this->setMinimumHeight(40);
+	this->setMinimumWidth(100);
+	this->setMaximumWidth(600);
+
+	this->setFixedHeight(40);
+
 	isSliderDragged = false;
 	clickAreaHeight = 20;
 	deleteSliderDist = 50;
@@ -302,6 +307,26 @@ void DkGradient::reset() {
 	init();
 	update();
 
+}
+
+
+void DkGradient::resizeEvent( QResizeEvent * event ) {
+
+	if (event->size() == event->oldSize())
+		return;
+
+	DkColorSlider *slider;
+
+	for (int i = 0; i < sliders.size(); i++) {
+		slider = sliders.at(i);
+		slider->updatePos(this->width());
+	}
+
+	//qDebug() << "resize gradient: " << event->size();
+
+	updateGradient();
+
+	QWidget::resizeEvent(event);
 }
 
 
@@ -574,6 +599,14 @@ void DkColorSlider::paintEvent(QPaintEvent* event) {
 	painter.fillRect(2, sliderHalfWidth+2, sliderWidth - 3, sliderWidth - 3, color);
 	
  
+}
+
+void DkColorSlider::updatePos(int parentWidth) {
+
+	int pos =normedPos * (parentWidth - sliderWidth - 1);
+
+	setGeometry(pos, 23, sliderWidth + 1, sliderWidth + sliderHalfWidth + 1);
+
 }
 
 void DkColorSlider::setActive(bool isActive) {
