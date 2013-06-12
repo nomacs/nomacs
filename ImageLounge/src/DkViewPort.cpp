@@ -1403,6 +1403,19 @@ void DkViewPort::updateImage() {
 		setImage(loader->getImage());
 }
 
+void DkViewPort::loadImage(QImage newImg) {
+
+	// delete current information
+	if (loader) {
+		unloadImage();
+		loader->setImage(newImg);
+		setImage(newImg);
+
+		// save to temp folder
+		loader->saveTempFile(newImg);
+	}
+}
+
 void DkViewPort::setImage(QImage newImg) {
 
 	DkTimer dt;

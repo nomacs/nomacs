@@ -1283,7 +1283,7 @@ DkLanManagerThread::DkLanManagerThread(DkNoMacs* parent) : DkManagerThread(paren
 void DkLanManagerThread::connectClient() {
 
 	connect(parent->viewport(), SIGNAL(sendImageSignal(QImage, QString)), clientManager, SLOT(sendNewImage(QImage, QString)));
-	connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(setImage(QImage)));
+	connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(loadImage(QImage)));
 	connect(clientManager, SIGNAL(sendInfoSignal(QString, int)), parent->viewport()->getController(), SLOT(setInfo(QString, int)));
 	connect(clientManager, SIGNAL(receivedImageTitle(QString)), parent, SLOT(setWindowTitle(QString)));
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));

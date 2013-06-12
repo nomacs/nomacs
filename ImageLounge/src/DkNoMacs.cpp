@@ -1327,17 +1327,7 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 	else if (event->mimeData()->hasImage()) {
 
 		QImage dropImg = qvariant_cast<QImage>(event->mimeData()->imageData());
-
-		// delete current information
-		if (viewport()->getImageLoader()) {
-			//viewport()->getImageLoader()->clearPath();
-			viewport()->unloadImage();
-			viewport()->getImageLoader()->setImage(dropImg);
-			viewport()->setImage(dropImg);
-
-			// save to temp folder
-			saveTempFileSignal(dropImg);
-		}
+		viewport()->loadImage(dropImg);
 	}
 
 	qDebug() << "drop event...";
@@ -1404,20 +1394,9 @@ void DkNoMacs::pasteImage() {
 
 		QImage dropImg = qvariant_cast<QImage>(clipboard->mimeData()->imageData());
 
-		if (viewport()) {
-			viewport()->unloadImage();
+		if (viewport())
+			viewport()->loadImage(dropImg);
 
-			// delete current information
-			if (viewport()->getImageLoader()) {
-				
-				//viewport()->getImageLoader()->clearPath();
-				viewport()->getImageLoader()->setImage(dropImg);
-				viewport()->setImage(dropImg);
-				qDebug() << "loader path: " << viewport()->getImageLoader()->getFile().absoluteFilePath();	
-
-				saveTempFileSignal(dropImg);
-			}
-		}
 	} else if (clipboard->mimeData()->hasText()) {
 
 		QString msg = clipboard->mimeData()->text();

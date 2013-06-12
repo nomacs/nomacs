@@ -538,7 +538,9 @@ public slots:
 	void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect);
 
+
 	virtual void updateImage();
+	virtual void loadImage(QImage newImg);
 	virtual void setEditedImage(QImage newImg);
 	virtual void setImage(QImage newImg);
 	virtual void setThumbImage(QImage newImg);
