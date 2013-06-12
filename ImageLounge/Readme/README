@@ -68,3 +68,17 @@ http://www.exiv2.org/download.html
 LibRaw-0.13.5 library:
 http://www.libraw.org/download
 -------------------------------------------------------------
+libqpsd
+https://github.com/Code-ReaQtor/libqpsd
+-------------------------------------------------------------
+webp
+https://developers.google.com/speed/webp/
+https://github.com/martell/webp.cmake
+-------------------------------------------------------------
+jasper 1.900.1
+http://www.ece.uvic.ca/~frodo/jasper/
+-------------------------------------------------------------
+qtjp2imageformat
+http://doc.qt.digia.com/solutions/3/qtjp2imageformat/index.html
+
+	
