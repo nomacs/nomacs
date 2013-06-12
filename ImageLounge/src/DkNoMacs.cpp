@@ -1132,23 +1132,27 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 		exitFullScreen();
 	else
 		enterFullScreen();
+
+	QMainWindow::mouseDoubleClickEvent(event);
 }
 
 
 void DkNoMacs::mousePressEvent(QMouseEvent* event) {
 
 	mousePos = event->pos();
-	if(event->buttons() == Qt::XButton1)
-	  {
+	if(event->buttons() == Qt::XButton1) {
 	    emit fourthButtonPressed();
-	  }
-	else if(event->buttons() == Qt::XButton2)
-	  {
+	}
+	else if(event->buttons() == Qt::XButton2) {
 	    emit fifthButtonPressed();
-	  }
+	}
+
+	QMainWindow::mousePressEvent(event);
 }
 
 void DkNoMacs::mouseReleaseEvent(QMouseEvent *event) {
+
+	QMainWindow::mouseReleaseEvent(event);
 }
 
 void DkNoMacs::contextMenuEvent(QContextMenuEvent *event) {
@@ -1184,6 +1188,8 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
 			qDebug() << "creating drag...\n";
 	}
+
+	QMainWindow::mouseMoveEvent(event);
 }
 
 bool DkNoMacs::gestureEvent(QGestureEvent *event) {
@@ -1244,6 +1250,9 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 		}
 	}
+
+	qDebug() << "gesture event (NoMacs)";
+
 	//	pinchTriggered(static_cast<QPinchGesture *>(pinch));
 	return true;
 }
@@ -1260,6 +1269,9 @@ void DkNoMacs::dragLeaveEvent(QDragLeaveEvent *event) {
 void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 
 	printf("drag enter event\n");
+
+	if (event->source() == this)
+		return;
 
 	if (event->mimeData()->hasFormat("network/sync-dir")) {
 		event->accept();
@@ -1278,6 +1290,8 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 	if (event->mimeData()->hasImage()) {
 		event->acceptProposedAction();
 	}
+
+	QMainWindow::dragEnterEvent(event);
 
 }
 
@@ -3208,7 +3222,7 @@ void DkNoMacsContrast::createTransferToolbar() {
 	addToolBar(transferToolBar);
 	transferToolBar->setObjectName("TransferToolBar");
 
-	transferToolBar->layout()->setSizeConstraint(QLayout::SetMinimumSize);
+	//transferToolBar->layout()->setSizeConstraint(QLayout::SetMinimumSize);
 	
 	connect(transferToolBar, SIGNAL(colorTableChanged(QGradientStops)),  viewport(), SLOT(changeColorTable(QGradientStops)));
 	connect(transferToolBar, SIGNAL(channelChanged(int)),  viewport(), SLOT(changeChannel(int)));
