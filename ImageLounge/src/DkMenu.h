@@ -258,19 +258,22 @@ signals:
 	void synchronizeWithSignal(quint16);
 	void disableSynchronizeWithSignal(quint16);
 
-	public slots:
-		void synchronize(bool checked) {
+public slots:
+	void synchronize(bool checked) {
 
-			if (checked)
-				emit synchronizeWithSignal(peer.peerId);
-			else
-				emit disableSynchronizeWithSignal(peer.peerId);
+		if (checked)
+			emit synchronizeWithSignal(peer.peerId);
+		else
+			emit disableSynchronizeWithSignal(peer.peerId);
 
-			for (int idx = 0; idx < tcpActions.size(); idx++)
+		for (int idx = 0; idx < tcpActions.size(); idx++) {
+			
+			if (tcpActions.at(idx)->objectName() != "sendImageAction")
 				tcpActions.at(idx)->setEnabled(!checked);
-
-			qDebug() << "emitted a synchronize message...\n";
 		}
+
+		qDebug() << "emitted a synchronize message...\n";
+	}
 
 protected:
 	DkPeer peer;

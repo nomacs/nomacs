@@ -126,6 +126,7 @@ DkTrainDialog::DkTrainDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(p
 	setWindowTitle(tr("Add New Image Format"));
 	createLayout();
 	setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
+	setAcceptDrops(true);
 }
 
 void DkTrainDialog::createLayout() {

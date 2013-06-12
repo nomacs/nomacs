@@ -168,8 +168,8 @@ void DkNoMacs::init() {
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
-	connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
-	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize)), this, SLOT(setWindowTitle(QFileInfo, QSize)));
+	connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
+	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
@@ -1301,7 +1301,7 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 		event->acceptProposedAction();
 	}
 
-	//QMainWindow::dragEnterEvent(event);
+	QMainWindow::dragEnterEvent(event);
 
 }
 
@@ -2539,11 +2539,11 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 	
 	if (!file.exists())
 		title = "nomacs";
-	else
-		setWindowModified(edited);
 
-	if (edited)
+	if (edited) {
 		title.append("[*]");
+		setWindowModified(edited);
+	}
 
 	QString attributes;
 
@@ -2782,6 +2782,7 @@ void DkNoMacsSync::initLanClient() {
 	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
 
 	QAction* sendImage = new QAction(tr("Send &Image"), this);
+	sendImage->setObjectName("sendImageAction");
 	sendImage->setShortcut(QKeySequence(shortcut_send_img));
 	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
 	sendImage->setToolTip(tr("Sends the current image to all clients."));
