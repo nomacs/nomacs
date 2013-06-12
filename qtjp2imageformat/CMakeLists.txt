@@ -1,7 +1,7 @@
 # works for windows
 # untested (and should NOT work :( ) for linux/unix
 
-PROJECT(QTJP2)
+PROJECT(QTJP22)
 
 # don't know if we need this
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
@@ -33,21 +33,18 @@ include_directories(
 	${LIBJASPER_INCLUDE_DIRECTORY}
 )
 
-
-
-
 file(GLOB_RECURSE QTJP2_SOURCES "plugin/*.cpp" "src/*.cpp")
 file(GLOB_RECURSE QTJP2_HEADERS "plugin/*.h" "src/*.h")
 
-add_library(qtjp2 SHARED ${QTJP2_SOURCES} ${QTJP2_HEADERS})
-target_link_libraries(qtjp2 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY})
-target_link_libraries(qtjp2 debug ${LIBJASPER_DEBUG_LIB})
-target_link_libraries(qtjp2 optimized ${LIBJASPER_RELEASE_LIB})
+add_library(qtjp22 SHARED ${QTJP2_SOURCES} ${QTJP2_HEADERS})
+target_link_libraries(qtjp22 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY})
+target_link_libraries(qtjp22 debug ${LIBJASPER_DEBUG_LIB})
+target_link_libraries(qtjp22 optimized ${LIBJASPER_RELEASE_LIB})
 
 if(MSVC)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release/imageformats CONFIGURATIONS Release)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp2.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/ReallyRelease/imageformats CONFIGURATIONS Release)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp2.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug/imageformats CONFIGURATIONS Debug)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release/imageformats CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/ReallyRelease/imageformats CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp22.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp22.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug/imageformats CONFIGURATIONS Debug)
 endif(MSVC)	
 
 
