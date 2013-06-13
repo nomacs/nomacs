@@ -575,7 +575,7 @@ void DkSettingsDialog::createLayout() {
 	buttonCancel = new QPushButton;
 	buttonCancel->setText(tr("Cancel"));
 
-	cbAdvancedSettings = new QCheckBox("Advanced");
+	cbAdvancedSettings = new QCheckBox(tr("Advanced"));
 
 	bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
 	bottomWidgetHBoxLayout->addStretch();
@@ -749,7 +749,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	bgColorWidgetChooser->setColor((DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless : DkSettings::Display::bgColorWidget);
 
-	fullscreenColChooser = new DkColorChooser(QColor(86,86,90), "Fullscreen Color", this);
+	fullscreenColChooser = new DkColorChooser(QColor(86,86,90), tr("Fullscreen Color"), this);
 	fullscreenColChooser->setColor(DkSettings::SlideShow::backgroundColor);
 
 	displayTimeSpin = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
@@ -1406,6 +1406,7 @@ void DkResourceSettingsWidgets::createLayout() {
 	
 	QWidget* dupWidget = new QWidget();
 	QHBoxLayout* hLayout = new QHBoxLayout(dupWidget);
+	hLayout->setContentsMargins(0,0,0,0);
 	
 	cbRemoveDuplicates = new QCheckBox(tr("Hide Duplicates"));
 	cbRemoveDuplicates->setChecked(DkSettings::Resources::filterRawImages);
