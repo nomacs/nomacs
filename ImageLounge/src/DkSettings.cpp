@@ -1493,7 +1493,8 @@ DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int s
 	hboxLowerLayout->addStretch();
 	vboxLayout->addWidget(upperLabel);
 	vboxLayout->addWidget(lowerWidget);
-	adjustSize();
+	setMinimumSize(sizeHint());
+	//adjustSize();
 	//optimalSize = size();
 
 }
