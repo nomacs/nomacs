@@ -1313,6 +1313,8 @@ void DkResizeDialog::createLayout() {
 	layout->addWidget(resizeBoxes);
 	layout->addStretch();
 	layout->addWidget(buttons);
+	
+	wPixelEdit->setFocus(Qt::ActiveWindowFocusReason);
 	show();
 }
 
