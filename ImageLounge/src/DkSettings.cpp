@@ -509,6 +509,9 @@ DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 	}
 	init();
 
+	//setMinimumSize(1000,1000);
+	this->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+
 	connect(listView, SIGNAL(activated(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
 	connect(listView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
 	connect(listView, SIGNAL(entered(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
@@ -596,12 +599,12 @@ void DkSettingsDialog::createLayout() {
 }
 
 void DkSettingsDialog::createSettingsWidgets() {
-	globalSettingsWidget = new DkGlobalSettingsWidget(this);
-	displaySettingsWidget = new DkDisplaySettingsWidget(this);
-	slideshowSettingsWidget = new DkFileWidget(this);
-	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(this);
-	exifSettingsWidget = new DkMetaDataSettingsWidget(this);
-	resourceSettingsWidget = new DkResourceSettingsWidgets(this);
+	globalSettingsWidget = new DkGlobalSettingsWidget(centralWidget);
+	displaySettingsWidget = new DkDisplaySettingsWidget(centralWidget);
+	slideshowSettingsWidget = new DkFileWidget(centralWidget);
+	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(centralWidget);
+	exifSettingsWidget = new DkMetaDataSettingsWidget(centralWidget);
+	resourceSettingsWidget = new DkResourceSettingsWidgets(centralWidget);
 
 	widgetList.clear();
 	widgetList.push_back(globalSettingsWidget);
@@ -661,7 +664,6 @@ void DkSettingsDialog::saveSettings() {
 }
 
 void DkSettingsDialog::initWidgets() {
-	
 	qDebug() << "initializing widgets...";
 	foreach (DkSettingsWidget* curWidget, widgetList) {
 		curWidget->init();
@@ -733,19 +735,21 @@ void DkGlobalSettingsWidget::createLayout() {
 	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
 	QVBoxLayout* leftLayout = new QVBoxLayout();
 	QVBoxLayout* rightLayout = new QVBoxLayout();
+	QWidget* rightWidget = new QWidget(this);
+	rightWidget->setLayout(rightLayout);
 
-	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"));
+	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
 	highlightColorChooser->setColor(DkSettings::Display::highlightColor);
 
-	iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"));
+	iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"), this);
 	iconColorChooser->setColor(DkSettings::Display::iconColor);
 	connect(iconColorChooser, SIGNAL(resetClicked()), this, SLOT(iconColorReset()));
 
-	bgColorChooser = new DkColorChooser(QColor(100, 100, 100, 255), tr("Background Color"));
+	bgColorChooser = new DkColorChooser(QColor(100, 100, 100, 255), tr("Background Color"), this);
 	bgColorChooser->setColor(DkSettings::Display::bgColor);
 	connect(bgColorChooser, SIGNAL(resetClicked()), this, SLOT(bgColorReset()));
 
-	bgColorWidgetChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Widget Color"));
+	bgColorWidgetChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Widget Color"), this);
 	bgColorWidgetChooser->setColor((DkSettings::App::appMode == DkSettings::mode_frameless) ?
 		DkSettings::Display::bgColorFrameless : DkSettings::Display::bgColorWidget);
 
@@ -754,11 +758,11 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	displayTimeSpin = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
 
-	QWidget* langWidget = new QWidget(this);
+	QWidget* langWidget = new QWidget(rightWidget);
 	QGridLayout* langLayout = new QGridLayout(langWidget);
 	langLayout->setMargin(0);
-	QLabel* langLabel = new QLabel("choose language:");
-	langCombo = new QComboBox(this);
+	QLabel* langLabel = new QLabel("choose language:", langWidget);
+	langCombo = new QComboBox(langWidget);
 
 	QDir qmDir = qApp->applicationDirPath();
 	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
@@ -795,7 +799,7 @@ void DkGlobalSettingsWidget::createLayout() {
 		}
 	}
 
-	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">translate nomacs</a>", this);
+	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">translate nomacs</a>", langWidget);
 	translateLabel->setToolTip(tr("if you want to help us and translate nomacs"));
 	QFont font;
 	font.setPointSize(7);
@@ -806,13 +810,13 @@ void DkGlobalSettingsWidget::createLayout() {
 	langLayout->addWidget(langCombo,1,0);
 	langLayout->addWidget(translateLabel,2,0,Qt::AlignRight);
 
-	QWidget* showBarsWidget = new QWidget;
+	QWidget* showBarsWidget = new QWidget(rightWidget);
 	QVBoxLayout* showBarsLayout = new QVBoxLayout(showBarsWidget);
-	cbShowMenu = new QCheckBox(tr("show Menu"), this);
-	cbShowToolbar = new QCheckBox(tr("show Toolbar"), this);
-	cbShowStatusbar = new QCheckBox(tr("show Statusbar"), this);
-	cbSmallIcons = new QCheckBox(tr("small icons"), this);
-	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), this);
+	cbShowMenu = new QCheckBox(tr("show Menu"), showBarsWidget);
+	cbShowToolbar = new QCheckBox(tr("show Toolbar"), showBarsWidget);
+	cbShowStatusbar = new QCheckBox(tr("show Statusbar"), showBarsWidget);
+	cbSmallIcons = new QCheckBox(tr("small icons"), showBarsWidget);
+	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), showBarsWidget);
 	showBarsLayout->addWidget(cbShowMenu);
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
@@ -820,13 +824,16 @@ void DkGlobalSettingsWidget::createLayout() {
 	showBarsLayout->addWidget(cbToolbarGradient);
 
 	// set to default
-	QWidget* defaultSettingsWidget = new QWidget(this);
+	QWidget* defaultSettingsWidget = new QWidget(rightWidget);
 	QHBoxLayout* defaultSettingsLayout = new QHBoxLayout(defaultSettingsWidget);
-	defaultSettingsLayout->setContentsMargins(11,0,11,0);
+	defaultSettingsLayout->setContentsMargins(0,0,0,0);
 	defaultSettingsLayout->setDirection(QHBoxLayout::RightToLeft);
-	buttonDefaultSettings = new QPushButton(tr("Apply default settings"), this);
+	buttonDefaultSettings = new QPushButton(tr("Apply default settings"), defaultSettingsWidget);
+	buttonDefaultSettings->setMinimumSize(buttonDefaultSettings->sizeHint());
 	defaultSettingsLayout->addWidget(buttonDefaultSettings);
 	defaultSettingsLayout->addStretch();
+
+	defaultSettingsWidget->setMinimumSize(defaultSettingsWidget->sizeHint());
 
 	leftLayout->addWidget(bgColorChooser);
 	leftLayout->addWidget(highlightColorChooser);
@@ -840,8 +847,9 @@ void DkGlobalSettingsWidget::createLayout() {
 	rightLayout->addStretch();
 	rightLayout->addWidget(defaultSettingsWidget);
 
+
 	widgetLayout->addLayout(leftLayout);
-	widgetLayout->addLayout(rightLayout);
+	widgetLayout->addWidget(rightWidget);
 }
 
 void DkGlobalSettingsWidget::writeSettings() {
@@ -1352,8 +1360,9 @@ void DkResourceSettingsWidgets::createLayout() {
 	
 	QGroupBox* gbCache = new QGroupBox(tr("Cache Settings"));
 	QGridLayout* cacheLayout = new QGridLayout(gbCache);
-	QLabel* labelPercentage = new QLabel(tr("Percentage of memory which should be used for caching:"));
-	sliderMemory = new QSlider(Qt::Horizontal);
+	QLabel* labelPercentage = new QLabel(tr("Percentage of memory which should be used for caching:"), gbCache);
+	labelPercentage->setMinimumSize(labelPercentage->sizeHint());
+	sliderMemory = new QSlider(Qt::Horizontal, gbCache);
 	sliderMemory->setMinimum(0);
 	sliderMemory->setMaximum(10*stepSize);
 	sliderMemory->setPageStep(40);
@@ -1507,14 +1516,14 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) 
 }
 
 DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/, int decimals/* =2*/) : QWidget(parent) {
-	spinBox = new QDoubleSpinBox();
+	spinBox = new QDoubleSpinBox(this);
 	spinBox->setMaximum(spinBoxMax);
 	spinBox->setMinimum(spinBoxMin);
 	spinBox->setSingleStep(step);
 	spinBox->setDecimals(decimals);
 	upperLabel = new QLabel(upperString);
 	lowerLabel = new QLabel(lowerString);
-	lowerWidget = new QWidget();
+	lowerWidget = new QWidget(this);
 
 	vboxLayout = new QVBoxLayout(this);
 	hboxLowerLayout = new QHBoxLayout(lowerWidget);
@@ -1529,7 +1538,7 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerS
 	//optimalSize = size();
 
 	//setLayout(vboxLayout);
-
+	setMinimumSize(sizeHint());
 }
 
 }
