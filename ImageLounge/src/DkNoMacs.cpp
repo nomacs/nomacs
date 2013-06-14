@@ -3274,6 +3274,9 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 			updater->checkForUpdated();	// TODO: is threaded??
 #endif
 
+		// sync signals
+		connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
+		
 		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
 		vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
 		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);

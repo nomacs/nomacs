@@ -386,7 +386,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="814"/>
       <source>small icons</source>
-      <translation>маленькие иконки</translation>
+      <translation>Маленькие иконки</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="815"/>
@@ -637,7 +637,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="147"/>
       <source>Keywords</source>
-      <translation>Путь</translation>
+      <translation>Ключевые слова</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="148"/>
@@ -1993,17 +1993,17 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="1355"/>
       <source>Percentage of memory which should be used for caching:</source>
-      <translation>﻿Процент памяти, используемый для кэширования:</translation>
+      <translation>Процент памяти, используемый для кэширования:</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1400"/>
       <source>Fast Preview Settings</source>
-      <translation>﻿Параметры быстрого просмотра</translation>
+      <translation>Параметры быстрого просмотра</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1402"/>
       <source>enable fast thumbnail preview</source>
-      <translation>﻿включить быстрый предпросмотр</translation>
+      <translation>Включить быстрый предпросмотр</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1405"/>
