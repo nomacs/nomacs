@@ -116,6 +116,8 @@ void DkNoMacs::init() {
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
 
+	pluginManager = new DkPluginManager(this);
+
 	// shortcuts and actions
 	createIcons();
 	createActions();
@@ -132,6 +134,7 @@ void DkNoMacs::init() {
 	addActions(toolsActions.toList());
 	addActions(viewActions.toList());
 	addActions(syncActions.toList());
+	addActions(pluginsActions.toList());
 	addActions(helpActions.toList());
 
 	// automatically add status tip as tool tip
@@ -145,6 +148,8 @@ void DkNoMacs::init() {
 		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
 	for (int idx = 0; idx < syncActions.size(); idx++)
 		syncActions[idx]->setToolTip(syncActions[idx]->statusTip());
+	for (int idx = 0; idx < pluginsActions.size(); idx++)
+		pluginsActions[idx]->setToolTip(pluginsActions[idx]->statusTip());
 	for (int idx = 0; idx < helpActions.size(); idx++)
 		helpActions[idx]->setToolTip(helpActions[idx]->statusTip());
 
@@ -523,6 +528,10 @@ void DkNoMacs::createMenu() {
 		syncMenu = menu->addMenu(tr("&Sync"));
 	else 
 		syncMenu = 0;
+
+	// plug-in menu
+	pluginsMenu = menu->addMenu(tr("&Plug-ins"));
+	createPluginsMenu();
 	
 	helpMenu = menu->addMenu(tr("&?"));
 #ifndef Q_WS_X11
@@ -900,6 +909,13 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_manipulation]->setShortcut(shortcut_manipulation);
 	toolsActions[menu_tools_manipulation]->setStatusTip(tr("modify the current image"));
 	connect(toolsActions[menu_tools_manipulation], SIGNAL(triggered()), this, SLOT(openImgManipulationDialog()));
+
+	// plugins menu
+
+	pluginsActions.resize(menu_plugins_end);
+	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plug-in manager"), this);
+	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plug-ins and download new ones"));
+	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -2711,6 +2727,119 @@ int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
 	errorDialog.show();
 
 	return errorDialog.exec();
+}
+
+/**
+* Creates the plug-in menu when it is not empty
+* called in DkNoMacs::createPluginsMenu()
+**/
+void DkNoMacs::addPluginsToMenu() {
+	
+	QMap<QString, DkPluginInterface *> loadedPlugins = pluginManager->getPlugins();
+	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+
+	QMap<QString, QString> runId2PluginId;
+	QList<QPair<QString, QString> > sortedNames;
+
+	for (int i = 0; i < pluginIdList.size(); i++) {
+		QStringList runID = loadedPlugins.value(pluginIdList.at(i))->runID();
+		for (int j = 0; j < runID.size(); j++) {
+			runId2PluginId.insert(runID.at(j), pluginIdList.at(i));
+			sortedNames.append(qMakePair(runID.at(j), loadedPlugins.value(pluginIdList.at(i))->pluginMenuName(runID.at(j))));
+		}
+	}
+
+	/*
+	QList<QPair<QString, QString> > sortedNames;
+	QMapIterator<QString, QString> iter(pluginNames);		
+	while(iter.hasNext()) {
+		iter.next();
+		sortedNames.append(qMakePair(iter.key(), loadedPlugins.value(iter.value())->pluginNames(iter.key())));
+	}
+	// Ordering ascending
+	qSort(sortedNames.begin(), sortedNames.end(), QPairSecondComparer());
+	*/
+
+	pluginsActions.resize(menu_plugins_end + sortedNames.size());
+	pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
+	pluginsMenu->addSeparator();
+
+	QMap<QString, bool> pluginsEnabled = QMap<QString, bool>();
+
+	QSettings settings;
+	int size = settings.beginReadArray("PluginSettings/disabledPlugins");
+	for (int i = 0; i < size; ++i) {
+		settings.setArrayIndex(i);
+		if (pluginIdList.contains(settings.value("pluginId").toString())) pluginsEnabled.insert(settings.value("pluginId").toString(), false);
+	}
+	settings.endArray();
+
+	int iterN = 0;
+	for(int i = 0; i < sortedNames.size(); i++) {
+
+		if (pluginsEnabled.value(runId2PluginId.value(sortedNames.at(i).first), true)) {
+			pluginsActions[menu_plugins_end + iterN] = new QAction(sortedNames.at(i).second, this);	//TODO translations
+			pluginsActions[menu_plugins_end + iterN]->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));		//TODO translations
+			pluginsActions[menu_plugins_end + iterN]->setData(sortedNames.at(i).first);
+			connect(pluginsActions[menu_plugins_end + iterN], SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+
+			addAction(pluginsActions[menu_plugins_end + iterN]);
+			pluginsMenu->addAction(pluginsActions[menu_plugins_end + iterN]);
+			pluginsActions[menu_plugins_end + iterN]->setToolTip(pluginsActions[menu_plugins_end + iterN]->statusTip());
+			iterN++;
+		}		
+	}
+	pluginManager->setRunId2PluginId(runId2PluginId);
+	pluginsActions.resize(menu_plugins_end + iterN);
+}
+
+/**
+* Creates the plug-ins menu 
+**/
+void DkNoMacs::createPluginsMenu() {
+
+	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+
+	if(pluginsActions.isEmpty()) { // first menu creation
+		if(pluginIdList.isEmpty()) { // no plugins
+			pluginsActions.resize(menu_plugins_end);
+			pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
+		}
+		else addPluginsToMenu(); // plugins found
+	}
+	else { // new creation of a plugin menu: first remove actions and recreate them as needed
+
+		for(int i = 0; i < pluginsActions.size()-menu_plugins_end; i++) removeAction(pluginsActions[menu_plugins_end + i]);
+
+		if(pluginIdList.isEmpty()) { // no  plugins
+			pluginsActions.resize(menu_plugins_end);
+			pluginsMenu->clear();
+			pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
+		}
+		else {
+			pluginsMenu->clear();
+			addPluginsToMenu();
+		}
+	}
+
+}
+
+void DkNoMacs::openPluginManager() {
+
+	bool done = pluginManager->exec();
+	createPluginsMenu();
+}
+
+void DkNoMacs::runLoadedPlugin() {
+   QAction* action = qobject_cast<QAction*>(sender());
+   if(action) {
+	   QString key = action->data().toString();
+	   QImage tmpImg = viewport()->getImageLoader()->getImage();
+	   DkViewPort *vp = viewport();
+	   //viewport()->setEditedImage(loadedPlugins[key]->runPlugin(key, tmpImg, *vp));
+	   QImage result = pluginManager->getPlugins().value(pluginManager->getRunId2PluginId().value(key))->runPlugin(key, tmpImg);
+	   if(!result.isNull()) viewport()->setEditedImage(result);
+   }
 }
 
 

@@ -246,6 +246,7 @@ include_directories (
         # src/DkConnection.cpp
         # src/DkNetwork.cpp
         # src/DkNoMacs.cpp
+		# src/DkPluginManager.cpp
 		# src/DkPong.cpp
         # src/DkTimer.cpp
         # src/DkUtils.cpp
@@ -271,6 +272,7 @@ endif (APPLE)
         # src/DkConnection.h
         # src/DkNetwork.h
         # src/DkNoMacs.h
+		# src/DkPluginManager.h
 		# src/DkPong.h
         # #src/DkTimer.h
         # #src/DkUtils.h
@@ -280,6 +282,7 @@ endif (APPLE)
         # src/DkMenu.h
         # src/DkSettings.h
 		# src/DkTransferToolBar.h
+		# src/DkPluginInterface.h
         # #src/BorderLayout.h
         # #src/resource.h
 # )
@@ -292,6 +295,7 @@ endif (APPLE)
         # src/DkNetwork.h
 		# src/DkManipulationWidgets.h
         # src/DkNoMacs.h
+		# src/DkPluginManager.h
 		# src/DkPong.h
         # src/DkTimer.h
         # src/DkUtils.h
@@ -302,6 +306,7 @@ endif (APPLE)
         # src/DkSettings.h
 		# src/DkTransferToolBar.h
         # src/BorderLayout.h
+		# src/DkPluginInterface.h
         # #src/resource.h
 # )
 

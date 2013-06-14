@@ -84,6 +84,8 @@ using namespace cv;
 #include "DkMenu.h"
 #include "DkTransferToolBar.h"
 #include "DkManipulationWidgets.h"
+#include "DkPluginInterface.h"
+#include "DkPluginManager.h"
 
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
@@ -269,6 +271,12 @@ enum syncActions {
 	menu_sync_connect_all,
 
 	menu_sync_end,	// nothing beyond this point
+};
+
+enum pluginsActions {
+	menu_plugin_manager,
+	
+	menu_plugins_end,	// nothing beyond this point
 };
 
 enum helpActions {
@@ -472,6 +480,8 @@ public slots:
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setContrast(bool contrast);
+	void runLoadedPlugin();
+	void openPluginManager();
 	//void shareFacebook();
 
 	// batch actions
@@ -512,6 +522,7 @@ protected:
 
 	// vars
 	QWidget *parent;
+	DkPluginManager* pluginManager;
 
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
@@ -519,6 +530,7 @@ protected:
 	QVector<QAction *> toolsActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
+	QVector<QAction *> pluginsActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
@@ -535,6 +547,7 @@ protected:
 	QMenu* toolsMenu;
 	QMenu* viewMenu;
 	QMenu* syncMenu;
+	QMenu* pluginsMenu;
 	QMenu* helpMenu;
 	QMenu* contextMenu;
 
@@ -593,6 +606,9 @@ protected:
 
 	virtual void readSettings();
 
+	// plugin functions
+	void addPluginsToMenu();
+	void createPluginsMenu();
 };
 
 class DllExport DkNoMacsSync : public DkNoMacs {
