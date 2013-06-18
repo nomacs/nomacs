@@ -143,6 +143,7 @@ enum {
 	shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
 	shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down,
 	shortcut_show_overview	= Qt::Key_O,
+	shortcut_show_explorer	= Qt::Key_E,
 	shortcut_show_player	= Qt::Key_P,
 	shortcut_show_exif		= Qt::Key_M,
 	shortcut_show_info		= Qt::Key_I,
@@ -251,6 +252,7 @@ enum viewActions {
 	menu_view_show_exif,
 	menu_view_show_info,
 	menu_view_show_histogram,
+	menu_view_show_explorer,
 	menu_view_frameless,
 	menu_view_opacity_up,
 	menu_view_opacity_down,
@@ -419,7 +421,7 @@ public slots:
 	void exitFullScreen();
 	void openKeyboardShortcuts();
 	void openSettings();
-	void showExplorer();
+	void showExplorer(bool show);
 	void openDir();
 	void openFile();
 	void renameFile();

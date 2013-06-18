@@ -1113,19 +1113,6 @@ DkFileSystemModel::DkFileSystemModel(QObject* parent /* = 0 */) : QFileSystemMod
 
 }
 
-void DkFileSystemModel::fetchMore(const QModelIndex& parent) {
-
-	QFileSystemModel::fetchMore(parent);
-
-	//sort(0, Qt::AscendingOrder);
-
-}
-
-void DkFileSystemModel::sort(int column, Qt::SortOrder order /* = Qt::AscendingOrder */) {
-
-	QFileSystemModel::sort(column, order);
-}
-
 // DkSortFileProxyModel --------------------------------------------------------------------
 DkSortFileProxyModel::DkSortFileProxyModel(QObject* parent /* = 0 */) : QSortFilterProxyModel(parent) {
 
@@ -1158,6 +1145,7 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	readSettings();
 
 	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
+	//connect(fileTree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
 }
 
 DkExplorer::~DkExplorer() {
@@ -1176,7 +1164,9 @@ void DkExplorer::createLayout() {
 	fileTree->setSortingEnabled(true);
 	fileTree->setModel(sortModel);
 	fileTree->setDragEnabled(true);
+	//fileTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
+	// by default descendingOrder is set
 	fileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
 
 	setWidget(fileTree);
@@ -1202,14 +1192,46 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 
 }
 
-void DkExplorer::closeEvent() {
+void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
+
+	QMenu* cm = new QMenu();
+
+
+	columnActions.clear();	// quick&dirty
+
+	for (int idx = 0; idx < fileModel->columnCount(); idx++) {
+
+		QAction* action = new QAction(fileModel->headerData(idx, Qt::Horizontal).toString(), this);
+		action->setCheckable(true);
+		action->setChecked(!fileTree->isColumnHidden(idx));
+		action->setObjectName(QString::number(idx));
+
+		connect(action, SIGNAL(toggled(bool)), this, SLOT(showColumn(bool)));
+		columnActions.push_back(action);
+
+		cm->addAction(action);
+	}
+
+	cm->exec(event->globalPos());	
+}
+
+void DkExplorer::showColumn(bool show) {
+
+	bool ok = false;
+	int idx = QObject::sender()->objectName().toInt(&ok);
+
+	if (!ok)
+		return;
+
+	fileTree->setColumnHidden(idx, !show);
+}
+
+void DkExplorer::closeEvent(QCloseEvent* event) {
 
 	writeSettings();
 }
 
 void DkExplorer::writeSettings() {
-
-	qDebug() << "write settings...";
 
 	QSettings settings;
 	settings.beginGroup(objectName());
@@ -1234,7 +1256,9 @@ void DkExplorer::readSettings() {
 		int colWidth = settings.value(headerVal + "Size", -1).toInt();
 		if (colWidth != -1) 
 			fileTree->setColumnWidth(idx, colWidth);
-		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", false).toBool());
+
+		bool showCol = idx != 0;	// by default, show the first column only
+		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
 	}
 }
 

@@ -758,11 +758,7 @@ class DkFileSystemModel : public QFileSystemModel {
 public:
 	DkFileSystemModel(QObject* parent = 0);
 
-	virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
-
 protected:
-	virtual void fetchMore(const QModelIndex& parent);
-
 
 };
 
@@ -787,12 +783,14 @@ public:
 public slots:
 	void setCurrentPath(QFileInfo fileInfo);
 	void fileClicked(const QModelIndex &index) const;
+	void showColumn(bool show);
 
 signals:
 	void openFile(QFileInfo fileInfo) const;
 
 protected:
-	void closeEvent();
+	void closeEvent(QCloseEvent *event);
+	void contextMenuEvent(QContextMenuEvent* event);
 
 	void createLayout();
 	void writeSettings();
@@ -801,6 +799,7 @@ protected:
 	DkFileSystemModel* fileModel;
 	DkSortFileProxyModel* sortModel;
 	QTreeView* fileTree;
+	QVector<QAction*> columnActions;
 };
 
 class DkOverview : public DkWidget {

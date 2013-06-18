@@ -175,7 +175,6 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
-	showExplorer();
 }
 
 #ifdef Q_WS_WIN	// windows specific versioning
@@ -480,6 +479,7 @@ void DkNoMacs::createMenu() {
 	viewToolsMenu->addAction(viewActions[menu_view_show_toolbar]);
 	viewToolsMenu->addAction(viewActions[menu_view_show_statusbar]);
 	viewToolsMenu->addAction(viewActions[menu_view_show_transfertoolbar]);
+	viewMenu->addAction(viewActions[menu_view_show_explorer]);
 	viewMenu->addAction(viewActions[menu_view_show_preview]);
 	viewMenu->addAction(viewActions[menu_view_show_scroller]);
 	viewMenu->addAction(viewActions[menu_view_show_exif]);
@@ -542,6 +542,7 @@ void DkNoMacs::createContextMenu() {
 
 	contextMenu = new QMenu(this);
 
+	contextMenu->addAction(viewActions[menu_view_show_explorer]);
 	contextMenu->addAction(viewActions[menu_view_show_preview]);
 	contextMenu->addAction(viewActions[menu_view_show_scroller]);
 	contextMenu->addAction(viewActions[menu_view_show_exif]);
@@ -770,7 +771,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_fit_frame]->setShortcut(QKeySequence(shortcut_fit_frame));
 	viewActions[menu_view_fit_frame]->setStatusTip(tr("Fit window to the image"));
 	connect(viewActions[menu_view_fit_frame], SIGNAL(triggered()), this, SLOT(fitFrame()));
-
+	
 	QList<QKeySequence> scs;
 	scs.append(shortcut_full_screen_ff);
 	scs.append(shortcut_full_screen_ad);
@@ -825,6 +826,12 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_show_player]->setStatusTip(tr("shows the player or not"));
 	viewActions[menu_view_show_player]->setCheckable(true);
 	connect(viewActions[menu_view_show_player], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPlayer(bool)));
+
+	viewActions[menu_view_show_explorer] = new QAction(tr("Show File &Explorer"), this);
+	viewActions[menu_view_show_explorer]->setShortcut(QKeySequence(shortcut_show_explorer));
+	viewActions[menu_view_show_explorer]->setStatusTip(tr("Show File Explorer"));
+	viewActions[menu_view_show_explorer]->setCheckable(true);
+	connect(viewActions[menu_view_show_explorer], SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
 
 	viewActions[menu_view_show_preview] = new QAction(tr("Sho&w Thumbnails"), this);
 	viewActions[menu_view_show_preview]->setShortcut(QKeySequence(shortcut_open_preview));
@@ -1721,7 +1728,7 @@ void DkNoMacs::tcpSendArrange() {
 	emit sendArrangeSignal(overlaid);
 }
 
-void DkNoMacs::showExplorer() {
+void DkNoMacs::showExplorer(bool show) {
 
 	if (!explorer) {
 		explorer = new DkExplorer(tr("File Explorer"));
@@ -1729,6 +1736,8 @@ void DkNoMacs::showExplorer() {
 		connect(explorer, SIGNAL(openFile(QFileInfo)), viewport()->getImageLoader(), SLOT(load(QFileInfo)));
 		connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo)), explorer, SLOT(setCurrentPath(QFileInfo)));
 	}
+
+	explorer->setVisible(show);
 
 	if (viewport()->getImageLoader()->hasFile()) {
 		explorer->setCurrentPath(viewport()->getImageLoader()->getFile());
