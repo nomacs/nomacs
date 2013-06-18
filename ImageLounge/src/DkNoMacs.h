@@ -215,7 +215,7 @@ enum editActions {
 	menu_edit_paste,
 	menu_edit_shortcuts,
 	menu_edit_preferences,
-	menu_edit_transfrom,
+	menu_edit_transform,
 	menu_edit_delete,
 	menu_edit_crop,
 	menu_edit_wallpaper,

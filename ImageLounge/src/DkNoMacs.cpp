@@ -128,12 +128,12 @@ void DkNoMacs::init() {
 	enableNoImageActions(false);
 
 	// add actions since they are ignored otherwise if the menu is hidden
-	addActions(fileActions.toList());
-	addActions(editActions.toList());
-	addActions(toolsActions.toList());
-	addActions(viewActions.toList());
-	addActions(syncActions.toList());
-	addActions(helpActions.toList());
+	viewport()->addActions(fileActions.toList());
+	viewport()->addActions(editActions.toList());
+	viewport()->addActions(toolsActions.toList());
+	viewport()->addActions(viewActions.toList());
+	viewport()->addActions(syncActions.toList());
+	viewport()->addActions(helpActions.toList());
 
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
@@ -305,7 +305,7 @@ void DkNoMacs::createToolbar() {
 	toolbar->addSeparator();
 
 	toolbar->addAction(editActions[menu_edit_crop]);
-	toolbar->addAction(editActions[menu_edit_transfrom]);
+	toolbar->addAction(editActions[menu_edit_transform]);
 	//toolbar->addAction(editActions[menu_edit_image_manipulation]);
 	toolbar->addSeparator();
 
@@ -463,7 +463,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_rotate_cw]);
 	editMenu->addAction(editActions[menu_edit_rotate_180]);
 	editMenu->addSeparator();
-	editMenu->addAction(editActions[menu_edit_transfrom]);
+	editMenu->addAction(editActions[menu_edit_transform]);
 	editMenu->addAction(editActions[menu_edit_crop]);
 	editMenu->addAction(editActions[menu_edit_delete]);
 	editMenu->addSeparator();
@@ -570,7 +570,7 @@ void DkNoMacs::createContextMenu() {
 	editContextMenu->addAction(editActions[menu_edit_rotate_ccw]);
 	editContextMenu->addAction(editActions[menu_edit_rotate_180]);
 	editContextMenu->addSeparator();
-	editContextMenu->addAction(editActions[menu_edit_transfrom]);
+	editContextMenu->addAction(editActions[menu_edit_transform]);
 	editContextMenu->addAction(editActions[menu_edit_crop]);
 	editContextMenu->addAction(editActions[menu_edit_delete]);
 
@@ -604,6 +604,7 @@ void DkNoMacs::createActions() {
 	connect(fileActions[menu_file_open_with], SIGNAL(triggered()), this, SLOT(openFileWith()));
 
 	fileActions[menu_file_rename] = new QAction(tr("Re&name"), this);
+	fileActions[menu_file_rename]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	fileActions[menu_file_rename]->setShortcut(QKeySequence(shortcut_rename));
 	fileActions[menu_file_rename]->setStatusTip(tr("Rename an image"));
 	connect(fileActions[menu_file_rename], SIGNAL(triggered()), this, SLOT(renameFile()));
@@ -624,16 +625,19 @@ void DkNoMacs::createActions() {
 	connect(fileActions[menu_file_print], SIGNAL(triggered()), this, SLOT(printDialog()));
 
 	fileActions[menu_file_reload] = new QAction(tr("&Reload File"), this);
+	fileActions[menu_file_reload]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	fileActions[menu_file_reload]->setShortcuts(QKeySequence::Refresh);
 	fileActions[menu_file_reload]->setStatusTip(tr("Reload File"));
 	connect(fileActions[menu_file_reload], SIGNAL(triggered()), vp, SLOT(reloadFile()));
 
 	fileActions[menu_file_next] = new QAction(fileIcons[icon_file_next], tr("Ne&xt File"), this);
+	fileActions[menu_file_next]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	fileActions[menu_file_next]->setShortcut(QKeySequence(shortcut_next_file));
 	fileActions[menu_file_next]->setStatusTip(tr("Load next image"));
 	connect(fileActions[menu_file_next], SIGNAL(triggered()), vp, SLOT(loadNextFileFast()));
 
 	fileActions[menu_file_prev] = new QAction(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
+	fileActions[menu_file_prev]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	fileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
 	fileActions[menu_file_prev]->setStatusTip(tr("Load previous file"));
 	connect(fileActions[menu_file_prev], SIGNAL(triggered()), vp, SLOT(loadPrevFileFast()));
@@ -665,11 +669,13 @@ void DkNoMacs::createActions() {
 	editActions.resize(menu_edit_end);
 
 	editActions[menu_edit_rotate_cw] = new QAction(editIcons[icon_edit_rotate_cw], tr("9&0° Clockwise"), this);
+	editActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_rotate_cw]->setShortcut(QKeySequence(shortcut_rotate_cw));
 	editActions[menu_edit_rotate_cw]->setStatusTip(tr("rotate the image 90° clockwise"));
 	connect(editActions[menu_edit_rotate_cw], SIGNAL(triggered()), vp, SLOT(rotateCW()));
 
 	editActions[menu_edit_rotate_ccw] = new QAction(editIcons[icon_edit_rotate_ccw], tr("&90° Counter Clockwise"), this);
+	editActions[menu_edit_rotate_ccw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_rotate_ccw]->setShortcut(QKeySequence(shortcut_rotate_ccw));
 	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90° counter clockwise"));
 	connect(editActions[menu_edit_rotate_ccw], SIGNAL(triggered()), vp, SLOT(rotateCCW()));
@@ -679,11 +685,13 @@ void DkNoMacs::createActions() {
 	connect(editActions[menu_edit_rotate_180], SIGNAL(triggered()), vp, SLOT(rotate180()));
 
 	editActions[menu_edit_copy] = new QAction(tr("&Copy"), this);
+	editActions[menu_edit_copy]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
 	editActions[menu_edit_copy]->setStatusTip(tr("copy image"));
 	connect(editActions[menu_edit_copy], SIGNAL(triggered()), this, SLOT(copyImage()));
 
 	editActions[menu_edit_copy_buffer] = new QAction(tr("&Copy Buffer"), this);
+	editActions[menu_edit_copy_buffer]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
 	editActions[menu_edit_copy_buffer]->setStatusTip(tr("copy image"));
 	connect(editActions[menu_edit_copy_buffer], SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
@@ -692,16 +700,19 @@ void DkNoMacs::createActions() {
 	pastScs.append(QKeySequence::Paste);
 	pastScs.append(shortcut_paste);
 	editActions[menu_edit_paste] = new QAction(tr("&Paste"), this);
+	editActions[menu_edit_paste]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_paste]->setShortcuts(pastScs);
 	editActions[menu_edit_paste]->setStatusTip(tr("paste image"));
 	connect(editActions[menu_edit_paste], SIGNAL(triggered()), this, SLOT(pasteImage()));
 
-	editActions[menu_edit_transfrom] = new QAction(editIcons[icon_edit_resize], tr("R&esize Image"), this);
-	editActions[menu_edit_transfrom]->setShortcut(shortcut_transform);
-	editActions[menu_edit_transfrom]->setStatusTip(tr("resize the current image"));
-	connect(editActions[menu_edit_transfrom], SIGNAL(triggered()), this, SLOT(resizeImage()));
+	editActions[menu_edit_transform] = new QAction(editIcons[icon_edit_resize], tr("R&esize Image"), this);
+	editActions[menu_edit_transform]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	editActions[menu_edit_transform]->setShortcut(shortcut_transform);
+	editActions[menu_edit_transform]->setStatusTip(tr("resize the current image"));
+	connect(editActions[menu_edit_transform], SIGNAL(triggered()), this, SLOT(resizeImage()));
 
 	editActions[menu_edit_crop] = new QAction(editIcons[icon_edit_crop], tr("Cr&op Image"), this);
+	editActions[menu_edit_crop]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_crop]->setShortcut(shortcut_crop);
 	editActions[menu_edit_crop]->setStatusTip(tr("cut the current image"));
 	editActions[menu_edit_crop]->setCheckable(true);
@@ -709,6 +720,7 @@ void DkNoMacs::createActions() {
 	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp->getController(), SLOT(showCrop(bool)));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
+	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
 	editActions[menu_edit_delete]->setStatusTip(tr("delete current file"));
 	connect(editActions[menu_edit_delete], SIGNAL(triggered()), this, SLOT(deleteFile()));
@@ -1025,7 +1037,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_rotate_ccw]->setEnabled(enable);
 	editActions[menu_edit_rotate_180]->setEnabled(enable);
 	editActions[menu_edit_delete]->setEnabled(enable);
-	editActions[menu_edit_transfrom]->setEnabled(enable);
+	editActions[menu_edit_transform]->setEnabled(enable);
 	editActions[menu_edit_crop]->setEnabled(enable);
 	editActions[menu_edit_copy]->setEnabled(enable);
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
