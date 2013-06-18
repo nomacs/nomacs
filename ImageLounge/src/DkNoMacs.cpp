@@ -70,6 +70,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	progressDialog = 0;
 	forceDialog = 0;
 	trainDialog = 0;
+	explorer = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -174,6 +175,7 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 
+	showExplorer();
 }
 
 #ifdef Q_WS_WIN	// windows specific versioning
@@ -1167,7 +1169,10 @@ void DkNoMacs::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkNoMacs::contextMenuEvent(QContextMenuEvent *event) {
 
-	contextMenu->exec(event->globalPos());
+	QMainWindow::contextMenuEvent(event);
+
+	if (!event->isAccepted())
+		contextMenu->exec(event->globalPos());
 }
 
 void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
@@ -1702,6 +1707,27 @@ void DkNoMacs::tcpSendArrange() {
 	
 	overlaid = !overlaid;
 	emit sendArrangeSignal(overlaid);
+}
+
+void DkNoMacs::showExplorer() {
+
+	if (!explorer) {
+		explorer = new DkExplorer(tr("File Explorer"));
+		addDockWidget(Qt::LeftDockWidgetArea, explorer);
+		connect(explorer, SIGNAL(openFile(QFileInfo)), viewport()->getImageLoader(), SLOT(load(QFileInfo)));
+		connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo)), explorer, SLOT(setCurrentPath(QFileInfo)));
+	}
+
+	if (viewport()->getImageLoader()->hasFile()) {
+		explorer->setCurrentPath(viewport()->getImageLoader()->getFile());
+	}
+	else {
+		QStringList folders = DkSettings::Global::recentFolders;
+
+		if (folders.size() > 0)
+			explorer->setCurrentPath(folders[0]);
+	}
+
 }
 
 void DkNoMacs::openDir() {

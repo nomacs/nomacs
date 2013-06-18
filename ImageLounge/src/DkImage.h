@@ -696,7 +696,6 @@ public:
 	void setSaveDir(QDir& dir);
 	void setImage(QImage img, QFileInfo editFile = QFileInfo());
 	void load();
-	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
 	bool hasMovie();
@@ -767,6 +766,7 @@ public slots:
 	void directoryChanged(const QString& path = QString());
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
+	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	virtual bool loadFile(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	void saveRating(int rating);
 	void deleteFile();

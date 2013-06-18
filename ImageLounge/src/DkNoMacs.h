@@ -419,6 +419,7 @@ public slots:
 	void exitFullScreen();
 	void openKeyboardShortcuts();
 	void openSettings();
+	void showExplorer();
 	void openDir();
 	void openFile();
 	void renameFile();
@@ -565,6 +566,7 @@ protected:
 	QProgressDialog* progressDialog;
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
+	DkExplorer* explorer;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
