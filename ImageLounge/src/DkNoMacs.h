@@ -482,6 +482,7 @@ public slots:
 	void setContrast(bool contrast);
 	void runLoadedPlugin();
 	void openPluginManager();
+	void initPluginManager();
 	//void shareFacebook();
 
 	// batch actions

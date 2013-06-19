@@ -70,6 +70,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	progressDialog = 0;
 	forceDialog = 0;
 	trainDialog = 0;
+	pluginManager = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -115,8 +116,6 @@ void DkNoMacs::init() {
 
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
-
-	pluginManager = new DkPluginManager(this);
 
 	// shortcuts and actions
 	createIcons();
@@ -531,7 +530,7 @@ void DkNoMacs::createMenu() {
 
 	// plug-in menu
 	pluginsMenu = menu->addMenu(tr("&Plug-ins"));
-	createPluginsMenu();
+	connect(pluginsMenu, SIGNAL(aboutToShow()), this, SLOT(initPluginManager()));
 	
 	helpMenu = menu->addMenu(tr("&?"));
 #ifndef Q_WS_X11
@@ -2840,6 +2839,14 @@ void DkNoMacs::runLoadedPlugin() {
 	   QImage result = pluginManager->getPlugins().value(pluginManager->getRunId2PluginId().value(key))->runPlugin(key, tmpImg);
 	   if(!result.isNull()) viewport()->setEditedImage(result);
    }
+}
+
+void DkNoMacs::initPluginManager() {
+
+	if(!pluginManager) {
+		pluginManager = new DkPluginManager(this);
+		createPluginsMenu();
+	}
 }
 
 

@@ -120,6 +120,8 @@ public:
 	~DkPluginManager();
 		
 	void loadPlugins();
+	void loadEnabledPlugins();
+	void singlePluginLoad(QString filePath);
 	QMap<QString, DkPluginInterface *> getPlugins();
 	QList<QString> getPluginIdList();
 	QMap<QString, QString> getPluginFileNames();
