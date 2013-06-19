@@ -39,6 +39,8 @@
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
 #include <QScrollBar>
+#include <QTableView>
+#include <QtXml/QXmlStreamReader>
 
 #include "DkViewPort.h"
 #include "DkPluginInterface.h"
@@ -47,6 +49,7 @@ namespace nmc {
 
 class DkPluginTableWidget;
 class DkInstalledPluginsModel;
+class DkPluginDownloader;
 
 enum pluginManagerTabs {
 	tab_installed_plugins,
@@ -66,6 +69,20 @@ enum downloadPluginsColumns {
 	dp_column_version,
 	dp_column_install,
 	dp_column_size,
+};
+
+enum pluginRequestType {
+	request_none,
+	request_xml,
+	request_xml_for_update,
+	request_preview,
+	request_plugin,
+	request_plugin_update,
+};
+
+enum xmlUsage {
+	xml_usage_update,
+	xml_usage_download,
 };
 
 struct XmlPluginData {
@@ -110,6 +127,7 @@ public:
 	QMap<QString, QString> getRunId2PluginId();
 	void setRunId2PluginId(QMap<QString, QString> newMap);
 	void deletePlugin(QString pluginID);
+	void deleteInstance(QString id);
 
 protected slots:
 	void closePressed();
@@ -143,27 +161,37 @@ public:
 	~ DkPluginTableWidget();
 
 	void clearTableFilters();
-	void updateModels();
+	void updateInstalledModel();
+	void downloadPluginInformation(int usage);
 	DkPluginManager* getPluginManager();
 	int getOpenedTab();
+	DkPluginDownloader* getDownloader();
 	
+public slots:
+	void uninstallPlugin(const QModelIndex &index);
+	void installPlugin(const QModelIndex &index);
+	void pluginInstalled(const QModelIndex &index);
+	void pluginUpdateFinished(bool finishedSuccessfully);
+
 private:
 	void createLayout();
+	void fillDownloadTable();
+	void updateSelectedPlugins();
 
 	int openedTab;
 	DkPluginManager* pluginManager;
 	QSortFilterProxyModel *proxyModel;
-	//DkInstalledPluginsModel* model;
 	QAbstractTableModel* model;
-
+	DkPluginDownloader* pluginDownloader;
 	QTableView* tableView;
 	QLineEdit* filterEdit;
+	QList<XmlPluginData> pluginsToUpdate;
 
-private slots:
+protected slots:
+	void showDownloaderMessage(QString msg, QString title);
+	void manageParsedXmlData(int usage);
 	void updatePlugins();
 	void filterTextChanged();
-	void uninstallPlugin(const QModelIndex &index);
-
 };
 
 // model for the table in the installed plug-ins tab 
@@ -205,7 +233,6 @@ Q_OBJECT
 
 public:
     DkDownloadPluginsModel(QObject *parent=0);
-    DkDownloadPluginsModel(QList<QString> data, QObject *parent=0);
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
@@ -215,20 +242,18 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
     bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
-	
-	QList<QString> getPluginData();
-	void setDataToInsert(QString newData);
-	void setEnabledData(QMap<QString, bool> enabledData);
-	QMap<QString, bool> getEnabledData();
-	void loadPluginsEnabledSettings();
-	void savePluginsEnabledSettings();
+
+	void updateInstalledData(const QModelIndex &index, bool installed);	
+	QList<XmlPluginData> getPluginData();
+	void setDataToInsert(XmlPluginData newData);
+	void setInstalledData(QMap<QString, bool> installedData);
+	QMap<QString, bool> getInstalledData();
 	
 private:
-	QList<QString> pluginData;
-	QMap<QString, bool> pluginsEnabled;
-	QString dataToInsert;
+	QList<XmlPluginData> pluginData;
+	QMap<QString, bool> pluginsInstalled;
+	XmlPluginData dataToInsert;
 	DkPluginTableWidget* parentTable;
-	QList<XmlPluginData> xmlPluginData;
 };
 
 
@@ -316,6 +341,7 @@ public:
 protected slots:
 	void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+	void updateImageFromReply(QImage img);
 
 private:
 	QAbstractTableModel* dataModel;
@@ -324,6 +350,66 @@ private:
 	DkPluginTableWidget* parentTable;
 	QImage defaultImage;
 	void updateImage();
+};
+
+// plugin xml data parser and downloadr
+class DkPluginDownloader : public QObject {
+	Q_OBJECT;
+
+public:	
+	DkPluginDownloader(QWidget* parent);
+
+	void downloadXml(int usage);
+	void downloadPreviewImg(QString url);
+	void downloadPlugin(const QModelIndex &index, QString url);
+	void updatePlugins(QList<QString> urls);
+	QList<XmlPluginData> getXmlPluginData();
+
+public slots:
+	
+/*	void parseXml();
+	void replyFinished(QNetworkReply*);
+	void performUpdate();
+	void downloadFinishedSlot(QNetworkReply* data);
+	void updateDownloadProgress(qint64 received, qint64 total) { emit downloadProgress(received, total); };
+	void cancelUpdate();
+	
+
+signals:
+	void displayUpdateDialog(QString msg, QString title);
+	void showUpdaterMessage(QString msg, QString title);
+	void downloadFinished(QString filePath);
+	void downloadProgress(qint64, qint64);
+	*/
+signals:
+	void showDownloaderMessage(QString msg, QString title);
+	void parsingFinished(int usage);
+	void imageDownloaded(QImage img);
+	void pluginDownloaded(const QModelIndex &index);
+	void pluginUpdated();
+	void allPluginsUpdated(bool finishedSuccessfully);
+
+protected slots:
+	void replyFinished(QNetworkReply*);
+	void updateDownloadProgress(qint64 received, qint64 total);
+	void cancelUpdate();
+
+private:
+	QNetworkAccessManager* accessManagerPlugin;
+	QNetworkReply* reply;
+	QProgressDialog* progressDialog;
+	bool downloadAborted;
+	QList<XmlPluginData> xmlPluginData;
+	int requestType;
+	QString fileName;
+	QModelIndex pluginIndex;
+	int currUsage;
+	int fileUpdateMax;
+	int fileUpdateCurr;
+	
+	void parseXml(QNetworkReply* reply);
+	void replyToImg(QNetworkReply* reply);
+	void startPluginDownload(QNetworkReply* reply);
 };
 
 };

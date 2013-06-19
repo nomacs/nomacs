@@ -135,8 +135,28 @@ void DkPluginManager::showEvent(QShowEvent *event) {
 	loadPlugins();
 	tabs->setCurrentIndex(tab_installed_plugins);
 	tableWidgetInstalled->clearTableFilters();
-	tableWidgetInstalled->updateModels();
+	tableWidgetInstalled->updateInstalledModel();
 	tableWidgetDownload->clearTableFilters();
+}
+
+void DkPluginManager::deleteInstance(QString id) {
+
+	if (pluginLoaders.contains(id)) {
+
+		pluginFiles.remove(id);
+		for (int i = 0; i < pluginIdList.size(); i++) 
+			if (pluginIdList.at(i) == id) {
+				pluginIdList.removeAt(i);
+				break;
+			}
+		loadedPlugins.remove(id);
+
+		QPluginLoader *loaderToDelete = pluginLoaders.take(id);
+		if(loaderToDelete->unload()) {
+			delete loaderToDelete;
+		}
+		else qDebug() << "Could not unload plug-in loader!";	
+	}
 }
 
 /**
@@ -217,8 +237,8 @@ QMap<QString, QString> DkPluginManager::getRunId2PluginId(){
 
 void DkPluginManager::tabChanged(int tab){
 
-	if(tab == tab_installed_plugins) tableWidgetInstalled->updateModels();
-	else if(tab == tab_download_plugins) tableWidgetDownload->updateModels();
+	if(tab == tab_installed_plugins) tableWidgetInstalled->updateInstalledModel();
+	else if(tab == tab_download_plugins) tableWidgetDownload->downloadPluginInformation(xml_usage_download);
 }
 
 void DkPluginManager::deletePlugin(QString pluginID) {
@@ -244,7 +264,7 @@ void DkPluginManager::deletePlugin(QString pluginID) {
 
 DkPluginTableWidget::DkPluginTableWidget(int tab, DkPluginManager* manager, QWidget* parent) : QWidget(parent) {
 
-	//init();
+	pluginDownloader = new DkPluginDownloader(this);
 	openedTab = tab;
 	pluginManager = manager;
 	createLayout();
@@ -288,7 +308,7 @@ void DkPluginTableWidget::createLayout() {
     proxyModel->setDynamicSortFilter(true);
 	//tableView->setMaximumHeight(100);
 	if(openedTab == tab_installed_plugins) model = new DkInstalledPluginsModel(pluginManager->getPluginIdList(), this);
-	else if (openedTab == tab_download_plugins) model = new DkDownloadPluginsModel(pluginManager->getPluginIdList(), this);
+	else if (openedTab == tab_download_plugins) model = new DkDownloadPluginsModel(this);
 	proxyModel->setSourceModel(model);
 	tableView->setModel(proxyModel);
 	tableView->resizeColumnsToContents();
@@ -317,10 +337,12 @@ void DkPluginTableWidget::createLayout() {
 		DkPushButtonDelegate* buttonDelegate = new DkPushButtonDelegate(tableView);
 		tableView->setItemDelegateForColumn(ip_column_uninstall, buttonDelegate);
 		connect(buttonDelegate, SIGNAL(buttonClicked(QModelIndex)), this, SLOT(uninstallPlugin(QModelIndex)));
+		connect(pluginDownloader, SIGNAL(allPluginsUpdated(bool)), this, SLOT(pluginUpdateFinished(bool)));
 	} else if (openedTab == tab_download_plugins) {
 		DkDownloadDelegate* buttonDelegate = new DkDownloadDelegate(tableView);
 		tableView->setItemDelegateForColumn(dp_column_install, buttonDelegate);
-		connect(buttonDelegate, SIGNAL(buttonClicked(QModelIndex)), this, SLOT(uninstallPlugin(QModelIndex)));
+		connect(buttonDelegate, SIGNAL(buttonClicked(QModelIndex)), this, SLOT(installPlugin(QModelIndex)));
+		connect(pluginDownloader, SIGNAL(pluginDownloaded(const QModelIndex &)), this, SLOT(pluginInstalled(const QModelIndex &)));
 	}
     verticalLayout->addWidget(tableView);
 
@@ -359,6 +381,7 @@ void DkPluginTableWidget::createLayout() {
 	decriptionImg->setMinimumSize(324,168);
 	connect(tableView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), decriptionImg, SLOT(selectionChanged(const QItemSelection &, const QItemSelection &)));
 	connect(proxyModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), decriptionImg, SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
+	connect(pluginDownloader, SIGNAL(imageDownloaded(QImage)), decriptionImg, SLOT(updateImageFromReply(QImage)));
 	bottHorLayout->addWidget(decriptionImg);
 	bottomVertLayout->addLayout(bottHorLayout);
 
@@ -366,10 +389,88 @@ void DkPluginTableWidget::createLayout() {
 }
 
 void DkPluginTableWidget::updatePlugins() {
-					
-	QMessageBox msgBox;
-	msgBox.setText("Updating plug-ins");
-	msgBox.exec();
+
+	downloadPluginInformation(xml_usage_update);
+}
+
+void DkPluginTableWidget::manageParsedXmlData(int usage) {
+
+	if (usage == xml_usage_download) fillDownloadTable();
+	else if (usage == xml_usage_update) updateSelectedPlugins();
+	else showDownloaderMessage("Sorry, too many connections at once.", tr("Plug-in manager"));
+}
+
+void DkPluginTableWidget::updateSelectedPlugins() {
+
+	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(model);
+	QList<QString> installedIdList = installedPluginsModel->getPluginData();
+	QList<XmlPluginData> updateList = pluginDownloader->getXmlPluginData();
+	pluginsToUpdate = QList<XmlPluginData>();
+	
+	for (int i = 0; i < updateList.size(); i++) {
+		for (int j = 0; j < installedIdList.size(); j++) {
+			if(updateList.at(i).id == installedIdList.at(j)) {
+				if(updateList.at(i).version != pluginManager->getPlugins().value(installedIdList.at(j))->pluginVersion()) pluginsToUpdate.append(updateList.at(i));
+				break;
+			}
+		}
+	}
+
+	if (pluginsToUpdate.size() > 0) {
+
+		QStringList pluginsNames = QStringList();
+		for (int i = 0; i < pluginsToUpdate.size(); i++) pluginsNames.append(pluginsToUpdate.at(i).name + "    v:" + pluginsToUpdate.at(i).version);
+
+		QMessageBox msgBox;
+		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgBox.setDefaultButton(QMessageBox::No);
+		msgBox.setEscapeButton(QMessageBox::No);
+		msgBox.setIcon(QMessageBox::Question);
+		msgBox.setWindowTitle(tr("Update plug-ins"));
+
+		msgBox.setText(tr("There are updates available for next plug-ins:<br><i>%1</i><br><br>Do you want to update?").arg(pluginsNames.join("<br>")));
+		
+		if(msgBox.exec() == QMessageBox::Yes) {
+
+			QList<QString> updatedList = pluginManager->getPluginIdList();
+			for (int i = 0; i < pluginsToUpdate.size(); i++) {
+				for (int j = updatedList.size() - 1; j >= 0; j--) 
+					if (updatedList.at(j) == pluginsToUpdate.at(i).id) {
+						updatedList.removeAt(j);
+						break;
+				}
+			}
+			pluginManager->setPluginIdList(updatedList);
+			updateInstalledModel(); // before deleting instace remove entries from table
+
+			for (int i = 0; i < pluginsToUpdate.size(); i++) pluginManager->deleteInstance(pluginsToUpdate.at(i).id);
+
+			// after deleting instances the file are not in use anymore -> update
+			QList<QString> urls = QList<QString>();
+			for (int i = 0; i <= pluginsToUpdate.size(); i++) {
+
+#if defined _WIN64
+				QString downloadUrl = pluginsToUpdate.takeLast().downloadX64;
+#elif _WIN32
+				QString downloadUrl = pluginsToUpdate.takeLast().downloadX86;
+#endif
+				urls.append(downloadUrl);
+			}
+
+			pluginDownloader->updatePlugins(urls);
+		}
+
+		msgBox.deleteLater();
+
+	}
+	else showDownloaderMessage(tr("All plug-ins are up to date."), tr("Plug-in manager"));
+}
+
+void DkPluginTableWidget::pluginUpdateFinished(bool finishedSuccessfully) {
+
+	pluginManager->loadPlugins();
+	updateInstalledModel();
+	if (finishedSuccessfully) showDownloaderMessage(tr("The plug-ins have been updated."), tr("Plug-in manager"));
 }
 
 void DkPluginTableWidget::filterTextChanged() {
@@ -399,18 +500,43 @@ void DkPluginTableWidget::uninstallPlugin(const QModelIndex &index) {
 	if(msgBox.exec() == QMessageBox::Yes) {
 
 		QMap<QString, bool> enabledSettings = installedPluginsModel->getEnabledData();
-
-		QList<QString> pluginIdList = pluginManager->getPluginIdList();	
+		QList<QString> pluginIdList = installedPluginsModel->getPluginData();	
 		pluginIdList.removeAt(selectedRow);			
 		enabledSettings.remove(pluginID);
 
 		pluginManager->setPluginIdList(pluginIdList);
 		installedPluginsModel->setEnabledData(enabledSettings);
 		installedPluginsModel->savePluginsEnabledSettings();
-		updateModels();	// !!! update model before deleting the interface
+		updateInstalledModel();	// !!! update model before deleting the interface
 
 		pluginManager->deletePlugin(pluginID);
 	}
+	msgBox.deleteLater();
+}
+
+void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
+
+	DkDownloadPluginsModel* downloadPluginsModel = static_cast<DkDownloadPluginsModel*>(model);
+	QModelIndex sourceIndex = proxyModel->mapToSource(index);
+	int selectedRow = sourceIndex.row();
+	
+#if defined _WIN64
+	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX64;
+#elif _WIN32
+	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX86;
+#endif
+
+	QDir pluginsDir = QDir(qApp->applicationDirPath());
+    pluginsDir.mkdir("plugins");
+
+	pluginDownloader->downloadPlugin(sourceIndex, downloadUrl);	
+}
+
+void DkPluginTableWidget::pluginInstalled(const QModelIndex &index) {
+
+	DkDownloadPluginsModel* downloadPluginsModel = static_cast<DkDownloadPluginsModel*>(model);
+	downloadPluginsModel->updateInstalledData(index, true);
+	pluginManager->loadPlugins();
 }
 
 void DkPluginTableWidget::clearTableFilters(){
@@ -422,7 +548,7 @@ void DkPluginTableWidget::clearTableFilters(){
 /*
 * update models if new plug-ins are installed or copied into the folder
 */
-void DkPluginTableWidget::updateModels() {
+void DkPluginTableWidget::updateInstalledModel() {
 
 	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(model);
 	installedPluginsModel->loadPluginsEnabledSettings();
@@ -444,6 +570,68 @@ void DkPluginTableWidget::updateModels() {
 	tableView->resizeRowsToContents();
 }
 
+void DkPluginTableWidget::downloadPluginInformation(int usage) {
+
+	pluginDownloader->downloadXml(usage);
+}
+
+void DkPluginTableWidget::fillDownloadTable() {
+
+	QList<XmlPluginData> xmlPluginData = pluginDownloader->getXmlPluginData();
+	DkDownloadPluginsModel* downloadPluginsModel = static_cast<DkDownloadPluginsModel*>(model);
+	QList<XmlPluginData> modelData = downloadPluginsModel->getPluginData();
+	QMap<QString, bool> installedPlugins = downloadPluginsModel->getInstalledData();
+
+	// delete rows if needed
+	if (modelData.size() > 0) {
+		for (int i = modelData.size() - 1; i >= 0; i--) {
+			int j;
+			for (j = 0; j < xmlPluginData.size(); j++) if (xmlPluginData.at(j).id == modelData.at(i).id) break;
+			if (j >= xmlPluginData.size()) downloadPluginsModel->removeRows(i, 1);
+		}
+	}
+
+	// insert new rows if needed
+	if (modelData.size() > 0) {
+		for (int i = 0; i < xmlPluginData.size(); i++) {
+			int j;
+			for (j = 0; j < modelData.size(); j++) if (xmlPluginData.at(i).id == modelData.at(j).id) break;
+			if (j >= modelData.size()) {
+				downloadPluginsModel->setDataToInsert(xmlPluginData.at(i));
+				downloadPluginsModel->insertRows(downloadPluginsModel->getPluginData().size(), 1);
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < xmlPluginData.size(); i++) {
+			downloadPluginsModel->setDataToInsert(xmlPluginData.at(i));
+			downloadPluginsModel->insertRows(downloadPluginsModel->getPluginData().size(), 1);
+		}
+	}
+
+	// check if installed
+	modelData.clear();
+	modelData = downloadPluginsModel->getPluginData();	
+	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+
+	for (int i = 0; i < modelData.size(); i++) {
+		if (pluginIdList.contains(modelData.at(i).id)) downloadPluginsModel->updateInstalledData(downloadPluginsModel->index(i, dp_column_install), true);
+		else downloadPluginsModel->updateInstalledData(downloadPluginsModel->index(i, dp_column_install), false);
+	}
+
+	tableView->resizeRowsToContents();
+}
+
+void DkPluginTableWidget::showDownloaderMessage(QString msg, QString title) {
+	QMessageBox infoDialog(this);
+	infoDialog.setWindowTitle(title);
+	infoDialog.setIcon(QMessageBox::Information);
+	infoDialog.setText(msg);
+	infoDialog.show();
+
+	infoDialog.exec();
+}
+
 DkPluginManager* DkPluginTableWidget::getPluginManager() {
 
 	return pluginManager;
@@ -454,6 +642,10 @@ int DkPluginTableWidget::getOpenedTab() {
 	return openedTab;
 }
 
+DkPluginDownloader* DkPluginTableWidget::getDownloader() {
+
+	return pluginDownloader;
+}
 
 /**********************************************************************************
 *DkInstalledPluginsModel : Model managing installed plug-ins data in the table
@@ -492,7 +684,7 @@ QVariant DkInstalledPluginsModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
 		
 		QString pluginID = pluginData.at(index.row());
-
+		QList<QString> fsd = parentTable->getPluginManager()->getPluginIdList();
         if (index.column() == ip_column_name) {
 			return parentTable->getPluginManager()->getPlugins().value(pluginID)->pluginName();
 		}
@@ -542,7 +734,7 @@ bool DkInstalledPluginsModel::setData(const QModelIndex &index, const QVariant &
 	if (index.isValid() && role == Qt::EditRole) {
         
 		if (index.column() == ip_column_enabled) {
-			pluginsEnabled.insert(pluginData.at(index.row()), value.toBool());	// TODO modify Qsettings
+			pluginsEnabled.insert(pluginData.at(index.row()), value.toBool());
 			savePluginsEnabledSettings();
 
 			emit(dataChanged(index, index));
@@ -570,8 +762,8 @@ bool DkInstalledPluginsModel::removeRows(int position, int rows, const QModelInd
 
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
-    for (int row=0; row < rows; row++) {
-        pluginData.removeAt(position);
+	for (int row=0; row < rows; row++) {
+        pluginData.removeAt(position+row);
     }
 
     endRemoveRows();
@@ -643,16 +835,10 @@ void DkInstalledPluginsModel::savePluginsEnabledSettings() {
 
 DkDownloadPluginsModel::DkDownloadPluginsModel(QObject *parent) : QAbstractTableModel(parent) {
 
-}
-
-DkDownloadPluginsModel::DkDownloadPluginsModel(QList<QString> data, QObject *parent) : QAbstractTableModel(parent) {
-
 	parentTable = static_cast<DkPluginTableWidget*>(parent);
 
-	pluginData = data;
-	pluginsEnabled = QMap<QString, bool>();
-
-	loadPluginsEnabledSettings();
+	pluginData = QList<XmlPluginData>();
+	pluginsInstalled = QMap<QString, bool>();
 }
 
 int DkDownloadPluginsModel::rowCount(const QModelIndex &parent) const {
@@ -672,24 +858,19 @@ QVariant DkDownloadPluginsModel::data(const QModelIndex &index, int role) const 
     if (index.row() >= pluginData.size() || index.row() < 0) return QVariant();
 
     if (role == Qt::DisplayRole) {
-		
-		QString pluginID = pluginData.at(index.row());
-
-        if (index.column() == dp_column_name) {
-			return parentTable->getPluginManager()->getPlugins().value(pluginID)->pluginName();
+ 
+		if (index.column() == dp_column_name) {
+			return pluginData.at(index.row()).name;
 		}
         else if (index.column() == dp_column_version) {
-			return parentTable->getPluginManager()->getPlugins().value(pluginID)->pluginVersion();
+			return pluginData.at(index.row()).version;
 		}
-//       else if (index.column() == ip_column_enabled)
-//			return pluginsEnabled.value(pluginID, true);
 		else if (index.column() == dp_column_install)
 			return QString(tr("Download and Install"));
     }
 
 	if (role == Qt::UserRole) {
-		if (index.row() == 7 || index.row() == 3 || index.row() == 1) return false;
-		else return true;
+		return pluginsInstalled.value(pluginData.at(index.row()).id, false);
 	}
 	
     return QVariant();
@@ -724,18 +905,6 @@ Qt::ItemFlags DkDownloadPluginsModel::flags(const QModelIndex &index) const {
 
 bool DkDownloadPluginsModel::setData(const QModelIndex &index, const QVariant &value, int role) {
 
-	if (index.isValid() && role == Qt::EditRole) {
-        
-		if (index.column() == ip_column_enabled) {
-			pluginsEnabled.insert(pluginData.at(index.row()), value.toBool());	// TODO modify Qsettings
-			savePluginsEnabledSettings();
-
-			emit(dataChanged(index, index));
-
-			return true;
-		}
-    }
-
     return false;
 }
 
@@ -756,68 +925,38 @@ bool DkDownloadPluginsModel::removeRows(int position, int rows, const QModelInde
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
     for (int row=0; row < rows; row++) {
-        pluginData.removeAt(position);
+        pluginData.removeAt(position+row);
     }
 
     endRemoveRows();
     return true;
 }
 
-QList<QString> DkDownloadPluginsModel::getPluginData() {
+void DkDownloadPluginsModel::updateInstalledData(const QModelIndex &index, bool installed) {
+
+	if(installed) pluginsInstalled.insert(pluginData.at(index.row()).id, true);
+	else pluginsInstalled.remove(pluginData.at(index.row()).id);
+	emit dataChanged(index, index);
+}
+
+QList<XmlPluginData> DkDownloadPluginsModel::getPluginData() {
 	
 	return pluginData;
 }
 
-void DkDownloadPluginsModel::setDataToInsert(QString newData) {
+void DkDownloadPluginsModel::setDataToInsert(XmlPluginData newData) {
 
 	dataToInsert = newData;
 }
 
-void DkDownloadPluginsModel::setEnabledData(QMap<QString, bool> enabledData) {
+void DkDownloadPluginsModel::setInstalledData(QMap<QString, bool> installedData) {
 
-	pluginsEnabled = enabledData;
+	pluginsInstalled = installedData;
 }
 
-QMap<QString, bool> DkDownloadPluginsModel::getEnabledData() {
+QMap<QString, bool> DkDownloadPluginsModel::getInstalledData() {
 
-	return pluginsEnabled;
-}
-
-void DkDownloadPluginsModel::loadPluginsEnabledSettings() {
-
-	pluginsEnabled.clear();
-
-	QSettings settings;
-	int size = settings.beginReadArray("PluginSettings/disabledPlugins");
-	for (int i = 0; i < size; i++) {
-
-		settings.setArrayIndex(i);
-		pluginsEnabled.insert(settings.value("pluginId").toString(), false);
-	}
-	settings.endArray();
-}
-
-void DkDownloadPluginsModel::savePluginsEnabledSettings() {
-	
-	QSettings settings;
-	settings.remove("PluginSettings/disabledPlugins");
-	
-	if (pluginsEnabled.size() > 0) {
-
-		int i = 0;
-		QMapIterator<QString, bool> iter(pluginsEnabled);	
-
-		settings.beginWriteArray("PluginSettings/disabledPlugins");
-		while(iter.hasNext()) {
-			iter.next();
-			if (!iter.value()) {
-				settings.setArrayIndex(i++);
-				settings.setValue("pluginId", iter.key());
-			}
-		}
-
-		settings.endArray();
-	}
+	return pluginsInstalled;
 }
 
 /**********************************************************************************
@@ -1066,14 +1205,14 @@ void DkDescriptionEdit::updateText() {
 			if (parentTable->getOpenedTab()==tab_installed_plugins) {
 				DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(dataModel);
 				pluginID = installedPluginsModel->getPluginData().at(sourceIndex.row());
+				if (!pluginID.isNull()) text = parentTable->getPluginManager()->getPlugins().value(pluginID)->pluginDescription();
 			}
 			else if (parentTable->getOpenedTab()==tab_download_plugins) {
 				DkDownloadPluginsModel* downloadPluginsModel = static_cast<DkDownloadPluginsModel*>(dataModel);
-				pluginID = downloadPluginsModel->getPluginData().at(sourceIndex.row());
-			}
+				text = downloadPluginsModel->getPluginData().at(sourceIndex.row()).decription;
+			}		
 			
-			if (!pluginID.isNull()) text = parentTable->getPluginManager()->getPlugins().value(pluginID)->pluginDescription();
-			else text = tr("Wrong plug-in GUID!");
+			if (text.isNull()) text = tr("Wrong plug-in GUID!");
 			this->setText(text);
 			break;
 	}
@@ -1115,19 +1254,26 @@ void DkDescriptionImage::updateImage() {
 			int row = selectionModel->selection().indexes().first().row();
 			QModelIndex sourceIndex = proxyModel->mapToSource(selectionModel->selection().indexes().first());
 			QString pluginID;
+			QImage img;
 			if (parentTable->getOpenedTab()==tab_installed_plugins) {
 				DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(dataModel);
 				pluginID = installedPluginsModel->getPluginData().at(sourceIndex.row());
+				img = parentTable->getPluginManager()->getPlugins().value(pluginID)->pluginDescriptionImage();
+				if (!img.isNull()) this->setPixmap(QPixmap::fromImage(img));
+				else this->setPixmap(QPixmap::fromImage(defaultImage));
 			}
 			else if (parentTable->getOpenedTab()==tab_download_plugins) {
 				DkDownloadPluginsModel* downloadPluginsModel = static_cast<DkDownloadPluginsModel*>(dataModel);
-				pluginID = downloadPluginsModel->getPluginData().at(sourceIndex.row());
+				parentTable->getDownloader()->downloadPreviewImg(downloadPluginsModel->getPluginData().at(sourceIndex.row()).previewImgUrl);
 			}
-			QImage img = parentTable->getPluginManager()->getPlugins().value(pluginID)->pluginDescriptionImage();
-			if (!img.isNull()) this->setPixmap(QPixmap::fromImage(img));
-			else this->setPixmap(QPixmap::fromImage(defaultImage));
 			break;
 	}
+}
+
+void DkDescriptionImage::updateImageFromReply(QImage img) {
+	
+	if (!img.isNull()) this->setPixmap(QPixmap::fromImage(img));
+	else this->setPixmap(QPixmap::fromImage(defaultImage));
 }
 
 void DkDescriptionImage::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight) {
@@ -1141,5 +1287,225 @@ void DkDescriptionImage::selectionChanged(const QItemSelection &selected, const 
 }
 
 
+/**********************************************************************************
+* DkPluginDownloader : load download plug-in data and download new plug-ins
+**********************************************************************************/
+
+DkPluginDownloader::DkPluginDownloader(QWidget* parent) {
+
+	reply = 0;
+	requestType = request_none;
+	downloadAborted = false;
+	QList<XmlPluginData> xmlPluginData = QList<XmlPluginData>();
+	accessManagerPlugin = new QNetworkAccessManager(this);
+	connect(accessManagerPlugin, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)) );
+	connect(this, SIGNAL(showDownloaderMessage(QString, QString)), parent, SLOT(showDownloaderMessage(QString, QString)));
+	connect(this, SIGNAL(parsingFinished(int)), parent, SLOT(manageParsedXmlData(int)));
+
+	progressDialog = new QProgressDialog("", tr("Cancel Update"), 0, 100, parent);
+	connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelUpdate()));
+	connect(this, SIGNAL(pluginDownloaded(const QModelIndex &)), progressDialog, SLOT(hide()));	
+	connect(this, SIGNAL(allPluginsUpdated(bool)), progressDialog, SLOT(hide()));
+}
+
+void DkPluginDownloader::downloadXml(int usage) {
+
+	currUsage = usage;
+	xmlPluginData.clear();
+	requestType = request_xml;
+	downloadAborted = false;
+	reply = accessManagerPlugin->get(QNetworkRequest(QUrl("http://www.nomacs.org/nomacs-plugins/index.php")));
+	QEventLoop loop;
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+}
+
+void DkPluginDownloader::downloadPreviewImg(QString url) {
+
+	requestType = request_preview;
+	downloadAborted = false;
+	reply = accessManagerPlugin->get(QNetworkRequest(QUrl(url)));
+	QEventLoop loop;
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+}
+
+void DkPluginDownloader::downloadPlugin(const QModelIndex &index, QString url) {
+
+	requestType = request_plugin;	
+	QStringList splittedUrl = url.split("/");
+	fileName = splittedUrl.last();
+	pluginIndex = index;
+	downloadAborted = false;
+	reply = accessManagerPlugin->get(QNetworkRequest(QUrl(url)));
+	progressDialog->setLabelText(tr("Downloading plug-in..."));
+	progressDialog->show();
+	connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
+	QEventLoop loop;
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+
+}
+
+void DkPluginDownloader::updatePlugins(QList<QString> urls) {
+
+	fileUpdateMax = urls.size();
+	for (int i = 0; i < urls.size(); i++) {
+
+		fileUpdateCurr = i;
+		requestType = request_plugin_update;	
+		downloadAborted = false;
+		QStringList splittedUrl = urls.at(i).split("/");
+		fileName = splittedUrl.last();
+		
+		
+		reply = accessManagerPlugin->get(QNetworkRequest(QUrl(urls.at(i))));
+		progressDialog->setLabelText(tr("Downloading plug-in..."));
+		progressDialog->show();
+		connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
+		QEventLoop loop;
+		connect(this, SIGNAL(pluginUpdated()), &loop, SLOT(quit()));
+		loop.exec();
+		if (downloadAborted) {
+			progressDialog->hide();
+			qDebug() << "update aborted";
+			emit allPluginsUpdated(false); //even if aborted all plug-ins must be reloaded so the deleted ones reload
+			break;
+		}
+	}
+}
+
+void DkPluginDownloader::replyFinished(QNetworkReply* reply) {
+
+	if(!downloadAborted) {
+		if (reply->error() != QNetworkReply::NoError) {
+			if (requestType == request_xml) emit showDownloaderMessage(tr("Sorry, I could not download plug-in information."), tr("Plug-in manager"));
+			else if (requestType == request_preview) emit showDownloaderMessage(tr("Sorry, I could not download plug-in preview."), tr("Plug-in manager"));
+			else if (requestType == request_plugin || requestType == request_plugin_update) emit showDownloaderMessage(tr("Sorry, I could not download plug-in."), tr("Plug-in manager"));
+			cancelUpdate();
+			return;
+		}
+
+		switch(requestType) {
+			case request_xml:
+				parseXml(reply);
+				break;
+			case request_preview:
+				replyToImg(reply);
+				break;
+			case request_plugin:
+				startPluginDownload(reply);
+				break;
+			case request_plugin_update:
+				startPluginDownload(reply);
+				break;
+		}
+	}
+}
+
+void DkPluginDownloader::parseXml(QNetworkReply* reply) {
+	
+	qDebug() << "xml with plug-in data downloaded, starting parsing";
+
+	QXmlStreamReader xml(reply->readAll());
+
+	while(!xml.atEnd() && !xml.hasError()) {
+
+		QXmlStreamReader::TokenType token = xml.readNext();
+		if(token == QXmlStreamReader::StartElement) {
+
+			if(xml.name() == "Plugin") {
+				QXmlStreamAttributes xmlAttributes = xml.attributes();
+				XmlPluginData data;
+				data.id = xmlAttributes.value("id").toString();
+				data.name = xmlAttributes.value("name").toString();
+				data.version = xmlAttributes.value("version").toString();
+				data.decription = xmlAttributes.value("description").toString();
+				data.downloadX64 = xmlAttributes.value("download_x64").toString();
+				data.downloadX86 = xmlAttributes.value("download_x86").toString();	
+				data.downloadSrc = xmlAttributes.value("download_src").toString();
+				data.previewImgUrl = xmlAttributes.value("preview_url").toString();
+				xmlPluginData.append(data);
+			}
+		}
+	}
+
+	if(xml.hasError())  {
+		emit showDownloaderMessage(tr("Sorry, I could not parse the downloaded plug-in data xml"), tr("Plug-in manager"));
+		xml.clear();
+		return;
+	}
+	xml.clear();
+
+	emit parsingFinished(currUsage);
+}
+
+void DkPluginDownloader::replyToImg(QNetworkReply* reply) {
+
+    QByteArray imgData = reply->readAll();
+	QImage downloadedImg;
+	downloadedImg.loadFromData(imgData);
+	emit imageDownloaded(downloadedImg);
+}
+
+void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
+
+	QDir pluginsDir = QDir(qApp->applicationDirPath());
+    pluginsDir.cd("plugins");
+
+	QFile file(pluginsDir.absolutePath().append("\\").append(fileName));
+	if (file.exists()) {
+		if(!file.remove())	qDebug() << "Failed to delete plug-in file!";
+	}
+
+	if (!file.open(QIODevice::WriteOnly)) {
+		emit showDownloaderMessage(tr("Sorry, the plug-in could not be saved."), tr("Plug-in manager"));
+		cancelUpdate();
+        return;
+	}
+    bool writeSuccess = (file.write(reply->readAll()) > 0);
+	file.close();
+
+	if (writeSuccess) {
+		if (requestType == request_plugin) emit showDownloaderMessage(tr("Plug-in %1 was successfully installed.").arg(fileName), tr("Plug-in manager"));
+	}
+	else {
+		emit showDownloaderMessage(tr("Sorry, the plug-in could not be saved."), tr("Plug-in manager"));
+		cancelUpdate();
+		return;
+	}
+
+	if (requestType == request_plugin) emit pluginDownloaded(pluginIndex);
+	else if (requestType == request_plugin_update) { 
+		if(fileUpdateCurr + 1 < fileUpdateMax) emit pluginUpdated();
+		else emit allPluginsUpdated(true);
+	}
+	else emit showDownloaderMessage("Sorry, too many connections at once.", tr("Plug-in manager"));
+}
+
+QList<XmlPluginData> DkPluginDownloader::getXmlPluginData() {
+
+	return xmlPluginData;
+}
+
+void DkPluginDownloader::cancelUpdate()  {
+
+	reply->abort(); 
+	downloadAborted = true;
+	if (requestType == request_plugin_update) emit pluginUpdated(); //stop the loop
+}
+
+void DkPluginDownloader::updateDownloadProgress(qint64 received, qint64 total) { 
+
+	if (requestType != request_plugin_update) {
+		progressDialog->setMaximum(total);
+		progressDialog->setValue(received);
+	}
+	else {
+		progressDialog->setMaximum(100000);
+		progressDialog->setValue((int)(100000.0/fileUpdateMax*((double)(received)/total + (double)(fileUpdateCurr)/fileUpdateMax)));
+	}
+
+}
 
 };
