@@ -28,6 +28,10 @@
 #include "DkImage.h"
 #include "DkNoMacs.h"
 
+extern "C" {
+#include "tiffio.h"
+}
+
 namespace nmc {
 
 #ifdef WIN32
@@ -113,6 +117,18 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 		imgLoaded = loadRawFile(this->file);
 		if (imgLoaded) loader = raw_loader;
 	}
+
+	//if (!imgLoaded && newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive))) {
+
+
+	//	TIFF* x = 0;
+	//	//TIFFClose(x);
+	//	//int code = TIFFReadDirectory(x);
+	//	uint16 bitPerSample;
+	//	TIFFGetField(x, TIFFTAG_BITSPERSAMPLE, &bitPerSample);
+
+	//}
+
 
 	// default Qt loader
 	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
