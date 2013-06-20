@@ -481,6 +481,10 @@ protected:
 	
 	bool loadRohFile(QString fileName);
 	bool loadRawFile(QFileInfo file);
+
+
+	QImage panTilt(QImage img);
+	cv::Mat blurPanTilt(cv::Mat src, cv::Mat depthImg, int maxKernel);
 	
 	int loader;
 	bool training;
