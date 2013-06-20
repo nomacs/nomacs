@@ -28,9 +28,9 @@
 #include "DkImage.h"
 #include "DkNoMacs.h"
 
-extern "C" {
-#include "tiffio.h"
-}
+//extern "C" {
+//#include "tiffio.h"
+//}
 
 namespace nmc {
 
