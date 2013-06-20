@@ -784,6 +784,7 @@ public slots:
 	void setCurrentPath(QFileInfo fileInfo);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
+	void setEditable(bool editable);
 
 signals:
 	void openFile(QFileInfo fileInfo) const;
@@ -795,7 +796,7 @@ protected:
 	void createLayout();
 	void writeSettings();
 	void readSettings();
-	
+
 	DkFileSystemModel* fileModel;
 	DkSortFileProxyModel* sortModel;
 	QTreeView* fileTree;

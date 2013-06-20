@@ -1121,6 +1121,9 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		QSettings settings;
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
+		
+		if (explorer)
+			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
 
 		DkSettings ourSettings;
 		ourSettings.save();
@@ -1731,8 +1734,13 @@ void DkNoMacs::tcpSendArrange() {
 void DkNoMacs::showExplorer(bool show) {
 
 	if (!explorer) {
+
+		// get last location
+		QSettings settings;
+		int dockLocation = settings.value("explorerLocation", Qt::LeftDockWidgetArea).toInt();
+		
 		explorer = new DkExplorer(tr("File Explorer"));
-		addDockWidget(Qt::LeftDockWidgetArea, explorer);
+		addDockWidget((Qt::DockWidgetArea)dockLocation, explorer);
 		connect(explorer, SIGNAL(openFile(QFileInfo)), viewport()->getImageLoader(), SLOT(load(QFileInfo)));
 		connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo)), explorer, SLOT(setCurrentPath(QFileInfo)));
 	}
@@ -1743,7 +1751,7 @@ void DkNoMacs::showExplorer(bool show) {
 		explorer->setCurrentPath(viewport()->getImageLoader()->getFile());
 	}
 	else {
-		QStringList folders = DkSettings::Global::recentFolders;
+		QStringList folders = DkSettings::Global::recentFiles;
 
 		if (folders.size() > 0)
 			explorer->setCurrentPath(folders[0]);
