@@ -206,6 +206,11 @@ class DkLANConnection : public DkConnection {
 
 
 	protected:
+		virtual void readGreetingMessage();
+		virtual bool readProtocolHeader();
+		virtual void processData();
+		virtual void readWhileBytesAvailable();
+
 		enum LANDataType {
 			upcomingImage = 9,
 			newImage,
@@ -213,24 +218,54 @@ class DkLANConnection : public DkConnection {
 			Undefined
 		};
 		LANDataType currentLanDataType;
-
-	private:
-		bool readProtocolHeader();
-		virtual void processData();
-		void readGreetingMessage();
-		void readWhileBytesAvailable();
-
-		QString clientName;
-		bool showInMenu;
-
 		bool allowTransformation;
 		bool allowPosition;
 		bool allowFile;
 		bool allowImage;
 
+	private:
+		
+
+		QString clientName;
+		bool showInMenu;
+
+
 		bool iAmServer;
 };
 
+
+class DkRemoteControlConnection : public DkLANConnection {
+	Q_OBJECT
+
+	public:
+		DkRemoteControlConnection(QObject* parent = 0);
+
+	signals:
+		void connectionNewPermission(DkRemoteControlConnection*, bool);
+
+	public slots:
+		void sendAskForPermission();
+		void sendPermission();
+
+	protected slots:
+		void processReadyRead();
+		
+
+	protected:
+		virtual void readGreetingMessage();
+		virtual bool readProtocolHeader();
+		virtual void processData();
+
+		enum RemoteControlDataType {
+			newPermission = 11,
+			newAskPermission,
+			Undefined
+		};
+		RemoteControlDataType currentRemoteControlDataType;
+
+	private:
+
+};
 
 };
 

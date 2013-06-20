@@ -156,6 +156,9 @@ bool DkSettings::Sync::allowImage = true;
 bool DkSettings::Sync::updateDialogShown= false;
 QDate DkSettings::Sync::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::Sync::syncAbsoluteTransform = true;
+QStringList DkSettings::Sync::recentSyncNames = QStringList();
+QHash<QString, QVariant> DkSettings::Sync::syncWhiteList = QHash<QString, QVariant>();
+
 
 float DkSettings::Resources::cacheMemory = 0;
 bool DkSettings::Resources::fastThumbnailPreview = true;
@@ -254,6 +257,8 @@ void DkSettings::load() {
 	Sync::lastUpdateCheck = settings.value("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck).toDate();
 	Sync::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform).toBool();
 	Sync::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier).toBool();
+	Sync::recentSyncNames = settings.value("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames).toStringList();
+	Sync::syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList).toHash();
 
 	Resources::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory).toFloat();
 	Resources::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview).toBool();
@@ -352,7 +357,9 @@ void DkSettings::save() {
 	settings.setValue("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck);
 	settings.setValue("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform);
 	settings.setValue("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier);
-	
+	settings.setValue("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames);
+	settings.setValue("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList);
+
 	settings.setValue("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory);
 	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview);
 	settings.setValue("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages);
@@ -479,6 +486,8 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Sync::updateDialogShown = false;
 	DkSettings::Sync::lastUpdateCheck = QDate(1970 , 1, 1);
 	DkSettings::Sync::syncAbsoluteTransform = true;
+	DkSettings::Sync::recentSyncNames = QStringList();
+	// do not clean whitelist
 
 	DkSettings::Resources::cacheMemory = 0;
 	DkSettings::Resources::fastThumbnailPreview = true;

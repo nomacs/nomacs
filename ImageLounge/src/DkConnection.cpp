@@ -787,4 +787,100 @@ void DkLANConnection::sendNewFileMessage(qint16 op , QString filename) {
 	DkConnection::sendNewFileMessage(op, filename);
 }
 
+// DkRemoteControlConnection --------------------------------------------------------------------
+DkRemoteControlConnection::DkRemoteControlConnection(QObject* parent /* = 0 */) : DkLANConnection(parent) {
+	currentRemoteControlDataType = Undefined;
+}
+
+void DkRemoteControlConnection::readGreetingMessage() {
+	DkLANConnection::readGreetingMessage();
+	allowFile = true;
+	allowImage = true;
+	allowPosition = true;
+	allowTransformation = true;
+	sendAskForPermission();
+}
+
+bool DkRemoteControlConnection::readProtocolHeader() {
+	QByteArray newPermissionBA = QByteArray("PERMISSION").append(SeparatorToken);
+	QByteArray newAskPermissionBA = QByteArray("ASKPERMISSION").append(SeparatorToken);
+
+	if (buffer == newPermissionBA) {
+		qDebug() << "New Permission received from:" << this->peerAddress() << ":" << this->peerPort();
+		currentRemoteControlDataType = newPermission;
+	} else if (buffer == newAskPermissionBA) {
+		qDebug() << "New Ask Permission received from:" << this->peerAddress() << ":" << this->peerPort();
+		currentRemoteControlDataType = newAskPermission;
+	} else {
+		return DkLANConnection::readProtocolHeader();
+	}
+
+	buffer.clear();
+	numBytesForCurrentDataType = dataLengthForCurrentDataType();
+	return true;
+}
+
+void DkRemoteControlConnection::processReadyRead() {
+	if (readDataIntoBuffer() <= 0)
+		return;
+	if (!readProtocolHeader())
+		return;
+
+	checkState();
+	DkLANConnection::processReadyRead();
+}
+
+void  DkRemoteControlConnection::processData() {
+	switch (currentRemoteControlDataType) {
+	case newPermission: {
+			bool allowedToConnect;
+			QDataStream ds(buffer);
+			ds >> allowedToConnect;
+			emit connectionNewPermission(this, allowedToConnect);
+			qDebug() << "emitted connectionNewPermission";
+			}
+		break;
+	case newAskPermission:  {
+		QString dummy;
+		QDataStream ds(buffer);
+		ds >> dummy;
+		sendPermission();
+		}
+		break;
+	case Undefined:
+	default: 
+		DkLANConnection::processData();
+	}
+
+	currentRemoteControlDataType = Undefined;
+	currentLanDataType = DkLANConnection::Undefined;
+	currentDataType = DkConnection::Undefined;
+	numBytesForCurrentDataType = 0;
+	buffer.clear();
+}
+
+void DkRemoteControlConnection::sendAskForPermission() {
+	qDebug() << "sending askForPermission to " << this->peerName() << ":" << this->peerPort();
+
+	QByteArray ba = "Dummy"; 
+	QByteArray data = "ASKPERMISSION";
+	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
+	write(data);
+	this->waitForBytesWritten();
+}
+
+void DkRemoteControlConnection::sendPermission() {
+	qDebug() << "sending askForPermission to " << this->peerName() << ":" << this->peerPort();
+
+	QByteArray ba;
+	QDataStream ds(&ba, QIODevice::ReadWrite);
+	ds << DkSettings::Sync::syncWhiteList.value(getClientName(), false).toBool();
+
+	QByteArray data = "PERMISSION";
+	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
+	write(data);
+	this->waitForBytesWritten();
+}
+
+
 }

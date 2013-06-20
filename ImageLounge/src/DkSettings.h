@@ -33,6 +33,7 @@
 #include <QLabel>
 #include <QStringList>
 #include <QStringListModel>
+#include <QHash>
 #include <QSpacerItem>
 #include <QPushButton>
 #include <QCheckBox>
@@ -169,6 +170,9 @@ class DkSettings : public QObject {
 			static QDate lastUpdateCheck;
 			static bool syncAbsoluteTransform;
 			static bool switchModifier;
+			static QStringList recentSyncNames;
+			static QHash<QString, QVariant> syncWhiteList;
+			//static QMap<QString, QDateTime> recentLastSeen;
 		};
 		struct MetaData {
 			static QBitArray metaDataBits;
