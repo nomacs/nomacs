@@ -1042,13 +1042,15 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 
 	QStringList sl = replyData.split('\n', QString::SkipEmptyParts);
 
-	QString version, x64, x86, url, mac;
+	QString version, x64, x86, url, mac, XPx86;
 	for(int i = 0; i < sl.length();i++) {
 		QStringList values = sl[i].split(" ");
 		if (values[0] == "version") 
 			version = values[1];
 		else if (values[0] == "x64")
 			x64 = values[1];
+		else if (values[0] == "XPx86")
+			XPx86 = values[1];
 		else if (values[0] == "x86")
 			x86 = values[1];
 		else if (values[0] == "mac")
@@ -1058,10 +1060,10 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 
 #if _MSC_VER == 1600
 	url = XPx86;	// for WinXP packages
-#elif _WIN32
-	url = x86;
 #elif defined _WIN64
 	url = x64;
+#elif _WIN32
+	url = x86;
 #elif defined Q_WS_MAC
 	url = mac;
 #endif 

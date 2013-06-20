@@ -1122,6 +1122,8 @@ void DkResizeDialog::init() {
 	createLayout();
 	initBoxes();
 
+	wPixelEdit->setFocus(Qt::ActiveWindowFocusReason);
+
 	QMetaObject::connectSlotsByName(this);
 
 }
@@ -1179,10 +1181,11 @@ void DkResizeDialog::createLayout() {
 
 	QLabel* wPixelLabel = new QLabel(tr("Width: "));
 	wPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	wPixelEdit = new QDoubleSpinBox();
+	wPixelEdit = new DkSelectAllDoubleSpinBox();
 	wPixelEdit->setObjectName("wPixelEdit");
 	wPixelEdit->setRange(minPx, maxPx);
 	wPixelEdit->setDecimals(0);
+	
 
 	QWidget* lockWidget = new QWidget();
 	QHBoxLayout* boxLayout = new QHBoxLayout(); 
@@ -1194,7 +1197,7 @@ void DkResizeDialog::createLayout() {
 
 	QLabel* hPixelLabel = new QLabel(tr("Height: "));
 	hPixelLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	hPixelEdit = new QDoubleSpinBox();
+	hPixelEdit = new DkSelectAllDoubleSpinBox();
 	hPixelEdit->setObjectName("hPixelEdit");
 	hPixelEdit->setRange(minPx, maxPx);
 	hPixelEdit->setDecimals(0);
@@ -1218,10 +1221,11 @@ void DkResizeDialog::createLayout() {
 	// Document dimensions
 	QLabel* widthLabel = new QLabel(tr("Width: "));
 	widthLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	widthEdit = new QDoubleSpinBox();
+	widthEdit = new DkSelectAllDoubleSpinBox();
 	widthEdit->setObjectName("widthEdit");
 	widthEdit->setRange(minWidth, maxWidth);
 	widthEdit->setDecimals(decimals);
+
 
 	lockButtonDim = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
 	//lockButtonDim->setIcon(QIcon(":/nomacs/img/lock.png"));
@@ -1232,7 +1236,7 @@ void DkResizeDialog::createLayout() {
 
 	QLabel* heightLabel = new QLabel(tr("Height: "));
 	heightLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	heightEdit = new QDoubleSpinBox();
+	heightEdit = new DkSelectAllDoubleSpinBox();
 	heightEdit->setObjectName("heightEdit");
 	heightEdit->setRange(minWidth, maxWidth);
 	heightEdit->setDecimals(decimals);
@@ -1258,7 +1262,7 @@ void DkResizeDialog::createLayout() {
 	// resolution
 	QLabel* resolutionLabel = new QLabel(tr("Resolution: "));
 	resolutionLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	resolutionEdit = new QDoubleSpinBox();
+	resolutionEdit = new DkSelectAllDoubleSpinBox();
 	resolutionEdit->setObjectName("resolutionEdit");
 	resolutionEdit->setRange(minWidth, maxWidth);
 	resolutionEdit->setDecimals(decimals);
@@ -1313,6 +1317,7 @@ void DkResizeDialog::createLayout() {
 	layout->addWidget(resizeBoxes);
 	layout->addStretch();
 	layout->addWidget(buttons);
+	
 	show();
 }
 

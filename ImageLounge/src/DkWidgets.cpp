@@ -1102,6 +1102,166 @@ void DkThumbsSaver::processDir(const QDir& dir, bool forceLoad) {
 	}
 }
 
+// DkFileSystemModel --------------------------------------------------------------------
+DkFileSystemModel::DkFileSystemModel(QObject* parent /* = 0 */) : QFileSystemModel(parent) {
+
+	// some custom settings
+	setRootPath(QDir::rootPath());
+	setNameFilters(DkImageLoader::fileFilters);
+	setReadOnly(false);
+	//setSupportedDragActions(Qt::CopyAction | Qt::MoveAction);
+
+}
+
+// DkSortFileProxyModel --------------------------------------------------------------------
+DkSortFileProxyModel::DkSortFileProxyModel(QObject* parent /* = 0 */) : QSortFilterProxyModel(parent) {
+
+}
+
+bool DkSortFileProxyModel::lessThan(const QModelIndex& left, const QModelIndex& right) const {
+
+	if (left.data().canConvert(QVariant::Url)) {
+
+		QFileInfo lf = left.data().toString();
+		QFileInfo rf = right.data().toString();
+
+		// could not find a better way to tell files from dirs appart (isDir() is not what we expect)
+		if (lf.suffix().isEmpty() && !rf.suffix().isEmpty())
+			return true;
+		else if (!lf.suffix().isEmpty() && rf.suffix().isEmpty())
+			return false;		
+
+		return wCompLogicQString(lf.fileName(), rf.fileName());
+	}
+
+	return QSortFilterProxyModel::lessThan(left, right);
+}
+
+// DkExplorer --------------------------------------------------------------------
+DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDockWidget(title, parent, flags) {
+
+	setObjectName("DkExplorer");
+	createLayout();
+	readSettings();
+
+	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
+	//connect(fileTree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
+}
+
+DkExplorer::~DkExplorer() {
+	writeSettings();
+}
+
+void DkExplorer::createLayout() {
+
+	fileModel = new DkFileSystemModel(this);
+	
+	sortModel = new DkSortFileProxyModel(this);
+	sortModel->setSourceModel(fileModel);
+	sortModel->setSortLocaleAware(true);
+
+	fileTree = new QTreeView(this);
+	fileTree->setSortingEnabled(true);
+	fileTree->setModel(sortModel);
+	fileTree->setDragEnabled(true);
+	//fileTree->setContextMenuPolicy(Qt::CustomContextMenu);
+
+	// by default descendingOrder is set
+	fileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
+
+	setWidget(fileTree);
+}
+
+void DkExplorer::setCurrentPath(QFileInfo fileInfo) {
+
+	// expand folders
+	if (fileInfo.isDir())
+		fileTree->expand(sortModel->mapFromSource(fileModel->index(fileInfo.absoluteFilePath())));
+
+	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(fileInfo.absoluteFilePath())));
+}
+
+void DkExplorer::fileClicked(const QModelIndex &index) const {
+
+	QFileInfo cFile = fileModel->fileInfo(sortModel->mapToSource(index));
+
+	qDebug() << "opening: " << cFile.absoluteFilePath();
+
+	if (DkImageLoader::isValid(cFile))
+		emit openFile(cFile);
+
+}
+
+void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
+
+	QMenu* cm = new QMenu();
+
+
+	columnActions.clear();	// quick&dirty
+
+	for (int idx = 0; idx < fileModel->columnCount(); idx++) {
+
+		QAction* action = new QAction(fileModel->headerData(idx, Qt::Horizontal).toString(), this);
+		action->setCheckable(true);
+		action->setChecked(!fileTree->isColumnHidden(idx));
+		action->setObjectName(QString::number(idx));
+
+		connect(action, SIGNAL(toggled(bool)), this, SLOT(showColumn(bool)));
+		columnActions.push_back(action);
+
+		cm->addAction(action);
+	}
+
+	cm->exec(event->globalPos());	
+}
+
+void DkExplorer::showColumn(bool show) {
+
+	bool ok = false;
+	int idx = QObject::sender()->objectName().toInt(&ok);
+
+	if (!ok)
+		return;
+
+	fileTree->setColumnHidden(idx, !show);
+}
+
+void DkExplorer::closeEvent(QCloseEvent* event) {
+
+	writeSettings();
+}
+
+void DkExplorer::writeSettings() {
+
+	QSettings settings;
+	settings.beginGroup(objectName());
+	
+	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
+		QString headerVal = fileModel->headerData(idx, Qt::Horizontal).toString();
+		settings.setValue(headerVal + "Size", fileTree->columnWidth(idx));
+		settings.setValue(headerVal + "Hidden", fileTree->isColumnHidden(idx));
+	}
+	
+}
+
+void DkExplorer::readSettings() {
+
+	QSettings settings;
+	settings.beginGroup(objectName());
+
+	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
+		
+		QString headerVal = fileModel->headerData(idx, Qt::Horizontal).toString();
+		
+		int colWidth = settings.value(headerVal + "Size", -1).toInt();
+		if (colWidth != -1) 
+			fileTree->setColumnWidth(idx, colWidth);
+
+		bool showCol = idx != 0;	// by default, show the first column only
+		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
+	}
+}
+
 // DkOverview --------------------------------------------------------------------
 DkOverview::DkOverview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 

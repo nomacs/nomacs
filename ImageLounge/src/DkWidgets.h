@@ -51,6 +51,10 @@
 #include <qmath.h>
 #include <QScrollBar>
 #include <QPlastiqueStyle>
+#include <QFileSystemModel>
+#include <QDockWidget>
+#include <QTreeView>
+#include <QSortFilterProxyModel>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -748,6 +752,55 @@ protected:
 	QProgressDialog* pd;
 };
 
+class DkFileSystemModel : public QFileSystemModel {
+	Q_OBJECT
+
+public:
+	DkFileSystemModel(QObject* parent = 0);
+
+protected:
+
+};
+
+class DkSortFileProxyModel : public QSortFilterProxyModel {
+	Q_OBJECT
+
+public:
+	DkSortFileProxyModel(QObject* parent = 0);
+
+protected:
+	virtual bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
+
+};
+
+class DkExplorer : public QDockWidget {
+	Q_OBJECT
+
+public:
+	DkExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkExplorer();
+
+public slots:
+	void setCurrentPath(QFileInfo fileInfo);
+	void fileClicked(const QModelIndex &index) const;
+	void showColumn(bool show);
+
+signals:
+	void openFile(QFileInfo fileInfo) const;
+
+protected:
+	void closeEvent(QCloseEvent *event);
+	void contextMenuEvent(QContextMenuEvent* event);
+
+	void createLayout();
+	void writeSettings();
+	void readSettings();
+	
+	DkFileSystemModel* fileModel;
+	DkSortFileProxyModel* sortModel;
+	QTreeView* fileTree;
+	QVector<QAction*> columnActions;
+};
 
 class DkOverview : public DkWidget {
 	Q_OBJECT

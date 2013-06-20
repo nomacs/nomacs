@@ -55,7 +55,6 @@
 #include <QComboBox>
 
 
-
 #include "BorderLayout.h"
 
 namespace nmc {

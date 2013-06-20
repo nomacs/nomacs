@@ -58,6 +58,38 @@
 
 namespace nmc {
 
+// needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
+// and http://qt-project.org/forums/viewthread/8590
+class DkSelectAllLineEdit : public QLineEdit {
+	public:
+		DkSelectAllLineEdit(QWidget* parent = 0) : QLineEdit(parent) {selectOnMousePressEvent = false;};
+
+	protected:
+		void focusInEvent(QFocusEvent *event) {
+			QLineEdit::focusInEvent(event);
+			selectAll();
+			selectOnMousePressEvent = true;
+		}
+
+		void mousePressEvent(QMouseEvent *event) {
+			QLineEdit::mousePressEvent(event);
+			if (selectOnMousePressEvent) {
+				selectAll();
+				selectOnMousePressEvent = false;
+			}
+		}
+	private:
+		bool selectOnMousePressEvent; 
+};
+
+class DkSelectAllDoubleSpinBox : public QDoubleSpinBox {
+	public:
+		DkSelectAllDoubleSpinBox(QWidget* parent = 0) : QDoubleSpinBox(parent) {
+			DkSelectAllLineEdit* le = new DkSelectAllLineEdit(this); 
+			setLineEdit(le);
+		};
+};
+
 class DkSplashScreen : public QDialog {
 	Q_OBJECT
 
@@ -389,6 +421,7 @@ public:
 		initBoxes();
 		updateSnippets();
 		drawPreview();
+		wPixelEdit->selectAll();
 	};
 
 	QImage getResizedImage() {
