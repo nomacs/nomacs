@@ -632,6 +632,7 @@ protected:
 	// network layer
 	DkLocalManagerThread* localClient;
 	DkLanManagerThread* lanClient;
+	DkRCManagerThread* rcClient;
 
 };
 

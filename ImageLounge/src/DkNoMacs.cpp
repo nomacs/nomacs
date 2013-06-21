@@ -2793,6 +2793,7 @@ void DkNoMacsSync::initLanClient() {
 	if (!DkSettings::Sync::enableNetworkSync) {
 
 		lanClient = 0;
+		rcClient = 0;
 
 		tcpLanMenu->setEnabled(false);
 		return;
@@ -2821,6 +2822,19 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->addTcpAction(startServer);
 	tcpLanMenu->addTcpAction(sendImage);
 	tcpLanMenu->setEnabled(true);
+
+
+	// remote control server
+	if (rcClient) {
+		rcClient->quit();
+		rcClient->wait();
+
+		delete rcClient;
+	}
+
+	rcClient = new DkRCManagerThread(this);
+	if (!DkSettings::Sync::syncWhiteList.empty())
+		rcClient->startServer(true);
 }
 
 void DkNoMacsSync::createActions() {
@@ -2970,6 +2984,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	localClient->start();
 
 	lanClient = 0;
+	rcClient = 0;
 
 	init();
 	setAcceptDrops(true);
