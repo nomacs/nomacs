@@ -874,7 +874,7 @@ void DkRemoteControlConnection::sendPermission() {
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
-	ds << DkSettings::Sync::syncWhiteList.value(getClientName(), false).toBool();
+	ds << DkSettings::Sync::syncWhiteList.contains(getClientName());
 
 	QByteArray data = "PERMISSION";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);

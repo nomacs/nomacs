@@ -423,7 +423,6 @@ void DkLANClientManager::connectionSentNewTitle(DkConnection* connection, QStrin
 		if (peer.peerId != connection->getPeerId())
 			peer.connection->sendNewTitleMessage(newTitle);
 	}
-
 }
 
 
@@ -435,6 +434,12 @@ void DkLANClientManager::connectionSynchronized(QList<quint16> synchronizedPeers
 	emit updateConnectionSignal(peerList.getActivePeers());
 
 	// ignore synchronized clients of other connection
+
+	// add to last seen for whitelisting
+	DkSettings::Sync::recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
+	DkSettings::Sync::recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime());
+
+
 }
 
 void DkLANClientManager::connectionStopSynchronized(DkConnection* connection) {
@@ -658,6 +663,13 @@ void DkLANClientManager::connectConnection(DkConnection* connection) {
 }
 
 // DkRemoteControllClientManager --------------------------------------------------------------------
+DkRemoteControlClientManager::DkRemoteControlClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent) {
+	server = new DkLANTcpServer(this, 28565, 28565);
+	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
+	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
+	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
+}
+
 QList<DkPeer> DkRemoteControlClientManager::getPeerList() {
 	QList<DkPeer> list;
 	foreach(DkPeer peer, peerList.getPeerList()) {
@@ -678,7 +690,7 @@ void DkRemoteControlClientManager::synchronizeWith(quint16 peerId) {
 		return;
 	}
 
-	if (DkSettings::Sync::syncWhiteList.value(peer.clientName, false).toBool()) {
+	if (DkSettings::Sync::syncWhiteList.contains(peer.clientName)) {
 		qDebug() << "Peer is not allowed to synchronize (not in whitelist)";
 		return;
 	}
@@ -732,8 +744,8 @@ void DkLocalTcpServer::incomingConnection ( int socketDescriptor )  {
 
 // DkLANTcpServer --------------------------------------------------------------------
 
-DkLANTcpServer::DkLANTcpServer( QObject* parent) : QTcpServer(parent) {
-	udpSocket = new DkLANUdpSocket();
+DkLANTcpServer::DkLANTcpServer( QObject* parent, quint16 udpServerPortRangeStart, quint16 updServerPortRangeEnd) : QTcpServer(parent) {
+	udpSocket = new DkLANUdpSocket(udpServerPortRangeStart, updServerPortRangeEnd);
 	connect(udpSocket, SIGNAL(udpSocketNewServerOnline(QHostAddress, quint16, QString)), this, SLOT(udpNewServerFound(QHostAddress, quint16, QString)));
 	connect(this, SIGNAL(sendNewClientBroadcast()), udpSocket, SLOT(sendNewClientBroadcast()));
 	emit sendNewClientBroadcast();
@@ -1359,5 +1371,28 @@ void DkLanManagerThread::createClient(QString title) {
 	clientManager = new DkLANClientManager(title);
 }
 
+// DkRCManagerThread --------------------------------------------------------------------
+DkRCManagerThread::DkRCManagerThread(DkNoMacs* parent) : DkLanManagerThread(parent) {
+	clientManager = 0;
+}
+
+void DkRCManagerThread::createClient(QString title) {
+	if (clientManager)
+		delete clientManager;
+
+	clientManager = new DkRemoteControlClientManager(title);
+}
+
+void DkRCManagerThread::connectClient() {
+	// not sure if we need something here
+
+	//connect(parent->viewport(), SIGNAL(sendImageSignal(QImage, QString)), clientManager, SLOT(sendNewImage(QImage, QString)));
+	//connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(loadImage(QImage)));
+	//connect(clientManager, SIGNAL(sendInfoSignal(QString, int)), parent->viewport()->getController(), SLOT(setInfo(QString, int)));
+	//connect(clientManager, SIGNAL(receivedImageTitle(QString)), parent, SLOT(setWindowTitle(QString)));
+	//connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
+
+	DkLanManagerThread::connectClient();
+}
 
 }

@@ -157,8 +157,8 @@ bool DkSettings::Sync::updateDialogShown= false;
 QDate DkSettings::Sync::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::Sync::syncAbsoluteTransform = true;
 QStringList DkSettings::Sync::recentSyncNames = QStringList();
-QHash<QString, QVariant> DkSettings::Sync::syncWhiteList = QHash<QString, QVariant>();
-
+QStringList DkSettings::Sync::syncWhiteList = QStringList();
+QHash<QString, QVariant> DkSettings::Sync::recentLastSeen = QHash<QString, QVariant>();
 
 float DkSettings::Resources::cacheMemory = 0;
 bool DkSettings::Resources::fastThumbnailPreview = true;
@@ -258,7 +258,8 @@ void DkSettings::load() {
 	Sync::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform).toBool();
 	Sync::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier).toBool();
 	Sync::recentSyncNames = settings.value("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames).toStringList();
-	Sync::syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList).toHash();
+	Sync::syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList).toStringList();
+	Sync::recentLastSeen = settings.value("SynchronizeSettings/recentLastSeen", DkSettings::Sync::recentLastSeen).toHash();
 
 	Resources::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory).toFloat();
 	Resources::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview).toBool();
@@ -359,6 +360,7 @@ void DkSettings::save() {
 	settings.setValue("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier);
 	settings.setValue("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames);
 	settings.setValue("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList);
+	settings.setValue("SynchronizeSettings/recentLastSeen", DkSettings::Sync::recentLastSeen);
 
 	settings.setValue("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory);
 	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview);
@@ -486,8 +488,8 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Sync::updateDialogShown = false;
 	DkSettings::Sync::lastUpdateCheck = QDate(1970 , 1, 1);
 	DkSettings::Sync::syncAbsoluteTransform = true;
-	DkSettings::Sync::recentSyncNames = QStringList();
-	// do not clean whitelist
+	// do not clean whitelist and lastseen
+	//DkSettings::Sync::recentSyncNames = QStringList();
 
 	DkSettings::Resources::cacheMemory = 0;
 	DkSettings::Resources::fastThumbnailPreview = true;
@@ -571,7 +573,7 @@ void DkSettingsDialog::createLayout() {
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("Resources");
+	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("Resources") << tr("Remote Control");
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
@@ -614,6 +616,7 @@ void DkSettingsDialog::createSettingsWidgets() {
 	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(centralWidget);
 	exifSettingsWidget = new DkMetaDataSettingsWidget(centralWidget);
 	resourceSettingsWidget = new DkResourceSettingsWidgets(centralWidget);
+	remoteControlWidget = new DkRemoteControlWidget(centralWidget);
 
 	widgetList.clear();
 	widgetList.push_back(globalSettingsWidget);
@@ -622,6 +625,7 @@ void DkSettingsDialog::createSettingsWidgets() {
 	widgetList.push_back(synchronizeSettingsWidget);
 	widgetList.push_back(exifSettingsWidget);
 	widgetList.push_back(resourceSettingsWidget);
+	widgetList.push_back(remoteControlWidget);
 }
 
 void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
@@ -1467,6 +1471,62 @@ void DkResourceSettingsWidgets::writeSettings() {
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
 	labelMemory->setText(QString::number((double)(newValue/stepSize)/100.0*totalMemory,'f',0) + " MB / "+ QString::number(totalMemory,'f',0) + " MB");
+}
+
+// DkRemoteControlWidget --------------------------------------------------------------------
+DkRemoteControlWidget::DkRemoteControlWidget(QWidget* parent) : DkSettingsWidget(parent) {
+	showOnlyInAdvancedMode = true;
+
+	createLayout();
+	init();
+}
+
+void DkRemoteControlWidget::init() {
+	QStringList clients = DkSettings::Sync::recentSyncNames;
+	clients << DkSettings::Sync::syncWhiteList;
+	clients.removeDuplicates();
+	clients.sort();
+
+	int cols = 2;
+	int wlIndex = 0;
+	int lsIndex = 0;
+	checkBoxes = QList<QCheckBox*>();
+	for(int i = 0; i < clients.size();i++) {
+		QCheckBox* clientCB = new QCheckBox(clients[i], this);
+		clientCB->setObjectName(clients[i]);		
+		clientCB->setToolTip(DkSettings::Sync::recentLastSeen.value(clients[i],"").toDateTime().toString(Qt::SystemLocaleDate));
+		if(DkSettings::Sync::syncWhiteList.contains(clients[i])) {
+			whiteListGrid->addWidget(clientCB, int(wlIndex/cols), wlIndex%cols);
+			clientCB->setChecked(true);
+			wlIndex++;
+		} else {
+			lastSeenGrid->addWidget(clientCB, int(lsIndex/cols), lsIndex%cols);
+			clientCB->setChecked(false);
+			lsIndex++;
+		}
+		checkBoxes.push_back(clientCB);
+	}
+}
+
+void DkRemoteControlWidget::createLayout() {
+	QVBoxLayout* vbox = new QVBoxLayout(this);
+	QGroupBox* whiteListGB = new QGroupBox(tr("These computers can automatically connect and control nomacs:"), this);
+	whiteListGrid = new QGridLayout(whiteListGB);
+
+	QGroupBox* lastSeenGB = new QGroupBox(tr("Computers recently seen:"), this);
+	lastSeenGrid = new QGridLayout(lastSeenGB);
+
+	vbox->addWidget(whiteListGB);
+	vbox->addWidget(lastSeenGB);
+	vbox->addStretch();
+}
+
+void DkRemoteControlWidget::writeSettings() {
+	DkSettings::Sync::syncWhiteList = QStringList();
+	for (int i = 0; i < checkBoxes.size(); i++) {
+		if (checkBoxes[i]->isChecked())
+			DkSettings::Sync::syncWhiteList << checkBoxes[i]->objectName();
+	}
 }
 
 // DkSpinBoxWiget --------------------------------------------------------------------

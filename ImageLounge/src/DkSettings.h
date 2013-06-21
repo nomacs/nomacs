@@ -67,6 +67,7 @@ class DkFileWidget;
 class DkSynchronizeSettingsWidget;
 class DkMetaDataSettingsWidget;
 class DkResourceSettingsWidgets;
+class DkRemoteControlWidget;
 class DkSettingsListView;
 class DkSpinBoxWidget;
 class DkDoubleSpinBoxWidget;
@@ -171,8 +172,8 @@ class DkSettings : public QObject {
 			static bool syncAbsoluteTransform;
 			static bool switchModifier;
 			static QStringList recentSyncNames;
-			static QHash<QString, QVariant> syncWhiteList;
-			//static QMap<QString, QDateTime> recentLastSeen;
+			static QStringList syncWhiteList;
+			static QHash<QString, QVariant> recentLastSeen;
 		};
 		struct MetaData {
 			static QBitArray metaDataBits;
@@ -287,6 +288,7 @@ class DkSettingsDialog : public QDialog {
 		DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
 		DkMetaDataSettingsWidget* exifSettingsWidget;
 		DkResourceSettingsWidgets* resourceSettingsWidget;
+		DkRemoteControlWidget* remoteControlWidget;
 };
 
 class DkSettingsWidget : public QWidget {
@@ -603,6 +605,23 @@ public:
 		double totalMemory;
 };
 
+class DkRemoteControlWidget: public DkSettingsWidget {
+		Q_OBJECT
+
+	public:
+		DkRemoteControlWidget(QWidget* parent);
+
+		void writeSettings();
+
+	private:
+		void init();
+		void createLayout();
+
+		QGridLayout* whiteListGrid;
+		QGridLayout* lastSeenGrid;
+
+		QList<QCheckBox*> checkBoxes;
+};
 
 
 class DkSpinBoxWidget : public QWidget {

@@ -201,6 +201,8 @@ class DkLANClientManager : public DkClientManager {
 
 	protected:
 		void connectConnection(DkConnection* connection);
+		
+		DkLANTcpServer* server;
 
 	protected slots:
 		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
@@ -223,14 +225,14 @@ class DkLANClientManager : public DkClientManager {
 
 	private:
 		virtual DkLANConnection* createConnection();
-		DkLANTcpServer* server;
+
 
 };
 
-class DkRemoteControlClientManager : DkLANClientManager {
+class DkRemoteControlClientManager : public DkLANClientManager {
 	Q_OBJECT
 	public:
-		DkRemoteControlClientManager(QString title, QObject* parent = 0) : DkLANClientManager(title, parent) {};
+		DkRemoteControlClientManager(QString title, QObject* parent = 0);
 		QList<DkPeer> getPeerList();
 
 	public slots:
@@ -271,7 +273,7 @@ class DkLocalTcpServer : public QTcpServer {
 class DkLANTcpServer : public QTcpServer {
 	Q_OBJECT;
 	public:
-		DkLANTcpServer(QObject* parent = 0);
+		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = 28566, quint16 udpServerPortRangeEnd = 28576);
 
 	signals:
 		void serverReiceivedNewConnection(QHostAddress address , quint16 port , QString clientName);
@@ -287,9 +289,10 @@ class DkLANTcpServer : public QTcpServer {
 	
 	protected:
 		void incomingConnection(int socketDescriptor);
-
-	private:
 		DkLANUdpSocket* udpSocket;
+	
+	private:
+
 };
 
 class DkLANUdpSocket : public QUdpSocket {
@@ -466,6 +469,18 @@ public slots:
 		emit startServerSignal(start);
 	};
 
+
+protected:
+	void createClient(QString title);
+
+};
+
+class DkRCManagerThread : public DkLanManagerThread {
+	Q_OBJECT
+
+public:
+	DkRCManagerThread(DkNoMacs* parent);
+	void connectClient();
 
 protected:
 	void createClient(QString title);
