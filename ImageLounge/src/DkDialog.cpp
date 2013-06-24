@@ -149,9 +149,7 @@ void DkTrainDialog::createLayout() {
 	viewport->setPanControl(QPointF(0.0f, 0.0f));
 
 	// buttons
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(false);	// ok is auto-default
-	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(false);	// ok is auto-default
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Add"));
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -316,8 +314,7 @@ void DkTifDialog::init() {
 	vBox->addWidget(compressionButton);
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -424,8 +421,7 @@ void DkCompressDialog::createLayout() {
 	previewLayout->addWidget(cbLossless, 3, 0);
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -677,8 +673,7 @@ void DkOpenWithDialog::createLayout() {
 	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);	// ok is auto-default
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -1305,8 +1300,7 @@ void DkResizeDialog::createLayout() {
 	gridLayout->setColumnStretch(6, 1000);
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -2222,8 +2216,7 @@ void DkShortcutsDialog::createLayout() {
 	connect(model, SIGNAL(duplicateSignal(QString)), notificationLabel, SLOT(setText(QString)));
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -2756,8 +2749,7 @@ void DkOpacityDialog::createLayout() {
 	slider->setMinimum(5);
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -2787,8 +2779,7 @@ void DkForceThumbDialog::createLayout() {
 	cbForceSave->setToolTip("If checked, existing thumbnails will be replaced");
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));

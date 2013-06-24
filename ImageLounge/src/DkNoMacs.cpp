@@ -2134,9 +2134,9 @@ void DkNoMacs::openImgManipulationDialog() {
 	QImage tmpImg = viewport()->getImageLoader()->getImage();
 	imgManipulationDialog->setImage(&tmpImg);
 
-	bool done = imgManipulationDialog->exec();
+	bool ok = imgManipulationDialog->exec();
 
-	if (imgManipulationDialog->wasOkPressed()) {
+	if (ok) {
 
 #ifdef WITH_OPENCV
 
