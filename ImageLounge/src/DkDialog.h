@@ -231,8 +231,11 @@ public slots:
 		
 		QDialog::setVisible(visible);
 
-		if (visible)
+		if (visible) {
+			updateSnippets();
+			drawPreview();
 			origView->zoomConstraints(origView->get100Factor());
+		}
 	};
 
 protected slots:
@@ -466,6 +469,12 @@ protected slots:
 
 	void drawPreview();
 
+	void setVisible(bool visible) {
+		updateSnippets();
+		drawPreview();
+
+		QDialog::setVisible(visible);
+	}
 
 protected:
 	int leftSpacing;
@@ -820,6 +829,34 @@ protected:
 	void createLayout();
 
 	DkSlider* slider;
+};
+
+class DkExportTiffDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkExportTiffDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+public slots:
+	void on_openButton_pressed();
+	void on_saveButton_pressed();
+	void on_fileEdit_textChanged(const QString& filename);
+	void setFile(const QFileInfo& file);
+
+protected:
+	void createLayout();
+
+	DkBaseViewPort* viewport;
+	QLabel* tiffLabel;
+	QLabel* folderLabel;
+	QLineEdit* fileEdit;
+	QComboBox* suffixBox;
+	QSpinBox* fromPage;
+	QSpinBox* toPage;
+
+	QFileInfo cFile;
+	QFileInfo saveDir;
+	DkBasicLoader loader;
 };
 
 class DkForceThumbDialog : public QDialog {

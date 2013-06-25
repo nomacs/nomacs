@@ -71,6 +71,8 @@ DkBasicLoader::DkBasicLoader(int mode) {
 	this->mode = mode;
 	training = false;
 	pageIdxDirty = false;
+	numPages = 0;
+	pageIdx = 0;
 	loader = no_loader;
 }
 

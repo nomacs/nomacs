@@ -81,7 +81,7 @@ using namespace cv;
 #endif
 
 #ifdef WITH_LIBTIFF
-#include "tif_config.h"
+#include "tif_config.h"	
 #include "tiffio.h"
 #endif
 

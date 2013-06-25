@@ -228,6 +228,7 @@ enum toolsActions {
 	menu_tools_thumbs,
 	menu_tools_filter,
 	menu_tools_manipulation,
+	menu_tools_export_tiff,
 
 	menu_tools_end,
 };
@@ -439,6 +440,7 @@ public slots:
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
+	void exportTiff();
 	void deleteFile();
 	void setWallpaper();
 	void printDialog();
@@ -578,6 +580,7 @@ protected:
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
+	DkExportTiffDialog* exportTiffDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 

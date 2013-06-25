@@ -584,7 +584,7 @@ protected:
 	virtual void drawBackground(QPainter *painter);
 	virtual void updateImageMatrix();
 	void showZoom();
-	QPoint newCenter(QSize s);	// for frameless
+	//QPoint newCenter(QSize s);	// for frameless
 	void toggleLena();
 	void getPixelInfo(const QPoint& pos);
 

@@ -297,7 +297,7 @@ void DkTifDialog::init() {
 
 	isOk = false;
 	setWindowTitle("TIF compression");
-	setFixedSize(270, 146);
+	//setFixedSize(270, 146);
 	setLayout(new QVBoxLayout(this));
 
 	//QWidget* buttonWidget = new QWidget(this);
@@ -331,10 +331,8 @@ DkCompressDialog::DkCompressDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 	dialogMode = jpg_dialog;	// default
 	bgCol = QColor(255,255,255);
 
-	setFixedSize(600, 450);
 	createLayout();
 	init();
-
 }
 
 void DkCompressDialog::init() {
@@ -353,7 +351,7 @@ void DkCompressDialog::init() {
 		slider->setEnabled(true);
 	}
 	else if (dialogMode == webp_dialog) {
-		setWindowTitle("WEBP Settings");
+		setWindowTitle("WebP Settings");
 		colChooser->setEnabled(false);
 		//colChooser->hide();
 		cbLossless->show();
@@ -369,6 +367,8 @@ void DkCompressDialog::createLayout() {
 
 	// shows the original image
 	origView = new DkBaseViewPort(this);
+	//origView->resize(80, 80);
+	//origView->setMinimumSize(20,20);
 	origView->setForceFastRendering(true);
 	origView->setPanControl(QPointF(0.0f, 0.0f));
 	connect(origView, SIGNAL(imageUpdated()), this, SLOT(drawPreview()));
@@ -381,6 +381,8 @@ void DkCompressDialog::createLayout() {
 
 	// shows the preview
 	previewLabel = new QLabel();
+	//origView->setMinimumSize(20,20);
+	previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
 	// slider
@@ -401,24 +403,26 @@ void DkCompressDialog::createLayout() {
 	colChooser->enableAlpha(false);
 	connect(colChooser, SIGNAL(accepted()), this, SLOT(newBgCol()));
 
-	QWidget* dummy = new QWidget();
-	QHBoxLayout* dummyLayout = new QHBoxLayout(dummy);
-	dummyLayout->addWidget(colChooser);
-	dummyLayout->addStretch();
-	dummyLayout->addWidget(previewSizeLabel);
+	//QWidget* dummy = new QWidget();
+	//QHBoxLayout* dummyLayout = new QHBoxLayout(dummy);
+	//dummyLayout->addWidget(colChooser);
+	//dummyLayout->addStretch();
+	//dummyLayout->addWidget(previewSizeLabel);
 
-	QWidget* previewWidget = new QWidget();
+	QWidget* previewWidget = new QWidget(this);
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
 	previewLayout->setAlignment(Qt::AlignHCenter);
-	previewLayout->setHorizontalSpacing(20);
+	previewLayout->setColumnStretch(0,1);
+	previewLayout->setColumnStretch(1,1);
 
 	previewLayout->addWidget(origLabelText, 0, 0);
 	previewLayout->addWidget(newLabel, 0, 1);
 	previewLayout->addWidget(origView, 1, 0);
 	previewLayout->addWidget(previewLabel, 1, 1);
 	previewLayout->addWidget(slider, 2, 0);
-	previewLayout->addWidget(dummy, 2, 1);
+	previewLayout->addWidget(colChooser, 2, 1);
 	previewLayout->addWidget(cbLossless, 3, 0);
+	previewLayout->addWidget(previewSizeLabel, 3, 1);
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -436,7 +440,7 @@ void DkCompressDialog::createLayout() {
 
 void DkCompressDialog::updateSnippets() {
 
-	if (!img)
+	if (!img || !isVisible())
 		return;
 
 	// TODO: no pointer -> threads
@@ -444,18 +448,19 @@ void DkCompressDialog::updateSnippets() {
 	origView->fullView();
 	origView->zoomConstraints(origView->get100Factor());
 
-	// fix layout issues - sorry
-	origView->setFixedWidth(width()*0.5f-30);
-	previewLabel->setFixedWidth(width()*0.5f-30);
+	//// fix layout issues - sorry
+	//origView->setFixedWidth(width()*0.5f-30);
+	//previewLabel->setFixedWidth(origView->width());
 }
 
 void DkCompressDialog::drawPreview() {
 
-	if (!img)
+	if (!img || !isVisible())
 		return;
 
 	QImage origImg = origView->getCurrentImageRegion();
 	qDebug() << "orig img size: " << origImg.size();
+	qDebug() << "min size: " << origView->minimumSize();
 	newImg = QImage(origImg.size(), QImage::Format_ARGB32);
 
 	if (dialogMode == jpg_dialog || dialogMode == j2k_dialog && hasAlpha)
@@ -497,7 +502,7 @@ void DkCompressDialog::drawPreview() {
 		updateFileSizeLabel();
 	}
 
-	previewLabel->setScaledContents(true);
+	//previewLabel->setScaledContents(true);
 	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
 }
@@ -1113,7 +1118,7 @@ void DkResizeDialog::init() {
 	resFactor.insert(res_ppc, 1.0f);
 
 	setWindowTitle(tr("Resize Image"));
-	setFixedSize(600, 512);
+	//setFixedSize(600, 512);
 	createLayout();
 	initBoxes();
 
@@ -1129,11 +1134,12 @@ void DkResizeDialog::createLayout() {
 	centralWidget = new QWidget(this);
 
 	QWidget* previewWidget = new QWidget();
+	previewWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
 
-	// preview
-	QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
-	s *= 0.5;
+	//// preview
+	//QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
+	//s *= 0.5;
 	int minPx = 1;
 	int maxPx = 100000;
 	int minWidth = 0.1;
@@ -1157,6 +1163,7 @@ void DkResizeDialog::createLayout() {
 
 	// shows the preview
 	previewLabel = new QLabel();
+	previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
 	previewLayout->addWidget(origLabelText, 0, 0);
@@ -1180,7 +1187,6 @@ void DkResizeDialog::createLayout() {
 	wPixelEdit->setObjectName("wPixelEdit");
 	wPixelEdit->setRange(minPx, maxPx);
 	wPixelEdit->setDecimals(0);
-	
 
 	QWidget* lockWidget = new QWidget();
 	QHBoxLayout* boxLayout = new QHBoxLayout(); 
@@ -1297,7 +1303,7 @@ void DkResizeDialog::createLayout() {
 	gridLayout->addWidget(resampleBox, 4, 1, 1, 3);
 
 	// add stretch
-	gridLayout->setColumnStretch(6, 1000);
+	gridLayout->setColumnStretch(6, 1);
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -1309,7 +1315,7 @@ void DkResizeDialog::createLayout() {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(previewWidget);
 	layout->addWidget(resizeBoxes);
-	layout->addStretch();
+	//layout->addStretch();
 	layout->addWidget(buttons);
 	
 	show();
@@ -1564,14 +1570,14 @@ void DkResizeDialog::on_resampleBox_currentIndexChanged(int idx) {
 
 void DkResizeDialog::updateSnippets() {
 
-	if (img.isNull())
+	if (img.isNull() || !isVisible())
 		return;
 
-	// fix layout issues - sorry
-	origView->setFixedWidth(width()*0.5f-30);
-	previewLabel->setFixedWidth(width()*0.5f-30);
-	origView->setFixedHeight(width()*0.5f-30);
-	previewLabel->setFixedHeight(width()*0.5f-30);
+	//// fix layout issues - sorry
+	//origView->setFixedWidth(width()*0.5f-30);
+	previewLabel->setMinimumWidth(origView->width());
+	//origView->setFixedHeight(width()*0.5f-30);
+	//previewLabel->setFixedHeight(width()*0.5f-30);
 
 
 	origView->setImage(img);
@@ -1593,13 +1599,13 @@ void DkResizeDialog::updateSnippets() {
 
 void DkResizeDialog::drawPreview() {
 
-	if (img.isNull())
+	if (img.isNull() || !isVisible())
 		return;
 
 	newImg = origView->getCurrentImageRegion();
 	newImg = resizeImg(newImg);
 
-	previewLabel->setScaledContents(true);
+	//previewLabel->setScaledContents(true);
 	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
 
@@ -2759,6 +2765,132 @@ void DkOpacityDialog::createLayout() {
 	layout->addWidget(buttons);
 
 	//setStandardButton 
+
+}
+
+// DkExportTiffDialog --------------------------------------------------------------------
+DkExportTiffDialog::DkExportTiffDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
+
+	setWindowTitle(tr("Add New Image Format"));
+	createLayout();
+	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
+	setAcceptDrops(true);
+
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkExportTiffDialog::createLayout() {
+
+	// open handles
+	QLabel* openLabel = new QLabel(tr("Multi-Page TIFF:"), this);
+
+	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
+	openButton->setObjectName("openButton");
+
+	tiffLabel = new QLabel(tr("No Multi-Page TIFF loaded"), this);
+
+	// save handles
+	QLabel* saveLabel = new QLabel(tr("Save Folder:"), this);
+
+	QPushButton* saveButton = new QPushButton(tr("&Browse"), this);
+	saveButton->setObjectName("saveButton");
+
+	folderLabel = new QLabel(tr("Specify a Save Folder"), this);
+
+	// file name handles
+	QLabel* fileLabel = new QLabel(tr("Filename:"), this);
+
+	fileEdit = new QLineEdit(tr("tiff_page"), this);
+	fileEdit->setObjectName("fileEdit");
+
+	suffixBox = new QComboBox(this);
+	suffixBox->addItems(DkImageLoader::saveFilters);
+	suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
+
+	// export handles
+	QLabel* exportLabel = new QLabel(tr("Export Pages"));
+
+	fromPage = new QSpinBox(0);
+
+	toPage = new QSpinBox(0);
+
+	QWidget* controlWidget = new QWidget(this);
+	QGridLayout* controlLayout = new QGridLayout(controlWidget);
+	controlLayout->addWidget(openLabel, 0, 0);
+	controlLayout->addWidget(openButton, 0, 1);
+	controlLayout->addWidget(tiffLabel, 0, 2, 1, 2);
+	//controlLayout->setColumnStretch(3, 1);
+
+	controlLayout->addWidget(saveLabel, 1, 0);
+	controlLayout->addWidget(saveButton, 1, 1);
+	controlLayout->addWidget(folderLabel, 1, 2, 1, 2);
+	//controlLayout->setColumnStretch(3, 1);
+
+	controlLayout->addWidget(fileLabel, 2, 0);
+	controlLayout->addWidget(fileEdit, 2, 1);
+	controlLayout->addWidget(suffixBox, 2, 2, 1, 2);
+	//controlLayout->setColumnStretch(3, 1);
+
+	controlLayout->addWidget(exportLabel, 3, 0);
+	controlLayout->addWidget(fromPage, 3, 1);
+	controlLayout->addWidget(toPage, 3, 2);
+	controlLayout->setColumnStretch(4, 1);
+
+	// shows the image if it could be loaded
+	viewport = new DkBaseViewPort(this);
+	viewport->setForceFastRendering(true);
+	viewport->setPanControl(QPointF(0.0f, 0.0f));
+
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(viewport);
+	layout->addWidget(controlWidget);
+	layout->addWidget(buttons);
+}
+
+void DkExportTiffDialog::on_openButton_pressed() {
+
+	// load system default open dialog
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
+		cFile.absolutePath(), 
+		DkImageLoader::saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+
+	setFile(fileName);
+}
+
+void DkExportTiffDialog::on_saveButton_pressed() {
+	qDebug() << "save triggered...";
+
+	// load system default open dialog
+	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
+		saveDir.absolutePath());
+
+	saveDir = dirName;
+}
+
+void DkExportTiffDialog::on_fileEdit_textChanged(const QString& filename) {
+
+	qDebug() << "new file name: " << filename;
+}
+
+void DkExportTiffDialog::setFile(const QFileInfo& file) {
+	
+	if (!file.exists())
+		return;
+	
+	cFile = file;
+	saveDir = file.absolutePath();
+	tiffLabel->setText(file.absoluteFilePath());
+	fileEdit->setText(file.baseName());
+
+	loader.loadGeneral(cFile);
+	viewport->setImage(loader.image());
 
 }
 

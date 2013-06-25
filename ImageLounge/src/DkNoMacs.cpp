@@ -66,6 +66,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	updater = 0;
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
+	exportTiffDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
@@ -526,6 +527,7 @@ void DkNoMacs::createMenu() {
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
+	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -929,6 +931,10 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_manipulation]->setShortcut(shortcut_manipulation);
 	toolsActions[menu_tools_manipulation]->setStatusTip(tr("modify the current image"));
 	connect(toolsActions[menu_tools_manipulation], SIGNAL(triggered()), this, SLOT(openImgManipulationDialog()));
+
+	toolsActions[menu_tools_export_tiff] = new QAction(tr("Export Multipage &TIFF"), this);
+	toolsActions[menu_tools_export_tiff]->setStatusTip(tr("Export TIFF pages to multiple tiff files"));
+	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -2073,6 +2079,7 @@ void DkNoMacs::saveFile() {
 		//jpgDialog->show();
 		jpgDialog->setImage(&saveImg);
 		
+
 		if (!jpgDialog->exec())
 			return;
 
@@ -2184,6 +2191,18 @@ void DkNoMacs::deleteFile() {
 
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
 		viewport()->getImageLoader()->deleteFile();
+}
+
+void DkNoMacs::exportTiff() {
+
+#ifdef WITH_LIBTIFF
+	if (!exportTiffDialog)
+		exportTiffDialog = new DkExportTiffDialog();
+
+	exportTiffDialog->setFile(viewport()->getImageLoader()->getFile());
+	
+	exportTiffDialog->exec();
+#endif
 }
 
 void DkNoMacs::openImgManipulationDialog() {
@@ -2592,10 +2611,8 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	if (!file.exists())
 		title = "nomacs";
 
-	if (edited) {
+	if (edited)
 		title.append("[*]");
-		setWindowModified(edited);
-	}
 
 	title.append(" ");
 	title.append(attr);	// append some attributes
@@ -2610,6 +2627,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	QMainWindow::setWindowTitle(title.append(attributes));
 	setWindowFilePath(file.absoluteFilePath());
 	emit sendTitleSignal(windowTitle());
+	setWindowModified(edited);
 
 	if (!viewport()->getController()->getFileInfoLabel()->isVisible() || 
 		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date)) {

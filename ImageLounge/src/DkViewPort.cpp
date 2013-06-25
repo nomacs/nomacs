@@ -657,6 +657,9 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 		setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}" );
 	
 	setMouseTracking(true);
+
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	setMinimumSize(10, 10);
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
@@ -890,14 +893,15 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 
-	viewportRect = QRect(0, 0, width(), height());
+	viewportRect = QRect(0, 0, event->size().width(), event->size().height());
 
-	// do we still need that??
-	QSize newSize = imgStorage.getImage().size();
-	newSize.scale(event->size(), Qt::IgnoreAspectRatio);
+	qDebug() << "new size: " << event->size();
+	//// do we still need that??
+	//QSize newSize = imgStorage.getImage().size();
+	//newSize.scale(event->size(), Qt::IgnoreAspectRatio);
 
-	newSize = (event->size()-newSize)/2;
-	move(newSize.width(), newSize.height());
+	//newSize = (event->size()-newSize)/2;
+	//move(newSize.width(), newSize.height());
 
 	updateImageMatrix();
 	centerImage();
@@ -1535,17 +1539,6 @@ void DkViewPort::fileNotLoaded(QFileInfo file) {
 
 	// things todo if a file was not loaded...
 	controller->getPlayer()->startTimer();
-}
-
-QPoint DkViewPort::newCenter(QSize s) {
-
-	if (!parent)
-		return QPoint();
-
-	QSize dxy = (s - parent->size())/2;
-	QPoint newPos = parent->pos() - QPoint(dxy.width(), dxy.height());
-
-	return newPos;
 }
 
 void DkViewPort::zoom(float factor, QPointF center) {
