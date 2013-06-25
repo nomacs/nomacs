@@ -360,8 +360,8 @@ DkLocalConnection* DkLocalClientManager::createConnection() {
 
 }
 // DkLANClientManager --------------------------------------------------------------------
-DkLANClientManager::DkLANClientManager(QString title, QObject* parent) : DkClientManager(title, parent) {
-	server = new DkLANTcpServer();
+DkLANClientManager::DkLANClientManager(QString title, QObject* parent, quint16 udpServerPortRangeStart, quint16 udpServerPortRangeEnd) : DkClientManager(title, parent) {
+	server = new DkLANTcpServer(0, udpServerPortRangeStart, udpServerPortRangeEnd);
 	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
@@ -377,12 +377,11 @@ QList<DkPeer> DkLANClientManager::getPeerList() {
 }
 
 void DkLANClientManager::startConnection(QHostAddress address, quint16 port, QString clientName) {
-	//qDebug() << "DkLANClientManager::startConnection: connecting to:" << address << ":" << port;
+	qDebug() << "DkLANClientManager::startConnection: connecting to:" << address << ":" << port << "    line:" << __LINE__;  
 	if (peerList.alreadyConnectedTo(address, port)) {
-		//qDebug() << "already connected";
+		qDebug() << "already connected";
 		return;
 	}
-
 
 	DkLANConnection* connection = createConnection();
 	connection->setClientName(clientName);
@@ -663,8 +662,8 @@ void DkLANClientManager::connectConnection(DkConnection* connection) {
 }
 
 // DkRemoteControllClientManager --------------------------------------------------------------------
-DkRemoteControlClientManager::DkRemoteControlClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent) {
-	server = new DkLANTcpServer(this, 28565, 28565);
+DkRemoteControlClientManager::DkRemoteControlClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, 28565, 28565) {
+	//server = new DkLANTcpServer(this, 28565, 28565);
 	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
@@ -705,14 +704,22 @@ void DkRemoteControlClientManager::synchronizeWith(quint16 peerId) {
 }
 
 void DkRemoteControlClientManager::connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* dkconnection) {
+	qDebug() << __FILE__ << __FUNCTION__;
+	peerList.print();
 	DkLANClientManager::connectionReadyForUse(peerServerPort, title, dkconnection);
 
 	DkPeer peer = peerList.getPeerByAddress(dkconnection->peerAddress(), peerServerPort);
 	permissionList.insert(peer.peerId, false);
+
+	DkRemoteControlConnection* connection = dynamic_cast<DkRemoteControlConnection*>(dkconnection); // TODO???? darf ich das
+	connection->sendAskForPermission();
 }
 
 void DkRemoteControlClientManager::connectionReceivedPermission(DkConnection* connection, bool allowedToConnect) {
+	peerList.print();
+	qDebug() << "----------------";
 	permissionList.insert(connection->getPeerId(), allowedToConnect);
+	peerList.print();
 }
 
 DkRemoteControlConnection* DkRemoteControlClientManager::createConnection() {
@@ -781,6 +788,7 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	this->startPort = startPort;
 	this->endPort = endPort;
 
+	qDebug() << "im DkLANUdpSocket: startPort:" << startPort << " endPort:" << endPort;
 	for (serverPort = startPort; serverPort <= endPort; serverPort++) {
 		if (bind(QHostAddress::Any, serverPort))
 			break;
@@ -798,7 +806,7 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	broadcasting = false;
 }
 
-	void DkLANUdpSocket::startBroadcast(quint16 tcpServerPort) {
+void DkLANUdpSocket::startBroadcast(quint16 tcpServerPort) {
 	this->tcpServerPort = tcpServerPort;
 
 	sendBroadcast(); // send first broadcast 
@@ -807,6 +815,7 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	connect(broadcastTimer, SIGNAL(timeout()), this, SLOT(sendBroadcast()));
 	broadcastTimer->start();
 	broadcasting = true;
+	qDebug() << __FILE__ << __FUNCTION__ << " starting broadcasting at:" << serverPort;
 }
 
 void DkLANUdpSocket::stopBroadcast() {
@@ -1067,8 +1076,8 @@ DkPeer DkPeerList::getPeerByAddress(QHostAddress address, quint16 port) {
 
 void DkPeerList::print() {
 	foreach (DkPeer peer, peerList) {
-		qDebug() << peer.peerId << 	" " << peer.clientName << " " << peer.hostAddress << " " << peer.peerServerPort << 
-			" " << peer.localServerPort << " " << peer.title << " sync:" << peer.isSynchronized() << " menu:" << peer.showInMenu;
+		qDebug() << peer.peerId << 	" " << peer.clientName << " " << peer.hostAddress << " serverPort:" << peer.peerServerPort << 
+			" localPort:" << peer.localServerPort << " " << peer.title << " sync:" << peer.isSynchronized() << " menu:" << peer.showInMenu;
 	}
 }
 

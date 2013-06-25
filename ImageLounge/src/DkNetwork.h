@@ -185,7 +185,7 @@ class DkLocalClientManager : public DkClientManager {
 class DkLANClientManager : public DkClientManager {
 	Q_OBJECT;
 	public:
-		DkLANClientManager(QString title, QObject* parent = 0);
+		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = 28566, quint16 udpServerPortRangeEnd = 28576);
 		virtual QList<DkPeer> getPeerList();
 
 	signals:
@@ -458,13 +458,13 @@ class DkLanManagerThread : public DkManagerThread {
 
 public:
 	DkLanManagerThread(DkNoMacs* parent);
-	void connectClient();
+	virtual void connectClient();
 
 signals:
 	void startServerSignal(bool start);
 
 public slots:
-	void startServer(bool start) {
+	virtual void startServer(bool start) {
 		// re-send
 		emit startServerSignal(start);
 	};
@@ -478,12 +478,19 @@ protected:
 class DkRCManagerThread : public DkLanManagerThread {
 	Q_OBJECT
 
-public:
-	DkRCManagerThread(DkNoMacs* parent);
-	void connectClient();
+	public:
+		DkRCManagerThread(DkNoMacs* parent);
+		void connectClient();
 
-protected:
-	void createClient(QString title);
+	public slots:
+		void startServer(bool start) {
+			wait(1000);
+			// re-send
+			emit startServerSignal(start);
+		};
+
+	protected:
+		void createClient(QString title);
 
 };
 

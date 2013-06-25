@@ -2802,26 +2802,26 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->clear();
 
 	// start lan client/server
-	lanClient = new DkLanManagerThread(this);
-	lanClient->start();
+	//lanClient = new DkLanManagerThread(this);
+	//lanClient->start();
 
-	// start server action
-	QAction* startServer = new QAction(tr("Start &Server"), this);
-	startServer->setCheckable(true);
-	startServer->setChecked(false);
-	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+	//// start server action
+	//QAction* startServer = new QAction(tr("Start &Server"), this);
+	//startServer->setCheckable(true);
+	//startServer->setChecked(false);
+	//connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
 
-	QAction* sendImage = new QAction(tr("Send &Image"), this);
-	sendImage->setObjectName("sendImageAction");
-	sendImage->setShortcut(QKeySequence(shortcut_send_img));
-	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
-	sendImage->setToolTip(tr("Sends the current image to all clients."));
-	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
+	//QAction* sendImage = new QAction(tr("Send &Image"), this);
+	//sendImage->setObjectName("sendImageAction");
+	//sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	////sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
+	//sendImage->setToolTip(tr("Sends the current image to all clients."));
+	//connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
-	tcpLanMenu->setClientManager(lanClient);
-	tcpLanMenu->addTcpAction(startServer);
-	tcpLanMenu->addTcpAction(sendImage);
-	tcpLanMenu->setEnabled(true);
+	//tcpLanMenu->setClientManager(lanClient);
+	//tcpLanMenu->addTcpAction(startServer);
+	//tcpLanMenu->addTcpAction(sendImage);
+	//tcpLanMenu->setEnabled(true);
 
 
 	// remote control server
@@ -2833,8 +2833,13 @@ void DkNoMacsSync::initLanClient() {
 	}
 
 	rcClient = new DkRCManagerThread(this);
-	if (!DkSettings::Sync::syncWhiteList.empty())
+	rcClient->start();
+	if (!DkSettings::Sync::syncWhiteList.empty()) {
+		qDebug() << "whitelist not empty .... starting server";
 		rcClient->startServer(true);
+	}
+	else 
+		qDebug() << "whitelist empty!!";
 }
 
 void DkNoMacsSync::createActions() {

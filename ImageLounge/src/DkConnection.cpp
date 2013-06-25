@@ -798,7 +798,7 @@ void DkRemoteControlConnection::readGreetingMessage() {
 	allowImage = true;
 	allowPosition = true;
 	allowTransformation = true;
-	sendAskForPermission();
+	//sendAskForPermission(); // if here to many messages are sent ... wait until readyforuse in network.cpp
 }
 
 bool DkRemoteControlConnection::readProtocolHeader() {
@@ -830,14 +830,35 @@ void DkRemoteControlConnection::processReadyRead() {
 	DkLANConnection::processReadyRead();
 }
 
-void  DkRemoteControlConnection::processData() {
+void DkRemoteControlConnection::readWhileBytesAvailable() {
+	do {
+		if (currentDataType == DkConnection::Undefined && currentLanDataType == DkLANConnection::Undefined && currentRemoteControlDataType == Undefined) {
+			readDataIntoBuffer();
+			if (!readProtocolHeader())
+				return;
+			checkState();
+		}
+		if (!hasEnoughData()) {
+			return;
+		}
+
+		buffer = read(numBytesForCurrentDataType);
+		if (buffer.size() != numBytesForCurrentDataType) {
+			abort();
+			return;
+		}
+		processData();
+	} while (bytesAvailable() > 0);
+}
+
+void DkRemoteControlConnection::processData() {
 	switch (currentRemoteControlDataType) {
 	case newPermission: {
 			bool allowedToConnect;
 			QDataStream ds(buffer);
 			ds >> allowedToConnect;
 			emit connectionNewPermission(this, allowedToConnect);
-			qDebug() << "emitted connectionNewPermission";
+			qDebug() << "emitted connectionNewPermission: allowedToConnect:" << allowedToConnect;
 			}
 		break;
 	case newAskPermission:  {
@@ -845,6 +866,7 @@ void  DkRemoteControlConnection::processData() {
 		QDataStream ds(buffer);
 		ds >> dummy;
 		sendPermission();
+		qDebug() << "askPermission processed ... sending Permission";
 		}
 		break;
 	case Undefined:
@@ -870,7 +892,7 @@ void DkRemoteControlConnection::sendAskForPermission() {
 }
 
 void DkRemoteControlConnection::sendPermission() {
-	qDebug() << "sending askForPermission to " << this->peerName() << ":" << this->peerPort();
+	qDebug() << "sending Permission to " << this->peerName() << ":" << this->peerPort();
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);

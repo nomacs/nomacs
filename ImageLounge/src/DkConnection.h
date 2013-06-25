@@ -241,20 +241,21 @@ class DkRemoteControlConnection : public DkLANConnection {
 		DkRemoteControlConnection(QObject* parent = 0);
 
 	signals:
-		void connectionNewPermission(DkRemoteControlConnection*, bool);
+		void connectionNewPermission(DkConnection*, bool);
 
 	public slots:
 		void sendAskForPermission();
 		void sendPermission();
 
 	protected slots:
-		void processReadyRead();
+		virtual void processReadyRead();
 		
 
 	protected:
 		virtual void readGreetingMessage();
 		virtual bool readProtocolHeader();
 		virtual void processData();
+		virtual void readWhileBytesAvailable();
 
 		enum RemoteControlDataType {
 			newPermission = 11,
