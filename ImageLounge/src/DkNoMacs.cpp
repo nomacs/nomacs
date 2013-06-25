@@ -172,8 +172,8 @@ void DkNoMacs::init() {
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
-	connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
-	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
+	//connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
+	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool, QString)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool, QString)));
 	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
@@ -2579,7 +2579,7 @@ QVector <QAction* > DkNoMacs::getSyncActions() {
 	return syncActions;
 }
 
-void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
+void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString attr) {
 
 	// TODO: rename!
 
@@ -2596,6 +2596,9 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 		title.append("[*]");
 		setWindowModified(edited);
 	}
+
+	title.append(" ");
+	title.append(attr);	// append some attributes
 
 	QString attributes;
 

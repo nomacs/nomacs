@@ -425,8 +425,8 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updateInfo(const QFileInfo& file, const QString& date, const int rating);
-	void updateTitle(const QFileInfo& file);
+	void updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating);
+	void updateTitle(const QFileInfo& file, const QString& attr);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
 	void setEdited(bool edited);

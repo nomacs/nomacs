@@ -248,7 +248,7 @@ public slots:
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
 
-	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false);
+	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -496,7 +496,7 @@ public:
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-	void windowTitleSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
+	//void windowTitleSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
 	void sendNewFileSignal(qint16 op, QString filename = "");
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg, int);

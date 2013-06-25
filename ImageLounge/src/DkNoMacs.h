@@ -454,7 +454,7 @@ public slots:
 	void featureRequest();
 	void errorDialog(QString msg, QString title = "Error");
 	void loadRecursion();
-	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false);
+	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();

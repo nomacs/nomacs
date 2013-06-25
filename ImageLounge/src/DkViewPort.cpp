@@ -252,7 +252,7 @@ void DkControlWidget::connectWidgets() {
 
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), filePreview, SLOT(updateDir(QFileInfo, int)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
-		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setFileInfo(QFileInfo, QSize, bool)));
+		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize, bool, QString)), this, SLOT(setFileInfo(QFileInfo, QSize, bool, QString)));
 
 		connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
@@ -441,7 +441,7 @@ void DkControlWidget::showHistogram(bool visible) {
 
 }
 
-void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited) {
+void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited, QString attr) {
 
 	qDebug() << "file info set...";
 
@@ -452,7 +452,7 @@ void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited) {
 	DkImageLoader::imgMetaData.setFileName(fileInfo);
 
 	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
-	fileInfoLabel->updateInfo(fileInfo, dateString, DkImageLoader::imgMetaData.getRating());
+	fileInfoLabel->updateInfo(fileInfo, attr, dateString, DkImageLoader::imgMetaData.getRating());
 	fileInfoLabel->setEdited(edited);
 	updateRating(DkImageLoader::imgMetaData.getRating());
 }

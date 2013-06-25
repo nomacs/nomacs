@@ -2120,20 +2120,20 @@ DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
 	return rating;
 }
 
-void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& date, const int rating) {
+void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating) {
 
-	updateTitle(file);
+	updateTitle(file, attr);
 	updateDate(date);
 	updateRating(rating);
 
 	updateWidth();
 }
 
-void DkFileInfoLabel::updateTitle(const QFileInfo& file) {
+void DkFileInfoLabel::updateTitle(const QFileInfo& file, const QString& attr) {
 	
 	this->file = file;
 	updateDate();
-	this->title->setText(file.fileName());
+	this->title->setText(file.fileName() + " " + attr);
 	this->title->setAlignment(Qt::AlignRight);
 
 	updateWidth();
