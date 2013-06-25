@@ -34,6 +34,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QProgressDialog>
+#include <QDialogButtonBox>
 
 #include "DkViewPort.h"
 
@@ -251,112 +252,103 @@ class DkExposure : public DkImageManipulationWidget {
 
 	Q_OBJECT
 	
-	public:
-		DkExposure(QWidget *parent, DkImageManipulationDialog *parentDialog);
-		~DkExposure();
-		float convertExposureToSliderVal(float val);
-		float convertSliderValToExposure(float val);
+public:
+	DkExposure(QWidget *parent, DkImageManipulationDialog *parentDialog);
+	~DkExposure();
+	float convertExposureToSliderVal(float val);
+	float convertSliderValToExposure(float val);
 
-	protected:
-		virtual void redrawImage();
+protected:
+	virtual void redrawImage();
 #ifdef WITH_OPENCV
-		virtual Mat compute(Mat inLut, float val1, float val2);
+	virtual Mat compute(Mat inLut, float val1, float val2);
 #endif
 
 };
 
 
 class DkUndoRedo : public DkImageManipulationWidget {
-
 	Q_OBJECT
 	
-	public:
-		DkUndoRedo(QWidget *parent, DkImageManipulationDialog *parentDialog);
-		~DkUndoRedo();
+public:
+	DkUndoRedo(QWidget *parent, DkImageManipulationDialog *parentDialog);
+	~DkUndoRedo();
 
-		static void enableUndoButton(bool val) { buttonUndo->setEnabled(val); };
-		static void enableRedoButton(bool val) { buttonRedo->setEnabled(val); };
+	static void enableUndoButton(bool val) { buttonUndo->setEnabled(val); };
+	static void enableRedoButton(bool val) { buttonRedo->setEnabled(val); };
 	
-	protected:
-		virtual void redrawImage();
+protected:
+	virtual void redrawImage();
 #ifdef WITH_OPENCV
-		virtual Mat compute(Mat inLut, float val1, float val2);
+	virtual Mat compute(Mat inLut, float val1, float val2);
 #endif
-		static QPushButton* buttonUndo;
-		static QPushButton* buttonRedo;
+	static QPushButton* buttonUndo;
+	static QPushButton* buttonRedo;
 
-		std::vector<historyData> historyDataVecCopy;
-		std::vector<DkImageManipulationWidget*> historyToolsVecCopy;
-		int manipulationTypeHist;
+	std::vector<historyData> historyDataVecCopy;
+	std::vector<DkImageManipulationWidget*> historyToolsVecCopy;
+	int manipulationTypeHist;
 
-	protected slots:
-		void undoPressed();
-		void redoPressed();
+protected slots:
+	void undoPressed();
+	void redoPressed();
 
-	//friend void DkImageManipulationWidget::prepareUndoRedoButtons();
+//friend void DkImageManipulationWidget::prepareUndoRedoButtons();
 };
 
 // Image manipulation dialog with image manipulation tools
 class DkImageManipulationDialog : public QDialog {
-
 	Q_OBJECT
 
-	public:
-		DkImageManipulationDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-		~DkImageManipulationDialog();
-		bool wasOkPressed() {
-			return isOk;
-		};
-		void setImage(QImage *img) {
-			this->img = img;
-			createImgPreview();
-			drawImgPreview();
-		};
+public:
+	DkImageManipulationDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkImageManipulationDialog();
+	void setImage(QImage *img) {
+		this->img = img;
+		createImgPreview();
+		drawImgPreview();
+	};
 
-		void resetValues();
-		QImage getImgPreview() {return imgPreview;};
+	void resetValues();
+	QImage getImgPreview() {return imgPreview;};
 
-		DkBrightness *getBrightnessWidget() { return brightnessWidget;};
-		DkContrast *getContrastWidget() { return contrastWidget;};
-		DkSaturation *getSaturationWidget() { return saturationWidget;};
-		DkHue *getHueWidget() { return hueWidget;};
-		DkGamma *getGammaWidget() { return gammaWidget;};
-		DkExposure *getExposureWidget() { return exposureWidget;};
+	DkBrightness *getBrightnessWidget() { return brightnessWidget;};
+	DkContrast *getContrastWidget() { return contrastWidget;};
+	DkSaturation *getSaturationWidget() { return saturationWidget;};
+	DkHue *getHueWidget() { return hueWidget;};
+	DkGamma *getGammaWidget() { return gammaWidget;};
+	DkExposure *getExposureWidget() { return exposureWidget;};
 
-	protected slots:
-		void okPressed();
-		void cancelPressed();
-		void updateImg(QImage updatedImg);
+protected slots:
+	void updateImg(QImage updatedImg);
 
-	protected:
-		bool isOk;
-		QImage *img;
-		QImage imgPreview;
-		int dialogWidth;
-		int dialogHeight;
-		QRect previewImgRect;
-		QLabel* previewLabel;
-		int previewWidth;
-		int previewHeight;
-		int toolsWidth;
-		int previewMargin;
+protected:
+	QImage *img;
+	QImage imgPreview;
+	int dialogWidth;
+	int dialogHeight;
+	QRect previewImgRect;
+	QLabel* previewLabel;
+	int previewWidth;
+	int previewHeight;
+	int toolsWidth;
+	int previewMargin;
 
-		DkContrast* contrastWidget;
-		DkBrightness* brightnessWidget;
-		DkSaturation* saturationWidget;
-		DkHue* hueWidget;
-		DkGamma* gammaWidget;
-		DkExposure* exposureWidget;
-		DkUndoRedo* undoredoWidget;
+	DkContrast* contrastWidget;
+	DkBrightness* brightnessWidget;
+	DkSaturation* saturationWidget;
+	DkHue* hueWidget;
+	DkGamma* gammaWidget;
+	DkExposure* exposureWidget;
+	DkUndoRedo* undoredoWidget;
 
-		void init();
-		void createLayout();
-		void showEvent(QShowEvent *event);
-		void createImgPreview();
-		void drawImgPreview();
+	void init();
+	void createLayout();
+	void createImgPreview();
+	void drawImgPreview();
 
-	signals:
-		void isNotGrayscaleImg(bool isGrayscale);
+signals:
+	void isNotGrayscaleImg(bool isGrayscale);
 };
 
 };

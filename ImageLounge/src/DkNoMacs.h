@@ -232,11 +232,25 @@ enum toolsActions {
 	menu_tools_end,
 };
 
+enum panelActions {
+	menu_panel_menu,
+	menu_panel_toolbar,
+	menu_panel_statusbar,
+	menu_panel_transfertoolbar,
+
+	menu_panel_player,
+	menu_panel_preview,
+	menu_panel_scroller,
+	menu_panel_exif,
+	menu_panel_info,
+	menu_panel_histogram,
+	menu_panel_overview,
+	menu_panel_explorer,
+
+	menu_panel_end,
+};
+
 enum viewActions {
-	menu_view_show_menu,
-	menu_view_show_toolbar,
-	menu_view_show_statusbar,
-	menu_view_show_transfertoolbar,
 	menu_view_fullscreen,
 	menu_view_reset,
 	menu_view_100,
@@ -245,14 +259,6 @@ enum viewActions {
 	menu_view_zoom_out,
 	menu_view_anti_aliasing,
 	menu_view_tp_pattern,
-	menu_view_show_overview,
-	menu_view_show_player,
-	menu_view_show_preview,
-	menu_view_show_scroller,
-	menu_view_show_exif,
-	menu_view_show_info,
-	menu_view_show_histogram,
-	menu_view_show_explorer,
 	menu_view_frameless,
 	menu_view_opacity_up,
 	menu_view_opacity_down,
@@ -396,6 +402,7 @@ public:
 	
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();
+	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
 
@@ -447,7 +454,7 @@ public slots:
 	void featureRequest();
 	void errorDialog(QString msg, QString title = "Error");
 	void loadRecursion();
-	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false);
+	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();
@@ -520,6 +527,7 @@ protected:
 	QVector<QAction *> fileActions;
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
+	QVector<QAction *> panelActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
 	QVector<QAction *> helpActions;
@@ -536,6 +544,7 @@ protected:
 	QMenu* fileMenu;	// TODO: release ?!
 	QMenu* editMenu;
 	QMenu* toolsMenu;
+	QMenu* panelMenu;
 	QMenu* viewMenu;
 	QMenu* syncMenu;
 	QMenu* helpMenu;
@@ -544,7 +553,7 @@ protected:
 	// sub menus
 	QMenu* fileFilesMenu;
 	QMenu* fileFoldersMenu;
-	QMenu* viewToolsMenu;
+	QMenu* panelToolsMenu;
 	DkTcpMenu* tcpViewerMenu;
 	DkTcpMenu* tcpLanMenu;
 	

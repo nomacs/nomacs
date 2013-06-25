@@ -425,8 +425,8 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updateInfo(const QFileInfo& file, const QString& date, const int rating);
-	void updateTitle(const QFileInfo& file);
+	void updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating);
+	void updateTitle(const QFileInfo& file, const QString& attr);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
 	void setEdited(bool edited);
@@ -784,6 +784,7 @@ public slots:
 	void setCurrentPath(QFileInfo fileInfo);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
+	void setEditable(bool editable);
 
 signals:
 	void openFile(QFileInfo fileInfo) const;
@@ -795,7 +796,7 @@ protected:
 	void createLayout();
 	void writeSettings();
 	void readSettings();
-	
+
 	DkFileSystemModel* fileModel;
 	DkSortFileProxyModel* sortModel;
 	QTreeView* fileTree;

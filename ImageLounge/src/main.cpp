@@ -51,7 +51,6 @@
 #include <iostream>
 #include <cassert>
 
-
 #ifdef Q_WS_WIN
 int main(int argc, wchar_t *argv[]) {
 #else

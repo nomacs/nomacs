@@ -1131,7 +1131,27 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex& left, const QModelIndex& 
 		else if (!lf.suffix().isEmpty() && rf.suffix().isEmpty())
 			return false;		
 
-		return wCompLogicQString(lf.fileName(), rf.fileName());
+
+		QString ls = (!lf.fileName().isEmpty()) ? lf.fileName() : lf.absoluteFilePath();	// otherwise e.g. C: is empty
+		QString rs = (!rf.fileName().isEmpty()) ? rf.fileName() : rf.absoluteFilePath();
+
+		QString ld = ls.section(QRegExp("[A-Z]:"), 1, -1, QString::SectionIncludeLeadingSep);
+		
+		// sort by drive letter if present
+		if (!ld.isEmpty()) {
+			ld.truncate(2);
+			ls = ld;
+		}
+
+		QString rd = rs.section(QRegExp("[A-Z]:"), 1, -1, QString::SectionIncludeLeadingSep);
+
+		// sort by drive letter if present
+		if (!rd.isEmpty()) {
+			rd.truncate(2);
+			rs = rd;
+		}
+
+		return wCompLogicQString(ls, rs);
 	}
 
 	return QSortFilterProxyModel::lessThan(left, right);
@@ -1196,6 +1216,15 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
 
 	QMenu* cm = new QMenu();
 
+	// enable editing
+	QAction* editAction = new QAction(tr("Editable"), this);
+	editAction->setCheckable(true);
+	editAction->setChecked(!fileModel->isReadOnly());
+	connect(editAction, SIGNAL(toggled(bool)), this, SLOT(setEditable(bool)));
+	
+	cm->addAction(editAction);
+	cm->addSeparator();
+
 
 	columnActions.clear();	// quick&dirty
 
@@ -1226,6 +1255,10 @@ void DkExplorer::showColumn(bool show) {
 	fileTree->setColumnHidden(idx, !show);
 }
 
+void DkExplorer::setEditable(bool editable) {
+	fileModel->setReadOnly(!editable);	
+}
+
 void DkExplorer::closeEvent(QCloseEvent* event) {
 
 	writeSettings();
@@ -1241,6 +1274,8 @@ void DkExplorer::writeSettings() {
 		settings.setValue(headerVal + "Size", fileTree->columnWidth(idx));
 		settings.setValue(headerVal + "Hidden", fileTree->isColumnHidden(idx));
 	}
+
+	settings.setValue("ReadOnly", fileModel->isReadOnly());
 	
 }
 
@@ -1260,6 +1295,8 @@ void DkExplorer::readSettings() {
 		bool showCol = idx != 0;	// by default, show the first column only
 		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
 	}
+
+	fileModel->setReadOnly(settings.value("ReadOnly", false).toBool());
 }
 
 // DkOverview --------------------------------------------------------------------
@@ -2083,20 +2120,20 @@ DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
 	return rating;
 }
 
-void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& date, const int rating) {
+void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating) {
 
-	updateTitle(file);
+	updateTitle(file, attr);
 	updateDate(date);
 	updateRating(rating);
 
 	updateWidth();
 }
 
-void DkFileInfoLabel::updateTitle(const QFileInfo& file) {
+void DkFileInfoLabel::updateTitle(const QFileInfo& file, const QString& attr) {
 	
 	this->file = file;
 	updateDate();
-	this->title->setText(file.fileName());
+	this->title->setText(file.fileName() + " " + attr);
 	this->title->setAlignment(Qt::AlignRight);
 
 	updateWidth();
