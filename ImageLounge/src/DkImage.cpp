@@ -71,8 +71,8 @@ DkBasicLoader::DkBasicLoader(int mode) {
 	this->mode = mode;
 	training = false;
 	pageIdxDirty = false;
-	numPages = 0;
-	pageIdx = 0;
+	numPages = 1;
+	pageIdx = 1;
 	loader = no_loader;
 }
 
@@ -648,8 +648,8 @@ bool DkBasicLoader::loadPSDFile(QFileInfo fileInfo) {
 void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 
 	// reset counters
-	numPages = 0;
-	pageIdx = 0;
+	numPages = 1;
+	pageIdx = 1;
 
 #ifdef WITH_LIBTIFF
 
@@ -2896,7 +2896,7 @@ QString DkImageLoader::fileName() {
 
 QString DkImageLoader::getTitleAttributeString() {
 
-	if (!basicLoader.getNumPages())
+	if (basicLoader.getNumPages() <= 1)
 		return QString();
 
 	QString attr = "[" + QString::number(basicLoader.getPageIdx()) + "/" + 

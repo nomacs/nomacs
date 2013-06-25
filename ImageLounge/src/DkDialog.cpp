@@ -2771,18 +2771,55 @@ void DkOpacityDialog::createLayout() {
 // DkExportTiffDialog --------------------------------------------------------------------
 DkExportTiffDialog::DkExportTiffDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
-	setWindowTitle(tr("Add New Image Format"));
+	setWindowTitle(tr("Export Multi-Page TIFF"));
 	createLayout();
 	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
 
+	connect(this, SIGNAL(updateImage(QImage)), viewport, SLOT(setImage(QImage)));
+	connect(&watcher, SIGNAL(finished()), this, SLOT(processingFinished()));
+	connect(this, SIGNAL(infoMessage(QString)), msgLabel, SLOT(setText(QString)));
+	connect(this, SIGNAL(updateProgress(int)), progress, SLOT(setValue(int)));
 	QMetaObject::connectSlotsByName(this);
 }
 
+void DkExportTiffDialog::dropEvent(QDropEvent *event) {
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+
+		setFile(url.toString());
+	}
+}
+
+void DkExportTiffDialog::dragEnterEvent(QDragEnterEvent *event) {
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+		QFileInfo file = QFileInfo(url.toString());
+
+		if (file.exists() && file.suffix().indexOf(QRegExp("tif"), Qt::CaseInsensitive) != -1)
+			event->acceptProposedAction();
+	}
+
+}
+
+
 void DkExportTiffDialog::createLayout() {
+
+	// progress bar
+	progress = new QProgressBar(this);
+	progress->hide();
+
+	msgLabel = new QLabel(this);
+	msgLabel->setStyleSheet("QLabel{color: #FF0000;}");
+	msgLabel->hide();
 
 	// open handles
 	QLabel* openLabel = new QLabel(tr("Multi-Page TIFF:"), this);
+	openLabel->setAlignment(Qt::AlignRight);
 
 	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
 	openButton->setObjectName("openButton");
@@ -2791,6 +2828,7 @@ void DkExportTiffDialog::createLayout() {
 
 	// save handles
 	QLabel* saveLabel = new QLabel(tr("Save Folder:"), this);
+	saveLabel->setAlignment(Qt::AlignRight);
 
 	QPushButton* saveButton = new QPushButton(tr("&Browse"), this);
 	saveButton->setObjectName("saveButton");
@@ -2799,6 +2837,7 @@ void DkExportTiffDialog::createLayout() {
 
 	// file name handles
 	QLabel* fileLabel = new QLabel(tr("Filename:"), this);
+	fileLabel->setAlignment(Qt::AlignRight);
 
 	fileEdit = new QLineEdit(tr("tiff_page"), this);
 	fileEdit->setObjectName("fileEdit");
@@ -2809,32 +2848,36 @@ void DkExportTiffDialog::createLayout() {
 
 	// export handles
 	QLabel* exportLabel = new QLabel(tr("Export Pages"));
+	exportLabel->setAlignment(Qt::AlignRight);
 
 	fromPage = new QSpinBox(0);
 
 	toPage = new QSpinBox(0);
 
-	QWidget* controlWidget = new QWidget(this);
+	overwrite = new QCheckBox(tr("Overwrite"));
+
+	controlWidget = new QWidget(this);
 	QGridLayout* controlLayout = new QGridLayout(controlWidget);
 	controlLayout->addWidget(openLabel, 0, 0);
-	controlLayout->addWidget(openButton, 0, 1);
-	controlLayout->addWidget(tiffLabel, 0, 2, 1, 2);
+	controlLayout->addWidget(openButton, 0, 1, 1, 2);
+	controlLayout->addWidget(tiffLabel, 0, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
 	controlLayout->addWidget(saveLabel, 1, 0);
-	controlLayout->addWidget(saveButton, 1, 1);
-	controlLayout->addWidget(folderLabel, 1, 2, 1, 2);
+	controlLayout->addWidget(saveButton, 1, 1, 1, 2);
+	controlLayout->addWidget(folderLabel, 1, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
 	controlLayout->addWidget(fileLabel, 2, 0);
-	controlLayout->addWidget(fileEdit, 2, 1);
-	controlLayout->addWidget(suffixBox, 2, 2, 1, 2);
+	controlLayout->addWidget(fileEdit, 2, 1, 1, 2);
+	controlLayout->addWidget(suffixBox, 2, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
 	controlLayout->addWidget(exportLabel, 3, 0);
 	controlLayout->addWidget(fromPage, 3, 1);
 	controlLayout->addWidget(toPage, 3, 2);
-	controlLayout->setColumnStretch(4, 1);
+	controlLayout->addWidget(overwrite, 3, 3);
+	controlLayout->setColumnStretch(5, 1);
 
 	// shows the image if it could be loaded
 	viewport = new DkBaseViewPort(this);
@@ -2842,16 +2885,20 @@ void DkExportTiffDialog::createLayout() {
 	viewport->setPanControl(QPointF(0.0f, 0.0f));
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Export"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(viewport);
+	layout->addWidget(progress);
+	layout->addWidget(msgLabel);
 	layout->addWidget(controlWidget);
 	layout->addWidget(buttons);
+
+	enableTIFFSave(false);
 }
 
 void DkExportTiffDialog::on_openButton_pressed() {
@@ -2871,12 +2918,103 @@ void DkExportTiffDialog::on_saveButton_pressed() {
 	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
 		saveDir.absolutePath());
 
-	saveDir = dirName;
+	if (saveDir.exists()) {
+		saveDir = dirName;
+		folderLabel->setText(saveDir.absolutePath());
+	}
 }
 
 void DkExportTiffDialog::on_fileEdit_textChanged(const QString& filename) {
 
 	qDebug() << "new file name: " << filename;
+}
+
+void DkExportTiffDialog::reject() {
+
+	// not sure if this is a nice way to do: but we change cancel behavior while processing
+	if (processing)
+		processing = false;
+	else
+		QDialog::reject();
+
+}
+
+void DkExportTiffDialog::accept() {
+
+	progress->setMinimum(fromPage->value()-1);
+	progress->setMaximum(toPage->value());
+	progress->setValue(progress->minimum());
+	progress->show();
+	msgLabel->show();
+
+	enableAll(false);
+
+	QString suffix = suffixBox->currentText();
+
+	for (int idx = 0; idx < DkImageLoader::fileFilters.size(); idx++) {
+		if (suffix.contains("(" + DkImageLoader::fileFilters.at(idx))) {
+			suffix = DkImageLoader::fileFilters.at(idx);
+			suffix.replace("*","");
+			break;
+		}
+	}
+
+	QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
+	
+	QFuture<int> future = QtConcurrent::run(this, 
+		&nmc::DkExportTiffDialog::exportImages,
+		cFile,
+		sFile, 
+		fromPage->value(), 
+		toPage->value(),
+		overwrite->isChecked());
+	watcher.setFuture(future);
+
+}
+
+void DkExportTiffDialog::processingFinished() {
+
+	enableAll(true);
+	progress->hide();
+	msgLabel->hide();
+
+	if (watcher.future() == QDialog::Accepted)
+		QDialog::accept();
+}
+
+int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite) {
+
+	processing = true;
+
+	// Do your job
+	for (int idx = from; idx <= to; idx++) {
+
+		QFileInfo sFile(saveFile.absolutePath(), saveFile.baseName() + QString::number(idx) + "." + saveFile.suffix());
+		qDebug() << "trying to save: " << sFile.absoluteFilePath();
+
+		// user wants to overwrite files
+		if (sFile.exists() && overwrite) {
+			QFile f(sFile.absoluteFilePath());
+			f.remove();
+		}
+
+		bool saved = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
+
+		if (!saved)
+			emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
+
+		loader.loadPage(1);						// load next
+		emit updateImage(loader.image());
+		emit updateProgress(idx);
+
+		// user cancelled?
+		if (!processing)
+			return QDialog::Rejected;
+	}
+
+	processing = false;
+
+	return QDialog::Accepted;
 }
 
 void DkExportTiffDialog::setFile(const QFileInfo& file) {
@@ -2886,12 +3024,36 @@ void DkExportTiffDialog::setFile(const QFileInfo& file) {
 	
 	cFile = file;
 	saveDir = file.absolutePath();
+	folderLabel->setText(saveDir.absolutePath());
 	tiffLabel->setText(file.absoluteFilePath());
 	fileEdit->setText(file.baseName());
 
 	loader.loadGeneral(cFile);
 	viewport->setImage(loader.image());
 
+	enableTIFFSave(loader.getNumPages() > 1);
+
+	fromPage->setRange(1, loader.getNumPages());
+	toPage->setRange(1, loader.getNumPages());
+
+	fromPage->setValue(1);
+	toPage->setValue(loader.getNumPages());
+}
+
+void DkExportTiffDialog::enableAll(bool enable) {
+
+	enableTIFFSave(enable);
+	controlWidget->setEnabled(enable);
+
+}
+
+void DkExportTiffDialog::enableTIFFSave(bool enable) {
+
+	fileEdit->setEnabled(enable);
+	suffixBox->setEnabled(enable);
+	fromPage->setEnabled(enable);
+	toPage->setEnabled(enable);
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(enable);
 }
 
 // DkForceThumbDialog --------------------------------------------------------------------

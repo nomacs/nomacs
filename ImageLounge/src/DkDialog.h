@@ -52,6 +52,10 @@
 #include <QPrintDialog>
 #include <QToolBar>
 #include <QFormLayout>
+#include <QProgressBar>
+#include <QFuture>
+#include <QtConcurrentRun>
+#include <QFutureWatcher>
 
 #include "DkWidgets.h"
 #include "DkViewPort.h"
@@ -842,9 +846,22 @@ public slots:
 	void on_saveButton_pressed();
 	void on_fileEdit_textChanged(const QString& filename);
 	void setFile(const QFileInfo& file);
+	void accept();
+	void reject();
+	int exportImages(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite);
+	void processingFinished();
+
+signals:
+	void updateImage(QImage img);
+	void updateProgress(int);
+	void infoMessage(QString msg);
 
 protected:
 	void createLayout();
+	void enableTIFFSave(bool enable);
+	void enableAll(bool enable);
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
 
 	DkBaseViewPort* viewport;
 	QLabel* tiffLabel;
@@ -853,10 +870,24 @@ protected:
 	QComboBox* suffixBox;
 	QSpinBox* fromPage;
 	QSpinBox* toPage;
+	QDialogButtonBox* buttons;
+	QProgressBar* progress;
+	QLabel* msgLabel;
+	QWidget* controlWidget;
+	QCheckBox* overwrite;
 
 	QFileInfo cFile;
-	QFileInfo saveDir;
+	QDir saveDir;
 	DkBasicLoader loader;
+	QFutureWatcher<int> watcher;
+	bool processing;
+
+	enum {
+		finished,
+		question_save,
+		error,
+
+	};
 };
 
 class DkForceThumbDialog : public QDialog {

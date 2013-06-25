@@ -2197,7 +2197,7 @@ void DkNoMacs::exportTiff() {
 
 #ifdef WITH_LIBTIFF
 	if (!exportTiffDialog)
-		exportTiffDialog = new DkExportTiffDialog();
+		exportTiffDialog = new DkExportTiffDialog(this);
 
 	exportTiffDialog->setFile(viewport()->getImageLoader()->getFile());
 	
