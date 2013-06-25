@@ -668,6 +668,8 @@ DkRemoteControlClientManager::DkRemoteControlClientManager(QString title, QObjec
 	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
+
+	qDebug() << "remote control network service startet";
 }
 
 QList<DkPeer> DkRemoteControlClientManager::getPeerList() {
