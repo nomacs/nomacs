@@ -758,6 +758,7 @@ bool DkBasicLoader::setPageIdx(int skipIdx) {
 
 void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
 
+#ifdef WITH_LIBTIFF
 	// code from Qt QTiffHandler
 	uint32 *target = reinterpret_cast<uint32 *>(buffer);
 	for (int32 x=0; x<width; ++x) {
@@ -768,6 +769,7 @@ void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
 			| (p & 0x0000ff00)
 			| ((p & 0x000000ff) << 16);
 	}
+#endif
 }
 
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {

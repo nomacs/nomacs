@@ -77,13 +77,12 @@
 	#include "opencv2/imgproc/imgproc.hpp"
 #endif
 
-// currently I assume, that we add libtiff if we find an opencv installation 
-// that's needed for win - maybe we can always include libtiff on other OSs
-#include "tiffio.h"
-#include "tiffiop.h"
-//#define WITH_LIBTIFF
-
 using namespace cv;
+#endif
+
+#ifdef WITH_LIBTIFF
+#include "tif_config.h"
+#include "tiffio.h"
 #endif
 
 #include <set>
