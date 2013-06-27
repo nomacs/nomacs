@@ -80,7 +80,7 @@ class DkSettings : public QObject {
 			mode_frameless,
 			mode_contrast,
 			mode_default_fullscreen,
-			mode_frameless_fullscren,
+			mode_frameless_fullscreen,
 			mode_contrast_fullscreen,
 			mode_end,
 		};

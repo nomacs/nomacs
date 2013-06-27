@@ -3007,7 +3007,7 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 		emit updateImage(loader.image());
 		emit updateProgress(idx);
 
-		// user cancelled?
+		// user canceled?
 		if (!processing)
 			return QDialog::Rejected;
 	}
@@ -3044,7 +3044,6 @@ void DkExportTiffDialog::enableAll(bool enable) {
 
 	enableTIFFSave(enable);
 	controlWidget->setEnabled(enable);
-
 }
 
 void DkExportTiffDialog::enableTIFFSave(bool enable) {

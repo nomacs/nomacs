@@ -131,6 +131,15 @@ int main(int argc, char *argv[]) {
 	if (args.size() > 1)
 		w->viewport()->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
 
+	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::App::currentAppMode).toInt();
+
+	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
+		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
+		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		) {
+		w->enterFullScreen();
+		qDebug() << "trying to enter fullscreen...";
+	}
+
 #ifdef Q_WS_MAC
 	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
 	a.installEventFilter(osxEventFilter);

@@ -310,6 +310,7 @@ void DkControlWidget::showWidgetsSettings() {
 		showPlayer(false);
 		overviewWindow->hide();
 		showHistogram(false);
+		return;
 	}
 
 	qDebug() << "current app mode: " << DkSettings::App::currentAppMode;

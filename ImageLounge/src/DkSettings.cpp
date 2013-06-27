@@ -278,7 +278,7 @@ void DkSettings::save() {
 	
 
 	int myAppMode = DkSettings::App::appMode;
-	if (App::currentAppMode != mode_frameless && App::currentAppMode != mode_frameless_fullscren) {
+	if (App::currentAppMode != mode_frameless && App::currentAppMode != mode_frameless_fullscreen) {
 		qDebug() << "app mode when saving: " << DkSettings::App::appMode;
 		settings.setValue("AppSettings/showToolBar", DkSettings::App::showToolBar);
 		settings.setValue("AppSettings/showStatusBar", DkSettings::App::showStatusBar);
@@ -294,6 +294,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
 
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
+	settings.setValue("AppSettings/currentAppMode", DkSettings::App::currentAppMode);
 
 	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
 	settings.setValue("GlobalSettings/numFiles",Global::numFiles);

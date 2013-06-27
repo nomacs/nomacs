@@ -776,6 +776,11 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_transfertoolbar]->setChecked(false);
 	connect(panelActions[menu_panel_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
 
+
+	qDebug() << "so: " << DkSettings::App::showOverview.size();
+	qDebug() << "sh: " << DkSettings::App::showHistogram.size();
+	qDebug() << "cAppMode: " << DkSettings::App::currentAppMode;
+
 	panelActions[menu_panel_overview] = new QAction(tr("O&verview"), this);
 	panelActions[menu_panel_overview]->setShortcut(QKeySequence(shortcut_show_overview));
 	panelActions[menu_panel_overview]->setStatusTip(tr("Shows the Zoom Overview"));
