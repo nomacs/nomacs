@@ -688,18 +688,33 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 			);
 	}
 	else
-		setStyleSheet("QToolBar{margin: 3px;}");
+		setStyleSheet("QToolBar{spacing: 3px; padding: 3px}");
 
+	//setContentsMargins(100, 0, 100, 0);
 }
 
 void DkCropToolBar::createLayout() {
 
+	QList<QKeySequence> enterSc;
+	enterSc.append(QKeySequence(Qt::Key_Enter));
+	enterSc.append(QKeySequence(Qt::Key_Return));
+
 	QAction* cropAction = new QAction(QIcon(":/nomacs/img/crop.png"), tr("Crop (ENTER)"), this);
-	//cropAction->setShortcut()
+	cropAction->setShortcuts(enterSc);
 	cropAction->setObjectName("cropAction");
 
 	QAction* cancelAction = new QAction(QIcon(":/nomacs/img/cancel.png"), tr("Cancel (ESC)"), this);
+	cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
 	cancelAction->setObjectName("cancelAction");
+
+	QIcon panIcon(":/nomacs/img/pan.png");
+	panIcon.addPixmap(QPixmap(":/nomacs/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+
+	panAction = new QAction(panIcon, tr("Pan"), this);
+	panAction->setShortcut(QKeySequence(Qt::Key_P));
+	panAction->setObjectName("panAction");
+	panAction->setCheckable(true);
+	panAction->setChecked(false);
 
 	QStringList ratios;
 	ratios << "1:1" << "4:3" << "4:5" << "14:10" << "14:11" << "16:9" << "16:10";
@@ -735,9 +750,8 @@ void DkCropToolBar::createLayout() {
 	colorDialog->setObjectName("colorDialog");
 	colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
 
-
-
 	addAction(cropAction);
+	addAction(panAction);
 	addAction(cancelAction);
 	addSeparator();
 	addWidget(ratioBox);
@@ -747,6 +761,14 @@ void DkCropToolBar::createLayout() {
 	addWidget(angleBox);
 	addSeparator();
 	addWidget(bgColButton);
+}
+
+void DkCropToolBar::setVisible(bool visible) {
+
+	if (visible)
+		panAction->setChecked(false);
+
+	QToolBar::setVisible(visible);
 }
 
 void DkCropToolBar::on_cropAction_triggered() {
@@ -827,6 +849,11 @@ void DkCropToolBar::on_horValBox_valueChanged(double val) {
 	DkVector diag = DkVector(horValBox->value(), verValBox->value());
 	emit aspectRatio(diag);
 
+}
+
+void DkCropToolBar::on_panAction_toggled(bool checked) {
+
+	emit panSignal(checked);
 }
 
 }

@@ -41,8 +41,6 @@ bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 	return QObject::eventFilter(obj, event);
 }
 
-
-
 DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags) {
 

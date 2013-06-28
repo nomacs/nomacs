@@ -229,9 +229,12 @@ public slots:
 	void on_verValBox_valueChanged(double val);
 	void on_angleBox_valueChanged(double val);
 	void on_bgColButton_clicked();
+	void on_panAction_toggled(bool checked);
 	void angleChanged(double val);
+	virtual void setVisible(bool visible);
 
 signals:
+	void panSignal(bool checked);
 	void cropSignal();
 	void cancelSignal();
 	void aspectRatio(const DkVector& diag);
@@ -246,6 +249,7 @@ protected:
 	QPushButton* bgColButton;
 	QColorDialog* colorDialog;
 	QColor bgCol;
+	QAction* panAction;
 };
 
 

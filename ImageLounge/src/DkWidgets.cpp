@@ -3221,7 +3221,8 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, bool)), this, SLOT(updateCorner(int, QPointF, bool)));
 		connect(ctrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
 	}
-		
+	
+	panning = false;
 }
 
 void DkEditableRect::reset() {
@@ -3230,6 +3231,12 @@ void DkEditableRect::reset() {
 	//for (int idx = 0; idx < ctrlPoints.size(); idx++)
 	//	ctrlPoints[idx]->reset();
 
+}
+
+void DkEditableRect::setPanning(bool panning) {
+	this->panning = panning;
+	setCursor(Qt::OpenHandCursor);
+	qDebug() << "panning set...";
 }
 
 QPointF DkEditableRect::map(const QPointF &pos) {
@@ -3365,7 +3372,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::Global::altMod) {
+	if (event->buttons() == Qt::LeftButton && 
+		(event->modifiers() == DkSettings::Global::altMod || panning)) {
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
 		return;
@@ -3376,6 +3384,7 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	if (rect.isEmpty()) {
 		state = initializing;
+		setAngle(0);
 	}
 	else if (rect.getPoly().containsPoint(posGrab, Qt::OddEvenFill)) {
 		state = moving;
@@ -3394,7 +3403,8 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::Global::altMod) {
+	if (event->modifiers() == DkSettings::Global::altMod ||
+		panning) {
 		
 		if (event->buttons() != Qt::LeftButton)
 			setCursor(Qt::OpenHandCursor);
@@ -3424,8 +3434,6 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
-		// TODO: we need a snap function otherwise you'll never get the bottom left corner...
-		
 		qDebug() << "pg: " << posGrab;
 
 		QPointF clipPos = clipToImage(event->posF());
@@ -3441,8 +3449,13 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 				rect.setAllCorners(p);
 			}
 			
+			DkVector diag;
+			
 			// when initializing shift should make the rect a square
-			DkVector diag = (event->modifiers() == Qt::ShiftModifier) ? DkVector(-1.0f, -1.0f) : DkVector();
+			if (event->modifiers() == Qt::ShiftModifier)
+				diag = DkVector(1.0f, 1.0f);
+			else
+				diag = fixedDiag;
 			rect.updateCorner(2, map(clipPos), diag);
 			update();
 		}
@@ -3483,7 +3496,8 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::Global::altMod) {
+	if (event->buttons() == Qt::LeftButton && 
+		(event->modifiers() == DkSettings::Global::altMod || panning)) {
 		setCursor(Qt::OpenHandCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -3503,8 +3517,7 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 	// Check the order or vertexes
 	float signedArea = (p[1].x() - p[0].x()) * (p[2].y() - p[0].y()) - (p[1].y()- p[0].y()) * (p[2].x() - p[0].x());
 	// If it's wrong, just change it
-	if (signedArea > 0)
-	{
+	if (signedArea > 0) {
 		QPointF tmp = p[1];
 		p[1] = p[3];
 		p[3] = tmp;
@@ -3529,16 +3542,16 @@ void DkEditableRect::keyPressEvent(QKeyEvent *event) {
 
 void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 
-	if (event->key() == Qt::Key_Escape)
-		hide();
-	else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-		
-		if (!rect.isEmpty())
-			emit enterPressedSignal(rect);
+	//if (event->key() == Qt::Key_Escape)
+	//	hide();
+	//else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+	//	
+	//	if (!rect.isEmpty())
+	//		emit enterPressedSignal(rect);
 
-		setVisible(false);
-		setWindowOpacity(0);
-	}
+	//	setVisible(false);
+	//	setWindowOpacity(0);
+	//}
 
 	qDebug() << "key pressed rect";
 
@@ -3585,6 +3598,7 @@ DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Q
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
 	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
 	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
+	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 }
 
 void DkCropWidget::crop() {

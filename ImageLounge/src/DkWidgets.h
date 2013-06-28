@@ -1318,6 +1318,7 @@ public slots:
 	void updateDiagonal(int idx);
 	void setFixedDiagonal(const DkVector& diag);
 	void setAngle(double angle);
+	void setPanning(bool panning);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
@@ -1349,6 +1350,7 @@ protected:
 	QVector<DkTransformRect*> ctrlPoints;
 	QCursor rotatingCursor;
 	QRectF* imgRect;
+	bool panning;
 
 };
 
