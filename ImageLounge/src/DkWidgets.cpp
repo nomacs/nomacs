@@ -3233,12 +3233,6 @@ void DkEditableRect::reset() {
 
 }
 
-void DkEditableRect::setPanning(bool panning) {
-	this->panning = panning;
-	setCursor(Qt::OpenHandCursor);
-	qDebug() << "panning set...";
-}
-
 QPointF DkEditableRect::map(const QPointF &pos) {
 
 	QPointF posM = pos;
@@ -3283,11 +3277,15 @@ void DkEditableRect::updateDiagonal(int idx) {
 
 void DkEditableRect::setFixedDiagonal(const DkVector& diag) {
 
-	fixedDiag = diag.getQPointF();
+	fixedDiag = diag;
+
+	qDebug() << "after rotating: " << fixedDiag.getQPointF();
 
 	// don't update in that case
-	if (fixedDiag.x == 0 || fixedDiag.y == 0)
+	if (diag.x == 0 || diag.y == 0)
 		return;
+	else
+		fixedDiag.rotate(-rect.getAngle());
 
 	QPointF c = rect.getCenter();
 
@@ -3296,6 +3294,12 @@ void DkEditableRect::setFixedDiagonal(const DkVector& diag) {
 
 	rect.setCenter(c);
 	update();
+}
+
+void DkEditableRect::setPanning(bool panning) {
+	this->panning = panning;
+	setCursor(Qt::OpenHandCursor);
+	qDebug() << "panning set...";
 }
 
 void DkEditableRect::updateCorner(int idx, QPointF point, bool isShiftDown) {
@@ -3486,7 +3490,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			angle -= angleRound;
 		}
 					
-		setAngle(angle);
+		setAngle(angle, false);
 	}
 
 	//QWidget::mouseMoveEvent(event);
@@ -3505,6 +3509,12 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 	}
 
 	state = do_nothing;
+
+	applyTransform();
+	//QWidget::mouseReleaseEvent(event);
+}
+
+void DkEditableRect::applyTransform() {
 
 	// apply transform
 	QPolygonF p = rect.getPoly();
@@ -3529,7 +3539,7 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 	rTform.reset();	
 	tTform.reset();
 	update();
-	//QWidget::mouseReleaseEvent(event);
+
 }
 
 void DkEditableRect::keyPressEvent(QKeyEvent *event) {
@@ -3558,7 +3568,7 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 	QWidget::keyPressEvent(event);
 }
 
-void DkEditableRect::setAngle(double angle) {
+void DkEditableRect::setAngle(double angle, bool apply) {
 
 	DkVector c(rect.getCenter());
 
@@ -3566,10 +3576,17 @@ void DkEditableRect::setAngle(double angle) {
 		tTform.translate(-c.x, -c.y);
 	
 	rTform.reset();
-	rTform.rotateRadians(angle);
+	if (apply)
+		rTform.rotateRadians(angle-rect.getAngle());
+	else
+		rTform.rotateRadians(angle);
+	
 	emit angleSignal(angle);
 
-	update();
+	if (apply)
+		applyTransform();
+	else
+		update();
 }
 
 void DkEditableRect::setVisible(bool visible) {

@@ -798,10 +798,10 @@ void DkCropToolBar::angleChanged(double val) {
 	qDebug() << val*DK_RAD2DEG;
 
 	double angle = val*DK_RAD2DEG;
-	while (angle > 90)
-		angle -= 180;
-	while (angle < -90)
-		angle += 180;
+	while (angle > 180)
+		angle -= 360;
+	while (angle < -180)
+		angle += 360;
 
 	angleBox->blockSignals(true);
 	angleBox->setValue(angle);

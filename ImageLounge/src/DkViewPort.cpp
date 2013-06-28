@@ -2135,7 +2135,7 @@ void DkViewPort::toggleLena() {
 		if (parent && parent->isFullScreen())
 			loader->load(QFileInfo(":/nomacs/img/lena-full.jpg"));
 		else
-			loader->load(QFileInfo(":/nomacs/img/lena.webp"));
+			loader->load(QFileInfo(":/nomacs/img/lena.jpg"));
 	}
 }
 
@@ -2185,18 +2185,20 @@ void DkViewPort::unloadImage() {
 		delete movie;
 		movie = 0;
 	}
+
 }
 
 void DkViewPort::loadFile(QFileInfo file, bool silent) {
 
-	testLoaded = false;
 	unloadImage();
+	testLoaded = false;
 
 	if (loader && file.isDir()) {
 		QDir dir = QDir(file.absoluteFilePath());
 		loader->setDir(dir);
 	} else if (loader)
 		loader->load(file, silent);
+
 }
 
 void DkViewPort::reloadFile() {
@@ -2262,7 +2264,7 @@ void DkViewPort::loadNextFileFast(bool silent) {
 }
 
 
-void DkViewPort::loadFileFast(int skipIdx, bool silent) {
+void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 
 	skipImageTimer->stop();
 
@@ -2270,12 +2272,16 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 	bool skip = true;
 
+	// block if lena is loaded
+	if (testLoaded && skipIdx != 0)
+		return;
+
 	if (DkSettings::Resources::fastThumbnailPreview) {
 
 		QImage thumb;
 		QFileInfo thumbFile;
 
-		if (loader && !testLoaded) {
+		if (loader) {
 
 			thumbFile = loader->getChangedFileInfo(skipIdx, silent);
 
@@ -2312,8 +2318,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 					controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
 
 			}
-		} else if (testLoaded)
-			skip = false;
+		} 
 
 		if (!thumb.isNull()) {
 			//unloadImage();
@@ -2323,16 +2328,16 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent) {
 
 		QCoreApplication::sendPostedEvents();
 	}
-	else if (loader && !testLoaded) {
+	else if (loader) {
 		unloadImage();
 		loader->changeFile(skipIdx, silent);
 		skip = false;
 	}
 
 	// could not load file? - this happens if we get dead image links
-	if (skip) {
+	if (skip && rec < 50) {
 		int newSkipIdx = (skipIdx > 0) ? 1 : -1;
-		loadFileFast(newSkipIdx, silent);
+		loadFileFast(newSkipIdx, silent, rec++);		// rec++ > so we never get endless recursion
 		
 		// TODO: probably we should let the user decide if he wants to get a warning here...
 		qDebug() << "load file fast recursive!! ";

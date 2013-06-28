@@ -1317,7 +1317,7 @@ public slots:
 	void updateCorner(int idx, QPointF point, bool isShiftDown);
 	void updateDiagonal(int idx);
 	void setFixedDiagonal(const DkVector& diag);
-	void setAngle(double angle);
+	void setAngle(double angle, bool apply = true);
 	void setPanning(bool panning);
 
 protected:
@@ -1327,6 +1327,7 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	QPointF clipToImage(const QPointF& pos);
+	void applyTransform();
 	
 	void paintEvent(QPaintEvent *event);
 
@@ -1373,8 +1374,6 @@ protected:
 	
 
 	DkCropToolBar* cropToolbar;
-
-
 };
 
 /**
