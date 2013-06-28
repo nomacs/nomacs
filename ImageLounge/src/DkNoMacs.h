@@ -269,6 +269,7 @@ enum syncActions {
 	menu_sync_pos,
 	menu_sync_arrange,
 	menu_sync_connect_all,
+	menu_sync_remote_control,
 
 	menu_sync_end,	// nothing beyond this point
 };
@@ -409,6 +410,7 @@ signals:
 	void sendArrangeSignal(bool overlaid);
 	void synchronizeWithSignal(quint16);
 	void synchronizeWithServerPortSignal(quint16);
+	void synchronizeRemoteControl(quint16);
 	void closeSignal();
 	void saveTempFileSignal(QImage img);
 	void sendQuitLocalClientsSignal();
@@ -613,6 +615,7 @@ signals:
 
 public slots:
 	void tcpConnectAll();
+	void tcpRemoteControl();
 	void settingsChanged();
 	void clientInitialized();
 

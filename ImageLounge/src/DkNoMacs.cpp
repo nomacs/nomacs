@@ -2802,26 +2802,26 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->clear();
 
 	// start lan client/server
-	//lanClient = new DkLanManagerThread(this);
-	//lanClient->start();
+	lanClient = new DkLanManagerThread(this);
+	lanClient->start();
 
-	//// start server action
-	//QAction* startServer = new QAction(tr("Start &Server"), this);
-	//startServer->setCheckable(true);
-	//startServer->setChecked(false);
-	//connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+	// start server action
+	QAction* startServer = new QAction(tr("Start &Server"), this);
+	startServer->setCheckable(true);
+	startServer->setChecked(false);
+	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
 
-	//QAction* sendImage = new QAction(tr("Send &Image"), this);
-	//sendImage->setObjectName("sendImageAction");
-	//sendImage->setShortcut(QKeySequence(shortcut_send_img));
-	////sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
-	//sendImage->setToolTip(tr("Sends the current image to all clients."));
-	//connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
+	QAction* sendImage = new QAction(tr("Send &Image"), this);
+	sendImage->setObjectName("sendImageAction");
+	sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
+	sendImage->setToolTip(tr("Sends the current image to all clients."));
+	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
-	//tcpLanMenu->setClientManager(lanClient);
-	//tcpLanMenu->addTcpAction(startServer);
-	//tcpLanMenu->addTcpAction(sendImage);
-	//tcpLanMenu->setEnabled(true);
+	tcpLanMenu->setClientManager(lanClient);
+	tcpLanMenu->addTcpAction(startServer);
+	tcpLanMenu->addTcpAction(sendImage);
+	tcpLanMenu->setEnabled(true);
 
 
 	// remote control server
@@ -2873,6 +2873,11 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
 
+	syncActions[menu_sync_remote_control] = new QAction(tr("&Remote Control"), this);
+	//syncActions[menu_sync_remote_control]->setShortcut(QKeySequence(shortcut_connect_all));
+	syncActions[menu_sync_remote_control]->setStatusTip(tr("Remote Control"));
+	connect(syncActions[menu_sync_remote_control], SIGNAL(triggered()), this, SLOT(tcpRemoteControl()));
+
 	assignCustomShortcuts(syncActions);
 }
 
@@ -2895,6 +2900,7 @@ void DkNoMacsSync::createMenu() {
 	syncMenu->addAction(syncActions[menu_sync]);
 	syncMenu->addAction(syncActions[menu_sync_pos]);
 	syncMenu->addAction(syncActions[menu_sync_arrange]);
+	syncMenu->addAction(syncActions[menu_sync_remote_control]);
 
 }
 
@@ -2965,6 +2971,16 @@ void DkNoMacsSync::tcpConnectAll() {
 	for (int idx = 0; idx < peers.size(); idx++)
 		emit synchronizeWithSignal(peers.at(idx).peerId);
 
+}
+
+void DkNoMacsSync::tcpRemoteControl() {
+	qDebug() << "trying to connect remote control ...";
+	QList<DkPeer> peers = rcClient->getPeerList();
+	qDebug() << "numer of peers in list:" << peers.size();
+	for (int idx = 0; idx < peers.size(); idx++)  {
+		qDebug() << "trying to synchronize with:" << peers.at(idx).clientName << ":" << peers.at(idx).peerServerPort;
+		emit synchronizeRemoteControl(peers.at(idx).peerId);	
+	}
 }
 
 void DkNoMacsSync::settingsChanged() {
