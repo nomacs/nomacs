@@ -67,11 +67,10 @@
 #include "DkWidgets.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
+#include "DkToolbars.h"
 //#include "DkDialog.h"
 
 #include "DkMath.h"
-
-#include "DkTransferToolBar.h"
 
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
@@ -229,8 +228,8 @@ public:
 		return rating;
 	}
 
-	DkEditableRect* getEditRect() {
-		return editRect;
+	DkCropWidget* corpWidget() {
+		return cropWidget;
 	}
 
 	void stopLabels();
@@ -279,7 +278,7 @@ protected:
 	QWidget* hudWidget;
 
 	DkViewPort* viewport;
-	DkEditableRect* editRect;
+	DkCropWidget* cropWidget;
 
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;

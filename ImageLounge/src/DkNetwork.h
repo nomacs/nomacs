@@ -370,6 +370,10 @@ public:
 	void run();
 
 	QList<DkPeer> getPeerList() {
+
+		if (!clientManager)
+			return QList<DkPeer>();
+
 		QMutexLocker locker(&mutex);
 		return clientManager->getPeerList();	// critical section
 	};

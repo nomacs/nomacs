@@ -3274,9 +3274,26 @@ void DkEditableRect::updateDiagonal(int idx) {
 		oldDiag = rect.getDiagonal(idx);
 }
 
+void DkEditableRect::setFixedDiagonal(const DkVector& diag) {
+
+	fixedDiag = diag.getQPointF();
+
+	// don't update in that case
+	if (fixedDiag.x == 0 || fixedDiag.y == 0)
+		return;
+
+	QPointF c = rect.getCenter();
+
+	if (!rect.getPoly().isEmpty()) 
+		rect.updateCorner(0, rect.getPoly().at(0), fixedDiag);
+
+	rect.setCenter(c);
+	update();
+}
+
 void DkEditableRect::updateCorner(int idx, QPointF point, bool isShiftDown) {
 
-	DkVector diag = (isShiftDown) ? oldDiag : DkVector();
+	DkVector diag = (isShiftDown || fixedDiag.x != 0 && fixedDiag.y != 0) ? oldDiag : DkVector();
 
 	rect.updateCorner(idx, map(point), diag);
 	update();
@@ -3367,8 +3384,8 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 		state = rotating;
 	}
 
-	// we should not need to do this?!
-	setFocus(Qt::ActiveWindowFocusReason);
+	//// we should not need to do this?!
+	//setFocus(Qt::ActiveWindowFocusReason);
 
 
 	//QWidget::mousePressEvent(event);
@@ -3389,9 +3406,9 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
-	// why do we need to do this?
-	if (!hasFocus())
-		setFocus(Qt::ActiveWindowFocusReason);
+	//// why do we need to do this?
+	//if (!hasFocus())
+	//	setFocus(Qt::ActiveWindowFocusReason);
 
 	QPointF posM = map(event->posF());
 	
@@ -3455,14 +3472,8 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
 			angle -= angleRound;
 		}
-			
-		if (!tTform.isTranslating())
-			tTform.translate(-c.x, -c.y);
-		
-		rTform.reset();
-		rTform.rotateRadians(angle);
-
-		update();
+					
+		setAngle(angle);
 	}
 
 	//QWidget::mouseMoveEvent(event);
@@ -3534,6 +3545,20 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 	QWidget::keyPressEvent(event);
 }
 
+void DkEditableRect::setAngle(double angle) {
+
+	DkVector c(rect.getCenter());
+
+	if (!tTform.isTranslating())
+		tTform.translate(-c.x, -c.y);
+	
+	rTform.reset();
+	rTform.rotateRadians(angle);
+	emit angleSignal(angle);
+
+	update();
+}
+
 void DkEditableRect::setVisible(bool visible) {
 
 	if (!visible) {
@@ -3543,14 +3568,42 @@ void DkEditableRect::setVisible(bool visible) {
 			ctrlPoints[idx]->hide();
 	}
 	else {
-		setFocus(Qt::ActiveWindowFocusReason);
+		//setFocus(Qt::ActiveWindowFocusReason);
 		setCursor(Qt::CrossCursor);
 	}
 
 	DkWidget::setVisible(visible);
 }
 
+// DkEditableRect --------------------------------------------------------------------
+DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/) : DkEditableRect(rect, parent, f) {
 
+	cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
+
+	connect(cropToolbar, SIGNAL(cropSignal()), this, SLOT(crop()));
+	connect(cropToolbar, SIGNAL(cancelSignal()), this, SLOT(hide()));
+	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
+	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
+	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
+}
+
+void DkCropWidget::crop() {
+
+	if (!rect.isEmpty())
+		emit enterPressedSignal(rect);
+
+	setVisible(false);
+	setWindowOpacity(0);
+
+}
+
+void DkCropWidget::setVisible(bool visible) {
+
+	emit showToolbar(cropToolbar, visible);
+	DkEditableRect::setVisible(visible);
+}
+
+// DkAnimagionLabel --------------------------------------------------------------------
 DkAnimationLabel::DkAnimationLabel(QString animationPath, QWidget* parent) : DkLabel(parent) {
 
 	init(animationPath, QSize());

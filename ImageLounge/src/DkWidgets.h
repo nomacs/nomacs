@@ -66,6 +66,7 @@
 #include "DkNetwork.h"
 #include "DkSettings.h"
 #include "DkMath.h"
+#include "DkToolbars.h"
 
 #ifdef Q_WS_WIN
 #include <ShObjIdl.h>
@@ -73,6 +74,7 @@
 #endif
 
 namespace nmc {
+
 class DkThumbNail;
 
 class DkWidget : public QWidget {
@@ -1151,6 +1153,21 @@ public:
 		return ((c2-c1)*0.5f + c1).getQPointF();
 	};
 
+	void setCenter(const QPointF& center) {
+
+		if (rect.empty())
+			return;
+
+		DkVector diff = getCenter() - center;
+
+		for (int idx = 0; idx < rect.size(); idx++) {
+
+			rect[idx] = rect[idx] - diff.getQPointF();
+		}
+
+
+	}
+
 	double getAngle() {
 		
 		// default upper left corner is 0
@@ -1290,14 +1307,17 @@ public:
 		this->imgRect = imgRect;
 	};
 
-	void setVisible(bool visible);
+	virtual void setVisible(bool visible);
 
 signals:
 	void enterPressedSignal(DkRotatingRect cropArea);
+	void angleSignal(double angle);
 
 public slots:
 	void updateCorner(int idx, QPointF point, bool isShiftDown);
 	void updateDiagonal(int idx);
+	void setFixedDiagonal(const DkVector& diag);
+	void setAngle(double angle);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
@@ -1320,6 +1340,7 @@ protected:
 	QPointF posGrab;
 	QPointF clickPos;
 	DkVector oldDiag;
+	DkVector fixedDiag;
 
 	QWidget* parent;
 	DkRotatingRect rect;
@@ -1328,6 +1349,29 @@ protected:
 	QVector<DkTransformRect*> ctrlPoints;
 	QCursor rotatingCursor;
 	QRectF* imgRect;
+
+};
+
+class DkCropWidget : public DkEditableRect {
+	Q_OBJECT
+
+public:
+	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	virtual void setVisible(bool visible);
+
+public slots:
+	void crop();
+
+signals:
+	void showToolbar(QToolBar* toolbar, bool show);
+
+
+protected:
+	
+
+	DkCropToolBar* cropToolbar;
+
 
 };
 

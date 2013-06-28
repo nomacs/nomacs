@@ -245,18 +245,21 @@ public:
 	~DkTcpAction() {};
 
 	void init() {
+		tcpActions = 0;
+		setObjectName("tcpAction");
 		setCheckable(true);
 		setChecked(peer.isSynchronized());
 		connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
 	};
 
-	void setTcpActions(QList<QAction*> actions) {
+	void setTcpActions(QList<QAction*>* actions) {
 		tcpActions = actions;
 	};
 
 signals:
 	void synchronizeWithSignal(quint16);
 	void disableSynchronizeWithSignal(quint16);
+	void enableActions(bool enable);
 
 public slots:
 	void synchronize(bool checked) {
@@ -266,18 +269,14 @@ public slots:
 		else
 			emit disableSynchronizeWithSignal(peer.peerId);
 
-		for (int idx = 0; idx < tcpActions.size(); idx++) {
-			
-			if (tcpActions.at(idx)->objectName() != "sendImageAction")
-				tcpActions.at(idx)->setEnabled(!checked);
-		}
-
+		emit enableActions(checked);
 		qDebug() << "emitted a synchronize message...\n";
 	}
 
+
 protected:
 	DkPeer peer;
-	QList<QAction*> tcpActions;
+	QList<QAction*>* tcpActions;
 
 };
 
@@ -331,12 +330,43 @@ public:
 		peers.clear();
 		clients.clear();
 		tcpActions.clear();
-	}
+	};
+
 
 signals:
 	void synchronizeWithSignal(quint16);
 
+public slots:
+	void enableActions(bool enable = false) {
+
+		updatePeers();
+
+		bool anyConnected = enable;
+
+		// let's see if any other connection is there
+		if (!anyConnected) {
+
+			for (int idx = 0; idx < tcpActions.size(); idx++) {
+
+				if (tcpActions.at(idx)->objectName() == "tcpAction" && tcpActions.at(idx)->isChecked()) {
+					anyConnected = true;
+					break;
+				}
+			}
+		}
+
+		for (int idx = 0; idx < tcpActions.size(); idx++) {
+
+			if (tcpActions.at(idx)->objectName() == "serverAction")
+				tcpActions.at(idx)->setEnabled(!anyConnected);
+			if (tcpActions.at(idx)->objectName() == "sendImageAction")
+				tcpActions.at(idx)->setEnabled(anyConnected);
+		}
+
+	}
+
 protected slots:
+		
 	void updatePeers() {	// find other clients on paint
 		
 		if (!clientThread)
@@ -376,14 +406,17 @@ protected slots:
 
 			DkTcpAction* peerEntry = new DkTcpAction(currentPeer, title, this);
 			if (!noClientsFound) 
-				peerEntry->setTcpActions(tcpActions);
+				peerEntry->setTcpActions(&tcpActions);
 			
 			connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
 			connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), clientThread, SLOT(stopSynchronizeWith(quint16)));
+			connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
 
 			addAction(peerEntry);
 
 		}
+
+		//enableActions();
 
 		peers = newPeers;
 

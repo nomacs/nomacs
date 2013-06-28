@@ -82,7 +82,7 @@ using namespace cv;
 #include "DkDialog.h"
 #include "DkSettings.h"
 #include "DkMenu.h"
-#include "DkTransferToolBar.h"
+#include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
 
 #ifdef DK_DLL
@@ -280,6 +280,13 @@ enum syncActions {
 	menu_sync_end,	// nothing beyond this point
 };
 
+enum lanSyncActions {
+	menu_lan_server,
+	menu_lan_image,
+
+	menu_lan_end,
+};
+
 enum helpActions {
 	menu_help_update,
 	menu_help_bug,
@@ -449,6 +456,7 @@ public slots:
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbar(bool show);
+	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
 	void openFileWith();
 	void aboutDialog();
@@ -468,7 +476,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	void newClientConnected(bool connected);
+	virtual void newClientConnected(bool connected);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
@@ -532,6 +540,7 @@ protected:
 	QVector<QAction *> panelActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
+	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
@@ -627,6 +636,7 @@ public slots:
 	void tcpConnectAll();
 	void settingsChanged();
 	void clientInitialized();
+	void newClientConnected(bool connected);
 
 protected:
 

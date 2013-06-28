@@ -178,6 +178,7 @@ void DkNoMacs::init() {
 	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
+	connect(viewport()->getController()->corpWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 
 }
 
@@ -978,6 +979,9 @@ void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
 
 		if (val != "no-shortcut")
 			actions[idx]->setShortcut(val);
+
+		// assign widget shortcuts to all of them
+		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
 }
 
@@ -1047,6 +1051,12 @@ void DkNoMacs::createShortcuts() {
 
 	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
 	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), vp->getImageLoader(), SLOT(deleteFile()));
+
+	for (int idx = 0; idx < shortcuts.size(); idx++) {
+
+		// assign widget shortcuts to all of them
+		shortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
+	}
 }
 
 void DkNoMacs::enableNoImageActions(bool enable) {
@@ -2498,6 +2508,20 @@ void DkNoMacs::showMenuBar(bool show) {
 	menu->showMenu();
 }
 
+void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
+
+	if (!toolbar)
+		return;
+
+	if (show)
+		addToolBar(toolbar);
+	else
+		removeToolBar(toolbar);
+
+	toolbar->setVisible(show);
+	showToolbar(!show);
+}
+
 void DkNoMacs::showToolbar(bool show) {
 
 	DkSettings::App::showToolBar = show;
@@ -2854,23 +2878,27 @@ void DkNoMacsSync::initLanClient() {
 	lanClient = new DkLanManagerThread(this);
 	lanClient->start();
 
-	// start server action
-	QAction* startServer = new QAction(tr("Start &Server"), this);
-	startServer->setCheckable(true);
-	startServer->setChecked(false);
-	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+	lanActions.resize(menu_lan_end);
 
-	QAction* sendImage = new QAction(tr("Send &Image"), this);
-	sendImage->setObjectName("sendImageAction");
-	sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	// start server action
+	lanActions[menu_lan_server] = new QAction(tr("Start &Server"), this);
+	lanActions[menu_lan_server]->setObjectName("serverAction");
+	lanActions[menu_lan_server]->setCheckable(true);
+	lanActions[menu_lan_server]->setChecked(false);
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+
+	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
+	lanActions[menu_lan_image]->setObjectName("sendImageAction");
+	lanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
 	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
-	sendImage->setToolTip(tr("Sends the current image to all clients."));
-	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
+	lanActions[menu_lan_image]->setToolTip(tr("Sends the current image to all clients."));
+	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
 	tcpLanMenu->setClientManager(lanClient);
-	tcpLanMenu->addTcpAction(startServer);
-	tcpLanMenu->addTcpAction(sendImage);
+	tcpLanMenu->addTcpAction(lanActions[menu_lan_server]);
+	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);
 	tcpLanMenu->setEnabled(true);
+	tcpLanMenu->enableActions();
 }
 
 void DkNoMacsSync::createActions() {
@@ -2998,6 +3026,13 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
+void DkNoMacsSync::newClientConnected(bool connected) {
+
+	tcpLanMenu->enableActions(connected);
+	
+	DkNoMacs::newClientConnected(connected);
+}
+
 void DkNoMacsSync::settingsChanged() {
 	initLanClient();
 
@@ -3042,7 +3077,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 	vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 	vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
-	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
+	vp->getController()->corpWidget()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 	DkSettings::App::appMode = 0;
@@ -3250,7 +3285,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
-		vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
+		vp->getController()->corpWidget()->registerAction(editActions[menu_edit_crop]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 
 		initLanClient();

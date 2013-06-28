@@ -47,5 +47,7 @@
         <file>img/portrait.png</file>
         <file>img/printer.png</file>
         <file>img/print-setup.png</file>
+        <file>img/cancel.png</file>
+        <file>img/swap.png</file>
     </qresource>
 </RCC>

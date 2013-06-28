@@ -39,7 +39,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	rating = -1;
 	
 	// cropping
-	editRect = new DkEditableRect(QRectF(), this);
+	cropWidget = new DkCropWidget(QRectF(), this);
 
 	// thumbnails, metadata
 	filePreview = new DkFilePreview(this, flags);
@@ -101,8 +101,8 @@ void DkControlWidget::init() {
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
-	editRect->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
-	editRect->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	cropWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	spinnerLabel->halfSize();
 
 	// dummy
@@ -224,7 +224,7 @@ void DkControlWidget::init() {
 	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
 	QHBoxLayout* editLayout = new QHBoxLayout(editWidget);
 	editLayout->setContentsMargins(0,0,0,0);
-	editLayout->addWidget(editRect);
+	editLayout->addWidget(cropWidget);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
@@ -290,7 +290,7 @@ void DkControlWidget::connectWidgets() {
 	connect(player, SIGNAL(nextSignal(bool)), viewport, SLOT(loadNextFileFast(bool)));
 
 	// cropping
-	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), viewport, SLOT(cropImage(DkRotatingRect)));
+	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect)), viewport, SLOT(cropImage(DkRotatingRect)));
 }
 
 void DkControlWidget::update() {
@@ -409,12 +409,12 @@ void DkControlWidget::showCrop(bool visible) {
 		editWidget->show();
 		hudWidget->hide();
 
-		editRect->reset();
-		editRect->show();
+		cropWidget->reset();
+		cropWidget->show();
 	}
 	else if (!visible && editWidget->isVisible()) {
 		editWidget->hide();
-		editRect->hide();
+		cropWidget->hide();
 		hudWidget->show();
 
 		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
@@ -1356,9 +1356,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	controller->show();
 
 	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
-	controller->getEditRect()->setWorldTransform(&worldMatrix);
-	controller->getEditRect()->setImageTransform(&imgMatrix);
-	controller->getEditRect()->setImageRect(&imgViewRect);
+	controller->corpWidget()->setWorldTransform(&worldMatrix);
+	controller->corpWidget()->setImageTransform(&imgMatrix);
+	controller->corpWidget()->setImageRect(&imgViewRect);
 
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
