@@ -3307,6 +3307,11 @@ void DkEditableRect::updateCorner(int idx, QPointF point, bool isShiftDown) {
 	DkVector diag = (isShiftDown || fixedDiag.x != 0 && fixedDiag.y != 0) ? oldDiag : DkVector();
 
 	rect.updateCorner(idx, map(point), diag);
+
+	// edge control -> remove aspect ratio constraint
+	if (idx >= 4 && idx < 8)
+		emit aRatioSignal(QPointF(0,0));
+
 	update();
 }
 
@@ -3581,12 +3586,13 @@ void DkEditableRect::setAngle(double angle, bool apply) {
 	else
 		rTform.rotateRadians(angle);
 	
-	emit angleSignal(angle);
-
 	if (apply)
 		applyTransform();
-	else
+	else {
 		update();
+		emit angleSignal(rect.getAngle()+angle);
+	}
+
 }
 
 void DkEditableRect::setVisible(bool visible) {
@@ -3614,14 +3620,15 @@ DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Q
 	connect(cropToolbar, SIGNAL(cancelSignal()), this, SLOT(hide()));
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
 	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
-	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
+	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
+	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
 }
 
 void DkCropWidget::crop() {
 
 	if (!rect.isEmpty())
-		emit enterPressedSignal(rect);
+		emit enterPressedSignal(rect, cropToolbar->getColor());
 
 	setVisible(false);
 	setWindowOpacity(0);
@@ -3633,6 +3640,7 @@ void DkCropWidget::setVisible(bool visible) {
 	emit showToolbar(cropToolbar, visible);
 	DkEditableRect::setVisible(visible);
 }
+
 
 // DkAnimagionLabel --------------------------------------------------------------------
 DkAnimationLabel::DkAnimationLabel(QString animationPath, QWidget* parent) : DkLabel(parent) {

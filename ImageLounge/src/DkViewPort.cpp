@@ -290,7 +290,8 @@ void DkControlWidget::connectWidgets() {
 	connect(player, SIGNAL(nextSignal(bool)), viewport, SLOT(loadNextFileFast(bool)));
 
 	// cropping
-	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect)), viewport, SLOT(cropImage(DkRotatingRect)));
+	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
+	connect(cropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), viewport, SLOT(setBackgroundBrush(const QBrush&)));
 }
 
 void DkControlWidget::update() {
@@ -1135,6 +1136,12 @@ void DkBaseViewPort::draw(QPainter *painter) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
+	if (backgroundBrush() != Qt::NoBrush) {
+		painter->setWorldMatrixEnabled(false);
+		painter->fillRect(QRect(QPoint(), size()), backgroundBrush());
+		painter->setWorldMatrixEnabled(true);
+	}
+
 	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
 
 	if (DkSettings::Display::tpPattern && imgQt.hasAlphaChannel()) {
@@ -1522,6 +1529,12 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	update();
 
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
+}
+
+void DkBaseViewPort::setBackgroundBrush(const QBrush &brush) {
+
+	qDebug() << "changing background brush...";
+	QGraphicsView::setBackgroundBrush(brush);
 }
 
 void DkViewPort::tcpSendImage() {
@@ -2446,7 +2459,7 @@ DkControlWidget* DkViewPort::getController() {
 	return controller;
 }
 
-void DkViewPort::cropImage(DkRotatingRect rect) {
+void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
 
 	QTransform tForm; 
 	QPointF cImgSize;
@@ -2461,7 +2474,7 @@ void DkViewPort::cropImage(DkRotatingRect rect) {
 	qDebug() << cImgSize;
 
 	QImage img = QImage(cImgSize.x(), cImgSize.y(), QImage::Format_ARGB32);
-	img.fill(QColor(0,0,0,0).rgba());
+	img.fill(bgCol.rgba());
 
 	// render the image into the new coordinate system
 	QPainter painter(&img);

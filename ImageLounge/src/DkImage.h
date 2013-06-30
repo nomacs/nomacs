@@ -27,7 +27,7 @@
 
 #pragma once
 
-#ifdef WIN32		// why is Q_WS_WIN32 not defined here?
+#ifdef WIN32
 #include "shlwapi.h"
 //#pragma comment (lib, "shlwapi.lib")
 #endif
@@ -65,7 +65,7 @@
 // opencv
 #ifdef WITH_OPENCV
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #pragma warning(disable: 4996)
 #endif
 
@@ -112,7 +112,7 @@ using namespace cv;
 
 namespace nmc {
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 	
 	/**
 	 * Logical string compare function.

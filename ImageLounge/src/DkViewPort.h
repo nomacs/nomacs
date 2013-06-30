@@ -396,6 +396,8 @@ public slots:
 	virtual void fullView();
 	virtual void resizeEvent(QResizeEvent* event);
 	virtual void stopBlockZooming();
+	//virtual void setBackgroundColor();
+	virtual void setBackgroundBrush(const QBrush &brush);
 
 	virtual void unloadImage();
 
@@ -535,7 +537,7 @@ public slots:
 	void loadLena();
 	void unloadImage();
 	void fileNotLoaded(QFileInfo file);
-	void cropImage(DkRotatingRect rect);
+	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 
 
 	virtual void updateImage();

@@ -35,6 +35,8 @@
 #include <QColor>
 #include <QPixmap>
 #include <QPainter>
+#include <QFuture>
+#include <QtConcurrentRun>
 
 #include <cmath>
 #include <sstream>
@@ -46,15 +48,18 @@
 
 #include "DkError.h"
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	#include <wtypes.h>
 	#include <windows.h>
-
+#else
+	#include <time.h>
 #endif
+
+
 
 #ifdef WITH_OPENCV
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #pragma warning(disable: 4996)
 #endif
 
@@ -87,6 +92,29 @@ private:
 	static int debugLevel;
 
 public:
+
+	/**
+	 * Sleeps n ms.
+	 * This function is based on the QTest::qSleep(int ms)
+	 * @param ms time to sleep
+	 **/ 
+	static void mSleep(int ms);
+
+	/**
+	 * Fast file exists method.
+	 * This function seems to be a bit unnecessary, however
+	 * at least windows has long (> 10 sec) timeouts if a
+	 * network drive is disconnected and you want to find
+	 * a file on that network. This function calls the normal
+	 * file.exists() but returns false if a timeout > waitMs 
+	 * is reached.
+	 * @param file the file to check
+	 * @param waitMs time in milli seconds to wait for file.exists()
+	 * @return bool true if the file exists
+	 **/ 
+	static bool exists(const QFileInfo& file, int waitMs = 5);
+
+	static bool checkFile(const QFileInfo& file);
 
 	static QString colorToString(const QColor& col) {
 

@@ -741,7 +741,7 @@ void DkCropToolBar::createLayout() {
 	angleBox->setMaximum(180);
 
 	// background color
-	bgCol = QColor(0,0,0);
+	bgCol = QColor(0,0,0,0);
 	bgColButton = new QPushButton(this);
 	bgColButton->setObjectName("bgColButton");
 	bgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(bgCol) + "; border: 1px solid #888;}");
@@ -765,10 +765,22 @@ void DkCropToolBar::createLayout() {
 
 void DkCropToolBar::setVisible(bool visible) {
 
+	if (!visible)
+		emit colorSignal(Qt::NoBrush);
+	else
+		emit colorSignal(bgCol);
+
 	if (visible)
 		panAction->setChecked(false);
 
 	QToolBar::setVisible(visible);
+}
+
+void DkCropToolBar::setAspectRatio(const QPointF& aRatio) {
+
+	horValBox->setValue(aRatio.x());
+	verValBox->setValue(aRatio.y());
+
 }
 
 void DkCropToolBar::on_cropAction_triggered() {
@@ -798,10 +810,10 @@ void DkCropToolBar::angleChanged(double val) {
 	qDebug() << val*DK_RAD2DEG;
 
 	double angle = val*DK_RAD2DEG;
-	while (angle > 180)
-		angle -= 360;
-	while (angle < -180)
-		angle += 360;
+	while (angle > 90)
+		angle -= 180;
+	while (angle < -90)
+		angle += 180;
 
 	angleBox->blockSignals(true);
 	angleBox->setValue(angle);
@@ -810,15 +822,20 @@ void DkCropToolBar::angleChanged(double val) {
 
 void DkCropToolBar::on_bgColButton_clicked() {
 
-	colorDialog->setCurrentColor(bgCol);
+	QColor tmpCol = bgCol;
+	if (!tmpCol.alpha()) tmpCol.setAlpha(255);	// avoid frustrated users
+	
+	colorDialog->setCurrentColor(tmpCol);
 	int ok = colorDialog->exec();
 
 	if (ok == QDialog::Accepted) {
 		bgCol = colorDialog->currentColor();
 		bgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(bgCol) + "; border: 1px solid #888;}");
+		emit colorSignal(bgCol);
 	}
 
 }
+
 
 void DkCropToolBar::on_ratioBox_currentIndexChanged(const QString& text) {
 

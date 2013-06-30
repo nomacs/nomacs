@@ -220,7 +220,12 @@ class DkCropToolBar : public QToolBar {
 public:
 	DkCropToolBar(const QString & title, QWidget * parent = 0);
 
+	QColor getColor() {
+		return bgCol;
+	};
+
 public slots:
+	void setAspectRatio(const QPointF& aRatio);
 	void on_cropAction_triggered();
 	void on_cancelAction_triggered();
 	void on_swapAction_triggered();
@@ -239,6 +244,7 @@ signals:
 	void cancelSignal();
 	void aspectRatio(const DkVector& diag);
 	void angleSignal(double angle);
+	void colorSignal(const QBrush& brush);
 
 protected:
 	void createLayout();

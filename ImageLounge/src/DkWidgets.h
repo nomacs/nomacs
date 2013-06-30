@@ -418,7 +418,6 @@ protected:
 	virtual void paintEvent(QPaintEvent *event);
 };
 
-// TODO: check why it's not working with DkFadeLabel
 class DkFileInfoLabel : public DkFadeLabel {
 	Q_OBJECT
 
@@ -1310,8 +1309,9 @@ public:
 	virtual void setVisible(bool visible);
 
 signals:
-	void enterPressedSignal(DkRotatingRect cropArea);
+	void enterPressedSignal(DkRotatingRect cropArea, const QColor& bgCol = QColor(0,0,0,0));
 	void angleSignal(double angle);
+	void aRatioSignal(const QPointF& aRatio);
 
 public slots:
 	void updateCorner(int idx, QPointF point, bool isShiftDown);
@@ -1362,13 +1362,15 @@ public:
 	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	virtual void setVisible(bool visible);
+	DkCropToolBar* getToolbar() {
+		return cropToolbar;
+	}
 
 public slots:
 	void crop();
 
 signals:
 	void showToolbar(QToolBar* toolbar, bool show);
-
 
 protected:
 	
