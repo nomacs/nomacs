@@ -694,8 +694,6 @@ void DkLANClientManager::connectConnection(DkConnection* connection) {
 // DkRemoteControllClientManager --------------------------------------------------------------------
 DkRemoteControlClientManager::DkRemoteControlClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, 28565, 28565) {
 	//server = new DkLANTcpServer(this, 28565, 28565);
-	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
-	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
 
 	qDebug() << "remote control network service startet";
@@ -704,7 +702,7 @@ DkRemoteControlClientManager::DkRemoteControlClientManager(QString title, QObjec
 QList<DkPeer> DkRemoteControlClientManager::getPeerList() {
 	QList<DkPeer> list;
 	foreach(DkPeer peer, peerList.getPeerList()) {
-		//if (permissionList.value(peer.peerId))
+		if (permissionList.value(peer.peerId))
 			list.push_back(peer);
 	}
 	return list;
@@ -753,7 +751,7 @@ void DkRemoteControlClientManager::connectionReadyForUse(quint16 peerServerPort,
 	qDebug() << "peerList:";
 	peerList.print();
 
-	if (server->isListening())
+	if (!server->isListening())
 		connection->sendAskForPermission(); // TODO: do i have to ask for permission?
 }
 

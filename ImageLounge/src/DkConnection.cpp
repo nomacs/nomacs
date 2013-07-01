@@ -190,21 +190,25 @@ bool DkConnection::readProtocolHeader() {
 }
 
 int DkConnection::readDataIntoBuffer(int maxSize) {
+	qDebug() << "im readDataIntoBuffer";
 	if (maxSize > MaxBufferSize)
 		return 0;
 
 	int numBytesBeforeRead = buffer.size();
+	qDebug() << "im readDataIntoBuffer" << " numBytesBeforeRead:" << numBytesBeforeRead;
 	if (numBytesBeforeRead == MaxBufferSize) {
 		qDebug() << "DkConnection::readDataIntoBuffer: Connection aborted";
 		abort();
 		return 0;
 	}
 
+	qDebug() << "im readDataIntoBuffer:" << " bytesAvailable:" << bytesAvailable();
 	while (bytesAvailable() > 0 && buffer.size() < maxSize) {
 		buffer.append(read(1));
 		if (buffer.endsWith(SeparatorToken))
 			break;
 	}
+	qDebug() << "im readDataIntoBuffer" << " bufferSize:" << buffer.size() << " " << buffer.simplified();
 	return buffer.size() - numBytesBeforeRead;
 }
 
@@ -212,9 +216,11 @@ bool DkConnection::hasEnoughData() {
 	if (numBytesForCurrentDataType <= 0) {
 		numBytesForCurrentDataType = dataLengthForCurrentDataType();
 	}
+	
 	qDebug() << "numBytesForCurrentDataType:" << numBytesForCurrentDataType;
 	qDebug() << "bytesAvailable:" << bytesAvailable();
 	qDebug() << "buffer size:" << buffer.size();
+	
 	if (bytesAvailable() < numBytesForCurrentDataType || numBytesForCurrentDataType <= 0) {
 		return false;
 	}
@@ -233,7 +239,11 @@ int DkConnection::dataLengthForCurrentDataType() {
 }
 
 void DkConnection::processReadyRead() {
-	
+	qDebug() << __FUNCTION__ << " " << __LINE__ << " ###################################################### buffer.size:" << buffer.size();
+	if (readDataIntoBuffer() <= 0)
+		return;
+	if (!readProtocolHeader())
+		return;
 	checkState();
 
 	readWhileBytesAvailable();
@@ -688,13 +698,15 @@ void DkLANConnection::processReadyRead() {
 		return;
 	}
 
+	qDebug() << __FUNCTION__ << " " << __LINE__ << " ###################################################### buffer.size:" << buffer.size();
+	//if (buffer.size() == 0) {
+	//	if (readDataIntoBuffer() <= 0)
+	//		return;
+	//}
+	//if (!readProtocolHeader())
+	//	return;
 
-	if (readDataIntoBuffer() <= 0)
-		return;
-	if (!readProtocolHeader())
-		return;
-
-	checkState();
+	//checkState();
 	DkConnection::processReadyRead();
 }
 
@@ -826,13 +838,18 @@ bool DkRemoteControlConnection::readProtocolHeader() {
 }
 
 void DkRemoteControlConnection::processReadyRead() {
-	qDebug() << __FUNCTION__ << " " << __LINE__;
-	if (readDataIntoBuffer() <= 0)
-		return;
-	if (!readProtocolHeader())
-		return;
+	//if (currentRemoteControlDataType != Undefined) { // long message
+	//	readWhileBytesAvailable();
+	//	return;
+	//}
 
-	checkState();
+	qDebug() << __FUNCTION__ << " " << __LINE__ << " ###################################################### buffer.size:" << buffer.size();
+	//if (readDataIntoBuffer() <= 0)
+	//	return;
+	//if (!readProtocolHeader())
+	//	return;
+
+	//checkState();
 	DkLANConnection::processReadyRead();
 }
 
@@ -868,8 +885,10 @@ void DkRemoteControlConnection::processData() {
 	switch (currentRemoteControlDataType) {
 	case newPermission: {
 			bool allowedToConnect;
+			QString dummy;
 			QDataStream ds(buffer);
 			ds >> allowedToConnect;
+			ds >> dummy;
 			emit connectionNewPermission(this, allowedToConnect);
 			qDebug() << "emitted connectionNewPermission: allowedToConnect:" << allowedToConnect;
 			}
@@ -887,7 +906,7 @@ void DkRemoteControlConnection::processData() {
 		DkLANConnection::processData();
 	}
 
-	currentRemoteControlDataType = Undefined;
+	currentRemoteControlDataType = DkRemoteControlConnection::Undefined;
 	currentLanDataType = DkLANConnection::Undefined;
 	currentDataType = DkConnection::Undefined;
 	numBytesForCurrentDataType = 0;
@@ -909,12 +928,17 @@ void DkRemoteControlConnection::sendAskForPermission() {
 }
 
 void DkRemoteControlConnection::sendPermission() {
+	qDebug() << "printing whitelist\n--------------------";
+	for (int i = 0; i < DkSettings::Sync::syncWhiteList.size(); i++)
+		qDebug() << DkSettings::Sync::syncWhiteList.at(i);
+	qDebug() << "--------------------";
+	qDebug() << "current client Name:" << getClientName();
 	qDebug() << "sending Permission to " << this->peerName() << ":" << this->peerPort() << "      value:" << DkSettings::Sync::syncWhiteList.contains(getClientName());
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << DkSettings::Sync::syncWhiteList.contains(getClientName());
-
+	ds << "dummyText";
 	QByteArray data = "PERMISSION";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
