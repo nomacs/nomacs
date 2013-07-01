@@ -2473,19 +2473,27 @@ void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
 
 	qDebug() << cImgSize;
 
+	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
+	double minD = qMin(abs(angle), abs(angle-CV_PI*0.5));
+
 	QImage img = QImage(cImgSize.x(), cImgSize.y(), QImage::Format_ARGB32);
 	img.fill(bgCol.rgba());
 
 	// render the image into the new coordinate system
 	QPainter painter(&img);
 	painter.setWorldTransform(tForm);
+	
+	// for rotated rects we want perfect anti-aliasing
+	if (minD > FLT_EPSILON)
+		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+	
 	painter.drawImage(QRect(QPoint(), imgStorage.getImage().size()), imgStorage.getImage(), QRect(QPoint(), imgStorage.getImage().size()));
 	painter.end();
 
 	setEditedImage(img);
 	
 	//imgQt = img;
-	update();
+	//update();
 
 	qDebug() << "cropping...";
 }

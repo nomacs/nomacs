@@ -1319,6 +1319,8 @@ public slots:
 	void setFixedDiagonal(const DkVector& diag);
 	void setAngle(double angle, bool apply = true);
 	void setPanning(bool panning);
+	void setPaintHint(int paintMode = DkCropToolBar::no_guide);
+	void setShadingHint(bool invert);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
@@ -1328,6 +1330,7 @@ protected:
 	void keyReleaseEvent(QKeyEvent *event);
 	QPointF clipToImage(const QPointF& pos);
 	void applyTransform();
+	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
 	
 	void paintEvent(QPaintEvent *event);
 
@@ -1352,7 +1355,8 @@ protected:
 	QCursor rotatingCursor;
 	QRectF* imgRect;
 	bool panning;
-
+	int paintMode;
+	bool invertShading;
 };
 
 class DkCropWidget : public DkEditableRect {

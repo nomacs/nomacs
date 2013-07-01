@@ -218,11 +218,23 @@ class DkCropToolBar : public QToolBar {
 
 
 public:
+
+	enum {
+		no_guide = 0,
+		rule_of_thirds,
+		grid,
+
+		mode_end,
+	};
+
 	DkCropToolBar(const QString & title, QWidget * parent = 0);
+	virtual ~DkCropToolBar();
 
 	QColor getColor() {
 		return bgCol;
 	};
+
+	void loadSettings();
 
 public slots:
 	void setAspectRatio(const QPointF& aRatio);
@@ -230,11 +242,13 @@ public slots:
 	void on_cancelAction_triggered();
 	void on_swapAction_triggered();
 	void on_ratioBox_currentIndexChanged(const QString& text);
+	void on_guideBox_currentIndexChanged(int idx);
 	void on_horValBox_valueChanged(double val);
 	void on_verValBox_valueChanged(double val);
 	void on_angleBox_valueChanged(double val);
 	void on_bgColButton_clicked();
 	void on_panAction_toggled(bool checked);
+	void on_invertAction_toggled(bool checked);
 	void angleChanged(double val);
 	virtual void setVisible(bool visible);
 
@@ -245,10 +259,15 @@ signals:
 	void aspectRatio(const DkVector& diag);
 	void angleSignal(double angle);
 	void colorSignal(const QBrush& brush);
+	void paintHint(int paintMode);
+	void shadingHint(bool invert);
 
 protected:
 	void createLayout();
+	void saveSettings();
 
+	QComboBox* guideBox;
+	QAction* invertAction;
 	QDoubleSpinBox* horValBox;
 	QDoubleSpinBox* verValBox;
 	QDoubleSpinBox* angleBox;

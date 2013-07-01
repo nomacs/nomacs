@@ -690,7 +690,35 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 	else
 		setStyleSheet("QToolBar{spacing: 3px; padding: 3px}");
 
+	//loadSettings();
+
 	//setContentsMargins(100, 0, 100, 0);
+}
+
+DkCropToolBar::~DkCropToolBar() {
+	saveSettings();
+}
+
+void DkCropToolBar::loadSettings() {
+
+	QSettings settings;
+	settings.beginGroup("Crop");
+
+	horValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
+	verValBox->setValue(settings.value("AspectRatioVertical", 0).toInt());
+	guideBox->setCurrentIndex(settings.value("guides", 0).toInt());
+	invertAction->setChecked(settings.value("inverted", false).toBool());
+}
+
+void DkCropToolBar::saveSettings() {
+
+	QSettings settings;
+	settings.beginGroup("Crop");
+
+	settings.setValue("AspectRatioHorizontal", horValBox->value());
+	settings.setValue("AspectRatioVertical", verValBox->value());
+	settings.setValue("guides", guideBox->currentIndex());
+	settings.setValue("inverted", invertAction->isChecked());
 }
 
 void DkCropToolBar::createLayout() {
@@ -726,13 +754,19 @@ void DkCropToolBar::createLayout() {
 	horValBox = new QDoubleSpinBox(this);
 	horValBox->setObjectName("horValBox");
 	horValBox->setSpecialValueText("  ");
-	
+	horValBox->setToolTip(tr("Horizontal Constraint"));
+	horValBox->setStatusTip(horValBox->toolTip());
+
 	QAction* swapAction = new QAction(QIcon(":/nomacs/img/swap.png"), tr("Swap"), this);
 	swapAction->setObjectName("swapAction");
+	swapAction->setToolTip(tr("Swap Dimensions"));
+	swapAction->setStatusTip(swapAction->toolTip());
 
 	verValBox = new QDoubleSpinBox(this);
 	verValBox->setObjectName("verValBox");
 	verValBox->setSpecialValueText("  ");
+	horValBox->setToolTip(tr("Vertical Constraint"));
+	horValBox->setStatusTip(horValBox->toolTip());
 
 	angleBox = new QDoubleSpinBox(this);
 	angleBox->setObjectName("angleBox");
@@ -745,10 +779,31 @@ void DkCropToolBar::createLayout() {
 	bgColButton = new QPushButton(this);
 	bgColButton->setObjectName("bgColButton");
 	bgColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(bgCol) + "; border: 1px solid #888;}");
+	bgColButton->setToolTip(tr("Background Color"));
+	bgColButton->setStatusTip(bgColButton->toolTip());
 
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
 	colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
+
+	// crop customization
+	QStringList guides;
+	guides <<	QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "Guides") << 
+				QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "Rule of Thirds") << 
+				QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "Grid");
+	guideBox = new QComboBox(this);
+	guideBox->addItems(guides);
+	guideBox->setObjectName("guideBox");
+	guideBox->setToolTip(tr("Show Guides in the Preview"));
+	guideBox->setStatusTip(guideBox->toolTip());
+
+	QIcon invertIcon(":/nomacs/img/crop-invert.png");
+	invertIcon.addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.png"), QIcon::Normal, QIcon::On);
+
+	invertAction = new QAction(invertIcon, tr("Invert Crop Tool Color"), this);
+	invertAction->setObjectName(tr("invertAction"));
+	invertAction->setCheckable(true);
+	invertAction->setChecked(false);
 
 	addAction(cropAction);
 	addAction(panAction);
@@ -761,6 +816,9 @@ void DkCropToolBar::createLayout() {
 	addWidget(angleBox);
 	addSeparator();
 	addWidget(bgColButton);
+	addSeparator();
+	addWidget(guideBox);
+	addAction(invertAction);
 }
 
 void DkCropToolBar::setVisible(bool visible) {
@@ -770,8 +828,10 @@ void DkCropToolBar::setVisible(bool visible) {
 	else
 		emit colorSignal(bgCol);
 
-	if (visible)
+	if (visible) {
 		panAction->setChecked(false);
+		angleBox->setValue(0);
+	}
 
 	QToolBar::setVisible(visible);
 }
@@ -780,7 +840,6 @@ void DkCropToolBar::setAspectRatio(const QPointF& aRatio) {
 
 	horValBox->setValue(aRatio.x());
 	verValBox->setValue(aRatio.y());
-
 }
 
 void DkCropToolBar::on_cropAction_triggered() {
@@ -789,6 +848,10 @@ void DkCropToolBar::on_cropAction_triggered() {
 
 void DkCropToolBar::on_cancelAction_triggered() {
 	emit cancelSignal();
+}
+
+void DkCropToolBar::on_invertAction_toggled(bool checked) {
+	emit shadingHint(checked);
 }
 
 void DkCropToolBar::on_swapAction_triggered() {
@@ -853,6 +916,11 @@ void DkCropToolBar::on_ratioBox_currentIndexChanged(const QString& text) {
 		horValBox->setValue(vals[0].toDouble());
 		verValBox->setValue(vals[1].toDouble());
 	}
+}
+
+void DkCropToolBar::on_guideBox_currentIndexChanged(int idx) {
+
+	emit paintHint(idx);
 }
 
 void DkCropToolBar::on_verValBox_valueChanged(double val) {

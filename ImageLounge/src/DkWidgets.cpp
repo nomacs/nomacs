@@ -3201,6 +3201,8 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	rotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
 	
 	setAttribute(Qt::WA_MouseTracking);
+	paintMode = DkCropToolBar::no_guide;
+	invertShading = false;
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
 	pen.setCosmetic(true);
@@ -3342,6 +3344,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.setBrush(brush);
 	painter.drawPath(path);
 
+	drawGuide(&painter, p, paintMode);
+	
 	//// debug
 	//painter.drawPoint(rect.getCenter());
 
@@ -3375,6 +3379,61 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	}
  
 	painter.end();
+}
+
+void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintMode) {
+
+	if (p.isEmpty() || paintMode == DkCropToolBar::no_guide)
+		return;
+
+	QColor col = painter->pen().color();
+	col.setAlpha(150);
+	QPen pen = painter->pen();
+	QPen cPen = pen;
+	cPen.setColor(col);
+	painter->setPen(cPen);
+
+	// vertical
+	DkVector lp = p[1]-p[0];	// parallel to drawing
+	DkVector l9 = p[3]-p[0];	// perpendicular to drawing
+
+	int nLines = (paintMode == DkCropToolBar::rule_of_thirds) ? 3 : l9.norm()/20;
+	DkVector offset = l9;
+	offset.normalize();
+	offset *= l9.norm()/nLines;
+
+	DkVector offsetVec = offset;
+
+	for (int idx = 0; idx < (nLines-1); idx++) {
+
+		// step through & paint
+		QLineF l = QLineF(DkVector(p[1]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		painter->drawLine(l);
+		offsetVec += offset;
+	}
+
+	// horizontal
+	lp = p[3]-p[0];	// parallel to drawing
+	l9 = p[1]-p[0];	// perpendicular to drawing
+
+	nLines = (paintMode == DkCropToolBar::rule_of_thirds) ? 3 : l9.norm()/20;
+	offset = l9;
+	offset.normalize();
+	offset *= l9.norm()/nLines;
+
+	offsetVec = offset;
+
+	for (int idx = 0; idx < (nLines-1); idx++) {
+
+		// step through & paint
+		QLineF l = QLineF(DkVector(p[3]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		painter->drawLine(l);
+		offsetVec += offset;
+	}
+
+	painter->setPen(pen);	// revert painter
+	qDebug() << "drawing guide... nLines: " << nLines;
+
 }
 
 // make events callable
@@ -3573,6 +3632,26 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 	QWidget::keyPressEvent(event);
 }
 
+void DkEditableRect::setPaintHint(int paintMode /* = DkCropToolBar::no_guide */) {
+
+	qDebug() << "painting mode: " << paintMode;
+	this->paintMode = paintMode;
+	update();
+}
+
+void DkEditableRect::setShadingHint(bool invert) {
+
+	QColor col = brush.color();
+	col = QColor(255-col.red(), 255-col.green(), 255-col.blue(), col.alpha());
+	brush.setColor(col);
+
+	col = pen.color();
+	col = QColor(255-col.red(), 255-col.green(), 255-col.blue(), col.alpha());
+	pen.setColor(col);
+
+	update();
+}
+
 void DkEditableRect::setAngle(double angle, bool apply) {
 
 	DkVector c(rect.getCenter());
@@ -3589,8 +3668,8 @@ void DkEditableRect::setAngle(double angle, bool apply) {
 	if (apply)
 		applyTransform();
 	else {
-		update();
 		emit angleSignal(rect.getAngle()+angle);
+		update();
 	}
 
 }
@@ -3621,8 +3700,12 @@ DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Q
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
 	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
+	connect(cropToolbar, SIGNAL(paintHint(int)), this, SLOT(setPaintHint(int)));
+	connect(cropToolbar, SIGNAL(shadingHint(bool)), this, SLOT(setShadingHint(bool)));
 	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
 	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
+
+	cropToolbar->loadSettings();	// need to this manually after connecting the slots
 }
 
 void DkCropWidget::crop() {
