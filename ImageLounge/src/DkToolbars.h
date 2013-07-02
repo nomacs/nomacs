@@ -266,6 +266,7 @@ protected:
 	void createLayout();
 	void saveSettings();
 
+	QComboBox* ratioBox;
 	QComboBox* guideBox;
 	QAction* invertAction;
 	QDoubleSpinBox* horValBox;

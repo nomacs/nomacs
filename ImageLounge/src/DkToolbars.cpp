@@ -746,8 +746,9 @@ void DkCropToolBar::createLayout() {
 
 	QStringList ratios;
 	ratios << "1:1" << "4:3" << "5:4" << "14:10" << "14:11" << "16:9" << "16:10";
+	ratios.prepend(QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "User Defined"));
 	ratios.prepend(QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "No Aspect Ratio"));
-	QComboBox* ratioBox = new QComboBox(this);
+	ratioBox = new QComboBox(this);
 	ratioBox->addItems(ratios);
 	ratioBox->setObjectName("ratioBox");
 
@@ -902,7 +903,12 @@ void DkCropToolBar::on_bgColButton_clicked() {
 
 void DkCropToolBar::on_ratioBox_currentIndexChanged(const QString& text) {
 
-	if (!text.contains(":")) {
+	// user defined -> do nothing
+	if (ratioBox->currentIndex() == 1)
+		return;	
+
+	// no aspect ratio -> clear boxes
+	if (ratioBox->currentIndex() == 0) {
 		horValBox->setValue(0);
 		verValBox->setValue(0);
 		return;
@@ -933,6 +939,17 @@ void DkCropToolBar::on_horValBox_valueChanged(double val) {
 
 	DkVector diag = DkVector(horValBox->value(), verValBox->value());
 	emit aspectRatio(diag);
+
+	QString rs = QString::number(horValBox->value()) + ":" + QString::number(verValBox->value());
+
+	int idx = ratioBox->findText(rs);
+
+	if (idx != -1)
+		ratioBox->setCurrentIndex(idx);
+	else if (horValBox->value() == 0 && verValBox->value() == 0)
+		ratioBox->setCurrentIndex(0);
+	else
+		ratioBox->setCurrentIndex(1);	
 
 }
 
