@@ -168,6 +168,7 @@ void DkNoMacs::init() {
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
 	connect(viewport(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
@@ -176,7 +177,7 @@ void DkNoMacs::init() {
 	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
-	connect(viewport()->getController()->corpWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 
 }
 
@@ -3075,7 +3076,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 	vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 	vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
-	vp->getController()->corpWidget()->registerAction(editActions[menu_edit_crop]);
+	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 	DkSettings::App::appMode = 0;
@@ -3283,7 +3284,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
-		vp->getController()->corpWidget()->registerAction(editActions[menu_edit_crop]);
+		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 
 		initLanClient();

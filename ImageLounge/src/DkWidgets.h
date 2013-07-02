@@ -1313,6 +1313,7 @@ signals:
 	void enterPressedSignal(DkRotatingRect cropArea, const QColor& bgCol = QColor(0,0,0,0));
 	void angleSignal(double angle);
 	void aRatioSignal(const QPointF& aRatio);
+	void statusInfoSignal(QString msg);
 
 public slots:
 	void updateCorner(int idx, QPointF point, bool isShiftDown, bool changeState = false);
@@ -1322,11 +1323,13 @@ public slots:
 	void setPanning(bool panning);
 	void setPaintHint(int paintMode = DkCropToolBar::no_guide);
 	void setShadingHint(bool invert);
+	void setShowInfo(bool showInfo);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
+	void wheelEvent(QWheelEvent* event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	QPointF clipToImage(const QPointF& pos);
@@ -1357,7 +1360,7 @@ protected:
 	QRectF* imgRect;
 	bool panning;
 	int paintMode;
-	bool invertShading;
+	bool showInfo;
 };
 
 class DkCropWidget : public DkEditableRect {

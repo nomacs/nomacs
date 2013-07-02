@@ -228,7 +228,7 @@ public:
 		return rating;
 	}
 
-	DkCropWidget* corpWidget() {
+	DkCropWidget* getCropWidget() {
 		return cropWidget;
 	}
 

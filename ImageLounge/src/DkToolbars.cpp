@@ -709,6 +709,7 @@ void DkCropToolBar::loadSettings() {
 	verValBox->setValue(settings.value("AspectRatioVertical", 0).toInt());
 	guideBox->setCurrentIndex(settings.value("guides", 0).toInt());
 	invertAction->setChecked(settings.value("inverted", false).toBool());
+	infoAction->setChecked(settings.value("info", true).toBool());
 }
 
 void DkCropToolBar::saveSettings() {
@@ -720,6 +721,7 @@ void DkCropToolBar::saveSettings() {
 	settings.setValue("AspectRatioVertical", verValBox->value());
 	settings.setValue("guides", guideBox->currentIndex());
 	settings.setValue("inverted", invertAction->isChecked());
+	settings.setValue("info", infoAction->isChecked());
 }
 
 void DkCropToolBar::createIcons() {
@@ -733,6 +735,7 @@ void DkCropToolBar::createIcons() {
 	icons[pan_icon].addPixmap(QPixmap(":/nomacs/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 	icons[invert_icon] = QIcon(":/nomacs/img/crop-invert.png");
 	icons[invert_icon].addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.png"), QIcon::Normal, QIcon::On);
+	icons[info_icon] = QIcon(":/nomacs/img/info.png");
 
 	if (!DkSettings::Display::defaultIconColor) {
 		// now colorize all icons
@@ -823,6 +826,11 @@ void DkCropToolBar::createLayout() {
 	invertAction->setCheckable(true);
 	invertAction->setChecked(false);
 
+	infoAction = new QAction(icons[info_icon], tr("Show Info"), this);
+	infoAction->setObjectName("infoAction");
+	infoAction->setCheckable(true);
+	infoAction->setChecked(false);
+
 	addAction(cropAction);
 	addAction(panAction);
 	addAction(cancelAction);
@@ -837,6 +845,7 @@ void DkCropToolBar::createLayout() {
 	addSeparator();
 	addWidget(guideBox);
 	addAction(invertAction);
+	addAction(infoAction);
 }
 
 void DkCropToolBar::setVisible(bool visible) {
@@ -870,6 +879,10 @@ void DkCropToolBar::on_cancelAction_triggered() {
 
 void DkCropToolBar::on_invertAction_toggled(bool checked) {
 	emit shadingHint(checked);
+}
+
+void DkCropToolBar::on_infoAction_toggled(bool checked) {
+	emit showInfo(checked);
 }
 
 void DkCropToolBar::on_swapAction_triggered() {

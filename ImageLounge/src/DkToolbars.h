@@ -232,6 +232,7 @@ public:
 		pan_icon,
 		cancel_icon,
 		invert_icon,
+		info_icon,
 
 		icons_end,
 
@@ -259,6 +260,7 @@ public slots:
 	void on_bgColButton_clicked();
 	void on_panAction_toggled(bool checked);
 	void on_invertAction_toggled(bool checked);
+	void on_infoAction_toggled(bool checked);
 	void angleChanged(double val);
 	virtual void setVisible(bool visible);
 
@@ -271,6 +273,7 @@ signals:
 	void colorSignal(const QBrush& brush);
 	void paintHint(int paintMode);
 	void shadingHint(bool invert);
+	void showInfo(bool show);
 
 protected:
 	void createLayout();
@@ -287,6 +290,7 @@ protected:
 	QColorDialog* colorDialog;
 	QColor bgCol;
 	QAction* panAction;
+	QAction* infoAction;
 
 	QVector<QIcon> icons;		// needed for colorizing
 };

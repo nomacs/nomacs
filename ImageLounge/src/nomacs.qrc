@@ -53,5 +53,6 @@
         <file>img/pan_checked.png</file>
         <file>img/crop-invert.png</file>
         <file>img/crop-invert-checked.png</file>
+        <file>img/info.png</file>
     </qresource>
 </RCC>

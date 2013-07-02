@@ -3207,7 +3207,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	
 	setAttribute(Qt::WA_MouseTracking);
 	paintMode = DkCropToolBar::no_guide;
-	invertShading = false;
+	showInfo = false;
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
 	pen.setCosmetic(true);
@@ -3386,6 +3386,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	}
  
 	painter.end();
+
+	QWidget::paintEvent(event);
 }
 
 void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintMode) {
@@ -3467,11 +3469,6 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 		state = rotating;
 	}
 
-	//// we should not need to do this?!
-	//setFocus(Qt::ActiveWindowFocusReason);
-
-
-	//QWidget::mousePressEvent(event);
 }
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
@@ -3487,12 +3484,9 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
+		update();
 		return;
 	}
-
-	//// why do we need to do this?
-	//if (!hasFocus())
-	//	setFocus(Qt::ActiveWindowFocusReason);
 
 	QPointF posM = map(event->posF());
 	
@@ -3510,8 +3504,6 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	double angle = 0;
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
-
-		qDebug() << "pg: " << posGrab;
 
 		QPointF clipPos = clipToImage(event->posF());
 
@@ -3577,13 +3569,19 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		while (sAngle < -90)
 			sAngle += 180;
 
-		QToolTip::showText(event->globalPos(),
-			//  In most scenarios you will have to change these for
-			//  the coordinate system you are working in.
-			QString::number( qRound(DkVector(p[1]-p[0]).norm()) ) + " x " +
-			QString::number( qRound(DkVector(p[3]-p[0]).norm()) ) + " px\n" +
-			QString::number( qRound(sAngle*100)/100.0f) + "°",
-			this);
+		sAngle = qRound(sAngle*100)/100.0f;
+		int width = qRound(DkVector(p[1]-p[0]).norm());
+		int height = qRound(DkVector(p[3]-p[0]).norm());
+
+		if (showInfo) {
+			QToolTip::showText(event->globalPos(),
+				QString::number(width) + " x " +
+				QString::number(height) + " px\n" +
+				QString::number(sAngle) + "°",
+				this);
+		}
+
+		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + "°");
 	}
 
 	//QWidget::mouseMoveEvent(event);
@@ -3605,6 +3603,12 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
 	applyTransform();
 	//QWidget::mouseReleaseEvent(event);
+}
+
+void DkEditableRect::wheelEvent(QWheelEvent* event) {
+
+	QWidget::wheelEvent(event);
+	update();	// this is an extra update - however we get rendering errors otherwise?!
 }
 
 void DkEditableRect::applyTransform() {
@@ -3681,6 +3685,10 @@ void DkEditableRect::setShadingHint(bool invert) {
 	update();
 }
 
+void DkEditableRect::setShowInfo(bool showInfo) {
+	this->showInfo = showInfo;
+}
+
 void DkEditableRect::setAngle(double angle, bool apply) {
 
 	DkVector c(rect.getCenter());
@@ -3731,6 +3739,7 @@ DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Q
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(cropToolbar, SIGNAL(paintHint(int)), this, SLOT(setPaintHint(int)));
 	connect(cropToolbar, SIGNAL(shadingHint(bool)), this, SLOT(setShadingHint(bool)));
+	connect(cropToolbar, SIGNAL(showInfo(bool)), this, SLOT(setShowInfo(bool)));
 	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
 	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
 

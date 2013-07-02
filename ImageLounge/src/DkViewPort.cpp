@@ -1363,9 +1363,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	controller->show();
 
 	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
-	controller->corpWidget()->setWorldTransform(&worldMatrix);
-	controller->corpWidget()->setImageTransform(&imgMatrix);
-	controller->corpWidget()->setImageRect(&imgViewRect);
+	controller->getCropWidget()->setWorldTransform(&worldMatrix);
+	controller->getCropWidget()->setImageTransform(&imgMatrix);
+	controller->getCropWidget()->setImageRect(&imgViewRect);
 
 	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
@@ -2084,7 +2084,7 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	msg = msg % " | <font color=#555555>" % col.name().toUpper() % "</font>";
 
-	emit statusInfoSignal(msg, status_pixel_info);
+		emit statusInfoSignal(msg, status_pixel_info);
 
 }
 
