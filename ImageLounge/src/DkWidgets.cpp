@@ -3715,7 +3715,6 @@ void DkCropWidget::crop() {
 
 	setVisible(false);
 	setWindowOpacity(0);
-
 }
 
 void DkCropWidget::setVisible(bool visible) {
