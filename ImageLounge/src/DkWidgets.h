@@ -55,6 +55,7 @@
 #include <QDockWidget>
 #include <QTreeView>
 #include <QSortFilterProxyModel>
+#include <QToolTip>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -1255,7 +1256,7 @@ public:
 	};
 
 signals:
-	void ctrlMovedSignal(int, QPointF, bool);
+	void ctrlMovedSignal(int, QPointF, bool, bool);
 	void updateDiagonal(int);
 
 protected:
@@ -1314,7 +1315,7 @@ signals:
 	void aRatioSignal(const QPointF& aRatio);
 
 public slots:
-	void updateCorner(int idx, QPointF point, bool isShiftDown);
+	void updateCorner(int idx, QPointF point, bool isShiftDown, bool changeState = false);
 	void updateDiagonal(int idx);
 	void setFixedDiagonal(const DkVector& diag);
 	void setAngle(double angle, bool apply = true);

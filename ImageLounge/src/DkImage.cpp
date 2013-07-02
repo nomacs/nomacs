@@ -743,7 +743,7 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 bool DkBasicLoader::setPageIdx(int skipIdx) {
 
 	// do nothing if we don't have tiff pages
-	if (numPages < 2)
+	if (numPages <= 1)
 		return false;
 
 	pageIdxDirty = false;

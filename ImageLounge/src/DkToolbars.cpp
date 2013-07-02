@@ -666,6 +666,7 @@ void DkColorSlider::mouseDoubleClickEvent(QMouseEvent *event) {
 // DkCropToolbar --------------------------------------------------------------------
 DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
 
+	createIcons();
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
@@ -681,14 +682,14 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 
 		setStyleSheet(
 			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
 			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
 			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
 			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
 			);
 	}
 	else
-		setStyleSheet("QToolBar{spacing: 3px; padding: 3px}");
+		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
 
 	//loadSettings();
 
@@ -721,24 +722,43 @@ void DkCropToolBar::saveSettings() {
 	settings.setValue("inverted", invertAction->isChecked());
 }
 
+void DkCropToolBar::createIcons() {
+
+	// create icons
+	icons.resize(icons_end);
+
+	icons[crop_icon] = QIcon(":/nomacs/img/crop.png");
+	icons[cancel_icon] = QIcon(":/nomacs/img/cancel.png");
+	icons[pan_icon] = 	QIcon(":/nomacs/img/pan.png");
+	icons[pan_icon].addPixmap(QPixmap(":/nomacs/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+	icons[invert_icon] = QIcon(":/nomacs/img/crop-invert.png");
+	icons[invert_icon].addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.png"), QIcon::Normal, QIcon::On);
+
+	if (!DkSettings::Display::defaultIconColor) {
+		// now colorize all icons
+		for (int idx = 0; idx < icons.size(); idx++) {
+
+			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::Display::iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::Display::iconColor), QIcon::Normal, QIcon::Off);
+		}
+	}
+}
+
 void DkCropToolBar::createLayout() {
 
 	QList<QKeySequence> enterSc;
 	enterSc.append(QKeySequence(Qt::Key_Enter));
 	enterSc.append(QKeySequence(Qt::Key_Return));
 
-	QAction* cropAction = new QAction(QIcon(":/nomacs/img/crop.png"), tr("Crop (ENTER)"), this);
+	QAction* cropAction = new QAction(icons[crop_icon], tr("Crop (ENTER)"), this);
 	cropAction->setShortcuts(enterSc);
 	cropAction->setObjectName("cropAction");
 
-	QAction* cancelAction = new QAction(QIcon(":/nomacs/img/cancel.png"), tr("Cancel (ESC)"), this);
+	QAction* cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
 	cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
 	cancelAction->setObjectName("cancelAction");
 
-	QIcon panIcon(":/nomacs/img/pan.png");
-	panIcon.addPixmap(QPixmap(":/nomacs/img/pan_checked.png"), QIcon::Normal, QIcon::On);
-
-	panAction = new QAction(panIcon, tr("Pan"), this);
+	panAction = new QAction(icons[pan_icon], tr("Pan"), this);
 	panAction->setShortcut(QKeySequence(Qt::Key_P));
 	panAction->setObjectName("panAction");
 	panAction->setCheckable(true);
@@ -798,10 +818,7 @@ void DkCropToolBar::createLayout() {
 	guideBox->setToolTip(tr("Show Guides in the Preview"));
 	guideBox->setStatusTip(guideBox->toolTip());
 
-	QIcon invertIcon(":/nomacs/img/crop-invert.png");
-	invertIcon.addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.png"), QIcon::Normal, QIcon::On);
-
-	invertAction = new QAction(invertIcon, tr("Invert Crop Tool Color"), this);
+	invertAction = new QAction(icons[invert_icon], tr("Invert Crop Tool Color"), this);
 	invertAction->setObjectName(tr("invertAction"));
 	invertAction->setCheckable(true);
 	invertAction->setChecked(false);

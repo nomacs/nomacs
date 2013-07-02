@@ -227,6 +227,16 @@ public:
 		mode_end,
 	};
 
+	enum {
+		crop_icon = 0,
+		pan_icon,
+		cancel_icon,
+		invert_icon,
+
+		icons_end,
+
+	};
+
 	DkCropToolBar(const QString & title, QWidget * parent = 0);
 	virtual ~DkCropToolBar();
 
@@ -264,6 +274,7 @@ signals:
 
 protected:
 	void createLayout();
+	void createIcons();
 	void saveSettings();
 
 	QComboBox* ratioBox;
@@ -276,6 +287,8 @@ protected:
 	QColorDialog* colorDialog;
 	QColor bgCol;
 	QAction* panAction;
+
+	QVector<QIcon> icons;		// needed for colorizing
 };
 
 

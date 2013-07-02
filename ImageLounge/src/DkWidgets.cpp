@@ -3171,6 +3171,7 @@ void DkTransformRect::mousePressEvent(QMouseEvent *event) {
 		emit updateDiagonal(parentIdx);
 	}
 	qDebug() << "mouse pressed control point";
+	QWidget::mousePressEvent(event);
 }
 
 void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
@@ -3178,12 +3179,16 @@ void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton) {
 		
 		QPointF pt = initialPos+event->globalPos()-posGrab;
-		emit ctrlMovedSignal(parentIdx, pt, event->modifiers() == Qt::ShiftModifier);
+		emit ctrlMovedSignal(parentIdx, pt, event->modifiers() == Qt::ShiftModifier, true);
+		qDebug() << "accepted false...";
 	}
+
+	QWidget::mouseMoveEvent(event);
 }
 
 void DkTransformRect::mouseReleaseEvent(QMouseEvent *event) {
 
+	QWidget::mouseReleaseEvent(event);
 }
 
 void DkTransformRect::enterEvent(QEvent *event) {
@@ -3220,7 +3225,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	for (int idx = 0; idx < 8; idx++) {
 		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
 		ctrlPoints[idx]->hide();
-		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, bool)), this, SLOT(updateCorner(int, QPointF, bool)));
+		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, bool, bool)), this, SLOT(updateCorner(int, QPointF, bool, bool)));
 		connect(ctrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
 	}
 	
@@ -3304,7 +3309,10 @@ void DkEditableRect::setPanning(bool panning) {
 	qDebug() << "panning set...";
 }
 
-void DkEditableRect::updateCorner(int idx, QPointF point, bool isShiftDown) {
+void DkEditableRect::updateCorner(int idx, QPointF point, bool isShiftDown, bool changeState) {
+
+	if (changeState)
+		state = scaling;
 
 	DkVector diag = (isShiftDown || fixedDiag.x != 0 && fixedDiag.y != 0) ? oldDiag : DkVector();
 
@@ -3334,7 +3342,6 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 		if (imgTform) p = imgTform->map(p);
 		if (worldTform) p = worldTform->map(p);
 		path.addPolygon(p);
-		qDebug() << "drawing rect";
 	}
 
 	// now draw
@@ -3432,7 +3439,6 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 	}
 
 	painter->setPen(pen);	// revert painter
-	qDebug() << "drawing guide... nLines: " << nLines;
 
 }
 
@@ -3499,7 +3505,10 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	}
 	else if (rect.isEmpty())
 		setCursor(Qt::CrossCursor);
-	
+
+	// additionally needed for showToolTip
+	double angle = 0;
+
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
 		qDebug() << "pg: " << posGrab;
@@ -3545,7 +3554,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		// compute the direction vector;
 		xt = c-xt;
 		xn = c-xn;
-		double angle = xn.angle() - xt.angle();
+		angle = xn.angle() - xt.angle();
 
 
 		// just rotate in CV_PI*0.25 steps if shift is pressed
@@ -3555,6 +3564,26 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		}
 					
 		setAngle(angle, false);
+	}
+
+	if (event->buttons() == Qt::LeftButton && state != moving) {
+
+		QPolygonF p = rect.getPoly();
+
+		double sAngle = (rect.getAngle()+angle)*DK_RAD2DEG;
+
+		while (sAngle > 90)
+			sAngle -= 180;
+		while (sAngle < -90)
+			sAngle += 180;
+
+		QToolTip::showText(event->globalPos(),
+			//  In most scenarios you will have to change these for
+			//  the coordinate system you are working in.
+			QString::number( qRound(DkVector(p[1]-p[0]).norm()) ) + " x " +
+			QString::number( qRound(DkVector(p[3]-p[0]).norm()) ) + " px\n" +
+			QString::number( qRound(sAngle*100)/100.0f) + "°",
+			this);
 	}
 
 	//QWidget::mouseMoveEvent(event);
