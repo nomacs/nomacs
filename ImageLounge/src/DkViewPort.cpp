@@ -1533,7 +1533,6 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 void DkBaseViewPort::setBackgroundBrush(const QBrush &brush) {
 
-	qDebug() << "changing background brush...";
 	QGraphicsView::setBackgroundBrush(brush);
 }
 

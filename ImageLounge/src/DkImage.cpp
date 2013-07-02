@@ -28,10 +28,6 @@
 #include "DkImage.h"
 #include "DkNoMacs.h"
 
-//extern "C" {
-//#include "tiffio.h"
-//}
-
 namespace nmc {
 
 #ifdef WIN32
@@ -745,6 +741,10 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 }
 
 bool DkBasicLoader::setPageIdx(int skipIdx) {
+
+	// do nothing if we don't have tiff pages
+	if (numPages < 2)
+		return false;
 
 	pageIdxDirty = false;
 
