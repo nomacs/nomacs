@@ -1485,47 +1485,63 @@ void DkRemoteControlWidget::init() {
 	QStringList clients = DkSettings::Sync::recentSyncNames;
 	clients << DkSettings::Sync::syncWhiteList;
 	clients.removeDuplicates();
-	clients.sort();
 
-	int cols = 2;
-	int wlIndex = 0;
-	int lsIndex = 0;
-	checkBoxes = QList<QCheckBox*>();
+	
 	for(int i = 0; i < clients.size();i++) {
-		QCheckBox* clientCB = new QCheckBox(clients[i], this);
-		clientCB->setObjectName(clients[i]);		
-		clientCB->setToolTip(DkSettings::Sync::recentLastSeen.value(clients[i],"").toDateTime().toString(Qt::SystemLocaleDate));
-		if(DkSettings::Sync::syncWhiteList.contains(clients[i])) {
-			whiteListGrid->addWidget(clientCB, int(wlIndex/cols), wlIndex%cols);
-			clientCB->setChecked(true);
-			wlIndex++;
-		} else {
-			lastSeenGrid->addWidget(clientCB, int(lsIndex/cols), lsIndex%cols);
-			clientCB->setChecked(false);
-			lsIndex++;
-		}
-		checkBoxes.push_back(clientCB);
+		QStandardItem* checkItem = new QStandardItem("");
+		checkItem->setCheckable(true);
+		checkItem->setEditable(false);
+		if(DkSettings::Sync::syncWhiteList.contains(clients[i]))
+			checkItem->setCheckState(Qt::Checked);
+		else
+			checkItem->setCheckState(Qt::Unchecked);
+		model->setItem(i, 0, checkItem);
+		
+		QStandardItem* nameItem = new QStandardItem(clients[i]);
+		nameItem->setEditable(false);
+		model->setItem(i, 1, nameItem);
+
+		QStandardItem* lastSeenItem = new QStandardItem(DkSettings::Sync::recentLastSeen.value(clients[i],"").toDateTime().toString(Qt::SystemLocaleDate));
+		lastSeenItem->setEditable(false);
+		model->setItem(i, 2, lastSeenItem);
 	}
+	//table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+	table->resizeColumnsToContents();
+	table->resizeRowsToContents();
 }
 
 void DkRemoteControlWidget::createLayout() {
 	QVBoxLayout* vbox = new QVBoxLayout(this);
-	QGroupBox* whiteListGB = new QGroupBox(tr("These computers can automatically connect and control nomacs:"), this);
+	QGroupBox* whiteListGB = new QGroupBox(tr("insert correct text here!:"), this);
 	whiteListGrid = new QGridLayout(whiteListGB);
 
-	QGroupBox* lastSeenGB = new QGroupBox(tr("Computers recently seen:"), this);
-	lastSeenGrid = new QGridLayout(lastSeenGB);
+	table = new QTableView(this);
+	table->setSortingEnabled(true);
+	table->verticalHeader()->setVisible(false);
+	//table->setGridStyle(Qt::NoPen);
+	table->setShowGrid(false);
+	//QHeaderView* headerView = new QHeaderView(Qt::Horizontal);
+	//headerView->setResizeMode(QHeaderView::ResizeToContents);
 
+	model = new QStandardItemModel();
+	model->setHorizontalHeaderItem(0, new QStandardItem(""));
+	model->setHorizontalHeaderItem(1, new QStandardItem(tr("Name")));
+	model->setHorizontalHeaderItem(2, new QStandardItem(tr("Last Seen")));
+	//model->setHeaderData(0, Qt::Horizontal, QString("name"));
+	//model->setHeaderData(1, Qt::Horizontal, QString("last seen") );
+	table->setModel(model);
+
+
+	whiteListGrid->addWidget(table);
 	vbox->addWidget(whiteListGB);
-	vbox->addWidget(lastSeenGB);
 	vbox->addStretch();
 }
 
 void DkRemoteControlWidget::writeSettings() {
 	DkSettings::Sync::syncWhiteList = QStringList();
-	for (int i = 0; i < checkBoxes.size(); i++) {
-		if (checkBoxes[i]->isChecked())
-			DkSettings::Sync::syncWhiteList << checkBoxes[i]->objectName();
+	for (int i=0; i<model->rowCount(); i++) {
+		if(model->item(i,0)->checkState() ==  Qt::Checked)
+			DkSettings::Sync::syncWhiteList << model->item(i,1)->text();
 	}
 }
 

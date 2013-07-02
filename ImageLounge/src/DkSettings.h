@@ -55,6 +55,9 @@
 #include <QTranslator>
 #include <QComboBox>
 
+#include <QTableView>
+#include <QStandardItemModel>
+#include <QStandardItem>
 
 #include "BorderLayout.h"
 
@@ -618,9 +621,9 @@ class DkRemoteControlWidget: public DkSettingsWidget {
 		void createLayout();
 
 		QGridLayout* whiteListGrid;
-		QGridLayout* lastSeenGrid;
 
-		QList<QCheckBox*> checkBoxes;
+		QTableView* table;
+		QStandardItemModel* model;
 };
 
 
