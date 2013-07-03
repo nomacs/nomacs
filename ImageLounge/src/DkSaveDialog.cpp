@@ -242,7 +242,7 @@ void DkCompressDialog::drawPreview() {
 
 	if (dialogMode == jpg_dialog || dialogMode == j2k_dialog && hasAlpha)
 		newImg.fill(bgCol.rgb());
-
+	 
 	QPainter bgPainter(&newImg);
 	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());
 	bgPainter.end();
