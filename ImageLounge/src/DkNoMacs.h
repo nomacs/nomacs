@@ -80,6 +80,7 @@ using namespace cv;
 #include "DkImage.h"
 #include "DkWidgets.h"
 #include "DkDialog.h"
+#include "DkSaveDialog.h"
 #include "DkSettings.h"
 #include "DkMenu.h"
 #include "DkToolbars.h"

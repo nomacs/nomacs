@@ -1503,6 +1503,11 @@ public:
 		return slider->value();
 	};
 
+	void setFocus(Qt::FocusReason reason) {
+		sliderBox->setFocus(reason);
+	};
+
+
 public slots:
 	void setValue(int value) {
 		
