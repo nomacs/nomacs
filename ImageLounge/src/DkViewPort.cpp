@@ -1228,7 +1228,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
-	if (event->modifiers() == ctrlMod) {
+	if (event->modifiers() == ctrlMod || (event->orientation() == Qt::Horizontal && event->modifiers() != altMod)) {
 
 		if (event->delta() < 0)
 			loadNextFileFast();

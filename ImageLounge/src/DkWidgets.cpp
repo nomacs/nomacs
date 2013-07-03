@@ -758,11 +758,12 @@ void DkFilePreview::setVisible(bool visible) {
 
 	DkWidget::setVisible(visible);
 
-	//if (visible)
-	//	indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
-
 	if (visible)
-		QtConcurrent::run(this, &DkFilePreview::indexDir, DkThumbsLoader::not_forced);
+		indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
+
+	// // would be nice - but with the current design we get crashes...
+	//if (visible)
+	//	QtConcurrent::run(this, &DkFilePreview::indexDir, DkThumbsLoader::not_forced);
 
 }
 

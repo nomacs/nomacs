@@ -1729,6 +1729,7 @@ void DkImageLoader::load(QFileInfo file, bool silent, int cacheState) {
 	// is it save to lock the mutex before setting up the thread??
 	/*QMutexLocker locker(&mutex);*/
 	
+	// TODO: use QtConcurrent here...
 	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(bool, silent), Q_ARG(int, cacheState));
 }
 
