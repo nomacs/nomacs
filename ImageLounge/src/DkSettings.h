@@ -172,6 +172,8 @@ class DkSettings : public QObject {
 		};
 		struct MetaData {
 			static QBitArray metaDataBits;
+			static bool ignoreExifOrientation;
+			static bool saveExifOrientation;
 
 			//static bool exifSize;
 			//static bool exifOrientation;
@@ -544,6 +546,8 @@ class DkMetaDataSettingsWidget : public DkSettingsWidget {
 		void init();
 		void createLayout();
 
+		QCheckBox* cbIgnoreOrientation;
+		QCheckBox* cbSaveOrientation;
 
 		//Checkboxes
 		QVector<QCheckBox *> pCbMetaData;

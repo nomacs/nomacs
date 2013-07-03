@@ -1857,7 +1857,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		//QStringList keys = imgMetaData.getExifKeys();
 		//qDebug() << keys;
 
-		if (!imgMetaData.isTiff() && !imgRotated)
+		if (!imgMetaData.isTiff() && !imgRotated && !DkSettings::MetaData::ignoreExifOrientation)
 			basicLoader.rotate(orientation);
 		
 		if (cacher && cacheState != cache_disable_update) 
@@ -2315,9 +2315,13 @@ void DkImageLoader::rotateImage(double angle) {
 		QCoreApplication::sendPostedEvents();	// update immediately as we interlock otherwise
 
 		mutex.lock();
-		if (file.exists()) {
+		if (file.exists() && DkSettings::MetaData::saveExifOrientation) {
 			imgMetaData.saveOrientation((int)angle);
 			qDebug() << "exif data saved (rotation)?";
+		}
+		else if (!DkSettings::MetaData::saveExifOrientation) {
+			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
+			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
 		}
 		mutex.unlock();
 
