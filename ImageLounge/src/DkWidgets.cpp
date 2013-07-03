@@ -754,6 +754,18 @@ void DkFilePreview::indexDir(int force) {
 
 }
 
+void DkFilePreview::setVisible(bool visible) {
+
+	DkWidget::setVisible(visible);
+
+	//if (visible)
+	//	indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
+
+	if (visible)
+		QtConcurrent::run(this, &DkFilePreview::indexDir, DkThumbsLoader::not_forced);
+
+}
+
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
 
@@ -822,7 +834,7 @@ void DkFolderScrollBar::indexDir(int force) {
 					qDebug() << "force state: " << force;
 
 					if (colorLoader) {
-						colorLoader->stop();	// TODO: can't be stopped by now
+						colorLoader->stop();
 						colorLoader->wait();
 						delete colorLoader;
 						colorLoader = 0;

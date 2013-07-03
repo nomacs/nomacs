@@ -56,6 +56,7 @@
 #include <QTreeView>
 #include <QSortFilterProxyModel>
 #include <QToolTip>
+#include <QtConcurrentRun>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -561,13 +562,7 @@ public:
 		return moveImageTimer;
 	};
 
-	void setVisible(bool visible) {
-
-		DkWidget::setVisible(visible);
-
-		if (visible)
-			indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
-	}
+	void setVisible(bool visible);
 
 public slots:
 	void paintEvent(QPaintEvent *event);
@@ -1203,8 +1198,6 @@ public:
 			size.setX(size.y());
 			size.setY(x);
 		}
-
-		//TODO: fix bug #132
 
 		// invariance -> user does not want to make a difference between an upside down rect
 		if (angle > CV_PI*0.25 && angle < CV_PI*0.75) {
