@@ -58,6 +58,8 @@
 #include <QTableView>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QAbstractTableModel>
+#include <QStyledItemDelegate>
 
 #include "BorderLayout.h"
 
@@ -74,6 +76,8 @@ class DkRemoteControlWidget;
 class DkSettingsListView;
 class DkSpinBoxWidget;
 class DkDoubleSpinBoxWidget;
+class DkWhiteListViewModel;
+
 
 class DkSettings : public QObject {
 	Q_OBJECT
@@ -608,6 +612,50 @@ public:
 		double totalMemory;
 };
 
+class DkCheckBoxDelegate : public QStyledItemDelegate {
+	Q_OBJECT
+	public:
+		DkCheckBoxDelegate(QObject* parent = 0) : QStyledItemDelegate(parent) {};
+
+
+		QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+		void setEditorData(QWidget *editor, const QModelIndex &index) const;
+		void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+
+		void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+	private slots:
+		void cbChanged(int);
+	
+};
+
+class DkWhiteListViewModel : public QAbstractTableModel {
+	Q_OBJECT
+	public:
+		DkWhiteListViewModel(QObject* parent=0);
+
+		virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+		bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+		virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
+		virtual int columnCount(const QModelIndex& parent = QModelIndex()) const { return 3;};
+		virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+		bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
+
+		void addWhiteListEntry(bool checked, QString name, QDateTime lastSeen);
+		Qt::ItemFlags flags(const QModelIndex& index) const;
+
+		QVector<bool> getCheckedVector() {return checked;};
+		QVector<QString> getNamesVector() {return names;};
+
+	private:
+		QVector<bool> checked;
+		QVector<QString> names;
+		QVector<QDateTime> lastSeen;
+};
+
+
 class DkRemoteControlWidget: public DkSettingsWidget {
 		Q_OBJECT
 
@@ -623,7 +671,8 @@ class DkRemoteControlWidget: public DkSettingsWidget {
 		QGridLayout* whiteListGrid;
 
 		QTableView* table;
-		QStandardItemModel* model;
+		DkWhiteListViewModel* whiteListModel;
+		
 };
 
 
@@ -674,5 +723,6 @@ private:
 	QHBoxLayout* hboxLowerLayout;
 	QSize optimalSize;
 };
+
 
 };

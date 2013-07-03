@@ -1482,4 +1482,7 @@ protected:
 	QSpinBox* sliderBox;
 };
 
+
+
+
 };
