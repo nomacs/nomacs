@@ -429,6 +429,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
 	fileMenu->addAction(fileActions[menu_file_open_with]);
 	fileMenu->addAction(fileActions[menu_file_save]);
+	fileMenu->addAction(fileActions[menu_file_save_as]);
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
@@ -628,6 +629,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
 	fileActions[menu_file_save]->setStatusTip(tr("Save an image"));
 	connect(fileActions[menu_file_save], SIGNAL(triggered()), this, SLOT(saveFile()));
+
+	fileActions[menu_file_save_as] = new QAction(tr("&Save As"), this);
+	fileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
+	fileActions[menu_file_save_as]->setStatusTip(tr("Save an image as"));
+	connect(fileActions[menu_file_save_as], SIGNAL(triggered()), this, SLOT(saveFileAs()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
@@ -1061,6 +1067,7 @@ void DkNoMacs::createShortcuts() {
 void DkNoMacs::enableNoImageActions(bool enable) {
 
 	fileActions[menu_file_save]->setEnabled(enable);
+	fileActions[menu_file_save_as]->setEnabled(enable);
 	fileActions[menu_file_rename]->setEnabled(enable);
 	fileActions[menu_file_open_with]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
@@ -1238,6 +1245,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			&& !viewport()->getImage().isNull()
 			&& viewport()->getImageLoader()) {
 
+			// TODO: check if we do it correct (network locations that are not mounted)
 			QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 			QList<QUrl> urls;
@@ -1346,6 +1354,9 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 	if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
 		url = url.toLocalFile();
+		
+		// TODO: check if we accept appropriately (network drives that are not mounted)
+		qDebug() << url;
 		QFileInfo file = QFileInfo(url.toString());
 
 		// just accept image files
@@ -1981,6 +1992,11 @@ void DkNoMacs::trainFormat() {
 }
 
 void DkNoMacs::saveFile() {
+
+	saveFileAs(true);
+}
+
+void DkNoMacs::saveFileAs(bool silent) {
 	
 	qDebug() << "saving...";
 
@@ -2020,11 +2036,19 @@ void DkNoMacs::saveFile() {
 			saveName.remove("." + saveFile.suffix());
 	}
 
-	// note: basename removes the whole file name from the first dot...
-	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+	QString fileName;
 
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
-		savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
+	// don't ask the user if save was hit & the file format is supported for saving
+	if (silent && !selectedFilter.isEmpty())
+		fileName = loader->getFile().absoluteFilePath();
+	else {
+		// note: basename removes the whole file name from the first dot...
+		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+
+		fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
+			savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
+	}
+
 
 	//qDebug() << "selected Filter: " << selectedFilter;
 

@@ -105,6 +105,7 @@ enum {
 	shortcut_open_preview	= Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
+	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
 	shortcut_first_file		= Qt::Key_Home, 
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
@@ -192,6 +193,7 @@ enum fileActions {
 	menu_file_open_dir,
 	menu_file_open_with,
 	menu_file_save,
+	menu_file_save_as,
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
@@ -444,6 +446,7 @@ public slots:
 	void find(bool filterAction = true);
 	void updateFilterState(QStringList filters);
 	void saveFile();
+	void saveFileAs(bool silent = false);
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
