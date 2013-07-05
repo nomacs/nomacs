@@ -214,7 +214,7 @@ class DkLANClientManager : public DkClientManager {
 		
 
 		
-		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
+		virtual void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		virtual void connectionStopSynchronized(DkConnection* connection);
 		void connectionSentNewTitle(DkConnection* connection, QString newTitle);
 		void connectionReceivedTransformation(DkConnection* connection, QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -243,6 +243,7 @@ class DkRemoteControlClientManager : public DkLANClientManager {
 		void connectConnection(DkConnection* connection);
 
 	private slots:
+		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		void connectionReceivedPermission(DkConnection* connection, bool allowedToConnect);
 		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
 

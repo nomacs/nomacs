@@ -856,7 +856,6 @@ void DkRemoteControlConnection::readWhileBytesAvailable() {
 		}
 
 		if (!hasEnoughData()) {
-			qDebug() << "has enough data is false";
 			return;
 		}
 		buffer = read(numBytesForCurrentDataType);
