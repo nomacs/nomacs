@@ -312,7 +312,7 @@ void DkConnection::checkState() {
 		}
 
 		state = Synchronized;
-		if (!isSynchronizeMessageSent)
+		if (!isSynchronizeMessageSent && allowedToSynchronize())
 			sendStartSynchronizeMessage();
 
 		synchronizedTimer->stop();
@@ -953,5 +953,18 @@ void DkRCConnection::sendRCType(RemoteControlType type) {
 	this->waitForBytesWritten();
 }
 
+bool DkRCConnection::allowedToSynchronize() {
+	if (!DkSettings::Sync::syncWhiteList.contains(getClientName())) {
+		qDebug() << "Peer " << getClientName() << " is not allowed to synchronize (not in whitelist)";
+		qDebug() << "printing whitelist:";
+		for(int i=0; i<DkSettings::Sync::syncWhiteList.size();i++ )
+			qDebug() << DkSettings::Sync::syncWhiteList.at(i);
+
+		//disconnect immediately
+		sendStopSynchronizeMessage();
+		return false;
+	} else
+		return true;
+}
 
 }

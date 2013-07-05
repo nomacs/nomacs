@@ -115,6 +115,7 @@ class DkConnection : public QTcpSocket {
 		virtual void readGreetingMessage() = 0;
 		bool hasEnoughData();
 		int dataLengthForCurrentDataType();
+		virtual bool allowedToSynchronize() {return true;};
 
 		ConnectionState state; 
 		DataType currentDataType; 
@@ -269,6 +270,7 @@ class DkRCConnection : public DkLANConnection {
 		virtual bool readProtocolHeader();
 		virtual void processData();
 		virtual void readWhileBytesAvailable();
+		virtual bool allowedToSynchronize();
 
 		enum RemoteControlDataType {
 			newPermission = 11,

@@ -1494,12 +1494,9 @@ void DkRemoteControlWidget::init() {
 	proxyModel->setSourceModel(whiteListModel);
 	table->setSortingEnabled(true);
 
-	//table->setItemDelegateForColumn(0, cbDelegate);
-
 	for(int i = 0; i < clients.size();i++) {
 		whiteListModel->addWhiteListEntry(DkSettings::Sync::syncWhiteList.contains(clients[i]), clients[i], DkSettings::Sync::recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
 	}
-	//table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 	table->setModel(proxyModel);
 	table->resizeColumnsToContents();
 	table->resizeRowsToContents();
@@ -1511,33 +1508,10 @@ void DkRemoteControlWidget::init() {
 
 void DkRemoteControlWidget::createLayout() {
 	QVBoxLayout* vbox = new QVBoxLayout(this);
-	//QGroupBox* whiteListGB = new QGroupBox(tr("insert correct text here!:"), this);
-	//whiteListGrid = new QGridLayout(whiteListGB);
-
-	
 
 	table = new QTableView(this);
 	table->setEditTriggers(QAbstractItemView::AllEditTriggers);
 	table->verticalHeader()->setVisible(false);
-	//table->setGridStyle(Qt::NoPen);
-	//table->setShowGrid(false);
-	//QHeaderView* headerView = new QHeaderView(Qt::Horizontal);
-	//headerView->setResizeMode(QHeaderView::ResizeToContents);
-
-
-	
-	
-	//model = new QStandardItemModel();
-	//model->setHorizontalHeaderItem(0, new QStandardItem(""));
-	//model->setHorizontalHeaderItem(1, new QStandardItem(tr("Name")));
-	//model->setHorizontalHeaderItem(2, new QStandardItem(tr("Last Seen")));
-	//model->setHeaderData(0, Qt::Horizontal, QString("name"));
-	//model->setHeaderData(1, Qt::Horizontal, QString("last seen") );
-	//table->setModel(model);
-
-
-	//whiteListGrid->addWidget(table);
-	//vbox->addWidget(whiteListGB);
 	vbox->addWidget(table);
 	vbox->addStretch();
 }
@@ -1671,9 +1645,7 @@ QVariant DkWhiteListViewModel::data(const QModelIndex & index, int role /* = Qt:
 	if (role == Qt::DisplayRole) {
 
 		if (index.column() == 0)
-			//return QVariant();
 			return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
-			//return checked.at(index.row()) ? QVariant(Qt::Checked) : QVariant(Qt::Unchecked);
 		else if (index.column() == 1)
 			return names.at(index.row());
 		else if (index.column() == 2)
@@ -1683,7 +1655,6 @@ QVariant DkWhiteListViewModel::data(const QModelIndex & index, int role /* = Qt:
 	}
 	else if (role == Qt::CheckStateRole && index.column() == 0) {
 		return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
-		//return checked.at(index.row()) ? QVariant(Qt::Checked) : QVariant(Qt::Unchecked);
 	}
 
 	return QVariant();
@@ -1707,9 +1678,7 @@ Qt::ItemFlags DkWhiteListViewModel::flags(const QModelIndex & index) const {
 		return Qt::ItemIsEnabled;
 
 	if (index.column()==0) {
-		//return Qt::ItemIsUserCheckable | Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable;
 		return Qt::ItemIsEnabled | Qt::ItemIsEditable;
-		//return Qt::ItemIsEnabled;
 	}
 	else
 		return QAbstractTableModel::flags(index);
@@ -1740,14 +1709,10 @@ QWidget *DkCheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionVie
 }
 
 void DkCheckBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
-	//bool value = index.model()->data(index, Qt::DisplayRole).toBool();
 	bool value = index.data().toBool();
 
 	QCheckBox* cb = static_cast<QCheckBox*>(editor);
-	cb->setChecked(!value);
-	//cb->setChecked(value);
-	
-	
+	cb->setChecked(!value); 
 }
 
 void DkCheckBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
