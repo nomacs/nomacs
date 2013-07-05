@@ -1497,29 +1497,16 @@ void DkRemoteControlWidget::init() {
 	//table->setItemDelegateForColumn(0, cbDelegate);
 
 	for(int i = 0; i < clients.size();i++) {
-		//QStandardItem* checkItem = new QStandardItem("");
-		//checkItem->setCheckable(true);
-		//checkItem->setEditable(false);
-		//if(DkSettings::Sync::syncWhiteList.contains(clients[i]))
-		//	checkItem->setCheckState(Qt::Checked);
-		//else
-		//	checkItem->setCheckState(Qt::Unchecked);
-		//model->setItem(i, 0, checkItem);
-		//
-		//QStandardItem* nameItem = new QStandardItem(clients[i]);
-		//nameItem->setEditable(false);
-		//model->setItem(i, 1, nameItem);
-
-		//QStandardItem* lastSeenItem = new QStandardItem(DkSettings::Sync::recentLastSeen.value(clients[i],"").toDateTime().toString(Qt::SystemLocaleDate));
-		//lastSeenItem->setEditable(false);
-		//model->setItem(i, 2, lastSeenItem);
-
 		whiteListModel->addWhiteListEntry(DkSettings::Sync::syncWhiteList.contains(clients[i]), clients[i], DkSettings::Sync::recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
 	}
 	//table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-	table->setModel(whiteListModel);
+	table->setModel(proxyModel);
 	table->resizeColumnsToContents();
 	table->resizeRowsToContents();
+
+	// default sorting by checkbox and name
+	table->sortByColumn(1, Qt::AscendingOrder);
+	table->sortByColumn(0, Qt::DescendingOrder);
 }
 
 void DkRemoteControlWidget::createLayout() {
@@ -1695,7 +1682,6 @@ QVariant DkWhiteListViewModel::data(const QModelIndex & index, int role /* = Qt:
 			return QVariant();
 	}
 	else if (role == Qt::CheckStateRole && index.column() == 0) {
-		qDebug() << "row:" << index.row() << " checked:" << checked.at(index.row());
 		return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
 		//return checked.at(index.row()) ? QVariant(Qt::Checked) : QVariant(Qt::Unchecked);
 	}
@@ -1750,6 +1736,7 @@ QWidget *DkCheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionVie
 	QCheckBox* editor = new QCheckBox(parent);
 	connect(editor, SIGNAL(stateChanged(int)), this, SLOT(cbChanged(int)));
 	return editor;
+
 }
 
 void DkCheckBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
@@ -1769,7 +1756,10 @@ void DkCheckBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
 }
 
 void DkCheckBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const {
-	editor->setGeometry(option.rect);
+	qDebug() << __FUNCTION__;
+	QRect rect = option.rect;
+	rect.setLeft(option.rect.left()+10);
+	editor->setGeometry(rect);
 }
 
 void DkCheckBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
@@ -1779,6 +1769,7 @@ void DkCheckBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 		QStyle* style = QApplication::style();
 		QStyleOptionButton cbOpt;
 		cbOpt.rect = option.rect;
+		cbOpt.rect.setLeft(cbOpt.rect.left()+10);
 		cbOpt.state = QStyle::State_Enabled;
 		cbOpt.state |= index.data().toBool() ? QStyle::State_On : QStyle::State_Off;
 		style->drawControl(QStyle::CE_CheckBox, &cbOpt, painter);
