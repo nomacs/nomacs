@@ -721,8 +721,13 @@ void DkRemoteControlClientManager::synchronizeWith(quint16 peerId) {
 		return;
 	}
 
-	if (DkSettings::Sync::syncWhiteList.contains(peer.clientName)) {
-		qDebug() << "Peer is not allowed to synchronize (not in whitelist)";
+	qDebug() << "contains?:" << DkSettings::Sync::syncWhiteList.contains(peer.clientName);
+	if (!DkSettings::Sync::syncWhiteList.contains(peer.clientName)) {
+		qDebug() << "Peer " << peer.clientName << "is not allowed to synchronize (not in whitelist)";
+		qDebug() << "printing whitelist:";
+		for(int i=0; i<DkSettings::Sync::syncWhiteList.size();i++ )
+			qDebug() << DkSettings::Sync::syncWhiteList.at(i);
+			
 		return;
 	}
 	qDebug() << "synchronizing with: " << peerId;
@@ -751,15 +756,15 @@ void DkRemoteControlClientManager::connectionReadyForUse(quint16 peerServerPort,
 	qDebug() << "peerList:";
 	peerList.print();
 
-	if (!server->isListening())
+	//if (!server->isListening())
 		connection->sendAskForPermission(); // TODO: do i have to ask for permission?
 }
 
 void DkRemoteControlClientManager::connectionReceivedPermission(DkConnection* connection, bool allowedToConnect) {
+	qDebug() << __FUNCTION__;
 	peerList.print();
 	qDebug() << "----------------";
 	permissionList.insert(connection->getPeerId(), allowedToConnect);
-	peerList.print();
 }
 
 DkRemoteControlConnection* DkRemoteControlClientManager::createConnection() {
