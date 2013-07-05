@@ -225,14 +225,12 @@ class DkLANClientManager : public DkClientManager {
 
 	private:
 		virtual DkLANConnection* createConnection();
-
-
 };
 
-class DkRemoteControlClientManager : public DkLANClientManager {
+class DkRCClientManager : public DkLANClientManager {
 	Q_OBJECT
 	public:
-		DkRemoteControlClientManager(QString title, QObject* parent = 0);
+		DkRCClientManager(QString title, QObject* parent = 0);
 		QList<DkPeer> getPeerList();
 
 	public slots:
@@ -245,10 +243,11 @@ class DkRemoteControlClientManager : public DkLANClientManager {
 	private slots:
 		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		void connectionReceivedPermission(DkConnection* connection, bool allowedToConnect);
+		void connectionReceivedRCType(DkConnection* connection, DkRCConnection::RemoteControlType);
 		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
 
 	private:
-		virtual DkRemoteControlConnection* createConnection();
+		virtual DkRCConnection* createConnection();
 		QHash<quint16, bool> permissionList;
 };
 

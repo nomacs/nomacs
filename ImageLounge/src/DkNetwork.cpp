@@ -692,14 +692,14 @@ void DkLANClientManager::connectConnection(DkConnection* connection) {
 }
 
 // DkRemoteControllClientManager --------------------------------------------------------------------
-DkRemoteControlClientManager::DkRemoteControlClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, 28565, 28565) {
+DkRCClientManager::DkRCClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, 28565, 28565) {
 	//server = new DkLANTcpServer(this, 28565, 28565);
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
 
 	qDebug() << "remote control network service startet";
 }
 
-QList<DkPeer> DkRemoteControlClientManager::getPeerList() {
+QList<DkPeer> DkRCClientManager::getPeerList() {
 	QList<DkPeer> list;
 	foreach(DkPeer peer, peerList.getPeerList()) {
 		if (permissionList.value(peer.peerId))
@@ -708,7 +708,7 @@ QList<DkPeer> DkRemoteControlClientManager::getPeerList() {
 	return list;
 }
 
-void DkRemoteControlClientManager::synchronizeWith(quint16 peerId) {
+void DkRCClientManager::synchronizeWith(quint16 peerId) {
 	qDebug() << "DkCRemoteControllientManager::synchronizeWith  peerId:" << peerId;
 
 	peerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
@@ -729,19 +729,20 @@ void DkRemoteControlClientManager::synchronizeWith(quint16 peerId) {
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 }
 
-void DkRemoteControlClientManager::connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection) {
+void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection) {
 	DkPeer peer = peerList.getPeerById(connection->getPeerId());
-	qDebug() << "contains?:" << DkSettings::Sync::syncWhiteList.contains(peer.clientName);
-	if (!DkSettings::Sync::syncWhiteList.contains(peer.clientName)) {
-		qDebug() << "Peer " << peer.clientName << "is not allowed to synchronize (not in whitelist)";
-		qDebug() << "printing whitelist:";
-		for(int i=0; i<DkSettings::Sync::syncWhiteList.size();i++ )
-			qDebug() << DkSettings::Sync::syncWhiteList.at(i);
+	// TODO: which client started the synchronization ... then check for whitelist
+	//qDebug() << "contains?:" << DkSettings::Sync::syncWhiteList.contains(peer.clientName);
+	//if (!DkSettings::Sync::syncWhiteList.contains(peer.clientName)) {
+	//	qDebug() << "Peer " << peer.clientName << "is not allowed to synchronize (not in whitelist)";
+	//	qDebug() << "printing whitelist:";
+	//	for(int i=0; i<DkSettings::Sync::syncWhiteList.size();i++ )
+	//		qDebug() << DkSettings::Sync::syncWhiteList.at(i);
 
-		//disconnect immediately
-		stopSynchronizeWith(connection->getPeerId());
-		return;
-	}
+	//	//disconnect immediately
+	//	stopSynchronizeWith(connection->getPeerId());
+	//	return;
+	//}
 
 	qDebug() << "Connection synchronized with:" << connection->getPeerPort();
 	peerList.setSynchronized(connection->getPeerId(), true);
@@ -760,14 +761,14 @@ void DkRemoteControlClientManager::connectionSynchronized(QList<quint16> synchro
 
 
 
-void DkRemoteControlClientManager::connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* dkconnection) {
+void DkRCClientManager::connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* dkconnection) {
 	qDebug() << __FILE__ << __FUNCTION__;
 	//DkLANClientManager::connectionReadyForUse(peerServerPort, title, dkconnection);
 	//peerList.print();
 	//DkPeer peer = peerList.getPeerByAddress(dkconnection->peerAddress(), peerServerPort);
 	//permissionList.insert(peer.peerId, false);
 
-	DkRemoteControlConnection* connection = dynamic_cast<DkRemoteControlConnection*>(dkconnection); // TODO???? darf ich das
+	DkRCConnection* connection = dynamic_cast<DkRCConnection*>(dkconnection); // TODO???? darf ich das
 	//qDebug() << "connection ready for use" << connection->peerPort() << " with title:" << title << " peerServerPort:" << peerServerPort << "  showInMenu: " << connection->getShowInMenu();
 
 	newPeerId++;
@@ -782,22 +783,27 @@ void DkRemoteControlClientManager::connectionReadyForUse(quint16 peerServerPort,
 		connection->sendAskForPermission(); // TODO: do i have to ask for permission?
 }
 
-void DkRemoteControlClientManager::connectionReceivedPermission(DkConnection* connection, bool allowedToConnect) {
+void DkRCClientManager::connectionReceivedPermission(DkConnection* connection, bool allowedToConnect) {
 	qDebug() << __FUNCTION__;
 	peerList.print();
 	qDebug() << "----------------";
 	permissionList.insert(connection->getPeerId(), allowedToConnect);
 }
 
-DkRemoteControlConnection* DkRemoteControlClientManager::createConnection() {
-	DkRemoteControlConnection* connection = new DkRemoteControlConnection();
+void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, DkRCConnection::RemoteControlType) {
+
+}
+
+DkRCConnection* DkRCClientManager::createConnection() {
+	DkRCConnection* connection = new DkRCConnection();
 	connectConnection(connection);
 	return connection;
 }
 
-void DkRemoteControlClientManager::connectConnection(DkConnection* connection) {
+void DkRCClientManager::connectConnection(DkConnection* connection) {
 	DkLANClientManager::connectConnection(connection);
 	connect(connection, SIGNAL(connectionNewPermission(DkConnection*, bool)), this, SLOT(connectionReceivedPermission(DkConnection*, bool)));
+	connect(connection, SIGNAL(connectionReceivedRCType(DkConnection*, DkRCConnection::RemoteControlType)), this, SLOT(connectionReceivedRCType(DkConnection*, RemoteControlType)));
 }
 
 // DkLocalTcpServer --------------------------------------------------------------------
@@ -1460,7 +1466,7 @@ void DkRCManagerThread::createClient(QString title) {
 	if (clientManager)
 		delete clientManager;
 
-	clientManager = new DkRemoteControlClientManager(title);
+	clientManager = new DkRCClientManager(title);
 }
 
 void DkRCManagerThread::connectClient() {

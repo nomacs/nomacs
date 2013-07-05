@@ -39,11 +39,11 @@
 #include <QThread>
 #include "DkSettings.h"
 
+
 namespace nmc {
 
 static const int MaxBufferSize = 102400000;
 static const char SeparatorToken = '<';
-
 
 class DkConnection : public QTcpSocket {
 	Q_OBJECT;
@@ -234,18 +234,31 @@ class DkLANConnection : public DkConnection {
 };
 
 
-class DkRemoteControlConnection : public DkLANConnection {
+class DkRCConnection : public DkLANConnection {
 	Q_OBJECT
 
 	public:
-		DkRemoteControlConnection(QObject* parent = 0);
+		DkRCConnection(QObject* parent = 0);
+		
+
+		enum RemoteControlType 	{
+			remoteControl = 1,
+			remoteControlSendImages,
+			remoteDisplay,
+			remoteUndefined
+		};
+
+		RemoteControlType rcType;
+
 
 	signals:
 		void connectionNewPermission(DkConnection*, bool);
+		void connectionNewRCType(DkConnection*, RemoteControlType);
 
 	public slots:
 		void sendAskForPermission();
 		void sendPermission();
+		void sendRCType(RemoteControlType type);
 
 	protected slots:
 		virtual void processReadyRead();
@@ -260,8 +273,10 @@ class DkRemoteControlConnection : public DkLANConnection {
 		enum RemoteControlDataType {
 			newPermission = 11,
 			newAskPermission,
+			newRcType,
 			Undefined
 		};
+
 		RemoteControlDataType currentRemoteControlDataType;
 
 	private:

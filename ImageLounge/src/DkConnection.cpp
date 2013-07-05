@@ -796,11 +796,12 @@ void DkLANConnection::sendNewFileMessage(qint16 op , QString filename) {
 }
 
 // DkRemoteControlConnection --------------------------------------------------------------------
-DkRemoteControlConnection::DkRemoteControlConnection(QObject* parent /* = 0 */) : DkLANConnection(parent) {
+DkRCConnection::DkRCConnection(QObject* parent /* = 0 */) : DkLANConnection(parent) {
 	currentRemoteControlDataType = Undefined;
+	rcType = remoteUndefined;
 }
 
-void DkRemoteControlConnection::readGreetingMessage() {
+void DkRCConnection::readGreetingMessage() {
 	DkLANConnection::readGreetingMessage();
 	allowFile = true;
 	allowImage = true;
@@ -809,10 +810,11 @@ void DkRemoteControlConnection::readGreetingMessage() {
 	//sendAskForPermission(); // if here to many messages are sent ... wait until readyforuse in network.cpp
 }
 
-bool DkRemoteControlConnection::readProtocolHeader() {
+bool DkRCConnection::readProtocolHeader() {
 	//qDebug() << __FUNCTION__ << " " << __LINE__;
 	QByteArray newPermissionBA = QByteArray("PERMISSION").append(SeparatorToken);
 	QByteArray newAskPermissionBA = QByteArray("ASKPERMISSION").append(SeparatorToken);
+	QByteArray newRCType = QByteArray("RCTYPE").append(SeparatorToken);
 
 	if (buffer == newPermissionBA) {
 		qDebug() << "New Permission received from:" << this->peerAddress() << ":" << this->peerPort();
@@ -820,6 +822,9 @@ bool DkRemoteControlConnection::readProtocolHeader() {
 	} else if (buffer == newAskPermissionBA) {
 		qDebug() << "New Ask Permission received from:" << this->peerAddress() << ":" << this->peerPort();
 		currentRemoteControlDataType = newAskPermission;
+	} else if (buffer == newRCType) {
+		qDebug() << "New RCType received from:" << this->peerAddress() << ":" << this->peerPort();
+		currentRemoteControlDataType = newRcType;
 	} else {
 		return DkLANConnection::readProtocolHeader();
 	}
@@ -829,7 +834,7 @@ bool DkRemoteControlConnection::readProtocolHeader() {
 	return true;
 }
 
-void DkRemoteControlConnection::processReadyRead() {
+void DkRCConnection::processReadyRead() {
 	//if (currentRemoteControlDataType != Undefined) { // long message
 	//	readWhileBytesAvailable();
 	//	return;
@@ -845,10 +850,10 @@ void DkRemoteControlConnection::processReadyRead() {
 	DkLANConnection::processReadyRead();
 }
 
-void DkRemoteControlConnection::readWhileBytesAvailable() {
+void DkRCConnection::readWhileBytesAvailable() {
 	//qDebug() << __FUNCTION__ << " " << __LINE__;
 	do {
-		if (currentDataType == DkConnection::Undefined && currentLanDataType == DkLANConnection::Undefined && currentRemoteControlDataType == DkRemoteControlConnection::Undefined) {
+		if (currentDataType == DkConnection::Undefined && currentLanDataType == DkLANConnection::Undefined && currentRemoteControlDataType == DkRCConnection::Undefined) {
 			readDataIntoBuffer();
 			if (!readProtocolHeader())
 				return;
@@ -867,7 +872,7 @@ void DkRemoteControlConnection::readWhileBytesAvailable() {
 	} while (bytesAvailable() > 0);
 }
 
-void DkRemoteControlConnection::processData() {
+void DkRCConnection::processData() {
 	switch (currentRemoteControlDataType) {
 	case newPermission: {
 			bool allowedToConnect;
@@ -887,19 +892,26 @@ void DkRemoteControlConnection::processData() {
 		sendPermission();
 		}
 		break;
+	case newRcType: {
+		int tmp;
+		QDataStream ds(buffer);
+		ds >> tmp;
+		rcType = static_cast<RemoteControlType>(tmp);
+		emit connectionNewRCType(this, rcType);
+		}
 	case Undefined:
 	default: 
 		DkLANConnection::processData();
 	}
 
-	currentRemoteControlDataType = DkRemoteControlConnection::Undefined;
+	currentRemoteControlDataType = DkRCConnection::Undefined;
 	currentLanDataType = DkLANConnection::Undefined;
 	currentDataType = DkConnection::Undefined;
 	numBytesForCurrentDataType = 0;
 	buffer.clear();
 }
 
-void DkRemoteControlConnection::sendAskForPermission() {
+void DkRCConnection::sendAskForPermission() {
 	qDebug() << "sending askForPermission to " << this->peerName() << ":" << this->peerPort();
 
 	QByteArray ba;
@@ -913,7 +925,7 @@ void DkRemoteControlConnection::sendAskForPermission() {
 	this->waitForBytesWritten();
 }
 
-void DkRemoteControlConnection::sendPermission() {
+void DkRCConnection::sendPermission() {
 	qDebug() << "printing whitelist\n--------------------";
 	for (int i = 0; i < DkSettings::Sync::syncWhiteList.size(); i++)
 		qDebug() << DkSettings::Sync::syncWhiteList.at(i);
@@ -926,6 +938,16 @@ void DkRemoteControlConnection::sendPermission() {
 	ds << DkSettings::Sync::syncWhiteList.contains(getClientName());
 	ds << "dummyText";
 	QByteArray data = "PERMISSION";
+	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
+	write(data);
+	this->waitForBytesWritten();
+}
+
+void DkRCConnection::sendRCType(RemoteControlType type) {
+	QByteArray ba;
+	QDataStream ds(&ba, QIODevice::ReadWrite);
+	ds << type;
+	QByteArray data = "RCTYPE";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
 	this->waitForBytesWritten();
