@@ -247,6 +247,7 @@ void DkConnection::processReadyRead() {
 }
 
 void DkConnection::checkState() {
+	qDebug() << "im check State -......-----......-----......-----......-----......-----......----";
 	if (state == WaitingForGreeting) {
 		if (currentDataType != Greeting) {
 			abort();
@@ -449,10 +450,10 @@ void DkLocalConnection::processReadyRead() {
 		return;
 	}
 
-	if (readDataIntoBuffer() <= 0)
-		return;
-	if (!readProtocolHeader())
-		return;
+	//if (readDataIntoBuffer() <= 0)
+	//	return;
+	//if (!readProtocolHeader())
+	//	return;
 
 	DkConnection::processReadyRead();
 }
