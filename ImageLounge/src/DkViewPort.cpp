@@ -1491,6 +1491,9 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 	} else if (loader)
 		loader->load(file, silent);
 
+	// TODO: add sync if auto connect
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
+		tcpLoadFile(0, file.absoluteFilePath());
 }
 
 void DkViewPort::reloadFile() {
@@ -1513,7 +1516,7 @@ void DkViewPort::loadFile(int skipIdx, bool silent) {
 		loader->changeFile(skipIdx, silent || (parent && parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen));
 
 	// alt mod
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
 		qDebug() << "emitting load next";
 	}
@@ -1667,7 +1670,7 @@ void DkViewPort::loadFirst() {
 	if (loader && !testLoaded)
 		loader->firstFile();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1678,7 +1681,7 @@ void DkViewPort::loadLast() {
 	if (loader && !testLoaded)
 		loader->lastFile();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
@@ -1711,6 +1714,11 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	qDebug() << "I got a file request??";
 
+	// some hack: set the mode to default in order to prevent loops (if both are auto connected)
+	// should be mostly harmless
+	int oldMode = DkSettings::Sync::syncMode;
+	DkSettings::Sync::syncMode = DkSettings::mode_default;
+
 	if (filename.isEmpty()) {
 
 		// change the file idx according to my brother
@@ -1721,18 +1729,23 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 			case SHRT_MAX:
 				loadLast();
 				break;
-			case 1:
-				loadNextFileFast();
-				break;
-			case -1:
-				loadPrevFileFast();
-				break;
+			//case 1:
+			//	loadNextFileFast();
+			//	break;
+			//case -1:
+			//	loadPrevFileFast();
+			//	break;
 			default:
-				if (loader) loader->loadFileAt(idx);
+				loadFileFast(idx);
+				//if (loader) loader->loadFileAt(idx);
 		}
 	}
 	else 
 		loadFile(QFileInfo(filename));
+
+	qDebug() << "loading file: " << filename;
+
+	DkSettings::Sync::syncMode = oldMode;
 
 }
 
