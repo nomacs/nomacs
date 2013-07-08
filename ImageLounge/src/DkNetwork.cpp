@@ -937,6 +937,7 @@ void DkLANUdpSocket::readBroadcast() {
 		if (isLocalHostAddress(senderIP)) // ignore connections from localhost
 			continue;
 
+		qDebug() << "????????????new broadcast received: list:" << list.at(0) << " senderServerPort: " << senderServerPort << " broadcasting:" << broadcasting << " localPort:" << serverPort;
 		if (list.at(0) == "newClient" && senderServerPort == 0 && broadcasting) { // new Client broadcast, answer with broadcast if instance is server
 			qDebug() << "new client broadcast received";
 			sendBroadcast();
