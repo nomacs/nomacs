@@ -27,6 +27,13 @@
 
 #pragma  once
 
+#define localTCPPortStart 45454
+#define localTCPPortEnd 45484
+#define lanUDPPortStart 28566
+#define lanUDPPortEnd 28576
+#define rcUDPPort 28565
+
+
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QTcpSocket>
@@ -185,7 +192,7 @@ class DkLocalClientManager : public DkClientManager {
 class DkLANClientManager : public DkClientManager {
 	Q_OBJECT;
 	public:
-		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = 28566, quint16 udpServerPortRangeEnd = 28576);
+		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = lanUDPPortStart, quint16 udpServerPortRangeEnd = lanUDPPortEnd);
 		virtual QList<DkPeer> getPeerList();
 
 	signals:
@@ -275,7 +282,7 @@ class DkLocalTcpServer : public QTcpServer {
 class DkLANTcpServer : public QTcpServer {
 	Q_OBJECT;
 	public:
-		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = 28566, quint16 udpServerPortRangeEnd = 28576);
+		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = lanUDPPortStart, quint16 udpServerPortRangeEnd = lanUDPPortEnd);
 
 	signals:
 		void serverReiceivedNewConnection(QHostAddress address , quint16 port , QString clientName);
@@ -301,7 +308,7 @@ class DkLANUdpSocket : public QUdpSocket {
 	Q_OBJECT;
 
 	public:
-		DkLANUdpSocket(quint16 startPort = 28566, quint16 endPort = 28576, QObject* parent = 0);
+		DkLANUdpSocket(quint16 startPort = lanUDPPortStart, quint16 endPort = lanUDPPortEnd, QObject* parent = 0);
 		void startBroadcast(quint16 tcpServerPort);
 		void stopBroadcast();
 		
