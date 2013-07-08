@@ -94,6 +94,14 @@ class DkSettings : public QObject {
 			mode_end,
 		};
 
+		enum syncModes {
+			sync_mode_default = 0,
+			sync_mode_auto,
+			sync_mode_remote,
+
+			sync_mode_end,
+		};
+
 		DkSettings() {};
 		DkSettings(const DkSettings& settings) {}; 
 
@@ -181,6 +189,7 @@ class DkSettings : public QObject {
 			static QStringList recentSyncNames;
 			static QStringList syncWhiteList;
 			static QHash<QString, QVariant> recentLastSeen;
+			static int syncMode;
 		};
 		struct MetaData {
 			static QBitArray metaDataBits;

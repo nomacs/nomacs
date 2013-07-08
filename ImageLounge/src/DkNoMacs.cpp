@@ -3081,6 +3081,7 @@ void DkNoMacsSync::tcpRemoteControl() {
 	qDebug() << "trying to connect remote control ...";
 	QList<DkPeer> peers = rcClient->getPeerList();
 	qDebug() << "number of peers in list:" << peers.size();
+	
 	for (int idx = 0; idx < peers.size(); idx++)  {
 		qDebug() << "trying to synchronize with:" << peers.at(idx).clientName << ":" << peers.at(idx).peerServerPort;
 		emit synchronizeRemoteControl(peers.at(idx).peerId);	

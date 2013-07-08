@@ -159,6 +159,7 @@ bool DkSettings::Sync::allowImage = true;
 bool DkSettings::Sync::updateDialogShown= false;
 QDate DkSettings::Sync::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::Sync::syncAbsoluteTransform = true;
+int DkSettings::Sync::syncMode = sync_mode_default;
 QStringList DkSettings::Sync::recentSyncNames = QStringList();
 QStringList DkSettings::Sync::syncWhiteList = QStringList();
 QHash<QString, QVariant> DkSettings::Sync::recentLastSeen = QHash<QString, QVariant>();
