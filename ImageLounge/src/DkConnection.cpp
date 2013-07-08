@@ -799,7 +799,6 @@ void DkLANConnection::sendNewFileMessage(qint16 op , QString filename) {
 // DkRemoteControlConnection --------------------------------------------------------------------
 DkRCConnection::DkRCConnection(QObject* parent /* = 0 */) : DkLANConnection(parent) {
 	currentRemoteControlDataType = Undefined;
-	rcType = remoteUndefined;
 }
 
 void DkRCConnection::readGreetingMessage() {
@@ -894,11 +893,10 @@ void DkRCConnection::processData() {
 		}
 		break;
 	case newRcType: {
-		int tmp;
+		int type;
 		QDataStream ds(buffer);
-		ds >> tmp;
-		rcType = static_cast<RemoteControlType>(tmp);
-		emit connectionNewRCType(this, rcType);
+		ds >> type;
+		emit connectionNewRCType(this, type);
 		}
 	case Undefined:
 	default: 
@@ -944,7 +942,7 @@ void DkRCConnection::sendPermission() {
 	this->waitForBytesWritten();
 }
 
-void DkRCConnection::sendRCType(RemoteControlType type) {
+void DkRCConnection::sendRCType(DkSettings::syncModes type) {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << type;

@@ -779,7 +779,9 @@ void DkRCClientManager::connectionReceivedPermission(DkConnection* connection, b
 	permissionList.insert(connection->getPeerId(), allowedToConnect);
 }
 
-void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, DkRCConnection::RemoteControlType) {
+void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, int mode) {
+
+	// TODO: cast mode
 
 }
 
@@ -792,7 +794,7 @@ DkRCConnection* DkRCClientManager::createConnection() {
 void DkRCClientManager::connectConnection(DkConnection* connection) {
 	DkLANClientManager::connectConnection(connection);
 	connect(connection, SIGNAL(connectionNewPermission(DkConnection*, bool)), this, SLOT(connectionReceivedPermission(DkConnection*, bool)));
-	connect(connection, SIGNAL(connectionNewRCType(DkConnection*, DkRCConnection::RemoteControlType)), this, SLOT(connectionReceivedRCType(DkConnection*, RemoteControlType)));
+	connect(connection, SIGNAL(connectionNewRCType(DkConnection*, int)), this, SLOT(connectionReceivedRCType(DkConnection*, int)));
 }
 
 // DkLocalTcpServer --------------------------------------------------------------------
@@ -936,6 +938,7 @@ void DkLANUdpSocket::readBroadcast() {
 			continue;
 
 		if (list.at(0) == "newClient" && senderServerPort == 0 && broadcasting) { // new Client broadcast, answer with broadcast if instance is server
+			qDebug() << "new client broadcast received";
 			sendBroadcast();
 			return;
 		}

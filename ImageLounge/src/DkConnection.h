@@ -243,25 +243,14 @@ class DkRCConnection : public DkLANConnection {
 	public:
 		DkRCConnection(QObject* parent = 0);
 		
-
-		enum RemoteControlType 	{
-			remoteControl = 1,
-			remoteControlSendImages,
-			remoteDisplay,
-			remoteUndefined
-		};
-
-		RemoteControlType rcType;
-
-
 	signals:
 		void connectionNewPermission(DkConnection*, bool);
-		void connectionNewRCType(DkConnection*, RemoteControlType);
+		void connectionNewRCType(DkConnection*, int);
 
 	public slots:
 		void sendAskForPermission();
 		void sendPermission();
-		void sendRCType(RemoteControlType type);
+		void sendRCType(DkSettings::syncModes type);
 
 	protected slots:
 		virtual void processReadyRead();

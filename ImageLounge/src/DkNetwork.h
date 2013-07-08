@@ -243,7 +243,7 @@ class DkRCClientManager : public DkLANClientManager {
 	private slots:
 		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		void connectionReceivedPermission(DkConnection* connection, bool allowedToConnect);
-		void connectionReceivedRCType(DkConnection* connection, DkRCConnection::RemoteControlType);
+		void connectionReceivedRCType(DkConnection* connection, int type);
 		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
 
 	private:
