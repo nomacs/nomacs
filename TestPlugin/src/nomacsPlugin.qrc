@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/nomacsPlugin">
+        <file>img/plugin1.png</file>
+    </qresource>
+</RCC>
