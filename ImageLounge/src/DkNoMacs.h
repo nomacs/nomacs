@@ -80,9 +80,10 @@ using namespace cv;
 #include "DkImage.h"
 #include "DkWidgets.h"
 #include "DkDialog.h"
+#include "DkSaveDialog.h"
 #include "DkSettings.h"
 #include "DkMenu.h"
-#include "DkTransferToolBar.h"
+#include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
 
 #ifdef DK_DLL
@@ -105,6 +106,7 @@ enum {
 	shortcut_open_preview	= Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
+	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
 	shortcut_first_file		= Qt::Key_Home, 
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
@@ -192,6 +194,7 @@ enum fileActions {
 	menu_file_open_dir,
 	menu_file_open_with,
 	menu_file_save,
+	menu_file_save_as,
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
@@ -228,15 +231,30 @@ enum toolsActions {
 	menu_tools_thumbs,
 	menu_tools_filter,
 	menu_tools_manipulation,
+	menu_tools_export_tiff,
 
 	menu_tools_end,
 };
 
+enum panelActions {
+	menu_panel_menu,
+	menu_panel_toolbar,
+	menu_panel_statusbar,
+	menu_panel_transfertoolbar,
+
+	menu_panel_player,
+	menu_panel_preview,
+	menu_panel_scroller,
+	menu_panel_exif,
+	menu_panel_info,
+	menu_panel_histogram,
+	menu_panel_overview,
+	menu_panel_explorer,
+
+	menu_panel_end,
+};
+
 enum viewActions {
-	menu_view_show_menu,
-	menu_view_show_toolbar,
-	menu_view_show_statusbar,
-	menu_view_show_transfertoolbar,
 	menu_view_fullscreen,
 	menu_view_reset,
 	menu_view_100,
@@ -245,14 +263,6 @@ enum viewActions {
 	menu_view_zoom_out,
 	menu_view_anti_aliasing,
 	menu_view_tp_pattern,
-	menu_view_show_overview,
-	menu_view_show_player,
-	menu_view_show_preview,
-	menu_view_show_scroller,
-	menu_view_show_exif,
-	menu_view_show_info,
-	menu_view_show_histogram,
-	menu_view_show_explorer,
 	menu_view_frameless,
 	menu_view_opacity_up,
 	menu_view_opacity_down,
@@ -272,6 +282,13 @@ enum syncActions {
 	menu_sync_remote_control,
 
 	menu_sync_end,	// nothing beyond this point
+};
+
+enum lanSyncActions {
+	menu_lan_server,
+	menu_lan_image,
+
+	menu_lan_end,
 };
 
 enum helpActions {
@@ -397,6 +414,7 @@ public:
 	
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();
+	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
 
@@ -431,9 +449,11 @@ public slots:
 	void find(bool filterAction = true);
 	void updateFilterState(QStringList filters);
 	void saveFile();
+	void saveFileAs(bool silent = false);
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
+	void exportTiff();
 	void deleteFile();
 	void setWallpaper();
 	void printDialog();
@@ -442,6 +462,7 @@ public slots:
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbar(bool show);
+	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
 	void openFileWith();
 	void aboutDialog();
@@ -449,7 +470,7 @@ public slots:
 	void featureRequest();
 	void errorDialog(QString msg, QString title = "Error");
 	void loadRecursion();
-	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false);
+	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();
@@ -461,7 +482,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	void newClientConnected(bool connected);
+	virtual void newClientConnected(bool connected);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
@@ -522,8 +543,10 @@ protected:
 	QVector<QAction *> fileActions;
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
+	QVector<QAction *> panelActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
+	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
@@ -538,6 +561,7 @@ protected:
 	QMenu* fileMenu;	// TODO: release ?!
 	QMenu* editMenu;
 	QMenu* toolsMenu;
+	QMenu* panelMenu;
 	QMenu* viewMenu;
 	QMenu* syncMenu;
 	QMenu* helpMenu;
@@ -546,7 +570,7 @@ protected:
 	// sub menus
 	QMenu* fileFilesMenu;
 	QMenu* fileFoldersMenu;
-	QMenu* viewToolsMenu;
+	QMenu* panelToolsMenu;
 	DkTcpMenu* tcpViewerMenu;
 	DkTcpMenu* tcpLanMenu;
 	
@@ -571,6 +595,7 @@ protected:
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
+	DkExportTiffDialog* exportTiffDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
@@ -618,6 +643,7 @@ public slots:
 	void tcpRemoteControl();
 	void settingsChanged();
 	void clientInitialized();
+	void newClientConnected(bool connected);
 
 protected:
 

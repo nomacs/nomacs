@@ -89,7 +89,7 @@ class DkSettings : public QObject {
 			mode_frameless,
 			mode_contrast,
 			mode_default_fullscreen,
-			mode_frameless_fullscren,
+			mode_frameless_fullscreen,
 			mode_contrast_fullscreen,
 			mode_end,
 		};
@@ -184,6 +184,8 @@ class DkSettings : public QObject {
 		};
 		struct MetaData {
 			static QBitArray metaDataBits;
+			static bool ignoreExifOrientation;
+			static bool saveExifOrientation;
 
 			//static bool exifSize;
 			//static bool exifOrientation;
@@ -557,6 +559,8 @@ class DkMetaDataSettingsWidget : public DkSettingsWidget {
 		void init();
 		void createLayout();
 
+		QCheckBox* cbIgnoreOrientation;
+		QCheckBox* cbSaveOrientation;
 
 		//Checkboxes
 		QVector<QCheckBox *> pCbMetaData;

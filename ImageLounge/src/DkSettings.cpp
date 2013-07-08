@@ -71,6 +71,9 @@ QString DkSettings::Global::setupVersion = "";
 	Qt::KeyboardModifier DkSettings::Global::ctrlMod = Qt::ControlModifier;
 #endif
 
+bool DkSettings::MetaData::ignoreExifOrientation = false;
+bool DkSettings::MetaData::saveExifOrientation = true;
+
 // open with settings
 QString DkSettings::Global::defaultAppPath = QString();
 int DkSettings::Global::defaultAppIdx = -1;
@@ -260,6 +263,9 @@ void DkSettings::load() {
 	Sync::recentSyncNames = settings.value("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames).toStringList();
 	Sync::syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList).toStringList();
 	Sync::recentLastSeen = settings.value("SynchronizeSettings/recentLastSeen", DkSettings::Sync::recentLastSeen).toHash();
+	
+	MetaData::ignoreExifOrientation = settings.value("MetaDataSettings/ignoreExifOrientation", DkSettings::MetaData::ignoreExifOrientation).toBool();
+	MetaData::saveExifOrientation = settings.value("MetaDataSettings/saveExifOrientation", DkSettings::MetaData::saveExifOrientation).toBool();
 
 	Resources::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory).toFloat();
 	Resources::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview).toBool();
@@ -284,7 +290,7 @@ void DkSettings::save() {
 	
 
 	int myAppMode = DkSettings::App::appMode;
-	if (App::currentAppMode != mode_frameless && App::currentAppMode != mode_frameless_fullscren) {
+	if (App::currentAppMode != mode_frameless && App::currentAppMode != mode_frameless_fullscreen) {
 		qDebug() << "app mode when saving: " << DkSettings::App::appMode;
 		settings.setValue("AppSettings/showToolBar", DkSettings::App::showToolBar);
 		settings.setValue("AppSettings/showStatusBar", DkSettings::App::showStatusBar);
@@ -300,6 +306,7 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
 
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
+	settings.setValue("AppSettings/currentAppMode", DkSettings::App::currentAppMode);
 
 	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
 	settings.setValue("GlobalSettings/numFiles",Global::numFiles);
@@ -339,9 +346,10 @@ void DkSettings::save() {
 	settings.setValue("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor);
 	settings.setValue("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor);
 	settings.setValue("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel);
-
-
+	
 	settings.setValue("MetaDataSettings/metaData", MetaData::metaDataBits);
+	settings.setValue("MetaDataSettings/ignoreExifOrientation", MetaData::ignoreExifOrientation);
+	settings.setValue("MetaDataSettings/saveExifOrientation", MetaData::saveExifOrientation);
 
 	settings.setValue("SlideShowSettings/filter", SlideShow::filter);
 	settings.setValue("SlideShowSettings/time", SlideShow::time);
@@ -1297,16 +1305,13 @@ void DkMetaDataSettingsWidget::createLayout() {
 	QGroupBox* gbCamData = new QGroupBox(tr("Camera Data"), this);
 	QGroupBox* gbDescription = new QGroupBox(tr("Description"), this);
 
-	QVBoxLayout* vboxLayoutLeft = new QVBoxLayout(gbCamData);
-	QVBoxLayout* vboxLayoutRight = new QVBoxLayout(gbDescription);
+	QVBoxLayout* camDataLayout = new QVBoxLayout(gbCamData);
+	QVBoxLayout* descriptionLayout = new QVBoxLayout(gbDescription);
 
 	//QWidget* leftCol = new QWidget();
 	//leftCol->setLayout(vboxLayoutLeft);
 	//QWidget* rightCol = new QWidget();/
 	//rightCol->setLayout(vboxLayoutRight);
-
-	hboxLayout->addWidget(gbDescription);
-	hboxLayout->addWidget(gbCamData);
 
 	//QLabel* topLabel = new QLabel;
 	QStringList sDescription;
@@ -1320,18 +1325,44 @@ void DkMetaDataSettingsWidget::createLayout() {
 	//QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");
 
 	for (int i=0; i<desc_end;i++) {
-		pCbMetaData.append(new QCheckBox(sDescription.at(i), this));
+		pCbMetaData.append(new QCheckBox(sDescription.at(i), gbDescription));
 	}
 
 	for(int i=0; i<camData_end;i++) {
-		vboxLayoutLeft->addWidget(pCbMetaData[i]);
+		camDataLayout->addWidget(pCbMetaData[i]);
 	}
-	vboxLayoutLeft->addStretch();
+	camDataLayout->addStretch();
 
 	for(int i=camData_end; i<desc_end;i++) {
-		vboxLayoutRight->addWidget(pCbMetaData[i]);
+		descriptionLayout->addWidget(pCbMetaData[i]);
 	}
-	vboxLayoutRight->addStretch();
+
+	descriptionLayout->addStretch();
+	
+	QGroupBox* gbOrientation = new QGroupBox(tr("Exif Orientation"), this);
+
+	cbIgnoreOrientation = new QCheckBox(tr("Ignore Exif Orientation"), gbOrientation);
+	cbIgnoreOrientation->setChecked(DkSettings::MetaData::ignoreExifOrientation);
+	cbIgnoreOrientation->setToolTip(tr("Note: instead of checking this option\n you should fix your images."));
+
+	cbSaveOrientation = new QCheckBox(tr("Save Exif Orientation"), gbOrientation);
+	cbSaveOrientation->setChecked(DkSettings::MetaData::saveExifOrientation);
+	cbSaveOrientation->setToolTip(tr("Note: unchecking this option decreases the speed of rotating images."));
+
+	QVBoxLayout* orientationLayout = new QVBoxLayout(gbOrientation);
+	orientationLayout->addWidget(cbIgnoreOrientation);
+	orientationLayout->addWidget(cbSaveOrientation);
+
+	QWidget* rightWidget = new QWidget(this);
+	QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
+	rightLayout->addWidget(gbCamData);
+	rightLayout->addWidget(gbOrientation);
+	rightLayout->addStretch();
+	//vboxLayoutDescription->addStretch();
+
+	hboxLayout->addWidget(gbDescription);
+	hboxLayout->addWidget(rightWidget);
+
 }
 
 void DkMetaDataSettingsWidget::writeSettings() {
@@ -1339,6 +1370,9 @@ void DkMetaDataSettingsWidget::writeSettings() {
 	for (int i=0; i<desc_end;i++) {
 		DkSettings::MetaData::metaDataBits[i] = pCbMetaData[i]->isChecked();
 	}
+
+	DkSettings::MetaData::ignoreExifOrientation = cbIgnoreOrientation->isChecked();
+	DkSettings::MetaData::saveExifOrientation = cbSaveOrientation->isChecked();
 }
 
 

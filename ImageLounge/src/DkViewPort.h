@@ -67,11 +67,11 @@
 #include "DkWidgets.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
+#include "DkToolbars.h"
+#include "DkBaseViewPort.h"
 //#include "DkDialog.h"
 
 #include "DkMath.h"
-
-#include "DkTransferToolBar.h"
 
 #ifdef DK_DLL
 #define DllExport __declspec(dllexport)
@@ -229,8 +229,8 @@ public:
 		return rating;
 	}
 
-	DkEditableRect* getEditRect() {
-		return editRect;
+	DkCropWidget* getCropWidget() {
+		return cropWidget;
 	}
 
 	void stopLabels();
@@ -248,7 +248,7 @@ public slots:
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
 
-	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false);
+	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -279,7 +279,7 @@ protected:
 	QWidget* hudWidget;
 
 	DkViewPort* viewport;
-	DkEditableRect* editRect;
+	DkCropWidget* cropWidget;
 
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
@@ -303,162 +303,6 @@ protected:
 
 	QPointF enterPos;
 	int rating;
-
-};
-
-
-
-
-class DllExport DkBaseViewPort : public QGraphicsView {
-	Q_OBJECT
-
-public:
-	
-	enum swipes{
-		no_swipe = 0, // dummy for now
-		next_image,
-		prev_image,
-		open_thumbs,
-		close_thumbs,
-		open_metadata,
-		close_metadata,
-		
-		swipes_end
-	};
-	
-	
-	DkBaseViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
-	virtual ~DkBaseViewPort();
-
-	virtual void release();
-	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
-	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
-	void setForceFastRendering(bool fastRendering = true) {
-		this->forceFastRendering = forceFastRendering;
-	}
-	
-	/**
-	 * Returns the scale factor for 100%.
-	 * Note this factor is only valid for the current image.
-	 * @return float 
-	 **/ 
-	float get100Factor() {
-		
-		updateImageMatrix();
-		return 1.0f/imgMatrix.m11();
-	}
-
-	void setPanControl(QPointF panControl) {
-		this->panControl = panControl;
-	};
-	
-	virtual QTransform getWorldMatrix() { 
-		return worldMatrix;
-	};
-	virtual QRect getMainGeometry() {
-		return geometry();
-	};
-
-	QImage getCurrentImageRegion();
-
-	virtual DkImageStorage* getImageStorage() {
-		return &imgStorage;
-	};
-
-	//virtual QImage getScaledImage(float factor);
-
-#ifdef WITH_OPENCV
-	virtual void setImage(cv::Mat newImg);
-#endif
-
-	virtual QImage getImage();
-
-	virtual QRectF getImageViewRect();
-
-signals:
-	void enableNoImageSignal(bool enable);
-	void showStatusBar(bool show, bool permanent);
-	void imageUpdated();	// this waits ~50 ms before triggering
-	
-//#ifdef DK_DLL
-	void keyReleaseSignal(QKeyEvent* event);	// make key presses available
-//#endif
-
-public slots:
-	virtual void togglePattern(bool show);
-	virtual void shiftLeft();
-	virtual void shiftRight();
-	virtual void shiftUp();
-	virtual void shiftDown();
-	virtual void moveView(QPointF);
-	virtual void zoomIn();
-	virtual void zoomOut();
-	virtual void resetView();
-	virtual void fullView();
-	virtual void resizeEvent(QResizeEvent* event);
-	virtual void stopBlockZooming();
-
-	virtual void unloadImage();
-
-	virtual void setImage(QImage newImg);
-
-protected:
-	virtual bool event(QEvent *event);
-	virtual void keyPressEvent(QKeyEvent *event);
-	virtual void keyReleaseEvent(QKeyEvent *event);
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void wheelEvent(QWheelEvent *event);
-	virtual void mouseDoubleClickEvent(QMouseEvent *event);
-	virtual void contextMenuEvent(QContextMenuEvent *event);
-	virtual void paintEvent(QPaintEvent* event);
-
-#ifndef QT_NO_GESTURES
-	virtual bool nativeGestureEvent(QNativeGestureEvent* event);
-	virtual int swipeRecognition(QNativeGestureEvent* event) { return no_swipe;};	// dummy
-#endif
-	virtual bool gestureEvent(QGestureEvent* event);
-	virtual void swipeAction(int swipeGesture) {};
-
-	QPainter* painter;
-	Qt::KeyboardModifier altMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
-	Qt::KeyboardModifier ctrlMod;
-
-	QWidget *parent;
-	//QImage imgQt;
-	//QMap<int, QImage> imgPyramid;
-	DkImageStorage imgStorage;
-	QMovie* movie;
-	QBrush pattern;
-
-
-	QTransform imgMatrix;
-	QTransform worldMatrix;
-	QRectF imgViewRect;
-	QRectF viewportRect;
-	QRectF imgRect;
-
-	QPointF panControl;	// controls how far we can pan outside an image
-	QPointF posGrab;
-	float minZoom;
-	float maxZoom;
-	float lastZoom;
-	float startZoom;
-	int swipeGesture;
-
-	bool forceFastRendering;
-	bool blockZooming;
-	QTimer* zoomTimer;
-
-	// functions
-	virtual void draw(QPainter *painter);
-	virtual bool imageInside();	// always return false?!
-	virtual void updateImageMatrix();
-	virtual QTransform getScaledImageMatrix();
-	virtual void controlImagePosition(float lb = -1, float ub = -1);
-	virtual void centerImage();
-	virtual void changeCursor();
 
 };
 
@@ -496,7 +340,7 @@ public:
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-	void windowTitleSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
+	//void windowTitleSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
 	void sendNewFileSignal(qint16 op, QString filename = "");
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg, int);
@@ -527,7 +371,7 @@ public slots:
 	//void loadPrevFile(bool silent = false);
 	void loadNextFileFast(bool silent = false);
 	void loadPrevFileFast(bool silent = false);
-	void loadFileFast(int skipIdx, bool silent = false);
+	void loadFileFast(int skipIdx, bool silent = false, int rec = 0);
 	void loadFile(int skipIdx, bool silent = false);
 	void loadFirst();
 	void loadLast();
@@ -536,7 +380,7 @@ public slots:
 	void loadLena();
 	void unloadImage();
 	void fileNotLoaded(QFileInfo file);
-	void cropImage(DkRotatingRect rect);
+	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 
 
 	virtual void updateImage();
@@ -584,7 +428,7 @@ protected:
 	virtual void drawBackground(QPainter *painter);
 	virtual void updateImageMatrix();
 	void showZoom();
-	QPoint newCenter(QSize s);	// for frameless
+	//QPoint newCenter(QSize s);	// for frameless
 	void toggleLena();
 	void getPixelInfo(const QPoint& pos);
 
