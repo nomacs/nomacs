@@ -15,4 +15,5 @@ ENDIF()
 add_subdirectory(jasper-1.900.1)
 add_subdirectory(qtjp2imageformat)
 add_dependencies(qtjp22 libjasper)
+add_subdirectory(FakeMiniaturesPlugin)
 
