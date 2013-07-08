@@ -194,7 +194,7 @@ class DkLANClientManager : public DkClientManager {
 	public slots:
 		void sendTitle(QString newTitle);
 		virtual void synchronizeWithServerPort(quint16 port) {}; // dummy
-		void stopSynchronizeWith(quint16 peerId);
+		void stopSynchronizeWith(quint16 peerId = -1);
 		void startServer(bool flag);
 		void sendNewImage(QImage image, QString title);
 		void synchronizeWith(quint16 peerId);
@@ -211,8 +211,6 @@ class DkLANClientManager : public DkClientManager {
 		void connectionReceivedNewImage(DkConnection* connection, QImage image, QString title);
 		void startConnection(QHostAddress address, quint16 port, QString clientName);
 		void sendStopSynchronizationToAll();
-		
-
 		
 		virtual void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		virtual void connectionStopSynchronized(DkConnection* connection);
@@ -236,6 +234,10 @@ class DkRCClientManager : public DkLANClientManager {
 	public slots:
 		//void sendAskForPermission(); // todo: muss das ein slot sein?
 		virtual void synchronizeWith(quint16 peerId);
+		virtual void sendNewMode(int mode);
+
+signals:
+		void sendNewModeMessage(int mode);
 
 	protected:
 		void connectConnection(DkConnection* connection);
@@ -482,19 +484,18 @@ protected:
 class DkRCManagerThread : public DkLanManagerThread {
 	Q_OBJECT
 
-	public:
-		DkRCManagerThread(DkNoMacs* parent);
-		void connectClient();
+public:
+	DkRCManagerThread(DkNoMacs* parent);
+	void connectClient();
 
-	public slots:
-		void startServer(bool start) {
-			wait(1000);
-			// re-send
-			emit startServerSignal(start);
-		};
+public slots:
+	void sendNewMode(int mode);
 
-	protected:
-		void createClient(QString title);
+signals:
+	void newModeSignal(int mode);
+
+protected:
+	void createClient(QString title);
 
 };
 
@@ -513,7 +514,6 @@ public slots:
 	void downloadFinishedSlot(QNetworkReply* data);
 	void updateDownloadProgress(qint64 received, qint64 total) { emit downloadProgress(received, total); };
 	void cancelUpdate();
-	
 
 signals:
 	void displayUpdateDialog(QString msg, QString title);

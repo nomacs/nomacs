@@ -765,6 +765,9 @@ void DkViewPort::setImage(QImage newImg) {
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 
+	if (DkSettings::Sync::syncMode == DkSettings::sync_mode_auto)
+		tcpSendImage();
+
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -896,8 +899,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	controller->update();	// why do we need to update the controller manually?
 	update();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
-		tcpSynchronize();
+	tcpSynchronize();
 	
 }
 
@@ -1003,6 +1005,11 @@ void DkViewPort::tcpSetWindowRect(QRect rect) {
 
 void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 	
+	if ((qApp->keyboardModifiers() != altMod && 
+		DkSettings::Sync::syncMode == DkSettings::sync_mode_default) || 
+		(!hasFocus() && !controller->hasFocus()))
+		return;
+
 	if (relativeMatrix.isIdentity()) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = worldMatrix.inverted().map(size);
@@ -1555,6 +1562,11 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 
+	if (DkSettings::Sync::syncMode == DkSettings::sync_mode_remote) {
+		emit sendNewFileSignal(skipIdx);
+		return;		// don't load images here...
+	}
+
 	skipImageTimer->stop();
 
 	silent |= (parent && parent->isFullScreen() && DkSettings::SlideShow::silentFullscreen);
@@ -1633,7 +1645,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 		return;		// no network loading in this case
 	}
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || 
+		DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && 
+		(hasFocus() || 
+		controller->hasFocus()))
 		emit sendNewFileSignal(skipIdx);
 
 	skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again

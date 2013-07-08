@@ -304,6 +304,7 @@ void DkLocalClientManager::synchronizeWith(quint16 peerId) {
 
 void DkLocalClientManager::stopSynchronizeWith(quint16 peerId) {
 	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
+	
 	foreach (DkPeer peer , synchronizedPeers) {
 		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
 		emit sendDisableSynchronizeMessage();
@@ -522,14 +523,30 @@ void DkLANClientManager::synchronizeWith(quint16 peerId) {
 
 
 void DkLANClientManager::stopSynchronizeWith(quint16 peerId) {
-	DkPeer peer = peerList.getPeerById(peerId);
-	connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
-	emit sendDisableSynchronizeMessage();
-	disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+	
 
-	peerList.setSynchronized(peer.peerId, false);
-	if (server->isListening()) // i am server
-		peerList.setShowInMenu(peerId, false);
+	// disconnect all
+	if (peerId == -1) {
+		QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
+
+		foreach (DkPeer peer , synchronizedPeers) {
+			connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+			emit sendDisableSynchronizeMessage();
+			peerList.setSynchronized(peer.peerId, false);
+			disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+		}
+	}
+	else {
+		DkPeer peer = peerList.getPeerById(peerId);
+		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+		emit sendDisableSynchronizeMessage();
+		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+
+		peerList.setSynchronized(peer.peerId, false);
+		if (server->isListening()) // i am server
+			peerList.setShowInMenu(peerId, false);
+	}
+
 
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 	emit updateConnectionSignal(peerList.getActivePeers());	
@@ -643,6 +660,7 @@ void DkLANClientManager::sendNewImage(QImage image, QString title) {
 		disconnect(this,SIGNAL(sendNewImageMessage(QImage, QString)), connection, SLOT(sendNewImageMessage(QImage, QString)));
 	}
 }
+
 
 void DkLANClientManager::startServer(bool flag) {
 	if (!flag) {
@@ -781,8 +799,8 @@ void DkRCClientManager::connectionReceivedPermission(DkConnection* connection, b
 
 void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, int mode) {
 
-	// TODO: cast mode
-
+	DkSettings::Sync::syncMode = mode;
+	qDebug() << "new mode: " << mode;
 }
 
 DkRCConnection* DkRCClientManager::createConnection() {
@@ -796,6 +814,19 @@ void DkRCClientManager::connectConnection(DkConnection* connection) {
 	connect(connection, SIGNAL(connectionNewPermission(DkConnection*, bool)), this, SLOT(connectionReceivedPermission(DkConnection*, bool)));
 	connect(connection, SIGNAL(connectionNewRCType(DkConnection*, int)), this, SLOT(connectionReceivedRCType(DkConnection*, int)));
 }
+
+void DkRCClientManager::sendNewMode(int mode) {
+	
+	//qDebug() << "sending new image";
+	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
+	foreach (DkPeer peer , synchronizedPeers) {
+		DkRCConnection* connection = dynamic_cast<DkRCConnection*>(peer.connection);
+		connect(this,SIGNAL(sendNewModeMessage(int)), connection, SLOT(sendRCType(int)));
+		emit sendNewModeMessage(mode);
+		disconnect(this,SIGNAL(sendNewModeMessage(int)), connection, SLOT(sendRCType(int)));
+	}
+}
+
 
 // DkLocalTcpServer --------------------------------------------------------------------
 DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
@@ -1469,8 +1500,14 @@ void DkRCManagerThread::connectClient() {
 	//connect(clientManager, SIGNAL(sendInfoSignal(QString, int)), parent->viewport()->getController(), SLOT(setInfo(QString, int)));
 	//connect(clientManager, SIGNAL(receivedImageTitle(QString)), parent, SLOT(setWindowTitle(QString)));
 	//connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
+	connect(this, SIGNAL(newModeSignal(int)), clientManager, SLOT(sendNewMode(int)));
+	connect(parent, SIGNAL(stopSynchronizeWithSignal()), clientManager, SLOT(stopSynchronizeWith()));
 
 	DkLanManagerThread::connectClient();
+}
+
+void DkRCManagerThread::sendNewMode(int mode) {
+	newModeSignal(mode);
 }
 
 }

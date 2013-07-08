@@ -313,7 +313,7 @@ void DkConnection::checkState() {
 		}
 
 		state = Synchronized;
-		if (!isSynchronizeMessageSent && allowedToSynchronize())
+		if (!isSynchronizeMessageSent)
 			sendStartSynchronizeMessage();
 
 		synchronizedTimer->stop();
@@ -942,7 +942,7 @@ void DkRCConnection::sendPermission() {
 	this->waitForBytesWritten();
 }
 
-void DkRCConnection::sendRCType(DkSettings::syncModes type) {
+void DkRCConnection::sendRCType(int type) {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << type;
