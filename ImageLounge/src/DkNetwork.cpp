@@ -155,12 +155,6 @@ void DkClientManager::newConnection( int socketDescriptor ) {
 	connection->setSocketDescriptor(socketDescriptor);
 	connection->setTitle(currentTitle);
 	startUpConnections.append(connection);
-	qDebug() << "startupConnections size:" << startUpConnections.size();
-	for (int i=0; i < startUpConnections.size(); i++) {
-		DkConnection* suConnection = startUpConnections.at(i);
-		qDebug() << i << "startupConnections: " << suConnection->peerAddress() << ":" << suConnection->peerPort();
-	}
-
 	qDebug() << "new Connection " << connection->peerPort();
 }
 
@@ -939,13 +933,16 @@ void DkLANUdpSocket::sendBroadcast() {
 }
 
 void DkLANUdpSocket::sendNewClientBroadcast() {
+	qDebug() << __FUNCTION__;
 	QByteArray datagram;
 	datagram.append("newClient");
 	datagram.append("@");
 	datagram.append(QByteArray::number(0));
 
-	for (quint16 port = startPort; port < endPort; port++) 
+	for (quint16 port = startPort; port < endPort; port++)  {
+		qDebug() << "sending new client broadcast at port:" << port;
 		writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, port);
+	}
 	qDebug() << "sent broadcast:" << datagram << "--- " << 0;
 }
 
