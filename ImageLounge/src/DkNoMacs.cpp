@@ -2875,6 +2875,21 @@ DkNoMacsSync::~DkNoMacsSync() {
 		localClient = 0;
 	}
 
+	if (rcClient) {
+
+		if (DkSettings::Sync::syncMode == DkSettings::sync_mode_remote)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
+
+		emit stopSynchronizeWithSignal();
+
+		rcClient->quit();
+		rcClient->wait();
+
+		delete rcClient;
+		rcClient = 0;
+
+	}
+
 }
 
 void DkNoMacsSync::initLanClient() {
@@ -2887,12 +2902,22 @@ void DkNoMacsSync::initLanClient() {
 		delete lanClient;
 	}
 
+	// remote control server
+	if (rcClient) {
+		rcClient->quit();
+		rcClient->wait();
+
+		delete rcClient;
+	}
+
 	if (!DkSettings::Sync::enableNetworkSync) {
 
 		lanClient = 0;
 		rcClient = 0;
 
 		tcpLanMenu->setEnabled(false);
+		syncActions[menu_sync_remote_control]->setEnabled(false);
+		syncActions[menu_sync_remote_display]->setEnabled(false);
 		return;
 	}
 
@@ -2924,22 +2949,22 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->setEnabled(true);
 	tcpLanMenu->enableActions();
 
-	// remote control server
-	if (rcClient) {
-		rcClient->quit();
-		rcClient->wait();
-
-		delete rcClient;
-	}
-
 	rcClient = new DkRCManagerThread(this);
 	rcClient->start();
+
+	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
+
+	DkTimer dt;
 	if (!DkSettings::Sync::syncWhiteList.empty()) {
 		qDebug() << "whitelist not empty .... starting server";
-		rcClient->startServer(true);
+		// TODO: currently blocking : )
+		emit startRCServerSignal(true);
+		//rcClient->startServer(true);
 	}
 	else 
 		qDebug() << "whitelist empty!!";
+
+	qDebug() << "start server takes: " << QString::fromStdString(dt.getTotal());
 }
 
 void DkNoMacsSync::createActions() {
@@ -2968,15 +2993,26 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_arrange]->setEnabled(false);
 	connect(syncActions[menu_sync_arrange], SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
 
-	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &all"), this);
+	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &All"), this);
 	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
 
+	syncActions[menu_sync_auto_connect] = new QAction(tr("&Auto Connect"), this);
+	syncActions[menu_sync_auto_connect]->setStatusTip(tr("Transmit All Signals Automatically."));
+	syncActions[menu_sync_auto_connect]->setCheckable(true);
+	connect(syncActions[menu_sync_auto_connect], SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
+
 	syncActions[menu_sync_remote_control] = new QAction(tr("&Remote Control"), this);
 	//syncActions[menu_sync_remote_control]->setShortcut(QKeySequence(shortcut_connect_all));
-	syncActions[menu_sync_remote_control]->setStatusTip(tr("Remote Control"));
-	connect(syncActions[menu_sync_remote_control], SIGNAL(triggered()), this, SLOT(tcpRemoteControl()));
+	syncActions[menu_sync_remote_control]->setStatusTip(tr("Automatically Receive Images From Your Remote Connection."));
+	syncActions[menu_sync_remote_control]->setCheckable(true);
+	connect(syncActions[menu_sync_remote_control], SIGNAL(triggered(bool)), this, SLOT(tcpRemoteControl(bool)));
+
+	syncActions[menu_sync_remote_display] = new QAction(tr("Remote &Display"), this);
+	syncActions[menu_sync_remote_display]->setStatusTip(tr("Automatically Send Images to a Remote Instance."));
+	syncActions[menu_sync_remote_display]->setCheckable(true);
+	connect(syncActions[menu_sync_remote_display], SIGNAL(triggered(bool)), this, SLOT(tcpRemoteDisplay(bool)));
 
 	assignCustomShortcuts(syncActions);
 }
@@ -2997,11 +3033,14 @@ void DkNoMacsSync::createMenu() {
 	tcpLanMenu = new DkTcpMenu(tr("&LAN Synchronize"), syncMenu, lanClient);	// TODO: replace
 	syncMenu->addMenu(tcpLanMenu);
 
+	syncMenu->addAction(syncActions[menu_sync_remote_control]);
+	syncMenu->addAction(syncActions[menu_sync_remote_display]);
+	syncMenu->addSeparator();
+
 	syncMenu->addAction(syncActions[menu_sync]);
 	syncMenu->addAction(syncActions[menu_sync_pos]);
 	syncMenu->addAction(syncActions[menu_sync_arrange]);
-	syncMenu->addAction(syncActions[menu_sync_remote_control]);
-
+	syncMenu->addAction(syncActions[menu_sync_auto_connect]);
 }
 
 // mouse events
@@ -3073,19 +3112,66 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
-void DkNoMacsSync::tcpRemoteControl() {
+void DkNoMacsSync::tcpRemoteControl(bool start) {
 
 	if (!rcClient)
 		return;
 
-	qDebug() << "trying to connect remote control ...";
+	bool couldConnect = connectWhiteList(DkSettings::sync_mode_remote, start);
+
+	syncActions[menu_sync_remote_control]->setChecked(couldConnect);
+
+}
+
+void DkNoMacsSync::tcpRemoteDisplay(bool start) {
+
+	if (!rcClient)
+		return;
+
+	bool couldConnect = connectWhiteList(DkSettings::sync_mode_auto, start);
+
+	syncActions[menu_sync_remote_display]->setChecked(couldConnect);
+}
+
+void DkNoMacsSync::tcpAutoConnect(bool connect) {
+
+	DkSettings::Sync::syncMode = (connect) ? DkSettings::sync_mode_auto : DkSettings::sync_mode_default;
+}
+
+
+bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
+
+	if (!rcClient)
+		return false;
+
+	bool couldConnect = false;
+
 	QList<DkPeer> peers = rcClient->getPeerList();
 	qDebug() << "number of peers in list:" << peers.size();
-	
-	for (int idx = 0; idx < peers.size(); idx++)  {
-		qDebug() << "trying to synchronize with:" << peers.at(idx).clientName << ":" << peers.at(idx).peerServerPort;
-		emit synchronizeRemoteControl(peers.at(idx).peerId);	
+
+	// TODO: add gui if idx != 1
+	if (connect && !peers.isEmpty()) {
+		DkPeer peer = peers[0];
+
+		emit synchronizeRemoteControl(peer.peerId);
+		DkSettings::Sync::syncMode = mode;
+		
+		if (mode == DkSettings::sync_mode_remote)
+			rcClient->sendNewMode(DkSettings::sync_mode_auto);	// TODO: if we need this threaded emit a signal here
+
+		couldConnect = true;
 	}
+	else if (!connect) {
+
+		DkSettings::Sync::syncMode = DkSettings::sync_mode_default;
+
+		if (mode == DkSettings::sync_mode_remote)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
+
+		emit stopSynchronizeWithSignal();
+	}
+
+	return couldConnect;
 }
 
 void DkNoMacsSync::newClientConnected(bool connected) {

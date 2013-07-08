@@ -247,7 +247,7 @@ void DkConnection::processReadyRead() {
 }
 
 void DkConnection::checkState() {
-	qDebug() << "im check State -......-----......-----......-----......-----......-----......----";
+	//qDebug() << "im check State -......-----......-----......-----......-----......-----......----";
 	if (state == WaitingForGreeting) {
 		if (currentDataType != Greeting) {
 			abort();
@@ -314,7 +314,7 @@ void DkConnection::checkState() {
 		}
 
 		state = Synchronized;
-		if (!isSynchronizeMessageSent && allowedToSynchronize())
+		if (!isSynchronizeMessageSent)
 			sendStartSynchronizeMessage();
 
 		synchronizedTimer->stop();
@@ -943,7 +943,7 @@ void DkRCConnection::sendPermission() {
 	this->waitForBytesWritten();
 }
 
-void DkRCConnection::sendRCType(DkSettings::syncModes type) {
+void DkRCConnection::sendRCType(int type) {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << type;

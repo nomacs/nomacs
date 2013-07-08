@@ -250,7 +250,7 @@ class DkRCConnection : public DkLANConnection {
 	public slots:
 		void sendAskForPermission();
 		void sendPermission();
-		void sendRCType(DkSettings::syncModes type);
+		void sendRCType(int type);
 
 	protected slots:
 		virtual void processReadyRead();
