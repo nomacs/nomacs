@@ -389,10 +389,8 @@ void DkLANClientManager::startConnection(QHostAddress address, quint16 port, QSt
 		return;
 	}
 
-	qDebug() << "startupConnections size:" << startUpConnections.size();
 	for (int i=0; i < startUpConnections.size(); i++) {
 		DkConnection* suConnection = startUpConnections.at(i);
-		qDebug() << "startupConnections: " << suConnection->peerAddress() << ":" << suConnection->peerPort();
 		if (suConnection->peerAddress() == address && suConnection->peerPort() == port) {
 			qDebug() << "already trying to connect to this client";
 			return;

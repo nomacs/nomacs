@@ -192,12 +192,13 @@ void DkThumbsLoader::loadThumbs() {
 		}
 
 		// does somebody want me to stop?
-		if (!isActive ) {
+		if (!isActive) {
 			mutex.unlock();
 			return;
 		}
 		
-		// TODO:  he breaks here! (crash detected)
+		// TODO:  he breaks here! (crash detected++)
+		// at the same time, main thread in DkFilePreview indexDir() -> waiting for our loader after stopping it
 		DkThumbNail* thumb = &(*thumbIter);
 		if (!thumb->hasImage()) {
 			thumb->setImage(getThumbNailQt(thumb->getFile()));
@@ -363,7 +364,7 @@ void DkThumbsLoader::loadAll() {
 
 /**
  * Loads the thumbnail from the metadata.
- * If no thumbnail is embeded, the whole image
+ * If no thumbnail is embedded, the whole image
  * is loaded and downsampled in a fast manner.
  * @param file the file to be loaded
  * @return QImage the loaded image. Null if no image
