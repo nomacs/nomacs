@@ -711,8 +711,7 @@ void DkLANClientManager::connectConnection(DkConnection* connection) {
 }
 
 // DkRemoteControllClientManager --------------------------------------------------------------------
-DkRCClientManager::DkRCClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, 28565, 28565) {
-	//server = new DkLANTcpServer(this, 28565, 28565);
+DkRCClientManager::DkRCClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, rcUDPPort, rcUDPPort) {
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
 
 	qDebug() << "remote control network service startet";
@@ -830,8 +829,8 @@ void DkRCClientManager::sendNewMode(int mode) {
 
 // DkLocalTcpServer --------------------------------------------------------------------
 DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
-	this->startPort = 45454;
-	this->endPort = 45484;
+	this->startPort = localTCPPortStart;
+	this->endPort = localTCPPortEnd;
 
 	for (int i = startPort; i < endPort; i++) {
 		if (listen(QHostAddress::LocalHost, i)) {
@@ -968,9 +967,7 @@ void DkLANUdpSocket::readBroadcast() {
 		if (isLocalHostAddress(senderIP)) // ignore connections from localhost
 			continue;
 
-		qDebug() << "????????????new broadcast received: list:" << list.at(0) << " senderServerPort: " << senderServerPort << " broadcasting:" << broadcasting << " localPort:" << serverPort;
 		if (list.at(0) == "newClient" && senderServerPort == 0 && broadcasting) { // new Client broadcast, answer with broadcast if instance is server
-			qDebug() << "new client broadcast received";
 			sendBroadcast();
 			return;
 		}
