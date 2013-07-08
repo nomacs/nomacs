@@ -37,6 +37,7 @@ DkConnection::DkConnection(QObject* parent) : QTcpSocket(parent) {
 	numBytesForCurrentDataType = -1;
 	isGreetingMessageSent = false;	
 	isSynchronizeMessageSent = false;
+	connectionCreated = false;
 	this->synchronizedTimer = new QTimer(this);
 	connect(synchronizedTimer, SIGNAL(timeout()), this, SLOT(synchronizedTimerTimeout()));
 

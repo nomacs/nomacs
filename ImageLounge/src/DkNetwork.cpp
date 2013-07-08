@@ -405,6 +405,7 @@ void DkLANClientManager::startConnection(QHostAddress address, quint16 port, QSt
 	}
 
 	DkLANConnection* connection = createConnection();
+	connection->connectionCreated = true;
 	connection->setClientName(clientName);
 	connection->connectToHost(address, port);
 	connection->setIAmServer(false);
@@ -702,7 +703,7 @@ DkRCClientManager::DkRCClientManager(QString title, QObject* parent /* = 0 */) :
 QList<DkPeer> DkRCClientManager::getPeerList() {
 	QList<DkPeer> list;
 	foreach(DkPeer peer, peerList.getPeerList()) {
-		if (permissionList.value(peer.peerId))
+		if (permissionList.value(peer.peerId) && peer.connection->connectionCreated)
 			list.push_back(peer);
 	}
 	return list;

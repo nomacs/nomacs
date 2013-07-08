@@ -65,6 +65,8 @@ class DkConnection : public QTcpSocket {
 		void setPeerId(quint16 peerId) { this->peerId = peerId;};
 		void setTitle(QString newTitle);
 
+		bool connectionCreated;
+
 	signals:
 		void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
 		void connectionStartSynchronize(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
