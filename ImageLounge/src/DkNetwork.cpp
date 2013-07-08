@@ -791,7 +791,7 @@ DkRCConnection* DkRCClientManager::createConnection() {
 void DkRCClientManager::connectConnection(DkConnection* connection) {
 	DkLANClientManager::connectConnection(connection);
 	connect(connection, SIGNAL(connectionNewPermission(DkConnection*, bool)), this, SLOT(connectionReceivedPermission(DkConnection*, bool)));
-	connect(connection, SIGNAL(connectionReceivedRCType(DkConnection*, DkRCConnection::RemoteControlType)), this, SLOT(connectionReceivedRCType(DkConnection*, RemoteControlType)));
+	connect(connection, SIGNAL(connectionNewRCType(DkConnection*, DkRCConnection::RemoteControlType)), this, SLOT(connectionReceivedRCType(DkConnection*, RemoteControlType)));
 }
 
 // DkLocalTcpServer --------------------------------------------------------------------
