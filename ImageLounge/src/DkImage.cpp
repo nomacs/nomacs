@@ -66,6 +66,9 @@ DkMetaData DkImageLoader::imgMetaData = DkMetaData();
 DkBasicLoader::DkBasicLoader(int mode) {
 	this->mode = mode;
 	training = false;
+	pageIdxDirty = false;
+	numPages = 1;
+	pageIdx = 1;
 	loader = no_loader;
 }
 
@@ -91,6 +94,9 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 #endif
 	release();
 
+	if (pageIdxDirty)
+		imgLoaded = loadPage();
+
 	// identify raw images:
 	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
@@ -106,9 +112,11 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 		imgLoaded = loadWebPFile(this->file);
 		if (imgLoaded) loader = webp_loader;
 	}
+
 	// RAW loader
 	if (!imgLoaded) {
-
+		
+		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files
 		imgLoaded = loadRawFile(this->file);
 		if (imgLoaded) loader = raw_loader;
@@ -150,6 +158,11 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 		cvImg = oldMat;
 #endif
 	}
+
+	// tiff things
+	if (imgLoaded && !pageIdxDirty)
+		indexPages(file);
+	pageIdxDirty = false;
 
 	return imgLoaded;
 }
@@ -626,6 +639,139 @@ bool DkBasicLoader::loadPSDFile(QFileInfo fileInfo) {
 		return psdHandler.read(&this->qImg);
 		
 	return false;
+}
+
+void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
+
+	// reset counters
+	numPages = 1;
+	pageIdx = 1;
+
+#ifdef WITH_LIBTIFF
+
+	// for now we just support tiff's
+	if (!fileInfo.suffix().contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)))
+		return;
+
+	// first turn off nasty warning/error dialogs - (we do the GUI : )
+	TIFFErrorHandler oldErrorHandler, oldWarningHandler;
+	oldWarningHandler = TIFFSetWarningHandler(NULL);
+	oldErrorHandler = TIFFSetErrorHandler(NULL); 
+
+	DkTimer dt;
+	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toAscii(), "r");
+
+	if (!tiff) 
+		return;
+
+	// libtiff example
+	int dircount = 0;
+
+	do {
+		dircount++;
+
+	} while (TIFFReadDirectory(tiff));
+
+	numPages = dircount;
+
+	if (numPages > 1)
+		pageIdx = 1;
+
+	qDebug() << dircount << " TIFF directories... " << QString::fromStdString(dt.getTotal());
+	TIFFClose(tiff);
+
+	TIFFSetWarningHandler(oldWarningHandler);
+	TIFFSetWarningHandler(oldErrorHandler);
+#endif
+
+}
+
+bool DkBasicLoader::loadPage(int skipIdx) {
+
+	bool imgLoaded = false;
+
+#ifdef WITH_LIBTIFF
+	pageIdx += skipIdx;
+
+	// <= 1 since first page is loaded using qt
+	if (pageIdx > numPages || pageIdx <= 1)
+		return imgLoaded;
+
+	// first turn off nasty warning/error dialogs - (we do the GUI : )
+	TIFFErrorHandler oldErrorHandler, oldWarningHandler;
+	oldWarningHandler = TIFFSetWarningHandler(NULL);
+	oldErrorHandler = TIFFSetErrorHandler(NULL); 
+
+	DkTimer dt;
+	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toAscii(), "r");
+
+	if (!tiff)
+		return imgLoaded;
+
+	uint32 width = 0;
+	uint32 height = 0;
+	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width);
+	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height);
+
+	// go to current directory
+	for (int idx = 1; idx < pageIdx; idx++) {
+
+		if (!TIFFReadDirectory(tiff))
+			return false;
+	}
+
+	// init the qImage
+	qImg = QImage(width, height, QImage::Format_ARGB32);
+
+	const int stopOnError = 1;
+	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(qImg.bits()), ORIENTATION_TOPLEFT, stopOnError);
+
+	if (imgLoaded) {
+		for (uint32 y=0; y<height; ++y)
+			convert32BitOrder(qImg.scanLine(y), width);
+	}
+
+	TIFFClose(tiff);
+
+	TIFFSetWarningHandler(oldWarningHandler);
+	TIFFSetWarningHandler(oldErrorHandler);
+#endif
+
+	return imgLoaded;
+}
+
+bool DkBasicLoader::setPageIdx(int skipIdx) {
+
+	// do nothing if we don't have tiff pages
+	if (numPages <= 1)
+		return false;
+
+	pageIdxDirty = false;
+
+	int newPageIdx = pageIdx + skipIdx;
+
+	if (newPageIdx > 0 && newPageIdx <= numPages) {
+		pageIdxDirty = true;
+		pageIdx = newPageIdx;
+	}
+
+	return pageIdxDirty;
+}
+
+void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
+
+#ifdef WITH_LIBTIFF
+	// code from Qt QTiffHandler
+	uint32 *target = reinterpret_cast<uint32 *>(buffer);
+	for (int32 x=0; x<width; ++x) {
+		uint32 p = target[x];
+		// convert between ARGB and ABGR
+		target[x] = (p & 0xff000000)
+			| ((p & 0x00ff0000) >> 16)
+			| (p & 0x0000ff00)
+			| ((p & 0x000000ff) << 16);
+	}
+#endif
 }
 
 bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
@@ -1293,7 +1439,11 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 	qDebug() << "file: " << file.absoluteFilePath();
 
 	DkTimer dt;
-	
+
+	// load a page (e.g. within a tiff file)
+	if (basicLoader.setPageIdx(skipIdx))
+		return basicLoader.getFile();
+
 	//if (folderUpdated) {
 	//	bool loaded = loadDir((virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir(), false);
 	//	if (!loaded)
@@ -1579,6 +1729,7 @@ void DkImageLoader::load(QFileInfo file, bool silent, int cacheState) {
 	// is it save to lock the mutex before setting up the thread??
 	/*QMutexLocker locker(&mutex);*/
 	
+	// TODO: use QtConcurrent here...
 	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(bool, silent), Q_ARG(int, cacheState));
 }
 
@@ -1652,7 +1803,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 	DkTimer dtc;
 
 	// critical section -> threads
-	if (cacher && cacheState != cache_force_load) {
+	if (cacher && cacheState != cache_force_load && !basicLoader.isDirty()) {
 		
 		QVector<DkImageCache> cache = cacher->getCache();
 		//QMutableVectorIterator<DkImageCache> cIter(cacher->getCache());
@@ -1706,7 +1857,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		//QStringList keys = imgMetaData.getExifKeys();
 		//qDebug() << keys;
 
-		if (!imgMetaData.isTiff() && !imgRotated)
+		if (!imgMetaData.isTiff() && !imgRotated && !DkSettings::MetaData::ignoreExifOrientation)
 			basicLoader.rotate(orientation);
 		
 		if (cacher && cacheState != cache_disable_update) 
@@ -1715,7 +1866,8 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		qDebug() << "orientation set in: " << QString::fromStdString(dt.getIvl());
 			
 		// update watcher
-		emit updateFileWatcherSignal(file);		this->file = file;
+		emit updateFileWatcherSignal(file);		
+		this->file = file;
 		lastFileLoaded = file;
 		editFile = QFileInfo();
 		loadDir(file.absoluteDir(), false);
@@ -2163,9 +2315,13 @@ void DkImageLoader::rotateImage(double angle) {
 		QCoreApplication::sendPostedEvents();	// update immediately as we interlock otherwise
 
 		mutex.lock();
-		if (file.exists()) {
+		if (file.exists() && DkSettings::MetaData::saveExifOrientation) {
 			imgMetaData.saveOrientation((int)angle);
 			qDebug() << "exif data saved (rotation)?";
+		}
+		else if (!DkSettings::MetaData::saveExifOrientation) {
+			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
+			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
 		}
 		mutex.unlock();
 
@@ -2732,7 +2888,7 @@ void DkImageLoader::setImage(QImage img, QFileInfo editFile) {
 void DkImageLoader::sendFileSignal() {
 
 	QFileInfo f = (editFile.exists()) ? editFile : file;
-	emit updateFileSignal(f, basicLoader.image().size(), editFile.exists());
+	emit updateFileSignal(f, basicLoader.image().size(), editFile.exists(), getTitleAttributeString());
 }
 
 /**
@@ -2743,6 +2899,16 @@ QString DkImageLoader::fileName() {
 	return file.fileName();
 }
 
+QString DkImageLoader::getTitleAttributeString() {
+
+	if (basicLoader.getNumPages() <= 1)
+		return QString();
+
+	QString attr = "[" + QString::number(basicLoader.getPageIdx()) + "/" + 
+		QString::number(basicLoader.getNumPages()) + "]";
+
+	return attr;
+}
 
 // DkCacher --------------------------------------------------------------------
 

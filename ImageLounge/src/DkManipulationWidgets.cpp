@@ -68,9 +68,8 @@ DkImageManipulationDialog::~DkImageManipulationDialog() {
  **/
 void DkImageManipulationDialog::init() {
 
-	isOk = false;
 	dialogWidth = 700;
-	dialogHeight = 560;
+	dialogHeight = 600;
 	toolsWidth = 200;
 	previewMargin = 20;
 	previewWidth = dialogWidth - toolsWidth - 2 * previewMargin;
@@ -119,15 +118,13 @@ void DkImageManipulationDialog::createLayout() {
 	QWidget* bottomWidget = new QWidget(this);
 	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
 
-	QPushButton* buttonOk = new QPushButton(tr("&Ok"));
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(okPressed()));
-	QPushButton* buttonCancel = new QPushButton(tr("&Cancel"));
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-
-	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	bottomWidgetHBoxLayout->addItem(spacer);
-	bottomWidgetHBoxLayout->addWidget(buttonOk);
-	bottomWidgetHBoxLayout->addWidget(buttonCancel);	
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->setContentsMargins(10,10,10,10);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 	
 	// central widget - preview image
 	QWidget* centralWidget = new QWidget(this);
@@ -142,8 +139,8 @@ void DkImageManipulationDialog::createLayout() {
 	QVBoxLayout* toolsLayout = new QVBoxLayout(eastWidget);
 	toolsLayout->setContentsMargins(0,0,0,0);
 
-	contrastWidget = new DkContrast(eastWidget, this);
 	brightnessWidget = new DkBrightness(eastWidget, this);
+	contrastWidget = new DkContrast(eastWidget, this);
 	saturationWidget = new DkSaturation(eastWidget, this);
 	hueWidget = new DkHue(eastWidget, this);
 	gammaWidget = new DkGamma(eastWidget, this);
@@ -165,7 +162,7 @@ void DkImageManipulationDialog::createLayout() {
 	eastWidget->setLayout(toolsLayout);
 	
 	BorderLayout* borderLayout = new BorderLayout;
-	borderLayout->addWidget(bottomWidget, BorderLayout::South);
+	borderLayout->addWidget(buttons, BorderLayout::South);
 	borderLayout->addWidget(centralWidget, BorderLayout::Center);
 	borderLayout->addWidget(eastWidget, BorderLayout::East);
 	this->setSizeGripEnabled(false);
@@ -174,7 +171,7 @@ void DkImageManipulationDialog::createLayout() {
 }
 
 /**
-* rescale vieport image - it is used as a preview for the manipulation tools changes
+* rescale viewport image - it is used as a preview for the manipulation tools changes
  **/
 void DkImageManipulationDialog::createImgPreview() {
 
@@ -246,22 +243,6 @@ void DkImageManipulationDialog::drawImgPreview() {
 
 	previewLabel->setPixmap(QPixmap::fromImage(preview));
 }
-
-void DkImageManipulationDialog::okPressed() {
-
-	isOk = true;
-	this->close();
-}
-
-void DkImageManipulationDialog::cancelPressed() {
-
-	this->close();
-}
-
-void DkImageManipulationDialog::showEvent(QShowEvent *event) {
-	isOk = false;
-}
-
 
 /**
  * constructor for the abstract class DkImageManipulationWidget - all image manipulation widgets are created from it

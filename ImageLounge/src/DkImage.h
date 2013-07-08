@@ -27,7 +27,7 @@
 
 #pragma once
 
-#ifdef WIN32		// why is Q_WS_WIN32 not defined here?
+#ifdef WIN32
 #include "shlwapi.h"
 //#pragma comment (lib, "shlwapi.lib")
 #endif
@@ -65,7 +65,7 @@
 // opencv
 #ifdef WITH_OPENCV
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #pragma warning(disable: 4996)
 #endif
 
@@ -78,6 +78,11 @@
 #endif
 
 using namespace cv;
+#endif
+
+#ifdef WITH_LIBTIFF
+#include "tif_config.h"	
+#include "tiffio.h"
 #endif
 
 #include <set>
@@ -107,7 +112,7 @@ using namespace cv;
 
 namespace nmc {
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 	
 	/**
 	 * Logical string compare function.
@@ -401,7 +406,30 @@ public:
 		release();
 	};
 
+	/**
+	 * Loads the image for the given file
+	 * @param file an image file
+	 * @param skipIdx the number of (internal) pages to be skipped
+	 * @return bool true if the image was loaded
+	 **/ 
 	bool loadGeneral(QFileInfo file);
+
+	/**
+	 * Loads the page requested (with respect to the current page)
+	 * @param skipIdx number of pages to skip
+	 * @return bool true if we could load the page requested
+	 **/ 
+	bool loadPage(int skipIdx = 0);
+
+	int getNumPages() {
+		return numPages;
+	};
+
+	int getPageIdx() {
+		return pageIdx;
+	};
+
+	bool setPageIdx(int skipIdx);
 
 	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
 	
@@ -434,6 +462,14 @@ public:
 	 **/ 
 	QImage image() {
 		return qImg;
+	};
+
+	QFileInfo getFile() {
+		return file;
+	};
+
+	bool isDirty() {
+		return pageIdxDirty;
 	};
 
 	/**
@@ -481,12 +517,17 @@ protected:
 	
 	bool loadRohFile(QString fileName);
 	bool loadRawFile(QFileInfo file);
-	
+	void indexPages(const QFileInfo& fileInfo);
+	void convert32BitOrder(void *buffer, int width);
+
 	int loader;
 	bool training;
 	int mode;
 	QImage qImg;
 	QFileInfo file;
+	int numPages;
+	int pageIdx;
+	bool pageIdxDirty;
 
 #ifdef WITH_OPENCV
 	cv::Mat cvImg;
@@ -752,7 +793,7 @@ signals:
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
-	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
+	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false, QString attr = QString());
 	void updateDirSignal(QFileInfo file, int force = DkThumbsLoader::not_forced);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
@@ -809,6 +850,7 @@ protected:
 	void updateHistory();
 	void startStopCacher();
 	void sendFileSignal();
+	QString getTitleAttributeString();
 };
 
 };

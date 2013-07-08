@@ -89,9 +89,17 @@ class DkSettings : public QObject {
 			mode_frameless,
 			mode_contrast,
 			mode_default_fullscreen,
-			mode_frameless_fullscren,
+			mode_frameless_fullscreen,
 			mode_contrast_fullscreen,
 			mode_end,
+		};
+
+		enum syncModes {
+			sync_mode_default = 0,
+			sync_mode_auto,
+			sync_mode_remote,
+
+			sync_mode_end,
 		};
 
 		DkSettings() {};
@@ -181,9 +189,12 @@ class DkSettings : public QObject {
 			static QStringList recentSyncNames;
 			static QStringList syncWhiteList;
 			static QHash<QString, QVariant> recentLastSeen;
+			static int syncMode;
 		};
 		struct MetaData {
 			static QBitArray metaDataBits;
+			static bool ignoreExifOrientation;
+			static bool saveExifOrientation;
 
 			//static bool exifSize;
 			//static bool exifOrientation;
@@ -557,6 +568,8 @@ class DkMetaDataSettingsWidget : public DkSettingsWidget {
 		void init();
 		void createLayout();
 
+		QCheckBox* cbIgnoreOrientation;
+		QCheckBox* cbSaveOrientation;
 
 		//Checkboxes
 		QVector<QCheckBox *> pCbMetaData;

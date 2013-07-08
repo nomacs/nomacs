@@ -41,8 +41,6 @@ bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 	return QObject::eventFilter(obj, event);
 }
 
-
-
 DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags) {
 
@@ -66,6 +64,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	updater = 0;
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
+	exportTiffDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
@@ -131,6 +130,7 @@ void DkNoMacs::init() {
 	viewport()->addActions(fileActions.toList());
 	viewport()->addActions(editActions.toList());
 	viewport()->addActions(toolsActions.toList());
+	viewport()->addActions(panelActions.toList());
 	viewport()->addActions(viewActions.toList());
 	viewport()->addActions(syncActions.toList());
 	viewport()->addActions(helpActions.toList());
@@ -142,6 +142,8 @@ void DkNoMacs::init() {
 		editActions[idx]->setToolTip(editActions[idx]->statusTip());
 	for (int idx = 0; idx < toolsActions.size(); idx++)
 		toolsActions[idx]->setToolTip(toolsActions[idx]->statusTip());
+	for (int idx = 0; idx < panelActions.size(); idx++)
+		panelActions[idx]->setToolTip(panelActions[idx]->statusTip());
 	for (int idx = 0; idx < viewActions.size(); idx++)
 		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
 	for (int idx = 0; idx < syncActions.size(); idx++)
@@ -166,14 +168,16 @@ void DkNoMacs::init() {
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
 	connect(viewport(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
-	connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
-	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
+	//connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
+	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool, QString)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool, QString)));
 	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 
 }
 
@@ -425,6 +429,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
 	fileMenu->addAction(fileActions[menu_file_open_with]);
 	fileMenu->addAction(fileActions[menu_file_save]);
+	fileMenu->addAction(fileActions[menu_file_save_as]);
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
@@ -474,25 +479,11 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_preferences]);
 
 	viewMenu = menu->addMenu(tr("&View"));
-	viewToolsMenu = viewMenu->addMenu(tr("Tool&bars"));
-	viewToolsMenu->addAction(viewActions[menu_view_show_menu]);
-	viewToolsMenu->addAction(viewActions[menu_view_show_toolbar]);
-	viewToolsMenu->addAction(viewActions[menu_view_show_statusbar]);
-	viewToolsMenu->addAction(viewActions[menu_view_show_transfertoolbar]);
-	viewMenu->addAction(viewActions[menu_view_show_explorer]);
-	viewMenu->addAction(viewActions[menu_view_show_preview]);
-	viewMenu->addAction(viewActions[menu_view_show_scroller]);
-	viewMenu->addAction(viewActions[menu_view_show_exif]);
-	viewMenu->addAction(viewActions[menu_view_show_overview]);
-	viewMenu->addAction(viewActions[menu_view_show_player]);
-	viewMenu->addAction(viewActions[menu_view_show_info]);
-	viewMenu->addAction(viewActions[menu_view_show_histogram]);
-	viewMenu->addSeparator();
 	
 	viewMenu->addAction(viewActions[menu_view_frameless]);	
+	viewMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewMenu->addSeparator();
 
-	viewMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewMenu->addAction(viewActions[menu_view_reset]);
 	viewMenu->addAction(viewActions[menu_view_100]);
 	viewMenu->addAction(viewActions[menu_view_fit_frame]);
@@ -515,10 +506,29 @@ void DkNoMacs::createMenu() {
 	
 	viewMenu->addAction(viewActions[menu_view_gps_map]);
 
+	panelMenu = menu->addMenu(tr("&Panels"));
+	panelToolsMenu = panelMenu->addMenu(tr("Tool&bars"));
+	panelToolsMenu->addAction(panelActions[menu_panel_menu]);
+	panelToolsMenu->addAction(panelActions[menu_panel_toolbar]);
+	panelToolsMenu->addAction(panelActions[menu_panel_statusbar]);
+	panelToolsMenu->addAction(panelActions[menu_panel_transfertoolbar]);
+	panelMenu->addAction(panelActions[menu_panel_explorer]);
+	panelMenu->addAction(panelActions[menu_panel_preview]);
+	panelMenu->addAction(panelActions[menu_panel_scroller]);
+	panelMenu->addAction(panelActions[menu_panel_exif]);
+	
+	panelMenu->addSeparator();
+	
+	panelMenu->addAction(panelActions[menu_panel_overview]);
+	panelMenu->addAction(panelActions[menu_panel_player]);
+	panelMenu->addAction(panelActions[menu_panel_info]);
+	panelMenu->addAction(panelActions[menu_panel_histogram]);
+
 	toolsMenu = menu->addMenu(tr("&Tools"));
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
+	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -542,14 +552,14 @@ void DkNoMacs::createContextMenu() {
 
 	contextMenu = new QMenu(this);
 
-	contextMenu->addAction(viewActions[menu_view_show_explorer]);
-	contextMenu->addAction(viewActions[menu_view_show_preview]);
-	contextMenu->addAction(viewActions[menu_view_show_scroller]);
-	contextMenu->addAction(viewActions[menu_view_show_exif]);
-	contextMenu->addAction(viewActions[menu_view_show_overview]);
-	contextMenu->addAction(viewActions[menu_view_show_player]);
-	contextMenu->addAction(viewActions[menu_view_show_info]);
-	contextMenu->addAction(viewActions[menu_view_show_histogram]);
+	contextMenu->addAction(panelActions[menu_panel_explorer]);
+	contextMenu->addAction(panelActions[menu_panel_preview]);
+	contextMenu->addAction(panelActions[menu_panel_scroller]);
+	contextMenu->addAction(panelActions[menu_panel_exif]);
+	contextMenu->addAction(panelActions[menu_panel_overview]);
+	contextMenu->addAction(panelActions[menu_panel_player]);
+	contextMenu->addAction(panelActions[menu_panel_info]);
+	contextMenu->addAction(panelActions[menu_panel_histogram]);
 	contextMenu->addSeparator();
 	
 	contextMenu->addAction(editActions[menu_edit_copy_buffer]);
@@ -619,6 +629,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
 	fileActions[menu_file_save]->setStatusTip(tr("Save an image"));
 	connect(fileActions[menu_file_save], SIGNAL(triggered()), this, SLOT(saveFile()));
+
+	fileActions[menu_file_save_as] = new QAction(tr("&Save As"), this);
+	fileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
+	fileActions[menu_file_save_as]->setStatusTip(tr("Save an image as"));
+	connect(fileActions[menu_file_save_as], SIGNAL(triggered()), this, SLOT(saveFileAs()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
@@ -741,37 +756,92 @@ void DkNoMacs::createActions() {
 	connect(editActions[menu_edit_preferences], SIGNAL(triggered()), this, SLOT(openSettings()));
 
 	// view menu
-	viewActions.resize(menu_view_end);
-	viewActions[menu_view_show_menu] = new QAction(tr("Show &Menu"), this);
-	viewActions[menu_view_show_menu]->setStatusTip(tr("hides the menu and shows it again on ALT"));
-	viewActions[menu_view_show_menu]->setCheckable(true);
-	connect(viewActions[menu_view_show_menu], SIGNAL(toggled(bool)), this, SLOT(showMenuBar(bool)));
+	panelActions.resize(menu_panel_end);
+	panelActions[menu_panel_menu] = new QAction(tr("&Menu"), this);
+	panelActions[menu_panel_menu]->setStatusTip(tr("Hides the Menu and Shows it Again on ALT"));
+	panelActions[menu_panel_menu]->setCheckable(true);
+	connect(panelActions[menu_panel_menu], SIGNAL(toggled(bool)), this, SLOT(showMenuBar(bool)));
 
-	viewActions[menu_view_show_toolbar] = new QAction(tr("Show Tool&bar"), this);
-	viewActions[menu_view_show_toolbar]->setShortcut(QKeySequence(shortcut_show_toolbar));
-	viewActions[menu_view_show_toolbar]->setStatusTip(tr("Show Toolbar"));
-	viewActions[menu_view_show_toolbar]->setCheckable(true);
-	connect(viewActions[menu_view_show_toolbar], SIGNAL(toggled(bool)), this, SLOT(showToolbar(bool)));
+	panelActions[menu_panel_toolbar] = new QAction(tr("Tool&bar"), this);
+	panelActions[menu_panel_toolbar]->setShortcut(QKeySequence(shortcut_show_toolbar));
+	panelActions[menu_panel_toolbar]->setStatusTip(tr("Show Toolbar"));
+	panelActions[menu_panel_toolbar]->setCheckable(true);
+	connect(panelActions[menu_panel_toolbar], SIGNAL(toggled(bool)), this, SLOT(showToolbar(bool)));
 
-	viewActions[menu_view_show_statusbar] = new QAction(tr("Show &Statusbar"), this);
-	viewActions[menu_view_show_statusbar]->setShortcut(QKeySequence(shortcut_show_statusbar));
-	viewActions[menu_view_show_statusbar]->setStatusTip(tr("Show Statusbar"));
-	viewActions[menu_view_show_statusbar]->setCheckable(true);
-	connect(viewActions[menu_view_show_statusbar], SIGNAL(toggled(bool)), this, SLOT(showStatusBar(bool)));
+	panelActions[menu_panel_statusbar] = new QAction(tr("&Statusbar"), this);
+	panelActions[menu_panel_statusbar]->setShortcut(QKeySequence(shortcut_show_statusbar));
+	panelActions[menu_panel_statusbar]->setStatusTip(tr("Show Statusbar"));
+	panelActions[menu_panel_statusbar]->setCheckable(true);
+	connect(panelActions[menu_panel_statusbar], SIGNAL(toggled(bool)), this, SLOT(showStatusBar(bool)));
 
 	// Added by fabian - for transferfunction:
-	viewActions[menu_view_show_transfertoolbar] = new QAction(tr("Show &Pseudocolor Function"), this);
-	viewActions[menu_view_show_transfertoolbar]->setShortcut(QKeySequence(shortcut_show_transfer));
-	viewActions[menu_view_show_transfertoolbar]->setStatusTip(tr("Show Pseudocolor Function"));
-	viewActions[menu_view_show_transfertoolbar]->setCheckable(true);
-	viewActions[menu_view_show_transfertoolbar]->setChecked(false);
-	connect(viewActions[menu_view_show_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+	panelActions[menu_panel_transfertoolbar] = new QAction(tr("&Pseudocolor Function"), this);
+	panelActions[menu_panel_transfertoolbar]->setShortcut(QKeySequence(shortcut_show_transfer));
+	panelActions[menu_panel_transfertoolbar]->setStatusTip(tr("Show Pseudocolor Function"));
+	panelActions[menu_panel_transfertoolbar]->setCheckable(true);
+	panelActions[menu_panel_transfertoolbar]->setChecked(false);
+	connect(panelActions[menu_panel_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
 
+
+	qDebug() << "so: " << DkSettings::App::showOverview.size();
+	qDebug() << "sh: " << DkSettings::App::showHistogram.size();
+	qDebug() << "cAppMode: " << DkSettings::App::currentAppMode;
+
+	panelActions[menu_panel_overview] = new QAction(tr("O&verview"), this);
+	panelActions[menu_panel_overview]->setShortcut(QKeySequence(shortcut_show_overview));
+	panelActions[menu_panel_overview]->setStatusTip(tr("Shows the Zoom Overview"));
+	panelActions[menu_panel_overview]->setCheckable(true);
+	panelActions[menu_panel_overview]->setChecked(DkSettings::App::showOverview.testBit(DkSettings::App::currentAppMode));
+	connect(panelActions[menu_panel_overview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showOverview(bool)));
+
+	panelActions[menu_panel_player] = new QAction(tr("Pla&yer"), this);
+	panelActions[menu_panel_player]->setShortcut(QKeySequence(shortcut_show_player));
+	panelActions[menu_panel_player]->setStatusTip(tr("Shows the Slide Show Player"));
+	panelActions[menu_panel_player]->setCheckable(true);
+	connect(panelActions[menu_panel_player], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPlayer(bool)));
+
+	panelActions[menu_panel_explorer] = new QAction(tr("File &Explorer"), this);
+	panelActions[menu_panel_explorer]->setShortcut(QKeySequence(shortcut_show_explorer));
+	panelActions[menu_panel_explorer]->setStatusTip(tr("Show File Explorer"));
+	panelActions[menu_panel_explorer]->setCheckable(true);
+	connect(panelActions[menu_panel_explorer], SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
+
+	panelActions[menu_panel_preview] = new QAction(tr("&Thumbnails"), this);
+	panelActions[menu_panel_preview]->setShortcut(QKeySequence(shortcut_open_preview));
+	panelActions[menu_panel_preview]->setStatusTip(tr("Show Thumbnails"));
+	panelActions[menu_panel_preview]->setCheckable(true);
+	connect(panelActions[menu_panel_preview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPreview(bool)));
+
+	panelActions[menu_panel_scroller] = new QAction(tr("&Folder Scrollbar"), this);
+	panelActions[menu_panel_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
+	panelActions[menu_panel_scroller]->setStatusTip(tr("Show Folder Scrollbar"));
+	panelActions[menu_panel_scroller]->setCheckable(true);
+	connect(panelActions[menu_panel_scroller], SIGNAL(toggled(bool)), vp->getController(), SLOT(showScroller(bool)));
+
+	panelActions[menu_panel_exif] = new QAction(tr("&Metadata"), this);
+	panelActions[menu_panel_exif]->setShortcut(QKeySequence(shortcut_show_exif));
+	panelActions[menu_panel_exif]->setStatusTip(tr("Shows the Metadata Panel"));
+	panelActions[menu_panel_exif]->setCheckable(true);
+	connect(panelActions[menu_panel_exif], SIGNAL(toggled(bool)), vp->getController(), SLOT(showMetaData(bool)));
+
+	panelActions[menu_panel_info] = new QAction(tr("File &Info"), this);
+	panelActions[menu_panel_info]->setShortcut(QKeySequence(shortcut_show_info));
+	panelActions[menu_panel_info]->setStatusTip(tr("Shows the Info Panel"));
+	panelActions[menu_panel_info]->setCheckable(true);
+	connect(panelActions[menu_panel_info], SIGNAL(toggled(bool)), vp->getController(), SLOT(showFileInfo(bool)));
+
+	panelActions[menu_panel_histogram] = new QAction(tr("&Histogram"), this);
+	panelActions[menu_panel_histogram]->setShortcut(QKeySequence(shortcut_show_histogram));
+	panelActions[menu_panel_histogram]->setStatusTip(tr("Shows the Histogram Panel"));
+	panelActions[menu_panel_histogram]->setCheckable(true);
+	connect(panelActions[menu_panel_histogram], SIGNAL(toggled(bool)), vp->getController(), SLOT(showHistogram(bool)));
+
+	viewActions.resize(menu_view_end);
 	viewActions[menu_view_fit_frame] = new QAction(tr("&Fit Window"), this);
 	viewActions[menu_view_fit_frame]->setShortcut(QKeySequence(shortcut_fit_frame));
 	viewActions[menu_view_fit_frame]->setStatusTip(tr("Fit window to the image"));
 	connect(viewActions[menu_view_fit_frame], SIGNAL(triggered()), this, SLOT(fitFrame()));
-	
+
 	QList<QKeySequence> scs;
 	scs.append(shortcut_full_screen_ff);
 	scs.append(shortcut_full_screen_ad);
@@ -784,7 +854,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_reset]->setShortcut(QKeySequence(shortcut_reset_view));
 	viewActions[menu_view_reset]->setStatusTip(tr("Shows the initial view (no zooming)"));
 	connect(viewActions[menu_view_reset], SIGNAL(triggered()), vp, SLOT(resetView()));
-	
+
 	viewActions[menu_view_100] = new QAction(viewIcons[icon_view_100], tr("Show &100%"), this);
 	viewActions[menu_view_100]->setShortcut(QKeySequence(shortcut_zoom_full));
 	viewActions[menu_view_100]->setStatusTip(tr("Shows the image at 100%"));
@@ -813,55 +883,6 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_tp_pattern]->setCheckable(true);
 	viewActions[menu_view_tp_pattern]->setChecked(DkSettings::Display::tpPattern);
 	connect(viewActions[menu_view_tp_pattern], SIGNAL(toggled(bool)), vp, SLOT(togglePattern(bool)));
-
-	viewActions[menu_view_show_overview] = new QAction(tr("Show O&verview"), this);
-	viewActions[menu_view_show_overview]->setShortcut(QKeySequence(shortcut_show_overview));
-	viewActions[menu_view_show_overview]->setStatusTip(tr("shows the overview or not"));
-	viewActions[menu_view_show_overview]->setCheckable(true);
-	viewActions[menu_view_show_overview]->setChecked(DkSettings::App::showOverview.testBit(DkSettings::App::currentAppMode));
-	connect(viewActions[menu_view_show_overview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showOverview(bool)));
-
-	viewActions[menu_view_show_player] = new QAction(tr("Show Pla&yer"), this);
-	viewActions[menu_view_show_player]->setShortcut(QKeySequence(shortcut_show_player));
-	viewActions[menu_view_show_player]->setStatusTip(tr("shows the player or not"));
-	viewActions[menu_view_show_player]->setCheckable(true);
-	connect(viewActions[menu_view_show_player], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPlayer(bool)));
-
-	viewActions[menu_view_show_explorer] = new QAction(tr("Show File &Explorer"), this);
-	viewActions[menu_view_show_explorer]->setShortcut(QKeySequence(shortcut_show_explorer));
-	viewActions[menu_view_show_explorer]->setStatusTip(tr("Show File Explorer"));
-	viewActions[menu_view_show_explorer]->setCheckable(true);
-	connect(viewActions[menu_view_show_explorer], SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
-
-	viewActions[menu_view_show_preview] = new QAction(tr("Sho&w Thumbnails"), this);
-	viewActions[menu_view_show_preview]->setShortcut(QKeySequence(shortcut_open_preview));
-	viewActions[menu_view_show_preview]->setStatusTip(tr("Show thumbnails"));
-	viewActions[menu_view_show_preview]->setCheckable(true);
-	connect(viewActions[menu_view_show_preview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPreview(bool)));
-
-	viewActions[menu_view_show_scroller] = new QAction(tr("Sho&w Folder Overview"), this);
-	viewActions[menu_view_show_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
-	viewActions[menu_view_show_scroller]->setStatusTip(tr("Show folder scrollbar"));
-	viewActions[menu_view_show_scroller]->setCheckable(true);
-	connect(viewActions[menu_view_show_scroller], SIGNAL(toggled(bool)), vp->getController(), SLOT(showScroller(bool)));
-
-	viewActions[menu_view_show_exif] = new QAction(tr("Show &Metadata"), this);
-	viewActions[menu_view_show_exif]->setShortcut(QKeySequence(shortcut_show_exif));
-	viewActions[menu_view_show_exif]->setStatusTip(tr("shows the metadata panel"));
-	viewActions[menu_view_show_exif]->setCheckable(true);
-	connect(viewActions[menu_view_show_exif], SIGNAL(toggled(bool)), vp->getController(), SLOT(showMetaData(bool)));
-
-	viewActions[menu_view_show_info] = new QAction(tr("Show File &Info"), this);
-	viewActions[menu_view_show_info]->setShortcut(QKeySequence(shortcut_show_info));
-	viewActions[menu_view_show_info]->setStatusTip(tr("shows the info panel"));
-	viewActions[menu_view_show_info]->setCheckable(true);
-	connect(viewActions[menu_view_show_info], SIGNAL(toggled(bool)), vp->getController(), SLOT(showFileInfo(bool)));
-
-	viewActions[menu_view_show_histogram] = new QAction(tr("Show &Histogram"), this);
-	viewActions[menu_view_show_histogram]->setShortcut(QKeySequence(shortcut_show_histogram));
-	viewActions[menu_view_show_histogram]->setStatusTip(tr("shows the image histogram panel"));
-	viewActions[menu_view_show_histogram]->setCheckable(true);
-	connect(viewActions[menu_view_show_histogram], SIGNAL(toggled(bool)), vp->getController(), SLOT(showHistogram(bool)));
 
 	viewActions[menu_view_frameless] = new QAction(tr("&Frameless"), this);
 	viewActions[menu_view_frameless]->setShortcut(QKeySequence(shortcut_frameless));
@@ -922,6 +943,10 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_manipulation]->setStatusTip(tr("modify the current image"));
 	connect(toolsActions[menu_tools_manipulation], SIGNAL(triggered()), this, SLOT(openImgManipulationDialog()));
 
+	toolsActions[menu_tools_export_tiff] = new QAction(tr("Export Multipage &TIFF"), this);
+	toolsActions[menu_tools_export_tiff]->setStatusTip(tr("Export TIFF pages to multiple tiff files"));
+	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
+
 	// help menu
 	helpActions.resize(menu_help_end);
 	helpActions[menu_help_about] = new QAction(tr("&About Nomacs"), this);
@@ -944,6 +969,7 @@ void DkNoMacs::createActions() {
 	assignCustomShortcuts(fileActions);
 	assignCustomShortcuts(editActions);
 	assignCustomShortcuts(viewActions);
+	assignCustomShortcuts(panelActions);
 	assignCustomShortcuts(toolsActions);
 	assignCustomShortcuts(helpActions);
 }
@@ -958,6 +984,9 @@ void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
 
 		if (val != "no-shortcut")
 			actions[idx]->setShortcut(val);
+
+		// assign widget shortcuts to all of them
+		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
 }
 
@@ -1027,11 +1056,18 @@ void DkNoMacs::createShortcuts() {
 
 	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
 	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), vp->getImageLoader(), SLOT(deleteFile()));
+
+	for (int idx = 0; idx < shortcuts.size(); idx++) {
+
+		// assign widget shortcuts to all of them
+		shortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
+	}
 }
 
 void DkNoMacs::enableNoImageActions(bool enable) {
 
 	fileActions[menu_file_save]->setEnabled(enable);
+	fileActions[menu_file_save_as]->setEnabled(enable);
 	fileActions[menu_file_rename]->setEnabled(enable);
 	fileActions[menu_file_open_with]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
@@ -1052,17 +1088,18 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 	
-	viewActions[menu_view_show_info]->setEnabled(enable);
+	panelActions[menu_panel_info]->setEnabled(enable);
 #ifdef WITH_OPENCV
-	viewActions[menu_view_show_histogram]->setEnabled(enable);
+	panelActions[menu_panel_histogram]->setEnabled(enable);
 #else
-	viewActions[menu_view_show_histogram]->setEnabled(false);
+	panelActions[menu_panel_histogram]->setEnabled(false);
 #endif
-	viewActions[menu_view_show_preview]->setEnabled(enable);
-	viewActions[menu_view_show_scroller]->setEnabled(enable);
-	viewActions[menu_view_show_exif]->setEnabled(enable);
-	viewActions[menu_view_show_overview]->setEnabled(enable);
-	viewActions[menu_view_show_player]->setEnabled(enable);
+	panelActions[menu_panel_preview]->setEnabled(enable);
+	panelActions[menu_panel_scroller]->setEnabled(enable);
+	panelActions[menu_panel_exif]->setEnabled(enable);
+	panelActions[menu_panel_overview]->setEnabled(enable);
+	panelActions[menu_panel_player]->setEnabled(enable);
+	
 	viewActions[menu_view_fullscreen]->setEnabled(enable);
 	viewActions[menu_view_reset]->setEnabled(enable);
 	viewActions[menu_view_100]->setEnabled(enable);
@@ -1121,6 +1158,9 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		QSettings settings;
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
+		
+		if (explorer)
+			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
 
 		DkSettings ourSettings;
 		ourSettings.save();
@@ -1205,6 +1245,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			&& !viewport()->getImage().isNull()
 			&& viewport()->getImageLoader()) {
 
+			// TODO: check if we do it correct (network locations that are not mounted)
 			QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 			QList<QUrl> urls;
@@ -1313,6 +1354,9 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 	if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
 		url = url.toLocalFile();
+		
+		// TODO: check if we accept appropriately (network drives that are not mounted)
+		qDebug() << url;
 		QFileInfo file = QFileInfo(url.toString());
 
 		// just accept image files
@@ -1731,8 +1775,13 @@ void DkNoMacs::tcpSendArrange() {
 void DkNoMacs::showExplorer(bool show) {
 
 	if (!explorer) {
+
+		// get last location
+		QSettings settings;
+		int dockLocation = settings.value("explorerLocation", Qt::LeftDockWidgetArea).toInt();
+		
 		explorer = new DkExplorer(tr("File Explorer"));
-		addDockWidget(Qt::LeftDockWidgetArea, explorer);
+		addDockWidget((Qt::DockWidgetArea)dockLocation, explorer);
 		connect(explorer, SIGNAL(openFile(QFileInfo)), viewport()->getImageLoader(), SLOT(load(QFileInfo)));
 		connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo)), explorer, SLOT(setCurrentPath(QFileInfo)));
 	}
@@ -1743,7 +1792,7 @@ void DkNoMacs::showExplorer(bool show) {
 		explorer->setCurrentPath(viewport()->getImageLoader()->getFile());
 	}
 	else {
-		QStringList folders = DkSettings::Global::recentFolders;
+		QStringList folders = DkSettings::Global::recentFiles;
 
 		if (folders.size() > 0)
 			explorer->setCurrentPath(folders[0]);
@@ -1943,6 +1992,11 @@ void DkNoMacs::trainFormat() {
 }
 
 void DkNoMacs::saveFile() {
+
+	saveFileAs(true);
+}
+
+void DkNoMacs::saveFileAs(bool silent) {
 	
 	qDebug() << "saving...";
 
@@ -1982,11 +2036,19 @@ void DkNoMacs::saveFile() {
 			saveName.remove("." + saveFile.suffix());
 	}
 
-	// note: basename removes the whole file name from the first dot...
-	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+	QString fileName;
 
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
-		savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
+	// don't ask the user if save was hit & the file format is supported for saving
+	if (silent && !selectedFilter.isEmpty())
+		fileName = loader->getFile().absoluteFilePath();
+	else {
+		// note: basename removes the whole file name from the first dot...
+		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+
+		fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
+			savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
+	}
+
 
 	//qDebug() << "selected Filter: " << selectedFilter;
 
@@ -2055,6 +2117,7 @@ void DkNoMacs::saveFile() {
 		//jpgDialog->show();
 		jpgDialog->setImage(&saveImg);
 		
+
 		if (!jpgDialog->exec())
 			return;
 
@@ -2168,6 +2231,18 @@ void DkNoMacs::deleteFile() {
 		viewport()->getImageLoader()->deleteFile();
 }
 
+void DkNoMacs::exportTiff() {
+
+#ifdef WITH_LIBTIFF
+	if (!exportTiffDialog)
+		exportTiffDialog = new DkExportTiffDialog(this);
+
+	exportTiffDialog->setFile(viewport()->getImageLoader()->getFile());
+	
+	exportTiffDialog->exec();
+#endif
+}
+
 void DkNoMacs::openImgManipulationDialog() {
 
 	if (!viewport() || viewport()->getImage().isNull())
@@ -2181,9 +2256,9 @@ void DkNoMacs::openImgManipulationDialog() {
 	QImage tmpImg = viewport()->getImageLoader()->getImage();
 	imgManipulationDialog->setImage(&tmpImg);
 
-	bool done = imgManipulationDialog->exec();
+	bool ok = imgManipulationDialog->exec();
 
-	if (imgManipulationDialog->wasOkPressed()) {
+	if (ok) {
 
 #ifdef WITH_OPENCV
 
@@ -2451,15 +2526,29 @@ void DkNoMacs::showMenuBar(bool show) {
 
 	DkSettings::App::showMenuBar = show;
 	int tts = (DkSettings::App::showMenuBar) ? -1 : 5000;
-	viewActions[menu_view_show_menu]->setChecked(DkSettings::App::showMenuBar);
+	panelActions[menu_panel_menu]->setChecked(DkSettings::App::showMenuBar);
 	menu->setTimeToShow(tts);
 	menu->showMenu();
+}
+
+void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
+
+	if (!toolbar)
+		return;
+
+	if (show)
+		addToolBar(toolbar);
+	else
+		removeToolBar(toolbar);
+
+	toolbar->setVisible(show);
+	showToolbar(!show);
 }
 
 void DkNoMacs::showToolbar(bool show) {
 
 	DkSettings::App::showToolBar = show;
-	viewActions[menu_view_show_toolbar]->setChecked(DkSettings::App::showToolBar);
+	panelActions[menu_panel_toolbar]->setChecked(DkSettings::App::showToolBar);
 	
 	if (DkSettings::App::showToolBar)
 		toolbar->show();
@@ -2474,7 +2563,7 @@ void DkNoMacs::showStatusBar(bool show, bool permanent) {
 
 	if (permanent)
 		DkSettings::App::showStatusBar = show;
-	viewActions[menu_view_show_statusbar]->setChecked(DkSettings::App::showStatusBar);
+	panelActions[menu_panel_statusbar]->setChecked(DkSettings::App::showStatusBar);
 
 	statusbar->setVisible(show);
 
@@ -2546,6 +2635,11 @@ QVector <QAction* > DkNoMacs::getBatchActions() {
 	return toolsActions;
 }
 
+QVector <QAction* > DkNoMacs::getPanelActions() {
+
+	return panelActions;
+}
+
 QVector <QAction* > DkNoMacs::getViewActions() {
 
 	return viewActions;
@@ -2556,7 +2650,7 @@ QVector <QAction* > DkNoMacs::getSyncActions() {
 	return syncActions;
 }
 
-void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
+void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString attr) {
 
 	// TODO: rename!
 
@@ -2569,10 +2663,11 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 	if (!file.exists())
 		title = "nomacs";
 
-	if (edited) {
+	if (edited)
 		title.append("[*]");
-		setWindowModified(edited);
-	}
+
+	title.append(" ");
+	title.append(attr);	// append some attributes
 
 	QString attributes;
 
@@ -2584,6 +2679,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited) {
 	QMainWindow::setWindowTitle(title.append(attributes));
 	setWindowFilePath(file.absoluteFilePath());
 	emit sendTitleSignal(windowTitle());
+	setWindowModified(edited);
 
 	if (!viewport()->getController()->getFileInfoLabel()->isVisible() || 
 		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date)) {
@@ -2611,6 +2707,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(fileActions, fileMenu->title());
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());
+	shortcutsDialog->addActions(panelActions, panelMenu->title());
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
@@ -2805,24 +2902,27 @@ void DkNoMacsSync::initLanClient() {
 	lanClient = new DkLanManagerThread(this);
 	lanClient->start();
 
-	// start server action
-	QAction* startServer = new QAction(tr("Start &Server"), this);
-	startServer->setCheckable(true);
-	startServer->setChecked(false);
-	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+	lanActions.resize(menu_lan_end);
 
-	QAction* sendImage = new QAction(tr("Send &Image"), this);
-	sendImage->setObjectName("sendImageAction");
-	sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	// start server action
+	lanActions[menu_lan_server] = new QAction(tr("Start &Server"), this);
+	lanActions[menu_lan_server]->setObjectName("serverAction");
+	lanActions[menu_lan_server]->setCheckable(true);
+	lanActions[menu_lan_server]->setChecked(false);
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+
+	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
+	lanActions[menu_lan_image]->setObjectName("sendImageAction");
+	lanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
 	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
-	sendImage->setToolTip(tr("Sends the current image to all clients."));
-	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
+	lanActions[menu_lan_image]->setToolTip(tr("Sends the current image to all clients."));
+	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
 	tcpLanMenu->setClientManager(lanClient);
-	tcpLanMenu->addTcpAction(startServer);
-	tcpLanMenu->addTcpAction(sendImage);
+	tcpLanMenu->addTcpAction(lanActions[menu_lan_server]);
+	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);
 	tcpLanMenu->setEnabled(true);
-
+	tcpLanMenu->enableActions();
 
 	// remote control server
 	if (rcClient) {
@@ -2974,13 +3074,25 @@ void DkNoMacsSync::tcpConnectAll() {
 }
 
 void DkNoMacsSync::tcpRemoteControl() {
+
+	if (!rcClient)
+		return;
+
 	qDebug() << "trying to connect remote control ...";
 	QList<DkPeer> peers = rcClient->getPeerList();
-	qDebug() << "numer of peers in list:" << peers.size();
+	qDebug() << "number of peers in list:" << peers.size();
+	
 	for (int idx = 0; idx < peers.size(); idx++)  {
 		qDebug() << "trying to synchronize with:" << peers.at(idx).clientName << ":" << peers.at(idx).peerServerPort;
 		emit synchronizeRemoteControl(peers.at(idx).peerId);	
 	}
+}
+
+void DkNoMacsSync::newClientConnected(bool connected) {
+
+	tcpLanMenu->enableActions(connected);
+	
+	DkNoMacs::newClientConnected(connected);
 }
 
 void DkNoMacsSync::settingsChanged() {
@@ -3024,13 +3136,13 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	// sync signals
 	connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
 
-	vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
-	vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
-	vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-	vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
-	vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-	vp->getController()->getHistogram()->registerAction(viewActions[menu_view_show_histogram]);
+	vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
+	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
+	vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
+	vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
+	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
+	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
+	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 	DkSettings::App::appMode = 0;
 
 	initLanClient();
@@ -3070,18 +3182,18 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 			updater->checkForUpdated();
 #endif
 
-		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
-		vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
-		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-		vp->getController()->getHistogram()->registerAction(viewActions[menu_view_show_histogram]);
+		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
+		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
+		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
+		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
+		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
+		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 
 		// in frameless, you cannot control if menu is visible...
-		viewActions[menu_view_show_menu]->setEnabled(false);
-		viewActions[menu_view_show_statusbar]->setEnabled(false);
-		viewActions[menu_view_show_statusbar]->setChecked(false);
-		viewActions[menu_view_show_toolbar]->setChecked(false);
+		panelActions[menu_panel_menu]->setEnabled(false);
+		panelActions[menu_panel_statusbar]->setEnabled(false);
+		panelActions[menu_panel_statusbar]->setChecked(false);
+		panelActions[menu_panel_toolbar]->setChecked(false);
 
 		menu->setTimeToShow(5000);
 		menu->hide();
@@ -3231,13 +3343,13 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		// sync signals
 		connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
 		
-		vp->getController()->getFilePreview()->registerAction(viewActions[menu_view_show_preview]);
-		vp->getController()->getScroller()->registerAction(viewActions[menu_view_show_scroller]);
-		vp->getController()->getMetaDataWidget()->registerAction(viewActions[menu_view_show_exif]);
-		vp->getController()->getPlayer()->registerAction(viewActions[menu_view_show_player]);
-		vp->getController()->getFileInfoLabel()->registerAction(viewActions[menu_view_show_info]);
-		vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
-		vp->getController()->getHistogram()->registerAction(viewActions[menu_view_show_histogram]);
+		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
+		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
+		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
+		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
+		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
+		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
+		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 
 		initLanClient();
 		emit sendTitleSignal(windowTitle());
@@ -3249,9 +3361,9 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		show();
 
 		// TODO: this should be checked but no event should be called
-		viewActions[menu_view_show_transfertoolbar]->blockSignals(true);
-		viewActions[menu_view_show_transfertoolbar]->setChecked(true);
-		viewActions[menu_view_show_transfertoolbar]->blockSignals(false);
+		panelActions[menu_panel_transfertoolbar]->blockSignals(true);
+		panelActions[menu_panel_transfertoolbar]->setChecked(true);
+		panelActions[menu_panel_transfertoolbar]->blockSignals(false);
 
 		qDebug() << "viewport (normal) created...";
 }
