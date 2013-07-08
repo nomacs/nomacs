@@ -247,7 +247,7 @@ void DkConnection::processReadyRead() {
 }
 
 void DkConnection::checkState() {
-	qDebug() << "im check State -......-----......-----......-----......-----......-----......----";
+	//qDebug() << "im check State -......-----......-----......-----......-----......-----......----";
 	if (state == WaitingForGreeting) {
 		if (currentDataType != Greeting) {
 			abort();
