@@ -114,13 +114,8 @@ QString DkFlipPlugin::pluginStatusTip(const QString &runID) const {
 QImage DkFlipPlugin::runPlugin(const QString &runID, const QImage &image) const {
 
 	if(!image.isNull()) {
-		bool horizontally = !(runID=="e7630f0f28c34df2b5a3f6d1fbd131aa");
-		QImage result(image.width(), image.height(), image.format());
-
-		for(int y=0; y<image.height(); y++)
-			for(int x=0; x<image.width(); x++)
-				result.setPixel(horizontally?x:(image.width()-1-x), horizontally?(image.height()-1-y):y, image.pixel( x, y ));
-		return result;
+		bool horizontally = (runID=="e7630f0f28c34df2b5a3f6d1fbd131aa");
+		return image.mirrored(horizontally, !horizontally);
 	}
 	else {
 		 QMessageBox msgBox;
