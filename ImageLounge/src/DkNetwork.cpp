@@ -937,8 +937,7 @@ void DkLANUdpSocket::sendNewClientBroadcast() {
 	datagram.append("@");
 	datagram.append(QByteArray::number(0));
 
-	for (quint16 port = startPort; port < endPort; port++)  {
-		qDebug() << "sending new client broadcast at port:" << port;
+	for (quint16 port = startPort; port <= endPort; port++)  {
 		writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, port);
 	}
 	qDebug() << "sent broadcast:" << datagram << "--- " << 0;
