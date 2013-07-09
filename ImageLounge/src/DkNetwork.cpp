@@ -516,11 +516,11 @@ void DkLANClientManager::synchronizeWith(quint16 peerId) {
 
 void DkLANClientManager::stopSynchronizeWith(quint16 peerId) {
 	
+	//qDebug() << "stop synchronize with:" << peerId;
 
 	// disconnect all
 	if (peerId == -1) {
 		QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
-
 		foreach (DkPeer peer , synchronizedPeers) {
 			connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
 			emit sendDisableSynchronizeMessage();
@@ -530,6 +530,10 @@ void DkLANClientManager::stopSynchronizeWith(quint16 peerId) {
 	}
 	else {
 		DkPeer peer = peerList.getPeerById(peerId);
+		if (peer.connection == 0 ) {
+			qDebug() << "peer is null ...  are you sure this peerId exists?";
+			return;
+		}
 		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
 		emit sendDisableSynchronizeMessage();
 		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
@@ -903,8 +907,6 @@ void DkLANUdpSocket::sendBroadcast() {
 	datagram.append(QHostInfo::localHostName());
 	datagram.append("@");
 	datagram.append(QByteArray::number(tcpServerPort));
-	// datagram.append(serverport) + clientname
-
 	
 	for (quint16 port = startPort; port <= endPort; port++) {
 		foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {

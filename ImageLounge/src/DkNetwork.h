@@ -430,7 +430,6 @@ public slots:
 		emit syncWithSignal(peerId);
 	};
 	void stopSynchronizeWith(quint16 peerId) {
-
 		emit stopSyncWithSignal(peerId);
 	};
 	void sendGoodByeToAll() {
