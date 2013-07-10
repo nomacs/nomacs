@@ -2128,10 +2128,21 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 	QString fileName;
 
+	int answer = QDialog::Rejected;
+
 	// don't ask the user if save was hit & the file format is supported for saving
-	if (silent && !selectedFilter.isEmpty())
+	if (silent && !selectedFilter.isEmpty() /*&& viewport()->getImageLoader()->isEdited()*/) {
 		fileName = loader->getFile().absoluteFilePath();
-	else {
+		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Overwrite File"), 
+			tr("Do you want to overwrite:\n%1?").arg(fileName), 
+			(QMessageBox::Yes | QMessageBox::No), this);
+		msg->setObjectName("overwriteDialog");
+
+		//msg->show();
+		answer = msg->exec();
+
+	}
+	if (answer == QDialog::Rejected || answer == QMessageBox::No) {
 		// note: basename removes the whole file name from the first dot...
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
