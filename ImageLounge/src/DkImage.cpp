@@ -37,19 +37,50 @@ bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 	//return true;
 }
 
-bool wCompLogicQString(const QString & lhs, const QString & rhs) {
+bool compLogicQString(const QString & lhs, const QString & rhs) {
 	
 	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
 	//return true;
 }
 #else
-bool wCompLogicQString(const QString & lhs, const QString & rhs) {
+bool compLogicQString(const QString & lhs, const QString & rhs) {
 
 	return lhs < rhs;
 	//return true;
 }
 
 #endif
+
+bool compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return lhf.created() < rhf.created();
+}
+
+bool compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compDateCreated(lhf, rhf);
+}
+
+bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return lhf.lastModified() < rhf.lastModified();
+}
+
+bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compDateModified(lhf, rhf);
+}
+
+bool compFilename(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return compLogicQString(lhf.fileName(), rhf.fileName());
+}
+
+bool compFilenameInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compFilename(lhf, rhf);
+}
+
 
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QStringList();
@@ -1485,7 +1516,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 			// see if the file was deleted
 			QStringList filesTmp = files;
 			filesTmp.append(cFilename);
-			qSort(filesTmp.begin(), filesTmp.end(), wCompLogicQString);
+			filesTmp = sort(filesTmp, dir);
 
 			cFileIdx = 0;
 			
@@ -2606,7 +2637,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	for (int idx = 0; idx < fileFilters.size(); idx++)
 		fileFiltersClean[idx].replace("*", "");
 
-	std::sort(fileNameList.begin(), fileNameList.end(), wCompLogic);
+	//std::sort(fileNameList.begin(), fileNameList.end(), wCompLogic);
 
 	QStringList fileList;
 	std::vector<std::wstring>::iterator lIter = fileNameList.begin();
@@ -2700,7 +2731,62 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 		}
 	}
 
+	fileList = sort(fileList, dir);
+
 	return fileList;
+}
+
+QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
+
+	QFileInfoList fList;
+
+	for (int idx = 0; idx < files.size(); idx++)
+		fList.append(QFileInfo(dir, files.at(idx)));
+
+	
+
+	switch(DkSettings::Global::sortMode) {
+
+	case DkSettings::sort_filename:
+		
+		if (DkSettings::Global::sortDir == DkSettings::sort_ascending)
+			qSort(fList.begin(), fList.end(), compFilename);
+		else
+			qSort(fList.begin(), fList.end(), compFilenameInv);
+		break;
+
+	case DkSettings::sort_date_created:
+		if (DkSettings::Global::sortDir == DkSettings::sort_ascending)
+			qSort(fList.begin(), fList.end(), compDateCreated);
+		else 
+			qSort(fList.begin(), fList.end(), compDateCreatedInv);
+		break;
+
+	case DkSettings::sort_date_modified:
+		if (DkSettings::Global::sortDir == DkSettings::sort_ascending)
+			qSort(fList.begin(), fList.end(), compDateModified);
+		else
+			qSort(fList.begin(), fList.end(), compDateModifiedInv);
+		break;
+
+
+	default:
+		// filename
+		qSort(fList.begin(), fList.end(), compFilename);
+
+	}
+
+	QStringList sFiles;
+	for (int idx = 0; idx < fList.size(); idx++)
+		sFiles.append(fList.at(idx).fileName());
+
+	return sFiles;
+}
+
+void DkImageLoader::sort() {
+
+	files = sort(files, dir);
+	emit updateDirSignal(file, DkThumbsLoader::dir_updated);
 }
 
 

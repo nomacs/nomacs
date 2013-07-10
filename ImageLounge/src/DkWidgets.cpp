@@ -1164,7 +1164,7 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex& left, const QModelIndex& 
 			rs = rd;
 		}
 
-		return wCompLogicQString(ls, rs);
+		return compLogicQString(ls, rs);
 	}
 
 	return QSortFilterProxyModel::lessThan(left, right);
