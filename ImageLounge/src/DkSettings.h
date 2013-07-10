@@ -117,6 +117,7 @@ class DkSettings : public QObject {
 			static int appMode;
 			static int currentAppMode;
 			static bool advancedSettings;
+			static bool closeOnEsc;
 		};
 
 		struct Display {
@@ -354,6 +355,7 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbShowStatusbar;
 		QCheckBox* cbSmallIcons;
 		QCheckBox* cbToolbarGradient;
+		QCheckBox* cbCloseOnEsc;
 
 		DkColorChooser* highlightColorChooser;
 		DkColorChooser* bgColorWidgetChooser;

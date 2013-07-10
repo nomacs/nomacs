@@ -42,6 +42,7 @@ QBitArray DkSettings::App::showMetaData = QBitArray(DkSettings::mode_end, false)
 QBitArray DkSettings::App::showPlayer = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);
 QBitArray DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
+bool DkSettings::App::closeOnEsc = false;
 int DkSettings::App::appMode = 0;
 int DkSettings::App::currentAppMode = 0;
 bool DkSettings::App::advancedSettings = false;
@@ -194,6 +195,7 @@ void DkSettings::load() {
 	tmpShow = settings.value("AppSettings/showOverview", DkSettings::App::showOverview).toBitArray();
 	if (tmpShow.size() == App::showOverview.size())	App::showOverview = tmpShow;
 
+	App::closeOnEsc = settings.value("AppSettings/closeOnEsc", DkSettings::App::closeOnEsc).toBool();
 	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
 
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
@@ -305,6 +307,7 @@ void DkSettings::save() {
 
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
 	settings.setValue("AppSettings/currentAppMode", DkSettings::App::currentAppMode);
+	settings.setValue("AppSettings/closeOnEsc", DkSettings::App::closeOnEsc);
 
 	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
 	settings.setValue("GlobalSettings/numFiles",Global::numFiles);
@@ -389,6 +392,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);
 	DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
 	DkSettings::App::advancedSettings = false;
+	DkSettings::App::closeOnEsc = false;
 
 	// now set default show options
 	DkSettings::App::showFileInfoLabel.setBit(DkSettings::mode_default, false);
@@ -729,6 +733,7 @@ void DkGlobalSettingsWidget::init() {
 	cbShowToolbar->setChecked(DkSettings::App::showToolBar);
 	cbSmallIcons->setChecked(DkSettings::Display::smallIcons);
 	cbToolbarGradient->setChecked(DkSettings::Display::toolbarGradient);
+	cbCloseOnEsc->setChecked(DkSettings::App::closeOnEsc);
 
 	curLanguage = DkSettings::Global::language;
 	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
@@ -828,16 +833,18 @@ void DkGlobalSettingsWidget::createLayout() {
 
 	QWidget* showBarsWidget = new QWidget(rightWidget);
 	QVBoxLayout* showBarsLayout = new QVBoxLayout(showBarsWidget);
-	cbShowMenu = new QCheckBox(tr("show Menu"), showBarsWidget);
-	cbShowToolbar = new QCheckBox(tr("show Toolbar"), showBarsWidget);
-	cbShowStatusbar = new QCheckBox(tr("show Statusbar"), showBarsWidget);
-	cbSmallIcons = new QCheckBox(tr("small icons"), showBarsWidget);
+	cbShowMenu = new QCheckBox(tr("Show Menu"), showBarsWidget);
+	cbShowToolbar = new QCheckBox(tr("Show Toolbar"), showBarsWidget);
+	cbShowStatusbar = new QCheckBox(tr("Show Statusbar"), showBarsWidget);
+	cbSmallIcons = new QCheckBox(tr("Small Icons"), showBarsWidget);
 	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), showBarsWidget);
+	cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), showBarsWidget);
 	showBarsLayout->addWidget(cbShowMenu);
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
 	showBarsLayout->addWidget(cbSmallIcons);
 	showBarsLayout->addWidget(cbToolbarGradient);
+	showBarsLayout->addWidget(cbCloseOnEsc);
 
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(rightWidget);
@@ -872,6 +879,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::App::showMenuBar = cbShowMenu->isChecked();
 	DkSettings::App::showStatusBar = cbShowStatusbar->isChecked();
 	DkSettings::App::showToolBar = cbShowToolbar->isChecked();
+	DkSettings::App::closeOnEsc = cbCloseOnEsc->isChecked();
 	DkSettings::Display::smallIcons = cbSmallIcons->isChecked();
 	DkSettings::Display::toolbarGradient = cbToolbarGradient->isChecked();
 	DkSettings::SlideShow::time = displayTimeSpin->getSpinBoxValue();
