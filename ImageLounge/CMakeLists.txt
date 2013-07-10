@@ -241,7 +241,8 @@ IF(ENABLE_TIFF)
 		ELSE ()
 			message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib")
 		ENDIF()
-		
+
+		SET(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")		
 		find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 	
 		# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
@@ -250,17 +251,19 @@ IF(ENABLE_TIFF)
 		IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 			add_definitions(-DWITH_LIBTIFF)
 		ELSE()
-			message(FATAL_ERROR, "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
-			message(FATAL_ERROR, "opencv dir: ${OpenCV_DIR}")
+			message(FATAL_ERROR "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
+			message(FATAL_ERROR "opencv dir: ${OpenCV_DIR}")
 		ENDIF()
-		SET(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")
+
 	ELSE()
 		find_package(TIFF)
 		IF(TIFF_FOUND)
 			SET(TIFF_CONFIG_DIR "")
 			add_definitions(-DWITH_LIBTIFF)
+		ELSE()
+			message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
 		ENDIF()
-		message(STATUS "tiff: ${TIFF_LIBRARIES}")
+		
 	ENDIF(MSVC)
 	
 	
