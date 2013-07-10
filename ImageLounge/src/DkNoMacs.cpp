@@ -41,8 +41,6 @@ bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 	return QObject::eventFilter(obj, event);
 }
 
-
-
 DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags) {
 
@@ -66,6 +64,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	updater = 0;
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
+	exportTiffDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
@@ -169,6 +168,7 @@ void DkNoMacs::init() {
 	// connects that are needed in all viewers
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
 	connect(viewport(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
@@ -177,6 +177,7 @@ void DkNoMacs::init() {
 	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
+	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 
 }
 
@@ -428,6 +429,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
 	fileMenu->addAction(fileActions[menu_file_open_with]);
 	fileMenu->addAction(fileActions[menu_file_save]);
+	fileMenu->addAction(fileActions[menu_file_save_as]);
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
@@ -526,6 +528,7 @@ void DkNoMacs::createMenu() {
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
+	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -626,6 +629,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save]->setShortcuts(QKeySequence::Save);
 	fileActions[menu_file_save]->setStatusTip(tr("Save an image"));
 	connect(fileActions[menu_file_save], SIGNAL(triggered()), this, SLOT(saveFile()));
+
+	fileActions[menu_file_save_as] = new QAction(tr("&Save As"), this);
+	fileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
+	fileActions[menu_file_save_as]->setStatusTip(tr("Save an image as"));
+	connect(fileActions[menu_file_save_as], SIGNAL(triggered()), this, SLOT(saveFileAs()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
@@ -773,6 +781,11 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_transfertoolbar]->setCheckable(true);
 	panelActions[menu_panel_transfertoolbar]->setChecked(false);
 	connect(panelActions[menu_panel_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
+
+
+	qDebug() << "so: " << DkSettings::App::showOverview.size();
+	qDebug() << "sh: " << DkSettings::App::showHistogram.size();
+	qDebug() << "cAppMode: " << DkSettings::App::currentAppMode;
 
 	panelActions[menu_panel_overview] = new QAction(tr("O&verview"), this);
 	panelActions[menu_panel_overview]->setShortcut(QKeySequence(shortcut_show_overview));
@@ -930,6 +943,10 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_manipulation]->setStatusTip(tr("modify the current image"));
 	connect(toolsActions[menu_tools_manipulation], SIGNAL(triggered()), this, SLOT(openImgManipulationDialog()));
 
+	toolsActions[menu_tools_export_tiff] = new QAction(tr("Export Multipage &TIFF"), this);
+	toolsActions[menu_tools_export_tiff]->setStatusTip(tr("Export TIFF pages to multiple tiff files"));
+	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
+
 	// help menu
 	helpActions.resize(menu_help_end);
 	helpActions[menu_help_about] = new QAction(tr("&About Nomacs"), this);
@@ -967,6 +984,9 @@ void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
 
 		if (val != "no-shortcut")
 			actions[idx]->setShortcut(val);
+
+		// assign widget shortcuts to all of them
+		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
 }
 
@@ -1036,11 +1056,18 @@ void DkNoMacs::createShortcuts() {
 
 	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
 	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), vp->getImageLoader(), SLOT(deleteFile()));
+
+	for (int idx = 0; idx < shortcuts.size(); idx++) {
+
+		// assign widget shortcuts to all of them
+		shortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
+	}
 }
 
 void DkNoMacs::enableNoImageActions(bool enable) {
 
 	fileActions[menu_file_save]->setEnabled(enable);
+	fileActions[menu_file_save_as]->setEnabled(enable);
 	fileActions[menu_file_rename]->setEnabled(enable);
 	fileActions[menu_file_open_with]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
@@ -1218,6 +1245,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			&& !viewport()->getImage().isNull()
 			&& viewport()->getImageLoader()) {
 
+			// TODO: check if we do it correct (network locations that are not mounted)
 			QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 			QList<QUrl> urls;
@@ -1326,6 +1354,9 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 	if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
 		url = url.toLocalFile();
+		
+		// TODO: check if we accept appropriately (network drives that are not mounted)
+		qDebug() << url;
 		QFileInfo file = QFileInfo(url.toString());
 
 		// just accept image files
@@ -1961,6 +1992,11 @@ void DkNoMacs::trainFormat() {
 }
 
 void DkNoMacs::saveFile() {
+
+	saveFileAs(true);
+}
+
+void DkNoMacs::saveFileAs(bool silent) {
 	
 	qDebug() << "saving...";
 
@@ -2000,11 +2036,19 @@ void DkNoMacs::saveFile() {
 			saveName.remove("." + saveFile.suffix());
 	}
 
-	// note: basename removes the whole file name from the first dot...
-	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+	QString fileName;
 
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
-		savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
+	// don't ask the user if save was hit & the file format is supported for saving
+	if (silent && !selectedFilter.isEmpty())
+		fileName = loader->getFile().absoluteFilePath();
+	else {
+		// note: basename removes the whole file name from the first dot...
+		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+
+		fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
+			savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
+	}
+
 
 	//qDebug() << "selected Filter: " << selectedFilter;
 
@@ -2073,6 +2117,7 @@ void DkNoMacs::saveFile() {
 		//jpgDialog->show();
 		jpgDialog->setImage(&saveImg);
 		
+
 		if (!jpgDialog->exec())
 			return;
 
@@ -2184,6 +2229,18 @@ void DkNoMacs::deleteFile() {
 
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
 		viewport()->getImageLoader()->deleteFile();
+}
+
+void DkNoMacs::exportTiff() {
+
+#ifdef WITH_LIBTIFF
+	if (!exportTiffDialog)
+		exportTiffDialog = new DkExportTiffDialog(this);
+
+	exportTiffDialog->setFile(viewport()->getImageLoader()->getFile());
+	
+	exportTiffDialog->exec();
+#endif
 }
 
 void DkNoMacs::openImgManipulationDialog() {
@@ -2474,6 +2531,20 @@ void DkNoMacs::showMenuBar(bool show) {
 	menu->showMenu();
 }
 
+void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
+
+	if (!toolbar)
+		return;
+
+	if (show)
+		addToolBar(toolbar);
+	else
+		removeToolBar(toolbar);
+
+	toolbar->setVisible(show);
+	showToolbar(!show);
+}
+
 void DkNoMacs::showToolbar(bool show) {
 
 	DkSettings::App::showToolBar = show;
@@ -2592,10 +2663,8 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	if (!file.exists())
 		title = "nomacs";
 
-	if (edited) {
+	if (edited)
 		title.append("[*]");
-		setWindowModified(edited);
-	}
 
 	title.append(" ");
 	title.append(attr);	// append some attributes
@@ -2610,6 +2679,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	QMainWindow::setWindowTitle(title.append(attributes));
 	setWindowFilePath(file.absoluteFilePath());
 	emit sendTitleSignal(windowTitle());
+	setWindowModified(edited);
 
 	if (!viewport()->getController()->getFileInfoLabel()->isVisible() || 
 		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date)) {
@@ -2831,23 +2901,27 @@ void DkNoMacsSync::initLanClient() {
 	lanClient = new DkLanManagerThread(this);
 	lanClient->start();
 
-	// start server action
-	QAction* startServer = new QAction(tr("Start &Server"), this);
-	startServer->setCheckable(true);
-	startServer->setChecked(false);
-	connect(startServer, SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+	lanActions.resize(menu_lan_end);
 
-	QAction* sendImage = new QAction(tr("Send &Image"), this);
-	sendImage->setObjectName("sendImageAction");
-	sendImage->setShortcut(QKeySequence(shortcut_send_img));
+	// start server action
+	lanActions[menu_lan_server] = new QAction(tr("Start &Server"), this);
+	lanActions[menu_lan_server]->setObjectName("serverAction");
+	lanActions[menu_lan_server]->setCheckable(true);
+	lanActions[menu_lan_server]->setChecked(false);
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+
+	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
+	lanActions[menu_lan_image]->setObjectName("sendImageAction");
+	lanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
 	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
-	sendImage->setToolTip(tr("Sends the current image to all clients."));
-	connect(sendImage, SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
+	lanActions[menu_lan_image]->setToolTip(tr("Sends the current image to all clients."));
+	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
 	tcpLanMenu->setClientManager(lanClient);
-	tcpLanMenu->addTcpAction(startServer);
-	tcpLanMenu->addTcpAction(sendImage);
+	tcpLanMenu->addTcpAction(lanActions[menu_lan_server]);
+	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);
 	tcpLanMenu->setEnabled(true);
+	tcpLanMenu->enableActions();
 }
 
 void DkNoMacsSync::createActions() {
@@ -2975,6 +3049,13 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
+void DkNoMacsSync::newClientConnected(bool connected) {
+
+	tcpLanMenu->enableActions(connected);
+	
+	DkNoMacs::newClientConnected(connected);
+}
+
 void DkNoMacsSync::settingsChanged() {
 	initLanClient();
 
@@ -3019,7 +3100,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 	vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 	vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
-	vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
+	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 	DkSettings::App::appMode = 0;
@@ -3227,7 +3308,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
-		vp->getController()->getEditRect()->registerAction(editActions[menu_edit_crop]);
+		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 
 		initLanClient();

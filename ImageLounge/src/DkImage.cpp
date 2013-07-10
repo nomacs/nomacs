@@ -28,10 +28,6 @@
 #include "DkImage.h"
 #include "DkNoMacs.h"
 
-//extern "C" {
-//#include "tiffio.h"
-//}
-
 namespace nmc {
 
 #ifdef WIN32
@@ -71,6 +67,8 @@ DkBasicLoader::DkBasicLoader(int mode) {
 	this->mode = mode;
 	training = false;
 	pageIdxDirty = false;
+	numPages = 1;
+	pageIdx = 1;
 	loader = no_loader;
 }
 
@@ -646,8 +644,8 @@ bool DkBasicLoader::loadPSDFile(QFileInfo fileInfo) {
 void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 
 	// reset counters
-	numPages = 0;
-	pageIdx = 0;
+	numPages = 1;
+	pageIdx = 1;
 
 #ifdef WITH_LIBTIFF
 
@@ -743,6 +741,10 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 }
 
 bool DkBasicLoader::setPageIdx(int skipIdx) {
+
+	// do nothing if we don't have tiff pages
+	if (numPages <= 1)
+		return false;
 
 	pageIdxDirty = false;
 
@@ -1727,6 +1729,7 @@ void DkImageLoader::load(QFileInfo file, bool silent, int cacheState) {
 	// is it save to lock the mutex before setting up the thread??
 	/*QMutexLocker locker(&mutex);*/
 	
+	// TODO: use QtConcurrent here...
 	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(bool, silent), Q_ARG(int, cacheState));
 }
 
@@ -1854,7 +1857,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		//QStringList keys = imgMetaData.getExifKeys();
 		//qDebug() << keys;
 
-		if (!imgMetaData.isTiff() && !imgRotated)
+		if (!imgMetaData.isTiff() && !imgRotated && !DkSettings::MetaData::ignoreExifOrientation)
 			basicLoader.rotate(orientation);
 		
 		if (cacher && cacheState != cache_disable_update) 
@@ -2312,9 +2315,13 @@ void DkImageLoader::rotateImage(double angle) {
 		QCoreApplication::sendPostedEvents();	// update immediately as we interlock otherwise
 
 		mutex.lock();
-		if (file.exists()) {
+		if (file.exists() && DkSettings::MetaData::saveExifOrientation) {
 			imgMetaData.saveOrientation((int)angle);
 			qDebug() << "exif data saved (rotation)?";
+		}
+		else if (!DkSettings::MetaData::saveExifOrientation) {
+			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
+			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
 		}
 		mutex.unlock();
 
@@ -2894,7 +2901,7 @@ QString DkImageLoader::fileName() {
 
 QString DkImageLoader::getTitleAttributeString() {
 
-	if (!basicLoader.getNumPages())
+	if (basicLoader.getNumPages() <= 1)
 		return QString();
 
 	QString attr = "[" + QString::number(basicLoader.getPageIdx()) + "/" + 

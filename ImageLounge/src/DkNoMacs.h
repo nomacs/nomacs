@@ -80,9 +80,10 @@ using namespace cv;
 #include "DkImage.h"
 #include "DkWidgets.h"
 #include "DkDialog.h"
+#include "DkSaveDialog.h"
 #include "DkSettings.h"
 #include "DkMenu.h"
-#include "DkTransferToolBar.h"
+#include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
 
 #ifdef DK_DLL
@@ -105,6 +106,7 @@ enum {
 	shortcut_open_preview	= Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
+	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
 	shortcut_first_file		= Qt::Key_Home, 
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
@@ -192,6 +194,7 @@ enum fileActions {
 	menu_file_open_dir,
 	menu_file_open_with,
 	menu_file_save,
+	menu_file_save_as,
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
@@ -228,6 +231,7 @@ enum toolsActions {
 	menu_tools_thumbs,
 	menu_tools_filter,
 	menu_tools_manipulation,
+	menu_tools_export_tiff,
 
 	menu_tools_end,
 };
@@ -277,6 +281,13 @@ enum syncActions {
 	menu_sync_connect_all,
 
 	menu_sync_end,	// nothing beyond this point
+};
+
+enum lanSyncActions {
+	menu_lan_server,
+	menu_lan_image,
+
+	menu_lan_end,
 };
 
 enum helpActions {
@@ -436,9 +447,11 @@ public slots:
 	void find(bool filterAction = true);
 	void updateFilterState(QStringList filters);
 	void saveFile();
+	void saveFileAs(bool silent = false);
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
+	void exportTiff();
 	void deleteFile();
 	void setWallpaper();
 	void printDialog();
@@ -447,6 +460,7 @@ public slots:
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbar(bool show);
+	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
 	void openFileWith();
 	void aboutDialog();
@@ -466,7 +480,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	void newClientConnected(bool connected);
+	virtual void newClientConnected(bool connected);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
@@ -530,6 +544,7 @@ protected:
 	QVector<QAction *> panelActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
+	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
@@ -578,6 +593,7 @@ protected:
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
+	DkExportTiffDialog* exportTiffDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
@@ -624,6 +640,7 @@ public slots:
 	void tcpConnectAll();
 	void settingsChanged();
 	void clientInitialized();
+	void newClientConnected(bool connected);
 
 protected:
 
