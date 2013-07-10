@@ -152,6 +152,7 @@ IF(ENABLE_WEBP)
 ENDIF(ENABLE_WEBP)
 
 
+
 IF (ENABLE_RAW)
 
 	# NOTE: libraw is used only when there is OpenCV found and used
@@ -233,7 +234,7 @@ IF(ENABLE_TIFF)
 		
 	# we try to grab the OpenCV's libtiff
 	IF (MSVC)
-		find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_DIR}/3rdparty/lib/" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
+		find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
 		IF(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
 			FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
 			FILE(COPY ${TIFF_BUILD_PATH}/Release/libtiff.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
@@ -248,8 +249,8 @@ IF(ENABLE_TIFF)
 	
 	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 	
-	# @stefan we need here the path to opencv/3rdparty/libtiff
-	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_SRC_DIR}/3rdparty/libtiff" )
+	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
+	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" )
 
 	IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
