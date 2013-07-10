@@ -2794,16 +2794,15 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 void DkNoMacs::openKeyboardShortcuts() {
 
 
-	// TODO: dummy currently we just use file menu...
 	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(this);
 	shortcutsDialog->addActions(fileActions, fileMenu->title());
+	shortcutsDialog->addActions(sortActions, sortMenu->title());
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());
 	shortcutsDialog->addActions(panelActions, panelMenu->title());
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
-
 
 	shortcutsDialog->exec();
 }
