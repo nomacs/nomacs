@@ -18,7 +18,7 @@ endif(COMMAND cmake_policy)
 
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
 OPTION (ENABLE_WEBP "Compile with webP support (webP)" OFF)
-OPTION (ENABLE_TIFF "Compile with multi-layer tiff" OFF)
+OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 
 set(NOMACS_VERSION 1.2.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
@@ -242,22 +242,27 @@ IF(ENABLE_TIFF)
 			message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib")
 		ENDIF()
 		
+		find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
+	
+		# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
+		find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" )
+
+		IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
+			add_definitions(-DWITH_LIBTIFF)
+		ELSE()
+			message(FATAL_ERROR, "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
+			message(FATAL_ERROR, "opencv dir: ${OpenCV_DIR}")
+		ENDIF()
 		SET(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")
 	ELSE()
-		find_library(TIFF_LIBRARIES libtiff)
+		find_package(TIFF)
+		IF(TIFF_FOUND)
+			SET(TIFF_CONFIG_DIR "")
+			add_definitions(-DWITH_LIBTIFF)
+		ENDIF()
+		message(STATUS "tiff: ${TIFF_LIBRARIES}")
 	ENDIF(MSVC)
 	
-	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
-	
-	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
-	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" )
-
-	IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
-		add_definitions(-DWITH_LIBTIFF)
-	ELSE()
-		message(FATAL_ERROR, "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
-		message(FATAL_ERROR, "opencv dir: ${OpenCV_DIR}")
-	ENDIF()
 	
 ENDIF(ENABLE_TIFF)
 
