@@ -822,7 +822,7 @@ void DkCropToolBar::createLayout() {
 	guideBox->setStatusTip(guideBox->toolTip());
 
 	invertAction = new QAction(icons[invert_icon], tr("Invert Crop Tool Color"), this);
-	invertAction->setObjectName(tr("invertAction"));
+	invertAction->setObjectName("invertAction");
 	invertAction->setCheckable(true);
 	invertAction->setChecked(false);
 
