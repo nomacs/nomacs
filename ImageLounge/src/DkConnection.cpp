@@ -236,7 +236,6 @@ int DkConnection::dataLengthForCurrentDataType() {
 }
 
 void DkConnection::processReadyRead() {
-	//qDebug() << __FUNCTION__ << " " << __LINE__ << " ###################################################### buffer.size:" << buffer.size();
 	if (readDataIntoBuffer() <= 0)
 		return;
 	if (!readProtocolHeader())
@@ -247,7 +246,6 @@ void DkConnection::processReadyRead() {
 }
 
 void DkConnection::checkState() {
-	//qDebug() << "im check State -......-----......-----......-----......-----......-----......----";
 	if (state == WaitingForGreeting) {
 		if (currentDataType != Greeting) {
 			abort();
@@ -318,7 +316,6 @@ void DkConnection::checkState() {
 			sendStartSynchronizeMessage();
 
 		synchronizedTimer->stop();
-		//qDebug() << "emitting Synchronized";
 		emit connectionStartSynchronize(synchronizedPeersOfOtherInstance, this);
 		return;
 	}
@@ -818,13 +815,13 @@ bool DkRCConnection::readProtocolHeader() {
 	QByteArray newRCType = QByteArray("RCTYPE").append(SeparatorToken);
 
 	if (buffer == newPermissionBA) {
-		qDebug() << "New Permission received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "New Permission received from:" << this->peerAddress() << ":" << this->peerPort();
 		currentRemoteControlDataType = newPermission;
 	} else if (buffer == newAskPermissionBA) {
-		qDebug() << "New Ask Permission received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "New Ask Permission received from:" << this->peerAddress() << ":" << this->peerPort();
 		currentRemoteControlDataType = newAskPermission;
 	} else if (buffer == newRCType) {
-		qDebug() << "New RCType received from:" << this->peerAddress() << ":" << this->peerPort();
+		//qDebug() << "New RCType received from:" << this->peerAddress() << ":" << this->peerPort();
 		currentRemoteControlDataType = newRcType;
 	} else {
 		return DkLANConnection::readProtocolHeader();
@@ -882,14 +879,14 @@ void DkRCConnection::processData() {
 			ds >> allowedToConnect;
 			ds >> dummy;
 			emit connectionNewPermission(this, allowedToConnect);
-			qDebug() << "emitted connectionNewPermission: allowedToConnect:" << allowedToConnect;
+			//qDebug() << "emitted connectionNewPermission: allowedToConnect:" << allowedToConnect;
 			}
 		break;
 	case newAskPermission:  {
 		QString dummy;
 		QDataStream ds(buffer);
 		ds >> dummy;
-		qDebug() << "askPermission processed ... sending Permission";
+		//qDebug() << "askPermission processed ... sending Permission";
 		sendPermission();
 		}
 		break;
@@ -912,14 +909,13 @@ void DkRCConnection::processData() {
 }
 
 void DkRCConnection::sendAskForPermission() {
-	qDebug() << "sending askForPermission to " << this->peerName() << ":" << this->peerPort();
+	//qDebug() << "sending askForPermission to " << this->peerName() << ":" << this->peerPort();
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << "dummyMessage";
 
 	QByteArray data = "ASKPERMISSION";
-	qDebug() << "ba.size:" << ba.size();
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
 	write(data);
 	this->waitForBytesWritten();
