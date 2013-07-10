@@ -2603,7 +2603,7 @@ void DkExportTiffDialog::createLayout() {
 	QLabel* fileLabel = new QLabel(tr("Filename:"), this);
 	fileLabel->setAlignment(Qt::AlignRight);
 
-	fileEdit = new QLineEdit(tr("tiff_page"), this);
+	fileEdit = new QLineEdit("tiff_page", this);
 	fileEdit->setObjectName("fileEdit");
 
 	suffixBox = new QComboBox(this);
