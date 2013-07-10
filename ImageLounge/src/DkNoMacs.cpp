@@ -2604,6 +2604,8 @@ bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
 			exitFullScreen();
 			return true;
 		}
+		else if (keyEvent->key() == Qt::Key_Escape && DkSettings::App::closeOnEsc)
+			close();
 	}
 	if (event->type() == QEvent::Gesture) {
 		return gestureEvent(static_cast<QGestureEvent*>(event));
