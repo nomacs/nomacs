@@ -210,6 +210,17 @@ enum fileActions {
 	menu_file_end,	// nothing beyond this point
 };
 
+enum sortActions {
+
+	menu_sort_filename,
+	menu_sort_date_created,
+	menu_sort_date_modified,
+	menu_sort_ascending,
+	menu_sort_descending,
+
+	menu_sort_end,
+};
+
 enum editActions {
 	menu_edit_rotate_cw,
 	menu_edit_rotate_ccw,
@@ -443,6 +454,7 @@ public slots:
 	void openDir();
 	void openFile();
 	void renameFile();
+	void changeSorting(bool change);
 	void goTo();
 	void find(bool filterAction = true);
 	void updateFilterState(QStringList filters);
@@ -539,6 +551,7 @@ protected:
 
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
+	QVector<QAction *> sortActions;
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
 	QVector<QAction *> panelActions;
@@ -556,7 +569,8 @@ protected:
 
 	// menu
 	DkMenuBar* menu;
-	QMenu* fileMenu;	// TODO: release ?!
+	QMenu* fileMenu;
+	QMenu* sortMenu;
 	QMenu* editMenu;
 	QMenu* toolsMenu;
 	QMenu* panelMenu;

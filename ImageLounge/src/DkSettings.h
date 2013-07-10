@@ -85,6 +85,21 @@ class DkSettings : public QObject {
 			mode_end,
 		};
 
+		enum sortMode {
+			sort_filename,
+			sort_date_created,
+			sort_date_modified,
+
+			sort_end,
+		};
+
+		enum sortDir {
+			sort_ascending,
+			sort_descending,
+
+			sort_dir_end,
+		};
+
 		DkSettings() {};
 		DkSettings(const DkSettings& settings) {}; 
 
@@ -151,6 +166,8 @@ class DkSettings : public QObject {
 			static bool showDefaultAppDialog;
 			static int numUserChoices;
 			static QStringList userAppPaths;
+			static int sortMode;
+			static int sortDir;
 		};
 		struct SlideShow {
 			static int filter;

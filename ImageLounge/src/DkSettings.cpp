@@ -79,6 +79,8 @@ QString DkSettings::Global::defaultAppPath = QString();
 int DkSettings::Global::defaultAppIdx = -1;
 bool DkSettings::Global::showDefaultAppDialog = true;
 int DkSettings::Global::numUserChoices = 3;
+int DkSettings::Global::sortMode = DkSettings::sort_filename;
+int DkSettings::Global::sortDir = DkSettings::sort_ascending;
 QStringList DkSettings::Global::userAppPaths = QStringList();
 
 bool DkSettings::Display::keepZoom = true;
@@ -212,6 +214,8 @@ void DkSettings::load() {
 	Global::defaultAppIdx = settings.value("GlobalSettings/defaultAppIdx", DkSettings::Global::defaultAppIdx).toInt();
 	Global::showDefaultAppDialog = settings.value("GlobalSettings/showDefaultAppDialog", DkSettings::Global::showDefaultAppDialog).toBool();
 	Global::numUserChoices = settings.value("GlobalSettings/numUserChoices", DkSettings::Global::numUserChoices).toInt();
+	Global::sortMode = settings.value("GlobalSettings/sortMode", DkSettings::Global::sortMode).toInt();
+	Global::sortDir = settings.value("GlobalSettings/sortDir", DkSettings::Global::sortDir).toInt();
 	Global::userAppPaths = settings.value("GlobalSettings/userAppPaths", DkSettings::Global::userAppPaths).toStringList();
 	Global::setupPath = settings.value("GlobalSettings/setupPath", DkSettings::Global::setupPath).toString();
 	Global::setupVersion = settings.value("GlobalSettings/setupVersion", DkSettings::Global::setupVersion).toString();
@@ -319,6 +323,8 @@ void DkSettings::save() {
 	settings.setValue("GlobalSettings/defaultAppPath", DkSettings::Global::defaultAppPath);
 	settings.setValue("GlobalSettings/showDefaultAppDialog", DkSettings::Global::showDefaultAppDialog);
 	settings.setValue("GlobalSettings/numUserChoices", DkSettings::Global::numUserChoices);
+	settings.setValue("GlobalSettings/sortMode", DkSettings::Global::sortMode);
+	settings.setValue("GlobalSettings/sortDir", DkSettings::Global::sortDir);
 	settings.setValue("GlobalSettings/userAppPaths", DkSettings::Global::userAppPaths);
 	settings.setValue("GlobalSettings/setupPath", DkSettings::Global::setupPath);
 	settings.setValue("GlobalSettings/setupVersion", DkSettings::Global::setupVersion);
@@ -410,6 +416,8 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Global::userAppPaths = QStringList();
 	DkSettings::Global::setupPath = "";
 	DkSettings::Global::setupVersion = "";
+	DkSettings::Global::sortMode = sort_filename;
+	DkSettings::Global::sortDir = sort_ascending;
 
 #ifdef Q_WS_X11
 	DkSettings::Sync::switchModifier = true;

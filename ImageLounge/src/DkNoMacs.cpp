@@ -128,6 +128,7 @@ void DkNoMacs::init() {
 
 	// add actions since they are ignored otherwise if the menu is hidden
 	viewport()->addActions(fileActions.toList());
+	viewport()->addActions(sortActions.toList());
 	viewport()->addActions(editActions.toList());
 	viewport()->addActions(toolsActions.toList());
 	viewport()->addActions(panelActions.toList());
@@ -138,6 +139,9 @@ void DkNoMacs::init() {
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
 		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
+	// automatically add status tip as tool tip
+	for (int idx = 0; idx < sortActions.size(); idx++)
+		sortActions[idx]->setToolTip(sortActions[idx]->statusTip());
 	for (int idx = 0; idx < editActions.size(); idx++)
 		editActions[idx]->setToolTip(editActions[idx]->statusTip());
 	for (int idx = 0; idx < toolsActions.size(); idx++)
@@ -445,6 +449,17 @@ void DkNoMacs::createMenu() {
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_print]);
 	fileMenu->addSeparator();
+	
+	sortMenu = new QMenu(tr("S&ort"), fileMenu);
+	sortMenu->addAction(sortActions[menu_sort_filename]);
+	sortMenu->addAction(sortActions[menu_sort_date_created]);
+	sortMenu->addAction(sortActions[menu_sort_date_modified]);
+	sortMenu->addSeparator();
+	sortMenu->addAction(sortActions[menu_sort_ascending]);
+	sortMenu->addAction(sortActions[menu_sort_descending]);
+
+	fileMenu->addMenu(sortMenu);
+	
 	fileMenu->addAction(fileActions[menu_file_goto]);
 	fileMenu->addAction(fileActions[menu_file_find]);
 	fileMenu->addAction(fileActions[menu_file_reload]);
@@ -570,6 +585,8 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
 
+	contextMenu->addMenu(sortMenu);
+
 	QMenu* viewContextMenu = contextMenu->addMenu(tr("&View"));
 	viewContextMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewContextMenu->addAction(viewActions[menu_view_reset]);
@@ -681,6 +698,43 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_exit]->setShortcuts(QKeySequence::Close);
 	fileActions[menu_file_exit]->setStatusTip(tr("Exit"));
 	connect(fileActions[menu_file_exit], SIGNAL(triggered()), this, SLOT(close()));
+
+	sortActions.resize(menu_sort_end);
+
+	sortActions[menu_sort_filename] = new QAction(tr("by &Filename"), this);
+	sortActions[menu_sort_filename]->setObjectName("menu_sort_filename");
+	sortActions[menu_sort_filename]->setStatusTip(tr("Sort by Filename"));
+	sortActions[menu_sort_filename]->setCheckable(true);
+	sortActions[menu_sort_filename]->setChecked(DkSettings::Global::sortMode == DkSettings::sort_filename);
+	connect(sortActions[menu_sort_filename], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_date_created] = new QAction(tr("by Date &Created"), this);
+	sortActions[menu_sort_date_created]->setObjectName("menu_sort_date_created");
+	sortActions[menu_sort_date_created]->setStatusTip(tr("Sort by Date Created"));
+	sortActions[menu_sort_date_created]->setCheckable(true);
+	sortActions[menu_sort_date_created]->setChecked(DkSettings::Global::sortMode == DkSettings::sort_date_created);
+	connect(sortActions[menu_sort_date_created], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_date_modified] = new QAction(tr("by Date Modified"), this);
+	sortActions[menu_sort_date_modified]->setObjectName("menu_sort_date_modified");
+	sortActions[menu_sort_date_modified]->setStatusTip(tr("Sort by Date Last Modified"));
+	sortActions[menu_sort_date_modified]->setCheckable(true);
+	sortActions[menu_sort_date_modified]->setChecked(DkSettings::Global::sortMode == DkSettings::sort_date_modified);
+	connect(sortActions[menu_sort_date_modified], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_ascending] = new QAction(tr("&Ascending"), this);
+	sortActions[menu_sort_ascending]->setObjectName("menu_sort_ascending");
+	sortActions[menu_sort_ascending]->setStatusTip(tr("Sort in Ascending Order"));
+	sortActions[menu_sort_ascending]->setCheckable(true);
+	sortActions[menu_sort_ascending]->setChecked(DkSettings::Global::sortDir == Qt::AscendingOrder);
+	connect(sortActions[menu_sort_ascending], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_descending] = new QAction(tr("&Descending"), this);
+	sortActions[menu_sort_descending]->setObjectName("menu_sort_descending");
+	sortActions[menu_sort_descending]->setStatusTip(tr("Sort in Descending Order"));
+	sortActions[menu_sort_descending]->setCheckable(true);
+	sortActions[menu_sort_descending]->setChecked(DkSettings::Global::sortDir == Qt::DescendingOrder);
+	connect(sortActions[menu_sort_descending], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 
 	editActions.resize(menu_edit_end);
 
@@ -1955,6 +2009,42 @@ void DkNoMacs::updateFilterState(QStringList filters) {
 	toolsActions[menu_tools_filter]->blockSignals(true);
 	toolsActions[menu_tools_filter]->setChecked(!filters.empty());
 	toolsActions[menu_tools_filter]->blockSignals(false);
+}
+
+void DkNoMacs::changeSorting(bool change) {
+
+	if (!change)
+		return;
+
+	
+	QString senderName = QObject::sender()->objectName();
+	bool modeChange = true;
+
+	if (senderName == "menu_sort_filename")
+		DkSettings::Global::sortMode = DkSettings::sort_filename;
+	else if (senderName == "menu_sort_date_created")
+		DkSettings::Global::sortMode = DkSettings::sort_date_created;
+	else if (senderName == "menu_sort_date_modified")
+		DkSettings::Global::sortMode = DkSettings::sort_date_modified;
+	else if (senderName == "menu_sort_ascending") {
+		DkSettings::Global::sortDir = DkSettings::sort_ascending;
+		modeChange = false;
+	}
+	else if (senderName == "menu_sort_descending") {
+		DkSettings::Global::sortDir = DkSettings::sort_descending;
+		modeChange = false;
+	}
+
+	if (viewport() && viewport()->getImageLoader()) 
+		viewport()->getImageLoader()->sort();
+
+	for (int idx = 0; idx < sortActions.size(); idx++) {
+
+		if (modeChange && idx < menu_sort_ascending && sortActions.at(idx) != QObject::sender())
+			sortActions[idx]->setChecked(false);
+		else if (!modeChange && idx >= menu_sort_ascending && sortActions.at(idx) != QObject::sender())
+			sortActions[idx]->setChecked(false);
+	}
 }
 
 void DkNoMacs::goTo() {
