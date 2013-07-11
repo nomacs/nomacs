@@ -32,7 +32,10 @@ ShowUnInstDetails show
 
 
 ; MUI 1.67 compatible ------
-!include "MUI.nsh"
+!include "MUI2.nsh"
+
+!include "uninstaller.nsdinc"
+
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -69,8 +72,13 @@ Page custom fileAssociation fileAssociationFinished
 !define MUI_FINISHPAGE_RUN_FUNCTION launchnomacs
 !insertmacro MUI_PAGE_FINISH
 
+
+; custom uninstaller page
+UninstPage custom un.fnc_uninstaller_Show un.uninstallNomacs
+
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
+
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
@@ -138,6 +146,9 @@ Var psd_state
 
 Var params
 Var fileAss 
+
+; Uninstaller
+Var hCtl_uninstaller_CheckBox1_state
 
 Function .onInit		
 	IfSilent isSilent isNotSilent
@@ -602,16 +613,25 @@ Function un.onInit
 	loop:
 	${nsProcess::FindProcess} "nomacs.exe" $R0
 	StrCmp $R0 0 0 +2
-	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
-	goto next
-	end:
-		quit
+	 MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
+	 goto next
+	 end:
+		 quit
 
 	next:
 		${nsProcess::Unload}
 
-	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
-	Abort    
+	; MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
+	; Abort    
+FunctionEnd
+
+
+Function un.uninstallNomacs
+	${NSD_GetState} $hCtl_uninstaller_CheckBox1 $hCtl_uninstaller_CheckBox1_state
+	${If} $hCtl_uninstaller_CheckBox1_state == ${BST_CHECKED}
+		; DeleteRegKey HKCU "Software\nomacs"
+		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'das ist nur ein test $hCtl_uninstaller_CheckBox1_state' IDOK  +1 IDCANCEL  +1 
+	${endif}
 FunctionEnd
 
 Section Uninstall
@@ -664,6 +684,7 @@ Section Uninstall
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  ; DeleteRegKey HKCU "Software\nomacs"
   
   ${UnRegisterExtension} ".jpg" "nomacs.file.jpg"
   ${UnRegisterExtension} ".jpeg" "nomacs.file.jpg"
