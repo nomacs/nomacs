@@ -148,12 +148,12 @@ int DkMessageBox::exec() {
 	if (!show)
 		return QDialog::Accepted;
 
-	int ret = QDialog::exec();
+	return QDialog::exec();
 
-	// save show again
-	settings.setValue(objectName(), showAgain->isChecked());
+	//// save show again
+	//settings.setValue(objectName(), showAgain->isChecked());
 
-	return ret;
+	//return ret;
 }
 
 void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons) {
