@@ -40,7 +40,7 @@ ShowUnInstDetails show
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "nomacs.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_UNICON "nomacs.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
