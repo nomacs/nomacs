@@ -492,7 +492,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	virtual void newClientConnected(bool connected);
+	virtual void newClientConnected(bool connected, bool local);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
@@ -654,7 +654,7 @@ public slots:
 	void tcpConnectAll();
 	void settingsChanged();
 	void clientInitialized();
-	void newClientConnected(bool connected);
+	void newClientConnected(bool connected, bool local);
 
 protected:
 

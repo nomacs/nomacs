@@ -164,7 +164,7 @@ QDate DkSettings::Sync::lastUpdateCheck = QDate(1970, 1, 1);	// not my birthday
 bool DkSettings::Sync::syncAbsoluteTransform = true;
 
 float DkSettings::Resources::cacheMemory = 0;
-bool DkSettings::Resources::fastThumbnailPreview = true;
+bool DkSettings::Resources::fastThumbnailPreview = false;
 bool DkSettings::Resources::filterRawImages = true;
 bool DkSettings::Resources::filterDuplicats = true;
 QString DkSettings::Resources::preferredExtension = "*.jpg";
@@ -501,7 +501,7 @@ void DkSettings::setToDefaultSettings() {
 	DkSettings::Sync::syncAbsoluteTransform = true;
 
 	DkSettings::Resources::cacheMemory = 0;
-	DkSettings::Resources::fastThumbnailPreview = true;
+	DkSettings::Resources::fastThumbnailPreview = false;
 	DkSettings::Resources::filterRawImages = true;
 	DkSettings::Resources::filterDuplicats = true;
 	DkSettings::Resources::preferredExtension = "*.jpg";
