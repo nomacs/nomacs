@@ -543,7 +543,9 @@ void DkNoMacs::createMenu() {
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
+#ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
+#endif
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -1759,7 +1761,7 @@ void DkNoMacs::lockWindow(bool lock) {
 #endif
 }
 
-void DkNoMacs::newClientConnected(bool connected) {
+void DkNoMacs::newClientConnected(bool connected, bool local) {
 	overlaid = false;
 	// add methods if clients are connected
 
@@ -2128,10 +2130,21 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 	QString fileName;
 
+	int answer = QDialog::Rejected;
+
 	// don't ask the user if save was hit & the file format is supported for saving
-	if (silent && !selectedFilter.isEmpty())
+	if (silent && !selectedFilter.isEmpty() && viewport()->getImageLoader()->isEdited()) {
 		fileName = loader->getFile().absoluteFilePath();
-	else {
+		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Overwrite File"), 
+			tr("Do you want to overwrite:\n%1?").arg(fileName), 
+			(QMessageBox::Yes | QMessageBox::No), this);
+		msg->setObjectName("overwriteDialog");
+
+		//msg->show();
+		answer = msg->exec();
+
+	}
+	if (answer == QDialog::Rejected || answer == QMessageBox::No) {
 		// note: basename removes the whole file name from the first dot...
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
@@ -3012,7 +3025,7 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->addTcpAction(lanActions[menu_lan_server]);
 	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);
 	tcpLanMenu->setEnabled(true);
-	tcpLanMenu->enableActions();
+	tcpLanMenu->enableActions(false, false);
 }
 
 void DkNoMacsSync::createActions() {
@@ -3140,11 +3153,11 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
-void DkNoMacsSync::newClientConnected(bool connected) {
+void DkNoMacsSync::newClientConnected(bool connected, bool local) {
 
-	tcpLanMenu->enableActions(connected);
+	tcpLanMenu->enableActions(connected, local);
 	
-	DkNoMacs::newClientConnected(connected);
+	DkNoMacs::newClientConnected(connected, local);
 }
 
 void DkNoMacsSync::settingsChanged() {
@@ -3185,7 +3198,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 #endif
 	
 	// sync signals
-	connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
+	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
 	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);

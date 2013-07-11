@@ -1026,12 +1026,16 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 
 		if (cp.isSynchronized() && newPeers.isEmpty()) {
 			newPeers = tr("connected with: ");
-			emit newClientConnectedSignal(true);
+			emit newClientConnectedSignal(true, cp.isLocal());
 		}
 		else if (newPeers.isEmpty()) {
 			newPeers = tr("disconnected with: ");
-			emit newClientConnectedSignal(false);
+			emit newClientConnectedSignal(false, cp.isLocal());
 		}
+
+		
+
+		qDebug() << "cp address..." << cp.hostAddress;
 
 		newPeers.append("\n\t");
 

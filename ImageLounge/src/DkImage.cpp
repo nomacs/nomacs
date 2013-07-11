@@ -3354,7 +3354,7 @@ QImage DkImageStorage::getImage(float factor) {
 	}
 	
 	// if the image does not exist - create it
-	if (!busy && imgs.empty() && img.colorTable().isEmpty()) {
+	if (!busy && imgs.empty() && img.colorTable().isEmpty() && img.width() > 32 && img.height() > 32) {
 		stop = false;
 		// nobody is busy so start working
 		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);

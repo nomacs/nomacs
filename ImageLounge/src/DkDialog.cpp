@@ -100,6 +100,187 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 //	close();
 //}
 
+// DkMessageBox --------------------------------------------------------------------
+DkMessageBox::DkMessageBox(QMessageBox::Icon icon, 
+						   const QString& title, 
+						   const QString& text, 
+						   QMessageBox::StandardButtons buttons /* = QMessageBox::NoButton */, 
+						   QWidget* parent /* = 0 */, 
+						   Qt::WindowFlags f /* = Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint */) : QDialog(parent, f) {
+
+	createLayout(icon, text, buttons);
+	setWindowTitle(title);
+
+}
+
+DkMessageBox::DkMessageBox(QWidget* parent /* = 0 */) : QDialog(parent) {
+
+	createLayout(QMessageBox::NoIcon, "", QMessageBox::NoButton);
+	setWindowTitle(tr("Error"));
+}
+
+DkMessageBox::~DkMessageBox() {
+
+	// save show again
+	QSettings settings;
+	settings.beginGroup("DkDialog");
+	settings.setValue(objectName(), showAgain->isChecked());
+
+}
+
+void DkMessageBox::setVisible(bool visible) {
+
+
+	if (visible)
+		adjustSize();
+
+	QDialog::setVisible(visible);
+}
+
+int DkMessageBox::exec() {
+
+	QSettings settings;
+	settings.beginGroup("DkDialog");
+
+	bool show = settings.value(objectName(), true).toBool();
+	showAgain->setChecked(show);
+
+	if (!show)
+		return QDialog::Accepted;
+
+	int ret = QDialog::exec();
+
+	// save show again
+	settings.setValue(objectName(), showAgain->isChecked());
+
+	return ret;
+}
+
+void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons) {
+
+	setAttribute(Qt::WA_DeleteOnClose, true);
+
+	//schamlos von qmessagebox.cpp geklaut
+	textLabel = new QLabel(userText);
+	textLabel->setTextInteractionFlags(Qt::TextInteractionFlags(style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, 0, this)));
+
+	textLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+	textLabel->setOpenExternalLinks(true);
+#if defined(Q_WS_MAC)
+	textLabel->setContentsMargins(16, 0, 0, 0);
+#else
+	textLabel->setContentsMargins(2, 0, 0, 0);
+	textLabel->setIndent(9);
+#endif
+	icon = userIcon;
+	iconLabel = new QLabel;
+	iconLabel->setPixmap(QMessageBox::standardIcon((QMessageBox::Icon)icon));
+	iconLabel->setObjectName(QLatin1String("iconLabel"));
+	iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+	showAgain = new QCheckBox(tr("Show Dialog Again"));
+	showAgain->setChecked(true);
+
+	buttonBox = new QDialogButtonBox;
+	buttonBox->setObjectName(QLatin1String("buttonBox"));
+	buttonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, 0, this));
+	QObject::connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
+		this, SLOT(buttonClicked(QAbstractButton*)));
+
+	buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
+
+
+	QGridLayout *grid = new QGridLayout;
+#ifndef Q_WS_MAC
+	grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
+	grid->addWidget(textLabel, 0, 1, 1, 1);
+	grid->addWidget(showAgain, 2, 1, 1, 2);
+	grid->addWidget(buttonBox, 3, 0, 1, 2);
+#else
+	grid->setMargin(0);
+	grid->setVerticalSpacing(8);
+	grid->setHorizontalSpacing(0);
+	setContentsMargins(24, 15, 24, 20);
+	grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignLeft);
+	grid->addWidget(textLabel, 0, 1, 1, 1);
+	// -- leave space for information label --
+	grid->setRowStretch(1, 100);
+	grid->setRowMinimumHeight(2, 6);
+	grid->addWidget(buttonBox, 3, 1, 1, 1);
+#endif
+
+	//grid->setSizeConstraint(QLayout::SetNoConstraint);
+	setLayout(grid);
+
+	setModal(true);
+
+#ifdef Q_WS_MAC
+	QFont f = font();
+	f.setBold(true);
+	textLabel->setFont(f);
+#endif
+
+}
+
+void DkMessageBox::buttonClicked(QAbstractButton* button) {
+
+	QAbstractButton* clickedButton = button;
+	
+	int ret = buttonBox->standardButton(button);
+	
+	//if (ret == QMessageBox::stand)
+	qDebug() << "return code: " << ret;
+	done(ret); // does not trigger closeEvent
+
+}
+
+void DkMessageBox::updateSize() {
+
+	if (!isVisible())
+		return;
+
+	QSize screenSize = QApplication::desktop()->availableGeometry(QCursor::pos()).size();
+#if defined(Q_OS_WINCE)
+	// the width of the screen, less the window border.
+	int hardLimit = screenSize.width() - (frameGeometry().width() - geometry().width());
+#else
+	int hardLimit = qMin(screenSize.width() - 480, 1000); // can never get bigger than this
+	// on small screens allows the messagebox be the same size as the screen
+	if (screenSize.width() <= 1024)
+		hardLimit = screenSize.width();
+#endif
+#ifdef Q_WS_MAC
+	int softLimit = qMin(screenSize.width()/2, 420);
+#else
+	// note: ideally on windows, hard and soft limits but it breaks compat
+#ifndef Q_OS_WINCE
+	int softLimit = qMin(screenSize.width()/2, 500);
+#else
+	int softLimit = qMin(screenSize.width() * 3 / 4, 500);
+#endif //Q_OS_WINCE
+#endif
+
+	textLabel->setWordWrap(false); // makes the label return min size
+	int width = minimumWidth();
+
+	if (width > softLimit) {
+		textLabel->setWordWrap(true);
+		width = qMax(softLimit, minimumWidth());
+
+		if (width > hardLimit)
+			width = hardLimit;
+	}
+
+	QFontMetrics fm(QApplication::font("QMdiSubWindowTitleBar"));
+	int windowTitleWidth = qMin(fm.width(windowTitle()) + 50, hardLimit);
+	if (windowTitleWidth > width)
+		width = windowTitleWidth;
+
+	this->setFixedSize(width, minimumHeight());
+	QCoreApplication::removePostedEvents(this, QEvent::LayoutRequest);
+
+}
+
 // file validator --------------------------------------------------------------------
 DkFileValidator::DkFileValidator(QString lastFile, QObject * parent) : QValidator(parent) {
 

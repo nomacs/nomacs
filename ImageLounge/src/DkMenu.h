@@ -346,9 +346,12 @@ signals:
 	void synchronizeWithSignal(quint16);
 
 public slots:
-	void enableActions(bool enable = false) {
+	void enableActions(bool enable = false, bool local = false) {
 
 		updatePeers();
+
+		if (local)
+			return;
 
 		bool anyConnected = enable;
 

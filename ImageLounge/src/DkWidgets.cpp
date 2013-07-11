@@ -3583,8 +3583,8 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			sAngle += 180;
 
 		sAngle = qRound(sAngle*100)/100.0f;
-		int width = qRound(DkVector(p[1]-p[0]).norm());
-		int height = qRound(DkVector(p[3]-p[0]).norm());
+		int height = qRound(DkVector(p[1]-p[0]).norm());
+		int width = qRound(DkVector(p[3]-p[0]).norm());
 
 		if (showInfo) {
 			QToolTip::showText(event->globalPos(),
