@@ -2756,17 +2756,25 @@ QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
 		break;
 
 	case DkSettings::sort_date_created:
-		if (DkSettings::Global::sortDir == DkSettings::sort_ascending)
+		if (DkSettings::Global::sortDir == DkSettings::sort_ascending) {
 			qSort(fList.begin(), fList.end(), compDateCreated);
-		else 
+			qSort(fList.begin(), fList.end(), compDateCreated);		// sort twice -> in order to guarantee that same entries are sorted correctly (thumbsloader)
+		}
+		else { 
 			qSort(fList.begin(), fList.end(), compDateCreatedInv);
+			qSort(fList.begin(), fList.end(), compDateCreatedInv);
+		}
 		break;
 
 	case DkSettings::sort_date_modified:
-		if (DkSettings::Global::sortDir == DkSettings::sort_ascending)
+		if (DkSettings::Global::sortDir == DkSettings::sort_ascending) {
 			qSort(fList.begin(), fList.end(), compDateModified);
-		else
+			qSort(fList.begin(), fList.end(), compDateModified);
+		}
+		else {
 			qSort(fList.begin(), fList.end(), compDateModifiedInv);
+			qSort(fList.begin(), fList.end(), compDateModifiedInv);
+		}
 		break;
 
 

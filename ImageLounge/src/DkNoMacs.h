@@ -305,6 +305,7 @@ enum helpActions {
 	menu_help_update,
 	menu_help_bug,
 	menu_help_feature,
+	menu_help_documentation,
 	menu_help_about,
 	
 	menu_help_end,	// nothing beyond this point
@@ -476,6 +477,7 @@ public slots:
 	void showGpsCoordinates();
 	void openFileWith();
 	void aboutDialog();
+	void openDocumentation();
 	void bugReport();
 	void featureRequest();
 	void errorDialog(QString msg, QString title = "Error");

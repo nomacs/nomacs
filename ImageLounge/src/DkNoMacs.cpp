@@ -561,6 +561,7 @@ void DkNoMacs::createMenu() {
 	helpMenu->addAction(helpActions[menu_help_bug]);
 	helpMenu->addAction(helpActions[menu_help_feature]);
 	helpMenu->addSeparator();
+	helpMenu->addAction(helpActions[menu_help_documentation]);
 	helpMenu->addAction(helpActions[menu_help_about]);
 
 }
@@ -973,7 +974,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_lock_window]->setCheckable(true);
 	viewActions[menu_view_lock_window]->setChecked(false);
 
-	connect(viewActions[menu_view_lock_window], SIGNAL(toggled(bool)), this, SLOT(lockWindow(bool)));
+	connect(viewActions[menu_view_lock_window], SIGNAL(triggered(bool)), this, SLOT(lockWindow(bool)));
 
 	viewActions[menu_view_gps_map] = new QAction(viewIcons[icon_view_gps], tr("Show G&PS Coordinates"), this);
 	viewActions[menu_view_gps_map]->setStatusTip(tr("shows the GPS coordinates"));
@@ -1009,6 +1010,10 @@ void DkNoMacs::createActions() {
 	helpActions[menu_help_about]->setShortcut(QKeySequence(shortcut_show_help));
 	helpActions[menu_help_about]->setStatusTip(tr("about"));
 	connect(helpActions[menu_help_about], SIGNAL(triggered()), this, SLOT(aboutDialog()));
+
+	helpActions[menu_help_documentation] = new QAction(tr("&Documentation"), this);
+	helpActions[menu_help_documentation]->setStatusTip(tr("Online Documentation"));
+	connect(helpActions[menu_help_documentation], SIGNAL(triggered()), this, SLOT(openDocumentation()));
 
 	helpActions[menu_help_bug] = new QAction(tr("&Report a Bug"), this);
 	helpActions[menu_help_bug]->setStatusTip(tr("Report a Bug"));
@@ -1744,6 +1749,7 @@ void DkNoMacs::lockWindow(bool lock) {
 	}
 	else if (lock && windowOpacity() == 1.0f) {
 		viewport()->getController()->setInfo(tr("You should first reduce opacity\n before working through the window."));
+		viewActions[menu_view_lock_window]->setChecked(false);
 	}
 	else {
 		qDebug() << "deactivating...";
@@ -2470,6 +2476,13 @@ void DkNoMacs::aboutDialog() {
 	DkSplashScreen* spScreen = new DkSplashScreen(this, 0/*, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint*/);
 	spScreen->exec();
 	delete spScreen;
+}
+
+void DkNoMacs::openDocumentation() {
+
+	QString url = QString("https://www.nomacs.org/documentation/");
+
+	QDesktopServices::openUrl(QUrl(url));
 }
 
 void DkNoMacs::bugReport() {

@@ -20,7 +20,7 @@ OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
 OPTION (ENABLE_WEBP "Compile with webP support (webP)" OFF)
 OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 
-set(NOMACS_VERSION 1.2.0)
+set(NOMACS_VERSION 1.4.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
