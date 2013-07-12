@@ -33,26 +33,51 @@
 #include <QStringList>
 #include <QString>
 #include <QMessageBox>
+#include <QAction>
 
 #include "DkPluginInterface.h"
 
+#include "DkBaseViewport.h"
+
 namespace nmc {
+
+class DkFirstClass : public QObject {
+	Q_OBJECT
+
+public:
+	DkFirstClass(QObject* parent);
+	QList<QAction*> getActions();
+
+	public slots:
+		void on_josefAction_triggered();
+		void on_anaAction_triggered();
+
+protected:
+	QList<QAction* > myActions;
+
+};
+
 
 class DkTestPlugin : public QObject, DkPluginInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkPluginInterface)
 
 public:
-    QString pluginID() const;
+    
+	QString pluginID() const;
     QString pluginName() const;
     QString pluginDescription() const;
     QImage pluginDescriptionImage() const;
     QString pluginVersion() const;
 
     QStringList runID() const;
-    QString pluginMenuName(const QString &runID) const;
+    QString pluginMenuName(const QString &runID = "") const;
     QString pluginStatusTip(const QString &runID) const;  
+	QList<QAction*> pluginActions();
     QImage runPlugin(const QString &runID, const QImage &image) const;
+
+private:
+	DkFirstClass* myClass;
 };
 
 };

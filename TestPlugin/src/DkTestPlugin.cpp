@@ -28,7 +28,7 @@
 #include "DkTestPlugin.h"
 
 namespace nmc {
-
+	
 /**
 * Returns unique ID for the generated dll
 **/
@@ -92,6 +92,8 @@ QStringList DkTestPlugin::runID() const {
 **/
 QString DkTestPlugin::pluginMenuName(const QString &runID) const {
 
+	return "Menu";
+
    if (runID=="c7019c2172d3474782d91d79be1babfd") return "Test plug-in 1";
    else if (runID=="b49683ec27824e3fa5f5d1abf37517f4") return "Test plug-in 2";
    else if (runID=="ccc725b251ba4c23ab7f596401ce1d92") return "Test plug-in 3";
@@ -113,6 +115,13 @@ QString DkTestPlugin::pluginStatusTip(const QString &runID) const {
 	else if (runID=="3ab568d753c345f69fdea7aa29ba18fa") return "Status tip for plug-in 5";
 	return "Wrong GUID!";
 };
+
+QList<QAction*> DkTestPlugin::pluginActions() {
+
+	myClass = new DkFirstClass(this);
+	
+	return myClass->getActions();
+}
 
 /**
 * Main function: runs plug-in based on its ID
@@ -139,5 +148,52 @@ QImage DkTestPlugin::runPlugin(const QString &runID, const QImage &image) const 
 
 Q_EXPORT_PLUGIN2(DkTestPlugin, DkTestPlugin)
 
-};
 
+
+// DkFirstClass --------------------------------------------------------------------
+DkFirstClass::DkFirstClass(QObject* parent) : QObject(parent) {
+	
+	
+	QAction* ca = new QAction(tr("Whatever"), this);
+	ca->setObjectName("Whatever");
+	myActions.append(ca);
+
+	ca = new QAction(tr("Josef"), this);
+	ca->setObjectName("josefAction");
+	ca->setStatusTip("tim");
+	myActions.append(ca);
+
+	ca = new QAction(tr("Ana"), this);
+	ca->setObjectName("anaAction");
+	myActions.append(ca);
+
+	//QAction* x = myActions.at(100);
+
+	QMetaObject::connectSlotsByName(this);
+}
+
+QList<QAction* > DkFirstClass::getActions() {
+
+	return myActions;
+}
+
+void DkFirstClass::on_josefAction_triggered() {
+
+	QMessageBox msgBox;
+	msgBox.setText(QString("Josef"));
+	msgBox.setIcon(QMessageBox::Warning);
+	msgBox.exec();
+
+
+}
+
+void DkFirstClass::on_anaAction_triggered() {
+
+	QMessageBox msgBox;
+	msgBox.setText(QString("Josef"));
+	msgBox.setIcon(QMessageBox::Warning);
+	msgBox.exec();
+
+}
+
+};

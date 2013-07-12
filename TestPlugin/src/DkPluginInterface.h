@@ -44,8 +44,9 @@ public:
     virtual QString pluginVersion() const = 0;
 
     virtual QStringList runID() const = 0;
-    virtual QString pluginMenuName(const QString &runID) const = 0;
-    virtual QString pluginStatusTip(const QString &runID) const = 0;  
+    virtual QString pluginMenuName(const QString &runID = "") const = 0;
+    virtual QString pluginStatusTip(const QString &runID) const = 0;
+	virtual QList<QAction*> pluginActions() { return QList<QAction*>();};
     virtual QImage runPlugin(const QString &runID, const QImage &image) const = 0;
 };
 
