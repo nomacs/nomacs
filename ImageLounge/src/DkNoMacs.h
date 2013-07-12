@@ -510,6 +510,7 @@ public slots:
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setContrast(bool contrast);
+	void loadFile(const QFileInfo& file);
 	//void shareFacebook();
 
 	// batch actions

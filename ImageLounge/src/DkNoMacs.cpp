@@ -1918,6 +1918,14 @@ void DkNoMacs::openFile() {
 	//viewport()->loadFile(QFileInfo(fileNames[0]));
 }
 
+void DkNoMacs::loadFile(const QFileInfo& file) {
+
+	if (!viewport())
+		return;
+
+	viewport()->loadFile(file);
+}
+
 void DkNoMacs::renameFile() {
 
 	DkImageLoader* loader = viewport()->getImageLoader();

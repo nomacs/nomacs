@@ -36,12 +36,12 @@
 	#pragma comment (linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
-#include "DkImage.h"
+//#include "DkImage.h"
 
 #include "DkNoMacs.h"
-#include "DkPong.h"
-#include "DkUtils.h"
-#include "DkTimer.h"
+//#include "DkPong.h"
+//#include "DkUtils.h"
+//#include "DkTimer.h"
 
 #include <QtGui/QApplication>
 #include <QFileInfo>
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
 	if (args.size() > 1)
-		w->viewport()->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
+		w->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::App::currentAppMode).toInt();
 
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
 	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
 	a.installEventFilter(osxEventFilter);
 	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
-		w->viewport(), SLOT(loadFile(const QFileInfo&)));
+		w, SLOT(loadFile(const QFileInfo&)));
 #endif
 		
 #ifdef Q_WS_WIN
