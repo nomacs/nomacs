@@ -76,20 +76,6 @@ using namespace cv;
 //	#pragma comment (lib, "dwmapi.lib")
 //#endif
 
-// my stuff
-#include "DkNetwork.h"
-#include "DkViewPort.h"
-#include "DkImage.h"
-#include "DkWidgets.h"
-#include "DkDialog.h"
-#include "DkSaveDialog.h"
-#include "DkSettings.h"
-#include "DkMenu.h"
-#include "DkToolbars.h"
-#include "DkManipulationWidgets.h"
-#include "DkPluginInterface.h"
-#include "DkPluginManager.h"
-
 #ifdef DK_DLL
 #define DllExport Q_DECL_EXPORT
 #else
@@ -114,6 +100,7 @@ class DkUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkTransferToolBar;
+class DkPluginManager;
 
 
 // keyboard shortcuts

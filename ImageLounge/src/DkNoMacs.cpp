@@ -38,7 +38,8 @@
 #include "DkMenu.h"
 #include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
-
+#include "DkPluginInterface.h"
+#include "DkPluginManager.h"
 
 namespace nmc {
 
@@ -576,7 +577,7 @@ void DkNoMacs::createMenu() {
 		syncMenu = 0;
 
 	// plug-in menu
-	pluginsMenu = menu->addMenu(tr("&Plug-ins"));
+	pluginsMenu = menu->addMenu(tr("&Plugins"));
 	connect(pluginsMenu, SIGNAL(aboutToShow()), this, SLOT(initPluginManager()));
 	
 	helpMenu = menu->addMenu(tr("&?"));
@@ -3025,12 +3026,33 @@ void DkNoMacs::addPluginsToMenu() {
 
 	QMap<QString, QString> runId2PluginId;
 	QList<QPair<QString, QString> > sortedNames;
+	QStringList pluginMenu;
+
+	QVector<QMenu*> pluginSubMenus;
 
 	for (int i = 0; i < pluginIdList.size(); i++) {
-		QStringList runID = loadedPlugins.value(pluginIdList.at(i))->runID();
-		for (int j = 0; j < runID.size(); j++) {
-			runId2PluginId.insert(runID.at(j), pluginIdList.at(i));
-			sortedNames.append(qMakePair(runID.at(j), loadedPlugins.value(pluginIdList.at(i))->pluginMenuName(runID.at(j))));
+
+		DkPluginInterface* cPlugin = loadedPlugins.value(pluginIdList.at(i));
+		QStringList runID = cPlugin->runID();
+
+		if (!cPlugin->pluginActions().empty()) {
+			
+			QMenu* sm = new QMenu(cPlugin->pluginMenuName());
+			sm->addActions(cPlugin->pluginActions());
+			runId2PluginId.insert(cPlugin->pluginMenuName(), pluginIdList.at(i));
+			
+			pluginSubMenus.append(sm);
+		}
+		else {
+		
+			//QList<QPair<QString, QString> > sortedNames;
+
+
+			for (int j = 0; j < runID.size(); j++) {
+				
+				runId2PluginId.insert(runID.at(j), pluginIdList.at(i));
+				sortedNames.append(qMakePair(runID.at(j), cPlugin->pluginMenuName(runID.at(j))));
+			}
 		}
 	}
 
@@ -3045,7 +3067,14 @@ void DkNoMacs::addPluginsToMenu() {
 	qSort(sortedNames.begin(), sortedNames.end(), QPairSecondComparer());
 	*/
 
-	pluginsActions.resize(menu_plugins_end + sortedNames.size());
+	//pluginsActions.resize(menu_plugins_end + sortedNames.size() + pluginSubMenus.size());
+	
+	// delete old actions!!
+	for (int idx = pluginsActions.size(); idx > menu_plugins_end; idx--) {
+		pluginsActions.last()->deleteLater();
+		pluginsActions.pop_back();
+	}
+
 	pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
 	pluginsMenu->addSeparator();
 
@@ -3059,23 +3088,33 @@ void DkNoMacs::addPluginsToMenu() {
 	}
 	settings.endArray();
 
-	int iterN = 0;
 	for(int i = 0; i < sortedNames.size(); i++) {
 
-		if (pluginsEnabled.value(runId2PluginId.value(sortedNames.at(i).first), true)) {
-			pluginsActions[menu_plugins_end + iterN] = new QAction(sortedNames.at(i).second, this);	//TODO translations
-			pluginsActions[menu_plugins_end + iterN]->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));		//TODO translations
-			pluginsActions[menu_plugins_end + iterN]->setData(sortedNames.at(i).first);
-			connect(pluginsActions[menu_plugins_end + iterN], SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
 
-			addAction(pluginsActions[menu_plugins_end + iterN]);
-			pluginsMenu->addAction(pluginsActions[menu_plugins_end + iterN]);
-			pluginsActions[menu_plugins_end + iterN]->setToolTip(pluginsActions[menu_plugins_end + iterN]->statusTip());
-			iterN++;
+		if (pluginsEnabled.value(runId2PluginId.value(sortedNames.at(i).first), true)) {
+
+			QAction* pluginAction = new QAction(sortedNames.at(i).second, this);	//TODO translations
+			pluginAction->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));		//TODO translations
+			pluginAction->setData(sortedNames.at(i).first);
+			connect(pluginAction, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+
+			viewport()->addAction(pluginAction);
+			pluginsMenu->addAction(pluginAction);
+			pluginAction->setToolTip(pluginAction->statusTip());
+
+			pluginsActions.append(pluginAction);
 		}		
 	}
+
+	for (int idx = 0; idx < pluginSubMenus.size(); idx++) {
+
+		if (pluginsEnabled.value(runId2PluginId.value(pluginSubMenus.at(idx)->title()), true))
+			pluginsMenu->addMenu(pluginSubMenus.at(idx));
+
+	}
+
 	pluginManager->setRunId2PluginId(runId2PluginId);
-	pluginsActions.resize(menu_plugins_end + iterN);
+	//pluginsActions.resize(menu_plugins_end + iterN);
 }
 
 /**
@@ -3117,6 +3156,22 @@ void DkNoMacs::openPluginManager() {
 
 void DkNoMacs::runLoadedPlugin() {
    QAction* action = qobject_cast<QAction*>(sender());
+
+   //if (!action)
+	  // return;
+
+   //QString key = action->data().toString();
+   //DkPluginInterface* cPlugin = pluginManager->getPlugins().value(pluginManager->getRunId2PluginId().value(key));
+
+   //if (cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
+	  // 
+	  // DkViewPort* vp = viewport();
+	  // DkViewPort* josef = cPlugin->getViewPort();
+	  // josef->imgLoader = vp->getImageLoader();
+	  // setCentralWidget(josef);
+
+   //}
+
    if(action) {
 	   QString key = action->data().toString();
 	   QImage tmpImg = viewport()->getImageLoader()->getImage();

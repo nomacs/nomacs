@@ -35,6 +35,14 @@ namespace nmc {
 
 class DkPluginInterface {
 public:
+
+	enum ifTypes {
+		interface_basic = 0,
+		interface_viewport,
+
+		inteface_end,
+	};
+
 	virtual ~DkPluginInterface() {}
 
     virtual QString pluginID() const = 0;
@@ -44,11 +52,22 @@ public:
     virtual QString pluginVersion() const = 0;
 
     virtual QStringList runID() const = 0;
-    virtual QString pluginMenuName(const QString &runID) const = 0;
-    virtual QString pluginStatusTip(const QString &runID) const = 0;  
+    virtual QString pluginMenuName(const QString &runID = "") const = 0;
+    virtual QString pluginStatusTip(const QString &runID) const = 0;
+	virtual QList<QAction*> pluginActions() { return QList<QAction*>();};
     virtual QImage runPlugin(const QString &runID, const QImage &image) const = 0;
+	virtual int interfaceType() const {return interface_basic; };
 };
+
+class DkViewPortInterface : public DkPluginInterface {
+
+public:
+
+	virtual int interfaceType()  const {return interface_viewport;};
 
 };
 
-Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.TUWien.nomacs.DkPluginInterface/0.1")
+};
+
+Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/0.1")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/0.1")
