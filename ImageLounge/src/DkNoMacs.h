@@ -80,9 +80,10 @@ using namespace cv;
 #include "DkImage.h"
 #include "DkWidgets.h"
 #include "DkDialog.h"
+#include "DkSaveDialog.h"
 #include "DkSettings.h"
 #include "DkMenu.h"
-#include "DkTransferToolBar.h"
+#include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
 #include "DkPluginInterface.h"
 #include "DkPluginManager.h"
@@ -107,6 +108,7 @@ enum {
 	shortcut_open_preview	= Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
+	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
 	shortcut_first_file		= Qt::Key_Home, 
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
@@ -145,6 +147,7 @@ enum {
 	shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
 	shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down,
 	shortcut_show_overview	= Qt::Key_O,
+	shortcut_show_explorer	= Qt::Key_E,
 	shortcut_show_player	= Qt::Key_P,
 	shortcut_show_exif		= Qt::Key_M,
 	shortcut_show_info		= Qt::Key_I,
@@ -193,6 +196,7 @@ enum fileActions {
 	menu_file_open_dir,
 	menu_file_open_with,
 	menu_file_save,
+	menu_file_save_as,
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
@@ -208,6 +212,17 @@ enum fileActions {
 	menu_file_end,	// nothing beyond this point
 };
 
+enum sortActions {
+
+	menu_sort_filename,
+	menu_sort_date_created,
+	menu_sort_date_modified,
+	menu_sort_ascending,
+	menu_sort_descending,
+
+	menu_sort_end,
+};
+
 enum editActions {
 	menu_edit_rotate_cw,
 	menu_edit_rotate_ccw,
@@ -217,7 +232,7 @@ enum editActions {
 	menu_edit_paste,
 	menu_edit_shortcuts,
 	menu_edit_preferences,
-	menu_edit_transfrom,
+	menu_edit_transform,
 	menu_edit_delete,
 	menu_edit_crop,
 	menu_edit_wallpaper,
@@ -229,15 +244,30 @@ enum toolsActions {
 	menu_tools_thumbs,
 	menu_tools_filter,
 	menu_tools_manipulation,
+	menu_tools_export_tiff,
 
 	menu_tools_end,
 };
 
+enum panelActions {
+	menu_panel_menu,
+	menu_panel_toolbar,
+	menu_panel_statusbar,
+	menu_panel_transfertoolbar,
+
+	menu_panel_player,
+	menu_panel_preview,
+	menu_panel_scroller,
+	menu_panel_exif,
+	menu_panel_info,
+	menu_panel_histogram,
+	menu_panel_overview,
+	menu_panel_explorer,
+
+	menu_panel_end,
+};
+
 enum viewActions {
-	menu_view_show_menu,
-	menu_view_show_toolbar,
-	menu_view_show_statusbar,
-	menu_view_show_transfertoolbar,
 	menu_view_fullscreen,
 	menu_view_reset,
 	menu_view_100,
@@ -246,13 +276,6 @@ enum viewActions {
 	menu_view_zoom_out,
 	menu_view_anti_aliasing,
 	menu_view_tp_pattern,
-	menu_view_show_overview,
-	menu_view_show_player,
-	menu_view_show_preview,
-	menu_view_show_scroller,
-	menu_view_show_exif,
-	menu_view_show_info,
-	menu_view_show_histogram,
 	menu_view_frameless,
 	menu_view_opacity_up,
 	menu_view_opacity_down,
@@ -277,12 +300,19 @@ enum pluginsActions {
 	menu_plugin_manager,
 	
 	menu_plugins_end,	// nothing beyond this point
+
+enum lanSyncActions {
+	menu_lan_server,
+	menu_lan_image,
+
+	menu_lan_end,
 };
 
 enum helpActions {
 	menu_help_update,
 	menu_help_bug,
 	menu_help_feature,
+	menu_help_documentation,
 	menu_help_about,
 	
 	menu_help_end,	// nothing beyond this point
@@ -402,6 +432,7 @@ public:
 	
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();
+	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
 
@@ -427,16 +458,20 @@ public slots:
 	void exitFullScreen();
 	void openKeyboardShortcuts();
 	void openSettings();
+	void showExplorer(bool show);
 	void openDir();
 	void openFile();
 	void renameFile();
+	void changeSorting(bool change);
 	void goTo();
 	void find(bool filterAction = true);
 	void updateFilterState(QStringList filters);
 	void saveFile();
+	void saveFileAs(bool silent = false);
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
+	void exportTiff();
 	void deleteFile();
 	void setWallpaper();
 	void printDialog();
@@ -445,14 +480,16 @@ public slots:
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbar(bool show);
+	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
 	void openFileWith();
 	void aboutDialog();
+	void openDocumentation();
 	void bugReport();
 	void featureRequest();
 	void errorDialog(QString msg, QString title = "Error");
 	void loadRecursion();
-	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false);
+	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();
@@ -464,7 +501,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	void newClientConnected(bool connected);
+	virtual void newClientConnected(bool connected, bool local);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
@@ -527,11 +564,14 @@ protected:
 
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
+	QVector<QAction *> sortActions;
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
+	QVector<QAction *> panelActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
 	QVector<QAction *> pluginsActions;
+	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
@@ -543,9 +583,11 @@ protected:
 
 	// menu
 	DkMenuBar* menu;
-	QMenu* fileMenu;	// TODO: release ?!
+	QMenu* fileMenu;
+	QMenu* sortMenu;
 	QMenu* editMenu;
 	QMenu* toolsMenu;
+	QMenu* panelMenu;
 	QMenu* viewMenu;
 	QMenu* syncMenu;
 	QMenu* pluginsMenu;
@@ -555,7 +597,7 @@ protected:
 	// sub menus
 	QMenu* fileFilesMenu;
 	QMenu* fileFoldersMenu;
-	QMenu* viewToolsMenu;
+	QMenu* panelToolsMenu;
 	DkTcpMenu* tcpViewerMenu;
 	DkTcpMenu* tcpLanMenu;
 	
@@ -579,6 +621,8 @@ protected:
 	QProgressDialog* progressDialog;
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
+	DkExplorer* explorer;
+	DkExportTiffDialog* exportTiffDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
@@ -628,6 +672,7 @@ public slots:
 	void tcpConnectAll();
 	void settingsChanged();
 	void clientInitialized();
+	void newClientConnected(bool connected, bool local);
 
 protected:
 

@@ -52,6 +52,10 @@
 #include <QPrintDialog>
 #include <QToolBar>
 #include <QFormLayout>
+#include <QProgressBar>
+#include <QFuture>
+#include <QtConcurrentRun>
+#include <QFutureWatcher>
 
 #include "DkWidgets.h"
 #include "DkViewPort.h"
@@ -80,6 +84,38 @@ class DkSelectAllLineEdit : public QLineEdit {
 		}
 	private:
 		bool selectOnMousePressEvent; 
+};
+
+class DkMessageBox : public QDialog {
+	Q_OBJECT
+
+public:
+	DkMessageBox(QMessageBox::Icon icon, 
+		const QString& title, 
+		const QString& text, 
+		QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
+		QWidget* parent = 0, 
+		Qt::WindowFlags f = Qt::Dialog);
+	DkMessageBox(QWidget* parent = 0);
+
+	~DkMessageBox();
+
+	virtual void setVisible(bool visible);
+
+public slots:
+	void buttonClicked(QAbstractButton* button);
+	int exec();
+
+protected:
+	
+	QLabel* iconLabel;
+	QLabel* textLabel;
+	QMessageBox::Icon icon;
+	QDialogButtonBox* buttonBox;
+	QCheckBox* showAgain;
+
+	void createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons);
+	void updateSize();
 };
 
 class DkSelectAllDoubleSpinBox : public QDoubleSpinBox {
@@ -158,121 +194,6 @@ protected:
 	
 	QFileInfo acceptedFile;
 	QFileInfo cFile;
-};
-
-class DkTifDialog : public QDialog {
-	Q_OBJECT
-
-public:
-	DkTifDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
-	int getCompression() {
-
-		return (noCompressionButton->isChecked()) ? 0 : 1;
-	};
-
-	// TODO: make it a bit more stylish
-
-protected:
-	void init();
-	QRadioButton* noCompressionButton;
-	QRadioButton* compressionButton;
-	bool isOk;
-
-};
-
-class DkCompressDialog : public QDialog {
-	Q_OBJECT
-
-public:
-
-	enum {
-		jpg_dialog,
-		j2k_dialog,
-		webp_dialog,
-
-		dialog_end
-	};
-
-	DkCompressDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
-	void imageHasAlpha(bool hasAlpha) {
-		this->hasAlpha = hasAlpha;
-		colChooser->setEnabled(hasAlpha);
-	};
-
-	QColor getBackgroundColor() {
-		return bgCol;
-	};
-
-	int getCompression() {
-
-		int compression = -1;
-		if (dialogMode == jpg_dialog || !cbLossless->isChecked())
-			compression = slider->value();
-
-		return compression;
-	};
-
-	void setImage(QImage* img) {
-		this->img = img;
-		updateSnippets();
-		drawPreview();
-	};
-
-	void setDialogMode(int dialogMode) {
-		this->dialogMode = dialogMode;
-		init();
-	};
-
-public slots:
-	
-	void setVisible(bool visible) {
-		
-		QDialog::setVisible(visible);
-
-		if (visible)
-			origView->zoomConstraints(origView->get100Factor());
-	};
-
-protected slots:
-
-	void newBgCol() {
-		bgCol = colChooser->getColor();
-		qDebug() << "new bg col...";
-		drawPreview();
-	};
-
-	void losslessCompression(bool lossless) {
-
-		slider->setEnabled(!lossless);
-		drawPreview();
-	};
-
-	void drawPreview();
-
-	void updateFileSizeLabel(float bufferSize = -1);
-
-
-protected:
-	int dialogMode;
-	bool hasAlpha;
-	QColor bgCol;
-	
-	QCheckBox* cbLossless;
-	DkSlider* slider;
-	DkColorChooser* colChooser;
-	QImage* img;
-	QImage origImg;
-	QImage newImg;
-	QLabel* previewLabel;
-	QLabel* previewSizeLabel;
-	//QLabel* origLabel;
-	DkBaseViewPort* origView;
-
-	void init();
-	void createLayout();
-	void updateSnippets();
 };
 
 class DkOpenWithDialog : public QDialog {
@@ -466,6 +387,12 @@ protected slots:
 
 	void drawPreview();
 
+	void setVisible(bool visible) {
+		updateSnippets();
+		drawPreview();
+
+		QDialog::setVisible(visible);
+	}
 
 protected:
 	int leftSpacing;
@@ -820,6 +747,61 @@ protected:
 	void createLayout();
 
 	DkSlider* slider;
+};
+
+class DkExportTiffDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkExportTiffDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+public slots:
+	void on_openButton_pressed();
+	void on_saveButton_pressed();
+	void on_fileEdit_textChanged(const QString& filename);
+	void setFile(const QFileInfo& file);
+	void accept();
+	void reject();
+	int exportImages(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite);
+	void processingFinished();
+
+signals:
+	void updateImage(QImage img);
+	void updateProgress(int);
+	void infoMessage(QString msg);
+
+protected:
+	void createLayout();
+	void enableTIFFSave(bool enable);
+	void enableAll(bool enable);
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+
+	DkBaseViewPort* viewport;
+	QLabel* tiffLabel;
+	QLabel* folderLabel;
+	QLineEdit* fileEdit;
+	QComboBox* suffixBox;
+	QSpinBox* fromPage;
+	QSpinBox* toPage;
+	QDialogButtonBox* buttons;
+	QProgressBar* progress;
+	QLabel* msgLabel;
+	QWidget* controlWidget;
+	QCheckBox* overwrite;
+
+	QFileInfo cFile;
+	QDir saveDir;
+	DkBasicLoader loader;
+	QFutureWatcher<int> watcher;
+	bool processing;
+
+	enum {
+		finished,
+		question_save,
+		error,
+
+	};
 };
 
 class DkForceThumbDialog : public QDialog {

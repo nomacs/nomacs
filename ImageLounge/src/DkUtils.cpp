@@ -106,4 +106,42 @@ double DkMemory::getFreeMemory() {
 	return mem;
 }
 
+// DkUtils --------------------------------------------------------------------
+void DkUtils::mSleep(int ms) {
+
+#ifdef Q_OS_WIN
+	Sleep(uint(ms));
+#else
+	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+	nanosleep(&ts, NULL);
+#endif
+
+}
+
+
+bool DkUtils::exists(const QFileInfo& file, int waitMs) {
+
+	QFuture<bool> future = QtConcurrent::run(&DkUtils::checkFile, file);
+
+	for (int idx = 0; idx < waitMs; idx++) {
+		if (future.isFinished())
+			break;
+
+		//qDebug() << "you are trying the new exists method... - you are modern!";
+
+		mSleep(1);
+	}
+
+	//future.cancel();
+
+	// assume file is not existing if it took longer than waitMs
+	return (future.isFinished()) ? future : false;	
+}
+
+bool DkUtils::checkFile(const QFileInfo& file) {
+
+	return file.exists();
+}
+
+
 }

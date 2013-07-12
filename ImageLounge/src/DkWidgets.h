@@ -51,6 +51,12 @@
 #include <qmath.h>
 #include <QScrollBar>
 #include <QPlastiqueStyle>
+#include <QFileSystemModel>
+#include <QDockWidget>
+#include <QTreeView>
+#include <QSortFilterProxyModel>
+#include <QToolTip>
+#include <QtConcurrentRun>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -62,6 +68,7 @@
 #include "DkNetwork.h"
 #include "DkSettings.h"
 #include "DkMath.h"
+#include "DkToolbars.h"
 
 #ifdef Q_WS_WIN
 #include <ShObjIdl.h>
@@ -69,6 +76,7 @@
 #endif
 
 namespace nmc {
+
 class DkThumbNail;
 
 class DkWidget : public QWidget {
@@ -412,7 +420,6 @@ protected:
 	virtual void paintEvent(QPaintEvent *event);
 };
 
-// TODO: check why it's not working with DkFadeLabel
 class DkFileInfoLabel : public DkFadeLabel {
 	Q_OBJECT
 
@@ -421,8 +428,8 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updateInfo(const QFileInfo& file, const QString& date, const int rating);
-	void updateTitle(const QFileInfo& file);
+	void updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating);
+	void updateTitle(const QFileInfo& file, const QString& attr);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
 	void setEdited(bool edited);
@@ -555,13 +562,7 @@ public:
 		return moveImageTimer;
 	};
 
-	void setVisible(bool visible) {
-
-		DkWidget::setVisible(visible);
-
-		if (visible)
-			indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
-	}
+	void setVisible(bool visible);
 
 public slots:
 	void paintEvent(QPaintEvent *event);
@@ -748,6 +749,56 @@ protected:
 	QProgressDialog* pd;
 };
 
+class DkFileSystemModel : public QFileSystemModel {
+	Q_OBJECT
+
+public:
+	DkFileSystemModel(QObject* parent = 0);
+
+protected:
+
+};
+
+class DkSortFileProxyModel : public QSortFilterProxyModel {
+	Q_OBJECT
+
+public:
+	DkSortFileProxyModel(QObject* parent = 0);
+
+protected:
+	virtual bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
+
+};
+
+class DkExplorer : public QDockWidget {
+	Q_OBJECT
+
+public:
+	DkExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkExplorer();
+
+public slots:
+	void setCurrentPath(QFileInfo fileInfo);
+	void fileClicked(const QModelIndex &index) const;
+	void showColumn(bool show);
+	void setEditable(bool editable);
+
+signals:
+	void openFile(QFileInfo fileInfo) const;
+
+protected:
+	void closeEvent(QCloseEvent *event);
+	void contextMenuEvent(QContextMenuEvent* event);
+
+	void createLayout();
+	void writeSettings();
+	void readSettings();
+
+	DkFileSystemModel* fileModel;
+	DkSortFileProxyModel* sortModel;
+	QTreeView* fileTree;
+	QVector<QAction*> columnActions;
+};
 
 class DkOverview : public DkWidget {
 	Q_OBJECT
@@ -1097,6 +1148,21 @@ public:
 		return ((c2-c1)*0.5f + c1).getQPointF();
 	};
 
+	void setCenter(const QPointF& center) {
+
+		if (rect.empty())
+			return;
+
+		DkVector diff = getCenter() - center;
+
+		for (int idx = 0; idx < rect.size(); idx++) {
+
+			rect[idx] = rect[idx] - diff.getQPointF();
+		}
+
+
+	}
+
 	double getAngle() {
 		
 		// default upper left corner is 0
@@ -1132,8 +1198,6 @@ public:
 			size.setX(size.y());
 			size.setY(x);
 		}
-
-		//TODO: fix bug #132
 
 		// invariance -> user does not want to make a difference between an upside down rect
 		if (angle > CV_PI*0.25 && angle < CV_PI*0.75) {
@@ -1185,7 +1249,7 @@ public:
 	};
 
 signals:
-	void ctrlMovedSignal(int, QPointF, bool);
+	void ctrlMovedSignal(int, QPointF, bool, bool);
 	void updateDiagonal(int);
 
 protected:
@@ -1236,22 +1300,34 @@ public:
 		this->imgRect = imgRect;
 	};
 
-	void setVisible(bool visible);
+	virtual void setVisible(bool visible);
 
 signals:
-	void enterPressedSignal(DkRotatingRect cropArea);
+	void enterPressedSignal(DkRotatingRect cropArea, const QColor& bgCol = QColor(0,0,0,0));
+	void angleSignal(double angle);
+	void aRatioSignal(const QPointF& aRatio);
+	void statusInfoSignal(QString msg);
 
 public slots:
-	void updateCorner(int idx, QPointF point, bool isShiftDown);
+	void updateCorner(int idx, QPointF point, bool isShiftDown, bool changeState = false);
 	void updateDiagonal(int idx);
+	void setFixedDiagonal(const DkVector& diag);
+	void setAngle(double angle, bool apply = true);
+	void setPanning(bool panning);
+	void setPaintHint(int paintMode = DkCropToolBar::no_guide);
+	void setShadingHint(bool invert);
+	void setShowInfo(bool showInfo);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
+	void wheelEvent(QWheelEvent* event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	QPointF clipToImage(const QPointF& pos);
+	void applyTransform();
+	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
 	
 	void paintEvent(QPaintEvent *event);
 
@@ -1266,6 +1342,7 @@ protected:
 	QPointF posGrab;
 	QPointF clickPos;
 	DkVector oldDiag;
+	DkVector fixedDiag;
 
 	QWidget* parent;
 	DkRotatingRect rect;
@@ -1274,7 +1351,32 @@ protected:
 	QVector<DkTransformRect*> ctrlPoints;
 	QCursor rotatingCursor;
 	QRectF* imgRect;
+	bool panning;
+	int paintMode;
+	bool showInfo;
+};
 
+class DkCropWidget : public DkEditableRect {
+	Q_OBJECT
+
+public:
+	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	virtual void setVisible(bool visible);
+	DkCropToolBar* getToolbar() {
+		return cropToolbar;
+	}
+
+public slots:
+	void crop();
+
+signals:
+	void showToolbar(QToolBar* toolbar, bool show);
+
+protected:
+	
+
+	DkCropToolBar* cropToolbar;
 };
 
 /**
@@ -1400,6 +1502,11 @@ public:
 	int value() {
 		return slider->value();
 	};
+
+	void setFocus(Qt::FocusReason reason) {
+		sliderBox->setFocus(reason);
+	};
+
 
 public slots:
 	void setValue(int value) {

@@ -18,8 +18,9 @@ endif(COMMAND cmake_policy)
 
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
 OPTION (ENABLE_WEBP "Compile with webP support (webP)" OFF)
+OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 
-set(NOMACS_VERSION 1.2.0)
+set(NOMACS_VERSION 1.4.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
@@ -124,7 +125,6 @@ else (HAVE_EXIV2_HPP)
 	message(STATUS "exiv2 does not contain exiv2.hpp. Using older include set")
 endif (HAVE_EXIV2_HPP)
 
-
 #webp
 IF(ENABLE_WEBP)
 	IF (MSVC)
@@ -152,6 +152,7 @@ IF(ENABLE_WEBP)
 ENDIF(ENABLE_WEBP)
 
 
+
 IF (ENABLE_RAW)
 
 	# NOTE: libraw is used only when there is OpenCV found and used
@@ -164,7 +165,7 @@ IF (ENABLE_RAW)
         	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.13.5/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
         	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
-        	                            PATHS "../LibRaw-0.13.5/buildfiles/" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
+        	                            PATHS "../LibRaw-0.13.5/buildfiles/Win32" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
 
 	        IF( EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
                 	EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND 
@@ -227,6 +228,47 @@ IF (ENABLE_RAW)
 	ENDIF()
 
 ENDIF(ENABLE_RAW)
+
+#multi-layer tiff
+IF(ENABLE_TIFF)
+		
+	# we try to grab the OpenCV's libtiff
+	IF (MSVC)
+		find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
+		IF(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
+			FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+			FILE(COPY ${TIFF_BUILD_PATH}/Release/libtiff.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		ELSE ()
+			message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib")
+		ENDIF()
+
+		SET(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")		
+		find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
+	
+		# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
+		find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" )
+
+		IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
+			add_definitions(-DWITH_LIBTIFF)
+		ELSE()
+			message(FATAL_ERROR "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
+			message(FATAL_ERROR "opencv dir: ${OpenCV_DIR}")
+		ENDIF()
+
+	ELSE()
+		find_package(TIFF)
+		IF(TIFF_FOUND)
+			SET(TIFF_CONFIG_DIR "")
+			add_definitions(-DWITH_LIBTIFF)
+		ELSE()
+			message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
+		ENDIF()
+		
+	ENDIF(MSVC)
+	
+	
+ENDIF(ENABLE_TIFF)
+
 	
 include_directories (
 	${QT_INCLUDES}
@@ -236,6 +278,8 @@ include_directories (
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}/src
 	${WEBP_INCLUDE_DIR}
+	${TIFF_INCLUDE_DIR}
+	${TIFF_CONFIG_DIR}
 )
 
 # set (NOMACS_SOURCES
@@ -370,7 +414,7 @@ IF (EXIV2_FOUND)
 	set(EXE_NAME ${CMAKE_PROJECT_NAME})
 	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
 	add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC})
-	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${WEBP_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB})
+	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${WEBP_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES})
 
 	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 		SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
@@ -425,7 +469,7 @@ IF (EXIV2_FOUND)
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		
 		SET(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
-		SOURCE_GROUP("Generated Files" FILES ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC}  ${NOMACS_QM})
+		SOURCE_GROUP("Generated Files" FILES ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM})
 		set_source_files_properties(${NOMACS_TRANSLATIONS} PROPERTIES HEADER_FILE_ONLY TRUE)
 		SOURCE_GROUP("Translations" FILES ${NOMACS_TRANSLATIONS})
 		SOURCE_GROUP("libqpsd" FILES ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS})
@@ -461,3 +505,5 @@ IF (EXIV2_FOUND)
 ELSE(!EXIV2_FOUND)
 	message(WARNING "At least one library has not been found")
 ENDIF()
+
+

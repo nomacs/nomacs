@@ -4,9 +4,9 @@
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2012 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2012 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2012 Florian Kleber <florian@nomacs.org>
+ Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
 
  This file is part of nomacs.
 
@@ -27,7 +27,7 @@
 
 #pragma once
 
-#ifdef WIN32		// why is Q_WS_WIN32 not defined here?
+#ifdef WIN32
 #include "shlwapi.h"
 //#pragma comment (lib, "shlwapi.lib")
 #endif
@@ -65,7 +65,7 @@
 // opencv
 #ifdef WITH_OPENCV
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #pragma warning(disable: 4996)
 #endif
 
@@ -78,6 +78,13 @@
 #endif
 
 using namespace cv;
+#endif
+
+#ifdef WITH_LIBTIFF
+	#ifdef Q_WS_WIN
+		#include "tif_config.h"	
+	#endif
+	#include "tiffio.h"
 #endif
 
 #include <set>
@@ -107,7 +114,7 @@ using namespace cv;
 
 namespace nmc {
 
-#ifdef WIN32
+#ifdef Q_WS_WIN
 	
 	/**
 	 * Logical string compare function.
@@ -126,8 +133,20 @@ namespace nmc {
 	bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
 #endif
 
-bool wCompLogicQString(const QString & lhs, const QString & rhs);
 
+bool compLogicQString(const QString & lhs, const QString & rhs);
+
+bool compFilename(const QFileInfo & lhf, const QFileInfo & rhf);
+
+bool compFilenameInv(const QFileInfo & lhf, const QFileInfo & rhf);
+
+bool compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf);
+
+bool compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf);
+
+bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf);
+
+bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
 
 // basic image processing
 
@@ -401,7 +420,30 @@ public:
 		release();
 	};
 
+	/**
+	 * Loads the image for the given file
+	 * @param file an image file
+	 * @param skipIdx the number of (internal) pages to be skipped
+	 * @return bool true if the image was loaded
+	 **/ 
 	bool loadGeneral(QFileInfo file);
+
+	/**
+	 * Loads the page requested (with respect to the current page)
+	 * @param skipIdx number of pages to skip
+	 * @return bool true if we could load the page requested
+	 **/ 
+	bool loadPage(int skipIdx = 0);
+
+	int getNumPages() {
+		return numPages;
+	};
+
+	int getPageIdx() {
+		return pageIdx;
+	};
+
+	bool setPageIdx(int skipIdx);
 
 	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
 	
@@ -434,6 +476,14 @@ public:
 	 **/ 
 	QImage image() {
 		return qImg;
+	};
+
+	QFileInfo getFile() {
+		return file;
+	};
+
+	bool isDirty() {
+		return pageIdxDirty;
 	};
 
 	/**
@@ -481,16 +531,17 @@ protected:
 	
 	bool loadRohFile(QString fileName);
 	bool loadRawFile(QFileInfo file);
+	void indexPages(const QFileInfo& fileInfo);
+	void convert32BitOrder(void *buffer, int width);
 
-
-	QImage panTilt(QImage img);
-	cv::Mat blurPanTilt(cv::Mat src, cv::Mat depthImg, int maxKernel);
-	
 	int loader;
 	bool training;
 	int mode;
 	QImage qImg;
 	QFileInfo file;
+	int numPages;
+	int pageIdx;
+	bool pageIdxDirty;
 
 #ifdef WITH_OPENCV
 	cv::Mat cvImg;
@@ -700,7 +751,6 @@ public:
 	void setSaveDir(QDir& dir);
 	void setImage(QImage img, QFileInfo editFile = QFileInfo());
 	void load();
-	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
 	bool hasMovie();
@@ -708,6 +758,8 @@ public:
 	void updateCacheIndex();
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false, bool searchFile = true);
+	static QStringList sort(const QStringList& files, const QDir& dir);
+	void sort();
 
 	static void initFileFilters();	// add special file filters
 
@@ -741,6 +793,10 @@ public:
 		return basicLoader.image();
 	};
 
+	bool dirtyTiff() {
+		return basicLoader.isDirty();
+	};
+
 	/**
 	 * Returns the image's metadata.
 	 * @return nmc::DkMetaData the image metadata.
@@ -757,7 +813,7 @@ signals:
 	void updateInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
-	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
+	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false, QString attr = QString());
 	void updateDirSignal(QFileInfo file, int force = DkThumbsLoader::not_forced);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
@@ -771,6 +827,7 @@ public slots:
 	void directoryChanged(const QString& path = QString());
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
+	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	virtual bool loadFile(QFileInfo file, bool silent = false, int cacheState = cache_default);
 	void saveRating(int rating);
 	void deleteFile();
@@ -813,6 +870,7 @@ protected:
 	void updateHistory();
 	void startStopCacher();
 	void sendFileSignal();
+	QString getTitleAttributeString();
 };
 
 };

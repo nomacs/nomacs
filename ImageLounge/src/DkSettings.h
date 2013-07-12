@@ -80,9 +80,24 @@ class DkSettings : public QObject {
 			mode_frameless,
 			mode_contrast,
 			mode_default_fullscreen,
-			mode_frameless_fullscren,
+			mode_frameless_fullscreen,
 			mode_contrast_fullscreen,
 			mode_end,
+		};
+
+		enum sortMode {
+			sort_filename,
+			sort_date_created,
+			sort_date_modified,
+
+			sort_end,
+		};
+
+		enum sortDir {
+			sort_ascending,
+			sort_descending,
+
+			sort_dir_end,
 		};
 
 		DkSettings() {};
@@ -102,6 +117,7 @@ class DkSettings : public QObject {
 			static int appMode;
 			static int currentAppMode;
 			static bool advancedSettings;
+			static bool closeOnEsc;
 		};
 
 		struct Display {
@@ -151,6 +167,8 @@ class DkSettings : public QObject {
 			static bool showDefaultAppDialog;
 			static int numUserChoices;
 			static QStringList userAppPaths;
+			static int sortMode;
+			static int sortDir;
 		};
 		struct SlideShow {
 			static int filter;
@@ -172,6 +190,8 @@ class DkSettings : public QObject {
 		};
 		struct MetaData {
 			static QBitArray metaDataBits;
+			static bool ignoreExifOrientation;
+			static bool saveExifOrientation;
 
 			//static bool exifSize;
 			//static bool exifOrientation;
@@ -335,6 +355,7 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbShowStatusbar;
 		QCheckBox* cbSmallIcons;
 		QCheckBox* cbToolbarGradient;
+		QCheckBox* cbCloseOnEsc;
 
 		DkColorChooser* highlightColorChooser;
 		DkColorChooser* bgColorWidgetChooser;
@@ -544,6 +565,8 @@ class DkMetaDataSettingsWidget : public DkSettingsWidget {
 		void init();
 		void createLayout();
 
+		QCheckBox* cbIgnoreOrientation;
+		QCheckBox* cbSaveOrientation;
 
 		//Checkboxes
 		QVector<QCheckBox *> pCbMetaData;

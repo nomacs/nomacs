@@ -7,7 +7,7 @@
 !include "nsProcess.nsh"
 
 ; your install directories
- !define BUILD_DIR "..\build2012\ReallyRelease"
+!define BUILD_DIR "..\build2012\ReallyRelease"
 ; !define BUILD_DIR "..\build2012x64\ReallyRelease"
 ; !define BUILD_DIR "..\build2010x86\ReallyRelease"
 ; !define TRANSLATION_DIR "translation"
@@ -16,7 +16,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "1.2.0"
+!define PRODUCT_VERSION "1.4.0"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -32,12 +32,15 @@ ShowUnInstDetails show
 
 
 ; MUI 1.67 compatible ------
-!include "MUI.nsh"
+!include "MUI2.nsh"
+
+!include "uninstaller.nsdinc"
+
 
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "nomacs.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_UNICON "nomacs.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -69,8 +72,13 @@ Page custom fileAssociation fileAssociationFinished
 !define MUI_FINISHPAGE_RUN_FUNCTION launchnomacs
 !insertmacro MUI_PAGE_FINISH
 
+
+; custom uninstaller page
+UninstPage custom un.fnc_uninstaller_Show un.uninstallNomacs
+
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
+
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
@@ -138,6 +146,9 @@ Var psd_state
 
 Var params
 Var fileAss 
+
+; Uninstaller
+Var hCtl_uninstaller_CheckBox1_state
 
 Function .onInit		
 	IfSilent isSilent isNotSilent
@@ -478,6 +489,7 @@ Section "MainSection" SEC01#
 
   File "${BUILD_DIR}\exiv2.dll"
   File "${BUILD_DIR}\libexpat.dll"
+  File "${BUILD_DIR}\libjasper.dll"
   File "${BUILD_DIR}\libraw.dll"
   File "${BUILD_DIR}\msvcp*.dll"
   File "${BUILD_DIR}\msvcr*.dll"
@@ -487,7 +499,7 @@ Section "MainSection" SEC01#
   File "${BUILD_DIR}\QtGui4.dll"
   File "${BUILD_DIR}\QtNetwork4.dll"
   File "${BUILD_DIR}\zlib1.dll"
-  File "${BUILD_DIR}\libjasper.dll"
+  
   
   File "${README_DIR}\COPYRIGHT"
   File "${README_DIR}\LICENSE.GPLv2"
@@ -495,13 +507,7 @@ Section "MainSection" SEC01#
   File "${README_DIR}\LICENSE.LGPL"
   File "${README_DIR}\LICENSE.OPENCV"
   SetOutPath "$INSTDIR\imageformats"
-  File "${BUILD_DIR}\imageformats\qgif4.dll"
-  File "${BUILD_DIR}\imageformats\qico4.dll"
-  File "${BUILD_DIR}\imageformats\qjpeg4.dll"
-  File "${BUILD_DIR}\imageformats\qmng4.dll"
-  File "${BUILD_DIR}\imageformats\qsvg4.dll"
-  File "${BUILD_DIR}\imageformats\qtiff4.dll"
-  File "${BUILD_DIR}\imageformats\qtjp22.dll"
+  File "${BUILD_DIR}\imageformats\*"
   
 	IfSilent isSilent isNotSilent
 		isSilent:
@@ -602,49 +608,32 @@ Function un.onInit
 	loop:
 	${nsProcess::FindProcess} "nomacs.exe" $R0
 	StrCmp $R0 0 0 +2
-	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
-	goto next
-	end:
-		quit
+	 MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
+	 goto next
+	 end:
+		 quit
 
 	next:
 		${nsProcess::Unload}
 
-	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
-	Abort    
+	; MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
+	; Abort    
+FunctionEnd
+
+
+Function un.uninstallNomacs
+	${NSD_GetState} $hCtl_uninstaller_CheckBox1 $hCtl_uninstaller_CheckBox1_state
+	${If} $hCtl_uninstaller_CheckBox1_state == ${BST_CHECKED}
+		; DeleteRegKey HKCU "Software\nomacs"
+		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'das ist nur ein test $hCtl_uninstaller_CheckBox1_state' IDOK  +1 IDCANCEL  +1 
+	${endif}
 FunctionEnd
 
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
-  Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR/imageformats\qtiff4.dll"
-  Delete "$INSTDIR/imageformats\qsvg4.dll"
-  Delete "$INSTDIR/imageformats\qmng4.dll"
-  Delete "$INSTDIR/imageformats\qjpeg4.dll"
-  Delete "$INSTDIR/imageformats\qico4.dll"
-  Delete "$INSTDIR/imageformats\qgif4.dll"
-  Delete "$INSTDIR/imageformats\qtjp22.dll"
-  Delete "$INSTDIR\zlib1.dll"
-  Delete "$INSTDIR\libjasper.dll"
-  Delete "$INSTDIR\QtNetwork4.dll"
-  Delete "$INSTDIR\QtGui4.dll"
-  Delete "$INSTDIR\QtCore4.dll"
-  Delete "$INSTDIR\opencv_imgproc220.dll"
-  Delete "$INSTDIR\opencv_core220.dll"
-  Delete "$INSTDIR\opencv_imgproc231.dll"
-  Delete "$INSTDIR\opencv_core231.dll"
-  Delete "$INSTDIR\opencv_imgproc240.dll"
-  Delete "$INSTDIR\opencv_core240.dll"
-  Delete "$INSTDIR\opencv_imgproc242.dll"
-  Delete "$INSTDIR\opencv_core242.dll"
-  Delete "$INSTDIR\msvcr*.dll"
-  Delete "$INSTDIR\msvcp*.dll"
-  Delete "$INSTDIR\libraw.dll"
-  Delete "$INSTDIR\expatw.dll"
-  Delete "$INSTDIR\expat.dll"
-  Delete "$INSTDIR\libexpat.dll"
-  Delete "$INSTDIR\exiv2.dll"
-  Delete "$INSTDIR\nomacs.exe"
+  Delete "$INSTDIR\imageformats\*"
+  Delete "$INSTDIR\*.dll"
+  Delete "$INSTDIR\*.exe"
   Delete "$INSTDIR\*.qm"
   
   Delete "$INSTDIR\COPYRIGHT"
@@ -664,6 +653,7 @@ Section Uninstall
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  ; DeleteRegKey HKCU "Software\nomacs"
   
   ${UnRegisterExtension} ".jpg" "nomacs.file.jpg"
   ${UnRegisterExtension} ".jpeg" "nomacs.file.jpg"

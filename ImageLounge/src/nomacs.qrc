@@ -49,5 +49,12 @@
         <file>img/print-setup.png</file>
         <file>img/imgDescriptionMissing.png</file>
         <file>img/downloaded.png</file>
+        <file>img/cancel.png</file>
+        <file>img/swap.png</file>
+        <file>img/pan.png</file>
+        <file>img/pan_checked.png</file>
+        <file>img/crop-invert.png</file>
+        <file>img/crop-invert-checked.png</file>
+        <file>img/info.png</file>
     </qresource>
 </RCC>

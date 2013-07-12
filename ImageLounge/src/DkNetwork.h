@@ -331,6 +331,9 @@ public:
 		bool isActive() {return hasChangedRecently;};
 		void setSynchronized(bool flag);
 		bool isSynchronized() {return sychronized;};
+		bool isLocal() {
+			return hostAddress == QHostAddress::LocalHost;
+		};
 
 		quint16 peerId;
 		quint16 localServerPort;
@@ -370,6 +373,10 @@ public:
 	void run();
 
 	QList<DkPeer> getPeerList() {
+
+		if (!clientManager)
+			return QList<DkPeer>();
+
 		QMutexLocker locker(&mutex);
 		return clientManager->getPeerList();	// critical section
 	};
