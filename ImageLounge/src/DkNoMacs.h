@@ -300,6 +300,7 @@ enum pluginsActions {
 	menu_plugin_manager,
 	
 	menu_plugins_end,	// nothing beyond this point
+};
 
 enum lanSyncActions {
 	menu_lan_server,
