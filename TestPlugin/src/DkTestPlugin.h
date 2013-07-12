@@ -37,30 +37,51 @@
 
 #include "DkPluginInterface.h"
 
+
+//#ifdef DK_DLL
+//#define DllExport Q_DECL_EXPORT
+//#else
+//#define DllExport Q_DECL_IMPORT
+//#endif
+
+//#undef DK_DLL
 #include "DkBaseViewport.h"
 
-namespace nmc {
 
-class DkFirstClass : public QObject {
+
+
+
+namespace nmc {
+	
+class DkFirstClass : public DkBaseViewPort {
 	Q_OBJECT
 
 public:
-	DkFirstClass(QObject* parent);
+	DkFirstClass(QWidget *parent = 0, Qt::WFlags flags = 0);
 	QList<QAction*> getActions();
 
-	public slots:
-		void on_josefAction_triggered();
-		void on_anaAction_triggered();
+public slots:
+	void on_josefAction_triggered();
+	void on_anaAction_triggered();
+
+
 
 protected:
+	void mouseMoveEvent(QMouseEvent *event) {
+
+		qDebug() << "changing your code muhahaha...";
+
+		DkBaseViewPort::mouseMoveEvent(event);
+	};
+	
 	QList<QAction* > myActions;
 
 };
 
 
-class DkTestPlugin : public QObject, DkPluginInterface {
+class DkTestPlugin : public QObject, DkViewPortInterface {
     Q_OBJECT
-    Q_INTERFACES(nmc::DkPluginInterface)
+    Q_INTERFACES(nmc::DkViewPortInterface)
 
 public:
     

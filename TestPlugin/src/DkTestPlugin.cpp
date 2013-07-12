@@ -118,7 +118,7 @@ QString DkTestPlugin::pluginStatusTip(const QString &runID) const {
 
 QList<QAction*> DkTestPlugin::pluginActions() {
 
-	myClass = new DkFirstClass(this);
+	myClass = new DkFirstClass(0);
 	
 	return myClass->getActions();
 }
@@ -151,7 +151,7 @@ Q_EXPORT_PLUGIN2(DkTestPlugin, DkTestPlugin)
 
 
 // DkFirstClass --------------------------------------------------------------------
-DkFirstClass::DkFirstClass(QObject* parent) : QObject(parent) {
+DkFirstClass::DkFirstClass(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent, flags) {
 	
 	
 	QAction* ca = new QAction(tr("Whatever"), this);
