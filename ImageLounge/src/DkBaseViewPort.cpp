@@ -27,6 +27,9 @@
 
 #include "DkBaseViewPort.h"
 
+#include "DkSettings.h"
+#include "DkUtils.h"
+
 namespace nmc {
 	
 // DkBaseViewport --------------------------------------------------------------------

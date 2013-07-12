@@ -29,11 +29,13 @@
 
 #include <QGraphicsView>
 #include <QCoreApplication>
+#include <QTimer>
+#include <QMovie>
 
 // gestures
 #include <QSwipeGesture>
 
-#include "DkImage.h"
+#include "DkImageStorage.h"
 
 // native gestures
 #ifndef QT_NO_GESTURES
