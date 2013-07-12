@@ -29,11 +29,13 @@
 
 #include <QGraphicsView>
 #include <QCoreApplication>
+#include <QTimer>
+#include <QMovie>
 
 // gestures
 #include <QSwipeGesture>
 
-#include "DkImage.h"
+#include "DkImageStorage.h"
 
 // native gestures
 #ifndef QT_NO_GESTURES
@@ -41,7 +43,7 @@
 #endif
 
 #ifdef DK_DLL
-#define DllExport __declspec(dllexport)
+#define DllExport Q_DECL_EXPORT
 #else
 #define DllExport
 #endif

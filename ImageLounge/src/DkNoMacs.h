@@ -50,6 +50,8 @@
 #include <QTimer>
 #include <QProcess>
 #include <QStringBuilder>
+#include <QDesktopWidget>
+#include <QProgressDialog>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -89,12 +91,30 @@ using namespace cv;
 #include "DkPluginManager.h"
 
 #ifdef DK_DLL
-#define DllExport __declspec(dllexport)
+#define DllExport Q_DECL_EXPORT
 #else
 #define DllExport
 #endif
 
 namespace nmc {
+
+class DkTcpMenu;
+class DkCompressDialog;
+class DkTifDialog;
+class DkOpacityDialog;
+class DkOpenWithDialog;
+class DkResizeDialog;
+class DkUpdateDialog;
+class DkForceThumbDialog;
+class DkTrainDialog;
+class DkExplorer;
+class DkExportTiffDialog;
+class DkImageManipulationDialog;
+class DkUpdater;
+class DkLocalManagerThread;
+class DkLanManagerThread;
+class DkTransferToolBar;
+
 
 // keyboard shortcuts
 //we can change the keyboard shortcuts from here !
@@ -436,6 +456,7 @@ public:
 	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
+	void loadFile(const QFileInfo& file, bool silent = false);
 
 	static void updateAll();
 

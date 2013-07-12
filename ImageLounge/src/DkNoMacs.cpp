@@ -27,6 +27,19 @@
 
 #include "DkNoMacs.h"
 
+// my stuff
+#include "DkNetwork.h"
+#include "DkViewPort.h"
+#include "DkImage.h"
+#include "DkWidgets.h"
+#include "DkDialog.h"
+#include "DkSaveDialog.h"
+#include "DkSettings.h"
+#include "DkMenu.h"
+#include "DkToolbars.h"
+#include "DkManipulationWidgets.h"
+
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {
@@ -216,21 +229,24 @@ void DkNoMacs::registerFileVersion() {
 		DWORD dummy;
 		DWORD dwSize = GetFileVersionInfoSize(szFilename, &dummy);
 		if (dwSize == 0) {
-			DkFileException("The version info size is zero\n", __LINE__, __FILE__);
+			throw DkFileException("The version info size is zero\n", __LINE__, __FILE__);
 		}
 		std::vector<BYTE> data(dwSize);
 
+		if (data.empty())
+			throw DkFileException("The version info is empty\n", __LINE__, __FILE__);
+
 		// load the version info
-		if (!GetFileVersionInfo(szFilename, NULL, dwSize, &data[0])) {
-			DkFileException("Sorry, I can't read the version info\n", __LINE__, __FILE__);
+		if (!data.empty() && !GetFileVersionInfo(szFilename, NULL, dwSize, &data[0])) {
+			throw DkFileException("Sorry, I can't read the version info\n", __LINE__, __FILE__);
 		}
 
 		// get the name and version strings
 		UINT                uiVerLen = 0;
 		VS_FIXEDFILEINFO*   pFixedInfo = 0;     // pointer to fixed file info structure
 
-		if (!VerQueryValue(&data[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
-			DkFileException("Sorry, I can't get the version values...\n", __LINE__, __FILE__);
+		if (!data.empty() && !VerQueryValue(&data[0], TEXT("\\"), (void**)&pFixedInfo, (UINT *)&uiVerLen)) {
+			throw DkFileException("Sorry, I can't get the version values...\n", __LINE__, __FILE__);
 		}
 
 		// pFixedInfo contains a lot more information...
@@ -1932,6 +1948,14 @@ void DkNoMacs::openFile() {
 
 	//qDebug() << "os filename: " << fileNames[0];
 	//viewport()->loadFile(QFileInfo(fileNames[0]));
+}
+
+void DkNoMacs::loadFile(const QFileInfo& file, bool silent) {
+
+	if (!viewport())
+		return;
+
+	viewport()->loadFile(file, silent);
 }
 
 void DkNoMacs::renameFile() {

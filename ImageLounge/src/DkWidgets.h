@@ -57,6 +57,9 @@
 #include <QSortFilterProxyModel>
 #include <QToolTip>
 #include <QtConcurrentRun>
+#include <QProgressDialog>
+#include <QHeaderView>
+#include <QMenu>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -729,17 +732,7 @@ public:
 	void processDir(const QDir& dir, bool forceLoad);
 
 public slots:
-	void stopProgress() {
-		
-		if (pd)
-			pd->hide();
-		
-		if (thumbsLoader) {
-			thumbsLoader->stop();
-			thumbsLoader->wait();
-			delete thumbsLoader;
-		}
-	};
+	void stopProgress();
 
 protected:
 	std::vector<DkThumbNail> thumbs;
