@@ -43,7 +43,7 @@
 #endif
 
 #ifdef DK_DLL
-#define DllExport __declspec(dllexport)
+#define DllExport Q_DECL_EXPORT
 #else
 #define DllExport
 #endif

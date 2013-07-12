@@ -1115,6 +1115,18 @@ void DkThumbsSaver::processDir(const QDir& dir, bool forceLoad) {
 	}
 }
 
+void DkThumbsSaver::stopProgress() {
+
+	if (pd)
+		pd->hide();
+
+	if (thumbsLoader) {
+		thumbsLoader->stop();
+		thumbsLoader->wait();
+		delete thumbsLoader;
+	}
+}
+
 // DkFileSystemModel --------------------------------------------------------------------
 DkFileSystemModel::DkFileSystemModel(QObject* parent /* = 0 */) : QFileSystemModel(parent) {
 

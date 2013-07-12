@@ -50,6 +50,8 @@
 #include <QTimer>
 #include <QProcess>
 #include <QStringBuilder>
+#include <QDesktopWidget>
+#include <QProgressDialog>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -74,25 +76,31 @@ using namespace cv;
 //	#pragma comment (lib, "dwmapi.lib")
 //#endif
 
-// my stuff
-#include "DkNetwork.h"
-#include "DkViewPort.h"
-#include "DkImage.h"
-#include "DkWidgets.h"
-#include "DkDialog.h"
-#include "DkSaveDialog.h"
-#include "DkSettings.h"
-#include "DkMenu.h"
-#include "DkToolbars.h"
-#include "DkManipulationWidgets.h"
-
 #ifdef DK_DLL
-#define DllExport __declspec(dllexport)
+#define DllExport Q_DECL_EXPORT
 #else
 #define DllExport
 #endif
 
 namespace nmc {
+
+class DkTcpMenu;
+class DkCompressDialog;
+class DkTifDialog;
+class DkOpacityDialog;
+class DkOpenWithDialog;
+class DkResizeDialog;
+class DkUpdateDialog;
+class DkForceThumbDialog;
+class DkTrainDialog;
+class DkExplorer;
+class DkExportTiffDialog;
+class DkImageManipulationDialog;
+class DkUpdater;
+class DkLocalManagerThread;
+class DkLanManagerThread;
+class DkTransferToolBar;
+
 
 // keyboard shortcuts
 //we can change the keyboard shortcuts from here !
@@ -428,6 +436,7 @@ public:
 	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
+	void loadFile(const QFileInfo& file, bool silent = false);
 
 	static void updateAll();
 
@@ -510,7 +519,6 @@ public slots:
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setContrast(bool contrast);
-	void loadFile(const QFileInfo& file);
 	//void shareFacebook();
 
 	// batch actions

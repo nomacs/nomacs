@@ -29,7 +29,7 @@
 
 #ifdef WIN32
 #include "shlwapi.h"
-//#pragma comment (lib, "shlwapi.lib")
+#pragma comment (lib, "shlwapi.lib")
 #endif
 
 #include <QtGui/QWidget>
@@ -56,6 +56,7 @@
 #include <QTimer>
 #include <QMovie>
 #include <QByteArray>
+#include <QCoreApplication>
 
 #ifdef WITH_WEBP
 #include "webp/decode.h"
@@ -90,7 +91,7 @@ using namespace cv;
 #include <set>
 
 #ifdef DK_DLL
-#define DllExport __declspec(dllexport)
+#define DllExport Q_DECL_EXPORT
 #else
 #define DllExport
 #endif
