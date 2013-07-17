@@ -54,12 +54,6 @@
 #include <iostream>
 #include <cassert>
 
-#ifdef WIN32
-#define DllImport Q_DECL_IMPORT
-#else
-#define DllImport
-#endif
-
 #ifdef Q_WS_WIN
 int main(int argc, wchar_t *argv[]) {
 #else
@@ -156,18 +150,6 @@ int main(int argc, char *argv[]) {
 //		w, SLOT(loadFile(const QFileInfo&)));
 //#endif
 //		
-//#ifdef Q_WS_WIN
-//	if (!nmc::DkSettings::Global::setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::Global::setupVersion) {
-//		
-//		// ask for exists - otherwise we always try to delete it if the user deleted it
-//		if (!QFileInfo(nmc::DkSettings::Global::setupPath).exists() || QFile::remove(nmc::DkSettings::Global::setupPath)) {
-//			nmc::DkSettings::Global::setupPath = "";
-//			nmc::DkSettings::Global::setupVersion = "";
-//			nmc::DkSettings settings;
-//			settings.save();
-//		}
-//	}
-//#endif // Q_WS_WIN
 
 	int rVal = a.exec();
 	//delete w;

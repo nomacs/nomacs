@@ -169,354 +169,556 @@ bool DkSettings::Resources::filterRawImages = true;
 bool DkSettings::Resources::filterDuplicats = true;
 QString DkSettings::Resources::preferredExtension = "*.jpg";
 
+// settings
+DkSettings::App DkSettings::app_p;
+DkSettings::Display DkSettings::display_p;
+DkSettings::Global DkSettings::global_p;
+DkSettings::SlideShow DkSettings::slideShow_p;
+DkSettings::Sync DkSettings::sync_p;
+DkSettings::MetaData DkSettings::meta_p;
+DkSettings::Resources DkSettings::resources_p;
 
-void DkSettings::load() {
+// load settings
+DkSettings::App DkSettings::app_d;
+DkSettings::Display DkSettings::display_d;
+DkSettings::Global DkSettings::global_d;
+DkSettings::SlideShow DkSettings::slideShow_d;
+DkSettings::Sync DkSettings::sync_d;
+DkSettings::MetaData DkSettings::meta_d;
+DkSettings::Resources DkSettings::resources_d;
+
+DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
+
+
+bool DkSettings::loaded = false;
+
+DkSettings::App& DkSettings::getAppSettings() {
+	load();
+	return app_p;
+}
+
+DkSettings::Display& DkSettings::getDisplaySettings() {
+	load();
+	return display_p;
+}
+
+DkSettings::Global& DkSettings::getGlobalSettings() {
+	load();
+	return global_p;
+}
+
+DkSettings::SlideShow& DkSettings::getSlideShowSettings() {
+	load();
+	return slideShow_p;
+}
+
+DkSettings::Sync& DkSettings::getSyncSettings() {
+	load();
+	return sync_p;
+}
+
+DkSettings::MetaData& DkSettings::getMetaDataSettings() {
+	load();
+	return meta_p;
+}
+
+DkSettings::Resources& DkSettings::getResourceSettings() {
+	load();
+	return resources_p;
+}
+
+
+void DkSettings::load(bool force) {
 	
+	if (loaded && !force)
+		return;
+
 	setToDefaultSettings();
 
 	QSettings settings;
-
-	App::showMenuBar = settings.value("AppSettings/showMenuBar", DkSettings::App::showMenuBar).toBool();
-	App::showToolBar = settings.value("AppSettings/showToolBar", DkSettings::App::showToolBar).toBool();
-	App::showStatusBar = settings.value("AppSettings/showStatusBar", DkSettings::App::showStatusBar).toBool();
+	settings.beginGroup("AppSettings");
 	
-	QBitArray tmpShow = settings.value("AppSettings/showFileInfoLabel", DkSettings::App::showFileInfoLabel).toBitArray();
-	if (tmpShow.size() == App::showFileInfoLabel.size())	App::showFileInfoLabel = tmpShow;
-	tmpShow = settings.value("AppSettings/showScroller", DkSettings::App::showScroller).toBitArray();
-	if (tmpShow.size() == App::showScroller.size())	App::showScroller = tmpShow;
-	tmpShow = settings.value("AppSettings/showFilePreview", DkSettings::App::showFilePreview).toBitArray();
-	if (tmpShow.size() == App::showFilePreview.size())	App::showFilePreview = tmpShow;
-	tmpShow = settings.value("AppSettings/showMetaData", DkSettings::App::showMetaData).toBitArray();
-	if (tmpShow.size() == App::showMetaData.size())	App::showMetaData = tmpShow;
-	tmpShow = settings.value("AppSettings/showPlayer", DkSettings::App::showPlayer).toBitArray();
-	if (tmpShow.size() == App::showPlayer.size())	App::showPlayer = tmpShow;
-	tmpShow = settings.value("AppSettings/showHistogram", DkSettings::App::showHistogram).toBitArray();
-	if (tmpShow.size() == App::showHistogram.size())	App::showHistogram = tmpShow;
-	tmpShow = settings.value("AppSettings/showOverview", DkSettings::App::showOverview).toBitArray();
-	if (tmpShow.size() == App::showOverview.size())	App::showOverview = tmpShow;
-
-	App::closeOnEsc = settings.value("AppSettings/closeOnEsc", DkSettings::App::closeOnEsc).toBool();
-	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
-
-	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
-	Global::numFiles = settings.value("GlobalSettings/numFiles", DkSettings::Global::numFiles).toInt();
-
-	Global::loop = settings.value("GlobalSettings/loop", DkSettings::Global::loop).toBool();
-	Global::scanSubFolders = settings.value("GlobalSettings/scanSubFolders", DkSettings::Global::scanSubFolders).toBool();
-	Global::lastDir = settings.value("GlobalSettings/lastDir", DkSettings::Global::lastDir).toString();
-	//GlobalSettings::lastSaveDir = settings.value("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir).toString();
-	Global::searchHistory = settings.value("GlobalSettings/searchHistory", DkSettings::Global::searchHistory).toStringList();
-	Global::recentFolders = settings.value("GlobalSettings/recentFolders", DkSettings::Global::recentFolders).toStringList();
-	Global::recentFiles = settings.value("GlobalSettings/recentFiles", DkSettings::Global::recentFiles).toStringList();
-	Global::useTmpPath= settings.value("GlobalSettings/useTmpPath", DkSettings::Global::useTmpPath).toBool();
-	Global::tmpPath = settings.value("GlobalSettings/tmpPath", DkSettings::Global::tmpPath).toString();
-	Global::language = settings.value("GlobalSettings/language", DkSettings::Global::language).toString();
-
-	Global::defaultAppPath = settings.value("GlobalSettings/defaultAppPath", DkSettings::Global::defaultAppPath).toString();
-	Global::defaultAppIdx = settings.value("GlobalSettings/defaultAppIdx", DkSettings::Global::defaultAppIdx).toInt();
-	Global::showDefaultAppDialog = settings.value("GlobalSettings/showDefaultAppDialog", DkSettings::Global::showDefaultAppDialog).toBool();
-	Global::numUserChoices = settings.value("GlobalSettings/numUserChoices", DkSettings::Global::numUserChoices).toInt();
-	Global::sortMode = settings.value("GlobalSettings/sortMode", DkSettings::Global::sortMode).toInt();
-	Global::sortDir = settings.value("GlobalSettings/sortDir", DkSettings::Global::sortDir).toInt();
-	Global::userAppPaths = settings.value("GlobalSettings/userAppPaths", DkSettings::Global::userAppPaths).toStringList();
-	Global::setupPath = settings.value("GlobalSettings/setupPath", DkSettings::Global::setupPath).toString();
-	Global::setupVersion = settings.value("GlobalSettings/setupVersion", DkSettings::Global::setupVersion).toString();
-
-	Display::keepZoom = settings.value("DisplaySettings/resetMatrix", DkSettings::Display::keepZoom).toBool();
-	Display::invertZoom = settings.value("DisplaySettings/invertZoom", DkSettings::Display::invertZoom).toBool();
-	Display::highlightColor = settings.value("DisplaySettings/highlightColor", DkSettings::Display::highlightColor).value<QColor>();
-	Display::bgColorWidget = settings.value("DisplaySettings/bgColor", DkSettings::Display::bgColorWidget).value<QColor>();
-	Display::bgColor = settings.value("DisplaySettings/bgColorNoMacs", DkSettings::Display::bgColor).value<QColor>();
-	Display::iconColor = settings.value("DisplaySettings/iconColor", DkSettings::Display::iconColor).value<QColor>();
-
-	Display::bgColorFrameless = settings.value("DisplaySettings/bgColorFrameless", DkSettings::Display::bgColorFrameless).value<QColor>();
-	Display::thumbSize = settings.value("DisplaySettings/thumbSize", DkSettings::Display::thumbSize).toInt();
-	Display::saveThumb = settings.value("DisplaySettings/saveThumb", DkSettings::Display::saveThumb).toBool();
-	Display::antiAliasing = settings.value("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing).toBool();
-	Display::tpPattern = settings.value("DisplaySettings/tpPattern", DkSettings::Display::tpPattern).toBool();
-	Display::smallIcons = settings.value("DisplaySettings/smallIcons", DkSettings::Display::smallIcons).toBool();
-	Display::toolbarGradient = settings.value("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient).toBool();
-	Display::showBorder = settings.value("DisplaySettings/showBorder", DkSettings::Display::showBorder).toBool();
-	Display::useDefaultColor = settings.value("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor).toBool();
-	Display::defaultIconColor = settings.value("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor).toBool();
-	Display::interpolateZoomLevel = settings.value("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel).toInt();
-
-	QBitArray tmpMetaData = settings.value("MetaDataSettings/metaData", DkSettings::MetaData::metaDataBits).toBitArray();
-	if (tmpMetaData.size() == MetaData::metaDataBits.size())
-		MetaData::metaDataBits = tmpMetaData;
-
-	SlideShow::filter = settings.value("SlideShowSettings/filter", DkSettings::SlideShow::filter).toInt();
-	SlideShow::time = settings.value("SlideShowSettings/time", DkSettings::SlideShow::time).toFloat();
-	SlideShow::backgroundColor = settings.value("SlideShowSettings/backgroundColor", DkSettings::SlideShow::backgroundColor).value<QColor>();
-	SlideShow::silentFullscreen = settings.value("SlideShowSettings/silentFullscreen", DkSettings::SlideShow::silentFullscreen).toBool();
-	QBitArray tmpDisplay = settings.value("SlideShowSettings/display", DkSettings::SlideShow::display).toBitArray();
-
-	if (tmpDisplay.size() == SlideShow::display.size())
-		SlideShow::display = tmpDisplay;
-
-	Sync::enableNetworkSync= settings.value("SynchronizeSettings/enableNetworkSync", DkSettings::Sync::enableNetworkSync).toBool();
-	Sync::allowTransformation = settings.value("SynchronizeSettings/allowTransformation", DkSettings::Sync::allowTransformation).toBool();
-	Sync::allowPosition = settings.value("SynchronizeSettings/allowPosition", DkSettings::Sync::allowPosition).toBool();
-	Sync::allowFile = settings.value("SynchronizeSettings/allowFile", DkSettings::Sync::allowFile).toBool();
-	Sync::allowImage = settings.value("SynchronizeSettings/allowImage", DkSettings::Sync::allowImage).toBool();;
-	Sync::updateDialogShown = settings.value("SynchronizeSettings/updateDialogShown", DkSettings::Sync::updateDialogShown).toBool();
-	Sync::lastUpdateCheck = settings.value("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck).toDate();
-	Sync::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform).toBool();
-	Sync::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier).toBool();
+	App::showMenuBar = settings.value("showMenuBar", app_p.showMenuBar).toBool();
+	App::showToolBar = settings.value("showToolBar", app_p.showToolBar).toBool();
+	App::showStatusBar = settings.value("showStatusBar", app_p.showStatusBar).toBool();
 	
-	MetaData::ignoreExifOrientation = settings.value("MetaDataSettings/ignoreExifOrientation", DkSettings::MetaData::ignoreExifOrientation).toBool();
-	MetaData::saveExifOrientation = settings.value("MetaDataSettings/saveExifOrientation", DkSettings::MetaData::saveExifOrientation).toBool();
+	QBitArray tmpShow = settings.value("showFileInfoLabel", app_p.showFileInfoLabel).toBitArray();
+	if (tmpShow.size() == app_p.showFileInfoLabel.size())	app_p.showFileInfoLabel = tmpShow;
+	tmpShow = settings.value("showScroller", app_p.showScroller).toBitArray();
+	if (tmpShow.size() == app_p.showScroller.size())	app_p.showScroller = tmpShow;
+	tmpShow = settings.value("showFilePreview", app_p.showFilePreview).toBitArray();
+	if (tmpShow.size() == app_p.showFilePreview.size())	app_p.showFilePreview = tmpShow;
+	tmpShow = settings.value("showMetaData", app_p.showMetaData).toBitArray();
+	if (tmpShow.size() == app_p.showMetaData.size())	app_p.showMetaData = tmpShow;
+	tmpShow = settings.value("showPlayer", app_p.showPlayer).toBitArray();
+	if (tmpShow.size() == app_p.showPlayer.size())	app_p.showPlayer = tmpShow;
+	tmpShow = settings.value("showHistogram", app_p.showHistogram).toBitArray();
+	if (tmpShow.size() == app_p.showHistogram.size())	app_p.showHistogram = tmpShow;
+	tmpShow = settings.value("showOverview", app_p.showOverview).toBitArray();
+	if (tmpShow.size() == app_p.showOverview.size())	app_p.showOverview = tmpShow;
 
-	Resources::cacheMemory = settings.value("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory).toFloat();
-	Resources::fastThumbnailPreview = settings.value("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview).toBool();
-	Resources::filterRawImages = settings.value("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages).toBool();	
-	Resources::filterDuplicats = settings.value("ResourceSettings/filterDuplicates", DkSettings::Resources::filterDuplicats).toBool();
-	Resources::preferredExtension = settings.value("ResourceSettings/preferredExtension", DkSettings::Resources::preferredExtension).toString();	
+	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
+	app_p.advancedSettings = settings.value("advancedSettings", app_p.advancedSettings).toBool();
 
-	if (DkSettings::Sync::switchModifier) {
-		DkSettings::Global::altMod = Qt::ControlModifier;
-		DkSettings::Global::ctrlMod = Qt::AltModifier;
+	settings.endGroup();
+	// Global Settings --------------------------------------------------------------------
+	settings.beginGroup("GlobalSettings");
+
+	global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
+	global_p.numFiles = settings.value("numFiles", global_p.numFiles).toInt();
+
+	global_p.loop = settings.value("loop", global_p.loop).toBool();
+	global_p.scanSubFolders = settings.value("scanSubFolders", global_p.scanSubFolders).toBool();
+	global_p.lastDir = settings.value("lastDir", global_p.lastDir).toString();
+	//GlobalSettings::lastSaveDir = settings.value("lastSaveDir", GlobalSettings::lastSaveDir).toString();
+	global_p.searchHistory = settings.value("searchHistory", global_p.searchHistory).toStringList();
+	global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
+	global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
+	global_p.useTmpPath= settings.value("useTmpPath", global_p.useTmpPath).toBool();
+	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
+	global_p.language = settings.value("language", global_p.language).toString();
+
+	global_p.defaultAppPath = settings.value("defaultAppPath", global_p.defaultAppPath).toString();
+	global_p.defaultAppIdx = settings.value("defaultAppIdx", global_p.defaultAppIdx).toInt();
+	global_p.showDefaultAppDialog = settings.value("showDefaultAppDialog", global_p.showDefaultAppDialog).toBool();
+	global_p.numUserChoices = settings.value("numUserChoices", global_p.numUserChoices).toInt();
+	global_p.sortMode = settings.value("sortMode", global_p.sortMode).toInt();
+	global_p.sortDir = settings.value("sortDir", global_p.sortDir).toInt();
+	global_p.userAppPaths = settings.value("userAppPaths", global_p.userAppPaths).toStringList();
+	global_p.setupPath = settings.value("setupPath", global_p.setupPath).toString();
+	global_p.setupVersion = settings.value("setupVersion", global_p.setupVersion).toString();
+
+	settings.endGroup();
+	// Display Settings --------------------------------------------------------------------
+	settings.beginGroup("DisplaySettings");
+
+	display_p.keepZoom = settings.value("resetMatrix", display_p.keepZoom).toBool();
+	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
+	display_p.highlightColor = settings.value("highlightColor", display_p.highlightColor).value<QColor>();
+	display_p.bgColorWidget = settings.value("bgColor", display_p.bgColorWidget).value<QColor>();
+	display_p.bgColor = settings.value("bgColorNoMacs", display_p.bgColor).value<QColor>();
+	display_p.iconColor = settings.value("iconColor", display_p.iconColor).value<QColor>();
+
+	display_p.bgColorFrameless = settings.value("bgColorFrameless", display_p.bgColorFrameless).value<QColor>();
+	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
+	display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
+	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
+	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
+	display_p.smallIcons = settings.value("smallIcons", display_p.smallIcons).toBool();
+	display_p.toolbarGradient = settings.value("toolbarGradient", display_p.toolbarGradient).toBool();
+	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
+	display_p.useDefaultColor = settings.value("useDefaultColor", display_p.useDefaultColor).toBool();
+	display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
+	display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
+
+	settings.endGroup();
+	// MetaData Settings --------------------------------------------------------------------
+	settings.beginGroup("MetaDataSettings");
+
+	QBitArray tmpMetaData = settings.value("metaData", meta_p.metaDataBits).toBitArray();
+	if (tmpMetaData.size() == meta_p.metaDataBits.size())
+		meta_p.metaDataBits = tmpMetaData;
+
+	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
+	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
+
+	settings.endGroup();
+	// SlideShow Settings --------------------------------------------------------------------
+	settings.beginGroup("SlideShowSettings");
+
+	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
+	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
+	slideShow_p.backgroundColor = settings.value("backgroundColor", slideShow_p.backgroundColor).value<QColor>();
+	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
+	QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
+
+	if (tmpDisplay.size() == slideShow_p.display.size())
+		slideShow_p.display = tmpDisplay;
+
+	settings.endGroup();
+	// Synchronize Settings --------------------------------------------------------------------
+	settings.beginGroup("SynchronizeSettings");
+
+	sync_p.enableNetworkSync= settings.value("enableNetworkSync", sync_p.enableNetworkSync).toBool();
+	sync_p.allowTransformation = settings.value("allowTransformation", sync_p.allowTransformation).toBool();
+	sync_p.allowPosition = settings.value("allowPosition", sync_p.allowPosition).toBool();
+	sync_p.allowFile = settings.value("allowFile", sync_p.allowFile).toBool();
+	sync_p.allowImage = settings.value("allowImage", sync_p.allowImage).toBool();;
+	sync_p.updateDialogShown = settings.value("updateDialogShown", sync_p.updateDialogShown).toBool();
+	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
+	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
+	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
+
+	settings.endGroup();
+	// Resource Settings --------------------------------------------------------------------
+	settings.beginGroup("ResourceSettings");
+
+	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
+	resources_p.fastThumbnailPreview = settings.value("fastThumbnailPreview", resources_p.fastThumbnailPreview).toBool();
+	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
+	resources_p.filterDuplicats = settings.value("filterDuplicates", resources_p.filterDuplicats).toBool();
+	resources_p.preferredExtension = settings.value("preferredExtension", resources_p.preferredExtension).toString();	
+
+	if (sync_p.switchModifier) {
+		global_p.altMod = Qt::ControlModifier;
+		global_p.ctrlMod = Qt::AltModifier;
 	}
 	else {
-		DkSettings::Global::altMod = Qt::AltModifier;
-		DkSettings::Global::ctrlMod = Qt::ControlModifier;
+		global_p.altMod = Qt::AltModifier;
+		global_p.ctrlMod = Qt::ControlModifier;
 	}
+
+	// keep loaded settings in mind
+	app_d = app_p;
+	global_d = global_p;
+	display_d = display_p;
+	slideShow_d = slideShow_p;
+	sync_d = sync_p;
+	meta_d = meta_p;
+	resources_d = resources_p;
+
+	loaded = true;
+
 
 }
 
-void DkSettings::save() {
+void DkSettings::save(bool force) {
+		
 	QSettings settings;
-	settings.setValue("AppSettings/showMenuBar", DkSettings::App::showMenuBar);
+	
+	settings.beginGroup("AppSettings");
+
+	if (!force && app_p.showMenuBar != app_d.showMenuBar)
+		settings.setValue("showMenuBar", app_p.showMenuBar);
 	
 
-	int myAppMode = DkSettings::App::appMode;
-	if (App::currentAppMode != mode_frameless && App::currentAppMode != mode_frameless_fullscreen) {
-		qDebug() << "app mode when saving: " << DkSettings::App::appMode;
-		settings.setValue("AppSettings/showToolBar", DkSettings::App::showToolBar);
-		settings.setValue("AppSettings/showStatusBar", DkSettings::App::showStatusBar);
+	int myAppMode = App::appMode;
+	if (app_p.currentAppMode != mode_frameless && app_p.currentAppMode != mode_frameless_fullscreen) {
+		
+		if (!force && app_p.showToolBar != app_d.showToolBar)
+			settings.setValue("showToolBar", app_p.showToolBar);
+
+		if (!force && app_p.showStatusBar != app_d.showStatusBar)
+			settings.setValue("showStatusBar", app_p.showStatusBar);
 	}
 
-	settings.setValue("AppSettings/showFileInfoLabel", App::showFileInfoLabel);
-	settings.setValue("AppSettings/showFilePreview", App::showFilePreview);
-	settings.setValue("AppSettings/showScroller", App::showScroller);
-	settings.setValue("AppSettings/showMetaData", App::showMetaData);
-	settings.setValue("AppSettings/showPlayer", App::showPlayer);
-	settings.setValue("AppSettings/showHistogram", App::showHistogram);
-	settings.setValue("AppSettings/showOverview", App::showOverview);
-	settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
+	if (!force && app_p.showFileInfoLabel != app_d.showFileInfoLabel)
+		settings.setValue("showFileInfoLabel", app_p.showFileInfoLabel);
+	if (!force && app_p.showFilePreview != app_d.showFilePreview)
+		settings.setValue("showFilePreview", app_p.showFilePreview);
+	if (!force && app_p.showScroller != app_d.showScroller)
+		settings.setValue("showScroller", app_p.showScroller);
+	if (!force && app_p.showMetaData != app_d.showMetaData)
+		settings.setValue("showMetaData", app_p.showMetaData);
+	if (!force && app_p.showPlayer != app_d.showPlayer)
+		settings.setValue("showPlayer", app_p.showPlayer);
+	if (!force && app_p.showHistogram != app_d.showHistogram)
+		settings.setValue("showHistogram", app_p.showHistogram);
+	if (!force && app_p.showOverview != app_d.showOverview)
+		settings.setValue("showOverview", app_p.showOverview);
+	if (!force && app_p.advancedSettings != app_d.advancedSettings)
+		settings.setValue("advancedSettings", app_p.advancedSettings);
+	if (!force && app_p.appMode != app_d.appMode)
+		settings.setValue("appMode", app_p.appMode);
+	if (!force && app_p.currentAppMode != app_d.currentAppMode)
+		settings.setValue("currentAppMode", app_p.currentAppMode);
+	if (!force && app_p.closeOnEsc != app_d.closeOnEsc)
+		settings.setValue("closeOnEsc", app_p.closeOnEsc);
 
-	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
-	settings.setValue("AppSettings/currentAppMode", DkSettings::App::currentAppMode);
-	settings.setValue("AppSettings/closeOnEsc", DkSettings::App::closeOnEsc);
+	settings.endGroup();
+	// Global Settings --------------------------------------------------------------------
+	settings.beginGroup("GlobalSettings");
 
-	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
-	settings.setValue("GlobalSettings/numFiles",Global::numFiles);
-	settings.setValue("GlobalSettings/loop",Global::loop);
-	settings.setValue("GlobalSettings/scanSubFolders",Global::scanSubFolders);
-	settings.setValue("GlobalSettings/lastDir", DkSettings::Global::lastDir);
-	//settings.setValue("GlobalSettings/lastSaveDir", DkSettings::GlobalSettings::lastSaveDir);
-	settings.setValue("GlobalSettings/searchHistory", DkSettings::Global::searchHistory);
-	settings.setValue("GlobalSettings/recentFolders", DkSettings::Global::recentFolders);
-	settings.setValue("GlobalSettings/recentFiles", DkSettings::Global::recentFiles);
-	settings.setValue("GlobalSettings/useTmpPath", DkSettings::Global::useTmpPath);
-	settings.setValue("GlobalSettings/tmpPath", DkSettings::Global::tmpPath);
-	settings.setValue("GlobalSettings/language", DkSettings::Global::language);
+	if (!force && global_p.skipImgs != global_d.skipImgs)
+		settings.setValue("skipImgs",global_p.skipImgs);
+	if (!force && global_p.numFiles != global_d.numFiles)
+		settings.setValue("numFiles",global_p.numFiles);
+	if (!force && global_p.loop != global_d.loop)
+		settings.setValue("loop",global_p.loop);
+	if (!force && global_p.scanSubFolders != global_d.scanSubFolders)
+		settings.setValue("scanSubFolders",global_p.scanSubFolders);
+	if (!force && global_p.lastDir != global_d.lastDir)
+		settings.setValue("lastDir", global_p.lastDir);
+	if (!force && global_p.searchHistory != global_d.searchHistory)
+		settings.setValue("searchHistory", global_p.searchHistory);
+	if (!force && global_p.recentFolders != global_d.recentFolders)
+		settings.setValue("recentFolders", global_p.recentFolders);
+	if (!force && global_p.recentFiles != global_d.recentFiles)
+		settings.setValue("recentFiles", global_p.recentFiles);
+	if (!force && global_p.useTmpPath != global_d.useTmpPath)
+		settings.setValue("useTmpPath", global_p.useTmpPath);
+	if (!force && global_p.tmpPath != global_d.tmpPath)
+		settings.setValue("tmpPath", global_p.tmpPath);
+	if (!force && global_p.language != global_d.language)
+		settings.setValue("language", global_p.language);
+	if (!force && global_p.defaultAppIdx != global_d.defaultAppIdx)
+		settings.setValue("defaultAppIdx", global_p.defaultAppIdx);
+	if (!force && global_p.defaultAppPath != global_d.defaultAppPath)
+		settings.setValue("defaultAppPath", global_p.defaultAppPath);
+	if (!force && global_p.showDefaultAppDialog != global_d.showDefaultAppDialog)
+		settings.setValue("showDefaultAppDialog", global_p.showDefaultAppDialog);
+	if (!force && global_p.numUserChoices != global_d.numUserChoices)
+		settings.setValue("numUserChoices", global_p.numUserChoices);
+	if (!force && global_p.sortMode != global_d.sortMode)
+		settings.setValue("sortMode", global_p.sortMode);
+	if (!force && global_p.sortDir != global_d.sortDir)
+		settings.setValue("sortDir", global_p.sortDir);
+	if (!force && global_p.userAppPaths != global_d.userAppPaths)
+		settings.setValue("userAppPaths", global_p.userAppPaths);
+	if (!force && global_p.setupPath != global_d.setupPath)
+		settings.setValue("setupPath", global_p.setupPath);
+	if (!force && global_p.setupVersion != global_d.setupVersion)
+		settings.setValue("setupVersion", global_p.setupVersion);
 
-	settings.setValue("GlobalSettings/defaultAppIdx", DkSettings::Global::defaultAppIdx);
-	settings.setValue("GlobalSettings/defaultAppPath", DkSettings::Global::defaultAppPath);
-	settings.setValue("GlobalSettings/showDefaultAppDialog", DkSettings::Global::showDefaultAppDialog);
-	settings.setValue("GlobalSettings/numUserChoices", DkSettings::Global::numUserChoices);
-	settings.setValue("GlobalSettings/sortMode", DkSettings::Global::sortMode);
-	settings.setValue("GlobalSettings/sortDir", DkSettings::Global::sortDir);
-	settings.setValue("GlobalSettings/userAppPaths", DkSettings::Global::userAppPaths);
-	settings.setValue("GlobalSettings/setupPath", DkSettings::Global::setupPath);
-	settings.setValue("GlobalSettings/setupVersion", DkSettings::Global::setupVersion);
+	settings.endGroup();
+	// Display Settings --------------------------------------------------------------------
+	settings.beginGroup("DisplaySettings");
 
-	settings.setValue("DisplaySettings/resetMatrix",Display::keepZoom);
-	settings.setValue("DisplaySettings/invertZoom",Display::invertZoom);
-	settings.setValue("DisplaySettings/highlightColor", Display::highlightColor);
-	settings.setValue("DisplaySettings/bgColor", Display::bgColorWidget);
-	settings.setValue("DisplaySettings/bgColorNoMacs", Display::bgColor);
-	settings.setValue("DisplaySettings/iconColor", Display::iconColor);
-	settings.setValue("DisplaySettings/bgColorFrameless", Display::bgColorFrameless);
-	settings.setValue("DisplaySettings/thumbSize", DkSettings::Display::thumbSize);
-	settings.setValue("DisplaySettings/saveThumb", DkSettings::Display::saveThumb);
-	settings.setValue("DisplaySettings/antiAliasing", DkSettings::Display::antiAliasing);
-	settings.setValue("DisplaySettings/tpPattern", DkSettings::Display::tpPattern);
-	settings.setValue("DisplaySettings/smallIcons", DkSettings::Display::smallIcons);
-	settings.setValue("DisplaySettings/toolbarGradient", DkSettings::Display::toolbarGradient);
-	settings.setValue("DisplaySettings/showBorder", DkSettings::Display::showBorder);
-	settings.setValue("DisplaySettings/useDefaultColor", DkSettings::Display::useDefaultColor);
-	settings.setValue("DisplaySettings/defaultIconColor", DkSettings::Display::defaultIconColor);
-	settings.setValue("DisplaySettings/interpolateZoomlevel", DkSettings::Display::interpolateZoomLevel);
+	if (!force && display_p.keepZoom != display_d.keepZoom)
+		settings.setValue("resetMatrix",display_p.keepZoom);
+	if (!force && display_p.invertZoom != display_d.invertZoom)
+		settings.setValue("invertZoom",display_p.invertZoom);
+	if (!force && display_p.highlightColor != display_d.highlightColor)
+		settings.setValue("highlightColor", display_p.highlightColor);
+	if (!force && display_p.bgColorWidget != display_d.bgColorWidget)
+		settings.setValue("bgColor", display_p.bgColorWidget);
+	if (!force && display_p.bgColor != display_d.bgColor)
+		settings.setValue("bgColorNoMacs", display_p.bgColor);
+	if (!force && display_p.iconColor != display_d.iconColor)
+		settings.setValue("iconColor", display_p.iconColor);
+	if (!force && display_p.bgColorFrameless != display_d.bgColorFrameless)
+		settings.setValue("bgColorFrameless", display_p.bgColorFrameless);
+	if (!force && display_p.thumbSize != display_d.thumbSize)
+		settings.setValue("thumbSize", display_p.thumbSize);
+	if (!force && display_p.saveThumb != display_d.saveThumb)
+		settings.setValue("saveThumb", display_p.saveThumb);
+	if (!force && display_p.antiAliasing != display_d.antiAliasing)
+		settings.setValue("antiAliasing", display_p.antiAliasing);
+	if (!force && display_p.tpPattern != display_d.tpPattern)
+		settings.setValue("tpPattern", display_p.tpPattern);
+	if (!force && display_p.smallIcons != display_d.smallIcons)
+		settings.setValue("smallIcons", display_p.smallIcons);
+	if (!force && display_p.toolbarGradient != display_d.toolbarGradient)
+		settings.setValue("toolbarGradient", display_p.toolbarGradient);
+	if (!force && display_p.showBorder != display_d.showBorder)
+		settings.setValue("showBorder", display_p.showBorder);
+	if (!force && display_p.useDefaultColor != display_d.useDefaultColor)
+		settings.setValue("useDefaultColor", display_p.useDefaultColor);
+	if (!force && display_p.defaultIconColor != display_d.defaultIconColor)
+		settings.setValue("defaultIconColor", display_p.defaultIconColor);
+	if (!force && display_p.interpolateZoomLevel != display_d.interpolateZoomLevel)
+		settings.setValue("interpolateZoomlevel", display_p.interpolateZoomLevel);
+
+	settings.endGroup();
+	// MetaData Settings --------------------------------------------------------------------
+	settings.beginGroup("MetaDataSettings");
 	
-	settings.setValue("MetaDataSettings/metaData", MetaData::metaDataBits);
-	settings.setValue("MetaDataSettings/ignoreExifOrientation", MetaData::ignoreExifOrientation);
-	settings.setValue("MetaDataSettings/saveExifOrientation", MetaData::saveExifOrientation);
+	if (!force && meta_p.metaDataBits != meta_d.metaDataBits)
+		settings.setValue("metaData", meta_p.metaDataBits);
+	if (!force && meta_p.ignoreExifOrientation != meta_d.ignoreExifOrientation)
+		settings.setValue("ignoreExifOrientation", meta_p.ignoreExifOrientation);
+	if (!force && meta_p.saveExifOrientation != meta_d.saveExifOrientation)
+		settings.setValue("saveExifOrientation", meta_p.saveExifOrientation);
 
-	settings.setValue("SlideShowSettings/filter", SlideShow::filter);
-	settings.setValue("SlideShowSettings/time", SlideShow::time);
-	settings.setValue("SlideShowSettings/display", SlideShow::display);
-	settings.setValue("SlideShowSettings/backgroundColor", SlideShow::backgroundColor);
-	settings.setValue("SlideShowSettings/silentFullscreen", SlideShow::silentFullscreen);
+	settings.endGroup();
+	// SlideShow Settings --------------------------------------------------------------------
+	settings.beginGroup("SlideShowSettings");
 
-	settings.setValue("SynchronizeSettings/enableNetworkSync", DkSettings::Sync::enableNetworkSync);
-	settings.setValue("SynchronizeSettings/allowTransformation", DkSettings::Sync::allowTransformation);
-	settings.setValue("SynchronizeSettings/allowPosition", DkSettings::Sync::allowPosition);
-	settings.setValue("SynchronizeSettings/allowFile", DkSettings::Sync::allowFile);
-	settings.setValue("SynchronizeSettings/allowImage", DkSettings::Sync::allowImage);
-	settings.setValue("SynchronizeSettings/updateDialogShown", DkSettings::Sync::updateDialogShown);
-	settings.setValue("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck);
-	settings.setValue("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform);
-	settings.setValue("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier);
-		
-	settings.setValue("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory);
-	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview);
-	settings.setValue("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages);
-	settings.setValue("ResourceSettings/filterDuplicates", DkSettings::Resources::filterDuplicats);
-	settings.setValue("ResourceSettings/preferredExtension", DkSettings::Resources::preferredExtension);
+	if (!force && slideShow_p.filter != slideShow_d.filter)
+		settings.setValue("filter", slideShow_p.filter);
+	if (!force && slideShow_p.time != slideShow_d.time)
+		settings.setValue("time", slideShow_p.time);
+	if (!force && slideShow_p.display != slideShow_d.display)
+		settings.setValue("display", slideShow_p.display);
+	if (!force && slideShow_p.backgroundColor != slideShow_d.backgroundColor)
+		settings.setValue("backgroundColor", slideShow_p.backgroundColor);
+	if (!force && slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
+		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
+
+	settings.endGroup();
+	// Sync Settings --------------------------------------------------------------------
+	settings.beginGroup("SynchronizeSettings");
+
+	if (!force && sync_p.enableNetworkSync != sync_d.enableNetworkSync)
+		settings.setValue("enableNetworkSync", sync_p.enableNetworkSync);
+	if (!force && sync_p.allowTransformation != sync_d.allowTransformation)
+		settings.setValue("allowTransformation", sync_p.allowTransformation);
+	if (!force && sync_p.allowPosition != sync_d.allowPosition)
+		settings.setValue("allowPosition", sync_p.allowPosition);
+	if (!force && sync_p.allowFile != sync_d.allowFile)
+		settings.setValue("allowFile", sync_p.allowFile);
+	if (!force && sync_p.allowImage != sync_d.allowImage)
+		settings.setValue("allowImage", sync_p.allowImage);
+	if (!force && sync_p.updateDialogShown != sync_d.updateDialogShown)
+		settings.setValue("updateDialogShown", sync_p.updateDialogShown);
+	if (!force && sync_p.lastUpdateCheck != sync_d.lastUpdateCheck)
+		settings.setValue("lastUpdateCheck", sync_p.lastUpdateCheck);
+	if (!force && sync_p.syncAbsoluteTransform != sync_d.syncAbsoluteTransform)
+		settings.setValue("syncAbsoluteTransform", sync_p.syncAbsoluteTransform);
+	if (!force && sync_p.switchModifier != sync_d.switchModifier)
+		settings.setValue("switchModifier", sync_p.switchModifier);
+
+	settings.endGroup();
+	// Resource Settings --------------------------------------------------------------------
+	settings.beginGroup("ResourceSettings");
+
+	if (!force && resources_p.cacheMemory != resources_d.cacheMemory)
+		settings.setValue("cacheMemory", resources_p.cacheMemory);
+	if (!force && resources_p.fastThumbnailPreview != resources_d.fastThumbnailPreview)
+		settings.setValue("fastThumbnailPreview", resources_p.fastThumbnailPreview);
+	if (!force && resources_p.filterRawImages != resources_d.filterRawImages)
+		settings.setValue("filterRawImages", resources_p.filterRawImages);
+	if (!force && resources_p.filterDuplicats != resources_d.filterDuplicats)
+		settings.setValue("filterDuplicates", resources_p.filterDuplicats);
+	if (!force && resources_p.preferredExtension != resources_d.preferredExtension)
+		settings.setValue("preferredExtension", resources_p.preferredExtension);
+
+	// keep loaded settings in mind
+	app_d = app_p;
+	global_d = global_p;
+	display_d = display_p;
+	slideShow_d = slideShow_p;
+	sync_d = sync_p;
+	meta_d = meta_p;
+	resources_d = resources_p;
 
 	qDebug() << "settings saved";
 }
 
 void DkSettings::setToDefaultSettings() {
 
-	DkSettings::App::showMenuBar = true;
-	DkSettings::App::showToolBar = true;
-	DkSettings::App::showStatusBar = false;
-	DkSettings::App::showFileInfoLabel = QBitArray(DkSettings::mode_end, true);
-	DkSettings::App::showFilePreview = QBitArray(DkSettings::mode_end, false);
-	DkSettings::App::showScroller = QBitArray(DkSettings::mode_end, false);
-	DkSettings::App::showMetaData = QBitArray(DkSettings::mode_end, false);
-	DkSettings::App::showPlayer = QBitArray(DkSettings::mode_end, false);
-	DkSettings::App::showHistogram = QBitArray(DkSettings::mode_end, false);
-	DkSettings::App::showOverview = QBitArray(DkSettings::mode_end, true);
-	DkSettings::App::advancedSettings = false;
-	DkSettings::App::closeOnEsc = false;
+	App::showMenuBar = true;
+	App::showToolBar = true;
+	App::showStatusBar = false;
+	App::showFileInfoLabel = QBitArray(mode_end, true);
+	App::showFilePreview = QBitArray(mode_end, false);
+	App::showScroller = QBitArray(mode_end, false);
+	App::showMetaData = QBitArray(mode_end, false);
+	App::showPlayer = QBitArray(mode_end, false);
+	App::showHistogram = QBitArray(mode_end, false);
+	App::showOverview = QBitArray(mode_end, true);
+	App::advancedSettings = false;
+	App::closeOnEsc = false;
 
 	// now set default show options
-	DkSettings::App::showFileInfoLabel.setBit(DkSettings::mode_default, false);
-	DkSettings::App::showFileInfoLabel.setBit(DkSettings::mode_contrast, false);
+	App::showFileInfoLabel.setBit(mode_default, false);
+	App::showFileInfoLabel.setBit(mode_contrast, false);
 
 
-	DkSettings::App::appMode = 0;
+	App::appMode = 0;
 	
-	DkSettings::Global::skipImgs = 10;
-	DkSettings::Global::numFiles = 10;
-	DkSettings::Global::loop = false;
-	DkSettings::Global::scanSubFolders = true;
-	DkSettings::Global::lastDir = QString();
-	DkSettings::Global::lastSaveDir = QString();
-	DkSettings::Global::recentFiles = QStringList();
-	DkSettings::Global::searchHistory = QStringList();
-	DkSettings::Global::recentFolders = QStringList();
-	DkSettings::Global::useTmpPath = false;
-	DkSettings::Global::tmpPath = QString();
-	DkSettings::Global::language = QString();
-	DkSettings::Global::defaultAppIdx = -1;
-	DkSettings::Global::defaultAppPath = QString();
-	DkSettings::Global::showDefaultAppDialog = true;
-	DkSettings::Global::numUserChoices = 3;
-	DkSettings::Global::userAppPaths = QStringList();
-	DkSettings::Global::setupPath = "";
-	DkSettings::Global::setupVersion = "";
-	DkSettings::Global::sortMode = sort_filename;
-	DkSettings::Global::sortDir = sort_ascending;
+	Global::skipImgs = 10;
+	Global::numFiles = 10;
+	Global::loop = false;
+	Global::scanSubFolders = true;
+	Global::lastDir = QString();
+	Global::lastSaveDir = QString();
+	Global::recentFiles = QStringList();
+	Global::searchHistory = QStringList();
+	Global::recentFolders = QStringList();
+	Global::useTmpPath = false;
+	Global::tmpPath = QString();
+	Global::language = QString();
+	Global::defaultAppIdx = -1;
+	Global::defaultAppPath = QString();
+	Global::showDefaultAppDialog = true;
+	Global::numUserChoices = 3;
+	Global::userAppPaths = QStringList();
+	Global::setupPath = "";
+	Global::setupVersion = "";
+	Global::sortMode = sort_filename;
+	Global::sortDir = sort_ascending;
 
 #ifdef Q_WS_X11
-	DkSettings::Sync::switchModifier = true;
-	DkSettings::Global::altMod = Qt::ControlModifier;
-	DkSettings::Global::ctrlMod = Qt::AltModifier;
+	Sync::switchModifier = true;
+	Global::altMod = Qt::ControlModifier;
+	Global::ctrlMod = Qt::AltModifier;
 #else
-	DkSettings::Sync::switchModifier = false;
-	DkSettings::Global::altMod = Qt::AltModifier;
-	DkSettings::Global::ctrlMod = Qt::ControlModifier;
+	Sync::switchModifier = false;
+	Global::altMod = Qt::AltModifier;
+	Global::ctrlMod = Qt::ControlModifier;
 #endif
 
 
-	DkSettings::Display::keepZoom = true;
-	DkSettings::Display::invertZoom = false;
-	DkSettings::Display::highlightColor = QColor(0, 204, 255);
-	DkSettings::Display::bgColorWidget = QColor(0, 0, 0, 100);
-	DkSettings::Display::bgColor = QColor(100, 100, 100, 255);
-	DkSettings::Display::bgColor = QColor(219, 89, 2, 255);
-	DkSettings::Display::bgColorFrameless = QColor(0, 0, 0, 180);
-	DkSettings::Display::thumbSize = 100;
-	DkSettings::Display::saveThumb = false;
-	DkSettings::Display::antiAliasing = true;
-	DkSettings::Display::tpPattern = false;
-	DkSettings::Display::smallIcons = true;
+	Display::keepZoom = true;
+	Display::invertZoom = false;
+	Display::highlightColor = QColor(0, 204, 255);
+	Display::bgColorWidget = QColor(0, 0, 0, 100);
+	Display::bgColor = QColor(100, 100, 100, 255);
+	Display::bgColor = QColor(219, 89, 2, 255);
+	Display::bgColorFrameless = QColor(0, 0, 0, 180);
+	Display::thumbSize = 100;
+	Display::saveThumb = false;
+	Display::antiAliasing = true;
+	Display::tpPattern = false;
+	Display::smallIcons = true;
 #ifdef Q_WS_WIN
-	DkSettings::Display::toolbarGradient = true;
+	Display::toolbarGradient = true;
 #else
-	DkSettings::Display::toolbarGradient = false;
+	Display::toolbarGradient = false;
 #endif
-	DkSettings::Display::showBorder = true;
-	DkSettings::Display::useDefaultColor = true;
-	DkSettings::Display::defaultIconColor = true;
-	DkSettings::Display::interpolateZoomLevel = 200;
+	Display::showBorder = true;
+	Display::useDefaultColor = true;
+	Display::defaultIconColor = true;
+	Display::interpolateZoomLevel = 200;
 
-	DkSettings::SlideShow::filter = 0;
-	DkSettings::SlideShow::time = 3.0;
-	DkSettings::SlideShow::display = QBitArray(DkDisplaySettingsWidget::display_end, true);
-	DkSettings::SlideShow::backgroundColor = QColor(217, 219, 228, 100);
-	DkSettings::SlideShow::silentFullscreen = true;
-
-
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_size] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_orientation] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_make] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_model] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_aperture] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_iso] = true;
-	//DkSettings::MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_exposuretime] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_rating] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_usercomment] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_date] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_datetimeoriginal] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_imagedescription] = true;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_creator] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_creatortitle] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_city] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_country] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_headline] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_caption] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_copyright] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_keywords] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_path] = false;
-	DkSettings::MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = false;
+	SlideShow::filter = 0;
+	SlideShow::time = 3.0;
+	SlideShow::display = QBitArray(DkDisplaySettingsWidget::display_end, true);
+	SlideShow::backgroundColor = QColor(217, 219, 228, 100);
+	SlideShow::silentFullscreen = true;
 
 
-	DkSettings::Sync::enableNetworkSync = false;
-	DkSettings::Sync::allowTransformation = true;
-	DkSettings::Sync::allowPosition = true;
-	DkSettings::Sync::allowFile = true;
-	DkSettings::Sync::allowImage = true;
-	DkSettings::Sync::updateDialogShown = false;
-	DkSettings::Sync::lastUpdateCheck = QDate(1970 , 1, 1);
-	DkSettings::Sync::syncAbsoluteTransform = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_size] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_orientation] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_make] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_model] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_aperture] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_iso] = true;
+	//MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::camData_exposuretime] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_rating] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_usercomment] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_date] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_datetimeoriginal] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_imagedescription] = true;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_creator] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_creatortitle] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_city] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_country] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_headline] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_caption] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_copyright] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_keywords] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_path] = false;
+	MetaData::metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = false;
 
-	DkSettings::Resources::cacheMemory = 0;
-	DkSettings::Resources::fastThumbnailPreview = false;
-	DkSettings::Resources::filterRawImages = true;
-	DkSettings::Resources::filterDuplicats = true;
-	DkSettings::Resources::preferredExtension = "*.jpg";
+
+	Sync::enableNetworkSync = false;
+	Sync::allowTransformation = true;
+	Sync::allowPosition = true;
+	Sync::allowFile = true;
+	Sync::allowImage = true;
+	Sync::updateDialogShown = false;
+	Sync::lastUpdateCheck = QDate(1970 , 1, 1);
+	Sync::syncAbsoluteTransform = true;
+
+	Resources::cacheMemory = 0;
+	Resources::fastThumbnailPreview = false;
+	Resources::filterRawImages = true;
+	Resources::filterDuplicats = true;
+	Resources::preferredExtension = "*.jpg";
 
 	qDebug() << "ok... default settings are set";
-
-	emit setToDefaultSettingsSignal();
 }
 
 // DkSettingsDialog --------------------------------------------------------------------
 DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 
 	//this->resize(600,420);
-
-	s = new DkSettings();
 
 	createLayout();
 	createSettingsWidgets();
@@ -538,15 +740,11 @@ DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
 
 	connect(buttonOk, SIGNAL(clicked()), this, SLOT(saveSettings()));
 	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-	connect(s, SIGNAL(setToDefaultSettingsSignal()), this, SLOT(initWidgets()));
 	connect(globalSettingsWidget, SIGNAL(applyDefault()), this, SLOT(setToDefault()));
 	connect(cbAdvancedSettings, SIGNAL(stateChanged(int)), this, SLOT(advancedSettingsChanged(int)));
 }
 
 DkSettingsDialog::~DkSettingsDialog() {
-	if (s) 
-		delete s; 
-	s=0;
 
 	QItemSelectionModel *m = listView->selectionModel();
 	if (m)

@@ -71,171 +71,173 @@ class DkSpinBoxWidget;
 class DkDoubleSpinBoxWidget;
 
 class DkSettings : public QObject {
-	Q_OBJECT
 
-	public:
+public:
 
-		enum modes {
-			mode_default = 0,
-			mode_frameless,
-			mode_contrast,
-			mode_default_fullscreen,
-			mode_frameless_fullscreen,
-			mode_contrast_fullscreen,
-			mode_end,
-		};
+	enum modes {
+		mode_default = 0,
+		mode_frameless,
+		mode_contrast,
+		mode_default_fullscreen,
+		mode_frameless_fullscreen,
+		mode_contrast_fullscreen,
+		mode_end,
+	};
 
-		enum sortMode {
-			sort_filename,
-			sort_date_created,
-			sort_date_modified,
+	enum sortMode {
+		sort_filename,
+		sort_date_created,
+		sort_date_modified,
 
-			sort_end,
-		};
+		sort_end,
+	};
 
-		enum sortDir {
-			sort_ascending,
-			sort_descending,
+	enum sortDir {
+		sort_ascending,
+		sort_descending,
 
-			sort_dir_end,
-		};
+		sort_dir_end,
+	};
 
-		DkSettings() {};
-		DkSettings(const DkSettings& settings) {}; 
+	struct App {
+		static bool showToolBar;
+		static bool showMenuBar;
+		static bool showStatusBar;
+		static QBitArray showFilePreview;
+		static QBitArray showFileInfoLabel;
+		static QBitArray showPlayer;
+		static QBitArray showMetaData;
+		static QBitArray showHistogram;
+		static QBitArray showOverview;
+		static QBitArray showScroller;
+		static int appMode;
+		static int currentAppMode;
+		static bool advancedSettings;
+		static bool closeOnEsc;
+	};
 
-		struct App {
-			static bool showToolBar;
-			static bool showMenuBar;
-			static bool showStatusBar;
-			static QBitArray showFilePreview;
-			static QBitArray showFileInfoLabel;
-			static QBitArray showPlayer;
-			static QBitArray showMetaData;
-			static QBitArray showHistogram;
-			static QBitArray showOverview;
-			static QBitArray showScroller;
-			static int appMode;
-			static int currentAppMode;
-			static bool advancedSettings;
-			static bool closeOnEsc;
-		};
+	struct Display {
+		static bool keepZoom;
+		static bool invertZoom;
+		static bool tpPattern;
+		static QColor highlightColor;
+		static QColor bgColorWidget;
+		static QColor bgColor;
+		static QColor bgColorFrameless;
+		static QColor iconColor;
+		static bool useDefaultColor;
+		static bool defaultIconColor;
+		static int thumbSize;
+		static bool saveThumb;
+		static int interpolateZoomLevel;
+		static bool antiAliasing;
+		static bool smallIcons;
+		static bool toolbarGradient;
+		static bool showBorder;
+	};
 
-		struct Display {
-			static bool keepZoom;
-			static bool invertZoom;
-			static bool tpPattern;
-			static QColor highlightColor;
-			static QColor bgColorWidget;
-			static QColor bgColor;
-			static QColor bgColorFrameless;
-			static QColor iconColor;
-			static bool useDefaultColor;
-			static bool defaultIconColor;
-			static int thumbSize;
-			static bool saveThumb;
-			static int interpolateZoomLevel;
-			static bool antiAliasing;
-			static bool smallIcons;
-			static bool toolbarGradient;
-			static bool showBorder;
-		};
+	struct Global {
+		static int skipImgs;
+		static int numFiles;
+		static bool loop;
+		static bool scanSubFolders;
 
-		struct Global {
-			static int skipImgs;
-			static int numFiles;
-			static bool loop;
-			static bool scanSubFolders;
+		static QString lastDir;
+		static QString lastSaveDir;
+		static QStringList recentFiles;
+		static QStringList recentFolders;
+		static bool useTmpPath;
+		static QString tmpPath;
+		static QString language;
+		static QStringList searchHistory;
 
-			static QString lastDir;
-			static QString lastSaveDir;
-			static QStringList recentFiles;
-			static QStringList recentFolders;
-			static bool useTmpPath;
-			static QString tmpPath;
-			static QString language;
-			static QStringList searchHistory;
+		static Qt::KeyboardModifier altMod;
+		static Qt::KeyboardModifier ctrlMod;
 
-			static Qt::KeyboardModifier altMod;
-			static Qt::KeyboardModifier ctrlMod;
+		static QString setupPath;
+		static QString setupVersion;
 
-			static QString setupPath;
-			static QString setupVersion;
-
-			// open with
-			static QString defaultAppPath;
-			static int defaultAppIdx;
-			static bool showDefaultAppDialog;
-			static int numUserChoices;
-			static QStringList userAppPaths;
-			static int sortMode;
-			static int sortDir;
-		};
-		struct SlideShow {
-			static int filter;
-			static float time;
-			static bool silentFullscreen;
-			static QBitArray display;
-			static QColor backgroundColor;
-		};
-		struct Sync {
-			static bool enableNetworkSync;
-			static bool allowTransformation;
-			static bool allowPosition;
-			static bool allowFile;
-			static bool allowImage;
-			static bool updateDialogShown;
-			static QDate lastUpdateCheck;
-			static bool syncAbsoluteTransform;
-			static bool switchModifier;
-		};
-		struct MetaData {
-			static QBitArray metaDataBits;
-			static bool ignoreExifOrientation;
-			static bool saveExifOrientation;
-
-			//static bool exifSize;
-			//static bool exifOrientation;
-			//static bool exifMake;
-			//static bool exifModel;
-			//static bool exifRate;
-			//static bool exifUserComment;
-			//static bool exifDate;
-			//static bool exifAperture;
-			//static bool exifShutterSpeed;
-			//static bool exifFlash;
-			//static bool exifFocalLength;
-			//static bool exifExposureMode;
-
-			//static bool exifExposureTime;
-			//static bool exifDateTimeOriginal;
-			//static bool exifImageDescription;
-
-			//static bool iptcCreator;
-			//static bool iptcCreatorTitle;
-			//static bool iptcCity;
-			//static bool iptcCountry;
-			//static bool iptcHeadline;
-			//static bool iptcCaption;
-			//static bool iptcCopyRight;
-			//static bool iptcKeywords;
-		};
+		// open with
+		static QString defaultAppPath;
+		static int defaultAppIdx;
+		static bool showDefaultAppDialog;
+		static int numUserChoices;
+		static QStringList userAppPaths;
+		static int sortMode;
+		static int sortDir;
+	};
+	struct SlideShow {
+		static int filter;
+		static float time;
+		static bool silentFullscreen;
+		static QBitArray display;
+		static QColor backgroundColor;
+	};
+	struct Sync {
+		static bool enableNetworkSync;
+		static bool allowTransformation;
+		static bool allowPosition;
+		static bool allowFile;
+		static bool allowImage;
+		static bool updateDialogShown;
+		static QDate lastUpdateCheck;
+		static bool syncAbsoluteTransform;
+		static bool switchModifier;
+	};
+	struct MetaData {
+		static QBitArray metaDataBits;
+		static bool ignoreExifOrientation;
+		static bool saveExifOrientation;
+	};
 		
-		struct Resources {
-			static float cacheMemory;
-			static bool fastThumbnailPreview;
-			static bool filterRawImages;
-			static bool filterDuplicats;
-			static QString preferredExtension;
-		};
+	struct Resources {
+		static float cacheMemory;
+		static bool fastThumbnailPreview;
+		static bool filterRawImages;
+		static bool filterDuplicats;
+		static QString preferredExtension;
+	};
 
-		void load();
-		void save();
-		void setToDefaultSettings();
+	static App& getAppSettings();
+	static Display& getDisplaySettings();
+	static Global& getGlobalSettings();
+	static SlideShow& getSlideShowSettings();
+	static Sync& getSyncSettings();
+	static MetaData& getMetaDataSettings();
+	static Resources& getResourceSettings();
 
-signals:
-		void setToDefaultSettingsSignal();
+	static void load(bool force = false);
+	static void save(bool force = false);
+	static void setToDefaultSettings();
 
+	static App& app;
+	static Global& global;
+	static Display& display;
+	static SlideShow& slideShow;
+	static Sync& sync;
+	static MetaData& meta;
+	static Resources& resources;
+
+protected:
+	static App app_p;
+	static Global global_p;
+	static Display display_p;
+	static SlideShow slideShow_p;
+	static Sync sync_p;
+	static MetaData meta_p;
+	static Resources resources_p;
+
+	static App app_d;
+	static Global global_d;
+	static Display display_d;
+	static SlideShow slideShow_d;
+	static Sync sync_d;
+	static MetaData meta_d;
+	static Resources resources_d;
+
+	static bool loaded;
 };
+
 
 class DkSettingsDialog : public QDialog {
 	Q_OBJECT;
@@ -275,8 +277,8 @@ class DkSettingsDialog : public QDialog {
 		void initWidgets();
 		void setToDefault() {
 			
-			if (s)
-				s->setToDefaultSettings();
+			DkSettings::setToDefaultSettings();
+			initWidgets();
 
 			// for main window
 			emit setToDefaultSignal();
@@ -291,7 +293,6 @@ class DkSettingsDialog : public QDialog {
 		QLabel* leftLabel;
 		QPushButton* buttonOk;
 		QPushButton* buttonCancel;
-		DkSettings* s;
 		QCheckBox* cbAdvancedSettings;
 
 		QList<DkSettingsWidget*> widgetList;

@@ -196,6 +196,21 @@ void DkNoMacs::init() {
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 
+
+// clean up nomacs
+#ifdef Q_WS_WIN
+	if (!nmc::DkSettings::Global::setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::Global::setupVersion) {
+
+		// ask for exists - otherwise we always try to delete it if the user deleted it
+		if (!QFileInfo(nmc::DkSettings::Global::setupPath).exists() || QFile::remove(nmc::DkSettings::Global::setupPath)) {
+			nmc::DkSettings::Global::setupPath = "";
+			nmc::DkSettings::Global::setupVersion = "";
+			nmc::DkSettings settings;
+			settings.save();
+		}
+	}
+#endif // Q_WS_WIN
+
 }
 
 #ifdef Q_WS_WIN	// windows specific versioning
@@ -2952,7 +2967,9 @@ void DkNoMacs::startSetup(QString filePath) {
 	if (!QFile::exists(filePath))
 		qDebug() << "file does not exist";
 	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath))) {
-		QString msg = tr("Unable to install new Version") + "<br><a href=\"file:///" + filePath + "\">"+ filePath +"</a><br>" + tr("Click the file to try install again");
+		QString msg = tr("Unable to install new version\n") +
+			tr("You can download the new version from our web page") +
+			"<br><a href=\"http://www.nomacs.org/download/\">www.nomacs.org</a><br>";
 		showUpdaterMessage(msg, "update");
 	}
 }
