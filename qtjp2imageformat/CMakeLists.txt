@@ -42,9 +42,9 @@ target_link_libraries(qtjp22 debug ${LIBJASPER_DEBUG_LIB})
 target_link_libraries(qtjp22 optimized ${LIBJASPER_RELEASE_LIB})
 
 if(MSVC)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release/imageformats CONFIGURATIONS Release)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.dll ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/ReallyRelease/imageformats CONFIGURATIONS Release)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp22.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp22.lib  DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug/imageformats CONFIGURATIONS Debug)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.dll DESTINATION ${NOMACS_BUILD_DIRECTORY}/Release/imageformats CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/qtjp22.dll DESTINATION ${NOMACS_BUILD_DIRECTORY}/ReallyRelease/imageformats CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/qtjp22.dll DESTINATION ${NOMACS_BUILD_DIRECTORY}/Debug/imageformats CONFIGURATIONS Debug)
 endif(MSVC)	
 
 
