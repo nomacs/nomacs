@@ -52,8 +52,8 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	maxZoom = 50;
 
 	blockZooming = false;
-	altMod = DkSettings::Global::altMod;
-	ctrlMod = DkSettings::Global::ctrlMod;
+	altMod = DkSettings::global.altMod;
+	ctrlMod = DkSettings::global.ctrlMod;
 
 	zoomTimer = new QTimer(this);
 	zoomTimer->setSingleShot(true);
@@ -64,15 +64,15 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 
 	setObjectName(QString::fromUtf8("DkBaseViewPort"));
 
-	if (DkSettings::Display::useDefaultColor) {
+	if (DkSettings::display.useDefaultColor) {
 
-		if (DkSettings::Display::toolbarGradient)
+		if (DkSettings::display.toolbarGradient)
 			setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
 		else
 			setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(QPalette().color(QPalette::Window)) + ";}" );		
 	}
 	else
-		setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(DkSettings::Display::bgColor) + ";}" );
+		setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" );
 
 	setMouseTracking(true);
 
@@ -114,7 +114,7 @@ void DkBaseViewPort::fullView() {
 
 void DkBaseViewPort::togglePattern(bool show) {
 
-	DkSettings::Display::tpPattern = show;
+	DkSettings::display.tpPattern = show;
 	update();
 }
 
@@ -241,7 +241,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 	emit enableNoImageSignal(!newImg.isNull());
 
-	if (!DkSettings::Display::keepZoom || imgRect != oldImgRect)
+	if (!DkSettings::display.keepZoom || imgRect != oldImgRect)
 		worldMatrix.reset();							
 
 	updateImageMatrix();
@@ -289,7 +289,7 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 		// don't interpolate if we are forced to, at 100% or we exceed the maximal interpolation level
 		if (!forceFastRendering && // force?
 			fabs(imgMatrix.m11()*worldMatrix.m11()-1.0f) > FLT_EPSILON && // @100% ?
-			imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::Display::interpolateZoomLevel/100.0f) {	// > max zoom level
+			imgMatrix.m11()*worldMatrix.m11() <= (float)DkSettings::display.interpolateZoomLevel/100.0f) {	// > max zoom level
 				painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
@@ -510,7 +510,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 			setCursor(Qt::OpenHandCursor);
 		else {
 
-			if (!DkSettings::App::showStatusBar)
+			if (!DkSettings::app.showStatusBar)
 				emit showStatusBar(false, false);
 
 			unsetCursor();
@@ -525,7 +525,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 
 	float factor = -event->delta();
-	if (DkSettings::Display::invertZoom) factor *= -1.0f;
+	if (DkSettings::display.invertZoom) factor *= -1.0f;
 
 	factor /= -1200.0f;
 	factor += 1.0f;
@@ -548,7 +548,7 @@ void DkBaseViewPort::draw(QPainter *painter) {
 	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
 	if (parent && parent->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
-		painter->fillRect(QRect(QPoint(), size()), DkSettings::SlideShow::backgroundColor);
+		painter->fillRect(QRect(QPoint(), size()), DkSettings::slideShow.backgroundColor);
 		painter->setWorldMatrixEnabled(true);
 	}
 
@@ -560,7 +560,7 @@ void DkBaseViewPort::draw(QPainter *painter) {
 
 	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
 
-	if (DkSettings::Display::tpPattern && imgQt.hasAlphaChannel()) {
+	if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
 
 		// don't scale the pattern...
 		QTransform scaleIv;

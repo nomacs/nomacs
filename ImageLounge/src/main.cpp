@@ -41,6 +41,7 @@
 #include <QObject>
 
 #include "DkNoMacs.h"
+#include "DkSettings.h"
 //#include "DkPong.h"
 //#include "DkUtils.h"
 //#include "DkTimer.h"
@@ -73,9 +74,9 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
 
-	//QSettings settings;
-	//int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
-	//nmc::DkSettings::App::currentAppMode = mode;
+	QSettings settings;
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
+	nmc::DkSettings::app.currentAppMode = mode;
 
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
@@ -106,50 +107,50 @@ int main(int argc, char *argv[]) {
 	// DEBUG --------------------------------------------------------------------
 
 
-	////QSettings settings;
-	//QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::Global::language).toString() + ".qm";
+	//QSettings settings;
+	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 
-	//QTranslator translator;
-	//if (!translator.load(translationName, qApp->applicationDirPath())) {
-	//	QDir appDir = QDir(qApp->applicationDirPath());
-	//	if (!translator.load(translationName, appDir.filePath("../share/nomacs/translations/")) && !translationName.contains("_en"))
-	//		qDebug() << "unable to load translation: " << translationName;
-	//}
-	//a.installTranslator(&translator);
+	QTranslator translator;
+	if (!translator.load(translationName, qApp->applicationDirPath())) {
+		QDir appDir = QDir(qApp->applicationDirPath());
+		if (!translator.load(translationName, appDir.filePath("../share/nomacs/translations/")) && !translationName.contains("_en"))
+			qDebug() << "unable to load translation: " << translationName;
+	}
+	a.installTranslator(&translator);
 	
-	////int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
-	////nmc::DkSettings::App::currentAppMode = mode;
+	//int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
+	//nmc::DkSettings::App::currentAppMode = mode;
 
-	//if (mode == nmc::DkSettings::mode_frameless) {
-		//w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
-	//	qDebug() << "this is the frameless nomacs...";
-	//}
-	//else if (mode == nmc::DkSettings::mode_contrast) {
-	//	w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
-	//	qDebug() << "this is the contrast nomacs...";
-	//}
-	//else
+	if (mode == nmc::DkSettings::mode_frameless) {
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
+		qDebug() << "this is the frameless nomacs...";
+	}
+	else if (mode == nmc::DkSettings::mode_contrast) {
+		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
+		qDebug() << "this is the contrast nomacs...";
+	}
+	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
 	if (args.size() > 1)
 		w->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
 
-	//int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::App::currentAppMode).toInt();
+	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
 
-	//if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
-	//	fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
-	//	fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		) {
-	//	w->enterFullScreen();
-	//	qDebug() << "trying to enter fullscreen...";
-	//}
+	if (fullScreenMode == nmc::DkSettings::mode_default_fullscreen		||
+		fullScreenMode == nmc::DkSettings::mode_frameless_fullscreen	||
+		fullScreenMode == nmc::DkSettings::mode_contrast_fullscreen		) {
+		w->enterFullScreen();
+		qDebug() << "trying to enter fullscreen...";
+	}
 
-//#ifdef Q_WS_MAC
-//	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
-//	a.installEventFilter(osxEventFilter);
-//	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
-//		w, SLOT(loadFile(const QFileInfo&)));
-//#endif
-//		
+#ifdef Q_WS_MAC
+	nmc::DkNomacsOSXEventFilter *osxEventFilter = new nmc::DkNomacsOSXEventFilter();
+	a.installEventFilter(osxEventFilter);
+	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
+		w, SLOT(loadFile(const QFileInfo&)));
+#endif
+		
 
 	int rVal = a.exec();
 	//delete w;

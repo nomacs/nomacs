@@ -477,7 +477,7 @@ DkOpenWithDialog::DkOpenWithDialog(QWidget* parent, Qt::WindowFlags flags) : QDi
 
 void DkOpenWithDialog::init() {
 
-	defaultApp = (DkSettings::Global::defaultAppIdx < 0) ? 0 : DkSettings::Global::defaultAppIdx;
+	defaultApp = (DkSettings::global.defaultAppIdx < 0) ? 0 : DkSettings::global.defaultAppIdx;
 	numDefaultApps = 0;
 
 	// TODO: qt obviously saves the settings if the keys are not found...
@@ -537,8 +537,8 @@ void DkOpenWithDialog::createLayout() {
 			connect(radio, SIGNAL(clicked()), this, SLOT(softwareSelectionChanged()));			
 
 			// always check first one
-			if (DkSettings::Global::defaultAppIdx == -1 && first ||
-				DkSettings::Global::defaultAppIdx == idx ) {
+			if (DkSettings::global.defaultAppIdx == -1 && first ||
+				DkSettings::global.defaultAppIdx == idx ) {
 
 					radio->setChecked(true);
 					first = false;
@@ -551,9 +551,9 @@ void DkOpenWithDialog::createLayout() {
 
 	}
 
-	QStringList tmpUserPaths = DkSettings::Global::userAppPaths; // shortcut
+	QStringList tmpUserPaths = DkSettings::global.userAppPaths; // shortcut
 
-	for (int idx = 0; idx < DkSettings::Global::numUserChoices; idx++) {
+	for (int idx = 0; idx < DkSettings::global.numUserChoices; idx++) {
 
 		// default initialization
 		userRadios.append(new QRadioButton(tr("Choose Application")));
@@ -584,7 +584,7 @@ void DkOpenWithDialog::createLayout() {
 
 		int userIdx = idx + numDefaultApps;
 
-		if (DkSettings::Global::defaultAppIdx == userIdx)
+		if (DkSettings::global.defaultAppIdx == userIdx)
 			userRadios[idx]->setChecked(true);
 
 		// is an application set & is it still installed?
@@ -615,7 +615,7 @@ void DkOpenWithDialog::createLayout() {
 	// never again checkbox
 	neverAgainBox = new QCheckBox(tr("Never show this dialog again"));
 	neverAgainBox->setObjectName("neverAgainBox");
-	neverAgainBox->setChecked(!DkSettings::Global::showDefaultAppDialog);
+	neverAgainBox->setChecked(!DkSettings::global.showDefaultAppDialog);
 	neverAgainBox->setToolTip(tr("Do not be scared, you can always open this window in Preferences -> Global Settings"));
 
 	// ok, cancel button
@@ -696,10 +696,10 @@ void DkOpenWithDialog::browseAppFile() {
 void DkOpenWithDialog::accept() {
 
 	// store everything
-	DkSettings::Global::showDefaultAppDialog = !neverAgainBox->isChecked();
-	DkSettings::Global::defaultAppIdx = defaultApp;
-	DkSettings::Global::defaultAppPath = getPath();
-	DkSettings::Global::userAppPaths = userAppPaths;
+	DkSettings::global.showDefaultAppDialog = !neverAgainBox->isChecked();
+	DkSettings::global.defaultAppIdx = defaultApp;
+	DkSettings::global.defaultAppPath = getPath();
+	DkSettings::global.userAppPaths = userAppPaths;
 
 	QDialog::accept();
 }
@@ -863,7 +863,7 @@ void DkSearchDialog::init() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
-	QCompleter* history = new QCompleter(DkSettings::Global::searchHistory);
+	QCompleter* history = new QCompleter(DkSettings::global.searchHistory);
 	history->setCompletionMode(QCompleter::InlineCompletion);
 	searchBar = new QLineEdit();
 	searchBar->setObjectName("searchBar");
@@ -1010,13 +1010,13 @@ void DkSearchDialog::on_cancelButton_pressed() {
 
 void DkSearchDialog::updateHistory() {
 	
-	DkSettings::Global::searchHistory.append(currentSearch);
+	DkSettings::global.searchHistory.append(currentSearch);
 
 	// keep the history small
-	if (DkSettings::Global::searchHistory.size() > 50)
-		DkSettings::Global::searchHistory.pop_front();
+	if (DkSettings::global.searchHistory.size() > 50)
+		DkSettings::global.searchHistory.pop_front();
 
-	//QCompleter* history = new QCompleter(DkSettings::Global::searchHistory);
+	//QCompleter* history = new QCompleter(DkSettings::global.searchHistory);
 	//searchBar->setCompleter(history);
 }
 
@@ -2326,10 +2326,10 @@ void DkPrintPreviewDialog::createIcons() {
 	icons[print_setup]		= QIcon(":/nomacs/img/print-setup.png");
 	icons[print_printer]	= QIcon(":/nomacs/img/printer.png");
 
-	if (!DkSettings::Display::defaultIconColor) {
+	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++)
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100), DkSettings::Display::iconColor));
+			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100), DkSettings::display.iconColor));
 	}
 }
 
@@ -2449,9 +2449,9 @@ void DkPrintPreviewDialog::createLayout() {
 	toolbar->addAction(pageSetupAction);
 	toolbar->addAction(printAction);
 
-	if (DkSettings::Display::toolbarGradient) {
+	if (DkSettings::display.toolbarGradient) {
 
-		QColor hCol = DkSettings::Display::highlightColor;
+		QColor hCol = DkSettings::display.highlightColor;
 		hCol.setAlpha(80);
 
 		toolbar->setStyleSheet(
@@ -2463,7 +2463,7 @@ void DkPrintPreviewDialog::createLayout() {
 			);
 	}
 
-	if (DkSettings::Display::smallIcons)
+	if (DkSettings::display.smallIcons)
 		toolbar->setIconSize(QSize(16, 16));
 	else
 		toolbar->setIconSize(QSize(32, 32));
@@ -2675,7 +2675,7 @@ void DkPrintPreviewWidget::wheelEvent(QWheelEvent *event) {
 
 
 	qreal delta = event->delta();
-	if (DkSettings::Display::invertZoom)
+	if (DkSettings::display.invertZoom)
 		delta *= -1;
 	if (event->delta() > 0)
 		zoomIn();

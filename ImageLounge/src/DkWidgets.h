@@ -106,12 +106,12 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 			return false;
 		}
 
-		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 	};
 
 
@@ -252,12 +252,12 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 			return false;
 		}
 
-		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 	};
 
 signals:
@@ -502,7 +502,7 @@ public slots:
 
 	void startTimer() {
 		if (playing) {
-			displayTimer->setInterval(DkSettings::SlideShow::time*1000);	// if it was updated...
+			displayTimer->setInterval(DkSettings::slideShow.time*1000);	// if it was updated...
 			displayTimer->start();
 		}
 	};
@@ -661,12 +661,12 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 			return false;
 		}
 
-		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 	};
 
 public slots:

@@ -57,6 +57,12 @@
 
 #include "BorderLayout.h"
 
+#ifdef DK_DLL
+#define DllExport Q_DECL_EXPORT
+#else
+#define DllExport Q_DECL_IMPORT
+#endif
+
 namespace nmc {
 
 class DkSettingsWidget;
@@ -70,7 +76,7 @@ class DkSettingsListView;
 class DkSpinBoxWidget;
 class DkDoubleSpinBoxWidget;
 
-class DkSettings : public QObject {
+class DllExport DkSettings {
 
 public:
 
@@ -100,102 +106,103 @@ public:
 	};
 
 	struct App {
-		static bool showToolBar;
-		static bool showMenuBar;
-		static bool showStatusBar;
-		static QBitArray showFilePreview;
-		static QBitArray showFileInfoLabel;
-		static QBitArray showPlayer;
-		static QBitArray showMetaData;
-		static QBitArray showHistogram;
-		static QBitArray showOverview;
-		static QBitArray showScroller;
-		static int appMode;
-		static int currentAppMode;
-		static bool advancedSettings;
-		static bool closeOnEsc;
+		bool showToolBar;
+		bool showMenuBar;
+		bool showStatusBar;
+		QBitArray showFilePreview;
+		QBitArray showFileInfoLabel;
+		QBitArray showPlayer;
+		QBitArray showMetaData;
+		QBitArray showHistogram;
+		QBitArray showOverview;
+		QBitArray showScroller;
+		int appMode;
+		int currentAppMode;
+		bool advancedSettings;
+		bool closeOnEsc;
 	};
 
 	struct Display {
-		static bool keepZoom;
-		static bool invertZoom;
-		static bool tpPattern;
-		static QColor highlightColor;
-		static QColor bgColorWidget;
-		static QColor bgColor;
-		static QColor bgColorFrameless;
-		static QColor iconColor;
-		static bool useDefaultColor;
-		static bool defaultIconColor;
-		static int thumbSize;
-		static bool saveThumb;
-		static int interpolateZoomLevel;
-		static bool antiAliasing;
-		static bool smallIcons;
-		static bool toolbarGradient;
-		static bool showBorder;
+		bool keepZoom;
+		bool invertZoom;
+		bool tpPattern;
+		QColor highlightColor;
+		QColor bgColorWidget;
+		QColor bgColor;
+		QColor bgColorFrameless;
+		QColor iconColor;
+		bool useDefaultColor;
+		bool defaultIconColor;
+		int thumbSize;
+		bool saveThumb;
+		int interpolateZoomLevel;
+		bool antiAliasing;
+		bool smallIcons;
+		bool toolbarGradient;
+		bool showBorder;
 	};
 
 	struct Global {
-		static int skipImgs;
-		static int numFiles;
-		static bool loop;
-		static bool scanSubFolders;
+		int skipImgs;
+		int numFiles;
+		bool loop;
+		bool scanSubFolders;
 
-		static QString lastDir;
-		static QString lastSaveDir;
-		static QStringList recentFiles;
-		static QStringList recentFolders;
-		static bool useTmpPath;
-		static QString tmpPath;
-		static QString language;
-		static QStringList searchHistory;
+		QString lastDir;
+		QString lastSaveDir;
+		QStringList recentFiles;
+		QStringList recentFolders;
+		bool useTmpPath;
+		QString tmpPath;
+		QString language;
+		QStringList searchHistory;
+		
+		Qt::KeyboardModifier altMod;
+		Qt::KeyboardModifier ctrlMod;
 
-		static Qt::KeyboardModifier altMod;
-		static Qt::KeyboardModifier ctrlMod;
-
-		static QString setupPath;
-		static QString setupVersion;
+		QString setupPath;
+		QString setupVersion;
 
 		// open with
-		static QString defaultAppPath;
-		static int defaultAppIdx;
-		static bool showDefaultAppDialog;
-		static int numUserChoices;
-		static QStringList userAppPaths;
-		static int sortMode;
-		static int sortDir;
+		QString defaultAppPath;
+		int defaultAppIdx;
+		bool showDefaultAppDialog;
+		int numUserChoices;
+		QStringList userAppPaths;
+		int sortMode;
+		int sortDir;
 	};
+
 	struct SlideShow {
-		static int filter;
-		static float time;
-		static bool silentFullscreen;
-		static QBitArray display;
-		static QColor backgroundColor;
+		int filter;
+		float time;
+		bool silentFullscreen;
+		QBitArray display;
+		QColor backgroundColor;
 	};
 	struct Sync {
-		static bool enableNetworkSync;
-		static bool allowTransformation;
-		static bool allowPosition;
-		static bool allowFile;
-		static bool allowImage;
-		static bool updateDialogShown;
-		static QDate lastUpdateCheck;
-		static bool syncAbsoluteTransform;
-		static bool switchModifier;
+		bool enableNetworkSync;
+		bool allowTransformation;
+		bool allowPosition;
+		bool allowFile;
+		bool allowImage;
+		bool updateDialogShown;
+		QDate lastUpdateCheck;
+		bool syncAbsoluteTransform;
+		bool switchModifier;
 	};
 	struct MetaData {
-		static QBitArray metaDataBits;
-		static bool ignoreExifOrientation;
-		static bool saveExifOrientation;
+		QBitArray metaDataBits;
+		bool ignoreExifOrientation;
+		bool saveExifOrientation;
 	};
 		
 	struct Resources {
-		static float cacheMemory;
-		static bool fastThumbnailPreview;
-		static bool filterRawImages;
-		static bool filterDuplicats;
-		static QString preferredExtension;
+		float cacheMemory;
+		bool fastThumbnailPreview;
+		bool filterRawImages;
+		bool filterDuplicats;
+		QString preferredExtension;
 	};
 
 	static App& getAppSettings();
@@ -215,7 +222,7 @@ public:
 	static Display& display;
 	static SlideShow& slideShow;
 	static Sync& sync;
-	static MetaData& meta;
+	static MetaData& metaData;
 	static Resources& resources;
 
 protected:
@@ -234,10 +241,7 @@ protected:
 	static Sync sync_d;
 	static MetaData meta_d;
 	static Resources resources_d;
-
-	static bool loaded;
 };
-
 
 class DkSettingsDialog : public QDialog {
 	Q_OBJECT;
@@ -337,10 +341,10 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 			emit applyDefault();
 		};
 		void bgColorReset() {
-			DkSettings::Display::useDefaultColor = true;
+			DkSettings::display.useDefaultColor = true;
 		};
 		void iconColorReset() {
-			DkSettings::Display::defaultIconColor = true;
+			DkSettings::display.defaultIconColor = true;
 		};
 
 
