@@ -129,12 +129,12 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="756"/>
       <source>Crop (ENTER)</source>
-      <translation>Crop (ENTER)</translation>
+      <translation>Обрезать (ENTER)</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="760"/>
       <source>Cancel (ESC)</source>
-      <translation>Cancel (ESC)</translation>
+      <translation>Отмена (ESC)</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="764"/>
@@ -174,7 +174,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="806"/>
       <source>Background Color</source>
-      <translation>Background Color</translation>
+      <translation>Цвет фона</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="815"/>
@@ -204,7 +204,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="829"/>
       <source>Show Info</source>
-      <translation>Show Info</translation>
+      <translation>Показать информацию</translation>
     </message>
   </context>
   <context>
@@ -212,7 +212,7 @@
     <message>
       <location filename="../src/DkWidgets.cpp" line="3746"/>
       <source>Crop Toolbar</source>
-      <translation>Crop Toolbar</translation>
+      <translation>Панель инструментов обрезания</translation>
     </message>
   </context>
   <context>
@@ -313,7 +313,7 @@
     <message>
       <location filename="../src/DkWidgets.cpp" line="1233"/>
       <source>Editable</source>
-      <translation>Editable</translation>
+      <translation>Редактируемый</translation>
     </message>
   </context>
   <context>
@@ -321,22 +321,22 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="2538"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Export Multi-Page TIFF</translation>
+      <translation>Экспорт многостраничного TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2585"/>
       <source>Multi-Page TIFF:</source>
-      <translation>Multi-Page TIFF:</translation>
+      <translation>Многостраничный TIFF:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2588"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Browse</translation>
+      <translation>&amp;Обзор</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2591"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>No Multi-Page TIFF loaded</translation>
+      <translation>Загружен не многостраничный TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2594"/>
@@ -351,42 +351,42 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="2603"/>
       <source>Filename:</source>
-      <translation>Filename:</translation>
+      <translation>Имя файла:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2614"/>
       <source>Export Pages</source>
-      <translation>Export Pages</translation>
+      <translation>Экспорт страниц</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2621"/>
       <source>Overwrite</source>
-      <translation>Overwrite</translation>
+      <translation>Перезаписать</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2653"/>
       <source>&amp;Export</source>
-      <translation>&amp;Export</translation>
+      <translation>&amp;Экспорт</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2654"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Cancel</translation>
+      <translation>&amp;Отмена</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2671"/>
       <source>Open TIFF</source>
-      <translation>Open TIFF</translation>
+      <translation>Открыть TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2682"/>
       <source>Open an Image Directory</source>
-      <translation>Open an Image Directory</translation>
+      <translation>Открыть каталог изображения</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2768"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>Sorry, I could not save: %1</translation>
+      <translation>Невозможно сохранить: %1</translation>
     </message>
   </context>
   <context>
@@ -531,7 +531,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="777"/>
       <source>Fullscreen Color</source>
-      <translation>Fullscreen Color</translation>
+      <translation>Цвет в полноэкранном режиме</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="780"/>
@@ -556,17 +556,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="836"/>
       <source>Show Menu</source>
-      <translation>Show Menu</translation>
+      <translation>Показать меню</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="837"/>
       <source>Show Toolbar</source>
-      <translation>Show Toolbar</translation>
+      <translation>Показать Панель инструментов</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="838"/>
       <source>Show Statusbar</source>
-      <translation>Show Statusbar</translation>
+      <translation>Показать Строку состояния</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="839"/>
@@ -581,7 +581,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="841"/>
       <source>Close on ESC</source>
-      <translation>Close on ESC</translation>
+      <translation>Закрыть по ESC</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="854"/>
@@ -1043,12 +1043,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="1345"/>
       <source>Exif Orientation</source>
-      <translation>Exif Orientation</translation>
+      <translation>Ориентация по EXIF</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1347"/>
       <source>Ignore Exif Orientation</source>
-      <translation>Ignore Exif Orientation</translation>
+      <translation>Игнорировать Exif ориентации</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1349"/>
@@ -1113,7 +1113,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="524"/>
       <source>&amp;Panels</source>
-      <translation>&amp;Panels</translation>
+      <translation>&amp;Панели</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="525"/>
@@ -1198,12 +1198,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="650"/>
       <source>&amp;Save As</source>
-      <translation>&amp;Save As</translation>
+      <translation>&amp;Сохранить как</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="652"/>
       <source>Save an image as</source>
-      <translation>Save an image as</translation>
+      <translation>Сохранить изображение как</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="655"/>
@@ -1288,22 +1288,22 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="704"/>
       <source>by &amp;Filename</source>
-      <translation>by &amp;Filename</translation>
+      <translation>по &amp;имени файла</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="706"/>
       <source>Sort by Filename</source>
-      <translation>Sort by Filename</translation>
+      <translation>Сортировать по имени файла</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="711"/>
       <source>by Date &amp;Created</source>
-      <translation>by Date &amp;Created</translation>
+      <translation>по дате &amp;создания</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="713"/>
       <source>Sort by Date Created</source>
-      <translation>Sort by Date Created</translation>
+      <translation>Сортировать по дате создания</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="718"/>
@@ -1493,7 +1493,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="844"/>
       <source>O&amp;verview</source>
-      <translation>O&amp;verview</translation>
+      <translation>&amp;Обзор</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="846"/>
@@ -1503,72 +1503,72 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="851"/>
       <source>Pla&amp;yer</source>
-      <translation>Pla&amp;yer</translation>
+      <translation>Про&amp;игрыватель</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="853"/>
       <source>Shows the Slide Show Player</source>
-      <translation>Shows the Slide Show Player</translation>
+      <translation>Показать "Плеер слайд-шоу"</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="857"/>
       <source>File &amp;Explorer</source>
-      <translation>File &amp;Explorer</translation>
+      <translation>&amp;Проводник</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="859"/>
       <source>Show File Explorer</source>
-      <translation>Show File Explorer</translation>
+      <translation>Показать "Обозреватель файлов"</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="863"/>
       <source>&amp;Thumbnails</source>
-      <translation>&amp;Thumbnails</translation>
+      <translation>&amp;Миниатюры</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="865"/>
       <source>Show Thumbnails</source>
-      <translation>Show Thumbnails</translation>
+      <translation>Показать миниатюры</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="869"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Folder Scrollbar</translation>
+      <translation>&amp;Полоса прокрутки папки</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="871"/>
       <source>Show Folder Scrollbar</source>
-      <translation>Show Folder Scrollbar</translation>
+      <translation>Показать полосу прокрутки папки</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="875"/>
       <source>&amp;Metadata</source>
-      <translation>&amp;Metadata</translation>
+      <translation>&amp;Метаданные</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="877"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Shows the Metadata Panel</translation>
+      <translation>Показать панель "Метаданные"</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="881"/>
       <source>File &amp;Info</source>
-      <translation>File &amp;Info</translation>
+      <translation>&amp;Информация о файле</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="883"/>
       <source>Shows the Info Panel</source>
-      <translation>Shows the Info Panel</translation>
+      <translation>Показывает панель «Информация»</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="887"/>
       <source>&amp;Histogram</source>
-      <translation>&amp;Histogram</translation>
+      <translation>&amp;Гистограмма</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="889"/>
       <source>Shows the Histogram Panel</source>
-      <translation>Shows the Histogram Panel</translation>
+      <translation>Показывает панель «Гистограмма»</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="894"/>
@@ -1743,12 +1743,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1000"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>Export Multipage &amp;TIFF</translation>
+      <translation>Экспорт многостраничного &amp; TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1001"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>Export TIFF pages to multiple tiff files</translation>
+      <translation>Экспорт страниц TIFF в несколько tiff - файлов</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1006"/>
@@ -1814,7 +1814,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1837"/>
       <source>File Explorer</source>
-      <translation>File Explorer</translation>
+      <translation>Проводник</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1862"/>
@@ -2444,7 +2444,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="601"/>
       <source>Advanced</source>
-      <translation>Advanced</translation>
+      <translation>Расширенный</translation>
     </message>
   </context>
   <context>
