@@ -308,51 +308,9 @@ if (APPLE)
 endif (APPLE)
 
 
-# set (NOMACS_MOCS
-        # #src/DkError.h
-        # src/DkImage.h
-        # #src/DkMath.h
-		# src/DkManipulationWidgets.h
-        # src/DkConnection.h
-        # src/DkNetwork.h
-        # src/DkNoMacs.h
-		# src/DkPong.h
-        # #src/DkTimer.h
-        # #src/DkUtils.h
-        # src/DkViewPort.h
-        # src/DkWidgets.h
-		# src/DkDialog.h
-        # src/DkMenu.h
-        # src/DkSettings.h
-		# src/DkTransferToolBar.h
-        # #src/BorderLayout.h
-        # #src/resource.h
-# )
-
-# set (NOMACS_HEADERS
-        # src/DkError.h
-        # src/DkImage.h
-        # src/DkMath.h
-        # src/DkConnection.h
-        # src/DkNetwork.h
-		# src/DkManipulationWidgets.h
-        # src/DkNoMacs.h
-		# src/DkPong.h
-        # src/DkTimer.h
-        # src/DkUtils.h
-        # src/DkViewPort.h
-        # src/DkWidgets.h
-		# src/DkDialog.h
-        # src/DkMenu.h
-        # src/DkSettings.h
-		# src/DkTransferToolBar.h
-        # src/BorderLayout.h
-        # #src/resource.h
-# )
-
 file(GLOB NOMACS_SOURCES "src/*.cpp")
 file(GLOB NOMACS_HEADERS "src/*.h")
-LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
+
 
 file(GLOB NOMACS_MOCS "src/*.h")
 
@@ -402,7 +360,6 @@ ENDIF(MSVC)
 QT4_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
 QT4_WRAP_UI(NOMACS_UI ${NOMACS_FORMS})
 QT4_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
-QT4_WRAP_CPP(NOMACS_MOC_SRC_SU src/main.cpp)
 QT4_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
 
 QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
@@ -410,19 +367,53 @@ QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
 #IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 IF (EXIV2_FOUND)
 
-	add_definitions("-DDK_DLL")
-
-	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
-	add_executable(${EXE_NAME}_startup WIN32  src/main.cpp ${NOMACS_MOC_SRC_SU} ${NOMACS_QM} ${NOMACS_TRANSLATIONS})
-	target_link_libraries(${EXE_NAME}_startup ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} ${VERSION_LIB} ${EXE_NAME}.lib)
-	add_library(${EXE_NAME} SHARED ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC})
-	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${WEBP_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES})
-	add_dependencies(${EXE_NAME}_startup ${EXE_NAME})
 	
-	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-		SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
-	ENDIF()
+	IF(MSVC)
 
+	set(EXE_NAME ${CMAKE_PROJECT_NAME})
+		set(DLL_NAME lib${CMAKE_PROJECT_NAME})
+		set(LIB_NAME optimized ${DLL_NAME}.lib debug ${DLL_NAME}d.lib)
+		LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
+		link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
+		add_executable(${EXE_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_MOC_SRC_SU} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
+		target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} ${VERSION_LIB} ${LIB_NAME})
+		
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES IMPORTED_IMPLIB "")
+				
+		add_library(${DLL_NAME} SHARED ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC})
+		target_link_libraries(${DLL_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${WEBP_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES})
+		add_dependencies(${EXE_NAME} ${DLL_NAME})
+		
+		
+		
+		SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
+
+		set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		
+		
+		
+		set_target_properties(${DLL_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL")
+		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
+		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${DLL_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_NAME}d)
+				
+	ELSE()
+		set(EXE_NAME ${CMAKE_PROJECT_NAME})
+		link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
+		add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC})
+		target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${WEBP_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES})
+
+		IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+			SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
+		ENDIF()
+	ENDIF(MSVC)
+		
 	IF (APPLE)
         	# mac's bundle install
 	        SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/macosx/Info.plist.in")
@@ -467,7 +458,7 @@ IF (EXIV2_FOUND)
 		add_definitions(/Zc:wchar_t-)
 		SET(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
 		SET(CMAKE_EXE_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
-		SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
+		
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
@@ -509,5 +500,3 @@ IF (EXIV2_FOUND)
 ELSE(!EXIV2_FOUND)
 	message(WARNING "At least one library has not been found")
 ENDIF()
-
-
