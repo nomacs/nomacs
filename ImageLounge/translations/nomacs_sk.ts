@@ -140,7 +140,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="764"/>
       <source>Pan</source>
-      <translation>Pan</translation>
+      <translation>Posun</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="772"/>
@@ -150,7 +150,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="773"/>
       <source>No Aspect Ratio</source>
-      <translation>No Aspect Ratio</translation>
+      <translation>Bez pomeru</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="781"/>
@@ -185,7 +185,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="816"/>
       <source>Rule of Thirds</source>
-      <translation>Rule of Thirds</translation>
+      <translation>Pravidlo tretín</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="817"/>
@@ -195,7 +195,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="821"/>
       <source>Show Guides in the Preview</source>
-      <translation>Show Guides in the Preview</translation>
+      <translation>Zobraziť vodidlá v náhľade</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="824"/>
@@ -205,7 +205,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="829"/>
       <source>Show Info</source>
-      <translation>Show Info</translation>
+      <translation>Zobraziť info</translation>
     </message>
   </context>
   <context>
@@ -213,7 +213,7 @@
     <message>
       <location filename="../src/DkWidgets.cpp" line="3746"/>
       <source>Crop Toolbar</source>
-      <translation>Crop Toolbar</translation>
+      <translation>Panel nástrojov orezať</translation>
     </message>
   </context>
   <context>
@@ -306,7 +306,7 @@
     <message>
       <location filename="../src/DkSettings.cpp" line="979"/>
       <source>Silent Fullscreen</source>
-      <translation>Silent Fullscreen</translation>
+      <translation>Tichý režim celej obrazovky</translation>
     </message>
   </context>
   <context>
@@ -314,7 +314,7 @@
     <message>
       <location filename="../src/DkWidgets.cpp" line="1233"/>
       <source>Editable</source>
-      <translation>Editable</translation>
+      <translation>Upraviteľné</translation>
     </message>
   </context>
   <context>
@@ -322,52 +322,52 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="2538"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Export Multi-Page TIFF</translation>
+      <translation>Exportovať viacstránkový TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2585"/>
       <source>Multi-Page TIFF:</source>
-      <translation>Multi-Page TIFF:</translation>
+      <translation>Viacstránkový TIFF:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2588"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Browse</translation>
+      <translation>&amp;Prehliadať</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2591"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>No Multi-Page TIFF loaded</translation>
+      <translation>Žiadne viacstránkové TIFF načítané</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2594"/>
       <source>Save Folder:</source>
-      <translation>Save Folder:</translation>
+      <translation>Uložiť priečinok:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2600"/>
       <source>Specify a Save Folder</source>
-      <translation>Specify a Save Folder</translation>
+      <translation>Určte priečinok uloženia</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2603"/>
       <source>Filename:</source>
-      <translation>Filename:</translation>
+      <translation>Názov súboru:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2614"/>
       <source>Export Pages</source>
-      <translation>Export Pages</translation>
+      <translation>Exportovať strany</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2621"/>
       <source>Overwrite</source>
-      <translation>Overwrite</translation>
+      <translation>Prepísať</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2653"/>
       <source>&amp;Export</source>
-      <translation>&amp;Export</translation>
+      <translation>&amp;Exportovať</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2654"/>
@@ -377,17 +377,17 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="2671"/>
       <source>Open TIFF</source>
-      <translation>Open TIFF</translation>
+      <translation>Otvoriť TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2682"/>
       <source>Open an Image Directory</source>
-      <translation>Open an Image Directory</translation>
+      <translation>Otvoriť priečinok s obrázkami</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2768"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>Sorry, I could not save: %1</translation>
+      <translation>Prepáčte, nepodarilo sa uložiť: %1</translation>
     </message>
   </context>
   <context>
@@ -418,7 +418,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="561"/>
       <source>CTRL+Zoom resizes the thumbnails</source>
-      <translation>CTRL+Zoom resizes the thumbnails</translation>
+      <translation>CTRL + Priblíženie zmení veľkosť miniatúr</translation>
     </message>
   </context>
   <context>
@@ -534,7 +534,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="777"/>
       <source>Fullscreen Color</source>
-      <translation>Fullscreen Color</translation>
+      <translation>Farba režimu celej obrazovky</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="780"/>
@@ -574,7 +574,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="839"/>
       <source>Small Icons</source>
-      <translation>Small Icons</translation>
+      <translation>Malé ikony</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="840"/>
@@ -584,7 +584,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="841"/>
       <source>Close on ESC</source>
-      <translation>Close on ESC</translation>
+      <translation>Zatvoriť klávesou ESC</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="854"/>
@@ -671,12 +671,12 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkImage.cpp" line="2156"/>
       <source>Sorry, I can't save: %1</source>
-      <translation>Sorry, I can't save: %1</translation>
+      <translation>Prepáčte, nepodarilo sa uložiť: %1</translation>
     </message>
     <message>
       <location filename="../src/DkImage.cpp" line="2241"/>
       <source>Sorry, I could not restore: %1</source>
-      <translation>Sorry, I could not restore: %1</translation>
+      <translation>Prepáčte, nepodarilo sa obnoviť: %1</translation>
     </message>
     <message>
       <location filename="../src/DkImage.cpp" line="2309"/>
@@ -686,14 +686,14 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkImage.cpp" line="2311"/>
       <source>Sorry, I could not delete: %1</source>
-      <translation>Sorry, I could not delete: %1</translation>
+      <translation>Prepáčte, nepodarilo sa vymazať: %1</translation>
     </message>
     <message>
       <location filename="../src/DkImage.cpp" line="1300"/>
       <source>%1 
  does not contain any image</source>
       <translation>%1 
- does not contain any image</translation>
+neobsahuje žiadne obrázky</translation>
     </message>
   </context>
   <context>
@@ -706,7 +706,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkManipulationWidgets.cpp" line="123"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>&amp;Ok</translation>
     </message>
     <message>
       <location filename="../src/DkManipulationWidgets.cpp" line="124"/>
@@ -852,22 +852,22 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2409"/>
       <source>manual</source>
-      <translation>manual</translation>
+      <translation>ručne</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2410"/>
       <source>normal</source>
-      <translation>normal</translation>
+      <translation>normálne</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2411"/>
       <source>aperture priority</source>
-      <translation>aperture priority</translation>
+      <translation>Priorita clony</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2412"/>
       <source>shutter priority</source>
-      <translation>shutter priority</translation>
+      <translation>Priorita uzávierky</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2413"/>
@@ -887,7 +887,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2416"/>
       <source>landscape mode</source>
-      <translation>landscape mode</translation>
+      <translation>režim našírku</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2419"/>
@@ -897,137 +897,137 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2420"/>
       <source>Fired</source>
-      <translation>Fired</translation>
+      <translation>Aktivované</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2421"/>
       <source>Fired, Return not detected</source>
-      <translation>Fired, Return not detected</translation>
+      <translation>Aktivované, návrat nebol zištený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2422"/>
       <source>Fired, Return detected</source>
-      <translation>Fired, Return detected</translation>
+      <translation>Aktivované, zistený návrat</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2423"/>
       <source>On, Did not fire</source>
-      <translation>On, Did not fire</translation>
+      <translation>Zapnuté, nebolo aktivované</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2424"/>
       <source>On, Fired</source>
-      <translation>On, Fired</translation>
+      <translation>Zapnuté, aktivované</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2425"/>
       <source>On, Return not detected</source>
-      <translation>On, Return not detected</translation>
+      <translation>Zapnuté, návrat nebol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2426"/>
       <source>On, Return detected</source>
-      <translation>On, Return detected</translation>
+      <translation>Zapnuté, návrat zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2427"/>
       <source>Off, Did not fire</source>
-      <translation>Off, Did not fire</translation>
+      <translation>Vypnuto, nebolo aktivované</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2428"/>
       <source>Off, Did not fire, Return not detected</source>
-      <translation>Off, Did not fire, Return not detected</translation>
+      <translation>Vypnuté, neaktivované, návrat nebol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2429"/>
       <source>Auto, Did not fire</source>
-      <translation>Auto, Did not fire</translation>
+      <translation>Automaticky, nebolo aktivované</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2430"/>
       <source>Auto, Fired</source>
-      <translation>Auto, Fired</translation>
+      <translation>Automaticky, nebolo aktivované</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2431"/>
       <source>Auto, Fired, Return not detected</source>
-      <translation>Auto, Fired, Return not detected</translation>
+      <translation>Automaticky, aktivované, návrat nebol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2432"/>
       <source>Auto, Fired, Return detected</source>
-      <translation>Auto, Fired, Return detected</translation>
+      <translation>Automaticky, aktivované, zistený návrat</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2433"/>
       <source>No flash function</source>
-      <translation>No flash function</translation>
+      <translation>Žiadna funkcia blesku</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2434"/>
       <source>Off, No flash function</source>
-      <translation>Off, No flash function</translation>
+      <translation>Vypnuté, žiadna funkcia blesku</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2435"/>
       <source>Fired, Red-eye reduction</source>
-      <translation>Fired, Red-eye reduction</translation>
+      <translation>Aktivované, redukcia červených očí</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2436"/>
       <source>Fired, Red-eye reduction, Return not detected</source>
-      <translation>Fired, Red-eye reduction, Return not detected</translation>
+      <translation>Aktivované, redukcia červených očí, návrat nebol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2437"/>
       <source>Fired, Red-eye reduction, Return detected</source>
-      <translation>Fired, Red-eye reduction, Return detected</translation>
+      <translation>Aktivované, redukcia červených očí, návrat bol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2438"/>
       <source>On, Red-eye reduction</source>
-      <translation>On, Red-eye reduction</translation>
+      <translation>Zapnuté, redukcia červených očí</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2439"/>
       <source>On, Red-eye reduction, Return not detected</source>
-      <translation>On, Red-eye reduction, Return not detected</translation>
+      <translation>Zapnuté, redukcia červených očí, návrat nebol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2440"/>
       <source>On, Red-eye reduction, Return detected</source>
-      <translation>On, Red-eye reduction, Return detected</translation>
+      <translation>Zapnuté, redukcia červených očí, návrat bol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2441"/>
       <source>Off, Red-eye reduction</source>
-      <translation>Off, Red-eye reduction</translation>
+      <translation>Vypnuté, redukcia červených očí</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2442"/>
       <source>Auto, Did not fire, Red-eye reduction</source>
-      <translation>Auto, Did not fire, Red-eye reduction</translation>
+      <translation>Auto, neaktivované, redukcia červených očí</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2443"/>
       <source>Auto, Fired, Red-eye reduction</source>
-      <translation>Auto, Fired, Red-eye reduction</translation>
+      <translation>Automaticky, aktivované, redukcia červených očí</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2444"/>
       <source>Auto, Fired, Red-eye reduction, Return not detected</source>
-      <translation>Auto, Fired, Red-eye reduction, Return not detected</translation>
+      <translation>Automaticky, aktivované, redukcia červených očí, návrat nebol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2445"/>
       <source>Auto, Fired, Red-eye reduction, Return detected</source>
-      <translation>Auto, Fired, Red-eye reduction, Return detected</translation>
+      <translation>Automaticky, aktivované, redukcia červených očí, návrat bol zistený</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="2561"/>
       <source>could not parse GPS Data</source>
-      <translation>could not parse GPS Data</translation>
+      <translation>Nepodarilo sa analyzovať GPS dáta</translation>
     </message>
   </context>
   <context>
@@ -1045,29 +1045,28 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="1345"/>
       <source>Exif Orientation</source>
-      <translation>Exif Orientation</translation>
+      <translation>Exif orientácia</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1347"/>
       <source>Ignore Exif Orientation</source>
-      <translation>Ignore Exif Orientation</translation>
+      <translation>Ignorovať Exif orientáciu</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1349"/>
       <source>Note: instead of checking this option
  you should fix your images.</source>
-      <translation>Note: instead of checking this option
- you should fix your images.</translation>
+      <translation>Poznámka: namiesto zaškrtnutia tejto možnosti by ste mali opraviť vaše obrázky.</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1351"/>
       <source>Save Exif Orientation</source>
-      <translation>Save Exif Orientation</translation>
+      <translation>Uložiť Exif orientáciu obrázka</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1353"/>
       <source>Note: unchecking this option decreases the speed of rotating images.</source>
-      <translation>Note: unchecking this option decreases the speed of rotating images.</translation>
+      <translation>Poznámka: odškrtnutím tejto možnosti se zníži rýchlosť otáčania obrázkov.</translation>
     </message>
   </context>
   <context>
@@ -1080,7 +1079,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="335"/>
       <source>CTRL activates the crosshair cursor</source>
-      <translation>CTRL activates the crosshair cursor</translation>
+      <translation>CTRL aktivuje krížový kurzor</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="431"/>
@@ -1100,7 +1099,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="453"/>
       <source>S&amp;ort</source>
-      <translation>S&amp;ort</translation>
+      <translation>Z&amp;oradiť</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="476"/>
@@ -1115,7 +1114,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="524"/>
       <source>&amp;Panels</source>
-      <translation>&amp;Panels</translation>
+      <translation>&amp;Panely</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="525"/>
@@ -1200,12 +1199,12 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="650"/>
       <source>&amp;Save As</source>
-      <translation>&amp;Save As</translation>
+      <translation>&amp;Uložiť ako</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="652"/>
       <source>Save an image as</source>
-      <translation>Save an image as</translation>
+      <translation>Uložiť obrázok ako</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="655"/>
@@ -1290,52 +1289,52 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="704"/>
       <source>by &amp;Filename</source>
-      <translation>by &amp;Filename</translation>
+      <translation>podľa názvu &amp;súboru</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="706"/>
       <source>Sort by Filename</source>
-      <translation>Sort by Filename</translation>
+      <translation>Zoradiť podľa názvu súboru</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="711"/>
       <source>by Date &amp;Created</source>
-      <translation>by Date &amp;Created</translation>
+      <translation>podľa dátumu &amp;vytvorenia</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="713"/>
       <source>Sort by Date Created</source>
-      <translation>Sort by Date Created</translation>
+      <translation>Zoradiť podľa dátumu vytvorenia</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="718"/>
       <source>by Date Modified</source>
-      <translation>by Date Modified</translation>
+      <translation>podľa dátumu úpravy</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="720"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Sort by Date Last Modified</translation>
+      <translation>Zoradiť podľa dátumu poslednej zmeny</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="725"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;Ascending</translation>
+      <translation>&amp;Vzostupne</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="727"/>
       <source>Sort in Ascending Order</source>
-      <translation>Sort in Ascending Order</translation>
+      <translation>Zoradiť vzostupne</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="732"/>
       <source>&amp;Descending</source>
-      <translation>&amp;Descending</translation>
+      <translation>&amp;Zostupne</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="734"/>
       <source>Sort in Descending Order</source>
-      <translation>Sort in Descending Order</translation>
+      <translation>Zoradiť zostupne</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="741"/>
@@ -1460,22 +1459,22 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="815"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Hides the Menu and Shows it Again on ALT</translation>
+      <translation>Skryje menu a zobrazí ho znovu pri stlačení ALT</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="819"/>
       <source>Tool&amp;bar</source>
-      <translation>Tool&amp;bar</translation>
+      <translation>&amp;Panel nástrojov</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="825"/>
       <source>&amp;Statusbar</source>
-      <translation>&amp;Statusbar</translation>
+      <translation>&amp;Stavový riadok</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="832"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation>&amp;Pseudocolor Function</translation>
+      <translation>Funkcia &amp;pseudofarby</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="821"/>
@@ -1495,72 +1494,72 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="844"/>
       <source>O&amp;verview</source>
-      <translation>O&amp;verview</translation>
+      <translation>P&amp;repísať</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="846"/>
       <source>Shows the Zoom Overview</source>
-      <translation>Shows the Zoom Overview</translation>
+      <translation>Zobrazí prehľad priblíženia</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="851"/>
       <source>Pla&amp;yer</source>
-      <translation>Pla&amp;yer</translation>
+      <translation>Pre&amp;hrávač</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="853"/>
       <source>Shows the Slide Show Player</source>
-      <translation>Shows the Slide Show Player</translation>
+      <translation>Zobrazí prehrávač prezentácie obrázkov</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="857"/>
       <source>File &amp;Explorer</source>
-      <translation>File &amp;Explorer</translation>
+      <translation>Prieskumník súborov</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="859"/>
       <source>Show File Explorer</source>
-      <translation>Show File Explorer</translation>
+      <translation>Zobraziť prieskumník súborov</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="863"/>
       <source>&amp;Thumbnails</source>
-      <translation>&amp;Thumbnails</translation>
+      <translation>Minia&amp;túry</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="865"/>
       <source>Show Thumbnails</source>
-      <translation>Show Thumbnails</translation>
+      <translation>Zobraziť miniatúry</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="869"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Folder Scrollbar</translation>
+      <translation>&amp;Posuvník priečinka</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="871"/>
       <source>Show Folder Scrollbar</source>
-      <translation>Show Folder Scrollbar</translation>
+      <translation>Zobraziť posuvník priečinka</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="875"/>
       <source>&amp;Metadata</source>
-      <translation>&amp;Metadata</translation>
+      <translation>&amp;Metadáta</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="877"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Shows the Metadata Panel</translation>
+      <translation>Zobrazí panel metadát</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="881"/>
       <source>File &amp;Info</source>
-      <translation>File &amp;Info</translation>
+      <translation>&amp;Info o súbore</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="883"/>
       <source>Shows the Info Panel</source>
-      <translation>Shows the Info Panel</translation>
+      <translation>Zobrazí informačný panel</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="887"/>
@@ -1570,7 +1569,7 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="889"/>
       <source>Shows the Histogram Panel</source>
-      <translation>Shows the Histogram Panel</translation>
+      <translation>Zobrazí panel histogramu</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="894"/>
@@ -1645,12 +1644,12 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="934"/>
       <source>&amp;Transparency Pattern</source>
-      <translation>&amp;Transparency Pattern</translation>
+      <translation>&amp;Vzor priehľadnosti</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="936"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>if checked, a pattern will be displayed for transparent objects</translation>
+      <translation>Ak je zaškrtnuté, zobrazí sa vzor na priehľadných objektoch</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="941"/>
@@ -1745,12 +1744,12 @@ Chcete ich ukázať znova?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1000"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>Export Multipage &amp;TIFF</translation>
+      <translation>Exportovať viacstránkový &amp;TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1001"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>Export TIFF pages to multiple tiff files</translation>
+      <translation>Exportovať stránky TIFF-u do viacerých tiff súborov</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1006"/>
@@ -1816,7 +1815,7 @@ kým začnete pracovať s oknom.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1837"/>
       <source>File Explorer</source>
-      <translation>File Explorer</translation>
+      <translation>Prieskumník súborov</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1862"/>
@@ -1832,13 +1831,13 @@ kým začnete pracovať s oknom.</translation>
       <location filename="../src/DkNoMacs.cpp" line="1923"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
-      <translation>Sorry, the directory: %1  does not exist
+      <translation>Prepáčte, priečinok: %1 neexistuje
 </translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1927"/>
       <source>Sorry, I can't write to the file: %1</source>
-      <translation>Sorry, I can't write to the file: %1</translation>
+      <translation>Prepáčte, nepodarilo sa zapísať do súboru: %1</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1932"/>
@@ -1854,18 +1853,18 @@ kým začnete pracovať s oknom.</translation>
       <location filename="../src/DkNoMacs.cpp" line="1947"/>
       <source>The file: %1  already exists.
  Do you want to replace it?</source>
-      <translation>The file: %1  already exists.
- Do you want to replace it?</translation>
+      <translation>Súbor: %1 už existuje. 
+Chcete ho nahradiť?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1961"/>
       <source>Sorry, I can't delete: %1</source>
-      <translation>Sorry, I can't delete: %1</translation>
+      <translation>Prepáčte, nepodarilo sa vymazať: %1</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1976"/>
       <source>Sorry, I can't rename: %1</source>
-      <translation>Sorry, I can't rename: %1</translation>
+      <translation>Prepáčte, nepodarilo sa premenovať: %1</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2058"/>
@@ -1885,7 +1884,7 @@ kým začnete pracovať s oknom.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2401"/>
       <source>Sorry, I could not create a wallpaper...</source>
-      <translation>Sorry, I could not create a wallpaper...</translation>
+      <translation>Prepáčte, nepodarilo sa vytvoriť pozadie plochy...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2443"/>
@@ -1938,17 +1937,17 @@ kým začnete pracovať s oknom.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3009"/>
       <source>Sends the current image to all clients.</source>
-      <translation>Sends the current image to all clients.</translation>
+      <translation>Odošle aktuálny obrázok všetkým klientom.</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3027"/>
       <source>Synchronize &amp;View</source>
-      <translation>Synchronize &amp;View</translation>
+      <translation>Synchronizovať &amp;zobrazenie</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3029"/>
       <source>synchronize the current view</source>
-      <translation>synchronize the current view</translation>
+      <translation>synchronizovať aktuálne zobrazenie</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3033"/>
@@ -2150,7 +2149,7 @@ kým začnete pracovať s oknom.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="2251"/>
       <source>Print Preview</source>
-      <translation>Print Preview</translation>
+      <translation>Ukážka pred tlačou</translation>
     </message>
   </context>
   <context>
@@ -2289,12 +2288,12 @@ kým začnete pracovať s oknom.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1436"/>
       <source>Sorry, but the image size %1 x %2 is illegal.</source>
-      <translation>Sorry, but the image size %1 x %2 is illegal.</translation>
+      <translation>Prepáčte, ale veľkosť obrázka %1 x %2 je neplatná.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="1494"/>
       <source>Sorry, the image is too large: %1</source>
-      <translation>Sorry, the image is too large: %1</translation>
+      <translation>Prepáčte, obrázok je príliš veľký: %1</translation>
     </message>
   </context>
   <context>
@@ -2446,7 +2445,7 @@ kým začnete pracovať s oknom.</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="601"/>
       <source>Advanced</source>
-      <translation>Advanced</translation>
+      <translation>Rozšírené</translation>
     </message>
   </context>
   <context>
@@ -2544,7 +2543,7 @@ Stlačte ESC aby ste vrátili zmeny</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="1199"/>
       <source>synchronize pan and zoom</source>
-      <translation>synchronize pan and zoom</translation>
+      <translation>Synchronizovať posun a priblíženie</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1215"/>
@@ -2840,7 +2839,7 @@ Vytvárajú sa náhľady...
     <message>
       <location filename="../src/DkViewPort.cpp" line="1412"/>
       <source>did you understand the brainteaser?</source>
-      <translation>did you understand the brainteaser?</translation>
+      <translation>Pochopili ste hlavolam?</translation>
     </message>
     <message>
       <location filename="../src/DkViewPort.cpp" line="1414"/>

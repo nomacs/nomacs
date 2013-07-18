@@ -153,7 +153,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="773"/>
       <source>No Aspect Ratio</source>
-      <translation>No Aspect Ratio</translation>
+      <translation>Nenhuma relação de aspeto</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="781"/>
@@ -198,17 +198,17 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="821"/>
       <source>Show Guides in the Preview</source>
-      <translation>Show Guides in the Preview</translation>
+      <translation>Mostrar guias na pré-visualização</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="824"/>
       <source>Invert Crop Tool Color</source>
-      <translation>Invert Crop Tool Color</translation>
+      <translation>Inverter cor da ferramenta de corte</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="829"/>
       <source>Show Info</source>
-      <translation>Show Info</translation>
+      <translation>Mostrar informações</translation>
     </message>
   </context>
   <context>
@@ -216,7 +216,7 @@
     <message>
       <location filename="../src/DkWidgets.cpp" line="3746"/>
       <source>Crop Toolbar</source>
-      <translation>Crop Toolbar</translation>
+      <translation>Barra de ferramentas de corte</translation>
     </message>
   </context>
   <context>
@@ -325,27 +325,27 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="2538"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Export Multi-Page TIFF</translation>
+      <translation>Exportação TIFF de várias páginas</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2585"/>
       <source>Multi-Page TIFF:</source>
-      <translation>Multi-Page TIFF:</translation>
+      <translation>TIFF de várias páginas:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2588"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Browse</translation>
+      <translation>E&amp;xplorar</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2591"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>No Multi-Page TIFF loaded</translation>
+      <translation>Nenhum ficheiro TIFF carregado</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2594"/>
       <source>Save Folder:</source>
-      <translation>Save Folder:</translation>
+      <translation>Pasta de gravação:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2600"/>
@@ -421,7 +421,7 @@ Pretende mostrar os campos?</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="561"/>
       <source>CTRL+Zoom resizes the thumbnails</source>
-      <translation>CTRL+Zoom resizes the thumbnails</translation>
+      <translation>CTRL+Zoom redimensiona as miniaturas</translation>
     </message>
   </context>
   <context>
@@ -536,7 +536,7 @@ Pretende mostrar os campos?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="777"/>
       <source>Fullscreen Color</source>
-      <translation>Fullscreen Color</translation>
+      <translation>Cor em ecrã completo</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="780"/>
@@ -576,7 +576,7 @@ Pretende mostrar os campos?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="839"/>
       <source>Small Icons</source>
-      <translation>Small Icons</translation>
+      <translation>Ícones pequenos</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="840"/>
@@ -586,7 +586,7 @@ Pretende mostrar os campos?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="841"/>
       <source>Close on ESC</source>
-      <translation>Close on ESC</translation>
+      <translation>Fechar com ESC</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="854"/>
@@ -1048,29 +1048,29 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="1345"/>
       <source>Exif Orientation</source>
-      <translation>Exif Orientation</translation>
+      <translation>Orientação EXIF</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1347"/>
       <source>Ignore Exif Orientation</source>
-      <translation>Ignore Exif Orientation</translation>
+      <translation>Ignorar orientação Exif</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1349"/>
       <source>Note: instead of checking this option
  you should fix your images.</source>
-      <translation>Note: instead of checking this option
- you should fix your images.</translation>
+      <translation>Nota: em vez de assinalar esta opção,
+tente corrigir as imagens.</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1351"/>
       <source>Save Exif Orientation</source>
-      <translation>Save Exif Orientation</translation>
+      <translation>Gravar orientação Exif</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1353"/>
       <source>Note: unchecking this option decreases the speed of rotating images.</source>
-      <translation>Note: unchecking this option decreases the speed of rotating images.</translation>
+      <translation>Nota: ao desmarcar esta opção, diminui a velocidade de rotação das imagens.</translation>
     </message>
   </context>
   <context>
@@ -1103,7 +1103,7 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="453"/>
       <source>S&amp;ort</source>
-      <translation>S&amp;ort</translation>
+      <translation>&amp;Ordenação</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="476"/>
@@ -1118,7 +1118,7 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="524"/>
       <source>&amp;Panels</source>
-      <translation>&amp;Panels</translation>
+      <translation>&amp;Painéis</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="525"/>
@@ -1203,12 +1203,12 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="650"/>
       <source>&amp;Save As</source>
-      <translation>&amp;Save As</translation>
+      <translation>Gravar &amp;como</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="652"/>
       <source>Save an image as</source>
-      <translation>Save an image as</translation>
+      <translation>Gravar imagem como</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="655"/>
@@ -1293,52 +1293,52 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="704"/>
       <source>by &amp;Filename</source>
-      <translation>by &amp;Filename</translation>
+      <translation>por nome de &amp;ficheiro</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="706"/>
       <source>Sort by Filename</source>
-      <translation>Sort by Filename</translation>
+      <translation>Ordenar por nome de ficheiro</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="711"/>
       <source>by Date &amp;Created</source>
-      <translation>by Date &amp;Created</translation>
+      <translation>por data de &amp;criação</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="713"/>
       <source>Sort by Date Created</source>
-      <translation>Sort by Date Created</translation>
+      <translation>Ordenar por data de criação</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="718"/>
       <source>by Date Modified</source>
-      <translation>by Date Modified</translation>
+      <translation>por data de modificação</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="720"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Sort by Date Last Modified</translation>
+      <translation>Ordenar por data da última modificação</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="725"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;Ascending</translation>
+      <translation>&amp;Ascendente</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="727"/>
       <source>Sort in Ascending Order</source>
-      <translation>Sort in Ascending Order</translation>
+      <translation>Ordenar por ordem crescente</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="732"/>
       <source>&amp;Descending</source>
-      <translation>&amp;Descending</translation>
+      <translation>&amp;Descendente</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="734"/>
       <source>Sort in Descending Order</source>
-      <translation>Sort in Descending Order</translation>
+      <translation>Ordenar por ordem decrescente</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="741"/>
@@ -1463,22 +1463,22 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="815"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Hides the Menu and Shows it Again on ALT</translation>
+      <translation>Ocultar e mostrar menu com a tecla ALT</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="819"/>
       <source>Tool&amp;bar</source>
-      <translation>Tool&amp;bar</translation>
+      <translation>&amp;Barra de ferramentas</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="825"/>
       <source>&amp;Statusbar</source>
-      <translation>&amp;Statusbar</translation>
+      <translation>Barra de e&amp;stado</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="832"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation>&amp;Pseudocolor Function</translation>
+      <translation>Função &amp;pseudocor</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="821"/>
@@ -1508,37 +1508,37 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="851"/>
       <source>Pla&amp;yer</source>
-      <translation>Pla&amp;yer</translation>
+      <translation>Reprod&amp;utor</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="853"/>
       <source>Shows the Slide Show Player</source>
-      <translation>Shows the Slide Show Player</translation>
+      <translation>Mostrar reprodutor de apresentações</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="857"/>
       <source>File &amp;Explorer</source>
-      <translation>File &amp;Explorer</translation>
+      <translation>&amp;Explorador de ficheiros</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="859"/>
       <source>Show File Explorer</source>
-      <translation>Show File Explorer</translation>
+      <translation>Mostrar explorador de ficheiros</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="863"/>
       <source>&amp;Thumbnails</source>
-      <translation>&amp;Thumbnails</translation>
+      <translation>Minia&amp;turas</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="865"/>
       <source>Show Thumbnails</source>
-      <translation>Show Thumbnails</translation>
+      <translation>Mostrar miniaturas</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="869"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Folder Scrollbar</translation>
+      <translation>Barra de deslocação de &amp;pastas</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="871"/>
@@ -1548,12 +1548,12 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="875"/>
       <source>&amp;Metadata</source>
-      <translation>&amp;Metadata</translation>
+      <translation>&amp;Meta-dados</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="877"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Shows the Metadata Panel</translation>
+      <translation>Mostrar painel de meta-dados</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="881"/>
@@ -1563,17 +1563,17 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="883"/>
       <source>Shows the Info Panel</source>
-      <translation>Shows the Info Panel</translation>
+      <translation>Mostrar painel de informações</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="887"/>
       <source>&amp;Histogram</source>
-      <translation>&amp;Histogram</translation>
+      <translation>&amp;Histograma</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="889"/>
       <source>Shows the Histogram Panel</source>
-      <translation>Shows the Histogram Panel</translation>
+      <translation>Mostrar painel de histograma</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="894"/>
@@ -1748,12 +1748,12 @@ não possui imagens</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1000"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>Export Multipage &amp;TIFF</translation>
+      <translation>Exportar &amp;TIFF de várias páginas</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1001"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>Export TIFF pages to multiple tiff files</translation>
+      <translation>Exportar páginas TIFF para vários ficheiros</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1006"/>

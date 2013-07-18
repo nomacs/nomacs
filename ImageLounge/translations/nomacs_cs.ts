@@ -148,12 +148,12 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="772"/>
       <source>User Defined</source>
-      <translation>Uživatelem definované</translation>
+      <translation>Definované uživatelem</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="773"/>
       <source>No Aspect Ratio</source>
-      <translation>Žádný poměr stran</translation>
+      <translation>Bez poměru stran</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="781"/>
@@ -168,7 +168,7 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="786"/>
       <source>Swap Dimensions</source>
-      <translation>Přepnout rozměry</translation>
+      <translation>Prohodit rozměry</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="792"/>
@@ -575,7 +575,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="839"/>
       <source>Small Icons</source>
-      <translation>Small Icons</translation>
+      <translation>Malé ikony</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="840"/>
@@ -585,7 +585,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="841"/>
       <source>Close on ESC</source>
-      <translation>Close on ESC</translation>
+      <translation>Zavřít s pomocí ESC</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="854"/>
@@ -650,14 +650,14 @@ Do you want to show them again?</source>
       <location filename="../src/DkImage.cpp" line="2067"/>
       <source>I can't save an empty file, sorry...
 </source>
-      <translation>
+      <translation>Promiňte, nelze uložit prázdný soubor...
 </translation>
     </message>
     <message>
       <location filename="../src/DkImage.cpp" line="2072"/>
       <source>Sorry, the directory: %1  does not exist
 </source>
-      <translation>
+      <translation>Promiňte, adresář: %1  neexistuje
 </translation>
     </message>
     <message>
@@ -1096,12 +1096,12 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="443"/>
       <source>Recent Fo&amp;lders</source>
-      <translation>Pos&amp;lední adresáře</translation>
+      <translation>&amp;Poslední adresáře</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="453"/>
       <source>S&amp;ort</source>
-      <translation>S&amp;ort</translation>
+      <translation>Seřad&amp;it</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="476"/>
@@ -1291,52 +1291,52 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="704"/>
       <source>by &amp;Filename</source>
-      <translation>by &amp;Filename</translation>
+      <translation>Podle &amp;jména souboru</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="706"/>
       <source>Sort by Filename</source>
-      <translation>Sort by Filename</translation>
+      <translation>Seřadí obrázky podle jména souborů</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="711"/>
       <source>by Date &amp;Created</source>
-      <translation>by Date &amp;Created</translation>
+      <translation>Podle datumu &amp;vytvoření</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="713"/>
       <source>Sort by Date Created</source>
-      <translation>Sort by Date Created</translation>
+      <translation>Seřadí obrázky podle datumu vytvoření</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="718"/>
       <source>by Date Modified</source>
-      <translation>by Date Modified</translation>
+      <translation>Podle datumu úprav</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="720"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Sort by Date Last Modified</translation>
+      <translation>Seřadí obrázky podle posledního datumu úprav</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="725"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;Ascending</translation>
+      <translation>V&amp;zestupně</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="727"/>
       <source>Sort in Ascending Order</source>
-      <translation>Sort in Ascending Order</translation>
+      <translation>Seřadí obrázky v vzestupném pořadí</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="732"/>
       <source>&amp;Descending</source>
-      <translation>&amp;Descending</translation>
+      <translation>S&amp;estupně</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="734"/>
       <source>Sort in Descending Order</source>
-      <translation>Sort in Descending Order</translation>
+      <translation>Seřadí obrázky v sestupném pořadí</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="741"/>
@@ -1381,7 +1381,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="763"/>
       <source>&amp;Copy Buffer</source>
-      <translation>&amp;Kopírovat vyrovnávací paměť</translation>
+      <translation>&amp;Kopírovat z vyrovnávací paměti</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="772"/>
@@ -1456,27 +1456,27 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="814"/>
       <source>&amp;Menu</source>
-      <translation>&amp;Menu</translation>
+      <translation>&amp;Nabídka</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="815"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Hides the Menu and Shows it Again on ALT</translation>
+      <translation>Skryje nabídku a zobrazí ji zpět klávesou ALT</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="819"/>
       <source>Tool&amp;bar</source>
-      <translation>Tool&amp;bar</translation>
+      <translation>Nást&amp;rojová lišta</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="825"/>
       <source>&amp;Statusbar</source>
-      <translation>&amp;Statusbar</translation>
+      <translation>&amp;Stavový řádek</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="832"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation>&amp;Pseudocolor Function</translation>
+      <translation>&amp;Funkce pseudobarev</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="821"/>
@@ -1496,82 +1496,82 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="844"/>
       <source>O&amp;verview</source>
-      <translation>O&amp;verview</translation>
+      <translation>Zme&amp;nšenina</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="846"/>
       <source>Shows the Zoom Overview</source>
-      <translation>Shows the Zoom Overview</translation>
+      <translation>Zobrazí zmenšeninu obrázku</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="851"/>
       <source>Pla&amp;yer</source>
-      <translation>Pla&amp;yer</translation>
+      <translation>Pře&amp;hrávač</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="853"/>
       <source>Shows the Slide Show Player</source>
-      <translation>Shows the Slide Show Player</translation>
+      <translation>Zobrazí přehrávač obrázků</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="857"/>
       <source>File &amp;Explorer</source>
-      <translation>File &amp;Explorer</translation>
+      <translation>Průzkumník &amp;souborů</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="859"/>
       <source>Show File Explorer</source>
-      <translation>Show File Explorer</translation>
+      <translation>Zobrazí průzkumník</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="863"/>
       <source>&amp;Thumbnails</source>
-      <translation>&amp;Thumbnails</translation>
+      <translation>&amp;Náhledy</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="865"/>
       <source>Show Thumbnails</source>
-      <translation>Show Thumbnails</translation>
+      <translation>Zobrazí náhledy</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="869"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Folder Scrollbar</translation>
+      <translation>&amp;Posuvník obrázků</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="871"/>
       <source>Show Folder Scrollbar</source>
-      <translation>Show Folder Scrollbar</translation>
+      <translation>Zobrazí posuvník pro přechod mezi obrázky</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="875"/>
       <source>&amp;Metadata</source>
-      <translation>&amp;Metadata</translation>
+      <translation>Me&amp;tadata</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="877"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Shows the Metadata Panel</translation>
+      <translation>Zobrazí panel s metadaty</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="881"/>
       <source>File &amp;Info</source>
-      <translation>File &amp;Info</translation>
+      <translation>&amp;Informace o souboru</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="883"/>
       <source>Shows the Info Panel</source>
-      <translation>Shows the Info Panel</translation>
+      <translation>Zobrazí informace o souboru</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="887"/>
       <source>&amp;Histogram</source>
-      <translation>&amp;Histogram</translation>
+      <translation>Hi&amp;stogram</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="889"/>
       <source>Shows the Histogram Panel</source>
-      <translation>Shows the Histogram Panel</translation>
+      <translation>Zobrazí panel s histogramem obrázku</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="894"/>
@@ -1817,7 +1817,7 @@ potom stiskněte CTRL+SHIFT+ALT+B</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1837"/>
       <source>File Explorer</source>
-      <translation>File Explorer</translation>
+      <translation>Průzkumník souborů</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1862"/>
@@ -2447,7 +2447,7 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="601"/>
       <source>Advanced</source>
-      <translation>Advanced</translation>
+      <translation>Rozšířené nastavení</translation>
     </message>
   </context>
   <context>
