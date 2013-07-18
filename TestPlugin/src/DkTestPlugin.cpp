@@ -29,6 +29,18 @@
 
 namespace nmc {
 	
+DkTestPlugin::DkTestPlugin() {
+	viewport = 0;
+}
+
+DkTestPlugin::~DkTestPlugin() {
+
+	if (viewport) {
+		viewport->deleteLater();
+		viewport = 0;
+	}
+}
+
 /**
 * Returns unique ID for the generated dll
 **/
@@ -45,7 +57,7 @@ QString DkTestPlugin::pluginID() const {
 **/
 QString DkTestPlugin::pluginName() const {
 
-   return "Test plug-in";
+   return "Start Painting";
 };
 
 /**
@@ -92,14 +104,14 @@ QStringList DkTestPlugin::runID() const {
 **/
 QString DkTestPlugin::pluginMenuName(const QString &runID) const {
 
-	return "Menu";
+	return "Paint";
 
-   if (runID=="c7019c2172d3474782d91d79be1babfd") return "Test plug-in 1";
-   else if (runID=="b49683ec27824e3fa5f5d1abf37517f4") return "Test plug-in 2";
-   else if (runID=="ccc725b251ba4c23ab7f596401ce1d92") return "Test plug-in 3";
-   else if (runID=="0e0adc9f38284447960e528efb2bb3b4") return "Test plug-in 4";
-   else if (runID=="3ab568d753c345f69fdea7aa29ba18fa") return "Test plug-in 5";
-   return "Wrong GUID!";
+	if (runID=="c7019c2172d3474782d91d79be1babfd") return "Test plug-in 1";
+	else if (runID=="b49683ec27824e3fa5f5d1abf37517f4") return "Test plug-in 2";
+	else if (runID=="ccc725b251ba4c23ab7f596401ce1d92") return "Test plug-in 3";
+	else if (runID=="0e0adc9f38284447960e528efb2bb3b4") return "Test plug-in 4";
+	else if (runID=="3ab568d753c345f69fdea7aa29ba18fa") return "Test plug-in 5";
+	return "Wrong GUID!";
 };
 
 /**
@@ -116,11 +128,26 @@ QString DkTestPlugin::pluginStatusTip(const QString &runID) const {
 	return "Wrong GUID!";
 };
 
-QList<QAction*> DkTestPlugin::pluginActions() {
+QList<QAction*> DkTestPlugin::pluginActions(QWidget* parent) {
 
-	myClass = new DkFirstClass(0);
+	QList<QAction*> myActions;
+
+	// destruction?
+	QAction* ca = new QAction(tr("Paint"), parent);
+	ca->setObjectName("paintAction");
+	connect(ca, SIGNAL(triggered()), this, SLOT(emitRunPlugin()));
+	myActions.append(ca);
 	
-	return myClass->getActions();
+	ca = new QAction(tr("Josef"), parent);
+	ca->setObjectName("josefAction");
+	ca->setStatusTip("tim");
+	myActions.append(ca);
+	
+	ca = new QAction(tr("Ana"), parent);
+	ca->setObjectName("anaAction");
+	myActions.append(ca);
+
+	return myActions;
 }
 
 /**
@@ -146,54 +173,97 @@ QImage DkTestPlugin::runPlugin(const QString &runID, const QImage &image) const 
 	return image;
 };
 
+DkPluginViewPort* DkTestPlugin::getViewPort() {
+
+	if (!viewport)
+		viewport = new DkPaintViewPort();
+
+	return viewport;
+}
+
 Q_EXPORT_PLUGIN2(DkTestPlugin, DkTestPlugin)
 
 
-
-// DkFirstClass --------------------------------------------------------------------
-DkFirstClass::DkFirstClass(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent, flags) {
-	
-	
-	QAction* ca = new QAction(tr("Whatever"), this);
-	ca->setObjectName("Whatever");
-	myActions.append(ca);
-
-	ca = new QAction(tr("Josef"), this);
-	ca->setObjectName("josefAction");
-	ca->setStatusTip("tim");
-	myActions.append(ca);
-
-	ca = new QAction(tr("Ana"), this);
-	ca->setObjectName("anaAction");
-	myActions.append(ca);
-
-	//QAction* x = myActions.at(100);
-
-	QMetaObject::connectSlotsByName(this);
+// My ViewPort --------------------------------------------------------------------
+DkPaintViewPort::DkPaintViewPort(QWidget* parent /* = 0 */) : DkPluginViewPort(parent) {
+	init();
 }
 
-QList<QAction* > DkFirstClass::getActions() {
-
-	return myActions;
+DkPaintViewPort::DkPaintViewPort(QGraphicsScene* scene, QWidget* parent /* = 0 */) : DkPluginViewPort(scene, parent) {
+	init();
 }
 
-void DkFirstClass::on_josefAction_triggered() {
+void DkPaintViewPort::init() {
+	qDebug() << "initializing PAINT viewport";
+	setMouseTracking(true);
+}
 
-	QMessageBox msgBox;
-	msgBox.setText(QString("Josef"));
-	msgBox.setIcon(QMessageBox::Warning);
-	msgBox.exec();
+void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
+	qDebug() << "mouse is moving...";
+	DkPluginViewPort::mouseMoveEvent(event);
+}
+
+void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
+
+	DkPluginViewPort::mousePressEvent(event);
+}
+
+void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 }
 
-void DkFirstClass::on_anaAction_triggered() {
+void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 
-	QMessageBox msgBox;
-	msgBox.setText(QString("Josef"));
-	msgBox.setIcon(QMessageBox::Warning);
-	msgBox.exec();
-
+	DkPluginViewPort::paintEvent(event);
 }
+
+//// DkFirstClass --------------------------------------------------------------------
+//DkFirstClass::DkFirstClass(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent, flags) {
+//	
+//	
+//	QAction* ca = new QAction(tr("Paint"), this);
+//	ca->setObjectName("paintAction");
+//	myActions.append(ca);
+//
+//	ca = new QAction(tr("Josef"), this);
+//	ca->setObjectName("josefAction");
+//	ca->setStatusTip("tim");
+//	myActions.append(ca);
+//
+//	ca = new QAction(tr("Ana"), this);
+//	ca->setObjectName("anaAction");
+//	myActions.append(ca);
+//
+//	//QAction* x = myActions.at(100);
+//
+//	QMetaObject::connectSlotsByName(this);
+//}
+//
+//QList<QAction* > DkFirstClass::getActions() {
+//
+//	return myActions;
+//}
+//
+//void DkFirstClass::on_josefAction_triggered() {
+//
+//	QMessageBox msgBox;
+//	msgBox.setText(QString("Josef"));
+//	msgBox.setIcon(QMessageBox::Warning);
+//	msgBox.exec();
+//}
+//
+//void DkFirstClass::on_anaAction_triggered() {
+//
+//	QMessageBox msgBox;
+//	msgBox.setText(QString("Josef"));
+//	msgBox.setIcon(QMessageBox::Warning);
+//	msgBox.exec();
+//
+//}
+//
+//void DkFirstClass::on_paintAction_triggered() {
+//	emit runPluginSignal();
+//}
 
 };

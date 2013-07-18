@@ -53,31 +53,31 @@
 
 namespace nmc {
 	
-class DkFirstClass : public DkBaseViewPort {
-	Q_OBJECT
+//class DkFirstClass : public DkBaseViewPort {
+//	Q_OBJECT
+//
+//public:
+//	DkFirstClass(QWidget *parent = 0, Qt::WFlags flags = 0);
+//	QList<QAction*> getActions();
+//
+//public slots:
+//	void on_josefAction_triggered();
+//	void on_anaAction_triggered();
+//	void on_paintAction_triggered();
+//
+//protected:
+//	void mouseMoveEvent(QMouseEvent *event) {
+//
+//		qDebug() << "changing your code muhahaha...";
+//
+//		DkBaseViewPort::mouseMoveEvent(event);
+//	};
+//	
+//	QList<QAction* > myActions;
+//
+//};
 
-public:
-	DkFirstClass(QWidget *parent = 0, Qt::WFlags flags = 0);
-	QList<QAction*> getActions();
-
-public slots:
-	void on_josefAction_triggered();
-	void on_anaAction_triggered();
-
-
-
-protected:
-	void mouseMoveEvent(QMouseEvent *event) {
-
-		qDebug() << "changing your code muhahaha...";
-
-		DkBaseViewPort::mouseMoveEvent(event);
-	};
-	
-	QList<QAction* > myActions;
-
-};
-
+class DkPaintViewPort;
 
 class DkTestPlugin : public QObject, DkViewPortInterface {
     Q_OBJECT
@@ -85,6 +85,9 @@ class DkTestPlugin : public QObject, DkViewPortInterface {
 
 public:
     
+	DkTestPlugin();
+	~DkTestPlugin();
+
 	QString pluginID() const;
     QString pluginName() const;
     QString pluginDescription() const;
@@ -94,11 +97,29 @@ public:
     QStringList runID() const;
     QString pluginMenuName(const QString &runID = "") const;
     QString pluginStatusTip(const QString &runID) const;  
-	QList<QAction*> pluginActions();
+	QList<QAction*> pluginActions(QWidget* parent);
     QImage runPlugin(const QString &runID, const QImage &image) const;
+	DkPluginViewPort* getViewPort();
 
-private:
-	DkFirstClass* myClass;
+protected:
+	//DkFirstClass* myClass;
+	DkPluginViewPort* viewport;
 };
+
+class DkPaintViewPort : public DkPluginViewPort {
+
+public:
+	DkPaintViewPort(QWidget* parent = 0);
+	DkPaintViewPort(QGraphicsScene* scene, QWidget* parent = 0);
+
+protected:
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void paintEvent(QPaintEvent *event);
+	virtual void init();
+
+};
+
 
 };
