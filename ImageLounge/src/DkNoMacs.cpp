@@ -2964,7 +2964,7 @@ void DkNoMacs::startSetup(QString filePath) {
 	if (!QFile::exists(filePath))
 		qDebug() << "file does not exist";
 	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath))) {
-		QString msg = tr("Unable to install new version\n") +
+		QString msg = tr("Unable to install new version<br>") +
 			tr("You can download the new version from our web page") +
 			"<br><a href=\"http://www.nomacs.org/download/\">www.nomacs.org</a><br>";
 		showUpdaterMessage(msg, "update");
