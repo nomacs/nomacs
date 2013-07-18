@@ -886,21 +886,22 @@ void DkSearchDialog::init() {
 
 
 	// buttons
-	findButton = new QPushButton(tr("F&ind"), this);
-	findButton->setObjectName("okButton");
-	findButton->setDefault(true);
+	buttons.resize(button_end);
+	buttons[find_button] = new QPushButton(tr("F&ind"), this);
+	buttons[find_button]->setObjectName("okButton");
+	//buttons[find_button]->setDefault(true);
 
-	filterButton = new QPushButton(tr("&Filter"), this);
-	filterButton->setObjectName("filterButton");
+	buttons[filter_button] = new QPushButton(tr("&Filter"), this);
+	buttons[filter_button]->setObjectName("filterButton");
 
-	cancelButton = new QPushButton(tr("&Cancel"), this);
-	cancelButton->setObjectName("cancelButton");
+	buttons[cancel_button] = new QPushButton(tr("&Cancel"), this);
+	buttons[cancel_button]->setObjectName("cancelButton");
 
 	QWidget* buttonWidget = new QWidget();
 	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::RightToLeft, buttonWidget);
-	buttonLayout->addWidget(cancelButton);
-	buttonLayout->addWidget(filterButton);
-	buttonLayout->addWidget(findButton);
+	buttonLayout->addWidget(buttons[cancel_button]);
+	buttonLayout->addWidget(buttons[filter_button]);
+	buttonLayout->addWidget(buttons[find_button]);
 
 	layout->addWidget(searchBar);
 	layout->addWidget(resultListView);
@@ -935,8 +936,15 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 	}
 
 	// if string match returns nothing -> try a regexp
-	if (resultList.empty())
-		resultList = fileList.filter(QRegExp(text));
+	if (resultList.empty()) {
+		QRegExp regExp(text);
+		resultList = fileList.filter(regExp);
+
+		if (resultList.empty()) {
+			regExp.setPatternSyntax(QRegExp::Wildcard);
+			resultList = fileList.filter(regExp);
+		}
+	}
 
 	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
 	currentSearch = text;
@@ -947,13 +955,13 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		stringModel->setStringList(answerList);
 
 		resultListView->setStyleSheet("QListView{color: #777777; font-style: italic;}");
-		filterButton->setEnabled(false);
-		findButton->setEnabled(false);
+		buttons[filter_button]->setEnabled(false);
+		buttons[find_button]->setEnabled(false);
 		//cancelButton->setFocus();
 	}
 	else {
-		filterButton->setEnabled(true);
-		findButton->setEnabled(true);
+		buttons[filter_button]->setEnabled(true);
+		buttons[find_button]->setEnabled(true);
 		stringModel->setStringList(makeViewable(resultList));
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 		resultListView->setStyleSheet(defaultStyleSheet);
@@ -994,18 +1002,24 @@ void DkSearchDialog::on_okButton_pressed() {
 
 	if (!fileName.isEmpty())
 		emit loadFileSignal(QFileInfo(path, fileName));
-	close();
+	accept();
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
 	filterSignal(currentSearch.split(" "));
 	isFilterPressed = true;
-	close();
+	done(filter_button);
 }
 
 void DkSearchDialog::on_cancelButton_pressed() {
 
-	close();
+	reject();
+}
+
+void DkSearchDialog::setDefaultButton(int defaultButton /* = find_button */) {
+
+	for (int idx = 0; idx < buttons.size(); idx++)
+		buttons[idx]->setAutoDefault(defaultButton == idx);
 }
 
 void DkSearchDialog::updateHistory() {

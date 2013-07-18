@@ -3879,14 +3879,15 @@ void DkColorChooser::init() {
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setContentsMargins(11,0,11,0);
 	
-	QLabel* colorLabel = new QLabel(text);
+	QLabel* colorLabel = new QLabel(text, this);
 	colorButton = new QPushButton("", this);
 	colorButton->setFlat(true);
 	colorButton->setObjectName("colorButton");
+	colorButton->setAutoDefault(false);
 	
 	QPushButton* resetButton = new QPushButton(tr("Reset"), this);
 	resetButton->setObjectName("resetButton");
-	//resetButton->setAutoDefault(true);
+	resetButton->setAutoDefault(false);
 
 	QWidget* colWidget = new QWidget(this);
 	QHBoxLayout* hLayout = new QHBoxLayout(colWidget);
@@ -4229,23 +4230,23 @@ void DkSlider::createLayout() {
 	layout->setSpacing(0);
 	layout->setContentsMargins(0,0,0,0);
 	
-	QWidget* dummy = new QWidget();
+	QWidget* dummy = new QWidget(this);
 	QHBoxLayout* titleLayout = new QHBoxLayout(dummy);
 	titleLayout->setContentsMargins(0,0,0,5);
 
-	QWidget* dummyBounds = new QWidget();
+	QWidget* dummyBounds = new QWidget(this);
 	QHBoxLayout* boundsLayout = new QHBoxLayout(dummyBounds);
 	boundsLayout->setContentsMargins(0,0,0,0);
 
-	titleLabel = new QLabel();
+	titleLabel = new QLabel(this);
 	
-	sliderBox = new QSpinBox();
+	sliderBox = new QSpinBox(this);
 
-	slider = new QSlider();
+	slider = new QSlider(this);
 	slider->setOrientation(Qt::Horizontal);
 
-	minValLabel = new QLabel();
-	maxValLabel = new QLabel();
+	minValLabel = new QLabel(this);
+	maxValLabel = new QLabel(this);
 	
 	titleLayout->addWidget(titleLabel);
 	titleLayout->addStretch();
