@@ -183,14 +183,6 @@ void DkCompressDialog::createLayout() {
 	//dummyLayout->addStretch();
 	//dummyLayout->addWidget(previewSizeLabel);
 
-	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	//buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-
 	QWidget* previewWidget = new QWidget(this);
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
 	previewLayout->setAlignment(Qt::AlignHCenter);
@@ -205,6 +197,14 @@ void DkCompressDialog::createLayout() {
 	previewLayout->addWidget(colChooser, 2, 1);
 	previewLayout->addWidget(cbLossless, 3, 0);
 	previewLayout->addWidget(previewSizeLabel, 3, 1);
+
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	//buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(previewWidget);
