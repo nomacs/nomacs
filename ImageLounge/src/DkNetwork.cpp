@@ -1012,10 +1012,9 @@ DkUpdater::DkUpdater() {
 
 void DkUpdater::checkForUpdated() {
 
-	DkSettings::Sync::lastUpdateCheck = QDate::currentDate();
+	DkSettings::sync.lastUpdateCheck = QDate::currentDate();
 
-	DkSettings settings;
-	settings.save();
+	DkSettings::save();
 
 #ifdef Q_WS_WIN
 	QUrl url ("http://www.nomacs.org/version_win_stable");
@@ -1157,11 +1156,10 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 		file.close();
 
-		DkSettings::Global::setupVersion = setupVersion;
-		DkSettings::Global::setupPath = absoluteFilePath;
+		DkSettings::global.setupVersion = setupVersion;
+		DkSettings::global.setupPath = absoluteFilePath;
 
-		DkSettings settings;
-		settings.save();
+		DkSettings::save();
 
 		emit downloadFinished(absoluteFilePath);
 	}

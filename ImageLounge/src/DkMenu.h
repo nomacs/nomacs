@@ -140,7 +140,7 @@ public slots:
 		int numItems = 0;
 		for (int idx = 0; idx < recentFiles->size(); idx++) {
 
-			if (numItems >= DkSettings::Global::numFiles ) // TODO: setting??
+			if (numItems >= DkSettings::global.numFiles ) // TODO: setting??
 				break;
 
 			DkTimer dt;

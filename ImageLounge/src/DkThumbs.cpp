@@ -379,7 +379,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 	int orientation = dataExif.getOrientation();
 	int imgW = thumb.width();
 	int imgH = thumb.height();
-	int tS = DkSettings::Display::thumbSize;
+	int tS = DkSettings::display.thumbSize;
 
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
@@ -456,7 +456,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
 
 		// there seems to be a bug in exiv2
-		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::Display::saveThumb)) {	// TODO settings
+		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::display.saveThumb)) {	// TODO settings
 			
 			try {
 				dataExif.saveThumbnail(thumb);
@@ -691,7 +691,7 @@ QColor DkColorLoader::computeColor(QImage& thumb) {
 	if (maxColCount > 0)
 		return QColor((float)qRed(maxCol)/numCols*255, (float)qGreen(maxCol)/numCols*255, (float)qBlue(maxCol)/numCols*255);
 	else
-		return DkSettings::Display::bgColorWidget;
+		return DkSettings::display.bgColorWidget;
 }
 
 void DkColorLoader::stop() {

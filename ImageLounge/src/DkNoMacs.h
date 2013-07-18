@@ -79,7 +79,7 @@ using namespace cv;
 #ifdef DK_DLL
 #define DllExport Q_DECL_EXPORT
 #else
-#define DllExport
+#define DllExport Q_DECL_IMPORT
 #endif
 
 namespace nmc {

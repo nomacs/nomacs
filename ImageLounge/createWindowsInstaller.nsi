@@ -486,7 +486,7 @@ Section "MainSection" SEC01#
   
   File "${TRANSLATION_DIR}\nomacs_*.qm"
   
-
+  File "${BUILD_DIR}\libnomacs.dll"
   File "${BUILD_DIR}\exiv2.dll"
   File "${BUILD_DIR}\libexpat.dll"
   File "${BUILD_DIR}\libjasper.dll"
@@ -624,8 +624,8 @@ FunctionEnd
 Function un.uninstallNomacs
 	${NSD_GetState} $hCtl_uninstaller_CheckBox1 $hCtl_uninstaller_CheckBox1_state
 	${If} $hCtl_uninstaller_CheckBox1_state == ${BST_CHECKED}
-		; DeleteRegKey HKCU "Software\nomacs"
-		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'das ist nur ein test $hCtl_uninstaller_CheckBox1_state' IDOK  +1 IDCANCEL  +1 
+		DeleteRegKey HKCU "Software\nomacs"
+		; MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'das ist nur ein test $hCtl_uninstaller_CheckBox1_state' IDOK  +1 IDCANCEL  +1 
 	${endif}
 FunctionEnd
 

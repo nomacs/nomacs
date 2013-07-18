@@ -534,7 +534,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		rgbImg.convertTo(rgbImg, CV_8U);
 			
 		// filter color noise withe a median filter
-		if (DkSettings::Resources::filterRawImages) {
+		if (DkSettings::resources.filterRawImages) {
 
 			float isoSpeed = iProcessor.imgdata.other.iso_speed;
 				
@@ -1126,13 +1126,13 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	connect(&delayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
 	timerBlockedUpdate = false;
 
-	//saveDir = DkSettings::Global::lastSaveDir;	// loading save dir is obsolete ?!
+	//saveDir = DkSettings::global.lastSaveDir;	// loading save dir is obsolete ?!
 	saveDir = "";
 
 	if (file.exists())
 		loadDir(file.absoluteDir());
 	else
-		dir = DkSettings::Global::lastDir;
+		dir = DkSettings::global.lastDir;
 
 	// init cacher
 	cacher = 0;
@@ -1365,7 +1365,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 void DkImageLoader::startStopCacher() {
 
 	// stop cacher
-	if (DkSettings::Resources::cacheMemory <= 0 && cacher) {
+	if (DkSettings::resources.cacheMemory <= 0 && cacher) {
 		cacher->stop();
 		cacher->wait();
 		delete cacher;
@@ -1373,7 +1373,7 @@ void DkImageLoader::startStopCacher() {
 	}
 
 	// start cacher
-	if (DkSettings::Resources::cacheMemory > 0 && !cacher) {
+	if (DkSettings::resources.cacheMemory > 0 && !cacher) {
 		cacher = new DkCacher();
 		cacher->setNewDir(dir, files);
 	}
@@ -1531,10 +1531,10 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 			}
 		}		
 
-		//qDebug() << "subfolders: " << DkSettings::Global::scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
+		//qDebug() << "subfolders: " << DkSettings::global.scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
 
 #if 0	// TODO: finish bug - when first image in folder is corrupted
-		if (DkSettings::Global::scanSubFolders && subFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= files.size())) {
+		if (DkSettings::global.scanSubFolders && subFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= files.size())) {
 
 			int folderIdx = 0;
 
@@ -1551,7 +1551,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 			else
 				folderIdx++;
 
-			if (DkSettings::Global::loop)
+			if (DkSettings::global.loop)
 				folderIdx %= subFolders.size();
 
 			if (folderIdx >= 0 && folderIdx < subFolders.size()) {
@@ -1575,7 +1575,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 		}
 #endif
 		// loop the directory
-		if (DkSettings::Global::loop) {
+		if (DkSettings::global.loop) {
 			newFileIdx %= files.size();
 
 			while (newFileIdx < 0)
@@ -1603,7 +1603,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 			
 			qDebug() << " you have reached the end ............";
 
-			if (!DkSettings::Global::loop)
+			if (!DkSettings::global.loop)
 				emit(setPlayer(false));
 
 			if (!silent)
@@ -1642,14 +1642,14 @@ void DkImageLoader::loadFileAt(int idx) {
 		if (idx == -1) {
 			idx = files.size()-1;
 		}
-		else if (DkSettings::Global::loop) {
+		else if (DkSettings::global.loop) {
 			idx %= files.size();
 
 			while (idx < 0)
 				idx = files.size() + idx;
 
 		}
-		else if (idx < 0 && !DkSettings::Global::loop) {
+		else if (idx < 0 && !DkSettings::global.loop) {
 			QString msg = tr("You have reached the beginning");
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
@@ -1657,7 +1657,7 @@ void DkImageLoader::loadFileAt(int idx) {
 		}
 		else if (idx >= files.size()) {
 			QString msg = tr("You have reached the end");
-			if (!DkSettings::Global::loop)
+			if (!DkSettings::global.loop)
 				emit(setPlayer(false));
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
@@ -1887,7 +1887,7 @@ bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
 		//QStringList keys = imgMetaData.getExifKeys();
 		//qDebug() << keys;
 
-		if (!imgMetaData.isTiff() && !imgRotated && !DkSettings::MetaData::ignoreExifOrientation)
+		if (!imgMetaData.isTiff() && !imgRotated && !DkSettings::metaData.ignoreExifOrientation)
 			basicLoader.rotate(orientation);
 		
 		if (cacher && cacheState != cache_disable_update) 
@@ -1975,13 +1975,13 @@ void DkImageLoader::saveFileSilentThreaded(QFileInfo file, QImage img) {
  **/ 
 QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt, bool force, bool threaded) {
 
-	QFileInfo tmpPath = QFileInfo(DkSettings::Global::tmpPath + "\\");
+	QFileInfo tmpPath = QFileInfo(DkSettings::global.tmpPath + "\\");
 	
-	if (!force && (!DkSettings::Global::useTmpPath || !tmpPath.exists())) {
+	if (!force && (!DkSettings::global.useTmpPath || !tmpPath.exists())) {
 		qDebug() << tmpPath.absolutePath() << "does not exist";
 		return QFileInfo();
 	}
-	else if ((!DkSettings::Global::useTmpPath || !tmpPath.exists())) {
+	else if ((!DkSettings::global.useTmpPath || !tmpPath.exists())) {
 
 #ifdef WIN32
 		
@@ -2130,7 +2130,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 
 		// assign the new save directory
 		saveDir = QDir(file.absoluteDir());
-		DkSettings::Global::lastSaveDir = file.absolutePath();	// we currently don't use that
+		DkSettings::global.lastSaveDir = file.absolutePath();	// we currently don't use that
 				
 		// reload my dir (if it was changed...)
 		this->file = QFileInfo(filePath);
@@ -2254,22 +2254,22 @@ void DkImageLoader::saveRating(int rating) {
  **/ 
 void DkImageLoader::updateHistory() {
 
-	DkSettings::Global::lastDir = file.absolutePath();
+	DkSettings::global.lastDir = file.absolutePath();
 
-	DkSettings::Global::recentFiles.removeAll(file.absoluteFilePath());
-	DkSettings::Global::recentFolders.removeAll(file.absolutePath());
+	DkSettings::global.recentFiles.removeAll(file.absoluteFilePath());
+	DkSettings::global.recentFolders.removeAll(file.absolutePath());
 
-	DkSettings::Global::recentFiles.push_front(file.absoluteFilePath());
-	DkSettings::Global::recentFolders.push_front(file.absolutePath());
+	DkSettings::global.recentFiles.push_front(file.absoluteFilePath());
+	DkSettings::global.recentFolders.push_front(file.absolutePath());
 
-	DkSettings::Global::recentFiles.removeDuplicates();
-	DkSettings::Global::recentFolders.removeDuplicates();
+	DkSettings::global.recentFiles.removeDuplicates();
+	DkSettings::global.recentFolders.removeDuplicates();
 
-	for (int idx = 0; idx < DkSettings::Global::recentFiles.size()-DkSettings::Global::numFiles-10; idx++)
-		DkSettings::Global::recentFiles.pop_back();
+	for (int idx = 0; idx < DkSettings::global.recentFiles.size()-DkSettings::global.numFiles-10; idx++)
+		DkSettings::global.recentFiles.pop_back();
 
-	for (int idx = 0; idx < DkSettings::Global::recentFolders.size()-DkSettings::Global::numFiles-10; idx++)
-		DkSettings::Global::recentFolders.pop_back();
+	for (int idx = 0; idx < DkSettings::global.recentFolders.size()-DkSettings::global.numFiles-10; idx++)
+		DkSettings::global.recentFolders.pop_back();
 
 
 	// TODO: shouldn't we delete that -> it's saved when nomacs is closed anyway
@@ -2345,11 +2345,11 @@ void DkImageLoader::rotateImage(double angle) {
 		QCoreApplication::sendPostedEvents();	// update immediately as we interlock otherwise
 
 		mutex.lock();
-		if (file.exists() && DkSettings::MetaData::saveExifOrientation) {
+		if (file.exists() && DkSettings::metaData.saveExifOrientation) {
 			imgMetaData.saveOrientation((int)angle);
 			qDebug() << "exif data saved (rotation)?";
 		}
-		else if (!DkSettings::MetaData::saveExifOrientation) {
+		else if (!DkSettings::metaData.saveExifOrientation) {
 			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
 			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
 		}
@@ -2570,7 +2570,7 @@ QStringList DkImageLoader::getFoldersRecursive(QDir dir) {
 
 	qDebug() << "scanning recursively: " << dir.absolutePath();
 
-	if (DkSettings::Global::scanSubFolders) {
+	if (DkSettings::global.scanSubFolders) {
 
 		QDirIterator dirs(dir.absolutePath(), QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 	
@@ -2694,9 +2694,9 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 		fileList = resultList;
 	}
 
-	if (DkSettings::Resources::filterDuplicats) {
+	if (DkSettings::resources.filterDuplicats) {
 
-		QString preferredExtension = DkSettings::Resources::preferredExtension;
+		QString preferredExtension = DkSettings::resources.preferredExtension;
 		preferredExtension = preferredExtension.replace("*.", "");
 		qDebug() << "preferred extension: " << preferredExtension;
 
@@ -2744,18 +2744,18 @@ QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
 
 	
 
-	switch(DkSettings::Global::sortMode) {
+	switch(DkSettings::global.sortMode) {
 
 	case DkSettings::sort_filename:
 		
-		if (DkSettings::Global::sortDir == DkSettings::sort_ascending)
+		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
 			qSort(fList.begin(), fList.end(), compFilename);
 		else
 			qSort(fList.begin(), fList.end(), compFilenameInv);
 		break;
 
 	case DkSettings::sort_date_created:
-		if (DkSettings::Global::sortDir == DkSettings::sort_ascending) {
+		if (DkSettings::global.sortDir == DkSettings::sort_ascending) {
 			qSort(fList.begin(), fList.end(), compDateCreated);
 			qSort(fList.begin(), fList.end(), compDateCreated);		// sort twice -> in order to guarantee that same entries are sorted correctly (thumbsloader)
 		}
@@ -2766,7 +2766,7 @@ QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
 		break;
 
 	case DkSettings::sort_date_modified:
-		if (DkSettings::Global::sortDir == DkSettings::sort_ascending) {
+		if (DkSettings::global.sortDir == DkSettings::sort_ascending) {
 			qSort(fList.begin(), fList.end(), compDateModified);
 			qSort(fList.begin(), fList.end(), compDateModified);
 		}
@@ -2903,10 +2903,10 @@ bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 
 void DkImageLoader::loadLastDir() {
 
-	if (DkSettings::Global::recentFolders.empty())
+	if (DkSettings::global.recentFolders.empty())
 		return;
 
-	QDir lastDir = DkSettings::Global::recentFolders[0];
+	QDir lastDir = DkSettings::global.recentFolders[0];
 	setDir(lastDir);
 }
 
@@ -3175,7 +3175,7 @@ void DkCacher::setCurrentFile(QFileInfo file, QImage img) {
 				curCache -= cacheIter.value().getCacheSize();
 				
 				// 4* since we are dealing with uncompressed images
-				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) + curCache < DkSettings::Resources::cacheMemory &&
+				if (DkImage::getBufferSizeFloat(img.size(), img.depth()) + curCache < DkSettings::resources.cacheMemory &&
 					DkImage::getBufferSizeFloat(img.size(), img.depth()) < 4*maxFileSize) {
 					cacheIter.value().setImage(img, true);	// if we get a new cache image here, we can safely assume, that it is already rotated
 					curCache += cacheIter.value().getCacheSize();
@@ -3253,7 +3253,7 @@ void DkCacher::load() {
 bool DkCacher::clean(int curCacheIdx) {
 
 	// nothing todo
-	if (curCache < DkSettings::Resources::cacheMemory)
+	if (curCache < DkSettings::resources.cacheMemory)
 		return true;
 	
 	QMutableVectorIterator<DkImageCache> cacheIter(cache);
@@ -3278,7 +3278,7 @@ bool DkCacher::clean(int curCacheIdx) {
 	qDebug() << "[cache] cache volume: " << curCache << " MB";
 
 	// stop caching
-	if (curCache >= DkSettings::Resources::cacheMemory)
+	if (curCache >= DkSettings::resources.cacheMemory)
 		return false;
 	
 	return true;
@@ -3307,7 +3307,7 @@ bool DkCacher::cacheImage(DkImageCache& cacheImg) {
 		curCache += cacheImg.getCacheSize();
 
 		qDebug() << "[cache] I cached: " << cacheImg.getFile().fileName() << " cache volume: " << curCache << " MB/ " 
-			<< DkSettings::Resources::cacheMemory << " MB";
+			<< DkSettings::resources.cacheMemory << " MB";
 		return true;
 	}
 	else

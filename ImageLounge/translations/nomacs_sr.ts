@@ -576,7 +576,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="839"/>
       <source>Small Icons</source>
-      <translation>Small Icons</translation>
+      <translation>Мале иконе</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="840"/>
@@ -586,7 +586,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="841"/>
       <source>Close on ESC</source>
-      <translation>Close on ESC</translation>
+      <translation>Затвори на ESC</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="854"/>
@@ -709,7 +709,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkManipulationWidgets.cpp" line="123"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>&amp;У реду</translation>
     </message>
     <message>
       <location filename="../src/DkManipulationWidgets.cpp" line="124"/>
@@ -1102,7 +1102,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="453"/>
       <source>S&amp;ort</source>
-      <translation>S&amp;ort</translation>
+      <translation>Р&amp;азврстај</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="476"/>
@@ -1207,7 +1207,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="652"/>
       <source>Save an image as</source>
-      <translation>Save an image as</translation>
+      <translation>Сачувај слику као</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="655"/>
@@ -1292,52 +1292,52 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="704"/>
       <source>by &amp;Filename</source>
-      <translation>by &amp;Filename</translation>
+      <translation>по &amp;имену фајла</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="706"/>
       <source>Sort by Filename</source>
-      <translation>Sort by Filename</translation>
+      <translation>Разврстај по &amp;имену фајла</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="711"/>
       <source>by Date &amp;Created</source>
-      <translation>by Date &amp;Created</translation>
+      <translation>по датуму &amp;креирања</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="713"/>
       <source>Sort by Date Created</source>
-      <translation>Sort by Date Created</translation>
+      <translation>Разврстај по датуму креирања</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="718"/>
       <source>by Date Modified</source>
-      <translation>by Date Modified</translation>
+      <translation>по датуму измене</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="720"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Sort by Date Last Modified</translation>
+      <translation>Развстај по датуму измене</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="725"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;Ascending</translation>
+      <translation>&amp;Растући</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="727"/>
       <source>Sort in Ascending Order</source>
-      <translation>Sort in Ascending Order</translation>
+      <translation>Развстај по растућем редоследу</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="732"/>
       <source>&amp;Descending</source>
-      <translation>&amp;Descending</translation>
+      <translation>&amp;Опадајући</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="734"/>
       <source>Sort in Descending Order</source>
-      <translation>Sort in Descending Order</translation>
+      <translation>Разврстај по опадајућем редоследу</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="741"/>
@@ -1522,7 +1522,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="859"/>
       <source>Show File Explorer</source>
-      <translation>Show File Explorer</translation>
+      <translation>Покажи претраживач фајлова</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="863"/>
@@ -1552,7 +1552,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="877"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Shows the Metadata Panel</translation>
+      <translation>Покажи панел метаподатака</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="881"/>
@@ -1562,7 +1562,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="883"/>
       <source>Shows the Info Panel</source>
-      <translation>Shows the Info Panel</translation>
+      <translation>Покажи панел са информацијама</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="887"/>
