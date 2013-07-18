@@ -271,6 +271,14 @@ class DkSearchDialog : public QDialog {
 
 public:
 
+	enum Buttons {
+		cancel_button = 0,
+		find_button,
+		filter_button,
+
+		button_end,
+	};
+
 	DkSearchDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void setFiles(QStringList fileList) {
@@ -286,6 +294,8 @@ public:
 	bool filterPressed() {
 		return isFilterPressed;
 	};
+
+	void setDefaultButton(int defaultButton = find_button);
 
 public slots:
 	void on_searchBar_textChanged(const QString& text);
@@ -309,9 +319,7 @@ protected:
 	QListView* resultListView;
 	QLineEdit* searchBar;
 
-	QPushButton* findButton;
-	QPushButton* filterButton;
-	QPushButton* cancelButton;
+	QVector<QPushButton*> buttons;
 
 	QString currentSearch;
 

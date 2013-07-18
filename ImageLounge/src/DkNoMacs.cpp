@@ -1995,14 +1995,20 @@ void DkNoMacs::find(bool filterAction) {
 		return;
 
 	if (filterAction) {
+
+		int db = (QObject::sender() == toolsActions[menu_tools_filter]) ? DkSearchDialog::filter_button : DkSearchDialog::find_button;
+		
+		qDebug() << "default button: " << db;
 		DkSearchDialog* searchDialog = new DkSearchDialog(this);
+		searchDialog->setDefaultButton(db);
 		searchDialog->setFiles(viewport()->getImageLoader()->getFiles());
 		searchDialog->setPath(viewport()->getImageLoader()->getDir());
 
 		connect(searchDialog, SIGNAL(filterSignal(QStringList)), viewport()->getImageLoader(), SLOT(setFolderFilters(QStringList)));
 		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport()->getImageLoader(), SLOT(loadFile(QFileInfo)));
-		searchDialog->exec();
-		
+		int answer = searchDialog->exec();
+
+		toolsActions[menu_tools_filter]->setChecked(answer == DkSearchDialog::filter_button);		
 	}
 	else {
 		// remove the filter 
@@ -2014,9 +2020,11 @@ void DkNoMacs::find(bool filterAction) {
 
 void DkNoMacs::updateFilterState(QStringList filters) {
 	
-	toolsActions[menu_tools_filter]->blockSignals(true);
-	toolsActions[menu_tools_filter]->setChecked(!filters.empty());
-	toolsActions[menu_tools_filter]->blockSignals(false);
+	// TODO: remove
+	//qDebug() << "filters: " << filters;
+	//toolsActions[menu_tools_filter]->blockSignals(true);
+	//toolsActions[menu_tools_filter]->setChecked(!filters.empty());
+	//toolsActions[menu_tools_filter]->blockSignals(false);
 }
 
 void DkNoMacs::changeSorting(bool change) {
