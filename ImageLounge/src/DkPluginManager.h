@@ -123,6 +123,7 @@ public:
 	void loadEnabledPlugins();
 	void singlePluginLoad(QString filePath);
 	QMap<QString, DkPluginInterface *> getPlugins();
+	DkPluginInterface* getPlugin(QString key);
 	QList<QString> getPluginIdList();
 	QMap<QString, QString> getPluginFileNames();
 	void setPluginIdList(QList<QString> newPlugins);

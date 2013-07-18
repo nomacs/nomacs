@@ -171,6 +171,10 @@ void DkPluginManager::singlePluginLoad(QString filePath) {
 	if(plugin) {
 
 		DkPluginInterface *initializedPlugin = qobject_cast<DkPluginInterface*>(plugin);
+
+		if (!initializedPlugin)
+			initializedPlugin = qobject_cast<DkViewPortInterface*>(plugin);
+
 		if(initializedPlugin) {
 			QString pluginID = initializedPlugin->pluginID();
 			pluginIdList.append(pluginID);
@@ -178,8 +182,13 @@ void DkPluginManager::singlePluginLoad(QString filePath) {
 			pluginLoaders.insert(pluginID, loader);
 			pluginFiles.insert(pluginID, filePath);
 		}
+		else
+			qDebug() << "could not initialize: " << filePath;
 	}
-	else delete loader;
+	else {
+		qDebug() << "could not load: " << filePath;
+		delete loader;
+	}
 }
 
 
@@ -240,6 +249,9 @@ void DkPluginManager::loadEnabledPlugins() {
 	}
 	settings.endArray();
 
+	// debug! - remove
+	pluginsPaths.insert("e1dc478b9962473b873e59db0228a22d", QCoreApplication::applicationDirPath() + "/plugins/testPlugin.dll");
+
 	size = settings.beginReadArray("PluginSettings/disabledPlugins");
 	for (int i = 0; i < size; i++) {
 		settings.setArrayIndex(i);
@@ -251,7 +263,7 @@ void DkPluginManager::loadEnabledPlugins() {
 
 	while(iter.hasNext()) {
 		iter.next();
-		if (!disabledPlugins.contains(iter.key())) singlePluginLoad(iter.value());
+		/*if (!disabledPlugins.contains(iter.key()))*/ singlePluginLoad(iter.value());
 	}
 }
 
@@ -262,6 +274,19 @@ QMap<QString, DkPluginInterface *> DkPluginManager::getPlugins() {
 
 	return loadedPlugins;
 }
+
+DkPluginInterface* DkPluginManager::getPlugin(QString key) {
+	
+	DkPluginInterface* cPlugin = loadedPlugins.value(getRunId2PluginId().value(key));
+
+	// if we could not find the runID, try to see if it is a pluginID
+	if (!cPlugin)
+		cPlugin = loadedPlugins.value(key);
+	
+	return cPlugin;
+}
+
+
 
 QList<QString> DkPluginManager::getPluginIdList() {
 

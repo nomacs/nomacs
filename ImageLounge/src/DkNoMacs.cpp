@@ -3055,12 +3055,19 @@ void DkNoMacs::addPluginsToMenu() {
 	for (int i = 0; i < pluginIdList.size(); i++) {
 
 		DkPluginInterface* cPlugin = loadedPlugins.value(pluginIdList.at(i));
-		QStringList runID = cPlugin->runID();
 
-		if (!cPlugin->pluginActions().empty()) {
+		QStringList runID = cPlugin->runID();
+		QList<QAction*> actions = cPlugin->pluginActions(this);
+
+		if (!actions.empty()) {
 			
+			QAction* runPlugin = new QAction(cPlugin->pluginName(), this);
+			connect(runPlugin, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+			runPlugin->setData(cPlugin->pluginID());
+			actions.prepend(runPlugin);
+
 			QMenu* sm = new QMenu(cPlugin->pluginMenuName());
-			sm->addActions(cPlugin->pluginActions());
+			sm->addActions(actions);
 			runId2PluginId.insert(cPlugin->pluginMenuName(), pluginIdList.at(i));
 			
 			pluginSubMenus.append(sm);
@@ -3146,6 +3153,8 @@ void DkNoMacs::createPluginsMenu() {
 
 	QList<QString> pluginIdList = pluginManager->getPluginIdList();
 
+	qDebug() << pluginIdList;
+
 	if(pluginsActions.isEmpty()) { // first menu creation
 		if(pluginIdList.isEmpty()) { // no plugins
 			pluginsActions.resize(menu_plugins_end);
@@ -3179,28 +3188,39 @@ void DkNoMacs::openPluginManager() {
 void DkNoMacs::runLoadedPlugin() {
    QAction* action = qobject_cast<QAction*>(sender());
 
-   //if (!action)
-	  // return;
+   if (!action)
+	   return;
 
-   //QString key = action->data().toString();
-   //DkPluginInterface* cPlugin = pluginManager->getPlugins().value(pluginManager->getRunId2PluginId().value(key));
+   QString key = action->data().toString();
+   DkPluginInterface* cPlugin = pluginManager->getPlugin(key);
 
-   //if (cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
-	  // 
-	  // DkViewPort* vp = viewport();
-	  // DkViewPort* josef = cPlugin->getViewPort();
-	  // josef->imgLoader = vp->getImageLoader();
-	  // setCentralWidget(josef);
+   // something is wrong if no plugin is loaded
+   if (!cPlugin) {
+	   qDebug() << "plugin is NULL";
+	   return;
+   }
 
-   //}
+   if (cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
 
-   if(action) {
-	   QString key = action->data().toString();
-	   QImage tmpImg = viewport()->getImageLoader()->getImage();
-	   DkViewPort *vp = viewport();
-	   //viewport()->setEditedImage(loadedPlugins[key]->runPlugin(key, tmpImg, *vp));
-	   QImage result = pluginManager->getPlugins().value(pluginManager->getRunId2PluginId().value(key))->runPlugin(key, tmpImg);
-	   if(!result.isNull()) viewport()->setEditedImage(result);
+	   DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
+
+	   viewport()->getController()->setPluginWidget(vPlugin->getViewPort());
+
+	   //DkViewPort* vp = viewport();
+	   //
+	   //
+	   //DkViewPort* josef = cPlugin->getViewPort();
+	   //josef->imgLoader = vp->getImageLoader();
+	   //setCentralWidget(josef);
+
+   }
+   else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
+	    QString key = action->data().toString();
+	    QImage tmpImg = viewport()->getImageLoader()->getImage();
+	    DkViewPort *vp = viewport();
+	    //viewport()->setEditedImage(loadedPlugins[key]->runPlugin(key, tmpImg, *vp));
+	    QImage result = cPlugin->runPlugin(key, tmpImg);
+	    if(!result.isNull()) viewport()->setEditedImage(result);
    }
 }
 

@@ -30,10 +30,14 @@
 #include <QStringList>
 #include <QString>
 #include <QImage>
+#include <QGraphicsView>
 
 namespace nmc {
 
+class DkPluginViewPort;
+
 class DkPluginInterface {
+
 public:
 
 	enum ifTypes {
@@ -54,17 +58,64 @@ public:
     virtual QStringList runID() const = 0;
     virtual QString pluginMenuName(const QString &runID = "") const = 0;
     virtual QString pluginStatusTip(const QString &runID) const = 0;
-	virtual QList<QAction*> pluginActions() { return QList<QAction*>();};
+	virtual QList<QAction*> pluginActions(QWidget* parent) { return QList<QAction*>();};
     virtual QImage runPlugin(const QString &runID, const QImage &image) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
+
+//signals:
+//	void runPluginSignal();
 };
 
 class DkViewPortInterface : public DkPluginInterface {
-
+	
 public:
 
 	virtual int interfaceType()  const {return interface_viewport;};
 
+	virtual DkPluginViewPort* getViewPort() = 0;
+
+};
+
+class DkPluginViewPort : public QGraphicsView {
+	Q_OBJECT
+
+public:
+	DkPluginViewPort(QWidget* parent = 0) : QGraphicsView(parent) {
+		init();
+	};
+
+	DkPluginViewPort(QGraphicsScene* scene, QWidget* parent = 0) {
+		init();
+	};
+
+	void setWorldMatrix(QTransform* worldMatrix) {
+		this->worldMatrix = worldMatrix;
+	};
+
+	void setImgMatrix(QTransform* imgMatrix) {
+		this->imgMatrix = imgMatrix;
+	};
+
+public slots:
+	void setImage(QImage& image) {
+		this->image = image;
+	};
+
+signals:
+	void imageEdited(QImage& image);
+
+protected:
+	virtual void init() {
+		worldMatrix = 0;
+		imgMatrix = 0;
+		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+		setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
+		setMouseTracking(true);
+	};
+
+	QTransform* worldMatrix;
+	QTransform* imgMatrix;
+	QImage image;
 };
 
 };

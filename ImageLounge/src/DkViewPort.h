@@ -43,6 +43,7 @@
 #include <QPrinter>
 #include <QtGui/QGradientStops>
 #include <QSwipeGesture>
+#include <QStackedLayout>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -69,6 +70,8 @@
 #include "DkSettings.h"
 #include "DkToolbars.h"
 #include "DkBaseViewPort.h"
+#include "DkPluginInterface.h"
+
 //#include "DkDialog.h"
 
 #include "DkMath.h"
@@ -191,6 +194,14 @@ public:
 		top_left_label
 	};
 
+	enum Widgets {
+		last_widget = -1,
+		hud_widget,
+		crop_widget,
+		plugin_widget,
+
+		widget_end
+	};
 
 	DkControlWidget(DkViewPort *parent = 0, Qt::WFlags flags = 0);
 	virtual ~DkControlWidget() {};
@@ -233,6 +244,8 @@ public:
 		return cropWidget;
 	}
 
+	void setPluginWidget(DkPluginViewPort* viewport = 0);
+
 	void stopLabels();
 	void showWidgetsSettings();
 
@@ -247,6 +260,7 @@ public slots:
 	void showCrop(bool visible);
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
+	void switchWidget(QWidget* widget = 0);
 
 	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void setInfo(QString msg, int time = 3000, int location = center_label);
@@ -275,8 +289,9 @@ protected:
 	void init();
 	void connectWidgets();
 
-	QWidget* editWidget;
-	QWidget* hudWidget;
+	QVector<QWidget*> widgets;
+	QStackedLayout* layout;
+	QWidget* lastActiveWidget;
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;
@@ -385,7 +400,7 @@ public slots:
 
 	virtual void updateImage();
 	virtual void loadImage(QImage newImg);
-	virtual void setEditedImage(QImage newImg);
+	virtual void setEditedImage(QImage& newImg);
 	virtual void setImage(QImage newImg);
 	virtual void setThumbImage(QImage newImg);
 

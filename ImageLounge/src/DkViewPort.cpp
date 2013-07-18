@@ -81,8 +81,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	//// debug: show invisible widgets
-	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	// debug: show invisible widgets
+	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -101,8 +101,8 @@ void DkControlWidget::init() {
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
-	cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
-	cropWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	//cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	spinnerLabel->halfSize();
 
 	// dummy
@@ -200,16 +200,16 @@ void DkControlWidget::init() {
 	lrLayout->addStretch();
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
-
-	// init both main widgets
-	hudWidget = new QWidget(this);
-	hudWidget->setMouseTracking(true);
-	editWidget = new QWidget(this);
-	editWidget->setMouseTracking(true);
-	editWidget->hide();
+	
+	// init main widgets
+	widgets.resize(widget_end);
+	widgets[hud_widget] = new QWidget(this);
+	widgets[crop_widget] = cropWidget;
+	lastActiveWidget = widgets[hud_widget];
+	widgets[plugin_widget] = new QWidget(this);
 
 	// global controller layout
-	QGridLayout* hudLayout = new QGridLayout(hudWidget);
+	QGridLayout* hudLayout = new QGridLayout(widgets[hud_widget]);
 	hudLayout->setContentsMargins(0,0,0,0);
 	hudLayout->setSpacing(0);
 
@@ -221,15 +221,16 @@ void DkControlWidget::init() {
 	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
 	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
 		
-	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
-	QHBoxLayout* editLayout = new QHBoxLayout(editWidget);
-	editLayout->setContentsMargins(0,0,0,0);
-	editLayout->addWidget(cropWidget);
+	//// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
+	//QHBoxLayout* editLayout = new QHBoxLayout(widgets[crop_widget]);
+	//editLayout->setContentsMargins(0,0,0,0);
+	//editLayout->addWidget(cropWidget);
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout = new QStackedLayout(this);
 	layout->setContentsMargins(0,0,0,0);
-	layout->addWidget(hudWidget);
-	layout->addWidget(editWidget);
+	
+	for (int idx = 0; idx < widgets.size(); idx++)
+		layout->addWidget(widgets[idx]);
 
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
@@ -406,24 +407,12 @@ void DkControlWidget::showOverview(bool visible) {
 
 void DkControlWidget::showCrop(bool visible) {
 
-	if (visible && !editWidget->isVisible()) {
-		editWidget->show();
-		hudWidget->hide();
-
+	if (visible) {
 		cropWidget->reset();
-		cropWidget->show();
+		switchWidget(widgets[crop_widget]);
 	}
-	else if (!visible && editWidget->isVisible()) {
-		editWidget->hide();
-		cropWidget->hide();
-		hudWidget->show();
-
-		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
-		if (fileInfoLabel->isVisible()) {
-			fileInfoLabel->setVisible(false);
-			showFileInfo(true);
-		}
-	}
+	else
+		switchWidget();
 
 }
 
@@ -440,6 +429,51 @@ void DkControlWidget::showHistogram(bool visible) {
 	else if (!visible && histogram->isVisible()) {
 		histogram->hide();
 	}
+
+}
+
+void DkControlWidget::switchWidget(QWidget* widget) {
+
+	if (layout->currentWidget() == widget)
+		return;
+
+	if (widget) {
+		lastActiveWidget = layout->currentWidget();
+		layout->setCurrentWidget(widget);
+	}
+	else
+		layout->setCurrentWidget(lastActiveWidget);
+
+	qDebug() << "changed to widget: " << layout->currentWidget();
+	// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
+	if (layout->currentIndex() == hud_widget && fileInfoLabel->isVisible()) {
+		fileInfoLabel->setVisible(false);
+		showFileInfo(true);
+	}
+
+}
+
+void DkControlWidget::setPluginWidget(DkPluginViewPort* viewport) {
+
+	if (!viewport)
+		return;
+
+	//if (widgets[plugin_widget])
+	//	widgets[plugin_widget]->deleteLater();
+
+	qDebug() << "viewport: " << viewport;
+
+	widgets[plugin_widget] = viewport;
+	layout->removeWidget(widgets[plugin_widget]);
+	layout->addWidget(widgets[plugin_widget]);
+
+	connect(this->viewport, SIGNAL(newImageSignal(QImage&)), viewport, SLOT(setImage(QImage&)));
+	connect(viewport, SIGNAL(imageEdited(QImage&)), this->viewport, SLOT(setEditedImage(QImage&)));
+	viewport->setImage(this->viewport->getImage());
+
+	qDebug() << "viewport size: " << viewport->size();
+
+	switchWidget(viewport);
 
 }
 
@@ -764,7 +798,8 @@ void DkViewPort::setImage(QImage newImg) {
 	// draw a histogram from the image -> does nothing if the histogram is invisible
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
-
+	
+	emit newImageSignal(newImg);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -1442,7 +1477,7 @@ void DkViewPort::settingsChanged() {
 	controller->settingsChanged();
 }
 
-void DkViewPort::setEditedImage(QImage newImg) {
+void DkViewPort::setEditedImage(QImage& newImg) {
 
 	QFileInfo file = loader->getFile();
 	unloadImage();
