@@ -118,9 +118,6 @@ int main(int argc, char *argv[]) {
 	}
 	a.installTranslator(&translator);
 	
-	//int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();
-	//nmc::DkSettings::App::currentAppMode = mode;
-
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
@@ -151,8 +148,8 @@ int main(int argc, char *argv[]) {
 		w, SLOT(loadFile(const QFileInfo&)));
 #endif
 		
-
 	int rVal = a.exec();
-	//delete w;
+	delete w;	// we need delete so that settings are saved (from destructors)
+
 	return rVal;
 }
