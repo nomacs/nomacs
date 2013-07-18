@@ -185,7 +185,7 @@ void DkCompressDialog::createLayout() {
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
+	//buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
