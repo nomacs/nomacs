@@ -196,26 +196,113 @@ DkPaintViewPort::DkPaintViewPort(QGraphicsScene* scene, QWidget* parent /* = 0 *
 void DkPaintViewPort::init() {
 	qDebug() << "initializing PAINT viewport";
 	setMouseTracking(true);
-}
-
-void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
-
-	qDebug() << "mouse is moving...";
-	DkPluginViewPort::mouseMoveEvent(event);
+	panning = false;
+	pathItem = 0;
+	setScene(&scene);
 }
 
 void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 
-	DkPluginViewPort::mousePressEvent(event);
+	// allow zoom/pan
+	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
+		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
+		QWidget::mousePressEvent(event);
+		return;
+	}
+
+	if (event->buttons() == Qt::LeftButton) {
+		
+		
+		pathItem = new QGraphicsPathItem();
+		pathItem->setPen(pen);
+		pathItem->setBrush(QColor(0,0,0,0));
+		scene.addItem(pathItem);
+
+		path.moveTo(event->posF());
+		//setTransform(*worldMatrix);
+
+
+
+		//lastPoint = mapToImage(event->posF());
+	}
+
+
+	// no propagation
+}
+
+void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
+
+	// allow zoom/pan
+	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
+		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
+		QWidget::mouseMoveEvent(event);
+		return;
+	}
+
+	if (event->buttons() == Qt::LeftButton) {
+		//draw(event->posF());
+		//lastPoint = mapToImage(event->posF());
+		path.lineTo(event->posF());
+		pathItem->setPath(path);
+	}
+
+
+	qDebug() << "mouse is moving...";
+	//QWidget::mouseMoveEvent(event);
 }
 
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
+	// allow zoom/pan
+	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
+		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
+		QWidget::mouseReleaseEvent(event);
+		return;
+	}
+
+	QWidget::mouseReleaseEvent(event);
 }
 
 void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 
-	DkPluginViewPort::paintEvent(event);
+	QPainter painter;
+	
+	if (worldMatrix)
+		painter.setWorldTransform(*worldMatrix);
+
+	QGraphicsView::paintEvent(event);
+}
+
+void DkPaintViewPort::draw(const QPointF& newPos) {
+
+	if (!image && !image->isNull())
+		return;
+
+	//image->mirror();
+
+	//QPainter painter(image);
+	//painter.setPen(pen);
+	//painter.setBrush(brush);
+	//painter.drawLine(lastPoint, newPos);
+	//painter.end();
+
+	//emit imageEdited(*image);	// hot stuff
+}
+
+void DkPaintViewPort::setBrush(const QBrush& brush) {
+	this->brush = brush;
+}
+
+void DkPaintViewPort::setPen(const QPen& pen) {
+	this->pen = pen;
+}
+
+QBrush DkPaintViewPort::getBrush() const {
+	return brush;
+}
+
+QPen DkPaintViewPort::getPen() const {
+	return pen;
 }
 
 //// DkFirstClass --------------------------------------------------------------------

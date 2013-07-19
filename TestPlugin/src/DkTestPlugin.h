@@ -34,8 +34,10 @@
 #include <QString>
 #include <QMessageBox>
 #include <QAction>
+#include <QGraphicsPathItem>
 
 #include "DkPluginInterface.h"
+#include "DkSettings.h"
 
 
 //#ifdef DK_DLL
@@ -107,10 +109,19 @@ protected:
 };
 
 class DkPaintViewPort : public DkPluginViewPort {
+	Q_OBJECT
 
 public:
 	DkPaintViewPort(QWidget* parent = 0);
 	DkPaintViewPort(QGraphicsScene* scene, QWidget* parent = 0);
+
+	QBrush getBrush() const;
+	QPen getPen() const;
+
+public slots:
+	void setBrush(const QBrush& brush);
+	void setPen(const QPen& pen);
+
 
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
@@ -119,6 +130,17 @@ protected:
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
 
+	void draw(const QPointF& newPos);
+
+	QPainterPath path;
+	QGraphicsPathItem* pathItem;
+
+	QGraphicsScene scene;
+
+	QBrush brush;
+	QPen pen;
+	QPointF lastPoint;
+	bool panning;
 };
 
 
