@@ -453,27 +453,29 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 
 }
 
-void DkControlWidget::setPluginWidget(DkPluginViewPort* viewport) {
+void DkControlWidget::setPluginWidget(DkPluginViewPort* pluginWidget) {
 
-	if (!viewport)
+	if (!pluginWidget)
 		return;
 
 	//if (widgets[plugin_widget])
 	//	widgets[plugin_widget]->deleteLater();
 
-	qDebug() << "viewport: " << viewport;
-
-	widgets[plugin_widget] = viewport;
+	qDebug() << "viewport: " << pluginWidget;
+	
+	// take ownership
+	pluginWidget->setParent(viewport);
+	widgets[plugin_widget] = pluginWidget;
 	layout->removeWidget(widgets[plugin_widget]);
 	layout->addWidget(widgets[plugin_widget]);
 
-	connect(this->viewport, SIGNAL(newImageSignal(QImage&)), viewport, SLOT(setImage(QImage&)));
-	connect(viewport, SIGNAL(imageEdited(QImage&)), this->viewport, SLOT(setEditedImage(QImage&)));
-	viewport->setImage(this->viewport->getImage());
+	connect(viewport, SIGNAL(newImageSignal(QImage*)), pluginWidget, SLOT(setImage(QImage*)));
+	connect(pluginWidget, SIGNAL(imageEdited(QImage&)), viewport, SLOT(setEditedImage(QImage&)));
+	pluginWidget->setImage(&viewport->getImage());
 
-	qDebug() << "viewport size: " << viewport->size();
+	qDebug() << "viewport size: " << pluginWidget->size();
 
-	switchWidget(viewport);
+	switchWidget(pluginWidget);
 
 }
 
@@ -799,7 +801,7 @@ void DkViewPort::setImage(QImage newImg) {
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 	
-	emit newImageSignal(newImg);
+	emit newImageSignal(&newImg);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {

@@ -97,7 +97,7 @@ public:
 	};
 
 public slots:
-	void setImage(QImage& image) {
+	void setImage(QImage* image) {
 		this->image = image;
 	};
 
@@ -105,9 +105,22 @@ signals:
 	void imageEdited(QImage& image);
 
 protected:
+
+	virtual QPointF mapToImage(const QPointF& pos) const {
+		
+		if (!worldMatrix || !imgMatrix)
+			return pos;
+		
+		QPointF imgPos = worldMatrix->inverted().map(QPointF(pos));
+		imgPos = imgMatrix->inverted().map(imgPos);
+
+		return imgPos;
+	};
+
 	virtual void init() {
 		worldMatrix = 0;
 		imgMatrix = 0;
+		image = 0;
 		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 		setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
 		setMouseTracking(true);
@@ -115,7 +128,7 @@ protected:
 
 	QTransform* worldMatrix;
 	QTransform* imgMatrix;
-	QImage image;
+	QImage* image;
 };
 
 };

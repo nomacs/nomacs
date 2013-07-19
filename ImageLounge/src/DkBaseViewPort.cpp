@@ -246,7 +246,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 	updateImageMatrix();
 	update();
-	emit newImageSignal(newImg);
+	emit newImageSignal(&newImg);
 }
 
 QImage DkBaseViewPort::getImage() {
