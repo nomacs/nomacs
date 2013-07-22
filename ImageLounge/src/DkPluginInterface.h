@@ -62,8 +62,6 @@ public:
     virtual QImage runPlugin(const QString &runID, const QImage &image) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 
-//signals:
-//	void runPluginSignal();
 };
 
 class DkViewPortInterface : public DkPluginInterface {
@@ -76,15 +74,11 @@ public:
 
 };
 
-class DkPluginViewPort : public QGraphicsView {
+class DkPluginViewPort : public QWidget {
 	Q_OBJECT
 
 public:
-	DkPluginViewPort(QWidget* parent = 0) : QGraphicsView(parent) {
-		init();
-	};
-
-	DkPluginViewPort(QGraphicsScene* scene, QWidget* parent = 0) {
+	DkPluginViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0) : QWidget(parent, flags) {
 		init();
 	};
 
@@ -94,11 +88,6 @@ public:
 
 	void setImgMatrix(QTransform* imgMatrix) {
 		this->imgMatrix = imgMatrix;
-	};
-
-public slots:
-	void setImage(QImage* image) {
-		this->image = image;
 	};
 
 signals:
@@ -111,24 +100,31 @@ protected:
 		if (!worldMatrix || !imgMatrix)
 			return pos;
 		
-		QPointF imgPos = worldMatrix->inverted().map(QPointF(pos));
+		QPointF imgPos = worldMatrix->inverted().map(pos);
 		imgPos = imgMatrix->inverted().map(imgPos);
 
 		return imgPos;
 	};
 
+	virtual QPointF mapToViewport(const QPointF& pos) const {
+
+		if (!worldMatrix)
+			return pos;
+
+		return worldMatrix->inverted().map(pos);
+	};
+
 	virtual void init() {
 		worldMatrix = 0;
 		imgMatrix = 0;
-		image = 0;
+
 		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 		setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
-		setMouseTracking(true);
+		//setMouseTracking(true);
 	};
 
 	QTransform* worldMatrix;
 	QTransform* imgMatrix;
-	QImage* image;
 };
 
 };

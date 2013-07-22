@@ -250,6 +250,7 @@ void DkPluginManager::loadEnabledPlugins() {
 	settings.endArray();
 
 	// debug! - remove
+	// @tim is there a way to manually add plugins? (e.g. new plugins while debugging)
 	pluginsPaths.insert("e1dc478b9962473b873e59db0228a22d", QCoreApplication::applicationDirPath() + "/plugins/testPlugin.dll");
 
 	size = settings.beginReadArray("PluginSettings/disabledPlugins");

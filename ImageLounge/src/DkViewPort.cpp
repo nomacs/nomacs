@@ -35,6 +35,7 @@ namespace nmc {
 DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget(parent, flags) {
 
 	viewport = parent;
+	setObjectName("DkControlWidget");
 
 	rating = -1;
 	
@@ -82,7 +83,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 void DkControlWidget::init() {
 
 	// debug: show invisible widgets
-	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -206,7 +207,6 @@ void DkControlWidget::init() {
 	widgets[hud_widget] = new QWidget(this);
 	widgets[crop_widget] = cropWidget;
 	lastActiveWidget = widgets[hud_widget];
-	widgets[plugin_widget] = new QWidget(this);
 
 	// global controller layout
 	QGridLayout* hudLayout = new QGridLayout(widgets[hud_widget]);
@@ -458,25 +458,8 @@ void DkControlWidget::setPluginWidget(DkPluginViewPort* pluginWidget) {
 	if (!pluginWidget)
 		return;
 
-	//if (widgets[plugin_widget])
-	//	widgets[plugin_widget]->deleteLater();
-
-	qDebug() << "viewport: " << pluginWidget;
-	
-	// take ownership
-	pluginWidget->setParent(viewport);
-	widgets[plugin_widget] = pluginWidget;
-	layout->removeWidget(widgets[plugin_widget]);
-	layout->addWidget(widgets[plugin_widget]);
-
-	connect(viewport, SIGNAL(newImageSignal(QImage*)), pluginWidget, SLOT(setImage(QImage*)));
-	connect(pluginWidget, SIGNAL(imageEdited(QImage&)), viewport, SLOT(setEditedImage(QImage&)));
-	pluginWidget->setImage(&viewport->getImage());
-
-	qDebug() << "viewport size: " << pluginWidget->size();
-
-	switchWidget(pluginWidget);
-
+	viewport->setPaintWidget(pluginWidget);
+	pluginWidget->setWorldMatrix(viewport->getWorldMatrixPtr());
 }
 
 void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited, QString attr) {
@@ -701,7 +684,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	// pre-render the viewport to that image... apply blur
 	// and then render the blurred image after the widget is rendered...
 	// performance?!
-
+	
 }
 
 DkViewPort::~DkViewPort() {
@@ -713,6 +696,15 @@ void DkViewPort::release() {
 
 	if (loader) delete loader;
 	loader = 0;
+}
+
+void DkViewPort::setPaintWidget(QWidget* widget) {
+
+	// always removes old widgets...
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(widget);
+
+	setLayout(layout);
 }
 
 #ifdef WITH_OPENCV

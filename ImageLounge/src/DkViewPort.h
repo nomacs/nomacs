@@ -198,7 +198,6 @@ public:
 		last_widget = -1,
 		hud_widget,
 		crop_widget,
-		plugin_widget,
 
 		widget_end
 	};
@@ -340,6 +339,12 @@ public:
 	QTransform getWorldMatrix() { 
 		return worldMatrix;
 	};
+
+	QTransform* getWorldMatrixPtr() {
+		return &worldMatrix;
+	};
+
+	void setPaintWidget(QWidget* widget);
 
 #ifdef WITH_OPENCV
 	void setImage(cv::Mat newImg);
