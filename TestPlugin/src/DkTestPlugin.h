@@ -35,6 +35,7 @@
 #include <QMessageBox>
 #include <QAction>
 #include <QGraphicsPathItem>
+#include <QGraphicsSceneMouseEvent>
 
 #include "DkPluginInterface.h"
 #include "DkSettings.h"
@@ -112,8 +113,7 @@ class DkPaintViewPort : public DkPluginViewPort {
 	Q_OBJECT
 
 public:
-	DkPaintViewPort(QWidget* parent = 0);
-	DkPaintViewPort(QGraphicsScene* scene, QWidget* parent = 0);
+	DkPaintViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	QBrush getBrush() const;
 	QPen getPen() const;
@@ -126,16 +126,13 @@ public slots:
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
 
 	void draw(const QPointF& newPos);
 
-	QPainterPath path;
-	QGraphicsPathItem* pathItem;
-
-	QGraphicsScene scene;
+	QVector<QPainterPath> paths;
 
 	QBrush brush;
 	QPen pen;

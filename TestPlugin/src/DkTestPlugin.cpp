@@ -185,20 +185,14 @@ Q_EXPORT_PLUGIN2(DkTestPlugin, DkTestPlugin)
 
 
 // My ViewPort --------------------------------------------------------------------
-DkPaintViewPort::DkPaintViewPort(QWidget* parent /* = 0 */) : DkPluginViewPort(parent) {
-	init();
-}
-
-DkPaintViewPort::DkPaintViewPort(QGraphicsScene* scene, QWidget* parent /* = 0 */) : DkPluginViewPort(scene, parent) {
+DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
 	init();
 }
 
 void DkPaintViewPort::init() {
-	qDebug() << "initializing PAINT viewport";
-	setMouseTracking(true);
-	panning = false;
-	pathItem = 0;
-	setScene(&scene);
+	panning = false;	// this should be set to true in a toolbar
+
+	DkPluginViewPort::init();
 }
 
 void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
@@ -211,21 +205,19 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 	}
 
 	if (event->buttons() == Qt::LeftButton) {
-		
-		
-		pathItem = new QGraphicsPathItem();
-		pathItem->setPen(pen);
-		pathItem->setBrush(QColor(0,0,0,0));
-		scene.addItem(pathItem);
-
-		path.moveTo(event->posF());
-		//setTransform(*worldMatrix);
-
-
-
-		//lastPoint = mapToImage(event->posF());
+		paths.append(QPainterPath());
+		paths.last().moveTo(mapToViewport(event->posF()));
 	}
+	if (event->buttons() == Qt::MiddleButton && parent()) {
 
+		// small image editing demo
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		if (viewport) {
+			QImage img = viewport->getImage();
+			img = img.mirrored();
+			viewport->setImage(img);
+		}
+	}
 
 	// no propagation
 }
@@ -235,20 +227,17 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 	// allow zoom/pan
 	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
 		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
-		QWidget::mouseMoveEvent(event);
+		DkPaintViewPort::mouseMoveEvent(event);
 		return;
 	}
 
 	if (event->buttons() == Qt::LeftButton) {
-		//draw(event->posF());
-		//lastPoint = mapToImage(event->posF());
-		path.lineTo(event->posF());
-		pathItem->setPath(path);
+		QPointF point = mapToViewport(event->posF());
+		paths.last().lineTo(point);
+		update();
 	}
 
-
-	qDebug() << "mouse is moving...";
-	//QWidget::mouseMoveEvent(event);
+	//QWidget::mouseMoveEvent(event);	// do not propagate mouse event
 }
 
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
@@ -256,37 +245,23 @@ void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	// allow zoom/pan
 	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
 		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
-		QWidget::mouseReleaseEvent(event);
+		DkPluginViewPort::mouseReleaseEvent(event);
 		return;
 	}
-
-	QWidget::mouseReleaseEvent(event);
 }
 
 void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 
-	QPainter painter;
+	QPainter painter(this);
 	
 	if (worldMatrix)
 		painter.setWorldTransform(*worldMatrix);
 
-	QGraphicsView::paintEvent(event);
-}
+	for (int idx = 0; idx < paths.size(); idx++)
+		painter.drawPath(paths.at(idx));
+	painter.end();
 
-void DkPaintViewPort::draw(const QPointF& newPos) {
-
-	if (!image && !image->isNull())
-		return;
-
-	//image->mirror();
-
-	//QPainter painter(image);
-	//painter.setPen(pen);
-	//painter.setBrush(brush);
-	//painter.drawLine(lastPoint, newPos);
-	//painter.end();
-
-	//emit imageEdited(*image);	// hot stuff
+	DkPluginViewPort::paintEvent(event);
 }
 
 void DkPaintViewPort::setBrush(const QBrush& brush) {
@@ -304,53 +279,5 @@ QBrush DkPaintViewPort::getBrush() const {
 QPen DkPaintViewPort::getPen() const {
 	return pen;
 }
-
-//// DkFirstClass --------------------------------------------------------------------
-//DkFirstClass::DkFirstClass(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent, flags) {
-//	
-//	
-//	QAction* ca = new QAction(tr("Paint"), this);
-//	ca->setObjectName("paintAction");
-//	myActions.append(ca);
-//
-//	ca = new QAction(tr("Josef"), this);
-//	ca->setObjectName("josefAction");
-//	ca->setStatusTip("tim");
-//	myActions.append(ca);
-//
-//	ca = new QAction(tr("Ana"), this);
-//	ca->setObjectName("anaAction");
-//	myActions.append(ca);
-//
-//	//QAction* x = myActions.at(100);
-//
-//	QMetaObject::connectSlotsByName(this);
-//}
-//
-//QList<QAction* > DkFirstClass::getActions() {
-//
-//	return myActions;
-//}
-//
-//void DkFirstClass::on_josefAction_triggered() {
-//
-//	QMessageBox msgBox;
-//	msgBox.setText(QString("Josef"));
-//	msgBox.setIcon(QMessageBox::Warning);
-//	msgBox.exec();
-//}
-//
-//void DkFirstClass::on_anaAction_triggered() {
-//
-//	QMessageBox msgBox;
-//	msgBox.setText(QString("Josef"));
-//	msgBox.setIcon(QMessageBox::Warning);
-//	msgBox.exec();
-//
-//}
-//
-//void DkFirstClass::on_paintAction_triggered() {
-//	emit runPluginSignal();
-//}
 
 };
