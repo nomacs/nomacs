@@ -31,6 +31,9 @@
 
 namespace nmc {
 
+
+int DkThumbsLoader::maxThumbSize = 160;
+
 /**
  * Default constructor of the thumbnail loader.
  * Note: currently the init calls the getFilteredFileList which might be slow.
@@ -44,7 +47,6 @@ DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QStri
 	this->thumbs = thumbs;
 	this->dir = dir;
 	this->isActive = true;
-	this->maxThumbSize = 160;
 	this->files = files;
 	init();
 }
@@ -429,26 +431,7 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 			if (loader.loadGeneral(file)) {
 
 				thumb = loader.image();
-				imgW = thumb.width();
-				imgH = thumb.height();
-
-				if (imgW > maxThumbSize || imgH > maxThumbSize) {
-					if (imgW > imgH) {
-						imgH = (float)maxThumbSize / imgW * imgH;
-						imgW = maxThumbSize;
-					} 
-					else if (imgW < imgH) {
-						imgW = (float)maxThumbSize / imgH * imgW;
-						imgH = maxThumbSize;
-					}
-					else {
-						imgW = maxThumbSize;
-						imgH = maxThumbSize;
-					}
-				}
-
-				thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
-				thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				createThumb(thumb);
 			}
 		}
 
@@ -486,6 +469,34 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 
 	return thumb;
 }
+
+ QImage DkThumbsLoader::createThumb(const QImage& image) {
+
+	 int imgW = image.width();
+	 int imgH = image.height();
+
+	 if (imgW > maxThumbSize || imgH > maxThumbSize) {
+		 if (imgW > imgH) {
+			 imgH = (float)maxThumbSize / imgW * imgH;
+			 imgW = maxThumbSize;
+		 } 
+		 else if (imgW < imgH) {
+			 imgW = (float)maxThumbSize / imgH * imgW;
+			 imgH = maxThumbSize;
+		 }
+		 else {
+			 imgW = maxThumbSize;
+			 imgH = maxThumbSize;
+		 }
+	 }
+
+	 // fast downscaling
+	 QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+	 thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	 return thumb;
+
+ }
 
 /**
  * Stops the current loading process.
