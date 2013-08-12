@@ -149,7 +149,7 @@ DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(paren
 void DkFilePreview::init() {
 
 	setObjectName("DkFilePreview");
-	setMouseTracking (true);	//receive mouse event everytime
+	setMouseTracking(true);	//receive mouse event everytime
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	
 	thumbsLoader = 0;
@@ -160,7 +160,7 @@ void DkFilePreview::init() {
 	qDebug() << "x offset: " << xOffset;
 
 	currentDx = 0;
-	currentFileIdx = 0;
+	currentFileIdx = -1;
 	oldFileIdx = 0;
 	mouseTrace = 0;
 	scrollToCurrentImage = false;
@@ -172,6 +172,7 @@ void DkFilePreview::init() {
 	worldMatrix = QTransform();
 
 	moveImageTimer = new QTimer(this);
+	moveImageTimer->setInterval(2);	// reduce cpu utilization
 	connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
 	
 	leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
@@ -646,6 +647,9 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 
 void DkFilePreview::moveImages() {
 
+	if (!isVisible())
+		return;
+
 	if (scrollToCurrentImage) {
 		
 		float cDist = width()/2.0f - newFileRect.center().x();
@@ -752,6 +756,7 @@ void DkFilePreview::indexDir(int force) {
 		update();
 	}
 
+	
 }
 
 void DkFilePreview::setVisible(bool visible) {
