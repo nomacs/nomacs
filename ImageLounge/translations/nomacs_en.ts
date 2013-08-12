@@ -763,7 +763,7 @@ Do you want to show them again?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="137"/>
       <source>Exposure Mode</source>
-      <translation>Belichtung</translation>
+      <translation>Exposure Mode</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="138"/>
