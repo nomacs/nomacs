@@ -136,8 +136,8 @@ void DkCompressDialog::init() {
 
 void DkCompressDialog::createLayout() {
 
-	QLabel* origLabelText = new QLabel(tr("Original"));
-	QLabel* newLabel = new QLabel(tr("New"));
+	QLabel* origLabelText = new QLabel(tr("Original"), this);
+	QLabel* newLabel = new QLabel(tr("New"), this);
 
 	// shows the original image
 	origView = new DkBaseViewPort(this);
@@ -154,25 +154,25 @@ void DkCompressDialog::createLayout() {
 	//origView->setStyleSheet("QViewPort{border: 1px solid #888;}");
 
 	// shows the preview
-	previewLabel = new QLabel();
+	previewLabel = new QLabel(this);
 	//origView->setMinimumSize(20,20);
 	previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
 	// slider
-	slider = new DkSlider(tr("Image Quality"));
+	slider = new DkSlider(tr("Image Quality"), this);
 	slider->setValue(80);
 	slider->setTickInterval(10);
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(drawPreview()));
 
 	// lossless
-	cbLossless = new QCheckBox(tr("Lossless Compression"));
+	cbLossless = new QCheckBox(tr("Lossless Compression"), this);
 	connect(cbLossless, SIGNAL(toggled(bool)), this, SLOT(losslessCompression(bool)));
 
 	previewSizeLabel = new QLabel();
 
 	// color chooser
-	colChooser = new DkColorChooser(bgCol, tr("Background Color"));
+	colChooser = new DkColorChooser(bgCol, tr("Background Color"), this);
 	colChooser->setEnabled(hasAlpha);
 	colChooser->enableAlpha(false);
 	connect(colChooser, SIGNAL(accepted()), this, SLOT(newBgCol()));
@@ -182,14 +182,6 @@ void DkCompressDialog::createLayout() {
 	//dummyLayout->addWidget(colChooser);
 	//dummyLayout->addStretch();
 	//dummyLayout->addWidget(previewSizeLabel);
-
-	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QWidget* previewWidget = new QWidget(this);
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
@@ -205,6 +197,15 @@ void DkCompressDialog::createLayout() {
 	previewLayout->addWidget(colChooser, 2, 1);
 	previewLayout->addWidget(cbLossless, 3, 0);
 	previewLayout->addWidget(previewSizeLabel, 3, 1);
+
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
+	buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(previewWidget);

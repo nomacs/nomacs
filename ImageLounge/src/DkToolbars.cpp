@@ -93,10 +93,10 @@ void DkTransferToolBar::createIcons() {
 	toolBarIcons[icon_toolbar_reset] = ICON("", ":/nomacs/img/gradient-reset.png");
 	toolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.png");
 
-	if (!DkSettings::Display::defaultIconColor) {
+	if (!DkSettings::display.defaultIconColor) {
 		// now colorize the icons
-		toolBarIcons[icon_toolbar_reset].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::Display::iconColor), QIcon::Normal, QIcon::Off);
-		toolBarIcons[icon_toolbar_pipette].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::Display::iconColor), QIcon::Normal, QIcon::Off);
+		toolBarIcons[icon_toolbar_reset].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		toolBarIcons[icon_toolbar_pipette].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 	}
 	
 	toolBarActions.resize(toolbar_end);
@@ -670,14 +670,14 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 
-	if (DkSettings::Display::smallIcons)
+	if (DkSettings::display.smallIcons)
 		setIconSize(QSize(16, 16));
 	else
 		setIconSize(QSize(32, 32));
 
-	if (DkSettings::Display::toolbarGradient) {
+	if (DkSettings::display.toolbarGradient) {
 
-		QColor hCol = DkSettings::Display::highlightColor;
+		QColor hCol = DkSettings::display.highlightColor;
 		hCol.setAlpha(80);
 
 		setStyleSheet(
@@ -737,12 +737,12 @@ void DkCropToolBar::createIcons() {
 	icons[invert_icon].addPixmap(QPixmap(":/nomacs/img/crop-invert-checked.png"), QIcon::Normal, QIcon::On);
 	icons[info_icon] = QIcon(":/nomacs/img/info.png");
 
-	if (!DkSettings::Display::defaultIconColor) {
+	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::Display::iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::Display::iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

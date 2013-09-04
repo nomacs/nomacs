@@ -117,14 +117,6 @@ void DkImageManipulationDialog::createLayout() {
 	// bottom widget - buttons	
 	QWidget* bottomWidget = new QWidget(this);
 	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
-
-	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	buttons->setContentsMargins(10,10,10,10);
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 	
 	// central widget - preview image
 	QWidget* centralWidget = new QWidget(this);
@@ -161,6 +153,14 @@ void DkImageManipulationDialog::createLayout() {
 
 	eastWidget->setLayout(toolsLayout);
 	
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->setContentsMargins(10,10,10,10);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
 	BorderLayout* borderLayout = new BorderLayout;
 	borderLayout->addWidget(buttons, BorderLayout::South);
 	borderLayout->addWidget(centralWidget, BorderLayout::Center);

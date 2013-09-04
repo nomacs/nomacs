@@ -7,11 +7,11 @@
 !include "nsProcess.nsh"
 
 ; your install directories
-!define BUILD_DIR "..\build2012\ReallyRelease"
+!define BUILD_DIR "..\build2012x86\ReallyRelease"
 ; !define BUILD_DIR "..\build2012x64\ReallyRelease"
 ; !define BUILD_DIR "..\build2010x86\ReallyRelease"
 ; !define TRANSLATION_DIR "translation"
-!define TRANSLATION_DIR "..\build2012"
+!define TRANSLATION_DIR "..\build2012x86"
 !define README_DIR "Readme"
 
 ; HM NIS Edit Wizard helper defines
@@ -268,6 +268,8 @@ Function fileAssociationFinished
 	Delete "$INSTDIR\opencv_core220.dll"
 	Delete "$INSTDIR\opencv_imgproc231.dll"
 	Delete "$INSTDIR\opencv_core231.dll"
+	Delete "$INSTDIR\opencv_imgproc242.dll"
+	Delete "$INSTDIR\opencv_core242.dll"
 
 	; RESET UPDATE FLAG
 	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
@@ -486,15 +488,15 @@ Section "MainSection" SEC01#
   
   File "${TRANSLATION_DIR}\nomacs_*.qm"
   
-
+  File "${BUILD_DIR}\libnomacs.dll"
   File "${BUILD_DIR}\exiv2.dll"
   File "${BUILD_DIR}\libexpat.dll"
   File "${BUILD_DIR}\libjasper.dll"
   File "${BUILD_DIR}\libraw.dll"
   File "${BUILD_DIR}\msvcp*.dll"
   File "${BUILD_DIR}\msvcr*.dll"
-  File "${BUILD_DIR}\opencv_core242.dll"
-  File "${BUILD_DIR}\opencv_imgproc242.dll"
+  File "${BUILD_DIR}\opencv_core*.dll"
+  File "${BUILD_DIR}\opencv_imgproc*.dll"
   File "${BUILD_DIR}\QtCore4.dll"
   File "${BUILD_DIR}\QtGui4.dll"
   File "${BUILD_DIR}\QtNetwork4.dll"
@@ -624,8 +626,8 @@ FunctionEnd
 Function un.uninstallNomacs
 	${NSD_GetState} $hCtl_uninstaller_CheckBox1 $hCtl_uninstaller_CheckBox1_state
 	${If} $hCtl_uninstaller_CheckBox1_state == ${BST_CHECKED}
-		; DeleteRegKey HKCU "Software\nomacs"
-		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'das ist nur ein test $hCtl_uninstaller_CheckBox1_state' IDOK  +1 IDCANCEL  +1 
+		DeleteRegKey HKCU "Software\nomacs"
+		; MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'das ist nur ein test $hCtl_uninstaller_CheckBox1_state' IDOK  +1 IDCANCEL  +1 
 	${endif}
 FunctionEnd
 

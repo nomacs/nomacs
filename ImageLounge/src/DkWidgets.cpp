@@ -39,9 +39,9 @@ void DkWidget::init() {
 
 	setMouseTracking(true);
 
-	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColorWidget;
+	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		DkSettings::display.bgColorFrameless :
+		DkSettings::display.bgColorWidget;
 	
 	showing = false;
 	hiding = false;
@@ -78,8 +78,8 @@ void DkWidget::hide() {
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
-			displaySettingsBits->setBit(DkSettings::App::currentAppMode, false);
+		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
 		}
 	}
 }
@@ -97,8 +97,8 @@ void DkWidget::setVisible(bool visible) {
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::App::currentAppMode, visible);
+	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
 	}
 }
 
@@ -154,8 +154,8 @@ void DkFilePreview::init() {
 	
 	thumbsLoader = 0;
 
-	xOffset = qRound(DkSettings::Display::thumbSize*0.1f);
-	yOffset = qRound(DkSettings::Display::thumbSize*0.1f);
+	xOffset = qRound(DkSettings::display.thumbSize*0.1f);
+	yOffset = qRound(DkSettings::display.thumbSize*0.1f);
 
 	qDebug() << "x offset: " << xOffset;
 
@@ -181,7 +181,7 @@ void DkFilePreview::init() {
 	rightGradient.setColorAt(1, Qt::black);
 	rightGradient.setColorAt(0, Qt::white);
 
-	minHeight = DkSettings::Display::thumbSize + yOffset;
+	minHeight = DkSettings::display.thumbSize + yOffset;
 	resize(parent->width(), minHeight);
 	setMaximumHeight(minHeight);
 
@@ -189,7 +189,7 @@ void DkFilePreview::init() {
 
 	//// load a default image
 	//QImageReader imageReader(":/nomacs/img/dummy-img.png");
-	//float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
+	//float fw = (float)DkSettings::display.thumbSize/(float)imageReader.size().width();
 	//QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
 	//imageReader.setScaledSize(newSize);
 	//stubImg = imageReader.read();
@@ -212,12 +212,12 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (minHeight != DkSettings::Display::thumbSize + yOffset) {
+	if (minHeight != DkSettings::display.thumbSize + yOffset) {
 
-		xOffset = qCeil(DkSettings::Display::thumbSize*0.1f);
-		yOffset = qCeil(DkSettings::Display::thumbSize*0.1f);
+		xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
+		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 		
-		minHeight = DkSettings::Display::thumbSize + yOffset;
+		minHeight = DkSettings::display.thumbSize + yOffset;
 		setMaximumHeight(minHeight);
 
 		//if (fileLabel->height() >= height() && fileLabel->isVisible())
@@ -315,7 +315,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		// create effect before gradient (otherwise the effect might be transparent : )
 		if (idx == currentFileIdx && (currentImgGlow.isNull() || currentFileIdx != oldFileIdx || currentImgGlow.size() != img.size()))
-			createCurrentImgEffect(img.copy(), DkSettings::Display::highlightColor);
+			createCurrentImgEffect(img.copy(), DkSettings::display.highlightColor);
 
 		// show that there are more images...
 		if (isLeftGradient)
@@ -446,7 +446,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	if (event->size() == event->oldSize() && this->width() == parent->width())
 		return;
 
-	minHeight = DkSettings::Display::thumbSize + yOffset;
+	minHeight = DkSettings::display.thumbSize + yOffset;
 	setMinimumHeight(1);
 	setMaximumHeight(minHeight);
 
@@ -537,7 +537,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 				if ((size_t)selected <= thumbs.size() && selected >= 0) {
 					DkThumbNail thumb = thumbs.at(selected);
-					createSelectedEffect(thumb.getImage(), DkSettings::Display::highlightColor);
+					createSelectedEffect(thumb.getImage(), DkSettings::display.highlightColor);
 				
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
 					//if (fileLabel->height() < height())
@@ -612,7 +612,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 
 	if (event->modifiers() == Qt::CTRL) {
 
-		int newSize = DkSettings::Display::thumbSize;
+		int newSize = DkSettings::display.thumbSize;
 		newSize += qRound(event->delta()*0.05f);
 
 		// make sure it is even
@@ -624,8 +624,8 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 		else if (newSize > 160)
 			newSize = 160;
 
-		if (newSize != DkSettings::Display::thumbSize) {
-			DkSettings::Display::thumbSize = newSize;
+		if (newSize != DkSettings::display.thumbSize) {
+			DkSettings::display.thumbSize = newSize;
 			update();
 		}
 	}
@@ -706,7 +706,7 @@ void DkFilePreview::indexDir(int force) {
 			files = DkImageLoader::getFilteredFileList(dir);
 
 			// this is nasty, but the exif writes to a back-up file so the index changes too if I save thumbnails
-			myChanges = thumbsLoader && DkSettings::Display::saveThumb && files.size()-1 == thumbsLoader->getFiles().size() && thumbsLoader->isWorking();
+			myChanges = thumbsLoader && DkSettings::display.saveThumb && files.size()-1 == thumbsLoader->getFiles().size() && thumbsLoader->isWorking();
 		}
 
 		
@@ -791,8 +791,8 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 	handle = new QLabel(this);
 	handle->setMouseTracking(true);
 	handle->setStyleSheet(QString("QLabel{border: 1px solid ")
-		+ DkUtils::colorToString(DkSettings::Display::highlightColor) + 
-		QString("; background-color: ") + DkUtils::colorToString(DkSettings::Display::bgColorWidget) + QString(";}"));
+		+ DkUtils::colorToString(DkSettings::display.highlightColor) + 
+		QString("; background-color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + QString(";}"));
 
 	init();
 }
@@ -876,7 +876,7 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 	}
 
 	QString gs = "qlineargradient(x1:0, y1:0, x2:1, y2:0 ";
-	gs += ", stop: 0 " + DkUtils::colorToString(DkSettings::Display::bgColorWidget);
+	gs += ", stop: 0 " + DkUtils::colorToString(DkSettings::display.bgColorWidget);
 
 	//int fileLimit = (colorLoader) ? colorLoader->maxFiles() : 100;
 	//float maxFiles = (files.size() > fileLimit) ? fileLimit : files.size();
@@ -889,7 +889,7 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 			DkUtils::colorToString(cCol); 
 	}
 
-	gs += ", stop: 1 " + DkUtils::colorToString(DkSettings::Display::bgColorWidget) + ");";
+	gs += ", stop: 1 " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ");";
 
 	setStyleSheet(QString("QScrollBar:horizontal { ") + 
 		QString("border: none;") +
@@ -980,9 +980,9 @@ void DkFolderScrollBar::init() {
 
 	setMouseTracking(true);
 
-	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless :
-	DkSettings::Display::bgColorWidget;
+	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		DkSettings::display.bgColorFrameless :
+	DkSettings::display.bgColorWidget;
 
 	showing = false;
 	hiding = false;
@@ -1019,8 +1019,8 @@ void DkFolderScrollBar::hide() {
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
-			displaySettingsBits->setBit(DkSettings::App::currentAppMode, false);
+		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
 		}
 	}
 }
@@ -1041,8 +1041,8 @@ void DkFolderScrollBar::setVisible(bool visible) {
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::App::currentAppMode, visible);
+	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
 	}
 }
 
@@ -1384,7 +1384,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		painter.setOpacity(0.8f);
 		painter.drawImage(overviewImgRect, imgT, QRect(0, 0, imgT.width(), imgT.height()));
 
-		QColor col = DkSettings::Display::highlightColor;
+		QColor col = DkSettings::display.highlightColor;
 		col.setAlpha(255);
 		painter.setPen(col);
 		col.setAlpha(50);
@@ -1425,7 +1425,7 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 		QPointF dxy = (cPos - currentViewPoint)/worldMatrix->m11()*panningSpeed;
 		emit moveViewSignal(dxy);
 
-		if (event->modifiers() == DkSettings::Global::altMod)
+		if (event->modifiers() == DkSettings::global.altMod)
 			emit sendTransformSignal();
 	}
 
@@ -1443,7 +1443,7 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 	posGrab = cPos;
 	emit moveViewSignal(dxy);
 
-	if (event->modifiers() == DkSettings::Global::altMod)
+	if (event->modifiers() == DkSettings::global.altMod)
 		emit sendTransformSignal();
 
 }
@@ -1538,9 +1538,9 @@ QTransform DkOverview::getScaledImageMatrix() {
 // DkLabel --------------------------------------------------------------------
 DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {
 
-	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColorWidget;
+	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		DkSettings::display.bgColorFrameless :
+		DkSettings::display.bgColorWidget;
 
 	setMouseTracking(true);
 	this->parent = parent;
@@ -1677,9 +1677,9 @@ void DkLabel::setTextToLabel() {
 
 DkLabelBg::DkLabelBg(QWidget* parent, const QString& text) : DkLabel(parent, text) {
 
-	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColorWidget;
+	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		DkSettings::display.bgColorFrameless :
+		DkSettings::display.bgColorWidget;
 
 	setAttribute(Qt::WA_TransparentForMouseEvents);	// labels should forward mouse events
 	
@@ -1743,9 +1743,9 @@ DkFadeLabel::DkFadeLabel(QWidget* parent, const QString& text) : DkLabel(parent,
 
 void DkFadeLabel::init() {
 
-	bgCol = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColorWidget;
+	bgCol = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		DkSettings::display.bgColorFrameless :
+		DkSettings::display.bgColorWidget;
 
 	showing = false;
 	hiding = false;
@@ -1793,9 +1793,9 @@ void DkFadeLabel::setVisible(bool visible) {
 	emit visibleSignal(visible);
 	DkLabel::setVisible(visible);
 
-	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
+	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
 		qDebug() << "setting visible to: " << visible;
-		displaySettingsBits->setBit(DkSettings::App::currentAppMode, visible);
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
 	}
 
 }
@@ -1923,7 +1923,7 @@ QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
 	
 	QPixmap imgPx = pm->copy();
 	QPixmap imgAlpha = imgPx;
-	imgAlpha.fill(DkSettings::Display::highlightColor);
+	imgAlpha.fill(DkSettings::display.highlightColor);
 	imgAlpha.setAlphaChannel(imgPx.alphaChannel());
 
 	return imgAlpha;
@@ -2089,9 +2089,9 @@ void DkFileInfoLabel::createLayout() {
 void DkFileInfoLabel::setVisible(bool visible) {
 
 	// nothing to display??
-	if (!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_name) &&
-		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date) &&
-		!DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_rating) && visible) {
+	if (!DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_name) &&
+		!DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_creation_date) &&
+		!DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_rating) && visible) {
 			
 			QMessageBox infoDialog(parent);
 			infoDialog.setWindowTitle(tr("Info Box"));
@@ -2107,16 +2107,16 @@ void DkFileInfoLabel::setVisible(bool visible) {
 				return;
 			}
 			else {
-				DkSettings::SlideShow::display.setBit(DkDisplaySettingsWidget::display_file_name, true);
-				DkSettings::SlideShow::display.setBit(DkDisplaySettingsWidget::display_creation_date, true);
-				DkSettings::SlideShow::display.setBit(DkDisplaySettingsWidget::display_file_rating, true);
+				DkSettings::slideShow.display.setBit(DkDisplaySettingsWidget::display_file_name, true);
+				DkSettings::slideShow.display.setBit(DkDisplaySettingsWidget::display_creation_date, true);
+				DkSettings::slideShow.display.setBit(DkDisplaySettingsWidget::display_file_rating, true);
 			}
 	}
 
 	DkFadeLabel::setVisible(visible);
-	title->setVisible(DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_name));
-	date->setVisible(DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_creation_date));
-	rating->setVisible(DkSettings::SlideShow::display.testBit(DkDisplaySettingsWidget::display_file_rating));
+	title->setVisible(DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_name));
+	date->setVisible(DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_creation_date));
+	rating->setVisible(DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_rating));
 
 	int height = 32;
 	if (title->isVisible())
@@ -2203,7 +2203,7 @@ void DkPlayer::init() {
 
 	// slide show
 	int timeToDisplayPlayer = 3000;
-	timeToDisplay = DkSettings::SlideShow::time*1000;
+	timeToDisplay = DkSettings::slideShow.time*1000;
 	playing = false;
 	displayTimer = new QTimer(this);
 	displayTimer->setInterval(timeToDisplay);
@@ -2300,8 +2300,8 @@ void DkPlayer::show(int ms) {
 	DkWidget::show();
 
 	// automatic showing, don't store it in the display bits
-	if (ms > 0 && displaySettingsBits && displaySettingsBits->size() > DkSettings::App::currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::App::currentAppMode, showPlayer);
+	if (ms > 0 && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, showPlayer);
 	}
 }
  
@@ -2840,7 +2840,7 @@ void DkMetaDataInfo::createLabels() {
 
 	for(int i=0; i<camDTags.size(); i++) {
 		//if bit set, create Label
-		if (DkSettings::MetaData::metaDataBits.testBit(i)) {
+		if (DkSettings::metaData.metaDataBits.testBit(i)) {
 			DkLabel* pl = new DkLabel(this);//, camDTags.at(i));
 			pl->setText(camDTags.at(i)+":",-1);
 			pl->setFontSize(fontSize);
@@ -2860,7 +2860,7 @@ void DkMetaDataInfo::createLabels() {
 
 	for(int i=0; i<descTags.size(); i++) {
 		//if bit set, create Label
-		if (DkSettings::MetaData::metaDataBits.testBit(DkMetaDataSettingsWidget::camData_end + i)) {
+		if (DkSettings::metaData.metaDataBits.testBit(DkMetaDataSettingsWidget::camData_end + i)) {
 			DkLabel* pl = new DkLabel(this);
 			pl->setText(descTags.at(i)+":",-1);
 			pl->setFontSize(fontSize);
@@ -3236,9 +3236,9 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 
 	pen = QPen(QColor(0, 0, 0, 255), 1);
 	pen.setCosmetic(true);
-	brush = (DkSettings::App::appMode == DkSettings::mode_frameless) ?
-		DkSettings::Display::bgColorFrameless :
-		DkSettings::Display::bgColorWidget;
+	brush = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+		DkSettings::display.bgColorFrameless :
+		DkSettings::display.bgColorWidget;
 
 	state = do_nothing;
 	worldTform = 0;
@@ -3474,7 +3474,7 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::Global::altMod || panning)) {
+		(event->modifiers() == DkSettings::global.altMod || panning)) {
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
 		return;
@@ -3499,7 +3499,7 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::Global::altMod ||
+	if (event->modifiers() == DkSettings::global.altMod ||
 		panning) {
 		
 		if (event->buttons() != Qt::LeftButton)
@@ -3617,7 +3617,7 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::Global::altMod || panning)) {
+		(event->modifiers() == DkSettings::global.altMod || panning)) {
 		setCursor(Qt::OpenHandCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
@@ -3879,14 +3879,15 @@ void DkColorChooser::init() {
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setContentsMargins(11,0,11,0);
 	
-	QLabel* colorLabel = new QLabel(text);
+	QLabel* colorLabel = new QLabel(text, this);
 	colorButton = new QPushButton("", this);
 	colorButton->setFlat(true);
 	colorButton->setObjectName("colorButton");
+	colorButton->setAutoDefault(false);
 	
 	QPushButton* resetButton = new QPushButton(tr("Reset"), this);
 	resetButton->setObjectName("resetButton");
-	//resetButton->setAutoDefault(true);
+	resetButton->setAutoDefault(false);
 
 	QWidget* colWidget = new QWidget(this);
 	QHBoxLayout* hLayout = new QHBoxLayout(colWidget);
@@ -4229,23 +4230,23 @@ void DkSlider::createLayout() {
 	layout->setSpacing(0);
 	layout->setContentsMargins(0,0,0,0);
 	
-	QWidget* dummy = new QWidget();
+	QWidget* dummy = new QWidget(this);
 	QHBoxLayout* titleLayout = new QHBoxLayout(dummy);
 	titleLayout->setContentsMargins(0,0,0,5);
 
-	QWidget* dummyBounds = new QWidget();
+	QWidget* dummyBounds = new QWidget(this);
 	QHBoxLayout* boundsLayout = new QHBoxLayout(dummyBounds);
 	boundsLayout->setContentsMargins(0,0,0,0);
 
-	titleLabel = new QLabel();
+	titleLabel = new QLabel(this);
 	
-	sliderBox = new QSpinBox();
+	sliderBox = new QSpinBox(this);
 
-	slider = new QSlider();
+	slider = new QSlider(this);
 	slider->setOrientation(Qt::Horizontal);
 
-	minValLabel = new QLabel();
-	maxValLabel = new QLabel();
+	minValLabel = new QLabel(this);
+	maxValLabel = new QLabel(this);
 	
 	titleLayout->addWidget(titleLabel);
 	titleLayout->addStretch();
