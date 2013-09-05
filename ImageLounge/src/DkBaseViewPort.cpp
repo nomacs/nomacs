@@ -530,6 +530,7 @@ void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 	factor /= -1200.0f;
 	factor += 1.0f;
 
+	qDebug() << "zoom factor..." << factor;
 	zoom(factor, event->pos());
 }
 

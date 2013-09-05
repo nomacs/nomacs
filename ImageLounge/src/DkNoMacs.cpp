@@ -1301,12 +1301,6 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 void DkNoMacs::mousePressEvent(QMouseEvent* event) {
 
 	mousePos = event->pos();
-	if(event->buttons() == Qt::XButton1) {
-	    emit fourthButtonPressed();
-	}
-	else if(event->buttons() == Qt::XButton2) {
-	    emit fifthButtonPressed();
-	}
 
 	//QMainWindow::mousePressEvent(event);
 }
