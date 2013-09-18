@@ -739,7 +739,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
-	if (!DkSettings::display.keepZoom || imgRect != oldImgRect)
+	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty())
 		worldMatrix.reset();
 	else {
 		imgViewRect = oldImgViewRect;
@@ -747,7 +747,13 @@ void DkViewPort::setImage(QImage newImg) {
 		worldMatrix = oldWorldMatrix;
 	}
 
-	updateImageMatrix();
+	updateImageMatrix();		
+
+	// if image is not inside, we'll align it at the top left border
+	if (!viewportRect.intersects(worldMatrix.mapRect(imgViewRect))) {
+		worldMatrix.translate(-worldMatrix.dx(), -worldMatrix.dy());
+		centerImage();
+	}
 
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
@@ -1264,8 +1270,16 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
+	qDebug() << "event orientation: " << event->orientation();
+	qDebug() << "modifiers: " << event->modifiers();
+
+	if (event->modifiers() & ctrlMod)
+		qDebug() << "CTRL modifier";
+	if (event->modifiers() & altMod)
+		qDebug() << "ALT modifier";
+
 	if ((!DkSettings::global.zoomOnWheel && event->modifiers() != ctrlMod) || 
-		(DkSettings::global.zoomOnWheel && (event->modifiers() == ctrlMod || (event->orientation() == Qt::Horizontal && event->modifiers() != altMod)))) {
+		(DkSettings::global.zoomOnWheel && (event->modifiers() & ctrlMod || (event->orientation() == Qt::Horizontal && !(event->modifiers() & altMod))))) {
 
 		if (event->delta() < 0)
 			loadNextFileFast();
