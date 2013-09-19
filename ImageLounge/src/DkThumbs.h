@@ -58,12 +58,7 @@ public:
 	 * @param file the corresponding file
 	 * @param img the thumbnail image
 	 **/ 
-	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage()) {
-		this->img = img;
-		this->file = file;
-		imgExists = true;
-		s = qMax(img.width(), img.height());
-	};
+	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage());
 
 	/**
 	 * Default destructor.
@@ -84,11 +79,15 @@ public:
 		this->img = img;
 	}
 
+	void compute(bool forceLoad = false, bool forceSave = false);
+	void removeBlackBorder(QImage& img);
+
 	/**
 	 * Returns the thumbnail.
 	 * @return QImage the thumbnail.
 	 **/ 
-	QImage getImage() {
+	QImage getImage() const {
+		
 		return img;
 	};
 
@@ -96,7 +95,7 @@ public:
 	 * Returns the file information.
 	 * @return QFileInfo the thumbnail file
 	 **/ 
-	QFileInfo getFile() {
+	QFileInfo getFile() const {
 		return file;
 	};
 
@@ -104,7 +103,7 @@ public:
 	 * Returns whether the thumbnail was loaded, or does not exist.
 	 * @return int a status (loaded | not loaded | exists not)
 	 **/ 
-	int hasImage() {
+	int hasImage() const {
 		
 		if (!img.isNull())
 			return loaded;
@@ -114,13 +113,33 @@ public:
 			return exists_not;
 	};
 
+	void setMaxThumbSize(int maxSize) {
+		this->maxThumbSize = maxSize;
+	};
+
+	int getMaxThumbSize() const {
+		return maxThumbSize;
+	};
+
+	void setMinThumbSize(int minSize) {
+		this->minThumbSize = minSize;
+	};
+
+	int getMinThumbSize() const {
+		return this->minThumbSize;
+	};
+	
+	void setRescale(bool rescale) {
+		this->rescale = rescale;
+	};
+
 	/**
 	 * Manipulates the file loaded status.
 	 * @param exists a status (loaded | not loaded | exists not)
 	 **/ 
 	void setImgExists(bool exists) {
 		imgExists = exists;
-	}
+	};
 
 	/**
 	 * Returns the thumbnail size.
@@ -135,6 +154,9 @@ private:
 	QFileInfo file;
 	int s;
 	bool imgExists;
+	int maxThumbSize;
+	int minThumbSize;
+	bool rescale;
 
 };
 
@@ -202,8 +224,8 @@ private:
 	bool forceLoad;
 	QStringList files;
 
-	// function
-	QImage getThumbNailQt(QFileInfo file);
+	//// function
+	//QImage getThumbNailQt(QFileInfo file);
 	//QImage getThumbNailWin(QFileInfo file);
 	void init();
 	void loadThumbs();

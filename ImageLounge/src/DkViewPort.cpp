@@ -632,6 +632,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	skipImageTimer->setSingleShot(true);
 	connect(skipImageTimer, SIGNAL(timeout()), this, SLOT(loadFullFile()));
 
+	repeatZoomTimer = new QTimer();
+	repeatZoomTimer->setInterval(20);
+	connect(repeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
+
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
 
@@ -735,7 +739,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
-	if (!DkSettings::display.keepZoom || imgRect != oldImgRect)
+	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty())
 		worldMatrix.reset();
 	else {
 		imgViewRect = oldImgViewRect;
@@ -743,7 +747,13 @@ void DkViewPort::setImage(QImage newImg) {
 		worldMatrix = oldWorldMatrix;
 	}
 
-	updateImageMatrix();
+	updateImageMatrix();		
+
+	// if image is not inside, we'll align it at the top left border
+	if (!viewportRect.intersects(worldMatrix.mapRect(imgViewRect))) {
+		worldMatrix.translate(-worldMatrix.dx(), -worldMatrix.dy());
+		centerImage();
+	}
 
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
@@ -928,6 +938,20 @@ void DkViewPort::showZoom() {
 	QString zoomStr;
 	zoomStr.sprintf("%.1f%%", imgMatrix.m11()*worldMatrix.m11()*100);
 	controller->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
+}
+
+void DkViewPort::repeatZoom() {
+
+	qDebug() << "repeating...";
+	if (DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1 ||
+		!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)
+		zoom(1.1f);
+	else if (!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1 ||
+		DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)
+		zoom(0.9f);
+	else
+		repeatZoomTimer->stop();	// safety if we don't catch the release
+
 }
 
 void DkViewPort::toggleResetMatrix() {
@@ -1180,6 +1204,18 @@ bool DkViewPort::event(QEvent *event) {
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
+	// if zoom on wheel, the additional keys should be used for switching files
+	if (DkSettings::global.zoomOnWheel) {
+		if(event->buttons() == Qt::XButton1)
+			loadPrevFileFast();
+		else if(event->buttons() == Qt::XButton2)
+			loadNextFileFast();
+	} 
+	else if(event->buttons() == Qt::XButton1 || event->buttons() == Qt::XButton2) {
+		repeatZoom();
+		repeatZoomTimer->start();
+	}
+	
 	// ok, start panning
 	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
 		setCursor(Qt::ClosedHandCursor);
@@ -1192,6 +1228,8 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	
+	repeatZoomTimer->stop();
+
 	DkBaseViewPort::mouseReleaseEvent(event);
 }
 
@@ -1232,7 +1270,16 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
-	if (event->modifiers() == ctrlMod || (event->orientation() == Qt::Horizontal && event->modifiers() != altMod)) {
+	qDebug() << "event orientation: " << event->orientation();
+	qDebug() << "modifiers: " << event->modifiers();
+
+	if (event->modifiers() & ctrlMod)
+		qDebug() << "CTRL modifier";
+	if (event->modifiers() & altMod)
+		qDebug() << "ALT modifier";
+
+	if ((!DkSettings::global.zoomOnWheel && event->modifiers() != ctrlMod) || 
+		(DkSettings::global.zoomOnWheel && (event->modifiers() & ctrlMod || (event->orientation() == Qt::Horizontal && !(event->modifiers() & altMod))))) {
 
 		if (event->delta() < 0)
 			loadNextFileFast();

@@ -985,7 +985,7 @@ void DkMetaData::readMetaData() {
 			return;
 		}
 
-		qDebug() << "[Exiv2] metadata loaded";
+		//qDebug() << "[Exiv2] metadata loaded";
 
 		mdata = true;
 	}

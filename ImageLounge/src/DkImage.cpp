@@ -27,6 +27,7 @@
 
 #include "DkImage.h"
 #include "DkNoMacs.h"
+#include <QPluginLoader>
 
 namespace nmc {
 
@@ -1161,7 +1162,21 @@ DkImageLoader::~DkImageLoader() {
 	qDebug() << "filepath: " << saveDir.absolutePath();
 }
 
+
+
 void DkImageLoader::initFileFilters() {
+
+	// load plugins
+	QDir pluginFolder(QCoreApplication::applicationDirPath());
+	pluginFolder.cd("imageformats");
+
+	QStringList pluginFilenames = pluginFolder.entryList(QStringList(".dll"));
+
+	for (int idx = 0; idx < pluginFilenames.size(); idx++) {
+		QPluginLoader p(QFileInfo(pluginFolder, pluginFilenames[idx]).absoluteFilePath());
+		if (!p.load())
+			qDebug() << "sorry, I could NOT load " << pluginFilenames[idx];
+	}
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
@@ -1231,6 +1246,8 @@ void DkImageLoader::initFileFilters() {
 	}
 
 	openFilters.prepend("Image Files (" + fileFilters.join(" ") + ")");
+
+	qDebug() << "supported: " << qtFormats;
 
 #ifdef Q_OS_WIN
 	DkImageLoader::fileFilters.append("*.lnk");
