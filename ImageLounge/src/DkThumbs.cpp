@@ -32,8 +32,23 @@
 namespace nmc {
 
 /**
+* Default constructor.
+* @param file the corresponding file
+* @param img the thumbnail image
+**/ 
+DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
+	this->img = img;
+	this->file = file;
+	this->maxThumbSize = 160;
+	this->minThumbSize = DkSettings::display.thumbSize;
+	this->rescale = true;
+	imgExists = true;
+	s = qMax(img.width(), img.height());
+};
+
+/**
  * Loads the thumbnail from the metadata.
- * If no thumbnail is embeded, the whole image
+ * If no thumbnail is embedded, the whole image
  * is loaded and downsampled in a fast manner.
  * @param file the file to be loaded
  * @return QImage the loaded image. Null if no image
@@ -46,10 +61,11 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
 	QImage thumb = dataExif.getThumbnail();
+	removeBlackBorder(thumb);
 	int orientation = dataExif.getOrientation();
 	int imgW = thumb.width();
 	int imgH = thumb.height();
-	int tS = DkSettings::display.thumbSize;
+	int tS = minThumbSize;
 
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
@@ -63,7 +79,7 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 	//else if (!thumb.isNull())
 	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
-	if (imgW > maxThumbSize || imgH > maxThumbSize) {
+	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
 		if (imgW > imgH) {
 			imgH = (float)maxThumbSize / imgW * imgH;
 			imgW = maxThumbSize;
@@ -141,7 +157,7 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 		}
 
 	}
-	else {
+	else if (rescale) {
 		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 		//qDebug() << "thumb loaded from exif...";
 	}
@@ -158,6 +174,58 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 	//return thumb;
 }
 
+void DkThumbNail::removeBlackBorder(QImage& img) {
+
+	int rIdx = 0;
+	bool nonblack = false;
+	
+	for ( ; rIdx < img.height(); rIdx++) {
+
+		const QRgb* pixel = (QRgb*)(img.constScanLine(rIdx));
+
+		for (int cIdx = 0; cIdx < img.width(); cIdx++, pixel++) {
+
+			// > 50 due to jpeg (normally we would want it to be != 0)
+			if (qRed(*pixel) > 50 || qBlue(*pixel) > 50 || qGreen(*pixel) > 50) {
+				nonblack = true;
+				break;
+			}
+		}
+
+		if (nonblack)
+			break;
+	}
+
+	// non black border?
+	if (rIdx == -1)
+		return;
+
+	int rIdxB = img.height()-1;
+	nonblack = false;
+
+	for ( ; rIdxB >= 0; rIdxB--) {
+
+		const QRgb* pixel = (QRgb*)(img.constScanLine(rIdxB));
+
+		for (int cIdx = 0; cIdx < img.width(); cIdx++, pixel++) {
+
+			if (qRed(*pixel) > 50 || qBlue(*pixel) > 50 || qGreen(*pixel) > 50) {
+				nonblack = true;
+				break;
+			}
+		}
+
+		if (nonblack) {
+			rIdxB--;
+			break;
+		}
+	}
+
+	// remove black borders
+	if (rIdx < rIdxB)
+		img = img.copy(0, rIdx, img.width(), rIdxB-rIdx);
+
+}
 
 /**
  * Default constructor of the thumbnail loader.

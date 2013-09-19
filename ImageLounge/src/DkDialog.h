@@ -818,16 +818,18 @@ class DkMosaicDialog : public QDialog {
 
 public:
 	DkMosaicDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	QImage getImage();
 
 public slots:
 	void on_openButton_pressed();
-	void on_saveButton_pressed();
+	void on_dbButton_pressed();
 	void on_fileEdit_textChanged(const QString& filename);
 	void setFile(const QFileInfo& file);
 	void accept();
 	void reject();
 	int computeMosaic(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite);
 	void processingFinished();
+	void buttonClicked(QAbstractButton* button);
 
 signals:
 	void updateImage(QImage img);
@@ -836,13 +838,13 @@ signals:
 
 protected:
 	void createLayout();
-	void enableTIFFSave(bool enable);
+	void enableMosaicSave(bool enable);
 	void enableAll(bool enable);
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 	QString getRandomImagePath(const QString& cPath, const QString& ignore);
 	void matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc);
-	cv::Mat createPatch(const QImage& thumb, int patchRes);
+	cv::Mat createPatch(const DkThumbNail& thumb, int patchRes);
 
 	DkBaseViewPort* viewport;
 	DkBaseViewPort* preview;
@@ -864,6 +866,7 @@ protected:
 	QFutureWatcher<int> watcher;
 	bool processing;
 	QImage mosaic;
+	QFileInfoList filesUsed;
 
 
 	enum {

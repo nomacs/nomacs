@@ -58,13 +58,7 @@ public:
 	 * @param file the corresponding file
 	 * @param img the thumbnail image
 	 **/ 
-	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage()) {
-		this->img = img;
-		this->file = file;
-		this->maxThumbSize = 160;
-		imgExists = true;
-		s = qMax(img.width(), img.height());
-	};
+	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage());
 
 	/**
 	 * Default destructor.
@@ -86,12 +80,13 @@ public:
 	}
 
 	void compute(bool forceLoad = false, bool forceSave = false);
+	void removeBlackBorder(QImage& img);
 
 	/**
 	 * Returns the thumbnail.
 	 * @return QImage the thumbnail.
 	 **/ 
-	QImage getImage() {
+	QImage getImage() const {
 		
 		return img;
 	};
@@ -100,7 +95,7 @@ public:
 	 * Returns the file information.
 	 * @return QFileInfo the thumbnail file
 	 **/ 
-	QFileInfo getFile() {
+	QFileInfo getFile() const {
 		return file;
 	};
 
@@ -108,7 +103,7 @@ public:
 	 * Returns whether the thumbnail was loaded, or does not exist.
 	 * @return int a status (loaded | not loaded | exists not)
 	 **/ 
-	int hasImage() {
+	int hasImage() const {
 		
 		if (!img.isNull())
 			return loaded;
@@ -122,8 +117,20 @@ public:
 		this->maxThumbSize = maxSize;
 	};
 
-	int getMaxThumbSize() {
+	int getMaxThumbSize() const {
 		return maxThumbSize;
+	};
+
+	void setMinThumbSize(int minSize) {
+		this->minThumbSize = minSize;
+	};
+
+	int getMinThumbSize() const {
+		return this->minThumbSize;
+	};
+	
+	void setRescale(bool rescale) {
+		this->rescale = rescale;
 	};
 
 	/**
@@ -132,7 +139,7 @@ public:
 	 **/ 
 	void setImgExists(bool exists) {
 		imgExists = exists;
-	}
+	};
 
 	/**
 	 * Returns the thumbnail size.
@@ -148,6 +155,8 @@ private:
 	int s;
 	bool imgExists;
 	int maxThumbSize;
+	int minThumbSize;
+	bool rescale;
 
 };
 

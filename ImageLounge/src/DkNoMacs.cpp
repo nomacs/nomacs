@@ -2404,7 +2404,10 @@ void DkNoMacs::computeMosaic() {
 
 	mosaicDialog->setFile(viewport()->getImageLoader()->getFile());
 
-	mosaicDialog->exec();
+	int response = mosaicDialog->exec();
+
+	if (response == QDialog::Accepted)
+		viewport()->setEditedImage(mosaicDialog->getImage());
 }
 
 void DkNoMacs::openImgManipulationDialog() {
