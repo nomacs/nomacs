@@ -3016,7 +3016,7 @@ void DkExportTiffDialog::enableTIFFSave(bool enable) {
 // DkMosaicDialog --------------------------------------------------------------------
 DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
-	setWindowTitle(tr("Export Multi-Page TIFF"));
+	setWindowTitle(tr("Create Mosaic Image"));
 	createLayout();
 	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
@@ -3079,15 +3079,15 @@ void DkMosaicDialog::createLayout() {
 	folderLabel = new QLabel(tr("Specify an Image Database"), this);
 
 	// file name handles
-	QLabel* fileLabel = new QLabel(tr("Filename:"), this);
+	QLabel* fileLabel = new QLabel(tr("Filters:"), this);
 	fileLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-	fileEdit = new QLineEdit("tiff_page", this);
+	fileEdit = new QLineEdit("", this);
 	fileEdit->setObjectName("fileEdit");
 
 	suffixBox = new QComboBox(this);
-	suffixBox->addItems(DkImageLoader::saveFilters);
-	suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
+	suffixBox->addItems(DkImageLoader::openFilters);
+	//suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
 
 	// export handles
 	QLabel* exportLabel = new QLabel(tr("Export Pages"));
@@ -3138,7 +3138,7 @@ void DkMosaicDialog::createLayout() {
 
 	// buttons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Export"));
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Generate"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
@@ -3335,9 +3335,10 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QFileInfo saveFile, int from, 
 		}
 
 		if (iDidNothing > 100 && !filesUsed.isEmpty()) {
-			filesUsed.clear();
 			emit infoMessage(tr("I need to use some images twice - maybe the database is too small?"));
+			filesUsed.clear();
 			iDidNothing = 0;
+			useTwice = true;
 		}
 		else if (iDidNothing > 100) {
 			emit infoMessage(tr("Sorry, it seems that i cannot create your mosaic with this database."));
