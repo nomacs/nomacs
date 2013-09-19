@@ -61,6 +61,7 @@ public:
 	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage()) {
 		this->img = img;
 		this->file = file;
+		this->maxThumbSize = 160;
 		imgExists = true;
 		s = qMax(img.width(), img.height());
 	};
@@ -84,11 +85,14 @@ public:
 		this->img = img;
 	}
 
+	void compute(bool forceLoad = false, bool forceSave = false);
+
 	/**
 	 * Returns the thumbnail.
 	 * @return QImage the thumbnail.
 	 **/ 
 	QImage getImage() {
+		
 		return img;
 	};
 
@@ -114,6 +118,14 @@ public:
 			return exists_not;
 	};
 
+	void setMaxThumbSize(int maxSize) {
+		this->maxThumbSize = maxSize;
+	};
+
+	int getMaxThumbSize() {
+		return maxThumbSize;
+	};
+
 	/**
 	 * Manipulates the file loaded status.
 	 * @param exists a status (loaded | not loaded | exists not)
@@ -135,6 +147,7 @@ private:
 	QFileInfo file;
 	int s;
 	bool imgExists;
+	int maxThumbSize;
 
 };
 
@@ -201,8 +214,8 @@ private:
 	bool forceLoad;
 	QStringList files;
 
-	// function
-	QImage getThumbNailQt(QFileInfo file);
+	//// function
+	//QImage getThumbNailQt(QFileInfo file);
 	//QImage getThumbNailWin(QFileInfo file);
 	void init();
 	void loadThumbs();

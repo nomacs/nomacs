@@ -3014,6 +3014,567 @@ void DkExportTiffDialog::enableTIFFSave(bool enable) {
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(enable);
 }
 
+// DkMosaicDialog --------------------------------------------------------------------
+DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
+
+	setWindowTitle(tr("Export Multi-Page TIFF"));
+	createLayout();
+	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
+	setAcceptDrops(true);
+
+	connect(this, SIGNAL(updateImage(QImage)), preview, SLOT(setImage(QImage)));
+	connect(&watcher, SIGNAL(finished()), this, SLOT(processingFinished()));
+	connect(this, SIGNAL(infoMessage(QString)), msgLabel, SLOT(setText(QString)));
+	connect(this, SIGNAL(updateProgress(int)), progress, SLOT(setValue(int)));
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkMosaicDialog::dropEvent(QDropEvent *event) {
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+
+		setFile(url.toString());
+	}
+}
+
+void DkMosaicDialog::dragEnterEvent(QDragEnterEvent *event) {
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+		QFileInfo file = QFileInfo(url.toString());
+
+		if (file.exists() && file.suffix().indexOf(QRegExp("tif"), Qt::CaseInsensitive) != -1)
+			event->acceptProposedAction();
+	}
+}
+
+void DkMosaicDialog::createLayout() {
+
+	// progress bar
+	progress = new QProgressBar(this);
+	progress->hide();
+
+	msgLabel = new QLabel(this);
+	msgLabel->setStyleSheet("QLabel{color: #FF0000;}");
+	msgLabel->hide();
+
+	// open handles
+	QLabel* openLabel = new QLabel(tr("Multi-Page TIFF:"), this);
+	openLabel->setAlignment(Qt::AlignRight);
+
+	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
+	openButton->setObjectName("openButton");
+
+	tiffLabel = new QLabel(tr("No Multi-Page TIFF loaded"), this);
+
+	// save handles
+	QLabel* saveLabel = new QLabel(tr("Save Folder:"), this);
+	saveLabel->setAlignment(Qt::AlignRight);
+
+	QPushButton* saveButton = new QPushButton(tr("&Browse"), this);
+	saveButton->setObjectName("saveButton");
+
+	folderLabel = new QLabel(tr("Specify a Save Folder"), this);
+
+	// file name handles
+	QLabel* fileLabel = new QLabel(tr("Filename:"), this);
+	fileLabel->setAlignment(Qt::AlignRight);
+
+	fileEdit = new QLineEdit("tiff_page", this);
+	fileEdit->setObjectName("fileEdit");
+
+	suffixBox = new QComboBox(this);
+	suffixBox->addItems(DkImageLoader::saveFilters);
+	suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
+
+	// export handles
+	QLabel* exportLabel = new QLabel(tr("Export Pages"));
+	exportLabel->setAlignment(Qt::AlignRight);
+
+	fromPage = new QSpinBox(0);
+
+	toPage = new QSpinBox(0);
+
+	overwrite = new QCheckBox(tr("Overwrite"));
+
+	controlWidget = new QWidget(this);
+	QGridLayout* controlLayout = new QGridLayout(controlWidget);
+	controlLayout->addWidget(openLabel, 0, 0);
+	controlLayout->addWidget(openButton, 0, 1, 1, 2);
+	controlLayout->addWidget(tiffLabel, 0, 3, 1, 2);
+	//controlLayout->setColumnStretch(3, 1);
+
+	controlLayout->addWidget(saveLabel, 1, 0);
+	controlLayout->addWidget(saveButton, 1, 1, 1, 2);
+	controlLayout->addWidget(folderLabel, 1, 3, 1, 2);
+	//controlLayout->setColumnStretch(3, 1);
+
+	controlLayout->addWidget(fileLabel, 2, 0);
+	controlLayout->addWidget(fileEdit, 2, 1, 1, 2);
+	controlLayout->addWidget(suffixBox, 2, 3, 1, 2);
+	//controlLayout->setColumnStretch(3, 1);
+
+	controlLayout->addWidget(exportLabel, 3, 0);
+	controlLayout->addWidget(fromPage, 3, 1);
+	controlLayout->addWidget(toPage, 3, 2);
+	controlLayout->addWidget(overwrite, 3, 3);
+	controlLayout->setColumnStretch(5, 1);
+
+	// shows the image if it could be loaded
+	viewport = new DkBaseViewPort(this);
+	viewport->setForceFastRendering(true);
+	viewport->setPanControl(QPointF(0.0f, 0.0f));
+
+	preview = new DkBaseViewPort(this);
+	preview->setForceFastRendering(true);
+	preview->setPanControl(QPointF(0.0f, 0.0f));
+
+	QWidget* viewports = new QWidget(this);
+	QHBoxLayout* viewLayout = new QHBoxLayout(viewports);
+	viewLayout->addWidget(viewport);
+	viewLayout->addWidget(preview);
+
+	// buttons
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Export"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(viewports);
+	layout->addWidget(progress);
+	layout->addWidget(msgLabel);
+	layout->addWidget(controlWidget);
+	layout->addWidget(buttons);
+
+	enableTIFFSave(false);
+}
+
+void DkMosaicDialog::on_openButton_pressed() {
+
+	// load system default open dialog
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
+		cFile.absolutePath(), 
+		DkImageLoader::saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+
+	setFile(fileName);
+}
+
+void DkMosaicDialog::on_saveButton_pressed() {
+	qDebug() << "save triggered...";
+
+	// load system default open dialog
+	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
+		saveDir.absolutePath());
+
+	if (saveDir.exists()) {
+		saveDir = dirName;
+		folderLabel->setText(saveDir.absolutePath());
+	}
+}
+
+void DkMosaicDialog::on_fileEdit_textChanged(const QString& filename) {
+
+	qDebug() << "new file name: " << filename;
+}
+
+void DkMosaicDialog::reject() {
+
+	// not sure if this is a nice way to do: but we change cancel behavior while processing
+	if (processing)
+		processing = false;
+	else
+		QDialog::reject();
+
+}
+
+void DkMosaicDialog::accept() {
+
+	progress->show();
+	msgLabel->show();
+
+	enableAll(false);
+
+	QString suffix = suffixBox->currentText();
+
+	for (int idx = 0; idx < DkImageLoader::fileFilters.size(); idx++) {
+		if (suffix.contains("(" + DkImageLoader::fileFilters.at(idx))) {
+			suffix = DkImageLoader::fileFilters.at(idx);
+			suffix.replace("*","");
+			break;
+		}
+	}
+
+	QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
+
+	QFuture<int> future = QtConcurrent::run(this, 
+		&nmc::DkMosaicDialog::computeMosaic,
+		cFile,
+		sFile, 
+		fromPage->value(), 
+		toPage->value(),
+		overwrite->isChecked());
+	watcher.setFuture(future);
+
+	//// debug
+	//computeMosaic(
+	//	cFile,
+	//	sFile, 
+	//	fromPage->value(), 
+	//	toPage->value(),
+	//	overwrite->isChecked());
+
+}
+
+void DkMosaicDialog::processingFinished() {
+
+	enableAll(true);
+	progress->hide();
+	msgLabel->hide();
+
+	//if (watcher.future() == QDialog::Accepted)
+	//	QDialog::accept();
+}
+
+int DkMosaicDialog::computeMosaic(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite) {
+
+	processing = true;
+
+	//TODO: convert image to L*a*b, extract luminance
+	// compute new image size
+	cv::Mat mImg = DkImage::qImage2Mat(loader.image());
+	cv::cvtColor(mImg, mImg, CV_RGB2Lab);
+	std::vector<Mat> channels;
+	cv::split(mImg, channels);
+	cv::Mat imgL = channels[0];
+	
+	//channels.clear();
+	mImg.release();
+
+	//// TODO: fix this!
+	//cv::Mat imgL3;
+	//cv::cvtColor(imgL, imgL3, CV_GRAY2RGB);
+	//emit updateImage(DkImage::mat2QImage(imgL3));
+
+	// defines (user should do that)
+	int newMinSize = 4096;
+	QSize numPatches = QSize(25, 0);
+
+	// compute new image size
+	float aratio = (float)imgL.rows/imgL.cols;
+
+	int patchResO = qFloor((float)qMin(imgL.rows, imgL.cols)/numPatches.width());
+	numPatches.setHeight(qFloor((float)qMax(imgL.rows, imgL.cols)/patchResO));
+
+	int patchResD = qFloor(patchResO*newMinSize/qMin(imgL.rows, imgL.cols));
+
+	// swap if the image is landscape
+	if (imgL.rows < imgL.cols) {
+		int tmp = numPatches.width();
+		numPatches.setWidth(numPatches.height());
+		numPatches.setHeight(tmp);
+	}
+
+	cv::Mat cc(numPatches.height(), numPatches.width(), CV_32FC1);
+	cc = 0;
+
+	cv::Mat dImg(patchResD*numPatches.height(), patchResD*numPatches.width(), CV_8UC1);
+	dImg = 255;
+
+	cv::Mat pImg(patchResO*numPatches.height(), patchResO*numPatches.width(), CV_8UC1);
+	pImg = 255;
+
+	////progress->setMinimum(fromPage->value()-1);
+	//progress->setMaximum(numPatches.width()*numPatches.height());
+	//progress->setValue(progress->minimum());
+	int pIdx = 0;
+	int maxP = numPatches.width()*numPatches.height();
+
+	//QSize imgSize = QSize(numHPatches*imgL.cols, numVPatches*imgL.rows);
+
+
+	QString imgPath = getRandomImagePath(saveDir.absolutePath(), "");
+
+	qDebug() << "I chose: " << imgPath;
+	int iDidNothing = 0;
+	bool force = false;
+
+	for (int idx = 0; idx < 10000; idx++) {
+
+		if (!processing)
+			return QDialog::Rejected;
+
+		if (iDidNothing > 20)
+			force = true;
+
+		// TODO: add ignore keyword
+		QString imgPath = getRandomImagePath(saveDir.absolutePath(), "");
+	
+		DkThumbNail thumb = DkThumbNail(QFileInfo(imgPath));
+		thumb.compute();
+
+		if (!thumb.hasImage()) {
+			iDidNothing++;
+			continue;
+		}
+
+		cv::Mat ccTmp(cc.size(), cc.depth());
+		
+		if (!force)
+			ccTmp = 0;
+		else
+			ccTmp = cc.clone();
+
+		cv::Mat thumbPatch = createPatch(thumb.getImage(), patchResO);
+		
+		if (thumbPatch.rows != patchResO || thumbPatch.cols != patchResO) {
+			iDidNothing++;
+			continue;
+		}
+		
+		matchPatch(imgL, thumbPatch, patchResO, ccTmp);
+
+		if (force) {
+			cv::Mat mask = (cc == 0);
+			mask.convertTo(mask, CV_32FC1, 1.0f/255.0f);
+			ccTmp = ccTmp.mul(mask);
+		}
+				
+		double maxVal = 0;
+		cv::Point maxIdx;
+		cv::minMaxLoc(ccTmp, 0, &maxVal, 0, &maxIdx);
+		float* ccPtr = cc.ptr<float>(maxIdx.y);
+		
+		//// debug
+		//cv::Mat imgT3;
+		//cv::cvtColor(ccTmp, imgT3, CV_GRAY2RGB);
+		//emit updateImage(DkImage::mat2QImage(imgT3));
+		//qDebug() << "force is: " << force;
+
+		//qDebug() << "max val " << maxVal << "ccptr " << ccPtr[maxIdx.x];
+
+		if (maxVal > ccPtr[maxIdx.x]) {
+
+			cv::Mat pPatch = pImg.rowRange(maxIdx.y*patchResO, maxIdx.y*patchResO+patchResO)
+				.colRange(maxIdx.x*patchResO, maxIdx.x*patchResO+patchResO);
+			thumbPatch.copyTo(pPatch);
+			
+			if (pIdx % 10 == 0) {
+				//debug
+				cv::Mat imgT3;
+				cv::cvtColor(pImg, imgT3, CV_GRAY2RGB);
+				emit updateImage(DkImage::mat2QImage(imgT3));
+			}
+
+			if (ccPtr[maxIdx.x] == 0) {
+				pIdx++;
+				emit updateProgress(qRound((float)pIdx/maxP*100));
+			}
+
+
+			if (thumb.getMaxThumbSize() < patchResD) {
+				thumb = DkThumbNail(QFileInfo(imgPath));
+				thumb.setMaxThumbSize(patchResD);
+				thumb.compute();
+			}
+			
+			thumbPatch = createPatch(thumb.getImage(), patchResD);
+			//thumbPatch.convertTo(thumbPatch, CV_8UC1, 25.5, 0);
+					
+
+			cv::Mat dPatch = dImg.rowRange(maxIdx.y*patchResD, maxIdx.y*patchResD+patchResD)
+				.colRange(maxIdx.x*patchResD, maxIdx.x*patchResD+patchResD);
+			//dPatch = 0;//thumbPatch.clone();
+			thumbPatch.copyTo(dPatch);
+
+			// update cc
+			ccPtr[maxIdx.x] = maxVal;
+
+			//iDidNothing = 0;
+		}
+		else
+			iDidNothing++;
+
+		// are we done yet?
+		double minVal = 0;
+		cv::minMaxLoc(cc, &minVal);
+
+		if (minVal > 0)
+			break;
+		
+	}
+
+	cv::Mat imgT3;
+	cv::cvtColor(dImg, imgT3, CV_GRAY2RGB);
+	emit updateImage(DkImage::mat2QImage(imgT3));
+
+
+
+	//// Do your job
+	//for (int idx = from; idx <= to; idx++) {
+
+	//	QFileInfo sFile(saveFile.absolutePath(), saveFile.baseName() + QString::number(idx) + "." + saveFile.suffix());
+	//	qDebug() << "trying to save: " << sFile.absoluteFilePath();
+
+	//	// user wants to overwrite files
+	//	if (sFile.exists() && overwrite) {
+	//		QFile f(sFile.absoluteFilePath());
+	//		f.remove();
+	//	}
+
+	//	bool saved = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
+
+	//	if (!saved)
+	//		emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
+
+	//	loader.loadPage(1);						// load next
+	//	emit updateImage(loader.image());
+	//	emit updateProgress(idx);
+
+	//	// user canceled?
+	//	if (!processing)
+	//		return QDialog::Rejected;
+	//}
+
+	processing = false;
+
+	return QDialog::Accepted;
+}
+
+void DkMosaicDialog::matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc) {
+
+	//std::cout << "cc size: " << cc.size() << std::endl;
+	for (int rIdx = 0; rIdx < cc.rows; rIdx++) {
+
+		float* ccPtr = cc.ptr<float>(rIdx);
+		const cv::Mat imgStrip = img.rowRange(rIdx*patchRes, rIdx*patchRes+patchRes);
+
+		for (int cIdx = 0; cIdx < cc.cols; cIdx++) {
+
+			// already computed?
+			if (ccPtr[cIdx] != 0)
+				continue;
+
+			const cv::Mat cPatch = imgStrip.colRange(cIdx*patchRes, cIdx*patchRes+patchRes);
+			
+			//std::cout << "patch size: " << cPatch.size() << std::endl;
+			//std::cout << "thumb size: " << thumb.size() << std::endl;
+			
+			cv::Mat absDiff;
+			cv::absdiff(cPatch, thumb, absDiff);
+			ccPtr[cIdx] = cv::sum(absDiff)[0]/(patchRes*patchRes*255);
+		}
+	}
+}
+
+cv::Mat DkMosaicDialog::createPatch(const QImage& thumb, int patchRes) {
+
+	cv::Mat cvThumb = DkImage::qImage2Mat(thumb);
+	cv::cvtColor(cvThumb, cvThumb, CV_RGB2Lab);
+	std::vector<Mat> channels;
+	cv::split(cvThumb, channels);
+	cvThumb = channels[0];
+	channels.clear();
+
+	// make square
+	if (cvThumb.rows != cvThumb.cols) {
+
+		if (cvThumb.rows > cvThumb.cols) {
+			float sh = (cvThumb.rows - cvThumb.cols)/2.0f;
+			cvThumb = cvThumb.rowRange(qFloor(sh), cvThumb.rows-qCeil(sh));
+		}
+		else {
+			float sh = (cvThumb.cols - cvThumb.rows)/2.0f;
+			cvThumb = cvThumb.colRange(qFloor(sh), cvThumb.cols-qCeil(sh));
+		}
+	}
+
+	cv::resize(cvThumb, cvThumb, cv::Size(patchRes, patchRes), 0.0, 0.0, CV_INTER_AREA);
+	//qDebug() << "thumb size: " << cvThumb.rows << " x " << cvThumb.cols;
+
+	return cvThumb;
+	//if size(img,1) ~= size(img,2)
+	//	[~, idx] = min(size(img));
+
+	//if idx == 1
+	//	sh = (size(img,2)-size(img,1))*0.5;
+	//img = img(:,floor(sh):end-ceil(sh));
+	//else
+	//	sh = (size(img,1)-size(img,2))*0.5;
+	//img = img(floor(sh):end-ceil(sh),:);    
+	//end
+	//	end
+
+
+}
+
+QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& ignore) {
+
+	// get all dirs
+	QFileInfoList entries = QDir(cPath).entryInfoList(QStringList(), QDir::AllDirs | QDir::NoDotAndDotDot);
+	//qDebug() << entries;
+	// get all files
+	entries += QDir(cPath).entryInfoList(DkImageLoader::fileFilters);
+	//qDebug() << "current entries: " << e;
+
+	if (entries.isEmpty())
+		return QString();
+
+	int rIdx = qRound((float)qrand()/RAND_MAX*(entries.size()-1));
+
+	qDebug() << "rand index: " << rIdx;
+
+	QFileInfo rPath = entries.at(rIdx);
+	qDebug() << rPath.absoluteFilePath();
+
+	if (rPath.isDir())
+		return getRandomImagePath(rPath.absoluteFilePath(), ignore);
+	else
+		return rPath.absoluteFilePath();
+}
+
+void DkMosaicDialog::setFile(const QFileInfo& file) {
+
+	if (!file.exists())
+		return;
+
+	cFile = file;
+	saveDir = file.absolutePath();
+	folderLabel->setText(saveDir.absolutePath());
+	tiffLabel->setText(file.absoluteFilePath());
+	fileEdit->setText(file.baseName());
+
+	loader.loadGeneral(cFile);
+	viewport->setImage(loader.image());
+
+	enableTIFFSave(loader.hasImage());
+
+	fromPage->setRange(1, loader.getNumPages());
+	toPage->setRange(1, loader.getNumPages());
+
+	fromPage->setValue(1);
+	toPage->setValue(loader.getNumPages());
+}
+
+void DkMosaicDialog::enableAll(bool enable) {
+
+	enableTIFFSave(enable);
+	controlWidget->setEnabled(enable);
+}
+
+void DkMosaicDialog::enableTIFFSave(bool enable) {
+
+	fileEdit->setEnabled(enable);
+	suffixBox->setEnabled(enable);
+	fromPage->setEnabled(enable);
+	toPage->setEnabled(enable);
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(enable);
+}
+
 // DkForceThumbDialog --------------------------------------------------------------------
 DkForceThumbDialog::DkForceThumbDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 

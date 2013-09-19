@@ -59,6 +59,7 @@
 
 #include "DkWidgets.h"
 #include "DkViewPort.h"
+#include "DkThumbs.h"
 
 namespace nmc {
 
@@ -811,6 +812,68 @@ protected:
 
 	};
 };
+
+class DkMosaicDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkMosaicDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+public slots:
+	void on_openButton_pressed();
+	void on_saveButton_pressed();
+	void on_fileEdit_textChanged(const QString& filename);
+	void setFile(const QFileInfo& file);
+	void accept();
+	void reject();
+	int computeMosaic(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite);
+	void processingFinished();
+
+signals:
+	void updateImage(QImage img);
+	void updateProgress(int);
+	void infoMessage(QString msg);
+
+protected:
+	void createLayout();
+	void enableTIFFSave(bool enable);
+	void enableAll(bool enable);
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	QString getRandomImagePath(const QString& cPath, const QString& ignore);
+	void matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc);
+	cv::Mat createPatch(const QImage& thumb, int patchRes);
+
+	DkBaseViewPort* viewport;
+	DkBaseViewPort* preview;
+	QLabel* tiffLabel;
+	QLabel* folderLabel;
+	QLineEdit* fileEdit;
+	QComboBox* suffixBox;
+	QSpinBox* fromPage;
+	QSpinBox* toPage;
+	QDialogButtonBox* buttons;
+	QProgressBar* progress;
+	QLabel* msgLabel;
+	QWidget* controlWidget;
+	QCheckBox* overwrite;
+
+	QFileInfo cFile;
+	QDir saveDir;
+	DkBasicLoader loader;
+	QFutureWatcher<int> watcher;
+	bool processing;
+	QImage mosaic;
+
+
+	enum {
+		finished,
+		question_save,
+		error,
+
+	};
+};
+
 
 class DkForceThumbDialog : public QDialog {
 	Q_OBJECT

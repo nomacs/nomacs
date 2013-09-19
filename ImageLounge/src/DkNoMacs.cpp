@@ -78,6 +78,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
+	mosaicDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
@@ -576,6 +577,7 @@ void DkNoMacs::createMenu() {
 #ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 #endif
+	toolsMenu->addAction(toolsActions[menu_tools_mosaic]);
 
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
@@ -1033,6 +1035,10 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_export_tiff] = new QAction(tr("Export Multipage &TIFF"), this);
 	toolsActions[menu_tools_export_tiff]->setStatusTip(tr("Export TIFF pages to multiple tiff files"));
 	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
+
+	toolsActions[menu_tools_mosaic] = new QAction(tr("&Mosaic Image"), this);
+	toolsActions[menu_tools_mosaic]->setStatusTip(tr("Create a Mosaic Image"));
+	connect(toolsActions[menu_tools_mosaic], SIGNAL(triggered()), this, SLOT(computeMosaic()));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -2389,6 +2395,16 @@ void DkNoMacs::exportTiff() {
 	
 	exportTiffDialog->exec();
 #endif
+}
+
+void DkNoMacs::computeMosaic() {
+
+	if (!mosaicDialog)
+		mosaicDialog = new DkMosaicDialog(this);
+
+	mosaicDialog->setFile(viewport()->getImageLoader()->getFile());
+
+	mosaicDialog->exec();
 }
 
 void DkNoMacs::openImgManipulationDialog() {
