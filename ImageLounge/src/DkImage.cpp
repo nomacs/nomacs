@@ -2135,6 +2135,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		
 		try {
 			// TODO: remove path?!
+			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(sImg));
 			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
 		} catch (DkException de) {
 			// do nothing -> the file type does not support meta data
@@ -2426,7 +2427,7 @@ bool DkImageLoader::restoreFile(const QFileInfo& fileInfo) {
 
 	if (backupFileName.isEmpty()) {
 		qDebug() << "I could not locate the backup file...";
-		return false;
+		return true;
 	}
 
 	// delete the destroyed file

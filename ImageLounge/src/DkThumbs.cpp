@@ -31,6 +31,9 @@
 
 namespace nmc {
 
+
+int DkThumbsLoader::maxThumbSize = 160;
+
 /**
 * Default constructor.
 * @param file the corresponding file
@@ -240,7 +243,6 @@ DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QStri
 	this->thumbs = thumbs;
 	this->dir = dir;
 	this->isActive = true;
-	this->maxThumbSize = 160;
 	this->files = files;
 	init();
 }
@@ -567,6 +569,35 @@ void DkThumbsLoader::stop() {
 	isActive = false;
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
 }
+
+QImage DkThumbsLoader::createThumb(const QImage& image) {
+
+	int imgW = image.width();
+	int imgH = image.height();
+
+	if (imgW > maxThumbSize || imgH > maxThumbSize) {
+		if (imgW > imgH) {
+			imgH = (float)maxThumbSize / imgW * imgH;
+			imgW = maxThumbSize;
+		} 
+		else if (imgW < imgH) {
+			imgW = (float)maxThumbSize / imgH * imgW;
+			imgH = maxThumbSize;
+		}
+		else {
+			imgW = maxThumbSize;
+			imgH = maxThumbSize;
+		}
+	}
+
+	// fast downscaling
+	QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+	thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	return thumb;
+
+}
+
 
 // DkColorLoader --------------------------------------------------------------------
 DkColorLoader::DkColorLoader(QDir dir, QStringList files) {
