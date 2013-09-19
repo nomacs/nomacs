@@ -3475,7 +3475,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 #endif
 
 		// sync signals
-		connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
+		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 		
 		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
 		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
