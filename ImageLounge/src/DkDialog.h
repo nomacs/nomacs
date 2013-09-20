@@ -803,6 +803,7 @@ protected:
 	QDir saveDir;
 	DkBasicLoader loader;
 	QFutureWatcher<int> watcher;
+
 	bool processing;
 
 	enum {
@@ -828,12 +829,17 @@ public slots:
 	void on_newHeightBox_valueChanged(int i);
 	void on_numPatchesV_valueChanged(int i);
 	void on_numPatchesH_valueChanged(int i);
+	void on_darkenSlider_valueChanged(int i);
+	void on_lightenSlider_valueChanged(int i);
+	void on_saturationSlider_valueChanged(int i);
 	void setFile(const QFileInfo& file);
 	void compute();
 	void reject();
 	int computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to);
-	void processingFinished();
+	void mosaicFinished();
+	void postProcessFinished();
 	void buttonClicked(QAbstractButton* button);
+	void updatePatchRes();
 
 signals:
 	void updateImage(QImage img);
@@ -841,6 +847,8 @@ signals:
 	void infoMessage(QString msg);
 
 protected:
+	void updatePostProcess();
+	void postProcessMosaic(float multiply = 0.3f, float screen = 0.5f, float saturation = 0.5f);
 	void createLayout();
 	void enableMosaicSave(bool enable);
 	void enableAll(bool enable);
@@ -849,7 +857,7 @@ protected:
 	QString getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix);
 	void matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc);
 	cv::Mat createPatch(const DkThumbNail& thumb, int patchRes);
-
+	
 	DkBaseViewPort* viewport;
 	DkBaseViewPort* preview;
 	QLabel* fileLabel;
@@ -865,12 +873,24 @@ protected:
 	QLabel* msgLabel;
 	QWidget* controlWidget;
 	QCheckBox* overwrite;
+	QLabel* patchResLabel;
+	
+	QWidget* sliderWidget;
+	QSlider* darkenSlider;
+	QSlider* lightenSlider;
+	QSlider* saturationSlider;
 
 	QFileInfo cFile;
 	QDir saveDir;
 	DkBasicLoader loader;
-	QFutureWatcher<int> watcher;
+	QFutureWatcher<int> mosaicWatcher;
+	QFutureWatcher<void> postProcessWatcher;
+
+	bool updatePostProcessing;
+	bool postProcessing;
 	bool processing;
+	cv::Mat origImg;
+	cv::Mat mosaicMat;
 	QImage mosaic;
 	QFileInfoList filesUsed;
 
