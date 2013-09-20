@@ -2135,7 +2135,7 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 		
 		try {
 			// TODO: remove path?!
-			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(sImg));
+			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(sImg), QFileInfo(filePath));
 			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
 		} catch (DkException de) {
 			// do nothing -> the file type does not support meta data

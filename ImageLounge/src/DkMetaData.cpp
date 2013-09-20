@@ -132,7 +132,11 @@ QImage DkMetaData::getThumbnail() {
 	return qThumb;
 }
 
-void DkMetaData::saveThumbnail(QImage thumb) {
+void DkMetaData::saveThumbnail(QImage thumb, QFileInfo saveFile) {
+
+	// do nothing if the image is saved somewhere else
+	if (saveFile != file)
+		return;
 
 	readMetaData();	
 
@@ -862,7 +866,7 @@ void DkMetaData::saveRating(int r) {
 
 void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 
-	qDebug() << "saving metadata...";
+	qDebug() << "saving metadata to: " << fileN.absoluteFilePath();
 	readMetaData();	
 	if (!mdata)
 		return;

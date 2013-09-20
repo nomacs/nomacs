@@ -827,7 +827,7 @@ public slots:
 	void setFile(const QFileInfo& file);
 	void accept();
 	void reject();
-	int computeMosaic(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite);
+	int computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to);
 	void processingFinished();
 	void buttonClicked(QAbstractButton* button);
 
@@ -842,7 +842,7 @@ protected:
 	void enableAll(bool enable);
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
-	QString getRandomImagePath(const QString& cPath, const QString& ignore);
+	QString getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix);
 	void matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc);
 	cv::Mat createPatch(const DkThumbNail& thumb, int patchRes);
 
@@ -850,7 +850,7 @@ protected:
 	DkBaseViewPort* preview;
 	QLabel* tiffLabel;
 	QLabel* folderLabel;
-	QLineEdit* fileEdit;
+	QLineEdit* filterEdit;
 	QComboBox* suffixBox;
 	QSpinBox* fromPage;
 	QSpinBox* toPage;

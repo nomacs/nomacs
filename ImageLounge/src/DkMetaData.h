@@ -101,7 +101,7 @@ public:
 	std::string getIptcValue(std::string key);
 	int getOrientation();
 	QImage getThumbnail();
-	void saveThumbnail(QImage thumb);
+	void saveThumbnail(QImage thumb, QFileInfo saveFile);
 	void saveOrientation(int o);
 	int getHorizontalFlipped();
 	void saveHorizontalFlipped(int f);

@@ -3082,11 +3082,15 @@ void DkMosaicDialog::createLayout() {
 	QLabel* fileLabel = new QLabel(tr("Filters:"), this);
 	fileLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-	fileEdit = new QLineEdit("", this);
-	fileEdit->setObjectName("fileEdit");
+	filterEdit = new QLineEdit("", this);
+	filterEdit->setObjectName("fileEdit");
+	filterEdit->setToolTip(tr("You can split multiple ignore words with ;"));
 
+	QStringList filters = DkImageLoader::openFilters;
+	filters.pop_front();	// replace for better readability
+	filters.push_front("All Images");
 	suffixBox = new QComboBox(this);
-	suffixBox->addItems(DkImageLoader::openFilters);
+	suffixBox->addItems(filters);
 	//suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
 
 	// export handles
@@ -3112,7 +3116,7 @@ void DkMosaicDialog::createLayout() {
 	//controlLayout->setColumnStretch(3, 1);
 
 	controlLayout->addWidget(fileLabel, 2, 0);
-	controlLayout->addWidget(fileEdit, 2, 1, 1, 2);
+	controlLayout->addWidget(filterEdit, 2, 1, 1, 2);
 	controlLayout->addWidget(suffixBox, 2, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
@@ -3205,31 +3209,36 @@ void DkMosaicDialog::accept() {
 
 	enableAll(false);
 
-	QString suffix = suffixBox->currentText();
+	QString suffixTmp = suffixBox->currentText();
+	QString suffix;
 
 	for (int idx = 0; idx < DkImageLoader::fileFilters.size(); idx++) {
-		if (suffix.contains("(" + DkImageLoader::fileFilters.at(idx))) {
+		if (suffixTmp.contains("(" + DkImageLoader::fileFilters.at(idx))) {
 			suffix = DkImageLoader::fileFilters.at(idx);
-			suffix.replace("*","");
+			//suffix.replace("*","");
 			break;
 		}
 	}
 
-	QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
+
+
+	QString filter = filterEdit->text();
+	//QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
 
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::computeMosaic,
 		cFile,
-		sFile, 
+		filter,
+		suffix, 
 		fromPage->value(), 
-		toPage->value(),
-		overwrite->isChecked());
+		toPage->value());
 	watcher.setFuture(future);
 
 	//// debug
 	//computeMosaic(
 	//	cFile,
-	//	sFile, 
+	//	filter,
+	//	suffix,
 	//	fromPage->value(), 
 	//	toPage->value(),
 	//	overwrite->isChecked());
@@ -3255,7 +3264,7 @@ void DkMosaicDialog::processingFinished() {
 	//	QDialog::accept();
 }
 
-int DkMosaicDialog::computeMosaic(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite) {
+int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to) {
 
 	processing = true;
 
@@ -3315,9 +3324,9 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QFileInfo saveFile, int from, 
 	int pIdx = 0;
 	int maxP = numPatches.width()*numPatches.height();
 
-	QString imgPath = getRandomImagePath(saveDir.absolutePath(), "");
+	//QString imgPath = getRandomImagePath(saveDir.absolutePath(), filter, suffix);
+	//qDebug() << "I chose: " << imgPath;
 
-	qDebug() << "I chose: " << imgPath;
 	int iDidNothing = 0;
 	bool force = false;
 	bool useTwice = false;
@@ -3345,8 +3354,8 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QFileInfo saveFile, int from, 
 			return QDialog::Rejected;
 		}
 
-		// TODO: add ignore keyword
-		QString imgPath = getRandomImagePath(saveDir.absolutePath(), "");
+		QString imgPath = getRandomImagePath(saveDir.absolutePath(), filter, suffix);
+		qDebug() << imgPath;
 
 		if (filesUsed.contains(QFileInfo(imgPath))) {
 			iDidNothing++;
@@ -3588,29 +3597,55 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 
 }
 
-QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& ignore) {
+QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix) {
 
 	// TODO: remove hierarchy
+
+	QStringList fileFilters = (suffix.isEmpty()) ? DkImageLoader::fileFilters : QStringList(suffix);
 
 	// get all dirs
 	QFileInfoList entries = QDir(cPath).entryInfoList(QStringList(), QDir::AllDirs | QDir::NoDotAndDotDot);
 	//qDebug() << entries;
 	// get all files
-	entries += QDir(cPath).entryInfoList(DkImageLoader::fileFilters);
+	entries += QDir(cPath).entryInfoList(fileFilters);
 	//qDebug() << "current entries: " << e;
+
+	if (!ignore.isEmpty()) {
+
+		QStringList ignoreList = ignore.split(";");
+		QFileInfoList entriesTmp = entries;
+		entries.clear();
+
+		for (int idx = 0; idx < entriesTmp.size(); idx++) {
+			
+			bool ignore = false;
+			QString p = entriesTmp.at(idx).absoluteFilePath();
+
+			for (int iIdx = 0; iIdx < ignoreList.size(); iIdx++) {
+				if (p.contains(ignoreList.at(iIdx))) {
+					ignore = true;
+					break;
+				}
+			}
+
+			if (!ignore)
+				entries.append(entriesTmp.at(idx));
+		}
+	}
+		
 
 	if (entries.isEmpty())
 		return QString();
 
 	int rIdx = qRound((float)qrand()/RAND_MAX*(entries.size()-1));
 
-	qDebug() << "rand index: " << rIdx;
+	//qDebug() << "rand index: " << rIdx;
 
 	QFileInfo rPath = entries.at(rIdx);
 	qDebug() << rPath.absoluteFilePath();
 
 	if (rPath.isDir())
-		return getRandomImagePath(rPath.absoluteFilePath(), ignore);
+		return getRandomImagePath(rPath.absoluteFilePath(), ignore, suffix);
 	else
 		return rPath.absoluteFilePath();
 }
@@ -3624,7 +3659,7 @@ void DkMosaicDialog::setFile(const QFileInfo& file) {
 	saveDir = file.absolutePath();
 	folderLabel->setText(saveDir.absolutePath());
 	tiffLabel->setText(file.absoluteFilePath());
-	fileEdit->setText(file.baseName());
+	filterEdit->setText(file.baseName());
 
 	loader.loadGeneral(cFile);
 	viewport->setImage(loader.image());
@@ -3646,7 +3681,7 @@ void DkMosaicDialog::enableAll(bool enable) {
 
 void DkMosaicDialog::enableMosaicSave(bool enable) {
 
-	fileEdit->setEnabled(enable);
+	filterEdit->setEnabled(enable);
 	suffixBox->setEnabled(enable);
 	fromPage->setEnabled(enable);
 	toPage->setEnabled(enable);

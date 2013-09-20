@@ -1508,7 +1508,7 @@ void DkViewPort::unloadImage() {
 		int rating = controller->getRating();
 
 		// TODO: if image is not saved... ask user?! -> resize & crop
-		if ((imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) ||
+		if (!loader->isEdited() && (imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) ||
 			(imgStorage.hasImage() && loader && loader->getMetaData().isDirty())) {
 			qDebug() << "old rating: " << loader->getMetaData().getRating() << " rating: " << rating << " is dirty: " << loader->getMetaData().isDirty();
 			qDebug() << "meta file: " << loader->getMetaData().getFile().absoluteFilePath() << " loader file: " << loader->getFile().absoluteFilePath();

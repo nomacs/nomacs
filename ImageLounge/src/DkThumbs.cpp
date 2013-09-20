@@ -148,7 +148,7 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::display.saveThumb)) {	// TODO settings
 			
 			try {
-				dataExif.saveThumbnail(thumb);
+				dataExif.saveThumbnail(thumb, QFileInfo(filePath));
 			} catch (DkException de) {
 				// do nothing -> the file type does not support meta data
 			}
@@ -200,7 +200,7 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 	}
 
 	// non black border?
-	if (rIdx == -1)
+	if (rIdx == -1 || rIdx > 15)
 		return;
 
 	int rIdxB = img.height()-1;
