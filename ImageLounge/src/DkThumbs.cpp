@@ -74,6 +74,8 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
 	QImageReader imageReader(filePath);
 
+	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
+
 	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
 
 		imgW = imageReader.size().width();

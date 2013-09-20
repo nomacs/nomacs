@@ -824,8 +824,12 @@ public slots:
 	void on_openButton_pressed();
 	void on_dbButton_pressed();
 	void on_fileEdit_textChanged(const QString& filename);
+	void on_newWidthBox_valueChanged(int i);
+	void on_newHeightBox_valueChanged(int i);
+	void on_numPatchesV_valueChanged(int i);
+	void on_numPatchesH_valueChanged(int i);
 	void setFile(const QFileInfo& file);
-	void accept();
+	void compute();
 	void reject();
 	int computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to);
 	void processingFinished();
@@ -848,12 +852,14 @@ protected:
 
 	DkBaseViewPort* viewport;
 	DkBaseViewPort* preview;
-	QLabel* tiffLabel;
+	QLabel* fileLabel;
 	QLabel* folderLabel;
 	QLineEdit* filterEdit;
 	QComboBox* suffixBox;
-	QSpinBox* fromPage;
-	QSpinBox* toPage;
+	QSpinBox* newWidthBox;
+	QSpinBox* newHeightBox;
+	QSpinBox* numPatchesV;
+	QSpinBox* numPatchesH;
 	QDialogButtonBox* buttons;
 	QProgressBar* progress;
 	QLabel* msgLabel;

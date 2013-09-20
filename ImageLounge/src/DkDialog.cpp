@@ -2734,6 +2734,7 @@ DkExportTiffDialog::DkExportTiffDialog(QWidget* parent /* = 0 */, Qt::WindowFlag
 	createLayout();
 	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
+	processing = false;
 
 	connect(this, SIGNAL(updateImage(QImage)), viewport, SLOT(setImage(QImage)));
 	connect(&watcher, SIGNAL(finished()), this, SLOT(processingFinished()));
@@ -3016,6 +3017,7 @@ void DkExportTiffDialog::enableTIFFSave(bool enable) {
 // DkMosaicDialog --------------------------------------------------------------------
 DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
+	processing = false;
 	setWindowTitle(tr("Create Mosaic Image"));
 	createLayout();
 	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
@@ -3045,7 +3047,7 @@ void DkMosaicDialog::dragEnterEvent(QDragEnterEvent *event) {
 		url = url.toLocalFile();
 		QFileInfo file = QFileInfo(url.toString());
 
-		if (file.exists() && file.suffix().indexOf(QRegExp("tif"), Qt::CaseInsensitive) != -1)
+		if (file.exists() && DkImageLoader::isValid(file))
 			event->acceptProposedAction();
 	}
 }
@@ -3066,8 +3068,9 @@ void DkMosaicDialog::createLayout() {
 
 	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
 	openButton->setObjectName("openButton");
+	openButton->setToolTip(tr("Specify the Root Folder of the Image Database Desired."));
 
-	tiffLabel = new QLabel(tr("No Image loaded"), this);
+	fileLabel = new QLabel(tr("No Image loaded"), this);
 
 	// save handles
 	QLabel* saveLabel = new QLabel(tr("Image Database:"), this);
@@ -3078,9 +3081,37 @@ void DkMosaicDialog::createLayout() {
 
 	folderLabel = new QLabel(tr("Specify an Image Database"), this);
 
-	// file name handles
-	QLabel* fileLabel = new QLabel(tr("Filters:"), this);
-	fileLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	// resolution handles
+	QLabel* sizeLabel = new QLabel(tr("Resolution:"));
+	sizeLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	newWidthBox = new QSpinBox();
+	newWidthBox->setObjectName("newWidthBox");
+	newWidthBox->setToolTip(tr("Pixel Width"));
+	newWidthBox->setMinimum(100);
+	newWidthBox->setMaximum(10000);
+	newHeightBox = new QSpinBox();
+	newHeightBox->setObjectName("newHeightBox");
+	newHeightBox->setToolTip(tr("Pixel Height"));
+	newHeightBox->setMinimum(100);
+	newHeightBox->setMaximum(10000);
+
+	// num patch handles
+	QLabel* patchLabel = new QLabel(tr("Patches:"));
+	patchLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	numPatchesH = new QSpinBox();
+	numPatchesH->setObjectName("numPatchesH");
+	numPatchesH->setToolTip(tr("Number of Horizontal Patches"));
+	numPatchesH->setMinimum(10);
+	numPatchesH->setMaximum(500);
+	numPatchesV = new QSpinBox();
+	numPatchesV->setObjectName("numPatchesV");
+	numPatchesV->setToolTip(tr("Number of Vertical Patches"));
+	numPatchesV->setMinimum(10);
+	numPatchesV->setMaximum(500);
+
+	// file filters
+	QLabel* filterLabel = new QLabel(tr("Filters:"), this);
+	filterLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
 	filterEdit = new QLineEdit("", this);
 	filterEdit->setObjectName("fileEdit");
@@ -3093,21 +3124,12 @@ void DkMosaicDialog::createLayout() {
 	suffixBox->addItems(filters);
 	//suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
 
-	// export handles
-	QLabel* exportLabel = new QLabel(tr("Export Pages"));
-	exportLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-
-	fromPage = new QSpinBox(0);
-
-	toPage = new QSpinBox(0);
-
-	overwrite = new QCheckBox(tr("Overwrite"));
 
 	controlWidget = new QWidget(this);
 	QGridLayout* controlLayout = new QGridLayout(controlWidget);
 	controlLayout->addWidget(openLabel, 0, 0);
 	controlLayout->addWidget(openButton, 0, 1, 1, 2);
-	controlLayout->addWidget(tiffLabel, 0, 3, 1, 2);
+	controlLayout->addWidget(fileLabel, 0, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
 	controlLayout->addWidget(saveLabel, 1, 0);
@@ -3115,15 +3137,17 @@ void DkMosaicDialog::createLayout() {
 	controlLayout->addWidget(folderLabel, 1, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
-	controlLayout->addWidget(fileLabel, 2, 0);
-	controlLayout->addWidget(filterEdit, 2, 1, 1, 2);
-	controlLayout->addWidget(suffixBox, 2, 3, 1, 2);
-	//controlLayout->setColumnStretch(3, 1);
+	controlLayout->addWidget(sizeLabel, 2, 0);
+	controlLayout->addWidget(newWidthBox, 2, 1);
+	controlLayout->addWidget(newHeightBox, 2, 2);
 
-	controlLayout->addWidget(exportLabel, 3, 0);
-	controlLayout->addWidget(fromPage, 3, 1);
-	controlLayout->addWidget(toPage, 3, 2);
-	controlLayout->addWidget(overwrite, 3, 3);
+	controlLayout->addWidget(patchLabel, 4, 0);
+	controlLayout->addWidget(numPatchesH, 4, 1);
+	controlLayout->addWidget(numPatchesV, 4, 2);
+
+	controlLayout->addWidget(filterLabel, 5, 0);
+	controlLayout->addWidget(filterEdit, 5, 1, 1, 2);
+	controlLayout->addWidget(suffixBox, 5, 3, 1, 2);
 	controlLayout->setColumnStretch(5, 1);
 
 	// shows the image if it could be loaded
@@ -3141,10 +3165,10 @@ void DkMosaicDialog::createLayout() {
 	viewLayout->addWidget(preview);
 
 	// buttons
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Generate"));
+	buttons = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	//connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 	buttons->button(QDialogButtonBox::Save)->setEnabled(false);
@@ -3187,6 +3211,48 @@ void DkMosaicDialog::on_fileEdit_textChanged(const QString& filename) {
 	qDebug() << "new file name: " << filename;
 }
 
+void DkMosaicDialog::on_newWidthBox_valueChanged(int i) {
+
+	if (!loader.hasImage())
+		return;
+
+	newHeightBox->blockSignals(true);
+	newHeightBox->setValue(qRound((float)newWidthBox->value()/loader.image().width()*loader.image().height()));
+	newHeightBox->blockSignals(false);
+}
+
+void DkMosaicDialog::on_newHeightBox_valueChanged(int i) {
+
+	if (!loader.hasImage())
+		return;
+
+	newWidthBox->blockSignals(true);
+	newWidthBox->setValue(qRound((float)newHeightBox->value()/loader.image().height()*loader.image().width()));
+	newWidthBox->blockSignals(false);
+}
+
+void DkMosaicDialog::on_numPatchesH_valueChanged(int i) {
+
+	if (!loader.hasImage())
+		return;
+
+	numPatchesV->blockSignals(true);
+	int patchResO = qFloor((float)loader.image().width()/numPatchesH->value());
+	numPatchesV->setValue(qFloor((float)loader.image().height()/patchResO));
+	numPatchesV->blockSignals(true);
+}
+
+void DkMosaicDialog::on_numPatchesV_valueChanged(int i) {
+	
+	if (!loader.hasImage())
+		return;
+
+	numPatchesH->blockSignals(true);
+	int patchResO = qFloor((float)loader.image().height()/numPatchesV->value());
+	numPatchesH->setValue(qFloor((float)loader.image().width()/patchResO));
+	numPatchesH->blockSignals(true);
+}
+
 QImage DkMosaicDialog::getImage() {
 	return mosaic;
 }
@@ -3201,10 +3267,11 @@ void DkMosaicDialog::reject() {
 
 }
 
-void DkMosaicDialog::accept() {
+void DkMosaicDialog::compute() {
 
 	progress->setValue(progress->minimum());
 	progress->show();
+	msgLabel->setText("");
 	msgLabel->show();
 
 	enableAll(false);
@@ -3220,8 +3287,6 @@ void DkMosaicDialog::accept() {
 		}
 	}
 
-
-
 	QString filter = filterEdit->text();
 	//QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
 
@@ -3230,8 +3295,8 @@ void DkMosaicDialog::accept() {
 		cFile,
 		filter,
 		suffix, 
-		fromPage->value(), 
-		toPage->value());
+		newWidthBox->value(), 
+		numPatchesH->value());
 	watcher.setFuture(future);
 
 	//// debug
@@ -3249,13 +3314,16 @@ void DkMosaicDialog::buttonClicked(QAbstractButton* button) {
 
 	if (button == buttons->button(QDialogButtonBox::Save))
 		QDialog::accept();
+	else if (button == buttons->button(QDialogButtonBox::Apply)) {
+		compute();
+	}
 }
 
 void DkMosaicDialog::processingFinished() {
 
 	enableAll(true);
 	progress->hide();
-	msgLabel->hide();
+	//msgLabel->hide();
 
 	if (!mosaic.isNull())
 		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
@@ -3264,7 +3332,7 @@ void DkMosaicDialog::processingFinished() {
 	//	QDialog::accept();
 }
 
-int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to) {
+int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int newWidth, int numPatchesH) {
 
 	processing = true;
 
@@ -3278,23 +3346,23 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	//emit updateImage(DkImage::mat2QImage(imgL3));
 
 	// defines (user should do that)
-	int newMinSize = 4096;
-	QSize numPatches = QSize(25, 0);
+	//int newMinSize = 4096;
+	QSize numPatches = QSize(numPatchesH, 0);
 
 	// compute new image size
 	float aratio = (float)mImg.rows/mImg.cols;
 
-	int patchResO = qFloor((float)qMin(mImg.rows, mImg.cols)/numPatches.width());
-	numPatches.setHeight(qFloor((float)qMax(mImg.rows, mImg.cols)/patchResO));
+	int patchResO = qFloor((float)mImg.cols/numPatches.width());
+	numPatches.setHeight(qFloor((float)mImg.rows/patchResO));
 
-	int patchResD = qFloor(patchResO*newMinSize/qMin(mImg.rows, mImg.cols));
+	int patchResD = qFloor(patchResO*newWidth/mImg.cols);
 
-	// swap if the image is landscape
-	if (mImg.rows < mImg.cols) {
-		int tmp = numPatches.width();
-		numPatches.setWidth(numPatches.height());
-		numPatches.setHeight(tmp);
-	}
+	//// swap if the image is landscape
+	//if (mImg.rows < mImg.cols) {
+	//	int tmp = numPatches.width();
+	//	numPatches.setWidth(numPatches.height());
+	//	numPatches.setHeight(tmp);
+	//}
 
 	float shR = (mImg.rows-patchResO*numPatches.height())/2.0f;
 	float shC = (mImg.cols-patchResO*numPatches.width())/2.0f;
@@ -3319,6 +3387,12 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	// patch image (preview)
 	cv::Mat pImg(patchResO*numPatches.height(), patchResO*numPatches.width(), CV_8UC1);
 	pImg = 255;
+
+	qDebug() << "mosaic data --------------------------------";
+	qDebug() << "patchRes: " << patchResD;
+	qDebug() << "new resolution: " << dImg.cols << " x " << dImg.rows;
+	qDebug() << "num patches: " << numPatches.width() << " x " << numPatches.height();
+	qDebug() << "mosaic data --------------------------------";
 
 	// progress bar
 	int pIdx = 0;
@@ -3363,6 +3437,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 		}
 
 		DkThumbNail thumb = DkThumbNail(QFileInfo(imgPath));
+		thumb.setMinThumbSize(patchResO);
 		thumb.setRescale(false);
 		thumb.compute();
 
@@ -3658,19 +3733,27 @@ void DkMosaicDialog::setFile(const QFileInfo& file) {
 	cFile = file;
 	saveDir = file.absolutePath();
 	folderLabel->setText(saveDir.absolutePath());
-	tiffLabel->setText(file.absoluteFilePath());
-	filterEdit->setText(file.baseName());
+	fileLabel->setText(file.absoluteFilePath());
+	//filterEdit->setText(file.baseName());
 
 	loader.loadGeneral(cFile);
 	viewport->setImage(loader.image());
 
 	enableMosaicSave(loader.hasImage());
 
-	fromPage->setRange(1, loader.getNumPages());
-	toPage->setRange(1, loader.getNumPages());
+	//newWidthBox->blockSignals(true);
+	//newHeightBox->blockSignals(true);
+	newWidthBox->setValue(loader.image().width());
+	numPatchesH->setValue(qFloor((float)loader.image().width()/90));	// 130 is a pretty good patch resolution
+	//newHeightBox->setValue(loader.image().height());
+	//newWidthBox->blockSignals(false);
+	//newHeightBox->blockSignals(false);
 
-	fromPage->setValue(1);
-	toPage->setValue(loader.getNumPages());
+	//fromPage->setRange(1, loader.getNumPages());
+	//toPage->setRange(1, loader.getNumPages());
+
+	//fromPage->setValue(1);
+	//toPage->setValue(loader.getNumPages());
 }
 
 void DkMosaicDialog::enableAll(bool enable) {
@@ -3683,9 +3766,11 @@ void DkMosaicDialog::enableMosaicSave(bool enable) {
 
 	filterEdit->setEnabled(enable);
 	suffixBox->setEnabled(enable);
-	fromPage->setEnabled(enable);
-	toPage->setEnabled(enable);
-	buttons->button(QDialogButtonBox::Ok)->setEnabled(enable);
+	newWidthBox->setEnabled(enable);
+	newHeightBox->setEnabled(enable);
+	numPatchesH->setEnabled(enable);
+	numPatchesV->setEnabled(enable);
+	buttons->button(QDialogButtonBox::Apply)->setEnabled(enable);
 }
 
 // DkForceThumbDialog --------------------------------------------------------------------
