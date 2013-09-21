@@ -848,7 +848,7 @@ signals:
 
 protected:
 	void updatePostProcess();
-	void postProcessMosaic(float multiply = 0.3f, float screen = 0.5f, float saturation = 0.5f);
+	void postProcessMosaic(float multiply = 0.3f, float screen = 0.5f, float saturation = 0.5f, bool computePreview = true);
 	void createLayout();
 	void enableMosaicSave(bool enable);
 	void enableAll(bool enable);
@@ -891,6 +891,7 @@ protected:
 	bool processing;
 	cv::Mat origImg;
 	cv::Mat mosaicMat;
+	cv::Mat mosaicMatSmall;
 	QImage mosaic;
 	QFileInfoList filesUsed;
 
