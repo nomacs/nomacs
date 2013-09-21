@@ -3126,8 +3126,8 @@ void DkMosaicDialog::createLayout() {
 	newHeightBox->setToolTip(tr("Pixel Height"));
 	newHeightBox->setMinimum(100);
 	newHeightBox->setMaximum(50000);
-	patchResLabel = new QLabel("");
-	patchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
+	realResLabel = new QLabel("");
+	//realResLabel->setToolTip(tr("."));
 
 	// num patch handles
 	QLabel* patchLabel = new QLabel(tr("Patches:"));
@@ -3142,6 +3142,8 @@ void DkMosaicDialog::createLayout() {
 	numPatchesV->setToolTip(tr("Number of Vertical Patches"));
 	numPatchesV->setMinimum(1);
 	numPatchesV->setMaximum(500);
+	patchResLabel = new QLabel("");
+	patchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
 
 	// file filters
 	QLabel* filterLabel = new QLabel(tr("Filters:"), this);
@@ -3173,11 +3175,12 @@ void DkMosaicDialog::createLayout() {
 	controlLayout->addWidget(sizeLabel, 2, 0);
 	controlLayout->addWidget(newWidthBox, 2, 1);
 	controlLayout->addWidget(newHeightBox, 2, 2);
-	controlLayout->addWidget(patchResLabel, 2, 3);
+	controlLayout->addWidget(realResLabel, 2, 3);
 
 	controlLayout->addWidget(patchLabel, 4, 0);
 	controlLayout->addWidget(numPatchesH, 4, 1);
 	controlLayout->addWidget(numPatchesV, 4, 2);
+	controlLayout->addWidget(patchResLabel, 4, 3);
 
 	controlLayout->addWidget(filterLabel, 5, 0);
 	controlLayout->addWidget(filterEdit, 5, 1, 1, 2);
@@ -3192,6 +3195,7 @@ void DkMosaicDialog::createLayout() {
 	preview = new DkBaseViewPort(this);
 	preview->setForceFastRendering(true);
 	preview->setPanControl(QPointF(0.0f, 0.0f));
+	preview->hide();
 
 	QWidget* viewports = new QWidget(this);
 	QHBoxLayout* viewLayout = new QHBoxLayout(viewports);
@@ -3200,6 +3204,7 @@ void DkMosaicDialog::createLayout() {
 
 	// buttons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
 	buttons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	//connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -3254,6 +3259,7 @@ void DkMosaicDialog::on_newWidthBox_valueChanged(int i) {
 	newHeightBox->blockSignals(true);
 	newHeightBox->setValue(qRound((float)newWidthBox->value()/loader.image().width()*loader.image().height()));
 	newHeightBox->blockSignals(false);
+	realResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(newWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(newHeightBox->value()/150.0*2.54, 0, 'f', 1));
 	updatePatchRes();
 }
 
@@ -3265,6 +3271,7 @@ void DkMosaicDialog::on_newHeightBox_valueChanged(int i) {
 	newWidthBox->blockSignals(true);
 	newWidthBox->setValue(qRound((float)newHeightBox->value()/loader.image().height()*loader.image().width()));
 	newWidthBox->blockSignals(false);
+	realResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(newWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(newHeightBox->value()/150.0*2.54, 0, 'f', 1));
 	updatePatchRes();
 }
 
@@ -3274,8 +3281,7 @@ void DkMosaicDialog::on_numPatchesH_valueChanged(int i) {
 		return;
 
 	numPatchesV->blockSignals(true);
-	int patchResO = qFloor((float)loader.image().width()/numPatchesH->value());
-	numPatchesV->setValue(qFloor((float)loader.image().height()/patchResO));
+	numPatchesV->setValue(qFloor((float)loader.image().height()/((float)loader.image().width()/numPatchesH->value())));
 	numPatchesV->blockSignals(false);
 	updatePatchRes();
 }
@@ -3286,8 +3292,7 @@ void DkMosaicDialog::on_numPatchesV_valueChanged(int i) {
 		return;
 
 	numPatchesH->blockSignals(true);
-	int patchResO = qFloor((float)loader.image().height()/numPatchesV->value());
-	numPatchesH->setValue(qFloor((float)loader.image().width()/patchResO));
+	numPatchesH->setValue(qFloor((float)loader.image().width()/((float)loader.image().height()/numPatchesV->value())));
 	numPatchesH->blockSignals(false);
 	updatePatchRes();
 }
@@ -3330,6 +3335,12 @@ void DkMosaicDialog::reject() {
 	// not sure if this is a nice way to do: but we change cancel behavior while processing
 	if (processing)
 		processing = false;
+	else if (!mosaic.isNull() && !buttons->button(QDialogButtonBox::Apply)->isEnabled()) {
+		buttons->button(QDialogButtonBox::Apply)->setEnabled(true);
+		enableAll(true);
+		viewport->show();
+		sliderWidget->hide();
+	}
 	else
 		QDialog::reject();
 
@@ -3339,13 +3350,21 @@ void DkMosaicDialog::buttonClicked(QAbstractButton* button) {
 
 	if (button == buttons->button(QDialogButtonBox::Save)) {
 
+		// render the full image
 		if (!mosaic.isNull()) {
-			postProcessMosaic(darkenSlider->value()/100.0f,
+			sliderWidget->hide();
+			progress->show();
+			enableAll(false);
+			button->setEnabled(false);
+			
+			QFuture<bool> future = QtConcurrent::run(this, 
+				&nmc::DkMosaicDialog::postProcessMosaic,
+				darkenSlider->value()/100.0f,
 				lightenSlider->value()/100.0f, 
 				saturationSlider->value()/100.0f,
 				false);
+			postProcessWatcher.setFuture(future);
 		}
-		QDialog::accept();
 	}
 	else if (button == buttons->button(QDialogButtonBox::Apply))
 		compute();
@@ -3360,10 +3379,13 @@ void DkMosaicDialog::compute() {
 	progress->show();
 	msgLabel->setText("");
 	msgLabel->show();
+	mosaicMatSmall.release();
 	mosaicMat.release();
 	origImg.release();
+	mosaic = QImage();
 	sliderWidget->hide();
 	viewport->show();
+	preview->show();
 
 	enableAll(false);
 
@@ -3403,7 +3425,6 @@ void DkMosaicDialog::compute() {
 
 void DkMosaicDialog::mosaicFinished() {
 
-	enableAll(true);
 	progress->hide();
 	//msgLabel->hide();
 	
@@ -3413,6 +3434,9 @@ void DkMosaicDialog::mosaicFinished() {
 		viewport->hide();
 		updatePostProcess();	// add values
 		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
+	}
+	else {
+		enableAll(true);
 	}
 
 	//if (watcher.future() == QDialog::Accepted)
@@ -3821,7 +3845,7 @@ void DkMosaicDialog::updatePostProcess() {
 	buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
 	buttons->button(QDialogButtonBox::Save)->setEnabled(false);
 
-	QFuture<void> future = QtConcurrent::run(this, 
+	QFuture<bool> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::postProcessMosaic,
 		darkenSlider->value()/100.0f,
 		lightenSlider->value()/100.0f, 
@@ -3835,15 +3859,17 @@ void DkMosaicDialog::updatePostProcess() {
 
 void DkMosaicDialog::postProcessFinished() {
 
-	if (updatePostProcessing)
+	if (postProcessWatcher.result()) {
+		QDialog::accept();
+	}
+	else if (updatePostProcessing)
 		updatePostProcess();
 	else {
-		buttons->button(QDialogButtonBox::Apply)->setEnabled(true);
 		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
 	}
 }
 
-void DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen /* = 0.5 */, float saturation, bool computePreview) {
+bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen /* = 0.5 */, float saturation, bool computePreview) {
 
 	postProcessing = true;
 
@@ -3868,6 +3894,9 @@ void DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 
 			const unsigned char* mosaicPtr = mosaicR.ptr<unsigned char>(rIdx);
 			unsigned char* origPtr = origR.ptr<unsigned char>(rIdx);
+
+			if (!computePreview)
+				emit updateProgress(qRound((float)rIdx/origR.rows*100));
 
 			for (int cIdx = 0; cIdx < origR.cols; cIdx++) {
 
@@ -3912,6 +3941,8 @@ void DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 		preview->setImage(mosaic);
 
 	postProcessing = false;
+
+	return !computePreview;
 
 }
 

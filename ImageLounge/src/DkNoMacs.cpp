@@ -2399,15 +2399,19 @@ void DkNoMacs::exportTiff() {
 
 void DkNoMacs::computeMosaic() {
 
-	if (!mosaicDialog)
-		mosaicDialog = new DkMosaicDialog(this);
+	//if (!mosaicDialog)
+	mosaicDialog = new DkMosaicDialog(this);
 
 	mosaicDialog->setFile(viewport()->getImageLoader()->getFile());
 
 	int response = mosaicDialog->exec();
 
-	if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull())
+	if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull()) {
 		viewport()->setEditedImage(mosaicDialog->getImage());
+		saveFileAs();
+	}
+
+	mosaicDialog->deleteLater();
 }
 
 void DkNoMacs::openImgManipulationDialog() {
