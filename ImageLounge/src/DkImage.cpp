@@ -109,7 +109,7 @@ DkBasicLoader::DkBasicLoader(int mode) {
  * @param file the image file that should be loaded.
  * @return bool true if the image could be loaded.
  **/ 
-bool DkBasicLoader::loadGeneral(QFileInfo file) {
+bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 
 	bool imgLoaded = false;
 	
@@ -195,6 +195,14 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 	if (imgLoaded && !pageIdxDirty)
 		indexPages(file);
 	pageIdxDirty = false;
+
+	if (imgLoaded && rotateImg && !DkSettings::metaData.ignoreExifOrientation) {
+		DkMetaData imgMetaData(file);		
+		int orientation = imgMetaData.getOrientation();
+
+		if (!imgMetaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+			rotate(orientation);
+	}
 
 	return imgLoaded;
 }

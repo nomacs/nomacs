@@ -117,7 +117,7 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 		if (thumb.isNull()) {
 			DkBasicLoader loader;
 			
-			if (loader.loadGeneral(file)) {
+			if (loader.loadGeneral(file, true)) {
 
 				thumb = loader.image();
 				imgW = thumb.width();

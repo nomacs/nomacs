@@ -2400,7 +2400,7 @@ void DkNoMacs::exportTiff() {
 void DkNoMacs::computeMosaic() {
 
 	//if (!mosaicDialog)
-	mosaicDialog = new DkMosaicDialog(this);
+	mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 
 	mosaicDialog->setFile(viewport()->getImageLoader()->getFile());
 

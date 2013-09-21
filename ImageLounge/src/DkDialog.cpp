@@ -3499,7 +3499,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	bool force = false;
 	bool useTwice = false;
 
-	for (int idx = 0; idx < 100; idx++) {
+	while (iDidNothing < 10000) {
 
 		if (!processing)
 			return QDialog::Rejected;
@@ -3731,7 +3731,7 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 	// load full image if we have not enough resolution
 	if (qMin(thumb.getImage().width(), thumb.getImage().height()) < patchRes) {
 		DkBasicLoader loader;
-		loader.loadGeneral(thumb.getFile());
+		loader.loadGeneral(thumb.getFile(), true);
 		img = loader.image();
 	}
 	else
