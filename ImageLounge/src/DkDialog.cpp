@@ -3228,7 +3228,7 @@ void DkMosaicDialog::on_openButton_pressed() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
 		cFile.absolutePath(), 
-		DkImageLoader::saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+		DkImageLoader::openFilters.join(";;"));
 
 	setFile(fileName);
 }
@@ -3353,6 +3353,7 @@ void DkMosaicDialog::buttonClicked(QAbstractButton* button) {
 		// render the full image
 		if (!mosaic.isNull()) {
 			sliderWidget->hide();
+			progress->setValue(progress->minimum());
 			progress->show();
 			enableAll(false);
 			button->setEnabled(false);
