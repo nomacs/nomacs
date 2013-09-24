@@ -31,6 +31,207 @@
 
 namespace nmc {
 
+
+int DkThumbsLoader::maxThumbSize = 160;
+
+/**
+* Default constructor.
+* @param file the corresponding file
+* @param img the thumbnail image
+**/ 
+DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
+	this->img = img;
+	this->file = file;
+	this->maxThumbSize = 160;
+	this->minThumbSize = DkSettings::display.thumbSize;
+	this->rescale = true;
+	imgExists = true;
+	s = qMax(img.width(), img.height());
+};
+
+/**
+ * Loads the thumbnail from the metadata.
+ * If no thumbnail is embedded, the whole image
+ * is loaded and downsampled in a fast manner.
+ * @param file the file to be loaded
+ * @return QImage the loaded image. Null if no image
+ * could be loaded at all.
+ **/ 
+void DkThumbNail::compute(bool forceLoad, bool forceSave) {
+	
+	DkTimer dt;
+
+	//// see if we can read the thumbnail from the exif data
+	DkMetaData dataExif(file);
+	QImage thumb = dataExif.getThumbnail();
+	removeBlackBorder(thumb);
+	int orientation = dataExif.getOrientation();
+	int imgW = thumb.width();
+	int imgH = thumb.height();
+	int tS = minThumbSize;
+
+	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
+	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
+	QImageReader imageReader(filePath);
+
+	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
+
+	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
+
+		imgW = imageReader.size().width();
+		imgH = imageReader.size().height();	// locks the file!
+	}
+	//else if (!thumb.isNull())
+	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
+	
+	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
+		if (imgW > imgH) {
+			imgH = (float)maxThumbSize / imgW * imgH;
+			imgW = maxThumbSize;
+		} 
+		else if (imgW < imgH) {
+			imgW = (float)maxThumbSize / imgH * imgW;
+			imgH = maxThumbSize;
+		}
+		else {
+			imgW = maxThumbSize;
+			imgH = maxThumbSize;
+		}
+	}
+
+	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad) {
+		
+		// flip size if the image is rotated by 90°
+		if (dataExif.isTiff() && abs(orientation) == 90) {
+			int tmpW = imgW;
+			imgW = imgH;
+			imgH = tmpW;
+		}
+
+		QSize initialSize = imageReader.size();
+
+		imageReader.setScaledSize(QSize(imgW, imgH));
+		thumb = imageReader.read();
+
+		// try to read the image
+		if (thumb.isNull()) {
+			DkBasicLoader loader;
+			
+			if (loader.loadGeneral(file)) {
+
+				thumb = loader.image();
+				imgW = thumb.width();
+				imgH = thumb.height();
+
+				if (imgW > maxThumbSize || imgH > maxThumbSize) {
+					if (imgW > imgH) {
+						imgH = (float)maxThumbSize / imgW * imgH;
+						imgW = maxThumbSize;
+					} 
+					else if (imgW < imgH) {
+						imgW = (float)maxThumbSize / imgH * imgW;
+						imgH = maxThumbSize;
+					}
+					else {
+						imgW = maxThumbSize;
+						imgH = maxThumbSize;
+					}
+				}
+
+				thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+				thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+			}
+		}
+
+		// is there a nice solution to do so??
+		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
+
+		// there seems to be a bug in exiv2
+		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::display.saveThumb)) {	// TODO settings
+			
+			try {
+				dataExif.saveThumbnail(thumb, QFileInfo(filePath));
+			} catch (DkException de) {
+				// do nothing -> the file type does not support meta data
+			}
+			catch (...) {
+
+				if (!DkImageLoader::restoreFile(QFileInfo(filePath)))
+					qDebug() << "could not save thumbnail for: " << filePath;
+			}
+		}
+
+	}
+	else if (rescale) {
+		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		//qDebug() << "thumb loaded from exif...";
+	}
+
+	if (orientation != -1 && !dataExif.isTiff()) {
+		QTransform rotationMatrix;
+		rotationMatrix.rotate((double)orientation);
+		thumb = thumb.transformed(rotationMatrix);
+	}
+
+	//qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
+
+	this->img = thumb;
+	//return thumb;
+}
+
+void DkThumbNail::removeBlackBorder(QImage& img) {
+
+	int rIdx = 0;
+	bool nonblack = false;
+	
+	for ( ; rIdx < img.height(); rIdx++) {
+
+		const QRgb* pixel = (QRgb*)(img.constScanLine(rIdx));
+
+		for (int cIdx = 0; cIdx < img.width(); cIdx++, pixel++) {
+
+			// > 50 due to jpeg (normally we would want it to be != 0)
+			if (qRed(*pixel) > 50 || qBlue(*pixel) > 50 || qGreen(*pixel) > 50) {
+				nonblack = true;
+				break;
+			}
+		}
+
+		if (nonblack)
+			break;
+	}
+
+	// non black border?
+	if (rIdx == -1 || rIdx > 15)
+		return;
+
+	int rIdxB = img.height()-1;
+	nonblack = false;
+
+	for ( ; rIdxB >= 0; rIdxB--) {
+
+		const QRgb* pixel = (QRgb*)(img.constScanLine(rIdxB));
+
+		for (int cIdx = 0; cIdx < img.width(); cIdx++, pixel++) {
+
+			if (qRed(*pixel) > 50 || qBlue(*pixel) > 50 || qGreen(*pixel) > 50) {
+				nonblack = true;
+				break;
+			}
+		}
+
+		if (nonblack) {
+			rIdxB--;
+			break;
+		}
+	}
+
+	// remove black borders
+	if (rIdx < rIdxB)
+		img = img.copy(0, rIdx, img.width(), rIdxB-rIdx);
+
+}
+
 /**
  * Default constructor of the thumbnail loader.
  * Note: currently the init calls the getFilteredFileList which might be slow.
@@ -44,7 +245,6 @@ DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QStri
 	this->thumbs = thumbs;
 	this->dir = dir;
 	this->isActive = true;
-	this->maxThumbSize = 160;
 	this->files = files;
 	init();
 }
@@ -200,7 +400,7 @@ void DkThumbsLoader::loadThumbs() {
 		// TODO:  he breaks here! (crash detected)
 		DkThumbNail* thumb = &(*thumbIter);
 		if (!thumb->hasImage()) {
-			thumb->setImage(getThumbNailQt(thumb->getFile()));
+			thumb->compute(forceLoad, forceSave);
 			if (thumb->hasImage())	// could I load the thumb?
 				emit updateSignal();
 			else {
@@ -362,37 +562,21 @@ void DkThumbsLoader::loadAll() {
 //}
 
 /**
- * Loads the thumbnail from the metadata.
- * If no thumbnail is embeded, the whole image
- * is loaded and downsampled in a fast manner.
- * @param file the file to be loaded
- * @return QImage the loaded image. Null if no image
- * could be loaded at all.
+ * Stops the current loading process.
+ * This method allows for stopping the thread without killing it.
  **/ 
-QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
+void DkThumbsLoader::stop() {
 	
-	DkTimer dt;
+	//QMutexLocker(&this->mutex);
+	isActive = false;
+	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
+}
 
-	//// see if we can read the thumbnail from the exif data
-	DkMetaData dataExif(file);
-	QImage thumb = dataExif.getThumbnail();
-	int orientation = dataExif.getOrientation();
-	int imgW = thumb.width();
-	int imgH = thumb.height();
-	int tS = DkSettings::display.thumbSize;
+QImage DkThumbsLoader::createThumb(const QImage& image) {
 
-	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
-	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
-	QImageReader imageReader(filePath);
+	int imgW = image.width();
+	int imgH = image.height();
 
-	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
-
-		imgW = imageReader.size().width();
-		imgH = imageReader.size().height();	// locks the file!
-	}
-	else if (!thumb.isNull())
-		qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
-	
 	if (imgW > maxThumbSize || imgH > maxThumbSize) {
 		if (imgW > imgH) {
 			imgH = (float)maxThumbSize / imgW * imgH;
@@ -408,95 +592,14 @@ QImage DkThumbsLoader::getThumbNailQt(QFileInfo file) {
 		}
 	}
 
-	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad) {
-		
-		// flip size if the image is rotated by 90°
-		if (dataExif.isTiff() && abs(orientation) == 90) {
-			int tmpW = imgW;
-			imgW = imgH;
-			imgH = tmpW;
-		}
-
-		QSize initialSize = imageReader.size();
-
-		imageReader.setScaledSize(QSize(imgW, imgH));
-		thumb = imageReader.read();
-
-		// try to read the image
-		if (thumb.isNull()) {
-			DkBasicLoader loader;
-			
-			if (loader.loadGeneral(file)) {
-
-				thumb = loader.image();
-				imgW = thumb.width();
-				imgH = thumb.height();
-
-				if (imgW > maxThumbSize || imgH > maxThumbSize) {
-					if (imgW > imgH) {
-						imgH = (float)maxThumbSize / imgW * imgH;
-						imgW = maxThumbSize;
-					} 
-					else if (imgW < imgH) {
-						imgW = (float)maxThumbSize / imgH * imgW;
-						imgH = maxThumbSize;
-					}
-					else {
-						imgW = maxThumbSize;
-						imgH = maxThumbSize;
-					}
-				}
-
-				thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
-				thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-			}
-		}
-
-		// is there a nice solution to do so??
-		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
-
-		// there seems to be a bug in exiv2
-		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::display.saveThumb)) {	// TODO settings
-			
-			try {
-				dataExif.saveThumbnail(thumb);
-			} catch (DkException de) {
-				// do nothing -> the file type does not support meta data
-			}
-			catch (...) {
-
-				if (!DkImageLoader::restoreFile(QFileInfo(filePath)))
-					qDebug() << "could not save thumbnail for: " << filePath;
-			}
-		}
-
-	}
-	else {
-		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		qDebug() << "thumb loaded from exif...";
-	}
-
-	if (orientation != -1 && !dataExif.isTiff()) {
-		QTransform rotationMatrix;
-		rotationMatrix.rotate((double)orientation);
-		thumb = thumb.transformed(rotationMatrix);
-	}
-
-	qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
+	// fast downscaling
+	QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+	thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	return thumb;
+
 }
 
-/**
- * Stops the current loading process.
- * This method allows for stopping the thread without killing it.
- **/ 
-void DkThumbsLoader::stop() {
-	
-	//QMutexLocker(&this->mutex);
-	isActive = false;
-	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
-}
 
 // DkColorLoader --------------------------------------------------------------------
 DkColorLoader::DkColorLoader(QDir dir, QStringList files) {

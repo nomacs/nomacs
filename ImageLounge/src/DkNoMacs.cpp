@@ -79,6 +79,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
+	mosaicDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
@@ -583,6 +584,7 @@ void DkNoMacs::createMenu() {
 #ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 #endif
+	toolsMenu->addAction(toolsActions[menu_tools_mosaic]);
 
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
@@ -625,6 +627,13 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(editActions[menu_edit_copy]);
 	contextMenu->addAction(editActions[menu_edit_paste]);
 	contextMenu->addSeparator();
+
+	// plugins menu
+	pluginsActions.resize(menu_plugins_end);
+	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plug-in manager"), this);
+	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plug-ins and download new ones"));
+	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
+
 	
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
@@ -1045,12 +1054,14 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_export_tiff]->setStatusTip(tr("Export TIFF pages to multiple tiff files"));
 	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
 
+	toolsActions[menu_tools_mosaic] = new QAction(tr("&Mosaic Image"), this);
+	toolsActions[menu_tools_mosaic]->setStatusTip(tr("Create a Mosaic Image"));
+	connect(toolsActions[menu_tools_mosaic], SIGNAL(triggered()), this, SLOT(computeMosaic()));
 	// plugins menu
 	pluginsActions.resize(menu_plugins_end);
 	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plug-in manager"), this);
 	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plug-ins and download new ones"));
 	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
-
 	// help menu
 	helpActions.resize(menu_help_end);
 	helpActions[menu_help_about] = new QAction(tr("&About Nomacs"), this);
@@ -1318,12 +1329,6 @@ void DkNoMacs::mouseDoubleClickEvent(QMouseEvent* event) {
 void DkNoMacs::mousePressEvent(QMouseEvent* event) {
 
 	mousePos = event->pos();
-	if(event->buttons() == Qt::XButton1) {
-	    emit fourthButtonPressed();
-	}
-	else if(event->buttons() == Qt::XButton2) {
-	    emit fifthButtonPressed();
-	}
 
 	//QMainWindow::mousePressEvent(event);
 }
@@ -2412,6 +2417,19 @@ void DkNoMacs::exportTiff() {
 	
 	exportTiffDialog->exec();
 #endif
+}
+
+void DkNoMacs::computeMosaic() {
+
+	if (!mosaicDialog)
+		mosaicDialog = new DkMosaicDialog(this);
+
+	mosaicDialog->setFile(viewport()->getImageLoader()->getFile());
+
+	int response = mosaicDialog->exec();
+
+	if (response == QDialog::Accepted)
+		viewport()->setEditedImage(mosaicDialog->getImage());
 }
 
 void DkNoMacs::openImgManipulationDialog() {
@@ -3674,7 +3692,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 #endif
 
 		// sync signals
-		connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
+		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 		
 		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
 		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);

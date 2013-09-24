@@ -59,6 +59,7 @@
 
 #include "DkWidgets.h"
 #include "DkViewPort.h"
+#include "DkThumbs.h"
 
 namespace nmc {
 
@@ -802,6 +803,7 @@ protected:
 	QDir saveDir;
 	DkBasicLoader loader;
 	QFutureWatcher<int> watcher;
+
 	bool processing;
 
 	enum {
@@ -811,6 +813,96 @@ protected:
 
 	};
 };
+
+class DkMosaicDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkMosaicDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	QImage getImage();
+
+public slots:
+	void on_openButton_pressed();
+	void on_dbButton_pressed();
+	void on_fileEdit_textChanged(const QString& filename);
+	void on_newWidthBox_valueChanged(int i);
+	void on_newHeightBox_valueChanged(int i);
+	void on_numPatchesV_valueChanged(int i);
+	void on_numPatchesH_valueChanged(int i);
+	void on_darkenSlider_valueChanged(int i);
+	void on_lightenSlider_valueChanged(int i);
+	void on_saturationSlider_valueChanged(int i);
+	void setFile(const QFileInfo& file);
+	void compute();
+	void reject();
+	int computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to);
+	void mosaicFinished();
+	void postProcessFinished();
+	void buttonClicked(QAbstractButton* button);
+	void updatePatchRes();
+
+signals:
+	void updateImage(QImage img);
+	void updateProgress(int);
+	void infoMessage(QString msg);
+
+protected:
+	void updatePostProcess();
+	void postProcessMosaic(float multiply = 0.3f, float screen = 0.5f, float saturation = 0.5f);
+	void createLayout();
+	void enableMosaicSave(bool enable);
+	void enableAll(bool enable);
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	QString getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix);
+	void matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc);
+	cv::Mat createPatch(const DkThumbNail& thumb, int patchRes);
+	
+	DkBaseViewPort* viewport;
+	DkBaseViewPort* preview;
+	QLabel* fileLabel;
+	QLabel* folderLabel;
+	QLineEdit* filterEdit;
+	QComboBox* suffixBox;
+	QSpinBox* newWidthBox;
+	QSpinBox* newHeightBox;
+	QSpinBox* numPatchesV;
+	QSpinBox* numPatchesH;
+	QDialogButtonBox* buttons;
+	QProgressBar* progress;
+	QLabel* msgLabel;
+	QWidget* controlWidget;
+	QCheckBox* overwrite;
+	QLabel* patchResLabel;
+	
+	QWidget* sliderWidget;
+	QSlider* darkenSlider;
+	QSlider* lightenSlider;
+	QSlider* saturationSlider;
+
+	QFileInfo cFile;
+	QDir saveDir;
+	DkBasicLoader loader;
+	QFutureWatcher<int> mosaicWatcher;
+	QFutureWatcher<void> postProcessWatcher;
+
+	bool updatePostProcessing;
+	bool postProcessing;
+	bool processing;
+	cv::Mat origImg;
+	cv::Mat mosaicMat;
+	QImage mosaic;
+	QFileInfoList filesUsed;
+
+
+	enum {
+		finished,
+		question_save,
+		error,
+
+	};
+};
+
 
 class DkForceThumbDialog : public QDialog {
 	Q_OBJECT

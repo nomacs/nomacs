@@ -95,6 +95,7 @@ class DkForceThumbDialog;
 class DkTrainDialog;
 class DkExplorer;
 class DkExportTiffDialog;
+class DkMosaicDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
 class DkLocalManagerThread;
@@ -252,6 +253,7 @@ enum toolsActions {
 	menu_tools_filter,
 	menu_tools_manipulation,
 	menu_tools_export_tiff,
+	menu_tools_mosaic,
 
 	menu_tools_end,
 };
@@ -481,6 +483,7 @@ public slots:
 	void resizeImage();
 	void openImgManipulationDialog();
 	void exportTiff();
+	void computeMosaic();
 	void deleteFile();
 	void setWallpaper();
 	void printDialog();
@@ -632,6 +635,7 @@ protected:
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
 	DkExportTiffDialog* exportTiffDialog;
+	DkMosaicDialog* mosaicDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 

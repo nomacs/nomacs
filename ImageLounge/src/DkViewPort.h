@@ -401,7 +401,7 @@ public slots:
 	void unloadImage();
 	void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
-
+	void repeatZoom();
 
 	virtual void updateImage();
 	virtual void loadImage(QImage newImg);
@@ -430,6 +430,7 @@ protected:
 	QTransform oldImgMatrix;
 
 	QTimer* skipImageTimer;
+	QTimer* repeatZoomTimer;
 
 	QImage imgBg;
 
