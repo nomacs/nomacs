@@ -49,7 +49,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 
 	// create exit shortcuts
 	QShortcut* escExit = new QShortcut(Qt::Key_Escape, this);
-	QObject::connect(escExit, SIGNAL( activated ()), this, SLOT( close() ));
+	QObject::connect(escExit, SIGNAL( activated()), this, SLOT( close() ));
 
 	// set the text
 	text = 
@@ -3120,12 +3120,12 @@ void DkMosaicDialog::createLayout() {
 	newWidthBox->setObjectName("newWidthBox");
 	newWidthBox->setToolTip(tr("Pixel Width"));
 	newWidthBox->setMinimum(100);
-	newWidthBox->setMaximum(50000);
+	newWidthBox->setMaximum(30000);
 	newHeightBox = new QSpinBox();
 	newHeightBox->setObjectName("newHeightBox");
 	newHeightBox->setToolTip(tr("Pixel Height"));
 	newHeightBox->setMinimum(100);
-	newHeightBox->setMaximum(50000);
+	newHeightBox->setMaximum(30000);
 	realResLabel = new QLabel("");
 	//realResLabel->setToolTip(tr("."));
 
@@ -3136,12 +3136,12 @@ void DkMosaicDialog::createLayout() {
 	numPatchesH->setObjectName("numPatchesH");
 	numPatchesH->setToolTip(tr("Number of Horizontal Patches"));
 	numPatchesH->setMinimum(1);
-	numPatchesH->setMaximum(500);
+	numPatchesH->setMaximum(1000);
 	numPatchesV = new QSpinBox();
 	numPatchesV->setObjectName("numPatchesV");
 	numPatchesV->setToolTip(tr("Number of Vertical Patches"));
 	numPatchesV->setMinimum(1);
-	numPatchesV->setMaximum(500);
+	numPatchesV->setMaximum(1000);
 	patchResLabel = new QLabel("");
 	patchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
 
@@ -3327,6 +3327,10 @@ void DkMosaicDialog::updatePatchRes() {
 }
 
 QImage DkMosaicDialog::getImage() {
+
+	if (mosaic.isNull() && !mosaicMat.empty())
+		return DkImage::mat2QImage(mosaicMat);
+
 	return mosaic;
 }
 
@@ -3446,6 +3450,7 @@ void DkMosaicDialog::mosaicFinished() {
 
 int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int newWidth, int numPatchesH) {
 
+	DkTimer dt;
 	processing = true;
 
 	// compute new image size
@@ -3455,11 +3460,11 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	QSize numPatches = QSize(numPatchesH, 0);
 
 	// compute new image size
-	float aratio = (float)mImg.rows/mImg.cols;
+	//float aratio = (float)mImg.rows/mImg.cols;
 	int patchResO = qFloor((float)mImg.cols/numPatches.width());
 	numPatches.setHeight(qFloor((float)mImg.rows/patchResO));
 
-	int patchResD = qFloor(patchResO*newWidth/mImg.cols);
+	int patchResD = qFloor(newWidth/numPatches.width());
 
 	float shR = (mImg.rows-patchResO*numPatches.height())/2.0f;
 	float shC = (mImg.cols-patchResO*numPatches.width())/2.0f;
@@ -3500,6 +3505,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	bool force = false;
 	bool useTwice = false;
 
+	//for (int idx = 0; idx < 10; idx++) {
 	while (iDidNothing < 10000) {
 
 		if (!processing)
@@ -3636,14 +3642,14 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 
 	//cv::Mat mImg = DkImage::qImage2Mat(loader.image());
 
-	if (channels.size() == 3) {
-		cv::resize(channels[1], channels[1], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-		cv::resize(channels[2], channels[2], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-	}
-	else {
-		cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-		cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);		
-	}
+	//if (channels.size() == 3) {
+	//	cv::resize(channels[1], channels[1], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
+	//	cv::resize(channels[2], channels[2], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
+	//}
+	//else {
+	//	cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
+	//	cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);		
+	//}
 
 	//// assign new luminance channel
 	//channels[0] = dImg;
@@ -3695,6 +3701,8 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	//}
 
 	processing = false;
+
+	qDebug() << "mosaic computed in: " << QString::fromStdString(dt.getTotal());
 
 	return QDialog::Accepted;
 }
@@ -3925,16 +3933,19 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 			}
 		}
 
-		if (!computePreview)
-			mosaicMat.release();
+		//if (!computePreview)
+		//	mosaicMat.release();
 		cv::cvtColor(origR, origR, CV_Lab2BGR);
+		qDebug() << "color converted";
 
 		mosaic = DkImage::mat2QImage(origR);
+		qDebug() << "mosaicing computed...";
 
 	}
 	catch(...) {
 		origR.release();
 		DkNoMacs::dialog("Sorry, I could not mix the image...");
+		qDebug() << "exception caught...";
 		mosaic = DkImage::mat2QImage(mosaicMat);
 	}
 	

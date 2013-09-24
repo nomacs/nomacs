@@ -1174,17 +1174,20 @@ DkImageLoader::~DkImageLoader() {
 
 void DkImageLoader::initFileFilters() {
 
-	// load plugins
-	QDir pluginFolder(QCoreApplication::applicationDirPath());
-	pluginFolder.cd("imageformats");
+	//// load plugins
+	//QDir pluginFolder(QCoreApplication::applicationDirPath());
+	//pluginFolder.cd("imageformats");
 
-	QStringList pluginFilenames = pluginFolder.entryList(QStringList(".dll"));
+	//QStringList pluginFilenames = pluginFolder.entryList(QStringList("*.dll"));
+	//qDebug() << "searching for plugins: " << pluginFolder.absolutePath();
+	//qDebug() << "plugins found: " << pluginFilenames;
 
-	for (int idx = 0; idx < pluginFilenames.size(); idx++) {
-		QPluginLoader p(QFileInfo(pluginFolder, pluginFilenames[idx]).absoluteFilePath());
-		if (!p.load())
-			qDebug() << "sorry, I could NOT load " << pluginFilenames[idx];
-	}
+	//for (int idx = 0; idx < pluginFilenames.size(); idx++) {
+	//	QPluginLoader p(QFileInfo(pluginFolder, pluginFilenames[idx]).absoluteFilePath());
+	//	if (!p.load())
+	//		qDebug() << "sorry, I could NOT load " << pluginFilenames[idx] << " since:\n" << p.errorString();
+	//	
+	//}
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
