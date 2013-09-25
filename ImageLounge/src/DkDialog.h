@@ -894,7 +894,7 @@ protected:
 	cv::Mat mosaicMat;
 	cv::Mat mosaicMatSmall;
 	QImage mosaic;
-	QFileInfoList filesUsed;
+	QVector<QFileInfo> filesUsed;
 
 
 	enum {

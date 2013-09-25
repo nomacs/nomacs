@@ -196,7 +196,9 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 
+	enableMovieActions(false);
 
 // clean up nomacs
 #ifdef Q_WS_WIN
@@ -354,6 +356,32 @@ void DkNoMacs::createToolbar() {
 	toolbar->addSeparator();
 
 	toolbar->addAction(viewActions[menu_view_gps_map]);
+
+	movieToolbar = addToolBar(tr("Movie Toolbar"));
+	movieToolbar->setObjectName("movieToolbar");
+	//movieToolbar->addSeparator();
+	movieToolbar->addAction(viewActions[menu_view_movie_prev]);
+	movieToolbar->addAction(viewActions[menu_view_movie_pause]);
+	movieToolbar->addAction(viewActions[menu_view_movie_next]);
+
+	if (DkSettings::display.toolbarGradient) {
+
+		QColor hCol = DkSettings::display.highlightColor;
+		hCol.setAlpha(80);
+
+		movieToolbar->setStyleSheet(
+			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
+			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
+			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
+			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
+			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
+			);
+	}
+
+	if (DkSettings::display.smallIcons)
+		movieToolbar->setIconSize(QSize(16, 16));
+	else
+		movieToolbar->setIconSize(QSize(32, 32));
 }
 
 
@@ -415,7 +443,7 @@ void DkNoMacs::createIcons() {
 	fileIcons[icon_file_filter] = QIcon();
 	fileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/filter.png"), QIcon::Normal, QIcon::On);
 	fileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/nofilter.png"), QIcon::Normal, QIcon::Off);
-
+	
 	editIcons.resize(icon_edit_end);
 	editIcons[icon_edit_rotate_cw] = ICON("object-rotate-right", ":/nomacs/img/rotate-cw.png");
 	editIcons[icon_edit_rotate_ccw] = ICON("object-rotate-left", ":/nomacs/img/rotate-cc.png");
@@ -427,6 +455,11 @@ void DkNoMacs::createIcons() {
 	viewIcons[icon_view_reset] = ICON("zoom-draw", ":/nomacs/img/zoomReset.png");
 	viewIcons[icon_view_100] = ICON("zoom-original", ":/nomacs/img/zoom100.png");
 	viewIcons[icon_view_gps] = ICON("", ":/nomacs/img/gps-globe.png");
+	viewIcons[icon_view_movie_play] = QIcon();
+	viewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-play.png"), QIcon::Normal, QIcon::On);
+	viewIcons[icon_view_movie_play].addPixmap(QPixmap(":/nomacs/img/movie-pause.png"), QIcon::Normal, QIcon::Off);
+	viewIcons[icon_view_movie_prev] = ICON("", ":/nomacs/img/movie-prev.png");
+	viewIcons[icon_view_movie_next] = ICON("", ":/nomacs/img/movie-next.png");
 
 	toolsIcons.resize(icon_tools_end);
 	toolsIcons[icon_tools_manipulation] = ICON("", ":/nomacs/img/manipulation.png");
@@ -549,7 +582,12 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_lock_window]);
 #endif
 	viewMenu->addSeparator();
-	
+
+	viewMenu->addAction(viewActions[menu_view_movie_pause]);
+	viewMenu->addAction(viewActions[menu_view_movie_prev]);
+	viewMenu->addAction(viewActions[menu_view_movie_next]);
+
+	viewMenu->addSeparator();
 	viewMenu->addAction(viewActions[menu_view_gps_map]);
 
 	panelMenu = menu->addMenu(tr("&Panels"));
@@ -1005,8 +1043,21 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_lock_window]->setStatusTip(tr("lock the window"));
 	viewActions[menu_view_lock_window]->setCheckable(true);
 	viewActions[menu_view_lock_window]->setChecked(false);
-
 	connect(viewActions[menu_view_lock_window], SIGNAL(triggered(bool)), this, SLOT(lockWindow(bool)));
+
+	viewActions[menu_view_movie_pause] = new QAction(viewIcons[icon_view_movie_play], tr("&Pause Movie"), this);
+	viewActions[menu_view_movie_pause]->setStatusTip(tr("pause the current movie"));
+	viewActions[menu_view_movie_pause]->setCheckable(true);
+	viewActions[menu_view_movie_pause]->setChecked(false);
+	connect(viewActions[menu_view_movie_pause], SIGNAL(triggered(bool)), vp, SLOT(pauseMovie(bool)));
+
+	viewActions[menu_view_movie_prev] = new QAction(viewIcons[icon_view_movie_prev], tr("P&revious Frame"), this);
+	viewActions[menu_view_movie_prev]->setStatusTip(tr("show previous frame"));
+	connect(viewActions[menu_view_movie_prev], SIGNAL(triggered()), vp, SLOT(previousMovieFrame()));
+
+	viewActions[menu_view_movie_next] = new QAction(viewIcons[icon_view_movie_next], tr("&Next Frame"), this);
+	viewActions[menu_view_movie_next]->setStatusTip(tr("show next frame"));
+	connect(viewActions[menu_view_movie_next], SIGNAL(triggered()), vp, SLOT(nextMovieFrame()));
 
 	viewActions[menu_view_gps_map] = new QAction(viewIcons[icon_view_gps], tr("Show G&PS Coordinates"), this);
 	viewActions[menu_view_gps_map]->setStatusTip(tr("shows the GPS coordinates"));
@@ -1209,6 +1260,23 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #else
 	toolsActions[menu_tools_manipulation]->setEnabled(false);
 #endif
+
+}
+
+void DkNoMacs::enableMovieActions(bool enable) {
+
+	viewActions[menu_view_movie_pause]->setEnabled(enable);
+	viewActions[menu_view_movie_prev]->setEnabled(enable);
+	viewActions[menu_view_movie_next]->setEnabled(enable);
+
+	viewActions[menu_view_movie_pause]->setChecked(false);
+	
+	if (enable)
+		addToolBar(movieToolbar);
+	else
+		removeToolBar(movieToolbar);
+
+	movieToolbar->setVisible(enable);
 
 }
 
@@ -2341,7 +2409,7 @@ void DkNoMacs::resizeImage() {
 		resizeDialog->setExifDpi(xDpi);
 	}
 
-	resizeDialog->setImage(viewport()->getImageLoader()->getImage());
+	resizeDialog->setImage(viewport()->getImage());
 
 	if (resizeDialog->exec()) {
 
@@ -2424,7 +2492,7 @@ void DkNoMacs::openImgManipulationDialog() {
 	else 
 		imgManipulationDialog->resetValues();
 
-	QImage tmpImg = viewport()->getImageLoader()->getImage();
+	QImage tmpImg = viewport()->getImage();
 	imgManipulationDialog->setImage(&tmpImg);
 
 	bool ok = imgManipulationDialog->exec();
@@ -2433,7 +2501,7 @@ void DkNoMacs::openImgManipulationDialog() {
 
 #ifdef WITH_OPENCV
 
-		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImageLoader()->getImage())));
+		QImage mImg = DkImage::mat2QImage(DkImageManipulationWidget::manipulateImage(DkImage::qImage2Mat(viewport()->getImage())));
 
 		if (!mImg.isNull())
 			viewport()->setEditedImage(mImg);
@@ -2716,13 +2784,26 @@ void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
 	if (!toolbar)
 		return;
 
+	showToolbarsTemporarily(!show);
+
 	if (show)
 		addToolBar(toolbar);
 	else
 		removeToolBar(toolbar);
 
 	toolbar->setVisible(show);
-	showToolbar(!show);
+}
+
+void DkNoMacs::showToolbarsTemporarily(bool show) {
+
+	QList<QToolBar *> toolbars = findChildren<QToolBar *>();
+
+	for (int idx = 0; idx < toolbars.size(); idx++) {
+		if (show)
+			toolbars.at(idx)->show();
+		else
+			toolbars.at(idx)->hide();
+	}
 }
 
 void DkNoMacs::showToolbar(bool show) {

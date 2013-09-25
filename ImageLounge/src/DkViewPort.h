@@ -345,6 +345,7 @@ signals:
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg, int);
 	void newClientConnectedSignal(bool connect, bool local);
+	void movieLoadedSignal(bool isMovie);
 
 public slots:
 	void rotateCW();
@@ -390,6 +391,9 @@ public slots:
 	virtual void setThumbImage(QImage newImg);
 
 	void settingsChanged();
+	void pauseMovie(bool paused);
+	void nextMovieFrame();
+	void previousMovieFrame();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);

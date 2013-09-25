@@ -718,6 +718,8 @@ void DkViewPort::setImage(QImage newImg) {
 
 	DkTimer dt;
 
+	emit movieLoadedSignal(false);
+
 	if (!thumbLoaded) { 
 		qDebug() << "saving image matrix...";
 		oldImgViewRect = imgViewRect;
@@ -1145,6 +1147,43 @@ void DkViewPort::loadMovie() {
 	movie = new QMovie(loader->getFile().absoluteFilePath());
 	connect(movie, SIGNAL(frameChanged(int)), this, SLOT(update()));
 	movie->start();
+	emit movieLoadedSignal(true);
+}
+
+void DkViewPort::pauseMovie(bool pause) {
+
+	if (!movie)
+		return;
+
+	movie->setPaused(pause);
+}
+
+void DkViewPort::nextMovieFrame() {
+
+	if (!movie)
+		return;
+
+	movie->jumpToNextFrame();
+	update();
+}
+
+void DkViewPort::previousMovieFrame() {
+
+	if (!movie)
+		return;
+
+	
+	int fn = movie->currentFrameNumber()-1;
+	if (fn == -1)
+		fn = movie->frameCount()-1;
+	//qDebug() << "retrieving frame: " << fn;
+	
+	while(movie->currentFrameNumber() != fn)
+		movie->jumpToNextFrame();
+
+	//// the subsequent thing is not working if the movie is paused
+	//bool success = movie->jumpToFrame(movie->currentFrameNumber()-1);
+	update();
 }
 
 void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
@@ -1814,7 +1853,7 @@ void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
 	if (minD > FLT_EPSILON)
 		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 	
-	painter.drawImage(QRect(QPoint(), imgStorage.getImage().size()), imgStorage.getImage(), QRect(QPoint(), imgStorage.getImage().size()));
+	painter.drawImage(QRect(QPoint(), getImage().size()), getImage(), QRect(QPoint(), getImage().size()));
 	painter.end();
 
 	setEditedImage(img);

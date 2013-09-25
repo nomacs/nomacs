@@ -40,6 +40,10 @@
         <file>img/pipette.png</file>
         <file>img/close.png</file>
         <file>img/manipulation.png</file>
+        <file>img/movie-play.png</file>
+        <file>img/movie-pause.png</file>
+        <file>img/movie-prev.png</file>
+        <file>img/movie-next.png</file>
         <file>img/zoom-in.png</file>
         <file>img/zoom-out.png</file>
         <file>img/fit-width.png</file>

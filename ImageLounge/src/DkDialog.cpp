@@ -3400,13 +3400,11 @@ void DkMosaicDialog::compute() {
 	for (int idx = 0; idx < DkImageLoader::fileFilters.size(); idx++) {
 		if (suffixTmp.contains("(" + DkImageLoader::fileFilters.at(idx))) {
 			suffix = DkImageLoader::fileFilters.at(idx);
-			//suffix.replace("*","");
 			break;
 		}
 	}
 
 	QString filter = filterEdit->text();
-	//QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
 
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::computeMosaic,
@@ -3443,9 +3441,6 @@ void DkMosaicDialog::mosaicFinished() {
 	else {
 		enableAll(true);
 	}
-
-	//if (watcher.future() == QDialog::Accepted)
-	//	QDialog::accept();
 }
 
 int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int newWidth, int numPatchesH) {
@@ -3479,6 +3474,9 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	// keeps track of the weights
 	cv::Mat cc(numPatches.height(), numPatches.width(), CV_32FC1);
 	cc = 0;
+	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);;	// tells us if we have already computed the real patch
+
+	filesUsed.resize(numPatches.height()*numPatches.width());
 
 	// destination image
 	cv::Mat dImg(patchResD*numPatches.height(), patchResD*numPatches.width(), CV_8UC1);
@@ -3498,9 +3496,6 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	int pIdx = 0;
 	int maxP = numPatches.width()*numPatches.height();
 
-	//QString imgPath = getRandomImagePath(saveDir.absolutePath(), filter, suffix);
-	//qDebug() << "I chose: " << imgPath;
-
 	int iDidNothing = 0;
 	bool force = false;
 	bool useTwice = false;
@@ -3511,28 +3506,26 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 		if (!processing)
 			return QDialog::Rejected;
 
-		if (iDidNothing > 20) {
+		if (iDidNothing > 50) {
 			force = true;
 
 			if (!useTwice)
 				emit infoMessage(tr("Filling empty areas..."));
 		}
 
-		if (iDidNothing > 100 && !filesUsed.isEmpty()) {
+		if (iDidNothing > 200 && !useTwice) {
 			emit infoMessage(tr("I need to use some images twice - maybe the database is too small?"));
-			filesUsed.clear();
 			iDidNothing = 0;
 			useTwice = true;
 		}
-		else if (iDidNothing > 100) {
+		else if (iDidNothing > 200) {
 			emit infoMessage(tr("Sorry, it seems that i cannot create your mosaic with this database."));
 			return QDialog::Rejected;
 		}
 
 		QString imgPath = getRandomImagePath(saveDir.absolutePath(), filter, suffix);
-		qDebug() << imgPath;
 
-		if (filesUsed.contains(QFileInfo(imgPath))) {
+		if (!useTwice && filesUsed.contains(QFileInfo(imgPath))) {
 			iDidNothing++;
 			continue;
 		}
@@ -3575,14 +3568,6 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 			cv::Point maxIdx;
 			cv::minMaxLoc(ccTmp, 0, &maxVal, 0, &maxIdx);
 			float* ccPtr = cc.ptr<float>(maxIdx.y);
-		
-			//// debug
-			//cv::Mat imgT3;
-			//cv::cvtColor(ccTmp, imgT3, CV_GRAY2RGB);
-			//emit updateImage(DkImage::mat2QImage(imgT3));
-			//qDebug() << "force is: " << force;
-
-			//qDebug() << "max val " << maxVal << "ccptr " << ccPtr[maxIdx.x];
 
 			if (maxVal > ccPtr[maxIdx.x]) {
 
@@ -3606,21 +3591,23 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 					pIdx++;
 					emit updateProgress(qRound((float)pIdx/maxP*100));
 				}
-						
-				thumbPatch = createPatch(thumb, patchResD);
-				//thumbPatch.convertTo(thumbPatch, CV_8UC1, 25.5, 0);
-					
 
-				cv::Mat dPatch = dImg.rowRange(maxIdx.y*patchResD, maxIdx.y*patchResD+patchResD)
-					.colRange(maxIdx.x*patchResD, maxIdx.x*patchResD+patchResD);
-				//dPatch = 0;//thumbPatch.clone();
-				thumbPatch.copyTo(dPatch);
+				// compute it now if we already have the full image loaded
+				if (thumb.getImage().width() > patchResD && thumb.getImage().height() > patchResD) {
+					thumbPatch = createPatch(thumb, patchResD);
+
+					cv::Mat dPatch = dImg.rowRange(maxIdx.y*patchResD, maxIdx.y*patchResD+patchResD)
+						.colRange(maxIdx.x*patchResD, maxIdx.x*patchResD+patchResD);
+					thumbPatch.copyTo(dPatch);
+					ccD.ptr<unsigned char>(maxIdx.y)[maxIdx.x] = 1;
+				}
+				else
+					ccD.ptr<unsigned char>(maxIdx.y)[maxIdx.x] = 0;
 
 				// update cc
 				ccPtr[maxIdx.x] = maxVal;
 
-				if (!useTwice)
-					filesUsed.append(thumb.getFile());
+				filesUsed[maxIdx.y*numPatchesH+maxIdx.x] = thumb.getFile();	// replaces additionally the old file
 				iDidNothing = 0;
 			}
 			else
@@ -3640,65 +3627,42 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 		
 	}
 
-	//cv::Mat mImg = DkImage::qImage2Mat(loader.image());
+	pIdx = 0;
 
-	//if (channels.size() == 3) {
-	//	cv::resize(channels[1], channels[1], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-	//	cv::resize(channels[2], channels[2], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-	//}
-	//else {
-	//	cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-	//	cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);		
-	//}
+	// compute real resolution
+	for (int rIdx = 0; rIdx < ccD.rows; rIdx++) {
 
-	//// assign new luminance channel
-	//channels[0] = dImg;
+		const unsigned char* ccDPtr = ccD.ptr<unsigned char>(rIdx);
 
-	//cv::Mat imgT3;
-	//cv::merge(channels, imgT3);
-	//cv::cvtColor(imgT3, imgT3, CV_Lab2BGR);
+		for (int cIdx = 0; cIdx < ccD.cols; cIdx++) {
 
-	//cv::Mat imgT3;
-	//cv::cvtColor(dImg, imgT3, CV_GRAY2RGB);
+			// is the patch already computed?
+			if (ccDPtr[cIdx])
+				continue;
+
+			QFileInfo cFile = filesUsed.at(rIdx*ccD.cols+cIdx);
+
+			if (!cFile.exists()) {
+				emit infoMessage(tr("Something is seriously wrong, I could not load: %1").arg(cFile.absoluteFilePath()));
+				continue;
+			}
+
+			cv::Mat thumbPatch = createPatch(DkThumbNail(cFile), patchResD);
+
+			cv::Mat dPatch = dImg.rowRange(rIdx*patchResD, rIdx*patchResD+patchResD)
+				.colRange(cIdx*patchResD, cIdx*patchResD+patchResD);
+			thumbPatch.copyTo(dPatch);
+			emit updateProgress(qRound((float)pIdx/maxP*100));
+			pIdx++;
+		}
+	}
+
+	qDebug() << "I fully rendered: " << ccD.rows*ccD.cols-cv::sum(ccD)[0] << " images";
 
 	// create final images
 	origImg = mImgLab;
 	mosaicMat = dImg;
 	mosaicMatSmall = pImg;
-
-	//cv::cvtColor(dImg, imgT3, CV_GRAY2RGB);
-	//emit updateImage(mosaic);
-
-
-	// for now we just mix it
-
-
-
-	//// Do your job
-	//for (int idx = from; idx <= to; idx++) {
-
-	//	QFileInfo sFile(saveFile.absolutePath(), saveFile.baseName() + QString::number(idx) + "." + saveFile.suffix());
-	//	qDebug() << "trying to save: " << sFile.absoluteFilePath();
-
-	//	// user wants to overwrite files
-	//	if (sFile.exists() && overwrite) {
-	//		QFile f(sFile.absoluteFilePath());
-	//		f.remove();
-	//	}
-
-	//	bool saved = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
-
-	//	if (!saved)
-	//		emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
-
-	//	loader.loadPage(1);						// load next
-	//	emit updateImage(loader.image());
-	//	emit updateProgress(idx);
-
-	//	// user canceled?
-	//	if (!processing)
-	//		return QDialog::Rejected;
-	//}
 
 	processing = false;
 
@@ -3709,7 +3673,6 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 
 void DkMosaicDialog::matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc) {
 
-	//std::cout << "cc size: " << cc.size() << std::endl;
 	for (int rIdx = 0; rIdx < cc.rows; rIdx++) {
 
 		float* ccPtr = cc.ptr<float>(rIdx);
@@ -3722,9 +3685,6 @@ void DkMosaicDialog::matchPatch(const cv::Mat& img, const cv::Mat& thumb, int pa
 				continue;
 
 			const cv::Mat cPatch = imgStrip.colRange(cIdx*patchRes, cIdx*patchRes+patchRes);
-			
-			//std::cout << "patch size: " << cPatch.size() << std::endl;
-			//std::cout << "thumb size: " << thumb.size() << std::endl;
 			
 			cv::Mat absDiff;
 			cv::absdiff(cPatch, thumb, absDiff);
@@ -3770,22 +3730,8 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 		qDebug() << "enlarging thumbs!!";
 
 	cv::resize(cvThumb, cvThumb, cv::Size(patchRes, patchRes), 0.0, 0.0, CV_INTER_AREA);
-	//qDebug() << "thumb size: " << cvThumb.rows << " x " << cvThumb.cols;
 
 	return cvThumb;
-	//if size(img,1) ~= size(img,2)
-	//	[~, idx] = min(size(img));
-
-	//if idx == 1
-	//	sh = (size(img,2)-size(img,1))*0.5;
-	//img = img(:,floor(sh):end-ceil(sh));
-	//else
-	//	sh = (size(img,1)-size(img,2))*0.5;
-	//img = img(floor(sh):end-ceil(sh),:);    
-	//end
-	//	end
-
-
 }
 
 QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix) {
@@ -3833,7 +3779,7 @@ QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& 
 	//qDebug() << "rand index: " << rIdx;
 
 	QFileInfo rPath = entries.at(rIdx);
-	qDebug() << rPath.absoluteFilePath();
+	//qDebug() << rPath.absoluteFilePath();
 
 	if (rPath.isDir())
 		return getRandomImagePath(rPath.absoluteFilePath(), ignore, suffix);
@@ -3978,6 +3924,8 @@ void DkMosaicDialog::setFile(const QFileInfo& file) {
 	//newHeightBox->blockSignals(true);
 	newWidthBox->setValue(loader.image().width());
 	numPatchesH->setValue(qFloor((float)loader.image().width()/90));	// 130 is a pretty good patch resolution
+	numPatchesH->setMaximum(qMin(1000, qFloor(loader.image().width()*0.5f)));
+	numPatchesV->setMaximum(qMin(1000, qFloor(loader.image().height()*0.5f)));
 	//newHeightBox->setValue(loader.image().height());
 	//newWidthBox->blockSignals(false);
 	//newHeightBox->blockSignals(false);

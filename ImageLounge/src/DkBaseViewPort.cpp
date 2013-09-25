@@ -250,6 +250,9 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 QImage DkBaseViewPort::getImage() {
 
+	if (movie)
+		return movie->currentImage();
+
 	return imgStorage.getImage();
 }
 

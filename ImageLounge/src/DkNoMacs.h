@@ -291,6 +291,9 @@ enum viewActions {
 	menu_view_opacity_change,
 	menu_view_lock_window,
 	menu_view_gps_map,
+	menu_view_movie_pause,
+	menu_view_movie_next,
+	menu_view_movie_prev,
 
 	menu_view_end,	// nothing beyond this point
 };
@@ -375,6 +378,9 @@ enum viewIcons {
 	icon_view_reset,
 	icon_view_100,
 	icon_view_gps,
+	icon_view_movie_play,
+	icon_view_movie_prev,
+	icon_view_movie_next,
 
 	icon_view_end,	// nothing beyond this point
 };
@@ -484,6 +490,7 @@ public slots:
 	void newInstance(QFileInfo file = QFileInfo());
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
+	void showToolbarsTemporarily(bool show);
 	void showToolbar(bool show);
 	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
@@ -522,6 +529,7 @@ public slots:
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setContrast(bool contrast);
+	void enableMovieActions(bool enable);
 	//void shareFacebook();
 
 	// batch actions
@@ -604,6 +612,7 @@ protected:
 	
 	// toolbar
 	QToolBar* toolbar;
+	QToolBar* movieToolbar;
 	QStatusBar* statusbar;
 	QVector<QLabel*> statusbarLabels;
 	
