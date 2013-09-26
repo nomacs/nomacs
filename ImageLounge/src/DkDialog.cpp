@@ -3240,7 +3240,7 @@ void DkMosaicDialog::on_dbButton_pressed() {
 	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
 		saveDir.absolutePath());
 
-	if (saveDir.exists()) {
+	if (QFileInfo(dirName).exists()) {
 		saveDir = dirName;
 		folderLabel->setText(saveDir.absolutePath());
 	}
@@ -3506,19 +3506,19 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 		if (!processing)
 			return QDialog::Rejected;
 
-		if (iDidNothing > 50) {
+		if (iDidNothing > 100) {
 			force = true;
 
 			if (!useTwice)
 				emit infoMessage(tr("Filling empty areas..."));
 		}
 
-		if (iDidNothing > 200 && !useTwice) {
+		if (iDidNothing > 400 && !useTwice) {
 			emit infoMessage(tr("I need to use some images twice - maybe the database is too small?"));
 			iDidNothing = 0;
 			useTwice = true;
 		}
-		else if (iDidNothing > 200) {
+		else if (iDidNothing > 400) {
 			emit infoMessage(tr("Sorry, it seems that i cannot create your mosaic with this database."));
 			return QDialog::Rejected;
 		}

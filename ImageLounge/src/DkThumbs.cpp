@@ -49,6 +49,13 @@ DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
 	s = qMax(img.width(), img.height());
 };
 
+void DkThumbNail::compute(bool forceLoad /* = false */, bool forceSave /* = false */) {
+	
+	// we do this that complicated to be thread-safe
+	// if we use member vars in the thread and the object gets deleted during thread execution we crash...
+	this->img = computeIntern(file, forceLoad, forceSave, maxThumbSize, minThumbSize, rescale);
+}
+
 /**
  * Loads the thumbnail from the metadata.
  * If no thumbnail is embedded, the whole image
@@ -57,10 +64,10 @@ DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  **/ 
-void DkThumbNail::compute(bool forceLoad, bool forceSave) {
+QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale) {
 	
 	DkTimer dt;
-
+	qDebug() << "[thumb] file: " << file.absoluteFilePath();
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
 	QImage thumb = dataExif.getThumbnail();
@@ -73,8 +80,6 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
 	QImageReader imageReader(filePath);
-
-	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
 
 	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS) {
 
@@ -147,7 +152,7 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 		imageReader.setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
 
 		// there seems to be a bug in exiv2
-		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::display.saveThumb)) {	// TODO settings
+		if ((initialSize.width() > 400 || initialSize.height() > 400) && (forceSave || DkSettings::display.saveThumb)) {
 			
 			try {
 				dataExif.saveThumbnail(thumb, QFileInfo(filePath));
@@ -175,8 +180,11 @@ void DkThumbNail::compute(bool forceLoad, bool forceSave) {
 
 	//qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
 
-	this->img = thumb;
-	//return thumb;
+	if (!thumb.isNull())
+		qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
+
+
+	return thumb;
 }
 
 void DkThumbNail::removeBlackBorder(QImage& img) {
@@ -231,6 +239,142 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 		img = img.copy(0, rIdx, img.width(), rIdxB-rIdx);
 
 }
+
+DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) {
+
+	connect(&watcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
+}
+
+DkThumbNailT::~DkThumbNailT() {
+	watcher.blockSignals(true);
+	watcher.cancel();
+}
+
+void DkThumbNailT::fetchThumb(bool forceLoad /* = false */, bool forceSave /* = false */) {
+
+	
+	if (!img.isNull() || !imgExists || watcher.isRunning())
+		return;
+
+	QFuture<QImage> future = QtConcurrent::run(this, 
+		&nmc::DkThumbNailT::computeCall, forceLoad, forceSave);
+
+	watcher.setFuture(future);
+}
+
+QImage DkThumbNailT::computeCall(bool forceLoad, bool forceSave) {
+
+	return DkThumbNail::computeIntern(file, forceLoad, forceSave, maxThumbSize, minThumbSize, rescale);
+}
+
+void DkThumbNailT::thumbLoaded() {
+	
+	QFuture<QImage> future = watcher.future();
+
+	this->img = future.result();
+	
+	if (!img.isNull())
+		emit thumbUpdated();
+	else
+		imgExists = false;
+}
+
+// DkThumbPool --------------------------------------------------------------------
+DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 0 */) : QObject(parent) {
+	this->currentFile = file;
+}
+
+void DkThumbPool::setFile(const QFileInfo& file, int force) {
+
+	if (!thumbs.empty() && (force == DkThumbsLoader::user_updated || currentFile.absoluteDir() != file.absoluteDir()))
+		indexDir();
+	else if (!thumbs.empty() && force == DkThumbsLoader::dir_updated)
+		updateDir();
+
+	if (currentFile != file)
+		emit newFileIdxSignal(fileIdx(file));
+
+	currentFile = file;
+
+}
+
+QFileInfo DkThumbPool::getCurrentFile() {
+	return currentFile;
+}
+
+int DkThumbPool::fileIdx(const QFileInfo& file) {
+
+	int tIdx = -1;
+	
+	for (int idx = 0; idx < thumbs.size(); idx++) {
+		if (file == thumbs.at(idx)->getFile()) {
+			tIdx = idx;
+			break;
+		}
+	}
+
+	return tIdx;
+}
+
+int DkThumbPool::getCurrentFileIdx() {
+
+	if (thumbs.empty())
+		indexDir();
+
+	return fileIdx(currentFile);
+}
+
+QVector<QSharedPointer<DkThumbNailT> > DkThumbPool::getThumbs() {
+
+	if (thumbs.empty())
+		indexDir();
+
+	emit newFileIdxSignal(getCurrentFileIdx());
+
+	return thumbs;
+}
+
+void DkThumbPool::indexDir() {
+
+	thumbs.clear();
+	files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
+
+	for (int idx = 0; idx < files.size(); idx++)
+		thumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
+}
+
+void DkThumbPool::updateDir() {
+
+	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
+
+	files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
+	
+	for (int idx = 0; idx < files.size(); idx++) {
+
+
+		if (int fIdx = fileIdx(files.at(idx)) != -1)
+			newThumbs.append(thumbs.at(fIdx));
+		else
+			newThumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
+	}
+
+	thumbs = newThumbs;
+}
+
+QSharedPointer<DkThumbNailT> DkThumbPool::createThumb(const QFileInfo& file) {
+
+	QSharedPointer<DkThumbNailT> thumb(new DkThumbNailT(file));
+	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
+
+	return thumb;
+}
+
+void DkThumbPool::thumbUpdated() {
+
+	// maybe we have to add a timer here to ignore too many calls at the same time
+	emit thumbUpdatedSignal();
+}
+
 
 /**
  * Default constructor of the thumbnail loader.
@@ -431,7 +575,9 @@ void DkThumbsLoader::setLoadLimits(int start, int end) {
 	startIdx = (start >= 0 && (unsigned int) start < thumbs->size()) ? start : 0;
 	endIdx = (end > 0 && (unsigned int) end < thumbs->size()) ? end : (int)thumbs->size();
 
-	somethingTodo = true;
+
+
+	//somethingTodo = true;
 }
 
 /**

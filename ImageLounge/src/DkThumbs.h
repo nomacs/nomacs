@@ -34,6 +34,8 @@
 #include <QThread>
 #include <QMutex>
 #include <QImageReader>
+#include <QFutureWatcher>
+#include <QtConcurrentRun>
 
 #include "DkTimer.h"
 #include "DkMetaData.h"
@@ -64,7 +66,7 @@ public:
 	 * Default destructor.
 	 * @return 
 	 **/ 
-	~DkThumbNail() {};
+	virtual ~DkThumbNail() {};
 
 	friend bool operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
 
@@ -79,7 +81,6 @@ public:
 		this->img = img;
 	}
 
-	void compute(bool forceLoad = false, bool forceSave = false);
 	void removeBlackBorder(QImage& img);
 
 	/**
@@ -98,6 +99,8 @@ public:
 	QFileInfo getFile() const {
 		return file;
 	};
+
+	void compute(bool forceLoad = false, bool forceSave = false);
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
@@ -141,15 +144,17 @@ public:
 		imgExists = exists;
 	};
 
-	/**
-	 * Returns the thumbnail size.
-	 * @return int the maximal side (either width or height)
-	 **/ 
-	int size() {
-		return s;
-	};
+	///**
+	// * Returns the thumbnail size.
+	// * @return int the maximal side (either width or height)
+	// **/ 
+	//int size() {
+	//	return s;
+	//};
 
-private:
+protected:
+	QImage computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale);
+
 	QImage img;
 	QFileInfo file;
 	int s;
@@ -157,8 +162,59 @@ private:
 	int maxThumbSize;
 	int minThumbSize;
 	bool rescale;
-
 };
+
+class DkThumbNailT : public QObject, public DkThumbNail {
+	Q_OBJECT
+
+public:
+	DkThumbNailT(QFileInfo file = QFileInfo(), QImage img = QImage());
+	~DkThumbNailT();
+
+	void fetchThumb(bool forceLoad = false, bool forceSave = false);
+
+signals:
+	void thumbUpdated();
+
+protected slots:
+	void thumbLoaded();
+
+protected:
+	QImage computeCall(bool forceLoad, bool forceSave);
+
+	QFutureWatcher<QImage> watcher;
+};
+
+class DkThumbPool : public QObject {
+	Q_OBJECT
+
+public:
+	DkThumbPool(QFileInfo file = QFileInfo(), QObject* parent = 0);
+	
+	QFileInfo getCurrentFile();
+	int getCurrentFileIdx();
+	int fileIdx(const QFileInfo& file);
+
+	QVector<QSharedPointer<DkThumbNailT> > getThumbs();
+
+public slots:
+	void setFile(const QFileInfo& files, int force = false);
+	void thumbUpdated();
+	void updateDir();
+
+signals:
+	void thumbUpdatedSignal();
+	void newFileIdxSignal(int idx);
+
+protected:
+	void indexDir();
+	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
+
+	QVector<QSharedPointer<DkThumbNailT> > thumbs;
+	QFileInfo currentFile;
+	QStringList files;
+};
+
 
 /**
  * This class provides a method for reading thumbnails.

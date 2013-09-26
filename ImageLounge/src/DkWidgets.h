@@ -544,16 +544,9 @@ class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFilePreview(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkFilePreview(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WFlags flags = 0);
 	
 	~DkFilePreview() {
-		
-		if (thumbsLoader) {
-			thumbsLoader->stop();
-			thumbsLoader->wait();
-			delete thumbsLoader;
-			thumbsLoader = 0;
-		}
 	};
 
 	void setCurrentDx(float dx) {
@@ -576,17 +569,19 @@ public slots:
 	void wheelEvent(QWheelEvent *event);
 	void leaveEvent(QEvent *event);
 	void moveImages();
-	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
+	void updateFileIdx(int fileIdx);
 
 signals:
 	void loadFileSignal(QFileInfo file);
-	void loadThumbsSignal(int start, int end);
+	//void loadThumbsSignal(int start, int end);
 	void changeFileSignal(int idx);
 
 private:
-	std::vector<DkThumbNail> thumbs;
-	DkThumbsLoader* thumbsLoader;
+	//QVector<QSharedPointer<DkThumbNailT>> thumbs;
+	DkThumbPool* thumbPool;
+	//DkThumbsLoader* thumbsLoader;
 	QDir thumbsDir;
+
 	
 	QWidget* parent;
 	QTransform worldMatrix;
@@ -626,7 +621,8 @@ private:
 	bool scrollToCurrentImage;
 	
 	void init();
-	void indexDir(int force = DkThumbsLoader::not_forced);
+	//void clearThumbs();
+	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
@@ -1367,7 +1363,7 @@ signals:
 	void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
-	
+	void createToolbar();
 
 	DkCropToolBar* cropToolbar;
 };

@@ -197,6 +197,10 @@ public:
 
 	void setFullScreen(bool fullscreen);
 
+	DkThumbPool* getThumbPool() {
+		return thumbPool;
+	}
+
 	DkFilePreview* getFilePreview() {
 		return filePreview;
 	}
@@ -298,6 +302,8 @@ protected:
 	DkLabelBg* centerLabel;
 	DkLabelBg* bottomLabel;
 	DkLabelBg* bottomLeftLabel;
+
+	DkThumbPool* thumbPool;
 
 	QLabel* wheelButton;
 

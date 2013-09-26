@@ -42,7 +42,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	cropWidget = new DkCropWidget(QRectF(), this);
 
 	// thumbnails, metadata
-	filePreview = new DkFilePreview(this, flags);
+	thumbPool = new DkThumbPool(QFileInfo(), this);
+	filePreview = new DkFilePreview(thumbPool, this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
 	overviewWindow = new DkOverview(this);
@@ -250,7 +251,7 @@ void DkControlWidget::connectWidgets() {
 	if (loader) {
 		qDebug() << "loader slots connected";
 
-		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), filePreview, SLOT(updateDir(QFileInfo, int)));
+		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), thumbPool, SLOT(setFile(QFileInfo, int)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize, bool, QString)), this, SLOT(setFileInfo(QFileInfo, QSize, bool, QString)));
 
@@ -1588,7 +1589,7 @@ void DkViewPort::reloadFile() {
 		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
 
 		if (controller->getFilePreview())
-			controller->getFilePreview()->updateDir(loader->getFile(), DkThumbsLoader::user_updated);
+			controller->getThumbPool()->setFile(loader->getFile(), true);
 	}
 }
 
