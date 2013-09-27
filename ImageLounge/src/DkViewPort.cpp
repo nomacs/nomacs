@@ -43,7 +43,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 	// thumbnails, metadata
 	thumbPool = new DkThumbPool(QFileInfo(), this);
-	thumbWidget = new DkThumbWidget(thumbPool, this, flags);
+	thumbWidget = new DkThumbScrollWidget(thumbPool, this, flags);
 	filePreview = new DkFilePreview(thumbPool, this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);

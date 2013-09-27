@@ -649,16 +649,19 @@ signals:
 protected:
 	void mouseDoubleClickEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent *event);
+	void paintEvent(QPaintEvent* event);
 
 	QSharedPointer<DkThumbNailT> thumb;
 
 };
 
-class DkThumbWidget : public DkWidget {
+class DkThumbWidget : public QWidget {
 	Q_OBJECT
 
 public:
 	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	void updateLayout();
 
 public slots:
 	virtual void setVisible(bool visible);
@@ -666,15 +669,29 @@ public slots:
 
 protected:
 	void wheelEvent(QWheelEvent *event);
-
-	void updateLayout();
+	void moveEvent(QMoveEvent *event);
 	void resizeEvent(QResizeEvent *event);
 
+	void fetchThumbs();
+
 	DkThumbPool* thumbPool;
-	QWidget* thumbsView;
 	QGridLayout* gridLayout;
-	QScrollArea* scrollArea;
+
 	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+
+};
+
+class DkThumbScrollWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+protected:
+	void resizeEvent(QResizeEvent *event);
+
+	DkThumbWidget* thumbsView;
+	QScrollArea* scrollArea;
 };
 
 class DkFolderScrollBar : public QScrollBar {

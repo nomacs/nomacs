@@ -286,7 +286,7 @@ protected:
 	DkCropWidget* cropWidget;
 
 	DkFilePreview* filePreview;
-	DkThumbWidget* thumbWidget;
+	DkThumbScrollWidget* thumbWidget;
 	DkMetaDataInfo* metaDataInfo;
 	DkOverview* overviewWindow;
 	DkPlayer* player;

@@ -50,9 +50,10 @@ class DkThumbNail {
 
 public:
 	enum {
+		loading = -2,
 		exists_not = -1,
 		not_loaded,
-		loaded
+		loaded,
 	};
 	
 	/**
@@ -172,6 +173,18 @@ public:
 	~DkThumbNailT();
 
 	void fetchThumb(bool forceLoad = false, bool forceSave = false);
+
+	/**
+	 * Returns whether the thumbnail was loaded, or does not exist.
+	 * @return int a status (loaded | not loaded | exists not | loading)
+	 **/ 
+	int hasImage() const {
+		
+		if (watcher.isRunning())
+			return loading;
+		else
+			return DkThumbNail::hasImage();
+	};
 
 signals:
 	void thumbUpdated();
