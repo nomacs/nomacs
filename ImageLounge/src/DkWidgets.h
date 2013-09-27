@@ -640,7 +640,6 @@ public:
 	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
 
 public slots:
-	virtual void setVisible(bool visible);
 	void updateLabel();
 
 signals:
@@ -650,8 +649,10 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent *event);
 	void paintEvent(QPaintEvent* event);
+	void resizeImgLabel();
 
 	QSharedPointer<DkThumbNailT> thumb;
+	QLabel* imgLabel;
 
 };
 
