@@ -60,6 +60,7 @@
 #include <QProgressDialog>
 #include <QHeaderView>
 #include <QMenu>
+#include <QScrollArea>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -140,7 +141,7 @@ protected:
 	void init();
 };
 
-class  DllExport DkLabel : public QLabel {
+class DllExport DkLabel : public QLabel {
 	Q_OBJECT
 
 public:
@@ -627,6 +628,53 @@ private:
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
 	void createCurrentImgEffect(QImage img, QColor col);
+};
+
+class DkThumbLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	void setThumb(QSharedPointer<DkThumbNailT> thumb);
+	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
+
+public slots:
+	virtual void setVisible(bool visible);
+	void updateLabel();
+
+signals:
+	void loadFileSignal(QFileInfo& file);
+
+protected:
+	void mouseDoubleClickEvent(QMouseEvent *event);
+	void resizeEvent(QResizeEvent *event);
+
+	QSharedPointer<DkThumbNailT> thumb;
+
+};
+
+class DkThumbWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+public slots:
+	virtual void setVisible(bool visible);
+	void updateThumbLabels();
+
+protected:
+	void wheelEvent(QWheelEvent *event);
+
+	void updateLayout();
+	void resizeEvent(QResizeEvent *event);
+
+	DkThumbPool* thumbPool;
+	QWidget* thumbsView;
+	QGridLayout* gridLayout;
+	QScrollArea* scrollArea;
+	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
 };
 
 class DkFolderScrollBar : public QScrollBar {

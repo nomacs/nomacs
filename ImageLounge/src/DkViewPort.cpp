@@ -43,6 +43,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 	// thumbnails, metadata
 	thumbPool = new DkThumbPool(QFileInfo(), this);
+	thumbWidget = new DkThumbWidget(thumbPool, this, flags);
 	filePreview = new DkFilePreview(thumbPool, this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
@@ -82,8 +83,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	//// debug: show invisible widgets
-	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	// debug: show invisible widgets
+	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -104,6 +105,8 @@ void DkControlWidget::init() {
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
 	cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	thumbWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	thumbWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	spinnerLabel->halfSize();
 
 	// dummy
@@ -214,13 +217,15 @@ void DkControlWidget::init() {
 	hudLayout->setContentsMargins(0,0,0,0);
 	hudLayout->setSpacing(0);
 
-	// add elements
-	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
-	hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
-	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
-	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
-	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
-	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
+	hudLayout->addWidget(thumbWidget, 0, 0);
+
+	//// add elements
+	//hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
+	//hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
+	//hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
+	//hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
+	//hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
+	//hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
 		
 	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
 	QHBoxLayout* editLayout = new QHBoxLayout(editWidget);
@@ -238,6 +243,7 @@ void DkControlWidget::init() {
 	//spinnerLabel->show();
 	
 	show();
+	thumbWidget->setVisible(true);
 	qDebug() << "controller initialized...";
 }
 

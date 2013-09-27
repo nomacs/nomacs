@@ -67,7 +67,10 @@ void DkThumbNail::compute(bool forceLoad /* = false */, bool forceSave /* = fals
 QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale) {
 	
 	DkTimer dt;
-	qDebug() << "[thumb] file: " << file.absoluteFilePath();
+	//qDebug() << "[thumb] file: " << file.absoluteFilePath();
+	//if (file.fileName().contains("__doris-gray.jp2"))
+	//	qDebug() << "the wrong file...";
+
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
 	QImage thumb = dataExif.getThumbnail();
@@ -122,30 +125,32 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 		if (thumb.isNull()) {
 			DkBasicLoader loader;
 			
-			if (loader.loadGeneral(file, true)) {
-
+			if (loader.loadGeneral(file, true))
 				thumb = loader.image();
-				imgW = thumb.width();
-				imgH = thumb.height();
+		}
 
-				if (imgW > maxThumbSize || imgH > maxThumbSize) {
-					if (imgW > imgH) {
-						imgH = (float)maxThumbSize / imgW * imgH;
-						imgW = maxThumbSize;
-					} 
-					else if (imgW < imgH) {
-						imgW = (float)maxThumbSize / imgH * imgW;
-						imgH = maxThumbSize;
-					}
-					else {
-						imgW = maxThumbSize;
-						imgH = maxThumbSize;
-					}
+		// the image is not scaled correctly yet
+		if (rescale && !thumb.isNull() && (imgW == -1 || imgH == -1)) {
+			imgW = thumb.width();
+			imgH = thumb.height();
+
+			if (imgW > maxThumbSize || imgH > maxThumbSize) {
+				if (imgW > imgH) {
+					imgH = (float)maxThumbSize / imgW * imgH;
+					imgW = maxThumbSize;
+				} 
+				else if (imgW < imgH) {
+					imgW = (float)maxThumbSize / imgH * imgW;
+					imgH = maxThumbSize;
 				}
-
-				thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
-				thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				else {
+					imgW = maxThumbSize;
+					imgH = maxThumbSize;
+				}
 			}
+
+			thumb = thumb.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+			thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
 		// is there a nice solution to do so??
@@ -180,8 +185,8 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 
 	//qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
 
-	if (!thumb.isNull())
-		qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
+	//if (!thumb.isNull())
+	//	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
 
 
 	return thumb;
@@ -286,10 +291,11 @@ DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 
 
 void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
-	if (!thumbs.empty() && (force == DkThumbsLoader::user_updated || currentFile.absoluteDir() != file.absoluteDir()))
+	// NOTE: uncomment this is just for debugging!!
+	//if (!thumbs.empty() && (force == DkThumbsLoader::user_updated || currentFile.absoluteDir() != file.absoluteDir()))
 		indexDir();
-	else if (!thumbs.empty() && force == DkThumbsLoader::dir_updated)
-		updateDir();
+	//else if (!thumbs.empty() && force == DkThumbsLoader::dir_updated)
+	//	updateDir();
 
 	if (currentFile != file)
 		emit newFileIdxSignal(fileIdx(file));
@@ -341,6 +347,10 @@ void DkThumbPool::indexDir() {
 
 	for (int idx = 0; idx < files.size(); idx++)
 		thumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
+	
+	if (!thumbs.empty())
+		emit numThumbChangedSignal();
+
 }
 
 void DkThumbPool::updateDir() {
@@ -357,6 +367,9 @@ void DkThumbPool::updateDir() {
 		else
 			newThumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
 	}
+
+	if (!thumbs.empty() && thumbs.size() != newThumbs.size())
+		emit numThumbChangedSignal();
 
 	thumbs = newThumbs;
 }

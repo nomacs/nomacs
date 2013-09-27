@@ -204,6 +204,7 @@ public slots:
 
 signals:
 	void thumbUpdatedSignal();
+	void numThumbChangedSignal();
 	void newFileIdxSignal(int idx);
 
 protected:

@@ -795,6 +795,185 @@ void DkFilePreview::setVisible(bool visible) {
 
 }
 
+// DkThumbLabel --------------------------------------------------------------------
+DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QWidget* parent, Qt::WindowFlags f) : QLabel(parent, f) {
+
+	setThumb(thumb);
+	//updateLabel();
+
+}
+
+void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
+	
+	this->thumb = thumb;
+
+	if (thumb.isNull())
+		return;
+
+	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(updateLabel()));
+	
+	setStatusTip(thumb->getFile().fileName());
+	setToolTip(thumb->getFile().fileName());
+}
+
+void DkThumbLabel::updateLabel() {
+
+	if (thumb.isNull())
+		return;
+
+	QPixmap pm;
+
+	if (!thumb->getImage().isNull())
+		pm = QPixmap::fromImage(thumb->getImage());
+	else
+		pm.load(":/nomacs/img/dummy-img.png");
+
+	setPixmap(pm.scaled(width(), height(), Qt::KeepAspectRatio));	
+	//qDebug() << "updating: " << thumb->getFile().fileName();
+
+	update();
+}
+
+void DkThumbLabel::setVisible(bool visible) {
+
+	if (thumb.isNull())
+		return;
+
+	if (visible)
+		thumb->fetchThumb();
+
+	QLabel::setVisible(visible);
+}
+
+void DkThumbLabel::mouseDoubleClickEvent(QMouseEvent *event) {
+
+	if (thumb.isNull())
+		return;
+
+	emit loadFileSignal(thumb->getFile());
+}
+
+void DkThumbLabel::resizeEvent(QResizeEvent *event) {
+
+	setMaximumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
+	updateLabel();
+
+	QLabel::resizeEvent(event);
+}
+
+
+// DkThumbWidget --------------------------------------------------------------------
+DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) {
+
+	setContentsMargins(0,0,0,0);
+	setStyleSheet("QWidget{background-color: QColor(200,0,0,90);} ");
+	
+	this->thumbPool = thumbPool;
+	thumbsView = new QWidget(this);
+	thumbsView->setContentsMargins(0,0,0,0);
+	//thumbsView->setFixedSize(10000, 10000);
+	thumbsView->setStyleSheet("QWidget{background-color: QColor(0,200,0,90);}");
+	gridLayout = new QGridLayout(thumbsView);
+
+
+	scrollArea = new QScrollArea(this);
+	scrollArea->setContentsMargins(0,0,0,0);
+	scrollArea->setWidget(thumbsView);
+	//scrollArea->setStyleSheet("QWidget{background-color: QColor(0,0,200,90);} ");
+
+	if (thumbPool != 0) {
+		connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
+		connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(updateThumbLabels()));
+	}
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0,0,0,0);
+	layout->addWidget(scrollArea);
+
+	//setFixedSize(300, 300);
+
+}
+
+void DkThumbWidget::setVisible(bool visible) {
+
+	if (!thumbPool)
+		return;
+
+
+	// TODO: uncomment!
+	//if (visible && !scrollArea)
+		updateThumbLabels();
+
+	DkWidget::setVisible(visible);
+}
+
+void DkThumbWidget::updateLayout() {
+	
+	int xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
+	int numCols = qFloor(((float)scrollArea->viewport()->width()-xOffset)/(DkSettings::display.thumbSize + xOffset));
+	if (numCols == 0) numCols = 1;	// at least one column is needed
+	int numRows = qCeil((float)thumbLabels.size()/numCols);
+	int rIdx = 0;
+
+	// recompute the xOffset
+	//xOffset = qFloor(((float)scrollArea->viewport()->width() - numCols*(DkSettings::display.thumbSize)) / (numCols*xOffset+xOffset));
+	gridLayout->setContentsMargins(xOffset, xOffset, xOffset, xOffset);
+	thumbsView->setFixedSize(numCols*(DkSettings::display.thumbSize+xOffset)+xOffset, numRows*(DkSettings::display.thumbSize+xOffset)+xOffset);
+	qDebug() << "thumbsview size: " << thumbsView->size();
+	//qDebug() << "computed by: " << width() << "/" << 
+
+	for (int idx = 0; idx < thumbLabels.size(); idx++) {
+
+		int cIdx = idx % numCols;
+
+		gridLayout->addWidget(thumbLabels.at(idx).data(), rIdx, cIdx, Qt::AlignCenter);
+
+		if (cIdx == numCols-1)
+			rIdx++;
+	}
+	qDebug() << "I have: " << numCols << " num rows: " << numRows;
+
+	update();
+}
+
+void DkThumbWidget::updateThumbLabels() {
+
+	qDebug() << "updating thumb labels...";
+
+	for (int idx = 0; idx < thumbLabels.size(); idx++)
+		gridLayout->removeWidget(thumbLabels.at(idx).data());
+
+	thumbLabels.clear();
+	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
+	
+	for (int idx = 0; idx < thumbs.size(); idx++)
+		thumbLabels.append(QSharedPointer<DkThumbLabel>(new DkThumbLabel(thumbs.at(idx), this)));
+
+	updateLayout();
+}
+
+void DkThumbWidget::wheelEvent(QWheelEvent *event) {
+
+	if (event->modifiers() == Qt::ControlModifier) {
+		int newSize = DkSettings::display.thumbSize + event->delta();
+
+		if (newSize > 6 && newSize <= 160) {
+			DkSettings::display.thumbSize = newSize;
+			updateLayout();
+			return;	// don't propagate
+		}
+	}
+
+	QWidget::wheelEvent(event);
+}
+
+void DkThumbWidget::resizeEvent(QResizeEvent *event) {
+
+	DkWidget::resizeEvent(event);
+	updateLayout();
+}
+
+
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
 
