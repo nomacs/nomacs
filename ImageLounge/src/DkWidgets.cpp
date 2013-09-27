@@ -811,11 +811,11 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
 		return;
 
 	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(updateLabel()));
-	
 	setStatusTip(thumb->getFile().fileName());
 	setToolTip(thumb->getFile().fileName());
 	setMaximumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
-	//setMinimumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
+
+	setMinimumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
 }
 
 void DkThumbLabel::updateLabel() {
@@ -844,6 +844,7 @@ void DkThumbLabel::setVisible(bool visible) {
 
 	//if (visible)
 	//	thumb->fetchThumb();
+	//qDebug() << "became visible: " << thumb->getFile().fileName();
 
 	QLabel::setVisible(visible);
 }
@@ -876,42 +877,85 @@ void DkThumbLabel::paintEvent(QPaintEvent* event) {
 DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QWidget(parent, flags) {
 
 	this->thumbPool = thumbPool;
-	gridLayout = new QGridLayout(this);
+	//gridLayout = new QGridLayout(this);
 
 	if (thumbPool != 0) {
 		connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
 		connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(updateThumbLabels()));
 	}
 
+	xOffset = 0;
+	numCols = 0;
+	numRows = 0;
+
 }
 
 void DkThumbWidget::updateLayout() {
 
 
-	int xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
+	xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 	// TODO: get parent size
-	int numCols = qFloor(((float)width()-xOffset)/(DkSettings::display.thumbSize + xOffset));
+	numCols = qFloor(((float)width()-xOffset)/(DkSettings::display.thumbSize + xOffset));
 	if (numCols == 0) numCols = 1;	// at least one column is needed
-	int numRows = qCeil((float)thumbLabels.size()/numCols);
+	numRows = qCeil((float)thumbLabels.size()/numCols);
 	int rIdx = 0;
 
 	// recompute the xOffset
 	//xOffset = qFloor(((float)scrollArea->viewport()->width() - numCols*(DkSettings::display.thumbSize)) / (numCols*xOffset+xOffset));
-	gridLayout->setContentsMargins(xOffset, xOffset, xOffset, xOffset);
+	//gridLayout->setContentsMargins(xOffset, xOffset, xOffset, xOffset);
 	setFixedSize(numCols*(DkSettings::display.thumbSize+xOffset)+xOffset, numRows*(DkSettings::display.thumbSize+xOffset)+xOffset);
 	//qDebug() << "thumbsview size: " << thumbsView->size();
 	//qDebug() << "computed by: " << width() << "/" << 
 
-	for (int idx = 0; idx < thumbLabels.size(); idx++) {
+	//for (int idx = 0; idx < thumbLabels.size(); idx++) {
 
-		int cIdx = idx % numCols;
+	//	int cIdx = idx % numCols;
 
-		gridLayout->addWidget(thumbLabels.at(idx).data(), rIdx, cIdx, Qt::AlignCenter);
+	//	gridLayout->addWidget(thumbLabels.at(idx).data(), rIdx, cIdx, Qt::AlignCenter);
 
-		if (cIdx == numCols-1)
-			rIdx++;
+	//	if (cIdx == numCols-1)
+	//		rIdx++;
+	//}
+
+	DkTimer dt;
+	int cYOffset = xOffset;
+
+	for (int rIdx = 0; rIdx < numRows; rIdx++) {
+
+		int cXOffset = xOffset;
+
+		//// do nothing if we are outside the region
+		//if (cYOffset < region.y()) {
+		//	cYOffset += DkSettings::display.thumbSize + xOffset;
+		//	continue;
+		//}
+		////else if (cYOffset > region.bottom())
+		//	break;	// we're done
+
+		for (int cIdx = 0; cIdx < numCols; cIdx++) {
+
+			int tIdx = rIdx*numCols+cIdx;
+
+			if (tIdx < 0 || tIdx >= thumbLabels.size()-1)
+				break;
+
+			QSharedPointer<DkThumbLabel> cLabel = thumbLabels.at(tIdx);
+			//if (cLabel->getThumb()->hasImage() == DkThumbNail::not_loaded)
+			//	cLabel->getThumb()->fetchThumb();
+
+			cLabel->move(cXOffset, cYOffset);
+			cLabel->show();
+			//cLabel->render(&painter, QPoint(cXOffset, cYOffset));
+			cXOffset += DkSettings::display.thumbSize + xOffset;
+		}
+
+		// update ypos
+		cYOffset += DkSettings::display.thumbSize + xOffset;
 	}
-	//qDebug() << "I have: " << numCols << " num rows: " << numRows;
+
+	qDebug() << "moving takes: " << QString::fromStdString(dt.getTotal());
+
+	qDebug() << "I have: " << numCols << " num rows: " << numRows;
 
 	//update();
 }
@@ -920,8 +964,8 @@ void DkThumbWidget::updateThumbLabels() {
 
 	qDebug() << "updating thumb labels...";
 
-	for (int idx = 0; idx < thumbLabels.size(); idx++)
-		gridLayout->removeWidget(thumbLabels.at(idx).data());
+	//for (int idx = 0; idx < thumbLabels.size(); idx++)
+	//	gridLayout->removeWidget(thumbLabels.at(idx).data());
 
 	thumbLabels.clear();
 	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
@@ -959,6 +1003,21 @@ void DkThumbWidget::setVisible(bool visible) {
 		updateThumbLabels();
 
 	QWidget::setVisible(visible);
+}
+
+// I really wanted to do this correct with a grid layout...
+// but: it is amazingly slow if we load > 4000 files...
+void DkThumbWidget::paintEvent(QPaintEvent *event) {
+
+	//QPainter painter(this);
+
+	//int cYOffset = xOffset;
+	//QRect region = visibleRegion().boundingRect();
+
+
+
+	QWidget::paintEvent(event);
+
 }
 
 void DkThumbWidget::moveEvent(QMoveEvent *event) {

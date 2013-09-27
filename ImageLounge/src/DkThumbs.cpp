@@ -67,13 +67,13 @@ void DkThumbNail::compute(bool forceLoad /* = false */, bool forceSave /* = fals
 QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale) {
 	
 	DkTimer dt;
-	//qDebug() << "[thumb] file: " << file.absoluteFilePath();
+	qDebug() << "[thumb] file: " << file.absoluteFilePath();
 	//if (file.fileName().contains("__doris-gray.jp2"))
 	//	qDebug() << "the wrong file...";
 
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
-	QImage thumb;// = dataExif.getThumbnail();
+	QImage thumb = dataExif.getThumbnail();
 	removeBlackBorder(thumb);
 	int orientation = dataExif.getOrientation();
 	int imgW = thumb.width();
@@ -297,6 +297,8 @@ void DkThumbPool::setFile(const QFileInfo& file, int force) {
 	//else if (!thumbs.empty() && force == DkThumbsLoader::dir_updated)
 	//	updateDir();
 
+	qDebug() << __LINE__;
+
 	if (currentFile != file)
 		emit newFileIdxSignal(fileIdx(file));
 
@@ -305,6 +307,7 @@ void DkThumbPool::setFile(const QFileInfo& file, int force) {
 }
 
 QFileInfo DkThumbPool::getCurrentFile() {
+	qDebug() << __LINE__;
 	return currentFile;
 }
 
@@ -318,7 +321,7 @@ int DkThumbPool::fileIdx(const QFileInfo& file) {
 			break;
 		}
 	}
-
+	qDebug() << __LINE__;
 	return tIdx;
 }
 
@@ -326,7 +329,7 @@ int DkThumbPool::getCurrentFileIdx() {
 
 	if (thumbs.empty())
 		indexDir();
-
+	qDebug() << __LINE__;
 	return fileIdx(currentFile);
 }
 
@@ -334,7 +337,7 @@ QVector<QSharedPointer<DkThumbNailT> > DkThumbPool::getThumbs() {
 
 	if (thumbs.empty())
 		indexDir();
-
+	qDebug() << __LINE__;
 	emit newFileIdxSignal(getCurrentFileIdx());
 
 	return thumbs;
@@ -347,7 +350,7 @@ void DkThumbPool::indexDir() {
 
 	for (int idx = 0; idx < files.size(); idx++)
 		thumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
-	
+	qDebug() << __LINE__;
 	if (!thumbs.empty())
 		emit numThumbChangedSignal();
 
@@ -367,7 +370,7 @@ void DkThumbPool::updateDir() {
 		else
 			newThumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
 	}
-
+	qDebug() << __LINE__;
 	if (!thumbs.empty() && thumbs.size() != newThumbs.size())
 		emit numThumbChangedSignal();
 
@@ -377,12 +380,13 @@ void DkThumbPool::updateDir() {
 QSharedPointer<DkThumbNailT> DkThumbPool::createThumb(const QFileInfo& file) {
 
 	QSharedPointer<DkThumbNailT> thumb(new DkThumbNailT(file));
-	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
-
+	//connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
+	qDebug() << __LINE__;
 	return thumb;
 }
 
 void DkThumbPool::thumbUpdated() {
+	qDebug() << __LINE__;
 
 	// maybe we have to add a timer here to ignore too many calls at the same time
 	emit thumbUpdatedSignal();

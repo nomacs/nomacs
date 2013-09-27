@@ -671,11 +671,15 @@ protected:
 	void wheelEvent(QWheelEvent *event);
 	void moveEvent(QMoveEvent *event);
 	void resizeEvent(QResizeEvent *event);
+	void paintEvent(QPaintEvent *event);
 
 	void fetchThumbs();
 
 	DkThumbPool* thumbPool;
-	QGridLayout* gridLayout;
+	//QGridLayout* gridLayout;
+	int xOffset;
+	int numRows;
+	int numCols;
 
 	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
 
