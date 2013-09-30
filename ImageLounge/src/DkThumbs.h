@@ -213,7 +213,8 @@ public:
 public slots:
 	void setFile(const QFileInfo& files, int force = false);
 	void thumbUpdated();
-	void updateDir();
+	void updateDir(const QFileInfo& currentFile);
+	void getUpdates(QObject* obj, bool isActive);
 
 signals:
 	void thumbUpdatedSignal();
@@ -221,12 +222,13 @@ signals:
 	void newFileIdxSignal(int idx);
 
 protected:
-	void indexDir();
+	void indexDir(const QFileInfo& currentFile);
 	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
 
 	QVector<QSharedPointer<DkThumbNailT> > thumbs;
 	QFileInfo currentFile;
 	QStringList files;
+	QVector<QObject*> listenerList;
 };
 
 

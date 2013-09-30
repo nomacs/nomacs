@@ -113,6 +113,7 @@ enum {
 	// file
 	shortcut_show_scroller	= Qt::Key_F,
 	shortcut_open_preview	= Qt::Key_T,
+	shortcut_open_thumbview	= Qt::SHIFT + Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
 	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
@@ -265,6 +266,7 @@ enum panelActions {
 
 	menu_panel_player,
 	menu_panel_preview,
+	menu_panel_thumbview,
 	menu_panel_scroller,
 	menu_panel_exif,
 	menu_panel_info,

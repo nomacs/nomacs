@@ -598,6 +598,7 @@ void DkNoMacs::createMenu() {
 	panelToolsMenu->addAction(panelActions[menu_panel_transfertoolbar]);
 	panelMenu->addAction(panelActions[menu_panel_explorer]);
 	panelMenu->addAction(panelActions[menu_panel_preview]);
+	panelMenu->addAction(panelActions[menu_panel_thumbview]);
 	panelMenu->addAction(panelActions[menu_panel_scroller]);
 	panelMenu->addAction(panelActions[menu_panel_exif]);
 	
@@ -642,6 +643,7 @@ void DkNoMacs::createContextMenu() {
 
 	contextMenu->addAction(panelActions[menu_panel_explorer]);
 	contextMenu->addAction(panelActions[menu_panel_preview]);
+	contextMenu->addAction(panelActions[menu_panel_thumbview]);
 	contextMenu->addAction(panelActions[menu_panel_scroller]);
 	contextMenu->addAction(panelActions[menu_panel_exif]);
 	contextMenu->addAction(panelActions[menu_panel_overview]);
@@ -938,6 +940,12 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_preview]->setStatusTip(tr("Show Thumbnails"));
 	panelActions[menu_panel_preview]->setCheckable(true);
 	connect(panelActions[menu_panel_preview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPreview(bool)));
+
+	panelActions[menu_panel_thumbview] = new QAction(tr("&Thumbnail Preview"), this);
+	panelActions[menu_panel_thumbview]->setShortcut(QKeySequence(shortcut_open_thumbview));
+	panelActions[menu_panel_thumbview]->setStatusTip(tr("Show Thumbnails Preview"));
+	panelActions[menu_panel_thumbview]->setCheckable(true);
+	connect(panelActions[menu_panel_thumbview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showThumbView(bool)));
 
 	panelActions[menu_panel_scroller] = new QAction(tr("&Folder Scrollbar"), this);
 	panelActions[menu_panel_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
@@ -1942,6 +1950,7 @@ void DkNoMacs::showExplorer(bool show) {
 		explorer = new DkExplorer(tr("File Explorer"));
 		addDockWidget((Qt::DockWidgetArea)dockLocation, explorer);
 		connect(explorer, SIGNAL(openFile(QFileInfo)), viewport()->getImageLoader(), SLOT(load(QFileInfo)));
+		connect(explorer, SIGNAL(openDir(QFileInfo)), viewport()->getController()->getThumbPool(), SLOT(setFile(QFileInfo)));
 		connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo)), explorer, SLOT(setCurrentPath(QFileInfo)));
 	}
 
@@ -3358,6 +3367,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
+	//vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
 	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 	vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 	vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
@@ -3404,6 +3414,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 #endif
 
 		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
+		//vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
 		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
@@ -3563,6 +3574,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 		
 		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
+		//vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
 		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);

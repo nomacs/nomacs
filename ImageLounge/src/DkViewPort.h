@@ -229,6 +229,10 @@ public:
 		return histogram;
 	}
 
+	DkThumbScrollWidget* getThumbWidget() {
+		return thumbWidget;
+	}
+
 	int getRating() {
 		return rating;
 	}
@@ -251,6 +255,7 @@ public slots:
 	void showCrop(bool visible);
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
+	void showThumbView(bool visible);
 
 	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void setInfo(QString msg, int time = 3000, int location = center_label);
@@ -281,6 +286,7 @@ protected:
 
 	QWidget* editWidget;
 	QWidget* hudWidget;
+	QWidget* thumbMetaWidget;
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;

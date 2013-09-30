@@ -656,7 +656,7 @@ protected:
 
 };
 
-class DkThumbWidget : public QWidget {
+class DkThumbWidget : public QLabel {
 	Q_OBJECT
 
 public:
@@ -672,9 +672,6 @@ protected:
 	void wheelEvent(QWheelEvent *event);
 	void moveEvent(QMoveEvent *event);
 	void resizeEvent(QResizeEvent *event);
-	void paintEvent(QPaintEvent *event);
-
-	void fetchThumbs();
 
 	DkThumbPool* thumbPool;
 	//QGridLayout* gridLayout;
@@ -686,17 +683,22 @@ protected:
 
 };
 
-class DkThumbScrollWidget : public DkWidget {
+class DkThumbScrollWidget : public QWidget {
 	Q_OBJECT
 
 public:
 	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+public slots:
+	void setVisible(bool visible);
 
 protected:
 	void resizeEvent(QResizeEvent *event);
 
 	DkThumbWidget* thumbsView;
 	QScrollArea* scrollArea;
+	DkThumbPool* thumbPool;
+
 };
 
 class DkFolderScrollBar : public QScrollBar {
@@ -844,6 +846,7 @@ public slots:
 
 signals:
 	void openFile(QFileInfo fileInfo) const;
+	void openDir(QFileInfo dir) const;
 
 protected:
 	void closeEvent(QCloseEvent *event);

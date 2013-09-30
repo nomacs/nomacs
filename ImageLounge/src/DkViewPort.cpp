@@ -44,6 +44,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	// thumbnails, metadata
 	thumbPool = new DkThumbPool(QFileInfo(), this);
 	thumbWidget = new DkThumbScrollWidget(thumbPool, this, flags);
+	thumbWidget->hide();
 	filePreview = new DkFilePreview(thumbPool, this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
@@ -212,30 +213,39 @@ void DkControlWidget::init() {
 	editWidget->setMouseTracking(true);
 	editWidget->hide();
 
+	thumbMetaWidget = new QWidget(this);
+	thumbMetaWidget->hide();
+
 	// global controller layout
 	QGridLayout* hudLayout = new QGridLayout(hudWidget);
 	hudLayout->setContentsMargins(0,0,0,0);
 	hudLayout->setSpacing(0);
 
-	hudLayout->addWidget(thumbWidget, 0, 0);
+	//hudLayout->addWidget(thumbWidget, 0, 0);
 
-	//// add elements
-	//hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
-	//hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
-	//hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
-	//hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
-	//hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
-	//hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
+	// add elements
+	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
+	hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
+	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
+	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
+	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
+	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
 		
 	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
 	QHBoxLayout* editLayout = new QHBoxLayout(editWidget);
 	editLayout->setContentsMargins(0,0,0,0);
 	editLayout->addWidget(cropWidget);
 
+	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
+	QHBoxLayout* thumbLayout = new QHBoxLayout(thumbMetaWidget);
+	thumbLayout->setContentsMargins(0,0,0,0);
+	thumbLayout->addWidget(thumbWidget);
+
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(hudWidget);
 	layout->addWidget(editWidget);
+	layout->addWidget(thumbMetaWidget);
 
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
@@ -243,7 +253,7 @@ void DkControlWidget::init() {
 	//spinnerLabel->show();
 	
 	show();
-	thumbWidget->setVisible(true);
+	//thumbWidget->setVisible(true);
 	qDebug() << "controller initialized...";
 }
 
@@ -416,6 +426,7 @@ void DkControlWidget::showCrop(bool visible) {
 	if (visible && !editWidget->isVisible()) {
 		editWidget->show();
 		hudWidget->hide();
+		thumbMetaWidget->hide();
 
 		cropWidget->reset();
 		cropWidget->show();
@@ -425,6 +436,30 @@ void DkControlWidget::showCrop(bool visible) {
 		cropWidget->hide();
 		hudWidget->show();
 
+		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
+		if (fileInfoLabel->isVisible()) {
+			fileInfoLabel->setVisible(false);
+			showFileInfo(true);
+		}
+	}
+
+}
+
+void DkControlWidget::showThumbView(bool visible) {
+
+	if (visible && !thumbMetaWidget->isVisible()) {
+
+		showCrop(false);
+		thumbMetaWidget->show();
+		thumbWidget->show();
+		hudWidget->hide();
+	}
+	else if (!visible && thumbMetaWidget->isVisible()) {
+
+		thumbMetaWidget->hide();
+		thumbWidget->hide();
+		hudWidget->show();
+		
 		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
 		if (fileInfoLabel->isVisible()) {
 			fileInfoLabel->setVisible(false);

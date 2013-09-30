@@ -802,6 +802,8 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QWidget* parent, 
 	imgLabel->setFocusPolicy(Qt::NoFocus);
 	imgLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 	imgLabel->setScaledContents(true);
+	imgLabel->setFixedSize(10,10);
+	imgLabel->setStyleSheet("QLabel{border: 1px solid #AAAAAA; background-color: QColor(100,100,100,40);}");
 	setStyleSheet("QLabel{background: transparent;}");
 
 	setThumb(thumb);
@@ -819,7 +821,7 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
 	setStatusTip(thumb->getFile().fileName());
 	setToolTip(thumb->getFile().fileName());
 	
-	// currently we could also say fixedsize
+	// currently we could also say fixed size
 	setMaximumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
 	setMinimumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
 }
@@ -836,35 +838,39 @@ void DkThumbLabel::updateLabel() {
 	else if (thumb->hasImage() == DkThumbNail::exists_not)
 		pm.load(":/nomacs/img/dummy-img.png");
 
-	if (!pm.isNull())
-		imgLabel->setPixmap(pm);	
+	if (!pm.isNull()) {
+		imgLabel->setPixmap(pm);
+		imgLabel->setStyleSheet("");
+	}
 	
 	resizeImgLabel();
 }
 
 void DkThumbLabel::resizeImgLabel() {
 
-	if (!imgLabel->pixmap())
-		return;
 
 	// resize pixmap label
 	QSize size = QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
 	QSize newSize = size;
-	const QPixmap* pm = imgLabel->pixmap();
 
-	if (pm->width() > size.width() || pm->height() > size.height()) {
-		float ratio = pm->width()/(pm->height()+FLT_EPSILON);
+	if (imgLabel->pixmap()) {
+		const QPixmap* pm = imgLabel->pixmap();
 
-		if (ratio > 1.0f && ratio != 0) {
-			newSize.setHeight(newSize.height()/ratio);
+		if (pm->width() > size.width() || pm->height() > size.height()) {
+			float ratio = pm->width()/(pm->height()+FLT_EPSILON);
+
+			if (ratio > 1.0f && ratio != 0) {
+				newSize.setHeight(newSize.height()/ratio);
+			}
+			else if (ratio != 0)
+				newSize.setWidth(newSize.width()*ratio);
 		}
-		else if (ratio != 0)
-			newSize.setWidth(newSize.width()*ratio);
-	}
-	else 
-		newSize = QSize(pm->width(), pm->height());
+		else 
+			newSize = QSize(pm->width(), pm->height());
 
-	imgLabel->setFixedSize(newSize);
+		imgLabel->setFixedSize(newSize);
+
+	}
 	QRect imgR = imgLabel->geometry();
 	imgR.moveCenter(QPoint(size.width()*0.5f, size.height()*0.5f));
 	imgLabel->setGeometry(imgR);
@@ -896,54 +902,44 @@ void DkThumbLabel::paintEvent(QPaintEvent* event) {
 }
 
 // DkThumbWidget --------------------------------------------------------------------
-DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QWidget(parent, flags) {
+DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QLabel(parent, flags) {
 
 	setObjectName("DkThumbWidget");
 	this->thumbPool = thumbPool;
-
-	if (thumbPool != 0) {
-		connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
-		connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(updateThumbLabels()));
-	}
 
 	xOffset = 0;
 	numCols = 0;
 	numRows = 0;
 
-	setStyleSheet(QString("DkThumbWidget{background-color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + QString(";}"));
+	//setStyleSheet("QLabel{background-color: black;}");
+	setStyleSheet(QString("QLabel{background-color: ") + DkUtils::colorToString(DkSettings::slideShow.backgroundColor) + QString(";}"));
 }
 
 void DkThumbWidget::updateLayout() {
 
+
+	QSize pSize = size();
+
+	// I really wanted to do this correct with a grid layout...
+	// but: it is amazingly slow if we load > 4000 files...
+	if (QWidget* p = static_cast<QWidget*>(parent()))
+		pSize = p->size();
 
 	int oldNumCols = numCols;
 	int oldNumRows = numRows;
 
 	xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 	// TODO: get parent size
-	numCols = qFloor(((float)width()-xOffset)/(DkSettings::display.thumbSize + xOffset));
-	qDebug() << "thumb size when layouting: " << DkSettings::display.thumbSize;
+	numCols = qFloor(((float)pSize.width()-xOffset)/(DkSettings::display.thumbSize + xOffset));
+	//qDebug() << "thumb size when layouting: " << DkSettings::display.thumbSize;
 	if (numCols == 0) numCols = 1;	// at least one column is needed
 	numRows = qCeil((float)thumbLabels.size()/numCols);
 	int rIdx = 0;
 
-	//if (numCols == oldNumCols && numRows == oldNumRows)
-	//	return;
-
 	// recompute the xOffset
 	//xOffset = qFloor(((float)scrollArea->viewport()->width() - numCols*(DkSettings::display.thumbSize)) / (numCols*xOffset+xOffset));
 	//gridLayout->setContentsMargins(xOffset, xOffset, xOffset, xOffset);
-	setFixedSize(numCols*(DkSettings::display.thumbSize+xOffset)+xOffset, numRows*(DkSettings::display.thumbSize+xOffset)+xOffset);
-
-	//for (int idx = 0; idx < thumbLabels.size(); idx++) {
-
-	//	int cIdx = idx % numCols;
-
-	//	gridLayout->addWidget(thumbLabels.at(idx).data(), rIdx, cIdx, Qt::AlignCenter);
-
-	//	if (cIdx == numCols-1)
-	//		rIdx++;
-	//}
+	setFixedSize(pSize.width()+30, qMax(numRows*(DkSettings::display.thumbSize+xOffset)+xOffset, pSize.height()-1));
 
 	DkTimer dt;
 	int cYOffset = xOffset;
@@ -987,13 +983,14 @@ void DkThumbWidget::updateThumbLabels() {
 	thumbLabels.clear();
 	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
 
-	for (int idx = 0; idx < thumbs.size(); idx++)
+	for (int idx = 0; idx < thumbs.size(); idx++) {
 		thumbLabels.append(QSharedPointer<DkThumbLabel>(new DkThumbLabel(thumbs.at(idx), this)));
+		if (idx < 2) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
+	}
 
 	if (!thumbs.empty())
 		updateLayout();
 
-	fetchThumbs();
 }
 
 void DkThumbWidget::wheelEvent(QWheelEvent *event) {
@@ -1019,28 +1016,22 @@ void DkThumbWidget::setVisible(bool visible) {
 	if (visible)
 		updateThumbLabels();
 
+	thumbPool->getUpdates(this, visible);
+
+	if (thumbPool != 0 && visible) {
+		connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
+		connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(updateThumbLabels()));
+	}
+	else if (thumbPool) {
+		disconnect(thumbPool, SIGNAL(thumbUpdatedSignal()));
+		disconnect(thumbPool, SIGNAL(numThumbChangedSignal()));
+	}
+
 	QWidget::setVisible(visible);
 }
 
-// I really wanted to do this correct with a grid layout...
-// but: it is amazingly slow if we load > 4000 files...
-void DkThumbWidget::paintEvent(QPaintEvent *event) {
-
-	//QPainter painter(this);
-
-	//int cYOffset = xOffset;
-	//QRect region = visibleRegion().boundingRect();
-
-
-
-	QWidget::paintEvent(event);
-
-}
 
 void DkThumbWidget::moveEvent(QMoveEvent *event) {
-
-	if (event->pos() != event->oldPos())
-		fetchThumbs();
 
 	if (!thumbLabels.empty()) {
 		qDebug() << "visible region: " << visibleRegion().boundingRect();
@@ -1057,60 +1048,30 @@ void DkThumbWidget::resizeEvent(QResizeEvent *event) {
 	
 }
 
-void DkThumbWidget::fetchThumbs() {
-
-	//qDebug() << "fetching..." << visibleRegion();
-
-	//for (int idx = 0; idx < thumbLabels.size(); idx++) {
-
-	//	if (thumbLabels.at(idx)->getThumb()->hasImage() != DkThumbNail::not_loaded)
-	//		continue;
-
-	//	//qDebug() << "thumbnail state: " << thumbLabels.at(idx)->getThumb()->hasImage();
-
-	//	QPoint mapped = /*thumbLabels.at(idx)->mapToParent*/(thumbLabels.at(idx)->pos());
-
-	//	// we need this due to initialization issues
-	//	if (mapped.x() == 0 || mapped.y() == 0)
-	//		continue;
-
-	//	if (visibleRegion().intersects(QRect(mapped, thumbLabels.at(idx)->size()))) {
-	//		thumbLabels.at(idx)->getThumb()->fetchThumb();
-	//		//qDebug() << "fetching thumb..." << QRect(mapped, thumbLabels.at(idx)->size());
-	//	}
-	//	//else
-	//	//	qDebug() << "geometry: " << QRect(mapped, thumbLabels.at(idx)->size());
-
-	//}
-
-	//QWidget::update();
-}
-
-
 // DkThumbScrollWidget --------------------------------------------------------------------
-DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
+DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QWidget(parent, flags) {
 
 	setObjectName("DkThumbScrollWidget");
 	setContentsMargins(0,0,0,0);
 	//setStyleSheet("QWidget{background-color: QColor(200,0,0,90);} ");
-	
+
 	scrollArea = new QScrollArea(this);
 	scrollArea->setContentsMargins(0,0,0,0);
-	//scrollArea->setObjectName("DkThumbScrollArea");
-	//scrollArea->styleSheet();
+	scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-	thumbsView = new DkThumbWidget(thumbPool, scrollArea, flags);
+	thumbsView = new DkThumbWidget(thumbPool, scrollArea);
 	thumbsView->setContentsMargins(0,0,0,0);
-	//thumbsView->setStyleSheet("QWidget{background-color: QColor(0,200,0,90);}");
 
 	scrollArea->setWidget(thumbsView);
-
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(scrollArea);
+	setLayout(layout);
 
-	//setStyleSheet(QString("QWidget{background-color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + QString(";}"));
+	thumbsView->setFixedWidth(scrollArea->viewport()->width());
+
+	this->thumbPool = thumbPool;
 
 }
 
@@ -1118,10 +1079,21 @@ void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
 
 	QWidget::resizeEvent(event);
 	
-	if (event->size() != event->oldSize())
+	if (event->size() != event->oldSize() && scrollArea)
 		thumbsView->setFixedWidth(scrollArea->viewport()->width());
 }
 
+void DkThumbScrollWidget::setVisible(bool visible) {
+
+
+	//if (scrollArea)
+	//	scrollArea->setVisible(visible);
+
+	//thumbsView->setVisible(visible);
+
+	QWidget::setVisible(visible);
+	//update();
+}
 
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
@@ -1590,7 +1562,8 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 
 	if (DkImageLoader::isValid(cFile))
 		emit openFile(cFile);
-
+	else if (cFile.isDir())
+		emit openDir(cFile);
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {

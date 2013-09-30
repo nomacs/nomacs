@@ -291,17 +291,16 @@ DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 
 
 void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
-	// NOTE: uncomment this is just for debugging!!
-	//if (!thumbs.empty() && (force == DkThumbsLoader::user_updated || currentFile.absoluteDir() != file.absoluteDir()))
-		indexDir();
-	//else if (!thumbs.empty() && force == DkThumbsLoader::dir_updated)
-	//	updateDir();
+	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || currentFile.absoluteDir() != file.absoluteDir()))
+		indexDir(file);
+	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
+		updateDir(file);
 
 	if (currentFile != file)
 		emit newFileIdxSignal(fileIdx(file));
 
 	currentFile = file;
-
+	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath();
 }
 
 QFileInfo DkThumbPool::getCurrentFile() {
@@ -325,7 +324,7 @@ int DkThumbPool::fileIdx(const QFileInfo& file) {
 int DkThumbPool::getCurrentFileIdx() {
 
 	if (thumbs.empty())
-		indexDir();
+		indexDir(currentFile);
 	
 	return fileIdx(currentFile);
 }
@@ -333,14 +332,34 @@ int DkThumbPool::getCurrentFileIdx() {
 QVector<QSharedPointer<DkThumbNailT> > DkThumbPool::getThumbs() {
 
 	if (thumbs.empty())
-		indexDir();
+		indexDir(currentFile);
 	
 	emit newFileIdxSignal(getCurrentFileIdx());
 
 	return thumbs;
 }
 
-void DkThumbPool::indexDir() {
+void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
+
+	bool registered = false;
+	for (int idx = 0; idx < listenerList.size(); idx++) {
+
+		if (!isActive && listenerList.at(idx) == obj) {
+			listenerList.remove(idx);
+			break;
+		}
+		else if (isActive && listenerList.at(idx) == obj) {
+			registered = true;
+			break;
+		}
+	}
+
+	if (!registered)
+		listenerList.append(obj);
+
+}
+
+void DkThumbPool::indexDir(const QFileInfo& currentFile) {
 
 	thumbs.clear();
 	files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
@@ -353,14 +372,13 @@ void DkThumbPool::indexDir() {
 
 }
 
-void DkThumbPool::updateDir() {
+void DkThumbPool::updateDir(const QFileInfo& currentFile) {
 
 	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
 
 	files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
 	
 	for (int idx = 0; idx < files.size(); idx++) {
-
 
 		if (int fIdx = fileIdx(files.at(idx)) != -1)
 			newThumbs.append(thumbs.at(fIdx));
