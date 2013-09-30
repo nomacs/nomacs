@@ -26,6 +26,7 @@ if(${LIBJASPER_CMAKE} STREQUAL "LIBJASPER_CMAKE-NOTFOUND")
 	message(FATAL_ERROR "you have to first execute cmake for jasper and then compile jasper")
 endif()
 include(${LIBJASPER_CMAKE})
+include(${QT_USE_FILE})
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/
@@ -37,7 +38,7 @@ file(GLOB_RECURSE QTJP2_SOURCES "plugin/*.cpp" "src/*.cpp")
 file(GLOB_RECURSE QTJP2_HEADERS "plugin/*.h" "src/*.h")
 
 add_library(qtjp22 SHARED ${QTJP2_SOURCES} ${QTJP2_HEADERS})
-target_link_libraries(qtjp22 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY})
+target_link_libraries(qtjp22 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY})
 target_link_libraries(qtjp22 debug ${LIBJASPER_DEBUG_LIB})
 target_link_libraries(qtjp22 optimized ${LIBJASPER_RELEASE_LIB})
 
