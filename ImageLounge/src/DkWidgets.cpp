@@ -897,9 +897,15 @@ void DkThumbLabel::resizeEvent(QResizeEvent *event) {
 void DkThumbLabel::paintEvent(QPaintEvent* event) {
 
 	if (!visibleRegion().isEmpty() && !thumbInitialized) {
-		thumb->fetchThumb();
+
 		// we set the stylesheet here because it slows down the initialization if many files are present
 		imgLabel->setStyleSheet("QLabel{border: 1px solid #AAAAAA; background-color: " + DkUtils::colorToString(QColor(100,100,100,60)) + ";}");
+		
+		if (thumb->hasImage() == DkThumbNail::not_loaded)
+			thumb->fetchThumb();
+		else
+			updateLabel();
+
 		thumbInitialized = true;
 	}
 

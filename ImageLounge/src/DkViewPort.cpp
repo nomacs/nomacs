@@ -449,6 +449,9 @@ void DkControlWidget::showThumbView(bool visible) {
 
 	if (visible && !thumbMetaWidget->isVisible()) {
 
+		// clear viewport
+		viewport->setImage(QImage());
+
 		showCrop(false);
 		thumbMetaWidget->show();
 		thumbWidget->show();
@@ -465,6 +468,9 @@ void DkControlWidget::showThumbView(bool visible) {
 			fileInfoLabel->setVisible(false);
 			showFileInfo(true);
 		}
+
+		// set again the last image
+		viewport->setImage(viewport->getImageLoader()->getImage());
 	}
 
 }
