@@ -798,13 +798,14 @@ void DkFilePreview::setVisible(bool visible) {
 // DkThumbLabel --------------------------------------------------------------------
 DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QWidget* parent, Qt::WindowFlags f) : QLabel(parent, f) {
 
+	thumbInitialized = false;
+
 	imgLabel = new QLabel(this);
 	imgLabel->setFocusPolicy(Qt::NoFocus);
 	imgLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 	imgLabel->setScaledContents(true);
 	imgLabel->setFixedSize(10,10);
-	imgLabel->setStyleSheet("QLabel{border: 1px solid #AAAAAA; background-color: QColor(100,100,100,40);}");
-	setStyleSheet("QLabel{background: transparent;}");
+	//setStyleSheet("QLabel{background: transparent;}");
 
 	setThumb(thumb);
 
@@ -895,8 +896,12 @@ void DkThumbLabel::resizeEvent(QResizeEvent *event) {
 
 void DkThumbLabel::paintEvent(QPaintEvent* event) {
 
-	if (!visibleRegion().isEmpty())
+	if (!visibleRegion().isEmpty() && !thumbInitialized) {
 		thumb->fetchThumb();
+		// we set the stylesheet here because it slows down the initialization if many files are present
+		imgLabel->setStyleSheet("QLabel{border: 1px solid #AAAAAA; background-color: " + DkUtils::colorToString(QColor(100,100,100,60)) + ";}");
+		thumbInitialized = true;
+	}
 
 	QLabel::paintEvent(event);
 }
@@ -952,7 +957,7 @@ void DkThumbWidget::updateLayout() {
 
 			int tIdx = rIdx*numCols+cIdx;
 
-			if (tIdx < 0 || tIdx >= thumbLabels.size()-1)
+			if (tIdx < 0 || tIdx >= thumbLabels.size())
 				break;
 
 			QSharedPointer<DkThumbLabel> cLabel = thumbLabels.at(tIdx);
@@ -983,10 +988,14 @@ void DkThumbWidget::updateThumbLabels() {
 	thumbLabels.clear();
 	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
 
+	DkTimer dt;
+
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 		thumbLabels.append(QSharedPointer<DkThumbLabel>(new DkThumbLabel(thumbs.at(idx), this)));
 		if (idx < 2) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
 	}
+
+	qDebug() << "initializing thumb labels takes: " << QString::fromStdString(dt.getTotal());
 
 	if (!thumbs.empty())
 		updateLayout();
@@ -1013,19 +1022,8 @@ void DkThumbWidget::setVisible(bool visible) {
 	if (!thumbPool)
 		return;
 
-	if (visible)
-		updateThumbLabels();
-
-	thumbPool->getUpdates(this, visible);
-
-	if (thumbPool != 0 && visible) {
-		connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
-		connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(updateThumbLabels()));
-	}
-	else if (thumbPool) {
-		disconnect(thumbPool, SIGNAL(thumbUpdatedSignal()));
-		disconnect(thumbPool, SIGNAL(numThumbChangedSignal()));
-	}
+	//if (visible)
+	//	updateThumbLabels();
 
 	QWidget::setVisible(visible);
 }
@@ -1041,7 +1039,7 @@ void DkThumbWidget::moveEvent(QMoveEvent *event) {
 
 void DkThumbWidget::resizeEvent(QResizeEvent *event) {
 
-	if (event->oldSize() != event->size())
+	if (event->oldSize().width() != event->size().width() && isVisible())
 		updateLayout();
 
 	QWidget::resizeEvent(event);
@@ -1085,11 +1083,23 @@ void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
 
 void DkThumbScrollWidget::setVisible(bool visible) {
 
+	
+	if (thumbPool) {
+		thumbPool->getUpdates(thumbsView, visible);
 
-	//if (scrollArea)
-	//	scrollArea->setVisible(visible);
+		if (visible) {
+			//connect(thumbPool, SIGNAL(thumbUpdatedSignal()), thumbsView, SLOT(update()));
+			connect(thumbPool, SIGNAL(numThumbChangedSignal()), thumbsView, SLOT(updateThumbLabels()));
+		}
+		else {
+			//disconnect(thumbPool, SIGNAL(thumbUpdatedSignal()));
+			//disconnect(thumbsView, SLOT(updateThumbLabels()));
+			thumbPool->disconnect(thumbsView);
+		}
 
-	//thumbsView->setVisible(visible);
+		if (visible)
+			thumbsView->updateThumbLabels();
+	}
 
 	QWidget::setVisible(visible);
 	//update();

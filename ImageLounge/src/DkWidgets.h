@@ -653,7 +653,7 @@ protected:
 
 	QSharedPointer<DkThumbNailT> thumb;
 	QLabel* imgLabel;
-
+	bool thumbInitialized;
 };
 
 class DkThumbWidget : public QLabel {

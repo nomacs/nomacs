@@ -2303,8 +2303,8 @@ void DkImageLoader::updateHistory() {
 
 
 	// TODO: shouldn't we delete that -> it's saved when nomacs is closed anyway
-	//DkSettings s = DkSettings();
-	//s.save();
+	DkSettings s = DkSettings();
+	s.save();
 }
 
 // image manipulation --------------------------------------------------------------------
