@@ -3157,12 +3157,22 @@ void DkMetaDataInfo::createLabels() {
 	pLabels.clear();
 	pValues.clear();
 
-	//int commentWidth;
+	numLabels = 0;
+	numLines = 6;
+	for (int idx = 0; idx < DkSettings::metaData.metaDataBits.size(); idx++) {
+		if (DkSettings::metaData.metaDataBits.testBit(idx))
+			numLabels++;
+	}
+
+	// well that's a bit of a hack
+	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? ((float)numLabels+numLines-1)/numLines : 2;
+	numLines = cvCeil((float)numLabels/cols);
+
 
 	//pLabels.resize(camDTags.size() + descTags.size());
 	//6 Lines...
-	maxLenLabel.resize(numLines);
-	for (int i=0; i<numLines; i++)
+	maxLenLabel.resize(cols);
+	for (int i=0; i<cols; i++)
 		maxLenLabel[i] = 0;
 
 	numLabels=0;
@@ -3220,16 +3230,18 @@ void DkMetaDataInfo::layoutLabels() {
 		return;
 
 	// #Labels / numLines = #Spalten
-	int cols = (numLabels+numLines-1)/numLines > 0 ? (numLabels+numLines-1)/numLines : 1;
+	numLines = 6;
+	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? ((float)numLabels+numLines-1)/numLines : 2;
+	numLines = cvCeil((float)numLabels/cols);
 
 	//qDebug() << "numCols: " << cols;
 
 	if (cols > maxCols)
 		qDebug() << "Labels are skipped...";
 
-	if (cols == 1) {
-		exifHeight = (pLabels.at(0)->height() + yMargin)*numLabels + yMargin;
-	} else exifHeight = 120;
+	//if (cols == 1) {
+		exifHeight = (pLabels.at(0)->height() + yMargin)*numLines + yMargin;
+	//} else exifHeight = 120;
 
 	//widget size
 	if (parent->width() < minWidth)
@@ -3249,7 +3261,7 @@ void DkMetaDataInfo::layoutLabels() {
 	setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
 
 	//subtract label length
-	for (int i=0; i<cols; i++) width -= (maxLenLabel[i] + xMargin);
+	for (int i=0; i<maxLenLabel.size(); i++) width -= (maxLenLabel[i] + xMargin);
 	width-=xMargin;
 
 	//rest length/#cols = column width for tags
@@ -3284,6 +3296,8 @@ void DkMetaDataInfo::layoutLabels() {
 		pValues.at(i)->setFixedWidth(widthValues);
 
 	}
+
+	//update()
 
 }
 
