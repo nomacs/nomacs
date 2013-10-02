@@ -311,7 +311,6 @@ void DkControlWidget::connectWidgets() {
 
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
-	connect(cropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), viewport, SLOT(setBackgroundBrush(const QBrush&)));
 }
 
 void DkControlWidget::update() {
@@ -433,6 +432,7 @@ void DkControlWidget::showCrop(bool visible) {
 
 		cropWidget->reset();
 		cropWidget->show();
+		connect(cropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), viewport, SLOT(setBackgroundBrush(const QBrush&)));
 	}
 	else if (!visible && editWidget->isVisible()) {
 		editWidget->hide();
@@ -444,6 +444,8 @@ void DkControlWidget::showCrop(bool visible) {
 			fileInfoLabel->setVisible(false);
 			showFileInfo(true);
 		}
+		viewport->setBackgroundBrush(QBrush());
+		cropWidget->getToolbar()->disconnect(viewport);
 	}
 
 }
@@ -463,8 +465,8 @@ void DkControlWidget::showThumbView(bool visible) {
 	else if (!visible && thumbMetaWidget->isVisible()) {
 
 		thumbMetaWidget->hide();
-		thumbScrollWidget->hide();
-		hudWidget->show();
+		//thumbScrollWidget->hide();
+		//hudWidget->show();
 		
 		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
 		if (fileInfoLabel->isVisible()) {
@@ -472,8 +474,8 @@ void DkControlWidget::showThumbView(bool visible) {
 			showFileInfo(true);
 		}
 
-		//// set again the last image
-		//viewport->setImage(viewport->getImageLoader()->getImage());
+		// set again the last image
+		viewport->setImage(viewport->getImageLoader()->getImage());
 	}
 
 }
@@ -1170,6 +1172,9 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 // drawing functions --------------------------------------------------------------------
 void DkViewPort::drawBackground(QPainter *painter) {
 	
+	if (controller->getThumbWidget()->isVisible())
+		return;
+
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
 	// fit to viewport

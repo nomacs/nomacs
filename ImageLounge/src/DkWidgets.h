@@ -687,7 +687,7 @@ protected:
 
 };
 
-class DkThumbScrollWidget : public QWidget {
+class DkThumbScrollWidget : public DkWidget {
 	Q_OBJECT
 
 public:
@@ -698,7 +698,9 @@ public:
 	};
 
 public slots:
-	void setVisible(bool visible);
+	virtual void setVisible(bool visible);
+	void animateOpacityUp();
+	void animateOpacityDown();
 
 protected:
 	void resizeEvent(QResizeEvent *event);

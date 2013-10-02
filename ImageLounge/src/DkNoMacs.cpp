@@ -3376,7 +3376,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
-	//vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
+	vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
 	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 	vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 	vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
@@ -3423,7 +3423,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 #endif
 
 		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
-		//vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
+		vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
 		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
@@ -3583,7 +3583,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 		
 		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
-		//vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
+		vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
 		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);

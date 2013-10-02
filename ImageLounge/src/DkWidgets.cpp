@@ -1059,7 +1059,7 @@ void DkThumbWidget::resizeEvent(QResizeEvent *event) {
 }
 
 // DkThumbScrollWidget --------------------------------------------------------------------
-DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QWidget(parent, flags) {
+DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
 
 	setObjectName("DkThumbScrollWidget");
 	setContentsMargins(0,0,0,0);
@@ -1113,8 +1113,30 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 			thumbsView->updateThumbLabels();
 	}
 
-	QWidget::setVisible(visible);
-	//update();
+	qDebug() << "showing thumb scroll widget...";
+
+	DkWidget::setVisible(visible);
+}
+
+void DkThumbScrollWidget::animateOpacityDown() {
+
+	DkWidget::animateOpacityDown();
+	
+	// this fixes some strange issues with effects and the scroll area
+	scrollArea->viewport()->update();
+	scrollArea->verticalScrollBar()->update();
+	scrollArea->update();
+	//thumbsView->update();
+}
+
+void DkThumbScrollWidget::animateOpacityUp() {
+
+	DkWidget::animateOpacityUp();
+	
+	// this fixes some strange issues with effects and the scroll area
+	scrollArea->viewport()->update();
+	scrollArea->verticalScrollBar()->update();
+	scrollArea->update();
 }
 
 // DkFolderScrollBar --------------------------------------------------------------------
