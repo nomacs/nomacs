@@ -465,8 +465,8 @@ void DkControlWidget::showThumbView(bool visible) {
 	else if (!visible && thumbMetaWidget->isVisible()) {
 
 		thumbMetaWidget->hide();
-		//thumbScrollWidget->hide();
-		//hudWidget->show();
+		thumbScrollWidget->hide();
+		hudWidget->show();
 		
 		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
 		if (fileInfoLabel->isVisible()) {

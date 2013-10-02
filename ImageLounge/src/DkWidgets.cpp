@@ -834,8 +834,25 @@ void DkThumbLabel::updateLabel() {
 
 	QPixmap pm;
 
-	if (!thumb->getImage().isNull())
+	if (!thumb->getImage().isNull()) {
+	
 		pm = QPixmap::fromImage(thumb->getImage());
+
+		if (true) {
+			// TODO: add setting
+			QRect r(QPoint(), pm.size());
+
+			if (r.width() > r.height()) {
+				r.setX(qFloor((r.width()-r.height())*0.5f));
+				r.setWidth(r.height());
+			}
+			else {
+				r.setY(qFloor((r.height()-r.width())*0.5f));
+				r.setHeight(r.width());
+			}
+			pm = pm.copy(r);
+		}
+	}
 	else if (thumb->hasImage() == DkThumbNail::exists_not)
 		pm.load(":/nomacs/img/dummy-img.png");
 
@@ -848,7 +865,6 @@ void DkThumbLabel::updateLabel() {
 }
 
 void DkThumbLabel::resizeImgLabel() {
-
 
 	// resize pixmap label
 	QSize size = QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
@@ -924,6 +940,23 @@ DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /
 
 	//setStyleSheet("QLabel{background-color: black;}");
 	setStyleSheet(QString("QLabel{background-color: ") + DkUtils::colorToString(DkSettings::slideShow.backgroundColor) + QString(";}"));
+	createActions();
+}
+
+void DkThumbWidget::createActions() {
+
+	actions.resize(actions_end);
+
+	actions[zoom_in] = new QShortcut(Qt::Key_Plus, this);
+	//actions[zoom_in]->setShortcut(Qt::Key_Q);
+	actions[zoom_in]->setContext(Qt::WidgetWithChildrenShortcut);
+	connect(actions[zoom_in], SIGNAL(activated()), this, SLOT(increaseThumbs()));
+
+	actions[zoom_out] = new QShortcut(Qt::Key_Minus, this);
+	//actions[zoom_out]->setShortcut(Qt::Key_W);
+	actions[zoom_out]->setContext(Qt::WidgetWithChildrenShortcut);
+	connect(actions[zoom_out], SIGNAL(activated()), this, SLOT(decreaseThumbs()));
+
 }
 
 void DkThumbWidget::updateLayout() {
@@ -1005,6 +1038,9 @@ void DkThumbWidget::updateThumbLabels() {
 
 	qDebug() << "initializing thumb labels takes: " << QString::fromStdString(dt.getTotal());
 
+	setStatusTip(tr("%1 images").arg(QString::number(thumbs.size())));
+	//setToolTip(tr("%1 images").arg(QString::number(thumbs.size())));
+
 	if (!thumbs.empty())
 		updateLayout();
 
@@ -1023,6 +1059,26 @@ void DkThumbWidget::wheelEvent(QWheelEvent *event) {
 	}
 
 	QWidget::wheelEvent(event);
+}
+
+void DkThumbWidget::resizeThumbs(int dx) {
+
+	int newSize = DkSettings::display.thumbSize + dx;
+
+	if (newSize > 6 && newSize <= 160) {
+		DkSettings::display.thumbSize = newSize;
+		updateLayout();
+	}
+
+	qDebug() << "resizing...";
+}
+
+void DkThumbWidget::increaseThumbs() {
+	resizeThumbs(10);
+}
+
+void DkThumbWidget::decreaseThumbs() {
+	resizeThumbs(-10);
 }
 
 void DkThumbWidget::loadFile(QFileInfo& file) {
@@ -1073,6 +1129,7 @@ DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidg
 	thumbsView->setContentsMargins(0,0,0,0);
 
 	scrollArea->setWidget(thumbsView);
+	scrollArea->setWidgetResizable(true);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
@@ -1116,6 +1173,11 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 	qDebug() << "showing thumb scroll widget...";
 
 	DkWidget::setVisible(visible);
+}
+
+void DkThumbScrollWidget::wheelEvent(QWheelEvent *event) {
+
+	qDebug() << "getting wheel events!!";
 }
 
 void DkThumbScrollWidget::animateOpacityDown() {

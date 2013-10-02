@@ -115,6 +115,10 @@ public:
 		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 	};
 
+	bool isHiding() const {
+		return hiding;
+	};
+
 
 signals:
 	void visibleSignal(bool visible);
@@ -660,6 +664,13 @@ class DkThumbWidget : public QLabel {
 	Q_OBJECT
 
 public:
+	enum {
+		zoom_in,
+		zoom_out,
+
+		actions_end
+	};
+
 	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void updateLayout();
@@ -668,6 +679,9 @@ public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbLabels();
 	void loadFile(QFileInfo& file);
+	void resizeThumbs(int dx);
+	void increaseThumbs();
+	void decreaseThumbs();
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -676,6 +690,7 @@ protected:
 	void wheelEvent(QWheelEvent *event);
 	void moveEvent(QMoveEvent *event);
 	void resizeEvent(QResizeEvent *event);
+	void createActions();
 
 	DkThumbPool* thumbPool;
 	//QGridLayout* gridLayout;
@@ -684,6 +699,7 @@ protected:
 	int numCols;
 
 	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+	QVector<QShortcut*> actions;
 
 };
 
@@ -697,6 +713,9 @@ public:
 		return thumbsView;
 	};
 
+	//bool eventFilter(QObject* obj, QEvent* evt);
+
+
 public slots:
 	virtual void setVisible(bool visible);
 	void animateOpacityUp();
@@ -704,6 +723,7 @@ public slots:
 
 protected:
 	void resizeEvent(QResizeEvent *event);
+	void wheelEvent(QWheelEvent *event);
 
 	DkThumbWidget* thumbsView;
 	QScrollArea* scrollArea;
