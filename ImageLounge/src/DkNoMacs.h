@@ -643,6 +643,7 @@ protected:
 	DkUpdater* updater;
 
 	QRect oldGeometry;
+	QList<QToolBar *> hiddenToolbars;
 
 	QProcess process;
 

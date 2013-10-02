@@ -667,6 +667,10 @@ public:
 public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbLabels();
+	void loadFile(QFileInfo& file);
+
+signals:
+	void loadFileSignal(QFileInfo file);
 
 protected:
 	void wheelEvent(QWheelEvent *event);
@@ -688,6 +692,10 @@ class DkThumbScrollWidget : public QWidget {
 
 public:
 	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	DkThumbWidget* getThumbWidget() {
+		return thumbsView;
+	};
 
 public slots:
 	void setVisible(bool visible);

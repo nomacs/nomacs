@@ -2805,13 +2805,22 @@ void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
 
 void DkNoMacs::showToolbarsTemporarily(bool show) {
 
-	QList<QToolBar *> toolbars = findChildren<QToolBar *>();
+	if (show) {
+		for (int idx = 0; idx < hiddenToolbars.size(); idx++)
+			hiddenToolbars.at(idx)->show();
+	}
+	else {
 
-	for (int idx = 0; idx < toolbars.size(); idx++) {
-		if (show)
-			toolbars.at(idx)->show();
-		else
-			toolbars.at(idx)->hide();
+		hiddenToolbars.clear();
+		QList<QToolBar *> toolbars = findChildren<QToolBar *>();
+
+		for (int idx = 0; idx < toolbars.size(); idx++) {
+			
+			if (toolbars.at(idx)->isVisible()) {
+				toolbars.at(idx)->hide();
+				hiddenToolbars.append(toolbars.at(idx));
+			}
+		}
 	}
 }
 

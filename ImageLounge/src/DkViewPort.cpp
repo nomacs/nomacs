@@ -43,8 +43,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 	// thumbnails, metadata
 	thumbPool = new DkThumbPool(QFileInfo(), this);
-	thumbWidget = new DkThumbScrollWidget(thumbPool, this, flags);
-	thumbWidget->hide();
+	thumbScrollWidget = new DkThumbScrollWidget(thumbPool, this, flags);
+	thumbScrollWidget->hide();
 	filePreview = new DkFilePreview(thumbPool, this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
@@ -106,8 +106,8 @@ void DkControlWidget::init() {
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
 	cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	thumbWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
-	thumbWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	thumbScrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	spinnerLabel->halfSize();
 
 	// dummy
@@ -239,7 +239,7 @@ void DkControlWidget::init() {
 	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
 	QHBoxLayout* thumbLayout = new QHBoxLayout(thumbMetaWidget);
 	thumbLayout->setContentsMargins(0,0,0,0);
-	thumbLayout->addWidget(thumbWidget);
+	thumbLayout->addWidget(thumbScrollWidget);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
@@ -286,9 +286,12 @@ void DkControlWidget::connectWidgets() {
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 
+	// thumbnail preview widget
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+
 	// file scroller
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
-
+	
 	// overview
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
 	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
@@ -454,13 +457,13 @@ void DkControlWidget::showThumbView(bool visible) {
 
 		showCrop(false);
 		thumbMetaWidget->show();
-		thumbWidget->show();
+		thumbScrollWidget->show();
 		hudWidget->hide();
 	}
 	else if (!visible && thumbMetaWidget->isVisible()) {
 
 		thumbMetaWidget->hide();
-		thumbWidget->hide();
+		thumbScrollWidget->hide();
 		hudWidget->show();
 		
 		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
@@ -469,8 +472,8 @@ void DkControlWidget::showThumbView(bool visible) {
 			showFileInfo(true);
 		}
 
-		// set again the last image
-		viewport->setImage(viewport->getImageLoader()->getImage());
+		//// set again the last image
+		//viewport->setImage(viewport->getImageLoader()->getImage());
 	}
 
 }
@@ -557,6 +560,7 @@ void DkControlWidget::stopLabels() {
 	spinnerLabel->stop();
 
 	showCrop(false);
+	showThumbView(false);
 }
 
 void DkControlWidget::settingsChanged() {

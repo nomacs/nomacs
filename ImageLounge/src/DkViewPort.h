@@ -230,7 +230,7 @@ public:
 	}
 
 	DkThumbScrollWidget* getThumbWidget() {
-		return thumbWidget;
+		return thumbScrollWidget;
 	}
 
 	int getRating() {
@@ -292,7 +292,7 @@ protected:
 	DkCropWidget* cropWidget;
 
 	DkFilePreview* filePreview;
-	DkThumbScrollWidget* thumbWidget;
+	DkThumbScrollWidget* thumbScrollWidget;
 	DkMetaDataInfo* metaDataInfo;
 	DkOverview* overviewWindow;
 	DkPlayer* player;

@@ -997,8 +997,10 @@ void DkThumbWidget::updateThumbLabels() {
 	DkTimer dt;
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {
-		thumbLabels.append(QSharedPointer<DkThumbLabel>(new DkThumbLabel(thumbs.at(idx), this)));
-		if (idx < 2) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
+		QSharedPointer<DkThumbLabel> thumb(new DkThumbLabel(thumbs.at(idx), this));
+		connect(thumb.data(), SIGNAL(loadFileSignal(QFileInfo&)), this, SLOT(loadFile(QFileInfo&)));
+		thumbLabels.append(thumb);
+		if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
 	}
 
 	qDebug() << "initializing thumb labels takes: " << QString::fromStdString(dt.getTotal());
@@ -1021,6 +1023,10 @@ void DkThumbWidget::wheelEvent(QWheelEvent *event) {
 	}
 
 	QWidget::wheelEvent(event);
+}
+
+void DkThumbWidget::loadFile(QFileInfo& file) {
+	emit loadFileSignal(file);
 }
 
 void DkThumbWidget::setVisible(bool visible) {
