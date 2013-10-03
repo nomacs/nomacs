@@ -652,6 +652,7 @@ public slots:
 
 signals:
 	void loadFileSignal(QFileInfo& file);
+	void showFileSignal(const QFileInfo& file);
 
 protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -690,29 +691,24 @@ public slots:
 	void updateThumbLabels();
 	void loadFile(QFileInfo& file);
 	void resizeThumbs(int dx);
-	void increaseThumbs();
-	void decreaseThumbs();
+	void showFile(const QFileInfo& file);
 
 signals:
 	void loadFileSignal(QFileInfo file);
+	void statusInfoSignal(QString msg, int pos = 0);
 
 protected:
 	void wheelEvent(QWheelEvent *event);
-	void moveEvent(QMoveEvent *event);
 	void resizeEvent(QResizeEvent *event);
-	void createActions();
 
 	DkThumbPool* thumbPool;
-	//QGridLayout* gridLayout;
 	int xOffset;
 	int numRows;
 	int numCols;
-
-	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
-	QVector<QShortcut*> actions;
-	QGraphicsScene* scene;
 	bool firstLayout;
 
+	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+	QGraphicsScene* scene;
 };
 
 class DkThumbScrollWidget : public DkWidget {
@@ -725,20 +721,11 @@ public:
 		return thumbsView;
 	};
 
-	//bool eventFilter(QObject* obj, QEvent* evt);
-
-
 public slots:
 	virtual void setVisible(bool visible);
-	void animateOpacityUp();
-	void animateOpacityDown();
 
 protected:
-	void resizeEvent(QResizeEvent *event);
-	void wheelEvent(QWheelEvent *event);
-
 	DkThumbWidget* thumbsView;
-	//QScrollArea* scrollArea;
 	DkThumbPool* thumbPool;
 
 };
