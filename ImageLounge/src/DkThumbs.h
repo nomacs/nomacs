@@ -223,6 +223,7 @@ signals:
 
 protected:
 	void indexDir(const QFileInfo& currentFile);
+	QDir dir(const QFileInfo& file) const;	// fixes a Qt 'bug'
 	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
 
 	QVector<QSharedPointer<DkThumbNailT> > thumbs;

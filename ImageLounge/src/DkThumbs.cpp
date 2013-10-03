@@ -291,7 +291,7 @@ DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 
 
 void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
-	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || currentFile.absoluteDir() != file.absoluteDir()))
+	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || dir(currentFile) != dir(file)))
 		indexDir(file);
 	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
 		updateDir(file);
@@ -305,6 +305,11 @@ void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
 QFileInfo DkThumbPool::getCurrentFile() {
 	return currentFile;
+}
+
+QDir DkThumbPool::dir(const QFileInfo& file) const {
+
+	return (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absoluteDir();
 }
 
 int DkThumbPool::fileIdx(const QFileInfo& file) {
@@ -362,10 +367,14 @@ void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
 void DkThumbPool::indexDir(const QFileInfo& currentFile) {
 
 	thumbs.clear();
-	files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
+
+	// imho this is a Qt bug
+	QDir cDir = dir(currentFile);
+
+	files = DkImageLoader::getFilteredFileList(cDir);
 
 	for (int idx = 0; idx < files.size(); idx++)
-		thumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
+		thumbs.append(createThumb(QFileInfo(cDir, files.at(idx))));
 	
 	if (!thumbs.empty())
 		emit numThumbChangedSignal();
@@ -376,14 +385,14 @@ void DkThumbPool::updateDir(const QFileInfo& currentFile) {
 
 	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
 
-	files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
-	
+	files = DkImageLoader::getFilteredFileList(dir(currentFile));
+
 	for (int idx = 0; idx < files.size(); idx++) {
 
 		if (int fIdx = fileIdx(files.at(idx)) != -1)
 			newThumbs.append(thumbs.at(fIdx));
 		else
-			newThumbs.append(createThumb(QFileInfo(currentFile.absoluteDir(), files.at(idx))));
+			newThumbs.append(createThumb(QFileInfo(dir(currentFile), files.at(idx))));
 	}
 	
 	if (!thumbs.empty() && thumbs.size() != newThumbs.size())

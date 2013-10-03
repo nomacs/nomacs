@@ -61,6 +61,8 @@
 #include <QHeaderView>
 #include <QMenu>
 #include <QScrollArea>
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -634,14 +636,16 @@ private:
 	void createCurrentImgEffect(QImage img, QColor col);
 };
 
-class DkThumbLabel : public QLabel {
+class DkThumbLabel : public QObject, public QGraphicsPixmapItem {
 	Q_OBJECT
 
 public:
-	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem* parent = 0);
 
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
 	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
+	QRectF boundingRect() const;
+	void updateSize();
 
 public slots:
 	void updateLabel();
@@ -650,17 +654,23 @@ signals:
 	void loadFileSignal(QFileInfo& file);
 
 protected:
-	void mouseDoubleClickEvent(QMouseEvent *event);
+	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 	void resizeEvent(QResizeEvent *event);
-	void paintEvent(QPaintEvent* event);
-	void resizeImgLabel();
+	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0);
+	void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 	QSharedPointer<DkThumbNailT> thumb;
 	QLabel* imgLabel;
 	bool thumbInitialized;
+	QPen noImagePen;
+	QBrush noImageBrush;
+	QPen selectPen;
+	QBrush selectBrush;
+	bool isHovered;
 };
 
-class DkThumbWidget : public QLabel {
+class DkThumbWidget : public QGraphicsView {
 	Q_OBJECT
 
 public:
@@ -671,7 +681,7 @@ public:
 		actions_end
 	};
 
-	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
 
 	void updateLayout();
 
@@ -700,6 +710,8 @@ protected:
 
 	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
 	QVector<QShortcut*> actions;
+	QGraphicsScene* scene;
+	bool firstLayout;
 
 };
 
@@ -726,7 +738,7 @@ protected:
 	void wheelEvent(QWheelEvent *event);
 
 	DkThumbWidget* thumbsView;
-	QScrollArea* scrollArea;
+	//QScrollArea* scrollArea;
 	DkThumbPool* thumbPool;
 
 };
