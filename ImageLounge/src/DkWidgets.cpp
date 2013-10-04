@@ -808,7 +808,6 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem* pa
 	//imgLabel->setFixedSize(10,10);
 	//setStyleSheet("QLabel{background: transparent;}");
 	setThumb(thumb);
-	setFlag(GraphicsItemFlag::ItemIsSelectable, true);
 	setAcceptsHoverEvents(true);
 
 }
@@ -884,8 +883,10 @@ void DkThumbLabel::updateLabel() {
 		}
 	}
 
-	if (!pm.isNull())
+	if (!pm.isNull()) {
 		setPixmap(pm);
+		setFlag(GraphicsItemFlag::ItemIsSelectable, true);
+	}
 	
 	updateSize();
 }
@@ -941,6 +942,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		painter->setPen(noImagePen);
 		painter->setBrush(noImageBrush);
 		painter->drawRect(boundingRect());
+		
 	}
 	else {
 		QColor c = DkSettings::display.highlightColor;
@@ -967,7 +969,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 }
 
 // DkThumbWidget --------------------------------------------------------------------
-DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */) : QGraphicsView(parent) {
+DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
 
 	setObjectName("DkThumbWidget");
 	this->thumbPool = thumbPool;
@@ -977,42 +979,7 @@ DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /
 	numRows = 0;
 	firstLayout = true;
 
-	scene = new QGraphicsScene(this);
-	setScene(scene);
-	scene->setBackgroundBrush(DkSettings::slideShow.backgroundColor);
-
-	setDragMode(QGraphicsView::RubberBandDrag);
-	setResizeAnchor(QGraphicsView::AnchorUnderMouse);
-	setAcceptDrops(true);
-
-	createActions();
-}
-
-void DkThumbWidget::createActions() {
-
-	actions.resize(actions_end);
-
-	actions[select_all] = new QAction(tr("Select &All"), this);
-	actions[select_all]->setShortcut(QKeySequence::SelectAll);
-	actions[select_all]->setCheckable(true);
-	connect(actions[select_all], SIGNAL(triggered(bool)), this, SLOT(selectAllThumbs(bool)));
-
-	actions[zoom_in] = new QAction(tr("Zoom &In"), this);
-	actions[zoom_in]->setShortcut(Qt::Key_Plus);
-	connect(actions[zoom_in], SIGNAL(triggered()), this, SLOT(increaseThumbs()));
-
-	actions[zoom_out] = new QAction(tr("Zoom &Out"), this);
-	actions[zoom_out]->setShortcut(Qt::Key_Minus);
-	connect(actions[zoom_out], SIGNAL(triggered()), this, SLOT(decreaseThumbs()));
-
-	contextMenu = new QMenu(tr("Thumb"), this);
-	for (int idx = 0; idx < actions.size(); idx++) {
-		actions[idx]->setShortcutContext(Qt::WidgetShortcut);
-
-		contextMenu->addAction(actions.at(idx));
-	}
-
-	addActions(actions.toList());
+	setBackgroundBrush(DkSettings::slideShow.backgroundColor);
 }
 
 void DkThumbWidget::updateLayout() {
@@ -1020,10 +987,10 @@ void DkThumbWidget::updateLayout() {
 	if (thumbLabels.empty())
 		return;
 
-	QSize pSize = size();
-
-	if (verticalScrollBar())
-		pSize.setWidth(pSize.width()-verticalScrollBar()->width());
+	QSize pSize;
+		
+	if (!views().empty())
+		pSize = QSize(views().first()->viewport()->size());
 
 	int oldNumCols = numCols;
 	int oldNumRows = numRows;
@@ -1068,7 +1035,7 @@ void DkThumbWidget::updateLayout() {
 	}
 
 	qDebug() << "moving takes: " << QString::fromStdString(dt.getTotal());
-	scene->update();
+	update();
 
 	//if (verticalScrollBar()->isVisible())
 	//	verticalScrollBar()->update();
@@ -1081,7 +1048,7 @@ void DkThumbWidget::updateThumbLabels() {
 	qDebug() << "updating thumb labels...";
 
 	thumbLabels.clear();
-	scene->clear();
+	clear();
 
 	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
 
@@ -1094,7 +1061,7 @@ void DkThumbWidget::updateThumbLabels() {
 
 		thumb->show();
 		thumbLabels.append(thumb);
-		scene->addItem(thumb.data());
+		addItem(thumb.data());
 
 		if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
 	}
@@ -1113,21 +1080,6 @@ void DkThumbWidget::showFile(const QFileInfo& file) {
 		emit statusInfoSignal(tr("%1 Images").arg(QString::number(thumbLabels.size())));
 	else
 		emit statusInfoSignal(file.fileName());
-}
-
-void DkThumbWidget::wheelEvent(QWheelEvent *event) {
-
-	if (event->modifiers() == Qt::ControlModifier) {
-		resizeThumbs(qCeil(event->delta()/100.0f));
-	}
-	else if (event->modifiers() == Qt::NoModifier) {
-		
-		if (verticalScrollBar()->isVisible())
-			verticalScrollBar()->setValue(verticalScrollBar()->value()-event->delta());
-
-	}
-
-	//QWidget::wheelEvent(event);
 }
 
 void DkThumbWidget::increaseThumbs() {
@@ -1154,46 +1106,24 @@ void DkThumbWidget::loadFile(QFileInfo& file) {
 	emit loadFileSignal(file);
 }
 
-void DkThumbWidget::setVisible(bool visible) {
-
-	firstLayout = true;
-
-	if (!thumbPool)
-		return;
-
-	if (visible)
-		updateLayout();
-
-	QGraphicsView::setVisible(visible);
-}
-
-void DkThumbWidget::resizeEvent(QResizeEvent *event) {
-
-	if (event->oldSize().width() != event->size().width() && isVisible())
-		updateLayout();
-
-	QGraphicsView::resizeEvent(event);
-	
-}
-
-void DkThumbWidget::mousePressEvent(QMouseEvent *event) {
+void DkThumbWidget::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 	if (event->buttons() == Qt::LeftButton) {
 		mousePos = event->pos();
-		itemClicked = scene->itemAt(event->pos()) != 0;
+		itemClicked = itemAt(event->pos()) != 0;
 		qDebug() << "item clicked: " << itemClicked;
 	}
 
-	QGraphicsView::mousePressEvent(event);
+	QGraphicsScene::mousePressEvent(event);
 }
 
-void DkThumbWidget::mouseMoveEvent(QMouseEvent *event) {
+void DkThumbWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 
-	QGraphicsView::mouseMoveEvent(event);
+	QGraphicsScene::mouseMoveEvent(event);
 
 	if (event->buttons() == Qt::LeftButton && itemClicked) {
 			
-		int dist = QPoint(event->pos()-mousePos).manhattanLength();
+		int dist = QPointF(event->pos()-mousePos).manhattanLength();
 
 		if (dist > QApplication::startDragDistance()) {
 			
@@ -1210,26 +1140,26 @@ void DkThumbWidget::mouseMoveEvent(QMouseEvent *event) {
 
 			if (!urls.empty()) {
 				mimeData->setUrls(urls);
-				QDrag* drag = new QDrag(this);
-				drag->setMimeData(mimeData);
-				Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+				//QDrag* drag = new QDrag(this);
+				//drag->setMimeData(mimeData);
+				//Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
 			}
 		}
 	}
 }
 
-void DkThumbWidget::mouseReleaseEvent(QMouseEvent *event) {
+void DkThumbWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
-	QGraphicsView::mouseReleaseEvent(event);
+	QGraphicsScene::mouseReleaseEvent(event);
 }
 
 void DkThumbWidget::dragEnterEvent(QDragEnterEvent *event) {
 
 	qDebug() << event->source() << " I am: " << this;
 
-	if (event->source() == this)
+/*	if (event->source() == this)
 		event->acceptProposedAction();
-	else if (event->mimeData()->hasUrls()) {
+	else */if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
 		url = url.toLocalFile();
 
@@ -1247,10 +1177,10 @@ void DkThumbWidget::dragEnterEvent(QDragEnterEvent *event) {
 
 void DkThumbWidget::dropEvent(QDropEvent *event) {
 
-	if (event->source() == this) {
-		event->accept();
-		return;
-	}
+	//if (event->source() == this) {
+	//	event->accept();
+	//	return;
+	//}
 
 	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
 		QUrl url = event->mimeData()->urls().at(0);
@@ -1266,15 +1196,6 @@ void DkThumbWidget::dropEvent(QDropEvent *event) {
 	}
 
 	qDebug() << "drop event...";
-}
-
-void DkThumbWidget::contextMenuEvent(QContextMenuEvent *event) {
-
-	//if (!event->isAccepted())
-	contextMenu->exec(event->globalPos());
-	event->accept();
-
-	//QGraphicsView::contextMenuEvent(event);
 }
 
 void DkThumbWidget::selectAllThumbs(bool selected) {
@@ -1294,41 +1215,115 @@ void DkThumbWidget::selectThumbs(bool selected /* = true */, int from /* = 0 */,
 
 }
 
+// DkThumbView --------------------------------------------------------------------
+DkThumbsView::DkThumbsView(DkThumbWidget* scene, QWidget* parent /* = 0 */) : QGraphicsView(scene, parent) {
+
+	this->scene = scene;
+
+	setDragMode(QGraphicsView::RubberBandDrag);
+	setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+	setAcceptDrops(true);
+
+}
+
+void DkThumbsView::wheelEvent(QWheelEvent *event) {
+
+	if (event->modifiers() == Qt::ControlModifier) {
+		scene->resizeThumbs(qCeil(event->delta()/100.0f));
+	}
+	else if (event->modifiers() == Qt::NoModifier) {
+
+		if (verticalScrollBar()->isVisible())
+			verticalScrollBar()->setValue(verticalScrollBar()->value()-event->delta());
+	}
+
+	//QWidget::wheelEvent(event);
+}
+
 // DkThumbScrollWidget --------------------------------------------------------------------
 DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
 
 	setObjectName("DkThumbScrollWidget");
 	setContentsMargins(0,0,0,0);
 
-	thumbsView = new DkThumbWidget(thumbPool, this);
-	thumbsView->setContentsMargins(0,0,0,0);
+	thumbsScene = new DkThumbWidget(thumbPool, this);
+	//thumbsView->setContentsMargins(0,0,0,0);
+
+	view = new DkThumbsView(thumbsScene, this);
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
-	layout->addWidget(thumbsView);
+	layout->addWidget(view);
 	setLayout(layout);
 
 	this->thumbPool = thumbPool;
+
+	createActions();
+}
+
+void DkThumbScrollWidget::createActions() {
+
+	actions.resize(actions_end);
+
+	actions[select_all] = new QAction(tr("Select &All"), this);
+	actions[select_all]->setShortcut(QKeySequence::SelectAll);
+	actions[select_all]->setCheckable(true);
+	connect(actions[select_all], SIGNAL(triggered(bool)), thumbsScene, SLOT(selectAllThumbs(bool)));
+
+	actions[zoom_in] = new QAction(tr("Zoom &In"), this);
+	actions[zoom_in]->setShortcut(Qt::Key_Control & Qt::Key_Plus);
+	connect(actions[zoom_in], SIGNAL(triggered()), thumbsScene, SLOT(increaseThumbs()));
+
+	actions[zoom_out] = new QAction(tr("Zoom &Out"), this);
+	actions[zoom_out]->setShortcut(Qt::Key_Minus);
+	connect(actions[zoom_out], SIGNAL(triggered()), thumbsScene, SLOT(decreaseThumbs()));
+
+	contextMenu = new QMenu(tr("Thumb"), this);
+	for (int idx = 0; idx < actions.size(); idx++) {
+		
+		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		contextMenu->addAction(actions.at(idx));
+	}
+
+	addActions(actions.toList());
 }
 
 void DkThumbScrollWidget::setVisible(bool visible) {
 
 	
 	if (thumbPool) {
-		thumbPool->getUpdates(thumbsView, visible);
+		thumbPool->getUpdates(thumbsScene, visible);
 
 		if (visible)
-			connect(thumbPool, SIGNAL(numThumbChangedSignal()), thumbsView, SLOT(updateThumbLabels()));
+			connect(thumbPool, SIGNAL(numThumbChangedSignal()), thumbsScene, SLOT(updateThumbLabels()));
 		else
-			thumbPool->disconnect(thumbsView);
+			thumbPool->disconnect(thumbsScene);
 
 		if (visible)
-			thumbsView->updateThumbLabels();
+			thumbsScene->updateThumbLabels();
 	}
 
 	qDebug() << "showing thumb scroll widget...";
 
 	DkWidget::setVisible(visible);
+}
+
+void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
+
+	if (event->oldSize().width() != event->size().width() && isVisible())
+		thumbsScene->updateLayout();
+
+	DkWidget::resizeEvent(event);
+	
+}
+
+void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
+
+	//if (!event->isAccepted())
+	contextMenu->exec(event->globalPos());
+	event->accept();
+
+	//QGraphicsView::contextMenuEvent(event);
 }
 
 // DkFolderScrollBar --------------------------------------------------------------------

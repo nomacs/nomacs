@@ -63,6 +63,7 @@
 #include <QScrollArea>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsSceneMouseEvent>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -671,24 +672,15 @@ protected:
 	bool isHovered;
 };
 
-class DkThumbWidget : public QGraphicsView {
+class DkThumbWidget : public QGraphicsScene {
 	Q_OBJECT
 
 public:
-	enum {
-		select_all,
-		zoom_in,
-		zoom_out,
-
-		actions_end
-	};
-
 	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
 
 	void updateLayout();
 
 public slots:
-	virtual void setVisible(bool visible);
 	void updateThumbLabels();
 	void loadFile(QFileInfo& file);
 	void increaseThumbs();
@@ -704,15 +696,11 @@ signals:
 
 protected:
 	void wheelEvent(QWheelEvent *event);
-	void resizeEvent(QResizeEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-	void contextMenuEvent(QContextMenuEvent *event);
-
-	void createActions();
+	void mousePressEvent(QGraphicsSceneMouseEvent *event);
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 	DkThumbPool* thumbPool;
 	int xOffset;
@@ -720,30 +708,55 @@ protected:
 	int numCols;
 	bool firstLayout;
 	bool itemClicked;
-	QPoint mousePos;
+	QPointF mousePos;
 
-	QMenu* contextMenu;
-	QVector<QAction*> actions;
 	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
-	QGraphicsScene* scene;
+};
+
+class DkThumbsView : public QGraphicsView {
+	Q_OBJECT
+
+public:
+	DkThumbsView(DkThumbWidget* scene, QWidget* parent = 0);
+
+protected:
+	void wheelEvent(QWheelEvent *event);
+
+	DkThumbWidget* scene;
 };
 
 class DkThumbScrollWidget : public DkWidget {
 	Q_OBJECT
 
 public:
+	enum {
+		select_all,
+		zoom_in,
+		zoom_out,
+
+		actions_end
+	};
+
 	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	DkThumbWidget* getThumbWidget() {
-		return thumbsView;
+		return thumbsScene;
 	};
 
 public slots:
 	virtual void setVisible(bool visible);
 
 protected:
-	DkThumbWidget* thumbsView;
+	void createActions();
+	void resizeEvent(QResizeEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event);
+
+	DkThumbWidget* thumbsScene;
 	DkThumbPool* thumbPool;
+	DkThumbsView* view;
+
+	QMenu* contextMenu;
+	QVector<QAction*> actions;
 
 };
 
