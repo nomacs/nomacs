@@ -3247,8 +3247,8 @@ void DkNoMacs::addPluginsToMenu() {
 
 		if (pluginsEnabled.value(runId2PluginId.value(sortedNames.at(i).first), true)) {
 
-			QAction* pluginAction = new QAction(sortedNames.at(i).second, this);	//TODO translations
-			pluginAction->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));		//TODO translations
+			QAction* pluginAction = new QAction(sortedNames.at(i).second, this);
+			pluginAction->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));
 			pluginAction->setData(sortedNames.at(i).first);
 			connect(pluginAction, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
 
@@ -3340,10 +3340,9 @@ void DkNoMacs::runLoadedPlugin() {
 
    }
    else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
-	    QString key = action->data().toString();
+
 	    QImage tmpImg = viewport()->getImageLoader()->getImage();
 	    DkViewPort *vp = viewport();
-	    //viewport()->setEditedImage(loadedPlugins[key]->runPlugin(key, tmpImg, *vp));
 	    QImage result = cPlugin->runPlugin(key, tmpImg);
 	    if(!result.isNull()) viewport()->setEditedImage(result);
    }
