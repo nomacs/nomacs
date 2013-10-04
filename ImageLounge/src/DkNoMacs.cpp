@@ -1408,7 +1408,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton 
 			&& dist > QApplication::startDragDistance()
 			&& viewport() 
-			&& viewport()->getWorldMatrix().m11() <= 1.0f
+			&& viewport()->imageInside()
 			&& !viewport()->getImage().isNull()
 			&& viewport()->getImageLoader()) {
 
@@ -1982,7 +1982,10 @@ void DkNoMacs::openDir() {
 
 	qDebug() << "loading directory: " << dirName;
 	
-	viewport()->loadFile(QFileInfo(dirName));
+	if (viewport()->getController()->getThumbWidget()->isVisible())
+		viewport()->getController()->getThumbPool()->setFile(QFileInfo(dirName));
+	else
+		viewport()->loadFile(QFileInfo(dirName));
 }
 
 void DkNoMacs::openFile() {

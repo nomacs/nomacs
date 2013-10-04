@@ -676,6 +676,7 @@ class DkThumbWidget : public QGraphicsView {
 
 public:
 	enum {
+		select_all,
 		zoom_in,
 		zoom_out,
 
@@ -690,8 +691,12 @@ public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbLabels();
 	void loadFile(QFileInfo& file);
+	void increaseThumbs();
+	void decreaseThumbs();
 	void resizeThumbs(int dx);
 	void showFile(const QFileInfo& file);
+	void selectThumbs(bool select = true, int from = 0, int to = -1);
+	void selectAllThumbs(bool select = true);
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -700,13 +705,25 @@ signals:
 protected:
 	void wheelEvent(QWheelEvent *event);
 	void resizeEvent(QResizeEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event);
+
+	void createActions();
 
 	DkThumbPool* thumbPool;
 	int xOffset;
 	int numRows;
 	int numCols;
 	bool firstLayout;
+	bool itemClicked;
+	QPoint mousePos;
 
+	QMenu* contextMenu;
+	QVector<QAction*> actions;
 	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
 	QGraphicsScene* scene;
 };
