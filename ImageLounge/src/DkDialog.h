@@ -848,7 +848,7 @@ signals:
 
 protected:
 	void updatePostProcess();
-	void postProcessMosaic(float multiply = 0.3f, float screen = 0.5f, float saturation = 0.5f);
+	bool postProcessMosaic(float multiply = 0.3f, float screen = 0.5f, float saturation = 0.5f, bool computePreview = true);
 	void createLayout();
 	void enableMosaicSave(bool enable);
 	void enableAll(bool enable);
@@ -873,6 +873,7 @@ protected:
 	QLabel* msgLabel;
 	QWidget* controlWidget;
 	QCheckBox* overwrite;
+	QLabel* realResLabel;
 	QLabel* patchResLabel;
 	
 	QWidget* sliderWidget;
@@ -884,15 +885,16 @@ protected:
 	QDir saveDir;
 	DkBasicLoader loader;
 	QFutureWatcher<int> mosaicWatcher;
-	QFutureWatcher<void> postProcessWatcher;
+	QFutureWatcher<bool> postProcessWatcher;
 
 	bool updatePostProcessing;
 	bool postProcessing;
 	bool processing;
 	cv::Mat origImg;
 	cv::Mat mosaicMat;
+	cv::Mat mosaicMatSmall;
 	QImage mosaic;
-	QFileInfoList filesUsed;
+	QVector<QFileInfo> filesUsed;
 
 
 	enum {

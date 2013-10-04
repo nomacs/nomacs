@@ -101,7 +101,9 @@ void DkImageStorage::computeImage() {
 	while (iSize.width() > 2*1542 && iSize.height() > 2*1542)	// in general we need less than 200 ms for the whole downscaling if we start at 1500 x 1500
 		iSize *= 0.5;
 
-	resizedImg = resizedImg.scaled(iSize, Qt::KeepAspectRatio, Qt::FastTransformation);
+	// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
+	if (qMax(iSize.width(), iSize.height()) < 20000)
+		resizedImg = resizedImg.scaled(iSize, Qt::KeepAspectRatio, Qt::FastTransformation);
 
 	// it would be pretty strange if we needed more than 30 sub-images
 	for (int idx = 0; idx < 30; idx++) {

@@ -310,7 +310,7 @@ void DkSettings::save(bool force) {
 		settings.setValue("advancedSettings", app_p.advancedSettings);
 	//if (!force && app_p.appMode != app_d.appMode)
 		settings.setValue("appMode", app_p.appMode);
-	if (!force && app_p.currentAppMode != app_d.currentAppMode)
+	//if (!force && app_p.currentAppMode != app_d.currentAppMode)
 		settings.setValue("currentAppMode", app_p.currentAppMode);
 	if (!force && app_p.closeOnEsc != app_d.closeOnEsc)
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);

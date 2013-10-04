@@ -26,7 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkDialog.h"
-
+#include "DkNoMacs.h"
 
 namespace nmc {
 
@@ -49,7 +49,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, f
 
 	// create exit shortcuts
 	QShortcut* escExit = new QShortcut(Qt::Key_Escape, this);
-	QObject::connect(escExit, SIGNAL( activated ()), this, SLOT( close() ));
+	QObject::connect(escExit, SIGNAL( activated()), this, SLOT( close() ));
 
 	// set the text
 	text = 
@@ -3029,6 +3029,7 @@ DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* =
 	connect(this, SIGNAL(updateImage(QImage)), preview, SLOT(setImage(QImage)));
 	connect(&mosaicWatcher, SIGNAL(finished()), this, SLOT(mosaicFinished()));
 	connect(&postProcessWatcher, SIGNAL(finished()), this, SLOT(postProcessFinished()));
+	connect(&postProcessWatcher, SIGNAL(canceled()), this, SLOT(postProcessFinished()));
 	connect(this, SIGNAL(infoMessage(QString)), msgLabel, SLOT(setText(QString)));
 	connect(this, SIGNAL(updateProgress(int)), progress, SLOT(setValue(int)));
 	QMetaObject::connectSlotsByName(this);
@@ -3069,17 +3070,17 @@ void DkMosaicDialog::createLayout() {
 	// post processing sliders
 	darkenSlider = new QSlider(Qt::Horizontal, this);
 	darkenSlider->setObjectName("darkenSlider");
-	darkenSlider->setValue(30);
+	darkenSlider->setValue(40);
 	//darkenSlider->hide();
 
 	lightenSlider = new QSlider(Qt::Horizontal, this);
 	lightenSlider->setObjectName("lightenSlider");
-	lightenSlider->setValue(30);
+	lightenSlider->setValue(40);
 	//lightenSlider->hide();
 
 	saturationSlider = new QSlider(Qt::Horizontal, this);
 	saturationSlider->setObjectName("saturationSlider");
-	saturationSlider->setValue(30);
+	saturationSlider->setValue(60);
 	//saturationSlider->hide();
 
 	sliderWidget = new QWidget(this);
@@ -3119,14 +3120,14 @@ void DkMosaicDialog::createLayout() {
 	newWidthBox->setObjectName("newWidthBox");
 	newWidthBox->setToolTip(tr("Pixel Width"));
 	newWidthBox->setMinimum(100);
-	newWidthBox->setMaximum(10000);
+	newWidthBox->setMaximum(30000);
 	newHeightBox = new QSpinBox();
 	newHeightBox->setObjectName("newHeightBox");
 	newHeightBox->setToolTip(tr("Pixel Height"));
 	newHeightBox->setMinimum(100);
-	newHeightBox->setMaximum(10000);
-	patchResLabel = new QLabel("");
-	patchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
+	newHeightBox->setMaximum(30000);
+	realResLabel = new QLabel("");
+	//realResLabel->setToolTip(tr("."));
 
 	// num patch handles
 	QLabel* patchLabel = new QLabel(tr("Patches:"));
@@ -3135,12 +3136,14 @@ void DkMosaicDialog::createLayout() {
 	numPatchesH->setObjectName("numPatchesH");
 	numPatchesH->setToolTip(tr("Number of Horizontal Patches"));
 	numPatchesH->setMinimum(1);
-	numPatchesH->setMaximum(500);
+	numPatchesH->setMaximum(1000);
 	numPatchesV = new QSpinBox();
 	numPatchesV->setObjectName("numPatchesV");
 	numPatchesV->setToolTip(tr("Number of Vertical Patches"));
 	numPatchesV->setMinimum(1);
-	numPatchesV->setMaximum(500);
+	numPatchesV->setMaximum(1000);
+	patchResLabel = new QLabel("");
+	patchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
 
 	// file filters
 	QLabel* filterLabel = new QLabel(tr("Filters:"), this);
@@ -3157,7 +3160,6 @@ void DkMosaicDialog::createLayout() {
 	suffixBox->addItems(filters);
 	//suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
 
-
 	controlWidget = new QWidget(this);
 	QGridLayout* controlLayout = new QGridLayout(controlWidget);
 	controlLayout->addWidget(openLabel, 0, 0);
@@ -3173,11 +3175,12 @@ void DkMosaicDialog::createLayout() {
 	controlLayout->addWidget(sizeLabel, 2, 0);
 	controlLayout->addWidget(newWidthBox, 2, 1);
 	controlLayout->addWidget(newHeightBox, 2, 2);
-	controlLayout->addWidget(patchResLabel, 2, 3);
+	controlLayout->addWidget(realResLabel, 2, 3);
 
 	controlLayout->addWidget(patchLabel, 4, 0);
 	controlLayout->addWidget(numPatchesH, 4, 1);
 	controlLayout->addWidget(numPatchesV, 4, 2);
+	controlLayout->addWidget(patchResLabel, 4, 3);
 
 	controlLayout->addWidget(filterLabel, 5, 0);
 	controlLayout->addWidget(filterEdit, 5, 1, 1, 2);
@@ -3192,6 +3195,7 @@ void DkMosaicDialog::createLayout() {
 	preview = new DkBaseViewPort(this);
 	preview->setForceFastRendering(true);
 	preview->setPanControl(QPointF(0.0f, 0.0f));
+	preview->hide();
 
 	QWidget* viewports = new QWidget(this);
 	QHBoxLayout* viewLayout = new QHBoxLayout(viewports);
@@ -3200,6 +3204,7 @@ void DkMosaicDialog::createLayout() {
 
 	// buttons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
 	buttons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	//connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -3223,7 +3228,7 @@ void DkMosaicDialog::on_openButton_pressed() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
 		cFile.absolutePath(), 
-		DkImageLoader::saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+		DkImageLoader::openFilters.join(";;"));
 
 	setFile(fileName);
 }
@@ -3235,7 +3240,7 @@ void DkMosaicDialog::on_dbButton_pressed() {
 	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
 		saveDir.absolutePath());
 
-	if (saveDir.exists()) {
+	if (QFileInfo(dirName).exists()) {
 		saveDir = dirName;
 		folderLabel->setText(saveDir.absolutePath());
 	}
@@ -3254,6 +3259,7 @@ void DkMosaicDialog::on_newWidthBox_valueChanged(int i) {
 	newHeightBox->blockSignals(true);
 	newHeightBox->setValue(qRound((float)newWidthBox->value()/loader.image().width()*loader.image().height()));
 	newHeightBox->blockSignals(false);
+	realResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(newWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(newHeightBox->value()/150.0*2.54, 0, 'f', 1));
 	updatePatchRes();
 }
 
@@ -3265,6 +3271,7 @@ void DkMosaicDialog::on_newHeightBox_valueChanged(int i) {
 	newWidthBox->blockSignals(true);
 	newWidthBox->setValue(qRound((float)newHeightBox->value()/loader.image().height()*loader.image().width()));
 	newWidthBox->blockSignals(false);
+	realResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(newWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(newHeightBox->value()/150.0*2.54, 0, 'f', 1));
 	updatePatchRes();
 }
 
@@ -3274,8 +3281,7 @@ void DkMosaicDialog::on_numPatchesH_valueChanged(int i) {
 		return;
 
 	numPatchesV->blockSignals(true);
-	int patchResO = qFloor((float)loader.image().width()/numPatchesH->value());
-	numPatchesV->setValue(qFloor((float)loader.image().height()/patchResO));
+	numPatchesV->setValue(qFloor((float)loader.image().height()/((float)loader.image().width()/numPatchesH->value())));
 	numPatchesV->blockSignals(false);
 	updatePatchRes();
 }
@@ -3286,8 +3292,7 @@ void DkMosaicDialog::on_numPatchesV_valueChanged(int i) {
 		return;
 
 	numPatchesH->blockSignals(true);
-	int patchResO = qFloor((float)loader.image().height()/numPatchesV->value());
-	numPatchesH->setValue(qFloor((float)loader.image().width()/patchResO));
+	numPatchesH->setValue(qFloor((float)loader.image().width()/((float)loader.image().height()/numPatchesV->value())));
 	numPatchesH->blockSignals(false);
 	updatePatchRes();
 }
@@ -3322,6 +3327,10 @@ void DkMosaicDialog::updatePatchRes() {
 }
 
 QImage DkMosaicDialog::getImage() {
+
+	if (mosaic.isNull() && !mosaicMat.empty())
+		return DkImage::mat2QImage(mosaicMat);
+
 	return mosaic;
 }
 
@@ -3330,6 +3339,12 @@ void DkMosaicDialog::reject() {
 	// not sure if this is a nice way to do: but we change cancel behavior while processing
 	if (processing)
 		processing = false;
+	else if (!mosaic.isNull() && !buttons->button(QDialogButtonBox::Apply)->isEnabled()) {
+		buttons->button(QDialogButtonBox::Apply)->setEnabled(true);
+		enableAll(true);
+		viewport->show();
+		sliderWidget->hide();
+	}
 	else
 		QDialog::reject();
 
@@ -3337,8 +3352,25 @@ void DkMosaicDialog::reject() {
 
 void DkMosaicDialog::buttonClicked(QAbstractButton* button) {
 
-	if (button == buttons->button(QDialogButtonBox::Save))
-		QDialog::accept();
+	if (button == buttons->button(QDialogButtonBox::Save)) {
+
+		// render the full image
+		if (!mosaic.isNull()) {
+			sliderWidget->hide();
+			progress->setValue(progress->minimum());
+			progress->show();
+			enableAll(false);
+			button->setEnabled(false);
+			
+			QFuture<bool> future = QtConcurrent::run(this, 
+				&nmc::DkMosaicDialog::postProcessMosaic,
+				darkenSlider->value()/100.0f,
+				lightenSlider->value()/100.0f, 
+				saturationSlider->value()/100.0f,
+				false);
+			postProcessWatcher.setFuture(future);
+		}
+	}
 	else if (button == buttons->button(QDialogButtonBox::Apply))
 		compute();
 }
@@ -3352,10 +3384,13 @@ void DkMosaicDialog::compute() {
 	progress->show();
 	msgLabel->setText("");
 	msgLabel->show();
+	mosaicMatSmall.release();
 	mosaicMat.release();
 	origImg.release();
+	mosaic = QImage();
 	sliderWidget->hide();
 	viewport->show();
+	preview->show();
 
 	enableAll(false);
 
@@ -3365,13 +3400,11 @@ void DkMosaicDialog::compute() {
 	for (int idx = 0; idx < DkImageLoader::fileFilters.size(); idx++) {
 		if (suffixTmp.contains("(" + DkImageLoader::fileFilters.at(idx))) {
 			suffix = DkImageLoader::fileFilters.at(idx);
-			//suffix.replace("*","");
 			break;
 		}
 	}
 
 	QString filter = filterEdit->text();
-	//QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
 
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::computeMosaic,
@@ -3395,7 +3428,6 @@ void DkMosaicDialog::compute() {
 
 void DkMosaicDialog::mosaicFinished() {
 
-	enableAll(true);
 	progress->hide();
 	//msgLabel->hide();
 	
@@ -3406,42 +3438,28 @@ void DkMosaicDialog::mosaicFinished() {
 		updatePostProcess();	// add values
 		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
 	}
-
-	//if (watcher.future() == QDialog::Accepted)
-	//	QDialog::accept();
+	else {
+		enableAll(true);
+	}
 }
 
 int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int newWidth, int numPatchesH) {
 
+	DkTimer dt;
 	processing = true;
 
-	//TODO: convert image to L*a*b, extract luminance
 	// compute new image size
 	cv::Mat mImg = DkImage::qImage2Mat(loader.image());
 
-	//// TODO: fix this!
-	//cv::Mat imgL3;
-	//cv::cvtColor(imgL, imgL3, CV_GRAY2RGB);
-	//emit updateImage(DkImage::mat2QImage(imgL3));
-
-	// defines (user should do that)
-	//int newMinSize = 4096;
+	filesUsed.clear();
 	QSize numPatches = QSize(numPatchesH, 0);
 
 	// compute new image size
-	float aratio = (float)mImg.rows/mImg.cols;
-
+	//float aratio = (float)mImg.rows/mImg.cols;
 	int patchResO = qFloor((float)mImg.cols/numPatches.width());
 	numPatches.setHeight(qFloor((float)mImg.rows/patchResO));
 
-	int patchResD = qFloor(patchResO*newWidth/mImg.cols);
-
-	//// swap if the image is landscape
-	//if (mImg.rows < mImg.cols) {
-	//	int tmp = numPatches.width();
-	//	numPatches.setWidth(numPatches.height());
-	//	numPatches.setHeight(tmp);
-	//}
+	int patchResD = qFloor(newWidth/numPatches.width());
 
 	float shR = (mImg.rows-patchResO*numPatches.height())/2.0f;
 	float shC = (mImg.cols-patchResO*numPatches.width())/2.0f;
@@ -3453,12 +3471,12 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	cv::split(mImgLab, channels);
 	cv::Mat imgL = channels[0];
 
-	//channels.clear();
-	//mImgLab.release();
-
 	// keeps track of the weights
 	cv::Mat cc(numPatches.height(), numPatches.width(), CV_32FC1);
 	cc = 0;
+	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);;	// tells us if we have already computed the real patch
+
+	filesUsed.resize(numPatches.height()*numPatches.width());
 
 	// destination image
 	cv::Mat dImg(patchResD*numPatches.height(), patchResD*numPatches.width(), CV_8UC1);
@@ -3478,130 +3496,127 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	int pIdx = 0;
 	int maxP = numPatches.width()*numPatches.height();
 
-	//QString imgPath = getRandomImagePath(saveDir.absolutePath(), filter, suffix);
-	//qDebug() << "I chose: " << imgPath;
-
 	int iDidNothing = 0;
 	bool force = false;
 	bool useTwice = false;
 
-	for (int idx = 0; idx < 10000; idx++) {
+	//for (int idx = 0; idx < 10; idx++) {
+	while (iDidNothing < 10000) {
 
 		if (!processing)
 			return QDialog::Rejected;
 
-		if (iDidNothing > 20) {
+		if (iDidNothing > 100) {
 			force = true;
 
 			if (!useTwice)
 				emit infoMessage(tr("Filling empty areas..."));
 		}
 
-		if (iDidNothing > 100 && !filesUsed.isEmpty()) {
+		if (iDidNothing > 400 && !useTwice) {
 			emit infoMessage(tr("I need to use some images twice - maybe the database is too small?"));
-			filesUsed.clear();
 			iDidNothing = 0;
 			useTwice = true;
 		}
-		else if (iDidNothing > 100) {
+		else if (iDidNothing > 400) {
 			emit infoMessage(tr("Sorry, it seems that i cannot create your mosaic with this database."));
 			return QDialog::Rejected;
 		}
 
 		QString imgPath = getRandomImagePath(saveDir.absolutePath(), filter, suffix);
-		qDebug() << imgPath;
 
-		if (filesUsed.contains(QFileInfo(imgPath))) {
+		if (!useTwice && filesUsed.contains(QFileInfo(imgPath))) {
 			iDidNothing++;
 			continue;
 		}
 
-		DkThumbNail thumb = DkThumbNail(QFileInfo(imgPath));
-		thumb.setMinThumbSize(patchResO);
-		thumb.setRescale(false);
-		thumb.compute();
+		try {
 
-		if (!thumb.hasImage()) {
-			iDidNothing++;
-			continue;
-		}
+			DkThumbNail thumb = DkThumbNail(QFileInfo(imgPath));
+			thumb.setMinThumbSize(patchResO);
+			thumb.setRescale(false);
+			thumb.compute();
 
-		cv::Mat ccTmp(cc.size(), cc.depth());
+			if (!thumb.hasImage()) {
+				iDidNothing++;
+				continue;
+			}
+
+			cv::Mat ccTmp(cc.size(), cc.depth());
 		
-		if (!force)
-			ccTmp = 0;
-		else
-			ccTmp = cc.clone();
+			if (!force)
+				ccTmp = 0;
+			else
+				ccTmp = cc.clone();
 
-		cv::Mat thumbPatch = createPatch(thumb, patchResO);
+			cv::Mat thumbPatch = createPatch(thumb, patchResO);
 		
-		if (thumbPatch.rows != patchResO || thumbPatch.cols != patchResO) {
-			iDidNothing++;
-			continue;
-		}
+			if (thumbPatch.rows != patchResO || thumbPatch.cols != patchResO) {
+				iDidNothing++;
+				continue;
+			}
 		
-		matchPatch(imgL, thumbPatch, patchResO, ccTmp);
+			matchPatch(imgL, thumbPatch, patchResO, ccTmp);
 
-		if (force) {
-			cv::Mat mask = (cc == 0);
-			mask.convertTo(mask, CV_32FC1, 1.0f/255.0f);
-			ccTmp = ccTmp.mul(mask);
-		}
+			if (force) {
+				cv::Mat mask = (cc == 0);
+				mask.convertTo(mask, CV_32FC1, 1.0f/255.0f);
+				ccTmp = ccTmp.mul(mask);
+			}
 				
-		double maxVal = 0;
-		cv::Point maxIdx;
-		cv::minMaxLoc(ccTmp, 0, &maxVal, 0, &maxIdx);
-		float* ccPtr = cc.ptr<float>(maxIdx.y);
-		
-		//// debug
-		//cv::Mat imgT3;
-		//cv::cvtColor(ccTmp, imgT3, CV_GRAY2RGB);
-		//emit updateImage(DkImage::mat2QImage(imgT3));
-		//qDebug() << "force is: " << force;
+			double maxVal = 0;
+			cv::Point maxIdx;
+			cv::minMaxLoc(ccTmp, 0, &maxVal, 0, &maxIdx);
+			float* ccPtr = cc.ptr<float>(maxIdx.y);
 
-		//qDebug() << "max val " << maxVal << "ccptr " << ccPtr[maxIdx.x];
+			if (maxVal > ccPtr[maxIdx.x]) {
 
-		if (maxVal > ccPtr[maxIdx.x]) {
-
-			cv::Mat pPatch = pImg.rowRange(maxIdx.y*patchResO, maxIdx.y*patchResO+patchResO)
-				.colRange(maxIdx.x*patchResO, maxIdx.x*patchResO+patchResO);
-			thumbPatch.copyTo(pPatch);
+				cv::Mat pPatch = pImg.rowRange(maxIdx.y*patchResO, maxIdx.y*patchResO+patchResO)
+					.colRange(maxIdx.x*patchResO, maxIdx.x*patchResO+patchResO);
+				thumbPatch.copyTo(pPatch);
 			
-			// visualize
-			if (pIdx % 10 == 0) {
+				// visualize
+				if (pIdx % 10 == 0) {
 				
-				channels[0] = pImg;
+					channels[0] = pImg;
 				
-				//debug
-				cv::Mat imgT3;
-				cv::merge(channels, imgT3);
-				cv::cvtColor(imgT3, imgT3, CV_Lab2BGR);
-				emit updateImage(DkImage::mat2QImage(imgT3));
+					//debug
+					cv::Mat imgT3;
+					cv::merge(channels, imgT3);
+					cv::cvtColor(imgT3, imgT3, CV_Lab2BGR);
+					emit updateImage(DkImage::mat2QImage(imgT3));
+				}
+
+				if (ccPtr[maxIdx.x] == 0) {
+					pIdx++;
+					emit updateProgress(qRound((float)pIdx/maxP*100));
+				}
+
+				// compute it now if we already have the full image loaded
+				if (thumb.getImage().width() > patchResD && thumb.getImage().height() > patchResD) {
+					thumbPatch = createPatch(thumb, patchResD);
+
+					cv::Mat dPatch = dImg.rowRange(maxIdx.y*patchResD, maxIdx.y*patchResD+patchResD)
+						.colRange(maxIdx.x*patchResD, maxIdx.x*patchResD+patchResD);
+					thumbPatch.copyTo(dPatch);
+					ccD.ptr<unsigned char>(maxIdx.y)[maxIdx.x] = 1;
+				}
+				else
+					ccD.ptr<unsigned char>(maxIdx.y)[maxIdx.x] = 0;
+
+				// update cc
+				ccPtr[maxIdx.x] = maxVal;
+
+				filesUsed[maxIdx.y*numPatchesH+maxIdx.x] = thumb.getFile();	// replaces additionally the old file
+				iDidNothing = 0;
 			}
-
-			if (ccPtr[maxIdx.x] == 0) {
-				pIdx++;
-				emit updateProgress(qRound((float)pIdx/maxP*100));
-			}
-						
-			thumbPatch = createPatch(thumb, patchResD);
-			//thumbPatch.convertTo(thumbPatch, CV_8UC1, 25.5, 0);
-					
-
-			cv::Mat dPatch = dImg.rowRange(maxIdx.y*patchResD, maxIdx.y*patchResD+patchResD)
-				.colRange(maxIdx.x*patchResD, maxIdx.x*patchResD+patchResD);
-			//dPatch = 0;//thumbPatch.clone();
-			thumbPatch.copyTo(dPatch);
-
-			// update cc
-			ccPtr[maxIdx.x] = maxVal;
-
-			if (!useTwice)
-				filesUsed.append(thumb.getFile());
-			iDidNothing = 0;
-		}
-		else
+			else
+				iDidNothing++;
+		} 
+		// catch cv exceptions e.g. out of memory
+		catch(...) {
 			iDidNothing++;
+		}
 
 		// are we done yet?
 		double minVal = 0;
@@ -3612,73 +3627,52 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 		
 	}
 
-	//cv::Mat mImg = DkImage::qImage2Mat(loader.image());
+	pIdx = 0;
 
-	if (channels.size() == 3) {
-		cv::resize(channels[1], channels[1], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-		cv::resize(channels[2], channels[2], cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
+	// compute real resolution
+	for (int rIdx = 0; rIdx < ccD.rows; rIdx++) {
+
+		const unsigned char* ccDPtr = ccD.ptr<unsigned char>(rIdx);
+
+		for (int cIdx = 0; cIdx < ccD.cols; cIdx++) {
+
+			// is the patch already computed?
+			if (ccDPtr[cIdx])
+				continue;
+
+			QFileInfo cFile = filesUsed.at(rIdx*ccD.cols+cIdx);
+
+			if (!cFile.exists()) {
+				emit infoMessage(tr("Something is seriously wrong, I could not load: %1").arg(cFile.absoluteFilePath()));
+				continue;
+			}
+
+			cv::Mat thumbPatch = createPatch(DkThumbNail(cFile), patchResD);
+
+			cv::Mat dPatch = dImg.rowRange(rIdx*patchResD, rIdx*patchResD+patchResD)
+				.colRange(cIdx*patchResD, cIdx*patchResD+patchResD);
+			thumbPatch.copyTo(dPatch);
+			emit updateProgress(qRound((float)pIdx/maxP*100));
+			pIdx++;
+		}
 	}
-	else {
-		cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);
-		cv::resize(imgL, imgL, cv::Size(dImg.cols, dImg.rows), 0, 0, CV_INTER_LANCZOS4);		
-	}
 
-	//// assign new luminance channel
-	//channels[0] = dImg;
-
-	//cv::Mat imgT3;
-	//cv::merge(channels, imgT3);
-	//cv::cvtColor(imgT3, imgT3, CV_Lab2BGR);
-
-	//cv::Mat imgT3;
-	//cv::cvtColor(dImg, imgT3, CV_GRAY2RGB);
+	qDebug() << "I fully rendered: " << ccD.rows*ccD.cols-cv::sum(ccD)[0] << " images";
 
 	// create final images
 	origImg = mImgLab;
 	mosaicMat = dImg;
-
-	//cv::cvtColor(dImg, imgT3, CV_GRAY2RGB);
-	//emit updateImage(mosaic);
-
-
-	// for now we just mix it
-
-
-
-	//// Do your job
-	//for (int idx = from; idx <= to; idx++) {
-
-	//	QFileInfo sFile(saveFile.absolutePath(), saveFile.baseName() + QString::number(idx) + "." + saveFile.suffix());
-	//	qDebug() << "trying to save: " << sFile.absoluteFilePath();
-
-	//	// user wants to overwrite files
-	//	if (sFile.exists() && overwrite) {
-	//		QFile f(sFile.absoluteFilePath());
-	//		f.remove();
-	//	}
-
-	//	bool saved = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
-
-	//	if (!saved)
-	//		emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
-
-	//	loader.loadPage(1);						// load next
-	//	emit updateImage(loader.image());
-	//	emit updateProgress(idx);
-
-	//	// user canceled?
-	//	if (!processing)
-	//		return QDialog::Rejected;
-	//}
+	mosaicMatSmall = pImg;
 
 	processing = false;
+
+	qDebug() << "mosaic computed in: " << QString::fromStdString(dt.getTotal());
 
 	return QDialog::Accepted;
 }
 
 void DkMosaicDialog::matchPatch(const cv::Mat& img, const cv::Mat& thumb, int patchRes, cv::Mat& cc) {
 
-	//std::cout << "cc size: " << cc.size() << std::endl;
 	for (int rIdx = 0; rIdx < cc.rows; rIdx++) {
 
 		float* ccPtr = cc.ptr<float>(rIdx);
@@ -3691,9 +3685,6 @@ void DkMosaicDialog::matchPatch(const cv::Mat& img, const cv::Mat& thumb, int pa
 				continue;
 
 			const cv::Mat cPatch = imgStrip.colRange(cIdx*patchRes, cIdx*patchRes+patchRes);
-			
-			//std::cout << "patch size: " << cPatch.size() << std::endl;
-			//std::cout << "thumb size: " << thumb.size() << std::endl;
 			
 			cv::Mat absDiff;
 			cv::absdiff(cPatch, thumb, absDiff);
@@ -3709,7 +3700,7 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 	// load full image if we have not enough resolution
 	if (qMin(thumb.getImage().width(), thumb.getImage().height()) < patchRes) {
 		DkBasicLoader loader;
-		loader.loadGeneral(thumb.getFile());
+		loader.loadGeneral(thumb.getFile(), true);
 		img = loader.image();
 	}
 	else
@@ -3739,22 +3730,8 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 		qDebug() << "enlarging thumbs!!";
 
 	cv::resize(cvThumb, cvThumb, cv::Size(patchRes, patchRes), 0.0, 0.0, CV_INTER_AREA);
-	//qDebug() << "thumb size: " << cvThumb.rows << " x " << cvThumb.cols;
 
 	return cvThumb;
-	//if size(img,1) ~= size(img,2)
-	//	[~, idx] = min(size(img));
-
-	//if idx == 1
-	//	sh = (size(img,2)-size(img,1))*0.5;
-	//img = img(:,floor(sh):end-ceil(sh));
-	//else
-	//	sh = (size(img,1)-size(img,2))*0.5;
-	//img = img(floor(sh):end-ceil(sh),:);    
-	//end
-	//	end
-
-
 }
 
 QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& ignore, const QString& suffix) {
@@ -3802,7 +3779,7 @@ QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& 
 	//qDebug() << "rand index: " << rIdx;
 
 	QFileInfo rPath = entries.at(rIdx);
-	qDebug() << rPath.absoluteFilePath();
+	//qDebug() << rPath.absoluteFilePath();
 
 	if (rPath.isDir())
 		return getRandomImagePath(rPath.absoluteFilePath(), ignore, suffix);
@@ -3823,109 +3800,107 @@ void DkMosaicDialog::updatePostProcess() {
 	buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
 	buttons->button(QDialogButtonBox::Save)->setEnabled(false);
 
-	QFuture<void> future = QtConcurrent::run(this, 
+	QFuture<bool> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::postProcessMosaic,
 		darkenSlider->value()/100.0f,
 		lightenSlider->value()/100.0f, 
-		saturationSlider->value()/100.0f);
+		saturationSlider->value()/100.0f,
+		true);
 	postProcessWatcher.setFuture(future);
-	
+
 	updatePostProcessing = false;
 	//postProcessMosaic(darkenSlider->value()/100.0f, lightenSlider->value()/100.0f, saturationSlider->value()/100.0f);
 }
 
 void DkMosaicDialog::postProcessFinished() {
 
-	if (updatePostProcessing)
+	if (postProcessWatcher.result()) {
+		QDialog::accept();
+	}
+	else if (updatePostProcessing)
 		updatePostProcess();
 	else {
-		buttons->button(QDialogButtonBox::Apply)->setEnabled(true);
 		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
 	}
 }
 
-void DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen /* = 0.5 */, float saturation) {
+bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen /* = 0.5 */, float saturation, bool computePreview) {
 
 	postProcessing = true;
 
-	qDebug() << "darken: " << multiply << " lighte: " << screen;
-	//multiply = 0.3f;
+	qDebug() << "darken: " << multiply << " lighten: " << screen;
+
 	cv::Mat origR;
 	cv::Mat mosaicR;
-	cv::resize(origImg, origR, mosaicMat.size(), 0, 0, CV_INTER_LANCZOS4);
-	origR.convertTo(origR, CV_32FC1, 1.0f/255.0f);
-	mosaicMat.convertTo(mosaicR, CV_32FC1, 1.0f/255.0f);
 
-	//cv::normalize(origR, origR, 1.0, 0.7, NORM_MINMAX);
-	DkUtils::getMatInfo(origR, "origR");
+	try {
+		if (computePreview) {
+			origR = origImg.clone();
+			mosaicR = mosaicMatSmall.clone();
+		}
+		else {
+			cv::resize(origImg, origR, mosaicMat.size(), 0, 0, CV_INTER_LANCZOS4);
+			mosaicR = mosaicMat;
+			origImg.release();
+		}
 
-	// this operation needs a lot of RAM
-	std::vector<cv::Mat> channels;
-	cv::split(origR, channels);
+		// multiply the two images
+		for (int rIdx = 0; rIdx < origR.rows; rIdx++) {
 
-	cv::Mat imgL = channels[0].clone();
+			const unsigned char* mosaicPtr = mosaicR.ptr<unsigned char>(rIdx);
+			unsigned char* origPtr = origR.ptr<unsigned char>(rIdx);
 
-	imgL = 1.0f-imgL;
-	imgL *= screen;
-	imgL += (1.0f-screen);
-	
-	cv::Mat mosaicRInv = 1.0f-mosaicR;
-	//mosaicRInv *= screen;
-	//mosaicRInv += (1.0f-screen);
+			if (!computePreview)
+				emit updateProgress(qRound((float)rIdx/origR.rows*100));
 
-	cv::Mat tmp = channels[0].clone();
-	channels[0] = mosaicRInv.mul(imgL);
-	channels[0] = 1.0f-channels[0];
-	imgL = tmp;
+			for (int cIdx = 0; cIdx < origR.cols; cIdx++) {
 
-	double minVal, maxVal;
-	cv::minMaxLoc(channels[0], &minVal, &maxVal);
-	qDebug() << "dynamic range: " << minVal << ", " << maxVal;
+				// mix the luminance channel
+				float mosaic = mosaicPtr[cIdx]/255.0f;
+				float luminance = (*origPtr)/255.0f;
 
-	imgL *= multiply;
-	imgL += (1.0f-multiply);
-	//mosaicR *= multiply;
-	//mosaicR += (1.0f-multiply);
+			
+				float lighten = (1.0f-luminance)*screen + (1.0f-screen);
+				lighten *= 1.0f-mosaic;	// multiply inverse
+				lighten = 1.0f-lighten;
 
-	channels[0] = channels[0].mul(imgL);
-	channels[0] *= 100.0f;
+				float darken = luminance*multiply + (1.0f-multiply);
+				darken *= lighten;	// mix with the mosaic pixel
 
-	// scale the color channels
-	if (channels.size() > 1) {
-		channels[1] *= 254.0f*saturation;
-		channels[1] -= 127.0f*saturation;
-		channels[2] *= 254.0f*saturation;
-		channels[2] -= 127.0f*saturation;
+				// now stretch to the dynamic range and save it
+				*origPtr = qRound(darken*255.0f);
+
+				// now adopt the saturation
+				origPtr++;
+				*origPtr = qRound((*origPtr-128) * saturation)+128;
+				origPtr++;
+				*origPtr = qRound((*origPtr-128) * saturation)+128;
+				origPtr++;
+			}
+		}
+
+		//if (!computePreview)
+		//	mosaicMat.release();
+		cv::cvtColor(origR, origR, CV_Lab2BGR);
+		qDebug() << "color converted";
+
+		mosaic = DkImage::mat2QImage(origR);
+		qDebug() << "mosaicing computed...";
+
 	}
-
-
-	//// don't change the alpha channel
-	//for (int idx = 0; idx < 3; idx++) {
-	//	
-	//	//// skip alpha
-	//	//if (channels.size() == 4 && idx == 0)
-	//	//	continue;
-
-	//	channels[idx] = mosaicMat.mul(channels[idx]);
-	//}
-
-	cv::merge(channels, origR);
-	channels.clear();
-
-	//cv::Mat mosaicR;
-	cv::cvtColor(origR, origR, CV_Lab2BGR);
-
-
-	//DkUtils::getMatInfo(mosaicR, "mosaicMat");
-	DkUtils::getMatInfo(origR, "origR");
-
-	//mosaicR = mosaicR.mul(origR, multiply);
+	catch(...) {
+		origR.release();
+		DkNoMacs::dialog("Sorry, I could not mix the image...");
+		qDebug() << "exception caught...";
+		mosaic = DkImage::mat2QImage(mosaicMat);
+	}
 	
-
-	mosaic = DkImage::mat2QImage(origR);
-	preview->setImage(mosaic);
+	if (computePreview)
+		preview->setImage(mosaic);
 
 	postProcessing = false;
+
+	return !computePreview;
 
 }
 
@@ -3949,6 +3924,8 @@ void DkMosaicDialog::setFile(const QFileInfo& file) {
 	//newHeightBox->blockSignals(true);
 	newWidthBox->setValue(loader.image().width());
 	numPatchesH->setValue(qFloor((float)loader.image().width()/90));	// 130 is a pretty good patch resolution
+	numPatchesH->setMaximum(qMin(1000, qFloor(loader.image().width()*0.5f)));
+	numPatchesV->setMaximum(qMin(1000, qFloor(loader.image().height()*0.5f)));
 	//newHeightBox->setValue(loader.image().height());
 	//newWidthBox->blockSignals(false);
 	//newHeightBox->blockSignals(false);

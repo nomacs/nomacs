@@ -109,7 +109,7 @@ DkBasicLoader::DkBasicLoader(int mode) {
  * @param file the image file that should be loaded.
  * @return bool true if the image could be loaded.
  **/ 
-bool DkBasicLoader::loadGeneral(QFileInfo file) {
+bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 
 	bool imgLoaded = false;
 	
@@ -196,6 +196,14 @@ bool DkBasicLoader::loadGeneral(QFileInfo file) {
 		indexPages(file);
 	pageIdxDirty = false;
 
+	if (imgLoaded && rotateImg && !DkSettings::metaData.ignoreExifOrientation) {
+		DkMetaData imgMetaData(file);		
+		int orientation = imgMetaData.getOrientation();
+
+		if (!imgMetaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+			rotate(orientation);
+	}
+
 	return imgLoaded;
 }
 
@@ -281,7 +289,6 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 
 		//use iprocessor from libraw to read the data
 		iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
-
 		//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
 		//iProcessor.imgdata.params.use_camera_wb = 1;
 		//// (-a) Use automatic white balance obtained after averaging over the entire image
@@ -320,11 +327,11 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		//check if the specific corrections are different regarding different camera models
 		//find out some general specifications of the most important raw formats
 
-		qDebug() << "----------------";
-		qDebug() << "Bayer Pattern: " << QString::fromStdString(iProcessor.imgdata.idata.cdesc);
-		qDebug() << "Camera manufacturer: " << QString::fromStdString(iProcessor.imgdata.idata.make);
-		qDebug() << "Camera model: " << QString::fromStdString(iProcessor.imgdata.idata.model);
-		qDebug() << "canon_ev " << (float)iProcessor.imgdata.color.canon_ev;
+		//qDebug() << "----------------";
+		//qDebug() << "Bayer Pattern: " << QString::fromStdString(iProcessor.imgdata.idata.cdesc);
+		//qDebug() << "Camera manufacturer: " << QString::fromStdString(iProcessor.imgdata.idata.make);
+		//qDebug() << "Camera model: " << QString::fromStdString(iProcessor.imgdata.idata.model);
+		//qDebug() << "canon_ev " << (float)iProcessor.imgdata.color.canon_ev;
 
 		//debug outputs of the exif data read by libraw
 		//qDebug() << "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
@@ -341,7 +348,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		//	iProcessor.imgdata.params.gamm[4],
 		//	iProcessor.imgdata.params.gamm[5]);
 
-		qDebug() << "----------------";
+		//qDebug() << "----------------";
 
 		if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) throw DkException("Wrong Bayer Pattern (not RGBG)\n", __LINE__, __FILE__);
 
@@ -606,7 +613,8 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		qDebug() << "Not compiled using OpenCV - could not load any RAW image";
 #endif
 	} catch (...) {
-		qWarning() << "failed to load raw image...";
+		//// silently ignore, maybe it's not a raw image
+		//qWarning() << "failed to load raw image...";
 	}
 
 	return imgLoaded;
@@ -1165,17 +1173,20 @@ DkImageLoader::~DkImageLoader() {
 
 void DkImageLoader::initFileFilters() {
 
-	// load plugins
-	QDir pluginFolder(QCoreApplication::applicationDirPath());
-	pluginFolder.cd("imageformats");
+	//// load plugins
+	//QDir pluginFolder(QCoreApplication::applicationDirPath());
+	//pluginFolder.cd("imageformats");
 
-	QStringList pluginFilenames = pluginFolder.entryList(QStringList(".dll"));
+	//QStringList pluginFilenames = pluginFolder.entryList(QStringList("*.dll"));
+	//qDebug() << "searching for plugins: " << pluginFolder.absolutePath();
+	//qDebug() << "plugins found: " << pluginFilenames;
 
-	for (int idx = 0; idx < pluginFilenames.size(); idx++) {
-		QPluginLoader p(QFileInfo(pluginFolder, pluginFilenames[idx]).absoluteFilePath());
-		if (!p.load())
-			qDebug() << "sorry, I could NOT load " << pluginFilenames[idx];
-	}
+	//for (int idx = 0; idx < pluginFilenames.size(); idx++) {
+	//	QPluginLoader p(QFileInfo(pluginFolder, pluginFilenames[idx]).absoluteFilePath());
+	//	if (!p.load())
+	//		qDebug() << "sorry, I could NOT load " << pluginFilenames[idx] << " since:\n" << p.errorString();
+	//	
+	//}
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
@@ -2291,8 +2302,8 @@ void DkImageLoader::updateHistory() {
 
 
 	// TODO: shouldn't we delete that -> it's saved when nomacs is closed anyway
-	//DkSettings s = DkSettings();
-	//s.save();
+	DkSettings s = DkSettings();
+	s.save();
 }
 
 // image manipulation --------------------------------------------------------------------

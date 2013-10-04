@@ -60,6 +60,10 @@
 #include <QProgressDialog>
 #include <QHeaderView>
 #include <QMenu>
+#include <QScrollArea>
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsSceneMouseEvent>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -114,6 +118,10 @@ public:
 		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 	};
 
+	bool isHiding() const {
+		return hiding;
+	};
+
 
 signals:
 	void visibleSignal(bool visible);
@@ -140,7 +148,7 @@ protected:
 	void init();
 };
 
-class  DllExport DkLabel : public QLabel {
+class DllExport DkLabel : public QLabel {
 	Q_OBJECT
 
 public:
@@ -544,16 +552,9 @@ class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFilePreview(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkFilePreview(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WFlags flags = 0);
 	
 	~DkFilePreview() {
-		
-		if (thumbsLoader) {
-			thumbsLoader->stop();
-			thumbsLoader->wait();
-			delete thumbsLoader;
-			thumbsLoader = 0;
-		}
 	};
 
 	void setCurrentDx(float dx) {
@@ -576,17 +577,19 @@ public slots:
 	void wheelEvent(QWheelEvent *event);
 	void leaveEvent(QEvent *event);
 	void moveImages();
-	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
+	void updateFileIdx(int fileIdx);
 
 signals:
 	void loadFileSignal(QFileInfo file);
-	void loadThumbsSignal(int start, int end);
+	//void loadThumbsSignal(int start, int end);
 	void changeFileSignal(int idx);
 
 private:
-	std::vector<DkThumbNail> thumbs;
-	DkThumbsLoader* thumbsLoader;
+	//QVector<QSharedPointer<DkThumbNailT>> thumbs;
+	DkThumbPool* thumbPool;
+	//DkThumbsLoader* thumbsLoader;
 	QDir thumbsDir;
+
 	
 	QWidget* parent;
 	QTransform worldMatrix;
@@ -626,11 +629,135 @@ private:
 	bool scrollToCurrentImage;
 	
 	void init();
-	void indexDir(int force = DkThumbsLoader::not_forced);
+	//void clearThumbs();
+	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
 	void createCurrentImgEffect(QImage img, QColor col);
+};
+
+class DkThumbLabel : public QObject, public QGraphicsPixmapItem {
+	Q_OBJECT
+
+public:
+	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem* parent = 0);
+
+	void setThumb(QSharedPointer<DkThumbNailT> thumb);
+	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
+	QRectF boundingRect() const;
+	void updateSize();
+
+public slots:
+	void updateLabel();
+
+signals:
+	void loadFileSignal(QFileInfo& file);
+	void showFileSignal(const QFileInfo& file);
+
+protected:
+	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+	void resizeEvent(QResizeEvent *event);
+	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0);
+	void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
+	QSharedPointer<DkThumbNailT> thumb;
+	QLabel* imgLabel;
+	bool thumbInitialized;
+	QPen noImagePen;
+	QBrush noImageBrush;
+	QPen selectPen;
+	QBrush selectBrush;
+	bool isHovered;
+};
+
+class DkThumbWidget : public QGraphicsScene {
+	Q_OBJECT
+
+public:
+	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
+
+	void updateLayout();
+
+public slots:
+	void updateThumbLabels();
+	void loadFile(QFileInfo& file);
+	void increaseThumbs();
+	void decreaseThumbs();
+	void resizeThumbs(int dx);
+	void showFile(const QFileInfo& file);
+	void selectThumbs(bool select = true, int from = 0, int to = -1);
+	void selectAllThumbs(bool select = true);
+
+signals:
+	void loadFileSignal(QFileInfo file);
+	void statusInfoSignal(QString msg, int pos = 0);
+
+protected:
+	void wheelEvent(QWheelEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	void mousePressEvent(QGraphicsSceneMouseEvent *event);
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+	DkThumbPool* thumbPool;
+	int xOffset;
+	int numRows;
+	int numCols;
+	bool firstLayout;
+	bool itemClicked;
+	QPointF mousePos;
+
+	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+};
+
+class DkThumbsView : public QGraphicsView {
+	Q_OBJECT
+
+public:
+	DkThumbsView(DkThumbWidget* scene, QWidget* parent = 0);
+
+protected:
+	void wheelEvent(QWheelEvent *event);
+
+	DkThumbWidget* scene;
+};
+
+class DkThumbScrollWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	enum {
+		select_all,
+		zoom_in,
+		zoom_out,
+
+		actions_end
+	};
+
+	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	DkThumbWidget* getThumbWidget() {
+		return thumbsScene;
+	};
+
+public slots:
+	virtual void setVisible(bool visible);
+
+protected:
+	void createActions();
+	void resizeEvent(QResizeEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event);
+
+	DkThumbWidget* thumbsScene;
+	DkThumbPool* thumbPool;
+	DkThumbsView* view;
+
+	QMenu* contextMenu;
+	QVector<QAction*> actions;
+
 };
 
 class DkFolderScrollBar : public QScrollBar {
@@ -778,6 +905,7 @@ public slots:
 
 signals:
 	void openFile(QFileInfo fileInfo) const;
+	void openDir(QFileInfo dir) const;
 
 protected:
 	void closeEvent(QCloseEvent *event);
@@ -1367,7 +1495,7 @@ signals:
 	void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
-	
+	void createToolbar();
 
 	DkCropToolBar* cropToolbar;
 };

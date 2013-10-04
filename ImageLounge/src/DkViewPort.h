@@ -207,6 +207,10 @@ public:
 
 	void setFullScreen(bool fullscreen);
 
+	DkThumbPool* getThumbPool() {
+		return thumbPool;
+	}
+
 	DkFilePreview* getFilePreview() {
 		return filePreview;
 	}
@@ -235,6 +239,10 @@ public:
 		return histogram;
 	}
 
+	DkThumbScrollWidget* getThumbWidget() {
+		return thumbScrollWidget;
+	}
+
 	int getRating() {
 		return rating;
 	}
@@ -259,6 +267,7 @@ public slots:
 	void showCrop(bool visible);
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
+	void showThumbView(bool visible);
 	void switchWidget(QWidget* widget = 0);
 
 	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
@@ -291,11 +300,13 @@ protected:
 	QVector<QWidget*> widgets;
 	QStackedLayout* layout;
 	QWidget* lastActiveWidget;
+	QWidget* thumbMetaWidget;
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;
 
 	DkFilePreview* filePreview;
+	DkThumbScrollWidget* thumbScrollWidget;
 	DkMetaDataInfo* metaDataInfo;
 	DkOverview* overviewWindow;
 	DkPlayer* player;
@@ -312,6 +323,8 @@ protected:
 	DkLabelBg* centerLabel;
 	DkLabelBg* bottomLabel;
 	DkLabelBg* bottomLeftLabel;
+
+	DkThumbPool* thumbPool;
 
 	QLabel* wheelButton;
 
@@ -365,6 +378,7 @@ signals:
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg, int);
 	void newClientConnectedSignal(bool connect, bool local);
+	void movieLoadedSignal(bool isMovie);
 
 public slots:
 	void rotateCW();
@@ -410,6 +424,9 @@ public slots:
 	virtual void setThumbImage(QImage newImg);
 
 	void settingsChanged();
+	void pauseMovie(bool paused);
+	void nextMovieFrame();
+	void previousMovieFrame();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);

@@ -189,7 +189,7 @@ public:
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/ 
-	bool loadGeneral(QFileInfo file);
+	bool loadGeneral(QFileInfo file, bool rotateImg = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
