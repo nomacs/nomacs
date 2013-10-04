@@ -491,6 +491,7 @@ void DkControlWidget::setPluginWidget(DkPluginViewPort* pluginWidget) {
 
 	viewport->setPaintWidget(pluginWidget);
 	pluginWidget->setWorldMatrix(viewport->getWorldMatrixPtr());
+	pluginWidget->setImgMatrix(viewport->getImageMatrixPtr());
 }
 
 void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited, QString attr) {

@@ -357,6 +357,10 @@ public:
 		return &worldMatrix;
 	};
 
+	QTransform* getImageMatrixPtr() {
+		return &imgMatrix;
+	};
+
 	void setPaintWidget(QWidget* widget);
 
 #ifdef WITH_OPENCV
