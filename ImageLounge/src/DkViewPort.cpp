@@ -107,8 +107,8 @@ void DkControlWidget::init() {
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
 	//cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
-	thumbScrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	thumbScrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	spinnerLabel->halfSize();
 
 	// dummy
@@ -211,10 +211,8 @@ void DkControlWidget::init() {
 	widgets.resize(widget_end);
 	widgets[hud_widget] = new QWidget(this);
 	widgets[crop_widget] = cropWidget;
+	widgets[thumb_widget] = thumbScrollWidget;
 	lastActiveWidget = widgets[hud_widget];
-
-	thumbMetaWidget = new QWidget(this);
-	thumbMetaWidget->hide();
 
 	// global controller layout
 	QGridLayout* hudLayout = new QGridLayout(widgets[hud_widget]);
@@ -241,7 +239,6 @@ void DkControlWidget::init() {
 	
 	for (int idx = 0; idx < widgets.size(); idx++)
 		layout->addWidget(widgets[idx]);
-	layout->addWidget(thumbMetaWidget);
 
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
@@ -433,30 +430,19 @@ void DkControlWidget::showCrop(bool visible) {
 
 void DkControlWidget::showThumbView(bool visible) {
 
-	if (visible && !thumbMetaWidget->isVisible()) {
+	if (visible) {
 
 		// clear viewport
 		viewport->setImage(QImage());
-
-		showCrop(false);
-		thumbMetaWidget->show();
-		thumbScrollWidget->show();
-		hudWidget->hide();
+		switchWidget(widgets[thumb_widget]);
+		thumbScrollWidget->getThumbWidget()->updateLayout();
 	}
-	else if (!visible && thumbMetaWidget->isVisible()) {
-
-		thumbMetaWidget->hide();
-		thumbScrollWidget->hide();
-		hudWidget->show();
-		
-		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
-		if (fileInfoLabel->isVisible()) {
-			fileInfoLabel->setVisible(false);
-			showFileInfo(true);
-		}
+	else {
 
 		// set again the last image
-		viewport->setImage(viewport->getImageLoader()->getImage());
+		if (widgets[thumb_widget]->isVisible())
+			viewport->setImage(viewport->getImageLoader()->getImage());
+		switchWidget();
 	}
 
 }

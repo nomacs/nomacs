@@ -1035,7 +1035,7 @@ void DkThumbWidget::updateLayout() {
 	}
 
 	qDebug() << "moving takes: " << QString::fromStdString(dt.getTotal());
-	update();
+	update(sceneRect());
 
 	//if (verticalScrollBar()->isVisible())
 	//	verticalScrollBar()->update();
@@ -1290,6 +1290,8 @@ void DkThumbScrollWidget::createActions() {
 
 void DkThumbScrollWidget::setVisible(bool visible) {
 
+	//if (visible)
+	//	adjustSize();
 	
 	if (thumbPool) {
 		thumbPool->getUpdates(thumbsScene, visible);

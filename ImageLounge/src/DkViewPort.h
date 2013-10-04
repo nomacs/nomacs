@@ -198,6 +198,7 @@ public:
 		last_widget = -1,
 		hud_widget,
 		crop_widget,
+		thumb_widget,
 
 		widget_end
 	};
@@ -300,7 +301,6 @@ protected:
 	QVector<QWidget*> widgets;
 	QStackedLayout* layout;
 	QWidget* lastActiveWidget;
-	QWidget* thumbMetaWidget;
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;
