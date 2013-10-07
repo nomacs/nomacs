@@ -851,7 +851,7 @@ void DkFolderScrollBar::indexDir(int force) {
 					}
 			}
 
-			handle->setFixedWidth((qRound(1.0f/files.size()*this->width()) < minHandleWidth) ? minHandleWidth : qRound(1.0f/files.size()*this->width()));
+			handle->setFixedWidth((qRound(1.0f/(files.size()*this->width()+FLT_EPSILON)) < minHandleWidth) ? minHandleWidth : qRound(1.0f/(files.size()*this->width()+FLT_EPSILON)));
 
 			this->files = files;
 	}

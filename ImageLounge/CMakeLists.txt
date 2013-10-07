@@ -19,6 +19,7 @@ endif(COMMAND cmake_policy)
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
 OPTION (ENABLE_WEBP "Compile with webP support (webP)" OFF)
 OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
+OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 
 set(NOMACS_VERSION 1.4.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
@@ -369,6 +370,11 @@ IF (EXIV2_FOUND)
 
 	
 	IF(MSVC)
+		if (DISABLE_QT_DEBUG)
+			message (STATUS "disabling qt debug messages")
+			add_definitions(-DQT_NO_DEBUG_OUTPUT)
+		endif()
+
 
 		set(EXE_NAME ${CMAKE_PROJECT_NAME})
 		set(DLL_NAME lib${CMAKE_PROJECT_NAME})

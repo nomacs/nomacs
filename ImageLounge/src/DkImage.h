@@ -90,11 +90,11 @@ using namespace cv;
 
 #include <set>
 
-#ifdef DK_DLL
-#define DllExport Q_DECL_EXPORT
-#else
-#define DllExport
-#endif
+//#ifdef DK_DLL
+//#define DllExport Q_DECL_EXPORT
+//#else
+//#define DllExport
+//#endif
 
 // TODO: ifdef
 //#include <ShObjIdl.h>
