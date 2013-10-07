@@ -159,6 +159,7 @@ public:
 		
 		Qt::KeyboardModifier altMod;
 		Qt::KeyboardModifier ctrlMod;
+		bool zoomOnWheel;
 
 		QString setupPath;
 		QString setupVersion;
@@ -361,6 +362,7 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbSmallIcons;
 		QCheckBox* cbToolbarGradient;
 		QCheckBox* cbCloseOnEsc;
+		QCheckBox* cbZoomOnWheel;
 
 		DkColorChooser* highlightColorChooser;
 		DkColorChooser* bgColorWidgetChooser;

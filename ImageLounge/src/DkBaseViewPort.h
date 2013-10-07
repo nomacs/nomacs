@@ -118,6 +118,9 @@ public:
 
 	virtual QRectF getImageViewRect();
 
+	virtual bool imageInside();	// always return false?!
+
+
 signals:
 	void enableNoImageSignal(bool enable);
 	void showStatusBar(bool show, bool permanent);
@@ -146,6 +149,7 @@ public slots:
 	virtual void unloadImage();
 
 	virtual void setImage(QImage newImg);
+
 
 protected:
 	virtual bool event(QEvent *event);
@@ -198,7 +202,6 @@ protected:
 
 	// functions
 	virtual void draw(QPainter *painter);
-	virtual bool imageInside();	// always return false?!
 	virtual void updateImageMatrix();
 	virtual QTransform getScaledImageMatrix();
 	virtual void controlImagePosition(float lb = -1, float ub = -1);

@@ -97,6 +97,7 @@ class DkForceThumbDialog;
 class DkTrainDialog;
 class DkExplorer;
 class DkExportTiffDialog;
+class DkMosaicDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
 class DkLocalManagerThread;
@@ -114,6 +115,7 @@ enum {
 	// file
 	shortcut_show_scroller	= Qt::Key_F,
 	shortcut_open_preview	= Qt::Key_T,
+	shortcut_open_thumbview	= Qt::SHIFT + Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
 	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
@@ -253,6 +255,7 @@ enum toolsActions {
 	menu_tools_filter,
 	menu_tools_manipulation,
 	menu_tools_export_tiff,
+	menu_tools_mosaic,
 
 	menu_tools_end,
 };
@@ -265,6 +268,7 @@ enum panelActions {
 
 	menu_panel_player,
 	menu_panel_preview,
+	menu_panel_thumbview,
 	menu_panel_scroller,
 	menu_panel_exif,
 	menu_panel_info,
@@ -291,6 +295,9 @@ enum viewActions {
 	menu_view_opacity_change,
 	menu_view_lock_window,
 	menu_view_gps_map,
+	menu_view_movie_pause,
+	menu_view_movie_next,
+	menu_view_movie_prev,
 
 	menu_view_end,	// nothing beyond this point
 };
@@ -375,6 +382,9 @@ enum viewIcons {
 	icon_view_reset,
 	icon_view_100,
 	icon_view_gps,
+	icon_view_movie_play,
+	icon_view_movie_prev,
+	icon_view_movie_next,
 
 	icon_view_end,	// nothing beyond this point
 };
@@ -476,6 +486,7 @@ public slots:
 	void resizeImage();
 	void openImgManipulationDialog();
 	void exportTiff();
+	void computeMosaic();
 	void deleteFile();
 	void setWallpaper();
 	void printDialog();
@@ -483,6 +494,7 @@ public slots:
 	void newInstance(QFileInfo file = QFileInfo());
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
+	void showToolbarsTemporarily(bool show);
 	void showToolbar(bool show);
 	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
@@ -521,6 +533,7 @@ public slots:
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setContrast(bool contrast);
+	void enableMovieActions(bool enable);
 	//void shareFacebook();
 
 	// batch actions
@@ -603,6 +616,7 @@ protected:
 	
 	// toolbar
 	QToolBar* toolbar;
+	QToolBar* movieToolbar;
 	QStatusBar* statusbar;
 	QVector<QLabel*> statusbarLabels;
 	
@@ -621,6 +635,7 @@ protected:
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
 	DkExportTiffDialog* exportTiffDialog;
+	DkMosaicDialog* mosaicDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
@@ -630,6 +645,7 @@ protected:
 	DkUpdater* updater;
 
 	QRect oldGeometry;
+	QList<QToolBar *> hiddenToolbars;
 
 	QProcess process;
 

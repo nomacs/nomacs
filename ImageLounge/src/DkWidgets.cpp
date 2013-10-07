@@ -138,9 +138,13 @@ void DkWidget::animateOpacityDown() {
 }
 
 // DkFilePreview --------------------------------------------------------------------
-DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(parent, flags) {
+DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WFlags flags) : DkWidget(parent, flags) {
 
 	this->parent = parent;
+	this->thumbPool = thumbPool;
+	connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
+	connect(thumbPool, SIGNAL(newFileIdxSignal(int)), this, SLOT(updateFileIdx(int)));
+
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
 
@@ -149,10 +153,10 @@ DkFilePreview::DkFilePreview(QWidget* parent, Qt::WFlags flags) : DkWidget(paren
 void DkFilePreview::init() {
 
 	setObjectName("DkFilePreview");
-	setMouseTracking (true);	//receive mouse event everytime
+	setMouseTracking(true);	//receive mouse event everytime
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 	
-	thumbsLoader = 0;
+	//thumbsLoader = 0;
 
 	xOffset = qRound(DkSettings::display.thumbSize*0.1f);
 	yOffset = qRound(DkSettings::display.thumbSize*0.1f);
@@ -160,8 +164,8 @@ void DkFilePreview::init() {
 	qDebug() << "x offset: " << xOffset;
 
 	currentDx = 0;
-	currentFileIdx = 0;
-	oldFileIdx = 0;
+	currentFileIdx = -1;
+	oldFileIdx = -1;
 	mouseTrace = 0;
 	scrollToCurrentImage = false;
 
@@ -172,6 +176,7 @@ void DkFilePreview::init() {
 	worldMatrix = QTransform();
 
 	moveImageTimer = new QTimer(this);
+	moveImageTimer->setInterval(2);	// reduce cpu utilization
 	connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
 	
 	leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
@@ -239,7 +244,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setWorldMatrixEnabled(true);
 
 	// TODO: paint dummies
-	if (thumbs.empty())
+	if (thumbPool->getThumbs().empty())
 		return;
 
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -258,17 +263,18 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 	thumbRects.clear();
 
 	DkTimer dt;
+	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
 
-	for (unsigned int idx = 0; idx < thumbs.size(); idx++) {
+	for (int idx = 0; idx < thumbs.size(); idx++) {
 
-		DkThumbNail thumb = thumbs.at(idx);
+		QSharedPointer<DkThumbNailT> thumb = thumbs.at(idx);
 		
-		if (thumb.hasImage() == DkThumbNail::exists_not) {
+		if (thumb->hasImage() == DkThumbNail::exists_not) {
 			thumbRects.push_back(QRectF());
 			continue;
 		}
 
-		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage() : stubImg;
+		QImage img = (thumb->hasImage() == DkThumbNail::loaded) ? thumb->getImage() : stubImg;
 		
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 		if (height()-yOffset < r.height())
@@ -302,9 +308,10 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		else if (imgWorldRect.left() > width())
 			break;
 
-		// load the thumb!
-		if (thumb.hasImage() == DkThumbNail::not_loaded && currentFileIdx == oldFileIdx)
-			thumbsLoader->setLoadLimits(idx-10, idx+10);
+		thumb->fetchThumb();
+		//// load the thumb!
+		//if (thumb->hasImage() == DkThumbNail::not_loaded && currentFileIdx == oldFileIdx)
+		//	thumbsLoader->setLoadLimits(idx-10, idx+10);
 
 		////imgWorldRect = worldMatrix.mapRect(r);
 		//QRectF debugR = worldMatrix.inverted().mapRect(imgWorldRect);
@@ -535,15 +542,15 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				selected = idx;
 
-				if ((size_t)selected <= thumbs.size() && selected >= 0) {
-					DkThumbNail thumb = thumbs.at(selected);
-					createSelectedEffect(thumb.getImage(), DkSettings::display.highlightColor);
+				if ((size_t)selected <= thumbPool->getThumbs().size() && selected >= 0) {
+					QSharedPointer<DkThumbNailT> thumb = thumbPool->getThumbs().at(selected);
+					createSelectedEffect(thumb->getImage(), DkSettings::display.highlightColor);
 				
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
 					//if (fileLabel->height() < height())
 					//	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
-					setToolTip(thumbs.at(selected).getFile().fileName());
-					setStatusTip(thumbs.at(selected).getFile().fileName());
+					setToolTip(thumb->getFile().fileName());
+					setStatusTip(thumb->getFile().fileName());
 				}
 				break;
 			}
@@ -598,8 +605,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
 			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
-				DkThumbNail thumb = thumbs.at(idx);
-				emit loadFileSignal(thumb.getFile());
+				emit loadFileSignal(thumbPool->getThumbs().at(idx)->getFile());
 			}
 		}
 	}
@@ -646,6 +652,9 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 
 void DkFilePreview::moveImages() {
 
+	if (!isVisible())
+		return;
+
 	if (scrollToCurrentImage) {
 		
 		float cDist = width()/2.0f - newFileRect.center().x();
@@ -681,90 +690,640 @@ void DkFilePreview::moveImages() {
 	update();
 }
 
-void DkFilePreview::updateDir(QFileInfo file, int force) {
+//void DkFilePreview::updateDir(QFileInfo file, int force) {
+//
+//	currentFile = file;
+//
+//	if (isVisible())
+//		indexDir(force);
+//}
 
-	currentFile = file;
+//void DkFilePreview::indexDir(int force) {
+//
+//	QStringList files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
+//
+//	// don't! update
+//	clearThumbs();
+//	
+//	for (int idx = 0; idx < files.size(); idx++)
+//		thumbs.push_back(QSharedPointer<DkThumbNailT>(new DkThumbNailT(QFileInfo(currentFile.absoluteDir(), files.at(idx)))));
+//
+//	//QDir dir = currentFile.absoluteDir();
+//	//dir.setNameFilters(DkImageLoader::fileFilters);
+//	//dir.setSorting(QDir::LocaleAware);
+//
+//	//// new folder?
+//	//if ((force == DkThumbsLoader::user_updated || force == DkThumbsLoader::dir_updated || 
+//	//	thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
+//	//	!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
+//
+//	//	QStringList files;
+//	//	bool myChanges = false;
+//	//	if (force == DkThumbsLoader::dir_updated) {
+//	//		files = DkImageLoader::getFilteredFileList(dir);
+//
+//	//		// TODO: find out if we wrote a thumbnail
+//	//		// this is nasty, but the exif writes to a back-up file so the index changes too if I save thumbnails
+//	//		myChanges = DkSettings::display.saveThumb && files.size()-1 == thumbs.size();
+//	//	}
+//
+//	//	
+//
+//	//	// if a dir update was triggered, only update if the file index changed
+//	//	if (force != DkThumbsLoader::dir_updated) {
+//
+//	//		qDebug() << "force state: " << force;
+//
+//	//		if (files != thumbsLoader->getFiles()) {
+//	//			qDebug() << "file index changed..........." << " my changes: " << myChanges;
+//	//			qDebug() << "new index: " << files.size() << " old index: " << thumbsLoader->getFiles().size();
+//	//		}
+//
+//	//		if (thumbsLoader) {
+//	//			thumbsLoader->stop();
+//	//			thumbsLoader->wait();
+//	//			delete thumbsLoader;
+//	//			thumbsLoader = 0;
+//	//		}
+//
+//	//		if (dir.exists()) {
+//
+//	//			thumbsLoader = new DkThumbsLoader(&thumbs, dir, files);
+//	//			connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
+//
+//	//			thumbsLoader->start();
+//	//			thumbsDir = dir;
+//	//		}
+//	//		else
+//	//			thumbs.clear();
+//
+//	//	}
+//	//}
+//
+//	oldFileIdx = currentFileIdx;
+//	//currentFileIdx = thumbsLoader->getFileIdx(currentFile);
+//	currentFileIdx = files.indexOf(currentFile.fileName());
+//		
+//	if (currentFileIdx >= 0 && currentFileIdx < files.size())
+//		scrollToCurrentImage = true;
+//	update();
+//	
+//}
 
-	if (isVisible())
-		indexDir(force);
-}
-
-void DkFilePreview::indexDir(int force) {
+void DkFilePreview::updateFileIdx(int idx) {
 	
-	QDir dir = currentFile.absoluteDir();
-	dir.setNameFilters(DkImageLoader::fileFilters);
-	dir.setSorting(QDir::LocaleAware);
+	if (idx == currentFileIdx)
+		return;
 
-	// new folder?
-	if ((force == DkThumbsLoader::user_updated || force == DkThumbsLoader::dir_updated || 
-		thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
-		!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
-
-		QStringList files;
-		bool myChanges = false;
-		if (force == DkThumbsLoader::dir_updated) {
-			files = DkImageLoader::getFilteredFileList(dir);
-
-			// this is nasty, but the exif writes to a back-up file so the index changes too if I save thumbnails
-			myChanges = thumbsLoader && DkSettings::display.saveThumb && files.size()-1 == thumbsLoader->getFiles().size() && thumbsLoader->isWorking();
-		}
-
-		
-
-		// if a dir update was triggered, only update if the file index changed
-		if (force != DkThumbsLoader::dir_updated || 
-			(thumbsLoader && files != thumbsLoader->getFiles() && !myChanges)) {
-
-			qDebug() << "force state: " << force;
-
-			if (thumbsLoader && files != thumbsLoader->getFiles()) {
-				qDebug() << "file index changed..........." << " my changes: " << myChanges;
-				qDebug() << "new index: " << files.size() << " old index: " << thumbsLoader->getFiles().size();
-			}
-
-			if (thumbsLoader) {
-				thumbsLoader->stop();
-				thumbsLoader->wait();
-				delete thumbsLoader;
-				thumbsLoader = 0;
-			}
-
-			if (dir.exists()) {
-
-				thumbsLoader = new DkThumbsLoader(&thumbs, dir, files);
-				connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
-
-				thumbsLoader->start();
-				thumbsDir = dir;
-			}
-			else
-				thumbs.clear();
-
-		}
-	}
-
-	if (thumbsLoader) {
-		oldFileIdx = currentFileIdx;
-		currentFileIdx = thumbsLoader->getFileIdx(currentFile);
-		
-		if (currentFileIdx >= 0 && currentFileIdx < thumbsLoader->getFiles().size())
-			scrollToCurrentImage = true;
-		update();
-	}
-
+	currentFileIdx = idx;
+	if (currentFileIdx >= 0)
+		scrollToCurrentImage = true;
+	update();
 }
 
 void DkFilePreview::setVisible(bool visible) {
 
 	DkWidget::setVisible(visible);
 
-	if (visible)
-		indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
+	if (visible && thumbPool)
+		thumbPool->getThumbs();
+		//indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
 
 	// // would be nice - but with the current design we get crashes...
 	//if (visible)
 	//	QtConcurrent::run(this, &DkFilePreview::indexDir, DkThumbsLoader::not_forced);
 
+}
+
+// DkThumbLabel --------------------------------------------------------------------
+DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem* parent) : QGraphicsPixmapItem(parent) {
+
+	thumbInitialized = false;
+	isHovered = false;
+
+	//imgLabel = new QLabel(this);
+	//imgLabel->setFocusPolicy(Qt::NoFocus);
+	//imgLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+	//imgLabel->setScaledContents(true);
+	//imgLabel->setFixedSize(10,10);
+	//setStyleSheet("QLabel{background: transparent;}");
+	setThumb(thumb);
+	setAcceptsHoverEvents(true);
+
+}
+
+void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
+	
+	this->thumb = thumb;
+
+	if (thumb.isNull())
+		return;
+
+	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(updateLabel()));
+	//setStatusTip(thumb->getFile().fileName());
+	//setToolTip(thumb->getFile().fileName());
+	
+	// style dummy
+	noImagePen.setColor(QColor(150,150,150));
+	noImageBrush = QColor(100,100,100,50);
+
+	QColor col = DkSettings::display.highlightColor;
+	col.setAlpha(90);
+	selectBrush = col;
+	selectPen.setColor(DkSettings::display.highlightColor);
+
+	//// currently we could also say fixed size
+	//setMaximumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
+	//setMinimumSize(QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
+}
+
+QRectF DkThumbLabel::boundingRect() const {
+
+	if (!pixmap().isNull() && qMax(pixmap().width(), pixmap().height()) >= DkSettings::display.thumbSize)
+		return QGraphicsPixmapItem::boundingRect();
+
+	QRectF r;
+	int s = DkSettings::display.thumbSize;
+
+	if (pixmap().isNull()) {
+		int ds = qMin(s-2, 10);
+		r = QRectF(s*0.5f-ds*0.5f, s*0.5f-ds*0.5f, ds, ds);
+	}
+	else {
+		r = QRectF(s*0.5f-pixmap().width()*0.5f, s*0.5f-pixmap().height()*0.5f, pixmap().width(), pixmap().height());
+	}
+
+	return r;
+}
+
+void DkThumbLabel::updateLabel() {
+
+	if (thumb.isNull())
+		return;
+
+	QPixmap pm;
+
+	if (!thumb->getImage().isNull()) {
+	
+		pm = QPixmap::fromImage(thumb->getImage());
+
+		if (true) {
+			// TODO: add setting
+			QRect r(QPoint(), pm.size());
+
+			if (r.width() > r.height()) {
+				r.setX(qFloor((r.width()-r.height())*0.5f));
+				r.setWidth(r.height());
+			}
+			else {
+				r.setY(qFloor((r.height()-r.width())*0.5f));
+				r.setHeight(r.width());
+			}
+			pm = pm.copy(r);
+		}
+	}
+
+	if (!pm.isNull()) {
+		setPixmap(pm);
+		setFlag(GraphicsItemFlag::ItemIsSelectable, true);
+	}
+	
+	updateSize();
+}
+
+void DkThumbLabel::updateSize() {
+
+	// resize pixmap label
+	int maxSize = qMax(pixmap().width(), pixmap().height());
+	
+	if (maxSize > DkSettings::display.thumbSize)
+		setScale((float)DkSettings::display.thumbSize/maxSize);
+}	
+
+void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+
+	if (thumb.isNull())
+		return;
+
+	emit loadFileSignal(thumb->getFile());
+}
+
+void DkThumbLabel::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+	
+	isHovered = true;
+	emit showFileSignal(thumb->getFile());
+	update();
+}
+
+void DkThumbLabel::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+	
+	isHovered = false;
+	emit showFileSignal(QFileInfo());
+	update();
+}
+
+void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget) {
+
+	if (isVisible() && !thumbInitialized) {
+
+		if (thumb->hasImage() == DkThumbNail::not_loaded)
+			thumb->fetchThumb();
+		else
+			updateLabel();
+
+		qDebug() << "updating label: " << thumb->getFile().fileName();
+		thumbInitialized = true;
+	}
+
+	if (!pixmap().isNull()) {
+		painter->drawPixmap(boundingRect(), pixmap(), QRectF(QPoint(), pixmap().size()));
+	}
+	else if (thumb->hasImage() == DkThumbNail::exists_not) {
+		painter->setPen(noImagePen);
+		painter->setBrush(noImageBrush);
+		painter->drawRect(boundingRect());
+		
+	}
+	else {
+		QColor c = DkSettings::display.highlightColor;
+		c.setAlpha(30);
+		painter->setPen(noImagePen);
+		painter->setBrush(c);
+		painter->drawRect(boundingRect());
+	}
+
+	// render hovered
+	if (isHovered) {
+		painter->setBrush(QColor(255,255,255,60));
+		painter->setPen(Qt::NoPen);
+		painter->drawRect(boundingRect());
+	}
+		
+	// render selected
+	if (isSelected()) {
+		painter->setBrush(selectBrush);
+		painter->setPen(selectPen);
+		painter->drawRect(boundingRect());
+	}
+	//QGraphicsPixmapItem::paint(painter, option, widget);
+}
+
+// DkThumbWidget --------------------------------------------------------------------
+DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
+
+	setObjectName("DkThumbWidget");
+	this->thumbPool = thumbPool;
+
+	xOffset = 0;
+	numCols = 0;
+	numRows = 0;
+	firstLayout = true;
+
+	setBackgroundBrush(DkSettings::slideShow.backgroundColor);
+}
+
+void DkThumbWidget::updateLayout() {
+
+	if (thumbLabels.empty())
+		return;
+
+	QSize pSize;
+		
+	if (!views().empty())
+		pSize = QSize(views().first()->viewport()->size());
+
+	int oldNumCols = numCols;
+	int oldNumRows = numRows;
+
+	xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
+	numCols = qMax(qFloor(((float)pSize.width()-xOffset)/(DkSettings::display.thumbSize + xOffset)), 1);
+	numRows = qCeil((float)thumbLabels.size()/numCols);
+	int rIdx = 0;
+
+	int tso = DkSettings::display.thumbSize+xOffset;
+	setSceneRect(0, 0, numCols*tso+xOffset, numRows*tso+xOffset);
+	int fileIdx = thumbPool->getCurrentFileIdx();
+
+	DkTimer dt;
+	int cYOffset = xOffset;
+
+	for (int rIdx = 0; rIdx < numRows; rIdx++) {
+
+		int cXOffset = xOffset;
+
+		for (int cIdx = 0; cIdx < numCols; cIdx++) {
+
+			int tIdx = rIdx*numCols+cIdx;
+
+			if (tIdx < 0 || tIdx >= thumbLabels.size())
+				break;
+
+			QSharedPointer<DkThumbLabel> cLabel = thumbLabels.at(tIdx);
+			cLabel->setPos(cXOffset, cYOffset);
+			cLabel->updateSize();
+			
+			if (tIdx == fileIdx)
+				cLabel->ensureVisible();
+
+			//cLabel->show();
+
+			cXOffset += DkSettings::display.thumbSize + xOffset;
+		}
+
+		// update ypos
+		cYOffset += DkSettings::display.thumbSize + xOffset;
+	}
+
+	qDebug() << "moving takes: " << QString::fromStdString(dt.getTotal());
+	update();
+
+	//if (verticalScrollBar()->isVisible())
+	//	verticalScrollBar()->update();
+
+	firstLayout = false;
+}
+
+void DkThumbWidget::updateThumbLabels() {
+
+	qDebug() << "updating thumb labels...";
+
+	thumbLabels.clear();
+	clear();
+
+	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
+
+	DkTimer dt;
+
+	for (int idx = 0; idx < thumbs.size(); idx++) {
+		QSharedPointer<DkThumbLabel> thumb(new DkThumbLabel(thumbs.at(idx)));
+		connect(thumb.data(), SIGNAL(loadFileSignal(QFileInfo&)), this, SLOT(loadFile(QFileInfo&)));
+		connect(thumb.data(), SIGNAL(showFileSignal(const QFileInfo&)), this, SLOT(showFile(const QFileInfo&)));
+
+		thumb->show();
+		thumbLabels.append(thumb);
+		addItem(thumb.data());
+
+		if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
+	}
+
+	qDebug() << "initializing thumb labels takes: " << QString::fromStdString(dt.getTotal());
+
+	showFile(QFileInfo());
+
+	if (!thumbs.empty())
+		updateLayout();
+}
+
+void DkThumbWidget::showFile(const QFileInfo& file) {
+
+	if (file.absoluteFilePath() == QDir::currentPath() || file.absoluteFilePath().isEmpty())
+		emit statusInfoSignal(tr("%1 Images").arg(QString::number(thumbLabels.size())));
+	else
+		emit statusInfoSignal(file.fileName());
+}
+
+void DkThumbWidget::increaseThumbs() {
+
+	resizeThumbs(4);
+}
+
+void DkThumbWidget::decreaseThumbs() {
+
+	resizeThumbs(-4);
+}
+
+void DkThumbWidget::resizeThumbs(int dx) {
+
+	int newSize = DkSettings::display.thumbSize + dx;
+
+	if (newSize > 6 && newSize <= 160) {
+		DkSettings::display.thumbSize = newSize;
+		updateLayout();
+	}
+}
+
+void DkThumbWidget::loadFile(QFileInfo& file) {
+	emit loadFileSignal(file);
+}
+
+void DkThumbWidget::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+
+	if (event->buttons() == Qt::LeftButton) {
+		mousePos = event->pos();
+		itemClicked = itemAt(event->pos()) != 0;
+		qDebug() << "item clicked: " << itemClicked;
+	}
+
+	QGraphicsScene::mousePressEvent(event);
+}
+
+void DkThumbWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+
+	QGraphicsScene::mouseMoveEvent(event);
+
+	if (event->buttons() == Qt::LeftButton && itemClicked) {
+			
+		int dist = QPointF(event->pos()-mousePos).manhattanLength();
+
+		if (dist > QApplication::startDragDistance()) {
+			
+			QList<QUrl> urls;
+
+			for (int idx = 0; idx < thumbLabels.size(); idx++) {
+
+				if (thumbLabels.at(idx)->isSelected()) {
+					urls.append("file:///" + thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
+				}
+			}
+
+			QMimeData* mimeData = new QMimeData;
+
+			if (!urls.empty()) {
+				mimeData->setUrls(urls);
+				//QDrag* drag = new QDrag(this);
+				//drag->setMimeData(mimeData);
+				//Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+			}
+		}
+	}
+}
+
+void DkThumbWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+
+	QGraphicsScene::mouseReleaseEvent(event);
+}
+
+void DkThumbWidget::dragEnterEvent(QDragEnterEvent *event) {
+
+	qDebug() << event->source() << " I am: " << this;
+
+/*	if (event->source() == this)
+		event->acceptProposedAction();
+	else */if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+
+		QFileInfo file = QFileInfo(url.toString());
+
+		// just accept image files
+		if (DkImageLoader::isValid(file))
+			event->acceptProposedAction();
+		else if (file.isDir())
+			event->acceptProposedAction();
+	}
+
+	//QGraphicsView::dragEnterEvent(event);
+}
+
+void DkThumbWidget::dropEvent(QDropEvent *event) {
+
+	//if (event->source() == this) {
+	//	event->accept();
+	//	return;
+	//}
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		qDebug() << "dropping: " << url;
+		url = url.toLocalFile();
+
+		QFileInfo file = QFileInfo(url.toString());
+		
+		if (file.isDir())
+			thumbPool->setFile(file);
+		else
+			emit loadFileSignal(file);
+	}
+
+	qDebug() << "drop event...";
+}
+
+void DkThumbWidget::selectAllThumbs(bool selected) {
+
+	qDebug() << "selecting...";
+	selectThumbs(selected);
+}
+
+void DkThumbWidget::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */) {
+
+	if (to == -1)
+		to = thumbLabels.size();
+
+	for (int idx = from; idx < to && idx < thumbLabels.size(); idx++) {
+		thumbLabels.at(idx)->setSelected(selected);
+	}
+
+}
+
+// DkThumbView --------------------------------------------------------------------
+DkThumbsView::DkThumbsView(DkThumbWidget* scene, QWidget* parent /* = 0 */) : QGraphicsView(scene, parent) {
+
+	this->scene = scene;
+
+	setDragMode(QGraphicsView::RubberBandDrag);
+	setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+	setAcceptDrops(true);
+
+}
+
+void DkThumbsView::wheelEvent(QWheelEvent *event) {
+
+	if (event->modifiers() == Qt::ControlModifier) {
+		scene->resizeThumbs(qCeil(event->delta()/100.0f));
+	}
+	else if (event->modifiers() == Qt::NoModifier) {
+
+		if (verticalScrollBar()->isVisible())
+			verticalScrollBar()->setValue(verticalScrollBar()->value()-event->delta());
+	}
+
+	//QWidget::wheelEvent(event);
+}
+
+// DkThumbScrollWidget --------------------------------------------------------------------
+DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
+
+	setObjectName("DkThumbScrollWidget");
+	setContentsMargins(0,0,0,0);
+
+	thumbsScene = new DkThumbWidget(thumbPool, this);
+	//thumbsView->setContentsMargins(0,0,0,0);
+
+	view = new DkThumbsView(thumbsScene, this);
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0,0,0,0);
+	layout->addWidget(view);
+	setLayout(layout);
+
+	this->thumbPool = thumbPool;
+
+	createActions();
+}
+
+void DkThumbScrollWidget::createActions() {
+
+	actions.resize(actions_end);
+
+	actions[select_all] = new QAction(tr("Select &All"), this);
+	actions[select_all]->setShortcut(QKeySequence::SelectAll);
+	actions[select_all]->setCheckable(true);
+	connect(actions[select_all], SIGNAL(triggered(bool)), thumbsScene, SLOT(selectAllThumbs(bool)));
+
+	actions[zoom_in] = new QAction(tr("Zoom &In"), this);
+	actions[zoom_in]->setShortcut(Qt::Key_Control & Qt::Key_Plus);
+	connect(actions[zoom_in], SIGNAL(triggered()), thumbsScene, SLOT(increaseThumbs()));
+
+	actions[zoom_out] = new QAction(tr("Zoom &Out"), this);
+	actions[zoom_out]->setShortcut(Qt::Key_Minus);
+	connect(actions[zoom_out], SIGNAL(triggered()), thumbsScene, SLOT(decreaseThumbs()));
+
+	contextMenu = new QMenu(tr("Thumb"), this);
+	for (int idx = 0; idx < actions.size(); idx++) {
+		
+		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+		contextMenu->addAction(actions.at(idx));
+	}
+
+	addActions(actions.toList());
+}
+
+void DkThumbScrollWidget::setVisible(bool visible) {
+
+	
+	if (thumbPool) {
+		thumbPool->getUpdates(thumbsScene, visible);
+
+		if (visible)
+			connect(thumbPool, SIGNAL(numThumbChangedSignal()), thumbsScene, SLOT(updateThumbLabels()));
+		else
+			thumbPool->disconnect(thumbsScene);
+
+		if (visible)
+			thumbsScene->updateThumbLabels();
+	}
+
+	qDebug() << "showing thumb scroll widget...";
+
+	DkWidget::setVisible(visible);
+}
+
+void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
+
+	if (event->oldSize().width() != event->size().width() && isVisible())
+		thumbsScene->updateLayout();
+
+	DkWidget::resizeEvent(event);
+	
+}
+
+void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
+
+	//if (!event->isAccepted())
+	contextMenu->exec(event->globalPos());
+	event->accept();
+
+	//QGraphicsView::contextMenuEvent(event);
 }
 
 // DkFolderScrollBar --------------------------------------------------------------------
@@ -1234,7 +1793,8 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 
 	if (DkImageLoader::isValid(cFile))
 		emit openFile(cFile);
-
+	else if (cFile.isDir())
+		emit openDir(cFile);
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
@@ -2828,12 +3388,22 @@ void DkMetaDataInfo::createLabels() {
 	pLabels.clear();
 	pValues.clear();
 
-	//int commentWidth;
+	numLabels = 0;
+	numLines = 6;
+	for (int idx = 0; idx < DkSettings::metaData.metaDataBits.size(); idx++) {
+		if (DkSettings::metaData.metaDataBits.testBit(idx))
+			numLabels++;
+	}
+
+	// well that's a bit of a hack
+	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? ((float)numLabels+numLines-1)/numLines : 2;
+	numLines = cvCeil((float)numLabels/cols);
+
 
 	//pLabels.resize(camDTags.size() + descTags.size());
 	//6 Lines...
-	maxLenLabel.resize(numLines);
-	for (int i=0; i<numLines; i++)
+	maxLenLabel.resize(cols);
+	for (int i=0; i<cols; i++)
 		maxLenLabel[i] = 0;
 
 	numLabels=0;
@@ -2891,16 +3461,18 @@ void DkMetaDataInfo::layoutLabels() {
 		return;
 
 	// #Labels / numLines = #Spalten
-	int cols = (numLabels+numLines-1)/numLines > 0 ? (numLabels+numLines-1)/numLines : 1;
+	numLines = 6;
+	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? ((float)numLabels+numLines-1)/numLines : 2;
+	numLines = cvCeil((float)numLabels/cols);
 
 	//qDebug() << "numCols: " << cols;
 
 	if (cols > maxCols)
 		qDebug() << "Labels are skipped...";
 
-	if (cols == 1) {
-		exifHeight = (pLabels.at(0)->height() + yMargin)*numLabels + yMargin;
-	} else exifHeight = 120;
+	//if (cols == 1) {
+		exifHeight = (pLabels.at(0)->height() + yMargin)*numLines + yMargin;
+	//} else exifHeight = 120;
 
 	//widget size
 	if (parent->width() < minWidth)
@@ -2920,7 +3492,7 @@ void DkMetaDataInfo::layoutLabels() {
 	setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
 
 	//subtract label length
-	for (int i=0; i<cols; i++) width -= (maxLenLabel[i] + xMargin);
+	for (int i=0; i<maxLenLabel.size(); i++) width -= (maxLenLabel[i] + xMargin);
 	width-=xMargin;
 
 	//rest length/#cols = column width for tags
@@ -2955,6 +3527,8 @@ void DkMetaDataInfo::layoutLabels() {
 		pValues.at(i)->setFixedWidth(widthValues);
 
 	}
+
+	//update()
 
 }
 
@@ -3755,6 +4329,11 @@ void DkEditableRect::setVisible(bool visible) {
 // DkEditableRect --------------------------------------------------------------------
 DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/) : DkEditableRect(rect, parent, f) {
 
+	cropToolbar = 0;
+}
+
+void DkCropWidget::createToolbar() {
+
 	cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
 
 	connect(cropToolbar, SIGNAL(cropSignal()), this, SLOT(crop()));
@@ -3769,9 +4348,13 @@ DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Q
 	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
 
 	cropToolbar->loadSettings();	// need to this manually after connecting the slots
+
 }
 
 void DkCropWidget::crop() {
+
+	if (!cropToolbar)
+		return;
 
 	if (!rect.isEmpty())
 		emit enterPressedSignal(rect, cropToolbar->getColor());
@@ -3781,6 +4364,9 @@ void DkCropWidget::crop() {
 }
 
 void DkCropWidget::setVisible(bool visible) {
+
+	if (visible && !cropToolbar)
+		createToolbar();
 
 	emit showToolbar(cropToolbar, visible);
 	DkEditableRect::setVisible(visible);

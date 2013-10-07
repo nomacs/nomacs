@@ -179,6 +179,7 @@ void DkSettings::load(bool force) {
 	global_p.userAppPaths = settings.value("userAppPaths", global_p.userAppPaths).toStringList();
 	global_p.setupPath = settings.value("setupPath", global_p.setupPath).toString();
 	global_p.setupVersion = settings.value("setupVersion", global_p.setupVersion).toString();
+	global_p.zoomOnWheel = settings.value("zoomOnWheel", global_p.zoomOnWheel).toBool();
 
 	settings.endGroup();
 	// Display Settings --------------------------------------------------------------------
@@ -309,7 +310,7 @@ void DkSettings::save(bool force) {
 		settings.setValue("advancedSettings", app_p.advancedSettings);
 	//if (!force && app_p.appMode != app_d.appMode)
 		settings.setValue("appMode", app_p.appMode);
-	if (!force && app_p.currentAppMode != app_d.currentAppMode)
+	//if (!force && app_p.currentAppMode != app_d.currentAppMode)
 		settings.setValue("currentAppMode", app_p.currentAppMode);
 	if (!force && app_p.closeOnEsc != app_d.closeOnEsc)
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);
@@ -358,6 +359,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("setupPath", global_p.setupPath);
 	if (!force && global_p.setupVersion != global_d.setupVersion)
 		settings.setValue("setupVersion", global_p.setupVersion);
+	if (!force && global_p.zoomOnWheel != global_d.zoomOnWheel)
+		settings.setValue("zoomOnWheel", global_p.zoomOnWheel);
 
 	settings.endGroup();
 	// Display Settings --------------------------------------------------------------------
@@ -516,6 +519,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
 	global_p.sortDir = sort_ascending;
+	global_p.zoomOnWheel = true;
 
 #ifdef Q_WS_X11
 	sync_p.switchModifier = true;
@@ -592,7 +596,7 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.cacheMemory = 0;
 	resources_p.fastThumbnailPreview = false;
 	resources_p.filterRawImages = true;
-	resources_p.filterDuplicats = true;
+	resources_p.filterDuplicats = false;
 	resources_p.preferredExtension = "*.jpg";
 
 	qDebug() << "ok... default settings are set";
@@ -815,6 +819,7 @@ void DkGlobalSettingsWidget::init() {
 	cbSmallIcons->setChecked(DkSettings::display.smallIcons);
 	cbToolbarGradient->setChecked(DkSettings::display.toolbarGradient);
 	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
+	cbZoomOnWheel->setChecked(DkSettings::global.zoomOnWheel);
 
 	curLanguage = DkSettings::global.language;
 	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
@@ -920,12 +925,16 @@ void DkGlobalSettingsWidget::createLayout() {
 	cbSmallIcons = new QCheckBox(tr("Small Icons"), showBarsWidget);
 	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), showBarsWidget);
 	cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), showBarsWidget);
+	cbZoomOnWheel = new QCheckBox(tr("Mouse Wheel Zooms"), showBarsWidget);
+	cbZoomOnWheel->setToolTip(tr("If unchecked, the mouse wheel switches between images."));
+	cbZoomOnWheel->setMinimumSize(cbZoomOnWheel->sizeHint());
 	showBarsLayout->addWidget(cbShowMenu);
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
 	showBarsLayout->addWidget(cbSmallIcons);
 	showBarsLayout->addWidget(cbToolbarGradient);
 	showBarsLayout->addWidget(cbCloseOnEsc);
+	showBarsLayout->addWidget(cbZoomOnWheel);
 
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(rightWidget);
@@ -961,6 +970,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::app.showStatusBar = cbShowStatusbar->isChecked();
 	DkSettings::app.showToolBar = cbShowToolbar->isChecked();
 	DkSettings::app.closeOnEsc = cbCloseOnEsc->isChecked();
+	DkSettings::global.zoomOnWheel = cbZoomOnWheel->isChecked();
 	DkSettings::display.smallIcons = cbSmallIcons->isChecked();
 	DkSettings::display.toolbarGradient = cbToolbarGradient->isChecked();
 	DkSettings::slideShow.time = displayTimeSpin->getSpinBoxValue();

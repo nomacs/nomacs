@@ -42,7 +42,10 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	cropWidget = new DkCropWidget(QRectF(), this);
 
 	// thumbnails, metadata
-	filePreview = new DkFilePreview(this, flags);
+	thumbPool = new DkThumbPool(QFileInfo(), this);
+	thumbScrollWidget = new DkThumbScrollWidget(thumbPool, this, flags);
+	thumbScrollWidget->hide();
+	filePreview = new DkFilePreview(thumbPool, this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
 	overviewWindow = new DkOverview(this);
@@ -81,7 +84,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	//// debug: show invisible widgets
+	// debug: show invisible widgets
 	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
@@ -103,6 +106,8 @@ void DkControlWidget::init() {
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
 	cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	thumbScrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	spinnerLabel->halfSize();
 
 	// dummy
@@ -208,10 +213,15 @@ void DkControlWidget::init() {
 	editWidget->setMouseTracking(true);
 	editWidget->hide();
 
+	thumbMetaWidget = new QWidget(this);
+	thumbMetaWidget->hide();
+
 	// global controller layout
 	QGridLayout* hudLayout = new QGridLayout(hudWidget);
 	hudLayout->setContentsMargins(0,0,0,0);
 	hudLayout->setSpacing(0);
+
+	//hudLayout->addWidget(thumbWidget, 0, 0);
 
 	// add elements
 	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
@@ -226,10 +236,16 @@ void DkControlWidget::init() {
 	editLayout->setContentsMargins(0,0,0,0);
 	editLayout->addWidget(cropWidget);
 
+	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
+	QHBoxLayout* thumbLayout = new QHBoxLayout(thumbMetaWidget);
+	thumbLayout->setContentsMargins(0,0,0,0);
+	thumbLayout->addWidget(thumbScrollWidget);
+
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(hudWidget);
 	layout->addWidget(editWidget);
+	layout->addWidget(thumbMetaWidget);
 
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
@@ -237,6 +253,7 @@ void DkControlWidget::init() {
 	//spinnerLabel->show();
 	
 	show();
+	//thumbWidget->setVisible(true);
 	qDebug() << "controller initialized...";
 }
 
@@ -250,7 +267,7 @@ void DkControlWidget::connectWidgets() {
 	if (loader) {
 		qDebug() << "loader slots connected";
 
-		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), filePreview, SLOT(updateDir(QFileInfo, int)));
+		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), thumbPool, SLOT(setFile(QFileInfo, int)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize, bool, QString)), this, SLOT(setFileInfo(QFileInfo, QSize, bool, QString)));
 
@@ -269,9 +286,12 @@ void DkControlWidget::connectWidgets() {
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 
+	// thumbnail preview widget
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+
 	// file scroller
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
-
+	
 	// overview
 	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
 	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
@@ -291,7 +311,6 @@ void DkControlWidget::connectWidgets() {
 
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
-	connect(cropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), viewport, SLOT(setBackgroundBrush(const QBrush&)));
 }
 
 void DkControlWidget::update() {
@@ -409,9 +428,11 @@ void DkControlWidget::showCrop(bool visible) {
 	if (visible && !editWidget->isVisible()) {
 		editWidget->show();
 		hudWidget->hide();
+		thumbMetaWidget->hide();
 
 		cropWidget->reset();
 		cropWidget->show();
+		connect(cropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), viewport, SLOT(setBackgroundBrush(const QBrush&)));
 	}
 	else if (!visible && editWidget->isVisible()) {
 		editWidget->hide();
@@ -423,6 +444,38 @@ void DkControlWidget::showCrop(bool visible) {
 			fileInfoLabel->setVisible(false);
 			showFileInfo(true);
 		}
+		viewport->setBackgroundBrush(QBrush());
+		cropWidget->getToolbar()->disconnect(viewport);
+	}
+
+}
+
+void DkControlWidget::showThumbView(bool visible) {
+
+	if (visible && !thumbMetaWidget->isVisible()) {
+
+		// clear viewport
+		viewport->setImage(QImage());
+
+		showCrop(false);
+		thumbMetaWidget->show();
+		thumbScrollWidget->show();
+		hudWidget->hide();
+	}
+	else if (!visible && thumbMetaWidget->isVisible()) {
+
+		thumbMetaWidget->hide();
+		thumbScrollWidget->hide();
+		hudWidget->show();
+		
+		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
+		if (fileInfoLabel->isVisible()) {
+			fileInfoLabel->setVisible(false);
+			showFileInfo(true);
+		}
+
+		// set again the last image
+		viewport->setImage(viewport->getImageLoader()->getImage());
 	}
 
 }
@@ -509,6 +562,7 @@ void DkControlWidget::stopLabels() {
 	spinnerLabel->stop();
 
 	showCrop(false);
+	showThumbView(false);
 }
 
 void DkControlWidget::settingsChanged() {
@@ -632,6 +686,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	skipImageTimer->setSingleShot(true);
 	connect(skipImageTimer, SIGNAL(timeout()), this, SLOT(loadFullFile()));
 
+	repeatZoomTimer = new QTimer();
+	repeatZoomTimer->setInterval(20);
+	connect(repeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
+
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
 
@@ -714,6 +772,8 @@ void DkViewPort::setImage(QImage newImg) {
 
 	DkTimer dt;
 
+	emit movieLoadedSignal(false);
+
 	if (!thumbLoaded) { 
 		qDebug() << "saving image matrix...";
 		oldImgViewRect = imgViewRect;
@@ -735,7 +795,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
-	if (!DkSettings::display.keepZoom || imgRect != oldImgRect)
+	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty())
 		worldMatrix.reset();
 	else {
 		imgViewRect = oldImgViewRect;
@@ -743,7 +803,13 @@ void DkViewPort::setImage(QImage newImg) {
 		worldMatrix = oldWorldMatrix;
 	}
 
-	updateImageMatrix();
+	updateImageMatrix();		
+
+	// if image is not inside, we'll align it at the top left border
+	if (!viewportRect.intersects(worldMatrix.mapRect(imgViewRect))) {
+		worldMatrix.translate(-worldMatrix.dx(), -worldMatrix.dy());
+		centerImage();
+	}
 
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
@@ -930,6 +996,20 @@ void DkViewPort::showZoom() {
 	controller->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
 }
 
+void DkViewPort::repeatZoom() {
+
+	qDebug() << "repeating...";
+	if (DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1 ||
+		!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)
+		zoom(1.1f);
+	else if (!DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton1 ||
+		DkSettings::display.invertZoom && QApplication::mouseButtons() == Qt::XButton2)
+		zoom(0.9f);
+	else
+		repeatZoomTimer->stop();	// safety if we don't catch the release
+
+}
+
 void DkViewPort::toggleResetMatrix() {
 
 	DkSettings::display.keepZoom = !DkSettings::display.keepZoom;
@@ -1092,6 +1172,9 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 // drawing functions --------------------------------------------------------------------
 void DkViewPort::drawBackground(QPainter *painter) {
 	
+	if (controller->getThumbWidget()->isVisible())
+		return;
+
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
 	// fit to viewport
@@ -1121,6 +1204,43 @@ void DkViewPort::loadMovie() {
 	movie = new QMovie(loader->getFile().absoluteFilePath());
 	connect(movie, SIGNAL(frameChanged(int)), this, SLOT(update()));
 	movie->start();
+	emit movieLoadedSignal(true);
+}
+
+void DkViewPort::pauseMovie(bool pause) {
+
+	if (!movie)
+		return;
+
+	movie->setPaused(pause);
+}
+
+void DkViewPort::nextMovieFrame() {
+
+	if (!movie)
+		return;
+
+	movie->jumpToNextFrame();
+	update();
+}
+
+void DkViewPort::previousMovieFrame() {
+
+	if (!movie)
+		return;
+
+	
+	int fn = movie->currentFrameNumber()-1;
+	if (fn == -1)
+		fn = movie->frameCount()-1;
+	//qDebug() << "retrieving frame: " << fn;
+	
+	while(movie->currentFrameNumber() != fn)
+		movie->jumpToNextFrame();
+
+	//// the subsequent thing is not working if the movie is paused
+	//bool success = movie->jumpToFrame(movie->currentFrameNumber()-1);
+	update();
 }
 
 void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
@@ -1180,6 +1300,18 @@ bool DkViewPort::event(QEvent *event) {
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
+	// if zoom on wheel, the additional keys should be used for switching files
+	if (DkSettings::global.zoomOnWheel) {
+		if(event->buttons() == Qt::XButton1)
+			loadPrevFileFast();
+		else if(event->buttons() == Qt::XButton2)
+			loadNextFileFast();
+	} 
+	else if(event->buttons() == Qt::XButton1 || event->buttons() == Qt::XButton2) {
+		repeatZoom();
+		repeatZoomTimer->start();
+	}
+	
 	// ok, start panning
 	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
 		setCursor(Qt::ClosedHandCursor);
@@ -1192,6 +1324,8 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
 void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	
+	repeatZoomTimer->stop();
+
 	DkBaseViewPort::mouseReleaseEvent(event);
 }
 
@@ -1232,7 +1366,16 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkViewPort::wheelEvent(QWheelEvent *event) {
 
-	if (event->modifiers() == ctrlMod || (event->orientation() == Qt::Horizontal && event->modifiers() != altMod)) {
+	qDebug() << "event orientation: " << event->orientation();
+	qDebug() << "modifiers: " << event->modifiers();
+
+	if (event->modifiers() & ctrlMod)
+		qDebug() << "CTRL modifier";
+	if (event->modifiers() & altMod)
+		qDebug() << "ALT modifier";
+
+	if ((!DkSettings::global.zoomOnWheel && event->modifiers() != ctrlMod) || 
+		(DkSettings::global.zoomOnWheel && (event->modifiers() & ctrlMod || (event->orientation() == Qt::Horizontal && !(event->modifiers() & altMod))))) {
 
 		if (event->delta() < 0)
 			loadNextFileFast();
@@ -1461,7 +1604,7 @@ void DkViewPort::unloadImage() {
 		int rating = controller->getRating();
 
 		// TODO: if image is not saved... ask user?! -> resize & crop
-		if ((imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) ||
+		if (!loader->isEdited() && (imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) ||
 			(imgStorage.hasImage() && loader && loader->getMetaData().isDirty())) {
 			qDebug() << "old rating: " << loader->getMetaData().getRating() << " rating: " << rating << " is dirty: " << loader->getMetaData().isDirty();
 			qDebug() << "meta file: " << loader->getMetaData().getFile().absoluteFilePath() << " loader file: " << loader->getFile().absoluteFilePath();
@@ -1502,7 +1645,7 @@ void DkViewPort::reloadFile() {
 		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
 
 		if (controller->getFilePreview())
-			controller->getFilePreview()->updateDir(loader->getFile(), DkThumbsLoader::user_updated);
+			controller->getThumbPool()->setFile(loader->getFile(), true);
 	}
 }
 
@@ -1767,7 +1910,7 @@ void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
 	if (minD > FLT_EPSILON)
 		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 	
-	painter.drawImage(QRect(QPoint(), imgStorage.getImage().size()), imgStorage.getImage(), QRect(QPoint(), imgStorage.getImage().size()));
+	painter.drawImage(QRect(QPoint(), getImage().size()), getImage(), QRect(QPoint(), getImage().size()));
 	painter.end();
 
 	setEditedImage(img);
