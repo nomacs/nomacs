@@ -134,6 +134,7 @@ public:
 		bool useDefaultColor;
 		bool defaultIconColor;
 		int thumbSize;
+		int thumbPreviewSize;
 		bool saveThumb;
 		int interpolateZoomLevel;
 		bool antiAliasing;

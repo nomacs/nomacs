@@ -863,7 +863,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_crop]->setStatusTip(tr("cut the current image"));
 	editActions[menu_edit_crop]->setCheckable(true);
 	editActions[menu_edit_crop]->setChecked(false);
-	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp->getController(), SLOT(showCrop(bool)));
+	connect(editActions[menu_edit_crop], SIGNAL(triggered(bool)), vp->getController(), SLOT(showCrop(bool)));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -1085,7 +1085,7 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_filter]->setStatusTip(tr("Find an image"));
 	toolsActions[menu_tools_filter]->setCheckable(true);
 	toolsActions[menu_tools_filter]->setChecked(false);
-	connect(toolsActions[menu_tools_filter], SIGNAL(toggled(bool)), this, SLOT(find(bool)));
+	connect(toolsActions[menu_tools_filter], SIGNAL(triggered(bool)), this, SLOT(find(bool)));
 
 	toolsActions[menu_tools_manipulation] = new QAction(toolsIcons[icon_tools_manipulation], tr("Image &Manipulation"), this);
 	toolsActions[menu_tools_manipulation]->setShortcut(shortcut_manipulation);
@@ -1284,9 +1284,9 @@ void DkNoMacs::enableMovieActions(bool enable) {
 		addToolBar(movieToolbar);
 	else
 		removeToolBar(movieToolbar);
-
-	movieToolbar->setVisible(enable);
-
+	
+	if (toolbar->isVisible())
+		movieToolbar->setVisible(enable);
 }
 
 
@@ -1982,10 +1982,7 @@ void DkNoMacs::openDir() {
 
 	qDebug() << "loading directory: " << dirName;
 	
-	if (viewport()->getController()->getThumbWidget()->isVisible())
-		viewport()->getController()->getThumbPool()->setFile(QFileInfo(dirName));
-	else
-		viewport()->loadFile(QFileInfo(dirName));
+	viewport()->loadFile(QFileInfo(dirName));
 }
 
 void DkNoMacs::openFile() {

@@ -474,6 +474,9 @@ void DkControlWidget::showThumbView(bool visible) {
 			showFileInfo(true);
 		}
 
+		if (!viewport->getImageLoader()->hasImage())
+			viewport->loadFile(thumbPool->getCurrentFile());
+
 		// set again the last image
 		viewport->setImage(viewport->getImageLoader()->getImage());
 	}
@@ -1631,7 +1634,12 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 
 	if (loader && file.isDir()) {
 		QDir dir = QDir(file.absoluteFilePath());
-		loader->setDir(dir);
+
+		if (controller && controller->getThumbWidget()->isVisible())
+			controller->getThumbPool()->setFile(file);
+		else
+			loader->setDir(dir);
+
 	} else if (loader)
 		loader->load(file, silent);
 

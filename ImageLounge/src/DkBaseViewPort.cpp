@@ -587,7 +587,7 @@ void DkBaseViewPort::draw(QPainter *painter) {
 
 bool DkBaseViewPort::imageInside() {
 
-	return viewportRect.contains(worldMatrix.mapRect(imgViewRect));
+	return worldMatrix.m11() <= 1.0f || viewportRect.contains(worldMatrix.mapRect(imgViewRect));
 }
 
 void DkBaseViewPort::updateImageMatrix() {
