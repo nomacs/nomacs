@@ -33,3 +33,8 @@ OPTION (ENABLE_TEST "Compile Test plugin" ON)
 IF (ENABLE_TEST)
 	add_subdirectory(TestPlugin)
 ENDIF(ENABLE_TEST)
+
+OPTION (ENABLE_TEST "Compile Paint plugin" ON)
+IF (ENABLE_TEST)
+	add_subdirectory(PaintPlugin)
+ENDIF(ENABLE_TEST)
