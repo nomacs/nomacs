@@ -197,7 +197,7 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 	int rIdx = 0;
 	bool nonblack = false;
 	
-	for ( ; rIdx < img.height(); rIdx++) {
+	for ( ; rIdx < qRound(img.height()*0.1); rIdx++) {
 
 		const QRgb* pixel = (QRgb*)(img.constScanLine(rIdx));
 
@@ -221,7 +221,7 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 	int rIdxB = img.height()-1;
 	nonblack = false;
 
-	for ( ; rIdxB >= 0; rIdxB--) {
+	for ( ; rIdxB >= qRound(img.height()*0.9f); rIdxB--) {
 
 		const QRgb* pixel = (QRgb*)(img.constScanLine(rIdxB));
 
