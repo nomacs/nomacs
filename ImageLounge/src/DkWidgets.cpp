@@ -915,8 +915,10 @@ void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
 		QProcess::startDetached(exe, args);
 	}
-	else
-		emit loadFileSignal(thumb->getFile());
+	else {
+		QFileInfo file = thumb->getFile();
+		emit loadFileSignal(file);
+	}
 }
 
 void DkThumbLabel::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
