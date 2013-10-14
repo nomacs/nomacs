@@ -885,7 +885,9 @@ void DkThumbLabel::updateLabel() {
 
 	if (!pm.isNull()) {
 		setPixmap(pm);
-		setFlag(GraphicsItemFlag::ItemIsSelectable, true);
+		setFlag(ItemIsSelectable, true);
+		//QFlags<enum> f;
+
 	}
 
 	updateSize();
