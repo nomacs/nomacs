@@ -3473,7 +3473,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 
 	// keeps track of the weights
 	cv::Mat cc(numPatches.height(), numPatches.width(), CV_32FC1);
-	cc = 0;
+	cc.setTo(0);
 	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);;	// tells us if we have already computed the real patch
 
 	filesUsed.resize(numPatches.height()*numPatches.width());
@@ -3545,7 +3545,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 			cv::Mat ccTmp(cc.size(), cc.depth());
 		
 			if (!force)
-				ccTmp = 0;
+				ccTmp.setTo(0);
 			else
 				ccTmp = cc.clone();
 
