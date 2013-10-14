@@ -2991,7 +2991,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 		// create statusbar info
 		DkImageLoader::imgMetaData.setFileName(file);
 		QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
-		dateString = DkUtils::convertDate(dateString, file);
+		dateString = DkUtils::convertDateString(dateString, file);
 		showStatusMessage(dateString, status_time_info);
 	}
 	else 

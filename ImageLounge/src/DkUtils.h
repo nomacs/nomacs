@@ -341,7 +341,30 @@ public:
 		return stringify(rounded/std::pow(10,n));
 	};
 
-	static QString convertDate(const QString& date, const QFileInfo& file = QFileInfo()) {
+	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo()) {
+
+		// convert date
+		QDateTime dateCreated;
+		QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+
+		if (dateSplit.size() >= 3) {
+
+			QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
+			QTime time;
+
+			if (dateSplit.size() >= 6)
+				time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
+
+			dateCreated = QDateTime(dateV, time);
+		}
+		else if (file.exists())
+			dateCreated = file.created();
+
+		return dateCreated;
+	};
+
+	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo()) {
+		
 		// convert date
 		QString dateConverted;
 		QStringList dateSplit = date.split(QRegExp("[/: \t]"));
