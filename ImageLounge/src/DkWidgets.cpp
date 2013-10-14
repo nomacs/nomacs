@@ -1200,8 +1200,6 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event) {
 
 void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 
-	// TODO: this is wrong here - the whole drag&drop is not working yet
-	// another TODO is to fix hover issues if the thumb is smaller then requested
 	if (event->buttons() == Qt::LeftButton) {
 			
 		int dist = QPointF(event->pos()-mousePos).manhattanLength();
@@ -1221,7 +1219,6 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 			}
 		}
 	}
-
 
 	QGraphicsView::mouseMoveEvent(event);
 
