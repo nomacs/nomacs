@@ -980,7 +980,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 }
 
 // DkThumbWidget --------------------------------------------------------------------
-DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
+DkThumbScene::DkThumbScene(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
 
 	setObjectName("DkThumbWidget");
 	this->thumbPool = thumbPool;
@@ -993,7 +993,7 @@ DkThumbWidget::DkThumbWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /
 	setBackgroundBrush(DkSettings::slideShow.backgroundColor);
 }
 
-void DkThumbWidget::updateLayout() {
+void DkThumbScene::updateLayout() {
 
 	if (thumbLabels.empty())
 		return;
@@ -1056,7 +1056,7 @@ void DkThumbWidget::updateLayout() {
 	firstLayout = false;
 }
 
-void DkThumbWidget::updateThumbLabels() {
+void DkThumbScene::updateThumbLabels() {
 
 	qDebug() << "updating thumb labels...";
 
@@ -1087,7 +1087,7 @@ void DkThumbWidget::updateThumbLabels() {
 		updateLayout();
 }
 
-void DkThumbWidget::showFile(const QFileInfo& file) {
+void DkThumbScene::showFile(const QFileInfo& file) {
 
 	if (file.absoluteFilePath() == QDir::currentPath() || file.absoluteFilePath().isEmpty())
 		emit statusInfoSignal(tr("%1 Images").arg(QString::number(thumbLabels.size())));
@@ -1095,17 +1095,17 @@ void DkThumbWidget::showFile(const QFileInfo& file) {
 		emit statusInfoSignal(file.fileName());
 }
 
-void DkThumbWidget::increaseThumbs() {
+void DkThumbScene::increaseThumbs() {
 
 	resizeThumbs(4);
 }
 
-void DkThumbWidget::decreaseThumbs() {
+void DkThumbScene::decreaseThumbs() {
 
 	resizeThumbs(-4);
 }
 
-void DkThumbWidget::resizeThumbs(int dx) {
+void DkThumbScene::resizeThumbs(int dx) {
 
 	int newSize = DkSettings::display.thumbSize + dx;
 
@@ -1115,111 +1115,17 @@ void DkThumbWidget::resizeThumbs(int dx) {
 	}
 }
 
-void DkThumbWidget::loadFile(QFileInfo& file) {
+void DkThumbScene::loadFile(QFileInfo& file) {
 	emit loadFileSignal(file);
 }
 
-void DkThumbWidget::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-
-	if (event->buttons() == Qt::LeftButton) {
-		mousePos = event->pos();
-		itemClicked = itemAt(event->pos()) != 0;
-		qDebug() << "item clicked: " << itemClicked;
-	}
-
-	QGraphicsScene::mousePressEvent(event);
-}
-
-void DkThumbWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-
-	QGraphicsScene::mouseMoveEvent(event);
-
-	// TODO: this is wrong here - the whole drag&drop is not working yet
-	// another TODO is to fix hover issues if the thumb is smaller then requested
-	if (event->buttons() == Qt::LeftButton && itemClicked) {
-			
-		int dist = QPointF(event->pos()-mousePos).manhattanLength();
-
-		if (dist > QApplication::startDragDistance()) {
-			
-			QList<QUrl> urls;
-
-			for (int idx = 0; idx < thumbLabels.size(); idx++) {
-
-				if (thumbLabels.at(idx)->isSelected()) {
-					urls.append("file:///" + thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
-				}
-			}
-
-			QMimeData* mimeData = new QMimeData;
-
-			if (!urls.empty()) {
-				mimeData->setUrls(urls);
-				//QDrag* drag = new QDrag(this);
-				//drag->setMimeData(mimeData);
-				//Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
-			}
-		}
-	}
-}
-
-void DkThumbWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-
-	QGraphicsScene::mouseReleaseEvent(event);
-}
-
-void DkThumbWidget::dragEnterEvent(QDragEnterEvent *event) {
-
-	qDebug() << event->source() << " I am: " << this;
-
-/*	if (event->source() == this)
-		event->acceptProposedAction();
-	else */if (event->mimeData()->hasUrls()) {
-		QUrl url = event->mimeData()->urls().at(0);
-		url = url.toLocalFile();
-
-		QFileInfo file = QFileInfo(url.toString());
-
-		// just accept image files
-		if (DkImageLoader::isValid(file))
-			event->acceptProposedAction();
-		else if (file.isDir())
-			event->acceptProposedAction();
-	}
-
-	//QGraphicsView::dragEnterEvent(event);
-}
-
-void DkThumbWidget::dropEvent(QDropEvent *event) {
-
-	//if (event->source() == this) {
-	//	event->accept();
-	//	return;
-	//}
-
-	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-		QUrl url = event->mimeData()->urls().at(0);
-		qDebug() << "dropping: " << url;
-		url = url.toLocalFile();
-
-		QFileInfo file = QFileInfo(url.toString());
-		
-		if (file.isDir())
-			thumbPool->setFile(file);
-		else
-			emit loadFileSignal(file);
-	}
-
-	qDebug() << "drop event...";
-}
-
-void DkThumbWidget::selectAllThumbs(bool selected) {
+void DkThumbScene::selectAllThumbs(bool selected) {
 
 	qDebug() << "selecting...";
 	selectThumbs(selected);
 }
 
-void DkThumbWidget::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */) {
+void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */) {
 
 	if (to == -1)
 		to = thumbLabels.size();
@@ -1230,12 +1136,36 @@ void DkThumbWidget::selectThumbs(bool selected /* = true */, int from /* = 0 */,
 
 }
 
+QList<QUrl> DkThumbScene::getSelectedUrls() const {
+
+	QList<QUrl> urls;
+
+	for (int idx = 0; idx < thumbLabels.size(); idx++) {
+
+		if (thumbLabels.at(idx)->isSelected()) {
+			urls.append("file:///" + thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
+		}
+	}
+
+	return urls;
+}
+
+void DkThumbScene::setFile(const QFileInfo& file) {
+
+	if (file.isDir())
+		thumbPool->setFile(file);
+	else
+		emit loadFileSignal(file);
+
+}
+
 // DkThumbView --------------------------------------------------------------------
-DkThumbsView::DkThumbsView(DkThumbWidget* scene, QWidget* parent /* = 0 */) : QGraphicsView(scene, parent) {
+DkThumbsView::DkThumbsView(DkThumbScene* scene, QWidget* parent /* = 0 */) : QGraphicsView(scene, parent) {
 
 	this->scene = scene;
 
-	setDragMode(QGraphicsView::RubberBandDrag);
+	//setDragMode(QGraphicsView::RubberBandDrag);
+	
 	setResizeAnchor(QGraphicsView::AnchorUnderMouse);
 	setAcceptDrops(true);
 
@@ -1255,13 +1185,120 @@ void DkThumbsView::wheelEvent(QWheelEvent *event) {
 	//QWidget::wheelEvent(event);
 }
 
+void DkThumbsView::mousePressEvent(QMouseEvent *event) {
+
+	if (event->buttons() == Qt::LeftButton) {
+		mousePos = event->pos();
+		//itemClicked = itemAt(event->pos()) != 0;
+		//qDebug() << "item clicked: " << itemClicked;
+	}
+
+	QGraphicsView::mousePressEvent(event);
+}
+
+void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
+
+	// TODO: this is wrong here - the whole drag&drop is not working yet
+	// another TODO is to fix hover issues if the thumb is smaller then requested
+	if (event->buttons() == Qt::LeftButton) {
+			
+		int dist = QPointF(event->pos()-mousePos).manhattanLength();
+		//qDebug() << "dist: " << dist;
+
+		if (dist > QApplication::startDragDistance()) {
+			
+			QList<QUrl> urls = scene->getSelectedUrls();
+
+			QMimeData* mimeData = new QMimeData;
+
+			if (!urls.empty()) {
+				mimeData->setUrls(urls);
+				QDrag* drag = new QDrag(this);
+				drag->setMimeData(mimeData);
+				Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+			}
+		}
+	}
+
+
+	QGraphicsView::mouseMoveEvent(event);
+
+}
+
+void DkThumbsView::mouseReleaseEvent(QMouseEvent *event) {
+
+	QGraphicsView::mouseReleaseEvent(event);
+}
+
+void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
+
+	qDebug() << event->source() << " I am: " << this;
+
+	if (event->source() == this)
+		event->acceptProposedAction();
+	else if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+
+		QFileInfo file = QFileInfo(url.toString());
+
+		// just accept image files
+		if (DkImageLoader::isValid(file))
+			event->acceptProposedAction();
+		else if (file.isDir())
+			event->acceptProposedAction();
+	}
+
+	QGraphicsView::dragEnterEvent(event);
+}
+
+void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
+
+	if (event->source() == this)
+		event->acceptProposedAction();
+	else if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+
+		QFileInfo file = QFileInfo(url.toString());
+
+		// just accept image files
+		if (DkImageLoader::isValid(file))
+			event->acceptProposedAction();
+		else if (file.isDir())
+			event->acceptProposedAction();
+	}
+
+	//QGraphicsView::dragMoveEvent(event);
+}
+
+void DkThumbsView::dropEvent(QDropEvent *event) {
+
+	if (event->source() == this) {
+		event->accept();
+		return;
+	}
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		qDebug() << "dropping: " << url;
+		url = url.toLocalFile();
+
+		QFileInfo file = QFileInfo(url.toString());
+
+		scene->setFile(file);
+	}
+
+	qDebug() << "drop event...";
+}
+
 // DkThumbScrollWidget --------------------------------------------------------------------
 DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
 
 	setObjectName("DkThumbScrollWidget");
 	setContentsMargins(0,0,0,0);
 
-	thumbsScene = new DkThumbWidget(thumbPool, this);
+	thumbsScene = new DkThumbScene(thumbPool, this);
 	//thumbsView->setContentsMargins(0,0,0,0);
 
 	view = new DkThumbsView(thumbsScene, this);
