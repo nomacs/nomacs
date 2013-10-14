@@ -64,6 +64,7 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsItem>
 
 // gif animation label -----
 #include <QVBoxLayout>
