@@ -42,10 +42,12 @@
 #include "extern/qevent_p.h"
 #endif
 
-#ifdef DK_DLL
-#define DllExport Q_DECL_EXPORT
-#else
-#define DllExport
+#ifndef DllExport
+	#ifdef DK_DLL
+	#define DllExport Q_DECL_EXPORT
+	#else
+	#define DllExport
+	#endif
 #endif
 
 namespace nmc {
