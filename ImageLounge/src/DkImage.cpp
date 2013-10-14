@@ -3118,9 +3118,11 @@ void DkCacher::index() {
 				tmpCache.append(tmp);
 		}
 
+		qDebug() << "cur cache after updating: " << DkUtils::readableByte(curCache);
+
 		cache = tmpCache;
 
-		curFileIdx = -1;
+		//curFileIdx = -1;
 		somethingTodo = true;
 		updateFiles = false;
 	}
