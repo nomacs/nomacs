@@ -698,7 +698,7 @@ signals:
 	void statusInfoSignal(QString msg, int pos = 0);
 
 protected:
-	void wheelEvent(QWheelEvent *event);
+	//void wheelEvent(QWheelEvent *event);
 
 	DkThumbPool* thumbPool;
 	int xOffset;

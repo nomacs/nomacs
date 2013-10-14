@@ -3390,6 +3390,7 @@ void DkMosaicDialog::compute() {
 	mosaic = QImage();
 	sliderWidget->hide();
 	viewport->show();
+	preview->setForceFastRendering(true);
 	preview->show();
 
 	enableAll(false);
@@ -3435,12 +3436,13 @@ void DkMosaicDialog::mosaicFinished() {
 		sliderWidget->show();
 		msgLabel->hide();
 		viewport->hide();
+		preview->setForceFastRendering(false);
+
 		updatePostProcess();	// add values
 		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
 	}
-	else {
+	else
 		enableAll(true);
-	}
 }
 
 int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int newWidth, int numPatchesH) {

@@ -404,7 +404,7 @@ void DkThumbPool::updateDir(const QFileInfo& currentFile) {
 QSharedPointer<DkThumbNailT> DkThumbPool::createThumb(const QFileInfo& file) {
 
 	QSharedPointer<DkThumbNailT> thumb(new DkThumbNailT(file));
-	//connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
+	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
 	return thumb;
 }
 

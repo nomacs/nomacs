@@ -839,11 +839,11 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
 
 QRectF DkThumbLabel::boundingRect() const {
 
-	if (!pixmap().isNull() && qMax(pixmap().width(), pixmap().height()) >= DkSettings::display.thumbSize)
+	if (!pixmap().isNull() && qMax(pixmap().width(), pixmap().height()) >= DkSettings::display.thumbPreviewSize)
 		return QGraphicsPixmapItem::boundingRect();
 
 	QRectF r;
-	int s = DkSettings::display.thumbSize;
+	int s = DkSettings::display.thumbPreviewSize;
 
 	if (pixmap().isNull()) {
 		int ds = qMin(s-2, 10);
@@ -885,9 +885,11 @@ void DkThumbLabel::updateLabel() {
 
 	if (!pm.isNull()) {
 		setPixmap(pm);
-		setFlag(GraphicsItemFlag::ItemIsSelectable, true);
+		setFlag(ItemIsSelectable, true);
+		//QFlags<enum> f;
+
 	}
-	
+
 	updateSize();
 }
 
@@ -896,8 +898,10 @@ void DkThumbLabel::updateSize() {
 	// resize pixmap label
 	int maxSize = qMax(pixmap().width(), pixmap().height());
 	
-	if (maxSize > DkSettings::display.thumbSize)
-		setScale((float)DkSettings::display.thumbSize/maxSize);
+	if (maxSize > DkSettings::display.thumbPreviewSize)
+		setScale((float)DkSettings::display.thumbPreviewSize/maxSize);
+
+	//update();
 }	
 
 void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
@@ -939,13 +943,16 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 
 	if (isVisible() && !thumbInitialized) {
 
-		if (thumb->hasImage() == DkThumbNail::not_loaded)
+		if (thumb->hasImage() == DkThumbNail::not_loaded) {
 			thumb->fetchThumb();
-		else
+			thumbInitialized = true;
+		}
+		else {
 			updateLabel();
-
-		qDebug() << "updating label: " << thumb->getFile().fileName();
-		thumbInitialized = true;
+			thumbInitialized = true;
+			return;		// exit - otherwise we get paint errors
+		}
+		//qDebug() << "updating label: " << thumb->getFile().fileName();
 	}
 
 	if (!pixmap().isNull()) {
@@ -955,7 +962,6 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		painter->setPen(noImagePen);
 		painter->setBrush(noImageBrush);
 		painter->drawRect(boundingRect());
-		
 	}
 	else {
 		QColor c = DkSettings::display.highlightColor;
@@ -1008,13 +1014,13 @@ void DkThumbScene::updateLayout() {
 	int oldNumCols = numCols;
 	int oldNumRows = numRows;
 
-	xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
-	numCols = qMax(qFloor(((float)pSize.width()-xOffset)/(DkSettings::display.thumbSize + xOffset)), 1);
+	xOffset = qCeil(DkSettings::display.thumbPreviewSize*0.1f);
+	numCols = qMax(qFloor(((float)pSize.width()-xOffset)/(DkSettings::display.thumbPreviewSize + xOffset)), 1);
 	numCols = qMin(thumbLabels.size(), numCols);
 	numRows = qCeil((float)thumbLabels.size()/numCols);
 	int rIdx = 0;
 
-	int tso = DkSettings::display.thumbSize+xOffset;
+	int tso = DkSettings::display.thumbPreviewSize+xOffset;
 	// TODO: center it
 	setSceneRect(0, 0, numCols*tso+xOffset, numRows*tso+xOffset);
 	int fileIdx = thumbPool->getCurrentFileIdx();
@@ -1042,15 +1048,16 @@ void DkThumbScene::updateLayout() {
 
 			//cLabel->show();
 
-			cXOffset += DkSettings::display.thumbSize + xOffset;
+			cXOffset += DkSettings::display.thumbPreviewSize + xOffset;
 		}
 
 		// update ypos
-		cYOffset += DkSettings::display.thumbSize + xOffset;
+		cYOffset += DkSettings::display.thumbPreviewSize + xOffset;
 	}
 
 	qDebug() << "moving takes: " << QString::fromStdString(dt.getTotal());
-	update();
+	
+	//update();
 
 	//if (verticalScrollBar()->isVisible())
 	//	verticalScrollBar()->update();
@@ -1074,7 +1081,7 @@ void DkThumbScene::updateThumbLabels() {
 		connect(thumb.data(), SIGNAL(loadFileSignal(QFileInfo&)), this, SLOT(loadFile(QFileInfo&)));
 		connect(thumb.data(), SIGNAL(showFileSignal(const QFileInfo&)), this, SLOT(showFile(const QFileInfo&)));
 
-		thumb->show();
+		//thumb->show();
 		thumbLabels.append(thumb);
 		addItem(thumb.data());
 
@@ -1109,10 +1116,10 @@ void DkThumbScene::decreaseThumbs() {
 
 void DkThumbScene::resizeThumbs(int dx) {
 
-	int newSize = DkSettings::display.thumbSize + dx;
+	int newSize = DkSettings::display.thumbPreviewSize + dx;
 
 	if (newSize > 6 && newSize <= 160) {
-		DkSettings::display.thumbSize = newSize;
+		DkSettings::display.thumbPreviewSize = newSize;
 		updateLayout();
 	}
 }
@@ -1180,8 +1187,11 @@ void DkThumbsView::wheelEvent(QWheelEvent *event) {
 	}
 	else if (event->modifiers() == Qt::NoModifier) {
 
-		if (verticalScrollBar()->isVisible())
+		if (verticalScrollBar()->isVisible()) {
 			verticalScrollBar()->setValue(verticalScrollBar()->value()-event->delta());
+			//scene->update();
+			//scene->invalidate(scene->sceneRect());
+		}
 	}
 
 	//QWidget::wheelEvent(event);
@@ -1200,12 +1210,9 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event) {
 
 void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 
-	// TODO: this is wrong here - the whole drag&drop is not working yet
-	// another TODO is to fix hover issues if the thumb is smaller then requested
 	if (event->buttons() == Qt::LeftButton) {
 			
 		int dist = QPointF(event->pos()-mousePos).manhattanLength();
-		//qDebug() << "dist: " << dist;
 
 		if (dist > QApplication::startDragDistance()) {
 			
@@ -1222,9 +1229,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 		}
 	}
 
-
 	QGraphicsView::mouseMoveEvent(event);
-
 }
 
 void DkThumbsView::mouseReleaseEvent(QMouseEvent *event) {
@@ -1251,7 +1256,7 @@ void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
 			event->acceptProposedAction();
 	}
 
-	QGraphicsView::dragEnterEvent(event);
+	//QGraphicsView::dragEnterEvent(event);
 }
 
 void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
@@ -1290,6 +1295,8 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 
 		scene->setFile(file);
 	}
+
+	QGraphicsView::dropEvent(event);
 
 	qDebug() << "drop event...";
 }
