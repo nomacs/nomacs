@@ -905,7 +905,18 @@ void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 	if (thumb.isNull())
 		return;
 
-	emit loadFileSignal(thumb->getFile());
+	if (event->buttons() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier) {
+		QString exe = QApplication::applicationFilePath();
+		QStringList args;
+		args.append(thumb->getFile().absoluteFilePath());
+
+		if (objectName() == "DkNoMacsFrameless")
+			args.append("1");	
+
+		QProcess::startDetached(exe, args);
+	}
+	else
+		emit loadFileSignal(thumb->getFile());
 }
 
 void DkThumbLabel::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
@@ -997,10 +1008,12 @@ void DkThumbWidget::updateLayout() {
 
 	xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 	numCols = qMax(qFloor(((float)pSize.width()-xOffset)/(DkSettings::display.thumbSize + xOffset)), 1);
+	numCols = qMin(thumbLabels.size(), numCols);
 	numRows = qCeil((float)thumbLabels.size()/numCols);
 	int rIdx = 0;
 
 	int tso = DkSettings::display.thumbSize+xOffset;
+	// TODO: center it
 	setSceneRect(0, 0, numCols*tso+xOffset, numRows*tso+xOffset);
 	int fileIdx = thumbPool->getCurrentFileIdx();
 
@@ -1121,6 +1134,8 @@ void DkThumbWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 
 	QGraphicsScene::mouseMoveEvent(event);
 
+	// TODO: this is wrong here - the whole drag&drop is not working yet
+	// another TODO is to fix hover issues if the thumb is smaller then requested
 	if (event->buttons() == Qt::LeftButton && itemClicked) {
 			
 		int dist = QPointF(event->pos()-mousePos).manhattanLength();
