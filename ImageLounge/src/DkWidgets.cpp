@@ -542,7 +542,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				selected = idx;
 
-				if ((size_t)selected <= thumbPool->getThumbs().size() && selected >= 0) {
+				if (selected <= thumbPool->getThumbs().size() && selected >= 0) {
 					QSharedPointer<DkThumbNailT> thumb = thumbPool->getThumbs().at(selected);
 					createSelectedEffect(thumb->getImage(), DkSettings::display.highlightColor);
 				
