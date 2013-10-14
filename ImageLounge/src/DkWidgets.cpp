@@ -1203,7 +1203,6 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton) {
 			
 		int dist = QPointF(event->pos()-mousePos).manhattanLength();
-		//qDebug() << "dist: " << dist;
 
 		if (dist > QApplication::startDragDistance()) {
 			
@@ -1221,7 +1220,6 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	QGraphicsView::mouseMoveEvent(event);
-
 }
 
 void DkThumbsView::mouseReleaseEvent(QMouseEvent *event) {
@@ -1248,7 +1246,7 @@ void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
 			event->acceptProposedAction();
 	}
 
-	QGraphicsView::dragEnterEvent(event);
+	//QGraphicsView::dragEnterEvent(event);
 }
 
 void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
@@ -1287,6 +1285,8 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 
 		scene->setFile(file);
 	}
+
+	QGraphicsView::dropEvent(event);
 
 	qDebug() << "drop event...";
 }
