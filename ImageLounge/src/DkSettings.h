@@ -57,10 +57,12 @@
 
 #include "BorderLayout.h"
 
+#ifndef DllExport
 #ifdef DK_DLL
 #define DllExport Q_DECL_EXPORT
 #else
 #define DllExport Q_DECL_IMPORT
+#endif
 #endif
 
 namespace nmc {

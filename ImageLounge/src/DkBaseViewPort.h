@@ -33,6 +33,8 @@
 #include <QMovie>
 #include <QShortcut>
 
+#include <float.h>
+
 // gestures
 #include <QSwipeGesture>
 

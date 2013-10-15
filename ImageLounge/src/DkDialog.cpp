@@ -3019,6 +3019,7 @@ void DkExportTiffDialog::enableTIFFSave(bool enable) {
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(enable);
 }
 
+#ifdef WITH_OPENCV
 // DkMosaicDialog --------------------------------------------------------------------
 DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
@@ -3963,7 +3964,7 @@ void DkMosaicDialog::enableMosaicSave(bool enable) {
 	if (!enable)
 		buttons->button(QDialogButtonBox::Save)->setEnabled(enable);
 }
-
+#endif
 // DkForceThumbDialog --------------------------------------------------------------------
 DkForceThumbDialog::DkForceThumbDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
