@@ -615,7 +615,9 @@ void DkNoMacs::createMenu() {
 	toolsMenu = menu->addMenu(tr("&Tools"));
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
+#ifdef WITH_OPENCV
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
+#endif
 #ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 #endif
