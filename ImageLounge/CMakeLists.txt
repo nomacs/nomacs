@@ -17,7 +17,7 @@ endif(COMMAND cmake_policy)
 
 
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
-OPTION (ENABLE_WEBP "Compile with webP support (webP)" OFF)
+OPTION (ENABLE_WEBP "Compile with webP support (webP)" ON)
 OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 
