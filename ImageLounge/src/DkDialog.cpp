@@ -1134,7 +1134,7 @@ void DkResizeDialog::createLayout() {
 	previewLayout->addWidget(origView, 1, 0);
 	previewLayout->addWidget(previewLabel, 1, 1);
 
-	// all text dialogs... // TODO: go on here...
+	// all text dialogs...
 	QIntValidator* intValidator = new QIntValidator(1, 100000, 0);
 	QDoubleValidator* doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
 	doubleValidator->setRange(0, 100, 2);

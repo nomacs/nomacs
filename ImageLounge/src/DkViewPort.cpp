@@ -714,6 +714,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
 	
+	createShortcuts();
+
 	qDebug() << "viewer created...";
 
 	//// >DIR:  [7.4.2011 diem]
@@ -738,6 +740,46 @@ void DkViewPort::release() {
 
 	if (loader) delete loader;
 	loader = 0;
+}
+
+void DkViewPort::createShortcuts() {
+
+	//DkBaseViewPort::createShortcuts();
+
+	shortcuts.resize(scf_end);
+
+	// files
+	shortcuts[sc_first_file] = new QShortcut(shortcut_first_file, this);
+	connect(shortcuts[sc_first_file], SIGNAL(activated()), this, SLOT(loadFirst()));
+	shortcuts[sc_last_file] = new QShortcut(shortcut_last_file, this);
+	connect(shortcuts[sc_last_file], SIGNAL(activated()), this, SLOT(loadLast()));
+
+	shortcuts[sc_skip_prev] = new QShortcut(shortcut_skip_prev, this);
+	connect(shortcuts[sc_skip_prev], SIGNAL(activated()), this, SLOT(loadSkipPrev10()));
+	shortcuts[sc_skip_next] = new QShortcut(shortcut_skip_next, this);
+	connect(shortcuts[sc_skip_next], SIGNAL(activated()), this, SLOT(loadSkipNext10()));
+	
+	shortcuts[sc_first_sync] = new QShortcut(shortcut_first_file_sync, this);
+	connect(shortcuts[sc_first_sync], SIGNAL(activated()), this, SLOT(loadFirst()));
+
+	shortcuts[sc_last_sync] = new QShortcut(shortcut_last_file_sync, this);
+	connect(shortcuts[sc_last_sync], SIGNAL(activated()), this, SLOT(loadLast()));
+
+	shortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
+	connect(shortcuts[sc_next_sync], SIGNAL(activated()), this, SLOT(loadNextFileFast()));
+
+	shortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
+	connect(shortcuts[sc_prev_sync], SIGNAL(activated()), this, SLOT(loadPrevFileFast()));
+
+	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
+	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), loader, SLOT(deleteFile()));
+
+	for (int idx = 0; idx < shortcuts.size(); idx++) {
+		// assign widget shortcuts to all of them
+		shortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
+	}
+
+
 }
 
 #ifdef WITH_OPENCV

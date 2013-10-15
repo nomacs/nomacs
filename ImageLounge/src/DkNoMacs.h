@@ -148,14 +148,6 @@ enum {
 	shortcut_reset_view 	= Qt::CTRL + Qt::Key_0,
 	shortcut_zoom_full		= Qt::CTRL + Qt::Key_1,
 	shortcut_fit_frame		= Qt::CTRL + Qt::Key_2,
-	shortcut_zoom_in 		= Qt::Key_Plus,
-	shortcut_zoom_out		= Qt::Key_Minus,
-	shortcut_zoom_in_alt	= Qt::Key_Up,
-	shortcut_zoom_out_alt	= Qt::Key_Down,
-	shortcut_panning_left 	= Qt::CTRL + Qt::Key_Left,
-	shortcut_panning_right 	= Qt::CTRL + Qt::Key_Right,
-	shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
-	shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down,
 	shortcut_show_overview	= Qt::Key_O,
 	shortcut_show_explorer	= Qt::Key_E,
 	shortcut_show_player	= Qt::Key_P,
@@ -329,27 +321,8 @@ enum helpActions {
 };
 
 enum shortcuts {
-	sc_pan_up,
-	sc_pan_down,
-	sc_pan_left,
-	sc_pan_right,
-	sc_first_file,
-	sc_last_file,
-	sc_skip_prev,
-	sc_skip_next,
 	sc_test_img,
 	sc_test_rec,
-	sc_next_sync,
-	sc_prev_sync,
-	sc_first_sync,
-	sc_last_sync,
-	sc_zoom_in,
-	sc_zoom_out,
-	sc_zoom_in_alt,
-	sc_zoom_out_alt,
-	//sc_send_img,
-	sc_delete_silent,
-	//sc_play,
 
 	sc_end,	// nothing beyond this point
 };
@@ -463,8 +436,6 @@ signals:
 	void closeSignal();
 	void saveTempFileSignal(QImage img);
 	void sendQuitLocalClientsSignal();
-	void fourthButtonPressed();
-	void fifthButtonPressed();
 
 public slots:
 	void restart();

@@ -67,22 +67,55 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsVie
 	if (DkSettings::display.useDefaultColor) {
 
 		if (DkSettings::display.toolbarGradient)
-			setStyleSheet("QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
+			setStyleSheet("QGraphicsView{border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
 		else
-			setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(QPalette().color(QPalette::Window)) + ";}" );		
+			setStyleSheet("QGraphicsView{border-style: none; background-color: " + DkUtils::colorToString(QPalette().color(QPalette::Window)) + ";}" );		
 	}
 	else
-		setStyleSheet("QGraphicsView { border-style: none; background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" );
+		setStyleSheet("QGraphicsView{border-style: none; background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" );
 
 	setMouseTracking(true);
 
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	setMinimumSize(10, 10);
+
+	createShortcuts();
 }
 
 DkBaseViewPort::~DkBaseViewPort() {
 
 	release();
+}
+
+void DkBaseViewPort::createShortcuts() {
+
+	shortcuts.resize(sc_end);
+
+	// panning
+	shortcuts[sc_pan_left] = new QShortcut(shortcut_panning_left, this);
+	connect(shortcuts[sc_pan_left], SIGNAL(activated()), this, SLOT(shiftLeft()));
+	shortcuts[sc_pan_right] = new QShortcut(shortcut_panning_right, this);
+	connect(shortcuts[sc_pan_right], SIGNAL(activated()), this, SLOT(shiftRight()));
+	shortcuts[sc_pan_up] = new QShortcut(shortcut_panning_up, this);
+	connect(shortcuts[sc_pan_up], SIGNAL(activated()), this, SLOT(shiftUp()));
+	shortcuts[sc_pan_down] = new QShortcut(shortcut_panning_down, this);
+	connect(shortcuts[sc_pan_down], SIGNAL(activated()), this, SLOT(shiftDown()));
+
+	// zoom
+	shortcuts[sc_zoom_in] = new QShortcut(shortcut_zoom_in, this);
+	connect(shortcuts[sc_zoom_in], SIGNAL(activated()), this, SLOT(zoomIn()));
+	shortcuts[sc_zoom_out] = new QShortcut(shortcut_zoom_out, this);
+	connect(shortcuts[sc_zoom_out], SIGNAL(activated()), this, SLOT(zoomOut()));
+	shortcuts[sc_zoom_in_alt] = new QShortcut(shortcut_zoom_in_alt, this);
+	connect(shortcuts[sc_zoom_in_alt], SIGNAL(activated()), this, SLOT(zoomIn()));
+	shortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
+	connect(shortcuts[sc_zoom_out_alt], SIGNAL(activated()), this, SLOT(zoomOut()));
+
+	for (int idx = 0; idx < shortcuts.size(); idx++) {
+		// assign widget shortcuts to all of them
+		shortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
+	}
+
 }
 
 void DkBaseViewPort::zoomConstraints(float minZoom, float maxZoom) {
