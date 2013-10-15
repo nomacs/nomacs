@@ -2419,6 +2419,8 @@ void DkNoMacs::resizeImage() {
 		resizeDialog->setExifDpi(xDpi);
 	}
 
+	qDebug() << "resize image: " << viewport()->getImage().size();
+
 	resizeDialog->setImage(viewport()->getImage());
 
 	if (resizeDialog->exec()) {

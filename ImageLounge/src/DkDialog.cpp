@@ -1092,17 +1092,21 @@ void DkResizeDialog::createLayout() {
 	// central widget
 	centralWidget = new QWidget(this);
 
-	QWidget* previewWidget = new QWidget();
+	QWidget* previewWidget = new QWidget(this);
 	previewWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	//previewWidget->setStyleSheet("QWidget{background-color: #CCC;}");
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
+	previewLayout->setAlignment(Qt::AlignHCenter);
+	previewLayout->setColumnStretch(0,1);
+	previewLayout->setColumnStretch(1,1);
 
 	//// preview
 	//QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
 	//s *= 0.5;
 	int minPx = 1;
 	int maxPx = 100000;
-	int minWidth = 0.1;
-	int maxWidth = 500000;
+	double minWidth = 0.001;
+	double maxWidth = 500000;
 	int decimals = 2;
 
 	QLabel* origLabelText = new QLabel(tr("Original"));
@@ -1121,7 +1125,7 @@ void DkResizeDialog::createLayout() {
 	//origView->setStyleSheet("QViewPort{border: 1px solid #888;}");
 
 	// shows the preview
-	previewLabel = new QLabel();
+	previewLabel = new QLabel(this);
 	previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
@@ -1529,12 +1533,12 @@ void DkResizeDialog::on_resampleBox_currentIndexChanged(int idx) {
 
 void DkResizeDialog::updateSnippets() {
 
-	if (img.isNull() || !isVisible())
+	if (img.isNull() /*|| !isVisible()*/)
 		return;
 
 	//// fix layout issues - sorry
 	//origView->setFixedWidth(width()*0.5f-30);
-	previewLabel->setMinimumWidth(origView->width());
+	//previewLabel->setFixedWidth(origView->width()-2);
 	//origView->setFixedHeight(width()*0.5f-30);
 	//previewLabel->setFixedHeight(width()*0.5f-30);
 
@@ -1558,14 +1562,15 @@ void DkResizeDialog::updateSnippets() {
 
 void DkResizeDialog::drawPreview() {
 
-	if (img.isNull() || !isVisible())
+	if (img.isNull() || !isVisible()) 
 		return;
 
 	newImg = origView->getCurrentImageRegion();
 	newImg = resizeImg(newImg);
 
 	//previewLabel->setScaledContents(true);
-	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+	QSize s = QSize(previewLabel->width()-3, previewLabel->height()-3);	// fixes layout issues
+	QImage img = newImg.scaled(s, Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
 
 
