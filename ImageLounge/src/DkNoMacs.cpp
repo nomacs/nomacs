@@ -1638,6 +1638,7 @@ void DkNoMacs::enterFullScreen() {
 	
 	menuBar()->hide();
 	toolbar->hide();
+	movieToolbar->hide();
 	statusbar->hide();
 	showFullScreen();
 
