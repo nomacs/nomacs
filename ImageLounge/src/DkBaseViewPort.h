@@ -32,6 +32,8 @@
 #include <QTimer>
 #include <QMovie>
 
+#include <float.h>
+
 // gestures
 #include <QSwipeGesture>
 

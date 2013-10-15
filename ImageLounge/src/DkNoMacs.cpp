@@ -78,7 +78,9 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
+#ifdef WITH_OPENCV
 	mosaicDialog = 0;
+#endif
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
@@ -617,7 +619,9 @@ void DkNoMacs::createMenu() {
 #ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 #endif
+#ifdef WITH_OPENCV
 	toolsMenu->addAction(toolsActions[menu_tools_mosaic]);
+#endif
 
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
@@ -2476,7 +2480,7 @@ void DkNoMacs::exportTiff() {
 }
 
 void DkNoMacs::computeMosaic() {
-
+#ifdef WITH_OPENCV
 	//if (!mosaicDialog)
 	mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 
@@ -2490,6 +2494,7 @@ void DkNoMacs::computeMosaic() {
 	}
 
 	mosaicDialog->deleteLater();
+#endif
 }
 
 void DkNoMacs::openImgManipulationDialog() {

@@ -97,7 +97,9 @@ class DkForceThumbDialog;
 class DkTrainDialog;
 class DkExplorer;
 class DkExportTiffDialog;
+#ifdef WITH_OPENCV
 class DkMosaicDialog;
+#endif
 class DkImageManipulationDialog;
 class DkUpdater;
 class DkLocalManagerThread;
@@ -635,7 +637,9 @@ protected:
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
 	DkExportTiffDialog* exportTiffDialog;
+#ifdef WITH_OPENCV
 	DkMosaicDialog* mosaicDialog;
+#endif
 
 	DkImageManipulationDialog* imgManipulationDialog;
 

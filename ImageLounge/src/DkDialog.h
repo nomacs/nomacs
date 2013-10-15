@@ -813,7 +813,7 @@ protected:
 
 	};
 };
-
+#ifdef WITH_OPENCV
 class DkMosaicDialog : public QDialog {
 	Q_OBJECT
 
@@ -904,7 +904,7 @@ protected:
 
 	};
 };
-
+#endif
 
 class DkForceThumbDialog : public QDialog {
 	Q_OBJECT
