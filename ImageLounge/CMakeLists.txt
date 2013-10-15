@@ -353,6 +353,7 @@ set(NOMACS_TRANSLATIONS
 		translations/nomacs_de.ts
 		translations/nomacs_en.ts
 		translations/nomacs_es.ts		
+		translations/nomacs_fr.ts
 		translations/nomacs_it.ts
 		translations/nomacs_pl.ts
 		translations/nomacs_pt.ts
