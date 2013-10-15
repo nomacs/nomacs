@@ -539,7 +539,8 @@ void DkSettings::setToDefaultSettings() {
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.bgColorWidget = QColor(0, 0, 0, 100);
 	display_p.bgColor = QColor(100, 100, 100, 255);
-	display_p.bgColor = QColor(219, 89, 2, 255);
+	display_p.iconColor = QColor(100,100,100,255);
+	//display_p.bgColor = QColor(219, 89, 2, 255);
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;
 	display_p.thumbPreviewSize = 64;
@@ -556,7 +557,7 @@ void DkSettings::setToDefaultSettings() {
 	slideShow_p.filter = 0;
 	slideShow_p.time = 3.0;
 	slideShow_p.display = QBitArray(DkDisplaySettingsWidget::display_end, true);
-	slideShow_p.backgroundColor = QColor(217, 219, 228, 100);
+	slideShow_p.backgroundColor = QColor(86, 86, 90, 255);
 	slideShow_p.silentFullscreen = true;
 
 	meta_p.metaDataBits = QBitArray(DkMetaDataSettingsWidget::desc_end, false);

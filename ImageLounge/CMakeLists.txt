@@ -21,7 +21,7 @@ OPTION (ENABLE_WEBP "Compile with webP support (webP)" ON)
 OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 
-set(NOMACS_VERSION 1.4.0)
+set(NOMACS_VERSION 1.6.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
