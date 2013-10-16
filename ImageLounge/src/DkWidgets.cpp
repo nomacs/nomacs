@@ -2728,7 +2728,7 @@ void DkFileInfoLabel::updateTitle(const QFileInfo& file, const QString& attr) {
 
 void DkFileInfoLabel::updateDate(const QString& date) {
 
-	QString dateConverted = DkUtils::convertDate(date, file);
+	QString dateConverted = DkUtils::convertDateString(date, file);
 
 	this->date->setText(dateConverted);
 	this->date->setAlignment(Qt::AlignRight);
@@ -3337,7 +3337,7 @@ void DkMetaDataInfo::readTags() {
 
 					if (tmp.contains("Date")) {
 						
-						Value = DkUtils::convertDate(Value, file);
+						Value = DkUtils::convertDateString(Value, file);
 					}
 
 

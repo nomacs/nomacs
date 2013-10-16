@@ -54,6 +54,17 @@ bool compLogicQString(const QString & lhs, const QString & rhs) {
 
 bool compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {
 
+	//DkMetaData ld(lhf);
+	//DkMetaData rd(rhf);
+
+	//QDateTime ldt = DkUtils::convertDate(QString::fromStdString(ld.getExifValue("DateTimeOriginal")), lhf);
+	//QDateTime rdt = DkUtils::convertDate(QString::fromStdString(rd.getExifValue("DateTimeOriginal")), rhf);
+
+	//return ldt < rdt;
+
+	////QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
+
+
 	return lhf.created() < rhf.created();
 }
 
