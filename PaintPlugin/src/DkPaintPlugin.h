@@ -94,6 +94,7 @@ public slots:
 	void setPanning(bool checked);
 	void applyChangesAndClose();
 	void discardChangesAndClose();
+	virtual void setVisible(bool visible);
 
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
@@ -152,7 +153,7 @@ signals:
 	void paintHint(int paintMode);
 	void shadingHint(bool invert);
 	void panSignal(bool checked);
-	void showToolbar(QToolBar* toolbar, bool show);
+	//void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
 	void createLayout();

@@ -173,13 +173,16 @@ void DkPaintViewPort::init() {
 	pen = QColor(0,0,0);
 	pen.setWidth(1);
 	paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
-	paintToolbar->setVisible(true);
+	// >DIR: the toolbar gets visible when it is added to nomacs [16.10.2013 markus]
+	//paintToolbar->setVisible(true);	
 	connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
 	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
 	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 	connect(paintToolbar, SIGNAL(showToolbar(QToolBar*, bool)), this, SIGNAL(showToolbar(QToolBar*, bool)));
+	
+	
 	DkPluginViewPort::init();
 }
 
@@ -382,6 +385,14 @@ bool DkPaintViewPort::isCanceled() {
 	return cancelTriggered;
 }
 
+void DkPaintViewPort::setVisible(bool visible) {
+
+	if (paintToolbar)
+		emit showToolbar(paintToolbar, visible);
+
+	DkPluginViewPort::setVisible(visible);
+}
+
 /*-----------------------------------DkPaintToolBar ---------------------------------------------*/
 DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
 
@@ -486,13 +497,15 @@ void DkPaintToolBar::setVisible(bool visible) {
 	if (!visible)
 		emit colorSignal(QColor(0,0,0));
 	else {
-		emit colorSignal(penCol);
+		emit colorSignal(penCol);	// >DIR: these signals may not be connected at the time of the first show [16.10.2013 markus]
 		widthBox->setValue(1);
 		panAction->setChecked(false);
 	}
-	showToolbar(this, visible);
+
+
+	//emit showToolbar(this, visible);
 	//QToolBar::addSeparator();
-	//QToolBar::setVisible(visible);
+	QToolBar::setVisible(visible);
 }
 
 void DkPaintToolBar::on_applyAction_triggered() {
