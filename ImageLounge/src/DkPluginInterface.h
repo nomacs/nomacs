@@ -80,7 +80,9 @@ class DkPluginViewPort : public QWidget {
 
 public:
 	DkPluginViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0) : QWidget(parent, flags) {
-		init();
+		
+		// >DIR: I have removed the init here (it was called twice before due to derived classes) [16.10.2013 markus]
+		//init();
 	};
 
 	void setWorldMatrix(QTransform* worldMatrix) {
