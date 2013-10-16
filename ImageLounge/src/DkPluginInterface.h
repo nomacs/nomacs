@@ -31,6 +31,7 @@
 #include <QString>
 #include <QImage>
 #include <QGraphicsView>
+#include <QToolbar>
 
 namespace nmc {
 
@@ -59,7 +60,7 @@ public:
     virtual QString pluginMenuName(const QString &runID = "") const = 0;
     virtual QString pluginStatusTip(const QString &runID) const = 0;
 	virtual QList<QAction*> pluginActions(QWidget* parent) { return QList<QAction*>();};
-    virtual QImage runPlugin(const QString &runID, const QImage &image) const = 0;
+    virtual QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 
 };
@@ -91,7 +92,8 @@ public:
 	};
 
 signals:
-	void imageEdited(QImage& image);
+	void closePlugin(bool askForSaving);
+	void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
 

@@ -542,6 +542,7 @@ public slots:
 	void runLoadedPlugin();
 	void openPluginManager();
 	void initPluginManager();
+	void applyPluginChanges(bool askForSaving);
 	//void shareFacebook();
 
 	// batch actions
@@ -583,6 +584,7 @@ protected:
 	// vars
 	QWidget *parent;
 	DkPluginManager* pluginManager;
+	QString currRunningPlugin;
 
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;

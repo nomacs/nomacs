@@ -486,12 +486,12 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 
 void DkControlWidget::setPluginWidget(DkPluginViewPort* pluginWidget) {
 
-	if (!pluginWidget)
-		return;
-
 	viewport->setPaintWidget(pluginWidget);
-	pluginWidget->setWorldMatrix(viewport->getWorldMatrixPtr());
-	pluginWidget->setImgMatrix(viewport->getImageMatrixPtr());
+
+	if (pluginWidget) {
+		pluginWidget->setWorldMatrix(viewport->getWorldMatrixPtr());
+		pluginWidget->setImgMatrix(viewport->getImageMatrixPtr());
+	}
 }
 
 void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited, QString attr) {
@@ -738,10 +738,16 @@ void DkViewPort::release() {
 void DkViewPort::setPaintWidget(QWidget* widget) {
 
 	// always removes old widgets...
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->addWidget(widget);
 
-	setLayout(layout);
+	delete layout();
+
+	if(widget) {
+		QVBoxLayout* layout = new QVBoxLayout(this);
+
+		layout->addWidget(widget);
+
+		setLayout(layout);
+	}
 }
 
 #ifdef WITH_OPENCV

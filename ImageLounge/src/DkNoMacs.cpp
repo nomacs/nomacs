@@ -3328,8 +3328,10 @@ void DkNoMacs::runLoadedPlugin() {
    if (cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
 
 	   DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
-
+	   currRunningPlugin = key;
 	   viewport()->getController()->setPluginWidget(vPlugin->getViewPort());
+	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool)), this, SLOT(applyPluginChanges(bool)));
+	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 
 	   //DkViewPort* vp = viewport();
 	   //
@@ -3342,7 +3344,6 @@ void DkNoMacs::runLoadedPlugin() {
    else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
 
 	    QImage tmpImg = viewport()->getImageLoader()->getImage();
-	    DkViewPort *vp = viewport();
 	    QImage result = cPlugin->runPlugin(key, tmpImg);
 	    if(!result.isNull()) viewport()->setEditedImage(result);
    }
@@ -3356,6 +3357,18 @@ void DkNoMacs::initPluginManager() {
 	}
 }
 
+void DkNoMacs::applyPluginChanges(bool askForSaving) {
+
+	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
+	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
+	QImage pluginImage = vPlugin->runPlugin();	// empty vars - viewport plugin doesn't need them
+
+	if (!pluginImage.isNull()) {
+		if (!askForSaving) viewport()->setEditedImage(pluginImage);
+	}
+
+	viewport()->getController()->setPluginWidget(NULL);
+}
 
 // DkNoMacsSync --------------------------------------------------------------------
 DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, flags) {
