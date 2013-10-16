@@ -439,9 +439,6 @@ void DkControlWidget::showThumbView(bool visible) {
 	}
 	else {
 
-		if (!viewport->getImageLoader()->hasImage())
-			viewport->loadFile(thumbPool->getCurrentFile());
-
 		// set again the last image
 		if (widgets[thumb_widget]->isVisible())
 			viewport->setImage(viewport->getImageLoader()->getImage());
