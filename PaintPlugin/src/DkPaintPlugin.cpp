@@ -171,6 +171,8 @@ void DkPaintViewPort::init() {
 	defaultCursor = Qt::CrossCursor;
 	setCursor(defaultCursor);
 	pen = QColor(0,0,0);
+	pen.setCapStyle(Qt::RoundCap);
+	pen.setJoinStyle(Qt::RoundJoin);
 	pen.setWidth(1);
 	paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
 	// >DIR: the toolbar gets visible when it is added to nomacs [16.10.2013 markus]
@@ -208,9 +210,9 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 					
 					isOutside = false;
 					paths.append(QPainterPath());
-					paths.last().moveTo(mapToViewport(event->posF()));
+					paths.last().moveTo(mapToImage(event->posF()));
 					//paths.last().addRect(QRectF(mapToViewport(event->posF()), QSizeF(1,1)));
-					paths.last().lineTo(mapToViewport(event->posF())+QPointF(0.1,0));
+					paths.last().lineTo(mapToImage(event->posF())+QPointF(0.1,0));
 					//paths.last().lineTo(mapToViewport(event->posF()));
 					pathsPen.append(pen);
 					update();
@@ -255,11 +257,11 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
 					if (isOutside) {
 						paths.append(QPainterPath());
-						paths.last().moveTo(mapToViewport(event->posF()));
+						paths.last().moveTo(mapToImage(event->posF()));
 						pathsPen.append(pen);
 					}
 					else {
-						QPointF point = mapToViewport(event->posF());
+						QPointF point = mapToImage(event->posF());
 						paths.last().lineTo(point);
 						update();
 					}
@@ -296,13 +298,18 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 	QPainter painter(this);
 	
 	if (worldMatrix)
-		painter.setWorldTransform(*worldMatrix);
+		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
 	for (int idx = 0; idx < paths.size(); idx++) {
 
 		painter.setPen(pathsPen.at(idx));
 		painter.drawPath(paths.at(idx));
 	}
+
+	//// DEBUG show my widget
+	//painter.setBrush(QColor(0,0,0,100));
+	//painter.drawRect(geometry());
+
 	painter.end();
 
 	DkPluginViewPort::paintEvent(event);
@@ -481,7 +488,7 @@ void DkPaintToolBar::createLayout() {
 	widthBox->setObjectName("widthBox");
 	widthBox->setSuffix("px");
 	widthBox->setMinimum(1);
-	widthBox->setMaximum(15);
+	widthBox->setMaximum(500);	// huge sizes since images might have high resolutions
 
 	addAction(applyAction);
 	addAction(cancelAction);
