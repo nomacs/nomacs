@@ -11,12 +11,12 @@
 !define BUILD_DIR "..\build2012x64\ReallyRelease"
 ; !define BUILD_DIR "..\build2010x86\ReallyRelease"
 ; !define TRANSLATION_DIR "translation"
-!define TRANSLATION_DIR "..\build2012x86"
+!define TRANSLATION_DIR "..\build2012x64"
 !define README_DIR "Readme"
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "1.4.0"
+!define PRODUCT_VERSION "1.6.0 [x64]"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"

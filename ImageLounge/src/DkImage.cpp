@@ -1225,6 +1225,7 @@ void DkImageLoader::initFileFilters() {
 	if (qtFormats.contains("tga"))		openFilters.append("Targa Image File (*.tga)");
 	if (qtFormats.contains("mng"))		openFilters.append("Multi-Image Network Graphics (*.mng)");
 
+#ifdef WITH_OPENCV
 	// raw format
 	openFilters.append("Nikon Raw (*.nef)");
 	openFilters.append("Canon Raw (*.crw *.cr2)");
@@ -1232,7 +1233,8 @@ void DkImageLoader::initFileFilters() {
 	openFilters.append("Digital Negativ (*.dng)");
 	openFilters.append("Panasonic Raw (*.rw2)");
 	openFilters.append("Minolta Raw (*.mrw)");
-	
+#endif
+
 	// stereo formats
 	openFilters.append("JPEG Stereo (*.jps)");
 	openFilters.append("PNG Stereo (*.pns)");
@@ -3128,9 +3130,11 @@ void DkCacher::index() {
 				tmpCache.append(tmp);
 		}
 
+		qDebug() << "cur cache after updating: " << DkUtils::readableByte(curCache);
+
 		cache = tmpCache;
 
-		curFileIdx = -1;
+		//curFileIdx = -1;
 		somethingTodo = true;
 		updateFiles = false;
 	}

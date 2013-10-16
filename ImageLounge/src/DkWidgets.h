@@ -64,6 +64,7 @@
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsItem>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -672,13 +673,15 @@ protected:
 	bool isHovered;
 };
 
-class DkThumbWidget : public QGraphicsScene {
+class DkThumbScene : public QGraphicsScene {
 	Q_OBJECT
 
 public:
-	DkThumbWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
+	DkThumbScene(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
 
 	void updateLayout();
+	QList<QUrl> getSelectedUrls() const;
+	void setFile(const QFileInfo& file);
 
 public slots:
 	void updateThumbLabels();
@@ -695,12 +698,7 @@ signals:
 	void statusInfoSignal(QString msg, int pos = 0);
 
 protected:
-	void wheelEvent(QWheelEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
-	void mousePressEvent(QGraphicsSceneMouseEvent *event);
-	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+	//void wheelEvent(QWheelEvent *event);
 
 	DkThumbPool* thumbPool;
 	int xOffset;
@@ -708,7 +706,6 @@ protected:
 	int numCols;
 	bool firstLayout;
 	bool itemClicked;
-	QPointF mousePos;
 
 	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
 };
@@ -717,12 +714,20 @@ class DkThumbsView : public QGraphicsView {
 	Q_OBJECT
 
 public:
-	DkThumbsView(DkThumbWidget* scene, QWidget* parent = 0);
+	DkThumbsView(DkThumbScene* scene, QWidget* parent = 0);
 
 protected:
 	void wheelEvent(QWheelEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
 
-	DkThumbWidget* scene;
+	DkThumbScene* scene;
+	QPointF mousePos;
+
 };
 
 class DkThumbScrollWidget : public DkWidget {
@@ -739,7 +744,7 @@ public:
 
 	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	DkThumbWidget* getThumbWidget() {
+	DkThumbScene* getThumbWidget() {
 		return thumbsScene;
 	};
 
@@ -751,7 +756,7 @@ protected:
 	void resizeEvent(QResizeEvent *event);
 	void contextMenuEvent(QContextMenuEvent *event);
 
-	DkThumbWidget* thumbsScene;
+	DkThumbScene* thumbsScene;
 	DkThumbPool* thumbPool;
 	DkThumbsView* view;
 

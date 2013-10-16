@@ -194,6 +194,7 @@ void DkSettings::load(bool force) {
 
 	display_p.bgColorFrameless = settings.value("bgColorFrameless", display_p.bgColorFrameless).value<QColor>();
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
+	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
 	display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
@@ -382,6 +383,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("bgColorFrameless", display_p.bgColorFrameless);
 	if (!force && display_p.thumbSize != display_d.thumbSize)
 		settings.setValue("thumbSize", display_p.thumbSize);
+	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
+		settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
 	if (!force && display_p.saveThumb != display_d.saveThumb)
 		settings.setValue("saveThumb", display_p.saveThumb);
 	if (!force && display_p.antiAliasing != display_d.antiAliasing)
@@ -536,9 +539,11 @@ void DkSettings::setToDefaultSettings() {
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.bgColorWidget = QColor(0, 0, 0, 100);
 	display_p.bgColor = QColor(100, 100, 100, 255);
-	display_p.bgColor = QColor(219, 89, 2, 255);
+	display_p.iconColor = QColor(100,100,100,255);
+	//display_p.bgColor = QColor(219, 89, 2, 255);
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;
+	display_p.thumbPreviewSize = 64;
 	display_p.saveThumb = false;
 	display_p.antiAliasing = true;
 	display_p.tpPattern = false;
@@ -552,7 +557,7 @@ void DkSettings::setToDefaultSettings() {
 	slideShow_p.filter = 0;
 	slideShow_p.time = 3.0;
 	slideShow_p.display = QBitArray(DkDisplaySettingsWidget::display_end, true);
-	slideShow_p.backgroundColor = QColor(217, 219, 228, 100);
+	slideShow_p.backgroundColor = QColor(86, 86, 90, 255);
 	slideShow_p.silentFullscreen = true;
 
 	meta_p.metaDataBits = QBitArray(DkMetaDataSettingsWidget::desc_end, false);

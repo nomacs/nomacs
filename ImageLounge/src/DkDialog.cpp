@@ -1092,17 +1092,21 @@ void DkResizeDialog::createLayout() {
 	// central widget
 	centralWidget = new QWidget(this);
 
-	QWidget* previewWidget = new QWidget();
+	QWidget* previewWidget = new QWidget(this);
 	previewWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	//previewWidget->setStyleSheet("QWidget{background-color: #CCC;}");
 	QGridLayout* previewLayout = new QGridLayout(previewWidget);
+	previewLayout->setAlignment(Qt::AlignHCenter);
+	previewLayout->setColumnStretch(0,1);
+	previewLayout->setColumnStretch(1,1);
 
 	//// preview
 	//QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
 	//s *= 0.5;
 	int minPx = 1;
 	int maxPx = 100000;
-	int minWidth = 0.1;
-	int maxWidth = 500000;
+	double minWidth = 0.001;
+	double maxWidth = 500000;
 	int decimals = 2;
 
 	QLabel* origLabelText = new QLabel(tr("Original"));
@@ -1121,7 +1125,7 @@ void DkResizeDialog::createLayout() {
 	//origView->setStyleSheet("QViewPort{border: 1px solid #888;}");
 
 	// shows the preview
-	previewLabel = new QLabel();
+	previewLabel = new QLabel(this);
 	previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
@@ -1130,7 +1134,7 @@ void DkResizeDialog::createLayout() {
 	previewLayout->addWidget(origView, 1, 0);
 	previewLayout->addWidget(previewLabel, 1, 1);
 
-	// all text dialogs... // TODO: go on here...
+	// all text dialogs...
 	QIntValidator* intValidator = new QIntValidator(1, 100000, 0);
 	QDoubleValidator* doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
 	doubleValidator->setRange(0, 100, 2);
@@ -1529,12 +1533,12 @@ void DkResizeDialog::on_resampleBox_currentIndexChanged(int idx) {
 
 void DkResizeDialog::updateSnippets() {
 
-	if (img.isNull() || !isVisible())
+	if (img.isNull() /*|| !isVisible()*/)
 		return;
 
 	//// fix layout issues - sorry
 	//origView->setFixedWidth(width()*0.5f-30);
-	previewLabel->setMinimumWidth(origView->width());
+	//previewLabel->setFixedWidth(origView->width()-2);
 	//origView->setFixedHeight(width()*0.5f-30);
 	//previewLabel->setFixedHeight(width()*0.5f-30);
 
@@ -1558,14 +1562,15 @@ void DkResizeDialog::updateSnippets() {
 
 void DkResizeDialog::drawPreview() {
 
-	if (img.isNull() || !isVisible())
+	if (img.isNull() || !isVisible()) 
 		return;
 
 	newImg = origView->getCurrentImageRegion();
 	newImg = resizeImg(newImg);
 
 	//previewLabel->setScaledContents(true);
-	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+	QSize s = QSize(previewLabel->width()-3, previewLabel->height()-3);	// fixes layout issues
+	QImage img = newImg.scaled(s, Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
 
 
@@ -3014,6 +3019,7 @@ void DkExportTiffDialog::enableTIFFSave(bool enable) {
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(enable);
 }
 
+#ifdef WITH_OPENCV
 // DkMosaicDialog --------------------------------------------------------------------
 DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
@@ -3390,6 +3396,7 @@ void DkMosaicDialog::compute() {
 	mosaic = QImage();
 	sliderWidget->hide();
 	viewport->show();
+	preview->setForceFastRendering(true);
 	preview->show();
 
 	enableAll(false);
@@ -3435,12 +3442,13 @@ void DkMosaicDialog::mosaicFinished() {
 		sliderWidget->show();
 		msgLabel->hide();
 		viewport->hide();
+		preview->setForceFastRendering(false);
+
 		updatePostProcess();	// add values
 		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
 	}
-	else {
+	else
 		enableAll(true);
-	}
 }
 
 int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int newWidth, int numPatchesH) {
@@ -3473,7 +3481,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 
 	// keeps track of the weights
 	cv::Mat cc(numPatches.height(), numPatches.width(), CV_32FC1);
-	cc = 0;
+	cc.setTo(0);
 	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);;	// tells us if we have already computed the real patch
 
 	filesUsed.resize(numPatches.height()*numPatches.width());
@@ -3545,7 +3553,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 			cv::Mat ccTmp(cc.size(), cc.depth());
 		
 			if (!force)
-				ccTmp = 0;
+				ccTmp.setTo(0);
 			else
 				ccTmp = cc.clone();
 
@@ -3956,7 +3964,7 @@ void DkMosaicDialog::enableMosaicSave(bool enable) {
 	if (!enable)
 		buttons->button(QDialogButtonBox::Save)->setEnabled(enable);
 }
-
+#endif
 // DkForceThumbDialog --------------------------------------------------------------------
 DkForceThumbDialog::DkForceThumbDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 

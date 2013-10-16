@@ -79,7 +79,9 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	openWithDialog = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
+#ifdef WITH_OPENCV
 	mosaicDialog = 0;
+#endif
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
@@ -620,11 +622,15 @@ void DkNoMacs::createMenu() {
 	toolsMenu = menu->addMenu(tr("&Tools"));
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
+#ifdef WITH_OPENCV
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
+#endif
 #ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
 #endif
+#ifdef WITH_OPENCV
 	toolsMenu->addAction(toolsActions[menu_tools_mosaic]);
+#endif
 
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
@@ -881,7 +887,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_crop]->setStatusTip(tr("cut the current image"));
 	editActions[menu_edit_crop]->setCheckable(true);
 	editActions[menu_edit_crop]->setChecked(false);
-	connect(editActions[menu_edit_crop], SIGNAL(toggled(bool)), vp->getController(), SLOT(showCrop(bool)));
+	connect(editActions[menu_edit_crop], SIGNAL(triggered(bool)), vp->getController(), SLOT(showCrop(bool)));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -1103,7 +1109,7 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_filter]->setStatusTip(tr("Find an image"));
 	toolsActions[menu_tools_filter]->setCheckable(true);
 	toolsActions[menu_tools_filter]->setChecked(false);
-	connect(toolsActions[menu_tools_filter], SIGNAL(toggled(bool)), this, SLOT(find(bool)));
+	connect(toolsActions[menu_tools_filter], SIGNAL(triggered(bool)), this, SLOT(find(bool)));
 
 	toolsActions[menu_tools_manipulation] = new QAction(toolsIcons[icon_tools_manipulation], tr("Image &Manipulation"), this);
 	toolsActions[menu_tools_manipulation]->setShortcut(shortcut_manipulation);
@@ -1175,66 +1181,11 @@ void DkNoMacs::createShortcuts() {
 
 	shortcuts.resize(sc_end);
 
-	// panning
-	shortcuts[sc_pan_left] = new QShortcut(shortcut_panning_left, this);
-	QObject::connect( shortcuts[sc_pan_left], SIGNAL( activated ()), vp, SLOT(shiftLeft()));
-	shortcuts[sc_pan_right] = new QShortcut(shortcut_panning_right, this);
-	QObject::connect( shortcuts[sc_pan_right], SIGNAL( activated ()), vp, SLOT( shiftRight() ));
-	shortcuts[sc_pan_up] = new QShortcut(shortcut_panning_up, this);
-	QObject::connect(shortcuts[sc_pan_up], SIGNAL( activated ()), vp, SLOT( shiftUp() ));
-	shortcuts[sc_pan_down] = new QShortcut(shortcut_panning_down, this);
-	QObject::connect(shortcuts[sc_pan_down], SIGNAL( activated ()), vp, SLOT( shiftDown() ));
-
-	// files
-	shortcuts[sc_first_file] = new QShortcut(shortcut_first_file, this);
-	QObject::connect(shortcuts[sc_first_file], SIGNAL( activated ()), vp, SLOT( loadFirst() ));
-	shortcuts[sc_last_file] = new QShortcut(shortcut_last_file, this);
-	QObject::connect(shortcuts[sc_last_file], SIGNAL( activated ()), vp, SLOT( loadLast() ));
-
-	shortcuts[sc_skip_prev] = new QShortcut(shortcut_skip_prev, this);
-	QObject::connect(shortcuts[sc_skip_prev], SIGNAL( activated()), vp, SLOT( loadSkipPrev10() ));
-	shortcuts[sc_skip_next] = new QShortcut(shortcut_skip_next, this);
-	QObject::connect(shortcuts[sc_skip_next], SIGNAL( activated ()), vp, SLOT( loadSkipNext10() ));
-
-
 	shortcuts[sc_test_img] = new QShortcut(shortcut_test_img, this);
 	QObject::connect(shortcuts[sc_test_img], SIGNAL( activated ()), vp, SLOT( loadLena() ));
 
 	shortcuts[sc_test_rec] = new QShortcut(shortcut_test_rec, this);
 	QObject::connect(shortcuts[sc_test_rec], SIGNAL( activated ()), this, SLOT( loadRecursion() ));
-
-	shortcuts[sc_first_sync] = new QShortcut(shortcut_first_file_sync, this);
-	QObject::connect(shortcuts[sc_first_sync], SIGNAL( activated ()), vp, SLOT( loadFirst() ));
-
-	shortcuts[sc_last_sync] = new QShortcut(shortcut_last_file_sync, this);
-	QObject::connect(shortcuts[sc_last_sync], SIGNAL( activated ()), vp, SLOT( loadLast() ));
-
-	shortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
-	QObject::connect(shortcuts[sc_next_sync], SIGNAL( activated ()), vp, SLOT( loadNextFileFast() ));
-
-	QObject::connect(this, SIGNAL( fourthButtonPressed()), vp, SLOT( loadPrevFileFast() ));
-	QObject::connect(this, SIGNAL( fifthButtonPressed()), vp, SLOT( loadNextFileFast() ));
-
-	shortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
-	QObject::connect(shortcuts[sc_prev_sync], SIGNAL( activated ()), vp, SLOT( loadPrevFileFast() ));
-
-	shortcuts[sc_zoom_in] = new QShortcut(shortcut_zoom_in, this);
-	connect(shortcuts[sc_zoom_in], SIGNAL(activated()), vp, SLOT(zoomIn()));
-
-	shortcuts[sc_zoom_out] = new QShortcut(shortcut_zoom_out, this);
-	connect(shortcuts[sc_zoom_out], SIGNAL(activated()), vp, SLOT(zoomOut()));
-
-	shortcuts[sc_zoom_in_alt] = new QShortcut(shortcut_zoom_in_alt, this);
-	connect(shortcuts[sc_zoom_in_alt], SIGNAL(activated()), vp, SLOT(zoomIn()));
-
-	shortcuts[sc_zoom_out_alt] = new QShortcut(shortcut_zoom_out_alt, this);
-	connect(shortcuts[sc_zoom_out_alt], SIGNAL(activated()), vp, SLOT(zoomOut()));
-
-	//shortcuts[sc_send_img] = new QShortcut(shortcut_send_img, this);
-	//connect(shortcuts[sc_send_img], SIGNAL(activated()), vp, SLOT(tcpSendImage()));
-
-	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
-	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), vp->getImageLoader(), SLOT(deleteFile()));
 
 	for (int idx = 0; idx < shortcuts.size(); idx++) {
 
@@ -1306,9 +1257,9 @@ void DkNoMacs::enableMovieActions(bool enable) {
 		addToolBar(movieToolbar);
 	else
 		removeToolBar(movieToolbar);
-
-	movieToolbar->setVisible(enable);
-
+	
+	if (toolbar->isVisible())
+		movieToolbar->setVisible(enable);
 }
 
 
@@ -1711,6 +1662,7 @@ void DkNoMacs::enterFullScreen() {
 	
 	menuBar()->hide();
 	toolbar->hide();
+	movieToolbar->hide();
 	statusbar->hide();
 	showFullScreen();
 
@@ -2004,10 +1956,7 @@ void DkNoMacs::openDir() {
 
 	qDebug() << "loading directory: " << dirName;
 	
-	if (viewport()->getController()->getThumbWidget()->isVisible())
-		viewport()->getController()->getThumbPool()->setFile(QFileInfo(dirName));
-	else
-		viewport()->loadFile(QFileInfo(dirName));
+	viewport()->loadFile(QFileInfo(dirName));
 }
 
 void DkNoMacs::openFile() {
@@ -2444,6 +2393,8 @@ void DkNoMacs::resizeImage() {
 		resizeDialog->setExifDpi(xDpi);
 	}
 
+	qDebug() << "resize image: " << viewport()->getImage().size();
+
 	resizeDialog->setImage(viewport()->getImage());
 
 	if (resizeDialog->exec()) {
@@ -2501,7 +2452,7 @@ void DkNoMacs::exportTiff() {
 }
 
 void DkNoMacs::computeMosaic() {
-
+#ifdef WITH_OPENCV
 	//if (!mosaicDialog)
 	mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 
@@ -2515,6 +2466,7 @@ void DkNoMacs::computeMosaic() {
 	}
 
 	mosaicDialog->deleteLater();
+#endif
 }
 
 void DkNoMacs::openImgManipulationDialog() {

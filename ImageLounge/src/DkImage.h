@@ -81,20 +81,14 @@
 using namespace cv;
 #endif
 
-#ifdef WITH_LIBTIFF
-	#ifdef Q_WS_WIN
-		#include "tif_config.h"	
-	#endif
-	#include "tiffio.h"
-#endif
 
 #include <set>
 
-#ifdef DK_DLL
-#define DllExport Q_DECL_EXPORT
-#else
-#define DllExport
-#endif
+//#ifdef DK_DLL
+//#define DllExport Q_DECL_EXPORT
+//#else
+//#define DllExport
+//#endif
 
 // TODO: ifdef
 //#include <ShObjIdl.h>
@@ -113,6 +107,25 @@ using namespace cv;
 #ifdef Q_WS_X11
 	typedef  unsigned char byte;
 #endif
+
+#ifdef WITH_LIBTIFF
+	#ifdef Q_WS_WIN
+		#include "tif_config.h"	
+	#endif
+
+	#ifdef Q_WS_MAC
+		#define uint64 uint64_hack_
+		#define int64 int64_hack_
+	#endif // Q_WS_MAC
+
+	#include "tiffio.h"
+
+	#ifdef Q_WS_MAC
+		#undef uint64
+		#undef int64
+	#endif // Q_WS_MAC
+#endif
+
 
 namespace nmc {
 

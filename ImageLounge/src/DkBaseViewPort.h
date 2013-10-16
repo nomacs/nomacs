@@ -31,6 +31,9 @@
 #include <QCoreApplication>
 #include <QTimer>
 #include <QMovie>
+#include <QShortcut>
+
+#include <float.h>
 
 // gestures
 #include <QSwipeGesture>
@@ -42,10 +45,12 @@
 #include "extern/qevent_p.h"
 #endif
 
-#ifdef DK_DLL
-#define DllExport Q_DECL_EXPORT
-#else
-#define DllExport Q_DECL_IMPORT
+#ifndef DllExport
+	#ifdef DK_DLL
+	#define DllExport Q_DECL_EXPORT
+	#else
+	#define DllExport Q_DECL_IMPORT
+	#endif
 #endif
 
 namespace nmc {
@@ -67,6 +72,31 @@ public:
 		swipes_end
 	};
 	
+	enum shortcuts{
+		sc_pan_up,
+		sc_pan_down,
+		sc_pan_left,
+		sc_pan_right,
+		sc_zoom_in,
+		sc_zoom_out,
+		sc_zoom_in_alt,
+		sc_zoom_out_alt,
+
+		sc_end,
+	};
+
+	enum keys {
+		shortcut_panning_left 	= Qt::CTRL + Qt::Key_Left,
+		shortcut_panning_right 	= Qt::CTRL + Qt::Key_Right,
+		shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
+		shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down,
+
+		shortcut_zoom_in 		= Qt::Key_Plus,
+		shortcut_zoom_out		= Qt::Key_Minus,
+		shortcut_zoom_in_alt	= Qt::Key_Up,
+		shortcut_zoom_out_alt	= Qt::Key_Down,
+
+	};
 	
 	DkBaseViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
 	virtual ~DkBaseViewPort();
@@ -75,8 +105,8 @@ public:
 	void zoomConstraints(float minZoom = 0.01f, float maxZoom = 50.0f);
 	virtual void zoom(float factor = 0.5, QPointF center = QPointF(-1,-1));
 	void setForceFastRendering(bool fastRendering = true) {
-		this->forceFastRendering = forceFastRendering;
-	}
+		this->forceFastRendering = fastRendering;
+	};
 	
 	/**
 	 * Returns the scale factor for 100%.
@@ -87,7 +117,7 @@ public:
 		
 		updateImageMatrix();
 		return 1.0f/imgMatrix.m11();
-	}
+	};
 
 	void setPanControl(QPointF panControl) {
 		this->panControl = panControl;
@@ -169,6 +199,8 @@ protected:
 	virtual bool gestureEvent(QGestureEvent* event);
 	virtual void swipeAction(int swipeGesture) {};
 
+	QVector<QShortcut*> shortcuts;	
+
 	QPainter* painter;
 	Qt::KeyboardModifier altMod;		// it makes sense to switch these modifiers on linux (alt + mouse moves windows there)
 	Qt::KeyboardModifier ctrlMod;
@@ -206,6 +238,7 @@ protected:
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
 	virtual void centerImage();
 	virtual void changeCursor();
+	virtual void createShortcuts();
 
 };
 

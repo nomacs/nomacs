@@ -76,11 +76,11 @@
 
 #include "DkMath.h"
 
-#ifdef DK_DLL
-#define DllExport Q_DECL_EXPORT
-#else
-#define DllExport
-#endif
+//#ifdef DK_DLL
+//#define DllExport Q_DECL_EXPORT
+//#else
+//#define DllExport
+//#endif
 
 namespace nmc {
 
@@ -340,6 +340,21 @@ class DllExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
 
 public:
+	enum shortcutsFiles{
+		sc_first_file = sc_end,
+		sc_last_file,
+		sc_skip_prev,
+		sc_skip_next,
+		sc_next_sync,
+		sc_prev_sync,
+		sc_first_sync,
+		sc_last_sync,
+		sc_delete_silent,
+		//sc_play,
+
+		scf_end,
+	};
+
 	DkViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
 	virtual ~DkViewPort();
 
@@ -464,6 +479,7 @@ protected:
 	virtual int swipeRecognition(QNativeGestureEvent* event);	// dummy
 #endif
 	virtual void swipeAction(int swipeGesture);
+	virtual void createShortcuts();
 
 	virtual void loadMovie();
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
