@@ -782,13 +782,11 @@ void DkViewPort::createShortcuts() {
 
 void DkViewPort::setPaintWidget(QWidget* widget) {
 
-	// always removes old widgets...
-
 	delete layout();
 
 	if(widget) {
 		QVBoxLayout* layout = new QVBoxLayout(this);
-
+		layout->setContentsMargins(0,0,0,0);	// fixes small translations
 		layout->addWidget(widget);
 
 		setLayout(layout);

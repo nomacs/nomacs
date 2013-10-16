@@ -639,7 +639,7 @@ void DkNoMacs::createMenu() {
 		syncMenu = 0;
 
 	// plug-in menu
-	pluginsMenu = menu->addMenu(tr("&Plugins"));
+	pluginsMenu = menu->addMenu(tr("Pl&ugins"));
 	connect(pluginsMenu, SIGNAL(aboutToShow()), this, SLOT(initPluginManager()));
 	
 	helpMenu = menu->addMenu(tr("&?"));
