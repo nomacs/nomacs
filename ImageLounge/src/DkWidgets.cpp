@@ -459,7 +459,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 
 	resize(parent->width(), event->size().height());
 
-	if (currentFileIdx >= 0) {
+	if (currentFileIdx >= 0 && isVisible()) {
 		scrollToCurrentImage = true;
 		moveImageTimer->start(1);
 	}
@@ -652,8 +652,12 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 
 void DkFilePreview::moveImages() {
 
-	if (!isVisible())
+	qDebug() << "returning...";
+
+	if (!isVisible()) {
+		moveImageTimer->stop();
 		return;
+	}
 
 	if (scrollToCurrentImage) {
 		
