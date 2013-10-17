@@ -652,8 +652,6 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 
 void DkFilePreview::moveImages() {
 
-	qDebug() << "returning...";
-
 	if (!isVisible()) {
 		moveImageTimer->stop();
 		return;
