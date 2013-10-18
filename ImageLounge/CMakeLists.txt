@@ -21,6 +21,7 @@ OPTION (ENABLE_WEBP "Compile with webP support (webP)" ON)
 OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 
+
 set(NOMACS_VERSION 1.6.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
@@ -257,7 +258,7 @@ IF(ENABLE_TIFF)
 		ELSE ()
 			message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib")
 		ENDIF()
-
+		
 		SET(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")		
 		find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 	
@@ -474,6 +475,37 @@ IF (EXIV2_FOUND)
 		ENDFOREACH(qtlib)
 		
 		
+		# copy msvcp110.dll to Really Release
+		if (CMAKE_GENERATOR STREQUAL "Visual Studio 11" OR  CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64")
+			SET(VS_VERSION 11)
+		else()
+			SET(VS_VERSION 10)
+		endif()
+		
+		if (MSVC11)
+			GET_FILENAME_COMPONENT(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\11.0\\Setup\\VS;ProductDir] REALPATH CACHE)
+			SET(VS_VERSION 11)
+		elseif (MSVC10)
+			GET_FILENAME_COMPONENT(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Setup\\VS;ProductDir] REALPATH CACHE)
+			SET(VS_VERSION 10)
+		endif()
+		
+		if(CMAKE_CL_64)
+			set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x64/Microsoft.VC${VS_VERSION}0.CRT")
+		else()
+			set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x86/Microsoft.VC${VS_VERSION}0.CRT")
+		endif()
+		find_file(MSVCP NAMES msvcp${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+		find_file(MSVCR NAMES msvcr${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+		if(MSVCP)
+			FILE(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+			FILE(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+		else()
+			set(ERROR_MESSAGE "\nCould not find library msvcp110.dll. for really release")
+			message(STATUS  "${ERROR_MESSAGE}")
+		endif()
+
+		# create projects
 		SET(CMAKE_CONFIGURATION_TYPES "Debug;Release;ReallyRelease" CACHE STRING "limited configs" FORCE)
 		add_definitions(/Zc:wchar_t-)
 		SET(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
