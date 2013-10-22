@@ -493,7 +493,7 @@ void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
 
 void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
 
-#ifdef DK_DLL
+#ifdef DK_DLL_EXPORT
 	if (!event->isAutoRepeat())
 		emit keyReleaseSignal(event);	// make key presses available
 	//emit enableNoImageSignal(true);

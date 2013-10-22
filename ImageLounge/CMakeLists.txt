@@ -64,12 +64,17 @@ find_package(PkgConfig)
 pkg_check_modules(EXIV2  exiv2>=0.20)
 message(STATUS "exiv2 version by pkg-config: ${EXIV2_VERSION}")
 IF (NOT EXIV2_FOUND AND MSVC)
-
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/Win32/" )
+	endif()
+	
 	find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
 										"ReleaseDLL/exiv2.dll"
 										"DebugDLL/exiv2d.lib"
 										"DebugDLL/exiv2d.dll"
-					PATHS "../exiv2-0.23/msvc64/exiv2lib/Win32/" 
+					PATHS ${EXIV_SEARCH_PATH}
 					DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 					
 	find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" PATHS "../exiv2-0.23/msvc64/include" DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
@@ -179,10 +184,17 @@ IF (ENABLE_RAW)
                 message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
         ENDIF()
 	IF (NOT LIBRAW_FOUND AND MSVC)
+	
         	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.13.5/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
+			if(CMAKE_CL_64)
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/x64")
+			else()
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/Win32")
+			endif()
+			
         	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
-        	                            PATHS "../LibRaw-0.13.5/buildfiles/Win32" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
+        	                            PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
 
 	        IF( EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
                 	EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND 
