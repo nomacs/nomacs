@@ -58,10 +58,12 @@
 #include "BorderLayout.h"
 
 #ifndef DllExport
-#ifdef DK_DLL
+#ifdef DK_DLL_EXPORT
 #define DllExport Q_DECL_EXPORT
-#else
+#elif DK_DLL_IMPORT
 #define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
 #endif
 #endif
 
