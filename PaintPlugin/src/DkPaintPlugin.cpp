@@ -138,8 +138,6 @@ QImage DkPaintPlugin::runPlugin(const QString &runID, const QImage &image) const
 	QImage retImg = QImage();
 	if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
 
-	delete viewport;
-
 	return retImg;
 };
 
@@ -148,11 +146,22 @@ QImage DkPaintPlugin::runPlugin(const QString &runID, const QImage &image) const
 **/
 DkPluginViewPort* DkPaintPlugin::getViewPort() {
 
-	if (!viewport)
-		viewport = new DkPaintViewPort();
+	if (!viewport) {
+		viewport = new DkPaintViewPort();		
+		connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+	}
 
 	return viewport;
 }
+
+/**
+* sets the viewport pointer to NULL after the viewport is destroyed
+**/
+void DkPaintPlugin::viewportDestroyed() {
+
+	viewport = NULL;
+}
+
 
 Q_EXPORT_PLUGIN2(DkPaintPlugin, DkPaintPlugin)
 
@@ -175,15 +184,12 @@ void DkPaintViewPort::init() {
 	pen.setJoinStyle(Qt::RoundJoin);
 	pen.setWidth(1);
 	paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
-	// >DIR: the toolbar gets visible when it is added to nomacs [16.10.2013 markus]
-	//paintToolbar->setVisible(true);	
+
 	connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
 	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
 	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
-	connect(paintToolbar, SIGNAL(showToolbar(QToolBar*, bool)), this, SIGNAL(showToolbar(QToolBar*, bool)));
-	
 	
 	DkPluginViewPort::init();
 }
@@ -211,9 +217,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 					isOutside = false;
 					paths.append(QPainterPath());
 					paths.last().moveTo(mapToImage(event->posF()));
-					//paths.last().addRect(QRectF(mapToViewport(event->posF()), QSizeF(1,1)));
 					paths.last().lineTo(mapToImage(event->posF())+QPointF(0.1,0));
-					//paths.last().lineTo(mapToViewport(event->posF()));
 					pathsPen.append(pen);
 					update();
 				}
@@ -277,12 +281,6 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
-	// allow zoom/pan
-	/*if (panning) {
-		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
-		DkPluginViewPort::mouseReleaseEvent(event);
-		return;
-	}*/
 
 	// panning -> redirect to viewport
 	if (event->modifiers() == DkSettings::global.altMod || panning) {
@@ -305,10 +303,6 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 		painter.setPen(pathsPen.at(idx));
 		painter.drawPath(paths.at(idx));
 	}
-
-	//// DEBUG show my widget
-	//painter.setBrush(QColor(0,0,0,100));
-	//painter.drawRect(geometry());
 
 	painter.end();
 
@@ -370,13 +364,14 @@ void DkPaintViewPort::setPanning(bool checked) {
 void DkPaintViewPort::applyChangesAndClose() {
 
 	cancelTriggered = false;
+	setVisible(false);
 	emit closePlugin(false);	// false - don't ask for saving the image after applying
 }
 
 void DkPaintViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
-	paintToolbar->setVisible(false);
+	setVisible(false);
 	emit closePlugin(false);	// false - don't ask for saving the image after applying
 }
 
@@ -484,11 +479,19 @@ void DkPaintToolBar::createLayout() {
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
 
+	// pen width
 	widthBox = new QSpinBox(this);
 	widthBox->setObjectName("widthBox");
 	widthBox->setSuffix("px");
 	widthBox->setMinimum(1);
 	widthBox->setMaximum(500);	// huge sizes since images might have high resolutions
+
+	// pen alpha
+	alphaBox = new QSpinBox(this);
+	alphaBox->setObjectName("alphaBox");
+	alphaBox->setSuffix("%");
+	alphaBox->setMinimum(0);
+	alphaBox->setMaximum(100);
 
 	addAction(applyAction);
 	addAction(cancelAction);
@@ -497,6 +500,7 @@ void DkPaintToolBar::createLayout() {
 	addSeparator();
 	addWidget(penColButton);
 	addWidget(widthBox);
+	addWidget(alphaBox);
 }
 
 void DkPaintToolBar::setVisible(bool visible) {
@@ -504,14 +508,12 @@ void DkPaintToolBar::setVisible(bool visible) {
 	if (!visible)
 		emit colorSignal(QColor(0,0,0));
 	else {
-		emit colorSignal(penCol);	// >DIR: these signals may not be connected at the time of the first show [16.10.2013 markus]
+		emit colorSignal(penCol);
 		widthBox->setValue(1);
+		alphaBox->setValue(100);
 		panAction->setChecked(false);
 	}
 
-
-	//emit showToolbar(this, visible);
-	//QToolBar::addSeparator();
 	QToolBar::setVisible(visible);
 }
 
@@ -533,6 +535,14 @@ void DkPaintToolBar::on_widthBox_valueChanged(int val) {
 	emit widthSignal(val);
 }
 
+void DkPaintToolBar::on_alphaBox_valueChanged(int val) {
+
+	penAlpha = val;
+	QColor penColWA = penCol;
+	penColWA.setAlphaF(penAlpha/100.0);
+	emit colorSignal(penColWA);
+}
+
 void DkPaintToolBar::on_penColButton_clicked() {
 
 	QColor tmpCol = penCol;
@@ -543,7 +553,10 @@ void DkPaintToolBar::on_penColButton_clicked() {
 	if (ok == QDialog::Accepted) {
 		penCol = colorDialog->currentColor();
 		penColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
-		emit colorSignal(penCol);
+		
+		QColor penColWA = penCol;
+		penColWA.setAlphaF(penAlpha/100.0);
+		emit colorSignal(penColWA);
 	}
 
 }

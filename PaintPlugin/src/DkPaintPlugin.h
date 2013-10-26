@@ -73,6 +73,9 @@ public:
 
 protected:
 	DkPluginViewPort* viewport;
+
+protected slots:
+	void viewportDestroyed();
 };
 
 class DkPaintViewPort : public DkPluginViewPort {
@@ -143,6 +146,7 @@ public slots:
 	void on_panAction_toggled(bool checked);
 	void on_penColButton_clicked();
 	void on_widthBox_valueChanged(int val);
+	void on_alphaBox_valueChanged(int val);
 	virtual void setVisible(bool visible);
 
 signals:
@@ -153,7 +157,6 @@ signals:
 	void paintHint(int paintMode);
 	void shadingHint(bool invert);
 	void panSignal(bool checked);
-	//void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
 	void createLayout();
@@ -162,7 +165,9 @@ protected:
 	QPushButton* penColButton;
 	QColorDialog* colorDialog;
 	QSpinBox* widthBox;
+	QSpinBox* alphaBox;
 	QColor penCol;
+	int penAlpha;
 	QAction* panAction;
 
 	QVector<QIcon> icons;		// needed for colorizing
