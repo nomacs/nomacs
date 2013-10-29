@@ -1,5 +1,5 @@
-logfile = "c:\tmp\testoutput.txt"
 cDir = left(WScript.ScriptFullName,(Len(WScript.ScriptFullName))-(len(WScript.ScriptName)))
+logfile = cDir & "\logfile.txt"
 workingdir = "C:\VSProjects\nomacs.git\build2012\"
 
 
@@ -9,7 +9,7 @@ REM build x86
 buildCmd = ""
 buildCmd = addCmd(buildCmd, """C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\vcvarsall.bat"" x86")
 buildCmd = addCmd(buildCmd, "cd " & workingdir & " & dir")
-buildCmd = addCmd(buildCmd, "devenv.exe nomacs.sln /build ReallyRelease /out " & logfile &"2")
+buildCmd = addCmd(buildCmd, "devenv.exe nomacs.sln /build ReallyRelease /out " & Left(logfile, Len(logfile)-4) &"-devenv.txt")
 
 runCmd buildCmd, "Building Failed"
 
