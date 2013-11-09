@@ -296,7 +296,7 @@ void DkThumbPool::setFile(const QFileInfo& file, int force) {
 	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
 		updateDir(file);
 
-	if (currentFile != file)
+	if (currentFile != file || force != DkThumbsLoader::not_forced)
 		emit newFileIdxSignal(fileIdx(file));
 
 	currentFile = file;
@@ -359,7 +359,7 @@ void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
 		}
 	}
 
-	if (!registered)
+	if (!registered && isActive)
 		listenerList.append(obj);
 
 }

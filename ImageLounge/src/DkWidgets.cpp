@@ -787,6 +787,8 @@ void DkFilePreview::setVisible(bool visible) {
 
 	DkWidget::setVisible(visible);
 
+	thumbPool->getUpdates(this, visible);
+
 	if (visible && thumbPool)
 		thumbPool->getThumbs();
 		//indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
