@@ -418,6 +418,8 @@ void DkControlWidget::showOverview(bool visible) {
 
 void DkControlWidget::showCrop(bool visible) {
 
+	viewport->applyPluginChanges();
+
 	if (visible) {
 		cropWidget->reset();
 		switchWidget(widgets[crop_widget]);
@@ -484,14 +486,14 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 
 }
 
-void DkControlWidget::setPluginWidget(DkPluginViewPort* pluginWidget) {
+void DkControlWidget::setPluginWidget(DkPluginViewPort* pluginWidget, bool removeWidget) {
 
-	viewport->setPaintWidget(pluginWidget);
-
-	if (pluginWidget) {
+	if (!removeWidget) {
 		pluginWidget->setWorldMatrix(viewport->getWorldMatrixPtr());
 		pluginWidget->setImgMatrix(viewport->getImageMatrixPtr());
 	}
+
+	viewport->setPaintWidget(pluginWidget, removeWidget);
 }
 
 void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited, QString attr) {
@@ -697,6 +699,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	loader = new DkImageLoader();
 
+	mainLayout = new QVBoxLayout(this);
+
 	controller = new DkControlWidget(this, flags);
 	controller->show();
 
@@ -777,17 +781,18 @@ void DkViewPort::createShortcuts() {
 
 }
 
-void DkViewPort::setPaintWidget(QWidget* widget) {
+void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 
-	delete layout();
-
-	if(widget) {
-		QVBoxLayout* layout = new QVBoxLayout(this);
-		layout->setContentsMargins(0,0,0,0);	// fixes small translations
-		layout->addWidget(widget);
-
-		setLayout(layout);
+	if(!removeWidget) {
+		mainLayout->addWidget(widget);		
+	} else {
+		mainLayout->removeWidget(widget);
+		widget->deleteLater();
+		widget = NULL;
 	}
+	
+	//controller->raise();
+	
 }
 
 #ifdef WITH_OPENCV
@@ -1569,6 +1574,8 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 // edit image --------------------------------------------------------------------
 void DkViewPort::rotateCW() {
 
+	applyPluginChanges();
+
 	if (loader != 0)
 		loader->rotateImage(90);
 
@@ -1576,12 +1583,16 @@ void DkViewPort::rotateCW() {
 
 void DkViewPort::rotateCCW() {
 
+	applyPluginChanges();
+
 	if (loader != 0)
 		loader->rotateImage(-90);
 
 }
 
 void DkViewPort::rotate180() {
+
+	applyPluginChanges();
 
 	if (loader != 0)
 		loader->rotateImage(180);
@@ -1651,7 +1662,15 @@ void DkViewPort::setEditedImage(QImage& newImg) {
 	// TODO: add functions such as save file on unload
 }
 
+void DkViewPort::applyPluginChanges() {
+
+	DkNoMacs* noMacs = dynamic_cast<DkNoMacs*>(parent);
+	if(!noMacs->getCurrRunningPlugin().isEmpty()) noMacs->applyPluginChanges(true, false);
+}
+
 void DkViewPort::unloadImage() {
+
+	applyPluginChanges();
 
 	if (loader->getFile().exists()) {
 

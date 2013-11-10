@@ -434,6 +434,8 @@ public:
 
 	bool saveSettings;
 
+	QString getCurrRunningPlugin() {return currRunningPlugin;};
+
 signals:
 	void sendTitleSignal(QString newTitle);
 	void sendPositionSignal(QRect newRect, bool overlaid);
@@ -515,7 +517,7 @@ public slots:
 	void runLoadedPlugin();
 	void openPluginManager();
 	void initPluginManager();
-	void applyPluginChanges(bool askForSaving);
+	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	//void shareFacebook();
 
 	// batch actions

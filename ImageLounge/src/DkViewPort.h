@@ -252,7 +252,7 @@ public:
 		return cropWidget;
 	}
 
-	void setPluginWidget(DkPluginViewPort* viewport = 0);
+	void setPluginWidget(DkPluginViewPort* viewport, bool removeWidget);
 
 	void stopLabels();
 	void showWidgetsSettings();
@@ -376,7 +376,7 @@ public:
 		return &imgMatrix;
 	};
 
-	void setPaintWidget(QWidget* widget);
+	void setPaintWidget(QWidget* widget, bool removeWidget);
 
 #ifdef WITH_OPENCV
 	void setImage(cv::Mat newImg);
@@ -432,6 +432,7 @@ public slots:
 	void loadSkipPrev10();
 	void loadLena();
 	void unloadImage();
+	void applyPluginChanges();
 	void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 	void repeatZoom();
@@ -470,6 +471,7 @@ protected:
 
 	QImage imgBg;
 
+	QVBoxLayout* mainLayout;
 	DkControlWidget* controller;
 	DkImageLoader* loader;
 

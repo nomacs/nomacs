@@ -94,7 +94,7 @@ public:
 	};
 
 signals:
-	void closePlugin(bool askForSaving);
+	void closePlugin(bool askForSaving = false, bool alreadySaving = false);
 	void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
