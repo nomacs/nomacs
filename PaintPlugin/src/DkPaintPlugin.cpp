@@ -138,6 +138,8 @@ QImage DkPaintPlugin::runPlugin(const QString &runID, const QImage &image) const
 	QImage retImg = QImage();
 	if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
 
+	viewport->setVisible(false);
+	
 	return retImg;
 };
 
@@ -315,20 +317,23 @@ QImage DkPaintViewPort::getPaintedImage() {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 		if (viewport) {
 
-			QImage img = viewport->getImage();
+			if (!paths.isEmpty()) {   // if nothing is drawn there is no need to change the image
 
-			QPainter painter(&img);
+				QImage img = viewport->getImage();
 
-			if (worldMatrix)
-				painter.setWorldTransform(*worldMatrix);
+				QPainter painter(&img);
 
-			for (int idx = 0; idx < paths.size(); idx++) {
-				painter.setPen(pathsPen.at(idx));
-				painter.drawPath(paths.at(idx));
+				if (worldMatrix)
+					painter.setWorldTransform(*worldMatrix);
+
+				for (int idx = 0; idx < paths.size(); idx++) {
+					painter.setPen(pathsPen.at(idx));
+					painter.drawPath(paths.at(idx));
+				}
+				painter.end();
+
+				return img;
 			}
-			painter.end();
-
-			return img;
 		}
 	}
 	
@@ -364,15 +369,13 @@ void DkPaintViewPort::setPanning(bool checked) {
 void DkPaintViewPort::applyChangesAndClose() {
 
 	cancelTriggered = false;
-	setVisible(false);
-	emit closePlugin(false);	// false - don't ask for saving the image after applying
+	emit closePlugin();
 }
 
 void DkPaintViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
-	setVisible(false);
-	emit closePlugin(false);	// false - don't ask for saving the image after applying
+	emit closePlugin();
 }
 
 QBrush DkPaintViewPort::getBrush() const {
@@ -498,8 +501,8 @@ void DkPaintToolBar::createLayout() {
 	addSeparator();
 	addAction(panAction);
 	addSeparator();
-	addWidget(penColButton);
 	addWidget(widthBox);
+	addWidget(penColButton);
 	addWidget(alphaBox);
 }
 
