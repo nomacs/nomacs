@@ -46,8 +46,35 @@ bool compLogicQString(const QString & lhs, const QString & rhs) {
 #else
 bool compLogicQString(const QString & lhs, const QString & rhs) {
 
-	return lhs < rhs;
-	//return true;
+	//// check if the filenames are just numbers
+	//bool isNum;
+	//int lhn = lhs.left(lhs.lastIndexOf(".")).toInt(&isNum);
+	//qDebug() << "lhs dot idx: " << lhs.lastIndexOf(".");
+	//if (isNum) {
+	//	int rhn = rhs.left(rhs.lastIndexOf(".")).toInt(&isNum);
+	//	qDebug() << "left is a number...";
+
+	//	if (isNum) {
+	//		qDebug() << "comparing numbers...";
+	//		return lhn < rhn;
+	//	}
+	//}
+
+	// number compare
+	QRegExp r("\\d+");
+
+	if (lhs.indexOf(r) >= 0) {
+
+		int lhn = r.cap().toInt();
+
+		// we don't just want to find two numbers
+		// but we want them to be at the same position
+		if (rhs.indexOf(r) >= 0 && r.indexIn(lhs) == r.indexIn(rhs))
+			return lhn < r.cap().toInt();
+
+	}
+
+	return lhs.localeAwareCompare(rhs) < 0;
 }
 
 #endif
