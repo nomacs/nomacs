@@ -2988,6 +2988,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(panelActions, panelMenu->title());
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
+	shortcutsDialog->addActions(pluginsActions, pluginsMenu->title());
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
 
 	shortcutsDialog->exec();

@@ -700,6 +700,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	loader = new DkImageLoader();
 
 	mainLayout = new QVBoxLayout(this);
+	mainLayout->setContentsMargins(0,0,0,0);
 
 	controller = new DkControlWidget(this, flags);
 	controller->show();
