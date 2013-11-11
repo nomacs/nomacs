@@ -374,10 +374,10 @@ bool DkBaseViewPort::event(QEvent *event) {
 		return gestureEvent(static_cast<QGestureEvent*>(event));
 #endif
 
-	if (event->type() == QEvent::Paint)
+	//if (event->type() == QEvent::Paint)
 		return QGraphicsView::event(event);
-	else
-		return QGraphicsView::event(event);
+	//else
+	//	return QGraphicsView::event(event);
 
 	//qDebug() << "event caught..." << event->type();
 
