@@ -175,6 +175,7 @@ public:
 		QStringList userAppPaths;
 		int sortMode;
 		int sortDir;
+		QString pluginsDir;
 	};
 
 	struct SlideShow {

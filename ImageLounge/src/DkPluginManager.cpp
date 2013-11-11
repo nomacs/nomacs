@@ -213,8 +213,7 @@ void DkPluginManager::loadPlugins() {
 		}		
 	}
 
-	QDir pluginsDir = QDir(qApp->applicationDirPath());
-    pluginsDir.cd("plugins");
+	QDir pluginsDir = DkSettings::global.pluginsDir;
 
 	foreach(QString fileName, pluginsDir.entryList(QDir::Files)) singlePluginLoad(pluginsDir.absoluteFilePath(fileName));
 
@@ -516,7 +515,7 @@ void DkPluginTableWidget::updateSelectedPlugins() {
 				}
 			}
 			pluginManager->setPluginIdList(updatedList);
-			updateInstalledModel(); // before deleting instace remove entries from table
+			updateInstalledModel(); // before deleting instance remove entries from table
 
 			for (int i = 0; i < pluginsToUpdate.size(); i++) pluginManager->deleteInstance(pluginsToUpdate.at(i).id);
 
@@ -601,8 +600,12 @@ void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
 	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX86;
 #endif
 
-	QDir pluginsDir = QDir(qApp->applicationDirPath());
-    pluginsDir.mkdir("plugins");
+	QDir pluginsDir = DkSettings::global.pluginsDir;
+	
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	qDebug() << "path: " << DkSettings::global.pluginsDir;
 
 	pluginDownloader->downloadPlugin(sourceIndex, downloadUrl);	
 }
@@ -1528,8 +1531,7 @@ void DkPluginDownloader::replyToImg(QNetworkReply* reply) {
 
 void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
 
-	QDir pluginsDir = QDir(qApp->applicationDirPath());
-    pluginsDir.cd("plugins");
+	QDir pluginsDir = DkSettings::global.pluginsDir;
 
 	QFile file(pluginsDir.absolutePath().append("\\").append(fileName));
 	if (file.exists()) {
