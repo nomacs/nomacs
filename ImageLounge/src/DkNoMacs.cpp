@@ -1591,7 +1591,7 @@ void DkNoMacs::pasteImage() {
 	
 	qDebug() << "pasting...";
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	QClipboard* clipboard = QApplication::clipboard();
 
@@ -3346,6 +3346,9 @@ void DkNoMacs::initPluginManager() {
 }
 
 void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
+
+	if (currRunningPlugin.isEmpty())
+		return;
 
 	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
 	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
