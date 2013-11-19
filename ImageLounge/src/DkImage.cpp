@@ -159,6 +159,18 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	// identify raw images:
 	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
+	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+	QString suf = this->file.suffix().toLower();
+
+	// default Qt loader
+	// here we just try those formats that are officially supported
+	if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str())) {
+
+		// if image has Indexed8 + alpha channel -> we crash... sorry for that
+		imgLoaded = qImg.load(this->file.absoluteFilePath());
+		if (imgLoaded) loader = qt_loader;
+	}
+
 	// PSD loader
 	if (!imgLoaded) {
 
@@ -184,18 +196,13 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	// default Qt loader
 	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
-		// if image has Indexed8 + alpha channel -> we crash... sorry for that
-		imgLoaded = qImg.load(this->file.absoluteFilePath());
-		if (imgLoaded) loader = qt_loader;
+		QFile fileHandle(this->file.absoluteFilePath());
+		fileHandle.open(QIODevice::ReadOnly);
 
 		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
-		if (!imgLoaded) {
-			// TODO: add warning here
-			QFile file(this->file.absoluteFilePath());
-			file.open(QIODevice::ReadOnly);
-			imgLoaded = qImg.loadFromData(file.readAll());
-			if (imgLoaded) loader = qt_loader;
-		}
+		// TODO: add warning here
+		imgLoaded = qImg.loadFromData(fileHandle.readAll());
+		if (imgLoaded) loader = qt_loader;
 	}  
 
 	// this loader is a bit buggy -> be carefull
