@@ -2826,8 +2826,8 @@ void DkNoMacs::openFileWith() {
 	QStringList args;
 	
 	if (QFileInfo(DkSettings::global.defaultAppPath).fileName() == "explorer.exe") {
-		args << "/select," + QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
-		qDebug() << "explorer.exe started...";
+		args << "/select," << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
+		qDebug() << "explorer.exe started..." << args;
 	}
 	else
 		args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());

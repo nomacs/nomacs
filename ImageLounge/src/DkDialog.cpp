@@ -740,8 +740,6 @@ void DkOpenWithDialog::softwareCleanClicked() {
 	userRadios[idx]->setDisabled(true);
 	userRadios[idx]->setIcon(QIcon());
 
-
-
 	userCleanButtons[idx]->setVisible(false);
 	userCleanSpace[idx]->setVisible(true);
 }
