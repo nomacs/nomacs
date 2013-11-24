@@ -676,13 +676,6 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(editActions[menu_edit_copy]);
 	contextMenu->addAction(editActions[menu_edit_paste]);
 	contextMenu->addSeparator();
-
-	// plugins menu
-	pluginsActions.resize(menu_plugins_end);
-	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin manager"), this);
-	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plugins and download new ones"));
-	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
-
 	
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
