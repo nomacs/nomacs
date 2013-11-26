@@ -245,8 +245,10 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setWorldMatrixEnabled(true);
 
 	// TODO: paint dummies
-	if (thumbPool->getThumbs().empty())
+	if (thumbPool->getThumbs().empty()) {
+		thumbRects.clear();
 		return;
+	}
 
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	drawThumbs(&painter);
@@ -605,7 +607,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 		// find out where the mouse did click
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
-			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
+			if (idx < thumbPool->getThumbs().size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				emit loadFileSignal(thumbPool->getThumbs().at(idx)->getFile());
 			}
 		}

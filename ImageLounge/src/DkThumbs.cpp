@@ -319,7 +319,6 @@ int DkThumbPool::fileIdx(const QFileInfo& file) {
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 		if (file == thumbs.at(idx)->getFile()) {
 			tIdx = idx;
-			qDebug() << file.absoluteFilePath() << " == " << thumbs.at(idx)->getFile().absoluteFilePath();
 			break;
 		}
 	}

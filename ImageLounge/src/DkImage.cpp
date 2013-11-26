@@ -1308,11 +1308,12 @@ void DkImageLoader::initFileFilters() {
  * the currently loaded image.
  **/ 
 void DkImageLoader::clearPath() {
-	
 
 	QMutexLocker locker(&mutex);
 	basicLoader.release();
 	
+	file.refresh();
+
 	// lastFileLoaded must exist
 	if (file.exists())
 		lastFileLoaded = file;
@@ -1525,6 +1526,7 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
  **/ 
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searchFile) {
 
+	file.refresh();
 	bool virtualExists = files.contains(virtualFile.fileName());
 
 	if (!virtualExists && !file.exists())
@@ -1691,6 +1693,8 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 * @param idx the file index of the file which should be loaded.
 **/ 
 void DkImageLoader::loadFileAt(int idx) {
+
+	file.refresh();
 
 	if (basicLoader.hasImage() && !file.exists())
 		return;
@@ -2236,6 +2240,8 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 
 	QMutexLocker locker(&mutex);
 	
+	this->file.refresh();
+
 	// update watcher
 	if (this->file.exists() && watcher)
 		watcher->removePath(this->file.absoluteFilePath());
@@ -2287,6 +2293,8 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
  * @param rating the rating.
  **/ 
 void DkImageLoader::saveRating(int rating) {
+
+	file.refresh();
 
 	// file might be edited
 	if (!file.exists())
@@ -2348,6 +2356,8 @@ void DkImageLoader::updateHistory() {
  * Deletes the currently loaded file.
  **/ 
 void DkImageLoader::deleteFile() {
+	
+	file.refresh();
 
 	if (file.exists()) {
 
@@ -2388,6 +2398,7 @@ void DkImageLoader::deleteFile() {
 void DkImageLoader::rotateImage(double angle) {
 
 	qDebug() << "rotating image...";
+	file.refresh();
 
 	if (!basicLoader.hasImage()) {
 		qDebug() << "sorry, loader has no image";
@@ -2415,7 +2426,8 @@ void DkImageLoader::rotateImage(double angle) {
 			imgMetaData.saveOrientation((int)angle);
 			qDebug() << "exif data saved (rotation)?";
 		}
-		else if (!DkSettings::metaData.saveExifOrientation) {
+		else if (file.exists() && !DkSettings::metaData.saveExifOrientation) {
+			qDebug() << "file: " << file.fileName() << " exists...";
 			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
 			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
 		}
