@@ -2262,6 +2262,7 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		if (this->file.exists()) {
 			try {
 				// TODO: remove watcher path?!
+				imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(sImg), QFileInfo(filePath));
 				imgMetaData.saveMetaDataToFile(QFileInfo(filePath));
 			} catch (DkException e) {
 
@@ -2424,6 +2425,7 @@ void DkImageLoader::rotateImage(double angle) {
 		mutex.lock();
 		if (file.exists() && DkSettings::metaData.saveExifOrientation) {
 			imgMetaData.saveOrientation((int)angle);
+			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(basicLoader.image()), file);
 			qDebug() << "exif data saved (rotation)?";
 		}
 		else if (file.exists() && !DkSettings::metaData.saveExifOrientation) {
@@ -2431,6 +2433,8 @@ void DkImageLoader::rotateImage(double angle) {
 			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
 			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
 		}
+		
+
 		mutex.unlock();
 
 		sendFileSignal();

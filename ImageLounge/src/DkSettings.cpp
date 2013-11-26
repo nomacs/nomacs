@@ -587,6 +587,8 @@ void DkSettings::setToDefaultSettings() {
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_keywords] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_path] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = false;
+	meta_p.saveExifOrientation = true;
+	meta_p.ignoreExifOrientation = false;
 
 
 	sync_p.enableNetworkSync = false;

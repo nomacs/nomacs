@@ -161,6 +161,7 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 			
 			try {
 				dataExif.saveThumbnail(thumb, QFileInfo(filePath));
+				qDebug() << "[thumb] saved..."; 
 			} catch (DkException de) {
 				// do nothing -> the file type does not support meta data
 			}
