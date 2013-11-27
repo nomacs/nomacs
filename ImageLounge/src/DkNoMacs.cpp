@@ -1584,7 +1584,7 @@ void DkNoMacs::pasteImage() {
 	
 	qDebug() << "pasting...";
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	QClipboard* clipboard = QApplication::clipboard();
 
@@ -2077,7 +2077,7 @@ void DkNoMacs::renameFile() {
 
 void DkNoMacs::find(bool filterAction) {
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	if (!viewport() || !viewport()->getImageLoader())
 		return;
@@ -2153,7 +2153,7 @@ void DkNoMacs::changeSorting(bool change) {
 
 void DkNoMacs::goTo() {
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	if (!viewport() || !viewport()->getImageLoader())
 		return;
@@ -2381,7 +2381,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 void DkNoMacs::resizeImage() {
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
@@ -2433,7 +2433,7 @@ void DkNoMacs::resizeImage() {
 
 void DkNoMacs::deleteFile() {
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(false, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(false, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
@@ -2461,7 +2461,7 @@ void DkNoMacs::exportTiff() {
 void DkNoMacs::computeMosaic() {
 #ifdef WITH_OPENCV
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	//if (!mosaicDialog)
 	mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
@@ -2481,7 +2481,7 @@ void DkNoMacs::computeMosaic() {
 
 void DkNoMacs::openImgManipulationDialog() {
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
@@ -2568,7 +2568,7 @@ void DkNoMacs::setWallpaper() {
 
 void DkNoMacs::printDialog() {
 
-	if(getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	QPrinter printer;
 
@@ -3152,13 +3152,19 @@ void DkNoMacs::addPluginsToMenu() {
 		QList<QAction*> actions = cPlugin->pluginActions(this);
 
 		if (!actions.empty()) {
-			
+			/*
 			QAction* runPlugin = new QAction(cPlugin->pluginName(), this);
 			connect(runPlugin, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
 			runPlugin->setData(cPlugin->pluginID());
 			actions.prepend(runPlugin);
+			*/
+			for (int iAction = 0; iAction < actions.size(); iAction++) {
+				connect(actions.at(iAction), SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+				runId2PluginId.insert(actions.at(iAction)->data().toString(), pluginIdList.at(i));
+			}
 
 			QMenu* sm = new QMenu(cPlugin->pluginMenuName());
+			sm->setStatusTip(cPlugin->pluginStatusTip());
 			sm->addActions(actions);
 			runId2PluginId.insert(cPlugin->pluginMenuName(), pluginIdList.at(i));
 			
@@ -3306,6 +3312,14 @@ void DkNoMacs::runLoadedPlugin() {
 	   return;
    }
 
+	if(viewport()->getImageLoader()->getImage().isNull()){
+		QMessageBox msgBox;
+		msgBox.setText("No image in the viewport!\nThe plugin can't run.");
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.exec();
+		return;
+	}
+
    if (cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
 	    
 	   DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
@@ -3325,8 +3339,8 @@ void DkNoMacs::runLoadedPlugin() {
    else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
 
 	    QImage tmpImg = viewport()->getImageLoader()->getImage();
-	    QImage result = cPlugin->runPlugin(key, tmpImg);
-	    if(!result.isNull()) viewport()->setEditedImage(result);
+		QImage result = cPlugin->runPlugin(key, tmpImg);
+		if(!result.isNull()) viewport()->setEditedImage(result);
    }
 }
 

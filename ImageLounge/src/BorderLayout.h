@@ -45,7 +45,15 @@
  #include <QRect>
  #include <QWidgetItem>
 
- class BorderLayout : public QLayout
+#ifndef DllExport
+	#ifdef DK_DLL
+	#define DllExport Q_DECL_EXPORT
+	#else
+	#define DllExport Q_DECL_IMPORT
+	#endif
+#endif
+
+ class DllExport BorderLayout : public QLayout
  {
  public:
      enum Position { West, North, South, East, Center };

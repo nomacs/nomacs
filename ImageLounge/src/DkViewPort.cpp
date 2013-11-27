@@ -789,7 +789,6 @@ void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 	} else {
 		paintLayout->removeWidget(widget);
 		widget->deleteLater();
-		widget = NULL;
 	}
 	
 	//controller->raise();
