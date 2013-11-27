@@ -44,7 +44,7 @@ QString DkFakeMiniaturesPlugin::pluginID() const {
 **/
 QString DkFakeMiniaturesPlugin::pluginName() const {
 
-   return "Fake Miniatures";
+   return tr("Fake Miniatures");
 };
 
 /**
@@ -53,7 +53,7 @@ QString DkFakeMiniaturesPlugin::pluginName() const {
 **/
 QString DkFakeMiniaturesPlugin::pluginDescription() const {
 
-   return QString("<b>Created by:</b> Tim Jerman<br><b>Description:</b> Apply a fake miniature filter (tilt shift effect) to the image.<br><b>Usage:</b> On the ") +
+   return QString("<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Apply a fake miniature filter (tilt shift effect) to the image.<br><b>Usage:</b> On the ") +
 	    QString("preview image select (by mouse click move and release) the region without blurring. A blur is applyied depending on the distance from this region. ") +
 		QString("The amount of blur and saturation can be changed with the sliders on the right of the dialog.");
 };
@@ -73,7 +73,7 @@ QImage DkFakeMiniaturesPlugin::pluginDescriptionImage() const {
 **/
 QString DkFakeMiniaturesPlugin::pluginVersion() const {
 
-   return "0.0.1";
+   return "1.0.0";
 };
 
 /**
@@ -93,7 +93,7 @@ QStringList DkFakeMiniaturesPlugin::runID() const {
 **/
 QString DkFakeMiniaturesPlugin::pluginMenuName(const QString &runID) const {
 
-   if (runID == "4d29da2b322f44979c55ea0ed4ff158b") return "Fake Miniatures";
+   if (runID == "4d29da2b322f44979c55ea0ed4ff158b") return tr("Fake Miniatures");
    return "Wrong GUID!";
 };
 
@@ -103,7 +103,7 @@ QString DkFakeMiniaturesPlugin::pluginMenuName(const QString &runID) const {
 **/
 QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 
-   if (runID == "4d29da2b322f44979c55ea0ed4ff158b") return "Apply fake miniatures filter";
+   if (runID == "4d29da2b322f44979c55ea0ed4ff158b") return tr("Apply fake miniatures filter");
    return "Wrong GUID!";
 };
 
@@ -116,26 +116,18 @@ QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 QImage DkFakeMiniaturesPlugin::runPlugin(const QString &runID, const QImage &image) const {
 
 	if (runID == "4d29da2b322f44979c55ea0ed4ff158b") {
-		if(!image.isNull() ) {
-			DkFakeMiniaturesDialog* fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
+		DkFakeMiniaturesDialog* fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
 
-			fakeMiniaturesDialog->setImage(&image);
+		fakeMiniaturesDialog->setImage(&image);
 
-			bool done = fakeMiniaturesDialog->exec();
+		bool done = fakeMiniaturesDialog->exec();
 
-			QImage returnImg(image);
-			if (fakeMiniaturesDialog->wasOkPressed()) returnImg = fakeMiniaturesDialog->getImage();
+		QImage returnImg(image);
+		if (fakeMiniaturesDialog->wasOkPressed()) returnImg = fakeMiniaturesDialog->getImage();
 
-			fakeMiniaturesDialog->deleteLater();
+		fakeMiniaturesDialog->deleteLater();
 
-			if(!returnImg.isNull()) return returnImg;
-		}
-		else {
-			 QMessageBox msgBox;
-			 msgBox.setText("No image in the viewport!\nThe plug-in will now close.");
-			 msgBox.setIcon(QMessageBox::Warning);
-			 msgBox.exec();
-		}
+		if(!returnImg.isNull()) return returnImg;
 	}
 	else {
 		QMessageBox msgBox;
@@ -146,7 +138,7 @@ QImage DkFakeMiniaturesPlugin::runPlugin(const QString &runID, const QImage &ima
 	return image;
 };
 
-Q_EXPORT_PLUGIN2(DkFakeMiniaturesPlugin, DkFakeMiniaturesPlugin)
+Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkFakeMiniaturesPlugin/1.0", DkFakeMiniaturesPlugin)
 
 };
 

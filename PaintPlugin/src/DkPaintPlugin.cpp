@@ -60,8 +60,7 @@ QString DkPaintPlugin::pluginID() const {
 
 
 /**
-* Returns plug-in name
-* @param plug-in ID
+* Returns plugin name
 **/
 QString DkPaintPlugin::pluginName() const {
 
@@ -69,17 +68,15 @@ QString DkPaintPlugin::pluginName() const {
 };
 
 /**
-* Returns long description for every ID
-* @param plug-in ID
+* Returns long description
 **/
 QString DkPaintPlugin::pluginDescription() const {
 
-   return "<b>Created by:</b> Tim Jerman<br><b>Description:</b> Simple paint demo. Paints colored lines on image.";
+   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Paint on an opened image. The color, size and opacity of the brush can be changed.";
 };
 
 /**
-* Returns descriptive iamge for every ID
-* @param plug-in ID
+* Returns descriptive image
 **/
 QImage DkPaintPlugin::pluginDescriptionImage() const {
 
@@ -87,17 +84,18 @@ QImage DkPaintPlugin::pluginDescriptionImage() const {
 };
 
 /**
-* Returns plug-in version for every ID
-* @param plug-in ID
+* Returns plugin version
 **/
 QString DkPaintPlugin::pluginVersion() const {
 
-   return "0.1";
+   return "1.0.0";
 };
 
 /**
-* Returns unique IDs for every plug-in in this dll
-* plug-in can have more the one functionality that are triggered in the menu
+* Returns unique IDs for every plugin in this dll
+* plugin can have more the one functionality that are triggered in the menu
+* runID differes from pluginID
+* viewport plugins can have only one runID and one functionality bound to it 
 **/
 QStringList DkPaintPlugin::runID() const {
 
@@ -106,8 +104,8 @@ QStringList DkPaintPlugin::runID() const {
 };
 
 /**
-* Returns plug-in name for every ID
-* @param plug-in ID
+* Returns plugin name for every run ID
+* @param run ID
 **/
 QString DkPaintPlugin::pluginMenuName(const QString &runID) const {
 
@@ -117,17 +115,17 @@ QString DkPaintPlugin::pluginMenuName(const QString &runID) const {
 
 /**
 * Returns short description for status tip for every ID
-* @param plug-in ID
+* @param plugin ID
 **/
 QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
 
-	if (runID=="15ac610607d247d7a8b3bb5ea0fef5cc") return "Paint colored lines on image";
+	if (runID=="15ac610607d247d7a8b3bb5ea0fef5cc") return "Paint on image with colored brush";
 	return "Wrong GUID!";
 };
 
 /**
-* Main function: runs plug-in based on its ID
-* @param plug-in ID
+* Main function: runs plugin based on its ID
+* @param run ID
 * @param current image in the Nomacs viewport
 **/
 QImage DkPaintPlugin::runPlugin(const QString &runID, const QImage &image) const {
@@ -157,18 +155,19 @@ DkPluginViewPort* DkPaintPlugin::getViewPort() {
 }
 
 /**
-* sets the viewport pointer to NULL after the viewport is destroyed
+* sets the viewport pointer to NULL after the viewport is destroyedž
 **/
 void DkPaintPlugin::viewportDestroyed() {
 
-	viewport = NULL;
+	viewport = 0;
 }
 
-
-Q_EXPORT_PLUGIN2(DkPaintPlugin, DkPaintPlugin)
+/* macro for exporting plugin */
+Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkPaintPlugin/1.0", DkPaintPlugin)
 
 
 /*-----------------------------------DkPaintViewPort ---------------------------------------------*/
+
 DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
 
 	init();
@@ -176,7 +175,7 @@ DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPlu
 
 void DkPaintViewPort::init() {
 
-	panning = false;	// this should be set to true in a toolbar
+	panning = false;
 	cancelTriggered = false;
 	isOutside = false;
 	defaultCursor = Qt::CrossCursor;
@@ -225,17 +224,6 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 				}
 				else isOutside = true;
 			}
-		}
-	}
-
-	if (event->buttons() == Qt::MiddleButton && parent()) {
-
-		// small image editing demo
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
-		if (viewport) {
-			QImage img = viewport->getImage();
-			img = img.mirrored();
-			viewport->setImage(img);
 		}
 	}
 
@@ -512,7 +500,7 @@ void DkPaintToolBar::setVisible(bool visible) {
 		emit colorSignal(QColor(0,0,0));
 	else {
 		emit colorSignal(penCol);
-		widthBox->setValue(1);
+		widthBox->setValue(10);
 		alphaBox->setValue(100);
 		panAction->setChecked(false);
 	}

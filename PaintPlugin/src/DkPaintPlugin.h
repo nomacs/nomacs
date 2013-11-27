@@ -66,9 +66,9 @@ public:
     QString pluginVersion() const;
 
     QStringList runID() const;
-    QString pluginMenuName(const QString &runID = "") const;
-    QString pluginStatusTip(const QString &runID) const;
-    QImage runPlugin(const QString &runID, const QImage &image) const;
+    QString pluginMenuName(const QString &runID = QString()) const;
+    QString pluginStatusTip(const QString &runID = QString()) const;
+    QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 	DkPluginViewPort* getViewPort();
 
 protected:
@@ -105,8 +105,6 @@ protected:
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
-
-	void draw(const QPointF& newPos);
 
 	QVector<QPainterPath> paths;
 	QVector<QPen> pathsPen;

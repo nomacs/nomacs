@@ -40,43 +40,43 @@ QString DkFlipPlugin::pluginID() const {
 
 
 /**
-* Returns plug-in name
-* @param plug-in ID
+* Returns plugin name
+* @param plugin ID
 **/
 QString DkFlipPlugin::pluginName() const {
 
-   return "Flip plug-in";
+	return tr("Flip plugin");
 };
 
 /**
 * Returns long description for every ID
-* @param plug-in ID
+* @param plugin ID
 **/
 QString DkFlipPlugin::pluginDescription() const {
 
-   return "<b>Created by:</b> Tim Jerman<br><b> Flip images hirizontally or vertically.";
+	return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Flip images hirizontally or vertically.";
 };
 
 /**
 * Returns descriptive iamge for every ID
-* @param plug-in ID
+* @param plugin ID
 **/
 QImage DkFlipPlugin::pluginDescriptionImage() const {
 
-   return QImage(":/nomacsPlugin/img/flipPlugin.png");
+	return QImage(":/nomacsPlugin/img/flipPlugin.png");
 };
 
 /**
-* Returns plug-in version for every ID
-* @param plug-in ID
+* Returns plugin version for every ID
+* @param plugin ID
 **/
 QString DkFlipPlugin::pluginVersion() const {
 
-   return "0.0.1";
+	return "1.0.0";
 };
 
 /**
-* Returns unique IDs for every plug-in in this dll
+* Returns unique IDs for every plugin in this dll
 **/
 QStringList DkFlipPlugin::runID() const {
 
@@ -85,49 +85,78 @@ QStringList DkFlipPlugin::runID() const {
 };
 
 /**
-* Returns plug-in name for every ID
-* @param plug-in ID
+* Returns plugin name for every ID
+* @param plugin ID
 **/
 QString DkFlipPlugin::pluginMenuName(const QString &runID) const {
 
-   if (runID=="e7630f0f28c34df2b5a3f6d1fbd131aa") return "Flip Horizontally";
-   else if (runID=="9b262d0429c14464be6144340e5be66c") return "Flip Vertically";
-   return "Wrong GUID!";
+	/* //one way to do it:
+	if (runID=="e7630f0f28c34df2b5a3f6d1fbd131aa") return "Flip Horizontally";
+	else if (runID=="9b262d0429c14464be6144340e5be66c") return "Flip Vertically";
+	return "Wrong GUID!";
+	*/
+	
+	/*
+		//another way is to return a submenu from pluginActions function
+	*/
+	return tr("Flip image");
 };
 
 /**
 * Returns short description for status tip for every ID
-* @param plug-in ID
+* @param plugin ID
 **/
 QString DkFlipPlugin::pluginStatusTip(const QString &runID) const {
 
-   if (runID=="e7630f0f28c34df2b5a3f6d1fbd131aa") return "Flip image horizontally";
-   else if (runID=="9b262d0429c14464be6144340e5be66c") return "Flip image vertically";
-   return "Wrong GUID!";
+	/* //one way to do it:
+	if (runID=="e7630f0f28c34df2b5a3f6d1fbd131aa") return "Flip image horizontally";
+	else if (runID=="9b262d0429c14464be6144340e5be66c") return "Flip image vertically";
+	return "Wrong GUID!";
+	*/
+	
+	/*
+		//another way is to return a submenu from pluginActions function
+		//
+	*/
+	return tr("Flip image horizontally or vertically");
 };
 
+QList<QAction*> DkFlipPlugin::pluginActions(QWidget* parent) {
+
+	QList<QAction*> myActions;
+
+	QAction* ca = new QAction(tr("Horizontally"), parent);
+	ca->setObjectName("flipHorizontally");
+	ca->setStatusTip(tr("flip image horizontally"));
+	ca->setData("e7630f0f28c34df2b5a3f6d1fbd131aa");	// runID needed for calling function runPlugin()
+	myActions.append(ca);
+	
+	ca = new QAction(tr("Vertically"), parent);
+	ca->setObjectName("flipVertically");
+	ca->setStatusTip(tr("flip image vertically"));
+	ca->setData("9b262d0429c14464be6144340e5be66c");	// runID needed for calling function runPlugin()
+	myActions.append(ca);
+	
+
+	return myActions;
+}
+
 /**
-* Main function: runs plug-in based on its ID
-* @param plug-in ID
+* Main function: runs plugin based on its ID
+* @param plugin ID
 * @param current image in the Nomacs viewport
 **/
 QImage DkFlipPlugin::runPlugin(const QString &runID, const QImage &image) const {
 
-	if(!image.isNull()) {
+	if(!runID.isEmpty()) {
 		bool horizontally = (runID=="e7630f0f28c34df2b5a3f6d1fbd131aa");
 		return image.mirrored(horizontally, !horizontally);
-	}
-	else {
-		 QMessageBox msgBox;
-		 msgBox.setText("No image in the viewport!\nThe plug-in will now close.");
-		 msgBox.setIcon(QMessageBox::Warning);
-		 msgBox.exec();
 	}
 
 	return image;
 };
 
-Q_EXPORT_PLUGIN2(DkFlipPlugin, DkFlipPlugin)
+Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkFlipPlugin/1.0", DkFlipPlugin)
 
 };
 

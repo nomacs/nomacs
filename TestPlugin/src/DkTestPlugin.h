@@ -98,15 +98,16 @@ public:
     QString pluginVersion() const;
 
     QStringList runID() const;
-    QString pluginMenuName(const QString &runID = "") const;
-    QString pluginStatusTip(const QString &runID) const;  
-	QList<QAction*> pluginActions(QWidget* parent);
-    QImage runPlugin(const QString &runID, const QImage &image) const;
+    QString pluginMenuName(const QString &runID = QString()) const;
+    QString pluginStatusTip(const QString &runID = QString()) const;
+    QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 	DkPluginViewPort* getViewPort();
 
 protected:
-	//DkFirstClass* myClass;
 	DkPluginViewPort* viewport;
+
+protected slots:
+	void viewportDestroyed();
 };
 
 class DkPaintViewPort : public DkPluginViewPort {
@@ -114,14 +115,13 @@ class DkPaintViewPort : public DkPluginViewPort {
 
 public:
 	DkPaintViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
-	QBrush getBrush() const;
-	QPen getPen() const;
+	bool isCanceled();
+	QImage getPaintedImage();
 
 public slots:
-	void setBrush(const QBrush& brush);
-	void setPen(const QPen& pen);
-
+	virtual void setVisible(bool visible);
+	void applyChangesAndClose();
+	void discardChangesAndClose();
 
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
@@ -130,14 +130,10 @@ protected:
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
 
-	void draw(const QPointF& newPos);
-
-	QVector<QPainterPath> paths;
-
-	QBrush brush;
-	QPen pen;
-	QPointF lastPoint;
 	bool panning;
+	bool cancelTriggered;
+	QPointF rectStart;
+	QPointF rectEnd;
 };
 
 

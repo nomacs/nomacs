@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/nomacsPlugin">
-        <file>img/plugin1.png</file>
+        <file>img/imgDescriptionMissing.png</file>
     </qresource>
 </RCC>

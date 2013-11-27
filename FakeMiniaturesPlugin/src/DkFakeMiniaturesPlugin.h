@@ -52,9 +52,9 @@ public:
     QString pluginVersion() const;
 
     QStringList runID() const;
-    QString pluginMenuName(const QString &runID) const;
-    QString pluginStatusTip(const QString &runID) const;  
-    QImage runPlugin(const QString &runID, const QImage &image) const;
+    QString pluginMenuName(const QString &runID = QString()) const;
+    QString pluginStatusTip(const QString &runID = QString()) const;
+    QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 };
 
 };

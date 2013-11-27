@@ -57,7 +57,7 @@ QString DkTestPlugin::pluginID() const {
 **/
 QString DkTestPlugin::pluginName() const {
 
-   return "Start Painting";
+   return "Test plugin";
 };
 
 /**
@@ -66,7 +66,7 @@ QString DkTestPlugin::pluginName() const {
 **/
 QString DkTestPlugin::pluginDescription() const {
 
-   return "<b>Created by:</b> name<br><b>Description:</b> One plug-in with 5 actions that are added into the menu.";
+   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Template for viewport development. The test plugin shows how to develop a viewport plugin.<br><b>Usage:</b> Draw a rectangle with left mouse click. ENTER applies changes to the image, ESC cancels the action. Middle mouse click rotates the image.";
 };
 
 /**
@@ -84,7 +84,7 @@ QImage DkTestPlugin::pluginDescriptionImage() const {
 **/
 QString DkTestPlugin::pluginVersion() const {
 
-   return "2.2.1";
+   return "0.1.0";
 };
 
 /**
@@ -94,8 +94,7 @@ QString DkTestPlugin::pluginVersion() const {
 QStringList DkTestPlugin::runID() const {
 
 	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "c7019c2172d3474782d91d79be1babfd" << "b49683ec27824e3fa5f5d1abf37517f4" << "ccc725b251ba4c23ab7f596401ce1d92" <<
-						"0e0adc9f38284447960e528efb2bb3b4" << "3ab568d753c345f69fdea7aa29ba18fa";
+	return QStringList() << "c7019c2172d3474782d91d79be1babfd";
 };
 
 /**
@@ -104,13 +103,8 @@ QStringList DkTestPlugin::runID() const {
 **/
 QString DkTestPlugin::pluginMenuName(const QString &runID) const {
 
-	return "Paint";
+	if (runID=="c7019c2172d3474782d91d79be1babfd") return "Test viewport plugin";
 
-	if (runID=="c7019c2172d3474782d91d79be1babfd") return "Test plug-in 1";
-	else if (runID=="b49683ec27824e3fa5f5d1abf37517f4") return "Test plug-in 2";
-	else if (runID=="ccc725b251ba4c23ab7f596401ce1d92") return "Test plug-in 3";
-	else if (runID=="0e0adc9f38284447960e528efb2bb3b4") return "Test plug-in 4";
-	else if (runID=="3ab568d753c345f69fdea7aa29ba18fa") return "Test plug-in 5";
 	return "Wrong GUID!";
 };
 
@@ -120,94 +114,111 @@ QString DkTestPlugin::pluginMenuName(const QString &runID) const {
 **/
 QString DkTestPlugin::pluginStatusTip(const QString &runID) const {
 
-	if (runID=="c7019c2172d3474782d91d79be1babfd") return "Status tip for plug-in 1";
-	else if (runID=="b49683ec27824e3fa5f5d1abf37517f4") return "Status tip for plug-in 2";
-	else if (runID=="ccc725b251ba4c23ab7f596401ce1d92") return "Status tip for plug-in 3";
-	else if (runID=="0e0adc9f38284447960e528efb2bb3b4") return "Status tip for plug-in 4";
-	else if (runID=="3ab568d753c345f69fdea7aa29ba18fa") return "Status tip for plug-in 5";
+	if (runID=="c7019c2172d3474782d91d79be1babfd") return "Draw a rectangle with left mouse click";
+
 	return "Wrong GUID!";
 };
 
-QList<QAction*> DkTestPlugin::pluginActions(QWidget* parent) {
-
-	QList<QAction*> myActions;
-
-	// destruction?
-	QAction* ca = new QAction(tr("Paint"), parent);
-	ca->setObjectName("paintAction");
-	connect(ca, SIGNAL(triggered()), this, SLOT(emitRunPlugin()));
-	myActions.append(ca);
-	
-	ca = new QAction(tr("Josef"), parent);
-	ca->setObjectName("josefAction");
-	ca->setStatusTip("tim");
-	myActions.append(ca);
-	
-	ca = new QAction(tr("Ana"), parent);
-	ca->setObjectName("anaAction");
-	myActions.append(ca);
-
-	return myActions;
-}
-
 /**
-* Main function: runs plug-in based on its ID
-* @param plug-in ID
+* Main function: runs plugin based on its ID
+* @param run ID
 * @param current image in the Nomacs viewport
 **/
 QImage DkTestPlugin::runPlugin(const QString &runID, const QImage &image) const {
 
-	if(!image.isNull()) {
-		 QMessageBox msgBox;
-		 msgBox.setText(QString("You selected plugin %1.").arg(pluginMenuName(runID)));
-		 msgBox.setIcon(QMessageBox::Warning);
-		 msgBox.exec();
-	}
-	else {
-		 QMessageBox msgBox;
-		 msgBox.setText("No image in the viewport!\nThe plug-in will now close.");
-		 msgBox.setIcon(QMessageBox::Warning);
-		 msgBox.exec();
-	}
+	//for a viewport plugin runID and image are null
+	DkPaintViewPort* paintViewport = dynamic_cast<DkPaintViewPort*>(viewport);
 
-	return image;
+	QImage retImg = QImage();
+	bool abc = paintViewport->isCanceled();
+	if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
+
+	viewport->setVisible(false);
+	
+	return retImg;
 };
 
+/**
+* returns paintViewPort
+**/
 DkPluginViewPort* DkTestPlugin::getViewPort() {
 
-	if (!viewport)
-		viewport = new DkPaintViewPort();
+	if (!viewport) {
+		viewport = new DkPaintViewPort();		
+		connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+	}
 
 	return viewport;
 }
 
-Q_EXPORT_PLUGIN2(DkTestPlugin, DkTestPlugin)
+/**
+* sets the viewport pointer to NULL after the viewport is destroyed
+**/
+void DkTestPlugin::viewportDestroyed() {
 
+	viewport = 0;
+}
 
-// My ViewPort --------------------------------------------------------------------
+/* macro for exporting plugin */
+Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkTestPlugin/1.0", DkTestPlugin)
+
+/*-----------------------------------DkPaintViewPort ---------------------------------------------*/
 DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
 	init();
 }
 
 void DkPaintViewPort::init() {
 	panning = false;	// this should be set to true in a toolbar
+	cancelTriggered = true;
+
+	QList<QKeySequence> enterSc;
+	enterSc.append(QKeySequence(Qt::Key_Enter));
+	enterSc.append(QKeySequence(Qt::Key_Return));
+
+	QAction* applyAction = new QAction("Apply", this);
+	applyAction->setShortcuts(enterSc);
+	applyAction->setObjectName("applyAction");
+
+	QAction* cancelAction = new QAction("Cancel", this);
+	cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
+	cancelAction->setObjectName("cancelAction");
+
+	addAction(applyAction);
+	addAction(cancelAction);
+
+	connect(applyAction, SIGNAL(triggered()), this, SLOT(applyChangesAndClose()));
+	connect(cancelAction, SIGNAL(triggered()), this, SLOT(discardChangesAndClose()));
 
 	DkPluginViewPort::init();
 }
 
 void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 
-	// allow zoom/pan
-	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
-		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
-		QWidget::mousePressEvent(event);
+	// panning -> redirect to viewport
+	if (event->buttons() == Qt::LeftButton && 
+		(event->modifiers() == DkSettings::global.altMod || panning)) {
+		setCursor(Qt::ClosedHandCursor);
+		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
+		event->ignore();
 		return;
 	}
 
 	if (event->buttons() == Qt::LeftButton) {
-		paths.append(QPainterPath());
-		paths.last().moveTo(mapToViewport(event->posF()));
+		if(parent()) {
+
+			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+			if(viewport) {
+		
+				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
+					
+					rectStart = mapToImage(event->posF());
+					rectEnd = mapToImage(event->posF());
+					update();
+				}
+			}
+		}
 	}
+
 	if (event->buttons() == Qt::MiddleButton && parent()) {
 
 		// small image editing demo
@@ -224,17 +235,29 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 
 void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
-	// allow zoom/pan
-	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
-		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
-		DkPaintViewPort::mouseMoveEvent(event);
+	// panning -> redirect to viewport
+	if (event->modifiers() == DkSettings::global.altMod ||
+		panning) {
+
+		event->setModifiers(Qt::NoModifier);
+		event->ignore();
+		update();
 		return;
 	}
 
 	if (event->buttons() == Qt::LeftButton) {
-		QPointF point = mapToViewport(event->posF());
-		paths.last().lineTo(point);
-		update();
+		if(parent()) {
+			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+
+			if(viewport) {
+		
+				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
+
+					rectEnd = mapToImage(event->posF());
+					update();
+				}
+			}
+		}
 	}
 
 	//QWidget::mouseMoveEvent(event);	// do not propagate mouse event
@@ -242,10 +265,11 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
-	// allow zoom/pan
-	if (panning || event->buttons() == Qt::LeftButton && event->modifiers() == DkSettings::global.altMod) {
-		event->setModifiers(Qt::NoModifier);		// we want a 'normal' action in the viewport
-		DkPluginViewPort::mouseReleaseEvent(event);
+
+	// panning -> redirect to viewport
+	if (event->modifiers() == DkSettings::global.altMod || panning) {
+		event->setModifiers(Qt::NoModifier);
+		event->ignore();
 		return;
 	}
 }
@@ -255,29 +279,72 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 	QPainter painter(this);
 	
 	if (worldMatrix)
-		painter.setWorldTransform(*worldMatrix);
+		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
-	for (int idx = 0; idx < paths.size(); idx++)
-		painter.drawPath(paths.at(idx));
+	QPointF rectStartM = rectStart;
+
+	if(rectEnd.x() < rectStart.x()) rectStartM.setX(rectEnd.x());
+	if(rectStart.y() > rectEnd.y()) rectStartM.setY(rectEnd.y());
+
+	painter.setPen(Qt::red);
+	painter.fillRect(rectStartM.x(), rectStartM.y(), qAbs(rectStart.x()-rectEnd.x()), qAbs(rectStart.y()-rectEnd.y()), QBrush(QColor(0,0,0,80)));
+	painter.drawRect(rectStartM.x(), rectStartM.y(), qAbs(rectStart.x()-rectEnd.x()), qAbs(rectStart.y()-rectEnd.y()));
+
 	painter.end();
 
 	DkPluginViewPort::paintEvent(event);
 }
 
-void DkPaintViewPort::setBrush(const QBrush& brush) {
-	this->brush = brush;
+QImage DkPaintViewPort::getPaintedImage() {
+
+	if(parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		if (viewport) {
+			
+			QImage img = viewport->getImage();
+
+			QPainter painter(&img);
+
+			if (worldMatrix)
+				painter.setWorldTransform(*worldMatrix);
+
+			QPointF rectStartM = rectStart;
+
+			if(rectEnd.x() < rectStart.x()) rectStartM.setX(rectEnd.x());
+			if(rectStart.y() > rectEnd.y()) rectStartM.setY(rectEnd.y());
+
+			painter.setPen(Qt::red);
+			painter.fillRect(rectStartM.x(), rectStartM.y(), qAbs(rectStart.x()-rectEnd.x()), qAbs(rectStart.y()-rectEnd.y()), QBrush(QColor(0,0,0,80)));
+			painter.drawRect(rectStartM.x(), rectStartM.y(), qAbs(rectStart.x()-rectEnd.x()), qAbs(rectStart.y()-rectEnd.y()));
+
+			painter.end();
+
+			return img;
+		}
+	}
+	
+	return QImage();
 }
 
-void DkPaintViewPort::setPen(const QPen& pen) {
-	this->pen = pen;
+void DkPaintViewPort::setVisible(bool visible) {
+
+	DkPluginViewPort::setVisible(visible);
 }
 
-QBrush DkPaintViewPort::getBrush() const {
-	return brush;
+void DkPaintViewPort::applyChangesAndClose() {
+
+	cancelTriggered = false;
+	emit closePlugin();
 }
 
-QPen DkPaintViewPort::getPen() const {
-	return pen;
+void DkPaintViewPort::discardChangesAndClose() {
+
+	cancelTriggered = true;
+	emit closePlugin();
+}
+
+bool DkPaintViewPort::isCanceled() {
+	return cancelTriggered;
 }
 
 };
