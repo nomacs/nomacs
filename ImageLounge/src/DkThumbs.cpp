@@ -161,6 +161,7 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 			
 			try {
 				dataExif.saveThumbnail(thumb, QFileInfo(filePath));
+				qDebug() << "[thumb] saved..."; 
 			} catch (DkException de) {
 				// do nothing -> the file type does not support meta data
 			}
@@ -373,8 +374,10 @@ void DkThumbPool::indexDir(const QFileInfo& currentFile) {
 
 	files = DkImageLoader::getFilteredFileList(cDir);
 
-	for (int idx = 0; idx < files.size(); idx++)
-		thumbs.append(createThumb(QFileInfo(cDir, files.at(idx))));
+	for (int idx = 0; idx < files.size(); idx++) {
+		QSharedPointer<DkThumbNailT> t = createThumb(QFileInfo(cDir, files.at(idx)));
+		thumbs.append(t);
+	}
 	
 	if (!thumbs.empty())
 		emit numThumbChangedSignal();
@@ -385,14 +388,19 @@ void DkThumbPool::updateDir(const QFileInfo& currentFile) {
 
 	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
 
-	files = DkImageLoader::getFilteredFileList(dir(currentFile));
+	QDir cDir = dir(currentFile);
+	files = DkImageLoader::getFilteredFileList(cDir);
 
 	for (int idx = 0; idx < files.size(); idx++) {
 
-		if (int fIdx = fileIdx(files.at(idx)) != -1)
+		int fIdx = fileIdx(QFileInfo(cDir, files.at(idx)));
+
+		if (fIdx != -1)
 			newThumbs.append(thumbs.at(fIdx));
-		else
-			newThumbs.append(createThumb(QFileInfo(dir(currentFile), files.at(idx))));
+		else {
+			QSharedPointer<DkThumbNailT> t = createThumb(QFileInfo(cDir, files.at(idx)));
+			newThumbs.append(t);
+		}
 	}
 	
 	if (!thumbs.empty() && thumbs.size() != newThumbs.size())

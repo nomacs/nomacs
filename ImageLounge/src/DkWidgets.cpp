@@ -144,6 +144,7 @@ DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WFlags
 	this->thumbPool = thumbPool;
 	connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
 	connect(thumbPool, SIGNAL(newFileIdxSignal(int)), this, SLOT(updateFileIdx(int)));
+	connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(update()));
 
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
@@ -244,8 +245,10 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setWorldMatrixEnabled(true);
 
 	// TODO: paint dummies
-	if (thumbPool->getThumbs().empty())
+	if (thumbPool->getThumbs().empty()) {
+		thumbRects.clear();
 		return;
+	}
 
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	drawThumbs(&painter);
@@ -604,7 +607,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 		// find out where the mouse did click
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
-			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
+			if (idx < thumbPool->getThumbs().size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				emit loadFileSignal(thumbPool->getThumbs().at(idx)->getFile());
 			}
 		}

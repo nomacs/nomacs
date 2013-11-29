@@ -740,8 +740,6 @@ void DkOpenWithDialog::softwareCleanClicked() {
 	userRadios[idx]->setDisabled(true);
 	userRadios[idx]->setIcon(QIcon());
 
-
-
 	userCleanButtons[idx]->setVisible(false);
 	userCleanSpace[idx]->setVisible(true);
 }
@@ -1665,21 +1663,27 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	try {
 		Mat resizeImage = DkImage::qImage2Mat(img);
 
-		// is the image convertable?
+		// is the image convertible?
 		if (resizeImage.empty() || newSize.width() < 1 || newSize.height() < 1) {
 
 			return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
 		}
 		else {
 						
-			QVector<QRgb> colTable = img.colorTable();
-			qDebug() << "resizing..." << colTable.size();
+			//QVector<QRgb> colTable = img.colorTable();
+			//qDebug() << "resizing..." << colTable.size();
+			qDebug() << "img format: " << img.format();
+
 			Mat tmp;
 			cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, ipl);
 
 			QImage rImg = DkImage::mat2QImage(tmp);
-					
-			rImg.setColorTable(img.colorTable());
+			qDebug() << "rImg format: " << img.format();
+
+			if (!rImg.colorTable().isEmpty())
+				rImg.setColorTable(img.colorTable());
+
+			qDebug() << "rImg (colTable) format: " << img.format();
 			return rImg;
 
 		}
