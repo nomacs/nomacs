@@ -1193,6 +1193,8 @@ DkImageLoader::~DkImageLoader() {
 		delete cacher;
 	}
 
+	delete dirWatcher;
+
 	qDebug() << "dir open: " << dir.absolutePath();
 	qDebug() << "filepath: " << saveDir.absolutePath();
 }
@@ -1215,6 +1217,10 @@ void DkImageLoader::initFileFilters() {
 	//		qDebug() << "sorry, I could NOT load " << pluginFilenames[idx] << " since:\n" << p.errorString();
 	//	
 	//}
+
+	if (!openFilters.empty())
+		return;
+
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
