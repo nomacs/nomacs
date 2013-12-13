@@ -2585,6 +2585,24 @@ void DkNoMacs::bugReport() {
 	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
 		% QString("issues/new?issue[tracker_id]=1&issue[custom_field_values][1]=")
 		% QApplication::applicationVersion();
+
+	url += "&issue[custom_field_values][4]=";
+#if defined Q_WS_WIN &&	_MSC_VER == 1600
+	url += "Windows XP";
+#elif defined Q_WS_WIN && _WIN64
+	url += "Windows Vista/7/8 64bit";
+#elif defined Q_WS_WIN && _WIN32
+	url += "Windows Vista/7/8 32bit";
+#elif defined Q_WS_X11 && __x86_64__
+	url += "Linux 64bit";
+#elif defined Q_WS_X11 && __i386__
+	url += "Linux 32bit";
+#elif defined Q_WS_MAC
+	url += "Mac OS";
+#else
+	url += "";
+#endif
+
 	
 	QDesktopServices::openUrl(QUrl(url));
 }
@@ -2594,6 +2612,23 @@ void DkNoMacs::featureRequest() {
 	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
 		% QString("issues/new?issue[tracker_id]=2&issue[custom_field_values][1]=")
 		% QApplication::applicationVersion();
+
+	url += "&issue[custom_field_values][4]=";
+#if defined Q_WS_WIN &&	_MSC_VER == 1600
+	url += "Windows XP";
+#elif defined Q_WS_WIN && _WIN64
+	url += "Windows Vista/7/8 64bit";
+#elif defined Q_WS_WIN && _WIN32
+	url += "Windows Vista/7/8 32bit";
+#elif defined Q_WS_X11 && __x86_64__
+	url += "Linux 64bit";
+#elif defined Q_WS_X11 && __i386__
+	url += "Linux 32bit";
+#elif defined Q_WS_MAC
+	url += "Mac OS";
+#else
+	url += "";
+#endif
 
 	QDesktopServices::openUrl(QUrl(url));
 }
