@@ -3132,6 +3132,9 @@ void DkCacher::updateDir(QStringList& files) {
 	this->files = files;	// this change is done from another thread!
 	updateFiles = true;
 	qDebug() << "cacher files num: " << files.size();
+	// CRITICAL! he crashes here if you turn cacher on -> and open a folder where lot's of files are written automatically
+	// we should redesign the cacher anyway
+
 
 	//index();
 }
