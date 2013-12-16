@@ -311,6 +311,32 @@ protected:
 
 };
 
+class DkPrintButton : public DkButton {
+	Q_OBJECT
+
+public:
+	DkPrintButton ( const QIcon & checkedIcon, const QIcon & uncheckedIcon, const QString & text, QWidget * parent = 0 );
+
+public slots:
+	void countDown();
+	void startCountDown();
+
+protected:
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void paintEvent(QPaintEvent * event);
+	void init();
+
+	float opacityUpVal;
+	float opacityDownVal;
+
+	QTimer* animationTimer;
+	QTimer* countDownTimer;
+	int countDownNum;
+
+};
+
+
 class DkRatingLabel : public DkWidget {
 	Q_OBJECT
 
@@ -467,6 +493,8 @@ public:
 	};
 
 signals:
+	void firstSignal(bool silent = true);
+	void lastSignal(bool silent = true);
 	void nextSignal(bool silent = true);
 	void previousSignal(bool silent = true);
 	void saveImageSignal();
@@ -475,7 +503,8 @@ public slots:
 
 	void printPressed() {
 		show();
-		emit saveImageSignal();
+		if (!playButton->isChecked())
+			emit saveImageSignal();
 	};
 
 	void autoNext() {
@@ -490,6 +519,14 @@ public slots:
 		hideTimer->stop();
 		emit previousSignal();
 	};
+	void last() {
+		hideTimer->stop();
+		emit lastSignal();
+	};
+	void first() {
+		hideTimer->stop();
+		emit firstSignal();
+	};
 
 	virtual void show(int ms = 0);
 
@@ -500,10 +537,13 @@ protected:
 	int timeToDisplay;
 	QTimer* hideTimer;
 
+	DkButton* lastButton;
+	DkButton* firstButton;
 	DkButton* previousButton;
 	DkButton* nextButton;
-	DkButton* playButton;
-	QWidget* container;
+	DkPrintButton* playButton;
+	
+	//QWidget* container;
 
 	QVector<QAction*> actions;
 

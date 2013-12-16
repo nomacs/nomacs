@@ -1654,6 +1654,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	QSize s;
 	float opacity = 1.0f;
 
+	// just a hack
 	if (!isEnabled())
 		opacity = 0.5f;
 	else if(!mouseOver)
@@ -1712,6 +1713,118 @@ void DkButton::enterEvent(QEvent *event) {
 
 void DkButton::leaveEvent(QEvent *event) {
 	mouseOver = false;
+}
+
+DkPrintButton::DkPrintButton( const QIcon & checkedIcon, const QIcon & uncheckedIcon, const QString & text, QWidget * parent /* = 0 */ ) : DkButton(checkedIcon, uncheckedIcon, text, parent) {
+
+	init();
+}
+
+void DkPrintButton::init() {
+
+	countDownTimer = new QTimer(this);
+	countDownTimer->setInterval(1000);
+	countDownTimer->setSingleShot(true);
+	connect(countDownTimer, SIGNAL(timeout()), this, SLOT(countDown()));
+
+	animationTimer = new QTimer(this);
+	animationTimer->setInterval(30);
+	animationTimer->setSingleShot(true);
+	connect(animationTimer, SIGNAL(timeout()), this, SLOT(update()));
+
+	countDownNum = 14;
+	connect(this, SIGNAL(pressed()), this, SLOT(startCountDown()));
+	setObjectName("DkPrintButton");
+
+	opacityUpVal = 0.0f;
+	opacityDownVal = 1.0f;
+
+	qDebug() << "print button initialized...";
+}
+
+void DkPrintButton::paintEvent(QPaintEvent * event) {
+
+	DkButton::paintEvent(event);
+
+	if (!isChecked())
+		return;
+
+	QTextOption option;
+	option.setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+
+	QFont font;
+	font.setPixelSize(42);
+
+	QPainter painter(this);
+	painter.setPen(QColor(255,255,255));
+	painter.setFont(font);
+
+	if (countDownNum == 1) {
+
+		opacityDownVal -= 0.05f;
+
+		if (opacityDownVal > 0) {
+			painter.setOpacity(opacityDownVal);
+			animationTimer->start();
+		}
+		//else if (opacityUpVal < 1.0f) {
+		//	opacityUpVal += 0.1f;
+		//}
+		else
+			setChecked(false);	
+	}
+	painter.drawText(QRect(QPoint(), size()), QString::number(countDownNum), option);
+
+
+	//painter.drawRect(QRect(QPoint(), size()));
+	//painter.drawRect(QRect(2,2, 100, 100));
+
+
+
+	qDebug() << "painting";
+}
+
+void DkPrintButton::mousePressEvent(QMouseEvent *event) {
+
+	// eat the events...
+	if (isChecked())
+		return;
+
+	DkButton::mousePressEvent(event);
+}
+
+void DkPrintButton::mouseReleaseEvent(QMouseEvent *event) {
+
+	// eat the events...
+	if (isChecked())
+		return;
+
+	DkButton::mouseReleaseEvent(event);
+
+}
+
+void DkPrintButton::countDown() {
+
+	countDownNum--;
+	if (countDownNum > 1)
+		countDownTimer->start();
+
+	update();
+
+	qDebug() << "num: " << countDownNum; 
+}
+
+void DkPrintButton::startCountDown() {
+
+	if (isChecked())
+		return;
+
+	countDownNum = 14;
+	countDownTimer->start();
+	opacityUpVal = 0.0f;
+	opacityDownVal = 1.0f;
+
+	qDebug() << "starting countdown...";
 }
 
 // star label --------------------------------------------------------------------
@@ -1970,6 +2083,8 @@ void DkPlayer::init() {
 	
 	setObjectName("DkPlayer");
 
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+
 	// slide show
 	int timeToDisplayPlayer = 3000;
 	timeToDisplay = DkSettings::SlideShow::time*1000;
@@ -1990,9 +2105,10 @@ void DkPlayer::init() {
 	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
 
 	icon = QPixmap(":/nomacs/img/print.png");
-	playButton = new DkButton(icon, tr("play"), this);
+	QPixmap icon2 = QPixmap(":/nomacs/img/print-empty.png");
+	playButton = new DkPrintButton(icon2, icon, tr("print"), this);
 	playButton->keepAspectRatio = false;
-	//playButton->setChecked(false);
+	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
 	connect(playButton, SIGNAL(pressed()), this, SLOT(printPressed()));
 
@@ -2001,18 +2117,38 @@ void DkPlayer::init() {
 	nextButton->keepAspectRatio = false;
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
 
+	icon = QPixmap(":/nomacs/img/player-last.png");
+	lastButton = new DkButton(icon, tr("last"), this);
+	lastButton->keepAspectRatio = false;
+	connect(lastButton, SIGNAL(pressed()), this, SLOT(last()));
+
+	icon = QPixmap(":/nomacs/img/player-first.png");
+	firstButton = new DkButton(icon, tr("first"), this);
+	firstButton->keepAspectRatio = false;
+	connect(firstButton, SIGNAL(pressed()), this, SLOT(first()));
+
 	// now add to layout
-	container = new QWidget(this);
-	QHBoxLayout *layout = new QHBoxLayout(container);
+	//container = new QWidget(this);
+	QHBoxLayout *layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
 	layout->setSpacing(0);
+	layout->addWidget(firstButton);
 	layout->addWidget(previousButton);
 	layout->addWidget(playButton);
 	layout->addWidget(nextButton);
+	layout->addWidget(lastButton);
+	//layout->addStretch();
 
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	setMinimumSize(15, 5);
-	setMaximumSize(304, 118);
+	//setMinimumSize(15, 5);
+	//setMaximumSize(570, 118);
+	setFixedSize(510,118);
+
+	//QHBoxLayout *l = new QHBoxLayout(this);
+	//l->setSpacing(0);
+	//l->setContentsMargins(0,0,0,0);
+	//l->addWidget(container);
+	//l->addStretch();
 }
 
 void DkPlayer::resizeEvent(QResizeEvent *event) {
@@ -2020,28 +2156,28 @@ void DkPlayer::resizeEvent(QResizeEvent *event) {
 	if (event->oldSize() == event->size())
 		return;
 
-	// always preserve the player's aspect ratio
-	QSizeF s = event->size();
-	QSizeF ms = maximumSize();
-	float aRatio = s.width()/s.height();
-	float amRatio = ms.width()/ms.height();
-	
-	if (aRatio != amRatio && s.width() / amRatio <= s.height()) {
-		s.setHeight(s.width() / amRatio);
+	//// always preserve the player's aspect ratio
+	//QSizeF s = event->size();
+	//QSizeF ms = maximumSize();
+	//float aRatio = s.width()/s.height();
+	//float amRatio = ms.width()/ms.height();
+	//
+	//if (aRatio != amRatio && s.width() / amRatio <= s.height()) {
+	//	s.setHeight(s.width() / amRatio);
 
-		QRect r = QRect(QPoint(), s.toSize());
-		r.moveBottom(event->size().height()-1);
-		r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
-		container->setGeometry(r);
-	}
-	else {
-		s.setWidth(s.height() * amRatio);
+	//	QRect r = QRect(QPoint(), s.toSize());
+	//	r.moveBottom(event->size().height()-1);
+	//	r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
+	//	container->setGeometry(r);
+	//}
+	//else {
+	//	s.setWidth(s.height() * amRatio);
 
-		QRect r = QRect(QPoint(), s.toSize());
-		r.moveBottom(event->size().height()-1);
-		r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
-		container->setGeometry(r);
-	}
+	//	QRect r = QRect(QPoint(), s.toSize());
+	//	r.moveBottom(event->size().height()-1);
+	//	r.moveCenter(QPoint(qRound((float)event->size().width()/2.0f), r.center().y()));
+	//	container->setGeometry(r);
+	//}
 
 	QWidget::resizeEvent(event);
 }

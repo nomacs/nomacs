@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 	// register our organization
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
-	QCoreApplication::setApplicationName("Image Lounge");
+	QCoreApplication::setApplicationName("Image Lounge - Fotobox");
 
 	QSettings settings;
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::App::appMode).toInt();

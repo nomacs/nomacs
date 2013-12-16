@@ -21,8 +21,9 @@
         <file>img/nomacs32.png</file>
         <file>img/player-back.png</file>
         <file>img/player-next.png</file>
-        <file>img/player-pause.png</file>
-        <file>img/player-play.png</file>
+        <file>img/player-last.png</file>
+        <file>img/player-first.png</file>
+        <file>img/print-empty.png</file>
         <file>img/print.png</file>
         <file>img/label-gradient.png</file>
         <file>img/nomacs-bg.png</file>
