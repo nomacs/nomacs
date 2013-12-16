@@ -81,10 +81,14 @@ void DkThumbsLoader::init() {
 				cThumb = oldThumbs[idx];
 				break;
 			}
+			else
+				qDebug() << oldThumbs[idx].getFile().absoluteFilePath() << " != " << cThumb.getFile().absoluteFilePath();
 		}
 
 		thumbs->push_back(cThumb);
 	}
+
+	qDebug() << "------------------------------------- old thumbs: " << oldThumbs.size();
 
 	//thumbs->clear();
 	//thumbs = &newThumbs;

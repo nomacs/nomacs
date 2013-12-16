@@ -1750,7 +1750,7 @@ void DkImageLoader::copyImageToTemp() {
 	if (!copied)
 		emit updateInfoSignal(tr("Sorry, das Bild: %1 konnte nicht kopiert werden.").arg(destFileInfo.absoluteFilePath()));
 	else
-		emit updateInfoSignal(tr("BILD WIRD GEDRUCKT"), 2000);
+		emit updateInfoSignal(tr("BILD WIRD GEDRUCKT"), 5000);
 }
 
 /**

@@ -723,7 +723,7 @@ void DkFilePreview::indexDir(int force) {
 				thumbsLoader = 0;
 			}
 
-			thumbs.clear();
+			//thumbs.clear();
 
 			if (dir.exists()) {
 
@@ -1732,7 +1732,7 @@ void DkPrintButton::init() {
 	animationTimer->setSingleShot(true);
 	connect(animationTimer, SIGNAL(timeout()), this, SLOT(update()));
 
-	countDownNum = 14;
+	countDownNum = 12;
 	connect(this, SIGNAL(pressed()), this, SLOT(startCountDown()));
 	setObjectName("DkPrintButton");
 
@@ -1819,7 +1819,7 @@ void DkPrintButton::startCountDown() {
 	if (isChecked())
 		return;
 
-	countDownNum = 14;
+	countDownNum = 12;
 	countDownTimer->start();
 	opacityUpVal = 0.0f;
 	opacityDownVal = 1.0f;
