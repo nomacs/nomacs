@@ -1445,6 +1445,7 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettings::App::showToolBar) toolbar->show();
 		if (DkSettings::App::showStatusBar) statusbar->show();
 		showNormal();
+		update();
 	}
 
 	if (viewport())

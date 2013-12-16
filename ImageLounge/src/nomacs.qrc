@@ -50,5 +50,6 @@
         <file>img/portrait.png</file>
         <file>img/printer.png</file>
         <file>img/print-setup.png</file>
+      
     </qresource>
 </RCC>
