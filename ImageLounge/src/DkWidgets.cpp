@@ -187,9 +187,9 @@ void DkFilePreview::init() {
 
 	// load a default image
 	QImageReader imageReader(":/nomacs/img/dummy-img.png");
-	float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
-	QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
-	imageReader.setScaledSize(newSize);
+	//float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
+	//QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
+	//imageReader.setScaledSize(newSize);
 	stubImg = imageReader.read();
 
 	// wheel label
@@ -250,15 +250,15 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
 	thumbRects.clear();
 
-	// update stub??
-	if (stubImg.width() != DkSettings::Display::thumbSize) {
-		// load a default image
-		QImageReader imageReader(":/nomacs/img/dummy-img.png");
-		float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
-		QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
-		imageReader.setScaledSize(newSize);
-		stubImg = imageReader.read();
-	}
+	//// update stub??
+	//if (stubImg.width() != DkSettings::Display::thumbSize) {
+	//	// load a default image
+	//	QImageReader imageReader(":/nomacs/img/dummy-img.png");
+	//	float fw = (float)DkSettings::Display::thumbSize/(float)imageReader.size().width();
+	//	QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
+	//	imageReader.setScaledSize(newSize);
+	//	stubImg = imageReader.read();
+	//}
 
 	DkTimer dt;
 
@@ -271,7 +271,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			continue;
 		}
 
-		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage().copy() : stubImg;
+		QImage img = (thumb.hasImage() == DkThumbNail::loaded) ? thumb.getImage() : stubImg;
 		
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 		if (height()-yOffset < r.height())
@@ -537,9 +537,9 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 					DkThumbNail thumb = thumbs.at(selected);
 					createSelectedEffect(thumb.getImage(), DkSettings::Display::highlightColor);
 				
-					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
-					if (fileLabel->height() < height())
-						fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+					//// important: setText shows the label - if you then hide it here again you'll get a stack overflow
+					//if (fileLabel->height() < height())
+					//	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
 				}
 				break;
 			}
@@ -733,6 +733,8 @@ void DkFilePreview::indexDir(int force) {
 				thumbsLoader->start();
 				thumbsDir = dir;
 			}
+			else
+				thumbs.clear();
 		}
 	}
 
@@ -1654,7 +1656,9 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	QSize s;
 	float opacity = 1.0f;
 
-	// just a hack
+	//// debug (show button outline)
+	//painter.drawRect(QRect(QPoint(), size()));
+
 	if (!isEnabled())
 		opacity = 0.5f;
 	else if(!mouseOver)
