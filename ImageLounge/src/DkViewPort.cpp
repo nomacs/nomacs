@@ -293,6 +293,7 @@ void DkControlWidget::connectWidgets() {
 	connect(player, SIGNAL(nextSignal(bool)), viewport, SLOT(loadNextFileFast(bool)));
 	connect(player, SIGNAL(firstSignal()), viewport, SLOT(loadFirst()));
 	connect(player, SIGNAL(lastSignal()), viewport, SLOT(loadLast()));
+	connect(player, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
 
 	// cropping
 	connect(editRect, SIGNAL(enterPressedSignal(DkRotatingRect)), viewport, SLOT(cropImage(DkRotatingRect)));
@@ -624,8 +625,8 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
 // DkBaseViewport --------------------------------------------------------------------
 DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
 	
-	grabGesture(Qt::PanGesture);
-	grabGesture(Qt::PinchGesture);
+	//grabGesture(Qt::PanGesture);
+	//grabGesture(Qt::PinchGesture);
 	setAttribute(Qt::WA_AcceptTouchEvents);
 
 	forceFastRendering = false;

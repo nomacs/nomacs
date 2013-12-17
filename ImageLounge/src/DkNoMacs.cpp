@@ -151,10 +151,10 @@ void DkNoMacs::init() {
 		helpActions[idx]->setToolTip(helpActions[idx]->statusTip());
 
 
-	// TODO - just for android register me as a gesture recognizer
-	grabGesture(Qt::PanGesture);
-	grabGesture(Qt::PinchGesture);
-	grabGesture(Qt::SwipeGesture);
+	//// TODO - just for android register me as a gesture recognizer
+	//grabGesture(Qt::PanGesture);
+	//grabGesture(Qt::PinchGesture);
+	//grabGesture(Qt::SwipeGesture);
 
 	// load the window at the same position as last time
 	readSettings();
@@ -2359,9 +2359,9 @@ bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
 			return true;
 		}
 	}
-	if (event->type() == QEvent::Gesture) {
-		return gestureEvent(static_cast<QGestureEvent*>(event));
-	}
+	//if (event->type() == QEvent::Gesture) {
+	//	return gestureEvent(static_cast<QGestureEvent*>(event));
+	//}
 
 	return false;
 }
@@ -3075,9 +3075,9 @@ bool DkNoMacsFrameless::eventFilter(QObject *obj, QEvent *event) {
 			return true;
 		}
 	}
-	if (event->type() == QEvent::Gesture) {
-		return gestureEvent(static_cast<QGestureEvent*>(event));
-	}
+	//if (event->type() == QEvent::Gesture) {
+	//	return gestureEvent(static_cast<QGestureEvent*>(event));
+	//}
 
 	return false;
 }

@@ -321,6 +321,9 @@ public slots:
 	void countDown();
 	void startCountDown();
 
+signals:
+	void infoSignal(QString msg, int msec);
+
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
@@ -498,6 +501,7 @@ signals:
 	void nextSignal(bool silent = true);
 	void previousSignal(bool silent = true);
 	void saveImageSignal();
+	void infoSignal(QString msg, int msec);
 
 public slots:
 
@@ -597,7 +601,7 @@ signals:
 	void loadFileSignal(QFileInfo file);
 	void loadThumbsSignal(int start, int end);
 	void changeFileSignal(int idx);
-
+	
 private:
 	std::vector<DkThumbNail> thumbs;
 	DkThumbsLoader* thumbsLoader;

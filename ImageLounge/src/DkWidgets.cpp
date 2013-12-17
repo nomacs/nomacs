@@ -1806,8 +1806,10 @@ void DkPrintButton::mousePressEvent(QMouseEvent *event) {
 void DkPrintButton::mouseReleaseEvent(QMouseEvent *event) {
 
 	// eat the events...
-	if (isChecked())
+	if (isChecked()) {
+		emit infoSignal(tr("Bilderdruck läuft! Haben Sie Bitte noch einen moment Geduld."), 2000);
 		return;
+	}
 
 	DkButton::mouseReleaseEvent(event);
 
@@ -2121,6 +2123,8 @@ void DkPlayer::init() {
 	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
 	connect(playButton, SIGNAL(pressed()), this, SLOT(printPressed()));
+	connect(playButton, SIGNAL(infoSignal(QString, int)), this, SIGNAL(infoSignal(QString, int)));
+
 
 	icon = QPixmap(":/nomacs/img/player-next.png");
 	nextButton = new DkButton(icon, tr("next"), this);
