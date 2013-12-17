@@ -1421,6 +1421,8 @@ void DkNoMacs::enterFullScreen() {
 		DkSettings::App::currentAppMode = DkSettings::mode_default;
 	}
 	
+	setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+
 	menuBar()->hide();
 	toolbar->hide();
 	statusbar->hide();
@@ -1440,6 +1442,8 @@ void DkNoMacs::exitFullScreen() {
 			qDebug() << "illegal state: " << DkSettings::App::currentAppMode;
 			DkSettings::App::currentAppMode = DkSettings::mode_default;
 		}
+
+		setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
 
 		if (DkSettings::App::showMenuBar) menu->show();
 		if (DkSettings::App::showToolBar) toolbar->show();
