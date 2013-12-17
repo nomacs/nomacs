@@ -1132,90 +1132,90 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 
 	int dist = QPoint(event->pos()-mousePos).manhattanLength();
 
-	if (event->buttons() == Qt::LeftButton 
-			&& dist > QApplication::startDragDistance()
-			&& viewport() 
-			&& viewport()->getWorldMatrix().m11() <= 1.0f
-			&& !viewport()->getImage().isNull()
-			&& viewport()->getImageLoader()) {
+	//if (event->buttons() == Qt::LeftButton 
+	//		&& dist > QApplication::startDragDistance()
+	//		&& viewport() 
+	//		&& viewport()->getWorldMatrix().m11() <= 1.0f
+	//		&& !viewport()->getImage().isNull()
+	//		&& viewport()->getImageLoader()) {
 
-			QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->getFile().absoluteFilePath());
+	//		QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->getFile().absoluteFilePath());
 
-			QList<QUrl> urls;
-			urls.append(fileUrl);
+	//		QList<QUrl> urls;
+	//		urls.append(fileUrl);
 
-			QMimeData* mimeData = new QMimeData;
-			
-			if (viewport()->getImageLoader()->getFile().exists() && !viewport()->getImageLoader()->isEdited())
-				mimeData->setUrls(urls);
-			else if (!viewport()->getImage().isNull())
-				mimeData->setImageData(viewport()->getImage());
+	//		QMimeData* mimeData = new QMimeData;
+	//		
+	//		if (viewport()->getImageLoader()->getFile().exists() && !viewport()->getImageLoader()->isEdited())
+	//			mimeData->setUrls(urls);
+	//		else if (!viewport()->getImage().isNull())
+	//			mimeData->setImageData(viewport()->getImage());
 
-			QDrag* drag = new QDrag(this);
-			drag->setMimeData(mimeData);
-			Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
-			qDebug() << "creating drag...\n";
-	}
+	//		QDrag* drag = new QDrag(this);
+	//		drag->setMimeData(mimeData);
+	//		Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+	//		qDebug() << "creating drag...\n";
+	//}
 }
 
 bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 	
-	DkViewPort* vp = viewport();
+	//DkViewPort* vp = viewport();
 
-	if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
-		QSwipeGesture* swipeG = static_cast<QSwipeGesture *>(swipe);
+	//if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
+	//	QSwipeGesture* swipeG = static_cast<QSwipeGesture *>(swipe);
 
-		qDebug() << "swipe detected\n";
-		if (vp) {
-			
-			if (swipeG->horizontalDirection() == QSwipeGesture::Left)
-				vp->loadNextFileFast();
-			else if (swipeG->horizontalDirection() == QSwipeGesture::Right)
-				vp->loadPrevFileFast();
+	//	qDebug() << "swipe detected\n";
+	//	if (vp) {
+	//		
+	//		if (swipeG->horizontalDirection() == QSwipeGesture::Left)
+	//			vp->loadNextFileFast();
+	//		else if (swipeG->horizontalDirection() == QSwipeGesture::Right)
+	//			vp->loadPrevFileFast();
 
-			// TODO: recognize some other gestures please
-		}
+	//		// TODO: recognize some other gestures please
+	//	}
 
-	}
-	else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
-		
-		QPanGesture* panG = static_cast<QPanGesture *>(pan);
+	//}
+	//else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
+	//	
+	//	QPanGesture* panG = static_cast<QPanGesture *>(pan);
 
-		qDebug() << "you're speedy: " << panG->acceleration();
+	//	qDebug() << "you're speedy: " << panG->acceleration();
 
-		QPointF delta = panG->delta();
+	//	QPointF delta = panG->delta();
 
-		if (panG->acceleration() > 10 && delta.x() && fabs(delta.y()/delta.x()) < 0.2) {
-			
-			if (delta.x() < 0)
-				vp->loadNextFileFast();
-			else
-				vp->loadPrevFileFast();
-		}
+	//	if (panG->acceleration() > 10 && delta.x() && fabs(delta.y()/delta.x()) < 0.2) {
+	//		
+	//		if (delta.x() < 0)
+	//			vp->loadNextFileFast();
+	//		else
+	//			vp->loadPrevFileFast();
+	//	}
 
-		if (vp)
-			vp->moveView(panG->delta());
-	}
-	else if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
+	//	if (vp)
+	//		vp->moveView(panG->delta());
+	//}
+	//else if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
 
-		QPinchGesture* pinchG = static_cast<QPinchGesture *>(pinch);
+	//	QPinchGesture* pinchG = static_cast<QPinchGesture *>(pinch);
 
-		//if (pinchG->changeFlags() == QPinchGesture::ChangeFlag.ScaleFactorChanged) {
-		qDebug() << "scale Factor: " << pinchG->scaleFactor();
-		if (pinchG->scaleFactor() != 0 && vp) {
-			vp->zoom(pinchG->scaleFactor());
-		}
-		else if (pinchG->rotationAngle() != 0 && vp) {
+	//	//if (pinchG->changeFlags() == QPinchGesture::ChangeFlag.ScaleFactorChanged) {
+	//	qDebug() << "scale Factor: " << pinchG->scaleFactor();
+	//	if (pinchG->scaleFactor() != 0 && vp) {
+	//		vp->zoom(pinchG->scaleFactor());
+	//	}
+	//	else if (pinchG->rotationAngle() != 0 && vp) {
 
-			float angle = pinchG->rotationAngle();
+	//		float angle = pinchG->rotationAngle();
 
-			
-			qDebug() << "angle: " << angle;
+	//		
+	//		qDebug() << "angle: " << angle;
 
-			//vp->rotate(angle);
+	//		//vp->rotate(angle);
 
-		}
-	}
+	//	}
+	//}
 	//	pinchTriggered(static_cast<QPinchGesture *>(pinch));
 	return true;
 }
@@ -2770,27 +2770,27 @@ void DkNoMacsSync::createMenu() {
 // mouse events
 void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event) {
 
-	int dist = QPoint(event->pos()-mousePos).manhattanLength();
+	//int dist = QPoint(event->pos()-mousePos).manhattanLength();
 
-	// create drag sync action
-	if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance() &&
-		event->modifiers() == (Qt::ControlModifier | Qt::AltModifier)) {
+	//// create drag sync action
+	//if (event->buttons() == Qt::LeftButton && dist > QApplication::startDragDistance() &&
+	//	event->modifiers() == (Qt::ControlModifier | Qt::AltModifier)) {
 
-			qDebug() << "generating a drag event...";
+	//		qDebug() << "generating a drag event...";
 
-			QByteArray connectionData;
-			QDataStream dataStream(&connectionData, QIODevice::WriteOnly);
-			dataStream << localClient->getServerPort();
-			qDebug() << "serverport: " << localClient->getServerPort();
+	//		QByteArray connectionData;
+	//		QDataStream dataStream(&connectionData, QIODevice::WriteOnly);
+	//		dataStream << localClient->getServerPort();
+	//		qDebug() << "serverport: " << localClient->getServerPort();
 
-			QDrag* drag = new QDrag(this);
-			QMimeData *mimeData = new QMimeData;
-			mimeData->setData("network/sync-dir", connectionData);
+	//		QDrag* drag = new QDrag(this);
+	//		QMimeData *mimeData = new QMimeData;
+	//		mimeData->setData("network/sync-dir", connectionData);
 
-			drag->setMimeData(mimeData);
-			drag->exec(Qt::CopyAction | Qt::MoveAction);
-	}
-	else
+	//		drag->setMimeData(mimeData);
+	//		drag->exec(Qt::CopyAction | Qt::MoveAction);
+	//}
+	//else
 		DkNoMacs::mouseMoveEvent(event);
 
 }

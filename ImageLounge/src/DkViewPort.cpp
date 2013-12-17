@@ -902,8 +902,8 @@ void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 
 bool DkBaseViewPort::event(QEvent *event) {
 
-	if (event->type() == QEvent::Gesture)
-		return gestureEvent(static_cast<QGestureEvent*>(event));
+	//if (event->type() == QEvent::Gesture)
+	//	return gestureEvent(static_cast<QGestureEvent*>(event));
 
 
 	if (event->type() == QEvent::Paint)
@@ -918,29 +918,29 @@ bool DkBaseViewPort::event(QEvent *event) {
 
 bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 
-	if (QGesture *swipeG = event->gesture(Qt::SwipeGesture)) {
-		QSwipeGesture *swipe = static_cast<QSwipeGesture *>(swipeG);
-		
-		// thanks qt documentation : )
-		if (swipe->state() == Qt::GestureFinished) {
-			if (swipe->horizontalDirection() == QSwipeGesture::Left
-				|| swipe->verticalDirection() == QSwipeGesture::Up)
-				qDebug() << "here comes the previous image function...";
-			else
-				qDebug() << "here comes the next image function...";
-		}
-		qDebug() << "swipping...";
-	}
-	else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
+	//if (QGesture *swipeG = event->gesture(Qt::SwipeGesture)) {
+	//	QSwipeGesture *swipe = static_cast<QSwipeGesture *>(swipeG);
+	//	
+	//	// thanks qt documentation : )
+	//	if (swipe->state() == Qt::GestureFinished) {
+	//		if (swipe->horizontalDirection() == QSwipeGesture::Left
+	//			|| swipe->verticalDirection() == QSwipeGesture::Up)
+	//			qDebug() << "here comes the previous image function...";
+	//		else
+	//			qDebug() << "here comes the next image function...";
+	//	}
+	//	qDebug() << "swipping...";
+	//}
+	//else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
 
-		qDebug() << "panning...";
-	}
-	else if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
+	//	qDebug() << "panning...";
+	//}
+	//else if (QGesture *pinch = event->gesture(Qt::PinchGesture)) {
 
-		qDebug() << "pinching...";
-	}
-	else
-		return false;
+	//	qDebug() << "pinching...";
+	//}
+	//else
+	//	return false;
 
 	return true;
 }
