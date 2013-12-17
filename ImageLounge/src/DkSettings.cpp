@@ -46,6 +46,8 @@ int DkSettings::App::appMode = 0;
 int DkSettings::App::currentAppMode = 0;
 bool DkSettings::App::advancedSettings = false;
 
+int DkSettings::Foto::countDownIvl = 14;
+
 int DkSettings::Global::skipImgs = 10;
 bool DkSettings::Global::loop = false;
 bool DkSettings::Global::scanSubFolders = false;
@@ -188,6 +190,8 @@ void DkSettings::load() {
 
 	App::advancedSettings = settings.value("AppSettings/advancedSettings", DkSettings::App::advancedSettings).toBool();
 
+	Foto::countDownIvl = settings.value("FotoSettings/fotoCountDownIvl", DkSettings::Foto::countDownIvl).toInt();
+
 	Global::skipImgs = settings.value("GlobalSettings/skipImgs", DkSettings::Global::skipImgs).toInt();
 
 	Global::loop = settings.value("GlobalSettings/loop", DkSettings::Global::loop).toBool();
@@ -269,7 +273,6 @@ void DkSettings::load() {
 void DkSettings::save() {
 	QSettings settings;
 	settings.setValue("AppSettings/showMenuBar", DkSettings::App::showMenuBar);
-	
 
 	int myAppMode = DkSettings::App::appMode;
 	if (App::currentAppMode != mode_frameless && App::currentAppMode != mode_frameless_fullscren) {
@@ -288,6 +291,8 @@ void DkSettings::save() {
 	settings.setValue("AppSettings/advancedSettings", App::advancedSettings);
 
 	settings.setValue("AppSettings/appMode", DkSettings::App::appMode);
+
+	settings.setValue("FotoSettings/fotoCountDownIvl", DkSettings::Foto::countDownIvl);
 
 	settings.setValue("GlobalSettings/skipImgs",Global::skipImgs);
 	settings.setValue("GlobalSettings/loop",Global::loop);
@@ -374,6 +379,8 @@ void DkSettings::setToDefaultSettings() {
 
 	DkSettings::App::appMode = 0;
 	
+	DkSettings::Foto::countDownIvl = 14;
+
 	DkSettings::Global::skipImgs = 10;
 	DkSettings::Global::loop = false;
 	DkSettings::Global::scanSubFolders = true;

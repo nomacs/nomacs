@@ -1736,7 +1736,7 @@ void DkPrintButton::init() {
 	animationTimer->setSingleShot(true);
 	connect(animationTimer, SIGNAL(timeout()), this, SLOT(update()));
 
-	countDownNum = 12;
+	countDownNum = DkSettings::Foto::countDownIvl;
 	connect(this, SIGNAL(pressed()), this, SLOT(startCountDown()));
 	setObjectName("DkPrintButton");
 
@@ -1762,6 +1762,12 @@ void DkPrintButton::paintEvent(QPaintEvent * event) {
 	QPainter painter(this);
 	painter.setPen(QColor(255,255,255));
 	painter.setFont(font);
+
+	if (opacityUpVal < 1.0f) {
+		opacityUpVal += 0.05f;
+		painter.setOpacity(opacityUpVal);
+		animationTimer->start();
+	}
 
 	if (countDownNum == 1) {
 
@@ -1823,7 +1829,7 @@ void DkPrintButton::startCountDown() {
 	if (isChecked())
 		return;
 
-	countDownNum = 12;
+	countDownNum = DkSettings::Foto::countDownIvl;
 	countDownTimer->start();
 	opacityUpVal = 0.0f;
 	opacityDownVal = 1.0f;

@@ -2287,7 +2287,7 @@ void DkImageLoader::directoryChanged(const QString& path) {
 			timerBlockedUpdate = false;
 
 			if (!path.isEmpty())
-				delayedUpdateTimer.start(2000);
+				delayedUpdateTimer.start(500);
 		}
 		else
 			timerBlockedUpdate = true;

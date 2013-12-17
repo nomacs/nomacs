@@ -105,6 +105,10 @@ class DkSettings : public QObject {
 			static bool advancedSettings;
 		};
 
+		struct Foto {
+			static int countDownIvl;
+		};
+
 		struct Display {
 			static bool keepZoom;
 			static bool invertZoom;

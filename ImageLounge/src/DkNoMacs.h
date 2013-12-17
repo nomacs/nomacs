@@ -259,6 +259,13 @@ enum viewActions {
 	menu_view_end,	// nothing beyond this point
 };
 
+enum fotoActions {
+
+	menu_foto_interval,
+
+	menu_foto_end,	// nothing beyond this point
+};
+
 enum syncActions {
 	menu_sync,
 	menu_sync_pos,
@@ -392,6 +399,7 @@ public:
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();
 	QVector<QAction* > getViewActions();
+	QVector<QAction* > getFotoActions();
 	QVector<QAction* > getSyncActions();
 
 	static void updateAll();
@@ -442,6 +450,7 @@ public slots:
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();
+	void fotoIntervalTimer();
 	void changeOpacity(float change);
 	void animateChangeOpacity();
 	void animateOpacityUp();
@@ -512,6 +521,7 @@ protected:
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
 	QVector<QAction *> viewActions;
+	QVector<QAction *> fotoActions;
 	QVector<QAction *> syncActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
@@ -528,6 +538,7 @@ protected:
 	QMenu* editMenu;
 	QMenu* toolsMenu;
 	QMenu* viewMenu;
+	QMenu* fotoMenu;
 	QMenu* syncMenu;
 	QMenu* helpMenu;
 	QMenu* contextMenu;

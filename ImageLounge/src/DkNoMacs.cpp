@@ -130,6 +130,7 @@ void DkNoMacs::init() {
 	addActions(editActions.toList());
 	addActions(toolsActions.toList());
 	addActions(viewActions.toList());
+	addActions(fotoActions.toList());
 	addActions(syncActions.toList());
 	addActions(helpActions.toList());
 
@@ -142,6 +143,8 @@ void DkNoMacs::init() {
 		toolsActions[idx]->setToolTip(toolsActions[idx]->statusTip());
 	for (int idx = 0; idx < viewActions.size(); idx++)
 		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
+	for (int idx = 0; idx < fotoActions.size(); idx++)
+		fotoActions[idx]->setToolTip(fotoActions[idx]->statusTip());
 	for (int idx = 0; idx < syncActions.size(); idx++)
 		syncActions[idx]->setToolTip(syncActions[idx]->statusTip());
 	for (int idx = 0; idx < helpActions.size(); idx++)
@@ -502,6 +505,9 @@ void DkNoMacs::createMenu() {
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
 
+	fotoMenu = menu->addMenu(tr("&Fotojiffy"));
+	fotoMenu->addAction(fotoActions[menu_foto_interval]);
+
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
 		syncMenu = menu->addMenu(tr("&Sync"));
@@ -560,6 +566,7 @@ void DkNoMacs::createContextMenu() {
 		contextMenu->addMenu(syncMenu);
 
 	contextMenu->addSeparator();
+	contextMenu->addMenu(fotoMenu);
 	contextMenu->addAction(editActions[menu_edit_preferences]);
 
 }
@@ -873,6 +880,13 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_manipulation]->setShortcut(shortcut_manipulation);
 	toolsActions[menu_tools_manipulation]->setStatusTip(tr("modify the current image"));
 	connect(toolsActions[menu_tools_manipulation], SIGNAL(triggered()), this, SLOT(openImgManipulationDialog()));
+
+	// fotojiffy menu
+	fotoActions.resize(menu_foto_end);
+	
+	fotoActions[menu_foto_interval] = new QAction(tr("Print Timer"), this);
+	fotoActions[menu_foto_interval]->setStatusTip(tr("changes the print button timer interval"));
+	connect(fotoActions[menu_foto_interval], SIGNAL(triggered()), this, SLOT(fotoIntervalTimer()));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -1529,6 +1543,15 @@ void DkNoMacs::opacityDown() {
 void DkNoMacs::opacityUp() {
 	
 	changeOpacity(0.3f);
+}
+
+void DkNoMacs::fotoIntervalTimer() {
+
+	bool ok = false;
+	int countDownIvl = QInputDialog::getInteger(this, tr("Print Button Interval"), tr("Seconds:"), DkSettings::Foto::countDownIvl, 1, 1000, 1, &ok);
+
+	if (ok)
+		DkSettings::Foto::countDownIvl = countDownIvl;
 }
 
 void DkNoMacs::changeOpacity(float change) {
@@ -2447,6 +2470,11 @@ QVector <QAction* > DkNoMacs::getViewActions() {
 	return viewActions;
 }
 
+QVector <QAction* > DkNoMacs::getFotoActions() {
+
+	return fotoActions;
+}
+
 QVector <QAction* > DkNoMacs::getSyncActions() {
 
 	return syncActions;
@@ -2505,6 +2533,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
+	shortcutsDialog->addActions(fotoActions, fotoMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
 
