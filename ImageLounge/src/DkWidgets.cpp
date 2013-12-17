@@ -1807,7 +1807,7 @@ void DkPrintButton::mouseReleaseEvent(QMouseEvent *event) {
 
 	// eat the events...
 	if (isChecked()) {
-		emit infoSignal(tr("Bilderdruck läuft! Haben Sie Bitte noch einen moment Geduld."), 2000);
+		emit infoSignal(tr("Bilderdruck läuft! Haben Sie bitte noch einen Moment Geduld."), 2000);
 		return;
 	}
 
