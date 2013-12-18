@@ -508,6 +508,8 @@ public slots:
 	void fitFrame();
 	void setContrast(bool contrast);
 	void enableMovieActions(bool enable);
+	void clearFileHistory();
+	void clearFolderHistory();
 	//void shareFacebook();
 
 	// batch actions

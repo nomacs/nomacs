@@ -506,9 +506,11 @@ void DkNoMacs::createMenu() {
 
 	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
 	connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
 
 	fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::global.recentFolders);
 	connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	connect(fileFoldersMenu, SIGNAL(clearHistory()), this, SLOT(clearFolderHistory()));
 
 	fileMenu->addMenu(fileFilesMenu);
 	fileMenu->addMenu(fileFoldersMenu);
@@ -1246,6 +1248,14 @@ void DkNoMacs::enableMovieActions(bool enable) {
 	
 	if (toolbar->isVisible())
 		movieToolbar->setVisible(enable);
+}
+
+void DkNoMacs::clearFileHistory() {
+	DkSettings::global.recentFiles.clear();
+}
+
+void DkNoMacs::clearFolderHistory() {
+	DkSettings::global.recentFolders.clear();
 }
 
 
