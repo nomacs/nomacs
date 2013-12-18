@@ -521,6 +521,7 @@ void DkNoMacs::createMenu() {
 	sortMenu->addAction(sortActions[menu_sort_filename]);
 	sortMenu->addAction(sortActions[menu_sort_date_created]);
 	sortMenu->addAction(sortActions[menu_sort_date_modified]);
+	sortMenu->addAction(sortActions[menu_sort_random]);
 	sortMenu->addSeparator();
 	sortMenu->addAction(sortActions[menu_sort_ascending]);
 	sortMenu->addAction(sortActions[menu_sort_descending]);
@@ -803,6 +804,13 @@ void DkNoMacs::createActions() {
 	sortActions[menu_sort_date_modified]->setCheckable(true);
 	sortActions[menu_sort_date_modified]->setChecked(DkSettings::global.sortMode == DkSettings::sort_date_modified);
 	connect(sortActions[menu_sort_date_modified], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_random] = new QAction(tr("Random"), this);
+	sortActions[menu_sort_random]->setObjectName("menu_sort_random");
+	sortActions[menu_sort_random]->setStatusTip(tr("Sort in Random Order"));
+	sortActions[menu_sort_random]->setCheckable(true);
+	sortActions[menu_sort_random]->setChecked(DkSettings::global.sortMode == DkSettings::sort_random);
+	connect(sortActions[menu_sort_random], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 
 	sortActions[menu_sort_ascending] = new QAction(tr("&Ascending"), this);
 	sortActions[menu_sort_ascending]->setObjectName("menu_sort_ascending");
@@ -2109,6 +2117,8 @@ void DkNoMacs::changeSorting(bool change) {
 		DkSettings::global.sortMode = DkSettings::sort_date_created;
 	else if (senderName == "menu_sort_date_modified")
 		DkSettings::global.sortMode = DkSettings::sort_date_modified;
+	else if (senderName == "menu_sort_random")
+		DkSettings::global.sortMode = DkSettings::sort_random;
 	else if (senderName == "menu_sort_ascending") {
 		DkSettings::global.sortDir = DkSettings::sort_ascending;
 		modeChange = false;

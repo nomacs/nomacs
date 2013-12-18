@@ -109,6 +109,11 @@ bool compFilenameInv(const QFileInfo& lhf, const QFileInfo& rhf) {
 	return !compFilename(lhf, rhf);
 }
 
+bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return qrand() % 2;
+}
+
 
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QStringList();
@@ -2830,8 +2835,6 @@ QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
 	for (int idx = 0; idx < files.size(); idx++)
 		fList.append(QFileInfo(dir, files.at(idx)));
 
-	
-
 	switch(DkSettings::global.sortMode) {
 
 	case DkSettings::sort_filename:
@@ -2863,7 +2866,9 @@ QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
 			qSort(fList.begin(), fList.end(), compDateModifiedInv);
 		}
 		break;
-
+	case DkSettings::sort_random:
+			qSort(fList.begin(), fList.end(), compRandom);
+		break;
 
 	default:
 		// filename

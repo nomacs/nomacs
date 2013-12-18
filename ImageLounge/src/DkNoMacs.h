@@ -223,6 +223,7 @@ enum sortActions {
 	menu_sort_date_modified,
 	menu_sort_ascending,
 	menu_sort_descending,
+	menu_sort_random,
 
 	menu_sort_end,
 };

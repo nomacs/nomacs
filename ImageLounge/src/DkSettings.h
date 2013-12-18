@@ -98,6 +98,7 @@ public:
 		sort_filename,
 		sort_date_created,
 		sort_date_modified,
+		sort_random,
 
 		sort_end,
 	};

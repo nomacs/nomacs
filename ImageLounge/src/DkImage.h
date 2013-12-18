@@ -168,6 +168,8 @@ bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf);
 
 bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
 
+bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
+
 // basic image processing
 
 /**
