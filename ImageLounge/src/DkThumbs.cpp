@@ -68,8 +68,9 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 	
 	DkTimer dt;
 	qDebug() << "[thumb] file: " << file.absoluteFilePath();
-	//if (file.fileName().contains("__doris-gray.jp2"))
-	//	qDebug() << "the wrong file...";
+	if (file.fileName().contains("DSC_3998.bmp"))
+		qDebug() << "twice?";
+
 
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
@@ -249,6 +250,7 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 
 DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) {
 
+	fetching = false;
 	connect(&watcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
 }
 
@@ -260,8 +262,12 @@ DkThumbNailT::~DkThumbNailT() {
 void DkThumbNailT::fetchThumb(bool forceLoad /* = false */, bool forceSave /* = false */) {
 
 	
-	if (!img.isNull() || !imgExists || watcher.isRunning())
+	if (!img.isNull() || !imgExists || fetching)
 		return;
+
+	// we have to do our own bool here
+	// watcher.isRunning() returns false if the thread is waiting in the pool
+	fetching = true;
 
 	QFuture<QImage> future = QtConcurrent::run(this, 
 		&nmc::DkThumbNailT::computeCall, forceLoad, forceSave);
@@ -293,6 +299,12 @@ DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 
 
 void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
+	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath() << " old file: " << file.absoluteFilePath();
+
+	if (!file.exists())
+		return;
+
+
 	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || dir(currentFile) != dir(file)))
 		indexDir(file);
 	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
@@ -302,7 +314,6 @@ void DkThumbPool::setFile(const QFileInfo& file, int force) {
 		emit newFileIdxSignal(fileIdx(file));
 
 	currentFile = file;
-	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath();
 }
 
 QFileInfo DkThumbPool::getCurrentFile() {
