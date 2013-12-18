@@ -183,7 +183,6 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)orientation);
 		thumb = thumb.transformed(rotationMatrix);
-		qDebug() << "rotating thumb: " << file.fileName() << " by: " << orientation;
 	}
 
 	//qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
@@ -303,7 +302,6 @@ void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
 	if (!file.exists())
 		return;
-
 
 	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || dir(currentFile) != dir(file)))
 		indexDir(file);

@@ -1027,6 +1027,9 @@ void DkThumbScene::updateLayout() {
 	numRows = qCeil((float)thumbLabels.size()/numCols);
 	int rIdx = 0;
 
+	qDebug() << "num rows x num cols: " << numCols*numRows;
+	qDebug() << " thumb labels size: " << thumbLabels.size();
+
 	int tso = DkSettings::display.thumbPreviewSize+xOffset;
 	// TODO: center it
 	setSceneRect(0, 0, numCols*tso+xOffset, numRows*tso+xOffset);
@@ -1076,12 +1079,12 @@ void DkThumbScene::updateThumbLabels() {
 
 	qDebug() << "updating thumb labels...";
 
-	thumbLabels.clear();
-	clear();
-
 	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
 
 	DkTimer dt;
+
+	thumbLabels.clear();
+	clear();
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 		QSharedPointer<DkThumbLabel> thumb(new DkThumbLabel(thumbs.at(idx)));
@@ -1092,10 +1095,9 @@ void DkThumbScene::updateThumbLabels() {
 		thumbLabels.append(thumb);
 		addItem(thumb.data());
 
-		if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
+		//if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
 	}
 
-	qDebug() << "initializing thumb labels takes: " << QString::fromStdString(dt.getTotal());
 
 	showFile(QFileInfo());
 
