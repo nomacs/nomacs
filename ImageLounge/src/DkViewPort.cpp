@@ -311,6 +311,7 @@ void DkControlWidget::connectWidgets() {
 
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
+	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
 }
 
 void DkControlWidget::update() {
@@ -421,6 +422,11 @@ void DkControlWidget::showOverview(bool visible) {
 		overviewWindow->hide();
 	}
 
+}
+
+void DkControlWidget::hideCrop(bool hide /* = true */) {
+
+	showCrop(!hide);
 }
 
 void DkControlWidget::showCrop(bool visible) {

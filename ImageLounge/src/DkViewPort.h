@@ -252,6 +252,7 @@ public slots:
 	void showMetaData(bool visible);
 	void showFileInfo(bool visible);
 	void showPlayer(bool visible);
+	void hideCrop(bool hide = true);
 	void showCrop(bool visible);
 	void showOverview(bool visible);
 	void showHistogram(bool visible);

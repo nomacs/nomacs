@@ -4405,7 +4405,7 @@ void DkCropWidget::createToolbar() {
 	cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
 
 	connect(cropToolbar, SIGNAL(cropSignal()), this, SLOT(crop()));
-	connect(cropToolbar, SIGNAL(cancelSignal()), this, SLOT(hide()));
+	connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(cancelSignal()));
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
 	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));

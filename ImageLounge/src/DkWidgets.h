@@ -1497,6 +1497,7 @@ public slots:
 	void crop();
 
 signals:
+	void cancelSignal();
 	void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
