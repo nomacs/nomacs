@@ -2549,6 +2549,9 @@ void DkViewPortContrast::setImage(QImage newImg) {
 
 	DkViewPort::setImage(newImg);
 
+	if (newImg.isNull())
+		return;
+
 	if (imgStorage.getImage().format() == QImage::Format_Indexed8) {
 		int format = imgStorage.getImage().format();
 		imgs = QVector<QImage>(1);
