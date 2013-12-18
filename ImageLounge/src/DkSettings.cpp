@@ -570,13 +570,13 @@ void DkSettings::setToDefaultSettings() {
 	//MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuretime] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_rating] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_usercomment] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_date] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_datetimeoriginal] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_imagedescription] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_rating] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_usercomment] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_date] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_datetimeoriginal] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_imagedescription] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_creator] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_creatortitle] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_city] = false;
@@ -585,8 +585,8 @@ void DkSettings::setToDefaultSettings() {
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_caption] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_copyright] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_keywords] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_path] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_path] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = true;
 	meta_p.saveExifOrientation = true;
 	meta_p.ignoreExifOrientation = false;
 
@@ -1181,7 +1181,7 @@ void DkFileWidget::createLayout() {
 	numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
 	QWidget* checkBoxWidget = new QWidget(this);
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
-	cbWrapImages = new QCheckBox(tr("Wrap Images"));
+	cbWrapImages = new QCheckBox(tr("Loop Images"));
 
 
 	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"), this);

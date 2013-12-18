@@ -866,7 +866,7 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
-		saved = imgWriter->write(img);
+		saved = imgWriter->write(img);		// TODO: crash detected
 		delete imgWriter;
 	}
 
@@ -2435,9 +2435,18 @@ void DkImageLoader::rotateImage(double angle) {
 
 		mutex.lock();
 		if (file.exists() && DkSettings::metaData.saveExifOrientation) {
+			
 			imgMetaData.saveOrientation((int)angle);
-			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(basicLoader.image()), file);
-			qDebug() << "exif data saved (rotation)?";
+
+			QImage thumb = DkThumbsLoader::createThumb(basicLoader.image());
+			if (imgMetaData.isJpg()) {
+				// undo exif orientation
+				DkBasicLoader loader;
+				loader.setImage(thumb, QFileInfo());
+				loader.rotate(-imgMetaData.getOrientation());
+				thumb = loader.image();
+			}
+			imgMetaData.saveThumbnail(thumb, file);
 		}
 		else if (file.exists() && !DkSettings::metaData.saveExifOrientation) {
 			qDebug() << "file: " << file.fileName() << " exists...";

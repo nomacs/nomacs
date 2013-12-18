@@ -178,10 +178,11 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 		//qDebug() << "thumb loaded from exif...";
 	}
 
-	if (orientation != -1 && !dataExif.isTiff()) {
+	if (orientation != -1 && orientation != 0 && dataExif.isJpg()) {
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)orientation);
 		thumb = thumb.transformed(rotationMatrix);
+		qDebug() << "rotating thumb: " << file.fileName() << " by: " << orientation;
 	}
 
 	//qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
@@ -789,6 +790,8 @@ QImage DkThumbsLoader::createThumb(const QImage& image) {
 	// fast downscaling
 	QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
 	thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	qDebug() << "thumb size in createThumb: " << thumb.size();
 
 	return thumb;
 
