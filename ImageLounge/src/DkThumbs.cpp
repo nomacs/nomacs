@@ -640,6 +640,7 @@ void DkThumbsLoader::loadAll() {
 	// this function is used for batch saving
 	loadAllThumbs = true;
 	forceSave = true;
+	somethingTodo = true;
 	setLoadLimits(0, (int)thumbs->size());
 }
 

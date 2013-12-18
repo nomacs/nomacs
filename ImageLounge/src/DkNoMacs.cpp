@@ -2563,7 +2563,6 @@ void DkNoMacs::computeThumbsBatch() {
 	DkThumbsSaver* saver = new DkThumbsSaver();
 	saver->processDir(viewport()->getImageLoader()->getDir(), forceDialog->forceSave());
 
-
 }
 
 void DkNoMacs::aboutDialog() {
