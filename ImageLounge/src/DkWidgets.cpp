@@ -1098,7 +1098,6 @@ void DkThumbScene::updateThumbLabels() {
 		//if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
 	}
 
-
 	showFile(QFileInfo());
 
 	if (!thumbs.empty())

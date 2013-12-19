@@ -403,12 +403,13 @@ void DkThumbPool::updateDir(const QFileInfo& currentFile) {
 
 	for (int idx = 0; idx < files.size(); idx++) {
 
-		int fIdx = fileIdx(QFileInfo(cDir, files.at(idx)));
+		QFileInfo cFile(cDir, files.at(idx));
+		int fIdx = fileIdx(cFile);
 
-		if (fIdx != -1)
+		if (fIdx != -1 && thumbs.at(fIdx)->getFile().lastModified() == cFile.lastModified())
 			newThumbs.append(thumbs.at(fIdx));
 		else {
-			QSharedPointer<DkThumbNailT> t = createThumb(QFileInfo(cDir, files.at(idx)));
+			QSharedPointer<DkThumbNailT> t = createThumb(cFile);
 			newThumbs.append(t);
 		}
 	}
