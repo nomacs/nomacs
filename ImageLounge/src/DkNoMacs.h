@@ -105,6 +105,7 @@ class DkUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkTransferToolBar;
+class DkAppManager;
 
 
 // keyboard shortcuts
@@ -199,6 +200,7 @@ enum fileActions {
 	menu_file_open,
 	menu_file_open_dir,
 	menu_file_open_with,
+	menu_file_app_manager,
 	menu_file_save,
 	menu_file_save_as,
 	menu_file_rename,
@@ -462,6 +464,7 @@ public slots:
 	void exportTiff();
 	void computeMosaic();
 	void deleteFile();
+	void openAppManager();
 	void setWallpaper();
 	void printDialog();
 	void cleanSettings();
@@ -554,6 +557,7 @@ protected:
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
 	QVector<QAction *> sortActions;
+	QVector<QAction *> openWithActions;
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
 	QVector<QAction *> panelActions;
@@ -573,6 +577,7 @@ protected:
 	DkMenuBar* menu;
 	QMenu* fileMenu;
 	QMenu* sortMenu;
+	QMenu* openWithMenu;
 	QMenu* editMenu;
 	QMenu* toolsMenu;
 	QMenu* panelMenu;
@@ -614,6 +619,8 @@ protected:
 	DkMosaicDialog* mosaicDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
+
+	DkAppManager* appManager;
 
 	// client managers
 	//DkLocalClientManager* localClientManager;

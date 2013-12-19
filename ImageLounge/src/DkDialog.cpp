@@ -844,6 +844,228 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 	return QPixmap();
 }
 
+// DkAppManager --------------------------------------------------------------------
+DkAppManager::DkAppManager(QWidget* parent) {
+	
+	defaultNames.resize(app_idx_end);
+	defaultNames[app_photohsop]		= "PhotoshopAction";
+	defaultNames[app_picasa]		= "PicasaAction";
+	defaultNames[app_picasa_viewer] = "PicasaViewerAction";
+	defaultNames[app_irfan_view]	= "IrfanViewAction";
+	defaultNames[app_explorer]		= "ExplorerAction";
+
+	this->parent = parent;
+	loadSettings();
+}
+
+DkAppManager::~DkAppManager() {
+
+	saveSettings();
+}
+
+void DkAppManager::loadSettings() {
+
+	QSettings settings;
+	settings.beginGroup("DkAppManager");
+	
+	settings.beginWriteArray("Apps");
+
+	for (int idx = 0; idx < apps.size(); idx++) {
+		settings.setArrayIndex(idx);
+		settings.setValue("appName", apps.at(idx)->text());
+		settings.setValue("appPath", apps.at(idx)->toolTip());
+		settings.setValue("objectName", apps.at(idx)->objectName());
+	}
+	settings.endArray();
+}
+
+void DkAppManager::saveSettings() {
+
+	QSettings settings;
+	settings.beginGroup("DkAppManager");
+	
+	int size = settings.beginReadArray("Apps");
+	
+	for (int idx = 0; idx < size; idx++) {
+		settings.setArrayIndex(idx);
+		QAction* action = new QAction(parent);
+		action->setText(settings.value("appName", "").toString());
+		action->setToolTip(settings.value("appPath", "").toString());
+		action->setObjectName(settings.value("objectName", "").toString());
+
+		if (QFileInfo(action->toolTip()).exists())
+			apps.append(action);
+		else
+			qDebug() << "could not locate: " << action->toolTip();
+	}
+	settings.endArray();
+}
+
+QVector<QAction* > DkAppManager::getActions() {
+
+	findDefaultSoftware();
+	
+	for (int idx = 0; idx < apps.size(); idx++) 
+		assignIcon(apps.at(idx));
+
+	return apps;
+}
+
+void DkAppManager::findDefaultSoftware() {
+		
+	QString appPath;
+
+	// Photoshop
+	if (!containsApp(apps, defaultNames[app_photohsop])) {
+		appPath = searchForSoftware("Adobe", "Photoshop", "ApplicationPath");
+		if (!appPath.isEmpty()) {
+			QAction* a = new QAction(QObject::tr("&Photoshop"), parent);
+			a->setToolTip(appPath);
+			a->setObjectName(defaultNames[app_photohsop]);
+			apps.append(a);
+		}
+	}
+
+	if (!containsApp(apps, defaultNames[app_picasa])) {
+		// Picasa
+		appPath = searchForSoftware("Google", "Picasa", "Directory");
+		if (!appPath.isEmpty()) {
+			QAction* a = new QAction(QObject::tr("Pic&asa"), parent);
+			a->setToolTip(appPath);
+			a->setObjectName(defaultNames[app_picasa]);
+			apps.append(a);
+		}
+	}
+
+	if (!containsApp(apps, defaultNames[app_picasa_viewer])) {
+		// Picasa Photo Viewer
+		appPath = searchForSoftware("Google", "Picasa", "Directory", "PicasaPhotoViewer.exe");
+		if (!appPath.isEmpty()) {
+			QAction* a = new QAction(QObject::tr("Picasa Ph&oto Viewer"), parent);
+			a->setToolTip(appPath);
+			a->setObjectName(defaultNames[app_picasa_viewer]);
+			apps.append(a);
+		}
+	}
+
+	if (!containsApp(apps, defaultNames[app_irfan_view])) {
+		// IrfanView
+		appPath = searchForSoftware("IrfanView", "shell");
+		if (!appPath.isEmpty()) {
+			QAction* a = new QAction(QObject::tr("&IrfanView"), parent);
+			a->setToolTip(appPath);
+			a->setObjectName(defaultNames[app_irfan_view]);
+			apps.append(a);
+		}
+	}
+
+	if (!containsApp(apps, defaultNames[app_explorer])) {
+		appPath = "C:/Windows/explorer.exe";
+		if (QFileInfo(appPath).exists()) {
+			QAction* a = new QAction(QObject::tr("&Explorer"), parent);
+			a->setToolTip(appPath);
+			a->setObjectName(defaultNames[app_explorer]);
+			apps.append(a);
+		}
+	}
+}
+
+bool DkAppManager::containsApp(QVector<QAction* > apps, QString appName) {
+
+	for (int idx = 0; idx < apps.size(); idx++)
+		if (apps.at(idx)->objectName() == appName)
+			return true;
+
+	return false;
+}
+
+void DkAppManager::assignIcon(QAction* app) {
+
+#ifdef Q_WS_WIN
+#include <windows.h>
+
+	QFileInfo file = app->toolTip();
+	
+	if (!file.exists())
+		return;
+
+	// icon extraction should take between 2ms and 13ms
+	QPixmap appIcon;
+	QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
+
+	WCHAR* wDirName = new WCHAR[winPath.length()];
+
+	// CMakeLists.txt:
+	// if compile error that toWCharArray is not recognized:
+	// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
+	int dirLength = winPath.toWCharArray(wDirName);
+	wDirName[dirLength] = L'\0';	// append null character
+
+	int nIcons = ExtractIconExW(wDirName, 0, NULL, NULL, 0);
+
+	if (!nIcons)
+		return;
+
+	HICON largeIcon;
+	HICON smallIcon;
+	int err = ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
+
+	if (nIcons != 0 && largeIcon != NULL)
+		appIcon = QPixmap::fromWinHICON(largeIcon);
+
+	DestroyIcon(largeIcon);
+	DestroyIcon(smallIcon);
+
+	app->setIcon(appIcon);
+
+#endif
+
+}
+
+QString DkAppManager::searchForSoftware(QString organization, QString application, QString pathKey, QString exeName) {
+
+	// locate the settings entry
+	QSettings softwareSettings(QSettings::UserScope, organization, application);
+	QStringList keys = softwareSettings.allKeys();
+
+	QString appPath;
+
+	for (int idx = 0; idx < keys.length(); idx++) {
+
+		// find the path
+		if (keys[idx].contains(pathKey)) {
+			appPath = softwareSettings.value(keys[idx]).toString();
+			break;
+		}
+	}
+
+	// if we did not find it -> return
+	if (appPath.isEmpty())
+		return appPath;
+
+	if (exeName.isEmpty()) {
+
+		// locate the exe
+		QDir appFile = appPath.replace("\"", "");	// the string must not have extra quotes
+		QFileInfoList apps = appFile.entryInfoList(QStringList() << "*.exe");
+
+		for (int idx = 0; idx < apps.size(); idx++) {
+
+			if (apps[idx].fileName().contains(application)) {
+				appPath = apps[idx].absoluteFilePath();
+				break;
+			}
+		}
+
+		qDebug() << appPath;
+	}
+	else
+		appPath = QFileInfo(appPath, exeName).absoluteFilePath();	// for correct separators
+
+	return appPath;
+}
+
+
 // DkSearchDialaog --------------------------------------------------------------------
 DkSearchDialog::DkSearchDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 

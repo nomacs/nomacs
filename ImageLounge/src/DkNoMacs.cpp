@@ -86,6 +86,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	forceDialog = 0;
 	trainDialog = 0;
 	explorer = 0;
+	appManager = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -113,6 +114,11 @@ void DkNoMacs::release() {
 		delete progressDialog;
 		progressDialog = 0;
 	}
+
+	if (appManager) {
+		delete appManager;
+		appManager = 0;
+	}
 }
 
 void DkNoMacs::init() {
@@ -131,6 +137,8 @@ void DkNoMacs::init() {
 
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
+
+	appManager = new DkAppManager(this);
 
 	// shortcuts and actions
 	createIcons();
@@ -499,6 +507,14 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open]);
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
 	fileMenu->addAction(fileActions[menu_file_open_with]);
+	
+	openWithMenu = new QMenu(tr("Open &With"), fileMenu);
+	openWithMenu->addActions(appManager->getActions().toList());
+	openWithMenu->addSeparator();
+	openWithMenu->addAction(fileActions[menu_file_app_manager]);
+	fileMenu->addMenu(openWithMenu);
+
+	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_save]);
 	fileMenu->addAction(fileActions[menu_file_save_as]);
 	fileMenu->addAction(fileActions[menu_file_rename]);
@@ -715,6 +731,10 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_open_with]->setShortcut(QKeySequence(shortcut_open_with));
 	fileActions[menu_file_open_with]->setStatusTip(tr("Open an image in a different Program"));
 	connect(fileActions[menu_file_open_with], SIGNAL(triggered()), this, SLOT(openFileWith()));
+
+	fileActions[menu_file_app_manager] = new QAction(tr("&Manage Applications"), this);
+	fileActions[menu_file_app_manager]->setStatusTip(tr("Manage Applications which are Automatically Opened"));
+	connect(fileActions[menu_file_app_manager], SIGNAL(triggered()), this, SLOT(openAppManager()));
 
 	fileActions[menu_file_rename] = new QAction(tr("Re&name"), this);
 	fileActions[menu_file_rename]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -2435,6 +2455,12 @@ void DkNoMacs::deleteFile() {
 
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
 		viewport()->getImageLoader()->deleteFile();
+}
+
+void DkNoMacs::openAppManager() {
+
+	//DkAppManager* manager = new DkAppManager(this);
+
 }
 
 void DkNoMacs::exportTiff() {

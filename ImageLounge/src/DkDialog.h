@@ -267,6 +267,39 @@ protected:
 
 };
 
+class DkAppManager {
+
+public:
+	DkAppManager(QWidget* parent = 0);
+	~DkAppManager();
+
+	QVector<QAction* > getActions();
+
+	enum defaultAppIdx {
+
+		app_photohsop,
+		app_picasa,
+		app_picasa_viewer,
+		app_irfan_view,
+		app_explorer,
+
+		app_idx_end
+	};
+
+protected:
+	void saveSettings();
+	void loadSettings();
+	void assignIcon(QAction* app);
+	bool containsApp(QVector<QAction* > apps, QString appName);
+
+	QString searchForSoftware(QString organization, QString application, QString pathKey = "", QString exeName = "");
+	void findDefaultSoftware();
+
+	QVector<QString> defaultNames;
+	QVector<QAction* > apps;
+	QWidget* parent;
+};
+
 class DkSearchDialog : public QDialog {
 	Q_OBJECT
 
