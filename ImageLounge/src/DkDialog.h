@@ -267,13 +267,17 @@ protected:
 
 };
 
-class DkAppManager {
+class DkAppManager : public QObject{
+	Q_OBJECT
 
 public:
 	DkAppManager(QWidget* parent = 0);
 	~DkAppManager();
 
-	QVector<QAction* > getActions();
+	void setActions(QVector<QAction* > actions);
+	QVector<QAction* >& getActions();
+	QAction* createAction(QString filePath);
+	QAction* findAction(QString appPath);
 
 	enum defaultAppIdx {
 
@@ -285,6 +289,12 @@ public:
 
 		app_idx_end
 	};
+
+public slots:
+	void openTriggered();
+
+signals:
+	void openFileSignal(QAction* action);
 
 protected:
 	void saveSettings();
@@ -298,6 +308,26 @@ protected:
 	QVector<QString> defaultNames;
 	QVector<QAction* > apps;
 	QWidget* parent;
+};
+
+class DkAppManagerDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkAppManagerDialog(DkAppManager* manager = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+public slots:
+	void on_addButton_clicked();
+	void on_deleteButton_clicked();
+	virtual void accept();
+
+protected:
+	DkAppManager* manager;
+	QStandardItemModel* model;
+
+	void createLayout();
+	QList<QStandardItem* > getItems(QAction* action);
+	QTableView* appTableView;
 };
 
 class DkSearchDialog : public QDialog {

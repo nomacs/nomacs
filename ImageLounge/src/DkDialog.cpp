@@ -845,8 +845,10 @@ QPixmap DkOpenWithDialog::getIcon(QFileInfo file) {
 }
 
 // DkAppManager --------------------------------------------------------------------
-DkAppManager::DkAppManager(QWidget* parent) {
+DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 	
+	// >DIR: TODO: shortcuts not updated immediatly - make the gui nice [19.12.2013 markus]
+
 	defaultNames.resize(app_idx_end);
 	defaultNames[app_photohsop]		= "PhotoshopAction";
 	defaultNames[app_picasa]		= "PicasaAction";
@@ -863,7 +865,7 @@ DkAppManager::~DkAppManager() {
 	saveSettings();
 }
 
-void DkAppManager::loadSettings() {
+void DkAppManager::saveSettings() {
 
 	QSettings settings;
 	settings.beginGroup("DkAppManager");
@@ -879,7 +881,7 @@ void DkAppManager::loadSettings() {
 	settings.endArray();
 }
 
-void DkAppManager::saveSettings() {
+void DkAppManager::loadSettings() {
 
 	QSettings settings;
 	settings.beginGroup("DkAppManager");
@@ -897,18 +899,54 @@ void DkAppManager::saveSettings() {
 			apps.append(action);
 		else
 			qDebug() << "could not locate: " << action->toolTip();
+
 	}
 	settings.endArray();
 }
 
-QVector<QAction* > DkAppManager::getActions() {
+QVector<QAction* >& DkAppManager::getActions() {
 
+	apps.clear();
+	loadSettings();
 	findDefaultSoftware();
 	
-	for (int idx = 0; idx < apps.size(); idx++) 
+	for (int idx = 0; idx < apps.size(); idx++) {
 		assignIcon(apps.at(idx));
+		connect(apps.at(idx), SIGNAL(triggered()), this, SLOT(openTriggered()));
+	}
 
 	return apps;
+}
+
+void DkAppManager::setActions(QVector<QAction* > actions) {
+	
+	apps = actions;
+	saveSettings();
+}
+
+QAction* DkAppManager::createAction(QString filePath) {
+
+	QFileInfo file(filePath);
+	if (!file.exists())
+		return 0;
+
+	QAction* newApp = new QAction(file.baseName(), parent);
+	newApp->setToolTip(QDir::fromNativeSeparators(file.filePath()));
+	assignIcon(newApp);
+	connect(newApp, SIGNAL(triggered()), this, SLOT(openTriggered()));
+
+	return newApp;
+}
+
+QAction* DkAppManager::findAction(QString appPath) {
+
+	for (int idx = 0; idx < apps.size(); idx++) {
+
+		if (apps.at(idx)->toolTip() == appPath)
+			return apps.at(idx);
+	}
+
+	return 0;
 }
 
 void DkAppManager::findDefaultSoftware() {
@@ -920,7 +958,7 @@ void DkAppManager::findDefaultSoftware() {
 		appPath = searchForSoftware("Adobe", "Photoshop", "ApplicationPath");
 		if (!appPath.isEmpty()) {
 			QAction* a = new QAction(QObject::tr("&Photoshop"), parent);
-			a->setToolTip(appPath);
+			a->setToolTip(QDir::fromNativeSeparators(appPath));
 			a->setObjectName(defaultNames[app_photohsop]);
 			apps.append(a);
 		}
@@ -931,7 +969,7 @@ void DkAppManager::findDefaultSoftware() {
 		appPath = searchForSoftware("Google", "Picasa", "Directory");
 		if (!appPath.isEmpty()) {
 			QAction* a = new QAction(QObject::tr("Pic&asa"), parent);
-			a->setToolTip(appPath);
+			a->setToolTip(QDir::fromNativeSeparators(appPath));
 			a->setObjectName(defaultNames[app_picasa]);
 			apps.append(a);
 		}
@@ -942,7 +980,7 @@ void DkAppManager::findDefaultSoftware() {
 		appPath = searchForSoftware("Google", "Picasa", "Directory", "PicasaPhotoViewer.exe");
 		if (!appPath.isEmpty()) {
 			QAction* a = new QAction(QObject::tr("Picasa Ph&oto Viewer"), parent);
-			a->setToolTip(appPath);
+			a->setToolTip(QDir::fromNativeSeparators(appPath));
 			a->setObjectName(defaultNames[app_picasa_viewer]);
 			apps.append(a);
 		}
@@ -953,7 +991,7 @@ void DkAppManager::findDefaultSoftware() {
 		appPath = searchForSoftware("IrfanView", "shell");
 		if (!appPath.isEmpty()) {
 			QAction* a = new QAction(QObject::tr("&IrfanView"), parent);
-			a->setToolTip(appPath);
+			a->setToolTip(QDir::fromNativeSeparators(appPath));
 			a->setObjectName(defaultNames[app_irfan_view]);
 			apps.append(a);
 		}
@@ -963,7 +1001,7 @@ void DkAppManager::findDefaultSoftware() {
 		appPath = "C:/Windows/explorer.exe";
 		if (QFileInfo(appPath).exists()) {
 			QAction* a = new QAction(QObject::tr("&Explorer"), parent);
-			a->setToolTip(appPath);
+			a->setToolTip(QDir::fromNativeSeparators(appPath));
 			a->setObjectName(defaultNames[app_explorer]);
 			apps.append(a);
 		}
@@ -1024,6 +1062,8 @@ void DkAppManager::assignIcon(QAction* app) {
 
 QString DkAppManager::searchForSoftware(QString organization, QString application, QString pathKey, QString exeName) {
 
+	qDebug() << "searching for: " << organization;
+
 	// locate the settings entry
 	QSettings softwareSettings(QSettings::UserScope, organization, application);
 	QStringList keys = softwareSettings.allKeys();
@@ -1065,6 +1105,133 @@ QString DkAppManager::searchForSoftware(QString organization, QString applicatio
 	return appPath;
 }
 
+void DkAppManager::openTriggered() {
+
+	QAction* a = static_cast<QAction*>(QObject::sender());
+
+	if (a)
+		openFileSignal(a);
+}
+
+// DkAppManagerDialog --------------------------------------------------------------------
+DkAppManagerDialog::DkAppManagerDialog(DkAppManager* manager /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDialog(parent, flags) {
+
+	this->manager = manager;
+	createLayout();
+}
+
+void DkAppManagerDialog::createLayout() {
+
+	QVector<QAction* > appActions = manager->getActions();
+
+	model = new QStandardItemModel(this);
+	for (int rIdx = 0; rIdx < appActions.size(); rIdx++)
+		model->appendRow(getItems(appActions.at(rIdx)));
+
+	appTableView = new QTableView(this);
+	appTableView->setModel(model);
+	appTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	appTableView->verticalHeader()->hide();
+	appTableView->horizontalHeader()->hide();
+	//appTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	appTableView->setShowGrid(false);
+	appTableView->resizeColumnsToContents();
+	appTableView->setWordWrap(false);
+
+
+	QPushButton* addButton = new QPushButton(tr("&Add"), this);
+	addButton->setObjectName("addButton");
+
+	QPushButton* deleteButton = new QPushButton(tr("&Delete"), this);
+	deleteButton->setObjectName("deleteButton");
+	deleteButton->setShortcut(QKeySequence::Delete);
+
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	buttons->addButton(addButton, QDialogButtonBox::ActionRole);
+	buttons->addButton(deleteButton, QDialogButtonBox::ActionRole);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(appTableView);
+	layout->addWidget(buttons);
+
+	QMetaObject::connectSlotsByName(this);
+}
+
+QList<QStandardItem* > DkAppManagerDialog::getItems(QAction* action) {
+
+	QList<QStandardItem* > items;
+	items.append(new QStandardItem(action->icon(), action->text().replace("&", "")));
+	QStandardItem* item = new QStandardItem(action->toolTip());
+	item->setFlags(Qt::ItemIsSelectable);
+	items.append(item);
+
+	return items;
+}
+
+void DkAppManagerDialog::on_addButton_clicked() {
+
+	// load system default open dialog
+	QString appFilter;
+	QString defaultPath;
+#ifdef Q_WS_WIN
+	appFilter += tr("Executable Files (*.exe);;");
+	defaultPath = getenv("PROGRAMFILES");
+#else
+	defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
+#endif
+
+	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Application"),
+		defaultPath, 
+		appFilter);
+
+	if (filePath.isEmpty())
+		return;
+
+	QAction* newApp = manager->createAction(filePath);
+
+	if (newApp)
+		model->appendRow(getItems(newApp));
+
+}
+
+void DkAppManagerDialog::on_deleteButton_clicked() {
+
+	QModelIndexList selRows = appTableView->selectionModel()->selectedRows();
+
+	while (!selRows.isEmpty()) {
+		model->removeRows(selRows.last().row(), 1);
+		selRows.removeLast();
+	}
+}
+
+void DkAppManagerDialog::accept() {
+
+	QVector<QAction* > apps;
+
+	for (int idx = 0; idx < model->rowCount(); idx++) {
+
+		QString filePath = model->item(idx, 1)->text();
+		QString name = model->item(idx, 0)->text();
+		QAction* action = manager->findAction(filePath);
+
+		if (!action)
+			action = manager->createAction(filePath);
+
+		if (!name.contains(action->text().remove("&")))
+			action->setText(name);
+
+		apps.append(action);
+	}
+
+	manager->setActions(apps);
+
+	QDialog::accept();
+}
 
 // DkSearchDialaog --------------------------------------------------------------------
 DkSearchDialog::DkSearchDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {

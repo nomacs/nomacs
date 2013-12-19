@@ -475,7 +475,7 @@ public slots:
 	void showToolbar(bool show);
 	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
-	void openFileWith();
+	void openFileWith(QAction* action);
 	void aboutDialog();
 	void openDocumentation();
 	void bugReport();
@@ -643,6 +643,7 @@ protected:
 	virtual void createShortcuts();
 	virtual void createActions();
 	virtual void createMenu();
+	virtual void createOpenWithMenu(QMenu* menu);
 	virtual void createContextMenu();
 	virtual void createStatusbar();
 

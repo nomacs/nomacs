@@ -298,6 +298,7 @@ DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 
 
 void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
+	// >DIR: TODO: updating is not working properly e.g. DSC_4068.jpg  [19.12.2013 markus]
 	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath() << " old file: " << file.absoluteFilePath();
 
 	if (!file.exists())

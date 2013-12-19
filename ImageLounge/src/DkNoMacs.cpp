@@ -139,6 +139,7 @@ void DkNoMacs::init() {
 		setWindowIcon(dirIcon);
 
 	appManager = new DkAppManager(this);
+	connect(appManager, SIGNAL(openFileSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
 
 	// shortcuts and actions
 	createIcons();
@@ -152,6 +153,7 @@ void DkNoMacs::init() {
 
 	// add actions since they are ignored otherwise if the menu is hidden
 	viewport()->addActions(fileActions.toList());
+	viewport()->addActions(openWithMenu->actions());
 	viewport()->addActions(sortActions.toList());
 	viewport()->addActions(editActions.toList());
 	viewport()->addActions(toolsActions.toList());
@@ -509,9 +511,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_open_with]);
 	
 	openWithMenu = new QMenu(tr("Open &With"), fileMenu);
-	openWithMenu->addActions(appManager->getActions().toList());
-	openWithMenu->addSeparator();
-	openWithMenu->addAction(fileActions[menu_file_app_manager]);
+	createOpenWithMenu(openWithMenu);
 	fileMenu->addMenu(openWithMenu);
 
 	fileMenu->addSeparator();
@@ -661,6 +661,17 @@ void DkNoMacs::createMenu() {
 	helpMenu->addAction(helpActions[menu_help_documentation]);
 	helpMenu->addAction(helpActions[menu_help_about]);
 
+}
+
+void DkNoMacs::createOpenWithMenu(QMenu* menu) {
+
+	QVector<QAction* > appActions = appManager->getActions();
+	assignCustomShortcuts(appActions);
+	openWithMenu->addActions(appActions.toList());
+	
+	if (!appActions.empty())
+		openWithMenu->addSeparator();
+	openWithMenu->addAction(fileActions[menu_file_app_manager]);
 }
 
 void DkNoMacs::createContextMenu() {
@@ -1250,6 +1261,10 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #else
 	toolsActions[menu_tools_manipulation]->setEnabled(false);
 #endif
+
+	QList<QAction* > actions = openWithMenu->actions();
+	for (int idx = 0; idx < actions.size()-1; idx++)
+		actions.at(idx)->setEnabled(enable);
 
 }
 
@@ -2459,8 +2474,13 @@ void DkNoMacs::deleteFile() {
 
 void DkNoMacs::openAppManager() {
 
-	//DkAppManager* manager = new DkAppManager(this);
+	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(appManager, this, windowFlags());
+	appManagerDialog->exec();
 
+	appManagerDialog->deleteLater();
+
+	openWithMenu->clear();
+	createOpenWithMenu(openWithMenu);
 }
 
 void DkNoMacs::exportTiff() {
@@ -2894,36 +2914,30 @@ void DkNoMacs::showStatusMessage(QString msg, int which) {
 	statusbarLabels[which]->setText(msg);
 }
 
-void DkNoMacs::openFileWith() {
+void DkNoMacs::openFileWith(QAction* action) {
 
-	if (DkSettings::global.showDefaultAppDialog) {
-		if (!openWithDialog) openWithDialog = new DkOpenWithDialog(this);
-		
-		if (!openWithDialog->exec())
-			return;
-	}
+	if (!action)
+		return;
+
+	QFileInfo app(action->toolTip());
+
+	if (!app.exists())
+		viewport()->getController()->setInfo("Sorry, " % app.fileName() % " does not exist");
 
 	QStringList args;
 	
-	if (QFileInfo(DkSettings::global.defaultAppPath).fileName() == "explorer.exe") {
+	if (app.fileName() == "explorer.exe")
 		args << "/select," << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
-		qDebug() << "explorer.exe started..." << args;
-	}
 	else
 		args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
-	bool started = process.startDetached(DkSettings::global.defaultAppPath, args);
+	bool started = process.startDetached(app.absoluteFilePath(), args);
 
 	if (started)
-		qDebug() << "starting: " << DkSettings::global.defaultAppPath;
-	else if (viewport()) {
-		viewport()->getController()->setInfo("Sorry, I could not start: " % DkSettings::global.defaultAppPath);
-		DkSettings::global.showDefaultAppDialog = true;
-	}
-
-	qDebug() << "I'm trying to execute: " << args[0];
-
+		qDebug() << "starting: " << app.fileName();
+	else if (viewport())
+		viewport()->getController()->setInfo("Sorry, I could not start: " % app.absoluteFilePath());
 }
 
 void DkNoMacs::showGpsCoordinates() {
@@ -3019,6 +3033,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 
 	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(this);
 	shortcutsDialog->addActions(fileActions, fileMenu->title());
+	shortcutsDialog->addActions(openWithMenu->actions().toVector(), openWithMenu->title());
 	shortcutsDialog->addActions(sortActions, sortMenu->title());
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());
