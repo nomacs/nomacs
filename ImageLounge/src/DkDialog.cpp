@@ -1059,8 +1059,34 @@ DkResizeDialog::DkResizeDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog
 	init();
 }
 
+DkResizeDialog::~DkResizeDialog() {
+	saveSettings();
+}
+
+void DkResizeDialog::saveSettings() {
+
+	QSettings settings;
+	settings.beginGroup(objectName());
+
+	settings.setValue("ResampleMethod", resampleBox->currentIndex());
+	settings.setValue("Resample", resampleCheck->isChecked());
+}
+
+
+void DkResizeDialog::loadSettings() {
+
+	qDebug() << "loading new settings...";
+
+	QSettings settings;
+	settings.beginGroup(objectName());
+
+	resampleBox->setCurrentIndex(settings.value("ResampleMethod", ipl_cubic).toInt());
+	resampleCheck->setChecked(settings.value("Resample", true).toBool());
+}
+
 void DkResizeDialog::init() {
 
+	setObjectName("DkResizeDialog");
 	leftSpacing = 40;
 	margin = 10;
 	exifDpi = 72;
@@ -1082,6 +1108,7 @@ void DkResizeDialog::init() {
 	wPixelEdit->setFocus(Qt::ActiveWindowFocusReason);
 
 	QMetaObject::connectSlotsByName(this);
+	loadSettings();
 
 }
 

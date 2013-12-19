@@ -340,6 +340,7 @@ class DkResizeDialog : public QDialog {
 
 public:
 	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkResizeDialog();
 
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
 	enum{size_pixel, size_percent, size_end};
@@ -443,6 +444,8 @@ protected:
 	void updatePixelWidth();
 	void updatePixelHeight();
 	void updateResolution();
+	void loadSettings();
+	void saveSettings();
 	QImage resizeImg(QImage img, bool silent = true);
 };
 
