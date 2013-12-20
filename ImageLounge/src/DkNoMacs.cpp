@@ -75,7 +75,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	resizeDialog = 0;
 	opacityDialog = 0;
 	updater = 0;
-	openWithDialog = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
 #ifdef WITH_OPENCV
@@ -507,7 +506,6 @@ void DkNoMacs::createMenu() {
 	fileMenu = menu->addMenu(tr("&File"));
 	fileMenu->addAction(fileActions[menu_file_open]);
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
-	fileMenu->addAction(fileActions[menu_file_open_with]);
 	
 	openWithMenu = new QMenu(tr("Open &With"), fileMenu);
 	createOpenWithMenu(openWithMenu);
@@ -744,13 +742,9 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_open_dir]->setStatusTip(tr("Open a directory and load its first image"));
 	connect(fileActions[menu_file_open_dir], SIGNAL(triggered()), this, SLOT(openDir()));
 
-	fileActions[menu_file_open_with] = new QAction(tr("Open &With"), this);
-	fileActions[menu_file_open_with]->setShortcut(QKeySequence(shortcut_open_with));
-	fileActions[menu_file_open_with]->setStatusTip(tr("Open an image in a different Program"));
-	connect(fileActions[menu_file_open_with], SIGNAL(triggered()), this, SLOT(openFileWith()));
-
 	fileActions[menu_file_app_manager] = new QAction(tr("&Manage Applications"), this);
 	fileActions[menu_file_app_manager]->setStatusTip(tr("Manage Applications which are Automatically Opened"));
+	fileActions[menu_file_app_manager]->setShortcut(QKeySequence(shortcut_app_manager));
 	connect(fileActions[menu_file_app_manager], SIGNAL(triggered()), this, SLOT(openAppManager()));
 
 	fileActions[menu_file_rename] = new QAction(tr("Re&name"), this);
@@ -1224,7 +1218,6 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	fileActions[menu_file_save]->setEnabled(enable);
 	fileActions[menu_file_save_as]->setEnabled(enable);
 	fileActions[menu_file_rename]->setEnabled(enable);
-	fileActions[menu_file_open_with]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
 	fileActions[menu_file_reload]->setEnabled(enable);
 	fileActions[menu_file_prev]->setEnabled(enable);

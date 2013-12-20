@@ -170,12 +170,6 @@ public:
 		QString setupPath;
 		QString setupVersion;
 
-		// open with
-		QString defaultAppPath;
-		int defaultAppIdx;
-		bool showDefaultAppDialog;
-		int numUserChoices;
-		QStringList userAppPaths;
 		int sortMode;
 		int sortDir;
 	};
@@ -449,7 +443,6 @@ Q_OBJECT
 		void tmpPathButtonPressed();
 		void useTmpPathChanged(int state);
 		void lineEditChanged(QString path);
-		void openWithDialog();
 
 	private:
 		void init();

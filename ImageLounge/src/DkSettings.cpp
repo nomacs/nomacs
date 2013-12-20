@@ -170,13 +170,8 @@ void DkSettings::load(bool force) {
 	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
 	global_p.language = settings.value("language", global_p.language).toString();
 
-	global_p.defaultAppPath = settings.value("defaultAppPath", global_p.defaultAppPath).toString();
-	global_p.defaultAppIdx = settings.value("defaultAppIdx", global_p.defaultAppIdx).toInt();
-	global_p.showDefaultAppDialog = settings.value("showDefaultAppDialog", global_p.showDefaultAppDialog).toBool();
-	global_p.numUserChoices = settings.value("numUserChoices", global_p.numUserChoices).toInt();
 	global_p.sortMode = settings.value("sortMode", global_p.sortMode).toInt();
 	global_p.sortDir = settings.value("sortDir", global_p.sortDir).toInt();
-	global_p.userAppPaths = settings.value("userAppPaths", global_p.userAppPaths).toStringList();
 	global_p.setupPath = settings.value("setupPath", global_p.setupPath).toString();
 	global_p.setupVersion = settings.value("setupVersion", global_p.setupVersion).toString();
 	global_p.zoomOnWheel = settings.value("zoomOnWheel", global_p.zoomOnWheel).toBool();
@@ -342,20 +337,10 @@ void DkSettings::save(bool force) {
 		settings.setValue("tmpPath", global_p.tmpPath);
 	if (!force && global_p.language != global_d.language)
 		settings.setValue("language", global_p.language);
-	if (!force && global_p.defaultAppIdx != global_d.defaultAppIdx)
-		settings.setValue("defaultAppIdx", global_p.defaultAppIdx);
-	if (!force && global_p.defaultAppPath != global_d.defaultAppPath)
-		settings.setValue("defaultAppPath", global_p.defaultAppPath);
-	if (!force && global_p.showDefaultAppDialog != global_d.showDefaultAppDialog)
-		settings.setValue("showDefaultAppDialog", global_p.showDefaultAppDialog);
-	if (!force && global_p.numUserChoices != global_d.numUserChoices)
-		settings.setValue("numUserChoices", global_p.numUserChoices);
 	if (!force && global_p.sortMode != global_d.sortMode)
 		settings.setValue("sortMode", global_p.sortMode);
 	if (!force && global_p.sortDir != global_d.sortDir)
 		settings.setValue("sortDir", global_p.sortDir);
-	if (!force && global_p.userAppPaths != global_d.userAppPaths)
-		settings.setValue("userAppPaths", global_p.userAppPaths);
 	if (!force && global_p.setupPath != global_d.setupPath)
 		settings.setValue("setupPath", global_p.setupPath);
 	if (!force && global_p.setupVersion != global_d.setupVersion)
@@ -513,11 +498,6 @@ void DkSettings::setToDefaultSettings() {
 	global_p.useTmpPath = false;
 	global_p.tmpPath = QString();
 	global_p.language = QString();
-	global_p.defaultAppIdx = -1;
-	global_p.defaultAppPath = QString();
-	global_p.showDefaultAppDialog = true;
-	global_p.numUserChoices = 3;
-	global_p.userAppPaths = QStringList();
 	global_p.setupPath = "";
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
@@ -1183,17 +1163,11 @@ void DkFileWidget::createLayout() {
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	cbWrapImages = new QCheckBox(tr("Loop Images"));
 
-
-	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"), this);
-	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
-	
 	widgetLayout->addWidget(gbDragDrop);
 	leftLayout->addWidget(skipImgWidget);
 	leftLayout->addWidget(numberFiles);
 	leftLayout->addWidget(cbWrapImages);
 	leftLayout->addStretch();
-	rightLayout->addWidget(pbOpenWith);
-	rightLayout->addStretch();
 	subWidgetLayout->addLayout(leftLayout);
 	subWidgetLayout->addLayout(rightLayout);
 	widgetLayout->addLayout(subWidgetLayout);
@@ -1216,14 +1190,6 @@ void DkFileWidget::lineEditChanged(QString path) {
 bool DkFileWidget::existsDirectory(QString path) {
 	QFileInfo* fi = new QFileInfo(path);
 	return fi->exists();
-}
-
-void DkFileWidget::openWithDialog() {
-
-	DkOpenWithDialog* openWithDialog = new DkOpenWithDialog(this);
-	openWithDialog->exec();
-
-	delete openWithDialog;
 }
 
 void DkFileWidget::tmpPathButtonPressed() {
