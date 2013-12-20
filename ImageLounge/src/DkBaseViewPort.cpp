@@ -373,10 +373,10 @@ bool DkBaseViewPort::event(QEvent *event) {
 		return gestureEvent(static_cast<QGestureEvent*>(event));
 #endif
 
-	if (event->type() == QEvent::Paint)
-		return QGraphicsView::event(event);
-	else
-		return QGraphicsView::event(event);
+	//if (event->type() == QEvent::Paint)
+	//	return QGraphicsView::event(event);
+	//else
+	return QGraphicsView::event(event);
 
 	//qDebug() << "event caught..." << event->type();
 
@@ -469,7 +469,7 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 			else
 				qDebug() << "here comes the next image function...";
 		}
-		qDebug() << "swipping...";
+		qDebug() << "swiping...";
 	}
 	else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
 
