@@ -858,6 +858,12 @@ DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 
 	this->parent = parent;
 	loadSettings();
+	findDefaultSoftware();
+
+	for (int idx = 0; idx < apps.size(); idx++) {
+		assignIcon(apps.at(idx));
+		connect(apps.at(idx), SIGNAL(triggered()), this, SLOT(openTriggered()));
+	}
 }
 
 DkAppManager::~DkAppManager() {
@@ -905,15 +911,6 @@ void DkAppManager::loadSettings() {
 }
 
 QVector<QAction* >& DkAppManager::getActions() {
-
-	apps.clear();
-	loadSettings();
-	findDefaultSoftware();
-	
-	for (int idx = 0; idx < apps.size(); idx++) {
-		assignIcon(apps.at(idx));
-		connect(apps.at(idx), SIGNAL(triggered()), this, SLOT(openTriggered()));
-	}
 
 	return apps;
 }
@@ -1096,8 +1093,6 @@ QString DkAppManager::searchForSoftware(QString organization, QString applicatio
 				break;
 			}
 		}
-
-		qDebug() << appPath;
 	}
 	else
 		appPath = QFileInfo(appPath, exeName).absoluteFilePath();	// for correct separators
@@ -1117,6 +1112,7 @@ void DkAppManager::openTriggered() {
 DkAppManagerDialog::DkAppManagerDialog(DkAppManager* manager /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDialog(parent, flags) {
 
 	this->manager = manager;
+	this->setWindowTitle(tr("Manage Applications"));
 	createLayout();
 }
 
@@ -1136,8 +1132,8 @@ void DkAppManagerDialog::createLayout() {
 	//appTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	appTableView->setShowGrid(false);
 	appTableView->resizeColumnsToContents();
+	appTableView->resizeRowsToContents();
 	appTableView->setWordWrap(false);
-
 
 	QPushButton* addButton = new QPushButton(tr("&Add"), this);
 	addButton->setObjectName("addButton");
@@ -1158,15 +1154,16 @@ void DkAppManagerDialog::createLayout() {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(appTableView);
 	layout->addWidget(buttons);
-
 	QMetaObject::connectSlotsByName(this);
 }
 
 QList<QStandardItem* > DkAppManagerDialog::getItems(QAction* action) {
 
 	QList<QStandardItem* > items;
-	items.append(new QStandardItem(action->icon(), action->text().replace("&", "")));
-	QStandardItem* item = new QStandardItem(action->toolTip());
+	QStandardItem* item = new QStandardItem(action->icon(), action->text().remove("&"));
+	//item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
+	items.append(item);
+	item = new QStandardItem(action->toolTip());
 	item->setFlags(Qt::ItemIsSelectable);
 	items.append(item);
 
@@ -1222,8 +1219,10 @@ void DkAppManagerDialog::accept() {
 		if (!action)
 			action = manager->createAction(filePath);
 
-		if (!name.contains(action->text().remove("&")))
+		if (name != action->text().remove("&"))
 			action->setText(name);
+
+		qDebug() << "pushing back: " << action->text();
 
 		apps.append(action);
 	}

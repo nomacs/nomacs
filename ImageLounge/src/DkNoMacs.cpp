@@ -153,7 +153,6 @@ void DkNoMacs::init() {
 
 	// add actions since they are ignored otherwise if the menu is hidden
 	viewport()->addActions(fileActions.toList());
-	viewport()->addActions(openWithMenu->actions());
 	viewport()->addActions(sortActions.toList());
 	viewport()->addActions(editActions.toList());
 	viewport()->addActions(toolsActions.toList());
@@ -665,6 +664,12 @@ void DkNoMacs::createMenu() {
 
 void DkNoMacs::createOpenWithMenu(QMenu* menu) {
 
+	QList<QAction* > oldActions = openWithMenu->findChildren<QAction* >();
+
+	// remove old actions
+	for (int idx = 0; idx < oldActions.size(); idx++)
+		viewport()->removeAction(oldActions.at(idx));
+
 	QVector<QAction* > appActions = appManager->getActions();
 	assignCustomShortcuts(appActions);
 	openWithMenu->addActions(appActions.toList());
@@ -672,6 +677,7 @@ void DkNoMacs::createOpenWithMenu(QMenu* menu) {
 	if (!appActions.empty())
 		openWithMenu->addSeparator();
 	openWithMenu->addAction(fileActions[menu_file_app_manager]);
+	viewport()->addActions(appActions.toList());
 }
 
 void DkNoMacs::createContextMenu() {
