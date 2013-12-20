@@ -1695,13 +1695,13 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 
 void DkViewPort::reloadFile() {
 
-	unloadImage();
-
 	if (loader) {
-		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
-
 		if (controller->getFilePreview())
-			controller->getThumbPool()->setFile(loader->getFile(), true);
+			controller->getThumbPool()->setFile(loader->getFile(), DkThumbsLoader::user_updated);
+
+		unloadImage();
+
+		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
 	}
 }
 

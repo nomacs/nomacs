@@ -688,7 +688,7 @@ public slots:
 	void loadFile(QFileInfo& file);
 	void increaseThumbs();
 	void decreaseThumbs();
-	void resizeThumbs(int dx);
+	void resizeThumbs(float dx);
 	void showFile(const QFileInfo& file);
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);

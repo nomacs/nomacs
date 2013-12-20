@@ -1114,17 +1114,22 @@ void DkThumbScene::showFile(const QFileInfo& file) {
 
 void DkThumbScene::increaseThumbs() {
 
-	resizeThumbs(4);
+	resizeThumbs(1.2f);
 }
 
 void DkThumbScene::decreaseThumbs() {
 
-	resizeThumbs(-4);
+	resizeThumbs(0.8f);
 }
 
-void DkThumbScene::resizeThumbs(int dx) {
+void DkThumbScene::resizeThumbs(float dx) {
 
-	int newSize = DkSettings::display.thumbPreviewSize + dx;
+	if (dx < 0)
+		dx += 2.0f;
+
+	int newSize = DkSettings::display.thumbPreviewSize * dx;
+	qDebug() << "delta: " << dx;
+	qDebug() << "newsize: " << newSize;
 
 	if (newSize > 6 && newSize <= 160) {
 		DkSettings::display.thumbPreviewSize = newSize;
@@ -1191,7 +1196,7 @@ DkThumbsView::DkThumbsView(DkThumbScene* scene, QWidget* parent /* = 0 */) : QGr
 void DkThumbsView::wheelEvent(QWheelEvent *event) {
 
 	if (event->modifiers() == Qt::ControlModifier) {
-		scene->resizeThumbs(qCeil(event->delta()/100.0f));
+		scene->resizeThumbs(event->delta()/100.0f);
 	}
 	else if (event->modifiers() == Qt::NoModifier) {
 
