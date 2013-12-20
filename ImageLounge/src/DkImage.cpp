@@ -866,7 +866,7 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
-		saved = imgWriter->write(img);		// TODO: crash detected
+		saved = imgWriter->write(img);		// TODO: J2K crash detected
 		delete imgWriter;
 	}
 
