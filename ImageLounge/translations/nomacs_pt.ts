@@ -561,7 +561,7 @@ Pretende mostrar os campos?</translation>
     <message>
       <location filename="../src/DkSettings.cpp" line="922"/>
       <source>Show Menu</source>
-      <translation>Mostrar Menu</translation>
+      <translation>Mostrar menu</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="923"/>
@@ -1274,7 +1274,7 @@ tente corrigir as imagens.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="508"/>
       <source>Recent Fo&amp;lders</source>
-      <translation>&amp;Pastas recentes</translation>
+      <translation>Pas&amp;tas recentes</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="518"/>
@@ -1379,7 +1379,7 @@ tente corrigir as imagens.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="726"/>
       <source>&amp;Save As</source>
-      <translation>Gravar &amp;como</translation>
+      <translation>Gra&amp;var como</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="728"/>
@@ -1439,7 +1439,7 @@ tente corrigir as imagens.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="758"/>
       <source>St&amp;art New Instance</source>
-      <translation>&amp;Abrir nova instância</translation>
+      <translation>A&amp;brir nova instância</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="760"/>
@@ -1449,7 +1449,7 @@ tente corrigir as imagens.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="763"/>
       <source>&amp;Find &amp;&amp; Filter</source>
-      <translation>Localizar e &amp;filtrar</translation>
+      <translation>Locali&amp;zar e filtrar</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="765"/>
@@ -1559,7 +1559,7 @@ tente corrigir as imagens.</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="839"/>
       <source>&amp;Copy Buffer</source>
-      <translation>Memória de &amp;cópia</translation>
+      <translation>&amp;Buffer de cópia</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="848"/>

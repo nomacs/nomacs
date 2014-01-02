@@ -1537,7 +1537,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="829"/>
       <source>180°</source>
-      <translation>Otočí o 180°</translation>
+      <translation>Otočit o 180°</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="830"/>

@@ -1162,17 +1162,17 @@ neobsahuje žiadne obrázky</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="3133"/>
       <source>Patches:</source>
-      <translation>Patches:</translation>
+      <translation>Záplaty:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3137"/>
       <source>Number of Horizontal Patches</source>
-      <translation>Number of Horizontal Patches</translation>
+      <translation>Počet horizontálnych záplat</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3142"/>
       <source>Number of Vertical Patches</source>
-      <translation>Number of Vertical Patches</translation>
+      <translation>Počet vertikálnych záplat</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3146"/>
@@ -1222,7 +1222,7 @@ neobsahuje žiadne obrázky</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="3319"/>
       <source>Patch Resolution: %1 px</source>
-      <translation>Patch Resolution: %1 px</translation>
+      <translation>Rozlíšenie záplaty: %1 px</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3513"/>
@@ -2832,7 +2832,7 @@ Stlačte ESC aby ste vrátili zmeny</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1281"/>
       <source>Thumb</source>
-      <translation>Thumb</translation>
+      <translation>Palec</translation>
     </message>
   </context>
   <context>

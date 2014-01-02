@@ -129,82 +129,82 @@
     <message>
       <location filename="../src/DkToolbars.cpp" line="756"/>
       <source>Crop (ENTER)</source>
-      <translation>Crop (ENTER)</translation>
+      <translation>裁剪 (ENTER)</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="760"/>
       <source>Cancel (ESC)</source>
-      <translation>Cancel (ESC)</translation>
+      <translation>取消 (ESC)</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="764"/>
       <source>Pan</source>
-      <translation>Pan</translation>
+      <translation>面板</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="772"/>
       <source>User Defined</source>
-      <translation>User Defined</translation>
+      <translation>用户定义</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="773"/>
       <source>No Aspect Ratio</source>
-      <translation>No Aspect Ratio</translation>
+      <translation>不保持长宽比</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="781"/>
       <source>Horizontal Constraint</source>
-      <translation>Horizontal Constraint</translation>
+      <translation>水平约束</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="784"/>
       <source>Swap</source>
-      <translation>Swap</translation>
+      <translation>交换</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="786"/>
       <source>Swap Dimensions</source>
-      <translation>Swap Dimensions</translation>
+      <translation>互换尺寸</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="792"/>
       <source>Vertical Constraint</source>
-      <translation>Vertical Constraint</translation>
+      <translation>垂直约束</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="806"/>
       <source>Background Color</source>
-      <translation>Background Color</translation>
+      <translation>背景颜色</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="815"/>
       <source>Guides</source>
-      <translation>Guides</translation>
+      <translation>参考线</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="816"/>
       <source>Rule of Thirds</source>
-      <translation>Rule of Thirds</translation>
+      <translation>三分法</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="817"/>
       <source>Grid</source>
-      <translation>Grid</translation>
+      <translation>网格</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="821"/>
       <source>Show Guides in the Preview</source>
-      <translation>Show Guides in the Preview</translation>
+      <translation>在预览中显示参考线</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="824"/>
       <source>Invert Crop Tool Color</source>
-      <translation>Invert Crop Tool Color</translation>
+      <translation>裁剪工具颜色反转</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="829"/>
       <source>Show Info</source>
-      <translation>Show Info</translation>
+      <translation>显示信息</translation>
     </message>
   </context>
   <context>
@@ -212,7 +212,7 @@
     <message>
       <location filename="../src/DkWidgets.cpp" line="4337"/>
       <source>Crop Toolbar</source>
-      <translation>Crop Toolbar</translation>
+      <translation>裁剪工具栏</translation>
     </message>
   </context>
   <context>
@@ -313,7 +313,7 @@
     <message>
       <location filename="../src/DkWidgets.cpp" line="1805"/>
       <source>Editable</source>
-      <translation>Editable</translation>
+      <translation>可编辑</translation>
     </message>
   </context>
   <context>
@@ -321,72 +321,72 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="2733"/>
       <source>Export Multi-Page TIFF</source>
-      <translation>Export Multi-Page TIFF</translation>
+      <translation>导出多页 TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2781"/>
       <source>Multi-Page TIFF:</source>
-      <translation>Multi-Page TIFF:</translation>
+      <translation>多页 TIFF:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2784"/>
       <source>&amp;Browse</source>
-      <translation>&amp;Browse</translation>
+      <translation>浏览(&amp;B)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2787"/>
       <source>No Multi-Page TIFF loaded</source>
-      <translation>No Multi-Page TIFF loaded</translation>
+      <translation>没有多页 TIFF 加载</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2790"/>
       <source>Save Folder:</source>
-      <translation>Save Folder:</translation>
+      <translation>保存文件夹:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2796"/>
       <source>Specify a Save Folder</source>
-      <translation>Specify a Save Folder</translation>
+      <translation>指定保存文件夹</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2799"/>
       <source>Filename:</source>
-      <translation>Filename:</translation>
+      <translation>文件名:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2810"/>
       <source>Export Pages</source>
-      <translation>Export Pages</translation>
+      <translation>导出页面</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2817"/>
       <source>Overwrite</source>
-      <translation>Overwrite</translation>
+      <translation>覆盖</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2849"/>
       <source>&amp;Export</source>
-      <translation>&amp;Export</translation>
+      <translation>导出(&amp;E)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2850"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Cancel</translation>
+      <translation>取消(&amp;C)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2867"/>
       <source>Open TIFF</source>
-      <translation>Open TIFF</translation>
+      <translation>打开 TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2878"/>
       <source>Open an Image Directory</source>
-      <translation>Open an Image Directory</translation>
+      <translation>打开图像目录</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2963"/>
       <source>Sorry, I could not save: %1</source>
-      <translation>Sorry, I could not save: %1</translation>
+      <translation>对不起，不能保存: %1</translation>
     </message>
   </context>
   <context>
@@ -416,7 +416,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkWidgets.cpp" line="568"/>
       <source>CTRL+Zoom resizes the thumbnails</source>
-      <translation>CTRL+Zoom resizes the thumbnails</translation>
+      <translation>CTRL + 缩放调整缩略图的大小</translation>
     </message>
   </context>
   <context>
@@ -449,12 +449,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="1174"/>
       <source>Number of Recent Files/Folders:</source>
-      <translation>Number of Recent Files/Folders:</translation>
+      <translation>最近使用文件、文件夹的数目：</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1174"/>
       <source>shown in Menu</source>
-      <translation>shown in Menu</translation>
+      <translation>在菜单中显示</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1177"/>
@@ -477,26 +477,24 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3973"/>
       <source>Overwrite Existing Thumbnails</source>
-      <translation>Overwrite Existing Thumbnails</translation>
+      <translation>覆盖现有的缩略图</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3978"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>确定(&amp;O)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3979"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Cancel</translation>
+      <translation>取消(&amp;C)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3991"/>
       <source>Compute thumbnails for all images in:
  %1
 </source>
-      <translation>Compute thumbnails for all images in:
- %1
-</translation>
+      <translation>计算中所有图像的缩略图: %1</translation>
     </message>
   </context>
   <context>
@@ -532,7 +530,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="863"/>
       <source>Fullscreen Color</source>
-      <translation>Fullscreen Color</translation>
+      <translation>全屏背景色</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="866"/>
@@ -557,22 +555,22 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="922"/>
       <source>Show Menu</source>
-      <translation>Show Menu</translation>
+      <translation>显示菜单</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="923"/>
       <source>Show Toolbar</source>
-      <translation>Show Toolbar</translation>
+      <translation>显示工具栏</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="924"/>
       <source>Show Statusbar</source>
-      <translation>Show Statusbar</translation>
+      <translation>显示状态栏</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="925"/>
       <source>Small Icons</source>
-      <translation>Small Icons</translation>
+      <translation>小图标</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="926"/>
@@ -582,17 +580,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="927"/>
       <source>Close on ESC</source>
-      <translation>Close on ESC</translation>
+      <translation>按ESC关闭</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="928"/>
       <source>Mouse Wheel Zooms</source>
-      <translation>Mouse Wheel Zooms</translation>
+      <translation>鼠标滚轮缩放</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="929"/>
       <source>If unchecked, the mouse wheel switches between images.</source>
-      <translation>If unchecked, the mouse wheel switches between images.</translation>
+      <translation>如果不选中图像，鼠标滚轮在图像之间切换。</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="944"/>
@@ -712,7 +710,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkManipulationWidgets.cpp" line="158"/>
       <source>&amp;OK</source>
-      <translation>&amp;OK</translation>
+      <translation>确定(&amp;O)</translation>
     </message>
     <message>
       <location filename="../src/DkManipulationWidgets.cpp" line="159"/>
@@ -725,12 +723,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="119"/>
       <source>Error</source>
-      <translation>Error</translation>
+      <translation>错误</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="181"/>
       <source>Show Dialog Again</source>
-      <translation>Show Dialog Again</translation>
+      <translation>再次显示对话框</translation>
     </message>
   </context>
   <context>
@@ -1064,29 +1062,28 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="1436"/>
       <source>Exif Orientation</source>
-      <translation>Exif Orientation</translation>
+      <translation>Exif 信息</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1438"/>
       <source>Ignore Exif Orientation</source>
-      <translation>Ignore Exif Orientation</translation>
+      <translation>忽略 Exif 信息</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1440"/>
       <source>Note: instead of checking this option
  you should fix your images.</source>
-      <translation>Note: instead of checking this option
- you should fix your images.</translation>
+      <translation>注意：取消此选项的勾选，你需要修复你的图像。</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1442"/>
       <source>Save Exif Orientation</source>
-      <translation>Save Exif Orientation</translation>
+      <translation>保存 Exif 信息</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1444"/>
       <source>Note: unchecking this option decreases the speed of rotating images.</source>
-      <translation>Note: unchecking this option decreases the speed of rotating images.</translation>
+      <translation>注意： 取消此选项会降低图像旋转的速度。</translation>
     </message>
   </context>
   <context>
@@ -1094,7 +1091,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3024"/>
       <source>Create Mosaic Image</source>
-      <translation>Create Mosaic Image</translation>
+      <translation>创建马赛克图像</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3088"/>
@@ -1114,7 +1111,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3098"/>
       <source>Mosaic Image:</source>
-      <translation>Mosaic Image:</translation>
+      <translation>马赛克图像：</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3101"/>
@@ -1139,107 +1136,107 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3114"/>
       <source>Specify an Image Database</source>
-      <translation>Specify an Image Database</translation>
+      <translation>指定图像数据库</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3117"/>
       <source>Resolution:</source>
-      <translation>Resolution:</translation>
+      <translation>分辨率：</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3121"/>
       <source>Pixel Width</source>
-      <translation>Pixel Width</translation>
+      <translation>像素宽度</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3126"/>
       <source>Pixel Height</source>
-      <translation>Pixel Height</translation>
+      <translation>像素高度</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3133"/>
       <source>Patches:</source>
-      <translation>Patches:</translation>
+      <translation>调整：</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3137"/>
       <source>Number of Horizontal Patches</source>
-      <translation>Number of Horizontal Patches</translation>
+      <translation>横向调整：</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3142"/>
       <source>Number of Vertical Patches</source>
-      <translation>Number of Vertical Patches</translation>
+      <translation>纵向调整：</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3146"/>
       <source>If this label turns red, the computation might be slower.</source>
-      <translation>If this label turns red, the computation might be slower.</translation>
+      <translation>如果此标签变为红色，计算可能比较慢。</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3149"/>
       <source>Filters:</source>
-      <translation>Filters:</translation>
+      <translation>筛选器：</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3154"/>
       <source>You can split multiple ignore words with ;</source>
-      <translation>You can split multiple ignore words with ;</translation>
+      <translation>可以将拆分多个忽略单词 ；</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3207"/>
       <source>&amp;Save</source>
-      <translation>&amp;Save</translation>
+      <translation>保存(&amp;S)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3208"/>
       <source>&amp;Generate</source>
-      <translation>&amp;Generate</translation>
+      <translation>生成(&amp;G)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3209"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Cancel</translation>
+      <translation>取消(&amp;C)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3229"/>
       <source>Open TIFF</source>
-      <translation>Open TIFF</translation>
+      <translation>打开 TIFF</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3240"/>
       <source>Open an Image Directory</source>
-      <translation>Open an Image Directory</translation>
+      <translation>打开图像目录</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3262"/>
       <source>%1 x %2 cm @150 dpi</source>
-      <translation>%1 x %2 cm @150 dpi</translation>
+      <translation>%1 x %2 厘米 @150 dpi</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3319"/>
       <source>Patch Resolution: %1 px</source>
-      <translation>Patch Resolution: %1 px</translation>
+      <translation>调节分辨率：%1 px</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3513"/>
       <source>Filling empty areas...</source>
-      <translation>Filling empty areas...</translation>
+      <translation>填补空白区域......</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3517"/>
       <source>I need to use some images twice - maybe the database is too small?</source>
-      <translation>I need to use some images twice - maybe the database is too small?</translation>
+      <translation>需要使用一些图像两次- 或许数据库是否太小吗？</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3522"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-      <translation>Sorry, it seems that i cannot create your mosaic with this database.</translation>
+      <translation>对不起，看来无法用此数据库创建您的马赛克图像。</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3646"/>
       <source>Something is seriously wrong, I could not load: %1</source>
-      <translation>Something is seriously wrong, I could not load: %1</translation>
+      <translation>有一些严重错误，无法加载：%1</translation>
     </message>
   </context>
   <context>
@@ -1272,7 +1269,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="518"/>
       <source>S&amp;ort</source>
-      <translation>S&amp;ort</translation>
+      <translation>排序(&amp;o)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="541"/>
@@ -1287,7 +1284,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="594"/>
       <source>&amp;Panels</source>
-      <translation>&amp;Panels</translation>
+      <translation>面板(&amp;P)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="595"/>
@@ -1372,12 +1369,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="726"/>
       <source>&amp;Save As</source>
-      <translation>&amp;Save As</translation>
+      <translation>另存为(&amp;S)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="728"/>
       <source>Save an image as</source>
-      <translation>Save an image as</translation>
+      <translation>保存图像为</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="731"/>
@@ -1422,12 +1419,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="754"/>
       <source>Add Image Format</source>
-      <translation>Add Image Format</translation>
+      <translation>添加图像格式</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="755"/>
       <source>Add a new image format to nomacs</source>
-      <translation>Add a new image format to nomacs</translation>
+      <translation>添加新的图像格式到 nomacs</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="758"/>
@@ -1462,52 +1459,52 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="780"/>
       <source>by &amp;Filename</source>
-      <translation>by &amp;Filename</translation>
+      <translation>按文件名(&amp;F)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="782"/>
       <source>Sort by Filename</source>
-      <translation>Sort by Filename</translation>
+      <translation>按文件名排序</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="787"/>
       <source>by Date &amp;Created</source>
-      <translation>by Date &amp;Created</translation>
+      <translation>按创建日期(&amp;C)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="789"/>
       <source>Sort by Date Created</source>
-      <translation>Sort by Date Created</translation>
+      <translation>按创建日期排序</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="794"/>
       <source>by Date Modified</source>
-      <translation>by Date Modified</translation>
+      <translation>按修改日期</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="796"/>
       <source>Sort by Date Last Modified</source>
-      <translation>Sort by Date Last Modified</translation>
+      <translation>按最后修改日期排序</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="801"/>
       <source>&amp;Ascending</source>
-      <translation>&amp;Ascending</translation>
+      <translation>升序(&amp;A)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="803"/>
       <source>Sort in Ascending Order</source>
-      <translation>Sort in Ascending Order</translation>
+      <translation>升序排序</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="808"/>
       <source>&amp;Descending</source>
-      <translation>&amp;Descending</translation>
+      <translation>降序(&amp;D)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="810"/>
       <source>Sort in Descending Order</source>
-      <translation>Sort in Descending Order</translation>
+      <translation>降序排序</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="817"/>
@@ -1627,27 +1624,27 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="890"/>
       <source>&amp;Menu</source>
-      <translation>&amp;Menu</translation>
+      <translation>菜单(&amp;M)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="891"/>
       <source>Hides the Menu and Shows it Again on ALT</source>
-      <translation>Hides the Menu and Shows it Again on ALT</translation>
+      <translation>按ALT显示或隐藏菜单</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="895"/>
       <source>Tool&amp;bar</source>
-      <translation>Tool&amp;bar</translation>
+      <translation>工具条(&amp;b)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="901"/>
       <source>&amp;Statusbar</source>
-      <translation>&amp;Statusbar</translation>
+      <translation>状态栏(&amp;S)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="908"/>
       <source>&amp;Pseudocolor Function</source>
-      <translation>&amp;Pseudocolor Function</translation>
+      <translation>伪色功能 (&amp;P)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="897"/>
@@ -1657,7 +1654,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="361"/>
       <source>Movie Toolbar</source>
-      <translation>Movie Toolbar</translation>
+      <translation>影片工具栏</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="903"/>
@@ -1672,92 +1669,92 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="920"/>
       <source>O&amp;verview</source>
-      <translation>O&amp;verview</translation>
+      <translation>预览(&amp;O)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="922"/>
       <source>Shows the Zoom Overview</source>
-      <translation>Shows the Zoom Overview</translation>
+      <translation>显示缩放预览</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="927"/>
       <source>Pla&amp;yer</source>
-      <translation>Pla&amp;yer</translation>
+      <translation>幻灯片播放器(&amp;y)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="929"/>
       <source>Shows the Slide Show Player</source>
-      <translation>Shows the Slide Show Player</translation>
+      <translation>显示幻灯片播放器面板</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="933"/>
       <source>File &amp;Explorer</source>
-      <translation>File &amp;Explorer</translation>
+      <translation>文件资源管理器(&amp;E)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="935"/>
       <source>Show File Explorer</source>
-      <translation>Show File Explorer</translation>
+      <translation>显示文件资源管理器</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="939"/>
       <source>&amp;Thumbnails</source>
-      <translation>&amp;Thumbnails</translation>
+      <translation>缩略图(&amp;T)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="941"/>
       <source>Show Thumbnails</source>
-      <translation>Show Thumbnails</translation>
+      <translation>显示缩略图</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="945"/>
       <source>&amp;Thumbnail Preview</source>
-      <translation>&amp;Thumbnail Preview</translation>
+      <translation>缩略图预览(&amp;T)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="947"/>
       <source>Show Thumbnails Preview</source>
-      <translation>Show Thumbnails Preview</translation>
+      <translation>显示缩略图预览</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="951"/>
       <source>&amp;Folder Scrollbar</source>
-      <translation>&amp;Folder Scrollbar</translation>
+      <translation>文件夹滚动条(&amp;F)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="953"/>
       <source>Show Folder Scrollbar</source>
-      <translation>Show Folder Scrollbar</translation>
+      <translation>显示文件夹滚动条</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="957"/>
       <source>&amp;Metadata</source>
-      <translation>&amp;Metadata</translation>
+      <translation>元数据(&amp;M)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="959"/>
       <source>Shows the Metadata Panel</source>
-      <translation>Shows the Metadata Panel</translation>
+      <translation>显示元数据面板</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="963"/>
       <source>File &amp;Info</source>
-      <translation>File &amp;Info</translation>
+      <translation>文件信息(&amp;I)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="965"/>
       <source>Shows the Info Panel</source>
-      <translation>Shows the Info Panel</translation>
+      <translation>显示信息面板</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="969"/>
       <source>&amp;Histogram</source>
-      <translation>&amp;Histogram</translation>
+      <translation>直方图(&amp;H)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="971"/>
       <source>Shows the Histogram Panel</source>
-      <translation>Shows the Histogram Panel</translation>
+      <translation>显示直方图面板</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="976"/>
@@ -1832,12 +1829,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1016"/>
       <source>&amp;Transparency Pattern</source>
-      <translation>&amp;Transparency Pattern</translation>
+      <translation>透明模式(&amp;T)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1018"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>if checked, a pattern will be displayed for transparent objects</translation>
+      <translation>如果选中，图案将以透明对象模式显示。</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1023"/>
@@ -1897,32 +1894,32 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1057"/>
       <source>&amp;Pause Movie</source>
-      <translation>&amp;Pause Movie</translation>
+      <translation>暂停播放(&amp;P)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1058"/>
       <source>pause the current movie</source>
-      <translation>pause the current movie</translation>
+      <translation>暂停当前播放影片</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1063"/>
       <source>P&amp;revious Frame</source>
-      <translation>P&amp;revious Frame</translation>
+      <translation>上一帧(&amp;r)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1064"/>
       <source>show previous frame</source>
-      <translation>show previous frame</translation>
+      <translation>显示上一帧</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1067"/>
       <source>&amp;Next Frame</source>
-      <translation>&amp;Next Frame</translation>
+      <translation>下一帧(&amp;N)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1068"/>
       <source>show next frame</source>
-      <translation>show next frame</translation>
+      <translation>显示下一帧</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1071"/>
@@ -1962,22 +1959,22 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1095"/>
       <source>Export Multipage &amp;TIFF</source>
-      <translation>Export Multipage &amp;TIFF</translation>
+      <translation>导出多页 TIFF (&amp;T)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1096"/>
       <source>Export TIFF pages to multiple tiff files</source>
-      <translation>Export TIFF pages to multiple tiff files</translation>
+      <translation>导出TIFF 到多个 tiff 文件</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1099"/>
       <source>&amp;Mosaic Image</source>
-      <translation>&amp;Mosaic Image</translation>
+      <translation>马赛克图像(M)：</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1100"/>
       <source>Create a Mosaic Image</source>
-      <translation>Create a Mosaic Image</translation>
+      <translation>创建马赛克图像</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1105"/>
@@ -1992,12 +1989,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1110"/>
       <source>&amp;Documentation</source>
-      <translation>&amp;Documentation</translation>
+      <translation>文档(&amp;D)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1111"/>
       <source>Online Documentation</source>
-      <translation>Online Documentation</translation>
+      <translation>在线文档</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1114"/>
@@ -2052,7 +2049,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1951"/>
       <source>File Explorer</source>
-      <translation>File Explorer</translation>
+      <translation>文件资源管理器</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1977"/>
@@ -2115,14 +2112,13 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2270"/>
       <source>Overwrite File</source>
-      <translation>Overwrite File</translation>
+      <translation>覆盖文件</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2271"/>
       <source>Do you want to overwrite:
 %1?</source>
-      <translation>Do you want to overwrite:
-%1?</translation>
+      <translation>您要覆盖： %1 吗?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2283"/>
@@ -2137,7 +2133,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2605"/>
       <source>Save Thumbnails</source>
-      <translation>Save Thumbnails</translation>
+      <translation>保存缩略图</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3045"/>
@@ -2157,12 +2153,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3095"/>
       <source>Unable to install new version&lt;br&gt;</source>
-      <translation>Unable to install new version&lt;br&gt;</translation>
+      <translation>无法安装新版本 &lt;br&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3096"/>
       <source>You can download the new version from our web page</source>
-      <translation>You can download the new version from our web page</translation>
+      <translation>您可以从我们的网站上下载新的版本</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2465"/>
@@ -2180,12 +2176,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3196"/>
       <source>Send &amp;Image</source>
-      <translation>Send &amp;Image</translation>
+      <translation>发送图像(&amp;I)</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3200"/>
       <source>Sends the current image to all clients.</source>
-      <translation>Sends the current image to all clients.</translation>
+      <translation>将当前图像发送到所有客户端。</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3218"/>
@@ -2574,17 +2570,17 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="1561"/>
       <source>Hide Duplicates</source>
-      <translation>Hide Duplicates</translation>
+      <translation>隐藏重复项</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1563"/>
       <source>If checked, duplicated images are not shown (e.g. RAW+JPG</source>
-      <translation>If checked, duplicated images are not shown (e.g. RAW+JPG</translation>
+      <translation>如果选中，则重复的图片将不会显示 （如 RAW + JPG</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1565"/>
       <source>Preferred Extension: </source>
-      <translation>Preferred Extension: </translation>
+      <translation>首选的扩展：</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="1581"/>
@@ -2693,7 +2689,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="686"/>
       <source>Advanced</source>
-      <translation>Advanced</translation>
+      <translation>高级</translation>
     </message>
   </context>
   <context>
@@ -2812,22 +2808,22 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1268"/>
       <source>Select &amp;All</source>
-      <translation>Select &amp;All</translation>
+      <translation>全选(&amp;A)</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1273"/>
       <source>Zoom &amp;In</source>
-      <translation>Zoom &amp;In</translation>
+      <translation>放大(&amp;I)</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1277"/>
       <source>Zoom &amp;Out</source>
-      <translation>Zoom &amp;Out</translation>
+      <translation>缩小(&amp;O)</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1281"/>
       <source>Thumb</source>
-      <translation>Thumb</translation>
+      <translation>缩略图</translation>
     </message>
   </context>
   <context>
@@ -2835,7 +2831,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1080"/>
       <source>%1 Images</source>
-      <translation>%1 Images</translation>
+      <translation>%1 的图像</translation>
     </message>
   </context>
   <context>
@@ -2850,9 +2846,7 @@ Press ESC to undo changes</source>
       <source>
 Creating thumbnails...
 </source>
-      <translation>
-Creating thumbnails...
-</translation>
+      <translation>创建缩略图...</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1661"/>
@@ -2893,52 +2887,52 @@ Creating thumbnails...
     <message>
       <location filename="../src/DkDialog.cpp" line="307"/>
       <source>Add New Image Format</source>
-      <translation>Add New Image Format</translation>
+      <translation>添加新的图像格式</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="316"/>
       <source>Load New Image Format</source>
-      <translation>Load New Image Format</translation>
+      <translation>加载新的图像格式</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="334"/>
       <source>&amp;Add</source>
-      <translation>&amp;Add</translation>
+      <translation>添加(&amp;A)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="336"/>
       <source>&amp;Cancel</source>
-      <translation>&amp;Cancel</translation>
+      <translation>取消(&amp;C)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="364"/>
       <source>Open Image</source>
-      <translation>Open Image</translation>
+      <translation>打开图像</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="365"/>
       <source>All Files (*.*)</source>
-      <translation>All Files (*.*)</translation>
+      <translation>所有文件 (*.*)</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="406"/>
       <source>Sorry, currently we don't support: *.%1 files</source>
-      <translation>Sorry, currently we don't support: *.%1 files</translation>
+      <translation>对不起，目前我们不支持： *.%1 的文件</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="411"/>
       <source>*.%1 is already supported.</source>
-      <translation>*.%1 is already supported.</translation>
+      <translation>*.%1 已经被支持。</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="415"/>
       <source>*.%1 is supported.</source>
-      <translation>*.%1 is supported.</translation>
+      <translation>*.%1 支持。</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="430"/>
       <source>Please name the new format:</source>
-      <translation>Please name the new format:</translation>
+      <translation>请命名新的格式：</translation>
     </message>
   </context>
   <context>

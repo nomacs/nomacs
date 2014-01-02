@@ -586,12 +586,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettings.cpp" line="928"/>
       <source>Mouse Wheel Zooms</source>
-      <translation>Mouse Wheel Zooms</translation>
+      <translation>Масштабирование колесом мыши</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="929"/>
       <source>If unchecked, the mouse wheel switches between images.</source>
-      <translation>If unchecked, the mouse wheel switches between images.</translation>
+      <translation>Если не выбрано, колесо мыши сменяет изображения.</translation>
     </message>
     <message>
       <location filename="../src/DkSettings.cpp" line="944"/>
@@ -732,7 +732,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="181"/>
       <source>Show Dialog Again</source>
-      <translation>Show Dialog Again</translation>
+      <translation>Показывать диалог снова</translation>
     </message>
   </context>
   <context>
@@ -1096,7 +1096,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3024"/>
       <source>Create Mosaic Image</source>
-      <translation>Create Mosaic Image</translation>
+      <translation>Создать изображение из мозаики</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3088"/>
@@ -1116,7 +1116,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3098"/>
       <source>Mosaic Image:</source>
-      <translation>Mosaic Image:</translation>
+      <translation>&amp;Изображение из мозаики:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3101"/>
@@ -1126,22 +1126,22 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3103"/>
       <source>Specify the Root Folder of the Image Database Desired.</source>
-      <translation>Specify the Root Folder of the Image Database Desired.</translation>
+      <translation>Укажите корневую папку базы данных желаемого изображения.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3105"/>
       <source>No Image loaded</source>
-      <translation>No Image loaded</translation>
+      <translation>Нет загруженных изображений</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3108"/>
       <source>Image Database:</source>
-      <translation>Image Database:</translation>
+      <translation>База данных изображений:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3114"/>
       <source>Specify an Image Database</source>
-      <translation>Specify an Image Database</translation>
+      <translation>Укажите базу данных изображений</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3117"/>
@@ -1151,32 +1151,32 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3121"/>
       <source>Pixel Width</source>
-      <translation>Pixel Width</translation>
+      <translation>Ширина пикселей</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3126"/>
       <source>Pixel Height</source>
-      <translation>Pixel Height</translation>
+      <translation>Высота пикселей</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3133"/>
       <source>Patches:</source>
-      <translation>Patches:</translation>
+      <translation>Патчи:</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3137"/>
       <source>Number of Horizontal Patches</source>
-      <translation>Number of Horizontal Patches</translation>
+      <translation>Количество горизонтальных патчей</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3142"/>
       <source>Number of Vertical Patches</source>
-      <translation>Number of Vertical Patches</translation>
+      <translation>Количество вертикальных патчей</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3146"/>
       <source>If this label turns red, the computation might be slower.</source>
-      <translation>If this label turns red, the computation might be slower.</translation>
+      <translation>Если этот лейбл становится красным, вычисление может быть медленнее.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3149"/>
@@ -1186,7 +1186,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3154"/>
       <source>You can split multiple ignore words with ;</source>
-      <translation>You can split multiple ignore words with ;</translation>
+      <translation>Вы можете разделить несколько игнорируемых слова с помощью ;</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3207"/>
@@ -1211,7 +1211,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3240"/>
       <source>Open an Image Directory</source>
-      <translation>Open an Image Directory</translation>
+      <translation>Открыть каталог изображения</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3262"/>
@@ -1221,27 +1221,27 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkDialog.cpp" line="3319"/>
       <source>Patch Resolution: %1 px</source>
-      <translation>Patch Resolution: %1 px</translation>
+      <translation>Разрешение патча: %1 px</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3513"/>
       <source>Filling empty areas...</source>
-      <translation>Filling empty areas...</translation>
+      <translation>Заполнение пустой области...</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3517"/>
       <source>I need to use some images twice - maybe the database is too small?</source>
-      <translation>I need to use some images twice - maybe the database is too small?</translation>
+      <translation>Необходимо использовать некоторые изображения дважды - может быть база данных слишком мал?</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3522"/>
       <source>Sorry, it seems that i cannot create your mosaic with this database.</source>
-      <translation>Sorry, it seems that i cannot create your mosaic with this database.</translation>
+      <translation>К сожалению, невозможно создать вашу мозаику с этой базой данных.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3646"/>
       <source>Something is seriously wrong, I could not load: %1</source>
-      <translation>Something is seriously wrong, I could not load: %1</translation>
+      <translation>Серьезная ошибка, не удалось загрузить: %1</translation>
     </message>
   </context>
   <context>
@@ -1974,12 +1974,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1099"/>
       <source>&amp;Mosaic Image</source>
-      <translation>&amp;Mosaic Image</translation>
+      <translation>&amp; Изображение из мозаики</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1100"/>
       <source>Create a Mosaic Image</source>
-      <translation>Create a Mosaic Image</translation>
+      <translation>Создать изображение из мозаики</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1105"/>
@@ -2821,12 +2821,12 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1273"/>
       <source>Zoom &amp;In</source>
-      <translation>Zoom &amp;In</translation>
+      <translation>У&amp;величить</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1277"/>
       <source>Zoom &amp;Out</source>
-      <translation>Zoom &amp;Out</translation>
+      <translation>Уменьшить&amp;</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1281"/>
@@ -2839,7 +2839,7 @@ Press ESC to undo changes</source>
     <message>
       <location filename="../src/DkWidgets.cpp" line="1080"/>
       <source>%1 Images</source>
-      <translation>%1 Images</translation>
+      <translation>%1 Изображения</translation>
     </message>
   </context>
   <context>
