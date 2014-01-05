@@ -1670,14 +1670,14 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 		}
 		// tell user that there is nothing left to display
 		else if (newFileIdx < 0) {
-			QString msg = tr("You have reached the beginning");
+			QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_first_img]; //tr("You have reached the beginning");
 			if (!silent)
 				updateInfoSignal(msg, 1000);
 			return QFileInfo();
 		}
 		// tell user that there is nothing left to display
 		else if (newFileIdx >= files.size()) {
-			QString msg = tr("You have reached the end");
+			QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_last_img]; //tr("You have reached the end");
 			
 			qDebug() << " you have reached the end ............";
 
@@ -1730,13 +1730,13 @@ void DkImageLoader::loadFileAt(int idx) {
 
 		}
 		else if (idx < 0 && !DkSettings::global.loop) {
-			QString msg = tr("You have reached the beginning");
+			QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_first_img];//tr("You have reached the beginning");
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
 			return;
 		}
 		else if (idx >= files.size()) {
-			QString msg = tr("You have reached the end");
+			QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_last_img];//tr("You have reached the end");
 			if (!DkSettings::global.loop)
 				emit(setPlayer(false));
 			updateInfoSignal(msg, 1000);

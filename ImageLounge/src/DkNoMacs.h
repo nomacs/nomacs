@@ -299,6 +299,7 @@ enum viewActions {
 
 enum fotoActions {
 
+	menu_foto_translations,
 	menu_foto_interval,
 
 	menu_foto_end,	// nothing beyond this point
@@ -493,6 +494,7 @@ public slots:
 	void opacityUp();
 	void opacityDown();
 	void fotoIntervalTimer();
+	void fotoChangeTranslations();
 	void changeOpacity(float change);
 	void animateChangeOpacity();
 	void animateOpacityUp();

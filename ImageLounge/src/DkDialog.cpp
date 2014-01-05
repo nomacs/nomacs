@@ -855,6 +855,79 @@ void DkAppManagerDialog::accept() {
 	QDialog::accept();
 }
 
+// DkChangeTranslationsDialog --------------------------------------------------------------------
+DkChangeTranslationDialog::DkChangeTranslationDialog(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDialog(parent, flags) {
+
+	this->setWindowTitle(tr("Change Translations"));
+
+	origStrings = DkSettings::getDefaultStrings();
+
+	createLayout();
+}
+
+void DkChangeTranslationDialog::createLayout() {
+	
+	model = new QStandardItemModel(this);
+	for (int rIdx = 0; rIdx < origStrings.size(); rIdx++)
+		model->appendRow(getItems(rIdx));
+
+	translationTableView = new QTableView(this);
+	translationTableView->setModel(model);
+	translationTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	translationTableView->verticalHeader()->hide();
+	translationTableView->horizontalHeader()->hide();
+	//appTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	translationTableView->setWordWrap(false);
+	translationTableView->setShowGrid(false);
+	translationTableView->resizeColumnsToContents();
+	translationTableView->resizeRowsToContents();
+	
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(translationTableView);
+	layout->addWidget(buttons);
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkChangeTranslationDialog::accept() {
+
+	// TODO: update strings
+	QStringList strings;
+
+	for (int idx = 0; idx < model->rowCount(); idx++) {
+
+		strings.append(model->item(idx, 1)->text());
+	}
+
+	DkSettings::foto.fotoStrings = strings;
+	DkSettings::save();
+
+	QDialog::accept();
+}
+
+QList<QStandardItem* > DkChangeTranslationDialog::getItems(int idx) {
+
+	QList<QStandardItem* > items;
+	QStandardItem* item = new QStandardItem(origStrings[idx]);
+	item->setFlags(Qt::ItemIsSelectable);
+	items.append(item);
+	item = new QStandardItem(DkSettings::foto.fotoStrings[idx]);
+	item->setFlags(item->flags() | Qt::ItemIsEditable);
+	//item->setFlags(Qt::ItemIsSelectable);
+	items.append(item);
+
+	return items;
+}
+
+
+
+
 // DkSearchDialaog --------------------------------------------------------------------
 DkSearchDialog::DkSearchDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 

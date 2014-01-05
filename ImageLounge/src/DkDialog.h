@@ -260,6 +260,28 @@ protected:
 	QTableView* appTableView;
 };
 
+class DkChangeTranslationDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkChangeTranslationDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+public slots:
+	virtual void accept();
+
+protected:
+	QStandardItemModel* model;
+	QTableView* translationTableView;
+
+	QStringList origStrings;
+	QStringList activeStrings;
+
+	void createLayout();
+	QList<QStandardItem* > getItems(int idx);
+	
+};
+
+
 class DkSearchDialog : public QDialog {
 	Q_OBJECT
 

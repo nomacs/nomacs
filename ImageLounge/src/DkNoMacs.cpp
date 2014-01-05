@@ -159,6 +159,7 @@ void DkNoMacs::init() {
 	viewport()->addActions(viewActions.toList());
 	viewport()->addActions(syncActions.toList());
 	viewport()->addActions(helpActions.toList());
+	viewport()->addActions(fotoActions.toList());
 
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
@@ -644,6 +645,7 @@ void DkNoMacs::createMenu() {
 #endif
 
 	fotoMenu = menu->addMenu(tr("&Fotojiffy"));
+	fotoMenu->addAction(fotoActions[menu_foto_translations]);
 	fotoMenu->addAction(fotoActions[menu_foto_interval]);
 
 	// no sync menu in frameless view
@@ -1156,9 +1158,14 @@ void DkNoMacs::createActions() {
 	// fotojiffy menu
 	fotoActions.resize(menu_foto_end);
 	
+	fotoActions[menu_foto_translations] = new QAction(tr("Translations"), this);
+	fotoActions[menu_foto_translations]->setStatusTip(tr("change screen information"));
+	connect(fotoActions[menu_foto_translations], SIGNAL(triggered()), this, SLOT(fotoChangeTranslations()));
+
 	fotoActions[menu_foto_interval] = new QAction(tr("Print Timer"), this);
 	fotoActions[menu_foto_interval]->setStatusTip(tr("changes the print button timer interval"));
 	connect(fotoActions[menu_foto_interval], SIGNAL(triggered()), this, SLOT(fotoIntervalTimer()));
+
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -1189,6 +1196,7 @@ void DkNoMacs::createActions() {
 	assignCustomShortcuts(panelActions);
 	assignCustomShortcuts(toolsActions);
 	assignCustomShortcuts(helpActions);
+	assignCustomShortcuts(fotoActions);
 }
 
 void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
@@ -1811,6 +1819,21 @@ void DkNoMacs::opacityDown() {
 void DkNoMacs::opacityUp() {
 	
 	changeOpacity(0.3f);
+}
+
+void DkNoMacs::fotoChangeTranslations() {
+
+	DkChangeTranslationDialog* translationDialog = new DkChangeTranslationDialog(this, windowFlags());
+	translationDialog->exec();
+
+	if (translationDialog->result() == QDialog::Accepted)
+		restart();
+
+	translationDialog->deleteLater();
+
+
+
+	// TODO: change them?
 }
 
 void DkNoMacs::fotoIntervalTimer() {

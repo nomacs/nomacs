@@ -110,8 +110,26 @@ public:
 		sort_dir_end,
 	};
 
+	enum fotoStrings {
+		foto_first_img,
+		foto_last_img,
+		foto_next_img,
+		foto_prev_img,
+		foto_print,
+		foto_social_media,
+		foto_qr_code,
+		foto_info_print,
+		foto_info_still_printing,
+		foto_info_last_img,
+		foto_info_first_img,
+		foto_info_social_media,
+		
+		foto_strings_end,
+	};
+
 	struct Foto {
 		int countDownIvl;
+		QStringList fotoStrings;
 	};
 
 	struct App {
@@ -222,6 +240,7 @@ public:
 	static void load(bool force = false);
 	static void save(bool force = false);
 	static void setToDefaultSettings();
+	static QStringList getDefaultStrings();
 
 	static App& app;
 	static Global& global;

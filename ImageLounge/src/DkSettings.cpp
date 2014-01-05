@@ -125,6 +125,27 @@ DkSettings::Foto& DkSettings::getFotoSettings() {
 	return foto_p;
 }
 
+QStringList DkSettings::getDefaultStrings() {
+
+	QVector<QString> strings;
+	strings.resize(foto_strings_end);
+
+	strings[foto_first_img]		= "ältestest Bild";
+	strings[foto_last_img]		= "neuestes Bild";
+	strings[foto_next_img]		= "Bild zurück";
+	strings[foto_prev_img]		= "Bild vor";
+	strings[foto_print]			= "drucken";
+	strings[foto_social_media]	= "Bild auf Facebook hochladen";
+	strings[foto_qr_code]		= "www.facebook.com/fotojiffy";
+	strings[foto_info_print]	= "Bild wird gedruckt";
+	strings[foto_info_still_printing] = "Bild wird gedruckt. Bitte haben Sie noch einen Moment Geduld!";
+	strings[foto_info_last_img]	= "Sie haben das Ende erreicht";
+	strings[foto_info_first_img]= "Sie haben den Anfang erreicht";
+	strings[foto_info_social_media] = "Bild wird auf Facebook veröffentlicht";
+
+	return strings.toList();
+}
+
 void DkSettings::load(bool force) {
 
 	setToDefaultSettings();
@@ -166,6 +187,7 @@ void DkSettings::load(bool force) {
 	settings.beginGroup("Fotobox");
 
 	foto_p.countDownIvl = settings.value("countDownIvl", foto_p.countDownIvl).toInt();
+	foto_p.fotoStrings = settings.value("fotoStrings", getDefaultStrings()).toStringList();
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
@@ -472,6 +494,8 @@ void DkSettings::save(bool force) {
 
 	if (!force && foto_p.countDownIvl != foto_d.countDownIvl)
 		settings.setValue("countDownIvl", foto_p.countDownIvl);
+	if (!force && foto_p.fotoStrings != foto_d.fotoStrings)
+		settings.setValue("fotoStrings", foto_p.fotoStrings);
 
 	// keep loaded settings in mind
 	app_d = app_p;
