@@ -188,6 +188,7 @@ void DkSettings::load(bool force) {
 
 	foto_p.countDownIvl = settings.value("countDownIvl", foto_p.countDownIvl).toInt();
 	foto_p.fotoStrings = settings.value("fotoStrings", getDefaultStrings()).toStringList();
+	foto_p.showButtonText = settings.value("showButtonText", foto_p.showButtonText).toBool();
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
@@ -496,6 +497,9 @@ void DkSettings::save(bool force) {
 		settings.setValue("countDownIvl", foto_p.countDownIvl);
 	if (!force && foto_p.fotoStrings != foto_d.fotoStrings)
 		settings.setValue("fotoStrings", foto_p.fotoStrings);
+	if (!force && foto_p.showButtonText != foto_d.showButtonText)
+		settings.setValue("showButtonText", foto_p.showButtonText);
+
 
 	// keep loaded settings in mind
 	app_d = app_p;
@@ -532,6 +536,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.appMode = 0;
 	
 	foto_p.countDownIvl = 14;
+	foto_p.showButtonText = true;
 
 	global_p.skipImgs = 10;
 	global_p.numFiles = 10;

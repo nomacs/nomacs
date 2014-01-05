@@ -308,8 +308,19 @@ public:
 	DkButton ( const QIcon & checkedIcon, const QIcon & uncheckedIcon, const QString & text, QWidget * parent = 0 );
 	~DkButton() {};
 
+	enum {
+		default_button,
+		skip_button,
+		print_button,
+
+		buttons_end,
+	};
+
 	void adjustSize();
 	void setFixedSize(QSize size);
+	void setMode(int mode) {
+		this->mode = mode;
+	};
 
 	bool keepAspectRatio;
 
@@ -318,7 +329,8 @@ protected:
 	QIcon uncheckedIcon;
 	bool mouseOver;
 	QSize mySize;
-	
+	int mode;
+
 	// functions
 	void init();
 
@@ -356,7 +368,6 @@ protected:
 	QTimer* animationTimer;
 	QTimer* countDownTimer;
 	int countDownNum;
-
 };
 
 

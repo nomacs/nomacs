@@ -130,6 +130,7 @@ public:
 	struct Foto {
 		int countDownIvl;
 		QStringList fotoStrings;
+		bool showButtonText;
 	};
 
 	struct App {

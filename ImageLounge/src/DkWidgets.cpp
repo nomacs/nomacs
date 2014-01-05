@@ -2513,11 +2513,18 @@ DkButton::DkButton(const QIcon& checkedIcon, const QIcon& uncheckedIcon, const Q
 
 void DkButton::init() {
 
+	mode = default_button;
 	setIcon(checkedIcon);
 
-	if (!checkedIcon.availableSizes().empty())
+	if (!checkedIcon.availableSizes().empty() && !DkSettings::foto.showButtonText)
 		this->setMaximumSize(checkedIcon.availableSizes()[0]);	// crashes if the image is empty!!
-	
+	else if (!checkedIcon.availableSizes().empty()) {
+		
+		QSize s = checkedIcon.availableSizes()[0];
+		//s.setHeight(s.height()+textHeight);
+		this->setMaximumSize(s);	// crashes if the image is empty!!
+	}
+
 	mouseOver = false;
 	keepAspectRatio = true;
 }
@@ -2536,7 +2543,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	float opacity = 1.0f;
 
 	//// debug (show button outline)
-	//painter.drawRect(QRect(QPoint(), size()));
+	painter.drawRect(QRect(QPoint(), size()));
 
 	if (!isEnabled())
 		opacity = 0.5f;
@@ -2546,7 +2553,13 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	painter.setOpacity(opacity);
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
-	if (!mySize.isEmpty()) {
+	if (!mySize.isEmpty() && DkSettings::foto.showButtonText && mode == print_button) {
+
+		offset = QPoint((float)(size().width()-mySize.width())*0.5f, (float)(size().height()-mySize.height())*0.5f+10);
+		s = mySize;
+		s.setHeight(s.height()-20);
+	}
+	else if (!mySize.isEmpty()) {
 		
 		offset = QPoint((float)(size().width()-mySize.width())*0.5f, (float)(size().height()-mySize.height())*0.5f);
 		s = mySize;
@@ -2569,6 +2582,28 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	}
 
 	painter.drawPixmap(r, pm2draw);
+
+	if (DkSettings::foto.showButtonText && !text().isEmpty() && mode != default_button) {
+
+		// render text
+		QTextOption option;
+		option.setAlignment(Qt::AlignHCenter|Qt::AlignBottom);
+		
+		QFont font;
+		font.setPixelSize(9);
+
+		QPainter painter(this);
+		painter.setPen(QColor(255,255,255));
+		painter.setFont(font);
+		r.setHeight(r.height()-10);	// change spacing between button & text 
+		
+		if (mode == print_button)
+			r = QRect(QPoint(), size());
+		
+		painter.drawText(r, text(), option);
+	}
+
+
 	painter.end();
 }
 
@@ -2604,6 +2639,8 @@ DkPrintButton::DkPrintButton( const QIcon & checkedIcon, const QIcon & unchecked
 }
 
 void DkPrintButton::init() {
+
+	mode = print_button;
 
 	countDownTimer = new QTimer(this);
 	countDownTimer->setInterval(1000);
@@ -2991,33 +3028,40 @@ void DkPlayer::init() {
 	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(printPressed()));
 
 	QPixmap icon = QPixmap(":/nomacs/img/player-back.png");
-	previousButton = new DkButton(icon, tr("previous"), this);
+	previousButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_prev_img], this);
 	previousButton->keepAspectRatio = false;
+	previousButton->setMode(DkButton::skip_button);
 	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
 
 	icon = QPixmap(":/nomacs/img/print.png");
 	QPixmap icon2 = QPixmap(":/nomacs/img/print-empty.png");
-	playButton = new DkPrintButton(icon2, icon, tr("print"), this);
+	playButton = new DkPrintButton(icon2, icon, DkSettings::foto.fotoStrings[DkSettings::foto_print], this);
 	playButton->keepAspectRatio = false;
 	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
+	QSize s = icon.size();
+	s.setHeight(s.height()+20);
+	playButton->setFixedSize(s);
 	connect(playButton, SIGNAL(pressed()), this, SLOT(printPressed()));
 	connect(playButton, SIGNAL(infoSignal(QString, int)), this, SIGNAL(infoSignal(QString, int)));
 
 
 	icon = QPixmap(":/nomacs/img/player-next.png");
-	nextButton = new DkButton(icon, tr("next"), this);
+	nextButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_next_img], this);
 	nextButton->keepAspectRatio = false;
+	nextButton->setMode(DkButton::skip_button);
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
 
 	icon = QPixmap(":/nomacs/img/player-last.png");
-	lastButton = new DkButton(icon, tr("last"), this);
+	lastButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_last_img], this);
 	lastButton->keepAspectRatio = false;
+	lastButton->setMode(DkButton::skip_button);
 	connect(lastButton, SIGNAL(pressed()), this, SLOT(last()));
 
 	icon = QPixmap(":/nomacs/img/player-first.png");
-	firstButton = new DkButton(icon, tr("first"), this);
+	firstButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_first_img], this);
 	firstButton->keepAspectRatio = false;
+	firstButton->setMode(DkButton::skip_button);
 	connect(firstButton, SIGNAL(pressed()), this, SLOT(first()));
 
 	// now add to layout
@@ -3035,7 +3079,7 @@ void DkPlayer::init() {
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	//setMinimumSize(15, 5);
 	//setMaximumSize(570, 118);
-	setFixedSize(510,118);
+	setFixedSize(510,138);
 
 	//QHBoxLayout *l = new QHBoxLayout(this);
 	//l->setSpacing(0);
