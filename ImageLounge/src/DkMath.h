@@ -814,7 +814,7 @@ public:
 		return (vec.x - this->x) != 0 ? (vec.y - this->y) / (vec.x - this->x) : FLT_MAX;
 	}
 
-	virtual QPointF getQPointF() {
+	virtual QPointF getQPointF() const {
 		return QPointF(x, y);
 	};
 

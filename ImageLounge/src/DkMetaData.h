@@ -41,10 +41,14 @@
 #endif
 
 
-#ifdef DK_DLL
-#define DllExport __declspec(dllexport)
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
 #else
 #define DllExport
+#endif
 #endif
 
 namespace nmc {
@@ -101,7 +105,7 @@ public:
 	std::string getIptcValue(std::string key);
 	int getOrientation();
 	QImage getThumbnail();
-	void saveThumbnail(QImage thumb);
+	void saveThumbnail(QImage thumb, QFileInfo saveFile);
 	void saveOrientation(int o);
 	int getHorizontalFlipped();
 	void saveHorizontalFlipped(int f);

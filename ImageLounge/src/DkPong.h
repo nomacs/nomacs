@@ -25,6 +25,8 @@
 
  *******************************************************************************************************/
 
+#pragma once
+
 #include <QtGui/QMainWindow>
 #include <QtGui/QGraphicsView>
 #include <QTimer>

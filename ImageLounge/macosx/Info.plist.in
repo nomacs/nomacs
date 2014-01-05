@@ -58,10 +58,10 @@
                              <string>image/tiff-fx</string>
                              <string>image/png</string>
                         </array>
-<!--
+
                         <key>CFBundleTypeIconFile</key>
-                        <xstring>nomacs.icns</xstring>
--->
+                        <string>nomacs</string>
+
                         <key>CFBundleTypeRole</key>
                         <string>Viewer</string>
                         <key>LSIsAppleDefaultForType</key>

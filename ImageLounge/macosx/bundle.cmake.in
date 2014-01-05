@@ -36,6 +36,7 @@ message(STATUS "Searching for plugs in bundle: @CMAKE_INSTALL_PREFIX@/@EXE_NAME@
 file(GLOB_RECURSE inplugs
         @CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app/Contents/plugins/*@CMAKE_SHARED_LIBRARY_SUFFIX@)
 
+set(BU_CHMOD_BUNDLE_ITEMS 1)
 include(BundleUtilities)
 fixup_bundle(@CMAKE_INSTALL_PREFIX@/@EXE_NAME@.app "${inplugs}" @CMAKE_INSTALL_PREFIX@/Contents/plugins/) 
 

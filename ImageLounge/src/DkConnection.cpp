@@ -4,9 +4,9 @@
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2012 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2012 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2012 Florian Kleber <florian@nomacs.org>
+ Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
 
  This file is part of nomacs.
 
@@ -608,10 +608,10 @@ void DkLANConnection::sendGreetingMessage(QString currentTitle) {
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
 	ds << QHostInfo::localHostName();
-	ds << DkSettings::Sync::allowFile;
-	ds << DkSettings::Sync::allowImage;
-	ds << DkSettings::Sync::allowPosition;
-	ds << DkSettings::Sync::allowTransformation;
+	ds << DkSettings::sync.allowFile;
+	ds << DkSettings::sync.allowImage;
+	ds << DkSettings::sync.allowPosition;
+	ds << DkSettings::sync.allowTransformation;
 
 	if (iAmServer) 
 		ds << currentTitle;
@@ -644,10 +644,10 @@ void DkLANConnection::readGreetingMessage() {
 		QDataStream ds(buffer); // only read clientname
 		ds >> clientName;
 
-		allowFile = DkSettings::Sync::allowFile;
-		allowImage = DkSettings::Sync::allowImage;
-		allowPosition = DkSettings::Sync::allowPosition;
-		allowTransformation = DkSettings::Sync::allowTransformation;
+		allowFile = DkSettings::sync.allowFile;
+		allowImage = DkSettings::sync.allowImage;
+		allowPosition = DkSettings::sync.allowPosition;
+		allowTransformation = DkSettings::sync.allowTransformation;
 		title = "";
 	}
 

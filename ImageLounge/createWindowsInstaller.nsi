@@ -7,11 +7,11 @@
 !include "nsProcess.nsh"
 
 ; your install directories
- !define BUILD_DIR "..\build2012x86\ReallyRelease"
-; !define BUILD_DIR "..\build2012x64\ReallyRelease"
-; !define BUILD_DIR "..\build2010x86\ReallyRelease"
-; !define TRANSLATION_DIR "translation"
-!define TRANSLATION_DIR "..\build2012x86"
+; !define BUILD_DIR "..\build2012x86\ReallyRelease"
+
+!ifndef BUILD_DIR
+!define BUILD_DIR "..\build2012x64\ReallyRelease"
+!endif
 !define README_DIR "Readme"
 
 ; HM NIS Edit Wizard helper defines
@@ -32,12 +32,15 @@ ShowUnInstDetails show
 
 
 ; MUI 1.67 compatible ------
-!include "MUI.nsh"
+!include "MUI2.nsh"
+
+!include "uninstaller.nsdinc"
+
 
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "nomacs.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_UNICON "nomacs.ico"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -69,8 +72,13 @@ Page custom fileAssociation fileAssociationFinished
 !define MUI_FINISHPAGE_RUN_FUNCTION launchnomacs
 !insertmacro MUI_PAGE_FINISH
 
+
+; custom uninstaller page
+UninstPage custom un.fnc_uninstaller_Show un.uninstallNomacs
+
 ; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
+
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
@@ -92,6 +100,8 @@ Var pbm
 Var pgm
 Var xbm
 Var xpm
+Var jp2k
+Var webp
 
 
 Var jpg_state
@@ -102,6 +112,8 @@ Var pbm_state
 Var pgm_state
 Var xbm_state
 Var xpm_state
+Var jp2k_state
+Var webp_state
 
 ; Partially Supported
 Var checkAllPartially
@@ -117,6 +129,7 @@ Var mpo
 Var jps
 Var pns
 Var dng
+Var psd
 
 Var gif_state
 Var nef_state
@@ -129,9 +142,13 @@ Var mpo_state
 Var jps_state
 Var pns_state
 Var dng_state
+Var psd_state
 
 Var params
 Var fileAss 
+
+; Uninstaller
+Var hCtl_uninstaller_CheckBox1_state
 
 Function .onInit		
 	IfSilent isSilent isNotSilent
@@ -166,6 +183,9 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 10u 95u 15% 10u "bmp"
 	Pop $bmp
 
+	${NSD_CreateCheckbox} 10u 110u 15% 10u "webp"
+	Pop $webp
+
 	${NSD_CreateCheckbox} 70u 50u 15% 10u "pbm"
 	Pop $pbm
 
@@ -178,6 +198,9 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 70u 95u 15% 10u "xpm"
 	Pop $xpm
 
+	${NSD_CreateCheckbox} 70u 110u 15% 10u "jp2k"
+	Pop $jp2k
+	
 	${NSD_CreateGroupBox} 0 18u 40% 120u "Fully supported:";
 	Pop $FullySupportedGroupBox
 	
@@ -218,7 +241,10 @@ Function fileAssociation
 	${NSD_CreateCheckbox} 220u 110u 15% 10u "pns"
 	Pop $pns
 	
+	${NSD_CreateCheckbox} 220u 125u 15% 10u "psd"
+	Pop $psd
 
+	
 	${NSD_CreateGroupBox} 150u 18u 40% 120u "Partially supported:";
 	Pop $PartiallySupportedGroupBox
 	
@@ -242,6 +268,8 @@ Function fileAssociationFinished
 	Delete "$INSTDIR\opencv_core220.dll"
 	Delete "$INSTDIR\opencv_imgproc231.dll"
 	Delete "$INSTDIR\opencv_core231.dll"
+	Delete "$INSTDIR\opencv_imgproc242.dll"
+	Delete "$INSTDIR\opencv_core242.dll"
 
 	; RESET UPDATE FLAG
 	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
@@ -255,6 +283,8 @@ Function fileAssociationFinished
 	${NSD_GetState} $pgm $pgm_state
 	${NSD_GetState} $xbm $xbm_state
 	${NSD_GetState} $xpm $xpm_state
+	${NSD_GetState} $jp2k $jp2k_state
+	${NSD_GetState} $webp $webp_state
 
 	${If} $jpg_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".jpg" "nomacs.file.jpg" "JPG Image"
@@ -289,6 +319,15 @@ Function fileAssociationFinished
 	${If} $xpm_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"
 	${EndIf}
+
+	${If} $jp2k_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".jp2k" "nomacs.file.jp2k" "JPEG2000 Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".jp2" "nomacs.file.jp2" "JPEG2000 Image"
+	${EndIf}
+
+	${If} $webp_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.xpm" "WebP Image"
+	${EndIf}
 	
 	; PARTIALLY SUPPORTED
 	${NSD_GetState} $gif $gif_state
@@ -302,6 +341,7 @@ Function fileAssociationFinished
 	${NSD_GetState} $jps $jps_state
 	${NSD_GetState} $dng $dng_state
 	${NSD_GetState} $pns $pns_state
+	${NSD_GetState} $psd $psd_state
 
 	${If} $gif_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
@@ -346,6 +386,10 @@ Function fileAssociationFinished
 	${If} $pns_state == ${BST_CHECKED}
 		${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
 	${EndIf}
+
+	${If} $psd_state == ${BST_CHECKED}
+		${registerExtension} "$INSTDIR\nomacs.exe" ".psd" "nomacs.file.psd" "Photoshop Image"
+	${EndIf}
 	
 	Call RefreshShellIcons
 	
@@ -362,6 +406,8 @@ Function checkAllFully
 		${NSD_SetState} $pgm ${BST_CHECKED}
 		${NSD_SetState} $xbm ${BST_CHECKED}
 		${NSD_SetState} $xpm ${BST_CHECKED}
+		${NSD_SetState} $jp2k ${BST_CHECKED}
+		${NSD_SetState} $webp ${BST_CHECKED}
 	${Else}
 		${NSD_SetState} $jpg ${BST_UNCHECKED}
 		${NSD_SetState} $png ${BST_UNCHECKED}
@@ -371,6 +417,8 @@ Function checkAllFully
 		${NSD_SetState} $pgm ${BST_UNCHECKED}
 		${NSD_SetState} $xbm ${BST_UNCHECKED}
 		${NSD_SetState} $xpm ${BST_UNCHECKED}	
+		${NSD_SetState} $jp2k ${BST_UNCHECKED}	
+		${NSD_SetState} $webp ${BST_UNCHECKED}	
 	${EndIf}
 	
 
@@ -391,6 +439,7 @@ Function checkAllPartially
 		${NSD_SetState} $jps ${BST_CHECKED}
 		${NSD_SetState} $dng ${BST_CHECKED}
 		${NSD_SetState} $pns ${BST_CHECKED}
+		${NSD_SetState} $psd ${BST_CHECKED}
 	${Else}
 		${NSD_SetState} $gif ${BST_UNCHECKED}
 		${NSD_SetState} $nef ${BST_UNCHECKED}
@@ -403,6 +452,7 @@ Function checkAllPartially
 		${NSD_SetState} $jps ${BST_UNCHECKED}
 		${NSD_SetState} $dng ${BST_UNCHECKED}
 		${NSD_SetState} $pns ${BST_UNCHECKED}
+		${NSD_SetState} $psd ${BST_UNCHECKED}
 	${EndIf}
 	
 
@@ -436,20 +486,22 @@ Section "MainSection" SEC01#
   CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
   CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
   
-  File "${TRANSLATION_DIR}\nomacs_*.qm"
+  File "${BUILD_DIR}\..\nomacs_*.qm"
   
-
+  File "${BUILD_DIR}\libnomacs.dll"
   File "${BUILD_DIR}\exiv2.dll"
   File "${BUILD_DIR}\libexpat.dll"
+  File "${BUILD_DIR}\libjasper.dll"
   File "${BUILD_DIR}\libraw.dll"
   File "${BUILD_DIR}\msvcp*.dll"
   File "${BUILD_DIR}\msvcr*.dll"
-  File "${BUILD_DIR}\opencv_core246.dll"
-  File "${BUILD_DIR}\opencv_imgproc246.dll"
+  File "${BUILD_DIR}\opencv_core*.dll"
+  File "${BUILD_DIR}\opencv_imgproc*.dll"
   File "${BUILD_DIR}\QtCore4.dll"
   File "${BUILD_DIR}\QtGui4.dll"
   File "${BUILD_DIR}\QtNetwork4.dll"
   File "${BUILD_DIR}\zlib1.dll"
+  
   
   File "${README_DIR}\COPYRIGHT"
   File "${README_DIR}\LICENSE.GPLv2"
@@ -457,12 +509,7 @@ Section "MainSection" SEC01#
   File "${README_DIR}\LICENSE.LGPL"
   File "${README_DIR}\LICENSE.OPENCV"
   SetOutPath "$INSTDIR\imageformats"
-  File "${BUILD_DIR}\imageformats\qgif4.dll"
-  File "${BUILD_DIR}\imageformats\qico4.dll"
-  File "${BUILD_DIR}\imageformats\qjpeg4.dll"
-  File "${BUILD_DIR}\imageformats\qmng4.dll"
-  File "${BUILD_DIR}\imageformats\qsvg4.dll"
-  File "${BUILD_DIR}\imageformats\qtiff4.dll"
+  File "${BUILD_DIR}\imageformats\*"
   
 	IfSilent isSilent isNotSilent
 		isSilent:
@@ -479,6 +526,8 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pgm" "nomacs.file.pgm" "PGM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xbm" "nomacs.file.xbm" "XBM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jp2k" "nomacs.file.xpm" "JPEG2000 Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.xpm" "WebP Image"
 
 				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "Nikon Raw"
@@ -491,6 +540,7 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".dng" "nomacs.file.dng" "Digital Negative"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".psd" "nomacs.file.psd" "Photoshop Image"
 				
 			${elseif} $fileAss S== "AllFullySupported"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jpg" "nomacs.file.jpg" "JPG Image"
@@ -502,7 +552,10 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pbm" "nomacs.file.pbm" "PBM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pgm" "nomacs.file.pgm" "PGM Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".xbm" "nomacs.file.xbm" "XBM Image"
-				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"			
+				${registerExtension} "$INSTDIR\nomacs.exe" ".xpm" "nomacs.file.xpm" "XPM Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".jp2k" "nomacs.file.xpm" "JPEG2000 Image"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.xpm" "WebP Image"
+				
 			${elseif} $fileAss S== "AllPartiallySupported"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".gif" "nomacs.file.gif" "GIF Image"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".nef" "nomacs.file.nef" "Nikon Raw"
@@ -515,6 +568,7 @@ Section "MainSection" SEC01#
 				${registerExtension} "$INSTDIR\nomacs.exe" ".jps" "nomacs.file.jps" "JPEG Stereo"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".dng" "nomacs.file.dng" "Digital Negative"
 				${registerExtension} "$INSTDIR\nomacs.exe" ".pns" "nomacs.file.pns" "PNG Stereo"
+				${registerExtension} "$INSTDIR\nomacs.exe" ".psd" "nomacs.file.psd" "Photoshop Image"				
 			${endif}
 		isNotSilent:
 
@@ -556,49 +610,32 @@ Function un.onInit
 	loop:
 	${nsProcess::FindProcess} "nomacs.exe" $R0
 	StrCmp $R0 0 0 +2
-	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
-	goto next
-	end:
-		quit
+	 MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Close "nomacs - ImageLounge" before continuing' IDOK loop IDCANCEL end
+	 goto next
+	 end:
+		 quit
 
 	next:
 		${nsProcess::Unload}
 
-	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
-	Abort    
+	; MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
+	; Abort    
+FunctionEnd
+
+
+Function un.uninstallNomacs
+	${NSD_GetState} $hCtl_uninstaller_CheckBox1 $hCtl_uninstaller_CheckBox1_state
+	${If} $hCtl_uninstaller_CheckBox1_state == ${BST_CHECKED}
+		DeleteRegKey HKCU "Software\nomacs"
+		; MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'das ist nur ein test $hCtl_uninstaller_CheckBox1_state' IDOK  +1 IDCANCEL  +1 
+	${endif}
 FunctionEnd
 
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
-  Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR/imageformats\qtiff4.dll"
-  Delete "$INSTDIR/imageformats\qsvg4.dll"
-  Delete "$INSTDIR/imageformats\qmng4.dll"
-  Delete "$INSTDIR/imageformats\qjpeg4.dll"
-  Delete "$INSTDIR/imageformats\qico4.dll"
-  Delete "$INSTDIR/imageformats\qgif4.dll"
-  Delete "$INSTDIR\zlib1.dll"
-  Delete "$INSTDIR\QtNetwork4.dll"
-  Delete "$INSTDIR\QtGui4.dll"
-  Delete "$INSTDIR\QtCore4.dll"
-  Delete "$INSTDIR\opencv_imgproc220.dll"
-  Delete "$INSTDIR\opencv_core220.dll"
-  Delete "$INSTDIR\opencv_imgproc231.dll"
-  Delete "$INSTDIR\opencv_core231.dll"
-  Delete "$INSTDIR\opencv_imgproc240.dll"
-  Delete "$INSTDIR\opencv_core240.dll"
-  Delete "$INSTDIR\opencv_imgproc242.dll"
-  Delete "$INSTDIR\opencv_core242.dll"
-  Delete "$INSTDIR\opencv_imgproc246.dll"
-  Delete "$INSTDIR\opencv_core246.dll"
-  Delete "$INSTDIR\msvcr*.dll"
-  Delete "$INSTDIR\msvcp*.dll"
-  Delete "$INSTDIR\libraw.dll"
-  Delete "$INSTDIR\expatw.dll"
-  Delete "$INSTDIR\expat.dll"
-  Delete "$INSTDIR\libexpat.dll"
-  Delete "$INSTDIR\exiv2.dll"
-  Delete "$INSTDIR\nomacs.exe"
+  Delete "$INSTDIR\imageformats\*"
+  Delete "$INSTDIR\*.dll"
+  Delete "$INSTDIR\*.exe"
   Delete "$INSTDIR\*.qm"
   
   Delete "$INSTDIR\COPYRIGHT"
@@ -618,6 +655,7 @@ Section Uninstall
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  ; DeleteRegKey HKCU "Software\nomacs"
   
   ${UnRegisterExtension} ".jpg" "nomacs.file.jpg"
   ${UnRegisterExtension} ".jpeg" "nomacs.file.jpg"
@@ -628,7 +666,9 @@ Section Uninstall
   ${UnRegisterExtension} ".pbm" "nomacs.file.pbm"
   ${UnRegisterExtension} ".pgm" "nomacs.file.pgm"
   ${UnRegisterExtension} ".xbm" "nomacs.file.xbm"
-  ${UnRegisterExtension} ".xpm" "nomacs.file.xpm"  
+  ${UnRegisterExtension} ".xpm" "nomacs.file.xpm"
+  ${UnRegisterExtension} ".jp2k" "nomacs.file.jp2k"
+  ${UnRegisterExtension} ".webp" "nomacs.file.webp" 
 
   ${UnRegisterExtension} ".gif" "nomacs.file.gif"
   ${UnRegisterExtension} ".nef" "nomacs.file.nef"  
@@ -641,9 +681,7 @@ Section Uninstall
   ${UnRegisterExtension} ".jps" "nomacs.file.jps"  
   ${UnRegisterExtension} ".dng" "nomacs.file.dng"  
   ${UnRegisterExtension} ".pns" "nomacs.file.pns"  
-
-
-
+  ${UnRegisterExtension} ".psd" "nomacs.file.psd"  
   
   SetAutoClose true
 SectionEnd

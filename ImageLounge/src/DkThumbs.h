@@ -34,6 +34,8 @@
 #include <QThread>
 #include <QMutex>
 #include <QImageReader>
+#include <QFutureWatcher>
+#include <QtConcurrentRun>
 
 #include "DkTimer.h"
 #include "DkMetaData.h"
@@ -48,9 +50,10 @@ class DkThumbNail {
 
 public:
 	enum {
+		loading = -2,
 		exists_not = -1,
 		not_loaded,
-		loaded
+		loaded,
 	};
 	
 	/**
@@ -58,20 +61,15 @@ public:
 	 * @param file the corresponding file
 	 * @param img the thumbnail image
 	 **/ 
-	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage()) {
-		this->img = img;
-		this->file = file;
-		imgExists = true;
-		s = qMax(img.width(), img.height());
-	};
+	DkThumbNail(QFileInfo file = QFileInfo(), QImage img = QImage());
 
 	/**
 	 * Default destructor.
 	 * @return 
 	 **/ 
-	~DkThumbNail() {};
+	virtual ~DkThumbNail() {};
 
-	friend bool DkThumbNail::operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
+	friend bool operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
 
 		return lt.file == rt.file;
 	};
@@ -84,11 +82,14 @@ public:
 		this->img = img;
 	}
 
+	void removeBlackBorder(QImage& img);
+
 	/**
 	 * Returns the thumbnail.
 	 * @return QImage the thumbnail.
 	 **/ 
-	QImage getImage() {
+	QImage getImage() const {
+		
 		return img;
 	};
 
@@ -96,15 +97,17 @@ public:
 	 * Returns the file information.
 	 * @return QFileInfo the thumbnail file
 	 **/ 
-	QFileInfo getFile() {
+	QFileInfo getFile() const {
 		return file;
 	};
+
+	void compute(bool forceLoad = false, bool forceSave = false);
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
 	 * @return int a status (loaded | not loaded | exists not)
 	 **/ 
-	int hasImage() {
+	int hasImage() const {
 		
 		if (!img.isNull())
 			return loaded;
@@ -114,29 +117,122 @@ public:
 			return exists_not;
 	};
 
+	void setMaxThumbSize(int maxSize) {
+		this->maxThumbSize = maxSize;
+	};
+
+	int getMaxThumbSize() const {
+		return maxThumbSize;
+	};
+
+	void setMinThumbSize(int minSize) {
+		this->minThumbSize = minSize;
+	};
+
+	int getMinThumbSize() const {
+		return this->minThumbSize;
+	};
+	
+	void setRescale(bool rescale) {
+		this->rescale = rescale;
+	};
+
 	/**
 	 * Manipulates the file loaded status.
 	 * @param exists a status (loaded | not loaded | exists not)
 	 **/ 
 	void setImgExists(bool exists) {
 		imgExists = exists;
-	}
-
-	/**
-	 * Returns the thumbnail size.
-	 * @return int the maximal side (either width or height)
-	 **/ 
-	int size() {
-		return s;
 	};
 
-private:
+	///**
+	// * Returns the thumbnail size.
+	// * @return int the maximal side (either width or height)
+	// **/ 
+	//int size() {
+	//	return s;
+	//};
+
+protected:
+	QImage computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale);
+
 	QImage img;
 	QFileInfo file;
 	int s;
 	bool imgExists;
-
+	int maxThumbSize;
+	int minThumbSize;
+	bool rescale;
 };
+
+class DkThumbNailT : public QObject, public DkThumbNail {
+	Q_OBJECT
+
+public:
+	DkThumbNailT(QFileInfo file = QFileInfo(), QImage img = QImage());
+	~DkThumbNailT();
+
+	void fetchThumb(bool forceLoad = false, bool forceSave = false);
+
+	/**
+	 * Returns whether the thumbnail was loaded, or does not exist.
+	 * @return int a status (loaded | not loaded | exists not | loading)
+	 **/ 
+	int hasImage() const {
+		
+		if (watcher.isRunning())
+			return loading;
+		else
+			return DkThumbNail::hasImage();
+	};
+
+signals:
+	void thumbUpdated();
+
+protected slots:
+	void thumbLoaded();
+
+protected:
+	QImage computeCall(bool forceLoad, bool forceSave);
+
+	QFutureWatcher<QImage> watcher;
+	bool fetching;
+};
+
+class DkThumbPool : public QObject {
+	Q_OBJECT
+
+public:
+	DkThumbPool(QFileInfo file = QFileInfo(), QObject* parent = 0);
+	
+	QFileInfo getCurrentFile();
+	int getCurrentFileIdx();
+	int fileIdx(const QFileInfo& file);
+
+	QVector<QSharedPointer<DkThumbNailT> > getThumbs();
+
+public slots:
+	void setFile(const QFileInfo& files, int force = false);
+	void thumbUpdated();
+	void updateDir(const QFileInfo& currentFile);
+	void getUpdates(QObject* obj, bool isActive);
+
+signals:
+	void thumbUpdatedSignal();
+	void numThumbChangedSignal();
+	void newFileIdxSignal(int idx);
+
+protected:
+	void indexDir(const QFileInfo& currentFile);
+	QDir dir(const QFileInfo& file) const;	// fixes a Qt 'bug'
+	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
+
+	QVector<QSharedPointer<DkThumbNailT> > thumbs;
+	QFileInfo currentFile;
+	QStringList files;
+	QVector<QObject*> listenerList;
+};
+
 
 /**
  * This class provides a method for reading thumbnails.
@@ -153,6 +249,7 @@ public:
 	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QStringList files = QStringList());
 	~DkThumbsLoader() {};
 
+	static QImage createThumb(const QImage& image);
 	void run();
 	int getFileIdx(QFileInfo& file);
 	QStringList getFiles() {
@@ -192,7 +289,7 @@ private:
 	bool somethingTodo;
 	int numFilesLoaded;
 	QMutex mutex;
-	int maxThumbSize;
+	static int maxThumbSize;
 	int loadLimit;
 	int startIdx;
 	int endIdx;
@@ -201,8 +298,8 @@ private:
 	bool forceLoad;
 	QStringList files;
 
-	// function
-	QImage getThumbNailQt(QFileInfo file);
+	//// function
+	//QImage getThumbNailQt(QFileInfo file);
 	//QImage getThumbNailWin(QFileInfo file);
 	void init();
 	void loadThumbs();
@@ -217,6 +314,26 @@ public:
 
 	void stop();
 	void run();
+
+	const QVector<QColor>& getColors() const {
+		return cols;
+	};
+
+	const QVector<int>& getIndexes() const {
+		return indexes;
+	};
+
+	int maxFiles() const {
+		return maxThumbs;
+	};
+
+	QString getFilename(int idx) const {
+
+		if (idx < 0 || idx >= files.size())
+			return QString("");
+
+		return files.at(idx);
+	}
 
 signals:
 	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);

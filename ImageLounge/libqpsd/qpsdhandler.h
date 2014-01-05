@@ -27,19 +27,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include <QImage>
 #include <QColor>
 #include <QVariant>
-#include <math.h>
+#include <qmath.h>
 
-class QPSDHandler : public QImageIOHandler
+class QPsdHandler : public QImageIOHandler
 {
 public:
-    QPSDHandler();
-    ~QPSDHandler();
+    QPsdHandler();
+    ~QPsdHandler();
 
     bool canRead() const;
     bool read(QImage *image);
     //bool write(const QImage &image);
-
-    //QByteArray name() const;
 
     static bool canRead(QIODevice *device);
 

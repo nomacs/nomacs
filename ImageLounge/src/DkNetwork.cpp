@@ -4,9 +4,9 @@
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2012 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2012 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2012 Florian Kleber <florian@nomacs.org>
+ Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
 
  This file is part of nomacs.
 
@@ -241,7 +241,7 @@ void DkLocalClientManager::connectionSynchronized(QList<quint16> synchronizedPee
 		if (synchronizedPeersOfOtherClient[i]!=server->serverPort()) {
 			
 			DkPeer peer = peerList.getPeerByServerport(synchronizedPeersOfOtherClient[i]);
-			if (peer.getSynchronized())
+			if (peer.isSynchronized())
 				continue;
 
 			connect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
@@ -937,7 +937,7 @@ bool DkPeerList::setShowInMenu(quint16 peerId, bool showInMenu) {
 QList<DkPeer> DkPeerList::getSynchronizedPeers() {
 	QList<DkPeer> sychronizedPeers;
 	foreach(DkPeer peer, peerList) {
-		if (peer.getSynchronized())
+		if (peer.isSynchronized())
 			sychronizedPeers.push_back(peer);
 	}
 	return sychronizedPeers;
@@ -950,7 +950,7 @@ QList<DkPeer> DkPeerList::getPeerList() {
 QList<quint16> DkPeerList::getSynchronizedPeerServerPorts() {
 	QList<quint16> sychronizedPeerServerPorts;
 	foreach(DkPeer peer, peerList) {
-		if (peer.getSynchronized())
+		if (peer.isSynchronized())
 			sychronizedPeerServerPorts.push_back(peer.peerServerPort);
 	}
 	return sychronizedPeerServerPorts;
@@ -996,7 +996,7 @@ DkPeer DkPeerList::getPeerByAddress(QHostAddress address, quint16 port) {
 void DkPeerList::print() {
 	foreach (DkPeer peer, peerList) {
 		qDebug() << peer.peerId << 	" " << peer.clientName << " " << peer.hostAddress << " " << peer.peerServerPort << 
-			" " << peer.localServerPort << " " << peer.title << " sync:" << peer.getSynchronized() << " menu:" << peer.showInMenu;
+			" " << peer.localServerPort << " " << peer.title << " sync:" << peer.isSynchronized() << " menu:" << peer.showInMenu;
 	}
 }
 
@@ -1012,10 +1012,9 @@ DkUpdater::DkUpdater() {
 
 void DkUpdater::checkForUpdated() {
 
-	DkSettings::Sync::lastUpdateCheck = QDate::currentDate();
+	DkSettings::sync.lastUpdateCheck = QDate::currentDate();
 
-	DkSettings settings;
-	settings.save();
+	DkSettings::save();
 
 #ifdef Q_WS_WIN
 	QUrl url ("http://www.nomacs.org/version_win_stable");
@@ -1042,13 +1041,15 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 
 	QStringList sl = replyData.split('\n', QString::SkipEmptyParts);
 
-	QString version, x64, x86, url, mac;
+	QString version, x64, x86, url, mac, XPx86;
 	for(int i = 0; i < sl.length();i++) {
 		QStringList values = sl[i].split(" ");
 		if (values[0] == "version") 
 			version = values[1];
 		else if (values[0] == "x64")
 			x64 = values[1];
+		else if (values[0] == "XPx86")
+			XPx86 = values[1];
 		else if (values[0] == "x86")
 			x86 = values[1];
 		else if (values[0] == "mac")
@@ -1058,10 +1059,10 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 
 #if _MSC_VER == 1600
 	url = XPx86;	// for WinXP packages
-#elif _WIN32
-	url = x86;
 #elif defined _WIN64
 	url = x64;
+#elif _WIN32
+	url = x86;
 #elif defined Q_WS_MAC
 	url = mac;
 #endif 
@@ -1155,11 +1156,10 @@ void DkUpdater::downloadFinishedSlot(QNetworkReply* data) {
 
 		file.close();
 
-		DkSettings::Global::setupVersion = setupVersion;
-		DkSettings::Global::setupPath = absoluteFilePath;
+		DkSettings::global.setupVersion = setupVersion;
+		DkSettings::global.setupPath = absoluteFilePath;
 
-		DkSettings settings;
-		settings.save();
+		DkSettings::save();
 
 		emit downloadFinished(absoluteFilePath);
 	}
@@ -1283,7 +1283,7 @@ DkLanManagerThread::DkLanManagerThread(DkNoMacs* parent) : DkManagerThread(paren
 void DkLanManagerThread::connectClient() {
 
 	connect(parent->viewport(), SIGNAL(sendImageSignal(QImage, QString)), clientManager, SLOT(sendNewImage(QImage, QString)));
-	connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(setImage(QImage)));
+	connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(loadImage(QImage)));
 	connect(clientManager, SIGNAL(sendInfoSignal(QString, int)), parent->viewport()->getController(), SLOT(setInfo(QString, int)));
 	connect(clientManager, SIGNAL(receivedImageTitle(QString)), parent, SLOT(setWindowTitle(QString)));
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));

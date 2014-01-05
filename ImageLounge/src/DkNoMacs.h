@@ -50,6 +50,8 @@
 #include <QTimer>
 #include <QProcess>
 #include <QStringBuilder>
+#include <QDesktopWidget>
+#include <QProgressDialog>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -74,24 +76,36 @@ using namespace cv;
 //	#pragma comment (lib, "dwmapi.lib")
 //#endif
 
-// my stuff
-#include "DkNetwork.h"
-#include "DkViewPort.h"
-#include "DkImage.h"
-#include "DkWidgets.h"
-#include "DkDialog.h"
-#include "DkSettings.h"
-#include "DkMenu.h"
-#include "DkTransferToolBar.h"
-#include "DkManipulationWidgets.h"
-
-#ifdef DK_DLL
-#define DllExport __declspec(dllexport)
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
 #else
 #define DllExport
 #endif
+#endif
 
 namespace nmc {
+
+class DkTcpMenu;
+class DkCompressDialog;
+class DkTifDialog;
+class DkOpacityDialog;
+class DkResizeDialog;
+class DkUpdateDialog;
+class DkForceThumbDialog;
+class DkTrainDialog;
+class DkExplorer;
+class DkExportTiffDialog;
+class DkMosaicDialog;
+class DkImageManipulationDialog;
+class DkUpdater;
+class DkLocalManagerThread;
+class DkLanManagerThread;
+class DkTransferToolBar;
+class DkAppManager;
+
 
 // keyboard shortcuts
 //we can change the keyboard shortcuts from here !
@@ -103,8 +117,10 @@ enum {
 	// file
 	shortcut_show_scroller	= Qt::Key_F,
 	shortcut_open_preview	= Qt::Key_T,
+	shortcut_open_thumbview	= Qt::SHIFT + Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
-	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
+	shortcut_app_manager	= Qt::CTRL + Qt::Key_M,
+	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
 	shortcut_first_file		= Qt::Key_Home, 
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
@@ -134,15 +150,8 @@ enum {
 	shortcut_reset_view 	= Qt::CTRL + Qt::Key_0,
 	shortcut_zoom_full		= Qt::CTRL + Qt::Key_1,
 	shortcut_fit_frame		= Qt::CTRL + Qt::Key_2,
-	shortcut_zoom_in 		= Qt::Key_Plus,
-	shortcut_zoom_out		= Qt::Key_Minus,
-	shortcut_zoom_in_alt	= Qt::Key_Up,
-	shortcut_zoom_out_alt	= Qt::Key_Down,
-	shortcut_panning_left 	= Qt::CTRL + Qt::Key_Left,
-	shortcut_panning_right 	= Qt::CTRL + Qt::Key_Right,
-	shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
-	shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down,
 	shortcut_show_overview	= Qt::Key_O,
+	shortcut_show_explorer	= Qt::Key_E,
 	shortcut_show_player	= Qt::Key_P,
 	shortcut_show_exif		= Qt::Key_M,
 	shortcut_show_info		= Qt::Key_I,
@@ -152,6 +161,7 @@ enum {
 	shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_H,
 	shortcut_an_opacity		= Qt::ALT  + Qt::Key_H,
 	shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
+	shortcut_tp_pattern		= Qt::Key_B,
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
 	//shortcut_play			= Qt::Key_Space,
@@ -188,8 +198,9 @@ enum {
 enum fileActions {
 	menu_file_open,
 	menu_file_open_dir,
-	menu_file_open_with,
+	menu_file_app_manager,
 	menu_file_save,
+	menu_file_save_as,
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
@@ -197,11 +208,24 @@ enum fileActions {
 	menu_file_reload,
 	menu_file_next,
 	menu_file_prev,
+	menu_file_train_format,
 	menu_file_new_instance,
 	menu_file_exit,
 	//menu_file_share_fb,
 
 	menu_file_end,	// nothing beyond this point
+};
+
+enum sortActions {
+
+	menu_sort_filename,
+	menu_sort_date_created,
+	menu_sort_date_modified,
+	menu_sort_ascending,
+	menu_sort_descending,
+	menu_sort_random,
+
+	menu_sort_end,
 };
 
 enum editActions {
@@ -213,7 +237,7 @@ enum editActions {
 	menu_edit_paste,
 	menu_edit_shortcuts,
 	menu_edit_preferences,
-	menu_edit_transfrom,
+	menu_edit_transform,
 	menu_edit_delete,
 	menu_edit_crop,
 	menu_edit_wallpaper,
@@ -225,15 +249,32 @@ enum toolsActions {
 	menu_tools_thumbs,
 	menu_tools_filter,
 	menu_tools_manipulation,
+	menu_tools_export_tiff,
+	menu_tools_mosaic,
 
 	menu_tools_end,
 };
 
+enum panelActions {
+	menu_panel_menu,
+	menu_panel_toolbar,
+	menu_panel_statusbar,
+	menu_panel_transfertoolbar,
+
+	menu_panel_player,
+	menu_panel_preview,
+	menu_panel_thumbview,
+	menu_panel_scroller,
+	menu_panel_exif,
+	menu_panel_info,
+	menu_panel_histogram,
+	menu_panel_overview,
+	menu_panel_explorer,
+
+	menu_panel_end,
+};
+
 enum viewActions {
-	menu_view_show_menu,
-	menu_view_show_toolbar,
-	menu_view_show_statusbar,
-	menu_view_show_transfertoolbar,
 	menu_view_fullscreen,
 	menu_view_reset,
 	menu_view_100,
@@ -241,13 +282,7 @@ enum viewActions {
 	menu_view_zoom_in,
 	menu_view_zoom_out,
 	menu_view_anti_aliasing,
-	menu_view_show_overview,
-	menu_view_show_player,
-	menu_view_show_preview,
-	menu_view_show_scroller,
-	menu_view_show_exif,
-	menu_view_show_info,
-	menu_view_show_histogram,
+	menu_view_tp_pattern,
 	menu_view_frameless,
 	menu_view_opacity_up,
 	menu_view_opacity_down,
@@ -255,6 +290,9 @@ enum viewActions {
 	menu_view_opacity_change,
 	menu_view_lock_window,
 	menu_view_gps_map,
+	menu_view_movie_pause,
+	menu_view_movie_next,
+	menu_view_movie_prev,
 
 	menu_view_end,	// nothing beyond this point
 };
@@ -275,37 +313,26 @@ enum syncActions {
 	menu_sync_end,	// nothing beyond this point
 };
 
+enum lanSyncActions {
+	menu_lan_server,
+	menu_lan_image,
+
+	menu_lan_end,
+};
+
 enum helpActions {
 	menu_help_update,
 	menu_help_bug,
 	menu_help_feature,
+	menu_help_documentation,
 	menu_help_about,
 	
 	menu_help_end,	// nothing beyond this point
 };
 
 enum shortcuts {
-	sc_pan_up,
-	sc_pan_down,
-	sc_pan_left,
-	sc_pan_right,
-	sc_first_file,
-	sc_last_file,
-	sc_skip_prev,
-	sc_skip_next,
 	sc_test_img,
 	sc_test_rec,
-	sc_next_sync,
-	sc_prev_sync,
-	sc_first_sync,
-	sc_last_sync,
-	sc_zoom_in,
-	sc_zoom_out,
-	sc_zoom_in_alt,
-	sc_zoom_out_alt,
-	//sc_send_img,
-	sc_delete_silent,
-	//sc_play,
 
 	sc_end,	// nothing beyond this point
 };
@@ -338,6 +365,9 @@ enum viewIcons {
 	icon_view_reset,
 	icon_view_100,
 	icon_view_gps,
+	icon_view_movie_play,
+	icon_view_movie_prev,
+	icon_view_movie_next,
 
 	icon_view_end,	// nothing beyond this point
 };
@@ -398,9 +428,11 @@ public:
 	
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();
+	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getFotoActions();
 	QVector<QAction* > getSyncActions();
+	void loadFile(const QFileInfo& file, bool silent = false);
 
 	static void updateAll();
 
@@ -422,31 +454,41 @@ public slots:
 	void exitFullScreen();
 	void openKeyboardShortcuts();
 	void openSettings();
+	void showExplorer(bool show);
 	void openDir();
 	void openFile();
 	void renameFile();
+	void changeSorting(bool change);
 	void goTo();
 	void find(bool filterAction = true);
 	void updateFilterState(QStringList filters);
 	void saveFile();
+	void saveFileAs(bool silent = false);
+	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
+	void exportTiff();
+	void computeMosaic();
 	void deleteFile();
+	void openAppManager();
 	void setWallpaper();
 	void printDialog();
 	void cleanSettings();
 	void newInstance(QFileInfo file = QFileInfo());
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
+	void showToolbarsTemporarily(bool show);
 	void showToolbar(bool show);
+	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
-	void openFileWith();
+	void openFileWith(QAction* action);
 	void aboutDialog();
+	void openDocumentation();
 	void bugReport();
 	void featureRequest();
 	void errorDialog(QString msg, QString title = "Error");
 	void loadRecursion();
-	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false);
+	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();
@@ -459,7 +501,7 @@ public slots:
 	void tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid);
 	void tcpSendWindowRect();
 	void tcpSendArrange();
-	void newClientConnected();
+	virtual void newClientConnected(bool connected, bool local);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
@@ -475,6 +517,9 @@ public slots:
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setContrast(bool contrast);
+	void enableMovieActions(bool enable);
+	void clearFileHistory();
+	void clearFolderHistory();
 	//void shareFacebook();
 
 	// batch actions
@@ -518,11 +563,15 @@ protected:
 
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
+	QVector<QAction *> sortActions;
+	QVector<QAction *> openWithActions;
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
+	QVector<QAction *> panelActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> fotoActions;
 	QVector<QAction *> syncActions;
+	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
 	
@@ -534,9 +583,12 @@ protected:
 
 	// menu
 	DkMenuBar* menu;
-	QMenu* fileMenu;	// TODO: release ?!
+	QMenu* fileMenu;
+	QMenu* sortMenu;
+	QMenu* openWithMenu;
 	QMenu* editMenu;
 	QMenu* toolsMenu;
+	QMenu* panelMenu;
 	QMenu* viewMenu;
 	QMenu* fotoMenu;
 	QMenu* syncMenu;
@@ -546,7 +598,7 @@ protected:
 	// sub menus
 	QMenu* fileFilesMenu;
 	QMenu* fileFoldersMenu;
-	QMenu* viewToolsMenu;
+	QMenu* panelToolsMenu;
 	DkTcpMenu* tcpViewerMenu;
 	DkTcpMenu* tcpLanMenu;
 	
@@ -554,6 +606,7 @@ protected:
 	
 	// toolbar
 	QToolBar* toolbar;
+	QToolBar* movieToolbar;
 	QStatusBar* statusbar;
 	QVector<QLabel*> statusbarLabels;
 	
@@ -564,13 +617,18 @@ protected:
 	DkCompressDialog* jpgDialog;
 	DkTifDialog* tifDialog;
 	DkOpacityDialog* opacityDialog;
-	DkOpenWithDialog* openWithDialog;
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
 	DkForceThumbDialog* forceDialog;
+	DkTrainDialog* trainDialog;
+	DkExplorer* explorer;
+	DkExportTiffDialog* exportTiffDialog;
+	DkMosaicDialog* mosaicDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
+
+	DkAppManager* appManager;
 
 	// client managers
 	//DkLocalClientManager* localClientManager;
@@ -578,6 +636,7 @@ protected:
 	DkUpdater* updater;
 
 	QRect oldGeometry;
+	QList<QToolBar *> hiddenToolbars;
 
 	QProcess process;
 
@@ -592,6 +651,7 @@ protected:
 	virtual void createShortcuts();
 	virtual void createActions();
 	virtual void createMenu();
+	virtual void createOpenWithMenu(QMenu* menu);
 	virtual void createContextMenu();
 	virtual void createStatusbar();
 
@@ -615,6 +675,7 @@ public slots:
 	void tcpConnectAll();
 	void settingsChanged();
 	void clientInitialized();
+	void newClientConnected(bool connected, bool local);
 
 protected:
 

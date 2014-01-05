@@ -51,6 +51,20 @@
 #include <qmath.h>
 #include <QScrollBar>
 #include <QPlastiqueStyle>
+#include <QFileSystemModel>
+#include <QDockWidget>
+#include <QTreeView>
+#include <QSortFilterProxyModel>
+#include <QToolTip>
+#include <QtConcurrentRun>
+#include <QProgressDialog>
+#include <QHeaderView>
+#include <QMenu>
+#include <QScrollArea>
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsItem>
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -62,6 +76,7 @@
 #include "DkNetwork.h"
 #include "DkSettings.h"
 #include "DkMath.h"
+#include "DkToolbars.h"
 
 #ifdef Q_WS_WIN
 #include <ShObjIdl.h>
@@ -69,6 +84,7 @@
 #endif
 
 namespace nmc {
+
 class DkThumbNail;
 
 class DkWidget : public QWidget {
@@ -95,12 +111,16 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 			return false;
 		}
 
-		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
+	};
+
+	bool isHiding() const {
+		return hiding;
 	};
 
 
@@ -129,7 +149,7 @@ protected:
 	void init();
 };
 
-class  DllExport DkLabel : public QLabel {
+class DllExport DkLabel : public QLabel {
 	Q_OBJECT
 
 public:
@@ -213,12 +233,12 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 			return false;
 		}
 
-		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 	};
 
 signals:
@@ -445,7 +465,6 @@ protected:
 	virtual void paintEvent(QPaintEvent *event);
 };
 
-// TODO: check why it's not working with DkFadeLabel
 class DkFileInfoLabel : public DkFadeLabel {
 	Q_OBJECT
 
@@ -454,8 +473,8 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updateInfo(const QFileInfo& file, const QString& date, const int rating);
-	void updateTitle(const QFileInfo& file);
+	void updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating);
+	void updateTitle(const QFileInfo& file, const QString& attr);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
 	void setEdited(bool edited);
@@ -557,16 +576,9 @@ class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFilePreview(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkFilePreview(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WFlags flags = 0);
 	
 	~DkFilePreview() {
-		
-		if (thumbsLoader) {
-			thumbsLoader->stop();
-			thumbsLoader->wait();
-			delete thumbsLoader;
-			thumbsLoader = 0;
-		}
 	};
 
 	void setCurrentDx(float dx) {
@@ -578,13 +590,7 @@ public:
 		return moveImageTimer;
 	};
 
-	void setVisible(bool visible) {
-
-		DkWidget::setVisible(visible);
-
-		if (visible)
-			indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
-	}
+	void setVisible(bool visible);
 
 public slots:
 	void paintEvent(QPaintEvent *event);
@@ -595,17 +601,19 @@ public slots:
 	void wheelEvent(QWheelEvent *event);
 	void leaveEvent(QEvent *event);
 	void moveImages();
-	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
+	void updateFileIdx(int fileIdx);
 
 signals:
 	void loadFileSignal(QFileInfo file);
-	void loadThumbsSignal(int start, int end);
+	//void loadThumbsSignal(int start, int end);
 	void changeFileSignal(int idx);
 	
 private:
-	std::vector<DkThumbNail> thumbs;
-	DkThumbsLoader* thumbsLoader;
+	//QVector<QSharedPointer<DkThumbNailT>> thumbs;
+	DkThumbPool* thumbPool;
+	//DkThumbsLoader* thumbsLoader;
 	QDir thumbsDir;
+
 	
 	QWidget* parent;
 	QTransform worldMatrix;
@@ -631,7 +639,7 @@ private:
 	float currentDx;
 	QLabel* wheelButton;
 
-	DkGradientLabel* fileLabel;
+	//DkGradientLabel* fileLabel;
 
 	int selected;
 	float winPercent;
@@ -645,11 +653,139 @@ private:
 	bool scrollToCurrentImage;
 	
 	void init();
-	void indexDir(int force = DkThumbsLoader::not_forced);
+	//void clearThumbs();
+	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void createSelectedEffect(QImage img, QColor col);
 	void createCurrentImgEffect(QImage img, QColor col);
+};
+
+class DkThumbLabel : public QObject, public QGraphicsPixmapItem {
+	Q_OBJECT
+
+public:
+	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem* parent = 0);
+
+	void setThumb(QSharedPointer<DkThumbNailT> thumb);
+	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
+	QRectF boundingRect() const;
+	void updateSize();
+
+public slots:
+	void updateLabel();
+
+signals:
+	void loadFileSignal(QFileInfo& file);
+	void showFileSignal(const QFileInfo& file);
+
+protected:
+	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+	void resizeEvent(QResizeEvent *event);
+	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget * widget = 0);
+	void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
+	QSharedPointer<DkThumbNailT> thumb;
+	QLabel* imgLabel;
+	bool thumbInitialized;
+	QPen noImagePen;
+	QBrush noImageBrush;
+	QPen selectPen;
+	QBrush selectBrush;
+	bool isHovered;
+};
+
+class DkThumbScene : public QGraphicsScene {
+	Q_OBJECT
+
+public:
+	DkThumbScene(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
+
+	void updateLayout();
+	QList<QUrl> getSelectedUrls() const;
+	void setFile(const QFileInfo& file);
+
+public slots:
+	void updateThumbLabels();
+	void loadFile(QFileInfo& file);
+	void increaseThumbs();
+	void decreaseThumbs();
+	void resizeThumbs(float dx);
+	void showFile(const QFileInfo& file);
+	void selectThumbs(bool select = true, int from = 0, int to = -1);
+	void selectAllThumbs(bool select = true);
+
+signals:
+	void loadFileSignal(QFileInfo file);
+	void statusInfoSignal(QString msg, int pos = 0);
+
+protected:
+	//void wheelEvent(QWheelEvent *event);
+
+	DkThumbPool* thumbPool;
+	int xOffset;
+	int numRows;
+	int numCols;
+	bool firstLayout;
+	bool itemClicked;
+
+	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+};
+
+class DkThumbsView : public QGraphicsView {
+	Q_OBJECT
+
+public:
+	DkThumbsView(DkThumbScene* scene, QWidget* parent = 0);
+
+protected:
+	void wheelEvent(QWheelEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+
+	DkThumbScene* scene;
+	QPointF mousePos;
+
+};
+
+class DkThumbScrollWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	enum {
+		select_all,
+		zoom_in,
+		zoom_out,
+
+		actions_end
+	};
+
+	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	DkThumbScene* getThumbWidget() {
+		return thumbsScene;
+	};
+
+public slots:
+	virtual void setVisible(bool visible);
+
+protected:
+	void createActions();
+	void resizeEvent(QResizeEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event);
+
+	DkThumbScene* thumbsScene;
+	DkThumbPool* thumbPool;
+	DkThumbsView* view;
+
+	QMenu* contextMenu;
+	QVector<QAction*> actions;
+
 };
 
 class DkFolderScrollBar : public QScrollBar {
@@ -680,12 +816,12 @@ public:
 		if (!displaySettingsBits)
 			return false;
 
-		if (DkSettings::App::currentAppMode < 0 || DkSettings::App::currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::App::currentAppMode;
+		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
 			return false;
 		}
 
-		return displaySettingsBits->testBit(DkSettings::App::currentAppMode);
+		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 	};
 
 public slots:
@@ -725,6 +861,8 @@ protected:
 	bool sliding;
 	QLabel* handle;
 	DkWidget* dummyWidget;
+	int minHandleWidth;
+
 
 	// DkWidget
 	QColor bgCol;
@@ -749,17 +887,7 @@ public:
 	void processDir(const QDir& dir, bool forceLoad);
 
 public slots:
-	void stopProgress() {
-		
-		if (pd)
-			pd->hide();
-		
-		if (thumbsLoader) {
-			thumbsLoader->stop();
-			thumbsLoader->wait();
-			delete thumbsLoader;
-		}
-	};
+	void stopProgress();
 
 protected:
 	std::vector<DkThumbNail> thumbs;
@@ -769,6 +897,57 @@ protected:
 	QProgressDialog* pd;
 };
 
+class DkFileSystemModel : public QFileSystemModel {
+	Q_OBJECT
+
+public:
+	DkFileSystemModel(QObject* parent = 0);
+
+protected:
+
+};
+
+class DkSortFileProxyModel : public QSortFilterProxyModel {
+	Q_OBJECT
+
+public:
+	DkSortFileProxyModel(QObject* parent = 0);
+
+protected:
+	virtual bool lessThan(const QModelIndex& left, const QModelIndex& right) const;
+
+};
+
+class DkExplorer : public QDockWidget {
+	Q_OBJECT
+
+public:
+	DkExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkExplorer();
+
+public slots:
+	void setCurrentPath(QFileInfo fileInfo);
+	void fileClicked(const QModelIndex &index) const;
+	void showColumn(bool show);
+	void setEditable(bool editable);
+
+signals:
+	void openFile(QFileInfo fileInfo) const;
+	void openDir(QFileInfo dir) const;
+
+protected:
+	void closeEvent(QCloseEvent *event);
+	void contextMenuEvent(QContextMenuEvent* event);
+
+	void createLayout();
+	void writeSettings();
+	void readSettings();
+
+	DkFileSystemModel* fileModel;
+	DkSortFileProxyModel* sortModel;
+	QTreeView* fileTree;
+	QVector<QAction*> columnActions;
+};
 
 class DkOverview : public DkWidget {
 	Q_OBJECT
@@ -1118,6 +1297,21 @@ public:
 		return ((c2-c1)*0.5f + c1).getQPointF();
 	};
 
+	void setCenter(const QPointF& center) {
+
+		if (rect.empty())
+			return;
+
+		DkVector diff = getCenter() - center;
+
+		for (int idx = 0; idx < rect.size(); idx++) {
+
+			rect[idx] = rect[idx] - diff.getQPointF();
+		}
+
+
+	}
+
 	double getAngle() {
 		
 		// default upper left corner is 0
@@ -1153,8 +1347,6 @@ public:
 			size.setX(size.y());
 			size.setY(x);
 		}
-
-		//TODO: fix bug #132
 
 		// invariance -> user does not want to make a difference between an upside down rect
 		if (angle > CV_PI*0.25 && angle < CV_PI*0.75) {
@@ -1206,7 +1398,7 @@ public:
 	};
 
 signals:
-	void ctrlMovedSignal(int, QPointF, bool);
+	void ctrlMovedSignal(int, QPointF, bool, bool);
 	void updateDiagonal(int);
 
 protected:
@@ -1257,22 +1449,34 @@ public:
 		this->imgRect = imgRect;
 	};
 
-	void setVisible(bool visible);
+	virtual void setVisible(bool visible);
 
 signals:
-	void enterPressedSignal(DkRotatingRect cropArea);
+	void enterPressedSignal(DkRotatingRect cropArea, const QColor& bgCol = QColor(0,0,0,0));
+	void angleSignal(double angle);
+	void aRatioSignal(const QPointF& aRatio);
+	void statusInfoSignal(QString msg);
 
 public slots:
-	void updateCorner(int idx, QPointF point, bool isShiftDown);
+	void updateCorner(int idx, QPointF point, bool isShiftDown, bool changeState = false);
 	void updateDiagonal(int idx);
+	void setFixedDiagonal(const DkVector& diag);
+	void setAngle(double angle, bool apply = true);
+	void setPanning(bool panning);
+	void setPaintHint(int paintMode = DkCropToolBar::no_guide);
+	void setShadingHint(bool invert);
+	void setShowInfo(bool showInfo);
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
+	void wheelEvent(QWheelEvent* event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	QPointF clipToImage(const QPointF& pos);
+	void applyTransform();
+	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
 	
 	void paintEvent(QPaintEvent *event);
 
@@ -1287,6 +1491,7 @@ protected:
 	QPointF posGrab;
 	QPointF clickPos;
 	DkVector oldDiag;
+	DkVector fixedDiag;
 
 	QWidget* parent;
 	DkRotatingRect rect;
@@ -1295,7 +1500,33 @@ protected:
 	QVector<DkTransformRect*> ctrlPoints;
 	QCursor rotatingCursor;
 	QRectF* imgRect;
+	bool panning;
+	int paintMode;
+	bool showInfo;
+};
 
+class DkCropWidget : public DkEditableRect {
+	Q_OBJECT
+
+public:
+	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	virtual void setVisible(bool visible);
+	DkCropToolBar* getToolbar() {
+		return cropToolbar;
+	}
+
+public slots:
+	void crop();
+
+signals:
+	void cancelSignal();
+	void showToolbar(QToolBar* toolbar, bool show);
+
+protected:
+	void createToolbar();
+
+	DkCropToolBar* cropToolbar;
 };
 
 /**
@@ -1421,6 +1652,11 @@ public:
 	int value() {
 		return slider->value();
 	};
+
+	void setFocus(Qt::FocusReason reason) {
+		sliderBox->setFocus(reason);
+	};
+
 
 public slots:
 	void setValue(int value) {

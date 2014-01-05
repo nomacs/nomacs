@@ -17,9 +17,12 @@ endif(COMMAND cmake_policy)
 
 
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
-OPTION (ENABLE_WEBP "Compile with webP support (webP)" OFF)
+OPTION (ENABLE_WEBP "Compile with webP support (webP)" ON)
+OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
+OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 
-set(NOMACS_VERSION 1.0.0)
+
+set(NOMACS_VERSION 1.6.2)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
@@ -30,6 +33,7 @@ elseif (NOT MSVC) # debug and release need qt debug outputs on windows
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif ()
 
+set(EXE_NAME ${CMAKE_PROJECT_NAME})
 
 #Set the custom CMake module directory where our include/lib finders are
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -60,12 +64,17 @@ find_package(PkgConfig)
 pkg_check_modules(EXIV2  exiv2>=0.20)
 message(STATUS "exiv2 version by pkg-config: ${EXIV2_VERSION}")
 IF (NOT EXIV2_FOUND AND MSVC)
-
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/Win32/" )
+	endif()
+	
 	find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
 										"ReleaseDLL/exiv2.dll"
 										"DebugDLL/exiv2d.lib"
 										"DebugDLL/exiv2d.dll"
-					PATHS "../exiv2-0.23/msvc64/exiv2lib/Win32/" 
+					PATHS ${EXIV_SEARCH_PATH}
 					DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 					
 	find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" PATHS "../exiv2-0.23/msvc64/include" DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
@@ -124,32 +133,46 @@ else (HAVE_EXIV2_HPP)
 	message(STATUS "exiv2 does not contain exiv2.hpp. Using older include set")
 endif (HAVE_EXIV2_HPP)
 
-
 #webp
+SET(WEBP_INCLUDE_DIR "")
+SET(WEBP_SOURCE "")
 IF(ENABLE_WEBP)
-	IF (MSVC)
-		find_path(WEBP_BUILD_PATH NAMES "Release/webp.lib" "Debug/webp.lib" PATHS "../webp-0.2.1-cmake/build" DOC "Path to the WebP build directory" NO_DEFAULT_PATH)
-		IF(EXISTS "${WEBP_BUILD_PATH}/Release/webp.lib" AND EXISTS "${WEBP_BUILD_PATH}/Debug/webp.lib")
-			FILE(COPY ${WEBP_BUILD_PATH}/Debug/webp.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-			FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/libs/webp.lib ${CMAKE_CURRENT_BINARY_DIR}/libs/webpd.lib)
-			FILE(COPY ${WEBP_BUILD_PATH}/Release/webp.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-		ELSE ()
-			message(FATAL_ERROR, "could not locate webP liberaries. Needs WEBP_BUILD_PATH which contains /Release/webp.lib, /Debug/webp.lib")
-		ENDIF()
-		
-		SET(WEBP_LIBRARIES optimized "webp" debug "webpd")
-	ELSE()
-		find_library(WEBP_LIBRARIES webp)
-	ENDIF(MSVC)
+	ADD_DEFINITIONS(-DNDEBUG -DWEBP_USE_THREAD)
+
+	FILE(GLOB WEBP_DEC_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/dec/*c
+	)
 	
-	find_path(WEBP_INCLUDE_DIR NAMES "webp/decode.h" "encode.h" "types.h" HINTS "${WEBP_BUILD_PATH}/../src" )
-	IF(WEBP_LIBRARIES AND EXISTS ${WEBP_INCLUDE_DIR})
-		add_definitions(-DWITH_WEBP)
-	ELSE()
-		message(FATAL_ERROR "WebP not found. It's mandatory when used with ENABLE_WEBP enabled.")		
-	ENDIF()
-	
+	FILE(GLOB WEBP_DEMUX_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/demux/*c
+	)
+
+	FILE(GLOB WEBP_DSP_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/dsp/*c
+	)
+
+	FILE(GLOB WEBP_ENC_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/enc/*c
+	)
+
+	FILE(GLOB WEBP_UTILS_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/utils/*c
+	)
+
+	FILE(GLOB WEBP_MUX_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src/mux/*c
+	)
+	SET(WEBP_SOURCE ${WEBP_DEC_SRCS} ${WEBP_DEMUX_SRCS} ${WEBP_DSP_SRCS} ${WEBP_ENC_SRCS} ${WEBP_UTILS_SRCS} ${WEBP_MUX_SRC})
+	SET(WEBP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libwebp/src)
+	add_definitions(-DWITH_WEBP)
 ENDIF(ENABLE_WEBP)
+
 
 
 IF (ENABLE_RAW)
@@ -161,10 +184,17 @@ IF (ENABLE_RAW)
                 message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
         ENDIF()
 	IF (NOT LIBRAW_FOUND AND MSVC)
+	
         	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.13.5/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
+			if(CMAKE_CL_64)
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/x64")
+			else()
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/Win32")
+			endif()
+			
         	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
-        	                            PATHS "../LibRaw-0.13.5/buildfiles/" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
+        	                            PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
 
 	        IF( EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
                 	EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND 
@@ -227,6 +257,47 @@ IF (ENABLE_RAW)
 	ENDIF()
 
 ENDIF(ENABLE_RAW)
+
+#multi-layer tiff
+IF(ENABLE_TIFF)
+		
+	# we try to grab the OpenCV's libtiff
+	IF (MSVC)
+		find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
+		IF(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
+			FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+			FILE(COPY ${TIFF_BUILD_PATH}/Release/libtiff.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		ELSE ()
+			message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib")
+		ENDIF()
+		
+		SET(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")		
+		find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
+	
+		# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
+		find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" )
+
+		IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
+			add_definitions(-DWITH_LIBTIFF)
+		ELSE()
+			message(FATAL_ERROR "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
+			message(FATAL_ERROR "opencv dir: ${OpenCV_DIR}")
+		ENDIF()
+
+	ELSE()
+		find_package(TIFF)
+		IF(TIFF_FOUND)
+			SET(TIFF_CONFIG_DIR "")
+			add_definitions(-DWITH_LIBTIFF)
+		ELSE()
+			message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
+		ENDIF()
+		
+	ENDIF(MSVC)
+	
+	
+ENDIF(ENABLE_TIFF)
+
 	
 include_directories (
 	${QT_INCLUDES}
@@ -236,6 +307,8 @@ include_directories (
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}/src
 	${WEBP_INCLUDE_DIR}
+	${TIFF_INCLUDE_DIR}
+	${TIFF_CONFIG_DIR}
 )
 
 # set (NOMACS_SOURCES
@@ -263,50 +336,9 @@ if (APPLE)
 endif (APPLE)
 
 
-# set (NOMACS_MOCS
-        # #src/DkError.h
-        # src/DkImage.h
-        # #src/DkMath.h
-		# src/DkManipulationWidgets.h
-        # src/DkConnection.h
-        # src/DkNetwork.h
-        # src/DkNoMacs.h
-		# src/DkPong.h
-        # #src/DkTimer.h
-        # #src/DkUtils.h
-        # src/DkViewPort.h
-        # src/DkWidgets.h
-		# src/DkDialog.h
-        # src/DkMenu.h
-        # src/DkSettings.h
-		# src/DkTransferToolBar.h
-        # #src/BorderLayout.h
-        # #src/resource.h
-# )
-
-# set (NOMACS_HEADERS
-        # src/DkError.h
-        # src/DkImage.h
-        # src/DkMath.h
-        # src/DkConnection.h
-        # src/DkNetwork.h
-		# src/DkManipulationWidgets.h
-        # src/DkNoMacs.h
-		# src/DkPong.h
-        # src/DkTimer.h
-        # src/DkUtils.h
-        # src/DkViewPort.h
-        # src/DkWidgets.h
-		# src/DkDialog.h
-        # src/DkMenu.h
-        # src/DkSettings.h
-		# src/DkTransferToolBar.h
-        # src/BorderLayout.h
-        # #src/resource.h
-# )
-
 file(GLOB NOMACS_SOURCES "src/*.cpp")
 file(GLOB NOMACS_HEADERS "src/*.h")
+
 
 file(GLOB NOMACS_MOCS "src/*.h")
 
@@ -328,16 +360,21 @@ set (NOMACS_RESOURCES
 )
 
 set(NOMACS_TRANSLATIONS
-		translations/nomacs_en.ts
-		translations/nomacs_de.ts
-		translations/nomacs_ru.ts
-		translations/nomacs_zh.ts
 		translations/nomacs_als.ts
-		translations/nomacs_pl.ts
 		translations/nomacs_az.ts
+		translations/nomacs_cs.ts		
+		translations/nomacs_de.ts
+		translations/nomacs_en.ts
+		translations/nomacs_es.ts		
+		translations/nomacs_fr.ts
+		translations/nomacs_it.ts
+		translations/nomacs_pl.ts
+		translations/nomacs_pt.ts
+		translations/nomacs_ru.ts
 		translations/nomacs_sk.ts
-		translations/nomacs_es.ts
-		translations/nomacs_sr.ts
+		translations/nomacs_sl.ts
+		translations/nomacs_sr.ts		
+		translations/nomacs_zh.ts		
 )
 
 if (MSVC) # some settings for visual studio
@@ -358,15 +395,59 @@ QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
 
 #IF (EXIV2_FOUND AND LIBRAW_FOUND AND OpenCV_FOUND OR NOT COMPILEWITHOPENCV)
 IF (EXIV2_FOUND)
-	set(EXE_NAME ${CMAKE_PROJECT_NAME})
-	link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
-	add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC})
-	target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${WEBP_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB})
+	
+	IF(MSVC)
+		if (DISABLE_QT_DEBUG)
+			message (STATUS "disabling qt debug messages")
+			add_definitions(-DQT_NO_DEBUG_OUTPUT)
+		endif()
 
-	IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-		SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
-	ENDIF()
 
+		set(EXE_NAME ${CMAKE_PROJECT_NAME})
+		set(DLL_NAME lib${CMAKE_PROJECT_NAME})
+		set(LIB_NAME optimized ${DLL_NAME}.lib debug ${DLL_NAME}d.lib)
+		LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/main.cpp)
+		link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
+		add_executable(${EXE_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_MOC_SRC_SU} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
+		target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} ${VERSION_LIB} ${LIB_NAME})
+		
+		set_target_properties(${EXE_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT")
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${EXE_NAME} PROPERTIES IMPORTED_IMPLIB "")
+				
+		add_library(${DLL_NAME} SHARED ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC} ${WEBP_SOURCE})
+		target_link_libraries(${DLL_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES})
+		add_dependencies(${EXE_NAME} ${DLL_NAME})
+		
+		
+		
+		SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
+
+		set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		set_target_properties(${DLL_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		
+		
+		
+		set_target_properties(${DLL_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_EXPORT")
+		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
+		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
+		set_target_properties(${DLL_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_NAME}d)
+				
+	ELSE()
+		set(EXE_NAME ${CMAKE_PROJECT_NAME})
+		link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
+		add_executable(${EXE_NAME} WIN32 MACOSX_BUNDLE ${NOMACS_SOURCES} ${NOMACS_UI} ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_HEADERS} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS} ${LIBQPSD_MOC_SRC} ${WEBP_SOURCE})
+		target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBS} ${VERSION_LIB} ${TIFF_LIBRARIES})
+
+		IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+			SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES LINK_FLAGS -fopenmp)
+		ENDIF()
+	ENDIF(MSVC)
+		
 	IF (APPLE)
         	# mac's bundle install
 	        SET_TARGET_PROPERTIES(${EXE_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/macosx/Info.plist.in")
@@ -407,19 +488,53 @@ IF (EXIV2_FOUND)
 		ENDFOREACH(qtlib)
 		
 		
+		# copy msvcp110.dll to Really Release
+		if (CMAKE_GENERATOR STREQUAL "Visual Studio 11" OR  CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64")
+			SET(VS_VERSION 11)
+		else()
+			SET(VS_VERSION 10)
+		endif()
+		
+		if (MSVC11)
+			GET_FILENAME_COMPONENT(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\11.0\\Setup\\VS;ProductDir] REALPATH CACHE)
+			SET(VS_VERSION 11)
+		elseif (MSVC10)
+			GET_FILENAME_COMPONENT(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Setup\\VS;ProductDir] REALPATH CACHE)
+			SET(VS_VERSION 10)
+		endif()
+		
+		if(CMAKE_CL_64)
+			set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x64/Microsoft.VC${VS_VERSION}0.CRT")
+		else()
+			set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x86/Microsoft.VC${VS_VERSION}0.CRT")
+		endif()
+		find_file(MSVCP NAMES msvcp${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+		find_file(MSVCR NAMES msvcr${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+		if(MSVCP)
+			FILE(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+			FILE(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+		else()
+			set(ERROR_MESSAGE "\nCould not find library msvcp110.dll. for really release")
+			message(STATUS  "${ERROR_MESSAGE}")
+		endif()
+
+		# create projects
 		SET(CMAKE_CONFIGURATION_TYPES "Debug;Release;ReallyRelease" CACHE STRING "limited configs" FORCE)
 		add_definitions(/Zc:wchar_t-)
 		SET(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
 		SET(CMAKE_EXE_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
+		
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		
 		SET(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
-		SOURCE_GROUP("Generated Files" FILES ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC}  ${NOMACS_QM})
+		SOURCE_GROUP("Generated Files" FILES ${NOMACS_MOC_SRC} ${LIBQPSD_MOCS} ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM})
 		set_source_files_properties(${NOMACS_TRANSLATIONS} PROPERTIES HEADER_FILE_ONLY TRUE)
 		SOURCE_GROUP("Translations" FILES ${NOMACS_TRANSLATIONS})
 		SOURCE_GROUP("libqpsd" FILES ${LIBQPSD_SOURCES} ${LIBQPSD_HEADERS})
+		SOURCE_GROUP("libwebp" FILES ${WEBP_SOURCE})
+		
 		
 	ELSE(UNIX)	
 	

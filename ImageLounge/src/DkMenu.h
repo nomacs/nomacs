@@ -129,7 +129,7 @@ public:
 
 signals:
 	void loadFileSignal(QFileInfo file);
-	
+	void clearHistory();
 
 public slots:
 
@@ -140,35 +140,44 @@ public slots:
 		int numItems = 0;
 		for (int idx = 0; idx < recentFiles->size(); idx++) {
 
-			if (numItems >= 10) // TODO: setting??
+			if (numItems >= DkSettings::global.numFiles ) // TODO: setting??
 				break;
 
 			DkTimer dt;
 			QFileInfo file = recentFiles->at(idx);
 
-#ifdef WIN32
+			//DkTimer dd;
+			//QFileInfoList l = QDir::drives();
 
-			// TODO: it crashed twice here!
+			//for (int idx = 0; idx < l.size(); idx++)
+			//	qDebug() << "drives: " << l.at(idx).absoluteFilePath() << " " << l.at(idx).exists() << " found in: " << QString::fromStdString(dd.getTotal());
 
-			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
-			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
-			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
+			//QDir(file.)
 
-			// CMakeLists.txt:
-			// if compile error that toWCharArray is not recognized:
-			// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
-			int dirLength = winPath.toWCharArray(wDirName);
-			wDirName[dirLength] = L'\0';	// append null character
-
-			DWORD dAttr = GetFileAttributesW(wDirName);
-
-			if (dAttr == INVALID_FILE_ATTRIBUTES) {
-				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists (WIN32 reject) " << QString::fromStdString(dt.getTotal());
-				continue;
-			}
-#endif
+//#ifdef WIN32
+//
+//			// TODO: it crashed twice here!
+//
+//			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
+//			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
+//			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
+//
+//			// CMakeLists.txt:
+//			// if compile error that toWCharArray is not recognized:
+//			// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
+//			int dirLength = winPath.toWCharArray(wDirName);
+//			wDirName[dirLength] = L'\0';	// append null character
+//
+//			DWORD dAttr = GetFileAttributesW(wDirName);
+//
+//			if (dAttr == INVALID_FILE_ATTRIBUTES) {
+//				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists (WIN32 reject) " << QString::fromStdString(dt.getTotal());
+//				continue;
+//			}
+//#endif
 			// TODO: this line is sometimes (iPhone: ducking) slow!!
-			if (!file.exists()) {
+			if (!DkUtils::exists(file)) {
+				
 				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists " << QString::fromStdString(dt.getTotal());
 				continue;
 			}
@@ -191,6 +200,13 @@ public slots:
 			noItems->setEnabled(false);
 			QMenu::addAction(noItems);
 		}
+		else {
+			QMenu::addSeparator();
+			QAction* clearHistory = new QAction(tr("Clear History"), this);
+			connect(clearHistory, SIGNAL(triggered()), this, SIGNAL(clearHistory()));
+			QMenu::addAction(clearHistory);
+		}
+
 	};
 
 	void loadRecentFile() {
@@ -245,36 +261,38 @@ public:
 	~DkTcpAction() {};
 
 	void init() {
+		tcpActions = 0;
+		setObjectName("tcpAction");
 		setCheckable(true);
-		setChecked(peer.getSynchronized());
+		setChecked(peer.isSynchronized());
 		connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
 	};
 
-	void setTcpActions(QList<QAction*> actions) {
+	void setTcpActions(QList<QAction*>* actions) {
 		tcpActions = actions;
 	};
 
 signals:
 	void synchronizeWithSignal(quint16);
 	void disableSynchronizeWithSignal(quint16);
+	void enableActions(bool enable);
 
-	public slots:
-		void synchronize(bool checked) {
+public slots:
+	void synchronize(bool checked) {
 
-			if (checked)
-				emit synchronizeWithSignal(peer.peerId);
-			else
-				emit disableSynchronizeWithSignal(peer.peerId);
+		if (checked)
+			emit synchronizeWithSignal(peer.peerId);
+		else
+			emit disableSynchronizeWithSignal(peer.peerId);
 
-			for (int idx = 0; idx < tcpActions.size(); idx++)
-				tcpActions.at(idx)->setEnabled(!checked);
+		emit enableActions(checked);
+		qDebug() << "emitted a synchronize message...\n";
+	}
 
-			qDebug() << "emitted a synchronize message...\n";
-		}
 
 protected:
 	DkPeer peer;
-	QList<QAction*> tcpActions;
+	QList<QAction*>* tcpActions;
 
 };
 
@@ -328,13 +346,46 @@ public:
 		peers.clear();
 		clients.clear();
 		tcpActions.clear();
+	};
 
-	}
 
 signals:
 	void synchronizeWithSignal(quint16);
 
+public slots:
+	void enableActions(bool enable = false, bool local = false) {
+
+		updatePeers();
+
+		if (local)
+			return;
+
+		bool anyConnected = enable;
+
+		// let's see if any other connection is there
+		if (!anyConnected) {
+
+			for (int idx = 0; idx < tcpActions.size(); idx++) {
+
+				if (tcpActions.at(idx)->objectName() == "tcpAction" && tcpActions.at(idx)->isChecked()) {
+					anyConnected = true;
+					break;
+				}
+			}
+		}
+
+		for (int idx = 0; idx < tcpActions.size(); idx++) {
+
+			if (tcpActions.at(idx)->objectName() == "serverAction")
+				tcpActions.at(idx)->setEnabled(!anyConnected);
+			if (tcpActions.at(idx)->objectName() == "sendImageAction")
+				tcpActions.at(idx)->setEnabled(anyConnected);
+		}
+
+	}
+
 protected slots:
+		
 	void updatePeers() {	// find other clients on paint
 		
 		if (!clientThread)
@@ -374,14 +425,17 @@ protected slots:
 
 			DkTcpAction* peerEntry = new DkTcpAction(currentPeer, title, this);
 			if (!noClientsFound) 
-				peerEntry->setTcpActions(tcpActions);
+				peerEntry->setTcpActions(&tcpActions);
 			
 			connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
 			connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), clientThread, SLOT(stopSynchronizeWith(quint16)));
+			connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
 
 			addAction(peerEntry);
 
 		}
+
+		//enableActions();
 
 		peers = newPeers;
 
