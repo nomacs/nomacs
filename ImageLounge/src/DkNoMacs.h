@@ -270,6 +270,8 @@ enum panelActions {
 	menu_panel_histogram,
 	menu_panel_overview,
 	menu_panel_explorer,
+	menu_panel_social_button,
+	menu_panel_qrcode,
 
 	menu_panel_end,
 };

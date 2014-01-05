@@ -175,6 +175,12 @@ void DkSettings::load(bool force) {
 	tmpShow = settings.value("showHistogram", app_p.showHistogram).toBitArray();
 	if (tmpShow.size() == app_p.showHistogram.size())	
 		app_p.showHistogram = tmpShow;
+	tmpShow = settings.value("showSocialButton", app_p.showSocialButton).toBitArray();
+	if (tmpShow.size() == app_p.showSocialButton.size())	
+		app_p.showSocialButton = tmpShow;
+	tmpShow = settings.value("showQrCode", app_p.showQrCode).toBitArray();
+	if (tmpShow.size() == app_p.showQrCode.size())	
+		app_p.showQrCode = tmpShow;
 	tmpShow = settings.value("showOverview", app_p.showOverview).toBitArray();
 	if (tmpShow.size() == app_p.showOverview.size())	
 		app_p.showOverview = tmpShow;
@@ -336,6 +342,10 @@ void DkSettings::save(bool force) {
 		settings.setValue("showPlayer", app_p.showPlayer);
 	if (!force && app_p.showHistogram != app_d.showHistogram)
 		settings.setValue("showHistogram", app_p.showHistogram);
+	if (!force && app_p.showSocialButton != app_d.showSocialButton)
+		settings.setValue("showSocialButton", app_p.showSocialButton);
+	if (!force && app_p.showQrCode != app_d.showQrCode)
+		settings.setValue("showQrCode", app_p.showQrCode);
 	if (!force && app_p.showOverview != app_d.showOverview)
 		settings.setValue("showOverview", app_p.showOverview);
 	if (!force && app_p.advancedSettings != app_d.advancedSettings)
@@ -524,6 +534,8 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showMetaData = QBitArray(mode_end, false);
 	app_p.showPlayer = QBitArray(mode_end, false);
 	app_p.showHistogram = QBitArray(mode_end, false);
+	app_p.showSocialButton = QBitArray(mode_end, true);
+	app_p.showQrCode = QBitArray(mode_end, true);
 	app_p.showOverview = QBitArray(mode_end, true);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;

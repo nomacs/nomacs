@@ -241,6 +241,14 @@ public:
 		return cropWidget;
 	}
 
+	DkSocialButton* getSocialButton() {
+		return socialButton;
+	}
+
+	DkSocialButton* getQrCode() {
+		return qrCode;
+	}
+
 	void stopLabels();
 	void showWidgetsSettings();
 
@@ -257,6 +265,8 @@ public slots:
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
 	void showThumbView(bool visible);
+	void showSocialButton(bool visible);
+	void showQrCode(bool visible);
 
 	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void setInfo(QString msg, int time = 3000, int location = center_label);
@@ -299,6 +309,10 @@ protected:
 	DkPlayer* player;
 	DkHistogram* histogram;
 	DkFolderScrollBar* folderScroll;
+	DkSocialButton* socialButton;
+	DkSocialButton* qrCode;
+	QLabel* socialButtonText;
+	QLabel* qrCodeText;
 
 	DkFileInfoLabel* fileInfoLabel;
 	DkRatingLabelBg* ratingLabel;

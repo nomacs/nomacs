@@ -142,6 +142,8 @@ public:
 		QBitArray showPlayer;
 		QBitArray showMetaData;
 		QBitArray showHistogram;
+		QBitArray showSocialButton;
+		QBitArray showQrCode;
 		QBitArray showOverview;
 		QBitArray showScroller;
 		int appMode;

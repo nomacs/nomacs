@@ -149,6 +149,62 @@ protected:
 	void init();
 };
 
+class DkSocialButton : public QLabel {
+	Q_OBJECT
+
+public:
+	DkSocialButton(const QString& text, QWidget* parent = 0, Qt::WFlags flags = 0);
+
+	void registerAction(QAction* action) {
+		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+	};
+
+	void setDisplaySettings(QBitArray* displayBits) {
+		displaySettingsBits = displayBits;
+	};
+
+	bool getCurrentDisplaySetting() {
+
+		if (!displaySettingsBits)
+			return false;
+
+		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
+			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
+			return false;
+		}
+
+		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
+	};
+
+	bool isHiding() const {
+		return hiding;
+	};
+
+
+signals:
+	void visibleSignal(bool visible);
+
+public slots:
+	virtual void show();
+	virtual void hide();
+	virtual void setVisible(bool visible);
+
+	void animateOpacityUp();
+	void animateOpacityDown();
+
+protected:
+
+	bool hiding;
+	bool showing;
+
+	QGraphicsOpacityEffect* opacityEffect;
+	QBitArray* displaySettingsBits;
+
+	// functions
+	void init();
+};
+
+
 class DllExport DkLabel : public QLabel {
 	Q_OBJECT
 

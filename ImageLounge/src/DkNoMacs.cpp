@@ -630,6 +630,8 @@ void DkNoMacs::createMenu() {
 	panelMenu->addAction(panelActions[menu_panel_player]);
 	panelMenu->addAction(panelActions[menu_panel_info]);
 	panelMenu->addAction(panelActions[menu_panel_histogram]);
+	panelMenu->addAction(panelActions[menu_panel_social_button]);
+	panelMenu->addAction(panelActions[menu_panel_qrcode]);
 
 	toolsMenu = menu->addMenu(tr("&Tools"));
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
@@ -699,6 +701,9 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(panelActions[menu_panel_player]);
 	contextMenu->addAction(panelActions[menu_panel_info]);
 	contextMenu->addAction(panelActions[menu_panel_histogram]);
+	contextMenu->addAction(panelActions[menu_panel_qrcode]);
+	contextMenu->addAction(panelActions[menu_panel_social_button]);
+
 	contextMenu->addSeparator();
 	
 	contextMenu->addAction(editActions[menu_edit_copy_buffer]);
@@ -1029,6 +1034,19 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_histogram]->setStatusTip(tr("Shows the Histogram Panel"));
 	panelActions[menu_panel_histogram]->setCheckable(true);
 	connect(panelActions[menu_panel_histogram], SIGNAL(toggled(bool)), vp->getController(), SLOT(showHistogram(bool)));
+
+	panelActions[menu_panel_social_button] = new QAction(tr("&Social Media Button"), this);
+	//panelActions[menu_panel_social_button]->setShortcut(QKeySequence(shortcut_show_histogram));
+	panelActions[menu_panel_social_button]->setStatusTip(tr("Shows the Social Media Button"));
+	panelActions[menu_panel_social_button]->setCheckable(true);
+	connect(panelActions[menu_panel_social_button], SIGNAL(toggled(bool)), vp->getController(), SLOT(showSocialButton(bool)));
+
+	panelActions[menu_panel_qrcode] = new QAction(tr("&QR Code"), this);
+	//panelActions[menu_panel_qrcode]->setShortcut(QKeySequence(shortcut_show_histogram));
+	panelActions[menu_panel_qrcode]->setStatusTip(tr("Shows the QR Code"));
+	panelActions[menu_panel_qrcode]->setCheckable(true);
+	connect(panelActions[menu_panel_qrcode], SIGNAL(toggled(bool)), vp->getController(), SLOT(showQrCode(bool)));
+
 
 	viewActions.resize(menu_view_end);
 	viewActions[menu_view_fit_frame] = new QAction(tr("&Fit Window"), this);
@@ -3503,6 +3521,8 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+	vp->getController()->getSocialButton()->registerAction(panelActions[menu_panel_social_button]);
+	vp->getController()->getQrCode()->registerAction(panelActions[menu_panel_qrcode]);
 	DkSettings::app.appMode = 0;
 
 	initLanClient();
@@ -3549,6 +3569,8 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+		vp->getController()->getSocialButton()->registerAction(panelActions[menu_panel_social_button]);
+		vp->getController()->getQrCode()->registerAction(panelActions[menu_panel_qrcode]);
 
 		// in frameless, you cannot control if menu is visible...
 		panelActions[menu_panel_menu]->setEnabled(false);
@@ -3710,6 +3732,8 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+		vp->getController()->getSocialButton()->registerAction(panelActions[menu_panel_social_button]);
+		vp->getController()->getQrCode()->registerAction(panelActions[menu_panel_qrcode]);
 
 		initLanClient();
 		emit sendTitleSignal(windowTitle());

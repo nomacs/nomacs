@@ -52,6 +52,20 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
 
+	socialButton = new DkSocialButton(DkSettings::foto.fotoStrings[DkSettings::foto_social_media], this);
+	socialButton->setPixmap(QPixmap(":/nomacs/img/facebook.png"));
+	socialButton->setStyleSheet("QLabel{margin-right: 30px;}");
+	socialButtonText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_social_media], this);
+	socialButtonText->setStyleSheet("QLabel{color: #FFFFFF; margin-bottom: 30px; margin-right: 30px;}");
+	socialButtonText->hide();
+
+	qrCode = new DkSocialButton(DkSettings::foto.fotoStrings[DkSettings::foto_qr_code], this);
+	qrCode->setPixmap(QPixmap(":/nomacs/img/qrcode.png"));
+	qrCode->setStyleSheet("QLabel{margin-left: 30px;}");
+	qrCodeText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_qr_code], this);
+	qrCodeText->setStyleSheet("QLabel{color: #FFFFFF; margin-bottom: 30px; margin-left: 30px;}");
+	qrCodeText->hide();
+
 	// file info - overview
 	fileInfoLabel = new DkFileInfoLabel(this);
 	ratingLabel = new DkRatingLabelBg(2, this, flags);
@@ -85,8 +99,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 
 void DkControlWidget::init() {
 
-	// debug: show invisible widgets
-	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	//// debug: show invisible widgets
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -98,6 +112,8 @@ void DkControlWidget::init() {
 	fileInfoLabel->setDisplaySettings(&DkSettings::app.showFileInfoLabel);
 	player->setDisplaySettings(&DkSettings::app.showPlayer);
 	histogram->setDisplaySettings(&DkSettings::app.showHistogram);
+	socialButton->setDisplaySettings(&DkSettings::app.showSocialButton);
+	qrCode->setDisplaySettings(&DkSettings::app.showQrCode);
 
 	// some adjustments
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -110,7 +126,11 @@ void DkControlWidget::init() {
 	thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	thumbScrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	spinnerLabel->halfSize();
-
+	//socialButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	socialButton->setAlignment(Qt::AlignRight);
+	socialButtonText->setAlignment(Qt::AlignRight);
+	//socialButton->setFixedSize(200,200);
+	
 	// dummy
 	QWidget* dw = new QWidget();
 	dw->setMouseTracking(true);
@@ -141,6 +161,8 @@ void DkControlWidget::init() {
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
 	ulLayout->addWidget(dw);
+	ulLayout->addWidget(qrCode);
+	ulLayout->addWidget(qrCodeText);
 
 	// center column
 	QWidget* cW = new QWidget();
@@ -207,7 +229,8 @@ void DkControlWidget::init() {
 	lrLayout->addStretch();
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
-
+	lrLayout->addWidget(socialButton);
+	lrLayout->addWidget(socialButtonText);
 	// init both main widgets
 	hudWidget = new QWidget(this);
 	hudWidget->setMouseTracking(true);
@@ -348,6 +371,8 @@ void DkControlWidget::showWidgetsSettings() {
 	showFileInfo(fileInfoLabel->getCurrentDisplaySetting());
 	showPlayer(player->getCurrentDisplaySetting());
 	showHistogram(histogram->getCurrentDisplaySetting());
+	showSocialButton(socialButton->getCurrentDisplaySetting());
+	showQrCode(qrCode->getCurrentDisplaySetting());
 }
 
 void DkControlWidget::showPreview(bool visible) {
@@ -385,6 +410,33 @@ void DkControlWidget::showMetaData(bool visible) {
 	}
 	else if (!visible && metaDataInfo->isVisible())
 		metaDataInfo->hide();
+}
+
+void DkControlWidget::showSocialButton(bool visible) {
+
+	if (!socialButton)
+		return;
+
+	if (visible && !socialButton->isVisible())
+		socialButton->show();
+	else if (!visible && metaDataInfo->isVisible())
+		socialButton->hide();
+
+	socialButtonText->setVisible(visible);
+}
+
+void DkControlWidget::showQrCode(bool visible) {
+
+	if (!qrCode)
+		return;
+
+	if (visible && !qrCode->isVisible())
+		qrCode->show();
+	else if (!visible && qrCode->isVisible())
+		qrCode->hide();
+
+	qrCodeText->setVisible(visible);
+
 }
 
 void DkControlWidget::showFileInfo(bool visible) {

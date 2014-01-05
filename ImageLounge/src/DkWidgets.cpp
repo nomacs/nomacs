@@ -137,6 +137,103 @@ void DkWidget::animateOpacityDown() {
 	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
 }
 
+// DkSocialButton --------------------------------------------------------------------
+DkSocialButton::DkSocialButton(const QString& text, QWidget* parent, Qt::WFlags flags) : QLabel(text, parent, flags) {
+	init();
+}
+
+void DkSocialButton::init() {
+
+	setMouseTracking(true);
+
+	showing = false;
+	hiding = false;
+	displaySettingsBits = 0;
+	opacityEffect = 0;
+
+	// painter problems if the widget is a child of another that has the same graphicseffect
+	// widget starts on hide
+	opacityEffect = new QGraphicsOpacityEffect(this);
+	opacityEffect->setOpacity(0);
+	opacityEffect->setEnabled(false);
+	setGraphicsEffect(opacityEffect);
+
+	setVisible(false);
+}
+
+void DkSocialButton::show() {
+
+	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
+	if (!showing) {
+		hiding = false;
+		showing = true;
+		setVisible(true);
+		animateOpacityUp();
+	}
+}
+
+void DkSocialButton::hide() {
+
+	if (!hiding) {
+		hiding = true;
+		showing = false;
+		animateOpacityDown();
+
+		// set display bit here too -> since the final call to setVisible takes a few seconds
+		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
+		}
+	}
+}
+
+void DkSocialButton::setVisible(bool visible) {
+
+	if (visible && !isVisible() && !showing)
+		opacityEffect->setOpacity(100);
+
+	QLabel::setVisible(visible);
+	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+
+	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
+	}
+}
+
+void DkSocialButton::animateOpacityUp() {
+
+	if (!showing)
+		return;
+
+	opacityEffect->setEnabled(true);
+	if (opacityEffect->opacity() >= 1.0f || !showing) {
+		opacityEffect->setOpacity(1.0f);
+		showing = false;
+		opacityEffect->setEnabled(false);
+		return;
+	}
+
+	QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
+	opacityEffect->setOpacity(opacityEffect->opacity()+0.05);
+}
+
+void DkSocialButton::animateOpacityDown() {
+
+	if (!hiding)
+		return;
+
+	opacityEffect->setEnabled(true);
+	if (opacityEffect->opacity() <= 0.0f) {
+		opacityEffect->setOpacity(0.0f);
+		hiding = false;
+		setVisible(false);	// finally hide the widget
+		opacityEffect->setEnabled(false);
+		return;
+	}
+
+	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
+	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
+}
+
 // DkFilePreview --------------------------------------------------------------------
 DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WFlags flags) : DkWidget(parent, flags) {
 
@@ -2543,7 +2640,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	float opacity = 1.0f;
 
 	//// debug (show button outline)
-	painter.drawRect(QRect(QPoint(), size()));
+	//painter.drawRect(QRect(QPoint(), size()));
 
 	if (!isEnabled())
 		opacity = 0.5f;
