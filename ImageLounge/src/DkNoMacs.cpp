@@ -646,6 +646,7 @@ void DkNoMacs::createMenu() {
 
 	fotoMenu = menu->addMenu(tr("&Fotojiffy"));
 	fotoMenu->addAction(fotoActions[menu_foto_translations]);
+	fotoMenu->addAction(fotoActions[menu_foto_show_button_text]);
 	fotoMenu->addAction(fotoActions[menu_foto_interval]);
 
 	// no sync menu in frameless view
@@ -707,6 +708,8 @@ void DkNoMacs::createContextMenu() {
 	
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
+
+	contextMenu->addMenu(fotoMenu);
 
 	contextMenu->addMenu(sortMenu);
 
@@ -1161,6 +1164,12 @@ void DkNoMacs::createActions() {
 	fotoActions[menu_foto_translations] = new QAction(tr("Translations"), this);
 	fotoActions[menu_foto_translations]->setStatusTip(tr("change screen information"));
 	connect(fotoActions[menu_foto_translations], SIGNAL(triggered()), this, SLOT(fotoChangeTranslations()));
+
+	fotoActions[menu_foto_show_button_text] = new QAction(tr("Show Button Text"), this);
+	fotoActions[menu_foto_show_button_text]->setStatusTip(tr("if checked, the print buttons have text"));
+	fotoActions[menu_foto_show_button_text]->setCheckable(true);
+	fotoActions[menu_foto_show_button_text]->setChecked(DkSettings::foto.showButtonText);
+	connect(fotoActions[menu_foto_show_button_text], SIGNAL(toggled(bool)), this, SLOT(fotoShowButtonText(bool)));
 
 	fotoActions[menu_foto_interval] = new QAction(tr("Print Timer"), this);
 	fotoActions[menu_foto_interval]->setStatusTip(tr("changes the print button timer interval"));
@@ -1819,6 +1828,13 @@ void DkNoMacs::opacityDown() {
 void DkNoMacs::opacityUp() {
 	
 	changeOpacity(0.3f);
+}
+
+void DkNoMacs::fotoShowButtonText(bool show) {
+
+	DkSettings::foto.showButtonText = show;
+	DkSettings::save();
+	restart();
 }
 
 void DkNoMacs::fotoChangeTranslations() {

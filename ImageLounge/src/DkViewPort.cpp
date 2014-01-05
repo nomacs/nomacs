@@ -334,7 +334,7 @@ void DkControlWidget::showWidgetsSettings() {
 		showScroller(false);
 		showMetaData(false);
 		showFileInfo(false);
-		showPlayer(false);
+		//showPlayer(false);
 		overviewWindow->hide();
 		showHistogram(false);
 		return;

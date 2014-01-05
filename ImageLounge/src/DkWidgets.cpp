@@ -3039,9 +3039,12 @@ void DkPlayer::init() {
 	playButton->keepAspectRatio = false;
 	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
-	QSize s = icon.size();
-	s.setHeight(s.height()+20);
-	playButton->setFixedSize(s);
+
+	if (DkSettings::foto.showButtonText) {
+		QSize s = icon.size();
+		s.setHeight(s.height()+20);
+		playButton->setFixedSize(s);
+	}
 	connect(playButton, SIGNAL(pressed()), this, SLOT(printPressed()));
 	connect(playButton, SIGNAL(infoSignal(QString, int)), this, SIGNAL(infoSignal(QString, int)));
 
@@ -3079,8 +3082,11 @@ void DkPlayer::init() {
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	//setMinimumSize(15, 5);
 	//setMaximumSize(570, 118);
-	setFixedSize(510,138);
-
+	
+	if (DkSettings::foto.showButtonText)
+		setFixedSize(510,138);	
+	else
+		setFixedSize(510,118);	
 	//QHBoxLayout *l = new QHBoxLayout(this);
 	//l->setSpacing(0);
 	//l->setContentsMargins(0,0,0,0);
