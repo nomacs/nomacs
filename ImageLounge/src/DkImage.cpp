@@ -1721,6 +1721,17 @@ void DkImageLoader::loadFileAt(int idx) {
 
 		if (idx == -1) {
 			idx = files.size()-1;
+
+			if (files[idx] == virtualFile.fileName()) {
+				QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_last_img];//tr("You have reached the end");
+				if (!DkSettings::global.loop)
+					emit(setPlayer(false));
+				updateInfoSignal(msg, 1000);
+				mutex.unlock();
+				return;
+			}
+			else
+				qDebug() << files[idx] << " != " << file.fileName();
 		}
 		else if (DkSettings::global.loop) {
 			idx %= files.size();
@@ -1729,7 +1740,7 @@ void DkImageLoader::loadFileAt(int idx) {
 				idx = files.size() + idx;
 
 		}
-		else if (idx < 0 && !DkSettings::global.loop) {
+		else if (idx < 0 && !DkSettings::global.loop || idx == 0 && files[idx] == virtualFile.fileName()) {
 			QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_first_img];//tr("You have reached the beginning");
 			updateInfoSignal(msg, 1000);
 			mutex.unlock();
