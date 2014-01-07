@@ -153,7 +153,14 @@ class DkSocialButton : public QLabel {
 	Q_OBJECT
 
 public:
-	DkSocialButton(const QString& text, QWidget* parent = 0, Qt::WFlags flags = 0);
+	enum mode {
+		facebook,
+		qrcode,
+
+		mode_end
+	};
+	
+	DkSocialButton(int mode, QWidget* parent = 0, Qt::WFlags flags = 0);
 
 	void registerAction(QAction* action) {
 		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
@@ -191,17 +198,21 @@ public slots:
 
 	void animateOpacityUp();
 	void animateOpacityDown();
+	void changeImage();
 
 protected:
-
 	bool hiding;
 	bool showing;
+	int mode;
 
 	QGraphicsOpacityEffect* opacityEffect;
 	QBitArray* displaySettingsBits;
 
+	QMenu* cm;
+
 	// functions
 	void init();
+	void contextMenuEvent(QContextMenuEvent *event);
 };
 
 

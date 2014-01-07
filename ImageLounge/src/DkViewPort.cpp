@@ -52,15 +52,13 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
 
-	socialButton = new DkSocialButton(DkSettings::foto.fotoStrings[DkSettings::foto_social_media], this);
-	socialButton->setPixmap(QPixmap(":/nomacs/img/facebook.png"));
+	socialButton = new DkSocialButton(DkSocialButton::facebook, this);
 	socialButton->setStyleSheet("QLabel{margin-right: 30px;}");
 	socialButtonText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_social_media], this);
 	socialButtonText->setStyleSheet("QLabel{color: #FFFFFF; margin-bottom: 30px; margin-right: 30px;}");
 	socialButtonText->hide();
 
-	qrCode = new DkSocialButton(DkSettings::foto.fotoStrings[DkSettings::foto_qr_code], this);
-	qrCode->setPixmap(QPixmap(":/nomacs/img/qrcode.png"));
+	qrCode = new DkSocialButton(DkSocialButton::qrcode, this);
 	qrCode->setStyleSheet("QLabel{margin-left: 30px;}");
 	qrCodeText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_qr_code], this);
 	qrCodeText->setStyleSheet("QLabel{color: #FFFFFF; margin-bottom: 30px; margin-left: 30px;}");
@@ -100,7 +98,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 void DkControlWidget::init() {
 
 	//// debug: show invisible widgets
-	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -419,7 +417,7 @@ void DkControlWidget::showSocialButton(bool visible) {
 
 	if (visible && !socialButton->isVisible())
 		socialButton->show();
-	else if (!visible && metaDataInfo->isVisible())
+	else if (!visible && socialButton->isVisible())
 		socialButton->hide();
 
 	socialButtonText->setVisible(visible);

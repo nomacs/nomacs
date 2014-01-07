@@ -131,6 +131,11 @@ public:
 		int countDownIvl;
 		QStringList fotoStrings;
 		bool showButtonText;
+		QString socialImageUrl;
+		QString qrCodeImageUrl;
+		QString facebookPath;
+		QString printPath;
+		QString defaultImgPath;
 	};
 
 	struct App {

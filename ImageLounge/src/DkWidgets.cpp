@@ -138,7 +138,9 @@ void DkWidget::animateOpacityDown() {
 }
 
 // DkSocialButton --------------------------------------------------------------------
-DkSocialButton::DkSocialButton(const QString& text, QWidget* parent, Qt::WFlags flags) : QLabel(text, parent, flags) {
+DkSocialButton::DkSocialButton(int mode, QWidget* parent, Qt::WFlags flags) : QLabel(parent, flags) {
+	
+	this->mode = mode;
 	init();
 }
 
@@ -159,6 +161,56 @@ void DkSocialButton::init() {
 	setGraphicsEffect(opacityEffect);
 
 	setVisible(false);
+
+	// context menu
+	QAction* changeImage = new QAction(tr("Change Image"), this);
+	connect(changeImage, SIGNAL(triggered()), this, SLOT(changeImage()));
+
+	cm = new QMenu(tr(""), this);
+	cm->addAction(changeImage);
+
+	if (mode == facebook) {
+		setPixmap(DkSettings::foto.socialImageUrl);
+		qDebug() << DkSettings::foto.socialImageUrl << " loaded...";
+	}
+	else if (mode == qrcode)
+		setPixmap(DkSettings::foto.qrCodeImageUrl);
+	else
+		qDebug() << "mode: " << mode << " is not a known social media mode!";
+}
+
+void DkSocialButton::contextMenuEvent(QContextMenuEvent *event) {
+
+	QLabel::contextMenuEvent(event);
+
+	if (!event->isAccepted())
+		cm->exec(event->globalPos());
+
+	event->accept();
+
+}
+
+void DkSocialButton::changeImage() {
+
+	// load system default open dialog
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
+		"C:\\", 
+		DkImageLoader::openFilters.join(";;"));
+
+	// check if we can load it
+	QPixmap testP(fileName);
+	if (testP.isNull())
+		return;
+
+	if (mode == facebook)
+		DkSettings::foto.socialImageUrl = fileName;
+	else if (mode == qrcode)
+		DkSettings::foto.qrCodeImageUrl = fileName;
+
+	setPixmap(fileName);
+
+	DkSettings::save();
+
 }
 
 void DkSocialButton::show() {

@@ -130,10 +130,12 @@ int main(int argc, char *argv[]) {
 	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
+	QString imgDir = settings.value("FotoBox/defaultImgPath", nmc::DkSettings::foto.defaultImgPath).toString();
+
 	if (args.size() > 1)
 		w->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
 	else
-		w->viewport()->getImageLoader()->setDir(QDir("C:\\fotobox\\3_gallery_nomacs"));
+		w->viewport()->getImageLoader()->setDir(QDir(imgDir));
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
 

@@ -2056,7 +2056,7 @@ void DkImageLoader::copyImageToTemp() {
 
 	if (!tmpPath.exists() || !DkSettings::global.useTmpPath) {
 		// try default path specified
-		tmpPath = QFileInfo("C:\\fotobox\\print\\");
+		tmpPath = QFileInfo("C:\\fotobox\\print\\");		// TODO: update for different paths
 	}
 	if (!tmpPath.exists()) {
 		emit updateInfoSignal(tr("Sorry, %1 existiert nicht...").arg(tmpPath.absoluteFilePath()));

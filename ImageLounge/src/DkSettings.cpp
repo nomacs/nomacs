@@ -195,6 +195,11 @@ void DkSettings::load(bool force) {
 	foto_p.countDownIvl = settings.value("countDownIvl", foto_p.countDownIvl).toInt();
 	foto_p.fotoStrings = settings.value("fotoStrings", getDefaultStrings()).toStringList();
 	foto_p.showButtonText = settings.value("showButtonText", foto_p.showButtonText).toBool();
+	foto_p.socialImageUrl = settings.value("socialImageUrl", foto_p.socialImageUrl).toString();
+	foto_p.qrCodeImageUrl = settings.value("qrCodeImageUrl", foto_p.qrCodeImageUrl).toString();
+	foto_p.facebookPath = settings.value("facebookPath", foto_p.facebookPath).toString();
+	foto_p.printPath = settings.value("printPath", foto_p.printPath).toString();
+	foto_p.defaultImgPath = settings.value("defaultImgPath", foto_p.defaultImgPath).toString();
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
@@ -509,6 +514,16 @@ void DkSettings::save(bool force) {
 		settings.setValue("fotoStrings", foto_p.fotoStrings);
 	if (!force && foto_p.showButtonText != foto_d.showButtonText)
 		settings.setValue("showButtonText", foto_p.showButtonText);
+	if (!force && foto_p.socialImageUrl != foto_d.socialImageUrl)
+		settings.setValue("socialImageUrl", foto_p.socialImageUrl);
+	if (!force && foto_p.qrCodeImageUrl != foto_d.qrCodeImageUrl)
+		settings.setValue("qrCodeImageUrl", foto_p.qrCodeImageUrl);
+	if (!force && foto_p.facebookPath != foto_d.facebookPath)
+		settings.setValue("facebookPath", foto_p.facebookPath);
+	if (!force && foto_p.printPath != foto_d.printPath)
+		settings.setValue("printPath", foto_p.printPath);
+	if (!force && foto_p.defaultImgPath != foto_d.defaultImgPath)
+		settings.setValue("defaultImgPath", foto_p.defaultImgPath);
 
 
 	// keep loaded settings in mind
@@ -549,6 +564,11 @@ void DkSettings::setToDefaultSettings() {
 	
 	foto_p.countDownIvl = 14;
 	foto_p.showButtonText = true;
+	foto_p.socialImageUrl = QString(":/nomacs/img/facebook.png");
+	foto_p.qrCodeImageUrl = QString(":/nomacs/img/qrcode.png");
+	foto_p.defaultImgPath = QString("C:\\fotobox\\3_gallery_nomacs");
+	foto_p.printPath = QString("C:\\fotobox\\print");
+	foto_p.facebookPath = QString("C:\\fotobox\\facebook");
 
 	global_p.skipImgs = 10;
 	global_p.numFiles = 10;
