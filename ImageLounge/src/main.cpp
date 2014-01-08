@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
 	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
-	QString imgDir = settings.value("FotoBox/defaultImgPath", nmc::DkSettings::foto.defaultImgPath).toString();
+	QString imgDir = settings.value("Fotobox/defaultImgPath", nmc::DkSettings::foto.defaultImgPath).toString();
 
 	if (args.size() > 1)
 		w->loadFile(QFileInfo(args[1]), true);	// update folder + be silent

@@ -893,6 +893,8 @@ void DkChangeTranslationDialog::createLayout() {
 	layout->addWidget(translationTableView);
 	layout->addWidget(buttons);
 	QMetaObject::connectSlotsByName(this);
+
+	resize(720, 360);
 }
 
 void DkChangeTranslationDialog::accept() {

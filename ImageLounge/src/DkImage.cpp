@@ -2050,11 +2050,11 @@ void DkImageLoader::saveFile(QFileInfo file, QString fileFilter, QImage saveImg,
 			Q_ARG(int, compression));
 }
 
-void DkImageLoader::copyImageToTemp() {
+void DkImageLoader::copyImageToTemp(QFileInfo tmpPath) {
 
-	QFileInfo tmpPath = QFileInfo(DkSettings::global.tmpPath + "\\");
+	//QFileInfo tmpPath = QFileInfo(DkSettings::global.tmpPath + "\\");
 
-	if (!tmpPath.exists() || !DkSettings::global.useTmpPath) {
+	if (!tmpPath.exists()) {
 		// try default path specified
 		tmpPath = QFileInfo("C:\\fotobox\\print\\");		// TODO: update for different paths
 	}
@@ -2074,8 +2074,13 @@ void DkImageLoader::copyImageToTemp() {
 
 	if (!copied)
 		emit updateInfoSignal(tr("Sorry, das Bild: %1 konnte nicht kopiert werden.").arg(destFileInfo.absoluteFilePath()));
+	else if (tmpPath == DkSettings::foto.printPath)
+		emit updateInfoSignal(DkSettings::foto.fotoStrings[DkSettings::foto_info_print], 5000);
+	else if (tmpPath == DkSettings::foto.facebookPath)
+		emit updateInfoSignal(DkSettings::foto.fotoStrings[DkSettings::foto_info_social_media], 5000);
 	else
-		emit updateInfoSignal(tr("BILD WIRD GEDRUCKT"), 5000);
+		qDebug() << "unknown path: " << tmpPath.absoluteFilePath();
+
 }
 
 /**

@@ -190,6 +190,7 @@ public:
 
 signals:
 	void visibleSignal(bool visible);
+	void saveImageSignal(QFileInfo path);
 
 public slots:
 	virtual void show();
@@ -213,6 +214,8 @@ protected:
 	// functions
 	void init();
 	void contextMenuEvent(QContextMenuEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
 };
 
 
@@ -597,7 +600,7 @@ signals:
 	void lastSignal(bool silent = true);
 	void nextSignal(bool silent = true);
 	void previousSignal(bool silent = true);
-	void saveImageSignal();
+	void saveImageSignal(QFileInfo path);
 	void infoSignal(QString msg, int msec);
 
 public slots:
@@ -605,7 +608,7 @@ public slots:
 	void printPressed() {
 		show();
 		if (!playButton->isChecked())
-			emit saveImageSignal();
+			emit saveImageSignal(DkSettings::foto.printPath);
 	};
 
 	void autoNext() {

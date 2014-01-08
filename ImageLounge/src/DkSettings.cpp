@@ -130,7 +130,7 @@ QStringList DkSettings::getDefaultStrings() {
 	QVector<QString> strings;
 	strings.resize(foto_strings_end);
 
-	strings[foto_first_img]		= "ältestest Bild";
+	strings[foto_first_img]		= "ältestes Bild";
 	strings[foto_last_img]		= "neuestes Bild";
 	strings[foto_next_img]		= "Bild zurück";
 	strings[foto_prev_img]		= "Bild vor";

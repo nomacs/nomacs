@@ -304,6 +304,9 @@ enum fotoActions {
 	menu_foto_translations,
 	menu_foto_interval,
 	menu_foto_show_button_text,
+	menu_foto_change_default_path,
+	menu_foto_change_print_path,
+	menu_foto_change_facebook_path,
 
 	menu_foto_end,	// nothing beyond this point
 };
@@ -499,6 +502,7 @@ public slots:
 	void fotoIntervalTimer();
 	void fotoChangeTranslations();
 	void fotoShowButtonText(bool show);
+	void fotoChangeDefaultPath();
 	void changeOpacity(float change);
 	void animateChangeOpacity();
 	void animateOpacityUp();

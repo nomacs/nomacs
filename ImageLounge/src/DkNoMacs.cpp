@@ -650,6 +650,10 @@ void DkNoMacs::createMenu() {
 	fotoMenu->addAction(fotoActions[menu_foto_translations]);
 	fotoMenu->addAction(fotoActions[menu_foto_show_button_text]);
 	fotoMenu->addAction(fotoActions[menu_foto_interval]);
+	fotoMenu->addSeparator();
+	fotoMenu->addAction(fotoActions[menu_foto_change_default_path]);
+	fotoMenu->addAction(fotoActions[menu_foto_change_print_path]);
+	fotoMenu->addAction(fotoActions[menu_foto_change_facebook_path]);
 
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
@@ -692,17 +696,20 @@ void DkNoMacs::createContextMenu() {
 
 	contextMenu = new QMenu(this);
 
+	contextMenu->addMenu(fotoMenu);
+	contextMenu->addAction(panelActions[menu_panel_player]);
+	contextMenu->addAction(panelActions[menu_panel_social_button]);
+	contextMenu->addAction(panelActions[menu_panel_qrcode]);
+	contextMenu->addSeparator();
+
 	contextMenu->addAction(panelActions[menu_panel_explorer]);
 	contextMenu->addAction(panelActions[menu_panel_preview]);
 	contextMenu->addAction(panelActions[menu_panel_thumbview]);
 	contextMenu->addAction(panelActions[menu_panel_scroller]);
 	contextMenu->addAction(panelActions[menu_panel_exif]);
 	contextMenu->addAction(panelActions[menu_panel_overview]);
-	contextMenu->addAction(panelActions[menu_panel_player]);
 	contextMenu->addAction(panelActions[menu_panel_info]);
 	contextMenu->addAction(panelActions[menu_panel_histogram]);
-	contextMenu->addAction(panelActions[menu_panel_qrcode]);
-	contextMenu->addAction(panelActions[menu_panel_social_button]);
 
 	contextMenu->addSeparator();
 	
@@ -713,8 +720,6 @@ void DkNoMacs::createContextMenu() {
 	
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
-
-	contextMenu->addMenu(fotoMenu);
 
 	contextMenu->addMenu(sortMenu);
 
@@ -737,7 +742,6 @@ void DkNoMacs::createContextMenu() {
 		contextMenu->addMenu(syncMenu);
 
 	contextMenu->addSeparator();
-	contextMenu->addMenu(fotoMenu);
 	contextMenu->addAction(editActions[menu_edit_preferences]);
 
 }
@@ -1179,20 +1183,31 @@ void DkNoMacs::createActions() {
 	// fotojiffy menu
 	fotoActions.resize(menu_foto_end);
 	
-	fotoActions[menu_foto_translations] = new QAction(tr("Translations"), this);
+	fotoActions[menu_foto_translations] = new QAction(tr("&Translations"), this);
 	fotoActions[menu_foto_translations]->setStatusTip(tr("change screen information"));
 	connect(fotoActions[menu_foto_translations], SIGNAL(triggered()), this, SLOT(fotoChangeTranslations()));
 
-	fotoActions[menu_foto_show_button_text] = new QAction(tr("Show Button Text"), this);
+	fotoActions[menu_foto_show_button_text] = new QAction(tr("&Show Button Text"), this);
 	fotoActions[menu_foto_show_button_text]->setStatusTip(tr("if checked, the print buttons have text"));
 	fotoActions[menu_foto_show_button_text]->setCheckable(true);
 	fotoActions[menu_foto_show_button_text]->setChecked(DkSettings::foto.showButtonText);
 	connect(fotoActions[menu_foto_show_button_text], SIGNAL(toggled(bool)), this, SLOT(fotoShowButtonText(bool)));
 
-	fotoActions[menu_foto_interval] = new QAction(tr("Print Timer"), this);
+	fotoActions[menu_foto_interval] = new QAction(tr("&Print Timer"), this);
 	fotoActions[menu_foto_interval]->setStatusTip(tr("changes the print button timer interval"));
 	connect(fotoActions[menu_foto_interval], SIGNAL(triggered()), this, SLOT(fotoIntervalTimer()));
 
+	fotoActions[menu_foto_change_default_path] = new QAction(tr("Change &Default Image Path"), this);
+	fotoActions[menu_foto_change_default_path]->setStatusTip(tr("set the default image path"));
+	connect(fotoActions[menu_foto_change_default_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
+
+	fotoActions[menu_foto_change_print_path] = new QAction(tr("Change P&rint Path"), this);
+	fotoActions[menu_foto_change_print_path]->setStatusTip(tr("set the print path"));
+	connect(fotoActions[menu_foto_change_print_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
+
+	fotoActions[menu_foto_change_facebook_path] = new QAction(tr("Change S&ocial Media Path"), this);
+	fotoActions[menu_foto_change_facebook_path]->setStatusTip(tr("set the default image path"));
+	connect(fotoActions[menu_foto_change_facebook_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -1865,9 +1880,45 @@ void DkNoMacs::fotoChangeTranslations() {
 
 	translationDialog->deleteLater();
 
+}
 
+void DkNoMacs::fotoChangeDefaultPath() {
+	
+	QAction* sender = static_cast<QAction*>(QObject::sender());
 
-	// TODO: change them?
+	QString message = "";
+	QString* newPath = 0;
+	QString oldPath = "";
+
+	if (sender && sender == fotoActions[menu_foto_change_default_path]) {
+		message = tr("Change the Default Path");
+		newPath = &DkSettings::foto.defaultImgPath;
+	}
+	else if (sender && sender == fotoActions[menu_foto_change_print_path]) {
+		message = tr("Change the Print Path");
+		newPath = &DkSettings::foto.printPath;
+	}
+	else if (sender && sender == fotoActions[menu_foto_change_facebook_path]) {
+		message = tr("Change the Social Media Path");
+		newPath = &DkSettings::foto.facebookPath;
+	}
+	else
+		return;
+
+	if (!newPath)
+		return;
+
+	// load system default open dialog
+	QString dirName = QFileDialog::getExistingDirectory(this, message,
+														*newPath);
+
+	if (dirName.isEmpty())
+		return;
+
+	// assign new path
+	*newPath = dirName;
+	DkSettings::save();
+	restart();
 }
 
 void DkNoMacs::fotoIntervalTimer() {

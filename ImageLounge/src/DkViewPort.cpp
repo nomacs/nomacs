@@ -303,7 +303,8 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), folderScroll, SLOT(updateDir(QFileInfo, int)));
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo)), folderScroll, SLOT(updateDir(QFileInfo)));
 		
-		connect(player, SIGNAL(saveImageSignal()), loader, SLOT(copyImageToTemp()));
+		connect(player, SIGNAL(saveImageSignal(QFileInfo)), loader, SLOT(copyImageToTemp(QFileInfo)));
+		connect(socialButton, SIGNAL(saveImageSignal(QFileInfo)), loader, SLOT(copyImageToTemp(QFileInfo)));
 	}
 
 	// thumbs widget

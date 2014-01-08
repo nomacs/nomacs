@@ -190,6 +190,19 @@ void DkSocialButton::contextMenuEvent(QContextMenuEvent *event) {
 
 }
 
+void DkSocialButton::mousePressEvent(QMouseEvent *event) {
+
+	QLabel::mousePressEvent(event);
+}
+
+void DkSocialButton::mouseReleaseEvent(QMouseEvent *event) {
+
+	if (mode == facebook)
+		emit saveImageSignal(DkSettings::foto.facebookPath);
+
+	QLabel::mouseReleaseEvent(event);
+}
+
 void DkSocialButton::changeImage() {
 
 	// load system default open dialog
@@ -381,7 +394,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	}
 	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
 	//resize(parent->width(), minHeight);
-
+	qDebug() << "painting thumbs...";
 	QPainter painter(this);
 	painter.setBackground(bgCol);
 	
@@ -389,6 +402,10 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setBrush(bgCol);
 	QRect r = QRect(QPoint(), this->size());
 	painter.drawRect(r);
+
+	//painter.setBrush(QColor(0,0,0));
+	//QRect border(QPoint(0,height()-2), QSize(width(),2));
+	//painter.drawRect(border);
 
 	painter.setWorldTransform(worldMatrix);
 	painter.setWorldMatrixEnabled(true);
@@ -716,8 +733,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 	else
 		selected = -1;
 
-	if (selected == -1)
-		setToolTip(tr("CTRL+Zoom resizes the thumbnails"));
+	//if (selected == -1)
+	//	setToolTip(tr("CTRL+Zoom resizes the thumbnails"));
 
 
 	lastMousePos = event->pos();
