@@ -498,6 +498,8 @@ void DkAppManager::saveSettings() {
 
 	QSettings settings;
 	settings.beginGroup("DkAppManager");
+	// clear it first
+	settings.remove("Apps");
 	
 	settings.beginWriteArray("Apps");
 
@@ -524,7 +526,7 @@ void DkAppManager::loadSettings() {
 		action->setToolTip(settings.value("appPath", "").toString());
 		action->setObjectName(settings.value("objectName", "").toString());
 
-		if (QFileInfo(action->toolTip()).exists())
+		if (QFileInfo(action->toolTip()).exists() && !action->text().isEmpty())
 			apps.append(action);
 		else
 			qDebug() << "could not locate: " << action->toolTip();
@@ -534,6 +536,9 @@ void DkAppManager::loadSettings() {
 }
 
 QVector<QAction* >& DkAppManager::getActions() {
+
+	//for (int idx = 0; idx < apps.size(); idx++)
+	//	qDebug() << "returning action: " << apps[idx]->text();
 
 	return apps;
 }
@@ -642,6 +647,11 @@ void DkAppManager::assignIcon(QAction* app) {
 #ifdef Q_WS_WIN
 #include <windows.h>
 
+	if (!app) {
+		qDebug() << "SERIOUS problem here, I should assign an icon to a NULL pointer action";
+		return;
+	}
+
 	QFileInfo file = app->toolTip();
 	
 	if (!file.exists())
@@ -651,7 +661,7 @@ void DkAppManager::assignIcon(QAction* app) {
 	QPixmap appIcon;
 	QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
 
-	WCHAR* wDirName = new WCHAR[winPath.length()];
+	WCHAR* wDirName = new WCHAR[winPath.length()+1];
 
 	// CMakeLists.txt:
 	// if compile error that toWCharArray is not recognized:
@@ -669,7 +679,7 @@ void DkAppManager::assignIcon(QAction* app) {
 	int err = ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
 
 	if (nIcons != 0 && largeIcon != NULL)
-		appIcon = QPixmap::fromWinHICON(largeIcon);
+		appIcon = QPixmap::fromWinHICON(smallIcon);
 
 	DestroyIcon(largeIcon);
 	DestroyIcon(smallIcon);
@@ -841,6 +851,9 @@ void DkAppManagerDialog::accept() {
 
 		if (!action)
 			action = manager->createAction(filePath);
+		// obviously I cannot create this action - should we tell user?
+		if (!action)	
+			continue;
 
 		if (name != action->text().remove("&"))
 			action->setText(name);
@@ -2108,6 +2121,12 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, QString name) {
 
 	for (int idx = 0; idx < actions.size(); idx++) {
 
+		// skip NULL actions - this should never happen!
+		if (actions[idx]->text().isNull()) {
+			qDebug() << "NULL Action detected when creating shortcuts...";
+			continue;
+		}
+
 		QString text = actions[idx]->text();
 		text.remove("&");
 
@@ -2120,7 +2139,7 @@ void DkShortcutsModel::addDataActions(QVector<QAction*> actions, QString name) {
 
 	rootItem->appendChild(menuItem);
 	this->actions.append(actions);
-	qDebug() << "menu item has: " << menuItem->childCount();
+	//qDebug() << "menu item has: " << menuItem->childCount();
 
 }
 
@@ -2178,6 +2197,12 @@ void DkShortcutsModel::saveActions() {
 				continue;
 
 			if (cActions.at(mIdx)->shortcut() != ks) {
+
+				if (cActions.at(mIdx)->text().isEmpty()) {
+					qDebug() << "empty action detected! shortcut is: " << ks;
+					continue;
+				}
+
 				cActions.at(mIdx)->setShortcut(ks);		// assign new shortcut
 				settings.setValue(cActions.at(mIdx)->text(), ks.toString());	// note this works as long as you don't change the language!
 			}
