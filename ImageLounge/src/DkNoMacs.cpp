@@ -683,6 +683,10 @@ void DkNoMacs::createOpenWithMenu(QMenu* menu) {
 		viewport()->removeAction(oldActions.at(idx));
 
 	QVector<QAction* > appActions = appManager->getActions();
+
+	for (int idx = 0; idx < appActions.size(); idx++)
+		qDebug() << "adding action: " << appActions[idx]->text() << " " << appActions[idx]->toolTip();
+
 	assignCustomShortcuts(appActions);
 	openWithMenu->addActions(appActions.toList());
 	
@@ -978,11 +982,6 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_transfertoolbar]->setCheckable(true);
 	panelActions[menu_panel_transfertoolbar]->setChecked(false);
 	connect(panelActions[menu_panel_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
-
-
-	qDebug() << "so: " << DkSettings::app.showOverview.size();
-	qDebug() << "sh: " << DkSettings::app.showHistogram.size();
-	qDebug() << "cAppMode: " << DkSettings::app.currentAppMode;
 
 	panelActions[menu_panel_overview] = new QAction(tr("O&verview"), this);
 	panelActions[menu_panel_overview]->setShortcut(QKeySequence(shortcut_show_overview));
@@ -3167,10 +3166,19 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 
 void DkNoMacs::openKeyboardShortcuts() {
 
+	QList<QAction* > openWithActionList = openWithMenu->actions();
+	QVector<QAction* > openWithActions;
+
+	for (int idx = 0; idx < openWithActionList.size(); idx++) {
+		if (!openWithActionList.at(idx)->text().isEmpty())
+			openWithActions.append(openWithActionList.at(idx));
+		else
+			qDebug() << "Empty action detected!";
+	}
 
 	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(this);
 	shortcutsDialog->addActions(fileActions, fileMenu->title());
-	shortcutsDialog->addActions(openWithMenu->actions().toVector(), openWithMenu->title());
+	shortcutsDialog->addActions(openWithActions, openWithMenu->title());
 	shortcutsDialog->addActions(sortActions, sortMenu->title());
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());
