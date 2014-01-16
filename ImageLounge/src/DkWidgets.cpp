@@ -2721,9 +2721,9 @@ void DkButton::paintEvent(QPaintEvent *event) {
 
 	if (!mySize.isEmpty() && DkSettings::foto.showButtonText && mode == print_button) {
 
-		offset = QPoint((float)(size().width()-mySize.width())*0.5f, (float)(size().height()-mySize.height())*0.5f+10);
+		offset = QPoint((float)(size().width()-mySize.width())*0.5f, (float)(size().height()-mySize.height())*0.5f+15);
 		s = mySize;
-		s.setHeight(s.height()-20);
+		s.setHeight(s.height()-30);
 	}
 	else if (!mySize.isEmpty()) {
 		
@@ -2756,7 +2756,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 		option.setAlignment(Qt::AlignHCenter|Qt::AlignBottom);
 		
 		QFont font;
-		font.setPixelSize(9);
+		font.setPixelSize(11);
 
 		QPainter painter(this);
 		painter.setPen(QColor(255,255,255));
@@ -2889,7 +2889,7 @@ void DkPrintButton::mouseReleaseEvent(QMouseEvent *event) {
 
 	// eat the events...
 	if (isChecked()) {
-		emit infoSignal(tr("Bild wird gedruckt. Bitte haben Sie noch einen Moment Geduld!"), 2000);
+		emit infoSignal(DkSettings::foto.fotoStrings[DkSettings::foto_info_still_printing], 2000);
 		return;
 	}
 
@@ -3208,7 +3208,7 @@ void DkPlayer::init() {
 
 	if (DkSettings::foto.showButtonText) {
 		QSize s = icon.size();
-		s.setHeight(s.height()+20);
+		s.setHeight(s.height()+30);
 		playButton->setFixedSize(s);
 	}
 	connect(playButton, SIGNAL(pressed()), this, SLOT(printPressed()));
@@ -3250,7 +3250,7 @@ void DkPlayer::init() {
 	//setMaximumSize(570, 118);
 	
 	if (DkSettings::foto.showButtonText)
-		setFixedSize(510,138);	
+		setFixedSize(510,148);	
 	else
 		setFixedSize(510,118);	
 	//QHBoxLayout *l = new QHBoxLayout(this);
