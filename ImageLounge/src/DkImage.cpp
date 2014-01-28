@@ -341,6 +341,37 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		//// RAW data filtration mode during data unpacking and post-processing
 		//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
 
+		int tM = qMax(iProcessor.imgdata.thumbnail.twidth, iProcessor.imgdata.thumbnail.twidth);
+		// TODO: check actual screen resolution
+		qDebug() << "max thumb size: " << tM;
+
+		if (DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
+			DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920) {
+			
+			int err = iProcessor.unpack_thumb();
+			char* tPtr = iProcessor.imgdata.thumbnail.thumb;
+
+			if (!err && tPtr) {
+
+				QImage tmp;
+				tmp.loadFromData((const uchar*) tPtr, iProcessor.imgdata.thumbnail.tlength);
+
+				if (!tmp.isNull()) {
+					imgLoaded = true;
+					qImg = tmp;
+					qDebug() << "[RAW] I loaded the RAW's thumbnail";
+
+					return imgLoaded;
+				}
+				else
+					qDebug() << "qt could not load the thumb";
+			}
+			else
+				qDebug() << "error unpacking the thumb...";
+		}
+
+		qDebug() << "[RAW] loading full raw file";
+
 		//unpack the data
 		iProcessor.unpack();
 #ifdef LIBRAW_VERSION_14

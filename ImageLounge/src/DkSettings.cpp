@@ -245,6 +245,7 @@ void DkSettings::load(bool force) {
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
 	resources_p.fastThumbnailPreview = settings.value("fastThumbnailPreview", resources_p.fastThumbnailPreview).toBool();
 	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
+	resources_p.loadRawThumb = settings.value("loadRawThumb", resources_p.loadRawThumb).toInt();	
 	resources_p.filterDuplicats = settings.value("filterDuplicates", resources_p.filterDuplicats).toBool();
 	resources_p.preferredExtension = settings.value("preferredExtension", resources_p.preferredExtension).toString();	
 
@@ -448,6 +449,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("fastThumbnailPreview", resources_p.fastThumbnailPreview);
 	if (!force && resources_p.filterRawImages != resources_d.filterRawImages)
 		settings.setValue("filterRawImages", resources_p.filterRawImages);
+	if (!force && resources_p.loadRawThumb != resources_d.loadRawThumb)
+		settings.setValue("loadRawThumb", resources_p.loadRawThumb);
 	if (!force && resources_p.filterDuplicats != resources_d.filterDuplicats)
 		settings.setValue("filterDuplicates", resources_p.filterDuplicats);
 	if (!force && resources_p.preferredExtension != resources_d.preferredExtension)
@@ -583,6 +586,7 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.cacheMemory = 0;
 	resources_p.fastThumbnailPreview = false;
 	resources_p.filterRawImages = true;
+	resources_p.loadRawThumb = raw_thumb_always;
 	resources_p.filterDuplicats = false;
 	resources_p.preferredExtension = "*.jpg";
 
@@ -1467,6 +1471,8 @@ void DkResourceSettingsWidgets::init() {
 	cbFastThumbnailPreview->setChecked(DkSettings::resources.fastThumbnailPreview);
 	cbFilterRawImages->setChecked(DkSettings::resources.filterRawImages);
 	cbRemoveDuplicates->setChecked(DkSettings::resources.filterDuplicats);
+	
+	rawThumbButtons[DkSettings::resources.loadRawThumb]->setChecked(true);
 }
 
 void DkResourceSettingsWidgets::createLayout() {
@@ -1527,6 +1533,23 @@ void DkResourceSettingsWidgets::createLayout() {
 
 	QGroupBox* gbRawLoader = new QGroupBox(tr("Raw Loader Settings"));
 	
+	rawThumbButtonGroup = new QButtonGroup(this);
+
+	rawThumbButtons.resize(DkSettings::raw_thumb_end);
+
+	rawThumbButtons[DkSettings::raw_thumb_always] = new QRadioButton(tr("Always load JPG if embedded"), this);
+	rawThumbButtons[DkSettings::raw_thumb_if_large] = new QRadioButton(tr("Load JPG if it fits the screen resolution"), this);
+	rawThumbButtons[DkSettings::raw_thumb_never] = new QRadioButton(tr("Never load embedded JPG"), this);
+
+	QWidget* rawThumbWidget = new QWidget();
+	QVBoxLayout* rawThumbButtonLayout = new QVBoxLayout(rawThumbWidget);
+
+	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
+		rawThumbButtonGroup->addButton(rawThumbButtons[idx]);
+		rawThumbButtonLayout->addWidget(rawThumbButtons[idx]);
+	}
+
+
 	QWidget* dupWidget = new QWidget();
 	QHBoxLayout* hLayout = new QHBoxLayout(dupWidget);
 	hLayout->setContentsMargins(0,0,0,0);
@@ -1550,10 +1573,12 @@ void DkResourceSettingsWidgets::createLayout() {
 	hLayout->addWidget(cmExtensions);
 	hLayout->addStretch();
 
-	QGridLayout* rawLoaderLayuot = new QGridLayout(gbRawLoader);
+	QGridLayout* rawLoaderLayout = new QGridLayout(gbRawLoader);
 	cbFilterRawImages = new QCheckBox(tr("filter raw images"));
-	rawLoaderLayuot->addWidget(dupWidget);
-	rawLoaderLayuot->addWidget(cbFilterRawImages);
+	
+	rawLoaderLayout->addWidget(rawThumbWidget);
+	rawLoaderLayout->addWidget(dupWidget);
+	rawLoaderLayout->addWidget(cbFilterRawImages);
 
 	widgetVBoxLayout->addWidget(gbCache);
 	widgetVBoxLayout->addWidget(gbFastPreview);
@@ -1568,6 +1593,13 @@ void DkResourceSettingsWidgets::writeSettings() {
 	DkSettings::resources.filterRawImages = cbFilterRawImages->isChecked();
 	DkSettings::resources.filterDuplicats = cbRemoveDuplicates->isChecked();
 	DkSettings::resources.preferredExtension = DkImageLoader::fileFilters.at(cmExtensions->currentIndex());
+	
+	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
+		if (rawThumbButtons[idx]->isChecked()) {
+			DkSettings::resources.loadRawThumb = idx;
+			break;
+		}
+	}
 }
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {

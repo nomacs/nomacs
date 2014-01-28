@@ -110,6 +110,14 @@ public:
 		sort_dir_end,
 	};
 
+	enum rawThumb {
+		raw_thumb_always,
+		raw_thumb_if_large,
+		raw_thumb_never,
+
+		raw_thumb_end,
+	};
+
 	struct App {
 		bool showToolBar;
 		bool showMenuBar;
@@ -203,6 +211,7 @@ public:
 		bool fastThumbnailPreview;
 		bool filterRawImages;
 		bool filterDuplicats;
+		int loadRawThumb;
 		QString preferredExtension;
 	};
 
@@ -626,6 +635,9 @@ public:
 	
 		double stepSize;
 		double totalMemory;
+
+		QVector<QRadioButton* > rawThumbButtons;
+		QButtonGroup* rawThumbButtonGroup;
 };
 
 
