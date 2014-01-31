@@ -275,6 +275,9 @@ void DkControlWidget::init() {
 	//bottomLeftLabel->setText("topLeft label...", -1);
 	//spinnerLabel->show();
 	
+	socialConfirmDialog = new DkSocialConfirmDialog(this);
+	socialConfirmDialog->setParentButton(socialButton);
+
 	show();
 	//thumbWidget->setVisible(true);
 	qDebug() << "controller initialized...";
@@ -304,7 +307,9 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(updateFileSignal(QFileInfo)), folderScroll, SLOT(updateDir(QFileInfo)));
 		
 		connect(player, SIGNAL(saveImageSignal(QFileInfo)), loader, SLOT(copyImageToTemp(QFileInfo)));
-		connect(socialButton, SIGNAL(saveImageSignal(QFileInfo)), loader, SLOT(copyImageToTemp(QFileInfo)));
+		connect(socialConfirmDialog, SIGNAL(saveImageSignal(QFileInfo)), loader, SLOT(copyImageToTemp(QFileInfo)));
+
+
 	}
 
 	// thumbs widget
@@ -340,6 +345,10 @@ void DkControlWidget::connectWidgets() {
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
 	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
+
+	// confirm social dialog
+	connect(socialButton, SIGNAL(showConfirmDialogSignal()), socialConfirmDialog, SLOT(show()));
+
 }
 
 void DkControlWidget::update() {

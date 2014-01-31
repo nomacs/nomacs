@@ -131,7 +131,10 @@ public:
 		foto_info_last_img,
 		foto_info_first_img,
 		foto_info_social_media,
-		
+		foto_confirm_text,
+		foto_confirm_cancel,
+		foto_confirm_ok,
+
 		foto_strings_end,
 	};
 

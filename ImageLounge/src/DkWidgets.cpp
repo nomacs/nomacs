@@ -137,6 +137,140 @@ void DkWidget::animateOpacityDown() {
 	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
 }
 
+// DkSocialConfirmDialog --------------------------------------------------------------------
+DkSocialConfirmDialog::DkSocialConfirmDialog(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
+
+	//setAttribute(Qt::WA_MouseTracking);
+	setMouseTracking(true);
+	qDebug() << "confirm attrs: " << this->testAttribute(Qt::WA_TransparentForMouseEvents);
+
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+	confirmToggled(true);
+}
+
+void DkSocialConfirmDialog::createLayout() {
+
+	checkBox = new QPushButton(tr("wanna share"), this);
+
+	okButton = new QPushButton(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_ok], this);
+	//okButton->setFlat(true);
+	okButton->setObjectName("okButton");
+	cancelButton	= new QPushButton(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_cancel], this);
+	cancelButton->setObjectName("cancelButton");
+	okButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 130px; padding: 10px 0px 10px 0px; margin-bottom: 30px;}");
+	cancelButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 130px; padding: 10px 0px 10px 0px; margin-bottom: 30px;}");
+	//cancelButton->setFlat(true);
+
+	QWidget* buttonWidget = new QWidget(this);
+	QHBoxLayout* hLayout = new QHBoxLayout(buttonWidget);
+	hLayout->addWidget(cancelButton);
+	hLayout->addWidget(okButton);
+	buttonWidget->adjustSize();
+	
+	infoText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_text], this);
+	infoText->setWordWrap(true);
+	infoText->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	layout->addWidget(checkBox);
+	layout->addWidget(infoText);
+	layout->addWidget(buttonWidget);
+
+
+	setObjectName("DkConfirmDialog");
+	//setGeometry(100, 100, 400, 400);
+	//move(100,100);
+	setStyleSheet("DkConfirmDialog{padding: 30px;}");
+
+	adjustSize();
+
+}
+
+void DkSocialConfirmDialog::paintEvent(QPaintEvent *event) {
+
+	if (static_cast<QWidget* >(parent()) && parentButton) {
+	
+		QWidget* p = static_cast<QWidget* >(parent());
+		QPoint topLeft(p->size().width()-30-width(), p->size().height()-120-height());
+		
+		if (geometry().topLeft() != topLeft) {
+
+			qDebug() << "parent button top: " << parentButton->geometry().top();
+			qDebug() << "old: " << geometry().topLeft() << "new: " << topLeft;
+			move(topLeft);
+		}
+	}
+
+	QRect bgRect = QRect(QPoint(), QSize(width(), height()-15));
+	QPoint pc(bgRect.width()-32, bgRect.height()+15);
+
+	//if (parentButton) {
+	//	pc.setX(bgRect.width()-qRound(parentButton->width()*0.5));
+	//}
+
+	QPolygon p;
+	p.append(QPoint(pc.x()-15, bgRect.bottom()+1));
+	p.append(QPoint(pc.x()+15, bgRect.bottom()+1));
+	p.append(pc);
+	p.append(QPoint(pc.x()-15, bgRect.bottom()+1));
+
+	QPainter painter(this);
+	
+	// painting
+	painter.setPen(Qt::NoPen);
+	painter.setBrush(DkSettings::display.bgColorWidget);
+	painter.drawRect(bgRect);
+	painter.drawPolygon(p);
+	// end painting
+
+	painter.end();
+	DkWidget::paintEvent(event);
+}
+
+void DkSocialConfirmDialog::resizeEvent(QResizeEvent *event) {
+
+	qDebug() << "resizing event in confirm dialog";
+
+	DkWidget::resizeEvent(event);
+}
+
+void DkSocialConfirmDialog::setParentButton(QWidget* parentButton) {
+
+	this->parentButton = parentButton;
+	update();
+}
+
+void DkSocialConfirmDialog::mousePressEvent(QMouseEvent *event) {
+
+	qDebug() << "receiving events";
+}
+
+void DkSocialConfirmDialog::mouseReleaseEvent(QMouseEvent *event) {
+
+}
+
+void DkSocialConfirmDialog::confirmToggled(bool checked) {
+	
+	infoText->setStyleSheet("QLabel{color: white; font: italic;}");
+	//okButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 132; height: 140;}");
+	//cancelButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 132; height: 140;}");
+
+	adjustSize();
+}
+
+void DkSocialConfirmDialog::on_okButton_clicked() {
+
+	emit saveImageSignal(DkSettings::foto.facebookPath);
+	hide();
+}
+
+void DkSocialConfirmDialog::on_cancelButton_clicked() {
+	hide();
+}
+
+
 // DkSocialButton --------------------------------------------------------------------
 DkSocialButton::DkSocialButton(int mode, QWidget* parent, Qt::WFlags flags) : QLabel(parent, flags) {
 	
@@ -197,8 +331,9 @@ void DkSocialButton::mousePressEvent(QMouseEvent *event) {
 
 void DkSocialButton::mouseReleaseEvent(QMouseEvent *event) {
 
-	if (mode == facebook)
-		emit saveImageSignal(DkSettings::foto.facebookPath);
+	if (mode == facebook) {
+		emit showConfirmDialogSignal();
+	}
 
 	QLabel::mouseReleaseEvent(event);
 }

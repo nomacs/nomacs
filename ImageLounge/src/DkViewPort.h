@@ -332,6 +332,8 @@ protected:
 	QPointF enterPos;
 	int rating;
 
+	DkSocialConfirmDialog* socialConfirmDialog;
+
 };
 
 class DkImageLoader;

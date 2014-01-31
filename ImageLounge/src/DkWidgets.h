@@ -149,6 +149,36 @@ protected:
 	void init();
 };
 
+class DkSocialConfirmDialog : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkSocialConfirmDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	void setParentButton(QWidget* parentButton);
+
+signals:
+	void saveImageSignal(QFileInfo path);
+
+protected slots:
+	void confirmToggled(bool checked);
+	void on_okButton_clicked();
+	void on_cancelButton_clicked();
+
+protected:
+	QLabel* infoText;
+	QPushButton* okButton;
+	QPushButton* cancelButton;
+	QPushButton* checkBox;
+	QWidget* parentButton;
+
+	void createLayout();
+	void paintEvent(QPaintEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void resizeEvent(QResizeEvent *event);
+};
+
 class DkSocialButton : public QLabel {
 	Q_OBJECT
 
@@ -190,7 +220,7 @@ public:
 
 signals:
 	void visibleSignal(bool visible);
-	void saveImageSignal(QFileInfo path);
+	void showConfirmDialogSignal();
 
 public slots:
 	virtual void show();
@@ -208,6 +238,7 @@ protected:
 
 	QGraphicsOpacityEffect* opacityEffect;
 	QBitArray* displaySettingsBits;
+	DkSocialConfirmDialog* confirmDialog;
 
 	QMenu* cm;
 

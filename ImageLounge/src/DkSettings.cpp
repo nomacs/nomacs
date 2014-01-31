@@ -141,7 +141,10 @@ QStringList DkSettings::getDefaultStrings() {
 	strings[foto_info_still_printing] = "Bild wird gedruckt. Bitte haben Sie noch einen Moment Geduld!";
 	strings[foto_info_last_img]	= "Sie haben das Ende erreicht";
 	strings[foto_info_first_img]= "Sie haben den Anfang erreicht";
-	strings[foto_info_social_media] = "Bild wird auf Facebook veröffentlicht";
+	strings[foto_info_social_media] = "Ihr Bild wurde veröffentlicht. Den Link zum Bild finden Sie unten links - auch als QR-Code.";
+	strings[foto_confirm_text]	= "Hiermit versichere ich, dass alle abgebildeten Personen einer Veröffentlichung auf Facebook zustimmen (facebook.com/fotojiffy)";
+	strings[foto_confirm_ok]	= "Veröffentlichen";
+	strings[foto_confirm_cancel]= "Abbrechen";
 
 	return strings.toList();
 }
@@ -194,7 +197,19 @@ void DkSettings::load(bool force) {
 
 	foto_p.countDownIvl = settings.value("countDownIvl", foto_p.countDownIvl).toInt();
 	foto_p.initialZoomLevel = settings.value("initialZoomLevel", foto_p.initialZoomLevel).toFloat();
-	foto_p.fotoStrings = settings.value("fotoStrings", getDefaultStrings()).toStringList();
+	
+	foto_p.fotoStrings = getDefaultStrings();
+	QStringList fotoStrings = settings.value("fotoStrings", getDefaultStrings()).toStringList();
+	
+	if (fotoStrings.size() < foto_p.fotoStrings.size()) {
+
+		// recovering old settings only works if we never change the first strings!
+		for (int idx = 0; idx < fotoStrings.size(); idx++)
+			foto_p.fotoStrings[idx] = fotoStrings[idx];
+	}
+	else
+		foto_p.fotoStrings = fotoStrings;
+
 	foto_p.showButtonText = settings.value("showButtonText", foto_p.showButtonText).toBool();
 	foto_p.socialImageUrl = settings.value("socialImageUrl", foto_p.socialImageUrl).toString();
 	foto_p.qrCodeImageUrl = settings.value("qrCodeImageUrl", foto_p.qrCodeImageUrl).toString();
