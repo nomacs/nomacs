@@ -131,6 +131,12 @@ void DkBaseViewPort::release() {
 void DkBaseViewPort::resetView() {
 
 	worldMatrix.reset();
+	
+	//if (parent && parent->isFullScreen()) {
+	//	worldMatrix.scale(DkSettings::foto.initialZoomLevel, DkSettings::foto.initialZoomLevel);
+	//	centerImage();
+	//}
+	
 	changeCursor();
 
 	update();

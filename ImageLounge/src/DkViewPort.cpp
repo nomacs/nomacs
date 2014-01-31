@@ -905,8 +905,9 @@ void DkViewPort::setImage(QImage newImg) {
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 
-	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty())
+	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty()) {
 		worldMatrix.reset();
+	}
 	else {
 		imgViewRect = oldImgViewRect;
 		imgMatrix = oldImgMatrix;
@@ -914,7 +915,7 @@ void DkViewPort::setImage(QImage newImg) {
 	}
 
 	updateImageMatrix();		
-
+	
 	// if image is not inside, we'll align it at the top left border
 	if (!viewportRect.intersects(worldMatrix.mapRect(imgViewRect))) {
 		worldMatrix.translate(-worldMatrix.dx(), -worldMatrix.dy());
@@ -1152,6 +1153,15 @@ void DkViewPort::updateImageMatrix() {
 		worldMatrix.scale(scaleFactor, scaleFactor);
 		worldMatrix.translate(dx, dy);
 	}
+
+	float newZoom = DkSettings::foto.initialZoomLevel/imgMatrix.m11();
+
+	if (parent && parent->isFullScreen() && !DkSettings::display.keepZoom && newZoom < worldMatrix.m11()) {
+		worldMatrix.reset();	// overrides keep zoom ?!
+		worldMatrix.scale(newZoom, newZoom);
+		centerImage();
+	}
+
 }
 
 void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMatrix, QPointF canvasSize) {

@@ -304,6 +304,7 @@ enum fotoActions {
 
 	menu_foto_translations,
 	menu_foto_interval,
+	menu_foto_initial_zoom,
 	menu_foto_show_button_text,
 	menu_foto_change_default_path,
 	menu_foto_change_print_path,
@@ -501,6 +502,7 @@ public slots:
 	void opacityUp();
 	void opacityDown();
 	void fotoIntervalTimer();
+	void fotoInitialZoomLevel();
 	void fotoChangeTranslations();
 	void fotoShowButtonText(bool show);
 	void fotoChangeDefaultPath();

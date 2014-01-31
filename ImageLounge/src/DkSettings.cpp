@@ -193,6 +193,7 @@ void DkSettings::load(bool force) {
 	settings.beginGroup("Fotobox");
 
 	foto_p.countDownIvl = settings.value("countDownIvl", foto_p.countDownIvl).toInt();
+	foto_p.initialZoomLevel = settings.value("initialZoomLevel", foto_p.initialZoomLevel).toFloat();
 	foto_p.fotoStrings = settings.value("fotoStrings", getDefaultStrings()).toStringList();
 	foto_p.showButtonText = settings.value("showButtonText", foto_p.showButtonText).toBool();
 	foto_p.socialImageUrl = settings.value("socialImageUrl", foto_p.socialImageUrl).toString();
@@ -513,6 +514,8 @@ void DkSettings::save(bool force) {
 
 	if (!force && foto_p.countDownIvl != foto_d.countDownIvl)
 		settings.setValue("countDownIvl", foto_p.countDownIvl);
+	if (!force && foto_p.initialZoomLevel != foto_d.initialZoomLevel)
+		settings.setValue("initialZoomLevel", foto_p.initialZoomLevel);
 	if (!force && foto_p.fotoStrings != foto_d.fotoStrings)
 		settings.setValue("fotoStrings", foto_p.fotoStrings);
 	if (!force && foto_p.showButtonText != foto_d.showButtonText)
@@ -566,6 +569,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.appMode = 0;
 	
 	foto_p.countDownIvl = 14;
+	foto_p.initialZoomLevel = 0.315f;
 	foto_p.showButtonText = true;
 	foto_p.socialImageUrl = QString(":/nomacs/img/facebook.png");
 	foto_p.qrCodeImageUrl = QString(":/nomacs/img/qrcode.png");

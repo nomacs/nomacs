@@ -651,6 +651,7 @@ void DkNoMacs::createMenu() {
 	fotoMenu->addAction(fotoActions[menu_foto_translations]);
 	fotoMenu->addAction(fotoActions[menu_foto_show_button_text]);
 	fotoMenu->addAction(fotoActions[menu_foto_interval]);
+	fotoMenu->addAction(fotoActions[menu_foto_initial_zoom]);
 	fotoMenu->addSeparator();
 	fotoMenu->addAction(fotoActions[menu_foto_change_default_path]);
 	fotoMenu->addAction(fotoActions[menu_foto_change_print_path]);
@@ -1202,6 +1203,10 @@ void DkNoMacs::createActions() {
 	fotoActions[menu_foto_interval] = new QAction(tr("&Print Timer"), this);
 	fotoActions[menu_foto_interval]->setStatusTip(tr("changes the print button timer interval"));
 	connect(fotoActions[menu_foto_interval], SIGNAL(triggered()), this, SLOT(fotoIntervalTimer()));
+
+	fotoActions[menu_foto_initial_zoom] = new QAction(tr("&Initial Zoom Level"), this);
+	fotoActions[menu_foto_initial_zoom]->setStatusTip(tr("changes the initial zoom level"));
+	connect(fotoActions[menu_foto_initial_zoom], SIGNAL(triggered()), this, SLOT(fotoInitialZoomLevel()));
 
 	fotoActions[menu_foto_change_default_path] = new QAction(tr("Change &Default Image Path"), this);
 	fotoActions[menu_foto_change_default_path]->setStatusTip(tr("set the default image path"));
@@ -1935,6 +1940,18 @@ void DkNoMacs::fotoIntervalTimer() {
 	if (ok)
 		DkSettings::foto.countDownIvl = countDownIvl;
 }
+
+void DkNoMacs::fotoInitialZoomLevel() {
+
+	bool ok = false;
+	float initialZoomLevel = QInputDialog::getDouble(this, tr("Initial Zoom Level"), tr("Set Initial Zoom Level:"), DkSettings::foto.initialZoomLevel*100.0f, 0.5, 3000, 2, &ok);
+
+	if (ok) {
+		DkSettings::foto.initialZoomLevel = initialZoomLevel/100.0f;
+		viewport()->updateImage();
+	}
+}
+
 
 void DkNoMacs::changeOpacity(float change) {
 

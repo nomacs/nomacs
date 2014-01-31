@@ -116,7 +116,9 @@ public:
 		raw_thumb_never,
 
 		raw_thumb_end,
-	};	enum fotoStrings {
+	};	
+	
+	enum fotoStrings {
 		foto_first_img,
 		foto_last_img,
 		foto_next_img,
@@ -135,6 +137,7 @@ public:
 
 	struct Foto {
 		int countDownIvl;
+		float initialZoomLevel;
 		QStringList fotoStrings;
 		bool showButtonText;
 		QString socialImageUrl;
