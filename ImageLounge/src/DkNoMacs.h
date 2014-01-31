@@ -277,6 +277,7 @@ enum panelActions {
 };
 
 enum viewActions {
+	menu_view_minimize,
 	menu_view_fullscreen,
 	menu_view_reset,
 	menu_view_100,

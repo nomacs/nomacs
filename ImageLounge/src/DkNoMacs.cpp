@@ -583,6 +583,7 @@ void DkNoMacs::createMenu() {
 	
 	viewMenu->addAction(viewActions[menu_view_frameless]);	
 	viewMenu->addAction(viewActions[menu_view_fullscreen]);
+	viewMenu->addAction(viewActions[menu_view_minimize]);
 	viewMenu->addSeparator();
 
 	viewMenu->addAction(viewActions[menu_view_reset]);
@@ -722,13 +723,14 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(editActions[menu_edit_paste]);
 	contextMenu->addSeparator();
 	
+	contextMenu->addAction(viewActions[menu_view_minimize]);
+	contextMenu->addAction(viewActions[menu_view_fullscreen]);
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
 
 	contextMenu->addMenu(sortMenu);
 
 	QMenu* viewContextMenu = contextMenu->addMenu(tr("&View"));
-	viewContextMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewContextMenu->addAction(viewActions[menu_view_reset]);
 	viewContextMenu->addAction(viewActions[menu_view_100]);
 	viewContextMenu->addAction(viewActions[menu_view_fit_frame]);
@@ -1064,6 +1066,11 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_fullscreen]->setShortcuts(scs);
 	viewActions[menu_view_fullscreen]->setStatusTip(tr("Full Screen"));
 	connect(viewActions[menu_view_fullscreen], SIGNAL(triggered()), this, SLOT(enterFullScreen()));
+
+	viewActions[menu_view_minimize] = new QAction(tr("&Minimize"), this);
+	viewActions[menu_view_minimize]->setStatusTip(tr("Minimize nomacs"));
+	connect(viewActions[menu_view_minimize], SIGNAL(triggered()), this, SLOT(showMinimized()));
+
 
 	viewActions[menu_view_reset] = new QAction(viewIcons[icon_view_reset], tr("&Reset Canvas"), this);
 	viewActions[menu_view_reset]->setShortcut(QKeySequence(shortcut_reset_view));
