@@ -110,7 +110,13 @@ public:
 		sort_dir_end,
 	};
 
-	enum fotoStrings {
+	enum rawThumb {
+		raw_thumb_always,
+		raw_thumb_if_large,
+		raw_thumb_never,
+
+		raw_thumb_end,
+	};	enum fotoStrings {
 		foto_first_img,
 		foto_last_img,
 		foto_next_img,
@@ -233,6 +239,7 @@ public:
 		bool fastThumbnailPreview;
 		bool filterRawImages;
 		bool filterDuplicats;
+		int loadRawThumb;
 		QString preferredExtension;
 	};
 
@@ -661,6 +668,9 @@ public:
 	
 		double stepSize;
 		double totalMemory;
+
+		QVector<QRadioButton* > rawThumbButtons;
+		QButtonGroup* rawThumbButtonGroup;
 };
 
 

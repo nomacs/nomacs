@@ -373,8 +373,14 @@ void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
 		}
 	}
 
-	if (!registered && isActive)
+	if (!registered && isActive) {
+		
+		// we need an update here if the listener list was empty
+		if (listenerList.isEmpty())
+			updateDir(currentFile);
+
 		listenerList.append(obj);
+	}
 
 }
 
