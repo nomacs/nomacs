@@ -151,15 +151,29 @@ DkSocialConfirmDialog::DkSocialConfirmDialog(QWidget* parent /* = 0 */, Qt::Wind
 
 void DkSocialConfirmDialog::createLayout() {
 
-	checkBox = new QPushButton(tr("wanna share"), this);
+	QIcon icon = QIcon(":/nomacs/img/checkbox-on.png");
+	icon.addPixmap(QPixmap(":/nomacs/img/checkbox-on.png"), QIcon::Normal, QIcon::On);
+	icon.addPixmap(QPixmap(":/nomacs/img/checkbox-off.png"), QIcon::Normal, QIcon::Off);
+	checkBox = new QPushButton(icon, tr(""), this);
+	checkBox->setIcon(icon);
+	checkBox->setStyleSheet("QPushButton{background-color: argb(0,0,0,0); margin: 10,0,0,0;}");
+	checkBox->setIconSize(QSize(52,52));
+	checkBox->setCheckable(true);
+	checkBox->setChecked(true);
+	checkBox->setFlat(true);
+	connect(checkBox, SIGNAL(toggled(bool)), this, SLOT(confirmToggled(bool)));
 
 	okButton = new QPushButton(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_ok], this);
 	//okButton->setFlat(true);
 	okButton->setObjectName("okButton");
 	cancelButton	= new QPushButton(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_cancel], this);
 	cancelButton->setObjectName("cancelButton");
-	okButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 130px; padding: 10px 0px 10px 0px; margin-bottom: 30px;}");
-	cancelButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 130px; padding: 10px 0px 10px 0px; margin-bottom: 30px;}");
+	okButton->setStyleSheet(QString("QPushButton{background-color: #71c9c2; color: white; font: bold 14px;") +
+							QString("border: 0px; width: 130px; padding: 10px 0px 10px 0px; margin-bottom: 30px; margin-right: 30px}") +
+							QString("QPushButton::disabled{background-color: #466160;}"));
+	cancelButton->setStyleSheet(QString("QPushButton{background-color: #71c9c2; color: white; font: bold 14px;") +
+							QString("border: 0px; width: 130px; padding: 10px 0px 10px 0px; margin-bottom: 30px; margin-left: 30px;}") +
+							QString("QPushButton::disabled{background-color: #466160;}"));
 	//cancelButton->setFlat(true);
 
 	QWidget* buttonWidget = new QWidget(this);
@@ -171,6 +185,7 @@ void DkSocialConfirmDialog::createLayout() {
 	infoText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_text], this);
 	infoText->setWordWrap(true);
 	infoText->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+	infoText->setStyleSheet("QLabel{color: white; font: italic 12px; margin: 0 30 10 30;} QLabel::disabled{color: #d64949;}");
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -190,25 +205,17 @@ void DkSocialConfirmDialog::createLayout() {
 
 void DkSocialConfirmDialog::paintEvent(QPaintEvent *event) {
 
-	if (static_cast<QWidget* >(parent()) && parentButton) {
+	if (static_cast<QWidget* >(parent())) {
 	
 		QWidget* p = static_cast<QWidget* >(parent());
 		QPoint topLeft(p->size().width()-30-width(), p->size().height()-120-height());
 		
-		if (geometry().topLeft() != topLeft) {
-
-			qDebug() << "parent button top: " << parentButton->geometry().top();
-			qDebug() << "old: " << geometry().topLeft() << "new: " << topLeft;
-			move(topLeft);
-		}
+		if (geometry().topLeft() != topLeft)
+			move(topLeft);		// this is hot shit (we are in paintEvent)
 	}
 
 	QRect bgRect = QRect(QPoint(), QSize(width(), height()-15));
 	QPoint pc(bgRect.width()-32, bgRect.height()+15);
-
-	//if (parentButton) {
-	//	pc.setX(bgRect.width()-qRound(parentButton->width()*0.5));
-	//}
 
 	QPolygon p;
 	p.append(QPoint(pc.x()-15, bgRect.bottom()+1));
@@ -229,33 +236,16 @@ void DkSocialConfirmDialog::paintEvent(QPaintEvent *event) {
 	DkWidget::paintEvent(event);
 }
 
-void DkSocialConfirmDialog::resizeEvent(QResizeEvent *event) {
+void DkSocialConfirmDialog::show() {
 
-	qDebug() << "resizing event in confirm dialog";
-
-	DkWidget::resizeEvent(event);
-}
-
-void DkSocialConfirmDialog::setParentButton(QWidget* parentButton) {
-
-	this->parentButton = parentButton;
-	update();
-}
-
-void DkSocialConfirmDialog::mousePressEvent(QMouseEvent *event) {
-
-	qDebug() << "receiving events";
-}
-
-void DkSocialConfirmDialog::mouseReleaseEvent(QMouseEvent *event) {
-
+	checkBox->setChecked(true);
+	DkWidget::show();
 }
 
 void DkSocialConfirmDialog::confirmToggled(bool checked) {
 	
-	infoText->setStyleSheet("QLabel{color: white; font: italic;}");
-	//okButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 132; height: 140;}");
-	//cancelButton->setStyleSheet("QPushButton{background-color: #71c9c2; color: white; font: bold 14px; border: 0px; width: 132; height: 140;}");
+	okButton->setEnabled(checked);
+	infoText->setEnabled(checked);
 
 	adjustSize();
 }

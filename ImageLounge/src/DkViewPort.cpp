@@ -276,7 +276,6 @@ void DkControlWidget::init() {
 	//spinnerLabel->show();
 	
 	socialConfirmDialog = new DkSocialConfirmDialog(this);
-	socialConfirmDialog->setParentButton(socialButton);
 
 	show();
 	//thumbWidget->setVisible(true);
