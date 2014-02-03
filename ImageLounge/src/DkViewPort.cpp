@@ -1638,6 +1638,11 @@ void DkViewPort::settingsChanged() {
 
 void DkViewPort::setEditedImage(QImage newImg) {
 
+	if (newImg.isNull()) {
+		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		return;
+	}
+
 	QFileInfo file = loader->getFile();
 	unloadImage();
 	setImage(newImg);

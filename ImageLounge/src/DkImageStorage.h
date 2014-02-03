@@ -264,6 +264,14 @@ public:
 #endif
 	}
 
+	static QImage normImage(const QImage& img);
+
+	static bool normImage(QImage& img);
+
+	static QImage autoAdjustImage(const QImage& img);
+
+	static bool autoAdjustImage(QImage& img);
+
 };
 
 class DkImageStorage : public QObject {

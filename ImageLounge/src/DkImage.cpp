@@ -340,7 +340,6 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		////iProcessor.imgdata.params.output_color = 1; //sRGB  (0...raw)
 		//// RAW data filtration mode during data unpacking and post-processing
 		//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
-
 		int tM = qMax(iProcessor.imgdata.thumbnail.twidth, iProcessor.imgdata.thumbnail.twidth);
 		// TODO: check actual screen resolution
 		qDebug() << "max thumb size: " << tM;
@@ -348,6 +347,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		if (DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
 			DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920) {
 			
+			// crashes here if image is broken
 			int err = iProcessor.unpack_thumb();
 			char* tPtr = iProcessor.imgdata.thumbnail.thumb;
 

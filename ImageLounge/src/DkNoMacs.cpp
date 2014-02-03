@@ -560,14 +560,21 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_copy]);
 	editMenu->addAction(editActions[menu_edit_copy_buffer]);
 	editMenu->addAction(editActions[menu_edit_paste]);
+	editMenu->addAction(editActions[menu_edit_delete]);
 	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_rotate_ccw]);
 	editMenu->addAction(editActions[menu_edit_rotate_cw]);
 	editMenu->addAction(editActions[menu_edit_rotate_180]);
 	editMenu->addSeparator();
+
 	editMenu->addAction(editActions[menu_edit_transform]);
 	editMenu->addAction(editActions[menu_edit_crop]);
-	editMenu->addAction(editActions[menu_edit_delete]);
+	editMenu->addAction(editActions[menu_edit_flip_h]);
+	editMenu->addAction(editActions[menu_edit_flip_v]);
+	editMenu->addSeparator();
+	editMenu->addAction(editActions[menu_edit_auto_adjust]);
+	editMenu->addAction(editActions[menu_edit_norm]);
+	editMenu->addAction(editActions[menu_edit_invert]);
 	editMenu->addSeparator();
 #ifdef Q_WS_WIN
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
@@ -877,7 +884,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90° counter clockwise"));
 	connect(editActions[menu_edit_rotate_ccw], SIGNAL(triggered()), vp, SLOT(rotateCCW()));
 
-	editActions[menu_edit_rotate_180] = new QAction(tr("180°"), this);
+	editActions[menu_edit_rotate_180] = new QAction(tr("1&80°"), this);
 	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180°"));
 	connect(editActions[menu_edit_rotate_180], SIGNAL(triggered()), vp, SLOT(rotate180()));
 
@@ -887,7 +894,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_copy]->setStatusTip(tr("copy image"));
 	connect(editActions[menu_edit_copy], SIGNAL(triggered()), this, SLOT(copyImage()));
 
-	editActions[menu_edit_copy_buffer] = new QAction(tr("&Copy Buffer"), this);
+	editActions[menu_edit_copy_buffer] = new QAction(tr("Copy &Buffer"), this);
 	editActions[menu_edit_copy_buffer]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
 	editActions[menu_edit_copy_buffer]->setStatusTip(tr("copy image"));
@@ -915,6 +922,36 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_crop]->setCheckable(true);
 	editActions[menu_edit_crop]->setChecked(false);
 	connect(editActions[menu_edit_crop], SIGNAL(triggered(bool)), vp->getController(), SLOT(showCrop(bool)));
+
+	editActions[menu_edit_flip_h] = new QAction(tr("Flip &Horizontal"), this);
+	//editActions[menu_edit_flip_h]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	//editActions[menu_edit_flip_h]->setShortcut();
+	editActions[menu_edit_flip_h]->setStatusTip(tr("Flip Image Horizontally"));
+	connect(editActions[menu_edit_flip_h], SIGNAL(triggered()), this, SLOT(flipImageHorizontal()));
+
+	editActions[menu_edit_flip_v] = new QAction(tr("Flip &Vertical"), this);
+	//editActions[menu_edit_flip_v]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	//editActions[menu_edit_flip_v]->setShortcut();
+	editActions[menu_edit_flip_v]->setStatusTip(tr("Flip Image Vertically"));
+	connect(editActions[menu_edit_flip_v], SIGNAL(triggered()), this, SLOT(flipImageVertical()));
+
+	editActions[menu_edit_norm] = new QAction(tr("Nor&malize Image"), this);
+	editActions[menu_edit_norm]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	editActions[menu_edit_norm]->setShortcut(shortcut_norm_image);
+	editActions[menu_edit_norm]->setStatusTip(tr("Normalize the Image"));
+	connect(editActions[menu_edit_norm], SIGNAL(triggered()), this, SLOT(normalizeImage()));
+
+	editActions[menu_edit_auto_adjust] = new QAction(tr("&Auto Adjust"), this);
+	editActions[menu_edit_auto_adjust]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	editActions[menu_edit_auto_adjust]->setShortcut(shortcut_auto_adjust);
+	editActions[menu_edit_auto_adjust]->setStatusTip(tr("Auto Adjust Image Contrast and Color Balance"));
+	connect(editActions[menu_edit_auto_adjust], SIGNAL(triggered()), this, SLOT(autoAdjustImage()));
+
+	editActions[menu_edit_invert] = new QAction(tr("&Invert Image"), this);
+	//editActions[menu_edit_invert]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	//editActions[menu_edit_invert]->setShortcut();
+	editActions[menu_edit_invert]->setStatusTip(tr("Invert the Image"));
+	connect(editActions[menu_edit_invert], SIGNAL(triggered()), this, SLOT(invertImage()));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -1232,6 +1269,11 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_copy]->setEnabled(enable);
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
 	editActions[menu_edit_wallpaper]->setEnabled(enable);
+	editActions[menu_edit_flip_h]->setEnabled(enable);
+	editActions[menu_edit_flip_v]->setEnabled(enable);
+	editActions[menu_edit_norm]->setEnabled(enable);
+	editActions[menu_edit_auto_adjust]->setEnabled(enable);
+	editActions[menu_edit_invert]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 	
@@ -1649,6 +1691,90 @@ void DkNoMacs::pasteImage() {
 	else if (viewport())
 		viewport()->getController()->setInfo("Clipboard has no image...");
 
+}
+
+void DkNoMacs::flipImageHorizontal() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	img = img.mirrored(true, false);
+
+	if (img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
+	else
+		vp->setEditedImage(img);
+}
+
+void DkNoMacs::flipImageVertical() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	img = img.mirrored(false, true);
+
+	if (img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
+	else
+		vp->setEditedImage(img);
+
+}
+
+void DkNoMacs::invertImage() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	img.invertPixels();
+
+	if (img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Invert the Image..."));
+	else
+		vp->setEditedImage(img);
+
+}
+
+void DkNoMacs::normalizeImage() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	
+	bool normalized = DkImage::normImage(img);
+
+	if (!normalized || img.isNull())
+		vp->getController()->setInfo(tr("The Image is Already Normalized..."));
+	else
+		vp->setEditedImage(img);
+}
+
+void DkNoMacs::autoAdjustImage() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+
+	bool normalized = DkImage::autoAdjustImage(img);
+
+	if (!normalized || img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Auto Adjust"));
+	else
+		vp->setEditedImage(img);
 }
 
 void DkNoMacs::readSettings() {
