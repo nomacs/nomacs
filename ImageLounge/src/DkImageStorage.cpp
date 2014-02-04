@@ -45,32 +45,35 @@ bool DkImage::normImage(QImage& img) {
 	uchar maxVal = 0;
 	uchar minVal = 255;
 
-	// number of used bytes pr line
+	// number of used bytes per line
 	int bpl = (img.width() * img.depth() + 7) / 8;
 	int pad = img.bytesPerLine() - bpl;
 	uchar* mPtr = img.bits();
+
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+		
 		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
 			
 			if (*mPtr > maxVal)
 				maxVal = *mPtr;
 			if (*mPtr < minVal)
 				minVal = *mPtr;
-			
-			//*mPtr++ ^= 0xff;
 		}
+		
 		mPtr += pad;
 	}
 
 	if (minVal == 0 && maxVal == 255)
 		return false;
 
-	// number of used bytes pr line
 	uchar* ptr = img.bits();
+	
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+	
 		for (int cIdx = 0; cIdx < bpl; cIdx++) {
 			*ptr++ = qRound(255.0f*(*ptr-minVal)/(maxVal-minVal));
 		}
+		
 		ptr += pad;
 	}
 
@@ -88,6 +91,7 @@ QImage DkImage::autoAdjustImage(const QImage& img) {
 
 bool DkImage::autoAdjustImage(QImage& img) {
 
+	DkTimer dt;
 	qDebug() << "[Auto Adjust] image format: " << img.format();
 
 	// for grayscale image - normalize is the same
@@ -103,40 +107,34 @@ bool DkImage::autoAdjustImage(QImage& img) {
 
 	int channels = (img.format() == QImage::Format_RGB888) ? 3 : 4;
 
-	QColor maxVal(0,0,0);
-	QColor minVal(255,255,255);
+	uchar maxR = 0,		maxG = 0,	maxB = 0;
+	uchar minR = 255,	minG = 255, minB = 255;
 
 	// number of bytes per line used
 	int bpl = (img.width() * img.depth() + 7) / 8;
 	int pad = img.bytesPerLine() - bpl;
 
 	uchar* mPtr = img.bits();
+	uchar r,g,b;
 
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
 
 		for (int cIdx = 0; cIdx < bpl; ) {
 
-			uchar r = *mPtr; mPtr++;
-			uchar g = *mPtr; mPtr++;
-			uchar b = *mPtr; mPtr++;
-
-			QRgb val = qRgb(r, g, b);
+			r = *mPtr; mPtr++;
+			g = *mPtr; mPtr++;
+			b = *mPtr; mPtr++;
 			cIdx += 3;
 
-			if (qRed(val) > maxVal.red())
-				maxVal.setRed(qRed(val));
-			if (qRed(val) < minVal.red())
-				minVal.setRed(qRed(val));
+			if (r > maxR)	maxR = r;
+			if (r < minR)	minR = r;
 
-			if (qGreen(val) > maxVal.green())
-				maxVal.setGreen(qGreen(val));
-			if (qGreen(val) < minVal.green())
-				minVal.setGreen(qGreen(val));
+			if (g > maxG)	maxG = g;
+			if (g < minG)	minG = g;
 
-			if (qBlue(val) > maxVal.blue())
-				maxVal.setBlue(qBlue(val));
-			if (qBlue(val) < minVal.blue())
-				minVal.setBlue(qBlue(val));
+			if (b > maxB)	maxB = b;
+			if (b < minB)	minB = b;
+
 
 			// ?? strange but I would expect the alpha channel to be the first (big endian?)
 			if (channels == 4) {
@@ -149,39 +147,39 @@ bool DkImage::autoAdjustImage(QImage& img) {
 	}
 
 	QColor ignoreChannel;
-	ignoreChannel.setRed(maxVal.red()-minVal.red() < 30 || maxVal.red()-minVal.red() == 255);
-	ignoreChannel.setGreen(maxVal.green()-minVal.green() < 30 || maxVal.green()-minVal.green() == 255);
-	ignoreChannel.setBlue(maxVal.blue()-minVal.blue() < 30 || maxVal.blue()-minVal.blue() == 255);
+	bool ignoreR = maxR-minR < 30 || maxR-minR == 255;
+	bool ignoreG = maxG-minG < 30 || maxG-minG == 255;
+	bool ignoreB = maxB-minB < 30 || maxB-minB == 255;
 
-	if (ignoreChannel.red() && ignoreChannel.green() && ignoreChannel.blue()) {
+	uchar* ptr = img.bits();
+
+	//qDebug() << "red max: " << maxR << " min: " << minR << " ignored: " << ignoreR;
+	//qDebug() << "green max: " << maxG << " min: " << minG << " ignored: " << ignoreG;
+	//qDebug() << "blue max: " << maxB << " min: " << minB << " ignored: " << ignoreB;
+	//qDebug() << "computed in: " << QString::fromStdString(dt.getTotal());
+
+	if (ignoreR && ignoreG && ignoreB) {
 		qDebug() << "[Auto Adjust] There is no need to adjust the image";
 		return false;
 	}
-
-	// number of used bytes pr line
-	uchar* ptr = img.bits();
-
-	qDebug() << "red max: " << maxVal.red() << " min: " << minVal.red() << " ignored: " << ignoreChannel.red();
-	qDebug() << "green max: " << maxVal.green() << " min: " << minVal.green() << " ignored: " << ignoreChannel.green();
-	qDebug() << "blue max: " << maxVal.blue() << " min: " << minVal.blue() << " ignored: " << ignoreChannel.blue();
 
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
 
 		for (int cIdx = 0; cIdx < bpl; ) {
 
 			// don't check values - speed (but you see under-/overflows anyway)
-			if (!ignoreChannel.red())
-				*ptr = qRound(255.0f*((float)*ptr-minVal.red())/(maxVal.red()-minVal.red()));
+			if (!ignoreR)
+				*ptr = qRound(255.0f*((float)*ptr-minR)/(maxR-minR));
 			ptr++;
 			cIdx++;
 
-			if (!ignoreChannel.green())
-				*ptr = qRound(255.0f*((float)*ptr-minVal.green())/(maxVal.green()-minVal.green()));
+			if (!ignoreG)
+				*ptr = qRound(255.0f*((float)*ptr-minG)/(maxG-minG));
 			ptr++;
 			cIdx++;
 
-			if (!ignoreChannel.blue())
-				*ptr = qRound(255.0f*((float)*ptr-minVal.blue())/(maxVal.blue()-minVal.blue()));
+			if (!ignoreB)
+				*ptr = qRound(255.0f*((float)*ptr-minB)/(maxB-minB));
 			ptr++;
 			cIdx++;
 
@@ -194,10 +192,9 @@ bool DkImage::autoAdjustImage(QImage& img) {
 		ptr += pad;
 	}
 
-	//qDebug() << "[Auto Adjust] image adjusted: " << img.format() << " depth: " << img.depth() << " bitPerPlane: " << img.bitPlaneCount();
+	qDebug() << "[Auto Adjust] image adjusted in: " << QString::fromStdString(dt.getTotal());
+	
 	return true;
-
-
 
 }
 
