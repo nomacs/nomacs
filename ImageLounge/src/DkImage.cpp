@@ -2128,19 +2128,21 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 
 	qDebug() << "tmpPath: " << tmpPath.absolutePath();
 	
-	// TODO: call save file silent threaded...
-	for (int idx = 1; idx < 10000; idx++) {
+	//// TODO: call save file silent threaded...
+	//for (int idx = 1; idx < 10000; idx++) {
 	
-		QString fileName = name;
+		QString fileName = name + "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss") + fileExt;
 
-		if (idx < 10)
-			fileName += "000";
-		else if (idx < 100)
-			fileName += "00";
-		else if (idx < 1000)
-			fileName += "0";
-		
-		fileName += QString::number(idx) + fileExt;
+		//if (idx < 10)
+		//	fileName += "000";
+		//else if (idx < 100)
+		//	fileName += "00";
+		//else if (idx < 1000)
+		//	fileName += "0";
+		//
+		//fileName += QString::number(idx) + fileExt;
+
+		qDebug() << "checking: " << fileName;
 
 		QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
 
@@ -2150,23 +2152,12 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 				saveFileSilentThreaded(tmpFile, img);
 			else
 				saveFileSilentIntern(tmpFile, img);
-			//this->virtualFile = tmpFile;	// why doesn't it work out -> file does not exist (locked?)
-			//setImage(img);
-
-			//emit updateFileSignal(tmpFile, img.size());
 			
-			//if (updateFolder) {
-			//	emit updateDirSignal(tmpFile);
-			//	this->file = tmpFile;
-			//	loadDir(tmpFile.absoluteDir());
-			//}
-			
-			return tmpFile;
-
 			qDebug() << tmpFile.absoluteFilePath() << "saved...";
-			break;
+
+			return tmpFile;
 		}
-	}
+	//}
 
 	return QFileInfo();
 }
