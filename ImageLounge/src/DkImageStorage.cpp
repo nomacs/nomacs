@@ -32,6 +32,30 @@
 namespace nmc {
 
 // DkImage --------------------------------------------------------------------
+bool DkImage::alphaChannelUsed(const QImage& img) {
+
+	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_ARGB32_Premultiplied)
+		return false;
+
+	// number of used bytes per line
+	int bpl = (img.width() * img.depth() + 7) / 8;
+	int pad = img.bytesPerLine() - bpl;
+	const uchar* ptr = img.bits();
+
+	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+
+		for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
+
+			if (cIdx % 4 == 3 && *ptr != 255)
+				return true;
+		}
+
+		ptr += pad;
+	}
+
+	return false;
+}
+	
 QImage DkImage::normImage(const QImage& img) {
 
 	QImage imgN = img.copy();
@@ -242,8 +266,10 @@ QImage DkImageStorage::getImage(float factor) {
 			return imgs.at(idx);
 	}
 
+	qDebug() << "empty color table: " << img.colorTable().isEmpty();
+
 	// if the image does not exist - create it
-	if (!busy && imgs.empty() && img.colorTable().isEmpty() && img.width() > 32 && img.height() > 32) {
+	if (!busy && imgs.empty() && /*img.colorTable().isEmpty() &&*/ img.width() > 32 && img.height() > 32) {
 		stop = false;
 		// nobody is busy so start working
 		QMetaObject::invokeMethod(this, "computeImage", Qt::QueuedConnection);
@@ -286,7 +312,7 @@ void DkImageStorage::computeImage() {
 		cv::Mat tmp;
 		cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
 		resizedImg = DkImage::mat2QImage(tmp);
-		//resizedImg.setColorTable(img.colorTable());
+		resizedImg.setColorTable(img.colorTable());		// Not sure why we turned the color tables off
 #else
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif

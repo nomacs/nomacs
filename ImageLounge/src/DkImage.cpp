@@ -190,7 +190,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	}
 
 	// RAW loader
-	if (!imgLoaded) {
+	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str()) && DkImageLoader::openFilters.contains(newSuffix, Qt::CaseInsensitive)) {
 		
 		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files
@@ -893,11 +893,21 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(fileInfo, img, compression);
 	}
-	else {
+	else if (!saved) {
+
+
+		bool hasAlpha = DkImage::alphaChannelUsed(img);
+		QImage sImg = img;
+		
+		if (!hasAlpha)
+			sImg.convertToFormat(QImage::Format_RGB888);
+
+		qDebug() << "img has alpha: " << (img.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
+
 		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
-		saved = imgWriter->write(img);		// TODO: J2K crash detected
+		saved = imgWriter->write(sImg);		// TODO: J2K crash detected
 		delete imgWriter;
 	}
 

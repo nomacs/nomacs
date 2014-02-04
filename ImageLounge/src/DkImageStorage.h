@@ -272,6 +272,8 @@ public:
 
 	static bool autoAdjustImage(QImage& img);
 
+	static bool alphaChannelUsed(const QImage& img);
+
 };
 
 class DkImageStorage : public QObject {
