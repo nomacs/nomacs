@@ -36,9 +36,10 @@ namespace nmc {
 DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
 	: QToolBar(parent) {
 
+	loadSettings();
 
 	enableTFCheckBox = new QCheckBox(tr("Enable"));
-	enableTFCheckBox->setStatusTip(tr("Disables the pseudocolor function"));
+	enableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
 	
 	this->addWidget(enableTFCheckBox);
 
@@ -50,8 +51,13 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
 	this->addWidget(channelComboBox);
 
-	createIcons();
+	historyCombo = new QComboBox(this);
+	updateGradientHistory();
+	connect(historyCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
 
+	this->addWidget(historyCombo);
+
+	createIcons();
 
 	gradient = new DkGradient(this);
 	gradient->setStatusTip(tr("Click into the field for a new slider"));
@@ -60,7 +66,6 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	effect = new QGraphicsOpacityEffect(gradient);
 	effect->setOpacity(1);
 	gradient->setGraphicsEffect(effect);
-		
 		
 	// Disable the entire transfer toolbar:
 	//enableTF(Qt::Unchecked);
@@ -79,6 +84,9 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	connect(toolBarActions[icon_toolbar_reset], SIGNAL(triggered()), this, SLOT(reset()));
 	connect(toolBarActions[toolbar_pipette], SIGNAL(triggered()), this, SLOT(pickColor()));
 	
+	if (!oldGradients.empty())
+		gradient->setGradient(oldGradients.first());
+
 };
 
 #define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
@@ -107,14 +115,74 @@ void DkTransferToolBar::createIcons() {
 	toolBarActions[toolbar_pipette] = new QAction(toolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
 	toolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
 
+	toolBarActions[toolbar_save] = new QAction(QIcon(":/nomacs/img/save.png"), tr("Save Gradient"), this);
+	toolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
+	connect(toolBarActions[toolbar_save], SIGNAL(triggered()), this, SLOT(saveGradient()));
+
 	addActions(toolBarActions.toList());
 
 }
 
 DkTransferToolBar::~DkTransferToolBar() {
 
-
+	saveSettings();
 };
+
+void DkTransferToolBar::saveSettings() {
+
+	QSettings settings;
+	settings.beginGroup("Pseudo Color");
+
+	settings.beginWriteArray("oldGradients", oldGradients.size());
+
+	for (int idx = 0; idx < oldGradients.size(); idx++) {
+		settings.setArrayIndex(idx);
+
+		QVector<QGradientStop> stops = oldGradients.at(idx).stops();
+		settings.beginWriteArray("gradient", stops.size());
+
+		for (int sIdx = 0; sIdx < stops.size(); sIdx++) {
+			settings.setArrayIndex(sIdx);
+			settings.setValue("pos", stops.at(sIdx).first);
+			settings.setValue("color", stops.at(sIdx).second);
+		}
+		settings.endArray();
+	}
+
+	settings.endArray();
+}
+
+void DkTransferToolBar::loadSettings() {
+
+	QSettings settings;
+	settings.beginGroup("Pseudo Color");
+
+	int gSize = settings.beginReadArray("oldGradients");
+
+	for (int idx = 0; idx < gSize; idx++) {
+		settings.setArrayIndex(idx);
+
+		QVector<QGradientStop> stops;
+		int sSize = settings.beginReadArray("gradient");
+
+		for (int sIdx = 0; sIdx < sSize; sIdx++) {
+			settings.setArrayIndex(sIdx);
+			
+			QGradientStop s;
+			s.first = settings.value("pos", 0).toFloat();
+			s.second = settings.value("color", QColor()).value<QColor>();
+			qDebug() << "pos: " << s.first << " col: " << s.second;
+			stops.append(s);
+		}
+		settings.endArray();
+
+		QLinearGradient g;
+		g.setStops(stops);
+		oldGradients.append(g);
+	}
+
+	settings.endArray();
+}
 
 void DkTransferToolBar::resizeEvent( QResizeEvent * event ) {
 
@@ -195,9 +263,9 @@ void DkTransferToolBar::enableTFCheckBoxClicked(int state) {
 	enableTFCheckBox->setEnabled(true);
 
 	if (enabled)
-		enableTFCheckBox->setStatusTip(tr("Disables the pseudocolor function"));
+		enableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
 	else
-		enableTFCheckBox->setStatusTip(tr("Enables the pseudocolor function"));
+		enableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 
 	emit tFEnabled(enabled);
 
@@ -252,6 +320,36 @@ void DkTransferToolBar::paintEvent(QPaintEvent* event) {
 
 }
 
+void DkTransferToolBar::updateGradientHistory() {
+
+	historyCombo->clear();
+	historyCombo->setIconSize(QSize(50,10));
+
+	for (int idx = 0; idx < oldGradients.size(); idx++) {
+
+		QPixmap cg(50, 10);
+		QLinearGradient g(QPoint(0,0), QPoint(50, 0));
+		g.setStops(oldGradients[idx].stops());
+		QPainter p(&cg);
+		p.fillRect(cg.rect(), g);
+		historyCombo->addItem(cg, tr(""));
+	}
+}
+
+void DkTransferToolBar::switchGradient(int idx) {
+
+	if (idx >= 0 && idx < oldGradients.size()) {
+		gradient->setGradient(oldGradients[idx]);
+	}
+}
+
+void DkTransferToolBar::saveGradient() {
+	
+	oldGradients.prepend(gradient->getGradient());
+	updateGradientHistory();
+	saveSettings();
+}
+
 DkGradient::DkGradient(QWidget *parent) 
 	: QWidget(parent){
 
@@ -302,6 +400,30 @@ void DkGradient::init() {
 
 };
 
+void DkGradient::setGradient(const QLinearGradient& gradient) {
+
+	reset();
+	this->gradient.setStops(gradient.stops());
+
+	QVector<QGradientStop> stops = gradient.stops();
+
+	for (int idx = 0; idx < stops.size(); idx++) {
+		insertSlider(stops.at(idx).first, stops.at(idx).second);
+	}
+
+	//qDebug() << "resize gradient: " << event->size();
+
+	updateGradient();
+	update();
+	emit gradientChanged();
+
+}
+
+QLinearGradient DkGradient::getGradient() {
+
+	return gradient;
+}
+
 void DkGradient::reset() {
 
 	init();
@@ -341,7 +463,7 @@ void DkGradient::addSlider(qreal pos, QColor color) {
 
 }
 
-void DkGradient::insertSlider(qreal pos) {
+void DkGradient::insertSlider(qreal pos, QColor col) {
 
 	// Inserts a new slider at position pos and calculates the color, interpolated from the closest neighbors.
 
@@ -374,8 +496,6 @@ void DkGradient::insertSlider(qreal pos) {
 		}
 	}
 
-	
-
 	if ((leftDist == initValue) && (rightDist == initValue))
 		actColor = Qt::black;
 	// The slider is most left:
@@ -401,7 +521,7 @@ void DkGradient::insertSlider(qreal pos) {
 	}
 
 
-	addSlider(pos, actColor);
+	addSlider(pos, col.isValid() ? col : actColor);
 	// The last slider in the list is the last one added, now make this one active:
 	activateSlider(sliders.last());
 

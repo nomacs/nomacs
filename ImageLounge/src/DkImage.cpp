@@ -2142,8 +2142,6 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 		//
 		//fileName += QString::number(idx) + fileExt;
 
-		qDebug() << "checking: " << fileName;
-
 		QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
 
 		if (!tmpFile.exists()) {
