@@ -180,7 +180,7 @@ void DkSettings::load(bool force) {
 	// Display Settings --------------------------------------------------------------------
 	settings.beginGroup("DisplaySettings");
 
-	display_p.keepZoom = settings.value("resetMatrix", display_p.keepZoom).toBool();
+	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
 	display_p.highlightColor = settings.value("highlightColor", display_p.highlightColor).value<QColor>();
 	display_p.bgColorWidget = settings.value("bgColor", display_p.bgColorWidget).value<QColor>();
@@ -354,7 +354,7 @@ void DkSettings::save(bool force) {
 	settings.beginGroup("DisplaySettings");
 
 	if (!force && display_p.keepZoom != display_d.keepZoom)
-		settings.setValue("resetMatrix",display_p.keepZoom);
+		settings.setValue("keepZoom",display_p.keepZoom);
 	if (!force && display_p.invertZoom != display_d.invertZoom)
 		settings.setValue("invertZoom",display_p.invertZoom);
 	if (!force && display_p.highlightColor != display_d.highlightColor)
@@ -517,7 +517,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.ctrlMod = Qt::ControlModifier;
 #endif
 
-	display_p.keepZoom = true;
+	display_p.keepZoom = zoom_keep_same_size;
 	display_p.invertZoom = false;
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.bgColorWidget = QColor(0, 0, 0, 100);
@@ -1006,7 +1006,7 @@ void DkDisplaySettingsWidget::init() {
 	cbRating->setChecked(DkSettings::slideShow.display.testBit(display_file_rating));
 
 	cbInvertZoom->setChecked(DkSettings::display.invertZoom);
-	cbKeepZoom->setChecked(DkSettings::display.keepZoom);
+	keepZoomButtons[DkSettings::display.keepZoom]->setChecked(true);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
 	cbSaveThumb->setChecked(DkSettings::display.saveThumb);
 	interpolateWidget->setSpinBoxValue(DkSettings::display.interpolateZoomLevel);
@@ -1017,19 +1017,49 @@ void DkDisplaySettingsWidget::init() {
 
 void DkDisplaySettingsWidget::createLayout() {
 	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
-	QVBoxLayout* leftLayout = new QVBoxLayout;
-	QVBoxLayout* rightLayout = new QVBoxLayout;
+	QVBoxLayout* leftLayout = new QVBoxLayout(this);
+	QVBoxLayout* rightLayout = new QVBoxLayout(this);
 
 	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"));
+	gbZoom->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QVBoxLayout* gbZoomLayout = new QVBoxLayout(gbZoom);
 	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
 	QWidget* zoomCheckBoxes = new QWidget(this);
+	zoomCheckBoxes->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(zoomCheckBoxes);
 	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
 	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
-	cbKeepZoom = new QCheckBox(tr("Keep Zoom"), this);
+
+
+	QGroupBox* gbRawLoader = new QGroupBox(tr("Keep Zoom Settings"));
+
+	keepZoomButtonGroup = new QButtonGroup(this);
+
+	keepZoomButtons.resize(DkSettings::raw_thumb_end);
+	keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
+	keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if equal size"), this);
+	keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
+	keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
+
+	QWidget* keepZoomWidget = new QWidget();
+	keepZoomWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	QVBoxLayout* keepZoomButtonLayout = new QVBoxLayout(keepZoomWidget);
+
+	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
+		keepZoomButtonGroup->addButton(keepZoomButtons[idx]);
+		keepZoomButtonLayout->addWidget(keepZoomButtons[idx]);
+	}
+
+	//QGridLayout* rawLoaderLayout = new QGridLayout(gbRawLoader);
+	//cbFilterRawImages = new QCheckBox(tr("filter raw images"));
+
+	//rawLoaderLayout->addWidget(rawThumbWidget);
+	//rawLoaderLayout->addWidget(dupWidget);
+	//rawLoaderLayout->addWidget(cbFilterRawImages);
+
+	
 	vbCheckBoxLayout->addWidget(cbInvertZoom);
-	vbCheckBoxLayout->addWidget(cbKeepZoom);
+	vbCheckBoxLayout->addWidget(keepZoomWidget);
 	gbZoomLayout->addWidget(interpolateWidget);
 	gbZoomLayout->addWidget(zoomCheckBoxes);
 
@@ -1072,13 +1102,20 @@ void DkDisplaySettingsWidget::createLayout() {
 
 	widgetLayout->addLayout(leftLayout, 1);
 	widgetLayout->addLayout(rightLayout, 1);
+	adjustSize();
 }
 
 void DkDisplaySettingsWidget::writeSettings() {
 
 	DkSettings::display.invertZoom = (cbInvertZoom->isChecked()) ? true : false;
-	DkSettings::display.keepZoom = (cbKeepZoom->isChecked()) ? true : false;
-	
+
+	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
+		if (keepZoomButtons[idx]->isChecked()) {
+			DkSettings::display.keepZoom = idx;
+			break;
+		}
+	}
+
 	DkSettings::slideShow.silentFullscreen = cbSilentFullscreen->isChecked();
 
 	DkSettings::slideShow.display.setBit(display_file_name, cbName->isChecked());

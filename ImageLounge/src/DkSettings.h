@@ -118,6 +118,14 @@ public:
 		raw_thumb_end,
 	};
 
+	enum keepZoom {
+		zoom_always_keep,
+		zoom_keep_same_size,
+		zoom_never_keep,
+
+		zoom_end,
+	};
+
 	struct App {
 		bool showToolBar;
 		bool showMenuBar;
@@ -136,7 +144,7 @@ public:
 	};
 
 	struct Display {
-		bool keepZoom;
+		int keepZoom;
 		bool invertZoom;
 		bool tpPattern;
 		QColor highlightColor;
@@ -254,188 +262,188 @@ protected:
 };
 
 class DkSettingsDialog : public QDialog {
-	Q_OBJECT;
+Q_OBJECT;
 
-	public:
-		DkSettingsDialog(QWidget* parent);
-		DkSettingsDialog(const DkSettingsDialog& dialog) {
-			this->borderLayout = dialog.borderLayout;
-			this->listView = dialog.listView;
-			this->rightWidget = dialog.rightWidget;
-			this->leftLabel = dialog.leftLabel;
-			this->buttonOk = dialog.buttonOk;
-			this->buttonCancel = dialog.buttonCancel;
-			this->widgetList = dialog.widgetList;
-			this->centralWidget = dialog.centralWidget;
-			this->centralLayout = dialog.centralLayout;
-			this->globalSettingsWidget = dialog.globalSettingsWidget;
-			this->slideshowSettingsWidget = dialog.slideshowSettingsWidget;
-			this->synchronizeSettingsWidget = dialog.synchronizeSettingsWidget;
-		}
-		~DkSettingsDialog();
+public:
+	DkSettingsDialog(QWidget* parent);
+	DkSettingsDialog(const DkSettingsDialog& dialog) {
+		this->borderLayout = dialog.borderLayout;
+		this->listView = dialog.listView;
+		this->rightWidget = dialog.rightWidget;
+		this->leftLabel = dialog.leftLabel;
+		this->buttonOk = dialog.buttonOk;
+		this->buttonCancel = dialog.buttonCancel;
+		this->widgetList = dialog.widgetList;
+		this->centralWidget = dialog.centralWidget;
+		this->centralLayout = dialog.centralLayout;
+		this->globalSettingsWidget = dialog.globalSettingsWidget;
+		this->slideshowSettingsWidget = dialog.slideshowSettingsWidget;
+		this->synchronizeSettingsWidget = dialog.synchronizeSettingsWidget;
+	}
+	~DkSettingsDialog();
 
-	signals:
-		void languageChanged();
-		void settingsChanged();
-		void setToDefaultSignal();
+signals:
+	void languageChanged();
+	void settingsChanged();
+	void setToDefaultSignal();
 
-	private:
-		void init();
-		void createLayout();
-		void createSettingsWidgets();
+private:
+	void init();
+	void createLayout();
+	void createSettingsWidgets();
 
-	private slots:
-		void listViewSelected(const QModelIndex & qmodel);
-		void saveSettings();
-		void cancelPressed() { close(); };
-		void initWidgets();
-		void setToDefault() {
+private slots:
+	void listViewSelected(const QModelIndex & qmodel);
+	void saveSettings();
+	void cancelPressed() { close(); };
+	void initWidgets();
+	void setToDefault() {
 			
-			DkSettings::setToDefaultSettings();
-			initWidgets();
+		DkSettings::setToDefaultSettings();
+		initWidgets();
 
-			// for main window
-			emit setToDefaultSignal();
-			emit settingsChanged();
-		};
-		void advancedSettingsChanged(int state);
+		// for main window
+		emit setToDefaultSignal();
+		emit settingsChanged();
+	};
+	void advancedSettingsChanged(int state);
 
-	protected:
-		BorderLayout* borderLayout;
-		DkSettingsListView* listView;
-		QWidget* rightWidget;
-		QLabel* leftLabel;
-		QPushButton* buttonOk;
-		QPushButton* buttonCancel;
-		QCheckBox* cbAdvancedSettings;
+protected:
+	BorderLayout* borderLayout;
+	DkSettingsListView* listView;
+	QWidget* rightWidget;
+	QLabel* leftLabel;
+	QPushButton* buttonOk;
+	QPushButton* buttonCancel;
+	QCheckBox* cbAdvancedSettings;
 
-		QList<DkSettingsWidget*> widgetList;
-		QWidget* centralWidget;
-		QHBoxLayout* centralLayout;
-		DkGlobalSettingsWidget* globalSettingsWidget;
-		DkDisplaySettingsWidget* displaySettingsWidget;
-		DkFileWidget* slideshowSettingsWidget;
-		DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
-		DkMetaDataSettingsWidget* exifSettingsWidget;
-		DkResourceSettingsWidgets* resourceSettingsWidget;
+	QList<DkSettingsWidget*> widgetList;
+	QWidget* centralWidget;
+	QHBoxLayout* centralLayout;
+	DkGlobalSettingsWidget* globalSettingsWidget;
+	DkDisplaySettingsWidget* displaySettingsWidget;
+	DkFileWidget* slideshowSettingsWidget;
+	DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
+	DkMetaDataSettingsWidget* exifSettingsWidget;
+	DkResourceSettingsWidgets* resourceSettingsWidget;
 };
 
 class DkSettingsWidget : public QWidget {
 Q_OBJECT	
 
 public:
-		DkSettingsWidget(QWidget* parent) : QWidget(parent) { showOnlyInAdvancedMode = false;};
-		virtual void writeSettings() = 0;
-		virtual void init() = 0;
-		virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
+	DkSettingsWidget(QWidget* parent) : QWidget(parent) { showOnlyInAdvancedMode = false;};
+	virtual void writeSettings() = 0;
+	virtual void init() = 0;
+	virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
 
-		bool showOnlyInAdvancedMode;
+	bool showOnlyInAdvancedMode;
 };
 
 class DkColorChooser;
 
 class DkGlobalSettingsWidget : public DkSettingsWidget {
-	Q_OBJECT;
+Q_OBJECT;
 
-	public:
-		DkGlobalSettingsWidget(QWidget* parent);
+public:
+	DkGlobalSettingsWidget(QWidget* parent);
 	
-		void writeSettings();
+	void writeSettings();
 
-	signals:
-		void applyDefault();
+signals:
+	void applyDefault();
 
-	private slots:
-		void setToDefaultPressed() {
-			qDebug() << "apply default pressed...";
-			emit applyDefault();
-		};
-		void bgColorReset() {
-			DkSettings::display.useDefaultColor = true;
-		};
-		void iconColorReset() {
-			DkSettings::display.defaultIconColor = true;
-		};
+private slots:
+	void setToDefaultPressed() {
+		qDebug() << "apply default pressed...";
+		emit applyDefault();
+	};
+	void bgColorReset() {
+		DkSettings::display.useDefaultColor = true;
+	};
+	void iconColorReset() {
+		DkSettings::display.defaultIconColor = true;
+	};
 
 
 
-	private:
-		void init();
-		void createLayout();
+private:
+	void init();
+	void createLayout();
 
 		
-		DkDoubleSpinBoxWidget* displayTimeSpin;
-		QCheckBox* cbShowMenu;
-		QCheckBox* cbShowToolbar;
-		QCheckBox* cbShowStatusbar;
-		QCheckBox* cbSmallIcons;
-		QCheckBox* cbToolbarGradient;
-		QCheckBox* cbCloseOnEsc;
-		QCheckBox* cbZoomOnWheel;
+	DkDoubleSpinBoxWidget* displayTimeSpin;
+	QCheckBox* cbShowMenu;
+	QCheckBox* cbShowToolbar;
+	QCheckBox* cbShowStatusbar;
+	QCheckBox* cbSmallIcons;
+	QCheckBox* cbToolbarGradient;
+	QCheckBox* cbCloseOnEsc;
+	QCheckBox* cbZoomOnWheel;
 
-		DkColorChooser* highlightColorChooser;
-		DkColorChooser* bgColorWidgetChooser;
-		DkColorChooser* bgColorChooser;
-		DkColorChooser* iconColorChooser;
-		DkColorChooser* fullscreenColChooser;
+	DkColorChooser* highlightColorChooser;
+	DkColorChooser* bgColorWidgetChooser;
+	DkColorChooser* bgColorChooser;
+	DkColorChooser* iconColorChooser;
+	DkColorChooser* fullscreenColChooser;
 
-		QComboBox* langCombo;
+	QComboBox* langCombo;
 		
-		QPushButton* buttonDefaultSettings;
+	QPushButton* buttonDefaultSettings;
 
-		QString curLanguage;
-		QStringList languages;
+	QString curLanguage;
+	QStringList languages;
 
-		bool loop;
-		bool scanSubFolders;
+	bool loop;
+	bool scanSubFolders;
 
 };
 
 
 class DkDisplaySettingsWidget : public DkSettingsWidget {
-	Q_OBJECT	
+Q_OBJECT	
 
-	public:
-		enum DisplayItems{
-			display_file_name,
-			display_creation_date,
-			display_file_rating,
+public:
+	enum DisplayItems{
+		display_file_name,
+		display_creation_date,
+		display_file_rating,
 
-			display_end
-		};
+		display_end
+	};
 
-		DkDisplaySettingsWidget(QWidget* parent);
+	DkDisplaySettingsWidget(QWidget* parent);
 
-		void writeSettings();
+	void writeSettings();
 
-	private slots:
-		void showFileName(bool checked);
-		void showCreationDate(bool checked);
-		void showRating(bool checked);
+private slots:
+	void showFileName(bool checked);
+	void showCreationDate(bool checked);
+	void showRating(bool checked);
 
-	private:
-		void init();
-		void createLayout();
+private:
+	void init();
+	void createLayout();
 
-		QGroupBox* gbThumb;
+	QGroupBox* gbThumb;
 
-		QCheckBox* cbKeepZoom;
-		QCheckBox* cbInvertZoom;
+	QCheckBox* cbInvertZoom;
 
-		DkSpinBoxWidget* interpolateWidget;
-		QCheckBox* cbCreationDate;
-		QCheckBox* cbName;
-		QCheckBox* cbRating;
-		QCheckBox* cbSilentFullscreen;
+	DkSpinBoxWidget* interpolateWidget;
+	QCheckBox* cbCreationDate;
+	QCheckBox* cbName;
+	QCheckBox* cbRating;
+	QCheckBox* cbSilentFullscreen;
 
+	QVector<QRadioButton* > keepZoomButtons;
+	QButtonGroup* keepZoomButtonGroup;
 
+	DkSpinBoxWidget* maximalThumbSizeWidget; 
+	QCheckBox* cbSaveThumb;
+	QCheckBox* cbShowBorder;
 
-		DkSpinBoxWidget* maximalThumbSizeWidget; 
-		QCheckBox* cbSaveThumb;
-		QCheckBox* cbShowBorder;
-
-		bool keepZoom;
-		bool invertZoom;
+	bool keepZoom;
+	bool invertZoom;
 
 };
 
@@ -619,25 +627,25 @@ public:
 
 	void writeSettings();
 
-	private slots:
-		void memorySliderChanged(int newValue);
+private slots:
+	void memorySliderChanged(int newValue);
 
-	private:
-		void init();
-		void createLayout();
+private:
+	void init();
+	void createLayout();
 
-		QCheckBox* cbFastThumbnailPreview;
-		QCheckBox* cbFilterRawImages;
-		QCheckBox* cbRemoveDuplicates;
-		QComboBox* cmExtensions;
-		QSlider* sliderMemory;
-		QLabel* labelMemory;
-	
-		double stepSize;
-		double totalMemory;
+	QCheckBox* cbFastThumbnailPreview;
+	QCheckBox* cbFilterRawImages;
+	QCheckBox* cbRemoveDuplicates;
+	QComboBox* cmExtensions;
+	QSlider* sliderMemory;
+	QLabel* labelMemory;
 
-		QVector<QRadioButton* > rawThumbButtons;
-		QButtonGroup* rawThumbButtonGroup;
+	double stepSize;
+	double totalMemory;
+
+	QVector<QRadioButton* > rawThumbButtons;
+	QButtonGroup* rawThumbButtonGroup;
 };
 
 

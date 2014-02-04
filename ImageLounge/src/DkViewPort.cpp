@@ -845,8 +845,10 @@ void DkViewPort::setImage(QImage newImg) {
 	emit enableNoImageSignal(!newImg.isNull());
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
+	qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
 
-	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty())
+	if (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || oldImgRect.isEmpty() || 
+		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && oldImgRect != imgRect))
 		worldMatrix.reset();
 	else {
 		imgViewRect = oldImgViewRect;
