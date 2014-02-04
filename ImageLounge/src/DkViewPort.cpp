@@ -76,6 +76,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget
 	// info labels
 	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
 	centerLabel = new DkLabelBg(this, "");
+	//centerLabel->setWordWrap(true);
+	//centerLabel->setTextFormat(Qt::RichText);
 	centerLabel->updateStyleSheet(true);	// dirty hack
 	bottomLabel = new DkLabelBg(this, "");
 	bottomLeftLabel = new DkLabelBg(this, "");

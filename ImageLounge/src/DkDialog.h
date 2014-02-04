@@ -268,6 +268,8 @@ public:
 
 public slots:
 	virtual void accept();
+	virtual void customContextMenu(QPoint pos);
+	void copyText();
 
 protected:
 	QStandardItemModel* model;
@@ -278,9 +280,9 @@ protected:
 
 	void createLayout();
 	QList<QStandardItem* > getItems(int idx);
+	int lastRow;
 	
 };
-
 
 class DkSearchDialog : public QDialog {
 	Q_OBJECT

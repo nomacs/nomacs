@@ -873,7 +873,9 @@ DkChangeTranslationDialog::DkChangeTranslationDialog(QWidget* parent /* = 0 */, 
 
 	this->setWindowTitle(tr("Change Translations"));
 
-	origStrings = DkSettings::getDefaultStrings();
+	QSettings settings;
+	settings.beginGroup("Fotobox");
+	origStrings = settings.value("origFotoStrings", DkSettings::getDefaultStrings()).toStringList();
 
 	createLayout();
 }
@@ -890,11 +892,18 @@ void DkChangeTranslationDialog::createLayout() {
 	translationTableView->verticalHeader()->hide();
 	translationTableView->horizontalHeader()->hide();
 	//appTableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	translationTableView->setWordWrap(false);
+	translationTableView->setWordWrap(true);
 	translationTableView->setShowGrid(false);
-	translationTableView->resizeColumnsToContents();
+	translationTableView->setColumnWidth(0, 350);
+	translationTableView->horizontalHeader()->setStretchLastSection(true);
+	//translationTableView->setColumnWidth(1, 350);
+	//translationTableView->resizeColumnsToContents();
 	translationTableView->resizeRowsToContents();
-	
+	translationTableView->setEditTriggers(QAbstractItemView::CurrentChanged);	// single click to edit
+
+	translationTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(translationTableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(customContextMenu(QPoint)));
+
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
@@ -907,18 +916,51 @@ void DkChangeTranslationDialog::createLayout() {
 	layout->addWidget(buttons);
 	QMetaObject::connectSlotsByName(this);
 
-	resize(720, 360);
+	resize(750, 360);
+}
+
+void DkChangeTranslationDialog::customContextMenu(QPoint pos) {
+
+	lastRow = translationTableView->indexAt(pos).row();
+
+	QAction* copyTextAction = new QAction("Set Default Text", this);
+	connect(copyTextAction, SIGNAL(triggered()), this, SLOT(copyText()));
+
+	QMenu* menu = new QMenu(this);
+	menu->addAction(copyTextAction);
+	menu->popup(translationTableView->viewport()->mapToGlobal(pos));
+
+}
+
+void DkChangeTranslationDialog::copyText() {
+
+	if (lastRow == -1)
+		return;
+
+	// hack to disable all current editing
+	translationTableView->setDisabled(true);
+	translationTableView->setDisabled(false);
+
+	QStandardItem* item = new QStandardItem(model->item(lastRow, 0)->text());
+	item->setFlags(item->flags() | Qt::ItemIsEditable);
+	
+	model->setItem(lastRow, 1, item);
+
 }
 
 void DkChangeTranslationDialog::accept() {
 
-	// TODO: update strings
+	QStringList origStrings;
 	QStringList strings;
 
 	for (int idx = 0; idx < model->rowCount(); idx++) {
-
+		origStrings.append(model->item(idx, 0)->text());
 		strings.append(model->item(idx, 1)->text());
 	}
+
+	QSettings settings;
+	settings.beginGroup("Fotobox");
+	settings.setValue("origFotoStrings", origStrings);
 
 	DkSettings::foto.fotoStrings = strings;
 	DkSettings::save();
@@ -930,7 +972,9 @@ QList<QStandardItem* > DkChangeTranslationDialog::getItems(int idx) {
 
 	QList<QStandardItem* > items;
 	QStandardItem* item = new QStandardItem(origStrings[idx]);
-	item->setFlags(Qt::ItemIsSelectable);
+	item->setFlags(item->flags() | Qt::ItemIsEditable);
+	//item->setFlags(Qt::ItemIsSelectable);
+	
 	items.append(item);
 	item = new QStandardItem(DkSettings::foto.fotoStrings[idx]);
 	item->setFlags(item->flags() | Qt::ItemIsEditable);
@@ -939,9 +983,6 @@ QList<QStandardItem* > DkChangeTranslationDialog::getItems(int idx) {
 
 	return items;
 }
-
-
-
 
 // DkSearchDialaog --------------------------------------------------------------------
 DkSearchDialog::DkSearchDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
