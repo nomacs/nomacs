@@ -75,7 +75,7 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
 	QImage thumb = dataExif.getThumbnail();
-	removeBlackBorder(thumb);
+	//removeBlackBorder(thumb);
 	int orientation = dataExif.getOrientation();
 	int imgW = thumb.width();
 	int imgH = thumb.height();

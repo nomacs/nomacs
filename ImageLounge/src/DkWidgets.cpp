@@ -1068,7 +1068,7 @@ void DkFilePreview::moveImages() {
 
 void DkFilePreview::updateFileIdx(int idx) {
 	
-	if (idx == currentFileIdx)
+	if (idx == currentFileIdx || idx < 0 || idx >= thumbPool->getThumbs().size())
 		return;
 
 	currentFileIdx = idx;
