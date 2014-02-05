@@ -2599,6 +2599,7 @@ void DkNoMacs::deleteFile() {
 void DkNoMacs::openAppManager() {
 
 	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(appManager, this, windowFlags());
+	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
 	appManagerDialog->exec();
 
 	appManagerDialog->deleteLater();

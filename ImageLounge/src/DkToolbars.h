@@ -49,6 +49,7 @@
 #include <QtGui/QAction>
 #include <QTranslator>
 #include <QDoubleSpinBox>
+#include <QMenu>
 
 #include <QtGui/QGridLayout>
 #include <QtGui/QGraphicsOpacityEffect>
@@ -185,7 +186,9 @@ public slots:
 	void insertSlider(qreal pos);
 	void setImageMode(int mode);
 	void saveGradient();
-	
+	void deleteGradientMenu(QPoint pos);
+	void deleteGradient();
+
 private slots:
 	void applyTF();
 	void pickColor();

@@ -249,7 +249,11 @@ public:
 public slots:
 	void on_addButton_clicked();
 	void on_deleteButton_clicked();
+	void on_runButton_clicked();
 	virtual void accept();
+
+signals:
+	void openWithSignal(QAction* act);
 
 protected:
 	DkAppManager* manager;

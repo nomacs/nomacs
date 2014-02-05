@@ -52,8 +52,16 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	this->addWidget(channelComboBox);
 
 	historyCombo = new QComboBox(this);
+	
+	QAction* delGradientAction = new QAction("Delete", historyCombo);
+	connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
+	
+	historyCombo->addAction(delGradientAction);
+	historyCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
+	
 	updateGradientHistory();
 	connect(historyCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
+	connect(historyCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
 
 	this->addWidget(historyCombo);
 
@@ -182,6 +190,26 @@ void DkTransferToolBar::loadSettings() {
 	}
 
 	settings.endArray();
+}
+
+void DkTransferToolBar::deleteGradientMenu(QPoint pos) {
+
+	QMenu* cm = new QMenu(this);
+	QAction* delAction = new QAction("Delete", this);
+	connect(delAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
+	cm->popup(historyCombo->mapToGlobal(pos));
+	cm->exec();
+}
+
+void DkTransferToolBar::deleteGradient() {
+
+	int idx = historyCombo->currentIndex();
+
+	if (idx >= 0 && idx < oldGradients.size()) {
+		oldGradients.remove(idx);
+		historyCombo->removeItem(idx);
+	}
+
 }
 
 void DkTransferToolBar::resizeEvent( QResizeEvent * event ) {
