@@ -707,6 +707,10 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(panelActions[menu_panel_social_button]);
 	contextMenu->addAction(panelActions[menu_panel_qrcode]);
 	contextMenu->addSeparator();
+	contextMenu->addAction(viewActions[menu_view_minimize]);
+	contextMenu->addAction(viewActions[menu_view_fullscreen]);
+	contextMenu->addAction(viewActions[menu_view_frameless]);
+	contextMenu->addSeparator();
 
 	contextMenu->addAction(panelActions[menu_panel_explorer]);
 	contextMenu->addAction(panelActions[menu_panel_preview]);
@@ -724,11 +728,6 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(editActions[menu_edit_paste]);
 	contextMenu->addSeparator();
 	
-	contextMenu->addAction(viewActions[menu_view_minimize]);
-	contextMenu->addAction(viewActions[menu_view_fullscreen]);
-	contextMenu->addAction(viewActions[menu_view_frameless]);
-	contextMenu->addSeparator();
-
 	contextMenu->addMenu(sortMenu);
 
 	QMenu* viewContextMenu = contextMenu->addMenu(tr("&View"));

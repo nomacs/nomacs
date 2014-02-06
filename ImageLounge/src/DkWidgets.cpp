@@ -464,7 +464,7 @@ void DkFilePreview::init() {
 	worldMatrix = QTransform();
 
 	moveImageTimer = new QTimer(this);
-	moveImageTimer->setInterval(2);	// reduce cpu utilization
+	moveImageTimer->setInterval(4);	// reduce cpu utilization
 	connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
 	
 	leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
@@ -960,11 +960,11 @@ void DkFilePreview::moveImages() {
 		else
 			currentDx = cDist/4.0f;
 
-		if (fabs(currentDx) < 1)
-			currentDx = (currentDx < 0) ? -1.0f : 1.0f;
+		if (fabs(currentDx) < 3)
+			currentDx = (currentDx < 0) ? -3.0f : 3.0f;
 
 		// end position
-		if (fabs(cDist) < 1) {
+		if (fabs(cDist) < 3) {
 			currentDx = width()/2.0f-newFileRect.center().x();
 			moveImageTimer->stop();
 			scrollToCurrentImage = false;
@@ -1068,7 +1068,7 @@ void DkFilePreview::moveImages() {
 
 void DkFilePreview::updateFileIdx(int idx) {
 	
-	if (idx == currentFileIdx || idx < 0 || idx >= thumbPool->getThumbs().size())
+	if (idx == currentFileIdx)
 		return;
 
 	currentFileIdx = idx;
