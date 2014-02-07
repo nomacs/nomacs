@@ -129,6 +129,7 @@ class DkGradient : public QWidget {
 	private:
 		void init();
 		void addSlider(qreal pos, QColor color);
+		void clearAllSliders();
 		void updateGradient();
 		qreal getNormedPos(int pos);
 		int getAbsolutePos(qreal pos);

@@ -669,7 +669,7 @@ void DkFilePreview::moveImages() {
 		float cDist = width()/2.0f - newFileRect.center().x();
 		
 		if (fabs(cDist) < width()) {
-			currentDx = sqrt(fabs(cDist));
+			currentDx = sqrt(fabs(cDist))/1.3f;
 			if (cDist < 0) currentDx *= -1.0f;
 		}
 		else

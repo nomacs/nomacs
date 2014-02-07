@@ -133,7 +133,7 @@ void DkTransferToolBar::createIcons() {
 
 DkTransferToolBar::~DkTransferToolBar() {
 
-	saveSettings();
+	//saveSettings();
 };
 
 void DkTransferToolBar::saveSettings() {
@@ -409,16 +409,9 @@ DkGradient::~DkGradient() {
 
 void DkGradient::init() {
 
-	DkColorSlider *slider;
-
 	isActiveSliderExisting = false;
 
-	for (int i = 0; i < sliders.size(); i++) {
-		slider = sliders.at(i);
-		delete slider;
-	}
-
-	sliders.clear();
+	clearAllSliders();
 
 	addSlider(0, Qt::black);
 	addSlider(1, Qt::white);
@@ -428,18 +421,29 @@ void DkGradient::init() {
 
 };
 
+void DkGradient::clearAllSliders() {
+
+	for (int i = 0; i < sliders.size(); i++) {
+		DkColorSlider* slider = sliders.at(i);
+		delete slider;
+	}
+
+	sliders.clear();
+
+}
+
 void DkGradient::setGradient(const QLinearGradient& gradient) {
 
 	reset();
-	this->gradient.setStops(gradient.stops());
+	clearAllSliders();	// reset adds a slider at the start and end
 
+	this->gradient.setStops(gradient.stops());
+	
 	QVector<QGradientStop> stops = gradient.stops();
 
 	for (int idx = 0; idx < stops.size(); idx++) {
-		insertSlider(stops.at(idx).first, stops.at(idx).second);
+		addSlider(stops.at(idx).first, stops.at(idx).second);
 	}
-
-	//qDebug() << "resize gradient: " << event->size();
 
 	updateGradient();
 	update();
