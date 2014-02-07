@@ -175,6 +175,8 @@ enum {
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
 	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
+	shortcut_auto_adjust	= Qt::CTRL + Qt::SHIFT + Qt::Key_L,
+	shortcut_norm_image		= Qt::CTRL + Qt::SHIFT + Qt::Key_N,
 
 	// tcp
 	shortcut_shortcuts		= Qt::CTRL + Qt::Key_K,
@@ -240,6 +242,11 @@ enum editActions {
 	menu_edit_transform,
 	menu_edit_delete,
 	menu_edit_crop,
+	menu_edit_flip_h,
+	menu_edit_flip_v,
+	menu_edit_invert,
+	menu_edit_norm,
+	menu_edit_auto_adjust,
 	menu_edit_wallpaper,
 
 	menu_edit_end,	// nothing beyond this point
@@ -519,6 +526,11 @@ public slots:
 	void copyImage();
 	void copyImageBuffer();
 	void pasteImage();
+	void flipImageHorizontal();
+	void flipImageVertical();
+	void normalizeImage();
+	void autoAdjustImage();
+	void invertImage();
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);

@@ -914,8 +914,10 @@ void DkViewPort::setImage(QImage newImg) {
 	emit enableNoImageSignal(!newImg.isNull());
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
+	qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
 
-	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty()) {
+	if (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || oldImgRect.isEmpty() || 
+		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && oldImgRect != imgRect))
 		worldMatrix.reset();
 	}
 	else {
@@ -1290,6 +1292,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		controller->getOverview()->hide();
 
 	painter.end();
+
+	//qDebug() << "painting main widget...";
 
 	// propagate
 	QGraphicsView::paintEvent(event);
@@ -1713,6 +1717,11 @@ void DkViewPort::settingsChanged() {
 }
 
 void DkViewPort::setEditedImage(QImage newImg) {
+
+	if (newImg.isNull()) {
+		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		return;
+	}
 
 	QFileInfo file = loader->getFile();
 	unloadImage();

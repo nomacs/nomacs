@@ -768,6 +768,9 @@ void DkAppManagerDialog::createLayout() {
 	appTableView->resizeRowsToContents();
 	appTableView->setWordWrap(false);
 
+	QPushButton* runButton = new QPushButton(tr("&Run"), this);
+	runButton->setObjectName("runButton");
+
 	QPushButton* addButton = new QPushButton(tr("&Add"), this);
 	addButton->setObjectName("addButton");
 
@@ -781,6 +784,7 @@ void DkAppManagerDialog::createLayout() {
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	buttons->addButton(runButton, QDialogButtonBox::ActionRole);
 	buttons->addButton(addButton, QDialogButtonBox::ActionRole);
 	buttons->addButton(deleteButton, QDialogButtonBox::ActionRole);
 
@@ -837,6 +841,26 @@ void DkAppManagerDialog::on_deleteButton_clicked() {
 		model->removeRows(selRows.last().row(), 1);
 		selRows.removeLast();
 	}
+}
+
+void DkAppManagerDialog::on_runButton_clicked() {
+
+	accept();
+
+	QItemSelectionModel* sel = appTableView->selectionModel();
+
+	if (!sel->hasSelection() && !manager->getActions().isEmpty())
+		emit openWithSignal(manager->getActions().first());
+	
+	else if (!manager->getActions().isEmpty()) {
+
+		QModelIndexList rows = sel->selectedRows();
+
+		for (int idx = 0; idx < rows.size(); idx++) {
+			emit openWithSignal(manager->getActions().at(rows.at(idx).row()));
+		}
+	}
+
 }
 
 void DkAppManagerDialog::accept() {

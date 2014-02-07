@@ -49,6 +49,7 @@
 #include <QtGui/QAction>
 #include <QTranslator>
 #include <QDoubleSpinBox>
+#include <QMenu>
 
 #include <QtGui/QGridLayout>
 #include <QtGui/QGraphicsOpacityEffect>
@@ -105,8 +106,10 @@ class DkGradient : public QWidget {
 		DkGradient(QWidget *parent);
 		~DkGradient();
 		QGradientStops getGradientStops();
-		void insertSlider(qreal pos);
+		void insertSlider(qreal pos, QColor col = QColor());
 		void reset();
+		QLinearGradient getGradient();
+		void setGradient(const QLinearGradient& gradient);
 
 	signals:
 		void gradientChanged();
@@ -126,6 +129,7 @@ class DkGradient : public QWidget {
 	private:
 		void init();
 		void addSlider(qreal pos, QColor color);
+		void clearAllSliders();
 		void updateGradient();
 		qreal getNormedPos(int pos);
 		int getAbsolutePos(qreal pos);
@@ -150,6 +154,7 @@ enum toolBarIcons {
 enum toolBarActions {
 	toolbar_reset,
 	toolbar_pipette,
+	toolbar_save,
 	toolbar_end,	// nothing beyond this point
 };
 
@@ -159,6 +164,7 @@ enum imageModes {
 	mode_gray,
 	mode_rgb,
 };
+
 
 class DkTransferToolBar : public QToolBar {
 	Q_OBJECT
@@ -180,7 +186,9 @@ public slots:
 	virtual void paintEvent(QPaintEvent* event);
 	void insertSlider(qreal pos);
 	void setImageMode(int mode);
-		
+	void saveGradient();
+	void deleteGradientMenu(QPoint pos);
+	void deleteGradient();
 
 private slots:
 	void applyTF();
@@ -188,10 +196,13 @@ private slots:
 	void changeChannel(int index);
 	void enableTFCheckBoxClicked(int state);
 	void reset();
+	void switchGradient(int idx);
 
 protected:
 	virtual void resizeEvent ( QResizeEvent * event );
-
+	void loadSettings();
+	void saveSettings();
+	void updateGradientHistory();
 
 private:
 	void createIcons();
@@ -207,6 +218,9 @@ private:
 		
 	DkGradient *gradient;
 	QComboBox *channelComboBox;
+
+	QComboBox* historyCombo;
+	QVector<QLinearGradient> oldGradients;
 
 	QGraphicsOpacityEffect *effect;
 	int imageMode;

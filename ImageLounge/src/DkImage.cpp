@@ -190,7 +190,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	}
 
 	// RAW loader
-	if (!imgLoaded) {
+	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str()) && DkImageLoader::openFilters.contains(newSuffix, Qt::CaseInsensitive)) {
 		
 		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files
@@ -340,7 +340,6 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		////iProcessor.imgdata.params.output_color = 1; //sRGB  (0...raw)
 		//// RAW data filtration mode during data unpacking and post-processing
 		//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
-
 		int tM = qMax(iProcessor.imgdata.thumbnail.twidth, iProcessor.imgdata.thumbnail.twidth);
 		// TODO: check actual screen resolution
 		qDebug() << "max thumb size: " << tM;
@@ -348,6 +347,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		if (DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
 			DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920) {
 			
+			// crashes here if image is broken
 			int err = iProcessor.unpack_thumb();
 			char* tPtr = iProcessor.imgdata.thumbnail.thumb;
 
@@ -893,11 +893,21 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(fileInfo, img, compression);
 	}
-	else {
+	else if (!saved) {
+
+
+		bool hasAlpha = DkImage::alphaChannelUsed(img);
+		QImage sImg = img;
+		
+		if (!hasAlpha)
+			sImg.convertToFormat(QImage::Format_RGB888);
+
+		qDebug() << "img has alpha: " << (img.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
+
 		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
-		saved = imgWriter->write(img);		// TODO: J2K crash detected
+		saved = imgWriter->write(sImg);		// TODO: J2K crash detected
 		delete imgWriter;
 	}
 
@@ -2162,19 +2172,19 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 
 	qDebug() << "tmpPath: " << tmpPath.absolutePath();
 	
-	// TODO: call save file silent threaded...
-	for (int idx = 1; idx < 10000; idx++) {
+	//// TODO: call save file silent threaded...
+	//for (int idx = 1; idx < 10000; idx++) {
 	
-		QString fileName = name;
+		QString fileName = name + "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss") + fileExt;
 
-		if (idx < 10)
-			fileName += "000";
-		else if (idx < 100)
-			fileName += "00";
-		else if (idx < 1000)
-			fileName += "0";
-		
-		fileName += QString::number(idx) + fileExt;
+		//if (idx < 10)
+		//	fileName += "000";
+		//else if (idx < 100)
+		//	fileName += "00";
+		//else if (idx < 1000)
+		//	fileName += "0";
+		//
+		//fileName += QString::number(idx) + fileExt;
 
 		QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
 
@@ -2184,23 +2194,12 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 				saveFileSilentThreaded(tmpFile, img);
 			else
 				saveFileSilentIntern(tmpFile, img);
-			//this->virtualFile = tmpFile;	// why doesn't it work out -> file does not exist (locked?)
-			//setImage(img);
-
-			//emit updateFileSignal(tmpFile, img.size());
 			
-			//if (updateFolder) {
-			//	emit updateDirSignal(tmpFile);
-			//	this->file = tmpFile;
-			//	loadDir(tmpFile.absoluteDir());
-			//}
-			
-			return tmpFile;
-
 			qDebug() << tmpFile.absoluteFilePath() << "saved...";
-			break;
+
+			return tmpFile;
 		}
-	}
+	//}
 
 	return QFileInfo();
 }

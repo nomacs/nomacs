@@ -229,7 +229,7 @@ public:
 	bool setPageIdx(int skipIdx);
 
 	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
-	
+
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
 	 * @param img the new image
@@ -304,6 +304,8 @@ public:
 	bool decodeWebP(const QByteArray& buffer) {return false;};
 	bool encodeWebP(QByteArray& buffer, QImage img, int compression, int speed = 4) {return false;};
 #endif
+
+
 
 
 public slots:
