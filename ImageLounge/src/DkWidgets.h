@@ -760,6 +760,7 @@ private:
 
 	QRectF newFileRect;
 	bool scrollToCurrentImage;
+	bool isPainted;
 	
 	void init();
 	//void clearThumbs();
