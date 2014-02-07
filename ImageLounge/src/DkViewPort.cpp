@@ -1217,6 +1217,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 
 	painter.end();
 
+	//qDebug() << "painting main widget...";
+
 	// propagate
 	QGraphicsView::paintEvent(event);
 

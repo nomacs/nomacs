@@ -177,7 +177,7 @@ void DkFilePreview::init() {
 	worldMatrix = QTransform();
 
 	moveImageTimer = new QTimer(this);
-	moveImageTimer->setInterval(2);	// reduce cpu utilization
+	moveImageTimer->setInterval(5);	// reduce cpu utilization
 	connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
 	
 	leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
@@ -256,11 +256,15 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	if (currentFileIdx != oldFileIdx && currentFileIdx >= 0) {
 		oldFileIdx = currentFileIdx;
 		scrollToCurrentImage = true;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 	}
+	qDebug() << "finished painting...";
+
 }
 
 void DkFilePreview::drawThumbs(QPainter* painter) {
+
+	//qDebug() << "drawing thumbs: " << worldMatrix.dx();
 
 	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
 	thumbRects.clear();
@@ -464,7 +468,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 
 	if (currentFileIdx >= 0 && isVisible()) {
 		scrollToCurrentImage = true;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 	}
 
 	// now update...
@@ -528,7 +532,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		currentDx = (left) ? dx : -dx;
 		
 		scrollToCurrentImage = false;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 	}
 	else if (dx > borderTrigger && !scrollToCurrentImage)
 		moveImageTimer->stop();
@@ -586,7 +590,7 @@ void DkFilePreview::mousePressEvent(QMouseEvent *event) {
 		enterPos = event->pos();
 		qDebug() << "stop scrolling (middle button)";
 		scrollToCurrentImage = false;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 
 		// show icon
 		wheelButton->move(event->pos().x()-16, event->pos().y()-16);
@@ -664,16 +668,20 @@ void DkFilePreview::moveImages() {
 		
 		float cDist = width()/2.0f - newFileRect.center().x();
 		
-		if (fabs(cDist) < width())
-			currentDx = cDist/50.0f;
+		if (fabs(cDist) < width()) {
+			currentDx = sqrt(fabs(cDist));
+			if (cDist < 0) currentDx *= -1.0f;
+		}
 		else
 			currentDx = cDist/4.0f;
 
 		if (fabs(currentDx) < 1)
 			currentDx = (currentDx < 0) ? -1.0f : 1.0f;
 
+		//qDebug() << "dx: " << currentDx;
+
 		// end position
-		if (fabs(cDist) < 1) {
+		if (fabs(cDist) <= 1) {
 			currentDx = width()/2.0f-newFileRect.center().x();
 			moveImageTimer->stop();
 			scrollToCurrentImage = false;
@@ -692,6 +700,7 @@ void DkFilePreview::moveImages() {
 
 	//qDebug() << "currentDx: " << currentDx;
 	worldMatrix.translate(currentDx, 0);
+	qDebug() << "dx: " << worldMatrix.dx();
 	update();
 }
 
