@@ -1168,7 +1168,7 @@ void DkViewPort::updateImageMatrix() {
 
 	float newZoom = DkSettings::foto.initialZoomLevel/imgMatrix.m11();
 
-	if (parent && parent->isFullScreen() && !DkSettings::display.keepZoom && newZoom < worldMatrix.m11()) {
+	if (parent && parent->isFullScreen() && DkSettings::display.keepZoom == DkSettings::zoom_never_keep && newZoom < worldMatrix.m11()) {
 		worldMatrix.reset();	// overrides keep zoom ?!
 		worldMatrix.scale(newZoom, newZoom);
 		centerImage();
