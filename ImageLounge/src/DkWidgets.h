@@ -628,7 +628,8 @@ private:
 
 	QRectF newFileRect;
 	bool scrollToCurrentImage;
-	
+	bool isPainted;
+
 	void init();
 	//void clearThumbs();
 	//void indexDir(int force = DkThumbsLoader::not_forced);

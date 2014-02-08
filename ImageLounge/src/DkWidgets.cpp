@@ -169,6 +169,7 @@ void DkFilePreview::init() {
 	oldFileIdx = -1;
 	mouseTrace = 0;
 	scrollToCurrentImage = false;
+	isPainted = false;
 
 	winPercent = 0.1f;
 	borderTrigger = (float)width()*winPercent;
@@ -258,7 +259,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		scrollToCurrentImage = true;
 		moveImageTimer->start();
 	}
-	qDebug() << "finished painting...";
+	isPainted = true;
 
 }
 
@@ -665,9 +666,8 @@ void DkFilePreview::moveImages() {
 	}
 
 	if (scrollToCurrentImage) {
-		
 		float cDist = width()/2.0f - newFileRect.center().x();
-		
+
 		if (fabs(cDist) < width()) {
 			currentDx = sqrt(fabs(cDist))/1.3f;
 			if (cDist < 0) currentDx *= -1.0f;
@@ -675,17 +675,17 @@ void DkFilePreview::moveImages() {
 		else
 			currentDx = cDist/4.0f;
 
-		if (fabs(currentDx) < 1)
-			currentDx = (currentDx < 0) ? -1.0f : 1.0f;
-
-		//qDebug() << "dx: " << currentDx;
+		if (fabs(currentDx) < 2)
+			currentDx = (currentDx < 0) ? -2.0f : 2.0f;
 
 		// end position
-		if (fabs(cDist) <= 1) {
+		if (fabs(cDist) <= 2) {
 			currentDx = width()/2.0f-newFileRect.center().x();
 			moveImageTimer->stop();
 			scrollToCurrentImage = false;
 		}
+		else
+			isPainted = false;
 	}
 
 	// do not scroll out of the thumbs

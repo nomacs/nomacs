@@ -1676,7 +1676,8 @@ void DkNoMacs::pasteImage() {
 		if (viewport())
 			viewport()->loadImage(dropImg);
 
-	} else if (clipboard->mimeData()->hasText()) {
+	} 
+	else if (clipboard->mimeData()->hasText()) {
 
 		QString msg = clipboard->mimeData()->text();
 		QFileInfo file = QFileInfo(msg);
@@ -1687,7 +1688,6 @@ void DkNoMacs::pasteImage() {
 		else
 			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
 	}
-	
 	else if (viewport())
 		viewport()->getController()->setInfo("Clipboard has no image...");
 

@@ -1537,6 +1537,8 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	// update dir
 	if (skipIdx == 0 && cacheState == cache_force_load)
 		loadDir(dir, false);
+	else
+		loadDir(dir);
 
 	mutex.lock();
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
@@ -1579,13 +1581,14 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searchFile) {
 
 	file.refresh();
-	bool virtualExists = files.contains(virtualFile.fileName());
-
-	if (!virtualExists && !file.exists())
-		return QFileInfo();
+	virtualFile.refresh();
+	bool virtualExists = files.contains(virtualFile.fileName()); // old code here is a bug if the image is e.g. renamed
 
 	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
 	qDebug() << "file: " << file.absoluteFilePath();
+
+	if (!virtualExists && !file.exists())
+		return QFileInfo();
 
 	DkTimer dt;
 
@@ -2319,12 +2322,15 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		this->file = QFileInfo(filePath);
 		this->editFile = QFileInfo();
 
-		this->virtualFile = this->file;
-		basicLoader.setImage(saveImg, this->file);
-		loadDir(this->file.absoluteDir());
+		if (saved)
+			load(filePath, true);
 
-		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
-		sendFileSignal();
+		//this->virtualFile = this->file;
+		//basicLoader.setImage(saveImg, this->file);
+		//loadDir(this->file.absoluteDir());
+
+		//if (cacher) cacher->setCurrentFile(file, basicLoader.image());
+		//sendFileSignal();
 	}
 }
 
