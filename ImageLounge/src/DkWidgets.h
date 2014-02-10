@@ -157,6 +157,7 @@ public:
 
 public slots:
 	void show();
+	void toggleShow();
 
 signals:
 	void saveImageSignal(QFileInfo path);
@@ -174,6 +175,27 @@ protected:
 
 	void createLayout();
 	void paintEvent(QPaintEvent *event);
+};
+
+class DkQrCodeConfirmDialog : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkQrCodeConfirmDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+public slots:
+	void changeImage();
+	void toggleShow();
+
+protected:
+	QLabel* infoText;
+	QLabel* urlText;
+	QLabel* imgLabel;
+	QMenu* cm;
+
+	void createLayout();
+	void paintEvent(QPaintEvent *event);
+	void contextMenuEvent(QContextMenuEvent *event);
 };
 
 class DkSocialButton : public QLabel {

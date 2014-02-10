@@ -278,6 +278,7 @@ void DkControlWidget::init() {
 	//spinnerLabel->show();
 	
 	socialConfirmDialog = new DkSocialConfirmDialog(this);
+	qrCodeConfirmDialog = new DkQrCodeConfirmDialog(this);
 
 	show();
 	//thumbWidget->setVisible(true);
@@ -348,7 +349,12 @@ void DkControlWidget::connectWidgets() {
 	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
 
 	// confirm social dialog
-	connect(socialButton, SIGNAL(showConfirmDialogSignal()), socialConfirmDialog, SLOT(show()));
+	connect(socialButton, SIGNAL(showConfirmDialogSignal()), socialConfirmDialog, SLOT(toggleShow()));
+	connect(qrCode, SIGNAL(showConfirmDialogSignal()), qrCodeConfirmDialog, SLOT(toggleShow()));
+
+	// hide the opposite
+	connect(socialButton, SIGNAL(showConfirmDialogSignal()), qrCodeConfirmDialog, SLOT(hide()));
+	connect(qrCode, SIGNAL(showConfirmDialogSignal()), socialConfirmDialog, SLOT(hide()));
 
 }
 
@@ -369,6 +375,8 @@ void DkControlWidget::showWidgetsSettings() {
 		//showPlayer(false);
 		overviewWindow->hide();
 		showHistogram(false);
+		qrCodeConfirmDialog->hide();
+		socialConfirmDialog->hide();
 		return;
 	}
 
@@ -641,6 +649,10 @@ void DkControlWidget::stopLabels() {
 
 	showCrop(false);
 	showThumbView(false);
+
+	qrCodeConfirmDialog->hide();
+	socialConfirmDialog->hide();
+
 }
 
 void DkControlWidget::settingsChanged() {

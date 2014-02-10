@@ -134,6 +134,8 @@ public:
 		foto_confirm_text,
 		foto_confirm_cancel,
 		foto_confirm_ok,
+		foto_qrconfirm_info,
+		foto_qrconfirm_url,
 
 		foto_strings_end,
 	};
@@ -145,6 +147,7 @@ public:
 		bool showButtonText;
 		QString socialImageUrl;
 		QString qrCodeImageUrl;
+		QString qrCodeConfirmImageUrl;
 		QString facebookPath;
 		QString printPath;
 		QString defaultImgPath;

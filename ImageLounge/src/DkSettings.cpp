@@ -145,6 +145,8 @@ QStringList DkSettings::getDefaultStrings() {
 	strings[foto_confirm_text]	= "Hiermit versichere ich, dass alle abgebildeten Personen einer Veröffentlichung auf Facebook zustimmen (facebook.com/fotojiffy)";
 	strings[foto_confirm_ok]	= "Veröffentlichen";
 	strings[foto_confirm_cancel]= "Abbrechen";
+	strings[foto_qrconfirm_info]= "Um den QR-Code lesen zu können benötigen Sie eine entsprechende App auf ihrem Smartphone oder Tablet. Sollten Sie keine App auf Ihrem Gerät installiert haben, können Sie die Webgalerie über den nachfolgenden Link aufrufen:";
+	strings[foto_qrconfirm_url]	= "www.fb.com/fotojiffy";
 
 	return strings.toList();
 }
@@ -213,6 +215,7 @@ void DkSettings::load(bool force) {
 	foto_p.showButtonText = settings.value("showButtonText", foto_p.showButtonText).toBool();
 	foto_p.socialImageUrl = settings.value("socialImageUrl", foto_p.socialImageUrl).toString();
 	foto_p.qrCodeImageUrl = settings.value("qrCodeImageUrl", foto_p.qrCodeImageUrl).toString();
+	foto_p.qrCodeConfirmImageUrl = settings.value("qrCodeConfirmImageUrl", foto_p.qrCodeConfirmImageUrl).toString();
 	foto_p.facebookPath = settings.value("facebookPath", foto_p.facebookPath).toString();
 	foto_p.printPath = settings.value("printPath", foto_p.printPath).toString();
 	foto_p.defaultImgPath = settings.value("defaultImgPath", foto_p.defaultImgPath).toString();
@@ -539,6 +542,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("socialImageUrl", foto_p.socialImageUrl);
 	if (!force && foto_p.qrCodeImageUrl != foto_d.qrCodeImageUrl)
 		settings.setValue("qrCodeImageUrl", foto_p.qrCodeImageUrl);
+	if (!force && foto_p.qrCodeConfirmImageUrl != foto_d.qrCodeConfirmImageUrl)
+		settings.setValue("qrCodeConfirmImageUrl", foto_p.qrCodeConfirmImageUrl);
 	if (!force && foto_p.facebookPath != foto_d.facebookPath)
 		settings.setValue("facebookPath", foto_p.facebookPath);
 	if (!force && foto_p.printPath != foto_d.printPath)
@@ -588,6 +593,7 @@ void DkSettings::setToDefaultSettings() {
 	foto_p.showButtonText = true;
 	foto_p.socialImageUrl = QString(":/nomacs/img/facebook.png");
 	foto_p.qrCodeImageUrl = QString(":/nomacs/img/qrcode.png");
+	foto_p.qrCodeConfirmImageUrl = QString(":/nomacs/img/qrcode-large.png");
 	foto_p.defaultImgPath = QString("C:\\fotobox\\3_gallery_nomacs");
 	foto_p.printPath = QString("C:\\fotobox\\print");
 	foto_p.facebookPath = QString("C:\\fotobox\\facebook");

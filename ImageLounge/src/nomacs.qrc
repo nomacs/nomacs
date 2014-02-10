@@ -64,5 +64,6 @@
         <file>img/info.png</file>
         <file>img/facebook.png</file>
         <file>img/qrcode.png</file>
+        <file>img/qrcode-large.png</file>
     </qresource>
 </RCC>

@@ -260,6 +260,149 @@ void DkSocialConfirmDialog::on_cancelButton_clicked() {
 	hide();
 }
 
+void DkSocialConfirmDialog::toggleShow() {
+
+	if (isVisible())
+		hide();
+	else 
+		show();
+}
+
+
+
+// DkQrCodeConfirmDialog --------------------------------------------------------------------
+DkQrCodeConfirmDialog::DkQrCodeConfirmDialog(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
+
+	//setAttribute(Qt::WA_MouseTracking);
+	setMouseTracking(true);
+	qDebug() << "confirm attrs: " << this->testAttribute(Qt::WA_TransparentForMouseEvents);
+
+	createLayout();
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkQrCodeConfirmDialog::createLayout() {
+
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+
+	// context menu
+	QAction* changeImage = new QAction(tr("Change Image"), this);
+	connect(changeImage, SIGNAL(triggered()), this, SLOT(changeImage()));
+
+	cm = new QMenu(tr(""), this);
+	cm->addAction(changeImage);
+	
+	imgLabel = new QLabel(this);
+	imgLabel->setPixmap(DkSettings::foto.qrCodeConfirmImageUrl);
+	imgLabel->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+	imgLabel->setStyleSheet("QLabel{margin-top: 0px;}");
+
+	infoText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_qrconfirm_info], this);
+	infoText->setWordWrap(true);
+	infoText->setFixedWidth(180);
+	infoText->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	infoText->setStyleSheet("QLabel{color: #8a8a8a; font: 12px; margin-left: 10px; margin-top: 0px;} QLabel::disabled{color: #d64949;}");
+
+	urlText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_qrconfirm_url], this);
+	urlText->setWordWrap(true);
+	urlText->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	urlText->setStyleSheet("QLabel{color: white; font: bold italic 12px; margin-left: 0px; margin-bottom: 10px; margin-top: 5px;} QLabel::disabled{color: #d64949;}");
+
+	QWidget* hWidget = new QWidget(this);
+	QHBoxLayout* hBox = new QHBoxLayout(hWidget);
+	hBox->setMargin(0);
+	hBox->setSpacing(0);
+	hBox->setContentsMargins(0,0,0,0);
+	hBox->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+	hBox->addWidget(imgLabel);
+	hBox->addWidget(infoText);
+	
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+	layout->setContentsMargins(0,0,0,0);
+	layout->setSpacing(0);
+	layout->setMargin(20);
+	layout->addWidget(hWidget);
+	layout->addWidget(urlText);
+
+	setObjectName("DkQrCodeConfirmDialog");
+	//setGeometry(100, 100, 400, 400);
+	//move(100,100);
+	setStyleSheet("DkConfirmDialog{padding: 30px;}");
+
+	adjustSize();
+
+}
+
+void DkQrCodeConfirmDialog::contextMenuEvent(QContextMenuEvent *event) {
+
+	DkWidget::contextMenuEvent(event);
+
+	if (!event->isAccepted())
+		cm->exec(event->globalPos());
+
+	event->accept();
+
+}
+
+void DkQrCodeConfirmDialog::changeImage() {
+
+	// load system default open dialog
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
+		"C:\\", 
+		DkImageLoader::openFilters.join(";;"));
+
+	// check if we can load it
+	QPixmap testP(fileName);
+	if (testP.isNull())
+		return;
+
+	DkSettings::foto.qrCodeConfirmImageUrl = fileName;
+	imgLabel->setPixmap(fileName);
+
+	DkSettings::save();
+}
+
+void DkQrCodeConfirmDialog::toggleShow() {
+
+	if (isVisible())
+		hide();
+	else 
+		show();
+}
+
+void DkQrCodeConfirmDialog::paintEvent(QPaintEvent *event) {
+
+	if (static_cast<QWidget* >(parent())) {
+
+		QWidget* p = static_cast<QWidget* >(parent());
+		QPoint topRight(30, p->size().height()-120-height());
+
+		if (geometry().topLeft() != topRight)
+			move(topRight);		// this is hot shit (we are in paintEvent)
+	}
+
+	QRect bgRect = QRect(QPoint(), QSize(width(), height()-15));
+	QPoint pc(32, bgRect.height()+15);
+
+	QPolygon p;
+	p.append(QPoint(pc.x()-15, bgRect.bottom()+1));
+	p.append(QPoint(pc.x()+15, bgRect.bottom()+1));
+	p.append(pc);
+	p.append(QPoint(pc.x()-15, bgRect.bottom()+1));
+
+	QPainter painter(this);
+
+	// painting
+	painter.setPen(Qt::NoPen);
+	painter.setBrush(DkSettings::display.bgColorWidget);
+	painter.drawRect(bgRect);
+	painter.drawPolygon(p);
+	// end painting
+
+	painter.end();
+	DkWidget::paintEvent(event);
+}
 
 // DkSocialButton --------------------------------------------------------------------
 DkSocialButton::DkSocialButton(int mode, QWidget* parent, Qt::WFlags flags) : QLabel(parent, flags) {
@@ -321,9 +464,9 @@ void DkSocialButton::mousePressEvent(QMouseEvent *event) {
 
 void DkSocialButton::mouseReleaseEvent(QMouseEvent *event) {
 
-	if (mode == facebook) {
+	//if (mode == facebook) {
 		emit showConfirmDialogSignal();
-	}
+	//}
 
 	QLabel::mouseReleaseEvent(event);
 }

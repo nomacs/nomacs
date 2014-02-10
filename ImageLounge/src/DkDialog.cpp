@@ -899,7 +899,18 @@ DkChangeTranslationDialog::DkChangeTranslationDialog(QWidget* parent /* = 0 */, 
 
 	QSettings settings;
 	settings.beginGroup("Fotobox");
+	
+	QStringList defaultStrings = DkSettings::getDefaultStrings();
 	origStrings = settings.value("origFotoStrings", DkSettings::getDefaultStrings()).toStringList();
+
+	if (origStrings.size() < defaultStrings.size()) {
+
+		// recovering old settings only works if we never change the first strings!
+		for (int idx = 0; idx < origStrings.size(); idx++)
+			defaultStrings[idx] = origStrings[idx];
+
+		origStrings = defaultStrings;
+	}
 
 	createLayout();
 }

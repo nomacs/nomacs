@@ -333,6 +333,7 @@ protected:
 	int rating;
 
 	DkSocialConfirmDialog* socialConfirmDialog;
+	DkQrCodeConfirmDialog* qrCodeConfirmDialog;
 
 };
 
