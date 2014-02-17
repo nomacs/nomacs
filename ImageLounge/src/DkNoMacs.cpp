@@ -1385,7 +1385,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		
 		if (explorer)
 			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
-
+		
 		DkSettings::save();
 	}
 
