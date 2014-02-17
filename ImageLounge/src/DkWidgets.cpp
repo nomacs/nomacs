@@ -464,9 +464,17 @@ void DkSocialButton::mousePressEvent(QMouseEvent *event) {
 
 void DkSocialButton::mouseReleaseEvent(QMouseEvent *event) {
 
-	//if (mode == facebook) {
+	QRect pr = pixmap()->rect();
+	
+	// ok that's not beautiful but it does the trick
+	if (mode == qrcode)
+		pr.moveTopLeft(QPoint(contentsMargins().left(), contentsMargins().top()));
+	else if (mode == facebook)
+		pr.moveTopRight(QPoint(width()-contentsMargins().right(), contentsMargins().top()));
+
+	// do not track mouse clicks outside the pixmap area
+	if ((mode == qrcode || mode == facebook) && pr.contains(event->pos()))
 		emit showConfirmDialogSignal();
-	//}
 
 	QLabel::mouseReleaseEvent(event);
 }

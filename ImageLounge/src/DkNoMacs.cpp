@@ -710,37 +710,39 @@ void DkNoMacs::createContextMenu() {
 	contextMenu = new QMenu(this);
 
 	contextMenu->addMenu(fotoMenu);
+	contextMenu->addAction(panelActions[menu_panel_preview]);
 	contextMenu->addAction(panelActions[menu_panel_player]);
 	contextMenu->addAction(panelActions[menu_panel_social_button]);
 	contextMenu->addAction(panelActions[menu_panel_qrcode]);
 	contextMenu->addSeparator();
 	contextMenu->addAction(viewActions[menu_view_minimize]);
 	contextMenu->addAction(viewActions[menu_view_fullscreen]);
-	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
 
-	contextMenu->addAction(panelActions[menu_panel_explorer]);
-	contextMenu->addAction(panelActions[menu_panel_preview]);
-	contextMenu->addAction(panelActions[menu_panel_thumbview]);
-	contextMenu->addAction(panelActions[menu_panel_scroller]);
-	contextMenu->addAction(panelActions[menu_panel_exif]);
-	contextMenu->addAction(panelActions[menu_panel_overview]);
-	contextMenu->addAction(panelActions[menu_panel_info]);
-	contextMenu->addAction(panelActions[menu_panel_histogram]);
+	QMenu* panelContextMenu = contextMenu->addMenu(tr("Panels"));
+	panelContextMenu->addAction(panelActions[menu_panel_thumbview]);
+	panelContextMenu->addAction(panelActions[menu_panel_explorer]);
+	panelContextMenu->addAction(panelActions[menu_panel_scroller]);
+	panelContextMenu->addAction(panelActions[menu_panel_exif]);
+	panelContextMenu->addAction(panelActions[menu_panel_overview]);
+	panelContextMenu->addAction(panelActions[menu_panel_info]);
+	panelContextMenu->addAction(panelActions[menu_panel_histogram]);
 
 	contextMenu->addSeparator();
 	
-	contextMenu->addAction(editActions[menu_edit_copy_buffer]);
-	contextMenu->addAction(editActions[menu_edit_copy]);
-	contextMenu->addAction(editActions[menu_edit_paste]);
-	contextMenu->addSeparator();
-	
+	QMenu* copyContextMenu = contextMenu->addMenu(tr("Copy && Paste"));
+	copyContextMenu->addAction(editActions[menu_edit_copy_buffer]);
+	copyContextMenu->addAction(editActions[menu_edit_copy]);
+	copyContextMenu->addAction(editActions[menu_edit_paste]);
+
 	contextMenu->addMenu(sortMenu);
 
 	QMenu* viewContextMenu = contextMenu->addMenu(tr("&View"));
 	viewContextMenu->addAction(viewActions[menu_view_reset]);
 	viewContextMenu->addAction(viewActions[menu_view_100]);
 	viewContextMenu->addAction(viewActions[menu_view_fit_frame]);
+	viewContextMenu->addAction(viewActions[menu_view_frameless]);
+
 
 	QMenu* editContextMenu = contextMenu->addMenu(tr("&Edit"));
 	editContextMenu->addAction(editActions[menu_edit_rotate_cw]);
