@@ -1373,7 +1373,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 	emit closeSignal();
 	qDebug() << "saving window settings...";
 	setVisible(false);
-	showNormal();
+	//showNormal();
 
 	if (viewport())
 		viewport()->unloadImage();
