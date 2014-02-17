@@ -514,6 +514,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_save]);
 	fileMenu->addAction(fileActions[menu_file_save_as]);
+	fileMenu->addAction(fileActions[menu_file_save_web]);
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
@@ -778,6 +779,10 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
 	fileActions[menu_file_save_as]->setStatusTip(tr("Save an image as"));
 	connect(fileActions[menu_file_save_as], SIGNAL(triggered()), this, SLOT(saveFileAs()));
+
+	fileActions[menu_file_save_web] = new QAction(tr("&Save for Web"), this);
+	fileActions[menu_file_save_web]->setStatusTip(tr("Save an Image for Web Applications"));
+	connect(fileActions[menu_file_save_web], SIGNAL(triggered()), this, SLOT(saveFileWeb()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
@@ -1253,6 +1258,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 
 	fileActions[menu_file_save]->setEnabled(enable);
 	fileActions[menu_file_save_as]->setEnabled(enable);
+	fileActions[menu_file_save_web]->setEnabled(enable);
 	fileActions[menu_file_rename]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
 	fileActions[menu_file_reload]->setEnabled(enable);
@@ -2527,9 +2533,71 @@ void DkNoMacs::saveFileAs(bool silent) {
 		compression = tifDialog->getCompression();
 	}
 
-
 	if (loader)
 		loader->saveFile(sFile, selectedFilter, saveImg, compression);
+
+}
+
+void DkNoMacs::saveFileWeb() {
+
+	DkImageLoader* loader = viewport()->getImageLoader();
+
+	if (!loader)
+		return;
+
+	
+	QString saveName;
+	QFileInfo saveFile;
+
+	if (loader->hasFile()) {
+		saveFile = loader->getFile();
+		saveName = saveFile.fileName();
+
+		qDebug() << "save dir: " << loader->getSaveDir();
+
+		if (loader->getSaveDir() != saveFile.absoluteDir())
+			saveFile = QFileInfo(loader->getSaveDir(), saveName);
+	}
+
+	QImage img = viewport()->getImage();
+	bool imgHasAlpha = DkImage::alphaChannelUsed(img);
+
+	QString suffix = imgHasAlpha ? ".png" : ".jpg";
+	QString saveFilterGui;
+
+	for (int idx = 0; idx < DkImageLoader::saveFilters.size(); idx++) {
+
+		if (DkImageLoader::saveFilters.at(idx).contains(suffix)) {
+			saveFilterGui = DkImageLoader::saveFilters.at(idx);
+			break;
+		}
+	}
+
+	if (saveFile.exists())
+		saveFile = QFileInfo(saveFile.absolutePath(), saveFile.baseName() + suffix);
+
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
+						saveFile.absoluteFilePath(), saveFilterGui);
+
+	if (fileName.isEmpty())
+		return;
+
+	if (!jpgDialog)
+		jpgDialog = new DkCompressDialog(this);
+
+	jpgDialog->setDialogMode(DkCompressDialog::web_dialog);
+
+	jpgDialog->imageHasAlpha(imgHasAlpha);
+	jpgDialog->setImage(&img);
+
+	if (!jpgDialog->exec())
+		return;
+
+	float factor = jpgDialog->getResizeFactor();
+	if (factor != -1)
+		img = DkImage::resizeImage(img, QSize(), factor, DkImage::ipl_area);
+
+	loader->saveFile(fileName, suffix, img, jpgDialog->getCompression());
 
 }
 

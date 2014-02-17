@@ -91,7 +91,7 @@ bool DkImage::normImage(QImage& img) {
 		mPtr += pad;
 	}
 
-	if (minVal == 0 && maxVal == 255)
+	if (minVal == 0 && maxVal == 255 || maxVal-minVal == 0)
 		return false;
 
 	uchar* ptr = img.bits();
@@ -179,9 +179,9 @@ bool DkImage::autoAdjustImage(QImage& img) {
 	}
 
 	QColor ignoreChannel;
-	bool ignoreR = maxR-minR == 255;
-	bool ignoreG = maxG-minG == 255;
-	bool ignoreB = maxB-minB == 255;
+	bool ignoreR = maxR-minR == 0 || maxR-minR == 255;
+	bool ignoreG = maxR-minR == 0 || maxG-minG == 255;
+	bool ignoreB = maxR-minR == 0 || maxB-minB == 255;
 
 	uchar* ptr = img.bits();
 

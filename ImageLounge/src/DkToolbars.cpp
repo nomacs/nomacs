@@ -469,72 +469,71 @@ void DkGradient::activateSlider(DkColorSlider *sender) {
 
 };
 
-
 //
 DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
 	: QToolBar(parent) {
 
-		loadSettings();
+	loadSettings();
 
-		enableTFCheckBox = new QCheckBox(tr("Enable"));
-		enableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
+	enableTFCheckBox = new QCheckBox(tr("Enable"));
+	enableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
 
-		this->addWidget(enableTFCheckBox);
+	this->addWidget(enableTFCheckBox);
 
-		// >DIR: more compact gui [2.3.2012 markus]
-		this->addSeparator();
-		//this->addWidget(new QLabel(tr("Active channel:")));
+	// >DIR: more compact gui [2.3.2012 markus]
+	this->addSeparator();
+	//this->addWidget(new QLabel(tr("Active channel:")));
 
-		channelComboBox = new QComboBox(this);
-		channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
-		this->addWidget(channelComboBox);
+	channelComboBox = new QComboBox(this);
+	channelComboBox->setStatusTip(tr("Changes the displayed color channel"));
+	this->addWidget(channelComboBox);
 
-		historyCombo = new QComboBox(this);
+	historyCombo = new QComboBox(this);
 
-		QAction* delGradientAction = new QAction("Delete", historyCombo);
-		connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
+	QAction* delGradientAction = new QAction("Delete", historyCombo);
+	connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
 
-		historyCombo->addAction(delGradientAction);
-		historyCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
+	historyCombo->addAction(delGradientAction);
+	historyCombo->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-		updateGradientHistory();
-		connect(historyCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
-		connect(historyCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
+	updateGradientHistory();
+	connect(historyCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(switchGradient(int)));
+	connect(historyCombo, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(deleteGradientMenu(QPoint)));
 
-		this->addWidget(historyCombo);
+	this->addWidget(historyCombo);
 
-		createIcons();
+	createIcons();
 
-		gradient = new DkGradient(this);
-		gradient->setStatusTip(tr("Click into the field for a new slider"));
-		this->addWidget(gradient);
+	gradient = new DkGradient(this);
+	gradient->setStatusTip(tr("Click into the field for a new slider"));
+	this->addWidget(gradient);
 
-		effect = new QGraphicsOpacityEffect(gradient);
-		effect->setOpacity(1);
-		gradient->setGraphicsEffect(effect);
+	effect = new QGraphicsOpacityEffect(gradient);
+	effect->setOpacity(1);
+	gradient->setGraphicsEffect(effect);
 
-		// Disable the entire transfer toolbar:
-		//enableTF(Qt::Unchecked);
+	// Disable the entire transfer toolbar:
+	//enableTF(Qt::Unchecked);
 
-		// Initialize the combo box for color images:
-		imageMode = mode_uninitialized;
-		applyImageMode(mode_rgb);
+	// Initialize the combo box for color images:
+	imageMode = mode_uninitialized;
+	applyImageMode(mode_rgb);
 
-		enableToolBar(false);
-		enableTFCheckBox->setEnabled(true);	
+	enableToolBar(false);
+	enableTFCheckBox->setEnabled(true);	
 
-		connect(enableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
-		connect(gradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
+	connect(enableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
+	connect(gradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
 
-		// Actions called triggered by toolbar buttons:
-		connect(toolBarActions[icon_toolbar_reset], SIGNAL(triggered()), this, SLOT(reset()));
-		connect(toolBarActions[toolbar_pipette], SIGNAL(triggered()), this, SLOT(pickColor()));
+	// Actions called triggered by toolbar buttons:
+	connect(toolBarActions[icon_toolbar_reset], SIGNAL(triggered()), this, SLOT(reset()));
+	connect(toolBarActions[toolbar_pipette], SIGNAL(triggered()), this, SLOT(pickColor()));
 
-		// needed for initialization
-		connect(this, SIGNAL(gradientChanged()), gradient, SIGNAL(gradientChanged()));
+	// needed for initialization
+	connect(this, SIGNAL(gradientChanged()), gradient, SIGNAL(gradientChanged()));
 
-		if (!oldGradients.empty())
-			gradient->setGradient(oldGradients.first());
+	if (!oldGradients.empty())
+		gradient->setGradient(oldGradients.first());
 
 };
 

@@ -77,6 +77,7 @@
 #include "DkSettings.h"
 #include "DkMath.h"
 #include "DkToolbars.h"
+#include "DkBaseViewPort.h"
 
 #ifdef Q_WS_WIN
 #include <ShObjIdl.h>

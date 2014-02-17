@@ -115,19 +115,33 @@ void DkCompressDialog::init() {
 	if (dialogMode == jpg_dialog || dialogMode == j2k_dialog) {
 
 		if (dialogMode == jpg_dialog)
-			setWindowTitle("JPG Settings");
+			setWindowTitle(tr("JPG Settings"));
 		else
-			setWindowTitle("J2K Settings");
+			setWindowTitle(tr("J2K Settings"));
 
+		slider->show();
+		colChooser->show();
 		cbLossless->hide();
+		sizeCombo->hide();
 		slider->setEnabled(true);
 	}
 	else if (dialogMode == webp_dialog) {
-		setWindowTitle("WebP Settings");
+		setWindowTitle(tr("WebP Settings"));
 		colChooser->setEnabled(false);
-		//colChooser->hide();
+		slider->show();
+		colChooser->show();
 		cbLossless->show();
+		sizeCombo->hide();
 		losslessCompression(cbLossless->isChecked());
+	}
+	else if (dialogMode == web_dialog) {
+
+		setWindowTitle(tr("Save for Web"));
+
+		sizeCombo->show();
+		slider->hide();
+		colChooser->hide();
+		cbLossless->hide();
 	}
 
 	loadSettings();
@@ -137,7 +151,9 @@ void DkCompressDialog::init() {
 void DkCompressDialog::createLayout() {
 
 	QLabel* origLabelText = new QLabel(tr("Original"), this);
+	origLabelText->setAlignment(Qt::AlignHCenter);
 	QLabel* newLabel = new QLabel(tr("New"), this);
+	newLabel->setAlignment(Qt::AlignHCenter);
 
 	// shows the original image
 	origView = new DkBaseViewPort(this);
@@ -159,6 +175,14 @@ void DkCompressDialog::createLayout() {
 	previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
 	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
 
+	// size combo for web
+	sizeCombo = new QComboBox(this);
+	sizeCombo->addItem(tr("Small  (800 x 600)"), 600);
+	sizeCombo->addItem(tr("Medium (1024 x 768)"), 786);
+	sizeCombo->addItem(tr("Large  (1920 x 1080)"), 1080);
+	sizeCombo->addItem(tr("Original Size"), -1);
+	connect(sizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
+
 	// slider
 	slider = new DkSlider(tr("Image Quality"), this);
 	slider->setValue(80);
@@ -170,6 +194,7 @@ void DkCompressDialog::createLayout() {
 	connect(cbLossless, SIGNAL(toggled(bool)), this, SLOT(losslessCompression(bool)));
 
 	previewSizeLabel = new QLabel();
+	previewSizeLabel->setAlignment(Qt::AlignRight);
 
 	// color chooser
 	colChooser = new DkColorChooser(bgCol, tr("Background Color"), this);
@@ -196,7 +221,8 @@ void DkCompressDialog::createLayout() {
 	previewLayout->addWidget(slider, 2, 0);
 	previewLayout->addWidget(colChooser, 2, 1);
 	previewLayout->addWidget(cbLossless, 3, 0);
-	previewLayout->addWidget(previewSizeLabel, 3, 1);
+	previewLayout->addWidget(sizeCombo, 4, 0);
+	previewLayout->addWidget(previewSizeLabel, 4, 1);
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -241,8 +267,12 @@ void DkCompressDialog::drawPreview() {
 	qDebug() << "min size: " << origView->minimumSize();
 	newImg = QImage(origImg.size(), QImage::Format_ARGB32);
 
-	if (dialogMode == jpg_dialog || dialogMode == j2k_dialog && hasAlpha)
+	if ((dialogMode == jpg_dialog || dialogMode == j2k_dialog) && hasAlpha)
 		newImg.fill(bgCol.rgb());
+	else if ((dialogMode == jpg_dialog || dialogMode == web_dialog) && !hasAlpha)
+		newImg.fill(palette().color(QPalette::Background));
+	else
+		newImg.fill(QColor(0,0,0,0));
 	 
 	QPainter bgPainter(&newImg);
 	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());
@@ -255,7 +285,7 @@ void DkCompressDialog::drawPreview() {
 		buffer.open(QIODevice::ReadWrite);
 		newImg.save(&buffer, "JPG", slider->value());
 		newImg.loadFromData(ba, "JPG");
-		updateFileSizeLabel(buffer.size());
+		updateFileSizeLabel(ba.size(), origImg.size());
 	}
 	else if (dialogMode == j2k_dialog) {
 		// pre-compute the jpg compression
@@ -264,7 +294,7 @@ void DkCompressDialog::drawPreview() {
 		buffer.open(QIODevice::ReadWrite);
 		newImg.save(&buffer, "J2K", slider->value());
 		newImg.loadFromData(ba, "J2K");
-		updateFileSizeLabel(buffer.size());
+		updateFileSizeLabel(ba.size(), origImg.size());
 		qDebug() << "using j2k...";
 	}
 	else if (dialogMode == webp_dialog && getCompression() != -1) {
@@ -274,30 +304,56 @@ void DkCompressDialog::drawPreview() {
 		loader.encodeWebP(buffer, newImg, getCompression(), 0);
 		loader.decodeWebP(buffer);
 		newImg = loader.image();
-		updateFileSizeLabel(buffer.size());
+		updateFileSizeLabel(buffer.size(), origImg.size());
 	}
-	else {
+	else if (dialogMode == web_dialog) {
+
+		float factor = getResizeFactor();
+		if (factor != -1)
+			newImg = DkImage::resizeImage(newImg, QSize(), factor, DkImage::ipl_area);
+
+		if (!hasAlpha) {
+			// pre-compute the jpg compression
+			QByteArray ba;
+			QBuffer buffer(&ba);
+			buffer.open(QIODevice::ReadWrite);
+			newImg.save(&buffer, "JPG", getCompression());
+			newImg.loadFromData(ba, "JPG");
+			updateFileSizeLabel(ba.size(), origImg.size(), factor);
+		}
+		else
+			updateFileSizeLabel();
+	}
+	else
 		updateFileSizeLabel();
-	}
 
 	//previewLabel->setScaledContents(true);
 	QImage img = newImg.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
 }
 
-void DkCompressDialog::updateFileSizeLabel(float bufferSize) {
+void DkCompressDialog::updateFileSizeLabel(float bufferSize, QSize bufferImgSize, float factor) {
 
-	if (img == 0 || bufferSize == -1) {
+	if (bufferImgSize.isEmpty())
+		bufferImgSize = newImg.size();
+
+	if (img == 0 || bufferSize == -1 || bufferImgSize.isNull()) {
 		previewSizeLabel->setText(tr("File Size: --"));
 		previewSizeLabel->setEnabled(false);
 		return;
 	}
 	previewSizeLabel->setEnabled(true);
 
-	float depth = (dialogMode == jpg_dialog || dialogMode == j2k_dialog) ? 24 : img->depth();	// jpg uses always 24 bit
+	if (factor == -1.0f)
+		factor = 1.0f;
 
-	float rawBufferSize = newImg.width()*newImg.height()*depth/8.0f;
-	float rawImgSize = img->width()*img->height()*depth/8.0f;
+	float depth = (dialogMode == jpg_dialog || dialogMode == j2k_dialog || (dialogMode == web_dialog && hasAlpha)) ? 24 : img->depth();	// jpg uses always 24 bit
+	
+	float rawBufferSize = bufferImgSize.width()*bufferImgSize.height()*depth/8.0f;
+	float rawImgSize = factor*(img->width()*img->height()*depth/8.0f);
+
+	//qDebug() << "I need: " << rawImgSize*bufferSize/rawBufferSize << " bytes because buffer size: " << bufferSize;
+	//qDebug() << "new image: " << newImg.size() << " full image: " << img->size() << " depth: " << depth;
 
 	previewSizeLabel->setText(tr("File Size: ~%1").arg(DkUtils::readableByte(rawImgSize*bufferSize/rawBufferSize)));
 }

@@ -203,6 +203,7 @@ enum fileActions {
 	menu_file_app_manager,
 	menu_file_save,
 	menu_file_save_as,
+	menu_file_save_web,
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
@@ -463,6 +464,7 @@ public slots:
 	void updateFilterState(QStringList filters);
 	void saveFile();
 	void saveFileAs(bool silent = false);
+	void saveFileWeb();
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
