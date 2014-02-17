@@ -209,7 +209,7 @@ public:
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/ 
-	bool loadGeneral(QFileInfo file, bool rotateImg = false);
+	bool loadGeneral(QFileInfo file, bool rotateImg = false, bool fast = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
@@ -315,7 +315,7 @@ public slots:
 protected:
 	
 	bool loadRohFile(QString fileName);
-	bool loadRawFile(QFileInfo file);
+	bool loadRawFile(QFileInfo file, bool fast = false);
 	void indexPages(const QFileInfo& fileInfo);
 	void convert32BitOrder(void *buffer, int width);
 

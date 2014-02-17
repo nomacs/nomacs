@@ -126,7 +126,7 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 		if (thumb.isNull()) {
 			DkBasicLoader loader;
 			
-			if (loader.loadGeneral(file, true))
+			if (loader.loadGeneral(file, true, true))
 				thumb = loader.image();
 		}
 
