@@ -190,7 +190,7 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	}
 
 	// RAW loader
-	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str()) && DkImageLoader::openFilters.contains(newSuffix, Qt::CaseInsensitive)) {
+	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
 		
 		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files

@@ -700,7 +700,7 @@ void DkFilePreview::moveImages() {
 
 	//qDebug() << "currentDx: " << currentDx;
 	worldMatrix.translate(currentDx, 0);
-	qDebug() << "dx: " << worldMatrix.dx();
+	//qDebug() << "dx: " << worldMatrix.dx();
 	update();
 }
 
