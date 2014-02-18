@@ -543,7 +543,8 @@ void DkNoMacs::createMenu() {
 	sortMenu->addAction(sortActions[menu_sort_descending]);
 
 	fileMenu->addMenu(sortMenu);
-	
+	fileMenu->addAction(fileActions[menu_file_recursive]);
+
 	fileMenu->addAction(fileActions[menu_file_goto]);
 	fileMenu->addAction(fileActions[menu_file_find]);
 	fileMenu->addAction(fileActions[menu_file_reload]);
@@ -820,6 +821,12 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
 	fileActions[menu_file_find]->setStatusTip(tr("Find an image"));
 	connect(fileActions[menu_file_find], SIGNAL(triggered()), this, SLOT(find()));
+
+	fileActions[menu_file_recursive] = new QAction(tr("Scan Folder Re&cursive"), this);
+	fileActions[menu_file_recursive]->setStatusTip(tr("Step through Folder and Sub Folders"));
+	fileActions[menu_file_recursive]->setCheckable(true);
+	fileActions[menu_file_recursive]->setChecked(DkSettings::global.scanSubFolders);
+	connect(fileActions[menu_file_recursive], SIGNAL(triggered(bool)), this, SLOT(setRecursiveScan(bool)));
 
 	//fileActions[menu_file_share_fb] = new QAction(tr("Share on &Facebook"), this);
 	////fileActions[menu_file_share_fb]->setShortcuts(QKeySequence::Close);
@@ -1904,6 +1911,19 @@ void DkNoMacs::fitFrame() {
 	// reset viewport if we did not clip -> compensates round-off errors
 	if (screenRect.contains(nmRect.toRect()))
 		viewport()->resetView();
+
+}
+
+void DkNoMacs::setRecursiveScan(bool recursive) {
+
+	DkSettings::global.scanSubFolders = recursive;
+	//viewport()->reloadFile();
+	DkImageLoader* loader = viewport()->getImageLoader();
+	
+	if (!loader)
+		return;
+
+	loader->updateSubFolders(loader->getDir());
 
 }
 

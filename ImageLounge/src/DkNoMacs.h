@@ -207,6 +207,7 @@ enum fileActions {
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
+	menu_file_recursive,
 	menu_file_print,
 	menu_file_reload,
 	menu_file_next,
@@ -521,6 +522,7 @@ public slots:
 	void checkForUpdate();
 	void setFrameless(bool frameless);
 	void fitFrame();
+	void setRecursiveScan(bool recursive);
 	void setContrast(bool contrast);
 	void enableMovieActions(bool enable);
 	void clearFileHistory();
