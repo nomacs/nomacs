@@ -1638,18 +1638,18 @@ public:
 
 
 public slots:
-	void setValue(int value) {
+void setValue(int value) {
 		
-		slider->blockSignals(true);
-		slider->setValue(value);
-		slider->blockSignals(false);
+	slider->blockSignals(true);
+	slider->setValue(value);
+	slider->blockSignals(false);
 
-		sliderBox->blockSignals(true);
-		sliderBox->setValue(value);
-		sliderBox->blockSignals(false);
+	sliderBox->blockSignals(true);
+	sliderBox->setValue(value);
+	sliderBox->blockSignals(false);
 
-		emit valueChanged(value);
-	}
+	emit valueChanged(value);
+}
 
 signals:
 	void sliderMoved(int value);
