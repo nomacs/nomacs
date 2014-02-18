@@ -4410,7 +4410,7 @@ void DkEditableRect::setVisible(bool visible) {
 }
 
 // DkEditableRect --------------------------------------------------------------------
-DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/) : DkEditableRect(rect, parent, f) {
+DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /* = 0*/, Qt::WindowFlags f /* = 0*/) : DkEditableRect(rect, parent, f) {
 
 	cropToolbar = 0;
 }
