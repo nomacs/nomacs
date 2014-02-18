@@ -141,7 +141,7 @@ DkBasicLoader::DkBasicLoader(int mode) {
  * @param file the image file that should be loaded.
  * @return bool true if the image could be loaded.
  **/ 
-bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
+bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg, bool fast) {
 
 	bool imgLoaded = false;
 	
@@ -190,11 +190,11 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	}
 
 	// RAW loader
-	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str()) && DkImageLoader::openFilters.contains(newSuffix, Qt::CaseInsensitive)) {
+	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
 		
 		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files
-		imgLoaded = loadRawFile(this->file);
+		imgLoaded = loadRawFile(this->file, fast);
 		if (imgLoaded) loader = raw_loader;
 	}
 
@@ -315,7 +315,7 @@ bool DkBasicLoader::loadRohFile(QString fileName){
  * @param file the file to be loaded.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRawFile(QFileInfo file) {
+bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 
 	bool imgLoaded = false;
 
@@ -344,8 +344,8 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		// TODO: check actual screen resolution
 		qDebug() << "max thumb size: " << tM;
 
-		if (DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
-			DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920) {
+		if (fast || DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
+			(DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920)) {
 			
 			// crashes here if image is broken
 			int err = iProcessor.unpack_thumb();
@@ -1537,6 +1537,8 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	// update dir
 	if (skipIdx == 0 && cacheState == cache_force_load)
 		loadDir(dir, false);
+	else
+		loadDir(dir);
 
 	mutex.lock();
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
@@ -1579,13 +1581,14 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searchFile) {
 
 	file.refresh();
-	bool virtualExists = files.contains(virtualFile.fileName());
-
-	if (!virtualExists && !file.exists())
-		return QFileInfo();
+	virtualFile.refresh();
+	bool virtualExists = files.contains(virtualFile.fileName()); // old code here is a bug if the image is e.g. renamed
 
 	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
 	qDebug() << "file: " << file.absoluteFilePath();
+
+	if (!virtualExists && !file.exists())
+		return QFileInfo();
 
 	DkTimer dt;
 
@@ -2363,12 +2366,15 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		this->file = QFileInfo(filePath);
 		this->editFile = QFileInfo();
 
-		this->virtualFile = this->file;
-		basicLoader.setImage(saveImg, this->file);
-		loadDir(this->file.absoluteDir());
+		if (saved)
+			load(filePath, true);
 
-		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
-		sendFileSignal();
+		//this->virtualFile = this->file;
+		//basicLoader.setImage(saveImg, this->file);
+		//loadDir(this->file.absoluteDir());
+
+		//if (cacher) cacher->setCurrentFile(file, basicLoader.image());
+		//sendFileSignal();
 	}
 }
 

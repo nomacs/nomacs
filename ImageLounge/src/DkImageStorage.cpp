@@ -73,11 +73,15 @@ bool DkImage::normImage(QImage& img) {
 	int bpl = (img.width() * img.depth() + 7) / 8;
 	int pad = img.bytesPerLine() - bpl;
 	uchar* mPtr = img.bits();
+	bool hasAlpha = img.hasAlphaChannel() || img.format() == QImage::Format_RGB32;
 
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
 		
 		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
 			
+			if (hasAlpha && cIdx % 4 == 3)
+				continue;
+
 			if (*mPtr > maxVal)
 				maxVal = *mPtr;
 			if (*mPtr < minVal)
@@ -87,15 +91,19 @@ bool DkImage::normImage(QImage& img) {
 		mPtr += pad;
 	}
 
-	if (minVal == 0 && maxVal == 255)
+	if (minVal == 0 && maxVal == 255 || maxVal-minVal == 0)
 		return false;
 
 	uchar* ptr = img.bits();
 	
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
 	
-		for (int cIdx = 0; cIdx < bpl; cIdx++) {
-			*ptr++ = qRound(255.0f*(*ptr-minVal)/(maxVal-minVal));
+		for (int cIdx = 0; cIdx < bpl; cIdx++, ptr++) {
+
+			if (hasAlpha && cIdx % 4 == 3)
+				continue;
+
+			*ptr = qRound(255.0f*(*ptr-minVal)/(maxVal-minVal));
 		}
 		
 		ptr += pad;
@@ -129,7 +137,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 		return false;
 	}
 
-	int channels = (img.format() == QImage::Format_RGB888) ? 3 : 4;
+	int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
 
 	uchar maxR = 0,		maxG = 0,	maxB = 0;
 	uchar minR = 255,	minG = 255, minB = 255;
@@ -171,9 +179,9 @@ bool DkImage::autoAdjustImage(QImage& img) {
 	}
 
 	QColor ignoreChannel;
-	bool ignoreR = maxR-minR < 30 || maxR-minR == 255;
-	bool ignoreG = maxG-minG < 30 || maxG-minG == 255;
-	bool ignoreB = maxB-minB < 30 || maxB-minB == 255;
+	bool ignoreR = maxR-minR == 0 || maxR-minR == 255;
+	bool ignoreG = maxR-minR == 0 || maxG-minG == 255;
+	bool ignoreB = maxR-minR == 0 || maxB-minB == 255;
 
 	uchar* ptr = img.bits();
 

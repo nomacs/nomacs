@@ -702,6 +702,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		moveImageTimer->start();
 	}
 
+
 	isPainted = true;	// tell move image to go on
 
 }
@@ -1112,9 +1113,8 @@ void DkFilePreview::moveImages() {
 		return;
 
 	if (scrollToCurrentImage) {
-		
 		float cDist = width()/2.0f - newFileRect.center().x();
-		
+
 		if (fabs(cDist) < width()) {
 			currentDx = sqrt(fabs(cDist))/1.3f;
 			if (cDist < 0) currentDx *= -1.0f;
@@ -1147,7 +1147,7 @@ void DkFilePreview::moveImages() {
 
 	//qDebug() << "currentDx: " << currentDx;
 	worldMatrix.translate(currentDx, 0);
-	qDebug() << "dx: " << worldMatrix.dx();
+	//qDebug() << "dx: " << worldMatrix.dx();
 	update();
 }
 
@@ -5060,7 +5060,7 @@ void DkEditableRect::setVisible(bool visible) {
 }
 
 // DkEditableRect --------------------------------------------------------------------
-DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/) : DkEditableRect(rect, parent, f) {
+DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /* = 0*/, Qt::WindowFlags f /* = 0*/) : DkEditableRect(rect, parent, f) {
 
 	cropToolbar = 0;
 }

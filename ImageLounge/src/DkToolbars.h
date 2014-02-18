@@ -64,85 +64,84 @@ class DkColorSlider : public QWidget {
 	Q_OBJECT
 	
 	
-	public:
-		//DkColorSlider(QWidget *parent);
-		DkColorSlider(QWidget *parent, QColor color);
-		DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth);
-		~DkColorSlider();
-		QColor getColor();
-		qreal getNormedPos();
-		void setNormedPos(qreal pos);
-		void setActive(bool isActive);
-		void updatePos(int parentWidth);
+public:
+	//DkColorSlider(QWidget *parent);
+	DkColorSlider(QWidget *parent, QColor color);
+	DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth);
+	~DkColorSlider();
+	QColor getColor();
+	qreal getNormedPos();
+	void setNormedPos(qreal pos);
+	void setActive(bool isActive);
+	void updatePos(int parentWidth);
 
-		//void paintSlider(QPainter *painter);
+	//void paintSlider(QPainter *painter);
 
-	signals:
-		void sliderMoved(DkColorSlider *sender, int dragDistX, int yPos);
-		void sliderActivated(DkColorSlider *sender);
-		void colorChanged(DkColorSlider *slider);
+signals:
+	void sliderMoved(DkColorSlider *sender, int dragDistX, int yPos);
+	void sliderActivated(DkColorSlider *sender);
+	void colorChanged(DkColorSlider *slider);
 				
-	public slots:
-		virtual void paintEvent(QPaintEvent* event);
+public slots:
+	virtual void paintEvent(QPaintEvent* event);
 
-	protected:
-		virtual void mousePressEvent(QMouseEvent *event);
-		virtual void mouseMoveEvent(QMouseEvent *event);
-		virtual void mouseDoubleClickEvent(QMouseEvent *event);
+protected:
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
-	private:
-		int sliderWidth, sliderHeight, sliderHalfWidth;
-		bool isActive;
-		int dragStartX;
-		QColor color;
-		qreal normedPos;
-				
+private:
+	int sliderWidth, sliderHeight, sliderHalfWidth;
+	bool isActive;
+	int dragStartX;
+	QColor color;
+	qreal normedPos;
 };
 
 class DkGradient : public QWidget {
 	Q_OBJECT
 
-	public:
-		DkGradient(QWidget *parent);
-		~DkGradient();
-		QGradientStops getGradientStops();
-		void insertSlider(qreal pos, QColor col = QColor());
-		void reset();
-		QLinearGradient getGradient();
-		void setGradient(const QLinearGradient& gradient);
+public:
+	DkGradient(QWidget *parent);
+	~DkGradient();
+	QGradientStops getGradientStops();
+	void insertSlider(qreal pos, QColor col = QColor());
+	void reset();
+	QLinearGradient getGradient();
+	void setGradient(const QLinearGradient& gradient);
 
-	signals:
-		void gradientChanged();
+signals:
+	void gradientChanged();
 		
-	public slots:
-		virtual void paintEvent(QPaintEvent* event);
-		//virtual void setEnabled(bool enabled);
-		void moveSlider(DkColorSlider* sender, int dragDistX, int yPos);
-		void changeColor(DkColorSlider *slider);
-		void activateSlider(DkColorSlider *sender);
+public slots:
+	virtual void paintEvent(QPaintEvent* event);
+	//virtual void setEnabled(bool enabled);
+	void moveSlider(DkColorSlider* sender, int dragDistX, int yPos);
+	void changeColor(DkColorSlider *slider);
+	void activateSlider(DkColorSlider *sender);
 
-	protected:
-		virtual void mousePressEvent(QMouseEvent *event);
-		virtual void mouseReleaseEvent(QMouseEvent *event);
-		virtual void resizeEvent ( QResizeEvent * event );
+protected:
+	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
+	virtual void resizeEvent ( QResizeEvent * event );
 		
-	private:
-		void init();
-		void addSlider(qreal pos, QColor color);
-		void clearAllSliders();
-		void updateGradient();
-		qreal getNormedPos(int pos);
-		int getAbsolutePos(qreal pos);
+private:
+	void init();
+	void addSlider(qreal pos, QColor color);
+	void clearAllSliders();
+	void updateGradient();
+	qreal getNormedPos(int pos);
+	int getAbsolutePos(qreal pos);
 
-		int clickAreaHeight;
-		int deleteSliderDist;
-		QVector<DkColorSlider*> sliders;
-		bool isSliderDragged;
-		QLinearGradient gradient;
-		int sliderWidth, halfSliderWidth;
+	int clickAreaHeight;
+	int deleteSliderDist;
+	QVector<DkColorSlider*> sliders;
+	bool isSliderDragged;
+	QLinearGradient gradient;
+	int sliderWidth, halfSliderWidth;
 
-		DkColorSlider *activeSlider;
-		bool isActiveSliderExisting;
+	DkColorSlider *activeSlider;
+	bool isActiveSliderExisting;
 };
 
 enum toolBarIcons {
@@ -180,7 +179,7 @@ signals:
 	void channelChanged(int channel);
 	void transferFunctionChanged(int channel, QGradientStops stops);
 	void tFEnabled(bool);
-		
+	void gradientChanged();
 
 public slots:
 	virtual void paintEvent(QPaintEvent* event);
