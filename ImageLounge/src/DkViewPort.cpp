@@ -699,8 +699,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(paren
 	
 	loader = new DkImageLoader();
 
-	mainLayout = new QVBoxLayout(this);
-	mainLayout->setContentsMargins(0,0,0,0);
+	paintLayout = new QVBoxLayout(this);
+	paintLayout->setContentsMargins(0,0,0,0);
 
 	controller = new DkControlWidget(this, flags);
 	controller->show();
@@ -785,11 +785,10 @@ void DkViewPort::createShortcuts() {
 void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 
 	if(!removeWidget) {
-		mainLayout->addWidget(widget);		
+		paintLayout->addWidget(widget);		
 	} else {
-		mainLayout->removeWidget(widget);
+		paintLayout->removeWidget(widget);
 		widget->deleteLater();
-		widget = NULL;
 	}
 	
 	//controller->raise();

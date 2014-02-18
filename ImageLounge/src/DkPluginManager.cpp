@@ -50,7 +50,9 @@ void DkPluginManager::init() {
 	loadedPlugins = QMap<QString, DkPluginInterface *>();
 	pluginLoaders = QMap<QString, QPluginLoader *>();
 	pluginFiles = QMap<QString, QString>();
-	loadEnabledPlugins();
+	pluginIdList = QList<QString>();
+	runId2PluginId = QMap<QString, QString>();
+	loadEnabledPlugins(); //pluginLoadingDebuging -> comment this line
 
 	dialogWidth = 700;
 	dialogHeight = 500;
@@ -61,7 +63,7 @@ void DkPluginManager::init() {
 	*/
 	setWindowTitle(tr("Plug-in manager"));
 	setFixedSize(dialogWidth, dialogHeight);
-	createLayout();
+	createLayout(); //pluginLoadingDebuging -> comment this line
 }
 
 /**
@@ -131,7 +133,7 @@ void DkPluginManager::closePressed() {
 }
 
 void DkPluginManager::showEvent(QShowEvent *event) {
-
+	//pluginLoadingDebuging -> comment all lines bellow
 	loadPlugins();
 	tabs->setCurrentIndex(tab_installed_plugins);
 	tableWidgetInstalled->clearTableFilters();
@@ -166,11 +168,18 @@ void DkPluginManager::deleteInstance(QString id) {
  **/
 void DkPluginManager::singlePluginLoad(QString filePath) {
 
-	QPluginLoader *loader = new QPluginLoader(filePath);
+	QPluginLoader* loader = new QPluginLoader(filePath);
+	
+	if (!loader->load()) {
+        qDebug() << "Could not load: " << filePath;
+		return;
+    }
+	
 	QObject *plugin = loader->instance();
+
 	if(plugin) {
 
-		DkPluginInterface *initializedPlugin = qobject_cast<DkPluginInterface*>(plugin);
+		DkPluginInterface* initializedPlugin = qobject_cast<DkPluginInterface*>(plugin);
 
 		if (!initializedPlugin)
 			initializedPlugin = qobject_cast<DkViewPortInterface*>(plugin);
@@ -202,15 +211,15 @@ void DkPluginManager::loadPlugins() {
 		pluginFiles.clear();
 		pluginIdList.clear();
 		loadedPlugins.clear();
-		for (auto it = pluginLoaders.begin(); it != pluginLoaders.end();) {
+		runId2PluginId.clear();
 
-			QPluginLoader *loaderToDelete = it.value();
+		foreach (QPluginLoader* pluginLoader, pluginLoaders) {
 
-			if(loaderToDelete->unload()) delete loaderToDelete;
+			if(pluginLoader->unload())  delete pluginLoader;
 			else qDebug() << "Could not unload plug-in loader!";
+		}
 
-			pluginLoaders.erase(it++);
-		}		
+		pluginLoaders.clear();
 	}
 
 	QDir pluginsDir = DkSettings::global.pluginsDir;

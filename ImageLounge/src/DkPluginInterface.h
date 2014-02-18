@@ -57,8 +57,8 @@ public:
     virtual QString pluginVersion() const = 0;
 
     virtual QStringList runID() const = 0;
-    virtual QString pluginMenuName(const QString &runID = "") const = 0;
-    virtual QString pluginStatusTip(const QString &runID) const = 0;
+    virtual QString pluginMenuName(const QString &runID = QString()) const = 0;
+    virtual QString pluginStatusTip(const QString &runID = QString()) const = 0;
 	virtual QList<QAction*> pluginActions(QWidget* parent) { return QList<QAction*>();};
     virtual QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
@@ -133,5 +133,5 @@ protected:
 
 };
 
-Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/0.1")
-Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/0.1")
+Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/1.0")
+Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/1.0")

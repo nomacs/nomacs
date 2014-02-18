@@ -471,7 +471,7 @@ protected:
 
 	QImage imgBg;
 
-	QVBoxLayout* mainLayout;
+	QVBoxLayout* paintLayout;
 	DkControlWidget* controller;
 	DkImageLoader* loader;
 
