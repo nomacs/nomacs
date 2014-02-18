@@ -46,15 +46,14 @@
 #endif
 
 #ifndef DllExport
-	#ifdef DK_DLL_EXPORT
-		#define DllExport Q_DECL_EXPORT
-	#elif DK_DLL_IMPORT
-		#define DllExport Q_DECL_IMPORT
-	#else
-	#define DllExport Q_DECL_IMPORT
-	#endif
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
 #endif
-
+#endif
 
 namespace nmc {
 
