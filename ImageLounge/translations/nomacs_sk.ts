@@ -752,92 +752,92 @@ Chcete ich ukázať znova?</translation>
 <context>
     <name>nmc::DkImageLoader</name>
     <message>
-        <location filename="../src/DkImage.cpp" line="1549"/>
+        <location filename="../src/DkImage.cpp" line="1542"/>
         <source>sorry, %1 does not exist anymore...</source>
         <translation>Prepáčte, %1 už neexistuje...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1717"/>
-        <location filename="../src/DkImage.cpp" line="1777"/>
+        <location filename="../src/DkImage.cpp" line="1737"/>
+        <location filename="../src/DkImage.cpp" line="1797"/>
         <source>You have reached the beginning</source>
         <translation>Dostali ste sa na začiatok</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1724"/>
-        <location filename="../src/DkImage.cpp" line="1783"/>
+        <location filename="../src/DkImage.cpp" line="1744"/>
+        <location filename="../src/DkImage.cpp" line="1803"/>
         <source>You have reached the end</source>
         <translation>Dostali ste sa na koniec</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1909"/>
+        <location filename="../src/DkImage.cpp" line="1930"/>
         <source>Sorry, the file: %1 does not exist... </source>
         <translation>Prepáčte, súbor: %1 neexistuje... </translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1925"/>
+        <location filename="../src/DkImage.cpp" line="1946"/>
         <source>Sorry, you are not allowed to read: %1</source>
         <translation>Prepáčte, nemáte povolené čítať: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2038"/>
+        <location filename="../src/DkImage.cpp" line="2059"/>
         <source>Sorry, I could not load: %1</source>
         <translation>Prepáčte, nepodarilo sa načítať: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2122"/>
+        <location filename="../src/DkImage.cpp" line="2143"/>
         <source>Save Directory</source>
         <translation>Uložiť priečinok</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2179"/>
+        <location filename="../src/DkImage.cpp" line="2200"/>
         <source>I can&apos;t save an empty file, sorry...
 </source>
         <translation>Nemôžem uložiť prázdny súbor, prepáčte... </translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2184"/>
+        <location filename="../src/DkImage.cpp" line="2205"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
         <translation>Prepáčte, priečinok: %1 neexistuje
 </translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2189"/>
+        <location filename="../src/DkImage.cpp" line="2210"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
         <translation>Prepáčte, nepodarilo sa zapísať do súboru: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2220"/>
-        <location filename="../src/DkImage.cpp" line="2222"/>
-        <location filename="../src/DkImage.cpp" line="2293"/>
-        <location filename="../src/DkImage.cpp" line="2297"/>
+        <location filename="../src/DkImage.cpp" line="2241"/>
+        <location filename="../src/DkImage.cpp" line="2243"/>
+        <location filename="../src/DkImage.cpp" line="2314"/>
+        <location filename="../src/DkImage.cpp" line="2318"/>
         <source>saving...</source>
         <translation>ukladá sa...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2269"/>
+        <location filename="../src/DkImage.cpp" line="2290"/>
         <source>Sorry, I can&apos;t save: %1</source>
         <translation>Prepáčte, nepodarilo sa uložiť: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2362"/>
-        <location filename="../src/DkImage.cpp" line="2513"/>
+        <location filename="../src/DkImage.cpp" line="2383"/>
+        <location filename="../src/DkImage.cpp" line="2534"/>
         <source>Sorry, I could not restore: %1</source>
         <translation>Prepáčte, nepodarilo sa obnoviť: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2432"/>
+        <location filename="../src/DkImage.cpp" line="2453"/>
         <source>%1 deleted...</source>
         <translation>%1 vymazané...</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="2434"/>
+        <location filename="../src/DkImage.cpp" line="2455"/>
         <source>Sorry, I could not delete: %1</source>
         <translation>Prepáčte, nepodarilo sa vymazať: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkImage.cpp" line="1417"/>
-        <location filename="../src/DkImage.cpp" line="1458"/>
+        <location filename="../src/DkImage.cpp" line="1418"/>
+        <location filename="../src/DkImage.cpp" line="1451"/>
         <source>%1 
  does not contain any image</source>
         <translation>%1 
@@ -1419,59 +1419,59 @@ neobsahuje žiadne obrázky</translation>
         <translation>Z&amp;oradiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="560"/>
-        <location filename="../src/DkNoMacs.cpp" line="724"/>
+        <location filename="../src/DkNoMacs.cpp" line="561"/>
+        <location filename="../src/DkNoMacs.cpp" line="725"/>
         <source>&amp;Edit</source>
         <translation>&amp;Upraviť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="587"/>
-        <location filename="../src/DkNoMacs.cpp" line="718"/>
+        <location filename="../src/DkNoMacs.cpp" line="588"/>
+        <location filename="../src/DkNoMacs.cpp" line="719"/>
         <source>&amp;View</source>
         <translation>&amp;Zobraziť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="620"/>
+        <location filename="../src/DkNoMacs.cpp" line="621"/>
         <source>&amp;Panels</source>
         <translation>&amp;Panely</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="621"/>
+        <location filename="../src/DkNoMacs.cpp" line="622"/>
         <source>Tool&amp;bars</source>
         <translation>&amp;Panely nástrojov</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="639"/>
+        <location filename="../src/DkNoMacs.cpp" line="640"/>
         <source>&amp;Tools</source>
         <translation>&amp;Nástroje</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="654"/>
+        <location filename="../src/DkNoMacs.cpp" line="655"/>
         <source>&amp;Sync</source>
         <translation>&amp;Synch</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="658"/>
+        <location filename="../src/DkNoMacs.cpp" line="659"/>
         <source>&amp;?</source>
         <translation>&amp;Nápoveda</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="747"/>
+        <location filename="../src/DkNoMacs.cpp" line="748"/>
         <source>&amp;Open</source>
         <translation>&amp;Otvoriť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="749"/>
+        <location filename="../src/DkNoMacs.cpp" line="750"/>
         <source>Open an image</source>
         <translation>Otvoriť obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="752"/>
+        <location filename="../src/DkNoMacs.cpp" line="753"/>
         <source>Open &amp;Directory</source>
         <translation>Otvoriť p&amp;riečinok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="754"/>
+        <location filename="../src/DkNoMacs.cpp" line="755"/>
         <source>Open a directory and load its first image</source>
         <translation>Otvoriť priečinok a načítať jeho prvý obrázok</translation>
     </message>
@@ -1481,309 +1481,309 @@ neobsahuje žiadne obrázky</translation>
         <translation>Otvoriť &amp;s</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="762"/>
+        <location filename="../src/DkNoMacs.cpp" line="763"/>
         <source>Re&amp;name</source>
         <translation>Preme&amp;novať</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="765"/>
+        <location filename="../src/DkNoMacs.cpp" line="766"/>
         <source>Rename an image</source>
         <translation>Premenovať obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="768"/>
+        <location filename="../src/DkNoMacs.cpp" line="769"/>
         <source>&amp;Go To</source>
         <translation>Pr&amp;ejsť na</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="770"/>
+        <location filename="../src/DkNoMacs.cpp" line="771"/>
         <source>Go To an image</source>
         <translation>Prejsť na obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="773"/>
+        <location filename="../src/DkNoMacs.cpp" line="774"/>
         <source>&amp;Save</source>
         <translation>&amp;Uložiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="775"/>
+        <location filename="../src/DkNoMacs.cpp" line="776"/>
         <source>Save an image</source>
         <translation>Uložiť obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="778"/>
+        <location filename="../src/DkNoMacs.cpp" line="779"/>
         <source>&amp;Save As</source>
         <translation>&amp;Uložiť ako</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="780"/>
+        <location filename="../src/DkNoMacs.cpp" line="781"/>
         <source>Save an image as</source>
         <translation>Uložiť obrázok ako</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="787"/>
+        <location filename="../src/DkNoMacs.cpp" line="788"/>
         <source>&amp;Print</source>
         <translation>&amp;Tlačiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="789"/>
+        <location filename="../src/DkNoMacs.cpp" line="790"/>
         <source>Print an image</source>
         <translation>Vytlačiť obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="792"/>
+        <location filename="../src/DkNoMacs.cpp" line="793"/>
         <source>&amp;Reload File</source>
         <translation>&amp;Znovu načítať súbor</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="795"/>
+        <location filename="../src/DkNoMacs.cpp" line="796"/>
         <source>Reload File</source>
         <translation>Znovu načítať súbor</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="798"/>
+        <location filename="../src/DkNoMacs.cpp" line="799"/>
         <source>Ne&amp;xt File</source>
         <translation>Nas&amp;ledujúci súbor</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="801"/>
+        <location filename="../src/DkNoMacs.cpp" line="802"/>
         <source>Load next image</source>
         <translation>Načítať nasledujúci obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="804"/>
+        <location filename="../src/DkNoMacs.cpp" line="805"/>
         <source>Pre&amp;vious File</source>
         <translation>Predchádz&amp;ajúci súbor</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="807"/>
+        <location filename="../src/DkNoMacs.cpp" line="808"/>
         <source>Load previous file</source>
         <translation>Načítať predchádzajúci súbor</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="810"/>
+        <location filename="../src/DkNoMacs.cpp" line="811"/>
         <source>Add Image Format</source>
         <translation>Pridať formát obrázku</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="811"/>
+        <location filename="../src/DkNoMacs.cpp" line="812"/>
         <source>Add a new image format to nomacs</source>
         <translation>Pridá nový formát obrázkov pre nomacs</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="814"/>
+        <location filename="../src/DkNoMacs.cpp" line="815"/>
         <source>St&amp;art New Instance</source>
         <translation>Spustiť novú inšt&amp;anciu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="816"/>
+        <location filename="../src/DkNoMacs.cpp" line="817"/>
         <source>Open file in new instance</source>
         <translation>Otvoriť súbor v novej inštancii</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="819"/>
+        <location filename="../src/DkNoMacs.cpp" line="820"/>
         <source>&amp;Find &amp;&amp; Filter</source>
         <translation>&amp;Nájsť &amp;&amp; Filtrovať</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="821"/>
-        <location filename="../src/DkNoMacs.cpp" line="1173"/>
+        <location filename="../src/DkNoMacs.cpp" line="822"/>
+        <location filename="../src/DkNoMacs.cpp" line="1180"/>
         <source>Find an image</source>
         <translation>Nájsť obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="829"/>
+        <location filename="../src/DkNoMacs.cpp" line="836"/>
         <source>&amp;Exit</source>
         <translation>&amp;Ukončiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="831"/>
+        <location filename="../src/DkNoMacs.cpp" line="838"/>
         <source>Exit</source>
         <translation>Ukončiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="836"/>
+        <location filename="../src/DkNoMacs.cpp" line="843"/>
         <source>by &amp;Filename</source>
         <translation>podľa názvu &amp;súboru</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="838"/>
+        <location filename="../src/DkNoMacs.cpp" line="845"/>
         <source>Sort by Filename</source>
         <translation>Zoradiť podľa názvu súboru</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="843"/>
+        <location filename="../src/DkNoMacs.cpp" line="850"/>
         <source>by Date &amp;Created</source>
         <translation>podľa dátumu &amp;vytvorenia</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="845"/>
+        <location filename="../src/DkNoMacs.cpp" line="852"/>
         <source>Sort by Date Created</source>
         <translation>Zoradiť podľa dátumu vytvorenia</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="850"/>
+        <location filename="../src/DkNoMacs.cpp" line="857"/>
         <source>by Date Modified</source>
         <translation>podľa dátumu úpravy</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="852"/>
+        <location filename="../src/DkNoMacs.cpp" line="859"/>
         <source>Sort by Date Last Modified</source>
         <translation>Zoradiť podľa dátumu poslednej zmeny</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="864"/>
+        <location filename="../src/DkNoMacs.cpp" line="871"/>
         <source>&amp;Ascending</source>
         <translation>&amp;Vzostupne</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="866"/>
+        <location filename="../src/DkNoMacs.cpp" line="873"/>
         <source>Sort in Ascending Order</source>
         <translation>Zoradiť vzostupne</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="871"/>
+        <location filename="../src/DkNoMacs.cpp" line="878"/>
         <source>&amp;Descending</source>
         <translation>&amp;Zostupne</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="873"/>
+        <location filename="../src/DkNoMacs.cpp" line="880"/>
         <source>Sort in Descending Order</source>
         <translation>Zoradiť zostupne</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="880"/>
+        <location filename="../src/DkNoMacs.cpp" line="887"/>
         <source>9&amp;0° Clockwise</source>
         <translation>9&amp;0° v smere hodinových ručičiek</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="883"/>
+        <location filename="../src/DkNoMacs.cpp" line="890"/>
         <source>rotate the image 90° clockwise</source>
         <translation>otočiť obrázok o 90° v smere hodinových ručičiek</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="886"/>
+        <location filename="../src/DkNoMacs.cpp" line="893"/>
         <source>&amp;90° Counter Clockwise</source>
         <translation>&amp;90° proti smeru hodinových ručičiek</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="889"/>
+        <location filename="../src/DkNoMacs.cpp" line="896"/>
         <source>rotate the image 90° counter clockwise</source>
         <translation>otočiť obrázok o 90 ° proti smeru hodinových ručičiek</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="893"/>
+        <location filename="../src/DkNoMacs.cpp" line="900"/>
         <source>rotate the image by 180°</source>
         <translation>otočiť obrázok o 180°</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="896"/>
+        <location filename="../src/DkNoMacs.cpp" line="903"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopírovať</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="899"/>
-        <location filename="../src/DkNoMacs.cpp" line="905"/>
+        <location filename="../src/DkNoMacs.cpp" line="906"/>
+        <location filename="../src/DkNoMacs.cpp" line="912"/>
         <source>copy image</source>
         <translation>kopírovať obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="911"/>
+        <location filename="../src/DkNoMacs.cpp" line="918"/>
         <source>&amp;Paste</source>
         <translation>&amp;Prilepiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="914"/>
+        <location filename="../src/DkNoMacs.cpp" line="921"/>
         <source>paste image</source>
         <translation>prilepiť obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="917"/>
+        <location filename="../src/DkNoMacs.cpp" line="924"/>
         <source>R&amp;esize Image</source>
         <translation>Zm&amp;eniť veľkosť obrázka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="920"/>
+        <location filename="../src/DkNoMacs.cpp" line="927"/>
         <source>resize the current image</source>
         <translation>zmeniť veľkosť aktuálneho obrázka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="923"/>
+        <location filename="../src/DkNoMacs.cpp" line="930"/>
         <source>Cr&amp;op Image</source>
         <translation>&amp;Orezať obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="926"/>
+        <location filename="../src/DkNoMacs.cpp" line="933"/>
         <source>cut the current image</source>
         <translation>orezať aktuálny obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="961"/>
+        <location filename="../src/DkNoMacs.cpp" line="968"/>
         <source>&amp;Delete</source>
         <translation>&amp;Vymazať</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="964"/>
+        <location filename="../src/DkNoMacs.cpp" line="971"/>
         <source>delete current file</source>
         <translation>vymazať aktuálny súbor</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="967"/>
+        <location filename="../src/DkNoMacs.cpp" line="974"/>
         <source>&amp;Wallpaper</source>
         <translation>&amp;Pozadie plochy</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="968"/>
+        <location filename="../src/DkNoMacs.cpp" line="975"/>
         <source>set the current image as wallpaper</source>
         <translation>nastaviť aktuálny obrázok ako pozadie plochy</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="971"/>
+        <location filename="../src/DkNoMacs.cpp" line="978"/>
         <source>&amp;Keyboard Shortcuts</source>
         <translation>&amp;Klávesové skratky</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="973"/>
+        <location filename="../src/DkNoMacs.cpp" line="980"/>
         <source>lets you customize your keyboard shortcuts</source>
         <translation>vám umožní prispôsobiť si klávesové skratky</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="976"/>
+        <location filename="../src/DkNoMacs.cpp" line="983"/>
         <source>&amp;Settings</source>
         <translation>Na&amp;stavenia</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="978"/>
+        <location filename="../src/DkNoMacs.cpp" line="985"/>
         <source>settings</source>
         <translation>nastavenia</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="983"/>
+        <location filename="../src/DkNoMacs.cpp" line="990"/>
         <source>&amp;Menu</source>
         <translation>&amp;Menu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="984"/>
+        <location filename="../src/DkNoMacs.cpp" line="991"/>
         <source>Hides the Menu and Shows it Again on ALT</source>
         <translation>Skryje menu a zobrazí ho znovu pri stlačení ALT</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="988"/>
+        <location filename="../src/DkNoMacs.cpp" line="995"/>
         <source>Tool&amp;bar</source>
         <translation>&amp;Panel nástrojov</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="994"/>
+        <location filename="../src/DkNoMacs.cpp" line="1001"/>
         <source>&amp;Statusbar</source>
         <translation>&amp;Stavový riadok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1001"/>
+        <location filename="../src/DkNoMacs.cpp" line="1008"/>
         <source>&amp;Pseudocolor Function</source>
         <translation>Funkcia &amp;pseudofarby</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="990"/>
+        <location filename="../src/DkNoMacs.cpp" line="997"/>
         <source>Show Toolbar</source>
         <translation>Zobraziť panel nástrojov</translation>
     </message>
@@ -1793,494 +1793,504 @@ neobsahuje žiadne obrázky</translation>
         <translation>Panel s nástrojmi filmu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="757"/>
+        <location filename="../src/DkNoMacs.cpp" line="758"/>
         <source>&amp;Manage Applications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="758"/>
+        <location filename="../src/DkNoMacs.cpp" line="759"/>
         <source>Manage Applications which are Automatically Opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="783"/>
+        <location filename="../src/DkNoMacs.cpp" line="784"/>
         <source>&amp;Save for Web</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="784"/>
+        <location filename="../src/DkNoMacs.cpp" line="785"/>
         <source>Save an Image for Web Applications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="857"/>
+        <location filename="../src/DkNoMacs.cpp" line="825"/>
+        <source>Scan Folder Re&amp;cursive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkNoMacs.cpp" line="826"/>
+        <source>Step through Folder and Sub Folders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DkNoMacs.cpp" line="864"/>
         <source>Random</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="859"/>
+        <location filename="../src/DkNoMacs.cpp" line="866"/>
         <source>Sort in Random Order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="892"/>
+        <location filename="../src/DkNoMacs.cpp" line="899"/>
         <source>1&amp;80°</source>
         <translation type="unfinished">180° {1&amp;80°?}</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="902"/>
+        <location filename="../src/DkNoMacs.cpp" line="909"/>
         <source>Copy &amp;Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="931"/>
+        <location filename="../src/DkNoMacs.cpp" line="938"/>
         <source>Flip &amp;Horizontal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="934"/>
+        <location filename="../src/DkNoMacs.cpp" line="941"/>
         <source>Flip Image Horizontally</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="937"/>
+        <location filename="../src/DkNoMacs.cpp" line="944"/>
         <source>Flip &amp;Vertical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="940"/>
+        <location filename="../src/DkNoMacs.cpp" line="947"/>
         <source>Flip Image Vertically</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="943"/>
+        <location filename="../src/DkNoMacs.cpp" line="950"/>
         <source>Nor&amp;malize Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="946"/>
+        <location filename="../src/DkNoMacs.cpp" line="953"/>
         <source>Normalize the Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="949"/>
+        <location filename="../src/DkNoMacs.cpp" line="956"/>
         <source>&amp;Auto Adjust</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="952"/>
+        <location filename="../src/DkNoMacs.cpp" line="959"/>
         <source>Auto Adjust Image Contrast and Color Balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="955"/>
+        <location filename="../src/DkNoMacs.cpp" line="962"/>
         <source>&amp;Invert Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="958"/>
+        <location filename="../src/DkNoMacs.cpp" line="965"/>
         <source>Invert the Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="996"/>
+        <location filename="../src/DkNoMacs.cpp" line="1003"/>
         <source>Show Statusbar</source>
         <translation>Zobraziť stavový riadok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1003"/>
+        <location filename="../src/DkNoMacs.cpp" line="1010"/>
         <source>Show Pseudocolor Function</source>
         <translation>Zobrazí pseudofarby</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1008"/>
+        <location filename="../src/DkNoMacs.cpp" line="1015"/>
         <source>O&amp;verview</source>
         <translation>P&amp;repísať</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1010"/>
+        <location filename="../src/DkNoMacs.cpp" line="1017"/>
         <source>Shows the Zoom Overview</source>
         <translation>Zobrazí prehľad priblíženia</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1015"/>
+        <location filename="../src/DkNoMacs.cpp" line="1022"/>
         <source>Pla&amp;yer</source>
         <translation>Pre&amp;hrávač</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1017"/>
+        <location filename="../src/DkNoMacs.cpp" line="1024"/>
         <source>Shows the Slide Show Player</source>
         <translation>Zobrazí prehrávač prezentácie obrázkov</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1021"/>
+        <location filename="../src/DkNoMacs.cpp" line="1028"/>
         <source>File &amp;Explorer</source>
         <translation>Prieskumník súborov</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1023"/>
+        <location filename="../src/DkNoMacs.cpp" line="1030"/>
         <source>Show File Explorer</source>
         <translation>Zobraziť prieskumník súborov</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1027"/>
+        <location filename="../src/DkNoMacs.cpp" line="1034"/>
         <source>&amp;Thumbnails</source>
         <translation>Minia&amp;túry</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1029"/>
+        <location filename="../src/DkNoMacs.cpp" line="1036"/>
         <source>Show Thumbnails</source>
         <translation>Zobraziť miniatúry</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1033"/>
+        <location filename="../src/DkNoMacs.cpp" line="1040"/>
         <source>&amp;Thumbnail Preview</source>
         <translation>Náhľad minia&amp;túr</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1035"/>
+        <location filename="../src/DkNoMacs.cpp" line="1042"/>
         <source>Show Thumbnails Preview</source>
         <translation>Zobraziť náhľad miniatúr</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1039"/>
+        <location filename="../src/DkNoMacs.cpp" line="1046"/>
         <source>&amp;Folder Scrollbar</source>
         <translation>&amp;Posuvník priečinka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1041"/>
+        <location filename="../src/DkNoMacs.cpp" line="1048"/>
         <source>Show Folder Scrollbar</source>
         <translation>Zobraziť posuvník priečinka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1045"/>
+        <location filename="../src/DkNoMacs.cpp" line="1052"/>
         <source>&amp;Metadata</source>
         <translation>&amp;Metadáta</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1047"/>
+        <location filename="../src/DkNoMacs.cpp" line="1054"/>
         <source>Shows the Metadata Panel</source>
         <translation>Zobrazí panel metadát</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1051"/>
+        <location filename="../src/DkNoMacs.cpp" line="1058"/>
         <source>File &amp;Info</source>
         <translation>&amp;Info o súbore</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1053"/>
+        <location filename="../src/DkNoMacs.cpp" line="1060"/>
         <source>Shows the Info Panel</source>
         <translation>Zobrazí informačný panel</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1057"/>
+        <location filename="../src/DkNoMacs.cpp" line="1064"/>
         <source>&amp;Histogram</source>
         <translation>&amp;Histogram</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1059"/>
+        <location filename="../src/DkNoMacs.cpp" line="1066"/>
         <source>Shows the Histogram Panel</source>
         <translation>Zobrazí panel histogramu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1064"/>
+        <location filename="../src/DkNoMacs.cpp" line="1071"/>
         <source>&amp;Fit Window</source>
         <translation>&amp;Prispôsobiť okno</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1066"/>
+        <location filename="../src/DkNoMacs.cpp" line="1073"/>
         <source>Fit window to the image</source>
         <translation>Prispôsobiť okno obrázku</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1072"/>
+        <location filename="../src/DkNoMacs.cpp" line="1079"/>
         <source>Fu&amp;ll Screen</source>
         <translation>Ce&amp;lá obrazovka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1074"/>
+        <location filename="../src/DkNoMacs.cpp" line="1081"/>
         <source>Full Screen</source>
         <translation>Celá obrazovka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1077"/>
+        <location filename="../src/DkNoMacs.cpp" line="1084"/>
         <source>&amp;Reset Canvas</source>
         <translation>Z&amp;resetovať plátno</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1079"/>
+        <location filename="../src/DkNoMacs.cpp" line="1086"/>
         <source>Shows the initial view (no zooming)</source>
         <translation>Zobrazí v pôvodnej veľkosti (bez priblíženia)</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1082"/>
+        <location filename="../src/DkNoMacs.cpp" line="1089"/>
         <source>Show &amp;100%</source>
         <translation>Zobraziť &amp;100%</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1084"/>
+        <location filename="../src/DkNoMacs.cpp" line="1091"/>
         <source>Shows the image at 100%</source>
         <translation>Zobraziť obrázok v mierke 100 %</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1087"/>
+        <location filename="../src/DkNoMacs.cpp" line="1094"/>
         <source>Zoom &amp;In</source>
         <translation>Priblíž&amp;iť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1089"/>
+        <location filename="../src/DkNoMacs.cpp" line="1096"/>
         <source>zoom in</source>
         <translation>priblížiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1092"/>
+        <location filename="../src/DkNoMacs.cpp" line="1099"/>
         <source>&amp;Zoom Out</source>
         <translation>V&amp;zdialiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1094"/>
+        <location filename="../src/DkNoMacs.cpp" line="1101"/>
         <source>zoom out</source>
         <translation>vzdialiť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1097"/>
+        <location filename="../src/DkNoMacs.cpp" line="1104"/>
         <source>&amp;Anti Aliasing</source>
         <translation>&amp;Antialiasing</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1099"/>
+        <location filename="../src/DkNoMacs.cpp" line="1106"/>
         <source>if checked images are smoother</source>
         <translation>Ak je zaškrtnuté, obrázky budú hladšie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1104"/>
+        <location filename="../src/DkNoMacs.cpp" line="1111"/>
         <source>&amp;Transparency Pattern</source>
         <translation>&amp;Vzor priehľadnosti</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1106"/>
+        <location filename="../src/DkNoMacs.cpp" line="1113"/>
         <source>if checked, a pattern will be displayed for transparent objects</source>
         <translation>Ak je zaškrtnuté, zobrazí sa vzor na priehľadných objektoch</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1111"/>
+        <location filename="../src/DkNoMacs.cpp" line="1118"/>
         <source>&amp;Frameless</source>
         <translation>Bez&amp;rámové</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1113"/>
+        <location filename="../src/DkNoMacs.cpp" line="1120"/>
         <source>shows a frameless window</source>
         <translation>Zobrazí bezrámové okno</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1118"/>
+        <location filename="../src/DkNoMacs.cpp" line="1125"/>
         <source>&amp;Change Opacity</source>
         <translation>Zmeniť p&amp;riehľadnosť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1120"/>
+        <location filename="../src/DkNoMacs.cpp" line="1127"/>
         <source>change the window opacity</source>
         <translation>Zmení priehľadnosť okna</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1123"/>
+        <location filename="../src/DkNoMacs.cpp" line="1130"/>
         <source>Opacity &amp;Up</source>
         <translation>Z&amp;výšiť priehľadnosť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1125"/>
-        <location filename="../src/DkNoMacs.cpp" line="1130"/>
+        <location filename="../src/DkNoMacs.cpp" line="1132"/>
+        <location filename="../src/DkNoMacs.cpp" line="1137"/>
         <source>changes the window opacity</source>
         <translation>zmení priehľadnosť okna</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1128"/>
+        <location filename="../src/DkNoMacs.cpp" line="1135"/>
         <source>Opacity &amp;Down</source>
         <translation>Z&amp;nížiť priehľadnosť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1133"/>
+        <location filename="../src/DkNoMacs.cpp" line="1140"/>
         <source>To&amp;ggle Opacity</source>
         <translation>Prep&amp;núť priehľadnosť</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1135"/>
+        <location filename="../src/DkNoMacs.cpp" line="1142"/>
         <source>toggle the window opacity</source>
         <translation>prepne priehľadnosť okna</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1138"/>
+        <location filename="../src/DkNoMacs.cpp" line="1145"/>
         <source>Lock &amp;Window</source>
         <translation>Zamknúť &amp;okno</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1140"/>
+        <location filename="../src/DkNoMacs.cpp" line="1147"/>
         <source>lock the window</source>
         <translation>Zamkne okno</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1145"/>
+        <location filename="../src/DkNoMacs.cpp" line="1152"/>
         <source>&amp;Pause Movie</source>
         <translation>&amp;Pozastaviť film</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1146"/>
+        <location filename="../src/DkNoMacs.cpp" line="1153"/>
         <source>pause the current movie</source>
         <translation>pozastaví aktuálny film</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1151"/>
+        <location filename="../src/DkNoMacs.cpp" line="1158"/>
         <source>P&amp;revious Frame</source>
         <translation>P&amp;redchádzajúci snímok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1152"/>
+        <location filename="../src/DkNoMacs.cpp" line="1159"/>
         <source>show previous frame</source>
         <translation>zobraziť predchádzajúci snímok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1155"/>
+        <location filename="../src/DkNoMacs.cpp" line="1162"/>
         <source>&amp;Next Frame</source>
         <translation>&amp;Nasledujúci snímok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1156"/>
+        <location filename="../src/DkNoMacs.cpp" line="1163"/>
         <source>show next frame</source>
         <translation>Zobraziť nasledujúci snímok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1159"/>
+        <location filename="../src/DkNoMacs.cpp" line="1166"/>
         <source>Show G&amp;PS Coordinates</source>
         <translation>Zobraziť G&amp;PS súradnice</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1160"/>
+        <location filename="../src/DkNoMacs.cpp" line="1167"/>
         <source>shows the GPS coordinates</source>
         <translation>zobrazí GPS súradnice</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1167"/>
+        <location filename="../src/DkNoMacs.cpp" line="1174"/>
         <source>Compute &amp;Thumbnails</source>
         <translation>Vytvoriť &amp;miniatúry</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1168"/>
+        <location filename="../src/DkNoMacs.cpp" line="1175"/>
         <source>compute all thumbnails of the current folder</source>
         <translation>vytvorí všetky miniatúry v aktuálnom priečinku</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1172"/>
+        <location filename="../src/DkNoMacs.cpp" line="1179"/>
         <source>&amp;Filter</source>
         <translation>&amp;Filter</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1178"/>
+        <location filename="../src/DkNoMacs.cpp" line="1185"/>
         <source>Image &amp;Manipulation</source>
         <translation>Úpravy obráz&amp;ka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1180"/>
+        <location filename="../src/DkNoMacs.cpp" line="1187"/>
         <source>modify the current image</source>
         <translation>upraviť aktuálny obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1183"/>
+        <location filename="../src/DkNoMacs.cpp" line="1190"/>
         <source>Export Multipage &amp;TIFF</source>
         <translation>Exportovať viacstránkový &amp;TIFF</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1184"/>
+        <location filename="../src/DkNoMacs.cpp" line="1191"/>
         <source>Export TIFF pages to multiple tiff files</source>
         <translation>Exportovať stránky TIFF-u do viacerých tiff súborov</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1187"/>
+        <location filename="../src/DkNoMacs.cpp" line="1194"/>
         <source>&amp;Mosaic Image</source>
         <translation>Obrázok &amp;mozaiky</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1188"/>
+        <location filename="../src/DkNoMacs.cpp" line="1195"/>
         <source>Create a Mosaic Image</source>
         <translation>Vytvoriť mozaiku</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1193"/>
+        <location filename="../src/DkNoMacs.cpp" line="1200"/>
         <source>&amp;About Nomacs</source>
         <translation>&amp;O pragrame Nomacs</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1195"/>
+        <location filename="../src/DkNoMacs.cpp" line="1202"/>
         <source>about</source>
         <translation>o</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1198"/>
+        <location filename="../src/DkNoMacs.cpp" line="1205"/>
         <source>&amp;Documentation</source>
         <translation>&amp;Dokumentácia</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1199"/>
+        <location filename="../src/DkNoMacs.cpp" line="1206"/>
         <source>Online Documentation</source>
         <translation>Online dokumentácia</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1202"/>
+        <location filename="../src/DkNoMacs.cpp" line="1209"/>
         <source>&amp;Report a Bug</source>
         <translation>&amp;Nahlásiť chybu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1203"/>
+        <location filename="../src/DkNoMacs.cpp" line="1210"/>
         <source>Report a Bug</source>
         <translation>Nahlásiť chybu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1206"/>
+        <location filename="../src/DkNoMacs.cpp" line="1213"/>
         <source>&amp;Feature Request</source>
         <translation>Ž&amp;iadosť o funkciu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1207"/>
+        <location filename="../src/DkNoMacs.cpp" line="1214"/>
         <source>Feature Request</source>
         <translation>Žiadosť o funkciu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1210"/>
+        <location filename="../src/DkNoMacs.cpp" line="1217"/>
         <source>&amp;Check for Updates</source>
         <translation>&amp;Skontrolovať aktualizácie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1211"/>
+        <location filename="../src/DkNoMacs.cpp" line="1218"/>
         <source>check for updates</source>
         <translation>skontrolovať aktualizácie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1713"/>
-        <location filename="../src/DkNoMacs.cpp" line="1729"/>
+        <location filename="../src/DkNoMacs.cpp" line="1720"/>
+        <location filename="../src/DkNoMacs.cpp" line="1736"/>
         <source>Sorry, I cannot Flip the Image...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1746"/>
+        <location filename="../src/DkNoMacs.cpp" line="1753"/>
         <source>Sorry, I cannot Invert the Image...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1764"/>
+        <location filename="../src/DkNoMacs.cpp" line="1771"/>
         <source>The Image is Already Normalized...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1781"/>
+        <location filename="../src/DkNoMacs.cpp" line="1788"/>
         <source>Sorry, I cannot Auto Adjust</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1914"/>
+        <location filename="../src/DkNoMacs.cpp" line="1934"/>
         <source>Change Opacity</source>
         <translation>Zmena priehľadnosti</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1989"/>
+        <location filename="../src/DkNoMacs.cpp" line="2009"/>
         <source>Window Locked
 To unlock: gain focus (ALT+Tab),
 then press CTRL+SHIFT+ALT+B</source>
@@ -2289,131 +2299,131 @@ Pre odomknutie: vyberte okno (ALT+Tab),
 potom stlačte CTRL+SHIFT+ALT+B</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="1992"/>
+        <location filename="../src/DkNoMacs.cpp" line="2012"/>
         <source>You should first reduce opacity
  before working through the window.</source>
         <translation>Najskôr znížte priehľadnosť
 kým začnete pracovať s oknom.</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2086"/>
+        <location filename="../src/DkNoMacs.cpp" line="2106"/>
         <source>File Explorer</source>
         <translation>Prieskumník súborov</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2112"/>
+        <location filename="../src/DkNoMacs.cpp" line="2132"/>
         <source>Open an Image Directory</source>
         <translation>Otvoriť priečinok s obrázkami</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2141"/>
+        <location filename="../src/DkNoMacs.cpp" line="2161"/>
         <source>Open Image</source>
         <translation>Otvoriť obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2181"/>
+        <location filename="../src/DkNoMacs.cpp" line="2201"/>
         <source>Sorry, the directory: %1  does not exist
 </source>
         <translation>Prepáčte, priečinok: %1 neexistuje
 </translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2185"/>
+        <location filename="../src/DkNoMacs.cpp" line="2205"/>
         <source>Sorry, I can&apos;t write to the file: %1</source>
         <translation>Prepáčte, nepodarilo sa zapísať do súboru: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2190"/>
+        <location filename="../src/DkNoMacs.cpp" line="2210"/>
         <source>Rename:</source>
         <translation>Premenovať:</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2204"/>
+        <location filename="../src/DkNoMacs.cpp" line="2224"/>
         <source>Question</source>
         <translation>Otázka</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2205"/>
+        <location filename="../src/DkNoMacs.cpp" line="2225"/>
         <source>The file: %1  already exists.
  Do you want to replace it?</source>
         <translation>Súbor: %1 už existuje. 
 Chcete ho nahradiť?</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2219"/>
+        <location filename="../src/DkNoMacs.cpp" line="2239"/>
         <source>Sorry, I can&apos;t delete: %1</source>
         <translation>Prepáčte, nepodarilo sa vymazať: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2234"/>
+        <location filename="../src/DkNoMacs.cpp" line="2254"/>
         <source>Sorry, I can&apos;t rename: %1</source>
         <translation>Prepáčte, nepodarilo sa premenovať: %1</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2326"/>
+        <location filename="../src/DkNoMacs.cpp" line="2346"/>
         <source>Go To Image</source>
         <translation>Prejsť na obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2326"/>
+        <location filename="../src/DkNoMacs.cpp" line="2346"/>
         <source>Image Index:</source>
         <translation>Index obrázka:</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2404"/>
+        <location filename="../src/DkNoMacs.cpp" line="2424"/>
         <source>Overwrite File</source>
         <translation>Prepísať súbor</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2405"/>
+        <location filename="../src/DkNoMacs.cpp" line="2425"/>
         <source>Do you want to overwrite:
 %1?</source>
         <translation>Chcete prepísať: 
 %1?</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2417"/>
-        <location filename="../src/DkNoMacs.cpp" line="2579"/>
+        <location filename="../src/DkNoMacs.cpp" line="2437"/>
+        <location filename="../src/DkNoMacs.cpp" line="2599"/>
         <source>Save File %1</source>
         <translation>Uložiť súbor %1</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2774"/>
+        <location filename="../src/DkNoMacs.cpp" line="2794"/>
         <source>Sorry, I could not create a wallpaper...</source>
         <translation>Prepáčte, nepodarilo sa vytvoriť pozadie plochy...</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2816"/>
+        <location filename="../src/DkNoMacs.cpp" line="2836"/>
         <source>Save Thumbnails</source>
         <translation>Uložiť miniatúry</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3294"/>
+        <location filename="../src/DkNoMacs.cpp" line="3314"/>
         <source>Already downloading update</source>
         <translation>Aktualizácia sa už sťahuje</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3316"/>
+        <location filename="../src/DkNoMacs.cpp" line="3336"/>
         <source>Downloading update...</source>
         <translation>Sťahuje sa aktualizácia...</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3316"/>
+        <location filename="../src/DkNoMacs.cpp" line="3336"/>
         <source>Cancel Update</source>
         <translation>Zrušiť aktualizáciu</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3344"/>
+        <location filename="../src/DkNoMacs.cpp" line="3364"/>
         <source>Unable to install new version&lt;br&gt;</source>
         <translation>Nepodarilo sa nainštalovať novú verziu&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3345"/>
+        <location filename="../src/DkNoMacs.cpp" line="3365"/>
         <source>You can download the new version from our web page</source>
         <translation>Novú verziu si môžete stiahnuť z našej webstránky</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="2663"/>
+        <location filename="../src/DkNoMacs.cpp" line="2683"/>
         <source>Do you want to permanently delete %1</source>
         <translation>Chcete natrvalo vymazať %1</translation>
     </message>
@@ -2421,67 +2431,67 @@ Chcete ho nahradiť?</translation>
 <context>
     <name>nmc::DkNoMacsSync</name>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3439"/>
+        <location filename="../src/DkNoMacs.cpp" line="3459"/>
         <source>Start &amp;Server</source>
         <translation>Spustiť &amp;server</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3445"/>
+        <location filename="../src/DkNoMacs.cpp" line="3465"/>
         <source>Send &amp;Image</source>
         <translation>Odoslať &amp;obrázok</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3449"/>
+        <location filename="../src/DkNoMacs.cpp" line="3469"/>
         <source>Sends the current image to all clients.</source>
         <translation>Odošle aktuálny obrázok všetkým klientom.</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3467"/>
+        <location filename="../src/DkNoMacs.cpp" line="3487"/>
         <source>Synchronize &amp;View</source>
         <translation>Synchronizovať &amp;zobrazenie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3469"/>
+        <location filename="../src/DkNoMacs.cpp" line="3489"/>
         <source>synchronize the current view</source>
         <translation>synchronizovať aktuálne zobrazenie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3473"/>
+        <location filename="../src/DkNoMacs.cpp" line="3493"/>
         <source>&amp;Window Overlay</source>
         <translation>Prekrytie &amp;okien</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3475"/>
+        <location filename="../src/DkNoMacs.cpp" line="3495"/>
         <source>toggle the window opacity</source>
         <translation>prepne priehľadnosť okien</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3479"/>
+        <location filename="../src/DkNoMacs.cpp" line="3499"/>
         <source>Arrange Instances</source>
         <translation>Usporiadať inštancie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3481"/>
+        <location filename="../src/DkNoMacs.cpp" line="3501"/>
         <source>arrange connected instances</source>
         <translation>Usporiada spojené inštancie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3485"/>
+        <location filename="../src/DkNoMacs.cpp" line="3505"/>
         <source>Connect &amp;all</source>
         <translation>Pripojiť &amp;všetky</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3487"/>
+        <location filename="../src/DkNoMacs.cpp" line="3507"/>
         <source>connect all instances</source>
         <translation>pripojiť všetky inštancie</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3498"/>
+        <location filename="../src/DkNoMacs.cpp" line="3518"/>
         <source>&amp;Synchronize</source>
         <translation>&amp;Synchronizovať</translation>
     </message>
     <message>
-        <location filename="../src/DkNoMacs.cpp" line="3506"/>
+        <location filename="../src/DkNoMacs.cpp" line="3526"/>
         <source>&amp;LAN Synchronize</source>
         <translation>&amp;Sieťová synchronizácia</translation>
     </message>
