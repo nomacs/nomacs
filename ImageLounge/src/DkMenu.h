@@ -129,7 +129,7 @@ public:
 
 signals:
 	void loadFileSignal(QFileInfo file);
-	
+	void clearHistory();
 
 public slots:
 
@@ -200,6 +200,13 @@ public slots:
 			noItems->setEnabled(false);
 			QMenu::addAction(noItems);
 		}
+		else {
+			QMenu::addSeparator();
+			QAction* clearHistory = new QAction(tr("Clear History"), this);
+			connect(clearHistory, SIGNAL(triggered()), this, SIGNAL(clearHistory()));
+			QMenu::addAction(clearHistory);
+		}
+
 	};
 
 	void loadRecentFile() {

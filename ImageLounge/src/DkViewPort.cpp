@@ -304,6 +304,7 @@ void DkControlWidget::connectWidgets() {
 
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
+	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
 }
 
 void DkControlWidget::update() {
@@ -414,6 +415,11 @@ void DkControlWidget::showOverview(bool visible) {
 		overviewWindow->hide();
 	}
 
+}
+
+void DkControlWidget::hideCrop(bool hide /* = true */) {
+
+	showCrop(!hide);
 }
 
 void DkControlWidget::showCrop(bool visible) {
@@ -852,8 +858,10 @@ void DkViewPort::setImage(QImage newImg) {
 	emit enableNoImageSignal(!newImg.isNull());
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
+	qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
 
-	if (!DkSettings::display.keepZoom || oldImgRect.isEmpty())
+	if (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || oldImgRect.isEmpty() || 
+		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && oldImgRect != imgRect))
 		worldMatrix.reset();
 	else {
 		imgViewRect = oldImgViewRect;
@@ -1222,6 +1230,8 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		controller->getOverview()->hide();
 
 	painter.end();
+
+	//qDebug() << "painting main widget...";
 
 	// propagate
 	QGraphicsView::paintEvent(event);
@@ -1652,6 +1662,11 @@ void DkViewPort::settingsChanged() {
 
 void DkViewPort::setEditedImage(QImage& newImg) {
 
+	if (newImg.isNull()) {
+		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		return;
+	}
+
 	QFileInfo file = loader->getFile();
 	unloadImage();
 	setImage(newImg);
@@ -1717,13 +1732,13 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 
 void DkViewPort::reloadFile() {
 
-	unloadImage();
-
 	if (loader) {
-		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
-
 		if (controller->getFilePreview())
-			controller->getThumbPool()->setFile(loader->getFile(), true);
+			controller->getThumbPool()->setFile(loader->getFile(), DkThumbsLoader::user_updated);
+
+		unloadImage();
+
+		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
 	}
 }
 
@@ -2570,6 +2585,9 @@ void DkViewPortContrast::draw(QPainter *painter) {
 void DkViewPortContrast::setImage(QImage newImg) {
 
 	DkViewPort::setImage(newImg);
+
+	if (newImg.isNull())
+		return;
 
 	if (imgStorage.getImage().format() == QImage::Format_Indexed8) {
 		int format = imgStorage.getImage().format();

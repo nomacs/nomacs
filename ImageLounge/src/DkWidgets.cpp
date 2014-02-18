@@ -144,6 +144,7 @@ DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WFlags
 	this->thumbPool = thumbPool;
 	connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
 	connect(thumbPool, SIGNAL(newFileIdxSignal(int)), this, SLOT(updateFileIdx(int)));
+	connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(update()));
 
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
@@ -168,6 +169,7 @@ void DkFilePreview::init() {
 	oldFileIdx = -1;
 	mouseTrace = 0;
 	scrollToCurrentImage = false;
+	isPainted = false;
 
 	winPercent = 0.1f;
 	borderTrigger = (float)width()*winPercent;
@@ -176,7 +178,7 @@ void DkFilePreview::init() {
 	worldMatrix = QTransform();
 
 	moveImageTimer = new QTimer(this);
-	moveImageTimer->setInterval(2);	// reduce cpu utilization
+	moveImageTimer->setInterval(5);	// reduce cpu utilization
 	connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
 	
 	leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
@@ -244,8 +246,10 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setWorldMatrixEnabled(true);
 
 	// TODO: paint dummies
-	if (thumbPool->getThumbs().empty())
+	if (thumbPool->getThumbs().empty()) {
+		thumbRects.clear();
 		return;
+	}
 
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	drawThumbs(&painter);
@@ -253,11 +257,15 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	if (currentFileIdx != oldFileIdx && currentFileIdx >= 0) {
 		oldFileIdx = currentFileIdx;
 		scrollToCurrentImage = true;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 	}
+	isPainted = true;
+
 }
 
 void DkFilePreview::drawThumbs(QPainter* painter) {
+
+	//qDebug() << "drawing thumbs: " << worldMatrix.dx();
 
 	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
 	thumbRects.clear();
@@ -459,9 +467,9 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 
 	resize(parent->width(), event->size().height());
 
-	if (currentFileIdx >= 0) {
+	if (currentFileIdx >= 0 && isVisible()) {
 		scrollToCurrentImage = true;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 	}
 
 	// now update...
@@ -525,7 +533,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		currentDx = (left) ? dx : -dx;
 		
 		scrollToCurrentImage = false;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 	}
 	else if (dx > borderTrigger && !scrollToCurrentImage)
 		moveImageTimer->stop();
@@ -583,7 +591,7 @@ void DkFilePreview::mousePressEvent(QMouseEvent *event) {
 		enterPos = event->pos();
 		qDebug() << "stop scrolling (middle button)";
 		scrollToCurrentImage = false;
-		moveImageTimer->start(1);
+		moveImageTimer->start();
 
 		// show icon
 		wheelButton->move(event->pos().x()-16, event->pos().y()-16);
@@ -604,7 +612,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 		// find out where the mouse did click
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
-			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
+			if (idx < thumbPool->getThumbs().size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				emit loadFileSignal(thumbPool->getThumbs().at(idx)->getFile());
 			}
 		}
@@ -652,27 +660,32 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 
 void DkFilePreview::moveImages() {
 
-	if (!isVisible())
+	if (!isVisible()) {
+		moveImageTimer->stop();
 		return;
+	}
 
 	if (scrollToCurrentImage) {
-		
 		float cDist = width()/2.0f - newFileRect.center().x();
-		
-		if (fabs(cDist) < width())
-			currentDx = cDist/50.0f;
+
+		if (fabs(cDist) < width()) {
+			currentDx = sqrt(fabs(cDist))/1.3f;
+			if (cDist < 0) currentDx *= -1.0f;
+		}
 		else
 			currentDx = cDist/4.0f;
 
-		if (fabs(currentDx) < 1)
-			currentDx = (currentDx < 0) ? -1.0f : 1.0f;
+		if (fabs(currentDx) < 2)
+			currentDx = (currentDx < 0) ? -2.0f : 2.0f;
 
 		// end position
-		if (fabs(cDist) < 1) {
+		if (fabs(cDist) <= 2) {
 			currentDx = width()/2.0f-newFileRect.center().x();
 			moveImageTimer->stop();
 			scrollToCurrentImage = false;
 		}
+		else
+			isPainted = false;
 	}
 
 	// do not scroll out of the thumbs
@@ -687,6 +700,7 @@ void DkFilePreview::moveImages() {
 
 	//qDebug() << "currentDx: " << currentDx;
 	worldMatrix.translate(currentDx, 0);
+	//qDebug() << "dx: " << worldMatrix.dx();
 	update();
 }
 
@@ -784,6 +798,8 @@ void DkFilePreview::updateFileIdx(int idx) {
 void DkFilePreview::setVisible(bool visible) {
 
 	DkWidget::setVisible(visible);
+
+	thumbPool->getUpdates(this, visible);
 
 	if (visible && thumbPool)
 		thumbPool->getThumbs();
@@ -1020,6 +1036,9 @@ void DkThumbScene::updateLayout() {
 	numRows = qCeil((float)thumbLabels.size()/numCols);
 	int rIdx = 0;
 
+	qDebug() << "num rows x num cols: " << numCols*numRows;
+	qDebug() << " thumb labels size: " << thumbLabels.size();
+
 	int tso = DkSettings::display.thumbPreviewSize+xOffset;
 	// TODO: center it
 	setSceneRect(0, 0, numCols*tso+xOffset, numRows*tso+xOffset);
@@ -1069,12 +1088,12 @@ void DkThumbScene::updateThumbLabels() {
 
 	qDebug() << "updating thumb labels...";
 
-	thumbLabels.clear();
-	clear();
-
 	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
 
 	DkTimer dt;
+
+	thumbLabels.clear();
+	clear();
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 		QSharedPointer<DkThumbLabel> thumb(new DkThumbLabel(thumbs.at(idx)));
@@ -1085,10 +1104,8 @@ void DkThumbScene::updateThumbLabels() {
 		thumbLabels.append(thumb);
 		addItem(thumb.data());
 
-		if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
+		//if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
 	}
-
-	qDebug() << "initializing thumb labels takes: " << QString::fromStdString(dt.getTotal());
 
 	showFile(QFileInfo());
 
@@ -1106,17 +1123,22 @@ void DkThumbScene::showFile(const QFileInfo& file) {
 
 void DkThumbScene::increaseThumbs() {
 
-	resizeThumbs(4);
+	resizeThumbs(1.2f);
 }
 
 void DkThumbScene::decreaseThumbs() {
 
-	resizeThumbs(-4);
+	resizeThumbs(0.8f);
 }
 
-void DkThumbScene::resizeThumbs(int dx) {
+void DkThumbScene::resizeThumbs(float dx) {
 
-	int newSize = DkSettings::display.thumbPreviewSize + dx;
+	if (dx < 0)
+		dx += 2.0f;
+
+	int newSize = DkSettings::display.thumbPreviewSize * dx;
+	qDebug() << "delta: " << dx;
+	qDebug() << "newsize: " << newSize;
 
 	if (newSize > 6 && newSize <= 160) {
 		DkSettings::display.thumbPreviewSize = newSize;
@@ -1183,7 +1205,7 @@ DkThumbsView::DkThumbsView(DkThumbScene* scene, QWidget* parent /* = 0 */) : QGr
 void DkThumbsView::wheelEvent(QWheelEvent *event) {
 
 	if (event->modifiers() == Qt::ControlModifier) {
-		scene->resizeThumbs(qCeil(event->delta()/100.0f));
+		scene->resizeThumbs(event->delta()/100.0f);
 	}
 	else if (event->modifiers() == Qt::NoModifier) {
 
@@ -4390,7 +4412,7 @@ void DkEditableRect::setVisible(bool visible) {
 }
 
 // DkEditableRect --------------------------------------------------------------------
-DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/) : DkEditableRect(rect, parent, f) {
+DkCropWidget::DkCropWidget(QRectF rect /* = QRect */, QWidget* parent /* = 0*/, Qt::WindowFlags f /* = 0*/) : DkEditableRect(rect, parent, f) {
 
 	cropToolbar = 0;
 }
@@ -4400,7 +4422,7 @@ void DkCropWidget::createToolbar() {
 	cropToolbar = new DkCropToolBar(tr("Crop Toolbar"), this);
 
 	connect(cropToolbar, SIGNAL(cropSignal()), this, SLOT(crop()));
-	connect(cropToolbar, SIGNAL(cancelSignal()), this, SLOT(hide()));
+	connect(cropToolbar, SIGNAL(cancelSignal()), this, SIGNAL(cancelSignal()));
 	connect(cropToolbar, SIGNAL(aspectRatio(const DkVector&)), this, SLOT(setFixedDiagonal(const DkVector&)));
 	connect(cropToolbar, SIGNAL(angleSignal(double)), this, SLOT(setAngle(double)));
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));

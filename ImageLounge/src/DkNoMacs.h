@@ -77,12 +77,14 @@ using namespace cv;
 //#endif
 
 #ifndef DllExport
-	#ifdef DK_DLL
-	#define DllExport Q_DECL_EXPORT
-	#else
-	#define DllExport Q_DECL_IMPORT
-	#endif
-#endif 
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
 
 namespace nmc {
 
@@ -90,7 +92,6 @@ class DkTcpMenu;
 class DkCompressDialog;
 class DkTifDialog;
 class DkOpacityDialog;
-class DkOpenWithDialog;
 class DkResizeDialog;
 class DkUpdateDialog;
 class DkForceThumbDialog;
@@ -104,6 +105,7 @@ class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkTransferToolBar;
 class DkPluginManager;
+class DkAppManager;
 
 
 // keyboard shortcuts
@@ -118,7 +120,7 @@ enum {
 	shortcut_open_preview	= Qt::Key_T,
 	shortcut_open_thumbview	= Qt::SHIFT + Qt::Key_T,
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
-	shortcut_open_with		= Qt::CTRL + Qt::Key_M,
+	shortcut_app_manager	= Qt::CTRL + Qt::Key_M,
 	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
 	shortcut_first_file		= Qt::Key_Home, 
 	shortcut_last_file		= Qt::Key_End,
@@ -174,6 +176,8 @@ enum {
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
 	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
+	shortcut_auto_adjust	= Qt::CTRL + Qt::SHIFT + Qt::Key_L,
+	shortcut_norm_image		= Qt::CTRL + Qt::SHIFT + Qt::Key_N,
 
 	// tcp
 	shortcut_shortcuts		= Qt::CTRL + Qt::Key_K,
@@ -197,9 +201,10 @@ enum {
 enum fileActions {
 	menu_file_open,
 	menu_file_open_dir,
-	menu_file_open_with,
+	menu_file_app_manager,
 	menu_file_save,
 	menu_file_save_as,
+	menu_file_save_web,
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
@@ -222,6 +227,7 @@ enum sortActions {
 	menu_sort_date_modified,
 	menu_sort_ascending,
 	menu_sort_descending,
+	menu_sort_random,
 
 	menu_sort_end,
 };
@@ -238,6 +244,11 @@ enum editActions {
 	menu_edit_transform,
 	menu_edit_delete,
 	menu_edit_crop,
+	menu_edit_flip_h,
+	menu_edit_flip_v,
+	menu_edit_invert,
+	menu_edit_norm,
+	menu_edit_auto_adjust,
 	menu_edit_wallpaper,
 
 	menu_edit_end,	// nothing beyond this point
@@ -462,12 +473,14 @@ public slots:
 	void updateFilterState(QStringList filters);
 	void saveFile();
 	void saveFileAs(bool silent = false);
+	void saveFileWeb();
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
 	void exportTiff();
 	void computeMosaic();
 	void deleteFile();
+	void openAppManager();
 	void setWallpaper();
 	void printDialog();
 	void cleanSettings();
@@ -478,7 +491,7 @@ public slots:
 	void showToolbar(bool show);
 	void showToolbar(QToolBar* toolbar, bool show);
 	void showGpsCoordinates();
-	void openFileWith();
+	void openFileWith(QAction* action);
 	void aboutDialog();
 	void openDocumentation();
 	void bugReport();
@@ -502,6 +515,11 @@ public slots:
 	void copyImage();
 	void copyImageBuffer();
 	void pasteImage();
+	void flipImageHorizontal();
+	void flipImageVertical();
+	void normalizeImage();
+	void autoAdjustImage();
+	void invertImage();
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);
@@ -518,6 +536,8 @@ public slots:
 	void openPluginManager();
 	void initPluginManager();
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
+	void clearFileHistory();
+	void clearFolderHistory();
 	//void shareFacebook();
 
 	// batch actions
@@ -564,6 +584,7 @@ protected:
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
 	QVector<QAction *> sortActions;
+	QVector<QAction *> openWithActions;
 	QVector<QAction *> editActions;
 	QVector<QAction *> toolsActions;
 	QVector<QAction *> panelActions;
@@ -584,6 +605,7 @@ protected:
 	DkMenuBar* menu;
 	QMenu* fileMenu;
 	QMenu* sortMenu;
+	QMenu* openWithMenu;
 	QMenu* editMenu;
 	QMenu* toolsMenu;
 	QMenu* panelMenu;
@@ -615,7 +637,6 @@ protected:
 	DkCompressDialog* jpgDialog;
 	DkTifDialog* tifDialog;
 	DkOpacityDialog* opacityDialog;
-	DkOpenWithDialog* openWithDialog;
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
@@ -626,6 +647,8 @@ protected:
 	DkMosaicDialog* mosaicDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
+
+	DkAppManager* appManager;
 
 	// client managers
 	//DkLocalClientManager* localClientManager;
@@ -648,6 +671,7 @@ protected:
 	virtual void createShortcuts();
 	virtual void createActions();
 	virtual void createMenu();
+	virtual void createOpenWithMenu(QMenu* menu);
 	virtual void createContextMenu();
 	virtual void createStatusbar();
 

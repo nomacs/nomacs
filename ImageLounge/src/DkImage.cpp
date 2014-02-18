@@ -46,8 +46,35 @@ bool compLogicQString(const QString & lhs, const QString & rhs) {
 #else
 bool compLogicQString(const QString & lhs, const QString & rhs) {
 
-	return lhs < rhs;
-	//return true;
+	//// check if the filenames are just numbers
+	//bool isNum;
+	//int lhn = lhs.left(lhs.lastIndexOf(".")).toInt(&isNum);
+	//qDebug() << "lhs dot idx: " << lhs.lastIndexOf(".");
+	//if (isNum) {
+	//	int rhn = rhs.left(rhs.lastIndexOf(".")).toInt(&isNum);
+	//	qDebug() << "left is a number...";
+
+	//	if (isNum) {
+	//		qDebug() << "comparing numbers...";
+	//		return lhn < rhn;
+	//	}
+	//}
+
+	// number compare
+	QRegExp r("\\d+");
+
+	if (lhs.indexOf(r) >= 0) {
+
+		int lhn = r.cap().toInt();
+
+		// we don't just want to find two numbers
+		// but we want them to be at the same position
+		if (rhs.indexOf(r) >= 0 && r.indexIn(lhs) == r.indexIn(rhs))
+			return lhn < r.cap().toInt();
+
+	}
+
+	return lhs.localeAwareCompare(rhs) < 0;
 }
 
 #endif
@@ -93,6 +120,11 @@ bool compFilenameInv(const QFileInfo& lhf, const QFileInfo& rhf) {
 	return !compFilename(lhf, rhf);
 }
 
+bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return qrand() % 2;
+}
+
 
 // well this is pretty shitty... but we need the filter without description too
 QStringList DkImageLoader::fileFilters = QStringList();
@@ -120,7 +152,7 @@ DkBasicLoader::DkBasicLoader(int mode) {
  * @param file the image file that should be loaded.
  * @return bool true if the image could be loaded.
  **/ 
-bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
+bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg, bool fast) {
 
 	bool imgLoaded = false;
 	
@@ -143,6 +175,18 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	// identify raw images:
 	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
+	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+	QString suf = this->file.suffix().toLower();
+
+	// default Qt loader
+	// here we just try those formats that are officially supported
+	if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str())) {
+
+		// if image has Indexed8 + alpha channel -> we crash... sorry for that
+		imgLoaded = qImg.load(this->file.absoluteFilePath());
+		if (imgLoaded) loader = qt_loader;
+	}
+
 	// PSD loader
 	if (!imgLoaded) {
 
@@ -157,29 +201,24 @@ bool DkBasicLoader::loadGeneral(QFileInfo file, bool rotateImg) {
 	}
 
 	// RAW loader
-	if (!imgLoaded) {
+	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
 		
 		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files
-		imgLoaded = loadRawFile(this->file);
+		imgLoaded = loadRawFile(this->file, fast);
 		if (imgLoaded) loader = raw_loader;
 	}
 
 	// default Qt loader
 	if (!imgLoaded && !newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 
-		// if image has Indexed8 + alpha channel -> we crash... sorry for that
-		imgLoaded = qImg.load(this->file.absoluteFilePath());
-		if (imgLoaded) loader = qt_loader;
+		QFile fileHandle(this->file.absoluteFilePath());
+		fileHandle.open(QIODevice::ReadOnly);
 
 		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
-		if (!imgLoaded) {
-			// TODO: add warning here
-			QFile file(this->file.absoluteFilePath());
-			file.open(QIODevice::ReadOnly);
-			imgLoaded = qImg.loadFromData(file.readAll());
-			if (imgLoaded) loader = qt_loader;
-		}
+		// TODO: add warning here
+		imgLoaded = qImg.loadFromData(fileHandle.readAll());
+		if (imgLoaded) loader = qt_loader;
 	}  
 
 	// this loader is a bit buggy -> be carefull
@@ -286,7 +325,7 @@ bool DkBasicLoader::loadRohFile(QString fileName){
  * @param file the file to be loaded.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRawFile(QFileInfo file) {
+bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 
 	bool imgLoaded = false;
 
@@ -311,6 +350,37 @@ bool DkBasicLoader::loadRawFile(QFileInfo file) {
 		////iProcessor.imgdata.params.output_color = 1; //sRGB  (0...raw)
 		//// RAW data filtration mode during data unpacking and post-processing
 		//iProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
+		int tM = qMax(iProcessor.imgdata.thumbnail.twidth, iProcessor.imgdata.thumbnail.twidth);
+		// TODO: check actual screen resolution
+		qDebug() << "max thumb size: " << tM;
+
+		if (fast || DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
+			(DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920)) {
+			
+			// crashes here if image is broken
+			int err = iProcessor.unpack_thumb();
+			char* tPtr = iProcessor.imgdata.thumbnail.thumb;
+
+			if (!err && tPtr) {
+
+				QImage tmp;
+				tmp.loadFromData((const uchar*) tPtr, iProcessor.imgdata.thumbnail.tlength);
+
+				if (!tmp.isNull()) {
+					imgLoaded = true;
+					qImg = tmp;
+					qDebug() << "[RAW] I loaded the RAW's thumbnail";
+
+					return imgLoaded;
+				}
+				else
+					qDebug() << "qt could not load the thumb";
+			}
+			else
+				qDebug() << "error unpacking the thumb...";
+		}
+
+		qDebug() << "[RAW] loading full raw file";
 
 		//unpack the data
 		iProcessor.unpack();
@@ -833,11 +903,21 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(fileInfo, img, compression);
 	}
-	else {
+	else if (!saved) {
+
+
+		bool hasAlpha = DkImage::alphaChannelUsed(img);
+		QImage sImg = img;
+		
+		if (!hasAlpha)
+			sImg.convertToFormat(QImage::Format_RGB888);
+
+		qDebug() << "img has alpha: " << (img.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
+
 		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
-		saved = imgWriter->write(img);
+		saved = imgWriter->write(sImg);		// TODO: J2K crash detected
 		delete imgWriter;
 	}
 
@@ -1176,6 +1256,8 @@ DkImageLoader::~DkImageLoader() {
 		delete cacher;
 	}
 
+	delete dirWatcher;
+
 	qDebug() << "dir open: " << dir.absolutePath();
 	qDebug() << "filepath: " << saveDir.absolutePath();
 }
@@ -1198,6 +1280,10 @@ void DkImageLoader::initFileFilters() {
 	//		qDebug() << "sorry, I could NOT load " << pluginFilenames[idx] << " since:\n" << p.errorString();
 	//	
 	//}
+
+	if (!openFilters.empty())
+		return;
+
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
@@ -1284,11 +1370,12 @@ void DkImageLoader::initFileFilters() {
  * the currently loaded image.
  **/ 
 void DkImageLoader::clearPath() {
-	
 
 	QMutexLocker locker(&mutex);
 	basicLoader.release();
 	
+	file.refresh();
+
 	// lastFileLoaded must exist
 	if (file.exists())
 		lastFileLoaded = file;
@@ -1460,6 +1547,8 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	// update dir
 	if (skipIdx == 0 && cacheState == cache_force_load)
 		loadDir(dir, false);
+	else
+		loadDir(dir);
 
 	mutex.lock();
 	QFileInfo loadFile = getChangedFileInfo(skipIdx);
@@ -1501,13 +1590,15 @@ QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool sile
  **/ 
 QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searchFile) {
 
-	bool virtualExists = files.contains(virtualFile.fileName());
-
-	if (!virtualExists && !file.exists())
-		return QFileInfo();
+	file.refresh();
+	virtualFile.refresh();
+	bool virtualExists = files.contains(virtualFile.fileName()); // old code here is a bug if the image is e.g. renamed
 
 	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
 	qDebug() << "file: " << file.absoluteFilePath();
+
+	if (!virtualExists && !file.exists())
+		return QFileInfo();
 
 	DkTimer dt;
 
@@ -1667,6 +1758,8 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 * @param idx the file index of the file which should be loaded.
 **/ 
 void DkImageLoader::loadFileAt(int idx) {
+
+	file.refresh();
 
 	if (basicLoader.hasImage() && !file.exists())
 		return;
@@ -2048,19 +2141,19 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 
 	qDebug() << "tmpPath: " << tmpPath.absolutePath();
 	
-	// TODO: call save file silent threaded...
-	for (int idx = 1; idx < 10000; idx++) {
+	//// TODO: call save file silent threaded...
+	//for (int idx = 1; idx < 10000; idx++) {
 	
-		QString fileName = name;
+		QString fileName = name + "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss") + fileExt;
 
-		if (idx < 10)
-			fileName += "000";
-		else if (idx < 100)
-			fileName += "00";
-		else if (idx < 1000)
-			fileName += "0";
-		
-		fileName += QString::number(idx) + fileExt;
+		//if (idx < 10)
+		//	fileName += "000";
+		//else if (idx < 100)
+		//	fileName += "00";
+		//else if (idx < 1000)
+		//	fileName += "0";
+		//
+		//fileName += QString::number(idx) + fileExt;
 
 		QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
 
@@ -2070,23 +2163,12 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 				saveFileSilentThreaded(tmpFile, img);
 			else
 				saveFileSilentIntern(tmpFile, img);
-			//this->virtualFile = tmpFile;	// why doesn't it work out -> file does not exist (locked?)
-			//setImage(img);
-
-			//emit updateFileSignal(tmpFile, img.size());
 			
-			//if (updateFolder) {
-			//	emit updateDirSignal(tmpFile);
-			//	this->file = tmpFile;
-			//	loadDir(tmpFile.absoluteDir());
-			//}
-			
-			return tmpFile;
-
 			qDebug() << tmpFile.absoluteFilePath() << "saved...";
-			break;
+
+			return tmpFile;
 		}
-	}
+	//}
 
 	return QFileInfo();
 }
@@ -2212,6 +2294,8 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 
 	QMutexLocker locker(&mutex);
 	
+	this->file.refresh();
+
 	// update watcher
 	if (this->file.exists() && watcher)
 		watcher->removePath(this->file.absoluteFilePath());
@@ -2232,6 +2316,7 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		if (this->file.exists()) {
 			try {
 				// TODO: remove watcher path?!
+				imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(sImg), QFileInfo(filePath));
 				imgMetaData.saveMetaDataToFile(QFileInfo(filePath));
 			} catch (DkException e) {
 
@@ -2247,12 +2332,15 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
 		this->file = QFileInfo(filePath);
 		this->editFile = QFileInfo();
 
-		this->virtualFile = this->file;
-		basicLoader.setImage(saveImg, this->file);
-		loadDir(this->file.absoluteDir());
+		if (saved)
+			load(filePath, true);
 
-		if (cacher) cacher->setCurrentFile(file, basicLoader.image());
-		sendFileSignal();
+		//this->virtualFile = this->file;
+		//basicLoader.setImage(saveImg, this->file);
+		//loadDir(this->file.absoluteDir());
+
+		//if (cacher) cacher->setCurrentFile(file, basicLoader.image());
+		//sendFileSignal();
 	}
 }
 
@@ -2263,6 +2351,8 @@ void DkImageLoader::saveFileSilentIntern(QFileInfo file, QImage saveImg) {
  * @param rating the rating.
  **/ 
 void DkImageLoader::saveRating(int rating) {
+
+	file.refresh();
 
 	// file might be edited
 	if (!file.exists())
@@ -2324,6 +2414,8 @@ void DkImageLoader::updateHistory() {
  * Deletes the currently loaded file.
  **/ 
 void DkImageLoader::deleteFile() {
+	
+	file.refresh();
 
 	if (file.exists()) {
 
@@ -2364,6 +2456,7 @@ void DkImageLoader::deleteFile() {
 void DkImageLoader::rotateImage(double angle) {
 
 	qDebug() << "rotating image...";
+	file.refresh();
 
 	if (!basicLoader.hasImage()) {
 		qDebug() << "sorry, loader has no image";
@@ -2388,13 +2481,26 @@ void DkImageLoader::rotateImage(double angle) {
 
 		mutex.lock();
 		if (file.exists() && DkSettings::metaData.saveExifOrientation) {
+			
 			imgMetaData.saveOrientation((int)angle);
-			qDebug() << "exif data saved (rotation)?";
+
+			QImage thumb = DkThumbsLoader::createThumb(basicLoader.image());
+			if (imgMetaData.isJpg()) {
+				// undo exif orientation
+				DkBasicLoader loader;
+				loader.setImage(thumb, QFileInfo());
+				loader.rotate(-imgMetaData.getOrientation());
+				thumb = loader.image();
+			}
+			imgMetaData.saveThumbnail(thumb, file);
 		}
-		else if (!DkSettings::metaData.saveExifOrientation) {
+		else if (file.exists() && !DkSettings::metaData.saveExifOrientation) {
+			qDebug() << "file: " << file.fileName() << " exists...";
 			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
 			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
 		}
+		
+
 		mutex.unlock();
 
 		sendFileSignal();
@@ -2784,8 +2890,6 @@ QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
 	for (int idx = 0; idx < files.size(); idx++)
 		fList.append(QFileInfo(dir, files.at(idx)));
 
-	
-
 	switch(DkSettings::global.sortMode) {
 
 	case DkSettings::sort_filename:
@@ -2817,7 +2921,9 @@ QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
 			qSort(fList.begin(), fList.end(), compDateModifiedInv);
 		}
 		break;
-
+	case DkSettings::sort_random:
+			qSort(fList.begin(), fList.end(), compRandom);
+		break;
 
 	default:
 		// filename
@@ -3086,6 +3192,9 @@ void DkCacher::updateDir(QStringList& files) {
 	this->files = files;	// this change is done from another thread!
 	updateFiles = true;
 	qDebug() << "cacher files num: " << files.size();
+	// CRITICAL! he crashes here if you turn cacher on -> and open a folder where lot's of files are written automatically
+	// we should redesign the cacher anyway
+
 
 	//index();
 }

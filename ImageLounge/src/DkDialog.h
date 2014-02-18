@@ -197,74 +197,71 @@ protected:
 	QFileInfo cFile;
 };
 
-class DkOpenWithDialog : public QDialog {
+class DkAppManager : public QObject{
 	Q_OBJECT
 
-	enum {
-		app_photoshop,
-		app_irfan_view,
+public:
+	DkAppManager(QWidget* parent = 0);
+	~DkAppManager();
+
+	void setActions(QVector<QAction* > actions);
+	QVector<QAction* >& getActions();
+	QAction* createAction(QString filePath);
+	QAction* findAction(QString appPath);
+
+	enum defaultAppIdx {
+
+		app_photohsop,
 		app_picasa,
-		app_end,
+		app_picasa_viewer,
+		app_irfan_view,
+		app_explorer,
+
+		app_idx_end
 	};
 
-public:
-	DkOpenWithDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+public slots:
+	void openTriggered();
 
-protected slots:
-	void softwareSelectionChanged();
-	//void okClicked();
-	//void cancelClicked();
-	void browseAppFile();
-	void softwareCleanClicked();
-	virtual void accept();
+signals:
+	void openFileSignal(QAction* action);
 
 protected:
+	void saveSettings();
+	void loadSettings();
+	void assignIcon(QAction* app);
+	bool containsApp(QVector<QAction* > apps, QString appName);
 
-	// input
-	QStringList organizations;
-	QStringList applications;
-	QStringList pathKeys;
-	QStringList exeNames;
-	QStringList screenNames;
+	QString searchForSoftware(QString organization, QString application, QString pathKey = "", QString exeName = "");
+	void findDefaultSoftware();
 
-	QList<QPixmap> appIcons;
-	QList<QRadioButton*> userRadios;
-	QList<QPushButton*> userCleanButtons;
-	QList<QLabel*> userCleanSpace;
-	QButtonGroup* userRadiosGroup;
-	QStringList userAppPaths;
-	QStringList appPaths;
+	QVector<QString> defaultNames;
+	QVector<QAction* > apps;
+	QWidget* parent;
+};
 
-	QBoxLayout* layout;
-	QCheckBox* neverAgainBox;
+class DkAppManagerDialog : public QDialog {
+	Q_OBJECT
 
-	// output
-	int numDefaultApps;
-	int defaultApp;
-	//bool userClickedOk;
+public:
+	DkAppManagerDialog(DkAppManager* manager = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	// functions
-	void init();
+public slots:
+	void on_addButton_clicked();
+	void on_deleteButton_clicked();
+	void on_runButton_clicked();
+	virtual void accept();
+
+signals:
+	void openWithSignal(QAction* act);
+
+protected:
+	DkAppManager* manager;
+	QStandardItemModel* model;
+
 	void createLayout();
-	QString searchForSoftware(int softwareIdx);
-	QPixmap getIcon(QFileInfo path);
-
-	QString getPath() {
-
-		qDebug() << "app idx: " << defaultApp;
-
-		if (defaultApp < numDefaultApps && defaultApp >= 0 && defaultApp < appPaths.size()) {
-			qDebug() << "default path..." << appPaths[defaultApp];
-			return appPaths[defaultApp];
-		}
-		else if (defaultApp-numDefaultApps >= 0 && defaultApp-numDefaultApps < userAppPaths.size()) {
-			qDebug() << "user app path";
-			return userAppPaths[defaultApp-numDefaultApps];
-		}
-
-		return "";
-	};
-
+	QList<QStandardItem* > getItems(QAction* action);
+	QTableView* appTableView;
 };
 
 class DkSearchDialog : public QDialog {
@@ -340,6 +337,7 @@ class DkResizeDialog : public QDialog {
 
 public:
 	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkResizeDialog();
 
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
 	enum{size_pixel, size_percent, size_end};
@@ -443,6 +441,8 @@ protected:
 	void updatePixelWidth();
 	void updatePixelHeight();
 	void updateResolution();
+	void loadSettings();
+	void saveSettings();
 	QImage resizeImg(QImage img, bool silent = true);
 };
 

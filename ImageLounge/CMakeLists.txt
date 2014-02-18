@@ -21,7 +21,8 @@ OPTION (ENABLE_WEBP "Compile with webP support (webP)" ON)
 OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 
-set(NOMACS_VERSION 1.4.0)
+
+set(NOMACS_VERSION 1.6.3)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
@@ -63,12 +64,17 @@ find_package(PkgConfig)
 pkg_check_modules(EXIV2  exiv2>=0.20)
 message(STATUS "exiv2 version by pkg-config: ${EXIV2_VERSION}")
 IF (NOT EXIV2_FOUND AND MSVC)
-
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/Win32/" )
+	endif()
+	
 	find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
 										"ReleaseDLL/exiv2.dll"
 										"DebugDLL/exiv2d.lib"
 										"DebugDLL/exiv2d.dll"
-					PATHS "../exiv2-0.23/msvc64/exiv2lib/Win32/" 
+					PATHS ${EXIV_SEARCH_PATH}
 					DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 					
 	find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" PATHS "../exiv2-0.23/msvc64/include" DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
@@ -178,10 +184,17 @@ IF (ENABLE_RAW)
                 message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
         ENDIF()
 	IF (NOT LIBRAW_FOUND AND MSVC)
+	
         	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.13.5/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
+			if(CMAKE_CL_64)
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/x64")
+			else()
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/Win32")
+			endif()
+			
         	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
-        	                            PATHS "../LibRaw-0.13.5/buildfiles/Win32" DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
+        	                            PATHS ${LIBRAW_SEARCH_PATH} DOC "Path to the libraw build directory" NO_DEFAULT_PATH)
 
 	        IF( EXISTS ${LIBRAW_BUILD_PATH}/release/libraw.dll AND
                 	EXISTS ${LIBRAW_BUILD_PATH}/debug/libraw.dll AND 
@@ -257,7 +270,7 @@ IF(ENABLE_TIFF)
 		ELSE ()
 			message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib")
 		ENDIF()
-
+		
 		SET(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")		
 		find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 	
@@ -399,6 +412,7 @@ IF (EXIV2_FOUND)
 		add_executable(${EXE_NAME} WIN32  MACOSX_BUNDLE src/main.cpp ${NOMACS_MOC_SRC_SU} ${NOMACS_QM} ${NOMACS_TRANSLATIONS} ${NOMACS_RC})
 		target_link_libraries(${EXE_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} ${VERSION_LIB} ${LIB_NAME})
 		
+		set_target_properties(${EXE_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_IMPORT")
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
@@ -418,7 +432,7 @@ IF (EXIV2_FOUND)
 		
 		
 		
-		set_target_properties(${DLL_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL")
+		set_target_properties(${DLL_NAME} PROPERTIES COMPILE_FLAGS "-DDK_DLL_EXPORT")
 		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")
 		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
@@ -475,6 +489,37 @@ IF (EXIV2_FOUND)
 		ENDFOREACH(qtlib)
 		
 		
+		# copy msvcp110.dll to Really Release
+		if (CMAKE_GENERATOR STREQUAL "Visual Studio 11" OR  CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64")
+			SET(VS_VERSION 11)
+		else()
+			SET(VS_VERSION 10)
+		endif()
+		
+		if (MSVC11)
+			GET_FILENAME_COMPONENT(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\11.0\\Setup\\VS;ProductDir] REALPATH CACHE)
+			SET(VS_VERSION 11)
+		elseif (MSVC10)
+			GET_FILENAME_COMPONENT(VS_DIR [HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Setup\\VS;ProductDir] REALPATH CACHE)
+			SET(VS_VERSION 10)
+		endif()
+		
+		if(CMAKE_CL_64)
+			set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x64/Microsoft.VC${VS_VERSION}0.CRT")
+		else()
+			set(VC_RUNTIME_DIR "${VS_DIR}/VC/redist/x86/Microsoft.VC${VS_VERSION}0.CRT")
+		endif()
+		find_file(MSVCP NAMES msvcp${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+		find_file(MSVCR NAMES msvcr${VS_VERSION}0.dll PATHS ${VC_RUNTIME_DIR} NO_DEFAULT_PATH)
+		if(MSVCP)
+			FILE(COPY ${MSVCP} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+			FILE(COPY ${MSVCR} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+		else()
+			set(ERROR_MESSAGE "\nCould not find library msvcp110.dll. for really release")
+			message(STATUS  "${ERROR_MESSAGE}")
+		endif()
+
+		# create projects
 		SET(CMAKE_CONFIGURATION_TYPES "Debug;Release;ReallyRelease" CACHE STRING "limited configs" FORCE)
 		add_definitions(/Zc:wchar_t-)
 		SET(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")

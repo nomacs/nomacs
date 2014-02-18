@@ -75,7 +75,10 @@ public:
 		Mat mat2;
 		QImage cImg;	// must be initialized here!	(otherwise the data is lost before clone())
 
-		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32 ) {
+		if (img.format() == QImage::Format_RGB32)
+			qDebug() << "we have an RGB32 in memory...";
+
+		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
 			mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
 			//qDebug() << "ARGB32 or RGB32";
 		}
@@ -260,6 +263,16 @@ public:
 
 #endif
 	}
+
+	static QImage normImage(const QImage& img);
+
+	static bool normImage(QImage& img);
+
+	static QImage autoAdjustImage(const QImage& img);
+
+	static bool autoAdjustImage(QImage& img);
+
+	static bool alphaChannelUsed(const QImage& img);
 
 };
 

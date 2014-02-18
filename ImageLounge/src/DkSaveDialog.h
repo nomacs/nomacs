@@ -65,6 +65,7 @@ public:
 		jpg_dialog,
 		j2k_dialog,
 		webp_dialog,
+		web_dialog,
 
 		dialog_end
 	};
@@ -84,11 +85,28 @@ public:
 	int getCompression() {
 
 		int compression = -1;
-		if (dialogMode == jpg_dialog || !cbLossless->isChecked())
+		if ((dialogMode == jpg_dialog || !cbLossless->isChecked()) && dialogMode != web_dialog)
 			compression = slider->value();
+		else if (dialogMode == web_dialog)
+			compression = 80;
 
 		return compression;
 	};
+
+	float getResizeFactor() {
+
+		float factor = -1;
+		float finalEdge = sizeCombo->itemData(sizeCombo->currentIndex()).toInt();
+		float minEdge = min(img->width(), img->height());
+
+		if (finalEdge != -1 && minEdge > finalEdge)
+			factor = finalEdge/minEdge;
+
+		qDebug() << "factor: " << factor;
+
+		return factor;
+	};
+
 
 	void setImage(QImage* img) {
 		this->img = img;
@@ -130,11 +148,14 @@ protected slots:
 		drawPreview();
 	};
 
+	void changeSizeWeb(int) {
+		drawPreview();
+	};
+
 	void drawPreview();
 
-	void updateFileSizeLabel(float bufferSize = -1);
-
-
+	void updateFileSizeLabel(float bufferSize = -1, QSize bufferImgSize = QSize(), float factor = -1);
+	
 protected:
 	int dialogMode;
 	bool hasAlpha;
@@ -150,6 +171,7 @@ protected:
 	QLabel* previewSizeLabel;
 	//QLabel* origLabel;
 	DkBaseViewPort* origView;
+	QComboBox* sizeCombo;
 
 	void init();
 	void createLayout();

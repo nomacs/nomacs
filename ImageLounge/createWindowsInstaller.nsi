@@ -7,16 +7,16 @@
 !include "nsProcess.nsh"
 
 ; your install directories
-; !define BUILD_DIR "..\build2012x86\ReallyRelease"
+!define BUILD_DIR "..\build2012x86\ReallyRelease"
+
+!ifndef BUILD_DIR
 !define BUILD_DIR "..\build2012x64\ReallyRelease"
-; !define BUILD_DIR "..\build2010x86\ReallyRelease"
-; !define TRANSLATION_DIR "translation"
-!define TRANSLATION_DIR "..\build2012x64"
+!endif
 !define README_DIR "Readme"
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "1.6.0 [x64]"
+!define PRODUCT_VERSION "1.6.3"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -486,7 +486,7 @@ Section "MainSection" SEC01#
   CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
   CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
   
-  File "${TRANSLATION_DIR}\nomacs_*.qm"
+  File "${BUILD_DIR}\..\nomacs_*.qm"
   
   File "${BUILD_DIR}\libnomacs.dll"
   File "${BUILD_DIR}\exiv2.dll"

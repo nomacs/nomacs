@@ -76,7 +76,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	resizeDialog = 0;
 	opacityDialog = 0;
 	updater = 0;
-	openWithDialog = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
 #ifdef WITH_OPENCV
@@ -88,6 +87,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
 	trainDialog = 0;
 	pluginManager = 0;
 	explorer = 0;
+	appManager = 0;
 
 	currRunningPlugin = QString();
 
@@ -117,6 +117,11 @@ void DkNoMacs::release() {
 		delete progressDialog;
 		progressDialog = 0;
 	}
+
+	if (appManager) {
+		delete appManager;
+		appManager = 0;
+	}
 }
 
 void DkNoMacs::init() {
@@ -135,6 +140,9 @@ void DkNoMacs::init() {
 
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
+
+	appManager = new DkAppManager(this);
+	connect(appManager, SIGNAL(openFileSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
 
 	// shortcuts and actions
 	createIcons();
@@ -507,17 +515,25 @@ void DkNoMacs::createMenu() {
 	fileMenu = menu->addMenu(tr("&File"));
 	fileMenu->addAction(fileActions[menu_file_open]);
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
-	fileMenu->addAction(fileActions[menu_file_open_with]);
+	
+	openWithMenu = new QMenu(tr("Open &With"), fileMenu);
+	createOpenWithMenu(openWithMenu);
+	fileMenu->addMenu(openWithMenu);
+
+	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_save]);
 	fileMenu->addAction(fileActions[menu_file_save_as]);
+	fileMenu->addAction(fileActions[menu_file_save_web]);
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
 	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
 	connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
 
 	fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::global.recentFolders);
 	connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	connect(fileFoldersMenu, SIGNAL(clearHistory()), this, SLOT(clearFolderHistory()));
 
 	fileMenu->addMenu(fileFilesMenu);
 	fileMenu->addMenu(fileFoldersMenu);
@@ -530,6 +546,7 @@ void DkNoMacs::createMenu() {
 	sortMenu->addAction(sortActions[menu_sort_filename]);
 	sortMenu->addAction(sortActions[menu_sort_date_created]);
 	sortMenu->addAction(sortActions[menu_sort_date_modified]);
+	sortMenu->addAction(sortActions[menu_sort_random]);
 	sortMenu->addSeparator();
 	sortMenu->addAction(sortActions[menu_sort_ascending]);
 	sortMenu->addAction(sortActions[menu_sort_descending]);
@@ -553,14 +570,21 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_copy]);
 	editMenu->addAction(editActions[menu_edit_copy_buffer]);
 	editMenu->addAction(editActions[menu_edit_paste]);
+	editMenu->addAction(editActions[menu_edit_delete]);
 	editMenu->addSeparator();
 	editMenu->addAction(editActions[menu_edit_rotate_ccw]);
 	editMenu->addAction(editActions[menu_edit_rotate_cw]);
 	editMenu->addAction(editActions[menu_edit_rotate_180]);
 	editMenu->addSeparator();
+
 	editMenu->addAction(editActions[menu_edit_transform]);
 	editMenu->addAction(editActions[menu_edit_crop]);
-	editMenu->addAction(editActions[menu_edit_delete]);
+	editMenu->addAction(editActions[menu_edit_flip_h]);
+	editMenu->addAction(editActions[menu_edit_flip_v]);
+	editMenu->addSeparator();
+	editMenu->addAction(editActions[menu_edit_auto_adjust]);
+	editMenu->addAction(editActions[menu_edit_norm]);
+	editMenu->addAction(editActions[menu_edit_invert]);
 	editMenu->addSeparator();
 #ifdef Q_WS_WIN
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
@@ -657,6 +681,28 @@ void DkNoMacs::createMenu() {
 
 }
 
+void DkNoMacs::createOpenWithMenu(QMenu* menu) {
+
+	QList<QAction* > oldActions = openWithMenu->findChildren<QAction* >();
+
+	// remove old actions
+	for (int idx = 0; idx < oldActions.size(); idx++)
+		viewport()->removeAction(oldActions.at(idx));
+
+	QVector<QAction* > appActions = appManager->getActions();
+
+	for (int idx = 0; idx < appActions.size(); idx++)
+		qDebug() << "adding action: " << appActions[idx]->text() << " " << appActions[idx]->toolTip();
+
+	assignCustomShortcuts(appActions);
+	openWithMenu->addActions(appActions.toList());
+	
+	if (!appActions.empty())
+		openWithMenu->addSeparator();
+	openWithMenu->addAction(fileActions[menu_file_app_manager]);
+	viewport()->addActions(appActions.toList());
+}
+
 void DkNoMacs::createContextMenu() {
 
 	contextMenu = new QMenu(this);
@@ -721,10 +767,10 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_open_dir]->setStatusTip(tr("Open a directory and load its first image"));
 	connect(fileActions[menu_file_open_dir], SIGNAL(triggered()), this, SLOT(openDir()));
 
-	fileActions[menu_file_open_with] = new QAction(tr("Open &With"), this);
-	fileActions[menu_file_open_with]->setShortcut(QKeySequence(shortcut_open_with));
-	fileActions[menu_file_open_with]->setStatusTip(tr("Open an image in a different Program"));
-	connect(fileActions[menu_file_open_with], SIGNAL(triggered()), this, SLOT(openFileWith()));
+	fileActions[menu_file_app_manager] = new QAction(tr("&Manage Applications"), this);
+	fileActions[menu_file_app_manager]->setStatusTip(tr("Manage Applications which are Automatically Opened"));
+	fileActions[menu_file_app_manager]->setShortcut(QKeySequence(shortcut_app_manager));
+	connect(fileActions[menu_file_app_manager], SIGNAL(triggered()), this, SLOT(openAppManager()));
 
 	fileActions[menu_file_rename] = new QAction(tr("Re&name"), this);
 	fileActions[menu_file_rename]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -746,6 +792,10 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save_as]->setShortcut(QKeySequence(shortcut_save_as));
 	fileActions[menu_file_save_as]->setStatusTip(tr("Save an image as"));
 	connect(fileActions[menu_file_save_as], SIGNAL(triggered()), this, SLOT(saveFileAs()));
+
+	fileActions[menu_file_save_web] = new QAction(tr("&Save for Web"), this);
+	fileActions[menu_file_save_web]->setStatusTip(tr("Save an Image for Web Applications"));
+	connect(fileActions[menu_file_save_web], SIGNAL(triggered()), this, SLOT(saveFileWeb()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
@@ -817,6 +867,13 @@ void DkNoMacs::createActions() {
 	sortActions[menu_sort_date_modified]->setChecked(DkSettings::global.sortMode == DkSettings::sort_date_modified);
 	connect(sortActions[menu_sort_date_modified], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 
+	sortActions[menu_sort_random] = new QAction(tr("Random"), this);
+	sortActions[menu_sort_random]->setObjectName("menu_sort_random");
+	sortActions[menu_sort_random]->setStatusTip(tr("Sort in Random Order"));
+	sortActions[menu_sort_random]->setCheckable(true);
+	sortActions[menu_sort_random]->setChecked(DkSettings::global.sortMode == DkSettings::sort_random);
+	connect(sortActions[menu_sort_random], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
 	sortActions[menu_sort_ascending] = new QAction(tr("&Ascending"), this);
 	sortActions[menu_sort_ascending]->setObjectName("menu_sort_ascending");
 	sortActions[menu_sort_ascending]->setStatusTip(tr("Sort in Ascending Order"));
@@ -845,7 +902,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90° counter clockwise"));
 	connect(editActions[menu_edit_rotate_ccw], SIGNAL(triggered()), vp, SLOT(rotateCCW()));
 
-	editActions[menu_edit_rotate_180] = new QAction(tr("180°"), this);
+	editActions[menu_edit_rotate_180] = new QAction(tr("1&80°"), this);
 	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180°"));
 	connect(editActions[menu_edit_rotate_180], SIGNAL(triggered()), vp, SLOT(rotate180()));
 
@@ -855,7 +912,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_copy]->setStatusTip(tr("copy image"));
 	connect(editActions[menu_edit_copy], SIGNAL(triggered()), this, SLOT(copyImage()));
 
-	editActions[menu_edit_copy_buffer] = new QAction(tr("&Copy Buffer"), this);
+	editActions[menu_edit_copy_buffer] = new QAction(tr("Copy &Buffer"), this);
 	editActions[menu_edit_copy_buffer]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
 	editActions[menu_edit_copy_buffer]->setStatusTip(tr("copy image"));
@@ -883,6 +940,36 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_crop]->setCheckable(true);
 	editActions[menu_edit_crop]->setChecked(false);
 	connect(editActions[menu_edit_crop], SIGNAL(triggered(bool)), vp->getController(), SLOT(showCrop(bool)));
+
+	editActions[menu_edit_flip_h] = new QAction(tr("Flip &Horizontal"), this);
+	//editActions[menu_edit_flip_h]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	//editActions[menu_edit_flip_h]->setShortcut();
+	editActions[menu_edit_flip_h]->setStatusTip(tr("Flip Image Horizontally"));
+	connect(editActions[menu_edit_flip_h], SIGNAL(triggered()), this, SLOT(flipImageHorizontal()));
+
+	editActions[menu_edit_flip_v] = new QAction(tr("Flip &Vertical"), this);
+	//editActions[menu_edit_flip_v]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	//editActions[menu_edit_flip_v]->setShortcut();
+	editActions[menu_edit_flip_v]->setStatusTip(tr("Flip Image Vertically"));
+	connect(editActions[menu_edit_flip_v], SIGNAL(triggered()), this, SLOT(flipImageVertical()));
+
+	editActions[menu_edit_norm] = new QAction(tr("Nor&malize Image"), this);
+	editActions[menu_edit_norm]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	editActions[menu_edit_norm]->setShortcut(shortcut_norm_image);
+	editActions[menu_edit_norm]->setStatusTip(tr("Normalize the Image"));
+	connect(editActions[menu_edit_norm], SIGNAL(triggered()), this, SLOT(normalizeImage()));
+
+	editActions[menu_edit_auto_adjust] = new QAction(tr("&Auto Adjust"), this);
+	editActions[menu_edit_auto_adjust]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	editActions[menu_edit_auto_adjust]->setShortcut(shortcut_auto_adjust);
+	editActions[menu_edit_auto_adjust]->setStatusTip(tr("Auto Adjust Image Contrast and Color Balance"));
+	connect(editActions[menu_edit_auto_adjust], SIGNAL(triggered()), this, SLOT(autoAdjustImage()));
+
+	editActions[menu_edit_invert] = new QAction(tr("&Invert Image"), this);
+	//editActions[menu_edit_invert]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	//editActions[menu_edit_invert]->setShortcut();
+	editActions[menu_edit_invert]->setStatusTip(tr("Invert the Image"));
+	connect(editActions[menu_edit_invert], SIGNAL(triggered()), this, SLOT(invertImage()));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -930,11 +1017,6 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_transfertoolbar]->setCheckable(true);
 	panelActions[menu_panel_transfertoolbar]->setChecked(false);
 	connect(panelActions[menu_panel_transfertoolbar], SIGNAL(toggled(bool)), this, SLOT(setContrast(bool)));
-
-
-	qDebug() << "so: " << DkSettings::app.showOverview.size();
-	qDebug() << "sh: " << DkSettings::app.showHistogram.size();
-	qDebug() << "cAppMode: " << DkSettings::app.currentAppMode;
 
 	panelActions[menu_panel_overview] = new QAction(tr("O&verview"), this);
 	panelActions[menu_panel_overview]->setShortcut(QKeySequence(shortcut_show_overview));
@@ -1193,8 +1275,8 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 
 	fileActions[menu_file_save]->setEnabled(enable);
 	fileActions[menu_file_save_as]->setEnabled(enable);
+	fileActions[menu_file_save_web]->setEnabled(enable);
 	fileActions[menu_file_rename]->setEnabled(enable);
-	fileActions[menu_file_open_with]->setEnabled(enable);
 	fileActions[menu_file_print]->setEnabled(enable);
 	fileActions[menu_file_reload]->setEnabled(enable);
 	fileActions[menu_file_prev]->setEnabled(enable);
@@ -1210,6 +1292,11 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_copy]->setEnabled(enable);
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
 	editActions[menu_edit_wallpaper]->setEnabled(enable);
+	editActions[menu_edit_flip_h]->setEnabled(enable);
+	editActions[menu_edit_flip_v]->setEnabled(enable);
+	editActions[menu_edit_norm]->setEnabled(enable);
+	editActions[menu_edit_auto_adjust]->setEnabled(enable);
+	editActions[menu_edit_invert]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 	
@@ -1238,6 +1325,10 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	toolsActions[menu_tools_manipulation]->setEnabled(false);
 #endif
 
+	QList<QAction* > actions = openWithMenu->actions();
+	for (int idx = 0; idx < actions.size()-1; idx++)
+		actions.at(idx)->setEnabled(enable);
+
 }
 
 void DkNoMacs::enableMovieActions(bool enable) {
@@ -1255,6 +1346,14 @@ void DkNoMacs::enableMovieActions(bool enable) {
 	
 	if (toolbar->isVisible())
 		movieToolbar->setVisible(enable);
+}
+
+void DkNoMacs::clearFileHistory() {
+	DkSettings::global.recentFiles.clear();
+}
+
+void DkNoMacs::clearFolderHistory() {
+	DkSettings::global.recentFolders.clear();
 }
 
 
@@ -1291,7 +1390,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 	emit closeSignal();
 	qDebug() << "saving window settings...";
 	setVisible(false);
-	showNormal();
+	//showNormal();
 
 	if (viewport())
 		viewport()->unloadImage();
@@ -1303,7 +1402,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		
 		if (explorer)
 			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
-
+		
 		DkSettings::save();
 	}
 
@@ -1602,7 +1701,8 @@ void DkNoMacs::pasteImage() {
 		if (viewport())
 			viewport()->loadImage(dropImg);
 
-	} else if (clipboard->mimeData()->hasText()) {
+	} 
+	else if (clipboard->mimeData()->hasText()) {
 
 		QString msg = clipboard->mimeData()->text();
 		QFileInfo file = QFileInfo(msg);
@@ -1613,10 +1713,93 @@ void DkNoMacs::pasteImage() {
 		else
 			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
 	}
-	
 	else if (viewport())
 		viewport()->getController()->setInfo("Clipboard has no image...");
 
+}
+
+void DkNoMacs::flipImageHorizontal() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	img = img.mirrored(true, false);
+
+	if (img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
+	else
+		vp->setEditedImage(img);
+}
+
+void DkNoMacs::flipImageVertical() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	img = img.mirrored(false, true);
+
+	if (img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Flip the Image..."));
+	else
+		vp->setEditedImage(img);
+
+}
+
+void DkNoMacs::invertImage() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	img.invertPixels();
+
+	if (img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Invert the Image..."));
+	else
+		vp->setEditedImage(img);
+
+}
+
+void DkNoMacs::normalizeImage() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+	
+	bool normalized = DkImage::normImage(img);
+
+	if (!normalized || img.isNull())
+		vp->getController()->setInfo(tr("The Image is Already Normalized..."));
+	else
+		vp->setEditedImage(img);
+}
+
+void DkNoMacs::autoAdjustImage() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+
+	bool normalized = DkImage::autoAdjustImage(img);
+
+	if (!normalized || img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot Auto Adjust"));
+	else
+		vp->setEditedImage(img);
 }
 
 void DkNoMacs::readSettings() {
@@ -2130,6 +2313,8 @@ void DkNoMacs::changeSorting(bool change) {
 		DkSettings::global.sortMode = DkSettings::sort_date_created;
 	else if (senderName == "menu_sort_date_modified")
 		DkSettings::global.sortMode = DkSettings::sort_date_modified;
+	else if (senderName == "menu_sort_random")
+		DkSettings::global.sortMode = DkSettings::sort_random;
 	else if (senderName == "menu_sort_ascending") {
 		DkSettings::global.sortDir = DkSettings::sort_ascending;
 		modeChange = false;
@@ -2373,9 +2558,71 @@ void DkNoMacs::saveFileAs(bool silent) {
 		compression = tifDialog->getCompression();
 	}
 
-
 	if (loader)
 		loader->saveFile(sFile, selectedFilter, saveImg, compression);
+
+}
+
+void DkNoMacs::saveFileWeb() {
+
+	DkImageLoader* loader = viewport()->getImageLoader();
+
+	if (!loader)
+		return;
+
+	
+	QString saveName;
+	QFileInfo saveFile;
+
+	if (loader->hasFile()) {
+		saveFile = loader->getFile();
+		saveName = saveFile.fileName();
+
+		qDebug() << "save dir: " << loader->getSaveDir();
+
+		if (loader->getSaveDir() != saveFile.absoluteDir())
+			saveFile = QFileInfo(loader->getSaveDir(), saveName);
+	}
+
+	QImage img = viewport()->getImage();
+	bool imgHasAlpha = DkImage::alphaChannelUsed(img);
+
+	QString suffix = imgHasAlpha ? ".png" : ".jpg";
+	QString saveFilterGui;
+
+	for (int idx = 0; idx < DkImageLoader::saveFilters.size(); idx++) {
+
+		if (DkImageLoader::saveFilters.at(idx).contains(suffix)) {
+			saveFilterGui = DkImageLoader::saveFilters.at(idx);
+			break;
+		}
+	}
+
+	if (saveFile.exists())
+		saveFile = QFileInfo(saveFile.absolutePath(), saveFile.baseName() + suffix);
+
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
+						saveFile.absoluteFilePath(), saveFilterGui);
+
+	if (fileName.isEmpty())
+		return;
+
+	if (!jpgDialog)
+		jpgDialog = new DkCompressDialog(this);
+
+	jpgDialog->setDialogMode(DkCompressDialog::web_dialog);
+
+	jpgDialog->imageHasAlpha(imgHasAlpha);
+	jpgDialog->setImage(&img);
+
+	if (!jpgDialog->exec())
+		return;
+
+	float factor = jpgDialog->getResizeFactor();
+	if (factor != -1)
+		img = DkImage::resizeImage(img, QSize(), factor, DkImage::ipl_area);
+
+	loader->saveFile(fileName, suffix, img, jpgDialog->getCompression());
 
 }
 
@@ -2444,6 +2691,18 @@ void DkNoMacs::deleteFile() {
 
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
 		viewport()->getImageLoader()->deleteFile();
+}
+
+void DkNoMacs::openAppManager() {
+
+	DkAppManagerDialog* appManagerDialog = new DkAppManagerDialog(appManager, this, windowFlags());
+	connect(appManagerDialog, SIGNAL(openWithSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
+	appManagerDialog->exec();
+
+	appManagerDialog->deleteLater();
+
+	openWithMenu->clear();
+	createOpenWithMenu(openWithMenu);
 }
 
 void DkNoMacs::exportTiff() {
@@ -2599,7 +2858,6 @@ void DkNoMacs::computeThumbsBatch() {
 	DkThumbsSaver* saver = new DkThumbsSaver();
 	saver->processDir(viewport()->getImageLoader()->getDir(), forceDialog->forceSave());
 
-
 }
 
 void DkNoMacs::aboutDialog() {
@@ -2611,7 +2869,7 @@ void DkNoMacs::aboutDialog() {
 
 void DkNoMacs::openDocumentation() {
 
-	QString url = QString("https://www.nomacs.org/documentation/");
+	QString url = QString("http://www.nomacs.org/documentation/");
 
 	QDesktopServices::openUrl(QUrl(url));
 }
@@ -2621,6 +2879,24 @@ void DkNoMacs::bugReport() {
 	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
 		% QString("issues/new?issue[tracker_id]=1&issue[custom_field_values][1]=")
 		% QApplication::applicationVersion();
+
+	url += "&issue[custom_field_values][4]=";
+#if defined Q_WS_WIN &&	_MSC_VER == 1600
+	url += "Windows XP";
+#elif defined Q_WS_WIN && _WIN64
+	url += "Windows Vista/7/8 64bit";
+#elif defined Q_WS_WIN && _WIN32
+	url += "Windows Vista/7/8 32bit";
+#elif defined Q_WS_X11 && __x86_64__
+	url += "Linux 64bit";
+#elif defined Q_WS_X11 && __i386__
+	url += "Linux 32bit";
+#elif defined Q_WS_MAC
+	url += "Mac OS";
+#else
+	url += "";
+#endif
+
 	
 	QDesktopServices::openUrl(QUrl(url));
 }
@@ -2630,6 +2906,23 @@ void DkNoMacs::featureRequest() {
 	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
 		% QString("issues/new?issue[tracker_id]=2&issue[custom_field_values][1]=")
 		% QApplication::applicationVersion();
+
+	url += "&issue[custom_field_values][4]=";
+#if defined Q_WS_WIN &&	_MSC_VER == 1600
+	url += "Windows XP";
+#elif defined Q_WS_WIN && _WIN64
+	url += "Windows Vista/7/8 64bit";
+#elif defined Q_WS_WIN && _WIN32
+	url += "Windows Vista/7/8 32bit";
+#elif defined Q_WS_X11 && __x86_64__
+	url += "Linux 64bit";
+#elif defined Q_WS_X11 && __i386__
+	url += "Linux 32bit";
+#elif defined Q_WS_MAC
+	url += "Mac OS";
+#else
+	url += "";
+#endif
 
 	QDesktopServices::openUrl(QUrl(url));
 }
@@ -2850,36 +3143,30 @@ void DkNoMacs::showStatusMessage(QString msg, int which) {
 	statusbarLabels[which]->setText(msg);
 }
 
-void DkNoMacs::openFileWith() {
+void DkNoMacs::openFileWith(QAction* action) {
 
-	if (DkSettings::global.showDefaultAppDialog) {
-		if (!openWithDialog) openWithDialog = new DkOpenWithDialog(this);
-		
-		if (!openWithDialog->exec())
-			return;
-	}
+	if (!action)
+		return;
+
+	QFileInfo app(action->toolTip());
+
+	if (!app.exists())
+		viewport()->getController()->setInfo("Sorry, " % app.fileName() % " does not exist");
 
 	QStringList args;
 	
-	if (QFileInfo(DkSettings::global.defaultAppPath).fileName() == "explorer.exe") {
-		args << "/select," + QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
-		qDebug() << "explorer.exe started...";
-	}
+	if (app.fileName() == "explorer.exe")
+		args << "/select," << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
 	else
 		args << QDir::toNativeSeparators(viewport()->getImageLoader()->getFile().absoluteFilePath());
 
 	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
-	bool started = process.startDetached(DkSettings::global.defaultAppPath, args);
+	bool started = process.startDetached(app.absoluteFilePath(), args);
 
 	if (started)
-		qDebug() << "starting: " << DkSettings::global.defaultAppPath;
-	else if (viewport()) {
-		viewport()->getController()->setInfo("Sorry, I could not start: " % DkSettings::global.defaultAppPath);
-		DkSettings::global.showDefaultAppDialog = true;
-	}
-
-	qDebug() << "I'm trying to execute: " << args[0];
-
+		qDebug() << "starting: " << app.fileName();
+	else if (viewport())
+		viewport()->getController()->setInfo("Sorry, I could not start: " % app.absoluteFilePath());
 }
 
 void DkNoMacs::showGpsCoordinates() {
@@ -2972,9 +3259,19 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 
 void DkNoMacs::openKeyboardShortcuts() {
 
+	QList<QAction* > openWithActionList = openWithMenu->actions();
+	QVector<QAction* > openWithActions;
+
+	for (int idx = 0; idx < openWithActionList.size(); idx++) {
+		if (!openWithActionList.at(idx)->text().isEmpty())
+			openWithActions.append(openWithActionList.at(idx));
+		else
+			qDebug() << "Empty action detected!";
+	}
 
 	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(this);
 	shortcutsDialog->addActions(fileActions, fileMenu->title());
+	shortcutsDialog->addActions(openWithActions, openWithMenu->title());
 	shortcutsDialog->addActions(sortActions, sortMenu->title());
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());

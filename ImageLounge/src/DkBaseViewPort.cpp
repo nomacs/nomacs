@@ -375,9 +375,9 @@ bool DkBaseViewPort::event(QEvent *event) {
 #endif
 
 	//if (event->type() == QEvent::Paint)
-		return QGraphicsView::event(event);
-	//else
 	//	return QGraphicsView::event(event);
+	//else
+	return QGraphicsView::event(event);
 
 	//qDebug() << "event caught..." << event->type();
 
@@ -470,7 +470,7 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 			else
 				qDebug() << "here comes the next image function...";
 		}
-		qDebug() << "swipping...";
+		qDebug() << "swiping...";
 	}
 	else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
 
@@ -494,7 +494,7 @@ void DkBaseViewPort::keyPressEvent(QKeyEvent* event) {
 
 void DkBaseViewPort::keyReleaseEvent(QKeyEvent* event) {
 
-#ifdef DK_DLL
+#ifdef DK_DLL_EXPORT
 	if (!event->isAutoRepeat())
 		emit keyReleaseSignal(event);	// make key presses available
 	//emit enableNoImageSignal(true);

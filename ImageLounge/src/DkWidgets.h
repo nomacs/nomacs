@@ -77,6 +77,7 @@
 #include "DkSettings.h"
 #include "DkMath.h"
 #include "DkToolbars.h"
+#include "DkBaseViewPort.h"
 
 #ifdef Q_WS_WIN
 #include <ShObjIdl.h>
@@ -628,7 +629,8 @@ private:
 
 	QRectF newFileRect;
 	bool scrollToCurrentImage;
-	
+	bool isPainted;
+
 	void init();
 	//void clearThumbs();
 	//void indexDir(int force = DkThumbsLoader::not_forced);
@@ -688,7 +690,7 @@ public slots:
 	void loadFile(QFileInfo& file);
 	void increaseThumbs();
 	void decreaseThumbs();
-	void resizeThumbs(int dx);
+	void resizeThumbs(float dx);
 	void showFile(const QFileInfo& file);
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
@@ -1497,6 +1499,7 @@ public slots:
 	void crop();
 
 signals:
+	void cancelSignal();
 	void showToolbar(QToolBar* toolbar, bool show);
 
 protected:
@@ -1635,18 +1638,18 @@ public:
 
 
 public slots:
-	void setValue(int value) {
+void setValue(int value) {
 		
-		slider->blockSignals(true);
-		slider->setValue(value);
-		slider->blockSignals(false);
+	slider->blockSignals(true);
+	slider->setValue(value);
+	slider->blockSignals(false);
 
-		sliderBox->blockSignals(true);
-		sliderBox->setValue(value);
-		sliderBox->blockSignals(false);
+	sliderBox->blockSignals(true);
+	sliderBox->setValue(value);
+	sliderBox->blockSignals(false);
 
-		emit valueChanged(value);
-	}
+	emit valueChanged(value);
+}
 
 signals:
 	void sliderMoved(int value);

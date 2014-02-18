@@ -68,8 +68,9 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 	
 	DkTimer dt;
 	qDebug() << "[thumb] file: " << file.absoluteFilePath();
-	//if (file.fileName().contains("__doris-gray.jp2"))
-	//	qDebug() << "the wrong file...";
+	if (file.fileName().contains("DSC_3998.bmp"))
+		qDebug() << "twice?";
+
 
 	//// see if we can read the thumbnail from the exif data
 	DkMetaData dataExif(file);
@@ -125,7 +126,7 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 		if (thumb.isNull()) {
 			DkBasicLoader loader;
 			
-			if (loader.loadGeneral(file, true))
+			if (loader.loadGeneral(file, true, true))
 				thumb = loader.image();
 		}
 
@@ -161,6 +162,7 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 			
 			try {
 				dataExif.saveThumbnail(thumb, QFileInfo(filePath));
+				qDebug() << "[thumb] saved..."; 
 			} catch (DkException de) {
 				// do nothing -> the file type does not support meta data
 			}
@@ -177,7 +179,7 @@ QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave
 		//qDebug() << "thumb loaded from exif...";
 	}
 
-	if (orientation != -1 && !dataExif.isTiff()) {
+	if (orientation != -1 && orientation != 0 && dataExif.isJpg()) {
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)orientation);
 		thumb = thumb.transformed(rotationMatrix);
@@ -247,6 +249,7 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 
 DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) {
 
+	fetching = false;
 	connect(&watcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
 }
 
@@ -258,8 +261,12 @@ DkThumbNailT::~DkThumbNailT() {
 void DkThumbNailT::fetchThumb(bool forceLoad /* = false */, bool forceSave /* = false */) {
 
 	
-	if (!img.isNull() || !imgExists || watcher.isRunning())
+	if (!img.isNull() || !imgExists || fetching)
 		return;
+
+	// we have to do our own bool here
+	// watcher.isRunning() returns false if the thread is waiting in the pool
+	fetching = true;
 
 	QFuture<QImage> future = QtConcurrent::run(this, 
 		&nmc::DkThumbNailT::computeCall, forceLoad, forceSave);
@@ -291,16 +298,23 @@ DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 
 
 void DkThumbPool::setFile(const QFileInfo& file, int force) {
 
+	// >DIR: TODO: updating is not working properly e.g. DSC_4068.jpg  [19.12.2013 markus]
+	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath() << " new file: " << file.absoluteFilePath();
+
+	if (!file.exists()) {
+		qDebug() << file.absoluteFilePath() << " does not exist";
+		return;
+	}
+
 	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || dir(currentFile) != dir(file)))
 		indexDir(file);
 	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
 		updateDir(file);
 
-	if (currentFile != file)
+	if (currentFile != file || force != DkThumbsLoader::not_forced)
 		emit newFileIdxSignal(fileIdx(file));
 
 	currentFile = file;
-	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath();
 }
 
 QFileInfo DkThumbPool::getCurrentFile() {
@@ -359,8 +373,14 @@ void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
 		}
 	}
 
-	if (!registered)
+	if (!registered && isActive) {
+		
+		// we need an update here if the listener list was empty
+		if (listenerList.isEmpty())
+			updateDir(currentFile);
+
 		listenerList.append(obj);
+	}
 
 }
 
@@ -373,8 +393,10 @@ void DkThumbPool::indexDir(const QFileInfo& currentFile) {
 
 	files = DkImageLoader::getFilteredFileList(cDir);
 
-	for (int idx = 0; idx < files.size(); idx++)
-		thumbs.append(createThumb(QFileInfo(cDir, files.at(idx))));
+	for (int idx = 0; idx < files.size(); idx++) {
+		QSharedPointer<DkThumbNailT> t = createThumb(QFileInfo(cDir, files.at(idx)));
+		thumbs.append(t);
+	}
 	
 	if (!thumbs.empty())
 		emit numThumbChangedSignal();
@@ -385,14 +407,20 @@ void DkThumbPool::updateDir(const QFileInfo& currentFile) {
 
 	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
 
-	files = DkImageLoader::getFilteredFileList(dir(currentFile));
+	QDir cDir = dir(currentFile);
+	files = DkImageLoader::getFilteredFileList(cDir);
 
 	for (int idx = 0; idx < files.size(); idx++) {
 
-		if (int fIdx = fileIdx(files.at(idx)) != -1)
+		QFileInfo cFile(cDir, files.at(idx));
+		int fIdx = fileIdx(cFile);
+
+		if (fIdx != -1 && thumbs.at(fIdx)->getFile().lastModified() == cFile.lastModified())
 			newThumbs.append(thumbs.at(fIdx));
-		else
-			newThumbs.append(createThumb(QFileInfo(dir(currentFile), files.at(idx))));
+		else {
+			QSharedPointer<DkThumbNailT> t = createThumb(cFile);
+			newThumbs.append(t);
+		}
 	}
 	
 	if (!thumbs.empty() && thumbs.size() != newThumbs.size())
@@ -632,6 +660,7 @@ void DkThumbsLoader::loadAll() {
 	// this function is used for batch saving
 	loadAllThumbs = true;
 	forceSave = true;
+	somethingTodo = true;
 	setLoadLimits(0, (int)thumbs->size());
 }
 
@@ -780,6 +809,8 @@ QImage DkThumbsLoader::createThumb(const QImage& image) {
 	// fast downscaling
 	QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
 	thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	qDebug() << "thumb size in createThumb: " << thumb.size();
 
 	return thumb;
 

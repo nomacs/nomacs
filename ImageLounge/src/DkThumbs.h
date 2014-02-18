@@ -196,6 +196,7 @@ protected:
 	QImage computeCall(bool forceLoad, bool forceSave);
 
 	QFutureWatcher<QImage> watcher;
+	bool fetching;
 };
 
 class DkThumbPool : public QObject {

@@ -84,11 +84,16 @@ using namespace cv;
 
 #include <set>
 
-//#ifdef DK_DLL
-//#define DllExport Q_DECL_EXPORT
-//#else
-//#define DllExport
-//#endif
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
 
 // TODO: ifdef
 //#include <ShObjIdl.h>
@@ -163,6 +168,8 @@ bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf);
 
 bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
 
+bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
+
 // basic image processing
 
 /**
@@ -202,7 +209,7 @@ public:
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/ 
-	bool loadGeneral(QFileInfo file, bool rotateImg = false);
+	bool loadGeneral(QFileInfo file, bool rotateImg = false, bool fast = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
@@ -222,7 +229,7 @@ public:
 	bool setPageIdx(int skipIdx);
 
 	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
-	
+
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
 	 * @param img the new image
@@ -299,6 +306,8 @@ public:
 #endif
 
 
+
+
 public slots:
 	void rotate(int orientation);
 	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
@@ -306,7 +315,7 @@ public slots:
 protected:
 	
 	bool loadRohFile(QString fileName);
-	bool loadRawFile(QFileInfo file);
+	bool loadRawFile(QFileInfo file, bool fast = false);
 	void indexPages(const QFileInfo& fileInfo);
 	void convert32BitOrder(void *buffer, int width);
 

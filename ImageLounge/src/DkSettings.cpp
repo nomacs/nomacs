@@ -170,13 +170,8 @@ void DkSettings::load(bool force) {
 	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
 	global_p.language = settings.value("language", global_p.language).toString();
 
-	global_p.defaultAppPath = settings.value("defaultAppPath", global_p.defaultAppPath).toString();
-	global_p.defaultAppIdx = settings.value("defaultAppIdx", global_p.defaultAppIdx).toInt();
-	global_p.showDefaultAppDialog = settings.value("showDefaultAppDialog", global_p.showDefaultAppDialog).toBool();
-	global_p.numUserChoices = settings.value("numUserChoices", global_p.numUserChoices).toInt();
 	global_p.sortMode = settings.value("sortMode", global_p.sortMode).toInt();
 	global_p.sortDir = settings.value("sortDir", global_p.sortDir).toInt();
-	global_p.userAppPaths = settings.value("userAppPaths", global_p.userAppPaths).toStringList();
 	global_p.setupPath = settings.value("setupPath", global_p.setupPath).toString();
 	global_p.setupVersion = settings.value("setupVersion", global_p.setupVersion).toString();
 	global_p.zoomOnWheel = settings.value("zoomOnWheel", global_p.zoomOnWheel).toBool();
@@ -185,7 +180,7 @@ void DkSettings::load(bool force) {
 	// Display Settings --------------------------------------------------------------------
 	settings.beginGroup("DisplaySettings");
 
-	display_p.keepZoom = settings.value("resetMatrix", display_p.keepZoom).toBool();
+	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
 	display_p.highlightColor = settings.value("highlightColor", display_p.highlightColor).value<QColor>();
 	display_p.bgColorWidget = settings.value("bgColor", display_p.bgColorWidget).value<QColor>();
@@ -250,6 +245,7 @@ void DkSettings::load(bool force) {
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
 	resources_p.fastThumbnailPreview = settings.value("fastThumbnailPreview", resources_p.fastThumbnailPreview).toBool();
 	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
+	resources_p.loadRawThumb = settings.value("loadRawThumb", resources_p.loadRawThumb).toInt();	
 	resources_p.filterDuplicats = settings.value("filterDuplicates", resources_p.filterDuplicats).toBool();
 	resources_p.preferredExtension = settings.value("preferredExtension", resources_p.preferredExtension).toString();	
 
@@ -342,20 +338,10 @@ void DkSettings::save(bool force) {
 		settings.setValue("tmpPath", global_p.tmpPath);
 	if (!force && global_p.language != global_d.language)
 		settings.setValue("language", global_p.language);
-	if (!force && global_p.defaultAppIdx != global_d.defaultAppIdx)
-		settings.setValue("defaultAppIdx", global_p.defaultAppIdx);
-	if (!force && global_p.defaultAppPath != global_d.defaultAppPath)
-		settings.setValue("defaultAppPath", global_p.defaultAppPath);
-	if (!force && global_p.showDefaultAppDialog != global_d.showDefaultAppDialog)
-		settings.setValue("showDefaultAppDialog", global_p.showDefaultAppDialog);
-	if (!force && global_p.numUserChoices != global_d.numUserChoices)
-		settings.setValue("numUserChoices", global_p.numUserChoices);
 	if (!force && global_p.sortMode != global_d.sortMode)
 		settings.setValue("sortMode", global_p.sortMode);
 	if (!force && global_p.sortDir != global_d.sortDir)
 		settings.setValue("sortDir", global_p.sortDir);
-	if (!force && global_p.userAppPaths != global_d.userAppPaths)
-		settings.setValue("userAppPaths", global_p.userAppPaths);
 	if (!force && global_p.setupPath != global_d.setupPath)
 		settings.setValue("setupPath", global_p.setupPath);
 	if (!force && global_p.setupVersion != global_d.setupVersion)
@@ -368,7 +354,7 @@ void DkSettings::save(bool force) {
 	settings.beginGroup("DisplaySettings");
 
 	if (!force && display_p.keepZoom != display_d.keepZoom)
-		settings.setValue("resetMatrix",display_p.keepZoom);
+		settings.setValue("keepZoom",display_p.keepZoom);
 	if (!force && display_p.invertZoom != display_d.invertZoom)
 		settings.setValue("invertZoom",display_p.invertZoom);
 	if (!force && display_p.highlightColor != display_d.highlightColor)
@@ -463,6 +449,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("fastThumbnailPreview", resources_p.fastThumbnailPreview);
 	if (!force && resources_p.filterRawImages != resources_d.filterRawImages)
 		settings.setValue("filterRawImages", resources_p.filterRawImages);
+	if (!force && resources_p.loadRawThumb != resources_d.loadRawThumb)
+		settings.setValue("loadRawThumb", resources_p.loadRawThumb);
 	if (!force && resources_p.filterDuplicats != resources_d.filterDuplicats)
 		settings.setValue("filterDuplicates", resources_p.filterDuplicats);
 	if (!force && resources_p.preferredExtension != resources_d.preferredExtension)
@@ -513,11 +501,6 @@ void DkSettings::setToDefaultSettings() {
 	global_p.useTmpPath = false;
 	global_p.tmpPath = QString();
 	global_p.language = QString();
-	global_p.defaultAppIdx = -1;
-	global_p.defaultAppPath = QString();
-	global_p.showDefaultAppDialog = true;
-	global_p.numUserChoices = 3;
-	global_p.userAppPaths = QStringList();
 	global_p.setupPath = "";
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
@@ -540,7 +523,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.ctrlMod = Qt::ControlModifier;
 #endif
 
-	display_p.keepZoom = true;
+	display_p.keepZoom = zoom_keep_same_size;
 	display_p.invertZoom = false;
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.bgColorWidget = QColor(0, 0, 0, 100);
@@ -576,13 +559,13 @@ void DkSettings::setToDefaultSettings() {
 	//MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuretime] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_rating] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_usercomment] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_date] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_datetimeoriginal] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_imagedescription] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_rating] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_usercomment] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_date] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_datetimeoriginal] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_imagedescription] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_creator] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_creatortitle] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_city] = false;
@@ -591,8 +574,10 @@ void DkSettings::setToDefaultSettings() {
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_caption] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_copyright] = false;
 	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_keywords] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_path] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = false;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_path] = true;
+	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = true;
+	meta_p.saveExifOrientation = true;
+	meta_p.ignoreExifOrientation = false;
 
 
 	sync_p.enableNetworkSync = false;
@@ -607,6 +592,7 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.cacheMemory = 0;
 	resources_p.fastThumbnailPreview = false;
 	resources_p.filterRawImages = true;
+	resources_p.loadRawThumb = raw_thumb_always;
 	resources_p.filterDuplicats = false;
 	resources_p.preferredExtension = "*.jpg";
 
@@ -1026,7 +1012,7 @@ void DkDisplaySettingsWidget::init() {
 	cbRating->setChecked(DkSettings::slideShow.display.testBit(display_file_rating));
 
 	cbInvertZoom->setChecked(DkSettings::display.invertZoom);
-	cbKeepZoom->setChecked(DkSettings::display.keepZoom);
+	keepZoomButtons[DkSettings::display.keepZoom]->setChecked(true);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
 	cbSaveThumb->setChecked(DkSettings::display.saveThumb);
 	interpolateWidget->setSpinBoxValue(DkSettings::display.interpolateZoomLevel);
@@ -1037,19 +1023,49 @@ void DkDisplaySettingsWidget::init() {
 
 void DkDisplaySettingsWidget::createLayout() {
 	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
-	QVBoxLayout* leftLayout = new QVBoxLayout;
-	QVBoxLayout* rightLayout = new QVBoxLayout;
+	QVBoxLayout* leftLayout = new QVBoxLayout(this);
+	QVBoxLayout* rightLayout = new QVBoxLayout(this);
 
 	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"));
+	gbZoom->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QVBoxLayout* gbZoomLayout = new QVBoxLayout(gbZoom);
 	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
 	QWidget* zoomCheckBoxes = new QWidget(this);
+	zoomCheckBoxes->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(zoomCheckBoxes);
 	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
 	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
-	cbKeepZoom = new QCheckBox(tr("Keep Zoom"), this);
+
+
+	QGroupBox* gbRawLoader = new QGroupBox(tr("Keep Zoom Settings"));
+
+	keepZoomButtonGroup = new QButtonGroup(this);
+
+	keepZoomButtons.resize(DkSettings::raw_thumb_end);
+	keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
+	keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if equal size"), this);
+	keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
+	keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
+
+	QWidget* keepZoomWidget = new QWidget();
+	keepZoomWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	QVBoxLayout* keepZoomButtonLayout = new QVBoxLayout(keepZoomWidget);
+
+	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
+		keepZoomButtonGroup->addButton(keepZoomButtons[idx]);
+		keepZoomButtonLayout->addWidget(keepZoomButtons[idx]);
+	}
+
+	//QGridLayout* rawLoaderLayout = new QGridLayout(gbRawLoader);
+	//cbFilterRawImages = new QCheckBox(tr("filter raw images"));
+
+	//rawLoaderLayout->addWidget(rawThumbWidget);
+	//rawLoaderLayout->addWidget(dupWidget);
+	//rawLoaderLayout->addWidget(cbFilterRawImages);
+
+	
 	vbCheckBoxLayout->addWidget(cbInvertZoom);
-	vbCheckBoxLayout->addWidget(cbKeepZoom);
+	vbCheckBoxLayout->addWidget(keepZoomWidget);
 	gbZoomLayout->addWidget(interpolateWidget);
 	gbZoomLayout->addWidget(zoomCheckBoxes);
 
@@ -1092,13 +1108,20 @@ void DkDisplaySettingsWidget::createLayout() {
 
 	widgetLayout->addLayout(leftLayout, 1);
 	widgetLayout->addLayout(rightLayout, 1);
+	adjustSize();
 }
 
 void DkDisplaySettingsWidget::writeSettings() {
 
 	DkSettings::display.invertZoom = (cbInvertZoom->isChecked()) ? true : false;
-	DkSettings::display.keepZoom = (cbKeepZoom->isChecked()) ? true : false;
-	
+
+	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
+		if (keepZoomButtons[idx]->isChecked()) {
+			DkSettings::display.keepZoom = idx;
+			break;
+		}
+	}
+
 	DkSettings::slideShow.silentFullscreen = cbSilentFullscreen->isChecked();
 
 	DkSettings::slideShow.display.setBit(display_file_name, cbName->isChecked());
@@ -1185,19 +1208,13 @@ void DkFileWidget::createLayout() {
 	numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
 	QWidget* checkBoxWidget = new QWidget(this);
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
-	cbWrapImages = new QCheckBox(tr("Wrap Images"));
+	cbWrapImages = new QCheckBox(tr("Loop Images"));
 
-
-	QPushButton* pbOpenWith = new QPushButton(tr("&Open With"), this);
-	connect(pbOpenWith, SIGNAL(clicked()), this, SLOT(openWithDialog()));
-	
 	widgetLayout->addWidget(gbDragDrop);
 	leftLayout->addWidget(skipImgWidget);
 	leftLayout->addWidget(numberFiles);
 	leftLayout->addWidget(cbWrapImages);
 	leftLayout->addStretch();
-	rightLayout->addWidget(pbOpenWith);
-	rightLayout->addStretch();
 	subWidgetLayout->addLayout(leftLayout);
 	subWidgetLayout->addLayout(rightLayout);
 	widgetLayout->addLayout(subWidgetLayout);
@@ -1220,14 +1237,6 @@ void DkFileWidget::lineEditChanged(QString path) {
 bool DkFileWidget::existsDirectory(QString path) {
 	QFileInfo* fi = new QFileInfo(path);
 	return fi->exists();
-}
-
-void DkFileWidget::openWithDialog() {
-
-	DkOpenWithDialog* openWithDialog = new DkOpenWithDialog(this);
-	openWithDialog->exec();
-
-	delete openWithDialog;
 }
 
 void DkFileWidget::tmpPathButtonPressed() {
@@ -1505,6 +1514,8 @@ void DkResourceSettingsWidgets::init() {
 	cbFastThumbnailPreview->setChecked(DkSettings::resources.fastThumbnailPreview);
 	cbFilterRawImages->setChecked(DkSettings::resources.filterRawImages);
 	cbRemoveDuplicates->setChecked(DkSettings::resources.filterDuplicats);
+	
+	rawThumbButtons[DkSettings::resources.loadRawThumb]->setChecked(true);
 }
 
 void DkResourceSettingsWidgets::createLayout() {
@@ -1565,6 +1576,23 @@ void DkResourceSettingsWidgets::createLayout() {
 
 	QGroupBox* gbRawLoader = new QGroupBox(tr("Raw Loader Settings"));
 	
+	rawThumbButtonGroup = new QButtonGroup(this);
+
+	rawThumbButtons.resize(DkSettings::raw_thumb_end);
+
+	rawThumbButtons[DkSettings::raw_thumb_always] = new QRadioButton(tr("Always load JPG if embedded"), this);
+	rawThumbButtons[DkSettings::raw_thumb_if_large] = new QRadioButton(tr("Load JPG if it fits the screen resolution"), this);
+	rawThumbButtons[DkSettings::raw_thumb_never] = new QRadioButton(tr("Never load embedded JPG"), this);
+
+	QWidget* rawThumbWidget = new QWidget();
+	QVBoxLayout* rawThumbButtonLayout = new QVBoxLayout(rawThumbWidget);
+
+	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
+		rawThumbButtonGroup->addButton(rawThumbButtons[idx]);
+		rawThumbButtonLayout->addWidget(rawThumbButtons[idx]);
+	}
+
+
 	QWidget* dupWidget = new QWidget();
 	QHBoxLayout* hLayout = new QHBoxLayout(dupWidget);
 	hLayout->setContentsMargins(0,0,0,0);
@@ -1588,10 +1616,12 @@ void DkResourceSettingsWidgets::createLayout() {
 	hLayout->addWidget(cmExtensions);
 	hLayout->addStretch();
 
-	QGridLayout* rawLoaderLayuot = new QGridLayout(gbRawLoader);
+	QGridLayout* rawLoaderLayout = new QGridLayout(gbRawLoader);
 	cbFilterRawImages = new QCheckBox(tr("filter raw images"));
-	rawLoaderLayuot->addWidget(dupWidget);
-	rawLoaderLayuot->addWidget(cbFilterRawImages);
+	
+	rawLoaderLayout->addWidget(rawThumbWidget);
+	rawLoaderLayout->addWidget(dupWidget);
+	rawLoaderLayout->addWidget(cbFilterRawImages);
 
 	widgetVBoxLayout->addWidget(gbCache);
 	widgetVBoxLayout->addWidget(gbFastPreview);
@@ -1606,6 +1636,13 @@ void DkResourceSettingsWidgets::writeSettings() {
 	DkSettings::resources.filterRawImages = cbFilterRawImages->isChecked();
 	DkSettings::resources.filterDuplicats = cbRemoveDuplicates->isChecked();
 	DkSettings::resources.preferredExtension = DkImageLoader::fileFilters.at(cmExtensions->currentIndex());
+	
+	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
+		if (rawThumbButtons[idx]->isChecked()) {
+			DkSettings::resources.loadRawThumb = idx;
+			break;
+		}
+	}
 }
 
 void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
