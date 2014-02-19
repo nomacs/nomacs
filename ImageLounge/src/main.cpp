@@ -46,7 +46,7 @@
 //#include "DkUtils.h"
 //#include "DkTimer.h"
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QFileInfo>
 #include <QProcess>
 #include <QTranslator>
@@ -55,7 +55,7 @@
 #include <iostream>
 #include <cassert>
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
 #else
 int main(int argc, char *argv[]) {
@@ -80,13 +80,12 @@ int main(int argc, char *argv[]) {
 
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
-#ifndef Q_WS_MAC
+#if !defined(Q_WS_MAC) && !defined(QT5)
 	QApplication::setGraphicsSystem("raster");
-#else
+#elif !defined(QT5)
 	if (mode != nmc::DkSettings::mode_frameless)
 		QApplication::setGraphicsSystem("raster");
 #endif
-
 
 	QApplication a(argc, (char**)argv);
 	QStringList args = a.arguments();

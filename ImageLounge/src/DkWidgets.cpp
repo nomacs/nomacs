@@ -31,7 +31,7 @@
 
 namespace nmc {
 
-DkWidget::DkWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
+DkWidget::DkWidget(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 	init();
 }
 
@@ -138,7 +138,7 @@ void DkWidget::animateOpacityDown() {
 }
 
 // DkFilePreview --------------------------------------------------------------------
-DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WFlags flags) : DkWidget(parent, flags) {
+DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	this->parent = parent;
 	this->thumbPool = thumbPool;
@@ -398,8 +398,13 @@ void DkFilePreview::createCurrentImgEffect(QImage img, QColor col) {
 	QPixmap imgPx = QPixmap::fromImage(img);
 	currentImgGlow = imgPx;
 	currentImgGlow.fill(col);
-	currentImgGlow.setAlphaChannel(imgPx.alphaChannel());
 	
+	// >DIR: check with composite mode [18.2.2014 markus]
+#if QT_VERSION < 0x050000
+	currentImgGlow.setAlphaChannel(imgPx.alphaChannel());
+#endif
+
+
 	//QPixmap glow = imgPx;
 	//// Fills the whole pixmap with a certain color
 	//// Change to whatever color you want the glow to be
@@ -432,7 +437,11 @@ void DkFilePreview::createSelectedEffect(QImage img, QColor col) {
 	QPixmap imgPx = QPixmap::fromImage(img);
 	selectionGlow = imgPx;
 	selectionGlow.fill(col);
+
+	// >DIR: check with composite mode [18.2.2014 markus]
+#if QT_VERSION < 0x050000
 	selectionGlow.setAlphaChannel(imgPx.alphaChannel());
+#endif
 
 	////what about an outer glow??
 	//// To apply the effect, you need to make a QGraphicsItem
@@ -824,8 +833,12 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem* pa
 	//imgLabel->setFixedSize(10,10);
 	//setStyleSheet("QLabel{background: transparent;}");
 	setThumb(thumb);
+	
+#if QT_VERSION < 0x050000
 	setAcceptsHoverEvents(true);
-
+#else
+	setAcceptHoverEvents(true);
+#endif
 }
 
 void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
@@ -1415,7 +1428,10 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 	minHandleWidth = 30;
 	colorLoader = 0;
 
+	// >DIR: check for new plastique style [18.2.2014 markus]
+#if QT_VERSION < 0x050000
 	setStyle(new QPlastiqueStyle());
+#endif
 	setMouseTracking(true);
 
 	// apply style
@@ -2567,9 +2583,17 @@ QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
 	QPixmap imgPx = pm->copy();
 	QPixmap imgAlpha = imgPx;
 	imgAlpha.fill(DkSettings::display.highlightColor);
-	imgAlpha.setAlphaChannel(imgPx.alphaChannel());
 
-	return imgAlpha;
+	// >DIR: check compisite mode [18.2.2014 markus]
+#if QT_VERSION < 0x050000
+	imgAlpha.setAlphaChannel(imgPx.alphaChannel());
+#endif
+
+	QPainter painter(&imgPx);
+	painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+	painter.drawPixmap(imgPx.rect(), imgAlpha);
+
+	return imgPx;
 }
 
 void DkButton::focusInEvent(QFocusEvent * event) {
@@ -3054,10 +3078,10 @@ void DkMetaDataInfo::init() {
 	mapIptcExif[DkMetaDataSettingsWidget::desc_filesize] = 2;
 
 	for (int i = 0; i  < DkMetaDataSettingsWidget::scamDataDesc.size(); i++) 
-		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toAscii());
+		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toLatin1());
 
 	for (int i = 0; i  < DkMetaDataSettingsWidget::sdescriptionDesc.size(); i++)
-		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toAscii());
+		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toLatin1());
 
 
 	exposureModes.append(tr("not defined"));
@@ -4137,8 +4161,8 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 		return;
 	}
 
-	posGrab = map(event->posF());
-	clickPos = event->posF();
+	posGrab = map(QPointF(event->pos()));
+	clickPos = QPointF(event->pos());
 
 	if (rect.isEmpty()) {
 		state = initializing;
@@ -4170,7 +4194,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
-	QPointF posM = map(event->posF());
+	QPointF posM = map(QPointF(event->pos()));
 	
 	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
 		// show rotating - moving
@@ -4187,9 +4211,9 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
-		QPointF clipPos = clipToImage(event->posF());
+		QPointF clipPos = clipToImage(QPointF(event->pos()));
 
-		if (!imgRect || !rect.isEmpty() || clipPos == event->posF()) {
+		if (!imgRect || !rect.isEmpty() || clipPos == QPointF(event->pos())) {
 			
 			if (rect.isEmpty()) {
 

@@ -1424,10 +1424,10 @@ void DkMetaDataSettingsWidget::createLayout() {
 	//QLabel* topLabel = new QLabel;
 	QStringList sDescription;
 	for (int i = 0; i  < scamDataDesc.size(); i++) 
-		sDescription << qApp->translate("nmc::DkMetaData", scamDataDesc.at(i).toAscii());
+		sDescription << qApp->translate("nmc::DkMetaData", scamDataDesc.at(i).toLatin1());
 	
 	for (int i = 0; i  < sdescriptionDesc.size(); i++) 
-		sDescription << qApp->translate("nmc::DkMetaData", sdescriptionDesc.at(i).toAscii());
+		sDescription << qApp->translate("nmc::DkMetaData", sdescriptionDesc.at(i).toLatin1());
 	
 
 	//QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");

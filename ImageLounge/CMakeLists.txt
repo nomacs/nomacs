@@ -59,7 +59,7 @@ ELSE()
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 	message(STATUS "qmake path: ${QT_QMAKE_EXECUTABLE}")
 	GET_FILENAME_COMPONENT(QT_QMAKE_PATH ${QT_QMAKE_EXECUTABLE} PATH)
-	set(CMAKE_PREFIX_PATH ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5Widgets ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5Network ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5LinguistTools ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5PrintSupport)
+	set(CMAKE_PREFIX_PATH ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5Widgets ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5Network ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5LinguistTools ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5PrintSupport ${QT_QMAKE_PATH}\\..\\lib\\cmake\\Qt5Concurrent)
 	message(STATUS "path: ${QT_QMAKE_PATH}")
 	message(STATUS "cmake path: ${CMAKE_PREFIX_PATH}")
 	
@@ -67,8 +67,9 @@ ELSE()
 	find_package(Qt5Network)
 	find_package(Qt5LinguistTools)
 	find_package(Qt5PrintSupport)
+	find_package(Qt5Concurrent)
 	
-	set(QT_INCLUDES ${Qt5Widgets_INCLUDE_DIRS} ${Qt5LinguistTools_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5PrintSupport_INCLUDE_DIRS})
+	set(QT_INCLUDES ${Qt5Widgets_INCLUDE_DIRS} ${Qt5LinguistTools_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5PrintSupport_INCLUDE_DIRS} ${Qt5Concurrent_INCLUDE_DIRS})
 
 	message(STATUS "QT_INCLUDES: ${QT_INCLUDES}")
 	add_definitions(-DQT5)
@@ -520,7 +521,7 @@ IF (EXIV2_FOUND)
 			ENDFOREACH(qtlib)
 		ELSE()
 		
-			SET (QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets)
+			SET (QTLIBLIST Qt5Core Qt5Gui Qt5Network Qt5Widgets Qt5PrintSupport Qt5Concurrent)
 			FOREACH(qtlib ${QTLIBLIST})
 				GET_FILENAME_COMPONENT(QT_DLL_PATH_tmp ${QT_QMAKE_EXECUTABLE} PATH)
 				FILE(COPY ${QT_DLL_PATH_tmp}//..//lib/${qtlib}.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
@@ -598,8 +599,8 @@ IF (EXIV2_FOUND)
 		install(FILES src/img/nomacs.png DESTINATION share/pixmaps)
 		#  translations
 		install(FILES ${NOMACS_QM} DESTINATION share/nomacs/translations)
-                #  manpage
-                install(FILES Readme/nomacs.1 DESTINATION share/man/man1)
+		#  manpage
+		install(FILES Readme/nomacs.1 DESTINATION share/man/man1)
 
 
 		# "make dist" target

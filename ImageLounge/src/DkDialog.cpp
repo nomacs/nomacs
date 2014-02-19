@@ -31,7 +31,7 @@
 namespace nmc {
 
 // DkSplashScreen --------------------------------------------------------------------
-DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WFlags flags) : QDialog(0, flags) {
+DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog(0, flags) {
 
 	QPixmap img(":/nomacs/img/splash-screen.png");
 	setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
@@ -644,7 +644,7 @@ bool DkAppManager::containsApp(QVector<QAction* > apps, QString appName) {
 
 void DkAppManager::assignIcon(QAction* app) {
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #include <windows.h>
 
 	if (!app) {
@@ -666,8 +666,8 @@ void DkAppManager::assignIcon(QAction* app) {
 	// CMakeLists.txt:
 	// if compile error that toWCharArray is not recognized:
 	// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
-	int dirLength = winPath.toWCharArray(wDirName);
-	wDirName[dirLength] = L'\0';	// append null character
+	wDirName = (WCHAR*)winPath.utf16();
+	wDirName[winPath.length()] = L'\0';	// append null character
 
 	int nIcons = ExtractIconExW(wDirName, 0, NULL, NULL, 0);
 
@@ -679,7 +679,7 @@ void DkAppManager::assignIcon(QAction* app) {
 	int err = ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
 
 	if (nIcons != 0 && largeIcon != NULL)
-		appIcon = QPixmap::fromWinHICON(smallIcon);
+		appIcon = DkImage::fromWinHICON(smallIcon);
 
 	DestroyIcon(largeIcon);
 	DestroyIcon(smallIcon);
@@ -812,11 +812,13 @@ void DkAppManagerDialog::on_addButton_clicked() {
 	// load system default open dialog
 	QString appFilter;
 	QString defaultPath;
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	appFilter += tr("Executable Files (*.exe);;");
 	defaultPath = getenv("PROGRAMFILES");
-#else
+#elif QT_VERSION < 0x050000
 	defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
+#else
+	defaultPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);	// >DIR: check if we can use this for windows too [18.2.2014 markus]
 #endif
 
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Application"),
@@ -2367,7 +2369,7 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* prin
 void DkPrintPreviewDialog::init() {
 	
 	if (!printer) {
-#ifdef Q_WS_WIN
+#ifdef WIN32
 		printer = new QPrinter(QPrinter::HighResolution);
 #else
 		printer = new QPrinter;

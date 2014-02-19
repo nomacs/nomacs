@@ -32,7 +32,7 @@
 #pragma comment (lib, "shlwapi.lib")
 #endif
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QImageWriter>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
@@ -114,7 +114,7 @@ using namespace cv;
 #endif
 
 #ifdef WITH_LIBTIFF
-	#ifdef Q_WS_WIN
+	#ifdef WIN32
 		#include "tif_config.h"	
 	#endif
 
@@ -134,7 +134,7 @@ using namespace cv;
 
 namespace nmc {
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	
 	/**
 	 * Logical string compare function.

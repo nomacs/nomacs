@@ -129,9 +129,12 @@ public:
 		QPixmap glow = icon.copy();
 		QPixmap sGlow = glow.copy();
 		sGlow.fill(col);
-		sGlow.setAlphaChannel(glow.alphaChannel());
+		
+		// >DIR: check this code [18.2.2014 markus]
+		//sGlow.setAlphaChannel(glow.alphaChannel());
 
 		QPainter painter(&glow);
+		painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);	// check if this is the right composition mode
 		painter.setOpacity(0.5);
 		painter.drawPixmap(glow.rect(), sGlow);
 
@@ -366,7 +369,10 @@ public:
 		return dateConverted;
 	}
 
-#ifdef Q_WS_WIN
+	static std::wstring qStringToStdWString(const QString &str);
+	static QString stdWStringToQString(const std::wstring &str);
+
+#ifdef WIN32
 	static LPCWSTR stringToWchar(std::string str) {
 		wchar_t *wChar = new wchar_t[(int)str.length()+1];
 		size_t convertedChars = 0;

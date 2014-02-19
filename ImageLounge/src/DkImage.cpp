@@ -39,9 +39,12 @@ bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 }
 
 bool compLogicQString(const QString & lhs, const QString & rhs) {
-	
+#if QT_VERSION < 0x050000
 	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
 	//return true;
+#else
+	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
+#endif
 }
 #else
 bool compLogicQString(const QString & lhs, const QString & rhs) {
@@ -769,7 +772,7 @@ void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 	oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
 	DkTimer dt;
-	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toAscii(), "r");
+	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toLatin1(), "r");
 
 	if (!tiff) 
 		return;
@@ -813,7 +816,7 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 	oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
 	DkTimer dt;
-	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toAscii(), "r");
+	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toLatin1(), "r");
 
 	if (!tiff)
 		return imgLoaded;
@@ -2843,7 +2846,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 
 	DkTimer dt;
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 
 	QString winPath = QDir::toNativeSeparators(dir.path()) + "\\*.*";
 
@@ -2885,7 +2888,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	// convert to QStringList
 	for (unsigned int idx = 0; idx < fileNameList.size(); idx++, lIter++) {
 		
-		QString qFilename = QString::fromStdWString(*lIter);
+		QString qFilename = DkUtils::stdWStringToQString(*lIter);
 
 		// believe it or not, but this is 10 times faster than QRegExp
 		// drawback: we also get files that contain *.jpg*

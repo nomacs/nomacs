@@ -46,6 +46,7 @@
 #include <QItemEditorFactory>
 #include <QHeaderView>
 #include <QTreeView>
+#include <QMimeData>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -54,8 +55,8 @@
 #include <QFormLayout>
 #include <QProgressBar>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
+#include <QtConcurrentRun>
 
 #include "DkWidgets.h"
 #include "DkViewPort.h"
@@ -131,7 +132,7 @@ class DkSplashScreen : public QDialog {
 	Q_OBJECT
 
 public:
-	DkSplashScreen(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkSplashScreen(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkSplashScreen() {};
 
 	//protected:

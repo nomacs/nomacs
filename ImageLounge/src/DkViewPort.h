@@ -28,26 +28,26 @@
 #pragma once
 
 // Qt
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QPrintDialog>
-#include <QtGui/QPrintPreviewDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QInputDialog>
-#include <QtGui/QPainterPathStroker>
-#include <QtGui/QBitmap>
-#include <QtGui/QApplication>
+#include <QDesktopWidget>
+#include <QGraphicsView>
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#include <QMessageBox>
+#include <QWidget>
+#include <QLabel>
+#include <QInputDialog>
+#include <QPainterPathStroker>
+#include <QBitmap>
+#include <QApplication>
 #include <QUrl>
 #include <QPrinter>
-#include <QtGui/QGradientStops>
+#include <QGradientStops>
 #include <QSwipeGesture>
 
 // OpenCV
 #ifdef WITH_OPENCV
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #pragma warning(disable: 4996)
 #endif
 
@@ -58,8 +58,10 @@
 //#pragma comment (lib, "dwmapi.lib")
 //#endif
 
+#if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES
 #include "extern/qevent_p.h"
+#endif
 #endif
 
 // my stuff
@@ -192,7 +194,7 @@ public:
 	};
 
 
-	DkControlWidget(DkViewPort *parent = 0, Qt::WFlags flags = 0);
+	DkControlWidget(DkViewPort *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkControlWidget() {};
 
 	void setFullScreen(bool fullscreen);
@@ -342,7 +344,7 @@ public:
 		scf_end,
 	};
 
-	DkViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPort();
 
 	virtual void release();
@@ -452,8 +454,10 @@ protected:
 
 	// functions
 
+#if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES
-	virtual int swipeRecognition(QNativeGestureEvent* event);	// dummy
+	virtual int swipeRecognition(QNativeGestureEvent* event);
+#endif
 #endif
 	virtual void swipeAction(int swipeGesture);
 	virtual void createShortcuts();
@@ -473,7 +477,7 @@ class DllExport DkViewPortFrameless : public DkViewPort {
 	Q_OBJECT
 
 public:
-	DkViewPortFrameless(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkViewPortFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPortFrameless();
 
 	void release();
@@ -520,7 +524,7 @@ class DllExport DkViewPortContrast : public DkViewPort {
 	Q_OBJECT
 
 public:
-	DkViewPortContrast(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkViewPortContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkViewPortContrast();
 
 	void release();
