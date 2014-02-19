@@ -55,6 +55,7 @@
 #include <QGraphicsOpacityEffect>
 
 #include "DkMath.h"
+#include "DkImage.h"
 
 namespace nmc {
 

@@ -483,19 +483,19 @@ void DkNoMacs::createIcons() {
 			if (idx == icon_file_open_large || idx == icon_file_dir_large)
 				continue;
 
-			fileIcons[idx].addPixmap(DkUtils::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			fileIcons[idx].addPixmap(DkUtils::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 		}
 
 		// now colorize all icons
 		for (int idx = 0; idx < editIcons.size(); idx++)
-			editIcons[idx].addPixmap(DkUtils::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
+			editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
 
 		for (int idx = 0; idx < viewIcons.size(); idx++)
-			viewIcons[idx].addPixmap(DkUtils::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
+			viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
 
 		for (int idx = 0; idx < toolsIcons.size(); idx++)
-			toolsIcons[idx].addPixmap(DkUtils::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
+			toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
 
 	}
 }

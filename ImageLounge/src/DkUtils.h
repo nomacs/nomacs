@@ -121,26 +121,6 @@ public:
 		return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
 	};
 
-	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col) {
-
-		if (icon.isNull())
-			return icon;
-
-		QPixmap glow = icon.copy();
-		QPixmap sGlow = glow.copy();
-		sGlow.fill(col);
-		
-		// >DIR: check this code [18.2.2014 markus]
-		//sGlow.setAlphaChannel(glow.alphaChannel());
-
-		QPainter painter(&glow);
-		painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);	// check if this is the right composition mode
-		painter.setOpacity(0.5);
-		painter.drawPixmap(glow.rect(), sGlow);
-
-		return glow;
-	}
-
 	static QString readableByte(float bytes) {
 		
 		if (bytes >= 1024*1024*1024) {

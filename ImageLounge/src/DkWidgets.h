@@ -610,8 +610,8 @@ private:
 	
 	QLinearGradient leftGradient;
 	QLinearGradient rightGradient;
-	QPixmap selectionGlow;
-	QPixmap currentImgGlow;
+	QPixmap selectedImg;
+	QPixmap currentImg;
 	
 	QImage stubImg;
 	int mouseTrace;
@@ -640,8 +640,7 @@ private:
 	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
-	void createSelectedEffect(QImage img, QColor col);
-	void createCurrentImgEffect(QImage img, QColor col);
+	void createCurrentImg(const QImage& img);
 };
 
 class DkThumbLabel : public QObject, public QGraphicsPixmapItem {

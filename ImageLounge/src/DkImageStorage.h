@@ -279,6 +279,8 @@ public:
 
 	static bool alphaChannelUsed(const QImage& img);
 
+	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 0.5f);
+
 };
 
 class DkImageStorage : public QObject {

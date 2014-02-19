@@ -339,8 +339,26 @@ bool DkImage::autoAdjustImage(QImage& img) {
 	qDebug() << "[Auto Adjust] image adjusted in: " << QString::fromStdString(dt.getTotal());
 	
 	return true;
-
 }
+
+QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float opacity) {
+
+	if (icon.isNull())
+		return icon;
+
+	QPixmap glow = icon.copy();
+	QPixmap sGlow = glow.copy();
+	sGlow.fill(col);
+
+	QPainter painter(&glow);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
+	painter.setCompositionMode(QPainter::CompositionMode_SourceIn);	// check if this is the right composition mode
+	painter.setOpacity(opacity);
+	painter.drawPixmap(glow.rect(), sGlow);
+
+	return glow;
+};
+
 
 // DkImageStorage --------------------------------------------------------------------
 DkImageStorage::DkImageStorage(QImage img) {

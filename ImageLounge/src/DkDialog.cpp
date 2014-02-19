@@ -818,7 +818,7 @@ void DkAppManagerDialog::on_addButton_clicked() {
 #elif QT_VERSION < 0x050000
 	defaultPath = QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation); // retrieves startmenu on windows?!
 #else
-	defaultPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);	// >DIR: check if we can use this for windows too [18.2.2014 markus]
+	defaultPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);	// still retrieves startmenu on windows
 #endif
 
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Application"),
@@ -2441,7 +2441,7 @@ void DkPrintPreviewDialog::createIcons() {
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++)
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100), DkSettings::display.iconColor));
+			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100), DkSettings::display.iconColor));
 	}
 }
 
