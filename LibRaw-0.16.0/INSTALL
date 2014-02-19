@@ -1,0 +1,81 @@
+
+=========  Installing LibRaw ========
+
+I. Installation steps
+
+1. Unpack the distribution file:
+
+ $  tar xzvf LibRaw-0.xx.yy.tar.gz
+
+2. If you wish to use LibRaw demosaic pack(s), unpack them in the same folder:
+
+ $  tar xzvf LibRaw-demosaic-pack-GPL2-0.xx.yy.tar.gz
+ $  tar xzvf LibRaw-demosaic-pack-GPL3-0.xx.yy.tar.gz
+
+
+3. Go to LibRaw folder and run ./configure and make:
+
+ $ cd LibRaw-0.xx.yy
+ $ ./configure  [...optional args...]
+ $ make
+
+4. install by run make install as root:
+ 
+ $ sudo make install  
+
+
+II. ./configure options
+
+--enable-openmp
+--disable-openmp
+
+  Enable/disable OpenMP support if compiler supports it.
+  OpenMP is enabled by default.
+
+
+--enable-lcms
+--disable-lcms
+
+  Enable/disable LCMS color engine support. If enabled, ./configure will try to 
+  find lcms library.  Both LCMS-1.x and LCMS-2.x are supported
+  LCMS support is enabled by default
+
+
+--enable-examples
+--disable-examples
+
+  Enables/disables examples compilation and installation. Enabled by default
+
+
+--enable-demosaic-pack-gpl2
+--enable-demosaic-pack-gpl2=FOLDERNAME
+--enable-demosaic-pack-gpl2=no
+--disable-demosaic-pack-gpl2
+
+  Enables/disables support of additional demosaic methods licensed under GPL2
+  You need to download and unpack LibRaw-demosaic-pack-GPL2 archive to use 
+  this feature.
+  ./configure will try to find demosaic pack in:
+     
+     a) If folder is specified via  --enable-demosaic-pack-gpl2=FOLDERNAME 
+        command-line option, then only this folder will be checked.
+        
+     b) If no folder is specified in --enable-demosaic-pack-gpl2 switch:
+
+          ./LibRaw-demosaic-pack-GPL2 (in LibRaw folder)
+         ../LibRaw-demosaic-pack*GPL2* - upper level folder
+
+        If several ../LibRaw-demosaic-pack*GPL2* folders exists in upper level 
+        catalog, then ./configure will NOT use any of them due of ambiguity.
+        Specify exact folder name in this case using
+          --enable-demosaic-pack-gpl2=FOLDERNAME
+     
+ 
+
+--enable-demosaic-pack-gpl3
+--enable-demosaic-pack-gpl3=FOLDERNAME
+--enable-demosaic-pack-gpl3=no
+--disable-demosaic-pack-gpl3
+        
+        Same as above, but for GPL3-licensed demosaic pack.
+

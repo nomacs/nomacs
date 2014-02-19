@@ -1,0 +1,208 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>LibRaw: C API</title>
+  </head>
+  <body>
+    <a href=index-rus.html>[вернуться к оглавлению]</a>
+    <h1>LibRaw: C API</h1>
+    <p>LibRaw C API является "оберткой" (wrapper) вокруг С++ API, поэтому практически вся  документация к функциям C
+      API  является набором гиперссылок на соответствующие места <a href="API-CXX-rus.html">описания C++ API</a>.
+    </p>
+
+    <p>Содержание</p>
+    <ol>
+      <li><a href="#init">Инициализация:  libraw_data_t       *libraw_init(unsigned int flags);</a></li>
+      <li><a href="#return">Возвращаемые значения</a></li>
+      <li><a href="#dataload">Загрузка данных из файла</a></li>
+      <li><a href="#utility">Вспомогательные функции</a></li>
+      <li><a href="#dcrawemu">Постобработка данных, эмуляция поведения dcraw</a>
+        <ul>
+          <li><a href="#dcrawparams">Установка параметров</a></li>
+          <li><a href="#emu">Эмуляция поведения  dcraw</a></li>
+        </ul>
+        </li>
+      <li><a href="#write">Запись выходных файлов</a></li>
+      <li><a href="#memwrite">Запись результатов распаковки в память</a></li>
+    </ol>
+
+    <a name="init"></a>
+    <h2>Инициализация:  libraw_data_t       *libraw_init(unsigned int flags);</h2>
+    <p>
+      Функция возвращает указатель на <a href=#API-datastruct-rus.html#libraw_data_t>экземпляр структуры
+        libraw_data_t</a>.<br/>
+      Полученный указатель нужно передавать в качестве первого аргумента во все функции C API (кроме libraw_strerror).
+    </p>
+    <p>Возвращает: NULL при ошибке, указатель на структуру во всех остальных случаях.</p>
+
+    <a name="return"></a>
+    <h2>Возвращаемые значения</h2>
+    <p>Функции C API возвращают EINVAL (см. errno.h) если им передан нулевой указатель в качестве первого
+      аргумента. Во всех прочих случаях транслируется <a href="API-CXX-rus.html#return">код возврата C++ API</a>.
+    </p>
+
+    <a name="dataload"></a>
+    <h2>Загрузка данных из файла</h2>
+    <dl>
+      <dt>int libraw_open_file(libraw_data_t*, const char *)</dt>
+      <dt>int libraw_open_file_ex(libraw_data_t*, const char *,INT64 bigfile_size)</dt>
+      <dt>WIN32: int libraw_open_wfile(libraw_data_t*, const wchar_t *)</dt>
+      <dt>WIN32: int libraw_open_wfile_ex(libraw_data_t*, const wchar_t *,INT64 bigfile_size)</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#open_file">LibRaw::open_file()</a>
+      </dd>
+      <dt>int libraw_open_buffer(libraw_data_t*, void *buffer, size_t bufsize)</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#open_buffer">LibRaw::open_buffer()</a>
+      </dd>
+      <dt>    int                 libraw_unpack(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#unpack">LibRaw::unpack()</a>
+      </dd>
+      <dt>    int                 libraw_unpack_thumb(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#unpack_thumb">LibRaw::unpack_thumb()</a>
+      </dd>
+
+    </dl>
+    <a name="utility"></a>
+    <h2>Вспомогательные функции</h2>
+    <dl>
+      <dt>const char* libraw_version()</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#version">LibRaw::version()</a>
+      </dd>
+      <dt>const char* libraw_versionNumber()</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#versionNumber">LibRaw::versionNumber()</a>
+      </dd>
+      <dt>bool LIBRAW_CHECK_VERSION(major,minor,patch)</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#LIBRAW_CHECK_VERSION">LIBRAW_CHECK_VERSION</a> в описании C++ API
+      </dd>
+    <dt>int libraw_cameraCount()</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#cameraCount">LibRaw::cameraCount()</a>
+      </dd>
+    <dt>int libraw_cameraList()</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#cameraList">LibRaw::cameraList()</a>
+      </dd>
+      <dt>void                libraw_get_decoder_info(libraw_data_t*,libraw_decoder_info_t *);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#get_decoder_info">LibRaw::get_decoder_info()</a>
+      </dd>
+      <dt>void                libraw_unpack_function_name(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#unpack_function_name">LibRaw::unpack_function_name()</a>
+      </dd>
+      <dt>void                libraw_COLOR(libraw_data_t*,int row,int col);</dt>
+      <dd>
+        See <a href="API-CXX-rus.html#COLOR">LibRaw::COLOR()</a>
+      </dd>
+      <dt>void libraw_subtract_black(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#subtract_black">LibRaw::subtract_black()</a>
+      </dd>
+      <dt>void                libraw_recycle_datastream(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#recycle_datastream">LibRaw::recycle_datastream()</a>
+      </dd>
+      <dt>void                libraw_recycle(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#recycle">LibRaw::recycle()</a>
+      </dd>
+    <dt>void                libraw_close(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#~LibRaw">LibRaw::~LibRaw()</a>
+      </dd>
+    <dt>const char          *libraw_strerror(int errorcode);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#libraw_strerror">libraw_strerror</a>
+      </dd>
+    <dt>const char          *libraw_streprogress(enum LibRaw_progress);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#strprogress">LibRaw::strprogress</a>
+      </dd>
+    <dt>void                libraw_set_memerror_handler(libraw_data_t*, memory_callback cb);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#memerror">LibRaw::set_memerror_handler()</a>
+      </dd>
+    <dt>void                libraw_set_dataerror_handler(libraw_data_t*,data_callback func);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#dataerror">LibRaw::set_dataerror_handler()</a>
+      </dd>
+    <dt>void                libraw_set_progress_handler(libraw_data_t*,progress_callback func);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#progress">LibRaw::set_progress_handler()</a>
+      </dd>
+    </dl>
+    <a name="dcrawemu"></a>
+    <h2>Постобработка данных, эмуляция поведения dcraw</h2>
+    <a name="dcrawparams"></a>
+    <h3>Установка параметров</h3>
+    <p>
+      Параметры постобработки для описанных ниже вызовов ставятся, как и для  С++ API, модификацией полей структуры
+      libraw_output_params_t:
+    </p>
+    <pre>
+ libraw_data_t *ptr = libraw_init(0);
+ ptr->params.output_tiff = 1; //  выводить в TIFF
+    </pre>
+    <p>
+    Поля структуры описаны в <a href="API-datastruct-rus.html#libraw_output_params_t">документации на
+      libraw_output_params_t</a>, замечания по их использованию указаны в <a href=API-notes-rus.html>API notes</a>.
+    </p>
+    <a name="emu"></a>
+    <h3>Эмуляция поведения  dcraw</h3>
+    <dl>
+    <dt>int                 libraw_raw2image(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#raw2image">LibRaw::raw2image()</a>
+      </dd>
+    <dt>int                 libraw_free_image(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#free_image">LibRaw::free_image()</a>
+      </dd>
+    <dt>int                 libraw_adjust_sizes_info_only(libraw_data_t*);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#adjust_sizes_info_only">LibRaw::adjust_sizes_info_only()</a>
+      </dd>
+    <dt>int                 libraw_dcraw_process(libraw_data_t* lr);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#dcraw_process">LibRaw::dcraw_process()</a>
+      </dd>
+    </dl>
+    <a name="write"></a>
+    <h2>Запись выходных файлов</h2>
+    <dl>
+      <dt>int                 libraw_dcraw_ppm_tiff_writer(libraw_data_t* lr,const char *filename);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#dcraw_ppm_tiff_writer">LibRaw::dcraw_ppm_tiff_writer()</a>
+      </dd>
+      <dt>int                 libraw_dcraw_thumb_writer(libraw_data_t* lr,const char *fname);</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#dcraw_thumb_writer">LibRaw::dcraw_thumb_writer()</a>
+      </dd>
+    </dl>
+    <a name="memwrite"></a>
+    <h2>Запись результатов распаковки в память</h2>
+    <dl>
+      <dt>libraw_processed_image_t *libraw_dcraw_make_mem_image(libraw_data_t* lr,int * errcode)</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#dcraw_make_mem_image">LibRaw::dcraw_make_mem_image()</a>
+      </dd>
+      <dt>libraw_processed_image_t *libraw_dcraw_make_mem_thumb(libraw_data_t* lr,int * errcode)</dt>
+      <dd>
+        См. <a href="API-CXX-rus.html#dcraw_make_mem_thumb">LibRaw::dcraw_make_mem_thumb()</a>
+      </dd>
+    </dl>
+    <a href=index-rus.html>[вернуться к оглавлению]</a>
+    <hr>
+    <address><a href="mailto:info@libraw.org">LibRaw Team</a></address>
+<!-- Created: Sun Mar 16 14:44:49 MSK 2008 -->
+<!-- hhmts start -->
+Last modified: Tue Jul 19 14:49:40 MSD 2011
+<!-- hhmts end -->
+  </body>
+</html>

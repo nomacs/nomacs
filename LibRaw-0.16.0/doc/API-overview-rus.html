@@ -1,0 +1,72 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Обзор LibRaw API (C++)</title>
+  </head>
+
+  <body>
+    <a href=index-rus.html>[вернуться к оглавлению]</a>
+    <h1>Обзор LibRaw API (C++)</h1>
+    <h2>Общие положения</h2>
+    <ol>
+      <li>Вся обработка ведется экземпляром класса LibRaw - обработчиком изображений.</li>
+      <li>Один обработчик изображений одновременно может обрабатывать только один исходный файл, последовательно -
+      сколько угодно файлов.</li>
+      <li>В программе (например, в разных threads) могут одновременно работать несколько обработчиков, хотя следует
+        учитывать, что потребление памяти в обработчике может быть значительным.</li>
+      <li>Чтение исходных данных RAW-файла практически не требует настроек (об исключениях сказано в <a
+          href="API-notes-rus.html">API Notes</a>).</li>
+      <li>Все данные, извлеченные из RAW-файла доступны через поля данных обработчика (экземпляра класса LibRaw).</li>
+      <li>Несмотря на то, что LibRaw <b>не предназначена для постобработки RAW-данных</b>, в библиотеку включены
+        вызовы, позволяющие полностью воспроизвести поведение утилиты <b>dcraw</b>.
+      <li>Все настройки обработки производятся через поля данных класса LibRaw.</li>
+    </ol>
+        
+    <h2>Краткая демонстрация</h2>
+    <p> 
+      Пример ниже не содержит какой-либо обработки ошибок в целях компактности демонстрации
+    </p>
+    <pre>
+#include "libraw/libraw.h"
+int process_image(char *file)
+{
+        // Cоздадим обработчик изображений
+        LibRaw iProcessor;
+
+        // Открыть файл и считать метаданные
+        iProcessor.open_file(file);
+
+        // Метаданные доступны в <a href="API-datastruct-rus.html">полях данных класса</a>
+        printf("Image size: %d x %d\n",iProcessor.imgdata.sizes.width,iProcessor.imgdata.sizes.height);
+
+        // Распакуем изображение
+        iProcessor.unpack();
+        
+        // Преобразуем из iProcessor.rawdata... в iProcessor.image
+        iProcessor.raw2image();
+
+        // И напечатаем его дамп, данные доступны в <a href="API-datastruct-rus.html">полях данных класса</a>
+        for(i = 0;i lt; iProcessor.imgdata.sizes.iwidth *  iProcessor.imgdata.sizes.iheight; i++)
+           printf("i=%d R=%d G=%d B=%d G2=%d\n",
+                        i,
+                        iProcessor.imgdata.image[i][0],
+                        iProcessor.imgdata.image[i][1],
+                        iProcessor.imgdata.image[i][2],
+                        iProcessor.imgdata.image[i][3]
+                );
+
+        // Освободим процессор для работы со следующим изображением
+        iProcessor.recycle();
+}
+</pre>
+
+
+    <a href=index-rus.html>[вернуться к оглавлению]</a>
+    <hr>
+    <address><a href="mailto:info@libraw.org">LibRaw Team</a></address>
+<!-- Created: Sun Mar 16 09:15:41 MSK 2008 -->
+<!-- hhmts start -->
+Last modified: Mon Oct 24 13:10:54 MSD 2011
+<!-- hhmts end -->
+  </body>
+</html>
