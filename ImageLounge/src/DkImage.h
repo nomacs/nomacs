@@ -28,6 +28,8 @@
 #pragma once
 
 #ifdef WIN32
+#include <winsock2.h>	// needed since libraw 0.16
+
 #include "shlwapi.h"
 #pragma comment (lib, "shlwapi.lib")
 #endif

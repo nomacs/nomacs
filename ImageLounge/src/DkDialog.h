@@ -27,6 +27,10 @@
 
 #pragma once
 
+#ifdef WIN32
+#include <winsock2.h>	// needed since libraw 0.16
+#endif
+
 #include <QDialog>
 #include <QLabel>
 #include <QRadioButton>
@@ -67,25 +71,25 @@ namespace nmc {
 // needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
 // and http://qt-project.org/forums/viewthread/8590
 class DkSelectAllLineEdit : public QLineEdit {
-	public:
-		DkSelectAllLineEdit(QWidget* parent = 0) : QLineEdit(parent) {selectOnMousePressEvent = false;};
+public:
+	DkSelectAllLineEdit(QWidget* parent = 0) : QLineEdit(parent) {selectOnMousePressEvent = false;};
 
-	protected:
-		void focusInEvent(QFocusEvent *event) {
-			QLineEdit::focusInEvent(event);
+protected:
+	void focusInEvent(QFocusEvent *event) {
+		QLineEdit::focusInEvent(event);
+		selectAll();
+		selectOnMousePressEvent = true;
+	}
+
+	void mousePressEvent(QMouseEvent *event) {
+		QLineEdit::mousePressEvent(event);
+		if (selectOnMousePressEvent) {
 			selectAll();
-			selectOnMousePressEvent = true;
+			selectOnMousePressEvent = false;
 		}
-
-		void mousePressEvent(QMouseEvent *event) {
-			QLineEdit::mousePressEvent(event);
-			if (selectOnMousePressEvent) {
-				selectAll();
-				selectOnMousePressEvent = false;
-			}
-		}
-	private:
-		bool selectOnMousePressEvent; 
+	}
+private:
+	bool selectOnMousePressEvent; 
 };
 
 class DkMessageBox : public QDialog {

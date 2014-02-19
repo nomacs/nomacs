@@ -227,11 +227,11 @@ void DkNoMacs::init() {
 }
 
 #ifdef WIN32	// windows specific versioning
-#include <windows.h>
-#undef min
-#undef max
-#include <stdio.h>
-#include <string>
+//#include <windows.h>
+//#undef min
+//#undef max
+//#include <stdio.h>
+//#include <string>
 
 void DkNoMacs::registerFileVersion() {
 	
@@ -2797,8 +2797,8 @@ void DkNoMacs::setWallpaper() {
 
 #ifdef WIN32
 
-#include <stdio.h>
-#include <windows.h>
+//#include <stdio.h>
+//#include <windows.h>
 
 	//Read current windows background image path
 	QSettings appSettings( "HKEY_CURRENT_USER\\Control Panel\\Desktop", QSettings::NativeFormat);

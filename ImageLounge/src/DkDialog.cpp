@@ -645,7 +645,8 @@ bool DkAppManager::containsApp(QVector<QAction* > apps, QString appName) {
 void DkAppManager::assignIcon(QAction* app) {
 
 #ifdef WIN32
-#include <windows.h>
+
+//#include <windows.h>
 
 	if (!app) {
 		qDebug() << "SERIOUS problem here, I should assign an icon to a NULL pointer action";

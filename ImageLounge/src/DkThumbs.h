@@ -37,6 +37,10 @@
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
 
+#ifdef WIN32
+	#include <winsock2.h>	// needed since libraw 0.16
+#endif
+
 #include "DkTimer.h"
 #include "DkMetaData.h"
 #include "DkSettings.h"
