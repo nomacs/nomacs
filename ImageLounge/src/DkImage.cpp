@@ -331,7 +331,11 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 		int orientation = 0;
 
 		//use iprocessor from libraw to read the data
-		iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
+		int error = iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
+
+		if (error != LIBRAW_SUCCESS)
+			return false;
+
 		//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
 		//iProcessor.imgdata.params.use_camera_wb = 1;
 		//// (-a) Use automatic white balance obtained after averaging over the entire image
@@ -346,7 +350,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 		int tM = qMax(iProcessor.imgdata.thumbnail.twidth, iProcessor.imgdata.thumbnail.twidth);
 		// TODO: check actual screen resolution
 		qDebug() << "max thumb size: " << tM;
-
+				
 		if (fast || DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
 			(DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920)) {
 			
@@ -375,11 +379,14 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 
 		qDebug() << "[RAW] loading full raw file";
 
+
 		//unpack the data
-		iProcessor.unpack();
-#ifdef LIBRAW_VERSION_14
+		error = iProcessor.unpack();
+#ifndef LIBRAW_VERSION_13	// fixes a bug specific to libraw 13 - version call is UNTESTED
 		iProcessor.raw2image();
 #endif
+		if (error != LIBRAW_SUCCESS)
+			return false;
 
 		//iProcessor.dcraw_process();
 		//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
@@ -437,12 +444,10 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 
 			rawMat = Mat(rows, cols, CV_32FC1);
 
-			for (uint row = 0; row < rows; row++)
-			{
+			for (uint row = 0; row < rows; row++) {
 				float *ptrRaw = rawMat.ptr<float>(row);
 
-				for (uint col = 0; col < cols; col++)
-				{
+				for (uint col = 0; col < cols; col++) {
 
 					int colorIdx = iProcessor.COLOR(row, col);
 					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
