@@ -207,12 +207,12 @@ IF (ENABLE_RAW)
         ENDIF()
 	IF (NOT LIBRAW_FOUND AND MSVC)
 	
-        	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.13.5/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
+        	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.16.0/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
 			if(CMAKE_CL_64)
-				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/x64")
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/buildfiles/x64")
 			else()
-				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.13.5/buildfiles/Win32")
+				SET(LIBRAW_SEARCH_PATH "../LibRaw-0.16.0/buildfiles/Win32")
 			endif()
 			
         	find_path(LIBRAW_BUILD_PATH NAMES "release/libraw.lib" "release/libraw.dll" "debug/libraw.lib" "debug/libraw.dll"
