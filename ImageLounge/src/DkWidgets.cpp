@@ -1370,14 +1370,10 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
-
+//#include <QStyle>
 	minHandleWidth = 30;
 	colorLoader = 0;
 
-	// >DIR: check for new plastique style [18.2.2014 markus]
-#if QT_VERSION < 0x050000
-	setStyle(new QPlastiqueStyle());
-#endif
 	setMouseTracking(true);
 
 	// apply style
@@ -1409,7 +1405,6 @@ DkFolderScrollBar::~DkFolderScrollBar() {
 		delete colorLoader;
 		colorLoader = 0;
 	}
-
 }
 
 void DkFolderScrollBar::updateDir(QFileInfo file, int force) {
@@ -1516,7 +1511,9 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 		QString("QScrollBar::sub-line:horizontal {") +
 		QString("width: 0px;") +
 		QString("height: 0px;") +
-		QString("}"));
+		QString("}") +
+		QString("QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal{background: none}")	// remove 'ugly' Qt background pattern
+		);
 
 	qDebug() << "updating style...";
 	
