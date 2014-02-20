@@ -161,7 +161,7 @@ void DkSettings::load(bool force) {
 	global_p.numFiles = settings.value("numFiles", global_p.numFiles).toInt();
 
 	global_p.loop = settings.value("loop", global_p.loop).toBool();
-	global_p.scanSubFolders = settings.value("scanSubFolders", global_p.scanSubFolders).toBool();
+	global_p.scanSubFolders = settings.value("scanRecursive", global_p.scanSubFolders).toBool();
 	global_p.lastDir = settings.value("lastDir", global_p.lastDir).toString();
 	global_p.searchHistory = settings.value("searchHistory", global_p.searchHistory).toStringList();
 	global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
@@ -323,7 +323,7 @@ void DkSettings::save(bool force) {
 	if (!force && global_p.loop != global_d.loop)
 		settings.setValue("loop",global_p.loop);
 	if (!force && global_p.scanSubFolders != global_d.scanSubFolders)
-		settings.setValue("scanSubFolders",global_p.scanSubFolders);
+		settings.setValue("scanRecursive",global_p.scanSubFolders);
 	if (!force && global_p.lastDir != global_d.lastDir)
 		settings.setValue("lastDir", global_p.lastDir);
 	if (!force && global_p.searchHistory != global_d.searchHistory)

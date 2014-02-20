@@ -1403,22 +1403,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 	// folder changed signal was emitted
 	if (folderUpdated && newDir.absolutePath() == dir.absolutePath()) {
-		
-////#if 0
-//		if (scanRecursive) {
-//			subFolders.clear();
-//			getFoldersRecursive(dir, subFolders);
-//
-//			// find the first sub folder that has images
-//			for (int idx = 0; idx < subFolders.size(); idx++) {
-//				dir = subFolders[idx];
-//				files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-//				if (!files.empty())
-//					break;
-//			}
-//		}
-//		else 
-////#endif
+
 		files = getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		// might get empty too (e.g. someone deletes all images
@@ -1657,7 +1642,6 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 
 		//qDebug() << "subfolders: " << DkSettings::global.scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
 
-//#if 0	// TODO: finish bug - when first image in folder is corrupted
 		if (DkSettings::global.scanSubFolders && subFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= files.size())) {
 
 			int folderIdx = 0;
@@ -1714,9 +1698,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 			//	loadDir(dir, false);
 			//}
 
-
 		}
-//#endif
 
 		// this should never happen!
 		if (files.empty()) {

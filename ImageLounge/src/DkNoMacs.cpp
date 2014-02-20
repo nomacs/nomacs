@@ -1923,6 +1923,11 @@ void DkNoMacs::setRecursiveScan(bool recursive) {
 	if (!loader)
 		return;
 
+	if (recursive)
+		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Enabled"));
+	else
+		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Disabled"));
+
 	loader->updateSubFolders(loader->getDir());
 
 }
