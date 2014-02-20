@@ -236,14 +236,10 @@ IF (ENABLE_RAW)
                 	SET(LIBRAW_LIBRARIES optimized libraw.lib debug libraw.lib)
 
                 	SET(LIBRAW_FOUND true)
-                	SET(LIBRAW_VERSION 0.13.5)
         	ELSE()
                 	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/libraw.dll and debug/libraw.lib")
         	ENDIF()
 	ENDIF(NOT LIBRAW_FOUND AND MSVC)
-    IF (LIBRAW_VERSION VERSION_GREATER 0.14.0 OR LIBRAW_VERSION VERSION_EQUAL 0.14.0 )
-      add_definitions(-DLIBRAW_VERSION_14)
-    endif()
 	          
 	# OpenCV
 	SET(OpenCV_LIBS "")
