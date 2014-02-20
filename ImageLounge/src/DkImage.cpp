@@ -903,14 +903,13 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 	}
 	else if (!saved) {
 
-
 		bool hasAlpha = DkImage::alphaChannelUsed(img);
 		QImage sImg = img;
 		
 		if (!hasAlpha)
-			sImg.convertToFormat(QImage::Format_RGB888);
+			sImg = sImg.convertToFormat(QImage::Format_RGB888);
 
-		qDebug() << "img has alpha: " << (img.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
+		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
 
 		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
 		imgWriter->setCompression(compression);
@@ -2240,9 +2239,10 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	if (saved) {
 		
 		try {
+			// If we come from a RAW image and save a TIF, the thumbnail cracks the image - PS etc cannot read it anymore
 			// TODO: remove path?!
-			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(sImg), QFileInfo(filePath));
 			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
+			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(basicLoader.image()), QFileInfo(filePath));
 		} catch (DkException de) {
 			// do nothing -> the file type does not support meta data
 		}

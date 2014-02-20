@@ -906,6 +906,7 @@ void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 	exifImgN->setIptcData(iptcData);
 
 	exifImgN->writeMetadata();
+	this->file = fileN;
 
 }
 
