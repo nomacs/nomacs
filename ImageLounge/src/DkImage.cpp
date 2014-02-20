@@ -1694,7 +1694,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 				}
 				else if (newFileIdx < 0) {
 					newFileIdx += cFileIdx;
-					cFileIdx = files.size();
+					cFileIdx = files.size()-1;
 					qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << cFileIdx << " -----------------------------";
 					getChangedFileInfo(newFileIdx, silent, false);
 				}
