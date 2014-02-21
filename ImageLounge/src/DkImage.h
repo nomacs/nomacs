@@ -28,11 +28,13 @@
 #pragma once
 
 #ifdef WIN32
+#include <winsock2.h>	// needed since libraw 0.16
+
 #include "shlwapi.h"
 #pragma comment (lib, "shlwapi.lib")
 #endif
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QImageWriter>
 #include <QFileSystemWatcher>
 #include <QFileInfo>
@@ -114,7 +116,7 @@ using namespace cv;
 #endif
 
 #ifdef WITH_LIBTIFF
-	#ifdef Q_WS_WIN
+	#ifdef WIN32
 		#include "tif_config.h"	
 	#endif
 
@@ -134,7 +136,7 @@ using namespace cv;
 
 namespace nmc {
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	
 	/**
 	 * Logical string compare function.
@@ -512,6 +514,7 @@ public:
 	static bool isValid(const QFileInfo& fileInfo);
 	//static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
 	static QStringList getFoldersRecursive(QDir dir);
+	void updateSubFolders(QDir rootDir);
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
 
 	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
@@ -650,6 +653,8 @@ protected:
 	QThread* loaderThread;
 
 	// functions
+	int getNextFolderIdx(int folderIdx);
+	int getPrevFolderIdx(int folderIdx);
 	bool loadDir(QDir newDir, bool scanRecursive = true);
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();

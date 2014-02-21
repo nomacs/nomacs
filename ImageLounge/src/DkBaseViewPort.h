@@ -40,9 +40,11 @@
 
 #include "DkImageStorage.h"
 
+#if QT_VERSION < 0x050000
 // native gestures
 #ifndef QT_NO_GESTURES
 #include "extern/qevent_p.h"
+#endif
 #endif
 
 #ifndef DllExport
@@ -100,7 +102,7 @@ public:
 
 	};
 	
-	DkBaseViewPort(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkBaseViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkBaseViewPort();
 
 	virtual void release();

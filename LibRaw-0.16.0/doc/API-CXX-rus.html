@@ -1,0 +1,935 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>LibRaw C++ API</title>
+  </head>
+
+
+  <body>
+    <a href=index-rus.html>[вернуться к оглавлению]</a>
+    <h1>LibRaw C++ API</h1>
+    <p>Содержание</p>
+    <ol>
+      <li><a href="#LibRaw">Объект LibRaw</a> </li>
+      <li><a href="#return">Возвращаемые значения</a></li>
+      <li><a  href="#dataload">Методы, загружающие данные из файла</a>
+        <ul>
+          <li><a href="#open_datastream">int LibRaw::open_datastream(LibRaw_abstract_datastream *stream)</a>
+          <li><a  href="#open_file">int LibRaw::open_file(const char *rawfile[,INT64 bigfile_size])</a></li>
+          <li><a href="#open_buffer">int LibRaw::open_buffer(void *buffer, size_t bufsize)<a></li>
+          <li><a  href="#unpack">int LibRaw::unpack(void)</a></li>
+          <li><a  href="#unpack_thumb">int LibRaw::unpack_thumb(void)</a></li>
+          </ul>
+        </li>
+      <li><a  href="#utility">Вспомогательные функции</a>
+        <ul>
+          <li>Информация о версии библиотеки
+            <ul>
+              <li><a href="#version">const char* LibRaw::version()</a></li>
+              <li><a href="#versionNumber">int LibRaw::versionNumber()</a></li>
+              <li><a href="#LIBRAW_CHECK_VERSION">bool LIBRAW_CHECK_VERSION(major,minor,patch)</a>
+            </ul>
+          </li>
+          <li>Список поддерживаемых форматов (камер)
+            <ul>
+              <li><a href="#cameraCount">int LibRaw::cameraCount()</a></li>
+              <li><a href="#cameraList">const char** LibRaw::cameraList()</a></li>
+            </ul>
+          </li>
+          <li><a href="#set_rawspeed_camerafile">int LibRaw::set_rawspeed_camerafile(char *path_to_cameras_xml)</a></li>
+          <li><a href="#get_decoder_info">int LibRaw::get_decoder_info(libraw_decoder_info_t *)</a></li>
+          <li><a href="#unpack_function_name">const char* LibRaw::unpack_function_name()</a></li>
+          <li><a href="#COLOR">int LibRaw::COLOR()</a>
+          <li><a href="#setCancelFlag">void LibRaw::setCancelFlag()</a>
+          <li><a href="#subtract_black">int LibRaw::subtract_black()</a>
+          <li><a  href="#recycle">void LibRaw::recycle_datastream(void)</a></li>
+          <li><a  href="#recycle">void LibRaw::recycle(void)</a></li>
+          <li><a  href="#~LibRaw">LibRaw::~LibRaw()</a></li>
+          <li><a href="#strprogress">const char* LibRaw::strprogress(enum LibRaw_progress code)</a></li>
+          <li><a  href="#libraw_strerror">const char* LibRaw::strerror(int errorcode)</a></li>
+          <li><a  href="#callbacks">Установка функций нотификации об ошибках</a>
+            <ul>
+              <li><a href="#progress">Индикация стадий обработки/досрочное ее прекращение</a></li>
+              <li><a  href="#memerror">Уведомитель о нехватке памяти</a></li>
+              <li><a  href="#dataerror">Уведомитель об ошибке чтения файла</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+    <li><a  href="#dcrawemu">Постобработка данных, эмуляция поведения dcraw</a>
+        <ul>
+          <li><a  href="#dcraw_params">Задание параметров</a></li>
+          <li><a href="#raw2image">int LibRaw::raw2image</a></li>
+          <li><a href="#free_image">void LibRaw::free_image</a></li>
+          <li><a  href="#adjust_sizes_info_only">int LibRaw::adjust_sizes_info_only(void)</a></li>
+          <li><a  href="#dcraw_process">int LibRaw::dcraw_process(void)</a></li>
+        </ul>
+      </li>
+      <li><a  href="#dcrawrite">Запись данных в файлы, эмуляция поведения dcraw</a>
+        <ul>
+          <li><a  href="#dcraw_ppm_tiff_writer">int LibRaw::dcraw_ppm_tiff_writer(const char *outfile)</a></li>
+          <li><a  href="#dcraw_thumb_writer">int LibRaw::dcraw_thumb_writer(const char *thumbfile)</a></li>
+        </ul>
+      </li>
+      <li><a href="#memwrite">Запись распакованых данных в буфер в памяти</a>
+        <ul>
+          <li>
+            <a href="#get_mem_image_format">void get_mem_image_format(int *widthp, int *heightp, int *colorsp, int
+              *bpp)</a>
+            </li>
+          <li>
+            <a href="#copy_mem_image">int LibRaw::copy_mem_image(void* scan0, int stride, int bgr)</a>
+          </li>
+          <li><a href="#dcraw_make_mem_image">libraw_processed_image_t *dcraw_make_mem_image(int * errcode)</a>
+          </li>
+          <li><a href="#dcraw_make_mem_thumb">libraw_processed_image_t *dcraw_make_mem_thumb(int *errorcode)</a>
+          </li>
+          <li><a href"#dcraw_clear_mem">void LibRaw::dcraw_clear_mem(libraw_processed_image_t *)</a>
+          </li>
+        </ul>
+      </li>
+      <li><a href="#datastream">Абстракция ввода</a> <!-- h2-->
+        <ul>
+          <li><a href="#LibRaw_abstract_datastream">class LibRaw_abstract_datastream - абстрактный интерфейс чтения
+              RAW-файлов</a> <!-- h3 -->
+            <ul>
+              <li><a href="#datastream_methods">Методы класса LibRaw_abstract_datastream</a> <!-- h4 -->
+                <ul>
+                  <li><a href="#datastream_methods_utility">Верификация объекта</a></li>
+                  <li><a href="#datastream_methods_read">Чтение данных и позиционирование</a></li>
+                  <li><a href="#datastream_methods_other">Прочие методы</a></li>
+                </ul>
+                </li>
+            </ul>
+          </li>
+          <li><a href="#datastream_derived">Производные классы, входящие в LibRaw</a> <!-- h3 -->
+            <ul>
+              <li><a href="#file_datastream">class LibRaw_file_datastream - интерфейс чтения RAW-данных из файла</a></li>
+              <li><a href="#bigfile_datastream">class LibRaw_bigfile_datastream - интерфейс чтения RAW-данных из файла
+                для больших файлов</a></li>
+              <li><a href="#buffer_datastream">class LibRaw_buffer_datastream - интерфейс чтения RAW-данных из буфера в памяти</a></li>
+            </ul>
+          </li>
+          <li><a href="#own_datastreams">Создание собственных интерфейсов чтения</a>
+            <ul>
+              <li><a href="#substream">Поле substream: второй поток чтения данных</a></li>
+            </ul>
+          </li>
+      </li>
+    </ol>
+
+    <a name="LibRaw"></a>
+    <h2>Объект LibRaw</h2> 
+    <p>
+      Основной объект (класс) LibRaw, создается либо без параметров, либо передаются флаги, определяющие поведение
+      объекта. 
+    </p>
+    <pre>
+#include "libraw/libraw.h"
+...
+
+   LibRaw ImageProcessor(unsigned int flags=0);
+...
+    </pre>
+    <p>Флаги (несколько флагов задаются через | - оператор bitwise-OR):</P>
+    <ul>
+      <li><b>LIBRAW_OPTIONS_NO_MEMERR_CALLBACK</b> не устанавливать стандартный <a href="#callbacks">обработчик ошибки
+          нехватки памяти</a> (стандартный обработчик печатает сообщение об ошибке в stderr).</li>
+      <li><b>LIBRAW_OPTIONS_NO_DATAERR_CALLBACK</b> не устанавливать стандартный <a href="#callbacks">обработчик ошибки
+          чтения файла</a> (стандартный обработчик печатает сообщение об ошибке в stderr).</li>
+    </ul>
+    <p>
+    Для обработки изображения используются три группы методов
+    </p>
+    <ul>
+      <li><a href="#dataload">Загрузка данных из RAW-файла</a></li>
+      <li><a href="#dcrawemu">Функции пост-обработки, эмулирующие поведение dcraw</a></li>
+      <li><a href="#dcrawrite">Функции записи в файл, эмулирующие поведение dcraw</a></li>
+    </ul>
+    <p>
+      Результаты обработки размещаются в поле imgdata, которое имеет тип <a
+        href=API-datastruct-rus.html>libraw_data_t</a>, в этом же наборе данных содержатся поля, управляющие
+      постобработкой и выводом.
+    </p>
+    <a name="return"></a>
+    <h2>Возвращаемые значения</h2>
+    <p>
+      Все функции LibRaw API возвращают целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о
+        кодах возврата</a>. Пожалуйста, прочитайте <a href=API-notes-rus.html#errors>описание этого соглашения</a> и
+      <a href="#callbacks">описание поведения LibRaw при фатальных ошибках</a>.
+    </p>
+
+    <a name="dataload"></a>
+    <h2>Методы, загружающие данные из файла</h2>
+    <a name=open_datastream></a>
+    <h3>int LibRaw::open_datastream(LibRaw_abstract_datastream *stream)</h3>
+    <p>Открывает поток с RAW-данными, считывает оттуда метаданные (EXIF), заполняет
+      структуры:
+    </p>
+    <ul>
+      <li>imgdata.idata (<a href="API-datastruct-rus.html#libraw_iparams_t">libraw_iparams_t</a>),</li>
+      <li>imgdata.sizes (<a href="API-datastruct-rus.html#libraw_image_sizes_t">libraw_image_sizes_t</a>),</li>
+      <li>imgdata.color (<a href="API-datastruct-rus.html#libraw_colordata_t">libraw_colordata_t</a>),</li>
+      <li>imgdata.other (<a href="API-datastruct-rus.html#libraw_imgother_t">libraw_imgother_t</a>) и</li>
+      <li>imgdata.thumbnail (<a href="API-datastruct-rus.html#libraw_thumbnail_t">libraw_thumbnail_t</a>).</li>
+    </ul>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    <p>Перед началом обработки вызывается <a href="#recycle">recycle()</a>, следовательно при обработке нескольких
+      изображений в batch-режиме необязательно  вызываеть recycle() в конце цикла обработки.
+    </p>
+    <p><b>Входной параметр</b>: Объект класса, производного от <a href="#datastream">LibRaw_abstract_datastream</a>.
+      Объект должен быть проиницализирован и готов к чтению. Деинициализация объекта производится в вызвавшем
+      приложении.
+    </p>
+    <a name=open_file></a>
+    <h3>int LibRaw::open_file(const char *filename[,INT64 bigfile_size])</h3>
+    <h3>Win32 only: int LibRaw::open_file(const wchar_t *filename[,INT64 bigfile_size])</h3>
+    <p>
+      Создает объект <a href="#file_datastream">LibRaw_file_datastream</a> или <a
+        href="#bigfile_datastream">LibRaw_bigfile_datastream</a>,  вызывает <a
+        href="#open_datastream">open_datastream()</a>,  при успехе выставляет внутренний флаг, сигнализирующий о том,
+      что созданный объект должен быть уничтожен при <a href="#recycle">recycle()</a>, при неуспехе открытия -
+      уничтожает только что созданный объект. 
+    </p>
+    <p>Необязательный Параметр bigfle_size задает размер входного файла, начиная с которого происходит 
+      использование <a href="#bigfile_datastream">LibRaw_bigfile_datastream</a>. По-умолчанию, этот размер равен 250
+      Мб. 
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+
+    <a name=open_buffer></a>
+    <h3>int LibRaw::open_buffer(void *buffer, size_t bufsize)</h3>
+    <p>
+      Создает объект <a href="#buffer_datastream">LibRaw_buffer_datastream</a>, вызывает <a
+        href="#open_datastream">open_datastream()</a>,  при успехе выставляет внутренний флаг, сигнализирующий о том,
+      что созданный объект должен быть уничтожен при <a href="#recycle">recycle()</a>, при неуспехе открытия -
+      уничтожает только что созданный объект. 
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    <a name="unpack"></a>
+    <h3> int LibRaw::unpack(void)</h3>
+    <p>
+      Производит распаковку RAW-данных изображения и вычисление уровня черного (не для всех форматов). Результаты
+      работы помещаются в imgdata.image. 
+    </p>
+    <p>
+      На чтение данных в ряде (редких) случаев влияют настройки, сделанные в imgdata.params (<a
+        href="API-datastruct-rus.html#libraw_output_params_t">libraw_output_params_t</a>), подробнее см. в <a
+        href=API-notes-rus.html>API notes</a>.
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    
+    <a name="unpack_thumb"></a>
+    <h3>int LibRaw::unpack_thumb(void)</h3>
+    <p>
+      Производит чтение (либо распаковку) preview (thumbnail) изображения,
+      помещая результат в буфер imgdata.thumbnail.thumb.<br/>
+      JPEG-preview помещаются в данный буфер без каких-либо изменений (с
+      заголовком и т.п.),  Другие форматы preview помещаются в буфер в виде распакованого 
+      image bitmap (3 компонента, 8 бит на компонент).<br/>
+      Формат thumbnail записывается в поле imgdata.thumbnail.tformat,
+      возможные значения  описаны в <a
+        href="API-datastruct-rus.html#LibRaw_thumbnail_formats">описании констант и структур данных</a>.
+
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    <a name="utility"></a>
+    <h2>Вспомогательные функции</h2>
+    <h3>Информация о версии библиотеки</h3>
+    <a name="version"></a>
+    <h4>const char* LibRaw::version()</h4>
+    <p>
+      Возвращает строковое представление версии библиотеки в формате MAJOR.MINOR.PATCH-Status (например, 0.6.0-Alpha2
+      или 0.6.1-Release).
+    </p>
+    <a name="versionNumber"></a>
+    <h4>int LibRaw::versionNumber()</h4>
+    <p>
+      Возвращает целочисленное представление версии библиотеки. При выходе новых версий библиотеки версия всегда не убывает.
+    </p>
+    <a name="LIBRAW_CHECK_VERSION"></a>
+    <h4>bool LIBRAW_CHECK_VERSION(major,minor,patch)</h4>
+    <p>
+      Макрос для проверки версии в прикладных программах. Возвращает true если текущая версия библиотеки больше или
+      равна переданной в параметрах. Макрос выполняется динамически и может использоваться для проверки версии
+      библиотеки, загружаемой из shared library/DLL.
+    </p>
+    <h3>Список поддерживаемых форматов (камер)</h3>
+    <a name="cameraCount"></a>
+    <h4>int LibRaw::cameraCount()</h4>
+    <p>
+      Возвращает количество камер, поддерживаемых текущей версией библиотеки.
+    </p>
+    <a name="cameraList"></a>
+    <h4>const char** LibRaw::cameraList()</h4>
+    <p>
+      Возвращает cписок камер, поддерживаемых библиотекой. Список на 1 элемент длиннее, чем количество камер, в
+      последнем элементе списка содержится NULL.
+    </p>
+    <h3>Прочие вспомогательные функции</h3>
+    <a name="#set_rawspeed_camerafile"></a>
+    <h4>int LibRaw::set_rawspeed_camerafile(char *path_to_cameras_xml)</h4>
+    <p>
+     (Только для LibRaw, скомпилированной с поддержкой библиотеки RawSpeed)
+    <p>
+    Получает имя файла, содержащего  Читает XML-описание камер (cameras.xml)
+    <a name="get_decoder_info"></a>
+    <h4>int LibRaw::get_decoder_info(libraw_decoder_info_t *)</h4>
+    <p>
+      Функция заполняет структуру libraw_decoder_info_t по переданному указателю данными о текущем декодере.
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    <a name="unpack_function_name"></a>
+    <h4>const char* LibRaw::unpack_function_name()</h4>
+    <p>
+      Возвращает имя функции-распаковщика файла. Интересна только разработчикам тестов для LibRaw, чтобы проверить
+      test coverage.
+    </p>
+    <a name="setCancelFlag"></a>
+    <h4>void LibRaw::setCancelFlag()</h4>
+    <p>
+      Этот вызов устанавливает внутренний флаг быстрого завершения декодера.
+      Если флаг установлен, то декодер будет завершен так быстро, насколько 
+      это возможно.
+      Данный флаг предназначен для ситуации, когда вам нужно быстро завершить
+      все декодеры LibRaw, например для быстрого завершения программы.
+    </p>
+
+    <a name="COLOR"></a>
+    <h4>int LibRaw::COLOR(int row, int col)</h4>
+    <p>
+      Этот вызов возвращает цвет (номер цветового компонента) пиксела с
+      координатами row,col. Для 4-цветных файлов (CMYG, RGBG2) возвращается
+      число в диапазоне 0..3, для 3-цветных файлов - в диапазоне 0..2.
+    </p>
+    <a name="subtract_black"></a>
+    <h4>void LibRaw::subtract_black()</h4>
+    <p>
+      Вызов производит вычитание уровня черного из RAW-данных, если вычитание не произведено самой камерой.
+      При этом соответствующим образом исправляются поля <a
+        href="API-datastruct-rus.html#libraw_colordata_t">colordata.data_maximum</a>,
+      <b>colordata.data_maximum</b> и даные об уровне черного (<a
+        href="API-datastruct-rus.html#libraw_colordata_t">colordata.black</a> и <b>colordata.cblack</b>).
+    </p>
+    <p>
+      Данный вызов надлежит использовать в случае, когда вы хотите делать постпроцессинг RAW-данных 
+      самостоятельно. Встроенные в LibRaw <a href="#dcrawemu">функции постпроцессинга</a> вызовут
+      <b>subtract_black()</b> самостоятельно.
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+
+    <a name="recycle_datastream"></a>
+    <h4>void LibRaw::recycle_datastream(void)</h4>
+    <p>
+     Этот вызов позволяет освободить file handle (и ассоциированные
+     буферы), если ваше приложение больше не собирается вызывать unpack()
+     или unpack_thumb() и, следовательно, может разблокировать файл и
+     освободить память, которая использовалась для чтения RAW-файла.
+ 
+    <a name="recycle"></a>
+    <h4>void LibRaw::recycle(void)</h4>
+    <p>
+      Освобождает аллоцированные данные экземпляра LibRaw, делая  возможным обработку следующего файла тем же
+      процессором. Повторные вызовы recycle() вполне возможны и ничему не противоречат. 
+    </p>
+
+    <a name="~LibRaw"></a>
+    <h4>LibRaw::~LibRaw()</h4>
+    <p>Деструктор, сводится к вызову recycle()</p>
+
+    <a name="strprogress"></a>
+    <h4>const char* LibRaw::strprogress(enum LibRaw_progress code)</h4>
+    <p>Выдает текстовую расшифровку (на английском языке) для кодов текущей стадии обработки LibRaw</p>
+    <a name="libraw_strerror"></a>
+    <h4>const char* LibRaw::strerror(int errorcode)</h4>
+    <p>Аналог функции strerror(3) - выдает текстовую расшифровку (на английском языке) для кодов ошибок LibRaw</p>
+
+    <a name="callbacks"></a>
+    <h3>Установка функций нотификации</h3>
+    <p>
+      При работе библиотеки можно вызывать пользовательский callback, который может быть использован для
+      двух целей:
+    </p>
+    <ul>
+      <li>Динамическая отрисовка статуса обработки изображения.</li>
+      <li>Досрочное прекращение процесса обработки (например, по запросу пользователя)</li>
+    </ul>
+    <p>Кроме того, при работе библиотеки возможны два типа исключительных ситуаций, которые могут требовать
+      уведомления вызывающего приложения:
+    </p>
+    <ul>
+      <li>нехватка памяти</li>
+      <li>ошибка чтения данных</li>
+    </ul>
+    <p>
+      Приложение может установить свои callbacks, которые будут вызваны в вышеперечисленных случаях, с целью
+      уведомления пользователя (или вызывающей программы).
+    </p>
+    <a name="progress"></a>
+    <h4>Индикация стадий обработки/досрочное ее прекращение</h4>
+    <pre>
+        typedef int (*progress_callback)(void *callback_data,enum LibRaw_progress stage, int iteration, int expected);
+        void LibRaw::set_progress_handler(progress_callback func,void *callback_data);
+    </pre>
+    <p>
+      Пользователь может определить свою функцию, которая будет многократно (10-50 раз) вызываться в процессе
+      обработки данных  RAW-файла вызовами  dcraw_process().
+    </p>
+    <p>
+      Этот callback может сигнализировать о необходимости прекратить обработку путем возврата ненулевого значения. В
+      этом случае обработка будет завершена, память освобождена вызовом recycle() и объект LibRaw будет готов к
+      обработке следующего файла. Текущий вызов dcraw_process() вернет код ошибки 
+      LIBRAW_CANCELLED_BY_CALLBACK.
+      </p>
+    <p>
+      Параметры вызова:
+      <dl>
+      <dt>void *callback_data</dt>
+      <dd>void*-указатель, переданный при установке callback через
+        set_memerror_handler. Используется для передачи в callback дополнительных данных</dd>
+      <dt>enum LibRaw_progress stage</dt>
+      <dd>Текущая стадия обработки. Код может быть превращен в строку путем вызова функции 
+        <a href="#strprogress">LibRaw::strprogress</a>. Callback вызывается не на всех стадиях обработки, а только на
+        тех, которые могут занять большое время.
+      </dd>
+      <dt>int iteration</dt>
+      <dd>Номер итерации обработки (от 0 до    expected-1). Внутри стадии обработки callback вызывается более одного
+        раза, номер итерации внутри одной стадии всегда возрастает.
+      </dd>
+      <dt>int expected</dt>
+      <dd>Ожидаемое количество итераций на этой стадии обработки</dd>
+      </dl>
+    Возвращаемые значения: <b>0</b> если обработку можно продолжить, ненулевое число - если обработку следует
+    немедленно прекратить.
+    </p>
+    <p>
+      При использовании OpenMP порядок следования iteration неопределен, они не обязаны строго возрастать.
+    </p>
+    <p>
+      Пример кода callback:
+<pre>
+int my_progress_callback(void *data,enum LibRaw_progress p,int iteration, int expected)
+{
+    char *passed_string = (char *data);
+    printf("Callback: %s  pass %d of %d, data passed: %s\n",libraw_strprogress(p),iteration,expected,passed_string);
+    if(timeout || key_pressed )
+        return 1; // cancel processing immediately
+    else
+        return 0; // can continue
+}
+
+</pre>
+    <a name="memerror"></a>
+    <h4>Уведомитель о нехватке памяти</h4>
+    <pre>
+        typedef void (* memory_callback)(void *callback_data,const char *file, const char *where);
+        void LibRaw::set_memerror_handler(memory_callback func,void *callback_data);
+    </pre>
+    <p>
+      Пользователь может определить свою функцию, вызываемую по
+      нехватке памяти. Это void-функция, получающая три параметра:
+    </p>
+    <ul>
+      <li><b>callback_data</b> - void*-указатель, переданный при установке callback через
+        set_memerror_handler. Используется для передачи в callback дополнительных данных</li>
+      <li><b>file</b> - имя RAW-файла при обработке которого произошла ошибка нехватки памяти. Это имя файла <b>может
+          быть нулевым</b> - в случае, когда оно неизвестно модулю получения данных. Callback должен правильно
+        обрабатывать случай нулевого имени.</li>
+      <li><b>where</b> - имя функции в которой не хватило памяти;</li>
+    </ul>
+    <p>Задача callback - информационная (уведомление пользователя или кода программы о невозможности выполнить
+      обработку).</p> 
+    <p>Если не установить свой обработчик, то будет использован стандартный (печать сообщения об ошибке в stderr).</p>
+    <p>Можно установить нулевой обработчик, передав NULL в set_memerror_handler, тогда функция уведомления вызываться
+      не будет. Того же эффекта можно добиться, если создать объект LibRaw с флагом конструктора
+      LIBRAW_OPTIONS_NO_MEMERR_CALLBACK.
+    </p>
+    <p>В случае нехватки памяти, обработка текущего файла прекращается, вызывается уведомитель, все аллоцированные
+      ресурсы освобождаются, делается <a href="#recycle">recycle()</a>. Текущий вызов вернет ошибку
+      LIBRAW_UNSUFFICIENT_MEMORY. 
+      <br/>
+      При попытке продолжить обработку данных,  все вызовы последущие будут возвращать
+      LIBRAW_OUT_OF_ORDER_CALL. Обработку нового файла можно начать обычным образом: вызвав LibRaw::open_file().
+    </p>
+    <a name="dataerror"></a>
+    <h4>Уведомитель об ошибке чтения файла</h4>
+    <pre>
+        typedef void (*data_callback)(void *callback_data,const char *file, const int offset);
+        void LibRaw::set_dataerror_handler(data_callback func,void *callback_data); 
+    </pre>
+    <p>
+      Пользователь может определить свою функцию, вызываемую по ошибке входных данных. Это void-функция, получающая
+      три  параметра:
+    </p>
+    <ul>
+      <li><b>callback_data</b> - void*-указатель, переданный при установке callback через
+        set_memerror_handler. Используется для передачи в callback дополнительных данных</li>
+      <li><b>file</b>:  имя RAW-файла при обработке которого произошла ошибка нехватки памяти, этот параметр может
+        быть нулевым (NULL), вызываемый callback должен корректно обрабатывать этот случай.</li>
+      <li><b>offset</b>:  -1 если файл закончился (тогда как LibRaw ожидает там еще данные), положительное число -
+        позиция в файле (в байтах от начала), где возникла ошибка распаковки.</li>
+    </ul>
+    <p>Задача callback - информационная (уведомление пользователя или кода программы о невозможности выполнить
+      обработку).</p> 
+    <p>Если не установить свой обработчик, то будет использован стандартный (печать сообщения об ошибке в stderr).</p>
+    <p>Можно установить нулевой обработчик, передав NULL в set_dataerror_handler, тогда функция уведомления вызываться
+      не будет. Того же эффекта можно добиться, если создать объект LibRaw с флагом конструктора
+      LIBRAW_OPTIONS_NO_DATAERR_CALLBACK.
+    </p>
+    <p>В случае ошибки во входных данных, обработка текущего файла прекращается, вызывается уведомитель, все
+      аллоцированные ресурсы освобождаются, делается <a href="#recycle">recycle()</a>. Текущий вызов вернет ошибку
+      LIBRAW_IO_ERROR. 
+      <br/>
+      При попытке продолжить обработку данных,  все вызовы последущие будут возвращать
+      LIBRAW_OUT_OF_ORDER_CALL. Обработку нового файла можно начать обычным образом: вызвав LibRaw::open_file().
+    </p>
+
+    <a name="dcrawemu"></a>
+    <h2>Постобработка данных, эмуляция поведения dcraw</h2>
+    <p>
+      Вместо написания своей пост-обработки Bayer Pattern, можно
+      воспользоваться вызовами dcraw (которые вызываются после вызова 
+      open_file() + unpack() /+ unpack_thumb()/).
+    </p>
+    <a name="dcraw_params"></a>
+    <h3>Задание параметров</h3>
+    <p>
+      Практически все параметры, которые можно задать через командную строку dcraw, задаются путем присваивания
+      значений полям структуры <b>LibRaw::imgdata.params</b>, структура имеет тип <b>libraw_output_params_t</b>, все
+      поля перечислены и достаточно подробно описаны <a href="API-datastruct-rus.html#libraw_output_params_t">в
+        описании структур данных</a>.
+    </p>
+
+    <a name="raw2image"></a>
+    <h3>int LibRaw::raw2image</h3>
+    <p>
+      Функция аллоцирует буфер для постобработки imgdata.image, предварительно освобождая его, если он уже 
+      был аллоцирован, и заполняет его данными в формате,
+      совместимыми с версиями LibRaw 0.13 и старше.
+    </p>
+    <p>
+      Эту функцию следует вызывать самостоятельно только если вы собираетесь самостоятельно обрабатывать
+      RAW-данные и ваш код рассчитан на LibRaw 0.13 и более старые версии. Функции постпроцессинга (см.
+      ниже) вызывают raw2image() самостоятельно.
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    <a name="free_image"></a>
+    <h3>void LibRaw::free_image</h3>
+    <p>
+      Этот вызов освобождает буфер imgdata.image, аллоцированный вызовом raw2image();
+    </p>
+    <p>
+      Эту функцию следует вызывать, если текущий результат постпроцессинга уже не нужен (например, скопирован
+      куда-то), но возможны повторные вызовы постпроцессинга тех же данных (например, с другими параметрами),
+      поэтому вызывать <a href="#recycle">recycle()</a> еще рано.
+    </p>
+
+    <a name="adjust_sizes_info_only"></a>
+    <h3>int LibRaw::adjust_sizes_info_only(void)</h3>
+    <p>
+      Функция рассчитывает правильные размеры выходного изображения (imgdata.sizes.iwidth и imgdata.sizes.iheight) для
+            следующих случаев: 
+      </p>
+    <ul>
+      <li>файлы от камер Fuji (повернутые на 45 градусов);</li>
+      <li>файлы от камер с неквадратными пикселами;</li>
+      <li>изображения, снятые повернутой камерой.</li>
+    </ul>
+    <p>
+      В перечисленных выше случаях, функция меняет значения полей выходного размера изображения, причем это изменение
+      не может быть выполнено повторно.
+    </p>
+
+    <a name="dcraw_process"></a>
+    <h3>int LibRaw::dcraw_process(void)</h3>
+    <p>
+      Функция эмулирует возможности постобработки, имеющиеся в <b>dcraw</b><br/>
+      Вызывается после вызова LibRaw::unpack();
+    </p>
+    <p>Поддерживается вся функциональность dcraw (задаваемая через значение полей в <a
+        href="API-datastruct-rus.html#libraw_output_params_t">imgdata.params</a>) за исключением:
+      </p>
+    <ul>
+      <li>вычитания dark frame</li>
+      <li>работы с bad pixels</li>
+    </ul>
+    <p> Функция предназначена исключительно для демонстрационных и тестовых целей, предполагается что в большинстве
+      реальных приложений ее исходный текст будет использован как справочник по порядку обработки RAW-данных.
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    <a name="dcrawrite"></a>
+    <h2>Запись данных в файлы, эмуляция поведения dcraw</h2>
+    <p>Несмотря на обилие библиотек, предназначенных для записи файлов любых форматов, в LibRaw включены вызовы,
+      эмулирующие запись в файлы, производимую dcraw. В первую очередь это сделано для облегчения верификации работы
+      библиотеки - производимые ей файлы должны бинарно совпадать.
+    </p>
+
+    <a name="dcraw_ppm_tiff_writer"></a>
+    <h3>int LibRaw::dcraw_ppm_tiff_writer(const char *outfile)</h3>
+    <p>
+      Записывает результаты постобработки в файл в формате PPM/PGM или TIFF (формат задается через
+      imgdata.params.output_tiff). Производит результаты, бинарно идентичные с dcraw.
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+    <a name="dcraw_thumb_writer"></a>
+    <h3>int LibRaw::dcraw_thumb_writer(const char *thumbfile)</h3>
+    <p>Записывает thumbnail в файл в формате PPM для bitmap-thumbnails и JPEG для  JPEG-thumbnails, в формате
+      полностью идентичном результатам работы dcraw.
+    </p>
+    <p>Функция возвращает целое число в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>: положительное число, если какой-то из системных вызовов вернул ошибку, отрицательное число (из
+      <a href=API-datastruct-rus.html#LibRaw_errors>списка ошибок LibRaw</a>) при ошибочной ситуации
+      внутри LibRaw.
+    </p>
+
+    <a name="memwrite"></a>
+    <h2>Запись распакованых данных в буфер в памяти</h2>
+    <p>
+      Помимо записи в файл, библиотека предоставляет возможности записи извлеченных и обработанных функциями
+        dcraw_* данных в буфер в памяти. Для этого имеются такие вызовы:
+      <ul>
+      <li><b>get_mem_image_format</b> - возвращает размер битмепа и его битность</li>
+      <li><b>copy_mem_image</b> - копирует постпроцессированное изображение в произвольный буфер с заданным шагом
+        (stride) строк и с заданным порядком данных в пикселе (RGB/BGR)
+        </li>
+      <li><b>dcraw_make_mem_image</b> - преобразование извлеченных данных в RGB-битмэп нужного размера.
+        </li>
+      <li><b>dcraw_make_mem_thumb</b> -  извлечение thumbnail в виде образа JPEG-файла в памяти, либо (для тех камер,
+        где preview - не JPEG) в виде RGB-bitmap.
+      </li>
+      </ul>
+    Пример использования этих функций - mem_image (см. каталог samples/  дистрибутива).
+    </p>
+    <a name="get_mem_image_format"></a>
+    <h3>void get_mem_image_format(int *widthp, int *heightp, int *colorsp, int *bpp) const - возвращает размеры
+      обработанного изображения</h3>
+    <p>Значения (размеры изображения) возвращаются в переменных, заданных указателями:
+    </p>
+    <ul>
+      <li>Ширина изображения в пикселах - в *widthp;</li>
+      <li>Высота - в *heightp;</li>
+      <li>Количество цветов изображения - в *colorsp;</li>
+      <li>Битность изображения (8 или 16) в *bpp;</li>
+    </ul>
+    <a name="copy_mem_image"></a>
+    <h3>int LibRaw::copy_mem_image(void* scan0, int stride, int bgr) - копирует постпроцессированное изображение
+      в виде битмепа в произвольный буфер</h3>
+    <p>
+      Параметры функции:
+      </p>
+    <ul>
+      <li>void *scan0 - указатель на буфер. Буфер аллоцируется вызывающим приложением и должен быть не меньше чем
+        stride*image_height</li> 
+      <li>int stride - шаг (stride) строки изображения в байтах. Обычно должен быть равен
+        image_width*(bits_per_pixel/8*image_colors, но может быть больше, если, например, строки изображения хочется
+        выровнять на 8 (16, 32) байта.
+      <li>int bgr - порядок следования цветов пиксела. RGB для  bgr==0 и BGR в остальных случаях.</li>
+    </ul>
+    <p>The function returns an integer number in accordance with the <a href=API-notes-eng.html#errors>error
+code convention</a>: positive if any system call has returned an error, negative (from the
+<a href=API-datastruct-eng.html#LibRaw_errors>LibRaw error list</a>) if there has been an error situation within
+LibRaw.
+    </p>
+
+
+    <a name="dcraw_make_mem_image"></a>
+    <h3>libraw_processed_image_t *dcraw_make_mem_image(int *errorcode=NULL) - запись распакованного изображения в буфер в памяти</h3>
+    <p>
+      Аллоцирует буфер необходимого размера и записывает в него распакованное и обработанное изображение. Возвращает
+      аллоцированную структуру <a href="API-datastruct-rus.html#libraw_processed_image_t">libraw_processed_image_t</a>
+      с заполненными полями. Всегда возвращает распакованый bitmap (т.е. поле type возвращаемой структуры равно
+      LIBRAW_IMAGE_BITMAP).
+    </p>
+    <p>
+      Перед вызовом этой функции должна быть вызвана dcraw_process().
+    </p>
+    <p>
+      В случае ошибки возвращается NULL. Если в качестве аргумента errorcode передан ненулевой указатель, то по адресу
+      указателя записывается код
+      ошибки в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>.
+    </p>
+    <p><b>Внимание!</b> Память, аллоцированная функцией, не освобождается при вызове деструктора или
+      <b>LibRaw::recycle</b> и должна быть освобождена вызвавшим приложением путем вызова <a
+        href="#dcraw_clear_mem">LibRaw::dcraw_clear_mem()</a>. 
+    </p>
+
+    <a name="dcraw_make_mem_thumb"></a>
+    <h3>libraw_processed_image_t *dcraw_make_mem_thumb(int *errorcode=NULL) - запись распакованного thumbnail в буфер в памяти</h3>
+    <p>
+      Аллоцирует буфер необходимого размера и записывает в него thumbnail. Возвращает
+      аллоцированную структуру <a href="API-datastruct-rus.html#libraw_processed_image_t">libraw_processed_image_t</a>
+      с заполненными полями. Для большинства типов RAW-файлов в структуре будет содержаться  JPEG,
+      (т.е. поле type возвращаемой структуры равно LIBRAW_IMAGE_JPEG), для некоторых типов камер - RGB-bitmap.
+    </p>
+    <p>
+      Перед вызовом этой функции должна быть вызвана unpack_thumb();
+    </p>
+    <p>
+      В случае ошибки возвращается NULL. Если в качестве аргумента errorcode передан ненулевой указатель, то по адресу
+      указателя записывается код
+      ошибки в соответствии с <a href=API-notes-rus.html#errors>соглашением о кодах
+        возврата</a>.
+    </p>
+     <p><b>Внимание!</b> Память, аллоцированная функцией, не освобождается при вызове деструктора или
+      <b>LibRaw::recycle</b> и должна быть освобождена вызвавшим приложением  путем вызова <a
+        href="#dcraw_clear_mem">LibRaw::dcraw_clear_mem()</a>. 
+    </p>
+    <a name="dcraw_clear_mem"></a>
+    <h3>void LibRaw::dcraw_clear_mem(libraw_processed_image_t *)</h3>
+    <p>
+      Освобождает память, аллоцированную <b>dcraw_make_mem_image</b> и <b>dcraw_make_mem_thumb</b>.
+      </p>
+    <p>
+      Это статический член класса, вызывать его нужно как LibRaw::dcraw_clear_mem(...).
+    </p>
+    <p>
+      Данный вызов эквивалентен вызову системной функции free(), но рекомендуется использовать именно его, так как не
+      исключено, что LibRaw и вызывающее приложение используют разные и несовместимые системы управления памятью.
+    </p>
+
+    <a name="datastream"></a>
+    <h2>Абстракция ввода</h2>
+    <a name="LibRaw_abstract_datastream"></a>
+    <h3>class LibRaw_abstract_datastream - абстрактный интерфейс чтения RAW-файлов</h3>
+    <p>
+      Чтение RAW-данных в LibRaw производится при помощи объекта класса, производного от
+      <b>LibRaw_abstract_datastream</b>. Сам этот класс не реализует никакого чтения, но задает список виртуальных
+      методов, используемых в  LibRaw. Реализации методов в базовом классе возвращают ошибку.
+    </p>
+    <a name="datastream_methods"></a>
+    <h4>Методы класса LibRaw_abstract_datastream</h4>
+    <a name="datastream_methods_utility"></a>
+    <h5>Верификация объекта</h5>
+    <dl>
+      <dt><b>    virtual int         valid()</b></dt>
+      <dd>Проверка валидности потока. Метод возвращает 1 если поток сконструирован правильно и 0 если из данного
+        потока нельзя читать (передали несуществующее имя файла для файлового потока и т.п.).
+      </dd>
+    <a name="datastream_methods_read"></a>
+    <h5>Чтение данных и позиционирование</h5>
+    <p>Данная группа методов воспроизводит семантику объекта файл (FILE*) с произвольным позиционированием.</p>
+    <dl>
+      <dt><b>virtual int         read(void * ptr,size_t size, size_t nmemb)</b></dt>
+      <dd>
+        Аналог вызова fread(ptr,size,nmemb,file).
+      </dd>
+      <dt><b>virtual int         seek(off_t o, int whence)</b></dt>
+      <dd>
+        Аналог fseek(file,o,whence).
+      </dd>
+      <dt><b>virtual int         tell(</b></dt>
+      <dd>
+        Аналог ftell(file).
+      </dd>
+      <dt><b>virtual int         get_char()</b></dt>
+      <dd>
+        Аналог getc(file)/fgetc(file).
+      </dd>
+      <dt><b>virtual char*       gets(char *s, int n)</b></dt>
+      <dd>
+        Аналог fgets(s,n,file).
+      </dd>
+      <dt><b>virtual int         eof()</b></dt>
+      <dd>
+        Аналог feof(file).
+      </dd>
+      <dt><b>virtual int         scanf_one(const char *fmt, void *val)</b></dt>
+      <dd>
+        Упрощенный аналог fscanf(file,fmt,val): формат всегда описывает один аргумент, в результате функция с
+        переменным числом параметров не нужна: указатель в который считываются данные всегда один.
+      </dd>
+      <dt><b>    virtual int     jpeg_src(void * p);</b></dt>
+      <dd>
+        Инициализирует объект j_decompress_ptr, полученный через void *p; Дальше этот объект используется
+	libjpeg для чтения данных из JPEG-потока. Подробности смотрите в документации на LibJPEG
+        <p>
+        Возвращает: -1 если чтение JPEG-данных не поддержано или произошла ошибка, 0 при успехе.
+      </dd>
+      <dt><b>    virtual void *      make_jas_stream();</b></dt>
+	<dd>
+	Создает объект ввода-вывода LibJasper (распаковка JPEG2000). 
+	<p>
+	Возвращает: NULL если создать поток не удалось, указатель на поток если он создан.
+	</dd>
+
+    </dl>
+    <a name="datastream_methods_other"></a>
+    <h5>Прочие методы</h5>
+    <p>Данная группа методов включает в себя разнообразные вспомогательные методы, обеспечивающие временное
+      переключение потока ввода на другой объект.
+    </p>
+    <dl>
+      <dt><b>virtual const char* fname()</b></dt>
+      <dd>
+        Вызов возвращает имя открытого файла, если данному объекту ввода известно это имя (например, используется
+        <b>LibRaw_file_datastream</b>). Это имя используется в следующих случаях:
+        <ul>
+          <li>Передается в функции нотификации об ошибках.</li>
+          <li>Используются для генерации имени JPEG-файла с метаданными в соответствующих случаях (файлы с камер, где
+            RAW-изображение получается через недокументированные диагностические функции).
+        </ul>
+      </dd>
+      <dt><b>virtual int         subfile_open(const char *fn)</b></dt>
+      <dd>
+        Вызов временно переключает ввод на файл с именем fn. При успехе возвращается 0, при неуспехе - ненулевое
+        значение (например, код ошибки).<br/>
+        Данный вызов используется при разборе JPEG-файлов с метаданными для камер с "Diag RAW Hack".
+        <br/>
+        Данный вызов не реализован в <a href="#buffer_datastream">LibRaw_buffer_datastream</a>,  соответственно
+        разбор внешних метаданных для файлов, открытых через этот интерфейс - невозможен.
+        <br/>
+        Стандартная реализация метода (реализованная в базовом классе) всегда возвращает ошибку.
+        <br/>
+        Пример работающей реализации можно посмотреть в реализации класса
+        <a href="#file_datastream">LibRaw_file_datastream</a> в файле <b>libraw/libraw_datastream.h</b>.
+      </dd>
+      <dt><b>    virtual void subfile_close()</b></dt>
+      <dd>
+        Закрывает временно открытый файл с метаданными, возвращая ввод на исходный поток данных.
+      </dd>
+      <dt><b>    virtual int		tempbuffer_open(void  *buf, size_t size)</b></dt>
+      <dd>
+        Вызов временно переключает ввод на объект <a href="#buffer_datastream">LibRaw_buffer_datastream</a>,
+        построенный на буфере buf размера        size.<br/>
+        Это метод нужен для реализации разбора шифрованых метаданных камер Sony.
+        <p>
+          Этот метод реализован в рамках базового класса, переопределение в производных классах не требуется. Однако
+          наличие и возможная активность временного потока данных требует аккуратного программирования при реализации
+          собственных методов ввода-вывода. Подробнее это описано в разделе <a href="#substream">реализация
+            собственных интерфейсов чтения</a> ниже.
+      </dd>
+      <dt><b>    virtual void	tempbuffer_close()</b></dt>
+      <dd>
+        Вызов восстанавливает ввод обратно на полный поток данных.
+      </dd>
+    </dl>
+    
+    <a name="datastream_derived"></a>
+    <h3>Производные классы, входящие в LibRaw</h3>
+    <p>
+       В состав LibRaw входят два стандартных класса, реализующих ввод данных:
+    </p>
+    <ul>
+      <li><a href="#file_datastream">LibRaw_file_datastream</a> реализует ввод из файла в файловой системе.</li>
+      <li><a href="#bigfile_datastream">LibRaw_bigfile_datastream</a> реализует ввод из файла в файловой системе для
+        больших файлов.</li>
+      <li><a href="#buffer_datastream">LibRaw_buffer_datastream</a> реализует ввод из буфера в памяти.</li>
+    </ul>
+    <p>
+      Кроме того, пользователи C++-интерфейса могут реализовывать собственные методы чтения и использовать их через
+      метод <a href="#open_datastream">LibRaw::open_datastream</a>, требования и особенности реализации описаны ниже.
+    </p>
+    <a name="file_datastream"></a>
+    <a name="bigfile_datastream"></a>
+    <h4>class LibRaw_file_datastream - интерфейс чтения RAW-данных из файла</h4>
+    <h4>class LibRaw_bigfile_datastream - интерфейс чтения RAW-данных из файла</h4>
+    <p>
+      Данные классы реализуют ввод данных из файла.
+    </p>
+    <p><b>Методы класса:</b></p>
+    <dl>
+      <dt><b>    LibRaw_(big)file_datastream(const char *fname) </b></dt>
+      <dd>
+        Конструктор: создает объект <b>LibRaw_(big)file_datastream</b> для файла <b>fname</b>.<br/>
+        К сожалению, в C++ нельзя не создать объект в конструкторе, поэтому может быть создан невалидный объект (для
+        несуществующего файла). Работоспособность объекта проверяется методом <b>valid()</b>, описанным выше.
+      </dd>
+    </dl>
+    <p>
+      Все прочие методы класса полностью соответствуют <a href="#datastream_methods">описанным выше</a>.<br/>
+      Данный класс реализует все методы, включая fname()    и subfile_open().
+    </p>
+    <a name="buffer_datastream"></a>
+    <h4>class LibRaw_buffer_datastream - интерфейс чтения RAW-данных из буфера в памяти</h4>
+    <p>
+      Данный класс реализует ввод данных из буфера в памяти.
+    </p>
+    <p><b>Методы класса:</b></p>
+    <dl>
+      <dt><b>    LibRaw_buffer_datastream(void *buffer, size_t bsize)</b></dt>
+      <dd>
+        Конструктор: создает объект над буфером            <b>buffer</b> размера <b>bsize</b>.<br/>
+        Верифицировать валидность переданного указателя нормально невозможно, он проверяется только на ноль и -1.
+        Валидность всех прочих значений - на совести вызвавшего.
+      </dd>
+    </dl>
+    <p>
+      Все прочие методы класса полностью соответствуют <a href="#datastream_methods">описанным выше</a>.<br/>
+      Данный класс не поддерживает  методы fname() subfile_open(), следовательно разбор внешних JPEG-файлов
+      с метаданными невозможен.
+    </p>
+    <a name="own_datastreams"></a>
+    <h3>Создание собственных интерфейсов чтения</h3>
+    <p>
+      Для создания собственных интерфейсов чтения необходимо сделать класс, производный от
+      <b>LibRaw_abstract_datastream</b> и реализовать в нем все методы чтения, описанные выше.
+      В качестве образца можно использовать реализацию стандартных классов, поставляемых с LibRaw,
+      посмотреть которую можно  в файле <b>libraw/libraw_datastream.h</b> в поставке (оба стандартных интерфейса ввода
+      реализованы только на inline-функциях).
+    </p>
+    <a name="substream"></a>
+    <h4>Поле substream: второй поток чтения данных</h4>
+    <p>
+      Отдельного описания требует поле substream, которое объявлено в базовом классе и используется при временном
+      переключении ввода на другой поток данных. C++ не дает средств для красивой реализации нужной функциональности,
+      поэтому любой читающий метод ввода должен содержать в начале приблизительно такую строку:<br/>
+      <b>int method(...args...){ if(substream) return substream-&gt;method(...args...)</b>. Например:
+<pre>
+    virtual int eof() 
+    { 
+        if(substream) return substream-&gt;eof();
+....
+    virtual int scanf_one(const char *fmt, void* val) 
+    { 
+        if(substream) return substream-&gt;scanf_one(fmt,val);
+</pre>
+
+    <a href=index-rus.html>[вернуться к оглавлению]</a>
+    <hr>
+    <address><a href="mailto:info@libraw.org">LibRaw Team</a></address>
+<!-- Created: Sun Mar 16 10:08:29 MSK 2008 -->
+<!-- hhmts start -->
+Last modified: Tue Jul 19 14:50:24 MSD 2011
+<!-- hhmts end -->
+  </body>
+</html>

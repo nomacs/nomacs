@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# Copyright (c) 2013, Gilles Caulier, <caulier dot gilles at gmail dot com>
+# 
+# Redistribution and use is allowed according to the terms of the BSD license.
+# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+
+# adjust setup here if necessary 
+# NOTE: TARGET_TYPE ='x86_64' for OSX Lion (default), 'i386' for Snow Leopard.
+export TARGET_TYPE='x86_64'
+export INSTALL_PREFIX='/usr'
+export BUILD_TYPE='debugfull'
+
+if [ ! -d "build" ]; then
+    mkdir build
+fi
+
+cd build
+
+cmake -G "Unix Makefiles" . \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+      -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} \
+      -DCMAKE_OSX_ARCHITECTURES=${TARGET_TYPE} \
+      -DCMAKE_COLOR_MAKEFILE=ON \
+      -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+      -DCMAKE_INSTALL_NAME_DIR=/opt/local/lib \
+      -DCMAKE_SYSTEM_PREFIX_PATH="/opt/local;/usr" \
+      -DCMAKE_MODULE_PATH="/opt/local/share/cmake-2.8/Modules;/opt/local/share/cmake/modules" \
+      -Wno-dev \
+      -DENABLE_OPENMP=ON \
+      -DENABLE_LCMS=ON \
+      -DENABLE_EXAMPLES=ON \
+      -DENABLE_RAWSPEED=ON \
+      -DRAWSPEED_RPATH=../RawSpeed.libraw \
+      -DCHECKOUT_RAWSPEED=ON \
+      -DRAWSPEED_REVISION=HEAD \
+      -DENABLE_DEMOSAIC_PACK_GPL2=ON \
+      -DDEMOSAIC_PACK_GPL2_RPATH=../LibRaw-demosaic-pack-GPL2/ \
+      -DCHECKOUT_DEMOSAIC_PACK_GPL2=ON \
+      -DDEMOSAIC_PACK_GPL2_REVISION=HEAD \
+      -DENABLE_DEMOSAIC_PACK_GPL3=ON \
+      -DDEMOSAIC_PACK_GPL3_RPATH=../LibRaw-demosaic-pack-GPL3/ \
+      -DCHECKOUT_DEMOSAIC_PACK_GPL3=ON \
+      -DDEMOSAIC_PACK_GPL3_REVISION=HEAD \
+      -DENABLE_DCRAW_DEBUG=ON \
+      ..

@@ -28,20 +28,20 @@
 #pragma once
 
 #include <QApplication>
-#include <QtGui/QRadioButton>
-#include <QtGui/QAction>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QDialog>
-#include <QtGui/QGraphicsBlurEffect>
-#include <QtGui/QGraphicsPixmapItem>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QPushButton>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QShortcut>
-#include <QtGui/QToolButton>
-#include <QtGui/QComboBox>
-#include <QtGui/QMessageBox>
+#include <QRadioButton>
+#include <QAction>
+#include <QBoxLayout>
+#include <QDialog>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsPixmapItem>
+#include <QLabel>
+#include <QPainter>
+#include <QPushButton>
+#include <QMouseEvent>
+#include <QShortcut>
+#include <QToolButton>
+#include <QComboBox>
+#include <QMessageBox>
 #include <QStringBuilder>
 #include <QPointer>
 #include <QTimer>
@@ -50,13 +50,11 @@
 #include <QVector2D>
 #include <qmath.h>
 #include <QScrollBar>
-#include <QPlastiqueStyle>
 #include <QFileSystemModel>
 #include <QDockWidget>
 #include <QTreeView>
 #include <QSortFilterProxyModel>
 #include <QToolTip>
-#include <QtConcurrentRun>
 #include <QProgressDialog>
 #include <QHeaderView>
 #include <QMenu>
@@ -65,6 +63,12 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
+#include <QtConcurrentRun>
+#include <QMimeData>
+
+#if QT_VERSION < 0x050000
+#include <QPlastiqueStyle>
+#endif
 
 // gif animation label -----
 #include <QVBoxLayout>
@@ -79,7 +83,7 @@
 #include "DkToolbars.h"
 #include "DkBaseViewPort.h"
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #include <ShObjIdl.h>
 #include <ShlObj.h>
 #endif
@@ -92,7 +96,7 @@ class DkWidget : public QWidget {
 	Q_OBJECT
 
 public:
-	DkWidget(QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void registerAction(QAction* action) {
 		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
@@ -550,11 +554,12 @@ protected:
 
 };
 
+
 class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFilePreview(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WFlags flags = 0);
+	DkFilePreview(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	
 	~DkFilePreview() {
 	};
@@ -606,8 +611,8 @@ private:
 	
 	QLinearGradient leftGradient;
 	QLinearGradient rightGradient;
-	QPixmap selectionGlow;
-	QPixmap currentImgGlow;
+	QPixmap selectedImg;
+	QPixmap currentImg;
 	
 	QImage stubImg;
 	int mouseTrace;
@@ -636,8 +641,7 @@ private:
 	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
-	void createSelectedEffect(QImage img, QColor col);
-	void createCurrentImgEffect(QImage img, QColor col);
+	void createCurrentImg(const QImage& img);
 };
 
 class DkThumbLabel : public QObject, public QGraphicsPixmapItem {

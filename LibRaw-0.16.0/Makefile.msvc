@@ -1,0 +1,133 @@
+# Additional compiler flags (OpenMP, SSEx, AVX, ...)
+COPT_OPT=/arch:SSE2 /arch:AVX
+
+# Compile with RawSpeed support
+#CFLAGS_RAWSPEED=/DUSE_RAWSPEED /I"..\\RawSpeed" /I"..\\RawSpeed\include" /I"..\\RawSpeed\include\libjpeg"
+#LDFLAGS_RAWSPEED=..\RawSpeed\lib\rawspeed.lib ..\RawSpeed\lib\libxml2.lib ..\RawSpeed\lib\iconv.lib ..\RawSpeed\lib\charset.lib ..\RawSpeed\lib\turbojpeg-static.lib
+
+# Demosaic Pack GPL2:
+#CFLAGS_DP2=/I"..\\LibRaw-demosaic-pack-GPL2"
+#CFLAGSG2=/DLIBRAW_DEMOSAIC_PACK_GPL2
+
+# Demosaic Pack GPL3:
+#CFLAGS_DP3=/I"..\\LibRaw-demosaic-pack-GPL3"
+#CFLAGSG3=/DLIBRAW_DEMOSAIC_PACK_GPL3
+
+# LCMS 1.x support
+#LCMS_DEF=/DUSE_LCMS /DCMS_DLL /I..\lcms-1.19\include
+#LCMS_LIB=..\lcms-1.19\bin\lcms.lib
+
+# LCMS 2.x support
+#LCMS_DEF=/DUSE_LCMS2 /DCMS_DLL /I..\lcms2-2.3\include
+#LCMS_LIB=..\lcms2-2.3\bin\lcms2_dll.lib
+
+# JPEG support for DNG
+#JPEG_DEF=/DUSE_JPEG /I..\jpeg-8d
+#JPEG_LIB=..\jpeg-8d\Release\jpeg.lib
+
+
+SAMPLES=bin\raw-identify.exe bin\simple_dcraw.exe  bin\dcraw_emu.exe bin\dcraw_half.exe bin\half_mt.exe bin\mem_image.exe bin\unprocessed_raw.exe bin\4channels.exe bin\multirender_test.exe bin\postprocessing_benchmark.exe
+
+LIBSTATIC=lib\libraw_static.lib
+DLL=bin\libraw.dll
+LIBDLL=lib\libraw.lib
+
+all: $(DLL) $(SAMPLES) $(LIBSTATIC) 
+
+# Guess LIBPATH from $INCLUDE
+
+LIB_OBJECTS=object\dcraw_common_st.obj object\dcraw_fileio_st.obj  object\libraw_cxx_st.obj object\libraw_datastream_st.obj object\libraw_c_api_st.obj object\demosaic_packs_st.obj
+DLL_OBJECTS=object\dcraw_common.obj object\dcraw_fileio.obj  object\libraw_cxx.obj object\libraw_datastream.obj object\libraw_c_api.obj  object\demosaic_packs.obj
+
+CC=cl.exe
+COPT=/EHsc /MP /MT /I. /DWIN32 /O2 /W0 /nologo $(COPT_OPT) $(CFLAGSG2) $(CFLAGSG3) $(LCMS_DEF) $(JPEG_DEF) $(CFLAGS_RAWSPEED)
+
+LINKLIB=$(LIBDLL) $(LDFLAGS_RAWSPEED)
+
+# Samples - default to dynamic (DLL) link, uncomment next lines 
+#CFLAGS2=/DLIBRAW_NODLL
+#LINKLIB=$(LIBSTATIC)
+
+bin\raw-identify.exe: $(LINKLIB) samples\raw-identify.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\raw-identify.exe" /Fo"object\\" samples\raw-identify.cpp $(LINKLIB)
+
+bin\unprocessed_raw.exe: $(LINKLIB) samples\unprocessed_raw.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\unprocessed_raw.exe" /Fo"object\\" samples\unprocessed_raw.cpp $(LINKLIB) ws2_32.lib
+
+bin\4channels.exe: $(LINKLIB) samples\4channels.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\4channels.exe" /Fo"object\\" samples\4channels.cpp $(LINKLIB)
+
+bin\simple_dcraw.exe: $(LINKLIB) samples\simple_dcraw.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\simple_dcraw.exe" /Fo"object\\" samples\simple_dcraw.cpp $(LINKLIB)
+
+bin\postprocessing_benchmark.exe: $(LINKLIB) samples\postprocessing_benchmark.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\postprocessing_benchmark.exe" /Fo"object\\" samples\postprocessing_benchmark.cpp $(LINKLIB)
+
+bin\multirender_test.exe: $(LINKLIB) samples\multirender_test.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\multirender_test.exe" /Fo"object\\" samples\multirender_test.cpp $(LINKLIB)
+
+
+bin\mem_image.exe: $(LINKLIB) samples\mem_image.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\mem_image.exe" /Fo"object\\" samples\mem_image.cpp $(LINKLIB)
+
+bin\dcraw_emu.exe: $(LINKLIB) samples\dcraw_emu.cpp
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\dcraw_emu.exe" /Fo"object\\" samples\dcraw_emu.cpp $(LINKLIB)
+
+bin\dcraw_half.exe: $(LINKLIB) samples\dcraw_half.c
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\dcraw_half.exe" /Fo"object\\" samples\dcraw_half.c $(LINKLIB)
+
+bin\half_mt.exe: $(LINKLIB) samples\half_mt_win32.c
+	$(CC) $(COPT) $(CFLAGS2) /Fe"bin\\half_mt.exe" /Fo"object\\" samples\half_mt_win32.c $(LINKLIB)
+
+# DLL build
+
+$(DLL): $(DLL_OBJECTS)
+	-del /f $(DLL) $(LIBDLL)
+	cl $(COPT) /LD $(DLL_OBJECTS) $(LDFLAGS_RAWSPEED) $(LCMS_LIB) $(JPEG_LIB) /link /out:"$(DLL)" /implib:"$(LIBDLL)"
+
+object\dcraw_common.obj: internal\dcraw_common.cpp
+	$(CC) $(COPT) /DLIBRAW_BUILDLIB /Fo"object\\dcraw_common.obj" /c internal\dcraw_common.cpp
+
+object\dcraw_fileio.obj: internal\dcraw_fileio.cpp
+	$(CC) $(COPT) /DLIBRAW_BUILDLIB /Fo"object\\dcraw_fileio.obj" /c internal\dcraw_fileio.cpp
+
+object\demosaic_packs.obj: internal\demosaic_packs.cpp
+	$(CC) $(COPT) $(CFLAGS_DP2) $(CFLAGS_DP3) /DLIBRAW_BUILDLIB /Fo"object\\demosaic_packs.obj" /c internal\demosaic_packs.cpp
+
+object\libraw_cxx.obj: src\libraw_cxx.cpp
+	$(CC) $(COPT) /DLIBRAW_BUILDLIB /Fo"object\\libraw_cxx.obj" /c src\libraw_cxx.cpp
+
+object\libraw_datastream.obj: src\libraw_datastream.cpp
+	$(CC) $(COPT) /DLIBRAW_BUILDLIB /Fo"object\\libraw_datastream.obj" /c src\libraw_datastream.cpp
+
+object\libraw_c_api.obj: src\libraw_c_api.cpp
+	$(CC) $(COPT) /DLIBRAW_BUILDLIB /Fo"object\\libraw_c_api.obj" /c src\libraw_c_api.cpp
+
+
+# LIBRARY BUILD
+$(LIBSTATIC): $(LIB_OBJECTS)
+        -del /f $(LIBSTATIC)
+	lib /OUT:$(LIBSTATIC) /LTCG $(LIB_OBJECTS)
+
+object\dcraw_common_st.obj: internal\dcraw_common.cpp
+	$(CC) $(COPT) /DLIBRAW_NODLL /Fo"object\\dcraw_common_st.obj" /c internal\dcraw_common.cpp
+
+object\dcraw_fileio_st.obj: internal\dcraw_fileio.cpp
+	$(CC) $(COPT) /DLIBRAW_NODLL /Fo"object\\dcraw_fileio_st.obj" /c internal\dcraw_fileio.cpp
+
+object\demosaic_packs_st.obj: internal\demosaic_packs.cpp
+	$(CC) $(COPT)  $(CFLAGS_DP2) $(CFLAGS_DP3)  /DLIBRAW_NODLL /Fo"object\\demosaic_packs_st.obj" /c internal\demosaic_packs.cpp
+
+object\libraw_cxx_st.obj: src\libraw_cxx.cpp
+	$(CC) $(COPT) /DLIBRAW_NODLL /Fo"object\\libraw_cxx_st.obj" /c src\libraw_cxx.cpp
+
+object\libraw_datastream_st.obj: src\libraw_datastream.cpp
+	$(CC) $(COPT) /DLIBRAW_NODLL /Fo"object\\libraw_datastream_st.obj" /c src\libraw_datastream.cpp
+
+object\libraw_c_api_st.obj: src\libraw_c_api.cpp
+	$(CC) $(COPT) /DLIBRAW_NODLL /Fo"object\\libraw_c_api_st.obj" /c src\libraw_c_api.cpp
+
+clean:
+	-del $(LIBSTATIC) $(LIBDLL) lib\*.exp
+	-del $(LIB_OBJECTS) $(DLL_OBJECTS)
+	-del $(DLL) $(SAMPLES)

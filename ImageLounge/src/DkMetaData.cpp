@@ -906,6 +906,7 @@ void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 	exifImgN->setIptcData(iptcData);
 
 	exifImgN->writeMetadata();
+	this->file = fileN;
 
 }
 
@@ -952,8 +953,13 @@ void DkMetaData::readMetaData() {
 			// this is more work and should be done when updating the cacher as we should definitely
 			// not load the image twice...
 #ifdef EXV_UNICODE_PATH
+#if QT_VERSION < 0x050000
 			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
 			exifImg = Exiv2::ImageFactory::open(filePath);
+#else
+			std::wstring filePath = (file.isSymLink()) ? (wchar_t*)file.symLinkTarget().utf16() : (wchar_t*)file.absoluteFilePath().utf16();
+			exifImg = Exiv2::ImageFactory::open(filePath);
+#endif
 #else
 			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
 			exifImg = Exiv2::ImageFactory::open(filePath);

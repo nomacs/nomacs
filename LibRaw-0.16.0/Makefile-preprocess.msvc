@@ -1,0 +1,11 @@
+
+all: internal/dcraw_common.cpp internal/dcraw_fileio.cpp internal/defines.h
+
+internal/dcraw_common.cpp: dcraw/dcraw.c internal/defines.h
+	perl internal/preprocess.pl -DCOMMON dcraw/dcraw.c >internal/dcraw_common.cpp
+
+internal/defines.h: dcraw/dcraw.c
+	perl internal/preprocess.pl -DDEFINES dcraw/dcraw.c  >internal/defines.h
+
+internal/dcraw_fileio.cpp: dcraw/dcraw.c internal/defines.h 
+	perl internal/preprocess.pl -DFILEIO dcraw/dcraw.c >internal/dcraw_fileio.cpp

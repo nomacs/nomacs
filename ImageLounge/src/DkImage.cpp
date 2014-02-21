@@ -39,9 +39,12 @@ bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 }
 
 bool compLogicQString(const QString & lhs, const QString & rhs) {
-	
+#if QT_VERSION < 0x050000
 	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
 	//return true;
+#else
+	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
+#endif
 }
 #else
 bool compLogicQString(const QString & lhs, const QString & rhs) {
@@ -338,7 +341,11 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 		int orientation = 0;
 
 		//use iprocessor from libraw to read the data
-		iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
+		int error = iProcessor.open_file(file.absoluteFilePath().toStdString().c_str());
+
+		if (error != LIBRAW_SUCCESS)
+			return false;
+
 		//// (-w) Use camera white balance, if possible (otherwise, fallback to auto_wb)
 		//iProcessor.imgdata.params.use_camera_wb = 1;
 		//// (-a) Use automatic white balance obtained after averaging over the entire image
@@ -353,7 +360,7 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 		int tM = qMax(iProcessor.imgdata.thumbnail.twidth, iProcessor.imgdata.thumbnail.twidth);
 		// TODO: check actual screen resolution
 		qDebug() << "max thumb size: " << tM;
-
+				
 		if (fast || DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
 			(DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large && tM >= 1920)) {
 			
@@ -382,11 +389,14 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 
 		qDebug() << "[RAW] loading full raw file";
 
+
 		//unpack the data
-		iProcessor.unpack();
-#ifdef LIBRAW_VERSION_14
+		error = iProcessor.unpack();
+#ifndef LIBRAW_VERSION_13	// fixes a bug specific to libraw 13 - version call is UNTESTED
 		iProcessor.raw2image();
 #endif
+		if (error != LIBRAW_SUCCESS)
+			return false;
 
 		//iProcessor.dcraw_process();
 		//iProcessor.dcraw_ppm_tiff_writer("test.tiff");
@@ -444,12 +454,10 @@ bool DkBasicLoader::loadRawFile(QFileInfo file, bool fast) {
 
 			rawMat = Mat(rows, cols, CV_32FC1);
 
-			for (uint row = 0; row < rows; row++)
-			{
+			for (uint row = 0; row < rows; row++) {
 				float *ptrRaw = rawMat.ptr<float>(row);
 
-				for (uint col = 0; col < cols; col++)
-				{
+				for (uint col = 0; col < cols; col++) {
 
 					int colorIdx = iProcessor.COLOR(row, col);
 					ptrRaw[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][colorIdx]);
@@ -779,7 +787,7 @@ void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 	oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
 	DkTimer dt;
-	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toAscii(), "r");
+	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toLatin1(), "r");
 
 	if (!tiff) 
 		return;
@@ -823,7 +831,7 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 	oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
 	DkTimer dt;
-	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toAscii(), "r");
+	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toLatin1(), "r");
 
 	if (!tiff)
 		return imgLoaded;
@@ -905,14 +913,13 @@ bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
 	}
 	else if (!saved) {
 
-
 		bool hasAlpha = DkImage::alphaChannelUsed(img);
 		QImage sImg = img;
 		
 		if (!hasAlpha)
-			sImg.convertToFormat(QImage::Format_RGB888);
+			sImg = sImg.convertToFormat(QImage::Format_RGB888);
 
-		qDebug() << "img has alpha: " << (img.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
+		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
 
 		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
 		imgWriter->setCompression(compression);
@@ -1405,21 +1412,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 	// folder changed signal was emitted
 	if (folderUpdated && newDir.absolutePath() == dir.absolutePath()) {
-		
-#if 0
-		if (scanRecursive) {
-			subFolders = getFoldersRecursive(dir);
 
-			// find the first subfolder that has images
-			for (int idx = 0; idx < subFolders.size(); idx++) {
-				dir = subFolders[idx];
-				files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-				if (!files.empty())
-					break;
-			}
-		}
-		else 
-#endif
 		files = getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		// might get empty too (e.g. someone deletes all images
@@ -1446,23 +1439,15 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		dir.setNameFilters(fileFilters);
 		dir.setSorting(QDir::LocaleAware);		// TODO: extend
 		folderUpdated = false;
-		
-#if 0
-		if (scanRecursive) {
-			subFolders = getFoldersRecursive(dir);
-			// find the first subfolder that has images
-			for (int idx = 0; idx < subFolders.size(); idx++) {
-				dir = subFolders[idx];
-				files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-				if (!files.empty())
-					break;
-			}
-		}
-		else 
-#endif
+
 		folderKeywords.clear();	// delete key words -> otherwise user may be confused
 		emit folderFiltersChanged(folderKeywords);
-		files = getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+
+		if (scanRecursive && DkSettings::global.scanSubFolders) {
+			updateSubFolders(dir);
+		}
+		else 
+			files = getFilteredFileList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		if (files.empty()) {
 			emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
@@ -1596,6 +1581,7 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 
 	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
 	qDebug() << "file: " << file.absoluteFilePath();
+	qDebug() << "files: " << files;
 
 	if (!virtualExists && !file.exists())
 		return QFileInfo();
@@ -1665,7 +1651,6 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 
 		//qDebug() << "subfolders: " << DkSettings::global.scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
 
-#if 0	// TODO: finish bug - when first image in folder is corrupted
 		if (DkSettings::global.scanSubFolders && subFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= files.size())) {
 
 			int folderIdx = 0;
@@ -1679,33 +1664,57 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 			}
 
 			if (newFileIdx < 0)
-				folderIdx--;
+				folderIdx = getPrevFolderIdx(folderIdx);
 			else
-				folderIdx++;
+				folderIdx = getNextFolderIdx(folderIdx);
 
-			if (DkSettings::global.loop)
-				folderIdx %= subFolders.size();
+			qDebug() << "new folder idx: " << folderIdx;
+			
+			//if (DkSettings::global.loop)
+			//	folderIdx %= subFolders.size();
 
 			if (folderIdx >= 0 && folderIdx < subFolders.size()) {
+				
+				int oldFileSize = files.size();
 				loadDir(QDir(subFolders[folderIdx]), false);	// don't scan recursive again
-				qDebug() << files;
+				qDebug() << "loading new folder: " << subFolders[folderIdx];
 
-				if (newFileIdx >= files.size()) {
-					newFileIdx -= files.size();
+				if (newFileIdx >= oldFileSize) {
+					newFileIdx -= oldFileSize;
 					cFileIdx = 0;
 					qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << cFileIdx << " -----------------------------";
 					getChangedFileInfo(newFileIdx, silent, false);
 				}
 				else if (newFileIdx < 0) {
 					newFileIdx += cFileIdx;
-					cFileIdx = files.size();
+					cFileIdx = files.size()-1;
 					qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << cFileIdx << " -----------------------------";
 					getChangedFileInfo(newFileIdx, silent, false);
 				}
 			}
+			//// dir up
+			//else if (folderIdx == subFolders.size()) {
+
+			//	qDebug() << "going one up";
+			//	dir.cd("..");
+			//	loadDir(dir, false);	// don't scan recursive again
+			//	newFileIdx += cFileIdx;
+			//	cFileIdx = 0;
+			//	getChangedFileInfo(newFileIdx, silent, false);
+			//}
+			//// get root files
+			//else if (folderIdx < 0) {
+			//	loadDir(dir, false);
+			//}
 
 		}
-#endif
+
+		// this should never happen!
+		if (files.empty()) {
+			qDebug() << "file list is empty, where it should not be";
+			return QFileInfo();
+		}
+
 		// loop the directory
 		if (DkSettings::global.loop) {
 			newFileIdx %= files.size();
@@ -1802,6 +1811,7 @@ void DkImageLoader::loadFileAt(int idx) {
 
 	// file requested becomes current file
 	QFileInfo loadFile = QFileInfo(dir, files[idx]);
+	qDebug() << "[dir] " << loadFile.absoluteFilePath();
 
 	mutex.unlock();
 	load(loadFile);
@@ -2239,9 +2249,10 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	if (saved) {
 		
 		try {
+			// If we come from a RAW image and save a TIF, the thumbnail cracks the image - PS etc cannot read it anymore
 			// TODO: remove path?!
-			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(sImg), QFileInfo(filePath));
 			imgMetaData.saveMetaDataToFile(QFileInfo(filePath)/*, dataExif.getOrientation()*/);
+			imgMetaData.saveThumbnail(DkThumbsLoader::createThumb(basicLoader.image()), QFileInfo(filePath));
 		} catch (DkException de) {
 			// do nothing -> the file type does not support meta data
 		}
@@ -2713,27 +2724,109 @@ QDir DkImageLoader::getDir() {
 
 QStringList DkImageLoader::getFoldersRecursive(QDir dir) {
 
-	QStringList folderList;
-	DkTimer dt;
-
-	qDebug() << "scanning recursively: " << dir.absolutePath();
+	//DkTimer dt;
+	QStringList subFolders;
+	//qDebug() << "scanning recursively: " << dir.absolutePath();
 
 	if (DkSettings::global.scanSubFolders) {
 
 		QDirIterator dirs(dir.absolutePath(), QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 	
+		int nFolders = 0;
 		while (dirs.hasNext()) {
 			dirs.next();
-			folderList << dirs.filePath();
+			subFolders << dirs.filePath();
+			nFolders++;
+
+			if (nFolders > 100)
+				break;
+			
+			//getFoldersRecursive(dirs.filePath(), subFolders);
+			//qDebug() << "loop: " << dirs.filePath();
 		}
 	}	
 
-	folderList << dir.absolutePath();
-	qDebug() << folderList;
-	
-	qDebug() << "scanning folders recursively took me: " << QString::fromStdString(dt.getTotal());
+	subFolders << dir.absolutePath();
 
-	return folderList;
+	qSort(subFolders.begin(), subFolders.end(), compLogicQString);
+	
+
+	qDebug() << dir.absolutePath();
+	
+	//qDebug() << "scanning folders recursively took me: " << QString::fromStdString(dt.getTotal());
+	return subFolders;
+}
+
+void DkImageLoader::updateSubFolders(QDir rootDir) {
+	
+	subFolders = getFoldersRecursive(rootDir);
+
+	qDebug() << subFolders;
+
+	// find the first subfolder that has images
+	for (int idx = 0; idx < subFolders.size(); idx++) {
+		dir = subFolders[idx];
+		files = getFilteredFileList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		if (!files.empty())
+			break;
+	}
+
+}
+
+int DkImageLoader::getNextFolderIdx(int folderIdx) {
+	
+	int nextIdx = -1;
+
+	if (subFolders.empty())
+		return nextIdx;
+
+	// find the first sub folder that has images
+	for (int idx = 1; idx < subFolders.size(); idx++) {
+		
+		int tmpNextIdx = folderIdx + idx;
+
+		if (DkSettings::global.loop)
+			tmpNextIdx %= subFolders.size();
+		else if (tmpNextIdx >= subFolders.size())
+			return -1;
+
+		QDir cDir = subFolders[tmpNextIdx];
+		QStringList cFiles = getFilteredFileList(cDir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		if (!cFiles.empty()) {
+			nextIdx = tmpNextIdx;
+			break;
+		}
+	}
+
+	return nextIdx;
+}
+
+int DkImageLoader::getPrevFolderIdx(int folderIdx) {
+	
+	int prevIdx = -1;
+
+	if (subFolders.empty())
+		return prevIdx;
+
+	// find the first sub folder that has images
+	for (int idx = 1; idx < subFolders.size(); idx++) {
+
+		int tmpPrevIdx = folderIdx - idx;
+
+		if (DkSettings::global.loop && tmpPrevIdx < 0)
+			tmpPrevIdx += subFolders.size();
+		else if (tmpPrevIdx < 0)
+			return -1;
+
+		QDir cDir = subFolders[tmpPrevIdx];
+		QStringList cFiles = getFilteredFileList(cDir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		if (!cFiles.empty()) {
+			prevIdx = tmpPrevIdx;
+			break;
+		}
+	}
+
+	return prevIdx;
 }
 
 /**
@@ -2750,7 +2843,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 
 	DkTimer dt;
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 
 	QString winPath = QDir::toNativeSeparators(dir.path()) + "\\*.*";
 
@@ -2792,7 +2885,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	// convert to QStringList
 	for (unsigned int idx = 0; idx < fileNameList.size(); idx++, lIter++) {
 		
-		QString qFilename = QString::fromStdWString(*lIter);
+		QString qFilename = DkUtils::stdWStringToQString(*lIter);
 
 		// believe it or not, but this is 10 times faster than QRegExp
 		// drawback: we also get files that contain *.jpg*

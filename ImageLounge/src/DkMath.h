@@ -46,7 +46,7 @@
 
 #ifdef WITH_OPENCV
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 #pragma warning(disable: 4996)
 #endif
 
