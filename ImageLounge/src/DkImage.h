@@ -60,11 +60,6 @@
 #include <QByteArray>
 #include <QCoreApplication>
 
-#ifdef WITH_WEBP
-#include "webp/decode.h"
-#include "webp/encode.h"
-#endif
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -96,7 +91,6 @@ using namespace cv;
 #endif
 #endif
 
-
 // TODO: ifdef
 //#include <ShObjIdl.h>
 //#include <ShlObj.h>
@@ -105,11 +99,12 @@ using namespace cv;
 // my classes
 //#include "DkNoMacs.h"
 #include "DkImageStorage.h"
+#include "DkBasicLoader.h"
 #include "DkTimer.h"
 #include "DkSettings.h"
 #include "DkThumbs.h"
 #include "DkMetaData.h"
-#include "../libqpsd/qpsdhandler.h"
+#include "DkBasicLoader.h"
 
 #ifdef Q_WS_X11
 	typedef  unsigned char byte;
@@ -172,169 +167,6 @@ bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
 
 bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
 
-// basic image processing
-
-/**
- * This class provides image loading and editing capabilities.
- * It additionally stores the currently loaded image.
- **/ 
-class DkBasicLoader : public QObject {
-	Q_OBJECT
-
-public:
-
-	enum mode {
-		mode_default,
-		mode_mat_preferred,
-		mode_end
-	};
-
-	enum loaderID {
-		no_loader = 0,
-		qt_loader,
-		psd_loader,
-		webp_loader,
-		raw_loader,
-		roh_loader,
-		hdr_loader,
-	};
-
-	DkBasicLoader(int mode = mode_default);
-
-	~DkBasicLoader() {
-		release();
-	};
-
-	/**
-	 * Loads the image for the given file
-	 * @param file an image file
-	 * @param skipIdx the number of (internal) pages to be skipped
-	 * @return bool true if the image was loaded
-	 **/ 
-	bool loadGeneral(QFileInfo file, bool rotateImg = false, bool fast = false);
-
-	/**
-	 * Loads the page requested (with respect to the current page)
-	 * @param skipIdx number of pages to skip
-	 * @return bool true if we could load the page requested
-	 **/ 
-	bool loadPage(int skipIdx = 0);
-
-	int getNumPages() {
-		return numPages;
-	};
-
-	int getPageIdx() {
-		return pageIdx;
-	};
-
-	bool setPageIdx(int skipIdx);
-
-	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
-
-	/**
-	 * Sets a new image (if edited outside the basicLoader class)
-	 * @param img the new image
-	 * @param file assigns the current file name
-	 **/ 
-	void setImage(QImage img, QFileInfo file) {
-
-		this->file = file;
-		qImg = img;
-	};
-
-	void setTraining(bool training) {
-		training = true;
-	};
-
-	bool getTraining() {
-		return training;
-	};
-
-	int getLoader() {
-		return loader;
-	};
-
-	/**
-	 * Returns the 8-bit image, which is rendered.
-	 * @return QImage an 8bit image
-	 **/ 
-	QImage image() {
-		return qImg;
-	};
-
-	QFileInfo getFile() {
-		return file;
-	};
-
-	bool isDirty() {
-		return pageIdxDirty;
-	};
-
-	/**
-	 * Returns the current image size.
-	 * @return QSize the image size.
-	 **/ 
-	QSize size() {
-		return qImg.size();
-	};
-
-	/**
-	 * Returns true if an image is currently loaded.
-	 * @return bool true if an image is loaded.
-	 **/ 
-	bool hasImage() {
-
-		return !qImg.isNull();
-	};
-
-	void release();
-
-#ifdef WITH_OPENCV
-	Mat getImageCv() { return cv::Mat(); };	// we should not need this
-#endif
-
-	bool loadPSDFile(QFileInfo fileInfo);
-#ifdef WITH_WEBP
-	bool loadWebPFile(QFileInfo fileInfo);
-	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
-	bool decodeWebP(const QByteArray& buffer);
-	bool encodeWebP(QByteArray& buffer, QImage img, int compression, int speed = 4);
-#else
-	bool loadWebPFile(QFileInfo fileInfo) {return false;};	// not supported if webP was not linked
-	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false;};
-	bool decodeWebP(const QByteArray& buffer) {return false;};
-	bool encodeWebP(QByteArray& buffer, QImage img, int compression, int speed = 4) {return false;};
-#endif
-
-
-
-
-public slots:
-	void rotate(int orientation);
-	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
-
-protected:
-	
-	bool loadRohFile(QString fileName);
-	bool loadRawFile(QFileInfo file, bool fast = false);
-	void indexPages(const QFileInfo& fileInfo);
-	void convert32BitOrder(void *buffer, int width);
-
-	int loader;
-	bool training;
-	int mode;
-	QImage qImg;
-	QFileInfo file;
-	int numPages;
-	int pageIdx;
-	bool pageIdxDirty;
-
-#ifdef WITH_OPENCV
-	cv::Mat cvImg;
-#endif
-
-};
 
 class DkImageCache {
 
@@ -359,7 +191,7 @@ public:
 	};
 
 	void setImage(QImage img, bool rotated = false) {
-		
+
 		if (rotated)
 			this->rotated = rotated;
 		if (initialSize.isEmpty()) 
@@ -421,7 +253,6 @@ protected:
 	float cacheSize;
 	bool rotated;
 };
-
 
 /**
  * This class provides a method for caching images.
