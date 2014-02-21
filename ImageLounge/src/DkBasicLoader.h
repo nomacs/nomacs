@@ -77,7 +77,6 @@
 #endif // Q_WS_MAC
 #endif
 
-using namespace cv;
 #endif
 
 namespace nmc {
@@ -119,7 +118,8 @@ public:
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/ 
-	bool loadGeneral(QFileInfo file, bool rotateImg = false, bool fast = false);
+	bool loadGeneral(const QFileInfo& file, bool rotateImg = false, bool fast = false);
+	bool loadGeneral(const QFileInfo& file, const QByteArray& ba, bool rotateImg = false, bool fast = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
@@ -139,6 +139,7 @@ public:
 	bool setPageIdx(int skipIdx);
 
 	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
+	bool save(QImage img, QByteArray& ba, int compression = -1);
 
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
@@ -196,23 +197,26 @@ public:
 		return !qImg.isNull();
 	};
 
+	void loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba);
+
 	void release();
 
 #ifdef WITH_OPENCV
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
 #endif
 
-	bool loadPSDFile(QFileInfo fileInfo);
+	bool loadPSDFile(const QFileInfo& fileInfo);
+	bool loadPSDFile(const QByteArray& ba);
 #ifdef WITH_WEBP
-	bool loadWebPFile(QFileInfo fileInfo);
-	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression);
-	bool decodeWebP(const QByteArray& buffer);
-	bool encodeWebP(QByteArray& buffer, QImage img, int compression, int speed = 4);
+	bool loadWebPFile(const QFileInfo& fileInfo);
+	bool loadWebPFile(const QByteArray& ba);
+	bool saveWebPFile(const QFileInfo& fileInfo, QImage img, int compression);
+	bool saveWebPFile(QImage img, QByteArray& ba, int compression, int speed = 4);
 #else
-	bool loadWebPFile(QFileInfo fileInfo) {return false;};	// not supported if webP was not linked
-	bool saveWebPFile(QFileInfo fileInfo, QImage img, int compression) {return false;};
-	bool decodeWebP(const QByteArray& buffer) {return false;};
-	bool encodeWebP(QByteArray& buffer, QImage img, int compression, int speed = 4) {return false;};
+	bool loadWebPFile(const QFileInfo& fileInfo) {return false;};	// not supported if webP was not linked
+	bool loadWebPFile(const QByteArray& ba) {return false;};
+	bool saveWebPFile(const QFileInfo& fileInfo, QImage img, int compression) {return false;};
+	bool saveWebPFile(QImage img, QByteArray& ba, int compression, int speed = 4) {return false;};
 #endif
 
 public slots:
@@ -220,9 +224,10 @@ public slots:
 	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
 
 protected:
-	
-	bool loadRohFile(QString fileName);
-	bool loadRawFile(QFileInfo file, bool fast = false);
+	bool loadRohFile(const QFileInfo& fileInfo);
+	bool loadRohFile(const QByteArray& ba);
+	bool loadRawFile(const QFileInfo& fileInfo, bool fast = false);
+	bool loadRawFile(const QByteArray& ba, bool fast = false);
 	void indexPages(const QFileInfo& fileInfo);
 	void convert32BitOrder(void *buffer, int width);
 

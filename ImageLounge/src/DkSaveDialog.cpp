@@ -301,8 +301,8 @@ void DkCompressDialog::drawPreview() {
 		// pre-compute the webp compression
 		DkBasicLoader loader;
 		QByteArray buffer;
-		loader.encodeWebP(buffer, newImg, getCompression(), 0);
-		loader.decodeWebP(buffer);
+		loader.saveWebPFile(newImg, buffer, getCompression(), 0);
+		loader.loadWebPFile(buffer);
 		newImg = loader.image();
 		updateFileSizeLabel(buffer.size(), origImg.size());
 	}

@@ -134,8 +134,11 @@ bool QPsdHandler::canRead(QIODevice *device)
     return device->peek(4) == "8BPS";
 }
 
+#include <QDebug>
+
 bool QPsdHandler::read(QImage *image)
 {
+	
     QDataStream input(device());
     quint32 signature, height, width, colorModeDataLength, imageResourcesLength;
     quint16 version, channels, depth, colorMode, compression;
@@ -145,6 +148,7 @@ bool QPsdHandler::read(QImage *image)
 
     input >> signature;
     if (signature != 0x38425053) //'8BPS'
+	//if (signature == '8BPS')
         return false;
 
     input >> version; //version should be 1(PSD) or 2(PSB)

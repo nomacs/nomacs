@@ -64,7 +64,7 @@ void DkThumbNail::compute(bool forceLoad /* = false */, bool forceSave /* = fals
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  **/ 
-QImage DkThumbNail::computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale) {
+QImage DkThumbNail::computeIntern(const QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale) {
 	
 	DkTimer dt;
 	qDebug() << "[thumb] file: " << file.absoluteFilePath();
