@@ -554,12 +554,6 @@ protected:
 
 };
 
-class DkCemareData : public DkFadeLabel {
-	Q_OBJECT
-
-public:
-	DkCemareData(QWidget* parent = 0);
-};
 
 class DkFilePreview : public DkWidget {
 	Q_OBJECT
