@@ -53,10 +53,59 @@
 
 namespace nmc {
 
+class DllExport DkMetaDataT {
+
+public:
+	DkMetaDataT();
+
+	void readMetaData(const QFileInfo& fileInfo);
+	void readMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
+
+	bool saveMetaData(const QFileInfo& fileInfo);
+	bool saveMetaData(QByteArray& ba);
+
+	int getOrientation() const;
+	int getRating() const;
+	QString getNativeExifValue(const QString& key) const;
+	QString getExifValue(const QString& key) const;
+	QString getIptcValue(const QString& key) const;
+	QImage getThumbnail() const;
+	QStringList getExifKeys() const;
+	QStringList getExifValues() const;
+	QStringList getIptcKeys() const;
+	QStringList getIptcValues() const;
+
+	void setOrientation(int o);
+	void setRating(int r);
+	void setExifValue(QString key, QString taginfo);
+	void setThumbnail(QImage thumb);
+
+	bool hasMetaData() const;
+	bool isLoaded() const;
+	bool isTiff() const;
+	bool isJpg() const;
+	bool isRaw() const;
+	void printMetaData() const; //only for debug
+
+protected:
+	Exiv2::Image::AutoPtr exifImg;
+	QFileInfo file;
+
+	enum {
+		not_loaded,
+		no_data,
+		loaded,
+		dirty,
+	};
+
+	int exifState;
+};
+
 class DllExport DkMetaData {
 
 public:
 	DkMetaData(QFileInfo file = QFileInfo());
+	DkMetaData(const QByteArray& ba);
 
 	DkMetaData(const DkMetaData& metaData);
 
@@ -68,6 +117,7 @@ public:
 			return *this;
 
 		this->file = metadata.file;
+		this->buffer = metadata.buffer;
 		this->mdata = false;
 		this->hasMetaData = metadata.hasMetaData;
 		this->dirty = metadata.dirty;
@@ -75,6 +125,9 @@ public:
 		return *this;
 	};
 
+	bool isLoaded() const;
+
+	// TODO: remove!
 	void setFileName(QFileInfo file) {
 
 		// do nothing if the same file is set
@@ -87,6 +140,10 @@ public:
 		dirty = false;
 	};
 
+	void setBuffer(const QByteArray& ba) {
+		buffer = ba;
+	};
+
 	QFileInfo getFile() const {
 		return file;
 	};
@@ -95,9 +152,10 @@ public:
 		return dirty;
 	};
 
-	void reloadImg();
+	//void reloadImg();
 
 	void saveMetaDataToFile(QFileInfo fileN = QFileInfo(), int orientation = 0);
+	void saveMetaDataToBuffer(QByteArray& ba, int orientation = 0);
 
 	std::string getNativeExifValue(std::string key);
 	std::string getExifValue(std::string key);
@@ -122,16 +180,15 @@ public:
 
 
 private:
-
 	void readMetaData();
 
 	Exiv2::Image::AutoPtr exifImg;
 	QFileInfo file;
+	QByteArray buffer;
 
 	bool mdata;
 	bool hasMetaData;
 	bool dirty;
-
 };
 
 };

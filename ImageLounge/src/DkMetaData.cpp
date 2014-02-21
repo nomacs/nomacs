@@ -31,6 +31,703 @@
 
 namespace nmc {
 
+// DkMetaDataT --------------------------------------------------------------------
+
+DkMetaDataT::DkMetaDataT() {
+
+	exifState = not_loaded;
+}
+
+void DkMetaDataT::readMetaData(const QFileInfo& fileInfo) {
+
+	qDebug() << "[Exiv2] old metadata loading is used!";
+
+	QByteArray ba;
+	QFile file(fileInfo.absoluteFilePath());
+	file.open(QIODevice::ReadOnly);
+
+	ba = file.readAll();
+
+	readMetaData(fileInfo, ba);
+}
+
+void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, const QByteArray& ba) {
+
+	this->file = fileInfo;
+
+	if (ba.isEmpty()) {
+		exifState = no_data;
+		return;
+	}
+
+	try {
+		Exiv2::MemIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)ba.constData(), ba.size()));
+		exifImg = Exiv2::ImageFactory::open(exifBuffer);
+	} 
+	catch (...) {
+		exifState = no_data;
+		qDebug() << "[Exiv2] could not open file for exif data";
+		return;
+	}
+
+	if (exifImg.get() == 0) {
+		exifState = no_data;
+		qDebug() << "[Exiv2] image could not be opened for exif data extraction";
+		return;
+	}
+
+	try {
+		exifImg->readMetadata();
+
+		if (!exifImg->good()) {
+			qDebug() << "[Exiv2] metadata could not be read";
+			exifState = no_data;
+			return;
+		}
+
+	}catch (...) {
+		exifState = no_data;
+		qDebug() << "[Exiv2] could not read metadata (exception)";
+		return;
+	}
+
+	//qDebug() << "[Exiv2] metadata loaded";
+	exifState = loaded;
+}
+
+bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo) {
+
+	if (exifState != loaded)
+		return false;
+
+	QFile file(fileInfo.absoluteFilePath());
+	file.open(QFile::ReadOnly);
+	
+	QByteArray ba = file.readAll();
+	bool saved = saveMetaData(ba);
+	if (!saved)
+		return saved;
+	
+	file.open(QFile::WriteOnly);
+	file.write(ba);
+	file.close();
+
+	qDebug() << "[Exiv2] old save metadata used!";
+
+	return true;
+}
+
+bool DkMetaDataT::saveMetaData(QByteArray& ba) {
+
+	if (exifState != dirty)
+		return true;
+	else if (exifState != loaded)
+		return false;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::XmpData &xmpData = exifImg->xmpData();
+	Exiv2::IptcData &iptcData = exifImg->iptcData();
+
+	Exiv2::Image::AutoPtr exifImgN;
+
+	try {
+
+		Exiv2::MemIo::AutoPtr exifMem(new Exiv2::MemIo((byte*)ba.data(), ba.size()));
+		exifImgN = Exiv2::ImageFactory::open(exifMem);
+	} 
+	catch (...) {
+
+		qDebug() << "could not open image for exif data";
+		return false;
+	}
+
+	if (exifImgN.get() == 0) {
+		qDebug() << "image could not be opened for exif data extraction";
+		return false;
+	}
+
+	exifImgN->readMetadata();
+
+	exifImgN->setExifData(exifData);
+	exifImgN->setXmpData(xmpData);
+	exifImgN->setIptcData(iptcData);
+
+	exifImgN->writeMetadata();
+
+	return true;
+}
+
+int DkMetaDataT::getOrientation() const {
+
+	if (exifState != loaded && exifState != dirty)
+		return -1;
+
+	int orientation = -1;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+
+	if (!exifData.empty()) {
+
+		Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
+		Exiv2::ExifData::iterator pos = exifData.findKey(key);
+
+		if (pos != exifData.end() && pos->count() != 0) {
+			
+			Exiv2::Value::AutoPtr v = pos->getValue();
+
+			orientation = (int)pos->toFloat();
+
+			switch (orientation) {
+			case 6: orientation = 90;
+				break;
+			case 7: orientation = 90;
+				break;
+			case 3: orientation = 180;
+				break;
+			case 4: orientation = 180;
+				break;
+			case 8: orientation = -90;
+				break;
+			case 5: orientation = -90;
+				break;
+			default: orientation = 0;
+				break;
+			}	
+		}
+	}
+
+	return orientation;
+}
+
+int DkMetaDataT::getRating() const {
+	
+	if (exifState != loaded && exifState != dirty)
+		return -1;
+
+	float exifRating = -1;
+	float xmpRating = -1;
+	float fRating = 0;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();		//Exif.Image.Rating  - short
+	Exiv2::XmpData &xmpData = exifImg->xmpData();			//Xmp.xmp.Rating - text
+
+	//get Rating of Exif Tag
+	if (!exifData.empty()) {
+		Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Rating");
+		Exiv2::ExifData::iterator pos = exifData.findKey(key);
+
+		if (pos != exifData.end() && pos->count() != 0) {
+			Exiv2::Value::AutoPtr v = pos->getValue();
+			exifRating = v->toFloat();
+		}
+	}
+
+	//get Rating of Xmp Tag
+	if (!xmpData.empty()) {
+		Exiv2::XmpKey key = Exiv2::XmpKey("Xmp.xmp.Rating");
+		Exiv2::XmpData::iterator pos = xmpData.findKey(key);
+
+		//xmp Rating tag
+		if (pos != xmpData.end() && pos->count() != 0) {
+			Exiv2::Value::AutoPtr v = pos->getValue();
+			xmpRating = v->toFloat();
+		}
+
+		//if xmpRating not found, try to find MicrosoftPhoto Rating tag
+		if (xmpRating == -1) {
+			key = Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating");
+			pos = xmpData.findKey(key);
+			if (pos != xmpData.end() && pos->count() != 0) {
+				Exiv2::Value::AutoPtr v = pos->getValue();
+				xmpRating = v->toFloat();
+			}
+		}
+	}
+
+	if (xmpRating == -1.0f && exifRating != -1.0f)
+		fRating = exifRating;
+	else if (xmpRating != -1.0f && exifRating == -1.0f)
+		fRating = xmpRating;
+	else
+		fRating = exifRating;
+
+	return fRating;
+}
+
+QString DkMetaDataT::getNativeExifValue(const QString& key) const {
+
+	QString info;
+
+	if (exifState != loaded && exifState != dirty)
+		return info;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+
+	if (!exifData.empty()) {
+
+		Exiv2::ExifData::iterator pos;
+
+		try {
+			Exiv2::ExifKey ekey = Exiv2::ExifKey(key.toStdString());
+			pos = exifData.findKey(ekey);
+
+		} catch(...) {
+			return info;
+		}
+
+		if (pos != exifData.end() && pos->count() != 0) {
+			Exiv2::Value::AutoPtr v = pos->getValue();
+			info = QString::fromStdString(pos->toString());
+		}
+	}
+
+	return info;
+
+}
+
+QString DkMetaDataT::getExifValue(const QString& key) const {
+
+	QString info;
+
+	if (exifState != loaded && exifState != dirty)
+		return info;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+	std::string sKey = key.toStdString();
+
+	if (!exifData.empty()) {
+
+		Exiv2::ExifData::iterator pos;
+
+		try {
+			Exiv2::ExifKey ekey = Exiv2::ExifKey("Exif.Image." + sKey);
+			pos = exifData.findKey(ekey);
+
+			if (pos == exifData.end() || pos->count() == 0) {
+				Exiv2::ExifKey ekey = Exiv2::ExifKey("Exif.Photo." + sKey);	
+				pos = exifData.findKey(ekey);
+			}
+		} catch(...) {
+			try {
+				sKey = "Exif.Photo." + sKey;
+				Exiv2::ExifKey ekey = Exiv2::ExifKey(sKey);	
+				pos = exifData.findKey(ekey);
+			} catch (... ) {
+				return "";
+			}
+		}
+
+		if (pos != exifData.end() && pos->count() == 0) {
+			Exiv2::Value::AutoPtr v = pos->getValue();
+			info = QString::fromStdString(pos->toString());
+		}
+	}
+
+	return info;
+}
+
+QString DkMetaDataT::getIptcValue(const QString& key) const {
+
+	QString info;
+
+	if (exifState != loaded && exifState != dirty)
+		return info;
+
+	Exiv2::IptcData &iptcData = exifImg->iptcData();
+
+	if (!iptcData.empty()) {
+
+		Exiv2::IptcData::iterator pos;
+
+		try {
+			Exiv2::IptcKey ekey = Exiv2::IptcKey(key.toStdString());
+			pos = iptcData.findKey(ekey);
+		} catch (...) {
+			return info;
+		}
+
+		if (pos != iptcData.end() && pos->count() != 0) {
+			Exiv2::Value::AutoPtr v = pos->getValue();
+			info = QString::fromStdString(pos->toString());
+		}
+	}
+
+	return info;
+}
+
+QImage DkMetaDataT::getThumbnail() const {
+
+	QImage qThumb;
+
+	if (exifState != loaded && exifState != dirty)
+		return qThumb;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+
+	if (exifData.empty())
+		return qThumb;
+
+	try {
+		Exiv2::ExifThumb thumb(exifData);
+		Exiv2::DataBuf buffer = thumb.copy();
+		// ok, get the buffer...
+		std::pair<Exiv2::byte*, long> stdBuf = buffer.release();
+		QByteArray ba = QByteArray((char*)stdBuf.first, (int)stdBuf.second);
+		qThumb.loadFromData(ba);
+	}
+	catch (...) {
+		qDebug() << "Sorry, I could not load the thumb from the exif data...";
+	}
+
+	return qThumb;
+}
+
+bool DkMetaDataT::hasMetaData() const {
+
+	return exifState != no_data;
+}
+
+bool DkMetaDataT::isLoaded() const {
+
+	return exifState == loaded;
+}
+
+bool DkMetaDataT::isTiff() const {
+
+	QString newSuffix = file.suffix();
+	return newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive));
+}
+
+bool DkMetaDataT::isJpg() const {
+
+	QString newSuffix = file.suffix();
+	return newSuffix.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive));
+}
+
+bool DkMetaDataT::isRaw() const {
+
+	QString newSuffix = file.suffix();
+	return newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive));
+}
+
+QStringList DkMetaDataT::getExifKeys() const {
+
+	QStringList exifKeys;
+
+	if (exifState != loaded && exifState != dirty)
+		return exifKeys;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData::const_iterator end = exifData.end();
+
+	if (exifData.empty()) {
+		return exifKeys;
+
+	} else {
+
+		for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
+
+			std::string tmp = i->key();
+			exifKeys << QString::fromStdString(tmp);
+
+			//qDebug() << QString::fromStdString(tmp);
+		}
+	}
+
+	return exifKeys;
+}
+
+QStringList DkMetaDataT::getExifValues() const {
+
+	QStringList exifValues;
+
+	if (exifState != loaded && exifState != dirty)
+		return QStringList();
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData::const_iterator end = exifData.end();
+
+	if (exifData.empty())
+		return exifValues;
+
+	for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
+
+		std::string tmp = i->value().toString();
+		exifValues << QString::fromStdString(tmp);
+	}
+
+	return exifValues;
+}
+
+QStringList DkMetaDataT::getIptcKeys() const {
+
+	QStringList iptcKeys;
+	
+	if (exifState != loaded && exifState != dirty)
+		return iptcKeys;
+
+	Exiv2::IptcData &iptcData = exifImg->iptcData();
+	Exiv2::IptcData::iterator endI = iptcData.end();
+
+	if (iptcData.empty())
+		return iptcKeys;
+
+	for (Exiv2::IptcData::iterator md = iptcData.begin(); md != endI; ++md) {
+
+		std::string tmp = md->key();
+		iptcKeys << QString::fromStdString(tmp);
+	}
+
+	return iptcKeys;
+}
+
+QStringList DkMetaDataT::getIptcValues() const {
+	
+	QStringList iptcValues;
+
+	if (exifState != loaded && exifState != dirty)
+		return iptcValues;
+
+	Exiv2::IptcData &iptcData = exifImg->iptcData();
+	Exiv2::IptcData::iterator endI = iptcData.end();
+
+	if (iptcData.empty())
+		return iptcValues;
+	for (Exiv2::IptcData::iterator md = iptcData.begin(); md != endI; ++md) {
+
+		std::string tmp = md->value().toString();
+		iptcValues << QString::fromStdString(tmp);
+	}
+
+	return iptcValues;
+}
+
+void DkMetaDataT::setThumbnail(QImage thumb) {
+
+	if (exifState == not_loaded) 
+		return;
+
+	Exiv2::ExifData exifData = exifImg->exifData();
+
+	if (exifData.empty())
+		exifData = Exiv2::ExifData();
+
+	// ok, let's try to save the thumbnail...
+	try {
+		Exiv2::ExifThumb eThumb(exifData);
+
+		QByteArray data;
+		QBuffer buffer(&data);
+		buffer.open(QIODevice::WriteOnly);
+		thumb.save(&buffer, "JPEG");	// here we destroy the alpha channel of thumbnails
+
+		eThumb.erase();	// erase all thumbnails
+		eThumb.setJpegThumbnail((Exiv2::byte *)data.data(), data.size());
+
+		exifImg->setExifData(exifData);
+		exifState = dirty;
+
+	} catch (...) {
+		qDebug() << "I could not save the thumbnail...";
+	}
+}
+
+void DkMetaDataT::setOrientation(int o) {
+
+	if (exifState == not_loaded)
+		return;
+
+	if (o!=90 && o!=-90 && o!=180 && o!=0 && o!=270)
+		return;
+
+	if (o==-180) o=180;
+	if (o== 270) o=-90;
+
+	int orientation;
+
+	Exiv2::ExifData& exifData = exifImg->exifData();
+	Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
+
+	// this does not really work -> *.bmp images
+	if (exifData.empty())
+		exifData["Exif.Image.Orientation"] = uint16_t(1);
+
+	Exiv2::ExifData::iterator pos = exifData.findKey(key);
+
+	if (pos == exifData.end() || pos->count() == 0) {
+		exifData["Exif.Image.Orientation"] = uint16_t(1);
+
+		pos = exifData.findKey(key);
+	}
+
+	Exiv2::Value::AutoPtr v = pos->getValue();
+	Exiv2::UShortValue* prv = dynamic_cast<Exiv2::UShortValue*>(v.release());
+	if (!prv)	return;
+
+	Exiv2::UShortValue::AutoPtr rv = Exiv2::UShortValue::AutoPtr(prv);
+	if (rv->value_.empty())	return;
+
+	orientation = (int) rv->value_[0];
+	if (orientation <= 0 || orientation > 8) orientation = 1;
+
+	switch (orientation) {
+	case 1: if (o!=0) orientation = (o == -90) ? 8 : (o==90 ? 6 : 3);
+		break;
+	case 2: if (o!=0) orientation = (o == -90) ? 5 : (o==90 ? 7 : 4);
+		break;
+	case 3: if (o!=0) orientation = (o == -90) ? 6 : (o==90 ? 8 : 1);
+		break;
+	case 4: if (o!=0) orientation = (o == -90) ? 7 : (o==90 ? 5 : 2);
+		break;
+	case 5: if (o!=0) orientation = (o == -90) ? 4 : (o==90 ? 2 : 7);
+		break;
+	case 6: if (o!=0) orientation = (o == -90) ? 1 : (o==90 ? 3 : 8);
+		break;
+	case 7: if (o!=0) orientation = (o == -90) ? 2 : (o==90 ? 4 : 5);
+		break;
+	case 8: if (o!=0) orientation = (o == -90) ? 3 : (o==90 ? 1 : 6);
+		break;
+	}
+	rv->value_[0] = (unsigned short) orientation;
+	pos->setValue(rv.get());
+
+	// this try is a fast fix -> if the image does not support exiv data -> an exception is raised here -> tell the loader to save the orientated matrix
+	exifImg->setExifData(exifData);
+	exifState = dirty;
+}
+
+void DkMetaDataT::setRating(int r) {
+
+	if (exifState == not_loaded)
+		return;
+
+	unsigned short percentRating = 0;
+	std::string sRating, sRatingPercent;
+
+	if (r == 5)  { percentRating = 99; sRating = "5"; sRatingPercent = "99";}
+	else if (r==4) { percentRating = 75; sRating = "4"; sRatingPercent = "75";}
+	else if (r==3) { percentRating = 50; sRating = "3"; sRatingPercent = "50";}
+	else if (r==2) { percentRating = 25; sRating = "2"; sRatingPercent = "25";}
+	else if (r==1) {percentRating = 1; sRating = "1"; sRatingPercent = "1";}
+	else {r=0;}
+
+	Exiv2::ExifData &exifData = exifImg->exifData();		//Exif.Image.Rating  - short
+	Exiv2::XmpData &xmpData = exifImg->xmpData();			//Xmp.xmp.Rating - text
+
+	if (r>0) {
+		exifData["Exif.Image.Rating"] = uint16_t(r);
+		exifData["Exif.Image.RatingPercent"] = uint16_t(r);
+
+		Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpText);
+		v->read(sRating);
+		xmpData.add(Exiv2::XmpKey("Xmp.xmp.Rating"), v.get());
+		v->read(sRatingPercent);
+		xmpData.add(Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating"), v.get());
+	} 
+	else {
+
+		Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Rating");
+		Exiv2::ExifData::iterator pos = exifData.findKey(key);
+		if (pos != exifData.end()) exifData.erase(pos);
+
+		key = Exiv2::ExifKey("Exif.Image.RatingPercent");
+		pos = exifData.findKey(key);
+		if (pos != exifData.end()) exifData.erase(pos);
+
+		Exiv2::XmpKey key2 = Exiv2::XmpKey("Xmp.xmp.Rating");
+		Exiv2::XmpData::iterator pos2 = xmpData.findKey(key2);
+		if (pos2 != xmpData.end()) xmpData.erase(pos2);
+
+		key2 = Exiv2::XmpKey("Xmp.MicrosoftPhoto.Rating");
+		pos2 = xmpData.findKey(key2);
+		if (pos2 != xmpData.end()) xmpData.erase(pos2);
+	}
+
+	exifImg->setExifData(exifData);
+	exifImg->setXmpData(xmpData);
+
+	exifState = dirty;
+}
+
+void DkMetaDataT::setExifValue(QString key, QString taginfo) {
+
+	if (exifState == not_loaded)
+		return;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+
+	if (!exifData.empty()) {
+
+		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
+
+		if (tag.setValue(taginfo.toStdString()))
+			exifState == dirty;
+	}
+}
+
+void DkMetaDataT::printMetaData() const {
+
+	if (exifState != loaded && exifState != dirty)
+		return;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::IptcData &iptcData = exifImg->iptcData();
+	Exiv2::XmpData &xmpData = exifImg->xmpData();
+
+	qDebug() << "Exif------------------------------------------------------------------";
+
+	Exiv2::ExifData::const_iterator end = exifData.end();
+	for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
+		const char* tn = i->typeName();
+		std::cout << std::setw(44) << std::setfill(' ') << std::left
+			<< i->key() << " "
+			<< "0x" << std::setw(4) << std::setfill('0') << std::right
+			<< std::hex << i->tag() << " "
+			<< std::setw(9) << std::setfill(' ') << std::left
+			<< (tn ? tn : "Unknown") << " "
+			<< std::dec << std::setw(3)
+			<< std::setfill(' ') << std::right
+			<< i->count() << "  "
+			<< std::dec << i->value()
+			<< "\n";
+	}
+
+	qDebug() << "IPTC------------------------------------------------------------------";
+
+	Exiv2::IptcData::iterator endI2 = iptcData.end();
+	for (Exiv2::IptcData::iterator md = iptcData.begin(); md != endI2; ++md) {
+		std::cout << std::setw(44) << std::setfill(' ') << std::left
+			<< md->key() << " "
+			<< "0x" << std::setw(4) << std::setfill('0') << std::right
+			<< std::hex << md->tag() << " "
+			<< std::setw(9) << std::setfill(' ') << std::left
+			<< md->typeName() << " "
+			<< std::dec << std::setw(3)
+			<< std::setfill(' ') << std::right
+			<< md->count() << "  "
+			<< std::dec << md->value()
+			<< std::endl;
+	}
+
+	qDebug() << "XMP------------------------------------------------------------------";
+
+	Exiv2::XmpData::iterator endI3 = xmpData.end();
+	for (Exiv2::XmpData::iterator md = xmpData.begin(); md != endI3; ++md) {
+		std::cout << std::setw(44) << std::setfill(' ') << std::left
+			<< md->key() << " "
+			<< "0x" << std::setw(4) << std::setfill('0') << std::right
+			<< std::hex << md->tag() << " "
+			<< std::setw(9) << std::setfill(' ') << std::left
+			<< md->typeName() << " "
+			<< std::dec << std::setw(3)
+			<< std::setfill(' ') << std::right
+			<< md->count() << "  "
+			<< std::dec << md->value()
+			<< std::endl;
+	}
+
+}
+
 // DkMetaData --------------------------------------------------------------------
 DkMetaData::DkMetaData(QFileInfo file) {
 		this->file = file;
@@ -39,15 +736,28 @@ DkMetaData::DkMetaData(QFileInfo file) {
 		dirty = false;	
 }
 
+DkMetaData::DkMetaData(const QByteArray& ba) {
+	buffer = ba;
+	mdata = false;
+	hasMetaData = true;	// initially we assume that meta data is present
+	dirty = false;	
+}
+
+
 DkMetaData::DkMetaData(const DkMetaData& metaData) {
 
 	//const Exiv2::Image::AutoPtr exifImg((metaData.exifImg));
 	this->file = metaData.file;
+	this->buffer = metaData.buffer;
 	this->mdata = false;
 	this->hasMetaData = metaData.hasMetaData;
 	this->dirty = metaData.dirty;
 	// TODO: not too cool...
 
+}
+
+bool DkMetaData::isLoaded() const {
+	return mdata;
 }
 
 int DkMetaData::getOrientation() {
@@ -59,7 +769,6 @@ int DkMetaData::getOrientation() {
 	int orientation;
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
-
 
 	if (exifData.empty()) {
 		orientation = -1;
@@ -906,8 +1615,47 @@ void DkMetaData::saveMetaDataToFile(QFileInfo fileN, int orientation) {
 	exifImgN->setIptcData(iptcData);
 
 	exifImgN->writeMetadata();
-	this->file = fileN;
+	//this->file = fileN;
+}
 
+void DkMetaData::saveMetaDataToBuffer(QByteArray& ba, int orientation /* = 0 */) {
+
+	readMetaData();	
+	
+	if (!mdata)
+		return;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::XmpData &xmpData = exifImg->xmpData();
+	Exiv2::IptcData &iptcData = exifImg->iptcData();
+
+	Exiv2::Image::AutoPtr exifImgN;
+
+	try {
+
+		Exiv2::MemIo::AutoPtr exifMem(new Exiv2::MemIo((byte*)ba.data(), ba.size()));
+		exifImgN = Exiv2::ImageFactory::open(exifMem);
+
+	} catch (...) {
+
+		qDebug() << "could not open image for exif data";
+		return;
+	}
+
+	if (exifImgN.get() == 0) {
+		qDebug() << "image could not be opened for exif data extraction";
+		return;
+	}
+
+	exifImgN->readMetadata();
+
+	exifData["Exif.Image.Orientation"] = uint16_t(orientation);
+
+	exifImgN->setExifData(exifData);
+	exifImgN->setXmpData(xmpData);
+	exifImgN->setIptcData(iptcData);
+
+	exifImgN->writeMetadata();
 }
 
 bool DkMetaData::isTiff() {
@@ -948,22 +1696,28 @@ void DkMetaData::readMetaData() {
 
 		try {
 
-			// TODO: for now we don't support unicode filenames for exif data
-			// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
-			// this is more work and should be done when updating the cacher as we should definitely
-			// not load the image twice...
+			if (!buffer.isNull()) {
+				Exiv2::MemIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)buffer.constData(), buffer.size()));
+				exifImg = Exiv2::ImageFactory::open(exifBuffer);
+			}
+			else {
+				// TODO: for now we don't support unicode filenames for exif data
+				// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
+				// this is more work and should be done when updating the cacher as we should definitely
+				// not load the image twice...
 #ifdef EXV_UNICODE_PATH
 #if QT_VERSION < 0x050000
-			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
-			exifImg = Exiv2::ImageFactory::open(filePath);
+				std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
+				exifImg = Exiv2::ImageFactory::open(filePath);
 #else
-			std::wstring filePath = (file.isSymLink()) ? (wchar_t*)file.symLinkTarget().utf16() : (wchar_t*)file.absoluteFilePath().utf16();
-			exifImg = Exiv2::ImageFactory::open(filePath);
+				std::wstring filePath = (file.isSymLink()) ? (wchar_t*)file.symLinkTarget().utf16() : (wchar_t*)file.absoluteFilePath().utf16();
+				exifImg = Exiv2::ImageFactory::open(filePath);
 #endif
 #else
-			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
-			exifImg = Exiv2::ImageFactory::open(filePath);
+				std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
+				exifImg = Exiv2::ImageFactory::open(filePath);
 #endif
+			}
 		} catch (...) {
 			mdata = false;
 			hasMetaData = false;
@@ -1002,36 +1756,36 @@ void DkMetaData::readMetaData() {
 
 }
 
-void DkMetaData::reloadImg() {
-
-	try {
-
-		exifImg = Exiv2::ImageFactory::open(file.absoluteFilePath().toStdString());
-
-	} catch (...) {
-		mdata = false;
-		hasMetaData = false;
-		qDebug() << "could not open image for exif data";
-		return;
-	}
-
-	if (exifImg.get() == 0) {
-		qDebug() << "image could not be opened for exif data extraction";
-		mdata = false;
-		hasMetaData = false;
-		return;
-	}
-
-	exifImg->readMetadata();
-
-	if (!exifImg->good()) {
-		qDebug() << "metadata could not be read";
-		mdata = false;
-		hasMetaData = false;
-		return;
-	}
-
-	mdata = true;
-}
+//void DkMetaData::reloadImg() {
+//
+//	try {
+//
+//		exifImg = Exiv2::ImageFactory::open(file.absoluteFilePath().toStdString());
+//
+//	} catch (...) {
+//		mdata = false;
+//		hasMetaData = false;
+//		qDebug() << "could not open image for exif data";
+//		return;
+//	}
+//
+//	if (exifImg.get() == 0) {
+//		qDebug() << "image could not be opened for exif data extraction";
+//		mdata = false;
+//		hasMetaData = false;
+//		return;
+//	}
+//
+//	exifImg->readMetadata();
+//
+//	if (!exifImg->good()) {
+//		qDebug() << "metadata could not be read";
+//		mdata = false;
+//		hasMetaData = false;
+//		return;
+//	}
+//
+//	mdata = true;
+//}
 
 }
