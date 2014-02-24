@@ -36,7 +36,6 @@ int nmc::DkUtils::debugLevel = DK_MODULE;
 namespace nmc {
 
 // code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
-
 double DkMemory::getTotalMemory() {
 
 	double mem = -1;
@@ -107,6 +106,93 @@ double DkMemory::getFreeMemory() {
 }
 
 // DkUtils --------------------------------------------------------------------
+#ifdef WIN32
+
+bool DkUtils::wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
+	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
+	//return true;
+}
+
+bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+#if QT_VERSION < 0x050000
+	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
+	//return true;
+#else
+	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
+#endif
+}
+#else
+bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+
+	//// check if the filenames are just numbers
+	//bool isNum;
+	//int lhn = lhs.left(lhs.lastIndexOf(".")).toInt(&isNum);
+	//qDebug() << "lhs dot idx: " << lhs.lastIndexOf(".");
+	//if (isNum) {
+	//	int rhn = rhs.left(rhs.lastIndexOf(".")).toInt(&isNum);
+	//	qDebug() << "left is a number...";
+
+	//	if (isNum) {
+	//		qDebug() << "comparing numbers...";
+	//		return lhn < rhn;
+	//	}
+	//}
+
+	// number compare
+	QRegExp r("\\d+");
+
+	if (lhs.indexOf(r) >= 0) {
+
+		int lhn = r.cap().toInt();
+
+		// we don't just want to find two numbers
+		// but we want them to be at the same position
+		if (rhs.indexOf(r) >= 0 && r.indexIn(lhs) == r.indexIn(rhs))
+			return lhn < r.cap().toInt();
+
+	}
+
+	return lhs.localeAwareCompare(rhs) < 0;
+}
+
+#endif
+
+bool DkUtils::compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return lhf.created() < rhf.created();
+}
+
+bool DkUtils::compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compDateCreated(lhf, rhf);
+}
+
+bool DkUtils::compDateModified(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return lhf.lastModified() < rhf.lastModified();
+}
+
+bool DkUtils::compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compDateModified(lhf, rhf);
+}
+
+bool DkUtils::compFilename(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return compLogicQString(lhf.fileName(), rhf.fileName());
+}
+
+bool DkUtils::compFilenameInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compFilename(lhf, rhf);
+}
+
+bool DkUtils::compRandom(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return qrand() % 2;
+}
+
+
 void DkUtils::mSleep(int ms) {
 
 #ifdef Q_OS_WIN

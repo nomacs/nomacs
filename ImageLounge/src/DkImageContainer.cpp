@@ -34,11 +34,57 @@ DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 
 	this->fileInfo = fileInfo;
 	loadState = not_loaded;
+	edited = false;
+	
+	QSharedPointer<DkBasicLoader> loader(new DkBasicLoader());
+	this->loader = loader;
 }
 
-bool DkImageContainer::operator==(const DkImageContainer& o) {
+bool operator==(const DkImageContainer& lic, const DkImageContainer& ric) {
 
-	return fileInfo == o.file();
+	return lic.file() == ric.file();
+}
+
+bool DkImageContainer::operator<=(const DkImageContainer& o) const {
+
+	if (*this == o)
+		return true;
+
+	return *this < o;
+}
+
+bool DkImageContainer::operator<(const DkImageContainer& o) const {
+
+	switch(DkSettings::global.sortMode) {
+
+	case DkSettings::sort_filename:
+
+		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+			return DkUtils::compFilename(fileInfo, o.file());
+		else
+			return DkUtils::compFilenameInv(fileInfo, o.file());
+		break;
+
+	case DkSettings::sort_date_created:
+		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+			return DkUtils::compDateCreated(fileInfo, o.file());
+		else
+			return DkUtils::compDateCreatedInv(fileInfo, o.file());
+		break;
+
+	case DkSettings::sort_date_modified:
+		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+			return DkUtils::compDateModified(fileInfo, o.file());
+		else
+			return DkUtils::compDateModifiedInv(fileInfo, o.file());
+		
+	case DkSettings::sort_random:
+		return DkUtils::compRandom(fileInfo, o.file());
+
+	default:
+		// filename
+		return DkUtils::compFilename(fileInfo, o.file());
+	}
 }
 
 QFileInfo DkImageContainer::file() const {
@@ -46,34 +92,56 @@ QFileInfo DkImageContainer::file() const {
 	return fileInfo;
 }
 
-QImage DkImageContainer::image() {
+bool DkImageContainer::exists() {
 
-	if (img.isNull() && hasImage() == not_loaded)
-		loadFile();
-
-	return img;
+	fileInfo.refresh();
+	return fileInfo.exists();
 }
 
-int DkImageContainer::hasImage() const {
+QString DkImageContainer::getTitleAttribute() const {
+
+	if (loader->getNumPages() <= 1)
+		return QString();
+
+	QString attr = "[" + QString::number(loader->getPageIdx()) + "/" + 
+		QString::number(loader->getNumPages()) + "]";
+
+	return attr;
+}
+
+QImage DkImageContainer::image() {
+
+	if (loader->image().isNull() && hasImage() == not_loaded)
+		loadImage();
+
+	return loader->image();
+}
+
+void DkImageContainer::setImage(const QImage& img, const QFileInfo& fileInfo) {
+
+	this->fileInfo = fileInfo;
+	loader->setImage(img, fileInfo);
+	edited = true;
+}
+
+bool DkImageContainer::hasImage() const {
+
+	return loader->hasImage();
+}
+
+int DkImageContainer::imgLoaded() const {
 
 	return loadState;
 }
 
-void DkImageContainer::loadFile() {
-
-	DkBasicLoader basicLoader;
+bool DkImageContainer::loadImage() {
 
 	if (fileBuffer.isNull())
 		fileBuffer = loadFileToBuffer(fileInfo);
 
-	img = loadImage(fileInfo, fileBuffer);
+	loader = loadImageIntern(fileInfo, fileBuffer);
 
-	metaData.readMetaData(fileInfo, fileBuffer);
-	int orientation = metaData.getOrientation();
-
-	if (!metaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
-		basicLoader.rotate(orientation);
-	
+	return loader->hasImage();
 }
 
 QByteArray DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
@@ -88,19 +156,22 @@ QByteArray DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
 }
 
 
-QImage DkImageContainer::loadImage(const QFileInfo fileInfo, const QByteArray fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer) {
 
 	// checks performed so load the file
-	DkBasicLoader basicLoader;
+	QSharedPointer<DkBasicLoader> basicLoader(new DkBasicLoader());
 	
 	try {
-		basicLoader.loadGeneral(fileInfo, fileBuffer);
+		basicLoader->loadGeneral(fileInfo, fileBuffer, true);
 	} catch(...) {}
 
-	return basicLoader.image();
+	return basicLoader;
 }
 
+QFileInfo DkImageContainer::saveImageIntern(const QFileInfo file, QImage saveImg, int compression) {
 
+	loader->save(file, saveImg, compression);
+}
 
 
 // DkImageContainerT --------------------------------------------------------------------
@@ -108,6 +179,7 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 
 	fetchingBuffer = false;
 	fetchingImage = false;
+	connect(&saveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()));
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()));
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
 	connect(&imageWatcher, SIGNAL(canceled()), this, SLOT(cancelFinished()));
@@ -122,9 +194,11 @@ DkImageContainerT::~DkImageContainerT() {
 	imageWatcher.cancel();
 	//metaDataWatcher.blockSignals(true);
 	//metaDataWatcher.cancel();
+
+	saveImageWatcher.waitForFinished();
 }
 
-bool DkImageContainerT::loadImage() {
+bool DkImageContainerT::loadImageThreaded() {
 
 	fileInfo.refresh();
 
@@ -149,6 +223,49 @@ bool DkImageContainerT::loadImage() {
 	return true;
 }
 
+bool DkImageContainerT::saveImageThreaded(const QFileInfo& file, int compression /* = -1 */) {
+
+	return saveImageThreaded(file, loader->image(), compression);
+}
+
+
+bool DkImageContainerT::saveImageThreaded(const QFileInfo& file, const QImage& saveImg, int compression /* = -1 */) {
+
+	if (saveImg.isNull()) {
+		QString msg = tr("I can't save an empty file, sorry...\n");
+		emit errorDialogSignal(msg);
+		return false;
+	}
+	if (!file.absoluteDir().exists()) {
+		QString msg = tr("Sorry, the directory: %1  does not exist\n").arg(file.absolutePath());
+		emit errorDialogSignal(msg);
+		return false;
+	}
+	if (file.exists() && !file.isWritable()) {
+		QString msg = tr("Sorry, I can't write to the file: %1").arg(file.fileName());
+		emit errorDialogSignal(msg);
+		return false;
+	}
+
+	// TODO: add thumbnail?!
+	QFuture<QFileInfo> future = QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::saveImageIntern, fileInfo, saveImg, compression);
+
+	saveImageWatcher.setFuture(future);
+}
+
+void DkImageContainerT::savingFinished() {
+
+	QFileInfo saveFile = saveImageWatcher.result();
+
+	if (!saveFile.exists())
+		emit errorDialogSignal(tr("Sorry, I could not save the image"));
+	else {
+		emit fileSavedSignal(saveFile);
+		edited = false;
+	}
+}
+
 void DkImageContainerT::fetchFile() {
 
 	// ignore doubled calls
@@ -164,7 +281,7 @@ void DkImageContainerT::fetchFile() {
 	QFuture<QByteArray> future = QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::loadFileToBuffer, fileInfo);
 
-	//bufferWatcher.setFuture(future);
+	bufferWatcher.setFuture(future);
 }
 
 void DkImageContainerT::bufferLoaded() {
@@ -174,7 +291,7 @@ void DkImageContainerT::bufferLoaded() {
 
 	fileBuffer = bufferWatcher.result();
 
-	if (hasImage() == loading)
+	if (imgLoaded() == loading)
 		fetchImage();
 
 	fetchingBuffer = false;
@@ -182,15 +299,15 @@ void DkImageContainerT::bufferLoaded() {
 
 void DkImageContainerT::fetchImage() {
 
-	if (!img.isNull() || fileBuffer.isNull() || loadState == exists_not)
+	if (!loader->hasImage() || fileBuffer.isNull() || loadState == exists_not)
 		loadingFinished();
 	
 	// we have to do our own bool here
 	// watcher.isRunning() returns false if the thread is waiting in the pool
 	fetchingImage = true;
 
-	QFuture<QImage> future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadImage, fileInfo, fileBuffer);
+	QFuture<QSharedPointer<DkBasicLoader> > future = QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::loadImageIntern, fileInfo, fileBuffer);
 
 	imageWatcher.setFuture(future);
 }
@@ -201,7 +318,9 @@ void DkImageContainerT::imageLoaded() {
 		return;
 
 	// deliver image
-	img = imageWatcher.result();
+	loader = imageWatcher.result();
+	connect(loader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
+
 	fetchingImage = false;
 
 	//if (img.isNull())
@@ -214,25 +333,18 @@ void DkImageContainerT::loadingFinished() {
 
 	DkTimer dt;
 
-	if (img.isNull()) {
+	if (!loader->hasImage()) {
 		QString msg = tr("Sorry, I could not load: %1").arg(fileInfo.fileName());
 		emit showInfoSignal(msg);
-		emit fileLoadedSignal(fileInfo, false);
+		emit fileLoadedSignal(false);
 		loadState = exists_not;
 		return;
 	}
 
 	// see if this costs any time
-	metaData.readMetaData(fileInfo, fileBuffer);
-	int orientation = metaData.getOrientation();
-
-	DkBasicLoader basicLoader;
-	if (!metaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
-		basicLoader.rotate(orientation);
-
-	emit fileLoadedSignal(fileInfo, true);
+	emit fileLoadedSignal(true);
 	loadState = loaded;
-
+	
 	qDebug() << "metadata loaded and image rotated in: " << QString::fromStdString(dt.getTotal());
 }
 
@@ -247,11 +359,8 @@ void DkImageContainerT::cancel() {
 
 void DkImageContainerT::cancelFinished() {
 
-	if (bufferWatcher.isCanceled() && imageWatcher.isCanceled()) {
-		img = QImage();
-		metaData = DkMetaDataT();
-	}
-
+	if (bufferWatcher.isCanceled() && imageWatcher.isCanceled())
+		loader->release();
 }
 
 
@@ -260,9 +369,14 @@ QByteArray DkImageContainerT::loadFileToBuffer(const QFileInfo fileInfo) {
 	return DkImageContainer::loadFileToBuffer(fileInfo);
 }
 
-QImage DkImageContainerT::loadImage(const QFileInfo fileInfo, const QByteArray fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer) {
 
-	return DkImageContainer::loadImage(fileInfo, fileBuffer);
+	return DkImageContainer::loadImageIntern(fileInfo, fileBuffer);
+}
+
+QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo file, QImage saveImg, int compression) {
+
+	return DkImageContainer::saveImageIntern(file, saveImg, compression);
 }
 
 

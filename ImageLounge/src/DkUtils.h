@@ -49,8 +49,14 @@
 #include "DkError.h"
 
 #ifdef Q_OS_WIN
-	#include <wtypes.h>
-	#include <windows.h>
+
+#include <winsock2.h>	// needed since libraw 0.16
+#include <wtypes.h>
+#include <windows.h>
+
+#include "shlwapi.h"
+#pragma comment (lib, "shlwapi.lib")
+
 #else
 	#include <time.h>
 #endif
@@ -83,6 +89,7 @@ enum morphTypes {DK_ERODE=0, DK_DILATE};
 enum DebugLevel {DK_NONE=0,DK_WARNING, DK_MODULE, DK_DEBUG_A, DK_DEBUG_B, DK_DEBUG_C, DK_DEBUG_ALL};
 enum SpeedLebel {DK_NO_SPEED_UP=0, DK_SPEED_UP, DK_APPROXIMATE};
 
+
 /**
  * This class contains general functions which are useful.
  **/
@@ -92,6 +99,43 @@ private:
 	static int debugLevel;
 
 public:
+
+
+#ifdef WIN32
+	
+	/**
+	 * Logical string compare function.
+	 * This function is used to sort:
+	 * a1.png
+	 * a2.png
+	 * a10.png
+	 * instead of:
+	 * a1.png
+	 * a10.png
+	 * a2.png
+	 * @param lhs left string
+	 * @param rhs right string
+	 * @return bool true if left string < right string
+	 **/ 
+	static bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
+#endif
+
+	static bool compLogicQString(const QString & lhs, const QString & rhs);
+
+	static bool compFilename(const QFileInfo & lhf, const QFileInfo & rhf);
+
+	static bool compFilenameInv(const QFileInfo & lhf, const QFileInfo & rhf);
+
+	static bool compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
+
 
 	/**
 	 * Sleeps n ms.

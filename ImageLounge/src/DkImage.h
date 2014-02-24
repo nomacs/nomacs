@@ -27,13 +27,6 @@
 
 #pragma once
 
-#ifdef WIN32
-#include <winsock2.h>	// needed since libraw 0.16
-
-#include "shlwapi.h"
-#pragma comment (lib, "shlwapi.lib")
-#endif
-
 #include <QWidget>
 #include <QImageWriter>
 #include <QFileSystemWatcher>
@@ -105,6 +98,7 @@ using namespace cv;
 #include "DkThumbs.h"
 #include "DkMetaData.h"
 #include "DkBasicLoader.h"
+#include "DkImageContainer.h"
 
 #ifdef Q_WS_X11
 	typedef  unsigned char byte;
@@ -130,43 +124,6 @@ using namespace cv;
 
 
 namespace nmc {
-
-#ifdef WIN32
-	
-	/**
-	 * Logical string compare function.
-	 * This function is used to sort:
-	 * a1.png
-	 * a2.png
-	 * a10.png
-	 * instead of:
-	 * a1.png
-	 * a10.png
-	 * a2.png
-	 * @param lhs left string
-	 * @param rhs right string
-	 * @return bool true if left string < right string
-	 **/ 
-	bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
-#endif
-
-
-bool compLogicQString(const QString & lhs, const QString & rhs);
-
-bool compFilename(const QFileInfo & lhf, const QFileInfo & rhf);
-
-bool compFilenameInv(const QFileInfo & lhf, const QFileInfo & rhf);
-
-bool compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf);
-
-bool compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf);
-
-bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf);
-
-bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
-
-bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
-
 
 class DkImageCache {
 
@@ -346,15 +303,20 @@ public:
 	//static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
 	static QStringList getFoldersRecursive(QDir dir);
 	void updateSubFolders(QDir rootDir);
+
+	// deprecated
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
+	QFileInfoList getFilteredFileInfoList(const QDir& dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
 
 	static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
 
-	void rotateImage(double angle);
+	//void rotateImage(double angle);
 	void saveFile(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
 	void setFile(QFileInfo& filename);
-	QFileInfo getFile();
-	QStringList getFiles();
+	QSharedPointer<DkImageContainerT> getCurrentImage() const;
+	QFileInfo file() const;
+	//QStringList getFiles();	// deprecated
+	QVector<QSharedPointer<DkImageContainerT> > getImages();
 	void nextFile(bool silent = false);
 	void previousFile(bool silent = false);
 	void firstFile();
@@ -363,23 +325,26 @@ public:
 	void clearPath();
 	void clearFileWatcher();
 	QString getCurrentFilter();
-	QDir getDir();
+	QDir getDir() const;
 	QDir getSaveDir();
 	void loadLastDir();
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
-	void setImage(QImage img, QFileInfo editFile = QFileInfo());
-	void load();
-	QImage loadThumb(QFileInfo& file, bool silent = false);
+	QSharedPointer<DkImageContainerT> setImage(QImage img, QFileInfo editFile = QFileInfo());
+	//QImage loadThumb(QFileInfo& file, bool silent = false);
 	bool hasFile();
 	bool hasMovie();
 	bool isCached(QFileInfo& file);
-	void updateCacheIndex();
+	//void updateCacheIndex();
 	QString fileName();
-	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false, bool searchFile = true);
-	static QStringList sort(const QStringList& files, const QDir& dir);
+	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false, bool searchFile = true);		//deprecated
+	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool silent = false, bool searchFile = true);
+	static QStringList sort(const QStringList& files, const QDir& dir);	// deprecated
 	void sort();
-
+	QVector<QSharedPointer<DkImageContainerT> > sort(const QVector<QSharedPointer<DkImageContainerT> >& images, const QDir& dir);
+	QSharedPointer<DkImageContainerT> findFile(const QFileInfo& file) const;
+	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
+	
 	static void initFileFilters();	// add special file filters
 
 	/**
@@ -388,16 +353,15 @@ public:
 	 **/ 
 	bool hasImage() {
 		
-		QMutexLocker locker(&mutex);
 		return basicLoader.hasImage();
 	};
 
-	bool isEdited() {
+	bool isEdited() const {
 		return editFile.exists();
 	};
 
 	int numFiles() const {
-		return files.size();
+		return images.size();
 	};
 
 	/**
@@ -406,9 +370,6 @@ public:
 	 **/ 
 	QImage getImage() {
 		
-		// >DIR: dead-lock if a function calls getImage() that is called by updateImageSignal or updateDirSignal 
-		// and is connected with a Qt::directConnection [7.11.2012 markus]
-		QMutexLocker locker(&mutex);	
 		return basicLoader.image();
 	};
 
@@ -434,21 +395,30 @@ signals:
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
 	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false, QString attr = QString());
 	void updateDirSignal(QFileInfo file, int force = DkThumbsLoader::not_forced);
+	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
 	void setPlayer(bool play);
 	void updateFileWatcherSignal(QFileInfo file);
 
+	// new signals
+	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image);
+	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true);
+	void showInfoSignal(QString msg, int time = 3000, int position = 0);
+	void errorDialogSignal(const QString&);
+
 public slots:
-	QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
+	//QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);
 	void changeFile(int skipIdx, bool silent = false, int force = cache_default);
-	void fileChanged(const QString& path);
+	//void fileChanged(const QString& path);
 	void directoryChanged(const QString& path = QString());
 	void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
 	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
-	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);
+	void load(QFileInfo file, bool silent = false, int cacheState = cache_default);	// deprecated
+	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>(), bool silent = false);
+	void load(const QFileInfo& file, bool silent = false);
 	virtual bool loadFile(QFileInfo file, bool silent = false, int cacheState = cache_default);
-	void saveRating(int rating);
+	//void saveRating(int rating);
 	void deleteFile();
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilters(QStringList filters);
@@ -456,7 +426,9 @@ public slots:
 	void updateFileWatcher(QFileInfo filePath);
 	void disableFileWatcher();
 
-	//void enableWatcher(bool enable);
+	// new slots
+	void imageLoaded(bool loaded = false);
+	void imageSaved(QFileInfo file);
 
 protected:
 
@@ -467,21 +439,19 @@ protected:
 	bool timerBlockedUpdate;
 	
 	QFileInfo editFile;
-	QFileInfo lastFileLoaded;
-	QFileInfo file;
-	QFileInfo virtualFile;
+	//QFileInfo lastFileLoaded;
 	QDir dir;
 	QDir saveDir;
 	QFileSystemWatcher *watcher;
 	QFileSystemWatcher *dirWatcher;
 	QStringList subFolders;
-	QStringList files;
+	//QStringList files;
+	QVector<QSharedPointer<DkImageContainerT > > images;
+	QSharedPointer<DkImageContainerT > currentImage;
+	QSharedPointer<DkImageContainerT > lastImageLoaded;
 	bool folderUpdated;
-	int cFileIdx;
-
-	// threads
-	QMutex mutex;
-	QThread* loaderThread;
+	//int cFileIdx; // deprecated?
+	int tmpFileIdx; // deprecated?
 
 	// functions
 	int getNextFolderIdx(int folderIdx);
@@ -489,9 +459,9 @@ protected:
 	bool loadDir(QDir newDir, bool scanRecursive = true);
 	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
-	void startStopCacher();
 	void sendFileSignal();
 	QString getTitleAttributeString();
+	void createImages(const QFileInfoList& files);
 };
 
 };

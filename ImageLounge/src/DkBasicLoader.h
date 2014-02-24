@@ -118,8 +118,8 @@ public:
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/ 
-	bool loadGeneral(const QFileInfo& file, bool rotateImg = false, bool fast = false);
-	bool loadGeneral(const QFileInfo& file, const QByteArray& ba, bool rotateImg = false, bool fast = false);
+	bool loadGeneral(const QFileInfo& file, bool loadMetaData = false, bool fast = false);
+	bool loadGeneral(const QFileInfo& file, const QByteArray& ba, bool loadMetaData = false, bool fast = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
@@ -128,18 +128,18 @@ public:
 	 **/ 
 	bool loadPage(int skipIdx = 0);
 
-	int getNumPages() {
+	int getNumPages() const {
 		return numPages;
 	};
 
-	int getPageIdx() {
+	int getPageIdx() const {
 		return pageIdx;
 	};
 
 	bool setPageIdx(int skipIdx);
 
-	bool save(QFileInfo fileInfo, QImage img, int compression = -1);
-	bool save(QImage img, QByteArray& ba, int compression = -1);
+	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
+	bool save(const QFileInfo& fileInfo, const QImage& img, QByteArray& ba, int compression = -1);
 
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
@@ -162,6 +162,10 @@ public:
 
 	int getLoader() {
 		return loader;
+	};
+
+	DkMetaDataT getMetaData() {
+		return metaData;
 	};
 
 	/**
@@ -193,7 +197,6 @@ public:
 	 * @return bool true if an image is loaded.
 	 **/ 
 	bool hasImage() {
-
 		return !qImg.isNull();
 	};
 
@@ -219,6 +222,9 @@ public:
 	bool saveWebPFile(QImage img, QByteArray& ba, int compression, int speed = 4) {return false;};
 #endif
 
+signals:
+	void errorDialogSignal(const QString& msg);
+
 public slots:
 	void rotate(int orientation);
 	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
@@ -239,6 +245,7 @@ protected:
 	int numPages;
 	int pageIdx;
 	bool pageIdxDirty;
+	DkMetaDataT metaData;
 
 #ifdef WITH_OPENCV
 	cv::Mat cvImg;

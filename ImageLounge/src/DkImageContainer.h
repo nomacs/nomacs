@@ -49,37 +49,50 @@ public:
 	};
 
 	DkImageContainer(const QFileInfo& fileInfo);
-	bool operator==(const DkImageContainer& o);
+	friend bool operator==(const DkImageContainer& lic, const DkImageContainer& ric);
+	bool operator< (const DkImageContainer& o) const;
+	bool operator<= (const DkImageContainer& o) const;
 
 	QImage image();
 
-	int hasImage() const;
+	bool hasImage() const;
+	int imgLoaded() const;
 	QFileInfo file() const;
+	bool isEdited() const;
+	bool exists();
+	bool setPageIdx(int skipIdx);
+	int getPageIdx() const;
+	bool loadImage();
+	void setImage(const QImage& img, const QFileInfo& fileInfo);
+	QString getTitleAttribute() const;
 
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
 
 protected:
 	QFileInfo fileInfo;
-	DkMetaDataT metaData;
-	QImage img;
 	QByteArray fileBuffer;
+	QSharedPointer<DkBasicLoader> loader;
 
 	int loadState;
+	bool edited;
 
-	void loadFile();
-	QImage loadImage(const QFileInfo fileInfo, const QByteArray fileBuffer);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
+	QFileInfo saveImageIntern(const QFileInfo file, QImage saveImg, int compression);
 };
 
-class DkImageContainerT : public QObject, DkImageContainer {
+class DkImageContainerT : public QObject, public DkImageContainer {
 	Q_OBJECT
 
 public:
 	DkImageContainerT(const QFileInfo& file);
 	~DkImageContainerT();
 
-	bool loadImage();
+	bool loadImageThreaded();
 	void fetchFile();
 	void cancel();
+
+	bool saveImageThreaded(const QFileInfo& file, const QImage& saveImg, int compression = -1);
+	bool saveImageThreaded(const QFileInfo& file, int compression = -1);
 
 	///**
 	// * Returns whether the thumbnail was loaded, or does not exist.
@@ -88,8 +101,10 @@ public:
 	//int hasImage() const;
 
 signals:
-	void fileLoadedSignal(const QFileInfo& fileInfo, bool loaded = true);
+	void fileLoadedSignal(bool loaded = true);
+	void fileSavedSignal(QFileInfo file);
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
+	void errorDialogSignal(const QString& msg);
 
 protected slots:
 	void bufferLoaded();
@@ -99,15 +114,19 @@ protected slots:
 protected:
 	void fetchImage();
 	void loadingFinished();
-
+	void savingFinished();
+	
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
-	QImage loadImage(const QFileInfo fileInfo, const QByteArray fileBuffer);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
+	QFileInfo saveImageIntern(const QFileInfo file, QImage saveImg, int compression);
 
 	QFutureWatcher<QByteArray> bufferWatcher;
-	QFutureWatcher<QImage> imageWatcher;
+	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;
+	QFutureWatcher<QFileInfo> saveImageWatcher;
 
 	bool fetchingBuffer;
 	bool fetchingImage;
+	bool savingImage;
 };
 
 

@@ -866,12 +866,6 @@ void DkViewPort::setImage(QImage newImg) {
 
 	controller->getPlayer()->startTimer();
 	controller->getOverview()->setImage(newImg);	// TODO: maybe we could make use of the image pyramid here
-	
-	//// TODO: this is a fast fix
-	//// if this thread uses the static metadata object 
-	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
-	//// currently we need to read the metadata twice (not nice either)
-	DkImageLoader::imgMetaData.setFileName(loader->getFile());	
 	controller->stopLabels();
 
 	thumbLoaded = false;
@@ -937,9 +931,9 @@ void DkViewPort::tcpSendImage() {
 	controller->setInfo("sending image...", 3000, DkControlWidget::center_label);
 
 	if (loader)
-		sendImageSignal(imgStorage.getImage(), loader->fileName());
+		emit sendImageSignal(imgStorage.getImage(), loader->fileName());
 	else
-		sendImageSignal(imgStorage.getImage(), "nomacs - Image Lounge");
+		emit sendImageSignal(imgStorage.getImage(), "nomacs - Image Lounge");
 }
 
 void DkViewPort::fileNotLoaded(QFileInfo file) {
@@ -1256,7 +1250,7 @@ void DkViewPort::loadMovie() {
 		movie = 0;
 	}
 
-	movie = new QMovie(loader->getFile().absoluteFilePath());
+	movie = new QMovie(loader->file().absoluteFilePath());
 	connect(movie, SIGNAL(frameChanged(int)), this, SLOT(update()));
 	movie->start();
 	emit movieLoadedSignal(true);

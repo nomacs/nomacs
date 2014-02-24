@@ -3056,9 +3056,9 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 			f.remove();
 		}
 
-		bool saved = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
+		QFileInfo saveFile = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
 
-		if (!saved)
+		if (!saveFile.exists() || !saveFile.isFile())
 			emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
 
 		loader.loadPage(1);						// load next

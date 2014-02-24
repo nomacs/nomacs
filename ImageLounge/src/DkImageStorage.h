@@ -293,7 +293,7 @@ public:
 
 	void setImage(QImage img);
 	QImage getImage(float factor = 1.0f);
-	bool hasImage() {
+	bool hasImage() const {
 		return !img.isNull();
 	}
 

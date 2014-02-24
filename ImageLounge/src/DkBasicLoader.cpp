@@ -26,7 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkBasicLoader.h"
-#include "DkNoMacs.h" // Don't know if that's cool but we need it for dialogs (maybe a signal)?
+//#include "DkNoMacs.h" // Don't know if that's cool but we need it for dialogs (maybe a signal)?
 
 namespace nmc {
 
@@ -40,10 +40,10 @@ DkBasicLoader::DkBasicLoader(int mode) {
 	loader = no_loader;
 }
 
-bool DkBasicLoader::loadGeneral(const QFileInfo& file, bool rotateImg /* = false */, bool fast /* = false */) {
+bool DkBasicLoader::loadGeneral(const QFileInfo& file, bool loadMetaData /* = false */, bool fast /* = false */) {
 
 	QByteArray dummy;
-	return loadGeneral(file, dummy, rotateImg, fast);
+	return loadGeneral(file, dummy, loadMetaData, fast);
 }
 
 /**
@@ -51,7 +51,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& file, bool rotateImg /* = false
  * @param file the image file that should be loaded.
  * @return bool true if the image could be loaded.
  **/ 
-bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, const QByteArray& ba, bool rotateImg, bool fast) {
+bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, const QByteArray& ba, bool loadMetaData, bool fast) {
 
 	bool imgLoaded = false;
 	
@@ -164,11 +164,11 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, const QByteArray& ba,
 		indexPages(file);
 	pageIdxDirty = false;
 
-	if (imgLoaded && rotateImg && !DkSettings::metaData.ignoreExifOrientation) {
-		DkMetaData imgMetaData(file);		
-		int orientation = imgMetaData.getOrientation();
+	if (imgLoaded && loadMetaData && !DkSettings::metaData.ignoreExifOrientation) {
+		metaData.readMetaData(fileInfo, ba);		
+		int orientation = metaData.getOrientation();
 
-		if (!imgMetaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+		if (!metaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
 			rotate(orientation);
 	}
 
@@ -816,33 +816,62 @@ void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
 #endif
 }
 
-bool DkBasicLoader::save(QFileInfo fileInfo, QImage img, int compression) {
+bool DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, QByteArray& ba, int compression) {
 
 	bool saved = false;
 
 	qDebug() << "extension: " << fileInfo.suffix();
 
 	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
-		saved = saveWebPFile(fileInfo, img, compression);
+		saved = saveWebPFile(img, ba, compression);
 	}
-	else if (!saved) {
+	else {
 
 		bool hasAlpha = DkImage::alphaChannelUsed(img);
 		QImage sImg = img;
-		
+
 		if (!hasAlpha)
 			sImg = sImg.convertToFormat(QImage::Format_RGB888);
 
 		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
 
-		QImageWriter* imgWriter = new QImageWriter(fileInfo.absoluteFilePath());
+		QImageWriter* imgWriter = new QImageWriter(ba);
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
 		saved = imgWriter->write(sImg);		// TODO: J2K crash detected
 		delete imgWriter;
 	}
 
+	if (metaData.isLoaded() && metaData.hasMetaData()) {
+		try {
+			metaData.saveMetaData(ba);
+		} 
+		catch (...) {
+			// is it still throwing anything?
+		}
+	}
+	
+	if (!saved)
+		emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fileInfo.fileName()));
+
 	return saved;
+}
+
+QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int compression) {
+
+	QByteArray ba;
+
+	if (save(fileInfo, img, ba, compression)) {
+
+		QFile file(fileInfo.absoluteFilePath());
+		file.open(QIODevice::WriteOnly);
+		file.write(ba);
+		file.close();
+
+		return fileInfo;
+	}
+
+	return QFileInfo();
 }
 
 // image editing --------------------------------------------------------------------
@@ -982,7 +1011,7 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
 	}catch (std::exception se) {
 
 		if (!silent)
-			DkNoMacs::dialog(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(size, 32)));
+			emit errorDialogSignal(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(size, 32)));
 
 		return;
 	}
@@ -1004,6 +1033,7 @@ void DkBasicLoader::release() {
 	// TODO: auto save routines here
 
 	qImg = QImage();
+	metaData = DkMetaDataT();
 
 #ifdef WITH_OPENCV
 	cvImg.release();
