@@ -68,7 +68,7 @@ void DkImageContainer::loadFile() {
 
 	img = loadImage(fileInfo, fileBuffer);
 
-	metaData.setBuffer(fileBuffer);
+	metaData.readMetaData(fileInfo, fileBuffer);
 	int orientation = metaData.getOrientation();
 
 	if (!metaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
@@ -110,6 +110,8 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 	fetchingImage = false;
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()));
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
+	connect(&imageWatcher, SIGNAL(canceled()), this, SLOT(cancelFinished()));
+	connect(&imageWatcher, SIGNAL(canceled()), this, SLOT(cancelFinished()));
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
 }
 
@@ -167,6 +169,9 @@ void DkImageContainerT::fetchFile() {
 
 void DkImageContainerT::bufferLoaded() {
 
+	if (bufferWatcher.isCanceled())
+		return;
+
 	fileBuffer = bufferWatcher.result();
 
 	if (hasImage() == loading)
@@ -192,6 +197,9 @@ void DkImageContainerT::fetchImage() {
 
 void DkImageContainerT::imageLoaded() {
 
+	if (imageWatcher.isCanceled())
+		return;
+
 	// deliver image
 	img = imageWatcher.result();
 	fetchingImage = false;
@@ -204,15 +212,18 @@ void DkImageContainerT::imageLoaded() {
 
 void DkImageContainerT::loadingFinished() {
 
+	DkTimer dt;
+
 	if (img.isNull()) {
 		QString msg = tr("Sorry, I could not load: %1").arg(fileInfo.fileName());
 		emit showInfoSignal(msg);
 		emit fileLoadedSignal(fileInfo, false);
+		loadState = exists_not;
 		return;
 	}
 
 	// see if this costs any time
-	metaData.setBuffer(fileBuffer);
+	metaData.readMetaData(fileInfo, fileBuffer);
 	int orientation = metaData.getOrientation();
 
 	DkBasicLoader basicLoader;
@@ -220,7 +231,29 @@ void DkImageContainerT::loadingFinished() {
 		basicLoader.rotate(orientation);
 
 	emit fileLoadedSignal(fileInfo, true);
+	loadState = loaded;
+
+	qDebug() << "metadata loaded and image rotated in: " << QString::fromStdString(dt.getTotal());
 }
+
+void DkImageContainerT::cancel() {
+
+	if (loadState != loading)
+		cancelFinished();
+
+	bufferWatcher.cancel();
+	imageWatcher.cancel();
+}
+
+void DkImageContainerT::cancelFinished() {
+
+	if (bufferWatcher.isCanceled() && imageWatcher.isCanceled()) {
+		img = QImage();
+		metaData = DkMetaDataT();
+	}
+
+}
+
 
 QByteArray DkImageContainerT::loadFileToBuffer(const QFileInfo fileInfo) {
 

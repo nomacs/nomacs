@@ -60,7 +60,7 @@ public:
 
 protected:
 	QFileInfo fileInfo;
-	DkMetaData metaData;
+	DkMetaDataT metaData;
 	QImage img;
 	QByteArray fileBuffer;
 
@@ -79,6 +79,7 @@ public:
 
 	bool loadImage();
 	void fetchFile();
+	void cancel();
 
 	///**
 	// * Returns whether the thumbnail was loaded, or does not exist.
@@ -93,6 +94,7 @@ signals:
 protected slots:
 	void bufferLoaded();
 	void imageLoaded();
+	void cancelFinished();
 
 protected:
 	void fetchImage();
