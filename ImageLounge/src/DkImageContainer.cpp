@@ -54,36 +54,50 @@ bool DkImageContainer::operator<=(const DkImageContainer& o) const {
 
 bool DkImageContainer::operator<(const DkImageContainer& o) const {
 
+	return imageContainerLessThan(*this, o);
+}
+
+bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r) {
+
+	if (!l || !r)
+		return false;
+
+	return imageContainerLessThan(*l, *r);
+}
+
+bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r) {
+
 	switch(DkSettings::global.sortMode) {
 
 	case DkSettings::sort_filename:
 
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
-			return DkUtils::compFilename(fileInfo, o.file());
+			return DkUtils::compFilename(l.file(), r.file());
 		else
-			return DkUtils::compFilenameInv(fileInfo, o.file());
+			return DkUtils::compFilenameInv(l.file(), r.file());
 		break;
 
 	case DkSettings::sort_date_created:
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
-			return DkUtils::compDateCreated(fileInfo, o.file());
+			return DkUtils::compDateCreated(l.file(), r.file());
 		else
-			return DkUtils::compDateCreatedInv(fileInfo, o.file());
+			return DkUtils::compDateCreatedInv(l.file(), r.file());
 		break;
 
 	case DkSettings::sort_date_modified:
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
-			return DkUtils::compDateModified(fileInfo, o.file());
+			return DkUtils::compDateModified(l.file(), r.file());
 		else
-			return DkUtils::compDateModifiedInv(fileInfo, o.file());
-		
+			return DkUtils::compDateModifiedInv(l.file(), r.file());
+
 	case DkSettings::sort_random:
-		return DkUtils::compRandom(fileInfo, o.file());
+		return DkUtils::compRandom(l.file(), r.file());
 
 	default:
 		// filename
-		return DkUtils::compFilename(fileInfo, o.file());
+		return DkUtils::compFilename(l.file(), r.file());
 	}
+	
 }
 
 QFileInfo DkImageContainer::file() const {
@@ -177,9 +191,9 @@ QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo 
 	return basicLoader;
 }
 
-QFileInfo DkImageContainer::saveImageIntern(const QFileInfo file, QImage saveImg, int compression) {
+QFileInfo DkImageContainer::saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression) {
 
-	return loader->save(file, saveImg, compression);
+	return loader->save(fileInfo, saveImg, compression);
 }
 
 bool DkImageContainer::isEdited() const {
@@ -242,29 +256,31 @@ bool DkImageContainerT::loadImageThreaded() {
 	return true;
 }
 
-bool DkImageContainerT::saveImageThreaded(const QFileInfo& file, int compression /* = -1 */) {
+bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, int compression /* = -1 */) {
 
-	return saveImageThreaded(file, loader->image(), compression);
+	return saveImageThreaded(fileInfo, loader->image(), compression);
 }
 
 
-bool DkImageContainerT::saveImageThreaded(const QFileInfo& file, const QImage& saveImg, int compression /* = -1 */) {
+bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression /* = -1 */) {
 
 	if (saveImg.isNull()) {
 		QString msg = tr("I can't save an empty file, sorry...\n");
 		emit errorDialogSignal(msg);
 		return false;
 	}
-	if (!file.absoluteDir().exists()) {
-		QString msg = tr("Sorry, the directory: %1  does not exist\n").arg(file.absolutePath());
+	if (!fileInfo.absoluteDir().exists()) {
+		QString msg = tr("Sorry, the directory: %1  does not exist\n").arg(fileInfo.absolutePath());
 		emit errorDialogSignal(msg);
 		return false;
 	}
-	if (file.exists() && !file.isWritable()) {
-		QString msg = tr("Sorry, I can't write to the file: %1").arg(file.fileName());
+	if (fileInfo.exists() && !fileInfo.isWritable()) {
+		QString msg = tr("Sorry, I can't write to the file: %1").arg(fileInfo.fileName());
 		emit errorDialogSignal(msg);
 		return false;
 	}
+
+	qDebug() << "attempting to save: " << fileInfo.absoluteFilePath();
 
 	// TODO: add thumbnail?!
 	QFuture<QFileInfo> future = QtConcurrent::run(this, 
@@ -279,10 +295,14 @@ void DkImageContainerT::savingFinished() {
 
 	QFileInfo saveFile = saveImageWatcher.result();
 
-	if (!saveFile.exists())
+	if (!saveFile.exists()) {
 		emit errorDialogSignal(tr("Sorry, I could not save the image"));
+		emit fileSavedSignal(saveFile, false);
+	}
 	else {
 		emit fileSavedSignal(saveFile);
+		fileBuffer.clear();
+		fileInfo = saveFile;
 		edited = false;
 	}
 }
@@ -395,9 +415,11 @@ QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QFileInfo
 	return DkImageContainer::loadImageIntern(fileInfo, fileBuffer);
 }
 
-QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo file, QImage saveImg, int compression) {
+QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression) {
 
-	return DkImageContainer::saveImageIntern(file, saveImg, compression);
+	qDebug() << "saveImage in T: " << fileInfo.absoluteFilePath();
+
+	return DkImageContainer::saveImageIntern(fileInfo, saveImg, compression);
 }
 
 

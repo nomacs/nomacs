@@ -342,6 +342,7 @@ public:
 	//static QStringList sort(const QStringList& files, const QDir& dir);	// deprecated
 	void sort();
 	QVector<QSharedPointer<DkImageContainerT> > sort(const QVector<QSharedPointer<DkImageContainerT> >& images, const QDir& dir);
+	QSharedPointer<DkImageContainerT> findOrCreateFile(const QFileInfo& file) const;
 	QSharedPointer<DkImageContainerT> findFile(const QFileInfo& file) const;
 	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
 	
@@ -396,7 +397,7 @@ public slots:
 
 	// new slots
 	void imageLoaded(bool loaded = false);
-	void imageSaved(QFileInfo file);
+	void imageSaved(QFileInfo file, bool saved = true);
 	void unloadFile();
 	void reloadImage();
 

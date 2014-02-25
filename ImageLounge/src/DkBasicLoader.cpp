@@ -846,14 +846,16 @@ bool DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, QByteArra
 
 		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
 
-		QImageWriter* imgWriter = new QImageWriter(ba);
+		QBuffer fileBuffer(&ba);
+		fileBuffer.open(QIODevice::WriteOnly);
+		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fileInfo.suffix().toStdString().c_str());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
 		saved = imgWriter->write(sImg);		// TODO: J2K crash detected
 		delete imgWriter;
 	}
 
-	if (metaData->isLoaded()) {
+	if (saved && metaData->isLoaded()) {
 		try {
 			metaData->saveMetaData(ba);
 		} 
@@ -871,6 +873,8 @@ bool DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, QByteArra
 QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int compression) {
 
 	QByteArray ba;
+
+	qDebug() << "saving: " << fileInfo.absoluteFilePath();
 
 	if (save(fileInfo, img, ba, compression)) {
 

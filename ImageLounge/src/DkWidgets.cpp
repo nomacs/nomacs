@@ -3082,8 +3082,9 @@ void DkMetaDataInfo::init() {
 }
 void DkMetaDataInfo::setImageInfo(QSharedPointer<DkImageContainerT> imgC) {
 
+	this->imgC = imgC;
 	worldMatrix = QTransform();
-
+	
 	//DkTimer dt;
 	readTags();
 

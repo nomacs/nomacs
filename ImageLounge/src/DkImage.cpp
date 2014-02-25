@@ -304,7 +304,7 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 			images.append(newImg);
 	}
 
-	qSort(images.begin(), images.end());
+	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
 
 }
 
@@ -797,7 +797,17 @@ void DkImageLoader::loadFileAt(int idx) {
 
 }
 
-QSharedPointer<DkImageContainerT > DkImageLoader::findFile(const QFileInfo& file) const {
+QSharedPointer<DkImageContainerT> DkImageLoader::findOrCreateFile(const QFileInfo& file) const {
+
+	QSharedPointer<DkImageContainerT> imgC = findFile(file);
+
+	if (!imgC)
+		imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(file));
+
+	return imgC;
+}
+
+QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QFileInfo& file) const {
 
 	for (int idx = 0; idx < images.size(); idx++) {
 
@@ -860,11 +870,7 @@ void DkImageLoader::unloadFile() {
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
-	if (!newImg)
-		return;
-
-	if (!loadDir(newImg->file().absoluteDir()))
-		return;
+	loadDir(newImg->file().absoluteDir());
 	
 	if (currentImage) {
 		currentImage->cancel();
@@ -881,7 +887,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 	connect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
 	connect(currentImage.data(), SIGNAL(fileLoadedSignal(bool)), this, SLOT(imageLoaded(bool)));
 	connect(currentImage.data(), SIGNAL(showInfoSignal(QString, int, int)), this, SIGNAL(showInfoSignal(QString, int, int)));
-	connect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo)), this, SLOT(imageSaved(QFileInfo)));
+	connect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo, bool)), this, SLOT(imageSaved(QFileInfo, bool)));
 }
 
 //QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
@@ -980,6 +986,11 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 	// TODO: cacher routines
 	emit updateSpinnerSignalDelayed(false);
 	emit imageLoadedSignal(currentImage, loaded);
+
+	if (loaded)
+		emit imageUpdatedSignal(currentImage);
+
+	updateHistory();
 }
 
 
@@ -1267,7 +1278,10 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
  **/ 
 void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage saveImg, int compression) {
 	
-	if (saveImg.isNull() && !currentImage->hasImage())
+	QSharedPointer<DkImageContainerT> imgC = (currentImage) ? currentImage : findOrCreateFile(file);
+	setCurrentImage(imgC);
+
+	if (saveImg.isNull() && (!currentImage || !currentImage->hasImage()))
 		emit errorDialogSignal(tr("Sorry, I cannot save an empty image..."));	// info here?
 
 	QString filePath = file.absoluteFilePath();
@@ -1291,20 +1305,30 @@ void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage sa
 	}
 
 	emit updateSpinnerSignalDelayed(true);
-	QImage sImg = (saveImg.isNull()) ? currentImage->image() : saveImg;
-	currentImage->saveImageThreaded(file, compression);
+	QImage sImg = (saveImg.isNull()) ? imgC->image() : saveImg;
+
+	qDebug() << "saving: " << file.absoluteFilePath();
+
+	bool saveStarted = imgC->saveImageThreaded(file, sImg, compression);
+
+	if (!saveStarted)
+		imageSaved(QFileInfo(), false);
 
 }
 
-void DkImageLoader::imageSaved(QFileInfo file) {
+void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 
-	if (!file.exists() || !file.isFile())
+	emit updateSpinnerSignalDelayed(false);
+
+	if (!file.exists() || !file.isFile() || !saved)
 		return;
 
-	QSharedPointer<DkImageContainerT> sImg(new DkImageContainerT(file));
-	setCurrentImage(sImg);
-
 	// TODO: load it again here?
+
+
+	//QSharedPointer<DkImageContainerT> sImg(new DkImageContainerT(file));
+	//setCurrentImage(sImg);
+
 	//emit updateImageSignal();
 	//emit sendFileSignal();
 }
@@ -2349,7 +2373,7 @@ QStringList DkImageLoader::getFolderFilters() {
 void DkImageLoader::setFile(QFileInfo& file) {
 	
 	loadDir(file.absoluteDir());
-	findFile(file);
+	setCurrentImage(findFile(file));
 }
 
 /**
@@ -2380,11 +2404,7 @@ void DkImageLoader::setSaveDir(QDir& dir) {
  **/ 
 QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QImage img, QFileInfo editFile) {
 	
-	QSharedPointer<DkImageContainerT> newImg(new DkImageContainerT(editFile));
-
-	if (currentImage && currentImage->file() == editFile)
-		newImg = currentImage;
-
+	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(editFile);
 	newImg->setImage(img, editFile);
 	
 	setCurrentImage(newImg);

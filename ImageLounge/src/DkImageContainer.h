@@ -52,6 +52,8 @@ public:
 	friend bool operator==(const DkImageContainer& lic, const DkImageContainer& ric);
 	bool operator< (const DkImageContainer& o) const;
 	bool operator<= (const DkImageContainer& o) const;
+	friend bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r);
+	friend bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r);
 
 	QImage image();
 
@@ -80,7 +82,7 @@ protected:
 	bool edited;
 
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
-	QFileInfo saveImageIntern(const QFileInfo file, QImage saveImg, int compression);
+	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
 };
 
 class DkImageContainerT : public QObject, public DkImageContainer {
@@ -94,8 +96,8 @@ public:
 	void fetchFile();
 	void cancel();
 
-	bool saveImageThreaded(const QFileInfo& file, const QImage& saveImg, int compression = -1);
-	bool saveImageThreaded(const QFileInfo& file, int compression = -1);
+	bool saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression = -1);
+	bool saveImageThreaded(const QFileInfo& fileInfo, int compression = -1);
 	
 	void rotate(double angle) {};	// TODO: stub!
 
@@ -107,7 +109,7 @@ public:
 
 signals:
 	void fileLoadedSignal(bool loaded = true);
-	void fileSavedSignal(QFileInfo file);
+	void fileSavedSignal(QFileInfo fileInfo, bool saved = true);
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
 	void errorDialogSignal(const QString& msg);
 
@@ -123,7 +125,7 @@ protected:
 	
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
-	QFileInfo saveImageIntern(const QFileInfo file, QImage saveImg, int compression);
+	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
 
 	QFutureWatcher<QByteArray> bufferWatcher;
 	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;

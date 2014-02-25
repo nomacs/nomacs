@@ -106,6 +106,7 @@ class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkTransferToolBar;
 class DkAppManager;
+class DkImageContainerT;
 
 
 // keyboard shortcuts
@@ -492,6 +493,7 @@ public slots:
 	//void errorDialog(QString msg, QString title = "Error");
 	void errorDialog(const QString& msg);
 	void loadRecursion();
+	void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
 	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void showOpacityDialog();
 	void opacityUp();

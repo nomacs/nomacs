@@ -38,6 +38,7 @@
 #include "DkMenu.h"
 #include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
+#include "DkImageContainer.h"
 
 
 namespace nmc {
@@ -201,9 +202,8 @@ void DkNoMacs::init() {
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
-	//connect(viewport(), SIGNAL(windowTitleSignal(QFileInfo, QSize, bool)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool)));
-	connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo, QSize, bool, QString)), this, SLOT(setWindowTitle(QFileInfo, QSize, bool, QString)));
-	connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
+	connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
+	//connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
 	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
@@ -3200,6 +3200,16 @@ QVector <QAction* > DkNoMacs::getViewActions() {
 QVector <QAction* > DkNoMacs::getSyncActions() {
 
 	return syncActions;
+}
+
+void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC) {
+
+	if (!imgC) {
+		setWindowTitle(QFileInfo());
+		return;
+	}
+
+	setWindowTitle(imgC->file(), imgC->image().size(), imgC->isEdited(), imgC->getTitleAttribute());
 }
 
 void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString attr) {
