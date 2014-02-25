@@ -949,19 +949,18 @@ void DkImageLoader::reloadImage() {
 
 	dir = QDir();
 	setCurrentImage(currentImage);
-	load();
+	load(currentImage);
 }
 
 void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
 
 	loadDir(file.absoluteDir());
 
-	QSharedPointer<DkImageContainerT> newImg;
 
 	if (file.isFile()) {
-		newImg = findFile(file);
+		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
-		load();
+		load(currentImage);
 	}
 	else 
 		firstFile();

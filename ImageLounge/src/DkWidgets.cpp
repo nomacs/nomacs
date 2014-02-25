@@ -3287,7 +3287,7 @@ void DkMetaDataInfo::readTags() {
 		QFileInfo file = imgC->file();
 		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 
-		if (!file.absoluteFilePath().isEmpty()) {
+		if (metaData->isLoaded()) {
 
 			for (int i=0; i<camSearchTags.size(); i++) {
 				QString tmp, Value;

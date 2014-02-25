@@ -182,13 +182,13 @@ QByteArray DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
 QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer) {
 
 	// checks performed so load the file
-	QSharedPointer<DkBasicLoader> basicLoader(new DkBasicLoader());
+	//QSharedPointer<DkBasicLoader> basicLoader(new DkBasicLoader());
 	
 	try {
-		basicLoader->loadGeneral(fileInfo, fileBuffer, true);
+		loader->loadGeneral(fileInfo, fileBuffer, true);
 	} catch(...) {}
 
-	return basicLoader;
+	return loader;
 }
 
 QFileInfo DkImageContainer::saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression) {

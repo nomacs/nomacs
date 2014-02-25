@@ -89,9 +89,12 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, const QByteArray& ba) 
 		qDebug() << "[Exiv2] could not read metadata (exception)";
 		return;
 	}
-
+	
 	//qDebug() << "[Exiv2] metadata loaded";
 	exifState = loaded;
+
+	//printMetaData();
+
 }
 
 bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo) {
@@ -316,11 +319,13 @@ QString DkMetaDataT::getExifValue(const QString& key) const {
 			}
 		}
 
-		if (pos != exifData.end() && pos->count() == 0) {
+		if (pos != exifData.end() && pos->count() != 0) {
 			Exiv2::Value::AutoPtr v = pos->getValue();
 			info = QString::fromStdString(pos->toString());
 		}
 	}
+
+	qDebug() << QString::fromStdString(sKey) << " is " << info;
 
 	return info;
 }
@@ -720,38 +725,18 @@ void DkMetaDataT::printMetaData() const {
 
 	qDebug() << "Exif------------------------------------------------------------------";
 
-	Exiv2::ExifData::const_iterator end = exifData.end();
-	for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
-		const char* tn = i->typeName();
-		std::cout << std::setw(44) << std::setfill(' ') << std::left
-			<< i->key() << " "
-			<< "0x" << std::setw(4) << std::setfill('0') << std::right
-			<< std::hex << i->tag() << " "
-			<< std::setw(9) << std::setfill(' ') << std::left
-			<< (tn ? tn : "Unknown") << " "
-			<< std::dec << std::setw(3)
-			<< std::setfill(' ') << std::right
-			<< i->count() << "  "
-			<< std::dec << i->value()
-			<< "\n";
-	}
+	QStringList exifKeys = getExifKeys();
+
+	for (int idx = 0; idx < exifKeys.size(); idx++)
+		qDebug() << exifKeys.at(idx) << " is " << getNativeExifValue(exifKeys.at(idx));
 
 	qDebug() << "IPTC------------------------------------------------------------------";
 
 	Exiv2::IptcData::iterator endI2 = iptcData.end();
-	for (Exiv2::IptcData::iterator md = iptcData.begin(); md != endI2; ++md) {
-		std::cout << std::setw(44) << std::setfill(' ') << std::left
-			<< md->key() << " "
-			<< "0x" << std::setw(4) << std::setfill('0') << std::right
-			<< std::hex << md->tag() << " "
-			<< std::setw(9) << std::setfill(' ') << std::left
-			<< md->typeName() << " "
-			<< std::dec << std::setw(3)
-			<< std::setfill(' ') << std::right
-			<< md->count() << "  "
-			<< std::dec << md->value()
-			<< std::endl;
-	}
+	QStringList iptcKeys = getIptcKeys();
+
+	for (int idx = 0; idx < iptcKeys.size(); idx++)
+		qDebug() << iptcKeys.at(idx) << " is " << getIptcValue(iptcKeys.at(idx));
 
 	qDebug() << "XMP------------------------------------------------------------------";
 
