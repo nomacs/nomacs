@@ -1673,7 +1673,7 @@ void DkViewPort::unloadImage() {
 	//		qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
 	//}
 
-	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
+	//if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 
 	if (movie) {
 		movie->stop();
@@ -1835,6 +1835,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 	//	return;		// no network loading in this case
 	//}
 
+	unloadImage();
 	QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
 	loader->load(imgC);
 

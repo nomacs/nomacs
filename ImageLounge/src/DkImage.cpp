@@ -964,8 +964,10 @@ void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
 
 void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPointer<DkImageContainerT> */, bool silent) {
 
-	if (!image.isNull())
-		setCurrentImage(image);
+	if (!image)
+		return;
+
+	setCurrentImage(image);
 
 	emit updateSpinnerSignalDelayed(true);
 	bool loaded = currentImage->loadImageThreaded();	// loads file threaded
