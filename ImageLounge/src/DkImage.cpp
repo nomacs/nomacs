@@ -256,9 +256,8 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		folderKeywords.clear();	// delete key words -> otherwise user may be confused
 		emit folderFiltersChanged(folderKeywords);
 
-		if (scanRecursive && DkSettings::global.scanSubFolders) {
-			updateSubFolders(dir);
-		}
+		if (scanRecursive && DkSettings::global.scanSubFolders)
+			files = updateSubFolders(dir);
 		else 
 			files = getFilteredFileInfoList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
@@ -758,13 +757,10 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 **/ 
 void DkImageLoader::loadFileAt(int idx) {
 
-	if (!currentImage)
-		return;
-
 	//if (basicLoader.hasImage() && !file.exists())
 	//	return;
 
-	if (!dir.exists())
+	if (currentImage && !dir.exists())
 		loadDir(currentImage->file().absoluteDir());
 
 	if (dir.exists()) {
@@ -864,23 +860,25 @@ void DkImageLoader::unloadFile() {
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
-	if (newImg.isNull())
+	if (!newImg)
 		return;
 
 	if (!loadDir(newImg->file().absoluteDir()))
 		return;
 	
-	currentImage->cancel();
+	if (currentImage) {
+		currentImage->cancel();
 
-	// disconnect old image
-	disconnect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));
-	disconnect(currentImage.data(), SIGNAL(fileLoadedSignal(bool)), this, SLOT(imageLoaded(bool)));
-	disconnect(currentImage.data(), SIGNAL(showInfoSignal(QString, int, int)), this, SIGNAL(showInfoSignal(QString, int, int)));
-	disconnect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo)), this, SLOT(imageSaved(QFileInfo)));
+		// disconnect old image
+		disconnect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));
+		disconnect(currentImage.data(), SIGNAL(fileLoadedSignal(bool)), this, SLOT(imageLoaded(bool)));
+		disconnect(currentImage.data(), SIGNAL(showInfoSignal(QString, int, int)), this, SIGNAL(showInfoSignal(QString, int, int)));
+		disconnect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo)), this, SLOT(imageSaved(QFileInfo)));
+	}
 
 	currentImage = newImg;
 
-	connect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));
+	connect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
 	connect(currentImage.data(), SIGNAL(fileLoadedSignal(bool)), this, SLOT(imageLoaded(bool)));
 	connect(currentImage.data(), SIGNAL(showInfoSignal(QString, int, int)), this, SIGNAL(showInfoSignal(QString, int, int)));
 	connect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo)), this, SLOT(imageSaved(QFileInfo)));
@@ -950,8 +948,17 @@ void DkImageLoader::reloadImage() {
 
 void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
 
-	setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(file)));
-	load();
+	loadDir(file.absoluteDir());
+
+	QSharedPointer<DkImageContainerT> newImg;
+
+	if (file.isFile()) {
+		newImg = findFile(file);
+		setCurrentImage(newImg);
+		load();
+	}
+	else 
+		firstFile();
 	
 }
 
@@ -960,6 +967,7 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 	if (!image.isNull())
 		setCurrentImage(image);
 
+	emit updateSpinnerSignalDelayed(true);
 	bool loaded = currentImage->loadImageThreaded();	// loads file threaded
 	// if loaded is false, we definitively know that the file does not exist -> early exception here?
 
@@ -968,7 +976,7 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	// TODO: cacher routines
-
+	emit updateSpinnerSignalDelayed(false);
 	emit imageLoadedSignal(currentImage, loaded);
 }
 
@@ -1727,20 +1735,21 @@ QStringList DkImageLoader::getFoldersRecursive(QDir dir) {
 	return subFolders;
 }
 
-void DkImageLoader::updateSubFolders(QDir rootDir) {
+QFileInfoList DkImageLoader::updateSubFolders(QDir rootDir) {
 	
 	subFolders = getFoldersRecursive(rootDir);
-
+	QFileInfoList files;
 	qDebug() << subFolders;
 
 	// find the first subfolder that has images
 	for (int idx = 0; idx < subFolders.size(); idx++) {
 		dir = subFolders[idx];
-		QFileInfoList files = getFilteredFileInfoList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		files = getFilteredFileInfoList(dir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 		if (!files.empty())
 			break;
 	}
 
+	return files;
 }
 
 int DkImageLoader::getNextFolderIdx(int folderIdx) {

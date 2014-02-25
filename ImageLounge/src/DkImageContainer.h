@@ -115,11 +115,11 @@ protected slots:
 	void bufferLoaded();
 	void imageLoaded();
 	void cancelFinished();
+	void savingFinished();
+	void loadingFinished();
 
 protected:
 	void fetchImage();
-	void loadingFinished();
-	void savingFinished();
 	
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);

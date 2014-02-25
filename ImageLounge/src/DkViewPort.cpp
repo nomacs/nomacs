@@ -686,6 +686,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	thumbLoaded = false;
 	visibleStatusbar = false;
 
+	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<DkImageContainerT>");
+
 	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
@@ -716,8 +718,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	controller->getCropWidget()->setImageTransform(&imgMatrix);
 	controller->getCropWidget()->setImageRect(&imgViewRect);
 
-	connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
-	connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
+	connect(loader, SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::QueuedConnection);
+	//connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
+	//connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
 	
 	createShortcuts();
@@ -796,7 +799,13 @@ void DkViewPort::setImage(cv::Mat newImg) {
 }
 #endif
 
-void DkViewPort::updateImage() {
+void DkViewPort::updateImage(QSharedPointer<DkImageContainerT> image, bool loaded) {
+
+	// things todo if a file was not loaded...
+	if (!loaded) {
+		controller->getPlayer()->startTimer();
+		return;
+	}
 
 	// should not happen -> the loader should send this signal
 	if (!loader)
@@ -934,14 +943,6 @@ void DkViewPort::tcpSendImage() {
 		emit sendImageSignal(imgStorage.getImage(), loader->fileName());
 	else
 		emit sendImageSignal(imgStorage.getImage(), "nomacs - Image Lounge");
-}
-
-void DkViewPort::fileNotLoaded(QFileInfo file) {
-
-	qDebug() << "starting timer over again...";
-
-	// things todo if a file was not loaded...
-	controller->getPlayer()->startTimer();
 }
 
 void DkViewPort::zoom(float factor, QPointF center) {

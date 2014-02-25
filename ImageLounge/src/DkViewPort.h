@@ -409,11 +409,11 @@ public slots:
 	void loadSkipPrev10();
 	void loadLena();
 	void unloadImage();
-	void fileNotLoaded(QFileInfo file);
+	//void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 	void repeatZoom();
 
-	virtual void updateImage();
+	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(QImage newImg);
 	virtual void setEditedImage(QImage newImg);
 	virtual void setImage(QImage newImg);

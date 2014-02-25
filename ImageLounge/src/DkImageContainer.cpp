@@ -36,8 +36,7 @@ DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 	loadState = not_loaded;
 	edited = false;
 	
-	QSharedPointer<DkBasicLoader> loader(new DkBasicLoader());
-	this->loader = loader;
+	this->loader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
 }
 
 bool operator==(const DkImageContainer& lic, const DkImageContainer& ric) {
@@ -321,7 +320,7 @@ void DkImageContainerT::bufferLoaded() {
 
 void DkImageContainerT::fetchImage() {
 
-	if (!loader->hasImage() || fileBuffer.isNull() || loadState == exists_not)
+	if (loader->hasImage() || fileBuffer.isNull() || loadState == exists_not)
 		loadingFinished();
 	
 	// we have to do our own bool here

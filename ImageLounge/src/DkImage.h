@@ -302,7 +302,7 @@ public:
 	static bool isValid(const QFileInfo& fileInfo);
 	//static int locateFile(QFileInfo& fileInfo, QDir* dir = 0);
 	static QStringList getFoldersRecursive(QDir dir);
-	void updateSubFolders(QDir rootDir);
+	QFileInfoList updateSubFolders(QDir rootDir);
 
 	// deprecated
 	static QStringList getFilteredFileList(QDir dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());

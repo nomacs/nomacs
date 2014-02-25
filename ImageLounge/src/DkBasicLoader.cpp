@@ -38,7 +38,9 @@ DkBasicLoader::DkBasicLoader(int mode) {
 	numPages = 1;
 	pageIdx = 1;
 	loader = no_loader;
-	metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+
+	QSharedPointer<DkMetaDataT>metaData(new DkMetaDataT());
+	this->metaData = metaData;
 }
 
 bool DkBasicLoader::loadGeneral(const QFileInfo& file, bool loadMetaData /* = false */, bool fast /* = false */) {
@@ -166,7 +168,15 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, const QByteArray& ba,
 	pageIdxDirty = false;
 
 	if (imgLoaded && loadMetaData && !DkSettings::metaData.ignoreExifOrientation) {
-		metaData->readMetaData(fileInfo, ba);		
+		
+		if (!metaData)
+			metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+
+		if (ba.isEmpty())
+			metaData->readMetaData(fileInfo);
+		else
+			metaData->readMetaData(fileInfo, ba);
+
 		int orientation = metaData->getOrientation();
 
 		if (!metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)

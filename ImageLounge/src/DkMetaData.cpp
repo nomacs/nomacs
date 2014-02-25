@@ -32,7 +32,6 @@
 namespace nmc {
 
 // DkMetaDataT --------------------------------------------------------------------
-
 DkMetaDataT::DkMetaDataT() {
 
 	exifState = not_loaded;
@@ -45,8 +44,8 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo) {
 	QByteArray ba;
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
-
 	ba = file.readAll();
+	file.close();
 
 	readMetaData(fileInfo, ba);
 }
@@ -55,7 +54,7 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, const QByteArray& ba) 
 
 	this->file = fileInfo;
 
-	if (ba.isEmpty()) {
+	if (ba.isNull() || ba.isEmpty()) {
 		exifState = no_data;
 		return;
 	}

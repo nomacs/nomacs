@@ -208,6 +208,8 @@ void DkNoMacs::init() {
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
+	connect(viewport()->getImageLoader(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialog(const QString&)));
+
 
 	enableMovieActions(false);
 
@@ -2280,7 +2282,7 @@ void DkNoMacs::find(bool filterAction) {
 		searchDialog->setPath(viewport()->getImageLoader()->getDir());
 
 		connect(searchDialog, SIGNAL(filterSignal(QStringList)), viewport()->getImageLoader(), SLOT(setFolderFilters(QStringList)));
-		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport()->getImageLoader(), SLOT(loadFile(QFileInfo)));
+		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
 		int answer = searchDialog->exec();
 
 		toolsActions[menu_tools_filter]->setChecked(answer == DkSearchDialog::filter_button);		
@@ -3377,10 +3379,14 @@ void DkNoMacs::startSetup(QString filePath) {
 	}
 }
 
-void DkNoMacs::errorDialog(QString msg, QString title) {
-
-	dialog(msg, this, title);
+void DkNoMacs::errorDialog(const QString& msg) {
+	dialog(msg, this, tr("Error"));
 }
+
+//void DkNoMacs::errorDialog(QString msg, QString title) {
+//
+//	dialog(msg, this, title);
+//}
 
 int DkNoMacs::dialog(QString msg, QWidget* parent, QString title) {
 
