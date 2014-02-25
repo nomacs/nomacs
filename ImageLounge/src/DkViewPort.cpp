@@ -35,9 +35,8 @@ namespace nmc {
 DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
 	viewport = parent;
-
 	rating = -1;
-	
+
 	// cropping
 	cropWidget = new DkCropWidget(QRectF(), this);
 
@@ -268,8 +267,8 @@ void DkControlWidget::connectWidgets() {
 		qDebug() << "loader slots connected";
 
 		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), thumbPool, SLOT(setFile(QFileInfo, int)));
-		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize)), metaDataInfo, SLOT(setFileInfo(QFileInfo, QSize)));
-		connect(loader, SIGNAL(updateFileSignal(QFileInfo, QSize, bool, QString)), this, SLOT(setFileInfo(QFileInfo, QSize, bool, QString)));
+		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataInfo, SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
+		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 
 		connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
@@ -505,20 +504,18 @@ void DkControlWidget::showHistogram(bool visible) {
 
 }
 
-void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited, QString attr) {
+void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 
-	qDebug() << "file info set...";
+	if (!imgC)
+		return;
 
-	//// TODO: this is a fast fix
-	//// if this thread uses the static metadata object 
-	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
-	//// currently we need to read the metadata twice (not nice either)
-	DkImageLoader::imgMetaData.setFileName(fileInfo);
+	this->imgC = imgC;
 
-	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
-	fileInfoLabel->updateInfo(fileInfo, attr, dateString, DkImageLoader::imgMetaData.getRating());
-	fileInfoLabel->setEdited(edited);
-	updateRating(DkImageLoader::imgMetaData.getRating());
+	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
+	QString dateString = metaData->getExifValue("DateTimeOriginal");
+	fileInfoLabel->updateInfo(imgC->file(), "", dateString, metaData->getRating());
+	fileInfoLabel->setEdited(imgC->isEdited());
+	updateRating(metaData->getRating());
 }
 
 void DkControlWidget::setInfo(QString msg, int time, int location) {
@@ -591,6 +588,9 @@ void DkControlWidget::updateRating(int rating) {
 
 	if (fileInfoLabel)
 		fileInfoLabel->updateRating(rating);
+
+	QSharedPointer<DkMetaDataT> metaDataInfo = imgC->getMetaData();
+	metaDataInfo->setRating(rating);
 }
 
 void DkControlWidget::imageLoaded(bool loaded) {
@@ -1644,7 +1644,7 @@ void DkViewPort::setEditedImage(QImage newImg) {
 		return;
 	}
 
-	QFileInfo file = loader->getFile();
+	QFileInfo file = loader->file();
 	unloadImage();
 	setImage(newImg);
 	loader->setImage(newImg, file);
@@ -1656,20 +1656,21 @@ void DkViewPort::setEditedImage(QImage newImg) {
 
 void DkViewPort::unloadImage() {
 
-	if (loader->getFile().exists()) {
+	loader->unloadFile();
+	//if (loader->file().exists()) {
 
-		int rating = controller->getRating();
+	//	// TODO: add unload to loader
 
-		// TODO: if image is not saved... ask user?! -> resize & crop
-		if (!loader->isEdited() && (imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) ||
-			(imgStorage.hasImage() && loader && loader->getMetaData().isDirty())) {
-			qDebug() << "old rating: " << loader->getMetaData().getRating() << " rating: " << rating << " is dirty: " << loader->getMetaData().isDirty();
-			qDebug() << "meta file: " << loader->getMetaData().getFile().absoluteFilePath() << " loader file: " << loader->getFile().absoluteFilePath();
-			loader->saveRating(rating);
-		}
-		else
-			qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
-	}
+	//	// TODO: if image is not saved... ask user?! -> resize & crop
+	//	if (!loader->isEdited() && (imgStorage.hasImage() && loader && rating != -1 && rating != loader->getMetaData().getRating()) ||
+	//		(imgStorage.hasImage() && loader && loader->getMetaData().isDirty())) {
+	//		qDebug() << "old rating: " << loader->getMetaData().getRating() << " rating: " << rating << " is dirty: " << loader->getMetaData().isDirty();
+	//		qDebug() << "meta file: " << loader->getMetaData().getFile().absoluteFilePath() << " loader file: " << loader->getFile().absoluteFilePath();
+	//		loader->saveRating(rating);
+	//	}
+	//	else
+	//		qDebug() << "there is no need to save the rating (metadata rating: " << loader->getMetaData().getRating() << "my rating: " << rating << ")";
+	//}
 
 	if (loader) loader->clearPath();	// tell loader that the image is not the display image anymore
 
@@ -1702,12 +1703,9 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 void DkViewPort::reloadFile() {
 
 	if (loader) {
-		if (controller->getFilePreview())
-			controller->getThumbPool()->setFile(loader->getFile(), DkThumbsLoader::user_updated);
 
 		unloadImage();
-
-		loader->changeFile(0, false, DkImageLoader::cache_force_load);	// silent loading, but force loading
+		loader->reloadImage();
 	}
 }
 
@@ -1764,98 +1762,94 @@ void DkViewPort::loadNextFileFast(bool silent) {
 
 void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 
-	skipImageTimer->stop();
+	//skipImageTimer->stop();
 
-	silent |= (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen);
+	//silent |= (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen);
 
-	bool skip = true;
+	//bool skip = true;
 
-	// block if lena is loaded
-	if (testLoaded && skipIdx != 0)
-		return;
+	//// block if lena is loaded
+	//if (testLoaded && skipIdx != 0)
+	//	return;
 
-	if (DkSettings::resources.fastThumbnailPreview) {
+	//if (DkSettings::resources.fastThumbnailPreview) {
 
-		QImage thumb;
-		QFileInfo thumbFile;
+	//	QImage thumb;
+	//	QFileInfo thumbFile;
 
-		if (loader) {
+	//	if (loader) {
 
-			thumbFile = loader->getChangedFileInfo(skipIdx, silent);
+	//		QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx, silent);
 
-			// we have reached the beginning/end...
-			if (thumbFile.fileName().isEmpty()) {
-				skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
-				return;
-			}
+	//		// we have reached the beginning/end...
+	//		if (thumbFile.fileName().isEmpty()) {
+	//			skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
+	//			return;
+	//		}
 
-			QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
+	//		QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
 
-			// directly load images < 150 KB
-			if (f.exists() && f.size() > 0 && f.size() < 150*1024 || loader->dirtyTiff()) {
-				unloadImage();
-				loader->loadFile(thumbFile, silent, DkImageLoader::cache_disable_update);
-				skip = false;
-			}
-			// load full file if cached
-			else if (loader->isCached(thumbFile)) {
-				unloadImage();
-				loader->loadFile(thumbFile, silent, DkImageLoader::cache_disable_update);	// disable cacher on fast load
-				skip = false;
-			}
-			else {
-				unloadImage();
-				thumb = loader->loadThumb(thumbFile, silent);
+	//		// directly load images < 150 KB
+	//		if (f.exists() && f.size() > 0 && f.size() < 150*1024 || loader->dirtyTiff()) {
+	//			unloadImage();
+	//			loader->loadFile(thumbFile, silent, DkImageLoader::cache_disable_update);
+	//			skip = false;
+	//		}
+	//		else {
+	//			unloadImage();
+	//			thumb = loader->loadThumb(thumbFile, silent);
 
-				if (thumbFile.exists()) {
-					this->thumbFile = thumbFile;
-					skip = false;
-				}
+	//			if (thumbFile.exists()) {
+	//				this->thumbFile = thumbFile;
+	//				skip = false;
+	//			}
 
-				if (thumb.isNull())
-					controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
+	//			if (thumb.isNull())
+	//				controller->setInfo(thumbFile.fileName(), 1000, DkControlWidget::top_left_label);	// no thumb loaded -> show title at least
 
-			}
-		} 
+	//		}
+	//	} 
 
-		if (!thumb.isNull()) {
-			//unloadImage();
-			setThumbImage(thumb);
-			skip = false;
-		}
+	//	if (!thumb.isNull()) {
+	//		//unloadImage();
+	//		setThumbImage(thumb);
+	//		skip = false;
+	//	}
 
-		QCoreApplication::sendPostedEvents();
-	}
-	else if (loader) {
-		unloadImage();
-		loader->changeFile(skipIdx, silent);
-		skip = false;
-	}
+	//	QCoreApplication::sendPostedEvents();
+	//}
+	//else if (loader) {
+	//	unloadImage();
+	//	loader->changeFile(skipIdx, silent);
+	//	skip = false;
+	//}
 
-	// could not load file? - this happens if we get dead image links
-	if (skip && rec < 50) {
-		int newSkipIdx = (skipIdx > 0) ? 1 : -1;
-		loadFileFast(newSkipIdx, silent, rec++);		// rec++ > so we never get endless recursion
-		
-		// TODO: probably we should let the user decide if he wants to get a warning here...
-		qDebug() << "load file fast recursive!! ";
-		return;		// no network loading in this case
-	}
+	//// could not load file? - this happens if we get dead image links
+	//if (skip && rec < 50) {
+	//	int newSkipIdx = (skipIdx > 0) ? 1 : -1;
+	//	loadFileFast(newSkipIdx, silent, rec++);		// rec++ > so we never get endless recursion
+	//	
+	//	// TODO: probably we should let the user decide if he wants to get a warning here...
+	//	qDebug() << "load file fast recursive!! ";
+	//	return;		// no network loading in this case
+	//}
+
+	QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
+	loader->load(imgC);
 
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(skipIdx);
 
-	skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
+	//skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
 }
 
+// deprecated
 void DkViewPort::loadFullFile(bool silent) {
 
 	if (thumbFile.exists()) {
 		//unloadImage();	// TODO: unload image clears the image -> makes an empty file
 		loader->load(thumbFile, silent || (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
 	}
-	else if (loader)	// the cacher is updated by loading anyway
-		loader->updateCacheIndex();
 }
 
 void DkViewPort::loadFirst() {

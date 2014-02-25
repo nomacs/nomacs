@@ -235,10 +235,6 @@ public:
 		return thumbScrollWidget;
 	}
 
-	int getRating() {
-		return rating;
-	}
-
 	DkCropWidget* getCropWidget() {
 		return cropWidget;
 	}
@@ -260,7 +256,7 @@ public slots:
 	void showHistogram(bool visible);
 	void showThumbView(bool visible);
 
-	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
+	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -314,6 +310,8 @@ protected:
 	DkLabelBg* bottomLeftLabel;
 
 	DkThumbPool* thumbPool;
+
+	QSharedPointer<DkImageContainerT> imgC;
 
 	QLabel* wheelButton;
 

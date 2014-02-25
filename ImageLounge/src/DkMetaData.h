@@ -31,6 +31,7 @@
 #include <QImage>
 #include <QDebug>
 #include <QBuffer>
+#include <QVector2D>
 
 
 #ifdef HAVE_EXIV2_HPP
@@ -66,6 +67,7 @@ public:
 
 	int getOrientation() const;
 	int getRating() const;
+	QVector2D getResolution() const;
 	QString getNativeExifValue(const QString& key) const;
 	QString getExifValue(const QString& key) const;
 	QString getIptcValue(const QString& key) const;
@@ -75,6 +77,7 @@ public:
 	QStringList getIptcKeys() const;
 	QStringList getIptcValues() const;
 
+	void setResolution(const QVector2D& res);
 	void setOrientation(int o);
 	void setRating(int r);
 	void setExifValue(QString key, QString taginfo);

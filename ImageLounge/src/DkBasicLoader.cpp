@@ -38,6 +38,7 @@ DkBasicLoader::DkBasicLoader(int mode) {
 	numPages = 1;
 	pageIdx = 1;
 	loader = no_loader;
+	metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 }
 
 bool DkBasicLoader::loadGeneral(const QFileInfo& file, bool loadMetaData /* = false */, bool fast /* = false */) {
@@ -165,10 +166,10 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, const QByteArray& ba,
 	pageIdxDirty = false;
 
 	if (imgLoaded && loadMetaData && !DkSettings::metaData.ignoreExifOrientation) {
-		metaData.readMetaData(fileInfo, ba);		
-		int orientation = metaData.getOrientation();
+		metaData->readMetaData(fileInfo, ba);		
+		int orientation = metaData->getOrientation();
 
-		if (!metaData.isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+		if (!metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
 			rotate(orientation);
 	}
 
@@ -842,9 +843,9 @@ bool DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, QByteArra
 		delete imgWriter;
 	}
 
-	if (metaData.isLoaded() && metaData.hasMetaData()) {
+	if (metaData->isLoaded()) {
 		try {
-			metaData.saveMetaData(ba);
+			metaData->saveMetaData(ba);
 		} 
 		catch (...) {
 			// is it still throwing anything?
@@ -1033,7 +1034,7 @@ void DkBasicLoader::release() {
 	// TODO: auto save routines here
 
 	qImg = QImage();
-	metaData = DkMetaDataT();
+	metaData.clear();
 
 #ifdef WITH_OPENCV
 	cvImg.release();

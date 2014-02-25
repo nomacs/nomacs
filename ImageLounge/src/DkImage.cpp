@@ -40,8 +40,6 @@ QStringList DkImageLoader::saveFilters = QStringList();
 // formats we can load
 QStringList DkImageLoader::openFilters = QStringList();
 
-DkMetaData DkImageLoader::imgMetaData = DkMetaData();
-
 // DkImageLoader -> is nomacs file handling routine --------------------------------------------------------------------
 /**
  * Default constructor.
@@ -80,7 +78,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 		dir = DkSettings::global.lastDir;
 
 	// init cacher
-	cacher = 0;
 	initFileFilters();
 }
 
@@ -308,6 +305,8 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 			images.append(newImg);
 	}
 
+	qSort(images.begin(), images.end());
+
 }
 
 /**
@@ -350,10 +349,10 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	else
 		loadDir(dir);
 
-	QFileInfo loadFile = getChangedFileInfo(skipIdx);
+	QSharedPointer<DkImageContainerT> imgC = getSkippedImage(skipIdx);
 
 	// message when reloaded
-	if (loadFile.isFile() && loadFile.absoluteFilePath().isEmpty() && skipIdx == 0 && !currentImage.isNull()) {
+	if (imgC == currentImage && !currentImage.isNull() && !currentImage->exists()) {
 		QString msg = tr("sorry, %1 does not exist anymore...").arg(currentImage->file().fileName());
 		if (!silent)
 			emit updateInfoSignal(msg, 4000);
@@ -361,7 +360,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 
 
 	//if (loadFile.exists())
-		load(loadFile, silent, cacheState);
+		load(imgC, silent);
 }
 
 ///**
@@ -669,13 +668,13 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 				newFileIdx -= oldFileSize;
 				tmpFileIdx = 0;
 				qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << tmpFileIdx << " -----------------------------";
-				getChangedFileInfo(newFileIdx, silent, false);
+				getSkippedImage(newFileIdx, silent, false);
 			}
 			else if (newFileIdx < 0) {
 				newFileIdx += tmpFileIdx;
 				tmpFileIdx = images.size()-1;
 				qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << tmpFileIdx << " -----------------------------";
-				getChangedFileInfo(newFileIdx, silent, false);
+				getSkippedImage(newFileIdx, silent, false);
 			}
 		}
 		//// dir up
@@ -825,6 +824,16 @@ QSharedPointer<DkImageContainerT > DkImageLoader::findFile(const QFileInfo& file
 //	return files;
 //}
 
+QStringList DkImageLoader::getFileNames() {
+
+	QStringList fileNames;
+
+	for (int idx = 0; idx < images.size(); idx++)
+		fileNames.append(images[idx]->file().fileName());
+
+	return fileNames;
+}
+
 QVector<QSharedPointer<DkImageContainerT> > DkImageLoader::getImages() {
 
 	loadDir(dir);
@@ -845,6 +854,12 @@ void DkImageLoader::firstFile() {
 void DkImageLoader::lastFile() {
 	
 	loadFileAt(-1);
+}
+
+void DkImageLoader::unloadFile() {
+
+	// TODO: add save metadata (rating etc...)
+
 }
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
@@ -908,19 +923,29 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 //	return thumb;
 //}
 
-/**
- * Loads the file specified in a thread.
- * @param file the file to be loaded.
- * @param silent if true, no status will be displayed.
- **/ 
-void DkImageLoader::load(QFileInfo file, bool silent, int cacheState) {
+///**
+// * Loads the file specified in a thread.
+// * @param file the file to be loaded.
+// * @param silent if true, no status will be displayed.
+// **/ 
+//void DkImageLoader::load(QFileInfo file, bool silent, int cacheState) {
+//
+//	// if the locker is in load file we get dead locks if loading is not threaded
+//	// is it save to lock the mutex before setting up the thread??
+//	/*QMutexLocker locker(&mutex);*/
+//	
+//	// TODO: use QtConcurrent here...
+//	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(bool, silent), Q_ARG(int, cacheState));
+//}
 
-	// if the locker is in load file we get dead locks if loading is not threaded
-	// is it save to lock the mutex before setting up the thread??
-	/*QMutexLocker locker(&mutex);*/
-	
-	// TODO: use QtConcurrent here...
-	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(bool, silent), Q_ARG(int, cacheState));
+void DkImageLoader::reloadImage() {
+
+	if(!currentImage)
+		return;
+
+	dir = QDir();
+	setCurrentImage(currentImage);
+	load();
 }
 
 void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
@@ -1211,7 +1236,7 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 			if (threaded)
 				saveFileSilentThreaded(tmpFile, img);
 			else
-				saveFileSilentIntern(tmpFile, img);
+				//saveFileSilentIntern(tmpFile, img);	// TODO change to new format
 			
 			qDebug() << tmpFile.absoluteFilePath() << "saved...";
 
@@ -1425,89 +1450,77 @@ void DkImageLoader::deleteFile() {
 	}
 }
 
-///**
-// * Rotates the image.
-// * First, we try to set the rotation flag in the metadata
-// * (this is the fastest way to rotate an image).
-// * If this does not work, the image matrix is rotated.
-// * @param angle the rotation angle in degree.
-// **/ 
-//void DkImageLoader::rotateImage(double angle) {
-//
-//	qDebug() << "rotating image...";
-//	file.refresh();
-//
-//	if (!basicLoader.hasImage()) {
-//		qDebug() << "sorry, loader has no image";
-//		return;
-//	}
-//
-//	if (file.exists() && watcher) {
-//		mutex.lock();
-//		watcher->removePath(this->file.absoluteFilePath());
-//		mutex.unlock();
-//	}
-//	//updateInfoSignal("test", 5000);
-//
-//	try {
-//		
-//		mutex.lock();
-//		basicLoader.rotate(angle);
-//		mutex.unlock();
-//
-//		emit updateImageSignal();
-//		QCoreApplication::sendPostedEvents();	// update immediately as we interlock otherwise
-//
-//		mutex.lock();
-//		if (file.exists() && DkSettings::metaData.saveExifOrientation) {
-//			
-//			imgMetaData.saveOrientation((int)angle);
-//
-//			QImage thumb = DkThumbsLoader::createThumb(basicLoader.image());
-//			if (imgMetaData.isJpg()) {
-//				// undo exif orientation
-//				DkBasicLoader loader;
-//				loader.setImage(thumb, QFileInfo());
-//				loader.rotate(-imgMetaData.getOrientation());
-//				thumb = loader.image();
-//			}
-//			imgMetaData.saveThumbnail(thumb, file);
-//		}
-//		else if (file.exists() && !DkSettings::metaData.saveExifOrientation) {
-//			qDebug() << "file: " << file.fileName() << " exists...";
-//			imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
-//			throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
-//		}
-//		
-//
-//		mutex.unlock();
-//
-//		sendFileSignal();
-//	}
-//	catch(DkException de) {
-//
-//		mutex.unlock();
-//
-//		// TODO: saveFileSilentThreaded is in the main thread (find out why)
-//		// TODO: in this case the image is reloaded (file watcher seems to be active)
-//		// make a silent save -> if the image is just cached, do not save it
-//		if (file.exists())
-//			saveFileSilentThreaded(file);
-//	}
-//	catch(...) {	// if file is locked... or permission is missing
-//		mutex.unlock();
-//
-//		// try restoring the file
-//		if (!restoreFile(file))
-//			emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
-//	}
-//
-//	if (cacher)
-//		cacher->setCurrentFile(file, basicLoader.image());
-//
-//	emit updateFileWatcherSignal(this->file);
-//
-//}
+/**
+ * Rotates the image.
+ * First, we try to set the rotation flag in the metadata
+ * (this is the fastest way to rotate an image).
+ * If this does not work, the image matrix is rotated.
+ * @param angle the rotation angle in degree.
+ **/ 
+void DkImageLoader::rotateImage(double angle) {
+
+	qDebug() << "rotating image...";
+
+	if (!currentImage || !currentImage->hasImage()) {
+		qDebug() << "sorry, loader has no image";
+		return;
+	}
+
+
+	currentImage->rotate(angle);	// TODO: care for saving there
+
+	//	basicLoader.rotate(angle);
+	//	emit updateImageSignal();
+
+	//	if (file.exists() && DkSettings::metaData.saveExifOrientation) {
+	//		
+	//		imgMetaData.saveOrientation((int)angle);
+
+	//		QImage thumb = DkThumbsLoader::createThumb(basicLoader.image());
+	//		if (imgMetaData.isJpg()) {
+	//			// undo exif orientation
+	//			DkBasicLoader loader;
+	//			loader.setImage(thumb, QFileInfo());
+	//			loader.rotate(-imgMetaData.getOrientation());
+	//			thumb = loader.image();
+	//		}
+	//		imgMetaData.saveThumbnail(thumb, file);
+	//	}
+	//	else if (file.exists() && !DkSettings::metaData.saveExifOrientation) {
+	//		qDebug() << "file: " << file.fileName() << " exists...";
+	//		imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
+	//		throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
+	//	}
+	//	
+
+	//	mutex.unlock();
+
+	//	sendFileSignal();
+	//}
+	//catch(DkException de) {
+
+	//	mutex.unlock();
+
+	//	// TODO: saveFileSilentThreaded is in the main thread (find out why)
+	//	// TODO: in this case the image is reloaded (file watcher seems to be active)
+	//	// make a silent save -> if the image is just cached, do not save it
+	//	if (file.exists())
+	//		saveFileSilentThreaded(file);
+	//}
+	//catch(...) {	// if file is locked... or permission is missing
+	//	mutex.unlock();
+
+	//	// try restoring the file
+	//	if (!restoreFile(file))
+	//		emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
+	//}
+
+	//if (cacher)
+	//	cacher->setCurrentFile(file, basicLoader.image());
+
+	//emit updateFileWatcherSignal(this->file);
+
+}
 
 /**
  * Restores files that were destroyed by the Exiv2 lib.
@@ -1631,27 +1644,6 @@ void DkImageLoader::directoryChanged(const QString& path) {
 			timerBlockedUpdate = true;
 	}
 	
-}
-
-bool DkImageLoader::isCached(QFileInfo& file) {
-
-	if (!cacher)
-		return false;
-
-	QVectorIterator<DkImageCache> cIter(cacher->getCache());
-
-	while (cIter.hasNext()) {
-		const DkImageCache& cCache = cIter.next();
-
-		if (cCache.getFile() == file) {
-
-			if (cCache.getCacheState() == DkImageCache::cache_loaded) {
-				return true;
-			}
-		}
-	}
-
-	return false;
 }
 
 /**
@@ -1949,7 +1941,7 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 		}
 	}
 
-	fileList = sort(fileList, dir);
+	//fileList = sort(fileList, dir);
 
 	return fileList;
 }
@@ -2096,7 +2088,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 		}
 	}
 
-	fileList = sort(fileList, dir);
+	//fileList = sort(fileList, dir);
 
 	QFileInfoList fileInfoList;
 	
@@ -2202,6 +2194,44 @@ QString DkImageLoader::getCurrentFilter() {
 
 	return QString();
 }
+
+/**
+	* Returns if an image is loaded currently.
+	* @return bool true if an image is loaded.
+	**/ 
+bool DkImageLoader::hasImage() {
+		
+	return currentImage && currentImage->hasImage();
+};
+
+bool DkImageLoader::isEdited() const {
+	return currentImage && currentImage->isEdited();
+};
+
+int DkImageLoader::numFiles() const {
+	return images.size();
+};
+
+/**
+	* Returns the currently loaded image.
+	* @return QImage the current image
+	**/ 
+QImage DkImageLoader::getImage() {
+		
+	if (!currentImage)
+		return QImage();
+
+	return currentImage->image();
+};
+
+bool DkImageLoader::dirtyTiff() {
+
+	if (!currentImage)
+		return false;
+
+	return currentImage->getLoader()->isDirty();
+};
+
 
 /**
  * Returns if a file is supported by nomacs or not.

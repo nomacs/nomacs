@@ -109,6 +109,16 @@ QString DkImageContainer::getTitleAttribute() const {
 	return attr;
 }
 
+QSharedPointer<DkBasicLoader> DkImageContainer::getLoader() const {
+
+	return loader;
+}
+
+QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData() const {
+
+	return loader->getMetaData();
+}
+
 QImage DkImageContainer::image() {
 
 	if (loader->image().isNull() && hasImage() == not_loaded)
@@ -170,7 +180,17 @@ QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo 
 
 QFileInfo DkImageContainer::saveImageIntern(const QFileInfo file, QImage saveImg, int compression) {
 
-	loader->save(file, saveImg, compression);
+	return loader->save(file, saveImg, compression);
+}
+
+bool DkImageContainer::isEdited() const {
+
+	return edited;
+}
+
+bool DkImageContainer::setPageIdx(int skipIdx) {
+
+	return loader->setPageIdx(skipIdx);
 }
 
 
@@ -252,6 +272,8 @@ bool DkImageContainerT::saveImageThreaded(const QFileInfo& file, const QImage& s
 		&nmc::DkImageContainerT::saveImageIntern, fileInfo, saveImg, compression);
 
 	saveImageWatcher.setFuture(future);
+
+	return true;
 }
 
 void DkImageContainerT::savingFinished() {

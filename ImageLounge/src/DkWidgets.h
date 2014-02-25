@@ -1004,7 +1004,7 @@ public:
 	void draw(QPainter* painter);
 	void createLabels();
 	void resizeEvent(QResizeEvent *resizeW);
-	void getResolution(float &xResolution, float &yResolution);
+	//void getResolution(float &xResolution, float &yResolution);
 	QString getGPSCoordinates();
 	
 	//DkMetaData* getMetaData() {
@@ -1015,26 +1015,9 @@ signals:
 	void enableGpsSignal(bool);
 	
 public slots:
-	void setFileInfo(QFileInfo file, QSize s) {
-		
-		this->file = file;
-		imgSize = s;
-		worldMatrix = QTransform();
-
-		DkImageLoader::imgMetaData.setFileName(file);
-
-		//DkTimer dt;
-		readTags();
-			
-		emit enableGpsSignal(!getGPSCoordinates().isEmpty());
-
-		if (isVisible())
-			createLabels();
-		//qDebug() << "reading tags & creating labels: " << QString::fromStdString(dt.getTotal());
-	}
-
+	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setRating(int rating);
-	void setResolution(int xRes, int yRes);
+	//void setResolution(int xRes, int yRes);
 	void updateLabels();
 	void mouseMoveEvent(QMouseEvent *event);
 	void setVisible(bool visible) {
@@ -1073,11 +1056,9 @@ protected:
 
 	QVector<int> maxLenLabel;
 
-	QFileInfo file;
-	//DkMetaData metaData;
 	QVector<DkLabel *> pLabels;
 	QVector<DkLabel *> pValues;
-	QSize imgSize;
+	//QSize imgSize;
 
 	QStringList camDTags;
 	QStringList camDValues;
@@ -1093,6 +1074,7 @@ protected:
 	QMap<int, int> mapIptcExif;
 	QStringList exposureModes;
 	QMap<int, QString> flashModes;
+	QSharedPointer<DkImageContainerT> imgC;
 
 };
 

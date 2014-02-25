@@ -59,14 +59,17 @@ public:
 	int imgLoaded() const;
 	QFileInfo file() const;
 	bool isEdited() const;
+	int getPageIdx() const;
+	QString getTitleAttribute() const;
+	QSharedPointer<DkBasicLoader> getLoader() const;
+	QSharedPointer<DkMetaDataT> getMetaData() const;
+
 	bool exists();
 	bool setPageIdx(int skipIdx);
-	int getPageIdx() const;
-	bool loadImage();
-	void setImage(const QImage& img, const QFileInfo& fileInfo);
-	QString getTitleAttribute() const;
 
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
+	bool loadImage();
+	void setImage(const QImage& img, const QFileInfo& fileInfo);
 
 protected:
 	QFileInfo fileInfo;
@@ -93,6 +96,8 @@ public:
 
 	bool saveImageThreaded(const QFileInfo& file, const QImage& saveImg, int compression = -1);
 	bool saveImageThreaded(const QFileInfo& file, int compression = -1);
+	
+	void rotate(double angle) {};	// TODO: stub!
 
 	///**
 	// * Returns whether the thumbnail was loaded, or does not exist.

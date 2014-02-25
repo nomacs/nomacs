@@ -164,7 +164,7 @@ public:
 		return loader;
 	};
 
-	DkMetaDataT getMetaData() {
+	QSharedPointer<DkMetaDataT> getMetaData() const {
 		return metaData;
 	};
 
@@ -245,7 +245,7 @@ protected:
 	int numPages;
 	int pageIdx;
 	bool pageIdxDirty;
-	DkMetaDataT metaData;
+	QSharedPointer<DkMetaDataT> metaData;
 
 #ifdef WITH_OPENCV
 	cv::Mat cvImg;

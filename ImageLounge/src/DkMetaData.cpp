@@ -532,6 +532,51 @@ void DkMetaDataT::setThumbnail(QImage thumb) {
 	}
 }
 
+QVector2D DkMetaDataT::getResolution() const {
+
+
+	QVector2D resV = QVector2D(72,72);
+	QString xRes, yRes;
+
+	try {
+
+		if (hasMetaData()) {
+			//metaData = DkImageLoader::imgMetaData;
+			xRes = getExifValue("XResolution");
+			QStringList res;
+			res = xRes.split("/");
+			if (res.size() != 2) {
+				throw DkException("no x resolution found\n");
+			}
+			resV.setX(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
+
+			yRes = getExifValue("YResolution");
+			res = yRes.split("/");
+
+			qDebug() << "Resolution"  << xRes << " " << yRes;
+			if (res.size() != 2)
+				throw DkException("no y resolution found\n");
+			resV.setY(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
+		}
+	} catch (...) {
+		qDebug() << "could not load Exif resolution, set to 72dpi";
+	}
+
+	return resV;
+}
+
+void DkMetaDataT::setResolution(const QVector2D& res) {
+
+	QString x,y;
+	x.setNum(res.x());
+	y.setNum(res.y());
+	x=x+"/1";
+	y=y+"/1";
+
+	setExifValue("Exif.Image.XResolution",x);
+	setExifValue("Exif.Image.YResolution",y);
+}
+
 void DkMetaDataT::setOrientation(int o) {
 
 	if (exifState == not_loaded)
@@ -598,7 +643,7 @@ void DkMetaDataT::setOrientation(int o) {
 
 void DkMetaDataT::setRating(int r) {
 
-	if (exifState == not_loaded)
+	if (exifState == not_loaded || getRating() == r)
 		return;
 
 	unsigned short percentRating = 0;
@@ -661,7 +706,7 @@ void DkMetaDataT::setExifValue(QString key, QString taginfo) {
 		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
 
 		if (tag.setValue(taginfo.toStdString()))
-			exifState == dirty;
+			exifState = dirty;
 	}
 }
 
