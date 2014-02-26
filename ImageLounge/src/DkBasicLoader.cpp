@@ -901,13 +901,21 @@ QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int 
 void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, const QByteArray& ba) {
 
 	QByteArray writeBuffer = ba;
-	if (metaData->saveMetaData(writeBuffer)) {
+	
+	bool saved = false;
+	try {
+		saved = metaData->saveMetaData(writeBuffer);
+	} 
+	catch(...) {
+	}
+	
+	if (saved) {
+		//QFileInfo f = QFileInfo(fileInfo.absoluteDir(), "josef.jpg");
 		QFile file(fileInfo.absoluteFilePath());
 		file.open(QIODevice::WriteOnly);
-		file.write(writeBuffer);
+		qint64 bytesWritten = file.write(writeBuffer);
 		file.close();
-		emit errorDialogSignal(tr("your metadata is saved"));
-		qDebug() << "[DkBasicLoader] Metadata saved to file...";
+		qDebug() << "[DkBasicLoader] Metadata saved to file. bytes written: " << bytesWritten;
 	}
 
 }

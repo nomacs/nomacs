@@ -153,7 +153,7 @@ bool DkMetaDataT::saveMetaData(QByteArray& ba, bool force) {
 	exifImgN->setExifData(exifData);
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
-
+	
 	exifImgN->writeMetadata();
 
 	// now get the data again

@@ -901,7 +901,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	if (currentImage) {
 		currentImage->cancel();
-		//currentImage->clear();	// TODO: let cacher determine when to delete the image
+		currentImage->clear();	// TODO: let cacher determine when to delete the image
 
 		// disconnect old image
 		disconnect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));

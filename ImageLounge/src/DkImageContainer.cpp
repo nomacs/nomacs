@@ -276,7 +276,11 @@ DkImageContainerT::~DkImageContainerT() {
 
 bool DkImageContainerT::loadImageThreaded() {
 
+	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
+
+	if (fileInfo.lastModified() != modifiedBefore)
+		fileBuffer.clear();
 
 	// null file?
 	if (fileInfo.fileName().isEmpty() || !fileInfo.exists()) {
@@ -367,8 +371,10 @@ void DkImageContainerT::fetchFile() {
 	// ignore doubled calls
 	if (fetchingBuffer)
 		return;
-	else if (!fileBuffer.isEmpty())
+	else if (!fileBuffer.isEmpty()) {
 		bufferLoaded();
+		return;
+	}
 
 	// we have to do our own bool here
 	// watcher.isRunning() returns false if the thread is waiting in the pool
@@ -395,8 +401,10 @@ void DkImageContainerT::bufferLoaded() {
 
 void DkImageContainerT::fetchImage() {
 
-	if (loader->hasImage() || fileBuffer.isNull() || loadState == exists_not)
+	if (loader->hasImage() || fileBuffer.isNull() || loadState == exists_not) {
 		loadingFinished();
+		return;
+	}
 	
 	// we have to do our own bool here
 	// watcher.isRunning() returns false if the thread is waiting in the pool
@@ -436,8 +444,8 @@ void DkImageContainerT::loadingFinished() {
 		return;
 	}
 
-	emit fileLoadedSignal(true);
 	loadState = loaded;
+	emit fileLoadedSignal(true);
 	
 	qDebug() << "metadata loaded and image rotated in: " << QString::fromStdString(dt.getTotal());
 }
