@@ -73,6 +73,7 @@ public:
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
 	bool loadImage();
 	void setImage(const QImage& img, const QFileInfo& fileInfo);
+	void saveMetaData();
 	void clear();
 
 protected:
@@ -85,6 +86,7 @@ protected:
 
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
+	void saveMetaDataIntern(const QFileInfo& fileInfo, const QByteArray& fileBuffer);
 	void init();
 };
 
@@ -101,6 +103,7 @@ public:
 
 	bool saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression = -1);
 	bool saveImageThreaded(const QFileInfo& fileInfo, int compression = -1);
+	void saveMetaDataThreaded();
 	
 	void rotate(double angle) {};	// TODO: stub!
 
@@ -129,14 +132,17 @@ protected:
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
+	void saveMetaDataIntern();
 
 	QFutureWatcher<QByteArray> bufferWatcher;
 	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;
 	QFutureWatcher<QFileInfo> saveImageWatcher;
+	QFutureWatcher<bool> saveMetaDataWatcher;
 
 	bool fetchingBuffer;
 	bool fetchingImage;
 	bool savingImage;
+	bool savingMetaData;
 };
 
 

@@ -140,6 +140,7 @@ public:
 
 	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
 	bool save(const QFileInfo& fileInfo, const QImage& img, QByteArray& ba, int compression = -1);
+	void saveMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
 
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)

@@ -34,6 +34,7 @@ DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 
 	this->fileInfo = fileInfo;
 	this->loader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
+
 	init();
 }
 
@@ -115,7 +116,12 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 
 void DkImageContainer::clear() {
 
+	//if (edited) // trigger gui question
+
+	saveMetaData();
+
 	loader->release();
+	fileBuffer.clear();
 	init();
 }
 
@@ -215,6 +221,22 @@ QFileInfo DkImageContainer::saveImageIntern(const QFileInfo fileInfo, QImage sav
 	return loader->save(fileInfo, saveImg, compression);
 }
 
+void DkImageContainer::saveMetaData() {
+
+	saveMetaDataIntern(fileInfo, fileBuffer);
+}
+
+
+void DkImageContainer::saveMetaDataIntern(const QFileInfo& fileInfo, const QByteArray& fileBuffer) {
+
+	QByteArray ba = fileBuffer;
+
+	if (fileBuffer.isEmpty())
+		ba = loadFileToBuffer(fileInfo);
+		
+	loader->saveMetaData(fileInfo, ba);
+}
+
 bool DkImageContainer::isEdited() const {
 
 	return edited;
@@ -236,6 +258,8 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
 	connect(&imageWatcher, SIGNAL(canceled()), this, SLOT(cancelFinished()));
 	connect(&imageWatcher, SIGNAL(canceled()), this, SLOT(cancelFinished()));
+	connect(loader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
+
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
 }
 
@@ -273,6 +297,16 @@ bool DkImageContainerT::loadImageThreaded() {
 	loadState = loading;
 	fetchFile();
 	return true;
+}
+
+void DkImageContainerT::saveMetaDataThreaded() {
+
+	if (!exists())
+		return;
+
+	QFuture<void> future = QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::saveMetaDataIntern);
+
 }
 
 bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, int compression /* = -1 */) {
@@ -381,7 +415,6 @@ void DkImageContainerT::imageLoaded() {
 
 	// deliver image
 	loader = imageWatcher.result();
-	connect(loader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
 
 	fetchingImage = false;
 
@@ -402,9 +435,6 @@ void DkImageContainerT::loadingFinished() {
 		loadState = exists_not;
 		return;
 	}
-
-	// some house keeping
-	fileBuffer.clear();
 
 	emit fileLoadedSignal(true);
 	loadState = loaded;
@@ -445,5 +475,9 @@ QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo fileInfo, QImage sa
 	return DkImageContainer::saveImageIntern(fileInfo, saveImg, compression);
 }
 
+void DkImageContainerT::saveMetaDataIntern() {
+
+	return DkImageContainer::saveMetaDataIntern(fileInfo, fileBuffer);
+}
 
 };

@@ -99,7 +99,7 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, const QByteArray& ba) 
 
 bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 
-	if (exifState != loaded)
+	if (exifState != loaded && exifState != dirty)
 		return false;
 
 	QFile file(fileInfo.absoluteFilePath());
@@ -122,8 +122,8 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 bool DkMetaDataT::saveMetaData(QByteArray& ba, bool force) {
 
 	if (!force && exifState != dirty)
-		return true;
-	else if (exifState != loaded)
+		return false;
+	else if (exifState == not_loaded || exifState == no_data)
 		return false;
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
@@ -164,6 +164,7 @@ bool DkMetaDataT::saveMetaData(QByteArray& ba, bool force) {
 		return false;
 
 	exifImg = exifImgN;
+	exifState = loaded;
 
 	return true;
 }
@@ -517,7 +518,7 @@ QStringList DkMetaDataT::getIptcValues() const {
 
 void DkMetaDataT::setThumbnail(QImage thumb) {
 
-	if (exifState == not_loaded) 
+	if (exifState == not_loaded || exifState == no_data) 
 		return;
 
 	Exiv2::ExifData exifData = exifImg->exifData();
@@ -592,7 +593,7 @@ void DkMetaDataT::setResolution(const QVector2D& res) {
 
 void DkMetaDataT::setOrientation(int o) {
 
-	if (exifState == not_loaded)
+	if (exifState == not_loaded || exifState == no_data)
 		return;
 
 	if (o!=90 && o!=-90 && o!=180 && o!=0 && o!=270)
@@ -656,7 +657,7 @@ void DkMetaDataT::setOrientation(int o) {
 
 void DkMetaDataT::setRating(int r) {
 
-	if (exifState == not_loaded || getRating() == r)
+	if (exifState == not_loaded || exifState == no_data || getRating() == r)
 		return;
 
 	unsigned short percentRating = 0;
@@ -709,7 +710,7 @@ void DkMetaDataT::setRating(int r) {
 
 void DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
-	if (exifState == not_loaded)
+	if (exifState == not_loaded || exifState == no_data)
 		return;
 
 	Exiv2::ExifData &exifData = exifImg->exifData();

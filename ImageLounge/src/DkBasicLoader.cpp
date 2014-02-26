@@ -856,7 +856,6 @@ bool DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, QByteArra
 
 	if (saved && metaData->isLoaded()) {
 		try {
-
 			metaData->setExifValue("Exif.Image.ImageWidth", QString::number(img.width()));
 			metaData->setExifValue("Exif.Image.ImageLength", QString::number(img.height()));
 			metaData->setOrientation(0);
@@ -897,6 +896,20 @@ QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int 
 	}
 
 	return QFileInfo();
+}
+
+void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, const QByteArray& ba) {
+
+	QByteArray writeBuffer = ba;
+	if (metaData->saveMetaData(writeBuffer)) {
+		QFile file(fileInfo.absoluteFilePath());
+		file.open(QIODevice::WriteOnly);
+		file.write(writeBuffer);
+		file.close();
+		emit errorDialogSignal(tr("your metadata is saved"));
+		qDebug() << "[DkBasicLoader] Metadata saved to file...";
+	}
+
 }
 
 // image editing --------------------------------------------------------------------
@@ -1061,7 +1074,7 @@ void DkBasicLoader::release() {
 	qImg = QImage();
 	//metaData.clear();
 	metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
-
+	
 #ifdef WITH_OPENCV
 	cvImg.release();
 #endif

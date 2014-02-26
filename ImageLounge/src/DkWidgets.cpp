@@ -3287,7 +3287,7 @@ void DkMetaDataInfo::readTags() {
 		QFileInfo file = imgC->file();
 		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 
-		if (metaData->isLoaded()) {
+		//if (metaData->isLoaded()) {
 
 			for (int i=0; i<camSearchTags.size(); i++) {
 				QString tmp, Value;
@@ -3421,8 +3421,8 @@ void DkMetaDataInfo::readTags() {
 				}
 				descValues << Value;
 			}
-		} else
-			qDebug() << "Exif: file is not defined...";
+		//} else
+		//	qDebug() << "Exif: file is not defined...";
 
 	} catch (...) {
 		qDebug() << "could not load Exif information";

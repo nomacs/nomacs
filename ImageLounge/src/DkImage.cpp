@@ -878,6 +878,14 @@ void DkImageLoader::lastFile() {
 
 void DkImageLoader::unloadFile() {
 
+	if (!currentImage)
+		return;
+
+	//if (currentImage->isEdited())
+		// ask user for saving
+
+	currentImage->saveMetaData();
+
 	// TODO: add save metadata (rating etc...)
 
 }
