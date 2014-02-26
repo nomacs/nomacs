@@ -558,7 +558,8 @@ QVector2D DkMetaDataT::getResolution() const {
 			QStringList res;
 			res = xRes.split("/");
 			if (res.size() != 2) {
-				throw DkException("no x resolution found\n");
+				//throw DkException("no x resolution found\n");
+				return resV;
 			}
 			resV.setX(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
 
@@ -567,7 +568,8 @@ QVector2D DkMetaDataT::getResolution() const {
 
 			qDebug() << "Resolution"  << xRes << " " << yRes;
 			if (res.size() != 2)
-				throw DkException("no y resolution found\n");
+				return resV;
+				//throw DkException("no y resolution found\n");
 			resV.setY(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
 		}
 	} catch (...) {

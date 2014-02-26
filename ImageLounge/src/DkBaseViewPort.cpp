@@ -612,7 +612,6 @@ void DkBaseViewPort::draw(QPainter *painter) {
 		painter->drawRect(imgViewRect);
 	}
 
-
 	if (!movie || !movie->isValid())
 		painter->drawImage(imgViewRect, imgQt, imgQt.rect());
 	else {

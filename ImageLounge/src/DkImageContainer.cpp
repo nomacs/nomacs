@@ -119,7 +119,6 @@ void DkImageContainer::clear() {
 	//if (edited) // trigger gui question
 
 	saveMetaData();
-
 	loader->release();
 	fileBuffer.clear();
 	init();
@@ -251,13 +250,11 @@ bool DkImageContainer::setPageIdx(int skipIdx) {
 // DkImageContainerT --------------------------------------------------------------------
 DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(file) {
 
-	fetchingBuffer = false;
 	fetchingImage = false;
+	fetchingBuffer = false;
 	connect(&saveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()));
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()));
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
-	connect(&imageWatcher, SIGNAL(canceled()), this, SLOT(cancelFinished()));
-	connect(&imageWatcher, SIGNAL(canceled()), this, SLOT(cancelFinished()));
 	connect(loader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
 
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
@@ -268,10 +265,24 @@ DkImageContainerT::~DkImageContainerT() {
 	bufferWatcher.cancel();
 	imageWatcher.blockSignals(true);
 	imageWatcher.cancel();
+
 	//metaDataWatcher.blockSignals(true);
 	//metaDataWatcher.cancel();
 
 	saveImageWatcher.waitForFinished();
+	saveMetaDataWatcher.waitForFinished();
+}
+
+void DkImageContainerT::clear() {
+
+	cancel();
+
+	if (fetchingImage || fetchingBuffer)
+		return;
+
+	qDebug() << "clearing...";
+
+	DkImageContainer::clear();
 }
 
 bool DkImageContainerT::loadImageThreaded() {
@@ -303,6 +314,110 @@ bool DkImageContainerT::loadImageThreaded() {
 	return true;
 }
 
+void DkImageContainerT::fetchFile() {
+	
+	if (fetchingBuffer && imgLoaded() == loading_canceled) {
+		loadState = loading;
+		return;
+	}
+	if (fetchingImage)
+		imageWatcher.waitForFinished();
+
+	// ignore doubled calls
+	if (!fileBuffer.isEmpty()) {
+		bufferLoaded();
+		return;
+	}
+
+	fetchingBuffer = true;
+	QFuture<QByteArray> future = QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::loadFileToBuffer, fileInfo);
+
+	bufferWatcher.setFuture(future);
+}
+
+void DkImageContainerT::bufferLoaded() {
+
+	fetchingBuffer = false;
+	fileBuffer = bufferWatcher.result();
+
+	if (imgLoaded() == loading)
+		fetchImage();
+	else if (imgLoaded() == loading_canceled)
+		clear();
+}
+
+void DkImageContainerT::fetchImage() {
+
+	if (fetchingBuffer)
+		bufferWatcher.waitForFinished();
+
+	if (fetchingImage) {
+		loadState = loading;
+		return;
+	}
+
+	if (loader->hasImage() || fileBuffer.isNull() || loadState == exists_not) {
+		loadingFinished();
+		return;
+	}
+	
+	qDebug() << "fetching: " << fileInfo.absoluteFilePath();
+	fetchingImage = true;
+
+	QFuture<QSharedPointer<DkBasicLoader> > future = QtConcurrent::run(this, 
+		&nmc::DkImageContainerT::loadImageIntern, fileInfo, fileBuffer);
+
+	imageWatcher.setFuture(future);
+}
+
+void DkImageContainerT::imageLoaded() {
+
+	fetchingImage = false;
+
+	if (imgLoaded() == loading_canceled) {
+		clear();
+		loadState = not_loaded;
+		return;
+	}
+
+	// deliver image
+	loader = imageWatcher.result();
+	loadingFinished();
+}
+
+void DkImageContainerT::loadingFinished() {
+
+	DkTimer dt;
+
+	if (imgLoaded() == loading_canceled) {
+		clear();
+		loadState = not_loaded;
+		return;
+	}
+
+	if (!loader->hasImage()) {
+		QString msg = tr("Sorry, I could not load: %1").arg(fileInfo.fileName());
+		emit showInfoSignal(msg);
+		emit fileLoadedSignal(false);
+		loadState = exists_not;
+		return;
+	}
+
+	loadState = loaded;
+	emit fileLoadedSignal(true);
+	
+	qDebug() << "metadata loaded and image rotated in: " << QString::fromStdString(dt.getTotal());
+}
+
+void DkImageContainerT::cancel() {
+
+	if (loadState != loading)
+		return;
+
+	loadState = loading_canceled;
+}
+
 void DkImageContainerT::saveMetaDataThreaded() {
 
 	if (!exists())
@@ -320,6 +435,8 @@ bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, int compres
 
 
 bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression /* = -1 */) {
+
+	saveImageWatcher.waitForFinished();
 
 	if (saveImg.isNull()) {
 		QString msg = tr("I can't save an empty file, sorry...\n");
@@ -364,106 +481,6 @@ void DkImageContainerT::savingFinished() {
 		edited = false;
 		emit fileSavedSignal(saveFile);
 	}
-}
-
-void DkImageContainerT::fetchFile() {
-
-	// ignore doubled calls
-	if (fetchingBuffer)
-		return;
-	else if (!fileBuffer.isEmpty()) {
-		bufferLoaded();
-		return;
-	}
-
-	// we have to do our own bool here
-	// watcher.isRunning() returns false if the thread is waiting in the pool
-	fetchingBuffer = true;
-
-	QFuture<QByteArray> future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadFileToBuffer, fileInfo);
-
-	bufferWatcher.setFuture(future);
-}
-
-void DkImageContainerT::bufferLoaded() {
-
-	if (bufferWatcher.isCanceled())
-		return;
-
-	fileBuffer = bufferWatcher.result();
-
-	if (imgLoaded() == loading)
-		fetchImage();
-
-	fetchingBuffer = false;
-}
-
-void DkImageContainerT::fetchImage() {
-
-	if (loader->hasImage() || fileBuffer.isNull() || loadState == exists_not) {
-		loadingFinished();
-		return;
-	}
-	
-	// we have to do our own bool here
-	// watcher.isRunning() returns false if the thread is waiting in the pool
-	fetchingImage = true;
-
-	QFuture<QSharedPointer<DkBasicLoader> > future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadImageIntern, fileInfo, fileBuffer);
-
-	imageWatcher.setFuture(future);
-}
-
-void DkImageContainerT::imageLoaded() {
-
-	if (imageWatcher.isCanceled())
-		return;
-
-	// deliver image
-	loader = imageWatcher.result();
-
-	fetchingImage = false;
-
-	//if (img.isNull())
-		loadingFinished();
-	//else
-	//	fetchMetaData();
-}
-
-void DkImageContainerT::loadingFinished() {
-
-	DkTimer dt;
-
-	if (!loader->hasImage()) {
-		QString msg = tr("Sorry, I could not load: %1").arg(fileInfo.fileName());
-		emit showInfoSignal(msg);
-		emit fileLoadedSignal(false);
-		loadState = exists_not;
-		return;
-	}
-
-	loadState = loaded;
-	emit fileLoadedSignal(true);
-	
-	qDebug() << "metadata loaded and image rotated in: " << QString::fromStdString(dt.getTotal());
-}
-
-void DkImageContainerT::cancel() {
-
-	if (loadState != loading)
-		return;
-		//cancelFinished();
-
-	bufferWatcher.cancel();
-	imageWatcher.cancel();
-}
-
-void DkImageContainerT::cancelFinished() {
-
-	if (bufferWatcher.isCanceled() && imageWatcher.isCanceled())
-		clear();
 }
 
 QByteArray DkImageContainerT::loadFileToBuffer(const QFileInfo fileInfo) {

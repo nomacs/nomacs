@@ -241,7 +241,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 		// might get empty too (e.g. someone deletes all images
 		if (files.empty()) {
-			emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
+			emit showInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
 			return false;
 		}
 
@@ -269,7 +269,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 			files = getFilteredFileInfoList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		if (files.empty()) {
-			emit updateInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
+			emit showInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
 			return false;
 		}
 
@@ -354,7 +354,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	if (currentImage && imgC && imgC->file() == currentImage->file() && !currentImage->exists()) {
 		QString msg = tr("sorry, %1 does not exist anymore...").arg(currentImage->file().fileName());
 		if (!silent)
-			emit updateInfoSignal(msg, 4000);
+			emit showInfoSignal(msg, 4000);
 	}
 
 	load(imgC, silent);
@@ -718,7 +718,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	else if (newFileIdx < 0) {
 		QString msg = tr("You have reached the beginning");
 		if (!silent)
-			updateInfoSignal(msg, 1000);
+			showInfoSignal(msg, 1000);
 		return imgC;
 	}
 	// tell user that there is nothing left to display
@@ -731,7 +731,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 			emit(setPlayer(false));
 
 		if (!silent)
-			updateInfoSignal(msg, 1000);
+			showInfoSignal(msg, 1000);
 		return imgC;
 	}
 	//}
@@ -776,14 +776,14 @@ void DkImageLoader::loadFileAt(int idx) {
 		}
 		else if (idx < 0 && !DkSettings::global.loop) {
 			QString msg = tr("You have reached the beginning");
-			emit updateInfoSignal(msg, 1000);
+			emit showInfoSignal(msg, 1000);
 			return;
 		}
 		else if (idx >= images.size()) {
 			QString msg = tr("You have reached the end");
 			if (!DkSettings::global.loop)
 				emit(setPlayer(false));
-			emit updateInfoSignal(msg, 1000);
+			emit showInfoSignal(msg, 1000);
 			return;
 		}
 
@@ -1507,11 +1507,12 @@ void DkImageLoader::deleteFile() {
 
 		QFile fileHandle(currentImage->file().absoluteFilePath());
 		if (fileHandle.remove())
-			emit updateInfoSignal(tr("%1 deleted...").arg(currentImage->file().fileName()));
+			emit showInfoSignal(tr("%1 deleted...").arg(currentImage->file().fileName()));
 		else
-			emit updateInfoSignal(tr("Sorry, I could not delete: %1").arg(currentImage->file().fileName()));
+			emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(currentImage->file().fileName()));
 
-		setCurrentImage(getSkippedImage(1));
+		QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
+		load(imgC);
 	}
 }
 

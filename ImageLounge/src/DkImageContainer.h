@@ -35,6 +35,7 @@
 
 #include "DkMetaData.h"
 #include "DkBasicLoader.h"
+#include "DkThumbs.h"
 
 namespace nmc {
 
@@ -42,6 +43,7 @@ class DkImageContainer {
 
 public:
 	enum {
+		loading_canceled = -3,
 		loading = -2,
 		exists_not = -1,
 		not_loaded,
@@ -74,12 +76,13 @@ public:
 	bool loadImage();
 	void setImage(const QImage& img, const QFileInfo& fileInfo);
 	void saveMetaData();
-	void clear();
+	virtual void clear();
 
 protected:
 	QFileInfo fileInfo;
 	QByteArray fileBuffer;
 	QSharedPointer<DkBasicLoader> loader;
+	QSharedPointer<DkThumbNailT> thumb;
 
 	int loadState;
 	bool edited;
@@ -100,6 +103,7 @@ public:
 	bool loadImageThreaded();
 	void fetchFile();
 	void cancel();
+	void clear();
 
 	bool saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression = -1);
 	bool saveImageThreaded(const QFileInfo& fileInfo, int compression = -1);
@@ -120,7 +124,6 @@ signals:
 protected slots:
 	void bufferLoaded();
 	void imageLoaded();
-	void cancelFinished();
 	void savingFinished();
 	void loadingFinished();
 
@@ -137,10 +140,10 @@ protected:
 	QFutureWatcher<QFileInfo> saveImageWatcher;
 	QFutureWatcher<bool> saveMetaDataWatcher;
 
-	bool fetchingBuffer;
 	bool fetchingImage;
-	bool savingImage;
-	bool savingMetaData;
+	bool fetchingBuffer;
+	//bool savingImage;
+	//bool savingMetaData;
 };
 
 
