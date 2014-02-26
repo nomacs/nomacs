@@ -276,7 +276,12 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, bool fast /* = false 
  **/ 
 bool DkBasicLoader::loadRawFile(const QByteArray& ba, bool fast) {
 
-	if (ba.isNull())
+	qDebug() << "buffer size: " << ba.size();
+
+	// the buffer check is because:
+	// libraw has an error when loading buffers if the first 4 bytes encode as 'RIFF'
+	// and no data follows at all
+	if (ba.isNull() || ba.size() < 100)	
 		return false;
 
 	bool imgLoaded = false;
