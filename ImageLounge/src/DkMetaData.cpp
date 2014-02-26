@@ -335,8 +335,6 @@ QString DkMetaDataT::getExifValue(const QString& key) const {
 		}
 	}
 
-	qDebug() << QString::fromStdString(sKey) << " is " << info;
-
 	return info;
 }
 
@@ -398,7 +396,7 @@ QImage DkMetaDataT::getThumbnail() const {
 
 bool DkMetaDataT::hasMetaData() const {
 
-	return exifState != no_data;
+	return !(exifState == no_data || exifState == not_loaded);
 }
 
 bool DkMetaDataT::isLoaded() const {

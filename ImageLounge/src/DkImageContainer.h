@@ -105,8 +105,6 @@ public:
 	bool saveImageThreaded(const QFileInfo& fileInfo, int compression = -1);
 	void saveMetaDataThreaded();
 	
-	void rotate(double angle) {};	// TODO: stub!
-
 	///**
 	// * Returns whether the thumbnail was loaded, or does not exist.
 	// * @return int a status (loaded | not loaded | exists not | loading)

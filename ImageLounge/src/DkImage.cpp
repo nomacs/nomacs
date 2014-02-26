@@ -92,8 +92,6 @@ DkImageLoader::~DkImageLoader() {
 	qDebug() << "filepath: " << saveDir.absolutePath();
 }
 
-
-
 void DkImageLoader::initFileFilters() {
 
 	//// load plugins
@@ -976,6 +974,7 @@ void DkImageLoader::reloadImage() {
 		return;
 
 	dir = QDir();
+	currentImage->clear();
 	setCurrentImage(currentImage);
 	load(currentImage);
 }
@@ -1532,8 +1531,18 @@ void DkImageLoader::rotateImage(double angle) {
 		return;
 	}
 
+	currentImage->getLoader()->rotate(qRound(angle));	// TODO: care for saving there
 
-	currentImage->rotate(angle);	// TODO: care for saving there
+	QSharedPointer<DkMetaDataT> metaData = currentImage->getMetaData();
+
+	if (metaData->hasMetaData() && DkSettings::metaData.saveExifOrientation) {
+		QImage thumb = DkImage::createThumb(currentImage->image());
+		metaData->setOrientation(qRound(angle));
+	}
+	else
+		setImage(currentImage->image(), currentImage->file());
+
+	emit imageUpdatedSignal(currentImage);
 
 	//	basicLoader.rotate(angle);
 	//	emit updateImageSignal();

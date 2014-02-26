@@ -270,7 +270,7 @@ void DkControlWidget::connectWidgets() {
 		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataInfo, SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
 		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 
-		connect(loader, SIGNAL(updateInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
+		connect(loader, SIGNAL(showInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
 		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
 		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 
@@ -719,6 +719,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	controller->getCropWidget()->setImageRect(&imgViewRect);
 
 	connect(loader, SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::QueuedConnection);
+	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::QueuedConnection);
 	//connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	//connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
@@ -1836,8 +1837,18 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 	//}
 
 	unloadImage();
-	QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
-	loader->load(imgC);
+
+	for (int idx = 0; idx < loader->getImages().size(); idx++) {
+		QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
+		loader->setCurrentImage(imgC);
+		if (imgC && imgC->imgLoaded() != DkImageContainer::exists_not) {
+			loader->load(imgC);
+			break;
+		}
+		else
+			qDebug() << "image does not exist - skipping";
+	}
+	
 
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(skipIdx);
