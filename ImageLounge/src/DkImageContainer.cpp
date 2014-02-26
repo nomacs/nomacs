@@ -33,10 +33,19 @@ namespace nmc {
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 
 	this->fileInfo = fileInfo;
-	loadState = not_loaded;
-	edited = false;
-	
 	this->loader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
+	init();
+}
+
+void DkImageContainer::init() {
+
+	
+	// always keep in mind that a file does not exist
+	if (!edited && loadState != exists_not)
+		loadState = not_loaded;
+
+	edited = false;
+
 }
 
 bool operator==(const DkImageContainer& lic, const DkImageContainer& ric) {
@@ -98,6 +107,12 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 		return DkUtils::compFilename(l.file(), r.file());
 	}
 	
+}
+
+void DkImageContainer::clear() {
+
+	loader->release();
+	init();
 }
 
 QFileInfo DkImageContainer::file() const {
@@ -294,16 +309,18 @@ bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, const QImag
 void DkImageContainerT::savingFinished() {
 
 	QFileInfo saveFile = saveImageWatcher.result();
+	saveFile.refresh();
+	qDebug() << "save file: " << saveFile.absoluteFilePath();
 
 	if (!saveFile.exists()) {
 		emit errorDialogSignal(tr("Sorry, I could not save the image"));
 		emit fileSavedSignal(saveFile, false);
 	}
 	else {
-		emit fileSavedSignal(saveFile);
 		fileBuffer.clear();
 		fileInfo = saveFile;
 		edited = false;
+		emit fileSavedSignal(saveFile);
 	}
 }
 
@@ -382,7 +399,9 @@ void DkImageContainerT::loadingFinished() {
 		return;
 	}
 
-	// see if this costs any time
+	// some house keeping
+	fileBuffer.clear();
+
 	emit fileLoadedSignal(true);
 	loadState = loaded;
 	
@@ -392,7 +411,8 @@ void DkImageContainerT::loadingFinished() {
 void DkImageContainerT::cancel() {
 
 	if (loadState != loading)
-		cancelFinished();
+		return;
+		//cancelFinished();
 
 	bufferWatcher.cancel();
 	imageWatcher.cancel();
@@ -401,9 +421,8 @@ void DkImageContainerT::cancel() {
 void DkImageContainerT::cancelFinished() {
 
 	if (bufferWatcher.isCanceled() && imageWatcher.isCanceled())
-		loader->release();
+		clear();
 }
-
 
 QByteArray DkImageContainerT::loadFileToBuffer(const QFileInfo fileInfo) {
 

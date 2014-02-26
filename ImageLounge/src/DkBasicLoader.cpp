@@ -856,7 +856,7 @@ bool DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, QByteArra
 
 	if (saved && metaData->isLoaded()) {
 		try {
-			metaData->saveMetaData(ba);
+			metaData->saveMetaData(ba, true);
 		} 
 		catch (...) {
 			// is it still throwing anything?
@@ -881,6 +881,10 @@ QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int 
 		file.open(QIODevice::WriteOnly);
 		file.write(ba);
 		file.close();
+
+		// now load the image again - for consistency (e.g. jpg artifacts)
+		loadGeneral(fileInfo, ba);
+		this->file = fileInfo;
 
 		return fileInfo;
 	}
@@ -1045,6 +1049,7 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
 void DkBasicLoader::release() {
 
 	// TODO: auto save routines here
+	qDebug() << file.fileName() << " released...";
 
 	qImg = QImage();
 	//metaData.clear();

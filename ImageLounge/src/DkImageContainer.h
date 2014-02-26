@@ -72,6 +72,7 @@ public:
 	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
 	bool loadImage();
 	void setImage(const QImage& img, const QFileInfo& fileInfo);
+	void clear();
 
 protected:
 	QFileInfo fileInfo;
@@ -83,6 +84,7 @@ protected:
 
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
+	void init();
 };
 
 class DkImageContainerT : public QObject, public DkImageContainer {

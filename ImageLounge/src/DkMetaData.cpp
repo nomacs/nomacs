@@ -97,7 +97,7 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, const QByteArray& ba) 
 
 }
 
-bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo) {
+bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 
 	if (exifState != loaded)
 		return false;
@@ -106,7 +106,7 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo) {
 	file.open(QFile::ReadOnly);
 	
 	QByteArray ba = file.readAll();
-	bool saved = saveMetaData(ba);
+	bool saved = saveMetaData(ba, force);
 	if (!saved)
 		return saved;
 	
@@ -119,9 +119,9 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo) {
 	return true;
 }
 
-bool DkMetaDataT::saveMetaData(QByteArray& ba) {
+bool DkMetaDataT::saveMetaData(QByteArray& ba, bool force) {
 
-	if (exifState != dirty)
+	if (!force && exifState != dirty)
 		return true;
 	else if (exifState != loaded)
 		return false;
@@ -131,10 +131,10 @@ bool DkMetaDataT::saveMetaData(QByteArray& ba) {
 	Exiv2::IptcData &iptcData = exifImg->iptcData();
 
 	Exiv2::Image::AutoPtr exifImgN;
-
+	Exiv2::MemIo::AutoPtr exifMem;
 	try {
 
-		Exiv2::MemIo::AutoPtr exifMem(new Exiv2::MemIo((byte*)ba.data(), ba.size()));
+		exifMem = Exiv2::MemIo::AutoPtr(new Exiv2::MemIo((byte*)ba.data(), ba.size()));
 		exifImgN = Exiv2::ImageFactory::open(exifMem);
 	} 
 	catch (...) {
@@ -155,6 +155,15 @@ bool DkMetaDataT::saveMetaData(QByteArray& ba) {
 	exifImgN->setIptcData(iptcData);
 
 	exifImgN->writeMetadata();
+
+	// now get the data again
+	Exiv2::DataBuf exifBuf = exifImgN->io().read(exifImgN->io().size());
+	if (exifBuf.pData_)
+		ba = QByteArray((const char*)exifBuf.pData_, exifBuf.size_);
+	else
+		return false;
+
+	exifImg = exifImgN;
 
 	return true;
 }

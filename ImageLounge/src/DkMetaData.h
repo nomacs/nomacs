@@ -62,8 +62,8 @@ public:
 	void readMetaData(const QFileInfo& fileInfo);
 	void readMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
 
-	bool saveMetaData(const QFileInfo& fileInfo);
-	bool saveMetaData(QByteArray& ba);
+	bool saveMetaData(const QFileInfo& fileInfo, bool force = false);
+	bool saveMetaData(QByteArray& ba, bool force = false);
 
 	int getOrientation() const;
 	int getRating() const;

@@ -292,8 +292,8 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 		QSharedPointer<DkImageContainerT > newImg(new DkImageContainerT(files.at(idx)));
 
 		for (int oIdx = 0; oIdx < oldImages.size(); oIdx++) {
-			if (oldImages.at(idx).data() == newImg) {
-				tIdx = idx;
+			if (oldImages.at(oIdx).data() == newImg && oldImages.at(oIdx)->file().lastModified() == newImg->file().lastModified()) {
+				tIdx = oIdx;
 				break;
 			}
 		}
@@ -791,7 +791,7 @@ void DkImageLoader::loadFileAt(int idx) {
 	}
 
 	// file requested becomes current file
-	currentImage = images.at(idx);
+	setCurrentImage(images.at(idx));
 
 	load(currentImage);
 
@@ -872,8 +872,14 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	loadDir(newImg->file().absoluteDir());
 	
+	if (newImg && newImg.data() == currentImage.data()) {
+		qDebug() << "new image " << newImg << " is current image: " << currentImage;
+		return;
+	}
+
 	if (currentImage) {
 		currentImage->cancel();
+		//currentImage->clear();	// TODO: let cacher determine when to delete the image
 
 		// disconnect old image
 		disconnect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));
@@ -1321,6 +1327,10 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 
 	if (!file.exists() || !file.isFile() || !saved)
 		return;
+
+	emit imageLoadedSignal(currentImage, true);
+	emit imageUpdatedSignal(currentImage);
+	qDebug() << "image updated: " << currentImage->file().fileName();
 
 	// TODO: load it again here?
 
