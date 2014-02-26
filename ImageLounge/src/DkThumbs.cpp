@@ -786,37 +786,6 @@ void DkThumbsLoader::stop() {
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
 }
 
-QImage DkThumbsLoader::createThumb(const QImage& image) {
-
-	int imgW = image.width();
-	int imgH = image.height();
-
-	if (imgW > maxThumbSize || imgH > maxThumbSize) {
-		if (imgW > imgH) {
-			imgH = (float)maxThumbSize / imgW * imgH;
-			imgW = maxThumbSize;
-		} 
-		else if (imgW < imgH) {
-			imgW = (float)maxThumbSize / imgH * imgW;
-			imgH = maxThumbSize;
-		}
-		else {
-			imgW = maxThumbSize;
-			imgH = maxThumbSize;
-		}
-	}
-
-	// fast downscaling
-	QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
-	thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-	qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
-
-	return thumb;
-
-}
-
-
 // DkColorLoader --------------------------------------------------------------------
 DkColorLoader::DkColorLoader(QDir dir, QStringList files) {
 

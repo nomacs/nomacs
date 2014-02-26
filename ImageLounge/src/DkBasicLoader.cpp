@@ -856,10 +856,17 @@ bool DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, QByteArra
 
 	if (saved && metaData->isLoaded()) {
 		try {
+
+			metaData->setExifValue("Exif.Image.ImageWidth", QString::number(img.width()));
+			metaData->setExifValue("Exif.Image.ImageLength", QString::number(img.height()));
+			metaData->setOrientation(0);
+			metaData->setThumbnail(DkImage::createThumb(img));
 			metaData->saveMetaData(ba, true);
+			metaData->printMetaData();
 		} 
 		catch (...) {
 			// is it still throwing anything?
+			qDebug() << "Sorry, I could not save the meta data...";
 		}
 	}
 	

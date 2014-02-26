@@ -359,9 +359,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 			emit updateInfoSignal(msg, 4000);
 	}
 
-
-	//if (loadFile.exists())
-		load(imgC, silent);
+	load(imgC, silent);
 }
 
 ///**
@@ -595,9 +593,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	//if (searchFile && currentImage->file().absoluteDir() != dir.absolutePath()) {
 	//	qDebug() << "loading new dir: " << currentImage->file().absolutePath();
 	//	qDebug() << "old dir: " << dir.absolutePath();
-		bool loaded = loadDir(currentImage->file(), false);
-		if (!loaded)
-			return imgC;
+	bool loaded = loadDir(currentImage->file(), false);
 	//}
 
 	// locate the current file
@@ -611,9 +607,12 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	//if (virtualExists || file.exists()) {
 
 	if (searchFile) {
+
+		QFileInfo file = (currentImage->exists()) ? currentImage->file() : DkSettings::global.recentFiles.first();
+
 		for ( ; tmpFileIdx < images.size(); tmpFileIdx++) {
 
-			if (images[tmpFileIdx]->file() == currentImage->file())
+			if (images[tmpFileIdx]->file() == file)
 				break;
 		}
 	}

@@ -714,7 +714,7 @@ void DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
 
-	if (!exifData.empty()) {
+	if (!exifData.empty() || !getExifKeys().contains(key)) {
 
 		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
 

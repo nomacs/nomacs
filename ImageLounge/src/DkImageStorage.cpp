@@ -359,6 +359,37 @@ QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float op
 	return glow;
 };
 
+QImage DkImage::createThumb(const QImage& image) {
+
+	int maxThumbSize = 160;
+	int imgW = image.width();
+	int imgH = image.height();
+
+	if (imgW > maxThumbSize || imgH > maxThumbSize) {
+		if (imgW > imgH) {
+			imgH = (float)maxThumbSize / imgW * imgH;
+			imgW = maxThumbSize;
+		} 
+		else if (imgW < imgH) {
+			imgW = (float)maxThumbSize / imgH * imgW;
+			imgH = maxThumbSize;
+		}
+		else {
+			imgW = maxThumbSize;
+			imgH = maxThumbSize;
+		}
+	}
+
+	// fast downscaling
+	QImage thumb = image.scaled(QSize(imgW*2, imgH*2), Qt::KeepAspectRatio, Qt::FastTransformation);
+	thumb = thumb.scaled(QSize(imgW, imgH), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+	qDebug() << "thumb size in createThumb: " << thumb.size() << " format: " << thumb.format();
+
+	return thumb;
+};
+
+
 
 // DkImageStorage --------------------------------------------------------------------
 DkImageStorage::DkImageStorage(QImage img) {

@@ -509,7 +509,6 @@ public:
 	TreeItem* find(const QVariant& value, int column);
 	void setParent(TreeItem* parent);
 
-
 private:
 	QVector<TreeItem*> childItems;
 	QVector<QVariant> itemData;

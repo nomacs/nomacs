@@ -253,7 +253,6 @@ public:
 	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QStringList files = QStringList());
 	~DkThumbsLoader() {};
 
-	static QImage createThumb(const QImage& image);
 	void run();
 	int getFileIdx(QFileInfo& file);
 	QStringList getFiles() {
