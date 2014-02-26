@@ -344,6 +344,7 @@ public:
 	QVector<QSharedPointer<DkImageContainerT> > sort(const QVector<QSharedPointer<DkImageContainerT> >& images, const QDir& dir);
 	QSharedPointer<DkImageContainerT> findOrCreateFile(const QFileInfo& file) const;
 	QSharedPointer<DkImageContainerT> findFile(const QFileInfo& file) const;
+	int findFileIdx(const QFileInfo& file, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
 	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
 	
 	static void initFileFilters();	// add special file filters

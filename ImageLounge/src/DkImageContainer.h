@@ -49,7 +49,8 @@ public:
 	};
 
 	DkImageContainer(const QFileInfo& fileInfo);
-	friend bool operator==(const DkImageContainer& lic, const DkImageContainer& ric);
+	//friend bool operator==(const DkImageContainer& lic, const DkImageContainer& ric);
+	bool operator==(const DkImageContainer& ric) const;
 	bool operator< (const DkImageContainer& o) const;
 	bool operator<= (const DkImageContainer& o) const;
 	friend bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r);

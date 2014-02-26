@@ -48,10 +48,14 @@ void DkImageContainer::init() {
 
 }
 
-bool operator==(const DkImageContainer& lic, const DkImageContainer& ric) {
-
-	return lic.file() == ric.file();
+bool DkImageContainer::operator ==(const DkImageContainer& ric) const {
+	return fileInfo.absoluteFilePath() == ric.file().absoluteFilePath();
 }
+
+//bool operator==(const DkImageContainer& lic, const DkImageContainer& ric) {
+//
+//	return lic.file().absoluteFilePath() == ric.file().absoluteFilePath();
+//}
 
 bool DkImageContainer::operator<=(const DkImageContainer& o) const {
 

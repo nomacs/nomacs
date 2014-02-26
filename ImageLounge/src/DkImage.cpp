@@ -292,29 +292,22 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 void DkImageLoader::createImages(const QFileInfoList& files) {
 
+	DkTimer dt;
 	QVector<QSharedPointer<DkImageContainerT > > oldImages = images;
 	images.clear();
 
 	for (int idx = 0; idx < files.size(); idx++) {
 
-		int tIdx = -1;
-		QSharedPointer<DkImageContainerT > newImg(new DkImageContainerT(files.at(idx)));
+		int oIdx = findFileIdx(files.at(idx), oldImages);
 
-		for (int oIdx = 0; oIdx < oldImages.size(); oIdx++) {
-			if (oldImages.at(oIdx).data() == newImg && oldImages.at(oIdx)->file().lastModified() == newImg->file().lastModified()) {
-				tIdx = oIdx;
-				break;
-			}
-		}
-
-		if (tIdx != -1)
-			images.append(oldImages.at(tIdx));
+		if (oIdx != -1 && oldImages.at(oIdx)->file().lastModified() == files.at(idx).lastModified())
+			images.append(oldImages.at(oIdx));
 		else
-			images.append(newImg);
+			images.append(QSharedPointer<DkImageContainerT >(new DkImageContainerT(files.at(idx))));
 	}
 
 	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
-
+	qDebug() << "[DkImageLoader] " << images.size() << " indexed in " << QString::fromStdString(dt.getTotal());
 }
 
 /**
@@ -360,7 +353,7 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	QSharedPointer<DkImageContainerT> imgC = getSkippedImage(skipIdx);
 
 	// message when reloaded
-	if (imgC == currentImage && !currentImage.isNull() && !currentImage->exists()) {
+	if (currentImage && imgC && imgC->file() == currentImage->file() && !currentImage->exists()) {
 		QString msg = tr("sorry, %1 does not exist anymore...").arg(currentImage->file().fileName());
 		if (!silent)
 			emit updateInfoSignal(msg, 4000);
@@ -599,13 +592,13 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	if (currentImage->setPageIdx(skipIdx))
 		return currentImage;
 
-	if (searchFile && currentImage->file().absoluteDir() != dir.absolutePath()) {
-		qDebug() << "loading new dir: " << currentImage->file().absolutePath();
-		qDebug() << "old dir: " << dir.absolutePath();
+	//if (searchFile && currentImage->file().absoluteDir() != dir.absolutePath()) {
+	//	qDebug() << "loading new dir: " << currentImage->file().absolutePath();
+	//	qDebug() << "old dir: " << dir.absolutePath();
 		bool loaded = loadDir(currentImage->file(), false);
 		if (!loaded)
 			return imgC;
-	}
+	//}
 
 	// locate the current file
 	int newFileIdx = 0;
@@ -620,7 +613,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	if (searchFile) {
 		for ( ; tmpFileIdx < images.size(); tmpFileIdx++) {
 
-			if (images[tmpFileIdx] == currentImage)
+			if (images[tmpFileIdx]->file() == currentImage->file())
 				break;
 		}
 	}
@@ -826,6 +819,19 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QFileInfo& file)
 
 	return QSharedPointer<DkImageContainerT>();
 }
+
+int DkImageLoader::findFileIdx(const QFileInfo& file, const QVector<QSharedPointer<DkImageContainerT> >& images) const {
+
+	for (int idx = 0; idx < images.size(); idx++) {
+
+		if (images[idx]->file() == file)
+			return idx;
+	}
+
+	return -1;
+}
+
+
 //
 ///**
 // * Returns all files of the current directory.
@@ -881,7 +887,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	loadDir(newImg->file());
 	
-	if (newImg && newImg.data() == currentImage.data()) {
+	if (newImg && currentImage && newImg->file() == currentImage->file()) {
 		qDebug() << "new image " << newImg << " is current image: " << currentImage;
 		return;
 	}
@@ -1341,7 +1347,7 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 	emit imageLoadedSignal(currentImage, true);
 	emit imageUpdatedSignal(currentImage);
 	qDebug() << "image updated: " << currentImage->file().fileName();
-
+	
 	// TODO: load it again here?
 
 

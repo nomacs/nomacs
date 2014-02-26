@@ -1048,8 +1048,8 @@ void DkBasicLoader::resize(QSize size, float factor, QImage* img, int interpolat
  **/ 
 void DkBasicLoader::release() {
 
-	// TODO: auto save routines here
-	qDebug() << file.fileName() << " released...";
+	// TODO: auto save routines here?
+	//qDebug() << file.fileName() << " released...";
 
 	qImg = QImage();
 	//metaData.clear();
