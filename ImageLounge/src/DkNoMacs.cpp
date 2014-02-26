@@ -2561,7 +2561,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 	}
 
 	if (loader)
-		loader->saveFile(sFile, selectedFilter, saveImg, compression);
+		loader->saveFile(sFile, saveImg, selectedFilter, compression);
 
 }
 
@@ -2624,7 +2624,7 @@ void DkNoMacs::saveFileWeb() {
 	if (factor != -1)
 		img = DkImage::resizeImage(img, QSize(), factor, DkImage::ipl_area);
 
-	loader->saveFile(fileName, suffix, img, jpgDialog->getCompression());
+	loader->saveFile(fileName, img, suffix, jpgDialog->getCompression());
 
 }
 

@@ -73,7 +73,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	saveDir = "";
 
 	if (file.exists())
-		loadDir(file.absoluteDir());
+		loadDir(file);
 	else
 		dir = DkSettings::global.lastDir;
 
@@ -218,6 +218,15 @@ void DkImageLoader::clearFileWatcher() {
 
 	if (!watcher->files().isEmpty())
 		watcher->removePaths(watcher->files());	// remove all files previously watched
+}
+
+bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) {
+
+	newFile.refresh();
+	if (!newFile.exists())
+		return false;
+
+	return loadDir(newFile.absoluteDir(), scanRecursive);
 }
 
 /**
@@ -593,7 +602,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	if (searchFile && currentImage->file().absoluteDir() != dir.absolutePath()) {
 		qDebug() << "loading new dir: " << currentImage->file().absolutePath();
 		qDebug() << "old dir: " << dir.absolutePath();
-		bool loaded = loadDir(currentImage->file().absoluteDir(), false);
+		bool loaded = loadDir(currentImage->file(), false);
 		if (!loaded)
 			return imgC;
 	}
@@ -761,7 +770,7 @@ void DkImageLoader::loadFileAt(int idx) {
 	//	return;
 
 	if (currentImage && !dir.exists())
-		loadDir(currentImage->file().absoluteDir());
+		loadDir(currentImage->file());
 
 	if (dir.exists()) {
 
@@ -870,7 +879,7 @@ void DkImageLoader::unloadFile() {
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
-	loadDir(newImg->file().absoluteDir());
+	loadDir(newImg->file());
 	
 	if (newImg && newImg.data() == currentImage.data()) {
 		qDebug() << "new image " << newImg << " is current image: " << currentImage;
@@ -960,7 +969,7 @@ void DkImageLoader::reloadImage() {
 
 void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
 
-	loadDir(file.absoluteDir());
+	loadDir(file);
 
 
 	if (file.isFile()) {
@@ -982,6 +991,10 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 
 	emit updateSpinnerSignalDelayed(true);
 	bool loaded = currentImage->loadImageThreaded();	// loads file threaded
+	
+	if (!loaded)
+		emit updateSpinnerSignalDelayed(false);
+	
 	// if loaded is false, we definitively know that the file does not exist -> early exception here?
 
 }
@@ -1001,7 +1014,7 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 ///**
 // * Loads the file specified (not threaded!)
-// * @param file the file to be loaded.
+// * @param file the file to be ljoaded.
 // * @return bool true if the file could be loaded.
 // **/ 
 //bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
@@ -1183,25 +1196,20 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
  * @param saveImg the image to be saved
  * @param compression the compression method (for *.jpg or *.tif images)
  **/ 
-void DkImageLoader::saveFile(QFileInfo file, QString fileFilter, QImage saveImg, int compression) {
+void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter, int compression) {
 
-		QMetaObject::invokeMethod(this, "saveFileIntern", 
-			Qt::QueuedConnection, 
-			Q_ARG(QFileInfo, file), 
-			Q_ARG(QString, fileFilter), 
-			Q_ARG(QImage, saveImg),
-			Q_ARG(int, compression));
+	saveFileIntern(file, saveImg, fileFilter, compression);
 }
 
-/**
- * Saves a file in a thread with no status information.
- * @param file the file name/path
- * @param img the image to be saved
- **/ 
-void DkImageLoader::saveFileSilentThreaded(QFileInfo file, QImage img) {
-
-	QMetaObject::invokeMethod(this, "saveFileSilentIntern", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(QImage, img));
-}
+///**
+// * Saves a file in a thread with no status information.
+// * @param file the file name/path
+// * @param img the image to be saved
+// **/ 
+//void DkImageLoader::saveFileSilentThreaded(QFileInfo file, QImage img) {
+//
+//	QMetaObject::invokeMethod(this, "saveFileSilentIntern", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(QImage, img));
+//}
 
 /**
  * Saves a temporary file to the folder specified in Settings.
@@ -1259,9 +1267,11 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 
 		if (!tmpFile.exists()) {
 			
-			if (threaded)
-				saveFileSilentThreaded(tmpFile, img);
-			else
+			saveFileIntern(tmpFile, img);
+
+			//if (threaded)
+			//	saveFileSilentThreaded(tmpFile, img);
+			//else
 				//saveFileSilentIntern(tmpFile, img);	// TODO change to new format
 			
 			qDebug() << tmpFile.absoluteFilePath() << "saved...";
@@ -1281,7 +1291,7 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
  * @param saveImg the image to be saved
  * @param compression the compression method (for jpg, tif)
  **/ 
-void DkImageLoader::saveFileIntern(QFileInfo file, QString fileFilter, QImage saveImg, int compression) {
+void DkImageLoader::saveFileIntern(QFileInfo file, QImage saveImg, QString fileFilter, int compression) {
 	
 	QSharedPointer<DkImageContainerT> imgC = (currentImage) ? currentImage : findOrCreateFile(file);
 	setCurrentImage(imgC);
@@ -2381,7 +2391,6 @@ QStringList DkImageLoader::getFolderFilters() {
  **/ 
 void DkImageLoader::setFile(QFileInfo& file) {
 	
-	loadDir(file.absoluteDir());
 	setCurrentImage(findFile(file));
 }
 
@@ -2413,6 +2422,8 @@ void DkImageLoader::setSaveDir(QDir& dir) {
  **/ 
 QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QImage img, QFileInfo editFile) {
 	
+	qDebug() << "edited file: " << editFile.absoluteFilePath();
+
 	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(editFile);
 	newImg->setImage(img, editFile);
 	

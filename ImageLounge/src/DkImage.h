@@ -311,7 +311,7 @@ public:
 	//static DkMetaData imgMetaData;	// static class so that the metadata is only loaded once (performance)
 
 	void rotateImage(double angle);
-	void saveFile(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
+	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1);
 	void setFile(QFileInfo& filename);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
 	QFileInfo file() const;
@@ -382,7 +382,7 @@ public slots:
 	//void fileChanged(const QString& path);
 	void directoryChanged(const QString& path = QString());
 	//void saveFileSilentIntern(QFileInfo file, QImage saveImg = QImage());
-	void saveFileIntern(QFileInfo filename, QString fileFilter = "", QImage saveImg = QImage(), int compression = -1);
+	void saveFileIntern(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1);
 	//void load(QFileInfo file, bool silent = false, int cacheState = cache_default);	// deprecated
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>(), bool silent = false);
 	void load(const QFileInfo& file, bool silent = false);
@@ -427,8 +427,9 @@ protected:
 	// functions
 	int getNextFolderIdx(int folderIdx);
 	int getPrevFolderIdx(int folderIdx);
+	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
 	bool loadDir(QDir newDir, bool scanRecursive = true);
-	void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
+	//void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
 	void sendFileSignal();
 	QString getTitleAttributeString();
