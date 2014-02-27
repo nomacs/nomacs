@@ -389,6 +389,57 @@ QImage DkImage::createThumb(const QImage& image) {
 	return thumb;
 };
 
+QColor DkImage::getMeanColor(const QImage& img) {
+
+	// some speed-up params
+	int nC = qRound(img.depth()/8.0f);
+	int rStep = qRound(img.height()/100.0f)+1;
+	int cStep = qRound(img.width()/100.0f)+1;
+	int numCols = 42;
+
+	int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
+	QMap<QRgb, int> colLookup;
+	int maxColCount = 0;
+	QRgb maxCol;
+
+	for (int rIdx = 0; rIdx < img.height(); rIdx += rStep) {
+
+		const unsigned char* pixel = img.constScanLine(rIdx);
+
+		for (int cIdx = 0; cIdx < img.width()*nC; cIdx += cStep*nC) {
+
+			QColor cColC(qRound(pixel[cIdx+2*offset]/255.0f*numCols), 
+				qRound(pixel[cIdx+offset]/255.0f*numCols), 
+				qRound(pixel[cIdx]/255.0f*numCols));
+			QRgb cCol = cColC.rgb();
+
+			//// skip black
+			//if (cColC.saturation() < 10)
+			//	continue;
+			if (qRed(cCol) < 3 && qGreen(cCol) < 3 && qBlue(cCol) < 3)
+				continue;
+			if (qRed(cCol) > numCols-3 && qGreen(cCol) > numCols-3 && qBlue(cCol) > numCols-3)
+				continue;
+
+
+			if (colLookup.contains(cCol)) {
+				colLookup[cCol]++;
+			}
+			else
+				colLookup[cCol] = 1;
+
+			if (colLookup[cCol] > maxColCount) {
+				maxCol = cCol;
+				maxColCount = colLookup[cCol];
+			}
+		}
+	}
+
+	if (maxColCount > 0)
+		return QColor((float)qRed(maxCol)/numCols*255, (float)qGreen(maxCol)/numCols*255, (float)qBlue(maxCol)/numCols*255);
+	else
+		return DkSettings::display.bgColorWidget;
+}
 
 
 // DkImageStorage --------------------------------------------------------------------

@@ -436,4 +436,52 @@ protected:
 	void createImages(const QFileInfoList& files);
 };
 
+class DkColorLoader : public QThread {
+	Q_OBJECT
+
+public:
+	DkColorLoader(QVector<QSharedPointer<DkImageContainerT> > images);
+	~DkColorLoader() {};
+
+	void stop();
+	void run();
+
+	const QVector<QColor>& getColors() const {
+		return cols;
+	};
+
+	const QVector<int>& getIndexes() const {
+		return indexes;
+	};
+
+	int maxFiles() const {
+		return maxThumbs;
+	};
+
+	QString getFilename(int idx) const {
+
+		if (idx < 0 || idx >= images.size())
+			return QString("");
+
+		return images.at(idx)->file().fileName();
+	}
+
+signals:
+	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);
+
+protected:
+	void init();
+	void loadThumbs();
+	void loadColor(int fileIdx);
+	QColor computeColor(QImage& thumb);
+
+	QVector<QSharedPointer<DkImageContainerT> > images;
+	QVector<QColor> cols;
+	QVector<int> indexes;
+	bool isActive;
+	bool paused;
+	QMutex mutex;
+	int maxThumbs;
+};
+
 };

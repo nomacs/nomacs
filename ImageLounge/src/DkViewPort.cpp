@@ -280,8 +280,8 @@ void DkControlWidget::connectWidgets() {
 
 		connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
 
-		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), folderScroll, SLOT(updateDir(QFileInfo, int)));
-		connect(loader, SIGNAL(updateFileSignal(QFileInfo)), folderScroll, SLOT(updateDir(QFileInfo)));
+		connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), folderScroll, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
+		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), folderScroll, SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
 
 	}
 

@@ -1293,7 +1293,6 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
 //#include <QStyle>
 	minHandleWidth = 30;
-	colorLoader = 0;
 
 	setMouseTracking(true);
 
@@ -1314,82 +1313,89 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 	handle->setStyleSheet(QString("QLabel{border: 1px solid ")
 		+ DkUtils::colorToString(DkSettings::display.highlightColor) + 
 		QString("; background-color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + QString(";}"));
-
+	updateFolder = false;
+	updatesWaiting = 0;
 	init();
 }
 
 DkFolderScrollBar::~DkFolderScrollBar() {
 
-	if (colorLoader) {
-		colorLoader->stop();
-		colorLoader->wait();
-		delete colorLoader;
-		colorLoader = 0;
-	}
 }
 
-void DkFolderScrollBar::updateDir(QFileInfo file, int force) {
+void DkFolderScrollBar::updateDir(QVector<QSharedPointer<DkImageContainerT> > images) {
 
-	currentFile = file;
+	this->images = images;
+	updateFolder = true;
 
 	if (isVisible())
-		indexDir(force);
+		updateColors();
 }
 
-void DkFolderScrollBar::indexDir(int force) {
+void DkFolderScrollBar::updateColors() {
 
-	QDir dir = currentFile.absoluteDir();
-	dir.setNameFilters(DkImageLoader::fileFilters);
-	dir.setSorting(QDir::LocaleAware);
+	if (!updateFolder)
+		return;
 
-	// new folder?
-	if ((force == DkThumbsLoader::user_updated || force == DkThumbsLoader::dir_updated || 
-		currentDir.absolutePath() != currentFile.absolutePath() || files.empty()) &&
-		!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
+	int maxThumbs = 800;
 
-			QStringList files = DkImageLoader::getFilteredFileList(dir);
+	indexes.clear();
+	colors.clear();
 
-			// if a dir update was triggered, only update if the file index changed
-			if (force != DkThumbsLoader::dir_updated || files != this->files) {
+	for (int idx = 0; idx < maxThumbs && idx < images.size(); idx++) {
 
-					qDebug() << "force state: " << force;
-
-					if (colorLoader) {
-						colorLoader->stop();
-						colorLoader->wait();
-						delete colorLoader;
-						colorLoader = 0;
-					}
-
-					if (dir.exists()) {
-
-						colorLoader = new DkColorLoader(dir, files);
-						connect(colorLoader, SIGNAL(updateSignal(const QVector<QColor>&, const QVector<int>&)), this, SLOT(update(const QVector<QColor>&, const QVector<int>&)));
-
-						colorLoader->start();
-						currentDir = dir;
-					}
-			}
-
-			handle->setFixedWidth((qRound(1.0f/(files.size()*this->width()+FLT_EPSILON)) < minHandleWidth) ? minHandleWidth : qRound(1.0f/(files.size()*this->width()+FLT_EPSILON)));
-
-			this->files = files;
+		int fIdx = (images.size() > maxThumbs) ? qRound((float)idx/maxThumbs*(images.size()-1)) : idx;
+		QSharedPointer<DkThumbNailT> thumb = images.at(fIdx)->getThumb();
+		connect(thumb.data(), SIGNAL(colorUpdated()), this, SLOT(colorUpdated()));
+		thumb->fetchColor();
+		indexes.append(fIdx);
+		colors.append(DkSettings::display.bgColorWidget);
 	}
 
-	// TODO: update scrollbar
-	setMaximum(files.size());
+	handle->setFixedWidth((qRound(1.0f/(images.size()*this->width()+FLT_EPSILON)) < minHandleWidth) ? minHandleWidth : qRound(1.0f/(images.size()*this->width()+FLT_EPSILON)));
+	setMaximum(images.size());
 
-	blockSignals(true);
-	setValue(files.indexOf(currentFile.fileName()));
-	blockSignals(false);
+	updatesWaiting = 0;
+	updateFolder = false;
+}
+
+void DkFolderScrollBar::colorUpdated() {
+
+	// we keep a responsive gui by these means & loose the last 10 images
+	if (updatesWaiting < 20) {
+		updatesWaiting++;
+		return;
+	}
+	updatesWaiting = 0;
+
+	for (int idx = 0; idx < indexes.size(); idx++) {
+
+		QSharedPointer<DkThumbNailT> thumb = images.at(indexes.at(idx))->getThumb();
+
+		if (thumb->getMeanColor() != DkSettings::display.bgColorWidget)
+			colors[idx] = thumb->getMeanColor();
+	}
+
+	update(colors, indexes);
+}
+
+void DkFolderScrollBar::updateFile(QSharedPointer<DkImageContainerT> imgC) {
+	
+	if (!sliding)
+		cImg = imgC;
+
+	if (isVisible() && cImg) {
+		blockSignals(true);
+		setValue(fileIdx(imgC));
+		blockSignals(false);
+	}	
 }
 
 void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>& indexes) {
 
 	float offset = 0;
 
-	if (!files.empty()) {
-		handle->setFixedWidth((qRound(1.0f/files.size()*this->width()) < minHandleWidth) ? minHandleWidth : qRound(1.0f/files.size()*this->width()));
+	if (!images.empty()) {
+		handle->setFixedWidth((qRound(1.0f/images.size()*this->width()) < minHandleWidth) ? minHandleWidth : qRound(1.0f/images.size()*this->width()));
 		offset = (handle->width()*0.5f)/width();
 
 		setValue(value());	// update position
@@ -1405,7 +1411,7 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 
 		QColor cCol = colors[idx];
 		//cCol.setAlphaF(0.7);
-		gs += ", stop: " + QString::number((float)indexes[idx]/(files.size()-1)*(1.0f-2.5f*offset)+offset) + " " + 
+		gs += ", stop: " + QString::number((float)indexes[idx]/(images.size()-1)*(1.0f-2.5f*offset)+offset) + " " + 
 			DkUtils::colorToString(cCol); 
 	}
 
@@ -1445,8 +1451,8 @@ void DkFolderScrollBar::setValue(int i) {
 	//if (i > maximum())
 	//	i = maximum()-1;
 
-	if (!files.empty()) {
-		float handlePos = (float)files.indexOf(currentFile.fileName())/files.size();
+	if (!images.empty() && cImg) {
+		float handlePos = (float)fileIdx(cImg)/images.size();
 		handlePos *= (handle->width() == minHandleWidth) ? this->width()-handle->width() : this->width();
 		QRect r(qRound(handlePos), 0, handle->width(), height());
 		handle->setGeometry(r);
@@ -1455,10 +1461,30 @@ void DkFolderScrollBar::setValue(int i) {
 	QScrollBar::setValue(i);
 }
 
+int DkFolderScrollBar::fileIdx(QSharedPointer<DkImageContainerT> imgC) {
+
+	if (!imgC)
+		return -1;
+
+	for (int idx = 0; idx < images.size(); idx++) {
+
+		if (imgC->file().absoluteFilePath() == images.at(idx)->file().absoluteFilePath())
+			return idx;
+	}
+
+	return -1;
+}
+
 void DkFolderScrollBar::emitFileSignal(int i) {
 
+	if (!cImg)
+		return;
+
 	qDebug() << "value: " << i;
-	int skipIdx = i-files.indexOf(currentFile.fileName());
+	int skipIdx = i-fileIdx(cImg);
+	
+	if (i >= 0 && i < images.size())
+		cImg = images.at(i);
 	emit changeFileSignal(skipIdx);
 }
 
@@ -1470,8 +1496,8 @@ void DkFolderScrollBar::mouseMoveEvent(QMouseEvent *event) {
 	if (sliding && event->buttons() == Qt::LeftButton)
 		setValue(val);
 		
-	if (colorLoader)
-		this->setToolTip(colorLoader->getFilename(val));
+	if (val >= 0 && val < images.size())
+		setToolTip(images.at(val)->file().fileName());
 
 }
 
@@ -1484,6 +1510,7 @@ void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 
 	int offset = (handle->width() == minHandleWidth) ? handle->width() : 0;
 	setValue(qRound((float)(event->pos().x()-handle->width()*0.5)/(width()-offset)*maximum()));
+	sliding = false;
 
 	// do not propagate these events
 
@@ -1491,9 +1518,7 @@ void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkFolderScrollBar::resizeEvent(QResizeEvent *event) {
 
-	if (colorLoader)
-		update(colorLoader->getColors(), colorLoader->getIndexes());
-
+	update(colors, indexes);
 	QScrollBar::resizeEvent(event);
 }
 
@@ -1555,7 +1580,7 @@ void DkFolderScrollBar::setVisible(bool visible) {
 	}
 
 	if (visible)
-		indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
+		updateColors();
 
 	if (visible && !isVisible() && !showing)
 		opacityEffect->setOpacity(100);

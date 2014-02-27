@@ -812,7 +812,8 @@ public:
 	};
 
 public slots:
-	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
+	void updateDir(QVector<QSharedPointer<DkImageContainerT> > images);
+	void updateFile(QSharedPointer<DkImageContainerT> imgC);
 	void update(const QVector<QColor>& colors, const QVector<int>& indexes);
 
 	// DkWidget
@@ -825,6 +826,7 @@ public slots:
 
 protected slots:
 	void emitFileSignal(int i);
+	void colorUpdated();
 
 signals:
 	void changeFileSignal(int idx);
@@ -837,15 +839,17 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent *event);
-	
-	void indexDir(int force = DkThumbsLoader::not_forced);
-	
-	QDir currentDir;
-	QFileInfo currentFile;
-	QStringList files;
-	DkColorLoader* colorLoader;
+	int fileIdx(QSharedPointer<DkImageContainerT> imgC);
+	void updateColors();
+
+	QSharedPointer<DkImageContainerT> cImg;
+	QVector<QSharedPointer<DkImageContainerT> > images;
+	//DkColorLoader* colorLoader;
 	QVector<QColor> colors;
+	QVector<int> indexes;
 	bool sliding;
+	bool updateFolder;
+	int updatesWaiting;
 	QLabel* handle;
 	DkWidget* dummyWidget;
 	int minHandleWidth;

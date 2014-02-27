@@ -817,8 +817,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QFileInfo& file)
 
 int DkImageLoader::findFileIdx(const QFileInfo& file, const QVector<QSharedPointer<DkImageContainerT> >& images) const {
 
-	qDebug() << "searching for: " << file.absoluteFilePath();
-
 	for (int idx = 0; idx < images.size(); idx++) {
 
 		if (images[idx]->file().absoluteFilePath() == file.absoluteFilePath())
@@ -2795,6 +2793,67 @@ bool DkCacher::cacheImage(DkImageCache& cacheImg) {
 		cacheImg.ignore();		// cannot cache image
 
 	return false;
+}
+
+// DkColorLoader --------------------------------------------------------------------
+DkColorLoader::DkColorLoader(QVector<QSharedPointer<DkImageContainerT> > images) {
+
+	moveToThread(this);
+	init();
+}
+
+void DkColorLoader::init() {
+
+	isActive = true;
+	maxThumbs = 800;
+}
+
+void DkColorLoader::run() {
+
+	int updateIvl = 30;
+
+	// max full HD
+	for (int idx = 0; idx <= maxThumbs && idx < images.size(); idx++) {
+
+		//mutex.lock();
+		if (!isActive) {
+			qDebug() << "color loader stopped...";
+			//mutex.unlock();
+			break;
+		}
+
+		loadColor(idx);
+
+		if ((idx % updateIvl) == 0)
+			emit updateSignal(cols, indexes);
+	}
+
+	emit updateSignal(cols, indexes);
+
+}
+
+void DkColorLoader::loadColor(int fileIdx) {
+	
+	if (images.size() > maxThumbs)
+		fileIdx = qRound((float)fileIdx/maxThumbs*(images.size()-1));
+
+	QSharedPointer<DkThumbNailT> thumb = images.at(fileIdx)->getThumb();
+
+	QImage thumbImg;
+	if (thumb->hasImage() != DkThumbNailT::loaded)
+		thumb->compute(DkThumbNailT::force_exif_thumb);
+	thumbImg = thumb->getImage();
+		
+	if (!thumb.isNull()) {
+		cols.append(DkImage::getMeanColor(thumbImg));	// TODO: compute most significant color
+		indexes.append(fileIdx);
+	}
+
+}
+
+void DkColorLoader::stop() {
+
+	isActive = false;
 }
 
 }

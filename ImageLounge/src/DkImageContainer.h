@@ -148,6 +148,4 @@ protected:
 	//bool savingMetaData;
 };
 
-
-
 };

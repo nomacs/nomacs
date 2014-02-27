@@ -46,6 +46,7 @@ DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
 	this->minThumbSize = DkSettings::display.thumbSize;
 	this->rescale = true;
 	imgExists = true;
+	meanColor = DkSettings::display.bgColorWidget;
 	s = qMax(img.width(), img.height());
 };
 
@@ -54,6 +55,16 @@ void DkThumbNail::compute(int forceLoad) {
 	// we do this that complicated to be thread-safe
 	// if we use member vars in the thread and the object gets deleted during thread execution we crash...
 	this->img = computeIntern(file, QByteArray(), forceLoad, maxThumbSize, minThumbSize, rescale);
+}
+
+QColor DkThumbNail::computeColorIntern() {
+
+	QImage img = computeIntern(file, QByteArray(), force_exif_thumb, maxThumbSize, minThumbSize, rescale);
+
+	if (!img.isNull())
+		return DkImage::getMeanColor(img);
+
+	return DkSettings::display.bgColorWidget;
 }
 
 /**
@@ -252,8 +263,10 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) {
 
 	fetching = false;
+	fetchingColor = false;
 	forceLoad = do_not_force;
 	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
+	connect(&colorWatcher, SIGNAL(finished()), this, SLOT(colorLoaded()));
 }
 
 DkThumbNailT::~DkThumbNailT() {
@@ -261,9 +274,43 @@ DkThumbNailT::~DkThumbNailT() {
 	thumbWatcher.cancel();
 }
 
+void DkThumbNailT::fetchColor() {
+	
+	if (meanColor != DkSettings::display.bgColorWidget || !imgExists || fetchingColor)
+		return;
+
+	// we have to do our own bool here
+	// watcher.isRunning() returns false if the thread is waiting in the pool
+	fetchingColor = true;
+
+	QFuture<QColor> future = QtConcurrent::run(this, 
+		&nmc::DkThumbNailT::computeColorCall);
+
+	colorWatcher.setFuture(future);
+}
+
+QColor DkThumbNailT::computeColorCall() {
+
+	return DkThumbNail::computeColorIntern();
+}
+
+void DkThumbNailT::colorLoaded() {
+
+	QFuture<QColor> future = colorWatcher.future();
+
+	meanColor = future.result();
+
+	if (meanColor != DkSettings::display.bgColorWidget)
+		emit colorUpdated();
+	else
+		colorExists = false;
+
+	fetchingColor = false;
+	qDebug() << "mean color: " << meanColor;
+}
+
 void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QByteArray ba) {
 
-	
 	if (!img.isNull() || !imgExists || fetching)
 		return;
 
@@ -277,6 +324,7 @@ void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QByteArray ba) {
 
 	thumbWatcher.setFuture(future);
 }
+
 
 QImage DkThumbNailT::computeCall(int forceLoad, QByteArray ba) {
 
@@ -294,6 +342,8 @@ void DkThumbNailT::thumbLoaded() {
 	}
 	else if (forceLoad != force_exif_thumb)
 		imgExists = false;
+
+	fetching = false;
 }
 
 // DkThumbPool --------------------------------------------------------------------
@@ -789,207 +839,6 @@ void DkThumbsLoader::stop() {
 	//QMutexLocker(&this->mutex);
 	isActive = false;
 	qDebug() << "stopping thread: " << this->thread()->currentThreadId();
-}
-
-// DkColorLoader --------------------------------------------------------------------
-DkColorLoader::DkColorLoader(QDir dir, QStringList files) {
-
-	this->dir = dir;
-	this->files = files;
-
-	moveToThread(this);
-
-	init();
-}
-
-void DkColorLoader::init() {
-
-	if (files.empty())
-		files = DkImageLoader::getFilteredFileList(dir);
-
-	isActive = true;
-	maxThumbs = 800;
-}
-
-void DkColorLoader::run() {
-	
-	int updateIvl = 30;
-
-	// max full HD
-	for (int idx = 0; idx <= maxThumbs && idx < files.size(); idx++) {
-
-		//mutex.lock();
-		if (!isActive) {
-			qDebug() << "color loader stopped...";
-			//mutex.unlock();
-			break;
-		}
-
-		loadColor(idx);
-
-		if ((idx % updateIvl) == 0)
-			emit updateSignal(cols, indexes);
-	}
-
-	emit updateSignal(cols, indexes);
-	
-}
-
-void DkColorLoader::loadColor(int fileIdx) {
-
-	if (files.size() > maxThumbs)
-		fileIdx = qRound((float)fileIdx/maxThumbs*(files.size()-1));
-	
-	QFileInfo file(dir, files[fileIdx]);
-	
-	//// see if we can read the thumbnail from the exif data
-	DkMetaData dataExif(file);
-	QImage thumb = dataExif.getThumbnail();
-
-	if (!thumb.isNull()) {
-		
-		cols.append(computeColor(thumb));	// TODO: compute most significant color
-		indexes.append(fileIdx);
-	}
-}
-
-QColor DkColorLoader::computeColor(QImage& thumb) {
-
-	////int r = 0, g = 0, b = 0;
-
-	//int nC = qRound(thumb.depth()/8.0f);
-	//int rStep = qRound(thumb.height()/100.0f)+1;
-	//int cStep = qRound(thumb.width()/100.0f)+1;
-
-	//QVector<int> rHist; rHist.resize(100);
-	//QVector<int> gHist; gHist.resize(100);
-	//QVector<int> bHist; bHist.resize(100);
-
-	//for (int idx = 0; idx < rHist.size(); idx++) {
-	//	rHist[idx] = 0;
-	//	gHist[idx] = 0;
-	//	bHist[idx] = 0;
-	//}
-
-	//int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
-
-	//for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
-
-	//	const unsigned char* pixel = thumb.constScanLine(rIdx);
-
-	//	for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
-
-	//		rHist[qRound(pixel[cIdx+2*offset]/255.0f*rHist.size())]++;
-	//		gHist[qRound(pixel[cIdx+offset]/255.0f*gHist.size())]++;
-	//		bHist[qRound(pixel[cIdx]/255.0f*bHist.size())]++;
-	//	}
-	//}
-
-	//int rMaxVal = 0, gMaxVal = 0, bMaxVal = 0;
-	//int rMaxIdx = 0, gMaxIdx = 0, bMaxIdx = 0;
-
-	//for (int idx = 0; idx < rHist.size(); idx++) {
-
-	//	if (rHist[idx] > rMaxVal) {
-	//		rMaxVal = rHist[idx];
-	//		rMaxIdx = idx;
-	//	}
-	//	if (gHist[idx] > gMaxVal) {
-	//		gMaxVal = gHist[idx];
-	//		gMaxIdx = idx;
-	//	}
-	//	if (bHist[idx] > bMaxVal) {
-	//		bMaxVal = bHist[idx];
-	//		bMaxIdx = idx;
-	//	}
-	//}
-
-	//qDebug() << fileIdx;
-
-	//cols.append(QColor((float)rMaxIdx/rHist.size()*255, (float)gMaxIdx/gHist.size()*255, (float)bMaxIdx/bHist.size()*255));	// TODO: compute most significant color
-
-	//// compute mean color
-	//int r = 0, g = 0, b = 0;
-
-	//int nC = qRound(thumb.depth()/8.0f);
-	//int rStep = qRound(thumb.height()/100.0f)+1;
-	//int cStep = qRound(thumb.width()/100.0f)+1;
-	//int n = 0;
-
-	//int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
-
-	//for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
-
-	//	const unsigned char* pixel = thumb.constScanLine(rIdx);
-
-	//	for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
-
-	//		r += pixel[cIdx+2*offset];
-	//		g += pixel[cIdx+offset];
-	//		b += pixel[cIdx];
-	//		n++;
-	//	}
-	//}
-
-	//return QColor((float)r/n, g/n, b/n);
-
-
-	// compute most common color with a lookup table
-	//int r = 0, g = 0, b = 0;
-
-	// some speed-up params
-	int nC = qRound(thumb.depth()/8.0f);
-	int rStep = qRound(thumb.height()/100.0f)+1;
-	int cStep = qRound(thumb.width()/100.0f)+1;
-	int numCols = 42;
-
-	int offset = (nC > 1) ? 1 : 0;	// no offset for grayscale images
-	QMap<QRgb, int> colLookup;
-	int maxColCount = 0;
-	QRgb maxCol;
-
-	for (int rIdx = 0; rIdx < thumb.height(); rIdx += rStep) {
-
-		const unsigned char* pixel = thumb.constScanLine(rIdx);
-
-		for (int cIdx = 0; cIdx < thumb.width()*nC; cIdx += cStep*nC) {
-
-			QColor cColC(qRound(pixel[cIdx+2*offset]/255.0f*numCols), 
-				qRound(pixel[cIdx+offset]/255.0f*numCols), 
-				qRound(pixel[cIdx]/255.0f*numCols));
-			QRgb cCol = cColC.rgb();
-
-			//// skip black
-			//if (cColC.saturation() < 10)
-			//	continue;
-			if (qRed(cCol) < 3 && qGreen(cCol) < 3 && qBlue(cCol) < 3)
-				continue;
-			if (qRed(cCol) > numCols-3 && qGreen(cCol) > numCols-3 && qBlue(cCol) > numCols-3)
-				continue;
-
-
-			if (colLookup.contains(cCol)) {
-				colLookup[cCol]++;
-			}
-			else
-				colLookup[cCol] = 1;
-
-			if (colLookup[cCol] > maxColCount) {
-				maxCol = cCol;
-				maxColCount = colLookup[cCol];
-			}
-		}
-	}
-
-	if (maxColCount > 0)
-		return QColor((float)qRed(maxCol)/numCols*255, (float)qGreen(maxCol)/numCols*255, (float)qBlue(maxCol)/numCols*255);
-	else
-		return DkSettings::display.bgColorWidget;
-}
-
-void DkColorLoader::stop() {
-
-	isActive = false;
 }
 
 }

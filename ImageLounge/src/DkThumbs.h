@@ -121,6 +121,10 @@ public:
 			return exists_not;
 	};
 
+	QColor getMeanColor() const {
+		return meanColor;
+	};
+
 	void setMaxThumbSize(int maxSize) {
 		this->maxThumbSize = maxSize;
 	};
@@ -165,6 +169,7 @@ public:
 
 protected:
 	QImage computeIntern(QFileInfo file, QByteArray ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
+	QColor computeColorIntern();
 
 	QImage img;
 	QFileInfo file;
@@ -173,6 +178,8 @@ protected:
 	int maxThumbSize;
 	int minThumbSize;
 	bool rescale;
+	QColor meanColor;
+	bool colorExists;
 
 };
 
@@ -184,6 +191,7 @@ public:
 	~DkThumbNailT();
 
 	void fetchThumb(int forceLoad = do_not_force, QByteArray ba = QByteArray());
+	void fetchColor();
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
@@ -199,15 +207,20 @@ public:
 
 signals:
 	void thumbUpdated();
+	void colorUpdated();
 
 protected slots:
 	void thumbLoaded();
+	void colorLoaded();
 
 protected:
 	QImage computeCall(int forceLoad, QByteArray ba);
+	QColor computeColorCall();
 
 	QFutureWatcher<QImage> thumbWatcher;
+	QFutureWatcher<QColor> colorWatcher;
 	bool fetching;
+	bool fetchingColor;
 	int forceLoad;
 };
 
@@ -314,54 +327,6 @@ private:
 	//QImage getThumbNailWin(QFileInfo file);
 	void init();
 	void loadThumbs();
-};
-
-class DkColorLoader : public QThread {
-	Q_OBJECT
-
-public:
-	DkColorLoader(QDir dir = QDir(), QStringList files = QStringList());
-	~DkColorLoader() {};
-
-	void stop();
-	void run();
-
-	const QVector<QColor>& getColors() const {
-		return cols;
-	};
-
-	const QVector<int>& getIndexes() const {
-		return indexes;
-	};
-
-	int maxFiles() const {
-		return maxThumbs;
-	};
-
-	QString getFilename(int idx) const {
-
-		if (idx < 0 || idx >= files.size())
-			return QString("");
-
-		return files.at(idx);
-	}
-
-signals:
-	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);
-
-protected:
-	void init();
-	void loadThumbs();
-	void loadColor(int fileIdx);
-	QColor computeColor(QImage& thumb);
-
-	QVector<QColor> cols;
-	QVector<int> indexes;
-	QDir dir;
-	QStringList files;
-	bool isActive;
-	QMutex mutex;
-	int maxThumbs;
 };
 
 };
