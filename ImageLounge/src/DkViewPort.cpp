@@ -42,7 +42,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	// thumbnails, metadata
 	thumbPool = new DkThumbPool(QFileInfo(), this);
-	thumbScrollWidget = new DkThumbScrollWidget(thumbPool, this, flags);
+	thumbScrollWidget = new DkThumbScrollWidget(this, flags);
 	thumbScrollWidget->hide();
 	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
@@ -291,6 +291,8 @@ void DkControlWidget::connectWidgets() {
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 
 	// file scroller
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
@@ -1696,8 +1698,12 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 	if (loader && file.isDir()) {
 		QDir dir = QDir(file.absoluteFilePath());
 
-		if (controller && controller->getThumbWidget()->isVisible())
-			controller->getThumbPool()->setFile(file);
+		qDebug() << "thumb widget visible: " << controller->getThumbWidget()->isVisible();
+
+		if (loader && controller && controller->getThumbWidget()->isVisible()) {
+			loader->loadDir(dir);
+			//controller->getThumbWidget()->getThumbWidget()->setFile(file);
+		}
 		else
 			loader->setDir(dir);
 

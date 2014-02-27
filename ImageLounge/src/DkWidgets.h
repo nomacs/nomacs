@@ -680,11 +680,10 @@ class DkThumbScene : public QGraphicsScene {
 	Q_OBJECT
 
 public:
-	DkThumbScene(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
+	DkThumbScene(QWidget* parent = 0);
 
 	void updateLayout();
 	QList<QUrl> getSelectedUrls() const;
-	void setFile(const QFileInfo& file);
 
 public slots:
 	void updateThumbLabels();
@@ -695,15 +694,16 @@ public slots:
 	void showFile(const QFileInfo& file);
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 
 signals:
 	void loadFileSignal(QFileInfo file);
 	void statusInfoSignal(QString msg, int pos = 0);
 
 protected:
+	QVector<QSharedPointer<DkImageContainerT> > thumbs;
 	//void wheelEvent(QWheelEvent *event);
 
-	DkThumbPool* thumbPool;
 	int xOffset;
 	int numRows;
 	int numCols;
@@ -718,6 +718,9 @@ class DkThumbsView : public QGraphicsView {
 
 public:
 	DkThumbsView(DkThumbScene* scene, QWidget* parent = 0);
+
+signals:
+	void updateDirSignal(QFileInfo file);
 
 protected:
 	void wheelEvent(QWheelEvent *event);
@@ -745,7 +748,7 @@ public:
 		actions_end
 	};
 
-	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkThumbScrollWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	DkThumbScene* getThumbWidget() {
 		return thumbsScene;
@@ -753,6 +756,11 @@ public:
 
 public slots:
 	virtual void setVisible(bool visible);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void setDir(QFileInfo file);
+
+signals:
+	void updateDirSignal(QFileInfo file);
 
 protected:
 	void createActions();
@@ -760,7 +768,6 @@ protected:
 	void contextMenuEvent(QContextMenuEvent *event);
 
 	DkThumbScene* thumbsScene;
-	DkThumbPool* thumbPool;
 	DkThumbsView* view;
 
 	QMenu* contextMenu;

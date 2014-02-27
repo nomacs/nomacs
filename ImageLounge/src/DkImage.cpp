@@ -284,8 +284,9 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 				dirWatcher->removePaths(dirWatcher->directories());
 			dirWatcher->addPath(dir.absolutePath());
 		}
-
 	}
+	else
+		qDebug() << "ignoring... old dir: " << dir.absolutePath() << " newDir: " << newDir << " file size: " << images.size();
 
 	return true;
 }

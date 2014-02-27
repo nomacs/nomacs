@@ -346,6 +346,8 @@ public:
 	QSharedPointer<DkImageContainerT> findFile(const QFileInfo& file) const;
 	int findFileIdx(const QFileInfo& file, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
 	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
+	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
+	bool loadDir(QDir newDir, bool scanRecursive = true);
 	
 	static void initFileFilters();	// add special file filters
 
@@ -427,8 +429,6 @@ protected:
 	// functions
 	int getNextFolderIdx(int folderIdx);
 	int getPrevFolderIdx(int folderIdx);
-	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
-	bool loadDir(QDir newDir, bool scanRecursive = true);
 	//void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
 	void updateHistory();
 	void sendFileSignal();

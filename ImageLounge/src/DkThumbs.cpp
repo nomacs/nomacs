@@ -289,9 +289,6 @@ void DkThumbNailT::thumbLoaded() {
 
 	img = future.result();
 	
-	if (img.isNull())
-		qDebug() << "got a NULL thumb, loading state: " << forceLoad;
-
 	if (!img.isNull()) {
 		emit thumbUpdated();
 	}

@@ -886,10 +886,9 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 }
 
 // DkThumbWidget --------------------------------------------------------------------
-DkThumbScene::DkThumbScene(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
+DkThumbScene::DkThumbScene(QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
 
 	setObjectName("DkThumbWidget");
-	this->thumbPool = thumbPool;
 
 	xOffset = 0;
 	numCols = 0;
@@ -924,7 +923,7 @@ void DkThumbScene::updateLayout() {
 	int tso = DkSettings::display.thumbPreviewSize+xOffset;
 	// TODO: center it
 	setSceneRect(0, 0, numCols*tso+xOffset, numRows*tso+xOffset);
-	int fileIdx = thumbPool->getCurrentFileIdx();
+	//int fileIdx = thumbPool->getCurrentFileIdx();
 
 	DkTimer dt;
 	int cYOffset = xOffset;
@@ -944,8 +943,8 @@ void DkThumbScene::updateLayout() {
 			cLabel->setPos(cXOffset, cYOffset);
 			cLabel->updateSize();
 			
-			if (tIdx == fileIdx)
-				cLabel->ensureVisible();
+			//if (tIdx == fileIdx)
+			//	cLabel->ensureVisible();
 
 			//cLabel->show();
 
@@ -966,11 +965,19 @@ void DkThumbScene::updateLayout() {
 	firstLayout = false;
 }
 
+void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
+
+	this->thumbs = thumbs;
+	updateThumbLabels();
+}
+
 void DkThumbScene::updateThumbLabels() {
 
 	qDebug() << "updating thumb labels...";
 
-	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
+	QWidget* p = reinterpret_cast<QWidget*>(parent());
+	if (p && !p->isVisible())
+		return;
 
 	DkTimer dt;
 
@@ -978,7 +985,7 @@ void DkThumbScene::updateThumbLabels() {
 	clear();
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {
-		QSharedPointer<DkThumbLabel> thumb(new DkThumbLabel(thumbs.at(idx)));
+		QSharedPointer<DkThumbLabel> thumb(new DkThumbLabel(thumbs.at(idx)->getThumb()));
 		connect(thumb.data(), SIGNAL(loadFileSignal(QFileInfo&)), this, SLOT(loadFile(QFileInfo&)));
 		connect(thumb.data(), SIGNAL(showFileSignal(const QFileInfo&)), this, SLOT(showFile(const QFileInfo&)));
 
@@ -1061,15 +1068,6 @@ QList<QUrl> DkThumbScene::getSelectedUrls() const {
 	}
 
 	return urls;
-}
-
-void DkThumbScene::setFile(const QFileInfo& file) {
-
-	if (file.isDir())
-		thumbPool->setFile(file);
-	else
-		emit loadFileSignal(file);
-
 }
 
 // DkThumbView --------------------------------------------------------------------
@@ -1197,7 +1195,7 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 
 		QFileInfo file = QFileInfo(url.toString());
 
-		scene->setFile(file);
+		emit updateDirSignal(file);
 	}
 
 	QGraphicsView::dropEvent(event);
@@ -1206,22 +1204,21 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 }
 
 // DkThumbScrollWidget --------------------------------------------------------------------
-DkThumbScrollWidget::DkThumbScrollWidget(DkThumbPool* thumbPool /* = 0 */, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
+DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkWidget(parent, flags) {
 
 	setObjectName("DkThumbScrollWidget");
 	setContentsMargins(0,0,0,0);
 
-	thumbsScene = new DkThumbScene(thumbPool, this);
+	thumbsScene = new DkThumbScene(this);
 	//thumbsView->setContentsMargins(0,0,0,0);
 
 	view = new DkThumbsView(thumbsScene, this);
+	connect(view, SIGNAL(updateDirSignal(QFileInfo)), this, SIGNAL(updateDirSignal(QFileInfo)));
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
 	layout->addWidget(view);
 	setLayout(layout);
-
-	this->thumbPool = thumbPool;
 
 	createActions();
 }
@@ -1253,24 +1250,25 @@ void DkThumbScrollWidget::createActions() {
 	addActions(actions.toList());
 }
 
+void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
+
+	thumbsScene->updateThumbs(thumbs);
+}
+
+void DkThumbScrollWidget::setDir(QFileInfo file) {
+	
+	if (isVisible())
+		emit updateDirSignal(file);
+}
+
 void DkThumbScrollWidget::setVisible(bool visible) {
 
+	DkWidget::setVisible(visible);
 	
-	if (thumbPool) {
-		thumbPool->getUpdates(thumbsScene, visible);
-
-		if (visible)
-			connect(thumbPool, SIGNAL(numThumbChangedSignal()), thumbsScene, SLOT(updateThumbLabels()));
-		else
-			thumbPool->disconnect(thumbsScene);
-
-		if (visible)
-			thumbsScene->updateThumbLabels();
-	}
+	if (visible)
+		thumbsScene->updateThumbLabels();
 
 	qDebug() << "showing thumb scroll widget...";
-
-	DkWidget::setVisible(visible);
 }
 
 void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {
