@@ -118,6 +118,9 @@ void DkImageContainer::clear() {
 
 	//if (edited) // trigger gui question
 
+	if (imgLoaded() == loading || imgLoaded() == loading_canceled)
+		return;
+
 	saveMetaData();
 	loader->release();
 	fileBuffer.clear();
@@ -269,6 +272,9 @@ DkImageContainerT::~DkImageContainerT() {
 	//metaDataWatcher.blockSignals(true);
 	//metaDataWatcher.cancel();
 
+	// we have to wait here
+	bufferWatcher.waitForFinished();
+	imageWatcher.waitForFinished();
 	saveImageWatcher.waitForFinished();
 	saveMetaDataWatcher.waitForFinished();
 }

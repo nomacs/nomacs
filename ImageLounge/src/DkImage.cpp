@@ -342,20 +342,15 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 	//	return;
 	//}
 
+	if (skipIdx == 0) {
+		reloadImage();
+		return;
+	}
+
 	// update dir
-	if (skipIdx == 0 && cacheState == cache_force_load)
-		loadDir(dir, false);
-	else
-		loadDir(dir);
+	loadDir(dir);
 
 	QSharedPointer<DkImageContainerT> imgC = getSkippedImage(skipIdx);
-
-	// message when reloaded
-	if (currentImage && imgC && imgC->file() == currentImage->file() && !currentImage->exists()) {
-		QString msg = tr("sorry, %1 does not exist anymore...").arg(currentImage->file().fileName());
-		if (!silent)
-			emit showInfoSignal(msg, 4000);
-	}
 
 	load(imgC, silent);
 }
@@ -608,11 +603,11 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 		QFileInfo file = (currentImage->exists()) ? currentImage->file() : DkSettings::global.recentFiles.first();
 
-		for ( ; tmpFileIdx < images.size(); tmpFileIdx++) {
+		qDebug() << "current image: " << currentImage->file().absoluteFilePath() << " last image: " << DkSettings::global.recentFiles.first();
 
-			if (images[tmpFileIdx]->file() == file)
-				break;
-		}
+		tmpFileIdx = findFileIdx(file, images);
+		if (tmpFileIdx == -1)
+			tmpFileIdx = 0;
 	}
 	newFileIdx = tmpFileIdx + skipIdx;
 
@@ -819,9 +814,11 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QFileInfo& file)
 
 int DkImageLoader::findFileIdx(const QFileInfo& file, const QVector<QSharedPointer<DkImageContainerT> >& images) const {
 
+	qDebug() << "searching for: " << file.absoluteFilePath();
+
 	for (int idx = 0; idx < images.size(); idx++) {
 
-		if (images[idx]->file() == file)
+		if (images[idx]->file().absoluteFilePath() == file.absoluteFilePath())
 			return idx;
 	}
 
@@ -882,8 +879,6 @@ void DkImageLoader::unloadFile() {
 	//if (currentImage->isEdited())
 		// ask user for saving
 
-	currentImage->saveMetaData();
-
 	// TODO: add save metadata (rating etc...)
 
 }
@@ -892,14 +887,21 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	loadDir(newImg->file());
 	
-	if (newImg && currentImage && newImg->file() == currentImage->file()) {
-		qDebug() << "new image " << newImg << " is current image: " << currentImage;
+	if (newImg && currentImage && newImg->file().absoluteFilePath() == currentImage->file().absoluteFilePath()) {
+		qDebug() << "new image " << newImg->file().absoluteFilePath() << " is current image: " << currentImage->file().absoluteFilePath();
 		return;
 	}
 
 	if (currentImage) {
 		currentImage->cancel();
 		currentImage->clear();	// TODO: let cacher determine when to delete the image
+
+		if (currentImage->imgLoaded() == DkImageContainer::loading_canceled) {
+			emit showInfoSignal(newImg->file().fileName(), 3000, 1);
+			QCoreApplication::sendPostedEvents();
+		}
+
+		currentImage->saveMetaDataThreaded();
 
 		// disconnect old image
 		disconnect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));
@@ -973,7 +975,15 @@ void DkImageLoader::reloadImage() {
 	if(!currentImage)
 		return;
 
+	if (!currentImage->exists()) {
+		// message when reloaded
+		QString msg = tr("sorry, %1 does not exist anymore...").arg(currentImage->file().fileName());
+		emit showInfoSignal(msg, 4000);
+		return;
+	}
+
 	dir = QDir();
+	images.clear();
 	currentImage->clear();
 	setCurrentImage(currentImage);
 	load(currentImage);
