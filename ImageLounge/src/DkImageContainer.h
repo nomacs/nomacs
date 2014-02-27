@@ -68,6 +68,7 @@ public:
 	QString getTitleAttribute() const;
 	QSharedPointer<DkBasicLoader> getLoader() const;
 	QSharedPointer<DkMetaDataT> getMetaData() const;
+	QSharedPointer<DkThumbNailT> getThumb() const;
 
 	bool exists();
 	bool setPageIdx(int skipIdx);
@@ -120,6 +121,7 @@ signals:
 	void fileSavedSignal(QFileInfo fileInfo, bool saved = true);
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
 	void errorDialogSignal(const QString& msg);
+	void thumbUpdated();
 
 protected slots:
 	void bufferLoaded();

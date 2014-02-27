@@ -27,11 +27,11 @@
 
 #pragma once
 
-#include <QObject.h>
-#include <QFileInfo.h>
-#include <QImage.h>
-#include <QImageReader.h>
-#include <QImageWriter.h>
+#include <QObject>
+#include <QFileInfo>
+#include <QImage>
+#include <QImageReader>
+#include <QImageWriter>
 
 #include "DkImageStorage.h"
 #include "DkSettings.h"
@@ -140,6 +140,7 @@ public:
 
 	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
 	bool save(const QFileInfo& fileInfo, const QImage& img, QByteArray& ba, int compression = -1);
+	void saveThumbToMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
 	void saveMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
 
 	/**

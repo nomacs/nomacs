@@ -38,8 +38,6 @@
 #include "DkMenu.h"
 #include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
-#include "DkImageContainer.h"
-
 
 namespace nmc {
 

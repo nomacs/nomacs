@@ -159,6 +159,11 @@ QSharedPointer<DkMetaDataT> DkImageContainer::getMetaData() const {
 	return loader->getMetaData();
 }
 
+QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() const {
+
+	return thumb;
+}
+
 QImage DkImageContainer::image() {
 
 	if (loader->image().isNull() && hasImage() == not_loaded)
@@ -253,13 +258,14 @@ bool DkImageContainer::setPageIdx(int skipIdx) {
 // DkImageContainerT --------------------------------------------------------------------
 DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(file) {
 
+	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(file));
 	fetchingImage = false;
 	fetchingBuffer = false;
 	connect(&saveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()));
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()));
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
 	connect(loader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
-
+	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SIGNAL(thumbUpdated()));
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
 }
 
@@ -370,6 +376,9 @@ void DkImageContainerT::fetchImage() {
 	
 	qDebug() << "fetching: " << fileInfo.absoluteFilePath();
 	fetchingImage = true;
+
+	if (DkSettings::resources.fastThumbnailPreview)
+		thumb->fetchThumb(DkThumbNailT::force_exif_thumb, fileBuffer);
 
 	QFuture<QSharedPointer<DkBasicLoader> > future = QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::loadImageIntern, fileInfo, fileBuffer);

@@ -138,14 +138,9 @@ void DkWidget::animateOpacityDown() {
 }
 
 // DkFilePreview --------------------------------------------------------------------
-DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
+DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	this->parent = parent;
-	this->thumbPool = thumbPool;
-	connect(thumbPool, SIGNAL(thumbUpdatedSignal()), this, SLOT(update()));
-	connect(thumbPool, SIGNAL(newFileIdxSignal(int)), this, SLOT(updateFileIdx(int)));
-	connect(thumbPool, SIGNAL(numThumbChangedSignal()), this, SLOT(update()));
-
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
 
@@ -156,7 +151,6 @@ void DkFilePreview::init() {
 	setObjectName("DkFilePreview");
 	setMouseTracking(true);	//receive mouse event everytime
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-	
 	//thumbsLoader = 0;
 
 	xOffset = qRound(DkSettings::display.thumbSize*0.1f);
@@ -245,8 +239,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	painter.setWorldTransform(worldMatrix);
 	painter.setWorldMatrixEnabled(true);
 
-	// TODO: paint dummies
-	if (thumbPool->getThumbs().empty()) {
+	if (thumbs.empty()) {
 		thumbRects.clear();
 		return;
 	}
@@ -271,19 +264,22 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 	thumbRects.clear();
 
 	DkTimer dt;
-	QVector<QSharedPointer<DkThumbNailT> > thumbs = thumbPool->getThumbs();
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 
-		QSharedPointer<DkThumbNailT> thumb = thumbs.at(idx);
+		QSharedPointer<DkThumbNailT> thumb = thumbs.at(idx)->getThumb();
 		
 		if (thumb->hasImage() == DkThumbNail::exists_not) {
 			thumbRects.push_back(QRectF());
 			continue;
 		}
 
-		QImage img = (thumb->hasImage() == DkThumbNail::loaded) ? thumb->getImage() : stubImg;
-		
+		QImage img;
+		if (thumb->hasImage() == DkThumbNail::loaded)
+			img = thumb->getImage();
+		else
+			img = stubImg;
+
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 		if (height()-yOffset < r.height())
 			r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
@@ -294,9 +290,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		// center vertically
 		r.moveCenter(QPoint(qRound(r.center().x()), height()/2));
-
-		//if (idx == selected)
-		//	qDebug() << "rect: " << r;
 
 		// update the buffer dim
 		bufferDim.setRight(qRound(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
@@ -316,14 +309,10 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		else if (imgWorldRect.left() > width())
 			break;
 
-		thumb->fetchThumb();
-		//// load the thumb!
-		//if (thumb->hasImage() == DkThumbNail::not_loaded && currentFileIdx == oldFileIdx)
-		//	thumbsLoader->setLoadLimits(idx-10, idx+10);
-
-		////imgWorldRect = worldMatrix.mapRect(r);
-		//QRectF debugR = worldMatrix.inverted().mapRect(imgWorldRect);
-		//painter->drawRect(debugR);
+		if (thumb->hasImage() == DkThumbNail::not_loaded) {
+			connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(update()));
+			thumb->fetchThumb();
+		}
 
 		bool isLeftGradient = worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x();
 		bool isRightGradient = imgWorldRect.right() > rightGradient.start().x();
@@ -505,8 +494,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
 				selected = idx;
 
-				if (selected <= thumbPool->getThumbs().size() && selected >= 0) {
-					QSharedPointer<DkThumbNailT> thumb = thumbPool->getThumbs().at(selected);
+				if (selected <= thumbs.size() && selected >= 0) {
+					QSharedPointer<DkThumbNailT> thumb = thumbs.at(selected)->getThumb();
 					selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettings::display.highlightColor, 0.3f);
 				
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
@@ -567,8 +556,8 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 		// find out where the mouse did click
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
-			if (idx < thumbPool->getThumbs().size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
-				emit loadFileSignal(thumbPool->getThumbs().at(idx)->getFile());
+			if (idx < thumbs.size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
+				emit loadFileSignal(thumbs.at(idx)->file());
 			}
 		}
 	}
@@ -659,86 +648,6 @@ void DkFilePreview::moveImages() {
 	update();
 }
 
-//void DkFilePreview::updateDir(QFileInfo file, int force) {
-//
-//	currentFile = file;
-//
-//	if (isVisible())
-//		indexDir(force);
-//}
-
-//void DkFilePreview::indexDir(int force) {
-//
-//	QStringList files = DkImageLoader::getFilteredFileList(currentFile.absoluteDir());
-//
-//	// don't! update
-//	clearThumbs();
-//	
-//	for (int idx = 0; idx < files.size(); idx++)
-//		thumbs.push_back(QSharedPointer<DkThumbNailT>(new DkThumbNailT(QFileInfo(currentFile.absoluteDir(), files.at(idx)))));
-//
-//	//QDir dir = currentFile.absoluteDir();
-//	//dir.setNameFilters(DkImageLoader::fileFilters);
-//	//dir.setSorting(QDir::LocaleAware);
-//
-//	//// new folder?
-//	//if ((force == DkThumbsLoader::user_updated || force == DkThumbsLoader::dir_updated || 
-//	//	thumbsDir.absolutePath() != currentFile.absolutePath() || thumbs.empty()) &&
-//	//	!currentFile.absoluteFilePath().contains(":/nomacs/img/lena")) {	// do not load our resources as thumbs
-//
-//	//	QStringList files;
-//	//	bool myChanges = false;
-//	//	if (force == DkThumbsLoader::dir_updated) {
-//	//		files = DkImageLoader::getFilteredFileList(dir);
-//
-//	//		// TODO: find out if we wrote a thumbnail
-//	//		// this is nasty, but the exif writes to a back-up file so the index changes too if I save thumbnails
-//	//		myChanges = DkSettings::display.saveThumb && files.size()-1 == thumbs.size();
-//	//	}
-//
-//	//	
-//
-//	//	// if a dir update was triggered, only update if the file index changed
-//	//	if (force != DkThumbsLoader::dir_updated) {
-//
-//	//		qDebug() << "force state: " << force;
-//
-//	//		if (files != thumbsLoader->getFiles()) {
-//	//			qDebug() << "file index changed..........." << " my changes: " << myChanges;
-//	//			qDebug() << "new index: " << files.size() << " old index: " << thumbsLoader->getFiles().size();
-//	//		}
-//
-//	//		if (thumbsLoader) {
-//	//			thumbsLoader->stop();
-//	//			thumbsLoader->wait();
-//	//			delete thumbsLoader;
-//	//			thumbsLoader = 0;
-//	//		}
-//
-//	//		if (dir.exists()) {
-//
-//	//			thumbsLoader = new DkThumbsLoader(&thumbs, dir, files);
-//	//			connect(thumbsLoader, SIGNAL(updateSignal()), this, SLOT(update()));
-//
-//	//			thumbsLoader->start();
-//	//			thumbsDir = dir;
-//	//		}
-//	//		else
-//	//			thumbs.clear();
-//
-//	//	}
-//	//}
-//
-//	oldFileIdx = currentFileIdx;
-//	//currentFileIdx = thumbsLoader->getFileIdx(currentFile);
-//	currentFileIdx = files.indexOf(currentFile.fileName());
-//		
-//	if (currentFileIdx >= 0 && currentFileIdx < files.size())
-//		scrollToCurrentImage = true;
-//	update();
-//	
-//}
-
 void DkFilePreview::updateFileIdx(int idx) {
 	
 	if (idx == currentFileIdx)
@@ -750,20 +659,34 @@ void DkFilePreview::updateFileIdx(int idx) {
 	update();
 }
 
+void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage) {
+
+	int tIdx = -1;
+
+	for (int idx = 0; idx < thumbs.size(); idx++) {
+		if (thumbs.at(idx)->file().absoluteFilePath() == cImage->file().absoluteFilePath()) {
+			tIdx = idx;
+			break;
+		}
+	}
+
+	if (tIdx == currentFileIdx)
+		return;
+
+	currentFileIdx = tIdx;
+	if (currentFileIdx >= 0)
+		scrollToCurrentImage = true;
+	update();
+
+}
+
+void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
+	this->thumbs = thumbs;
+}
+
 void DkFilePreview::setVisible(bool visible) {
 
 	DkWidget::setVisible(visible);
-
-	thumbPool->getUpdates(this, visible);
-
-	if (visible && thumbPool)
-		thumbPool->getThumbs();
-		//indexDir(DkThumbsLoader::not_forced);	// false = do not force refreshing the folder
-
-	// // would be nice - but with the current design we get crashes...
-	//if (visible)
-	//	QtConcurrent::run(this, &DkFilePreview::indexDir, DkThumbsLoader::not_forced);
-
 }
 
 // DkThumbLabel --------------------------------------------------------------------

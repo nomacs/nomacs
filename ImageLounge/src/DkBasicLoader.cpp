@@ -903,6 +903,15 @@ QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int 
 	return QFileInfo();
 }
 
+void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, const QByteArray& ba) {
+	
+	if (qImg.isNull())
+		return;
+
+	metaData->setThumbnail(DkImage::createThumb(qImg));
+	saveMetaData(fileInfo, ba);
+}
+
 void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, const QByteArray& ba) {
 
 	QByteArray writeBuffer = ba;

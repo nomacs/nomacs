@@ -363,8 +363,7 @@ signals:
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
 	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false, QString attr = QString());
-	void updateDirSignal(QFileInfo file, int force = DkThumbsLoader::not_forced);
-	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
+	//void updateDirSignal(QFileInfo file, int force = DkThumbsLoader::not_forced);
 	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
 	void setPlayer(bool play);
@@ -375,6 +374,7 @@ signals:
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
 	void errorDialogSignal(const QString&);
+	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
 
 public slots:
 	//QImage changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent = false);

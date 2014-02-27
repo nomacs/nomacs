@@ -559,7 +559,7 @@ class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFilePreview(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkFilePreview(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	
 	~DkFilePreview() {
 	};
@@ -585,6 +585,8 @@ public slots:
 	void leaveEvent(QEvent *event);
 	void moveImages();
 	void updateFileIdx(int fileIdx);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -592,12 +594,7 @@ signals:
 	void changeFileSignal(int idx);
 
 private:
-	//QVector<QSharedPointer<DkThumbNailT>> thumbs;
-	DkThumbPool* thumbPool;
-	//DkThumbsLoader* thumbsLoader;
-	QDir thumbsDir;
-
-	
+	QVector<QSharedPointer<DkImageContainerT> > thumbs;
 	QWidget* parent;
 	QTransform worldMatrix;
 	

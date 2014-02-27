@@ -277,6 +277,8 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		images.clear();
 		createImages(files);
 
+		emit updateDirSignal(images);
+
 		if (dirWatcher) {
 			if (!dirWatcher->directories().isEmpty())
 				dirWatcher->removePaths(dirWatcher->directories());
@@ -896,10 +898,10 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 		currentImage->cancel();
 		currentImage->clear();	// TODO: let cacher determine when to delete the image
 
-		if (currentImage->imgLoaded() == DkImageContainer::loading_canceled) {
+		if (currentImage->imgLoaded() == DkImageContainer::loading_canceled)// {
 			emit showInfoSignal(newImg->file().fileName(), 3000, 1);
-			QCoreApplication::sendPostedEvents();
-		}
+			//QCoreApplication::sendPostedEvents();
+		//}
 
 		currentImage->saveMetaDataThreaded();
 
@@ -1720,7 +1722,6 @@ void DkImageLoader::directoryChanged(const QString& path) {
 		if ((path.isEmpty() && timerBlockedUpdate) || (!path.isEmpty() && !delayedUpdateTimer.isActive())) {
 
 			loadDir(dir, false);
-			emit updateDirSignal(images);
 			timerBlockedUpdate = false;
 
 			if (!path.isEmpty())

@@ -44,7 +44,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	thumbPool = new DkThumbPool(QFileInfo(), this);
 	thumbScrollWidget = new DkThumbScrollWidget(thumbPool, this, flags);
 	thumbScrollWidget->hide();
-	filePreview = new DkFilePreview(thumbPool, this, flags);
+	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
 	overviewWindow = new DkOverview(this);
@@ -266,7 +266,11 @@ void DkControlWidget::connectWidgets() {
 	if (loader) {
 		qDebug() << "loader slots connected";
 
-		connect(loader, SIGNAL(updateDirSignal(QFileInfo, int)), thumbPool, SLOT(setFile(QFileInfo, int)));
+		qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
+
+		connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+		connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), filePreview, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), filePreview, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataInfo, SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
 		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 
@@ -682,11 +686,11 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
 // DkViewPort --------------------------------------------------------------------
 DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(parent) {
 
+	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<DkImageContainerT>");
+
 	testLoaded = false;
 	thumbLoaded = false;
 	visibleStatusbar = false;
-
-	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<DkImageContainerT>");
 
 	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");

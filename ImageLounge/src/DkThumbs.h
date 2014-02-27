@@ -105,7 +105,7 @@ public:
 		return file;
 	};
 
-	void compute(bool forceLoad = false, bool forceSave = false);
+	void compute(int forceLoad = do_not_force);
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
@@ -157,8 +157,14 @@ public:
 	//	return s;
 	//};
 
+	enum {
+		do_not_force,
+		force_exif_thumb,
+		force_full_thumb,
+	};
+
 protected:
-	QImage computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale);
+	QImage computeIntern(QFileInfo file, QByteArray ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
 
 	QImage img;
 	QFileInfo file;
@@ -167,6 +173,7 @@ protected:
 	int maxThumbSize;
 	int minThumbSize;
 	bool rescale;
+
 };
 
 class DkThumbNailT : public QObject, public DkThumbNail {
@@ -176,7 +183,7 @@ public:
 	DkThumbNailT(QFileInfo file = QFileInfo(), QImage img = QImage());
 	~DkThumbNailT();
 
-	void fetchThumb(bool forceLoad = false, bool forceSave = false);
+	void fetchThumb(int forceLoad = do_not_force, QByteArray ba = QByteArray());
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
@@ -184,7 +191,7 @@ public:
 	 **/ 
 	int hasImage() const {
 		
-		if (watcher.isRunning())
+		if (thumbWatcher.isRunning())
 			return loading;
 		else
 			return DkThumbNail::hasImage();
@@ -197,10 +204,11 @@ protected slots:
 	void thumbLoaded();
 
 protected:
-	QImage computeCall(bool forceLoad, bool forceSave);
+	QImage computeCall(int forceLoad, QByteArray ba);
 
-	QFutureWatcher<QImage> watcher;
+	QFutureWatcher<QImage> thumbWatcher;
 	bool fetching;
+	int forceLoad;
 };
 
 class DkThumbPool : public QObject {
