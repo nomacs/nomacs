@@ -427,6 +427,7 @@ protected:
 	int tmpFileIdx; // deprecated?
 
 	// functions
+	void updateCacher(QSharedPointer<DkImageContainerT> imgC);
 	int getNextFolderIdx(int folderIdx);
 	int getPrevFolderIdx(int folderIdx);
 	//void saveFileSilentThreaded(QFileInfo file, QImage img = QImage());
@@ -436,6 +437,7 @@ protected:
 	void createImages(const QFileInfoList& files);
 };
 
+// deprecated
 class DkColorLoader : public QThread {
 	Q_OBJECT
 

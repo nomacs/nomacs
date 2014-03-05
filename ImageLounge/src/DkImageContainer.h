@@ -69,6 +69,8 @@ public:
 	QSharedPointer<DkBasicLoader> getLoader() const;
 	QSharedPointer<DkMetaDataT> getMetaData() const;
 	QSharedPointer<DkThumbNailT> getThumb() const;
+	float getMemoryUsage() const;
+	float getFileSize() const;
 
 	bool exists();
 	bool setPageIdx(int skipIdx);

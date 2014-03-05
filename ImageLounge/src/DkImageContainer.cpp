@@ -164,6 +164,20 @@ QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() const {
 	return thumb;
 }
 
+float DkImageContainer::getMemoryUsage() const {
+
+	float memSize = fileBuffer.size()/(1024.0f*1024.0f);
+	memSize += DkImage::getBufferSizeFloat(loader->image().size(), loader->image().depth());
+
+	return memSize;
+}
+
+float DkImageContainer::getFileSize() const {
+
+	return fileInfo.size()/(1024.0f*1024.0f);
+}
+
+
 QImage DkImageContainer::image() {
 
 	if (loader->image().isNull() && hasImage() == not_loaded)
@@ -391,8 +405,8 @@ void DkImageContainerT::imageLoaded() {
 	fetchingImage = false;
 
 	if (imgLoaded() == loading_canceled) {
-		clear();
 		loadState = not_loaded;
+		clear();
 		return;
 	}
 

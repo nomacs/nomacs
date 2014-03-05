@@ -895,7 +895,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	if (currentImage) {
 		currentImage->cancel();
-		currentImage->clear();	// TODO: let cacher determine when to delete the image
+		if (!DkSettings::resources.cacheMemory) currentImage->clear();
 
 		if (currentImage->imgLoaded() == DkImageContainer::loading_canceled)// {
 			emit showInfoSignal(newImg->file().fileName(), 3000, 1);
@@ -1015,6 +1015,8 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 	emit updateSpinnerSignalDelayed(true);
 	bool loaded = currentImage->loadImageThreaded();	// loads file threaded
 	
+	updateCacher(image);
+
 	if (!loaded)
 		emit updateSpinnerSignalDelayed(false);
 	
@@ -2031,6 +2033,51 @@ QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywo
 	//fileList = sort(fileList, dir);
 
 	return fileList;
+}
+
+void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
+
+	if (!imgC || !DkSettings::resources.cacheMemory)
+		return;
+
+	//// no caching? delete all
+	//if (!DkSettings::resources.cacheMemory) {
+	//	for (int idx = 0; idx < images.size(); idx++) {
+	//		images.at(idx)->clear();
+	//	}
+	//	return;
+	//}
+
+	int cIdx = findFileIdx(imgC->file(), images);
+	float mem = 0;
+
+	if (cIdx == -1) {
+		qDebug() << "WARNING: image not found for caching!";
+		return;
+	}
+
+	for (int idx = 0; idx < images.size(); idx++) {
+
+		if (idx >= cIdx-1 && idx <= idx+DkSettings::resources.maxImagesCached)
+			mem += images.at(idx)->getMemoryUsage();
+		else {
+			images.at(idx)->clear();
+			continue;
+		}
+
+		// ignore the last and current one
+		if (idx == cIdx-1 || idx == cIdx) {
+			continue;
+		}
+		// fully load the next image
+		else if (idx == cIdx+1 && mem < DkSettings::resources.cacheMemory) {
+			images.at(idx)->loadImageThreaded();
+		}
+		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory) {
+			images.at(idx)->fetchFile();
+		}
+	}
+
 }
 
 /**
