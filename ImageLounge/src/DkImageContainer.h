@@ -55,8 +55,6 @@ public:
 	bool operator==(const DkImageContainer& ric) const;
 	bool operator< (const DkImageContainer& o) const;
 	bool operator<= (const DkImageContainer& o) const;
-	friend bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r);
-	friend bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r);
 
 	QImage image();
 
@@ -95,6 +93,9 @@ protected:
 	void saveMetaDataIntern(const QFileInfo& fileInfo, const QByteArray& fileBuffer);
 	void init();
 };
+
+bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r);
+bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r);
 
 class DkImageContainerT : public QObject, public DkImageContainer {
 	Q_OBJECT
