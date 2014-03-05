@@ -56,6 +56,11 @@
 #include <cassert>
 
 #ifdef WIN32
+#include <shlobj.h>
+#endif
+
+
+#ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
 #else
 int main(int argc, char *argv[]) {
@@ -107,13 +112,27 @@ int main(int argc, char *argv[]) {
 
 
 	//QSettings settings;
+	QDir storageLocation;
+#ifdef  WIN32
+	TCHAR szPath[MAX_PATH];
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath))) {
+		QString path = szPath;
+		path += "/" + QCoreApplication::organizationName() + "/translations/"; 
+		storageLocation = QDir(path);
+	}
+#else
+	storageLocation = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+#endif //  WIN32
+
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 
 	QTranslator translator;
-	if (!translator.load(translationName, qApp->applicationDirPath())) {
-		QDir appDir = QDir(qApp->applicationDirPath());
-		if (!translator.load(translationName, appDir.filePath("../share/nomacs/translations/")) && !translationName.contains("_en"))
-			qDebug() << "unable to load translation: " << translationName;
+	if (!storageLocation.exists() || !translator.load(translationName, qApp->applicationDirPath())) {
+		if (!translator.load(translationName, qApp->applicationDirPath())) {
+			QDir appDir = QDir(qApp->applicationDirPath());
+			if (!translator.load(translationName, appDir.filePath("../share/nomacs/translations/")) && !translationName.contains("_en"))
+				qDebug() << "unable to load translation: " << translationName;
+		}
 	}
 	a.installTranslator(&translator);
 	

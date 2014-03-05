@@ -102,6 +102,7 @@ class DkExportTiffDialog;
 class DkMosaicDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
+class DkTranslationUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkTransferToolBar;
@@ -326,6 +327,7 @@ enum lanSyncActions {
 
 enum helpActions {
 	menu_help_update,
+	menu_help_update_translation,
 	menu_help_bug,
 	menu_help_feature,
 	menu_help_documentation,
@@ -522,6 +524,7 @@ public slots:
 	void performUpdate();
 	void updateProgress(qint64 received, qint64 total);
 	void startSetup(QString);
+	void updateTranslations();
 	virtual void enableNoImageActions(bool enable = true);
 	void checkForUpdate();
 	void setFrameless(bool frameless);
@@ -643,6 +646,8 @@ protected:
 	//DkLocalClientManager* localClientManager;
 	//DkLANClientManager* lanClientManager;
 	DkUpdater* updater;
+	DkTranslationUpdater* translationUpdater;	
+	
 
 	QRect oldGeometry;
 	QList<QToolBar *> hiddenToolbars;

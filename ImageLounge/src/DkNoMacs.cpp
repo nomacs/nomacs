@@ -74,6 +74,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	resizeDialog = 0;
 	opacityDialog = 0;
 	updater = 0;
+	translationUpdater = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
 #ifdef WITH_OPENCV
@@ -659,8 +660,9 @@ void DkNoMacs::createMenu() {
 	helpMenu = menu->addMenu(tr("&?"));
 #ifndef Q_WS_X11
 	helpMenu->addAction(helpActions[menu_help_update]);
-	helpMenu->addSeparator();
 #endif // !Q_WS_X11
+	helpMenu->addAction(helpActions[menu_help_update_translation]);
+	helpMenu->addSeparator();
 	helpMenu->addAction(helpActions[menu_help_bug]);
 	helpMenu->addAction(helpActions[menu_help_feature]);
 	helpMenu->addSeparator();
@@ -1217,6 +1219,10 @@ void DkNoMacs::createActions() {
 	helpActions[menu_help_update] = new QAction(tr("&Check for Updates"), this);
 	helpActions[menu_help_update]->setStatusTip(tr("check for updates"));
 	connect(helpActions[menu_help_update], SIGNAL(triggered()), this, SLOT(checkForUpdate()));
+
+	helpActions[menu_help_update_translation] = new QAction(tr("&Update Translation"), this);
+	helpActions[menu_help_update_translation]->setStatusTip(tr("Checks for a new version of the translations of the current language"));
+	connect(helpActions[menu_help_update_translation], SIGNAL(triggered()), this, SLOT(updateTranslations()));
 
 	assignCustomShortcuts(fileActions);
 	assignCustomShortcuts(editActions);
@@ -3314,7 +3320,7 @@ void DkNoMacs::checkForUpdate() {
 		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
 	}
 	updater->silent = false;
-	updater->checkForUpdated();
+	updater->checkForUpdates();
 
 }
 
@@ -3385,6 +3391,10 @@ void DkNoMacs::startSetup(QString filePath) {
 			"<br><a href=\"http://www.nomacs.org/download/\">www.nomacs.org</a><br>";
 		showUpdaterMessage(msg, "update");
 	}
+}
+
+void DkNoMacs::updateTranslations() {
+	translationUpdater->checkForUpdates();
 }
 
 void DkNoMacs::errorDialog(const QString& msg) {
@@ -3662,9 +3672,12 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
 	connect(updater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
+	translationUpdater = new DkTranslationUpdater();
+	connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+
 #ifndef Q_WS_X11
 	if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck)
-		updater->checkForUpdated();	// TODO: is threaded??
+		updater->checkForUpdates();	// TODO: is threaded??
 
 #endif
 	
@@ -3713,9 +3726,13 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 
 		updater = new DkUpdater();
 		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+
+		translationUpdater = new DkTranslationUpdater();
+		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+
 #ifndef Q_WS_X11
 		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck)
-			updater->checkForUpdated();
+			updater->checkForUpdates();
 #endif
 
 		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
@@ -3870,9 +3887,13 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
 		updater = new DkUpdater();
 		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+
+		translationUpdater = new DkTranslationUpdater();
+		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+
 #ifndef Q_WS_X11
 		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck)
-			updater->checkForUpdated();	// TODO: is threaded??
+			updater->checkForUpdates();	// TODO: is threaded??
 #endif
 
 		// sync signals

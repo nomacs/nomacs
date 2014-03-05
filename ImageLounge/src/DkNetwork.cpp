@@ -718,9 +718,11 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
 
 	localIpAddresses.clear();
-	foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
-		foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
-			localIpAddresses << entry.ip();
+	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
+	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
+		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
+		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
+			localIpAddresses << itr->ip();
 		}
 	}
 	broadcasting = false;
@@ -749,13 +751,14 @@ void DkLANUdpSocket::sendBroadcast() {
 	datagram.append(QByteArray::number(tcpServerPort));
 	// datagram.append(serverport) + clientname
 
-	
+	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
 	for (quint16 port = startPort; port <= endPort; port++) {
-		foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
-			foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
-				if (entry.broadcast().isNull())
+		for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
+			QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
+			for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
+				if (itr->broadcast().isNull())
 					continue;
-				writeDatagram(datagram.data(), datagram.size(), entry.broadcast(), port);
+				writeDatagram(datagram.data(), datagram.size(), itr->broadcast(), port);
 			}
 		}
 	}
@@ -1010,7 +1013,7 @@ DkUpdater::DkUpdater() {
 	updateAborted = false;
 }
 
-void DkUpdater::checkForUpdated() {
+void DkUpdater::checkForUpdates() {
 
 	DkSettings::sync.lastUpdateCheck = QDate::currentDate();
 
@@ -1178,6 +1181,80 @@ void DkUpdater::cancelUpdate()  {
 	qDebug() << "abort update";
 	updateAborted = true; 
 	reply->abort(); 
+}
+
+
+// DkTranslationUpdater --------------------------------------------------------------------
+DkTranslationUpdater::DkTranslationUpdater() {
+	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
+}
+
+void DkTranslationUpdater::checkForUpdates() {
+	QUrl url ("http://www.nomacs.org/translations/" + DkSettings::global.language + "/nomacs_" + DkSettings::global.language + ".qm");
+
+	qDebug() << "checking for new translations at " << url;
+	QNetworkRequest request = QNetworkRequest(url);
+	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
+	reply = accessManager.get(QNetworkRequest(url));
+}
+
+void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
+	if (reply->error()) {
+		qDebug() << "network reply error";
+		emit showUpdaterMessage(tr("Unable to download translation"), tr("update")); 
+		return;
+	}
+
+	QDateTime lastModifiedRemote = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
+
+	QDir storageLocation;
+#ifdef  WIN32
+	TCHAR szPath[MAX_PATH];
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath))) {
+		QString path = szPath;
+		path += "/" + QCoreApplication::organizationName() + "/translations/"; 
+		storageLocation = QDir(path);
+	}
+#else
+	storageLocation = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+#endif //  WIN32
+
+	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
+	QFile userTranslation(storageLocation.absoluteFilePath(translationName));
+	if (!userTranslation.exists() || QFileInfo(userTranslation).lastModified() < lastModifiedRemote) {
+		QString basename = "nomacs_" + DkSettings::global.language;
+		QString extension = ".qm";
+
+		if (!storageLocation.exists()) {
+			if (!storageLocation.mkpath(storageLocation.absolutePath())) {
+				qDebug() << "unable to create storage location ... aborting";
+				emit showUpdaterMessage(tr("Unable to update translation"), tr("update")); 
+				return; // TODO error message 
+			}
+		}
+
+		QString absoluteFilePath = storageLocation.absolutePath() + "/" + basename + extension;
+		if (QFile::exists(absoluteFilePath)) {
+			qDebug() << "File already exists - overwriting";
+		}
+
+		QFile file(absoluteFilePath);
+		if (!file.open(QIODevice::WriteOnly)) {
+			qDebug()  << "Could not open " << QFileInfo(file).absoluteFilePath() << "for writing";
+			return;
+		}
+
+		file.write(reply->readAll());
+		qDebug() << "saved new translation: " << " " << QFileInfo(file).absoluteFilePath();
+
+		file.close();
+		
+		emit showUpdaterMessage(tr("Translation updated"), tr("update")); 
+		qDebug() << "translation updated";
+	} else {
+		qDebug() << "no newer translations available";
+		emit showUpdaterMessage(tr("No newer translations found"), tr("update")); 
+	}
 }
 
 }
