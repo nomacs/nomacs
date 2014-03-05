@@ -44,9 +44,15 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QNetworkCookieJar>
+#include <QDesktopServices>
 //#include <QtCore>
 
 #include <math.h>
+
+#ifdef WIN32
+	#include <winsock2.h>	// needed since libraw 0.16
+	#include <shlobj.h>
+#endif
 
 #include "DkConnection.h"
 
@@ -460,7 +466,7 @@ public:
 	DkUpdater();
 
 public slots:
-	void checkForUpdated();
+	void checkForUpdates();
 	void replyFinished(QNetworkReply*);
 	void performUpdate();
 	void downloadFinishedSlot(QNetworkReply* data);
@@ -474,7 +480,7 @@ signals:
 	void downloadFinished(QString filePath);
 	void downloadProgress(qint64, qint64);
 
-private:
+protected:
 	void startDownload(QUrl downloadUrl);
 	void downloadUpdate();
 	QNetworkAccessManager accessManagerVersion;
@@ -486,6 +492,24 @@ private:
 	QUrl nomacsSetupUrl;
 	QString setupVersion;
 	bool updateAborted;
+};
+
+class DkTranslationUpdater : public QObject {
+	Q_OBJECT;
+
+	public:
+		DkTranslationUpdater();
+
+	public slots:
+		virtual void checkForUpdates();
+		virtual void replyFinished(QNetworkReply*);
+
+	signals:
+		void translationUpdated();
+		void showUpdaterMessage(QString, QString);
+	private:
+		QNetworkAccessManager accessManager;
+		QNetworkReply* reply;
 };
 
 //// this code is based on code from: 
