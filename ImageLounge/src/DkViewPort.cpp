@@ -1848,8 +1848,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 		return;		// no network loading in this case
 	}
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
+		QCoreApplication::sendPostedEvents();
+	}
 
 	skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
 }
