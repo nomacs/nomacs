@@ -118,13 +118,16 @@ void DkImageContainer::clear() {
 
 	//if (edited) // trigger gui question
 
-	if (imgLoaded() == loading || imgLoaded() == loading_canceled)
+	if (imgLoaded() == loading || imgLoaded() == loading_canceled) {
+		qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " cleared...";
 		return;
+	}
 
-	saveMetaData();
+	//saveMetaData();
 	loader->release();
 	fileBuffer.clear();
 	init();
+	qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " cleared...";
 }
 
 QFileInfo DkImageContainer::file() const {
@@ -220,6 +223,7 @@ QByteArray DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
 
 	QByteArray ba;
 	ba = file.readAll();
+	file.close();
 
 	return ba;
 }
@@ -364,8 +368,15 @@ void DkImageContainerT::fetchFile() {
 
 void DkImageContainerT::bufferLoaded() {
 
+	if (!fetchingBuffer) {
+		qDebug() << "WARNING: buffer loaded is called twice!";
+		return;
+	}
+
+	qDebug() << "buffer loaded by: " << QObject::sender();
 	fetchingBuffer = false;
 	fileBuffer = bufferWatcher.result();
+	bufferWatcher.setFuture(QFuture<QByteArray> ());
 
 	if (imgLoaded() == loading)
 		fetchImage();
@@ -402,16 +413,24 @@ void DkImageContainerT::fetchImage() {
 
 void DkImageContainerT::imageLoaded() {
 
+	if (!fetchingImage) {
+		qDebug() << "WARNING fetching image is called twice!";
+		return;
+	}
+
 	fetchingImage = false;
 
 	if (imgLoaded() == loading_canceled) {
 		loadState = not_loaded;
 		clear();
+		imageWatcher.setFuture(QFuture<QSharedPointer<DkBasicLoader> >());	// clear the future object
 		return;
 	}
 
 	// deliver image
 	loader = imageWatcher.result();
+	imageWatcher.setFuture(QFuture<QSharedPointer<DkBasicLoader> >());	// clear the future object
+
 	loadingFinished();
 }
 
@@ -433,10 +452,12 @@ void DkImageContainerT::loadingFinished() {
 		return;
 	}
 
+	// TODO: clear file buffer it it exceeds a certain size?! e.g. psd files
+	//fileBuffer.clear();
+	
 	loadState = loaded;
 	emit fileLoadedSignal(true);
 	
-	qDebug() << "metadata loaded and image rotated in: " << QString::fromStdString(dt.getTotal());
 }
 
 void DkImageContainerT::cancel() {

@@ -3206,15 +3206,15 @@ QVector <QAction* > DkNoMacs::getSyncActions() {
 	return syncActions;
 }
 
-void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC) {
-
-	if (!imgC) {
-		setWindowTitle(QFileInfo());
-		return;
-	}
-
-	setWindowTitle(imgC->file(), imgC->image().size(), imgC->isEdited(), imgC->getTitleAttribute());
-}
+//void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC) {
+//
+//	if (!imgC) {
+//		setWindowTitle(QFileInfo());
+//		return;
+//	}
+//
+//	setWindowTitle(imgC->file(), imgC->image().size(), imgC->isEdited(), imgC->getTitleAttribute());
+//}
 
 void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString attr) {
 

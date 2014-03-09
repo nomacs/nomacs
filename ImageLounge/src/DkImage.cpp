@@ -285,8 +285,8 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 			dirWatcher->addPath(dir.absolutePath());
 		}
 	}
-	else
-		qDebug() << "ignoring... old dir: " << dir.absolutePath() << " newDir: " << newDir << " file size: " << images.size();
+	//else
+	//	qDebug() << "ignoring... old dir: " << dir.absolutePath() << " newDir: " << newDir << " file size: " << images.size();
 
 	return true;
 }
@@ -895,7 +895,6 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	if (currentImage) {
 		currentImage->cancel();
-		if (!DkSettings::resources.cacheMemory) currentImage->clear();
 
 		if (currentImage->imgLoaded() == DkImageContainer::loading_canceled)// {
 			emit showInfoSignal(newImg->file().fileName(), 3000, 1);
@@ -903,6 +902,8 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 		//}
 
 		currentImage->saveMetaDataThreaded();
+		if (!DkSettings::resources.cacheMemory) 
+			currentImage->clear();
 
 		// disconnect old image
 		disconnect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));
