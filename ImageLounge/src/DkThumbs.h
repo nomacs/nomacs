@@ -36,6 +36,7 @@
 #include <QImageReader>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+#include <QSharedPointer>
 
 #ifdef WIN32
 	#include <winsock2.h>	// needed since libraw 0.16
@@ -168,7 +169,7 @@ public:
 	};
 
 protected:
-	QImage computeIntern(QFileInfo file, QByteArray ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
+	QImage computeIntern(QFileInfo file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
 	QColor computeColorIntern();
 
 	QImage img;
@@ -190,7 +191,7 @@ public:
 	DkThumbNailT(QFileInfo file = QFileInfo(), QImage img = QImage());
 	~DkThumbNailT();
 
-	void fetchThumb(int forceLoad = do_not_force, QByteArray ba = QByteArray());
+	void fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 	void fetchColor();
 
 	/**
@@ -214,7 +215,7 @@ protected slots:
 	void colorLoaded();
 
 protected:
-	QImage computeCall(int forceLoad, QByteArray ba);
+	QImage computeCall(int forceLoad, QSharedPointer<QByteArray> ba);
 	QColor computeColorCall();
 
 	QFutureWatcher<QImage> thumbWatcher;

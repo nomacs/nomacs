@@ -54,12 +54,12 @@ void DkThumbNail::compute(int forceLoad) {
 	
 	// we do this that complicated to be thread-safe
 	// if we use member vars in the thread and the object gets deleted during thread execution we crash...
-	this->img = computeIntern(file, QByteArray(), forceLoad, maxThumbSize, minThumbSize, rescale);
+	this->img = computeIntern(file, QSharedPointer<QByteArray>(), forceLoad, maxThumbSize, minThumbSize, rescale);
 }
 
 QColor DkThumbNail::computeColorIntern() {
 
-	QImage img = computeIntern(file, QByteArray(), force_exif_thumb, maxThumbSize, minThumbSize, rescale);
+	QImage img = computeIntern(file, QSharedPointer<QByteArray>(), force_exif_thumb, maxThumbSize, minThumbSize, rescale);
 
 	if (!img.isNull())
 		return DkImage::getMeanColor(img);
@@ -75,14 +75,14 @@ QColor DkThumbNail::computeColorIntern() {
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  **/ 
-QImage DkThumbNail::computeIntern(const QFileInfo file, const QByteArray ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale) {
+QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale) {
 	
 	DkTimer dt;
 	qDebug() << "[thumb] file: " << file.absoluteFilePath();
 
 	// see if we can read the thumbnail from the exif data
 	DkMetaDataT metaData;
-	if (ba.isEmpty())
+	if (!ba || ba->isEmpty())
 		metaData.readMetaData(file);
 	else
 		metaData.readMetaData(file, ba);
@@ -102,11 +102,11 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QByteArray ba, int
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
 	QImageReader* imageReader;
 	
-	if (ba.isEmpty())
+	if (!ba || ba->isEmpty())
 		imageReader = new QImageReader(filePath);
 	else {
 		QBuffer buffer;
-		buffer.setData(ba);
+		buffer.setData(ba->data());
 		buffer.open(QIODevice::ReadOnly);
 		imageReader = new QImageReader(&buffer, QFileInfo(filePath).suffix().toStdString().c_str());
 		buffer.close();
@@ -309,7 +309,7 @@ void DkThumbNailT::colorLoaded() {
 	qDebug() << "mean color: " << meanColor;
 }
 
-void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QByteArray ba) {
+void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteArray> ba) {
 
 	if (!img.isNull() || !imgExists || fetching)
 		return;
@@ -326,7 +326,7 @@ void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QByteArray ba) {
 }
 
 
-QImage DkThumbNailT::computeCall(int forceLoad, QByteArray ba) {
+QImage DkThumbNailT::computeCall(int forceLoad, QSharedPointer<QByteArray> ba) {
 
 	return DkThumbNail::computeIntern(file, ba, forceLoad, maxThumbSize, minThumbSize, rescale);
 }

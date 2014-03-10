@@ -300,11 +300,11 @@ void DkCompressDialog::drawPreview() {
 	else if (dialogMode == webp_dialog && getCompression() != -1) {
 		// pre-compute the webp compression
 		DkBasicLoader loader;
-		QByteArray buffer;
+		QSharedPointer<QByteArray> buffer(new QByteArray());
 		loader.saveWebPFile(newImg, buffer, getCompression(), 0);
-		loader.loadWebPFile(buffer);
+		loader.loadWebPFile(QFileInfo(), buffer);
 		newImg = loader.image();
-		updateFileSizeLabel(buffer.size(), origImg.size());
+		updateFileSizeLabel(buffer->size(), origImg.size());
 	}
 	else if (dialogMode == web_dialog) {
 

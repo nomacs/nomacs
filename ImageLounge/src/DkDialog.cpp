@@ -3802,7 +3802,7 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 	// load full image if we have not enough resolution
 	if (qMin(thumb.getImage().width(), thumb.getImage().height()) < patchRes) {
 		DkBasicLoader loader;
-		loader.loadGeneral(thumb.getFile(), true);
+		loader.loadGeneral(thumb.getFile(), true, true);
 		img = loader.image();
 	}
 	else

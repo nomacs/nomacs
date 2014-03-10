@@ -34,6 +34,7 @@ DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 
 	this->fileInfo = fileInfo;
 	this->loader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
+	this->fileBuffer = QSharedPointer<QByteArray>(new QByteArray());
 
 	init();
 }
@@ -169,7 +170,7 @@ QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() const {
 
 float DkImageContainer::getMemoryUsage() const {
 
-	float memSize = fileBuffer.size()/(1024.0f*1024.0f);
+	float memSize = fileBuffer->size()/(1024.0f*1024.0f);
 	memSize += DkImage::getBufferSizeFloat(loader->image().size(), loader->image().depth());
 
 	return memSize;
@@ -208,7 +209,8 @@ int DkImageContainer::imgLoaded() const {
 
 bool DkImageContainer::loadImage() {
 
-	if (fileBuffer.isNull())
+
+	if (fileBuffer->isNull())
 		fileBuffer = loadFileToBuffer(fileInfo);
 
 	loader = loadImageIntern(fileInfo, fileBuffer);
@@ -216,20 +218,19 @@ bool DkImageContainer::loadImage() {
 	return loader->hasImage();
 }
 
-QByteArray DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
+QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
 
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
 
-	QByteArray ba;
-	ba = file.readAll();
+	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
 	file.close();
 
 	return ba;
 }
 
 
-QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo fileInfo, const QSharedPointer<QByteArray> fileBuffer) {
 
 	// checks performed so load the file
 	//QSharedPointer<DkBasicLoader> basicLoader(new DkBasicLoader());
@@ -252,14 +253,9 @@ void DkImageContainer::saveMetaData() {
 }
 
 
-void DkImageContainer::saveMetaDataIntern(const QFileInfo& fileInfo, const QByteArray& fileBuffer) {
+void DkImageContainer::saveMetaDataIntern(const QFileInfo& fileInfo, QSharedPointer<QByteArray> fileBuffer) {
 
-	QByteArray ba = fileBuffer;
-
-	if (fileBuffer.isEmpty())
-		ba = loadFileToBuffer(fileInfo);
-		
-	loader->saveMetaData(fileInfo, ba);
+	loader->saveMetaData(fileInfo, fileBuffer);
 }
 
 bool DkImageContainer::isEdited() const {
@@ -354,13 +350,13 @@ void DkImageContainerT::fetchFile() {
 		imageWatcher.waitForFinished();
 
 	// ignore doubled calls
-	if (!fileBuffer.isEmpty()) {
+	if (fileBuffer && !fileBuffer->isEmpty()) {
 		bufferLoaded();
 		return;
 	}
 
 	fetchingBuffer = true;
-	QFuture<QByteArray> future = QtConcurrent::run(this, 
+	QFuture<QSharedPointer<QByteArray> > future = QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::loadFileToBuffer, fileInfo);
 
 	bufferWatcher.setFuture(future);
@@ -368,15 +364,9 @@ void DkImageContainerT::fetchFile() {
 
 void DkImageContainerT::bufferLoaded() {
 
-	if (!fetchingBuffer) {
-		qDebug() << "WARNING: buffer loaded is called twice!";
-		return;
-	}
-
 	qDebug() << "buffer loaded by: " << QObject::sender();
 	fetchingBuffer = false;
 	fileBuffer = bufferWatcher.result();
-	bufferWatcher.setFuture(QFuture<QByteArray> ());
 
 	if (imgLoaded() == loading)
 		fetchImage();
@@ -394,7 +384,7 @@ void DkImageContainerT::fetchImage() {
 		return;
 	}
 
-	if (loader->hasImage() || fileBuffer.isNull() || loadState == exists_not) {
+	if (loader->hasImage() || !fileBuffer || fileBuffer->isEmpty() || loadState == exists_not) {
 		loadingFinished();
 		return;
 	}
@@ -413,23 +403,16 @@ void DkImageContainerT::fetchImage() {
 
 void DkImageContainerT::imageLoaded() {
 
-	if (!fetchingImage) {
-		qDebug() << "WARNING fetching image is called twice!";
-		return;
-	}
-
 	fetchingImage = false;
 
 	if (imgLoaded() == loading_canceled) {
 		loadState = not_loaded;
 		clear();
-		imageWatcher.setFuture(QFuture<QSharedPointer<DkBasicLoader> >());	// clear the future object
 		return;
 	}
 
 	// deliver image
 	loader = imageWatcher.result();
-	imageWatcher.setFuture(QFuture<QSharedPointer<DkBasicLoader> >());	// clear the future object
 
 	loadingFinished();
 }
@@ -533,12 +516,12 @@ void DkImageContainerT::savingFinished() {
 	}
 }
 
-QByteArray DkImageContainerT::loadFileToBuffer(const QFileInfo fileInfo) {
+QSharedPointer<QByteArray> DkImageContainerT::loadFileToBuffer(const QFileInfo fileInfo) {
 
 	return DkImageContainer::loadFileToBuffer(fileInfo);
 }
 
-QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QFileInfo fileInfo, const QSharedPointer<QByteArray> fileBuffer) {
 
 	return DkImageContainer::loadImageIntern(fileInfo, fileBuffer);
 }

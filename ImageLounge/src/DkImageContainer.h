@@ -73,7 +73,7 @@ public:
 	bool exists();
 	bool setPageIdx(int skipIdx);
 
-	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
+	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo fileInfo);
 	bool loadImage();
 	void setImage(const QImage& img, const QFileInfo& fileInfo);
 	void saveMetaData();
@@ -81,16 +81,16 @@ public:
 
 protected:
 	QFileInfo fileInfo;
-	QByteArray fileBuffer;
+	QSharedPointer<QByteArray> fileBuffer;
 	QSharedPointer<DkBasicLoader> loader;
 	QSharedPointer<DkThumbNailT> thumb;
 
 	int loadState;
 	bool edited;
 
-	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
-	void saveMetaDataIntern(const QFileInfo& fileInfo, const QByteArray& fileBuffer);
+	void saveMetaDataIntern(const QFileInfo& fileInfo, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
 	void init();
 };
 
@@ -135,12 +135,12 @@ protected slots:
 protected:
 	void fetchImage();
 	
-	QByteArray loadFileToBuffer(const QFileInfo fileInfo);
-	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QByteArray fileBuffer);
+	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo fileInfo);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
 	void saveMetaDataIntern();
 
-	QFutureWatcher<QByteArray> bufferWatcher;
+	QFutureWatcher<QSharedPointer<QByteArray> > bufferWatcher;
 	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;
 	QFutureWatcher<QFileInfo> saveImageWatcher;
 	QFutureWatcher<bool> saveMetaDataWatcher;

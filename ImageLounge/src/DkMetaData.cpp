@@ -37,31 +37,33 @@ DkMetaDataT::DkMetaDataT() {
 	exifState = not_loaded;
 }
 
-void DkMetaDataT::readMetaData(const QFileInfo& fileInfo) {
-
-	qDebug() << "[Exiv2] old metadata loading is used!";
-
-	QByteArray ba;
-	QFile file(fileInfo.absoluteFilePath());
-	file.open(QIODevice::ReadOnly);
-	ba = file.readAll();
-	file.close();
-
-	readMetaData(fileInfo, ba);
-}
-
-void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, const QByteArray& ba) {
+void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
 
 	this->file = fileInfo;
 
-	if (ba.isNull() || ba.isEmpty()) {
-		exifState = no_data;
-		return;
-	}
-
 	try {
-		Exiv2::MemIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)ba.constData(), ba.size()));
-		exifImg = Exiv2::ImageFactory::open(exifBuffer);
+		if (!ba || ba->isEmpty()) {
+			// TODO: for now we don't support unicode filenames for exif data
+			// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
+			// this is more work and should be done when updating the cacher as we should definitely
+			// not load the image twice...
+#ifdef EXV_UNICODE_PATH
+#if QT_VERSION < 0x050000
+			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
+			exifImg = Exiv2::ImageFactory::open(filePath);
+#else
+			std::wstring filePath = (file.isSymLink()) ? (wchar_t*)file.symLinkTarget().utf16() : (wchar_t*)file.absoluteFilePath().utf16();
+			exifImg = Exiv2::ImageFactory::open(filePath);
+#endif
+#else
+			std::string filePath = (file.isSymLink()) ? file.symLinkTarget().toStdString() : file.absoluteFilePath().toStdString();
+			exifImg = Exiv2::ImageFactory::open(filePath);
+#endif
+		}
+		else {
+			Exiv2::MemIo::AutoPtr exifBuffer(new Exiv2::MemIo((const byte*)ba->constData(), ba->size()));
+			exifImg = Exiv2::ImageFactory::open(exifBuffer);
+		}
 	} 
 	catch (...) {
 		exifState = no_data;
@@ -105,13 +107,13 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QFile::ReadOnly);
 	
-	QByteArray ba = file.readAll();
+	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
 	bool saved = saveMetaData(ba, force);
 	if (!saved)
 		return saved;
 	
 	file.open(QFile::WriteOnly);
-	file.write(ba);
+	file.write(ba->data());
 	file.close();
 
 	qDebug() << "[Exiv2] old save metadata used!";
@@ -119,7 +121,10 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 	return true;
 }
 
-bool DkMetaDataT::saveMetaData(QByteArray& ba, bool force) {
+bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> ba, bool force) {
+
+	if (!ba)
+		return false;
 
 	if (!force && exifState != dirty)
 		return false;
@@ -134,7 +139,7 @@ bool DkMetaDataT::saveMetaData(QByteArray& ba, bool force) {
 	Exiv2::MemIo::AutoPtr exifMem;
 	try {
 
-		exifMem = Exiv2::MemIo::AutoPtr(new Exiv2::MemIo((byte*)ba.data(), ba.size()));
+		exifMem = Exiv2::MemIo::AutoPtr(new Exiv2::MemIo((byte*)ba->data(), ba->size()));
 		exifImgN = Exiv2::ImageFactory::open(exifMem);
 	} 
 	catch (...) {
@@ -159,7 +164,7 @@ bool DkMetaDataT::saveMetaData(QByteArray& ba, bool force) {
 	// now get the data again
 	Exiv2::DataBuf exifBuf = exifImgN->io().read(exifImgN->io().size());
 	if (exifBuf.pData_)
-		ba = QByteArray((const char*)exifBuf.pData_, exifBuf.size_);
+		ba = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));
 	else
 		return false;
 

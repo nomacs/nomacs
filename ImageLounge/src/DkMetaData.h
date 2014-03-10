@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QBuffer>
 #include <QVector2D>
+#include <QSharedPointer>
 
 
 #ifdef HAVE_EXIV2_HPP
@@ -59,11 +60,10 @@ class DllExport DkMetaDataT {
 public:
 	DkMetaDataT();
 
-	void readMetaData(const QFileInfo& fileInfo);
-	void readMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
+	void readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
 	bool saveMetaData(const QFileInfo& fileInfo, bool force = false);
-	bool saveMetaData(QByteArray& ba, bool force = false);
+	bool saveMetaData(QSharedPointer<QByteArray> ba, bool force = false);
 
 	int getOrientation() const;
 	int getRating() const;

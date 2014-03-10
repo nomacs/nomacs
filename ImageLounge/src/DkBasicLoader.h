@@ -113,13 +113,17 @@ public:
 	};
 
 	/**
+	 * Convenience function.
+	 **/ 
+	bool loadGeneral(const QFileInfo& file, bool loadMetaData = false, bool fast = false);
+
+	/**
 	 * Loads the image for the given file
 	 * @param file an image file
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/ 
-	bool loadGeneral(const QFileInfo& file, bool loadMetaData = false, bool fast = false);
-	bool loadGeneral(const QFileInfo& file, const QByteArray& ba, bool loadMetaData = false, bool fast = false);
+	bool loadGeneral(const QFileInfo& file, const QSharedPointer<QByteArray> ba, bool loadMetaData = false, bool fast = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
@@ -139,9 +143,9 @@ public:
 	bool setPageIdx(int skipIdx);
 
 	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
-	bool save(const QFileInfo& fileInfo, const QImage& img, QByteArray& ba, int compression = -1);
-	void saveThumbToMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
-	void saveMetaData(const QFileInfo& fileInfo, const QByteArray& ba);
+	bool saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray> ba, int compression = -1);
+	void saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	void saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
@@ -203,6 +207,7 @@ public:
 	};
 
 	void loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba);
+	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo& fileInfo);
 
 	void release();
 
@@ -210,18 +215,15 @@ public:
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
 #endif
 
-	bool loadPSDFile(const QFileInfo& fileInfo);
-	bool loadPSDFile(const QByteArray& ba);
+	bool loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 #ifdef WITH_WEBP
-	bool loadWebPFile(const QFileInfo& fileInfo);
-	bool loadWebPFile(const QByteArray& ba);
-	bool saveWebPFile(const QFileInfo& fileInfo, QImage img, int compression);
-	bool saveWebPFile(QImage img, QByteArray& ba, int compression, int speed = 4);
+	bool loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression);
+	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray> ba, int compression, int speed = 4);
 #else
-	bool loadWebPFile(const QFileInfo& fileInfo) {return false;};	// not supported if webP was not linked
-	bool loadWebPFile(const QByteArray& ba) {return false;};
-	bool saveWebPFile(const QFileInfo& fileInfo, QImage img, int compression) {return false;};
-	bool saveWebPFile(QImage img, QByteArray& ba, int compression, int speed = 4) {return false;};
+	bool loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) {return false;};	// not supported if webP was not linked
+	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression) {return false;};
+	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray> ba, int compression, int speed = 4) {return false;};
 #endif
 
 signals:
@@ -232,10 +234,8 @@ public slots:
 	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
 
 protected:
-	bool loadRohFile(const QFileInfo& fileInfo);
-	bool loadRohFile(const QByteArray& ba);
-	bool loadRawFile(const QFileInfo& fileInfo, bool fast = false);
-	bool loadRawFile(const QByteArray& ba, bool fast = false);
+	bool loadRohFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false);
 	void indexPages(const QFileInfo& fileInfo);
 	void convert32BitOrder(void *buffer, int width);
 
