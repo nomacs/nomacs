@@ -126,7 +126,7 @@ void DkImageContainer::clear() {
 
 	//saveMetaData();
 	loader->release();
-	fileBuffer.clear();
+	fileBuffer->clear();
 	init();
 	qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " cleared...";
 }
@@ -210,7 +210,7 @@ int DkImageContainer::imgLoaded() const {
 bool DkImageContainer::loadImage() {
 
 
-	if (fileBuffer->isNull())
+	if (fileBuffer->isEmpty())
 		fileBuffer = loadFileToBuffer(fileInfo);
 
 	loader = loadImageIntern(fileInfo, fileBuffer);
@@ -317,7 +317,7 @@ bool DkImageContainerT::loadImageThreaded() {
 	fileInfo.refresh();
 
 	if (fileInfo.lastModified() != modifiedBefore)
-		fileBuffer.clear();
+		fileBuffer->clear();
 
 	// null file?
 	if (fileInfo.fileName().isEmpty() || !fileInfo.exists()) {
@@ -365,6 +365,7 @@ void DkImageContainerT::fetchFile() {
 void DkImageContainerT::bufferLoaded() {
 
 	qDebug() << "buffer loaded by: " << QObject::sender();
+	
 	fetchingBuffer = false;
 	fileBuffer = bufferWatcher.result();
 
@@ -435,8 +436,9 @@ void DkImageContainerT::loadingFinished() {
 		return;
 	}
 
-	// TODO: clear file buffer it it exceeds a certain size?! e.g. psd files
-	//fileBuffer.clear();
+	// clear file buffer it it exceeds a certain size?! e.g. psd files
+	if (fileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
+		fileBuffer->clear();
 	
 	loadState = loaded;
 	emit fileLoadedSignal(true);
