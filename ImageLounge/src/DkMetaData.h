@@ -63,7 +63,7 @@ public:
 	void readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 
 	bool saveMetaData(const QFileInfo& fileInfo, bool force = false);
-	bool saveMetaData(QSharedPointer<QByteArray> ba, bool force = false);
+	bool saveMetaData(QSharedPointer<QByteArray>& ba, bool force = false);
 
 	int getOrientation() const;
 	int getRating() const;
@@ -88,6 +88,7 @@ public:
 	bool isTiff() const;
 	bool isJpg() const;
 	bool isRaw() const;
+	bool isDirty() const;
 	void printMetaData() const; //only for debug
 
 protected:

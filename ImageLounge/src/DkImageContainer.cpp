@@ -436,7 +436,7 @@ void DkImageContainerT::loadingFinished() {
 		return;
 	}
 
-	// clear file buffer it it exceeds a certain size?! e.g. psd files
+	// clear file buffer if it exceeds a certain size?! e.g. psd files
 	if (fileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
 		fileBuffer->clear();
 	
@@ -511,7 +511,7 @@ void DkImageContainerT::savingFinished() {
 		emit fileSavedSignal(saveFile, false);
 	}
 	else {
-		fileBuffer.clear();
+		fileBuffer->clear();
 		fileInfo = saveFile;
 		edited = false;
 		emit fileSavedSignal(saveFile);

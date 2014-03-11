@@ -85,7 +85,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		if (!ba || ba->isEmpty())
 			imgLoaded = qImg.load(file.absoluteFilePath());
 		else
-			imgLoaded = qImg.loadFromData(*ba.data());
+			imgLoaded = qImg.loadFromData(ba->data());
 
 		if (imgLoaded) loader = qt_loader;
 	}
@@ -680,6 +680,22 @@ QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QFileInfo& file
 	return ba;
 }
 
+bool DkBasicLoader::writeBufferToFile(const QFileInfo& fileInfo, const QSharedPointer<QByteArray> ba) const {
+
+	if (!ba || ba->isEmpty())
+		return false;
+
+	QFile file(fileInfo.absoluteFilePath());
+	file.open(QIODevice::WriteOnly);
+	qint64 bytesWritten = file.write(*ba.data());
+	file.close();
+	qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
+
+	if (!bytesWritten)
+		return false;
+
+	return true;
+}
 
 void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 
@@ -822,22 +838,20 @@ QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int 
 
 	if (saveToBuffer(fileInfo, img, ba, compression) && ba) {
 
-		QFile file(fileInfo.absoluteFilePath());
-		file.open(QIODevice::WriteOnly);
-		file.write(ba->data());
-		file.close();
+		if (writeBufferToFile(fileInfo, ba)) {
 
-		// now load the image again - for consistency (e.g. jpg artifacts)
-		loadGeneral(fileInfo, ba);
-		this->file = fileInfo;
+			// now load the image again - for consistency (e.g. jpg artifacts)
+			loadGeneral(fileInfo, ba);
+			this->file = fileInfo;
 
-		return fileInfo;
+			return fileInfo;
+		}
 	}
 
 	return QFileInfo();
 }
 
-bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray> ba, int compression) {
+bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray>& ba, int compression) {
 
 	if (!ba) 
 		ba = QSharedPointer<QByteArray>(new QByteArray());
@@ -889,7 +903,7 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 	return saved;
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
+void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
 	
 	if (qImg.isNull())
 		return;
@@ -898,11 +912,14 @@ void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointe
 	saveMetaData(fileInfo, ba);
 }
 
-void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
+void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
-	
+
+	if (ba->isEmpty() && metaData->isDirty())
+		ba = loadFileToBuffer(fileInfo);
+
 	bool saved = false;
 	try {
 		saved = metaData->saveMetaData(ba);
@@ -910,14 +927,8 @@ void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByte
 	catch(...) {
 	}
 	
-	if (saved) {
-		//QFileInfo f = QFileInfo(fileInfo.absoluteDir(), "josef.jpg");
-		QFile file(fileInfo.absoluteFilePath());
-		file.open(QIODevice::WriteOnly);
-		qint64 bytesWritten = file.write(ba->data());
-		file.close();
-		qDebug() << "[DkBasicLoader] Metadata saved to file. bytes written: " << bytesWritten;
-	}
+	if (saved)
+		writeBufferToFile(fileInfo, ba);
 
 }
 
@@ -1082,7 +1093,10 @@ void DkBasicLoader::release() {
 
 	qImg = QImage();
 	//metaData.clear();
-	metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+	
+	// TODO: where should we clear the metadata?
+	if (!metaData->isDirty())
+		metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 	
 #ifdef WITH_OPENCV
 	cvImg.release();
@@ -1101,18 +1115,18 @@ bool DkBasicLoader::loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByte
 
 	// retrieve the image features (size, alpha etc.)
 	WebPBitstreamFeatures features;
-	int error = WebPGetFeatures((const uint8_t*)ba.data(), ba->size(), &features);
+	int error = WebPGetFeatures((const uint8_t*)ba->data(), ba->size(), &features);
 	if (error) return false;
 
 	uint8_t* webData = 0;
 
 	if (features.has_alpha) {
-		webData = WebPDecodeBGRA((const uint8_t*) ba.data(), ba->size(), &features.width, &features.height);
+		webData = WebPDecodeBGRA((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
 		qImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
 	}
 	else {
-		webData = WebPDecodeRGB((const uint8_t*) ba.data(), ba->size(), &features.width, &features.height);
+		webData = WebPDecodeRGB((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
 		qImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
 	}
@@ -1130,19 +1144,16 @@ bool DkBasicLoader::saveWebPFile(const QFileInfo& fileInfo, const QImage img, in
 
 	QSharedPointer<QByteArray> ba;
 
-	if (saveWebPFile(img, ba, compression) && !ba->isEmpty()) {
+	if (saveWebPFile(img, ba, compression) && ba && !ba->isEmpty()) {
 
-		QFile file(fileInfo.absoluteFilePath());
-		file.open(QIODevice::WriteOnly);
-		file.write(*ba.data());
-	
+		writeBufferToFile(fileInfo, ba);
 		return true;
 	}
 
 	return false;
 }
 
-bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray> ba, int compression, int speed) {
+bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed) {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());

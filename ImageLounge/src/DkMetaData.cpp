@@ -121,7 +121,7 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 	return true;
 }
 
-bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> ba, bool force) {
+bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 
 	if (!ba)
 		return false;
@@ -154,6 +154,8 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray> ba, bool force) {
 	}
 
 	exifImgN->readMetadata();
+
+	qDebug() << "orientation for saving: " << getOrientation();
 
 	exifImgN->setExifData(exifData);
 	exifImgN->setXmpData(xmpData);
@@ -425,6 +427,11 @@ bool DkMetaDataT::isRaw() const {
 
 	QString newSuffix = file.suffix();
 	return newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive));
+}
+
+bool DkMetaDataT::isDirty() const {
+
+	return exifState == dirty;
 }
 
 QStringList DkMetaDataT::getExifKeys() const {

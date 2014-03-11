@@ -302,6 +302,7 @@ void DkCompressDialog::drawPreview() {
 		DkBasicLoader loader;
 		QSharedPointer<QByteArray> buffer(new QByteArray());
 		loader.saveWebPFile(newImg, buffer, getCompression(), 0);
+		qDebug() << "webP buffer size: " << buffer->size();
 		loader.loadWebPFile(QFileInfo(), buffer);
 		newImg = loader.image();
 		updateFileSizeLabel(buffer->size(), origImg.size());

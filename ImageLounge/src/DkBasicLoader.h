@@ -143,9 +143,9 @@ public:
 	bool setPageIdx(int skipIdx);
 
 	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
-	bool saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray> ba, int compression = -1);
-	void saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-	void saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray>& ba, int compression = -1);
+	void saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba = QSharedPointer<QByteArray>());
+	void saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba = QSharedPointer<QByteArray>());
 
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
@@ -208,6 +208,7 @@ public:
 
 	void loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba);
 	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo& fileInfo);
+	bool writeBufferToFile(const QFileInfo& fileInfo, const QSharedPointer<QByteArray> ba) const;
 
 	void release();
 
@@ -219,11 +220,11 @@ public:
 #ifdef WITH_WEBP
 	bool loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression);
-	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray> ba, int compression, int speed = 4);
+	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4);
 #else
 	bool loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) {return false;};	// not supported if webP was not linked
 	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression) {return false;};
-	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray> ba, int compression, int speed = 4) {return false;};
+	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4) {return false;};
 #endif
 
 signals:

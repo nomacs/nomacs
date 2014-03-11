@@ -1552,6 +1552,7 @@ void DkImageLoader::rotateImage(double angle) {
 
 	if (metaData->hasMetaData() && DkSettings::metaData.saveExifOrientation) {
 		QImage thumb = DkImage::createThumb(currentImage->image());
+		metaData->setThumbnail(thumb);
 		metaData->setOrientation(qRound(angle));
 	}
 	else
