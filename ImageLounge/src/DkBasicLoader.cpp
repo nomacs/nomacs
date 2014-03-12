@@ -903,14 +903,16 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 	return saved;
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
+void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo) {
 
-	saveThumbToMetaData(fileInfo, QSharedPointer<QByteArray>());
+	QSharedPointer<QByteArray> ba;	// dummy
+	saveThumbToMetaData(fileInfo, ba);
 }
 
-void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
+void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo) {
 
-	saveMetaData(fileInfo, QSharedPointer<QByteArray>());
+	QSharedPointer<QByteArray> ba;	// dummy
+	saveMetaData(fileInfo, ba);
 }
 
 void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
@@ -1138,7 +1140,7 @@ bool DkBasicLoader::loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByte
 	else {
 		webData = WebPDecodeRGB((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
-		qImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
+		qImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_RGB888);
 	}
 
 	// clone the image so we own the buffer
@@ -1170,8 +1172,10 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 
 	QImage sImg;
 
+	bool hasAlpha = DkImage::alphaChannelUsed(img);
+
 	// currently, guarantee that the image is a ARGB image
-	if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB888)
+	if (!hasAlpha && img.format() != QImage::Format_RGB888)
 		sImg = img.convertToFormat(QImage::Format_RGB888);	// for now
 	else 
 		sImg = img;
@@ -1227,12 +1231,13 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 
 	int errorCode = 0;
 
-	if (img.hasAlphaChannel())
-		errorCode = WebPPictureImportBGRA(&webImg, reinterpret_cast<uint8_t*>(sImg.bits()), img.bytesPerLine());
+	if (hasAlpha) 
+		errorCode = WebPPictureImportBGRA(&webImg, reinterpret_cast<uint8_t*>(sImg.bits()), sImg.bytesPerLine());
 	else
-		errorCode = WebPPictureImportRGB(&webImg, reinterpret_cast<uint8_t*>(sImg.bits()), img.bytesPerLine());
+		errorCode = WebPPictureImportRGB(&webImg, reinterpret_cast<uint8_t*>(sImg.bits()), sImg.bytesPerLine());
 
-	qDebug() << "import error: " << errorCode;
+	if (!errorCode)
+		qDebug() << "import error: " << errorCode;
 
 	// Set up a byte-writing method (write-to-memory, in this case):
 	WebPMemoryWriter writer;

@@ -102,7 +102,7 @@ class DkImageContainerT : public QObject, public DkImageContainer {
 
 public:
 	DkImageContainerT(const QFileInfo& file);
-	~DkImageContainerT();
+	virtual ~DkImageContainerT();
 
 	bool loadImageThreaded();
 	void fetchFile();

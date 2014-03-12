@@ -545,6 +545,18 @@ void DkMetaDataT::setThumbnail(QImage thumb) {
 		buffer.open(QIODevice::WriteOnly);
 		thumb.save(&buffer, "JPEG");	// here we destroy the alpha channel of thumbnails
 
+		try {
+			// whipe all exif data of the thumbnail
+			Exiv2::MemIo::AutoPtr exifBufferThumb(new Exiv2::MemIo((const byte*)data.constData(), data.size()));
+			Exiv2::Image::AutoPtr exifImgThumb = Exiv2::ImageFactory::open(exifBufferThumb);
+
+			if (exifImgThumb.get() != 0 && exifImgThumb->good())
+				exifImgThumb->clearExifData();
+		}
+		catch (...) {
+			qDebug() << "could not clear the thumbnail exif info";
+		}
+
 		eThumb.erase();	// erase all thumbnails
 		eThumb.setJpegThumbnail((Exiv2::byte *)data.data(), data.size());
 
