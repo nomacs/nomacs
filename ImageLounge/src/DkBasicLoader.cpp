@@ -1140,7 +1140,7 @@ bool DkBasicLoader::loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByte
 	else {
 		webData = WebPDecodeRGB((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
-		qImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_RGB888);
+		qImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
 	}
 
 	// clone the image so we own the buffer
