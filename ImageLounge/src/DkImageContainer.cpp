@@ -291,6 +291,7 @@ DkImageContainerT::~DkImageContainerT() {
 
 	//metaDataWatcher.blockSignals(true);
 	//metaDataWatcher.cancel();
+	loader->saveMetaData(fileInfo);
 
 	// we have to wait here
 	bufferWatcher.waitForFinished();
@@ -455,7 +456,7 @@ void DkImageContainerT::cancel() {
 
 void DkImageContainerT::saveMetaDataThreaded() {
 
-	if (!exists())
+	if (!exists() || loader->getMetaData() && !loader->getMetaData()->isDirty())
 		return;
 
 	QFuture<void> future = QtConcurrent::run(this, 

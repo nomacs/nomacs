@@ -408,7 +408,7 @@ bool DkMetaDataT::hasMetaData() const {
 
 bool DkMetaDataT::isLoaded() const {
 
-	return exifState == loaded;
+	return exifState == loaded || exifState == dirty;
 }
 
 bool DkMetaDataT::isTiff() const {
@@ -613,6 +613,14 @@ void DkMetaDataT::setResolution(const QVector2D& res) {
 
 	setExifValue("Exif.Image.XResolution",x);
 	setExifValue("Exif.Image.YResolution",y);
+}
+
+void DkMetaDataT::clearOrientation() {
+
+	if (exifState == not_loaded || exifState == no_data)
+		return;
+
+	setExifValue("orientation", "0");
 }
 
 void DkMetaDataT::setOrientation(int o) {

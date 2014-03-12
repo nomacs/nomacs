@@ -1364,6 +1364,8 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 	if (!file.exists() || !file.isFile() || !saved)
 		return;
 
+	loadDir(file);
+
 	emit imageLoadedSignal(currentImage, true);
 	emit imageUpdatedSignal(currentImage);
 	qDebug() << "image updated: " << currentImage->file().fileName();

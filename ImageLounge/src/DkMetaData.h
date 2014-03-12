@@ -78,6 +78,7 @@ public:
 	QStringList getIptcValues() const;
 
 	void setResolution(const QVector2D& res);
+	void clearOrientation();
 	void setOrientation(int o);
 	void setRating(int r);
 	void setExifValue(QString key, QString taginfo);
