@@ -760,6 +760,9 @@ void DkImageLoader::loadFileAt(int idx) {
 	if (currentImage && !dir.exists())
 		loadDir(currentImage->file());
 
+	if(images.empty())
+		return;
+
 	if (dir.exists()) {
 
 		if (idx == -1) {
