@@ -120,7 +120,7 @@ void DkImageContainer::clear() {
 	//if (edited) // trigger gui question
 
 	if (imgLoaded() == loading || imgLoaded() == loading_canceled) {
-		qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " cleared...";
+		//qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " NOT cleared...";
 		return;
 	}
 
@@ -128,7 +128,6 @@ void DkImageContainer::clear() {
 	loader->release();
 	fileBuffer->clear();
 	init();
-	qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " cleared...";
 }
 
 QFileInfo DkImageContainer::file() const {
@@ -307,8 +306,6 @@ void DkImageContainerT::clear() {
 	if (fetchingImage || fetchingBuffer)
 		return;
 
-	qDebug() << "clearing...";
-
 	DkImageContainer::clear();
 }
 
@@ -365,8 +362,6 @@ void DkImageContainerT::fetchFile() {
 
 void DkImageContainerT::bufferLoaded() {
 
-	qDebug() << "buffer loaded by: " << QObject::sender();
-	
 	fetchingBuffer = false;
 	fileBuffer = bufferWatcher.result();
 

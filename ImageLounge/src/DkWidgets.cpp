@@ -397,7 +397,6 @@ void DkFilePreview::createCurrentImg(const QImage& img) {
 	sr.moveCenter(QRectF(currentImg.rect()).center());
 	painter.setOpacity(1.0);
 	painter.drawImage(sr, img, QRect(QPoint(), img.size()));
-	qDebug() << "creating new current img...";
 }
 
 void DkFilePreview::resizeEvent(QResizeEvent *event) {
@@ -3250,7 +3249,6 @@ void DkMetaDataInfo::readTags() {
 						QString aValue = metaData->getExifValue(tmp);
 
 						qDebug() << aValue;
-						if (aValue.isEmpty()) qDebug() << "trying the fNumber";
 						if (aValue.isEmpty()) aValue = metaData->getExifValue("FNumber");
 
 						QStringList sList = aValue.split('/');

@@ -52,6 +52,7 @@
 #include <QMovie>
 #include <QByteArray>
 #include <QCoreApplication>
+#include <QApplication>
 
 // opencv
 #ifdef WITH_OPENCV

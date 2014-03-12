@@ -1016,8 +1016,6 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 	emit updateSpinnerSignalDelayed(true);
 	bool loaded = currentImage->loadImageThreaded();	// loads file threaded
 	
-	updateCacher(image);
-
 	if (!loaded)
 		emit updateSpinnerSignalDelayed(false);
 	
@@ -1027,14 +1025,18 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 
 void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
-	// TODO: cacher routines
 	emit updateSpinnerSignalDelayed(false);
 	emit imageLoadedSignal(currentImage, loaded);
 
-	if (loaded)
-		emit imageUpdatedSignal(currentImage);
+	if (!loaded)
+		return;
 
+	emit imageUpdatedSignal(currentImage);
+	updateCacher(currentImage);
 	updateHistory();
+
+	QApplication::sendPostedEvents();	// force an event post here
+
 }
 
 
@@ -2047,6 +2049,8 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 	if (!imgC || !DkSettings::resources.cacheMemory)
 		return;
 
+	DkTimer dt;
+
 	//// no caching? delete all
 	//if (!DkSettings::resources.cacheMemory) {
 	//	for (int idx = 0; idx < images.size(); idx++) {
@@ -2079,11 +2083,15 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 		// fully load the next image
 		else if (idx == cIdx+1 && mem < DkSettings::resources.cacheMemory) {
 			images.at(idx)->loadImageThreaded();
+			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " fully cached...";
 		}
 		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory) {
 			images.at(idx)->fetchFile();
+			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " file fetched...";
 		}
 	}
+
+	qDebug() << "cache with: " << mem << " MB created in: " << QString::fromStdString(dt.getTotal());
 
 }
 

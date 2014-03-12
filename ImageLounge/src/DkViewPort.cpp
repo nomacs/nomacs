@@ -339,7 +339,7 @@ void DkControlWidget::showWidgetsSettings() {
 		return;
 	}
 
-	qDebug() << "current app mode: " << DkSettings::app.currentAppMode;
+	//qDebug() << "current app mode: " << DkSettings::app.currentAppMode;
 
 	showPreview(filePreview->getCurrentDisplaySetting());
 	showScroller(folderScroll->getCurrentDisplaySetting());
@@ -372,8 +372,6 @@ void DkControlWidget::showScroller(bool visible) {
 }
 
 void DkControlWidget::showMetaData(bool visible) {
-
-	qDebug() << "[DkMetaData] showing: " << visible;
 
 	if (!metaDataInfo)
 		return;
@@ -842,7 +840,6 @@ void DkViewPort::setImage(QImage newImg) {
 	emit movieLoadedSignal(false);
 
 	if (!thumbLoaded) { 
-		qDebug() << "saving image matrix...";
 		oldImgViewRect = imgViewRect;
 		oldWorldMatrix = worldMatrix;
 		oldImgMatrix = imgMatrix;
@@ -861,7 +858,7 @@ void DkViewPort::setImage(QImage newImg) {
 	emit enableNoImageSignal(!newImg.isNull());
 
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
-	qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
+	//qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
 
 	if (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || oldImgRect.isEmpty() || 
 		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && oldImgRect != imgRect))
@@ -892,8 +889,6 @@ void DkViewPort::setImage(QImage newImg) {
 
 	// draw a histogram from the image -> does nothing if the histogram is invisible
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
-	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
-
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -1847,6 +1842,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 	//}
 
 	unloadImage();
+	QApplication::sendPostedEvents();
 
 	for (int idx = 0; idx < loader->getImages().size(); idx++) {
 		QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);

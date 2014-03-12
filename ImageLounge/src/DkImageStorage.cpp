@@ -486,8 +486,6 @@ QImage DkImageStorage::getImage(float factor) {
 			return imgs.at(idx);
 	}
 
-	qDebug() << "empty color table: " << img.colorTable().isEmpty();
-
 	// if the image does not exist - create it
 	if (!busy && imgs.empty() && /*img.colorTable().isEmpty() &&*/ img.width() > 32 && img.height() > 32) {
 		stop = false;
