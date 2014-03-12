@@ -904,6 +904,16 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 }
 
 void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
+
+	saveThumbToMetaData(fileInfo, QSharedPointer<QByteArray>());
+}
+
+void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
+
+	saveMetaData(fileInfo, QSharedPointer<QByteArray>());
+}
+
+void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
 	
 	if (qImg.isNull())
 		return;

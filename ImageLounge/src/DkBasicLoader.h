@@ -144,8 +144,10 @@ public:
 
 	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
 	bool saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray>& ba, int compression = -1);
-	void saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba = QSharedPointer<QByteArray>());
-	void saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba = QSharedPointer<QByteArray>());
+	void saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba);
+	void saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba);
+	void saveThumbToMetaData(const QFileInfo& fileInfo);
+	void saveMetaData(const QFileInfo& fileInfo);
 
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
