@@ -923,15 +923,16 @@ void DkRCConnection::sendAskForPermission() {
 
 void DkRCConnection::sendPermission() {
 	qDebug() << "printing whitelist\n--------------------";
-	for (int i = 0; i < DkSettings::Sync::syncWhiteList.size(); i++)
-		qDebug() << DkSettings::Sync::syncWhiteList.at(i);
+	for (int i = 0; i < DkSettings::sync.syncWhiteList.size(); i++)
+		qDebug() << DkSettings::sync.syncWhiteList.at(i);
 	qDebug() << "--------------------";
 	qDebug() << "current client Name:" << getClientName();
-	qDebug() << "sending Permission to " << this->peerName() << ":" << this->peerPort() << "      value:" << DkSettings::Sync::syncWhiteList.contains(getClientName());
+	qDebug() << "sending Permission to " << this->peerName() << ":" << this->peerPort() << "      value:" << DkSettings::sync.syncWhiteList.contains(getClientName());
+	
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
-	ds << DkSettings::Sync::syncWhiteList.contains(getClientName());
+	ds << DkSettings::sync.syncWhiteList.contains(getClientName());
 	ds << "dummyText";
 	QByteArray data = "PERMISSION";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);
@@ -950,11 +951,11 @@ void DkRCConnection::sendRCType(int type) {
 }
 
 bool DkRCConnection::allowedToSynchronize() {
-	if (!DkSettings::Sync::syncWhiteList.contains(getClientName())) {
+	if (!DkSettings::sync.syncWhiteList.contains(getClientName())) {
 		qDebug() << "Peer " << getClientName() << " is not allowed to synchronize (not in whitelist)";
 		qDebug() << "printing whitelist:";
-		for(int i=0; i<DkSettings::Sync::syncWhiteList.size();i++ )
-			qDebug() << DkSettings::Sync::syncWhiteList.at(i);
+		for(int i=0; i<DkSettings::sync.syncWhiteList.size();i++ )
+			qDebug() << DkSettings::sync.syncWhiteList.at(i);
 
 		//disconnect immediately
 		sendStopSynchronizeMessage();

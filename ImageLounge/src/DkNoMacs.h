@@ -105,6 +105,7 @@ class DkUpdater;
 class DkTranslationUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
+class DkRCManagerThread;
 class DkTransferToolBar;
 class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150

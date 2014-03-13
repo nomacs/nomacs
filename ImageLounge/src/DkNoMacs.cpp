@@ -3462,7 +3462,7 @@ DkNoMacsSync::~DkNoMacsSync() {
 
 	if (rcClient) {
 
-		if (DkSettings::Sync::syncMode == DkSettings::sync_mode_remote)
+		if (DkSettings::sync.syncMode == DkSettings::sync_mode_remote)
 			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
 
 		emit stopSynchronizeWithSignal();
@@ -3496,7 +3496,7 @@ void DkNoMacsSync::initLanClient() {
 		delete rcClient;
 	}
 
-	if (!DkSettings::Sync::enableNetworkSync) {
+	if (!DkSettings::sync.enableNetworkSync) {
 
 		lanClient = 0;
 		rcClient = 0;
@@ -3541,7 +3541,7 @@ void DkNoMacsSync::initLanClient() {
 	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
 	DkTimer dt;
-	if (!DkSettings::Sync::syncWhiteList.empty()) {
+	if (!DkSettings::sync.syncWhiteList.empty()) {
 		qDebug() << "whitelist not empty .... starting server";
 		// TODO: currently blocking : )
 		emit startRCServerSignal(true);
@@ -3722,7 +3722,7 @@ void DkNoMacsSync::tcpRemoteDisplay(bool start) {
 
 void DkNoMacsSync::tcpAutoConnect(bool connect) {
 
-	DkSettings::Sync::syncMode = (connect) ? DkSettings::sync_mode_auto : DkSettings::sync_mode_default;
+	DkSettings::sync.syncMode = (connect) ? DkSettings::sync_mode_auto : DkSettings::sync_mode_default;
 }
 
 
@@ -3741,7 +3741,7 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 		DkPeer peer = peers[0];
 
 		emit synchronizeRemoteControl(peer.peerId);
-		DkSettings::Sync::syncMode = mode;
+		DkSettings::sync.syncMode = mode;
 		
 		if (mode == DkSettings::sync_mode_remote)
 			rcClient->sendNewMode(DkSettings::sync_mode_auto);	// TODO: if we need this threaded emit a signal here
@@ -3750,7 +3750,7 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 	}
 	else if (!connect) {
 
-		DkSettings::Sync::syncMode = DkSettings::sync_mode_default;
+		DkSettings::sync.syncMode = DkSettings::sync_mode_default;
 
 		if (mode == DkSettings::sync_mode_remote)
 			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
@@ -3761,7 +3761,7 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 	return couldConnect;
 }
 
-void DkNoMacsSync::newClientConnected(bool connected) {
+void DkNoMacsSync::newClientConnected(bool connected, bool local) {
 
 	tcpLanMenu->enableActions(connected, local);
 	

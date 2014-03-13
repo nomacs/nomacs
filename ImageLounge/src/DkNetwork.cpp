@@ -452,8 +452,8 @@ void DkLANClientManager::connectionSynchronized(QList<quint16> synchronizedPeers
 	// ignore synchronized clients of other connection
 
 	// add to last seen for whitelisting
-	DkSettings::Sync::recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
-	DkSettings::Sync::recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
+	DkSettings::sync.recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
+	DkSettings::sync.recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
 
 
 }
@@ -750,8 +750,8 @@ void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersO
 	// ignore synchronized clients of other connection
 
 	// add to last seen for whitelisting
-	DkSettings::Sync::recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
-	DkSettings::Sync::recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
+	DkSettings::sync.recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
+	DkSettings::sync.recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
 
 
 }
@@ -785,7 +785,7 @@ void DkRCClientManager::connectionReceivedPermission(DkConnection* connection, b
 
 void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, int mode) {
 
-	DkSettings::Sync::syncMode = mode;
+	DkSettings::sync.syncMode = mode;
 	qDebug() << "new mode: " << mode;
 }
 

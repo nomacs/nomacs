@@ -61,10 +61,6 @@ QStringList DkMetaDataSettingsWidget::sdescriptionDesc = QStringList() <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Path") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
 
-int DkSettings::Sync::syncMode = sync_mode_default;
-QStringList DkSettings::Sync::recentSyncNames = QStringList();
-QStringList DkSettings::Sync::syncWhiteList = QStringList();
-QHash<QString, QVariant> DkSettings::Sync::recentLastSeen = QHash<QString, QVariant>();
 
 // settings
 DkSettings::App DkSettings::app_p;
@@ -211,23 +207,7 @@ void DkSettings::load(bool force) {
 	QBitArray tmpMetaData = settings.value("metaData", meta_p.metaDataBits).toBitArray();
 	if (tmpMetaData.size() == meta_p.metaDataBits.size())
 		meta_p.metaDataBits = tmpMetaData;
-
-	Sync::enableNetworkSync= settings.value("SynchronizeSettings/enableNetworkSync", DkSettings::Sync::enableNetworkSync).toBool();
-	Sync::allowTransformation = settings.value("SynchronizeSettings/allowTransformation", DkSettings::Sync::allowTransformation).toBool();
-	Sync::allowPosition = settings.value("SynchronizeSettings/allowPosition", DkSettings::Sync::allowPosition).toBool();
-	Sync::allowFile = settings.value("SynchronizeSettings/allowFile", DkSettings::Sync::allowFile).toBool();
-	Sync::allowImage = settings.value("SynchronizeSettings/allowImage", DkSettings::Sync::allowImage).toBool();;
-	Sync::updateDialogShown = settings.value("SynchronizeSettings/updateDialogShown", DkSettings::Sync::updateDialogShown).toBool();
-	Sync::lastUpdateCheck = settings.value("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck).toDate();
-	Sync::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform).toBool();
-	Sync::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier).toBool();
-	Sync::recentSyncNames = settings.value("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames).toStringList();
-	Sync::syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList).toStringList();
-	Sync::recentLastSeen = settings.value("SynchronizeSettings/recentLastSeen", DkSettings::Sync::recentLastSeen).toHash();
 	
-	MetaData::ignoreExifOrientation = settings.value("MetaDataSettings/ignoreExifOrientation", DkSettings::MetaData::ignoreExifOrientation).toBool();
-	MetaData::saveExifOrientation = settings.value("MetaDataSettings/saveExifOrientation", DkSettings::MetaData::saveExifOrientation).toBool();
-
 	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
 	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
 
@@ -257,6 +237,10 @@ void DkSettings::load(bool force) {
 	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
 	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
 	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
+	sync_p.recentSyncNames = settings.value("SynchronizeSettings/recentSyncNames", sync_p.recentSyncNames).toStringList();
+	sync_p.syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", sync_p.syncWhiteList).toStringList();
+	sync_p.recentLastSeen = settings.value("SynchronizeSettings/recentLastSeen", sync_p.recentLastSeen).toHash();
+
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------
@@ -436,24 +420,6 @@ void DkSettings::save(bool force) {
 		settings.setValue("backgroundColor", slideShow_p.backgroundColor);
 	if (!force && slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
-	settings.setValue("SynchronizeSettings/enableNetworkSync", DkSettings::Sync::enableNetworkSync);
-	settings.setValue("SynchronizeSettings/allowTransformation", DkSettings::Sync::allowTransformation);
-	settings.setValue("SynchronizeSettings/allowPosition", DkSettings::Sync::allowPosition);
-	settings.setValue("SynchronizeSettings/allowFile", DkSettings::Sync::allowFile);
-	settings.setValue("SynchronizeSettings/allowImage", DkSettings::Sync::allowImage);
-	settings.setValue("SynchronizeSettings/updateDialogShown", DkSettings::Sync::updateDialogShown);
-	settings.setValue("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck);
-	settings.setValue("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform);
-	settings.setValue("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier);
-	settings.setValue("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames);
-	settings.setValue("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList);
-	settings.setValue("SynchronizeSettings/recentLastSeen", DkSettings::Sync::recentLastSeen);
-
-	settings.setValue("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory);
-	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview);
-	settings.setValue("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages);
-	settings.setValue("ResourceSettings/filterDuplicates", DkSettings::Resources::filterDuplicats);
-	settings.setValue("ResourceSettings/preferredExtension", DkSettings::Resources::preferredExtension);
 
 	settings.endGroup();
 	// Sync Settings --------------------------------------------------------------------
@@ -477,6 +443,12 @@ void DkSettings::save(bool force) {
 		settings.setValue("syncAbsoluteTransform", sync_p.syncAbsoluteTransform);
 	if (!force && sync_p.switchModifier != sync_d.switchModifier)
 		settings.setValue("switchModifier", sync_p.switchModifier);
+	if (!force && sync_p.recentSyncNames != sync_d.recentSyncNames)
+		settings.setValue("recentSyncNames", sync_p.recentSyncNames);
+	if (!force && sync_p.syncWhiteList != sync_d.syncWhiteList)
+		settings.setValue("syncWhiteList", sync_p.syncWhiteList);
+	if (!force && sync_p.recentLastSeen != sync_d.recentLastSeen)
+		settings.setValue("recentLastSeen", sync_p.recentLastSeen);
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------
@@ -1696,8 +1668,8 @@ DkRemoteControlWidget::DkRemoteControlWidget(QWidget* parent) : DkSettingsWidget
 }
 
 void DkRemoteControlWidget::init() {
-	QStringList clients = DkSettings::Sync::recentSyncNames;
-	clients << DkSettings::Sync::syncWhiteList;
+	QStringList clients = DkSettings::sync.recentSyncNames;
+	clients << DkSettings::sync.syncWhiteList;
 	clients.removeDuplicates();
 
 	whiteListModel = new DkWhiteListViewModel(table);
@@ -1709,7 +1681,7 @@ void DkRemoteControlWidget::init() {
 	table->setSortingEnabled(true);
 
 	for(int i = 0; i < clients.size();i++) {
-		whiteListModel->addWhiteListEntry(DkSettings::Sync::syncWhiteList.contains(clients[i]), clients[i], DkSettings::Sync::recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
+		whiteListModel->addWhiteListEntry(DkSettings::sync.syncWhiteList.contains(clients[i]), clients[i], DkSettings::sync.recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
 	}
 	table->setModel(proxyModel);
 	table->resizeColumnsToContents();
@@ -1731,13 +1703,13 @@ void DkRemoteControlWidget::createLayout() {
 }
 
 void DkRemoteControlWidget::writeSettings() {
-	DkSettings::Sync::syncWhiteList = QStringList();
+	DkSettings::sync.syncWhiteList = QStringList();
 	QVector<bool> checked = whiteListModel->getCheckedVector();
 	QVector<QString> names = whiteListModel->getNamesVector();
 	
 	for (int i=0; i < checked.size(); i++) {
 		if(checked.at(i))
-			DkSettings::Sync::syncWhiteList << names.at(i);
+			DkSettings::sync.syncWhiteList << names.at(i);
 	}
 }
 

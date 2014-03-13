@@ -894,7 +894,7 @@ void DkViewPort::setImage(QImage newImg) {
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 
-	if (DkSettings::Sync::syncMode == DkSettings::sync_mode_auto)
+	if (DkSettings::sync.syncMode == DkSettings::sync_mode_auto)
 		tcpSendImage(true);
 
 }
@@ -1145,7 +1145,7 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 
 	// check if we need a synchronization
 	if ((qApp->keyboardModifiers() == altMod ||
-		DkSettings::Sync::syncMode != DkSettings::sync_mode_default) &&
+		DkSettings::sync.syncMode != DkSettings::sync_mode_default) &&
 		(hasFocus() || controller->hasFocus())) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = worldMatrix.inverted().map(size);
@@ -1714,7 +1714,7 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 		loader->load(file, silent);
 
 	// TODO: add sync if auto connect
-	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
 		tcpLoadFile(0, file.absoluteFilePath());
 }
 
@@ -1735,7 +1735,7 @@ void DkViewPort::loadFile(int skipIdx, bool silent) {
 		loader->changeFile(skipIdx, silent || (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
 
 	// alt mod
-	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus())) {
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
 		qDebug() << "emitting load next";
 	}
@@ -1867,7 +1867,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 	
 
 	if ((qApp->keyboardModifiers() == altMod || 
-		DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && 
+		DkSettings::sync.syncMode == DkSettings::sync_mode_auto) && 
 		(hasFocus() || 
 		controller->hasFocus()))
 		emit sendNewFileSignal(skipIdx);
@@ -1891,7 +1891,7 @@ void DkViewPort::loadFirst() {
 	if (loader && !testLoaded)
 		loader->firstFile();
 
-	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1902,7 +1902,7 @@ void DkViewPort::loadLast() {
 	if (loader && !testLoaded)
 		loader->lastFile();
 
-	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
@@ -1937,8 +1937,8 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	// some hack: set the mode to default in order to prevent loops (if both are auto connected)
 	// should be mostly harmless
-	int oldMode = DkSettings::Sync::syncMode;
-	DkSettings::Sync::syncMode = DkSettings::mode_default;
+	int oldMode = DkSettings::sync.syncMode;
+	DkSettings::sync.syncMode = DkSettings::mode_default;
 
 	if (filename.isEmpty()) {
 
@@ -1966,8 +1966,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	qDebug() << "loading file: " << filename;
 
-	DkSettings::Sync::syncMode = oldMode;
-
+	DkSettings::sync.syncMode = oldMode;
 }
 
 DkImageLoader* DkViewPort::getImageLoader() {

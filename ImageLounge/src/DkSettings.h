@@ -107,19 +107,6 @@ public:
 		sort_date_created,
 		sort_date_modified,
 		sort_random,
-		enum syncModes {
-			sync_mode_default = 0,
-			sync_mode_auto,
-			sync_mode_remote,
-
-			sync_mode_end,
-		};
-
-		enum sortMode {
-			sort_filename,
-			sort_date_created,
-			sort_date_modified,
-
 		sort_end,
 	};
 
@@ -144,6 +131,14 @@ public:
 		zoom_never_keep,
 
 		zoom_end,
+	};
+
+	enum syncModes {
+		sync_mode_default = 0,
+		sync_mode_auto,
+		sync_mode_remote,
+
+		sync_mode_end,
 	};
 
 	struct App {
@@ -227,6 +222,10 @@ public:
 		QDate lastUpdateCheck;
 		bool syncAbsoluteTransform;
 		bool switchModifier;
+		QStringList recentSyncNames;
+		QStringList syncWhiteList;
+		QHash<QString, QVariant> recentLastSeen;
+		int syncMode;
 	};
 	struct MetaData {
 		QBitArray metaDataBits;
