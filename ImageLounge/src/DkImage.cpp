@@ -896,6 +896,12 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 		return;
 	}
 
+	// cancel action if the image is currently loading
+	if (DkSettings::resources.waitForLastImg &&
+		currentImage && currentImage->imgLoaded() == DkImageContainerT::loading && 
+		newImg && newImg->file().absoluteDir() == currentImage->file().absoluteDir())
+		return;
+
 	if (currentImage) {
 		currentImage->cancel();
 
@@ -998,7 +1004,6 @@ void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
 
 	loadDir(file);
 
-
 	if (file.isFile()) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
@@ -1015,6 +1020,9 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 		return;
 
 	setCurrentImage(image);
+
+	if (currentImage && currentImage->imgLoaded() == DkImageContainerT::loading)
+		return;
 
 	emit updateSpinnerSignalDelayed(true);
 	bool loaded = currentImage->loadImageThreaded();	// loads file threaded

@@ -218,6 +218,7 @@ public:
 		float cacheMemory;
 		int maxImagesCached;
 		bool fastThumbnailPreview;
+		bool waitForLastImg;
 		bool filterRawImages;
 		bool filterDuplicats;
 		int loadRawThumb;
