@@ -191,11 +191,11 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		//qDebug() << "thumb loaded from exif...";
 	}
 
-	//if (orientation != -1 && orientation != 0 && metaData.isJpg()) {
-	//	QTransform rotationMatrix;
-	//	rotationMatrix.rotate((double)orientation);
-	//	thumb = thumb.transformed(rotationMatrix);
-	//}
+	if (orientation != -1 && orientation != 0 && metaData.isJpg()) {
+		QTransform rotationMatrix;
+		rotationMatrix.rotate((double)orientation);
+		thumb = thumb.transformed(rotationMatrix);
+	}
 
 	if (!thumb.isNull())
 		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());

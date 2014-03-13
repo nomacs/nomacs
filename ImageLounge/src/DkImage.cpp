@@ -1035,10 +1035,11 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 		return;
 
 	emit imageUpdatedSignal(currentImage);
-	updateCacher(currentImage);
-	updateHistory();
 
 	QApplication::sendPostedEvents();	// force an event post here
+
+	updateCacher(currentImage);
+	updateHistory();
 
 }
 

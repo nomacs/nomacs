@@ -367,8 +367,11 @@ void DkImageContainerT::bufferLoaded() {
 
 	if (imgLoaded() == loading)
 		fetchImage();
-	else if (imgLoaded() == loading_canceled)
+	else if (imgLoaded() == loading_canceled) {
+		loadState = not_loaded;
 		clear();
+		return;
+	}
 }
 
 void DkImageContainerT::fetchImage() {
@@ -419,8 +422,8 @@ void DkImageContainerT::loadingFinished() {
 	DkTimer dt;
 
 	if (imgLoaded() == loading_canceled) {
-		clear();
 		loadState = not_loaded;
+		clear();
 		return;
 	}
 
