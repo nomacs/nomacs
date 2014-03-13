@@ -4,9 +4,9 @@
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2012 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2012 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2012 Florian Kleber <florian@nomacs.org>
+ Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
 
  This file is part of nomacs.
 
@@ -81,8 +81,10 @@ using namespace cv;
 #endif
 
 #ifdef WITH_LIBTIFF
-#include "tif_config.h"	
-#include "tiffio.h"
+	#ifdef Q_WS_WIN
+		#include "tif_config.h"	
+	#endif
+	#include "tiffio.h"
 #endif
 
 #include <set>
@@ -131,8 +133,20 @@ namespace nmc {
 	bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
 #endif
 
-bool wCompLogicQString(const QString & lhs, const QString & rhs);
 
+bool compLogicQString(const QString & lhs, const QString & rhs);
+
+bool compFilename(const QFileInfo & lhf, const QFileInfo & rhf);
+
+bool compFilenameInv(const QFileInfo & lhf, const QFileInfo & rhf);
+
+bool compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf);
+
+bool compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf);
+
+bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf);
+
+bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
 
 // basic image processing
 
@@ -744,6 +758,8 @@ public:
 	void updateCacheIndex();
 	QString fileName();
 	QFileInfo getChangedFileInfo(int skipIdx, bool silent = false, bool searchFile = true);
+	static QStringList sort(const QStringList& files, const QDir& dir);
+	void sort();
 
 	static void initFileFilters();	// add special file filters
 
@@ -775,6 +791,10 @@ public:
 		// and is connected with a Qt::directConnection [7.11.2012 markus]
 		QMutexLocker locker(&mutex);	
 		return basicLoader.image();
+	};
+
+	bool dirtyTiff() {
+		return basicLoader.isDirty();
 	};
 
 	/**

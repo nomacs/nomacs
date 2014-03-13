@@ -102,6 +102,21 @@ class DkSettings : public QObject {
 			sync_mode_end,
 		};
 
+		enum sortMode {
+			sort_filename,
+			sort_date_created,
+			sort_date_modified,
+
+			sort_end,
+		};
+
+		enum sortDir {
+			sort_ascending,
+			sort_descending,
+
+			sort_dir_end,
+		};
+
 		DkSettings() {};
 		DkSettings(const DkSettings& settings) {}; 
 
@@ -119,6 +134,7 @@ class DkSettings : public QObject {
 			static int appMode;
 			static int currentAppMode;
 			static bool advancedSettings;
+			static bool closeOnEsc;
 		};
 
 		struct Display {
@@ -168,6 +184,8 @@ class DkSettings : public QObject {
 			static bool showDefaultAppDialog;
 			static int numUserChoices;
 			static QStringList userAppPaths;
+			static int sortMode;
+			static int sortDir;
 		};
 		struct SlideShow {
 			static int filter;
@@ -359,6 +377,7 @@ class DkGlobalSettingsWidget : public DkSettingsWidget {
 		QCheckBox* cbShowStatusbar;
 		QCheckBox* cbSmallIcons;
 		QCheckBox* cbToolbarGradient;
+		QCheckBox* cbCloseOnEsc;
 
 		DkColorChooser* highlightColorChooser;
 		DkColorChooser* bgColorWidgetChooser;

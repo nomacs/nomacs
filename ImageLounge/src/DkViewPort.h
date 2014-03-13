@@ -344,7 +344,7 @@ signals:
 	void sendNewFileSignal(qint16 op, QString filename = "");
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg, int);
-	void newClientConnectedSignal(bool);
+	void newClientConnectedSignal(bool connect, bool local);
 
 public slots:
 	void rotateCW();

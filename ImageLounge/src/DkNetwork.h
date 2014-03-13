@@ -371,6 +371,9 @@ class DkPeer : public QObject{
 		bool isActive() {return hasChangedRecently;};
 		void setSynchronized(bool flag);
 		bool isSynchronized() {return sychronized;};
+		bool isLocal() {
+			return hostAddress == QHostAddress::LocalHost;
+		};
 
 		quint16 peerId;
 		quint16 localServerPort;

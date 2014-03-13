@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file was created by NSISDialogDesigner 1.1.2.0
+http://coolsoft.altervista.org/nsisdialogdesigner
+Do not edit manually!
+-->
+<Dialog Name="uninstaller" Title="Uninstall nomacs - Image Lounge" Subtitle="Uninstall nomacs - Image Lounge" SetupType="Uninstall" Style="none" ExStyle="none" onClick="test">
+  <CheckBox Name="CheckBox1" Location="40, 170" Size="140, 24" Text="Delete all user settings" TabIndex="0" Style="none" ExStyle="none" />
+  <Label Name="Label1" Location="40, 35" Size="350, 23" Text="Do you really want to uninstall nomacs - Image Lounge?" Font="Microsoft Sans Serif, 8.25pt" TabIndex="3" Style="none" ExStyle="none" />
+  <Label Name="Label2" Location="40, 12" Size="287, 23" Text="D'oh" TabIndex="4" Style="none" ExStyle="none" />
+  <Label Name="Label3" Location="40, 83" Size="394, 32" Text="... which is odd because on the whole it wasn't the small green pieces of paper that were unhappy." Font="Microsoft Sans Serif, 8.25pt, style=Italic" TabIndex="5" Style="none" ExStyle="none" />
+  <Label Name="Label4" Location="230, 124" Size="190, 23" Text="and don't forget, nomacs was for free" ForeColor="ControlDarkDark" TabIndex="6" Style="none" ExStyle="none" />
+</Dialog>

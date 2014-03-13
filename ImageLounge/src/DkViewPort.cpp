@@ -1031,12 +1031,16 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 
 		if (cp.isSynchronized() && newPeers.isEmpty()) {
 			newPeers = tr("connected with: ");
-			emit newClientConnectedSignal(true);
+			emit newClientConnectedSignal(true, cp.isLocal());
 		}
 		else if (newPeers.isEmpty()) {
 			newPeers = tr("disconnected with: ");
-			emit newClientConnectedSignal(false);
+			emit newClientConnectedSignal(false, cp.isLocal());
 		}
+
+		
+
+		qDebug() << "cp address..." << cp.hostAddress;
 
 		newPeers.append("\n\t");
 
@@ -1594,7 +1598,7 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 			QFile f((thumbFile.isSymLink()) ? thumbFile.symLinkTarget() : thumbFile.absoluteFilePath());
 
 			// directly load images < 150 KB
-			if (f.exists() && f.size() > 0 && f.size() < 150*1024) {
+			if (f.exists() && f.size() > 0 && f.size() < 150*1024 || loader->dirtyTiff()) {
 				unloadImage();
 				loader->loadFile(thumbFile, silent, DkImageLoader::cache_disable_update);
 				skip = false;

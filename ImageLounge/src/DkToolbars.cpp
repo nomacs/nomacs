@@ -822,7 +822,7 @@ void DkCropToolBar::createLayout() {
 	guideBox->setStatusTip(guideBox->toolTip());
 
 	invertAction = new QAction(icons[invert_icon], tr("Invert Crop Tool Color"), this);
-	invertAction->setObjectName(tr("invertAction"));
+	invertAction->setObjectName("invertAction");
 	invertAction->setCheckable(true);
 	invertAction->setChecked(false);
 
@@ -906,7 +906,7 @@ void DkCropToolBar::angleChanged(double val) {
 	double angle = val*DK_RAD2DEG;
 	while (angle > 90)
 		angle -= 180;
-	while (angle < -90)
+	while (angle <= -90)
 		angle += 180;
 
 	angleBox->blockSignals(true);

@@ -128,6 +128,7 @@ void DkNoMacs::init() {
 
 	// add actions since they are ignored otherwise if the menu is hidden
 	viewport()->addActions(fileActions.toList());
+	viewport()->addActions(sortActions.toList());
 	viewport()->addActions(editActions.toList());
 	viewport()->addActions(toolsActions.toList());
 	viewport()->addActions(panelActions.toList());
@@ -138,6 +139,9 @@ void DkNoMacs::init() {
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
 		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
+	// automatically add status tip as tool tip
+	for (int idx = 0; idx < sortActions.size(); idx++)
+		sortActions[idx]->setToolTip(sortActions[idx]->statusTip());
 	for (int idx = 0; idx < editActions.size(); idx++)
 		editActions[idx]->setToolTip(editActions[idx]->statusTip());
 	for (int idx = 0; idx < toolsActions.size(); idx++)
@@ -445,6 +449,17 @@ void DkNoMacs::createMenu() {
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_print]);
 	fileMenu->addSeparator();
+	
+	sortMenu = new QMenu(tr("S&ort"), fileMenu);
+	sortMenu->addAction(sortActions[menu_sort_filename]);
+	sortMenu->addAction(sortActions[menu_sort_date_created]);
+	sortMenu->addAction(sortActions[menu_sort_date_modified]);
+	sortMenu->addSeparator();
+	sortMenu->addAction(sortActions[menu_sort_ascending]);
+	sortMenu->addAction(sortActions[menu_sort_descending]);
+
+	fileMenu->addMenu(sortMenu);
+	
 	fileMenu->addAction(fileActions[menu_file_goto]);
 	fileMenu->addAction(fileActions[menu_file_find]);
 	fileMenu->addAction(fileActions[menu_file_reload]);
@@ -528,7 +543,9 @@ void DkNoMacs::createMenu() {
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
 	toolsMenu->addAction(toolsActions[menu_tools_filter]);
 	toolsMenu->addAction(toolsActions[menu_tools_manipulation]);
+#ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
+#endif
 
 	// no sync menu in frameless view
 	if (DkSettings::App::appMode != DkSettings::mode_frameless)
@@ -544,6 +561,7 @@ void DkNoMacs::createMenu() {
 	helpMenu->addAction(helpActions[menu_help_bug]);
 	helpMenu->addAction(helpActions[menu_help_feature]);
 	helpMenu->addSeparator();
+	helpMenu->addAction(helpActions[menu_help_documentation]);
 	helpMenu->addAction(helpActions[menu_help_about]);
 
 }
@@ -569,6 +587,8 @@ void DkNoMacs::createContextMenu() {
 	
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
+
+	contextMenu->addMenu(sortMenu);
 
 	QMenu* viewContextMenu = contextMenu->addMenu(tr("&View"));
 	viewContextMenu->addAction(viewActions[menu_view_fullscreen]);
@@ -681,6 +701,43 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_exit]->setShortcuts(QKeySequence::Close);
 	fileActions[menu_file_exit]->setStatusTip(tr("Exit"));
 	connect(fileActions[menu_file_exit], SIGNAL(triggered()), this, SLOT(close()));
+
+	sortActions.resize(menu_sort_end);
+
+	sortActions[menu_sort_filename] = new QAction(tr("by &Filename"), this);
+	sortActions[menu_sort_filename]->setObjectName("menu_sort_filename");
+	sortActions[menu_sort_filename]->setStatusTip(tr("Sort by Filename"));
+	sortActions[menu_sort_filename]->setCheckable(true);
+	sortActions[menu_sort_filename]->setChecked(DkSettings::Global::sortMode == DkSettings::sort_filename);
+	connect(sortActions[menu_sort_filename], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_date_created] = new QAction(tr("by Date &Created"), this);
+	sortActions[menu_sort_date_created]->setObjectName("menu_sort_date_created");
+	sortActions[menu_sort_date_created]->setStatusTip(tr("Sort by Date Created"));
+	sortActions[menu_sort_date_created]->setCheckable(true);
+	sortActions[menu_sort_date_created]->setChecked(DkSettings::Global::sortMode == DkSettings::sort_date_created);
+	connect(sortActions[menu_sort_date_created], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_date_modified] = new QAction(tr("by Date Modified"), this);
+	sortActions[menu_sort_date_modified]->setObjectName("menu_sort_date_modified");
+	sortActions[menu_sort_date_modified]->setStatusTip(tr("Sort by Date Last Modified"));
+	sortActions[menu_sort_date_modified]->setCheckable(true);
+	sortActions[menu_sort_date_modified]->setChecked(DkSettings::Global::sortMode == DkSettings::sort_date_modified);
+	connect(sortActions[menu_sort_date_modified], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_ascending] = new QAction(tr("&Ascending"), this);
+	sortActions[menu_sort_ascending]->setObjectName("menu_sort_ascending");
+	sortActions[menu_sort_ascending]->setStatusTip(tr("Sort in Ascending Order"));
+	sortActions[menu_sort_ascending]->setCheckable(true);
+	sortActions[menu_sort_ascending]->setChecked(DkSettings::Global::sortDir == Qt::AscendingOrder);
+	connect(sortActions[menu_sort_ascending], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
+
+	sortActions[menu_sort_descending] = new QAction(tr("&Descending"), this);
+	sortActions[menu_sort_descending]->setObjectName("menu_sort_descending");
+	sortActions[menu_sort_descending]->setStatusTip(tr("Sort in Descending Order"));
+	sortActions[menu_sort_descending]->setCheckable(true);
+	sortActions[menu_sort_descending]->setChecked(DkSettings::Global::sortDir == Qt::DescendingOrder);
+	connect(sortActions[menu_sort_descending], SIGNAL(triggered(bool)), this, SLOT(changeSorting(bool)));
 
 	editActions.resize(menu_edit_end);
 
@@ -917,7 +974,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_lock_window]->setCheckable(true);
 	viewActions[menu_view_lock_window]->setChecked(false);
 
-	connect(viewActions[menu_view_lock_window], SIGNAL(toggled(bool)), this, SLOT(lockWindow(bool)));
+	connect(viewActions[menu_view_lock_window], SIGNAL(triggered(bool)), this, SLOT(lockWindow(bool)));
 
 	viewActions[menu_view_gps_map] = new QAction(viewIcons[icon_view_gps], tr("Show G&PS Coordinates"), this);
 	viewActions[menu_view_gps_map]->setStatusTip(tr("shows the GPS coordinates"));
@@ -953,6 +1010,10 @@ void DkNoMacs::createActions() {
 	helpActions[menu_help_about]->setShortcut(QKeySequence(shortcut_show_help));
 	helpActions[menu_help_about]->setStatusTip(tr("about"));
 	connect(helpActions[menu_help_about], SIGNAL(triggered()), this, SLOT(aboutDialog()));
+
+	helpActions[menu_help_documentation] = new QAction(tr("&Documentation"), this);
+	helpActions[menu_help_documentation]->setStatusTip(tr("Online Documentation"));
+	connect(helpActions[menu_help_documentation], SIGNAL(triggered()), this, SLOT(openDocumentation()));
 
 	helpActions[menu_help_bug] = new QAction(tr("&Report a Bug"), this);
 	helpActions[menu_help_bug]->setStatusTip(tr("Report a Bug"));
@@ -1688,6 +1749,7 @@ void DkNoMacs::lockWindow(bool lock) {
 	}
 	else if (lock && windowOpacity() == 1.0f) {
 		viewport()->getController()->setInfo(tr("You should first reduce opacity\n before working through the window."));
+		viewActions[menu_view_lock_window]->setChecked(false);
 	}
 	else {
 		qDebug() << "deactivating...";
@@ -1705,7 +1767,7 @@ void DkNoMacs::lockWindow(bool lock) {
 #endif
 }
 
-void DkNoMacs::newClientConnected(bool connected) {
+void DkNoMacs::newClientConnected(bool connected, bool local) {
 	overlaid = false;
 	// add methods if clients are connected
 
@@ -1957,6 +2019,42 @@ void DkNoMacs::updateFilterState(QStringList filters) {
 	toolsActions[menu_tools_filter]->blockSignals(false);
 }
 
+void DkNoMacs::changeSorting(bool change) {
+
+	if (!change)
+		return;
+
+	
+	QString senderName = QObject::sender()->objectName();
+	bool modeChange = true;
+
+	if (senderName == "menu_sort_filename")
+		DkSettings::Global::sortMode = DkSettings::sort_filename;
+	else if (senderName == "menu_sort_date_created")
+		DkSettings::Global::sortMode = DkSettings::sort_date_created;
+	else if (senderName == "menu_sort_date_modified")
+		DkSettings::Global::sortMode = DkSettings::sort_date_modified;
+	else if (senderName == "menu_sort_ascending") {
+		DkSettings::Global::sortDir = DkSettings::sort_ascending;
+		modeChange = false;
+	}
+	else if (senderName == "menu_sort_descending") {
+		DkSettings::Global::sortDir = DkSettings::sort_descending;
+		modeChange = false;
+	}
+
+	if (viewport() && viewport()->getImageLoader()) 
+		viewport()->getImageLoader()->sort();
+
+	for (int idx = 0; idx < sortActions.size(); idx++) {
+
+		if (modeChange && idx < menu_sort_ascending && sortActions.at(idx) != QObject::sender())
+			sortActions[idx]->setChecked(false);
+		else if (!modeChange && idx >= menu_sort_ascending && sortActions.at(idx) != QObject::sender())
+			sortActions[idx]->setChecked(false);
+	}
+}
+
 void DkNoMacs::goTo() {
 
 	if (!viewport() || !viewport()->getImageLoader())
@@ -2038,10 +2136,21 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 	QString fileName;
 
+	int answer = QDialog::Rejected;
+
 	// don't ask the user if save was hit & the file format is supported for saving
-	if (silent && !selectedFilter.isEmpty())
+	if (silent && !selectedFilter.isEmpty() && viewport()->getImageLoader()->isEdited()) {
 		fileName = loader->getFile().absoluteFilePath();
-	else {
+		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Overwrite File"), 
+			tr("Do you want to overwrite:\n%1?").arg(fileName), 
+			(QMessageBox::Yes | QMessageBox::No), this);
+		msg->setObjectName("overwriteDialog");
+
+		//msg->show();
+		answer = msg->exec();
+
+	}
+	if (answer == QDialog::Rejected || answer == QMessageBox::No) {
 		// note: basename removes the whole file name from the first dot...
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
@@ -2369,6 +2478,13 @@ void DkNoMacs::aboutDialog() {
 	delete spScreen;
 }
 
+void DkNoMacs::openDocumentation() {
+
+	QString url = QString("https://www.nomacs.org/documentation/");
+
+	QDesktopServices::openUrl(QUrl(url));
+}
+
 void DkNoMacs::bugReport() {
 
 	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
@@ -2514,6 +2630,8 @@ bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
 			exitFullScreen();
 			return true;
 		}
+		else if (keyEvent->key() == Qt::Key_Escape && DkSettings::App::closeOnEsc)
+			close();
 	}
 	if (event->type() == QEvent::Gesture) {
 		return gestureEvent(static_cast<QGestureEvent*>(event));
@@ -2702,16 +2820,15 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 void DkNoMacs::openKeyboardShortcuts() {
 
 
-	// TODO: dummy currently we just use file menu...
 	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(this);
 	shortcutsDialog->addActions(fileActions, fileMenu->title());
+	shortcutsDialog->addActions(sortActions, sortMenu->title());
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());
 	shortcutsDialog->addActions(panelActions, panelMenu->title());
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
-
 
 	shortcutsDialog->exec();
 }
@@ -2947,7 +3064,7 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->addTcpAction(lanActions[menu_lan_server]);
 	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);
 	tcpLanMenu->setEnabled(true);
-	tcpLanMenu->enableActions();
+	tcpLanMenu->enableActions(false, false);
 
 	rcClient = new DkRCManagerThread(this);
 	rcClient->start();
@@ -3112,6 +3229,7 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
+
 void DkNoMacsSync::tcpRemoteControl(bool start) {
 
 	if (!rcClient)
@@ -3176,9 +3294,9 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 
 void DkNoMacsSync::newClientConnected(bool connected) {
 
-	tcpLanMenu->enableActions(connected);
+	tcpLanMenu->enableActions(connected, local);
 	
-	DkNoMacs::newClientConnected(connected);
+	DkNoMacs::newClientConnected(connected, local);
 }
 
 void DkNoMacsSync::settingsChanged() {
@@ -3220,7 +3338,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 #endif
 	
 	// sync signals
-	connect(vp, SIGNAL(newClientConnectedSignal(bool)), this, SLOT(newClientConnected(bool)));
+	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
 	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
