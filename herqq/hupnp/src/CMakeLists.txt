@@ -179,6 +179,7 @@ SOVERSION "${HUpnp_MAJOR_VERSION}.${HUpnp_MINOR_VERSION}.${HUpnp_PATCH_VERSION}"
 )
 set_target_properties(HUpnp PROPERTIES COMPILE_FLAGS "-DH_BUILD_UPNP_CORE_LIB") 
 set_target_properties(HUpnp PROPERTIES DEBUG_OUTPUT_NAME HUpnpd)
+set_target_properties(HUpnp PROPERTIES RELEASE_OUTPUT_NAME HUpnp)
  
 
  

@@ -17,7 +17,8 @@ ${QT_LIBRARIES}
 ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY}
 )
 
-set_target_properties(QtSolutions_SOAP-2.7 PROPERTIES DEBUG_OUTPUT_NAME QtSolutions_SOAP-2.7d)
+set_target_properties(QtSolutions_SOAP-2.7 PROPERTIES DEBUG_OUTPUT_NAME QtSoap27d)
+set_target_properties(QtSolutions_SOAP-2.7 PROPERTIES RELEASE_OUTPUT_NAME QtSoap27)
 
 install(TARGETS QtSolutions_SOAP-2.7
 RUNTIME DESTINATION bin
