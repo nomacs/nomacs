@@ -1736,7 +1736,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 			//	loadPrevFileFast();
 			//	break;
 			default:
-				loadFileFast(idx);
+				loadFileFast(idx, true);
 				//if (loader) loader->loadFileAt(idx);
 		}
 	}
