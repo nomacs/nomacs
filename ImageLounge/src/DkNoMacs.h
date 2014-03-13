@@ -314,6 +314,10 @@ enum syncActions {
 	menu_sync_pos,
 	menu_sync_arrange,
 	menu_sync_connect_all,
+	menu_sync_auto_connect,
+
+	menu_sync_remote_control,
+	menu_sync_remote_display,
 
 	menu_sync_end,	// nothing beyond this point
 };
@@ -448,7 +452,9 @@ signals:
 	void sendPositionSignal(QRect newRect, bool overlaid);
 	void sendArrangeSignal(bool overlaid);
 	void synchronizeWithSignal(quint16);
+	void stopSynchronizeWithSignal();
 	void synchronizeWithServerPortSignal(quint16);
+	void synchronizeRemoteControl(quint16);
 	void closeSignal();
 	void saveTempFileSignal(QImage img);
 	void sendQuitLocalClientsSignal();
@@ -684,9 +690,13 @@ public:
 	
 signals:
 	void clientInitializedSignal();
+	void startRCServerSignal(bool start);
 
 public slots:
 	void tcpConnectAll();
+	void tcpRemoteControl(bool start);
+	void tcpRemoteDisplay(bool start);
+	void tcpAutoConnect(bool connect);
 	void settingsChanged();
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
@@ -699,6 +709,7 @@ protected:
 
 	// functions
 	void initLanClient();
+	bool connectWhiteList(int mode, bool connect = true);
 
 	// gui
 	virtual void createActions();
@@ -707,6 +718,7 @@ protected:
 	// network layer
 	DkLocalManagerThread* localClient;
 	DkLanManagerThread* lanClient;
+	DkRCManagerThread* rcClient;
 
 };
 

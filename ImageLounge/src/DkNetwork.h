@@ -27,6 +27,13 @@
 
 #pragma  once
 
+#define localTCPPortStart 45454
+#define localTCPPortEnd 45484
+#define lanUDPPortStart 28566
+#define lanUDPPortEnd 28576
+#define rcUDPPort 28565
+
+
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QTcpSocket>
@@ -66,27 +73,27 @@ class DkLANUdpSocket;
 
 
 class DkPeerList {
-public:
-	DkPeerList();
-	bool addPeer(DkPeer peer);
-	bool removePeer(quint16 peerId);
-	bool setSynchronized(quint16 peerId, bool synchronized);
-	bool setTitle(quint16 peerId, QString title);
-	bool setShowInMenu(quint16 peerId, bool showInMenu);
-	QList<DkPeer> getPeerList();
-	DkPeer getPeerById(quint16 id);
-	DkPeer getPeerByAddress(QHostAddress address, quint16 port);
+	public:
+		DkPeerList();
+		bool addPeer(DkPeer peer);
+		bool removePeer(quint16 peerId);
+		bool setSynchronized(quint16 peerId, bool synchronized);
+		bool setTitle(quint16 peerId, QString title);
+		bool setShowInMenu(quint16 peerId, bool showInMenu);
+		QList<DkPeer> getPeerList();
+		DkPeer getPeerById(quint16 id);
+		DkPeer getPeerByAddress(QHostAddress address, quint16 port);
 
-	QList<DkPeer> getSynchronizedPeers();
-	QList<quint16> getSynchronizedPeerServerPorts();
-	QList<DkPeer> getActivePeers();
+		QList<DkPeer> getSynchronizedPeers();
+		QList<quint16> getSynchronizedPeerServerPorts();
+		QList<DkPeer> getActivePeers();
 
-	DkPeer getPeerByServerport(quint16 port);
-	bool alreadyConnectedTo(QHostAddress address, quint16 port);
-	void print();
+		DkPeer getPeerByServerport(quint16 port);
+		bool alreadyConnectedTo(QHostAddress address, quint16 port);
+		void print();
 
-private:
-	QMultiHash<quint16, DkPeer> peerList;
+	private:
+		QMultiHash<quint16, DkPeer> peerList;
 };
 
 class DkClientManager : public QThread {
@@ -191,28 +198,34 @@ class DkLocalClientManager : public DkClientManager {
 class DkLANClientManager : public DkClientManager {
 	Q_OBJECT;
 	public:
-		DkLANClientManager(QString title, QObject* parent = 0);
-		QList<DkPeer> getPeerList();
+		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = lanUDPPortStart, quint16 udpServerPortRangeEnd = lanUDPPortEnd);
+		virtual QList<DkPeer> getPeerList();
 
 	signals:
 		void sendSwitchServerMessage(QHostAddress address, quint16 port);
 
 	public slots:
 		void sendTitle(QString newTitle);
-		void synchronizeWithServerPort(quint16 port) {}; // dummy
-		void stopSynchronizeWith(quint16 peerId);
+		virtual void synchronizeWithServerPort(quint16 port) {}; // dummy
+		void stopSynchronizeWith(quint16 peerId = -1);
 		void startServer(bool flag);
 		void sendNewImage(QImage image, QString title);
 		void synchronizeWith(quint16 peerId);
+
+	protected:
+		void connectConnection(DkConnection* connection);
+		
+		DkLANTcpServer* server;
+
+	protected slots:
+		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
 
 	private slots:
 		void connectionReceivedNewImage(DkConnection* connection, QImage image, QString title);
 		void startConnection(QHostAddress address, quint16 port, QString clientName);
 		void sendStopSynchronizationToAll();
 		
-
-		void connectionReadyForUse(quint16 peerId, QString title, DkConnection* connection);
-		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
+		virtual void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
 		virtual void connectionStopSynchronized(DkConnection* connection);
 		void connectionSentNewTitle(DkConnection* connection, QString newTitle);
 		void connectionReceivedTransformation(DkConnection* connection, QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -222,9 +235,35 @@ class DkLANClientManager : public DkClientManager {
 		void connectionReceivedSwitchServer(DkConnection* connection, QHostAddress address, quint16 port);
 
 	private:
-		DkLANConnection* createConnection();
-		DkLANTcpServer* server;
+		virtual DkLANConnection* createConnection();
+};
 
+class DkRCClientManager : public DkLANClientManager {
+	Q_OBJECT
+	public:
+		DkRCClientManager(QString title, QObject* parent = 0);
+		QList<DkPeer> getPeerList();
+
+	public slots:
+		//void sendAskForPermission(); // todo: muss das ein slot sein?
+		virtual void synchronizeWith(quint16 peerId);
+		virtual void sendNewMode(int mode);
+
+signals:
+		void sendNewModeMessage(int mode);
+
+	protected:
+		void connectConnection(DkConnection* connection);
+
+	private slots:
+		void connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection);
+		void connectionReceivedPermission(DkConnection* connection, bool allowedToConnect);
+		void connectionReceivedRCType(DkConnection* connection, int type);
+		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
+
+	private:
+		virtual DkRCConnection* createConnection();
+		QHash<quint16, bool> permissionList;
 };
 
 class DkLocalTcpServer : public QTcpServer {
@@ -249,7 +288,7 @@ class DkLocalTcpServer : public QTcpServer {
 class DkLANTcpServer : public QTcpServer {
 	Q_OBJECT;
 	public:
-		DkLANTcpServer(QObject* parent = 0);
+		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = lanUDPPortStart, quint16 udpServerPortRangeEnd = lanUDPPortEnd);
 
 	signals:
 		void serverReiceivedNewConnection(QHostAddress address , quint16 port , QString clientName);
@@ -265,16 +304,17 @@ class DkLANTcpServer : public QTcpServer {
 	
 	protected:
 		void incomingConnection(int socketDescriptor);
-
-	private:
 		DkLANUdpSocket* udpSocket;
+	
+	private:
+
 };
 
 class DkLANUdpSocket : public QUdpSocket {
 	Q_OBJECT;
 
 	public:
-		DkLANUdpSocket(quint16 startPort = 28566, quint16 endPort = 28576, QObject* parent = 0);
+		DkLANUdpSocket(quint16 startPort = lanUDPPortStart, quint16 endPort = lanUDPPortEnd, QObject* parent = 0);
 		void startBroadcast(quint16 tcpServerPort);
 		void stopBroadcast();
 		
@@ -303,7 +343,7 @@ class DkLANUdpSocket : public QUdpSocket {
 class DkPeer : public QObject{
 	Q_OBJECT;
 	
-public:
+	public:
 		DkPeer();
 		DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 peerServerPort, QString title, DkConnection* connection, bool sychronized = false, QString clientName="", bool showInMenu = false);
 		
@@ -399,7 +439,6 @@ public slots:
 		emit syncWithSignal(peerId);
 	};
 	void stopSynchronizeWith(quint16 peerId) {
-
 		emit stopSyncWithSignal(peerId);
 	};
 	void sendGoodByeToAll() {
@@ -440,17 +479,35 @@ class DkLanManagerThread : public DkManagerThread {
 
 public:
 	DkLanManagerThread(DkNoMacs* parent);
-	void connectClient();
+	virtual void connectClient();
 
 signals:
 	void startServerSignal(bool start);
 
 public slots:
-	void startServer(bool start) {
+	virtual void startServer(bool start) {
 		// re-send
 		emit startServerSignal(start);
 	};
 
+
+protected:
+	void createClient(QString title);
+
+};
+
+class DkRCManagerThread : public DkLanManagerThread {
+	Q_OBJECT
+
+public:
+	DkRCManagerThread(DkNoMacs* parent);
+	void connectClient();
+
+public slots:
+	void sendNewMode(int mode);
+
+signals:
+	void newModeSignal(int mode);
 
 protected:
 	void createClient(QString title);
@@ -472,7 +529,6 @@ public slots:
 	void downloadFinishedSlot(QNetworkReply* data);
 	void updateDownloadProgress(qint64 received, qint64 total) { emit downloadProgress(received, total); };
 	void cancelUpdate();
-	
 
 signals:
 	void displayUpdateDialog(QString msg, QString title);

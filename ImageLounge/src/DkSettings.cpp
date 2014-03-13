@@ -61,6 +61,10 @@ QStringList DkMetaDataSettingsWidget::sdescriptionDesc = QStringList() <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Path") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","File Size");
 
+int DkSettings::Sync::syncMode = sync_mode_default;
+QStringList DkSettings::Sync::recentSyncNames = QStringList();
+QStringList DkSettings::Sync::syncWhiteList = QStringList();
+QHash<QString, QVariant> DkSettings::Sync::recentLastSeen = QHash<QString, QVariant>();
 
 // settings
 DkSettings::App DkSettings::app_p;
@@ -207,6 +211,22 @@ void DkSettings::load(bool force) {
 	QBitArray tmpMetaData = settings.value("metaData", meta_p.metaDataBits).toBitArray();
 	if (tmpMetaData.size() == meta_p.metaDataBits.size())
 		meta_p.metaDataBits = tmpMetaData;
+
+	Sync::enableNetworkSync= settings.value("SynchronizeSettings/enableNetworkSync", DkSettings::Sync::enableNetworkSync).toBool();
+	Sync::allowTransformation = settings.value("SynchronizeSettings/allowTransformation", DkSettings::Sync::allowTransformation).toBool();
+	Sync::allowPosition = settings.value("SynchronizeSettings/allowPosition", DkSettings::Sync::allowPosition).toBool();
+	Sync::allowFile = settings.value("SynchronizeSettings/allowFile", DkSettings::Sync::allowFile).toBool();
+	Sync::allowImage = settings.value("SynchronizeSettings/allowImage", DkSettings::Sync::allowImage).toBool();;
+	Sync::updateDialogShown = settings.value("SynchronizeSettings/updateDialogShown", DkSettings::Sync::updateDialogShown).toBool();
+	Sync::lastUpdateCheck = settings.value("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck).toDate();
+	Sync::syncAbsoluteTransform = settings.value("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform).toBool();
+	Sync::switchModifier = settings.value("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier).toBool();
+	Sync::recentSyncNames = settings.value("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames).toStringList();
+	Sync::syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList).toStringList();
+	Sync::recentLastSeen = settings.value("SynchronizeSettings/recentLastSeen", DkSettings::Sync::recentLastSeen).toHash();
+	
+	MetaData::ignoreExifOrientation = settings.value("MetaDataSettings/ignoreExifOrientation", DkSettings::MetaData::ignoreExifOrientation).toBool();
+	MetaData::saveExifOrientation = settings.value("MetaDataSettings/saveExifOrientation", DkSettings::MetaData::saveExifOrientation).toBool();
 
 	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
 	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
@@ -416,6 +436,24 @@ void DkSettings::save(bool force) {
 		settings.setValue("backgroundColor", slideShow_p.backgroundColor);
 	if (!force && slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
+	settings.setValue("SynchronizeSettings/enableNetworkSync", DkSettings::Sync::enableNetworkSync);
+	settings.setValue("SynchronizeSettings/allowTransformation", DkSettings::Sync::allowTransformation);
+	settings.setValue("SynchronizeSettings/allowPosition", DkSettings::Sync::allowPosition);
+	settings.setValue("SynchronizeSettings/allowFile", DkSettings::Sync::allowFile);
+	settings.setValue("SynchronizeSettings/allowImage", DkSettings::Sync::allowImage);
+	settings.setValue("SynchronizeSettings/updateDialogShown", DkSettings::Sync::updateDialogShown);
+	settings.setValue("SynchronizeSettings/lastUpdateCheck", DkSettings::Sync::lastUpdateCheck);
+	settings.setValue("SynchronizeSettings/syncAbsoluteTransform", DkSettings::Sync::syncAbsoluteTransform);
+	settings.setValue("SynchronizeSettings/switchModifier", DkSettings::Sync::switchModifier);
+	settings.setValue("SynchronizeSettings/recentSyncNames", DkSettings::Sync::recentSyncNames);
+	settings.setValue("SynchronizeSettings/syncWhiteList", DkSettings::Sync::syncWhiteList);
+	settings.setValue("SynchronizeSettings/recentLastSeen", DkSettings::Sync::recentLastSeen);
+
+	settings.setValue("ResourceSettings/cacheMemory", DkSettings::Resources::cacheMemory);
+	settings.setValue("ResourceSettings/fastThumbnailPreview", DkSettings::Resources::fastThumbnailPreview);
+	settings.setValue("ResourceSettings/filterRawImages", DkSettings::Resources::filterRawImages);
+	settings.setValue("ResourceSettings/filterDuplicates", DkSettings::Resources::filterDuplicats);
+	settings.setValue("ResourceSettings/preferredExtension", DkSettings::Resources::preferredExtension);
 
 	settings.endGroup();
 	// Sync Settings --------------------------------------------------------------------
@@ -662,7 +700,7 @@ void DkSettingsDialog::createLayout() {
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("Resources");
+	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("Resources") << tr("Remote Control");
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
@@ -705,6 +743,7 @@ void DkSettingsDialog::createSettingsWidgets() {
 	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(centralWidget);
 	exifSettingsWidget = new DkMetaDataSettingsWidget(centralWidget);
 	resourceSettingsWidget = new DkResourceSettingsWidgets(centralWidget);
+	remoteControlWidget = new DkRemoteControlWidget(centralWidget);
 
 	widgetList.clear();
 	widgetList.push_back(globalSettingsWidget);
@@ -713,6 +752,7 @@ void DkSettingsDialog::createSettingsWidgets() {
 	widgetList.push_back(synchronizeSettingsWidget);
 	widgetList.push_back(exifSettingsWidget);
 	widgetList.push_back(resourceSettingsWidget);
+	widgetList.push_back(remoteControlWidget);
 }
 
 void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
@@ -1647,6 +1687,60 @@ void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
 	labelMemory->setText(QString::number((double)(newValue/stepSize)/100.0*totalMemory,'f',0) + " MB / "+ QString::number(totalMemory,'f',0) + " MB");
 }
 
+// DkRemoteControlWidget --------------------------------------------------------------------
+DkRemoteControlWidget::DkRemoteControlWidget(QWidget* parent) : DkSettingsWidget(parent) {
+	showOnlyInAdvancedMode = true;
+
+	createLayout();
+	init();
+}
+
+void DkRemoteControlWidget::init() {
+	QStringList clients = DkSettings::Sync::recentSyncNames;
+	clients << DkSettings::Sync::syncWhiteList;
+	clients.removeDuplicates();
+
+	whiteListModel = new DkWhiteListViewModel(table);
+	DkCheckBoxDelegate* cbDelegate = new DkCheckBoxDelegate();
+	table->setItemDelegate(cbDelegate);
+
+	QSortFilterProxyModel* proxyModel = new QSortFilterProxyModel(this);
+	proxyModel->setSourceModel(whiteListModel);
+	table->setSortingEnabled(true);
+
+	for(int i = 0; i < clients.size();i++) {
+		whiteListModel->addWhiteListEntry(DkSettings::Sync::syncWhiteList.contains(clients[i]), clients[i], DkSettings::Sync::recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
+	}
+	table->setModel(proxyModel);
+	table->resizeColumnsToContents();
+	table->resizeRowsToContents();
+
+	// default sorting by checkbox and name
+	table->sortByColumn(1, Qt::AscendingOrder);
+	table->sortByColumn(0, Qt::DescendingOrder);
+}
+
+void DkRemoteControlWidget::createLayout() {
+	QVBoxLayout* vbox = new QVBoxLayout(this);
+
+	table = new QTableView(this);
+	table->setEditTriggers(QAbstractItemView::AllEditTriggers);
+	table->verticalHeader()->setVisible(false);
+	vbox->addWidget(table);
+	vbox->addStretch();
+}
+
+void DkRemoteControlWidget::writeSettings() {
+	DkSettings::Sync::syncWhiteList = QStringList();
+	QVector<bool> checked = whiteListModel->getCheckedVector();
+	QVector<QString> names = whiteListModel->getNamesVector();
+	
+	for (int i=0; i < checked.size(); i++) {
+		if(checked.at(i))
+			DkSettings::Sync::syncWhiteList << names.at(i);
+	}
+}
+
 // DkSpinBoxWiget --------------------------------------------------------------------
 DkSpinBoxWidget::DkSpinBoxWidget(QWidget* parent) : QWidget(parent) {
 	spinBox = new QSpinBox(this);
@@ -1727,6 +1821,147 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerS
 
 	//setLayout(vboxLayout);
 	setMinimumSize(sizeHint());
+}
+
+// DkWhiteListViewModel --------------------------------------------------------------------
+ DkWhiteListViewModel::DkWhiteListViewModel(QObject* parent) : QAbstractTableModel(parent) {
+ }
+
+
+ QVariant DkWhiteListViewModel::headerData(int section, Qt::Orientation orientation, int role /* = Qt::DisplayRole */) const {
+
+	 if (orientation == Qt::Vertical ||role != Qt::DisplayRole)
+		 return QAbstractTableModel::headerData(section, orientation, role);
+
+	 if (section == 0)
+		 return QVariant();
+		//return QString(tr("Connect"));
+	 else if (section == 1)
+		 return QString(tr("Name"));
+	 else if (section == 2)
+		 return QString(tr("Last Connected"));
+	 else
+		 return QString("That's too much of information");
+
+ }
+
+bool DkWhiteListViewModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role) {
+
+	return false;
+}
+
+QVariant DkWhiteListViewModel::data(const QModelIndex & index, int role /* = Qt::DisplayRole */) const {
+	if (!index.isValid()) {
+		qDebug() << "invalid row: " << index.row();
+		return QVariant();
+	}
+	
+	if (role == Qt::DisplayRole) {
+
+		if (index.column() == 0)
+			return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
+		else if (index.column() == 1)
+			return names.at(index.row());
+		else if (index.column() == 2)
+			return lastSeen.at(index.row());
+		else
+			return QVariant();
+	}
+	else if (role == Qt::CheckStateRole && index.column() == 0) {
+		return checked.at(index.row()) ? Qt::Checked : Qt::Unchecked;
+	}
+
+	return QVariant();
+}
+
+bool DkWhiteListViewModel::setData(const QModelIndex &index, const QVariant &value, int role /* = Qt::EditRole */) {
+	qDebug() << __FUNCTION__;
+	if (!index.isValid()) {
+		qDebug() << "invalid row: " << index.row();
+		return false;
+	}
+
+	if (index.column() == 0) {
+		checked[index.row()] = value.toBool();
+	}
+	return false;
+}
+
+Qt::ItemFlags DkWhiteListViewModel::flags(const QModelIndex & index) const {
+	if(!index.isValid())
+		return Qt::ItemIsEnabled;
+
+	if (index.column()==0) {
+		return Qt::ItemIsEnabled | Qt::ItemIsEditable;
+	}
+	else
+		return QAbstractTableModel::flags(index);
+}
+
+int DkWhiteListViewModel::rowCount(const QModelIndex& parent /* = QModelIndex */) const {
+	if (parent.isValid())
+		return 0;
+	return names.size();
+}
+
+
+void DkWhiteListViewModel::addWhiteListEntry(bool checked, QString name, QDateTime lastSeen) {
+	this->checked.push_back(checked);
+	this->names.push_back(name);
+	this->lastSeen.push_back(lastSeen);
+
+	dataChanged(createIndex(this->checked.size()-1, 0, &this->checked[this->checked.size()-1]), createIndex(this->checked.size()-1, 2, &this->checked[this->checked.size()-1]));
+}
+
+// DkCheckBoxDelegate --------------------------------------------------------------------
+
+QWidget *DkCheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+	QCheckBox* editor = new QCheckBox(parent);
+	connect(editor, SIGNAL(stateChanged(int)), this, SLOT(cbChanged(int)));
+	return editor;
+
+}
+
+void DkCheckBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+	bool value = index.data().toBool();
+
+	QCheckBox* cb = static_cast<QCheckBox*>(editor);
+	cb->setChecked(!value); 
+}
+
+void DkCheckBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+	QCheckBox* cb = static_cast<QCheckBox*>(editor);
+	model->setData(index, cb->isChecked());
+}
+
+void DkCheckBoxDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/* index */) const {
+	qDebug() << __FUNCTION__;
+	QRect rect = option.rect;
+	rect.setLeft(option.rect.left()+10);
+	editor->setGeometry(rect);
+}
+
+void DkCheckBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+	if (index.column()==0) {
+		painter->save();
+
+		QStyle* style = QApplication::style();
+		QStyleOptionButton cbOpt;
+		cbOpt.rect = option.rect;
+		cbOpt.rect.setLeft(cbOpt.rect.left()+10);
+		cbOpt.state = QStyle::State_Enabled;
+		cbOpt.state |= index.data().toBool() ? QStyle::State_On : QStyle::State_Off;
+		style->drawControl(QStyle::CE_CheckBox, &cbOpt, painter);
+		painter->restore();
+	}
+	else
+		QStyledItemDelegate::paint(painter, option, index);
+}
+
+void DkCheckBoxDelegate::cbChanged(int state) {
+	QCheckBox* cb = qobject_cast<QCheckBox*>(sender());
+	emit commitData(cb);
+	emit closeEditor(cb);
 }
 
 }

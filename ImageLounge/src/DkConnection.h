@@ -39,11 +39,11 @@
 #include <QThread>
 #include "DkSettings.h"
 
+
 namespace nmc {
 
 static const int MaxBufferSize = 102400000;
 static const char SeparatorToken = '<';
-
 
 class DkConnection : public QTcpSocket {
 	Q_OBJECT;
@@ -64,6 +64,8 @@ class DkConnection : public QTcpSocket {
 		quint16 getPeerId() {return peerId;};
 		void setPeerId(quint16 peerId) { this->peerId = peerId;};
 		void setTitle(QString newTitle);
+
+		bool connectionCreated;
 
 	signals:
 		void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
@@ -115,6 +117,7 @@ class DkConnection : public QTcpSocket {
 		virtual void readGreetingMessage() = 0;
 		bool hasEnoughData();
 		int dataLengthForCurrentDataType();
+		virtual bool allowedToSynchronize() {return true;};
 
 		ConnectionState state; 
 		DataType currentDataType; 
@@ -206,6 +209,11 @@ class DkLANConnection : public DkConnection {
 
 
 	protected:
+		virtual void readGreetingMessage();
+		virtual bool readProtocolHeader();
+		virtual void processData();
+		virtual void readWhileBytesAvailable();
+
 		enum LANDataType {
 			upcomingImage = 9,
 			newImage,
@@ -213,24 +221,60 @@ class DkLANConnection : public DkConnection {
 			Undefined
 		};
 		LANDataType currentLanDataType;
-
-	private:
-		bool readProtocolHeader();
-		virtual void processData();
-		void readGreetingMessage();
-		void readWhileBytesAvailable();
-
-		QString clientName;
-		bool showInMenu;
-
 		bool allowTransformation;
 		bool allowPosition;
 		bool allowFile;
 		bool allowImage;
 
+	private:
+		
+
+		QString clientName;
+		bool showInMenu;
+
+
 		bool iAmServer;
 };
 
+
+class DkRCConnection : public DkLANConnection {
+	Q_OBJECT
+
+	public:
+		DkRCConnection(QObject* parent = 0);
+		
+	signals:
+		void connectionNewPermission(DkConnection*, bool);
+		void connectionNewRCType(DkConnection*, int);
+
+	public slots:
+		void sendAskForPermission();
+		void sendPermission();
+		void sendRCType(int type);
+
+	protected slots:
+		virtual void processReadyRead();
+		
+
+	protected:
+		virtual void readGreetingMessage();
+		virtual bool readProtocolHeader();
+		virtual void processData();
+		virtual void readWhileBytesAvailable();
+		virtual bool allowedToSynchronize();
+
+		enum RemoteControlDataType {
+			newPermission = 11,
+			newAskPermission,
+			newRcType,
+			Undefined
+		};
+
+		RemoteControlDataType currentRemoteControlDataType;
+
+	private:
+
+};
 
 };
 

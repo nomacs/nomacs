@@ -894,6 +894,9 @@ void DkViewPort::setImage(QImage newImg) {
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 
+	if (DkSettings::Sync::syncMode == DkSettings::sync_mode_auto)
+		tcpSendImage(true);
+
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -942,9 +945,10 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
 }
 
-void DkViewPort::tcpSendImage() {
+void DkViewPort::tcpSendImage(bool silent) {
 
-	controller->setInfo("sending image...", 3000, DkControlWidget::center_label);
+	if (!silent)
+		controller->setInfo("sending image...", 3000, DkControlWidget::center_label);
 
 	if (loader)
 		emit sendImageSignal(imgStorage.getImage(), loader->fileName());
@@ -1017,8 +1021,7 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	controller->update();	// why do we need to update the controller manually?
 	update();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
-		tcpSynchronize();
+	tcpSynchronize();
 	
 }
 
@@ -1030,8 +1033,7 @@ void DkViewPort::resetView() {
 
 	update();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
-		tcpSynchronize();
+	tcpSynchronize();
 }
 
 void DkViewPort::fullView() {
@@ -1138,16 +1140,19 @@ void DkViewPort::tcpSetWindowRect(QRect rect) {
 
 void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 	
-	if (relativeMatrix.isIdentity()) {
+	if (!relativeMatrix.isIdentity())
+		emit sendTransformSignal(relativeMatrix, QTransform(), QPointF());
+
+	// check if we need a synchronization
+	if ((qApp->keyboardModifiers() == altMod ||
+		DkSettings::Sync::syncMode != DkSettings::sync_mode_default) &&
+		(hasFocus() || controller->hasFocus())) {
 		QPointF size = QPointF(geometry().width()/2.0f, geometry().height()/2.0f);
 		size = worldMatrix.inverted().map(size);
 		size = imgMatrix.inverted().map(size);
 		size = QPointF(size.x()/(float)imgStorage.getImage().width(), size.y()/(float)imgStorage.getImage().height());
 
 		emit sendTransformSignal(worldMatrix, imgMatrix, size);
-	}
-	else {
-		emit sendTransformSignal(relativeMatrix, QTransform(), QPointF());
 	}
 }
 
@@ -1413,8 +1418,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 				tcpSynchronize(relTransform);
 			}
 		}
-		else if (event->modifiers() == altMod)
-			tcpSynchronize();
+		tcpSynchronize();
 	}
 
 	// send to parent
@@ -1442,8 +1446,7 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 	else 
 		DkBaseViewPort::wheelEvent(event);
 
-	if (event->modifiers() == altMod)
-		tcpSynchronize();
+	tcpSynchronize();
 
 }
 
@@ -1710,6 +1713,9 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 	} else if (loader)
 		loader->load(file, silent);
 
+	// TODO: add sync if auto connect
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
+		tcpLoadFile(0, file.absoluteFilePath());
 }
 
 void DkViewPort::reloadFile() {
@@ -1729,7 +1735,7 @@ void DkViewPort::loadFile(int skipIdx, bool silent) {
 		loader->changeFile(skipIdx, silent || (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
 
 	// alt mod
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
 		qDebug() << "emitting load next";
 	}
@@ -1860,7 +1866,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 	}
 	
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || 
+		DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && 
+		(hasFocus() || 
+		controller->hasFocus()))
 		emit sendNewFileSignal(skipIdx);
 
 	//skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
@@ -1882,7 +1891,7 @@ void DkViewPort::loadFirst() {
 	if (loader && !testLoaded)
 		loader->firstFile();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MIN);
 }
 
@@ -1893,7 +1902,7 @@ void DkViewPort::loadLast() {
 	if (loader && !testLoaded)
 		loader->lastFile();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if ((qApp->keyboardModifiers() == altMod || DkSettings::Sync::syncMode == DkSettings::sync_mode_auto) && (hasFocus() || controller->hasFocus()))
 		emit sendNewFileSignal(SHRT_MAX);
 
 }
@@ -1926,6 +1935,11 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	qDebug() << "I got a file request??";
 
+	// some hack: set the mode to default in order to prevent loops (if both are auto connected)
+	// should be mostly harmless
+	int oldMode = DkSettings::Sync::syncMode;
+	DkSettings::Sync::syncMode = DkSettings::mode_default;
+
 	if (filename.isEmpty()) {
 
 		// change the file idx according to my brother
@@ -1936,18 +1950,23 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 			case SHRT_MAX:
 				loadLast();
 				break;
-			case 1:
-				loadNextFileFast();
-				break;
-			case -1:
-				loadPrevFileFast();
-				break;
+			//case 1:
+			//	loadNextFileFast();
+			//	break;
+			//case -1:
+			//	loadPrevFileFast();
+			//	break;
 			default:
-				if (loader) loader->loadFileAt(idx);
+				loadFileFast(idx, true);
+				//if (loader) loader->loadFileAt(idx);
 		}
 	}
 	else 
 		loadFile(QFileInfo(filename));
+
+	qDebug() << "loading file: " << filename;
+
+	DkSettings::Sync::syncMode = oldMode;
 
 }
 
@@ -2104,8 +2123,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 
 	update();
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
-		tcpSynchronize();
+	tcpSynchronize();
 
 }
 

@@ -1659,4 +1659,7 @@ protected:
 	QSpinBox* sliderBox;
 };
 
+
+
+
 };
