@@ -1,0 +1,6 @@
+#ifndef H_PHOTOALBUM_
+#define H_PHOTOALBUM_
+
+#include "public/hphotoalbum.h"
+
+#endif // H_PHOTOALBUM_

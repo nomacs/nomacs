@@ -1,0 +1,6 @@
+#ifndef H_MEDIAINFO_
+#define H_MEDIAINFO_
+
+#include "public/hmediainfo.h"
+
+#endif // H_MEDIAINFO_

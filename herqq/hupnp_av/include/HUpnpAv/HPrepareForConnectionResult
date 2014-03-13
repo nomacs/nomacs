@@ -1,0 +1,6 @@
+#ifndef H_PREPAREFORCONNECTION_RESULT_
+#define H_PREPAREFORCONNECTION_RESULT_
+
+#include "public/hprepareforconnection_result.h"
+
+#endif // H_PREPAREFORCONNECTION_RESULT_

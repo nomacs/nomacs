@@ -1,0 +1,6 @@
+#ifndef H_SSDP_
+#define H_SSDP_
+
+#include "public/hssdp.h"
+
+#endif // H_SSDP_

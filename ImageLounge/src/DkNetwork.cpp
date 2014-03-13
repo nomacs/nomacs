@@ -454,8 +454,7 @@ void DkLANClientManager::connectionSynchronized(QList<quint16> synchronizedPeers
 	// add to last seen for whitelisting
 	DkSettings::sync.recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
 	DkSettings::sync.recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
-
-
+	qDebug() << "added " << peerList.getPeerById(connection->getPeerId()).clientName << " to recently seen list";
 }
 
 void DkLANClientManager::connectionStopSynchronized(DkConnection* connection) {

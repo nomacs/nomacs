@@ -237,10 +237,9 @@ void DkSettings::load(bool force) {
 	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
 	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
 	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
-	sync_p.recentSyncNames = settings.value("SynchronizeSettings/recentSyncNames", sync_p.recentSyncNames).toStringList();
-	sync_p.syncWhiteList = settings.value("SynchronizeSettings/syncWhiteList", sync_p.syncWhiteList).toStringList();
-	sync_p.recentLastSeen = settings.value("SynchronizeSettings/recentLastSeen", sync_p.recentLastSeen).toHash();
-
+	sync_p.recentSyncNames = settings.value("recentSyncNames", sync_p.recentSyncNames).toStringList();
+	sync_p.syncWhiteList = settings.value("syncWhiteList", sync_p.syncWhiteList).toStringList();
+	sync_p.recentLastSeen = settings.value("recentLastSeen", sync_p.recentLastSeen).toHash();
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------

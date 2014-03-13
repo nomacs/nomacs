@@ -1,0 +1,6 @@
+#ifndef H_MEDIARENDERER_ADAPTER_
+#define H_MEDIARENDERER_ADAPTER_
+
+#include "public/hmediarenderer_adapter.h"
+
+#endif // H_MEDIARENDERER_ADAPTER_

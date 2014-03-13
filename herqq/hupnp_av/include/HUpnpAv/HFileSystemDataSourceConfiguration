@@ -1,0 +1,6 @@
+#ifndef H_FILESYSTEM_DATASOURCE_CONFIGURATION_
+#define H_FILESYSTEM_DATASOURCE_CONFIGURATION_
+
+#include "public/hfsys_datasource_configuration.h"
+
+#endif // H_FILESYSTEM_DATASOURCE_CONFIGURATION_

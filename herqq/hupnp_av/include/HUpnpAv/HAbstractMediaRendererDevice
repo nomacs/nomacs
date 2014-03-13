@@ -1,0 +1,6 @@
+#ifndef H_ABSTRACTMEDIARENDERER_DEVICE_
+#define H_ABSTRACTMEDIARENDERER_DEVICE_
+
+#include "public/habstractmediarenderer_device.h"
+
+#endif // H_ABSTRACTMEDIARENDERER_DEVICE_

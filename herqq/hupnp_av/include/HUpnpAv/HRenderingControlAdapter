@@ -1,0 +1,6 @@
+#ifndef H_RENDERINGCONTROLADAPTER_
+#define H_RENDERINGCONTROLADAPTER_
+
+#include "public/hrenderingcontrol_adapter.h"
+
+#endif // H_RENDERINGCONTROLADAPTER_

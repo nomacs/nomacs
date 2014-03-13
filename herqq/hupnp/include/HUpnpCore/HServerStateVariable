@@ -1,0 +1,6 @@
+#ifndef H_SERVER_STATEVARIABLE_
+#define H_SERVER_STATEVARIABLE_
+
+#include "public/hserverstatevariable.h"
+
+#endif // H_SERVER_STATEVARIABLE_

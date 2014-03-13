@@ -1,0 +1,7 @@
+#ifndef H_CDS_PROPERTY_
+#define H_CDS_PROPERTY_
+
+#include "public/hcdsproperty.h"
+
+#endif // H_CDS_PROPERTY_
+

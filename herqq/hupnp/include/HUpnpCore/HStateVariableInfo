@@ -1,0 +1,6 @@
+#ifndef H_STATEVARIABLEINFO_
+#define H_STATEVARIABLEINFO_
+
+#include "public/hstatevariableinfo.h"
+
+#endif // H_STATEVARIABLEINFO_

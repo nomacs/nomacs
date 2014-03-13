@@ -1,0 +1,6 @@
+#ifndef H_SORTINFO_
+#define H_SORTINFO_
+
+#include "public/hsortinfo.h"
+
+#endif // H_SORTINFO_

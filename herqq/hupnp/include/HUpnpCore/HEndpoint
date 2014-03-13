@@ -1,0 +1,6 @@
+#ifndef H_ENDPOINT_
+#define H_ENDPOINT_
+
+#include "public/hendpoint.h"
+
+#endif // H_ENDPOINT_

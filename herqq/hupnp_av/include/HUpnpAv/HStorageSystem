@@ -1,0 +1,6 @@
+#ifndef H_STORAGESYSTEM_
+#define H_STORAGESYSTEM_
+
+#include "public/hstoragesystem.h"
+
+#endif // H_STORAGESYSTEM_

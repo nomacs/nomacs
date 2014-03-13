@@ -1,0 +1,6 @@
+#ifndef H_MEDIARENDERER_DEVICECONFIGURATION_
+#define H_MEDIARENDERER_DEVICECONFIGURATION_
+
+#include "public/hmediarenderer_deviceconfiguration.h"
+
+#endif // H_MEDIARENDERER_DEVICECONFIGURATION_

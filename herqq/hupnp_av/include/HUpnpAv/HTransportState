@@ -1,0 +1,6 @@
+#ifndef H_TRANSPORTSTATE_
+#define H_TRANSPORTSTATE_
+
+#include "public/htransportstate.h"
+
+#endif // H_TRANSPORTSTATE_

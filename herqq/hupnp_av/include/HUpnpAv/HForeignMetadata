@@ -1,0 +1,6 @@
+#ifndef H_FOREIGNMETADATA_
+#define H_FOREIGNMETADATA_
+
+#include "public/hforeignmetadata.h"
+
+#endif // H_FOREIGNMETADATA_

@@ -1,0 +1,6 @@
+#ifndef H_SERVICE_PROXY
+#define H_SERVICE_PROXY
+
+#include "public/hclientservice.h"
+
+#endif // H_SERVICE_PROXY

@@ -1,0 +1,6 @@
+#ifndef H_IMAGEITEM_
+#define H_IMAGEITEM_
+
+#include "public/himageitem.h"
+
+#endif // H_IMAGEITEM_

@@ -1,0 +1,6 @@
+#ifndef H_DEVICEPROXY_
+#define H_DEVICEPROXY_
+
+#include "public/hclientdevice.h"
+
+#endif // H_DEVICEPROXY_

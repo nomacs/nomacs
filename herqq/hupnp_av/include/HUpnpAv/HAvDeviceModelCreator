@@ -1,0 +1,6 @@
+#ifndef HAV_DEVICEMODEL_CREATOR_
+#define HAV_DEVICEMODEL_CREATOR_
+
+#include "public/hav_devicemodel_creator.h"
+
+#endif // HAV_DEVICEMODEL_CREATOR_

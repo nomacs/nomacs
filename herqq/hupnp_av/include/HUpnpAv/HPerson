@@ -1,0 +1,6 @@
+#ifndef H_PERSON_
+#define H_PERSON_
+
+#include "public/hperson.h"
+
+#endif // H_PERSON_

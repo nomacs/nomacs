@@ -1,0 +1,6 @@
+#ifndef H_ABSTRACT_CDS_DATASOURCE_
+#define H_ABSTRACT_CDS_DATASOURCE_
+
+#include "public/habstract_cds_datasource.h"
+
+#endif // H_ABSTRACT_CDS_DATASOURCE_

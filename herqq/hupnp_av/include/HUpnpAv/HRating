@@ -1,0 +1,6 @@
+#ifndef H_RATING_
+#define H_RATING_
+
+#include "public/hrating.h"
+
+#endif // H_RATING_

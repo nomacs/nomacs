@@ -1,0 +1,6 @@
+#ifndef H_POSITIONINFO_
+#define H_POSITIONINFO_
+
+#include "public/hpositioninfo.h"
+
+#endif // H_POSITIONINFO_

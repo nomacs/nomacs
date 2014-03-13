@@ -1,0 +1,6 @@
+#ifndef H_PLAYLISTCONTAINER_
+#define H_PLAYLISTCONTAINER_
+
+#include "public/hplaylistcontainer.h"
+
+#endif // H_PLAYLISTCONTAINER_

@@ -1,0 +1,6 @@
+#ifndef H_DEVICEMODEL_VALIDATOR_
+#define H_DEVICEMODEL_VALIDATOR_
+
+#include "public/hdevicemodel_validator.h"
+
+#endif // H_DEVICEMODEL_VALIDATOR_

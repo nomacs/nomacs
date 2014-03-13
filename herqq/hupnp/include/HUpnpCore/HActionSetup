@@ -1,0 +1,6 @@
+#ifndef H_ACTIONSETUP_
+#define H_ACTIONSETUP_
+
+#include "public/hactions_setupdata.h"
+
+#endif // H_ACTIONSETUP_

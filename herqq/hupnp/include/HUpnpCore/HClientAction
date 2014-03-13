@@ -1,0 +1,6 @@
+#ifndef H_CLIENTACTION_
+#define H_CLIENTACTION_
+
+#include "public/hclientaction.h"
+
+#endif // H_CLIENTACTION_

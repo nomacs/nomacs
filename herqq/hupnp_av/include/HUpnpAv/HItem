@@ -1,0 +1,6 @@
+#ifndef H_ITEM_
+#define H_ITEM_
+
+#include "public/hitem.h"
+
+#endif // H_ITEM_

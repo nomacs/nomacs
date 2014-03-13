@@ -1,0 +1,6 @@
+#ifndef H_CHANNELGROUPNAME_
+#define H_CHANNELGROUPNAME_
+
+#include "public/hchannelgroupname.h"
+
+#endif // H_CHANNELGROUPNAME_

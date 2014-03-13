@@ -1,0 +1,6 @@
+#ifndef H_STATEVARIABLECOLLECTION_
+#define H_STATEVARIABLECOLLECTION_
+
+#include "public/hstatevariablecollection.h"
+
+#endif // H_STATEVARIABLECOLLECTION_

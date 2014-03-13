@@ -1,0 +1,6 @@
+#ifndef H_AVCONTROLPOINT
+#define H_AVCONTROLPOINT
+
+#include "public/hav_controlpoint.h"
+
+#endif // H_AVCONTROLPOINT

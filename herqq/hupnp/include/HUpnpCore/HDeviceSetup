@@ -1,0 +1,6 @@
+#ifndef H_DEVICESETUP_
+#define H_DEVICESETUP_
+
+#include "public/hdevices_setupdata.h"
+
+#endif // H_DEVICESETUP_

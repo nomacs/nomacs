@@ -1,0 +1,6 @@
+#ifndef H_AUDIOBROADCAST_
+#define H_AUDIOBROADCAST_
+
+#include "public/haudiobroadcast.h"
+
+#endif // H_AUDIOBROADCAST_

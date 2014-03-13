@@ -1,0 +1,6 @@
+#ifndef H_STORAGEMEDIUM_
+#define H_STORAGEMEDIUM_
+
+#include "public/hstoragemedium.h"
+
+#endif // H_STORAGEMEDIUM_

@@ -1,0 +1,6 @@
+#ifndef H_CONNECTIONINFO_
+#define H_CONNECTIONINFO_
+
+#include "public/hconnectioninfo.h"
+
+#endif // H_CONNECTIONINFO_

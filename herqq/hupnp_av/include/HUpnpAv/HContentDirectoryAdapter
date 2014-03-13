@@ -1,0 +1,6 @@
+#ifndef H_CONTENTDIRECTORY_ADAPTER_
+#define H_CONTENTDIRECTORY_ADAPTER_
+
+#include "public/hcontentdirectory_adapter.h"
+
+#endif // H_CONTENTDIRECTORY_ADAPTER_

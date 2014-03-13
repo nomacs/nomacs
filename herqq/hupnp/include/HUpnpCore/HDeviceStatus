@@ -1,0 +1,6 @@
+#ifndef H_DEVICESTATUS_
+#define H_DEVICESTATUS_
+
+#include "public/hdevicestatus.h"
+
+#endif // H_DEVICESTATUS_

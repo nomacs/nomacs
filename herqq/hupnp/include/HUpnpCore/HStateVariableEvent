@@ -1,0 +1,6 @@
+#ifndef H_STATEVARIABLE_EVENT_
+#define H_STATEVARIABLE_EVENT_
+
+#include "public/hstatevariable_event.h"
+
+#endif // H_STATEVARIABLE_EVENT_

@@ -1,0 +1,6 @@
+#ifndef H_MULTICAST_SOCKET_
+#define H_MULTICAST_SOCKET_
+
+#include "public/hmulticast_socket.h"
+
+#endif // H_MULTICAST_SOCKET_

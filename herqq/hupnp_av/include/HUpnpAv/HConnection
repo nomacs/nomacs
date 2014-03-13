@@ -1,0 +1,6 @@
+#ifndef H_CONNECTION_
+#define H_CONNECTION_
+
+#include "public/hconnection.h"
+
+#endif // H_CONNECTION_

@@ -1,0 +1,6 @@
+#ifndef H_AUDIOCHANNELGROUP_
+#define H_AUDIOCHANNELGROUP_
+
+#include "public/haudiochannelgroup.h"
+
+#endif // H_AUDIOCHANNELGROUP_

@@ -1,0 +1,6 @@
+#ifndef HAV_DEVICEMODEL_INFOPROVIDER_
+#define HAV_DEVICEMODEL_INFOPROVIDER_
+
+#include "public/hav_devicemodel_infoprovider.h"
+
+#endif // HAV_DEVICEMODEL_INFOPROVIDER_

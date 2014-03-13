@@ -1,0 +1,6 @@
+#ifndef H_ABSTRACTRENDERINGCONTROLSERVICE_
+#define H_ABSTRACTRENDERINGCONTROLSERVICE_
+
+#include "public/habstractrenderingcontrol_service.h"
+
+#endif // H_ABSTRACTRENDERINGCONTROLSERVICE_

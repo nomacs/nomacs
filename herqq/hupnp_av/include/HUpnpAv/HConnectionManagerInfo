@@ -1,0 +1,6 @@
+#ifndef H_CONNECTIONMANAGERINFO_
+#define H_CONNECTIONMANAGERINFO_
+
+#include "public/hconnectionmanager_info.h"
+
+#endif // H_CONNECTIONMANAGERINFO_

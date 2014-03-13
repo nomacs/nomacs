@@ -1,0 +1,6 @@
+#ifndef H_ROOTDIR_
+#define H_ROOTDIR_
+
+#include "public/hrootdir.h"
+
+#endif // H_ROOTDIR_

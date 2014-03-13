@@ -1,0 +1,6 @@
+#ifndef H_SEEKMODE_
+#define H_SEEKMODE_
+
+#include "public/hseekinfo.h"
+
+#endif // H_SEEKMODE_

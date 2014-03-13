@@ -1,0 +1,6 @@
+#ifndef H_VIDEOBROADCAST_
+#define H_VIDEOBROADCAST_
+
+#include "public/hvideobroadcast.h"
+
+#endif // H_VIDEOBROADCAST_

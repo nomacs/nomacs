@@ -1,0 +1,6 @@
+#ifndef H_VIDEOITEM_
+#define H_VIDEOITEM_
+
+#include "public/hvideoitem.h"
+
+#endif // H_VIDEOITEM_
