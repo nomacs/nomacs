@@ -858,6 +858,7 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 	if (!file.exists() || !file.isFile() || !saved)
 		return;
 
+	folderUpdated = true;
 	loadDir(file);
 
 	emit imageLoadedSignal(currentImage, true);
@@ -1050,7 +1051,7 @@ void DkImageLoader::rotateImage(double angle) {
 	QSharedPointer<DkMetaDataT> metaData = currentImage->getMetaData();
 
 	if (metaData->hasMetaData() && DkSettings::metaData.saveExifOrientation) {
-		metaData->setThumbnail(thumb);
+		//metaData->setThumbnail(thumb);
 		metaData->setOrientation(qRound(angle));
 	}
 	else

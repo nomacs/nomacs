@@ -191,7 +191,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		//qDebug() << "thumb loaded from exif...";
 	}
 
-	if (orientation != -1 && orientation != 0 && metaData.isJpg()) {
+	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)orientation);
 		thumb = thumb.transformed(rotationMatrix);

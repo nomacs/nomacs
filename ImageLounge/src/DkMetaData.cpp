@@ -137,6 +137,7 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 
 	Exiv2::Image::AutoPtr exifImgN;
 	Exiv2::MemIo::AutoPtr exifMem;
+
 	try {
 
 		exifMem = Exiv2::MemIo::AutoPtr(new Exiv2::MemIo((byte*)ba->data(), ba->size()));
@@ -620,7 +621,7 @@ void DkMetaDataT::clearOrientation() {
 	if (exifState == not_loaded || exifState == no_data)
 		return;
 
-	setExifValue("orientation", "0");
+	setExifValue("Exif.Image.Orientation", "0");
 }
 
 void DkMetaDataT::setOrientation(int o) {
@@ -682,7 +683,6 @@ void DkMetaDataT::setOrientation(int o) {
 	rv->value_[0] = (unsigned short) orientation;
 	pos->setValue(rv.get());
 
-	// this try is a fast fix -> if the image does not support exiv data -> an exception is raised here -> tell the loader to save the orientated matrix
 	exifImg->setExifData(exifData);
 	exifState = dirty;
 }
@@ -747,12 +747,20 @@ void DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
 
-	if (!exifData.empty() || !getExifKeys().contains(key)) {
+	if (!exifData.empty() && getExifKeys().contains(key)) {
 
 		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
 
 		if (tag.setValue(taginfo.toStdString()))
 			exifState = dirty;
+	}
+	else if (!exifData.empty()) {
+
+		Exiv2::ExifKey key(key.toStdString());
+		Exiv2::Exifdatum tag(key);
+		tag.setValue(taginfo.toStdString());
+
+		exifData.add(tag);
 	}
 }
 
