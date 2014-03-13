@@ -346,156 +346,156 @@ void DkThumbNailT::thumbLoaded() {
 	fetching = false;
 }
 
-// DkThumbPool --------------------------------------------------------------------
-DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 0 */) : QObject(parent) {
-	this->currentFile = file;
-}
-
-void DkThumbPool::setFile(const QFileInfo& file, int force) {
-
-	// >DIR: TODO: updating is not working properly e.g. DSC_4068.jpg  [19.12.2013 markus]
-	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath() << " new file: " << file.absoluteFilePath();
-
-	if (!file.exists()) {
-		qDebug() << file.absoluteFilePath() << " does not exist";
-		return;
-	}
-
-	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || dir(currentFile) != dir(file)))
-		indexDir(file);
-	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
-		updateDir(file);
-
-	if (currentFile != file || force != DkThumbsLoader::not_forced)
-		emit newFileIdxSignal(fileIdx(file));
-
-	currentFile = file;
-}
-
-QFileInfo DkThumbPool::getCurrentFile() {
-	return currentFile;
-}
-
-QDir DkThumbPool::dir(const QFileInfo& file) const {
-
-	return (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absoluteDir();
-}
-
-int DkThumbPool::fileIdx(const QFileInfo& file) {
-
-	int tIdx = -1;
-	
-	for (int idx = 0; idx < thumbs.size(); idx++) {
-		if (file == thumbs.at(idx)->getFile()) {
-			tIdx = idx;
-			break;
-		}
-	}
-
-	return tIdx;
-}
-
-int DkThumbPool::getCurrentFileIdx() {
-
-	if (thumbs.empty())
-		indexDir(currentFile);
-	
-	return fileIdx(currentFile);
-}
-
-QVector<QSharedPointer<DkThumbNailT> > DkThumbPool::getThumbs() {
-
-	if (thumbs.empty())
-		indexDir(currentFile);
-	
-	emit newFileIdxSignal(getCurrentFileIdx());
-
-	return thumbs;
-}
-
-void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
-
-	bool registered = false;
-	for (int idx = 0; idx < listenerList.size(); idx++) {
-
-		if (!isActive && listenerList.at(idx) == obj) {
-			listenerList.remove(idx);
-			break;
-		}
-		else if (isActive && listenerList.at(idx) == obj) {
-			registered = true;
-			break;
-		}
-	}
-
-	if (!registered && isActive) {
-		
-		// we need an update here if the listener list was empty
-		if (listenerList.isEmpty())
-			updateDir(currentFile);
-
-		listenerList.append(obj);
-	}
-
-}
-
-void DkThumbPool::indexDir(const QFileInfo& currentFile) {
-
-	thumbs.clear();
-
-	// imho this is a Qt bug
-	QDir cDir = dir(currentFile);
-
-	files = DkImageLoader::getFilteredFileList(cDir);
-
-	for (int idx = 0; idx < files.size(); idx++) {
-		QSharedPointer<DkThumbNailT> t = createThumb(QFileInfo(cDir, files.at(idx)));
-		thumbs.append(t);
-	}
-	
-	if (!thumbs.empty())
-		emit numThumbChangedSignal();
-
-}
-
-void DkThumbPool::updateDir(const QFileInfo& currentFile) {
-
-	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
-
-	QDir cDir = dir(currentFile);
-	files = DkImageLoader::getFilteredFileList(cDir);
-
-	for (int idx = 0; idx < files.size(); idx++) {
-
-		QFileInfo cFile(cDir, files.at(idx));
-		int fIdx = fileIdx(cFile);
-
-		if (fIdx != -1 && thumbs.at(fIdx)->getFile().lastModified() == cFile.lastModified())
-			newThumbs.append(thumbs.at(fIdx));
-		else {
-			QSharedPointer<DkThumbNailT> t = createThumb(cFile);
-			newThumbs.append(t);
-		}
-	}
-	
-	if (!thumbs.empty() && thumbs.size() != newThumbs.size())
-		emit numThumbChangedSignal();
-
-	thumbs = newThumbs;
-}
-
-QSharedPointer<DkThumbNailT> DkThumbPool::createThumb(const QFileInfo& file) {
-
-	QSharedPointer<DkThumbNailT> thumb(new DkThumbNailT(file));
-	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
-	return thumb;
-}
-
-void DkThumbPool::thumbUpdated() {
-
-	// maybe we have to add a timer here to ignore too many calls at the same time
-	emit thumbUpdatedSignal();
-}
+//// DkThumbPool --------------------------------------------------------------------
+//DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 0 */) : QObject(parent) {
+//	this->currentFile = file;
+//}
+//
+//void DkThumbPool::setFile(const QFileInfo& file, int force) {
+//
+//	// >DIR: TODO: updating is not working properly e.g. DSC_4068.jpg  [19.12.2013 markus]
+//	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath() << " new file: " << file.absoluteFilePath();
+//
+//	if (!file.exists()) {
+//		qDebug() << file.absoluteFilePath() << " does not exist";
+//		return;
+//	}
+//
+//	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || dir(currentFile) != dir(file)))
+//		indexDir(file);
+//	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
+//		updateDir(file);
+//
+//	if (currentFile != file || force != DkThumbsLoader::not_forced)
+//		emit newFileIdxSignal(fileIdx(file));
+//
+//	currentFile = file;
+//}
+//
+//QFileInfo DkThumbPool::getCurrentFile() {
+//	return currentFile;
+//}
+//
+//QDir DkThumbPool::dir(const QFileInfo& file) const {
+//
+//	return (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absoluteDir();
+//}
+//
+//int DkThumbPool::fileIdx(const QFileInfo& file) {
+//
+//	int tIdx = -1;
+//	
+//	for (int idx = 0; idx < thumbs.size(); idx++) {
+//		if (file == thumbs.at(idx)->getFile()) {
+//			tIdx = idx;
+//			break;
+//		}
+//	}
+//
+//	return tIdx;
+//}
+//
+//int DkThumbPool::getCurrentFileIdx() {
+//
+//	if (thumbs.empty())
+//		indexDir(currentFile);
+//	
+//	return fileIdx(currentFile);
+//}
+//
+//QVector<QSharedPointer<DkThumbNailT> > DkThumbPool::getThumbs() {
+//
+//	if (thumbs.empty())
+//		indexDir(currentFile);
+//	
+//	emit newFileIdxSignal(getCurrentFileIdx());
+//
+//	return thumbs;
+//}
+//
+//void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
+//
+//	bool registered = false;
+//	for (int idx = 0; idx < listenerList.size(); idx++) {
+//
+//		if (!isActive && listenerList.at(idx) == obj) {
+//			listenerList.remove(idx);
+//			break;
+//		}
+//		else if (isActive && listenerList.at(idx) == obj) {
+//			registered = true;
+//			break;
+//		}
+//	}
+//
+//	if (!registered && isActive) {
+//		
+//		// we need an update here if the listener list was empty
+//		if (listenerList.isEmpty())
+//			updateDir(currentFile);
+//
+//		listenerList.append(obj);
+//	}
+//
+//}
+//
+//void DkThumbPool::indexDir(const QFileInfo& currentFile) {
+//
+//	thumbs.clear();
+//
+//	// imho this is a Qt bug
+//	QDir cDir = dir(currentFile);
+//
+//	files = DkImageLoader::getFilteredFileList(cDir);
+//
+//	for (int idx = 0; idx < files.size(); idx++) {
+//		QSharedPointer<DkThumbNailT> t = createThumb(QFileInfo(cDir, files.at(idx)));
+//		thumbs.append(t);
+//	}
+//	
+//	if (!thumbs.empty())
+//		emit numThumbChangedSignal();
+//
+//}
+//
+//void DkThumbPool::updateDir(const QFileInfo& currentFile) {
+//
+//	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
+//
+//	QDir cDir = dir(currentFile);
+//	files = DkImageLoader::getFilteredFileList(cDir);
+//
+//	for (int idx = 0; idx < files.size(); idx++) {
+//
+//		QFileInfo cFile(cDir, files.at(idx));
+//		int fIdx = fileIdx(cFile);
+//
+//		if (fIdx != -1 && thumbs.at(fIdx)->getFile().lastModified() == cFile.lastModified())
+//			newThumbs.append(thumbs.at(fIdx));
+//		else {
+//			QSharedPointer<DkThumbNailT> t = createThumb(cFile);
+//			newThumbs.append(t);
+//		}
+//	}
+//	
+//	if (!thumbs.empty() && thumbs.size() != newThumbs.size())
+//		emit numThumbChangedSignal();
+//
+//	thumbs = newThumbs;
+//}
+//
+//QSharedPointer<DkThumbNailT> DkThumbPool::createThumb(const QFileInfo& file) {
+//
+//	QSharedPointer<DkThumbNailT> thumb(new DkThumbNailT(file));
+//	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
+//	return thumb;
+//}
+//
+//void DkThumbPool::thumbUpdated() {
+//
+//	// maybe we have to add a timer here to ignore too many calls at the same time
+//	emit thumbUpdatedSignal();
+//}
 
 
 /**
@@ -506,7 +506,7 @@ void DkThumbPool::thumbUpdated() {
  * caller must destroy the thumbs vector.
  * @param dir the directory where thumbnails should be loaded from.
  **/ 
-DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QStringList files) {
+DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QFileInfoList files) {
 
 	this->thumbs = thumbs;
 	this->dir = dir;
@@ -521,8 +521,9 @@ DkThumbsLoader::DkThumbsLoader(std::vector<DkThumbNail>* thumbs, QDir dir, QStri
  **/ 
 void DkThumbsLoader::init() {
 
-	if (files.empty())
-		files = DkImageLoader::getFilteredFileList(dir);
+	// TODO: update!
+	//if (files.empty())
+	//	files = DkImageLoader::getFilteredFileInfoList(dir);
 	startIdx = -1;
 	endIdx = -1;
 	somethingTodo = false;
@@ -537,7 +538,7 @@ void DkThumbsLoader::init() {
 
 	DkTimer dt;
 	for (int idx = 0; idx < files.size(); idx++) {
-		QFileInfo cFile = QFileInfo(dir, files[idx]);
+		QFileInfo cFile = files[idx];
 
 		DkThumbNail cThumb = DkThumbNail(cFile);
 

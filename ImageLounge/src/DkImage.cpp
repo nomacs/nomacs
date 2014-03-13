@@ -50,11 +50,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 
 	qRegisterMetaType<QFileInfo>("QFileInfo");
 
-	watcher = 0;
-	// init the watcher
-	//watcher = new QFileSystemWatcher();
-	//connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
-	
 	// this seems to be unnecessary complicated, but otherwise we create the watcher in different threads
 	// (depending on if loadFile() is called threaded) which is not a very good ides
 	connect(this, SIGNAL(updateFileWatcherSignal(QFileInfo)), this, SLOT(updateFileWatcher(QFileInfo)), Qt::QueuedConnection);
@@ -206,18 +201,6 @@ void DkImageLoader::clearPath() {
 	currentImage.clear();
 }
 
-/**
- * Clears the current file watch.
- **/ 
-void DkImageLoader::clearFileWatcher() {
-
-	if (!watcher)
-		return;
-
-	if (!watcher->files().isEmpty())
-		watcher->removePaths(watcher->files());	// remove all files previously watched
-}
-
 bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) {
 
 	newFile.refresh();
@@ -312,31 +295,11 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 }
 
 /**
- * Loads the next file.
- * @param silent if true, no status information will be displayed.
- **/ 
-void DkImageLoader::nextFile(bool silent) {
-	
-	qDebug() << "loading next file";
-	changeFile(1, silent);
-}
-
-/**
- * Loads the previous file.
- * @param silent if true, no status information will be displayed.
- **/ 
-void DkImageLoader::previousFile(bool silent) {
-	
-	qDebug() << "loading previous file";
-	changeFile(-1, silent);
-}
-
-/**
  * Loads the ancesting or subsequent file.
  * @param skipIdx the number of files that should be skipped after/before the current file.
  * @param silent if true, no status information will be displayed.
  **/ 
-void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
+void DkImageLoader::changeFile(int skipIdx) {
 
 	//if (!img.isNull() && !file.exists())
 	//	return;
@@ -355,217 +318,8 @@ void DkImageLoader::changeFile(int skipIdx, bool silent, int cacheState) {
 
 	QSharedPointer<DkImageContainerT> imgC = getSkippedImage(skipIdx);
 
-	load(imgC, silent);
+	load(imgC);
 }
-
-///**
-// * Loads the ancesting or subsequent thumbnail file.
-// * @param skipIdx the number of files that should be skipped after/before the current file.
-// * @param silent if true, no status information will be displayed.
-// **/ 
-//QImage DkImageLoader::changeFileFast(int skipIdx, QFileInfo& fileInfo, bool silent) {
-//
-//	fileInfo = getSkippedImage(skipIdx);
-//
-//	//if (loadFile.exists())
-//	// no threading here
-//	return loadThumb(fileInfo, silent);
-//}
-
-///**
-// * Returns the file info of the ancesting/subsequent file + skipIdx.
-// * @param skipIdx the number of files to be skipped from the current file.
-// * @param silent if true, no status information will be displayed.
-// * @return QFileInfo the file info of the demanded file
-// **/ 
-//QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searchFile) {
-//
-//	file.refresh();
-//	virtualFile.refresh();
-//	bool virtualExists = files.contains(virtualFile.fileName()); // old code here is a bug if the image is e.g. renamed
-//
-//	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
-//	qDebug() << "file: " << file.absoluteFilePath();
-//	qDebug() << "files: " << files;
-//
-//	if (!virtualExists && !file.exists())
-//		return QFileInfo();
-//
-//	DkTimer dt;
-//
-//	// load a page (e.g. within a tiff file)
-//	if (basicLoader.setPageIdx(skipIdx))
-//		return basicLoader.getFile();
-//
-//	//if (folderUpdated) {
-//	//	bool loaded = loadDir((virtualExists) ? virtualFile.absoluteDir() : file.absoluteDir(), false);
-//	//	if (!loaded)
-//	//		return QFileInfo();
-//	//}
-//	
-//	if (searchFile && !file.absoluteFilePath().isEmpty()) {
-//		QDir newDir = (virtualExists && virtualFile.absoluteDir() != dir) ? virtualFile.absoluteDir() : file.absoluteDir();
-//		qDebug() << "loading new dir: " << newDir.absolutePath();
-//		qDebug() << "old dir: " << dir.absolutePath();
-//		bool loaded = loadDir(newDir, false);
-//		if (!loaded)
-//			return QFileInfo();
-//	}
-//
-//	// locate the current file
-//	QString cFilename = (virtualExists) ? virtualFile.fileName() : file.fileName();
-//	int newFileIdx = 0;
-//	
-//	if (searchFile) cFileIdx = 0;
-//
-//	//qDebug() << "virtual file " << virtualFile.absoluteFilePath();
-//	//qDebug() << "file" << file.absoluteFilePath();
-//
-//	if (virtualExists || file.exists()) {
-//
-//		if (searchFile) {
-//			for ( ; cFileIdx < files.size(); cFileIdx++) {
-//
-//				if (files[cFileIdx] == cFilename)
-//					break;
-//			}
-//		}
-//		newFileIdx = cFileIdx + skipIdx;
-//
-//		// could not locate the file -> it was deleted?!
-//		if (searchFile && cFileIdx == files.size()) {
-//			
-//			// see if the file was deleted
-//			QStringList filesTmp = files;
-//			filesTmp.append(cFilename);
-//			filesTmp = sort(filesTmp, dir);
-//
-//			cFileIdx = 0;
-//			
-//			for ( ; cFileIdx < filesTmp.size(); cFileIdx++) {
-//
-//				if (filesTmp[cFileIdx] == cFilename)
-//					break;
-//			}
-//
-//			if (filesTmp.size() != cFileIdx) {
-//				newFileIdx = cFileIdx + skipIdx;
-//				if (skipIdx > 0) newFileIdx--;	// -1 because the current file does not exist
-//			}
-//		}		
-//
-//		//qDebug() << "subfolders: " << DkSettings::global.scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
-//
-//		if (DkSettings::global.scanSubFolders && subFolders.size() > 1 && (newFileIdx < 0 || newFileIdx >= files.size())) {
-//
-//			int folderIdx = 0;
-//
-//			// locate folder
-//			for (int idx = 0; idx < subFolders.size(); idx++) {
-//				if (subFolders[idx] == dir.absolutePath()) {
-//					folderIdx = idx;
-//					break;
-//				}
-//			}
-//
-//			if (newFileIdx < 0)
-//				folderIdx = getPrevFolderIdx(folderIdx);
-//			else
-//				folderIdx = getNextFolderIdx(folderIdx);
-//
-//			qDebug() << "new folder idx: " << folderIdx;
-//			
-//			//if (DkSettings::global.loop)
-//			//	folderIdx %= subFolders.size();
-//
-//			if (folderIdx >= 0 && folderIdx < subFolders.size()) {
-//				
-//				int oldFileSize = files.size();
-//				loadDir(QDir(subFolders[folderIdx]), false);	// don't scan recursive again
-//				qDebug() << "loading new folder: " << subFolders[folderIdx];
-//
-//				if (newFileIdx >= oldFileSize) {
-//					newFileIdx -= oldFileSize;
-//					cFileIdx = 0;
-//					qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << cFileIdx << " -----------------------------";
-//					getChangedFileInfo(newFileIdx, silent, false);
-//				}
-//				else if (newFileIdx < 0) {
-//					newFileIdx += cFileIdx;
-//					cFileIdx = files.size()-1;
-//					qDebug() << "new skip idx: " << newFileIdx << "cFileIdx: " << cFileIdx << " -----------------------------";
-//					getChangedFileInfo(newFileIdx, silent, false);
-//				}
-//			}
-//			//// dir up
-//			//else if (folderIdx == subFolders.size()) {
-//
-//			//	qDebug() << "going one up";
-//			//	dir.cd("..");
-//			//	loadDir(dir, false);	// don't scan recursive again
-//			//	newFileIdx += cFileIdx;
-//			//	cFileIdx = 0;
-//			//	getChangedFileInfo(newFileIdx, silent, false);
-//			//}
-//			//// get root files
-//			//else if (folderIdx < 0) {
-//			//	loadDir(dir, false);
-//			//}
-//
-//		}
-//
-//		// this should never happen!
-//		if (files.empty()) {
-//			qDebug() << "file list is empty, where it should not be";
-//			return QFileInfo();
-//		}
-//
-//		// loop the directory
-//		if (DkSettings::global.loop) {
-//			newFileIdx %= files.size();
-//
-//			while (newFileIdx < 0)
-//				newFileIdx = files.size() + newFileIdx;
-//
-//		}
-//		// clip to pos1 if skipIdx < -1
-//		else if (cFileIdx > 0 && newFileIdx < 0) {
-//			newFileIdx = 0;
-//		}
-//		// clip to end if skipIdx > 1
-//		else if (cFileIdx < files.size()-1 && newFileIdx >= files.size()) {
-//			newFileIdx = files.size()-1;
-//		}
-//		// tell user that there is nothing left to display
-//		else if (newFileIdx < 0) {
-//			QString msg = tr("You have reached the beginning");
-//			if (!silent)
-//				updateInfoSignal(msg, 1000);
-//			return QFileInfo();
-//		}
-//		// tell user that there is nothing left to display
-//		else if (newFileIdx >= files.size()) {
-//			QString msg = tr("You have reached the end");
-//			
-//			qDebug() << " you have reached the end ............";
-//
-//			if (!DkSettings::global.loop)
-//				emit(setPlayer(false));
-//
-//			if (!silent)
-//				updateInfoSignal(msg, 1000);
-//			return QFileInfo();
-//		}
-//	}
-//
-//	//qDebug() << "file idx changed in: " << QString::fromStdString(dt.getTotal());
-//
-//	cFileIdx = newFileIdx;
-//
-//	// file requested becomes current file
-//	return (files.isEmpty()) ? QFileInfo() : QFileInfo(dir, files[newFileIdx]);
-//	
-//}
 
 /**
  * Returns the file info of the ancesting/subsequent file + skipIdx.
@@ -929,58 +683,6 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 	connect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo, bool)), this, SLOT(imageSaved(QFileInfo, bool)));
 }
 
-//QImage DkImageLoader::loadThumb(QFileInfo& file, bool silent) {
-//		
-//	DkTimer dt;
-//
-//	if (cacher)
-//		cacher->pause();	// loadFile re-starts the cacher again
-//
-//	virtualFile = file;
-//
-//	// see if we can read the thumbnail from the exif data
-//	DkMetaData dataExif(file);
-//	QImage thumb = dataExif.getThumbnail();
-//	int orientation = dataExif.getOrientation();
-//
-//	qDebug() << "thumb size: " << thumb.size();
-//
-//	//// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
-//	//QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
-//			
-//	if (orientation != -1 && !dataExif.isTiff()) {
-//		QTransform rotationMatrix;
-//		rotationMatrix.rotate((double)orientation);
-//		thumb = thumb.transformed(rotationMatrix);
-//	}
-//
-//	if (!thumb.isNull()) {
-//		file = virtualFile;
-//		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
-//
-//		if (file.exists())
-//			emit updateFileSignal(file, thumb.size());
-//
-//	}
-//
-//	return thumb;
-//}
-
-///**
-// * Loads the file specified in a thread.
-// * @param file the file to be loaded.
-// * @param silent if true, no status will be displayed.
-// **/ 
-//void DkImageLoader::load(QFileInfo file, bool silent, int cacheState) {
-//
-//	// if the locker is in load file we get dead locks if loading is not threaded
-//	// is it save to lock the mutex before setting up the thread??
-//	/*QMutexLocker locker(&mutex);*/
-//	
-//	// TODO: use QtConcurrent here...
-//	QMetaObject::invokeMethod(this, "loadFile", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(bool, silent), Q_ARG(int, cacheState));
-//}
-
 void DkImageLoader::reloadImage() {
 
 	if(!currentImage)
@@ -1000,7 +702,7 @@ void DkImageLoader::reloadImage() {
 	load(currentImage);
 }
 
-void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
+void DkImageLoader::load(const QFileInfo& file) {
 
 	loadDir(file);
 
@@ -1014,7 +716,7 @@ void DkImageLoader::load(const QFileInfo& file, bool silent /* = false */) {
 	
 }
 
-void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPointer<DkImageContainerT> */, bool silent) {
+void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPointer<DkImageContainerT> */) {
 
 	if (!image)
 		return;
@@ -1051,211 +753,11 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 }
 
-
-///**
-// * Loads the file specified (not threaded!)
-// * @param file the file to be ljoaded.
-// * @return bool true if the file could be loaded.
-// **/ 
-//bool DkImageLoader::loadFile(QFileInfo file, bool silent, int cacheState) {
-//	
-//	DkTimer dtt;
-//
-//	// null file?
-//	if (file.fileName().isEmpty()) {
-//		this->file = lastFileLoaded;
-//		return false;
-//	}
-//	else if (!file.exists()) {
-//		
-//		if (!silent) {
-//			QString msg = tr("Sorry, the file: %1 does not exist... ").arg(file.fileName());
-//			updateInfoSignal(msg);
-//		}
-//		
-//		fileNotLoadedSignal(file);
-//		this->file = lastFileLoaded;	// revert to last file
-//
-//		int fPos = files.indexOf(file.fileName());
-//		if (fPos >= 0)
-//			files.removeAt(fPos);
-//
-//		return false;
-//	}
-//	else if (!file.permission(QFile::ReadUser)) {
-//		
-//		if (!silent) {
-//			QString msg = tr("Sorry, you are not allowed to read: %1").arg(file.fileName());
-//			updateInfoSignal(msg);
-//		}
-//		
-//		fileNotLoadedSignal(file);
-//		this->file = lastFileLoaded;	// revert to last file
-//
-//		return false;
-//	}
-//
-//	if (cacher)
-//		cacher->pause();
-//
-//	DkTimer dt;
-//
-//	//test exif
-//	//DkExif dataExif = DkExif(file);
-//	//int orientation = dataExif.getOrientation();
-//	//dataExif.getExifKeys();
-//	//dataExif.getExifValues();
-//	//dataExif.getIptcKeys();
-//	//dataExif.getIptcValues();
-//	//dataExif.saveOrientation(90);
-//
-//	if (!silent)
-//		emit updateSpinnerSignalDelayed(true);
-//
-//	qDebug() << "loading: " << file.absoluteFilePath();
-//
-//	bool imgLoaded = false;
-//	bool imgRotated = false;
-//	
-//	DkTimer dtc;
-//
-//	// critical section -> threads
-//	if (cacher && cacheState != cache_force_load && !basicLoader.isDirty()) {
-//		
-//		QVector<DkImageCache> cache = cacher->getCache();
-//		//QMutableVectorIterator<DkImageCache> cIter(cacher->getCache());
-//
-//		for (int idx = 0; idx < cache.size(); idx++) {
-//			
-//			//cIter.next();
-//
-//			if (cache.at(idx).getFile() == file) {
-//
-//				if (cache.at(idx).getCacheState() == DkImageCache::cache_loaded) {
-//					DkImageCache cCache = cache.at(idx);
-//					QImage tmp = cCache.getImage();
-//					basicLoader.setImage(tmp, file);
-//					imgLoaded = basicLoader.hasImage();
-//
-//					// nothing todo here
-//					if (!imgLoaded)
-//						break;
-//
-//					imgRotated = cCache.isRotated();
-//				}
-//				break; 
-//			}
-//			//cIter.next();
-//		}
-//	}
-//
-//	qDebug() << "loading from cache takes: " << QString::fromStdString(dtc.getTotal());
-//	
-//	if (!imgLoaded) {
-//		try {
-//			imgLoaded = basicLoader.loadGeneral(file);
-//		} catch(...) {
-//			imgLoaded = false;
-//		}
-//	}
-//
-//	this->virtualFile = file;
-//
-//	if (!silent)
-//		emit updateSpinnerSignalDelayed(false);	// stop showing
-//
-//	qDebug() << "image loaded in: " << QString::fromStdString(dt.getTotal());
-//	
-//	if (imgLoaded) {
-//		
-//		DkMetaData imgMetaData(file);		
-//		int orientation = imgMetaData.getOrientation();
-//
-//		//QStringList keys = imgMetaData.getExifKeys();
-//		//qDebug() << keys;
-//
-//		if (!imgMetaData.isTiff() && !imgRotated && !DkSettings::metaData.ignoreExifOrientation)
-//			basicLoader.rotate(orientation);
-//		
-//		if (cacher && cacheState != cache_disable_update) 
-//			cacher->setCurrentFile(file, basicLoader.image());
-//
-//		qDebug() << "orientation set in: " << QString::fromStdString(dt.getIvl());
-//			
-//		// update watcher
-//		emit updateFileWatcherSignal(file);		
-//		this->file = file;
-//		lastFileLoaded = file;
-//		editFile = QFileInfo();
-//		loadDir(file.absoluteDir(), false);
-//		
-//		emit updateImageSignal();
-//		emit updateDirSignal(file);	// this should call updateFileSignal too
-//		sendFileSignal();
-//
-//		// update history
-//		updateHistory();
-//	}
-//	else {
-//		//if (!silent) {
-//			QString msg = tr("Sorry, I could not load: %1").arg(file.fileName());
-//			updateInfoSignal(msg);
-//			this->file = lastFileLoaded;	// revert to last file
-//			qDebug() << "reverting to: " << lastFileLoaded.fileName();
-//			loadDir(this->file.absoluteDir(), false);
-//		//}
-//		fileNotLoadedSignal(file);
-//		
-//		startStopCacher();
-//		if (cacher) {
-//			cacher->start();
-//			cacher->play();
-//		}
-//
-//		qDebug() << "I did load it silent: " << silent;
-//		return false;
-//	}
-//
-//	startStopCacher();
-//	if (cacher) {
-//		cacher->start();
-//		cacher->play();
-//	}
-//
-//	qDebug() << "total loading time: " << QString::fromStdString(dtt.getTotal());
-//
-//	return true;
-//}
-
-
-/**
- * Saves the file specified in a thread.
- * If the file already exists, it will be replaced.
- * @param file the (new) filename.
- * @param fileFilter the file extenstion (e.g. *.jpg)
- * @param saveImg the image to be saved
- * @param compression the compression method (for *.jpg or *.tif images)
- **/ 
-void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter, int compression) {
-
-	saveFileIntern(file, saveImg, fileFilter, compression);
-}
-
-///**
-// * Saves a file in a thread with no status information.
-// * @param file the file name/path
-// * @param img the image to be saved
-// **/ 
-//void DkImageLoader::saveFileSilentThreaded(QFileInfo file, QImage img) {
-//
-//	QMetaObject::invokeMethod(this, "saveFileSilentIntern", Qt::QueuedConnection, Q_ARG(QFileInfo, file), Q_ARG(QImage, img));
-//}
-
 /**
  * Saves a temporary file to the folder specified in Settings.
  * @param img the image (which was in most cases pasted to nomacs)
  **/ 
-QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt, bool force, bool threaded) {
+QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt, bool force) {
 
 	QFileInfo tmpPath = QFileInfo(DkSettings::global.tmpPath + "\\");
 	
@@ -1289,36 +791,14 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 
 	qDebug() << "tmpPath: " << tmpPath.absolutePath();
 	
-	//// TODO: call save file silent threaded...
-	//for (int idx = 1; idx < 10000; idx++) {
-	
-		QString fileName = name + "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss") + fileExt;
+	QString fileName = name + "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh.mm.ss") + fileExt;
+	QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
 
-		//if (idx < 10)
-		//	fileName += "000";
-		//else if (idx < 100)
-		//	fileName += "00";
-		//else if (idx < 1000)
-		//	fileName += "0";
-		//
-		//fileName += QString::number(idx) + fileExt;
-
-		QFileInfo tmpFile = QFileInfo(tmpPath.absolutePath(), fileName);
-
-		if (!tmpFile.exists()) {
+	if (!tmpFile.exists()) {
 			
-			saveFileIntern(tmpFile, img);
-
-			//if (threaded)
-			//	saveFileSilentThreaded(tmpFile, img);
-			//else
-				//saveFileSilentIntern(tmpFile, img);	// TODO change to new format
-			
-			qDebug() << tmpFile.absoluteFilePath() << "saved...";
-
-			return tmpFile;
-		}
-	//}
+		saveFile(tmpFile, img);
+		return tmpFile;
+	}
 
 	return QFileInfo();
 }
@@ -1331,7 +811,7 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
  * @param saveImg the image to be saved
  * @param compression the compression method (for jpg, tif)
  **/ 
-void DkImageLoader::saveFileIntern(QFileInfo file, QImage saveImg, QString fileFilter, int compression) {
+void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter, int compression) {
 	
 	QSharedPointer<DkImageContainerT> imgC = (currentImage) ? currentImage : findOrCreateFile(file);
 	setCurrentImage(imgC);
@@ -1576,60 +1056,7 @@ void DkImageLoader::rotateImage(double angle) {
 	else
 		setImage(currentImage->image(), currentImage->file());
 
-
 	emit imageUpdatedSignal(currentImage);
-
-	//	basicLoader.rotate(angle);
-	//	emit updateImageSignal();
-
-	//	if (file.exists() && DkSettings::metaData.saveExifOrientation) {
-	//		
-	//		imgMetaData.saveOrientation((int)angle);
-
-	//		QImage thumb = DkThumbsLoader::createThumb(basicLoader.image());
-	//		if (imgMetaData.isJpg()) {
-	//			// undo exif orientation
-	//			DkBasicLoader loader;
-	//			loader.setImage(thumb, QFileInfo());
-	//			loader.rotate(-imgMetaData.getOrientation());
-	//			thumb = loader.image();
-	//		}
-	//		imgMetaData.saveThumbnail(thumb, file);
-	//	}
-	//	else if (file.exists() && !DkSettings::metaData.saveExifOrientation) {
-	//		qDebug() << "file: " << file.fileName() << " exists...";
-	//		imgMetaData.saveOrientation(0);		// either metadata throws or we force throwing
-	//		throw DkException("User forces NO exif orientation", __LINE__, __FILE__);
-	//	}
-	//	
-
-	//	mutex.unlock();
-
-	//	sendFileSignal();
-	//}
-	//catch(DkException de) {
-
-	//	mutex.unlock();
-
-	//	// TODO: saveFileSilentThreaded is in the main thread (find out why)
-	//	// TODO: in this case the image is reloaded (file watcher seems to be active)
-	//	// make a silent save -> if the image is just cached, do not save it
-	//	if (file.exists())
-	//		saveFileSilentThreaded(file);
-	//}
-	//catch(...) {	// if file is locked... or permission is missing
-	//	mutex.unlock();
-
-	//	// try restoring the file
-	//	if (!restoreFile(file))
-	//		emit updateInfoSignal(tr("Sorry, I could not restore: %1").arg(file.fileName()));
-	//}
-
-	//if (cacher)
-	//	cacher->setCurrentFile(file, basicLoader.image());
-
-	//emit updateFileWatcherSignal(this->file);
-
 }
 
 /**
@@ -1689,43 +1116,6 @@ bool DkImageLoader::restoreFile(const QFileInfo& fileInfo) {
 	// now 
 	return backupFile.rename(fileInfo.absoluteFilePath());
 }
-
-void DkImageLoader::updateFileWatcher(QFileInfo filePath) {
-
-	//if (watcher)
-	//	delete watcher;
-
-	//watcher = new QFileSystemWatcher(QStringList(filePath.absoluteFilePath()), this);
-	//connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
-
-	//qDebug() << "file watcher updated: " << filePath.absoluteFilePath();
-}
-
-void DkImageLoader::disableFileWatcher() {
-
-	//if (watcher) {
-	//	delete watcher;
-	//	watcher = 0;
-	//}
-
-}
-
-///**
-// * Reloads the currently loaded file if it was edited by another software.
-// * @param path the file path of the changed file.
-// **/ 
-//void DkImageLoader::fileChanged(const QString& path) {
-//
-//	qDebug() << "file updated: " << path;
-//
-//	// ignore if watcher was disabled
-//	if (path == file.absoluteFilePath()) {
-//		QMutexLocker locker(&mutex);
-//		load(QFileInfo(path), true, cache_force_load);
-//	}
-//	else
-//		qDebug() << "file watcher is not up-to-date...";
-//}
 
 /**
  * Reloads the file index if the directory was edited.
@@ -1871,7 +1261,7 @@ int DkImageLoader::getNextFolderIdx(int folderIdx) {
 			return -1;
 
 		QDir cDir = subFolders[tmpNextIdx];
-		QStringList cFiles = getFilteredFileList(cDir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		QFileInfoList cFiles = getFilteredFileInfoList(cDir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 		if (!cFiles.empty()) {
 			nextIdx = tmpNextIdx;
 			break;
@@ -1899,7 +1289,7 @@ int DkImageLoader::getPrevFolderIdx(int folderIdx) {
 			return -1;
 
 		QDir cDir = subFolders[tmpPrevIdx];
-		QStringList cFiles = getFilteredFileList(cDir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
+		QFileInfoList cFiles = getFilteredFileInfoList(cDir, ignoreKeywords, keywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 		if (!cFiles.empty()) {
 			prevIdx = tmpPrevIdx;
 			break;
@@ -1907,153 +1297,6 @@ int DkImageLoader::getPrevFolderIdx(int folderIdx) {
 	}
 
 	return prevIdx;
-}
-
-/**
- * Returns the file list of the directory dir.
- * Note: this function might get slow if lots of files (> 10000) are in the
- * directory or if the directory is in the net.
- * Currently the file list is sorted according to the system specification.
- * @param dir the directory to load the file list from.
- * @param ignoreKeywords if one of these keywords is in the file name, the file will be ignored.
- * @param keywords if one of these keywords is not in the file name, the file will be ignored.
- * @return QStringList all filtered files of the current directory.
- **/ 
-QStringList DkImageLoader::getFilteredFileList(QDir dir, QStringList ignoreKeywords, QStringList keywords, QStringList folderKeywords) {
-
-	DkTimer dt;
-
-#ifdef WIN32
-
-	QString winPath = QDir::toNativeSeparators(dir.path()) + "\\*.*";
-
-	wchar_t* fnameT = L"C:\\VSProjects\\img\\*.*";
-	const wchar_t* fname = reinterpret_cast<const wchar_t *>(winPath.utf16());
-
-	WIN32_FIND_DATAW findFileData;
-	HANDLE MyHandle = FindFirstFileW(fname, &findFileData);
-
-	std::vector<std::wstring> fileNameList;
-	std::wstring fileName;
-
-	if( MyHandle != INVALID_HANDLE_VALUE) {
-		
-		do {
-
-			fileName = findFileData.cFileName;
-			fileNameList.push_back(fileName);	// TODO: sort correct according to numbers
-		} while(FindNextFileW(MyHandle, &findFileData) != 0);
-	}
-
-	FindClose(MyHandle);
-	
-	// slow regexp
-	//QString extPattern = ".+((\\" + fileFilters.join("$)|(\\") + "$))";
-	//extPattern.replace("*", "");
-	//QRegExp exp(extPattern, Qt::CaseInsensitive);
-
-	// remove the * in fileFilters
-	QStringList fileFiltersClean = fileFilters;
-	for (int idx = 0; idx < fileFilters.size(); idx++)
-		fileFiltersClean[idx].replace("*", "");
-
-	//std::sort(fileNameList.begin(), fileNameList.end(), wCompLogic);
-
-	QStringList fileList;
-	std::vector<std::wstring>::iterator lIter = fileNameList.begin();
-
-	// convert to QStringList
-	for (unsigned int idx = 0; idx < fileNameList.size(); idx++, lIter++) {
-		
-		QString qFilename = DkUtils::stdWStringToQString(*lIter);
-
-		// believe it or not, but this is 10 times faster than QRegExp
-		// drawback: we also get files that contain *.jpg*
-		for (int idx = 0; idx < fileFiltersClean.size(); idx++) {
-
-			if (qFilename.contains(fileFiltersClean[idx], Qt::CaseInsensitive)) {
-				fileList.append(qFilename);
-				break;
-			}
-		}
-	}
-
-	qDebug() << "WinAPI, indexed (" << fileList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
-#else
-
-	// true file list
-	dir.setSorting(QDir::LocaleAware);
-	QStringList fileList = dir.entryList(fileFilters);
-	qDebug() << "Qt, sorted file list computed in: " << QString::fromStdString(dt.getIvl());
-	qDebug() << fileList;
-
-#endif
-
-	for (int idx = 0; idx < ignoreKeywords.size(); idx++) {
-		QRegExp exp = QRegExp("^((?!" + ignoreKeywords[idx] + ").)*$");
-		exp.setCaseSensitivity(Qt::CaseInsensitive);
-		fileList = fileList.filter(exp);
-	}
-
-	for (int idx = 0; idx < keywords.size(); idx++) {
-		fileList = fileList.filter(keywords[idx], Qt::CaseInsensitive);
-	}
-
-	if (!folderKeywords.empty()) {
-		
-		QStringList resultList = fileList;
-		for (int idx = 0; idx < folderKeywords.size(); idx++) {
-			resultList = resultList.filter(folderKeywords[idx], Qt::CaseInsensitive);
-		}
-
-		// if string match returns nothing -> try a regexp
-		if (resultList.empty())
-			resultList = fileList.filter(QRegExp(folderKeywords.join(" ")));
-
-		qDebug() << "filtered file list (get)" << resultList;
-		qDebug() << "keywords: " << folderKeywords;
-		fileList = resultList;
-	}
-
-	if (DkSettings::resources.filterDuplicats) {
-
-		QString preferredExtension = DkSettings::resources.preferredExtension;
-		preferredExtension = preferredExtension.replace("*.", "");
-		qDebug() << "preferred extension: " << preferredExtension;
-
-		QStringList resultList = fileList;
-		fileList.clear();
-		
-		for (int idx = 0; idx < resultList.size(); idx++) {
-			
-			QFileInfo cFName = QFileInfo(resultList.at(idx));
-
-			if (preferredExtension.compare(cFName.suffix(), Qt::CaseInsensitive) == 0) {
-				fileList.append(resultList.at(idx));
-				continue;
-			}
-
-			QString cFBase = cFName.baseName();
-			bool remove = false;
-
-			for (int cIdx = 0; cIdx < resultList.size(); cIdx++) {
-
-				QString ccBase = QFileInfo(resultList.at(cIdx)).baseName();
-
-				if (cIdx != idx && ccBase == cFBase && resultList.at(cIdx).contains(preferredExtension, Qt::CaseInsensitive)) {
-					remove = true;
-					break;
-				}
-			}
-			
-			if (!remove)
-				fileList.append(resultList.at(idx));
-		}
-	}
-
-	//fileList = sort(fileList, dir);
-
-	return fileList;
 }
 
 void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
@@ -2337,30 +1580,10 @@ QDir DkImageLoader::getSaveDir() {
 }
 
 /**
- * Returns the file extension of the current file.
- * @return QString current file extension.
- **/ 
-QString DkImageLoader::getCurrentFilter() {
-
-	if (!currentImage || !currentImage->exists())
-		return QString();
-
-	QString cSuffix = currentImage->file().suffix();
-
-	for (int idx = 0; idx < saveFilters.size(); idx++) {
-
-		if (saveFilters[idx].contains(cSuffix))
-			return saveFilters[idx];
-	}
-
-	return QString();
-}
-
-/**
-	* Returns if an image is loaded currently.
-	* @return bool true if an image is loaded.
-	**/ 
-bool DkImageLoader::hasImage() {
+* Returns if an image is loaded currently.
+* @return bool true if an image is loaded.
+**/ 
+bool DkImageLoader::hasImage() const {
 		
 	return currentImage && currentImage->hasImage();
 };
@@ -2490,15 +1713,6 @@ void DkImageLoader::setFolderFilters(QStringList filters) {
 
 QStringList DkImageLoader::getFolderFilters() {
 	return folderKeywords;
-}
-
-/**
- * Sets the file specified and loads the directory.
- * @param file the file to be set as current file.
- **/ 
-void DkImageLoader::setFile(QFileInfo& file) {
-	
-	setCurrentImage(findFile(file));
 }
 
 /**

@@ -199,9 +199,9 @@ public:
 
 	void setFullScreen(bool fullscreen);
 
-	DkThumbPool* getThumbPool() {
-		return thumbPool;
-	}
+	//DkThumbPool* getThumbPool() {
+	//	return thumbPool;
+	//}
 
 	DkFilePreview* getFilePreview() {
 		return filePreview;
@@ -309,7 +309,7 @@ protected:
 	DkLabelBg* bottomLabel;
 	DkLabelBg* bottomLeftLabel;
 
-	DkThumbPool* thumbPool;
+//	DkThumbPool* thumbPool;
 
 	QSharedPointer<DkImageContainerT> imgC;
 
@@ -394,15 +394,13 @@ public slots:
 	void tcpSendImage();
 	
 	// file actions
-	void loadFile(QFileInfo file, bool silent = false);
+	void loadFile(QFileInfo file);
 	void reloadFile();
-	void loadFullFile(bool silent = false);
-	//void loadNextFile(bool silent = false);
-	//void loadPrevFile(bool silent = false);
-	void loadNextFileFast(bool silent = false);
-	void loadPrevFileFast(bool silent = false);
-	void loadFileFast(int skipIdx, bool silent = false, int rec = 0);
-	void loadFile(int skipIdx, bool silent = false);
+	void loadFullFile();
+	void loadNextFileFast();
+	void loadPrevFileFast();
+	void loadFileFast(int skipIdx, int rec = 0);
+	void loadFile(int skipIdx);
 	void loadFirst();
 	void loadLast();
 	void loadSkipNext10();

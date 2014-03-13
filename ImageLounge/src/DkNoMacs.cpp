@@ -1615,7 +1615,7 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 		qDebug() << "dropping: " << url;
 		url = url.toLocalFile();
 		
-		viewport()->loadFile(QFileInfo(url.toString()), true);
+		viewport()->loadFile(QFileInfo(url.toString()));
 
 		QList<QUrl> urls = event->mimeData()->urls();
 		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
@@ -1685,7 +1685,7 @@ void DkNoMacs::pasteImage() {
 		QUrl url = clipboard->mimeData()->urls().at(0);
 		url = url.toLocalFile();
 		qDebug() << "pasting: " << url.toString();
-		viewport()->loadFile(QFileInfo(url.toString()), true);
+		viewport()->loadFile(QFileInfo(url.toString()));
 
 	}
 	else if (clipboard->mimeData()->hasImage()) {
@@ -1702,7 +1702,7 @@ void DkNoMacs::pasteImage() {
 		QFileInfo file = QFileInfo(msg);
 
 		if (file.exists()) {
-			viewport()->loadFile(file, true);
+			viewport()->loadFile(file);
 		}
 		else
 			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
@@ -2196,7 +2196,7 @@ void DkNoMacs::loadFile(const QFileInfo& file, bool silent) {
 	if (!viewport())
 		return;
 
-	viewport()->loadFile(file, silent);
+	viewport()->loadFile(file);
 }
 
 void DkNoMacs::renameFile() {
@@ -2797,7 +2797,7 @@ void DkNoMacs::setWallpaper() {
 	//	dImg = img;
 
 	QImage dImg = img;
-	QFileInfo tmpPath = viewport()->getImageLoader()->saveTempFile(dImg, "wallpaper", ".jpg", true, false);
+	QFileInfo tmpPath = viewport()->getImageLoader()->saveTempFile(dImg, "wallpaper", ".jpg", true);
 
 	// is there a more elegant way to see if saveTempFile returned an empty path
 	if (tmpPath.absoluteFilePath() == QFileInfo().absoluteFilePath()) {

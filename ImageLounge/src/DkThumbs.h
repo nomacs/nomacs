@@ -225,39 +225,39 @@ protected:
 	int forceLoad;
 };
 
-class DkThumbPool : public QObject {
-	Q_OBJECT
-
-public:
-	DkThumbPool(QFileInfo file = QFileInfo(), QObject* parent = 0);
-	
-	QFileInfo getCurrentFile();
-	int getCurrentFileIdx();
-	int fileIdx(const QFileInfo& file);
-
-	QVector<QSharedPointer<DkThumbNailT> > getThumbs();
-
-public slots:
-	void setFile(const QFileInfo& files, int force = false);
-	void thumbUpdated();
-	void updateDir(const QFileInfo& currentFile);
-	void getUpdates(QObject* obj, bool isActive);
-
-signals:
-	void thumbUpdatedSignal();
-	void numThumbChangedSignal();
-	void newFileIdxSignal(int idx);
-
-protected:
-	void indexDir(const QFileInfo& currentFile);
-	QDir dir(const QFileInfo& file) const;	// fixes a Qt 'bug'
-	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
-
-	QVector<QSharedPointer<DkThumbNailT> > thumbs;
-	QFileInfo currentFile;
-	QStringList files;
-	QVector<QObject*> listenerList;
-};
+//class DkThumbPool : public QObject {
+//	Q_OBJECT
+//
+//public:
+//	DkThumbPool(QFileInfo file = QFileInfo(), QObject* parent = 0);
+//	
+//	QFileInfo getCurrentFile();
+//	int getCurrentFileIdx();
+//	int fileIdx(const QFileInfo& file);
+//
+//	QVector<QSharedPointer<DkThumbNailT> > getThumbs();
+//
+//public slots:
+//	void setFile(const QFileInfo& files, int force = false);
+//	void thumbUpdated();
+//	void updateDir(const QFileInfo& currentFile);
+//	void getUpdates(QObject* obj, bool isActive);
+//
+//signals:
+//	void thumbUpdatedSignal();
+//	void numThumbChangedSignal();
+//	void newFileIdxSignal(int idx);
+//
+//protected:
+//	void indexDir(const QFileInfo& currentFile);
+//	QDir dir(const QFileInfo& file) const;	// fixes a Qt 'bug'
+//	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
+//
+//	QVector<QSharedPointer<DkThumbNailT> > thumbs;
+//	QFileInfo currentFile;
+//	QStringList files;
+//	QVector<QObject*> listenerList;
+//};
 
 
 /**
@@ -272,12 +272,12 @@ class DkThumbsLoader : public QThread {
 	Q_OBJECT
 
 public:
-	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QStringList files = QStringList());
+	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QFileInfoList files = QFileInfoList());
 	~DkThumbsLoader() {};
 
 	void run();
 	int getFileIdx(QFileInfo& file);
-	QStringList getFiles() {
+	QFileInfoList getFiles() {
 		return files;
 	};
 	QDir getDir() {
@@ -321,7 +321,7 @@ private:
 	bool loadAllThumbs;
 	bool forceSave;
 	bool forceLoad;
-	QStringList files;
+	QFileInfoList files;
 
 	//// function
 	//QImage getThumbNailQt(QFileInfo file);

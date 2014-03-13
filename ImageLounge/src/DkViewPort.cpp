@@ -40,8 +40,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	// cropping
 	cropWidget = new DkCropWidget(QRectF(), this);
 
-	// thumbnails, metadata
-	thumbPool = new DkThumbPool(QFileInfo(), this);
+	//// thumbnails, metadata
+	//thumbPool = new DkThumbPool(QFileInfo(), this);
 	thumbScrollWidget = new DkThumbScrollWidget(this, flags);
 	thumbScrollWidget->hide();
 	filePreview = new DkFilePreview(this, flags);
@@ -483,8 +483,9 @@ void DkControlWidget::showThumbView(bool visible) {
 			showFileInfo(true);
 		}
 
-		if (!viewport->getImageLoader()->hasImage())
-			viewport->loadFile(thumbPool->getCurrentFile());
+		// TODO
+		//if (!viewport->getImageLoader()->hasImage())
+		//	viewport->loadFile(thumbPool->getCurrentFile());
 
 		// set again the last image
 		viewport->setImage(viewport->getImageLoader()->getImage());
@@ -1685,7 +1686,7 @@ void DkViewPort::unloadImage() {
 
 }
 
-void DkViewPort::loadFile(QFileInfo file, bool silent) {
+void DkViewPort::loadFile(QFileInfo file) {
 
 	unloadImage();
 	testLoaded = false;
@@ -1703,7 +1704,7 @@ void DkViewPort::loadFile(QFileInfo file, bool silent) {
 			loader->setDir(dir);
 
 	} else if (loader)
-		loader->load(file, silent);
+		loader->load(file);
 
 }
 
@@ -1716,12 +1717,12 @@ void DkViewPort::reloadFile() {
 	}
 }
 
-void DkViewPort::loadFile(int skipIdx, bool silent) {
+void DkViewPort::loadFile(int skipIdx) {
 
 	unloadImage();
 
 	if (loader && !testLoaded)
-		loader->changeFile(skipIdx, silent || (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+		loader->changeFile(skipIdx);
 
 	// alt mod
 	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
@@ -1730,44 +1731,18 @@ void DkViewPort::loadFile(int skipIdx, bool silent) {
 	}
 }
 
-//void DkViewPort::loadNextFile(bool silent) {
-//
-//	// this function is (more or less) deprecated -> just needed since we cannot distinguish between action triggered & action repeated
-//	unloadImage();
-//
-//	if (loader && !testLoaded)
-//		loader->changeFile(1, silent || (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
-//
-//	// alt mod
-//	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
-//		emit sendNewFileSignal(1);
-//		qDebug() << "emitting load next";
-//	}
-//}
-//
-//void DkViewPort::loadPrevFile(bool silent) {
-//
-//	unloadImage();
-//
-//	if (loader && !testLoaded)
-//		loader->changeFile(-1, silent || (parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
-//
-//	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
-//		emit sendNewFileSignal(-1);
-//}
+void DkViewPort::loadPrevFileFast() {
 
-void DkViewPort::loadPrevFileFast(bool silent) {
-
-	loadFileFast(-1, silent);
+	loadFileFast(-1);
 }
 
-void DkViewPort::loadNextFileFast(bool silent) {
+void DkViewPort::loadNextFileFast() {
 
-	loadFileFast(1, silent);
+	loadFileFast(1);
 }
 
 
-void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
+void DkViewPort::loadFileFast(int skipIdx, int rec) {
 
 	//skipImageTimer->stop();
 
@@ -1863,11 +1838,11 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 }
 
 // deprecated
-void DkViewPort::loadFullFile(bool silent) {
+void DkViewPort::loadFullFile() {
 
 	if (thumbFile.exists()) {
 		//unloadImage();	// TODO: unload image clears the image -> makes an empty file
-		loader->load(thumbFile, silent || (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+		loader->load(thumbFile);
 	}
 }
 
@@ -1896,7 +1871,7 @@ void DkViewPort::loadLast() {
 
 void DkViewPort::loadSkipPrev10() {
 
-	loadFileFast(-DkSettings::global.skipImgs, (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+	loadFileFast(-DkSettings::global.skipImgs);
 	//unloadImage();
 
 	//if (loader && !testLoaded)
@@ -1908,7 +1883,7 @@ void DkViewPort::loadSkipPrev10() {
 
 void DkViewPort::loadSkipNext10() {
 
-	loadFileFast(DkSettings::global.skipImgs, (parent && parent->isFullScreen() && DkSettings::slideShow.silentFullscreen));
+	loadFileFast(DkSettings::global.skipImgs);
 	//unloadImage();
 
 	//if (loader && !testLoaded)
