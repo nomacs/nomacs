@@ -72,7 +72,7 @@ bool compLogicQString(const QString & lhs, const QString & rhs) {
 
 		// we don't just want to find two numbers
 		// but we want them to be at the same position
-		if ((rhs.indexOf(r) >= 0 && r.indexIn(lhs)) == r.indexIn(rhs))
+		if (rhs.indexOf(r) >= 0 && r.indexIn(lhs) == r.indexIn(rhs))
 			return lhn < r.cap().toInt();
 
 	}
