@@ -28,8 +28,9 @@
 
 
 #ifdef WIN32
-	#include "shlwapi.h"
-	#pragma comment (lib, "shlwapi.lib")
+#include "winsock2.h"
+#include "shlwapi.h"
+#pragma comment (lib, "shlwapi.lib")
 #endif
 
 #if defined(_MSC_BUILD) && !defined(QT_NO_DEBUG_OUTPUT) // fixes cmake bug - really release uses subsystem windows, debug and release subsystem console

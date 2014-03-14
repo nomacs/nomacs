@@ -1766,10 +1766,14 @@ void DkImageLoader::loadFileAt(int idx) {
 
 	mutex.lock();
 
-	if (!dir.exists()) {
+	
+	if (virtualFile.isFile() || file.isFile()) {
 		QDir newDir = (virtualFile.exists()) ? virtualFile.absoluteDir() : file.absolutePath();	
 		loadDir(newDir);
 	}
+
+	if (files.empty())
+		return;
 
 	if (dir.exists()) {
 

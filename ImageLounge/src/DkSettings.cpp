@@ -325,7 +325,6 @@ void DkSettings::load(bool force) {
 		global_p.ctrlMod = Qt::ControlModifier;
 	}
 
-
 	// keep loaded settings in mind
 	app_d = app_p;
 	global_d = global_p;
