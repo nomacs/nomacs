@@ -47,7 +47,7 @@ void DkImageContainer::init() {
 		loadState = not_loaded;
 
 	edited = false;
-
+	selected = false;
 }
 
 bool DkImageContainer::operator ==(const DkImageContainer& ric) const {
@@ -71,6 +71,20 @@ bool DkImageContainer::operator<(const DkImageContainer& o) const {
 
 	return imageContainerLessThan(*this, o);
 }
+
+bool DkImageContainer::operator>(const DkImageContainer& o) const {
+
+	return !imageContainerLessThan(*this, o);
+}
+
+bool DkImageContainer::operator>=(const DkImageContainer& o) const {
+
+	if (*this == o)
+		return true;
+
+	return !imageContainerLessThan(*this, o);
+}
+
 
 bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r) {
 
@@ -262,6 +276,11 @@ bool DkImageContainer::isEdited() const {
 	return edited;
 }
 
+bool DkImageContainer::isSelected() const {
+
+	return selected;
+}
+
 bool DkImageContainer::setPageIdx(int skipIdx) {
 
 	return loader->setPageIdx(skipIdx);
@@ -274,6 +293,13 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(file));
 	fetchingImage = false;
 	fetchingBuffer = false;
+	
+	// our file watcher
+	fileUpdateTimer.setSingleShot(false);
+	fileUpdateTimer.setInterval(500);
+	waitForUpdate = false;
+
+	connect(&fileUpdateTimer, SIGNAL(timeout()), this, SLOT(checkForFileUpdates()));
 	connect(&saveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()));
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()));
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
@@ -309,13 +335,38 @@ void DkImageContainerT::clear() {
 	DkImageContainer::clear();
 }
 
-bool DkImageContainerT::loadImageThreaded() {
+void DkImageContainerT::checkForFileUpdates() {
 
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
-
+	
 	if (fileInfo.lastModified() != modifiedBefore)
-		fileBuffer->clear();
+		waitForUpdate = true;
+
+	// we use our own file watcher, since the qt watcher
+	// uses locks to check for updates. this might
+	// be more accurate. however, the locks are pretty nasty
+	// if the user e.g. wants to delete the file while watching
+	// it in nomacs
+	if (waitForUpdate && fileInfo.isReadable()) {
+		waitForUpdate = false;
+		thumb->setImage(QImage());
+		loadImageThreaded(true);
+	}
+
+}
+
+bool DkImageContainerT::loadImageThreaded(bool force) {
+
+	// check file for updates
+	QDateTime modifiedBefore = fileInfo.lastModified();
+	fileInfo.refresh();
+
+	if (force || fileInfo.lastModified() != modifiedBefore) {
+		qDebug() << "updating image...";
+		thumb->setImage(QImage());
+		clear();
+	}
 
 	// null file?
 	if (fileInfo.fileName().isEmpty() || !fileInfo.exists()) {
@@ -452,11 +503,32 @@ void DkImageContainerT::cancel() {
 	loadState = loading_canceled;
 }
 
+void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = true */) {
+
+	selected = connectSignals;
+
+	if (connectSignals) {
+		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SIGNAL(errorDialogSignal(const QString&)));
+		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
+		connect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
+		connect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
+		fileUpdateTimer.start();
+	}
+	else {
+		disconnect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SIGNAL(errorDialogSignal(const QString&)));
+		disconnect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
+		disconnect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
+		disconnect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
+		fileUpdateTimer.stop();
+	}
+}
+
 void DkImageContainerT::saveMetaDataThreaded() {
 
 	if (!exists() || loader->getMetaData() && !loader->getMetaData()->isDirty())
 		return;
 
+	fileUpdateTimer.stop();
 	QFuture<void> future = QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::saveMetaDataIntern);
 
@@ -490,7 +562,7 @@ bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, const QImag
 
 	qDebug() << "attempting to save: " << fileInfo.absoluteFilePath();
 
-	// TODO: add thumbnail?!
+	fileUpdateTimer.stop();
 	QFuture<QFileInfo> future = QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::saveImageIntern, fileInfo, saveImg, compression);
 
@@ -505,7 +577,7 @@ void DkImageContainerT::savingFinished() {
 	saveFile.refresh();
 	thumb->setImage(QImage());	// clear thumbnail
 	qDebug() << "save file: " << saveFile.absoluteFilePath();
-
+	
 	if (!saveFile.exists()) {
 		emit fileSavedSignal(saveFile, false);
 	}
@@ -513,6 +585,8 @@ void DkImageContainerT::savingFinished() {
 		fileBuffer->clear();
 		fileInfo = saveFile;
 		edited = false;
+		if (selected)
+			fileUpdateTimer.start();
 		emit fileSavedSignal(saveFile);
 	}
 }

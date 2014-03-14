@@ -921,7 +921,6 @@ void DkThumbScene::updateLayout() {
 	qDebug() << " thumb labels size: " << thumbLabels.size();
 
 	int tso = DkSettings::display.thumbPreviewSize+xOffset;
-	// TODO: center it
 	setSceneRect(0, 0, numCols*tso+xOffset, numRows*tso+xOffset);
 	//int fileIdx = thumbPool->getCurrentFileIdx();
 
@@ -957,6 +956,14 @@ void DkThumbScene::updateLayout() {
 
 	qDebug() << "moving takes: " << QString::fromStdString(dt.getTotal());
 	
+	for (int idx = 0; idx < thumbLabels.size(); idx++) {
+
+		if (thumbs.at(idx)->isSelected()) {
+			thumbLabels.at(idx)->ensureVisible();
+			thumbLabels.at(idx)->setSelected(true);	// not working here?!
+		}
+	}
+
 	//update();
 
 	//if (verticalScrollBar()->isVisible())
@@ -992,8 +999,6 @@ void DkThumbScene::updateThumbLabels() {
 		//thumb->show();
 		thumbLabels.append(thumb);
 		addItem(thumb.data());
-
-		//if (!idx) qDebug() << "thumbdir: " << thumbs.at(idx)->getFile().absoluteFilePath();
 	}
 
 	showFile(QFileInfo());

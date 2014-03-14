@@ -32,6 +32,7 @@
 #include <QFileInfo>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QTimer>
 
 #include "DkMetaData.h"
 #include "DkBasicLoader.h"
@@ -55,6 +56,8 @@ public:
 	bool operator==(const DkImageContainer& ric) const;
 	bool operator< (const DkImageContainer& o) const;
 	bool operator<= (const DkImageContainer& o) const;
+	bool operator> (const DkImageContainer& o) const;
+	bool operator>= (const DkImageContainer& o) const;
 
 	QImage image();
 
@@ -62,6 +65,7 @@ public:
 	int imgLoaded() const;
 	QFileInfo file() const;
 	bool isEdited() const;
+	bool isSelected() const;
 	int getPageIdx() const;
 	QString getTitleAttribute() const;
 	QSharedPointer<DkBasicLoader> getLoader() const;
@@ -87,6 +91,7 @@ protected:
 
 	int loadState;
 	bool edited;
+	bool selected;
 
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QImage saveImg, int compression);
@@ -104,20 +109,15 @@ public:
 	DkImageContainerT(const QFileInfo& file);
 	virtual ~DkImageContainerT();
 
-	bool loadImageThreaded();
 	void fetchFile();
 	void cancel();
 	void clear();
+	void receiveUpdates(QObject* obj, bool connectSignals = true);
 
+	bool loadImageThreaded(bool force = false);
 	bool saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression = -1);
 	bool saveImageThreaded(const QFileInfo& fileInfo, int compression = -1);
 	void saveMetaDataThreaded();
-	
-	///**
-	// * Returns whether the thumbnail was loaded, or does not exist.
-	// * @return int a status (loaded | not loaded | exists not | loading)
-	// **/ 
-	//int hasImage() const;
 
 signals:
 	void fileLoadedSignal(bool loaded = true);
@@ -125,6 +125,9 @@ signals:
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
 	void errorDialogSignal(const QString& msg);
 	void thumbUpdated();
+
+public slots:
+	void checkForFileUpdates(); 
 
 protected slots:
 	void bufferLoaded();
@@ -147,6 +150,9 @@ protected:
 
 	bool fetchingImage;
 	bool fetchingBuffer;
+	bool waitForUpdate;
+
+	QTimer fileUpdateTimer;
 	//bool savingImage;
 	//bool savingMetaData;
 };

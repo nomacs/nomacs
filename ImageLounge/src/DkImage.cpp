@@ -363,26 +363,26 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 		qDebug() << "current image: " << currentImage->file().absoluteFilePath() << " last image: " << DkSettings::global.recentFiles.first();
 
 		tmpFileIdx = findFileIdx(file, images);
-		if (tmpFileIdx == -1)
+
+		// could not locate the file -> it was deleted?!
+		if (tmpFileIdx == -1) {
+
 			tmpFileIdx = 0;
+			for (; tmpFileIdx < images.size(); tmpFileIdx++) {
+
+				if (*(currentImage.data()) < *(images[tmpFileIdx].data()))
+					break;
+			}
+
+			if (skipIdx > 0)
+				tmpFileIdx--;	// -1 because the current file does not exist
+			if (images.size() == tmpFileIdx)	// could not locate file - resize
+				tmpFileIdx = 0;
+
+		}		
+
 	}
 	newFileIdx = tmpFileIdx + skipIdx;
-
-	// could not locate the file -> it was deleted?!
-	if (searchFile && tmpFileIdx == images.size()) {
-			
-		tmpFileIdx = 0;
-		for (; tmpFileIdx < images.size(); tmpFileIdx++) {
-
-			if (images[tmpFileIdx].data() <= currentImage.data())
-				break;
-		}
-
-		if (images.size() != tmpFileIdx) {
-			newFileIdx = tmpFileIdx + skipIdx;
-			if (skipIdx > 0) newFileIdx--;	// -1 because the current file does not exist
-		}
-	}		
 
 	//qDebug() << "subfolders: " << DkSettings::global.scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
 
@@ -668,19 +668,11 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 		if (!DkSettings::resources.cacheMemory) 
 			currentImage->clear();
 
-		// disconnect old image
-		disconnect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialogSignal(const QString&)));
-		disconnect(currentImage.data(), SIGNAL(fileLoadedSignal(bool)), this, SLOT(imageLoaded(bool)));
-		disconnect(currentImage.data(), SIGNAL(showInfoSignal(QString, int, int)), this, SIGNAL(showInfoSignal(QString, int, int)));
-		disconnect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo)), this, SLOT(imageSaved(QFileInfo)));
+		currentImage->receiveUpdates(this, false);
 	}
 
 	currentImage = newImg;
-
-	connect(currentImage.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
-	connect(currentImage.data(), SIGNAL(fileLoadedSignal(bool)), this, SLOT(imageLoaded(bool)));
-	connect(currentImage.data(), SIGNAL(showInfoSignal(QString, int, int)), this, SIGNAL(showInfoSignal(QString, int, int)));
-	connect(currentImage.data(), SIGNAL(fileSavedSignal(QFileInfo, bool)), this, SLOT(imageSaved(QFileInfo, bool)));
+	currentImage->receiveUpdates(this);
 }
 
 void DkImageLoader::reloadImage() {
@@ -865,14 +857,6 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 	emit imageUpdatedSignal(currentImage);
 	qDebug() << "image updated: " << currentImage->file().fileName();
 	
-	// TODO: load it again here?
-
-
-	//QSharedPointer<DkImageContainerT> sImg(new DkImageContainerT(file));
-	//setCurrentImage(sImg);
-
-	//emit updateImageSignal();
-	//emit sendFileSignal();
 }
 
 ///**
@@ -1146,7 +1130,7 @@ void DkImageLoader::directoryChanged(const QString& path) {
 			timerBlockedUpdate = false;
 
 			if (!path.isEmpty())
-				delayedUpdateTimer.start(3000);
+				delayedUpdateTimer.start(1000);
 		}
 		else
 			timerBlockedUpdate = true;
