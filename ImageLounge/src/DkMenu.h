@@ -28,14 +28,14 @@
 #pragma once
 
 
-#include <QtGui/QAction>
-#include <QtGui/QMenuBar>
+#include <QAction>
+#include <QMenuBar>
 
-#include <QtCore/QFileInfo>
-#include <QtCore/QList>
-#include <QtCore/QObject>
-#include <QtCore/QPointer>
-#include <QtCore/QTimer>
+#include <QFileInfo>
+#include <QList>
+#include <QObject>
+#include <QPointer>
+#include <QTimer>
 
 #include "DkNetwork.h"
 #include "DkTimer.h"

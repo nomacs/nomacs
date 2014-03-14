@@ -32,7 +32,7 @@
 namespace nmc {
 
 // DkControlWidget --------------------------------------------------------------------
-DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WFlags flags) : QWidget(parent, flags) {
+DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
 	viewport = parent;
 
@@ -761,7 +761,7 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
 
 
 // DkViewPort --------------------------------------------------------------------
-DkViewPort::DkViewPort(QWidget *parent, Qt::WFlags flags) : DkBaseViewPort(parent) {
+DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(parent) {
 
 	testLoaded = false;
 	thumbLoaded = false;
@@ -1533,9 +1533,11 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 
 }
 
+#if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES
 int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	
+
 	if (posGrab.isNull()) {
 		posGrab = event->position;
 		return no_swipe;
@@ -1593,6 +1595,7 @@ int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	return no_swipe;
 
 }
+#endif
 #endif
 
 void DkViewPort::swipeAction(int swipeGesture) {
@@ -1933,8 +1936,10 @@ void DkViewPort::loadFileFast(int skipIdx, bool silent, int rec) {
 		return;		// no network loading in this case
 	}
 
-	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus()))
+	if (qApp->keyboardModifiers() == altMod && (hasFocus() || controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
+		QCoreApplication::sendPostedEvents();
+	}
 
 	skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
 }
@@ -2075,7 +2080,7 @@ void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
 }
 
 // DkViewPortFrameless --------------------------------------------------------------------
-DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
+DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent) {
 	
 #ifdef Q_WS_MAC
 	parent->setAttribute(Qt::WA_MacNoShadow);
@@ -2501,7 +2506,7 @@ QTransform DkViewPortFrameless::getScaledImageMatrix() {
 	return imgMatrix;
 }
 
-DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WFlags flags) : DkViewPort(parent) {
+DkViewPortContrast::DkViewPortContrast(QWidget *parent, Qt::WindowFlags flags) : DkViewPort(parent) {
 
 	isColorPickerActive = false;
 	activeChannel = 0;

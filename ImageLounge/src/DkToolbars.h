@@ -27,34 +27,35 @@
 
 #pragma once
 
-#include <QtGui/QToolBar>
-#include <QtGui/QWidget>
+#include <QToolBar>
+#include <QWidget>
 #include <QObject>
-#include <QtGui/QPainter>
-#include <QtGui/QLinearGradient>
-#include <QtGui/QImage>
-#include <QtGui/QPainterPath>
+#include <QPainter>
+#include <QLinearGradient>
+#include <QImage>
+#include <QPainterPath>
 #include <QDebug>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QColorDialog>
-#include <QtGui/QColor>
-#include <QtGui/QGradientStops>
-#include <QtGui/QPushButton>
-#include <QtGui/QComboBox>
-#include <QtGui/QLabel>
-#include <QtGui/QCheckBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLayout>
-#include <QtGui/QIcon>
-#include <QtGui/QAction>
+#include <QMouseEvent>
+#include <QColorDialog>
+#include <QColor>
+#include <QGradientStops>
+#include <QPushButton>
+#include <QComboBox>
+#include <QLabel>
+#include <QCheckBox>
+#include <QHBoxLayout>
+#include <QLayout>
+#include <QIcon>
+#include <QAction>
 #include <QTranslator>
 #include <QDoubleSpinBox>
 #include <QMenu>
 
-#include <QtGui/QGridLayout>
-#include <QtGui/QGraphicsOpacityEffect>
+#include <QGridLayout>
+#include <QGraphicsOpacityEffect>
 
 #include "DkMath.h"
+#include "DkImage.h"
 
 namespace nmc {
 

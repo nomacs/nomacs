@@ -31,7 +31,7 @@
 
 namespace nmc {
 
-DkWidget::DkWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
+DkWidget::DkWidget(QWidget* parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 	init();
 }
 
@@ -576,7 +576,7 @@ void DkSocialButton::animateOpacityDown() {
 }
 
 // DkFilePreview --------------------------------------------------------------------
-DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WFlags flags) : DkWidget(parent, flags) {
+DkFilePreview::DkFilePreview(DkThumbPool* thumbPool, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	this->parent = parent;
 	this->thumbPool = thumbPool;
@@ -773,8 +773,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		bool isRightGradient = imgWorldRect.right() > rightGradient.start().x();
 
 		// create effect before gradient (otherwise the effect might be transparent : )
-		if (idx == currentFileIdx && (currentImgGlow.isNull() || currentFileIdx != oldFileIdx || currentImgGlow.size() != img.size()))
-			createCurrentImgEffect(img.copy(), DkSettings::display.highlightColor);
+		if (idx == currentFileIdx && (currentImg.isNull() || currentFileIdx != oldFileIdx || currentImg.width()-4 != r.width() || currentImg.height()-4 != r.height()))
+			createCurrentImg(img);
 
 		// show that there are more images...
 		if (isLeftGradient)
@@ -782,28 +782,13 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		if (isRightGradient)
 			drawFadeOut(rightGradient, imgWorldRect, &img);
 		
-		if (idx == selected && !selectionGlow.isNull()) {
-			painter->drawPixmap(r, selectionGlow, QRect(QPoint(), img.size()));
-			painter->setOpacity(0.8);
-			painter->drawImage(r, img, QRect(QPoint(), img.size()));
-			painter->setOpacity(1.0f);
-		}
-		else if (idx == currentFileIdx) {
+		if (idx == selected && !selectedImg.isNull())
+			painter->drawPixmap(r, selectedImg, QRect(QPoint(), selectedImg.size()));
+		else if (idx == currentFileIdx && !currentImg.isNull()) {
 
-			// create border
-			QRectF sr = r;
-			sr.setSize(sr.size()+QSize(2, 2));
+			QRectF sr = currentImg.rect();
 			sr.moveCenter(r.center());
-			painter->setOpacity(0.8);
-			painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
-
-			sr.setSize(sr.size()+QSize(2, 2));
-			sr.moveCenter(r.center());
-			painter->setOpacity(0.3);
-			painter->drawPixmap(sr, currentImgGlow, QRect(QPoint(), img.size()));
-
-			painter->setOpacity(1.0);
-			painter->drawImage(r, img, QRect(QPoint(), img.size()));
+			painter->drawPixmap(sr, currentImg, QRect(QPoint(), currentImg.size()));
 		}
 		else
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
@@ -837,67 +822,37 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 	img->setAlphaChannel(mask);
 }
 
-void DkFilePreview::createCurrentImgEffect(QImage img, QColor col) {
+void DkFilePreview::createCurrentImg(const QImage& img) {
+
+	QRectF r = img.rect();
+	if (height()-yOffset < r.height())
+		r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
+
+	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
 	
-	QPixmap imgPx = QPixmap::fromImage(img);
-	currentImgGlow = imgPx;
-	currentImgGlow.fill(col);
-	currentImgGlow.setAlphaChannel(imgPx.alphaChannel());
-	
-	//QPixmap glow = imgPx;
-	//// Fills the whole pixmap with a certain color
-	//// Change to whatever color you want the glow to be
-	//// However, it is now just a red box
-	//glow.fill(Qt::red);
-	//
-	//img = img.scaled(img.size()-QSize(20,20), Qt::IgnoreAspectRatio);
-	//imgPx = QPixmap::fromImage(img);
+	currentImg = QPixmap(r.width()+4, r.height()+4);
+	currentImg.fill(QColor(0,0,0,0));
+	//currentImg = QPixmap::fromImage(img);
 
-	//// This masks out the transparent parts of the image
-	//// (or at least that's my understanding of it - that's how
-	//// it worked when I tried it, but I'm pretty new to this)
-	//// This makes the glow the shape of the pixmap image
-	//glow.setMask(imgPx.createHeuristicMask());
+	QPainter painter(&currentImg);
+	painter.setRenderHint(QPainter::SmoothPixmapTransform);
+	// create border
+	QRectF sr = r;
+	sr.setSize(sr.size()+QSize(2, 2));
+	sr.moveCenter(QRectF(currentImg.rect()).center());
+	painter.setOpacity(0.8);
+	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
 
-	//// To apply the effect, you need to make a QGraphicsItem
-	//QGraphicsPixmapItem *glowItem = new QGraphicsPixmapItem(glow);
+	sr.setSize(sr.size()+QSize(2, 2));
+	sr.moveCenter(QRectF(currentImg.rect()).center());
+	painter.setOpacity(0.3);
+	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
 
-	//// Add the blur
-	//QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
-	//// You can fiddle with the blur to get different effects
-	//blur->setBlurRadius(20);
-	//glowItem->setGraphicsEffect(blur);
-	//currentImgGlow = glowItem->pixmap();
-	////glowItem->get
-}
-
-void DkFilePreview::createSelectedEffect(QImage img, QColor col) {
-
-	QPixmap imgPx = QPixmap::fromImage(img);
-	selectionGlow = imgPx;
-	selectionGlow.fill(col);
-	selectionGlow.setAlphaChannel(imgPx.alphaChannel());
-
-	////what about an outer glow??
-	//// To apply the effect, you need to make a QGraphicsItem
-	//QGraphicsPixmapItem* glowItem = new QGraphicsPixmapItem(selectionGlow);
-
-	//QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
-	//// You can fiddle with the blur to get different effects
-	//blur->setBlurRadius(50);
-	//// Add the blur
-	//glowItem->setGraphicsEffect(blur);
-	//glowItem->setScale(1.5);
-	//
-	//selectionGlow = glowItem->pixmap();
-
-	////selectionGlow = QPixmap(img.height()+30, img.width()+30);
-	////QPainter painter(&selectionGlow);
-
-	////glowItem->paint(painter, )
-	////blur->draw(&painter);
-
-
+	sr = r;
+	sr.moveCenter(QRectF(currentImg.rect()).center());
+	painter.setOpacity(1.0);
+	painter.drawImage(sr, img, QRect(QPoint(), img.size()));
+	qDebug() << "creating new current img...";
 }
 
 void DkFilePreview::resizeEvent(QResizeEvent *event) {
@@ -996,7 +951,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 				if (selected <= thumbPool->getThumbs().size() && selected >= 0) {
 					QSharedPointer<DkThumbNailT> thumb = thumbPool->getThumbs().at(selected);
-					createSelectedEffect(thumb->getImage(), DkSettings::display.highlightColor);
+					selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettings::display.highlightColor, 0.3f);
 				
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
 					//if (fileLabel->height() < height())
@@ -1271,8 +1226,12 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem* pa
 	//imgLabel->setFixedSize(10,10);
 	//setStyleSheet("QLabel{background: transparent;}");
 	setThumb(thumb);
+	
+#if QT_VERSION < 0x050000
 	setAcceptsHoverEvents(true);
-
+#else
+	setAcceptHoverEvents(true);
+#endif
 }
 
 void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
@@ -1858,11 +1817,10 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
-
+//#include <QStyle>
 	minHandleWidth = 30;
 	colorLoader = 0;
 
-	setStyle(new QPlastiqueStyle());
 	setMouseTracking(true);
 
 	// apply style
@@ -1894,7 +1852,6 @@ DkFolderScrollBar::~DkFolderScrollBar() {
 		delete colorLoader;
 		colorLoader = 0;
 	}
-
 }
 
 void DkFolderScrollBar::updateDir(QFileInfo file, int force) {
@@ -2001,7 +1958,9 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 		QString("QScrollBar::sub-line:horizontal {") +
 		QString("width: 0px;") +
 		QString("height: 0px;") +
-		QString("}"));
+		QString("}") +
+		QString("QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal{background: none}")	// remove 'ugly' Qt background pattern
+		);
 
 	qDebug() << "updating style...";
 	
@@ -3064,13 +3023,11 @@ void DkButton::paintEvent(QPaintEvent *event) {
 }
 
 QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
-	
-	QPixmap imgPx = pm->copy();
-	QPixmap imgAlpha = imgPx;
-	imgAlpha.fill(DkSettings::display.highlightColor);
-	imgAlpha.setAlphaChannel(imgPx.alphaChannel());
 
-	return imgAlpha;
+	if (!pm || pm->isNull())
+		return QPixmap();
+
+	return DkImage::colorizePixmap(*pm, DkSettings::display.highlightColor, 1.0f);
 }
 
 void DkButton::focusInEvent(QFocusEvent * event) {
@@ -3704,10 +3661,10 @@ void DkMetaDataInfo::init() {
 	mapIptcExif[DkMetaDataSettingsWidget::desc_filesize] = 2;
 
 	for (int i = 0; i  < DkMetaDataSettingsWidget::scamDataDesc.size(); i++) 
-		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toAscii());
+		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toLatin1());
 
 	for (int i = 0; i  < DkMetaDataSettingsWidget::sdescriptionDesc.size(); i++)
-		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toAscii());
+		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toLatin1());
 
 
 	exposureModes.append(tr("not defined"));
@@ -4787,8 +4744,8 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 		return;
 	}
 
-	posGrab = map(event->posF());
-	clickPos = event->posF();
+	posGrab = map(QPointF(event->pos()));
+	clickPos = QPointF(event->pos());
 
 	if (rect.isEmpty()) {
 		state = initializing;
@@ -4820,7 +4777,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
-	QPointF posM = map(event->posF());
+	QPointF posM = map(QPointF(event->pos()));
 	
 	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
 		// show rotating - moving
@@ -4837,9 +4794,9 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
-		QPointF clipPos = clipToImage(event->posF());
+		QPointF clipPos = clipToImage(QPointF(event->pos()));
 
-		if (!imgRect || !rect.isEmpty() || clipPos == event->posF()) {
+		if (!imgRect || !rect.isEmpty() || clipPos == QPointF(event->pos())) {
 			
 			if (rect.isEmpty()) {
 

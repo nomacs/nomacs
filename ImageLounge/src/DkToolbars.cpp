@@ -555,8 +555,8 @@ void DkTransferToolBar::createIcons() {
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize the icons
-		toolBarIcons[icon_toolbar_reset].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
-		toolBarIcons[icon_toolbar_pipette].addPixmap(DkUtils::colorizePixmap(toolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		toolBarIcons[icon_toolbar_reset].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		toolBarIcons[icon_toolbar_pipette].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 	}
 	
 	toolBarActions.resize(toolbar_end);
@@ -896,8 +896,8 @@ void DkCropToolBar::createIcons() {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

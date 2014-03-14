@@ -54,7 +54,7 @@ bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 	return QObject::eventFilter(obj, event);
 }
 
-DkNoMacs::DkNoMacs(QWidget *parent, Qt::WFlags flags)
+DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	: QMainWindow(parent, flags) {
 
 	QMainWindow::setWindowTitle("nomacs - Image Lounge");
@@ -125,7 +125,7 @@ void DkNoMacs::init() {
 	//setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
 
 // assign icon -> in windows the 32px version
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	QString iconPath = ":/nomacs/img/nomacs32.png";
 #else
 	QString iconPath = ":/nomacs/img/nomacs.png";
@@ -215,7 +215,7 @@ void DkNoMacs::init() {
 	enableMovieActions(false);
 
 // clean up nomacs
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	if (!nmc::DkSettings::global.setupPath.isEmpty() && QApplication::applicationVersion() == nmc::DkSettings::global.setupVersion) {
 
 		// ask for exists - otherwise we always try to delete it if the user deleted it
@@ -229,12 +229,12 @@ void DkNoMacs::init() {
 
 }
 
-#ifdef Q_WS_WIN	// windows specific versioning
-#include <windows.h>
-#undef min
-#undef max
-#include <stdio.h>
-#include <string>
+#ifdef WIN32	// windows specific versioning
+//#include <windows.h>
+//#undef min
+//#undef max
+//#include <stdio.h>
+//#include <string>
 
 void DkNoMacs::registerFileVersion() {
 	
@@ -486,19 +486,19 @@ void DkNoMacs::createIcons() {
 			if (idx == icon_file_open_large || idx == icon_file_dir_large)
 				continue;
 
-			fileIcons[idx].addPixmap(DkUtils::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			fileIcons[idx].addPixmap(DkUtils::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 		}
 
 		// now colorize all icons
 		for (int idx = 0; idx < editIcons.size(); idx++)
-			editIcons[idx].addPixmap(DkUtils::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
+			editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
 
 		for (int idx = 0; idx < viewIcons.size(); idx++)
-			viewIcons[idx].addPixmap(DkUtils::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
+			viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
 
 		for (int idx = 0; idx < toolsIcons.size(); idx++)
-			toolsIcons[idx].addPixmap(DkUtils::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
+			toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
 
 	}
 }
@@ -546,7 +546,8 @@ void DkNoMacs::createMenu() {
 	sortMenu->addAction(sortActions[menu_sort_descending]);
 
 	fileMenu->addMenu(sortMenu);
-	
+	fileMenu->addAction(fileActions[menu_file_recursive]);
+
 	fileMenu->addAction(fileActions[menu_file_goto]);
 	fileMenu->addAction(fileActions[menu_file_find]);
 	fileMenu->addAction(fileActions[menu_file_reload]);
@@ -580,7 +581,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_norm]);
 	editMenu->addAction(editActions[menu_edit_invert]);
 	editMenu->addSeparator();
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
 	editMenu->addSeparator();
 #endif
@@ -609,7 +610,7 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_opacity_up]);
 	viewMenu->addAction(viewActions[menu_view_opacity_down]);
 	viewMenu->addAction(viewActions[menu_view_opacity_an]);
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	viewMenu->addAction(viewActions[menu_view_lock_window]);
 #endif
 	viewMenu->addSeparator();
@@ -844,6 +845,12 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
 	fileActions[menu_file_find]->setStatusTip(tr("Find an image"));
 	connect(fileActions[menu_file_find], SIGNAL(triggered()), this, SLOT(find()));
+
+	fileActions[menu_file_recursive] = new QAction(tr("Scan Folder Re&cursive"), this);
+	fileActions[menu_file_recursive]->setStatusTip(tr("Step through Folder and Sub Folders"));
+	fileActions[menu_file_recursive]->setCheckable(true);
+	fileActions[menu_file_recursive]->setChecked(DkSettings::global.scanSubFolders);
+	connect(fileActions[menu_file_recursive], SIGNAL(triggered(bool)), this, SLOT(setRecursiveScan(bool)));
 
 	//fileActions[menu_file_share_fb] = new QAction(tr("Share on &Facebook"), this);
 	////fileActions[menu_file_share_fb]->setShortcuts(QKeySequence::Close);
@@ -1986,6 +1993,24 @@ void DkNoMacs::fitFrame() {
 
 }
 
+void DkNoMacs::setRecursiveScan(bool recursive) {
+
+	DkSettings::global.scanSubFolders = recursive;
+	//viewport()->reloadFile();
+	DkImageLoader* loader = viewport()->getImageLoader();
+	
+	if (!loader)
+		return;
+
+	if (recursive)
+		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Enabled"));
+	else
+		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Disabled"));
+
+	loader->updateSubFolders(loader->getDir());
+
+}
+
 void DkNoMacs::showOpacityDialog() {
 
 	if (!opacityDialog) {
@@ -2134,7 +2159,7 @@ void DkNoMacs::animateChangeOpacity() {
 void DkNoMacs::lockWindow(bool lock) {
 
 	
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	
 	qDebug() << "locking: " << lock;
 
@@ -2143,7 +2168,7 @@ void DkNoMacs::lockWindow(bool lock) {
 		HWND hwnd = (HWND) winId(); // get handle of the widget
 		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
 		SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT); 
-		SetWindowPos(this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+		SetWindowPos((HWND)this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 		viewport()->getController()->setInfo(tr("Window Locked\nTo unlock: gain focus (ALT+Tab),\nthen press CTRL+SHIFT+ALT+B"), 5000);
 	}
 	else if (lock && windowOpacity() == 1.0f) {
@@ -2156,7 +2181,7 @@ void DkNoMacs::lockWindow(bool lock) {
 		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
 		SetWindowLong(hwnd, GWL_EXSTYLE, styles & ~WS_EX_TRANSPARENT); 
 
-		SetWindowPos(this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+		SetWindowPos((HWND)this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
 #else
 	// TODO: find corresponding command for linux etc
@@ -2192,7 +2217,7 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 	}
 	else {
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 		showMinimized();
 		setWindowState(Qt::WindowActive);
 #else
@@ -2935,8 +2960,8 @@ void DkNoMacs::setWallpaper() {
 
 #ifdef WIN32
 
-#include <stdio.h>
-#include <windows.h>
+//#include <stdio.h>
+//#include <windows.h>
 
 	//Read current windows background image path
 	QSettings appSettings( "HKEY_CURRENT_USER\\Control Panel\\Desktop", QSettings::NativeFormat);
@@ -3003,13 +3028,13 @@ void DkNoMacs::bugReport() {
 		% QApplication::applicationVersion();
 
 	url += "&issue[custom_field_values][4]=";
-#if defined Q_WS_WIN &&	_MSC_VER == 1600
+#if defined WIN32 &&	_MSC_VER == 1600
 	url += "Windows XP";
-#elif defined Q_WS_WIN && _WIN64
+#elif defined WIN32 && _WIN64
 	url += "Windows Vista/7/8 64bit";
-#elif defined Q_WS_WIN && _WIN32
+#elif defined WIN32 && _WIN32
 	url += "Windows Vista/7/8 32bit";
-#elif defined Q_WS_X11 && __x86_64__
+#elif defined Q_WS_X11 && __x86_64__	// >DIR: check if qt5 still supports these flags [19.2.2014 markus]
 	url += "Linux 64bit";
 #elif defined Q_WS_X11 && __i386__
 	url += "Linux 32bit";
@@ -3030,11 +3055,11 @@ void DkNoMacs::featureRequest() {
 		% QApplication::applicationVersion();
 
 	url += "&issue[custom_field_values][4]=";
-#if defined Q_WS_WIN &&	_MSC_VER == 1600
+#if defined WIN32 &&	_MSC_VER == 1600
 	url += "Windows XP";
-#elif defined Q_WS_WIN && _WIN64
+#elif defined WIN32 && _WIN64
 	url += "Windows Vista/7/8 64bit";
-#elif defined Q_WS_WIN && _WIN32
+#elif defined WIN32 && _WIN32
 	url += "Windows Vista/7/8 32bit";
 #elif defined Q_WS_X11 && __x86_64__
 	url += "Linux 64bit";
@@ -3555,7 +3580,7 @@ int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
 
 
 // DkNoMacsSync --------------------------------------------------------------------
-DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WFlags flags) : DkNoMacs(parent, flags) {
+DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags) : DkNoMacs(parent, flags) {
 
 }
 
@@ -3763,7 +3788,7 @@ void DkNoMacsSync::clientInitialized() {
 	emit clientInitializedSignal();
 }
 
-DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(parent, flags) {
+DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(parent, flags) {
 
 		// init members
 	DkViewPort* vp = new DkViewPort(this);
@@ -3815,7 +3840,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WFlags flags) : DkNoMacsSync(paren
 }
 
 // FramelessNoMacs --------------------------------------------------------------------
-DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WFlags flags)
+DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 	: DkNoMacs(parent, flags) {
 
 		setObjectName("DkNoMacsFrameless");
@@ -3970,7 +3995,7 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 
 // Transfer function:
 
-DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WFlags flags)
+DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 	: DkNoMacsSync(parent, flags) {
 
 

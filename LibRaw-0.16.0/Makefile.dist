@@ -1,0 +1,152 @@
+all: library all_samples 
+
+CFLAGS=-O4  -I. -w
+
+# OpenMP support
+#CFLAGS+=-fopenmp
+
+# RawSpeed Support
+#CFLAGS+=-pthread -DUSE_RAWSPEED -I../RawSpeed -I/usr/local/include/libxml2
+#LDADD+=-L../RawSpeed/RawSpeed -lrawspeed -L/usr/local/include -ljpeg -lxml2
+#RAWSPEED_DATA=../RawSpeed/data/cameras.xml
+
+
+# Jasper support for RedCine
+CFLAGS+=-DUSE_JASPER -I/usr/local/include
+LDADD+=-L/usr/local/lib -ljasper
+
+# JPEG support for DNG
+CFLAGS+=-DUSE_JPEG -I/usr/local/include
+LDADD+=-L/usr/local/lib -ljpeg
+# LIBJPEG8:
+CFLAGS+=-DUSE_JPEG8
+
+# LCMS support
+#CFLAGS+=-DUSE_LCMS -I/usr/local/include
+#LDADD+=-L/usr/local/lib -llcms
+
+# LCMS2.x support
+#CFLAGS+=-DUSE_LCMS2 -I/usr/local/include
+#LDADD+=-L/usr/local/lib -llcms2
+
+# Demosaic Pack GPL2:
+#DPCFLAGS+=-I../LibRaw-demosaic-pack-GPL2
+#CFLAGS+=-DLIBRAW_DEMOSAIC_PACK_GPL2
+
+# Demosaic Pack GPL3:
+#DPCFLAGS+=-I../LibRaw-demosaic-pack-GPL3
+#CFLAGS+=-DLIBRAW_DEMOSAIC_PACK_GPL3
+
+
+DCRAW_LIB_OBJECTS=object/dcraw_common.o object/libraw_cxx.o object/libraw_datastream.o object/libraw_c_api.o object/dcraw_fileio.o object/demosaic_packs.o
+DCRAW_LIB_MT_OBJECTS=object/dcraw_common_mt.o object/libraw_cxx_mt.o object/libraw_datastream_mt.o object/libraw_c_api_mt.o object/dcraw_fileio_mt.o object/demosaic_packs_mt.o
+
+library: lib/libraw.a lib/libraw_r.a
+
+all_samples: bin/raw-identify bin/simple_dcraw  bin/dcraw_emu bin/dcraw_half bin/half_mt bin/mem_image \
+             bin/unprocessed_raw bin/4channels bin/multirender_test bin/postprocessing_benchmark
+
+install: library
+	@if [ -d /usr/local/include ] ; then cp -R libraw /usr/local/include/ ; else echo 'no /usr/local/include' ; fi
+	@if [ -d /usr/local/lib ] ; then cp lib/libraw.a lib/libraw_r.a /usr/local/lib/ ; else echo 'no /usr/local/lib' ; fi
+
+install-binaries: all_samples
+	@if [ -d /usr/local/bin ] ; then cp bin/[a-z]* /usr/local/bin/ ; else echo 'no /usr/local/bin' ; fi
+
+
+## RawSpeed xml file
+
+RawSpeed/rawspeed_xmldata.cpp: ${RAWSPEED_DATA}
+	./rsxml2c.sh ${RAWSPEED_DATA} > RawSpeed/rawspeed_xmldata.cpp
+
+#binaries
+
+bin/raw-identify: lib/libraw.a samples/raw-identify.cpp
+	g++ -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/raw-identify samples/raw-identify.cpp -L./lib -lraw  -lm ${LDADD}
+
+bin/unprocessed_raw: lib/libraw.a samples/unprocessed_raw.cpp
+	g++ -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/unprocessed_raw samples/unprocessed_raw.cpp -L./lib -lraw  -lm  ${LDADD}
+
+bin/4channels: lib/libraw.a samples/4channels.cpp
+	g++ -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/4channels samples/4channels.cpp -L./lib -lraw  -lm  ${LDADD}
+
+bin/simple_dcraw: lib/libraw.a samples/simple_dcraw.cpp
+	g++ -DLIBRAW_NOTHREADS   ${CFLAGS} -o bin/simple_dcraw samples/simple_dcraw.cpp -L./lib -lraw  -lm  ${LDADD}
+
+bin/multirender_test: lib/libraw.a samples/multirender_test.cpp
+	g++ -DLIBRAW_NOTHREADS   ${CFLAGS} -o bin/multirender_test samples/multirender_test.cpp -L./lib -lraw  -lm  ${LDADD}
+
+bin/postprocessing_benchmark: lib/libraw.a samples/postprocessing_benchmark.cpp
+	g++ -DLIBRAW_NOTHREADS   ${CFLAGS} -o bin/postprocessing_benchmark samples/postprocessing_benchmark.cpp -L./lib -lraw  -lm  ${LDADD}
+
+bin/mem_image: lib/libraw.a samples/mem_image.cpp
+	g++ -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/mem_image samples/mem_image.cpp -L./lib -lraw  -lm  ${LDADD}
+
+bin/dcraw_half: lib/libraw.a object/dcraw_half.o
+	gcc -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/dcraw_half object/dcraw_half.o -L./lib -lraw  -lm -lstdc++  ${LDADD}
+
+bin/half_mt: lib/libraw_r.a object/half_mt.o
+	gcc   -pthread ${CFLAGS} -o bin/half_mt object/half_mt.o -L./lib -lraw_r  -lm -lstdc++  ${LDADD}
+
+bin/dcraw_emu: lib/libraw.a samples/dcraw_emu.cpp
+	g++ -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/dcraw_emu samples/dcraw_emu.cpp -L./lib -lraw  -lm  ${LDADD}
+
+#objects
+
+object/demosaic_packs.o: internal/demosaic_packs.cpp
+	g++ -c -DLIBRAW_NOTHREADS  ${CFLAGS} ${DPCFLAGS} -o object/demosaic_packs.o internal/demosaic_packs.cpp
+
+object/dcraw_common.o: internal/dcraw_common.cpp
+	g++ -c -DLIBRAW_NOTHREADS  ${CFLAGS} -o object/dcraw_common.o internal/dcraw_common.cpp
+
+object/dcraw_fileio.o: internal/dcraw_fileio.cpp
+	g++ -c -DLIBRAW_NOTHREADS ${CFLAGS}  -o object/dcraw_fileio.o internal/dcraw_fileio.cpp
+
+object/libraw_cxx.o: src/libraw_cxx.cpp RawSpeed/rawspeed_xmldata.cpp
+	g++ -c -DLIBRAW_NOTHREADS  ${CFLAGS} -o object/libraw_cxx.o src/libraw_cxx.cpp
+
+object/libraw_datastream.o: src/libraw_datastream.cpp
+	g++ -c -DLIBRAW_NOTHREADS  ${CFLAGS} -o object/libraw_datastream.o src/libraw_datastream.cpp
+
+object/libraw_c_api.o: src/libraw_c_api.cpp
+	g++ -c -DLIBRAW_NOTHREADS   ${CFLAGS} -o object/libraw_c_api.o src/libraw_c_api.cpp
+
+object/dcraw_half.o: samples/dcraw_half.c
+	gcc -c -DLIBRAW_NOTHREADS   ${CFLAGS} -o object/dcraw_half.o samples/dcraw_half.c
+
+object/half_mt.o: samples/half_mt.c
+	gcc -c -pthread   ${CFLAGS} -o object/half_mt.o samples/half_mt.c
+
+
+lib/libraw.a: ${DCRAW_LIB_OBJECTS}
+	rm -f lib/libraw.a
+	ar crv lib/libraw.a ${DCRAW_LIB_OBJECTS}
+	ranlib lib/libraw.a
+
+lib/libraw_r.a: ${DCRAW_LIB_MT_OBJECTS}
+	rm -f lib/libraw_r.a
+	ar crv lib/libraw_r.a ${DCRAW_LIB_MT_OBJECTS}
+	ranlib lib/libraw_r.a
+
+object/demosaic_packs_mt.o: internal/demosaic_packs.cpp
+	g++ -c -pthread   ${CFLAGS} ${DPCFLAGS} -o object/demosaic_packs_mt.o internal/demosaic_packs.cpp
+
+object/dcraw_common_mt.o: internal/dcraw_common.cpp
+	g++ -c -pthread   ${CFLAGS} -o object/dcraw_common_mt.o internal/dcraw_common.cpp
+
+object/dcraw_fileio_mt.o: internal/dcraw_fileio.cpp
+	g++ -c -pthread  ${CFLAGS} -o object/dcraw_fileio_mt.o internal/dcraw_fileio.cpp
+
+object/libraw_cxx_mt.o: src/libraw_cxx.cpp RawSpeed/rawspeed_xmldata.cpp
+	g++ -c   -pthread ${CFLAGS} -o object/libraw_cxx_mt.o src/libraw_cxx.cpp
+
+object/libraw_datastream_mt.o: src/libraw_datastream.cpp
+	g++ -c   -pthread ${CFLAGS} -o object/libraw_datastream_mt.o src/libraw_datastream.cpp
+
+object/libraw_c_api_mt.o: src/libraw_c_api.cpp
+	g++ -c   -pthread ${CFLAGS} -o object/libraw_c_api_mt.o src/libraw_c_api.cpp
+
+clean:
+	rm -fr bin/*.dSYM
+	rm -f *.o *~ src/*~ samples/*~ internal/*~ libraw/*~ lib/lib*.a bin/[4a-z]* object/*o dcraw/*~ doc/*~ bin/*~
+

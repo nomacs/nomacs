@@ -33,7 +33,7 @@
 namespace nmc {
 	
 // DkBaseViewport --------------------------------------------------------------------
-DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WFlags flags) : QGraphicsView(parent) {
+DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WindowFlags flags) : QGraphicsView(parent) {
 
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
@@ -394,7 +394,9 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 
 	qDebug() << "native gesture...";
 
-#ifdef Q_WS_WIN
+#if QT_VERSION < 0x050000
+
+#ifdef WIN32
 	float cZoom = event->argument;
 #else
 	float cZoom = 0;	// ignore on other os
@@ -456,6 +458,7 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 	default:
 		return false;	// ignored type
 	}
+#endif
 
 	return true;
 }

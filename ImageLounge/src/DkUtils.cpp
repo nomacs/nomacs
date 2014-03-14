@@ -41,7 +41,7 @@ double DkMemory::getTotalMemory() {
 
 	double mem = -1;
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 
 	MEMORYSTATUSEX MemoryStatus;
 	ZeroMemory(&MemoryStatus, sizeof(MEMORYSTATUSEX));
@@ -75,7 +75,7 @@ double DkMemory::getFreeMemory() {
 	double mem = -1;
 	
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 
 	MEMORYSTATUSEX MemoryStatus;
 
@@ -141,6 +141,24 @@ bool DkUtils::exists(const QFileInfo& file, int waitMs) {
 bool DkUtils::checkFile(const QFileInfo& file) {
 
 	return file.exists();
+}
+
+// code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error
+std::wstring DkUtils::qStringToStdWString(const QString &str) {
+#ifdef _MSC_VER
+	return std::wstring((const wchar_t *)str.utf16());
+#else
+	return str.toStdWString();
+#endif
+}
+
+// code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error
+QString DkUtils::stdWStringToQString(const std::wstring &str) {
+#ifdef _MSC_VER
+	return QString::fromUtf16((const ushort *)str.c_str());
+#else
+	return QString::fromStdWString(str);
+#endif
 }
 
 

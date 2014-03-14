@@ -30,18 +30,18 @@
 #pragma once
 
 // Qt
-#include <QtGui/QMainWindow>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QShortcut>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QAction>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolBar>
-#include <QtGui/QStatusBar>
-#include <QtGui/QPanGesture>
-#include <QtGui/QSplashScreen>
-#include <QtGui/QErrorMessage>
+#include <QMainWindow>
+#include <QBoxLayout>
+#include <QShortcut>
+#include <QResizeEvent>
+#include <QAction>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QToolBar>
+#include <QStatusBar>
+#include <QPanGesture>
+#include <QSplashScreen>
+#include <QErrorMessage>
 #include <QDesktopServices>
 #include <QClipboard>
 #include <QEvent>
@@ -52,11 +52,12 @@
 #include <QStringBuilder>
 #include <QDesktopWidget>
 #include <QProgressDialog>
+#include <QDrag>
 
 // OpenCV
 #ifdef WITH_OPENCV
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
 	#pragma warning(disable: 4996)
 #endif
 
@@ -207,6 +208,7 @@ enum fileActions {
 	menu_file_rename,
 	menu_file_goto,
 	menu_file_find,
+	menu_file_recursive,
 	menu_file_print,
 	menu_file_reload,
 	menu_file_next,
@@ -543,6 +545,7 @@ public slots:
 	void checkForUpdate();
 	void setFrameless(bool frameless);
 	void fitFrame();
+	void setRecursiveScan(bool recursive);
 	void setContrast(bool contrast);
 	void enableMovieActions(bool enable);
 	void clearFileHistory();
@@ -668,7 +671,7 @@ protected:
 	QProcess process;
 
 	// functions
-	DkNoMacs(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 
 	virtual void init();
 	
@@ -690,7 +693,7 @@ class DllExport DkNoMacsSync : public DkNoMacs {
 	Q_OBJECT
 
 public:
-	DkNoMacsSync(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkNoMacsSync(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	~DkNoMacsSync();
 	qint16 getServerPort();
 	void syncWith(qint16 port);
@@ -727,7 +730,7 @@ class DllExport DkNoMacsIpl : public DkNoMacsSync {
 	Q_OBJECT
 
 public:
-	DkNoMacsIpl(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkNoMacsIpl(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 
 };
 
@@ -737,7 +740,7 @@ class DllExport DkNoMacsFrameless : public DkNoMacs {
 	Q_OBJECT
 
 public:
-	DkNoMacsFrameless(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	
 	virtual ~DkNoMacsFrameless();
 
@@ -759,7 +762,7 @@ class DllExport DkNoMacsContrast : public DkNoMacsSync {
 	Q_OBJECT
 
 public:
-	DkNoMacsContrast(QWidget *parent = 0, Qt::WFlags flags = 0);
+	DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 	
 	virtual ~DkNoMacsContrast();
 	void release();	
