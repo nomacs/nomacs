@@ -684,6 +684,7 @@ void DkMetaDataT::setOrientation(int o) {
 	pos->setValue(rv.get());
 
 	exifImg->setExifData(exifData);
+
 	exifState = dirty;
 }
 

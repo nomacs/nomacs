@@ -503,10 +503,10 @@ void DkImageContainerT::savingFinished() {
 
 	QFileInfo saveFile = saveImageWatcher.result();
 	saveFile.refresh();
+	thumb->setImage(QImage());	// clear thumbnail
 	qDebug() << "save file: " << saveFile.absoluteFilePath();
 
 	if (!saveFile.exists()) {
-		emit errorDialogSignal(tr("Sorry, I could not save the image"));
 		emit fileSavedSignal(saveFile, false);
 	}
 	else {

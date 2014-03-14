@@ -1049,12 +1049,20 @@ void DkImageLoader::rotateImage(double angle) {
 	currentImage->getThumb()->setImage(thumb);
 
 	QSharedPointer<DkMetaDataT> metaData = currentImage->getMetaData();
+	bool metaDataSet = false;
 
 	if (metaData->hasMetaData() && DkSettings::metaData.saveExifOrientation) {
-		//metaData->setThumbnail(thumb);
-		metaData->setOrientation(qRound(angle));
+		try {
+			if (!metaData->isJpg())
+				metaData->setThumbnail(thumb);
+			metaData->setOrientation(qRound(angle));
+			metaDataSet = true;
+		}
+		catch (...) {
+		}
 	}
-	else
+
+	if (!metaDataSet)
 		setImage(currentImage->image(), currentImage->file());
 
 	emit imageUpdatedSignal(currentImage);

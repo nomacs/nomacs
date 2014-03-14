@@ -437,7 +437,7 @@ public:
 	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
-	void loadFile(const QFileInfo& file, bool silent = false);
+	void loadFile(const QFileInfo& file);
 
 	static void updateAll();
 

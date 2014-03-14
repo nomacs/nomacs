@@ -85,7 +85,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		if (!ba || ba->isEmpty())
 			imgLoaded = qImg.load(file.absoluteFilePath());
 		else
-			imgLoaded = qImg.loadFromData(ba->data());
+			imgLoaded = qImg.loadFromData(*ba.data());
 
 		if (imgLoaded) loader = qt_loader;
 	}

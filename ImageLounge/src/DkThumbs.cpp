@@ -81,13 +81,21 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	qDebug() << "[thumb] file: " << file.absoluteFilePath();
 
 	// see if we can read the thumbnail from the exif data
+	QImage thumb;
 	DkMetaDataT metaData;
-	if (!ba || ba->isEmpty())
-		metaData.readMetaData(file);
-	else
-		metaData.readMetaData(file, ba);
 
-	QImage thumb = metaData.getThumbnail();
+	try {
+		if (!ba || ba->isEmpty())
+			metaData.readMetaData(file);
+		else
+			metaData.readMetaData(file, ba);
+
+		thumb = metaData.getThumbnail();
+	}
+	catch(...) {
+		// do nothing - we'll load the full file
+	}
+
 	removeBlackBorder(thumb);
 
 	if (thumb.isNull() && forceLoad == force_exif_thumb)

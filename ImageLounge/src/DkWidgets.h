@@ -488,8 +488,8 @@ public:
 	};
 
 signals:
-	void nextSignal(bool silent = true);
-	void previousSignal(bool silent = true);
+	void nextSignal();
+	void previousSignal();
 
 public slots:
 	void play(bool play) {

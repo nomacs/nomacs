@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
 	if (args.size() > 1)
-		w->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
+		w->loadFile(QFileInfo(args[1]));	// update folder + be silent
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
 
