@@ -3226,8 +3226,8 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	QString title = file.fileName();
 	title = title.remove(".lnk");
 	
-	if (!file.exists())
-		title = "nomacs";
+	if (title.isEmpty())
+		title = "nomacs - Image Lounge";
 
 	if (edited)
 		title.append("[*]");

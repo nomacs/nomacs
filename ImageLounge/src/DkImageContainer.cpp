@@ -340,6 +340,14 @@ void DkImageContainerT::checkForFileUpdates() {
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
 	
+	if (!fileInfo.exists()) {
+		edited = true;
+
+		if (loadState == loaded)
+			emit fileLoadedSignal(true);
+	}
+
+
 	if (fileInfo.lastModified() != modifiedBefore)
 		waitForUpdate = true;
 
