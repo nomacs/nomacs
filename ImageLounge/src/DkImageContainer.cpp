@@ -583,13 +583,15 @@ void DkImageContainerT::savingFinished() {
 
 	QFileInfo saveFile = saveImageWatcher.result();
 	saveFile.refresh();
-	thumb->setImage(QImage());	// clear thumbnail
 	qDebug() << "save file: " << saveFile.absoluteFilePath();
 	
 	if (!saveFile.exists()) {
 		emit fileSavedSignal(saveFile, false);
 	}
 	else {
+		// reset thumb
+		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(saveFile, loader->image()));
+
 		fileBuffer->clear();
 		fileInfo = saveFile;
 		edited = false;
