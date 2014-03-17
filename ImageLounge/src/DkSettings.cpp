@@ -695,4 +695,19 @@ void DkSettings::setToDefaultSettings() {
 	qDebug() << "ok... default settings are set";
 }
 
+void DkFileFilterHandling::registerExtension(const QString& ext) {
+
+#ifdef WIN32
+	QSettings settings("HKEY_CLASSES_ROOT\\" + ext + "\\OpenWithList\\");
+	//settings.setValue("nomacs.exe");
+
+	
+
+#endif
+}
+
+void DkFileFilterHandling::setAsDefaultApp(const QString& ext, bool defaultApp) {
+
+}
+
 }

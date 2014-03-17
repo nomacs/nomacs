@@ -368,8 +368,6 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		if (strcmp(iProcessor.imgdata.idata.cdesc, "RGBG")) throw DkException("Wrong Bayer Pattern (not RGBG)\n", __LINE__, __FILE__);
 
-
-
 		// 1. read raw image and normalize it according to dynamic range and black point
 		
 		//dynamic range is defined by maximum - black

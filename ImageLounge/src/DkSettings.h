@@ -27,34 +27,6 @@
 
 #pragma once
 
-//#include <QDialog>
-//#include <QWidget>
-//#include <QListView>
-//#include <QLabel>
-//#include <QStringList>
-//#include <QStringListModel>
-//#include <QSpacerItem>
-//#include <QPushButton>
-//#include <QCheckBox>
-//#include <QDebug>
-//#include <QSpinBox>
-//#include <QGroupBox>
-//#include <QSettings>
-//#include <QStyle>
-//#include <QColorDialog>
-//#include <QKeyEvent>
-//#include <QModelIndex>
-//#include <QStringBuilder>
-//#include <QButtonGroup>
-//#include <QRadioButton>
-//#include <QFileDialog>
-//#include <QLineEdit>
-//#include <QTranslator>
-//#include <QComboBox>
-//
-//
-//#include "BorderLayout.h"
-
 #include <QBitArray>
 #include <QColor>
 #include <QDate>
@@ -71,6 +43,17 @@
 #endif
 
 namespace nmc {
+
+class DkFileFilterHandling {
+
+public:
+	DkFileFilterHandling() {};
+
+	void registerExtension(const QString& ext);
+	void setAsDefaultApp(const QString& ext, bool defaultApp);
+
+};
+
 
 class DllExport DkSettings {
 
