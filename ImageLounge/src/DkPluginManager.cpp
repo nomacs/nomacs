@@ -156,6 +156,8 @@ void DkPluginManager::deleteInstance(QString id) {
 		QPluginLoader *loaderToDelete = pluginLoaders.take(id);
 		if(loaderToDelete->unload()) {
 			delete loaderToDelete;
+			//loaderToDelete->deleteLater();
+			loaderToDelete = 0;
 		}
 		else qDebug() << "Could not unload plug-in loader!";	
 	}
@@ -197,6 +199,7 @@ void DkPluginManager::singlePluginLoad(QString filePath) {
 	else {
 		qDebug() << "could not load: " << filePath;
 		delete loader;
+		loader = 0;
 	}
 }
 
@@ -215,7 +218,10 @@ void DkPluginManager::loadPlugins() {
 
 		foreach (QPluginLoader* pluginLoader, pluginLoaders) {
 
-			if(pluginLoader->unload())  delete pluginLoader;
+			if(pluginLoader->unload()) { 
+				delete pluginLoader;
+				pluginLoader = 0;
+			}
 			else qDebug() << "Could not unload plug-in loader!";
 		}
 
@@ -325,6 +331,7 @@ void DkPluginManager::tabChanged(int tab){
 }
 
 void DkPluginManager::deletePlugin(QString pluginID) {
+
 
 	QPluginLoader *loaderToDelete = pluginLoaders.take(pluginID);
 		
@@ -486,15 +493,18 @@ void DkPluginTableWidget::manageParsedXmlData(int usage) {
 void DkPluginTableWidget::updateSelectedPlugins() {
 
 	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(model);
-	QList<QString> installedIdList = installedPluginsModel->getPluginData();
-	QList<XmlPluginData> updateList = pluginDownloader->getXmlPluginData();
-	pluginsToUpdate = QList<XmlPluginData>();
+
+	if (installedPluginsModel) {
+		QList<QString> installedIdList = installedPluginsModel->getPluginData();
+		QList<XmlPluginData> updateList = pluginDownloader->getXmlPluginData();
+		pluginsToUpdate = QList<XmlPluginData>();
 	
-	for (int i = 0; i < updateList.size(); i++) {
-		for (int j = 0; j < installedIdList.size(); j++) {
-			if(updateList.at(i).id == installedIdList.at(j)) {
-				if(updateList.at(i).version != pluginManager->getPlugins().value(installedIdList.at(j))->pluginVersion()) pluginsToUpdate.append(updateList.at(i));
-				break;
+		for (int i = 0; i < updateList.size(); i++) {
+			for (int j = 0; j < installedIdList.size(); j++) {
+				if(updateList.at(i).id == installedIdList.at(j)) {
+					if(updateList.at(i).version != pluginManager->getPlugins().value(installedIdList.at(j))->pluginVersion()) pluginsToUpdate.append(updateList.at(i));
+					break;
+				}
 			}
 		}
 	}

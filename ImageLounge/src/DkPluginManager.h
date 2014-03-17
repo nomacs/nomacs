@@ -148,6 +148,7 @@ protected:
 	QList<QString> pluginIdList;
 	QMap<QString, QString> runId2PluginId;
 
+
 	void init();
 	void createLayout();
 	void showEvent(QShowEvent *event);

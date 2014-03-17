@@ -3679,6 +3679,8 @@ void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
 	if (currRunningPlugin.isEmpty())
 		return;
 
+	// TODO: do nothing if the viewport is NULL
+
 	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
 	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
 	currRunningPlugin = QString();
