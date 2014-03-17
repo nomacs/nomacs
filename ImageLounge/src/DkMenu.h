@@ -36,6 +36,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QTimer>
+#include <QStringBuilder>
 
 #include "DkNetwork.h"
 #include "DkTimer.h"

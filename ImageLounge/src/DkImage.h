@@ -143,10 +143,6 @@ public:
 
 	virtual ~DkImageLoader();
 
-	static QStringList fileFilters;	// just the filters
-	static QStringList openFilters;	// for open dialog
-	static QStringList saveFilters;	// for close dialog
-
 	QStringList ignoreKeywords;
 	QStringList keywords;
 	QStringList folderKeywords;		// are deleted if a new folder is opened
@@ -183,8 +179,6 @@ public:
 	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
 	bool loadDir(QDir newDir, bool scanRecursive = true);
 	
-	static void initFileFilters();	// add special file filters
-
 	bool hasImage() const;
 	bool isEdited() const;
 	int numFiles() const;

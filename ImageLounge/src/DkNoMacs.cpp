@@ -38,6 +38,7 @@
 #include "DkMenu.h"
 #include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
+#include "DkSettingsWidgets.h"
 
 namespace nmc {
 
@@ -2171,7 +2172,7 @@ void DkNoMacs::openFile() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
 		loader->getDir().absolutePath(), 
-		DkImageLoader::openFilters.join(";;"));
+		DkSettings::openFilters.join(";;"));
 
 	//// show the dialog
 	//if(openDialog->exec())
@@ -2406,7 +2407,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 		int filterIdx = -1;
 
-		QStringList sF = DkImageLoader::saveFilters;
+		QStringList sF = DkSettings::saveFilters;
 		//qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
@@ -2446,7 +2447,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
 		fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
-			savePath, DkImageLoader::saveFilters.join(";;"), &selectedFilter);
+			savePath, DkSettings::saveFilters.join(";;"), &selectedFilter);
 	}
 
 
@@ -2485,7 +2486,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
 
-		QStringList sF = DkImageLoader::saveFilters;
+		QStringList sF = DkSettings::saveFilters;
 
 		for (int idx = 0; idx < sF.size(); idx++) {
 
@@ -2596,10 +2597,10 @@ void DkNoMacs::saveFileWeb() {
 	QString suffix = imgHasAlpha ? ".png" : ".jpg";
 	QString saveFilterGui;
 
-	for (int idx = 0; idx < DkImageLoader::saveFilters.size(); idx++) {
+	for (int idx = 0; idx < DkSettings::saveFilters.size(); idx++) {
 
-		if (DkImageLoader::saveFilters.at(idx).contains(suffix)) {
-			saveFilterGui = DkImageLoader::saveFilters.at(idx);
+		if (DkSettings::saveFilters.at(idx).contains(suffix)) {
+			saveFilterGui = DkSettings::saveFilters.at(idx);
 			break;
 		}
 	}
@@ -3248,7 +3249,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	setWindowModified(edited);
 
 	if ((!viewport()->getController()->getFileInfoLabel()->isVisible() || 
-		!DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_creation_date)) && viewport()->getImageLoader()->getCurrentImage()) {
+		!DkSettings::slideShow.display.testBit(DkSettings::display_creation_date)) && viewport()->getImageLoader()->getCurrentImage()) {
 		
 		// create statusbar info
 		QSharedPointer<DkMetaDataT> metaData = viewport()->getImageLoader()->getCurrentImage()->getMetaData();

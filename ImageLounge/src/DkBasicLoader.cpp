@@ -150,17 +150,21 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		indexPages(file);
 	pageIdxDirty = false;
 
-	if (imgLoaded && loadMetaData && !DkSettings::metaData.ignoreExifOrientation) {
+	if (imgLoaded && loadMetaData && metaData) {
 		
-		if (!metaData)
-			qDebug() << "metadata is null...";
+		try {
+			metaData->readMetaData(fileInfo, ba);
+		
+			if (!DkSettings::metaData.ignoreExifOrientation) {
+				int orientation = metaData->getOrientation();
 
-		metaData->readMetaData(fileInfo, ba);
-
-		int orientation = metaData->getOrientation();
-
-		if (!metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
-			rotate(orientation);
+				if (!metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+					rotate(orientation);
+			}
+		} catch(...) {}	// ignore if we cannot read the metadata
+	}
+	else if (!metaData) {
+		qDebug() << "metaData is NULL!";
 	}
 
 	return imgLoaded;

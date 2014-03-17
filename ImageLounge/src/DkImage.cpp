@@ -31,15 +31,6 @@
 
 namespace nmc {
 
-// well this is pretty shitty... but we need the filter without description too
-QStringList DkImageLoader::fileFilters = QStringList();
-
-// formats we can save
-QStringList DkImageLoader::saveFilters = QStringList();
-
-// formats we can load
-QStringList DkImageLoader::openFilters = QStringList();
-
 // DkImageLoader -> is nomacs file handling routine --------------------------------------------------------------------
 /**
  * Default constructor.
@@ -71,9 +62,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 		loadDir(file);
 	else
 		dir = DkSettings::global.lastDir;
-
-	// init cacher
-	initFileFilters();
 }
 
 /**
@@ -85,105 +73,6 @@ DkImageLoader::~DkImageLoader() {
 
 	qDebug() << "dir open: " << dir.absolutePath();
 	qDebug() << "filepath: " << saveDir.absolutePath();
-}
-
-void DkImageLoader::initFileFilters() {
-
-	//// load plugins
-	//QDir pluginFolder(QCoreApplication::applicationDirPath());
-	//pluginFolder.cd("imageformats");
-
-	//QStringList pluginFilenames = pluginFolder.entryList(QStringList("*.dll"));
-	//qDebug() << "searching for plugins: " << pluginFolder.absolutePath();
-	//qDebug() << "plugins found: " << pluginFilenames;
-
-	//for (int idx = 0; idx < pluginFilenames.size(); idx++) {
-	//	QPluginLoader p(QFileInfo(pluginFolder, pluginFilenames[idx]).absoluteFilePath());
-	//	if (!p.load())
-	//		qDebug() << "sorry, I could NOT load " << pluginFilenames[idx] << " since:\n" << p.errorString();
-	//	
-	//}
-
-	if (!openFilters.empty())
-		return;
-
-
-	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
-
-	// formats we can save
-	if (qtFormats.contains("png"))		saveFilters.append("Portable Network Graphics (*.png)");
-	if (qtFormats.contains("jpg"))		saveFilters.append("JPEG (*.jpg *.jpeg)");
-	if (qtFormats.contains("j2k"))		saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
-	if (qtFormats.contains("tif"))		saveFilters.append("TIFF (*.tif *.tiff)");
-	if (qtFormats.contains("bmp"))		saveFilters.append("Windows Bitmap (*.bmp)");
-	if (qtFormats.contains("ppm"))		saveFilters.append("Portable Pixmap (*.ppm)");
-	if (qtFormats.contains("xbm"))		saveFilters.append("X11 Bitmap (*.xbm)");
-	if (qtFormats.contains("xpm"))		saveFilters.append("X11 Pixmap (*.xpm)");
-
-	// internal filters
-#ifdef WITH_WEBP
-	saveFilters.append("WebP (*.webp)");
-#endif
-
-	// formats we can load
-	openFilters += saveFilters;
-	if (qtFormats.contains("gif"))		openFilters.append("Graphic Interchange Format (*.gif)");
-	if (qtFormats.contains("pbm"))		openFilters.append("Portable Bitmap (*.pbm)");
-	if (qtFormats.contains("pgm"))		openFilters.append("Portable Graymap (*.pgm)");
-	if (qtFormats.contains("ico"))		openFilters.append("Icon Files (*.ico)");
-	if (qtFormats.contains("tga"))		openFilters.append("Targa Image File (*.tga)");
-	if (qtFormats.contains("mng"))		openFilters.append("Multi-Image Network Graphics (*.mng)");
-
-#ifdef WITH_OPENCV
-	// raw format
-	openFilters.append("Nikon Raw (*.nef)");
-	openFilters.append("Canon Raw (*.crw *.cr2)");
-	openFilters.append("Sony Raw (*.arw)");
-	openFilters.append("Digital Negativ (*.dng)");
-	openFilters.append("Panasonic Raw (*.rw2)");
-	openFilters.append("Minolta Raw (*.mrw)");
-#endif
-
-	// stereo formats
-	openFilters.append("JPEG Stereo (*.jps)");
-	openFilters.append("PNG Stereo (*.pns)");
-	openFilters.append("Multi Picture Object (*.mpo)");
-	
-	// other formats
-	openFilters.append("Adobe Photoshop (*.psd)");
-	openFilters.append("Large Document Format (*.psb)");
-	openFilters.append("Rohkost (*.roh)");
-
-	// load user filters
-	QSettings settings;
-	openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
-
-	for (int idx = 0; idx < openFilters.size(); idx++) {
-
-		QString cFilter = openFilters[idx];
-		cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
-		cFilter = cFilter.replace(")", "");
-		DkImageLoader::fileFilters += cFilter.split(" ");
-	}
-
-	QString allFilters = DkImageLoader::fileFilters.join(" ");
-
-	// add unknown formats from Qt plugins
-	for (int idx = 0; idx < qtFormats.size(); idx++) {
-
-		if (!allFilters.contains(qtFormats.at(idx))) {
-			openFilters.append("Image Format (*." + qtFormats.at(idx) + ")");
-			DkImageLoader::fileFilters.append("*." + qtFormats.at(idx));
-		}
-	}
-
-	openFilters.prepend("Image Files (" + fileFilters.join(" ") + ")");
-
-	qDebug() << "supported: " << qtFormats;
-
-#ifdef Q_OS_WIN
-	DkImageLoader::fileFilters.append("*.lnk");
-#endif
 }
 
 /**
@@ -239,7 +128,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 		// update save directory
 		dir = newDir;
-		dir.setNameFilters(fileFilters);
+		dir.setNameFilters(DkSettings::fileFilters);
 		dir.setSorting(QDir::LocaleAware);		// TODO: extend
 		folderUpdated = false;
 
@@ -1317,6 +1206,12 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 
 	for (int idx = 0; idx < images.size(); idx++) {
 
+		// clear images if they are edited
+		if (idx != cIdx && images.at(idx)->isEdited()) {
+			images.at(idx)->clear();
+			continue;
+		}
+
 		if (idx >= cIdx-1 && idx <= idx+DkSettings::resources.maxImagesCached)
 			mem += images.at(idx)->getMemoryUsage();
 		else {
@@ -1387,8 +1282,8 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 	//QRegExp exp(extPattern, Qt::CaseInsensitive);
 
 	// remove the * in fileFilters
-	QStringList fileFiltersClean = fileFilters;
-	for (int idx = 0; idx < fileFilters.size(); idx++)
+	QStringList fileFiltersClean = DkSettings::fileFilters;
+	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++)
 		fileFiltersClean[idx].replace("*", "");
 
 	//std::sort(fileNameList.begin(), fileNameList.end(), wCompLogic);
@@ -1630,9 +1525,9 @@ bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 	QString fileName = fInfo.fileName();
 	qDebug() << "filename: " << fileName;
 	
-	for (int idx = 0; idx < fileFilters.size(); idx++) {
+	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
 
-		QRegExp exp = QRegExp(fileFilters.at(idx), Qt::CaseInsensitive);
+		QRegExp exp = QRegExp(DkSettings::fileFilters.at(idx), Qt::CaseInsensitive);
 		exp.setPatternSyntax(QRegExp::Wildcard);
 		if (exp.exactMatch(fileName))
 			return true;

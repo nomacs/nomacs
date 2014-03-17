@@ -37,6 +37,7 @@
 #include <QDialogButtonBox>
 
 #include "DkViewPort.h"
+#include "BorderLayout.h"
 
 namespace nmc {
 

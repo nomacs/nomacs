@@ -29,6 +29,8 @@
 
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QButtonGroup>
 
 #include "DkBaseViewPort.h"
 #include "DkWidgets.h"

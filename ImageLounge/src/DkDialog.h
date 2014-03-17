@@ -51,6 +51,8 @@
 #include <QHeaderView>
 #include <QTreeView>
 #include <QMimeData>
+#include <QStringListModel>
+#include <QListView>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>

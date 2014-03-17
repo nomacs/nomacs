@@ -1684,7 +1684,7 @@ DkFileSystemModel::DkFileSystemModel(QObject* parent /* = 0 */) : QFileSystemMod
 
 	// some custom settings
 	setRootPath(QDir::rootPath());
-	setNameFilters(DkImageLoader::fileFilters);
+	setNameFilters(DkSettings::fileFilters);
 	setReadOnly(false);
 	//setSupportedDragActions(Qt::CopyAction | Qt::MoveAction);
 
@@ -2640,9 +2640,9 @@ void DkFileInfoLabel::createLayout() {
 void DkFileInfoLabel::setVisible(bool visible) {
 
 	// nothing to display??
-	if (!DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_name) &&
-		!DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_creation_date) &&
-		!DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_rating) && visible) {
+	if (!DkSettings::slideShow.display.testBit(DkSettings::display_file_name) &&
+		!DkSettings::slideShow.display.testBit(DkSettings::display_creation_date) &&
+		!DkSettings::slideShow.display.testBit(DkSettings::display_file_rating) && visible) {
 			
 			QMessageBox infoDialog(parent);
 			infoDialog.setWindowTitle(tr("Info Box"));
@@ -2658,16 +2658,16 @@ void DkFileInfoLabel::setVisible(bool visible) {
 				return;
 			}
 			else {
-				DkSettings::slideShow.display.setBit(DkDisplaySettingsWidget::display_file_name, true);
-				DkSettings::slideShow.display.setBit(DkDisplaySettingsWidget::display_creation_date, true);
-				DkSettings::slideShow.display.setBit(DkDisplaySettingsWidget::display_file_rating, true);
+				DkSettings::slideShow.display.setBit(DkSettings::display_file_name, true);
+				DkSettings::slideShow.display.setBit(DkSettings::display_creation_date, true);
+				DkSettings::slideShow.display.setBit(DkSettings::display_file_rating, true);
 			}
 	}
 
 	DkFadeLabel::setVisible(visible);
-	title->setVisible(DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_name));
-	date->setVisible(DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_creation_date));
-	rating->setVisible(DkSettings::slideShow.display.testBit(DkDisplaySettingsWidget::display_file_rating));
+	title->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_name));
+	date->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_creation_date));
+	rating->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_rating));
 
 	int height = 32;
 	if (title->isVisible())
@@ -2933,39 +2933,39 @@ DkMetaDataInfo::DkMetaDataInfo(QWidget* parent) : DkWidget(parent) {
 
 void DkMetaDataInfo::init() {
 
-	mapIptcExif[DkMetaDataSettingsWidget::camData_size] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_orientation] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_make] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_model] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_aperture] = 0;
-	//mapIptcExif[DkMetaDataSettingsWidget::camData_shutterspeed] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_flash] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_focallength] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_exposuremode] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::camData_exposuretime] = 0;
+	mapIptcExif[DkSettings::camData_size] = 0;
+	mapIptcExif[DkSettings::camData_orientation] = 0;
+	mapIptcExif[DkSettings::camData_make] = 0;
+	mapIptcExif[DkSettings::camData_model] = 0;
+	mapIptcExif[DkSettings::camData_aperture] = 0;
+	//mapIptcExif[DkSettings::camData_shutterspeed] = 0;
+	mapIptcExif[DkSettings::camData_flash] = 0;
+	mapIptcExif[DkSettings::camData_focallength] = 0;
+	mapIptcExif[DkSettings::camData_exposuremode] = 0;
+	mapIptcExif[DkSettings::camData_exposuretime] = 0;
 
-	mapIptcExif[DkMetaDataSettingsWidget::desc_rating] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_usercomment] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_date] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_datetimeoriginal] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_imagedescription] = 0;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_creator] = 1;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_creatortitle] = 1;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_city] = 1;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_country] = 1;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_headline] = 1;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_caption] = 1;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_copyright] = 1;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_keywords] = 1;
+	mapIptcExif[DkSettings::desc_rating] = 0;
+	mapIptcExif[DkSettings::desc_usercomment] = 0;
+	mapIptcExif[DkSettings::desc_date] = 0;
+	mapIptcExif[DkSettings::desc_datetimeoriginal] = 0;
+	mapIptcExif[DkSettings::desc_imagedescription] = 0;
+	mapIptcExif[DkSettings::desc_creator] = 1;
+	mapIptcExif[DkSettings::desc_creatortitle] = 1;
+	mapIptcExif[DkSettings::desc_city] = 1;
+	mapIptcExif[DkSettings::desc_country] = 1;
+	mapIptcExif[DkSettings::desc_headline] = 1;
+	mapIptcExif[DkSettings::desc_caption] = 1;
+	mapIptcExif[DkSettings::desc_copyright] = 1;
+	mapIptcExif[DkSettings::desc_keywords] = 1;
 
-	mapIptcExif[DkMetaDataSettingsWidget::desc_path] = 2;
-	mapIptcExif[DkMetaDataSettingsWidget::desc_filesize] = 2;
+	mapIptcExif[DkSettings::desc_path] = 2;
+	mapIptcExif[DkSettings::desc_filesize] = 2;
 
-	for (int i = 0; i  < DkMetaDataSettingsWidget::scamDataDesc.size(); i++) 
-		camDTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::scamDataDesc.at(i).toLatin1());
+	for (int i = 0; i  < DkSettings::scamDataDesc.size(); i++) 
+		camDTags << qApp->translate("nmc::DkMetaData", DkSettings::scamDataDesc.at(i).toLatin1());
 
-	for (int i = 0; i  < DkMetaDataSettingsWidget::sdescriptionDesc.size(); i++)
-		descTags << qApp->translate("nmc::DkMetaData", DkMetaDataSettingsWidget::sdescriptionDesc.at(i).toLatin1());
+	for (int i = 0; i  < DkSettings::sdescriptionDesc.size(); i++)
+		descTags << qApp->translate("nmc::DkMetaData", DkSettings::sdescriptionDesc.at(i).toLatin1());
 
 
 	exposureModes.append(tr("not defined"));
@@ -3009,9 +3009,9 @@ void DkMetaDataInfo::init() {
 
 	worldMatrix = QTransform();
 
-	if (camDTags.size() != DkMetaDataSettingsWidget::camData_end)
+	if (camDTags.size() != DkSettings::camData_end)
 		qDebug() << "wrong definition of Camera Data (Exif). Size of CamData tags is different from enum";
-	if (descTags.size() != DkMetaDataSettingsWidget::desc_end - DkMetaDataSettingsWidget::camData_end)
+	if (descTags.size() != DkSettings::desc_end - DkSettings::camData_end)
 		qDebug() << "wrong definition of Description Data (Exif). Size of Descriptions tags is different from enum";
 
 	setMouseTracking(true);
@@ -3250,7 +3250,7 @@ void DkMetaDataInfo::readTags() {
 					
 					//special treatments
 					// aperture
-					if (i == DkMetaDataSettingsWidget::camData_aperture) {
+					if (i == DkSettings::camData_aperture) {
 						
 						QString aValue = metaData->getExifValue(tmp);
 
@@ -3268,7 +3268,7 @@ void DkMetaDataInfo::readTags() {
 
 					}
 					// focal length
-					else if (i == DkMetaDataSettingsWidget::camData_focallength) {
+					else if (i == DkSettings::camData_focallength) {
 
 						QString aValue = metaData->getExifValue(tmp);
 						QStringList sList = aValue.split('/');
@@ -3282,7 +3282,7 @@ void DkMetaDataInfo::readTags() {
 
 					}
 					// exposure time
-					else if (i == DkMetaDataSettingsWidget::camData_exposuretime) {
+					else if (i == DkSettings::camData_exposuretime) {
 
 						QString aValue = metaData->getExifValue(tmp);
 						QStringList sList = aValue.split('/');
@@ -3305,10 +3305,10 @@ void DkMetaDataInfo::readTags() {
 							Value = aValue;
 
 					}
-					else if (i == DkMetaDataSettingsWidget::camData_size) {	
+					else if (i == DkSettings::camData_size) {	
 						Value = QString::number(imgC->image().width()) + " x " + QString::number(imgC->image().height());
 					}
-					else if (i == DkMetaDataSettingsWidget::camData_exposuremode) {
+					else if (i == DkSettings::camData_exposuremode) {
 						//qDebug() << "exposure mode was found";
 						Value = metaData->getExifValue(tmp);
 						int mode = Value.toInt();
@@ -3317,7 +3317,7 @@ void DkMetaDataInfo::readTags() {
 							Value = exposureModes[mode];
 						
 					} 
-					else if (i == DkMetaDataSettingsWidget::camData_flash) {
+					else if (i == DkSettings::camData_flash) {
 
 						Value = metaData->getExifValue(tmp);
 						unsigned int mode = Value.toUInt();
@@ -3345,7 +3345,7 @@ void DkMetaDataInfo::readTags() {
 			for (int i=1; i<descSearchTags.size(); i++) {
 				QString tmp, Value;
 
-				if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 0) {
+				if (mapIptcExif[DkSettings::camData_end + i] == 0) {
 					//tmp = preExifI + camDTags.at(i);
 					tmp = descSearchTags.at(i);
 					//qDebug() << tmp;
@@ -3354,10 +3354,10 @@ void DkMetaDataInfo::readTags() {
 					if (tmp.contains("Date"))
 						Value = DkUtils::convertDate(Value, file);
 
-				} else if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 1) {
+				} else if (mapIptcExif[DkSettings::camData_end + i] == 1) {
 					tmp = preIptc + descSearchTags.at(i);
 					Value = metaData->getIptcValue(tmp);
-				} else if (mapIptcExif[DkMetaDataSettingsWidget::camData_end + i] == 2) {
+				} else if (mapIptcExif[DkSettings::camData_end + i] == 2) {
 					//all other defined tags not in metadata
 					tmp = descSearchTags.at(i);
 					if (!tmp.compare("Path"))
@@ -3445,7 +3445,7 @@ void DkMetaDataInfo::createLabels() {
 
 	for(int i=0; i<descTags.size(); i++) {
 		//if bit set, create Label
-		if (DkSettings::metaData.metaDataBits.testBit(DkMetaDataSettingsWidget::camData_end + i)) {
+		if (DkSettings::metaData.metaDataBits.testBit(DkSettings::camData_end + i)) {
 			DkLabel* pl = new DkLabel(this);
 			pl->setText(descTags.at(i)+":",-1);
 			pl->setFontSize(fontSize);

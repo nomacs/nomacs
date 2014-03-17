@@ -351,6 +351,11 @@ void DkImageContainerT::checkForFileUpdates() {
 	if (fileInfo.lastModified() != modifiedBefore)
 		waitForUpdate = true;
 
+	if (edited) {
+		fileUpdateTimer.stop();
+		return;
+	}
+
 	// we use our own file watcher, since the qt watcher
 	// uses locks to check for updates. this might
 	// be more accurate. however, the locks are pretty nasty

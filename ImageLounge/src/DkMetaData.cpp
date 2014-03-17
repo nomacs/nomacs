@@ -532,13 +532,13 @@ void DkMetaDataT::setThumbnail(QImage thumb) {
 	if (exifState == not_loaded || exifState == no_data) 
 		return;
 
-	Exiv2::ExifData exifData = exifImg->exifData();
-
-	if (exifData.empty())
-		exifData = Exiv2::ExifData();
-
-	// ok, let's try to save the thumbnail...
 	try {
+		Exiv2::ExifData exifData = exifImg->exifData();
+
+		if (exifData.empty())
+			exifData = Exiv2::ExifData();
+
+		// ok, let's try to save the thumbnail...
 		Exiv2::ExifThumb eThumb(exifData);
 
 		QByteArray data;

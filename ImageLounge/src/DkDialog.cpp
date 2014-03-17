@@ -407,7 +407,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 		return;
 	}
 
-	if (DkImageLoader::fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
+	if (DkSettings::fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
 		userFeedback(tr("*.%1 is already supported.").arg(fileInfo.suffix()), false);
 		imgLoaded = false;
 	}
@@ -425,7 +425,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 void DkTrainDialog::accept() {
 
 	// add the extension to user filters
-	if (!DkImageLoader::fileFilters.join(" ").contains(acceptedFile.suffix(), Qt::CaseInsensitive)) {
+	if (!DkSettings::fileFilters.join(" ").contains(acceptedFile.suffix(), Qt::CaseInsensitive)) {
 
 		QString name = QInputDialog::getText(this, "Format Name", tr("Please name the new format:"), QLineEdit::Normal, "Your File Format");
 		QString tag = name + " (*." + acceptedFile.suffix() + ")";
@@ -435,8 +435,8 @@ void DkTrainDialog::accept() {
 		QStringList userFilters = settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 		userFilters.append(tag);
 		settings.setValue("ResourceSettings/userFilters", userFilters);
-		DkImageLoader::openFilters.append(tag);
-		DkImageLoader::fileFilters.append("*." + acceptedFile.suffix());
+		DkSettings::openFilters.append(tag);
+		DkSettings::fileFilters.append("*." + acceptedFile.suffix());
 	}
 
 	QDialog::accept();
@@ -2902,8 +2902,8 @@ void DkExportTiffDialog::createLayout() {
 	fileEdit->setObjectName("fileEdit");
 
 	suffixBox = new QComboBox(this);
-	suffixBox->addItems(DkImageLoader::saveFilters);
-	suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
+	suffixBox->addItems(DkSettings::saveFilters);
+	suffixBox->setCurrentIndex(DkSettings::saveFilters.indexOf(QRegExp(".*tif.*")));
 
 	// export handles
 	QLabel* exportLabel = new QLabel(tr("Export Pages"));
@@ -2965,7 +2965,7 @@ void DkExportTiffDialog::on_openButton_pressed() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
 		cFile.absolutePath(), 
-		DkImageLoader::saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+		DkSettings::saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
 
 	setFile(fileName);
 }
@@ -3010,9 +3010,9 @@ void DkExportTiffDialog::accept() {
 
 	QString suffix = suffixBox->currentText();
 
-	for (int idx = 0; idx < DkImageLoader::fileFilters.size(); idx++) {
-		if (suffix.contains("(" + DkImageLoader::fileFilters.at(idx))) {
-			suffix = DkImageLoader::fileFilters.at(idx);
+	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
+		if (suffix.contains("(" + DkSettings::fileFilters.at(idx))) {
+			suffix = DkSettings::fileFilters.at(idx);
 			suffix.replace("*","");
 			break;
 		}
@@ -3253,7 +3253,7 @@ void DkMosaicDialog::createLayout() {
 	filterEdit->setObjectName("fileEdit");
 	filterEdit->setToolTip(tr("You can split multiple ignore words with ;"));
 
-	QStringList filters = DkImageLoader::openFilters;
+	QStringList filters = DkSettings::openFilters;
 	filters.pop_front();	// replace for better readability
 	filters.push_front("All Images");
 	suffixBox = new QComboBox(this);
@@ -3328,7 +3328,7 @@ void DkMosaicDialog::on_openButton_pressed() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
 		cFile.absolutePath(), 
-		DkImageLoader::openFilters.join(";;"));
+		DkSettings::openFilters.join(";;"));
 
 	setFile(fileName);
 }
@@ -3498,9 +3498,9 @@ void DkMosaicDialog::compute() {
 	QString suffixTmp = suffixBox->currentText();
 	QString suffix;
 
-	for (int idx = 0; idx < DkImageLoader::fileFilters.size(); idx++) {
-		if (suffixTmp.contains("(" + DkImageLoader::fileFilters.at(idx))) {
-			suffix = DkImageLoader::fileFilters.at(idx);
+	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
+		if (suffixTmp.contains("(" + DkSettings::fileFilters.at(idx))) {
+			suffix = DkSettings::fileFilters.at(idx);
 			break;
 		}
 	}
@@ -3840,7 +3840,7 @@ QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& 
 
 	// TODO: remove hierarchy
 
-	QStringList fileFilters = (suffix.isEmpty()) ? DkImageLoader::fileFilters : QStringList(suffix);
+	QStringList fileFilters = (suffix.isEmpty()) ? DkSettings::fileFilters : QStringList(suffix);
 
 	// get all dirs
 	QFileInfoList entries = QDir(cPath).entryInfoList(QStringList(), QDir::AllDirs | QDir::NoDotAndDotDot);

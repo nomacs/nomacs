@@ -37,6 +37,8 @@
 #include <QHostAddress>
 #include <QHostInfo>
 #include <QThread>
+#include <QDebug>
+
 #include "DkSettings.h"
 
 namespace nmc {
