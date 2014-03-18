@@ -176,6 +176,7 @@ enum {
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
 	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
+	shortcut_copy_color		= Qt::CTRL + Qt::ALT + Qt::Key_C,
 	shortcut_auto_adjust	= Qt::CTRL + Qt::SHIFT + Qt::Key_L,
 	shortcut_norm_image		= Qt::CTRL + Qt::SHIFT + Qt::Key_N,
 
@@ -239,6 +240,7 @@ enum editActions {
 	menu_edit_rotate_180,
 	menu_edit_copy,
 	menu_edit_copy_buffer,
+	menu_edit_copy_color,
 	menu_edit_paste,
 	menu_edit_shortcuts,
 	menu_edit_preferences,
@@ -507,6 +509,7 @@ public slots:
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
+	void copyPixelColorValue();
 	void pasteImage();
 	void flipImageHorizontal();
 	void flipImageVertical();

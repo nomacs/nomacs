@@ -368,6 +368,8 @@ public:
 	void setVisibleStatusbar(bool visibleStatusbar) {
 		this->visibleStatusbar = visibleStatusbar;
 	};
+	
+	QString getCurrentPixelHexValue();
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -452,6 +454,7 @@ protected:
 	DkControlWidget* controller;
 	DkImageLoader* loader;
 
+	QPoint currentPixelPos;
 	// functions
 
 #if QT_VERSION < 0x050000

@@ -1388,6 +1388,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	//qDebug() << "mouse move (DkViewPort)";
 	//changeCursor();
+	currentPixelPos = event->pos();
 
 	if (visibleStatusbar)
 		getPixelInfo(event->pos());
@@ -1568,6 +1569,24 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 		emit statusInfoSignal(msg, status_pixel_info);
 
+}
+
+QString DkViewPort::getCurrentPixelHexValue() {
+
+	if (imgStorage.getImage().isNull() || currentPixelPos.isNull())
+		return QString();
+
+	QPointF imgPos = worldMatrix.inverted().map(QPointF(currentPixelPos));
+	imgPos = imgMatrix.inverted().map(imgPos);
+
+	QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
+
+	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgStorage.getImage().width() || xy.y() >= imgStorage.getImage().height())
+		return QString();
+
+	QColor col = imgStorage.getImage().pixel(xy);
+	
+	return col.name().toUpper().remove(0,1);
 }
 
 // edit image --------------------------------------------------------------------
