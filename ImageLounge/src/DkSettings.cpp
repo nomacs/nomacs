@@ -214,6 +214,9 @@ void DkSettings::load(bool force) {
 
 	initFileFilters();
 
+	DkFileFilterHandling fh;
+	fh.registerExtension(".jpg");
+
 	setToDefaultSettings();
 
 	QSettings settings;
@@ -698,10 +701,24 @@ void DkSettings::setToDefaultSettings() {
 void DkFileFilterHandling::registerExtension(const QString& ext) {
 
 #ifdef WIN32
-	QSettings settings("HKEY_CLASSES_ROOT\\" + ext + "\\OpenWithList\\");
-	//settings.setValue("nomacs.exe");
+	QSettings settings("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
+	settings.beginGroup(".png");
+	settings.beginGroup("OpenWithProgIds");
+	//settings.beginGroup("nomacs.exe");
+	settings.setValue("nomacs.png.1", "");	
+	//settings.remove("josef");
 
-	
+	QSettings settings2("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
+	settings.beginGroup(".png");
+	settings.beginGroup("OpenWithList");
+	settings.beginGroup("nomacs.exe");
+	settings.setValue("josef", "");	
+	settings.remove("josef");
+
+
+	// register application
+	QSettings settings3("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\");
+
 
 #endif
 }

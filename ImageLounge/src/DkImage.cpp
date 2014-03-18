@@ -534,10 +534,8 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	loadDir(newImg->file());
 	
-	if (newImg && currentImage && newImg->file().absoluteFilePath() == currentImage->file().absoluteFilePath()) {
-		qDebug() << "new image " << newImg->file().absoluteFilePath() << " is current image: " << currentImage->file().absoluteFilePath();
-		return;
-	}
+	// if the file stays the same, we just want to update the pointer
+	bool updatePointer = newImg && currentImage && newImg->file().absoluteFilePath() == currentImage->file().absoluteFilePath();
 
 	// cancel action if the image is currently loading
 	if (DkSettings::resources.waitForLastImg &&
@@ -546,17 +544,17 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 		return;
 
 	if (currentImage) {
-		currentImage->cancel();
 
-		if (currentImage->imgLoaded() == DkImageContainer::loading_canceled)// {
-			emit showInfoSignal(newImg->file().fileName(), 3000, 1);
-			//QCoreApplication::sendPostedEvents();
-		//}
+		if (!updatePointer) {
+				currentImage->cancel();
 
-		currentImage->saveMetaDataThreaded();
-		if (!DkSettings::resources.cacheMemory) 
-			currentImage->clear();
+			if (currentImage->imgLoaded() == DkImageContainer::loading_canceled)
+				emit showInfoSignal(newImg->file().fileName(), 3000, 1);
 
+			currentImage->saveMetaDataThreaded();
+			if (!DkSettings::resources.cacheMemory) 
+				currentImage->clear();
+		}
 		currentImage->receiveUpdates(this, false);
 	}
 

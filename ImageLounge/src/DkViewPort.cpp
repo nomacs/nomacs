@@ -1651,6 +1651,7 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	QFileInfo file = loader->file();
 	unloadImage();
 	setImage(newImg);
+	qDebug() << "loader gets this size: " << newImg.size();
 	loader->setImage(newImg, file);
 
 	// TODO: contrast viewport does not add * 
