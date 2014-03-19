@@ -716,6 +716,7 @@ void DkNoMacs::createContextMenu() {
 	
 	contextMenu->addAction(editActions[menu_edit_copy_buffer]);
 	contextMenu->addAction(editActions[menu_edit_copy]);
+	contextMenu->addAction(editActions[menu_edit_copy_color]);
 	contextMenu->addAction(editActions[menu_edit_paste]);
 	contextMenu->addSeparator();
 	
@@ -919,6 +920,12 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
 	editActions[menu_edit_copy_buffer]->setStatusTip(tr("copy image"));
 	connect(editActions[menu_edit_copy_buffer], SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
+
+	editActions[menu_edit_copy_color] = new QAction(tr("Copy Co&lor"), this);
+	editActions[menu_edit_copy_color]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	editActions[menu_edit_copy_color]->setShortcut(shortcut_copy_color);
+	editActions[menu_edit_copy_color]->setStatusTip(tr("copy pixel color value as HEX"));
+	connect(editActions[menu_edit_copy_color], SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
 
 	QList<QKeySequence> pastScs;
 	pastScs.append(QKeySequence::Paste);
@@ -1293,6 +1300,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_crop]->setEnabled(enable);
 	editActions[menu_edit_copy]->setEnabled(enable);
 	editActions[menu_edit_copy_buffer]->setEnabled(enable);
+	editActions[menu_edit_copy_color]->setEnabled(enable);
 	editActions[menu_edit_wallpaper]->setEnabled(enable);
 	editActions[menu_edit_flip_h]->setEnabled(enable);
 	editActions[menu_edit_flip_v]->setEnabled(enable);
@@ -1662,6 +1670,20 @@ void DkNoMacs::copyImage() {
 	clipboard->setMimeData(mimeData);
 
 	qDebug() << "copying: " << fileUrl;
+}
+
+void DkNoMacs::copyPixelColorValue() {
+	
+	if (!viewport() || viewport()->getImage().isNull())
+		return;
+
+	QMimeData* mimeData = new QMimeData;
+
+	if (!viewport()->getImage().isNull())
+		mimeData->setText(viewport()->getCurrentPixelHexValue());
+
+	QClipboard* clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData);
 }
 
 void DkNoMacs::copyImageBuffer() {
