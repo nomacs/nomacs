@@ -737,8 +737,8 @@ void DkFileFilterHandling::registerExtension(const QString& ext, const QString& 
 
 	QSettings settings2("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
 	settings2.beginGroup(ext);
-	if (add)
-		settings2.setValue("Default", progKey);	
+	//if (add)
+	//	settings2.setValue("Default", progKey);	
 	settings2.beginGroup("OpenWithProgIds");
 	//settings.beginGroup("nomacs.exe");
 
@@ -746,8 +746,6 @@ void DkFileFilterHandling::registerExtension(const QString& ext, const QString& 
 		settings2.setValue(progKey, "");	// tell system that nomacs can handle this file type
 	else
 		settings2.remove(progKey);
-	//settings.remove("josef");
-
 #endif
 }
 

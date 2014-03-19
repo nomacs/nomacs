@@ -49,10 +49,11 @@ class DkFileFilterHandling {
 
 public:
 	DkFileFilterHandling() {};
+	void registerFileType(const QString& filterString, const QString& attribute, bool add);
 
+protected:
 	QString registerProgID(const QString& ext, const QString& friendlyName, bool add);
 	void registerExtension(const QString& ext, const QString& progKey, bool add);
-	void registerFileType(const QString& filterString, const QString& attribute, bool add);
 	void setAsDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
 };
 
