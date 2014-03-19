@@ -226,6 +226,11 @@ void DkNoMacs::init() {
 	}
 #endif // Q_WS_WIN
 
+
+	DkFileFilterHandling fh;
+	fh.registerFileType(DkSettings::openFilters.at(2), tr("Image"), true);
+	qDebug() << DkSettings::openFilters.at(1) << "registered";
+
 }
 
 #ifdef WIN32	// windows specific versioning

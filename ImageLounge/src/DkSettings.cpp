@@ -135,7 +135,7 @@ void DkSettings::initFileFilters() {
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
 	// formats we can save
-	if (qtFormats.contains("png"))		saveFilters.append("Portable Network Graphics (*.png)");
+	if (qtFormats.contains("png"))		saveFilters.append("PNG (*.png)");
 	if (qtFormats.contains("jpg"))		saveFilters.append("JPEG (*.jpg *.jpeg)");
 	if (qtFormats.contains("j2k"))		saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
 	if (qtFormats.contains("tif"))		saveFilters.append("TIFF (*.tif *.tiff)");
@@ -213,10 +213,6 @@ void DkSettings::initFileFilters() {
 void DkSettings::load(bool force) {
 
 	initFileFilters();
-
-	DkFileFilterHandling fh;
-	fh.registerExtension(".jpg");
-
 	setToDefaultSettings();
 
 	QSettings settings;
@@ -698,32 +694,115 @@ void DkSettings::setToDefaultSettings() {
 	qDebug() << "ok... default settings are set";
 }
 
-void DkFileFilterHandling::registerExtension(const QString& ext) {
+QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {
 
 #ifdef WIN32
-	QSettings settings("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
-	settings.beginGroup(".png");
-	settings.beginGroup("OpenWithProgIds");
-	//settings.beginGroup("nomacs.exe");
-	settings.setValue("nomacs.png.1", "");	
-	//settings.remove("josef");
+
+	QString nomacsPath = "HKEY_CURRENT_USER\\SOFTWARE\\Classes\\";
+	QString nomacsKey = "nomacs" + ext + ".2";
+
+	QSettings settings(nomacsPath, QSettings::NativeFormat);
+	
+	if (add) {
+		settings.beginGroup(nomacsKey);
+		settings.setValue("Default", friendlyName);
+		//settings.setValue("AppUserModelID", "nomacs.ImageLounge");
+		//settings.setValue("EditFlags", 1);
+		//settings.setValue("CurVer", nomacsKey);
+		settings.beginGroup("DefaultIcon");
+		settings.setValue("Default","\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\", 1");
+		settings.endGroup();
+		settings.beginGroup("shell");
+		settings.beginGroup("open");
+		settings.beginGroup("command");
+		settings.setValue("Default", "\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\" \"%1\"");
+		settings.endGroup();
+		settings.endGroup();
+		settings.endGroup();
+
+		qDebug() << nomacsKey << " written";
+	}
+	else
+		settings.remove(nomacsKey);
+
+	return nomacsKey;
+#else
+	return QString();
+#endif
+}
+
+void DkFileFilterHandling::registerExtension(const QString& ext, const QString& progKey, bool add) {
+
+#ifdef WIN32
 
 	QSettings settings2("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
-	settings.beginGroup(".png");
-	settings.beginGroup("OpenWithList");
-	settings.beginGroup("nomacs.exe");
-	settings.setValue("josef", "");	
-	settings.remove("josef");
+	settings2.beginGroup(ext);
+	if (add)
+		settings2.setValue("Default", progKey);	
+	settings2.beginGroup("OpenWithProgIds");
+	//settings.beginGroup("nomacs.exe");
 
-
-	// register application
-	QSettings settings3("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\");
-
+	if (add)
+		settings2.setValue(progKey, "");	// tell system that nomacs can handle this file type
+	else
+		settings2.remove(progKey);
+	//settings.remove("josef");
 
 #endif
 }
 
-void DkFileFilterHandling::setAsDefaultApp(const QString& ext, bool defaultApp) {
+void DkFileFilterHandling::registerFileType(const QString& filterString, const QString& attribute, bool add) {
+
+#ifdef WIN32
+
+	QStringList tmp = filterString.split("(");
+
+	if (tmp.size() != 2) {
+		qDebug() << "WARNING: wrong filter string!";
+		return;
+	}
+
+	QString friendlyName = tmp.at(0) + attribute;
+	QString filters = tmp.at(1);
+	filters.replace(")", "");
+	filters.replace("*", "");
+
+	QStringList extList = filters.split(";;");
+
+	if (extList.empty()) {
+		qDebug() << "nothing to do here, not registering: " << filterString;
+		return;
+	}
+
+	// register a new progID
+	QString progKey = registerProgID(extList.at(0), friendlyName, add);
+
+	// register the extension
+	for (int idx = 0; idx < extList.size(); idx++) {
+
+		qDebug() << "registering: " << extList.at(idx);
+		registerExtension(extList.at(idx), progKey, add);
+		setAsDefaultApp(extList.at(idx), progKey, add);		// this is not working on Win8
+	}
+
+#endif
+}
+
+void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& progKey, bool add) {
+
+#ifdef WIN32
+	
+	QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts", QSettings::NativeFormat);
+	settings.beginGroup(ext);
+
+	if (add) {
+		settings.beginGroup("UserChoice");
+		settings.setValue("ProgId", progKey);
+		qDebug() << "default app set";
+	}
+	else
+		settings.setValue("Default", "");
+#endif
 
 }
 

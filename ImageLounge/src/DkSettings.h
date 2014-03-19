@@ -30,6 +30,7 @@
 #include <QBitArray>
 #include <QColor>
 #include <QDate>
+#include <QTranslator>
 
 
 #ifndef DllExport
@@ -49,9 +50,10 @@ class DkFileFilterHandling {
 public:
 	DkFileFilterHandling() {};
 
-	void registerExtension(const QString& ext);
-	void setAsDefaultApp(const QString& ext, bool defaultApp);
-
+	QString registerProgID(const QString& ext, const QString& friendlyName, bool add);
+	void registerExtension(const QString& ext, const QString& progKey, bool add);
+	void registerFileType(const QString& filterString, const QString& attribute, bool add);
+	void setAsDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
 };
 
 

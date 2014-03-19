@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
 	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
 		w, SLOT(loadFile(const QFileInfo&)));
 #endif
-		
+
 	int rVal = a.exec();
 	delete w;	// we need delete so that settings are saved (from destructors)
 

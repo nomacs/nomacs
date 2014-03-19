@@ -326,7 +326,7 @@ Function fileAssociationFinished
 	${EndIf}
 
 	${If} $webp_state == ${BST_CHECKED}
-		${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.xpm" "WebP Image"
+		${registerExtension} "$INSTDIR\nomacs.exe" ".webp" "nomacs.file.webp" "WebP Image"
 	${EndIf}
 	
 	; PARTIALLY SUPPORTED
