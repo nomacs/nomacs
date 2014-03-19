@@ -143,12 +143,12 @@ bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 
 	if (lhs.indexOf(r) >= 0) {
 
-		int lhn = r.cap().toInt();
+		long long lhn = r.cap().toLongLong();
 
 		// we don't just want to find two numbers
 		// but we want them to be at the same position
 		if (rhs.indexOf(r) >= 0 && r.indexIn(lhs) == r.indexIn(rhs))
-			return lhn < r.cap().toInt();
+			return lhn < r.cap().toLongLong();
 
 	}
 
