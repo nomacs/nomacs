@@ -56,10 +56,16 @@
 
 #include <math.h>
 
+
 #ifdef WIN32
 	#include <winsock2.h>	// needed since libraw 0.16
 	#include <shlobj.h>
 #endif
+
+#ifdef WITH_UPNP
+#include "DkUpnp.h"
+#endif // WITH_UPNP
+
 
 #include "DkConnection.h"
 
@@ -199,6 +205,7 @@ class DkLANClientManager : public DkClientManager {
 	Q_OBJECT;
 	public:
 		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = lanUDPPortStart, quint16 udpServerPortRangeEnd = lanUDPPortEnd);
+		virtual ~DkLANClientManager(); 
 		virtual QList<DkPeer> getPeerList();
 
 	signals:
@@ -236,6 +243,10 @@ class DkLANClientManager : public DkClientManager {
 
 	private:
 		virtual DkLANConnection* createConnection();
+
+
+		DkUpnpControlPoint* upnpControlPoint;
+		DkUpnpDeviceHost* upnpDeviceHost;
 };
 
 class DkRCClientManager : public DkLANClientManager {
@@ -305,7 +316,7 @@ class DkLANTcpServer : public QTcpServer {
 	protected:
 		void incomingConnection(int socketDescriptor);
 		DkLANUdpSocket* udpSocket;
-	
+
 	private:
 
 };

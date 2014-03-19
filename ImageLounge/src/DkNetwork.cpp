@@ -64,7 +64,6 @@ void DkClientManager::disconnected() {
 		removeConnection(connection);
 	}
 
-
 }
 
 void DkClientManager::removeConnection(DkConnection* connection) {
@@ -371,6 +370,28 @@ DkLANClientManager::DkLANClientManager(QString title, QObject* parent, quint16 u
 	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
+
+#ifdef WITH_UPNP
+	upnpDeviceHost = new DkUpnpDeviceHost();
+	
+	upnpControlPoint = new DkUpnpControlPoint();
+	connect(upnpControlPoint, SIGNAL(newNomacsFound(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
+	// TODO connect signals
+#endif // WITH_UPNP
+}
+
+DkLANClientManager::~DkLANClientManager() {
+#ifdef  WITH_UPNP
+	if (!upnpDeviceHost) {
+		delete upnpDeviceHost;
+		upnpDeviceHost = 0;
+	}
+	if (!upnpControlPoint) {
+		delete upnpControlPoint;
+		upnpControlPoint = 0;
+	}
+#endif //  WITH_UPNP
+
 }
 
 QList<DkPeer> DkLANClientManager::getPeerList() {
@@ -664,6 +685,17 @@ void DkLANClientManager::startServer(bool flag) {
 		}
 	}
 	server->startServer(flag);
+#ifdef WITH_UPNP
+	qDebug() << "server address:" << server->serverAddress() << " port:" << server->serverPort();
+	if (flag) {
+		
+		// TODO rewrite xml
+		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml", server->serverPort(), -1);
+		
+	} else {
+		upnpDeviceHost->stopDevicehost();
+	}
+#endif // WITH_UPNP
 }
 
 

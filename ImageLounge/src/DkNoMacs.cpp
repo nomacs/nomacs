@@ -3535,10 +3535,10 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->setEnabled(true);
 	tcpLanMenu->enableActions(false, false);
 
-	rcClient = new DkRCManagerThread(this);
-	rcClient->start();
+	//rcClient = new DkRCManagerThread(this);
+	//rcClient->start();
 
-	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
+	//connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
 	DkTimer dt;
 	if (!DkSettings::sync.syncWhiteList.empty()) {

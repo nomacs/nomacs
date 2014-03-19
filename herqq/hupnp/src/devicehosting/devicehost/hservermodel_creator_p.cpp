@@ -386,6 +386,9 @@ bool HServerModelCreator::parseServiceList(
             return false;
         }
 
+		qDebug() << "m_creationParameters->m_deviceLocations[0]:" << m_creationParameters->m_deviceLocations[0];
+		qDebug() << "info.scpdUrl():" << info.scpdUrl();
+
         if (!m_creationParameters->m_serviceDescriptionFetcher(
                 extractBaseUrl(m_creationParameters->m_deviceLocations[0]),
                 info.scpdUrl(), &service->h_ptr->m_serviceDescription))

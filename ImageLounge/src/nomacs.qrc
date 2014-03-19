@@ -58,5 +58,7 @@
         <file>img/crop-invert.png</file>
         <file>img/crop-invert-checked.png</file>
         <file>img/info.png</file>
+		<file>descriptions/nomacs-device.xml</file>
+		<file>descriptions/nomacs-service.xml</file>
     </qresource>
 </RCC>
