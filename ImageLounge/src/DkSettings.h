@@ -254,6 +254,8 @@ public:
 	static QStringList fileFilters;	// just the filters
 	static QStringList openFilters;	// for open dialog
 	static QStringList saveFilters;	// for close dialog
+	static QStringList browseFilters;
+	static QStringList registerFilters;
 
 	static App& getAppSettings();
 	static Display& getDisplaySettings();

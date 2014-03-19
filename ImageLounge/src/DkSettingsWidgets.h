@@ -42,6 +42,8 @@
 #include <QDebug>
 #include <QButtonGroup>
 #include <QFileDialog>
+#include <QStandardItem>
+#include <QTableView>
 
 #include "DkSettings.h"
 #include "BorderLayout.h"
@@ -97,6 +99,8 @@ private:
 	QHBoxLayout* hboxLowerLayout;
 	QSize optimalSize;
 };
+
+
 
 class DkSettingsListView : public QListView {
 	Q_OBJECT;
@@ -176,8 +180,8 @@ public:
 
 	void writeSettings();
 
-	private slots:
-		void enableNetworkCheckBoxChanged(int state);
+private slots:
+	void enableNetworkCheckBoxChanged(int state);
 
 private:
 	void init();
@@ -194,6 +198,24 @@ private:
 	QCheckBox* cbAllowFile;
 	QCheckBox* cbSwitchModifier;
 	QGroupBox* gbNetworkSettings;
+};
+
+class DkFileFilterSettingWidget: public DkSettingsWidget {
+	Q_OBJECT
+
+public:
+	DkFileFilterSettingWidget(QWidget* parent);
+	virtual void writeSettings();
+	virtual void init();
+
+protected:
+	void createLayout();
+	QList<QStandardItem*> getItems(const QString& filter, bool browse, bool reg);
+
+	QTableView* filterTableView;
+	QStandardItemModel* model;
+	QCheckBox* browseAll, registerAll;
+
 };
 
 class DkDisplaySettingsWidget : public DkSettingsWidget {
@@ -372,20 +394,20 @@ class DkSettingsDialog : public QDialog {
 
 public:
 	DkSettingsDialog(QWidget* parent);
-	DkSettingsDialog(const DkSettingsDialog& dialog) {
-		this->borderLayout = dialog.borderLayout;
-		this->listView = dialog.listView;
-		this->rightWidget = dialog.rightWidget;
-		this->leftLabel = dialog.leftLabel;
-		this->buttonOk = dialog.buttonOk;
-		this->buttonCancel = dialog.buttonCancel;
-		this->widgetList = dialog.widgetList;
-		this->centralWidget = dialog.centralWidget;
-		this->centralLayout = dialog.centralLayout;
-		this->globalSettingsWidget = dialog.globalSettingsWidget;
-		this->slideshowSettingsWidget = dialog.slideshowSettingsWidget;
-		this->synchronizeSettingsWidget = dialog.synchronizeSettingsWidget;
-	}
+	//DkSettingsDialog(const DkSettingsDialog& dialog) {
+	//	this->borderLayout = dialog.borderLayout;
+	//	this->listView = dialog.listView;
+	//	this->rightWidget = dialog.rightWidget;
+	//	this->leftLabel = dialog.leftLabel;
+	//	this->buttonOk = dialog.buttonOk;
+	//	this->buttonCancel = dialog.buttonCancel;
+	//	this->widgetList = dialog.widgetList;
+	//	this->centralWidget = dialog.centralWidget;
+	//	this->centralLayout = dialog.centralLayout;
+	//	this->globalSettingsWidget = dialog.globalSettingsWidget;
+	//	this->slideshowSettingsWidget = dialog.slideshowSettingsWidget;
+	//	this->synchronizeSettingsWidget = dialog.synchronizeSettingsWidget;
+	//}
 	~DkSettingsDialog();
 
 signals:
@@ -398,21 +420,21 @@ private:
 	void createLayout();
 	void createSettingsWidgets();
 
-	private slots:
-		void listViewSelected(const QModelIndex & qmodel);
-		void saveSettings();
-		void cancelPressed() { close(); };
-		void initWidgets();
-		void setToDefault() {
+private slots:
+	void listViewSelected(const QModelIndex & qmodel);
+	void saveSettings();
+	void cancelPressed() { close(); };
+	void initWidgets();
+	void setToDefault() {
 
-			DkSettings::setToDefaultSettings();
-			initWidgets();
+		DkSettings::setToDefaultSettings();
+		initWidgets();
 
-			// for main window
-			emit setToDefaultSignal();
-			emit settingsChanged();
-		};
-		void advancedSettingsChanged(int state);
+		// for main window
+		emit setToDefaultSignal();
+		emit settingsChanged();
+	};
+	void advancedSettingsChanged(int state);
 
 protected:
 	BorderLayout* borderLayout;
@@ -432,6 +454,7 @@ protected:
 	DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
 	DkMetaDataSettingsWidget* exifSettingsWidget;
 	DkResourceSettingsWidgets* resourceSettingsWidget;
+	DkFileFilterSettingWidget* fileFilterSettingsWidget;
 };
 
 };

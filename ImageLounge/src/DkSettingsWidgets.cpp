@@ -97,7 +97,7 @@ void DkSettingsDialog::createLayout() {
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("Resources");
+	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("File Filters") << tr("Resources");
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
@@ -120,7 +120,6 @@ void DkSettingsDialog::createLayout() {
 	bottomWidgetHBoxLayout->addWidget(buttonOk);
 	bottomWidgetHBoxLayout->addWidget(buttonCancel);
 
-
 	borderLayout = new BorderLayout(this);
 	borderLayout->addWidget(leftWidget, BorderLayout::West);
 	borderLayout->addWidget(bottomWidget, BorderLayout::South);
@@ -140,6 +139,7 @@ void DkSettingsDialog::createSettingsWidgets() {
 	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(centralWidget);
 	exifSettingsWidget = new DkMetaDataSettingsWidget(centralWidget);
 	resourceSettingsWidget = new DkResourceSettingsWidgets(centralWidget);
+	fileFilterSettingsWidget = new DkFileFilterSettingWidget(centralWidget);
 
 	widgetList.clear();
 	widgetList.push_back(globalSettingsWidget);
@@ -147,6 +147,7 @@ void DkSettingsDialog::createSettingsWidgets() {
 	widgetList.push_back(slideshowSettingsWidget);
 	widgetList.push_back(synchronizeSettingsWidget);
 	widgetList.push_back(exifSettingsWidget);
+	widgetList.push_back(fileFilterSettingsWidget);
 	widgetList.push_back(resourceSettingsWidget);
 }
 
@@ -1164,7 +1165,68 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerS
 	setMinimumSize(sizeHint());
 }
 
+// DkFileFilterSettings --------------------------------------------------------------------
+DkFileFilterSettingWidget::DkFileFilterSettingWidget(QWidget* parent) : DkSettingsWidget(parent) {
 
+	init();
+}
 
+void DkFileFilterSettingWidget::init() {
+
+	createLayout();
+}
+
+void DkFileFilterSettingWidget::createLayout() {
+
+	QStringList fileFilters = DkSettings::openFilters;
+
+	model = new QStandardItemModel(this);
+	for (int rIdx = 1; rIdx < fileFilters.size(); rIdx++)
+		model->appendRow(getItems(fileFilters.at(rIdx), true, true));
+	
+	model->setHeaderData(0, Qt::Horizontal, tr("Filter"));
+	model->setHeaderData(1, Qt::Horizontal, tr("Browse"));
+	model->setHeaderData(2, Qt::Horizontal, tr("Register"));
+
+	filterTableView = new QTableView(this);
+	filterTableView->setModel(model);
+	filterTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+	filterTableView->verticalHeader()->hide();
+	//filterTableView->horizontalHeader()->hide();
+	filterTableView->setShowGrid(false);
+	filterTableView->resizeColumnsToContents();
+	filterTableView->resizeRowsToContents();
+	filterTableView->setWordWrap(false);
+	
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(filterTableView);
+	setLayout(layout);
+	//show();
+}
+
+QList<QStandardItem*> DkFileFilterSettingWidget::getItems(const QString& filter, bool browse, bool reg) {
+
+	QList<QStandardItem* > items;
+	QStandardItem* item = new QStandardItem(filter);
+	item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+	items.append(item);
+	item = new QStandardItem("");
+	//item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+	item->setCheckable(true);
+	item->setCheckState(browse ? Qt::Checked : Qt::Unchecked);
+	items.append(item);
+	item = new QStandardItem("");
+	//item->setFlags(Qt::Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+	item->setCheckable(true);
+	item->setCheckState(reg ? Qt::Checked : Qt::Unchecked);
+	items.append(item);
+
+	return items;
+
+}
+
+void DkFileFilterSettingWidget::writeSettings() {
+
+}
 
 }

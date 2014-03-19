@@ -88,6 +88,8 @@ QStringList DkSettings::saveFilters = QStringList();
 
 // formats we can load
 QStringList DkSettings::openFilters = QStringList();
+QStringList DkSettings::browseFilters = QStringList();
+QStringList DkSettings::registerFilters = QStringList();
 
 DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
@@ -208,6 +210,7 @@ void DkSettings::initFileFilters() {
 #ifdef Q_OS_WIN
 	fileFilters.append("*.lnk");
 #endif
+
 }
 
 void DkSettings::load(bool force) {
