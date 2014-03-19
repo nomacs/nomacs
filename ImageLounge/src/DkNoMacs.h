@@ -61,6 +61,7 @@
 	#pragma warning(disable: 4996)
 #endif
 
+
 #ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
 #include "opencv/cv.h"
 #else
@@ -109,6 +110,8 @@ class DkRCManagerThread;
 class DkTransferToolBar;
 class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
+class DkUpnpControlPoint;
+class DkUpnpDeviceHost;
 
 
 // keyboard shortcuts
@@ -692,6 +695,7 @@ public:
 signals:
 	void clientInitializedSignal();
 	void startRCServerSignal(bool start);
+	void startTCPServerSignal(bool start);
 
 public slots:
 	void tcpConnectAll();
@@ -701,6 +705,7 @@ public slots:
 	void settingsChanged();
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
+	void startTCPServer(bool start);
 
 protected:
 
@@ -720,6 +725,10 @@ protected:
 	DkLocalManagerThread* localClient;
 	DkLanManagerThread* lanClient;
 	DkRCManagerThread* rcClient;
+#ifdef WITH_UPNP
+	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
+	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
+#endif // WITH_UPNP
 
 };
 

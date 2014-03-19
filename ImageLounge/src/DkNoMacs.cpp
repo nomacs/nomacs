@@ -39,6 +39,11 @@
 #include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
 
+#ifdef WITH_UPNP
+#include "DkUpnp.h"
+#endif // WITH_UPNP
+
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {
@@ -3511,6 +3516,16 @@ void DkNoMacsSync::initLanClient() {
 
 	// start lan client/server
 	lanClient = new DkLanManagerThread(this);
+#ifdef WITH_UPNP
+	if (!upnpControlPoint) {
+		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
+	}
+	lanClient->upnpControlPoint = upnpControlPoint;
+	if (!upnpDeviceHost) {
+		upnpDeviceHost = QSharedPointer<DkUpnpDeviceHost>(new DkUpnpDeviceHost());
+	}
+	lanClient->upnpDeviceHost = upnpDeviceHost;
+#endif // WITH_UPNP
 	lanClient->start();
 
 	lanActions.resize(menu_lan_end);
@@ -3520,7 +3535,8 @@ void DkNoMacsSync::initLanClient() {
 	lanActions[menu_lan_server]->setObjectName("serverAction");
 	lanActions[menu_lan_server]->setCheckable(true);
 	lanActions[menu_lan_server]->setChecked(false);
-	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
+	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
 
 	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
 	lanActions[menu_lan_image]->setObjectName("sendImageAction");
@@ -3535,8 +3551,20 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->setEnabled(true);
 	tcpLanMenu->enableActions(false, false);
 
-	//rcClient = new DkRCManagerThread(this);
-	//rcClient->start();
+	rcClient = new DkRCManagerThread(this);
+#ifdef WITH_UPNP
+	if (!upnpControlPoint) {
+		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
+	}
+	rcClient->upnpControlPoint = upnpControlPoint;
+	if (!upnpDeviceHost) {
+		upnpDeviceHost = QSharedPointer<DkUpnpDeviceHost>(new DkUpnpDeviceHost());
+	}
+	rcClient->upnpDeviceHost = upnpDeviceHost;
+#endif // WITH_UPNP
+	
+	rcClient->start();
+	
 
 	//connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
@@ -3768,6 +3796,13 @@ void DkNoMacsSync::newClientConnected(bool connected, bool local) {
 	DkNoMacs::newClientConnected(connected, local);
 }
 
+void DkNoMacsSync::startTCPServer(bool start) {
+	
+	if (!upnpDeviceHost->isStarted())
+		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml");
+	emit startTCPServerSignal(start);
+}
+
 void DkNoMacsSync::settingsChanged() {
 	initLanClient();
 
@@ -3791,6 +3826,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 
 	lanClient = 0;
 	rcClient = 0;
+
 
 	init();
 	setAcceptDrops(true);

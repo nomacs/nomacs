@@ -210,6 +210,7 @@ class DkLANClientManager : public DkClientManager {
 
 	signals:
 		void sendSwitchServerMessage(QHostAddress address, quint16 port);
+		void serverPortChanged(quint16 port);
 
 	public slots:
 		void sendTitle(QString newTitle);
@@ -240,13 +241,9 @@ class DkLANClientManager : public DkClientManager {
 		void connectionReceivedNewFile(DkConnection* connection, qint16 op, QString filename);
 		void connectionReceivedUpcomingImage(DkConnection* connection, QString imageTitle);
 		void connectionReceivedSwitchServer(DkConnection* connection, QHostAddress address, quint16 port);
-
 	private:
 		virtual DkLANConnection* createConnection();
 
-
-		DkUpnpControlPoint* upnpControlPoint;
-		DkUpnpDeviceHost* upnpDeviceHost;
 };
 
 class DkRCClientManager : public DkLANClientManager {
@@ -492,6 +489,11 @@ public:
 	DkLanManagerThread(DkNoMacs* parent);
 	virtual void connectClient();
 
+#ifdef WITH_UPNP
+	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
+	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
+#endif // WITH_UPNP
+
 signals:
 	void startServerSignal(bool start);
 
@@ -504,6 +506,8 @@ public slots:
 
 protected:
 	void createClient(QString title);
+
+
 
 };
 

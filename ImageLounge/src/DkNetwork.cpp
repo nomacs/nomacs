@@ -370,28 +370,9 @@ DkLANClientManager::DkLANClientManager(QString title, QObject* parent, quint16 u
 	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
-
-#ifdef WITH_UPNP
-	upnpDeviceHost = new DkUpnpDeviceHost();
-	
-	upnpControlPoint = new DkUpnpControlPoint();
-	connect(upnpControlPoint, SIGNAL(newNomacsFound(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
-	// TODO connect signals
-#endif // WITH_UPNP
 }
 
 DkLANClientManager::~DkLANClientManager() {
-#ifdef  WITH_UPNP
-	if (!upnpDeviceHost) {
-		delete upnpDeviceHost;
-		upnpDeviceHost = 0;
-	}
-	if (!upnpControlPoint) {
-		delete upnpControlPoint;
-		upnpControlPoint = 0;
-	}
-#endif //  WITH_UPNP
-
 }
 
 QList<DkPeer> DkLANClientManager::getPeerList() {
@@ -404,7 +385,7 @@ QList<DkPeer> DkLANClientManager::getPeerList() {
 }
 
 void DkLANClientManager::startConnection(QHostAddress address, quint16 port, QString clientName) {
-	//qDebug() << "DkLANClientManager::startConnection: connecting to:" << address << ":" << port << "    line:" << __LINE__;  
+	qDebug() << "DkLANClientManager::startConnection: connecting to:" << address << ":" << port << "    line:" << __LINE__;  
 	if (peerList.alreadyConnectedTo(address, port)) {
 		//qDebug() << "already connected";
 		return;
@@ -688,12 +669,9 @@ void DkLANClientManager::startServer(bool flag) {
 #ifdef WITH_UPNP
 	qDebug() << "server address:" << server->serverAddress() << " port:" << server->serverPort();
 	if (flag) {
-		
-		// TODO rewrite xml
-		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml", server->serverPort(), -1);
-		
+		emit serverPortChanged(server->serverPort());
 	} else {
-		upnpDeviceHost->stopDevicehost();
+		emit serverPortChanged(0);
 	}
 #endif // WITH_UPNP
 }
@@ -1557,6 +1535,14 @@ void DkLanManagerThread::connectClient() {
 	connect(clientManager, SIGNAL(receivedImageTitle(QString)), parent, SLOT(setWindowTitle(QString)));
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 
+#ifdef WITH_UPNP
+	qRegisterMetaType<QFileInfo>("QHostAddress");
+	connect(upnpControlPoint.data(), SIGNAL(newLANNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)), Qt::QueuedConnection);
+	connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(tcpServerPortChanged(quint16)), Qt::QueuedConnection);
+#endif // WITH_UPNP
+
+
+
 	DkManagerThread::connectClient();
 }
 
@@ -1578,6 +1564,7 @@ void DkRCManagerThread::createClient(QString title) {
 		delete clientManager;
 
 	clientManager = new DkRCClientManager(title);
+
 }
 
 void DkRCManagerThread::connectClient() {
@@ -1591,7 +1578,20 @@ void DkRCManagerThread::connectClient() {
 	connect(this, SIGNAL(newModeSignal(int)), clientManager, SLOT(sendNewMode(int)));
 	connect(parent, SIGNAL(stopSynchronizeWithSignal()), clientManager, SLOT(stopSynchronizeWith()));
 
-	DkLanManagerThread::connectClient();
+#ifdef WITH_UPNP
+	qRegisterMetaType<QFileInfo>("QHostAddress");
+	//connect(upnpControlPoint.data(), SIGNAL(newRCNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)), Qt::QueuedConnection);
+	//connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(wlServerPortChanged(quint16)), Qt::QueuedConnection);
+#endif // WITH_UPNP
+
+	//DkLanManagerThread::connectClient();
+
+#ifdef WITH_UPNP
+	// disconnect signals made by lan manager thread
+	//disconnect(upnpControlPoint.data(), SIGNAL(newLANNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)));
+	//disconnect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(tcpServerPortChanged(quint16)));
+#endif // WITH_UPNP
+
 }
 
 void DkRCManagerThread::sendNewMode(int mode) {

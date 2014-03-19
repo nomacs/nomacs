@@ -15,6 +15,8 @@
 #include <QFile>
 #include <QUrl>
 #include <QHostAddress>
+#include <QCoreApplication>
+#include <QNetworkInterface>
 
 #include <HUpnpCore/HServerDevice>
 #include <HUpnpCore/HServerService>
@@ -27,6 +29,7 @@
 #include <HUpnpCore/HDeviceHost>
 #include <HUpnpCore/HActionArgument>
 #include <HUpnpCore/HServerStateVariable>
+#include <HUpnpCore/HServiceId>
 
 #include <HUpnpCore/HActionInvoke>
 #include <HUpnpCore/HClientService>
@@ -37,11 +40,18 @@
 namespace nmc {
 
 	class DkUpnpDeviceHost : public Herqq::Upnp::HDeviceHost {
+		Q_OBJECT
 		public:
 			DkUpnpDeviceHost();
-			bool startDevicehost(QString pathToConfig, quint16 tcpServerPort, quint16 wlServerPort);
+			virtual ~DkUpnpDeviceHost() {qDebug() << "deleting Devicehost!";};
+			bool startDevicehost(QString pathToConfig);
 			void stopDevicehost(); 
+		public slots:
+			void tcpServerPortChanged(quint16 port);
+			void wlServerPortChanged(quint16 port);
 
+		private:
+			quint16 tcpServerPort, wlServerPort;
 	};
 
 	class DkUpnpServer : public Herqq::Upnp::HServerDevice {
@@ -56,6 +66,8 @@ namespace nmc {
 			DkUpnpService(quint16 tcpServerPort, quint16 wlServerPort);
 			virtual ~DkUpnpService() {};
 
+			void setTcpServerPort(quint16 port);
+			void setWlServerPort(quint16 port);
 			Q_INVOKABLE qint32 getTCPServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs);
 			Q_INVOKABLE qint32 getWhitelistServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs);
 
@@ -84,7 +96,8 @@ namespace nmc {
 			bool init();
 
 		signals:
-			void newNomacsFound(QHostAddress address, quint16 port, QString name);
+			void newLANNomacsFound(QHostAddress address, quint16 port, QString name);
+			void newRCNomacsFound(QHostAddress address, quint16 port, QString name);
 
 		private slots:
 			void rootDeviceOnline(Herqq::Upnp::HClientDevice*);
@@ -92,7 +105,9 @@ namespace nmc {
 			void invokeComplete(Herqq::Upnp::HClientAction* clientAction, const Herqq::Upnp::HClientActionOp& clientActionOp);
 
 		private:
+			bool isLocalHostAddress(const QHostAddress address);
 			Herqq::Upnp::HControlPoint* controlPoint;
+			QList<QHostAddress> localIpAddresses;
 	};
 
 
