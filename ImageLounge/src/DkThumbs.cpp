@@ -311,7 +311,7 @@ void DkThumbPool::setFile(const QFileInfo& file, int force) {
 	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
 		updateDir(file);
 
-	if (currentFile != file || force != DkThumbsLoader::not_forced)
+	if (currentFile != file || force != DkThumbsLoader::not_forced || !files.contains(file.fileName()))
 		emit newFileIdxSignal(fileIdx(file));
 
 	currentFile = file;

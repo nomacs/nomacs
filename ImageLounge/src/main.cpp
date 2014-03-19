@@ -134,8 +134,10 @@ int main(int argc, char *argv[]) {
 
 	if (args.size() > 1)
 		w->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
-	else
+	else {
 		w->viewport()->getImageLoader()->setDir(QDir(imgDir));
+		w->viewport()->getImageLoader()->firstFile();
+	}
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
 

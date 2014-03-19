@@ -1568,11 +1568,11 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 
 	file.refresh();
 	virtualFile.refresh();
-	bool virtualExists = files.contains(virtualFile.fileName()); // old code here is a bug if the image is e.g. renamed
+	bool virtualExists = files.contains(virtualFile.fileName()) || (file.absoluteFilePath() != QCoreApplication::applicationDirPath() && virtualFile.absoluteFilePath() != QCoreApplication::applicationDirPath()); // old code here is a bug if the image is e.g. renamed
 
 	qDebug() << "virtual file: " << virtualFile.absoluteFilePath();
 	qDebug() << "file: " << file.absoluteFilePath();
-	qDebug() << "files: " << files;
+	//qDebug() << "files: " << files;
 
 	if (!virtualExists && !file.exists())
 		return QFileInfo();
@@ -1615,6 +1615,9 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 				if (files[cFileIdx] == cFilename)
 					break;
 			}
+
+			if (cFileIdx == file.size())
+				qDebug() << "could not locate file: " << cFilename;
 		}
 		newFileIdx = cFileIdx + skipIdx;
 
@@ -1627,6 +1630,8 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 			filesTmp = sort(filesTmp, dir);
 
 			cFileIdx = 0;
+
+			qDebug() << "searching for: " << cFilename;
 			
 			for ( ; cFileIdx < filesTmp.size(); cFileIdx++) {
 
@@ -1638,6 +1643,8 @@ QFileInfo DkImageLoader::getChangedFileInfo(int skipIdx, bool silent, bool searc
 				newFileIdx = cFileIdx + skipIdx;
 				if (skipIdx > 0) newFileIdx--;	// -1 because the current file does not exist
 			}
+			else
+				qDebug() << "could not locate current file";
 		}		
 
 		//qDebug() << "subfolders: " << DkSettings::global.scanSubFolders << "subfolder size: " << (subFolders.size() > 1);
