@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
-
+	
 	QSettings settings;
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
 	nmc::DkSettings::app.currentAppMode = mode;
@@ -94,6 +94,7 @@ int main(int argc, char *argv[]) {
 
 	QApplication a(argc, (char**)argv);
 	QStringList args = a.arguments();
+	nmc::DkSettings::initFileFilters();
 
 	//// pong --------------------------------------------------------------------
 	//nmc::DkPong *p = new nmc::DkPong();

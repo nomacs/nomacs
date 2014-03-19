@@ -215,7 +215,6 @@ void DkSettings::initFileFilters() {
 
 void DkSettings::load(bool force) {
 
-	initFileFilters();
 	setToDefaultSettings();
 
 	QSettings settings;
