@@ -1191,6 +1191,7 @@ void DkFilePreview::updateFileIdx(int idx) {
 	if (idx == currentFileIdx)
 		return;
 
+	currentImg = QPixmap();	// clear current image
 	currentFileIdx = idx;
 	if (currentFileIdx >= 0)
 		scrollToCurrentImage = true;
