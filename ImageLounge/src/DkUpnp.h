@@ -17,6 +17,8 @@
 #include <QHostAddress>
 #include <QCoreApplication>
 #include <QNetworkInterface>
+#include <QUuid>
+#include <QDir>
 
 #include <HUpnpCore/HServerDevice>
 #include <HUpnpCore/HServerService>

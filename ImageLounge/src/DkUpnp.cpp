@@ -49,13 +49,43 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 		qDebug() << "DkUpnpDeviceHost: config file not found";
 		return false;
 	}
+
+	QUuid uuid = QUuid::createUuid();
+	QString uuidString = uuid.toString();
+	uuidString.replace("{","");
+	uuidString.replace("}","");
+	QString newXMLpath = QDir::tempPath() + QDir::separator() + uuidString + ".xml";
+	
+
+	QByteArray fileData;
+	f.open(QIODevice::ReadOnly);
+	fileData = f.readAll();
+	QString fileText(fileData);
+	fileText.replace("insert-new-uuid-here", uuidString);
+	fileText.replace("nomacs-service.xml", QDir::temp().dirName()+"/nomacs-service.xml");
+	f.seek(0);
+	QFile newXMLfile(newXMLpath);
+	newXMLfile.open(QIODevice::WriteOnly);
+	newXMLfile.write(fileText.toUtf8());
+	f.close();
+	newXMLfile.close();
+
+	QFileInfo fileInfo = QFileInfo(f);
+	QFile serviceXML(fileInfo.absolutePath() + QDir::separator() + "nomacs-service.xml");
+	if (!serviceXML.exists())
+		qDebug() << "nomacs-service.xml file does not exist";
+	if (!serviceXML.copy(QDir::tempPath()+ QDir::separator() + "nomacs-service.xml"))
+		qDebug() << "unable to copy nomacs-service.xml";
+	QFile newServiceXMLFile(QDir::tempPath()+ QDir::separator() + "nomacs-service.xml");
+
 	DkUpnpDeviceModelCreator creator;
 
 	Herqq::Upnp::HDeviceHostConfiguration hostConfig;
 	hostConfig.setDeviceModelCreator(creator);
 	
 	Herqq::Upnp::HDeviceConfiguration config;
-	config.setPathToDeviceDescription(pathToConfig);
+	//config.setPathToDeviceDescription(pathToConfig);
+	config.setPathToDeviceDescription(newXMLpath);
 	
 	hostConfig.add(config);
 	
@@ -63,7 +93,9 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	if (!retVal) {
 		qDebug() << "error while initializing device host:\n" << errorDescription();
 	}
-	
+
+	newXMLfile.remove();
+	newServiceXMLFile.remove();
 	return retVal;
 }
 
