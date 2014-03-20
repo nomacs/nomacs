@@ -43,6 +43,7 @@ void DkUpnpDeviceHost::wlServerPortChanged(quint16 port) {
 }
 
 bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
+	qDebug() << "starting DeviceHost";
 	QFile f(pathToConfig);
 	if (!f.exists()) {
 		qDebug() << "DkUpnpDeviceHost: config file not found";

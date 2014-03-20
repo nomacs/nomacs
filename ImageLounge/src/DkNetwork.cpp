@@ -387,7 +387,7 @@ QList<DkPeer> DkLANClientManager::getPeerList() {
 void DkLANClientManager::startConnection(QHostAddress address, quint16 port, QString clientName) {
 	qDebug() << "DkLANClientManager::startConnection: connecting to:" << address << ":" << port << "    line:" << __LINE__;  
 	if (peerList.alreadyConnectedTo(address, port)) {
-		//qDebug() << "already connected";
+		qDebug() << "already connected";
 		return;
 	}
 
@@ -855,7 +855,7 @@ void DkLANTcpServer::startServer(bool flag) {
 	if (flag) {
 		listen(QHostAddress::Any);
 		qDebug() << "DkLANTcpServer listening on:" << this->serverPort();
-		udpSocket->startBroadcast(this->serverPort());
+		//udpSocket->startBroadcast(this->serverPort());
 	} else {
 		emit(sendStopSynchronizationToAll());
 		this->close();
@@ -884,7 +884,7 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	}
 
 	qDebug() << "UpdBroadcastserver listening on " << serverPort;
-	connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
+	//connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
 
 	localIpAddresses.clear();
 	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
@@ -1536,11 +1536,11 @@ void DkLanManagerThread::connectClient() {
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 
 #ifdef WITH_UPNP
-	qRegisterMetaType<QFileInfo>("QHostAddress");
+	qRegisterMetaType<QHostAddress>("QHostAddress");
 	connect(upnpControlPoint.data(), SIGNAL(newLANNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)), Qt::QueuedConnection);
 	connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(tcpServerPortChanged(quint16)), Qt::QueuedConnection);
+	
 #endif // WITH_UPNP
-
 
 
 	DkManagerThread::connectClient();
@@ -1579,7 +1579,7 @@ void DkRCManagerThread::connectClient() {
 	connect(parent, SIGNAL(stopSynchronizeWithSignal()), clientManager, SLOT(stopSynchronizeWith()));
 
 #ifdef WITH_UPNP
-	qRegisterMetaType<QFileInfo>("QHostAddress");
+	//qRegisterMetaType<QFileInfo>("QHostAddress");
 	//connect(upnpControlPoint.data(), SIGNAL(newRCNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)), Qt::QueuedConnection);
 	//connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(wlServerPortChanged(quint16)), Qt::QueuedConnection);
 #endif // WITH_UPNP

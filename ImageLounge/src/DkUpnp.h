@@ -91,8 +91,10 @@ namespace nmc {
 	class DkUpnpControlPoint : public QObject {
 		Q_OBJECT
 		public:
-			DkUpnpControlPoint() { init();};
-			virtual ~DkUpnpControlPoint() {}; // TODO!!
+			DkUpnpControlPoint() { qDebug() << "constructing dkupnpcontrolpoint";};
+			virtual ~DkUpnpControlPoint() {
+				qDebug() << "dkupnpcontrolpoint deleted";
+			}; // TODO!!
 			bool init();
 
 		signals:

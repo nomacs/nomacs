@@ -3516,6 +3516,7 @@ void DkNoMacsSync::initLanClient() {
 
 	// start lan client/server
 	lanClient = new DkLanManagerThread(this);
+	lanClient->setObjectName("lanClient");
 #ifdef WITH_UPNP
 	if (!upnpControlPoint) {
 		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
@@ -3552,6 +3553,7 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->enableActions(false, false);
 
 	rcClient = new DkRCManagerThread(this);
+	rcClient->setObjectName("rcClient");
 #ifdef WITH_UPNP
 	if (!upnpControlPoint) {
 		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
@@ -3811,6 +3813,18 @@ void DkNoMacsSync::settingsChanged() {
 
 void DkNoMacsSync::clientInitialized() {
 	//TODO: things that need to be done after the clientManager has finished initialization
+#ifdef WITH_UPNP
+	QObject* obj = QObject::sender();
+	if (obj && obj->objectName() == "lanClient") {
+		qDebug() << "sender:" << obj->objectName();
+		qDebug() << "initializing upnpControlPoint";
+		upnpControlPoint->init();
+	} else {
+		qDebug() << "obj null";
+	}
+	
+#endif // WITH_UPNP
+	
 	emit clientInitializedSignal();
 }
 
@@ -3822,6 +3836,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	setCentralWidget(vp);
 
 	localClient = new DkLocalManagerThread(this);
+	localClient->setObjectName("localClient");
 	localClient->start();
 
 	lanClient = 0;
@@ -4038,6 +4053,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		setCentralWidget(vp);
 
 		localClient = new DkLocalManagerThread(this);
+		localClient->setObjectName("localClient");
 		localClient->start();
 
 		lanClient = 0;
