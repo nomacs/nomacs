@@ -63,38 +63,29 @@ namespace nmc {
 	class DkUpnpService : public Herqq::Upnp::HServerService {
 		Q_OBJECT
 		public:
-			DkUpnpService(quint16 tcpServerPort, quint16 wlServerPort);
+			DkUpnpService();
 			virtual ~DkUpnpService() {};
 
-			void setTcpServerPort(quint16 port);
-			void setWlServerPort(quint16 port);
 			Q_INVOKABLE qint32 getTCPServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs);
 			Q_INVOKABLE qint32 getWhitelistServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs);
-
-		private:
-			quint16 tcpServerPort;
-			quint16 wlServerPort;
 	};
 
 	class DkUpnpDeviceModelCreator : public Herqq::Upnp::HDeviceModelCreator {
 		public:	
-			//DkUpnpDeviceModelCreator() {};
-			DkUpnpDeviceModelCreator(quint16 tcpServerPort, quint16 wlServerPort);
+			DkUpnpDeviceModelCreator();
 			virtual DkUpnpServer* createDevice(const Herqq::Upnp::HDeviceInfo& info) const;
 			virtual DkUpnpService* createService(const Herqq::Upnp::HServiceInfo& serviceInfo, const Herqq::Upnp::HDeviceInfo& deviceInfo) const;
-			virtual DkUpnpDeviceModelCreator* newInstance() const {return new DkUpnpDeviceModelCreator(tcpServerPort, wlServerPort);};
+			virtual DkUpnpDeviceModelCreator* newInstance() const {return new DkUpnpDeviceModelCreator();};
 		private:
-			quint16 tcpServerPort;
-			quint16 wlServerPort;
 	};
 
 	class DkUpnpControlPoint : public QObject {
 		Q_OBJECT
 		public:
-			DkUpnpControlPoint() { qDebug() << "constructing dkupnpcontrolpoint";};
+			DkUpnpControlPoint() { };
 			virtual ~DkUpnpControlPoint() {
-				qDebug() << "dkupnpcontrolpoint deleted";
-			}; // TODO!!
+
+			}; // TODO deleting !!
 			bool init();
 
 		signals:

@@ -49,7 +49,7 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 		qDebug() << "DkUpnpDeviceHost: config file not found";
 		return false;
 	}
-	DkUpnpDeviceModelCreator creator(tcpServerPort, wlServerPort);
+	DkUpnpDeviceModelCreator creator;
 
 	Herqq::Upnp::HDeviceHostConfiguration hostConfig;
 	hostConfig.setDeviceModelCreator(creator);
@@ -73,10 +73,7 @@ void DkUpnpDeviceHost::stopDevicehost() {
 }
 
 // DkUpnpServer --------------------------------------------------------------------	
-DkUpnpDeviceModelCreator::DkUpnpDeviceModelCreator(quint16 tcpServerPort, quint16 wlServerPort) {
-	this->tcpServerPort = tcpServerPort;
-	this->wlServerPort = wlServerPort;
-	qDebug() << "DkUpnpDeviceModelCreator port:" << this->tcpServerPort;
+DkUpnpDeviceModelCreator::DkUpnpDeviceModelCreator() {
 }
 
 DkUpnpServer* DkUpnpDeviceModelCreator::createDevice(const Herqq::Upnp::HDeviceInfo& info) const {
@@ -89,17 +86,14 @@ DkUpnpServer* DkUpnpDeviceModelCreator::createDevice(const Herqq::Upnp::HDeviceI
 }
 
 // DkUpnpService --------------------------------------------------------------------
-DkUpnpService::DkUpnpService(quint16 tcpServerPort, quint16 wlServerPort) {
-	this->tcpServerPort = tcpServerPort;
-	this->wlServerPort = wlServerPort;
-	qDebug() << "DkUpnpService port:" << tcpServerPort;
+DkUpnpService::DkUpnpService() {
+	// do nothing
 }
 
 DkUpnpService* DkUpnpDeviceModelCreator::createService(const Herqq::Upnp::HServiceInfo& serviceInfo, const Herqq::Upnp::HDeviceInfo& deviceInfo) const {
 	qDebug() << "DkUpnpDeviceModelCreator: creating service: " << serviceInfo.serviceType().toString();
 	if (serviceInfo.serviceType().toString() == "urn:nomacs-org:service:nomacsService:1") {
-		qDebug() << "creating new service port:" << tcpServerPort;
-		return new DkUpnpService(tcpServerPort, wlServerPort);
+		return new DkUpnpService();
 	}
 	qDebug() << "DkUpnpDeviceModelCreator: unable to create Service. serviceType not supported";
 	return 0;
@@ -107,29 +101,17 @@ DkUpnpService* DkUpnpDeviceModelCreator::createService(const Herqq::Upnp::HServi
 
 // DkUpnpService --------------------------------------------------------------------
 qint32 DkUpnpService::getTCPServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs) {
-	qDebug() << "im getTCPServerURL: sending " << tcpServerPort;
 	int port = stateVariables().value("tcpServerPort")->value().toInt();
-	qDebug() << "port: " << port;
+	qDebug() << "DkUpnpService::getTCPServerURL sending port:" << port;
 	outArgs->setValue("tcpServerPort", port);
 	return Herqq::Upnp::UpnpSuccess;
 }
 
 qint32 DkUpnpService::getWhitelistServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs) {
-	qDebug() << "im getWhitelistServerURL: sending" << wlServerPort;
-	outArgs->setValue("whiteListServerPort", wlServerPort);
+	int port = stateVariables().value("whiteListServerPort")->value().toInt();
+	qDebug() << "DkUpnpService::getWhitelistServerURL sending port:" << port;
+	outArgs->setValue("whiteListServerPort", port);
 	return Herqq::Upnp::UpnpSuccess;
-}
-
-void DkUpnpService::setTcpServerPort(quint16 port) {
-	qDebug() << "tcp server port set";
-	tcpServerPort = port;
-	stateVariables().value("tcpServerPort")->setValue(port);
-}
-
-void DkUpnpService::setWlServerPort(quint16 port) {
-	qDebug() << "wl server port set";
-	wlServerPort = port;
-	stateVariables().value("whiteListServerPort")->setValue(port);
 }
 
 // DkUpnpControlPoint --------------------------------------------------------------------

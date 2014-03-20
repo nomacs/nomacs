@@ -855,7 +855,7 @@ void DkLANTcpServer::startServer(bool flag) {
 	if (flag) {
 		listen(QHostAddress::Any);
 		qDebug() << "DkLANTcpServer listening on:" << this->serverPort();
-		//udpSocket->startBroadcast(this->serverPort());
+		udpSocket->startBroadcast(this->serverPort());
 	} else {
 		emit(sendStopSynchronizationToAll());
 		this->close();
@@ -925,7 +925,7 @@ void DkLANUdpSocket::sendBroadcast() {
 			for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
 				if (itr->broadcast().isNull())
 					continue;
-				writeDatagram(datagram.data(), datagram.size(), itr->broadcast(), port);
+				//writeDatagram(datagram.data(), datagram.size(), itr->broadcast(), port);
 			}
 		}
 	}
