@@ -925,7 +925,7 @@ void DkLANUdpSocket::sendBroadcast() {
 			for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
 				if (itr->broadcast().isNull())
 					continue;
-				//writeDatagram(datagram.data(), datagram.size(), itr->broadcast(), port);
+				writeDatagram(datagram.data(), datagram.size(), itr->broadcast(), port);
 			}
 		}
 	}

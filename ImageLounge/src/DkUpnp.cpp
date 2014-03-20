@@ -63,6 +63,7 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	if (!retVal) {
 		qDebug() << "error while initializing device host:\n" << errorDescription();
 	}
+	
 	return retVal;
 }
 
@@ -115,6 +116,13 @@ qint32 DkUpnpService::getWhitelistServerURL(const Herqq::Upnp::HActionArguments&
 }
 
 // DkUpnpControlPoint --------------------------------------------------------------------
+DkUpnpControlPoint::~DkUpnpControlPoint() {
+	if(controlPoint) {
+		delete controlPoint;
+		controlPoint = 0;
+	}
+}
+
 bool DkUpnpControlPoint::init() {
 	controlPoint = new Herqq::Upnp::HControlPoint(this);
 	connect(controlPoint, SIGNAL(rootDeviceOnline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOnline(Herqq::Upnp::HClientDevice*)));
@@ -156,30 +164,32 @@ void DkUpnpControlPoint::rootDeviceOnline(Herqq::Upnp::HClientDevice* clientDevi
 			return;
 		}
 		QHostAddress host = QHostAddress(url.host());
-		if(isLocalHostAddress(host)) {
-			//qDebug() << "is local address ... aborting";
+		//if(isLocalHostAddress(host)) {
+		//	qDebug() << "is local address ... aborting";
+		//	return;
+		//}
+
+		Herqq::Upnp::HClientService* service = clientDevice->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
+		if (!clientDevice) {
+			qDebug() << "nomacs service is empty ... aborting";
 			return;
 		}
 
+		Herqq::Upnp::HClientActions actions = service->actions();
+		Herqq::Upnp::HActionArguments aas;
+		Herqq::Upnp::HClientActionOp cao;
 
-		Herqq::Upnp::HClientServices services = clientDevice->services();
-		for(int i = 0; i < (int) services.size(); i++) {
-			Herqq::Upnp::HClientService* service = services.at(i); 
-			qDebug() << "service " << i << ":" << service->description() ;
-			Herqq::Upnp::HClientActions actions = service->actions();
-			Herqq::Upnp::HActionArguments aas;
-			Herqq::Upnp::HClientActionOp cao;
+		// ask for LAN server
+		//connect(actions.value("getTCPServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
+		//cao = actions.value("getTCPServerURL")->beginInvoke(aas);
 
-			// ask for LAN server
-			connect(actions.value("getTCPServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
-			cao = actions.value("getTCPServerURL")->beginInvoke(aas);
+		// ask for RC server
+		//connect(actions.value("getWhitelistServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
+		//cao = actions.value("getWhitelistServerURL")->beginInvoke(aas);
 
-			// ask for RC server
-			connect(actions.value("getWhitelistServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
-			cao = actions.value("getWhitelistServerURL")->beginInvoke(aas);
-		}
 
-		//emit newNomacsFound(url.host(), )
+		connect(service->stateVariables().value("tcpServerPort"), SIGNAL(valueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)), this, SLOT(tcpValueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)));
+		connect(service->stateVariables().value("whiteListServerPort"), SIGNAL(valueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)), this, SLOT(wlValueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)));
 
 		//Herqq::Upnp::HClientServices services = clientDevice->services();
 		//for(int i = 0; i < (int) services.size(); i++) {
@@ -213,7 +223,7 @@ void DkUpnpControlPoint::invokeComplete(Herqq::Upnp::HClientAction* clientAction
 	}
 	QHostAddress address = QHostAddress(url.host());
 	if(isLocalHostAddress(address)) {
-		//qDebug() << "is local address ... aborting";
+		qDebug() << "is local address ... aborting";
 		return;
 	}
 
@@ -247,6 +257,55 @@ void DkUpnpControlPoint::rootDeviceOffline(Herqq::Upnp::HClientDevice* clientDev
 	qDebug() << "rootDeviceOffline:" << clientDevice->info().deviceType().toString();
 
 	controlPoint->removeRootDevice(clientDevice);
+}
+
+void DkUpnpControlPoint::tcpValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent &event) {
+	qDebug() << "im tcp value changed";
+	QList<QUrl> locations = source->parentService()->parentDevice()->locations();
+	QUrl url;
+	for (auto itr = locations.begin(); itr != locations.end(); itr++) {
+		url = *itr;
+	}
+	if(url.isEmpty()) {
+		qDebug() << "url is empty, aborting";
+		return;
+	}
+	QHostAddress address = QHostAddress(url.host());
+	if(isLocalHostAddress(address)) {
+		qDebug() << "is local address ... aborting";
+		return;
+	}
+
+	quint16 port = source->value().toInt();
+	if (port == 0)
+		return;
+	qDebug() << "emitting newLANNomacsFound:" << address << " port:" << port;
+	emit newLANNomacsFound(address, port, "");
+}
+
+void DkUpnpControlPoint::wlValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent &event) {
+	qDebug() << "im wl value changed";
+	QList<QUrl> locations = source->parentService()->parentDevice()->locations();
+	QUrl url;
+	for (auto itr = locations.begin(); itr != locations.end(); itr++) {
+		url = *itr;
+	}
+	if(url.isEmpty()) {
+		qDebug() << "url is empty, aborting";
+		return;
+	}
+	QHostAddress address = QHostAddress(url.host());
+	if(isLocalHostAddress(address)) {
+		qDebug() << "is local address ... aborting";
+		return;
+	}
+
+	quint16 port = source->value().toInt();
+	if (port == 0)
+		return;
+	qDebug() << "emitting newLANNomacsFound:" << address << " port:" << port;
+	emit newRCNomacsFound(address, port, "");
+
 }
 
 bool DkUpnpControlPoint::isLocalHostAddress(const QHostAddress address) {

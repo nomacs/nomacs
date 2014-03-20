@@ -33,6 +33,7 @@
 
 #include <HUpnpCore/HActionInvoke>
 #include <HUpnpCore/HClientService>
+#include <HUpnpCore/HClientStateVariable>
 #include <HUpnpCore/HClientAction>
 #include <HUpnpCore/HClientActionOp>
 #include <HUpnpCore/HAsyncOp>
@@ -83,9 +84,7 @@ namespace nmc {
 		Q_OBJECT
 		public:
 			DkUpnpControlPoint() { };
-			virtual ~DkUpnpControlPoint() {
-
-			}; // TODO deleting !!
+			virtual ~DkUpnpControlPoint();
 			bool init();
 
 		signals:
@@ -96,7 +95,8 @@ namespace nmc {
 			void rootDeviceOnline(Herqq::Upnp::HClientDevice*);
 			void rootDeviceOffline(Herqq::Upnp::HClientDevice*);
 			void invokeComplete(Herqq::Upnp::HClientAction* clientAction, const Herqq::Upnp::HClientActionOp& clientActionOp);
-
+			void tcpValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent &event);
+			void wlValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent &event);
 		private:
 			bool isLocalHostAddress(const QHostAddress address);
 			Herqq::Upnp::HControlPoint* controlPoint;
