@@ -37,6 +37,7 @@
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
 #include <QSharedPointer>
+#include <QTimer>
 
 #ifdef WIN32
 	#include <winsock2.h>	// needed since libraw 0.16
@@ -181,7 +182,6 @@ protected:
 	bool rescale;
 	QColor meanColor;
 	bool colorExists;
-
 };
 
 class DkThumbNailT : public QObject, public DkThumbNail {
@@ -210,6 +210,9 @@ signals:
 	void thumbUpdated();
 	void colorUpdated();
 
+public slots:
+	void fetchThumbSoft();
+
 protected slots:
 	void thumbLoaded();
 	void colorLoaded();
@@ -223,6 +226,7 @@ protected:
 	bool fetching;
 	bool fetchingColor;
 	int forceLoad;
+	QTimer waitForLoadingTimer;
 };
 
 //class DkThumbPool : public QObject {

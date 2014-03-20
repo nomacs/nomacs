@@ -273,11 +273,19 @@ DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) 
 	fetching = false;
 	fetchingColor = false;
 	forceLoad = do_not_force;
+
+	waitForLoadingTimer.setSingleShot(false);
+	waitForLoadingTimer.setInterval(100);
+
 	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
 	connect(&colorWatcher, SIGNAL(finished()), this, SLOT(colorLoaded()));
+	connect(&waitForLoadingTimer, SIGNAL(timeout()), this, SLOT(fetchThumbSoft()));
 }
 
 DkThumbNailT::~DkThumbNailT() {
+
+	if (fetching && DkSettings::resources.numThumbsLoading > 0)
+		DkSettings::resources.numThumbsLoading--;
 	thumbWatcher.blockSignals(true);
 	thumbWatcher.cancel();
 }
@@ -317,7 +325,17 @@ void DkThumbNailT::colorLoaded() {
 	qDebug() << "mean color: " << meanColor;
 }
 
+void DkThumbNailT::fetchThumbSoft() {
+
+	if (DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading)
+		fetchThumb();
+	else
+		waitForLoadingTimer.start();
+}
+
 void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteArray> ba) {
+
+	waitForLoadingTimer.stop();
 
 	if (!img.isNull() || !imgExists || fetching)
 		return;
@@ -331,6 +349,7 @@ void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
 		&nmc::DkThumbNailT::computeCall, forceLoad, ba);
 
 	thumbWatcher.setFuture(future);
+	DkSettings::resources.numThumbsLoading++;
 }
 
 
@@ -352,6 +371,7 @@ void DkThumbNailT::thumbLoaded() {
 		imgExists = false;
 
 	fetching = false;
+	DkSettings::resources.numThumbsLoading--;
 }
 
 //// DkThumbPool --------------------------------------------------------------------

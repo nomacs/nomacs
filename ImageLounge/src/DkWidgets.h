@@ -651,6 +651,7 @@ public:
 	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
 	QRectF boundingRect() const;
 	void updateSize();
+	void setVisible(bool visible);
 
 public slots:
 	void updateLabel();

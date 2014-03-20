@@ -201,6 +201,8 @@ public:
 		bool filterDuplicats;
 		int loadRawThumb;
 		QString preferredExtension;
+		int numThumbsLoading;
+		int maxThumbsLoading;
 	};
 
 	//enums for checkboxes - divide in camera data and description

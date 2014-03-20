@@ -692,6 +692,8 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.loadRawThumb = raw_thumb_always;
 	resources_p.filterDuplicats = false;
 	resources_p.preferredExtension = "*.jpg";
+	resources_p.numThumbsLoading = 0;
+	resources_p.maxThumbsLoading = 5;
 
 	qDebug() << "ok... default settings are set";
 }
