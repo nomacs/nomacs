@@ -83,15 +83,13 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	translationUpdater = 0;
 	imgManipulationDialog = 0;
 	exportTiffDialog = 0;
-#ifdef WITH_OPENCV
-	mosaicDialog = 0;
-#endif
 	updateDialog = 0;
 	progressDialog = 0;
 	forceDialog = 0;
 	trainDialog = 0;
 	explorer = 0;
 	appManager = 0;
+	settingsDialog = 0;
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -2754,7 +2752,7 @@ void DkNoMacs::exportTiff() {
 void DkNoMacs::computeMosaic() {
 #ifdef WITH_OPENCV
 	//if (!mosaicDialog)
-	mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+	DkMosaicDialog* mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 
 	mosaicDialog->setFile(viewport()->getImageLoader()->file());
 
@@ -3327,12 +3325,14 @@ void DkNoMacs::openKeyboardShortcuts() {
 
 void DkNoMacs::openSettings() {
 
-	DkSettingsDialog dsd = DkSettingsDialog(this);
-	connect(&dsd, SIGNAL(setToDefaultSignal()), this, SLOT(cleanSettings()));
-	connect(&dsd, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
-	connect(&dsd, SIGNAL(languageChanged()), this, SLOT(restart()));
-	connect(&dsd, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
-	dsd.exec();
+	if (!settingsDialog) {
+		settingsDialog = new DkSettingsDialog(this);
+		connect(settingsDialog, SIGNAL(setToDefaultSignal()), this, SLOT(cleanSettings()));
+		connect(settingsDialog, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
+		connect(settingsDialog, SIGNAL(languageChanged()), this, SLOT(restart()));
+		connect(settingsDialog, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
+		settingsDialog->exec();
+	}
 
 	qDebug() << "hier könnte ihre werbung stehen...";
 }

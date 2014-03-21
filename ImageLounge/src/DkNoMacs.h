@@ -92,6 +92,7 @@ namespace nmc {
 
 class DkTcpMenu;
 class DkCompressDialog;
+class DkSettingsDialog;
 class DkTifDialog;
 class DkOpacityDialog;
 class DkResizeDialog;
@@ -100,7 +101,6 @@ class DkForceThumbDialog;
 class DkTrainDialog;
 class DkExplorer;
 class DkExportTiffDialog;
-class DkMosaicDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
 class DkTranslationUpdater;
@@ -652,7 +652,7 @@ protected:
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
 	DkExportTiffDialog* exportTiffDialog;
-	DkMosaicDialog* mosaicDialog;
+	DkSettingsDialog* settingsDialog;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 
