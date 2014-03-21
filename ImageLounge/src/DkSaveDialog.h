@@ -99,7 +99,7 @@ public:
 
 		float factor = -1;
 		float finalEdge = sizeCombo->itemData(sizeCombo->currentIndex()).toInt();
-		float minEdge = min(img->width(), img->height());
+		float minEdge = std::min(img->width(), img->height());
 
 		if (finalEdge != -1 && minEdge > finalEdge)
 			factor = finalEdge/minEdge;

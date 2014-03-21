@@ -1,0 +1,6 @@
+#ifndef H_SORTMODIFIER_
+#define H_SORTMODIFIER_
+
+#include "public/hsortinfo.h"
+
+#endif // H_SORTMODIFIER_

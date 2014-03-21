@@ -40,6 +40,11 @@
 #include "DkManipulationWidgets.h"
 #include "DkSettingsWidgets.h"
 
+#ifdef WITH_UPNP
+#include "DkUpnp.h"
+#endif // WITH_UPNP
+
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {
@@ -3488,6 +3493,21 @@ DkNoMacsSync::~DkNoMacsSync() {
 		localClient = 0;
 	}
 
+	if (rcClient) {
+
+		if (DkSettings::sync.syncMode == DkSettings::sync_mode_remote)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
+
+		emit stopSynchronizeWithSignal();
+
+		rcClient->quit();
+		rcClient->wait();
+
+		delete rcClient;
+		rcClient = 0;
+
+	}
+
 }
 
 void DkNoMacsSync::initLanClient() {
@@ -3500,11 +3520,23 @@ void DkNoMacsSync::initLanClient() {
 		delete lanClient;
 	}
 
+
+	// remote control server
+	if (rcClient) {
+		rcClient->quit();
+		rcClient->wait();
+
+		delete rcClient;
+	}
+
 	if (!DkSettings::sync.enableNetworkSync) {
 
 		lanClient = 0;
+		rcClient = 0;
 
 		tcpLanMenu->setEnabled(false);
+		syncActions[menu_sync_remote_control]->setEnabled(false);
+		syncActions[menu_sync_remote_display]->setEnabled(false);
 		return;
 	}
 
@@ -3512,6 +3544,17 @@ void DkNoMacsSync::initLanClient() {
 
 	// start lan client/server
 	lanClient = new DkLanManagerThread(this);
+	lanClient->setObjectName("lanClient");
+#ifdef WITH_UPNP
+	if (!upnpControlPoint) {
+		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
+	}
+	lanClient->upnpControlPoint = upnpControlPoint;
+	if (!upnpDeviceHost) {
+		upnpDeviceHost = QSharedPointer<DkUpnpDeviceHost>(new DkUpnpDeviceHost());
+	}
+	lanClient->upnpDeviceHost = upnpDeviceHost;
+#endif // WITH_UPNP
 	lanClient->start();
 
 	lanActions.resize(menu_lan_end);
@@ -3521,7 +3564,8 @@ void DkNoMacsSync::initLanClient() {
 	lanActions[menu_lan_server]->setObjectName("serverAction");
 	lanActions[menu_lan_server]->setCheckable(true);
 	lanActions[menu_lan_server]->setChecked(false);
-	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), lanClient, SLOT(startServer(bool)));	// TODO: something that makes sense...
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
+	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
 
 	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
 	lanActions[menu_lan_image]->setObjectName("sendImageAction");
@@ -3535,6 +3579,40 @@ void DkNoMacsSync::initLanClient() {
 	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);
 	tcpLanMenu->setEnabled(true);
 	tcpLanMenu->enableActions(false, false);
+
+	rcClient = new DkRCManagerThread(this);
+	rcClient->setObjectName("rcClient");
+#ifdef WITH_UPNP
+	if (!upnpControlPoint) {
+		upnpControlPoint = QSharedPointer<DkUpnpControlPoint>(new DkUpnpControlPoint());
+	}
+	rcClient->upnpControlPoint = upnpControlPoint;
+	if (!upnpDeviceHost) {
+		upnpDeviceHost = QSharedPointer<DkUpnpDeviceHost>(new DkUpnpDeviceHost());
+	}
+	rcClient->upnpDeviceHost = upnpDeviceHost;
+#endif // WITH_UPNP
+	
+	rcClient->start();
+	
+
+	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
+
+	DkTimer dt;
+	if (!DkSettings::sync.syncWhiteList.empty()) {
+		qDebug() << "whitelist not empty .... starting server";
+#ifdef WITH_UPNP
+		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml");
+#endif // WITH_UPNP
+
+		// TODO: currently blocking : )
+		emit startRCServerSignal(true);
+		//rcClient->startServer(true);
+	}
+	else 
+		qDebug() << "whitelist empty!!";
+
+	qDebug() << "start server takes: " << QString::fromStdString(dt.getTotal());
 }
 
 void DkNoMacsSync::createActions() {
@@ -3563,10 +3641,26 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_arrange]->setEnabled(false);
 	connect(syncActions[menu_sync_arrange], SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
 
-	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &all"), this);
+	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &All"), this);
 	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
+
+	syncActions[menu_sync_auto_connect] = new QAction(tr("&Auto Connect"), this);
+	syncActions[menu_sync_auto_connect]->setStatusTip(tr("Transmit All Signals Automatically."));
+	syncActions[menu_sync_auto_connect]->setCheckable(true);
+	connect(syncActions[menu_sync_auto_connect], SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
+
+	syncActions[menu_sync_remote_control] = new QAction(tr("&Remote Control"), this);
+	//syncActions[menu_sync_remote_control]->setShortcut(QKeySequence(shortcut_connect_all));
+	syncActions[menu_sync_remote_control]->setStatusTip(tr("Automatically Receive Images From Your Remote Connection."));
+	syncActions[menu_sync_remote_control]->setCheckable(true);
+	connect(syncActions[menu_sync_remote_control], SIGNAL(triggered(bool)), this, SLOT(tcpRemoteControl(bool)));
+
+	syncActions[menu_sync_remote_display] = new QAction(tr("Remote &Display"), this);
+	syncActions[menu_sync_remote_display]->setStatusTip(tr("Automatically Send Images to a Remote Instance."));
+	syncActions[menu_sync_remote_display]->setCheckable(true);
+	connect(syncActions[menu_sync_remote_display], SIGNAL(triggered(bool)), this, SLOT(tcpRemoteDisplay(bool)));
 
 	assignCustomShortcuts(syncActions);
 }
@@ -3587,10 +3681,14 @@ void DkNoMacsSync::createMenu() {
 	tcpLanMenu = new DkTcpMenu(tr("&LAN Synchronize"), syncMenu, lanClient);	// TODO: replace
 	syncMenu->addMenu(tcpLanMenu);
 
+	syncMenu->addAction(syncActions[menu_sync_remote_control]);
+	syncMenu->addAction(syncActions[menu_sync_remote_display]);
+	syncMenu->addSeparator();
+
 	syncMenu->addAction(syncActions[menu_sync]);
 	syncMenu->addAction(syncActions[menu_sync_pos]);
 	syncMenu->addAction(syncActions[menu_sync_arrange]);
-
+	syncMenu->addAction(syncActions[menu_sync_auto_connect]);
 }
 
 // mouse events
@@ -3662,11 +3760,83 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
+
+void DkNoMacsSync::tcpRemoteControl(bool start) {
+
+	if (!rcClient)
+		return;
+
+	bool couldConnect = connectWhiteList(DkSettings::sync_mode_remote, start);
+
+	syncActions[menu_sync_remote_control]->setChecked(couldConnect);
+
+}
+
+void DkNoMacsSync::tcpRemoteDisplay(bool start) {
+
+	if (!rcClient)
+		return;
+
+	bool couldConnect = connectWhiteList(DkSettings::sync_mode_auto, start);
+
+	syncActions[menu_sync_remote_display]->setChecked(couldConnect);
+}
+
+void DkNoMacsSync::tcpAutoConnect(bool connect) {
+
+	DkSettings::sync.syncMode = (connect) ? DkSettings::sync_mode_auto : DkSettings::sync_mode_default;
+}
+
+
+bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
+
+	if (!rcClient)
+		return false;
+
+	bool couldConnect = false;
+
+	QList<DkPeer> peers = rcClient->getPeerList();
+	qDebug() << "number of peers in list:" << peers.size();
+
+	// TODO: add gui if idx != 1
+	if (connect && !peers.isEmpty()) {
+		DkPeer peer = peers[0];
+
+		emit synchronizeRemoteControl(peer.peerId);
+		DkSettings::sync.syncMode = mode;
+		
+		if (mode == DkSettings::sync_mode_remote)
+			rcClient->sendNewMode(DkSettings::sync_mode_auto);	// TODO: if we need this threaded emit a signal here
+
+		couldConnect = true;
+	}
+	else if (!connect) {
+
+		DkSettings::sync.syncMode = DkSettings::sync_mode_default;
+
+		if (mode == DkSettings::sync_mode_remote)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
+
+		emit stopSynchronizeWithSignal();
+	}
+
+	return couldConnect;
+}
+
 void DkNoMacsSync::newClientConnected(bool connected, bool local) {
 
 	tcpLanMenu->enableActions(connected, local);
 	
 	DkNoMacs::newClientConnected(connected, local);
+}
+
+void DkNoMacsSync::startTCPServer(bool start) {
+	
+#ifdef WITH_UPNP
+	if (!upnpDeviceHost->isStarted())
+		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml");
+#endif // WITH_UPNP
+	emit startTCPServerSignal(start);
 }
 
 void DkNoMacsSync::settingsChanged() {
@@ -3677,6 +3847,20 @@ void DkNoMacsSync::settingsChanged() {
 
 void DkNoMacsSync::clientInitialized() {
 	//TODO: things that need to be done after the clientManager has finished initialization
+#ifdef WITH_UPNP
+	QObject* obj = QObject::sender();
+	if (obj && obj->objectName() == "lanClient" || obj->objectName() == "rcClient") {
+		qDebug() << "sender:" << obj->objectName();
+		if (!upnpControlPoint->isStarted()) {
+			qDebug() << "initializing upnpControlPoint";
+			upnpControlPoint->init();
+		}
+	} else {
+		qDebug() << "obj null";
+	}
+	
+#endif // WITH_UPNP
+	
 	emit clientInitializedSignal();
 }
 
@@ -3688,9 +3872,12 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	setCentralWidget(vp);
 
 	localClient = new DkLocalManagerThread(this);
+	localClient->setObjectName("localClient");
 	localClient->start();
 
 	lanClient = 0;
+	rcClient = 0;
+
 
 	init();
 	setAcceptDrops(true);
@@ -3902,9 +4089,11 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		setCentralWidget(vp);
 
 		localClient = new DkLocalManagerThread(this);
+		localClient->setObjectName("localClient");
 		localClient->start();
 
 		lanClient = 0;
+		rcClient = 0;
 
 		init();
 

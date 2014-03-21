@@ -1,0 +1,6 @@
+#ifndef H_PROTOCOLINFORESULT_
+#define H_PROTOCOLINFORESULT_
+
+#include "public/hprotocolinforesult.h"
+
+#endif // H_PROTOCOLINFORESULT_

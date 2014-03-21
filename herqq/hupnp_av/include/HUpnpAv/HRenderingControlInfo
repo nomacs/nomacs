@@ -1,0 +1,6 @@
+#ifndef H_RENDERINGCONTROL_INFO_
+#define H_RENDERINGCONTROL_INFO_
+
+#include "public/hrenderingcontrol_info.h"
+
+#endif // H_RENDERINGCONTROL_INFO_

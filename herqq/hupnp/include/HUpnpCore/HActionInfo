@@ -1,0 +1,6 @@
+#ifndef H_ACTIONINFO_
+#define H_ACTIONINFO_
+
+#include "public/hactioninfo.h"
+
+#endif // H_ACTIONINFO_

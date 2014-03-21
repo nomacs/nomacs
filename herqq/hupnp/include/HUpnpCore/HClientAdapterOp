@@ -1,0 +1,6 @@
+#ifndef H_CLIENTADAPTER_OP_
+#define H_CLIENTADAPTER_OP_
+
+#include "public/hclientadapterop.h"
+
+#endif // H_CLIENTADAPTER_OP_

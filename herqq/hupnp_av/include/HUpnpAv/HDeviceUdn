@@ -1,0 +1,6 @@
+#ifndef H_DEVICEUDN_
+#define H_DEVICEUDN_
+
+#include "public/hdeviceudn.h"
+
+#endif // H_DEVICEUDN_

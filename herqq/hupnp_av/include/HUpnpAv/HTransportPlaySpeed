@@ -1,0 +1,6 @@
+#ifndef H_TRANSPORTPLAYSPEED_
+#define H_TRANSPORTPLAYSPEED_
+
+#include "public/htransportinfo.h"
+
+#endif // H_TRANSPORTPLAYSPEED_

@@ -1,0 +1,6 @@
+#ifndef H_UPNPAV_INFO_
+#define H_UPNPAV_INFO_
+
+#include "public/hupnpavinfo.h"
+
+#endif // H_UPNPAV_INFO_

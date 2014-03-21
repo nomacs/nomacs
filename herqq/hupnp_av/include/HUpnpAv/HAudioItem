@@ -1,0 +1,6 @@
+#ifndef H_AUDIOITEM_
+#define H_AUDIOITEM_
+
+#include "public/haudioitem.h"
+
+#endif // H_AUDIOITEM_

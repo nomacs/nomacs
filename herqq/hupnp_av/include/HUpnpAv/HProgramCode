@@ -1,0 +1,6 @@
+#ifndef H_PROGRAMCODE_
+#define H_PROGRAMCODE_
+
+#include "public/hprogramcode.h"
+
+#endif // H_PROGRAMCODE_

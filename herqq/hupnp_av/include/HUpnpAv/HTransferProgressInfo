@@ -1,0 +1,6 @@
+#ifndef H_TRANSFERPROGRESSINFO_
+#define H_TRANSFERPROGRESSINFO_
+
+#include "public/htransferprogressinfo.h"
+
+#endif // H_TRANSFERPROGRESSINFO_

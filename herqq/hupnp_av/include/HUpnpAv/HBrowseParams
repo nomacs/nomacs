@@ -1,0 +1,6 @@
+#ifndef H_BROWSEPARAMS_
+#define H_BROWSEPARAMS_
+
+#include "public/hmediabrowser.h"
+
+#endif // H_BROWSEPARAMS_

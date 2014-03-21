@@ -1,0 +1,6 @@
+#ifndef H_SERVICEINFO_
+#define H_SERVICEINFO_
+
+#include "public/hserviceinfo.h"
+
+#endif // H_SERVICEINFO_

@@ -1,0 +1,6 @@
+#ifndef H_ACTIONINVOKE_
+#define H_ACTIONINVOKE_
+
+#include "public/hactioninvoke.h"
+
+#endif // H_ACTIONINVOKE_

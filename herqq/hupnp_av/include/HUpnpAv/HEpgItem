@@ -1,0 +1,6 @@
+#ifndef H_EPGITEM_
+#define H_EPGITEM_
+
+#include "public/hepgitem.h"
+
+#endif // H_EPGITEM_

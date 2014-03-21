@@ -1,0 +1,6 @@
+#ifndef H_PLAYMODE_
+#define H_PLAYMODE_
+
+#include "public/hplaymode.h"
+
+#endif // H_PLAYMODE_

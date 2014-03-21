@@ -1,0 +1,6 @@
+#ifndef H_DEVICECAPABILITIES_
+#define H_DEVICECAPABILITIES_
+
+#include "public/hdevicecapabilities.h"
+
+#endif // H_DEVICECAPABILITIES_

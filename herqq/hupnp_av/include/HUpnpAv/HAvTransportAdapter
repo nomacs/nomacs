@@ -1,0 +1,6 @@
+#ifndef H_AVTRANSPORT_ADAPTER_
+#define H_AVTRANSPORT_ADAPTER_
+
+#include "public/havtransport_adapter.h"
+
+#endif // H_AVTRANSPORT_ADAPTER_

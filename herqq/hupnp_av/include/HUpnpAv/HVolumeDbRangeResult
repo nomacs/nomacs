@@ -1,0 +1,6 @@
+#ifndef H_VOLUMEDBRANGE_RESULT_
+#define H_VOLUMEDBRANGE_RESULT_
+
+#include "public/hvolumedbrange_result.h"
+
+#endif // H_VOLUMEDBRANGE_RESULT_

@@ -1,0 +1,6 @@
+#ifndef H_DEVICEMODEL_INFOPROVIDER_
+#define H_DEVICEMODEL_INFOPROVIDER_
+
+#include "public/hdevicemodel_infoprovider.h"
+
+#endif // H_DEVICEMODEL_INFOPROVIDER_

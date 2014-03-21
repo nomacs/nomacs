@@ -1,0 +1,6 @@
+#ifndef H_AUDIOBOOK_
+#define H_AUDIOBOOK_
+
+#include "public/haudiobook.h"
+
+#endif // H_AUDIOBOOK_

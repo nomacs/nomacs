@@ -1,0 +1,6 @@
+#ifndef H_ACTIONARGUMENTS_
+#define H_ACTIONARGUMENTS_
+
+#include "public/hactionarguments.h"
+
+#endif // H_ACTIONARGUMENTS_

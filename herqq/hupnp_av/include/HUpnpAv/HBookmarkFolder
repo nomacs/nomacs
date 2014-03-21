@@ -1,0 +1,6 @@
+#ifndef H_BOOKMARKFOLDER_
+#define H_BOOKMARKFOLDER_
+
+#include "public/hbookmarkfolder.h"
+
+#endif // H_BOOKMARKFOLDER_

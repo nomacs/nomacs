@@ -1,0 +1,6 @@
+#ifndef H_CONTENTDURATION_
+#define H_CONTENTDURATION_
+
+#include "public/hcontentduration.h"
+
+#endif // H_CONTENTDURATION_

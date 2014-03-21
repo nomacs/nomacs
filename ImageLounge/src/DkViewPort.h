@@ -393,7 +393,7 @@ public slots:
 	void tcpSynchronize(QTransform relativeMatrix = QTransform());
 	void tcpLoadFile(qint16 idx, QString filename);
 	void tcpShowConnections(QList<DkPeer> peers);
-	void tcpSendImage();
+	void tcpSendImage(bool silent = false);
 	
 	// file actions
 	void loadFile(QFileInfo file);

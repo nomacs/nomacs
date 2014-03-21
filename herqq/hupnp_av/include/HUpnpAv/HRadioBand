@@ -1,0 +1,6 @@
+#ifndef H_RADIOBAND_
+#define H_RADIOBAND_
+
+#include "public/hradioband.h"
+
+#endif // H_RADIOBAND_

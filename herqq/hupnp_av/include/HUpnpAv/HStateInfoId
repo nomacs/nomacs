@@ -1,0 +1,6 @@
+#ifndef H_STATEINFOID_
+#define H_STATEINFOID_
+
+#include "public/hstateinfoid.h"
+
+#endif // H_STATEINFOID_

@@ -1,0 +1,6 @@
+#ifndef H_AVTRANSPORTINFO_
+#define H_AVTRANSPORTINFO_
+
+#include "public/havtransport_info.h"
+
+#endif // H_AVTRANSPORTINFO_

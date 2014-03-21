@@ -1,0 +1,6 @@
+#ifndef H_STATEVARIABLES_SETUPDATA_
+#define H_STATEVARIABLES_SETUPDATA_
+
+#include "public/hstatevariables_setupdata.h"
+
+#endif // H_STATEVARIABLES_SETUPDATA_

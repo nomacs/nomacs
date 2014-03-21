@@ -1,0 +1,6 @@
+#ifndef H_RENDERER_CONNECTIONMANAGER_
+#define H_RENDERER_CONNECTIONMANAGER_
+
+#include "public/hrendererconnection_manager.h"
+
+#endif // H_RENDERER_CONNECTIONMANAGER_

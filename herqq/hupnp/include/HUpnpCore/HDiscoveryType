@@ -1,0 +1,6 @@
+#ifndef H_DISCOVERYTYPE_
+#define H_DISCOVERYTYPE_
+
+#include "public/hdiscoverytype.h"
+
+#endif // H_DISCOVERYTYPE_

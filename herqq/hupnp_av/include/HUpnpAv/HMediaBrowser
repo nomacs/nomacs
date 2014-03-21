@@ -1,0 +1,6 @@
+#ifndef H_MEDIABROWSER_
+#define H_MEDIABROWSER_
+
+#include "public/hmediabrowser.h"
+
+#endif // H_MEDIABROWSER_

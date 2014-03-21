@@ -1,0 +1,6 @@
+#ifndef H_RCS_LASTCHANGE_INFO_
+#define H_RCS_LASTCHANGE_INFO_
+
+#include "public/hrcs_lastchange_info.h"
+
+#endif // H_RCS_LASTCHANGE_INFO_

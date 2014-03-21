@@ -1,0 +1,6 @@
+#ifndef H_OBJECTEVENTINFO_
+#define H_OBJECTEVENTINFO_
+
+#include "public/hobject.h"
+
+#endif // H_OBJECTEVENTINFO_

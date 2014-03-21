@@ -1,0 +1,6 @@
+#ifndef H_CLONABLE_
+#define H_CLONABLE_
+
+#include "public/hclonable.h"
+
+#endif // H_CLONABLE_

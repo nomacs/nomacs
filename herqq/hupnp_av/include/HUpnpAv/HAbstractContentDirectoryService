@@ -1,0 +1,6 @@
+#ifndef H_ABSTRACTCONTENTDIRECTORYSERVICE_
+#define H_ABSTRACTCONTENTDIRECTORYSERVICE_
+
+#include "public/habstractcontentdirectory_service.h"
+
+#endif // H_ABSTRACTCONTENTDIRECTORYSERVICE_

@@ -1,0 +1,6 @@
+#ifndef H_CDSCLASSINFO_
+#define H_CDSCLASSINFO_
+
+#include "public/hcdsclassinfo.h"
+
+#endif // H_CDSCLASSINFO_

@@ -1,0 +1,6 @@
+#ifndef H_ACTIONINVOKE_CALLBACK_
+#define H_ACTIONINVOKE_CALLBACK_
+
+#include "public/hactioninvoke_callback.h"
+
+#endif // H_ACTIONINVOKE_CALLBACK_

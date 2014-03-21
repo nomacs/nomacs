@@ -1,0 +1,6 @@
+#ifndef H_RESOURCE_TYPE_
+#define H_RESOURCE_TYPE_
+
+#include "public/hresourcetype.h"
+
+#endif // H_RESOURCE_TYPE_

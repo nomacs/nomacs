@@ -61,6 +61,7 @@
 	#pragma warning(disable: 4996)
 #endif
 
+
 #ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
 #include "opencv/cv.h"
 #else
@@ -105,9 +106,15 @@ class DkUpdater;
 class DkTranslationUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
+class DkRCManagerThread;
 class DkTransferToolBar;
 class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
+#ifdef WITH_UPNP
+class DkUpnpControlPoint;
+class DkUpnpDeviceHost;
+#endif // WITH_UPNP
+
 
 
 // keyboard shortcuts
@@ -316,6 +323,10 @@ enum syncActions {
 	menu_sync_pos,
 	menu_sync_arrange,
 	menu_sync_connect_all,
+	menu_sync_auto_connect,
+
+	menu_sync_remote_control,
+	menu_sync_remote_display,
 
 	menu_sync_end,	// nothing beyond this point
 };
@@ -450,7 +461,9 @@ signals:
 	void sendPositionSignal(QRect newRect, bool overlaid);
 	void sendArrangeSignal(bool overlaid);
 	void synchronizeWithSignal(quint16);
+	void stopSynchronizeWithSignal();
 	void synchronizeWithServerPortSignal(quint16);
+	void synchronizeRemoteControl(quint16);
 	void closeSignal();
 	void saveTempFileSignal(QImage img);
 	void sendQuitLocalClientsSignal();
@@ -687,12 +700,18 @@ public:
 	
 signals:
 	void clientInitializedSignal();
+	void startRCServerSignal(bool start);
+	void startTCPServerSignal(bool start);
 
 public slots:
 	void tcpConnectAll();
+	void tcpRemoteControl(bool start);
+	void tcpRemoteDisplay(bool start);
+	void tcpAutoConnect(bool connect);
 	void settingsChanged();
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
+	void startTCPServer(bool start);
 
 protected:
 
@@ -702,6 +721,7 @@ protected:
 
 	// functions
 	void initLanClient();
+	bool connectWhiteList(int mode, bool connect = true);
 
 	// gui
 	virtual void createActions();
@@ -710,6 +730,11 @@ protected:
 	// network layer
 	DkLocalManagerThread* localClient;
 	DkLanManagerThread* lanClient;
+	DkRCManagerThread* rcClient;
+#ifdef WITH_UPNP
+	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
+	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
+#endif // WITH_UPNP
 
 };
 

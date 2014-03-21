@@ -1,0 +1,6 @@
+#ifndef H_DATETIMERANGE_
+#define H_DATETIMERANGE_
+
+#include "public/hdatetimerange.h"
+
+#endif // H_DATETIMERANGE_

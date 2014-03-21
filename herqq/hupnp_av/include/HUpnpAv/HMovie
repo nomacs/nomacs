@@ -1,0 +1,6 @@
+#ifndef H_MOVIE_
+#define H_MOVIE_
+
+#include "public/hmovie.h"
+
+#endif // H_MOVIE_

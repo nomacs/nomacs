@@ -1,0 +1,6 @@
+#ifndef H_CDS_DIDLLITE_SERIALIZER_
+#define H_CDS_DIDLLITE_SERIALIZER_
+
+#include "public/hcds_dlite_serializer.h"
+
+#endif // H_CDS_DIDLLITE_SERIALIZER_

@@ -1,0 +1,6 @@
+#ifndef H_STORAGEVOLUME_
+#define H_STORAGEVOLUME_
+
+#include "public/hstoragevolume.h"
+
+#endif // H_STORAGEVOLUME_

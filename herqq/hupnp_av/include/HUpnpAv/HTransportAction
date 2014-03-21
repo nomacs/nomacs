@@ -1,0 +1,6 @@
+#ifndef H_TRANSPORTACTION_
+#define H_TRANSPORTACTION_
+
+#include "public/htransportaction.h"
+
+#endif // H_TRANSPORTACTION_

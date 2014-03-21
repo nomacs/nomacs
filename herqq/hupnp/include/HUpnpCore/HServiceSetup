@@ -1,0 +1,6 @@
+#ifndef H_SERVICESETUP_
+#define H_SERVICESETUP_
+
+#include "public/hservices_setupdata.h"
+
+#endif // H_SERVICESETUP_

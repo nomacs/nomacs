@@ -1,0 +1,6 @@
+#ifndef H_MEDIASERVER_INFO_
+#define H_MEDIASERVER_INFO_
+
+#include "public/hmediaserver_info.h"
+
+#endif // H_MEDIASERVER_INFO_

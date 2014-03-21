@@ -1,0 +1,6 @@
+#ifndef H_UPNPINFO_
+#define H_UPNPINFO_
+
+#include "public/hupnpinfo.h"
+
+#endif // H_UPNPINFO_

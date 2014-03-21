@@ -1,0 +1,6 @@
+#ifndef H_CDS_LASTCHANGE_INFO_
+#define H_CDS_LASTCHANGE_INFO_
+
+#include "public/hcds_lastchange_info.h"
+
+#endif // H_CDS_LASTCHANGE_INFO_

@@ -303,7 +303,7 @@ void DkSettings::load(bool force) {
 	QBitArray tmpMetaData = settings.value("metaData", meta_p.metaDataBits).toBitArray();
 	if (tmpMetaData.size() == meta_p.metaDataBits.size())
 		meta_p.metaDataBits = tmpMetaData;
-
+	
 	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
 	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
 
@@ -333,6 +333,9 @@ void DkSettings::load(bool force) {
 	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
 	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
 	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
+	sync_p.recentSyncNames = settings.value("recentSyncNames", sync_p.recentSyncNames).toStringList();
+	sync_p.syncWhiteList = settings.value("syncWhiteList", sync_p.syncWhiteList).toStringList();
+	sync_p.recentLastSeen = settings.value("recentLastSeen", sync_p.recentLastSeen).toHash();
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------
@@ -536,6 +539,12 @@ void DkSettings::save(bool force) {
 		settings.setValue("syncAbsoluteTransform", sync_p.syncAbsoluteTransform);
 	if (!force && sync_p.switchModifier != sync_d.switchModifier)
 		settings.setValue("switchModifier", sync_p.switchModifier);
+	if (!force && sync_p.recentSyncNames != sync_d.recentSyncNames)
+		settings.setValue("recentSyncNames", sync_p.recentSyncNames);
+	if (!force && sync_p.syncWhiteList != sync_d.syncWhiteList)
+		settings.setValue("syncWhiteList", sync_p.syncWhiteList);
+	if (!force && sync_p.recentLastSeen != sync_d.recentLastSeen)
+		settings.setValue("recentLastSeen", sync_p.recentLastSeen);
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------

@@ -1,0 +1,6 @@
+#ifndef H_CONTROLPOINT_CONFIGURATION_
+#define H_CONTROLPOINT_CONFIGURATION_
+
+#include "public/hcontrolpoint_configuration.h"
+
+#endif // H_CONTROLPOINT_CONFIGURATION_

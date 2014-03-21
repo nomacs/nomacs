@@ -1,0 +1,6 @@
+#ifndef H_RENDERERCONNECTION_EVENTINFO_
+#define H_RENDERERCONNECTION_EVENTINFO_
+
+#include "public/hrendererconnection.h"
+
+#endif // H_RENDERERCONNECTION_EVENTINFO_

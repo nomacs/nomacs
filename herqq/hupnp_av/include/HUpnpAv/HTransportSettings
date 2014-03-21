@@ -1,0 +1,6 @@
+#ifndef H_TRANSPORTSETTINGS_
+#define H_TRANSPORTSETTINGS_
+
+#include "public/htransportsettings.h"
+
+#endif // H_TRANSPORTSETTINGS_

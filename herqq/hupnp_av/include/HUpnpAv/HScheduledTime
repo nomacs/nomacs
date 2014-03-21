@@ -1,0 +1,6 @@
+#ifndef H_SCHEDULEDTIME_
+#define H_SCHEDULEDTIME_
+
+#include "public/hscheduledtime.h"
+
+#endif // H_SCHEDULEDTIME_

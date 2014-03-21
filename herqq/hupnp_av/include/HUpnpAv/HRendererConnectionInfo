@@ -1,0 +1,6 @@
+#ifndef H_RENDERER_CONNECTIONINFO
+#define H_RENDERER_CONNECTIONINFO
+
+#include "public/hrendererconnection_info.h"
+
+#endif // H_RENDERER_CONNECTIONINFO

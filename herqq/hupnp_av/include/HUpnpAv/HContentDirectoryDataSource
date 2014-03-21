@@ -1,0 +1,6 @@
+#ifndef H_CONTENTDIRECTORY_DATASOURCE_
+#define H_CONTENTDIRECTORY_DATASOURCE_
+
+#include "public/hcontentdirectory_datasource.h"
+
+#endif // H_CONTENTDIRECTORY_DATASOURCE_

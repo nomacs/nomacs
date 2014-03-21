@@ -1,0 +1,6 @@
+#ifndef H_MUSICGENRE_
+#define H_MUSICGENRE_
+
+#include "public/hmusicgenre.h"
+
+#endif // H_MUSICGENRE_

@@ -1,0 +1,6 @@
+#ifndef H_CONTAINEREVENTINFO_
+#define H_CONTAINEREVENTINFO_
+
+#include "public/hcontainer.h"
+
+#endif // H_CONTAINEREVENTINFO_
