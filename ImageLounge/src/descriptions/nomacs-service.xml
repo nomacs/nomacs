@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<scpd xmlns="urn:schemas-upnp-org:service-1-0">
+	<specVersion>
+		<major>1</major>
+		<minor>0</minor>
+	</specVersion>
+	<actionList>
+		<action>
+			<name>getTCPServerURL</name>
+			<argumentList>
+				<argument>
+					<name>tcpServerPort</name>
+					<relatedStateVariable>tcpServerPort</relatedStateVariable>
+					<direction>out</direction>
+				</argument>				
+			</argumentList>
+		</action>
+		<action>
+			<name>getWhiteListServerURL</name>
+			<argumentList>
+				<argument>
+					<name>whiteListServerPort</name>
+					<relatedStateVariable>whiteListServerPort</relatedStateVariable>
+					<direction>out</direction>
+				</argument>				
+			</argumentList>
+		</action>
+	</actionList>
+	<serviceStateTable>
+		<stateVariable sendEvents="yes">
+			<name>tcpServerPort</name>
+			<dataType>int</dataType>
+			<defaultValue>""</defaultValue>
+		</stateVariable>
+		<stateVariable sendEvents="yes">
+			<name>whiteListServerPort</name>
+			<dataType>int</dataType>
+			<defaultValue>""</defaultValue>
+		</stateVariable>
+	</serviceStateTable>
+</scpd>
