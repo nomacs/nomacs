@@ -110,8 +110,11 @@ class DkRCManagerThread;
 class DkTransferToolBar;
 class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
+#ifdef WITH_UPNP
 class DkUpnpControlPoint;
 class DkUpnpDeviceHost;
+#endif // WITH_UPNP
+
 
 
 // keyboard shortcuts
