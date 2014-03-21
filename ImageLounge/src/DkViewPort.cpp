@@ -1860,7 +1860,7 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 	if ((qApp->keyboardModifiers() == altMod || 
 		DkSettings::sync.syncMode == DkSettings::sync_mode_auto) && 
 		(hasFocus() || 
-		controller->hasFocus()))
+		controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
 		QCoreApplication::sendPostedEvents();
 	}

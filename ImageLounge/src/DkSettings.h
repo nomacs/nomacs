@@ -315,5 +315,4 @@ protected:
 	static Resources resources_d;
 };
 
-		DkRemoteControlWidget* remoteControlWidget;
 };
