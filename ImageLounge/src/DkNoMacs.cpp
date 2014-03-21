@@ -3568,11 +3568,15 @@ void DkNoMacsSync::initLanClient() {
 	rcClient->start();
 	
 
-	//connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
+	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
 	DkTimer dt;
 	if (!DkSettings::sync.syncWhiteList.empty()) {
 		qDebug() << "whitelist not empty .... starting server";
+#ifdef WITH_UPNP
+		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml");
+#endif // WITH_UPNP
+
 		// TODO: currently blocking : )
 		emit startRCServerSignal(true);
 		//rcClient->startServer(true);
@@ -3800,8 +3804,10 @@ void DkNoMacsSync::newClientConnected(bool connected, bool local) {
 
 void DkNoMacsSync::startTCPServer(bool start) {
 	
+#ifdef WITH_UPNP
 	if (!upnpDeviceHost->isStarted())
 		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml");
+#endif // WITH_UPNP
 	emit startTCPServerSignal(start);
 }
 
@@ -3815,10 +3821,12 @@ void DkNoMacsSync::clientInitialized() {
 	//TODO: things that need to be done after the clientManager has finished initialization
 #ifdef WITH_UPNP
 	QObject* obj = QObject::sender();
-	if (obj && obj->objectName() == "lanClient") {
+	if (obj && obj->objectName() == "lanClient" || obj->objectName() == "rcClient") {
 		qDebug() << "sender:" << obj->objectName();
-		qDebug() << "initializing upnpControlPoint";
-		upnpControlPoint->init();
+		if (!upnpControlPoint->isStarted()) {
+			qDebug() << "initializing upnpControlPoint";
+			upnpControlPoint->init();
+		}
 	} else {
 		qDebug() << "obj null";
 	}
@@ -4057,6 +4065,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		localClient->start();
 
 		lanClient = 0;
+		rcClient = 0;
 
 		init();
 

@@ -70,7 +70,7 @@ namespace nmc {
 			virtual ~DkUpnpService() {};
 
 			Q_INVOKABLE qint32 getTCPServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs);
-			Q_INVOKABLE qint32 getWhitelistServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs);
+			Q_INVOKABLE qint32 getWhiteListServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs);
 	};
 
 	class DkUpnpDeviceModelCreator : public Herqq::Upnp::HDeviceModelCreator {
@@ -85,10 +85,10 @@ namespace nmc {
 	class DkUpnpControlPoint : public QObject {
 		Q_OBJECT
 		public:
-			DkUpnpControlPoint() { };
+			DkUpnpControlPoint() { cpIsStarted=false; };
 			virtual ~DkUpnpControlPoint();
 			bool init();
-
+			bool isStarted();
 		signals:
 			void newLANNomacsFound(QHostAddress address, quint16 port, QString name);
 			void newRCNomacsFound(QHostAddress address, quint16 port, QString name);
@@ -101,6 +101,7 @@ namespace nmc {
 			void wlValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent &event);
 		private:
 			bool isLocalHostAddress(const QHostAddress address);
+			bool cpIsStarted;
 			Herqq::Upnp::HControlPoint* controlPoint;
 			QList<QHostAddress> localIpAddresses;
 	};

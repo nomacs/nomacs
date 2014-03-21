@@ -140,9 +140,9 @@ qint32 DkUpnpService::getTCPServerURL(const Herqq::Upnp::HActionArguments& inArg
 	return Herqq::Upnp::UpnpSuccess;
 }
 
-qint32 DkUpnpService::getWhitelistServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs) {
+qint32 DkUpnpService::getWhiteListServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs) {
 	int port = stateVariables().value("whiteListServerPort")->value().toInt();
-	qDebug() << "DkUpnpService::getWhitelistServerURL sending port:" << port;
+	qDebug() << "DkUpnpService::getWhiteListServerURL sending port:" << port;
 	outArgs->setValue("whiteListServerPort", port);
 	return Herqq::Upnp::UpnpSuccess;
 }
@@ -173,7 +173,7 @@ bool DkUpnpControlPoint::init() {
 			localIpAddresses << itr->ip();
 		}
 	}
-
+	cpIsStarted = true;
 	return true;
 }
 
@@ -269,7 +269,7 @@ void DkUpnpControlPoint::invokeComplete(Herqq::Upnp::HClientAction* clientAction
 		emit newLANNomacsFound(address, quintPort, "");
 		//QCoreApplication::sendPostedEvents();
 	}
-	port = arguments.get("whitelistServerPort").value().toInt();
+	port = arguments.get("whiteListServerPort").value().toInt();
 	if (port > 0 ) {
 		QList<QUrl> locations = clientAction->parentService()->parentDevice()->locations();
 		QUrl url;
@@ -281,6 +281,7 @@ void DkUpnpControlPoint::invokeComplete(Herqq::Upnp::HClientAction* clientAction
 			return;
 		}
 		QHostAddress address = QHostAddress(url.host());
+		qDebug() << "emitting newRCNomacsFound:" << address << " port:" << port;
 		emit newRCNomacsFound(address, port, "");
 	}
 }
@@ -335,7 +336,7 @@ void DkUpnpControlPoint::wlValueChanged(const Herqq::Upnp::HClientStateVariable 
 	quint16 port = source->value().toInt();
 	if (port == 0)
 		return;
-	qDebug() << "emitting newLANNomacsFound:" << address << " port:" << port;
+	qDebug() << "emitting newRCNomacsFound:" << address << " port:" << port;
 	emit newRCNomacsFound(address, port, "");
 
 }
@@ -348,5 +349,8 @@ bool DkUpnpControlPoint::isLocalHostAddress(const QHostAddress address) {
 	return false;
 }
 
+bool DkUpnpControlPoint::isStarted() {
+	return cpIsStarted;	
+}
 
 }

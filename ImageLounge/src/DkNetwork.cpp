@@ -1578,18 +1578,14 @@ void DkRCManagerThread::connectClient() {
 	connect(this, SIGNAL(newModeSignal(int)), clientManager, SLOT(sendNewMode(int)));
 	connect(parent, SIGNAL(stopSynchronizeWithSignal()), clientManager, SLOT(stopSynchronizeWith()));
 
-#ifdef WITH_UPNP
-	//qRegisterMetaType<QFileInfo>("QHostAddress");
-	//connect(upnpControlPoint.data(), SIGNAL(newRCNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)), Qt::QueuedConnection);
-	//connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(wlServerPortChanged(quint16)), Qt::QueuedConnection);
-#endif // WITH_UPNP
-
-	//DkLanManagerThread::connectClient();
+	DkLanManagerThread::connectClient();
 
 #ifdef WITH_UPNP
-	// disconnect signals made by lan manager thread
-	//disconnect(upnpControlPoint.data(), SIGNAL(newLANNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)));
-	//disconnect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(tcpServerPortChanged(quint16)));
+	 //disconnect signals made by lan manager thread
+	disconnect(upnpControlPoint.data(), SIGNAL(newLANNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)));
+	disconnect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(tcpServerPortChanged(quint16)));
+	connect(upnpControlPoint.data(), SIGNAL(newRCNomacsFound(QHostAddress, quint16, QString)), clientManager, SLOT(startConnection(QHostAddress, quint16, QString)), Qt::QueuedConnection);
+	connect(clientManager, SIGNAL(serverPortChanged(quint16)), upnpDeviceHost.data(), SLOT(wlServerPortChanged(quint16)), Qt::QueuedConnection);
 #endif // WITH_UPNP
 
 }
