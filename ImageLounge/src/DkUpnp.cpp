@@ -80,8 +80,9 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	QFile serviceXML(fileInfo.absolutePath() + QDir::separator() + "nomacs-service.xml");
 	if (!serviceXML.exists())
 		qDebug() << "nomacs-service.xml file does not exist";
-	if (!serviceXML.copy(QDir::tempPath()+ QDir::separator() + "nomacs-service.xml"))
-		qDebug() << "unable to copy nomacs-service.xml";
+	QString newServiceXMLPath = QDir::tempPath()+ QDir::separator() + "nomacs-service.xml";
+	if (!serviceXML.copy(newServiceXMLPath))
+		qDebug() << "unable to copy nomacs-service.xml to " << newServiceXMLPath << ", perhaps files already exists";
 	QFile newServiceXMLFile(QDir::tempPath()+ QDir::separator() + "nomacs-service.xml");
 
 	DkUpnpDeviceModelCreator creator;
@@ -162,10 +163,22 @@ DkUpnpControlPoint::~DkUpnpControlPoint() {
 }
 
 bool DkUpnpControlPoint::init() {
-	Herqq::Upnp::HControlPointConfiguration config;
-	config.setNetworkAddressesToUse(localIpAddresses);
+	//Herqq::Upnp::SetLoggingLevel(Herqq::Upnp::Debug);
+	localIpAddresses.clear();
+	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
+	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
+		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
+		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
+			localIpAddresses << itr->ip();
+			qDebug() << "ip:" << itr->ip();
+		}
+	}
 
-	controlPoint = new Herqq::Upnp::HControlPoint(config, this);
+
+	//Herqq::Upnp::HControlPointConfiguration config;
+	//config.setNetworkAddressesToUse(localIpAddresses);
+
+	controlPoint = new Herqq::Upnp::HControlPoint(/*config, */this);
 	connect(controlPoint, SIGNAL(rootDeviceOnline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOnline(Herqq::Upnp::HClientDevice*)));
 	connect(controlPoint, SIGNAL(rootDeviceOffline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOffline(Herqq::Upnp::HClientDevice*)));
 
@@ -174,14 +187,6 @@ bool DkUpnpControlPoint::init() {
 		return false;
 	}
 
-	localIpAddresses.clear();
-	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
-	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
-		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
-		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
-			localIpAddresses << itr->ip();
-		}
-	}
 	cpIsStarted = true;
 	return true;
 }
