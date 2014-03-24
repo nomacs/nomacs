@@ -884,7 +884,7 @@ DkLANUdpSocket::DkLANUdpSocket( quint16 startPort, quint16 endPort , QObject* pa
 	}
 
 	qDebug() << "UpdBroadcastserver listening on " << serverPort;
-	//connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
+	connect(this, SIGNAL(readyRead()), this, SLOT(readBroadcast()));
 
 	localIpAddresses.clear();
 	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();

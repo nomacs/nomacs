@@ -170,7 +170,6 @@ bool DkUpnpControlPoint::init() {
 		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
 		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
 			localIpAddresses << itr->ip();
-			qDebug() << "ip:" << itr->ip();
 		}
 	}
 
