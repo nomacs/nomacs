@@ -254,10 +254,12 @@ QVector<uchar> DkImage::getLinear2GammaTable() {
 	for (int idx = 0; idx < 256; idx++) {
 
 		double i = idx/255.0;
-		if (i <= 0.0031308)
+		if (i <= 0.0031308) {
 			gammaTable.append(qRound(i*12.92*255.0));
-		else
+		}
+		else {
 			gammaTable.append(qRound(std::pow((1+a)*i-a,1/2.4)*255.0));
+		}
 	}
 
 	return gammaTable;
@@ -276,10 +278,12 @@ QVector<uchar> DkImage::getGamma2LinearTable() {
 	for (int idx = 0; idx < 256; idx++) {
 
 		double i = idx/255.0;
-		if (i <= 0.04045)
+		if (i <= 0.04045) {
 			gammaTable.append(qRound(i/12.92*255.0));
-		else
+		}
+		else {
 			gammaTable.append(qRound(std::pow((i+a)/(1+a),2.4)*255));
+		}
 	}
 
 	return gammaTable;
