@@ -23,7 +23,7 @@ void DkUpnpDeviceHost::tcpServerPortChanged(quint16 port) {
 	qDebug() << "DkUpnpDeviceHost: setting tcp port" << port;
 	this->tcpServerPort = port;
 	Herqq::Upnp::HServerDevices devices = rootDevices();
-	for (auto itr = devices.begin(); itr != devices.end(); itr++) {
+	for (Herqq::Upnp::HServerDevices::iterator itr = devices.begin(); itr != devices.end(); itr++) {
 		Herqq::Upnp::HServerService* service =  (*itr)->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
 		if (service)
 			service->stateVariables().value("tcpServerPort")->setValue(port);
@@ -35,7 +35,7 @@ void DkUpnpDeviceHost::wlServerPortChanged(quint16 port) {
 	qDebug() << "DkUpnpDeviceHost: setting wl port" << port;
 	this->wlServerPort = port;
 	Herqq::Upnp::HServerDevices devices = rootDevices();
-	for (auto itr = devices.begin(); itr != devices.end(); itr++) {
+	for (Herqq::Upnp::HServerDevices::iterator itr = devices.begin(); itr != devices.end(); itr++) {
 		Herqq::Upnp::HServerService* service =  (*itr)->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
 		if(service)
 			service->stateVariables().value("whiteListServerPort")->setValue(port);
@@ -194,7 +194,7 @@ void DkUpnpControlPoint::rootDeviceOnline(Herqq::Upnp::HClientDevice* clientDevi
 		
 		QList<QUrl> locations = clientDevice->locations(Herqq::Upnp::AbsoluteUrl);
 		QUrl url;
-		for (auto itr = locations.begin(); itr != locations.end(); itr++) {
+		for (QList<QUrl>::iterator itr = locations.begin(); itr != locations.end(); itr++) {
 			url = *itr;
 		}
 		if(url.isEmpty()) {
@@ -252,7 +252,7 @@ void DkUpnpControlPoint::invokeComplete(Herqq::Upnp::HClientAction* clientAction
 
 	QList<QUrl> locations = clientAction->parentService()->parentDevice()->locations();
 	QUrl url;
-	for (auto itr = locations.begin(); itr != locations.end(); itr++) {
+	for (QList<QUrl>::iterator itr = locations.begin(); itr != locations.end(); itr++) {
 		url = *itr;
 	}
 	if(url.isEmpty()) {
@@ -279,7 +279,7 @@ void DkUpnpControlPoint::invokeComplete(Herqq::Upnp::HClientAction* clientAction
 	if (port > 0 ) {
 		QList<QUrl> locations = clientAction->parentService()->parentDevice()->locations();
 		QUrl url;
-		for (auto itr = locations.begin(); itr != locations.end(); itr++) {
+		for (QList<QUrl>::iterator itr = locations.begin(); itr != locations.end(); itr++) {
 			url = *itr;
 		}
 		if(url.isEmpty()) {
@@ -302,7 +302,7 @@ void DkUpnpControlPoint::tcpValueChanged(const Herqq::Upnp::HClientStateVariable
 	qDebug() << "im tcp value changed";
 	QList<QUrl> locations = source->parentService()->parentDevice()->locations();
 	QUrl url;
-	for (auto itr = locations.begin(); itr != locations.end(); itr++) {
+	for (QList<QUrl>::iterator itr = locations.begin(); itr != locations.end(); itr++) {
 		url = *itr;
 	}
 	if(url.isEmpty()) {
@@ -326,7 +326,7 @@ void DkUpnpControlPoint::wlValueChanged(const Herqq::Upnp::HClientStateVariable 
 	qDebug() << "im wl value changed";
 	QList<QUrl> locations = source->parentService()->parentDevice()->locations();
 	QUrl url;
-	for (auto itr = locations.begin(); itr != locations.end(); itr++) {
+	for (QList<QUrl>::iterator itr = locations.begin(); itr != locations.end(); itr++) {
 		url = *itr;
 	}
 	if(url.isEmpty()) {
