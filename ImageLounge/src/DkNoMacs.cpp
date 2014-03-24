@@ -3602,7 +3602,7 @@ void DkNoMacsSync::initLanClient() {
 	if (!DkSettings::sync.syncWhiteList.empty()) {
 		qDebug() << "whitelist not empty .... starting server";
 #ifdef WITH_UPNP
-		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml");
+		upnpDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs-device.xml");
 #endif // WITH_UPNP
 
 		// TODO: currently blocking : )
@@ -3834,7 +3834,7 @@ void DkNoMacsSync::startTCPServer(bool start) {
 	
 #ifdef WITH_UPNP
 	if (!upnpDeviceHost->isStarted())
-		upnpDeviceHost->startDevicehost("descriptions/nomacs-device.xml");
+		upnpDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs-device.xml");
 #endif // WITH_UPNP
 	emit startTCPServerSignal(start);
 }

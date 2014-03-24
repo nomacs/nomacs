@@ -62,7 +62,13 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	fileData = f.readAll();
 	QString fileText(fileData);
 	fileText.replace("insert-new-uuid-here", uuidString);
+#ifdef WIN32
 	fileText.replace("nomacs-service.xml", QDir::temp().dirName()+"/nomacs-service.xml");
+#else
+	fileText.replace("nomacs-service.xml", "/nomacs-service.xml");
+#endif // WIN32
+
+	
 	f.seek(0);
 	QFile newXMLfile(newXMLpath);
 	newXMLfile.open(QIODevice::WriteOnly);
