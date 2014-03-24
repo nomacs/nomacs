@@ -221,16 +221,25 @@ void DkUpnpControlPoint::rootDeviceOnline(Herqq::Upnp::HClientDevice* clientDevi
 		}
 
 		Herqq::Upnp::HClientActions actions = service->actions();
+		qDebug() << "service:" << service->description();
 		Herqq::Upnp::HActionArguments aas;
 		Herqq::Upnp::HClientActionOp cao;
 
 		// ask for LAN server
-		//connect(actions.value("getTCPServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
-		//cao = actions.value("getTCPServerURL")->beginInvoke(aas);
+		if (!actions.value("getTCPServerURL")) {
+			qDebug() << "action.value(getTCPServerURL) is null ... aborting";
+			return;
+		}
+		connect(actions.value("getTCPServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
+		cao = actions.value("getTCPServerURL")->beginInvoke(aas);
 
 		// ask for RC server
-		//connect(actions.value("getWhitelistServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
-		//cao = actions.value("getWhitelistServerURL")->beginInvoke(aas);
+		if (!actions.value("getWhiteListServerURL")) {
+			qDebug() << "action.value(getWhiteListServerURL) is null ... aborting";
+			return;
+		}
+		connect(actions.value("getWhiteListServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
+		cao = actions.value("getWhiteListServerURL")->beginInvoke(aas);
 
 
 		connect(service->stateVariables().value("tcpServerPort"), SIGNAL(valueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)), this, SLOT(tcpValueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)));
