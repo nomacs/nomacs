@@ -39,6 +39,7 @@
 #include <HUpnpCore/HClientAction>
 #include <HUpnpCore/HClientActionOp>
 #include <HUpnpCore/HAsyncOp>
+#include <HUpnpCore/HControlPointConfiguration>
 
 namespace nmc {
 

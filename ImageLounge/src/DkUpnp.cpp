@@ -162,7 +162,10 @@ DkUpnpControlPoint::~DkUpnpControlPoint() {
 }
 
 bool DkUpnpControlPoint::init() {
-	controlPoint = new Herqq::Upnp::HControlPoint(this);
+	Herqq::Upnp::HControlPointConfiguration config;
+	config.setNetworkAddressesToUse(localIpAddresses);
+
+	controlPoint = new Herqq::Upnp::HControlPoint(config, this);
 	connect(controlPoint, SIGNAL(rootDeviceOnline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOnline(Herqq::Upnp::HClientDevice*)));
 	connect(controlPoint, SIGNAL(rootDeviceOffline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOffline(Herqq::Upnp::HClientDevice*)));
 
@@ -202,10 +205,10 @@ void DkUpnpControlPoint::rootDeviceOnline(Herqq::Upnp::HClientDevice* clientDevi
 			return;
 		}
 		QHostAddress host = QHostAddress(url.host());
-		//if(isLocalHostAddress(host)) {
-		//	qDebug() << "is local address ... aborting";
-		//	return;
-		//}
+		if(isLocalHostAddress(host)) {
+			qDebug() << "is local address ... aborting";
+			return;
+		}
 
 		Herqq::Upnp::HClientService* service = clientDevice->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
 		if (!clientDevice) {
