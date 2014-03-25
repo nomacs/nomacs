@@ -220,6 +220,7 @@ public:
 		QString preferredExtension;
 		int numThumbsLoading;
 		int maxThumbsLoading;
+		bool gammaCorrection;
 	};
 
 	//enums for checkboxes - divide in camera data and description

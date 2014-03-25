@@ -349,6 +349,7 @@ void DkSettings::load(bool force) {
 	resources_p.loadRawThumb = settings.value("loadRawThumb", resources_p.loadRawThumb).toInt();	
 	resources_p.filterDuplicats = settings.value("filterDuplicates", resources_p.filterDuplicats).toBool();
 	resources_p.preferredExtension = settings.value("preferredExtension", resources_p.preferredExtension).toString();	
+	resources_p.gammaCorrection = settings.value("gammaCorrection", resources_p.gammaCorrection).toBool();
 
 	if (sync_p.switchModifier) {
 		global_p.altMod = Qt::ControlModifier;
@@ -566,6 +567,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("filterDuplicates", resources_p.filterDuplicats);
 	if (!force && resources_p.preferredExtension != resources_d.preferredExtension)
 		settings.setValue("preferredExtension", resources_p.preferredExtension);
+	if (!force && resources_p.gammaCorrection != resources_d.gammaCorrection)
+		settings.setValue("gammaCorrection", resources_p.gammaCorrection);
 
 	// keep loaded settings in mind
 	app_d = app_p;
@@ -703,6 +706,7 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.preferredExtension = "*.jpg";
 	resources_p.numThumbsLoading = 0;
 	resources_p.maxThumbsLoading = 5;
+	resources_p.gammaCorrection = true;
 
 	qDebug() << "ok... default settings are set";
 }

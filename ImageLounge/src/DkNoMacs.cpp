@@ -3331,8 +3331,9 @@ void DkNoMacs::openSettings() {
 		connect(settingsDialog, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
 		connect(settingsDialog, SIGNAL(languageChanged()), this, SLOT(restart()));
 		connect(settingsDialog, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
-		settingsDialog->exec();
 	}
+
+	settingsDialog->exec();
 
 	qDebug() << "hier könnte ihre werbung stehen...";
 }

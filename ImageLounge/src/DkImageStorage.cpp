@@ -258,7 +258,7 @@ QVector<uchar> DkImage::getLinear2GammaTable() {
 			gammaTable.append(qRound(i*12.92*255.0));
 		}
 		else {
-			gammaTable.append(qRound(std::pow((1+a)*i-a,1/2.4)*255.0));
+			gammaTable.append(qRound(((1+a)*std::pow(i,1/2.4)-a)*255.0));
 		}
 	}
 
