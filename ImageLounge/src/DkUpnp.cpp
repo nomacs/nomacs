@@ -167,17 +167,29 @@ bool DkUpnpControlPoint::init() {
 	localIpAddresses.clear();
 	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
 	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
-		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
-		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
-			localIpAddresses << itr->ip();
+		if (networkInterfacesItr->flags() & QNetworkInterface::IsUp) {
+			QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
+			for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
+				if (itr->ip() != QHostAddress::LocalHost) {
+					localIpAddresses << itr->ip();
+				}
+			}
 		}
 	}
 
+	//foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+	//	if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost)) {
+	//		qDebug() << address.toString();
+	//		localIpAddresses << address;
+	//		qDebug() << "add:" << address;
+	//	}
+	//}
 
-	//Herqq::Upnp::HControlPointConfiguration config;
-	//config.setNetworkAddressesToUse(localIpAddresses);
+	Herqq::Upnp::HControlPointConfiguration config;
+	config.setNetworkAddressesToUse(localIpAddresses);
 
-	controlPoint = new Herqq::Upnp::HControlPoint(/*config, */this);
+	controlPoint = new Herqq::Upnp::HControlPoint(/*config,*/ this);
+	
 	connect(controlPoint, SIGNAL(rootDeviceOnline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOnline(Herqq::Upnp::HClientDevice*)));
 	connect(controlPoint, SIGNAL(rootDeviceOffline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOffline(Herqq::Upnp::HClientDevice*)));
 
