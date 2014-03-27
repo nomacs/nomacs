@@ -153,6 +153,7 @@ public:
 		bool smallIcons;
 		bool toolbarGradient;
 		bool showBorder;
+		bool displaySquaredThumbs;
 	};
 
 	struct Global {

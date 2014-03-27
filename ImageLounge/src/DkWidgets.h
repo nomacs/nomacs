@@ -653,6 +653,7 @@ public:
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
 	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
 	QRectF boundingRect() const;
+	QPainterPath shape() const;
 	void updateSize();
 	void setVisible(bool visible);
 
@@ -696,16 +697,17 @@ public slots:
 	void loadFile(QFileInfo& file);
 	void increaseThumbs();
 	void decreaseThumbs();
+	void toggleSquaredThumbs(bool squares);
 	void resizeThumbs(float dx);
 	void showFile(const QFileInfo& file);
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
-	void fetchThumbs();
 
 signals:
 	void loadFileSignal(QFileInfo file);
 	void statusInfoSignal(QString msg, int pos = 0);
+	void thumbLoadedSignal();
 
 protected:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;
@@ -730,6 +732,9 @@ public:
 signals:
 	void updateDirSignal(QFileInfo file);
 
+public slots:
+	void fetchThumbs();
+
 protected:
 	void wheelEvent(QWheelEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
@@ -752,6 +757,7 @@ public:
 		select_all,
 		zoom_in,
 		zoom_out,
+		display_squares,
 
 		actions_end
 	};

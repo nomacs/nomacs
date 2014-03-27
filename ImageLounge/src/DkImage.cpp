@@ -1227,7 +1227,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " fully cached...";
 		}
 		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory) {
-			images.at(idx)->fetchFile();
+			images.at(idx)->fetchFile();		// TODO: crash detected here
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " file fetched...";
 		}
 	}
