@@ -124,7 +124,7 @@ signals:
 	void fileSavedSignal(QFileInfo fileInfo, bool saved = true);
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
 	void errorDialogSignal(const QString& msg);
-	void thumbUpdated();
+	void thumbLoadedSignal(bool loaded = true);
 
 public slots:
 	void checkForFileUpdates(); 

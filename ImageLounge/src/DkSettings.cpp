@@ -705,7 +705,7 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.filterDuplicats = false;
 	resources_p.preferredExtension = "*.jpg";
 	resources_p.numThumbsLoading = 0;
-	resources_p.maxThumbsLoading = 5;
+	resources_p.maxThumbsLoading = 125;
 	resources_p.gammaCorrection = true;
 
 	qDebug() << "ok... default settings are set";

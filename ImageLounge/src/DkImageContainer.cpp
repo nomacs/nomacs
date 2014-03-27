@@ -304,7 +304,7 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()));
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
 	connect(loader.data(), SIGNAL(errorDialogSignal(const QString&)), this, SIGNAL(errorDialogSignal(const QString&)));
-	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SIGNAL(thumbUpdated()));
+	connect(thumb.data(), SIGNAL(thumbLoadedSignal(bool)), this, SIGNAL(thumbLoadedSignal(bool)));
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
 }
 

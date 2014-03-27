@@ -65,6 +65,8 @@
 #include <QGraphicsItem>
 #include <QtConcurrentRun>
 #include <QMimeData>
+#include <QTimeLine>
+#include <QGraphicsItemAnimation>
 
 #if QT_VERSION < 0x050000
 #include <QPlastiqueStyle>
@@ -632,7 +634,7 @@ private:
 	QRectF newFileRect;
 	bool scrollToCurrentImage;
 	bool isPainted;
-
+	
 	void init();
 	//void clearThumbs();
 	//void indexDir(int force = DkThumbsLoader::not_forced);
@@ -646,6 +648,7 @@ class DkThumbLabel : public QObject, public QGraphicsPixmapItem {
 
 public:
 	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem* parent = 0);
+	~DkThumbLabel();
 
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
 	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
@@ -670,11 +673,13 @@ protected:
 	QSharedPointer<DkThumbNailT> thumb;
 	QLabel* imgLabel;
 	bool thumbInitialized;
+	bool fetchingThumb;
 	QPen noImagePen;
 	QBrush noImageBrush;
 	QPen selectPen;
 	QBrush selectBrush;
 	bool isHovered;
+	QPointF lastMove;
 };
 
 class DkThumbScene : public QGraphicsScene {
@@ -696,6 +701,7 @@ public slots:
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void fetchThumbs();
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -711,7 +717,8 @@ protected:
 	bool firstLayout;
 	bool itemClicked;
 
-	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+	QVector<DkThumbLabel* > thumbLabels;
+	QList<DkThumbLabel* > thumbsNotLoaded;
 };
 
 class DkThumbsView : public QGraphicsView {

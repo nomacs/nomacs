@@ -207,7 +207,7 @@ public:
 	};
 
 signals:
-	void thumbUpdated();
+	void thumbLoadedSignal(bool loaded = true);
 	void colorUpdated();
 
 public slots:

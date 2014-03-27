@@ -364,14 +364,12 @@ void DkThumbNailT::thumbLoaded() {
 
 	img = future.result();
 	
-	if (!img.isNull()) {
-		emit thumbUpdated();
-	}
-	else if (forceLoad != force_exif_thumb)
+	if (forceLoad != force_exif_thumb)
 		imgExists = false;
 
 	fetching = false;
 	DkSettings::resources.numThumbsLoading--;
+	emit thumbLoadedSignal(img.isNull());
 }
 
 //// DkThumbPool --------------------------------------------------------------------

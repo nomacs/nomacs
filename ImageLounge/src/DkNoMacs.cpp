@@ -3847,6 +3847,7 @@ void DkNoMacsSync::settingsChanged() {
 }
 
 void DkNoMacsSync::clientInitialized() {
+	
 	//TODO: things that need to be done after the clientManager has finished initialization
 #ifdef WITH_UPNP
 	QObject* obj = QObject::sender();
