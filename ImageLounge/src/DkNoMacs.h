@@ -113,6 +113,7 @@ class DkImageContainerT;	// TODO: add include to suppress warning C4150
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
 class DkUpnpDeviceHost;
+class DkUpnpRendererDeviceHost;
 #endif // WITH_UPNP
 
 
@@ -324,6 +325,7 @@ enum syncActions {
 	menu_sync_arrange,
 	menu_sync_connect_all,
 	menu_sync_auto_connect,
+	menu_sync_start_upnp,
 
 	menu_sync_remote_control,
 	menu_sync_remote_display,
@@ -708,6 +710,7 @@ public slots:
 	void tcpRemoteControl(bool start);
 	void tcpRemoteDisplay(bool start);
 	void tcpAutoConnect(bool connect);
+	void startUpnpRenderer(bool start);
 	void settingsChanged();
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
@@ -734,6 +737,7 @@ protected:
 #ifdef WITH_UPNP
 	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
 	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
+	QSharedPointer<DkUpnpRendererDeviceHost> upnpRendererDeviceHost;
 #endif // WITH_UPNP
 
 };

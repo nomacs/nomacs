@@ -387,4 +387,108 @@ bool DkUpnpControlPoint::isStarted() {
 	return cpIsStarted;	
 }
 
+// DkUpnpRendererConnectionManager --------------------------------------------------------------------
+Herqq::Upnp::Av::HRendererConnection* DkUpnpRendererConnectionManager::doCreate(Herqq::Upnp::Av::HAbstractConnectionManagerService* service, Herqq::Upnp::Av::HConnectionInfo* cinfo) {
+	QString contentFormat = cinfo->protocolInfo().contentFormat();
+	qDebug() << "content:" << contentFormat;
+	rendererConnection = new DkUpnpRendererConnection();
+	connect(rendererConnection, SIGNAL(newImage(QImage)), this, SLOT(conNewImage(QImage)));
+	return rendererConnection;
+}
+
+// DkUpnpRendererDeviceHost
+bool DkUpnpRendererDeviceHost::startDevicehost(QString pathToConfig) {
+	//Herqq::Upnp::SetLoggingLevel(Herqq::Upnp::Debug);
+	qDebug() << "starting DeviceHost";
+	QFile f(pathToConfig);
+	if (!f.exists()) {
+		qDebug() << "DkUpnpRendererDeviceHost: config file not found";
+		return false;
+	}
+
+//	QUuid uuid = QUuid::createUuid();
+//	QString uuidString = uuid.toString();
+//	uuidString.replace("{","");
+//	uuidString.replace("}","");
+//	QString newXMLpath = QDir::tempPath() + QDir::separator() + uuidString + ".xml";
+//
+//
+//	QByteArray fileData;
+//	f.open(QIODevice::ReadOnly);
+//	fileData = f.readAll();
+//	QString fileText(fileData);
+//	fileText.replace("insert-new-uuid-here", uuidString);
+//#ifdef WIN32
+//	fileText.replace("nomacs-service.xml", QDir::temp().dirName()+"/nomacs-service.xml");
+//#else
+//	fileText.replace("nomacs-service.xml", "/nomacs-service.xml");
+//#endif // WIN32
+//
+//
+//	f.seek(0);
+//	QFile newXMLfile(newXMLpath);
+//	newXMLfile.open(QIODevice::WriteOnly);
+//	newXMLfile.write(fileText.toUtf8());
+//	f.close();
+//	newXMLfile.close();
+//
+//	QFileInfo fileInfo = QFileInfo(f);
+//	QFile serviceXML(fileInfo.absolutePath() + QDir::separator() + "nomacs-service.xml");
+//	if (!serviceXML.exists())
+//		qDebug() << "nomacs-service.xml file does not exist";
+//	QString newServiceXMLPath = QDir::tempPath()+ QDir::separator() + "nomacs-service.xml";
+//	if (!serviceXML.copy(newServiceXMLPath))
+//		qDebug() << "unable to copy nomacs-service.xml to " << newServiceXMLPath << ", perhaps files already exists";
+//	QFile newServiceXMLFile(QDir::tempPath()+ QDir::separator() + "nomacs-service.xml");
+
+	Herqq::Upnp::Av::HMediaRendererDeviceConfiguration mediaRendererConfig;
+	connectionManager = new DkUpnpRendererConnectionManager();
+	connect(connectionManager, SIGNAL(newImage(QImage)), this, SLOT(cmNewImage(QImage)));
+	mediaRendererConfig.setRendererConnectionManager(connectionManager, true);
+
+	Herqq::Upnp::Av::HAvDeviceModelCreator avCreator;
+	avCreator.setMediaRendererConfiguration(mediaRendererConfig);
+
+	Herqq::Upnp::HDeviceConfiguration config;
+	config.setPathToDeviceDescription(pathToConfig);
+
+	Herqq::Upnp::HDeviceHostConfiguration hostConfig;
+	hostConfig.setDeviceModelCreator(avCreator);
+	hostConfig.add(config);
+
+
+	bool retVal = init(hostConfig);
+	if (!retVal) {
+		qDebug() << "error while initializing device host:\n" << errorDescription();
+	}
+
+	return retVal;
+}
+
+
+void DkUpnpRendererDeviceHost::stopDevicehost() {
+	qDebug() << "DkUpnpRenderDeviceHost: stopping DeviceHost";
+	quit();
+}
+
+DkUpnpRendererConnection::DkUpnpRendererConnection() {
+}
+
+qint32 DkUpnpRendererConnection::doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata/* =0 */) {
+	qDebug() << "doSetResource url:" << resourceUri;
+	QNetworkRequest req(resourceUri);
+	curResource = accessManager.get(req);
+	bool ok = connect(curResource, SIGNAL(finished()), this, SLOT(finished()));
+	
+	return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;
+}
+
+void DkUpnpRendererConnection::finished() {
+	qDebug() << "finished";
+	QByteArray currentData = curResource->readAll();
+	QImage img;
+	img.loadFromData(currentData);
+	emit newImage(img);
+}
+
 }

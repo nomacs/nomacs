@@ -1,8 +1,9 @@
 # ** File generated automatically, do not modify **
 
 SET(HUPNP_SOURCE_DIR @HUpnp_SOURCE_DIR@)
-SET(HUPNP_INCLUDE_DIR @HUpnp_SOURCE_DIR@/hupnp/include)
+SET(HUPNP_INCLUDE_DIR @HUpnp_SOURCE_DIR@/hupnp/include @HUpnp_SOURCE_DIR@/hupnp_av/include)
 SET(HUPNP_LIBS @HUPNP_LIBS@) 
+SET(HUPNPAV_LIBS @HUPNPAV_LIBS@) 
 SET(HUPNP_LIB_DIR @CMAKE_BINARY_DIR@/libs)
 IF(HUPNP_INCLUDE_DIR)
 	SET(HUPNP_FOUND true)

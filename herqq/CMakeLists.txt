@@ -30,7 +30,15 @@ get_property(HUPNP_RELEASE_NAME TARGET HUpnp PROPERTY RELEASE_OUTPUT_NAME)
 get_property(QTSOAP_DEBUG_NAME TARGET QtSolutions_SOAP-2.7 PROPERTY DEBUG_OUTPUT_NAME)
 get_property(QTSOAP_RELEASE_NAME TARGET QtSolutions_SOAP-2.7 PROPERTY RELEASE_OUTPUT_NAME)
 
+# project(HUpnpAV)
+
+
 set(HUPNP_LIBS optimized ${CMAKE_BINARY_DIR}/libs/Release/${HUPNP_RELEASE_NAME}.lib optimized ${CMAKE_BINARY_DIR}/libs/Release/${QTSOAP_RELEASE_NAME}.lib debug  ${CMAKE_BINARY_DIR}/libs/Debug/${HUPNP_DEBUG_NAME}.lib debug ${CMAKE_BINARY_DIR}/libs/Debug/${QTSOAP_DEBUG_NAME}.lib)
+
+add_subdirectory(hupnp_av)
+get_property(HUPNPAV_DEBUG_NAME TARGET HUpnpAV PROPERTY DEBUG_OUTPUT_NAME)
+get_property(HUPNPAV_RELEASE_NAME TARGET HUpnpAV PROPERTY RELEASE_OUTPUT_NAME)
+set(HUPNPAV_LIBS optimized ${CMAKE_BINARY_DIR}/libs/Release/${HUPNPAV_RELEASE_NAME}.lib debug  ${CMAKE_BINARY_DIR}/libs/Debug/${HUPNPAV_DEBUG_NAME}.lib)
 
 configure_file(${HUpnp_SOURCE_DIR}/HUpnpConfig.cmake.in ${CMAKE_BINARY_DIR}/HUpnpConfig.cmake)
  
