@@ -1715,79 +1715,18 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 		}
 	}
 
-	Qt::TransformationMode iplQt;
-	switch(resampleBox->currentIndex()) {
-	case ipl_nearest:	
-	case ipl_area:		iplQt = Qt::FastTransformation; break;
-	case ipl_linear:	
-	case ipl_cubic:		
-	case ipl_lanczos:	iplQt = Qt::SmoothTransformation; break;
-	}
-#ifdef WITH_OPENCV
+	QImage rImg = DkImage::resizeImage(img, newSize, 1.0f, resampleBox->currentIndex());
 
-	int ipl = CV_INTER_CUBIC;
-	switch(resampleBox->currentIndex()) {
-	case ipl_nearest:	ipl = CV_INTER_NN; break;
-	case ipl_area:		ipl = CV_INTER_AREA; break;
-	case ipl_linear:	ipl = CV_INTER_LINEAR; break;
-	case ipl_cubic:		ipl = CV_INTER_CUBIC; break;
-#ifdef DISABLE_LANCZOS
-	case ipl_lanczos:	ipl = CV_INTER_CUBIC; break;
-#else
-	case ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
-#endif
+	if (rImg.isNull() && !silent) {
+		qDebug() << "image size: " << newSize;
+		QMessageBox errorDialog(this);
+		errorDialog.setIcon(QMessageBox::Critical);
+		errorDialog.setText(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(newSize, 32)));
+		errorDialog.show();
+		errorDialog.exec();
 	}
 
-	try {
-		Mat resizeImage = DkImage::qImage2Mat(img);
-
-		// is the image convertible?
-		if (resizeImage.empty() || newSize.width() < 1 || newSize.height() < 1) {
-
-			return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
-		}
-		else {
-						
-			//QVector<QRgb> colTable = img.colorTable();
-			//qDebug() << "resizing..." << colTable.size();
-			qDebug() << "img format: " << img.format();
-
-			Mat tmp;
-			cv::resize(resizeImage, tmp, cv::Size(newSize.width(), newSize.height()), 0, 0, ipl);
-
-			QImage rImg = DkImage::mat2QImage(tmp);
-			qDebug() << "rImg format: " << img.format();
-
-			if (!rImg.colorTable().isEmpty())
-				rImg.setColorTable(img.colorTable());
-
-			qDebug() << "rImg (colTable) format: " << img.format();
-			return rImg;
-
-		}
-
-	}catch (std::exception se) {
-
-		if (!silent) {
-
-			qDebug() << "image size: " << newSize;
-			QMessageBox errorDialog(this);
-			errorDialog.setIcon(QMessageBox::Critical);
-			errorDialog.setText(tr("Sorry, the image is too large: %1").arg(DkImage::getBufferSize(newSize, 32)));
-			errorDialog.show();
-			errorDialog.exec();
-		}
-
-		return QImage();
-	}
-
-	return QImage();
-#else
-
-	return img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
-
-#endif
-
+	return rImg;
 }
 
 // DkShortcutDelegate --------------------------------------------------------------------

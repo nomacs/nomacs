@@ -143,6 +143,84 @@ QPixmap DkImage::fromWinHICON(HICON icon) {
 	return QPixmap::fromImage(image);
 }
 #endif
+
+QImage DkImage::resizeImage(const QImage img, const QSize& newSize, float factor /* = 1.0f */, int interpolation /* = ipl_cubic */) {
+
+	QSize nSize = newSize;
+
+	// nothing to do
+	if (img.size() == nSize && factor == 1.0f)
+		return img;
+
+	if (factor != 1.0f)
+		nSize = QSize(img.width()*factor, img.height()*factor);
+
+	if (nSize.width() < 1 || nSize.height() < 1) {
+		return QImage();
+	}
+
+	Qt::TransformationMode iplQt;
+	switch(interpolation) {
+	case ipl_nearest:	
+	case ipl_area:		iplQt = Qt::FastTransformation; break;
+	case ipl_linear:	
+	case ipl_cubic:		
+	case ipl_lanczos:	iplQt = Qt::SmoothTransformation; break;
+	}
+#ifdef WITH_OPENCV
+
+	int ipl = CV_INTER_CUBIC;
+	switch(interpolation) {
+	case ipl_nearest:	ipl = CV_INTER_NN; break;
+	case ipl_area:		ipl = CV_INTER_AREA; break;
+	case ipl_linear:	ipl = CV_INTER_LINEAR; break;
+	case ipl_cubic:		ipl = CV_INTER_CUBIC; break;
+#ifdef DISABLE_LANCZOS
+	case ipl_lanczos:	ipl = CV_INTER_CUBIC; break;
+#else
+	case ipl_lanczos:	ipl = CV_INTER_LANCZOS4; break;
+#endif
+	}
+
+
+	try {
+		QImage qImg = img.copy();
+		DkImage::gammaToLinear(qImg);
+		Mat resizeImage = DkImage::qImage2Mat(qImg);
+
+		// is the image convertible?
+		if (resizeImage.empty()) {
+			qImg = qImg.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
+		}
+		else {
+
+			Mat tmp;
+			cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
+			resizeImage = tmp;
+			qImg = DkImage::mat2QImage(resizeImage);
+		}
+
+		DkImage::linearToGamma(qImg);
+
+		if (!img.colorTable().isEmpty())
+			qImg.setColorTable(img.colorTable());
+
+		return qImg;
+
+	}catch (std::exception se) {
+
+		return QImage();
+	}
+
+#else
+
+	QImage qImg = img.copy();
+	DkImage::gammaToLinear(qImg);
+	qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
+	DkImage::linearToGamma(qImg);
+	return qImg;
+#endif
+}
 	
 bool DkImage::alphaChannelUsed(const QImage& img) {
 
@@ -167,7 +245,87 @@ bool DkImage::alphaChannelUsed(const QImage& img) {
 
 	return false;
 }
-	
+
+QVector<uchar> DkImage::getLinear2GammaTable() {
+
+	QVector<uchar> gammaTable;
+	double a = 0.055;
+
+	for (int idx = 0; idx < 256; idx++) {
+
+		double i = idx/255.0;
+		if (i <= 0.0031308) {
+			gammaTable.append(qRound(i*12.92*255.0));
+		}
+		else {
+			gammaTable.append(qRound(std::pow((1+a)*i-a,1/2.4)*255.0));
+		}
+	}
+
+	return gammaTable;
+}
+
+QVector<uchar> DkImage::getGamma2LinearTable() {
+
+	// the formula should be:
+	// i = px/255
+	// i <= 0.04045 -> i/12.92
+	// i > 0.04045 -> (i+0.055)/(1+0.055)^2.4
+
+	QVector<uchar> gammaTable;
+	double a = 0.055;
+
+	for (int idx = 0; idx < 256; idx++) {
+
+		double i = idx/255.0;
+		if (i <= 0.04045) {
+			gammaTable.append(qRound(i/12.92*255.0));
+		}
+		else {
+			gammaTable.append(qRound(std::pow((i+a)/(1+a),2.4)*255));
+		}
+	}
+
+	return gammaTable;
+}
+
+void DkImage::gammaToLinear(QImage& img) {
+
+	QVector<uchar> gt = getGamma2LinearTable();
+	mapGammaTable(img, gt);
+}
+
+void DkImage::linearToGamma(QImage& img) {
+
+	QVector<uchar> gt = getLinear2GammaTable();
+	mapGammaTable(img, gt);
+}
+
+void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
+
+	DkTimer dt;
+
+	// number of bytes per line used
+	int bpl = (img.width() * img.depth() + 7) / 8;
+	int pad = img.bytesPerLine() - bpl;
+
+	//int channels = (img.hasAlphaChannel() || img.format() == QImage::Format_RGB32) ? 4 : 3;
+
+	uchar* mPtr = img.bits();
+
+	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+
+		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
+
+			*mPtr = gammaTable[*mPtr];
+		}
+		mPtr += pad;
+	}
+
+	qDebug() << "gamma computation takes: " << QString::fromStdString(dt.getTotal());
+}
+
+
 QImage DkImage::normImage(const QImage& img) {
 
 	QImage imgN = img.copy();
@@ -506,6 +664,7 @@ void DkImageStorage::computeImage() {
 	DkTimer dt;
 	busy = true;
 	QImage resizedImg = img;
+	
 
 	// down sample the image until it is twice times full HD
 	QSize iSize = img.size();
@@ -525,6 +684,8 @@ void DkImageStorage::computeImage() {
 		if (s.width() < 32 || s.height() < 32)
 			break;
 
+		DkImage::gammaToLinear(resizedImg);
+
 #ifdef WITH_OPENCV
 		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
 		cv::Mat tmp;
@@ -534,6 +695,7 @@ void DkImageStorage::computeImage() {
 #else
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
+		DkImage::linearToGamma(resizedImg);
 
 		// new image assigned?
 		if (stop)

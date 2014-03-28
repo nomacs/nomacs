@@ -234,7 +234,6 @@ signals:
 
 public slots:
 	void rotate(int orientation);
-	void resize(QSize size, float factor = 1.0f, QImage* img = 0, int interpolation = DkImage::ipl_cubic, bool silent = false);
 
 protected:
 	bool loadRohFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
