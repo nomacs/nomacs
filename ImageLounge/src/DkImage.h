@@ -100,6 +100,8 @@ using namespace cv;
 #include "DkMetaData.h"
 #include "DkBasicLoader.h"
 #include "DkImageContainer.h"
+#include "DkMessageBox.h"
+
 
 #ifdef Q_WS_X11
 	typedef  unsigned char byte;
@@ -219,7 +221,7 @@ public slots:
 	// new slots
 	void imageLoaded(bool loaded = false);
 	void imageSaved(QFileInfo file, bool saved = true);
-	void unloadFile();
+	bool unloadFile();
 	void reloadImage();
 
 protected:

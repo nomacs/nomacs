@@ -693,7 +693,7 @@ bool DkBasicLoader::writeBufferToFile(const QFileInfo& fileInfo, const QSharedPo
 	file.close();
 	qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
 
-	if (!bytesWritten)
+	if (!bytesWritten || bytesWritten == -1)
 		return false;
 
 	return true;

@@ -179,7 +179,7 @@ public slots:
 	//virtual void setBackgroundColor();
 	virtual void setBackgroundBrush(const QBrush &brush);
 
-	virtual void unloadImage();
+	virtual bool unloadImage(bool fileChange = true);
 
 	virtual void setImage(QImage newImg);
 

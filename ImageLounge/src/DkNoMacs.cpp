@@ -39,6 +39,7 @@
 #include "DkToolbars.h"
 #include "DkManipulationWidgets.h"
 #include "DkSettingsWidgets.h"
+#include "DkMessageBox.h"
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
@@ -213,7 +214,6 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialog(const QString&)));
-
 
 	enableMovieActions(false);
 
@@ -3648,19 +3648,20 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
 
-	syncActions[menu_sync_auto_connect] = new QAction(tr("&Auto Connect"), this);
+	syncActions[menu_sync_auto_connect] = new QAction(tr("&Sync All Actions"), this);
 	syncActions[menu_sync_auto_connect]->setStatusTip(tr("Transmit All Signals Automatically."));
 	syncActions[menu_sync_auto_connect]->setCheckable(true);
+	syncActions[menu_sync_auto_connect]->setChecked(DkSettings::sync.syncMode == DkSettings::sync_mode_auto);
 	connect(syncActions[menu_sync_auto_connect], SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
 
 	syncActions[menu_sync_start_upnp] = new QAction(tr("&Start Upnp"), this);
-	syncActions[menu_sync_start_upnp]->setStatusTip(tr("Starts an Upnp Media Renderer."));
+	syncActions[menu_sync_start_upnp]->setStatusTip(tr("Starts a Upnp Media Renderer."));
 	syncActions[menu_sync_start_upnp]->setCheckable(true);
 	connect(syncActions[menu_sync_start_upnp], SIGNAL(triggered(bool)), this, SLOT(startUpnpRenderer(bool)));
 
 	syncActions[menu_sync_remote_control] = new QAction(tr("&Remote Control"), this);
 	//syncActions[menu_sync_remote_control]->setShortcut(QKeySequence(shortcut_connect_all));
-	syncActions[menu_sync_remote_control]->setStatusTip(tr("Automatically Receive Images From Your Remote Connection."));
+	syncActions[menu_sync_remote_control]->setStatusTip(tr("Automatically Receive Images From Your Remote Instance."));
 	syncActions[menu_sync_remote_control]->setCheckable(true);
 	connect(syncActions[menu_sync_remote_control], SIGNAL(triggered(bool)), this, SLOT(tcpRemoteControl(bool)));
 

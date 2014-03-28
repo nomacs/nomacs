@@ -31,6 +31,7 @@
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
+#include <QWidget>
 #include <QDialog>
 #include <QLabel>
 #include <QRadioButton>
@@ -53,6 +54,7 @@
 #include <QMimeData>
 #include <QStringListModel>
 #include <QListView>
+#include <QDialogButtonBox>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -92,38 +94,6 @@ protected:
 	}
 private:
 	bool selectOnMousePressEvent; 
-};
-
-class DkMessageBox : public QDialog {
-	Q_OBJECT
-
-public:
-	DkMessageBox(QMessageBox::Icon icon, 
-		const QString& title, 
-		const QString& text, 
-		QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
-		QWidget* parent = 0, 
-		Qt::WindowFlags f = Qt::Dialog);
-	DkMessageBox(QWidget* parent = 0);
-
-	~DkMessageBox();
-
-	virtual void setVisible(bool visible);
-
-public slots:
-	void buttonClicked(QAbstractButton* button);
-	int exec();
-
-protected:
-	
-	QLabel* iconLabel;
-	QLabel* textLabel;
-	QMessageBox::Icon icon;
-	QDialogButtonBox* buttonBox;
-	QCheckBox* showAgain;
-
-	void createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons);
-	void updateSize();
 };
 
 class DkSelectAllDoubleSpinBox : public QDoubleSpinBox {

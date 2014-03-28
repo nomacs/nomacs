@@ -408,7 +408,7 @@ public slots:
 	void loadSkipNext10();
 	void loadSkipPrev10();
 	void loadLena();
-	void unloadImage();
+	bool unloadImage(bool fileChange = true);
 	//void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 	void repeatZoom();
@@ -531,7 +531,6 @@ public:
 signals:
 	void tFSliderAdded(qreal pos);
 	void imageModeSet(int mode);
-
 
 public slots:
 	//TODO: remove the functions, which are not used anymore:
