@@ -19,6 +19,11 @@
 #include <QNetworkInterface>
 #include <QUuid>
 #include <QDir>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QPointer>
+#include <QNetworkAccessManager>
+#include <QImage>
 
 #include <HUpnpCore/HServerDevice>
 #include <HUpnpCore/HServerService>
@@ -40,6 +45,15 @@
 #include <HUpnpCore/HClientActionOp>
 #include <HUpnpCore/HAsyncOp>
 #include <HUpnpCore/HControlPointConfiguration>
+
+#include <HUpnpAV/HAvControlPoint>
+#include <HUpnpAv/HRendererConnectionManager>
+#include <HUpnpAv/HMediaRendererDeviceConfiguration>
+#include <HUpnpAv/HAvDeviceModelCreator>
+#include <HUpnpAv/HRendererConnection>
+#include <HUpnpAv/HSeekInfo>
+#include <HUpnpAv/HProtocolInfo>
+
 
 namespace nmc {
 
@@ -107,6 +121,58 @@ namespace nmc {
 			QList<QHostAddress> localIpAddresses;
 	};
 
+// MediaRenderer --------------------------------------------------------------------
 
+	class DkUpnpRendererConnection : public Herqq::Upnp::Av::HRendererConnection {
+		Q_OBJECT
+		public:
+			DkUpnpRendererConnection();
+		signals:
+			void newImage(QImage img);
+
+	protected:
+		virtual qint32 doPlay(const QString &speed) { qDebug() << "doPlay: speed:" << speed; return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doStop() { qDebug() << "doStop";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doSeek(const Herqq::Upnp::Av::HSeekInfo &seekinfo) { qDebug() << "doSeek";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doNext() { qDebug() << "doNext";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doPrevious() { qDebug() << "doPrevious";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata=0);
+		virtual qint32 doSetNextResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata=0) { qDebug() << "doSetNextResource url:" << resourceUri;return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doSelectPreset(const QString &presetName) { qDebug() << "doSelectPreset preset:" << presetName;return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+	private slots:
+		void finished();
+	private:
+		QPointer<QNetworkReply> curResource;
+		QNetworkAccessManager accessManager;
+	};
+
+	class DkUpnpRendererConnectionManager : public Herqq::Upnp::Av::HRendererConnectionManager {
+		Q_OBJECT
+		protected:
+			virtual Herqq::Upnp::Av::HRendererConnection* doCreate(Herqq::Upnp::Av::HAbstractConnectionManagerService* service, Herqq::Upnp::Av::HConnectionInfo* cinfo);
+
+		private slots:
+			void conNewImage(QImage img) {emit newImage(img);};
+		private:
+			Herqq::Upnp::Av::HRendererConnection* rendererConnection;
+		signals:
+			void newImage(QImage img);
+
+	};
+
+	class DkUpnpRendererDeviceHost : public Herqq::Upnp::HDeviceHost {
+		Q_OBJECT
+		public:
+			DkUpnpRendererDeviceHost () {};
+			virtual ~DkUpnpRendererDeviceHost () {qDebug() << "deleting Devicehost!";};
+			bool startDevicehost(QString pathToConfig);
+			void stopDevicehost(); 
+		signals:
+			void newImage(QImage);
+			private slots:
+				void cmNewImage(QImage img) {emit newImage(img);};
+		private:
+			DkUpnpRendererConnectionManager* connectionManager;
+	};
 
 };

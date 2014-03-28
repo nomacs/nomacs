@@ -167,18 +167,29 @@ bool DkUpnpControlPoint::init() {
 	localIpAddresses.clear();
 	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
 	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
-		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
-		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
-			localIpAddresses << itr->ip();
-			qDebug() << "ip:" << itr->ip();
+		if (networkInterfacesItr->flags() & QNetworkInterface::IsUp) {
+			QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
+			for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
+				if (itr->ip() != QHostAddress::LocalHost) {
+					localIpAddresses << itr->ip();
+				}
+			}
 		}
 	}
 
+	//foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+	//	if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost)) {
+	//		qDebug() << address.toString();
+	//		localIpAddresses << address;
+	//		qDebug() << "add:" << address;
+	//	}
+	//}
 
-	//Herqq::Upnp::HControlPointConfiguration config;
-	//config.setNetworkAddressesToUse(localIpAddresses);
+	Herqq::Upnp::HControlPointConfiguration config;
+	config.setNetworkAddressesToUse(localIpAddresses);
 
-	controlPoint = new Herqq::Upnp::HControlPoint(/*config, */this);
+	controlPoint = new Herqq::Upnp::HControlPoint(/*config,*/ this);
+	
 	connect(controlPoint, SIGNAL(rootDeviceOnline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOnline(Herqq::Upnp::HClientDevice*)));
 	connect(controlPoint, SIGNAL(rootDeviceOffline(Herqq::Upnp::HClientDevice*)), this, SLOT(rootDeviceOffline(Herqq::Upnp::HClientDevice*)));
 
@@ -222,16 +233,25 @@ void DkUpnpControlPoint::rootDeviceOnline(Herqq::Upnp::HClientDevice* clientDevi
 		}
 
 		Herqq::Upnp::HClientActions actions = service->actions();
+		qDebug() << "service:" << service->description();
 		Herqq::Upnp::HActionArguments aas;
 		Herqq::Upnp::HClientActionOp cao;
 
 		// ask for LAN server
-		//connect(actions.value("getTCPServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
-		//cao = actions.value("getTCPServerURL")->beginInvoke(aas);
+		if (!actions.value("getTCPServerURL")) {
+			qDebug() << "action.value(getTCPServerURL) is null ... aborting";
+			return;
+		}
+		connect(actions.value("getTCPServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
+		cao = actions.value("getTCPServerURL")->beginInvoke(aas);
 
 		// ask for RC server
-		//connect(actions.value("getWhitelistServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
-		//cao = actions.value("getWhitelistServerURL")->beginInvoke(aas);
+		if (!actions.value("getWhiteListServerURL")) {
+			qDebug() << "action.value(getWhiteListServerURL) is null ... aborting";
+			return;
+		}
+		connect(actions.value("getWhiteListServerURL"), SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)), this, SLOT(invokeComplete(Herqq::Upnp::HClientAction*, const Herqq::Upnp::HClientActionOp&)));
+		cao = actions.value("getWhiteListServerURL")->beginInvoke(aas);
 
 
 		connect(service->stateVariables().value("tcpServerPort"), SIGNAL(valueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)), this, SLOT(tcpValueChanged(const Herqq::Upnp::HClientStateVariable*, const Herqq::Upnp::HStateVariableEvent&)));
@@ -365,6 +385,110 @@ bool DkUpnpControlPoint::isLocalHostAddress(const QHostAddress address) {
 
 bool DkUpnpControlPoint::isStarted() {
 	return cpIsStarted;	
+}
+
+// DkUpnpRendererConnectionManager --------------------------------------------------------------------
+Herqq::Upnp::Av::HRendererConnection* DkUpnpRendererConnectionManager::doCreate(Herqq::Upnp::Av::HAbstractConnectionManagerService* service, Herqq::Upnp::Av::HConnectionInfo* cinfo) {
+	QString contentFormat = cinfo->protocolInfo().contentFormat();
+	qDebug() << "content:" << contentFormat;
+	rendererConnection = new DkUpnpRendererConnection();
+	connect(rendererConnection, SIGNAL(newImage(QImage)), this, SLOT(conNewImage(QImage)));
+	return rendererConnection;
+}
+
+// DkUpnpRendererDeviceHost
+bool DkUpnpRendererDeviceHost::startDevicehost(QString pathToConfig) {
+	//Herqq::Upnp::SetLoggingLevel(Herqq::Upnp::Debug);
+	qDebug() << "starting DeviceHost";
+	QFile f(pathToConfig);
+	if (!f.exists()) {
+		qDebug() << "DkUpnpRendererDeviceHost: config file not found";
+		return false;
+	}
+
+//	QUuid uuid = QUuid::createUuid();
+//	QString uuidString = uuid.toString();
+//	uuidString.replace("{","");
+//	uuidString.replace("}","");
+//	QString newXMLpath = QDir::tempPath() + QDir::separator() + uuidString + ".xml";
+//
+//
+//	QByteArray fileData;
+//	f.open(QIODevice::ReadOnly);
+//	fileData = f.readAll();
+//	QString fileText(fileData);
+//	fileText.replace("insert-new-uuid-here", uuidString);
+//#ifdef WIN32
+//	fileText.replace("nomacs-service.xml", QDir::temp().dirName()+"/nomacs-service.xml");
+//#else
+//	fileText.replace("nomacs-service.xml", "/nomacs-service.xml");
+//#endif // WIN32
+//
+//
+//	f.seek(0);
+//	QFile newXMLfile(newXMLpath);
+//	newXMLfile.open(QIODevice::WriteOnly);
+//	newXMLfile.write(fileText.toUtf8());
+//	f.close();
+//	newXMLfile.close();
+//
+//	QFileInfo fileInfo = QFileInfo(f);
+//	QFile serviceXML(fileInfo.absolutePath() + QDir::separator() + "nomacs-service.xml");
+//	if (!serviceXML.exists())
+//		qDebug() << "nomacs-service.xml file does not exist";
+//	QString newServiceXMLPath = QDir::tempPath()+ QDir::separator() + "nomacs-service.xml";
+//	if (!serviceXML.copy(newServiceXMLPath))
+//		qDebug() << "unable to copy nomacs-service.xml to " << newServiceXMLPath << ", perhaps files already exists";
+//	QFile newServiceXMLFile(QDir::tempPath()+ QDir::separator() + "nomacs-service.xml");
+
+	Herqq::Upnp::Av::HMediaRendererDeviceConfiguration mediaRendererConfig;
+	connectionManager = new DkUpnpRendererConnectionManager();
+	connect(connectionManager, SIGNAL(newImage(QImage)), this, SLOT(cmNewImage(QImage)));
+	mediaRendererConfig.setRendererConnectionManager(connectionManager, true);
+
+	Herqq::Upnp::Av::HAvDeviceModelCreator avCreator;
+	avCreator.setMediaRendererConfiguration(mediaRendererConfig);
+
+	Herqq::Upnp::HDeviceConfiguration config;
+	config.setPathToDeviceDescription(pathToConfig);
+
+	Herqq::Upnp::HDeviceHostConfiguration hostConfig;
+	hostConfig.setDeviceModelCreator(avCreator);
+	hostConfig.add(config);
+
+
+	bool retVal = init(hostConfig);
+	if (!retVal) {
+		qDebug() << "error while initializing device host:\n" << errorDescription();
+	}
+
+	return retVal;
+}
+
+
+void DkUpnpRendererDeviceHost::stopDevicehost() {
+	qDebug() << "DkUpnpRenderDeviceHost: stopping DeviceHost";
+	quit();
+}
+
+DkUpnpRendererConnection::DkUpnpRendererConnection() {
+}
+
+qint32 DkUpnpRendererConnection::doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata/* =0 */) {
+	qDebug() << "doSetResource url:" << resourceUri;
+	QNetworkRequest req(resourceUri);
+	curResource = accessManager.get(req);
+	bool ok = connect(curResource, SIGNAL(finished()), this, SLOT(finished()));
+	
+	return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;
+}
+
+void DkUpnpRendererConnection::finished() {
+	qDebug() << "finished";
+	QByteArray currentData = curResource->readAll();
+	QImage img;
+	img.loadFromData(currentData);
+	emit newImage(img);
 }
 
 }

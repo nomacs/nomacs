@@ -3653,6 +3653,11 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_auto_connect]->setCheckable(true);
 	connect(syncActions[menu_sync_auto_connect], SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
 
+	syncActions[menu_sync_start_upnp] = new QAction(tr("&Start Upnp"), this);
+	syncActions[menu_sync_start_upnp]->setStatusTip(tr("Starts an Upnp Media Renderer."));
+	syncActions[menu_sync_start_upnp]->setCheckable(true);
+	connect(syncActions[menu_sync_start_upnp], SIGNAL(triggered(bool)), this, SLOT(startUpnpRenderer(bool)));
+
 	syncActions[menu_sync_remote_control] = new QAction(tr("&Remote Control"), this);
 	//syncActions[menu_sync_remote_control]->setShortcut(QKeySequence(shortcut_connect_all));
 	syncActions[menu_sync_remote_control]->setStatusTip(tr("Automatically Receive Images From Your Remote Connection."));
@@ -3691,6 +3696,10 @@ void DkNoMacsSync::createMenu() {
 	syncMenu->addAction(syncActions[menu_sync_pos]);
 	syncMenu->addAction(syncActions[menu_sync_arrange]);
 	syncMenu->addAction(syncActions[menu_sync_auto_connect]);
+#ifdef WITH_UPNP
+	syncMenu->addAction(syncActions[menu_sync_start_upnp]);
+#endif // WITH_UPNP
+
 }
 
 // mouse events
@@ -3789,6 +3798,18 @@ void DkNoMacsSync::tcpAutoConnect(bool connect) {
 	DkSettings::sync.syncMode = (connect) ? DkSettings::sync_mode_auto : DkSettings::sync_mode_default;
 }
 
+void DkNoMacsSync::startUpnpRenderer(bool start) {
+#ifdef WITH_UPNP
+	if (!upnpRendererDeviceHost) {
+		upnpRendererDeviceHost = QSharedPointer<DkUpnpRendererDeviceHost>(new DkUpnpRendererDeviceHost());
+		connect(upnpRendererDeviceHost.data(), SIGNAL(newImage(QImage)), viewport(), SLOT(setImage(QImage)));
+	}
+	if(start)
+		upnpRendererDeviceHost->startDevicehost("descriptions/nomacs_mediarenderer_description.xml");
+	else
+		upnpDeviceHost->stopDevicehost();
+#endif // WITH_UPNP
+}
 
 bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 
