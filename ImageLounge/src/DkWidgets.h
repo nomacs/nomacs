@@ -887,19 +887,27 @@ class DkThumbsSaver : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkThumbsSaver() : thumbsLoader(0), pd(0) {};
+	DkThumbsSaver(QWidget* parent = 0);
 
-	void processDir(const QDir& dir, bool forceLoad);
+	void processDir(QVector<QSharedPointer<DkImageContainerT> > images, bool forceSave);
+
+signals:
+	void numFilesSignal(int currentFileIdx);
 
 public slots:
 	void stopProgress();
+	void thumbLoaded(bool loaded);
+	void loadNext();
 
 protected:
-	std::vector<DkThumbNail> thumbs;
-	DkThumbsLoader* thumbsLoader;
 
 	QFileInfo currentDir;
 	QProgressDialog* pd;
+	int cLoadIdx;
+	QVector<QSharedPointer<DkImageContainerT> > images;
+	bool stop;
+	bool forceSave;
+	int numSaved;
 };
 
 class DkFileSystemModel : public QFileSystemModel {

@@ -76,6 +76,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	openDialog = 0;
 	saveDialog = 0;
 	jpgDialog = 0;
+	thumbSaver = 0;
 	tifDialog = 0;
 	resizeDialog = 0;
 	opacityDialog = 0;
@@ -2884,9 +2885,9 @@ void DkNoMacs::computeThumbsBatch() {
 	if (!forceDialog->exec())
 		return;
 
-	DkThumbsSaver* saver = new DkThumbsSaver();
-	saver->processDir(viewport()->getImageLoader()->getDir(), forceDialog->forceSave());
-
+	if (!thumbSaver)
+		thumbSaver = new DkThumbsSaver(this);
+	thumbSaver->processDir(viewport()->getImageLoader()->getImages(), forceDialog->forceSave());
 }
 
 void DkNoMacs::aboutDialog() {

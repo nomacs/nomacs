@@ -108,15 +108,22 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 	file.open(QFile::ReadOnly);
 	
 	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
+	file.close();
 	bool saved = saveMetaData(ba, force);
-	if (!saved)
+	if (!saved) {
+		qDebug() << "[DkMetaDataT] could not save: " << fileInfo.fileName();
 		return saved;
-	
+	}
+	else if (ba->isEmpty()) {
+		qDebug() << "[DkMetaDataT] could not save: " << fileInfo.fileName() << " empty Buffer!";
+		return false;
+	}
+
 	file.open(QFile::WriteOnly);
-	file.write(ba->data());
+	file.write(ba->data(), ba->size());
 	file.close();
 
-	qDebug() << "[Exiv2] old save metadata used!";
+	qDebug() << "[DkMetaDataT] I saved: " << ba->size();
 
 	return true;
 }
@@ -166,9 +173,10 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 
 	// now get the data again
 	Exiv2::DataBuf exifBuf = exifImgN->io().read(exifImgN->io().size());
-	if (exifBuf.pData_)
-		ba = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));
-	else
+	if (exifBuf.pData_) {
+		QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));
+		ba = tmp;
+	} else
 		return false;
 
 	exifImg = exifImgN;
@@ -184,36 +192,41 @@ int DkMetaDataT::getOrientation() const {
 
 	int orientation = -1;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
+	try {
+		Exiv2::ExifData &exifData = exifImg->exifData();
 
-	if (!exifData.empty()) {
+		if (!exifData.empty()) {
 
-		Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
-		Exiv2::ExifData::iterator pos = exifData.findKey(key);
+			Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");
+			Exiv2::ExifData::iterator pos = exifData.findKey(key);
 
-		if (pos != exifData.end() && pos->count() != 0) {
+			if (pos != exifData.end() && pos->count() != 0) {
 			
-			Exiv2::Value::AutoPtr v = pos->getValue();
+				Exiv2::Value::AutoPtr v = pos->getValue();
 
-			orientation = (int)pos->toFloat();
+				orientation = (int)pos->toFloat();
 
-			switch (orientation) {
-			case 6: orientation = 90;
-				break;
-			case 7: orientation = 90;
-				break;
-			case 3: orientation = 180;
-				break;
-			case 4: orientation = 180;
-				break;
-			case 8: orientation = -90;
-				break;
-			case 5: orientation = -90;
-				break;
-			default: orientation = 0;
-				break;
-			}	
+				switch (orientation) {
+				case 6: orientation = 90;
+					break;
+				case 7: orientation = 90;
+					break;
+				case 3: orientation = 180;
+					break;
+				case 4: orientation = 180;
+					break;
+				case 8: orientation = -90;
+					break;
+				case 5: orientation = -90;
+					break;
+				default: orientation = 0;
+					break;
+				}	
+			}
 		}
+	}
+	catch(...) {
+		return 0;
 	}
 
 	return orientation;

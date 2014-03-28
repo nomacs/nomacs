@@ -282,17 +282,17 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		QRectF r = QRectF(bufferDim.topRight(), img.size());
 		if (height()-yOffset < r.height())
-			r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
+			r.setSize(QSizeF(qFloor(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
 
 		// check if the size is still valid
 		if (r.width() < 1 || r.height() < 1) 
 			continue;
 
 		// center vertically
-		r.moveCenter(QPoint(qRound(r.center().x()), height()/2));
+		r.moveCenter(QPoint(qFloor(r.center().x()), height()/2));
 
 		// update the buffer dim
-		bufferDim.setRight(qRound(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
+		bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
 		thumbRects.push_back(r);
 
 		QRectF imgWorldRect = worldMatrix.mapRect(r);
@@ -311,8 +311,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		if (thumb->hasImage() == DkThumbNail::not_loaded && 
 			DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading) {
+			thumb->fetchThumb();
 			connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
-			thumb->fetchThumbSoft();
 		}
 
 		bool isLeftGradient = worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x();
@@ -1064,9 +1064,8 @@ void DkThumbScene::toggleSquaredThumbs(bool squares) {
 	
 	DkSettings::display.displaySquaredThumbs = squares;
 
-	for (int idx = 0; idx < thumbLabels.size(); idx++) {
+	for (int idx = 0; idx < thumbLabels.size(); idx++)
 		thumbLabels.at(idx)->updateLabel();
-	}
 
 	// well, that's not too beautiful
 	if (DkSettings::display.displaySquaredThumbs)
@@ -1737,48 +1736,63 @@ void DkFolderScrollBar::animateOpacityDown() {
 
 
 // DkThumbsSaver --------------------------------------------------------------------
-void DkThumbsSaver::processDir(const QDir& dir, bool forceLoad) {
-	
-	if (thumbsLoader) {
-		thumbsLoader->stop();
-		thumbsLoader->wait();
-		delete thumbsLoader;
+DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkWidget(parent) {
+	stop = false;
+	cLoadIdx = 0;
+	numSaved = 0;
+}
+
+void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > images, bool forceSave) {
+
+	if (images.empty())
+		return;
+
+	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->file().absolutePath(), tr("Cancel"), 0, (int)images.size(), DkNoMacs::getDialogParent());
+	pd->setWindowTitle(tr("Thumbnails"));
+
+	//pd->setWindowModality(Qt::WindowModal);
+
+	connect(this, SIGNAL(numFilesSignal(int)), pd, SLOT(setValue(int)));
+
+	pd->show();
+
+	this->forceSave = forceSave;
+	this->images = images;
+	loadNext();
+}
+
+void DkThumbsSaver::thumbLoaded(bool loaded) {
+
+	numSaved++;
+	emit numFilesSignal(numSaved);
+
+	if (numSaved == images.size()-1 || stop) {
+		pd->close();
+		stop = true;
 	}
+	else
+		loadNext();
+}
 
-	thumbs.clear();
+void DkThumbsSaver::loadNext() {
+	
+	int missing = DkSettings::resources.maxThumbsLoading-DkSettings::resources.numThumbsLoading;
+	int numLoading = cLoadIdx+missing;
+	int force = (forceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
 
-	if (dir.exists()) {
+	qDebug() << "missing: " << missing << " num loading: " << numLoading;
 
-		thumbsLoader = new DkThumbsLoader(&thumbs, dir);
-		thumbsLoader->setForceLoad(forceLoad);
-
-		pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + dir.absolutePath(), tr("Cancel"), 0, (int)thumbs.size(), DkNoMacs::getDialogParent());
-		pd->setWindowTitle(tr("Thumbnails"));
+	for (int idx = cLoadIdx; idx < images.size() && idx <= numLoading; idx++) {
 		
-		//pd->setWindowModality(Qt::WindowModal);
-
-		connect(pd, SIGNAL(canceled()), thumbsLoader, SLOT(stop()));
-		connect(thumbsLoader, SIGNAL(numFilesSignal(int)), pd, SLOT(setValue(int)));
-		connect(thumbsLoader, SIGNAL(finished()), this, SLOT(stopProgress()));
-
-		pd->show();
-
-		thumbsLoader->start();
-
-		thumbsLoader->loadAll();
+		images.at(idx)->getThumb()->fetchThumb(force);
+		connect(images.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
+		cLoadIdx = idx;
 	}
 }
 
 void DkThumbsSaver::stopProgress() {
 
-	if (pd)
-		pd->hide();
-
-	if (thumbsLoader) {
-		thumbsLoader->stop();
-		thumbsLoader->wait();
-		delete thumbsLoader;
-	}
+	stop = true;
 }
 
 // DkFileSystemModel --------------------------------------------------------------------
