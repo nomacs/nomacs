@@ -93,7 +93,7 @@ protected:
 	bool edited;
 	bool selected;
 
-	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, const QSharedPointer<QByteArray> fileBuffer);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void saveMetaDataIntern(const QFileInfo& fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
 	void init();
@@ -139,7 +139,7 @@ protected:
 	void fetchImage();
 	
 	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo fileInfo);
-	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<QByteArray> fileBuffer);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void saveMetaDataIntern(QSharedPointer<DkBasicLoader> loader);
 
