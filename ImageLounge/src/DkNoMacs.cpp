@@ -3874,16 +3874,13 @@ void DkNoMacsSync::clientInitialized() {
 	//TODO: things that need to be done after the clientManager has finished initialization
 #ifdef WITH_UPNP
 	QObject* obj = QObject::sender();
-	if (obj && obj->objectName() == "lanClient" || obj->objectName() == "rcClient") {
+	if (obj && (obj->objectName() == "lanClient" || obj->objectName() == "rcClient")) {
 		qDebug() << "sender:" << obj->objectName();
 		if (!upnpControlPoint->isStarted()) {
 			qDebug() << "initializing upnpControlPoint";
 			upnpControlPoint->init();
 		}
-	} else {
-		qDebug() << "obj null";
-	}
-	
+	} 
 #endif // WITH_UPNP
 	
 	emit clientInitializedSignal();
