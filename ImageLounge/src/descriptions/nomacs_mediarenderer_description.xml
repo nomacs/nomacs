@@ -14,7 +14,7 @@
         <modelNumber>0.1</modelNumber>
         <modelURL>www.nomacs.org</modelURL>
 		<serialNumber>0123456789</serialNumber>
-        <UDN>uuid:5d794fd2-5fff-4fff-ffff-c07a51363f0a</UDN>
+        <UDN>uuid:insert-new-uuid-here</UDN>
         <serviceList>
             <service>
                 <serviceType>urn:schemas-upnp-org:service:RenderingControl:2</serviceType>

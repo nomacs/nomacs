@@ -3806,7 +3806,7 @@ void DkNoMacsSync::startUpnpRenderer(bool start) {
 		connect(upnpRendererDeviceHost.data(), SIGNAL(newImage(QImage)), viewport(), SLOT(setImage(QImage)));
 	}
 	if(start)
-		upnpRendererDeviceHost->startDevicehost("descriptions/nomacs_mediarenderer_description.xml");
+		upnpRendererDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs_mediarenderer_description.xml");
 	else
 		upnpDeviceHost->stopDevicehost();
 #endif // WITH_UPNP
