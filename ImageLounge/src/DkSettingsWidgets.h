@@ -190,10 +190,10 @@ public:
 
 	void writeSettings();
 
-	private slots:
-		void tmpPathButtonPressed();
-		void useTmpPathChanged(int state);
-		void lineEditChanged(QString path);
+private slots:
+	void tmpPathButtonPressed();
+	void useTmpPathChanged(int state);
+	void lineEditChanged(QString path);
 
 private:
 	void init();
@@ -208,9 +208,11 @@ private:
 	DkSpinBoxWidget* skipImgWidget;
 	DkSpinBoxWidget* numberFiles;
 	QCheckBox* cbWrapImages;
-
-
+	
 	QGroupBox* 	gbDragDrop;
+
+	QRadioButton* rbWaitForImage;
+	QRadioButton* rbSkipImage;
 
 	int filter;
 	QString tmpPath;

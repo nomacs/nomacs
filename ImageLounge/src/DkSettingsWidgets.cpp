@@ -639,6 +639,22 @@ void DkFileWidget::createLayout() {
 	vbTmpPathWidget->addWidget(cbUseTmpPath);
 	vbTmpPathWidget->addWidget(lineEditWidget);
 
+	// image loading
+	rbSkipImage = new QRadioButton(tr("Skip Images"), this);
+	rbSkipImage->setToolTip(tr("Images are skipped until the next button is released."));
+	rbSkipImage->setChecked(!DkSettings::resources.waitForLastImg);
+	rbWaitForImage = new QRadioButton(tr("Wait for Images to be Loaded"), this);
+	rbWaitForImage->setToolTip(tr("A new image is loaded after displaying the last image"));
+	rbWaitForImage->setChecked(DkSettings::resources.waitForLastImg);
+
+	QButtonGroup* bgImageLoading = new QButtonGroup(this);
+	bgImageLoading->addButton(rbSkipImage);
+	bgImageLoading->addButton(rbWaitForImage);
+
+	QGroupBox* gbImageLoading = new QGroupBox(tr("Image Loading Policy"), this);
+	QVBoxLayout* imageLoadingLayout = new QVBoxLayout(gbImageLoading);
+	imageLoadingLayout->addWidget(rbSkipImage);
+	imageLoadingLayout->addWidget(rbWaitForImage);
 
 	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
 	numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
@@ -647,6 +663,7 @@ void DkFileWidget::createLayout() {
 	cbWrapImages = new QCheckBox(tr("Loop Images"));
 
 	widgetLayout->addWidget(gbDragDrop);
+	widgetLayout->addWidget(gbImageLoading);
 	leftLayout->addWidget(skipImgWidget);
 	leftLayout->addWidget(numberFiles);
 	leftLayout->addWidget(cbWrapImages);
@@ -654,7 +671,6 @@ void DkFileWidget::createLayout() {
 	subWidgetLayout->addLayout(leftLayout);
 	subWidgetLayout->addLayout(rightLayout);
 	widgetLayout->addLayout(subWidgetLayout);
-
 }
 
 void DkFileWidget::writeSettings() {
@@ -663,6 +679,7 @@ void DkFileWidget::writeSettings() {
 	DkSettings::global.loop = cbWrapImages->isChecked();
 	DkSettings::global.useTmpPath = cbUseTmpPath->isChecked();
 	DkSettings::global.tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
+	DkSettings::resources.waitForLastImg = rbWaitForImage->isChecked();
 
 }
 

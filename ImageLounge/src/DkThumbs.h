@@ -84,9 +84,9 @@ public:
 	 * Sets the thumbnail image.
 	 * @param img the thumbnail
 	 **/ 
-	void setImage(QImage img) {
+	virtual void setImage(QImage img) {
 		this->img = img;
-	}
+	};
 
 	void removeBlackBorder(QImage& img);
 
@@ -206,6 +206,11 @@ public:
 			return loading;
 		else
 			return DkThumbNail::hasImage();
+	};
+
+	void setImage(QImage img) {
+		DkThumbNail::setImage(img);
+		emit thumbLoadedSignal(true);
 	};
 
 signals:

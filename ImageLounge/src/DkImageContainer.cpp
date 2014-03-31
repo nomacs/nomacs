@@ -132,10 +132,10 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 void DkImageContainer::clear() {
 
 	//if (edited) // trigger gui question
-	if (imgLoaded() == loading || imgLoaded() == loading_canceled) {
-		//qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " NOT cleared...";
-		return;
-	}
+	//if (imgLoaded() == loading || imgLoaded() == loading_canceled) {
+	//	//qDebug() << "[DkImageContainer] " << fileInfo.fileName() << " NOT cleared...";
+	//	return;
+	//}
 
 	//saveMetaData();
 	loader->release();
@@ -225,7 +225,7 @@ bool DkImageContainer::loadImage() {
 	if (fileBuffer->isEmpty())
 		fileBuffer = loadFileToBuffer(fileInfo);
 
-	loader = loadImageIntern(fileInfo, fileBuffer);
+	loader = loadImageIntern(fileInfo, loader, fileBuffer);
 
 	return loader->hasImage();
 }
@@ -242,11 +242,8 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fi
 }
 
 
-QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo fileInfo, const QSharedPointer<QByteArray> fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainer::loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer) {
 
-	// checks performed so load the file
-	//QSharedPointer<DkBasicLoader> basicLoader(new DkBasicLoader());
-	
 	try {
 		loader->loadGeneral(fileInfo, fileBuffer, true);
 	} catch(...) {}
@@ -313,13 +310,11 @@ DkImageContainerT::~DkImageContainerT() {
 	imageWatcher.blockSignals(true);
 	imageWatcher.cancel();
 
-	//metaDataWatcher.blockSignals(true);
-	//metaDataWatcher.cancel();
-	loader->saveMetaData(fileInfo);
+	saveMetaData();
 
 	// we have to wait here
-	bufferWatcher.waitForFinished();
-	imageWatcher.waitForFinished();
+	saveMetaDataWatcher.blockSignals(true);
+	saveImageWatcher.blockSignals(true);
 	saveImageWatcher.waitForFinished();
 	saveMetaDataWatcher.waitForFinished();
 }
@@ -459,7 +454,7 @@ void DkImageContainerT::fetchImage() {
 		thumb->fetchThumb(DkThumbNailT::force_exif_thumb, fileBuffer);
 
 	QFuture<QSharedPointer<DkBasicLoader> > future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadImageIntern, fileInfo, fileBuffer);
+		&nmc::DkImageContainerT::loadImageIntern, fileInfo, loader, fileBuffer);
 
 	imageWatcher.setFuture(future);
 }
@@ -497,6 +492,9 @@ void DkImageContainerT::loadingFinished() {
 		loadState = exists_not;
 		return;
 	}
+	//else {
+	//	thumb->setImage(DkImage::createThumb(loader->image()));
+	//}
 
 	// clear file buffer if it exceeds a certain size?! e.g. psd files
 	if (fileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
@@ -612,9 +610,9 @@ QSharedPointer<QByteArray> DkImageContainerT::loadFileToBuffer(const QFileInfo f
 	return DkImageContainer::loadFileToBuffer(fileInfo);
 }
 
-QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QFileInfo fileInfo, const QSharedPointer<QByteArray> fileBuffer) {
+QSharedPointer<DkBasicLoader> DkImageContainerT::loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer) {
 
-	return DkImageContainer::loadImageIntern(fileInfo, fileBuffer);
+	return DkImageContainer::loadImageIntern(fileInfo, loader, fileBuffer);
 }
 
 QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression) {
