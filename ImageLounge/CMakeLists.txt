@@ -348,9 +348,10 @@ IF(ENABLE_UPNP)
 			add_definitions(-DWITH_UPNP)
 		ENDIF(HUpnp_FOUND)
 	ELSE(MSVC) # not really working, just for testing
-		find_path(HUPNP_INCLUDE_DIR NAMES "HUpnpCore/"  PATHS "/usr/include" DOC "Path to the hupnp include directory" NO_DEFAULT_PATH)
-        set(HUPNP_LIBS "HUpnp")
-		add_definitions(-DWITH_UPNP)
+	# not working due to HAav library ... look for other solutions
+#		find_path(HUPNP_INCLUDE_DIR NAMES "HUpnpCore/"  PATHS "/usr/include" DOC "Path to the hupnp include directory" NO_DEFAULT_PATH)
+#        set(HUPNP_LIBS "HUpnp")
+#		add_definitions(-DWITH_UPNP)
 	ENDIF(MSVC)
 ENDIF(ENABLE_UPNP)
 	
