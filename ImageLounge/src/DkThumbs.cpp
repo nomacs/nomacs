@@ -75,10 +75,12 @@ QColor DkThumbNail::computeColorIntern() {
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  **/ 
-QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale) {
+QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QByteArray> ba, 
+								  int forceLoad, int maxThumbSize, int minThumbSize, 
+								  bool rescale) {
 	
 	DkTimer dt;
-	qDebug() << "[thumb] file: " << file.absoluteFilePath();
+	//qDebug() << "[thumb] file: " << file.absoluteFilePath();
 
 	// see if we can read the thumbnail from the exif data
 	QImage thumb;
@@ -100,6 +102,8 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 	if (thumb.isNull() && forceLoad == force_exif_thumb)
 		return QImage();
+
+	bool exifThumb = !thumb.isNull();
 
 	int orientation = metaData.getOrientation();
 	int imgW = thumb.width();
@@ -143,7 +147,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		}
 	}
 
-	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb) {
+	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb) {
 		
 		// flip size if the image is rotated by 90°
 		if (metaData.isTiff() && abs(orientation) == 90) {
@@ -205,8 +209,33 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		thumb = thumb.transformed(rotationMatrix);
 	}
 
+	// save the thumbnail if the caller either forces it, or the save thumb is requested and the image did not have any before
+	if (forceLoad == force_save_thumb || (forceLoad == save_thumb && !exifThumb)) {
+		
+		try {
+
+			QImage sThumb = thumb.copy();
+			if (orientation != -1 && orientation != 0) {
+				QTransform rotationMatrix;
+				rotationMatrix.rotate(-(double)orientation);
+				sThumb = sThumb.transformed(rotationMatrix);
+			}
+
+			metaData.setThumbnail(thumb);
+
+			if (!ba || ba->isEmpty())
+				metaData.saveMetaData(file);
+			else
+				metaData.saveMetaData(file, ba);
+		}
+		catch(...) {
+			qDebug() << "Sorry, I could not save the metadata";
+		}
+	}
+
+
 	if (!thumb.isNull())
-		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal());
+		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal()) << ((exifThumb) ? " from EXIV" : " from File");
 
 	//if (!thumb.isNull())
 	//	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
@@ -274,12 +303,8 @@ DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) 
 	fetchingColor = false;
 	forceLoad = do_not_force;
 
-	waitForLoadingTimer.setSingleShot(false);
-	waitForLoadingTimer.setInterval(100);
-
 	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
 	connect(&colorWatcher, SIGNAL(finished()), this, SLOT(colorLoaded()));
-	connect(&waitForLoadingTimer, SIGNAL(timeout()), this, SLOT(fetchThumbSoft()));
 }
 
 DkThumbNailT::~DkThumbNailT() {
@@ -325,20 +350,13 @@ void DkThumbNailT::colorLoaded() {
 	qDebug() << "mean color: " << meanColor;
 }
 
-void DkThumbNailT::fetchThumbSoft() {
+bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByteArray> ba) {
 
-	if (DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading)
-		fetchThumb();
-	else
-		waitForLoadingTimer.start();
-}
-
-void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteArray> ba) {
-
-	waitForLoadingTimer.stop();
+	if (forceLoad == force_full_thumb || forceLoad == force_save_thumb || forceLoad == save_thumb)
+		img = QImage();
 
 	if (!img.isNull() || !imgExists || fetching)
-		return;
+		return false;
 
 	// we have to do our own bool here
 	// watcher.isRunning() returns false if the thread is waiting in the pool
@@ -350,6 +368,8 @@ void DkThumbNailT::fetchThumb(int forceLoad /* = false */, QSharedPointer<QByteA
 
 	thumbWatcher.setFuture(future);
 	DkSettings::resources.numThumbsLoading++;
+
+	return true;
 }
 
 
@@ -364,14 +384,12 @@ void DkThumbNailT::thumbLoaded() {
 
 	img = future.result();
 	
-	if (!img.isNull()) {
-		emit thumbUpdated();
-	}
-	else if (forceLoad != force_exif_thumb)
+	if (img.isNull() && forceLoad != force_exif_thumb)
 		imgExists = false;
 
 	fetching = false;
 	DkSettings::resources.numThumbsLoading--;
+	emit thumbLoadedSignal(img.isNull());
 }
 
 //// DkThumbPool --------------------------------------------------------------------

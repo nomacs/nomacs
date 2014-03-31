@@ -143,6 +143,7 @@ public:
 
 		return qImg;
 	}
+
 #endif
 
 	/**

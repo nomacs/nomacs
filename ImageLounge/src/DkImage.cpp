@@ -518,11 +518,31 @@ void DkImageLoader::lastFile() {
 	loadFileAt(-1);
 }
 
-void DkImageLoader::unloadFile() {
+bool DkImageLoader::unloadFile() {
 
 	if (!currentImage)
-		return;
+		return true;
 
+	if (currentImage->isEdited()) {
+		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Save Image"), tr("Do you want to save changes to:\n%1").arg(currentImage->file().fileName()), 
+			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), DkNoMacs::getDialogParent());
+
+		msgBox->setObjectName("saveEditDialog");
+
+		int answer = msgBox->exec();
+
+		if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
+			currentImage->saveImageThreaded(currentImage->file());
+		}
+		else if (answer == QMessageBox::Cancel) {
+			return false;
+		}
+		else {
+			currentImage->saveMetaDataThreaded();
+		}
+	}
+
+	return true;
 	//if (currentImage->isEdited())
 		// ask user for saving
 
@@ -545,14 +565,16 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	if (currentImage) {
 
+		// do we load a new image?
 		if (!updatePointer) {
-				currentImage->cancel();
+			currentImage->cancel();
 
 			if (currentImage->imgLoaded() == DkImageContainer::loading_canceled)
 				emit showInfoSignal(newImg->file().fileName(), 3000, 1);
 
 			currentImage->saveMetaDataThreaded();
-			if (!DkSettings::resources.cacheMemory) 
+
+			if (!DkSettings::resources.cacheMemory)
 				currentImage->clear();
 		}
 		currentImage->receiveUpdates(this, false);
@@ -1227,7 +1249,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " fully cached...";
 		}
 		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory) {
-			images.at(idx)->fetchFile();
+			images.at(idx)->fetchFile();		// TODO: crash detected here
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " file fetched...";
 		}
 	}

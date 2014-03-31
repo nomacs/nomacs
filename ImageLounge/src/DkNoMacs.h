@@ -110,6 +110,7 @@ class DkRCManagerThread;
 class DkTransferToolBar;
 class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
+class DkThumbsSaver;
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
 class DkUpnpDeviceHost;
@@ -655,6 +656,7 @@ protected:
 	DkExplorer* explorer;
 	DkExportTiffDialog* exportTiffDialog;
 	DkSettingsDialog* settingsDialog;
+	DkThumbsSaver* thumbSaver;
 
 	DkImageManipulationDialog* imgManipulationDialog;
 

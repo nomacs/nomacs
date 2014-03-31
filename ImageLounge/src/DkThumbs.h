@@ -167,6 +167,8 @@ public:
 		do_not_force,
 		force_exif_thumb,
 		force_full_thumb,
+		save_thumb,
+		force_save_thumb,
 	};
 
 protected:
@@ -191,7 +193,7 @@ public:
 	DkThumbNailT(QFileInfo file = QFileInfo(), QImage img = QImage());
 	~DkThumbNailT();
 
-	void fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 	void fetchColor();
 
 	/**
@@ -207,11 +209,8 @@ public:
 	};
 
 signals:
-	void thumbUpdated();
+	void thumbLoadedSignal(bool loaded = true);
 	void colorUpdated();
-
-public slots:
-	void fetchThumbSoft();
 
 protected slots:
 	void thumbLoaded();
@@ -226,7 +225,6 @@ protected:
 	bool fetching;
 	bool fetchingColor;
 	int forceLoad;
-	QTimer waitForLoadingTimer;
 };
 
 //class DkThumbPool : public QObject {

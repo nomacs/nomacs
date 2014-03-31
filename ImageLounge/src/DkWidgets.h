@@ -65,6 +65,8 @@
 #include <QGraphicsItem>
 #include <QtConcurrentRun>
 #include <QMimeData>
+#include <QTimeLine>
+#include <QGraphicsItemAnimation>
 
 #if QT_VERSION < 0x050000
 #include <QPlastiqueStyle>
@@ -632,7 +634,7 @@ private:
 	QRectF newFileRect;
 	bool scrollToCurrentImage;
 	bool isPainted;
-
+	
 	void init();
 	//void clearThumbs();
 	//void indexDir(int force = DkThumbsLoader::not_forced);
@@ -646,10 +648,12 @@ class DkThumbLabel : public QObject, public QGraphicsPixmapItem {
 
 public:
 	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem* parent = 0);
+	~DkThumbLabel();
 
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
 	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
 	QRectF boundingRect() const;
+	QPainterPath shape() const;
 	void updateSize();
 	void setVisible(bool visible);
 
@@ -670,11 +674,13 @@ protected:
 	QSharedPointer<DkThumbNailT> thumb;
 	QLabel* imgLabel;
 	bool thumbInitialized;
+	bool fetchingThumb;
 	QPen noImagePen;
 	QBrush noImageBrush;
 	QPen selectPen;
 	QBrush selectBrush;
 	bool isHovered;
+	QPointF lastMove;
 };
 
 class DkThumbScene : public QGraphicsScene {
@@ -691,6 +697,7 @@ public slots:
 	void loadFile(QFileInfo& file);
 	void increaseThumbs();
 	void decreaseThumbs();
+	void toggleSquaredThumbs(bool squares);
 	void resizeThumbs(float dx);
 	void showFile(const QFileInfo& file);
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
@@ -700,6 +707,7 @@ public slots:
 signals:
 	void loadFileSignal(QFileInfo file);
 	void statusInfoSignal(QString msg, int pos = 0);
+	void thumbLoadedSignal();
 
 protected:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;
@@ -711,7 +719,8 @@ protected:
 	bool firstLayout;
 	bool itemClicked;
 
-	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+	QVector<DkThumbLabel* > thumbLabels;
+	QList<DkThumbLabel* > thumbsNotLoaded;
 };
 
 class DkThumbsView : public QGraphicsView {
@@ -722,6 +731,9 @@ public:
 
 signals:
 	void updateDirSignal(QFileInfo file);
+
+public slots:
+	void fetchThumbs();
 
 protected:
 	void wheelEvent(QWheelEvent *event);
@@ -745,6 +757,7 @@ public:
 		select_all,
 		zoom_in,
 		zoom_out,
+		display_squares,
 
 		actions_end
 	};
@@ -874,19 +887,27 @@ class DkThumbsSaver : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkThumbsSaver() : thumbsLoader(0), pd(0) {};
+	DkThumbsSaver(QWidget* parent = 0);
 
-	void processDir(const QDir& dir, bool forceLoad);
+	void processDir(QVector<QSharedPointer<DkImageContainerT> > images, bool forceSave);
+
+signals:
+	void numFilesSignal(int currentFileIdx);
 
 public slots:
 	void stopProgress();
+	void thumbLoaded(bool loaded);
+	void loadNext();
 
 protected:
-	std::vector<DkThumbNail> thumbs;
-	DkThumbsLoader* thumbsLoader;
 
 	QFileInfo currentDir;
 	QProgressDialog* pd;
+	int cLoadIdx;
+	QVector<QSharedPointer<DkImageContainerT> > images;
+	bool stop;
+	bool forceSave;
+	int numSaved;
 };
 
 class DkFileSystemModel : public QFileSystemModel {

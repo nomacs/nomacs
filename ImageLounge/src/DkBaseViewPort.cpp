@@ -310,7 +310,9 @@ QImage DkBaseViewPort::getCurrentImageRegion() {
 	return imgR;
 }
 
-void DkBaseViewPort::unloadImage() {
+bool DkBaseViewPort::unloadImage(bool fileChange) {
+
+	return true;
 }
 
 // events --------------------------------------------------------------------

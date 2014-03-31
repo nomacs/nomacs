@@ -689,11 +689,11 @@ bool DkBasicLoader::writeBufferToFile(const QFileInfo& fileInfo, const QSharedPo
 
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::WriteOnly);
-	qint64 bytesWritten = file.write(*ba.data());
+	qint64 bytesWritten = file.write(*ba.data(), ba->size());
 	file.close();
 	qDebug() << "[DkBasicLoader] buffer saved, bytes written: " << bytesWritten;
 
-	if (!bytesWritten)
+	if (!bytesWritten || bytesWritten == -1)
 		return false;
 
 	return true;

@@ -153,6 +153,7 @@ public:
 		bool smallIcons;
 		bool toolbarGradient;
 		bool showBorder;
+		bool displaySquaredThumbs;
 	};
 
 	struct Global {
@@ -220,6 +221,7 @@ public:
 		QString preferredExtension;
 		int numThumbsLoading;
 		int maxThumbsLoading;
+		bool gammaCorrection;
 	};
 
 	//enums for checkboxes - divide in camera data and description
