@@ -762,7 +762,6 @@ void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersO
 	DkSettings::sync.recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
 	DkSettings::sync.recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
 
-
 }
 
 
@@ -1189,7 +1188,7 @@ void DkUpdater::checkForUpdates() {
 	DkSettings::save();
 
 #ifdef WIN32
-	QUrl url ("http://www.nomacs.org/version_win_stable");
+	QUrl url ("http://www.nomacs.org/version_win_beta");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
 #elif defined Q_WS_MAC
