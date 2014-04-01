@@ -40,6 +40,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QPushButton>
 
 namespace nmc {
 
@@ -58,10 +59,11 @@ public:
 	~DkMessageBox();
 
 	virtual void setVisible(bool visible);
+	void setDefaultButton(QMessageBox::StandardButton button);
 
-	public slots:
-		void buttonClicked(QAbstractButton* button);
-		int exec();
+public slots:
+	void buttonClicked(QAbstractButton* button);
+	int exec();
 
 protected:
 

@@ -262,7 +262,7 @@ void DkImageContainer::saveMetaData() {
 }
 
 
-void DkImageContainer::saveMetaDataIntern(const QFileInfo& fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
+void DkImageContainer::saveMetaDataIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
 	loader->saveMetaData(fileInfo, fileBuffer);
 }
@@ -315,8 +315,8 @@ DkImageContainerT::~DkImageContainerT() {
 	// we have to wait here
 	saveMetaDataWatcher.blockSignals(true);
 	saveImageWatcher.blockSignals(true);
-	saveImageWatcher.waitForFinished();
-	saveMetaDataWatcher.waitForFinished();
+	//saveImageWatcher.waitForFinished();
+	//saveMetaDataWatcher.waitForFinished();
 }
 
 void DkImageContainerT::clear() {
@@ -540,17 +540,17 @@ void DkImageContainerT::saveMetaDataThreaded() {
 
 	fileUpdateTimer.stop();
 	QFuture<void> future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::saveMetaDataIntern, loader);
+		&nmc::DkImageContainerT::saveMetaDataIntern, fileInfo, loader, fileBuffer);
 
 }
 
-bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, int compression /* = -1 */) {
+bool DkImageContainerT::saveImageThreaded(const QFileInfo fileInfo, int compression /* = -1 */) {
 
 	return saveImageThreaded(fileInfo, loader->image(), compression);
 }
 
 
-bool DkImageContainerT::saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression /* = -1 */) {
+bool DkImageContainerT::saveImageThreaded(const QFileInfo fileInfo, const QImage saveImg, int compression /* = -1 */) {
 
 	saveImageWatcher.waitForFinished();
 
@@ -622,7 +622,7 @@ QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo fileInfo, QSharedPo
 	return DkImageContainer::saveImageIntern(fileInfo, loader, saveImg, compression);
 }
 
-void DkImageContainerT::saveMetaDataIntern(QSharedPointer<DkBasicLoader> loader) {
+void DkImageContainerT::saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
 	return DkImageContainer::saveMetaDataIntern(fileInfo, loader, fileBuffer);
 }

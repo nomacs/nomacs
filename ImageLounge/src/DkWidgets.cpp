@@ -858,7 +858,7 @@ void DkThumbLabel::setVisible(bool visible) {
 void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 
 	if (!fetchingThumb && thumb->hasImage() == DkThumbNail::not_loaded && 
-		DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading) {
+		DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading*2) {
 		thumb->fetchThumb();
 		fetchingThumb = true;
 	}
@@ -1269,7 +1269,7 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 
 void DkThumbsView::fetchThumbs() {
 
-	int maxThreads = DkSettings::resources.maxThumbsLoading;
+	int maxThreads = DkSettings::resources.maxThumbsLoading*2;
 	
 	// don't do anything if it is loading anyway
 	if (DkSettings::resources.numThumbsLoading)
@@ -1369,7 +1369,7 @@ void DkThumbScrollWidget::setDir(QFileInfo file) {
 
 void DkThumbScrollWidget::setVisible(bool visible) {
 
-	DkWidget::setVisible(visible);
+	QWidget::setVisible(visible);
 	
 	if (visible)
 		thumbsScene->updateThumbLabels();

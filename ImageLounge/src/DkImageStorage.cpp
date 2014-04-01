@@ -684,18 +684,21 @@ void DkImageStorage::computeImage() {
 		if (s.width() < 32 || s.height() < 32)
 			break;
 
-		DkImage::gammaToLinear(resizedImg);
+		//if (!img.colorTable().isEmpty())
+			DkImage::gammaToLinear(resizedImg);
 
 #ifdef WITH_OPENCV
 		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
 		cv::Mat tmp;
 		cv::resize(rImgCv, tmp, cv::Size(s.width(), s.height()), 0, 0, CV_INTER_AREA);
 		resizedImg = DkImage::mat2QImage(tmp);
-		resizedImg.setColorTable(img.colorTable());		// Not sure why we turned the color tables off
 #else
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
+
+		//if (!img.colorTable().isEmpty())
 		DkImage::linearToGamma(resizedImg);
+		//resizedImg.setColorTable(img.colorTable());		// Not sure why we turned the color tables off
 
 		// new image assigned?
 		if (stop)

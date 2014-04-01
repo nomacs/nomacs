@@ -41,10 +41,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 
 	qRegisterMetaType<QFileInfo>("QFileInfo");
 
-	// this seems to be unnecessary complicated, but otherwise we create the watcher in different threads
-	// (depending on if loadFile() is called threaded) which is not a very good ides
-	connect(this, SIGNAL(updateFileWatcherSignal(QFileInfo)), this, SLOT(updateFileWatcher(QFileInfo)), Qt::QueuedConnection);
-
 	dirWatcher = new QFileSystemWatcher(this);
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
@@ -527,6 +523,7 @@ bool DkImageLoader::unloadFile() {
 		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Save Image"), tr("Do you want to save changes to:\n%1").arg(currentImage->file().fileName()), 
 			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), DkNoMacs::getDialogParent());
 
+		msgBox->setDefaultButton(QMessageBox::No);
 		msgBox->setObjectName("saveEditDialog");
 
 		int answer = msgBox->exec();
@@ -1249,6 +1246,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " fully cached...";
 		}
 		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory) {
+			//dt.getIvl();
 			images.at(idx)->fetchFile();		// TODO: crash detected here
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " file fetched...";
 		}
@@ -1469,7 +1467,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 
 void DkImageLoader::sort() {
 	
-	qSort(images.begin(), images.end());
+	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
 	emit updateDirSignal(images);
 }
 

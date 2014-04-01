@@ -95,7 +95,7 @@ protected:
 
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-	void saveMetaDataIntern(const QFileInfo& fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
+	void saveMetaDataIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
 	void init();
 };
 
@@ -115,8 +115,8 @@ public:
 	void receiveUpdates(QObject* obj, bool connectSignals = true);
 
 	bool loadImageThreaded(bool force = false);
-	bool saveImageThreaded(const QFileInfo& fileInfo, const QImage& saveImg, int compression = -1);
-	bool saveImageThreaded(const QFileInfo& fileInfo, int compression = -1);
+	bool saveImageThreaded(const QFileInfo fileInfo, const QImage saveImg, int compression = -1);
+	bool saveImageThreaded(const QFileInfo fileInfo, int compression = -1);
 	void saveMetaDataThreaded();
 
 signals:
@@ -141,7 +141,7 @@ protected:
 	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo fileInfo);
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-	void saveMetaDataIntern(QSharedPointer<DkBasicLoader> loader);
+	void saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer);
 
 	QFutureWatcher<QSharedPointer<QByteArray> > bufferWatcher;
 	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;

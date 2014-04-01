@@ -52,7 +52,7 @@ DkMessageBox::~DkMessageBox() {
 
 	QSettings settings;
 	settings.beginGroup("DkDialog");
-	settings.setValue(objectName(), showAgain->isChecked());
+	settings.setValue(objectName(), !showAgain->isChecked());
 }
 
 void DkMessageBox::setVisible(bool visible) {
@@ -72,7 +72,7 @@ int DkMessageBox::exec() {
 	settings.beginGroup("DkDialog");
 	bool show = settings.value(objName, true).toBool();
 	int answer = settings.value(objName + "-answer", QDialog::Accepted).toInt();
-	showAgain->setChecked(show);
+	showAgain->setChecked(!show);
 
 	if (!show)
 		return answer;
@@ -117,8 +117,7 @@ void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString
 		this, SLOT(buttonClicked(QAbstractButton*)));
 
 	buttonBox->setStandardButtons(QDialogButtonBox::StandardButtons(int(buttons)));
-
-
+	
 	QGridLayout *grid = new QGridLayout;
 #ifndef Q_WS_MAC
 	grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop);
@@ -148,6 +147,18 @@ void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString
 	f.setBold(true);
 	textLabel->setFont(f);
 #endif
+
+}
+
+void DkMessageBox::setDefaultButton(QMessageBox::StandardButton button) {
+	
+	QPushButton* b = buttonBox->button(QDialogButtonBox::StandardButton(button));
+
+	if (!b)
+		return;
+
+	b->setDefault(true);
+	//b->setFocus();
 
 }
 
