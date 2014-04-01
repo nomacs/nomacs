@@ -16,7 +16,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs - Image Lounge"
-!define PRODUCT_VERSION "1.6.4"
+!define PRODUCT_VERSION "2.0.0 Beta"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -501,6 +501,8 @@ Section "MainSection" SEC01#
   File "${BUILD_DIR}\QtGui4.dll"
   File "${BUILD_DIR}\QtNetwork4.dll"
   File "${BUILD_DIR}\zlib1.dll"
+  File "${BUILD_DIR}\HUpnpAV.dll"
+  File "${BUILD_DIR}\HUpnp.dll"
   
   
   File "${README_DIR}\COPYRIGHT"
