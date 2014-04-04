@@ -684,7 +684,16 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage) {
 }
 
 void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
+	
 	this->thumbs = thumbs;
+
+	for (int idx = 0; idx < thumbs.size(); idx++) {
+		if (thumbs.at(idx)->isSelected()) {
+			currentFileIdx = idx;
+			break;
+		}
+	}
+
 	update();
 }
 
