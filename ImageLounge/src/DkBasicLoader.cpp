@@ -846,14 +846,8 @@ QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int 
 
 	if (saveToBuffer(fileInfo, img, ba, compression) && ba) {
 
-		if (writeBufferToFile(fileInfo, ba)) {
-
-			// now load the image again - for consistency (e.g. jpg artifacts)
-			loadGeneral(fileInfo, ba);
-			this->file = fileInfo;
-
+		if (writeBufferToFile(fileInfo, ba))
 			return fileInfo;
-		}
 	}
 
 	return QFileInfo();

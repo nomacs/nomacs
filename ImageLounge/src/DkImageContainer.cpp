@@ -591,21 +591,23 @@ void DkImageContainerT::savingFinished() {
 	saveFile.refresh();
 	qDebug() << "save file: " << saveFile.absoluteFilePath();
 	
-	if (!saveFile.exists() || !saveFile.isFile()) {
+	if (!saveFile.exists() || !saveFile.isFile())
 		emit fileSavedSignal(saveFile, false);
-		QString msg = tr("Sorry, I could not save: %1").arg(fileInfo.fileName());
-		emit errorDialogSignal(msg);
-	}
 	else {
-		// reset thumb
-		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(saveFile, loader->image()));
+		//// reset thumb - loadImageThreaded should do it anyway
+		//thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(saveFile, loader->image()));
 
-		fileBuffer->clear();
+		fileBuffer->clear();	// do a complete clear?
 		fileInfo = saveFile;
 		edited = false;
-		if (selected)
+		if (selected) {
+			loadImageThreaded(true);	// force a reload
 			fileUpdateTimer.start();
+		}
 		emit fileSavedSignal(saveFile);
+
+
+
 	}
 }
 

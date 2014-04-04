@@ -898,6 +898,8 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		noSelOption = *option;
 		noSelOption.state &= ~QStyle::State_Selected;
 	}
+
+	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 	QGraphicsPixmapItem::paint(painter, &noSelOption, widget);
 
 	// render hovered

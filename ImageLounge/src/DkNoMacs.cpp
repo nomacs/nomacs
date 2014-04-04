@@ -809,8 +809,8 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_reload]->setStatusTip(tr("Reload File"));
 	connect(fileActions[menu_file_reload], SIGNAL(triggered()), vp, SLOT(reloadFile()));
 
-	fileActions[menu_file_next] = new QAction(fileIcons[icon_file_next], tr("Ne&xt File"), this);
-	fileActions[menu_file_next]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	fileActions[menu_file_next] = new QAction(fileIcons[icon_file_next], tr("Ne&xt File"), viewport());
+	fileActions[menu_file_next]->setShortcutContext(Qt::WidgetShortcut);
 	fileActions[menu_file_next]->setShortcut(QKeySequence(shortcut_next_file));
 	fileActions[menu_file_next]->setStatusTip(tr("Load next image"));
 	connect(fileActions[menu_file_next], SIGNAL(triggered()), vp, SLOT(loadNextFileFast()));
