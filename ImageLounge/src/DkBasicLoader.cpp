@@ -816,6 +816,12 @@ bool DkBasicLoader::setPageIdx(int skipIdx) {
 	return pageIdxDirty;
 }
 
+void DkBasicLoader::resetPageIdx() {
+
+	pageIdxDirty = false;
+	pageIdx = 1;
+}
+
 void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
 
 #ifdef WITH_LIBTIFF

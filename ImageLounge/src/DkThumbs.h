@@ -84,9 +84,7 @@ public:
 	 * Sets the thumbnail image.
 	 * @param img the thumbnail
 	 **/ 
-	virtual void setImage(QImage img) {
-		this->img = img;
-	};
+	virtual void setImage(QImage img);
 
 	void removeBlackBorder(QImage& img);
 

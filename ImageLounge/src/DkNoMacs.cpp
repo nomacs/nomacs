@@ -1401,13 +1401,18 @@ QWidget* DkNoMacs::getDialogParent() {
 // Qt how-to
 void DkNoMacs::closeEvent(QCloseEvent *event) {
 
+	if (viewport()) {
+		if (!viewport()->unloadImage(true)) {
+			// do not close if the user hit cancel in the save changes dialog
+			event->ignore();
+			return;
+		}
+	}
+
 	emit closeSignal();
 	qDebug() << "saving window settings...";
 	setVisible(false);
 	//showNormal();
-
-	if (viewport())
-		viewport()->unloadImage();
 
 	if (saveSettings) {
 		QSettings settings;

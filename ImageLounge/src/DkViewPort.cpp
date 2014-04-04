@@ -1766,7 +1766,12 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 
 	for (int idx = 0; idx < loader->getImages().size(); idx++) {
 		QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
+		
+		if (!imgC)
+			break;
+
 		loader->setCurrentImage(imgC);
+
 		if (imgC && imgC->imgLoaded() != DkImageContainer::exists_not) {
 			loader->load(imgC);
 			break;

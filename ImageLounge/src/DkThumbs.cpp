@@ -40,7 +40,7 @@ int DkThumbsLoader::maxThumbSize = 160;
 * @param img the thumbnail image
 **/ 
 DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
-	this->img = img;
+	this->img = DkImage::createThumb(img);
 	this->file = file;
 	this->maxThumbSize = 160;
 	this->minThumbSize = DkSettings::display.thumbSize;
@@ -295,6 +295,11 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 	if (rIdx < rIdxB)
 		img = img.copy(0, rIdx, img.width(), rIdxB-rIdx);
 
+}
+
+void DkThumbNail::setImage(QImage img) {
+	
+	this->img = DkImage::createThumb(img);
 }
 
 DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) {

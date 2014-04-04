@@ -55,36 +55,6 @@ DkMessageBox::~DkMessageBox() {
 	settings.setValue(objectName(), !showAgain->isChecked());
 }
 
-void DkMessageBox::setVisible(bool visible) {
-
-
-	if (visible)
-		adjustSize();
-
-	QDialog::setVisible(visible);
-}
-
-int DkMessageBox::exec() {
-
-	QString objName = objectName();
-
-	QSettings settings;
-	settings.beginGroup("DkDialog");
-	bool show = settings.value(objName, true).toBool();
-	int answer = settings.value(objName + "-answer", QDialog::Accepted).toInt();
-	showAgain->setChecked(!show);
-
-	if (!show)
-		return answer;
-
-	answer = QDialog::exec();	// destroys dialog - be carefull with what you do afterwards
-
-	// save show again
-	settings.setValue(objName + "-answer", answer);
-
-	return answer;
-}
-
 void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons) {
 
 	setAttribute(Qt::WA_DeleteOnClose, true);
@@ -148,6 +118,36 @@ void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString
 	textLabel->setFont(f);
 #endif
 
+}
+
+void DkMessageBox::setVisible(bool visible) {
+
+
+	if (visible)
+		adjustSize();
+
+	QDialog::setVisible(visible);
+}
+
+int DkMessageBox::exec() {
+
+	QString objName = objectName();
+
+	QSettings settings;
+	settings.beginGroup("DkDialog");
+	bool show = settings.value(objName, true).toBool();
+	int answer = settings.value(objName + "-answer", QDialog::Accepted).toInt();
+	showAgain->setChecked(!show);
+
+	if (!show)
+		return answer;
+
+	answer = QDialog::exec();	// destroys dialog - be carefull with what you do afterwards
+
+	// save show again
+	settings.setValue(objName + "-answer", answer);
+
+	return answer;
 }
 
 void DkMessageBox::setDefaultButton(QMessageBox::StandardButton button) {

@@ -172,7 +172,7 @@ public:
 	bool hasFile();
 	bool hasMovie();
 	QString fileName();
-	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool silent = false, bool searchFile = true);
+	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
 	void sort();
 	QSharedPointer<DkImageContainerT> findOrCreateFile(const QFileInfo& file) const;
 	QSharedPointer<DkImageContainerT> findFile(const QFileInfo& file) const;

@@ -141,6 +141,7 @@ public:
 	};
 
 	bool setPageIdx(int skipIdx);
+	void resetPageIdx();
 
 	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
 	bool saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray>& ba, int compression = -1);

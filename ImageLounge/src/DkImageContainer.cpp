@@ -334,11 +334,10 @@ void DkImageContainerT::checkForFileUpdates() {
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
 	
-	if (!fileInfo.exists()) {
+	// if image exists_not don't do this
+	if (!fileInfo.exists() && loadState == loaded) {
 		edited = true;
-
-		if (loadState == loaded)
-			emit fileLoadedSignal(true);
+		emit fileLoadedSignal(true);
 	}
 
 
@@ -369,7 +368,7 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
 
-	if (force || fileInfo.lastModified() != modifiedBefore) {
+	if (force || fileInfo.lastModified() != modifiedBefore || loader->isDirty()) {
 		qDebug() << "updating image...";
 		thumb->setImage(QImage());
 		clear();
@@ -450,7 +449,8 @@ void DkImageContainerT::fetchImage() {
 	qDebug() << "fetching: " << fileInfo.absoluteFilePath();
 	fetchingImage = true;
 
-	if (DkSettings::resources.fastThumbnailPreview)
+	// TODO: fastThumbPreview is obsolete?!
+	if (DkSettings::resources.fastThumbnailPreview && thumb->hasImage() == DkThumbNail::not_loaded)
 		thumb->fetchThumb(DkThumbNailT::force_exif_thumb, fileBuffer);
 
 	QFuture<QSharedPointer<DkBasicLoader> > future = QtConcurrent::run(this, 
@@ -486,6 +486,8 @@ void DkImageContainerT::loadingFinished() {
 	}
 
 	if (!loader->hasImage()) {
+		fileUpdateTimer.stop();
+		edited = false;
 		QString msg = tr("Sorry, I could not load: %1").arg(fileInfo.fileName());
 		emit showInfoSignal(msg);
 		emit fileLoadedSignal(false);
@@ -515,22 +517,24 @@ void DkImageContainerT::cancel() {
 
 void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = true */) {
 
-	selected = connectSignals;
-
-	if (connectSignals) {
+	// !selected - do not connect twice
+	if (connectSignals && !selected) {
 		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SIGNAL(errorDialogSignal(const QString&)));
 		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
 		connect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
 		connect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
 		fileUpdateTimer.start();
 	}
-	else {
+	else if (!connectSignals) {
 		disconnect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SIGNAL(errorDialogSignal(const QString&)));
 		disconnect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
 		disconnect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
 		disconnect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
 		fileUpdateTimer.stop();
 	}
+
+	selected = connectSignals;
+
 }
 
 void DkImageContainerT::saveMetaDataThreaded() {
