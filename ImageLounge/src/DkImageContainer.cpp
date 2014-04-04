@@ -214,7 +214,7 @@ bool DkImageContainer::hasImage() const {
 	return loader->hasImage();
 }
 
-int DkImageContainer::imgLoaded() const {
+int DkImageContainer::getLoadState() const {
 
 	return loadState;
 }
@@ -397,7 +397,7 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 
 void DkImageContainerT::fetchFile() {
 	
-	if (fetchingBuffer && imgLoaded() == loading_canceled) {
+	if (fetchingBuffer && getLoadState() == loading_canceled) {
 		loadState = loading;
 		return;
 	}
@@ -422,9 +422,9 @@ void DkImageContainerT::bufferLoaded() {
 	fetchingBuffer = false;
 	fileBuffer = bufferWatcher.result();
 
-	if (imgLoaded() == loading)
+	if (getLoadState() == loading)
 		fetchImage();
-	else if (imgLoaded() == loading_canceled) {
+	else if (getLoadState() == loading_canceled) {
 		loadState = not_loaded;
 		clear();
 		return;
@@ -463,7 +463,7 @@ void DkImageContainerT::imageLoaded() {
 
 	fetchingImage = false;
 
-	if (imgLoaded() == loading_canceled) {
+	if (getLoadState() == loading_canceled) {
 		loadState = not_loaded;
 		clear();
 		return;
@@ -479,7 +479,7 @@ void DkImageContainerT::loadingFinished() {
 
 	DkTimer dt;
 
-	if (imgLoaded() == loading_canceled) {
+	if (getLoadState() == loading_canceled) {
 		loadState = not_loaded;
 		clear();
 		return;

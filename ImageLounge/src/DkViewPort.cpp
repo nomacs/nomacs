@@ -1772,7 +1772,7 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 
 		loader->setCurrentImage(imgC);
 
-		if (imgC && imgC->imgLoaded() != DkImageContainer::exists_not) {
+		if (imgC && imgC->getLoadState() != DkImageContainer::exists_not) {
 			loader->load(imgC);
 			break;
 		}

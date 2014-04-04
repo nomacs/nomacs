@@ -519,6 +519,9 @@ QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float op
 
 QImage DkImage::createThumb(const QImage& image) {
 
+	if (image.isNull())
+		return image;
+
 	int maxThumbSize = 160;
 	int imgW = image.width();
 	int imgH = image.height();

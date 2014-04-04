@@ -62,7 +62,7 @@ public:
 	QImage image();
 
 	bool hasImage() const;
-	int imgLoaded() const;
+	int getLoadState() const;
 	QFileInfo file() const;
 	bool isEdited() const;
 	bool isSelected() const;

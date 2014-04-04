@@ -557,7 +557,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 
 	// cancel action if the image is currently loading
 	if (DkSettings::resources.waitForLastImg &&
-		currentImage && currentImage->imgLoaded() == DkImageContainerT::loading && 
+		currentImage && currentImage->getLoadState() == DkImageContainerT::loading && 
 		newImg && newImg->file().absoluteDir() == currentImage->file().absoluteDir())
 		return;
 
@@ -567,7 +567,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 		if (!updatePointer) {
 			currentImage->cancel();
 
-			if (currentImage->imgLoaded() == DkImageContainer::loading_canceled)
+			if (currentImage->getLoadState() == DkImageContainer::loading_canceled)
 				emit showInfoSignal(newImg->file().fileName(), 3000, 1);
 
 			currentImage->saveMetaDataThreaded();
@@ -626,7 +626,7 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 
 	setCurrentImage(image);
 
-	if (currentImage && currentImage->imgLoaded() == DkImageContainerT::loading)
+	if (currentImage && currentImage->getLoadState() == DkImageContainerT::loading)
 		return;
 
 	emit updateSpinnerSignalDelayed(true);
@@ -1249,11 +1249,11 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 			continue;
 		}
 		// fully load the next image
-		else if (idx == cIdx+1 && mem < DkSettings::resources.cacheMemory) {
+		else if (idx == cIdx+1 && mem < DkSettings::resources.cacheMemory && images.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
 			images.at(idx)->loadImageThreaded();
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " fully cached...";
 		}
-		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory) {
+		else if (idx > cIdx && idx < cIdx+DkSettings::resources.maxImagesCached-2 && mem < DkSettings::resources.cacheMemory && images.at(idx)->getLoadState() == DkImageContainerT::not_loaded) {
 			//dt.getIvl();
 			images.at(idx)->fetchFile();		// TODO: crash detected here
 			qDebug() << "[Cacher] " << images.at(idx)->file().absoluteFilePath() << " file fetched...";

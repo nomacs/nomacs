@@ -3158,7 +3158,7 @@ void DkMetaDataInfo::setImageInfo(QSharedPointer<DkImageContainerT> imgC) {
 	worldMatrix = QTransform();
 	
 	//DkTimer dt;
-	readTags();
+	readTags();		// TODO: we should set the GPS stuff into DkMetaDataT - then we don't need to read all tags here
 
 	emit enableGpsSignal(!getGPSCoordinates().isEmpty());
 
