@@ -391,6 +391,25 @@ QImage DkImage::autoAdjustImage(const QImage& img) {
 	return imgA;
 }
 
+bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
+
+#ifdef WITH_OPENCV
+
+	//DkImage::gammaToLinear(img);
+	cv::Mat imgCv = DkImage::qImage2Mat(img);
+
+	cv::Mat imgG;
+	cv::GaussianBlur(imgCv, imgG, cv::Size(6*sigma+1, 6*sigma+1), sigma);		// this is awesomely slow
+	cv::addWeighted(imgCv, weight, imgG, 1-weight, 0, imgCv);
+	img = DkImage::mat2QImage(imgCv);
+
+	//DkImage::linearToGamma(img);
+#endif
+
+
+	return true;
+}
+
 bool DkImage::autoAdjustImage(QImage& img) {
 
 	DkTimer dt;
