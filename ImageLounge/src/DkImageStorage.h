@@ -214,6 +214,14 @@ public:
 	static void mapGammaTable(QImage& img, const QVector<uchar>& gammaTable);
 	static QImage normImage(const QImage& img);
 	static bool normImage(QImage& img);
+		/**
+	 * Computes a 1D Gaussian filter kernel.
+	 * Generates a Gaussian kernel. The kernel's size is adjusted to
+	 * the standard deviation.
+	 * @param sigma the standard deviation of the Gaussian.
+	 * @return the gaussian kernel (CV_32FC1)
+	 **/
+	static Mat get1DGauss(double sigma);
 	static QImage autoAdjustImage(const QImage& img);
 	static bool autoAdjustImage(QImage& img);
 	static bool unsharpMask(QImage& img, float sigma = 20.0f, float weight = 1.5f);

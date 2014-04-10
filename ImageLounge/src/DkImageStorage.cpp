@@ -391,26 +391,9 @@ QImage DkImage::autoAdjustImage(const QImage& img) {
 	return imgA;
 }
 
-bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
-
-#ifdef WITH_OPENCV
-
-	//DkImage::gammaToLinear(img);
-	cv::Mat imgCv = DkImage::qImage2Mat(img);
-
-	cv::Mat imgG;
-	cv::GaussianBlur(imgCv, imgG, cv::Size(6*sigma+1, 6*sigma+1), sigma);		// this is awesomely slow
-	cv::addWeighted(imgCv, weight, imgG, 1-weight, 0, imgCv);
-	img = DkImage::mat2QImage(imgCv);
-
-	//DkImage::linearToGamma(img);
-#endif
-
-
-	return true;
-}
-
 bool DkImage::autoAdjustImage(QImage& img) {
+
+	//return DkImage::unsharpMask(img, 30.0f, 1.5f);
 
 	DkTimer dt;
 	qDebug() << "[Auto Adjust] image format: " << img.format();
@@ -535,6 +518,53 @@ QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float op
 
 	return glow;
 };
+
+cv::Mat DkImage::get1DGauss(double sigma) {
+
+	// correct -> checked with matlab reference
+	int kernelsize = cvRound(cvCeil(sigma*3)*2)+1;
+	if (kernelsize < 3) kernelsize = 3;
+	if ((kernelsize % 2) != 1) kernelsize+=1;
+
+	Mat gKernel = Mat(1, kernelsize, CV_32F);
+	float* kernelPtr = gKernel.ptr<float>();
+
+	for (int idx = 0, x = -cvFloor(kernelsize/2); idx < kernelsize; idx++,x++) {
+
+		kernelPtr[idx] = (float)(exp(-(x*x)/(2*sigma*sigma)));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
+	}
+
+
+	if (sum(gKernel).val[0] == 0)
+		throw DkIllegalArgumentException("The kernel sum is zero\n", __LINE__, __FILE__);
+	else
+		gKernel *= 1.0f/sum(gKernel).val[0];
+
+	return gKernel;
+}
+
+bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
+
+#ifdef WITH_OPENCV
+	DkTimer dt;
+	//DkImage::gammaToLinear(img);
+	cv::Mat imgCv = DkImage::qImage2Mat(img);
+
+	cv::Mat imgG;
+	cv::Mat gx = cv::getGaussianKernel(4*sigma+1, sigma);
+	cv::Mat gy = gx.t();
+	cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
+	//cv::GaussianBlur(imgCv, imgG, cv::Size(4*sigma+1, 4*sigma+1), sigma);		// this is awesomely slow
+	cv::addWeighted(imgCv, weight, imgG, 1-weight, 0, imgCv);
+	img = DkImage::mat2QImage(imgCv);
+
+	qDebug() << "unsharp mask takes: " << QString::fromStdString(dt.getTotal());
+	//DkImage::linearToGamma(img);
+#endif
+
+
+	return true;
+}
 
 QImage DkImage::createThumb(const QImage& image) {
 

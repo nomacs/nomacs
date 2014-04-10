@@ -2874,6 +2874,178 @@ void DkExportTiffDialog::enableTIFFSave(bool enable) {
 }
 
 #ifdef WITH_OPENCV
+// DkUnsharpDialog --------------------------------------------------------------------
+DkUnsharpDialog::DkUnsharpDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
+
+	processing = false;
+
+	setWindowTitle(tr("Sharpen Image"));
+	createLayout();
+	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
+	setAcceptDrops(true);
+
+	connect(this, SIGNAL(updateImage(QImage)), preview, SLOT(setImage(QImage)));
+	connect(&unsharpWatcher, SIGNAL(finished()), this, SLOT(unsharpFinished()));
+	connect(viewport, SIGNAL(imageUpdated()), this, SLOT(computePreview()));
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkUnsharpDialog::dropEvent(QDropEvent *event) {
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+
+		setFile(url.toString());
+	}
+}
+
+void DkUnsharpDialog::dragEnterEvent(QDragEnterEvent *event) {
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+		QFileInfo file = QFileInfo(url.toString());
+
+		if (file.exists() && DkImageLoader::isValid(file))
+			event->acceptProposedAction();
+	}
+}
+
+void DkUnsharpDialog::createLayout() {
+
+	// post processing sliders
+	sigmaSlider = new DkSlider(tr("Sigma"), this);
+	sigmaSlider->setObjectName("sigmaSlider");
+	sigmaSlider->setValue(30);
+	//darkenSlider->hide();
+
+	amountSlider = new DkSlider(tr("Amount"), this);
+	amountSlider->setObjectName("amountSlider");
+	amountSlider->setValue(45);
+
+	QWidget* sliderWidget = new QWidget(this);
+	QVBoxLayout* sliderLayout = new QVBoxLayout(sliderWidget);
+	sliderLayout->addWidget(sigmaSlider);
+	sliderLayout->addWidget(amountSlider);
+
+	// shows the image if it could be loaded
+	viewport = new DkBaseViewPort(this);
+	viewport->setForceFastRendering(true);
+	viewport->setPanControl(QPointF(0.0f, 0.0f));
+
+	preview = new DkBaseViewPort(this);
+	preview->setForceFastRendering(true);
+	preview->setPanControl(QPointF(0.0f, 0.0f));
+
+	QWidget* viewports = new QWidget(this);
+	QHBoxLayout* viewLayout = new QHBoxLayout(viewports);
+	viewLayout->addWidget(viewport);
+	viewLayout->addWidget(preview);
+
+	// buttons
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	//buttons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
+	//buttons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
+	//buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	//connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	//buttons->button(QDialogButtonBox::Save)->setEnabled(false);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(viewports);
+	layout->addWidget(sliderWidget);
+	layout->addWidget(buttons);
+}
+
+void DkUnsharpDialog::on_sigmaSlider_valueChanged(int i) {
+
+	computePreview();
+}
+
+void DkUnsharpDialog::on_amountSlider_valueChanged(int i) {
+
+	computePreview();
+}
+
+QImage DkUnsharpDialog::getImage() {
+
+	return computeUnsharp(img, sigmaSlider->value(), amountSlider->value());
+}
+
+void DkUnsharpDialog::reject() {
+
+	QDialog::reject();
+
+}
+
+//void DkMosaicDialog::buttonClicked(QAbstractButton* button) {
+//
+//	if (button == buttons->button(QDialogButtonBox::Save)) {
+//
+//		// render the full image
+//		if (!mosaic.isNull()) {
+//			sliderWidget->hide();
+//			progress->setValue(progress->minimum());
+//			progress->show();
+//			enableAll(false);
+//			button->setEnabled(false);
+//
+//			QFuture<bool> future = QtConcurrent::run(this, 
+//				&nmc::DkMosaicDialog::postProcessMosaic,
+//				darkenSlider->value()/100.0f,
+//				lightenSlider->value()/100.0f, 
+//				saturationSlider->value()/100.0f,
+//				false);
+//			postProcessWatcher.setFuture(future);
+//		}
+//	}
+//	else if (button == buttons->button(QDialogButtonBox::Apply))
+//		compute();
+//}
+
+void DkUnsharpDialog::computePreview() {
+
+	if (processing)
+		return;
+
+	QFuture<QImage> future = QtConcurrent::run(this, 
+		&nmc::DkUnsharpDialog::computeUnsharp,
+		viewport->getCurrentImageRegion(),
+		sigmaSlider->value(),
+		amountSlider->value()); 
+	unsharpWatcher.setFuture(future);
+}
+
+void DkUnsharpDialog::unsharpFinished() {
+
+	preview->setImage(unsharpWatcher.result());
+	update();
+}
+
+QImage DkUnsharpDialog::computeUnsharp(const QImage img, int sigma, int amount) {
+
+	QImage imgC = img.copy();
+	DkImage::unsharpMask(imgC, sigma, 1.0f+amount/100.0f);
+	return imgC;
+}
+
+void DkUnsharpDialog::setImage(const QImage& img) {
+	this->img = img;
+	viewport->setImage(img);
+	viewport->fullView();
+	viewport->zoomConstraints(viewport->get100Factor());
+	computePreview();
+}
+
+void DkUnsharpDialog::setFile(const QFileInfo& file) {
+
+	DkBasicLoader loader;
+	loader.loadGeneral(file);
+	setImage(loader.image());
+}
+
 // DkMosaicDialog --------------------------------------------------------------------
 DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 

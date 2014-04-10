@@ -588,6 +588,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_auto_adjust]);
 	editMenu->addAction(editActions[menu_edit_norm]);
 	editMenu->addAction(editActions[menu_edit_invert]);
+	editMenu->addAction(editActions[menu_edit_unsharp]);
 	editMenu->addSeparator();
 #ifdef WIN32
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
@@ -977,12 +978,16 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_auto_adjust]->setShortcut(shortcut_auto_adjust);
 	editActions[menu_edit_auto_adjust]->setStatusTip(tr("Auto Adjust Image Contrast and Color Balance"));
 	connect(editActions[menu_edit_auto_adjust], SIGNAL(triggered()), this, SLOT(autoAdjustImage()));
-
+	
 	editActions[menu_edit_invert] = new QAction(tr("&Invert Image"), this);
 	//editActions[menu_edit_invert]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	//editActions[menu_edit_invert]->setShortcut();
 	editActions[menu_edit_invert]->setStatusTip(tr("Invert the Image"));
 	connect(editActions[menu_edit_invert], SIGNAL(triggered()), this, SLOT(invertImage()));
+
+	editActions[menu_edit_unsharp] = new QAction(tr("&Unsharp Mask"), this);
+	editActions[menu_edit_unsharp]->setStatusTip(tr("Stretches the Local Contrast of an Image"));
+	connect(editActions[menu_edit_unsharp], SIGNAL(triggered()), this, SLOT(unsharpMask()));
 
 	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -1310,6 +1315,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_flip_v]->setEnabled(enable);
 	editActions[menu_edit_norm]->setEnabled(enable);
 	editActions[menu_edit_auto_adjust]->setEnabled(enable);
+	editActions[menu_edit_unsharp]->setEnabled(enable);
 	editActions[menu_edit_invert]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
@@ -1831,6 +1837,18 @@ void DkNoMacs::autoAdjustImage() {
 		vp->getController()->setInfo(tr("Sorry, I cannot Auto Adjust"));
 	else
 		vp->setEditedImage(img);
+}
+
+void DkNoMacs::unsharpMask() {
+
+	DkUnsharpDialog* unsharpDialog = new DkUnsharpDialog(this);
+	unsharpDialog->setImage(viewport()->getImage());
+	bool answer = unsharpDialog->exec();
+	if (answer == QDialog::Accepted) {
+		viewport()->setImage(unsharpDialog->getImage());
+	}
+
+	unsharpDialog->deleteLater();
 }
 
 void DkNoMacs::readSettings() {

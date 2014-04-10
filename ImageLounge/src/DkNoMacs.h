@@ -263,6 +263,7 @@ enum editActions {
 	menu_edit_invert,
 	menu_edit_norm,
 	menu_edit_auto_adjust,
+	menu_edit_unsharp,
 	menu_edit_wallpaper,
 
 	menu_edit_end,	// nothing beyond this point
@@ -536,6 +537,7 @@ public slots:
 	void flipImageVertical();
 	void normalizeImage();
 	void autoAdjustImage();
+	void unsharpMask();
 	void invertImage();
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
