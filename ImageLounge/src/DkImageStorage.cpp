@@ -144,7 +144,7 @@ QPixmap DkImage::fromWinHICON(HICON icon) {
 }
 #endif
 
-QImage DkImage::resizeImage(const QImage img, const QSize& newSize, float factor /* = 1.0f */, int interpolation /* = ipl_cubic */) {
+QImage DkImage::resizeImage(const QImage img, const QSize& newSize, float factor /* = 1.0f */, int interpolation /* = ipl_cubic */, bool correctGamma /* = true */) {
 
 	QSize nSize = newSize;
 
@@ -185,7 +185,9 @@ QImage DkImage::resizeImage(const QImage img, const QSize& newSize, float factor
 
 	try {
 		QImage qImg = img.copy();
-		DkImage::gammaToLinear(qImg);
+		
+		if (correctGamma)
+			DkImage::gammaToLinear(qImg);
 		Mat resizeImage = DkImage::qImage2Mat(qImg);
 
 		// is the image convertible?
@@ -200,7 +202,8 @@ QImage DkImage::resizeImage(const QImage img, const QSize& newSize, float factor
 			qImg = DkImage::mat2QImage(resizeImage);
 		}
 
-		DkImage::linearToGamma(qImg);
+		if (correctGamma)
+			DkImage::linearToGamma(qImg);
 
 		if (!img.colorTable().isEmpty())
 			qImg.setColorTable(img.colorTable());
@@ -215,9 +218,13 @@ QImage DkImage::resizeImage(const QImage img, const QSize& newSize, float factor
 #else
 
 	QImage qImg = img.copy();
-	DkImage::gammaToLinear(qImg);
+	
+	if (correctGamma)
+		DkImage::gammaToLinear(qImg);
 	qImg.scaled(nSize, Qt::IgnoreAspectRatio, iplQt);
-	DkImage::linearToGamma(qImg);
+	
+	if (correctGamma)
+		DkImage::linearToGamma(qImg);
 	return qImg;
 #endif
 }
@@ -272,6 +279,7 @@ QVector<uchar> DkImage::getGamma2LinearTable() {
 	// i <= 0.04045 -> i/12.92
 	// i > 0.04045 -> (i+0.055)/(1+0.055)^2.4
 
+	qDebug() << "gamma2Linear: ";
 	QVector<uchar> gammaTable;
 	double a = 0.055;
 
@@ -282,7 +290,7 @@ QVector<uchar> DkImage::getGamma2LinearTable() {
 			gammaTable.append(qRound(i/12.92*255.0));
 		}
 		else {
-			gammaTable.append(qRound(std::pow((i+a)/(1+a),2.4)*255));
+			gammaTable.append(std::pow((i+a)/(1+a),2.4)*255 > 0 ? std::pow((i+a)/(1+a),2.4)*255 : 0);
 		}
 	}
 
@@ -316,6 +324,13 @@ void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
 
 		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
+
+			if (*mPtr < 0 || *mPtr > 255)
+				qDebug() << "WRONG VALUE: " << *mPtr;
+
+			if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > 255)
+				qDebug() << "WRONG VALUE: " << *mPtr;
+
 
 			*mPtr = gammaTable[*mPtr];
 		}
@@ -736,8 +751,8 @@ void DkImageStorage::computeImage() {
 		if (s.width() < 32 || s.height() < 32)
 			break;
 
-		//if (!img.colorTable().isEmpty())
-			DkImage::gammaToLinear(resizedImg);
+		// // mapping here introduces bugs
+		//DkImage::gammaToLinear(resizedImg);
 
 #ifdef WITH_OPENCV
 		cv::Mat rImgCv = DkImage::qImage2Mat(resizedImg);
@@ -748,8 +763,9 @@ void DkImageStorage::computeImage() {
 		resizedImg = resizedImg.scaled(s, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 #endif
 
-		//if (!img.colorTable().isEmpty())
-		DkImage::linearToGamma(resizedImg);
+		// // mapping here introduces bugs
+		//DkImage::linearToGamma(resizedImg);
+		
 		//resizedImg.setColorTable(img.colorTable());		// Not sure why we turned the color tables off
 
 		// new image assigned?

@@ -929,8 +929,10 @@ DkResizeDialog::DkResizeDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog
 	init();
 }
 
-DkResizeDialog::~DkResizeDialog() {
+void DkResizeDialog::accept() {
 	saveSettings();
+
+	QDialog::accept();
 }
 
 void DkResizeDialog::saveSettings() {
@@ -940,6 +942,16 @@ void DkResizeDialog::saveSettings() {
 
 	settings.setValue("ResampleMethod", resampleBox->currentIndex());
 	settings.setValue("Resample", resampleCheck->isChecked());
+	settings.setValue("CorrectGamma", gammaCorrection->isChecked());
+
+	if (sizeBox->currentIndex() == size_percent) {
+		settings.setValue("Width", wPixelEdit->value());
+		settings.setValue("Height", hPixelEdit->value());
+	}
+	else {
+		settings.setValue("Width", 0);
+		settings.setValue("Height", 0);
+	}
 }
 
 
@@ -952,6 +964,28 @@ void DkResizeDialog::loadSettings() {
 
 	resampleBox->setCurrentIndex(settings.value("ResampleMethod", ipl_cubic).toInt());
 	resampleCheck->setChecked(settings.value("Resample", true).toBool());
+	gammaCorrection->setChecked(settings.value("CorrectGamma", true).toBool());
+
+	if (settings.value("Width", 0).toDouble() != 0) {
+
+		double w = settings.value("Width", 0).toDouble();
+		double h = settings.value("Height", 0).toDouble();
+
+		qDebug() << "width loaded from settings: " << w;
+
+		if (w != h) {
+			lockButton->setChecked(false);
+			lockButtonDim->setChecked(false);
+		}
+		sizeBox->setCurrentIndex(size_percent);
+
+		wPixelEdit->setValue(w);
+		hPixelEdit->setValue(h);
+		
+		updateWidth();
+		updateHeight();
+	}
+
 }
 
 void DkResizeDialog::init() {
@@ -978,8 +1012,6 @@ void DkResizeDialog::init() {
 	wPixelEdit->setFocus(Qt::ActiveWindowFocusReason);
 
 	QMetaObject::connectSlotsByName(this);
-	loadSettings();
-
 }
 
 void DkResizeDialog::createLayout() {
@@ -1160,6 +1192,11 @@ void DkResizeDialog::createLayout() {
 	gridLayout->addWidget(resampleCheck, 3, 1, 1, 3);
 	gridLayout->addWidget(resampleBox, 4, 1, 1, 3);
 
+	gammaCorrection = new QCheckBox(tr("Gamma Correction"));
+	gammaCorrection->setChecked(true);
+
+	gridLayout->addWidget(gammaCorrection, 5, 1, 1, 3);
+
 	// add stretch
 	gridLayout->setColumnStretch(6, 1);
 
@@ -1179,7 +1216,7 @@ void DkResizeDialog::createLayout() {
 	show();
 }
 
-void DkResizeDialog::initBoxes() {
+void DkResizeDialog::initBoxes(bool updateSettings) {
 
 	if (img.isNull())
 		return;
@@ -1199,6 +1236,9 @@ void DkResizeDialog::initBoxes() {
 
 	float height = (float)img.height()/exifDpi * units;
 	heightEdit->setValue(height);
+
+	if (updateSettings)
+		loadSettings();
 }
 
 void DkResizeDialog::updateWidth() {
@@ -1534,7 +1574,7 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 		}
 	}
 
-	QImage rImg = DkImage::resizeImage(img, newSize, 1.0f, resampleBox->currentIndex());
+	QImage rImg = DkImage::resizeImage(img, newSize, 1.0f, resampleBox->currentIndex(), gammaCorrection->isChecked());
 
 	if (rImg.isNull() && !silent) {
 		qDebug() << "image size: " << newSize;

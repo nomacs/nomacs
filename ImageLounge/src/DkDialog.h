@@ -314,7 +314,7 @@ class DkResizeDialog : public QDialog {
 
 public:
 	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	~DkResizeDialog();
+	~DkResizeDialog() {};
 
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
 	enum{size_pixel, size_percent, size_end};
@@ -323,7 +323,7 @@ public:
 
 	void setImage(QImage img) {
 		this->img = img;
-		initBoxes();
+		initBoxes(true);
 		updateSnippets();
 		drawPreview();
 		wPixelEdit->selectAll();
@@ -378,6 +378,9 @@ protected slots:
 		QDialog::setVisible(visible);
 	}
 
+public slots:
+	virtual void accept();
+
 protected:
 	int leftSpacing;
 	int margin;
@@ -403,6 +406,7 @@ protected:
 	QDoubleSpinBox* resolutionEdit;
 	QComboBox* resUnitBox;
 	QCheckBox* resampleCheck;
+	QCheckBox* gammaCorrection;
 	QComboBox* resampleBox;
 
 	float exifDpi;
@@ -410,7 +414,7 @@ protected:
 	QVector<float> resFactor;
 
 	void init();
-	void initBoxes();
+	void initBoxes(bool updateSettings = false);
 	void createLayout();
 	void updateSnippets();
 	void updateHeight();

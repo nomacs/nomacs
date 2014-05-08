@@ -206,7 +206,7 @@ public:
 	 * @param interpolation the interpolation method
 	 * @return QImage the resized image
 	 **/ 
-	static QImage resizeImage(const QImage img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic);
+	static QImage resizeImage(const QImage img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic, bool correctGamma = true);
 	static QVector<uchar> getGamma2LinearTable();
 	static QVector<uchar> getLinear2GammaTable();
 	static void gammaToLinear(QImage& img);
