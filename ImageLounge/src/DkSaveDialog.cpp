@@ -178,7 +178,7 @@ void DkCompressDialog::createLayout() {
 	// size combo for web
 	sizeCombo = new QComboBox(this);
 	sizeCombo->addItem(tr("Small  (800 x 600)"), 600);
-	sizeCombo->addItem(tr("Medium (1024 x 768)"), 786);
+	sizeCombo->addItem(tr("Medium (1024 x 786)"), 786);
 	sizeCombo->addItem(tr("Large  (1920 x 1080)"), 1080);
 	sizeCombo->addItem(tr("Original Size"), -1);
 	connect(sizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
