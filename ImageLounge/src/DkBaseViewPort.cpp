@@ -349,6 +349,9 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 
 void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
 
+	if (event->oldSize() == event->size())
+		return;
+
 	viewportRect = QRect(0, 0, event->size().width(), event->size().height());
 
 	qDebug() << "new size: " << event->size();

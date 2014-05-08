@@ -1845,7 +1845,7 @@ void DkNoMacs::unsharpMask() {
 	unsharpDialog->setImage(viewport()->getImage());
 	bool answer = unsharpDialog->exec();
 	if (answer == QDialog::Accepted) {
-		viewport()->setImage(unsharpDialog->getImage());
+		viewport()->setEditedImage(unsharpDialog->getImage());
 	}
 
 	unsharpDialog->deleteLater();

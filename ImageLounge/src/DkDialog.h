@@ -820,7 +820,7 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 
 	DkBaseViewPort* viewport;
-	DkBaseViewPort* preview;
+	QLabel* preview;
 	QDialogButtonBox* buttons;
 	QFutureWatcher<QImage> unsharpWatcher;
 

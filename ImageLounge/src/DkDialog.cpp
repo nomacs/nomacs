@@ -2992,14 +2992,19 @@ void DkUnsharpDialog::createLayout() {
 	viewport->setForceFastRendering(true);
 	viewport->setPanControl(QPointF(0.0f, 0.0f));
 
-	preview = new DkBaseViewPort(this);
-	preview->setForceFastRendering(true);
-	preview->setPanControl(QPointF(0.0f, 0.0f));
+	preview = new QLabel(this);
+	preview->setScaledContents(true);
+	preview->setMinimumSize(QSize(200,200));
+	//preview->setForceFastRendering(true);
+	//preview->setPanControl(QPointF(0.0f, 0.0f));
 
 	QWidget* viewports = new QWidget(this);
-	QHBoxLayout* viewLayout = new QHBoxLayout(viewports);
-	viewLayout->addWidget(viewport);
-	viewLayout->addWidget(preview);
+	QGridLayout* viewLayout = new QGridLayout(viewports);
+	viewLayout->setColumnStretch(0,1);
+	viewLayout->setColumnStretch(1,1);
+
+	viewLayout->addWidget(viewport, 0,0);
+	viewLayout->addWidget(preview, 0, 1);
 
 	// buttons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
@@ -3064,7 +3069,7 @@ void DkUnsharpDialog::reject() {
 //}
 
 void DkUnsharpDialog::computePreview() {
-
+		
 	if (processing)
 		return;
 
@@ -3074,12 +3079,17 @@ void DkUnsharpDialog::computePreview() {
 		sigmaSlider->value(),
 		amountSlider->value()); 
 	unsharpWatcher.setFuture(future);
+	processing = true;
 }
 
 void DkUnsharpDialog::unsharpFinished() {
 
-	preview->setImage(unsharpWatcher.result());
-	update();
+	QImage img = unsharpWatcher.result();
+	img = img.scaled(preview->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+	preview->setPixmap(QPixmap::fromImage(img));
+
+	//update();
+	processing = false;
 }
 
 QImage DkUnsharpDialog::computeUnsharp(const QImage img, int sigma, int amount) {
