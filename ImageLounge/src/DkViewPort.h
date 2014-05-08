@@ -423,6 +423,7 @@ public slots:
 	void pauseMovie(bool paused);
 	void nextMovieFrame();
 	void previousMovieFrame();
+	void animateFade();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -444,6 +445,12 @@ protected:
 
 	QTimer* skipImageTimer;
 	QTimer* repeatZoomTimer;
+	
+	// fading stuff
+	QTimer* fadeTimer;
+	QImage fadeBuffer;
+	float fadeOpacity;
+	QRectF fadeImgRect;
 
 	QImage imgBg;
 

@@ -706,6 +706,10 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	repeatZoomTimer->setInterval(20);
 	connect(repeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
 
+	fadeTimer = new QTimer();
+	fadeTimer->setInterval(10);
+	connect(fadeTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
+
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
 
@@ -893,6 +897,8 @@ void DkViewPort::setImage(QImage newImg) {
 	if (DkSettings::sync.syncMode == DkSettings::sync_mode_auto)
 		tcpSendImage(true);
 
+	if (DkSettings::display.fadeSec)
+		fadeTimer->start();
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -1201,7 +1207,16 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
-		draw(&painter);
+		// TODO: if fading is active we interpolate with background instead of the other image
+		draw(&painter, 1.0f-fadeOpacity);
+
+		if (/*fadeTimer->isActive() && */!fadeBuffer.isNull()) {
+			float oldOp = painter.opacity();
+			painter.setOpacity(fadeOpacity);
+			painter.drawImage(fadeImgRect, fadeBuffer, fadeBuffer.rect());
+			painter.setOpacity(oldOp);
+		}
+
 		//Now disable matrixWorld for overlay display
 		painter.setWorldMatrixEnabled(false);
 	}
@@ -1590,6 +1605,19 @@ QString DkViewPort::getCurrentPixelHexValue() {
 	return col.name().toUpper().remove(0,1);
 }
 
+void DkViewPort::animateFade() {
+
+	float step = fadeTimer->interval()/(1000*DkSettings::display.fadeSec);
+	fadeOpacity -= step;
+
+	if (fadeOpacity <= 0) {
+		fadeBuffer = QImage();
+		fadeTimer->stop();
+	}
+
+	update();
+}
+
 // edit image --------------------------------------------------------------------
 void DkViewPort::rotateCW() {
 
@@ -1682,6 +1710,12 @@ void DkViewPort::setEditedImage(QImage newImg) {
 }
 
 bool DkViewPort::unloadImage(bool fileChange) {
+
+	if (DkSettings::display.fadeSec) {
+		fadeBuffer = imgStorage.getImage();
+		fadeImgRect = imgViewRect;
+		fadeOpacity = 1.0f;
+	}
 
 	int success = true;
 	if (fileChange)

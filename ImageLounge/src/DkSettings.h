@@ -154,6 +154,7 @@ public:
 		bool toolbarGradient;
 		bool showBorder;
 		bool displaySquaredThumbs;
+		float fadeSec;
 	};
 
 	struct Global {

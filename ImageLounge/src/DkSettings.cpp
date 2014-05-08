@@ -293,6 +293,7 @@ void DkSettings::load(bool force) {
 	display_p.toolbarGradient = settings.value("toolbarGradient", display_p.toolbarGradient).toBool();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
 	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
+	display_p.fadeSec = settings.value("fadeSec", display_p.fadeSec).toFloat();
 	display_p.useDefaultColor = settings.value("useDefaultColor", display_p.useDefaultColor).toBool();
 	display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
 	display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
@@ -489,6 +490,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("showBorder", display_p.showBorder);
 	if (!force && display_p.displaySquaredThumbs != display_d.displaySquaredThumbs)
 		settings.setValue("displaySquaredThumbs", display_p.displaySquaredThumbs);
+	if (!force && display_p.fadeSec != display_d.fadeSec)
+		settings.setValue("fadeSec", display_p.fadeSec);
 	if (!force && display_p.useDefaultColor != display_d.useDefaultColor)
 		settings.setValue("useDefaultColor", display_p.useDefaultColor);
 	if (!force && display_p.defaultIconColor != display_d.defaultIconColor)
@@ -654,6 +657,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = true;
 	display_p.displaySquaredThumbs = true;
+	display_p.fadeSec = 0.0f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;

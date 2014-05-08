@@ -236,7 +236,7 @@ protected:
 	QTimer* zoomTimer;
 
 	// functions
-	virtual void draw(QPainter *painter);
+	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	virtual void updateImageMatrix();
 	virtual QTransform getScaledImageMatrix();
 	virtual void controlImagePosition(float lb = -1, float ub = -1);
