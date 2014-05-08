@@ -735,7 +735,7 @@ void DkImageStorage::computeImage() {
 
 	// down sample the image until it is twice times full HD
 	QSize iSize = img.size();
-	while (iSize.width() > 2*1542 && iSize.height() > 2*1542)	// in general we need less than 200 ms for the whole downscaling if we start at 1500 x 1500
+	while (iSize.width() > 2*1920 && iSize.height() > 2*1920)	// in general we need less than 200 ms for the whole downscaling if we start at 1500 x 1500
 		iSize *= 0.5;
 
 	// for extreme panorama images the Qt scaling crashes (if we have a width > 30000) so we simply 
