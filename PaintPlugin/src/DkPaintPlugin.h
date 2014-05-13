@@ -44,6 +44,7 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 #include "DkBaseViewport.h"
+#include "DkImageStorage.h"
 
 namespace nmc {
 
@@ -70,6 +71,7 @@ public:
     QString pluginStatusTip(const QString &runID = QString()) const;
     QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 	DkPluginViewPort* getViewPort();
+	void deleteViewPort();
 
 protected:
 	DkPluginViewPort* viewport;
@@ -83,7 +85,7 @@ class DkPaintViewPort : public DkPluginViewPort {
 
 public:
 	DkPaintViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
+	
 	QBrush getBrush() const;
 	QPen getPen() const;
 	bool isCanceled();
@@ -169,7 +171,7 @@ protected:
 	QAction* panAction;
 
 	QVector<QIcon> icons;		// needed for colorizing
-
+	
 };
 
 

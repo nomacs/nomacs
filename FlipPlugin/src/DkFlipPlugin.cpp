@@ -30,6 +30,24 @@
 namespace nmc {
 
 /**
+*	Constructor
+**/
+DkFlipPlugin::DkFlipPlugin() {
+
+	QList<QAction*> myActions = QList<QAction*>();
+}
+
+/**
+*	Destructor
+**/
+DkFlipPlugin::~DkFlipPlugin() {
+
+	qDeleteAll(myActions);
+	myActions.clear();
+}
+
+
+/**
 * Returns unique ID for the generated dll
 **/
 QString DkFlipPlugin::pluginID() const {
@@ -123,8 +141,6 @@ QString DkFlipPlugin::pluginStatusTip(const QString &runID) const {
 
 QList<QAction*> DkFlipPlugin::pluginActions(QWidget* parent) {
 
-	QList<QAction*> myActions;
-
 	QAction* ca = new QAction(tr("Horizontally"), parent);
 	ca->setObjectName("flipHorizontally");
 	ca->setStatusTip(tr("flip image horizontally"));
@@ -137,7 +153,6 @@ QList<QAction*> DkFlipPlugin::pluginActions(QWidget* parent) {
 	ca->setData("9b262d0429c14464be6144340e5be66c");	// runID needed for calling function runPlugin()
 	myActions.append(ca);
 	
-
 	return myActions;
 }
 

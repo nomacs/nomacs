@@ -31,10 +31,14 @@ namespace nmc {
 
 /*-----------------------------------DkPaintPlugin ---------------------------------------------*/
 
+DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
+DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
+
 /**
 *	Constructor
 **/
 DkPaintPlugin::DkPaintPlugin() {
+
 	viewport = 0;
 }
 
@@ -129,16 +133,21 @@ QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
 * @param current image in the Nomacs viewport
 **/
 QImage DkPaintPlugin::runPlugin(const QString &runID, const QImage &image) const {
-
-	//for a viewport plugin runID and image are null
-	DkPaintViewPort* paintViewport = dynamic_cast<DkPaintViewPort*>(viewport);
-
-	QImage retImg = QImage();
-	if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
-
-	viewport->setVisible(false);
 	
-	return retImg;
+	//for a viewport plugin runID and image are null
+	if (viewport) {
+
+		DkPaintViewPort* paintViewport = dynamic_cast<DkPaintViewPort*>(viewport);
+
+		QImage retImg = QImage();
+		if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
+
+		viewport->setVisible(false);
+	
+		return retImg;
+	}
+	
+	return image;
 };
 
 /**
@@ -147,19 +156,26 @@ QImage DkPaintPlugin::runPlugin(const QString &runID, const QImage &image) const
 DkPluginViewPort* DkPaintPlugin::getViewPort() {
 
 	if (!viewport) {
-		viewport = new DkPaintViewPort();		
-		connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+		viewport = new DkPaintViewPort();
+		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
 	}
-
 	return viewport;
 }
 
 /**
-* sets the viewport pointer to NULL after the viewport is destroyedž
+* sets the viewport pointer to NULL after the viewport is destroyed
 **/
 void DkPaintPlugin::viewportDestroyed() {
 
 	viewport = 0;
+}
+
+void DkPaintPlugin::deleteViewPort() {
+
+	if (viewport) {
+		viewport->deleteLater();
+		viewport = 0;
+	}
 }
 
 /* macro for exporting plugin */
@@ -174,7 +190,7 @@ DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPlu
 }
 
 void DkPaintViewPort::init() {
-
+	
 	panning = false;
 	cancelTriggered = false;
 	isOutside = false;
@@ -184,6 +200,7 @@ void DkPaintViewPort::init() {
 	pen.setCapStyle(Qt::RoundCap);
 	pen.setJoinStyle(Qt::RoundJoin);
 	pen.setWidth(1);
+	
 	paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
 
 	connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
@@ -194,7 +211,6 @@ void DkPaintViewPort::init() {
 	
 	DkPluginViewPort::init();
 }
-
 
 void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 
@@ -270,7 +286,6 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
-
 
 	// panning -> redirect to viewport
 	if (event->modifiers() == DkSettings::global.altMod || panning) {
@@ -433,8 +448,8 @@ void DkPaintToolBar::createIcons() {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			icons[idx].addPixmap(DkUtils::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+			icons[idx].addPixmap(DkImage::colorizePixmap(icons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 		}
 	}
 }

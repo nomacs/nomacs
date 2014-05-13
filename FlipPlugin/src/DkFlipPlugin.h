@@ -44,6 +44,10 @@ class DkFlipPlugin : public QObject, DkPluginInterface {
     Q_INTERFACES(nmc::DkPluginInterface)
 
 public:
+
+	DkFlipPlugin();
+	~DkFlipPlugin();
+
     QString pluginID() const;
     QString pluginName() const;
     QString pluginDescription() const;
@@ -53,9 +57,12 @@ public:
     QStringList runID() const;
     QString pluginMenuName(const QString &runID = QString()) const;
     QString pluginStatusTip(const QString &runID = QString()) const;
-	List<QAction*> pluginActions(QWidget* parent);
+	QList<QAction*> pluginActions(QWidget* parent);
     QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const;
 
+
+protected:
+	QList<QAction*> myActions;
 };
 
 };
