@@ -492,14 +492,22 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 
 }
 
-void DkControlWidget::setPluginWidget(DkPluginViewPort* pluginWidget, bool removeWidget) {
+void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget) {
+
+	DkPluginViewPort* pluginViewport = pluginWidget->getViewPort();
+
+	if (!pluginViewport) return;
 
 	if (!removeWidget) {
-		pluginWidget->setWorldMatrix(viewport->getWorldMatrixPtr());
-		pluginWidget->setImgMatrix(viewport->getImageMatrixPtr());
+		pluginViewport->setWorldMatrix(viewport->getWorldMatrixPtr());
+		pluginViewport->setImgMatrix(viewport->getImageMatrixPtr());
 	}
 
-	viewport->setPaintWidget(pluginWidget, removeWidget);
+	viewport->setPaintWidget(dynamic_cast<QWidget*>(pluginViewport), removeWidget);
+	
+	if (removeWidget) {
+		pluginWidget->deleteViewPort();
+	}
 }
 
 void DkControlWidget::setFileInfo(QFileInfo fileInfo, QSize size, bool edited, QString attr) {
@@ -682,6 +690,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	testLoaded = false;
 	thumbLoaded = false;
 	visibleStatusbar = false;
+	pluginImageWasApplied = false;
 
 	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
@@ -794,7 +803,7 @@ void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 		paintLayout->addWidget(widget);		
 	} else {
 		paintLayout->removeWidget(widget);
-		widget->deleteLater();
+		//widget->deleteLater();
 	}
 	
 	//controller->raise();
@@ -1683,12 +1692,15 @@ void DkViewPort::setEditedImage(QImage& newImg) {
 void DkViewPort::applyPluginChanges() {
 
 	DkNoMacs* noMacs = dynamic_cast<DkNoMacs*>(parent);
+
+	if (!noMacs) return;
+
 	if(!noMacs->getCurrRunningPlugin().isEmpty()) noMacs->applyPluginChanges(true, false);
 }
 
 void DkViewPort::unloadImage() {
 
-	applyPluginChanges();
+	if (!pluginImageWasApplied) applyPluginChanges(); //prevent recursion
 
 	if (loader->getFile().exists()) {
 

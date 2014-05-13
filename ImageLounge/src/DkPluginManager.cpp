@@ -56,50 +56,18 @@ void DkPluginManager::init() {
 
 	dialogWidth = 700;
 	dialogHeight = 500;
-	/*
-	tabsMargin = 20;
-	tabsWidth = dialogWidth - 2 * tabsMargin;
-	tabsHeight = dialogHeight - tabsMargin - 30;
-	*/
-	setWindowTitle(tr("Plug-in manager"));
+
+	setWindowTitle(tr("Plugin manager"));
 	setFixedSize(dialogWidth, dialogHeight);
-	createLayout(); //pluginLoadingDebuging -> comment this line
+	createLayout();
+
 }
 
-/**
+/*
 * create plugin manager dialog layout
  **/
 void DkPluginManager::createLayout() {
 	/*
-	// bottom widget - buttons	
-	QWidget* bottomWidget = new QWidget(this);
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
-
-	QPushButton* buttonClose = new QPushButton(tr("&Close"));
-	connect(buttonClose, SIGNAL(clicked()), this, SLOT(closePressed()));
-
-	QSpacerItem* spacer = new QSpacerItem(1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-	bottomWidgetHBoxLayout->addItem(spacer);
-	bottomWidgetHBoxLayout->addWidget(buttonClose);
-	
-	// central widget - tabs
-	QWidget* centralWidget = new QWidget(this);
-
-	QTabWidget* tabs = new QTabWidget(centralWidget);
-	tabs->setGeometry(QRect(QPoint(tabsMargin, tabsMargin), QSize(tabsWidth, tabsHeight)));
-
-	tabs->addTab(new QWidget(), tr("Manage installed plug-ins"));  
-	tabs->addTab(new QWidget(), tr("Download new plug-ins"));
-
-	BorderLayout* borderLayout = new BorderLayout;
-	borderLayout->addWidget(bottomWidget, BorderLayout::South);
-	borderLayout->addWidget(centralWidget, BorderLayout::Center);
-	this->setSizeGripEnabled(false);
-
-	this->setLayout(borderLayout);
-
-	*/
-
 	QVBoxLayout* verticalLayout = new QVBoxLayout(this);
 	tabs = new QTabWidget(this);
 
@@ -124,6 +92,7 @@ void DkPluginManager::createLayout() {
     verticalLayout->addLayout(horizontalLayout);
 
 	this->setSizeGripEnabled(false);
+	*/	
 }
 
 
@@ -133,14 +102,18 @@ void DkPluginManager::closePressed() {
 }
 
 void DkPluginManager::showEvent(QShowEvent *event) {
-	//pluginLoadingDebuging -> comment all lines bellow
+
 	loadPlugins();
+	//pluginLoadingDebuging -> comment all lines bellow
+	/*
 	tabs->setCurrentIndex(tab_installed_plugins);
 	tableWidgetInstalled->clearTableFilters();
 	tableWidgetInstalled->updateInstalledModel();
 	tableWidgetDownload->clearTableFilters();
+	*/
 }
 
+/*
 void DkPluginManager::deleteInstance(QString id) {
 
 	if (pluginLoaders.contains(id)) {
@@ -153,16 +126,11 @@ void DkPluginManager::deleteInstance(QString id) {
 			}
 		loadedPlugins.remove(id);
 
-		QPluginLoader *loaderToDelete = pluginLoaders.take(id);
-		if(loaderToDelete->unload()) {
-			delete loaderToDelete;
-			//loaderToDelete->deleteLater();
-			loaderToDelete = 0;
-		}
-		else qDebug() << "Could not unload plug-in loader!";	
+		QPluginLoader* loaderToDelete = pluginLoaders.take(id);
+		if(!loaderToDelete->unload()) qDebug() << "Could not unload plug-in loader!";	
 	}
 }
-
+*/
 
 /**
 * Loads one plug-in from file fileName
@@ -177,14 +145,14 @@ void DkPluginManager::singlePluginLoad(QString filePath) {
 		return;
     }
 	
-	QObject *plugin = loader->instance();
+	QObject* pluginObject = loader->instance();
 
-	if(plugin) {
+	if(pluginObject) {
 
-		DkPluginInterface* initializedPlugin = qobject_cast<DkPluginInterface*>(plugin);
+		DkPluginInterface* initializedPlugin = qobject_cast<DkPluginInterface*>(pluginObject);
 
 		if (!initializedPlugin)
-			initializedPlugin = qobject_cast<DkViewPortInterface*>(plugin);
+			initializedPlugin = qobject_cast<DkViewPortInterface*>(pluginObject);
 
 		if(initializedPlugin) {
 			QString pluginID = initializedPlugin->pluginID();
@@ -197,9 +165,8 @@ void DkPluginManager::singlePluginLoad(QString filePath) {
 			qDebug() << "could not initialize: " << filePath;
 	}
 	else {
-		qDebug() << "could not load: " << filePath;
 		delete loader;
-		loader = 0;
+		qDebug() << "could not load: " << filePath;
 	}
 }
 
@@ -210,25 +177,29 @@ void DkPluginManager::singlePluginLoad(QString filePath) {
 void DkPluginManager::loadPlugins() {
 
 	// if reloading first delete all instances
-	if (!loadedPlugins.isEmpty()) {
-		pluginFiles.clear();
-		pluginIdList.clear();
-		loadedPlugins.clear();
-		runId2PluginId.clear();
+	if (!pluginLoaders.isEmpty()) {
 
-		foreach (QPluginLoader* pluginLoader, pluginLoaders) {
+		for(int i = 0; i < pluginIdList.count(); i++) {
 
-			if(pluginLoader->unload()) { 
-				delete pluginLoader;
-				pluginLoader = 0;
-			}
-			else qDebug() << "Could not unload plug-in loader!";
+			QPluginLoader* pluginLoader = pluginLoaders.take(pluginIdList.at(i));
+			qDebug() << pluginLoader->errorString();
+			if(!pluginLoader->unload()) qDebug() << "Could not unload plug-in loader!";
+			
+			delete pluginLoader;
+			pluginLoader = 0;
+
 		}
-
-		pluginLoaders.clear();
 	}
 
+	pluginFiles.clear();
+	runId2PluginId.clear();	
+	loadedPlugins.clear();
+	pluginIdList.clear();
+	pluginLoaders.clear();
+
 	QDir pluginsDir = DkSettings::global.pluginsDir;
+	//QDir pluginsDir = QDir(qApp->applicationDirPath());
+    //pluginsDir.cd("plugins");
 
 	foreach(QString fileName, pluginsDir.entryList(QDir::Files)) singlePluginLoad(pluginsDir.absoluteFilePath(fileName));
 
@@ -245,9 +216,7 @@ void DkPluginManager::loadPlugins() {
 	settings.endArray();
 }
 
-/**
-* Loads enabled plug-ins when the menu is first hit
- **/
+//Loads enabled plug-ins when the menu is first hit
 void DkPluginManager::loadEnabledPlugins() {
 
 	if (!loadedPlugins.isEmpty()) qDebug() << "This should be empty!";
@@ -278,10 +247,8 @@ void DkPluginManager::loadEnabledPlugins() {
 	}
 }
 
-/**
-* returns map with id and interface
-**/
-QMap<QString, DkPluginInterface *> DkPluginManager::getPlugins() {
+//returns map with id and interface
+QMap<QString, DkPluginInterface*> DkPluginManager::getPlugins() {
 
 	return loadedPlugins;
 }
@@ -325,32 +292,33 @@ QMap<QString, QString> DkPluginManager::getRunId2PluginId(){
 }
 
 void DkPluginManager::tabChanged(int tab){
-
+	/*
 	if(tab == tab_installed_plugins) tableWidgetInstalled->updateInstalledModel();
 	else if(tab == tab_download_plugins) tableWidgetDownload->downloadPluginInformation(xml_usage_download);
+	*/
 }
 
+/*
 void DkPluginManager::deletePlugin(QString pluginID) {
 
-
-	QPluginLoader *loaderToDelete = pluginLoaders.take(pluginID);
+	QPluginLoader* loaderToDelete = pluginLoaders.take(pluginID);
 		
-	if(loaderToDelete->unload()) delete loaderToDelete;
-	else qDebug() << "Could not unload plug-in loader!";
+	if(!loaderToDelete->unload()) qDebug() << "Could not unload plug-in loader!";
 
 	QFile file(pluginFiles.take(pluginID));
 	if(!file.remove()) {
 		qDebug() << "Failed to delete plug-in file!";
-		QMessageBox::critical(this, tr("Plug-in manager"), tr("The dll could not be deleted!\nPlease restart nomacs and try again."));
+		QMessageBox::critical(this, tr("Plugin manager"), tr("The dll could not be deleted!\nPlease restart nomacs and try again."));
 	}
 
 	loadedPlugins.remove(pluginID);
 }
 
+/*
 
-/**********************************************************************************
-*DkPluginTableWidget : Widget with table views containing plugin data
-**********************************************************************************/
+//*********************************************************************************
+//DkPluginTableWidget : Widget with table views containing plugin data
+//*********************************************************************************
 
 DkPluginTableWidget::DkPluginTableWidget(int tab, DkPluginManager* manager, QWidget* parent) : QWidget(parent) {
 
@@ -364,9 +332,8 @@ DkPluginTableWidget::~DkPluginTableWidget() {
 
 }
 
-/**
-* create the main layout of the plugin manager
-**/
+
+// create the main layout of the plugin manager
 void DkPluginTableWidget::createLayout() {
 
 	QVBoxLayout* verticalLayout = new QVBoxLayout(this);
@@ -493,18 +460,15 @@ void DkPluginTableWidget::manageParsedXmlData(int usage) {
 void DkPluginTableWidget::updateSelectedPlugins() {
 
 	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(model);
-
-	if (installedPluginsModel) {
-		QList<QString> installedIdList = installedPluginsModel->getPluginData();
-		QList<XmlPluginData> updateList = pluginDownloader->getXmlPluginData();
-		pluginsToUpdate = QList<XmlPluginData>();
+	QList<QString> installedIdList = installedPluginsModel->getPluginData();
+	QList<XmlPluginData> updateList = pluginDownloader->getXmlPluginData();
+	pluginsToUpdate = QList<XmlPluginData>();
 	
-		for (int i = 0; i < updateList.size(); i++) {
-			for (int j = 0; j < installedIdList.size(); j++) {
-				if(updateList.at(i).id == installedIdList.at(j)) {
-					if(updateList.at(i).version != pluginManager->getPlugins().value(installedIdList.at(j))->pluginVersion()) pluginsToUpdate.append(updateList.at(i));
-					break;
-				}
+	for (int i = 0; i < updateList.size(); i++) {
+		for (int j = 0; j < installedIdList.size(); j++) {
+			if(updateList.at(i).id == installedIdList.at(j)) {
+				if(updateList.at(i).version != pluginManager->getPlugins().value(installedIdList.at(j))->pluginVersion()) pluginsToUpdate.append(updateList.at(i));
+				break;
 			}
 		}
 	}
@@ -619,6 +583,8 @@ void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
 	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX86;
 #endif
 
+	//QDir pluginsDir = QDir(qApp->applicationDirPath());
+    //pluginsDir.mkdir("plugins");
 	QDir pluginsDir = DkSettings::global.pluginsDir;
 	
 	if (!pluginsDir.exists())
@@ -642,9 +608,8 @@ void DkPluginTableWidget::clearTableFilters(){
 	filterEdit->setFocus();
 }
 
-/*
-* update models if new plug-ins are installed or copied into the folder
-*/
+
+//update models if new plug-ins are installed or copied into the folder
 void DkPluginTableWidget::updateInstalledModel() {
 
 	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(model);
@@ -750,9 +715,9 @@ DkPluginDownloader* DkPluginTableWidget::getDownloader() {
 	return pluginDownloader;
 }
 
-/**********************************************************************************
-*DkInstalledPluginsModel : Model managing installed plug-ins data in the table
-**********************************************************************************/
+//**********************************************************************************
+//DkInstalledPluginsModel : Model managing installed plug-ins data in the table
+//**********************************************************************************
 
 DkInstalledPluginsModel::DkInstalledPluginsModel(QObject *parent) : QAbstractTableModel(parent) {
 
@@ -930,9 +895,9 @@ void DkInstalledPluginsModel::savePluginsEnabledSettings() {
 }
 
 
-/**********************************************************************************
-*DkDownloadPluginsModel : Model managing the download plug.in data
-**********************************************************************************/
+//**********************************************************************************
+//DkDownloadPluginsModel : Model managing the download plug.in data
+//**********************************************************************************
 
 DkDownloadPluginsModel::DkDownloadPluginsModel(QObject *parent) : QAbstractTableModel(parent) {
 
@@ -1060,9 +1025,9 @@ QMap<QString, bool> DkDownloadPluginsModel::getInstalledData() {
 	return pluginsInstalled;
 }
 
-/**********************************************************************************
-*DkCheckBoxDelegate : delagete for checkbox only column in the model
-**********************************************************************************/
+//*********************************************************************************
+//DkCheckBoxDelegate : delagete for checkbox only column in the model
+//*********************************************************************************
 
 static QRect CheckBoxRect(const QStyleOptionViewItem &viewItemStyleOptions) {
 
@@ -1124,9 +1089,9 @@ bool DkCheckBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, c
 
 
 
-/**********************************************************************************
-*DkPushButtonDelegate : delagete for uninstall column in the model
-**********************************************************************************/
+//*********************************************************************************
+//DkPushButtonDelegate : delagete for uninstall column in the model
+//*********************************************************************************
 
 static QRect PushButtonRect(const QStyleOptionViewItem &viewItemStyleOptions) {
 
@@ -1196,9 +1161,9 @@ bool DkPushButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 }
 
 
-/**********************************************************************************
-*DkDownloadDelegate : icon if already downloaded or button if not
-**********************************************************************************/
+//**********************************************************************************
+//DkDownloadDelegate : icon if already downloaded or button if not
+//**********************************************************************************
 
 DkDownloadDelegate::DkDownloadDelegate(QObject *parent) : QStyledItemDelegate(parent) {
 	
@@ -1276,9 +1241,9 @@ bool DkDownloadDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, c
 
 
 
-/**********************************************************************************
-* DkDescriptionEdit : text edit connected to tableView selection and models
-**********************************************************************************/
+//**********************************************************************************
+//DkDescriptionEdit : text edit connected to tableView selection and models
+//**********************************************************************************
 
 DkDescriptionEdit::DkDescriptionEdit(QAbstractTableModel* data, QSortFilterProxyModel* proxy, QItemSelectionModel* selection, QWidget *parent) : QTextEdit(parent) {
 	
@@ -1330,9 +1295,9 @@ void DkDescriptionEdit::selectionChanged(const QItemSelection &selected, const Q
 }
 
 
-/**********************************************************************************
-* DkDescriptionImage : image label connected to tableView selection and models
-**********************************************************************************/
+//**********************************************************************************
+//DkDescriptionImage : image label connected to tableView selection and models
+//**********************************************************************************
 
 DkDescriptionImage::DkDescriptionImage(QAbstractTableModel* data, QSortFilterProxyModel* proxy, QItemSelectionModel* selection, QWidget *parent) : QLabel(parent) {
 	
@@ -1388,9 +1353,9 @@ void DkDescriptionImage::selectionChanged(const QItemSelection &selected, const 
 }
 
 
-/**********************************************************************************
-* DkPluginDownloader : load download plug-in data and download new plug-ins
-**********************************************************************************/
+//**********************************************************************************
+//DkPluginDownloader : load download plug-in data and download new plug-ins
+//**********************************************************************************
 
 DkPluginDownloader::DkPluginDownloader(QWidget* parent) {
 
@@ -1550,6 +1515,8 @@ void DkPluginDownloader::replyToImg(QNetworkReply* reply) {
 
 void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
 
+	//QDir pluginsDir = QDir(qApp->applicationDirPath());
+    //pluginsDir.cd("plugins
 	QDir pluginsDir = DkSettings::global.pluginsDir;
 
 	QFile file(pluginsDir.absolutePath().append("\\").append(fileName));
@@ -1606,5 +1573,7 @@ void DkPluginDownloader::updateDownloadProgress(qint64 received, qint64 total) {
 	}
 
 }
+
+*/
 
 };

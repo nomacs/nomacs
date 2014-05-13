@@ -129,8 +129,8 @@ public:
 	void setPluginIdList(QList<QString> newPlugins);
 	QMap<QString, QString> getRunId2PluginId();
 	void setRunId2PluginId(QMap<QString, QString> newMap);
-	void deletePlugin(QString pluginID);
-	void deleteInstance(QString id);
+	//void deletePlugin(QString pluginID);
+	//void deleteInstance(QString id);
 
 protected slots:
 	void closePressed();
@@ -154,7 +154,7 @@ protected:
 	void showEvent(QShowEvent *event);
 		
 };
-
+/*
 // widget with all plug-in information
 class DkPluginTableWidget: public QWidget {
 
@@ -369,22 +369,6 @@ public:
 	void updatePlugins(QList<QString> urls);
 	QList<XmlPluginData> getXmlPluginData();
 
-public slots:
-	
-/*	void parseXml();
-	void replyFinished(QNetworkReply*);
-	void performUpdate();
-	void downloadFinishedSlot(QNetworkReply* data);
-	void updateDownloadProgress(qint64 received, qint64 total) { emit downloadProgress(received, total); };
-	void cancelUpdate();
-	
-
-signals:
-	void displayUpdateDialog(QString msg, QString title);
-	void showUpdaterMessage(QString msg, QString title);
-	void downloadFinished(QString filePath);
-	void downloadProgress(qint64, qint64);
-	*/
 signals:
 	void showDownloaderMessage(QString msg, QString title);
 	void parsingFinished(int usage);
@@ -415,5 +399,6 @@ private:
 	void replyToImg(QNetworkReply* reply);
 	void startPluginDownload(QNetworkReply* reply);
 };
+*/
 
 };

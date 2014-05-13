@@ -254,7 +254,7 @@ public:
 		return cropWidget;
 	}
 
-	void setPluginWidget(DkPluginViewPort* viewport, bool removeWidget);
+	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
 
 	void stopLabels();
 	void showWidgetsSettings();
@@ -392,6 +392,11 @@ public:
 	void setVisibleStatusbar(bool visibleStatusbar) {
 		this->visibleStatusbar = visibleStatusbar;
 	};
+	
+	void applyPluginChanges();
+	void setPluginImageWasApplied(bool pluginImageWasApplied) {
+		this->pluginImageWasApplied = pluginImageWasApplied;
+	};
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -435,7 +440,6 @@ public slots:
 	void loadSkipPrev10();
 	void loadLena();
 	void unloadImage();
-	void applyPluginChanges();
 	void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 	void repeatZoom();
@@ -478,6 +482,7 @@ protected:
 	DkControlWidget* controller;
 	DkImageLoader* loader;
 
+	bool pluginImageWasApplied;
 	// functions
 
 #if QT_VERSION < 0x050000

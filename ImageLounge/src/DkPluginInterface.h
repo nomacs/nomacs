@@ -72,7 +72,7 @@ public:
 	virtual int interfaceType()  const {return interface_viewport;};
 
 	virtual DkPluginViewPort* getViewPort() = 0;
-
+	virtual void deleteViewPort() = 0;
 };
 
 class DkPluginViewPort : public QWidget {
