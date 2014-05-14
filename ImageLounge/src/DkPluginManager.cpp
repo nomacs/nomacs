@@ -183,6 +183,7 @@ void DkPluginManager::loadPlugins() {
 
 			QPluginLoader* pluginLoader = pluginLoaders.take(pluginIdList.at(i));
 			qDebug() << pluginLoader->errorString();
+			
 			if(!pluginLoader->unload()) qDebug() << "Could not unload plug-in loader!";
 			
 			delete pluginLoader;

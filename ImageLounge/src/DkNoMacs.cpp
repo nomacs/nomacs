@@ -3560,6 +3560,8 @@ void DkNoMacs::addPluginsToMenu() {
 	}
 
 	pluginManager->setRunId2PluginId(runId2PluginId);
+
+	assignCustomShortcuts(pluginsActions);
 }
 
 /**
