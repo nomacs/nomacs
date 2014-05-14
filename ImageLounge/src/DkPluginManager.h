@@ -129,8 +129,8 @@ public:
 	void setPluginIdList(QList<QString> newPlugins);
 	QMap<QString, QString> getRunId2PluginId();
 	void setRunId2PluginId(QMap<QString, QString> newMap);
-	//void deletePlugin(QString pluginID);
-	//void deleteInstance(QString id);
+	void deletePlugin(QString pluginID);
+	void deleteInstance(QString id);
 
 protected slots:
 	void closePressed();
@@ -154,7 +154,7 @@ protected:
 	void showEvent(QShowEvent *event);
 		
 };
-/*
+
 // widget with all plug-in information
 class DkPluginTableWidget: public QWidget {
 
@@ -399,6 +399,6 @@ private:
 	void replyToImg(QNetworkReply* reply);
 	void startPluginDownload(QNetworkReply* reply);
 };
-*/
+
 
 };
