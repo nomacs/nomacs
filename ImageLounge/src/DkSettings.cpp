@@ -657,7 +657,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = true;
 	display_p.displaySquaredThumbs = true;
-	display_p.fadeSec = 0.0f;
+	display_p.fadeSec = 0.5f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;
