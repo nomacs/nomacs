@@ -47,6 +47,8 @@ DkPaintPlugin::DkPaintPlugin() {
 **/
 DkPaintPlugin::~DkPaintPlugin() {
 
+	qDebug() << "[PAINT PLUGIN] deleted...";
+
 	if (viewport) {
 		viewport->deleteLater();
 		viewport = 0;
@@ -187,6 +189,18 @@ Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkPaintPlugin/1.0", DkPaintPlugin)
 DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
 
 	init();
+}
+
+DkPaintViewPort::~DkPaintViewPort() {
+	qDebug() << "[PAINT VIEWPORT] deleted...";
+	
+	// acitive deletion since the MainWindow takes ownership...
+	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
+	// however, then we have lot's of toolbars in memory if the user opens the plugin again and again
+	if (paintToolbar) {
+		delete paintToolbar;
+		paintToolbar = 0;
+	}
 }
 
 void DkPaintViewPort::init() {
@@ -428,10 +442,13 @@ DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */
 	}
 	else
 		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
+
+	qDebug() << "[PAINT TOOLBAR] created...";
 }
 
 DkPaintToolBar::~DkPaintToolBar() {
 
+	qDebug() << "[PAINT TOOLBAR] deleted...";
 }
 
 void DkPaintToolBar::createIcons() {
@@ -519,6 +536,8 @@ void DkPaintToolBar::setVisible(bool visible) {
 		alphaBox->setValue(100);
 		panAction->setChecked(false);
 	}
+
+	qDebug() << "[PAINT TOOLBAR] set visible: " << visible;
 
 	QToolBar::setVisible(visible);
 }

@@ -85,6 +85,7 @@ class DkPaintViewPort : public DkPluginViewPort {
 
 public:
 	DkPaintViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkPaintViewPort();
 	
 	QBrush getBrush() const;
 	QPen getPen() const;
