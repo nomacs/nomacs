@@ -41,7 +41,7 @@
 #pragma warning(disable: 4996)
 #endif
 
-#include <libraw/libraw.h>
+//#include <libraw/libraw.h>
 #ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
 #include "opencv/cv.h"
 #else
@@ -52,13 +52,23 @@
 using namespace cv;
 #endif
 
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
 namespace nmc {
 
 /**
  * DkImage holds some basic image processing
  * methods that are generally needed.
  **/ 
-class DkImage {
+class DllExport DkImage {
 
 public:
 

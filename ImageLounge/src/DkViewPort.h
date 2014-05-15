@@ -43,6 +43,7 @@
 #include <QPrinter>
 #include <QGradientStops>
 #include <QSwipeGesture>
+#include <QStackedLayout>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -71,6 +72,8 @@
 #include "DkSettings.h"
 #include "DkToolbars.h"
 #include "DkBaseViewPort.h"
+#include "DkPluginInterface.h"
+
 //#include "DkDialog.h"
 
 #include "DkMath.h"
@@ -193,6 +196,14 @@ public:
 		top_left_label
 	};
 
+	enum Widgets {
+		last_widget = -1,
+		hud_widget,
+		crop_widget,
+		thumb_widget,
+
+		widget_end
+	};
 
 	DkControlWidget(DkViewPort *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkControlWidget() {};
@@ -239,6 +250,8 @@ public:
 		return cropWidget;
 	}
 
+	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
+
 	void stopLabels();
 	void showWidgetsSettings();
 
@@ -255,6 +268,7 @@ public slots:
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
 	void showThumbView(bool visible);
+	void switchWidget(QWidget* widget = 0);
 
 	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
@@ -283,9 +297,9 @@ protected:
 	void init();
 	void connectWidgets();
 
-	QWidget* editWidget;
-	QWidget* hudWidget;
-	QWidget* thumbMetaWidget;
+	QVector<QWidget*> widgets;
+	QStackedLayout* layout;
+	QWidget* lastActiveWidget;
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;
@@ -355,6 +369,16 @@ public:
 		return worldMatrix;
 	};
 
+	QTransform* getWorldMatrixPtr() {
+		return &worldMatrix;
+	};
+
+	QTransform* getImageMatrixPtr() {
+		return &imgMatrix;
+	};
+
+	void setPaintWidget(QWidget* widget, bool removeWidget);
+
 #ifdef WITH_OPENCV
 	void setImage(cv::Mat newImg);
 #endif
@@ -368,6 +392,11 @@ public:
 	};
 	
 	QString getCurrentPixelHexValue();
+	
+	void applyPluginChanges();
+	void setPluginImageWasApplied(bool pluginImageWasApplied) {
+		this->pluginImageWasApplied = pluginImageWasApplied;
+	};
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -415,7 +444,7 @@ public slots:
 
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(QImage newImg);
-	virtual void setEditedImage(QImage newImg);
+	virtual void setEditedImage(QImage& newImg);
 	virtual void setImage(QImage newImg);
 	virtual void setThumbImage(QImage newImg);
 
@@ -454,10 +483,12 @@ protected:
 
 	QImage imgBg;
 
+	QVBoxLayout* paintLayout;
 	DkControlWidget* controller;
 	DkImageLoader* loader;
 
 	QPoint currentPixelPos;
+	bool pluginImageWasApplied;
 	// functions
 
 #if QT_VERSION < 0x050000

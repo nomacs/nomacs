@@ -271,7 +271,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	imgStorage.setImage(newImg);
 	QRectF oldImgRect = imgRect;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
-
+	
 	emit enableNoImageSignal(!newImg.isNull());
 
 	if (!DkSettings::display.keepZoom || imgRect != oldImgRect)
@@ -279,6 +279,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 	updateImageMatrix();
 	update();
+	emit newImageSignal(&newImg);
 }
 
 QImage DkBaseViewPort::getImage() {

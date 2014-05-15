@@ -181,6 +181,7 @@ public:
 
 		int sortMode;
 		int sortDir;
+		QString pluginsDir;
 	};
 
 	struct SlideShow {

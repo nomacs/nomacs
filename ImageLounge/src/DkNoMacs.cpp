@@ -40,6 +40,8 @@
 #include "DkManipulationWidgets.h"
 #include "DkSettingsWidgets.h"
 #include "DkMessageBox.h"
+#include "DkPluginInterface.h"
+#include "DkPluginManager.h"
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
@@ -89,9 +91,12 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	progressDialog = 0;
 	forceDialog = 0;
 	trainDialog = 0;
+	pluginManager = 0;
 	explorer = 0;
 	appManager = 0;
 	settingsDialog = 0;
+
+	currRunningPlugin = QString();
 
 	// start localhost client/server
 	//localClientManager = new DkLocalClientManager(windowTitle());
@@ -164,7 +169,10 @@ void DkNoMacs::init() {
 	viewport()->addActions(panelActions.toList());
 	viewport()->addActions(viewActions.toList());
 	viewport()->addActions(syncActions.toList());
+	viewport()->addActions(pluginsActions.toList());
 	viewport()->addActions(helpActions.toList());
+
+
 
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
@@ -182,6 +190,8 @@ void DkNoMacs::init() {
 		viewActions[idx]->setToolTip(viewActions[idx]->statusTip());
 	for (int idx = 0; idx < syncActions.size(); idx++)
 		syncActions[idx]->setToolTip(syncActions[idx]->statusTip());
+	for (int idx = 0; idx < pluginsActions.size(); idx++)
+		pluginsActions[idx]->setToolTip(pluginsActions[idx]->statusTip());
 	for (int idx = 0; idx < helpActions.size(); idx++)
 		helpActions[idx]->setToolTip(helpActions[idx]->statusTip());
 
@@ -667,6 +677,10 @@ void DkNoMacs::createMenu() {
 		syncMenu = menu->addMenu(tr("&Sync"));
 	else 
 		syncMenu = 0;
+
+	// plugin menu
+	pluginsMenu = menu->addMenu(tr("Pl&ugins"));
+	connect(pluginsMenu, SIGNAL(aboutToShow()), this, SLOT(initPluginManager()));
 	
 	helpMenu = menu->addMenu(tr("&?"));
 #ifndef Q_WS_X11
@@ -1218,7 +1232,11 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_mosaic] = new QAction(tr("&Mosaic Image"), this);
 	toolsActions[menu_tools_mosaic]->setStatusTip(tr("Create a Mosaic Image"));
 	connect(toolsActions[menu_tools_mosaic], SIGNAL(triggered()), this, SLOT(computeMosaic()));
-
+	// plugins menu
+	pluginsActions.resize(menu_plugins_end);
+	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin manager"), this);
+	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plugins and download new ones"));
+	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
 	// help menu
 	helpActions.resize(menu_help_end);
 	helpActions[menu_help_about] = new QAction(tr("&About Nomacs"), this);
@@ -1721,6 +1739,8 @@ void DkNoMacs::copyImageBuffer() {
 void DkNoMacs::pasteImage() {
 	
 	qDebug() << "pasting...";
+
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	QClipboard* clipboard = QApplication::clipboard();
 
@@ -2327,6 +2347,8 @@ void DkNoMacs::renameFile() {
 
 void DkNoMacs::find(bool filterAction) {
 
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+
 	if (!viewport() || !viewport()->getImageLoader())
 		return;
 
@@ -2403,6 +2425,8 @@ void DkNoMacs::changeSorting(bool change) {
 
 void DkNoMacs::goTo() {
 
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+
 	if (!viewport() || !viewport()->getImageLoader())
 		return;
 
@@ -2443,6 +2467,8 @@ void DkNoMacs::saveFile() {
 void DkNoMacs::saveFileAs(bool silent) {
 	
 	qDebug() << "saving...";
+
+	if(!currRunningPlugin.isEmpty()) applyPluginChanges(true, true);
 
 	DkImageLoader* loader = viewport()->getImageLoader();
 
@@ -2689,6 +2715,8 @@ void DkNoMacs::saveFileWeb() {
 
 void DkNoMacs::resizeImage() {
 
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
 
@@ -2738,6 +2766,8 @@ void DkNoMacs::resizeImage() {
 
 void DkNoMacs::deleteFile() {
 
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(false, false);
+
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
 
@@ -2775,6 +2805,9 @@ void DkNoMacs::exportTiff() {
 
 void DkNoMacs::computeMosaic() {
 #ifdef WITH_OPENCV
+
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+
 	//if (!mosaicDialog)
 	DkMosaicDialog* mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 
@@ -2792,6 +2825,8 @@ void DkNoMacs::computeMosaic() {
 }
 
 void DkNoMacs::openImgManipulationDialog() {
+
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
@@ -2877,6 +2912,8 @@ void DkNoMacs::setWallpaper() {
 }
 
 void DkNoMacs::printDialog() {
+
+	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	QPrinter printer;
 
@@ -3308,7 +3345,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 		// create statusbar info
 		QSharedPointer<DkMetaDataT> metaData = viewport()->getImageLoader()->getCurrentImage()->getMetaData();
 		QString dateString = metaData->getExifValue("DateTimeOriginal");
-		dateString = DkUtils::convertDate(dateString, file);
+		dateString = DkUtils::convertDateString(dateString, file);
 		showStatusMessage(dateString, status_time_info);
 	}
 	else 
@@ -3342,6 +3379,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(panelActions, panelMenu->title());
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
+	shortcutsDialog->addActions(pluginsActions, pluginsMenu->title());
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
 
 	shortcutsDialog->exec();
@@ -3500,6 +3538,285 @@ int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
 	return errorDialog.exec();
 }
 
+/**
+* Creates the plugin menu when it is not empty
+* called in DkNoMacs::createPluginsMenu()
+**/
+void DkNoMacs::addPluginsToMenu() {
+	
+	QMap<QString, DkPluginInterface *> loadedPlugins = pluginManager->getPlugins();
+	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+
+	QMap<QString, QString> runId2PluginId = QMap<QString, QString>();
+	QList<QPair<QString, QString> > sortedNames = QList<QPair<QString, QString> >();
+	QStringList pluginMenu = QStringList();
+
+	QVector<QMenu*> pluginSubMenus = QVector<QMenu*>();
+
+	for (int i = 0; i < pluginIdList.size(); i++) {
+
+		DkPluginInterface* cPlugin = loadedPlugins.value(pluginIdList.at(i));
+
+		if (cPlugin) {
+
+			QStringList runID = cPlugin->runID();
+			QList<QAction*> actions = cPlugin->pluginActions(this);
+
+			if (!actions.empty()) {
+				/*
+				QAction* runPlugin = new QAction(cPlugin->pluginName(), this);
+				connect(runPlugin, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+				runPlugin->setData(cPlugin->pluginID());
+				actions.prepend(runPlugin);
+				*/
+				for (int iAction = 0; iAction < actions.size(); iAction++) {
+					connect(actions.at(iAction), SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+					runId2PluginId.insert(actions.at(iAction)->data().toString(), pluginIdList.at(i));
+				}
+
+				QMenu* sm = new QMenu(cPlugin->pluginMenuName(),this);
+				sm->setStatusTip(cPlugin->pluginStatusTip());
+				sm->addActions(actions);
+				runId2PluginId.insert(cPlugin->pluginMenuName(), pluginIdList.at(i));
+			
+				pluginSubMenus.append(sm);
+			}
+			else {
+		
+				//QList<QPair<QString, QString> > sortedNames;
+
+
+				for (int j = 0; j < runID.size(); j++) {
+				
+					runId2PluginId.insert(runID.at(j), pluginIdList.at(i));
+					sortedNames.append(qMakePair(runID.at(j), cPlugin->pluginMenuName(runID.at(j))));
+				}
+			}
+		}
+	}
+
+	/*
+	QList<QPair<QString, QString> > sortedNames;
+	QMapIterator<QString, QString> iter(pluginNames);		
+	while(iter.hasNext()) {
+		iter.next();
+		sortedNames.append(qMakePair(iter.key(), loadedPlugins.value(iter.value())->pluginNames(iter.key())));
+	}
+	// Ordering ascending
+	qSort(sortedNames.begin(), sortedNames.end(), QPairSecondComparer());
+	*/
+
+	//pluginsActions.resize(menu_plugins_end + sortedNames.size() + pluginSubMenus.size());
+	
+	pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
+	pluginsMenu->addSeparator();
+
+	QMap<QString, bool> pluginsEnabled = QMap<QString, bool>();
+
+	QSettings settings;
+	int size = settings.beginReadArray("PluginSettings/disabledPlugins");
+	for (int i = 0; i < size; ++i) {
+		settings.setArrayIndex(i);
+		if (pluginIdList.contains(settings.value("pluginId").toString())) pluginsEnabled.insert(settings.value("pluginId").toString(), false);
+	}
+	settings.endArray();
+
+	for(int i = 0; i < sortedNames.size(); i++) {
+
+
+		if (pluginsEnabled.value(runId2PluginId.value(sortedNames.at(i).first), true)) {
+
+			QAction* pluginAction = new QAction(sortedNames.at(i).second, this);
+			pluginAction->setStatusTip(loadedPlugins.value(runId2PluginId.value(sortedNames.at(i).first))->pluginStatusTip(sortedNames.at(i).first));
+			pluginAction->setData(sortedNames.at(i).first);
+			connect(pluginAction, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
+
+			viewport()->addAction(pluginAction);
+			pluginsMenu->addAction(pluginAction);
+			pluginAction->setToolTip(pluginAction->statusTip());
+
+			pluginsActions.append(pluginAction);
+		}		
+	}
+
+	for (int idx = 0; idx < pluginSubMenus.size(); idx++) {
+
+		if (pluginsEnabled.value(runId2PluginId.value(pluginSubMenus.at(idx)->title()), true))
+			pluginsMenu->addMenu(pluginSubMenus.at(idx));
+
+	}
+
+	pluginManager->setRunId2PluginId(runId2PluginId);
+
+	assignCustomShortcuts(pluginsActions);
+}
+
+/**
+* Creates the plugins menu 
+**/
+void DkNoMacs::createPluginsMenu() {
+
+	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+
+	if(pluginIdList.isEmpty()) { // no  plugins
+		pluginsMenu->clear();
+		pluginsActions.resize(menu_plugins_end);
+		pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
+	}
+	else {
+		pluginsMenu->clear();
+		// delete old plugin actions	
+		for (int idx = pluginsActions.size(); idx > menu_plugins_end; idx--) {
+			pluginsActions.last()->deleteLater();
+			pluginsActions.last() = 0;
+			pluginsActions.pop_back();
+		}
+		pluginsActions.resize(menu_plugins_end);
+		addPluginsToMenu();
+	}
+
+}
+
+void DkNoMacs::openPluginManager() {
+
+	if (!currRunningPlugin.isEmpty()) {
+	   	   
+		QMessageBox infoDialog(this);
+		infoDialog.setWindowTitle("Close plugin");
+		infoDialog.setIcon(QMessageBox::Information);
+		infoDialog.setText("Please first close the currently opened plugin.");
+		infoDialog.show();
+
+		infoDialog.exec();
+		return;
+	}
+
+	bool done = pluginManager->exec();
+	createPluginsMenu();
+}
+
+void DkNoMacs::runLoadedPlugin() {
+   QAction* action = qobject_cast<QAction*>(sender());
+
+   if (!action)
+	   return;
+
+   if (!currRunningPlugin.isEmpty()) {
+	   
+	    // the plugin is not closed in time
+	   
+	   	QMessageBox infoDialog(this);
+		infoDialog.setWindowTitle("Close plugin");
+		infoDialog.setIcon(QMessageBox::Information);
+		infoDialog.setText("Please first close the currently opened plugin.");
+		infoDialog.show();
+
+		infoDialog.exec();
+		return;
+   }
+
+   QString key = action->data().toString();
+   DkPluginInterface* cPlugin = pluginManager->getPlugin(key);
+
+   // something is wrong if no plugin is loaded
+   if (!cPlugin) {
+	   qDebug() << "plugin is NULL";
+	   return;
+   }
+
+	if(viewport()->getImageLoader()->getImage().isNull()){
+		QMessageBox msgBox;
+		msgBox.setText("No image in the viewport!\nThe plugin can't run.");
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.exec();
+		return;
+	}
+
+   if (cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
+	    
+		DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
+
+	   if(!vPlugin) 
+		   return;
+
+	   currRunningPlugin = key;
+
+	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(applyPluginChanges(bool, bool)));
+	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+	   
+	   viewport()->getController()->setPluginWidget(vPlugin, false);
+	   
+   }
+   else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
+
+	    QImage tmpImg = viewport()->getImageLoader()->getImage();
+		QImage result = cPlugin->runPlugin(key, tmpImg);
+		if(!result.isNull()) viewport()->setEditedImage(result);
+   }
+}
+
+void DkNoMacs::initPluginManager() {
+
+	if(!pluginManager) {
+		pluginManager = new DkPluginManager(this);
+		createPluginsMenu();
+	}
+}
+
+void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
+
+	if (currRunningPlugin.isEmpty())
+		return;
+
+	if (!viewport())
+		return;
+
+	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
+
+	currRunningPlugin = QString();
+	bool isSaveNeeded = false;
+
+	if (!cPlugin) 
+		return;
+	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
+
+	if (!vPlugin) 
+		return;
+
+	viewport()->setPluginImageWasApplied(true);
+
+	QImage pluginImage = vPlugin->runPlugin();	// empty vars - viewport plugin doesn't need them
+
+	if (!pluginImage.isNull()) {
+		if (askForSaving) {
+
+			QMessageBox msgBox;
+			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+			msgBox.setDefaultButton(QMessageBox::No);
+			msgBox.setEscapeButton(QMessageBox::No);
+			msgBox.setIcon(QMessageBox::Question);
+			msgBox.setWindowTitle(tr("Exiting plugin..."));
+
+			msgBox.setText(tr("Do you want to apply plugin changes?"));
+
+			if(msgBox.exec() == QMessageBox::Yes) {
+				viewport()->setEditedImage(pluginImage);
+				//isSaveNeeded = true;
+			}
+
+			msgBox.deleteLater();
+		}				
+		else viewport()->setEditedImage(pluginImage);
+	}
+	
+	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+	
+	viewport()->getController()->setPluginWidget(vPlugin, true);
+
+	if(!alreadySaving && isSaveNeeded) saveFileAs();
+
+	viewport()->setPluginImageWasApplied(true);
+}
 
 // DkNoMacsSync --------------------------------------------------------------------
 DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags) : DkNoMacs(parent, flags) {

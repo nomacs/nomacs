@@ -628,6 +628,12 @@ void DkSettings::setToDefaultSettings() {
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
 	global_p.sortDir = sort_ascending;
+	
+	global_p.pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+
+#if !defined(QT_NO_DEBUG_OUTPUT)
+	global_p.pluginsDir = qApp->applicationDirPath() + "/plugins";
+#endif
 	global_p.zoomOnWheel = true;
 
 #ifdef Q_WS_X11
@@ -657,7 +663,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = true;
 	display_p.displaySquaredThumbs = true;
-	display_p.fadeSec = 0.5f;
+	display_p.fadeSec = 0.0f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;

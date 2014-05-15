@@ -35,7 +35,7 @@ namespace nmc {
 DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
 	viewport = parent;
-	rating = -1;
+	setObjectName("DkControlWidget");
 
 	// cropping
 	cropWidget = new DkCropWidget(QRectF(), this);
@@ -103,10 +103,10 @@ void DkControlWidget::init() {
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
-	cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
-	cropWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
-	thumbScrollWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	//cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	thumbScrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	spinnerLabel->halfSize();
 
 	// dummy
@@ -204,19 +204,16 @@ void DkControlWidget::init() {
 	lrLayout->addStretch();
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
-
-	// init both main widgets
-	hudWidget = new QWidget(this);
-	hudWidget->setMouseTracking(true);
-	editWidget = new QWidget(this);
-	editWidget->setMouseTracking(true);
-	editWidget->hide();
-
-	thumbMetaWidget = new QWidget(this);
-	thumbMetaWidget->hide();
+	
+	// init main widgets
+	widgets.resize(widget_end);
+	widgets[hud_widget] = new QWidget(this);
+	widgets[crop_widget] = cropWidget;
+	widgets[thumb_widget] = thumbScrollWidget;
+	lastActiveWidget = widgets[hud_widget];
 
 	// global controller layout
-	QGridLayout* hudLayout = new QGridLayout(hudWidget);
+	QGridLayout* hudLayout = new QGridLayout(widgets[hud_widget]);
 	hudLayout->setContentsMargins(0,0,0,0);
 	hudLayout->setSpacing(0);
 
@@ -230,21 +227,16 @@ void DkControlWidget::init() {
 	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
 	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
 		
-	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
-	QHBoxLayout* editLayout = new QHBoxLayout(editWidget);
-	editLayout->setContentsMargins(0,0,0,0);
-	editLayout->addWidget(cropWidget);
+	//// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
+	//QHBoxLayout* editLayout = new QHBoxLayout(widgets[crop_widget]);
+	//editLayout->setContentsMargins(0,0,0,0);
+	//editLayout->addWidget(cropWidget);
 
-	// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
-	QHBoxLayout* thumbLayout = new QHBoxLayout(thumbMetaWidget);
-	thumbLayout->setContentsMargins(0,0,0,0);
-	thumbLayout->addWidget(thumbScrollWidget);
-
-	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout = new QStackedLayout(this);
 	layout->setContentsMargins(0,0,0,0);
-	layout->addWidget(hudWidget);
-	layout->addWidget(editWidget);
-	layout->addWidget(thumbMetaWidget);
+	
+	for (int idx = 0; idx < widgets.size(); idx++)
+		layout->addWidget(widgets[idx]);
 
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
@@ -434,61 +426,37 @@ void DkControlWidget::hideCrop(bool hide /* = true */) {
 
 void DkControlWidget::showCrop(bool visible) {
 
-	if (visible && !editWidget->isVisible()) {
-		editWidget->show();
-		hudWidget->hide();
-		thumbMetaWidget->hide();
+	viewport->applyPluginChanges();
 
+	if (visible) {
 		cropWidget->reset();
-		cropWidget->show();
+		switchWidget(widgets[crop_widget]);
 		connect(cropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), viewport, SLOT(setBackgroundBrush(const QBrush&)));
 	}
-	else if (!visible && editWidget->isVisible()) {
-		editWidget->hide();
-		cropWidget->hide();
-		hudWidget->show();
-
-		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
-		if (fileInfoLabel->isVisible()) {
-			fileInfoLabel->setVisible(false);
-			showFileInfo(true);
-		}
-		viewport->setBackgroundBrush(QBrush());
-		cropWidget->getToolbar()->disconnect(viewport);
-	}
+	else
+		switchWidget();
 
 }
 
 void DkControlWidget::showThumbView(bool visible) {
 
-	if (visible && !thumbMetaWidget->isVisible()) {
+	if (visible) {
 
 		// clear viewport
 		viewport->setImage(QImage());
-
-		showCrop(false);
-		thumbMetaWidget->show();
-		thumbScrollWidget->show();
-		hudWidget->hide();
+		switchWidget(widgets[thumb_widget]);
+		thumbScrollWidget->getThumbWidget()->updateLayout();
 	}
-	else if (!visible && thumbMetaWidget->isVisible()) {
-
-		thumbMetaWidget->hide();
-		thumbScrollWidget->hide();
-		hudWidget->show();
+	else {
 		
-		// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
-		if (fileInfoLabel->isVisible()) {
-			fileInfoLabel->setVisible(false);
-			showFileInfo(true);
-		}
-
 		// TODO
 		//if (!viewport->getImageLoader()->hasImage())
 		//	viewport->loadFile(thumbPool->getCurrentFile());
 
 		// set again the last image
-		viewport->setImage(viewport->getImageLoader()->getImage());
+		if (widgets[thumb_widget]->isVisible())
+			viewport->setImage(viewport->getImageLoader()->getImage());
+		switchWidget();
 	}
 
 }
@@ -507,6 +475,45 @@ void DkControlWidget::showHistogram(bool visible) {
 		histogram->hide();
 	}
 
+}
+
+void DkControlWidget::switchWidget(QWidget* widget) {
+
+	if (layout->currentWidget() == widget)
+		return;
+
+	if (widget) {
+		lastActiveWidget = layout->currentWidget();
+		layout->setCurrentWidget(widget);
+	}
+	else
+		layout->setCurrentWidget(lastActiveWidget);
+
+	qDebug() << "changed to widget: " << layout->currentWidget();
+	// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
+	if (layout->currentIndex() == hud_widget && fileInfoLabel->isVisible()) {
+		fileInfoLabel->setVisible(false);
+		showFileInfo(true);
+	}
+
+}
+
+void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget) {
+
+	DkPluginViewPort* pluginViewport = pluginWidget->getViewPort();
+
+	if (!pluginViewport) return;
+
+	if (!removeWidget) {
+		pluginViewport->setWorldMatrix(viewport->getWorldMatrixPtr());
+		pluginViewport->setImgMatrix(viewport->getImageMatrixPtr());
+	}
+
+	viewport->setPaintWidget(dynamic_cast<QWidget*>(pluginViewport), removeWidget);
+	
+	if (removeWidget) {
+		pluginWidget->deleteViewPort();
+	}
 }
 
 void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
@@ -692,6 +699,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	testLoaded = false;
 	thumbLoaded = false;
 	visibleStatusbar = false;
+	pluginImageWasApplied = false;
 
 	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
@@ -707,7 +715,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(repeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
 
 	fadeTimer = new QTimer();
-	fadeTimer->setInterval(10);
+	fadeTimer->setInterval(50);
 	connect(fadeTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
 
 	setAcceptDrops(true);
@@ -718,6 +726,9 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	setMouseTracking (true);//receive mouse event everytime
 	
 	loader = new DkImageLoader();
+
+	paintLayout = new QVBoxLayout(this);
+	paintLayout->setContentsMargins(0,0,0,0);
 
 	controller = new DkControlWidget(this, flags);
 	controller->show();
@@ -747,7 +758,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	// pre-render the viewport to that image... apply blur
 	// and then render the blurred image after the widget is rendered...
 	// performance?!
-
+	
 }
 
 DkViewPort::~DkViewPort() {
@@ -801,6 +812,19 @@ void DkViewPort::createShortcuts() {
 
 }
 
+void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
+
+	if(!removeWidget) {
+		paintLayout->addWidget(widget);		
+	} else {
+		paintLayout->removeWidget(widget);
+		//widget->deleteLater();
+	}
+	
+	//controller->raise();
+	
+}
+
 #ifdef WITH_OPENCV
 void DkViewPort::setImage(cv::Mat newImg) {
 
@@ -829,7 +853,9 @@ void DkViewPort::loadImage(QImage newImg) {
 
 	// delete current information
 	if (loader) {
-		unloadImage(false);
+		if (!unloadImage(true))
+			return;	// user canceled
+
 		loader->setImage(newImg);
 		setImage(newImg);
 
@@ -896,7 +922,8 @@ void DkViewPort::setImage(QImage newImg) {
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	if (DkSettings::sync.syncMode == DkSettings::sync_mode_auto)
 		tcpSendImage(true);
-
+	
+	emit newImageSignal(&newImg);
 	if (DkSettings::display.fadeSec)
 		fadeTimer->start();
 }
@@ -1614,12 +1641,15 @@ void DkViewPort::animateFade() {
 		fadeBuffer = QImage();
 		fadeTimer->stop();
 	}
+	qDebug() << "fade step: " << step;
 
 	update();
 }
 
 // edit image --------------------------------------------------------------------
 void DkViewPort::rotateCW() {
+
+	applyPluginChanges();
 
 	if (loader != 0)
 		loader->rotateImage(90);
@@ -1628,12 +1658,16 @@ void DkViewPort::rotateCW() {
 
 void DkViewPort::rotateCCW() {
 
+	applyPluginChanges();
+
 	if (loader != 0)
 		loader->rotateImage(-90);
 
 }
 
 void DkViewPort::rotate180() {
+
+	applyPluginChanges();
 
 	if (loader != 0)
 		loader->rotateImage(180);
@@ -1691,7 +1725,7 @@ void DkViewPort::settingsChanged() {
 	controller->settingsChanged();
 }
 
-void DkViewPort::setEditedImage(QImage newImg) {
+void DkViewPort::setEditedImage(QImage& newImg) {
 
 	if (newImg.isNull()) {
 		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
@@ -1709,8 +1743,21 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	// TODO: add functions such as save file on unload
 }
 
+void DkViewPort::applyPluginChanges() {
+
+	DkNoMacs* noMacs = dynamic_cast<DkNoMacs*>(parent);
+
+	if (!noMacs) return;
+
+	if(!noMacs->getCurrRunningPlugin().isEmpty()) noMacs->applyPluginChanges(true, false);
+}
+
 bool DkViewPort::unloadImage(bool fileChange) {
 
+
+	// TODO: we have to check here - why loading is not stopped by applyPluginChanges()
+	if (!pluginImageWasApplied) applyPluginChanges(); //prevent recursion
+	
 	if (DkSettings::display.fadeSec) {
 		fadeBuffer = imgStorage.getImage();
 		fadeImgRect = imgViewRect;

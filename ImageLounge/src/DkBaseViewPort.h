@@ -48,15 +48,14 @@
 #endif
 
 #ifndef DllExport
-	#ifdef DK_DLL_EXPORT
-		#define DllExport Q_DECL_EXPORT
-	#elif DK_DLL_IMPORT
-		#define DllExport Q_DECL_IMPORT
-	#else
-		#define DllExport
-	#endif
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
 #endif
-
+#endif
 
 namespace nmc {
 
@@ -158,6 +157,7 @@ signals:
 	void enableNoImageSignal(bool enable);
 	void showStatusBar(bool show, bool permanent);
 	void imageUpdated();	// this waits ~50 ms before triggering
+	void newImageSignal(QImage* img);
 	
 //#ifdef DK_DLL
 	void keyReleaseSignal(QKeyEvent* event);	// make key presses available

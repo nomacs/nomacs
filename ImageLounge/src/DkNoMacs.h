@@ -108,6 +108,7 @@ class DkLocalManagerThread;
 class DkLanManagerThread;
 class DkRCManagerThread;
 class DkTransferToolBar;
+class DkPluginManager;
 class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
 class DkThumbsSaver;
@@ -335,6 +336,12 @@ enum syncActions {
 	menu_sync_end,	// nothing beyond this point
 };
 
+enum pluginsActions {
+	menu_plugin_manager,
+	
+	menu_plugins_end,	// nothing beyond this point
+};
+
 enum lanSyncActions {
 	menu_lan_server,
 	menu_lan_image,
@@ -460,6 +467,8 @@ public:
 
 	bool saveSettings;
 
+	QString getCurrRunningPlugin() {return currRunningPlugin;};
+
 signals:
 	void sendTitleSignal(QString newTitle);
 	void sendPositionSignal(QRect newRect, bool overlaid);
@@ -553,6 +562,10 @@ public slots:
 	void setRecursiveScan(bool recursive);
 	void setContrast(bool contrast);
 	void enableMovieActions(bool enable);
+	void runLoadedPlugin();
+	void openPluginManager();
+	void initPluginManager();
+	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
 	void clearFolderHistory();
 	//void shareFacebook();
@@ -595,6 +608,8 @@ protected:
 
 	// vars
 	QWidget *parent;
+	DkPluginManager* pluginManager;
+	QString currRunningPlugin;
 
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
@@ -605,6 +620,7 @@ protected:
 	QVector<QAction *> panelActions;
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
+	QVector<QAction *> pluginsActions;
 	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
@@ -625,6 +641,7 @@ protected:
 	QMenu* panelMenu;
 	QMenu* viewMenu;
 	QMenu* syncMenu;
+	QMenu* pluginsMenu;
 	QMenu* helpMenu;
 	QMenu* contextMenu;
 
@@ -693,6 +710,9 @@ protected:
 
 	virtual void readSettings();
 
+	// plugin functions
+	void addPluginsToMenu();
+	void createPluginsMenu();
 };
 
 class DllExport DkNoMacsSync : public DkNoMacs {

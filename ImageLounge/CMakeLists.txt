@@ -376,6 +376,7 @@ include_directories (
         # src/DkConnection.cpp
         # src/DkNetwork.cpp
         # src/DkNoMacs.cpp
+		# src/DkPluginManager.cpp
 		# src/DkPong.cpp
         # src/DkTimer.cpp
         # src/DkUtils.cpp
