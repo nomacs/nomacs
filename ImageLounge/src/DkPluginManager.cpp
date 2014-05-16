@@ -67,7 +67,7 @@ void DkPluginManager::init() {
 * create plugin manager dialog layout
  **/
 void DkPluginManager::createLayout() {
-	/*
+	
 	QVBoxLayout* verticalLayout = new QVBoxLayout(this);
 	tabs = new QTabWidget(this);
 
@@ -92,7 +92,6 @@ void DkPluginManager::createLayout() {
     verticalLayout->addLayout(horizontalLayout);
 
 	this->setSizeGripEnabled(false);
-	*/	
 }
 
 
@@ -104,16 +103,13 @@ void DkPluginManager::closePressed() {
 void DkPluginManager::showEvent(QShowEvent *event) {
 
 	loadPlugins();
-	//pluginLoadingDebuging -> comment all lines bellow
-	/*
+
 	tabs->setCurrentIndex(tab_installed_plugins);
 	tableWidgetInstalled->clearTableFilters();
 	tableWidgetInstalled->updateInstalledModel();
 	tableWidgetDownload->clearTableFilters();
-	*/
 }
 
-/*
 void DkPluginManager::deleteInstance(QString id) {
 
 	if (pluginLoaders.contains(id)) {
@@ -127,10 +123,11 @@ void DkPluginManager::deleteInstance(QString id) {
 		loadedPlugins.remove(id);
 
 		QPluginLoader* loaderToDelete = pluginLoaders.take(id);
-		if(!loaderToDelete->unload()) qDebug() << "Could not unload plug-in loader!";	
+		if(!loaderToDelete->unload()) qDebug() << "Could not unload plug-in loader!";
+		delete loaderToDelete;
+		loaderToDelete = 0;
 	}
 }
-*/
 
 /**
 * Loads one plug-in from file fileName
@@ -265,8 +262,6 @@ DkPluginInterface* DkPluginManager::getPlugin(QString key) {
 	return cPlugin;
 }
 
-
-
 QList<QString> DkPluginManager::getPluginIdList() {
 
 	return pluginIdList;
@@ -293,18 +288,18 @@ QMap<QString, QString> DkPluginManager::getRunId2PluginId(){
 }
 
 void DkPluginManager::tabChanged(int tab){
-	/*
+	
 	if(tab == tab_installed_plugins) tableWidgetInstalled->updateInstalledModel();
 	else if(tab == tab_download_plugins) tableWidgetDownload->downloadPluginInformation(xml_usage_download);
-	*/
 }
 
-/*
 void DkPluginManager::deletePlugin(QString pluginID) {
 
 	QPluginLoader* loaderToDelete = pluginLoaders.take(pluginID);
 		
 	if(!loaderToDelete->unload()) qDebug() << "Could not unload plug-in loader!";
+	delete loaderToDelete;
+	loaderToDelete = 0;
 
 	QFile file(pluginFiles.take(pluginID));
 	if(!file.remove()) {
@@ -314,8 +309,6 @@ void DkPluginManager::deletePlugin(QString pluginID) {
 
 	loadedPlugins.remove(pluginID);
 }
-
-/*
 
 //*********************************************************************************
 //DkPluginTableWidget : Widget with table views containing plugin data
@@ -1574,7 +1567,5 @@ void DkPluginDownloader::updateDownloadProgress(qint64 received, qint64 total) {
 	}
 
 }
-
-*/
 
 };

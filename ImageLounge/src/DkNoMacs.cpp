@@ -3801,7 +3801,7 @@ void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
 
 			if(msgBox.exec() == QMessageBox::Yes) {
 				viewport()->setEditedImage(pluginImage);
-				//isSaveNeeded = true;
+				isSaveNeeded = true;
 			}
 
 			msgBox.deleteLater();
