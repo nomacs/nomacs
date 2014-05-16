@@ -31,7 +31,7 @@
 #include <QString>
 #include <QImage>
 #include <QGraphicsView>
-#include <QToolbar>
+#include <QToolBar>
 
 namespace nmc {
 

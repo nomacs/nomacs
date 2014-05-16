@@ -1865,7 +1865,8 @@ void DkNoMacs::unsharpMask() {
 	unsharpDialog->setImage(viewport()->getImage());
 	bool answer = unsharpDialog->exec();
 	if (answer == QDialog::Accepted) {
-		viewport()->setEditedImage(unsharpDialog->getImage());
+		QImage editedImage = unsharpDialog->getImage();
+		viewport()->setEditedImage(editedImage);
 	}
 
 	unsharpDialog->deleteLater();
@@ -2816,7 +2817,8 @@ void DkNoMacs::computeMosaic() {
 	int response = mosaicDialog->exec();
 
 	if (response == QDialog::Accepted && !mosaicDialog->getImage().isNull()) {
-		viewport()->setEditedImage(mosaicDialog->getImage());
+		QImage editedImage = mosaicDialog->getImage();
+		viewport()->setEditedImage(editedImage);
 		saveFileAs();
 	}
 
