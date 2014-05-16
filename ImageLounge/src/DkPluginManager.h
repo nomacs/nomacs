@@ -262,12 +262,12 @@ private:
 
 
 // checkbox delegate based on code from http://stackoverflow.com/questions/3363190/qt-qtableview-how-to-have-a-checkbox-only-column
-class DkCheckBoxDelegate : public QStyledItemDelegate {
+class DkPluginCheckBoxDelegate : public QStyledItemDelegate {
 
 Q_OBJECT
 
 public:
-	DkCheckBoxDelegate(QObject *parent = 0);
+	DkPluginCheckBoxDelegate(QObject *parent = 0);
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 

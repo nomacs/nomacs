@@ -384,7 +384,7 @@ void DkPluginTableWidget::createLayout() {
 	tableView->setAlternatingRowColors(true);
 	//tableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 	if(openedTab == tab_installed_plugins) {
-		tableView->setItemDelegateForColumn(ip_column_enabled, new DkCheckBoxDelegate(tableView));
+		tableView->setItemDelegateForColumn(ip_column_enabled, new DkPluginCheckBoxDelegate(tableView));
 		DkPushButtonDelegate* buttonDelegate = new DkPushButtonDelegate(tableView);
 		tableView->setItemDelegateForColumn(ip_column_uninstall, buttonDelegate);
 		connect(buttonDelegate, SIGNAL(buttonClicked(QModelIndex)), this, SLOT(uninstallPlugin(QModelIndex)));
@@ -1032,12 +1032,12 @@ static QRect CheckBoxRect(const QStyleOptionViewItem &viewItemStyleOptions) {
 	return QRect(checkBoxPoint, checkBoxRect.size());
 }
 
-DkCheckBoxDelegate::DkCheckBoxDelegate(QObject *parent) : QStyledItemDelegate(parent) {
+DkPluginCheckBoxDelegate::DkPluginCheckBoxDelegate(QObject *parent) : QStyledItemDelegate(parent) {
 	
 	parentTable = static_cast<QTableView*>(parent);
 }
 
-void DkCheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+void DkPluginCheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
 
 	if (option.state & QStyle::State_Selected) {
 		if (parentTable->hasFocus()) painter->fillRect(option.rect, option.palette.highlight());
@@ -1059,7 +1059,7 @@ void DkCheckBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 	QApplication::style()->drawControl(QStyle::CE_CheckBox, &checkBoxStyleOption, painter);
 }
 
-bool DkCheckBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
+bool DkPluginCheckBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
 	
 	if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonDblClick)) {
 		QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
