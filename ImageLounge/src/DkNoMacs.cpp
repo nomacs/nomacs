@@ -3956,7 +3956,7 @@ void DkNoMacsSync::initLanClient() {
 	else 
 		qDebug() << "whitelist empty!!";
 
-	qDebug() << "start server takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "start server takes: " << dt.getTotal();
 }
 
 void DkNoMacsSync::createActions() {

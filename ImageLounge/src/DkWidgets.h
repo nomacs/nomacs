@@ -538,6 +538,10 @@ public slots:
 
 	virtual void show(int ms = 0);
 
+	bool isPlaying() const {
+		return playing;
+	};
+
 protected:
 	void resizeEvent(QResizeEvent *event);
 	void init();

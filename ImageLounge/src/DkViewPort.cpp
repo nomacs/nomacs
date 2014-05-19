@@ -706,17 +706,21 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	loader = 0;
 	
-	skipImageTimer = new QTimer();
+	skipImageTimer = new QTimer(this);
 	skipImageTimer->setSingleShot(true);
 	connect(skipImageTimer, SIGNAL(timeout()), this, SLOT(loadFullFile()));
 
-	repeatZoomTimer = new QTimer();
+	repeatZoomTimer = new QTimer(this);
 	repeatZoomTimer->setInterval(20);
 	connect(repeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
 
-	fadeTimer = new QTimer();
-	fadeTimer->setInterval(50);
+	fadeTimer = new QTimer(this);
+	fadeTimer->setInterval(5);
 	connect(fadeTimer, SIGNAL(timeout()), this, SLOT(animateFade()));
+
+	moveTimer = new QTimer(this);
+	moveTimer->setInterval(5);
+	connect(moveTimer, SIGNAL(timeout()), this, SLOT(animateMove()));
 
 	setAcceptDrops(true);
 	setObjectName(QString::fromUtf8("DkViewPort"));
@@ -891,8 +895,9 @@ void DkViewPort::setImage(QImage newImg) {
 	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 	//qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
 
-	if (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || oldImgRect.isEmpty() || 
-		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && oldImgRect != imgRect))
+	if (!DkSettings::slideShow.moveSpeed && (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || 
+		(DkSettings::display.keepZoom == DkSettings::zoom_keep_same_size && oldImgRect != imgRect)) ||
+		 oldImgRect.isEmpty())
 		worldMatrix.reset();
 	else {
 		imgViewRect = oldImgViewRect;
@@ -915,6 +920,19 @@ void DkViewPort::setImage(QImage newImg) {
 	thumbLoaded = false;
 	thumbFile = QFileInfo();
 	oldImgRect = imgRect;
+	
+	// init fading
+	if (DkSettings::display.fadeSec) {
+		fadeTimer->start();
+		fadeTime.start();
+	}
+
+	// init moving
+	if (DkSettings::slideShow.moveSpeed /*&& controller->getPlayer()->isPlaying()*/ 
+		&& newImg.width() > width() && newImg.height() > height()) {
+		targetScale = 1.0f/imgMatrix.m11();
+		// TODO: if too large - do a threshold
+	}
 
 	update();
 
@@ -922,10 +940,9 @@ void DkViewPort::setImage(QImage newImg) {
 	if (controller->getHistogram()) controller->getHistogram()->drawHistogram(newImg);
 	if (DkSettings::sync.syncMode == DkSettings::sync_mode_auto)
 		tcpSendImage(true);
-	
+
 	emit newImageSignal(&newImg);
-	if (DkSettings::display.fadeSec)
-		fadeTimer->start();
+
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -971,7 +988,7 @@ void DkViewPort::setThumbImage(QImage newImg) {
 
 	update();
 
-	qDebug() << "setting the image took me: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "setting the image took me: " << dt.getTotal();
 }
 
 void DkViewPort::tcpSendImage(bool silent) {
@@ -1240,7 +1257,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		if (/*fadeTimer->isActive() && */!fadeBuffer.isNull()) {
 			float oldOp = painter.opacity();
 			painter.setOpacity(fadeOpacity);
-			painter.drawImage(fadeImgRect, fadeBuffer, fadeBuffer.rect());
+			painter.drawImage(fadeImgViewRect, fadeBuffer, fadeBuffer.rect());
 			painter.setOpacity(oldOp);
 		}
 
@@ -1634,16 +1651,28 @@ QString DkViewPort::getCurrentPixelHexValue() {
 
 void DkViewPort::animateFade() {
 
-	float step = fadeTimer->interval()/(1000*DkSettings::display.fadeSec);
-	fadeOpacity -= step;
-
+	fadeOpacity = 1.0-fadeTime.getTotalTime()/DkSettings::display.fadeSec;
+	
 	if (fadeOpacity <= 0) {
 		fadeBuffer = QImage();
 		fadeTimer->stop();
+		fadeOpacity = 0;
 	}
-	qDebug() << "fade step: " << step;
+	else if (DkSettings::slideShow.moveSpeed) {
+		float factor = 1.0f+(targetScale-worldMatrix.m11()) * fadeTime.getTotalTime()/DkSettings::display.fadeSec;
+		zoom(factor, QPoint(0,0));
+		qDebug() << "zoom factor: " << factor;
+		// TODO: maybe the timer is not stable? - painting seems to be stable
+	}
+
+	qDebug() << "new opacity: " << fadeOpacity;
 
 	update();
+}
+
+void DkViewPort::animateMove() {
+
+	moveView(moveStep/worldMatrix.m11());
 }
 
 // edit image --------------------------------------------------------------------
@@ -1759,8 +1788,9 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	if (!pluginImageWasApplied) applyPluginChanges(); //prevent recursion
 	
 	if (DkSettings::display.fadeSec) {
-		fadeBuffer = imgStorage.getImage();
-		fadeImgRect = imgViewRect;
+		fadeBuffer = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+		fadeImgViewRect = imgViewRect;
+		fadeImgRect = imgRect;
 		fadeOpacity = 1.0f;
 	}
 

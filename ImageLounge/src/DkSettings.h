@@ -190,6 +190,7 @@ public:
 		bool silentFullscreen;
 		QBitArray display;
 		QColor backgroundColor;
+		float moveSpeed;
 	};
 	struct Sync {
 		bool enableNetworkSync;

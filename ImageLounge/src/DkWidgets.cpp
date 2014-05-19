@@ -998,7 +998,7 @@ void DkThumbScene::updateLayout() {
 		cYOffset += DkSettings::display.thumbPreviewSize + xOffset;
 	}
 
-	qDebug() << "moving takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "moving takes: " << dt.getTotal();
 	
 	for (int idx = 0; idx < thumbLabels.size(); idx++) {
 
@@ -1035,11 +1035,11 @@ void DkThumbScene::updateThumbLabels() {
 	DkTimer dt;
 
 	clear();	// deletes the thumbLabels
-	qDebug() << "clearing viewport: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "clearing viewport: " << dt.getTotal();
 	thumbLabels.clear();
 	thumbsNotLoaded.clear();
 
-	qDebug() << "clearing labels takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "clearing labels takes: " << dt.getTotal();
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 		DkThumbLabel* thumb = new DkThumbLabel(thumbs.at(idx)->getThumb());
@@ -1058,12 +1058,12 @@ void DkThumbScene::updateThumbLabels() {
 
 	showFile(QFileInfo());
 
-	qDebug() << "creating labels takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "creating labels takes: " << dt.getTotal();
 
 	if (!thumbs.empty())
 		updateLayout();
 
-	qDebug() << "initializing labels takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "initializing labels takes: " << dt.getTotal();
 }
 
 void DkThumbScene::showFile(const QFileInfo& file) {
@@ -4853,7 +4853,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	//		if(maxRGB > maxHistValue) maxHistValue = maxRGB;
 	//	}
 	//}
-	//qDebug() << "computing the histogram took me: " << QString::fromStdString(dt.getTotal());
+	//qDebug() << "computing the histogram took me: " << dt.getTotal();
 
 	setMaxHistogramValue(maxHistValue);
 	updateHistogramValues(histValues);
@@ -4865,7 +4865,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 
 #endif
 	
-	qDebug() << "drawing the histogram took me: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "drawing the histogram took me: " << dt.getTotal();
 
 	update();
 }

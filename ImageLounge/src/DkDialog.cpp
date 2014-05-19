@@ -814,7 +814,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		}
 	}
 
-	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "searching takes: " << dt.getTotal();
 	currentSearch = text;
 
 	if (resultList.empty()) {
@@ -835,7 +835,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		resultListView->setStyleSheet(defaultStyleSheet);
 	}
 
-	qDebug() << "searching takes (total): " << QString::fromStdString(dt.getTotal());
+	qDebug() << "searching takes (total): " << dt.getTotal();
 }
 
 void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelIndex) {
@@ -3768,7 +3768,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 
 	processing = false;
 
-	qDebug() << "mosaic computed in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "mosaic computed in: " << dt.getTotal();
 
 	return QDialog::Accepted;
 }

@@ -337,7 +337,7 @@ void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
 		mPtr += pad;
 	}
 
-	qDebug() << "gamma computation takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "gamma computation takes: " << dt.getTotal();
 }
 
 
@@ -475,7 +475,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 	//qDebug() << "red max: " << maxR << " min: " << minR << " ignored: " << ignoreR;
 	//qDebug() << "green max: " << maxG << " min: " << minG << " ignored: " << ignoreG;
 	//qDebug() << "blue max: " << maxB << " min: " << minB << " ignored: " << ignoreB;
-	//qDebug() << "computed in: " << QString::fromStdString(dt.getTotal());
+	//qDebug() << "computed in: " << dt.getTotal();
 
 	if (ignoreR && ignoreG && ignoreB) {
 		qDebug() << "[Auto Adjust] There is no need to adjust the image";
@@ -511,7 +511,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 		ptr += pad;
 	}
 
-	qDebug() << "[Auto Adjust] image adjusted in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "[Auto Adjust] image adjusted in: " << dt.getTotal();
 	
 	return true;
 }
@@ -573,7 +573,7 @@ bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 	cv::addWeighted(imgCv, weight, imgG, 1-weight, 0, imgCv);
 	img = DkImage::mat2QImage(imgCv);
 
-	qDebug() << "unsharp mask takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "unsharp mask takes: " << dt.getTotal();
 	//DkImage::linearToGamma(img);
 #endif
 
@@ -782,7 +782,7 @@ void DkImageStorage::computeImage() {
 	// tell my caller I did something
 	emit imageUpdated();
 
-	qDebug() << "pyramid computation took me: " << QString::fromStdString(dt.getTotal()) << " layers: " << imgs.size();
+	qDebug() << "pyramid computation took me: " << dt.getTotal() << " layers: " << imgs.size();
 
 	if (imgs.size() > 6)
 		qDebug() << "layer size > 6: " << img.size();

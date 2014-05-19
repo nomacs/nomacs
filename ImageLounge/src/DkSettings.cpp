@@ -315,6 +315,7 @@ void DkSettings::load(bool force) {
 
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
 	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
+	slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
 	slideShow_p.backgroundColor = settings.value("backgroundColor", slideShow_p.backgroundColor).value<QColor>();
 	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
@@ -518,6 +519,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("filter", slideShow_p.filter);
 	if (!force && slideShow_p.time != slideShow_d.time)
 		settings.setValue("time", slideShow_p.time);
+	if (!force && slideShow_p.moveSpeed != slideShow_d.moveSpeed)
+		settings.setValue("moveSpeed", slideShow_p.moveSpeed);
 	if (!force && slideShow_p.display != slideShow_d.display)
 		settings.setValue("display", slideShow_p.display);
 	if (!force && slideShow_p.backgroundColor != slideShow_d.backgroundColor)
@@ -663,13 +666,14 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = true;
 	display_p.displaySquaredThumbs = true;
-	display_p.fadeSec = 0.0f;
+	display_p.fadeSec = 3.5f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;
 
 	slideShow_p.filter = 0;
 	slideShow_p.time = 3.0;
+	slideShow_p.moveSpeed = 1;
 	slideShow_p.display = QBitArray(display_end, true);
 	slideShow_p.backgroundColor = QColor(86, 86, 90, 255);
 	slideShow_p.silentFullscreen = true;

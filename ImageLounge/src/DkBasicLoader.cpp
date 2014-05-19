@@ -578,7 +578,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 				merge(corrCh, rgbImg);
 				cvtColor(rgbImg, rgbImg, CV_YCrCb2RGB);
 
-				qDebug() << "median blurred in: " << QString::fromStdString(dMed.getTotal()) << ", winSize: " << winSize;
+				qDebug() << "median blurred in: " << dMed.getTotal() << ", winSize: " << winSize;
 			}
 			else qDebug() << "median filter: unrecognizable ISO speed";
 			
@@ -735,7 +735,7 @@ void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 	if (numPages > 1)
 		pageIdx = 1;
 
-	qDebug() << dircount << " TIFF directories... " << QString::fromStdString(dt.getTotal());
+	qDebug() << dircount << " TIFF directories... " << dt.getTotal();
 	TIFFClose(tiff);
 
 	TIFFSetWarningHandler(oldWarningHandler);
