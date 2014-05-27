@@ -420,6 +420,7 @@ public slots:
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
 	void tcpSetWindowRect(QRect rect);
 	void tcpSynchronize(QTransform relativeMatrix = QTransform());
+	void tcpForceSynchronize();
 	void tcpLoadFile(qint16 idx, QString filename);
 	void tcpShowConnections(QList<DkPeer> peers);
 	void tcpSendImage(bool silent = false);
@@ -444,7 +445,7 @@ public slots:
 
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(QImage newImg);
-	virtual void setEditedImage(QImage& newImg);
+	virtual void setEditedImage(QImage newImg);
 	virtual void setImage(QImage newImg);
 	virtual void setThumbImage(QImage newImg);
 

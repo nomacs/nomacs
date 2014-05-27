@@ -666,7 +666,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = true;
 	display_p.displaySquaredThumbs = true;
-	display_p.fadeSec = 3.5f;
+	display_p.fadeSec = 0.0f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;
@@ -716,6 +716,7 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.updateDialogShown = false;
 	sync_p.lastUpdateCheck = QDate(1970 , 1, 1);
 	sync_p.syncAbsoluteTransform = true;
+	sync_p.syncMode = DkSettings::sync_mode_default;
 
 	resources_p.cacheMemory = 0;
 	resources_p.maxImagesCached = 5;

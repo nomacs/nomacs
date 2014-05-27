@@ -695,6 +695,7 @@ void DkControlWidget::keyReleaseEvent(QKeyEvent *event) {
 DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(parent) {
 
 	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<DkImageContainerT>");
+	qRegisterMetaType<QSharedPointer<DkImageContainerT> >( "QSharedPointer<nmc::DkImageContainerT>");
 
 	testLoaded = false;
 	thumbLoaded = false;
@@ -1200,6 +1201,14 @@ void DkViewPort::tcpSynchronize(QTransform relativeMatrix) {
 
 		emit sendTransformSignal(worldMatrix, imgMatrix, size);
 	}
+}
+
+void DkViewPort::tcpForceSynchronize() {
+
+	int oldMode = DkSettings::sync.syncMode;
+	DkSettings::sync.syncMode = DkSettings::sync_mode_auto;
+	tcpSynchronize();
+	DkSettings::sync.syncMode = oldMode;
 }
 
 void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
@@ -1754,7 +1763,7 @@ void DkViewPort::settingsChanged() {
 	controller->settingsChanged();
 }
 
-void DkViewPort::setEditedImage(QImage& newImg) {
+void DkViewPort::setEditedImage(QImage newImg) {
 
 	if (newImg.isNull()) {
 		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
