@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/nomacsPlugin">
+        <file>img/flipPlugin.png</file>
+    </qresource>
+</RCC>
