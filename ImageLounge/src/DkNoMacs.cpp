@@ -95,6 +95,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	explorer = 0;
 	appManager = 0;
 	settingsDialog = 0;
+	printPreviewDialog = 0;
 
 	currRunningPlugin = QString();
 
@@ -2927,10 +2928,13 @@ void DkNoMacs::printDialog() {
 
 	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
 	QImage img = viewport()->getImage();
-	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(img, res.x(), 0, this);
+	if (!printPreviewDialog)
+		printPreviewDialog = new DkPrintPreviewDialog(img, res.x(), 0, this);
+	else
+		printPreviewDialog->setImage(img, res.x());
 
-	previewDialog->show();
-	previewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
+	printPreviewDialog->show();
+	printPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
 
 }
 

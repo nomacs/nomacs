@@ -651,7 +651,7 @@ public:
 	};
 
 	DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
+	void setImage(QImage img, float dpi);
 	void init();
 
 public slots:
@@ -678,6 +678,7 @@ private slots:
 
 private:
 	void setFitting(bool on);
+	void scaleImage();
 	bool isFitting() {
 		return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
 	};
