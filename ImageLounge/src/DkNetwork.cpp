@@ -1202,6 +1202,7 @@ void DkUpdater::checkForUpdates() {
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	reply = accessManagerVersion.get(QNetworkRequest(url));
+	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
 }
 
 void DkUpdater::replyFinished(QNetworkReply* reply) {
@@ -1351,6 +1352,10 @@ void DkUpdater::cancelUpdate()  {
 	reply->abort(); 
 }
 
+void DkUpdater::replyError(QNetworkReply::NetworkError ne) {
+	if (!silent)
+		emit showUpdaterMessage(tr("Unable to connect to server ... please try again later"), tr("updates"));
+}
 
 // DkTranslationUpdater --------------------------------------------------------------------
 DkTranslationUpdater::DkTranslationUpdater() {

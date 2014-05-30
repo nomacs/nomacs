@@ -542,6 +542,7 @@ public:
 public slots:
 	void checkForUpdates();
 	void replyFinished(QNetworkReply*);
+	void replyError(QNetworkReply::NetworkError);
 	void performUpdate();
 	void downloadFinishedSlot(QNetworkReply* data);
 	void updateDownloadProgress(qint64 received, qint64 total) { emit downloadProgress(received, total); };
