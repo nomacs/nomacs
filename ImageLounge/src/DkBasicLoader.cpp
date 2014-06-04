@@ -55,7 +55,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	bool imgLoaded = false;
 	
-	if (file.isSymLink())
+	if (fileInfo.isSymLink())
 		file = fileInfo.symLinkTarget();
 	else
 		file = fileInfo;
