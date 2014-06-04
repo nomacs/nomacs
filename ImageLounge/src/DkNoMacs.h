@@ -112,6 +112,7 @@ class DkPluginManager;
 class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
 class DkThumbsSaver;
+class DkPrintPreviewDialog;
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
 class DkUpnpDeviceHost;
@@ -678,6 +679,8 @@ protected:
 	DkThumbsSaver* thumbSaver;
 
 	DkImageManipulationDialog* imgManipulationDialog;
+
+	DkPrintPreviewDialog* printPreviewDialog;
 
 	DkAppManager* appManager;
 
