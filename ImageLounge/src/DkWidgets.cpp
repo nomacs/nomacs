@@ -1383,7 +1383,7 @@ void DkThumbScrollWidget::setDir(QFileInfo file) {
 
 void DkThumbScrollWidget::setVisible(bool visible) {
 
-	QWidget::setVisible(visible);
+	DkWidget::setVisible(visible);
 	
 	if (visible)
 		thumbsScene->updateThumbLabels();
