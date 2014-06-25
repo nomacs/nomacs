@@ -29,12 +29,12 @@
 	<serviceStateTable>
 		<stateVariable sendEvents="yes">
 			<name>tcpServerPort</name>
-			<dataType>int</dataType>
+			<dataType>i4</dataType>
 			<defaultValue>""</defaultValue>
 		</stateVariable>
 		<stateVariable sendEvents="yes">
 			<name>whiteListServerPort</name>
-			<dataType>int</dataType>
+			<dataType>i4</dataType>
 			<defaultValue>""</defaultValue>
 		</stateVariable>
 	</serviceStateTable>
