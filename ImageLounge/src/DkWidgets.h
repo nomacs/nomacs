@@ -647,7 +647,7 @@ private:
 	void createCurrentImg(const QImage& img);
 };
 
-class DkThumbLabel : public QObject, public QGraphicsPixmapItem {
+class DkThumbLabel : public QGraphicsObject {
 	Q_OBJECT
 
 public:
@@ -660,6 +660,7 @@ public:
 	QPainterPath shape() const;
 	void updateSize();
 	void setVisible(bool visible);
+	QPixmap pixmap() const;
 
 public slots:
 	void updateLabel();
@@ -676,6 +677,8 @@ protected:
 	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 	QSharedPointer<DkThumbNailT> thumb;
+	QGraphicsPixmapItem icon;
+	QGraphicsTextItem text;
 	QLabel* imgLabel;
 	bool thumbInitialized;
 	bool fetchingThumb;
