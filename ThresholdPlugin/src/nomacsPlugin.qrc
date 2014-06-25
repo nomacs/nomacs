@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/nomacsPlugin">
+    <qresource prefix="/nomacsPluginThr">
         <file>img/description.png</file>
         <file>img/pan.png</file>
         <file>img/pan_checked.png</file>

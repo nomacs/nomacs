@@ -1,9 +1,13 @@
 <RCC>
-    <qresource prefix="/nomacsPluginPaint">
+    <qresource prefix="/nomacsPluginImgTrans">
         <file>img/description.png</file>
         <file>img/pan.png</file>
         <file>img/pan_checked.png</file>
         <file>img/apply.png</file>
         <file>img/cancel.png</file>
+        <file>img/scale.png</file>
+        <file>img/rotate.png</file>
+        <file>img/shear.png</file>
+        <file>img/rotating-cursor.png</file>
     </qresource>
 </RCC>

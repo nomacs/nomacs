@@ -81,7 +81,7 @@ QString DkFlipPlugin::pluginDescription() const {
 **/
 QImage DkFlipPlugin::pluginDescriptionImage() const {
 
-	return QImage(":/nomacsPlugin/img/flipPlugin.png");
+	return QImage(":/nomacsPluginFlip/img/flipPlugin.png");
 };
 
 /**

@@ -64,7 +64,7 @@ QString DkFakeMiniaturesPlugin::pluginDescription() const {
 **/
 QImage DkFakeMiniaturesPlugin::pluginDescriptionImage() const {
 
-   return QImage(":/nomacsPlugin/img/fakeMinDesc.png");
+   return QImage(":/nomacsPluginFakeMin/img/fakeMinDesc.png");
 };
 
 /**

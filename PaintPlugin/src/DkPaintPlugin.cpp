@@ -78,7 +78,7 @@ QString DkPaintPlugin::pluginName() const {
 **/
 QString DkPaintPlugin::pluginDescription() const {
 
-   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Paint on an opened image. The color, size and opacity of the brush can be changed.";
+   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> May 2014<br><b>Description:</b> Paint on an opened image. The color, size and opacity of the brush can be changed.";
 };
 
 /**
@@ -86,7 +86,7 @@ QString DkPaintPlugin::pluginDescription() const {
 **/
 QImage DkPaintPlugin::pluginDescriptionImage() const {
 
-   return QImage(":/nomacsPlugin/img/description.png");
+   return QImage(":/nomacsPluginPaint/img/description.png");
 };
 
 /**
@@ -94,7 +94,7 @@ QImage DkPaintPlugin::pluginDescriptionImage() const {
 **/
 QString DkPaintPlugin::pluginVersion() const {
 
-   return "1.0.0";
+   return "1.1.0";
 };
 
 /**
@@ -456,10 +456,10 @@ void DkPaintToolBar::createIcons() {
 	// create icons
 	icons.resize(icons_end);
 
-	icons[apply_icon] = QIcon(":/nomacsPlugin/img/apply.png");
-	icons[cancel_icon] = QIcon(":/nomacsPlugin/img/cancel.png");
-	icons[pan_icon] = 	QIcon(":/nomacsPlugin/img/pan.png");
-	icons[pan_icon].addPixmap(QPixmap(":/nomacsPlugin/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+	icons[apply_icon] = QIcon(":/nomacsPluginPaint/img/apply.png");
+	icons[cancel_icon] = QIcon(":/nomacsPluginPaint/img/cancel.png");
+	icons[pan_icon] = 	QIcon(":/nomacsPluginPaint/img/pan.png");
+	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginPaint/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons

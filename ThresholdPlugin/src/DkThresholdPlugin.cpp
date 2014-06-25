@@ -76,7 +76,7 @@ QString DkThresholdPlugin::pluginName() const {
 **/
 QString DkThresholdPlugin::pluginDescription() const {
 
-   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> May 2014<br><b>Description:</b> Fast threshold selection for color and grayscale images. If wanted a ranged threshold can be created by changing the upper threshold value. Threshold can be applied to each of the color channels or to the luminance channel.";
+   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> June 2014<br><b>Description:</b> Fast threshold selection for color and grayscale images. If wanted a ranged threshold can be created by changing the upper threshold value. Threshold can be applied to each of the color channels or to the luminance channel.";
 };
 
 /**
@@ -84,7 +84,7 @@ QString DkThresholdPlugin::pluginDescription() const {
 **/
 QImage DkThresholdPlugin::pluginDescriptionImage() const {
 
-   return QImage(":/nomacsPlugin/img/description.png");
+   return QImage(":/nomacsPluginThr/img/description.png");
 };
 
 /**
@@ -602,10 +602,10 @@ void DkThresholdToolBar::createIcons() {
 	// create icons
 	icons.resize(icons_end);
 
-	icons[apply_icon] = QIcon(":/nomacsPlugin/img/apply.png");
-	icons[cancel_icon] = QIcon(":/nomacsPlugin/img/cancel.png");
-	icons[pan_icon] = 	QIcon(":/nomacsPlugin/img/pan.png");
-	icons[pan_icon].addPixmap(QPixmap(":/nomacsPlugin/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+	icons[apply_icon] = QIcon(":/nomacsPluginThr/img/apply.png");
+	icons[cancel_icon] = QIcon(":/nomacsPluginThr/img/cancel.png");
+	icons[pan_icon] = 	QIcon(":/nomacsPluginThr/img/pan.png");
+	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginThr/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
