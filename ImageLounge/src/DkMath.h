@@ -75,6 +75,15 @@ int cvFloor(float num);
 #undef min
 #undef max
 
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
 
 namespace nmc {
 
@@ -308,7 +317,7 @@ public:
 /**
  * A simple 2D vector class.
  */
-class DkVector {
+class DllExport DkVector {
 
 public:
 	

@@ -32,7 +32,7 @@
 #include <QImage>
 #include <QThread>
 
-#include "DkMetaData.h"
+//#include "DkMetaData.h"
 
 // opencv
 #ifdef WITH_OPENCV

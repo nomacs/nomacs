@@ -2942,7 +2942,7 @@ DkUnsharpDialog::DkUnsharpDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
 
-	connect(this, SIGNAL(updateImage(QImage)), preview, SLOT(setImage(QImage)));
+	connect(this, SIGNAL(updateImage(QImage)), viewport, SLOT(setImage(QImage)));
 	connect(&unsharpWatcher, SIGNAL(finished()), this, SLOT(unsharpFinished()));
 	connect(viewport, SIGNAL(imageUpdated()), this, SLOT(computePreview()));
 	QMetaObject::connectSlotsByName(this);
