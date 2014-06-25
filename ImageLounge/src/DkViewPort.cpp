@@ -790,8 +790,10 @@ void DkViewPort::createShortcuts() {
 	connect(shortcuts[sc_last_file], SIGNAL(activated()), this, SLOT(loadLast()));
 
 	shortcuts[sc_skip_prev] = new QShortcut(shortcut_skip_prev, this);
+	shortcuts[sc_skip_prev]->setContext(Qt::WidgetWithChildrenShortcut);
 	connect(shortcuts[sc_skip_prev], SIGNAL(activated()), this, SLOT(loadSkipPrev10()));
 	shortcuts[sc_skip_next] = new QShortcut(shortcut_skip_next, this);
+	shortcuts[sc_skip_next]->setContext(Qt::WidgetWithChildrenShortcut);
 	connect(shortcuts[sc_skip_next], SIGNAL(activated()), this, SLOT(loadSkipNext10()));
 	
 	shortcuts[sc_first_sync] = new QShortcut(shortcut_first_file_sync, this);
