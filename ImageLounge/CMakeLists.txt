@@ -310,9 +310,11 @@ IF(ENABLE_TIFF)
 
 		IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 			add_definitions(-DWITH_LIBTIFF)
-		ELSE()
-			message(FATAL_ERROR "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
+		ELSE(NOT EXISTS ${TIFF_CONFIG_DIR})
+			message(FATAL_ERROR "TIFF_CONFIG_DIR dir not found. Needs path which contains Release/libtiff.lib and debug/libtiffd.lib")
 			message(FATAL_ERROR "opencv dir: ${OpenCV_DIR}")
+		ELSE(NOT EXISTS ${TIFF_INCLUDE_DIR})
+			message(FATAL_ERROR "TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
 		ENDIF()
 
 	ELSE()
