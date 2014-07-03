@@ -281,9 +281,10 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 			unsigned char *ptr = imgHsvCh[1].ptr<unsigned char>(row);
 	 	
 			for (int col = 0; col < imgHsv.cols; col++) {
-				int tmp = ptr[col] * satFactor;
-				if(tmp > 255) tmp = 255;
-				ptr[col] = tmp;
+				float tmp = (float)ptr[col] * satFactor;
+				if (tmp > 255.0f) tmp = 255.0f;
+				if (tmp < 0) tmp = 0.0f;
+				ptr[col] = (unsigned char)qRound(tmp);
 			}
 		}
 	
@@ -369,14 +370,22 @@ Mat DkFakeMiniaturesDialog::blurPanTilt(Mat src, Mat depthImg, int maxKernel) {
 			top *= integralImg.cols;
 			bottom *= integralImg.cols;
 
+			float tmp = 0.0f;
+
 			// compute mean kernel
 			if (area && itgrl32Ptr && ks > 1)
-				blurPtr[cIdx] = qRound((*(itgrl32Ptr + top+right) + *(itgrl32Ptr + bottom+left) - *(itgrl32Ptr + top+left) - *(itgrl32Ptr + bottom+right))/area *255.0f);
+				tmp = (*(itgrl32Ptr + top+right) + *(itgrl32Ptr + bottom+left) - *(itgrl32Ptr + top+left) - *(itgrl32Ptr + bottom+right))/area;
 			else if (area && itgrl64Ptr && ks > 1)
-				blurPtr[cIdx] = qRound((*(itgrl64Ptr + top+right) + *(itgrl64Ptr + bottom+left) - *(itgrl64Ptr + top+left) - *(itgrl64Ptr + bottom+right))/area *255.0f);
+				tmp = (*(itgrl64Ptr + top+right) + *(itgrl64Ptr + bottom+left) - *(itgrl64Ptr + top+left) - *(itgrl64Ptr + bottom+right))/area;
 			else
-				blurPtr[cIdx] = srcPtr[cIdx];
+				tmp = srcPtr[cIdx];
 
+			if (tmp < 0)
+				tmp = 0.0f;
+			if (tmp > 1)
+				tmp = 1.0f;
+
+			blurPtr[cIdx] = qRound(tmp * 255);
 		}
 	}
 

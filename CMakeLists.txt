@@ -29,7 +29,12 @@ IF (ENABLE_FLIP)
 	add_subdirectory(FlipPlugin)
 ENDIF(ENABLE_FLIP)
 
-OPTION (ENABLE_TEST "Compile Test plugin" ON)
+OPTION (ENABLE_TRANSFORM "Compile Transform plugin" ON)
+IF (ENABLE_TRANSFORM)
+	add_subdirectory(AffineTransformations)
+ENDIF(ENABLE_TRANSFORM)
+
+OPTION (ENABLE_TEST "Compile Test plugin" OFF)
 IF (ENABLE_TEST)
 	add_subdirectory(TestPlugin)
 ENDIF(ENABLE_TEST)

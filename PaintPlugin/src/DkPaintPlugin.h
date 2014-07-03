@@ -38,6 +38,9 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QToolbar>
 #include <QMainWindow>
+#include <QColorDialog>
+#include <QSpinBox>
+#include <QPushButton>
 
 #include "DkPluginInterface.h"
 #include "DkNoMacs.h"
