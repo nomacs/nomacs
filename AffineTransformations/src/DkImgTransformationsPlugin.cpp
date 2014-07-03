@@ -203,7 +203,8 @@ DkImgTransformationsViewPort::~DkImgTransformationsViewPort() {
 
 void DkImgTransformationsViewPort::init() {
 
-	selectedMode = mode_rotate;
+	defaultMode = mode_scale;
+	selectedMode = defaultMode;
 	panning = false;
 	cancelTriggered = false;
 	defaultCursor = Qt::ArrowCursor;
@@ -220,7 +221,7 @@ void DkImgTransformationsViewPort::init() {
 
 	intrRect = new DkInteractionRects(this);
 
-	imgTransformationsToolbar = new DkImgTransformationsToolBar(tr("ImgTransformations Toolbar"), this);
+	imgTransformationsToolbar = new DkImgTransformationsToolBar(tr("ImgTransformations Toolbar"), defaultMode, this);
 
 	connect(imgTransformationsToolbar, SIGNAL(scaleXValSignal(double)), this, SLOT(setScaleXValue(double)));
 	connect(imgTransformationsToolbar, SIGNAL(scaleYValSignal(double)), this, SLOT(setScaleYValue(double)));
@@ -660,26 +661,25 @@ void DkImgTransformationsViewPort::setCropEnabled(bool enabled) {
 
 void DkImgTransformationsViewPort::calculateAutoRotation() {
 	
-	/*
 	if(parent()) {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 		if (viewport) {
 
 			QImage img = viewport->getImage();
 
-			for (int y = 0; y < img.height(); y++) {
-				for (int x = 0; x < img.width(); x++) {
-					sumPixel += qRed(img.pixel(x, y));
-				}
-			}
+			if (img.width() > 10 && img.height() > 10) {
+				DkSkewEstimator skewEstimator = DkSkewEstimator(img);
+				rotationValue = skewEstimator.getSkewAngle();
+				imgTransformationsToolbar->setRotationValue(rotationValue);
 
-			sumPixel /= (img.height() * img.width());
+				return;
+			}
 		}
 	}
-	*/
-	//imgTransformationsToolbar->setThrValue(qRound(sumPixel));
+
 	rotationValue = 0;
 	imgTransformationsToolbar->setRotationValue(rotationValue);
+	
 }
 
 void DkImgTransformationsViewPort::setPanning(bool checked) {
@@ -720,15 +720,15 @@ void DkImgTransformationsViewPort::setVisible(bool visible) {
 
 
 	if (imgTransformationsToolbar) emit showToolbar(imgTransformationsToolbar, visible);
-	setMode(mode_shear);
+	setMode(defaultMode);
 	DkPluginViewPort::setVisible(visible);
 }
 
 /*-----------------------------------DkImgTransformationsToolBar ---------------------------------------------*/
-DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
+DkImgTransformationsToolBar::DkImgTransformationsToolBar(const QString & title, int defaultMode, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
 
 	createIcons();
-	createLayout();
+	createLayout(defaultMode);
 	QMetaObject::connectSlotsByName(this);
 
 	if (DkSettings::display.smallIcons)
@@ -780,7 +780,7 @@ void DkImgTransformationsToolBar::createIcons() {
 	}
 }
 
-void DkImgTransformationsToolBar::createLayout() {
+void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 
 	QList<QKeySequence> enterSc;
 	enterSc.append(QKeySequence(Qt::Key_Enter + Qt::SHIFT));
@@ -840,7 +840,7 @@ void DkImgTransformationsToolBar::createLayout() {
 	rotationBox->setObjectName("rotationBox");
 	rotationBox->setMinimum(0);
 	rotationBox->setMaximum(359.9);
-	rotationBox->setSingleStep(0.5);
+	rotationBox->setSingleStep(0.1);
 	rotationBox->setDecimals(1);
 	rotationBox->setWrapping(true);
 	rotationBox->setSuffix("°");
@@ -904,12 +904,14 @@ void DkImgTransformationsToolBar::createLayout() {
 	toolbarWidgetList.insert(scaleXBox->objectName(), this->addWidget(scaleXBox));
 	toolbarWidgetList.insert(scaleYBox->objectName(), this->addWidget(scaleYBox));
 	toolbarWidgetList.insert(rotationBox->objectName(), this->addWidget(rotationBox));
+	#ifdef WITH_OPENCV
 	toolbarWidgetList.insert(autoRotateButton->objectName(), this->addWidget(autoRotateButton));
+	#endif
 	toolbarWidgetList.insert(cropEnabledBox->objectName(), this->addWidget(cropEnabledBox));
 	toolbarWidgetList.insert(shearXBox->objectName(), this->addWidget(shearXBox));
 	toolbarWidgetList.insert(shearYBox->objectName(), this->addWidget(shearYBox));
 
-	modifyLayout(mode_shear);
+	modifyLayout(defaultMode);
 }
 
 void DkImgTransformationsToolBar::modifyLayout(int mode) {
@@ -917,7 +919,9 @@ void DkImgTransformationsToolBar::modifyLayout(int mode) {
 	switch(mode) {
 		case mode_scale:
 			toolbarWidgetList.value(rotationBox->objectName())->setVisible(false);
+			#ifdef WITH_OPENCV
 			toolbarWidgetList.value(autoRotateButton->objectName())->setVisible(false);
+			#endif
 			toolbarWidgetList.value(cropEnabledBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(scaleXBox->objectName())->setVisible(true);
 			toolbarWidgetList.value(scaleYBox->objectName())->setVisible(true);
@@ -930,7 +934,9 @@ void DkImgTransformationsToolBar::modifyLayout(int mode) {
 			toolbarWidgetList.value(scaleXBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(scaleYBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(rotationBox->objectName())->setVisible(true);
+			#ifdef WITH_OPENCV
 			toolbarWidgetList.value(autoRotateButton->objectName())->setVisible(true);
+			#endif
 			toolbarWidgetList.value(cropEnabledBox->objectName())->setVisible(true);
 			toolbarWidgetList.value(shearXBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(shearYBox->objectName())->setVisible(false);
@@ -941,7 +947,9 @@ void DkImgTransformationsToolBar::modifyLayout(int mode) {
 			toolbarWidgetList.value(scaleXBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(scaleYBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(rotationBox->objectName())->setVisible(false);
+			#ifdef WITH_OPENCV
 			toolbarWidgetList.value(autoRotateButton->objectName())->setVisible(false);
+			#endif
 			toolbarWidgetList.value(cropEnabledBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(shearXBox->objectName())->setVisible(true);
 			toolbarWidgetList.value(shearYBox->objectName())->setVisible(true);
