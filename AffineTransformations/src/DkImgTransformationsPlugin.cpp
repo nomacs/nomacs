@@ -538,6 +538,7 @@ QImage DkImgTransformationsViewPort::getTransformedImage() {
 
 				QImage paintedImage = QImage(affineTransform.mapRect(inImage.rect()).size(), inImage.format());
 				QPainter imagePainter(&paintedImage);
+				imagePainter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 				imagePainter.setTransform(affineTransform);
 				imagePainter.drawImage(QPoint(0,0), inImage);
 				imagePainter.end();
@@ -554,6 +555,7 @@ QImage DkImgTransformationsViewPort::getTransformedImage() {
 
 				QImage paintedImage = QImage(affineTransform.mapRect(inImage.rect()).size(), inImage.format());
 				QPainter imagePainter(&paintedImage);
+				imagePainter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 				imagePainter.fillRect(paintedImage.rect(), Qt::white);		
 				affineTransform.reset();
 				affineTransform.translate(paintedImage.width()/2, paintedImage.height()/2);
@@ -591,6 +593,7 @@ QImage DkImgTransformationsViewPort::getTransformedImage() {
 				*/
 				QImage paintedImage = QImage(affineTransform.mapRect(inImage.rect()).size(), inImage.format());
 				QPainter imagePainter(&paintedImage);
+				imagePainter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 				imagePainter.fillRect(paintedImage.rect(), Qt::white);		
 				affineTransform.reset();
 				affineTransform.translate(paintedImage.width()/2, paintedImage.height()/2);
