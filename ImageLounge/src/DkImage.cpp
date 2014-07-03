@@ -177,7 +177,7 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 	}
 
 	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
-	qDebug() << "[DkImageLoader] " << images.size() << " indexed in " << QString::fromStdString(dt.getTotal());
+	qDebug() << "[DkImageLoader] " << images.size() << " indexed in " << dt.getTotal();
 }
 
 /**
@@ -1260,7 +1260,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 		}
 	}
 
-	qDebug() << "cache with: " << mem << " MB created in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "cache with: " << mem << " MB created in: " << dt.getTotal();
 
 }
 
@@ -1333,14 +1333,14 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 		}
 	}
 
-	qDebug() << "WinAPI, indexed (" << fileList.size() <<") files in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "WinAPI, indexed (" << fileList.size() <<") files in: " << dt.getTotal();
 #else
 
 	// true file list
 	QDir tmpDir = dir;
 	tmpDir.setSorting(QDir::LocaleAware);
 	QStringList fileList = tmpDir.entryList(DkSettings::fileFilters);
-	qDebug() << "Qt, sorted file list computed in: " << QString::fromStdString(dt.getIvl());
+	qDebug() << "Qt, sorted file list computed in: " << dt.getIvl();
 	qDebug() << fileList;
 
 #endif

@@ -814,7 +814,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		}
 	}
 
-	qDebug() << "searching takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "searching takes: " << dt.getTotal();
 	currentSearch = text;
 
 	if (resultList.empty()) {
@@ -835,7 +835,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		resultListView->setStyleSheet(defaultStyleSheet);
 	}
 
-	qDebug() << "searching takes (total): " << QString::fromStdString(dt.getTotal());
+	qDebug() << "searching takes (total): " << dt.getTotal();
 }
 
 void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelIndex) {
@@ -2181,33 +2181,22 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* prin
 	printDialog = 0;
 	imgTransform = QTransform();
 	init();
+	scaleImage();
 }
 
-void DkPrintPreviewDialog::init() {
-	
-	if (!printer) {
-#ifdef WIN32
-		printer = new QPrinter(QPrinter::HighResolution);
-#else
-		printer = new QPrinter;
-#endif
-	}
-	
-	preview = new DkPrintPreviewWidget(printer, this);
-	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
-	connect(preview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
-	
-	createIcons();
-	setup_Actions();
-	createLayout();
-	setMinimumHeight(600);
-	setMinimumWidth(800);
+void DkPrintPreviewDialog::setImage(QImage img, float dpi) {
+	this->img = img;
+	this->dpi = dpi;
+	imgTransform = QTransform();
+	scaleImage();
+}
 
+void DkPrintPreviewDialog::scaleImage() {
 	QRectF rect = printer->pageRect();
 	qreal scaleFactor;
 	QSizeF paperSize = printer->paperSize(QPrinter::Inch);
 	QRectF pageRectInch = printer->pageRect(QPrinter::Inch);
-	
+
 	// scale image to fit on paper
 	if (rect.width()/img.width() < rect.height()/img.height()) {
 		scaleFactor = rect.width()/(img.width()+FLT_EPSILON);		
@@ -2239,6 +2228,28 @@ void DkPrintPreviewDialog::init() {
 	dpiFactor->lineEdit()->setText(QString().sprintf("%.0f", dpi)+dpiEditorSuffix);
 	centerImage();
 	updateZoomFactor();
+}
+
+void DkPrintPreviewDialog::init() {
+	
+	if (!printer) {
+#ifdef WIN32
+		printer = new QPrinter(QPrinter::HighResolution);
+#else
+		printer = new QPrinter;
+#endif
+	}
+	
+	preview = new DkPrintPreviewWidget(printer, this);
+	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
+	connect(preview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
+	
+	createIcons();
+	setup_Actions();
+	createLayout();
+	setMinimumHeight(600);
+	setMinimumWidth(800);
+
 }
 
 void DkPrintPreviewDialog::createIcons() {
@@ -3768,7 +3779,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 
 	processing = false;
 
-	qDebug() << "mosaic computed in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "mosaic computed in: " << dt.getTotal();
 
 	return QDialog::Accepted;
 }

@@ -337,7 +337,7 @@ void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
 		mPtr += pad;
 	}
 
-	qDebug() << "gamma computation takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "gamma computation takes: " << dt.getTotal();
 }
 
 
@@ -436,6 +436,10 @@ bool DkImage::autoAdjustImage(QImage& img) {
 	uchar* mPtr = img.bits();
 	uchar r,g,b;
 
+	int histR[256] = {0};
+	int histG[256] = {0};
+	int histB[256] = {0};
+
 	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
 
 		for (int cIdx = 0; cIdx < bpl; ) {
@@ -453,6 +457,10 @@ bool DkImage::autoAdjustImage(QImage& img) {
 
 			if (b > maxB)	maxB = b;
 			if (b < minB)	minB = b;
+
+			histR[r]++;
+			histG[g]++;
+			histB[b]++;
 
 
 			// ?? strange but I would expect the alpha channel to be the first (big endian?)
@@ -472,10 +480,23 @@ bool DkImage::autoAdjustImage(QImage& img) {
 
 	uchar* ptr = img.bits();
 
+	if (ignoreR) {
+		maxR = findHistPeak(histR);
+		ignoreR = maxR-minR == 0 || maxR-minR == 255;
+	}
+	if (ignoreG) {
+		maxG = findHistPeak(histG);
+		ignoreG = maxG-minG == 0 || maxG-minG == 255;
+	}
+	if (ignoreB) {
+		maxB = findHistPeak(histB);
+		ignoreB = maxB-minB == 0 || maxB-minB == 255;
+	}
+
 	//qDebug() << "red max: " << maxR << " min: " << minR << " ignored: " << ignoreR;
 	//qDebug() << "green max: " << maxG << " min: " << minG << " ignored: " << ignoreG;
 	//qDebug() << "blue max: " << maxB << " min: " << minB << " ignored: " << ignoreB;
-	//qDebug() << "computed in: " << QString::fromStdString(dt.getTotal());
+	//qDebug() << "computed in: " << dt.getTotal();
 
 	if (ignoreR && ignoreG && ignoreB) {
 		qDebug() << "[Auto Adjust] There is no need to adjust the image";
@@ -487,18 +508,26 @@ bool DkImage::autoAdjustImage(QImage& img) {
 		for (int cIdx = 0; cIdx < bpl; ) {
 
 			// don't check values - speed (but you see under-/overflows anyway)
-			if (!ignoreR)
+			if (!ignoreR && *ptr < maxR)
 				*ptr = qRound(255.0f*((float)*ptr-minR)/(maxR-minR));
+			else if (!ignoreR)
+				*ptr = 255;
+
 			ptr++;
 			cIdx++;
 
-			if (!ignoreG)
+			if (!ignoreG && *ptr < maxG)
 				*ptr = qRound(255.0f*((float)*ptr-minG)/(maxG-minG));
+			else if (!ignoreG)
+				*ptr = 255;
+
 			ptr++;
 			cIdx++;
 
-			if (!ignoreB)
+			if (!ignoreB && *ptr < maxB)
 				*ptr = qRound(255.0f*((float)*ptr-minB)/(maxB-minB));
+			else if (!ignoreB)
+				*ptr = 255;
 			ptr++;
 			cIdx++;
 
@@ -511,9 +540,34 @@ bool DkImage::autoAdjustImage(QImage& img) {
 		ptr += pad;
 	}
 
-	qDebug() << "[Auto Adjust] image adjusted in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "[Auto Adjust] image adjusted in: " << dt.getTotal();
 	
 	return true;
+}
+
+uchar DkImage::findHistPeak(const int* hist, float quantile) {
+
+	int histArea = 0;
+
+	for (int idx = 0; idx < 256; idx++)
+		histArea += hist[idx];
+
+	int sumBins = 0;
+
+	for (int idx = 255; idx >= 0; idx--) {
+
+		sumBins += hist[idx];
+		
+		if (sumBins/(float)histArea > quantile) {
+			qDebug() << "max bin: " << idx;
+			return (uchar)idx;
+		}
+
+	}
+
+	qDebug() << "no max bin found... sum: " << sumBins;
+
+	return 255;
 }
 
 QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float opacity) {
@@ -573,7 +627,7 @@ bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 	cv::addWeighted(imgCv, weight, imgG, 1-weight, 0, imgCv);
 	img = DkImage::mat2QImage(imgCv);
 
-	qDebug() << "unsharp mask takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "unsharp mask takes: " << dt.getTotal();
 	//DkImage::linearToGamma(img);
 #endif
 
@@ -782,7 +836,7 @@ void DkImageStorage::computeImage() {
 	// tell my caller I did something
 	emit imageUpdated();
 
-	qDebug() << "pyramid computation took me: " << QString::fromStdString(dt.getTotal()) << " layers: " << imgs.size();
+	qDebug() << "pyramid computation took me: " << dt.getTotal() << " layers: " << imgs.size();
 
 	if (imgs.size() > 6)
 		qDebug() << "layer size > 6: " << img.size();

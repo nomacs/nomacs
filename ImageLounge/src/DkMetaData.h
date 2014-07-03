@@ -34,15 +34,6 @@
 #include <QVector2D>
 #include <QSharedPointer>
 
-
-#ifdef HAVE_EXIV2_HPP
-#include <exiv2/exiv2.hpp>
-#else
-#include <exiv2/image.hpp>
-#include <iomanip>
-#endif
-
-
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
 #define DllExport Q_DECL_EXPORT
@@ -53,6 +44,13 @@
 #endif
 #endif
 
+#ifdef HAVE_EXIV2_HPP
+#include <exiv2/exiv2.hpp>
+#else
+#include <exiv2/image.hpp>
+#include <iomanip>
+#endif
+
 namespace nmc {
 
 class DllExport DkMetaDataT {
@@ -61,7 +59,6 @@ public:
 	DkMetaDataT();
 
 	void readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-
 	bool saveMetaData(const QFileInfo& fileInfo, bool force = false);
 	bool saveMetaData(QSharedPointer<QByteArray>& ba, bool force = false);
 

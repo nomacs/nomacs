@@ -38,9 +38,20 @@
 #include "DkBasicLoader.h"
 #include "DkThumbs.h"
 
+
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
 namespace nmc {
 
-class DkImageContainer {
+class DllExport DkImageContainer {
 
 public:
 	enum {
@@ -102,7 +113,7 @@ protected:
 bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r);
 bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r);
 
-class DkImageContainerT : public QObject, public DkImageContainer {
+class DllExport DkImageContainerT : public QObject, public DkImageContainer {
 	Q_OBJECT
 
 public:

@@ -64,7 +64,7 @@ public:
 	 * the object was initialized.
 	 * @return the time in seconds or milliseconds.
 	 **/
-	std::string getTotal() {
+	QString getTotal() {
 		lastTick = clock();
 		double ct = (double) (lastTick-firstTick) / CLOCKS_PER_SEC;
 
@@ -83,7 +83,7 @@ public:
 	 * or getTotal().
 	 * @return the time in seconds or milliseconds.
 	 **/
-	std::string getIvl() {
+	QString getIvl() {
 		clock_t tmp = clock();
 		double ct = (double) (tmp-lastTick) / CLOCKS_PER_SEC;
 		lastTick = tmp;
@@ -94,11 +94,11 @@ public:
 
 
 	/**
-	 * Converts time to std::string.
+	 * Converts time to QString.
 	 * @param ct current time interval
-	 * @return std::string the time interval as string
+	 * @return QString the time interval as string
 	 **/ 
-	std::string stringifyTime(double ct) {
+	QString stringifyTime(double ct) {
 
 		std::string msg = " ";
 
@@ -115,7 +115,7 @@ public:
 			msg += DkUtils::stringify(h) + " hours " + DkUtils::stringify(ct-h*3600.0f, 0) + " min";
 		}
 
-		return msg;
+		return QString::fromStdString(msg);
 
 	};
 
@@ -124,6 +124,11 @@ public:
 	 **/
 	void stop() {
 		lastTick = clock();
+	};
+
+	void start() {
+		firstTick = clock();
+		lastTick = firstTick;
 	};
 
 	/**
@@ -175,7 +180,7 @@ public:
 	 * The time interval of all start() stop() calls.
 	 * @return the time in seconds or milliseconds.
 	 **/
-	std::string getIvl() {
+	QString getIvl() {
 		
 		double ct = (double) (timeIvl) / CLOCKS_PER_SEC;
 		

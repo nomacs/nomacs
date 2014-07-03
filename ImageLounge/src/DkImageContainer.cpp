@@ -232,7 +232,13 @@ bool DkImageContainer::loadImage() {
 
 QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
 
-	QFile file(fileInfo.absoluteFilePath());
+	QFileInfo fInfo = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : fileInfo;
+
+	if (fInfo.suffix().contains("psd")) {	// for now just psd's are not cached because their file might be way larger than the part we need to read
+		return QSharedPointer<QByteArray>(new QByteArray());
+	}
+
+	QFile file(fInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
 
 	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
@@ -441,7 +447,7 @@ void DkImageContainerT::fetchImage() {
 		return;
 	}
 
-	if (loader->hasImage() || !fileBuffer || fileBuffer->isEmpty() || loadState == exists_not) {
+	if (loader->hasImage() || /*!fileBuffer || fileBuffer->isEmpty() ||*/ loadState == exists_not) {
 		loadingFinished();
 		return;
 	}
@@ -499,7 +505,7 @@ void DkImageContainerT::loadingFinished() {
 	//}
 
 	// clear file buffer if it exceeds a certain size?! e.g. psd files
-	if (fileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
+	if (fileBuffer && fileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)
 		fileBuffer->clear();
 	
 	loadState = loaded;

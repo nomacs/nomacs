@@ -235,7 +235,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 
 	if (!thumb.isNull())
-		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << QString::fromStdString(dt.getTotal()) << ((exifThumb) ? " from EXIV" : " from File");
+		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << dt.getTotal() << ((exifThumb) ? " from EXIV" : " from File");
 
 	//if (!thumb.isNull())
 	//	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
@@ -604,7 +604,7 @@ void DkThumbsLoader::init() {
 		thumbs->push_back(cThumb);
 	}
 
-	qDebug() << "thumb stubs loaded in: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "thumb stubs loaded in: " << dt.getTotal();
 }
 
 /**

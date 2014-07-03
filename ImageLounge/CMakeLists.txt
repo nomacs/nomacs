@@ -207,9 +207,7 @@ IF(ENABLE_WEBP)
 ENDIF(ENABLE_WEBP)
 
 
-
 IF (ENABLE_RAW)
-
 	# NOTE: libraw is used only when there is OpenCV found and used
 	# LibRaw
 	pkg_check_modules(LIBRAW  libraw>=0.12.0)
@@ -251,6 +249,7 @@ IF (ENABLE_RAW)
 	          
 	# OpenCV
 	SET(OpenCV_LIBS "")
+	SET(OpenCV_FOUND false)
 	if (PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
 		pkg_check_modules(OpenCV  opencv>=2.1.0)
 		SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
@@ -288,10 +287,13 @@ IF (ENABLE_RAW)
 ENDIF(ENABLE_RAW)
 
 #multi-layer tiff
-IF(ENABLE_TIFF)
-		
+IF(ENABLE_TIFF)	
 	# we try to grab the OpenCV's libtiff
 	IF (MSVC)
+		IF(NOT OpenCV_FOUND)
+			message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable RAW support")
+		ENDIF(NOT OpenCV_FOUND)
+
 		find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
 		IF(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
 			FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
@@ -308,9 +310,11 @@ IF(ENABLE_TIFF)
 
 		IF(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 			add_definitions(-DWITH_LIBTIFF)
-		ELSE()
-			message(FATAL_ERROR "libtiff not found. It's mandatory when used with ENABLE_TIFF enabled.")
+		ELSE(NOT EXISTS ${TIFF_CONFIG_DIR})
+			message(FATAL_ERROR "TIFF_CONFIG_DIR dir not found. Needs path which contains Release/libtiff.lib and debug/libtiffd.lib")
 			message(FATAL_ERROR "opencv dir: ${OpenCV_DIR}")
+		ELSE(NOT EXISTS ${TIFF_INCLUDE_DIR})
+			message(FATAL_ERROR "TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
 		ENDIF()
 
 	ELSE()

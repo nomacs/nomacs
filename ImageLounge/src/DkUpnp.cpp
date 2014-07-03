@@ -229,7 +229,7 @@ void DkUpnpControlPoint::rootDeviceOnline(Herqq::Upnp::HClientDevice* clientDevi
 		}
 
 		Herqq::Upnp::HClientService* service = clientDevice->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
-		if (!clientDevice) {
+		if (!service) {
 			qDebug() << "nomacs service is empty ... aborting";
 			return;
 		}

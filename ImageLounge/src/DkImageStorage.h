@@ -32,8 +32,6 @@
 #include <QImage>
 #include <QThread>
 
-//#include "DkMetaData.h"
-
 // opencv
 #ifdef WITH_OPENCV
 
@@ -239,6 +237,7 @@ public:
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 0.5f);
 	static QImage createThumb(const QImage& img);
 	static QColor getMeanColor(const QImage& img);
+	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
 };
 
 class DkImageStorage : public QObject {

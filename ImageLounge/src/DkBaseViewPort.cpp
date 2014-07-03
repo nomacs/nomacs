@@ -623,9 +623,8 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 
 	if (!movie || !movie->isValid())
 		painter->drawImage(imgViewRect, imgQt, imgQt.rect());
-	else {
+	else
 		painter->drawPixmap(imgViewRect, movie->currentPixmap(), movie->frameRect());
-	}
 
 	painter->setOpacity(oldOp);
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();

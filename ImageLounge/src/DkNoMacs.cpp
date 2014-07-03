@@ -95,6 +95,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	explorer = 0;
 	appManager = 0;
 	settingsDialog = 0;
+	printPreviewDialog = 0;
 
 	currRunningPlugin = QString();
 
@@ -240,10 +241,10 @@ void DkNoMacs::init() {
 	}
 #endif // Q_WS_WIN
 
-
-	DkFileFilterHandling fh;
-	fh.registerFileType(DkSettings::openFilters.at(2), tr("Image"), true);
-	qDebug() << DkSettings::openFilters.at(1) << "registered";
+	// TODO: finish registration process
+	//DkFileFilterHandling fh;
+	//fh.registerFileType(DkSettings::openFilters.at(2), tr("Image"), true);
+	//qDebug() << DkSettings::openFilters.at(1) << "registered";
 
 }
 
@@ -2927,10 +2928,13 @@ void DkNoMacs::printDialog() {
 
 	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
 	QImage img = viewport()->getImage();
-	DkPrintPreviewDialog* previewDialog = new DkPrintPreviewDialog(img, res.x(), 0, this);
+	if (!printPreviewDialog)
+		printPreviewDialog = new DkPrintPreviewDialog(img, res.x(), 0, this);
+	else
+		printPreviewDialog->setImage(img, res.x());
 
-	previewDialog->show();
-	previewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
+	printPreviewDialog->show();
+	printPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
 
 }
 
@@ -3956,7 +3960,7 @@ void DkNoMacsSync::initLanClient() {
 	else 
 		qDebug() << "whitelist empty!!";
 
-	qDebug() << "start server takes: " << QString::fromStdString(dt.getTotal());
+	qDebug() << "start server takes: " << dt.getTotal();
 }
 
 void DkNoMacsSync::createActions() {
@@ -3971,7 +3975,7 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync]->setShortcut(QKeySequence(shortcut_sync));
 	syncActions[menu_sync]->setStatusTip(tr("synchronize the current view"));
 	syncActions[menu_sync]->setEnabled(false);
-	connect(syncActions[menu_sync], SIGNAL(triggered()), vp, SLOT(tcpSynchronize()));
+	connect(syncActions[menu_sync], SIGNAL(triggered()), vp, SLOT(tcpForceSynchronize()));
 
 	syncActions[menu_sync_pos] = new QAction(tr("&Window Overlay"), this);
 	syncActions[menu_sync_pos]->setShortcut(QKeySequence(shortcut_tab));
