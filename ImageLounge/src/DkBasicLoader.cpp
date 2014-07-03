@@ -26,7 +26,8 @@
  *******************************************************************************************************/
 
 #include "DkBasicLoader.h"
-//#include "DkNoMacs.h" // Don't know if that's cool but we need it for dialogs (maybe a signal)?
+
+#include "DkMetaData.h"
 
 namespace nmc {
 

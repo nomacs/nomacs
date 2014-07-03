@@ -81,6 +81,11 @@
 
 namespace nmc {
 
+// results in compiler warning C4150
+// as far as I understand, the warning can be ignored because
+// the destructor of DkMetaDataT is trivial - could someone check for this so we can suppress it?
+class DkMetaDataT;
+
 /**
  * This class provides image loading and editing capabilities.
  * It additionally stores the currently loaded image.

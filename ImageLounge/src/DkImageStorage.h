@@ -32,8 +32,6 @@
 #include <QImage>
 #include <QThread>
 
-#include "DkMetaData.h"
-
 // opencv
 #ifdef WITH_OPENCV
 
