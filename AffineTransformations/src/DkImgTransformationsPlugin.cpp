@@ -783,10 +783,10 @@ void DkImgTransformationsToolBar::createIcons() {
 void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 
 	QList<QKeySequence> enterSc;
-	enterSc.append(QKeySequence(Qt::Key_Enter + Qt::SHIFT));
-	enterSc.append(QKeySequence(Qt::Key_Return + Qt::SHIFT));
+	enterSc.append(QKeySequence(Qt::Key_Enter));
+	enterSc.append(QKeySequence(Qt::Key_Return));
 
-	QAction* applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER + SHIFT)"), this);
+	QAction* applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
 	applyAction->setShortcuts(enterSc);
 	applyAction->setObjectName("applyAction");
 
