@@ -3730,9 +3730,9 @@ void DkNoMacs::runLoadedPlugin() {
 	   return;
    }
 
-	if(viewport()->getImageLoader()->getImage().isNull()){
-		QMessageBox msgBox;
-		msgBox.setText("No image in the viewport!\nThe plugin can't run.");
+	if(viewport()->getImageLoader()->getImage().isNull() && cPlugin->closesOnImageChange()){
+		QMessageBox msgBox(this);
+		msgBox.setText("No image loaded\nThe plugin can't run.");
 		msgBox.setIcon(QMessageBox::Warning);
 		msgBox.exec();
 		return;
@@ -3749,6 +3749,8 @@ void DkNoMacs::runLoadedPlugin() {
 
 	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(applyPluginChanges(bool, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
+	   connect(vPlugin->getViewPort(), SIGNAL(loadFile(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	   connect(vPlugin->getViewPort(), SIGNAL(loadImage(QImage)), viewport(), SLOT(setImage(QImage)));
 	   
 	   viewport()->getController()->setPluginWidget(vPlugin, false);
 	   
@@ -3778,6 +3780,9 @@ void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
 		return;
 
 	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
+
+	if (!cPlugin->closesOnImageChange())
+		return;
 
 	currRunningPlugin = QString();
 	bool isSaveNeeded = false;
