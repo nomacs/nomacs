@@ -29,6 +29,11 @@ IF (ENABLE_FLIP)
 	add_subdirectory(FlipPlugin)
 ENDIF(ENABLE_FLIP)
 
+OPTION (ENABLE_NIKON "Compile Nikon plugin" ON)
+IF (ENABLE_NIKON)
+	add_subdirectory(NikonPlugin)
+ENDIF(ENABLE_NIKON)
+
 OPTION (ENABLE_TRANSFORM "Compile Transform plugin" ON)
 IF (ENABLE_TRANSFORM)
 	add_subdirectory(AffineTransformations)

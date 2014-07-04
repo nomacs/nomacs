@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/nomacsPluginNikon">
+        <file>img/description.png</file>
+    </qresource>
+</RCC>
