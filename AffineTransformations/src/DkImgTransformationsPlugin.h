@@ -53,6 +53,7 @@
 #include "DkBaseViewport.h"
 #include "DkImageStorage.h"
 #include "DkMath.h"
+#include "DkSkewEstimator.h"
 
 namespace nmc {
 
@@ -146,6 +147,7 @@ protected:
 	bool insideIntrRect;
 	int intrIdx;
 	int selectedMode;
+	int defaultMode;
 	double rotationValue;
 	double rotationValueTemp;
 	QPoint referencePoint;
@@ -173,7 +175,7 @@ public:
 		icons_end,
 	};
 
-	DkImgTransformationsToolBar(const QString & title, QWidget * parent = 0);
+	DkImgTransformationsToolBar(const QString & title, int defaultMode, QWidget * parent = 0);
 	virtual ~DkImgTransformationsToolBar();
 
 	void setRotationValue(double val);
@@ -210,7 +212,7 @@ signals:
 	void modeChangedSignal(int mode);
 
 protected:
-	void createLayout();
+	void createLayout(int defaultMode);
 	void createIcons();
 	void modifyLayout(int mode);
 
