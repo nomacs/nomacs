@@ -4049,7 +4049,8 @@ void DkNoMacsSync::createMenu() {
 	syncMenu->addAction(syncActions[menu_sync_arrange]);
 	syncMenu->addAction(syncActions[menu_sync_auto_connect]);
 #ifdef WITH_UPNP
-	syncMenu->addAction(syncActions[menu_sync_start_upnp]);
+	// disable this action since it does not work using herqq
+	//syncMenu->addAction(syncActions[menu_sync_start_upnp]);
 #endif // WITH_UPNP
 
 }
