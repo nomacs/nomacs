@@ -27,6 +27,8 @@
 
 #pragma once
 
+#ifdef WITH_PLUGINS
+
 #include <QtGui/QWidget>
 #include <QtGui/QSlider>
 #include <QtGui/QSpinBox>
@@ -402,3 +404,6 @@ private:
 
 
 };
+
+#endif // WITH_PLUGINS
+
