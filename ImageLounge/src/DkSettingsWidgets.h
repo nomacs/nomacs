@@ -257,6 +257,7 @@ public:
 protected:
 	void createLayout();
 	QList<QStandardItem*> getItems(const QString& filter, bool browse, bool reg);
+	bool checkFilter(const QString& filter, const QStringList& filters) const;
 
 	QTableView* filterTableView;
 	QStandardItemModel* model;

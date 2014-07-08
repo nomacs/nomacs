@@ -1308,8 +1308,8 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 	//QRegExp exp(extPattern, Qt::CaseInsensitive);
 
 	// remove the * in fileFilters
-	QStringList fileFiltersClean = DkSettings::fileFilters;
-	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++)
+	QStringList fileFiltersClean = DkSettings::app.browseFilters;
+	for (int idx = 0; idx < fileFiltersClean.size(); idx++)
 		fileFiltersClean[idx].replace("*", "");
 
 	//std::sort(fileNameList.begin(), fileNameList.end(), wCompLogic);

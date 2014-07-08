@@ -1255,7 +1255,7 @@ void DkFileFilterSettingWidget::createLayout() {
 
 	model = new QStandardItemModel(this);
 	for (int rIdx = 1; rIdx < fileFilters.size(); rIdx++)
-		model->appendRow(getItems(fileFilters.at(rIdx), true, true));
+		model->appendRow(getItems(fileFilters.at(rIdx), checkFilter(fileFilters.at(rIdx), DkSettings::app.browseFilters), checkFilter(fileFilters.at(rIdx), DkSettings::app.registerFilters)));
 	
 	model->setHeaderData(0, Qt::Horizontal, tr("Filter"));
 	model->setHeaderData(1, Qt::Horizontal, tr("Browse"));
@@ -1275,6 +1275,18 @@ void DkFileFilterSettingWidget::createLayout() {
 	layout->addWidget(filterTableView);
 	setLayout(layout);
 	//show();
+}
+
+bool DkFileFilterSettingWidget::checkFilter(const QString& cFilter, const QStringList& filters) const {
+
+	if (filters.empty())
+		return true;
+
+	for (int idx = 0; idx < filters.size(); idx++)
+		if (cFilter.contains(filters[idx]))
+			return true;
+
+	return filters.indexOf(cFilter) != -1;
 }
 
 QList<QStandardItem*> DkFileFilterSettingWidget::getItems(const QString& filter, bool browse, bool reg) {
@@ -1299,6 +1311,40 @@ QList<QStandardItem*> DkFileFilterSettingWidget::getItems(const QString& filter,
 }
 
 void DkFileFilterSettingWidget::writeSettings() {
+
+	DkFileFilterHandling fh;
+	DkSettings::app.browseFilters.clear();
+	
+	for (int idx = 0; idx < model->rowCount(); idx++) {
+
+		QStandardItem* item = model->item(idx, 0);
+
+		if (!item)
+			continue;
+
+		QStandardItem* browseItem = model->item(idx, 1);
+		QStandardItem* regItem = model->item(idx, 2);
+
+		if (browseItem && browseItem->checkState() == Qt::Checked) {
+			
+			QString cFilter = item->text();
+			cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+			cFilter = cFilter.replace(")", "");
+
+			DkSettings::app.browseFilters += cFilter.split(" ");
+		}
+		
+		fh.registerFileType(item->text(), tr("Image"), regItem->checkState() == Qt::Checked);
+		
+		if (regItem->checkState() == Qt::Checked) {
+			DkSettings::app.registerFilters.append(item->text());
+			qDebug() << item->text() << " registered";
+		}
+		else
+			qDebug() << item->text() << " unregistered";
+	}
+
+
 
 }
 
