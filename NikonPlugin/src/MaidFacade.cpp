@@ -500,28 +500,45 @@ void MaidFacade::acquireItemObjectsFinished() {
 				qDebug() << "filename was empty, file will be discarded";
 				return;
 			}
+
 			firstFilename = filename;
+
 		} else {
 			// save 
 			QFileInfo newFilenameInfo = QFileInfo(firstFilenameInfo.canonicalPath() + "/" + firstFilenameInfo.baseName() + "." + fileInfo.suffix());
 			filename = increaseFilenameNumber(newFilenameInfo);
+			qDebug() << "I tried to increase the file number...";
 		}
 		qDebug() << "saving file: " << filename;
 
-		std::ofstream outFile;
-
-		outFile.open(filename.toStdString(), std::ios::out | std::ios::binary);
-		if (!outFile.good() || !outFile.is_open()) {
-			//return kNkMAIDResult_UnexpectedError;
-			qDebug() << "could not open file for writing!";
+		// using Qt for I/O allows for Unicode filenames!
+		QFile file(filename);
+		file.open(QFile::WriteOnly);
+		
+		if (!file.isOpen()) {
+			QMessageBox::critical(0, tr("Save Error"), tr("Sorry, I could not write to:\n %1").arg(filename));
 			return;
 		}
+		
+		file.write(currentFileData->buffer, currentFileFileInfo.ulTotalLength);
+		file.close();
 
-		qDebug() << "writing " << currentFileFileInfo.ulTotalLength << " bytes";
-		outFile.write(currentFileData->buffer, currentFileFileInfo.ulTotalLength);
-		outFile.close();
+
+		//std::ofstream outFile;
+
+		//outFile.open(filename.toStdString(), std::ios::out | std::ios::binary);
+		//if (!outFile.good() || !outFile.is_open()) {
+		//	//return kNkMAIDResult_UnexpectedError;
+		//	qDebug() << "could not open file for writing!";
+		//	return;
+		//}
+
+		//qDebug() << "writing " << currentFileFileInfo.ulTotalLength << " bytes";
+		//outFile.write(currentFileData->buffer, currentFileFileInfo.ulTotalLength);
+		//outFile.close();
 
 		lastFileInfo = QFileInfo(filename);
+
 	}();
 
 	delete[] currentFileData->buffer;
@@ -587,12 +604,13 @@ QString MaidFacade::getCapturedFileName(const QFileInfo& saveFile) {
 
 	//if (answer == QDialog::Rejected || answer == QMessageBox::No) {
 		// note: basename removes the whole file name from the first dot...
+	if (firstFilename.isEmpty() || !autoSaveNaming) {	
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
 		// TODO: set the main window here...
 		fileName = QFileDialog::getSaveFileName(0, tr("Save File %1").arg(saveName),
 			savePath, selectedFilter, &selectedFilter);
-	//}
+	}
 
 	return fileName;
 }
@@ -602,6 +620,9 @@ QString MaidFacade::getCapturedFileName(const QFileInfo& saveFile) {
  * For image0.jpg, this will return image1.jpg, etc.
  */
 QString MaidFacade::increaseFilenameNumber(const QFileInfo& fileInfo) {
+	
+	qDebug() << "file info before increasing: " << fileInfo.absoluteFilePath();
+	
 	std::ifstream testFileIn;
 	QString basePath = fileInfo.canonicalPath() + "/" + fileInfo.baseName();
 	QString filename = "";
@@ -616,6 +637,8 @@ QString MaidFacade::increaseFilenameNumber(const QFileInfo& fileInfo) {
 
 		testFileIn.close();
 	}
+
+	qDebug() << "increasing filename to: " << filename;
 
 	return filename;
 }
@@ -851,6 +874,7 @@ void CALLPASCAL CALLBACK eventProc(NKREF ref, ULONG eventType, NKPARAM data) {
 	default:
 		qDebug() << "Unknown event in a MaidObject.";
 	}
+
 }
 
 NKERROR CALLPASCAL CALLBACK dataProc(NKREF ref, LPVOID info, LPVOID data) {

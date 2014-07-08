@@ -1,0 +1,95 @@
+This NIKON License Agreement ("AGREEMENT") is a legal agreement between you ("PARTICIPANT", either an individual or single entity) and NIKON Corporation ("NIKON") setting forth the terms and conditions for your use of the NIKON software accompanying this AGREEMENT which includes computer software and may include "online" or electronic documentation ("SOFTWARE").
+
+By selecting "I agree" button below, PARTICIPANT indicates PARTICIPANT's acceptance of this AGREEMENT and is agreeing to be bound by the terms of this AGREEMENT.  If PARTICIPANT does not agree to the terms of this AGREEMENT, PARTICIPANT is not authorized to download or use the SOFTWARE.  
+
+1.   DEFINITIONS
+
+1.1  "NIKON PRODUCT" means the NIKON digital camera product developed, manufactured, distributed and sold by NIKON.
+
+1.2  "SOFTWARE" means the COMMAND and MODULE items defined below, and any documentation, materials, and specifications related thereto.
+
+1.3  "COMMAND" means the specifications of the command protocol of the NIKON PRODUCT, which is one of the items included in the NIKON SOFTWARE DEVELOPMENT KIT.
+
+1.4  "MODULE" means the object program of the driver software of the NIKON PRODUCT, which is one of the items included in the NIKON SOFTWARE DEVELOPMENT KIT.
+
+1.5  "PARTICIPANT SOFTWARE" means the software developed by PARTICIPANT which incorporates all or part of the SOFTWARE in order to control the NIKON PRODUCT through PCs or other apparatuses.
+
+1.6  "CONFIDENTIAL INFORMATION" means the SOFTWARE, all data, technical information, documentation, specifications, trade secrets, know-how and other information disclosed or provided by NIKON to PARTICIPANT relating to the SOFTWARE.
+
+
+2.   GRANT OF LICENSE AND RESTRICTIONS ON USE
+
+2.1  Subject to the terms and conditions of this AGREEMENT, NIKON hereby grants to PARTICIPANT, a non-transferable, non-exclusive, worldwide, royalty-free license to (a) use and copy the SOFTWARE to develop the PARTICIPANT SOFTWARE; (b) incorporate the SOFTWARE into the PARTICIPANT SOFTWARE; and (c) to the extent the SOFTWARE is incorporated into the PARTICIPANT SOFTWARE, use, copy and sublicense the SOFTWARE to a third party subject to terms and conditions consistent with this AGREEMENT.  Such third party-PARTICIPANT agreements shall name NIKON as a third party beneficiary of the restrictions on use, limitation of liabilities, and disclaimers of warranties.
+
+2.2  PARTICIPANT shall not copy or use the SOFTWARE for any purpose other than as expressly set forth in this AGREEMENT, provided, however, that PARTICIPANT may make one copy of the SOFTWARE solely for backup purposes. 
+
+2.3  PARTICIPANT shall not modify the SOFTWARE, except that PARTICIPANT may add new functions to the SOFTWARE for the purpose of developing the PARTICIPANT SOFTWARE.
+
+2.4  PARTICIPANT shall not reverse engineer, decrypt, de-compile, or disassemble the SOFTWARE, or create any derivative works of the SOFTWARE (except as expressly permitted in Section 2.3) without prior notice to and written approval of NIKON, or have others do the same.
+
+
+3.   OWNERSHIP OF THE SOFTWARE
+     PARTICIPANT acknowledges NIKON'S exclusive ownership of all right, title, and interest in and to the SOFTWARE and any patents, copyrights, trademarks, trade names, trade secrets, and other intellectual property rights associated with the SOFTWARE.  Except for the express license in Section 2.1, this AGREEMENT shall not give PARTICIPANT any right, title and interest in and to the SOFTWARE. During and after the Term of this AGREEMENT, PARTICIPANT shall not, in any way, contest or help others to contest NIKON'S ownership of the SOFTWARE or the validity of any registrations or rights of NIKON now owned or subsequently obtained relating to the SOFTWARE.  PARTICIPANT shall not remove, alter or obscure any patent, copyright, or trademark notices or other proprietary legends used by NIKON in connection with or related to the SOFTWARE. All rights in and to the SOFTWARE not expressly granted to PARTICIPANT in this AGREEMENT are expressly reserved for NIKON.
+
+
+4.   DISCLAIMERS OF WARRANTIES AND LIMITATION OF LIABILITY
+
+4.1  THE SOFTWARE IS PROVIDED BY NIKON TO PARTICIPANT ON AN "AS IS" BASIS, WITHOUT WARRANTY OF ANY KIND, AND NIKON SPECIFICALLY DISCLAIMS ANY AND ALL WARRANTIES, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT.  IN NO EVENT, DOES NIKON WARRANT THE PERFORMANCE OF OR THE RESULTS PARTICIPANT MAY OBTAIN FROM THE SOFTWARE, OR THAT THE SOFTWARE WILL MEET PARTICIPANT'S REQUIREMENTS OR THAT THE OPERATION OF THE SOFTWARE WILL BE UNINTERRUPTED, ERROR-FREE, OR FREE OF VIRUSES.
+
+4.2  IN NO EVENT SHALL NIKON BE LIABLE TO PARTICIPANT FOR ANY INDIRECT, CONSEQUENTIAL OR INCIDENTAL DAMAGES, LOSSES OR, EXPENSES OF ANY KIND, WHETHER LOSS OF PROFITS, BUSINESS INTERRUPTION, OR OTHERWISE ARISING OUT OF OR RESULTING FROM THE SOFTWARE, HOWEVER CAUSED, EVEN IF NIKON OR ITS REPRESENTATIVES OR AGENTS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, LOSSES, OR EXPENSES.
+
+4.3  NIKON is not obligated under this AGREEMENT to provide PARTICIPANT with any technical support relating to the SOFTWARE or the PARTICIPANT SOFTWARE.
+
+
+5.   INDEMNIFICATION
+     PARTICIPANT shall indemnify, defend, and hold harmless NIKON, its subsidiaries and its affiliates, and their respective officers, directors, employees, shareholders, legal representatives, agents, successors and assigns ("NIKON INDEMNIFIED PARTIES"), from and against any damages, liabilities, costs and expenses (including reasonable attorneys' and professionals' fees and litigation costs) related to (a) any third party claim that the PARTICIPANT SOFTWARE infringes the copyright, patent, trademark, trade secret or other proprietary or contract right of such third party, except to the extent such claim of infringement relates solely to the SOFTWARE; (b) a breach of this AGREEMENT by PARTICIPANT; and (c) the distribution or use of the PARTICIPANT SOFTWARE.  NIKON shall promptly provide PARTICIPANT with written notice of any such claim and reasonable cooperation, information, and assistance in connection therewith.  PARTICIPANT shall have sole control and authority with respect to the defense, settlement, or compromise of such claim, provided that any settlement of such claim includes a full release for the NIKON INDEMNIFIED PARTIES. 
+
+
+6.   CONFIDENTIALITY
+
+6.1  PARTICIPANT shall hold CONFIDENTIAL INFORMATION in strict confidence, shall use such CONFIDENTIAL INFORMATION only to the extent necessary for the purpose of the performance of its services under this AGREEMENT, shall reproduce CONFIDENTIAL INFORMATION only to the extent necessary for such purpose, shall restrict disclosure of CONFIDENTIAL INFORMATION to its employees who have a need to know CONFIDENTIAL INFORMATION (and who are bound by policies or agreements consistent with the obligations herein) and shall not disclose CONFIDENTIAL INFORMATION to any third party without prior written approval of NIKON.
+
+6.2  Notwithstanding the foregoing, PARTICIPANT may disclose CONFIDENTIAL INFORMATION pursuant to an order by a court of law or other governmental body or agency; provided, however, that prior to any such disclosure, PARTICIPANT shall inform NIKON of such required disclosure and provide NIKON with sufficient time to seek any available protective order or other protective measure for the CONFIDENTIAL INFORMATION.
+
+6.3  CONFIDENTIAL INFORMATION shall not include information which PARTICIPANT can prove through credible evidence (a) was lawfully received by PARTICIPANT from a third party free of any obligation to keep it confidential; (b) is or becomes publicly available, other than by an unauthorized disclosure; (c) is independently developed without any reference to the CONFIDENTIAL INFORMATION, as evidenced by contemporaneous written records of PARTICIPANT; provided that, with respect to any of the foregoing exceptions, PARTICIPANT will give NIKON prompt notice prior to any such disclosure.
+
+
+7.   TERM
+     This AGREEMENT is effective until terminated pursuant to Section 8.   
+
+
+8.   TERMINATION
+     If PARTICIPANT breaches any provision hereof, NIKON shall give PARTICIPANT written notice requesting that such breach be remedied.  If such breach is not cured within thirty (30) days after PARTICIPANT'S receipt of such notice to NIKON's reasonable satisfaction, NIKON may terminate this AGREEMENT by written notice to PARTICIPANT, effective as of the date specified in such notice. PARTICIPANT may terminate this AGREEMENT for any reason upon thirty (30) days prior written notice to NIKON.
+
+
+9.   EFFECTS OF TERMINATION
+
+9.1  The rights and obligations set forth in Sections 1, 2.3, 2.4, 3, 4, 5, 6, 9, 10, 11, 12, 13, and 14 shall survive any termination of this AGREEMENT.
+     Notwithstanding the foregoing, the license granted to PARTICIPANT under Section 2.1(c) shall survive any termination of this Agreement to the extent the SOFTWARE is incorporated into the PARTICIPANT SOFTWARE which is delivered to a third party up to the termination of this AGREEMENT.
+
+9.2  No claims by PARTICIPANT for compensation shall be made by reason of the termination of this AGREEMENT.
+
+9.3  Upon termination of this AGREEMENT, PARTICIPANT shall immediately return to NIKON, or destroy in NIKON'S sole discretion, all copies of the SOFTWARE in PARTICIPANT'S possession as of the date of such termination.
+
+
+10.  PARTIAL INVALIDITY
+     If any provision of this AGREEMENT is held unenforceable by a court of competent jurisdiction, that provision shall be enforced to the maximum extent permissible so as to effect the intent of the parties, and the remainder of this AGREEMENT shall continue in full force and effect.
+
+
+11.  ENTIRE AGREEMENT
+     This AGREEMENT constitutes the entire and only agreement between NIKON and PARTICIPANT and supersedes all previous negotiations, discussions, understandings, representations, agreements, commitments and so forth, whether written or oral, between NIKON and PARTICIPANT.
+
+
+12.  ASSIGNMENT
+     Neither party shall assign this AGREEMENT or any of its rights or duties hereunder without the prior written consent of the other party, and this AGREEMENT shall be binding upon and shall inure to the benefit of the parties' respective successors and assigns.
+
+
+13.  GOVERNING LAW 
+     This Agreement is governed by and shall be construed in accordance with the laws of Japan; provided that in the event that Japanese law is not deemed applicable to this Agreement for any reason in the country where you obtained the SOFTWARE, this Agreement shall be governed and construed in accordance with the laws of the country where you obtained the SOFTWARE.  PARTICIPANT consents to service of process in any action arising from this Agreement by regular mail or other commercially reasonable means of receipted delivery.  The parties agree that any action arising out of or relating to this AGREEMENT shall be maintained in the same jurisdiction.  
+
+
+14.  CAPTIONS
+     The captions are interested only as a matter of convenience and for reference and in no way define, limit or otherwise describe the scope or interest of this AGREEMENT.
+
+
+May 26, 2008 DSC Command & Module SDK-Eng-01

@@ -12,6 +12,9 @@
 #include <QImage>
 #include <QStringList>
 #include <QFutureWatcher>
+#include <QBuffer>
+#include <QMessageBox>
+
 #include "MaidObject.h"
 
 void CALLPASCAL CALLBACK eventProc(NKREF ref, ULONG ulEvent, NKPARAM data);
