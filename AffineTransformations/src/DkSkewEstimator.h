@@ -31,8 +31,9 @@
 #include <QImage>
 #include <QtCore/qmath.h>
 #include <QGlobal.h>
-#include <QTime>
-#include<QVector3D>
+#include <QVector3D>
+#include <QVector4D>
+#include <cmath>
 
 #include "DkImageStorage.h"
 
@@ -68,10 +69,12 @@ public:
 		dir_end,
 	};
 
-	DkSkewEstimator(QImage inImage);
+	DkSkewEstimator();
 	~DkSkewEstimator();
 
 	double getSkewAngle();
+	QVector<QVector4D> getLines();
+	void setImage(QImage inImage);
 
 private: 
 	cv::Mat computeSeparability(cv::Mat integral, cv::Mat integralSq, int direction);
@@ -85,10 +88,14 @@ private:
 	int delta;
 	double sigma;
 	double sepThr;
-	double epsilon;
+	int epsilon;
 	int kMax;
-
+	int minLineLength;
+	int minLineProjLength;
+	
+	QVector<QVector4D> selectedLines;
 	cv::Mat matImg;
+	int rotationFactor;
 };
 
 };

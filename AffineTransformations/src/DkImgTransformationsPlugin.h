@@ -45,6 +45,7 @@
 #include <QSlider>
 #include <QPushButton>
 #include <QtCore/qmath.h>
+#include <QVector4D>
 
 #include "DkPluginInterface.h"
 #include "DkNoMacs.h"
@@ -155,6 +156,7 @@ protected:
 	double imgRatioAngle;
 	QCursor rotatingCursor;
 	bool rotCropEnabled;
+	DkSkewEstimator skewEstimator;
 };
 
 

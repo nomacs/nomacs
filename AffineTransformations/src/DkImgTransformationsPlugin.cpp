@@ -219,6 +219,7 @@ void DkImgTransformationsViewPort::init() {
 	rotCropEnabled = false;
 
 	intrRect = new DkInteractionRects(this);
+	skewEstimator = DkSkewEstimator();
 
 	imgTransformationsToolbar = new DkImgTransformationsToolBar(tr("ImgTransformations Toolbar"), defaultMode, this);
 
@@ -495,6 +496,14 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 		intrRect->draw(&painter);
 	} 
 	else if (selectedMode == mode_rotate) {
+
+		QPen linePen(Qt::green, 2, Qt::SolidLine);
+		painter.setPen(linePen);
+		QVector<QVector4D> lines = skewEstimator.getLines();
+		for (int i = 0; i < lines.size(); i++) {
+			painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
+		}
+
 		painter.restore();
 		if (rotCropEnabled) {
 			QSize cropSize = QSize();
@@ -667,8 +676,10 @@ void DkImgTransformationsViewPort::calculateAutoRotation() {
 			QImage img = viewport->getImage();
 
 			if (img.width() > 10 && img.height() > 10) {
-				DkSkewEstimator skewEstimator = DkSkewEstimator(img);
+				
+				skewEstimator.setImage(img);
 				rotationValue = skewEstimator.getSkewAngle();
+				if (rotationValue < 0) rotationValue += 360;
 				imgTransformationsToolbar->setRotationValue(rotationValue);
 
 				return;

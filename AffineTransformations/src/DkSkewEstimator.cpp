@@ -1,5 +1,5 @@
 /*******************************************************************************************************
- DkImgTransformationsPlugin.cpp
+ DkSkewEstimator.cpp
  Created on:	28.06.2014
 
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
@@ -29,69 +29,87 @@
 
 namespace nmc {
 
-DkSkewEstimator::DkSkewEstimator(QImage inImage) {
+DkSkewEstimator::DkSkewEstimator() {
 
 	// method parameters
-	nIter = 300;
+	nIter = 200;
 	sigma = 0.3;
 	sepThr = 0.1,
 	epsilon = 2;
 	kMax = 7;
+	sepDims = QSize(0,0); // based on image size
+	delta = 0; // based on image size
+	minLineLength = 10;
+	minLineProjLength = minLineLength/4;
+	rotationFactor = 1;
 
-	matImg = DkImage::qImage2Mat(inImage);
-	
-	sepDims = QSize(qRound(inImage.width()/1430.0*49.0),qRound(inImage.height()/700.0*12.0));
-	delta = qRound(inImage.height()/1430.0*20.0);
-
-	if (inImage.width() < inImage.height()) {
-
-		matImg = matImg.t();
-		sepDims = QSize(qRound(inImage.width()/1430.0*49.0),qRound(inImage.height()/700.0*12.0));
-		delta = qRound(inImage.height()/1430.0*20.0);
-	}
-
-	if (sepDims.width() < 1) sepDims.setWidth(1);
-	if (sepDims.height() < 1) sepDims.setHeight(1);
-
-	QTime time = QTime::currentTime();
-	qsrand((uint)time.msec());
+	selectedLines.clear();
 }
 
 DkSkewEstimator::~DkSkewEstimator() {
 
 }
 
+void DkSkewEstimator::setImage(QImage inImage) {
+
+	matImg = DkImage::qImage2Mat(inImage);
+	
+	sepDims = QSize(qRound(inImage.width()/1430.0*49.0),qRound(inImage.height()/700.0*12.0));
+	delta = qRound(inImage.width()/1430.0*20.0);
+	minLineLength = qRound(inImage.width()/1430.0 * 20.0);
+	rotationFactor = 1;
+
+	if (inImage.width() < inImage.height()) {
+
+		matImg = matImg.t();
+		sepDims = QSize(qRound(inImage.width()/1430.0*49.0),qRound(inImage.height()/700.0*12.0));
+		delta = qRound(inImage.height()/1430.0*20.0);
+		minLineLength = qRound(inImage.height()/1430.0 * 20.0);
+		rotationFactor = -1;
+	}
+
+	if (sepDims.width() < 1) sepDims.setWidth(1);
+	if (sepDims.height() < 1) sepDims.setHeight(1);
+
+	minLineProjLength = minLineLength/4;
+}
+
 double DkSkewEstimator::getSkewAngle() {
 
-	cv::Mat matGray;
+	if (!matImg.empty()) {
+		cv::Mat matGray;
 
-	if (matImg.channels() > 1)
-		cv::cvtColor(matImg, matGray, CV_BGR2GRAY);
-	else matGray = matImg;
+		if (matImg.channels() > 1)
+			cv::cvtColor(matImg, matGray, CV_BGR2GRAY);
+		else matGray = matImg;
 
-	cv::Mat integral, integralSq;
-	cv::integral(matGray, integral, integralSq, CV_64F);
-	if (integral.channels() > 1) qDebug() << "Error! integral image has more than one channel";
+		cv::Mat integral, integralSq;
+		cv::integral(matGray, integral, integralSq, CV_64F);
+		if (integral.channels() > 1) qDebug() << "Error! integral image has more than one channel";
 
-	cv::Mat separabilityHor = computeSeparability(integral, integralSq, dir_horizontal);
-	cv::Mat separabilityVer = computeSeparability(integral, integralSq,  dir_vertical);
+		cv::Mat separabilityHor = computeSeparability(integral, integralSq, dir_horizontal);
+		cv::Mat separabilityVer = computeSeparability(integral, integralSq,  dir_vertical);
 
-	double min, max;
-	cv::minMaxLoc(separabilityHor, &min, &max);	
-	cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, sepThr * max, dir_horizontal);
-	//cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, 0.1, dir_horizontal);
-	cv::minMaxLoc(separabilityVer, &min, &max);
-	cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, sepThr * max, dir_vertical);
-	//cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, 0.1, dir_vertical);
+		double min, max;
+		cv::minMaxLoc(separabilityHor, &min, &max);	
+		cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, sepThr * max, dir_horizontal);
+		//cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, 0.1, dir_horizontal);
+		cv::minMaxLoc(separabilityVer, &min, &max);
+		cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, sepThr * max, dir_vertical);
+		//cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, 0.1, dir_vertical);
 
-	QVector<QVector3D> weightsHor = computeWeights(edgeMapHor, dir_horizontal);
-	qDebug() << weightsHor.size();
-	QVector<QVector3D> weightsVer = computeWeights(edgeMapVer, dir_vertical);
-	qDebug() << weightsVer.size();
+		selectedLines.clear();
 
-	weightsHor += weightsVer;
+		QVector<QVector3D> weightsHor = computeWeights(edgeMapHor, dir_horizontal);
+		qDebug() << weightsHor.size();
+		QVector<QVector3D> weightsVer = computeWeights(edgeMapVer, dir_vertical);
+		qDebug() << weightsVer.size();
 
-	return computeSkewAngle(weightsHor, qSqrt(matGray.rows*matGray.rows + matGray.cols*matGray.cols));
+		weightsHor += weightsVer;
+
+		return computeSkewAngle(weightsHor, qSqrt(matGray.rows*matGray.rows + matGray.cols*matGray.cols));
+	}
+	else return 0;
 }
 
 cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralSq, int direction) {
@@ -229,7 +247,8 @@ int DkSkewEstimator::randInt(int low, int high) {
 QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int direction) {
 
 	vector<Vec4i> lines;
-	HoughLinesP(edgeMap, lines, 1, CV_PI/180, 50, 20, 20 ); //params: rho resolution, theta resolution, threshold, min Line length, max line gap
+	QVector4D maxLine = QVector4D();
+	HoughLinesP(edgeMap, lines, 1, CV_PI/180, 50, minLineLength, 20 ); //params: rho resolution, theta resolution, threshold, min Line length, max line gap
 
 	QVector<QVector3D> computedWeights = QVector<QVector3D>();
 
@@ -240,106 +259,138 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 
 		if (direction == dir_horizontal) {
 
-			for (int K = 0; K < nIter; K++) {
-		
-				int xr1 = randInt(l[0],l[2]);
-				while(xr1 >= edgeMap.cols) xr1 = randInt(l[0],l[2]);
-				int xr2 = randInt(l[0],l[2]);
-				while (xr1 == xr2 || xr2 >= edgeMap.cols) xr2 = randInt(l[0],l[2]); // the line should be enough long
+			int K = 0;
 
-				double slope = (l[3] - l[1]) / (double)(l[2] - l[0]);
-				double inters = l[1] - slope * l[0];
-				int y1 = qRound(slope * xr1 + inters);
-				int y2 = qRound(slope * xr2 + inters);
+			if (l[2] < l[0]) l = Vec4i(l[2],l[3],l[0],l[1]);
 
-				if (y1 >= edgeMap.rows) y1 = edgeMap.rows - 1; // doesn't happen very often - just a precaution
-				if (y2 >= edgeMap.rows) y2 = edgeMap.rows - 1;
+			int x1 = l[0];
+			int x2 = l[2];
+
+			while(x2 > edgeMap.cols) x2--;
+			while(x1 < 0) x1--;
+
+			double lineAngle =  atan2((l[3] - l[1]), (l[2] - l[0]));
+			double slope = qTan(lineAngle);
+			//qDebug() << lineAngle << "  slope: "  <<slope;
+			//qDebug() << l[0] << " " << l[1] << " " << l[2]<< " " << l[3] ;
+
+			while (qAbs(x1-x2) > minLineProjLength && K < nIter) {
+
+				int y1 = qRound(l[1] + (x1 - l[0]) * slope);
+				int y2 = qRound(l[1] + (x2 - l[0]) * slope);
 
 				QVector<int> yrPoss1 = QVector<int>();
-				for (int di = -delta; di <= delta; di++) {
-					if (edgeMap.at<uchar>(y1 + di, xr1) == 1) yrPoss1.append(y1+di);
+				for (int di = -delta; di <= delta && y1 + di < edgeMap.rows; di++) {
+					if (y1 + di >= 0)
+						if (edgeMap.at<uchar>(y1 + di, x1) == 1) yrPoss1.append(y1+di);
 				}
 				
 				QVector<int> yrPoss2 = QVector<int>();
-				for (int di = -delta; di <= delta; di++) {
-					if (edgeMap.at<uchar>(y2 + di, xr2) == 1) yrPoss2.append(y2+di);
+				for (int di = -delta; di <= delta && y2 + di < edgeMap.rows; di++) {
+					if (y2 + di >= 0)
+						if (edgeMap.at<uchar>(y2 + di, x2) == 1) yrPoss2.append(y2+di);
 				}
 
 				if (yrPoss1.size() > 0 && yrPoss2.size() > 0) {
+					for (int y1i = 0; y1i < yrPoss1.size(); y1i++) {
 
-					int yr1 = yrPoss1.at(randInt(0,yrPoss1.size()-1));
-					int yr2 = yrPoss2.at(randInt(0,yrPoss2.size()-1));
+						int ys1 = yrPoss1.at(y1i);
+						for (int y2i = 0; y2i < yrPoss2.size(); y2i++) {
+							int ys2 = yrPoss2.at(y2i);
 
-					slope = (yr2 - yr1) / (double)(xr2 - xr1);
-					inters = yr2 - slope * xr2;
-			
-					double sumVal = 0;
-					for (int xi = xr1; xi <= xr2; xi++)
-						for (double yi = -epsilon; yi <= epsilon + 0.001; yi += epsilon/2.0) {
-							int xc = qRound(slope * xi + inters) + yi;
-							if(xc < edgeMap.rows && xi < edgeMap.cols && xc > 0 && xi > 0) sumVal += edgeMap.at<uchar>(xc, xi);
-						}
+							double sumVal = 0;
+							for (int xi = x1; xi <= x2; xi++)
+								for (int yi = -epsilon; yi <= epsilon; yi++) {
+									int yc = qRound(l[1] + (xi - l[0]) * slope) + yi;
+									if(yc < edgeMap.rows && xi < edgeMap.cols && yc > 0 && xi > 0) sumVal += edgeMap.at<uchar>(yc, xi);
+								}
 
-					if (sumVal > currMax.x()) {
+							if (sumVal > currMax.x()) {
 				
-						QPointF centerPoint = QPointF(0.5*(xr1 + xr2), 0.5*(yr1 + yr2));
-						currMax = QVector3D(sumVal, slope, (float) qSqrt( (edgeMap.cols*0.5 - centerPoint.x()) * (edgeMap.cols*0.5 - centerPoint.x()) + (edgeMap.rows*0.5 - centerPoint.y()) * (edgeMap.rows*0.5 - centerPoint.y()) ));
+								QPointF centerPoint = QPointF(0.5*(x1 + x2), 0.5*(y1 + y2));
+								currMax = QVector3D(sumVal, - rotationFactor * lineAngle, (float) qSqrt( (edgeMap.cols*0.5 - centerPoint.x()) * (edgeMap.cols*0.5 - centerPoint.x()) + (edgeMap.rows*0.5 - centerPoint.y()) * (edgeMap.rows*0.5 - centerPoint.y()) ));
+								maxLine = QVector4D(x1, y1, x2, y2);
+								//qDebug() << maxLine;
+							}
+
+							K++;
+						}
 					}
 				}
+
+				x1++;
+				x2--;				
 			}
 		}
 		else {
 
-			for (int K = 0; K < nIter; K++) {
+			int K = 0;
 
-				int xr1 = randInt(l[1],l[3]);
-				while(xr1 >= edgeMap.rows) xr1 = randInt(l[1],l[3]);
-				int xr2 = randInt(l[1],l[3]);
-				while (xr1 == xr2 || xr2 >= edgeMap.rows) xr2 = randInt(l[1],l[3]);
+			if (l[3] < l[1]) l = Vec4i(l[2],l[3],l[0],l[1]);
 
-				double slope = (l[2] - l[0]) / (double)(l[3] - l[1]);
-				double inters = l[0] - slope * l[1];
-				int y1 = qRound(slope * xr1 + inters);
-				int y2 = qRound(slope * xr2 + inters);
+			int x1 = l[1];
+			int x2 = l[3];
 
-				if (y1 >= edgeMap.cols) y1 = edgeMap.cols - 1; // doesn't happen very often - just a precaution
-				if (y2 >= edgeMap.cols) y2 = edgeMap.cols - 1;
+			while(x2 > edgeMap.rows) x2--;
+			while(x1 < 0) x1--;
+
+			double lineAngle =  atan2((l[2] - l[0]), (l[3] - l[1]));
+			double slope = qTan(lineAngle);
+
+			while (qAbs(x1-x2) > minLineProjLength && K < nIter) {
+
+				int y1 = qRound(l[0] + (x1 - l[1]) * slope);
+				int y2 = qRound(l[0] + (x2 - l[1]) * slope);
 
 				QVector<int> yrPoss1 = QVector<int>();
-				for (int di = -delta; di <= delta; di++) {
-					if (edgeMap.at<uchar>(xr1, y1 + di) == 1) yrPoss1.append(y1+di);
+				for (int di = -delta; di <= delta && y1 + di < edgeMap.cols; di++) {
+					if (y1 + di >= 0)
+						if (edgeMap.at<uchar>(x1, y1 + di) == 1) yrPoss1.append(y1+di);
 				}
 				
 				QVector<int> yrPoss2 = QVector<int>();
-				for (int di = -delta; di <= delta; di++) {
-					if (edgeMap.at<uchar>(xr2, y2 + di) == 1) yrPoss2.append(y2+di);
+				for (int di = -delta; di <= delta && y2 + di < edgeMap.cols; di++) {
+					if (y2 + di >= 0)
+						if (edgeMap.at<uchar>(x2, y2 + di) == 1) yrPoss2.append(y2+di);
 				}
 
 				if (yrPoss1.size() > 0 && yrPoss2.size() > 0) {
+					for (int y1i = 0; y1i < yrPoss1.size(); y1i++) {
 
-					int yr1 = yrPoss1.at(randInt(0,yrPoss1.size()-1));
-					int yr2 = yrPoss2.at(randInt(0,yrPoss2.size()-1));
+						int ys1 = yrPoss1.at(y1i);
+						for (int y2i = 0; y2i < yrPoss2.size(); y2i++) {
+							int ys2 = yrPoss2.at(y2i);
 
-					slope = (yr2 - yr1) / (double)(xr2 - xr1);
-					inters = yr2 - slope * xr2;
-			
-					double sumVal = 0;
-					for (int xi = xr1; xi <= xr2; xi++)
-						for (double yi = -epsilon; yi <= epsilon + 0.001; yi += epsilon/2.0) {
-							int yc = qRound(slope * xi + inters) + yi;
-							if(yc < edgeMap.cols && xi < edgeMap.rows && yc > 0 && xi > 0) sumVal += edgeMap.at<uchar>(xi, yc);
-						}
+							double sumVal = 0;
+							for (int xi = x1; xi <= x2; xi++)
+								for (int yi = -epsilon; yi <= epsilon; yi++) {
+									int yc = qRound(l[0] + (xi - l[1]) * slope) + yi;
+									if(yc < edgeMap.cols && xi < edgeMap.rows && yc > 0 && xi > 0) sumVal += edgeMap.at<uchar>(xi, yc);
+								}
 
-					if (sumVal > currMax.x()) {
+							if (sumVal > currMax.x()) {
 				
-						QPointF centerPoint = QPointF(0.5*(xr1 + xr2), 0.5*(yr1 + yr2));
-						currMax = QVector3D(sumVal, slope, (float) qSqrt( (edgeMap.rows *0.5 - centerPoint.x()) * (edgeMap.rows*0.5 - centerPoint.x()) + (edgeMap.cols*0.5 - centerPoint.y()) * (edgeMap.cols*0.5 - centerPoint.y()) ));
+								QPointF centerPoint = QPointF(0.5*(x1 + x2), 0.5*(y1 + y2));
+								currMax = QVector3D(sumVal, rotationFactor * lineAngle, (float) qSqrt( (edgeMap.rows *0.5 - centerPoint.x()) * (edgeMap.rows*0.5 - centerPoint.x()) + (edgeMap.cols*0.5 - centerPoint.y()) * (edgeMap.cols*0.5 - centerPoint.y()) ));
+								maxLine = QVector4D(y1, x1, y2, x2);
+								//qDebug() << maxLine;
+							}
+
+							K++;
+						}
 					}
 				}
+
+				x1++;
+				x2--;				
 			}
 		}
 
-		if (currMax.x() > 0) computedWeights.append(currMax);
+		if (currMax.x() > 0) {
+			computedWeights.append(currMax);
+			if (rotationFactor == -1) maxLine = QVector4D(maxLine.y(), maxLine.x(), maxLine.w(), maxLine.z());
+			selectedLines.push_back(maxLine);
+		}
 	}
 	return computedWeights;
 }
@@ -354,21 +405,22 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 		if (weights.at(i).x() > maxWeight)
 			maxWeight = weights.at(i).x();
 
-	double eta = 0.5 * maxWeight;
+	double eta = 0.35 * maxWeight;
 
 	QVector<QVector3D> thrWeights = QVector<QVector3D> ();
 	for (int i = 0; i < weights.size(); i++)
-		if (weights.at(i).x() > eta)
-			thrWeights.append(QVector3D((weights.at(i).x() - eta) * (weights.at(i).x() - eta), qAtan(weights.at(i).y()) / M_PI * 180, weights.at(i).z() / imgDiagonal));
+		if (weights.at(i).x() > eta) {
+			thrWeights.append(QVector3D((weights.at(i).x() - eta) * (weights.at(i).x() - eta), weights.at(i).y() / M_PI * 180, weights.at(i).z() / imgDiagonal));
+			//qDebug() << weights.at(i).y() / M_PI * 180;
+		}
 
 	QVector<QPointF> saliencyVec = QVector<QPointF>();
 
-	for (double skewAngle = -20; skewAngle <= 20.001; skewAngle += 0.1) {
+	for (double skewAngle = -30; skewAngle <= 30.001; skewAngle += 0.1) {
 
 		double saliency = 0;
 
 		for (int i = 0; i < thrWeights.size(); i++) {
-
 			saliency += thrWeights.at(i).x() * qExp(-thrWeights.at(i).z()) * qExp(- 0.5 * ((skewAngle - thrWeights.at(i).y()) * (skewAngle - thrWeights.at(i).y())) / (sigma * sigma));
 		}
 
@@ -389,10 +441,12 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 
 	if (maxSaliency == 0) return 0;
 
-	salSkewAngle = -salSkewAngle;
-	if (salSkewAngle < 0) salSkewAngle += 360;
-
 	return salSkewAngle;
+}
+
+QVector<QVector4D> DkSkewEstimator::getLines() {
+
+	return selectedLines;
 }
 
 };
