@@ -3760,13 +3760,12 @@ void DkNoMacs::runLoadedPlugin() {
 
 	   currRunningPlugin = key;
 
-	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(applyPluginChanges(bool, bool)));
+	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(closePlugin(bool, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(loadFile(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
 	   connect(vPlugin->getViewPort(), SIGNAL(loadImage(QImage)), viewport(), SLOT(setImage(QImage)));
 	   
 	   viewport()->getController()->setPluginWidget(vPlugin, false);
-	   
    }
    else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
 
@@ -3787,7 +3786,7 @@ void DkNoMacs::initPluginManager() {
 #endif // WITH_PLUGINS
 }
 
-void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
+void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 #ifdef WITH_PLUGINS
 
 	if (currRunningPlugin.isEmpty())
@@ -3798,8 +3797,6 @@ void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
 
 	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
 
-	if (!cPlugin->closesOnImageChange())
-		return;
 
 	currRunningPlugin = QString();
 	bool isSaveNeeded = false;
@@ -3836,15 +3833,31 @@ void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
 		}				
 		else viewport()->setEditedImage(pluginImage);
 	}
-	
+
 	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
-	
+
 	viewport()->getController()->setPluginWidget(vPlugin, true);
 
 	if(!alreadySaving && isSaveNeeded) saveFileAs();
 
 	viewport()->setPluginImageWasApplied(true);
 
+#endif // WITH_PLUGINS
+}
+
+void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
+
+#ifdef WITH_PLUGINS
+	if (currRunningPlugin.isEmpty())
+		return;
+
+	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
+
+	// does the plugin want to be closed on image changes?
+	if (!cPlugin->closesOnImageChange())
+		return;
+
+	closePlugin(askForSaving, alreadySaving);
 #endif // WITH_PLUGINS
 }
 

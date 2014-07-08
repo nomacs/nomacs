@@ -33,6 +33,8 @@
 #include <QGraphicsView>
 #include <QToolBar>
 #include <QFileInfo>
+#include <QApplication>
+#include <QMainWindow>
 
 namespace nmc {
 
@@ -64,6 +66,23 @@ public:
     virtual QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 	virtual bool closesOnImageChange() {return true;};
+	QMainWindow* getMainWidnow() const {
+
+		QWidgetList widgets = QApplication::topLevelWidgets();
+
+		QMainWindow* win = 0;
+
+		for (int idx = 0; idx < widgets.size(); idx++) {
+
+			if (widgets.at(idx)->inherits("QMainWindow")) {
+				win = qobject_cast<QMainWindow*>(widgets.at(idx));
+				break;
+			}
+		}
+
+		return win;
+	}
+
 
 };
 

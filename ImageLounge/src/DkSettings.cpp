@@ -673,7 +673,7 @@ void DkSettings::setToDefaultSettings() {
 
 	slideShow_p.filter = 0;
 	slideShow_p.time = 3.0;
-	slideShow_p.moveSpeed = 1;
+	slideShow_p.moveSpeed = 0;		// TODO: set to 1 for finishing slideshow
 	slideShow_p.display = QBitArray(display_end, true);
 	slideShow_p.backgroundColor = QColor(86, 86, 90, 255);
 	slideShow_p.silentFullscreen = true;

@@ -566,6 +566,7 @@ public slots:
 	void runLoadedPlugin();
 	void openPluginManager();
 	void initPluginManager();
+	void closePlugin(bool askForSaving, bool alreadySaving);
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
 	void clearFolderHistory();
