@@ -195,12 +195,13 @@ DkPluginViewPort* DkNikonPlugin::getViewPort() {
 
 				connect(camControls, SIGNAL(updateImage(QImage)), getViewPort(), SIGNAL(loadImage(QImage)));
 				connect(camControls, SIGNAL(loadFile(QFileInfo)), getViewPort(), SIGNAL(loadFile(QFileInfo)));
+				connect(camControls, SIGNAL(closeSignal()), getViewPort(), SIGNAL(closePlugin()));
 			}
 
 			camControls->setVisible(true);		
 
 		} else {
-			QMessageBox warningDialog(mainWindow);	// TODO: dirty
+			QMessageBox warningDialog(mainWindow);
 			warningDialog.setWindowTitle(tr("MAID Library could not be opened"));
 			warningDialog.setText(tr("The MAID library could not be opened. Camera controls will be disabled."));
 			warningDialog.setIcon(QMessageBox::Warning);
@@ -214,29 +215,13 @@ DkPluginViewPort* DkNikonPlugin::getViewPort() {
 	return viewport;
 }
 
-QMainWindow* DkNikonPlugin::getMainWidnow() const {
-
-	QWidgetList widgets = QApplication::topLevelWidgets();
-
-	QMainWindow* win = 0;
-
-	for (int idx = 0; idx < widgets.size(); idx++) {
-		
-		if (widgets.at(idx)->inherits("QMainWindow")) {
-			win = qobject_cast<QMainWindow*>(widgets.at(idx));
-			break;
-		}
-	}
-
-	return win;
-}
-
 /**
 * sets the viewport pointer to NULL after the viewport is destroyed
 **/
 void DkNikonPlugin::viewportDestroyed() {
 
 	viewport = 0;
+	camControls = 0;
 }
 
 void DkNikonPlugin::deleteViewPort() {
@@ -245,6 +230,17 @@ void DkNikonPlugin::deleteViewPort() {
 		viewport->deleteLater();
 		viewport = 0;
 	}
+
+	if (camControls) {
+		camControls->deleteLater();
+		camControls = 0;
+	}
+
+	if (maidFacade) {
+		delete maidFacade;
+		maidFacade = 0;
+	}
+
 }
 
 /* macro for exporting plugin */
@@ -713,6 +709,7 @@ void DkCamControls::closeEvent(QCloseEvent* event) {
 	}
 
 	// TODO: notify nomacs to close the plugin and release everything
+	emit closeSignal();
 
 	//writeSettings();
 }

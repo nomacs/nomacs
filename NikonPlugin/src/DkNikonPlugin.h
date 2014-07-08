@@ -98,7 +98,6 @@ public:
 	virtual bool closesOnImageChange() {return false;};
 
 protected:
-	QMainWindow* getMainWidnow() const;
 	DkPluginViewPort* viewport;
 	DkCamControls* camControls;
 	MaidFacade* maidFacade;
@@ -136,6 +135,7 @@ signals:
 	void statusChanged();
 	void updateImage(QImage image);
 	void loadFile(QFileInfo file);
+	void closeSignal();
 
 public slots:
 	void connectDevice();
