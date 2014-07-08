@@ -59,9 +59,7 @@ DkPaintPlugin::~DkPaintPlugin() {
 * Returns unique ID for the generated dll
 **/
 QString DkPaintPlugin::pluginID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QString("ad970ef36cc24737afd2b53ad015ff0d");
+	return PLUGIN_ID;
 };
 
 
@@ -94,7 +92,7 @@ QImage DkPaintPlugin::pluginDescriptionImage() const {
 **/
 QString DkPaintPlugin::pluginVersion() const {
 
-   return "1.1.0";
+   return PLUGIN_VERSION;
 };
 
 /**

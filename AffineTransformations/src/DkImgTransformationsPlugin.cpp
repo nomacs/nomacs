@@ -60,8 +60,7 @@ DkImgTransformationsPlugin::~DkImgTransformationsPlugin() {
 **/
 QString DkImgTransformationsPlugin::pluginID() const {
 
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QString("7a4a50a45ddb408ba46a16a40e6518fd");
+	return PLUGIN_ID;
 };
 
 
@@ -94,7 +93,7 @@ QImage DkImgTransformationsPlugin::pluginDescriptionImage() const {
 **/
 QString DkImgTransformationsPlugin::pluginVersion() const {
 
-   return "1.0.0";
+   return PLUGIN_VERSION;
 };
 
 /**

@@ -5,11 +5,19 @@ PROJECT(nomacs-plugins)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
+# MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
+
 SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
+SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
 IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 	MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 ENDIF()
+
+if(CMAKE_CL_64)
+	SET(PLUGIN_ARCHITECTURE "x64")
+else()
+	SET(PLUGIN_ARCHITECTURE "x86")
+endif()
 
 
 OPTION (ENABLE_JP2K "Compile JPEG2000 plugin (jasper and qtjp2)" ON)

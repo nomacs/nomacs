@@ -1,6 +1,14 @@
 
 PROJECT(fakeMiniaturesPlugin)
 
+######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
+set(PLUGIN_VERSION 1.0.0)
+set(PLUGIN_ID "a2ac7b68866b4ab29fb1df3e170b8f0d") #GUID without hyphens generated at http://www.guidgenerator.com/
+######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
+
+add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
+add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
+
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)
@@ -16,8 +24,6 @@ IF(${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 	MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 ENDIF()
 
-set(PLUGIN_VERSION 1.0.0)
-add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     message(STATUS "A debug build. -DDEBUG is defined")
@@ -90,12 +96,35 @@ QT4_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
 QT4_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
 
 link_directories(${OpenCV_LIBRARY_DIRS} ${NOMACS_BUILD_DIRECTORY}/$(CONFIGURATION) ${NOMACS_BUILD_DIRECTORY}/libs)
-ADD_LIBRARY(fakeMiniaturesPlugin SHARED ${PLUGIN_SOURCES} ${PLUGIN_MOC_SRC} ${PLUGIN_RCC} ${PLUGIN_HEADERS})	
-target_link_libraries(fakeMiniaturesPlugin ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OpenCV_LIBS} ${NOMACS_LIB})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_MOC_SRC} ${PLUGIN_RCC} ${PLUGIN_HEADERS})	
+target_link_libraries(${PROJECT_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} ${OpenCV_LIBS} ${NOMACS_LIB})
 
 IF (MSVC)
-	add_custom_command(TARGET fakeMiniaturesPlugin POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/)
-	add_custom_command(TARGET fakeMiniaturesPlugin POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fakeMiniaturesPlugin> ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/fakeMiniaturesPlugin.dll DESTINATION ${NOMACS_BUILD_DIRECTORY}/ReallyRelease/plugins CONFIGURATIONS Release)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/)
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:flipPlugin> ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/plugins/)
+	
+	# write dll to d.txt (used for automated plugin download)
+	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/d.txt)
+		file(READ ${CMAKE_CURRENT_SOURCE_DIR}/d.txt fileContent)	
+		if(CMAKE_CL_64)
+			string (REGEX MATCHALL "^x64" matches ${fileContent})
+			if(NOT matches)
+				file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/d.txt "x64 ${PROJECT_NAME}.dll\n")
+			endif()
+		else()
+			string (REGEX MATCHALL "^x86" matches ${fileContent})		
+			if(NOT ${matches})
+				file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/d.txt "x86 ${PROJECT_NAME}.dll\n")
+			endif()	
+		endif(CMAKE_CL_64)
+	else()
+		if(CMAKE_CL_64)
+			file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/d.txt "x64 ${PROJECT_NAME}.dll\n")
+		else()
+			file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/d.txt "x86 ${PROJECT_NAME}.dll\n")
+		endif()	
+	endif()
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/flipPlugin.dll DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/${PLUGIN_ARCHITECTURE}/ CONFIGURATIONS Release)
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/d.txt DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/ CONFIGURATIONS Release)
 	
 ENDIF(MSVC)

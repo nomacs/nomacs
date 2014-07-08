@@ -57,9 +57,7 @@ DkThresholdPlugin::~DkThresholdPlugin() {
 * Returns unique ID for the generated dll
 **/
 QString DkThresholdPlugin::pluginID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QString("70e2fbe0c913462e846bb91da201ceca");
+	return PLUGIN_ID;
 };
 
 
@@ -92,7 +90,7 @@ QImage DkThresholdPlugin::pluginDescriptionImage() const {
 **/
 QString DkThresholdPlugin::pluginVersion() const {
 
-   return "1.0.0";
+   return PLUGIN_VERSION;
 };
 
 /**

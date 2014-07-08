@@ -70,9 +70,7 @@ DkNikonPlugin::~DkNikonPlugin() {
 * Returns unique ID for the generated dll
 **/
 QString DkNikonPlugin::pluginID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QString("87c51045b38744caa9f389e000d64f3f");
+	return PLUGIN_ID;
 };
 
 
@@ -105,7 +103,7 @@ QImage DkNikonPlugin::pluginDescriptionImage() const {
 **/
 QString DkNikonPlugin::pluginVersion() const {
 
-   return "1.0.0";
+   return PLUGIN_VERSION;
 };
 
 /**

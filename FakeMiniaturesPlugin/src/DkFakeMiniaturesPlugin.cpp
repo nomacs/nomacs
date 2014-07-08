@@ -33,9 +33,7 @@ namespace nmc {
 * Returns unique ID for the generated dll
 **/
 QString DkFakeMiniaturesPlugin::pluginID() const {
-
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QString("a2ac7b68866b4ab29fb1df3e170b8f0d");
+	return PLUGIN_ID;
 };
 
 /**
@@ -73,7 +71,7 @@ QImage DkFakeMiniaturesPlugin::pluginDescriptionImage() const {
 **/
 QString DkFakeMiniaturesPlugin::pluginVersion() const {
 
-   return "1.0.0";
+   return PLUGIN_VERSION;
 };
 
 /**
