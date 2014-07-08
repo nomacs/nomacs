@@ -68,6 +68,7 @@ void MaidFacade::setCapValueChangeCallback(std::function<void(uint32_t)> capValu
  */
 std::set<uint32_t> MaidFacade::listDevices() {
 	auto& devicesV = moduleObject->getChildren();
+
 	return std::set<uint32_t>(devicesV.begin(), devicesV.end());
 }
 
