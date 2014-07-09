@@ -198,6 +198,7 @@ void DkPluginManager::loadPlugins() {
 	pluginLoaders.clear();
 
 	QDir pluginsDir = DkSettings::global.pluginsDir;
+	//QDir pluginsDir = QDir("C:\\VSProjects\\nomacs-plugins\\build2012x64\\FlipPlugin\\Debug");
 	//QDir pluginsDir = QDir(qApp->applicationDirPath());
     //pluginsDir.cd("plugins");
 
