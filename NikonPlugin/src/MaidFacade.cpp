@@ -51,6 +51,7 @@ bool MaidFacade::init() {
 	connect(&shootFutureWatcher, SIGNAL(finished()), this, SLOT(shootFinished()));
 	connect(&acquireFutureWatcher, SIGNAL(finished()), this, SLOT(acquireItemObjectsFinished()));
 
+	closed = false;
 	initialized = true;
 	return true;
 }
@@ -68,6 +69,9 @@ void MaidFacade::setCapValueChangeCallback(std::function<void(uint32_t)> capValu
  */
 std::set<uint32_t> MaidFacade::listDevices() {
 	auto& devicesV = moduleObject->getChildren();
+	qDebug() << "module is alive: " << moduleObject->isAlive();
+
+	qDebug() << "number of children: " << devicesV.size();
 
 	return std::set<uint32_t>(devicesV.begin(), devicesV.end());
 }
@@ -307,6 +311,12 @@ void MaidFacade::closeSource() {
 void MaidFacade::closeEverything() {
 	closeSource();
 	closeModule();
+
+	closed = true;
+}
+
+bool MaidFacade::isClosed() {
+	return closed;
 }
 
 /*!

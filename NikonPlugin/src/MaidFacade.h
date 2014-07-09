@@ -72,6 +72,7 @@ public:
 
 	bool init();
 	bool isInitialized();
+	bool isClosed();
 	void setCapValueChangeCallback(std::function<void(uint32_t)> capValueChangeCallback);
 	std::set<uint32_t> listDevices();
 	void openSource(ULONG id);
@@ -143,6 +144,7 @@ private:
 	bool currentlyAcquiringObjects;
 	bool initialized;
 	bool autoSaveNaming;
+	bool closed;
 	
 	//void closeChildren(std::unique_ptr<Maid::MaidObject> mo);
 	MaybeStringValues readPackedStringCap(ULONG capId);

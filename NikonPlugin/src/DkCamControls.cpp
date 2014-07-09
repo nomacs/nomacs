@@ -53,6 +53,8 @@ DkCamControls::DkCamControls(MaidFacade* maidFacade, const QString& title, QWidg
 }
 
 DkCamControls::~DkCamControls() {
+
+	close();
 }
 
 void DkCamControls::createLayout() {
@@ -466,6 +468,21 @@ void DkCamControls::showEvent(QShowEvent *event) {
 }
 
 void DkCamControls::closeEvent(QCloseEvent* event) {
+
+	close();
+	emit closeSignal();
+
+}
+
+void DkCamControls::close() {
+
+	// something to do here?
+	if (maidFacade->isClosed())
+		return;
+
+	if (maidFacade->isLiveViewActive())
+		onLiveView();
+
 	stopActivities();
 
 	try {
@@ -474,11 +491,6 @@ void DkCamControls::closeEvent(QCloseEvent* event) {
 		// hopefully nothing left to close
 		qDebug() << "unable to close maid objects and module";
 	}
-
-	// TODO: notify nomacs to close the plugin and release everything
-	emit closeSignal();
-
-	//writeSettings();
 }
 
 void DkCamControls::resizeEvent(QResizeEvent *event) {
