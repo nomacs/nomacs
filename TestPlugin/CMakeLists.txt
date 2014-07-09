@@ -9,12 +9,14 @@ endif(COMMAND cmake_policy)
 
 #find nomacs build directory
 MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
-SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
-SET(NOMACS_INCLUDE_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs source directory")
-
-IF(${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
-	MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
-ENDIF()
+find_package(nomacs)
+if(NOT NOMACS_FOUND)
+	SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
+	SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
+	IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
+		MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
+	ENDIF()
+endif()
 
 set(PLUGIN_VERSION 1.0.0)
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
