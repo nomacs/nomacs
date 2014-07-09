@@ -10,8 +10,8 @@ set(PLUGIN_VERSION 1.0.0)
 set(PLUGIN_ID "87c51045b38744caa9f389e000d64f3f") #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
-add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
-add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
+add_definitions(-DPLUGIN_VERSION="\\"${PLUGIN_VERSION}\\"")
+add_definitions(-DPLUGIN_ID="\\"${PLUGIN_ID}\\"")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)

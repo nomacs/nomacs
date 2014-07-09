@@ -23,7 +23,7 @@ if(NOT NOMACS_FOUND)
 endif()
 
 set(PLUGIN_VERSION 1.0.0)
-add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
+add_definitions(-DPLUGIN_VERSION="\\"${PLUGIN_VERSION}\\"")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     message(STATUS "A debug build. -DDEBUG is defined")
