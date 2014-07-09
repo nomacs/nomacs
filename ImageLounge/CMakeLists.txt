@@ -538,6 +538,7 @@ IF (EXIV2_FOUND)
 		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE")
 		set_target_properties(${DLL_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_NAME}d)
+		set_target_properties(${DLL_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_NAME})
 				
 	ELSE()
 		set(EXE_NAME ${CMAKE_PROJECT_NAME})
@@ -689,8 +690,20 @@ IF (EXIV2_FOUND)
 		# simulate autotools' "make dist"
 		add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 	ENDIF()
+	# generate configuration file
+	
+	IF(DLL_NAME)
+		get_property(NOMACS_DEBUG_NAME TARGET ${DLL_NAME} PROPERTY DEBUG_OUTPUT_NAME)
+		get_property(NOMACS_RELEASE_NAME TARGET ${DLL_NAME} PROPERTY RELEASE_OUTPUT_NAME)
+		set(NOMACS_LIBS optimized ${CMAKE_BINARY_DIR}/libs/Release/${NOMACS_RELEASE_NAME}.lib debug  ${CMAKE_BINARY_DIR}/libs/Debug/${NOMACS_DEBUG_NAME}.lib)
+	ENDIF()
+	SET(NOMACS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+	SET(NOMACS_BUILD_DIRECTORY ${CMAKE_BINARY_DIR})
+	configure_file(${NOMACS_SOURCE_DIR}/nomacs.cmake.in ${CMAKE_BINARY_DIR}/nomacsConfig.cmake)
 	
 ELSE(!EXIV2_FOUND)
 	message(WARNING "At least one library has not been found")
 ENDIF()
+
+
 
