@@ -10,6 +10,10 @@
 #
 PROJECT(nomacs)
 
+IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmakeUser.txt)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/cmakeUser.txt)
+ENDIF()
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW)
@@ -18,7 +22,6 @@ if(COMMAND cmake_policy)
 		cmake_policy(SET CMP0020 NEW)	# qt warnings
 	endif ()
 endif(COMMAND cmake_policy)
-
 
 OPTION (ENABLE_RAW "Compile with raw images support (OpenCV, libraw)" ON)
 OPTION (ENABLE_WEBP "Compile with webP support (webP)" ON)
@@ -259,7 +262,8 @@ IF (ENABLE_RAW)
                 	message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/libraw.dll and debug/libraw.lib")
         	ENDIF()
 	ENDIF(NOT LIBRAW_FOUND AND MSVC)
-	          
+
+	
 	# OpenCV
 	SET(OpenCV_LIBS "")
 	SET(OpenCV_FOUND false)
@@ -268,18 +272,28 @@ IF (ENABLE_RAW)
 		SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
 	endif(PKG_CONFIG_FOUND)
 	IF (OpenCV_LIBS STREQUAL "") 
+
+		IF (MSVC)
+			unset(OpenCV_LIB_DIR_DBG CACHE)
+			unset(OpenCV_3RDPARTY_LIB_DIR_DBG CACHE)
+			unset(OpenCV_3RDPARTY_LIB_DIR_OPT CACHE)
+			unset(OpenCV_CONFIG_PATH CACHE)
+			unset(OpenCV_LIB_DIR_DBG CACHE)
+			unset(OpenCV_LIB_DIR_OPT CACHE)
+		ENDIF ()
 		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+		
 	ENDIF()
 	IF (OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND AND MSVC) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
 		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
 		SET(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
 	ENDIF()
+	
 	IF (NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
 	ELSE()
 		add_definitions(-DWITH_OPENCV)
 	ENDIF()
-	
 	
 	if (APPLE)
 		# OpenCV has really draconian dependencies on mac (generating bundle greater tha 105MB)
@@ -675,8 +689,8 @@ IF (EXIV2_FOUND)
 		# simulate autotools' "make dist"
 		add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 	ENDIF()
-
 	
 ELSE(!EXIV2_FOUND)
 	message(WARNING "At least one library has not been found")
 ENDIF()
+
