@@ -32,6 +32,9 @@
 #include <QImage>
 #include <QGraphicsView>
 #include <QToolBar>
+#include <QFileInfo>
+#include <QApplication>
+#include <QMainWindow>
 
 namespace nmc {
 
@@ -62,6 +65,24 @@ public:
 	virtual QList<QAction*> pluginActions(QWidget* parent) { return QList<QAction*>();};
     virtual QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
+	virtual bool closesOnImageChange() {return true;};
+	QMainWindow* getMainWidnow() const {
+
+		QWidgetList widgets = QApplication::topLevelWidgets();
+
+		QMainWindow* win = 0;
+
+		for (int idx = 0; idx < widgets.size(); idx++) {
+
+			if (widgets.at(idx)->inherits("QMainWindow")) {
+				win = qobject_cast<QMainWindow*>(widgets.at(idx));
+				break;
+			}
+		}
+
+		return win;
+	}
+
 
 };
 
@@ -96,6 +117,8 @@ public:
 signals:
 	void closePlugin(bool askForSaving = false, bool alreadySaving = false);
 	void showToolbar(QToolBar* toolbar, bool show);
+	void loadFile(QFileInfo file);
+	void loadImage(QImage image);
 
 protected:
 

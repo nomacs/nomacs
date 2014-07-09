@@ -88,8 +88,6 @@ QStringList DkSettings::saveFilters = QStringList();
 
 // formats we can load
 QStringList DkSettings::openFilters = QStringList();
-QStringList DkSettings::browseFilters = QStringList();
-QStringList DkSettings::registerFilters = QStringList();
 
 DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
@@ -247,6 +245,13 @@ void DkSettings::load(bool force) {
 		app_p.showOverview = tmpShow;
 
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
+	app_p.browseFilters = settings.value("browseFilters", fileFilters).toStringList();
+
+	// double-check (if user removes all filters he can't browse anymore - so override this case)
+	if (app_p.browseFilters.empty())
+		app_p.browseFilters = fileFilters;
+
+	app_p.registerFilters = settings.value("registerFilters", app_p.registerFilters).toStringList();
 	app_p.advancedSettings = settings.value("advancedSettings", app_p.advancedSettings).toBool();
 
 	settings.endGroup();
@@ -417,6 +422,10 @@ void DkSettings::save(bool force) {
 		settings.setValue("currentAppMode", app_p.currentAppMode);
 	if (!force && app_p.closeOnEsc != app_d.closeOnEsc)
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);
+	if (!force && app_p.browseFilters != app_d.browseFilters)
+		settings.setValue("browseFilters", app_p.browseFilters);
+	if (!force && app_p.registerFilters != app_d.registerFilters)
+		settings.setValue("registerFilters", app_p.registerFilters);
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
@@ -607,6 +616,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showOverview = QBitArray(mode_end, true);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;
+	app_p.browseFilters = QStringList();
 	app_p.showMenuBar = true;
 
 	// now set default show options
@@ -673,7 +683,7 @@ void DkSettings::setToDefaultSettings() {
 
 	slideShow_p.filter = 0;
 	slideShow_p.time = 3.0;
-	slideShow_p.moveSpeed = 1;
+	slideShow_p.moveSpeed = 0;		// TODO: set to 1 for finishing slideshow
 	slideShow_p.display = QBitArray(display_end, true);
 	slideShow_p.backgroundColor = QColor(86, 86, 90, 255);
 	slideShow_p.silentFullscreen = true;
