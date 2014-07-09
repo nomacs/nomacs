@@ -10,8 +10,8 @@
 #
 PROJECT(nomacs)
 
-IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmakeUser.txt)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/cmakeUser.txt)
+IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.txt)
 ENDIF()
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
@@ -321,6 +321,9 @@ IF(ENABLE_TIFF)
 			message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable RAW support")
 		ENDIF(NOT OpenCV_FOUND)
 
+		unset(TIFF_BUILD_PATH CACHE)
+		unset(TIFF_CONFIG_DIR CACHE)
+		
 		find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
 		IF(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
 			FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
