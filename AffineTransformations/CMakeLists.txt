@@ -1,6 +1,10 @@
 
 PROJECT(affineTransformPlugin)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 1.0.0)
 set(PLUGIN_ID "7a4a50a45ddb408ba46a16a40e6518fd") #GUID without hyphens generated at http://www.guidgenerator.com/

@@ -1,6 +1,10 @@
 
 PROJECT(paintPlugin)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 1.1.0)
 set(PLUGIN_ID "ad970ef36cc24737afd2b53ad015ff0d") #GUID without hyphens generated at http://www.guidgenerator.com/
@@ -20,11 +24,11 @@ MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
 find_package(nomacs)
 if(NOT NOMACS_FOUND)
 	SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
-	SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
 	IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 		MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 	ENDIF()
 endif()
+SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     message(STATUS "A debug build. -DDEBUG is defined")

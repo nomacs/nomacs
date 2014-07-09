@@ -1,6 +1,10 @@
 
 PROJECT(nikonPlugin)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 1.0.0)
 set(PLUGIN_ID "87c51045b38744caa9f389e000d64f3f") #GUID without hyphens generated at http://www.guidgenerator.com/
