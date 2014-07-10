@@ -51,6 +51,7 @@ bool MaidFacade::init() {
 	connect(&shootFutureWatcher, SIGNAL(finished()), this, SLOT(shootFinished()));
 	connect(&acquireFutureWatcher, SIGNAL(finished()), this, SLOT(acquireItemObjectsFinished()));
 
+	closed = false;
 	initialized = true;
 	return true;
 }
@@ -307,6 +308,12 @@ void MaidFacade::closeSource() {
 void MaidFacade::closeEverything() {
 	closeSource();
 	closeModule();
+
+	closed = true;
+}
+
+bool MaidFacade::isClosed() {
+	return closed;
 }
 
 /*!

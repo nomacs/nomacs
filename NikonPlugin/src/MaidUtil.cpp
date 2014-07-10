@@ -14,15 +14,53 @@ MaidUtil::~MaidUtil() {
 	}
 }
 
+#include "QCoreApplication"
+#include "QDebug"
+#include "DkUtils.h"
+
 /*!
  * Load the maid library
  * throws InitError
  */
 void MaidUtil::loadLibrary() {
-	instModule = LoadLibraryA(PATH_TYPE0007);
-	if (instModule == nullptr) {
-		throw InitError();	// do not throw - if you do not catch
+
+	// TODO: think how we best load md3 others than the 0007.md3
+	instModule = loadSingleLibrary("Type0007.md3");
+
+	if (!instModule)
+		throw InitError();
+
+	if (!loadSingleLibrary("NkdPTP.dll"))
+		throw InitError();
+
+}
+
+HINSTANCE MaidUtil::loadSingleLibrary(const QString& libName) const {
+
+	QStringList pathList = QCoreApplication::libraryPaths();
+
+	for (int idx = 0; idx < pathList.size(); idx++) {
+
+		QString winPath = QDir::toNativeSeparators(pathList.at(idx) + QString("/") + libName);
+
+		WCHAR* wDirName = new WCHAR[winPath.length()+1];
+
+		// CMakeLists.txt:
+		// if compile error that toWCharArray is not recognized:
+		// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
+		wDirName = (WCHAR*)winPath.utf16();
+		wDirName[winPath.length()] = L'\0';	// append null character
+
+
+		if (HINSTANCE instModule = LoadLibraryW(wDirName)) {
+			qDebug() << libName << " loaded from: " << winPath;
+			return instModule;	// ok, we could locate it - we're done
+		}
+		else
+			qDebug() << "could not locate " << libName << " in: " << winPath;
 	}
+
+	return nullptr;
 }
 
 /*!

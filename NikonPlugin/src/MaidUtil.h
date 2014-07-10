@@ -5,10 +5,11 @@
 #include "Maid3.h"
 #include "Maid3d1.h"
 #include "MaidObject.h"
+#include <QDir>
 
 #include <iostream>
 
-#define PATH_TYPE0007 "Type0007.md3"
+//#define PATH_TYPE0007 "Type0007.md3"
 
 namespace Maid {
 
@@ -24,6 +25,7 @@ public:
 	}
 
 	void loadLibrary();
+	HINSTANCE loadSingleLibrary(const QString& libName) const;
 	void initMAID();
 	int callMAIDEntryPoint(LPNkMAIDObject, ULONG, ULONG, ULONG, NKPARAM, LPNKFUNC, NKREF);
 	std::vector<std::string> packedStringEnumToVector(NkMAIDEnum* e);
