@@ -1,13 +1,17 @@
 
 PROJECT(nikonPlugin)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 1.0.0)
 set(PLUGIN_ID "87c51045b38744caa9f389e000d64f3f") #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
-add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
-add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
+add_definitions(-DPLUGIN_VERSION="\\"${PLUGIN_VERSION}\\"")
+add_definitions(-DPLUGIN_ID="\\"${PLUGIN_ID}\\"")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)
@@ -73,13 +77,12 @@ include_directories (
 	${QT_INCLUDES}
 	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_SOURCE_DIR}/src
 	${NOMACS_INCLUDE_DIRECTORY}
 )
 
 file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h")
-file(GLOB PLUGIN_MOCS "src/*.h", ${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h)
+file(GLOB PLUGIN_MOCS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
 
 set (PLUGIN_RESOURCES
         src/nomacsPlugin.qrc

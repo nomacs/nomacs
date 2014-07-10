@@ -2,6 +2,10 @@
 # untested (and should NOT work :( ) for linux/unix
 PROJECT(libjasper)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
 INCLUDE (CheckIncludeFiles)
 
 MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)

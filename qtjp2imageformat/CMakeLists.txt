@@ -3,6 +3,11 @@
 
 PROJECT(QTJP22)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
+
 # don't know if we need this
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)

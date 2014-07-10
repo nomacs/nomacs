@@ -1,6 +1,10 @@
 
 PROJECT(testPlugin)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)
@@ -19,7 +23,7 @@ if(NOT NOMACS_FOUND)
 endif()
 
 set(PLUGIN_VERSION 1.0.0)
-add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
+add_definitions(-DPLUGIN_VERSION="\\"${PLUGIN_VERSION}\\"")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     message(STATUS "A debug build. -DDEBUG is defined")
@@ -69,13 +73,12 @@ include_directories (
 	${QT_INCLUDES}
 	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_SOURCE_DIR}/src
 	${NOMACS_INCLUDE_DIRECTORY}
 )
 
 file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h")
-file(GLOB PLUGIN_MOCS "src/*.h", ${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h)
+file(GLOB PLUGIN_MOCS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
 
 set (PLUGIN_RESOURCES
         src/nomacsPlugin.qrc

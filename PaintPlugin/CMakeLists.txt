@@ -1,13 +1,17 @@
 
 PROJECT(paintPlugin)
 
+IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
+ENDIF()
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 1.1.0)
 set(PLUGIN_ID "ad970ef36cc24737afd2b53ad015ff0d") #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
-add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
-add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
+add_definitions(-DPLUGIN_VERSION="\\"${PLUGIN_VERSION}\\"")
+add_definitions(-DPLUGIN_ID="\\"${PLUGIN_ID}\\"")
 
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
@@ -20,11 +24,11 @@ MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
 find_package(nomacs)
 if(NOT NOMACS_FOUND)
 	SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
-	SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
 	IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 		MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 	ENDIF()
 endif()
+SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     message(STATUS "A debug build. -DDEBUG is defined")
@@ -74,13 +78,12 @@ include_directories (
 	${QT_INCLUDES}
 	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_SOURCE_DIR}/src
 	${NOMACS_INCLUDE_DIRECTORY}
 )
 
 file(GLOB PLUGIN_SOURCES "src/*.cpp")
 file(GLOB PLUGIN_HEADERS "src/*.h")
-file(GLOB PLUGIN_MOCS "src/*.h", ${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h)
+file(GLOB PLUGIN_MOCS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
 
 set (PLUGIN_RESOURCES
         src/nomacsPlugin.qrc
