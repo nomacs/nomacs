@@ -52,8 +52,7 @@ DkFlipPlugin::~DkFlipPlugin() {
 **/
 QString DkFlipPlugin::pluginID() const {
 
-	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QString("35f8d00939bb493dad6b9363bbe70d31");
+	return PLUGIN_ID;
 };
 
 
@@ -90,7 +89,7 @@ QImage DkFlipPlugin::pluginDescriptionImage() const {
 **/
 QString DkFlipPlugin::pluginVersion() const {
 
-	return "1.0.0";
+	return PLUGIN_VERSION;
 };
 
 /**
