@@ -77,26 +77,49 @@ void DkSkewEstimator::setImage(QImage inImage) {
 double DkSkewEstimator::getSkewAngle() {
 
 	if (!matImg.empty()) {
+
+		QProgressDialog* progress = new QProgressDialog(QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Calculating angle..."), QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Cancel"), 0, 100);
+		int step = 100;
+		progress->setWindowModality(Qt::WindowModal);
+		progress->setValue(1);	// a strange behavior of the progress dialog: first setValue shows an empty dialog (setting to zero won't work)
+		progress->setValue(2);	// second setValue shows the progress bar with 2% (setting to zero won't work)
+		progress->setValue(0);	// finally set the progress to zero
+
 		cv::Mat matGray;
 
 		if (matImg.channels() > 1)
 			cv::cvtColor(matImg, matGray, CV_BGR2GRAY);
 		else matGray = matImg;
 
+		progress->setValue(5);
+		if (progress->wasCanceled()) return 0;
+
 		cv::Mat integral, integralSq;
 		cv::integral(matGray, integral, integralSq, CV_64F);
 		if (integral.channels() > 1) qDebug() << "Error! integral image has more than one channel";
 
+		progress->setValue(20);
+		if (progress->wasCanceled()) return 0;
+
 		cv::Mat separabilityHor = computeSeparability(integral, integralSq, dir_horizontal);
+		progress->setValue(40);
+		if (progress->wasCanceled()) return 0;
+
 		cv::Mat separabilityVer = computeSeparability(integral, integralSq,  dir_vertical);
+		progress->setValue(60);
+		if (progress->wasCanceled()) return 0;
 
 		double min, max;
 		cv::minMaxLoc(separabilityHor, &min, &max);	
 		cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, sepThr * max, dir_horizontal);
 		//cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, 0.1, dir_horizontal);
+		progress->setValue(75);
+		if (progress->wasCanceled()) return 0;
 		cv::minMaxLoc(separabilityVer, &min, &max);
 		cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, sepThr * max, dir_vertical);
 		//cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, 0.1, dir_vertical);
+		progress->setValue(90);
+		if (progress->wasCanceled()) return 0;
 
 		selectedLines.clear();
 
@@ -106,8 +129,11 @@ double DkSkewEstimator::getSkewAngle() {
 		qDebug() << weightsVer.size();
 
 		weightsHor += weightsVer;
+ 
+		double retAngle = computeSkewAngle(weightsHor, qSqrt(matGray.rows*matGray.rows + matGray.cols*matGray.cols));
+		progress->setValue(100);
 
-		return computeSkewAngle(weightsHor, qSqrt(matGray.rows*matGray.rows + matGray.cols*matGray.cols));
+		return retAngle;
 	}
 	else return 0;
 }
@@ -325,7 +351,7 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 		else {
 
 			int K = 0;
-
+			qDebug() << l[0] << " " << l[1] << " " << l[2]<< " " << l[3] ;
 			if (l[3] < l[1]) l = Vec4i(l[2],l[3],l[0],l[1]);
 
 			int x1 = l[1];
@@ -336,6 +362,8 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 
 			double lineAngle =  atan2((l[2] - l[0]), (l[3] - l[1]));
 			double slope = qTan(lineAngle);
+			//qDebug() << lineAngle << "  slope: "  <<slope;
+			
 
 			while (qAbs(x1-x2) > minLineProjLength && K < nIter) {
 
@@ -389,7 +417,8 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 		if (currMax.x() > 0) {
 			computedWeights.append(currMax);
 			if (rotationFactor == -1) maxLine = QVector4D(maxLine.y(), maxLine.x(), maxLine.w(), maxLine.z());
-			selectedLines.push_back(maxLine);
+			selectedLines.append(maxLine);
+			selectedLineTypes.append(0);
 		}
 	}
 	return computedWeights;
@@ -400,18 +429,18 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 
 	if (weights.size() < 1) return 0;
 
-	int maxWeight = 0;
+	double maxWeight = 0;
 	for (int i = 0; i < weights.size(); i++)
 		if (weights.at(i).x() > maxWeight)
 			maxWeight = weights.at(i).x();
 
-	double eta = 0.35 * maxWeight;
+	double eta = 0.35;
 
 	QVector<QVector3D> thrWeights = QVector<QVector3D> ();
 	for (int i = 0; i < weights.size(); i++)
-		if (weights.at(i).x() > eta) {
-			thrWeights.append(QVector3D((weights.at(i).x() - eta) * (weights.at(i).x() - eta), weights.at(i).y() / M_PI * 180, weights.at(i).z() / imgDiagonal));
-			//qDebug() << weights.at(i).y() / M_PI * 180;
+		if (weights.at(i).x()/maxWeight > eta) {
+			thrWeights.append(QVector3D(qSqrt((weights.at(i).x()/maxWeight - eta)/(1 - eta)), weights.at(i).y() / M_PI * 180, weights.at(i).z() / imgDiagonal));
+			//thrWeights.append(QVector3D((weights.at(i).x()/maxWeight - eta) * (weights.at(i).x()/maxWeight - eta), weights.at(i).y() / M_PI * 180, weights.at(i).z() / imgDiagonal));
 		}
 
 	QVector<QPointF> saliencyVec = QVector<QPointF>();
@@ -421,7 +450,7 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 		double saliency = 0;
 
 		for (int i = 0; i < thrWeights.size(); i++) {
-			saliency += thrWeights.at(i).x() * qExp(-thrWeights.at(i).z()) * qExp(- 0.5 * ((skewAngle - thrWeights.at(i).y()) * (skewAngle - thrWeights.at(i).y())) / (sigma * sigma));
+			saliency += thrWeights.at(i).x() * qExp(-thrWeights.at(i).z()) * qExp(-0.5 * ((skewAngle - thrWeights.at(i).y()) * (skewAngle - thrWeights.at(i).y())) / (sigma * sigma));
 		}
 
 		saliencyVec.append(QPointF(skewAngle, saliency));
@@ -439,6 +468,10 @@ double DkSkewEstimator::computeSkewAngle(QVector<QVector3D> weights, double imgD
 		}
 	}
 
+	for (int i = 0; i < weights.size(); i++)
+		if (weights.at(i).x() > eta && qAbs(weights.at(i).y() / M_PI * 180 - salSkewAngle) < 0.15)
+			selectedLineTypes.replace(i,1);
+
 	if (maxSaliency == 0) return 0;
 
 	return salSkewAngle;
@@ -448,5 +481,11 @@ QVector<QVector4D> DkSkewEstimator::getLines() {
 
 	return selectedLines;
 }
+
+QVector<int> DkSkewEstimator::getLineTypes() {
+
+	return selectedLineTypes;
+}
+
 
 };

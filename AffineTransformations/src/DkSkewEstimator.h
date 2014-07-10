@@ -34,6 +34,7 @@
 #include <QVector3D>
 #include <QVector4D>
 #include <cmath>
+#include <QProgressDialog>
 
 #include "DkImageStorage.h"
 
@@ -74,6 +75,7 @@ public:
 
 	double getSkewAngle();
 	QVector<QVector4D> getLines();
+	QVector<int> getLineTypes();
 	void setImage(QImage inImage);
 
 private: 
@@ -94,6 +96,7 @@ private:
 	int minLineProjLength;
 	
 	QVector<QVector4D> selectedLines;
+	QVector<int> selectedLineTypes;
 	cv::Mat matImg;
 	int rotationFactor;
 };

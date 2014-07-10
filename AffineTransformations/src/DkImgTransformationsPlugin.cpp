@@ -203,6 +203,8 @@ DkImgTransformationsViewPort::~DkImgTransformationsViewPort() {
 void DkImgTransformationsViewPort::init() {
 
 	defaultMode = mode_scale;
+	QSettings settings;
+	defaultMode = settings.value("affineTransformPlugin/mode", defaultMode).toInt();
 	selectedMode = defaultMode;
 	panning = false;
 	cancelTriggered = false;
@@ -217,6 +219,8 @@ void DkImgTransformationsViewPort::init() {
 	intrIdx = 100;
 	rotationCenter = QPoint();
 	rotCropEnabled = false;
+	angleLinesEnabled = true;
+	guideMode = guide_no_guide;
 
 	intrRect = new DkInteractionRects(this);
 	skewEstimator = DkSkewEstimator();
@@ -230,7 +234,9 @@ void DkImgTransformationsViewPort::init() {
 	connect(imgTransformationsToolbar, SIGNAL(rotationValSignal(double)), this, SLOT(setRotationValue(double)));
 	connect(imgTransformationsToolbar, SIGNAL(calculateAutoRotationSignal()), this, SLOT(calculateAutoRotation()));
 	connect(imgTransformationsToolbar, SIGNAL(cropEnabledSignal(bool)), this, SLOT(setCropEnabled(bool)));
+	connect(imgTransformationsToolbar, SIGNAL(showLinesSignal(bool)), this, SLOT(	setAngleLinesEnabled(bool)));
 	connect(imgTransformationsToolbar, SIGNAL(modeChangedSignal(int)), this, SLOT(setMode(int)));
+	connect(imgTransformationsToolbar, SIGNAL(guideStyleSignal(int)), this, SLOT(setGuideStyle(int)));
 	connect(imgTransformationsToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(imgTransformationsToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
 	connect(imgTransformationsToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
@@ -484,6 +490,7 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 
 	painter.drawImage(inImage.rect(), inImage);
 	
+	drawGuide(&painter, QPolygonF(QRectF(imgRect)), guideMode);
 	painter.drawRect(imgRect);
 	painter.drawLine(imgRect.topLeft() + QPointF(imgRect.width()/3,0), imgRect.bottomLeft() + QPointF(imgRect.width()/3,0));
 	painter.drawLine(imgRect.topLeft() + QPointF(2*imgRect.width()/3,0), imgRect.bottomLeft() + QPointF(2*imgRect.width()/3,0));
@@ -497,11 +504,15 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	} 
 	else if (selectedMode == mode_rotate) {
 
-		QPen linePen(Qt::green, 2, Qt::SolidLine);
-		painter.setPen(linePen);
-		QVector<QVector4D> lines = skewEstimator.getLines();
-		for (int i = 0; i < lines.size(); i++) {
-			painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
+		if (angleLinesEnabled) {
+			QPen linePen(Qt::red, qCeil(3.0 * imgRect.width() / 1000.0), Qt::SolidLine);
+			QVector<QVector4D> lines = skewEstimator.getLines();
+			QVector<int> lineTypes = skewEstimator.getLineTypes();
+			for (int i = 0; i < lines.size(); i++) {
+				(lineTypes.at(i)) ? linePen.setColor(Qt::green) : linePen.setColor(Qt::red);
+				painter.setPen(linePen);
+				painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
+			}
 		}
 
 		painter.restore();
@@ -530,6 +541,60 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	painter.end();
 
 	DkPluginViewPort::paintEvent(event);
+}
+
+void DkImgTransformationsViewPort::drawGuide(QPainter* painter, const QPolygonF& p, int paintMode) {
+
+	if (p.isEmpty() || paintMode == guide_no_guide)
+		return;
+
+	QColor col = painter->pen().color();
+	col.setAlpha(150);
+	QPen pen = painter->pen();
+	QPen cPen = pen;
+	cPen.setColor(col);
+	painter->setPen(cPen);
+
+	// vertical
+	DkVector lp = p[1]-p[0];	// parallel to drawing
+	DkVector l9 = p[3]-p[0];	// perpendicular to drawing
+
+	int nLines = (paintMode == guide_rule_of_thirds) ? 3 : l9.norm()/20;
+	DkVector offset = l9;
+	offset.normalize();
+	offset *= l9.norm()/nLines;
+
+	DkVector offsetVec = offset;
+
+	for (int idx = 0; idx < (nLines-1); idx++) {
+
+		// step through & paint
+		QLineF l = QLineF(DkVector(p[1]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		painter->drawLine(l);
+		offsetVec += offset;
+	}
+
+	// horizontal
+	lp = p[3]-p[0];	// parallel to drawing
+	l9 = p[1]-p[0];	// perpendicular to drawing
+
+	nLines = (paintMode == guide_rule_of_thirds) ? 3 : l9.norm()/20;
+	offset = l9;
+	offset.normalize();
+	offset *= l9.norm()/nLines;
+
+	offsetVec = offset;
+
+	for (int idx = 0; idx < (nLines-1); idx++) {
+
+		// step through & paint
+		QLineF l = QLineF(DkVector(p[3]+offsetVec).getQPointF(), DkVector(p[0]+offsetVec).getQPointF());
+		painter->drawLine(l);
+		offsetVec += offset;
+	}
+
+	painter->setPen(pen);	// revert painter
+
 }
 
 QImage DkImgTransformationsViewPort::getTransformedImage() {
@@ -657,6 +722,7 @@ void DkImgTransformationsViewPort::setShearYValue(double val) {
 
 void DkImgTransformationsViewPort::setRotationValue(double val) {
 
+	if (val < 0) val += 360;
 	this->rotationValue = val;
 	this->repaint();
 }
@@ -664,6 +730,12 @@ void DkImgTransformationsViewPort::setRotationValue(double val) {
 void DkImgTransformationsViewPort::setCropEnabled(bool enabled) {
 
 	this->rotCropEnabled = enabled;
+	this->repaint();
+}
+
+void DkImgTransformationsViewPort::setAngleLinesEnabled(bool enabled) {
+
+	this->angleLinesEnabled = enabled;
 	this->repaint();
 }
 
@@ -681,7 +753,7 @@ void DkImgTransformationsViewPort::calculateAutoRotation() {
 				rotationValue = skewEstimator.getSkewAngle();
 				if (rotationValue < 0) rotationValue += 360;
 				imgTransformationsToolbar->setRotationValue(rotationValue);
-
+				this->repaint();
 				return;
 			}
 		}
@@ -716,6 +788,12 @@ bool DkImgTransformationsViewPort::isCanceled() {
 	return cancelTriggered;
 }
 
+void DkImgTransformationsViewPort::setGuideStyle(int guideMode) {
+
+	this->guideMode = guideMode;
+	this->repaint();
+}
+
 void DkImgTransformationsViewPort::setVisible(bool visible) {
 
 	if(parent()) {
@@ -730,6 +808,7 @@ void DkImgTransformationsViewPort::setVisible(bool visible) {
 
 
 	if (imgTransformationsToolbar) emit showToolbar(imgTransformationsToolbar, visible);
+
 	setMode(defaultMode);
 	DkPluginViewPort::setVisible(visible);
 }
@@ -848,14 +927,14 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	//rotation value
 	rotationBox = new QDoubleSpinBox(this);
 	rotationBox->setObjectName("rotationBox");
-	rotationBox->setMinimum(0);
-	rotationBox->setMaximum(359.9);
+	rotationBox->setMinimum(-180);
+	rotationBox->setMaximum(180);
 	rotationBox->setSingleStep(0.1);
 	rotationBox->setDecimals(1);
 	rotationBox->setWrapping(true);
 	rotationBox->setSuffix("°");
 	rotationBox->setToolTip(tr("Rotation angle"));
-	rotationBox->setStatusTip(rotationBox->toolTip());
+	rotationBox->setStatusTip(tr("Rotation angle [-180°,180°]"));
 
 
 	//auto rotation selection
@@ -863,6 +942,13 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	autoRotateButton->setObjectName("autoRotateButton");
 	autoRotateButton->setToolTip(tr("Automaticly rotate image for small skewness"));
 	autoRotateButton->setStatusTip(autoRotateButton->toolTip());
+
+	//show lines for automatic angle detection
+	showLinesBox = new QCheckBox(tr("Show angle lines"), this);
+	showLinesBox->setObjectName("showLinesBox");
+	showLinesBox->setCheckState(Qt::Checked);
+	showLinesBox->setToolTip(tr("Show lines for angle detection."));
+	showLinesBox->setStatusTip(tr("Show lines (red) for angle detection. Green lines correspond to the selected angle."));
 
 	//crop rotated image
 	cropEnabledBox = new QCheckBox(tr("Crop image"), this);
@@ -894,12 +980,37 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	shearYBox->setStatusTip(shearYBox->toolTip());
 
 
+	// crop customization
+	QStringList guides;
+	guides <<	QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Guides") << 
+				QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Rule of Thirds") << 
+				QT_TRANSLATE_NOOP("nmc::DkImgTransformationsToolBar", "Grid");
+	guideBox = new QComboBox(this);
+	guideBox->addItems(guides);
+	guideBox->setObjectName("guideBox");
+	guideBox->setToolTip(tr("Show Guides in the Preview"));
+	guideBox->setStatusTip(guideBox->toolTip());
+
 
 	QActionGroup* modesGroup = new QActionGroup(this);
     modesGroup->addAction(scaleAction);
 	modesGroup->addAction(rotateAction);
 	modesGroup->addAction(shearAction);
-	scaleAction->setChecked(true);
+
+	switch(defaultMode) {
+		case mode_scale:
+			scaleAction->setChecked(true);
+			break;
+		case mode_rotate:
+			rotateAction->setChecked(true);
+			break;
+		case mode_shear:
+			shearAction->setChecked(true);
+			break;
+		default:
+			scaleAction->setChecked(true);
+			break;
+	}
 
 	toolbarWidgetList = QMap<QString, QAction*>();
 
@@ -916,10 +1027,13 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	toolbarWidgetList.insert(rotationBox->objectName(), this->addWidget(rotationBox));
 	#ifdef WITH_OPENCV
 	toolbarWidgetList.insert(autoRotateButton->objectName(), this->addWidget(autoRotateButton));
+	toolbarWidgetList.insert(showLinesBox->objectName(), this->addWidget(showLinesBox));
 	#endif
 	toolbarWidgetList.insert(cropEnabledBox->objectName(), this->addWidget(cropEnabledBox));
 	toolbarWidgetList.insert(shearXBox->objectName(), this->addWidget(shearXBox));
 	toolbarWidgetList.insert(shearYBox->objectName(), this->addWidget(shearYBox));
+	addSeparator();
+	addWidget(guideBox);
 
 	modifyLayout(defaultMode);
 }
@@ -931,6 +1045,7 @@ void DkImgTransformationsToolBar::modifyLayout(int mode) {
 			toolbarWidgetList.value(rotationBox->objectName())->setVisible(false);
 			#ifdef WITH_OPENCV
 			toolbarWidgetList.value(autoRotateButton->objectName())->setVisible(false);
+			toolbarWidgetList.value(showLinesBox->objectName())->setVisible(false);
 			#endif
 			toolbarWidgetList.value(cropEnabledBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(scaleXBox->objectName())->setVisible(true);
@@ -946,6 +1061,7 @@ void DkImgTransformationsToolBar::modifyLayout(int mode) {
 			toolbarWidgetList.value(rotationBox->objectName())->setVisible(true);
 			#ifdef WITH_OPENCV
 			toolbarWidgetList.value(autoRotateButton->objectName())->setVisible(true);
+			toolbarWidgetList.value(showLinesBox->objectName())->setVisible(true);
 			#endif
 			toolbarWidgetList.value(cropEnabledBox->objectName())->setVisible(true);
 			toolbarWidgetList.value(shearXBox->objectName())->setVisible(false);
@@ -959,6 +1075,7 @@ void DkImgTransformationsToolBar::modifyLayout(int mode) {
 			toolbarWidgetList.value(rotationBox->objectName())->setVisible(false);
 			#ifdef WITH_OPENCV
 			toolbarWidgetList.value(autoRotateButton->objectName())->setVisible(false);
+			toolbarWidgetList.value(showLinesBox->objectName())->setVisible(false);
 			#endif
 			toolbarWidgetList.value(cropEnabledBox->objectName())->setVisible(false);
 			toolbarWidgetList.value(shearXBox->objectName())->setVisible(true);
@@ -1003,6 +1120,7 @@ void DkImgTransformationsToolBar::on_panAction_toggled(bool checked) {
 void DkImgTransformationsToolBar::on_scaleAction_toggled(bool checked) {
 
 	if(checked) {
+		updateSettingsMode(mode_scale);
 		modifyLayout(mode_scale);
 		emit modeChangedSignal(mode_scale);
 	}
@@ -1011,6 +1129,7 @@ void DkImgTransformationsToolBar::on_scaleAction_toggled(bool checked) {
 void DkImgTransformationsToolBar::on_rotateAction_toggled(bool checked) {
 
 	if(checked) {
+		updateSettingsMode(mode_rotate);
 		modifyLayout(mode_rotate);
 		emit modeChangedSignal(mode_rotate);
 	}
@@ -1019,6 +1138,7 @@ void DkImgTransformationsToolBar::on_rotateAction_toggled(bool checked) {
 void DkImgTransformationsToolBar::on_shearAction_toggled(bool checked) {
 
 	if(checked) {
+		updateSettingsMode(mode_shear);
 		modifyLayout(mode_shear);
 		emit modeChangedSignal(mode_shear);
 	}
@@ -1045,7 +1165,8 @@ void DkImgTransformationsToolBar::on_shearYBox_valueChanged(double val) {
 }
 
 void DkImgTransformationsToolBar::on_rotationBox_valueChanged(double val) {
-
+	
+	rotationBox->setValue(val);
 	emit rotationValSignal(val);
 }
 
@@ -1054,13 +1175,24 @@ void DkImgTransformationsToolBar::on_autoRotateButton_clicked() {
 	emit calculateAutoRotationSignal();
 }
 
+void DkImgTransformationsToolBar::on_showLinesBox_stateChanged(int val) {
+
+	emit showLinesSignal((val == Qt::Checked));
+}
+
 void DkImgTransformationsToolBar::on_cropEnabledBox_stateChanged(int val) {
 
 	emit cropEnabledSignal((val == Qt::Checked));
 }
 
+void DkImgTransformationsToolBar::on_guideBox_currentIndexChanged(int val) {
+
+	emit guideStyleSignal(val);
+}
+
 void DkImgTransformationsToolBar::setRotationValue(double val) {
 
+	if (val > 180) val -= 360;
 	rotationBox->setValue(val);
 }
 
@@ -1074,6 +1206,12 @@ void DkImgTransformationsToolBar::setShearValue(QPointF val) {
 
 	shearXBox->setValue(val.x());
 	shearYBox->setValue(val.y());
+}
+
+void DkImgTransformationsToolBar::updateSettingsMode(int mode) {
+	
+	QSettings settings;
+	settings.setValue("affineTransformPlugin/mode", mode);
 }
 
 /*-----------------------------------DkInteractionRects ---------------------------------------------*/
