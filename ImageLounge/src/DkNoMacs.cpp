@@ -3109,7 +3109,7 @@ void DkNoMacs::setContrast(bool contrast) {
 
 void DkNoMacs::onWindowLoaded() {
 
-	if (!DkSettings::global.recentFiles.empty())
+	if (DkSettings::app.appMode != DkSettings::mode_frameless && !DkSettings::global.recentFiles.empty())
 		viewport()->getController()->showRecentFiles(true);
 
 	QSettings s;
