@@ -46,6 +46,7 @@
 #include <QPushButton>
 #include <QtCore/qmath.h>
 #include <QVector4D>
+#include <QSettings>
 
 #include "DkPluginInterface.h"
 #include "DkNoMacs.h"
@@ -68,6 +69,14 @@ enum {
 	mode_shear,
 
 	mode_end,
+};
+
+enum {
+	guide_no_guide = 0,
+	guide_rule_of_thirds,
+	guide_grid,
+
+	guide_end,
 };
 
 class DkImgTransformationsPlugin : public QObject, DkViewPortInterface {
@@ -122,6 +131,8 @@ public slots:
 	void setRotationValue(double val);
 	void calculateAutoRotation();
 	void setCropEnabled(bool enabled);
+	void setAngleLinesEnabled(bool enabled);
+	void setGuideStyle(int guideMode);
 
 protected slots:
 		
@@ -135,6 +146,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 	QPoint map(const QPointF &pos);
 	virtual void init();
+	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
 
 	bool cancelTriggered;
 	bool panning;
@@ -157,6 +169,8 @@ protected:
 	QCursor rotatingCursor;
 	bool rotCropEnabled;
 	DkSkewEstimator skewEstimator;
+	bool angleLinesEnabled;
+	int guideMode;
 };
 
 
@@ -197,7 +211,9 @@ public slots:
 	void on_shearYBox_valueChanged(double val);
 	void on_rotationBox_valueChanged(double val);
 	void on_cropEnabledBox_stateChanged(int val);
+	void on_showLinesBox_stateChanged(int val);
 	void on_autoRotateButton_clicked();
+	void on_guideBox_currentIndexChanged(int val);
 	virtual void setVisible(bool visible);
 
 signals:
@@ -210,13 +226,16 @@ signals:
 	void rotationValSignal(double val);
 	void calculateAutoRotationSignal();
 	void cropEnabledSignal(bool enabled);
+	void showLinesSignal(bool enabled);
 	void panSignal(bool checked);
 	void modeChangedSignal(int mode);
+	void guideStyleSignal(int guideMode);
 
 protected:
 	void createLayout(int defaultMode);
 	void createIcons();
 	void modifyLayout(int mode);
+	void updateSettingsMode(int mode);
 
 	QDoubleSpinBox* scaleXBox;
 	QDoubleSpinBox* scaleYBox;
@@ -225,7 +244,9 @@ protected:
 	QDoubleSpinBox* rotationBox;
 	QCheckBox* cropEnabledBox;
 	QPushButton* autoRotateButton;
+	QCheckBox* showLinesBox;
 	QMap<QString, QAction*> toolbarWidgetList;
+	QComboBox* guideBox;
 
 	QAction* panAction;
 	QAction* scaleAction;
