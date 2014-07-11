@@ -15,11 +15,12 @@ find_package(nomacs)
 if(NOT NOMACS_FOUND)
 	message(STATUS "find_package was unable to find nomacs")
 	SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
-	SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
+	SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET-ONLY_NEEDED_FOR_DEPLOYING" CACHE PATH "Path to the plugin install directory for deploying")
 	IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 		MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 	ENDIF()
 endif()
+
 
 
 if(CMAKE_CL_64)
