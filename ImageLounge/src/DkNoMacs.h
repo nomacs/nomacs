@@ -223,6 +223,7 @@ enum fileActions {
 	menu_file_goto,
 	menu_file_find,
 	menu_file_recursive,
+	menu_file_show_recent,
 	menu_file_print,
 	menu_file_reload,
 	menu_file_next,

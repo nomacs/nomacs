@@ -547,6 +547,7 @@ void DkNoMacs::createMenu() {
 
 	fileMenu->addMenu(fileFilesMenu);
 	fileMenu->addMenu(fileFoldersMenu);
+	fileMenu->addAction(fileActions[menu_file_show_recent]);
 
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_print]);
@@ -819,6 +820,12 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
 	fileActions[menu_file_print]->setStatusTip(tr("Print an image"));
 	connect(fileActions[menu_file_print], SIGNAL(triggered()), this, SLOT(printDialog()));
+
+	fileActions[menu_file_show_recent] = new QAction(tr("&Recent Files and Folders"), this);
+	fileActions[menu_file_show_recent]->setCheckable(true);
+	fileActions[menu_file_show_recent]->setChecked(false);
+	fileActions[menu_file_show_recent]->setStatusTip(tr("Show Recent Files and Folders"));
+	connect(fileActions[menu_file_show_recent], SIGNAL(triggered(bool)), vp->getController(), SLOT(showRecentFiles(bool)));
 
 	fileActions[menu_file_reload] = new QAction(tr("&Reload File"), this);
 	fileActions[menu_file_reload]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -3102,11 +3109,11 @@ void DkNoMacs::setContrast(bool contrast) {
 
 void DkNoMacs::onWindowLoaded() {
 
-	//DkRecentFilesWidget* rf = new DkRecentFilesWidget(this);
-	//rf->show();
+	if (!DkSettings::global.recentFiles.empty())
+		viewport()->getController()->showRecentFiles(true);
 
 	QSettings s;
-	bool firstTime = (s.value("AppSettings/appMode", -1).toInt() == -1) ? true : false;
+	bool firstTime = s.value("AppSettings/firstTime", true).toBool();
 
 	if (!firstTime)
 		return;
@@ -3114,6 +3121,8 @@ void DkNoMacs::onWindowLoaded() {
 	// here are some first time requests
 	DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
 	wecomeDialog->exec();
+
+	s.setValue("AppSettings/firstTime", false);
 
 	if (wecomeDialog->isLanguageChanged())
 		restart();
@@ -4316,6 +4325,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+	vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 	DkSettings::app.appMode = 0;
 
 	initLanClient();
@@ -4533,6 +4543,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+		vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 
 		initLanClient();
 		emit sendTitleSignal(windowTitle());

@@ -39,6 +39,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	// cropping
 	cropWidget = new DkCropWidget(QRectF(), this);
+	recentFilesWidget = new DkRecentFilesWidget(this);
 
 	//// thumbnails, metadata
 	//thumbPool = new DkThumbPool(QFileInfo(), this);
@@ -105,6 +106,7 @@ void DkControlWidget::init() {
 	overviewWindow->setContentsMargins(10, 10, 0, 0);
 	//cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	recentFilesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	thumbScrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	spinnerLabel->halfSize();
@@ -209,6 +211,7 @@ void DkControlWidget::init() {
 	widgets.resize(widget_end);
 	widgets[hud_widget] = new QWidget(this);
 	widgets[crop_widget] = cropWidget;
+	widgets[recent_files_widget] = recentFilesWidget;
 	widgets[thumb_widget] = thumbScrollWidget;
 	lastActiveWidget = widgets[hud_widget];
 
@@ -280,6 +283,9 @@ void DkControlWidget::connectWidgets() {
 	// thumbs widget
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
+
+	// recent files widget
+	connect(recentFilesWidget, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
@@ -415,6 +421,18 @@ void DkControlWidget::showOverview(bool visible) {
 	}
 	else if (!visible && overviewWindow->isVisible()) {
 		overviewWindow->hide();
+	}
+
+}
+
+void DkControlWidget::showRecentFiles(bool visible) {
+
+	if (visible) {
+		recentFilesWidget->setCustomStyle(!viewport->getImage().isNull());
+		switchWidget(widgets[recent_files_widget]);
+	}
+	else {
+		switchWidget();
 	}
 
 }
