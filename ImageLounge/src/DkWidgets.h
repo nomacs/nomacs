@@ -68,6 +68,10 @@
 #include <QTimeLine>
 #include <QGraphicsItemAnimation>
 
+#ifdef WIN32
+#pragma warning(disable: 4275)	// there are some weird things happening if qtconcurrentmap.h is included - we ignore this elegantly
+#endif
+
 #include <QThread>
 #include <QFuture>
 #include <QFutureWatcher>
@@ -1719,7 +1723,7 @@ public:
 	DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 signals:
-	void loadFile(QFileInfo);
+	void loadFileSignal(QFileInfo);
 
 protected:
 	void mousePressEvent(QMouseEvent *ev);
@@ -1732,17 +1736,27 @@ class DkRecentFilesWidget : public DkWidget {
 
 public:
 	DkRecentFilesWidget(QWidget* parent = 0);
+	static void mappedFileExists(DkFileInfo& fileInfo);
+	void setCustomStyle(bool imgLoadedStyle = false);
+
+signals:
+	void loadFileSignal(QFileInfo fileInfo);
 
 public slots:
-	void updateEntries(int idx = 0);
+	void updateFiles();
+	void updateFolders();
+	virtual void setVisible(bool visible);
 
 protected:
 	void createLayout();
+	void updateFileList();
 
 	QVector<DkFileInfo> recentFiles;
 	QVector<DkFileInfo> recentFolders;
 	QFutureWatcher<void> fileWatcher;
 	QFutureWatcher<void> folderWatcher;
+	QVector<DkFileLabel*> fileLabels;
+	QVector<DkFileLabel*> folderLabels;
 
 	QVBoxLayout* filesLayout;
 	QVBoxLayout* folderLayout;
@@ -1750,9 +1764,11 @@ protected:
 	QWidget* filesWidget;
 	QWidget* folderWidget;
 
+	QLabel* folderTitle;
+	QLabel* filesTitle;
+	QLabel* bgLabel;
 };
 
-void mappedFileExists(DkFileInfo& fileInfo);
 
 
 };
