@@ -96,14 +96,14 @@ if(ENABLE_OPENCV)
 	if(${OpenCV_VERSION} EQUAL "2.1.0")
 		add_definitions(-DDISABLE_LANCZOS)
 	endif()
-endif()
+endif(ENABLE_OPENCV)
 
+# search for libraw
 if(ENABLE_RAW)
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling RAW. You have to enable ENABLE_OPENCV")
 	endif()
-	
-	# search for libraw
+
 	find_path(LIBRAW_INCLUDE_DIRS "libraw/libraw.h" PATHS "../LibRaw-0.16.0/" DOC "Path to libraw/libraw.h" NO_DEFAULT_PATH)
 
 	if(CMAKE_CL_64)
@@ -135,11 +135,11 @@ if(ENABLE_RAW)
 	else()
 			message(WARNING "libraw build directory not found. Needs path which contains release/libraw.dll, release/libraw.lib, debug/libraw.dll and debug/libraw.lib")
 	endif()
-endif()
+endif(ENABLE_RAW)
 
+# search for multi-layer tiff
+# we try to grab the OpenCV's libtiff
 if(ENABLE_TIFF)
-	# search for multi-layer tiff
-	# we try to grab the OpenCV's libtiff
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable ENABLE_OPENCV")
 	endif(NOT OpenCV_FOUND)
@@ -169,7 +169,7 @@ if(ENABLE_TIFF)
 	else(NOT EXISTS ${TIFF_INCLUDE_DIR})
 		message(FATAL_ERROR "TIFF_INCLUDE_DIR not found. Needs path which contains tif_config.h. Usually located in OpenCV Source directory ./3rdparty/libtiff")
 	endif()
-endif()
+endif(ENABLE_TIFF)
 
 #search for UPnP
 if(ENABLE_UPNP)

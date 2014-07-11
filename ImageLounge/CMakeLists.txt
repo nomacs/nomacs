@@ -49,10 +49,8 @@ endif()
 # find Qt
 NMC_FINDQT()
 
-# add webp for all platforms
-if(ENABLE_WEBP)
-	NMC_ENABLE_WEBP()
-endif(ENABLE_WEBP)
+# webp for all platforms
+NMC_ENABLE_WEBP()
 
 
 # gather information for building
@@ -69,13 +67,12 @@ include_directories (
 	${HUPNP_INCLUDE_DIR}
 )
 
+file(GLOB NOMACS_SOURCES "src/*.cpp")
+file(GLOB NOMACS_HEADERS "src/*.h")
+
 if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 	SET (NOMACS_SOURCES ${NOMACS_SOURCES} macosx/nomacs.icns)
 endif (APPLE)
-
-
-file(GLOB NOMACS_SOURCES "src/*.cpp")
-file(GLOB NOMACS_HEADERS "src/*.h")
 
 file(GLOB NOMACS_MOCS "src/*.h")
 
