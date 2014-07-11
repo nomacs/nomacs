@@ -197,13 +197,16 @@ void DkPluginManager::loadPlugins() {
 	pluginIdList.clear();
 	pluginLoaders.clear();
 
-	QDir pluginsDir = DkSettings::global.pluginsDir;
-	//QDir pluginsDir = QDir("C:\\VSProjects\\nomacs-plugins\\build2012x64\\FlipPlugin\\Debug");
-	//QDir pluginsDir = QDir(qApp->applicationDirPath());
-    //pluginsDir.cd("plugins");
+	QStringList libPaths = QCoreApplication::libraryPaths();
 
-	foreach(QString fileName, pluginsDir.entryList(QDir::Files)) singlePluginLoad(pluginsDir.absoluteFilePath(fileName));
-
+	for (int idx = 0; idx < libPaths.size(); idx++) {
+		
+		QDir pluginsDir(libPaths.at(idx));
+		
+		foreach(QString fileName, pluginsDir.entryList(QDir::Files)) 
+			singlePluginLoad(pluginsDir.absoluteFilePath(fileName));
+	}
+	
 	QSettings settings;
 	int i = 0;
 
@@ -1512,8 +1515,6 @@ void DkPluginDownloader::replyToImg(QNetworkReply* reply) {
 
 void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
 
-	//QDir pluginsDir = QDir(qApp->applicationDirPath());
-    //pluginsDir.cd("plugins
 	QDir pluginsDir = DkSettings::global.pluginsDir;
 
 	QFile file(pluginsDir.absolutePath().append("\\").append(fileName));

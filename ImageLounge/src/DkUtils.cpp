@@ -192,6 +192,45 @@ bool DkUtils::compRandom(const QFileInfo& lhf, const QFileInfo& rhf) {
 	return qrand() % 2;
 }
 
+void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
+
+	QDir qmDir = qApp->applicationDirPath();
+	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
+	if (fileNames.size() == 0) {
+		QDir appDir = QDir(qApp->applicationDirPath());
+		qmDir = QDir(appDir.filePath("../share/nomacs/translations/"));
+		fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
+	}
+
+	langCombo->addItem("English");
+	languages << "en";
+
+	for (int i = 0; i < fileNames.size(); ++i) {
+		QString locale = fileNames[i];
+		locale.remove(0, locale.indexOf('_') + 1);
+		locale.chop(3);
+
+		QTranslator translator;
+		if (translator.load(fileNames[i], qmDir.absolutePath()))
+			qDebug() << "translation loaded";
+		else
+			qDebug() << "translation NOT loaded";
+
+		//: this should be the name of the language in which nomacs is translated to
+		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");
+		if (language.isEmpty())
+			continue;
+
+		langCombo->addItem(language);
+		languages << locale;
+	}
+	
+	langCombo->setCurrentIndex(languages.indexOf(DkSettings::global.language));
+	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
+		langCombo->setCurrentIndex(0);
+
+}
+
 
 void DkUtils::mSleep(int ms) {
 

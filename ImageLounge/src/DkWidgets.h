@@ -68,6 +68,11 @@
 #include <QTimeLine>
 #include <QGraphicsItemAnimation>
 
+#include <QThread>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <qtconcurrentmap.h>
+
 #if QT_VERSION < 0x050000
 #include <QPlastiqueStyle>
 #endif
@@ -1688,7 +1693,66 @@ protected:
 	QSpinBox* sliderBox;
 };
 
+class DkFileInfo {
 
+public:
+	DkFileInfo();
+	DkFileInfo(const QFileInfo& fileInfo);
+
+	QFileInfo getFileInfo() const;
+	bool exists() const;
+	void setExists(bool fileExists);
+
+	bool inUse() const;
+	void setInUse(bool inUse);
+
+protected:
+	QFileInfo fileInfo;
+	bool fileExists;
+	bool used;
+};
+
+class DkFileLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+signals:
+	void loadFile(QFileInfo);
+
+protected:
+	void mousePressEvent(QMouseEvent *ev);
+
+	DkFileInfo fileInfo;
+};
+
+class DkRecentFilesWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkRecentFilesWidget(QWidget* parent = 0);
+
+public slots:
+	void updateEntries(int idx = 0);
+
+protected:
+	void createLayout();
+
+	QVector<DkFileInfo> recentFiles;
+	QVector<DkFileInfo> recentFolders;
+	QFutureWatcher<void> fileWatcher;
+	QFutureWatcher<void> folderWatcher;
+
+	QVBoxLayout* filesLayout;
+	QVBoxLayout* folderLayout;
+
+	QWidget* filesWidget;
+	QWidget* folderWidget;
+
+};
+
+void mappedFileExists(DkFileInfo& fileInfo);
 
 
 };

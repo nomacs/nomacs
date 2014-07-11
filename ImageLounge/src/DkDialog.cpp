@@ -4104,4 +4104,71 @@ void DkForceThumbDialog::setDir(const QDir& fileInfo) {
 	infoLabel->setText(tr("Compute thumbnails for all images in:\n %1\n").arg(fileInfo.absolutePath()));
 }
 
+// Welcome dialog --------------------------------------------------------------------
+DkWelcomeDialog::DkWelcomeDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent, f) {
+
+	setWindowTitle(tr("Welcome"));
+	createLayout();
+	languageChanged = false;
+}
+
+void DkWelcomeDialog::createLayout() {
+
+	QGridLayout* layout = new QGridLayout(this);
+
+	QLabel* welcomeLabel = new QLabel(tr("Welcome to nomacs, please choose your preferred language below."), this);
+
+	languageCombo = new QComboBox(this);
+	DkUtils::addLanguages(languageCombo, languages);
+
+	registerFilesCheckBox = new QCheckBox(tr("Register File Associations"), this);
+	registerFilesCheckBox->setChecked(true);
+
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	
+	layout->addItem(new QSpacerItem(10, 10), 0, 0, -1, -1);
+	layout->addWidget(welcomeLabel, 1, 0, 1, 3);
+	layout->addItem(new QSpacerItem(10, 10), 2, 0, -1, -1);
+	layout->addWidget(languageCombo, 3, 1);
+
+#ifdef WIN32
+	layout->addWidget(registerFilesCheckBox, 4, 1);
+#else
+	registerFilesCheckBox->setChecked(false);
+#endif
+	
+	layout->addWidget(buttons, 5, 0, 1, 3);
+}
+
+void DkWelcomeDialog::accept() {
+	
+	// register file associations
+	if (registerFilesCheckBox->isChecked()) {
+		DkFileFilterHandling fh;
+
+		for (int idx = 0; idx < DkSettings::openFilters.size(); idx++) {
+			fh.registerFileType(DkSettings::openFilters.at(idx), tr("Image"), true);
+		}
+
+	}
+
+	// change language
+	if (languageCombo->currentIndex() != languages.indexOf(DkSettings::global.language) && languageCombo->currentIndex() >= 0) {
+		DkSettings::global.language = languages.at(languageCombo->currentIndex());
+		languageChanged = true;
+	}
+
+	QDialog::accept();
+}
+
+bool DkWelcomeDialog::isLanguageChanged() {
+
+	return languageChanged;
+}
+
 } // close namespace

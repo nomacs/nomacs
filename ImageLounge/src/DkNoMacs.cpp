@@ -113,6 +113,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	if (settings)
 		delete settings;
+
 }
 
 DkNoMacs::~DkNoMacs() {
@@ -241,11 +242,7 @@ void DkNoMacs::init() {
 	}
 #endif // Q_WS_WIN
 
-	// TODO: finish registration process
-	//DkFileFilterHandling fh;
-	//fh.registerFileType(DkSettings::openFilters.at(2), tr("Image"), true);
-	//qDebug() << DkSettings::openFilters.at(1) << "registered";
-
+	QTimer::singleShot(0, this, SLOT(onWindowLoaded()));
 }
 
 #ifdef WIN32	// windows specific versioning
@@ -3096,32 +3093,24 @@ void DkNoMacs::setContrast(bool contrast) {
 	qDebug() << "contrast arguments: " << args;
 }
 
-//bool DkNoMacs::event(QEvent *event) {
-//
-//	if (event->type() > QEvent::User)
-//		qDebug() << "user event??";
-//
-//	//if (event->type() == DkInfoEvent::type()) {
-//
-//	//	DkInfoEvent *infoEvent = static_cast<DkInfoEvent*>(event);
-//	//	viewport()->setInfo(infoEvent->getMessage(), infoEvent->getTime(), infoEvent->getInfoType());
-//	//	return true;
-//	//}
-//	//if (event->type() == DkLoadImageEvent::type()) {
-//
-//	//	DkLoadImageEvent *imgEvent = static_cast<DkLoadImageEvent*>(event);
-//	//	
-//	//	if (!imgEvent->getImage().isNull())
-//	//		viewport()->setImage(imgEvent->getImage());
-//	//	viewport()->setWindowTitle(imgEvent->getTitle(), imgEvent->getAttr());
-//	//	return true;
-//	//}
-//
-//	if (event->type() == QEvent::Gesture)
-//		return gestureEvent(static_cast<QGestureEvent*>(event));
-//
-//	return QMainWindow::event(event);
-//}
+void DkNoMacs::onWindowLoaded() {
+
+	DkRecentFilesWidget* rf = new DkRecentFilesWidget(this);
+	rf->show();
+
+	QSettings s;
+	bool firstTime = (s.value("AppSettings/appMode", -1).toInt() == -1) ? true : false;
+
+	if (!firstTime)
+		return;
+
+	// here are some first time requests
+	DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
+	wecomeDialog->exec();
+
+	if (wecomeDialog->isLanguageChanged())
+		restart();
+}
 
 void DkNoMacs::keyPressEvent(QKeyEvent *event) {
 	
@@ -3696,11 +3685,15 @@ void DkNoMacs::openPluginManager() {
 #ifdef WITH_PLUGINS
 
 	if (!currRunningPlugin.isEmpty()) {
+		closePlugin(true, false);
+	}
+
+	if (!currRunningPlugin.isEmpty()) {
 	   	   
 		QMessageBox infoDialog(this);
 		infoDialog.setWindowTitle("Close plugin");
 		infoDialog.setIcon(QMessageBox::Information);
-		infoDialog.setText("Please first close the currently opened plugin.");
+		infoDialog.setText("Please close the currently opened plugin first.");
 		infoDialog.show();
 
 		infoDialog.exec();
@@ -3719,6 +3712,9 @@ void DkNoMacs::runLoadedPlugin() {
 
    if (!action)
 	   return;
+
+   if (!currRunningPlugin.isEmpty())
+	   closePlugin(true, false);
 
    if (!currRunningPlugin.isEmpty()) {
 	   
@@ -3755,11 +3751,11 @@ void DkNoMacs::runLoadedPlugin() {
 	    
 		DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
 
-	   if(!vPlugin) 
+	   if(!vPlugin || !vPlugin->getViewPort()) 
 		   return;
 
 	   currRunningPlugin = key;
-
+	   	   
 	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(closePlugin(bool, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(loadFile(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));

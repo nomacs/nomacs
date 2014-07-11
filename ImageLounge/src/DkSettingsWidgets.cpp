@@ -303,41 +303,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	langLayout->setMargin(0);
 	QLabel* langLabel = new QLabel("choose language:", langWidget);
 	langCombo = new QComboBox(langWidget);
-
-	QDir qmDir = qApp->applicationDirPath();
-	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
-	if (fileNames.size() == 0) {
-		QDir appDir = QDir(qApp->applicationDirPath());
-		qmDir = QDir(appDir.filePath("../share/nomacs/translations/"));
-		fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
-	}
-
-	langCombo->addItem("English");
-	languages << "en";
-
-	for (int i = 0; i < fileNames.size(); ++i) {
-		QString locale = fileNames[i];
-		locale.remove(0, locale.indexOf('_') + 1);
-		locale.chop(3);
-
-		QTranslator translator;
-		if (translator.load(fileNames[i], qmDir.absolutePath()))
-			qDebug() << "translation loaded";
-		else
-			qDebug() << "translation NOT loaded";
-
-		//: this should be the name of the language in which nomacs is translated to
-		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");
-		if (language.isEmpty())
-			continue;
-
-		langCombo->addItem(language);
-		languages << locale;
-
-		if (locale == curLanguage) {
-			langCombo->setCurrentIndex(i+1); // +1 because of english
-		}
-	}
+	DkUtils::addLanguages(langCombo, languages);
 
 	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">translate nomacs</a>", langWidget);
 	translateLabel->setToolTip(tr("if you want to help us and translate nomacs"));
@@ -1314,6 +1280,7 @@ void DkFileFilterSettingWidget::writeSettings() {
 
 	DkFileFilterHandling fh;
 	DkSettings::app.browseFilters.clear();
+	DkSettings::app.registerFilters.clear();
 	
 	for (int idx = 0; idx < model->rowCount(); idx++) {
 
@@ -1343,8 +1310,6 @@ void DkFileFilterSettingWidget::writeSettings() {
 		else
 			qDebug() << item->text() << " unregistered";
 	}
-
-
 
 }
 

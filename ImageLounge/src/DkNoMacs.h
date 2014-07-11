@@ -574,6 +574,7 @@ public slots:
 
 	// batch actions
 	void computeThumbsBatch();
+	void onWindowLoaded();
 
 protected:
 	

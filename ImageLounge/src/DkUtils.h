@@ -37,6 +37,12 @@
 #include <QPainter>
 #include <QFuture>
 #include <QtConcurrentRun>
+#include <QDir>
+#include <QComboBox>
+#include <QCoreApplication>
+#include <QTranslator>
+
+
 
 #include <cmath>
 #include <sstream>
@@ -47,6 +53,7 @@
 #include <fstream>
 
 #include "DkError.h"
+#include "DkSettings.h"
 
 #ifdef Q_OS_WIN
 
@@ -60,8 +67,6 @@
 #else
 	#include <time.h>
 #endif
-
-
 
 #ifdef WITH_OPENCV
 
@@ -83,6 +88,16 @@ using namespace cv;
 
 #endif
 
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
 namespace nmc {
 
 enum morphTypes {DK_ERODE=0, DK_DILATE};
@@ -93,7 +108,7 @@ enum SpeedLebel {DK_NO_SPEED_UP=0, DK_SPEED_UP, DK_APPROXIMATE};
 /**
  * This class contains general functions which are useful.
  **/
-class DkUtils {
+class DllExport DkUtils {
 
 private:
 	static int debugLevel;
@@ -136,6 +151,7 @@ public:
 
 	static bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
 
+	static void addLanguages(QComboBox* langCombo, QStringList& languages);
 
 	/**
 	 * Sleeps n ms.

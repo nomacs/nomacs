@@ -121,6 +121,10 @@ signals:
 	void loadImage(QImage image);
 
 protected:
+	virtual void closeEvent(QCloseEvent *event) {
+		emit closePlugin();
+		QWidget::closeEvent(event);
+	};
 
 	virtual QPointF mapToImage(const QPointF& pos) const {
 		

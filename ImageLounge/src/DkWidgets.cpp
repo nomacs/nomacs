@@ -5034,6 +5034,132 @@ void DkSlider::createLayout() {
 	connect(sliderBox, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
 }
 
+// DkFileInfo --------------------------------------------------------------------
+DkFileInfo::DkFileInfo() {
+	fileExists = false;
+	used = false;
+}
+
+DkFileInfo::DkFileInfo(const QFileInfo& fileInfo) {
+
+	this->fileInfo = fileInfo;
+	fileExists = false;
+	used = false;
+}
+
+bool DkFileInfo::exists() const {
+	return fileExists;
+}
+
+void DkFileInfo::setExists(bool fileExists) {
+	this->fileExists = fileExists;
+}
+
+bool DkFileInfo::inUse() const {
+	return used;
+}
+
+void DkFileInfo::setInUse(bool inUse) {
+	used = inUse;
+}
+
+QFileInfo DkFileInfo::getFileInfo() const {
+	return fileInfo;
+}
+
+// DkFileLabel --------------------------------------------------------------------
+DkFileLabel::DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+
+	if (fileInfo.getFileInfo().isDir())
+		setText(fileInfo.getFileInfo().absoluteFilePath());
+	else
+		setText(fileInfo.getFileInfo().fileName());
+
+	this->fileInfo = fileInfo;
+}
+
+void DkFileLabel::mousePressEvent(QMouseEvent *ev) {
+
+	emit loadFile(fileInfo.getFileInfo());
+
+	QLabel::mousePressEvent(ev);
+}
+
+// Recent Files Widget --------------------------------------------------------------------
+DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(parent) {
+
+	resize(500, 200);
+	//setStyleSheet("QWidget{background-color:#aaaaaa;}");
+	createLayout();
+
+	connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateEntries()));
+	connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateEntries()));
+
+	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++)
+		recentFiles.append(QFileInfo(DkSettings::global.recentFiles.at(idx)));
+	for (int idx = 0; idx < DkSettings::global.recentFolders.size(); idx++)
+		recentFolders.append(QFileInfo(DkSettings::global.recentFolders.at(idx)));
+
+	fileWatcher.setFuture(QtConcurrent::map(recentFiles, &mappedFileExists));
+	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &mappedFileExists));
+}
+
+void DkRecentFilesWidget::createLayout() {
+
+	QHBoxLayout* hLayout = new QHBoxLayout(this);
+
+	filesWidget = new QWidget(this);
+	filesLayout = new QVBoxLayout(filesWidget);
+
+	folderWidget = new QWidget(this);
+	folderLayout = new QVBoxLayout(folderWidget);
+
+	hLayout->addWidget(filesWidget);
+	hLayout->addWidget(folderWidget);
+}
+
+void DkRecentFilesWidget::updateEntries(int idx) {
+
+	for (int idx = 0; idx < recentFiles.size(); idx++) {
+
+		if (recentFiles.at(idx).inUse())
+			continue;
+
+		if (recentFiles.at(idx).exists()) {
+			recentFiles[idx].setInUse(true);
+
+			DkFileLabel* fLabel = new DkFileLabel(recentFiles.at(idx), this);
+			filesLayout->addWidget(fLabel);
+		}
+	}
+
+	for (int idx = 0; idx < recentFolders.size(); idx++) {
+
+		if (recentFolders.at(idx).inUse())
+			continue;
+
+		if (recentFolders.at(idx).exists()) {
+			recentFolders[idx].setInUse(true);
+
+			DkFileLabel* fLabel = new DkFileLabel(recentFolders.at(idx), this);
+			folderLayout->addWidget(fLabel);
+		}
+	}
+
+	filesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	folderWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	filesWidget->adjustSize();
+	folderWidget->adjustSize();
+
+	qDebug() << "entry updated...";
+
+}
+
+void mappedFileExists(DkFileInfo& fileInfo) {
+
+	fileInfo.setExists(fileInfo.getFileInfo().exists());
+}
+
 }
 
 

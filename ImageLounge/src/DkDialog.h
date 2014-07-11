@@ -944,5 +944,24 @@ protected:
 	QCheckBox* cbForceSave;
 };
 
+class DkWelcomeDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkWelcomeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	bool isLanguageChanged();
+
+public slots:
+	virtual void accept();
+
+protected:
+	void createLayout();
+	
+	QComboBox* languageCombo;
+	QCheckBox* registerFilesCheckBox;
+	QStringList languages;
+	bool languageChanged;
+};
 
 }
