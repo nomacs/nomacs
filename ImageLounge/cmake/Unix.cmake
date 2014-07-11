@@ -34,32 +34,42 @@ if(NOT EXIV2_FOUND)
 endif(NOT EXIV2_FOUND)
 
 # search for opencv
-set(OpenCV_LIBS "")
-set(OpenCV_FOUND false)
-if(PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
-	pkg_check_modules(OpenCV  opencv>=2.1.0)
-	set(OpenCV_LIBS ${OpenCV_LIBRARIES})
-endif(PKG_CONFIG_FOUND)
+if(ENABLE_OPENCV)
+	set(OpenCV_LIBS "")
+	set(OpenCV_FOUND false)
+	if(PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
+		pkg_check_modules(OpenCV  opencv>=2.1.0)
+		set(OpenCV_LIBS ${OpenCV_LIBRARIES})
+	endif(PKG_CONFIG_FOUND)
 
-if(OpenCV_LIBS STREQUAL "")
-	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
-endif(OpenCV_LIBS STREQUAL "")
+	if(OpenCV_LIBS STREQUAL "")
+		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+	endif(OpenCV_LIBS STREQUAL "")
 
-if(NOT OpenCV_FOUND)
-	message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
-else()
-	add_definitions(-DWITH_OPENCV)
-endif()
+	if(NOT OpenCV_FOUND)
+		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
+	else()
+		add_definitions(-DWITH_OPENCV)
+	endif()
 
-if(${OpenCV_VERSION} EQUAL "2.1.0")
-	add_definitions(-DDISABLE_LANCZOS)
-endif()
+	if(${OpenCV_VERSION} EQUAL "2.1.0")
+		add_definitions(-DDISABLE_LANCZOS)
+	endif()
+endif(ENABLE_OPENCV)
 
 # search for libraw
-pkg_check_modules(LIBRAW  libraw>=0.12.0)
-if(NOT LIBRAW_FOUND AND NOT MSVC)
-	message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
-endif()
+if(ENABLE_RAW)
+	if(NOT OpenCV_FOUND)
+		message(FATAL_ERROR "OpenCV is mandotory when enabling RAW. You have to enable ENABLE_OPENCV")
+	endif()
+
+	pkg_check_modules(LIBRAW  libraw>=0.12.0)
+	if(NOT LIBRAW_FOUND)
+		message(FATAL_ERROR "libraw not found. It's mandatory when used with ENABLE_RAW enabled") 
+	else()
+		add_definitions(-DWITH_LIBRAW)
+	endif()
+endif(ENABLE_RAW)
 
 #search for multi-layer tiff
 find_package(TIFF)
