@@ -206,6 +206,8 @@ DkPluginViewPort* DkNikonPlugin::getViewPort() {
 			warningDialog.setDefaultButton(QMessageBox::Ok);
 			warningDialog.show();
 			warningDialog.exec();
+
+			return 0;
 		}
 	}
 

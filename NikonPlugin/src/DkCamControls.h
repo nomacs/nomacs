@@ -130,7 +130,7 @@ protected:
 	void showEvent(QShowEvent *event);
 	void closeEvent(QCloseEvent *event);
 	void resizeEvent(QResizeEvent *event);
-	void close();
+	void closeMaid();
 
 	void createLayout();
 	void updateLensAttachedLabel(bool attached);

@@ -681,7 +681,7 @@ void DkImgTransformationsViewPort::calculateAutoRotation() {
 				rotationValue = skewEstimator.getSkewAngle();
 				if (rotationValue < 0) rotationValue += 360;
 				imgTransformationsToolbar->setRotationValue(rotationValue);
-
+				update();
 				return;
 			}
 		}

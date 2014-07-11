@@ -54,7 +54,7 @@ DkCamControls::DkCamControls(MaidFacade* maidFacade, const QString& title, QWidg
 
 DkCamControls::~DkCamControls() {
 
-	close();
+	closeMaid();
 }
 
 void DkCamControls::createLayout() {
@@ -469,18 +469,18 @@ void DkCamControls::showEvent(QShowEvent *event) {
 
 void DkCamControls::closeEvent(QCloseEvent* event) {
 
-	close();
+	closeMaid();
 	emit closeSignal();
 
 }
 
-void DkCamControls::close() {
+void DkCamControls::closeMaid() {
 
 	// something to do here?
 	if (maidFacade->isClosed())
 		return;
 
-	if (maidFacade->isLiveViewActive())
+	if (connected && maidFacade->isLiveViewActive())
 		onLiveView();
 
 	stopActivities();
