@@ -505,9 +505,12 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 		layout->setCurrentWidget(widget);
 	}
 	else
-		layout->setCurrentWidget(lastActiveWidget);
+	//	layout->setCurrentWidget(0);
+		layout->setCurrentWidget(widgets[hud_widget]);
 
-	qDebug() << "changed to widget: " << layout->currentWidget();
+	if (layout->currentWidget())
+		qDebug() << "changed to widget: " << layout->currentWidget();
+
 	// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
 	if (layout->currentIndex() == hud_widget && fileInfoLabel->isVisible()) {
 		fileInfoLabel->setVisible(false);
@@ -597,8 +600,10 @@ void DkControlWidget::stopLabels() {
 	//topLeftLabel->stop();
 	spinnerLabel->stop();
 
-	showCrop(false);
-	showThumbView(false);
+	//showCrop(false);
+	//showThumbView(false);
+	//showRecentFiles(false);
+	switchWidget();
 }
 
 void DkControlWidget::settingsChanged() {
