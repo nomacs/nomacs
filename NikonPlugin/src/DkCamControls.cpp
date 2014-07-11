@@ -480,8 +480,8 @@ void DkCamControls::closeMaid() {
 	if (maidFacade->isClosed())
 		return;
 
-	if (connected && maidFacade->isLiveViewActive())
-		onLiveView();
+	//if (connected && maidFacade->isLiveViewActive())
+	//	onLiveView();
 
 	stopActivities();
 
