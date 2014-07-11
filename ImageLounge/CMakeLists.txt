@@ -28,7 +28,7 @@ NMC_OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
 NMC_OPTION (ENABLE_UPNP "Compile with UPNP" ON IF MSVC)
 NMC_OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 NMC_OPTION (ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
-NMC_OPTION (ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported" ON IF MSVC)
+NMC_OPTION (ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" ON IF MSVC)
 
 # load pathes from the user file if exists 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.cmake)
@@ -77,7 +77,6 @@ endif (APPLE)
 file(GLOB NOMACS_SOURCES "src/*.cpp")
 file(GLOB NOMACS_HEADERS "src/*.h")
 
-
 file(GLOB NOMACS_MOCS "src/*.h")
 
 file(GLOB LIBQPSD_SOURCES "libqpsd/*.cpp")
@@ -95,7 +94,11 @@ set (NOMACS_FORMS
 )
 
 set (NOMACS_RESOURCES
-        src/nomacs.qrc
+		src/nomacs.qrc
+)
+
+set (NOMACS_RESOURCES
+		src/nomacs.qrc
 )
 
 set(NOMACS_TRANSLATIONS
@@ -115,6 +118,14 @@ set(NOMACS_TRANSLATIONS
 	translations/nomacs_sr.ts		
 	translations/nomacs_zh.ts		
 )
+
+IF (NOT ENABLE_QT5)
+ QT4_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
+ QT4_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
+ELSE()
+ QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
+ QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
+ENDIF()
 
 if (DISABLE_QT_DEBUG)
 	message (STATUS "disabling qt debug messages")

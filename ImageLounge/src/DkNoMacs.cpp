@@ -596,7 +596,9 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_auto_adjust]);
 	editMenu->addAction(editActions[menu_edit_norm]);
 	editMenu->addAction(editActions[menu_edit_invert]);
+#ifdef WITH_OPENCV
 	editMenu->addAction(editActions[menu_edit_unsharp]);
+#endif
 	editMenu->addSeparator();
 #ifdef WIN32
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
@@ -1333,7 +1335,11 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_flip_v]->setEnabled(enable);
 	editActions[menu_edit_norm]->setEnabled(enable);
 	editActions[menu_edit_auto_adjust]->setEnabled(enable);
+#ifdef WITH_OPENCV
 	editActions[menu_edit_unsharp]->setEnabled(enable);
+#else
+	editActions[menu_edit_unsharp]->setEnabled(false);
+#endif
 	editActions[menu_edit_invert]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
@@ -1860,7 +1866,7 @@ void DkNoMacs::autoAdjustImage() {
 }
 
 void DkNoMacs::unsharpMask() {
-
+#ifdef WITH_OPENCV
 	DkUnsharpDialog* unsharpDialog = new DkUnsharpDialog(this);
 	unsharpDialog->setImage(viewport()->getImage());
 	bool answer = unsharpDialog->exec();
@@ -1870,6 +1876,7 @@ void DkNoMacs::unsharpMask() {
 	}
 
 	unsharpDialog->deleteLater();
+#endif
 }
 
 void DkNoMacs::readSettings() {
@@ -3095,8 +3102,8 @@ void DkNoMacs::setContrast(bool contrast) {
 
 void DkNoMacs::onWindowLoaded() {
 
-	DkRecentFilesWidget* rf = new DkRecentFilesWidget(this);
-	rf->show();
+	//DkRecentFilesWidget* rf = new DkRecentFilesWidget(this);
+	//rf->show();
 
 	QSettings s;
 	bool firstTime = (s.value("AppSettings/appMode", -1).toInt() == -1) ? true : false;

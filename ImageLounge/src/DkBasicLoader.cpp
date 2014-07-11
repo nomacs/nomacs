@@ -247,7 +247,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	try {
 
-#ifdef WITH_OPENCV
+#ifdef WITH_LIBRAW
 
 		LibRaw iProcessor;
 		QImage image;
