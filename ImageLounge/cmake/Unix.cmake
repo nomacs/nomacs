@@ -1,8 +1,8 @@
 # nomacs cmake file for a Unix/Linux build
 
-if (ENABLE_PLUGINS)
-	message(FATAL_ERROR "Plugin system is currently only supported on windows systems")
-endif()
+#if (ENABLE_PLUGINS)
+#	message(FATAL_ERROR "Plugin system is currently only supported on windows systems")
+#endif()
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")

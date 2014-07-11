@@ -21,16 +21,22 @@ set(BINARY_NAME ${CMAKE_PROJECT_NAME})
 include("cmake/Utils.cmake")
 
 # different compile options
-NMC_OPTION (ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF (only Windows))" ON)
-NMC_OPTION (ENABLE_RAW "Compile with raw images support (libraw)" ON)
-NMC_OPTION (ENABLE_WEBP "Compile with webP support (webP)" ON)
-NMC_OPTION (ENABLE_TIFF "Compile with multi-layer tiff" ON)
-NMC_OPTION (ENABLE_UPNP "Compile with UPNP" ON IF MSVC)
-NMC_OPTION (DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
-NMC_OPTION (ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
-NMC_OPTION (ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" ON IF MSVC)
+option(ENABLE_OPENCV "Compile with Opencv (needed for RAW and TIFF)" ON)
+option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
+option(ENABLE_WEBP "Compile with webP support (webP)" ON)
+option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
+option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
+option(ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
 
-# load pathes from the user file if exists 
+if(MSVC)
+  option(ENABLE_UPNP "Compile with UPNP" ON)
+  option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" ON)
+else()
+  option(ENABLE_UPNP "Compile with UPNP" OFF)
+  option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" OFF)
+endif()
+
+# load paths from the user file if exists 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.cmake)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.cmake)
 endif()

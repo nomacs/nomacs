@@ -1,4 +1,4 @@
-# nomacs cmake file for a windows build
+l# nomacs cmake file for a windows build
 
 # load pathes from the user file if exists 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.txt)
