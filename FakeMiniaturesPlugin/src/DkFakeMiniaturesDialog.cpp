@@ -251,7 +251,7 @@ QImage DkFakeMiniaturesDialog::applyMiniaturesFilter(QImage inImg, QRect qRoi) {
 	cv::Mat distImg(blurImg.size(), CV_8UC1);
 	distImg = 255;
 	cv::Mat roi(distImg, Rect(qRoi.topLeft().x(), qRoi.topLeft().y(), qRoi.width(), qRoi.height()));
-	roi = 0;
+	roi.setTo(0);
 	// blur plane by plane
 	std::vector<cv::Mat> planes;
 	cv::split(blurImg, planes);

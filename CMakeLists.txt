@@ -22,7 +22,6 @@ if(NOT NOMACS_FOUND)
 endif()
 
 
-
 if(CMAKE_CL_64)
 	SET(PLUGIN_ARCHITECTURE "x64")
 else()
@@ -47,7 +46,7 @@ IF (ENABLE_FLIP)
 	add_subdirectory(FlipPlugin)
 ENDIF(ENABLE_FLIP)
 
-if(NOT CMAKE_CL_64)
+if(NOT CMAKE_CL_64 AND MSVC)
 	OPTION (ENABLE_NIKON "Compile Nikon plugin" ON)
 	IF (ENABLE_NIKON)
 		add_subdirectory(NikonPlugin)

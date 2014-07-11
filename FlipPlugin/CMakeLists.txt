@@ -96,7 +96,7 @@ ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
 ADD_DEFINITIONS(-DQT_DLL)
 
-set(NOMACS_LIB optimized libnomacs.lib debug libnomacsd.lib)
+#set(NOMACS_LIB optimized libnomacs.lib debug libnomacsd.lib)
 
 QT4_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
 QT4_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})

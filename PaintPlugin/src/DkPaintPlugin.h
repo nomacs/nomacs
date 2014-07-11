@@ -36,7 +36,7 @@
 #include <QAction>
 #include <QGraphicsPathItem>
 #include <QGraphicsSceneMouseEvent>
-#include <QToolbar>
+#include <QToolBar>
 #include <QMainWindow>
 #include <QColorDialog>
 #include <QSpinBox>
@@ -46,7 +46,7 @@
 #include "DkNoMacs.h"
 #include "DkSettings.h"
 #include "DkUtils.h"
-#include "DkBaseViewport.h"
+#include "DkBaseViewPort.h"
 #include "DkImageStorage.h"
 
 namespace nmc {
