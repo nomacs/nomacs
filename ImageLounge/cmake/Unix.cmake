@@ -1,7 +1,7 @@
 # nomacs cmake file for a Unix/Linux build
 
 if (ENABLE_PLUGINS)
-	message(FATAL_ERROR "Plugin system is currently only supported on windows systems
+	message(FATAL_ERROR "Plugin system is currently only supported on windows systems")
 endif()
 
 
@@ -34,6 +34,7 @@ if(NOT EXIV2_FOUND)
 endif(NOT EXIV2_FOUND)
 
 # search for opencv
+unset(OpenCV_FOUND CACHE)
 if(ENABLE_OPENCV)
 	set(OpenCV_LIBS "")
 	set(OpenCV_FOUND false)
@@ -47,7 +48,7 @@ if(ENABLE_OPENCV)
 	endif(OpenCV_LIBS STREQUAL "")
 
 	if(NOT OpenCV_FOUND)
-		message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
+		message(FATAL_ERROR "OpenCV not found.") 
 	else()
 		add_definitions(-DWITH_OPENCV)
 	endif()
@@ -72,10 +73,17 @@ if(ENABLE_RAW)
 endif(ENABLE_RAW)
 
 #search for multi-layer tiff
-find_package(TIFF)
-if(TIFF_FOUND)
-	SET(TIFF_CONFIG_DIR "")
-	add_definitions(-DWITH_LIBTIFF)
-else()
-	message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
-endif()
+unset(TIFF_INCLUDE_DIR CACHE)
+unset(TIFF_LIBRARY CACHE)
+if(ENABLE_TIFF)
+	if(NOT OpenCV_FOUND)
+		message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable ENABLE_OPENCV")
+	endif()
+	find_package(TIFF)
+	if(TIFF_FOUND)
+		SET(TIFF_CONFIG_DIR "")
+		add_definitions(-DWITH_LIBTIFF)
+	else()
+		message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
+	endif()
+endif(ENABLE_TIFF)
