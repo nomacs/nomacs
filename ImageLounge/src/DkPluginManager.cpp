@@ -505,11 +505,12 @@ void DkPluginTableWidget::updateSelectedPlugins() {
 			// after deleting instances the file are not in use anymore -> update
 			QList<QString> urls = QList<QString>();
 			while (pluginsToUpdate.size() > 0) {
+			  QString downloadUrl; 
 
 #if defined _WIN64
-				QString downloadUrl = pluginsToUpdate.takeLast().downloadX64;
+				downloadUrl = pluginsToUpdate.takeLast().downloadX64;
 #elif _WIN32
-				QString downloadUrl = pluginsToUpdate.takeLast().downloadX86;
+				downloadUrl = pluginsToUpdate.takeLast().downloadX86;
 #endif
 				urls.append(downloadUrl);
 			}
@@ -577,10 +578,11 @@ void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
 	QModelIndex sourceIndex = proxyModel->mapToSource(index);
 	int selectedRow = sourceIndex.row();
 	
+	QString downloadUrl;
 #if defined _WIN64
-	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX64;
+	downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX64;
 #elif _WIN32
-	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX86;
+	downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX86;
 #endif
 
 	//QDir pluginsDir = QDir(qApp->applicationDirPath());
