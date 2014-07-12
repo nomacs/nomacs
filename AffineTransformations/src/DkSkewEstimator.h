@@ -99,6 +99,7 @@ private:
 	QVector<int> selectedLineTypes;
 	cv::Mat matImg;
 	int rotationFactor;
+	QProgressDialog* progress;
 };
 
 };
