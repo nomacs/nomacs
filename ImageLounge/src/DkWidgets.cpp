@@ -5034,6 +5034,236 @@ void DkSlider::createLayout() {
 	connect(sliderBox, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
 }
 
+// DkFileInfo --------------------------------------------------------------------
+DkFileInfo::DkFileInfo() {
+	fileExists = false;
+	used = false;
+}
+
+DkFileInfo::DkFileInfo(const QFileInfo& fileInfo) {
+
+	this->fileInfo = fileInfo;
+	fileExists = false;
+	used = false;
+}
+
+bool DkFileInfo::exists() const {
+	return fileExists;
+}
+
+void DkFileInfo::setExists(bool fileExists) {
+	this->fileExists = fileExists;
+}
+
+bool DkFileInfo::inUse() const {
+	return used;
+}
+
+void DkFileInfo::setInUse(bool inUse) {
+	used = inUse;
+}
+
+QFileInfo DkFileInfo::getFileInfo() const {
+	return fileInfo;
+}
+
+// DkFileLabel --------------------------------------------------------------------
+DkFileLabel::DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+
+	if (fileInfo.getFileInfo().isDir())
+		setText(fileInfo.getFileInfo().absoluteFilePath());
+	else
+		setText(fileInfo.getFileInfo().fileName());
+
+	this->fileInfo = fileInfo;
+
+}
+
+void DkFileLabel::mousePressEvent(QMouseEvent *ev) {
+
+	emit loadFileSignal(fileInfo.getFileInfo());
+
+	QLabel::mousePressEvent(ev);
+}
+
+// Recent Files Widget --------------------------------------------------------------------
+DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(parent) {
+
+	setObjectName("DkRecentFilesWidget");
+
+	createLayout();
+
+	connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateFiles()));
+	connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
+}
+
+void DkRecentFilesWidget::createLayout() {
+
+	filesWidget = new QWidget(this);
+	filesLayout = new QVBoxLayout(filesWidget);
+
+	folderWidget = new QWidget(this);
+	folderLayout = new QVBoxLayout(folderWidget);
+	
+	filesTitle = new QLabel(tr("Recent Files"), this);
+	filesTitle->setStyleSheet("QLabel{font-size: 20px;}");
+
+	folderTitle = new QLabel(tr("Recent Folders"), this);
+	folderTitle->setStyleSheet("QLabel{font-size: 20px;}");
+
+	bgLabel = new QLabel(this);
+	bgLabel->setObjectName("bgLabel");
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setContentsMargins(0,0,0,0);
+	layout->addWidget(bgLabel);
+	QHBoxLayout* hLayout = new QHBoxLayout(bgLabel);
+
+	hLayout->addWidget(filesWidget);
+	hLayout->addWidget(folderWidget);
+	hLayout->addStretch();
+
+	setCustomStyle();
+}
+
+void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
+
+	if (imgLoadedStyle) {
+		setStyleSheet(QString("#bgLabel{background-color:") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" +
+			QString("QLabel{color: #FFFFFF; padding: 2 0 2 0; font-size: 13px;}") + 
+			QString("QLabel:hover{color: #FFFFFF;") + 
+			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.highlightColor) + ", stop: 1 rgba(0,0,0,0));}");
+
+	}
+	else {
+		setStyleSheet(QString("#bgLabel{background-color: rgba(0,0,0,0);}" +
+			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" + 
+		QString("QLabel:hover{color: #FFFFFF;") + 
+			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColor) + ", stop: 1 rgba(0,0,0,0));}"));
+
+	}
+
+}
+
+void DkRecentFilesWidget::setVisible(bool visible) {
+	
+	if (visible)
+		updateFileList();
+	
+	qDebug() << "showing recent files...";
+
+	DkWidget::setVisible(visible);
+}
+
+void DkRecentFilesWidget::updateFileList() {
+
+	delete folderLayout;
+	delete filesLayout;
+
+	folderLayout = new QVBoxLayout(folderWidget);
+	filesLayout = new QVBoxLayout(filesWidget);
+	
+	filesWidget->setFixedHeight(1080);
+	folderWidget->setFixedHeight(1080);
+
+	filesLayout->setSpacing(0);
+	folderLayout->setSpacing(0);
+
+	for (int idx = 0; idx < fileLabels.size(); idx++) {
+		delete fileLabels.at(idx);
+	}
+
+	for (int idx = 0; idx < folderLabels.size(); idx++) {
+		delete folderLabels.at(idx);
+	}
+
+	filesTitle->hide();
+	folderTitle->hide();
+
+	fileWatcher.cancel();
+	fileWatcher.waitForFinished();
+	folderWatcher.cancel();
+	folderWatcher.waitForFinished();
+
+	fileLabels.clear();
+	folderLabels.clear();
+	recentFiles.clear();
+	recentFolders.clear();
+
+	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++)
+		recentFiles.append(QFileInfo(DkSettings::global.recentFiles.at(idx)));
+	for (int idx = 0; idx < DkSettings::global.recentFolders.size(); idx++)
+		recentFolders.append(QFileInfo(DkSettings::global.recentFolders.at(idx)));
+
+	fileWatcher.setFuture(QtConcurrent::map(recentFiles, &nmc::DkRecentFilesWidget::mappedFileExists));
+	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &nmc::DkRecentFilesWidget::mappedFileExists));
+}
+
+void DkRecentFilesWidget::updateFiles() {
+
+	filesTitle->show();
+	filesLayout->addWidget(filesTitle);
+	filesLayout->addSpacerItem(new QSpacerItem(10, 10));
+
+	int cHeight = 0;
+
+	for (int idx = 0; idx < recentFiles.size(); idx++) {
+
+		if (recentFiles.at(idx).inUse())
+			continue;
+
+		if (recentFiles.at(idx).exists()) {
+			recentFiles[idx].setInUse(true);
+
+			DkFileLabel* fLabel = new DkFileLabel(recentFiles.at(idx), this);
+			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+			fileLabels.append(fLabel);
+			filesLayout->addWidget(fLabel);
+
+			cHeight += fLabel->height();
+			if (cHeight > folderWidget->height())
+				break;
+
+		}
+	}
+
+	filesLayout->addStretch();
+}
+
+void DkRecentFilesWidget::updateFolders() {
+
+	folderTitle->show();
+	folderLayout->addWidget(folderTitle);
+	folderLayout->addSpacerItem(new QSpacerItem(10, 10));
+
+	int cHeight = 0;
+
+	for (int idx = 0; idx < recentFolders.size(); idx++) {
+
+		if (recentFolders.at(idx).inUse())
+			continue;
+
+		if (recentFolders.at(idx).exists()) {
+			recentFolders[idx].setInUse(true);
+
+			DkFileLabel* fLabel = new DkFileLabel(recentFolders.at(idx), this);
+			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+			folderLayout->addWidget(fLabel);
+			folderLabels.append(fLabel);
+
+			cHeight += fLabel->height();
+			if (cHeight > folderWidget->height())
+				break;
+		}
+	}
+
+	folderLayout->addStretch();
+}
+
+void DkRecentFilesWidget::mappedFileExists(DkFileInfo& fileInfo) {
+
+	fileInfo.setExists(fileInfo.getFileInfo().exists());
+}
+
 }
 
 

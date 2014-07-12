@@ -588,6 +588,7 @@ QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float op
 	return glow;
 };
 
+#ifdef WITH_OPENCV
 cv::Mat DkImage::get1DGauss(double sigma) {
 
 	// correct -> checked with matlab reference
@@ -611,6 +612,7 @@ cv::Mat DkImage::get1DGauss(double sigma) {
 
 	return gKernel;
 }
+#endif
 
 bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 

@@ -197,13 +197,16 @@ void DkPluginManager::loadPlugins() {
 	pluginIdList.clear();
 	pluginLoaders.clear();
 
-	QDir pluginsDir = DkSettings::global.pluginsDir;
-	//QDir pluginsDir = QDir("C:\\VSProjects\\nomacs-plugins\\build2012x64\\FlipPlugin\\Debug");
-	//QDir pluginsDir = QDir(qApp->applicationDirPath());
-    //pluginsDir.cd("plugins");
+	QStringList libPaths = QCoreApplication::libraryPaths();
 
-	foreach(QString fileName, pluginsDir.entryList(QDir::Files)) singlePluginLoad(pluginsDir.absoluteFilePath(fileName));
-
+	for (int idx = 0; idx < libPaths.size(); idx++) {
+		
+		QDir pluginsDir(libPaths.at(idx));
+		
+		foreach(QString fileName, pluginsDir.entryList(QDir::Files)) 
+			singlePluginLoad(pluginsDir.absoluteFilePath(fileName));
+	}
+	
 	QSettings settings;
 	int i = 0;
 
@@ -502,11 +505,12 @@ void DkPluginTableWidget::updateSelectedPlugins() {
 			// after deleting instances the file are not in use anymore -> update
 			QList<QString> urls = QList<QString>();
 			while (pluginsToUpdate.size() > 0) {
+			  QString downloadUrl; 
 
 #if defined _WIN64
-				QString downloadUrl = pluginsToUpdate.takeLast().downloadX64;
+				downloadUrl = pluginsToUpdate.takeLast().downloadX64;
 #elif _WIN32
-				QString downloadUrl = pluginsToUpdate.takeLast().downloadX86;
+				downloadUrl = pluginsToUpdate.takeLast().downloadX86;
 #endif
 				urls.append(downloadUrl);
 			}
@@ -574,10 +578,11 @@ void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
 	QModelIndex sourceIndex = proxyModel->mapToSource(index);
 	int selectedRow = sourceIndex.row();
 	
+	QString downloadUrl;
 #if defined _WIN64
-	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX64;
+	downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX64;
 #elif _WIN32
-	QString downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX86;
+	downloadUrl = downloadPluginsModel->getPluginData().at(selectedRow).downloadX86;
 #endif
 
 	//QDir pluginsDir = QDir(qApp->applicationDirPath());
@@ -1512,8 +1517,6 @@ void DkPluginDownloader::replyToImg(QNetworkReply* reply) {
 
 void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
 
-	//QDir pluginsDir = QDir(qApp->applicationDirPath());
-    //pluginsDir.cd("plugins
 	QDir pluginsDir = DkSettings::global.pluginsDir;
 
 	QFile file(pluginsDir.absolutePath().append("\\").append(fileName));

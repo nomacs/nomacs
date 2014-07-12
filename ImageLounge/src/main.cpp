@@ -96,6 +96,22 @@ int main(int argc, char *argv[]) {
 	QStringList args = a.arguments();
 	nmc::DkSettings::initFileFilters();
 
+
+	// initialize plugin paths -----------------------------------------
+	nmc::DkSettings::global.pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
+
+#if !defined(QT_NO_DEBUG_OUTPUT)
+	nmc::DkSettings::global.pluginsDir = qApp->applicationDirPath() + "/plugins";
+	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
+#endif
+	// initialize plugin paths -----------------------------------------
+
+	QStringList lPs = QCoreApplication::libraryPaths();
+	for (int idx = 0; idx < lPs.size(); idx++) {
+		qDebug() << "library path: " << lPs.at(idx);
+	}
+
 	//// pong --------------------------------------------------------------------
 	//nmc::DkPong *p = new nmc::DkPong();
 	//int pVal = a.exec();

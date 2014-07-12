@@ -113,6 +113,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	if (settings)
 		delete settings;
+
 }
 
 DkNoMacs::~DkNoMacs() {
@@ -241,11 +242,7 @@ void DkNoMacs::init() {
 	}
 #endif // Q_WS_WIN
 
-	// TODO: finish registration process
-	//DkFileFilterHandling fh;
-	//fh.registerFileType(DkSettings::openFilters.at(2), tr("Image"), true);
-	//qDebug() << DkSettings::openFilters.at(1) << "registered";
-
+	QTimer::singleShot(0, this, SLOT(onWindowLoaded()));
 }
 
 #ifdef WIN32	// windows specific versioning
@@ -550,6 +547,7 @@ void DkNoMacs::createMenu() {
 
 	fileMenu->addMenu(fileFilesMenu);
 	fileMenu->addMenu(fileFoldersMenu);
+	fileMenu->addAction(fileActions[menu_file_show_recent]);
 
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_print]);
@@ -599,7 +597,9 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_auto_adjust]);
 	editMenu->addAction(editActions[menu_edit_norm]);
 	editMenu->addAction(editActions[menu_edit_invert]);
+#ifdef WITH_OPENCV
 	editMenu->addAction(editActions[menu_edit_unsharp]);
+#endif
 	editMenu->addSeparator();
 #ifdef WIN32
 	editMenu->addAction(editActions[menu_edit_wallpaper]);
@@ -820,6 +820,12 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
 	fileActions[menu_file_print]->setStatusTip(tr("Print an image"));
 	connect(fileActions[menu_file_print], SIGNAL(triggered()), this, SLOT(printDialog()));
+
+	fileActions[menu_file_show_recent] = new QAction(tr("&Recent Files and Folders"), this);
+	fileActions[menu_file_show_recent]->setCheckable(true);
+	fileActions[menu_file_show_recent]->setChecked(false);
+	fileActions[menu_file_show_recent]->setStatusTip(tr("Show Recent Files and Folders"));
+	connect(fileActions[menu_file_show_recent], SIGNAL(triggered(bool)), vp->getController(), SLOT(showRecentFiles(bool)));
 
 	fileActions[menu_file_reload] = new QAction(tr("&Reload File"), this);
 	fileActions[menu_file_reload]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -1336,7 +1342,11 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_flip_v]->setEnabled(enable);
 	editActions[menu_edit_norm]->setEnabled(enable);
 	editActions[menu_edit_auto_adjust]->setEnabled(enable);
+#ifdef WITH_OPENCV
 	editActions[menu_edit_unsharp]->setEnabled(enable);
+#else
+	editActions[menu_edit_unsharp]->setEnabled(false);
+#endif
 	editActions[menu_edit_invert]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
@@ -1863,7 +1873,7 @@ void DkNoMacs::autoAdjustImage() {
 }
 
 void DkNoMacs::unsharpMask() {
-
+#ifdef WITH_OPENCV
 	DkUnsharpDialog* unsharpDialog = new DkUnsharpDialog(this);
 	unsharpDialog->setImage(viewport()->getImage());
 	bool answer = unsharpDialog->exec();
@@ -1873,6 +1883,7 @@ void DkNoMacs::unsharpMask() {
 	}
 
 	unsharpDialog->deleteLater();
+#endif
 }
 
 void DkNoMacs::readSettings() {
@@ -3096,32 +3107,26 @@ void DkNoMacs::setContrast(bool contrast) {
 	qDebug() << "contrast arguments: " << args;
 }
 
-//bool DkNoMacs::event(QEvent *event) {
-//
-//	if (event->type() > QEvent::User)
-//		qDebug() << "user event??";
-//
-//	//if (event->type() == DkInfoEvent::type()) {
-//
-//	//	DkInfoEvent *infoEvent = static_cast<DkInfoEvent*>(event);
-//	//	viewport()->setInfo(infoEvent->getMessage(), infoEvent->getTime(), infoEvent->getInfoType());
-//	//	return true;
-//	//}
-//	//if (event->type() == DkLoadImageEvent::type()) {
-//
-//	//	DkLoadImageEvent *imgEvent = static_cast<DkLoadImageEvent*>(event);
-//	//	
-//	//	if (!imgEvent->getImage().isNull())
-//	//		viewport()->setImage(imgEvent->getImage());
-//	//	viewport()->setWindowTitle(imgEvent->getTitle(), imgEvent->getAttr());
-//	//	return true;
-//	//}
-//
-//	if (event->type() == QEvent::Gesture)
-//		return gestureEvent(static_cast<QGestureEvent*>(event));
-//
-//	return QMainWindow::event(event);
-//}
+void DkNoMacs::onWindowLoaded() {
+
+	if (DkSettings::app.appMode != DkSettings::mode_frameless && !DkSettings::global.recentFiles.empty())
+		viewport()->getController()->showRecentFiles(true);
+
+	QSettings s;
+	bool firstTime = s.value("AppSettings/firstTime", true).toBool();
+
+	if (!firstTime)
+		return;
+
+	// here are some first time requests
+	DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
+	wecomeDialog->exec();
+
+	s.setValue("AppSettings/firstTime", false);
+
+	if (wecomeDialog->isLanguageChanged())
+		restart();
+}
 
 void DkNoMacs::keyPressEvent(QKeyEvent *event) {
 	
@@ -3696,11 +3701,15 @@ void DkNoMacs::openPluginManager() {
 #ifdef WITH_PLUGINS
 
 	if (!currRunningPlugin.isEmpty()) {
+		closePlugin(true, false);
+	}
+
+	if (!currRunningPlugin.isEmpty()) {
 	   	   
 		QMessageBox infoDialog(this);
 		infoDialog.setWindowTitle("Close plugin");
 		infoDialog.setIcon(QMessageBox::Information);
-		infoDialog.setText("Please first close the currently opened plugin.");
+		infoDialog.setText("Please close the currently opened plugin first.");
 		infoDialog.show();
 
 		infoDialog.exec();
@@ -3719,6 +3728,9 @@ void DkNoMacs::runLoadedPlugin() {
 
    if (!action)
 	   return;
+
+   if (!currRunningPlugin.isEmpty())
+	   closePlugin(true, false);
 
    if (!currRunningPlugin.isEmpty()) {
 	   
@@ -3755,11 +3767,11 @@ void DkNoMacs::runLoadedPlugin() {
 	    
 		DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
 
-	   if(!vPlugin) 
+	   if(!vPlugin || !vPlugin->getViewPort()) 
 		   return;
 
 	   currRunningPlugin = key;
-
+	   	   
 	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(closePlugin(bool, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(loadFile(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
@@ -4313,6 +4325,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+	vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 	DkSettings::app.appMode = 0;
 
 	initLanClient();
@@ -4530,6 +4543,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+		vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 
 		initLanClient();
 		emit sendTitleSignal(windowTitle());
