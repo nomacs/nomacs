@@ -140,7 +140,7 @@ bool DkPluginManager::singlePluginLoad(QString filePath) {
 	QPluginLoader* loader = new QPluginLoader(filePath);
 	
 	if (!loader->load()) {
-        qDebug() << "Could not load: " << filePath;
+        //qDebug() << "Could not load: " << filePath;
 		return false;
     }
 	
@@ -168,9 +168,11 @@ bool DkPluginManager::singlePluginLoad(QString filePath) {
 	}
 	else {
 		delete loader;
-		qDebug() << "could not load: " << filePath;
+		//qDebug() << "could not load: " << filePath;
 		return false;
 	}
+
+	qDebug() << filePath << " loaded...";
 
 	return true;
 }
@@ -597,7 +599,7 @@ void DkPluginTableWidget::installPlugin(const QModelIndex &index) {
 	if (!pluginsDir.exists())
 		pluginsDir.mkpath(pluginsDir.absolutePath());
 
-	qDebug() << "path: " << DkSettings::global.pluginsDir;
+	qDebug() << "install path: " << DkSettings::global.pluginsDir;
 
 	pluginDownloader->downloadPlugin(sourceIndex, downloadFileListUrl, downloadPluginsModel->getPluginData().at(selectedRow).name);	
 }
@@ -607,6 +609,8 @@ void DkPluginTableWidget::pluginInstalled(const QModelIndex &index) {
 	DkDownloadPluginsModel* downloadPluginsModel = static_cast<DkDownloadPluginsModel*>(model);
 	downloadPluginsModel->updateInstalledData(index, true);
 	pluginManager->loadPlugins();
+
+	qDebug() << "plugin saved to: " << DkSettings::global.pluginsDir;
 }
 
 void DkPluginTableWidget::clearTableFilters(){
@@ -1442,7 +1446,9 @@ void DkPluginDownloader::downloadPlugin(const QModelIndex &index, QString url, Q
 		}
 	}
 
-	emit showDownloaderMessage(tr("Plugin %1 was successfully installed.").arg(pluginName), tr("Plugin manager"));
+	// // the check mark suggests this anyway
+	//emit showDownloaderMessage(tr("Plugin %1 was successfully installed.").arg(pluginName), tr("Plugin manager"));
+	//// TODO: check if the file exists before giving a success notification
 	emit pluginDownloaded(index);
 }
 

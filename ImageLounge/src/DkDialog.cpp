@@ -4140,6 +4140,7 @@ void DkWelcomeDialog::createLayout() {
 	layout->addWidget(registerFilesCheckBox, 4, 1);
 #else
 	registerFilesCheckBox->setChecked(false);
+	registerFilesCheckBox->hide();
 #endif
 	
 	layout->addWidget(buttons, 5, 0, 1, 3);

@@ -641,7 +641,6 @@ void DkSettings::setToDefaultSettings() {
 	global_p.setupVersion = "";
 	global_p.sortMode = sort_filename;
 	global_p.sortDir = sort_ascending;
-	global_p.pluginsDir = "";	
 	global_p.zoomOnWheel = true;
 
 #ifdef Q_WS_X11
