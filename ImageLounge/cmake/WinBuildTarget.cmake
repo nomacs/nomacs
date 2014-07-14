@@ -23,8 +23,8 @@ target_link_libraries(${DLL_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_
 add_dependencies(${BINARY_NAME} ${DLL_NAME})
 
 if (ENABLE_QT5)
-	qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport)
-	qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport)
+	qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
+	qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
 ENDIF()
 
 SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
