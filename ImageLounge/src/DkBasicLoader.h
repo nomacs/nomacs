@@ -34,6 +34,7 @@
 #include <QImageWriter>
 
 #include "DkImageStorage.h"
+#include "DkMetaData.h"
 #include "DkSettings.h"
 #include "DkError.h"
 #include "DkTimer.h"
