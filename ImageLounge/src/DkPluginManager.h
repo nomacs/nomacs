@@ -79,7 +79,7 @@ enum pluginRequestType {
 	request_xml_for_update,
 	request_preview,
 	request_plugin,
-	request_plugin_update,
+	request_plugin_files_list,
 };
 
 enum xmlUsage {
@@ -93,9 +93,8 @@ struct XmlPluginData {
 	QString version;
 	QString decription;
 	QString previewImgUrl;
-	QString downloadSrc;
-	QString downloadX86;
-	QString downloadX64;
+	bool isWin64;
+	bool isWin86;
 };
 
 struct QPairFirstComparer {
@@ -123,7 +122,7 @@ public:
 		
 	void loadPlugins();
 	void loadEnabledPlugins();
-	void singlePluginLoad(QString filePath);
+	bool singlePluginLoad(QString filePath);
 	QMap<QString, DkPluginInterface *> getPlugins();
 	DkPluginInterface* getPlugin(QString key);
 	QList<QString> getPluginIdList();
@@ -367,7 +366,7 @@ public:
 
 	void downloadXml(int usage);
 	void downloadPreviewImg(QString url);
-	void downloadPlugin(const QModelIndex &index, QString url);
+	void downloadPlugin(const QModelIndex &index, QString url, QString pluginName);
 	void updatePlugins(QList<QString> urls);
 	QList<XmlPluginData> getXmlPluginData();
 
@@ -376,8 +375,8 @@ signals:
 	void parsingFinished(int usage);
 	void imageDownloaded(QImage img);
 	void pluginDownloaded(const QModelIndex &index);
-	void pluginUpdated();
 	void allPluginsUpdated(bool finishedSuccessfully);
+	void pluginFilesDownloadingFinished();
 
 protected slots:
 	void replyFinished(QNetworkReply*);
@@ -392,14 +391,15 @@ private:
 	QList<XmlPluginData> xmlPluginData;
 	int requestType;
 	QString fileName;
-	QModelIndex pluginIndex;
 	int currUsage;
-	int fileUpdateMax;
-	int fileUpdateCurr;
-	
+	QStringList filesToDownload;
+
 	void parseXml(QNetworkReply* reply);
 	void replyToImg(QNetworkReply* reply);
 	void startPluginDownload(QNetworkReply* reply);
+	void parseFileList(QNetworkReply* reply);
+	void downloadSingleFile(QString url);
+	void downloadPluginFileList(QString url);
 };
 
 
