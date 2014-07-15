@@ -29,7 +29,9 @@
 
 namespace nmc {
 
-DkSkewEstimator::DkSkewEstimator() {
+DkSkewEstimator::DkSkewEstimator(QWidget* mainWin) {
+
+	this->mainWin = mainWin;
 
 	// method parameters
 	nIter = 200;
@@ -77,7 +79,7 @@ void DkSkewEstimator::setImage(QImage inImage) {
 double DkSkewEstimator::getSkewAngle() {
 
 	if (!matImg.empty()) {
-		progress = new QProgressDialog(QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Calculating angle..."), QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Cancel"), 0, 100);
+		progress = new QProgressDialog(QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Calculating angle..."), QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Cancel"), 0, 100, mainWin);
 		progress->setMinimumDuration(250);
 		progress->setMaximum(100);
 		progress->setValue(0);

@@ -35,6 +35,7 @@
 #include <QVector4D>
 #include <cmath>
 #include <QProgressDialog>
+#include <QWidget>
 
 #include "DkImageStorage.h"
 
@@ -70,7 +71,7 @@ public:
 		dir_end,
 	};
 
-	DkSkewEstimator();
+	DkSkewEstimator(QWidget* mainWin = 0);
 	~DkSkewEstimator();
 
 	double getSkewAngle();
@@ -100,6 +101,7 @@ private:
 	cv::Mat matImg;
 	int rotationFactor;
 	QProgressDialog* progress;
+	QWidget* mainWin;
 };
 
 };

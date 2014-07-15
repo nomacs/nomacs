@@ -223,7 +223,7 @@ void DkImgTransformationsViewPort::init() {
 	guideMode = guide_no_guide;
 
 	intrRect = new DkInteractionRects(this);
-	skewEstimator = DkSkewEstimator();
+	skewEstimator = DkSkewEstimator(this);
 
 	imgTransformationsToolbar = new DkImgTransformationsToolBar(tr("ImgTransformations Toolbar"), defaultMode, this);
 
@@ -505,11 +505,15 @@ void DkImgTransformationsViewPort::paintEvent(QPaintEvent *event) {
 	else if (selectedMode == mode_rotate) {
 
 		if (angleLinesEnabled) {
-			QPen linePen(Qt::red, qCeil(3.0 * imgRect.width() / 1000.0), Qt::SolidLine);
+			QPen linePen(DkSettings::display.highlightColor, qCeil(2.0 * imgRect.width() / 1000.0), Qt::SolidLine);
+			QColor hCAlpha(50,50,50);
+			hCAlpha.setAlpha(200);
+
+			//QPen linePen(Qt::red, qCeil(3.0 * imgRect.width() / 1000.0), Qt::SolidLine);
 			QVector<QVector4D> lines = skewEstimator.getLines();
 			QVector<int> lineTypes = skewEstimator.getLineTypes();
 			for (int i = 0; i < lines.size(); i++) {
-				(lineTypes.at(i)) ? linePen.setColor(Qt::green) : linePen.setColor(Qt::red);
+				(lineTypes.at(i)) ? linePen.setColor(DkSettings::display.highlightColor) : linePen.setColor(hCAlpha);
 				painter.setPen(linePen);
 				painter.drawLine(QPoint(lines.at(i).x(), lines.at(i).y()), QPoint(lines.at(i).z(), lines.at(i).w()));
 			}
@@ -938,9 +942,9 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 
 
 	//auto rotation selection
-	autoRotateButton = new QPushButton(tr("Auto Rotate"), this);
+	autoRotateButton = new QPushButton(tr("Auto &Rotate"), this);
 	autoRotateButton->setObjectName("autoRotateButton");
-	autoRotateButton->setToolTip(tr("Automaticly rotate image for small skewness"));
+	autoRotateButton->setToolTip(tr("Automatically rotate image for small skewness"));
 	autoRotateButton->setStatusTip(autoRotateButton->toolTip());
 
 	//show lines for automatic angle detection
