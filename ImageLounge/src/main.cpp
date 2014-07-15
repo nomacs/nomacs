@@ -98,10 +98,19 @@ int main(int argc, char *argv[]) {
 
 
 	// initialize plugin paths -----------------------------------------
-	nmc::DkSettings::global.pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+	QDir pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
-	nmc::DkSettings::global.pluginsDir = qApp->applicationDirPath() + "/plugins";
+	QDir pluginsDir = qApp->applicationDirPath() + "/plugins";
+
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
 #endif
 
 	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);

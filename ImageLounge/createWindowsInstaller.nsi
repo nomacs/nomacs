@@ -178,7 +178,7 @@ Function finishpageaction
 	Delete "$INSTDIR\opencv_core231.dll"
 	Delete "$INSTDIR\opencv_imgproc242.dll"
 	Delete "$INSTDIR\opencv_core242.dll"
-
+	
 	; RESET UPDATE FLAG
 	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
 	
@@ -239,30 +239,35 @@ Function un.uninstallNomacs
 FunctionEnd
 
 Section Uninstall
-  Delete "$INSTDIR\${PRODUCT_NAME}.url"
-  Delete "$INSTDIR\imageformats\*"
-  Delete "$INSTDIR\*.dll"
-  Delete "$INSTDIR\*.exe"
-  Delete "$INSTDIR\*.qm"
+	Delete "$INSTDIR\${PRODUCT_NAME}.url"
+	Delete "$INSTDIR\imageformats\*"
+	Delete "$INSTDIR\*.dll"
+	Delete "$INSTDIR\*.exe"
+	Delete "$INSTDIR\*.qm"
+	  
+	Delete "$INSTDIR\COPYRIGHT"
+	Delete "$INSTDIR\LICENSE.GPLv2"
+	Delete "$INSTDIR\LICENSE.GPLv3"
+	Delete "$INSTDIR\LICENSE.LGPL"
+	Delete "$INSTDIR\LICENSE.OPENCV"
   
-  Delete "$INSTDIR\COPYRIGHT"
-  Delete "$INSTDIR\LICENSE.GPLv2"
-  Delete "$INSTDIR\LICENSE.GPLv3"
-  Delete "$INSTDIR\LICENSE.LGPL"
-  Delete "$INSTDIR\LICENSE.OPENCV"
+	; REMOVE plugins
+	Delete "$APPDATA\nomacs\plugins\*"
+	RMDir "$APPDATA\nomacs\plugins\"
+	RMDir "$APPDATA\nomacs\"
   
-  Delete "$SMPROGRAMS\nomacs - image lounge\Uninstall.lnk"
-  Delete "$SMPROGRAMS\nomacs - image lounge\Website.lnk"
-  Delete "$DESKTOP\nomacs - image lounge.lnk"
-  Delete "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk"
+	Delete "$SMPROGRAMS\nomacs - image lounge\Uninstall.lnk"
+	Delete "$SMPROGRAMS\nomacs - image lounge\Website.lnk"
+	Delete "$DESKTOP\nomacs - image lounge.lnk"
+	Delete "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk"
 
-  RMDir "$SMPROGRAMS\nomacs - image lounge"
-  RMDir "$INSTDIR\imageformats"
-  RMDir "$INSTDIR"
+	RMDir "$SMPROGRAMS\nomacs - image lounge"
+	RMDir "$INSTDIR\imageformats"
+	RMDir "$INSTDIR"
 
-  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
-  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
-  ; DeleteRegKey HKCU "Software\nomacs"
-    
-  SetAutoClose true
+	DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+	DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+	; DeleteRegKey HKCU "Software\nomacs"
+		
+	SetAutoClose true
 SectionEnd
