@@ -160,5 +160,6 @@ protected:
 
 };
 
+// Change this version number if DkPluginInterface is changed!
 Q_DECLARE_INTERFACE(nmc::DkPluginInterface, "com.nomacs.ImageLounge.DkPluginInterface/1.0")
 Q_DECLARE_INTERFACE(nmc::DkViewPortInterface, "com.nomacs.ImageLounge.DkViewPortInterface/1.0")

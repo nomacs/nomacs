@@ -77,9 +77,19 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	// image histogram
 	histogram = new DkHistogram(this);
-
+	
 	init();
 	connectWidgets();
+
+	// add mousetracking to all widgets which allows the viewport for status updates
+	QObjectList widgets = children();
+	for (int idx = 0; idx < widgets.size(); idx++) {
+		if (QWidget* w = qobject_cast<QWidget*>(widgets.at(idx))) {
+			w->setMouseTracking(true);
+		}
+	}
+
+
 }
 
 void DkControlWidget::init() {
