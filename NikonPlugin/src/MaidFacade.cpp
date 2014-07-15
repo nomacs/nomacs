@@ -513,7 +513,7 @@ void MaidFacade::acquireItemObjectsFinished() {
 		} else {
 			// save 
 			QFileInfo newFilenameInfo = QFileInfo(firstFilenameInfo.canonicalPath() + "/" + firstFilenameInfo.baseName() + "." + fileInfo.suffix());
-			filename = increaseFilenameNumber(newFilenameInfo);
+			filename = increaseFilenameNumber(newFilenameInfo).absoluteFilePath();
 			qDebug() << "I tried to increase the file number...";
 		}
 		qDebug() << "saving file: " << filename;
@@ -626,28 +626,20 @@ QString MaidFacade::getCapturedFileName(const QFileInfo& saveFile) {
 /**
  * For image0.jpg, this will return image1.jpg, etc.
  */
-QString MaidFacade::increaseFilenameNumber(const QFileInfo& fileInfo) {
+QFileInfo MaidFacade::increaseFilenameNumber(const QFileInfo& fileInfo) {
 	
 	qDebug() << "file info before increasing: " << fileInfo.absoluteFilePath();
 	
-	std::ifstream testFileIn;
-	QString basePath = fileInfo.canonicalPath() + "/" + fileInfo.baseName();
-	QString filename = "";
+	QFileInfo newInfo;
+
 	// test file names
 	while (true) {
-		filename = basePath + "_" + QString::number(++prevFileNumber) + "." + fileInfo.completeSuffix();
-		testFileIn.open(filename.toStdString());
-		if (!testFileIn.good()) {
-			testFileIn.close();
+		newInfo = QFileInfo(fileInfo.absolutePath(), fileInfo.baseName() + "-" + QString::number(++prevFileNumber) + "." + fileInfo.completeSuffix());
+		if (!newInfo.exists())
 			break;
-		}
-
-		testFileIn.close();
 	}
 
-	qDebug() << "increasing filename to: " << filename;
-
-	return filename;
+	return newInfo;
 }
 
 QString MaidFacade::getCurrentSavePath() {
@@ -701,7 +693,9 @@ QImage MaidFacade::getLiveViewImage() {
 	bool r = true;
 	QImage empty = QImage();
 
-	headerSize = 384;
+	// 128 byte for Nikon D90
+	//headerSize = 128;	// Type0003
+	headerSize = 384;	// Type0007
 
 	memset(&dataArray, 0, sizeof(NkMAIDArray));
 
