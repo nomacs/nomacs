@@ -178,6 +178,11 @@ MaidFacade::MaybeStringValues MaidFacade::readShutterSpeed() {
 	return shutterSpeed;
 }
 
+MaidFacade::MaybeStringValues MaidFacade::readCompressionLevel() {
+	compressionLevel = readPackedStringCap(kNkMAIDCapability_CompressionLevel);
+	return compressionLevel;
+}
+
 /*!
  * Reads the exposure mode from the source and returns it
  * throws MaidError
@@ -205,6 +210,10 @@ MaidFacade::MaybeStringValues MaidFacade::getSensitivity() {
 
 MaidFacade::MaybeStringValues MaidFacade::getShutterSpeed() {
 	return shutterSpeed;
+}
+
+MaidFacade::MaybeStringValues MaidFacade::getCompressionLevel() {
+	return compressionLevel;
 }
 
 MaidFacade::MaybeUnsignedValues MaidFacade::getExposureMode() {
@@ -264,6 +273,10 @@ bool MaidFacade::setSensitivity(size_t newValue) {
 
 bool MaidFacade::setShutterSpeed(size_t newValue) {
 	return setMaybeStringEnumValue(shutterSpeed, kNkMAIDCapability_ShutterSpeed, newValue);
+}
+
+bool MaidFacade::setCompressionLevel(size_t newValue) {
+	return setMaybeStringEnumValue(compressionLevel, kNkMAIDCapability_CompressionLevel, newValue);
 }
 
 bool MaidFacade::setExposureMode(size_t newValue) {

@@ -84,15 +84,18 @@ public:
 	MaybeStringValues readAperture();
 	MaybeStringValues readSensitivity();
 	MaybeStringValues readShutterSpeed();
+	MaybeStringValues readCompressionLevel();
 	MaybeUnsignedValues readExposureMode();
 	MaybeStringValues getAperture();
 	MaybeStringValues getSensitivity();
 	MaybeStringValues getShutterSpeed();
+	MaybeStringValues getCompressionLevel();
 	MaybeUnsignedValues getExposureMode();
 	bool setAperture(size_t newValue);
 	bool setSensitivity(size_t newValue);
 	bool setShutterSpeed(size_t newValue);
 	bool setExposureMode(size_t newValue);
+	bool setCompressionLevel(size_t newValue);
 	bool isLensAttached();
 	bool isAutoIso();
 	bool shoot(bool withAf = false);
@@ -129,6 +132,7 @@ private:
 	MaybeStringValues aperture;
 	MaybeStringValues sensitivity;
 	MaybeStringValues shutterSpeed;
+	MaybeStringValues compressionLevel;
 	MaybeUnsignedValues exposureMode;
 	QMutex mutex;
 	bool lensAttached;

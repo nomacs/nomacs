@@ -129,6 +129,16 @@ void DkCamControls::createLayout() {
 	shutterSpeedLayout->addWidget(shutterSpeedCombo);
 	shutterSpeedWidget->setLayout(shutterSpeedLayout);
 
+	QWidget* compressionWidget = new QWidget();
+	compressionLayout = new QHBoxLayout();
+	QLabel* compressionLabel = new QLabel(tr("File Format"));
+	compressionCombo = new QComboBox();
+	compressionCombo->setObjectName("compressionCombo");
+	compressionCombo->setAccessibleName(tr("File Format"));
+	compressionLayout->addWidget(compressionLabel);
+	compressionLayout->addWidget(compressionCombo);
+	compressionWidget->setLayout(compressionLayout);
+
 	buttonsLayout = new QHBoxLayout();
 	afButton = new QPushButton(tr("AF"));
 	afButton->setToolTip(tr("Auto-Focus"));
@@ -150,6 +160,7 @@ void DkCamControls::createLayout() {
 	mainLayout->addWidget(apertureWidget);
 	mainLayout->addWidget(isoWidget);
 	mainLayout->addWidget(shutterSpeedWidget);
+	mainLayout->addWidget(compressionWidget);
 	mainLayout->addLayout(buttonsLayout);
 	mainLayout->addLayout(connectionLayout);
 	mainGroup->setLayout(mainLayout);
@@ -553,6 +564,7 @@ void DkCamControls::updateUiValues() {
 	updateExposureMode();
 	updateExposureModeDependentUiValues();
 	updateAutoIsoLabel();
+	updateCompressionLevel();
 
 	filePathWidget->setEnabled(connected);
 	saveNamesCheckBox->setEnabled(connected);
@@ -625,6 +637,11 @@ void DkCamControls::onComboActivated(int index) {
 		if (shutterSpeed.second && index != shutterSpeed.first.currentValue) {
 			setShutterSpeed(shutterSpeedCombo->currentIndex(), shutterSpeed.first.currentValue);
 		}
+	} else if (QObject::sender() == compressionCombo) {
+		MaidFacade::MaybeStringValues compressionLevel = maidFacade->getCompressionLevel();
+		if (compressionLevel.second && index != compressionLevel.first.currentValue) {
+			setCompressionLevel(compressionCombo->currentIndex(), compressionLevel.first.currentValue);
+		}
 	}
 }
 
@@ -672,6 +689,14 @@ void DkCamControls::setShutterSpeed(const int index, int fallback) {
 void DkCamControls::setSensitivity(const int index, int fallback) {
 	setCameraComboBoxValue(isoCombo, 
 		[&] (size_t v) { return maidFacade->setSensitivity(v); }, 
+		[&] () {}, 
+		index, 
+		fallback);
+}
+
+void DkCamControls::setCompressionLevel(const int index, int fallback) {
+	setCameraComboBoxValue(compressionCombo, 
+		[&] (size_t v) { return maidFacade->setCompressionLevel(v); }, 
 		[&] () {}, 
 		index, 
 		fallback);
@@ -816,6 +841,37 @@ void DkCamControls::updateShutterSpeed() {
 
 		disconnect(shutterSpeedCombo, SIGNAL(activated(int)), this, SLOT(onComboActivated(int)));
 		shutterSpeedCombo->setEnabled(false);
+	}
+}
+
+void DkCamControls::updateCompressionLevel() {
+	if (!connected) {
+		compressionCombo->setEnabled(false);
+		return;
+	}
+
+	MaidFacade::MaybeStringValues compressionLevel;
+	try {
+		compressionLevel = maidFacade->readCompressionLevel();
+	} catch (Maid::MaidError) {
+		qDebug() << "error reading compression level (file format)";
+	};
+
+	compressionCombo->clear();
+	if (compressionLevel.second) {
+		auto valueData = maidFacade->toQStringList(compressionLevel.first);
+		const QStringList& values = valueData.first;
+		const size_t& currentIndex = valueData.second;
+		compressionCombo->insertItems(0, values);
+		compressionCombo->setCurrentIndex(currentIndex);
+
+		connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(onComboActivated(int)));
+		compressionCombo->setEnabled(true);
+	}
+
+	if (!compressionLevel.second) {
+		disconnect(compressionCombo, SIGNAL(activated(int)), this, SLOT(onComboActivated(int)));
+		compressionCombo->setEnabled(false);
 	}
 }
 
@@ -1001,10 +1057,12 @@ void DkCamControls::loadProfile() {
 	const int apertureIndex = apertureCombo->findText(p.aperture);
 	const int sensitivityIndex = isoCombo->findText(p.sensitivity);
 	const int shutterSpeedIndex = shutterSpeedCombo->findText(p.shutterSpeed);
+	const int compressionLevelIndex = compressionCombo->findText(p.compressionLevel);
 
 	if (apertureIndex == -1 && !p.aperture.isEmpty() 
 		|| sensitivityIndex == -1 && !p.sensitivity.isEmpty() 
-		|| shutterSpeedIndex == -1 && !p.shutterSpeed.isEmpty()) {
+		|| shutterSpeedIndex == -1 && !p.shutterSpeed.isEmpty()
+		|| compressionLevelIndex == -1 && !p.compressionLevel.isEmpty()) {
 
 		errorText = unequalItemsText;
 	}
@@ -1028,6 +1086,9 @@ void DkCamControls::loadProfile() {
 	}
 	if (!p.shutterSpeed.isEmpty()) {
 		setShutterSpeed(shutterSpeedIndex);
+	}
+	if (!p.compressionLevel.isEmpty()) {
+		setCompressionLevel(compressionLevelIndex);
 	}
 	
 }
@@ -1102,6 +1163,7 @@ DkCamControls::Profile DkCamControls::createProfileFromCurrent(const QString& na
 	setProfileValue(p.aperture, apertureCombo);
 	setProfileValue(p.sensitivity, isoCombo);
 	setProfileValue(p.shutterSpeed, shutterSpeedCombo);
+	setProfileValue(p.compressionLevel, compressionCombo);
 
 	return p;
 }
@@ -1130,7 +1192,8 @@ void DkCamControls::writeProfiles() {
 			<< p.exposureMode
 			<< p.aperture
 			<< p.sensitivity
-			<< p.shutterSpeed;
+			<< p.shutterSpeed
+			<< p.compressionLevel;
 
 		stream << list.join(";") << "\n";
 	}
@@ -1169,6 +1232,7 @@ void DkCamControls::readProfiles() {
 		p.aperture = fields.at(++i);
 		p.sensitivity = fields.at(++i);
 		p.shutterSpeed = fields.at(++i);
+		p.compressionLevel = fields.at(++i);
 
 		profiles.append(p);
 		addProfilesComboItem(p);
