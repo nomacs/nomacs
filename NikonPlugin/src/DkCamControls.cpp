@@ -190,13 +190,19 @@ void DkCamControls::createLayout() {
 	
 	filePathWidget = new QWidget();
 	QLayout* filePathLayout = new QHBoxLayout();
-	filePathLabel = new QLabel();
-	filePathLabel->setObjectName("filePathLabel");
-	filePathLabel->setAccessibleName(tr("Save path"));
+	filePathEdit = new QLineEdit();
+	filePathEdit->setObjectName("filePathLabel");
+	filePathEdit->setAccessibleName(tr("Save path"));
+	filePathEdit->setReadOnly(true);
+	filePathChangeButton = new QPushButton(tr("..."));
+	filePathChangeButton->setToolTip(tr("Select a new save path"));
+	int textWidth = filePathChangeButton->fontMetrics().boundingRect(filePathChangeButton->text()).width();
+	filePathChangeButton->setMaximumWidth(textWidth + 16);
+	filePathChangeButton->setEnabled(false);
 	filePathLayout->addWidget(new QLabel(tr("Save path")));
-	filePathLayout->addWidget(filePathLabel);
+	filePathLayout->addWidget(filePathEdit);
+	filePathLayout->addWidget(filePathChangeButton);
 	filePathWidget->setLayout(filePathLayout);
-	filePathWidget->setEnabled(false);
 
 	saveNamesCheckBox = new QCheckBox(tr("Name files automatically"));
 	saveNamesCheckBox->setChecked(true);
@@ -238,6 +244,7 @@ void DkCamControls::createLayout() {
 	connect(deleteProfileButton, SIGNAL(clicked()), this, SLOT(deleteProfile()));
 	connect(profilesCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onProfilesComboIndexChanged(int)));
 	connect(saveNamesCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onSaveNamesCheckBoxChanged(int)));
+	connect(filePathChangeButton, SIGNAL(clicked()), this, SLOT(changeSavePath()));
 	connect(this, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(arrangeLayout(Qt::DockWidgetArea)));
 	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(arrangeLayout()));
 	// maidFacade signals
@@ -323,6 +330,12 @@ void DkCamControls::onOpenDeviceError() {
 
 void DkCamControls::onSaveNamesCheckBoxChanged(int state) {
 	maidFacade->setAutoSaveNaming(state != 0);
+}
+
+void DkCamControls::changeSavePath() {
+	QString newPath = QFileDialog::getExistingDirectory(this, tr("Select new save path"), maidFacade->getCurrentSavePath());
+	maidFacade->setCurrentSavePath(QFileInfo(newPath).filePath());
+	filePathEdit->setText(maidFacade->getCurrentSavePath());
 }
 
 void DkCamControls::setConnected(bool newValue) {
@@ -508,11 +521,9 @@ void DkCamControls::setVisible(bool visible) {
 void DkCamControls::updateWidgetSize() {
 	QString savePath = maidFacade->getCurrentSavePath();
 	if (savePath.isEmpty()) {
-		filePathLabel->setText(tr("-"));
+		filePathEdit->setText("");
 	} else {
-		QFontMetricsF fontMetrics(filePathLabel->font());
-		filePathLabel->setText(fontMetrics.elidedText(savePath, Qt::TextElideMode::ElideLeft, exposureModeCombo->width()));
-		filePathLabel->setToolTip(savePath);
+		filePathEdit->setText(savePath);
 	}
 }
 
@@ -552,6 +563,7 @@ void DkCamControls::updateUiValues() {
 		liveViewButton->setText(tr("Stop Live View"));
 
 		afButton->setEnabled(true);
+		filePathChangeButton->setEnabled(false);
 	} else {
 		mainGroup->setEnabled(connected);
 		profilesGroup->setEnabled(connected);
@@ -560,6 +572,12 @@ void DkCamControls::updateUiValues() {
 		afButton->setEnabled(connected);
 		liveViewButton->setEnabled(connected);
 		liveViewButton->setText(tr("Start Live View"));
+
+		if (maidFacade->getCurrentSavePath().isEmpty()) {
+			filePathChangeButton->setEnabled(false);
+		} else {
+			filePathChangeButton->setEnabled(connected);
+		}
 	}
 }
 
@@ -911,7 +929,7 @@ void DkCamControls::onShootFinished() {
 
 	QString savePath = maidFacade->getCurrentSavePath();
 	updateWidgetSize();
-	filePathWidget->setEnabled(!savePath.isEmpty());
+	filePathChangeButton->setEnabled(!savePath.isEmpty());
 
 	if (openImagesCheckBox->isChecked()) {
 		emit loadFile(maidFacade->getLastFileInfo());

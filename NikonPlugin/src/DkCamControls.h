@@ -116,6 +116,7 @@ protected slots:
 	void deleteProfile();
 	void newProfile();
 	void onSaveNamesCheckBoxChanged(int state);
+	void changeSavePath();
 
 protected:
 	struct Profile {
@@ -184,7 +185,7 @@ protected:
 	QHBoxLayout* profilesLayout;
 	QLabel* lensAttachedLabel;
 	QLabel* autoIsoLabel;
-	QLabel* filePathLabel;
+	QLineEdit* filePathEdit;
 	QCheckBox* saveNamesCheckBox;
 	QCheckBox* openImagesCheckBox;
 	QComboBox* profilesCombo;
@@ -201,6 +202,7 @@ protected:
 	QPushButton* deleteProfileButton;
 	QPushButton* loadProfileButton;
 	QPushButton* saveProfileButton;
+	QPushButton* filePathChangeButton;
 	QHBoxLayout* connectionLayout;
 	QHBoxLayout* exposureModeLayout;
 	QHBoxLayout* apertureLayout;

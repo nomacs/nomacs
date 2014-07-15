@@ -106,6 +106,7 @@ public:
 	void progressCallbackUpdate(ULONG command, ULONG param, ULONG done, ULONG total);
 	void enumerateCapsAll();
 	QString getCurrentSavePath();
+	void setCurrentSavePath(QString path);
 	void setAutoSaveNaming(bool);
 	QFileInfo getLastFileInfo();
 	QString makePictureFilename();

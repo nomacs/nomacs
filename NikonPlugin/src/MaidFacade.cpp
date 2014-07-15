@@ -512,7 +512,7 @@ void MaidFacade::acquireItemObjectsFinished() {
 
 		} else {
 			// save 
-			QFileInfo newFilenameInfo = QFileInfo(firstFilenameInfo.canonicalPath() + "/" + firstFilenameInfo.baseName() + "." + fileInfo.suffix());
+			QFileInfo newFilenameInfo = QFileInfo(getCurrentSavePath() + QDir::separator() + firstFilenameInfo.baseName() + "." + fileInfo.suffix());
 			filename = increaseFilenameNumber(newFilenameInfo);
 			qDebug() << "I tried to increase the file number...";
 		}
@@ -529,20 +529,6 @@ void MaidFacade::acquireItemObjectsFinished() {
 		
 		file.write(currentFileData->buffer, currentFileFileInfo.ulTotalLength);
 		file.close();
-
-
-		//std::ofstream outFile;
-
-		//outFile.open(filename.toStdString(), std::ios::out | std::ios::binary);
-		//if (!outFile.good() || !outFile.is_open()) {
-		//	//return kNkMAIDResult_UnexpectedError;
-		//	qDebug() << "could not open file for writing!";
-		//	return;
-		//}
-
-		//qDebug() << "writing " << currentFileFileInfo.ulTotalLength << " bytes";
-		//outFile.write(currentFileData->buffer, currentFileFileInfo.ulTotalLength);
-		//outFile.close();
 
 		lastFileInfo = QFileInfo(filename);
 
@@ -631,7 +617,7 @@ QString MaidFacade::increaseFilenameNumber(const QFileInfo& fileInfo) {
 	qDebug() << "file info before increasing: " << fileInfo.absoluteFilePath();
 	
 	std::ifstream testFileIn;
-	QString basePath = fileInfo.canonicalPath() + "/" + fileInfo.baseName();
+	QString basePath = fileInfo.absolutePath() + QDir::separator() + fileInfo.baseName();
 	QString filename = "";
 	// test file names
 	while (true) {
@@ -654,7 +640,13 @@ QString MaidFacade::getCurrentSavePath() {
 	if (firstFilename.isEmpty()) {
 		return QString();
 	} else {
-		return QFileInfo(firstFilename).canonicalPath();
+		return QFileInfo(firstFilename).absolutePath();
+	}
+}
+
+void MaidFacade::setCurrentSavePath(QString path) {
+	if (!firstFilename.isEmpty()) {
+		firstFilename = path + QDir::separator() + QFileInfo(firstFilename).fileName();
 	}
 }
 
