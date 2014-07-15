@@ -212,7 +212,7 @@ void DkCamControls::createLayout() {
 	openImagesCheckBox->setChecked(true);
 	openImagesCheckBox->setEnabled(false);
 
-	optionsGroup = new QGroupBox(tr("Options"));
+	optionsGroup = new QGroupBox(tr("Other Options"));
 	optionsGroup->setFlat(true);
 	optionsLayout = new QVBoxLayout();
 	optionsLayout->addWidget(filePathWidget);
