@@ -114,7 +114,10 @@ QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 QImage DkFakeMiniaturesPlugin::runPlugin(const QString &runID, const QImage &image) const {
 
 	if (runID == "4d29da2b322f44979c55ea0ed4ff158b") {
-		DkFakeMiniaturesDialog* fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
+		QMainWindow* mainWindow = this->getMainWidnow();
+		DkFakeMiniaturesDialog* fakeMiniaturesDialog;
+		if(mainWindow) fakeMiniaturesDialog = new DkFakeMiniaturesDialog(mainWindow);
+		else fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
 
 		fakeMiniaturesDialog->setImage(&image);
 

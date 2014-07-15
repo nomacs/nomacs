@@ -77,13 +77,14 @@ void DkSkewEstimator::setImage(QImage inImage) {
 double DkSkewEstimator::getSkewAngle() {
 
 	if (!matImg.empty()) {
-
-		QProgressDialog* progress = new QProgressDialog(QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Calculating angle..."), QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Cancel"), 0, 100);
-		int step = 100;
+		progress = new QProgressDialog(QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Calculating angle..."), QT_TRANSLATE_NOOP("nmc::DkSkewEstimator", "Cancel"), 0, 100);
+		progress->setMinimumDuration(250);
+		progress->setMaximum(100);
+		progress->setValue(0);
 		progress->setWindowModality(Qt::WindowModal);
-		progress->setValue(1);	// a strange behavior of the progress dialog: first setValue shows an empty dialog (setting to zero won't work)
-		progress->setValue(2);	// second setValue shows the progress bar with 2% (setting to zero won't work)
-		progress->setValue(0);	// finally set the progress to zero
+		progress->setModal(true);
+		progress->hide();
+		progress->show();
 
 		cv::Mat matGray;
 
@@ -91,35 +92,38 @@ double DkSkewEstimator::getSkewAngle() {
 			cv::cvtColor(matImg, matGray, CV_BGR2GRAY);
 		else matGray = matImg;
 
-		progress->setValue(5);
-		if (progress->wasCanceled()) return 0;
-
 		cv::Mat integral, integralSq;
 		cv::integral(matGray, integral, integralSq, CV_64F);
 		if (integral.channels() > 1) qDebug() << "Error! integral image has more than one channel";
 
-		progress->setValue(20);
-		if (progress->wasCanceled()) return 0;
-
 		cv::Mat separabilityHor = computeSeparability(integral, integralSq, dir_horizontal);
-		progress->setValue(40);
-		if (progress->wasCanceled()) return 0;
+		if (progress->wasCanceled()) {
+			progress->deleteLater();
+			return 0;
+		}
 
 		cv::Mat separabilityVer = computeSeparability(integral, integralSq,  dir_vertical);
-		progress->setValue(60);
-		if (progress->wasCanceled()) return 0;
+		if (progress->wasCanceled()) {
+			progress->deleteLater();
+			return 0;
+		}
 
 		double min, max;
 		cv::minMaxLoc(separabilityHor, &min, &max);	
 		cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, sepThr * max, dir_horizontal);
 		//cv::Mat edgeMapHor = computeEdgeMap(separabilityHor, 0.1, dir_horizontal);
-		progress->setValue(75);
-		if (progress->wasCanceled()) return 0;
+		if (progress->wasCanceled()) {
+			progress->deleteLater();
+			return 0;
+		}
+
 		cv::minMaxLoc(separabilityVer, &min, &max);
 		cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, sepThr * max, dir_vertical);
 		//cv::Mat edgeMapVer = computeEdgeMap(separabilityVer, 0.1, dir_vertical);
-		progress->setValue(90);
-		if (progress->wasCanceled()) return 0;
+		if (progress->wasCanceled()) {
+			progress->deleteLater();
+			return 0;
+		}
 
 		selectedLines.clear();
 
@@ -127,11 +131,18 @@ double DkSkewEstimator::getSkewAngle() {
 		qDebug() << weightsHor.size();
 		QVector<QVector3D> weightsVer = computeWeights(edgeMapVer, dir_vertical);
 		qDebug() << weightsVer.size();
+		if (progress->wasCanceled()) {
+			selectedLines.clear();
+			progress->deleteLater();
+			return 0;
+		}
 
 		weightsHor += weightsVer;
  
 		double retAngle = computeSkewAngle(weightsHor, qSqrt(matGray.rows*matGray.rows + matGray.cols*matGray.cols));
+
 		progress->setValue(100);
+		progress->deleteLater();
 
 		return retAngle;
 	}
@@ -146,8 +157,12 @@ cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralS
 	int H2 = qCeil(sepDims.height()/2);
 
 	if (direction == dir_horizontal) {
+		int progressStep = integral.rows - 2 * H2 - 2 * qCeil(delta/2);
+		int lastValue = progress->value();
 
 		for (int r = H2 + qCeil(delta/2); r < integral.rows - H2 - qCeil(delta/2); r++) {
+			progress->setValue(lastValue + qRound(30 * (r - H2 - qCeil(delta/2)) / progressStep));
+			if (progress->wasCanceled()) break;
 			for (int c = W2 + qCeil(delta/2); c < integral.cols - W2 - qCeil(delta/2); c++) {
 
 				double mean1 = integral.at<double>(r - H2, c - W2) + integral.at<double>(r - 1, c + W2) - integral.at<double>(r - H2, c + W2) - integral.at<double>(r - 1, c - W2);
@@ -168,7 +183,13 @@ cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralS
 		}
 	}
 	else {
+		int progressStep = integral.rows - 2 * W2 - 2 * qCeil(delta/2);
+		int lastValue = progress->value();
+
 		for (int r = W2 + qCeil(delta/2); r < integral.rows - W2 - qCeil(delta/2); r++) {
+			progress->setValue(lastValue + qRound(30 * (r - W2 - qCeil(delta/2)) / progressStep));
+			if (progress->wasCanceled()) break;
+
 			for (int c = H2 + qCeil(delta/2); c < integral.cols - H2 - qCeil(delta/2); c++) {
 
 				double mean1 = integral.at<double>(r - W2, c - H2) + integral.at<double>(r + W2, c - 1) - integral.at<double>(r + W2, c - H2) - integral.at<double>(r - W2, c - 1);
@@ -206,9 +227,13 @@ cv::Mat DkSkewEstimator::computeEdgeMap(cv::Mat separability, double thr, int di
 	cv::Mat edgeMap = Mat::zeros(separability.rows, separability.cols, CV_8UC1);
 
 	if (direction == dir_horizontal) {
+		int progressStep = separability.rows - 2 * H2 - 2 * kMax;
+		int lastValue = progress->value();
 
 		float* p;
 		for (int r = H2 + kMax; r < separability.rows - H2 - kMax; r++) {
+			progress->setValue(lastValue + qRound(5 * (r - H2 - kMax) / progressStep));
+			if (progress->wasCanceled()) break;
 
 			p = separability.ptr<float>(r);
 			for (int c = W2; c < separability.cols - W2; c++) {
@@ -235,9 +260,13 @@ cv::Mat DkSkewEstimator::computeEdgeMap(cv::Mat separability, double thr, int di
 		}
 	}
 	else  {
+		int progressStep = separability.rows - 2 * W2 - 2 * kMax;
+		int lastValue = progress->value();
 
 		float* p;
 		for (int r = W2; r < separability.rows - W2; r++) {
+			progress->setValue(lastValue + qRound(5 * (r - W2 - kMax) / progressStep));
+			if (progress->wasCanceled()) break;
 
 			p = separability.ptr<float>(r);
 			for (int c = H2 + kMax; c < separability.cols - H2 - kMax; c++) {
@@ -277,8 +306,11 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 	HoughLinesP(edgeMap, lines, 1, CV_PI/180, 50, minLineLength, 20 ); //params: rho resolution, theta resolution, threshold, min Line length, max line gap
 
 	QVector<QVector3D> computedWeights = QVector<QVector3D>();
+	int lastValue = progress->value();
 
 	for(size_t i = 0; i < lines.size(); i++) {
+		progress->setValue(lastValue + qRound(15 * i / lines.size()));
+		if (progress->wasCanceled()) break;
 
 		Vec4i l = lines[i];		
 		QVector3D currMax = QVector3D(0.0, 0.0, 0.0);
@@ -297,8 +329,6 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 
 			double lineAngle =  atan2((l[3] - l[1]), (l[2] - l[0]));
 			double slope = qTan(lineAngle);
-			//qDebug() << lineAngle << "  slope: "  <<slope;
-			//qDebug() << l[0] << " " << l[1] << " " << l[2]<< " " << l[3] ;
 
 			while (qAbs(x1-x2) > minLineProjLength && K < nIter) {
 
@@ -336,7 +366,6 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 								QPointF centerPoint = QPointF(0.5*(x1 + x2), 0.5*(y1 + y2));
 								currMax = QVector3D(sumVal, - rotationFactor * lineAngle, (float) qSqrt( (edgeMap.cols*0.5 - centerPoint.x()) * (edgeMap.cols*0.5 - centerPoint.x()) + (edgeMap.rows*0.5 - centerPoint.y()) * (edgeMap.rows*0.5 - centerPoint.y()) ));
 								maxLine = QVector4D(x1, y1, x2, y2);
-								//qDebug() << maxLine;
 							}
 
 							K++;
@@ -351,7 +380,6 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 		else {
 
 			int K = 0;
-			qDebug() << l[0] << " " << l[1] << " " << l[2]<< " " << l[3] ;
 			if (l[3] < l[1]) l = Vec4i(l[2],l[3],l[0],l[1]);
 
 			int x1 = l[1];
@@ -362,7 +390,6 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 
 			double lineAngle =  atan2((l[2] - l[0]), (l[3] - l[1]));
 			double slope = qTan(lineAngle);
-			//qDebug() << lineAngle << "  slope: "  <<slope;
 			
 
 			while (qAbs(x1-x2) > minLineProjLength && K < nIter) {
@@ -401,7 +428,6 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 								QPointF centerPoint = QPointF(0.5*(x1 + x2), 0.5*(y1 + y2));
 								currMax = QVector3D(sumVal, rotationFactor * lineAngle, (float) qSqrt( (edgeMap.rows *0.5 - centerPoint.x()) * (edgeMap.rows*0.5 - centerPoint.x()) + (edgeMap.cols*0.5 - centerPoint.y()) * (edgeMap.cols*0.5 - centerPoint.y()) ));
 								maxLine = QVector4D(y1, x1, y2, x2);
-								//qDebug() << maxLine;
 							}
 
 							K++;

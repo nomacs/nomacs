@@ -30,7 +30,7 @@
 
 #include <QImage>
 #include <QtCore/qmath.h>
-#include <QGlobal.h>
+#include <QtGlobal>
 #include <QVector3D>
 #include <QVector4D>
 #include <cmath>
@@ -99,6 +99,7 @@ private:
 	QVector<int> selectedLineTypes;
 	cv::Mat matImg;
 	int rotationFactor;
+	QProgressDialog* progress;
 };
 
 };
