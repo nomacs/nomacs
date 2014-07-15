@@ -322,7 +322,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		if ((idx == currentFileIdx || thumbs.at(idx)->isSelected()) && 
 			(currentImg.isNull() || currentFileIdx != oldFileIdx || currentImg.width()-4 != r.width() || currentImg.height()-4 != r.height())) {
 			createCurrentImg(img);
-			qDebug() << "thumb size: " << img.size();
 		}
 
 		// show that there are more images...

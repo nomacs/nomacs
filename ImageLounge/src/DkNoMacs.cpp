@@ -3827,12 +3827,12 @@ void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 	if (!pluginImage.isNull()) {
 		if (askForSaving) {
 
-			QMessageBox msgBox;
+			QMessageBox msgBox(this);
 			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			msgBox.setDefaultButton(QMessageBox::No);
 			msgBox.setEscapeButton(QMessageBox::No);
 			msgBox.setIcon(QMessageBox::Question);
-			msgBox.setWindowTitle(tr("Exiting plugin..."));
+			msgBox.setWindowTitle(tr("Closing plugin..."));
 
 			msgBox.setText(tr("Do you want to apply plugin changes?"));
 
@@ -3840,10 +3840,10 @@ void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 				viewport()->setEditedImage(pluginImage);
 				isSaveNeeded = true;
 			}
-
 			msgBox.deleteLater();
 		}				
-		else viewport()->setEditedImage(pluginImage);
+		else 
+			viewport()->setEditedImage(pluginImage);
 	}
 
 	disconnect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));

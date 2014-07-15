@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
 	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
-	QDir pluginsDir = qApp->applicationDirPath() + "/plugins";
+	pluginsDir = qApp->applicationDirPath() + "/plugins";
 
 	if (!pluginsDir.exists())
 		pluginsDir.mkpath(pluginsDir.absolutePath());

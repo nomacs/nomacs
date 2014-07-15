@@ -845,7 +845,8 @@ void DkViewPort::createShortcuts() {
 void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 
 	if(!removeWidget) {
-		paintLayout->addWidget(widget);		
+		paintLayout->addWidget(widget);
+		pluginImageWasApplied = false;
 	} else {
 		paintLayout->removeWidget(widget);
 		//widget->deleteLater();
