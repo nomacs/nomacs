@@ -29,20 +29,20 @@
 
 #ifdef WITH_PLUGINS
 
-#include <QtGui/QWidget>
-#include <QtGui/QSlider>
-#include <QtGui/QSpinBox>
-#include <QtGui/QLabel>
-#include <QtGui/QTextEdit>
-#include <QtGui/QProgressDialog>
-#include <QtGui/QTabWidget>
+#include <QWidget>
+#include <QSlider>
+#include <QSpinBox>
+#include <QLabel>
+#include <QTextEdit>
+#include <QProgressDialog>
+#include <QTabWidget>
 #include <QPluginLoader>
 #include <QHeaderView>
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
 #include <QScrollBar>
 #include <QTableView>
-#include <QtXml/QXmlStreamReader>
+#include <QXmlStreamReader>
 
 #include "DkViewPort.h"
 #include "DkPluginInterface.h"
