@@ -737,6 +737,7 @@ signals:
 
 public slots:
 	void tcpConnectAll();
+	void tcpChangeSyncMode(int syncMode);
 	void tcpRemoteControl(bool start);
 	void tcpRemoteDisplay(bool start);
 	void tcpAutoConnect(bool connect);
