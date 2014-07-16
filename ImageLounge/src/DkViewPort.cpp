@@ -1912,7 +1912,7 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 		return;
 
 	if (!((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncActions) &&
-		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display)) {
+		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_control)) {
 		QApplication::sendPostedEvents();
 
 		for (int idx = 0; idx < loader->getImages().size(); idx++) {

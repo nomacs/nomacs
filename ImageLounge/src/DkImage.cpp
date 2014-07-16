@@ -666,6 +666,10 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
  **/ 
 QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt, bool force) {
 
+	// do not save temp images if we are remote control or remote display
+	if (DkSettings::sync.syncMode != DkSettings::sync_mode_default)
+		return QFileInfo();
+
 	QFileInfo tmpPath = QFileInfo(DkSettings::global.tmpPath + "\\");
 	
 	if (!force && (!DkSettings::global.useTmpPath || !tmpPath.exists())) {
