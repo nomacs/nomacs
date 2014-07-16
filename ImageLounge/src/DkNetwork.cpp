@@ -792,9 +792,8 @@ void DkRCClientManager::connectionReceivedPermission(DkConnection* connection, b
 }
 
 void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, int mode) {
-
-	DkSettings::sync.syncMode = mode;
-	qDebug() << "new mode: " << mode;
+	qDebug() << "connection received new remote control mode: " << mode;
+	emit(connectedReceivedNewMode(mode));
 }
 
 DkRCConnection* DkRCClientManager::createConnection() {
@@ -1581,6 +1580,7 @@ void DkRCManagerThread::connectClient() {
 	//connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 	connect(this, SIGNAL(newModeSignal(int)), clientManager, SLOT(sendNewMode(int)));
 	connect(parent, SIGNAL(stopSynchronizeWithSignal()), clientManager, SLOT(stopSynchronizeWith()));
+	connect(clientManager, SIGNAL(connectedReceivedNewMode(int)), parent, SLOT(tcpChangeSyncMode(int)));
 
 	DkLanManagerThread::connectClient();
 

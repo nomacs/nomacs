@@ -261,6 +261,7 @@ class DkRCClientManager : public DkLANClientManager {
 
 signals:
 		void sendNewModeMessage(int mode);
+		void connectedReceivedNewMode(int mode);
 
 	protected:
 		void connectConnection(DkConnection* connection);

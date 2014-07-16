@@ -4199,7 +4199,7 @@ void DkNoMacsSync::tcpRemoteControl(bool start) {
 	if (start)
 		start = connectWhiteList(DkSettings::sync_mode_remote_control, start);
 	else {
-		// TODO disconnect all
+		rcClient->sendGoodByeToAll();
 	}
 
 	syncActions[menu_sync_remote_control]->setChecked(start);
@@ -4211,9 +4211,13 @@ void DkNoMacsSync::tcpRemoteDisplay(bool start) {
 	if (!rcClient)
 		return;
 
-	bool couldConnect = connectWhiteList(DkSettings::sync_mode_remote_display, start);
+	if (start)
+		start = connectWhiteList(DkSettings::sync_mode_remote_display, start);
+	else {
+		rcClient->sendGoodByeToAll();
+	}
 
-	syncActions[menu_sync_remote_display]->setChecked(couldConnect);
+	syncActions[menu_sync_remote_display]->setChecked(start);
 }
 
 void DkNoMacsSync::tcpAutoConnect(bool connect) {
