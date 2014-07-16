@@ -458,7 +458,6 @@ public slots:
 
 	void quit();
 
-
 protected:
 	virtual void createClient(QString title) = 0;
 	

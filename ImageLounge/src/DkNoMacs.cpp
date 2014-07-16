@@ -3954,26 +3954,9 @@ void DkNoMacsSync::initLanClient() {
 #endif // WITH_UPNP
 	lanClient->start();
 
-	lanActions.resize(menu_lan_end);
-
-	// start server action
-	lanActions[menu_lan_server] = new QAction(tr("Start &Server"), this);
-	lanActions[menu_lan_server]->setObjectName("serverAction");
-	lanActions[menu_lan_server]->setCheckable(true);
-	lanActions[menu_lan_server]->setChecked(false);
-	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
-	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
-
-	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
-	lanActions[menu_lan_image]->setObjectName("sendImageAction");
-	lanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
-	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
-	lanActions[menu_lan_image]->setToolTip(tr("Sends the current image to all clients."));
-	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
-
 	tcpLanMenu->setClientManager(lanClient);
 	tcpLanMenu->addTcpAction(lanActions[menu_lan_server]);
-	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);
+	tcpLanMenu->addTcpAction(lanActions[menu_lan_image]);	// well this is a bit nasty... we only add it here to have correct enable/disable behavior...
 	tcpLanMenu->setEnabled(true);
 	tcpLanMenu->enableActions(false, false);
 
@@ -4065,6 +4048,23 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_remote_display]->setCheckable(true);
 	connect(syncActions[menu_sync_remote_display], SIGNAL(triggered(bool)), this, SLOT(tcpRemoteDisplay(bool)));
 
+	lanActions.resize(menu_lan_end);
+
+	// start server action
+	lanActions[menu_lan_server] = new QAction(tr("Start &Server"), this);
+	lanActions[menu_lan_server]->setObjectName("serverAction");
+	lanActions[menu_lan_server]->setCheckable(true);
+	lanActions[menu_lan_server]->setChecked(false);
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
+	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
+
+	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
+	lanActions[menu_lan_image]->setObjectName("sendImageAction");
+	lanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
+	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
+	lanActions[menu_lan_image]->setToolTip(tr("Sends the current image to all clients."));
+	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
+
 	assignCustomShortcuts(syncActions);
 }
 
@@ -4086,6 +4086,7 @@ void DkNoMacsSync::createMenu() {
 
 	syncMenu->addAction(syncActions[menu_sync_remote_control]);
 	syncMenu->addAction(syncActions[menu_sync_remote_display]);
+	syncMenu->addAction(lanActions[menu_lan_image]);
 	syncMenu->addSeparator();
 
 	syncMenu->addAction(syncActions[menu_sync]);
