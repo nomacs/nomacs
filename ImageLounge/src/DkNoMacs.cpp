@@ -4263,12 +4263,16 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 		
 		if (mode == DkSettings::sync_mode_remote_control)
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here
+		else
+			rcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
 
 		couldConnect = true;
 	}
 	else if (!connect) {
 
 		if (mode == DkSettings::sync_mode_remote_control)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here
+		else
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
 
 		emit stopSynchronizeWithSignal();
