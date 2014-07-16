@@ -4170,20 +4170,36 @@ void DkNoMacsSync::tcpConnectAll() {
 
 void DkNoMacsSync::tcpChangeSyncMode(int syncMode) {
 
-	if (syncMode == DkSettings::sync.syncMode)
+	if (syncMode == DkSettings::sync.syncMode || !rcClient)
 		return;
 
-	// turn off the old mode
-	switch(DkSettings::sync.syncMode) {
-		{case DkSettings::sync_mode_remote_control: tcpRemoteControl(false); break;}
-		{case DkSettings::sync_mode_remote_display: tcpRemoteDisplay(false); break;}
-	//default:
+	// turn off everything
+	if (DkSettings::sync.syncMode != DkSettings::sync_mode_default)
+		rcClient->sendGoodByeToAll();
+
+	syncActions[menu_sync_remote_control]->setChecked(false);
+	syncActions[menu_sync_remote_display]->setChecked(false);
+
+	if (syncMode == DkSettings::sync_mode_default) {
+		DkSettings::sync.syncMode = syncMode;
+		return;
+	}
+
+	bool connected = connectWhiteList(syncMode, true);
+
+	if (!connected) {
+		DkSettings::sync.syncMode = DkSettings::sync_mode_default;
+		return;
 	}
 
 	// turn on the new mode
 	switch(syncMode) {
-		{case DkSettings::sync_mode_remote_control: tcpRemoteControl(true); break;}
-		{case DkSettings::sync_mode_remote_display: tcpRemoteDisplay(true); break;}
+		case DkSettings::sync_mode_remote_control: 
+			syncActions[menu_sync_remote_control]->setChecked(true);	
+			break;
+		case DkSettings::sync_mode_remote_display: 
+			syncActions[menu_sync_remote_display]->setChecked(true);
+			break;
 	//default:
 	}
 
@@ -4196,14 +4212,7 @@ void DkNoMacsSync::tcpRemoteControl(bool start) {
 	if (!rcClient)
 		return;
 
-	if (start)
-		start = connectWhiteList(DkSettings::sync_mode_remote_control, start);
-	else {
-		rcClient->sendGoodByeToAll();
-	}
-
-	syncActions[menu_sync_remote_control]->setChecked(start);
-
+	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_control : DkSettings::sync_mode_default);
 }
 
 void DkNoMacsSync::tcpRemoteDisplay(bool start) {
@@ -4211,13 +4220,8 @@ void DkNoMacsSync::tcpRemoteDisplay(bool start) {
 	if (!rcClient)
 		return;
 
-	if (start)
-		start = connectWhiteList(DkSettings::sync_mode_remote_display, start);
-	else {
-		rcClient->sendGoodByeToAll();
-	}
+	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_display : DkSettings::sync_mode_default);
 
-	syncActions[menu_sync_remote_display]->setChecked(start);
 }
 
 void DkNoMacsSync::tcpAutoConnect(bool connect) {
@@ -4253,7 +4257,6 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 		DkPeer peer = peers[0];
 
 		emit synchronizeRemoteControl(peer.peerId);
-		DkSettings::sync.syncMode = mode;
 		
 		if (mode == DkSettings::sync_mode_remote_control)
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here
@@ -4261,8 +4264,6 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 		couldConnect = true;
 	}
 	else if (!connect) {
-
-		DkSettings::sync.syncMode = DkSettings::sync_mode_default;
 
 		if (mode == DkSettings::sync_mode_remote_control)
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here

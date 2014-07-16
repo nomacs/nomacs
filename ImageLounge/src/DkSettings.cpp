@@ -341,7 +341,7 @@ void DkSettings::load(bool force) {
 	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
 	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
 	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
-	sync_p.syncMode = settings.value("syncMode", sync_p.syncMode).toInt();
+	//sync_p.syncMode = settings.value("syncMode", sync_p.syncMode).toInt();
 	sync_p.syncActions = settings.value("syncActions", sync_p.syncActions).toBool();
 	sync_p.recentSyncNames = settings.value("recentSyncNames", sync_p.recentSyncNames).toStringList();
 	sync_p.syncWhiteList = settings.value("syncWhiteList", sync_p.syncWhiteList).toStringList();
@@ -560,8 +560,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("syncAbsoluteTransform", sync_p.syncAbsoluteTransform);
 	if (!force && sync_p.switchModifier != sync_d.switchModifier)
 		settings.setValue("switchModifier", sync_p.switchModifier);
-	if (!force && sync_p.syncMode != sync_d.syncMode)
-		settings.setValue("syncMode", sync_p.syncMode);
+	//if (!force && sync_p.syncMode != sync_d.syncMode)
+	//	settings.setValue("syncMode", sync_p.syncMode);
 	if (!force && sync_p.syncActions != sync_d.syncActions)
 		settings.setValue("syncActions", sync_p.syncActions);
 	if (!force && sync_p.recentSyncNames != sync_d.recentSyncNames)
