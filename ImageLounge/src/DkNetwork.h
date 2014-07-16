@@ -154,8 +154,8 @@ class DkClientManager : public QThread {
 		virtual void connectionReceivedTransformation(DkConnection* connection, QTransform transform, QTransform imgTransform, QPointF canvasSize);
 		virtual void connectionReceivedPosition(DkConnection* connection, QRect rect, bool opacity, bool overlaid);
 		virtual void connectionReceivedNewFile(DkConnection* connection, qint16 op, QString filename);
+		virtual void connectionReceivedGoodBye(DkConnection* connection);
 		void connectionShowStatusMessage(DkConnection* connection, QString msg);
-		void connectionReceivedGoodBye(DkConnection* connection);
 		void disconnected();
 
 	protected:
@@ -271,6 +271,7 @@ signals:
 		void connectionReceivedPermission(DkConnection* connection, bool allowedToConnect);
 		void connectionReceivedRCType(DkConnection* connection, int type);
 		virtual void connectionReadyForUse(quint16 peerServerPort, QString title, DkConnection* connection);
+		virtual void connectionReceivedGoodBye(DkConnection* connection);
 
 	private:
 		virtual DkRCConnection* createConnection();
