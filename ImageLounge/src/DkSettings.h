@@ -111,8 +111,8 @@ public:
 
 	enum syncModes {
 		sync_mode_default = 0,
-		sync_mode_auto,
-		sync_mode_remote,
+		sync_mode_remote_display,
+		sync_mode_remote_control,
 
 		sync_mode_end,
 	};
@@ -208,6 +208,7 @@ public:
 		QStringList syncWhiteList;
 		QHash<QString, QVariant> recentLastSeen;
 		int syncMode;
+		bool syncActions;
 	};
 	struct MetaData {
 		QBitArray metaDataBits;

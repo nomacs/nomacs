@@ -329,7 +329,7 @@ enum syncActions {
 	menu_sync_pos,
 	menu_sync_arrange,
 	menu_sync_connect_all,
-	menu_sync_auto_connect,
+	menu_sync_all_actions,
 	menu_sync_start_upnp,
 
 	menu_sync_remote_control,

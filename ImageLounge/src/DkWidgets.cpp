@@ -5135,9 +5135,9 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 	}
 	else {
 		setStyleSheet(QString("#bgLabel{background-color: rgba(0,0,0,0);}" +
-			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" + 
+			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" + 
 		QString("QLabel:hover{color: #FFFFFF;") + 
-			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColor) + ", stop: 1 rgba(0,0,0,0));}"));
+			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ", stop: 1 rgba(0,0,0,0));}"));
 
 	}
 

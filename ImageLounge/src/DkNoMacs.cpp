@@ -3892,8 +3892,8 @@ DkNoMacsSync::~DkNoMacsSync() {
 
 	if (rcClient) {
 
-		if (DkSettings::sync.syncMode == DkSettings::sync_mode_remote)
-			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
+		if (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_control)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
 
 		emit stopSynchronizeWithSignal();
 
@@ -4043,11 +4043,11 @@ void DkNoMacsSync::createActions() {
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));
 
-	syncActions[menu_sync_auto_connect] = new QAction(tr("&Sync All Actions"), this);
-	syncActions[menu_sync_auto_connect]->setStatusTip(tr("Transmit All Signals Automatically."));
-	syncActions[menu_sync_auto_connect]->setCheckable(true);
-	syncActions[menu_sync_auto_connect]->setChecked(DkSettings::sync.syncMode == DkSettings::sync_mode_auto);
-	connect(syncActions[menu_sync_auto_connect], SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
+	syncActions[menu_sync_all_actions] = new QAction(tr("&Sync All Actions"), this);
+	syncActions[menu_sync_all_actions]->setStatusTip(tr("Transmit All Signals Automatically."));
+	syncActions[menu_sync_all_actions]->setCheckable(true);
+	syncActions[menu_sync_all_actions]->setChecked(DkSettings::sync.syncActions);
+	connect(syncActions[menu_sync_all_actions], SIGNAL(triggered(bool)), this, SLOT(tcpAutoConnect(bool)));
 
 	syncActions[menu_sync_start_upnp] = new QAction(tr("&Start Upnp"), this);
 	syncActions[menu_sync_start_upnp]->setStatusTip(tr("Starts a Upnp Media Renderer."));
@@ -4091,7 +4091,7 @@ void DkNoMacsSync::createMenu() {
 	syncMenu->addAction(syncActions[menu_sync]);
 	syncMenu->addAction(syncActions[menu_sync_pos]);
 	syncMenu->addAction(syncActions[menu_sync_arrange]);
-	syncMenu->addAction(syncActions[menu_sync_auto_connect]);
+	syncMenu->addAction(syncActions[menu_sync_all_actions]);
 #ifdef WITH_UPNP
 	// disable this action since it does not work using herqq
 	//syncMenu->addAction(syncActions[menu_sync_start_upnp]);
@@ -4174,7 +4174,7 @@ void DkNoMacsSync::tcpRemoteControl(bool start) {
 	if (!rcClient)
 		return;
 
-	bool couldConnect = connectWhiteList(DkSettings::sync_mode_remote, start);
+	bool couldConnect = connectWhiteList(DkSettings::sync_mode_remote_control, start);
 
 	syncActions[menu_sync_remote_control]->setChecked(couldConnect);
 
@@ -4185,14 +4185,14 @@ void DkNoMacsSync::tcpRemoteDisplay(bool start) {
 	if (!rcClient)
 		return;
 
-	bool couldConnect = connectWhiteList(DkSettings::sync_mode_auto, start);
+	bool couldConnect = connectWhiteList(DkSettings::sync_mode_remote_display, start);
 
 	syncActions[menu_sync_remote_display]->setChecked(couldConnect);
 }
 
 void DkNoMacsSync::tcpAutoConnect(bool connect) {
 
-	DkSettings::sync.syncMode = (connect) ? DkSettings::sync_mode_auto : DkSettings::sync_mode_default;
+	DkSettings::sync.syncActions = connect;
 }
 
 void DkNoMacsSync::startUpnpRenderer(bool start) {
@@ -4225,8 +4225,8 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 		emit synchronizeRemoteControl(peer.peerId);
 		DkSettings::sync.syncMode = mode;
 		
-		if (mode == DkSettings::sync_mode_remote)
-			rcClient->sendNewMode(DkSettings::sync_mode_auto);	// TODO: if we need this threaded emit a signal here
+		if (mode == DkSettings::sync_mode_remote_control)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here
 
 		couldConnect = true;
 	}
@@ -4234,8 +4234,8 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 
 		DkSettings::sync.syncMode = DkSettings::sync_mode_default;
 
-		if (mode == DkSettings::sync_mode_remote)
-			rcClient->sendNewMode(DkSettings::sync_mode_remote);	// TODO: if we need this threaded emit a signal here
+		if (mode == DkSettings::sync_mode_remote_control)
+			rcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
 
 		emit stopSynchronizeWithSignal();
 	}
