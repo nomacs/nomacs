@@ -191,12 +191,24 @@ public:
 		icons_end,
 	};
 
+	enum {
+		settings_mode = 0,
+		settings_guide,
+		settings_crop,
+		settings_lines,
+
+		guide_end,
+	};
+
 	DkImgTransformationsToolBar(const QString & title, int defaultMode, QWidget * parent = 0);
 	virtual ~DkImgTransformationsToolBar();
 
 	void setRotationValue(double val);
 	void setScaleValue(QPointF val);
 	void setShearValue(QPointF val);
+	void setCropState(int val);
+	void setGuideLineState(int val);
+	void setAngleLineState(int val);
 
 public slots:
 	void on_applyAction_triggered();
@@ -235,7 +247,7 @@ protected:
 	void createLayout(int defaultMode);
 	void createIcons();
 	void modifyLayout(int mode);
-	void updateSettingsMode(int mode);
+	void updateAffineTransformPluginSettings(int val, int type);
 
 	QDoubleSpinBox* scaleXBox;
 	QDoubleSpinBox* scaleYBox;

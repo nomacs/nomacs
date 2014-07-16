@@ -138,7 +138,7 @@ QImage DkThresholdPlugin::runPlugin(const QString &runID, const QImage &image) c
 		DkThresholdViewPort* thresholdViewport = dynamic_cast<DkThresholdViewPort*>(viewport);
 
 		QImage retImg = QImage();
-		if (!thresholdViewport->isCanceled()) retImg = thresholdViewport->getThresholdedImage();
+		if (!thresholdViewport->isCanceled()) retImg = thresholdViewport->getThresholdedImage(true);
 
 		viewport->setVisible(false);
 
@@ -206,7 +206,9 @@ void DkThresholdViewPort::init() {
 	thrChannel = channel_gray;
 	thrEnabled = true;
 	thrValue = 128;
-	thrValueUpper = thrValue;
+	thrValueUpper = thrValue;	
+	origImg = QImage();
+	origImgSet = false;
 
 	thresholdToolbar = new DkThresholdToolBar(tr("Threshold Toolbar"), this);
 
@@ -262,217 +264,142 @@ void DkThresholdViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkThresholdViewPort::paintEvent(QPaintEvent *event) {
 
-	QImage thrImage = QImage();
-	QRect imgRect = QRect();
-
-	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
-		if (viewport) {
-
-			imgRect = viewport->getImage().rect();
-			thrImage = QImage(viewport->getImage());
-			QImage viewportImage;
-
-			//if (thrEnabled) {
-
-				switch (thrImage.depth()) {
-					case 8:
-						thrImage = QImage(viewport->getImage().size(), QImage::Format_RGB32);
-						viewportImage = QImage(viewport->getImage());
-
-						for (int y = 0; y < thrImage.height(); y++) {
-							for (int x = 0; x < thrImage.width(); x++) {
-								int gray =  (thrEnabled) ? ((thrValue <= qRed(viewportImage.pixel(x, y)) && qRed(viewportImage.pixel(x, y)) <= thrValueUpper) ? 255 : 0)  :  qRed(viewportImage.pixel(x, y));
-								thrImage.setPixel(x, y, qRgb(gray, gray, gray));
-							}
-						}
-						break;
-					case 24:
-						for (int y = 0; y < thrImage.height(); y++) {
-							for (int x = 0; x < thrImage.width(); x++) {
-								int pixel = thrImage.pixel(x, y);
-								int gray = 0;
-								switch (thrChannel) {
-									case channel_gray:
-										gray =  (thrEnabled) ? ((thrValue <= qGray(pixel) && qGray(pixel) <= thrValueUpper) ? 255 : 0) : qGray(pixel);
-										break;
-									case channel_red:
-										gray =  (thrEnabled) ? ((thrValue <= qRed(pixel) && qRed(pixel) <= thrValueUpper) ? 255 : 0) : qRed(pixel);
-										break;
-									case channel_blue:
-										gray =  (thrEnabled) ? ((thrValue <= qBlue(pixel) && qBlue(pixel) <= thrValueUpper) ? 255 : 0) : qBlue(pixel);
-										break;
-									case channel_green:
-										gray =  (thrEnabled) ? ((thrValue <= qGreen(pixel) && qGreen(pixel) <= thrValueUpper) ? 255 : 0) : qGreen(pixel);
-										break;
-								}
-								thrImage.setPixel(x, y, qRgb(gray, gray, gray));
-							}
-						}
-						break;
-					case 32:
-						for (int y = 0; y < thrImage.height(); y++) {
-							for (int x = 0; x < thrImage.width(); x++) {
-								int pixel = thrImage.pixel(x, y);
-								int gray = 0;
-								switch (thrChannel) {
-									case channel_gray:
-										gray =  (thrEnabled) ? ((thrValue <= qGray(pixel) && qGray(pixel) <= thrValueUpper) ? 255 : 0) : qGray(pixel);
-										break;
-									case channel_red:
-										gray =  (thrEnabled) ? ((thrValue <= qRed(pixel) && qRed(pixel) <= thrValueUpper) ? 255 : 0) : qRed(pixel);
-										break;
-									case channel_blue:
-										gray =  (thrEnabled) ? ((thrValue <= qBlue(pixel) && qBlue(pixel) <= thrValueUpper) ? 255 : 0) : qBlue(pixel);
-										break;
-									case channel_green:
-										gray =  (thrEnabled) ? ((thrValue <= qGreen(pixel) && qGreen(pixel) <= thrValueUpper) ? 255 : 0) : qGreen(pixel);
-										break;
-								}
-								int alpha = qAlpha(pixel);
-								thrImage.setPixel(x, y, qRgba(gray, gray, gray, alpha));
-							}
-						}
-						break;
-				}
-			//}
-		}
-	}
-
-	QPainter painter(this);
-	
-	if (worldMatrix)
-		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));
-
-	painter.drawImage(imgRect, thrImage);
-
-	painter.end();
-	
 	DkPluginViewPort::paintEvent(event);
 }
 
-QImage DkThresholdViewPort::getThresholdedImage() {
+QImage DkThresholdViewPort::getThresholdedImage(bool thrEnabled) {
 
-	if(parent()) {
+
+	if(parent() && !origImgSet) {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 		if (viewport) {
-
-			QImage img = viewport->getImage();
-			QImage thrImage = QImage(img);
-
-			switch (thrImage.depth()) {
-				case 8:
-					thrImage = QImage(viewport->getImage().size(), QImage::Format_RGB32);
-
-					for (int y = 0; y < thrImage.height(); y++) {
-						for (int x = 0; x < thrImage.width(); x++) {
-							int gray =  (thrValue <= qRed(img.pixel(x, y)) && qRed(img.pixel(x, y)) <= thrValueUpper) ? 255 : 0;
-							thrImage.setPixel(x, y, qRgb(gray, gray, gray));
-						}
-					}
-					break;
-				case 24:
-					for (int y = 0; y < thrImage.height(); y++) {
-						for (int x = 0; x < thrImage.width(); x++) {
-							int pixel = thrImage.pixel(x, y);
-							int gray = 0;
-							switch (thrChannel) {
-								case channel_gray:
-									gray =  (thrValue <= qGray(pixel) && qGray(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-								case channel_red:
-									gray =  (thrValue <= qRed(pixel) && qRed(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-								case channel_blue:
-									gray =  (thrValue <= qBlue(pixel) && qBlue(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-								case channel_green:
-									gray =  (thrValue <= qGreen(pixel) && qGreen(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-							}
-							thrImage.setPixel(x, y, qRgb(gray, gray, gray));
-						}
-					}
-					break;
-				case 32:
-					for (int y = 0; y < thrImage.height(); y++) {
-						for (int x = 0; x < thrImage.width(); x++) {
-							int pixel = thrImage.pixel(x, y);
-							int gray = 0;
-							switch (thrChannel) {
-								case channel_gray:
-									gray =  (thrValue <= qGray(pixel) && qGray(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-								case channel_red:
-									gray =  (thrValue <= qRed(pixel) && qRed(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-								case channel_blue:
-									gray =  (thrValue <= qBlue(pixel) && qBlue(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-								case channel_green:
-									gray =  (thrValue <= qGreen(pixel) && qGreen(pixel) <= thrValueUpper) ? 255 : 0;
-									break;
-							}
-							int alpha = qAlpha(pixel);
-							thrImage.setPixel(x, y, qRgba(gray, gray, gray, alpha));
-						}
-					}
-					break;
-			}
-
-			if (img.depth() == 8) {
-
-				QImage outImage = QImage(viewport->getImage().size(), QImage::Format_RGB32);
-
-				QPainter painter(&outImage);
-
-				//if (worldMatrix)
-					//painter.setWorldTransform(*worldMatrix);
-
-				painter.drawImage(thrImage.rect(), thrImage);
-
-				painter.end();
-
-				return outImage;
-			}
-
-			QPainter painter(&img);
-
-			//if (worldMatrix)
-				//painter.setWorldTransform(*worldMatrix);
-
-			painter.drawImage(thrImage.rect(), thrImage);
-
-			painter.end();
-			
-			return img;
+			origImg = viewport->getImage();
+			origImgSet = true;
 		}
 	}
-	
-	return QImage();
+
+	QImage thrImage = QImage(origImg);
+
+	switch (thrImage.depth()) {
+		case 8:
+			thrImage = QImage(origImg.size(), QImage::Format_RGB32);
+
+			for (int y = 0; y < thrImage.height(); y++) {
+				for (int x = 0; x < thrImage.width(); x++) {
+					int gray =  (thrEnabled) ? ((thrValue <= qRed(origImg.pixel(x, y)) && qRed(origImg.pixel(x, y)) <= thrValueUpper) ? 255 : 0)  :  qRed(origImg.pixel(x, y));
+					thrImage.setPixel(x, y, qRgb(gray, gray, gray));
+				}
+			}
+			break;
+		case 24:
+			for (int y = 0; y < thrImage.height(); y++) {
+				for (int x = 0; x < thrImage.width(); x++) {
+					int pixel = thrImage.pixel(x, y);
+					int gray = 0;
+					switch (thrChannel) {
+						case channel_gray:
+							gray =  (thrEnabled) ? ((thrValue <= qGray(pixel) && qGray(pixel) <= thrValueUpper) ? 255 : 0) : qGray(pixel);
+							break;
+						case channel_red:
+							gray =  (thrEnabled) ? ((thrValue <= qRed(pixel) && qRed(pixel) <= thrValueUpper) ? 255 : 0) : qRed(pixel);
+							break;
+						case channel_blue:
+							gray =  (thrEnabled) ? ((thrValue <= qBlue(pixel) && qBlue(pixel) <= thrValueUpper) ? 255 : 0) : qBlue(pixel);
+							break;
+						case channel_green:
+							gray =  (thrEnabled) ? ((thrValue <= qGreen(pixel) && qGreen(pixel) <= thrValueUpper) ? 255 : 0) : qGreen(pixel);
+							break;
+					}
+					thrImage.setPixel(x, y, qRgb(gray, gray, gray));
+				}
+			}
+			break;
+		case 32:
+			for (int y = 0; y < thrImage.height(); y++) {
+				for (int x = 0; x < thrImage.width(); x++) {
+					int pixel = thrImage.pixel(x, y);
+					int gray = 0;
+					switch (thrChannel) {
+						case channel_gray:
+							gray =  (thrEnabled) ? ((thrValue <= qGray(pixel) && qGray(pixel) <= thrValueUpper) ? 255 : 0) : qGray(pixel);
+							break;
+						case channel_red:
+							gray =  (thrEnabled) ? ((thrValue <= qRed(pixel) && qRed(pixel) <= thrValueUpper) ? 255 : 0) : qRed(pixel);
+							break;
+						case channel_blue:
+							gray =  (thrEnabled) ? ((thrValue <= qBlue(pixel) && qBlue(pixel) <= thrValueUpper) ? 255 : 0) : qBlue(pixel);
+							break;
+						case channel_green:
+							gray =  (thrEnabled) ? ((thrValue <= qGreen(pixel) && qGreen(pixel) <= thrValueUpper) ? 255 : 0) : qGreen(pixel);
+							break;
+					}
+					int alpha = qAlpha(pixel);
+					thrImage.setPixel(x, y, qRgba(gray, gray, gray, alpha));
+				}
+			}
+			break;
+	}
+
+	if (origImg.depth() == 8) {
+
+		QImage outImage = QImage(origImg.size(), QImage::Format_RGB32);
+
+		QPainter painter(&outImage);
+
+		painter.drawImage(thrImage.rect(), thrImage);
+
+		painter.end();
+
+		return outImage;
+	}
+
+	QImage outImage = QImage(origImg);
+	QPainter painter(&outImage);
+
+	painter.drawImage(thrImage.rect(), thrImage);
+
+	painter.end();
+			
+	return outImage;
 }
 
 void DkThresholdViewPort::setThrValue(int val) {
 
 	this->thrValue = val;
+	if (parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
+	}
 	this->repaint();
 }
 
 void DkThresholdViewPort::setThrValueUpper(int val) {
 
 	this->thrValueUpper = val;
+	if (parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
+	}
 	this->repaint();
 }
 
 void DkThresholdViewPort::setThrEnabled(bool enabled) {
 
 	this->thrEnabled = enabled;
+	if (parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
+	}
 	this->repaint();
 }
 
 void DkThresholdViewPort::setThrChannel(int val) {
 
 	this->thrChannel = val;
+	if (parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		if (viewport) viewport->setImage(getThresholdedImage(this->thrEnabled));
+	}
 	this->repaint();
 }
 
@@ -480,44 +407,36 @@ void DkThresholdViewPort::calculateAutoThreshold() {
 
 	double sumPixel = 0;
 
-	if(parent()) {
-		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
-		if (viewport) {
-
-			QImage img = viewport->getImage();		
-
-			if (img.depth() == 8) {
-				for (int y = 0; y < img.height(); y++) {
-					for (int x = 0; x < img.width(); x++) {
-						sumPixel += qRed(img.pixel(x, y));
-					}
-				}
+	if (origImg.depth() == 8) {
+		for (int y = 0; y < origImg.height(); y++) {
+			for (int x = 0; x < origImg.width(); x++) {
+				sumPixel += qRed(origImg.pixel(x, y));
 			}
-			else if(img.depth() == 24 || img.depth() == 32) {
-				for (int y = 0; y < img.height(); y++) {
-					for (int x = 0; x < img.width(); x++) {
-						int pixel = img.pixel(x, y);
-						switch (thrChannel) {
-							case channel_gray:
-								sumPixel += qGray(img.pixel(x, y));
-								break;
-							case channel_red:
-								sumPixel += qRed(img.pixel(x, y));
-								break;
-							case channel_blue:
-								sumPixel += qBlue(img.pixel(x, y));
-								break;
-							case channel_green:
-								sumPixel += qGreen(img.pixel(x, y));
-								break;
-						}
-					}
-				}
-			}
-
-			sumPixel /= (img.height() * img.width());
 		}
 	}
+	else if(origImg.depth() == 24 || origImg.depth() == 32) {
+		for (int y = 0; y < origImg.height(); y++) {
+			for (int x = 0; x < origImg.width(); x++) {
+				int pixel = origImg.pixel(x, y);
+				switch (thrChannel) {
+					case channel_gray:
+						sumPixel += qGray(origImg.pixel(x, y));
+						break;
+					case channel_red:
+						sumPixel += qRed(origImg.pixel(x, y));
+						break;
+					case channel_blue:
+						sumPixel += qBlue(origImg.pixel(x, y));
+						break;
+					case channel_green:
+						sumPixel += qGreen(origImg.pixel(x, y));
+						break;
+				}
+			}
+		}
+	}
+
+	sumPixel /= (origImg.height() * origImg.width());
 
 	thresholdToolbar->setThrValue(qRound(sumPixel));
 }
@@ -539,6 +458,10 @@ void DkThresholdViewPort::applyChangesAndClose() {
 void DkThresholdViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
+	if(parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		if (viewport) viewport->setImage(origImg);
+	}
 	emit closePlugin();
 }
 
@@ -618,10 +541,10 @@ void DkThresholdToolBar::createIcons() {
 void DkThresholdToolBar::createLayout() {
 
 	QList<QKeySequence> enterSc;
-	enterSc.append(QKeySequence(Qt::Key_Enter + Qt::SHIFT));
-	enterSc.append(QKeySequence(Qt::Key_Return + Qt::SHIFT));
+	enterSc.append(QKeySequence(Qt::Key_Enter));
+	enterSc.append(QKeySequence(Qt::Key_Return));
 
-	QAction* applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER + SHIFT)"), this);
+	QAction* applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
 	applyAction->setShortcuts(enterSc);
 	applyAction->setObjectName("applyAction");
 

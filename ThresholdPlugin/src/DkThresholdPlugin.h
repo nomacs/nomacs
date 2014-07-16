@@ -95,7 +95,7 @@ public:
 	~DkThresholdViewPort();
 
 	bool isCanceled();
-	QImage getThresholdedImage();
+	QImage getThresholdedImage(bool thrEnabled);
 
 public slots:
 	void setPanning(bool checked);
@@ -133,6 +133,8 @@ protected:
 	int thrValue;
 	int thrValueUpper;
 	bool thrEnabled;
+	QImage origImg;
+	bool origImgSet;
 };
 
 

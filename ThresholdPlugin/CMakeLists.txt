@@ -7,7 +7,7 @@ ENDIF()
 
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 1.0.0)
+set(PLUGIN_VERSION 1.0.1)
 set(PLUGIN_ID 70e2fbe0c913462e846bb91da201ceca) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
