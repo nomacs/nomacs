@@ -218,8 +218,9 @@ void DkCamControls::createLayout() {
 	saveNamesCheckBox = new QCheckBox(tr("Name files automatically"));
 	saveNamesCheckBox->setChecked(true);
 	saveNamesCheckBox->setEnabled(false);
+	onSaveNamesCheckBoxChanged(1);
 
-	openImagesCheckBox = new QCheckBox(tr("Load and display images after shooting"));
+	openImagesCheckBox = new QCheckBox(tr("Display images after shooting"));
 	openImagesCheckBox->setChecked(true);
 	openImagesCheckBox->setEnabled(false);
 
@@ -262,6 +263,8 @@ void DkCamControls::createLayout() {
 	connect(maidFacade, SIGNAL(acquireStart()), this, SLOT(onAcquireStart()));
 	connect(maidFacade, SIGNAL(shootAndAcquireFinished()), this, SLOT(onShootFinished()));
 	connect(maidFacade, SIGNAL(updateAcquireProgress(unsigned int, unsigned int)), this, SLOT(onUpdateAcquireProgress(unsigned int, unsigned int)));
+
+
 
 	readProfiles();
 }
