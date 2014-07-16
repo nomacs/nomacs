@@ -344,7 +344,7 @@ void DkCamControls::onSaveNamesCheckBoxChanged(int state) {
 }
 
 void DkCamControls::changeSavePath() {
-	QString newPath = QFileDialog::getExistingDirectory(this, tr("Select new save path"), maidFacade->getCurrentSavePath());
+	QString newPath = QFileDialog::getExistingDirectory(this->parentWidget(), tr("Select new save path"), maidFacade->getCurrentSavePath());
 	maidFacade->setCurrentSavePath(QFileInfo(newPath).filePath());
 	filePathEdit->setText(maidFacade->getCurrentSavePath());
 }

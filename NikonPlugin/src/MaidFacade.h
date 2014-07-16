@@ -64,7 +64,7 @@ public:
 	typedef std::pair<MaidFacade::StringValues, bool> MaybeStringValues;
 	typedef std::pair<MaidFacade::UnsignedValues, bool> MaybeUnsignedValues;
 
-	MaidFacade();
+	MaidFacade(QWidget* const dialogParent);
 	virtual ~MaidFacade() {}
 
 	// some callbacks are public because they have to be called from a function outside the class
@@ -109,7 +109,7 @@ public:
 	void progressCallbackUpdate(ULONG command, ULONG param, ULONG done, ULONG total);
 	void enumerateCapsAll();
 	QString getCurrentSavePath();
-	void setCurrentSavePath(QString path);
+	void setCurrentSavePath(const QString& path);
 	void setAutoSaveNaming(bool);
 	QFileInfo getLastFileInfo();
 	QString makePictureFilename();
@@ -150,6 +150,7 @@ private:
 	bool initialized;
 	bool autoSaveNaming;
 	bool closed;
+	QWidget* const dialogParent;
 	
 	//void closeChildren(std::unique_ptr<Maid::MaidObject> mo);
 	MaybeStringValues readPackedStringCap(ULONG capId);

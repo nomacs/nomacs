@@ -19,9 +19,9 @@ using nmc::MaidFacade;
 using Maid::MaidUtil;
 using Maid::MaidObject;
 
-MaidFacade::MaidFacade() 
+MaidFacade::MaidFacade(QWidget* const dialogParent) 
 	: lensAttached(false), prevFileNumber(0), captureCount(0), allItemsAcquired(false), 
-	currentlyAcquiringObjects(false), initialized(false) {
+	currentlyAcquiringObjects(false), initialized(false), dialogParent(dialogParent) {
 }
 
 /*!
@@ -614,7 +614,7 @@ QString MaidFacade::getCapturedFileName(const QFileInfo& saveFile) {
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
 		// TODO: set the main window here...
-		fileName = QFileDialog::getSaveFileName(0, tr("Save File %1").arg(saveName),
+		fileName = QFileDialog::getSaveFileName(dialogParent, tr("Save File %1").arg(saveName),
 			savePath, selectedFilter, &selectedFilter);
 	}
 
@@ -657,7 +657,7 @@ QString MaidFacade::getCurrentSavePath() {
 	}
 }
 
-void MaidFacade::setCurrentSavePath(QString path) {
+void MaidFacade::setCurrentSavePath(const QString& path) {
 	if (!firstFilename.isEmpty()) {
 		firstFilename = path + QDir::separator() + QFileInfo(firstFilename).fileName();
 	}
