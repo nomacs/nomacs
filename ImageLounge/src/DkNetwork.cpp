@@ -796,6 +796,11 @@ void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, int m
 	emit(connectedReceivedNewMode(mode));
 }
 
+void DkRCClientManager::connectionReceivedGoodBye(DkConnection* connection) {
+	emit connectedReceivedNewMode(DkSettings::sync_mode_default);
+	DkClientManager::connectionReceivedGoodBye(connection);
+}
+
 DkRCConnection* DkRCClientManager::createConnection() {
 	DkRCConnection* connection = new DkRCConnection();
 	connectConnection(connection);
@@ -912,6 +917,7 @@ void DkLANUdpSocket::stopBroadcast() {
 }
 
 void DkLANUdpSocket::sendBroadcast() {
+	//qDebug() << "sending broadcast";
 	QByteArray datagram;
 	datagram.append(QHostInfo::localHostName());
 	datagram.append("@");
