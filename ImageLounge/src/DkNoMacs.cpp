@@ -4168,7 +4168,7 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
-void DkNoMacsSync::tcpChangeSyncMode(int syncMode) {
+void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 
 	if (syncMode == DkSettings::sync.syncMode || !rcClient)
 		return;
@@ -4185,7 +4185,9 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode) {
 		return;
 	}
 
-	bool connected = connectWhiteList(syncMode, true);
+	// if we do not connect with the white list, the signal came from the rc client
+	// so we can easily assume that we are connected
+	bool connected = (connectWhiteList) ? connectWhiteList(syncMode, true) : true;
 
 	if (!connected) {
 		DkSettings::sync.syncMode = DkSettings::sync_mode_default;
@@ -4212,7 +4214,7 @@ void DkNoMacsSync::tcpRemoteControl(bool start) {
 	if (!rcClient)
 		return;
 
-	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_control : DkSettings::sync_mode_default);
+	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_control : DkSettings::sync_mode_default, true);
 }
 
 void DkNoMacsSync::tcpRemoteDisplay(bool start) {
@@ -4220,7 +4222,7 @@ void DkNoMacsSync::tcpRemoteDisplay(bool start) {
 	if (!rcClient)
 		return;
 
-	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_display : DkSettings::sync_mode_default);
+	tcpChangeSyncMode((start) ? DkSettings::sync_mode_remote_display : DkSettings::sync_mode_default, true);
 
 }
 
