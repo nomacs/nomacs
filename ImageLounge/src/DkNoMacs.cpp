@@ -4277,6 +4277,7 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
 
 		emit stopSynchronizeWithSignal();
+		couldConnect = true;
 	}
 
 	return couldConnect;

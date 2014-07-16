@@ -113,6 +113,7 @@ public:
 		sync_mode_default = 0,
 		sync_mode_remote_display,
 		sync_mode_remote_control,
+		sync_mode_receiveing_command,
 
 		sync_mode_end,
 	};

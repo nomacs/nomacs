@@ -1932,8 +1932,8 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 		}
 	}	
 
-	if ((qApp->keyboardModifiers() == altMod || 
-		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && 
+	if (((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncActions) &&
+		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_control) && 
 		(hasFocus() || 
 		controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
@@ -2007,8 +2007,8 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	// some hack: set the mode to default in order to prevent loops (if both are auto connected)
 	// should be mostly harmless
-	int oldMode = DkSettings::sync.syncMode;
-	DkSettings::sync.syncMode = DkSettings::mode_default;
+	//int oldMode = DkSettings::sync.syncMode;
+	//DkSettings::sync.syncMode = DkSettings::sync_mode_receiveing_command;
 
 	if (filename.isEmpty()) {
 
@@ -2036,7 +2036,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	qDebug() << "loading file: " << filename;
 
-	DkSettings::sync.syncMode = oldMode;
+	//DkSettings::sync.syncMode = oldMode;
 }
 
 DkImageLoader* DkViewPort::getImageLoader() {
