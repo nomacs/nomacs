@@ -139,6 +139,9 @@ endif(ENABLE_RAW)
 
 # search for multi-layer tiff
 # we try to grab the OpenCV's libtiff
+	unset(TIFF_BUILD_PATH CACHE)
+	unset(TIFF_CONFIG_DIR CACHE)
+	unset(TIFF_INCLUDE_DIR CACHE)
 if(ENABLE_TIFF)
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV is mandotory when enabling TIFF. You have to enable ENABLE_OPENCV")
@@ -147,7 +150,9 @@ if(ENABLE_TIFF)
 	unset(TIFF_BUILD_PATH CACHE)
 	unset(TIFF_CONFIG_DIR CACHE)
 
-	find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
+	message(STATUS "OpenCV_3RDPARTY_LIB_DIR_OPT: ${OpenCV_3RDPARTY_LIB_DIR_OPT}")
+	message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
+	find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" "${OpenCV_DIR}/3rdparty/lib" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
 	if(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
 		FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
 		FILE(COPY ${TIFF_BUILD_PATH}/Release/libtiff.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
@@ -159,7 +164,7 @@ if(ENABLE_TIFF)
 	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 
 	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
-	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" )
+	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
 
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
