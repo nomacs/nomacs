@@ -510,12 +510,9 @@ void DkControlWidget::switchWidget(QWidget* widget) {
 	if (layout->currentWidget() == widget)
 		return;
 
-	if (widget) {
-		lastActiveWidget = layout->currentWidget();
+	if (widget)
 		layout->setCurrentWidget(widget);
-	}
 	else
-	//	layout->setCurrentWidget(0);
 		layout->setCurrentWidget(widgets[hud_widget]);
 
 	if (layout->currentWidget())
@@ -1263,8 +1260,6 @@ void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
 			newPeers = tr("disconnected with: ");
 			emit newClientConnectedSignal(false, cp.isLocal());
 		}
-
-		
 
 		qDebug() << "cp address..." << cp.hostAddress;
 

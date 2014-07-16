@@ -5145,10 +5145,10 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 
 void DkRecentFilesWidget::setVisible(bool visible) {
 	
-	if (visible)
+	if (visible) {
 		updateFileList();
-	
-	qDebug() << "showing recent files...";
+		qDebug() << "showing recent files...";
+	}
 
 	DkWidget::setVisible(visible);
 }
