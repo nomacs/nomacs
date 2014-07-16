@@ -4192,6 +4192,7 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 
 	if (!connected) {
 		DkSettings::sync.syncMode = DkSettings::sync_mode_default;
+		viewport()->getController()->setInfo(tr("Sorry, I could not find any clients."));
 		return;
 	}
 

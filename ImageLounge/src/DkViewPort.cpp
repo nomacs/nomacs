@@ -1911,24 +1911,26 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 	if (!unloadImage())
 		return;
 
-	QApplication::sendPostedEvents();
+	if (!((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncActions) &&
+		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display)) {
+		QApplication::sendPostedEvents();
 
-	for (int idx = 0; idx < loader->getImages().size(); idx++) {
-		QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
+		for (int idx = 0; idx < loader->getImages().size(); idx++) {
+			QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
 		
-		if (!imgC)
-			break;
+			if (!imgC)
+				break;
 
-		loader->setCurrentImage(imgC);
+			loader->setCurrentImage(imgC);
 
-		if (imgC && imgC->getLoadState() != DkImageContainer::exists_not) {
-			loader->load(imgC);
-			break;
+			if (imgC && imgC->getLoadState() != DkImageContainer::exists_not) {
+				loader->load(imgC);
+				break;
+			}
+			else
+				qDebug() << "image does not exist - skipping";
 		}
-		else
-			qDebug() << "image does not exist - skipping";
-	}
-	
+	}	
 
 	if ((qApp->keyboardModifiers() == altMod || 
 		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && 
