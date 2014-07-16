@@ -1933,7 +1933,7 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 	}	
 
 	if (((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncActions) &&
-		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_control) && 
+		DkSettings::sync.syncMode != DkSettings::sync_mode_remote_display) && 
 		(hasFocus() || 
 		controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
