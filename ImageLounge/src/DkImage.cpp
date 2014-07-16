@@ -517,7 +517,8 @@ bool DkImageLoader::unloadFile() {
 	if (!currentImage)
 		return true;
 
-	if (currentImage->isEdited()) {
+	// if we are either in rc or remote display mode & the directory does not exist - we received an image, so don't ask the user
+	if (currentImage->isEdited() && (DkSettings::sync.syncMode == DkSettings::sync_mode_default || currentImage->file().absoluteDir().exists())) {
 		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Save Image"), tr("Do you want to save changes to:\n%1").arg(currentImage->file().fileName()), 
 			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), DkNoMacs::getDialogParent());
 

@@ -88,8 +88,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 			w->setMouseTracking(true);
 		}
 	}
-
-
 }
 
 void DkControlWidget::init() {

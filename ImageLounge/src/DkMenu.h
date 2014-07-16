@@ -379,7 +379,7 @@ public slots:
 
 			if (tcpActions.at(idx)->objectName() == "serverAction")
 				tcpActions.at(idx)->setEnabled(!anyConnected);
-			if (tcpActions.at(idx)->objectName() == "sendImageAction")
+			if (tcpActions.at(idx)->objectName() == "sendImageAction" && DkSettings::sync.syncMode == DkSettings::sync_mode_default)
 				tcpActions.at(idx)->setEnabled(anyConnected);
 		}
 
@@ -408,8 +408,11 @@ protected slots:
 
 		if (!noClientsFound || !newPeers.empty()) {
 			
-			for (int idx = 0; idx < tcpActions.size(); idx++)
-				addAction(tcpActions.at(idx));
+			for (int idx = 0; idx < tcpActions.size(); idx++) {
+				
+				if (tcpActions.at(idx)->objectName() != "sendImageAction")
+					addAction(tcpActions.at(idx));
+			}
 
 			//QList<QAction*>::iterator actionIter = tcpActions.begin();
 			//while (actionIter != tcpActions.end()) {
