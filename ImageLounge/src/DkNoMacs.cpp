@@ -4187,7 +4187,7 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 
 	// if we do not connect with the white list, the signal came from the rc client
 	// so we can easily assume that we are connected
-	bool connected = (connectWhiteList) ? connectWhiteList(syncMode, true) : true;
+	bool connected = (connectWithWhiteList) ? connectWhiteList(syncMode, true) : true;
 
 	if (!connected) {
 		DkSettings::sync.syncMode = DkSettings::sync_mode_default;

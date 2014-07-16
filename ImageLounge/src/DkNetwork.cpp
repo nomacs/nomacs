@@ -1537,6 +1537,7 @@ void DkLanManagerThread::connectClient() {
 	connect(clientManager, SIGNAL(sendInfoSignal(QString, int)), parent->viewport()->getController(), SLOT(setInfo(QString, int)));
 	connect(clientManager, SIGNAL(receivedImageTitle(QString)), parent, SLOT(setWindowTitle(QString)));
 	connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
+	connect(this, SIGNAL(sendGoodByeToAll()), clientManager, SLOT(sendGoodByeToAll()));
 
 #ifdef WITH_UPNP
 	qRegisterMetaType<QHostAddress>("QHostAddress");
