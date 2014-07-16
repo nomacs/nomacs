@@ -75,7 +75,6 @@ macro(NMC_FINDQT)
 		message(STATUS "path: ${QT_QMAKE_PATH}")
 		message(STATUS "cmake path: ${CMAKE_PREFIX_PATH}")
 		
-		find_package(Qt5Core)
 		find_package(Qt5Widgets)
 		find_package(Qt5Network)
 		find_package(Qt5LinguistTools)
