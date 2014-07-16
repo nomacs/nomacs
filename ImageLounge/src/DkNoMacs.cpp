@@ -4168,15 +4168,41 @@ void DkNoMacsSync::tcpConnectAll() {
 
 }
 
+void DkNoMacsSync::tcpChangeSyncMode(int syncMode) {
+
+	if (syncMode == DkSettings::sync.syncMode)
+		return;
+
+	// turn off the old mode
+	switch(DkSettings::sync.syncMode) {
+		{case DkSettings::sync_mode_remote_control: tcpRemoteControl(false); break;}
+		{case DkSettings::sync_mode_remote_display: tcpRemoteDisplay(false); break;}
+	//default:
+	}
+
+	// turn on the new mode
+	switch(syncMode) {
+		{case DkSettings::sync_mode_remote_control: tcpRemoteControl(true); break;}
+		{case DkSettings::sync_mode_remote_display: tcpRemoteDisplay(true); break;}
+	//default:
+	}
+
+	DkSettings::sync.syncMode = syncMode;
+}
+
 
 void DkNoMacsSync::tcpRemoteControl(bool start) {
 
 	if (!rcClient)
 		return;
 
-	bool couldConnect = connectWhiteList(DkSettings::sync_mode_remote_control, start);
+	if (start)
+		start = connectWhiteList(DkSettings::sync_mode_remote_control, start);
+	else {
+		// TODO disconnect all
+	}
 
-	syncActions[menu_sync_remote_control]->setChecked(couldConnect);
+	syncActions[menu_sync_remote_control]->setChecked(start);
 
 }
 
