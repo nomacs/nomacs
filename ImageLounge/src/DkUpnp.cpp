@@ -43,6 +43,7 @@ void DkUpnpDeviceHost::wlServerPortChanged(quint16 port) {
 }
 
 bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
+	qDebug() << "pathToConfig:" << pathToConfig;
 	qDebug() << "starting DeviceHost";
 	QFile f(pathToConfig);
 	if (!f.exists()) {
@@ -59,7 +60,9 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 
 	QByteArray fileData;
 	f.open(QIODevice::ReadOnly);
+	//f.seek(0);
 	fileData = f.readAll();
+	f.close();
 	QString fileText(fileData);
 	fileText.replace("insert-new-uuid-here", uuidString);
 #ifdef WIN32
@@ -69,11 +72,12 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 #endif // WIN32
 
 	
-	f.seek(0);
+	
 	QFile newXMLfile(newXMLpath);
 	newXMLfile.open(QIODevice::WriteOnly);
 	newXMLfile.write(fileText.toUtf8());
-	f.close();
+	qDebug() << "writing file:" << newXMLpath;
+	
 	newXMLfile.close();
 
 	QFileInfo fileInfo = QFileInfo(f);
@@ -81,7 +85,7 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	if (!serviceXML.exists())
 		qDebug() << "nomacs-service.xml file does not exist";
 	QString newServiceXMLPath = QDir::tempPath()+ QDir::separator() + "nomacs-service.xml";
-	if(QFile::exists(newServiceXMLPath)) {
+	if(!QFile::exists(newServiceXMLPath)) {
 		if (!serviceXML.copy(newServiceXMLPath))
 			qDebug() << "unable to copy nomacs-service.xml to " << newServiceXMLPath << ", perhaps files already exists";
 	}

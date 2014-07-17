@@ -918,35 +918,35 @@ void DkLANUdpSocket::stopBroadcast() {
 
 void DkLANUdpSocket::sendBroadcast() {
 	//qDebug() << "sending broadcast";
-	QByteArray datagram;
-	datagram.append(QHostInfo::localHostName());
-	datagram.append("@");
-	datagram.append(QByteArray::number(tcpServerPort));
-	QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
-	for (quint16 port = startPort; port <= endPort; port++) {
-		for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
-			QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
-			for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
-				if (itr->broadcast().isNull())
-					continue;
-				writeDatagram(datagram.data(), datagram.size(), itr->broadcast(), port);
-			}
-		}
-	}
+	//QByteArray datagram;
+	//datagram.append(QHostInfo::localHostName());
+	//datagram.append("@");
+	//datagram.append(QByteArray::number(tcpServerPort));
+	//QList<QNetworkInterface> networkInterfaces = QNetworkInterface::allInterfaces();
+	//for (quint16 port = startPort; port <= endPort; port++) {
+	//	for (QList<QNetworkInterface>::iterator networkInterfacesItr = networkInterfaces.begin(); networkInterfacesItr != networkInterfaces.end(); networkInterfacesItr++) {
+	//		QList<QNetworkAddressEntry> entires = networkInterfacesItr->addressEntries();
+	//		for (QList<QNetworkAddressEntry>::iterator itr = entires.begin(); itr != entires.end(); itr++) {
+	//			if (itr->broadcast().isNull())
+	//				continue;
+	//			writeDatagram(datagram.data(), datagram.size(), itr->broadcast(), port);
+	//		}
+	//	}
+	//}
 
 
 }
 
 void DkLANUdpSocket::sendNewClientBroadcast() {
-	QByteArray datagram;
-	datagram.append("newClient");
-	datagram.append("@");
-	datagram.append(QByteArray::number(0));
+	//QByteArray datagram;
+	//datagram.append("newClient");
+	//datagram.append("@");
+	//datagram.append(QByteArray::number(0));
 
-	for (quint16 port = startPort; port <= endPort; port++)  {
-		writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, port);
-	}
-	qDebug() << "sent broadcast:" << datagram << "--- " << 0;
+	//for (quint16 port = startPort; port <= endPort; port++)  {
+	//	writeDatagram(datagram.data(), datagram.size(), QHostAddress::Broadcast, port);
+	//}
+	//qDebug() << "sent broadcast:" << datagram << "--- " << 0;
 }
 
 void DkLANUdpSocket::readBroadcast() {
