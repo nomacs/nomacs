@@ -30,12 +30,12 @@
 		<stateVariable sendEvents="yes">
 			<name>tcpServerPort</name>
 			<dataType>i4</dataType>
-			<defaultValue>""</defaultValue>
+			<defaultValue>"0"</defaultValue>
 		</stateVariable>
 		<stateVariable sendEvents="yes">
 			<name>whiteListServerPort</name>
 			<dataType>i4</dataType>
-			<defaultValue>""</defaultValue>
+			<defaultValue>"0"</defaultValue>
 		</stateVariable>
 	</serviceStateTable>
 </scpd>
