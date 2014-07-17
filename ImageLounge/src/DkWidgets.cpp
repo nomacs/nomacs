@@ -5075,7 +5075,7 @@ DkFileLabel::DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, 
 		setText(fileInfo.getFileInfo().fileName());
 
 	this->fileInfo = fileInfo;
-
+	setObjectName("DkFileLabel");
 }
 
 void DkFileLabel::mousePressEvent(QMouseEvent *ev) {
@@ -5094,6 +5094,17 @@ DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(p
 
 	connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateFiles()));
 	connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
+}
+
+DkRecentFilesWidget::~DkRecentFilesWidget() {
+
+	fileWatcher.blockSignals(true);
+	fileWatcher.cancel();
+	fileWatcher.waitForFinished();
+
+	folderWatcher.blockSignals(true);
+	folderWatcher.cancel();
+	folderWatcher.waitForFinished();
 }
 
 void DkRecentFilesWidget::createLayout() {
@@ -5129,14 +5140,14 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 	if (imgLoadedStyle) {
 		setStyleSheet(QString("#bgLabel{background-color:") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" +
 			QString("QLabel{color: #FFFFFF; padding: 2 0 2 0; font-size: 13px;}") + 
-			QString("QLabel:hover{color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget)) + 
+			QString("#DkFileLabel:hover{color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget)) + 
 			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 rgba(255,255,255,200), stop: 1 rgba(0,0,0,0));}"));
 
 	}
 	else {
 		setStyleSheet(QString("#bgLabel{background-color: rgba(0,0,0,0);}" +
 			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" + 
-		QString("QLabel:hover{color: #FFFFFF;") + 
+			QString("#DkFileLabel:hover{color: #FFFFFF;") + 
 			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ", stop: 1 rgba(0,0,0,0));}"));
 
 	}

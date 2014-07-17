@@ -1736,6 +1736,7 @@ class DkRecentFilesWidget : public DkWidget {
 
 public:
 	DkRecentFilesWidget(QWidget* parent = 0);
+	~DkRecentFilesWidget();
 	static void mappedFileExists(DkFileInfo& fileInfo);
 	void setCustomStyle(bool imgLoadedStyle = false);
 

@@ -71,8 +71,6 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 #else
 	fileText.replace("nomacs-service.xml", "/nomacs-service.xml");
 #endif // WIN32
-
-	
 	
 	QFile newXMLfile(newXMLpath);
 	newXMLfile.open(QIODevice::WriteOnly);
