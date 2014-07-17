@@ -5096,7 +5096,8 @@ DkImageLabel::DkImageLabel(const QFileInfo& fileInfo, QWidget* parent /* = 0 */,
 	setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
 	setMouseTracking(true);
 
-	
+	setStatusTip(fileInfo.fileName());
+	setToolTip(fileInfo.fileName());
 	
 	createLayout();
 }
