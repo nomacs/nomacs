@@ -3112,10 +3112,15 @@ void DkNoMacs::setContrast(bool contrast) {
 	qDebug() << "contrast arguments: " << args;
 }
 
-void DkNoMacs::onWindowLoaded() {
+void DkNoMacs::showRecentFiles(bool show) {
 
+	// TODO: add setting
 	if (DkSettings::app.appMode != DkSettings::mode_frameless && !DkSettings::global.recentFiles.empty())
-		viewport()->getController()->showRecentFiles(true);
+		viewport()->getController()->showRecentFiles(show);
+
+}
+
+void DkNoMacs::onWindowLoaded() {
 
 	QSettings s;
 	bool firstTime = s.value("AppSettings/firstTime", true).toBool();

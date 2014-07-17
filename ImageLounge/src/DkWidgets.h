@@ -1716,11 +1716,11 @@ protected:
 	bool used;
 };
 
-class DkFileLabel : public QLabel {
+class DkFolderLabel : public QLabel {
 	Q_OBJECT
 
 public:
-	DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 signals:
 	void loadFileSignal(QFileInfo);
@@ -1729,6 +1729,34 @@ protected:
 	void mousePressEvent(QMouseEvent *ev);
 
 	DkFileInfo fileInfo;
+};
+
+class DkImageLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkImageLabel(const QFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	bool hasFile() const;
+
+signals:
+	void labelLoaded();
+	void loadFileSignal(QFileInfo);
+
+public slots:
+	void thumbLoaded();
+	void removeFileFromList();
+
+protected:
+	void mousePressEvent(QMouseEvent *ev);
+	void enterEvent(QEvent *ev);
+	void leaveEvent(QEvent *ev);
+	void createLayout();
+
+	QLabel* imageLabel;
+	QLabel* highLightLabel;
+	QPushButton* removeFileButton;
+	QSharedPointer<DkThumbNailT> thumb;
 };
 
 class DkRecentFilesWidget : public DkWidget {
@@ -1747,19 +1775,21 @@ public slots:
 	void updateFiles();
 	void updateFolders();
 	virtual void setVisible(bool visible);
+	//void clearFileHistory();
+	//void clearFolderHistory();
 
 protected:
 	void createLayout();
 	void updateFileList();
 
-	QVector<DkFileInfo> recentFiles;
+	QVector<QFileInfo> recentFiles;
 	QVector<DkFileInfo> recentFolders;
-	QFutureWatcher<void> fileWatcher;
+	//QFutureWatcher<void> fileWatcher;
 	QFutureWatcher<void> folderWatcher;
-	QVector<DkFileLabel*> fileLabels;
-	QVector<DkFileLabel*> folderLabels;
+	QVector<DkImageLabel*> fileLabels;
+	QVector<DkFolderLabel*> folderLabels;
 
-	QVBoxLayout* filesLayout;
+	QGridLayout* filesLayout;
 	QVBoxLayout* folderLayout;
 
 	QWidget* filesWidget;
@@ -1768,6 +1798,12 @@ protected:
 	QLabel* folderTitle;
 	QLabel* filesTitle;
 	QLabel* bgLabel;
+
+	QLabel* clearFiles;
+	QLabel* clearFolders;
+
+	int rFileIdx;
+	int numActiveLabels;
 };
 
 

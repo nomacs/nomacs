@@ -490,6 +490,7 @@ public slots:
 	void openKeyboardShortcuts();
 	void openSettings();
 	void showExplorer(bool show);
+	void showRecentFiles(bool show = true);
 	void openDir();
 	void openFile();
 	void renameFile();

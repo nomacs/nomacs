@@ -5067,7 +5067,7 @@ QFileInfo DkFileInfo::getFileInfo() const {
 }
 
 // DkFileLabel --------------------------------------------------------------------
-DkFileLabel::DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
 	if (fileInfo.getFileInfo().isDir())
 		setText(fileInfo.getFileInfo().absoluteFilePath());
@@ -5078,29 +5078,141 @@ DkFileLabel::DkFileLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, 
 	setObjectName("DkFileLabel");
 }
 
-void DkFileLabel::mousePressEvent(QMouseEvent *ev) {
+void DkFolderLabel::mousePressEvent(QMouseEvent *ev) {
 
 	emit loadFileSignal(fileInfo.getFileInfo());
 
 	QLabel::mousePressEvent(ev);
 }
 
+// DkImageLabel --------------------------------------------------------------------
+DkImageLabel::DkImageLabel(const QFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+
+	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(fileInfo));
+	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(labelLoaded()));
+	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
+	thumb->fetchThumb(DkThumbNailT::force_exif_thumb);
+
+	setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
+	setMouseTracking(true);
+
+	
+	
+	createLayout();
+}
+
+void DkImageLabel::createLayout() {
+
+	imageLabel = new QLabel(this);
+	imageLabel->setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
+	imageLabel->setStyleSheet("QLabel{margin: 0 0 0 0; padding: 0 0 0 0; border: 1px solid " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}");
+
+	QColor cA = DkSettings::display.highlightColor;
+	cA.setAlpha(100);
+	highLightLabel = new QLabel(this);
+	highLightLabel->setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
+	highLightLabel->setStyleSheet("QLabel{background: " + DkUtils::colorToString(cA) + "; border: 1px solid " + DkUtils::colorToString(DkSettings::display.highlightColor) + ";}");
+	highLightLabel->hide();
+
+	removeFileButton = new QPushButton(QIcon(":/nomacs/img/close.png"), tr(""), this);
+	removeFileButton->setFlat(true);
+	removeFileButton->setStyleSheet("QPushButton{margin: 0 0 0 0; padding: 0 0 0 0; border: none;}");
+	removeFileButton->move(width()-17, 0);
+	removeFileButton->hide();
+
+	connect(removeFileButton, SIGNAL(clicked()), this, SLOT(removeFileFromList()));
+}
+
+bool DkImageLabel::hasFile() const {
+
+	return !thumb->getImage().isNull();
+}
+
+void DkImageLabel::thumbLoaded() {
+
+	if (thumb->getImage().isNull()) {
+		qDebug() << thumb->getFile().fileName() << " not loaded...";
+		return;
+	}
+	//qDebug() << thumb->getFile().fileName() << " loaded...";
+	
+	QPixmap pm = QPixmap::fromImage(thumb->getImage());
+
+	QRect r(QPoint(), pm.size());
+
+	if (r.width() > r.height()) {
+		r.setX(qFloor((r.width()-r.height())*0.5f));
+		r.setWidth(r.height());
+	}
+	else {
+		r.setY(qFloor((r.height()-r.width())*0.5f));
+		r.setHeight(r.width());
+	}
+	pm = pm.copy(r);
+
+	qDebug() << pm.size();
+
+	imageLabel->setPixmap(pm);
+}
+
+void DkImageLabel::removeFileFromList() {
+
+	imageLabel->hide();
+	//highLightLabel->hide();
+	removeFileButton->hide();
+	highLightLabel->setStyleSheet("QLabel{background: " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + "; border: 1px solid black;}");
+	highLightLabel->show();
+
+	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++) {
+
+		if (thumb->getFile().absoluteFilePath() == DkSettings::global.recentFiles.at(idx))
+			DkSettings::global.recentFiles.removeAt(idx);
+	}
+}
+
+void DkImageLabel::enterEvent(QEvent *ev) {
+	
+	if (imageLabel->isVisible()) {
+		highLightLabel->show();
+		removeFileButton->show();
+	}
+	QLabel::enterEvent(ev);
+}
+
+void DkImageLabel::leaveEvent(QEvent *ev) {
+	
+	if (imageLabel->isVisible())
+		highLightLabel->hide();
+	removeFileButton->hide();
+	QLabel::leaveEvent(ev);
+}
+
+void DkImageLabel::mousePressEvent(QMouseEvent *ev) {
+
+	emit loadFileSignal(thumb->getFile());
+
+	QLabel::mousePressEvent(ev);
+}
+
+
 // Recent Files Widget --------------------------------------------------------------------
 DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(parent) {
 
 	setObjectName("DkRecentFilesWidget");
 
+	rFileIdx = 0;
+
 	createLayout();
 
-	connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateFiles()));
+	//connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateFiles()));
 	connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
 }
 
 DkRecentFilesWidget::~DkRecentFilesWidget() {
 
-	fileWatcher.blockSignals(true);
-	fileWatcher.cancel();
-	fileWatcher.waitForFinished();
+	//fileWatcher.blockSignals(true);
+	//fileWatcher.cancel();
+	//fileWatcher.waitForFinished();
 
 	folderWatcher.blockSignals(true);
 	folderWatcher.cancel();
@@ -5110,7 +5222,7 @@ DkRecentFilesWidget::~DkRecentFilesWidget() {
 void DkRecentFilesWidget::createLayout() {
 
 	filesWidget = new QWidget(this);
-	filesLayout = new QVBoxLayout(filesWidget);
+	filesLayout = new QGridLayout(filesWidget);
 
 	folderWidget = new QWidget(this);
 	folderLayout = new QVBoxLayout(folderWidget);
@@ -5149,7 +5261,6 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" + 
 			QString("#DkFileLabel:hover{color: #FFFFFF;") + 
 			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ", stop: 1 rgba(0,0,0,0));}"));
-
 	}
 
 }
@@ -5168,14 +5279,16 @@ void DkRecentFilesWidget::updateFileList() {
 
 	delete folderLayout;
 	delete filesLayout;
+	rFileIdx = 0;
+	numActiveLabels = 0;
 
+	filesLayout = new QGridLayout(filesWidget);
 	folderLayout = new QVBoxLayout(folderWidget);
-	filesLayout = new QVBoxLayout(filesWidget);
-	
+
 	filesWidget->setFixedHeight(1080);
 	folderWidget->setFixedHeight(1080);
 
-	filesLayout->setSpacing(0);
+	//filesLayout->setSpacing(10);
 	folderLayout->setSpacing(0);
 
 	for (int idx = 0; idx < fileLabels.size(); idx++) {
@@ -5189,8 +5302,8 @@ void DkRecentFilesWidget::updateFileList() {
 	filesTitle->hide();
 	folderTitle->hide();
 
-	fileWatcher.cancel();
-	fileWatcher.waitForFinished();
+	//fileWatcher.cancel();
+	//fileWatcher.waitForFinished();
 	folderWatcher.cancel();
 	folderWatcher.waitForFinished();
 
@@ -5204,39 +5317,77 @@ void DkRecentFilesWidget::updateFileList() {
 	for (int idx = 0; idx < DkSettings::global.recentFolders.size(); idx++)
 		recentFolders.append(QFileInfo(DkSettings::global.recentFolders.at(idx)));
 
-	fileWatcher.setFuture(QtConcurrent::map(recentFiles, &nmc::DkRecentFilesWidget::mappedFileExists));
+	//fileWatcher.setFuture(QtConcurrent::map(recentFiles, &nmc::DkRecentFilesWidget::mappedFileExists));
 	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &nmc::DkRecentFilesWidget::mappedFileExists));
+
+	updateFiles();
 }
 
 void DkRecentFilesWidget::updateFiles() {
 
-	filesTitle->show();
-	filesLayout->addWidget(filesTitle);
-	filesLayout->addSpacerItem(new QSpacerItem(10, 10));
+	int columns = 3;
 
-	int cHeight = 0;
-
-	for (int idx = 0; idx < recentFiles.size(); idx++) {
-
-		if (recentFiles.at(idx).inUse())
-			continue;
-
-		if (recentFiles.at(idx).exists()) {
-			recentFiles[idx].setInUse(true);
-
-			DkFileLabel* fLabel = new DkFileLabel(recentFiles.at(idx), this);
-			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
-			fileLabels.append(fLabel);
-			filesLayout->addWidget(fLabel);
-
-			cHeight += fLabel->height();
-			if (cHeight > folderWidget->height())
-				break;
-
-		}
+	if (fileLabels.empty()) {
+		filesTitle->show();
+		filesLayout->setRowStretch(qFloor(recentFiles.size()*0.5f), 100);
+		filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
+		//filesLayout->addItem(new QSpacerItem(30,10), 1, 0);
 	}
 
-	filesLayout->addStretch();
+	// show current
+	if (rFileIdx < fileLabels.size() && fileLabels.at(rFileIdx)->hasFile()) {
+		fileLabels.at(rFileIdx)->show();
+		filesLayout->addWidget(fileLabels.at(rFileIdx), qFloor((float)numActiveLabels/columns)+2, numActiveLabels%columns);
+		numActiveLabels++;
+	}
+	else if (rFileIdx < fileLabels.size()) {
+		fileLabels.at(rFileIdx)->hide();
+	}
+	//else if (rFileIdx >= fileLabels.size()) {
+	//	qDebug() << "index out of range";
+	//}
+	//else
+	//	qDebug() << "could not load thumb..." << fileLabels.at(rFileIdx)->hasFile();
+
+	if (!fileLabels.empty())
+		rFileIdx++;
+
+	// load next
+	if ((rFileIdx/(float)columns*DkSettings::display.thumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < recentFiles.size()) {
+		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx), this);
+		cLabel->setStyleSheet(QString("QLabel{background-color: rgba(0,0,0,0), border: solid 1px black;}"));
+		
+		fileLabels.append(cLabel);
+		connect(cLabel, SIGNAL(labelLoaded()), this, SLOT(updateFiles()));
+		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+	}
+
+	update();
+
+
+	//int cHeight = 0;
+
+	//for (int idx = 0; idx < recentFiles.size(); idx++) {
+
+	//	if (recentFiles.at(idx).inUse())
+	//		continue;
+
+	//	if (recentFiles.at(idx).exists()) {
+	//		recentFiles[idx].setInUse(true);
+
+	//		DkFolderLabel* fLabel = new DkFolderLabel(recentFiles.at(idx), this);
+	//		connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+	//		fileLabels.append(fLabel);
+	//		filesLayout->addWidget(fLabel);
+
+	//		cHeight += fLabel->height();
+	//		if (cHeight > folderWidget->height())
+	//			break;
+
+	//	}
+	//}
+
+	//filesLayout->addStretch();
 }
 
 void DkRecentFilesWidget::updateFolders() {
@@ -5255,7 +5406,7 @@ void DkRecentFilesWidget::updateFolders() {
 		if (recentFolders.at(idx).exists()) {
 			recentFolders[idx].setInUse(true);
 
-			DkFileLabel* fLabel = new DkFileLabel(recentFolders.at(idx), this);
+			DkFolderLabel* fLabel = new DkFolderLabel(recentFolders.at(idx), this);
 			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
 			folderLayout->addWidget(fLabel);
 			folderLabels.append(fLabel);
