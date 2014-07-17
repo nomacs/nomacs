@@ -61,7 +61,7 @@ namespace nmc {
 		Q_OBJECT
 		public:
 			DkUpnpDeviceHost();
-			virtual ~DkUpnpDeviceHost() {qDebug() << "deleting Devicehost!";};
+			virtual ~DkUpnpDeviceHost();
 			bool startDevicehost(QString pathToConfig);
 			void stopDevicehost(); 
 		public slots:
@@ -70,6 +70,7 @@ namespace nmc {
 
 		private:
 			quint16 tcpServerPort, wlServerPort;
+			QString serviceXMLPath;
 	};
 
 	class DkUpnpServer : public Herqq::Upnp::HServerDevice {
