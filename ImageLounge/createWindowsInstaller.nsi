@@ -7,7 +7,7 @@
 !include "nsProcess.nsh"
 
 ; your install directories
-; !define BUILD_DIR "..\build2012x86\ReallyRelease"
+!define BUILD_DIR "..\build2012x86\ReallyRelease"
 
 !ifndef BUILD_DIR
 !define BUILD_DIR "..\build2012x64\ReallyRelease"

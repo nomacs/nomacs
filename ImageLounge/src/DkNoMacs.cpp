@@ -1535,12 +1535,17 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			&& !viewport()->getImage().isNull()
 			&& viewport()->getImageLoader()) {
 
-			// TODO: check if we do it correct (network locations that are not mounted)
-			QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->file().absoluteFilePath());
 
+			qDebug() << viewport()->getImageLoader()->file().absoluteFilePath();
+
+			// TODO: check if we do it correct (network locations that are not mounted)
+			QUrl fileUrl = QUrl::fromLocalFile(viewport()->getImageLoader()->file().absoluteFilePath());
+
+			// TODO: we cannot drag&drop files with # in them because # starts a new fragment
 			QList<QUrl> urls;
 			urls.append(fileUrl);
-
+			
+			// who deletes me?
 			QMimeData* mimeData = new QMimeData;
 			
 			if (viewport()->getImageLoader()->file().exists() && !viewport()->getImageLoader()->isEdited())
@@ -1551,7 +1556,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			QDrag* drag = new QDrag(this);
 			drag->setMimeData(mimeData);
 			Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
-			qDebug() << "creating drag...\n";
+			qDebug() << "creating drag: " << fileUrl;
 	}
 
 	//QMainWindow::mouseMoveEvent(event);
@@ -3975,7 +3980,10 @@ void DkNoMacsSync::initLanClient() {
 	
 	rcClient->start();
 	
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
+	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
+	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
 	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
 	DkTimer dt;
@@ -3991,6 +3999,8 @@ void DkNoMacsSync::initLanClient() {
 	}
 	else 
 		qDebug() << "whitelist empty!!";
+
+
 
 	qDebug() << "start server takes: " << dt.getTotal();
 }
@@ -4055,15 +4065,12 @@ void DkNoMacsSync::createActions() {
 	lanActions[menu_lan_server]->setObjectName("serverAction");
 	lanActions[menu_lan_server]->setCheckable(true);
 	lanActions[menu_lan_server]->setChecked(false);
-	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
-	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
 
 	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
 	lanActions[menu_lan_image]->setObjectName("sendImageAction");
 	lanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
 	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
 	lanActions[menu_lan_image]->setToolTip(tr("Sends the current image to all clients."));
-	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
 	assignCustomShortcuts(syncActions);
 }
