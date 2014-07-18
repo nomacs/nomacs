@@ -3830,7 +3830,7 @@ void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 	if (!vPlugin) 
 		return;
 
-	viewport()->setPluginImageWasApplied(true);
+	//viewport()->setPluginImageWasApplied(true);
 
 	QImage pluginImage = vPlugin->runPlugin();	// empty vars - viewport plugin doesn't need them
 
@@ -3862,7 +3862,7 @@ void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 
 	if(!alreadySaving && isSaveNeeded) saveFileAs();
 
-	viewport()->setPluginImageWasApplied(true);
+	//viewport()->setPluginImageWasApplied(true);
 
 #endif // WITH_PLUGINS
 }

@@ -252,6 +252,7 @@ void DkGlobalSettingsWidget::init() {
 	cbSmallIcons->setChecked(DkSettings::display.smallIcons);
 	cbToolbarGradient->setChecked(DkSettings::display.toolbarGradient);
 	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
+	cbShowRecentFiles->setChecked(DkSettings::app.showRecentFiles);
 	cbZoomOnWheel->setChecked(DkSettings::global.zoomOnWheel);
 
 	curLanguage = DkSettings::global.language;
@@ -324,12 +325,14 @@ void DkGlobalSettingsWidget::createLayout() {
 	cbSmallIcons = new QCheckBox(tr("Small Icons"), showBarsWidget);
 	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), showBarsWidget);
 	cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), showBarsWidget);
+	cbShowRecentFiles = new QCheckBox(tr("Show Recent Files on Start"), showBarsWidget);
 	cbZoomOnWheel = new QCheckBox(tr("Mouse Wheel Zooms"), showBarsWidget);
 	cbZoomOnWheel->setToolTip(tr("If unchecked, the mouse wheel switches between images."));
 	cbZoomOnWheel->setMinimumSize(cbZoomOnWheel->sizeHint());
 	showBarsLayout->addWidget(cbShowMenu);
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
+	showBarsLayout->addWidget(cbShowRecentFiles);
 	showBarsLayout->addWidget(cbSmallIcons);
 	showBarsLayout->addWidget(cbToolbarGradient);
 	showBarsLayout->addWidget(cbCloseOnEsc);
@@ -369,6 +372,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::app.showStatusBar = cbShowStatusbar->isChecked();
 	DkSettings::app.showToolBar = cbShowToolbar->isChecked();
 	DkSettings::app.closeOnEsc = cbCloseOnEsc->isChecked();
+	DkSettings::app.showRecentFiles = cbShowRecentFiles->isChecked();
 	DkSettings::global.zoomOnWheel = cbZoomOnWheel->isChecked();
 	DkSettings::display.smallIcons = cbSmallIcons->isChecked();
 	DkSettings::display.toolbarGradient = cbToolbarGradient->isChecked();
@@ -416,7 +420,8 @@ void DkDisplaySettingsWidget::init() {
 	cbInvertZoom->setChecked(DkSettings::display.invertZoom);
 	keepZoomButtons[DkSettings::display.keepZoom]->setChecked(true);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
-	cbSaveThumb->setChecked(DkSettings::display.saveThumb);
+	fadeSlideShow->setSpinBoxValue(DkSettings::display.fadeSec);
+	//cbSaveThumb->setChecked(DkSettings::display.saveThumb);
 	interpolateWidget->setSpinBoxValue(DkSettings::display.interpolateZoomLevel);
 
 	cbShowBorder->setChecked(DkSettings::display.showBorder);
@@ -424,11 +429,10 @@ void DkDisplaySettingsWidget::init() {
 }
 
 void DkDisplaySettingsWidget::createLayout() {
-	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
-	QVBoxLayout* leftLayout = new QVBoxLayout(this);
-	QVBoxLayout* rightLayout = new QVBoxLayout(this);
+	
+	QGridLayout* gridLayout = new QGridLayout(this);
 
-	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"));
+	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"), this);
 	gbZoom->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QVBoxLayout* gbZoomLayout = new QVBoxLayout(gbZoom);
 	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
@@ -439,7 +443,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
 
 
-	QGroupBox* gbRawLoader = new QGroupBox(tr("Keep Zoom Settings"));
+	//QGroupBox* gbRawLoader = new QGroupBox(tr("Keep Zoom Settings"), this);
 
 	keepZoomButtonGroup = new QButtonGroup(this);
 
@@ -471,16 +475,16 @@ void DkDisplaySettingsWidget::createLayout() {
 	gbZoomLayout->addWidget(interpolateWidget);
 	gbZoomLayout->addWidget(zoomCheckBoxes);
 
-	QGroupBox* gbThumbs = new QGroupBox(tr("Thumbnails"));
+	QGroupBox* gbThumbs = new QGroupBox(tr("Thumbnails"), this);
 	QVBoxLayout* gbThumbsLayout = new QVBoxLayout(gbThumbs);
-	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 16, 160, this);
+	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 16, 160, gbThumbs);
 	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
-	cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
-	cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
+	//cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
+	//cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
 	gbThumbsLayout->addWidget(maximalThumbSizeWidget);
-	gbThumbsLayout->addWidget(cbSaveThumb);
+	//gbThumbsLayout->addWidget(cbSaveThumb);
 
-	QGroupBox* gbFileInfo = new QGroupBox(tr("File Information"));
+	QGroupBox* gbFileInfo = new QGroupBox(tr("File Information"), this);
 	QVBoxLayout* gbLayout = new QVBoxLayout(gbFileInfo);
 	cbName = new QCheckBox(tr("Image Name"));
 	gbLayout->addWidget(cbName);
@@ -489,27 +493,31 @@ void DkDisplaySettingsWidget::createLayout() {
 	cbRating = new QCheckBox(tr("Rating"));
 	gbLayout->addWidget(cbRating);
 
-	QGroupBox* gbFrameless = new QGroupBox(tr("Frameless"));
+	QGroupBox* gbFrameless = new QGroupBox(tr("Frameless"), this);
 	QVBoxLayout* gbFramelessLayout = new QVBoxLayout(gbFrameless);
 	cbShowBorder = new QCheckBox(tr("Show Border"));
 	gbFramelessLayout->addWidget(cbShowBorder);
 
-	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen"));
+	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen"), this);
 	QVBoxLayout* gbFullScreenLayout = new QVBoxLayout(gbFullscreen);
 	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
 	gbFullScreenLayout->addWidget(cbSilentFullscreen);
 
+	QGroupBox* gbSlideShow = new QGroupBox(tr("Slide Show"), this);
+	QVBoxLayout* gbSlideShowLayout = new QVBoxLayout(gbSlideShow);
+	fadeSlideShow = new DkDoubleSpinBoxWidget(tr("Fade Images:"), tr("sec"), 0, 16, this);
+	fadeSlideShow->setSpinBoxValue(DkSettings::display.fadeSec);
+	gbSlideShowLayout->addWidget(fadeSlideShow);
 
-	leftLayout->addWidget(gbZoom);
-	leftLayout->addWidget(gbThumbs);
-	leftLayout->addStretch();
-	rightLayout->addWidget(gbFileInfo);
-	rightLayout->addWidget(gbFrameless);
-	rightLayout->addWidget(gbFullscreen);
-	rightLayout->addStretch();
+	gridLayout->addWidget(gbZoom, 0, 0, 3, 1);
+	gridLayout->addWidget(gbThumbs, 3, 0);
+	gridLayout->addWidget(gbFileInfo, 0, 1);
+	gridLayout->addWidget(gbFrameless, 1, 1);
+	gridLayout->addWidget(gbFullscreen, 2, 1);
+	gridLayout->addWidget(gbSlideShow, 3, 1);
 
-	widgetLayout->addLayout(leftLayout, 1);
-	widgetLayout->addLayout(rightLayout, 1);
+	gridLayout->setRowStretch(4, 10);
+
 	adjustSize();
 }
 
@@ -531,7 +539,8 @@ void DkDisplaySettingsWidget::writeSettings() {
 	DkSettings::slideShow.display.setBit(DkSettings::display_file_rating, cbRating->isChecked());
 
 	DkSettings::display.thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
-	DkSettings::display.saveThumb = cbSaveThumb->isChecked();
+	DkSettings::display.fadeSec = fadeSlideShow->getSpinBoxValue();
+	//DkSettings::display.saveThumb = cbSaveThumb->isChecked();
 	DkSettings::display.interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
 	DkSettings::display.showBorder = cbShowBorder->isChecked();
 }
@@ -564,7 +573,7 @@ void DkFileWidget::init() {
 
 	cbWrapImages->setChecked(DkSettings::global.loop);
 	skipImgWidget->setSpinBoxValue(DkSettings::global.skipImgs);
-	numberFiles->setSpinBoxValue(DkSettings::global.numFiles);
+	//numberFiles->setSpinBoxValue(DkSettings::global.numFiles);
 	cbUseTmpPath->setChecked(DkSettings::global.useTmpPath);
 	tmpPath = DkSettings::global.tmpPath;
 	leTmpPath->setText(tmpPath);
@@ -623,7 +632,7 @@ void DkFileWidget::createLayout() {
 	imageLoadingLayout->addWidget(rbWaitForImage);
 
 	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
-	numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
+	//numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
 	QWidget* checkBoxWidget = new QWidget(this);
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	cbWrapImages = new QCheckBox(tr("Loop Images"));
@@ -631,7 +640,7 @@ void DkFileWidget::createLayout() {
 	widgetLayout->addWidget(gbDragDrop);
 	widgetLayout->addWidget(gbImageLoading);
 	leftLayout->addWidget(skipImgWidget);
-	leftLayout->addWidget(numberFiles);
+	//leftLayout->addWidget(numberFiles);
 	leftLayout->addWidget(cbWrapImages);
 	leftLayout->addStretch();
 	subWidgetLayout->addLayout(leftLayout);
@@ -641,7 +650,7 @@ void DkFileWidget::createLayout() {
 
 void DkFileWidget::writeSettings() {
 	DkSettings::global.skipImgs = skipImgWidget->getSpinBoxValue();
-	DkSettings::global.numFiles = numberFiles->getSpinBoxValue();
+	//DkSettings::global.numFiles = numberFiles->getSpinBoxValue();
 	DkSettings::global.loop = cbWrapImages->isChecked();
 	DkSettings::global.useTmpPath = cbUseTmpPath->isChecked();
 	DkSettings::global.tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
@@ -1139,15 +1148,16 @@ DkSpinBoxWidget::DkSpinBoxWidget(QWidget* parent) : QWidget(parent) {
 }
 
 DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int spinBoxMin, int spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/) : QWidget(parent) {
-	spinBox = new QSpinBox();
+	spinBox = new QSpinBox(this);
 	spinBox->setMaximum(spinBoxMax);
 	spinBox->setMinimum(spinBoxMin);
 	spinBox->setSingleStep(step);
 	upperLabel = new QLabel(upperString);
 	lowerLabel = new QLabel(lowerString);
-	lowerWidget = new QWidget();
+	lowerWidget = new QWidget(this);
 
 	vboxLayout = new QVBoxLayout(this) ;
+	vboxLayout->setSpacing(0);
 	hboxLowerLayout = new QHBoxLayout(lowerWidget);
 
 	hboxLowerLayout->addWidget(spinBox);
@@ -1168,6 +1178,7 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) 
 	lowerLabel = new QLabel(this);
 	lowerWidget = new QWidget(this);
 	vboxLayout = new QVBoxLayout(this);
+	vboxLayout->setSpacing(0);
 	hboxLowerLayout = new QHBoxLayout(lowerWidget);
 
 	hboxLowerLayout->addWidget(spinBox);
@@ -1179,6 +1190,7 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) 
 }
 
 DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/, int decimals/* =2*/) : QWidget(parent) {
+	
 	spinBox = new QDoubleSpinBox(this);
 	spinBox->setMaximum(spinBoxMax);
 	spinBox->setMinimum(spinBoxMin);
@@ -1189,6 +1201,7 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerS
 	lowerWidget = new QWidget(this);
 
 	vboxLayout = new QVBoxLayout(this);
+	vboxLayout->setSpacing(0);
 	hboxLowerLayout = new QHBoxLayout(lowerWidget);
 
 	hboxLowerLayout->addWidget(spinBox);

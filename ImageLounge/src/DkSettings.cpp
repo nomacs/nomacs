@@ -245,6 +245,7 @@ void DkSettings::load(bool force) {
 		app_p.showOverview = tmpShow;
 
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
+	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
 	app_p.browseFilters = settings.value("browseFilters", fileFilters).toStringList();
 
 	// double-check (if user removes all filters he can't browse anymore - so override this case)
@@ -259,7 +260,7 @@ void DkSettings::load(bool force) {
 	settings.beginGroup("GlobalSettings");
 
 	global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
-	global_p.numFiles = settings.value("numFiles", global_p.numFiles).toInt();
+	//global_p.numFiles = settings.value("numFiles", global_p.numFiles).toInt();
 
 	global_p.loop = settings.value("loop", global_p.loop).toBool();
 	global_p.scanSubFolders = settings.value("scanRecursive", global_p.scanSubFolders).toBool();
@@ -291,7 +292,7 @@ void DkSettings::load(bool force) {
 	display_p.bgColorFrameless = settings.value("bgColorFrameless", display_p.bgColorFrameless).value<QColor>();
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
-	display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
+	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
 	display_p.smallIcons = settings.value("smallIcons", display_p.smallIcons).toBool();
@@ -423,6 +424,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("currentAppMode", app_p.currentAppMode);
 	if (!force && app_p.closeOnEsc != app_d.closeOnEsc)
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);
+	if (!force && app_p.showRecentFiles != app_d.showRecentFiles)
+		settings.setValue("showRecentFiles", app_p.showRecentFiles);
 	if (!force && app_p.browseFilters != app_d.browseFilters)
 		settings.setValue("browseFilters", app_p.browseFilters);
 	if (!force && app_p.registerFilters != app_d.registerFilters)
@@ -434,8 +437,8 @@ void DkSettings::save(bool force) {
 
 	if (!force && global_p.skipImgs != global_d.skipImgs)
 		settings.setValue("skipImgs",global_p.skipImgs);
-	if (!force && global_p.numFiles != global_d.numFiles)
-		settings.setValue("numFiles",global_p.numFiles);
+	//if (!force && global_p.numFiles != global_d.numFiles)
+	//	settings.setValue("numFiles",global_p.numFiles);
 	if (!force && global_p.loop != global_d.loop)
 		settings.setValue("loop",global_p.loop);
 	if (!force && global_p.scanSubFolders != global_d.scanSubFolders)
@@ -487,8 +490,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("thumbSize", display_p.thumbSize);
 	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
 		settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
-	if (!force && display_p.saveThumb != display_d.saveThumb)
-		settings.setValue("saveThumb", display_p.saveThumb);
+	//if (!force && display_p.saveThumb != display_d.saveThumb)
+	//	settings.setValue("saveThumb", display_p.saveThumb);
 	if (!force && display_p.antiAliasing != display_d.antiAliasing)
 		settings.setValue("antiAliasing", display_p.antiAliasing);
 	if (!force && display_p.tpPattern != display_d.tpPattern)
@@ -619,6 +622,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showOverview = QBitArray(mode_end, true);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;
+	app_p.showRecentFiles = true;
 	app_p.browseFilters = QStringList();
 	app_p.showMenuBar = true;
 
@@ -629,7 +633,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.appMode = 0;
 	
 	global_p.skipImgs = 10;
-	global_p.numFiles = 10;
+	global_p.numFiles = 50;
 	global_p.loop = false;
 	global_p.scanSubFolders = false;
 	global_p.lastDir = QString();
@@ -666,14 +670,14 @@ void DkSettings::setToDefaultSettings() {
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;
 	display_p.thumbPreviewSize = 64;
-	display_p.saveThumb = false;
+	//display_p.saveThumb = false;
 	display_p.antiAliasing = true;
 	display_p.tpPattern = false;
 	display_p.smallIcons = true;
 	display_p.toolbarGradient = false;
-	display_p.showBorder = true;
+	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
-	display_p.fadeSec = 0.0f;
+	display_p.fadeSec = 2.0f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;
@@ -737,6 +741,7 @@ void DkSettings::setToDefaultSettings() {
 	resources_p.numThumbsLoading = 0;
 	resources_p.maxThumbsLoading = 5;
 	resources_p.gammaCorrection = true;
+	resources_p.waitForLastImg = true;
 
 	qDebug() << "ok... default settings are set";
 }
