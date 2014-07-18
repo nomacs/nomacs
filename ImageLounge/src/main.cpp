@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
 
 	if (args.size() > 1)
 		w->loadFile(QFileInfo(args[1]));	// update folder + be silent
-	else
+	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();

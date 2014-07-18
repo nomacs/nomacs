@@ -401,9 +401,9 @@ public:
 	QString getCurrentPixelHexValue();
 	
 	void applyPluginChanges();
-	void setPluginImageWasApplied(bool pluginImageWasApplied) {
-		this->pluginImageWasApplied = pluginImageWasApplied;
-	};
+	//void setPluginImageWasApplied(bool pluginImageWasApplied) {
+	//	this->pluginImageWasApplied = pluginImageWasApplied;
+	//};
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -492,7 +492,7 @@ protected:
 	QRectF fadeImgViewRect;
 	QRectF fadeImgRect;
 	
-	// moving stuff
+	// moving stuff - not used yet
 	QPoint moveStep;
 	float targetScale;
 	QTimer* moveTimer;
@@ -505,7 +505,7 @@ protected:
 	DkImageLoader* loader;
 
 	QPoint currentPixelPos;
-	bool pluginImageWasApplied;
+	//bool pluginImageWasApplied;
 	// functions
 
 #if QT_VERSION < 0x050000

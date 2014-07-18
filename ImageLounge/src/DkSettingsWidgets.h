@@ -206,7 +206,7 @@ private:
 	QPushButton* pbTmpPath;
 	QCheckBox* cbUseTmpPath;
 	DkSpinBoxWidget* skipImgWidget;
-	DkSpinBoxWidget* numberFiles;
+	//DkSpinBoxWidget* numberFiles;
 	QCheckBox* cbWrapImages;
 	
 	QGroupBox* 	gbDragDrop;
@@ -283,7 +283,7 @@ private:
 	void init();
 	void createLayout();
 
-	QGroupBox* gbThumb;
+	//QGroupBox* gbThumb;
 
 	QCheckBox* cbInvertZoom;
 
@@ -292,12 +292,13 @@ private:
 	QCheckBox* cbName;
 	QCheckBox* cbRating;
 	QCheckBox* cbSilentFullscreen;
+	DkDoubleSpinBoxWidget* fadeSlideShow;
 
 	QVector<QRadioButton* > keepZoomButtons;
 	QButtonGroup* keepZoomButtonGroup;
 
 	DkSpinBoxWidget* maximalThumbSizeWidget; 
-	QCheckBox* cbSaveThumb;
+	//QCheckBox* cbSaveThumb;
 	QCheckBox* cbShowBorder;
 
 	bool keepZoom;
@@ -416,6 +417,7 @@ private:
 	QCheckBox* cbSmallIcons;
 	QCheckBox* cbToolbarGradient;
 	QCheckBox* cbCloseOnEsc;
+	QCheckBox* cbShowRecentFiles;
 	QCheckBox* cbZoomOnWheel;
 
 	DkColorChooser* highlightColorChooser;
