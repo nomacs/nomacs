@@ -436,7 +436,7 @@ void DkConnection::synchronizedTimerTimeout() {
 }
 
 // DkLocalConnection --------------------------------------------------------------------
-DkLocalConnection::DkLocalConnection(QObject* parent/* =0 */) {
+DkLocalConnection::DkLocalConnection(QObject* parent/* =0 */) : DkConnection(parent) {
 	this->currentLocalDataType = Undefined;
 }
 

@@ -40,8 +40,11 @@
 #include "DkManipulationWidgets.h"
 #include "DkSettingsWidgets.h"
 #include "DkMessageBox.h"
+#ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
 #include "DkPluginManager.h"
+#endif //  WITH_PLUGINS
+
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"

@@ -27,8 +27,6 @@
 
 #include "DkPluginManager.h"
 
-#ifdef WITH_PLUGINS
-
 
 namespace nmc {
 
@@ -1644,6 +1642,4 @@ void DkPluginDownloader::updateDownloadProgress(qint64 received, qint64 total) {
 }
 
 };
-
-#endif // WITH_PLUGINS
 
