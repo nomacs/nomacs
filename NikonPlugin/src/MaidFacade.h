@@ -159,7 +159,7 @@ private:
 	void sourceIdleLoop(ULONG* count);
 	bool setMaybeStringEnumValue(std::pair<StringValues, bool>& theMaybeValue, ULONG capId, size_t newValue);
 	bool setMaybeUnsignedEnumValue(std::pair<UnsignedValues, bool>& theMaybeValue, ULONG capId, size_t newValue);
-	QString increaseFilenameNumber(const QFileInfo& fileInfo);
+	QFileInfo increaseFilenameNumber(const QFileInfo& fileInfo);
 	void setCurrentFileData(DataProcData* currentFileData, void* info);
 	QString getCapturedFileName(const QFileInfo& saveFile);
 };

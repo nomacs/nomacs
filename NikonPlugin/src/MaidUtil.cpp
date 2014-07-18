@@ -26,6 +26,7 @@ void MaidUtil::loadLibrary() {
 
 	// TODO: think how we best load md3 others than the 0007.md3
 	instModule = loadSingleLibrary("Type0007.md3");
+	//instModule = loadSingleLibrary("Type0003.md3");
 
 	if (!instModule)
 		throw InitError();
