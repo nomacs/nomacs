@@ -178,6 +178,7 @@ enum {
 	shortcut_tp_pattern		= Qt::Key_B,
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
+	shortcut_recent_files	= Qt::CTRL + Qt::Key_R,
 	//shortcut_play			= Qt::Key_Space,
 
 	// edit
@@ -651,8 +652,8 @@ protected:
 	QMenu* contextMenu;
 
 	// sub menus
-	QMenu* fileFilesMenu;
-	QMenu* fileFoldersMenu;
+	//QMenu* fileFilesMenu;
+	//QMenu* fileFoldersMenu;
 	QMenu* panelToolsMenu;
 	DkTcpMenu* tcpViewerMenu;
 	DkTcpMenu* tcpLanMenu;

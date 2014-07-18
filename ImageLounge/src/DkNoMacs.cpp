@@ -537,16 +537,16 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
-	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
-	connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
-	connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
+	//fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
+	//connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	//connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
 
-	fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::global.recentFolders);
-	connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
-	connect(fileFoldersMenu, SIGNAL(clearHistory()), this, SLOT(clearFolderHistory()));
+	//fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::global.recentFolders);
+	//connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	//connect(fileFoldersMenu, SIGNAL(clearHistory()), this, SLOT(clearFolderHistory()));
 
-	fileMenu->addMenu(fileFilesMenu);
-	fileMenu->addMenu(fileFoldersMenu);
+	//fileMenu->addMenu(fileFilesMenu);
+	//fileMenu->addMenu(fileFoldersMenu);
 	fileMenu->addAction(fileActions[menu_file_show_recent]);
 
 	fileMenu->addSeparator();
@@ -822,6 +822,7 @@ void DkNoMacs::createActions() {
 	connect(fileActions[menu_file_print], SIGNAL(triggered()), this, SLOT(printDialog()));
 
 	fileActions[menu_file_show_recent] = new QAction(tr("&Recent Files and Folders"), this);
+	fileActions[menu_file_show_recent]->setShortcut(QKeySequence(shortcut_recent_files));
 	fileActions[menu_file_show_recent]->setCheckable(true);
 	fileActions[menu_file_show_recent]->setChecked(false);
 	fileActions[menu_file_show_recent]->setStatusTip(tr("Show Recent Files and Folders"));

@@ -171,6 +171,7 @@ public:
 		QString lastSaveDir;
 		QStringList recentFiles;
 		QStringList recentFolders;
+		bool logRecentFiles;
 		bool useTmpPath;
 		QString tmpPath;
 		QString language;

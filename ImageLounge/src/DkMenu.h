@@ -118,126 +118,126 @@ private:
 
 };
 
-class DkHistoryMenu : public QMenu {
-	Q_OBJECT
-
-public:
-	DkHistoryMenu(const QString& title, QWidget* parent = 0, QStringList* recentFiles = 0) : QMenu(title, parent) {
-
-		connect(this, SIGNAL(aboutToShow()), this, SLOT(updateActions()));
-		this->recentFiles = recentFiles;
-	};
-
-signals:
-	void loadFileSignal(QFileInfo file);
-	void clearHistory();
-
-public slots:
-
-	void updateActions() {
-		
-		QMenu::clear();
-
-		int numItems = 0;
-		for (int idx = 0; idx < recentFiles->size(); idx++) {
-
-			if (numItems >= DkSettings::global.numFiles)
-				break;
-
-			DkTimer dt;
-			QFileInfo file = recentFiles->at(idx);
-
-			//DkTimer dd;
-			//QFileInfoList l = QDir::drives();
-
-			//for (int idx = 0; idx < l.size(); idx++)
-			//	qDebug() << "drives: " << l.at(idx).absoluteFilePath() << " " << l.at(idx).exists() << " found in: " << QString::fromStdString(dd.getTotal());
-
-			//QDir(file.)
-
-//#ifdef WIN32
+//class DkHistoryMenu : public QMenu {
+//	Q_OBJECT
 //
-//			// TODO: it crashed twice here!
+//public:
+//	DkHistoryMenu(const QString& title, QWidget* parent = 0, QStringList* recentFiles = 0) : QMenu(title, parent) {
 //
-//			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
-//			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
-//			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
+//		connect(this, SIGNAL(aboutToShow()), this, SLOT(updateActions()));
+//		this->recentFiles = recentFiles;
+//	};
 //
-//			// CMakeLists.txt:
-//			// if compile error that toWCharArray is not recognized:
-//			// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
-//			int dirLength = winPath.toWCharArray(wDirName);
-//			wDirName[dirLength] = L'\0';	// append null character
+//signals:
+//	void loadFileSignal(QFileInfo file);
+//	void clearHistory();
 //
-//			DWORD dAttr = GetFileAttributesW(wDirName);
+//public slots:
 //
-//			if (dAttr == INVALID_FILE_ATTRIBUTES) {
-//				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists (WIN32 reject) " << dt.getTotal();
+//	void updateActions() {
+//		
+//		QMenu::clear();
+//
+//		int numItems = 0;
+//		for (int idx = 0; idx < recentFiles->size(); idx++) {
+//
+//			if (numItems >= DkSettings::global.numFiles)
+//				break;
+//
+//			DkTimer dt;
+//			QFileInfo file = recentFiles->at(idx);
+//
+//			//DkTimer dd;
+//			//QFileInfoList l = QDir::drives();
+//
+//			//for (int idx = 0; idx < l.size(); idx++)
+//			//	qDebug() << "drives: " << l.at(idx).absoluteFilePath() << " " << l.at(idx).exists() << " found in: " << QString::fromStdString(dd.getTotal());
+//
+//			//QDir(file.)
+//
+////#ifdef WIN32
+////
+////			// TODO: it crashed twice here!
+////
+////			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
+////			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
+////			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
+////
+////			// CMakeLists.txt:
+////			// if compile error that toWCharArray is not recognized:
+////			// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
+////			int dirLength = winPath.toWCharArray(wDirName);
+////			wDirName[dirLength] = L'\0';	// append null character
+////
+////			DWORD dAttr = GetFileAttributesW(wDirName);
+////
+////			if (dAttr == INVALID_FILE_ATTRIBUTES) {
+////				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists (WIN32 reject) " << dt.getTotal();
+////				continue;
+////			}
+////#endif
+//			// TODO: this line is sometimes (iPhone: ducking) slow!!
+//			if (!DkUtils::exists(file)) {
+//				
+//				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists " << dt.getTotal();
 //				continue;
 //			}
-//#endif
-			// TODO: this line is sometimes (iPhone: ducking) slow!!
-			if (!DkUtils::exists(file)) {
-				
-				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists " << dt.getTotal();
-				continue;
-			}
-
-			qDebug() << "folder exists " << dt.getTotal();
-
-			QString title = (file.isDir()) ? file.absoluteFilePath() : file.fileName();
-
-			QAction* recentFileAction = new QAction(title, this);
-			connect(recentFileAction, SIGNAL(triggered()), this, SLOT(loadRecentFile()));
-
-			QMenu::addAction(recentFileAction);
-			numItems++;
-
-			qDebug() << "item processed in: " << dt.getTotal();
-		}
-
-		if (numItems == 0) {
-			QAction* noItems = new QAction(tr("no entries"), this);
-			noItems->setEnabled(false);
-			QMenu::addAction(noItems);
-		}
-		else {
-			QMenu::addSeparator();
-			QAction* clearHistory = new QAction(tr("Clear History"), this);
-			connect(clearHistory, SIGNAL(triggered()), this, SIGNAL(clearHistory()));
-			QMenu::addAction(clearHistory);
-		}
-
-	};
-
-	void loadRecentFile() {
-
-		QAction* sender = dynamic_cast<QAction*>(QObject::sender());
-
-		int fileIdx = -1;
-		for (int idx = 0; idx < recentFiles->size(); idx++) {
-
-			if (recentFiles->at(idx).isEmpty())
-				continue;
-
-			QFileInfo file = recentFiles->at(idx);
-
-			if (file.fileName() == sender->text() || file.absoluteFilePath() == sender->text()) {
-				fileIdx = idx;
-				break;
-			}
-		}
-
-		if (fileIdx == -1)
-			return;
-
-		emit loadFileSignal(recentFiles->at(fileIdx));
-	};
-
-protected:
-
-	QStringList* recentFiles;
-};
+//
+//			qDebug() << "folder exists " << dt.getTotal();
+//
+//			QString title = (file.isDir()) ? file.absoluteFilePath() : file.fileName();
+//
+//			QAction* recentFileAction = new QAction(title, this);
+//			connect(recentFileAction, SIGNAL(triggered()), this, SLOT(loadRecentFile()));
+//
+//			QMenu::addAction(recentFileAction);
+//			numItems++;
+//
+//			qDebug() << "item processed in: " << dt.getTotal();
+//		}
+//
+//		if (numItems == 0) {
+//			QAction* noItems = new QAction(tr("no entries"), this);
+//			noItems->setEnabled(false);
+//			QMenu::addAction(noItems);
+//		}
+//		else {
+//			QMenu::addSeparator();
+//			QAction* clearHistory = new QAction(tr("Clear History"), this);
+//			connect(clearHistory, SIGNAL(triggered()), this, SIGNAL(clearHistory()));
+//			QMenu::addAction(clearHistory);
+//		}
+//
+//	};
+//
+//	void loadRecentFile() {
+//
+//		QAction* sender = dynamic_cast<QAction*>(QObject::sender());
+//
+//		int fileIdx = -1;
+//		for (int idx = 0; idx < recentFiles->size(); idx++) {
+//
+//			if (recentFiles->at(idx).isEmpty())
+//				continue;
+//
+//			QFileInfo file = recentFiles->at(idx);
+//
+//			if (file.fileName() == sender->text() || file.absoluteFilePath() == sender->text()) {
+//				fileIdx = idx;
+//				break;
+//			}
+//		}
+//
+//		if (fileIdx == -1)
+//			return;
+//
+//		emit loadFileSignal(recentFiles->at(fileIdx));
+//	};
+//
+//protected:
+//
+//	QStringList* recentFiles;
+//};
 
 
 class DkTcpAction : public QAction {

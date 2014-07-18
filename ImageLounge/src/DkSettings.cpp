@@ -268,6 +268,7 @@ void DkSettings::load(bool force) {
 	global_p.searchHistory = settings.value("searchHistory", global_p.searchHistory).toStringList();
 	global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
 	global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
+	global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
 	global_p.useTmpPath= settings.value("useTmpPath", global_p.useTmpPath).toBool();
 	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
 	global_p.language = settings.value("language", global_p.language).toString();
@@ -451,6 +452,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("recentFolders", global_p.recentFolders);
 	if (!force && global_p.recentFiles != global_d.recentFiles)
 		settings.setValue("recentFiles", global_p.recentFiles);
+	if (!force && global_p.logRecentFiles != global_d.logRecentFiles)
+		settings.setValue("logRecentFiles", global_p.logRecentFiles);
 	if (!force && global_p.useTmpPath != global_d.useTmpPath)
 		settings.setValue("useTmpPath", global_p.useTmpPath);
 	if (!force && global_p.tmpPath != global_d.tmpPath)
@@ -641,6 +644,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.recentFiles = QStringList();
 	global_p.searchHistory = QStringList();
 	global_p.recentFolders = QStringList();
+	global_p.logRecentFiles = true;
 	global_p.useTmpPath = false;
 	global_p.tmpPath = QString();
 	global_p.language = QString();
