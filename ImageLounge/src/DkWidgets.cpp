@@ -1450,6 +1450,7 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
 //#include <QStyle>
 	minHandleWidth = 30;
+	sliding = false;
 
 	setMouseTracking(true);
 

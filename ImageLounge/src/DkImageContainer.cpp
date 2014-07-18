@@ -41,13 +41,13 @@ DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 
 void DkImageContainer::init() {
 
+	edited = false;
+	selected = false;
 	
 	// always keep in mind that a file does not exist
 	if (!edited && loadState != exists_not)
 		loadState = not_loaded;
 
-	edited = false;
-	selected = false;
 }
 
 bool DkImageContainer::operator ==(const DkImageContainer& ric) const {
