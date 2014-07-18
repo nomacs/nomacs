@@ -211,21 +211,16 @@ void DkLocalClientManager::searchForOtherClients() {
 	for (int i = server->startPort; i <= server->endPort; i++) {
 		if (i == server->serverPort())
 			continue;
-		qDebug() << "search For other clients on port:" << i;
+		//qDebug() << "search For other clients on port:" << i;
 		DkConnection* connection = createConnection();
 		connection->connectToHost(QHostAddress::LocalHost,i);
 		
 
-		if (connection->waitForConnected(10))
-			qDebug() << "Connected to " << i ;
-
-		connection->sendGreetingMessage(currentTitle);
-		//startUpConnections.append(connection);
-		//qDebug() << "startupConnections size:" << startUpConnections.size();
-		//for (int i=0; i < startUpConnections.size(); i++) {
-		//	DkConnection* suConnection = startUpConnections.at(i);
-		//	qDebug() << "startupConnections: " << suConnection->peerAddress() << ":" << suConnection->getPeerPort();
-		//}
+		if (connection->waitForConnected(20)) {
+			//qDebug() << "Connected to " << i ;
+			connection->sendGreetingMessage(currentTitle);
+		} else
+			delete connection;
 	}
 	
 }
