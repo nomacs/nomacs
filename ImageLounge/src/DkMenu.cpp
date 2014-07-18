@@ -30,7 +30,6 @@
 namespace nmc {
 
 // DkMenu --------------------------------------------------------------------
-
 DkMenuBar::DkMenuBar(QWidget *parent, int timeToShow) : QMenuBar(parent) {
 
 	this->timeToShow = timeToShow;	// default: 5 seconds

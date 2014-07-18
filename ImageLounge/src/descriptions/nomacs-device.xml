@@ -16,7 +16,7 @@
 		<serviceList>
 			<service>
 				<serviceType>urn:nomacs-org:service:nomacsService:1</serviceType>
-				<serviceId>urn:nomacs-org:serviceId:nomacsService:1</serviceId>
+				<serviceId>urn:nomacs-org:serviceId:nomacsService</serviceId>
 				<SCPDURL>nomacs-service.xml</SCPDURL>
 				<controlURL>/control</controlURL>
 				<eventSubURL>/eventing</eventSubURL>

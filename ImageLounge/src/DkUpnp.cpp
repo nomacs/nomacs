@@ -15,6 +15,7 @@ namespace nmc{
 
 // DkUpnpDeviceHost --------------------------------------------------------------------
 DkUpnpDeviceHost::DkUpnpDeviceHost() {
+	qDebug() << "Constructing Device Host";
 	tcpServerPort = 0;
 	wlServerPort = 0;
 }
@@ -24,7 +25,7 @@ void DkUpnpDeviceHost::tcpServerPortChanged(quint16 port) {
 	this->tcpServerPort = port;
 	Herqq::Upnp::HServerDevices devices = rootDevices();
 	for (Herqq::Upnp::HServerDevices::iterator itr = devices.begin(); itr != devices.end(); itr++) {
-		Herqq::Upnp::HServerService* service =  (*itr)->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
+		Herqq::Upnp::HServerService* service =  (*itr)->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService"));
 		if (service)
 			service->stateVariables().value("tcpServerPort")->setValue(port);
 	}	
@@ -36,13 +37,14 @@ void DkUpnpDeviceHost::wlServerPortChanged(quint16 port) {
 	this->wlServerPort = port;
 	Herqq::Upnp::HServerDevices devices = rootDevices();
 	for (Herqq::Upnp::HServerDevices::iterator itr = devices.begin(); itr != devices.end(); itr++) {
-		Herqq::Upnp::HServerService* service =  (*itr)->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
+		Herqq::Upnp::HServerService* service =  (*itr)->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService"));
 		if(service)
 			service->stateVariables().value("whiteListServerPort")->setValue(port);
 	}
 }
 
 bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
+	qDebug() << "pathToConfig:" << pathToConfig;
 	qDebug() << "starting DeviceHost";
 	QFile f(pathToConfig);
 	if (!f.exists()) {
@@ -59,7 +61,9 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 
 	QByteArray fileData;
 	f.open(QIODevice::ReadOnly);
+	//f.seek(0);
 	fileData = f.readAll();
+	f.close();
 	QString fileText(fileData);
 	fileText.replace("insert-new-uuid-here", uuidString);
 #ifdef WIN32
@@ -67,13 +71,12 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 #else
 	fileText.replace("nomacs-service.xml", "/nomacs-service.xml");
 #endif // WIN32
-
 	
-	f.seek(0);
 	QFile newXMLfile(newXMLpath);
 	newXMLfile.open(QIODevice::WriteOnly);
 	newXMLfile.write(fileText.toUtf8());
-	f.close();
+	qDebug() << "writing file:" << newXMLpath;
+	
 	newXMLfile.close();
 
 	QFileInfo fileInfo = QFileInfo(f);
@@ -81,7 +84,7 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	if (!serviceXML.exists())
 		qDebug() << "nomacs-service.xml file does not exist";
 	QString newServiceXMLPath = QDir::tempPath()+ QDir::separator() + "nomacs-service.xml";
-	if(QFile::exists(newServiceXMLPath)) {
+	if(!QFile::exists(newServiceXMLPath)) {
 		if (!serviceXML.copy(newServiceXMLPath))
 			qDebug() << "unable to copy nomacs-service.xml to " << newServiceXMLPath << ", perhaps files already exists";
 	}
@@ -103,8 +106,12 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 		qDebug() << "error while initializing device host:\n" << errorDescription();
 	}
 
-	newXMLfile.remove();
-	newServiceXMLFile.remove();
+	if(!newXMLfile.remove()) 
+		qDebug() << "unable to remove upnp device.xml file";
+	this->serviceXMLPath = newServiceXMLPath;
+	//qDebug() << "newServiceXMLPath" << newServiceXMLPath;
+	//if(!QFile::remove(newServiceXMLPath))
+		//qDebug() << "unable to remove upnp service.xml file";
 	return retVal;
 }
 
@@ -112,6 +119,12 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 void DkUpnpDeviceHost::stopDevicehost() {
 	qDebug() << "DkUpnpDeviceHost: stopping DeviceHost";
 	quit();
+}
+
+DkUpnpDeviceHost::~DkUpnpDeviceHost() {
+	 qDebug() << "deleting Devicehost!"; 
+	 if(!QFile::remove(serviceXMLPath))
+		 qDebug() << "unable to delete service xml file:" << serviceXMLPath;
 }
 
 // DkUpnpServer --------------------------------------------------------------------	
@@ -228,7 +241,7 @@ void DkUpnpControlPoint::rootDeviceOnline(Herqq::Upnp::HClientDevice* clientDevi
 			return;
 		}
 
-		Herqq::Upnp::HClientService* service = clientDevice->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService:1"));
+		Herqq::Upnp::HClientService* service = clientDevice->serviceById(Herqq::Upnp::HServiceId("urn:nomacs-org:service:nomacsService"));
 		if (!service) {
 			qDebug() << "nomacs service is empty ... aborting";
 			return;

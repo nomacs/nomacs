@@ -728,7 +728,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	testLoaded = false;
 	thumbLoaded = false;
 	visibleStatusbar = false;
-	pluginImageWasApplied = false;
+	//pluginImageWasApplied = false;
+	fadeOpacity = 0.0f;
 
 	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
@@ -851,7 +852,7 @@ void DkViewPort::setPaintWidget(QWidget* widget, bool removeWidget) {
 
 	if(!removeWidget) {
 		paintLayout->addWidget(widget);
-		pluginImageWasApplied = false;
+		//pluginImageWasApplied = false;
 	} else {
 		paintLayout->removeWidget(widget);
 		//widget->deleteLater();
@@ -954,10 +955,12 @@ void DkViewPort::setImage(QImage newImg) {
 	oldImgRect = imgRect;
 	
 	// init fading
-	if (DkSettings::display.fadeSec) {
+	if (DkSettings::display.fadeSec && (controller->getPlayer()->isPlaying() || parent && parent->isFullScreen())) {
 		fadeTimer->start();
 		fadeTime.start();
 	}
+	else
+		fadeOpacity = 0.0f;
 
 	// init moving
 	if (DkSettings::slideShow.moveSpeed /*&& controller->getPlayer()->isPlaying()*/ 
@@ -1823,9 +1826,9 @@ bool DkViewPort::unloadImage(bool fileChange) {
 
 
 	// TODO: we have to check here - why loading is not stopped by applyPluginChanges()
-	if (!pluginImageWasApplied) applyPluginChanges(); //prevent recursion
+	/*if (!pluginImageWasApplied)*/ applyPluginChanges(); //prevent recursion
 	
-	if (DkSettings::display.fadeSec) {
+	if (DkSettings::display.fadeSec && (controller->getPlayer()->isPlaying() || parent && parent->isFullScreen())) {
 		fadeBuffer = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
 		fadeImgViewRect = imgViewRect;
 		fadeImgRect = imgRect;
@@ -1932,8 +1935,8 @@ void DkViewPort::loadFileFast(int skipIdx, int rec) {
 		}
 	}	
 
-	if ((qApp->keyboardModifiers() == altMod || 
-		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display || DkSettings::sync.syncActions) && 
+	if (((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncActions) &&
+		DkSettings::sync.syncMode != DkSettings::sync_mode_remote_display) && 
 		(hasFocus() || 
 		controller->hasFocus())) {
 		emit sendNewFileSignal(skipIdx);
@@ -2007,8 +2010,8 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	// some hack: set the mode to default in order to prevent loops (if both are auto connected)
 	// should be mostly harmless
-	int oldMode = DkSettings::sync.syncMode;
-	DkSettings::sync.syncMode = DkSettings::mode_default;
+	//int oldMode = DkSettings::sync.syncMode;
+	//DkSettings::sync.syncMode = DkSettings::sync_mode_receiveing_command;
 
 	if (filename.isEmpty()) {
 
@@ -2036,7 +2039,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 	qDebug() << "loading file: " << filename;
 
-	DkSettings::sync.syncMode = oldMode;
+	//DkSettings::sync.syncMode = oldMode;
 }
 
 DkImageLoader* DkViewPort::getImageLoader() {

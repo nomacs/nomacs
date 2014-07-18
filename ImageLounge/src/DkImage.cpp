@@ -882,17 +882,35 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
  **/ 
 void DkImageLoader::updateHistory() {
 
-	// TODO: 
+	if (!DkSettings::global.logRecentFiles)
+		return;
+
 	QFileInfo file = currentImage->file();
 	if (!currentImage || currentImage->hasImage() != DkImageContainer::loaded)
 		return;
-
-	// TODO: update the file history here or put file history to the settings (better option)
 
 	DkSettings::global.lastDir = file.absolutePath();
 
 	DkSettings::global.recentFiles.removeAll(file.absoluteFilePath());
 	DkSettings::global.recentFolders.removeAll(file.absolutePath());
+
+	QStringList tmpRecentFiles;
+
+	// try to collect images from different folders
+	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++) {
+		
+		if (DkSettings::global.recentFiles.at(idx).contains(file.absolutePath()))
+			tmpRecentFiles.append(DkSettings::global.recentFiles.at(idx));
+	}
+
+	if (tmpRecentFiles.size() < qFloor(0.5f*DkSettings::global.numFiles)) {
+
+		// maximum 4 most recent images from the same folder
+		for (int idx = tmpRecentFiles.size()-1; idx > 4; idx--) {
+			DkSettings::global.recentFiles.removeAll(tmpRecentFiles.at(idx));
+
+		}
+	}
 
 	DkSettings::global.recentFiles.push_front(file.absoluteFilePath());
 	DkSettings::global.recentFolders.push_front(file.absolutePath());
@@ -905,7 +923,6 @@ void DkImageLoader::updateHistory() {
 
 	for (int idx = 0; idx < DkSettings::global.recentFolders.size()-DkSettings::global.numFiles-10; idx++)
 		DkSettings::global.recentFolders.pop_back();
-
 
 	DkSettings s = DkSettings();
 	s.save();

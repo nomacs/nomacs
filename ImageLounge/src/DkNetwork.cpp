@@ -211,9 +211,10 @@ void DkLocalClientManager::searchForOtherClients() {
 	for (int i = server->startPort; i <= server->endPort; i++) {
 		if (i == server->serverPort())
 			continue;
-		//qDebug() << "search For other clients on port:" << i;
+		qDebug() << "search For other clients on port:" << i;
 		DkConnection* connection = createConnection();
 		connection->connectToHost(QHostAddress::LocalHost,i);
+		
 
 		if (connection->waitForConnected(10))
 			qDebug() << "Connected to " << i ;
@@ -354,7 +355,7 @@ void DkLocalClientManager::connectionReceivedQuit() {
 }
 
 DkLocalConnection* DkLocalClientManager::createConnection() {
-	DkLocalConnection* connection = new DkLocalConnection();
+	DkLocalConnection* connection = new DkLocalConnection(this);
 	connection->setLocalTcpServerPort(server->serverPort());
 	connection->setTitle(currentTitle);
 	connectConnection(connection);
@@ -366,7 +367,7 @@ DkLocalConnection* DkLocalClientManager::createConnection() {
 }
 // DkLANClientManager --------------------------------------------------------------------
 DkLANClientManager::DkLANClientManager(QString title, QObject* parent, quint16 udpServerPortRangeStart, quint16 udpServerPortRangeEnd) : DkClientManager(title, parent) {
-	server = new DkLANTcpServer(0, udpServerPortRangeStart, udpServerPortRangeEnd);
+	server = new DkLANTcpServer(this, udpServerPortRangeStart, udpServerPortRangeEnd);
 	connect(server, SIGNAL(serverReiceivedNewConnection(QHostAddress, quint16, QString)), this, SLOT(startConnection(QHostAddress, quint16, QString)));
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));

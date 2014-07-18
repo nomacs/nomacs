@@ -113,6 +113,7 @@ public:
 		sync_mode_default = 0,
 		sync_mode_remote_display,
 		sync_mode_remote_control,
+		sync_mode_receiveing_command,
 
 		sync_mode_end,
 	};
@@ -128,6 +129,7 @@ public:
 		QBitArray showHistogram;
 		QBitArray showOverview;
 		QBitArray showScroller;
+		bool showRecentFiles;
 		int appMode;
 		int currentAppMode;
 		bool advancedSettings;
@@ -149,7 +151,7 @@ public:
 		bool defaultIconColor;
 		int thumbSize;
 		int thumbPreviewSize;
-		bool saveThumb;
+		//bool saveThumb;
 		int interpolateZoomLevel;
 		bool antiAliasing;
 		bool smallIcons;
@@ -169,6 +171,7 @@ public:
 		QString lastSaveDir;
 		QStringList recentFiles;
 		QStringList recentFolders;
+		bool logRecentFiles;
 		bool useTmpPath;
 		QString tmpPath;
 		QString language;

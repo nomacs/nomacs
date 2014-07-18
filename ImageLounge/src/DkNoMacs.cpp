@@ -40,8 +40,11 @@
 #include "DkManipulationWidgets.h"
 #include "DkSettingsWidgets.h"
 #include "DkMessageBox.h"
+#ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
 #include "DkPluginManager.h"
+#endif //  WITH_PLUGINS
+
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
@@ -537,16 +540,16 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
-	fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
-	connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
-	connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
+	//fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
+	//connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	//connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
 
-	fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::global.recentFolders);
-	connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
-	connect(fileFoldersMenu, SIGNAL(clearHistory()), this, SLOT(clearFolderHistory()));
+	//fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::global.recentFolders);
+	//connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+	//connect(fileFoldersMenu, SIGNAL(clearHistory()), this, SLOT(clearFolderHistory()));
 
-	fileMenu->addMenu(fileFilesMenu);
-	fileMenu->addMenu(fileFoldersMenu);
+	//fileMenu->addMenu(fileFilesMenu);
+	//fileMenu->addMenu(fileFoldersMenu);
 	fileMenu->addAction(fileActions[menu_file_show_recent]);
 
 	fileMenu->addSeparator();
@@ -822,6 +825,7 @@ void DkNoMacs::createActions() {
 	connect(fileActions[menu_file_print], SIGNAL(triggered()), this, SLOT(printDialog()));
 
 	fileActions[menu_file_show_recent] = new QAction(tr("&Recent Files and Folders"), this);
+	fileActions[menu_file_show_recent]->setShortcut(QKeySequence(shortcut_recent_files));
 	fileActions[menu_file_show_recent]->setCheckable(true);
 	fileActions[menu_file_show_recent]->setChecked(false);
 	fileActions[menu_file_show_recent]->setStatusTip(tr("Show Recent Files and Folders"));
@@ -1535,12 +1539,17 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			&& !viewport()->getImage().isNull()
 			&& viewport()->getImageLoader()) {
 
-			// TODO: check if we do it correct (network locations that are not mounted)
-			QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->file().absoluteFilePath());
 
+			qDebug() << viewport()->getImageLoader()->file().absoluteFilePath();
+
+			// TODO: check if we do it correct (network locations that are not mounted)
+			QUrl fileUrl = QUrl::fromLocalFile(viewport()->getImageLoader()->file().absoluteFilePath());
+
+			// TODO: we cannot drag&drop files with # in them because # starts a new fragment
 			QList<QUrl> urls;
 			urls.append(fileUrl);
-
+			
+			// who deletes me?
 			QMimeData* mimeData = new QMimeData;
 			
 			if (viewport()->getImageLoader()->file().exists() && !viewport()->getImageLoader()->isEdited())
@@ -1551,7 +1560,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			QDrag* drag = new QDrag(this);
 			drag->setMimeData(mimeData);
 			Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
-			qDebug() << "creating drag...\n";
+			qDebug() << "creating drag: " << fileUrl;
 	}
 
 	//QMainWindow::mouseMoveEvent(event);
@@ -3107,10 +3116,15 @@ void DkNoMacs::setContrast(bool contrast) {
 	qDebug() << "contrast arguments: " << args;
 }
 
-void DkNoMacs::onWindowLoaded() {
+void DkNoMacs::showRecentFiles(bool show) {
 
+	// TODO: add setting
 	if (DkSettings::app.appMode != DkSettings::mode_frameless && !DkSettings::global.recentFiles.empty())
-		viewport()->getController()->showRecentFiles(true);
+		viewport()->getController()->showRecentFiles(show);
+
+}
+
+void DkNoMacs::onWindowLoaded() {
 
 	QSettings s;
 	bool firstTime = s.value("AppSettings/firstTime", true).toBool();
@@ -3820,7 +3834,7 @@ void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 	if (!vPlugin) 
 		return;
 
-	viewport()->setPluginImageWasApplied(true);
+	//viewport()->setPluginImageWasApplied(true);
 
 	QImage pluginImage = vPlugin->runPlugin();	// empty vars - viewport plugin doesn't need them
 
@@ -3852,7 +3866,7 @@ void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 
 	if(!alreadySaving && isSaveNeeded) saveFileAs();
 
-	viewport()->setPluginImageWasApplied(true);
+	//viewport()->setPluginImageWasApplied(true);
 
 #endif // WITH_PLUGINS
 }
@@ -3975,7 +3989,10 @@ void DkNoMacsSync::initLanClient() {
 	
 	rcClient->start();
 	
+	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
+	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
+	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
 	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
 	DkTimer dt;
@@ -3991,6 +4008,8 @@ void DkNoMacsSync::initLanClient() {
 	}
 	else 
 		qDebug() << "whitelist empty!!";
+
+
 
 	qDebug() << "start server takes: " << dt.getTotal();
 }
@@ -4055,15 +4074,12 @@ void DkNoMacsSync::createActions() {
 	lanActions[menu_lan_server]->setObjectName("serverAction");
 	lanActions[menu_lan_server]->setCheckable(true);
 	lanActions[menu_lan_server]->setChecked(false);
-	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
-	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
 
 	lanActions[menu_lan_image] = new QAction(tr("Send &Image"), this);
 	lanActions[menu_lan_image]->setObjectName("sendImageAction");
 	lanActions[menu_lan_image]->setShortcut(QKeySequence(shortcut_send_img));
 	//sendImage->setEnabled(false);		// TODO: enable/disable sendImage action as needed
 	lanActions[menu_lan_image]->setToolTip(tr("Sends the current image to all clients."));
-	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
 	assignCustomShortcuts(syncActions);
 }
@@ -4277,6 +4293,7 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_control);	// TODO: if we need this threaded emit a signal here
 
 		emit stopSynchronizeWithSignal();
+		couldConnect = true;
 	}
 
 	return couldConnect;

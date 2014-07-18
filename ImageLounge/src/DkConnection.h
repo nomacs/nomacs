@@ -54,11 +54,9 @@ class DkConnection : public QTcpSocket {
 		DkConnection(QObject* parent=0);
 		~DkConnection() {
 			qDebug() << "connection destructed...";
-			//sendNewGoodbyeMessage();
 		};
 
 		void release() {
-			qDebug() << "connection destructed...";
 			sendNewGoodbyeMessage();
 		};
 

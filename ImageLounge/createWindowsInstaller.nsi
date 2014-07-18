@@ -7,7 +7,7 @@
 !include "nsProcess.nsh"
 
 ; your install directories
-; !define BUILD_DIR "..\build2012x86\ReallyRelease"
+!define BUILD_DIR "..\build2012x86\ReallyRelease"
 
 !ifndef BUILD_DIR
 !define BUILD_DIR "..\build2012x64\ReallyRelease"
@@ -174,6 +174,8 @@ Function finishpageaction
 	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "resetMatrix"
 	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "saveThumb"
 	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "thumbSize"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "numFiles"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "saveThumb"
 	
 	; DELETE OLD DLLs
 	Delete "$INSTDIR\opencv_imgproc220.dll"
@@ -248,6 +250,8 @@ Section Uninstall
 	Delete "$INSTDIR\*.dll"
 	Delete "$INSTDIR\*.exe"
 	Delete "$INSTDIR\*.qm"
+	Delete "$INSTDIR\nomacs - Image Lounge [x64].url"
+	Delete "$INSTDIR\nomacs - Image Lounge.url"
 	  
 	Delete "$INSTDIR\COPYRIGHT"
 	Delete "$INSTDIR\LICENSE.GPLv2"
@@ -264,7 +268,7 @@ Section Uninstall
 	Delete "$SMPROGRAMS\nomacs - image lounge\Website.lnk"
 	Delete "$DESKTOP\nomacs - image lounge.lnk"
 	Delete "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk"
-
+		
 	RMDir "$SMPROGRAMS\nomacs - image lounge"
 	RMDir "$INSTDIR\imageformats"
 	RMDir "$INSTDIR"

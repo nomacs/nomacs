@@ -27,7 +27,6 @@
 
 #pragma once
 
-#ifdef WITH_PLUGINS
 
 #include <QWidget>
 #include <QSlider>
@@ -408,5 +407,4 @@ private:
 
 };
 
-#endif // WITH_PLUGINS
 
