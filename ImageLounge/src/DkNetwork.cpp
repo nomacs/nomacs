@@ -354,7 +354,7 @@ void DkLocalClientManager::connectionReceivedQuit() {
 }
 
 DkLocalConnection* DkLocalClientManager::createConnection() {
-	DkLocalConnection* connection = new DkLocalConnection();
+	DkLocalConnection* connection = new DkLocalConnection(this);
 	connection->setLocalTcpServerPort(server->serverPort());
 	connection->setTitle(currentTitle);
 	connectConnection(connection);
