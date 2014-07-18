@@ -44,7 +44,8 @@ endmacro(NMC_OPTION)
 
 # Searches for Qt with the required components
 macro(NMC_FINDQT)
-	set(CMAKE_AUTOMOC ON)
+
+	# set(CMAKE_AUTOMOC ON)
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
 	# find the Qt
 	if (NOT ENABLE_QT5)
@@ -86,6 +87,7 @@ macro(NMC_FINDQT)
 		message(STATUS "QT_INCLUDES: ${QT_INCLUDES}")
 		add_definitions(-DQT5)
 	endif(NOT ENABLE_QT5)
+	
 endmacro(NMC_FINDQT)
 
 # enables webp
