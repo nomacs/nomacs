@@ -131,6 +131,7 @@ public:
 	void setRunId2PluginId(QMap<QString, QString> newMap);
 	void deletePlugin(QString pluginID);
 	void deleteInstance(QString id);
+	QMap<QString, QString> getPreviouslyInstalledPlugins();
 
 protected slots:
 	void closePressed();
@@ -147,12 +148,12 @@ protected:
 	QMap<QString, QString> pluginFiles;
 	QList<QString> pluginIdList;
 	QMap<QString, QString> runId2PluginId;
-
+	QMap<QString, QString> previouslyInstalledPlugins;
 
 	void init();
 	void createLayout();
 	void showEvent(QShowEvent *event);
-		
+	void loadPreviouslyInstalledPlugins();
 };
 
 // widget with all plug-in information

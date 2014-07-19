@@ -102,6 +102,7 @@ void DkPluginManager::closePressed() {
 
 void DkPluginManager::showEvent(QShowEvent *event) {
 
+	loadPreviouslyInstalledPlugins();
 	loadPlugins();
 	tableWidgetInstalled->getPluginUpdateData();
 
@@ -231,8 +232,27 @@ void DkPluginManager::loadPlugins() {
 		settings.setArrayIndex(i++);
 		settings.setValue("pluginId", pluginIdList.at(j));
 		settings.setValue("pluginFilePath", pluginFiles.value(pluginIdList.at(j)));
+		settings.setValue("version", loadedPlugins.value(pluginIdList.at(j))->pluginVersion());
 	}
 	settings.endArray();
+}
+
+void DkPluginManager::loadPreviouslyInstalledPlugins() {
+
+	previouslyInstalledPlugins = QMap<QString, QString>();
+
+	QSettings settings;
+	int size = settings.beginReadArray("PluginSettings/filePaths");
+	for (int i = 0; i < size; i++) {
+		settings.setArrayIndex(i);
+		previouslyInstalledPlugins.insert(settings.value("pluginId").toString(), settings.value("version").toString());
+	}
+	settings.endArray();
+}
+
+QMap<QString, QString> DkPluginManager::getPreviouslyInstalledPlugins() {
+
+	return previouslyInstalledPlugins;
 }
 
 //Loads enabled plugins when the menu is first hit
@@ -484,17 +504,24 @@ void DkPluginTableWidget::getListOfUpdates() {
 	DkInstalledPluginsModel* installedPluginsModel = static_cast<DkInstalledPluginsModel*>(model);
 	QList<QString> installedIdList = installedPluginsModel->getPluginData();
 	QList<XmlPluginData> updateList = pluginDownloader->getXmlPluginData();
+	QMap<QString, QString> previouslyInstalledPlugins = pluginManager->getPreviouslyInstalledPlugins();
+	QMap<QString, QString> installedPluginsList = previouslyInstalledPlugins;
 	pluginsToUpdate = QList<XmlPluginData>();
+
+	for (int i = 0; i < installedIdList.size(); i++)
+		if (!installedPluginsList.contains(installedIdList.at(i)))
+			installedPluginsList.insert(installedIdList.at(i), pluginManager->getPlugins().value(installedIdList.at(i))->pluginVersion());
 	
 	updateButton->setEnabled(false);
 	updateButton->setText(tr("Plugins up to date"));
 	updateButton->setToolTip(tr("No available updates."));
 
 	for (int i = 0; i < updateList.size(); i++) {
-		for (int j = 0; j < installedIdList.size(); j++) {
-			if(updateList.at(i).id == installedIdList.at(j)) {
-
-				QStringList cVersion = pluginManager->getPlugins().value(installedIdList.at(j))->pluginVersion().split('.');
+		QMapIterator<QString, QString> iter(installedPluginsList);
+		while (iter.hasNext()) {
+			iter.next();
+			if(updateList.at(i).id == iter.key()) {
+				QStringList cVersion = iter.value().split('.');
 				QStringList nVersion = updateList.at(i).version.split('.');
 
 				if (cVersion.size() < 3 || nVersion.size() < 3) {
