@@ -58,7 +58,7 @@ void DkPluginManager::init() {
 	dialogHeight = 500;
 
 	setWindowTitle(tr("Plugin manager"));
-	setFixedSize(dialogWidth, dialogHeight);
+	setMinimumSize(dialogWidth, dialogHeight);
 	createLayout();
 
 }
@@ -448,8 +448,12 @@ void DkPluginTableWidget::createLayout() {
 	QHBoxLayout* topHorLayout = new QHBoxLayout();
 	QLabel* descLabel = new QLabel(tr("Plugin description:"));
 	topHorLayout->addWidget(descLabel);
+	QSpacerItem* horizontalSpacer1 = new QSpacerItem(300, 1, QSizePolicy::Expanding, QSizePolicy::Minimum);
+	topHorLayout->addItem(horizontalSpacer1);
 	QLabel* previewLabel = new QLabel(tr("Plugin preview:"));
 	topHorLayout->addWidget(previewLabel);
+	QSpacerItem* horizontalSpacer2 = new QSpacerItem(250, 1, QSizePolicy::Minimum, QSizePolicy::Minimum);
+	topHorLayout->addItem(horizontalSpacer2);
 	bottomVertLayout->addLayout(topHorLayout);
 
 	QHBoxLayout* bottHorLayout = new QHBoxLayout();
