@@ -30,7 +30,7 @@ else()
 endif()
 
 
-OPTION (ENABLE_JP2K "Compile JPEG2000 plugin (jasper and qtjp2)" ON)
+OPTION (ENABLE_JP2K "Compile JPEG2000 plugin (jasper and qtjp2)" OFF)
 IF (ENABLE_JP2K)
 	add_subdirectory(jasper-1.900.1)
 	add_subdirectory(qtjp2imageformat)
