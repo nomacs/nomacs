@@ -72,22 +72,29 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 	fileText.replace("nomacs-service.xml", "/nomacs-service.xml");
 #endif // WIN32
 	
-	QFile newXMLfile(newXMLpath);
-	newXMLfile.open(QIODevice::WriteOnly);
-	newXMLfile.write(fileText.toUtf8());
+	QFile newDescriptorFile(newXMLpath);
+	newDescriptorFile.open(QIODevice::WriteOnly);
+	newDescriptorFile.write(fileText.toUtf8());
 	qDebug() << "writing file:" << newXMLpath;
-	
-	newXMLfile.close();
+	newDescriptorFile.close();
 
 	QFileInfo fileInfo = QFileInfo(f);
 	QFile serviceXML(fileInfo.absolutePath() + QDir::separator() + "nomacs-service.xml");
-	if (!serviceXML.exists())
+	if (!serviceXML.open(QIODevice::ReadOnly))
 		qDebug() << "nomacs-service.xml file does not exist";
+	
+	// copy the resource file to the user tmp folder
 	QString newServiceXMLPath = QDir::tempPath()+ QDir::separator() + "nomacs-service.xml";
-	if(!QFile::exists(newServiceXMLPath)) {
-		if (!serviceXML.copy(newServiceXMLPath))
-			qDebug() << "unable to copy nomacs-service.xml to " << newServiceXMLPath << ", perhaps files already exists";
-	}
+	QFile tmpServiceXmlFile(newServiceXMLPath);
+	tmpServiceXmlFile.open(QIODevice::WriteOnly);
+	tmpServiceXmlFile.write(serviceXML.readAll());
+	tmpServiceXmlFile.close();
+	serviceXML.close();
+	
+	//if(!QFile::exists(newServiceXMLPath)) {
+	//	if (!serviceXML.copy(newServiceXMLPath))
+	//		qDebug() << "unable to copy nomacs-service.xml to " << newServiceXMLPath << ", perhaps files already exists";
+	//}
 	QFile newServiceXMLFile(QDir::tempPath()+ QDir::separator() + "nomacs-service.xml");
 	serviceXML.close();
 	DkUpnpDeviceModelCreator creator;
@@ -106,9 +113,13 @@ bool DkUpnpDeviceHost::startDevicehost(QString pathToConfig) {
 		qDebug() << "error while initializing device host:\n" << errorDescription();
 	}
 
-	if(!newXMLfile.remove()) 
+	if(!newDescriptorFile.remove()) 
 		qDebug() << "unable to remove upnp device.xml file";
-	this->serviceXMLPath = newServiceXMLPath;
+	// this->serviceXMLPath = newServiceXMLPath;
+
+	if (!tmpServiceXmlFile.remove())
+		qDebug() << tmpServiceXmlFile.errorString();
+
 	//qDebug() << "newServiceXMLPath" << newServiceXMLPath;
 	//if(!QFile::remove(newServiceXMLPath))
 		//qDebug() << "unable to remove upnp service.xml file";

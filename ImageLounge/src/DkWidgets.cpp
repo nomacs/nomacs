@@ -5130,6 +5130,11 @@ bool DkImageLabel::hasFile() const {
 	return !thumb->getImage().isNull();
 }
 
+QSharedPointer<DkThumbNailT> DkImageLabel::getThumb() const {
+	
+	return thumb;
+}
+
 void DkImageLabel::thumbLoaded() {
 
 	if (thumb->getImage().isNull()) {
@@ -5344,6 +5349,9 @@ void DkRecentFilesWidget::updateFiles() {
 	}
 	else if (rFileIdx < fileLabels.size()) {
 		fileLabels.at(rFileIdx)->hide();
+
+		// remove files which we can't load to keep the list clean...
+		DkSettings::global.recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFile().absoluteFilePath());		// remove recent files which we could not load...
 	}
 	//else if (rFileIdx >= fileLabels.size()) {
 	//	qDebug() << "index out of range";
