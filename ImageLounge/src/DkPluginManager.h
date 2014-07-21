@@ -131,6 +131,7 @@ public:
 	void setRunId2PluginId(QMap<QString, QString> newMap);
 	void deletePlugin(QString pluginID);
 	void deleteInstance(QString id);
+	QMap<QString, QString> getPreviouslyInstalledPlugins();
 
 protected slots:
 	void closePressed();
@@ -147,12 +148,12 @@ protected:
 	QMap<QString, QString> pluginFiles;
 	QList<QString> pluginIdList;
 	QMap<QString, QString> runId2PluginId;
-
+	QMap<QString, QString> previouslyInstalledPlugins;
 
 	void init();
 	void createLayout();
 	void showEvent(QShowEvent *event);
-		
+	void loadPreviouslyInstalledPlugins();
 };
 
 // widget with all plug-in information
@@ -170,17 +171,19 @@ public:
 	DkPluginManager* getPluginManager();
 	int getOpenedTab();
 	DkPluginDownloader* getDownloader();
+	void getPluginUpdateData();
 	
 public slots:
 	void uninstallPlugin(const QModelIndex &index);
 	void installPlugin(const QModelIndex &index);
 	void pluginInstalled(const QModelIndex &index);
 	void pluginUpdateFinished(bool finishedSuccessfully);
+	void reloadPlugins();
 
 private:
 	void createLayout();
-	void fillDownloadTable();
-	void updateSelectedPlugins();
+	void fillDownloadTable();	
+	void getListOfUpdates();
 
 	int openedTab;
 	DkPluginManager* pluginManager;
@@ -190,12 +193,13 @@ private:
 	QTableView* tableView;
 	QLineEdit* filterEdit;
 	QList<XmlPluginData> pluginsToUpdate;
+	QPushButton* updateButton;
 
 protected slots:
 	void showDownloaderMessage(QString msg, QString title);
 	void manageParsedXmlData(int usage);
-	void updatePlugins();
 	void filterTextChanged();
+	void updateSelectedPlugins();	
 };
 
 // model for the table in the installed plug-ins tab 
@@ -376,7 +380,7 @@ signals:
 	void pluginDownloaded(const QModelIndex &index);
 	void allPluginsUpdated(bool finishedSuccessfully);
 	void pluginFilesDownloadingFinished();
-
+	void reloadPlugins();
 protected slots:
 	void replyFinished(QNetworkReply*);
 	void updateDownloadProgress(qint64 received, qint64 total);
