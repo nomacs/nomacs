@@ -906,7 +906,7 @@ void DkImageLoader::updateHistory() {
 	if (tmpRecentFiles.size() < qFloor(0.5f*DkSettings::global.numFiles)) {
 
 		// maximum 4 most recent images from the same folder
-		for (int idx = tmpRecentFiles.size()-1; idx > 4; idx--) {
+		for (int idx = tmpRecentFiles.size()-1; idx > 3; idx--) {
 			DkSettings::global.recentFiles.removeAll(tmpRecentFiles.at(idx));
 
 		}

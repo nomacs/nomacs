@@ -1738,6 +1738,7 @@ public:
 	DkImageLabel(const QFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	bool hasFile() const;
+	QSharedPointer<DkThumbNailT> getThumb() const;
 
 signals:
 	void labelLoaded();
