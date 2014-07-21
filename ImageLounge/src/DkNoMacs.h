@@ -569,6 +569,7 @@ public slots:
 	void runLoadedPlugin();
 	void openPluginManager();
 	void initPluginManager();
+	void runPluginFromShortcut();
 	void closePlugin(bool askForSaving, bool alreadySaving);
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
@@ -607,6 +608,8 @@ protected:
 	bool gestureEvent(QGestureEvent *event);
 
 	void assignCustomShortcuts(QVector<QAction*> actions);
+	void assignCustomPluginShortcuts();
+	void savePluginActions(QVector<QAction *> actions);
 
 	bool otherKeyPressed;
 	QPoint posGrabKey;
@@ -627,6 +630,7 @@ protected:
 	QVector<QAction *> viewActions;
 	QVector<QAction *> syncActions;
 	QVector<QAction *> pluginsActions;
+	QVector<QAction *> pluginsDummyActions;
 	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
