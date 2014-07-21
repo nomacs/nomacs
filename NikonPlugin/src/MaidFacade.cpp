@@ -694,8 +694,8 @@ QImage MaidFacade::getLiveViewImage() {
 	QImage empty = QImage();
 
 	// 128 byte for Nikon D90
-	headerSize = 128;	// Type0003
-	//headerSize = 384;	// Type0007
+	//headerSize = 128;	// Type0003
+	headerSize = 384;	// Type0007
 
 	memset(&dataArray, 0, sizeof(NkMAIDArray));
 
