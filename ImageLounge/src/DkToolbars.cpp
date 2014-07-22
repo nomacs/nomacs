@@ -476,7 +476,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	loadSettings();
 
 	enableTFCheckBox = new QCheckBox(tr("Enable"));
-	enableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
+	enableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 
 	this->addWidget(enableTFCheckBox);
 

@@ -2218,7 +2218,7 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 	DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter *painter) {
+void DkViewPortFrameless::draw(QPainter *painter, float opacity) {
 	
 	if (parent && parent->isFullScreen()) {
 		QColor col = QColor(0,0,0);
@@ -2629,7 +2629,7 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 	
 }
 
-void DkViewPortContrast::draw(QPainter *painter) {
+void DkViewPortContrast::draw(QPainter *painter, float opacity) {
 
 	if (parent && parent->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);
