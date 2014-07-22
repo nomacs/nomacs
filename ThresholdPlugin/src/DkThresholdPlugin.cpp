@@ -139,6 +139,12 @@ QImage DkThresholdPlugin::runPlugin(const QString &runID, const QImage &image) c
 
 		QImage retImg = QImage();
 		if (!thresholdViewport->isCanceled()) retImg = thresholdViewport->getThresholdedImage(true);
+		else {
+			if (parent()) {
+				DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+				if (viewport) viewport->setImage(thresholdViewport->getOriginalImage());
+			}
+		}
 
 		viewport->setVisible(false);
 
@@ -155,7 +161,7 @@ DkPluginViewPort* DkThresholdPlugin::getViewPort() {
 
 	if (!viewport) {
 		viewport = new DkThresholdViewPort();
-		connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
 	}
 	return viewport;
 }
@@ -172,6 +178,7 @@ void DkThresholdPlugin::deleteViewPort() {
 
 	if (viewport) {
 		viewport->deleteLater();
+		viewport = 0;
 	}
 }
 
@@ -265,6 +272,11 @@ void DkThresholdViewPort::mouseReleaseEvent(QMouseEvent *event) {
 void DkThresholdViewPort::paintEvent(QPaintEvent *event) {
 
 	DkPluginViewPort::paintEvent(event);
+}
+
+QImage DkThresholdViewPort::getOriginalImage() {
+	
+	return origImg;
 }
 
 QImage DkThresholdViewPort::getThresholdedImage(bool thrEnabled) {
@@ -458,7 +470,7 @@ void DkThresholdViewPort::applyChangesAndClose() {
 void DkThresholdViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
-	if(parent()) {
+	if(parent() && origImgSet) {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 		if (viewport) viewport->setImage(origImg);
 	}
