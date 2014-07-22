@@ -96,6 +96,7 @@ public:
 
 	bool isCanceled();
 	QImage getThresholdedImage(bool thrEnabled);
+	QImage getOriginalImage();
 
 public slots:
 	void setPanning(bool checked);

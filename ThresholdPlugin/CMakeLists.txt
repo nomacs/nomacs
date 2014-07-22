@@ -7,7 +7,7 @@ ENDIF()
 
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 1.0.1)
+set(PLUGIN_VERSION 1.0.3)
 set(PLUGIN_ID 70e2fbe0c913462e846bb91da201ceca) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
@@ -26,11 +26,11 @@ MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
 find_package(nomacs)
 if(NOT NOMACS_FOUND)
 	SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
-	SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
 	IF (${NOMACS_BUILD_DIRECTORY} STREQUAL "NOT_SET")
 		MESSAGE(FATAL_ERROR "You have to set the nomacs build directory")
 	ENDIF()
 endif()
+SET(NOMACS_PLUGIN_INSTALL_DIRECTORY "NOT_SET" CACHE PATH "Path to the plugin install directory for deploying")
 
 if (CMAKE_BUILD_TYPE STREQUAL "debug" OR CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     message(STATUS "A debug build. -DDEBUG is defined")
@@ -125,7 +125,7 @@ IF (MSVC)
 		if(CMAKE_CL_64)
 			file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/d.txt "x64 x64/${PROJECT_NAME}.dll\n")
 		else()
-			file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/d.txt "x86 x64/${PROJECT_NAME}.dll\n")
+			file(APPEND ${CMAKE_CURRENT_SOURCE_DIR}/d.txt "x86 x86/${PROJECT_NAME}.dll\n")
 		endif()	
 	endif()
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/${PROJECT_NAME}.dll DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/${PLUGIN_ARCHITECTURE}/ CONFIGURATIONS Release)

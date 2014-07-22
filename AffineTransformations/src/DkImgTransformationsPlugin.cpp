@@ -158,7 +158,7 @@ DkPluginViewPort* DkImgTransformationsPlugin::getViewPort() {
 
 	if (!viewport) {
 		viewport = new DkImgTransformationsViewPort();
-		connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
 	}
 	return viewport;
 }
@@ -175,6 +175,7 @@ void DkImgTransformationsPlugin::deleteViewPort() {
 
 	if (viewport) {
 		viewport->deleteLater();
+		viewport = 0;
 	}
 }
 
