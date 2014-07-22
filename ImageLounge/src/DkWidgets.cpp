@@ -5092,7 +5092,6 @@ DkImageLabel::DkImageLabel(const QFileInfo& fileInfo, QWidget* parent /* = 0 */,
 	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(fileInfo));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(labelLoaded()));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
-	thumb->fetchThumb(DkThumbNailT::force_exif_thumb);
 
 	setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
 	setMouseTracking(true);
@@ -5370,6 +5369,8 @@ void DkRecentFilesWidget::updateFiles() {
 		fileLabels.append(cLabel);
 		connect(cLabel, SIGNAL(labelLoaded()), this, SLOT(updateFiles()));
 		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
+
 	}
 
 	update();

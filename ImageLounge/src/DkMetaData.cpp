@@ -49,6 +49,8 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteAr
 			// not load the image twice...
 #ifdef EXV_UNICODE_PATH
 #if QT_VERSION < 0x050000
+			// it was crashing here - if the thumbnail is fetched in the constructor of a label
+			// seems that the QFileInfo was corrupted?!
 			std::wstring filePath = (file.isSymLink()) ? file.symLinkTarget().toStdWString() : file.absoluteFilePath().toStdWString();
 			exifImg = Exiv2::ImageFactory::open(filePath);
 #else

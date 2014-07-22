@@ -263,6 +263,12 @@ Section Uninstall
 	Delete "$APPDATA\nomacs\plugins\*"
 	RMDir "$APPDATA\nomacs\plugins\"
 	RMDir "$APPDATA\nomacs\"
+	
+	SetShellVarContext all ; point to ProgramData
+	Delete "$APPDATA\nomacs\translations\*"
+	RMDir "$APPDATA\nomacs\translations\"
+	RMDir "$APPDATA\nomacs\"
+	SetShellVarContext current ; point to default
   
 	Delete "$SMPROGRAMS\nomacs - image lounge\Uninstall.lnk"
 	Delete "$SMPROGRAMS\nomacs - image lounge\Website.lnk"
