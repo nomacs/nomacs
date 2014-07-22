@@ -51,6 +51,11 @@
 #include <iomanip>
 #endif
 
+// OS 2 does not define byte so we safely assume, that other programmers agree to call an 8 bit a byte
+#ifndef byte
+typedef unsigned char byte;
+#endif
+
 namespace nmc {
 
 class DllExport DkMetaDataT {

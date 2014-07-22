@@ -379,7 +379,7 @@ void DkFilePreview::createCurrentImg(const QImage& img) {
 	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
 	
 	currentImg = QPixmap(r.width()+4, r.height()+4);
-	currentImg.fill(QColor(0,0,0,0));
+	currentImg.fill(QColor(0,0,0,0).rgb());
 	//currentImg = QPixmap::fromImage(img);
 
 	QPainter painter(&currentImg);
