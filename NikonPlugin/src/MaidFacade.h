@@ -64,7 +64,7 @@ public:
 	typedef std::pair<MaidFacade::StringValues, bool> MaybeStringValues;
 	typedef std::pair<MaidFacade::UnsignedValues, bool> MaybeUnsignedValues;
 
-	MaidFacade();
+	MaidFacade(QWidget* const dialogParent);
 	virtual ~MaidFacade() {}
 
 	// some callbacks are public because they have to be called from a function outside the class
@@ -84,15 +84,18 @@ public:
 	MaybeStringValues readAperture();
 	MaybeStringValues readSensitivity();
 	MaybeStringValues readShutterSpeed();
+	MaybeStringValues readCompressionLevel();
 	MaybeUnsignedValues readExposureMode();
 	MaybeStringValues getAperture();
 	MaybeStringValues getSensitivity();
 	MaybeStringValues getShutterSpeed();
+	MaybeStringValues getCompressionLevel();
 	MaybeUnsignedValues getExposureMode();
 	bool setAperture(size_t newValue);
 	bool setSensitivity(size_t newValue);
 	bool setShutterSpeed(size_t newValue);
 	bool setExposureMode(size_t newValue);
+	bool setCompressionLevel(size_t newValue);
 	bool isLensAttached();
 	bool isAutoIso();
 	bool shoot(bool withAf = false);
@@ -106,6 +109,7 @@ public:
 	void progressCallbackUpdate(ULONG command, ULONG param, ULONG done, ULONG total);
 	void enumerateCapsAll();
 	QString getCurrentSavePath();
+	void setCurrentSavePath(const QString& path);
 	void setAutoSaveNaming(bool);
 	QFileInfo getLastFileInfo();
 	QString makePictureFilename();
@@ -128,6 +132,7 @@ private:
 	MaybeStringValues aperture;
 	MaybeStringValues sensitivity;
 	MaybeStringValues shutterSpeed;
+	MaybeStringValues compressionLevel;
 	MaybeUnsignedValues exposureMode;
 	QMutex mutex;
 	bool lensAttached;
@@ -145,6 +150,7 @@ private:
 	bool initialized;
 	bool autoSaveNaming;
 	bool closed;
+	QWidget* const dialogParent;
 	
 	//void closeChildren(std::unique_ptr<Maid::MaidObject> mo);
 	MaybeStringValues readPackedStringCap(ULONG capId);

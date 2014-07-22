@@ -174,7 +174,7 @@ DkPluginViewPort* DkNikonPlugin::getViewPort() {
 	if (!maidFacade) {
 		QMainWindow* mainWindow = getMainWidnow();
 
-		maidFacade = new MaidFacade();
+		maidFacade = new MaidFacade(mainWindow);
 
 		if (maidFacade->init()) {
 			

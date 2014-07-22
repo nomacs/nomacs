@@ -116,6 +116,7 @@ protected slots:
 	void deleteProfile();
 	void newProfile();
 	void onSaveNamesCheckBoxChanged(int state);
+	void changeSavePath();
 
 protected:
 	struct Profile {
@@ -125,6 +126,7 @@ protected:
 		QString aperture;
 		QString sensitivity;
 		QString shutterSpeed;
+		QString compressionLevel;
 	};
 
 	void showEvent(QShowEvent *event);
@@ -141,6 +143,7 @@ protected:
 	void updateSensitivity();
 	void updateShutterSpeed();
 	void updateExposureMode();
+	void updateCompressionLevel();
 	void updateProfilesUi();
 	void setConnected(bool connected);
 	void closeDeviceAndSetState();
@@ -149,6 +152,7 @@ protected:
 	void setShutterSpeed(const int index, int fallback = -1);
 	void setSensitivity(const int index, int fallback = -1);
 	void setExposureMode(const int index, int fallback = -1);
+	void setCompressionLevel(const int index, int fallback = -1);
 	void setCameraComboBoxValue(QComboBox* comboBox, std::function<bool(size_t)> setCameraValue, std::function<void()> onSuccess, const int index, int fallback = -1);
 	Profile createProfileFromCurrent(const QString& name);
 	void writeProfiles();
@@ -184,7 +188,7 @@ protected:
 	QHBoxLayout* profilesLayout;
 	QLabel* lensAttachedLabel;
 	QLabel* autoIsoLabel;
-	QLabel* filePathLabel;
+	QLineEdit* filePathEdit;
 	QCheckBox* saveNamesCheckBox;
 	QCheckBox* openImagesCheckBox;
 	QComboBox* profilesCombo;
@@ -192,6 +196,7 @@ protected:
 	QComboBox* isoCombo;
 	QComboBox* apertureCombo;
 	QComboBox* shutterSpeedCombo;
+	QComboBox* compressionCombo;
 	QPushButton* connectButton;
 	QPushButton* liveViewButton;
 	QPushButton* afButton;
@@ -201,11 +206,13 @@ protected:
 	QPushButton* deleteProfileButton;
 	QPushButton* loadProfileButton;
 	QPushButton* saveProfileButton;
+	QPushButton* filePathChangeButton;
 	QHBoxLayout* connectionLayout;
 	QHBoxLayout* exposureModeLayout;
 	QHBoxLayout* apertureLayout;
 	QHBoxLayout* isoLayout;
 	QHBoxLayout* shutterSpeedLayout;
+	QHBoxLayout* compressionLayout;
 	QHBoxLayout* buttonsLayout;
 	QSpacerItem* boxFillerV;
 	QSpacerItem* boxFillerH;

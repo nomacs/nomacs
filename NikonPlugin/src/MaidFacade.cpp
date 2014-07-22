@@ -19,9 +19,9 @@ using nmc::MaidFacade;
 using Maid::MaidUtil;
 using Maid::MaidObject;
 
-MaidFacade::MaidFacade() 
+MaidFacade::MaidFacade(QWidget* const dialogParent) 
 	: lensAttached(false), prevFileNumber(0), captureCount(0), allItemsAcquired(false), 
-	currentlyAcquiringObjects(false), initialized(false) {
+	currentlyAcquiringObjects(false), initialized(false), dialogParent(dialogParent) {
 }
 
 /*!
@@ -178,6 +178,11 @@ MaidFacade::MaybeStringValues MaidFacade::readShutterSpeed() {
 	return shutterSpeed;
 }
 
+MaidFacade::MaybeStringValues MaidFacade::readCompressionLevel() {
+	compressionLevel = readPackedStringCap(kNkMAIDCapability_CompressionLevel);
+	return compressionLevel;
+}
+
 /*!
  * Reads the exposure mode from the source and returns it
  * throws MaidError
@@ -205,6 +210,10 @@ MaidFacade::MaybeStringValues MaidFacade::getSensitivity() {
 
 MaidFacade::MaybeStringValues MaidFacade::getShutterSpeed() {
 	return shutterSpeed;
+}
+
+MaidFacade::MaybeStringValues MaidFacade::getCompressionLevel() {
+	return compressionLevel;
 }
 
 MaidFacade::MaybeUnsignedValues MaidFacade::getExposureMode() {
@@ -264,6 +273,10 @@ bool MaidFacade::setSensitivity(size_t newValue) {
 
 bool MaidFacade::setShutterSpeed(size_t newValue) {
 	return setMaybeStringEnumValue(shutterSpeed, kNkMAIDCapability_ShutterSpeed, newValue);
+}
+
+bool MaidFacade::setCompressionLevel(size_t newValue) {
+	return setMaybeStringEnumValue(compressionLevel, kNkMAIDCapability_CompressionLevel, newValue);
 }
 
 bool MaidFacade::setExposureMode(size_t newValue) {
@@ -512,8 +525,9 @@ void MaidFacade::acquireItemObjectsFinished() {
 
 		} else {
 			// save 
-			QFileInfo newFilenameInfo = QFileInfo(firstFilenameInfo.canonicalPath() + "/" + firstFilenameInfo.baseName() + "." + fileInfo.suffix());
+			QFileInfo newFilenameInfo = QFileInfo(getCurrentSavePath() + QDir::separator() + firstFilenameInfo.baseName() + "." + fileInfo.suffix());
 			filename = increaseFilenameNumber(newFilenameInfo).absoluteFilePath();
+
 			qDebug() << "I tried to increase the file number...";
 		}
 		qDebug() << "saving file: " << filename;
@@ -529,20 +543,6 @@ void MaidFacade::acquireItemObjectsFinished() {
 		
 		file.write(currentFileData->buffer, currentFileFileInfo.ulTotalLength);
 		file.close();
-
-
-		//std::ofstream outFile;
-
-		//outFile.open(filename.toStdString(), std::ios::out | std::ios::binary);
-		//if (!outFile.good() || !outFile.is_open()) {
-		//	//return kNkMAIDResult_UnexpectedError;
-		//	qDebug() << "could not open file for writing!";
-		//	return;
-		//}
-
-		//qDebug() << "writing " << currentFileFileInfo.ulTotalLength << " bytes";
-		//outFile.write(currentFileData->buffer, currentFileFileInfo.ulTotalLength);
-		//outFile.close();
 
 		lastFileInfo = QFileInfo(filename);
 
@@ -615,7 +615,7 @@ QString MaidFacade::getCapturedFileName(const QFileInfo& saveFile) {
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
 		// TODO: set the main window here...
-		fileName = QFileDialog::getSaveFileName(0, tr("Save File %1").arg(saveName),
+		fileName = QFileDialog::getSaveFileName(dialogParent, tr("Save File %1").arg(saveName),
 			savePath, selectedFilter, &selectedFilter);
 	}
 
@@ -629,7 +629,7 @@ QString MaidFacade::getCapturedFileName(const QFileInfo& saveFile) {
 QFileInfo MaidFacade::increaseFilenameNumber(const QFileInfo& fileInfo) {
 	
 	qDebug() << "file info before increasing: " << fileInfo.absoluteFilePath();
-	
+
 	QFileInfo newInfo;
 
 	// test file names
@@ -646,7 +646,13 @@ QString MaidFacade::getCurrentSavePath() {
 	if (firstFilename.isEmpty()) {
 		return QString();
 	} else {
-		return QFileInfo(firstFilename).canonicalPath();
+		return QFileInfo(firstFilename).absolutePath();
+	}
+}
+
+void MaidFacade::setCurrentSavePath(const QString& path) {
+	if (!firstFilename.isEmpty()) {
+		firstFilename = path + QDir::separator() + QFileInfo(firstFilename).fileName();
 	}
 }
 

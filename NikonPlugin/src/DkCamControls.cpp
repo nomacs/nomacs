@@ -129,6 +129,16 @@ void DkCamControls::createLayout() {
 	shutterSpeedLayout->addWidget(shutterSpeedCombo);
 	shutterSpeedWidget->setLayout(shutterSpeedLayout);
 
+	QWidget* compressionWidget = new QWidget();
+	compressionLayout = new QHBoxLayout();
+	QLabel* compressionLabel = new QLabel(tr("File Format"));
+	compressionCombo = new QComboBox();
+	compressionCombo->setObjectName("compressionCombo");
+	compressionCombo->setAccessibleName(tr("File Format"));
+	compressionLayout->addWidget(compressionLabel);
+	compressionLayout->addWidget(compressionCombo);
+	compressionWidget->setLayout(compressionLayout);
+
 	buttonsLayout = new QHBoxLayout();
 	afButton = new QPushButton(tr("AF"));
 	afButton->setToolTip(tr("Auto-Focus"));
@@ -150,6 +160,7 @@ void DkCamControls::createLayout() {
 	mainLayout->addWidget(apertureWidget);
 	mainLayout->addWidget(isoWidget);
 	mainLayout->addWidget(shutterSpeedWidget);
+	mainLayout->addWidget(compressionWidget);
 	mainLayout->addLayout(buttonsLayout);
 	mainLayout->addLayout(connectionLayout);
 	mainGroup->setLayout(mainLayout);
@@ -190,23 +201,30 @@ void DkCamControls::createLayout() {
 	
 	filePathWidget = new QWidget();
 	QLayout* filePathLayout = new QHBoxLayout();
-	filePathLabel = new QLabel();
-	filePathLabel->setObjectName("filePathLabel");
-	filePathLabel->setAccessibleName(tr("Save path"));
+	filePathEdit = new QLineEdit();
+	filePathEdit->setObjectName("filePathLabel");
+	filePathEdit->setAccessibleName(tr("Save path"));
+	filePathEdit->setReadOnly(true);
+	filePathChangeButton = new QPushButton(tr("..."));
+	filePathChangeButton->setToolTip(tr("Select a new save path"));
+	int textWidth = filePathChangeButton->fontMetrics().boundingRect(filePathChangeButton->text()).width();
+	filePathChangeButton->setMaximumWidth(textWidth + 16);
+	filePathChangeButton->setEnabled(false);
 	filePathLayout->addWidget(new QLabel(tr("Save path")));
-	filePathLayout->addWidget(filePathLabel);
+	filePathLayout->addWidget(filePathEdit);
+	filePathLayout->addWidget(filePathChangeButton);
 	filePathWidget->setLayout(filePathLayout);
-	filePathWidget->setEnabled(false);
 
 	saveNamesCheckBox = new QCheckBox(tr("Name files automatically"));
 	saveNamesCheckBox->setChecked(true);
 	saveNamesCheckBox->setEnabled(false);
+	onSaveNamesCheckBoxChanged(1);
 
-	openImagesCheckBox = new QCheckBox(tr("Load and display images after shooting"));
+	openImagesCheckBox = new QCheckBox(tr("Display images after shooting"));
 	openImagesCheckBox->setChecked(true);
 	openImagesCheckBox->setEnabled(false);
 
-	optionsGroup = new QGroupBox(tr("Options"));
+	optionsGroup = new QGroupBox(tr("Other Options"));
 	optionsGroup->setFlat(true);
 	optionsLayout = new QVBoxLayout();
 	optionsLayout->addWidget(filePathWidget);
@@ -238,12 +256,15 @@ void DkCamControls::createLayout() {
 	connect(deleteProfileButton, SIGNAL(clicked()), this, SLOT(deleteProfile()));
 	connect(profilesCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onProfilesComboIndexChanged(int)));
 	connect(saveNamesCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onSaveNamesCheckBoxChanged(int)));
+	connect(filePathChangeButton, SIGNAL(clicked()), this, SLOT(changeSavePath()));
 	connect(this, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(arrangeLayout(Qt::DockWidgetArea)));
 	connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(arrangeLayout()));
 	// maidFacade signals
 	connect(maidFacade, SIGNAL(acquireStart()), this, SLOT(onAcquireStart()));
 	connect(maidFacade, SIGNAL(shootAndAcquireFinished()), this, SLOT(onShootFinished()));
 	connect(maidFacade, SIGNAL(updateAcquireProgress(unsigned int, unsigned int)), this, SLOT(onUpdateAcquireProgress(unsigned int, unsigned int)));
+
+
 
 	readProfiles();
 }
@@ -323,6 +344,12 @@ void DkCamControls::onOpenDeviceError() {
 
 void DkCamControls::onSaveNamesCheckBoxChanged(int state) {
 	maidFacade->setAutoSaveNaming(state != 0);
+}
+
+void DkCamControls::changeSavePath() {
+	QString newPath = QFileDialog::getExistingDirectory(this->parentWidget(), tr("Select new save path"), maidFacade->getCurrentSavePath());
+	maidFacade->setCurrentSavePath(QFileInfo(newPath).filePath());
+	filePathEdit->setText(maidFacade->getCurrentSavePath());
 }
 
 void DkCamControls::setConnected(bool newValue) {
@@ -508,11 +535,9 @@ void DkCamControls::setVisible(bool visible) {
 void DkCamControls::updateWidgetSize() {
 	QString savePath = maidFacade->getCurrentSavePath();
 	if (savePath.isEmpty()) {
-		filePathLabel->setText(tr("-"));
+		filePathEdit->setText("");
 	} else {
-		QFontMetricsF fontMetrics(filePathLabel->font());
-		filePathLabel->setText(fontMetrics.elidedText(savePath, Qt::TextElideMode::ElideLeft, exposureModeCombo->width()));
-		filePathLabel->setToolTip(savePath);
+		filePathEdit->setText(savePath);
 	}
 }
 
@@ -542,6 +567,7 @@ void DkCamControls::updateUiValues() {
 	updateExposureMode();
 	updateExposureModeDependentUiValues();
 	updateAutoIsoLabel();
+	updateCompressionLevel();
 
 	filePathWidget->setEnabled(connected);
 	saveNamesCheckBox->setEnabled(connected);
@@ -552,6 +578,7 @@ void DkCamControls::updateUiValues() {
 		liveViewButton->setText(tr("Stop Live View"));
 
 		afButton->setEnabled(true);
+		filePathChangeButton->setEnabled(false);
 	} else {
 		mainGroup->setEnabled(connected);
 		profilesGroup->setEnabled(connected);
@@ -560,6 +587,12 @@ void DkCamControls::updateUiValues() {
 		afButton->setEnabled(connected);
 		liveViewButton->setEnabled(connected);
 		liveViewButton->setText(tr("Start Live View"));
+
+		if (maidFacade->getCurrentSavePath().isEmpty()) {
+			filePathChangeButton->setEnabled(false);
+		} else {
+			filePathChangeButton->setEnabled(connected);
+		}
 	}
 }
 
@@ -606,6 +639,11 @@ void DkCamControls::onComboActivated(int index) {
 		MaidFacade::MaybeStringValues shutterSpeed = maidFacade->getShutterSpeed();
 		if (shutterSpeed.second && index != shutterSpeed.first.currentValue) {
 			setShutterSpeed(shutterSpeedCombo->currentIndex(), shutterSpeed.first.currentValue);
+		}
+	} else if (QObject::sender() == compressionCombo) {
+		MaidFacade::MaybeStringValues compressionLevel = maidFacade->getCompressionLevel();
+		if (compressionLevel.second && index != compressionLevel.first.currentValue) {
+			setCompressionLevel(compressionCombo->currentIndex(), compressionLevel.first.currentValue);
 		}
 	}
 }
@@ -654,6 +692,14 @@ void DkCamControls::setShutterSpeed(const int index, int fallback) {
 void DkCamControls::setSensitivity(const int index, int fallback) {
 	setCameraComboBoxValue(isoCombo, 
 		[&] (size_t v) { return maidFacade->setSensitivity(v); }, 
+		[&] () {}, 
+		index, 
+		fallback);
+}
+
+void DkCamControls::setCompressionLevel(const int index, int fallback) {
+	setCameraComboBoxValue(compressionCombo, 
+		[&] (size_t v) { return maidFacade->setCompressionLevel(v); }, 
 		[&] () {}, 
 		index, 
 		fallback);
@@ -801,6 +847,37 @@ void DkCamControls::updateShutterSpeed() {
 	}
 }
 
+void DkCamControls::updateCompressionLevel() {
+	if (!connected) {
+		compressionCombo->setEnabled(false);
+		return;
+	}
+
+	MaidFacade::MaybeStringValues compressionLevel;
+	try {
+		compressionLevel = maidFacade->readCompressionLevel();
+	} catch (Maid::MaidError) {
+		qDebug() << "error reading compression level (file format)";
+	};
+
+	compressionCombo->clear();
+	if (compressionLevel.second) {
+		auto valueData = maidFacade->toQStringList(compressionLevel.first);
+		const QStringList& values = valueData.first;
+		const size_t& currentIndex = valueData.second;
+		compressionCombo->insertItems(0, values);
+		compressionCombo->setCurrentIndex(currentIndex);
+
+		connect(compressionCombo, SIGNAL(activated(int)), this, SLOT(onComboActivated(int)));
+		compressionCombo->setEnabled(true);
+	}
+
+	if (!compressionLevel.second) {
+		disconnect(compressionCombo, SIGNAL(activated(int)), this, SLOT(onComboActivated(int)));
+		compressionCombo->setEnabled(false);
+	}
+}
+
 void DkCamControls::updateExposureMode() {
 	if (!connected) {
 		exposureModeCombo->setEnabled(false);
@@ -911,7 +988,7 @@ void DkCamControls::onShootFinished() {
 
 	QString savePath = maidFacade->getCurrentSavePath();
 	updateWidgetSize();
-	filePathWidget->setEnabled(!savePath.isEmpty());
+	filePathChangeButton->setEnabled(!savePath.isEmpty());
 
 	if (openImagesCheckBox->isChecked()) {
 		emit loadFile(maidFacade->getLastFileInfo());
@@ -983,10 +1060,12 @@ void DkCamControls::loadProfile() {
 	const int apertureIndex = apertureCombo->findText(p.aperture);
 	const int sensitivityIndex = isoCombo->findText(p.sensitivity);
 	const int shutterSpeedIndex = shutterSpeedCombo->findText(p.shutterSpeed);
+	const int compressionLevelIndex = compressionCombo->findText(p.compressionLevel);
 
 	if (apertureIndex == -1 && !p.aperture.isEmpty() 
 		|| sensitivityIndex == -1 && !p.sensitivity.isEmpty() 
-		|| shutterSpeedIndex == -1 && !p.shutterSpeed.isEmpty()) {
+		|| shutterSpeedIndex == -1 && !p.shutterSpeed.isEmpty()
+		|| compressionLevelIndex == -1 && !p.compressionLevel.isEmpty()) {
 
 		errorText = unequalItemsText;
 	}
@@ -1010,6 +1089,9 @@ void DkCamControls::loadProfile() {
 	}
 	if (!p.shutterSpeed.isEmpty()) {
 		setShutterSpeed(shutterSpeedIndex);
+	}
+	if (!p.compressionLevel.isEmpty()) {
+		setCompressionLevel(compressionLevelIndex);
 	}
 	
 }
@@ -1084,6 +1166,7 @@ DkCamControls::Profile DkCamControls::createProfileFromCurrent(const QString& na
 	setProfileValue(p.aperture, apertureCombo);
 	setProfileValue(p.sensitivity, isoCombo);
 	setProfileValue(p.shutterSpeed, shutterSpeedCombo);
+	setProfileValue(p.compressionLevel, compressionCombo);
 
 	return p;
 }
@@ -1112,7 +1195,8 @@ void DkCamControls::writeProfiles() {
 			<< p.exposureMode
 			<< p.aperture
 			<< p.sensitivity
-			<< p.shutterSpeed;
+			<< p.shutterSpeed
+			<< p.compressionLevel;
 
 		stream << list.join(";") << "\n";
 	}
@@ -1151,6 +1235,7 @@ void DkCamControls::readProfiles() {
 		p.aperture = fields.at(++i);
 		p.sensitivity = fields.at(++i);
 		p.shutterSpeed = fields.at(++i);
+		p.compressionLevel = fields.at(++i);
 
 		profiles.append(p);
 		addProfilesComboItem(p);
