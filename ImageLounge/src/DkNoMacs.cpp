@@ -1283,6 +1283,7 @@ void DkNoMacs::createActions() {
 	assignCustomShortcuts(panelActions);
 	assignCustomShortcuts(toolsActions);
 	assignCustomShortcuts(helpActions);
+	assignCustomPluginShortcuts();
 }
 
 void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
@@ -1299,6 +1300,38 @@ void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
 		// assign widget shortcuts to all of them
 		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
+}
+
+void DkNoMacs::assignCustomPluginShortcuts() {
+#ifdef WITH_PLUGINS
+
+	QSettings settings;
+	settings.beginGroup("CustomPluginShortcuts");
+	QStringList psKeys = settings.allKeys();
+	settings.endGroup();
+
+	if (psKeys.size() > 0) {
+
+		settings.beginGroup("CustomShortcuts");
+
+		pluginsDummyActions = QVector<QAction *>();
+
+		for (int i = 0; i< psKeys.size(); i++) {
+
+			QAction* action = new QAction(psKeys.at(i), this);
+			QString val = settings.value(psKeys.at(i), "no-shortcut").toString();
+			if (val != "no-shortcut")
+				action->setShortcut(val);
+			connect(action, SIGNAL(triggered()), this, SLOT(runPluginFromShortcut()));
+			// assign widget shortcuts to all of them
+			action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+			pluginsDummyActions.append(action);
+		}
+
+		settings.endGroup();
+		viewport()->addActions(pluginsDummyActions.toList());
+	}
+#endif // WITH_PLUGINS
 }
 
 void DkNoMacs::createShortcuts() {
@@ -3407,6 +3440,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
 #ifdef WITH_PLUGINS
+	initPluginManager();
 	shortcutsDialog->addActions(pluginsActions, pluginsMenu->title());
 #endif // WITH_PLUGINS
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
@@ -3680,9 +3714,23 @@ void DkNoMacs::addPluginsToMenu() {
 	pluginManager->setRunId2PluginId(runId2PluginId);
 
 	assignCustomShortcuts(pluginsActions);
+	savePluginActions(pluginsActions);
 
 #endif // WITH_PLUGINS
 }
+
+void DkNoMacs::savePluginActions(QVector<QAction *> actions) {
+#ifdef WITH_PLUGINS
+
+	QSettings settings;
+	settings.beginGroup("CustomPluginShortcuts");
+	settings.remove("");
+	for (int i = 0; i < actions.size(); i++)
+		settings.setValue(actions.at(i)->text(), actions.at(i)->text());
+	settings.endGroup();
+#endif // WITH_PLUGINS
+}
+
 
 /**
 * Creates the plugins menu 
@@ -3809,6 +3857,25 @@ void DkNoMacs::initPluginManager() {
 		pluginManager = new DkPluginManager(this);
 		createPluginsMenu();
 	}
+#endif // WITH_PLUGINS
+}
+
+void DkNoMacs::runPluginFromShortcut() {
+#ifdef WITH_PLUGINS
+
+	QAction* action = qobject_cast<QAction*>(sender());
+	QString actionName = action->text();
+
+	for (int i = 0; i < pluginsDummyActions.size(); i++)
+		viewport()->removeAction(pluginsDummyActions.at(i));
+
+	initPluginManager();
+	
+	for (int i = 0; i < pluginsActions.size(); i++)
+		if (pluginsActions.at(i)->text().compare(actionName) == 0) {
+			pluginsActions.at(i)->trigger();
+			break;
+		}
 #endif // WITH_PLUGINS
 }
 
