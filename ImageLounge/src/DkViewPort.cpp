@@ -622,6 +622,9 @@ void DkControlWidget::settingsChanged() {
 
 void DkControlWidget::updateRating(int rating) {
 
+	if (!imgC)
+		return;
+
 	this->rating = rating;
 
 	ratingLabel->setRating(rating);
