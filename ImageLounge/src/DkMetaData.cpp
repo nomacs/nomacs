@@ -43,10 +43,6 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteAr
 
 	try {
 		if (!ba || ba->isEmpty()) {
-			// TODO: for now we don't support unicode filenames for exif data
-			// however we could if: we load the file as a buffer and provide this buffer as *byte to exif
-			// this is more work and should be done when updating the cacher as we should definitely
-			// not load the image twice...
 #ifdef EXV_UNICODE_PATH
 #if QT_VERSION < 0x050000
 			// it was crashing here - if the thumbnail is fetched in the constructor of a label
