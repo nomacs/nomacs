@@ -5106,6 +5106,7 @@ void DkImageLabel::createLayout() {
 
 	imageLabel = new QLabel(this);
 	imageLabel->setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
+	imageLabel->setScaledContents(true);
 	imageLabel->setStyleSheet("QLabel{margin: 0 0 0 0; padding: 0 0 0 0; border: 1px solid " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}");
 
 	QColor cA = DkSettings::display.highlightColor;
@@ -5335,7 +5336,7 @@ void DkRecentFilesWidget::updateFiles() {
 
 	if (fileLabels.empty()) {
 		filesTitle->show();
-		filesLayout->setRowStretch(qFloor(recentFiles.size()*0.5f), 100);
+		filesLayout->setRowStretch(recentFiles.size(), 100);
 		filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
 		//filesLayout->addItem(new QSpacerItem(30,10), 1, 0);
 	}
