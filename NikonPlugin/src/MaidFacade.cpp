@@ -629,10 +629,7 @@ QString MaidFacade::getCapturedFileName(const QFileInfo& saveFile) {
 QFileInfo MaidFacade::increaseFilenameNumber(const QFileInfo& fileInfo) {
 	
 	qDebug() << "file info before increasing: " << fileInfo.absoluteFilePath();
-	
-	std::ifstream testFileIn;
-	QString basePath = fileInfo.absolutePath() + QDir::separator() + fileInfo.baseName();
-	QString filename = "";
+
 	QFileInfo newInfo;
 
 	// test file names
