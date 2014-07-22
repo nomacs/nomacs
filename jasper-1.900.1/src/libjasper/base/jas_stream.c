@@ -91,6 +91,10 @@
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_math.h"
 
+#ifdef WIN32
+#pragma warning(disable: C4996)	// deprecation warning
+#endif
+
 /******************************************************************************\
 * Local function prototypes.
 \******************************************************************************/
@@ -343,6 +347,10 @@ jas_stream_t *jas_stream_freopen(const char *path, const char *mode, FILE *fp)
 
 jas_stream_t *jas_stream_tmpfile()
 {
+	// >DIR: needed for complicated buffer fix [22.7.2014 markus]
+	int idx;
+	char buf[L_tmpnam+1];
+
 	jas_stream_t *stream;
 	jas_stream_fileobj_t *obj;
 
@@ -366,6 +374,16 @@ jas_stream_t *jas_stream_tmpfile()
 
 	/* Choose a file name. */
 	tmpnam(obj->pathname);
+
+	// >DIR: ok, that's not what I would call elegant [22.7.2014 markus]
+	// but here is the fix: tmpnam returns a path with // which cannot be handled by open
+	for (idx = 2; idx < (L_tmpnam+1); idx++) {
+		buf[idx-2] = obj->pathname[idx];
+	}
+
+	for (idx = 0; idx < (L_tmpnam+1); idx++) {
+		obj->pathname[idx] = buf[idx];
+	}
 
 	/* Open the underlying file. */
 	if ((obj->fd = open(obj->pathname, O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY,

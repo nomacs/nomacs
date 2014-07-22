@@ -759,6 +759,11 @@ bool Jpeg2000JasperReader::write(const QImage &image, int quality)
     if(qtDepth == 32) // RGB(A)
     {
         jasper_image = newRGBAImage(qtWidth, qtHeight, qtImage.hasAlphaChannel());
+
+		// >DIR: check if the image could be created [22.7.2014 markus]
+		if (!jasper_image)
+			return false;
+
         if (qtImage.hasAlphaChannel())
             copyQtJasper(&Jpeg2000JasperReader::copyScanlineQtJasperRGBA);
         else
@@ -769,6 +774,11 @@ bool Jpeg2000JasperReader::write(const QImage &image, int quality)
         if (qtImage.allGray()) //colormapped grayscale
         {
             jasper_image = newGrayscaleImage(qtWidth, qtHeight, qtImage.hasAlphaChannel());
+
+			// >DIR: check if the image could be created [22.7.2014 markus]
+			if (!jasper_image)
+				return false;
+
             if (qtImage.hasAlphaChannel())
                 copyQtJasper(&Jpeg2000JasperReader::copyScanlineQtJasperColormapGrayscaleA);
             else
@@ -777,6 +787,11 @@ bool Jpeg2000JasperReader::write(const QImage &image, int quality)
         else // colormapped color
         {
             jasper_image = newRGBAImage(qtWidth, qtHeight, qtImage.hasAlphaChannel());
+
+			// >DIR: check if the image could be created [22.7.2014 markus]
+			if (!jasper_image)
+				return false;
+
             if (qtImage.hasAlphaChannel())
                copyQtJasper(&Jpeg2000JasperReader::copyScanlineQtJasperColormapRGBA);
             else
@@ -1017,6 +1032,10 @@ jas_image_t* Jpeg2000JasperReader::newRGBAImage(const int width, const int heigh
         params[c] = param;
     jas_image_t *newImage = jas_image_create(jasNumComponents, params,JAS_CLRSPC_SRGB);
 
+	// >DIR: check null pointer [22.7.2014 markus]
+	if (!newImage)
+		return 0;
+
     jas_image_setcmpttype(newImage, 0,JAS_IMAGE_CT_RGB_R);
     jas_image_setcmpttype(newImage, 1,JAS_IMAGE_CT_RGB_G);
     jas_image_setcmpttype(newImage, 2,JAS_IMAGE_CT_RGB_B);
@@ -1047,6 +1066,10 @@ jas_image_t *Jpeg2000JasperReader::newGrayscaleImage(const int width, const int 
     jasNumComponents = alpha ? 2 : 1;
     jas_image_cmptparm_t param = createComponentMetadata(width, height);
     jas_image_t *newImage = jas_image_create(1, &param,JAS_CLRSPC_SGRAY);
+
+	// >DIR: check if the image could be created [22.7.2014 markus]
+	if (!newImage)
+		return 0;
 
     jas_image_setcmpttype(newImage, 0,JAS_IMAGE_CT_GRAY_Y);
 
