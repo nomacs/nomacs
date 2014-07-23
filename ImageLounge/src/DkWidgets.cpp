@@ -379,7 +379,11 @@ void DkFilePreview::createCurrentImg(const QImage& img) {
 	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
 	
 	currentImg = QPixmap(r.width()+4, r.height()+4);
-	currentImg.fill(QColor(0,0,0,0).rgb());
+#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
+	currentImg.fill(qRgba(0,0,0,0));	// sets alpha wrong
+#else
+	currentImg.fill(QColor(0,0,0,0));	// introduced in Qt 4.8
+#endif
 	//currentImg = QPixmap::fromImage(img);
 
 	QPainter painter(&currentImg);

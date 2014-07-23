@@ -1817,9 +1817,13 @@ void DkNoMacs::pasteImage() {
 
 	if (clipboard->mimeData()->hasUrls() && clipboard->mimeData()->urls().size() > 0) {
 		QUrl url = clipboard->mimeData()->urls().at(0);
-		url = url.toLocalFile();
 		qDebug() << "pasting: " << url.toString();
-		viewport()->loadFile(QFileInfo(url.toString()));
+		
+		QFileInfo fInfo(url.toLocalFile());
+		if (DkImageLoader::isValid(fInfo))
+			viewport()->loadFile(fInfo);
+		else if (url.isValid())
+			downloadFile(url);
 
 	}
 	else if (clipboard->mimeData()->hasImage()) {
@@ -1838,6 +1842,8 @@ void DkNoMacs::pasteImage() {
 		if (file.exists()) {
 			viewport()->loadFile(file);
 		}
+		else if (QUrl(msg).isValid())
+			downloadFile(QUrl(msg));
 		else
 			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
 	}
