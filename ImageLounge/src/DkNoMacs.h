@@ -113,6 +113,8 @@ class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
+class FileDownloader;
+
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
 class DkUpnpDeviceHost;
@@ -574,6 +576,8 @@ public slots:
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
 	void clearFolderHistory();
+	void downloadFile(const QUrl& url);
+	void fileDownloaded();
 	//void shareFacebook();
 
 	// batch actions
@@ -690,6 +694,7 @@ protected:
 	DkImageManipulationDialog* imgManipulationDialog;
 
 	DkPrintPreviewDialog* printPreviewDialog;
+	FileDownloader* fileDownloader;
 
 	DkAppManager* appManager;
 
