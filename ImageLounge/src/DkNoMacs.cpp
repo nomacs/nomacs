@@ -1279,12 +1279,16 @@ void DkNoMacs::createActions() {
 	connect(helpActions[menu_help_update_translation], SIGNAL(triggered()), this, SLOT(updateTranslations()));
 
 	assignCustomShortcuts(fileActions);
+	assignCustomShortcuts(sortActions);
 	assignCustomShortcuts(editActions);
 	assignCustomShortcuts(viewActions);
 	assignCustomShortcuts(panelActions);
 	assignCustomShortcuts(toolsActions);
 	assignCustomShortcuts(helpActions);
 	assignCustomPluginShortcuts();
+
+	// add sort actions to the thumbscene
+	viewport()->getController()->getThumbWidget()->addContextMenuActions(sortActions, tr("&Sort"));
 }
 
 void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
@@ -1729,7 +1733,7 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 
 		// just accept image files
 		if (DkImageLoader::isValid(file))
-			viewport()->loadFile(QFileInfo(url.toString()));
+			viewport()->loadFile(file);
 		else if (url.isValid())
 			downloadFile(url);
 		else
@@ -2466,39 +2470,33 @@ void DkNoMacs::updateFilterState(QStringList filters) {
 
 void DkNoMacs::changeSorting(bool change) {
 
-	if (!change)
-		return;
-
+	if (change) {
 	
-	QString senderName = QObject::sender()->objectName();
-	bool modeChange = true;
+		QString senderName = QObject::sender()->objectName();
 
-	if (senderName == "menu_sort_filename")
-		DkSettings::global.sortMode = DkSettings::sort_filename;
-	else if (senderName == "menu_sort_date_created")
-		DkSettings::global.sortMode = DkSettings::sort_date_created;
-	else if (senderName == "menu_sort_date_modified")
-		DkSettings::global.sortMode = DkSettings::sort_date_modified;
-	else if (senderName == "menu_sort_random")
-		DkSettings::global.sortMode = DkSettings::sort_random;
-	else if (senderName == "menu_sort_ascending") {
-		DkSettings::global.sortDir = DkSettings::sort_ascending;
-		modeChange = false;
-	}
-	else if (senderName == "menu_sort_descending") {
-		DkSettings::global.sortDir = DkSettings::sort_descending;
-		modeChange = false;
-	}
+		if (senderName == "menu_sort_filename")
+			DkSettings::global.sortMode = DkSettings::sort_filename;
+		else if (senderName == "menu_sort_date_created")
+			DkSettings::global.sortMode = DkSettings::sort_date_created;
+		else if (senderName == "menu_sort_date_modified")
+			DkSettings::global.sortMode = DkSettings::sort_date_modified;
+		else if (senderName == "menu_sort_random")
+			DkSettings::global.sortMode = DkSettings::sort_random;
+		else if (senderName == "menu_sort_ascending")
+			DkSettings::global.sortDir = DkSettings::sort_ascending;
+		else if (senderName == "menu_sort_descending")
+			DkSettings::global.sortDir = DkSettings::sort_descending;
 
-	if (viewport() && viewport()->getImageLoader()) 
-		viewport()->getImageLoader()->sort();
+		if (viewport() && viewport()->getImageLoader()) 
+			viewport()->getImageLoader()->sort();
+	}
 
 	for (int idx = 0; idx < sortActions.size(); idx++) {
 
-		if (modeChange && idx < menu_sort_ascending && sortActions.at(idx) != QObject::sender())
-			sortActions[idx]->setChecked(false);
-		else if (!modeChange && idx >= menu_sort_ascending && sortActions.at(idx) != QObject::sender())
-			sortActions[idx]->setChecked(false);
+		if (idx < menu_sort_ascending)
+			sortActions[idx]->setChecked(idx == DkSettings::global.sortMode);
+		else if (idx >= menu_sort_ascending)
+			sortActions[idx]->setChecked(idx-menu_sort_ascending == DkSettings::global.sortDir);
 	}
 }
 

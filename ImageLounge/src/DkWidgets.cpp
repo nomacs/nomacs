@@ -1379,6 +1379,21 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	createActions();
 }
 
+void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle) {
+
+	parentActions = actions;
+
+	if (!menuTitle.isEmpty()) {
+		QMenu* m = contextMenu->addMenu(menuTitle);
+		m->addActions(parentActions.toList());
+	}
+	else {
+		contextMenu->addSeparator();
+		contextMenu->addActions(parentActions.toList());
+	}
+
+}
+
 void DkThumbScrollWidget::createActions() {
 
 	actions.resize(actions_end);
@@ -1803,6 +1818,10 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 	if (images.empty())
 		return;
 
+	stop = false;
+	cLoadIdx = 0;
+	numSaved = 0;
+
 	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->file().absolutePath(), tr("Cancel"), 0, (int)images.size(), DkNoMacs::getDialogParent());
 	pd->setWindowTitle(tr("Thumbnails"));
 
@@ -1823,7 +1842,11 @@ void DkThumbsSaver::thumbLoaded(bool loaded) {
 	emit numFilesSignal(numSaved);
 
 	if (numSaved == images.size()-1 || stop) {
-		pd->close();
+		if (pd) {
+			pd->close();
+			pd->deleteLater();
+			pd = 0;
+		}
 		stop = true;
 	}
 	else
@@ -1837,12 +1860,12 @@ void DkThumbsSaver::loadNext() {
 	int force = (forceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
 
 	qDebug() << "missing: " << missing << " num loading: " << numLoading;
+	qDebug() << "loading bounds: " << cLoadIdx << " - " << numLoading;
 
-	for (int idx = cLoadIdx; idx < images.size() && idx <= numLoading; idx++) {
-		
-		images.at(idx)->getThumb()->fetchThumb(force);
+	for (int idx = cLoadIdx; idx < images.size() && idx < numLoading; idx++) {
+		cLoadIdx++;
 		connect(images.at(idx)->getThumb().data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
-		cLoadIdx = idx;
+		images.at(idx)->getThumb()->fetchThumb(force);
 	}
 }
 

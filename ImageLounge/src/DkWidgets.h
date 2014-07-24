@@ -784,6 +784,8 @@ public:
 		return thumbsScene;
 	};
 
+	void addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle = "");
+
 public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
@@ -802,6 +804,7 @@ protected:
 
 	QMenu* contextMenu;
 	QVector<QAction*> actions;
+	QVector<QAction*> parentActions;
 
 };
 
