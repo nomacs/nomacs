@@ -78,6 +78,13 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 	QString suf = file.suffix().toLower();
 
+	if (!imgLoaded && !file.exists() && ba && !ba->isEmpty()) {
+		imgLoaded = qImg.loadFromData(*ba.data());
+
+		if (imgLoaded)
+			loader = qt_loader;
+	}
+
 	// default Qt loader
 	// here we just try those formats that are officially supported
 	if (!imgLoaded && qtFormats.contains(suf.toStdString().c_str())) {

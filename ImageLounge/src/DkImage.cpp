@@ -889,6 +889,12 @@ void DkImageLoader::updateHistory() {
 	if (!currentImage || currentImage->hasImage() != DkImageContainer::loaded)
 		return;
 
+	// sync with other instances
+	QSettings settings;
+	settings.beginGroup("AppSettings");
+	DkSettings::global.recentFolders = settings.value("recentFolders", DkSettings::global.recentFolders).toStringList();
+	DkSettings::global.recentFiles = settings.value("recentFiles", DkSettings::global.recentFiles).toStringList();
+
 	DkSettings::global.lastDir = file.absolutePath();
 
 	DkSettings::global.recentFiles.removeAll(file.absoluteFilePath());
@@ -924,8 +930,12 @@ void DkImageLoader::updateHistory() {
 	for (int idx = 0; idx < DkSettings::global.recentFolders.size()-DkSettings::global.numFiles-10; idx++)
 		DkSettings::global.recentFolders.pop_back();
 
-	DkSettings s = DkSettings();
-	s.save();
+	// sync with other instances
+	settings.setValue("recentFolders", DkSettings::global.recentFolders);
+	settings.value("recentFiles", DkSettings::global.recentFiles);
+
+	//DkSettings s = DkSettings();
+	//s.save();
 }
 
 // image manipulation --------------------------------------------------------------------

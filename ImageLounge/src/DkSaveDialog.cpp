@@ -272,7 +272,7 @@ void DkCompressDialog::drawPreview() {
 	else if ((dialogMode == jpg_dialog || dialogMode == web_dialog) && !hasAlpha)
 		newImg.fill(palette().color(QPalette::Background).rgb());
 	else
-		newImg.fill(QColor(0,0,0,0).rgb());
+		newImg.fill(QColor(0,0,0,0).rgba());
 	 
 	QPainter bgPainter(&newImg);
 	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());

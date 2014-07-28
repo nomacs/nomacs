@@ -99,6 +99,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	appManager = 0;
 	settingsDialog = 0;
 	printPreviewDialog = 0;
+	fileDownloader = 0;
 
 	currRunningPlugin = QString();
 
@@ -1278,12 +1279,16 @@ void DkNoMacs::createActions() {
 	connect(helpActions[menu_help_update_translation], SIGNAL(triggered()), this, SLOT(updateTranslations()));
 
 	assignCustomShortcuts(fileActions);
+	assignCustomShortcuts(sortActions);
 	assignCustomShortcuts(editActions);
 	assignCustomShortcuts(viewActions);
 	assignCustomShortcuts(panelActions);
 	assignCustomShortcuts(toolsActions);
 	assignCustomShortcuts(helpActions);
 	assignCustomPluginShortcuts();
+
+	// add sort actions to the thumbscene
+	viewport()->getController()->getThumbWidget()->addContextMenuActions(sortActions, tr("&Sort"));
 }
 
 void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
@@ -1685,10 +1690,15 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 	}
 	if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
+
+		QList<QUrl> urls = event->mimeData()->urls();
+		
+		for (int idx = 0; idx < urls.size(); idx++)
+			qDebug() << "url: " << urls.at(idx);
+		
 		url = url.toLocalFile();
 		
 		// TODO: check if we accept appropriately (network drives that are not mounted)
-		qDebug() << url;
 		QFileInfo file = QFileInfo(url.toString());
 
 		// just accept image files
@@ -1696,6 +1706,9 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 			event->acceptProposedAction();
 		else if (file.isDir())
 			event->acceptProposedAction();
+		else if (event->mimeData()->urls().at(0).isValid())
+			event->acceptProposedAction();
+		
 	}
 	if (event->mimeData()->hasImage()) {
 		event->acceptProposedAction();
@@ -1715,10 +1728,17 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
 		QUrl url = event->mimeData()->urls().at(0);
 		qDebug() << "dropping: " << url;
-		url = url.toLocalFile();
 		
-		viewport()->loadFile(QFileInfo(url.toString()));
+		QFileInfo file = QFileInfo(url.toLocalFile());
 
+		// just accept image files
+		if (DkImageLoader::isValid(file))
+			viewport()->loadFile(file);
+		else if (url.isValid())
+			downloadFile(url);
+		else
+			qDebug() << url.toString() << " is not valid...";
+		
 		QList<QUrl> urls = event->mimeData()->urls();
 		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
 			newInstance(QFileInfo(urls[idx].toLocalFile()));
@@ -1801,9 +1821,13 @@ void DkNoMacs::pasteImage() {
 
 	if (clipboard->mimeData()->hasUrls() && clipboard->mimeData()->urls().size() > 0) {
 		QUrl url = clipboard->mimeData()->urls().at(0);
-		url = url.toLocalFile();
 		qDebug() << "pasting: " << url.toString();
-		viewport()->loadFile(QFileInfo(url.toString()));
+		
+		QFileInfo fInfo(url.toLocalFile());
+		if (DkImageLoader::isValid(fInfo))
+			viewport()->loadFile(fInfo);
+		else if (url.isValid())
+			downloadFile(url);
 
 	}
 	else if (clipboard->mimeData()->hasImage()) {
@@ -1822,6 +1846,8 @@ void DkNoMacs::pasteImage() {
 		if (file.exists()) {
 			viewport()->loadFile(file);
 		}
+		else if (QUrl(msg).isValid())
+			downloadFile(QUrl(msg));
 		else
 			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
 	}
@@ -2444,39 +2470,33 @@ void DkNoMacs::updateFilterState(QStringList filters) {
 
 void DkNoMacs::changeSorting(bool change) {
 
-	if (!change)
-		return;
-
+	if (change) {
 	
-	QString senderName = QObject::sender()->objectName();
-	bool modeChange = true;
+		QString senderName = QObject::sender()->objectName();
 
-	if (senderName == "menu_sort_filename")
-		DkSettings::global.sortMode = DkSettings::sort_filename;
-	else if (senderName == "menu_sort_date_created")
-		DkSettings::global.sortMode = DkSettings::sort_date_created;
-	else if (senderName == "menu_sort_date_modified")
-		DkSettings::global.sortMode = DkSettings::sort_date_modified;
-	else if (senderName == "menu_sort_random")
-		DkSettings::global.sortMode = DkSettings::sort_random;
-	else if (senderName == "menu_sort_ascending") {
-		DkSettings::global.sortDir = DkSettings::sort_ascending;
-		modeChange = false;
-	}
-	else if (senderName == "menu_sort_descending") {
-		DkSettings::global.sortDir = DkSettings::sort_descending;
-		modeChange = false;
-	}
+		if (senderName == "menu_sort_filename")
+			DkSettings::global.sortMode = DkSettings::sort_filename;
+		else if (senderName == "menu_sort_date_created")
+			DkSettings::global.sortMode = DkSettings::sort_date_created;
+		else if (senderName == "menu_sort_date_modified")
+			DkSettings::global.sortMode = DkSettings::sort_date_modified;
+		else if (senderName == "menu_sort_random")
+			DkSettings::global.sortMode = DkSettings::sort_random;
+		else if (senderName == "menu_sort_ascending")
+			DkSettings::global.sortDir = DkSettings::sort_ascending;
+		else if (senderName == "menu_sort_descending")
+			DkSettings::global.sortDir = DkSettings::sort_descending;
 
-	if (viewport() && viewport()->getImageLoader()) 
-		viewport()->getImageLoader()->sort();
+		if (viewport() && viewport()->getImageLoader()) 
+			viewport()->getImageLoader()->sort();
+	}
 
 	for (int idx = 0; idx < sortActions.size(); idx++) {
 
-		if (modeChange && idx < menu_sort_ascending && sortActions.at(idx) != QObject::sender())
-			sortActions[idx]->setChecked(false);
-		else if (!modeChange && idx >= menu_sort_ascending && sortActions.at(idx) != QObject::sender())
-			sortActions[idx]->setChecked(false);
+		if (idx < menu_sort_ascending)
+			sortActions[idx]->setChecked(idx == DkSettings::global.sortMode);
+		else if (idx >= menu_sort_ascending)
+			sortActions[idx]->setChecked(idx-menu_sort_ascending == DkSettings::global.sortDir);
 	}
 }
 
@@ -2514,6 +2534,39 @@ void DkNoMacs::trainFormat() {
 	}
 
 
+}
+
+void DkNoMacs::downloadFile(const QUrl& url) {
+
+	if (!fileDownloader) {
+		fileDownloader = new FileDownloader(url, this);
+		connect(fileDownloader, SIGNAL(downloaded()), this, SLOT(fileDownloaded()));
+		qDebug() << "trying to download: " << url;
+	}
+	else
+		fileDownloader->downloadFile(url);
+
+}
+
+void DkNoMacs::fileDownloaded() {
+
+	if (!fileDownloader) {
+		qDebug() << "empty fileDownloader, where it should not be";
+		return;
+	}
+
+	QSharedPointer<QByteArray> ba = fileDownloader->downloadedData();
+
+	if (!ba || ba->isEmpty()) {
+		qDebug() << fileDownloader->getUrl() << " not downloaded...";
+		return;
+	}
+
+	DkBasicLoader loader;
+	if (loader.loadGeneral(QFileInfo(), ba, true))
+		viewport()->loadImage(loader.image());
+	else
+		viewport()->getController()->setInfo(tr("Sorry, I could not load: %1").arg(fileDownloader->getUrl().toString()));
 }
 
 void DkNoMacs::saveFile() {

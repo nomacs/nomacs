@@ -121,7 +121,7 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 	file.write(ba->data(), ba->size());
 	file.close();
 
-	qDebug() << "[DkMetaDataT] I saved: " << ba->size();
+	qDebug() << "[DkMetaDataT] I saved: " << ba->size() << " bytes";
 
 	return true;
 }
