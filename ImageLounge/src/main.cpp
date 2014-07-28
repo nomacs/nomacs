@@ -96,13 +96,18 @@ int main(int argc, char *argv[]) {
 	QStringList args = a.arguments();
 	nmc::DkSettings::initFileFilters();
 
-
+#ifdef WITH_PLUGINS
 	// initialize plugin paths -----------------------------------------
+	// TODO: change this path for linux
 	QDir pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
 	if (!pluginsDir.exists())
 		pluginsDir.mkpath(pluginsDir.absolutePath());
 
 	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
+#endif // WITH_PLUGINS
+
+
+
 
 #if !defined(QT_NO_DEBUG_OUTPUT)
 	pluginsDir = qApp->applicationDirPath() + "/plugins";
