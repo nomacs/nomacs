@@ -148,7 +148,6 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	} 
 
-
 	//if (!imgLoaded && (training || file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive)))) {
 
 	//	// load hdr here...
@@ -752,8 +751,11 @@ bool DkBasicLoader::loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	const unsigned short* imgPtr = (const unsigned short*)dataPtr;
 
 	int numCols = qCeil(sqrt(numElements));
-	cv::Mat allPatches((numCols-1)*guessedH, numCols*guessedW, CV_8UC1, Scalar(255));
+	int minusOneRow = (qCeil(sqrt(numElements)) != qFloor(sqrt(numElements))) ? 1 : 0;
 
+	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, Scalar(255));
+
+	// there is a bug somewhere - (for my files the last image is broken)
 	for (int idx = 0; idx < numElements-1; idx++) {
 
 		cv::Mat cPatch = getPatch(imgPtr + vecSize*idx+qCeil(idx*0.5), QSize(guessedW, guessedH), (idx+1)%2);
