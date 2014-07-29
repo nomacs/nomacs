@@ -255,6 +255,7 @@ void DkTrainDialog::accept() {
 		settings.setValue("ResourceSettings/userFilters", userFilters);
 		DkSettings::openFilters.append(tag);
 		DkSettings::fileFilters.append("*." + acceptedFile.suffix());
+		DkSettings::app.browseFilters += acceptedFile.suffix();
 	}
 
 	QDialog::accept();
