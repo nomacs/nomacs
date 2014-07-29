@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 	// initialize plugin paths -----------------------------------------
 #ifdef WIN32
 	QDir pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
-#elif
+#else
 	QDir pluginsDir = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/plugins/");
 #endif // WIN32
 
