@@ -2038,6 +2038,9 @@ void DkNoMacs::setFrameless(bool frameless) {
     } else {
 		DkSettings::app.appMode = DkSettings::mode_default;
     }
+	
+	DkSettings::save();
+	
 	bool started = process.startDetached(exe, args);
 
 	// close me if the new instance started
