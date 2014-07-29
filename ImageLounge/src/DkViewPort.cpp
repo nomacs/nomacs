@@ -1873,6 +1873,7 @@ void DkViewPort::loadFile(QFileInfo file) {
 	} else if (loader)
 		loader->load(file);
 
+	qDebug() << "sync mode: " << (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display);
 	if ((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display) && (hasFocus() || controller->hasFocus()) && loader->hasFile())
 		tcpLoadFile(0, file.absoluteFilePath());
 }

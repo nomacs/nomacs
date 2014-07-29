@@ -139,6 +139,16 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		if (imgLoaded) loader = roh_loader;
 
 	} 
+
+	// this loader is for OpenCV cascade training files
+	if (!imgLoaded && newSuffix.contains(QRegExp("(vec)", Qt::CaseInsensitive))) {
+
+		imgLoaded = loadPureRaw(file, ba);
+		if (imgLoaded) loader = roh_loader;
+
+	} 
+
+
 	//if (!imgLoaded && (training || file.suffix().contains(QRegExp("(hdr)", Qt::CaseInsensitive)))) {
 
 	//	// load hdr here...
@@ -670,6 +680,114 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	return false;
 }
+
+#ifdef WITH_OPENCV
+
+bool DkBasicLoader::loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, QSize s, int skipHeader) {
+
+	if (!ba)
+		ba = QSharedPointer<QByteArray>(new QByteArray());
+
+	// load from file?
+	if (ba->isEmpty())
+		ba = loadFileToBuffer(fileInfo);
+
+	if (ba->isEmpty())
+		return false;
+
+
+	const int* pData = (const int*)ba->constData();
+	int rIdx = 0;
+	int fileCount = pData[rIdx]; rIdx++;
+	int vecSize = pData[rIdx]; rIdx++;
+	rIdx++; // skip two shorts
+
+	int guessedW = 0;
+	int guessedH = 0;
+
+	// parse patch size from file
+	QString fName = fileInfo.fileName();
+	QStringList sections = fName.split(QRegExp("[-\\.]"));	
+
+	for (int idx = 0; idx < sections.size(); idx++) {
+
+		QString tmpSec = sections[idx];
+		qDebug() << "section: " << tmpSec;
+
+		int sIdx = tmpSec.indexOf("w");
+		if (tmpSec.contains("w"))
+			guessedW = tmpSec.remove("w").toInt();
+		else if (tmpSec.contains("h"))
+			guessedH = tmpSec.remove("h").toInt();
+	}
+
+	qDebug() << "patch size from filename: " << guessedW << " x " << guessedH;
+
+	if(vecSize > 0 && !guessedH && !guessedW) {
+		guessedW = cvFloor(sqrt((float) vecSize));
+		if(guessedW > 0)
+			guessedH = vecSize/guessedW;
+	}
+
+	if(guessedW <= 0 || guessedH <= 0 || guessedW * guessedH != vecSize) {
+		
+		// TODO: ask user
+		return false;
+	}
+	
+	int fSize = ba->size();
+	int numElements = 0;
+
+	// guess size
+	if (s.isEmpty()) {
+		double nEl = (fSize-64)/(vecSize*2);
+
+		if (qFloor(nEl) != qCeil(nEl))
+			return false;
+		numElements = qRound(nEl);
+	}
+
+	const int* dataPtr = (const int*)ba->constData();
+	dataPtr += rIdx;
+	const unsigned short* imgPtr = (const unsigned short*)dataPtr;
+
+	int numCols = qCeil(sqrt(numElements));
+	cv::Mat allPatches((numCols-1)*guessedH, numCols*guessedW, CV_8UC1, Scalar(255));
+
+	for (int idx = 0; idx < numElements-1; idx++) {
+
+		cv::Mat cPatch = getPatch(imgPtr + vecSize*idx+qCeil(idx*0.5), QSize(guessedW, guessedH), (idx+1)%2);
+		cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));
+
+		if (!cPatchAll.empty())
+			cPatch.copyTo(cPatchAll);
+	}
+
+	this->qImg = DkImage::mat2QImage(allPatches);
+	this->qImg = this->qImg.convertToFormat(QImage::Format_ARGB32);
+
+	return true;
+}
+
+Mat DkBasicLoader::getPatch(const unsigned short* dataPtr, QSize patchSize, int mod2) const {
+	
+	cv::Mat img(patchSize.height(), patchSize.width(), CV_16UC1, (void*)dataPtr);
+	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, Scalar(0));
+
+	// ok, take just the second byte
+	for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
+
+		unsigned char* ptr8U = img8U.ptr<unsigned char>(rIdx);
+		unsigned char* ptr16U = img.ptr<unsigned char>(rIdx);
+
+		for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
+			ptr8U[cIdx] = ptr16U[cIdx*2+mod2];
+		}
+	}
+
+	return img8U;
+}
+#endif
 
 void DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba) {
 
