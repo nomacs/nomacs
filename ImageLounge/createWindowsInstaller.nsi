@@ -167,30 +167,13 @@ Section "MainSection" SEC01#
 SectionEnd
 
 Function finishpageaction
-	
-	; DELETE REGISTRY ENTRIES FROM OLD VERSION
-	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "highlightColor"
-	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "invertZoom"
-	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "resetMatrix"
-	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "saveThumb"
-	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "thumbSize"
-	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "numFiles"
-	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "saveThumb"
-	
-	; DELETE OLD DLLs
-	Delete "$INSTDIR\opencv_imgproc220.dll"
-	Delete "$INSTDIR\opencv_core220.dll"
-	Delete "$INSTDIR\opencv_imgproc231.dll"
-	Delete "$INSTDIR\opencv_core231.dll"
-	Delete "$INSTDIR\opencv_imgproc242.dll"
-	Delete "$INSTDIR\opencv_core242.dll"
-	
+		
 	; RESET UPDATE FLAG
 	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
 	
 	Call RefreshShellIcons
 	
-	CreateShortCut "$DESKTOP\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
+	CreateShortCut "$DESKTOP\nomacs - Image Lounge.lnk" "$INSTDIR\nomacs.exe"
 FunctionEnd
 
 Function launchnomacs
@@ -212,6 +195,28 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\nomacs.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  
+	; DELETE REGISTRY ENTRIES FROM OLD VERSION
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "saveThumb"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\GlobalSettings\" "numFiles"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "saveThumb"
+
+	; some cleaning for the new settings (introduced in nomacs 2.0.2
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "highlightColor"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "bgColor"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "bgColorNomacs"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "iconColor"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\DisplaySettings\" "bgColorFrameless"
+	DeleteRegValue HKCU "Software\nomacs\Image Lounge\SlideShowSettings\" "backgroundColor"
+
+	; DELETE OLD DLLs
+	Delete "$INSTDIR\opencv_imgproc220.dll"
+	Delete "$INSTDIR\opencv_core220.dll"
+	Delete "$INSTDIR\opencv_imgproc231.dll"
+	Delete "$INSTDIR\opencv_core231.dll"
+	Delete "$INSTDIR\opencv_imgproc242.dll"
+	Delete "$INSTDIR\opencv_core242.dll"
+
 SectionEnd
 
 
@@ -262,8 +267,14 @@ Section Uninstall
 	; REMOVE plugins
 	Delete "$APPDATA\nomacs\plugins\*"
 	RMDir "$APPDATA\nomacs\plugins\"
+	
+	; REMOVE translations
+	Delete "$APPDATA\nomacs\translations\*"
+	RMDir "$APPDATA\nomacs\translations\"
+	
 	RMDir "$APPDATA\nomacs\"
 	
+	; REMOVE old translations
 	SetShellVarContext all ; point to ProgramData
 	Delete "$APPDATA\nomacs\translations\*"
 	RMDir "$APPDATA\nomacs\translations\"

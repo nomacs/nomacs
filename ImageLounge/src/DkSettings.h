@@ -308,6 +308,8 @@ public:
 	static MetaData& getMetaDataSettings();
 	static Resources& getResourceSettings();
 	static void initFileFilters();
+	static void loadTranslation(const QString& fileName, QTranslator& translator);
+	static QStringList getTranslationDirs();
 
 	static void load(bool force = false);
 	static void save(bool force = false);

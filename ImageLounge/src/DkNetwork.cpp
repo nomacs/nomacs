@@ -1381,16 +1381,17 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 	QDateTime lastModifiedRemote = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
 
-	QDir storageLocation;
+
 #ifdef  WIN32
-	TCHAR szPath[MAX_PATH];
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath))) {
-		QString path = szPath;
-		path += "/" + QCoreApplication::organizationName() + "/translations/"; 
-		storageLocation = QDir(path);
+	QDir storageLocation;
+	if (DkSettings::isPortable()) {
+		storageLocation = QDir(QCoreApplication::applicationDirPath());
+		storageLocation.cd("translations");
 	}
+	else
+		storageLocation = QDir(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
 #else
-	storageLocation = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+	QDir storageLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
 #endif //  WIN32
 
 	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
@@ -1403,7 +1404,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 			if (!storageLocation.mkpath(storageLocation.absolutePath())) {
 				qDebug() << "unable to create storage location ... aborting";
 				emit showUpdaterMessage(tr("Unable to update translation"), tr("update")); 
-				return; // TODO error message 
+				return;
 			}
 		}
 

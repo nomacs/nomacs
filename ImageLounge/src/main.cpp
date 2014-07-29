@@ -60,6 +60,42 @@
 #include <shlobj.h>
 #endif
 
+void createPluginsPath() {
+
+#ifdef WITH_PLUGINS
+	// initialize plugin paths -----------------------------------------
+#ifdef WIN32
+	QDir pluginsDir;
+	if (!nmc::DkSettings::isPortable())
+		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+	else
+		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+#else
+	QDir pluginsDir = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/plugins/");
+#endif // WIN32
+
+
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
+
+	// for debugging only
+#ifndef QT_NO_DEBUG_OUTPUT
+	pluginsDir = qApp->applicationDirPath() + "/plugins";
+
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
+
+	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
+
+#endif
+#endif // WITH_PLUGINS
+
+}
+
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
 #else
@@ -81,16 +117,13 @@ int main(int argc, char *argv[]) {
 	
 	//qDebug() << "settings: " << settings.fileName();
 
-	//int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
-	//nmc::DkSettings::app.currentAppMode = mode;
-
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
 #if !defined(Q_WS_MAC) && !defined(QT5)
 	QApplication::setGraphicsSystem("raster");
-#elif !defined(QT5)
-	if (mode != nmc::DkSettings::mode_frameless)
-		QApplication::setGraphicsSystem("raster");
+//#elif !defined(QT5)
+//	if (mode != nmc::DkSettings::mode_frameless)
+//		QApplication::setGraphicsSystem("raster");
 #endif
 
 	QApplication a(argc, (char**)argv);
@@ -103,37 +136,7 @@ int main(int argc, char *argv[]) {
 	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
 	nmc::DkSettings::app.currentAppMode = mode;
 
-	qDebug() << "app mode: " << mode;
-
-#ifdef WITH_PLUGINS
-	// initialize plugin paths -----------------------------------------
-#ifdef WIN32
-	QDir pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
-#else
-	QDir pluginsDir = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/plugins/");
-#endif // WIN32
-
-	
-	if (!pluginsDir.exists())
-		pluginsDir.mkpath(pluginsDir.absolutePath());
-
-	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
-#endif // WITH_PLUGINS
-
-
-
-
-#if !defined(QT_NO_DEBUG_OUTPUT)
-	pluginsDir = qApp->applicationDirPath() + "/plugins";
-
-	if (!pluginsDir.exists())
-		pluginsDir.mkpath(pluginsDir.absolutePath());
-
-	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
-#endif
-
-	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
-	// initialize plugin paths -----------------------------------------
+	createPluginsPath();
 
 	//// pong --------------------------------------------------------------------
 	//nmc::DkPong *p = new nmc::DkPong();
@@ -150,30 +153,12 @@ int main(int argc, char *argv[]) {
 	qDebug() << "\n";
 	// DEBUG --------------------------------------------------------------------
 
-
+	qDebug() << "data location: " << QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).absolutePath();
 	//QSettings settings;
-	QDir storageLocation;
-#ifdef  WIN32
-	TCHAR szPath[MAX_PATH];
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath))) {
-		QString path = szPath;
-		path += "/" + QCoreApplication::organizationName() + "/translations/"; 
-		storageLocation = QDir(path);
-	}
-#else
-	storageLocation = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
-#endif //  WIN32
 
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
-
 	QTranslator translator;
-	if (!storageLocation.exists() || !translator.load(translationName, qApp->applicationDirPath())) {
-		if (!translator.load(translationName, qApp->applicationDirPath())) {
-			QDir appDir = QDir(qApp->applicationDirPath());
-			if (!translator.load(translationName, appDir.filePath("../share/nomacs/translations/")) && !translationName.contains("_en"))
-				qDebug() << "unable to load translation: " << translationName;
-		}
-	}
+	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
 	
 	if (mode == nmc::DkSettings::mode_frameless) {

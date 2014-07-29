@@ -214,6 +214,7 @@ void DkPluginManager::loadPlugins() {
 		QDir pluginsDir(libPaths.at(idx));
 		
 		foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
+			qDebug() << "trying to load " << fileName << " from: " << pluginsDir.absolutePath();
 
 			QString shortFileName = fileName.split("/").last();
 			if (!loadedPluginFileNames.contains(shortFileName)) { // prevent double loading of the same plugin

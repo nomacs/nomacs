@@ -209,6 +209,37 @@ void DkSettings::initFileFilters() {
 
 }
 
+void DkSettings::loadTranslation(const QString& fileName, QTranslator& translator) {
+
+	QStringList translationDirs = getTranslationDirs();
+
+	for (int idx = 0; idx < translationDirs.size(); idx++) {
+
+		if (translator.load(fileName, translationDirs[idx])) {
+			qDebug() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			break;
+		}
+	}
+}
+
+QStringList DkSettings::getTranslationDirs() {
+
+	QStringList translationDirs;
+	if (!DkSettings::isPortable())
+		translationDirs.append(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
+	translationDirs.append(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+	
+	QDir p((qApp->applicationDirPath()));
+	translationDirs.append(p.absolutePath());
+	if (p.cd("translations"))
+		translationDirs.append(p.absolutePath());
+	p = QDir(qApp->applicationDirPath());
+	if (p.cd("../share/nomacs/translations/"))
+		translationDirs.append(p.absolutePath());
+
+	return translationDirs;
+}
+
 void DkSettings::load(bool force) {
 
 	setToDefaultSettings();
