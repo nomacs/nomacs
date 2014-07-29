@@ -740,6 +740,7 @@ bool DkBasicLoader::loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	// guess size
 	if (s.isEmpty()) {
 		double nEl = (fSize-64)/(vecSize*2);
+		nEl = (fSize-64-qCeil(nEl))/(vecSize*2)+1;	// opencv adds one byte per image - so we take care for this here
 
 		if (qFloor(nEl) != qCeil(nEl))
 			return false;
@@ -750,13 +751,14 @@ bool DkBasicLoader::loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	dataPtr += rIdx;
 	const unsigned short* imgPtr = (const unsigned short*)dataPtr;
 
-	int numCols = qCeil(sqrt(numElements));
-	int minusOneRow = (qCeil(sqrt(numElements)) != qFloor(sqrt(numElements))) ? 1 : 0;
+	double nRowsCols = sqrt(numElements);
+	int numCols = qCeil(nRowsCols);
+	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
 
 	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, Scalar(255));
 
 	// there is a bug somewhere - (for my files the last image is broken)
-	for (int idx = 0; idx < numElements-1; idx++) {
+	for (int idx = 0; idx < numElements; idx++) {
 
 		cv::Mat cPatch = getPatch(imgPtr + vecSize*idx+qCeil(idx*0.5), QSize(guessedW, guessedH), (idx+1)%2);
 		cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));

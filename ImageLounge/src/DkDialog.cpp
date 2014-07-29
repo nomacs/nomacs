@@ -187,7 +187,6 @@ void DkTrainDialog::openFile() {
 		pathEdit->setText(filePath);
 		loadFile(filePath);
 	}
-
 }
 
 void DkTrainDialog::userFeedback(const QString& msg, bool error) {
