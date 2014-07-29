@@ -82,12 +82,16 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 	platform = " [x86] ";
 #endif
 
-	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  "<br>"
+	if (!DkSettings::isPortable())
+		qDebug() << "nomacs is not portable: " << DkSettings::getSettingsFile().absoluteFilePath();
+
+	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  "<br>" %
 #ifdef WITH_OPENCV
 		"RAW support: Yes"
 #else
 		"RAW support: No"
-#endif  
+#endif  		
+		% (DkSettings::isPortable() ? tr("<br>Portable") : "")
 		);
 
 	versionLabel->move(360, 280);
@@ -249,7 +253,7 @@ void DkTrainDialog::accept() {
 		QString tag = name + " (*." + acceptedFile.suffix() + ")";
 
 		// load user filters
-		QSettings settings;
+		QSettings& settings = Settings::instance().getSettings();
 		QStringList userFilters = settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 		userFilters.append(tag);
 		settings.setValue("ResourceSettings/userFilters", userFilters);
@@ -315,7 +319,7 @@ DkAppManager::~DkAppManager() {
 
 void DkAppManager::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("DkAppManager");
 	// clear it first
 	settings.remove("Apps");
@@ -329,11 +333,12 @@ void DkAppManager::saveSettings() {
 		settings.setValue("objectName", apps.at(idx)->objectName());
 	}
 	settings.endArray();
+	settings.endGroup();
 }
 
 void DkAppManager::loadSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("DkAppManager");
 	
 	int size = settings.beginReadArray("Apps");
@@ -352,6 +357,7 @@ void DkAppManager::loadSettings() {
 
 	}
 	settings.endArray();
+	settings.endGroup();
 }
 
 QVector<QAction* >& DkAppManager::getActions() {
@@ -937,7 +943,7 @@ void DkResizeDialog::accept() {
 
 void DkResizeDialog::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
 	settings.setValue("ResampleMethod", resampleBox->currentIndex());
@@ -952,6 +958,7 @@ void DkResizeDialog::saveSettings() {
 		settings.setValue("Width", 0);
 		settings.setValue("Height", 0);
 	}
+	settings.endGroup();
 }
 
 
@@ -959,7 +966,7 @@ void DkResizeDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
 	resampleBox->setCurrentIndex(settings.value("ResampleMethod", ipl_cubic).toInt());
@@ -985,6 +992,7 @@ void DkResizeDialog::loadSettings() {
 		updateWidth();
 		updateHeight();
 	}
+	settings.endGroup();
 
 }
 
@@ -2020,7 +2028,7 @@ void DkShortcutsModel::saveActions() {
 	if (!rootItem)
 		return;
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("CustomShortcuts");
 
 	// loop all menu entries
@@ -2051,6 +2059,7 @@ void DkShortcutsModel::saveActions() {
 			}
 		}
 	}
+	settings.endGroup();
 
 }
 

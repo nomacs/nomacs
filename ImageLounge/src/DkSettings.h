@@ -31,6 +31,8 @@
 #include <QColor>
 #include <QDate>
 #include <QTranslator>
+#include <QFileInfo>
+#include <QSettings>
 
 #include <QTableView>
 #include <QStandardItemModel>
@@ -48,6 +50,8 @@
 #endif
 #endif
 
+
+
 namespace nmc {
 
 class DkFileFilterHandling {
@@ -63,6 +67,17 @@ protected:
 	void setAsDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
 };
 
+class DllExport Settings {
+
+public:
+	static Settings& instance();
+	QSettings& getSettings();
+	
+private:
+	Settings();
+
+	QSharedPointer<QSettings> m_settings;
+};
 
 class DllExport DkSettings {
 
@@ -297,6 +312,9 @@ public:
 	static void load(bool force = false);
 	static void save(bool force = false);
 	static void setToDefaultSettings();
+
+	static bool isPortable();
+	static QFileInfo getSettingsFile();
 
 	static App& app;
 	static Global& global;

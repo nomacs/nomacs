@@ -2039,7 +2039,7 @@ void DkExplorer::closeEvent(QCloseEvent* event) {
 
 void DkExplorer::writeSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 	
 	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
@@ -2049,12 +2049,13 @@ void DkExplorer::writeSettings() {
 	}
 
 	settings.setValue("ReadOnly", fileModel->isReadOnly());
+	settings.endGroup();
 	
 }
 
 void DkExplorer::readSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
 	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
@@ -2070,6 +2071,7 @@ void DkExplorer::readSettings() {
 	}
 
 	fileModel->setReadOnly(settings.value("ReadOnly", false).toBool());
+	settings.endGroup();
 }
 
 // DkOverview --------------------------------------------------------------------
@@ -5363,7 +5365,7 @@ void DkRecentFilesWidget::updateFiles() {
 
 	if (fileLabels.empty()) {
 		filesTitle->show();
-		filesLayout->setRowStretch(recentFiles.size(), 100);
+		filesLayout->setRowStretch(recentFiles.size()+2, 100);
 		filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
 		//filesLayout->addItem(new QSpacerItem(30,10), 1, 0);
 	}
@@ -5392,6 +5394,7 @@ void DkRecentFilesWidget::updateFiles() {
 	// load next
 	if ((rFileIdx/(float)columns*DkSettings::display.thumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < recentFiles.size()) {
 		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx), this);
+		cLabel->hide();
 		cLabel->setStyleSheet(QString("QLabel{background-color: rgba(0,0,0,0), border: solid 1px black;}"));
 		
 		fileLabels.append(cLabel);

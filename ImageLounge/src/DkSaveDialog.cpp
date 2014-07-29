@@ -83,12 +83,13 @@ DkCompressDialog::~DkCompressDialog() {
 
 void DkCompressDialog::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 	settings.setValue("Compression" + QString::number(dialogMode), getCompression());
 	
 	if (dialogMode != webp_dialog)
 		settings.setValue("BackgroundColor" + QString::number(dialogMode), getBackgroundColor());
+	settings.endGroup();
 }
 
 
@@ -96,7 +97,7 @@ void DkCompressDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
 	bgCol = settings.value("BackgroundColor" + QString::number(dialogMode), QColor(255,255,255)).value<QColor>();
@@ -105,6 +106,7 @@ void DkCompressDialog::loadSettings() {
 	slider->setValue(compression);
 	colChooser->setColor(bgCol);
 	newBgCol();
+	settings.endGroup();
 }
 
 void DkCompressDialog::init() {

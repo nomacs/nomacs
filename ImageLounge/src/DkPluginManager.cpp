@@ -223,7 +223,7 @@ void DkPluginManager::loadPlugins() {
 		}
 	}
 	
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	int i = 0;
 
 	settings.remove("PluginSettings/filePaths");
@@ -241,7 +241,7 @@ void DkPluginManager::loadPreviouslyInstalledPlugins() {
 
 	previouslyInstalledPlugins = QMap<QString, QString>();
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	int size = settings.beginReadArray("PluginSettings/filePaths");
 	for (int i = 0; i < size; i++) {
 		settings.setArrayIndex(i);
@@ -262,7 +262,7 @@ void DkPluginManager::loadEnabledPlugins() {
 
 	QMap<QString, QString> pluginsPaths = QMap<QString, QString>();
 	QList<QString> disabledPlugins = QList<QString>();
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 
 	int size = settings.beginReadArray("PluginSettings/filePaths");
 	for (int i = 0; i < size; i++) {
@@ -927,7 +927,7 @@ void DkInstalledPluginsModel::loadPluginsEnabledSettings() {
 
 	pluginsEnabled.clear();
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	int size = settings.beginReadArray("PluginSettings/disabledPlugins");
 	for (int i = 0; i < size; i++) {
 
@@ -939,7 +939,7 @@ void DkInstalledPluginsModel::loadPluginsEnabledSettings() {
 
 void DkInstalledPluginsModel::savePluginsEnabledSettings() {
 	
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.remove("PluginSettings/disabledPlugins");
 	
 	if (pluginsEnabled.size() > 0) {

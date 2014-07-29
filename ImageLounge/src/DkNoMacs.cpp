@@ -76,8 +76,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	saveSettings = true;
 
 	// load settings
-	DkSettings* settings = new DkSettings();
-	settings->load();
+	DkSettings::load();
 	
 	openDialog = 0;
 	saveDialog = 0;
@@ -114,10 +113,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	resize(850, 504);
 	setMinimumSize(20, 20);
-
-	if (settings)
-		delete settings;
-
 }
 
 DkNoMacs::~DkNoMacs() {
@@ -1293,7 +1288,7 @@ void DkNoMacs::createActions() {
 
 void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("CustomShortcuts");
 
 	for (int idx = 0; idx < actions.size(); idx++) {
@@ -1305,12 +1300,14 @@ void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
 		// assign widget shortcuts to all of them
 		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	}
+
+	settings.endGroup();
 }
 
 void DkNoMacs::assignCustomPluginShortcuts() {
 #ifdef WITH_PLUGINS
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("CustomPluginShortcuts");
 	QStringList psKeys = settings.allKeys();
 	settings.endGroup();
@@ -1336,6 +1333,7 @@ void DkNoMacs::assignCustomPluginShortcuts() {
 		settings.endGroup();
 		viewport()->addActions(pluginsDummyActions.toList());
 	}
+
 #endif // WITH_PLUGINS
 }
 
@@ -1494,7 +1492,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 	//showNormal();
 
 	if (saveSettings) {
-		QSettings settings;
+		QSettings& settings = Settings::instance().getSettings();
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
 		
@@ -1957,7 +1955,7 @@ void DkNoMacs::unsharpMask() {
 void DkNoMacs::readSettings() {
 	
 	qDebug() << "reading settings...";
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	restoreGeometry(settings.value("geometry").toByteArray());
 	restoreState(settings.value("windowState").toByteArray());
 }
@@ -2269,7 +2267,7 @@ void DkNoMacs::showExplorer(bool show) {
 	if (!explorer) {
 
 		// get last location
-		QSettings settings;
+		QSettings& settings = Settings::instance().getSettings();
 		int dockLocation = settings.value("explorerLocation", Qt::LeftDockWidgetArea).toInt();
 		
 		explorer = new DkExplorer(tr("File Explorer"));
@@ -3133,7 +3131,7 @@ void DkNoMacs::featureRequest() {
 
 void DkNoMacs::cleanSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.clear();
 
 	readSettings();
@@ -3212,8 +3210,8 @@ void DkNoMacs::showRecentFiles(bool show) {
 
 void DkNoMacs::onWindowLoaded() {
 
-	QSettings s;
-	bool firstTime = s.value("AppSettings/firstTime", true).toBool();
+	QSettings& settings = Settings::instance().getSettings();
+	bool firstTime = settings.value("AppSettings/firstTime", true).toBool();
 
 	if (!firstTime)
 		return;
@@ -3222,7 +3220,7 @@ void DkNoMacs::onWindowLoaded() {
 	DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
 	wecomeDialog->exec();
 
-	s.setValue("AppSettings/firstTime", false);
+	settings.setValue("AppSettings/firstTime", false);
 
 	if (wecomeDialog->isLanguageChanged())
 		restart();
@@ -3731,7 +3729,7 @@ void DkNoMacs::addPluginsToMenu() {
 
 	QMap<QString, bool> pluginsEnabled = QMap<QString, bool>();
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	int size = settings.beginReadArray("PluginSettings/disabledPlugins");
 	for (int i = 0; i < size; ++i) {
 		settings.setArrayIndex(i);
@@ -3775,7 +3773,7 @@ void DkNoMacs::addPluginsToMenu() {
 void DkNoMacs::savePluginActions(QVector<QAction *> actions) {
 #ifdef WITH_PLUGINS
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("CustomPluginShortcuts");
 	settings.remove("");
 	for (int i = 0; i < actions.size(); i++)

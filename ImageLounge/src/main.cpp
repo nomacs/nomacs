@@ -42,6 +42,7 @@
 
 #include "DkNoMacs.h"
 #include "DkSettings.h"
+
 //#include "DkPong.h"
 //#include "DkUtils.h"
 //#include "DkTimer.h"
@@ -58,7 +59,6 @@
 #ifdef WIN32
 #include <shlobj.h>
 #endif
-
 
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
@@ -79,9 +79,10 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
 	
-	QSettings settings;
-	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
-	nmc::DkSettings::app.currentAppMode = mode;
+	//qDebug() << "settings: " << settings.fileName();
+
+	//int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
+	//nmc::DkSettings::app.currentAppMode = mode;
 
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
@@ -95,6 +96,14 @@ int main(int argc, char *argv[]) {
 	QApplication a(argc, (char**)argv);
 	QStringList args = a.arguments();
 	nmc::DkSettings::initFileFilters();
+	QSettings& settings = nmc::Settings::instance().getSettings();
+	
+	nmc::DkSettings::load();
+
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
+	nmc::DkSettings::app.currentAppMode = mode;
+
+	qDebug() << "app mode: " << mode;
 
 #ifdef WITH_PLUGINS
 	// initialize plugin paths -----------------------------------------
@@ -167,18 +176,18 @@ int main(int argc, char *argv[]) {
 	}
 	a.installTranslator(&translator);
 	
-	if (mode == nmc::DkSettings::mode_frameless) {
+	if (nmc::DkSettings::app.appMode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
 	}
-	else if (mode == nmc::DkSettings::mode_contrast) {
+	else if (nmc::DkSettings::app.appMode == nmc::DkSettings::mode_contrast) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsContrast());
 		qDebug() << "this is the contrast nomacs...";
 	}
 	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
-	if (args.size() > 1)
+	if (args.size() > 1 && QFileInfo(args[1]).exists())
 		w->loadFile(QFileInfo(args[1]));	// update folder + be silent
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
