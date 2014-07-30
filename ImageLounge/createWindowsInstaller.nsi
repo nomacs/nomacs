@@ -166,13 +166,7 @@ Section "MainSection" SEC01#
   
 SectionEnd
 
-Function finishpageaction
-		
-	; RESET UPDATE FLAG
-	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
-	
-	Call RefreshShellIcons
-	
+Function finishpageaction	
 	CreateShortCut "$DESKTOP\nomacs - Image Lounge.lnk" "$INSTDIR\nomacs.exe"
 FunctionEnd
 
@@ -216,6 +210,11 @@ Section -Post
 	Delete "$INSTDIR\opencv_core231.dll"
 	Delete "$INSTDIR\opencv_imgproc242.dll"
 	Delete "$INSTDIR\opencv_core242.dll"
+	
+	; RESET UPDATE FLAG
+	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
+	
+	Call RefreshShellIcons
 
 SectionEnd
 

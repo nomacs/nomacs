@@ -1828,12 +1828,14 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 	//pd->setWindowModality(Qt::WindowModal);
 
 	connect(this, SIGNAL(numFilesSignal(int)), pd, SLOT(setValue(int)));
+	connect(pd, SIGNAL(canceled()), this, SLOT(stopProgress()));
 
 	pd->show();
 
 	this->forceSave = forceSave;
 	this->images = images;
 	loadNext();
+
 }
 
 void DkThumbsSaver::thumbLoaded(bool loaded) {
@@ -1855,6 +1857,9 @@ void DkThumbsSaver::thumbLoaded(bool loaded) {
 
 void DkThumbsSaver::loadNext() {
 	
+	if (stop)
+		return;
+
 	int missing = DkSettings::resources.maxThumbsLoading-DkSettings::resources.numThumbsLoading;
 	int numLoading = cLoadIdx+missing;
 	int force = (forceSave) ? DkThumbNail::force_save_thumb : DkThumbNail::save_thumb;
