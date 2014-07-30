@@ -247,6 +247,28 @@ void DkSettings::load(bool force) {
 	QSettings& settings = Settings::instance().getSettings();
 	qDebug() << "loading settings from: " << settings.fileName();
 
+	// fix from nomacs 2.0 to 2.0.2 - delete old color values
+	if (settings.value("highlightColor", 0).value<QColor>().isValid()) {
+		settings.remove("highlightColor");
+		qDebug() << "highlight color removed from settings";
+	}
+	if (settings.value("iconColor", 0).value<QColor>().isValid()) {
+		settings.remove("iconColor");
+		qDebug() << "iconColor removed from settings";
+	}
+	if (settings.value("backgroundColor", 0).value<QColor>().isValid()) {
+		settings.remove("backgroundColor");
+		qDebug() << "backgroundColor removed from settings";
+	}
+	if (settings.value("bgColor", 0).value<QColor>().isValid()) {
+		settings.remove("bgColor");
+		qDebug() << "bgColor removed from settings";
+	}
+	if (settings.value("bgColorNomacs", 0).value<QColor>().isValid()) {
+		settings.remove("bgColorNomacs");
+		qDebug() << "bgColorNomacs removed from settings";
+	}
+
 	settings.beginGroup("AppSettings");
 	
 	app_p.showMenuBar = settings.value("showMenuBar", app_p.showMenuBar).toBool();
@@ -316,14 +338,10 @@ void DkSettings::load(bool force) {
 
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
-	if (!settings.value("highlightColor", display_p.highlightColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
-		display_p.highlightColor = QColor::fromRgba(settings.value("highlightColor", display_p.highlightColor.rgba()).toInt());
-	if (!settings.value("bgColor", display_p.bgColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
-		display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColor", display_p.bgColorWidget.rgba()).toInt());
-	if (!settings.value("bgColorNomacs", display_p.bgColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
-		display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacs", display_p.bgColor.rgba()).toInt());
-	if (!settings.value("iconColor", display_p.iconColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
-		display_p.iconColor = QColor::fromRgba(settings.value("iconColor", display_p.iconColor.rgba()).toInt());
+	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColor", display_p.highlightColor.rgba()).toInt());
+	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColor", display_p.bgColorWidget.rgba()).toInt());
+	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacs", display_p.bgColor.rgba()).toInt());
+	display_p.iconColor = QColor::fromRgba(settings.value("iconColor", display_p.iconColor.rgba()).toInt());
 
 	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFrameless", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
@@ -358,8 +376,7 @@ void DkSettings::load(bool force) {
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
 	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
 	slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
-	if (!settings.value("backgroundColor", slideShow.backgroundColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
-		slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColor", slideShow_p.backgroundColor.rgba()).toInt());
+	slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColor", slideShow_p.backgroundColor.rgba()).toInt());
 	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
 
