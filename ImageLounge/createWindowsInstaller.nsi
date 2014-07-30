@@ -212,6 +212,7 @@ Section -Post
 	Delete "$INSTDIR\opencv_core231.dll"
 	Delete "$INSTDIR\opencv_imgproc242.dll"
 	Delete "$INSTDIR\opencv_core242.dll"
+	Delete "$INSTDIR\nomacs_*.qm"
 	
 	; RESET UPDATE FLAG
 	WriteRegStr HKCU "Software\nomacs\Image Lounge\SynchronizeSettings\" "updateDialogShown" "false"
@@ -252,6 +253,7 @@ FunctionEnd
 
 Section Uninstall
 	Delete "$INSTDIR\${PRODUCT_NAME}.url"
+	Delete "$INSTDIR\translations\*"
 	Delete "$INSTDIR\imageformats\*"
 	Delete "$INSTDIR\*.dll"
 	Delete "$INSTDIR\*.exe"
@@ -289,6 +291,7 @@ Section Uninstall
 		
 	RMDir "$SMPROGRAMS\nomacs - image lounge"
 	RMDir "$INSTDIR\imageformats"
+	RMDir "$INSTDIR\translations"
 	RMDir "$INSTDIR"
 
 	DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
