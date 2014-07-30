@@ -247,28 +247,6 @@ void DkSettings::load(bool force) {
 	QSettings& settings = Settings::instance().getSettings();
 	qDebug() << "loading settings from: " << settings.fileName();
 
-	// fix from nomacs 2.0 to 2.0.2 - delete old color values
-	if (settings.value("highlightColor", 0).value<QColor>().isValid()) {
-		settings.remove("highlightColor");
-		qDebug() << "highlight color removed from settings";
-	}
-	if (settings.value("iconColor", 0).value<QColor>().isValid()) {
-		settings.remove("iconColor");
-		qDebug() << "iconColor removed from settings";
-	}
-	if (settings.value("backgroundColor", 0).value<QColor>().isValid()) {
-		settings.remove("backgroundColor");
-		qDebug() << "backgroundColor removed from settings";
-	}
-	if (settings.value("bgColor", 0).value<QColor>().isValid()) {
-		settings.remove("bgColor");
-		qDebug() << "bgColor removed from settings";
-	}
-	if (settings.value("bgColorNomacs", 0).value<QColor>().isValid()) {
-		settings.remove("bgColorNomacs");
-		qDebug() << "bgColorNomacs removed from settings";
-	}
-
 	settings.beginGroup("AppSettings");
 	
 	app_p.showMenuBar = settings.value("showMenuBar", app_p.showMenuBar).toBool();
@@ -338,12 +316,12 @@ void DkSettings::load(bool force) {
 
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
-	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColor", display_p.highlightColor.rgba()).toInt());
-	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColor", display_p.bgColorWidget.rgba()).toInt());
-	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacs", display_p.bgColor.rgba()).toInt());
-	display_p.iconColor = QColor::fromRgba(settings.value("iconColor", display_p.iconColor.rgba()).toInt());
+	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
+	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.bgColorWidget.rgba()).toInt());
+	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
+	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
 
-	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFrameless", display_p.bgColorFrameless.rgba()).toInt());
+	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
 	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
@@ -376,7 +354,7 @@ void DkSettings::load(bool force) {
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
 	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
 	slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
-	slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColor", slideShow_p.backgroundColor.rgba()).toInt());
+	slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColorRGBA", slideShow_p.backgroundColor.rgba()).toInt());
 	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
 
@@ -534,15 +512,15 @@ void DkSettings::save(bool force) {
 	if (!force && display_p.invertZoom != display_d.invertZoom)
 		settings.setValue("invertZoom",display_p.invertZoom);
 	if (!force && display_p.highlightColor != display_d.highlightColor)
-		settings.setValue("highlightColor", display_p.highlightColor.rgba());
+		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
 	if (!force && display_p.bgColorWidget != display_d.bgColorWidget)
-		settings.setValue("bgColor", display_p.bgColorWidget.rgba());
+		settings.setValue("bgColorWidgetRGBA", display_p.bgColorWidget.rgba());
 	if (!force && display_p.bgColor != display_d.bgColor)
-		settings.setValue("bgColorNoMacs", display_p.bgColor.rgba());
+		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
 	if (!force && display_p.iconColor != display_d.iconColor)
-		settings.setValue("iconColor", display_p.iconColor.rgba());
+		settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
 	if (!force && display_p.bgColorFrameless != display_d.bgColorFrameless)
-		settings.setValue("bgColorFrameless", display_p.bgColorFrameless.rgba());
+		settings.setValue("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba());
 	if (!force && display_p.thumbSize != display_d.thumbSize)
 		settings.setValue("thumbSize", display_p.thumbSize);
 	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
@@ -594,7 +572,7 @@ void DkSettings::save(bool force) {
 	if (!force && slideShow_p.display != slideShow_d.display)
 		settings.setValue("display", slideShow_p.display);
 	if (!force && slideShow_p.backgroundColor != slideShow_d.backgroundColor)
-		settings.setValue("backgroundColor", slideShow_p.backgroundColor.rgba());
+		settings.setValue("backgroundColorRGBA", slideShow_p.backgroundColor.rgba());
 	if (!force && slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
 
