@@ -112,6 +112,13 @@ else()
 	message(STATUS  "\nInfo: Could not find the correct msvcp libraries. You have to copy them manually to ReallyRelease if you want to distribute nomacs")
 endif()
 
+# copy translation files after each build
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+foreach(QM ${NOMACS_QM})
+	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+endforeach(QM)
+
+
 # set properties for Visual Studio Projects
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;ReallyRelease" CACHE STRING "limited configs" FORCE)
 add_definitions(/Zc:wchar_t-)
