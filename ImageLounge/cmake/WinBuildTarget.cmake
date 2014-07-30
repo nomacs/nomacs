@@ -82,6 +82,15 @@ else()
 	file(COPY ${QT_DLL_PATH_tmp}//libEGLd.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 endif(NOT ENABLE_QT5)
 
+# create settings file for portable version while working
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Release/settings.nfo)
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Release/settings.nfo "")
+endif()
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Debug/settings.nfo)
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Debug/settings.nfo "")
+endif()
+
+
 # copy msvcpXXX.dll to Really Release
 # todo: visual studio 2013
 if (CMAKE_GENERATOR STREQUAL "Visual Studio 11" OR  CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64")
