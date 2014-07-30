@@ -889,7 +889,7 @@ void DkImageLoader::updateHistory() {
 
 	// sync with other instances
 	QSettings& settings = Settings::instance().getSettings();
-	settings.beginGroup("AppSettings");
+	settings.beginGroup("GlobalSettings");
 	DkSettings::global.recentFolders = settings.value("recentFolders", DkSettings::global.recentFolders).toStringList();
 	DkSettings::global.recentFiles = settings.value("recentFiles", DkSettings::global.recentFiles).toStringList();
 

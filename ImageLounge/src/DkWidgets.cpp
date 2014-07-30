@@ -805,7 +805,6 @@ void DkThumbLabel::updateLabel() {
 		pm = QPixmap::fromImage(thumb->getImage());
 
 		if (DkSettings::display.displaySquaredThumbs) {
-			// TODO: add setting
 			QRect r(QPoint(), pm.size());
 
 			if (r.width() > r.height()) {
@@ -816,6 +815,7 @@ void DkThumbLabel::updateLabel() {
 				r.setY(qFloor((r.height()-r.width())*0.5f));
 				r.setHeight(r.width());
 			}
+
 			pm = pm.copy(r);
 		}
 	}
@@ -946,7 +946,7 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		noSelOption.state &= ~QStyle::State_Selected;
 	}
 
-	painter->setRenderHint(QPainter::SmoothPixmapTransform);
+	painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 	icon.paint(painter, &noSelOption, widget);
 	//text.paint(painter, &noSelOption, widget);
 
@@ -1843,7 +1843,7 @@ void DkThumbsSaver::thumbLoaded(bool loaded) {
 	numSaved++;
 	emit numFilesSignal(numSaved);
 
-	if (numSaved == images.size()-1 || stop) {
+	if (numSaved == images.size() || stop) {
 		if (pd) {
 			pd->close();
 			pd->deleteLater();
