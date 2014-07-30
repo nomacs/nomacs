@@ -67,8 +67,6 @@ DkImageLoader::~DkImageLoader() {
 
 	//delete dirWatcher;	// needed?
 
-	qDebug() << "dir open: " << dir.absolutePath();
-	qDebug() << "filepath: " << saveDir.absolutePath();
 }
 
 /**
