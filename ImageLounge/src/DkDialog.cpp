@@ -220,7 +220,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 	DkBasicLoader basicLoader;
 	basicLoader.setTraining(true);
 
-	bool imgLoaded = basicLoader.loadGeneral(fileInfo);
+	bool imgLoaded = basicLoader.loadGeneral(fileInfo, true);
 
 	if (!imgLoaded) {
 		viewport->setImage(QImage());	// remove the image
@@ -2924,7 +2924,7 @@ void DkExportTiffDialog::setFile(const QFileInfo& file) {
 	tiffLabel->setText(file.absoluteFilePath());
 	fileEdit->setText(file.baseName());
 
-	loader.loadGeneral(cFile);
+	loader.loadGeneral(cFile, true);
 	viewport->setImage(loader.image());
 
 	enableTIFFSave(loader.getNumPages() > 1);
@@ -3130,7 +3130,7 @@ void DkUnsharpDialog::setImage(const QImage& img) {
 void DkUnsharpDialog::setFile(const QFileInfo& file) {
 
 	DkBasicLoader loader;
-	loader.loadGeneral(file);
+	loader.loadGeneral(file, true);
 	setImage(loader.image());
 }
 
@@ -3596,7 +3596,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	// keeps track of the weights
 	cv::Mat cc(numPatches.height(), numPatches.width(), CV_32FC1);
 	cc.setTo(0);
-	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);;	// tells us if we have already computed the real patch
+	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);	// tells us if we have already computed the real patch
 
 	filesUsed.resize(numPatches.height()*numPatches.width());
 
@@ -4037,7 +4037,7 @@ void DkMosaicDialog::setFile(const QFileInfo& file) {
 	fileLabel->setText(file.absoluteFilePath());
 	//filterEdit->setText(file.baseName());
 
-	loader.loadGeneral(cFile);
+	loader.loadGeneral(cFile, true);
 	viewport->setImage(loader.image());
 
 	enableMosaicSave(loader.hasImage());

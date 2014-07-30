@@ -932,7 +932,7 @@ void DkImageLoader::updateHistory() {
 
 	// sync with other instances
 	settings.setValue("recentFolders", DkSettings::global.recentFolders);
-	settings.value("recentFiles", DkSettings::global.recentFiles);
+	settings.setValue("recentFiles", DkSettings::global.recentFiles);
 	settings.endGroup();
 
 	//DkSettings s = DkSettings();

@@ -316,10 +316,14 @@ void DkSettings::load(bool force) {
 
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
-	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColor", display_p.highlightColor.rgba()).toInt());
-	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColor", display_p.bgColorWidget.rgba()).toInt());
-	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacs", display_p.bgColor.rgba()).toInt());
-	display_p.iconColor = QColor::fromRgba(settings.value("iconColor", display_p.iconColor.rgba()).toInt());
+	if (!settings.value("highlightColor", display_p.highlightColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
+		display_p.highlightColor = QColor::fromRgba(settings.value("highlightColor", display_p.highlightColor.rgba()).toInt());
+	if (!settings.value("bgColor", display_p.bgColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
+		display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColor", display_p.bgColorWidget.rgba()).toInt());
+	if (!settings.value("bgColorNomacs", display_p.bgColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
+		display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacs", display_p.bgColor.rgba()).toInt());
+	if (!settings.value("iconColor", display_p.iconColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
+		display_p.iconColor = QColor::fromRgba(settings.value("iconColor", display_p.iconColor.rgba()).toInt());
 
 	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFrameless", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
@@ -354,7 +358,8 @@ void DkSettings::load(bool force) {
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
 	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
 	slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
-	slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColor", slideShow_p.backgroundColor.rgba()).toInt());
+	if (!settings.value("backgroundColor", slideShow.backgroundColor).value<QColor>().isValid())	// fixes changes from QColor to int (needed for portable version)
+		slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColor", slideShow_p.backgroundColor.rgba()).toInt());
 	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
 
