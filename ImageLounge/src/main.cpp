@@ -79,19 +79,10 @@ void createPluginsPath() {
 		pluginsDir.mkpath(pluginsDir.absolutePath());
 
 	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
-
-	// for debugging only
-#ifndef QT_NO_DEBUG_OUTPUT
-	pluginsDir = qApp->applicationDirPath() + "/plugins";
-
-	if (!pluginsDir.exists())
-		pluginsDir.mkpath(pluginsDir.absolutePath());
-
-	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
-
+	qDebug() << "plugins dir set to: " << nmc::DkSettings::global.pluginsDir;
+	
 	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
 
-#endif
 #endif // WITH_PLUGINS
 
 }

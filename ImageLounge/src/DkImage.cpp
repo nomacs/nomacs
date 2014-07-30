@@ -1581,8 +1581,12 @@ bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 		return false;
 
 	QString fileName = fInfo.fileName();
-	qDebug() << "filename: " << fileName;
-	
+
+	return hasValidSuffix(fileName);
+}
+
+bool DkImageLoader::hasValidSuffix(const QString& fileName) {
+
 	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
 
 		QRegExp exp = QRegExp(DkSettings::fileFilters.at(idx), Qt::CaseInsensitive);
@@ -1591,10 +1595,7 @@ bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 			return true;
 	}
 
-	printf("I did not accept... honestly...\n");
-
 	return false;
-
 }
 
 ///**

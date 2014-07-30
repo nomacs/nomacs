@@ -16,7 +16,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs"
-!define PRODUCT_VERSION "2.0 [x64]"
+!define PRODUCT_VERSION "2.0.2 [x64]"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -135,8 +135,6 @@ Section "MainSection" SEC01#
   CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
   CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
   
-  File "${BUILD_DIR}\..\nomacs_*.qm"
-  
   File "${BUILD_DIR}\libnomacs.dll"
   File "${BUILD_DIR}\exiv2.dll"
   File "${BUILD_DIR}\libexpat.dll"
@@ -161,6 +159,10 @@ Section "MainSection" SEC01#
   File "${README_DIR}\LICENSE.GPLv3"
   File "${README_DIR}\LICENSE.LGPL"
   File "${README_DIR}\LICENSE.OPENCV"
+  
+  SetOutPath "$INSTDIR\translations"
+  File "${BUILD_DIR}\translations\nomacs_*.qm"
+  
   SetOutPath "$INSTDIR\imageformats"
   File "${BUILD_DIR}\imageformats\*"
   

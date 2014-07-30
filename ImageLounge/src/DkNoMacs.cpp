@@ -1706,7 +1706,7 @@ void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
 			event->acceptProposedAction();
 		else if (file.isDir())
 			event->acceptProposedAction();
-		else if (event->mimeData()->urls().at(0).isValid())
+		else if (event->mimeData()->urls().at(0).isValid() && DkImageLoader::hasValidSuffix(event->mimeData()->urls().at(0).toString()))
 			event->acceptProposedAction();
 		
 	}
@@ -1826,7 +1826,7 @@ void DkNoMacs::pasteImage() {
 		QFileInfo fInfo(url.toLocalFile());
 		if (DkImageLoader::isValid(fInfo))
 			viewport()->loadFile(fInfo);
-		else if (url.isValid())
+		else if (url.isValid() && DkImageLoader::hasValidSuffix(url.toString()))
 			downloadFile(url);
 
 	}

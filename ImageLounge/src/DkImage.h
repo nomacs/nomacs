@@ -150,6 +150,7 @@ public:
 	QStringList folderKeywords;		// are deleted if a new folder is opened
 
 	static bool isValid(const QFileInfo& fileInfo);
+	static bool hasValidSuffix(const QString& fileName);
 	static QStringList getFoldersRecursive(QDir dir);
 	QFileInfoList updateSubFolders(QDir rootDir);
 	QFileInfoList getFilteredFileInfoList(const QDir& dir, QStringList ignoreKeywords = QStringList(), QStringList keywords = QStringList(), QStringList folderKeywords = QStringList());
