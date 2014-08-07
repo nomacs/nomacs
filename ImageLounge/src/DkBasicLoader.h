@@ -226,10 +226,10 @@ public:
 
 #ifdef WITH_OPENCV
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
-	bool loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0);
-	Mat getPatch(const unsigned short* dataPtr, QSize patchSize, int mod2) const;
+	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0);
+	Mat getPatch(const unsigned char* dataPtr, QSize patchSize, int mod2) const;
 #else
-	bool loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0) {return false};
+	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0) {return false};
 #endif
 
 	bool loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());

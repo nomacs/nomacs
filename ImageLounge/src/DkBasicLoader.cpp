@@ -143,7 +143,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	// this loader is for OpenCV cascade training files
 	if (!imgLoaded && newSuffix.contains(QRegExp("(vec)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadPureRaw(file, ba);
+		imgLoaded = loadOpenCVVecFile(file, ba);
 		if (imgLoaded) loader = roh_loader;
 
 	} 
@@ -682,7 +682,7 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 #ifdef WITH_OPENCV
 
-bool DkBasicLoader::loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, QSize s, int skipHeader) {
+bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, QSize s, int skipHeader) {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
@@ -749,18 +749,17 @@ bool DkBasicLoader::loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	const int* dataPtr = (const int*)ba->constData();
 	dataPtr += rIdx;
-	const unsigned short* imgPtr = (const unsigned short*)dataPtr;
+	const unsigned char* imgPtr = (const unsigned char*)dataPtr;
 
 	double nRowsCols = sqrt(numElements);
 	int numCols = qCeil(nRowsCols);
 	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
 
-	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, Scalar(255));
+	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, Scalar(125));
 
-	// there is a bug somewhere - (for my files the last image is broken)
 	for (int idx = 0; idx < numElements; idx++) {
 
-		cv::Mat cPatch = getPatch(imgPtr + vecSize*idx+qCeil(idx*0.5), QSize(guessedW, guessedH), (idx+1)%2);
+		cv::Mat cPatch = getPatch(imgPtr + vecSize*idx*2+idx+1, QSize(guessedW, guessedH), 0);
 		cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));
 
 		if (!cPatchAll.empty())
@@ -773,7 +772,7 @@ bool DkBasicLoader::loadPureRaw(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	return true;
 }
 
-Mat DkBasicLoader::getPatch(const unsigned short* dataPtr, QSize patchSize, int mod2) const {
+Mat DkBasicLoader::getPatch(const unsigned char* dataPtr, QSize patchSize, int mod2) const {
 	
 	cv::Mat img(patchSize.height(), patchSize.width(), CV_16UC1, (void*)dataPtr);
 	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, Scalar(0));
@@ -785,7 +784,7 @@ Mat DkBasicLoader::getPatch(const unsigned short* dataPtr, QSize patchSize, int 
 		unsigned char* ptr16U = img.ptr<unsigned char>(rIdx);
 
 		for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
-			ptr8U[cIdx] = ptr16U[cIdx*2+mod2];
+			ptr8U[cIdx] = ptr16U[cIdx*2];
 		}
 	}
 
