@@ -102,7 +102,7 @@ void DkPluginManager::closePressed() {
 
 void DkPluginManager::showEvent(QShowEvent *event) {
 
-	loadPreviouslyInstalledPlugins();
+	loadPreviouslyInstalledPluginsList();
 	loadPlugins();
 	tableWidgetInstalled->getPluginUpdateData();
 
@@ -237,7 +237,7 @@ void DkPluginManager::loadPlugins() {
 	settings.endArray();
 }
 
-void DkPluginManager::loadPreviouslyInstalledPlugins() {
+void DkPluginManager::loadPreviouslyInstalledPluginsList() {
 
 	previouslyInstalledPlugins = QMap<QString, QString>();
 
