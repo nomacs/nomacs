@@ -83,12 +83,13 @@ DkCompressDialog::~DkCompressDialog() {
 
 void DkCompressDialog::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 	settings.setValue("Compression" + QString::number(dialogMode), getCompression());
 	
 	if (dialogMode != webp_dialog)
-		settings.setValue("BackgroundColor" + QString::number(dialogMode), getBackgroundColor());
+		settings.setValue("bgCompressionColor" + QString::number(dialogMode), getBackgroundColor().rgba());
+	settings.endGroup();
 }
 
 
@@ -96,15 +97,16 @@ void DkCompressDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
-	bgCol = settings.value("BackgroundColor" + QString::number(dialogMode), QColor(255,255,255)).value<QColor>();
+	bgCol = settings.value("bgCompressionColor" + QString::number(dialogMode), QColor(255,255,255).rgba()).toInt();
 	int compression = settings.value("Compression" + QString::number(dialogMode), 80).toInt();
 
 	slider->setValue(compression);
 	colChooser->setColor(bgCol);
 	newBgCol();
+	settings.endGroup();
 }
 
 void DkCompressDialog::init() {
@@ -270,9 +272,9 @@ void DkCompressDialog::drawPreview() {
 	if ((dialogMode == jpg_dialog || dialogMode == j2k_dialog) && hasAlpha)
 		newImg.fill(bgCol.rgb());
 	else if ((dialogMode == jpg_dialog || dialogMode == web_dialog) && !hasAlpha)
-		newImg.fill(palette().color(QPalette::Background));
+		newImg.fill(palette().color(QPalette::Background).rgb());
 	else
-		newImg.fill(QColor(0,0,0,0));
+		newImg.fill(QColor(0,0,0,0).rgba());
 	 
 	QPainter bgPainter(&newImg);
 	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());

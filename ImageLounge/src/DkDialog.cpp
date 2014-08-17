@@ -82,12 +82,16 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 	platform = " [x86] ";
 #endif
 
-	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  "<br>"
+	if (!DkSettings::isPortable())
+		qDebug() << "nomacs is not portable: " << DkSettings::getSettingsFile().absoluteFilePath();
+
+	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  "<br>" %
 #ifdef WITH_OPENCV
 		"RAW support: Yes"
 #else
 		"RAW support: No"
-#endif  
+#endif  		
+		% (DkSettings::isPortable() ? tr("<br>Portable") : "")
 		);
 
 	versionLabel->move(360, 280);
@@ -187,7 +191,6 @@ void DkTrainDialog::openFile() {
 		pathEdit->setText(filePath);
 		loadFile(filePath);
 	}
-
 }
 
 void DkTrainDialog::userFeedback(const QString& msg, bool error) {
@@ -217,7 +220,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 	DkBasicLoader basicLoader;
 	basicLoader.setTraining(true);
 
-	bool imgLoaded = basicLoader.loadGeneral(fileInfo);
+	bool imgLoaded = basicLoader.loadGeneral(fileInfo, true);
 
 	if (!imgLoaded) {
 		viewport->setImage(QImage());	// remove the image
@@ -250,12 +253,13 @@ void DkTrainDialog::accept() {
 		QString tag = name + " (*." + acceptedFile.suffix() + ")";
 
 		// load user filters
-		QSettings settings;
+		QSettings& settings = Settings::instance().getSettings();
 		QStringList userFilters = settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 		userFilters.append(tag);
 		settings.setValue("ResourceSettings/userFilters", userFilters);
 		DkSettings::openFilters.append(tag);
 		DkSettings::fileFilters.append("*." + acceptedFile.suffix());
+		DkSettings::app.browseFilters += acceptedFile.suffix();
 	}
 
 	QDialog::accept();
@@ -315,7 +319,7 @@ DkAppManager::~DkAppManager() {
 
 void DkAppManager::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("DkAppManager");
 	// clear it first
 	settings.remove("Apps");
@@ -329,11 +333,12 @@ void DkAppManager::saveSettings() {
 		settings.setValue("objectName", apps.at(idx)->objectName());
 	}
 	settings.endArray();
+	settings.endGroup();
 }
 
 void DkAppManager::loadSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("DkAppManager");
 	
 	int size = settings.beginReadArray("Apps");
@@ -352,6 +357,7 @@ void DkAppManager::loadSettings() {
 
 	}
 	settings.endArray();
+	settings.endGroup();
 }
 
 QVector<QAction* >& DkAppManager::getActions() {
@@ -937,7 +943,7 @@ void DkResizeDialog::accept() {
 
 void DkResizeDialog::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
 	settings.setValue("ResampleMethod", resampleBox->currentIndex());
@@ -952,6 +958,7 @@ void DkResizeDialog::saveSettings() {
 		settings.setValue("Width", 0);
 		settings.setValue("Height", 0);
 	}
+	settings.endGroup();
 }
 
 
@@ -959,7 +966,7 @@ void DkResizeDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
 	resampleBox->setCurrentIndex(settings.value("ResampleMethod", ipl_cubic).toInt());
@@ -985,6 +992,7 @@ void DkResizeDialog::loadSettings() {
 		updateWidth();
 		updateHeight();
 	}
+	settings.endGroup();
 
 }
 
@@ -2020,7 +2028,7 @@ void DkShortcutsModel::saveActions() {
 	if (!rootItem)
 		return;
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("CustomShortcuts");
 
 	// loop all menu entries
@@ -2051,6 +2059,7 @@ void DkShortcutsModel::saveActions() {
 			}
 		}
 	}
+	settings.endGroup();
 
 }
 
@@ -2915,7 +2924,7 @@ void DkExportTiffDialog::setFile(const QFileInfo& file) {
 	tiffLabel->setText(file.absoluteFilePath());
 	fileEdit->setText(file.baseName());
 
-	loader.loadGeneral(cFile);
+	loader.loadGeneral(cFile, true);
 	viewport->setImage(loader.image());
 
 	enableTIFFSave(loader.getNumPages() > 1);
@@ -3121,7 +3130,7 @@ void DkUnsharpDialog::setImage(const QImage& img) {
 void DkUnsharpDialog::setFile(const QFileInfo& file) {
 
 	DkBasicLoader loader;
-	loader.loadGeneral(file);
+	loader.loadGeneral(file, true);
 	setImage(loader.image());
 }
 
@@ -3587,7 +3596,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	// keeps track of the weights
 	cv::Mat cc(numPatches.height(), numPatches.width(), CV_32FC1);
 	cc.setTo(0);
-	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);;	// tells us if we have already computed the real patch
+	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);	// tells us if we have already computed the real patch
 
 	filesUsed.resize(numPatches.height()*numPatches.width());
 
@@ -4028,7 +4037,7 @@ void DkMosaicDialog::setFile(const QFileInfo& file) {
 	fileLabel->setText(file.absoluteFilePath());
 	//filterEdit->setText(file.baseName());
 
-	loader.loadGeneral(cFile);
+	loader.loadGeneral(cFile, true);
 	viewport->setImage(loader.image());
 
 	enableMosaicSave(loader.hasImage());

@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkMessageBox.h"
+#include "DkSettings.h"
 
 namespace nmc {
 
@@ -50,9 +51,10 @@ DkMessageBox::DkMessageBox(QWidget* parent /* = 0 */) : QDialog(parent) {
 
 DkMessageBox::~DkMessageBox() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("DkDialog");
 	settings.setValue(objectName(), !showAgain->isChecked());
+	settings.endGroup();
 }
 
 void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons) {
@@ -133,19 +135,22 @@ int DkMessageBox::exec() {
 
 	QString objName = objectName();
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("DkDialog");
 	bool show = settings.value(objName, true).toBool();
 	int answer = settings.value(objName + "-answer", QDialog::Accepted).toInt();
+	settings.endGroup();
 	showAgain->setChecked(!show);
 
 	if (!show)
 		return answer;
 
-	answer = QDialog::exec();	// destroys dialog - be carefull with what you do afterwards
+	answer = QDialog::exec();	// destroys dialog - be careful with what you do afterwards
 
 	// save show again
+	settings.beginGroup("DkDialog");
 	settings.setValue(objName + "-answer", answer);
+	settings.endGroup();
 
 	return answer;
 }

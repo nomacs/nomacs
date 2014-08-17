@@ -97,9 +97,7 @@ DkSettings::Sync& DkSettings::sync = DkSettings::getSyncSettings();
 DkSettings::MetaData& DkSettings::metaData = DkSettings::getMetaDataSettings();
 DkSettings::Resources& DkSettings::resources = DkSettings::getResourceSettings();
 
-
 DkSettings::App& DkSettings::getAppSettings() {
-	load();
 	return app_p;
 }
 
@@ -179,7 +177,7 @@ void DkSettings::initFileFilters() {
 	openFilters.append("Rohkost (*.roh)");
 
 	// load user filters
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 
 	for (int idx = 0; idx < openFilters.size(); idx++) {
@@ -211,11 +209,44 @@ void DkSettings::initFileFilters() {
 
 }
 
+void DkSettings::loadTranslation(const QString& fileName, QTranslator& translator) {
+
+	QStringList translationDirs = getTranslationDirs();
+
+	for (int idx = 0; idx < translationDirs.size(); idx++) {
+
+		if (translator.load(fileName, translationDirs[idx])) {
+			qDebug() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			break;
+		}
+	}
+}
+
+QStringList DkSettings::getTranslationDirs() {
+
+	QStringList translationDirs;
+	if (!DkSettings::isPortable())
+		translationDirs.append(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
+	translationDirs.append(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+	
+	QDir p((qApp->applicationDirPath()));
+	translationDirs.append(p.absolutePath());
+	if (p.cd("translations"))
+		translationDirs.append(p.absolutePath());
+	p = QDir(qApp->applicationDirPath());
+	if (p.cd("../share/nomacs/translations/"))
+		translationDirs.append(p.absolutePath());
+
+	return translationDirs;
+}
+
 void DkSettings::load(bool force) {
 
 	setToDefaultSettings();
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
+	qDebug() << "loading settings from: " << settings.fileName();
+
 	settings.beginGroup("AppSettings");
 	
 	app_p.showMenuBar = settings.value("showMenuBar", app_p.showMenuBar).toBool();
@@ -285,12 +316,12 @@ void DkSettings::load(bool force) {
 
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
-	display_p.highlightColor = settings.value("highlightColor", display_p.highlightColor).value<QColor>();
-	display_p.bgColorWidget = settings.value("bgColor", display_p.bgColorWidget).value<QColor>();
-	display_p.bgColor = settings.value("bgColorNoMacs", display_p.bgColor).value<QColor>();
-	display_p.iconColor = settings.value("iconColor", display_p.iconColor).value<QColor>();
+	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
+	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.bgColorWidget.rgba()).toInt());
+	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
+	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
 
-	display_p.bgColorFrameless = settings.value("bgColorFrameless", display_p.bgColorFrameless).value<QColor>();
+	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
 	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
@@ -323,7 +354,7 @@ void DkSettings::load(bool force) {
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
 	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
 	slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
-	slideShow_p.backgroundColor = settings.value("backgroundColor", slideShow_p.backgroundColor).value<QColor>();
+	slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColorRGBA", slideShow_p.backgroundColor.rgba()).toInt());
 	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
 
@@ -372,6 +403,7 @@ void DkSettings::load(bool force) {
 		global_p.ctrlMod = Qt::ControlModifier;
 	}
 
+	settings.endGroup();
 
 	// keep loaded settings in mind
 	app_d = app_p;
@@ -386,7 +418,7 @@ void DkSettings::load(bool force) {
 
 void DkSettings::save(bool force) {
 		
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	
 	settings.beginGroup("AppSettings");
 
@@ -480,15 +512,15 @@ void DkSettings::save(bool force) {
 	if (!force && display_p.invertZoom != display_d.invertZoom)
 		settings.setValue("invertZoom",display_p.invertZoom);
 	if (!force && display_p.highlightColor != display_d.highlightColor)
-		settings.setValue("highlightColor", display_p.highlightColor);
+		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
 	if (!force && display_p.bgColorWidget != display_d.bgColorWidget)
-		settings.setValue("bgColor", display_p.bgColorWidget);
+		settings.setValue("bgColorWidgetRGBA", display_p.bgColorWidget.rgba());
 	if (!force && display_p.bgColor != display_d.bgColor)
-		settings.setValue("bgColorNoMacs", display_p.bgColor);
+		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
 	if (!force && display_p.iconColor != display_d.iconColor)
-		settings.setValue("iconColor", display_p.iconColor);
+		settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
 	if (!force && display_p.bgColorFrameless != display_d.bgColorFrameless)
-		settings.setValue("bgColorFrameless", display_p.bgColorFrameless);
+		settings.setValue("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba());
 	if (!force && display_p.thumbSize != display_d.thumbSize)
 		settings.setValue("thumbSize", display_p.thumbSize);
 	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
@@ -540,7 +572,7 @@ void DkSettings::save(bool force) {
 	if (!force && slideShow_p.display != slideShow_d.display)
 		settings.setValue("display", slideShow_p.display);
 	if (!force && slideShow_p.backgroundColor != slideShow_d.backgroundColor)
-		settings.setValue("backgroundColor", slideShow_p.backgroundColor);
+		settings.setValue("backgroundColorRGBA", slideShow_p.backgroundColor.rgba());
 	if (!force && slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
 
@@ -599,6 +631,7 @@ void DkSettings::save(bool force) {
 		settings.setValue("preferredExtension", resources_p.preferredExtension);
 	if (!force && resources_p.gammaCorrection != resources_d.gammaCorrection)
 		settings.setValue("gammaCorrection", resources_p.gammaCorrection);
+	settings.endGroup();
 
 	// keep loaded settings in mind
 	app_d = app_p;
@@ -749,6 +782,36 @@ void DkSettings::setToDefaultSettings() {
 
 	qDebug() << "ok... default settings are set";
 }
+
+bool DkSettings::isPortable() {
+
+	QFileInfo settingsFile = getSettingsFile();
+	return settingsFile.isFile() && settingsFile.exists();
+}
+
+QFileInfo DkSettings::getSettingsFile() {
+
+	return QFileInfo(QCoreApplication::applicationDirPath(), "settings.nfo");
+}
+
+Settings::Settings() {
+	m_settings = DkSettings::isPortable() ? QSharedPointer<QSettings>(new QSettings(DkSettings::getSettingsFile().absoluteFilePath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
+	qDebug() << "portable nomacs: " << DkSettings::isPortable();
+}
+
+Settings& Settings::instance() { 
+	static QSharedPointer<Settings> inst;
+	if (!inst)
+		inst = QSharedPointer<Settings>(new Settings());
+	return *inst; 
+}
+
+QSettings& Settings::getSettings() {
+	//QMutexLocker(&mutex);
+	return *m_settings;
+}
+
+
 
 QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {
 
