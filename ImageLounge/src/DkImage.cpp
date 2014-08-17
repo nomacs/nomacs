@@ -663,7 +663,6 @@ void DkImageLoader::reloadImage() {
 
 void DkImageLoader::load(const QFileInfo& file) {
 
-	QString dsad = file.absoluteFilePath();
 	bool isZipArchive = (file.isFile() && file.suffix().compare("zip") == 0);
 
 	if (isZipArchive) loadZipArchive(file);
