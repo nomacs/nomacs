@@ -476,7 +476,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	loadSettings();
 
 	enableTFCheckBox = new QCheckBox(tr("Enable"));
-	enableTFCheckBox->setStatusTip(tr("Disables the Pseudo Color function"));
+	enableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 
 	this->addWidget(enableTFCheckBox);
 
@@ -577,7 +577,7 @@ void DkTransferToolBar::createIcons() {
 
 void DkTransferToolBar::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("Pseudo Color");
 
 	settings.beginWriteArray("oldGradients", oldGradients.size());
@@ -597,11 +597,12 @@ void DkTransferToolBar::saveSettings() {
 	}
 
 	settings.endArray();
+	settings.endGroup();
 }
 
 void DkTransferToolBar::loadSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("Pseudo Color");
 
 	int gSize = settings.beginReadArray("oldGradients");
@@ -629,6 +630,7 @@ void DkTransferToolBar::loadSettings() {
 	}
 
 	settings.endArray();
+	settings.endGroup();
 }
 
 void DkTransferToolBar::deleteGradientMenu(QPoint pos) {
@@ -857,7 +859,7 @@ DkCropToolBar::~DkCropToolBar() {
 
 void DkCropToolBar::loadSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("Crop");
 
 	horValBox->setValue(settings.value("AspectRatioHorizontal", 0).toInt());
@@ -865,11 +867,12 @@ void DkCropToolBar::loadSettings() {
 	guideBox->setCurrentIndex(settings.value("guides", 0).toInt());
 	invertAction->setChecked(settings.value("inverted", false).toBool());
 	infoAction->setChecked(settings.value("info", true).toBool());
+	settings.endGroup();
 }
 
 void DkCropToolBar::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("Crop");
 
 	settings.setValue("AspectRatioHorizontal", horValBox->value());
@@ -877,6 +880,7 @@ void DkCropToolBar::saveSettings() {
 	settings.setValue("guides", guideBox->currentIndex());
 	settings.setValue("inverted", invertAction->isChecked());
 	settings.setValue("info", infoAction->isChecked());
+	settings.endGroup();
 }
 
 void DkCropToolBar::createIcons() {
