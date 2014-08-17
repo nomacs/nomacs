@@ -2340,7 +2340,7 @@ void DkNoMacs::showMetaDataDock(bool show) {
 
 		// get last location
 		QSettings& settings = Settings::instance().getSettings();
-		int dockLocation = settings.value("metaDataDockLocation", Qt::LeftDockWidgetArea).toInt();
+		int dockLocation = settings.value("metaDataDockLocation", Qt::RightDockWidgetArea).toInt();
 
 		metaDataDock = new DkMetaDataDock(tr("Meta Data Info"));
 		addDockWidget((Qt::DockWidgetArea)dockLocation, metaDataDock);

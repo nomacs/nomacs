@@ -294,12 +294,28 @@ void DkMetaDataDock::createLayout() {
 	treeView->setIndentation(8);
 	//treeView->setStyleSheet("QTreeView{border-color: #C3C3C4; alternate-background-color: blue; background: #AAAAAA;}");
 
+	thumbNailLabel = new QLabel(tr("Thumbnail"), this);
+	thumbNailLabel->hide();
+
+	// thumb layout
+	QWidget* thumbWidget = new QWidget(this);
+	QHBoxLayout* thumbLayout = new QHBoxLayout(thumbWidget);
+	thumbLayout->addStretch();
+	thumbLayout->addWidget(thumbNailLabel);
+	thumbLayout->addStretch();
+
 	// TODO: add thumbnail widget
 	layout->addWidget(treeView);
+	layout->addWidget(thumbWidget);
 	setWidget(widget);
 }
 
 void DkMetaDataDock::updateEntries() {
+
+	QStringList expandedNames;
+	getExpandedItemNames(model->index(0,0,QModelIndex()), expandedNames);
+	qDebug() << "expanded names: -----------------";
+	qDebug() << expandedNames;
 
 	model->clear();
 
@@ -308,7 +324,9 @@ void DkMetaDataDock::updateEntries() {
 
 	model->addMetaData(imgC->getMetaData());
 
-	update();
+	treeView->setUpdatesEnabled(false);
+	expandRows(model->index(0,0,QModelIndex()), expandedNames);
+	treeView->setUpdatesEnabled(true);
 
 }
 
@@ -318,6 +336,66 @@ void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC) {
 
 	if (isVisible())
 		updateEntries();
+
+	if (imgC) {
+
+		// we need to load the thumbnail fresh to guarantee, that we just consider the exif thumb
+		// the imgC thumbnail might be created from the image
+		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(imgC->file()));
+		connect(thumb.data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
+		thumb->fetchThumb(DkThumbNailT::force_exif_thumb);
+	}
+}
+
+void DkMetaDataDock::thumbLoaded(bool loaded) {
+
+	if (loaded) {
+		QImage thumbImg = thumb->getImage();
+		thumbNailLabel->setFixedHeight(thumbImg.height());
+		thumbNailLabel->setPixmap(QPixmap::fromImage(thumbImg));
+		thumbNailLabel->show();
+	}
+	else
+		thumbNailLabel->hide();
+
+	qDebug() << "has thumbnail: " << loaded;
+
+}
+
+void DkMetaDataDock::getExpandedItemNames(const QModelIndex& index, QStringList& expandedNames) {
+
+	if (!treeView || !index.isValid())
+		return;
+
+	if (treeView->isExpanded(index))
+		expandedNames.append(model->data(index,Qt::DisplayRole).toString());
+
+	int rows = model->rowCount(index);
+
+	for (int idx = 0; idx < rows; idx++)
+		getExpandedItemNames(model->index(idx, 0, index), expandedNames);
+
+}
+
+void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& expandedNames) {
+
+	if (!index.isValid())
+		return;
+
+	// TODO: expand rows accordingly - currently crashes because matches seem to be wrong
+	for (int idx = 0; idx < expandedNames.size(); idx++) {
+		
+		QModelIndexList matches = model->match(index, Qt::DisplayRole, expandedNames.at(idx));
+		
+		for (int mIdx = 0; mIdx < matches.size(); mIdx++) {
+
+			if (!treeView->isExpanded(matches.at(mIdx))) {
+				treeView->setExpanded(matches.at(mIdx), true);
+				qDebug() << model->data(matches.at(mIdx)).toString();
+				expandRows(matches.at(mIdx), expandedNames);
+			}
+		}
+	}
 }
 
 //void DkMetaDataDock::setVisible(bool visible) {

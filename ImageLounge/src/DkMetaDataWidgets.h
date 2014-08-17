@@ -29,9 +29,11 @@
 
 #include <QDockWidget>
 #include <QTreeView>
+#include <QLabel>
 
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
 
 namespace nmc {
 
@@ -72,15 +74,21 @@ public:
 
 public slots:
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
+	void thumbLoaded(bool loaded);
 	//virtual void setVisible(bool visible);
 
 protected:
 	void createLayout();
 	void updateEntries();
 
+	void getExpandedItemNames(const QModelIndex& index, QStringList& expandedNames);
+	void expandRows(const QModelIndex& index, const QStringList& expandedNames);
+
 	QSharedPointer<DkImageContainerT> imgC;
 	QTreeView* treeView;
 	DkMetaDataModel* model;
+	QLabel* thumbNailLabel;
+	QSharedPointer<DkThumbNailT> thumb;
 };
 
 };

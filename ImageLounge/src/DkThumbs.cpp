@@ -384,6 +384,10 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 
 QImage DkThumbNailT::computeCall(int forceLoad, QSharedPointer<QByteArray> ba) {
 
+	// no rescale if we load from exif - memory should not be an issue here
+	if (forceLoad == DkThumbNailT::force_exif_thumb)
+		rescale = false;
+
 	return DkThumbNail::computeIntern(file, ba, forceLoad, maxThumbSize, minThumbSize, rescale);
 }
 
@@ -398,7 +402,7 @@ void DkThumbNailT::thumbLoaded() {
 
 	fetching = false;
 	DkSettings::resources.numThumbsLoading--;
-	emit thumbLoadedSignal(img.isNull());
+	emit thumbLoadedSignal(!img.isNull());
 }
 
 //// DkThumbPool --------------------------------------------------------------------
