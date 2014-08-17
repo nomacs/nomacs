@@ -100,6 +100,7 @@ class DkUpdateDialog;
 class DkForceThumbDialog;
 class DkTrainDialog;
 class DkExplorer;
+class DkMetaDataDock;
 class DkExportTiffDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
@@ -168,6 +169,7 @@ enum {
 	shortcut_fit_frame		= Qt::CTRL + Qt::Key_2,
 	shortcut_show_overview	= Qt::Key_O,
 	shortcut_show_explorer	= Qt::Key_E,
+	shortcut_show_metadata_dock = Qt::ALT + Qt::Key_M,
 	shortcut_show_player	= Qt::Key_P,
 	shortcut_show_exif		= Qt::Key_M,
 	shortcut_show_info		= Qt::Key_I,
@@ -300,6 +302,7 @@ enum panelActions {
 	menu_panel_histogram,
 	menu_panel_overview,
 	menu_panel_explorer,
+	menu_panel_metadata_dock,
 
 	menu_panel_end,
 };
@@ -493,6 +496,7 @@ public slots:
 	void openKeyboardShortcuts();
 	void openSettings();
 	void showExplorer(bool show);
+	void showMetaDataDock(bool show);
 	void showRecentFiles(bool show = true);
 	void openDir();
 	void openFile();
@@ -687,6 +691,7 @@ protected:
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
 	DkExplorer* explorer;
+	DkMetaDataDock* metaDataDock;
 	DkExportTiffDialog* exportTiffDialog;
 	DkSettingsDialog* settingsDialog;
 	DkThumbsSaver* thumbSaver;

@@ -72,6 +72,7 @@ public:
 	int getRating() const;
 	QVector2D getResolution() const;
 	QString getNativeExifValue(const QString& key) const;
+	QString getXmpValue(const QString& key) const;
 	QString getExifValue(const QString& key) const;
 	QString getIptcValue(const QString& key) const;
 	QImage getThumbnail() const;
@@ -79,6 +80,7 @@ public:
 	QStringList getExifValues() const;
 	QStringList getIptcKeys() const;
 	QStringList getIptcValues() const;
+	QStringList getXmpKeys() const;
 
 	void setResolution(const QVector2D& res);
 	void clearOrientation();
@@ -94,6 +96,8 @@ public:
 	bool isRaw() const;
 	bool isDirty() const;
 	void printMetaData() const; //only for debug
+
+
 
 protected:
 	Exiv2::Image::AutoPtr exifImg;
@@ -127,6 +131,8 @@ public:
 	QString getFlashMode(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const;
 	bool hasGPS(QSharedPointer<DkMetaDataT> metaData) const;
+	QString translateKey(const QString& key) const;
+	QString resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData, const QString& key, const QString& value) const;
 
 	QStringList getCamSearchTags() const;
 	QStringList getDescSearchTags() const;

@@ -285,5 +285,91 @@ QString DkUtils::stdWStringToQString(const std::wstring &str) {
 #endif
 }
 
+// TreeItem --------------------------------------------------------------------
+TreeItem::TreeItem(const QVector<QVariant> &data, TreeItem *parent) {
+	parentItem = parent;
+	itemData = data;
+}
+
+TreeItem::~TreeItem() {
+	clear();
+}
+
+void TreeItem::clear() {
+	qDeleteAll(childItems);
+	childItems.clear();
+}
+
+void TreeItem::appendChild(TreeItem *item) {
+	childItems.append(item);
+	//item->setParent(this);
+}
+
+TreeItem* TreeItem::child(int row) {
+
+	if (row < 0 || row >= childItems.size())
+		return 0;
+
+	return childItems[row];
+}
+
+int TreeItem::childCount() const {
+	return childItems.size();
+}
+
+int TreeItem::row() const {
+
+	if (parentItem)
+		return parentItem->childItems.indexOf(const_cast<TreeItem*>(this));
+
+	return 0;
+}
+
+int TreeItem::columnCount() const {
+
+	int columns = itemData.size();
+
+	for (int idx = 0; idx < childItems.size(); idx++)
+		columns = qMax(columns, childItems[idx]->columnCount());
+
+	return columns;
+}
+
+QVariant TreeItem::data(int column) const {
+	return itemData.value(column);
+}
+
+void TreeItem::setData(const QVariant& value, int column) {
+
+	if (column < 0 || column >= itemData.size())
+		return;
+
+	qDebug() << "replacing: " << itemData[0] << " with: " << value;
+	itemData.replace(column, value);
+}
+
+TreeItem* TreeItem::find(const QVariant& value, int column) {
+
+	if (column < 0)
+		return 0;
+
+	if (column < itemData.size() && itemData[column] == value)
+		return this;
+
+	for (int idx = 0; idx < childItems.size(); idx++) 
+		if (TreeItem* child = childItems[idx]->find(value, column))
+			return child;
+
+	return 0;
+}
+
+TreeItem* TreeItem::parent() const {
+	return parentItem;
+}
+
+void TreeItem::setParent(TreeItem* parent) {
+	parentItem = parent;
+}
+
 
 }

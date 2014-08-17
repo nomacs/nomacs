@@ -1067,6 +1067,7 @@ public slots:
 		if (visible) {
 			readTags();
 			createLabels();
+			imgC->getMetaData()->printMetaData();
 		}
 
 		qDebug() << "[DkMetaData] setVisible: " << visible;

@@ -549,4 +549,30 @@ public:
 	static double getFreeMemory();
 };
 
+// from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
+class TreeItem {
+
+public:
+	TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);
+	~TreeItem();
+
+	void appendChild(TreeItem *child);
+
+	TreeItem *child(int row);
+	int childCount() const;
+	int columnCount() const;
+	QVariant data(int column) const;
+	void setData(const QVariant& value, int column);
+	int row() const;
+	TreeItem* parent() const;
+	TreeItem* find(const QVariant& value, int column);
+	void setParent(TreeItem* parent);
+	void clear();
+
+private:
+	QVector<TreeItem*> childItems;
+	QVector<QVariant> itemData;
+	TreeItem *parentItem;
+};
+
 };

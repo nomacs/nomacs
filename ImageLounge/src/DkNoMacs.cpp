@@ -40,6 +40,8 @@
 #include "DkManipulationWidgets.h"
 #include "DkSettingsWidgets.h"
 #include "DkMessageBox.h"
+#include "DkMetaDataWidgets.h"
+
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
 #include "DkPluginManager.h"
@@ -95,6 +97,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	trainDialog = 0;
 	pluginManager = 0;
 	explorer = 0;
+	metaDataDock = 0;
 	appManager = 0;
 	settingsDialog = 0;
 	printPreviewDialog = 0;
@@ -646,6 +649,7 @@ void DkNoMacs::createMenu() {
 	panelToolsMenu->addAction(panelActions[menu_panel_statusbar]);
 	panelToolsMenu->addAction(panelActions[menu_panel_transfertoolbar]);
 	panelMenu->addAction(panelActions[menu_panel_explorer]);
+	panelMenu->addAction(panelActions[menu_panel_metadata_dock]);
 	panelMenu->addAction(panelActions[menu_panel_preview]);
 	panelMenu->addAction(panelActions[menu_panel_thumbview]);
 	panelMenu->addAction(panelActions[menu_panel_scroller]);
@@ -724,6 +728,7 @@ void DkNoMacs::createContextMenu() {
 	contextMenu = new QMenu(this);
 
 	contextMenu->addAction(panelActions[menu_panel_explorer]);
+	contextMenu->addAction(panelActions[menu_panel_metadata_dock]);
 	contextMenu->addAction(panelActions[menu_panel_preview]);
 	contextMenu->addAction(panelActions[menu_panel_thumbview]);
 	contextMenu->addAction(panelActions[menu_panel_scroller]);
@@ -1078,6 +1083,12 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_explorer]->setStatusTip(tr("Show File Explorer"));
 	panelActions[menu_panel_explorer]->setCheckable(true);
 	connect(panelActions[menu_panel_explorer], SIGNAL(toggled(bool)), this, SLOT(showExplorer(bool)));
+
+	panelActions[menu_panel_metadata_dock] = new QAction(tr("Metadata &Info"), this);
+	panelActions[menu_panel_metadata_dock]->setShortcut(QKeySequence(shortcut_show_metadata_dock));
+	panelActions[menu_panel_metadata_dock]->setStatusTip(tr("Show Metadata Info"));
+	panelActions[menu_panel_metadata_dock]->setCheckable(true);
+	connect(panelActions[menu_panel_metadata_dock], SIGNAL(toggled(bool)), this, SLOT(showMetaDataDock(bool)));
 
 	panelActions[menu_panel_preview] = new QAction(tr("&Thumbnails"), this);
 	panelActions[menu_panel_preview]->setShortcut(QKeySequence(shortcut_open_preview));
@@ -1499,7 +1510,9 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		
 		if (explorer)
 			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
-		
+		if (metaDataDock)
+			settings.setValue("metaDataDockLocation", QMainWindow::dockWidgetArea(metaDataDock));
+
 		DkSettings::save();
 	}
 
@@ -2320,6 +2333,27 @@ void DkNoMacs::showExplorer(bool show) {
 	}
 
 }
+
+void DkNoMacs::showMetaDataDock(bool show) {
+
+	if (!metaDataDock) {
+
+		// get last location
+		QSettings& settings = Settings::instance().getSettings();
+		int dockLocation = settings.value("metaDataDockLocation", Qt::LeftDockWidgetArea).toInt();
+
+		metaDataDock = new DkMetaDataDock(tr("Meta Data Info"));
+		addDockWidget((Qt::DockWidgetArea)dockLocation, metaDataDock);
+		connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
+	}
+
+	metaDataDock->setVisible(show);
+
+	if (viewport()->getImageLoader()->hasFile())
+		metaDataDock->setImage(viewport()->getImageLoader()->getCurrentImage());
+
+}
+
 
 void DkNoMacs::openDir() {
 

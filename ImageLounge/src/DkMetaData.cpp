@@ -319,6 +319,37 @@ QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 
 }
 
+QString DkMetaDataT::getXmpValue(const QString& key) const {
+
+	QString info;
+
+	if (exifState != loaded && exifState != dirty)
+		return info;
+
+	Exiv2::XmpData &xmpData = exifImg->xmpData();
+
+	if (!xmpData.empty()) {
+
+		Exiv2::XmpData::iterator pos;
+
+		try {
+			Exiv2::XmpKey ekey = Exiv2::XmpKey(key.toStdString());
+			pos = xmpData.findKey(ekey);
+
+		} catch(...) {
+			return info;
+		}
+
+		if (pos != xmpData.end() && pos->count() != 0) {
+			Exiv2::Value::AutoPtr v = pos->getValue();
+			info = QString::fromStdString(pos->toString());
+		}
+	}
+
+	return info;
+}
+
+
 QString DkMetaDataT::getExifValue(const QString& key) const {
 
 	QString info;
@@ -475,6 +506,32 @@ QStringList DkMetaDataT::getExifKeys() const {
 
 	return exifKeys;
 }
+
+QStringList DkMetaDataT::getXmpKeys() const {
+
+	QStringList xmpKeys;
+
+	if (exifState != loaded && exifState != dirty)
+		return xmpKeys;
+
+	Exiv2::XmpData &xmpData = exifImg->xmpData();
+	Exiv2::XmpData::const_iterator end = xmpData.end();
+
+	if (xmpData.empty()) {
+		return xmpKeys;
+
+	} else {
+
+		for (Exiv2::XmpData::const_iterator i = xmpData.begin(); i != end; ++i) {
+
+			std::string tmp = i->key();
+			xmpKeys << QString::fromStdString(tmp);
+		}
+	}
+
+	return xmpKeys;
+}
+
 
 QStringList DkMetaDataT::getExifValues() const {
 
@@ -1079,6 +1136,44 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 	}
 
 	return gpsInfo;
+}
+
+QString DkMetaDataHelper::translateKey(const QString& key) const {
+
+	QString translatedKey = key;
+
+	int keyIdx = camSearchTags.indexOf(key);
+	if (keyIdx != -1)
+		translatedKey = translatedCamTags.at(keyIdx);
+
+	keyIdx = descSearchTags.indexOf(key);
+	if (keyIdx != -1)
+		translatedKey = translatedDescTags.at(keyIdx);
+
+	return translatedKey;
+}
+
+QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData, const QString& key, const QString& value) const {
+
+	QString rValue = value;
+
+	if (key == camSearchTags[DkSettings::camData_aperture]) {
+		rValue = DkMetaDataHelper::getInstance().getApertureValue(metaData);
+	}
+	else if (key == camSearchTags[DkSettings::camData_focallength]) {
+		rValue = DkMetaDataHelper::getInstance().getFocalLength(metaData);
+	}
+	else if (key == camSearchTags[DkSettings::camData_exposuretime]) {
+		rValue = DkMetaDataHelper::getInstance().getExposureTime(metaData);
+	}
+	else if (key == camSearchTags[DkSettings::camData_exposuremode]) {
+		rValue = DkMetaDataHelper::getInstance().getExposureMode(metaData);						
+	} 
+	else if (key == camSearchTags[DkSettings::camData_flash]) {
+		rValue = DkMetaDataHelper::getInstance().getFlashMode(metaData);
+	}
+
+	return rValue;
 }
 
 bool DkMetaDataHelper::hasGPS(QSharedPointer<DkMetaDataT> metaData) const {
