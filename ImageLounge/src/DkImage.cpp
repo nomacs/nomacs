@@ -656,6 +656,7 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 	updateCacher(currentImage);
 	updateHistory();
 
+	emit imageHasGPSSignal(DkMetaDataHelper::getInstance().hasGPS(currentImage->getMetaData()));
 }
 
 /**

@@ -33,6 +33,7 @@
 #include <QBuffer>
 #include <QVector2D>
 #include <QSharedPointer>
+#include <QStringList>
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -106,6 +107,48 @@ protected:
 	};
 
 	int exifState;
+};
+
+class DllExport DkMetaDataHelper {
+
+public:
+
+	static DkMetaDataHelper& getInstance() {
+
+		static DkMetaDataHelper instance;
+
+		return instance;
+	}
+
+	QString getApertureValue(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getFocalLength(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getExposureTime(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getExposureMode(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getFlashMode(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const;
+	bool hasGPS(QSharedPointer<DkMetaDataT> metaData) const;
+
+	QStringList getCamSearchTags() const;
+	QStringList getDescSearchTags() const;
+	QStringList getTranslatedCamTags() const;
+	QStringList getTranslatedDescTags() const;
+	QStringList getAllExposureModes() const;
+	QMap<int, QString> getAllFlashModes() const;
+
+protected:
+	DkMetaDataHelper() { init(); };
+	DkMetaDataHelper(DkMetaDataHelper const&);		// hide
+	void operator=(DkMetaDataHelper const&);		// hide
+	void init();
+
+	QStringList camSearchTags;
+	QStringList descSearchTags;
+
+	QStringList translatedCamTags;
+	QStringList translatedDescTags;
+
+	QStringList exposureModes;
+	QMap<int, QString> flashModes;
 };
 
 };

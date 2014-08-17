@@ -219,8 +219,7 @@ void DkNoMacs::init() {
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
 	connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
-	//connect(viewport()->getImageLoader(), SIGNAL(newErrorDialog(QString, QString)), this, SLOT(errorDialog(QString, QString)));
-	connect(viewport()->getController()->getMetaDataWidget(), SIGNAL(enableGpsSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
+	connect(viewport()->getImageLoader(), SIGNAL(imageHasGPSSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
@@ -3403,16 +3402,16 @@ void DkNoMacs::openFileWith(QAction* action) {
 
 void DkNoMacs::showGpsCoordinates() {
 
-	DkMetaDataInfo* exifData = viewport()->getController()->getMetaDataWidget();
+	QSharedPointer<DkMetaDataT> metaData = viewport()->getImageLoader()->getCurrentImage()->getMetaData();
 
-	if (!exifData || exifData->getGPSCoordinates().isEmpty()) {
+	if (!DkMetaDataHelper::getInstance().hasGPS(metaData)) {
 		viewport()->getController()->setInfo("Sorry, I could not find the GPS coordinates...");
 		return;
 	}
 
-	qDebug() << "gps: " << exifData->getGPSCoordinates();
+	qDebug() << "gps: " << DkMetaDataHelper::getInstance().getGpsCoordinates(metaData);
 
-	QDesktopServices::openUrl(QUrl(exifData->getGPSCoordinates()));  
+	QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));  
 }
 
 QVector <QAction* > DkNoMacs::getFileActions() {

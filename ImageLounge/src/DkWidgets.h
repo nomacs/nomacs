@@ -1043,9 +1043,6 @@ class DkMetaDataInfo : public DkWidget {
 	Q_OBJECT
 
 public:
-
-	static QString sCamDataTags;
-	static QString sDescriptionTags;
 		
 	DkMetaDataInfo(QWidget* parent = 0);
 	~DkMetaDataInfo() {};
@@ -1054,15 +1051,11 @@ public:
 	void createLabels();
 	void resizeEvent(QResizeEvent *resizeW);
 	//void getResolution(float &xResolution, float &yResolution);
-	QString getGPSCoordinates();
 	
 	//DkMetaData* getMetaData() {
 	//	return &metaData;
 	//};
-	
-signals:
-	void enableGpsSignal(bool);
-	
+		
 public slots:
 	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setRating(int rating);
@@ -1071,8 +1064,10 @@ public slots:
 	void mouseMoveEvent(QMouseEvent *event);
 	void setVisible(bool visible) {
 
-		if (visible)
+		if (visible) {
+			readTags();
 			createLabels();
+		}
 
 		qDebug() << "[DkMetaData] setVisible: " << visible;
 
@@ -1084,7 +1079,6 @@ protected:
 	void readTags();
 	void layoutLabels();
 	void paintEvent(QPaintEvent *event);
-	
 
 	QWidget* parent;
 	QPoint lastMousePos;
@@ -1109,10 +1103,8 @@ protected:
 	QVector<DkLabel *> pValues;
 	//QSize imgSize;
 
-	QStringList camDTags;
 	QStringList camDValues;
 
-	QStringList descTags;
 	QStringList descValues;
 
 	QRect leftGradientRect;
@@ -1121,8 +1113,6 @@ protected:
 	QLinearGradient rightGradient;
 
 	QMap<int, int> mapIptcExif;
-	QStringList exposureModes;
-	QMap<int, QString> flashModes;
 	QSharedPointer<DkImageContainerT> imgC;
 
 };

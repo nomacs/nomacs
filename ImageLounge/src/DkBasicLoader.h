@@ -232,9 +232,9 @@ public:
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;
 #else
-	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0) {return false};
-	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const {return 0};
-	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {return false};
+	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0) {return false;};
+	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const {return 0;};
+	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {return false;};
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {};
 
 #endif

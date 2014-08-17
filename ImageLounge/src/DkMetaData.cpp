@@ -25,8 +25,10 @@
 
  *******************************************************************************************************/
 
-#include "DkMetaData.h"
+#include <QTranslator>
+#include <QObject>
 
+#include "DkMetaData.h"
 #include "DkImage.h"
 
 namespace nmc {
@@ -308,6 +310,7 @@ QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 
 		if (pos != exifData.end() && pos->count() != 0) {
 			Exiv2::Value::AutoPtr v = pos->getValue();
+			
 			info = QString::fromStdString(pos->toString());
 		}
 	}
@@ -817,6 +820,300 @@ void DkMetaDataT::printMetaData() const {
 			<< std::endl;
 	}
 
+}
+
+// DkMetaDataHelper --------------------------------------------------------------------
+
+void DkMetaDataHelper::init() {
+
+	camSearchTags.append("ImageSize");
+	camSearchTags.append("Orientation");
+	camSearchTags.append("Make");
+	camSearchTags.append("Model");
+	camSearchTags.append("ApertureValue");
+	camSearchTags.append("ISOSpeedRatings");
+	camSearchTags.append("Flash");
+	camSearchTags.append("FocalLength");
+	camSearchTags.append("ExposureMode");
+	camSearchTags.append("ExposureTime");
+
+	descSearchTags.append("Rating");
+	descSearchTags.append("UserComment");
+	descSearchTags.append("DateTime");
+	descSearchTags.append("DateTimeOriginal");
+	descSearchTags.append("ImageDescription");
+	descSearchTags.append("Byline");
+	descSearchTags.append("BylineTitle");
+	descSearchTags.append("City");
+	descSearchTags.append("Country");
+	descSearchTags.append("Headline");
+	descSearchTags.append("Caption");
+	descSearchTags.append("CopyRight");
+	descSearchTags.append("Keywords");
+	descSearchTags.append("Path");
+	descSearchTags.append("FileSize");
+
+
+	for (int i = 0; i  < DkSettings::scamDataDesc.size(); i++) 
+		translatedCamTags << qApp->translate("nmc::DkMetaData", DkSettings::scamDataDesc.at(i).toLatin1());
+
+	for (int i = 0; i  < DkSettings::sdescriptionDesc.size(); i++)
+		translatedDescTags << qApp->translate("nmc::DkMetaData", DkSettings::sdescriptionDesc.at(i).toLatin1());
+
+	if (translatedCamTags.size() != DkSettings::camData_end)
+		qDebug() << "wrong definition of Camera Data (Exif). Size of CamData tags is different from enum";
+	if (translatedDescTags.size() != DkSettings::desc_end - DkSettings::camData_end)
+		qDebug() << "wrong definition of Description Data (Exif). Size of Descriptions tags is different from enum";
+
+	exposureModes.append(QObject::tr("not defined"));
+	exposureModes.append(QObject::tr("manual"));
+	exposureModes.append(QObject::tr("normal"));
+	exposureModes.append(QObject::tr("aperture priority"));
+	exposureModes.append(QObject::tr("shutter priority"));
+	exposureModes.append(QObject::tr("program creative"));
+	exposureModes.append(QObject::tr("high-speed program"));
+	exposureModes.append(QObject::tr("porQObject::trait mode"));
+	exposureModes.append(QObject::tr("landscape mode"));
+
+	// flash mapping is taken from: http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Flash
+	flashModes.insert(0x0, QObject::tr("No Flash"));
+	flashModes.insert(0x1, QObject::tr("Fired"));
+	flashModes.insert(0x5, QObject::tr("Fired, Return not detected"));
+	flashModes.insert(0x7, QObject::tr("Fired, Return detected"));
+	flashModes.insert(0x8, QObject::tr("On, Did not fire"));
+	flashModes.insert(0x9, QObject::tr("On, Fired"));
+	flashModes.insert(0xd, QObject::tr("On, Return not detected"));
+	flashModes.insert(0xf, QObject::tr("On, Return detected"));
+	flashModes.insert(0x10, QObject::tr("Off, Did not fire"));
+	flashModes.insert(0x14, QObject::tr("Off, Did not fire, Return not detected"));
+	flashModes.insert(0x18, QObject::tr("Auto, Did not fire"));
+	flashModes.insert(0x19, QObject::tr("Auto, Fired"));
+	flashModes.insert(0x1d, QObject::tr("Auto, Fired, Return not detected"));
+	flashModes.insert(0x1f, QObject::tr("Auto, Fired, Return detected"));
+	flashModes.insert(0x20, QObject::tr("No flash function"));
+	flashModes.insert(0x30, QObject::tr("Off, No flash function"));
+	flashModes.insert(0x41, QObject::tr("Fired, Red-eye reduction"));
+	flashModes.insert(0x45, QObject::tr("Fired, Red-eye reduction, Return not detected"));
+	flashModes.insert(0x47, QObject::tr("Fired, Red-eye reduction, Return detected"));
+	flashModes.insert(0x49, QObject::tr("On, Red-eye reduction"));
+	flashModes.insert(0x4d, QObject::tr("On, Red-eye reduction, Return not detected"));
+	flashModes.insert(0x4f, QObject::tr("On, Red-eye reduction, Return detected"));
+	flashModes.insert(0x50, QObject::tr("Off, Red-eye reduction"));
+	flashModes.insert(0x58, QObject::tr("Auto, Did not fire, Red-eye reduction"));
+	flashModes.insert(0x59, QObject::tr("Auto, Fired, Red-eye reduction"));
+	flashModes.insert(0x5d, QObject::tr("Auto, Fired, Red-eye reduction, Return not detected"));
+	flashModes.insert(0x5f, QObject::tr("Auto, Fired, Red-eye reduction, Return detected"));
+}
+
+QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData) const {
+
+	QString key = camSearchTags.at(DkSettings::camData_aperture); 
+
+	QString value = metaData->getExifValue(key);
+	if (value.isEmpty()) value = metaData->getExifValue("FNumber");	// try alternative tag
+
+	QStringList sList = value.split('/');
+
+	if (sList.size() == 2) {
+		double val = std::pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
+		value = QString::fromStdString(DkUtils::stringify(val,1));
+	}
+
+	return value;
+}
+
+QString DkMetaDataHelper::getFocalLength(QSharedPointer<DkMetaDataT> metaData) const {
+
+	// focal length
+	QString key = camSearchTags.at(DkSettings::camData_focallength);
+
+	QString value = metaData->getExifValue(key);
+	QStringList sList = value.split('/');
+
+	if (sList.size() == 2) {
+		double val = sList[0].toDouble()/sList[1].toDouble();
+		value = QString::fromStdString(DkUtils::stringify(val,1)) + " mm";
+	}
+
+	return value;
+}
+
+QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) const {
+
+	QString key = camSearchTags.at(DkSettings::camData_exposuretime);
+	QString value = metaData->getExifValue(key);
+	QStringList sList = value.split('/');
+
+	if (sList.size() == 2) {
+		int nom = sList[0].toInt();		// nominator
+		int denom = sList[1].toInt();	// denominator
+
+		// if exposure time is less than a second -> compute the gcd for nice values (1/500 instead of 2/1000)
+		if (nom <= denom) {
+			int gcd = DkMath::gcd(denom, nom);
+			value = QString::number(nom/gcd) % QString("/") % QString::number(denom/gcd);
+		}
+		else
+			value = QString::fromStdString(DkUtils::stringify((float)nom/(float)denom,1));
+
+		value += " sec";
+	}
+
+	return value;
+}
+
+QString DkMetaDataHelper::getExposureMode(QSharedPointer<DkMetaDataT> metaData) const {
+
+	QString key = camSearchTags.at(DkSettings::camData_exposuremode);
+	QString value = metaData->getExifValue(key);
+	int mode = value.toInt();
+
+	if (mode >= 0 && mode < exposureModes.size())
+		value = exposureModes[mode];
+
+	return value;
+}
+
+QString DkMetaDataHelper::getFlashMode(QSharedPointer<DkMetaDataT> metaData) const {
+
+	QString key = camSearchTags.at(DkSettings::camData_exposuremode);
+	QString value = metaData->getExifValue(key);
+	unsigned int mode = value.toUInt();
+	value = flashModes[mode];
+
+	return value;
+}
+
+QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const {
+
+	QString Lat, LatRef, Lon, LonRef, gpsInfo;
+	QStringList help;
+
+	try {
+
+		if (metaData->hasMetaData()) {
+			//metaData = DkImageLoader::imgMetaData;
+			Lat = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitude");
+			LatRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitudeRef");
+			Lon = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitude");
+			LonRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef");
+			//example url
+			//http://maps.google.at/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
+
+			gpsInfo = "http://maps.google.at/maps?q=" + LatRef + "+";
+
+			help = Lat.split(" ");
+			for (int i=0; i<help.size(); ++i) {
+				float val1, val2;
+				QString valS;
+				QStringList coordP;
+				valS = help.at(i);
+				coordP = valS.split("/");
+				if (coordP.size() != 2)
+					throw DkException(QObject::tr("could not parse GPS Data").toStdString());
+
+				val1 = coordP.at(0).toFloat();
+				val2 = coordP.at(1).toFloat();
+				val1 = val2 != 0 ? val1/val2 : val1;
+
+				if (i==0) {
+					valS.setNum((int)val1);
+					gpsInfo += valS + "°";
+				}
+				if (i==1) {
+					if (val2 > 1)							
+						valS.setNum(val1, 'f', 6);
+					else
+						valS.setNum((int)val1);
+					gpsInfo += "+" + valS + "'";
+				}
+				if (i==2) {
+					if (val1 != 0) {
+						valS.setNum(val1, 'f', 6);
+						gpsInfo += "+" + valS + "''";
+					}
+				}
+			}
+
+			gpsInfo += "+" + LonRef;
+			help = Lon.split(" ");
+			for (int i=0; i<help.size(); ++i) {
+				float val1, val2;
+				QString valS;
+				QStringList coordP;
+				valS = help.at(i);
+				coordP = valS.split("/");
+				if (coordP.size() != 2)
+					throw DkException(QObject::tr("could not parse GPS Data").toStdString());
+
+				val1 = coordP.at(0).toFloat();
+				val2 = coordP.at(1).toFloat();
+				val1 = val2 != 0 ? val1/val2 : val1;
+
+				if (i==0) {
+					valS.setNum((int)val1);
+					gpsInfo += valS + "°";
+					//gpsInfo += valS + QString::fromUtf16((ushort*)"0xb0");//QChar('°');
+					//gpsInfo += valS + QString::setUnicode("0xb0");//QChar('°');
+				}
+				if (i==1) {
+					if (val2 > 1)							
+						valS.setNum(val1, 'f', 6);
+					else
+						valS.setNum((int)val1);
+					gpsInfo += "+" + valS + "'";
+				}
+				if (i==2) {
+					if (val1 != 0) {
+						valS.setNum(val1, 'f', 6);
+						gpsInfo += "+" + valS + "''";
+					}
+				}
+			}
+
+		}
+
+	} catch (...) {
+		gpsInfo = "";
+		//qDebug() << "could not load Exif GPS information";
+	}
+
+	return gpsInfo;
+}
+
+bool DkMetaDataHelper::hasGPS(QSharedPointer<DkMetaDataT> metaData) const {
+
+	return !getGpsCoordinates(metaData).isEmpty();
+}
+
+QStringList DkMetaDataHelper::getCamSearchTags() const {
+
+	return camSearchTags;
+}
+
+QStringList DkMetaDataHelper::getDescSearchTags() const {
+
+	return descSearchTags;
+}
+
+QStringList DkMetaDataHelper::getTranslatedCamTags() const {
+
+	return translatedCamTags;
+}
+
+QStringList DkMetaDataHelper::getTranslatedDescTags() const {
+
+	return translatedDescTags;
+}
+
+QStringList DkMetaDataHelper::getAllExposureModes() const {
+
+	return exposureModes;
+}
+
+QMap<int, QString> DkMetaDataHelper::getAllFlashModes() const {
+
+	return flashModes;
 }
 
 }

@@ -207,6 +207,7 @@ signals:
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
 	void errorDialogSignal(const QString&);
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
+	void imageHasGPSSignal(bool hasGPS);
 
 public slots:
 	void changeFile(int skipIdx);

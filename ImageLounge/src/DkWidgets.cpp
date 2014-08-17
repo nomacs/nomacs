@@ -3103,15 +3103,6 @@ void DkPlayer::show(int ms) {
 //	QString("Iptc.Application2.Headline Iptc.Application2.Caption Iptc.Application2.Copyright Iptc.Application2.Keywords");
 //QString DkMetaDataInfo::sIptcDesc = QString("Creator;Creator Title;City;Country;Headline;Caption;Copyright;Keywords");
 
-QString DkMetaDataInfo::sCamDataTags = QString("ImageSize Orientation Make Model ApertureValue ISOSpeedRatings Flash FocalLength ") %
-	QString("ExposureMode ExposureTime");
-
-QString DkMetaDataInfo::sDescriptionTags = QString("Rating UserComment DateTime DateTimeOriginal ImageDescription Byline BylineTitle City Country ") %
-	QString("Headline Caption CopyRight Keywords Path FileSize");
-
-
-
-
 DkMetaDataInfo::DkMetaDataInfo(QWidget* parent) : DkWidget(parent) {
 	
 	setObjectName("DkMetaDataInfo");
@@ -3163,58 +3154,7 @@ void DkMetaDataInfo::init() {
 	mapIptcExif[DkSettings::desc_path] = 2;
 	mapIptcExif[DkSettings::desc_filesize] = 2;
 
-	for (int i = 0; i  < DkSettings::scamDataDesc.size(); i++) 
-		camDTags << qApp->translate("nmc::DkMetaData", DkSettings::scamDataDesc.at(i).toLatin1());
-
-	for (int i = 0; i  < DkSettings::sdescriptionDesc.size(); i++)
-		descTags << qApp->translate("nmc::DkMetaData", DkSettings::sdescriptionDesc.at(i).toLatin1());
-
-
-	exposureModes.append(tr("not defined"));
-	exposureModes.append(tr("manual"));
-	exposureModes.append(tr("normal"));
-	exposureModes.append(tr("aperture priority"));
-	exposureModes.append(tr("shutter priority"));
-	exposureModes.append(tr("program creative"));
-	exposureModes.append(tr("high-speed program"));
-	exposureModes.append(tr("portrait mode"));
-	exposureModes.append(tr("landscape mode"));
-
-	// flash mapping is taken from: http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Flash
-	flashModes.insert(0x0, tr("No Flash"));
-	flashModes.insert(0x1, tr("Fired"));
-	flashModes.insert(0x5, tr("Fired, Return not detected"));
-	flashModes.insert(0x7, tr("Fired, Return detected"));
-	flashModes.insert(0x8, tr("On, Did not fire"));
-	flashModes.insert(0x9, tr("On, Fired"));
-	flashModes.insert(0xd, tr("On, Return not detected"));
-	flashModes.insert(0xf, tr("On, Return detected"));
-	flashModes.insert(0x10, tr("Off, Did not fire"));
-	flashModes.insert(0x14, tr("Off, Did not fire, Return not detected"));
-	flashModes.insert(0x18, tr("Auto, Did not fire"));
-	flashModes.insert(0x19, tr("Auto, Fired"));
-	flashModes.insert(0x1d, tr("Auto, Fired, Return not detected"));
-	flashModes.insert(0x1f, tr("Auto, Fired, Return detected"));
-	flashModes.insert(0x20, tr("No flash function"));
-	flashModes.insert(0x30, tr("Off, No flash function"));
-	flashModes.insert(0x41, tr("Fired, Red-eye reduction"));
-	flashModes.insert(0x45, tr("Fired, Red-eye reduction, Return not detected"));
-	flashModes.insert(0x47, tr("Fired, Red-eye reduction, Return detected"));
-	flashModes.insert(0x49, tr("On, Red-eye reduction"));
-	flashModes.insert(0x4d, tr("On, Red-eye reduction, Return not detected"));
-	flashModes.insert(0x4f, tr("On, Red-eye reduction, Return detected"));
-	flashModes.insert(0x50, tr("Off, Red-eye reduction"));
-	flashModes.insert(0x58, tr("Auto, Did not fire, Red-eye reduction"));
-	flashModes.insert(0x59, tr("Auto, Fired, Red-eye reduction"));
-	flashModes.insert(0x5d, tr("Auto, Fired, Red-eye reduction, Return not detected"));
-	flashModes.insert(0x5f, tr("Auto, Fired, Red-eye reduction, Return detected"));
-
 	worldMatrix = QTransform();
-
-	if (camDTags.size() != DkSettings::camData_end)
-		qDebug() << "wrong definition of Camera Data (Exif). Size of CamData tags is different from enum";
-	if (descTags.size() != DkSettings::desc_end - DkSettings::camData_end)
-		qDebug() << "wrong definition of Description Data (Exif). Size of Descriptions tags is different from enum";
 
 	setMouseTracking(true);
 	//readTags();
@@ -3239,183 +3179,10 @@ void DkMetaDataInfo::setImageInfo(QSharedPointer<DkImageContainerT> imgC) {
 	worldMatrix = QTransform();
 	
 	//DkTimer dt;
-	readTags();		// TODO: we should set the GPS stuff into DkMetaDataT - then we don't need to read all tags here
-
-	emit enableGpsSignal(!getGPSCoordinates().isEmpty());
-
-	if (isVisible())
+	if (isVisible()) {
+		readTags();
 		createLabels();
-}
-
-//void DkMetaDataInfo::getResolution(float &xResolution, float &yResolution) {
-//	
-//	if (!imgC)
-//		return;
-//	
-//	float xR, yR;
-//	QString xRes, yRes;
-//	xR = 72.0f;
-//	yR = 72.0f;
-//
-//	try {
-//
-//		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
-//
-//		if (metaData->hasMetaData()) {
-//			//metaData = DkImageLoader::imgMetaData;
-//			xRes = metaData->getExifValue("XResolution");
-//			QStringList res;
-//			res = xRes.split("/");
-//			if (res.size() != 2) {
-//				throw DkException("no x resolution found\n");
-//			}
-//			xR = res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72;
-//
-//			yRes = metaData->getExifValue("YResolution");
-//			res = yRes.split("/");
-//
-//			qDebug() << "Resolution"  << xRes << " " << yRes;
-//			if (res.size() != 2)
-//				throw DkException("no y resolution found\n");
-//			yR = res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72;
-//		}
-//	} catch (...) {
-//		qDebug() << "could not load Exif resolution, set to 72dpi";
-//		xR = 72;
-//		yR = 72;
-//	}
-//
-//	xResolution = xR;
-//	yResolution = yR;
-//	
-//}
-
-QString DkMetaDataInfo::getGPSCoordinates() {
-	
-	if (!imgC)
-		return QString();
-
-	QString Lat, LatRef, Lon, LonRef, gpsInfo;
-	QStringList help;
-	
-	try {
-
-		////gps test
-		//Exiv2::Image::AutoPtr image = Exiv2::ImageFactory::open("H:\\img\\exif\\gps.jpg");
-		////////assert (image.get() != 0);
-		//image->readMetadata();
-		//Exiv2::ExifData &exifData = image->exifData();
-		//
-		//if (exifData.empty()) {
-		//	printf("empty exif data\n");
-		//}
-		//Exiv2::ExifData::const_iterator end = exifData.end();
-		//for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
-		//	const char* tn = i->typeName();
-		//	std::cout << std::setw(44) << std::setfill(' ') << std::left
-		//		<< i->key() << " "
-		//		<< "0x" << std::setw(4) << std::setfill('0') << std::right
-		//		<< std::hex << i->tag() << " "
-		//		<< std::setw(9) << std::setfill(' ') << std::left
-		//		<< (tn ? tn : "Unknown") << " "
-		//		<< std::dec << std::setw(3)
-		//		<< std::setfill(' ') << std::right
-		//		<< i->count() << "  "
-		//		<< std::dec << i->value()
-		//		<< "\n";
-		//}
-		////gps test ends...
-
-		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
-
-		if (metaData->hasMetaData()) {
-			//metaData = DkImageLoader::imgMetaData;
-			Lat = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitude");
-			LatRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLatitudeRef");
-			Lon = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitude");
-			LonRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef");
-			//example url
-			//http://maps.google.at/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
-
-			gpsInfo = "http://maps.google.at/maps?q=" + LatRef + "+";
-
-			help = Lat.split(" ");
-			for (int i=0; i<help.size(); ++i) {
-				float val1, val2;
-				QString valS;
-				QStringList coordP;
-				valS = help.at(i);
-				coordP = valS.split("/");
-				if (coordP.size() != 2)
-					throw DkException(tr("could not parse GPS Data").toStdString());
-
-				val1 = coordP.at(0).toFloat();
-				val2 = coordP.at(1).toFloat();
-				val1 = val2 != 0 ? val1/val2 : val1;
-				
-				if (i==0) {
-					valS.setNum((int)val1);
-					gpsInfo += valS + "°";
-				}
-				if (i==1) {
-					if (val2 > 1)							
-						valS.setNum(val1, 'f', 6);
-					else
-						valS.setNum((int)val1);
-					gpsInfo += "+" + valS + "'";
-				}
-				if (i==2) {
-					if (val1 != 0) {
-						valS.setNum(val1, 'f', 6);
-						gpsInfo += "+" + valS + "''";
-					}
-				}
-			}
-
-			gpsInfo += "+" + LonRef;
-			help = Lon.split(" ");
-			for (int i=0; i<help.size(); ++i) {
-				float val1, val2;
-				QString valS;
-				QStringList coordP;
-				valS = help.at(i);
-				coordP = valS.split("/");
-				if (coordP.size() != 2)
-					throw DkException(tr("could not parse GPS Data").toStdString());
-
-				val1 = coordP.at(0).toFloat();
-				val2 = coordP.at(1).toFloat();
-				val1 = val2 != 0 ? val1/val2 : val1;
-
-				if (i==0) {
-					valS.setNum((int)val1);
-					gpsInfo += valS + "°";
-					//gpsInfo += valS + QString::fromUtf16((ushort*)"0xb0");//QChar('°');
-					//gpsInfo += valS + QString::setUnicode("0xb0");//QChar('°');
-				}
-				if (i==1) {
-					if (val2 > 1)							
-						valS.setNum(val1, 'f', 6);
-					else
-						valS.setNum((int)val1);
-					gpsInfo += "+" + valS + "'";
-				}
-				if (i==2) {
-					if (val1 != 0) {
-						valS.setNum(val1, 'f', 6);
-						gpsInfo += "+" + valS + "''";
-					}
-				}
-			}
-
-		}
-
-	} catch (...) {
-		gpsInfo = "";
-		//qDebug() << "could not load Exif GPS information";
 	}
-
-	return gpsInfo;
 }
 
 void DkMetaDataInfo::readTags() {
@@ -3430,8 +3197,6 @@ void DkMetaDataInfo::readTags() {
 		camDValues.clear();
 		descValues.clear();
 
-		QStringList camSearchTags = sCamDataTags.split(" ");
-		QStringList descSearchTags = sDescriptionTags.split(" ");
 
 		//QString preExifI = "Exif.Image.";
 		//QString preExifP = "Exif.Photo.";
@@ -3439,6 +3204,8 @@ void DkMetaDataInfo::readTags() {
 		
 		QFileInfo file = imgC->file();
 		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
+		QStringList camSearchTags = DkMetaDataHelper::getInstance().getCamSearchTags();
+		QStringList descSearchTags = DkMetaDataHelper::getInstance().getDescSearchTags();
 
 		//if (metaData->isLoaded()) {
 
@@ -3453,77 +3220,24 @@ void DkMetaDataInfo::readTags() {
 					//special treatments
 					// aperture
 					if (i == DkSettings::camData_aperture) {
-						
-						QString aValue = metaData->getExifValue(tmp);
-
-						qDebug() << aValue;
-						if (aValue.isEmpty()) aValue = metaData->getExifValue("FNumber");
-
-						QStringList sList = aValue.split('/');
-
-						if (sList.size() == 2) {
-							double val = std::pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
-							Value = QString::fromStdString(DkUtils::stringify(val,1));
-						}
-						else
-							Value = aValue;
-
+						Value = DkMetaDataHelper::getInstance().getApertureValue(metaData);
 					}
 					// focal length
 					else if (i == DkSettings::camData_focallength) {
-
-						QString aValue = metaData->getExifValue(tmp);
-						QStringList sList = aValue.split('/');
-
-						if (sList.size() == 2) {
-							double val = sList[0].toDouble()/sList[1].toDouble();
-							Value = QString::fromStdString(DkUtils::stringify(val,1)) + " mm";
-						}
-						else
-							Value = aValue;
-
+						Value = DkMetaDataHelper::getInstance().getFocalLength(metaData);
 					}
 					// exposure time
 					else if (i == DkSettings::camData_exposuretime) {
-
-						QString aValue = metaData->getExifValue(tmp);
-						QStringList sList = aValue.split('/');
-
-						if (sList.size() == 2) {
-							int nom = sList[0].toInt();		// nominator
-							int denom = sList[1].toInt();	// denominator
-
-							// if exposure time is less than a second -> compute the gcd for nice values (1/500 instead of 2/1000)
-							if (nom <= denom) {
-								int gcd = DkMath::gcd(denom, nom);
-								Value = QString::number(nom/gcd) % QString("/") % QString::number(denom/gcd);
-							}
-							else
-								Value = QString::fromStdString(DkUtils::stringify((float)nom/(float)denom,1));
-
-							Value += " sec";
-						}
-						else
-							Value = aValue;
-
+						Value = DkMetaDataHelper::getInstance().getExposureTime(metaData);
 					}
 					else if (i == DkSettings::camData_size) {	
 						Value = QString::number(imgC->image().width()) + " x " + QString::number(imgC->image().height());
 					}
 					else if (i == DkSettings::camData_exposuremode) {
-						//qDebug() << "exposure mode was found";
-						Value = metaData->getExifValue(tmp);
-						int mode = Value.toInt();
-
-						if (mode >= 0 && mode < exposureModes.size())
-							Value = exposureModes[mode];
-						
+						Value = DkMetaDataHelper::getInstance().getExposureMode(metaData);						
 					} 
 					else if (i == DkSettings::camData_flash) {
-
-						Value = metaData->getExifValue(tmp);
-						unsigned int mode = Value.toUInt();
-						Value = flashModes[mode];
+						Value = DkMetaDataHelper::getInstance().getFlashMode(metaData);
 					}
 					else {
 						//qDebug() << "size" << imgSize.width() << imgSize.height();
@@ -3589,8 +3303,13 @@ void DkMetaDataInfo::createLabels() {
 		return;
 	}
 
+	QStringList camDTags = DkMetaDataHelper::getInstance().getTranslatedCamTags();
+	QStringList descTags = DkMetaDataHelper::getInstance().getTranslatedDescTags();
+
 	if (camDValues.size() != camDTags.size() || descValues.size() != descTags.size()) {
 		qDebug() << "error reading metadata: tag number is not equal value number";
+		qDebug() << "cam value size: " << camDValues.size() << " cam tag size: " << camDTags.size();
+		qDebug() << "desc value size: " << descValues.size() << " desc tag size: " << descTags.size();
 		return;
 	}
 
