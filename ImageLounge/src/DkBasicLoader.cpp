@@ -693,32 +693,17 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 
 	if (ba->isEmpty())
 		return false;
-
-
-	const int* pData = (const int*)ba->constData();
-	int rIdx = 0;
-	int fileCount = pData[rIdx]; rIdx++;
-	int vecSize = pData[rIdx]; rIdx++;
-	rIdx++; // skip two shorts
+	
+	// read header & get a pointer to the first image
+	int fileCount, vecSize;
+	const unsigned char* imgPtr = (const unsigned char*)ba->constData();
+	if (!readHeader(&imgPtr, fileCount, vecSize))
+		return false;
 
 	int guessedW = 0;
 	int guessedH = 0;
 
-	// parse patch size from file
-	QString fName = fileInfo.fileName();
-	QStringList sections = fName.split(QRegExp("[-\\.]"));	
-
-	for (int idx = 0; idx < sections.size(); idx++) {
-
-		QString tmpSec = sections[idx];
-		qDebug() << "section: " << tmpSec;
-
-		int sIdx = tmpSec.indexOf("w");
-		if (tmpSec.contains("w"))
-			guessedW = tmpSec.remove("w").toInt();
-		else if (tmpSec.contains("h"))
-			guessedH = tmpSec.remove("h").toInt();
-	}
+	getPatchSizeFromFileName(fileInfo.fileName(), guessedW, guessedH);
 
 	qDebug() << "patch size from filename: " << guessedW << " x " << guessedH;
 
@@ -731,6 +716,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 	if(guessedW <= 0 || guessedH <= 0 || guessedW * guessedH != vecSize) {
 		
 		// TODO: ask user
+		qDebug() << "dimensions do not match, patch size: " << guessedW << " x " << guessedH << " vecSize: " << vecSize;
 		return false;
 	}
 	
@@ -747,10 +733,6 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 		numElements = qRound(nEl);
 	}
 
-	const int* dataPtr = (const int*)ba->constData();
-	dataPtr += rIdx;
-	const unsigned char* imgPtr = (const unsigned char*)dataPtr;
-
 	double nRowsCols = sqrt(numElements);
 	int numCols = qCeil(nRowsCols);
 	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
@@ -759,7 +741,13 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 
 	for (int idx = 0; idx < numElements; idx++) {
 
-		cv::Mat cPatch = getPatch(imgPtr + vecSize*idx*2+idx+1, QSize(guessedW, guessedH), 0);
+		if (*imgPtr != 0) {
+			qDebug() << "skipping non-empty byte - there is something seriously wrong here!";
+			//return false;	// stop if the byte is non-empty -> otherwise we might read wrong memory
+		}
+
+		imgPtr++;	// there is an empty byte between images
+		cv::Mat cPatch = getPatch(&imgPtr, QSize(guessedW, guessedH));
 		cv::Mat cPatchAll = allPatches(cv::Rect(idx%numCols*guessedW, qFloor(idx/numCols)*guessedH, guessedW, guessedH));
 
 		if (!cPatchAll.empty())
@@ -772,27 +760,124 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 	return true;
 }
 
-Mat DkBasicLoader::getPatch(const unsigned char* dataPtr, QSize patchSize, int mod2) const {
+void DkBasicLoader::getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {
+
+	// parse patch size from file
+	QStringList sections = fileName.split(QRegExp("[-\\.]"));	
+
+	for (int idx = 0; idx < sections.size(); idx++) {
+
+		QString tmpSec = sections[idx];
+		qDebug() << "section: " << tmpSec;
+
+		int sIdx = tmpSec.indexOf("w");
+		if (tmpSec.contains("w"))
+			width = tmpSec.remove("w").toInt();
+		else if (tmpSec.contains("h"))
+			height = tmpSec.remove("h").toInt();
+	}
+
+}
+
+bool DkBasicLoader::readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {
+
+	const int* pData = (const int*)*dataPtr;
+	fileCount = *pData; pData++;	// read file count
+	vecSize = *pData;				// read vec size
+
+	qDebug() << "vec size: " << vecSize << " fileCount " << fileCount;
+
+	*dataPtr += 12;	// skip the first 12 (header) bytes
+
+	return true;
+}
+
+// the double pointer is here needed to additionally increase the pointer value
+Mat DkBasicLoader::getPatch(const unsigned char** dataPtr, QSize patchSize) const {
 	
-	cv::Mat img(patchSize.height(), patchSize.width(), CV_16UC1, (void*)dataPtr);
 	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, Scalar(0));
 
 	// ok, take just the second byte
 	for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
 
 		unsigned char* ptr8U = img8U.ptr<unsigned char>(rIdx);
-		unsigned char* ptr16U = img.ptr<unsigned char>(rIdx);
 
 		for (int cIdx = 0; cIdx < img8U.cols; cIdx++) {
-			ptr8U[cIdx] = ptr16U[cIdx*2];
+			ptr8U[cIdx] = **dataPtr;
+			*dataPtr += 2;	// it is strange: opencv stores vec files as 16 bit but just use the 2nd byte
 		}
 	}
 
 	return img8U;
 }
+
+int DkBasicLoader::mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const {
+
+	int lastVecSize = 0;
+	int totalFileCount = 0;
+	int vecCount = 0;
+	int pWidth = 0, pHeight = 0;
+	QByteArray vecBuffer;
+
+	for (int idx = 0; idx < vecFileInfos.size(); idx++) {
+
+		QFileInfo fInfo = vecFileInfos.at(idx);
+		QSharedPointer<QByteArray> ba = loadFileToBuffer(fInfo);
+		if (ba->isEmpty()){
+			qDebug() << "could not load: " << fInfo.fileName();
+			continue;
+		}
+
+		int fileCount, vecSize;
+		const unsigned char* dataPtr = (const unsigned char*)ba->constData();
+		if (!readHeader(&dataPtr, fileCount, vecSize)) {
+			qDebug() << "could not read header, skipping: " << fInfo.fileName();
+			continue;
+		}
+
+		if (lastVecSize && vecSize != lastVecSize) {
+			qDebug() << "wrong vec size, skipping: " << fInfo.fileName();
+			continue;
+		}
+
+		vecBuffer.append((const char*)dataPtr, vecSize*fileCount*2+fileCount);	// +fileCount accounts for the '\0' bytes between the patches
+		
+		getPatchSizeFromFileName(fInfo.fileName(), pWidth, pHeight);
+
+		totalFileCount += fileCount;
+		lastVecSize = vecSize;
+
+		vecCount++;
+	}
+
+	// don't save if we could not merge the files
+	if (!vecCount)
+		return vecCount;
+
+	unsigned int* header = new unsigned int[3];
+	header[0] = totalFileCount;
+	header[1] = lastVecSize;
+	header[2] = 0;
+
+	vecBuffer.prepend((const char*) header, 3*sizeof(int));
+
+	// append width, height if we don't know
+	if (pWidth && pHeight) {
+		QString whString = "-w" + QString::number(pWidth) + "-h" + QString::number(pHeight);
+		saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + whString + "." + saveFileInfo.suffix());
+	}
+
+	QFile file(saveFileInfo.absoluteFilePath());
+	file.open(QIODevice::WriteOnly);
+	file.write(vecBuffer);
+	file.close();
+
+	return vecCount;
+}
+
 #endif
 
-void DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba) {
+void DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba) const {
 
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
@@ -800,7 +885,7 @@ void DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba) 
 	ba = file.readAll();
 }
 
-QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo) {
+QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo) const {
 
 	QFile file(fileInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);

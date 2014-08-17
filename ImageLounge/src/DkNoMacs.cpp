@@ -1730,6 +1730,33 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 		qDebug() << "dropping: " << url;
 		
 		QFileInfo file = QFileInfo(url.toLocalFile());
+		QList<QUrl> urls = event->mimeData()->urls();
+
+		// merge OpenCV vec files if multiple vec files are dropped
+		if (urls.size() > 1 && file.suffix() == "vec") {
+
+			QVector<QFileInfo> vecFiles;
+
+			for (int idx = 0; idx < urls.size(); idx++)
+				vecFiles.append(urls.at(idx).toLocalFile());
+
+			// ask user for filename
+			QFileInfo sInfo(QFileDialog::getSaveFileName(this, tr("Save File"),
+				vecFiles.at(0).absolutePath(), "Cascade Training File (*.vec)"));
+			
+			DkBasicLoader loader;
+			int numFiles = loader.mergeVecFiles(vecFiles, sInfo);
+			
+			if (numFiles) {
+				viewport()->loadFile(sInfo);
+				viewport()->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
+			}
+
+
+			return;
+		}
+		else
+			qDebug() << urls.size() << file.suffix() << " files dropped";
 
 		// just accept image files
 		if (DkImageLoader::isValid(file))
@@ -1739,7 +1766,6 @@ void DkNoMacs::dropEvent(QDropEvent *event) {
 		else
 			qDebug() << url.toString() << " is not valid...";
 		
-		QList<QUrl> urls = event->mimeData()->urls();
 		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
 			newInstance(QFileInfo(urls[idx].toLocalFile()));
 		
