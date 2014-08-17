@@ -86,11 +86,17 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	QImage thumb;
 	DkMetaDataT metaData;
 
+	QSharedPointer<QByteArray> baZip = QSharedPointer<QByteArray>();
+	if (file.dir().path().contains(".zip")) baZip = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(file), DkZipContainer::decodeImageFile(file));
+
 	try {
-		if (!ba || ba->isEmpty())
-			metaData.readMetaData(file);
-		else
-			metaData.readMetaData(file, ba);
+		if (baZip && !baZip->isEmpty())	metaData.readMetaData(file, baZip);
+		else {
+			if (!ba || ba->isEmpty())
+				metaData.readMetaData(file);
+			else
+				metaData.readMetaData(file, ba);
+		}
 
 		thumb = metaData.getThumbnail();
 	}
@@ -165,8 +171,14 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		if (thumb.isNull()) {
 			DkBasicLoader loader;
 			
-			if (loader.loadGeneral(file, ba, true, true))
+			if (baZip && !baZip->isEmpty())	{
+				if (loader.loadGeneral(file, baZip, true, true))
 				thumb = loader.image();
+			}
+			else {
+				if (loader.loadGeneral(file, ba, true, true))
+					thumb = loader.image();
+			}
 		}
 
 		// the image is not scaled correctly yet

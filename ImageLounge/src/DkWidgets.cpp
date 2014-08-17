@@ -548,6 +548,7 @@ void DkFilePreview::mousePressEvent(QMouseEvent *event) {
 
 void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 
+	int dsa = currentFileIdx;
 	currentDx = 0;
 	moveImageTimer->stop();
 	wheelButton->hide();
@@ -559,7 +560,8 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
 			if (idx < thumbs.size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
-				emit loadFileSignal(thumbs.at(idx)->file());
+				if (thumbs.at(idx)->isFromZip()) emit changeFileSignal(idx - currentFileIdx);
+				else emit loadFileSignal(thumbs.at(idx)->file());
 			}
 		}
 	}
@@ -3404,6 +3406,7 @@ void DkMetaDataInfo::readTags() {
 		QString preIptc = "Iptc.Application2.";
 		
 		QFileInfo file = imgC->file();
+		if(imgC->isFromZip()) file = imgC->getZipData()->getZipFileInfo();
 		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 
 		//if (metaData->isLoaded()) {
@@ -3528,8 +3531,9 @@ void DkMetaDataInfo::readTags() {
 				} else if (mapIptcExif[DkSettings::camData_end + i] == 2) {
 					//all other defined tags not in metadata
 					tmp = descSearchTags.at(i);
-					if (!tmp.compare("Path"))
+					if (!tmp.compare("Path")) {
 						Value = QString(file.absoluteFilePath());
+					}
 					else if (!tmp.compare("FileSize")) {
 						Value = DkUtils::readableByte(file.size());
 					} else

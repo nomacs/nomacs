@@ -34,6 +34,9 @@
 #include <QFutureWatcher>
 #include <QTimer>
 
+// qzip
+#include <JlCompress.h>
+
 #include "DkMetaData.h"
 #include "DkBasicLoader.h"
 #include "DkThumbs.h"
@@ -50,6 +53,28 @@
 #endif
 
 namespace nmc {
+
+class DllExport DkZipContainer {
+
+public:
+	DkZipContainer(const QFileInfo& fileInfo);
+
+	bool isZip();
+	QFileInfo getZipFileInfo();
+	QFileInfo getImageFileInfo();
+	QFileInfo getEncodedFileInfo();
+	static QSharedPointer<QByteArray> extractImage(QFileInfo zipFile, QFileInfo imageFile);
+	static QFileInfo decodeZipFile(const QFileInfo& encodedFileInfo);
+	static QFileInfo decodeImageFile(const QFileInfo& encodedFileInfo);
+	static QFileInfo encodeZipFile(const QFileInfo& zipFile, const QString& imageFile);
+
+protected:
+	QFileInfo encodedFileInfo;
+	QFileInfo zipFileInfo;
+	QFileInfo imageFileInfo;
+	bool imageInZip;
+
+};
 
 class DllExport DkImageContainer {
 
@@ -75,6 +100,7 @@ public:
 	bool hasImage() const;
 	int getLoadState() const;
 	QFileInfo file() const;
+	bool isFromZip() const;
 	bool isEdited() const;
 	bool isSelected() const;
 	int getPageIdx() const;
@@ -84,6 +110,7 @@ public:
 	QSharedPointer<DkThumbNailT> getThumb() const;
 	float getMemoryUsage() const;
 	float getFileSize() const;
+	QSharedPointer<DkZipContainer> getZipData() const;
 
 	bool exists();
 	bool setPageIdx(int skipIdx);
@@ -99,6 +126,7 @@ protected:
 	QSharedPointer<QByteArray> fileBuffer;
 	QSharedPointer<DkBasicLoader> loader;
 	QSharedPointer<DkThumbNailT> thumb;
+	QSharedPointer<DkZipContainer> zipData;
 
 	int loadState;
 	bool edited;
