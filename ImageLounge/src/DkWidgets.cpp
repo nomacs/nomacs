@@ -548,7 +548,6 @@ void DkFilePreview::mousePressEvent(QMouseEvent *event) {
 
 void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 
-	int dsa = currentFileIdx;
 	currentDx = 0;
 	moveImageTimer->stop();
 	wheelButton->hide();
