@@ -84,6 +84,50 @@ void DkImageLoader::clearPath() {
 	currentImage.clear();
 }
 
+/**
+ * Loads a given zip archive and the first image in it.
+ * @param zipFile the archive to be loaded.
+ **/ 
+bool DkImageLoader::loadZipArchive(QFileInfo zipFile) {
+
+	QStringList fileNameList = JlCompress::getFileList(zipFile.absoluteFilePath());
+	
+	// remove the * in fileFilters
+	QStringList fileFiltersClean = DkSettings::app.browseFilters;
+	for (int idx = 0; idx < fileFiltersClean.size(); idx++)
+		fileFiltersClean[idx].replace("*", "");
+
+	QStringList fileList;
+	for (int idx = 0; idx < fileNameList.size(); idx++) {
+		
+		for (int idxFilter = 0; idxFilter < fileFiltersClean.size(); idxFilter++) {
+
+			if (fileNameList.at(idx).contains(fileFiltersClean[idxFilter], Qt::CaseInsensitive)) {
+				fileList.append(fileNameList.at(idx));
+				break;
+			}
+		}
+	}
+
+	QFileInfoList fileInfoList;
+	//encode both the input zip file and the output image into a single fileInfo
+	for (int idx = 0; idx < fileList.size(); idx++)
+		fileInfoList.append(DkZipContainer::encodeZipFile(zipFile, fileList.at(idx)));
+
+	images.clear();
+	createImages(fileInfoList);
+	
+	// zip archives could not contain known image formats
+	if (fileInfoList.empty()) {
+		emit showInfoSignal(tr("%1 \n does not contain any image").arg(zipFile.fileName()), 4000);	// stop showing
+		return false;
+	}
+
+	emit updateDirSignal(images);
+
+	return true;
+}
+
 bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) {
 
 	newFile.refresh();
@@ -444,6 +488,17 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findOrCreateFile(const QFileInf
 
 QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QFileInfo& file) const {
 
+	// if one image is from zip than all should be
+	// for images in zip the "images[idx]->file() == file" comparison somahow does not work
+	if(images.size() > 0) {
+
+		if (images[0]->isFromZip()) {
+			int idx = findFileIdx(file, images);
+			if (idx < 0) return QSharedPointer<DkImageContainerT>();
+			else return images[idx];
+		}
+	}
+
 	for (int idx = 0; idx < images.size(); idx++) {
 
 		if (images[idx]->file() == file)
@@ -606,9 +661,12 @@ void DkImageLoader::reloadImage() {
 
 void DkImageLoader::load(const QFileInfo& file) {
 
-	loadDir(file);
+	bool isZipArchive = (file.isFile() && file.suffix().compare("zip") == 0);
 
-	if (file.isFile()) {
+	if (isZipArchive) loadZipArchive(file);
+	else loadDir(file);
+
+	if (file.isFile() && !isZipArchive) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
 		load(currentImage);

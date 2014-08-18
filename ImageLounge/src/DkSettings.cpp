@@ -176,6 +176,9 @@ void DkSettings::initFileFilters() {
 	openFilters.append("Large Document Format (*.psb)");
 	openFilters.append("Rohkost (*.roh)");
 
+	// archive formats
+	openFilters.append("ZIP Archive (*.zip)");
+
 	// load user filters
 	QSettings& settings = Settings::instance().getSettings();
 	openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
@@ -871,6 +874,8 @@ void DkFileFilterHandling::registerExtension(const QString& ext, const QString& 
 void DkFileFilterHandling::registerFileType(const QString& filterString, const QString& attribute, bool add) {
 
 #ifdef WIN32
+
+	if (filterString.contains("ZIP", Qt::CaseInsensitive)) return; // do not register ZIP archives
 
 	QStringList tmp = filterString.split("(");
 

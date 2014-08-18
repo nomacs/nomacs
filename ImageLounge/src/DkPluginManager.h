@@ -153,7 +153,7 @@ protected:
 	void init();
 	void createLayout();
 	void showEvent(QShowEvent *event);
-	void loadPreviouslyInstalledPlugins();
+	void loadPreviouslyInstalledPluginsList();
 };
 
 // widget with all plug-in information

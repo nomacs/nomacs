@@ -90,6 +90,9 @@ using namespace cv;
 //#include <ShlObj.h>
 //#include <Windows.h>
 
+// qzip
+#include <JlCompress.h>
+
 // my classes
 //#include "DkNoMacs.h"
 #include "DkImageStorage.h"
@@ -181,6 +184,7 @@ public:
 	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
 	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
 	bool loadDir(QDir newDir, bool scanRecursive = true);
+	bool loadZipArchive(QFileInfo zipFile);
 	
 	bool hasImage() const;
 	bool isEdited() const;
