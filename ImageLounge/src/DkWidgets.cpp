@@ -548,7 +548,6 @@ void DkFilePreview::mousePressEvent(QMouseEvent *event) {
 
 void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 
-	int dsa = currentFileIdx;
 	currentDx = 0;
 	moveImageTimer->stop();
 	wheelButton->hide();
@@ -3303,7 +3302,7 @@ QString DkMetaDataInfo::getGPSCoordinates() {
 			Lon = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitude");
 			LonRef = metaData->getNativeExifValue("Exif.GPSInfo.GPSLongitudeRef");
 			//example url
-			//http://maps.google.at/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
+			//http://maps.google.at/maps?q=N+48Â°+8'+31.940001''+E16Â°+15'+35.009998''
 
 			gpsInfo = "http://maps.google.at/maps?q=" + LatRef + "+";
 
@@ -3323,7 +3322,7 @@ QString DkMetaDataInfo::getGPSCoordinates() {
 				
 				if (i==0) {
 					valS.setNum((int)val1);
-					gpsInfo += valS + "°";
+					gpsInfo += valS + "Â°";
 				}
 				if (i==1) {
 					if (val2 > 1)							
@@ -3357,9 +3356,9 @@ QString DkMetaDataInfo::getGPSCoordinates() {
 
 				if (i==0) {
 					valS.setNum((int)val1);
-					gpsInfo += valS + "°";
-					//gpsInfo += valS + QString::fromUtf16((ushort*)"0xb0");//QChar('°');
-					//gpsInfo += valS + QString::setUnicode("0xb0");//QChar('°');
+					gpsInfo += valS + "Â°";
+					//gpsInfo += valS + QString::fromUtf16((ushort*)"0xb0");//QChar('Â°');
+					//gpsInfo += valS + QString::setUnicode("0xb0");//QChar('Â°');
 				}
 				if (i==1) {
 					if (val2 > 1)							
@@ -4363,11 +4362,11 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			QToolTip::showText(event->globalPos(),
 				QString::number(width) + " x " +
 				QString::number(height) + " px\n" +
-				QString::number(sAngle) + "°",
+				QString::number(sAngle) + "Â°",
 				this);
 		}
 
-		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + "°");
+		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + "Â°");
 	}
 
 	//QWidget::mouseMoveEvent(event);
