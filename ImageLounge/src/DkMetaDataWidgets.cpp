@@ -268,6 +268,41 @@ DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, 
 		setObjectName("DkMetaDataDock");
 
 		createLayout();
+		readSettings();
+}
+
+DkMetaDataDock::~DkMetaDataDock() {
+	writeSettings();
+}
+
+void DkMetaDataDock::writeSettings() {
+
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup(objectName());
+	
+	for (int idx = 0; idx < model->columnCount(QModelIndex()); idx++) {
+
+		QString headerVal = model->headerData(idx, Qt::Horizontal).toString();
+		settings.setValue(headerVal + "Size", treeView->columnWidth(idx));
+
+	}
+	settings.endGroup();
+}
+
+void DkMetaDataDock::readSettings() {
+	
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup(objectName());
+
+	for (int idx = 0; idx < model->columnCount(QModelIndex()); idx++) {
+
+		QString headerVal = model->headerData(idx, Qt::Horizontal).toString();
+
+		int colWidth = settings.value(headerVal + "Size", -1).toInt();
+		if (colWidth != -1) 
+			treeView->setColumnWidth(idx, colWidth);
+	}
+	settings.endGroup();
 }
 
 void DkMetaDataDock::createLayout() {
@@ -382,19 +417,24 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 	if (!index.isValid())
 		return;
 
-	// TODO: expand rows accordingly - currently crashes because matches seem to be wrong
-	for (int idx = 0; idx < expandedNames.size(); idx++) {
-		
-		QModelIndexList matches = model->match(index, Qt::DisplayRole, expandedNames.at(idx));
-		
-		for (int mIdx = 0; mIdx < matches.size(); mIdx++) {
+	if (expandedNames.contains(model->data(index).toString())) {
+		qDebug() << "expanding: " << model->data(index).toString();
+		treeView->setExpanded(index, true);
+	}
 
-			if (!treeView->isExpanded(matches.at(mIdx))) {
-				treeView->setExpanded(matches.at(mIdx), true);
-				qDebug() << model->data(matches.at(mIdx)).toString();
-				expandRows(matches.at(mIdx), expandedNames);
-			}
+	for (int idx = 0; idx < model->rowCount(index); idx++) {
+
+		QModelIndex cIndex = index.child(idx, 0);
+
+		if (expandedNames.contains(model->data(cIndex).toString())) {
+			qDebug() << "expanding: " << model->data(cIndex).toString();
+			treeView->setExpanded(cIndex, true);
+			expandRows(cIndex, expandedNames);
 		}
+		else
+			qDebug() << "NOT expanding: " << model->data(cIndex).toString();
+
+
 	}
 }
 

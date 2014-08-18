@@ -71,6 +71,7 @@ class DkMetaDataDock : public QDockWidget {
 
 public:
 	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	~DkMetaDataDock();
 
 public slots:
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
@@ -80,6 +81,8 @@ public slots:
 protected:
 	void createLayout();
 	void updateEntries();
+	void writeSettings();
+	void readSettings();
 
 	void getExpandedItemNames(const QModelIndex& index, QStringList& expandedNames);
 	void expandRows(const QModelIndex& index, const QStringList& expandedNames);
