@@ -567,7 +567,7 @@ protected:
 	// functions
 	QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
-	virtual void draw(QPainter *painter);
+	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	void drawFrame(QPainter* painter);
 	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
@@ -598,7 +598,7 @@ public slots:
 	virtual void setImage(QImage newImg);
 
 protected:
-	virtual void draw(QPainter *painter);
+	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void keyPressEvent(QKeyEvent *event);
 private:

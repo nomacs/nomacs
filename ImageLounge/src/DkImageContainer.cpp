@@ -209,7 +209,7 @@ float DkImageContainer::getFileSize() const {
 
 QImage DkImageContainer::image() {
 
-	if (loader->image().isNull() && hasImage() == not_loaded)
+	if (loader->image().isNull() && getLoadState() == not_loaded)
 		loadImage();
 
 	return loader->image();

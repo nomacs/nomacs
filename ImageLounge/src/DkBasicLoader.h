@@ -218,14 +218,25 @@ public:
 		return !qImg.isNull();
 	};
 
-	void loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba);
-	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo& fileInfo);
+	void loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba) const;
+	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo& fileInfo) const;
 	bool writeBufferToFile(const QFileInfo& fileInfo, const QSharedPointer<QByteArray> ba) const;
 
 	void release();
 
 #ifdef WITH_OPENCV
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
+	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0);
+	Mat getPatch(const unsigned char** dataPtr, QSize patchSize) const;
+	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const;
+	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
+	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;
+#else
+	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0) {return false};
+	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const {return 0};
+	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {return false};
+	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {};
+
 #endif
 
 	bool loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());

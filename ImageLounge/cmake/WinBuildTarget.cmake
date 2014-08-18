@@ -83,6 +83,15 @@ else()
 	file(COPY ${QT_DLL_PATH_tmp}//libEGLd.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 endif(NOT ENABLE_QT5)
 
+# create settings file for portable version while working
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Release/settings.nfo)
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Release/settings.nfo "")
+endif()
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Debug/settings.nfo)
+	file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Debug/settings.nfo "")
+endif()
+
+
 # copy msvcpXXX.dll to Really Release
 # todo: visual studio 2013
 if (CMAKE_GENERATOR STREQUAL "Visual Studio 11" OR  CMAKE_GENERATOR STREQUAL "Visual Studio 11 Win64")
@@ -112,6 +121,13 @@ if(MSVCP)
 else()
 	message(STATUS  "\nInfo: Could not find the correct msvcp libraries. You have to copy them manually to ReallyRelease if you want to distribute nomacs")
 endif()
+
+# copy translation files after each build
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory \"${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+foreach(QM ${NOMACS_QM})
+	add_custom_command(TARGET ${BINARY_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy \"${QM}\" \"${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>/translations/\")
+endforeach(QM)
+
 
 # set properties for Visual Studio Projects
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;ReallyRelease" CACHE STRING "limited configs" FORCE)

@@ -98,12 +98,13 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 				metaData.readMetaData(file, ba);
 		}
 
-		thumb = metaData.getThumbnail();
+		// read the full image if we want to create new thumbnails
+		if (forceLoad != force_save_thumb)
+			thumb = metaData.getThumbnail();
 	}
 	catch(...) {
 		// do nothing - we'll load the full file
 	}
-
 	removeBlackBorder(thumb);
 
 	if (thumb.isNull() && forceLoad == force_exif_thumb)
@@ -160,6 +161,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 			int tmpW = imgW;
 			imgW = imgH;
 			imgH = tmpW;
+			qDebug() << "EXIV size is flipped...";
 		}
 
 		QSize initialSize = imageReader->size();
@@ -233,12 +235,14 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 				sThumb = sThumb.transformed(rotationMatrix);
 			}
 
-			metaData.setThumbnail(thumb);
+			metaData.setThumbnail(sThumb);
 
 			if (!ba || ba->isEmpty())
 				metaData.saveMetaData(file);
 			else
 				metaData.saveMetaData(file, ba);
+
+			qDebug() << "[thumb] saved to exif data";
 		}
 		catch(...) {
 			qDebug() << "Sorry, I could not save the metadata";

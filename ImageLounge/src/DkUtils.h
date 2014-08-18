@@ -42,8 +42,6 @@
 #include <QCoreApplication>
 #include <QTranslator>
 
-
-
 #include <cmath>
 #include <sstream>
 #include <stdarg.h>

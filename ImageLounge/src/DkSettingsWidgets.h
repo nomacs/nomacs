@@ -391,24 +391,21 @@ public:
 signals:
 	void applyDefault();
 
-	private slots:
-		void setToDefaultPressed() {
-			qDebug() << "apply default pressed...";
-			emit applyDefault();
-		};
-		void bgColorReset() {
-			DkSettings::display.useDefaultColor = true;
-		};
-		void iconColorReset() {
-			DkSettings::display.defaultIconColor = true;
-		};
-
-
+private slots:
+	void setToDefaultPressed() {
+		qDebug() << "apply default pressed...";
+		emit applyDefault();
+	};
+	void bgColorReset() {
+		DkSettings::display.useDefaultColor = true;
+	};
+	void iconColorReset() {
+		DkSettings::display.defaultIconColor = true;
+	};
 
 private:
 	void init();
 	void createLayout();
-
 
 	DkDoubleSpinBoxWidget* displayTimeSpin;
 	QCheckBox* cbShowMenu;

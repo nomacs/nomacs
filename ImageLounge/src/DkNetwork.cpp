@@ -1189,7 +1189,7 @@ void DkUpdater::checkForUpdates() {
 	DkSettings::save();
 
 #ifdef WIN32
-	QUrl url ("http://www.nomacs.org/version_win_beta");
+	QUrl url ("http://www.nomacs.org/version_win_stable");
 #elif defined Q_WS_X11
 	QUrl url ("http://www.nomacs.org/version_linux");
 #elif defined Q_WS_MAC
@@ -1381,16 +1381,17 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 	QDateTime lastModifiedRemote = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
 
-	QDir storageLocation;
+
 #ifdef  WIN32
-	TCHAR szPath[MAX_PATH];
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath))) {
-		QString path = szPath;
-		path += "/" + QCoreApplication::organizationName() + "/translations/"; 
-		storageLocation = QDir(path);
+	QDir storageLocation;
+	if (DkSettings::isPortable()) {
+		storageLocation = QDir(QCoreApplication::applicationDirPath());
+		storageLocation.cd("translations");
 	}
+	else
+		storageLocation = QDir(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
 #else
-	storageLocation = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+	QDir storageLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
 #endif //  WIN32
 
 	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
@@ -1403,7 +1404,7 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 			if (!storageLocation.mkpath(storageLocation.absolutePath())) {
 				qDebug() << "unable to create storage location ... aborting";
 				emit showUpdaterMessage(tr("Unable to update translation"), tr("update")); 
-				return; // TODO error message 
+				return;
 			}
 		}
 
@@ -1599,6 +1600,39 @@ void DkRCManagerThread::connectClient() {
 
 void DkRCManagerThread::sendNewMode(int mode) {
 	newModeSignal(mode);
+}
+
+// File Downloader --------------------------------------------------------------------
+FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
+	connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)),
+		SLOT(fileDownloaded(QNetworkReply*)));
+
+	downloadFile(imageUrl);
+}
+
+FileDownloader::~FileDownloader() {
+}
+
+void FileDownloader::downloadFile(const QUrl& url) {
+		
+	QNetworkRequest request(url);
+	m_WebCtrl.get(request);
+	this->url = url;
+}
+
+void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
+	m_DownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
+	//emit a signal
+	pReply->deleteLater();
+	emit downloaded();
+}
+
+QSharedPointer<QByteArray> FileDownloader::downloadedData() const {
+	return m_DownloadedData;
+}
+
+QUrl FileDownloader::getUrl() const {
+	return url;
 }
 
 }

@@ -622,6 +622,9 @@ void DkControlWidget::settingsChanged() {
 
 void DkControlWidget::updateRating(int rating) {
 
+	if (!imgC)
+		return;
+
 	this->rating = rating;
 
 	ratingLabel->setRating(rating);
@@ -1870,6 +1873,7 @@ void DkViewPort::loadFile(QFileInfo file) {
 	} else if (loader)
 		loader->load(file);
 
+	qDebug() << "sync mode: " << (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display);
 	if ((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display) && (hasFocus() || controller->hasFocus()) && loader->hasFile())
 		tcpLoadFile(0, file.absoluteFilePath());
 }
@@ -2218,7 +2222,7 @@ void DkViewPortFrameless::paintEvent(QPaintEvent* event) {
 	DkViewPort::paintEvent(event);
 }
 
-void DkViewPortFrameless::draw(QPainter *painter) {
+void DkViewPortFrameless::draw(QPainter *painter, float opacity) {
 	
 	if (parent && parent->isFullScreen()) {
 		QColor col = QColor(0,0,0);
@@ -2629,7 +2633,7 @@ void DkViewPortContrast::changeColorTable(QGradientStops stops) {
 	
 }
 
-void DkViewPortContrast::draw(QPainter *painter) {
+void DkViewPortContrast::draw(QPainter *painter, float opacity) {
 
 	if (parent && parent->isFullScreen()) {
 		painter->setWorldMatrixEnabled(false);

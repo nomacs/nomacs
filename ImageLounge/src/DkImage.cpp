@@ -67,8 +67,6 @@ DkImageLoader::~DkImageLoader() {
 
 	//delete dirWatcher;	// needed?
 
-	qDebug() << "dir open: " << dir.absolutePath();
-	qDebug() << "filepath: " << saveDir.absolutePath();
 }
 
 /**
@@ -947,6 +945,12 @@ void DkImageLoader::updateHistory() {
 	if (!currentImage || currentImage->hasImage() != DkImageContainer::loaded)
 		return;
 
+	// sync with other instances
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup("GlobalSettings");
+	DkSettings::global.recentFolders = settings.value("recentFolders", DkSettings::global.recentFolders).toStringList();
+	DkSettings::global.recentFiles = settings.value("recentFiles", DkSettings::global.recentFiles).toStringList();
+
 	DkSettings::global.lastDir = file.absolutePath();
 
 	DkSettings::global.recentFiles.removeAll(file.absoluteFilePath());
@@ -982,8 +986,13 @@ void DkImageLoader::updateHistory() {
 	for (int idx = 0; idx < DkSettings::global.recentFolders.size()-DkSettings::global.numFiles-10; idx++)
 		DkSettings::global.recentFolders.pop_back();
 
-	DkSettings s = DkSettings();
-	s.save();
+	// sync with other instances
+	settings.setValue("recentFolders", DkSettings::global.recentFolders);
+	settings.setValue("recentFiles", DkSettings::global.recentFiles);
+	settings.endGroup();
+
+	//DkSettings s = DkSettings();
+	//s.save();
 }
 
 // image manipulation --------------------------------------------------------------------
@@ -1630,8 +1639,12 @@ bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 		return false;
 
 	QString fileName = fInfo.fileName();
-	qDebug() << "filename: " << fileName;
-	
+
+	return hasValidSuffix(fileName);
+}
+
+bool DkImageLoader::hasValidSuffix(const QString& fileName) {
+
 	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
 
 		QRegExp exp = QRegExp(DkSettings::fileFilters.at(idx), Qt::CaseInsensitive);
@@ -1640,10 +1653,7 @@ bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 			return true;
 	}
 
-	printf("I did not accept... honestly...\n");
-
 	return false;
-
 }
 
 ///**
