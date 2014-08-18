@@ -92,6 +92,7 @@ protected:
 	DkMetaDataModel* model;
 	QLabel* thumbNailLabel;
 	QSharedPointer<DkThumbNailT> thumb;
+	QStringList expandedNames;
 };
 
 };

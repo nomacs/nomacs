@@ -284,8 +284,11 @@ void DkMetaDataDock::writeSettings() {
 
 		QString headerVal = model->headerData(idx, Qt::Horizontal).toString();
 		settings.setValue(headerVal + "Size", treeView->columnWidth(idx));
-
 	}
+
+	settings.setValue("expandedNames", expandedNames);
+	qDebug() << "settings write expanded names: " << expandedNames;
+
 	settings.endGroup();
 }
 
@@ -302,6 +305,9 @@ void DkMetaDataDock::readSettings() {
 		if (colWidth != -1) 
 			treeView->setColumnWidth(idx, colWidth);
 	}
+	expandedNames = settings.value("expandedNames", QStringList()).toStringList();
+	qDebug() << "settings expanded names: " << expandedNames;
+
 	settings.endGroup();
 }
 
@@ -347,10 +353,7 @@ void DkMetaDataDock::createLayout() {
 
 void DkMetaDataDock::updateEntries() {
 
-	QStringList expandedNames;
 	getExpandedItemNames(model->index(0,0,QModelIndex()), expandedNames);
-	qDebug() << "expanded names: -----------------";
-	qDebug() << expandedNames;
 
 	model->clear();
 
@@ -402,8 +405,12 @@ void DkMetaDataDock::getExpandedItemNames(const QModelIndex& index, QStringList&
 	if (!treeView || !index.isValid())
 		return;
 
-	if (treeView->isExpanded(index))
-		expandedNames.append(model->data(index,Qt::DisplayRole).toString());
+	QString entryName = model->data(index,Qt::DisplayRole).toString();
+
+	if (treeView->isExpanded(index) && !expandedNames.contains(entryName))
+		expandedNames.append(entryName);
+	else if (!treeView->isExpanded(index))
+		expandedNames.removeAll(model->data(index,Qt::DisplayRole).toString());
 
 	int rows = model->rowCount(index);
 
@@ -427,14 +434,9 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 		QModelIndex cIndex = index.child(idx, 0);
 
 		if (expandedNames.contains(model->data(cIndex).toString())) {
-			qDebug() << "expanding: " << model->data(cIndex).toString();
 			treeView->setExpanded(cIndex, true);
 			expandRows(cIndex, expandedNames);
 		}
-		else
-			qDebug() << "NOT expanding: " << model->data(cIndex).toString();
-
-
 	}
 }
 
