@@ -5,8 +5,8 @@ you need the Qt SDK or the compiled sources (>= 4.7.0) to compile nomacs
 opencv [only needed if raw images are enabled]
 	you need to download and compile OpenCV (>= 2.2.0) using cmake
 
-libraw-0.13.5 [only needed if raw images are enabled]
-	open LibRaw-0.13.5/LibRaw.sln [convert projects if necessary]
+LibRaw-0.16.0 [only needed if raw images are enabled]
+	open LibRaw-0.16.0/LibRaw-nomacs.sln [convert projects if necessary]
 	build libraw (debug & release)
 	- don't care if some projects fail
 

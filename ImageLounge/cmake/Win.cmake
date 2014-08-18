@@ -204,11 +204,12 @@ unset(QUAZIP_LIBS CACHE)
 unset(QUAZIP_BUILD_DIRECTORY CACHE)
 unset(QUAZIP_DEPENDENCY CACHE)
 unset(QUAZIP_FOUND CACHE)
+unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
 	# QT_ROOT needed by QuaZip cmake 
     if ("${QT_ROOT}" STREQUAL "")
-        set(QT_ROOT ${QT_QTCORE_INCLUDE_DIR}/../../)
+        set(QT_ROOT ${QT_QTCORE_INCLUDE_DIR}/../..)
     endif()    
 	# these variables need to be set before adding subdirectory
 	SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)

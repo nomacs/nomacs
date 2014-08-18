@@ -1,7 +1,8 @@
 project (QuaZip)
 cmake_minimum_required(VERSION 2.6)
 
-option(BUILD_WITH_QT4 "Build QuaZip with Qt4 no matter if Qt5 was found" OFF)
+# diem: we don't want to see this check box from the nomacs cmake
+# option(BUILD_WITH_QT4 "Build QuaZip with Qt4 no matter if Qt5 was found" OFF)
 
 if( NOT BUILD_WITH_QT4 )
     # try Qt5 first, and prefer that if found

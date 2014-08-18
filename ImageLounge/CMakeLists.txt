@@ -43,6 +43,12 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.cmake)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeUser.cmake)
 endif()
 
+# find Qt
+NMC_FINDQT()
+
+# webp for all platforms
+NMC_ENABLE_WEBP()
+
 if(MSVC)
 	include(${CMAKE_SOURCE_DIR}/cmake/Win.cmake)
 elseif(APPLE)
@@ -53,13 +59,6 @@ else()
 	message(STATUS "build system unkown ... fallback to unix")
 	include(${CMAKE_SOURCE_DIR}/cmake/Unix.cmake)
 endif()
-
-# find Qt
-NMC_FINDQT()
-
-# webp for all platforms
-NMC_ENABLE_WEBP()
-
 
 # gather information for building
 include_directories (
