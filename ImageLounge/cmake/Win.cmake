@@ -197,4 +197,35 @@ if(ENABLE_UPNP)
 	endif(HUpnp_FOUND)	
 endif(ENABLE_UPNP)	
 
+#search for quazip
+unset(QUAZIP_SOURCE_DIRECTORY CACHE)
+unset(QUAZIP_INCLUDE_DIRECTORY CACHE)
+unset(QUAZIP_LIBS CACHE)
+unset(QUAZIP_BUILD_DIRECTORY CACHE)
+unset(QUAZIP_DEPENDENCY CACHE)
+unset(QUAZIP_FOUND CACHE)
+
+if(ENABLE_QUAZIP)
+	# QT_ROOT needed by QuaZip cmake 
+    if ("${QT_ROOT}" STREQUAL "")
+        set(QT_ROOT ${QT_QTCORE_INCLUDE_DIR}/../../)
+    endif()    
+	# these variables need to be set before adding subdirectory
+	SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
+	set(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
+	
+	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7)
+	
+	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)
+	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
+
+	find_package(QuaZip)
+	if(QUAZIP_FOUND)
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:quazip> ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/)
+		set(QUAZIP_DEPENDENCY "quazip")
+	else()
+		message(FATAL_ERROR "CMake was unable to find quazip")
+	endif(QUAZIP_FOUND)
+endif(ENABLE_QUAZIP)
 

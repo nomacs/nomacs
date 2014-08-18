@@ -31,9 +31,11 @@ option(ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
 if(MSVC)
   option(ENABLE_UPNP "Compile with UPNP" ON)
   option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" ON)
+  option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 else()
   option(ENABLE_UPNP "Compile with UPNP" OFF)
   option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" OFF)
+  option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
 endif()
 
 # load paths from the user file if exists 
@@ -71,6 +73,8 @@ include_directories (
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
 	${HUPNP_INCLUDE_DIR}
+	${QUAZIP_INCLUDE_DIRECTORY}
+	${ZLIB_INCLUDE_DIRS}
 )
 
 file(GLOB NOMACS_SOURCES "src/*.cpp")
