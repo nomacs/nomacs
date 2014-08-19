@@ -84,6 +84,7 @@ void DkImageLoader::clearPath() {
 	currentImage.clear();
 }
 
+#ifdef WITH_QUAZIP
 /**
  * Loads a given zip archive and the first image in it.
  * @param zipFile the archive to be loaded.
@@ -127,6 +128,7 @@ bool DkImageLoader::loadZipArchive(QFileInfo zipFile) {
 
 	return true;
 }
+#endif
 
 bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) {
 
@@ -661,12 +663,17 @@ void DkImageLoader::reloadImage() {
 
 void DkImageLoader::load(const QFileInfo& file) {
 
+#ifdef WITH_QUAZIP
 	bool isZipArchive = (file.isFile() && file.suffix().compare("zip") == 0);
 
-	if (isZipArchive) loadZipArchive(file);
-	else loadDir(file);
-
-	if (file.isFile() && !isZipArchive) {
+	if (isZipArchive) {
+	  loadZipArchive(file);
+	  firstFile();
+	  return;
+	}
+#endif
+	loadDir(file);
+	if (file.isFile()) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
 		load(currentImage);

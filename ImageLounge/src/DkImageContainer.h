@@ -35,7 +35,9 @@
 #include <QTimer>
 
 // qzip
+#ifdef WITH_QUAZIP
 #include <JlCompress.h>
+#endif
 
 #include "DkMetaData.h"
 #include "DkBasicLoader.h"
@@ -54,6 +56,7 @@
 
 namespace nmc {
 
+#ifdef WITH_QUAZIP
 class DllExport DkZipContainer {
 
 public:
@@ -75,6 +78,7 @@ protected:
 	bool imageInZip;
 
 };
+#endif
 
 class DllExport DkImageContainer {
 
@@ -110,7 +114,9 @@ public:
 	QSharedPointer<DkThumbNailT> getThumb() const;
 	float getMemoryUsage() const;
 	float getFileSize() const;
+#ifdef WITH_QUAZIP
 	QSharedPointer<DkZipContainer> getZipData() const;
+#endif
 
 	bool exists();
 	bool setPageIdx(int skipIdx);
@@ -126,7 +132,9 @@ protected:
 	QSharedPointer<QByteArray> fileBuffer;
 	QSharedPointer<DkBasicLoader> loader;
 	QSharedPointer<DkThumbNailT> thumb;
+#ifdef WITH_QUAZIP	
 	QSharedPointer<DkZipContainer> zipData;
+#endif
 
 	int loadState;
 	bool edited;

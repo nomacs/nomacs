@@ -31,11 +31,13 @@ namespace nmc {
 
 // DkImageContainer --------------------------------------------------------------------
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
-
+	this->fileInfo = fileInfo;
+#ifdef WITH_QUAZIP
 	this->zipData = QSharedPointer<DkZipContainer>(new DkZipContainer(fileInfo));
+	if(isFromZip())
+	  this->fileInfo = zipData->getImageFileInfo();
+#endif
 	//this->fileInfo = fileInfo;
-	if(!isFromZip()) this->fileInfo = fileInfo;
-	else this->fileInfo = zipData->getImageFileInfo();
 	this->loader = QSharedPointer<DkBasicLoader>(new DkBasicLoader());
 	this->fileBuffer = QSharedPointer<QByteArray>(new QByteArray());
 
@@ -151,10 +153,15 @@ QFileInfo DkImageContainer::file() const {
 	return fileInfo;
 }
 
+#ifdef WITH_QUAZIP
 bool DkImageContainer::isFromZip() const {
-
 	return zipData->isZip();
 }
+#else
+bool DkImageContainer::isFromZip() const {
+	return false;
+}  
+#endif
 
 bool DkImageContainer::exists() {
 
@@ -188,10 +195,12 @@ QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() const {
 	return thumb;
 }
 
+#ifdef WITH_QUAZIP
 QSharedPointer<DkZipContainer> DkImageContainer::getZipData() const {
 
 	return zipData;
 }
+#endif
 
 float DkImageContainer::getMemoryUsage() const {
 
@@ -250,7 +259,9 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fi
 	if (fInfo.suffix().contains("psd")) {	// for now just psd's are not cached because their file might be way larger than the part we need to read
 		return QSharedPointer<QByteArray>(new QByteArray());
 	}
+#ifdef WITH_QUAZIP
 	else if (isFromZip()) return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
+#endif
 
 	QFile file(fInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
@@ -306,8 +317,11 @@ bool DkImageContainer::setPageIdx(int skipIdx) {
 // DkImageContainerT --------------------------------------------------------------------
 DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(file) {
 
+	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(file));
+#ifdef WITH_QUAZIP	
 	if(isFromZip()) thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(zipData->getEncodedFileInfo()));
-	else thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(file));
+#endif	
+	
 	fetchingImage = false;
 	fetchingBuffer = false;
 	
@@ -352,7 +366,9 @@ void DkImageContainerT::clear() {
 
 void DkImageContainerT::checkForFileUpdates() {
 
+#ifdef WITH_QUAZIP
 	if(isFromZip()) fileInfo = zipData->getZipFileInfo();
+#endif
 
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
@@ -367,7 +383,9 @@ void DkImageContainerT::checkForFileUpdates() {
 	if (fileInfo.lastModified() != modifiedBefore)
 		waitForUpdate = true;
 
+#ifdef WITH_QUAZIP
 	if(isFromZip()) fileInfo = zipData->getImageFileInfo();
+#endif
 
 	if (edited) {
 		fileUpdateTimer.stop();
@@ -388,10 +406,12 @@ void DkImageContainerT::checkForFileUpdates() {
 }
 
 bool DkImageContainerT::loadImageThreaded(bool force) {
-	
+
+#ifdef WITH_QUAZIP
 	//zip archives: get zip file fileInfo for checks
 	if(isFromZip()) fileInfo = zipData->getZipFileInfo();
-
+#endif
+	
 	// check file for updates
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
@@ -418,9 +438,11 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 		return false;
 	}
 
+#ifdef WITH_QUAZIP
 	//zip archives: use the image file info from now on
 	if(isFromZip()) fileInfo = zipData->getImageFileInfo();
-
+#endif
+	
 	loadState = loading;
 	fetchFile();
 	return true;
@@ -667,6 +689,7 @@ void DkImageContainerT::saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<Dk
 }
 
 
+#ifdef WITH_QUAZIP
 // DkZipContainer --------------------------------------------------------------------
 DkZipContainer::DkZipContainer(const QFileInfo& fileInfo) {
 
@@ -735,5 +758,5 @@ QFileInfo DkZipContainer::getEncodedFileInfo() {
 
 	return encodedFileInfo;
 }
-
+#endif
 };
