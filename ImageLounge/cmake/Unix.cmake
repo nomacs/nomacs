@@ -87,3 +87,31 @@ if(ENABLE_TIFF)
 		message(FATAL_ERROR "libtiff was not found. It's mandatory when used with ENABLE_TIFF enabled.")
 	endif()
 endif(ENABLE_TIFF)
+
+#search for quazip
+unset(QUAZIP_SOURCE_DIRECTORY CACHE)
+unset(QUAZIP_INCLUDE_DIRECTORY CACHE)
+unset(QUAZIP_LIBS CACHE)
+unset(QUAZIP_BUILD_DIRECTORY CACHE)
+unset(QUAZIP_DEPENDENCY CACHE)
+unset(QUAZIP_FOUND CACHE)
+
+unset(QUAZIP_HEADERS CACHE)
+unset(QUAZIP_SOURCES CACHE)
+unset(QUAZIP_MOCS CACHE)
+unset(QT_ROOT CACHE)
+
+if(ENABLE_QUAZIP)
+  set(QUAZIP_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip")
+  
+  file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c*")
+  file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
+  file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
+  
+  IF (NOT ENABLE_QT5)
+    QT4_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
+  ELSE()
+    QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
+  ENDIF()
+  add_definitions(-DWITH_QUAZIP)
+endif(ENABLE_QUAZIP)
