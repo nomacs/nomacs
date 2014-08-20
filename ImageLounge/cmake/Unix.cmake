@@ -115,3 +115,15 @@ if(ENABLE_QUAZIP)
   ENDIF()
   add_definitions(-DWITH_QUAZIP)
 endif(ENABLE_QUAZIP)
+
+
+# add libqpsd
+file(GLOB LIBQPSD_SOURCES "libqpsd/*.cpp")
+file(GLOB LIBQPSD_HEADERS "libqpsd/*.h")
+file(GLOB LIBQPSD_MOCS "libqpsd/*.h")
+IF (NOT ENABLE_QT5)
+ QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ELSE()
+ QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ENDIF()
+

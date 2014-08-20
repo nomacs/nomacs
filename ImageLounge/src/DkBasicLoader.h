@@ -38,7 +38,7 @@
 #include "DkSettings.h"
 #include "DkError.h"
 #include "DkTimer.h"
-#include "../libqpsd/qpsdhandler.h"
+#include "qpsdhandler.h"
 
 #ifdef WITH_WEBP
 #include "webp/decode.h"
