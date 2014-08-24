@@ -3204,7 +3204,9 @@ void DkMetaDataInfo::readTags() {
 		QString preIptc = "Iptc.Application2.";
 		
 		QFileInfo file = imgC->file();
+#ifdef WITH_QUAZIP		
 		if(imgC->isFromZip()) file = imgC->getZipData()->getZipFileInfo();
+#endif
 		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 		QStringList camSearchTags = DkMetaDataHelper::getInstance().getCamSearchTags();
 		QStringList descSearchTags = DkMetaDataHelper::getInstance().getDescSearchTags();

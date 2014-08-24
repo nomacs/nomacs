@@ -87,9 +87,10 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	DkMetaDataT metaData;
 
 	QSharedPointer<QByteArray> baZip = QSharedPointer<QByteArray>();
+#ifdef WITH_QUAZIP
 	if (file.dir().path().contains(DkZipContainer::zipMarker())) 
 		baZip = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(file), DkZipContainer::decodeImageFile(file));
-
+#endif
 	try {
 		if (baZip && !baZip->isEmpty())	
 			metaData.readMetaData(file, baZip);
