@@ -420,6 +420,55 @@ QString DkMetaDataT::getIptcValue(const QString& key) const {
 	return info;
 }
 
+void DkMetaDataT::getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const {
+
+	fileKeys.append(QObject::tr("Filename"));
+	fileValues.append(file.fileName());
+
+	fileKeys.append(QObject::tr("Path"));
+	fileValues.append(file.absolutePath());
+
+	if (file.isSymLink()) {
+		fileKeys.append(QObject::tr("Target"));
+		fileValues.append(file.symLinkTarget());
+	}
+
+	fileKeys.append(QObject::tr("Size"));
+	fileValues.append(DkUtils::readableByte(file.size()));
+
+	// date group
+	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));
+	fileValues.append(file.created().toString(Qt::SystemLocaleDate));
+
+	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Modified"));
+	fileValues.append(file.lastModified().toString(Qt::SystemLocaleDate));
+
+	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Read"));
+	fileValues.append(file.lastRead().toString(Qt::SystemLocaleDate));
+
+	if (!file.owner().isEmpty()) {
+		fileKeys.append(QObject::tr("Owner"));
+		fileValues.append(file.owner());
+	}
+
+	fileKeys.append(QObject::tr("OwnerID"));
+	fileValues.append(QString::number(file.ownerId()));
+
+	if (!file.group().isEmpty()) {
+		fileKeys.append(QObject::tr("Group"));
+		fileValues.append(file.group());
+	}
+	
+	QStringList tmpKeys;
+
+	// full file keys are needed to create the hierarchy
+	for (int idx = 0; idx < fileKeys.size(); idx++) {
+		tmpKeys.append(QObject::tr("File") + "." + fileKeys.at(idx));
+	}
+
+	fileKeys = tmpKeys;
+}
+
 QImage DkMetaDataT::getThumbnail() const {
 
 	QImage qThumb;
