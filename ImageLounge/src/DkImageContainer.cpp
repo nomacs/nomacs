@@ -155,17 +155,21 @@ QFileInfo DkImageContainer::file() const {
 	return fileInfo;
 }
 
+bool DkImageContainer::isFromZip() const {
 #ifdef WITH_QUAZIP
-bool DkImageContainer::isFromZip() const {
 	return zipData->isZip();
-}
 #else
-bool DkImageContainer::isFromZip() const {
 	return false;
-}  
 #endif
+}
 
 bool DkImageContainer::exists() {
+
+#ifdef WITH_QUAZIP
+
+	if (isFromZip())
+		return true;
+#endif
 
 	fileInfo.refresh();
 	return fileInfo.exists();
@@ -257,13 +261,14 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fi
 
 	QFileInfo fInfo = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : fileInfo;
 
+#ifdef WITH_QUAZIP
+	if (isFromZip()) 
+		return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
+#endif
+
 	if (fInfo.suffix().contains("psd")) {	// for now just psd's are not cached because their file might be way larger than the part we need to read
 		return QSharedPointer<QByteArray>(new QByteArray());
 	}
-#ifdef WITH_QUAZIP
-	else if (isFromZip()) 
-		return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
-#endif
 
 	QFile file(fInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
@@ -688,87 +693,6 @@ QFileInfo DkImageContainerT::saveImageIntern(const QFileInfo fileInfo, QSharedPo
 void DkImageContainerT::saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer) {
 
 	return DkImageContainer::saveMetaDataIntern(fileInfo, loader, fileBuffer);
-}
-
-
-#ifdef WITH_QUAZIP
-// DkZipContainer --------------------------------------------------------------------
-DkZipContainer::DkZipContainer(const QFileInfo& fileInfo) {
-
-	encodedFileInfo = QFileInfo();
-	zipFileInfo = QFileInfo();
-	imageFileInfo = QFileInfo();
-
-	if(fileInfo.dir().path().contains(mZipMarker)) {
-		imageInZip = true;
-		encodedFileInfo = fileInfo;
-		zipFileInfo = decodeZipFile(fileInfo);
-		imageFileInfo = decodeImageFile(fileInfo);
-		qDebug() << "path: " << fileInfo.dir().path();
-	}
-	else {
-		imageInZip = false;
-		qDebug() << "no container: " << fileInfo.dir().path();
-	}
-}
-
-QFileInfo DkZipContainer::encodeZipFile(const QFileInfo& zipFile, const QString& imageFile) {
-
-	return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
-}
-
-QFileInfo DkZipContainer::decodeZipFile(const QFileInfo& encodedFileInfo) {
-
-	return encodedFileInfo.dir().path().left(encodedFileInfo.dir().path().indexOf(mZipMarker));
-}
-
-QFileInfo DkZipContainer::decodeImageFile(const QFileInfo& encodedFileInfo) {
-
-	return encodedFileInfo.dir().path().right(encodedFileInfo.dir().path().size() - encodedFileInfo.dir().path().indexOf(mZipMarker) - QString(mZipMarker).size()).replace(mZipMarker,"/") + encodedFileInfo.fileName();
-}
-
-QSharedPointer<QByteArray> DkZipContainer::extractImage(QFileInfo zipFile, QFileInfo imageFile) {
-
-	QuaZip zip(zipFile.absoluteFilePath());		
-	if(!zip.open(QuaZip::mdUnzip)) 
-		return QSharedPointer<QByteArray>(new QByteArray());
-
-	zip.setCurrentFile(imageFile.filePath());
-	QuaZipFile extractedFile(&zip);
-	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
-		return QSharedPointer<QByteArray>(new QByteArray());
-
-	QSharedPointer<QByteArray> ba(new QByteArray(extractedFile.readAll()));
-	extractedFile.close();
-
-	zip.close();
-
-	return ba;
-}
-
-bool DkZipContainer::isZip() {
-
-	return imageInZip;
-}
-
-QFileInfo DkZipContainer::getZipFileInfo() {
-
-	return zipFileInfo;
-}
-
-QFileInfo DkZipContainer::getImageFileInfo() {
-
-	return imageFileInfo;
-}
-
-QFileInfo DkZipContainer::getEncodedFileInfo() {
-
-	return encodedFileInfo;
-}
-#endif
-QString DkZipContainer::zipMarker() {
-
-	return mZipMarker;
 }
 
 };

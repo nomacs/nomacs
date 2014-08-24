@@ -92,6 +92,8 @@ QStringList DkSettings::openFilters = QStringList();
 // container formats
 QStringList DkSettings::containerFilters = QStringList();
 
+QString DkSettings::containerRawFilters = "";
+
 DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
 DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
@@ -177,14 +179,19 @@ void DkSettings::initFileFilters() {
 	// other formats
 	openFilters.append("Adobe Photoshop (*.psd)");
 	openFilters.append("Large Document Format (*.psb)");
-	openFilters.append("Rohkost (*.roh)");
 
 	// archive formats
 	containerFilters.append("ZIP Archive (*.zip)");
-	containerFilters.append("RAR Archive (*.rar)");
-	containerFilters.append("Microsoft Office Document (*.docx *.pptx *.xlsx)");
-
+	containerFilters.append("Microsoft Word Document (*.docx)");
+	containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
+	containerFilters.append("Microsoft Excel Document (*.xlsx)");
+	
 	openFilters += containerFilters;
+
+	containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
+
+	// finally: fabians filter
+	openFilters.append("Rohkost (*.roh)");
 
 	// load user filters
 	QSettings& settings = Settings::instance().getSettings();
@@ -287,11 +294,17 @@ void DkSettings::load(bool force) {
 
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
 	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
-	app_p.browseFilters = settings.value("browseFilters", fileFilters).toStringList();
+	
+	QStringList tmpFileFilters = fileFilters;
+	QStringList tmpContainerFilters = containerRawFilters.split(" ");
+	for (int idx = 0; idx < tmpContainerFilters.size(); idx++) {
+		tmpFileFilters.removeAll(tmpContainerFilters.at(idx));
+	}
+	app_p.browseFilters = settings.value("browseFilters", tmpFileFilters).toStringList();
 
 	// double-check (if user removes all filters he can't browse anymore - so override this case)
 	if (app_p.browseFilters.empty())
-		app_p.browseFilters = fileFilters;
+		app_p.browseFilters = tmpFileFilters;
 
 	app_p.registerFilters = settings.value("registerFilters", app_p.registerFilters).toStringList();
 	app_p.advancedSettings = settings.value("advancedSettings", app_p.advancedSettings).toBool();

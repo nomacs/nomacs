@@ -90,6 +90,33 @@ namespace nmc {
 // the destructor of DkMetaDataT is trivial - could someone check for this so we can suppress it?
 class DkMetaDataT;
 
+#ifdef WITH_QUAZIP
+class DllExport DkZipContainer {
+
+public:
+	DkZipContainer(const QFileInfo& fileInfo);
+
+	bool isZip();
+	QFileInfo getZipFileInfo();
+	QFileInfo getImageFileInfo();
+	QFileInfo getEncodedFileInfo();
+	static QString zipMarker();
+	static QSharedPointer<QByteArray> extractImage(QFileInfo zipFile, QFileInfo imageFile);
+	static void extractImage(QFileInfo zipFile, QFileInfo imageFile, QByteArray& ba);
+	static QFileInfo decodeZipFile(const QFileInfo& encodedFileInfo);
+	static QFileInfo decodeImageFile(const QFileInfo& encodedFileInfo);
+	static QFileInfo encodeZipFile(const QFileInfo& zipFile, const QString& imageFile);
+
+protected:
+	QFileInfo encodedFileInfo;
+	QFileInfo zipFileInfo;
+	QFileInfo imageFileInfo;
+	bool imageInZip;
+	static QString mZipMarker;
+
+};
+#endif
+
 /**
  * This class provides image loading and editing capabilities.
  * It additionally stores the currently loaded image.

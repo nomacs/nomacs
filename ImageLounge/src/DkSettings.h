@@ -300,6 +300,7 @@ public:
 	static QStringList openFilters;	// for open dialog
 	static QStringList saveFilters;	// for save dialog
 	static QStringList containerFilters;
+	static QString containerRawFilters;
 
 	static App& getAppSettings();
 	static Display& getDisplaySettings();

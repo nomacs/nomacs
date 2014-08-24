@@ -133,6 +133,13 @@ bool DkImageLoader::loadZipArchive(QFileInfo zipFile) {
 
 bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) {
 
+#ifdef WITH_QUAZIP
+	bool isZipArchive = DkBasicLoader::isContainer(newFile);
+
+	if (isZipArchive)
+		return loadZipArchive(newFile);
+#endif
+
 	newFile.refresh();
 	if (!newFile.exists())
 		return false;
@@ -400,6 +407,8 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	}
 	// tell user that there is nothing left to display
 	else if (newFileIdx < 0) {
+
+		// TODO: find an elegant way to switch back to the zip folder
 		QString msg = tr("You have reached the beginning");
 		showInfoSignal(msg, 1000);
 		return imgC;
@@ -663,19 +672,15 @@ void DkImageLoader::reloadImage() {
 
 void DkImageLoader::load(const QFileInfo& file) {
 
-#ifdef WITH_QUAZIP
-	bool isZipArchive = DkBasicLoader::isContainer(file);
+	bool hasZipMarker = false;
 
-	if (isZipArchive) {
-	  loadZipArchive(file);
-	  firstFile();
-	  return;
-	}
+#ifdef WITH_QUAZIP
+	hasZipMarker = file.absoluteFilePath().contains(DkZipContainer::zipMarker());
 #endif
 
 	loadDir(file);
 
-	if (file.isFile() || file.absoluteFilePath().contains(DkZipContainer::zipMarker())) {
+	if (file.isFile() || hasZipMarker) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
 		load(currentImage);
@@ -689,6 +694,16 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 
 	if (!image)
 		return;
+
+#ifdef WITH_QUAZIP
+	bool isZipArchive = DkBasicLoader::isContainer(image->file());
+
+	if (isZipArchive) {
+		loadZipArchive(image->file());
+		firstFile();
+		return;
+	}
+#endif
 
 	setCurrentImage(image);
 
