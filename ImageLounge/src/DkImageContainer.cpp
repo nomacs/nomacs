@@ -29,7 +29,9 @@
 
 namespace nmc {
 
+#ifdef WITH_QUAZIP
 QString DkZipContainer::mZipMarker = "dIrChAr";
+#endif
 
 // DkImageContainer --------------------------------------------------------------------
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {

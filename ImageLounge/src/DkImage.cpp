@@ -591,6 +591,7 @@ bool DkImageLoader::unloadFile() {
 
 		int answer = msgBox->exec();
 
+		// TODO: Save As dialog for unsupported files
 		if (answer == QMessageBox::Accepted || answer == QMessageBox::Yes) {
 			currentImage->saveImageThreaded(currentImage->file());
 		}

@@ -1423,11 +1423,9 @@ DkZipContainer::DkZipContainer(const QFileInfo& fileInfo) {
 		encodedFileInfo = fileInfo;
 		zipFileInfo = decodeZipFile(fileInfo);
 		imageFileInfo = decodeImageFile(fileInfo);
-		qDebug() << "path: " << fileInfo.dir().path();
 	}
 	else {
 		imageInZip = false;
-		qDebug() << "no container: " << fileInfo.dir().path();
 	}
 }
 
