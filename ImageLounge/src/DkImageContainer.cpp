@@ -29,6 +29,8 @@
 
 namespace nmc {
 
+QString DkZipContainer::mZipMarker = "dIrChAr";
+
 // DkImageContainer --------------------------------------------------------------------
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 
@@ -674,39 +676,44 @@ DkZipContainer::DkZipContainer(const QFileInfo& fileInfo) {
 	zipFileInfo = QFileInfo();
 	imageFileInfo = QFileInfo();
 
-	if(fileInfo.dir().path().contains(".zip")) {
-
+	if(fileInfo.dir().path().contains(mZipMarker)) {
 		imageInZip = true;
 		encodedFileInfo = fileInfo;
 		zipFileInfo = decodeZipFile(fileInfo);
 		imageFileInfo = decodeImageFile(fileInfo);
+		qDebug() << "path: " << fileInfo.dir().path();
 	}
-	else imageInZip = false;
+	else {
+		imageInZip = false;
+		qDebug() << "no container: " << fileInfo.dir().path();
+	}
 }
 
 QFileInfo DkZipContainer::encodeZipFile(const QFileInfo& zipFile, const QString& imageFile) {
 
-	return QFileInfo(QDir(zipFile.absoluteFilePath() + "dIrChAr" + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", "dIrChAr")),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
+	return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
 }
 
 QFileInfo DkZipContainer::decodeZipFile(const QFileInfo& encodedFileInfo) {
 
-	return encodedFileInfo.dir().path().left(encodedFileInfo.dir().path().indexOf("dIrChAr"));
+	return encodedFileInfo.dir().path().left(encodedFileInfo.dir().path().indexOf(mZipMarker));
 }
 
 QFileInfo DkZipContainer::decodeImageFile(const QFileInfo& encodedFileInfo) {
 
-	return encodedFileInfo.dir().path().right(encodedFileInfo.dir().path().size() - encodedFileInfo.dir().path().indexOf("dIrChAr") - QString("dIrChAr").size()).replace("dIrChAr","/") + encodedFileInfo.fileName();
+	return encodedFileInfo.dir().path().right(encodedFileInfo.dir().path().size() - encodedFileInfo.dir().path().indexOf(mZipMarker) - QString(mZipMarker).size()).replace(mZipMarker,"/") + encodedFileInfo.fileName();
 }
 
 QSharedPointer<QByteArray> DkZipContainer::extractImage(QFileInfo zipFile, QFileInfo imageFile) {
 
 	QuaZip zip(zipFile.absoluteFilePath());		
-	if(!zip.open(QuaZip::mdUnzip)) return QSharedPointer<QByteArray>(new QByteArray());
+	if(!zip.open(QuaZip::mdUnzip)) 
+		return QSharedPointer<QByteArray>(new QByteArray());
 
 	zip.setCurrentFile(imageFile.filePath());
 	QuaZipFile extractedFile(&zip);
-	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError()!=UNZ_OK) return QSharedPointer<QByteArray>(new QByteArray());
+	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
+		return QSharedPointer<QByteArray>(new QByteArray());
 
 	QSharedPointer<QByteArray> ba(new QByteArray(extractedFile.readAll()));
 	extractedFile.close();
@@ -734,6 +741,11 @@ QFileInfo DkZipContainer::getImageFileInfo() {
 QFileInfo DkZipContainer::getEncodedFileInfo() {
 
 	return encodedFileInfo;
+}
+
+QString DkZipContainer::zipMarker() {
+
+	return mZipMarker;
 }
 
 };

@@ -159,6 +159,8 @@ public:
 	void saveThumbToMetaData(const QFileInfo& fileInfo);
 	void saveMetaData(const QFileInfo& fileInfo);
 
+	static bool isContainer(const QFileInfo& fileInfo);
+
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
 	 * @param img the new image

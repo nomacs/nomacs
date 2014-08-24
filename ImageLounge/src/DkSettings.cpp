@@ -89,6 +89,9 @@ QStringList DkSettings::saveFilters = QStringList();
 // formats we can load
 QStringList DkSettings::openFilters = QStringList();
 
+// container formats
+QStringList DkSettings::containerFilters = QStringList();
+
 DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
 DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
@@ -177,7 +180,11 @@ void DkSettings::initFileFilters() {
 	openFilters.append("Rohkost (*.roh)");
 
 	// archive formats
-	openFilters.append("ZIP Archive (*.zip)");
+	containerFilters.append("ZIP Archive (*.zip)");
+	containerFilters.append("RAR Archive (*.rar)");
+	containerFilters.append("Microsoft Office Document (*.docx *.pptx *.xlsx)");
+
+	openFilters += containerFilters;
 
 	// load user filters
 	QSettings& settings = Settings::instance().getSettings();
@@ -874,8 +881,6 @@ void DkFileFilterHandling::registerExtension(const QString& ext, const QString& 
 void DkFileFilterHandling::registerFileType(const QString& filterString, const QString& attribute, bool add) {
 
 #ifdef WIN32
-
-	if (filterString.contains("ZIP", Qt::CaseInsensitive)) return; // do not register ZIP archives
 
 	QStringList tmp = filterString.split("(");
 

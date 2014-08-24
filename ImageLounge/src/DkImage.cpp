@@ -661,10 +661,13 @@ void DkImageLoader::reloadImage() {
 
 void DkImageLoader::load(const QFileInfo& file) {
 
-	bool isZipArchive = (file.isFile() && file.suffix().compare("zip") == 0);
+	// TODO: remove - add to loaddir
+	bool isZipArchive = DkBasicLoader::isContainer(file);
 
-	if (isZipArchive) loadZipArchive(file);
-	else loadDir(file);
+	if (isZipArchive) 
+		loadZipArchive(file);
+	else 
+		loadDir(file);
 
 	if (file.isFile() && !isZipArchive) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);

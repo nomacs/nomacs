@@ -1163,6 +1163,23 @@ void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByte
 
 }
 
+bool DkBasicLoader::isContainer(const QFileInfo& fileInfo) {
+
+	if (!fileInfo.isFile() || !fileInfo.exists())
+		return false;
+
+	QString suffix = fileInfo.suffix();
+
+	for (int idx = 0; idx < DkSettings::containerFilters.size(); idx++) {
+
+		if (DkSettings::containerFilters[idx].contains(suffix))
+			return true;
+		qDebug() << suffix << " not found in: " << DkSettings::containerFilters[idx];
+	}
+
+	return false;
+}
+
 // image editing --------------------------------------------------------------------
 /**
  * This method rotates an image.

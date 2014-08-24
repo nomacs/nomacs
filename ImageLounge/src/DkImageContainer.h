@@ -63,6 +63,7 @@ public:
 	QFileInfo getZipFileInfo();
 	QFileInfo getImageFileInfo();
 	QFileInfo getEncodedFileInfo();
+	static QString zipMarker();
 	static QSharedPointer<QByteArray> extractImage(QFileInfo zipFile, QFileInfo imageFile);
 	static QFileInfo decodeZipFile(const QFileInfo& encodedFileInfo);
 	static QFileInfo decodeImageFile(const QFileInfo& encodedFileInfo);
@@ -73,6 +74,7 @@ protected:
 	QFileInfo zipFileInfo;
 	QFileInfo imageFileInfo;
 	bool imageInZip;
+	static QString mZipMarker;
 
 };
 
