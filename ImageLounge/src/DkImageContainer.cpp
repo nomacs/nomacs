@@ -245,7 +245,6 @@ int DkImageContainer::getLoadState() const {
 
 bool DkImageContainer::loadImage() {
 
-
 	if (fileBuffer->isEmpty())
 		fileBuffer = loadFileToBuffer(fileInfo);
 
@@ -262,7 +261,8 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fi
 		return QSharedPointer<QByteArray>(new QByteArray());
 	}
 #ifdef WITH_QUAZIP
-	else if (isFromZip()) return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
+	else if (isFromZip()) 
+		return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
 #endif
 
 	QFile file(fInfo.absoluteFilePath());

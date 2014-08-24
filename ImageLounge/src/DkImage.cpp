@@ -125,6 +125,7 @@ bool DkImageLoader::loadZipArchive(QFileInfo zipFile) {
 	}
 
 	emit updateDirSignal(images);
+	dir = zipFile.absoluteDir();
 
 	return true;
 }
@@ -468,7 +469,6 @@ void DkImageLoader::loadFileAt(int idx) {
 			emit showInfoSignal(msg, 1000);
 			return;
 		}
-
 	}
 
 	// file requested becomes current file
@@ -672,8 +672,10 @@ void DkImageLoader::load(const QFileInfo& file) {
 	  return;
 	}
 #endif
+
 	loadDir(file);
-	if (file.isFile()) {
+
+	if (file.isFile() || file.absoluteFilePath().contains(DkZipContainer::zipMarker())) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
 		load(currentImage);

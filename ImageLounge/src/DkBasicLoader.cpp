@@ -28,6 +28,7 @@
 #include "DkBasicLoader.h"
 
 #include "DkMetaData.h"
+#include "DkImageContainer.h"
 
 namespace nmc {
 
