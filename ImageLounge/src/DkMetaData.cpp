@@ -458,7 +458,35 @@ void DkMetaDataT::getFileMetaData(QStringList& fileKeys, QStringList& fileValues
 		fileKeys.append(QObject::tr("Group"));
 		fileValues.append(file.group());
 	}
-	
+
+	QString permissionString;
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Owner"));
+	permissionString += file.permissions() & QFile::ReadOwner	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteOwner	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeOwner	? "x" : "-";
+	fileValues.append(permissionString);
+
+	permissionString = "";
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("User"));
+	permissionString += file.permissions() & QFile::ReadUser	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteUser	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeUser		? "x" : "-";
+	fileValues.append(permissionString);
+
+	permissionString = "";
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Group"));
+	permissionString += file.permissions() & QFile::ReadGroup	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteGroup	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeGroup	? "x" : "-";
+	fileValues.append(permissionString);
+
+	permissionString = "";
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Other"));
+	permissionString += file.permissions() & QFile::ReadOther	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteOther	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeOther	? "x" : "-";
+	fileValues.append(permissionString);
+
 	QStringList tmpKeys;
 
 	// full file keys are needed to create the hierarchy
