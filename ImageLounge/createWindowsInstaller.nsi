@@ -149,6 +149,7 @@ Section "MainSection" SEC01#
   File "${BUILD_DIR}\QtNetwork4.dll"
   File "${BUILD_DIR}\QtSoap27.dll"
   File "${BUILD_DIR}\QtXml4.dll"
+  File "${BUILD_DIR}\quazip.dll"
   File "${BUILD_DIR}\zlib1.dll"
   File "${BUILD_DIR}\HUpnpAV.dll"
   File "${BUILD_DIR}\HUpnp.dll"
