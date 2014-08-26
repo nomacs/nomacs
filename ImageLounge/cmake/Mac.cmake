@@ -123,3 +123,54 @@ if(ENABLE_QUAZIP)
   ENDIF()
   add_definitions(-DWITH_QUAZIP)
 endif(ENABLE_QUAZIP)
+
+
+# add libqpsd
+file(GLOB LIBQPSD_SOURCES "3rdparty/libqpsd/*.cpp")
+file(GLOB LIBQPSD_HEADERS "3rdparty/libqpsd/*.h")
+file(GLOB LIBQPSD_MOCS "3rdparty/libqpsd/*.h")
+IF (NOT ENABLE_QT5)
+ QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ELSE()
+ QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ENDIF()
+
+# add webp
+SET(WEBP_INCLUDE_DIR "")
+SET(WEBP_SOURCE "")
+if(ENABLE_WEBP)
+	add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
+
+	file(GLOB WEBP_DEC_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dec/*c
+	)
+	
+	file(GLOB WEBP_DEMUX_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/demux/*c
+	)
+
+	file(GLOB WEBP_DSP_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/dsp/*c
+	)
+
+	file(GLOB WEBP_ENC_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/enc/*c
+	)
+
+	file(GLOB WEBP_UTILS_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/utils/*c
+	)
+
+	file(GLOB WEBP_MUX_SRCS
+		RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/mux/*c
+	)
+	set(WEBP_SOURCE ${WEBP_DEC_SRCS} ${WEBP_DEMUX_SRCS} ${WEBP_DSP_SRCS} ${WEBP_ENC_SRCS} ${WEBP_UTILS_SRCS} ${WEBP_MUX_SRC})
+	set(WEBP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src)
+	add_definitions(-DWITH_WEBP)
+endif(ENABLE_WEBP)
