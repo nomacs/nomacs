@@ -220,6 +220,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 	DkBasicLoader basicLoader;
 	basicLoader.setTraining(true);
 
+	// TODO: archives cannot be trained currently
 	bool imgLoaded = basicLoader.loadGeneral(fileInfo, true);
 
 	if (!imgLoaded) {
@@ -4080,10 +4081,14 @@ void DkWelcomeDialog::accept() {
 	if (registerFilesCheckBox->isChecked()) {
 		DkFileFilterHandling fh;
 
-		for (int idx = 0; idx < DkSettings::openFilters.size(); idx++) {
-			fh.registerFileType(DkSettings::openFilters.at(idx), tr("Image"), true);
-		}
+		QStringList rFilters = DkSettings::openFilters;
+		
+		for (int idx = 0; idx < DkSettings::containerFilters.size(); idx++)
+			rFilters.removeAll(DkSettings::containerFilters.at(idx));
 
+		for (int idx = 0; idx < rFilters.size(); idx++) {
+			fh.registerFileType(rFilters.at(idx), tr("Image"), true);
+		}
 	}
 
 	// change language

@@ -1258,6 +1258,9 @@ void DkFileFilterSettingWidget::createLayout() {
 
 bool DkFileFilterSettingWidget::checkFilter(const QString& cFilter, const QStringList& filters) const {
 
+	if (filters.empty() && DkSettings::containerFilters.contains(cFilter))
+		return false;
+
 	if (filters.empty())
 		return true;
 

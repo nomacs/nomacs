@@ -882,6 +882,7 @@ void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 	}
 	else {
 		QFileInfo file = thumb->getFile();
+		qDebug() << "trying to load: " << file.absoluteFilePath();
 		emit loadFileSignal(file);
 	}
 }

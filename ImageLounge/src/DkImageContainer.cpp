@@ -29,6 +29,10 @@
 
 namespace nmc {
 
+#ifdef WITH_QUAZIP
+QString DkZipContainer::mZipMarker = "dIrChAr";
+#endif
+
 // DkImageContainer --------------------------------------------------------------------
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 	this->fileInfo = fileInfo;
@@ -153,17 +157,21 @@ QFileInfo DkImageContainer::file() const {
 	return fileInfo;
 }
 
+bool DkImageContainer::isFromZip() const {
 #ifdef WITH_QUAZIP
-bool DkImageContainer::isFromZip() const {
 	return zipData->isZip();
-}
 #else
-bool DkImageContainer::isFromZip() const {
 	return false;
-}  
 #endif
+}
 
 bool DkImageContainer::exists() {
+
+#ifdef WITH_QUAZIP
+
+	if (isFromZip())
+		return true;
+#endif
 
 	fileInfo.refresh();
 	return fileInfo.exists();
@@ -243,7 +251,6 @@ int DkImageContainer::getLoadState() const {
 
 bool DkImageContainer::loadImage() {
 
-
 	if (fileBuffer->isEmpty())
 		fileBuffer = loadFileToBuffer(fileInfo);
 
@@ -256,12 +263,14 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fi
 
 	QFileInfo fInfo = fileInfo.isSymLink() ? fileInfo.symLinkTarget() : fileInfo;
 
+#ifdef WITH_QUAZIP
+	if (isFromZip()) 
+		return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
+#endif
+
 	if (fInfo.suffix().contains("psd")) {	// for now just psd's are not cached because their file might be way larger than the part we need to read
 		return QSharedPointer<QByteArray>(new QByteArray());
 	}
-#ifdef WITH_QUAZIP
-	else if (isFromZip()) return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
-#endif
 
 	QFile file(fInfo.absoluteFilePath());
 	file.open(QIODevice::ReadOnly);
@@ -688,75 +697,4 @@ void DkImageContainerT::saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<Dk
 	return DkImageContainer::saveMetaDataIntern(fileInfo, loader, fileBuffer);
 }
 
-
-#ifdef WITH_QUAZIP
-// DkZipContainer --------------------------------------------------------------------
-DkZipContainer::DkZipContainer(const QFileInfo& fileInfo) {
-
-	encodedFileInfo = QFileInfo();
-	zipFileInfo = QFileInfo();
-	imageFileInfo = QFileInfo();
-
-	if(fileInfo.dir().path().contains(".zip")) {
-
-		imageInZip = true;
-		encodedFileInfo = fileInfo;
-		zipFileInfo = decodeZipFile(fileInfo);
-		imageFileInfo = decodeImageFile(fileInfo);
-	}
-	else imageInZip = false;
-}
-
-QFileInfo DkZipContainer::encodeZipFile(const QFileInfo& zipFile, const QString& imageFile) {
-
-	return QFileInfo(QDir(zipFile.absoluteFilePath() + "dIrChAr" + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", "dIrChAr")),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
-}
-
-QFileInfo DkZipContainer::decodeZipFile(const QFileInfo& encodedFileInfo) {
-
-	return encodedFileInfo.dir().path().left(encodedFileInfo.dir().path().indexOf("dIrChAr"));
-}
-
-QFileInfo DkZipContainer::decodeImageFile(const QFileInfo& encodedFileInfo) {
-
-	return encodedFileInfo.dir().path().right(encodedFileInfo.dir().path().size() - encodedFileInfo.dir().path().indexOf("dIrChAr") - QString("dIrChAr").size()).replace("dIrChAr","/") + encodedFileInfo.fileName();
-}
-
-QSharedPointer<QByteArray> DkZipContainer::extractImage(QFileInfo zipFile, QFileInfo imageFile) {
-
-	QuaZip zip(zipFile.absoluteFilePath());		
-	if(!zip.open(QuaZip::mdUnzip)) return QSharedPointer<QByteArray>(new QByteArray());
-
-	zip.setCurrentFile(imageFile.filePath());
-	QuaZipFile extractedFile(&zip);
-	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError()!=UNZ_OK) return QSharedPointer<QByteArray>(new QByteArray());
-
-	QSharedPointer<QByteArray> ba(new QByteArray(extractedFile.readAll()));
-	extractedFile.close();
-
-	zip.close();
-
-	return ba;
-}
-
-bool DkZipContainer::isZip() {
-
-	return imageInZip;
-}
-
-QFileInfo DkZipContainer::getZipFileInfo() {
-
-	return zipFileInfo;
-}
-
-QFileInfo DkZipContainer::getImageFileInfo() {
-
-	return imageFileInfo;
-}
-
-QFileInfo DkZipContainer::getEncodedFileInfo() {
-
-	return encodedFileInfo;
-}
-#endif
 };

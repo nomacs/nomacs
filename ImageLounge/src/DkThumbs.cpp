@@ -88,16 +88,16 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 	QSharedPointer<QByteArray> baZip = QSharedPointer<QByteArray>();
 #ifdef WITH_QUAZIP
-	if (file.dir().path().contains(".zip")) baZip = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(file), DkZipContainer::decodeImageFile(file));
+	if (file.dir().path().contains(DkZipContainer::zipMarker())) 
+		baZip = DkZipContainer::extractImage(DkZipContainer::decodeZipFile(file), DkZipContainer::decodeImageFile(file));
 #endif
 	try {
-		if (baZip && !baZip->isEmpty())	metaData.readMetaData(file, baZip);
-		else {
-			if (!ba || ba->isEmpty())
-				metaData.readMetaData(file);
-			else
-				metaData.readMetaData(file, ba);
-		}
+		if (baZip && !baZip->isEmpty())	
+			metaData.readMetaData(file, baZip);
+		else if (!ba || ba->isEmpty())
+			metaData.readMetaData(file);
+		else
+			metaData.readMetaData(file, ba);
 
 		// read the full image if we want to create new thumbnails
 		if (forceLoad != force_save_thumb)

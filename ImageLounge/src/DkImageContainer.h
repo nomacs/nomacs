@@ -56,30 +56,6 @@
 
 namespace nmc {
 
-#ifdef WITH_QUAZIP
-class DllExport DkZipContainer {
-
-public:
-	DkZipContainer(const QFileInfo& fileInfo);
-
-	bool isZip();
-	QFileInfo getZipFileInfo();
-	QFileInfo getImageFileInfo();
-	QFileInfo getEncodedFileInfo();
-	static QSharedPointer<QByteArray> extractImage(QFileInfo zipFile, QFileInfo imageFile);
-	static QFileInfo decodeZipFile(const QFileInfo& encodedFileInfo);
-	static QFileInfo decodeImageFile(const QFileInfo& encodedFileInfo);
-	static QFileInfo encodeZipFile(const QFileInfo& zipFile, const QString& imageFile);
-
-protected:
-	QFileInfo encodedFileInfo;
-	QFileInfo zipFileInfo;
-	QFileInfo imageFileInfo;
-	bool imageInZip;
-
-};
-#endif
-
 class DllExport DkImageContainer {
 
 public:

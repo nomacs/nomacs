@@ -420,6 +420,83 @@ QString DkMetaDataT::getIptcValue(const QString& key) const {
 	return info;
 }
 
+void DkMetaDataT::getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const {
+
+	fileKeys.append(QObject::tr("Filename"));
+	fileValues.append(file.fileName());
+
+	fileKeys.append(QObject::tr("Path"));
+	fileValues.append(file.absolutePath());
+
+	if (file.isSymLink()) {
+		fileKeys.append(QObject::tr("Target"));
+		fileValues.append(file.symLinkTarget());
+	}
+
+	fileKeys.append(QObject::tr("Size"));
+	fileValues.append(DkUtils::readableByte(file.size()));
+
+	// date group
+	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));
+	fileValues.append(file.created().toString(Qt::SystemLocaleDate));
+
+	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Modified"));
+	fileValues.append(file.lastModified().toString(Qt::SystemLocaleDate));
+
+	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Last Read"));
+	fileValues.append(file.lastRead().toString(Qt::SystemLocaleDate));
+
+	if (!file.owner().isEmpty()) {
+		fileKeys.append(QObject::tr("Owner"));
+		fileValues.append(file.owner());
+	}
+
+	fileKeys.append(QObject::tr("OwnerID"));
+	fileValues.append(QString::number(file.ownerId()));
+
+	if (!file.group().isEmpty()) {
+		fileKeys.append(QObject::tr("Group"));
+		fileValues.append(file.group());
+	}
+
+	QString permissionString;
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Owner"));
+	permissionString += file.permissions() & QFile::ReadOwner	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteOwner	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeOwner	? "x" : "-";
+	fileValues.append(permissionString);
+
+	permissionString = "";
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("User"));
+	permissionString += file.permissions() & QFile::ReadUser	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteUser	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeUser		? "x" : "-";
+	fileValues.append(permissionString);
+
+	permissionString = "";
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Group"));
+	permissionString += file.permissions() & QFile::ReadGroup	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteGroup	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeGroup	? "x" : "-";
+	fileValues.append(permissionString);
+
+	permissionString = "";
+	fileKeys.append(QObject::tr("Permissions") + "." + QObject::tr("Other"));
+	permissionString += file.permissions() & QFile::ReadOther	? "r" : "-";
+	permissionString += file.permissions() & QFile::WriteOther	? "w" : "-";
+	permissionString += file.permissions() & QFile::ExeOther	? "x" : "-";
+	fileValues.append(permissionString);
+
+	QStringList tmpKeys;
+
+	// full file keys are needed to create the hierarchy
+	for (int idx = 0; idx < fileKeys.size(); idx++) {
+		tmpKeys.append(QObject::tr("File") + "." + fileKeys.at(idx));
+	}
+
+	fileKeys = tmpKeys;
+}
+
 QImage DkMetaDataT::getThumbnail() const {
 
 	QImage qThumb;
