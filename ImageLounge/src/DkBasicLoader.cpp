@@ -650,7 +650,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 }
 
 bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
-
+#ifndef WIN32
 	// load from file?
 	if (!ba || ba->isEmpty()) {
 		QFile file(fileInfo.absoluteFilePath());
@@ -677,6 +677,7 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 			return psdHandler.read(&this->qImg);
 	}
 
+#endif // !WIN32
 	return false;
 }
 
