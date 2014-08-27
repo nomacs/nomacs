@@ -60,6 +60,7 @@ private:
       \return true if success, false otherwise.
       */
     static bool compressSubDir(QuaZip* parentZip, QString dir, QString parentDir, bool recursive = true);
+public:
     /// Extract a single file.
     /**
       \param zip The opened zip archive to extract from.
@@ -75,7 +76,6 @@ private:
       */
     static bool removeFile(QStringList listFile);
 
-public:
     /// Compress a single file.
     /**
       \param fileCompressed The name of the archive.

@@ -95,6 +95,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	progressDialog = 0;
 	forceDialog = 0;
 	trainDialog = 0;
+	archiveExtractionDialog = 0;
 	pluginManager = 0;
 	explorer = 0;
 	metaDataDock = 0;
@@ -538,6 +539,11 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
+#ifdef WITH_QUAZIP
+	fileMenu->addAction(fileActions[menu_file_extract_archive]);
+	fileMenu->addSeparator();
+#endif
+
 	//fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
 	//connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
 	//connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
@@ -818,6 +824,10 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save_web] = new QAction(tr("&Save for Web"), this);
 	fileActions[menu_file_save_web]->setStatusTip(tr("Save an Image for Web Applications"));
 	connect(fileActions[menu_file_save_web], SIGNAL(triggered()), this, SLOT(saveFileWeb()));
+
+	fileActions[menu_file_extract_archive] = new QAction(tr("Extract from archive"), this);
+	fileActions[menu_file_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::containerRawFilters));
+	connect(fileActions[menu_file_extract_archive], SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
@@ -2596,6 +2606,29 @@ void DkNoMacs::trainFormat() {
 	}
 
 
+}
+
+void DkNoMacs::extractImagesFromArchive() {
+#ifdef WITH_QUAZIP
+	if (!viewport())
+		return;
+
+	if (!archiveExtractionDialog)
+		archiveExtractionDialog = new DkArchiveExtractionDialog(this);
+
+	if (viewport()->getImageLoader()->getCurrentImage()) {
+		if (viewport()->getImageLoader()->getCurrentImage()->isFromZip())
+			archiveExtractionDialog->setCurrentFile(viewport()->getImageLoader()->getCurrentImage()->getZipData()->getZipFileInfo(), true);
+		else archiveExtractionDialog->setCurrentFile(viewport()->getImageLoader()->file(), false);
+	}
+	else archiveExtractionDialog->setCurrentFile(viewport()->getImageLoader()->file(), false);
+
+	bool okPressed = archiveExtractionDialog->exec();
+
+	if (okPressed) {
+
+	}
+#endif
 }
 
 void DkNoMacs::downloadFile(const QUrl& url) {
