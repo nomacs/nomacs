@@ -38,7 +38,10 @@
 #include "DkSettings.h"
 #include "DkError.h"
 #include "DkTimer.h"
+
+#ifndef WIN32
 #include "qpsdhandler.h"
+#endif
 
 #ifdef WITH_WEBP
 #include "webp/decode.h"
