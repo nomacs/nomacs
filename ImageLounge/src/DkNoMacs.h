@@ -149,6 +149,7 @@ enum {
 	shortcut_next_file		= Qt::Key_Right,
 	shortcut_rename			= Qt::Key_F2,
 	shortcut_goto			= Qt::CTRL + Qt::Key_G,
+	shortcut_extract		= Qt::CTRL + Qt::Key_E,
 
 	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 	shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,

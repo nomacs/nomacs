@@ -826,7 +826,8 @@ void DkNoMacs::createActions() {
 	connect(fileActions[menu_file_save_web], SIGNAL(triggered()), this, SLOT(saveFileWeb()));
 
 	fileActions[menu_file_extract_archive] = new QAction(tr("Extract from archive"), this);
-	fileActions[menu_file_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::containerRawFilters));
+	fileActions[menu_file_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::containerRawFilters));		
+	fileActions[menu_file_extract_archive]->setShortcut(QKeySequence(shortcut_extract));
 	connect(fileActions[menu_file_extract_archive], SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
