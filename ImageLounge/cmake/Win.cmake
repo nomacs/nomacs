@@ -197,6 +197,13 @@ if(ENABLE_UPNP)
 	endif(HUpnp_FOUND)	
 endif(ENABLE_UPNP)	
 
+
+# these variables need to be set before adding subdirectory with projects
+SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
+set(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
+set(CMAKE_C_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
+set(NOMACS_BUILD_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 #search for quazip
 unset(QUAZIP_SOURCE_DIRECTORY CACHE)
 unset(QUAZIP_INCLUDE_DIRECTORY CACHE)
@@ -211,9 +218,6 @@ if(ENABLE_QUAZIP)
     if ("${QT_ROOT}" STREQUAL "")
         set(QT_ROOT ${QT_QTCORE_INCLUDE_DIR}/../..)
     endif()    
-	# these variables need to be set before adding subdirectory
-	SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
-	set(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
 	
 	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7)
 	
@@ -222,8 +226,7 @@ if(ENABLE_QUAZIP)
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_REALLYRELEASE ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
 	find_package(QuaZip)
-	if(QUAZIP_FOUND)
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:quazip> ${NOMACS_BUILD_DIRECTORY}/$<CONFIGURATION>/)
+	if(QUAZIP_FOUND)		
 		add_definitions(-DWITH_QUAZIP)
 		set(QUAZIP_DEPENDENCY "quazip")
 	else()
@@ -231,3 +234,21 @@ if(ENABLE_QUAZIP)
 	endif(QUAZIP_FOUND)
 endif(ENABLE_QUAZIP)
 
+#add libqpsd
+add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/libqpsd)
+set(LIBQPSD_LIBRARY "qpsd")
+IF (NOT ENABLE_QT5)
+ QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ELSE()
+ QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ENDIF()
+
+#add webp
+unset(WEBP_LIBRARY CACHE)
+unset(WEBP_INCLUDE_DIR CACHE)
+if(ENABLE_WEBP)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/libwebp)
+	set(WEBP_LIBRARY "webp")
+	set(WEBP_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/libwebp/src")
+	add_definitions(-DWITH_WEBP)
+endif(ENABLE_WEBP)

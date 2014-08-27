@@ -4086,7 +4086,7 @@ void DkWelcomeDialog::accept() {
 		for (int idx = 0; idx < DkSettings::containerFilters.size(); idx++)
 			rFilters.removeAll(DkSettings::containerFilters.at(idx));
 
-		for (int idx = 0; idx < rFilters.size(); idx++) {
+		for (int idx = 1; idx < rFilters.size(); idx++) {
 			fh.registerFileType(rFilters.at(idx), tr("Image"), true);
 		}
 	}

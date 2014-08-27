@@ -27,15 +27,14 @@ option(ENABLE_WEBP "Compile with webP support (webP)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 option(ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
+option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 
 if(MSVC)
   option(ENABLE_UPNP "Compile with UPNP" ON)
   option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" ON)
-  option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 else()
   option(ENABLE_UPNP "Compile with UPNP" OFF)
   option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" OFF)
-  option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
 endif()
 
 # load paths from the user file if exists 
@@ -47,7 +46,7 @@ endif()
 NMC_FINDQT()
 
 # webp for all platforms
-NMC_ENABLE_WEBP()
+#NMC_ENABLE_WEBP()
 
 if(MSVC)
 	include(${CMAKE_SOURCE_DIR}/cmake/Win.cmake)
@@ -74,6 +73,7 @@ include_directories (
 	${HUPNP_INCLUDE_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
 	${ZLIB_INCLUDE_DIRS}
+	${CMAKE_SOURCE_DIR}/3rdparty/libqpsd
 )
 
 file(GLOB NOMACS_SOURCES "src/*.cpp")
@@ -84,10 +84,6 @@ if (APPLE) # todo: somehow add this to Mac.cmake or MacBuildTarget.cmake
 endif (APPLE)
 
 file(GLOB NOMACS_MOCS "src/*.h")
-
-file(GLOB LIBQPSD_SOURCES "libqpsd/*.cpp")
-file(GLOB LIBQPSD_HEADERS "libqpsd/*.h")
-file(GLOB LIBQPSD_MOCS "libqpsd/*.h")
 
 IF(NOT ENABLE_UPNP)
 	LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/DkUpnp.cpp)
@@ -136,12 +132,10 @@ IF (NOT ENABLE_QT5)
  QT4_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
  QT4_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
  QT4_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
- QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
 ELSE()
  QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
  QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
  QT5_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
- QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
 ENDIF()
 
 if (DISABLE_QT_DEBUG)

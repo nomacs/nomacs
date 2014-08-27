@@ -81,7 +81,7 @@ public:
 	QStringList getIptcKeys() const;
 	QStringList getIptcValues() const;
 	QStringList getXmpKeys() const;
-
+	void getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const;
 	void setResolution(const QVector2D& res);
 	void clearOrientation();
 	void setOrientation(int o);
@@ -96,8 +96,6 @@ public:
 	bool isRaw() const;
 	bool isDirty() const;
 	void printMetaData() const; //only for debug
-
-
 
 protected:
 	Exiv2::Image::AutoPtr exifImg;

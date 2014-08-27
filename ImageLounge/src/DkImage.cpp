@@ -28,6 +28,7 @@
 #include "DkImage.h"
 #include "DkNoMacs.h"
 #include <QPluginLoader>
+#include <qmath.h>
 
 namespace nmc {
 

@@ -54,7 +54,16 @@ void DkMetaDataModel::clear() {
 }
 
 void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
-	
+
+	QStringList fileKeys, fileValues;
+	metaData->getFileMetaData(fileKeys, fileValues);
+
+	for (int idx = 0; idx < fileKeys.size(); idx++) {
+
+		QString lastKey = fileKeys.at(idx).split(".").last();
+		createItem(fileKeys.at(idx), lastKey, fileValues.at(idx));
+	}
+
 	QStringList exifKeys = metaData->getExifKeys();
 
 	for (int idx = 0; idx < exifKeys.size(); idx++) {
@@ -353,7 +362,10 @@ void DkMetaDataDock::createLayout() {
 
 void DkMetaDataDock::updateEntries() {
 
-	getExpandedItemNames(model->index(0,0,QModelIndex()), expandedNames);
+	int numRows = model->rowCount(QModelIndex());
+
+	for (int idx = 0; idx < numRows; idx++)
+		getExpandedItemNames(model->index(idx,0,QModelIndex()), expandedNames);
 
 	model->clear();
 
@@ -361,10 +373,15 @@ void DkMetaDataDock::updateEntries() {
 		return;
 
 	model->addMetaData(imgC->getMetaData());
-
+	
 	treeView->setUpdatesEnabled(false);
-	expandRows(model->index(0,0,QModelIndex()), expandedNames);
+	numRows = model->rowCount(QModelIndex());
+	for (int idx = 0; idx < numRows; idx++)
+		expandRows(model->index(idx, 0, QModelIndex()), expandedNames);
 	treeView->setUpdatesEnabled(true);
+
+	// for values we should adjust the size at least to the currently visible rows...
+	treeView->resizeColumnToContents(1);
 
 }
 
@@ -413,6 +430,8 @@ void DkMetaDataDock::getExpandedItemNames(const QModelIndex& index, QStringList&
 		expandedNames.removeAll(model->data(index,Qt::DisplayRole).toString());
 
 	int rows = model->rowCount(index);
+
+	qDebug() << "entry: " << entryName;
 
 	for (int idx = 0; idx < rows; idx++)
 		getExpandedItemNames(model->index(idx, 0, index), expandedNames);

@@ -60,6 +60,7 @@ add_subdirectory(quazip)
 install(FILES FindQuaZip.cmake DESTINATION ${CMAKE_ROOT}/Modules)
 
 # added by stefan for nomacs
+
 # write configuration file
 get_property(QUAZIP_DEBUG_NAME TARGET quazip PROPERTY DEBUG_OUTPUT_NAME)
 get_property(QUAZIP_RELEASE_NAME TARGET quazip PROPERTY RELEASE_OUTPUT_NAME)
