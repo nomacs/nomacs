@@ -94,7 +94,7 @@ double DkMemory::getFreeMemory() {
 
 #elif defined Q_WS_MAC
 
-	// TODO: could somebody (with a make please add the corresponding calls?
+	// TODO: could somebody with a mac please add the corresponding calls?
 
 #endif
 
@@ -106,56 +106,47 @@ double DkMemory::getFreeMemory() {
 }
 
 // DkUtils --------------------------------------------------------------------
-#ifdef WIN32
-
-bool DkUtils::wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
-	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
-	//return true;
-}
-
-bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
-#if QT_VERSION < 0x050000
-	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
-	//return true;
-#else
-	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
-#endif
-}
-#else
 bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 
-	//// check if the filenames are just numbers
-	//bool isNum;
-	//int lhn = lhs.left(lhs.lastIndexOf(".")).toInt(&isNum);
-	//qDebug() << "lhs dot idx: " << lhs.lastIndexOf(".");
-	//if (isNum) {
-	//	int rhn = rhs.left(rhs.lastIndexOf(".")).toInt(&isNum);
-	//	qDebug() << "left is a number...";
-
-	//	if (isNum) {
-	//		qDebug() << "comparing numbers...";
-	//		return lhn < rhn;
-	//	}
-	//}
-
-	// number compare
-	QRegExp r("\\d+");
-
-	if (lhs.indexOf(r) >= 0) {
-
-		long long lhn = r.cap().toLongLong();
-
-		// we don't just want to find two numbers
-		// but we want them to be at the same position
-		if (rhs.indexOf(r) >= 0 && r.indexIn(lhs) == r.indexIn(rhs))
-			return lhn < r.cap().toLongLong();
-
+	// check if the filenames are numbers only
+	// using double here lets nomacs sort correctly for files such as "1.jpg", "1.5.jpg", "2.jpg", which is nice
+	// double is accurate to approximately 16 significant digits, where using long long would work to about 19, so no big drawback.
+	bool lhs_isNum;
+	bool rhs_isNum;
+	double lhn = lhs.left(lhs.lastIndexOf(".")).toDouble(&lhs_isNum);
+	double rhn = rhs.left(rhs.lastIndexOf(".")).toDouble(&rhs_isNum);
+	
+	// if both filenames convert to clean numbers, compare them
+	if (lhs_isNum && rhs_isNum) {
+		return lhn < rhn;
 	}
 
+	// if not, let clean numbers always be sorted before mixed numbers and letters
+	// logic here is deliberately spelled out, the compiler will do the optimization
+	if (lhs_isNum && !rhs_isNum) {
+		return true;
+	}
+	if (!lhs_isNum && rhs_isNum) {
+		return false;
+	}
+
+	// if none are numbers, fall back to string comparison - different code for windows and linux
+#ifdef WIN32
+
+	#if QT_VERSION < 0x050000
+		return StrCmpLogicalW(lhs.toStdWString(), rhs.toStdWString()) < 0;
+	#else
+		return StrCmpLogicalW((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16()) < 0;	// TODO: is this nice?
+	#endif
+
+#else // not WIN32
+
 	return lhs.localeAwareCompare(rhs) < 0;
-}
 
 #endif
+
+}
+
 
 bool DkUtils::compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {
 
