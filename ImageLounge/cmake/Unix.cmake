@@ -102,6 +102,7 @@ unset(QUAZIP_MOCS CACHE)
 unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
+  find_package(ZLIB REQUIRED)
   set(QUAZIP_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip")
   
   file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c*")
