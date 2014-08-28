@@ -82,11 +82,18 @@ unset(OpenCV_LIB_DIR_OPT CACHE)
 
 if(ENABLE_OPENCV)
 	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
+	message(STATUS "opencv libs: ${OpenCV_LIBS}")
 	if(OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
 		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
 		set(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
 	endif()
-
+	if(OpenCV_VERSION VERSION_GREATER 2.4.7 AND OpenCV_FOUND) # OpenCV cmake does not define optimized and debug libs any longer (reallyrelease not working), thus define them ourselves
+		unset(OpenCV_LIBS)
+		string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
+		foreach(lib ${OpenCV_FIND_COMPONENTS_})
+			set(OpenCV_LIBS "${OpenCV_LIBS}debug;${OpenCV_DIR}/lib/Debug/${lib}${OpenCV_SHORT_VERSION}d.lib;optimized;${OpenCV_DIR}/lib/Release/${lib}${OpenCV_SHORT_VERSION}.lib;")
+		endforeach()
+	endif()
 	if(NOT OpenCV_FOUND)
 		message(FATAL_ERROR "OpenCV not found.") 
 	else()
@@ -150,8 +157,6 @@ if(ENABLE_TIFF)
 	unset(TIFF_BUILD_PATH CACHE)
 	unset(TIFF_CONFIG_DIR CACHE)
 
-	message(STATUS "OpenCV_3RDPARTY_LIB_DIR_OPT: ${OpenCV_3RDPARTY_LIB_DIR_OPT}")
-	message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
 	find_path(TIFF_BUILD_PATH NAMES "Release/libtiff.lib" "Debug/libtiffd.lib" PATHS "${OpenCV_3RDPARTY_LIB_DIR_OPT}/../" "${OpenCV_DIR}/3rdparty/lib" DOC "Path to the libtiff build directory" NO_DEFAULT_PATH)
 	if(EXISTS "${TIFF_BUILD_PATH}/Release/libtiff.lib" AND EXISTS "${TIFF_BUILD_PATH}/Debug/libtiffd.lib")
 		FILE(COPY ${TIFF_BUILD_PATH}/Debug/libtiffd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
