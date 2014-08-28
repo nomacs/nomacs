@@ -94,7 +94,7 @@ double DkMemory::getFreeMemory() {
 
 #elif defined Q_WS_MAC
 
-	// TODO: could somebody (with a make please add the corresponding calls?
+	// TODO: could somebody with a mac please add the corresponding calls?
 
 #endif
 
@@ -122,40 +122,37 @@ bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 #endif
 }
 #else
+
 bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+	
+	// check if the filenames are numbers only
+	// using double here lets nomacs sort correctly for files such as "1.jpg", "1.5.jpg", "2.jpg", which is nice
+	// double is accurate to approximately 16 significant digits, where using long long would work to about 19, so no big drawback.
+	bool lhs_isNum;
+	bool rhs_isNum;
+	double lhn = lhs.left(lhs.lastIndexOf(".")).toDouble(&lhs_isNum);
+	double rhn = rhs.left(rhs.lastIndexOf(".")).toDouble(&rhs_isNum);
+	
+	// if both filenames convert to clean numbers, compare them
+	if (lhs_isNum && rhs_isNum) {
+		return lhn < rhn;
+	}
 
-	//// check if the filenames are just numbers
-	//bool isNum;
-	//int lhn = lhs.left(lhs.lastIndexOf(".")).toInt(&isNum);
-	//qDebug() << "lhs dot idx: " << lhs.lastIndexOf(".");
-	//if (isNum) {
-	//	int rhn = rhs.left(rhs.lastIndexOf(".")).toInt(&isNum);
-	//	qDebug() << "left is a number...";
-
-	//	if (isNum) {
-	//		qDebug() << "comparing numbers...";
-	//		return lhn < rhn;
-	//	}
-	//}
-
-	// number compare
-	QRegExp r("\\d+");
-
-	if (lhs.indexOf(r) >= 0) {
-
-		long long lhn = r.cap().toLongLong();
-
-		// we don't just want to find two numbers
-		// but we want them to be at the same position
-		if (rhs.indexOf(r) >= 0 && r.indexIn(lhs) == r.indexIn(rhs))
-			return lhn < r.cap().toLongLong();
-
+	// if not, let clean numbers always be sorted before mixed numbers and letters
+	// logic here is deliberately spelled out, the compiler will do the optimization
+	if (lhs_isNum && !rhs_isNum) {
+		return true;
+	}
+	if (!lhs_isNum && rhs_isNum) {
+		return false;
 	}
 
 	return lhs.localeAwareCompare(rhs) < 0;
 }
-
 #endif
+
+
+
 
 bool DkUtils::compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {
 
