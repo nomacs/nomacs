@@ -4086,7 +4086,7 @@ void DkWelcomeDialog::accept() {
 		for (int idx = 0; idx < DkSettings::containerFilters.size(); idx++)
 			rFilters.removeAll(DkSettings::containerFilters.at(idx));
 
-		for (int idx = 0; idx < rFilters.size(); idx++) {
+		for (int idx = 1; idx < rFilters.size(); idx++) {
 			fh.registerFileType(rFilters.at(idx), tr("Image"), true);
 		}
 	}
@@ -4104,5 +4104,309 @@ bool DkWelcomeDialog::isLanguageChanged() {
 
 	return languageChanged;
 }
+
+
+// archive extraction dialog --------------------------------------------------------------------
+#ifdef WITH_QUAZIP
+DkArchiveExtractionDialog::DkArchiveExtractionDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+	
+	fileList = QStringList();
+	setWindowTitle(tr("Extract images from an archive"));
+	createLayout();
+	setMinimumSize(340, 400);
+	setAcceptDrops(true);
+}
+
+void DkArchiveExtractionDialog::createLayout() {
+
+	// archive file path
+	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(DkSettings::containerRawFilters.replace(" *", ", *")));
+	archivePathEdit = new QLineEdit();
+	archivePathEdit->setValidator(&fileValidator);
+	connect(archivePathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(archivePathEdit, SIGNAL(editingFinished()), this, SLOT(loadArchive()));
+
+	QPushButton* openArchiveButton = new QPushButton("&Browse");
+	connect(openArchiveButton, SIGNAL(pressed()), this, SLOT(openArchive()));
+
+	// dir file path
+	QLabel* dirLabel = new QLabel(tr("Extract to"));
+	dirPathEdit = new QLineEdit();
+	dirPathEdit->setValidator(&fileValidator);
+	connect(dirPathEdit, SIGNAL(textChanged(QString)), this, SLOT(dirTextChanged(QString)));
+
+	QPushButton* openDirButton = new QPushButton("&Browse");
+	connect(openDirButton, SIGNAL(pressed()), this, SLOT(openDir()));
+
+	feedbackLabel = new QLabel("");
+
+	fileListDisplay = new QListWidget();
+
+	removeSubfolders = new QCheckBox("Remove subfolders", this);
+	removeSubfolders->setChecked(false);
+	connect(removeSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
+
+	// buttons
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Extract"));
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QWidget* extractWidget = new QWidget();
+	QGridLayout* gdLayout = new QGridLayout(extractWidget);
+	gdLayout->addWidget(archiveLabel, 0, 0);
+	gdLayout->addWidget(archivePathEdit, 1, 0);
+	gdLayout->addWidget(openArchiveButton, 1, 1);
+	gdLayout->addWidget(dirLabel, 2, 0);
+	gdLayout->addWidget(dirPathEdit, 3, 0);
+	gdLayout->addWidget(openDirButton, 3, 1);
+	gdLayout->addWidget(feedbackLabel, 4, 0, 1, 2);
+	gdLayout->addWidget(fileListDisplay, 5, 0, 1, 2);
+	gdLayout->addWidget(removeSubfolders, 6, 0, 1, 2);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(extractWidget);
+	layout->addWidget(buttons);
+}
+
+void DkArchiveExtractionDialog::setCurrentFile(const QFileInfo& file, bool isZip) {
+
+	userFeedback("", false);
+	archivePathEdit->setText("");
+	dirPathEdit->setText("");
+	fileListDisplay->clear();
+	removeSubfolders->setChecked(false);
+
+	cFile = file;
+	if (isZip) {
+		archivePathEdit->setText(cFile.absoluteFilePath());
+		loadArchive();
+	}
+};
+
+void DkArchiveExtractionDialog::textChanged(QString text) {
+	
+	if (QFileInfo(text).exists() && DkBasicLoader::isContainer(text)) {
+		archivePathEdit->setStyleSheet("color:black");
+		loadArchive(text);
+	}
+	else {
+		archivePathEdit->setStyleSheet("color:red");
+		userFeedback("", false);	
+		fileListDisplay->clear();
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+	}
+
+}
+
+void DkArchiveExtractionDialog::dirTextChanged(QString text) {
+	
+	if (text.isEmpty()) {
+		userFeedback("", false);
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+	}
+}
+
+void DkArchiveExtractionDialog::checkbocChecked(int state) {
+
+	loadArchive();
+}
+
+void DkArchiveExtractionDialog::openArchive() {
+
+	// load system default open dialog
+	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Archive"),
+		(archivePathEdit->text().isEmpty()) ? cFile.absolutePath() : archivePathEdit->text(), tr("Archives (%1)").arg(DkSettings::containerRawFilters.remove(",")));
+
+	if (QFileInfo(filePath).exists()) {
+		archivePathEdit->setText(filePath);
+		loadArchive(filePath);
+	}
+}
+
+void DkArchiveExtractionDialog::openDir() {
+
+	// load system default open dialog
+	QString filePath = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+		(dirPathEdit->text().isEmpty()) ? cFile.absoluteDir().absolutePath() : dirPathEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+	if (QFileInfo(filePath).exists())
+		dirPathEdit->setText(filePath);
+}
+
+void DkArchiveExtractionDialog::userFeedback(const QString& msg, bool error) {
+
+	if (!error)
+		feedbackLabel->setStyleSheet("color:black");
+	else
+		feedbackLabel->setStyleSheet("color:red");
+
+	feedbackLabel->setText(msg);
+}
+
+void DkArchiveExtractionDialog::loadArchive(QString filePath) {
+
+	fileList = QStringList();
+	fileListDisplay->clear();
+
+	if(filePath.isEmpty())
+		filePath = archivePathEdit->text();
+
+	QFileInfo fileInfo(filePath);
+	if (!fileInfo.exists())
+		return;
+
+	if (!DkBasicLoader::isContainer(filePath)) {
+		userFeedback(tr("Not a valid archive."), true);
+		return;
+	}
+
+	if (dirPathEdit->text().isEmpty()) {
+
+		dirPathEdit->setText(QFileInfo(filePath).absoluteFilePath().remove("." + QFileInfo(filePath).suffix()));
+		dirPathEdit->setFocus();
+	}
+
+	QStringList fileNameList = JlCompress::getFileList(filePath);
+	
+	// remove the * in fileFilters
+	QStringList fileFiltersClean = DkSettings::app.browseFilters;
+	for (int idx = 0; idx < fileFiltersClean.size(); idx++)
+		fileFiltersClean[idx].replace("*", "");
+
+	for (int idx = 0; idx < fileNameList.size(); idx++) {
+		
+		for (int idxFilter = 0; idxFilter < fileFiltersClean.size(); idxFilter++) {
+
+			if (fileNameList.at(idx).contains(fileFiltersClean[idxFilter], Qt::CaseInsensitive)) {
+				fileList.append(fileNameList.at(idx));
+				break;
+			}
+		}
+	}
+
+	if (fileList.size() > 0)
+		userFeedback(tr("Number of images: ") + QString::number(fileList.size()), false);
+	else {
+		userFeedback(tr("The archive does not contain any images."), false);
+		return;
+	}
+
+	fileListDisplay->addItems(fileList);
+
+	if (removeSubfolders->checkState() == Qt::Checked) {
+		for (int i = 0; i < fileListDisplay->count(); i++) {
+
+			QFileInfo fi(fileListDisplay->item(i)->text());
+			fileListDisplay->item(i)->setText(fi.fileName());
+		}
+	}
+	fileListDisplay->update();
+
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
+}
+
+void DkArchiveExtractionDialog::accept() {
+
+	QStringList extractedFiles = extractFilesWithProgress(archivePathEdit->text(), fileList, dirPathEdit->text(), removeSubfolders->isChecked());
+
+	if ((extractedFiles.isEmpty() || extractedFiles.size() != fileList.size()) && !extractedFiles.contains("userCanceled")) {
+		
+		QMessageBox msgBox(this);
+		msgBox.setText(tr("The images could not be extracted!"));
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.exec();
+	}
+
+	QDialog::accept();
+}
+
+void DkArchiveExtractionDialog::dropEvent(QDropEvent *event) {
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		qDebug() << "dropping: " << url;
+		url = url.toLocalFile();
+
+		if (QFileInfo(url.toString()).isFile()) {
+			archivePathEdit->setText(url.toString());
+			loadArchive(url.toString());
+		}
+		else
+			dirPathEdit->setText(url.toString());
+	}
+}
+
+void DkArchiveExtractionDialog::dragEnterEvent(QDragEnterEvent *event) {
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+		QFileInfo file = QFileInfo(url.toString());
+
+		if (file.exists())
+			event->acceptProposedAction();
+	}
+
+}
+
+QStringList DkArchiveExtractionDialog::extractFilesWithProgress(QString fileCompressed, QStringList files, QString dir, bool removeSubfolders) {
+
+    QuaZip zip(fileCompressed);
+    if(!zip.open(QuaZip::mdUnzip)) {
+        return QStringList();
+    }
+
+    QProgressDialog progressDialog(this);
+    progressDialog.setCancelButtonText(tr("&Cancel"));
+    progressDialog.setRange(0, files.size() - 1);
+    progressDialog.setWindowTitle(tr("Extracting files..."));
+	progressDialog.setWindowModality(Qt::WindowModal);
+	progressDialog.setModal(true);
+	progressDialog.hide();
+	progressDialog.show();
+
+    QStringList extracted;
+    for (int i=0; i<files.count(); i++) {
+		progressDialog.setValue(i);
+		progressDialog.setLabelText(tr("Extracting file %1 of %2").arg(i + 1).arg(files.size()));
+
+		QString absPath;
+		if(removeSubfolders)
+			absPath = QDir(dir).absoluteFilePath(QFileInfo(files.at(i)).fileName());
+		else
+			absPath = QDir(dir).absoluteFilePath(files.at(i));
+
+        if (!JlCompress::extractFile(&zip, files.at(i), absPath)) {
+            JlCompress::removeFile(extracted);
+            return QStringList();
+        }
+        extracted.append(absPath);
+		if(progressDialog.wasCanceled()) {
+			JlCompress::removeFile(extracted);
+			return QStringList("userCanceled");
+		}
+    }
+
+    zip.close();
+    if(zip.getZipError()!=0) {
+        JlCompress::removeFile(extracted);
+        return QStringList();
+    }
+
+	progressDialog.close();
+
+    return extracted;
+}
+
+
+
+
+
+
+
+#endif
 
 } // close namespace

@@ -907,7 +907,7 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 	filters.replace(")", "");
 	filters.replace("*", "");
 
-	QStringList extList = filters.split(";;");
+	QStringList extList = filters.split(" ");
 
 	if (extList.empty()) {
 		qDebug() << "nothing to do here, not registering: " << filterString;
