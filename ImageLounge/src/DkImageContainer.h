@@ -34,7 +34,7 @@
 #include <QFutureWatcher>
 #include <QTimer>
 
-// qzip
+// quazip
 #ifdef WITH_QUAZIP
 #include <JlCompress.h>
 #endif

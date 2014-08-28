@@ -90,7 +90,7 @@ using namespace cv;
 //#include <ShlObj.h>
 //#include <Windows.h>
 
-// qzip
+// quazip
 #ifdef WITH_QUAZIP
 #include <JlCompress.h>
 #endif

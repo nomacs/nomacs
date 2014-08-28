@@ -30,6 +30,8 @@
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
 
+#include <qmath.h>
+
 namespace nmc {
 
 // Basic loader and image edit class --------------------------------------------------------------------

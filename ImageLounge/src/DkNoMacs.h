@@ -99,6 +99,9 @@ class DkResizeDialog;
 class DkUpdateDialog;
 class DkForceThumbDialog;
 class DkTrainDialog;
+#ifdef WITH_QUAZIP
+class DkArchiveExtractionDialog;
+#endif
 class DkExplorer;
 class DkMetaDataDock;
 class DkExportTiffDialog;
@@ -146,6 +149,7 @@ enum {
 	shortcut_next_file		= Qt::Key_Right,
 	shortcut_rename			= Qt::Key_F2,
 	shortcut_goto			= Qt::CTRL + Qt::Key_G,
+	shortcut_extract		= Qt::CTRL + Qt::Key_E,
 
 	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 	shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
@@ -236,6 +240,7 @@ enum fileActions {
 	menu_file_train_format,
 	menu_file_new_instance,
 	menu_file_exit,
+	menu_file_extract_archive,
 	//menu_file_share_fb,
 
 	menu_file_end,	// nothing beyond this point
@@ -508,6 +513,7 @@ public slots:
 	void saveFile();
 	void saveFileAs(bool silent = false);
 	void saveFileWeb();
+	void extractImagesFromArchive();
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
@@ -690,6 +696,9 @@ protected:
 	QProgressDialog* progressDialog;
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
+#ifdef WITH_QUAZIP
+	DkArchiveExtractionDialog* archiveExtractionDialog;
+#endif
 	DkExplorer* explorer;
 	DkMetaDataDock* metaDataDock;
 	DkExportTiffDialog* exportTiffDialog;

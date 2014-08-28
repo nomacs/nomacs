@@ -55,6 +55,8 @@
 #include <QStringListModel>
 #include <QListView>
 #include <QDialogButtonBox>
+#include <QListWidget>
+#include <QProgressDialog>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -65,6 +67,11 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+
+// quazip
+#ifdef WITH_QUAZIP
+#include <JlCompress.h>
+#endif
 
 #include "DkWidgets.h"
 #include "DkViewPort.h"
@@ -936,5 +943,44 @@ protected:
 	QStringList languages;
 	bool languageChanged;
 };
+
+#ifdef WITH_QUAZIP
+class DkArchiveExtractionDialog : public QDialog {
+	Q_OBJECT
+	
+public:
+	DkArchiveExtractionDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	void setCurrentFile(const QFileInfo& file, bool isZip);
+
+public slots:
+	void textChanged(QString text);
+	void checkbocChecked(int state);
+	void dirTextChanged(QString text);
+	void loadArchive(QString filePath = "");
+	void openArchive();
+	void openDir();
+	void accept();
+
+protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+
+	void createLayout();
+	void userFeedback(const QString& msg, bool error = false);
+	QStringList extractFilesWithProgress(QString fileCompressed, QStringList files, QString dir, bool removeSubfolders);
+
+	DkFileValidator fileValidator;
+	QDialogButtonBox* buttons;
+	QLineEdit* archivePathEdit;
+	QLineEdit* dirPathEdit;
+	QListWidget* fileListDisplay;
+	QLabel* feedbackLabel;
+	QCheckBox* removeSubfolders;
+
+	QStringList fileList;
+	QFileInfo cFile;
+};
+#endif
 
 }
