@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkUtils.h"
+#include "DkMath.h"
 
 #ifdef Q_WS_X11
 #include <sys/sysinfo.h>
@@ -262,6 +263,60 @@ bool DkUtils::exists(const QFileInfo& file, int waitMs) {
 bool DkUtils::checkFile(const QFileInfo& file) {
 
 	return file.exists();
+}
+
+QDateTime DkUtils::getConvertableDate(const QString& date) {
+
+	QDateTime dateCreated;
+	QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+
+	if (date.count(":") != 4 /*|| date.count(QRegExp("\t")) != 1*/)
+		return dateCreated;
+
+	if (dateSplit.size() >= 3) {
+
+		int y = dateSplit[0].toInt();
+		int m = dateSplit[1].toInt();
+		int d = dateSplit[2].toInt();
+
+		if (y == 0 || m == 0 || d == 0)
+			return dateCreated;
+
+		QDate dateV = QDate(y, m, d);
+		QTime time;
+
+		if (dateSplit.size() >= 6)
+			time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
+
+		dateCreated = QDateTime(dateV, time);
+	}
+
+	return dateCreated;
+}
+
+QString DkUtils::cleanFraction(const QString& frac) {
+
+	QStringList sList = frac.split('/');
+	QString cleanFrac = frac;
+
+	if (sList.size() == 2) {
+		int nom = sList[0].toInt();		// nominator
+		int denom = sList[1].toInt();	// denominator
+
+		// if exposure time is less than a second -> compute the gcd for nice values (1/500 instead of 2/1000)
+		if (nom != 0 && denom != 0) {
+			int gcd = DkMath::gcd(denom, nom);
+			cleanFrac = QString::number(nom/gcd);
+
+			// do not show fractions like 9/1 -> it is more natural to write 9 in these cases
+			if (denom/gcd != 1)
+				 cleanFrac += QString("/") + QString::number(denom/gcd);
+
+			qDebug() << frac << " >> " << cleanFrac;
+		}
+	}
+	
+	return cleanFrac;
 }
 
 // code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error

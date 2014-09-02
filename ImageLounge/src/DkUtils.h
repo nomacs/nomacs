@@ -382,6 +382,8 @@ public:
 		return stringify(rounded/std::pow(10,n));
 	};
 
+	static QDateTime getConvertableDate(const QString& date);
+
 	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo()) {
 
 		// convert date
@@ -428,8 +430,9 @@ public:
 			dateConverted = "unknown date";
 
 		return dateConverted;
-	}
+	};
 
+	static QString cleanFraction(const QString& frac);
 	static std::wstring qStringToStdWString(const QString &str);
 	static QString stdWStringToQString(const std::wstring &str);
 

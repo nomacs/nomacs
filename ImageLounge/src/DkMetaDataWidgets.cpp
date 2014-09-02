@@ -55,6 +55,9 @@ void DkMetaDataModel::clear() {
 
 void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
+	//metaData->printMetaData();
+
+	DkTimer dt;
 	QStringList fileKeys, fileValues;
 	metaData->getFileMetaData(fileKeys, fileValues);
 
@@ -99,6 +102,8 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 		createItem(xmpKeys.at(idx), translatedKey, exifValue);
 	}
+
+	qDebug() << "model refreshed in: " << dt.getTotal();
 }
 
 void DkMetaDataModel::createItem(const QString& key, const QString& keyName, const QString& value) {
@@ -128,8 +133,17 @@ void DkMetaDataModel::createItem(const QString& key, const QString& keyName, con
 		item = cHierarchyItem;	// switch to next hierarchy level
 	}
 
+	QString cleanValue = DkUtils::cleanFraction(value);
+	
 	QVector<QVariant> metaDataEntry;
-	metaDataEntry << keyName << value;
+	metaDataEntry << keyName;
+
+	QDateTime pd = DkUtils::getConvertableDate(cleanValue);
+
+	if (!pd.isNull())
+		metaDataEntry << pd;
+	else
+		metaDataEntry << cleanValue;
 
 	TreeItem* dataItem = new TreeItem(metaDataEntry, item);
 	item->appendChild(dataItem);
@@ -165,13 +179,10 @@ QModelIndex DkMetaDataModel::parent(const QModelIndex &index) const {
 	TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
 	TreeItem *parentItem = childItem->parent();
 
-	if (parentItem == rootItem)
+	if (!parentItem || parentItem == rootItem)
 		return QModelIndex();
 
-	if (!parentItem)
-		return QModelIndex();
-
-	//qDebug() << "creating index for: " << childItem->data(0);
+	//qDebug() << "parent is: " << childItem->data(0);
 
 	return createIndex(parentItem->row(), 0, parentItem);
 }
@@ -237,16 +248,16 @@ QVariant DkMetaDataModel::headerData(int section, Qt::Orientation orientation, i
 //	if (!index.isValid() || role != Qt::EditRole)
 //		return false;
 //
-//	if (index.column() == 1) {
+//	//if (index.column() == 1) {
 //
-//		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-//		item->setData(ks, index.column());
+//	//	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+//	//	item->setData(ks, index.column());
 //
-//	}
-//	else {
+//	//}
+//	//else {
 //		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
 //		item->setData(value, index.column());
-//	}
+//	//}
 //
 //	emit dataChanged(index, index);
 //	return true;
@@ -337,7 +348,6 @@ void DkMetaDataDock::createLayout() {
 
 	// create our beautiful shortcut view
 	model = new DkMetaDataModel(this);
-
 	treeView = new QTreeView(this);
 	treeView->setModel(model);
 	treeView->setAlternatingRowColors(true);
@@ -354,7 +364,6 @@ void DkMetaDataDock::createLayout() {
 	thumbLayout->addWidget(thumbNailLabel);
 	thumbLayout->addStretch();
 
-	// TODO: add thumbnail widget
 	layout->addWidget(treeView);
 	layout->addWidget(thumbWidget);
 	setWidget(widget);
@@ -382,6 +391,8 @@ void DkMetaDataDock::updateEntries() {
 
 	// for values we should adjust the size at least to the currently visible rows...
 	treeView->resizeColumnToContents(1);
+	//if (treeView->columnWidth(1) > 1000)
+	//	treeView->setColumnWidth(1, 1000);
 
 }
 
