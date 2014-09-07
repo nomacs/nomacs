@@ -594,6 +594,11 @@ void DkFilePreview::init() {
 	xOffset = qRound(DkSettings::display.thumbSize*0.1f);
 	yOffset = qRound(DkSettings::display.thumbSize*0.1f);
 
+	if (DkSettings::foto.stripMode) {
+		xOffset = 20;
+		yOffset = 100;
+	}
+
 	qDebug() << "x offset: " << xOffset;
 
 	currentDx = 0;
@@ -603,7 +608,7 @@ void DkFilePreview::init() {
 	scrollToCurrentImage = false;
 	isPainted = false;
 
-	winPercent = 0.1f;
+	winPercent = 0.05f;
 	borderTrigger = (float)width()*winPercent;
 	//fileLabel = new DkGradientLabel(this);
 
@@ -650,11 +655,11 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (DkSettings::foto.stripMode && parent && minHeight != parent->height()-150) {
+	if (DkSettings::foto.stripMode && parent && minHeight != parent->height()-180) {
 
 		xOffset = 10;
 		yOffset = 100;
-		minHeight = parent->height()-150;
+		minHeight = parent->height()-180;
 		setFixedHeight(minHeight);
 	}
 	else if (!DkSettings::foto.stripMode && minHeight != DkSettings::display.thumbSize + yOffset) {
@@ -832,7 +837,9 @@ void DkFilePreview::createCurrentImg(const QImage& img) {
 
 	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
 	
-	currentImg = QPixmap(r.width()+4, r.height()+4);
+	QSize effectSize = (DkSettings::foto.stripMode) ? QSize(4, 4) : QSize(2,2);
+
+	currentImg = QPixmap(r.width()+effectSize.width()*2, r.height()+effectSize.height()*2);
 #if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
 	currentImg.fill(qRgba(0,0,0,0));	// sets alpha wrong
 #else
@@ -844,12 +851,12 @@ void DkFilePreview::createCurrentImg(const QImage& img) {
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	// create border
 	QRectF sr = r;
-	sr.setSize(sr.size()+QSize(2, 2));
+	sr.setSize(sr.size()+effectSize);
 	sr.moveCenter(QRectF(currentImg.rect()).center());
 	painter.setOpacity(0.8);
 	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
 
-	sr.setSize(sr.size()+QSize(2, 2));
+	sr.setSize(sr.size()+effectSize);
 	sr.moveCenter(QRectF(currentImg.rect()).center());
 	painter.setOpacity(0.3);
 	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
@@ -865,7 +872,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	if (event->size() == event->oldSize() && this->width() == parent->width())
 		return;
 
-	minHeight = (DkSettings::foto.stripMode && parent) ? parent->height()-150 : DkSettings::display.thumbSize + yOffset;
+	minHeight = (DkSettings::foto.stripMode && parent) ? parent->height()-180 : DkSettings::display.thumbSize + yOffset;
 	setMinimumHeight(1);
 	setMaximumHeight(minHeight);
 
@@ -882,6 +889,9 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	rightGradient.setStart(QPoint(width()-borderTrigger, 0));
 	rightGradient.setFinalStop(QPoint(width(), 0));
 	
+	if (DkSettings::foto.stripMode)
+		DkSettings::display.thumbSize = event->size().height()-yOffset;
+
 	//update();
 	QWidget::resizeEvent(event);
 }

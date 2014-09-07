@@ -118,6 +118,9 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	int imgH = thumb.height();
 	int tS = minThumbSize;
 
+	if (maxThumbSize < minThumbSize)
+		maxThumbSize = minThumbSize;
+
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
 	QImageReader* imageReader;
@@ -141,10 +144,13 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
 	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
-		if (imgW > imgH) {
+		if (!DkSettings::foto.stripMode && imgW > imgH) {	// just check height in strip mode
 			imgH = (float)maxThumbSize / imgW * imgH;
 			imgW = maxThumbSize;
-		} 
+		} else if (DkSettings::foto.stripMode && imgW > imgH) {
+			imgW = (float)maxThumbSize / imgH * imgW;
+			imgH = maxThumbSize;
+		}
 		else if (imgW < imgH) {
 			imgW = (float)maxThumbSize / imgH * imgW;
 			imgH = maxThumbSize;
