@@ -1,0 +1,6 @@
+#ifndef H_CONNECTIONMANAGER_ADAPTER_
+#define H_CONNECTIONMANAGER_ADAPTER_
+
+#include "public/hconnectionmanager_adapter.h"
+
+#endif // H_CONNECTIONMANAGER_ADAPTER_

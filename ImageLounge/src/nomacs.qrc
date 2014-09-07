@@ -55,6 +55,8 @@
         <file>img/portrait.png</file>
         <file>img/printer.png</file>
         <file>img/print-setup.png</file>
+        <file>img/imgDescriptionMissing.png</file>
+        <file>img/downloaded.png</file>
         <file>img/cancel.png</file>
         <file>img/swap.png</file>
         <file>img/pan.png</file>
@@ -65,5 +67,11 @@
         <file>img/facebook.png</file>
         <file>img/qrcode.png</file>
         <file>img/qrcode-large.png</file>
+		<file>descriptions/nomacs-device.xml</file>
+		<file>descriptions/nomacs-service.xml</file>
+		<file>descriptions/nomacs_avtransport_scpd.xml</file>
+		<file>descriptions/nomacs_connectionmanager_sink_scpd.xml</file>
+		<file>descriptions/nomacs_mediarenderer_description.xml</file>
+		<file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
     </qresource>
 </RCC>

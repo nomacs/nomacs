@@ -1,0 +1,6 @@
+#ifndef H_SERVERDEVICE_
+#define H_SERVERDEVICE_
+
+#include "public/hserverdevice.h"
+
+#endif // H_SERVERDEVICE_

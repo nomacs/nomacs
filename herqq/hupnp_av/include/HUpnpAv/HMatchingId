@@ -1,0 +1,6 @@
+#ifndef H_MATCHINGID_
+#define H_MATCHINGID_
+
+#include "public/hmatching_id.h"
+
+#endif // H_MATCHINGID_

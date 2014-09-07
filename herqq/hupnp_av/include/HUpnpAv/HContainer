@@ -1,0 +1,6 @@
+#ifndef H_CONTAINER_
+#define H_CONTAINER_
+
+#include "public/hcontainer.h"
+
+#endif // H_CONTAINER_

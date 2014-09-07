@@ -1,0 +1,6 @@
+#ifndef H_SEARCHRESULT_
+#define H_SEARCHRESULT_
+
+#include "public/hsearchresult.h"
+
+#endif // H_SEARCHRESULT_

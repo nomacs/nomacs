@@ -1,0 +1,6 @@
+#ifndef H_TRANSPORT_SERVICE_PROXY_
+#define H_TRANSPORT_SERVICE_PROXY_
+
+#include "public/htransport_service_proxy.h"
+
+#endif // H_TRANSPORT_SERVICE_PROXY_

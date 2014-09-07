@@ -1,0 +1,6 @@
+#ifndef H_CREATEOBJECTRESULT_
+#define H_CREATEOBJECTRESULT_
+
+#include "public/hcreateobjectresult.h"
+
+#endif // H_CREATEOBJECTRESULT_

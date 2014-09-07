@@ -1,0 +1,6 @@
+#ifndef H_OBJECT_
+#define H_OBJECT_
+
+#include "public/hobject.h"
+
+#endif // H_OBJECT_

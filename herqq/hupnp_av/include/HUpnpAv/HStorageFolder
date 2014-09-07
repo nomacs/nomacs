@@ -1,0 +1,6 @@
+#ifndef H_STORAGEFOLDER_
+#define H_STORAGEFOLDER_
+
+#include "public/hstoragefolder.h"
+
+#endif // H_STORAGEFOLDER_

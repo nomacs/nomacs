@@ -1,0 +1,6 @@
+#ifndef H_MUSICALBUM_
+#define H_MUSICALBUM_
+
+#include "public/hmusicalbum.h"
+
+#endif // H_MUSICALBUM_

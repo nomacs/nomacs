@@ -1,0 +1,6 @@
+#ifndef H_PROTOCOLINFO_
+#define H_PROTOCOLINFO_
+
+#include "public/hprotocolinfo.h"
+
+#endif // H_PROTOCOLINFO_

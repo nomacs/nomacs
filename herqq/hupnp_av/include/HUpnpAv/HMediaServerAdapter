@@ -1,0 +1,6 @@
+#ifndef H_MEDIASERVER_ADAPTER_
+#define H_MEDIASERVER_ADAPTER_
+
+#include "public/hmediaserver_adapter.h"
+
+#endif // H_MEDIASERVER_ADAPTER_

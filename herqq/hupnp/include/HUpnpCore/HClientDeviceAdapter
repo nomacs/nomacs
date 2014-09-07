@@ -1,0 +1,6 @@
+#ifndef H_CLIENTDEVICE_ADAPTER_
+#define H_CLIENTDEVICE_ADAPTER_
+
+#include "public/hclientdevice_adapter.h"
+
+#endif // H_CLIENTDEVICE_ADAPTER_

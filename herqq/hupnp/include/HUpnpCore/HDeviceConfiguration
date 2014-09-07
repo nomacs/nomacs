@@ -1,0 +1,6 @@
+#ifndef H_DEVICEHOST_CONFIGURATION_
+#define H_DEVICEHOST_CONFIGURATION_
+
+#include "public/hdevicehost_configuration.h"
+
+#endif // H_DEVICEHOST_CONFIGURATION_

@@ -1,0 +1,6 @@
+#ifndef H_ABSTRACTTRANSPORTSERVICE_
+#define H_ABSTRACTTRANSPORTSERVICE_
+
+#include "public/habstracttransport_service.h"
+
+#endif // H_ABSTRACTTRANSPORTSERVICE_

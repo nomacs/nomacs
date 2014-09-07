@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+	<specVersion>
+		<major>1</major>
+		<minor>0</minor>
+	</specVersion>
+	<device>
+		<deviceType>urn:nomacs-org:device:nomacs:1</deviceType>
+		<friendlyName>nomacs Image Lounge</friendlyName>
+		<manufacturer>nomacs</manufacturer>
+		<manufacturerURL>www.nomacs.org</manufacturerURL>
+		<modelDescription>nomacs image lounge</modelDescription>
+		<modelName>test</modelName>
+		<modelNumber>1</modelNumber>
+		<UDN>uuid:insert-new-uuid-here</UDN>
+		<serviceList>
+			<service>
+				<serviceType>urn:nomacs-org:service:nomacsService:1</serviceType>
+				<serviceId>urn:nomacs-org:serviceId:nomacsService</serviceId>
+				<SCPDURL>nomacs-service.xml</SCPDURL>
+				<controlURL>/control</controlURL>
+				<eventSubURL>/eventing</eventSubURL>
+			</service>
+		</serviceList>
+	</device>
+</root>

@@ -1,0 +1,6 @@
+#ifndef H_PERSONWITHROLE_
+#define H_PERSONWITHROLE_
+
+#include "public/hpersonwithrole.h"
+
+#endif // H_PERSONWITHROLE_

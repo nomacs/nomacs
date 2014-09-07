@@ -43,6 +43,7 @@
 #include <QPrinter>
 #include <QGradientStops>
 #include <QSwipeGesture>
+#include <QStackedLayout>
 
 // OpenCV
 #ifdef WITH_OPENCV
@@ -71,6 +72,8 @@
 #include "DkSettings.h"
 #include "DkToolbars.h"
 #include "DkBaseViewPort.h"
+#include "DkPluginInterface.h"
+
 //#include "DkDialog.h"
 
 #include "DkMath.h"
@@ -193,15 +196,24 @@ public:
 		top_left_label
 	};
 
+	enum Widgets {
+		last_widget = -1,
+		hud_widget,
+		crop_widget,
+		recent_files_widget,
+		thumb_widget,
+
+		widget_end
+	};
 
 	DkControlWidget(DkViewPort *parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkControlWidget() {};
 
 	void setFullScreen(bool fullscreen);
 
-	DkThumbPool* getThumbPool() {
-		return thumbPool;
-	}
+	//DkThumbPool* getThumbPool() {
+	//	return thumbPool;
+	//}
 
 	DkFilePreview* getFilePreview() {
 		return filePreview;
@@ -235,13 +247,15 @@ public:
 		return thumbScrollWidget;
 	}
 
-	int getRating() {
-		return rating;
-	}
-
 	DkCropWidget* getCropWidget() {
 		return cropWidget;
 	}
+
+	DkRecentFilesWidget* getRecentFilesWidget() {
+		return recentFilesWidget;
+	}
+
+	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
 
 	DkSocialButton* getSocialButton() {
 		return socialButton;
@@ -269,8 +283,10 @@ public slots:
 	void showThumbView(bool visible);
 	void showSocialButton(bool visible);
 	void showQrCode(bool visible);
+	void showRecentFiles(bool visible);
+	void switchWidget(QWidget* widget = 0);
 
-	void setFileInfo(QFileInfo fileInfo, QSize size = QSize(), bool edited = false, QString attr = QString());
+	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
 	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
 	virtual void setSpinner(int time = 3000);
@@ -297,12 +313,13 @@ protected:
 	void init();
 	void connectWidgets();
 
-	QWidget* editWidget;
-	QWidget* hudWidget;
-	QWidget* thumbMetaWidget;
+	QVector<QWidget*> widgets;
+	QStackedLayout* layout;
+	QWidget* lastActiveWidget;
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;
+	DkRecentFilesWidget* recentFilesWidget;
 
 	DkFilePreview* filePreview;
 	DkThumbScrollWidget* thumbScrollWidget;
@@ -327,7 +344,9 @@ protected:
 	DkLabelBg* bottomLabel;
 	DkLabelBg* bottomLeftLabel;
 
-	DkThumbPool* thumbPool;
+//	DkThumbPool* thumbPool;
+
+	QSharedPointer<DkImageContainerT> imgC;
 
 	QLabel* wheelButton;
 
@@ -374,6 +393,16 @@ public:
 		return worldMatrix;
 	};
 
+	QTransform* getWorldMatrixPtr() {
+		return &worldMatrix;
+	};
+
+	QTransform* getImageMatrixPtr() {
+		return &imgMatrix;
+	};
+
+	void setPaintWidget(QWidget* widget, bool removeWidget);
+
 #ifdef WITH_OPENCV
 	void setImage(cv::Mat newImg);
 #endif
@@ -385,6 +414,13 @@ public:
 	void setVisibleStatusbar(bool visibleStatusbar) {
 		this->visibleStatusbar = visibleStatusbar;
 	};
+	
+	QString getCurrentPixelHexValue();
+	
+	void applyPluginChanges();
+	//void setPluginImageWasApplied(bool pluginImageWasApplied) {
+	//	this->pluginImageWasApplied = pluginImageWasApplied;
+	//};
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -408,31 +444,30 @@ public slots:
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);
 	void tcpSetWindowRect(QRect rect);
 	void tcpSynchronize(QTransform relativeMatrix = QTransform());
+	void tcpForceSynchronize();
 	void tcpLoadFile(qint16 idx, QString filename);
 	void tcpShowConnections(QList<DkPeer> peers);
-	void tcpSendImage();
+	void tcpSendImage(bool silent = false);
 	
 	// file actions
-	void loadFile(QFileInfo file, bool silent = false);
+	void loadFile(QFileInfo file);
 	void reloadFile();
-	void loadFullFile(bool silent = false);
-	//void loadNextFile(bool silent = false);
-	//void loadPrevFile(bool silent = false);
-	void loadNextFileFast(bool silent = false);
-	void loadPrevFileFast(bool silent = false);
-	void loadFileFast(int skipIdx, bool silent = false, int rec = 0);
-	void loadFile(int skipIdx, bool silent = false);
+	void loadFullFile();
+	void loadNextFileFast();
+	void loadPrevFileFast();
+	void loadFileFast(int skipIdx, int rec = 0);
+	void loadFile(int skipIdx);
 	void loadFirst();
 	void loadLast();
 	void loadSkipNext10();
 	void loadSkipPrev10();
 	void loadLena();
-	void unloadImage();
-	void fileNotLoaded(QFileInfo file);
+	bool unloadImage(bool fileChange = true);
+	//void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 	void repeatZoom();
 
-	virtual void updateImage();
+	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(QImage newImg);
 	virtual void setEditedImage(QImage newImg);
 	virtual void setImage(QImage newImg);
@@ -442,6 +477,8 @@ public slots:
 	void pauseMovie(bool paused);
 	void nextMovieFrame();
 	void previousMovieFrame();
+	void animateFade();
+	void animateMove();
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -463,12 +500,29 @@ protected:
 
 	QTimer* skipImageTimer;
 	QTimer* repeatZoomTimer;
+	
+	// fading stuff
+	QTimer* fadeTimer;
+	DkTimer fadeTime;
+	QImage fadeBuffer;
+	float fadeOpacity;
+	QRectF fadeImgViewRect;
+	QRectF fadeImgRect;
+	
+	// moving stuff - not used yet
+	QPoint moveStep;
+	float targetScale;
+	QTimer* moveTimer;
+	
 
 	QImage imgBg;
 
+	QVBoxLayout* paintLayout;
 	DkControlWidget* controller;
 	DkImageLoader* loader;
 
+	QPoint currentPixelPos;
+	//bool pluginImageWasApplied;
 	// functions
 
 #if QT_VERSION < 0x050000
@@ -530,7 +584,7 @@ protected:
 	// functions
 	QTransform getScaledImageMatrix();
 	virtual void updateImageMatrix();
-	virtual void draw(QPainter *painter);
+	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	void drawFrame(QPainter* painter);
 	virtual void drawBackground(QPainter *painter);
 	void controlImagePosition(float lb = -1, float ub = -1);
@@ -550,7 +604,6 @@ signals:
 	void tFSliderAdded(qreal pos);
 	void imageModeSet(int mode);
 
-
 public slots:
 	//TODO: remove the functions, which are not used anymore:
 	void changeChannel(int channel);
@@ -562,7 +615,7 @@ public slots:
 	virtual void setImage(QImage newImg);
 
 protected:
-	virtual void draw(QPainter *painter);
+	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void keyPressEvent(QKeyEvent *event);
 private:

@@ -1,0 +1,6 @@
+#ifndef H_MUSICVIDEOCLIP_
+#define H_MUSICVIDEOCLIP_
+
+#include "public/hmusicvideoclip.h"
+
+#endif // H_MUSICVIDEOCLIP_

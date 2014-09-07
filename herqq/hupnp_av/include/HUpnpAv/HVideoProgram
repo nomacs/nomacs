@@ -1,0 +1,6 @@
+#ifndef H_VIDEOPROGRAM_
+#define H_VIDEOPROGRAM_
+
+#include "public/hvideoprogram.h"
+
+#endif // H_VIDEOPROGRAM_

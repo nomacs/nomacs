@@ -1,0 +1,6 @@
+#ifndef H_CHANNEL_
+#define H_CHANNEL_
+
+#include "public/hchannel.h"
+
+#endif // H_CHANNEL_

@@ -27,35 +27,18 @@
 
 #pragma once
 
-#include <QDialog>
-#include <QWidget>
-#include <QListView>
-#include <QLabel>
-#include <QStringList>
-#include <QStringListModel>
-#include <QSpacerItem>
-#include <QPushButton>
-#include <QCheckBox>
-#include <QDebug>
-#include <QSpinBox>
-#include <QGroupBox>
-#include <QSettings>
-#include <QStyle>
 #include <QBitArray>
-#include <QColorDialog>
-#include <QKeyEvent>
-#include <QModelIndex>
-#include <QStringBuilder>
+#include <QColor>
 #include <QDate>
-#include <QButtonGroup>
-#include <QRadioButton>
-#include <QFileDialog>
-#include <QLineEdit>
 #include <QTranslator>
-#include <QComboBox>
+#include <QFileInfo>
+#include <QSettings>
 
-
-#include "BorderLayout.h"
+#include <QTableView>
+#include <QStandardItemModel>
+#include <QStandardItem>
+#include <QAbstractTableModel>
+#include <QStyledItemDelegate>
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -67,18 +50,34 @@
 #endif
 #endif
 
+
+
 namespace nmc {
 
-class DkSettingsWidget;
-class DkGlobalSettingsWidget;
-class DkDisplaySettingsWidget;
-class DkFileWidget;
-class DkSynchronizeSettingsWidget;
-class DkMetaDataSettingsWidget;
-class DkResourceSettingsWidgets;
-class DkSettingsListView;
-class DkSpinBoxWidget;
-class DkDoubleSpinBoxWidget;
+class DkFileFilterHandling {
+class DkWhiteListViewModel;
+
+public:
+	DkFileFilterHandling() {};
+	void registerFileType(const QString& filterString, const QString& attribute, bool add);
+
+protected:
+	QString registerProgID(const QString& ext, const QString& friendlyName, bool add);
+	void registerExtension(const QString& ext, const QString& progKey, bool add);
+	void setAsDefaultApp(const QString& ext, const QString& progKey, bool defaultApp);
+};
+
+class DllExport Settings {
+
+public:
+	static Settings& instance();
+	QSettings& getSettings();
+	
+private:
+	Settings();
+
+	QSharedPointer<QSettings> m_settings;
+};
 
 class DllExport DkSettings {
 
@@ -99,7 +98,6 @@ public:
 		sort_date_created,
 		sort_date_modified,
 		sort_random,
-
 		sort_end,
 	};
 
@@ -161,6 +159,15 @@ public:
 		zoom_end,
 	};
 
+	enum syncModes {
+		sync_mode_default = 0,
+		sync_mode_remote_display,
+		sync_mode_remote_control,
+		sync_mode_receiveing_command,
+
+		sync_mode_end,
+	};
+
 	struct App {
 		bool showToolBar;
 		bool showMenuBar;
@@ -174,10 +181,13 @@ public:
 		QBitArray showQrCode;
 		QBitArray showOverview;
 		QBitArray showScroller;
+		bool showRecentFiles;
 		int appMode;
 		int currentAppMode;
 		bool advancedSettings;
 		bool closeOnEsc;
+		QStringList browseFilters;
+		QStringList registerFilters;
 	};
 
 	struct Display {
@@ -193,12 +203,14 @@ public:
 		bool defaultIconColor;
 		int thumbSize;
 		int thumbPreviewSize;
-		bool saveThumb;
+		//bool saveThumb;
 		int interpolateZoomLevel;
 		bool antiAliasing;
 		bool smallIcons;
 		bool toolbarGradient;
 		bool showBorder;
+		bool displaySquaredThumbs;
+		float fadeSec;
 	};
 
 	struct Global {
@@ -211,6 +223,7 @@ public:
 		QString lastSaveDir;
 		QStringList recentFiles;
 		QStringList recentFolders;
+		bool logRecentFiles;
 		bool useTmpPath;
 		QString tmpPath;
 		QString language;
@@ -225,6 +238,7 @@ public:
 
 		int sortMode;
 		int sortDir;
+		QString pluginsDir;
 	};
 
 	struct SlideShow {
@@ -233,6 +247,7 @@ public:
 		bool silentFullscreen;
 		QBitArray display;
 		QColor backgroundColor;
+		float moveSpeed;
 	};
 	struct Sync {
 		bool enableNetworkSync;
@@ -244,6 +259,11 @@ public:
 		QDate lastUpdateCheck;
 		bool syncAbsoluteTransform;
 		bool switchModifier;
+		QStringList recentSyncNames;
+		QStringList syncWhiteList;
+		QHash<QString, QVariant> recentLastSeen;
+		int syncMode;
+		bool syncActions;
 	};
 	struct MetaData {
 		QBitArray metaDataBits;
@@ -253,12 +273,71 @@ public:
 		
 	struct Resources {
 		float cacheMemory;
+		int maxImagesCached;
 		bool fastThumbnailPreview;
+		bool waitForLastImg;
 		bool filterRawImages;
 		bool filterDuplicats;
 		int loadRawThumb;
 		QString preferredExtension;
+		int numThumbsLoading;
+		int maxThumbsLoading;
+		bool gammaCorrection;
 	};
+
+	//enums for checkboxes - divide in camera data and description
+	enum cameraData {
+		camData_size,
+		camData_orientation,
+		camData_make,
+		camData_model,
+		camData_aperture,
+		//camData_shutterspeed,
+		camData_iso,
+		camData_flash,
+		camData_focallength,
+		camData_exposuremode,
+		camData_exposuretime,
+
+		camData_end
+	};
+
+	enum descriptionT {
+		desc_rating = camData_end,
+		desc_usercomment,
+		desc_date,
+		desc_datetimeoriginal,
+		desc_imagedescription,
+		desc_creator,
+		desc_creatortitle,
+		desc_city,
+		desc_country,
+		desc_headline,
+		desc_caption,
+		desc_copyright,
+		desc_keywords,
+		desc_path,
+		desc_filesize,
+
+		desc_end
+	};
+
+	enum DisplayItems{
+		display_file_name,
+		display_creation_date,
+		display_file_rating,
+
+		display_end
+	};
+
+	static QStringList scamDataDesc;
+	static QStringList sdescriptionDesc;
+
+	static QStringList fileFilters;	// just the filters
+	static QStringList openFilters;	// for open dialog
+	static QStringList saveFilters;	// for save dialog
+	static QStringList containerFilters;
+	static QString containerRawFilters;
 
 	static App& getAppSettings();
 	static Display& getDisplaySettings();
@@ -268,11 +347,17 @@ public:
 	static MetaData& getMetaDataSettings();
 	static Resources& getResourceSettings();
 	static Foto& getFotoSettings();
+	static void initFileFilters();
+	static void loadTranslation(const QString& fileName, QTranslator& translator);
+	static QStringList getTranslationDirs();
 
 	static void load(bool force = false);
 	static void save(bool force = false);
 	static void setToDefaultSettings();
 	static QStringList getDefaultStrings();
+
+	static bool isPortable();
+	static QFileInfo getSettingsFile();
 
 	static App& app;
 	static Global& global;
@@ -301,443 +386,6 @@ protected:
 	static MetaData meta_d;
 	static Resources resources_d;
 	static Foto foto_d;
-};
-
-class DkSettingsDialog : public QDialog {
-Q_OBJECT;
-
-public:
-	DkSettingsDialog(QWidget* parent);
-	DkSettingsDialog(const DkSettingsDialog& dialog) {
-		this->borderLayout = dialog.borderLayout;
-		this->listView = dialog.listView;
-		this->rightWidget = dialog.rightWidget;
-		this->leftLabel = dialog.leftLabel;
-		this->buttonOk = dialog.buttonOk;
-		this->buttonCancel = dialog.buttonCancel;
-		this->widgetList = dialog.widgetList;
-		this->centralWidget = dialog.centralWidget;
-		this->centralLayout = dialog.centralLayout;
-		this->globalSettingsWidget = dialog.globalSettingsWidget;
-		this->slideshowSettingsWidget = dialog.slideshowSettingsWidget;
-		this->synchronizeSettingsWidget = dialog.synchronizeSettingsWidget;
-	}
-	~DkSettingsDialog();
-
-signals:
-	void languageChanged();
-	void settingsChanged();
-	void setToDefaultSignal();
-
-private:
-	void init();
-	void createLayout();
-	void createSettingsWidgets();
-
-private slots:
-	void listViewSelected(const QModelIndex & qmodel);
-	void saveSettings();
-	void cancelPressed() { close(); };
-	void initWidgets();
-	void setToDefault() {
-			
-		DkSettings::setToDefaultSettings();
-		initWidgets();
-
-		// for main window
-		emit setToDefaultSignal();
-		emit settingsChanged();
-	};
-	void advancedSettingsChanged(int state);
-
-protected:
-	BorderLayout* borderLayout;
-	DkSettingsListView* listView;
-	QWidget* rightWidget;
-	QLabel* leftLabel;
-	QPushButton* buttonOk;
-	QPushButton* buttonCancel;
-	QCheckBox* cbAdvancedSettings;
-
-	QList<DkSettingsWidget*> widgetList;
-	QWidget* centralWidget;
-	QHBoxLayout* centralLayout;
-	DkGlobalSettingsWidget* globalSettingsWidget;
-	DkDisplaySettingsWidget* displaySettingsWidget;
-	DkFileWidget* slideshowSettingsWidget;
-	DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
-	DkMetaDataSettingsWidget* exifSettingsWidget;
-	DkResourceSettingsWidgets* resourceSettingsWidget;
-};
-
-class DkSettingsWidget : public QWidget {
-Q_OBJECT	
-
-public:
-	DkSettingsWidget(QWidget* parent) : QWidget(parent) { showOnlyInAdvancedMode = false;};
-	virtual void writeSettings() = 0;
-	virtual void init() = 0;
-	virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
-
-	bool showOnlyInAdvancedMode;
-};
-
-class DkColorChooser;
-
-class DkGlobalSettingsWidget : public DkSettingsWidget {
-Q_OBJECT;
-
-public:
-	DkGlobalSettingsWidget(QWidget* parent);
-	
-	void writeSettings();
-
-signals:
-	void applyDefault();
-
-private slots:
-	void setToDefaultPressed() {
-		qDebug() << "apply default pressed...";
-		emit applyDefault();
-	};
-	void bgColorReset() {
-		DkSettings::display.useDefaultColor = true;
-	};
-	void iconColorReset() {
-		DkSettings::display.defaultIconColor = true;
-	};
-
-
-
-private:
-	void init();
-	void createLayout();
-
-		
-	DkDoubleSpinBoxWidget* displayTimeSpin;
-	QCheckBox* cbShowMenu;
-	QCheckBox* cbShowToolbar;
-	QCheckBox* cbShowStatusbar;
-	QCheckBox* cbSmallIcons;
-	QCheckBox* cbToolbarGradient;
-	QCheckBox* cbCloseOnEsc;
-	QCheckBox* cbZoomOnWheel;
-
-	DkColorChooser* highlightColorChooser;
-	DkColorChooser* bgColorWidgetChooser;
-	DkColorChooser* bgColorChooser;
-	DkColorChooser* iconColorChooser;
-	DkColorChooser* fullscreenColChooser;
-
-	QComboBox* langCombo;
-		
-	QPushButton* buttonDefaultSettings;
-
-	QString curLanguage;
-	QStringList languages;
-
-	bool loop;
-	bool scanSubFolders;
-
-};
-
-
-class DkDisplaySettingsWidget : public DkSettingsWidget {
-Q_OBJECT	
-
-public:
-	enum DisplayItems{
-		display_file_name,
-		display_creation_date,
-		display_file_rating,
-
-		display_end
-	};
-
-	DkDisplaySettingsWidget(QWidget* parent);
-
-	void writeSettings();
-
-private slots:
-	void showFileName(bool checked);
-	void showCreationDate(bool checked);
-	void showRating(bool checked);
-
-private:
-	void init();
-	void createLayout();
-
-	QGroupBox* gbThumb;
-
-	QCheckBox* cbInvertZoom;
-
-	DkSpinBoxWidget* interpolateWidget;
-	QCheckBox* cbCreationDate;
-	QCheckBox* cbName;
-	QCheckBox* cbRating;
-	QCheckBox* cbSilentFullscreen;
-
-	QVector<QRadioButton* > keepZoomButtons;
-	QButtonGroup* keepZoomButtonGroup;
-
-	DkSpinBoxWidget* maximalThumbSizeWidget; 
-	QCheckBox* cbSaveThumb;
-	QCheckBox* cbShowBorder;
-
-	bool keepZoom;
-	bool invertZoom;
-
-};
-
-
-class DkFileWidget : public DkSettingsWidget {
-Q_OBJECT	
-
-	public:
-		DkFileWidget(QWidget* parent);
-
-		void writeSettings();
-	
-	private slots:
-		void tmpPathButtonPressed();
-		void useTmpPathChanged(int state);
-		void lineEditChanged(QString path);
-
-	private:
-		void init();
-		void createLayout();
-		bool existsDirectory(QString path);
-
-
-		QVBoxLayout* vBoxLayout;
-		QLineEdit* leTmpPath;
-		QPushButton* pbTmpPath;
-		QCheckBox* cbUseTmpPath;
-		DkSpinBoxWidget* skipImgWidget;
-		DkSpinBoxWidget* numberFiles;
-		QCheckBox* cbWrapImages;
-		
-
-		QGroupBox* 	gbDragDrop;
-
-		int filter;
-		QString tmpPath;
-};
-
-class DkSynchronizeSettingsWidget : public DkSettingsWidget {
-	Q_OBJECT
-
-	public:
-		DkSynchronizeSettingsWidget(QWidget* parent);
-
-		void writeSettings();
-	
-	private slots:
-		void enableNetworkCheckBoxChanged(int state);
-
-	private:
-		void init();
-		void createLayout();
-
-		QVBoxLayout* vboxLayout;
-		QRadioButton* rbSyncAbsoluteTransform;
-		QRadioButton* rbSyncRelativeTransform;
-		QCheckBox* cbEnableNetwork;
-		QButtonGroup* buttonGroup;
-		QCheckBox* cbAllowTransformation;
-		QCheckBox* cbAllowPosition;
-		QCheckBox* cbAllowImage;
-		QCheckBox* cbAllowFile;
-		QCheckBox* cbSwitchModifier;
-		QGroupBox* gbNetworkSettings;
-};
-
-class DkSettingsListView : public QListView {
-Q_OBJECT;
-
-	public:
-		DkSettingsListView(QWidget* parent) : QListView(parent) {};
-		~DkSettingsListView() {QItemSelectionModel* sm = this->selectionModel(); delete sm;};
-
-	public slots:
-		void keyPressEvent(QKeyEvent *event) {
-			if (event->key() == Qt::Key_Up) {
-				previousIndex(); 
-				return;
-			}
-			else if (event->key() == Qt::Key_Down) {
-				nextIndex(); 
-				return;
-			}
-			QListView::keyPressEvent(event);
-		};
-	private:
-		void previousIndex();
-		void nextIndex();
-};	
-
-
-class DkMetaDataSettingsWidget : public DkSettingsWidget {
-	Q_OBJECT
-
-	public:
-
-		//enums for checkboxes - divide in camera data and description
-		enum cameraData {
-			camData_size,
-			camData_orientation,
-			camData_make,
-			camData_model,
-			camData_aperture,
-			//camData_shutterspeed,
-			camData_iso,
-			camData_flash,
-			camData_focallength,
-			camData_exposuremode,
-			camData_exposuretime,
-
-			camData_end
-		};
-
-		enum descriptionT {
-			desc_rating = camData_end,
-			desc_usercomment,
-			desc_date,
-			desc_datetimeoriginal,
-			desc_imagedescription,
-			desc_creator,
-			desc_creatortitle,
-			desc_city,
-			desc_country,
-			desc_headline,
-			desc_caption,
-			desc_copyright,
-			desc_keywords,
-			desc_path,
-			desc_filesize,
-		
-			desc_end
-		};
-
-		static QStringList scamDataDesc;
-		static QStringList sdescriptionDesc;
-
-		DkMetaDataSettingsWidget(QWidget* parent);
-
-		void writeSettings();
-
-	private:
-		void init();
-		void createLayout();
-
-		QCheckBox* cbIgnoreOrientation;
-		QCheckBox* cbSaveOrientation;
-
-		//Checkboxes
-		QVector<QCheckBox *> pCbMetaData;
-
-		//Tags not used, but maybe later...
-		//Exif.Image.BitsPerSample
-		//Exif.Image.ImageDescription
-		//Exif.Image.XResolution, Exif.Image.YResolution
-		//Exif.Image.ISOSpeedRatings
-		//Exif.Image.BrightnessValue
-		//Exif.Image.ExposureBiasValue
-		//Exif.Image.MaxApertureValue
-		//Exif.Image.LightSource
-		//Exif.Image.Noise
-
-		//IPTC
-		//Iptc.Application2.DateCreated
-
-		////XMP
-		//CreateDate
-		//CreatorTool
-		//Identifier
-		//Label
-		//MetaDataDate
-		//ModifyDate
-		//Nickname
-		//Rating
-};
-
-class DkResourceSettingsWidgets: public DkSettingsWidget {
-	Q_OBJECT
-
-public:
-	DkResourceSettingsWidgets(QWidget* parent);
-
-	void writeSettings();
-
-private slots:
-	void memorySliderChanged(int newValue);
-
-private:
-	void init();
-	void createLayout();
-
-	QCheckBox* cbFastThumbnailPreview;
-	QCheckBox* cbFilterRawImages;
-	QCheckBox* cbRemoveDuplicates;
-	QComboBox* cmExtensions;
-	QSlider* sliderMemory;
-	QLabel* labelMemory;
-
-	double stepSize;
-	double totalMemory;
-
-	QVector<QRadioButton* > rawThumbButtons;
-	QButtonGroup* rawThumbButtonGroup;
-};
-
-
-
-class DkSpinBoxWidget : public QWidget {
-	Q_OBJECT;
-public:	
-	DkSpinBoxWidget(QWidget* parent = 0);
-	DkSpinBoxWidget(QString upperString, QString lowerString, int spinBoxMin, int spinBoxMax, QWidget* parent=0, int step = 1);
-	QSpinBox* getSpinBox() { return spinBox;};
-	void setSpinBoxValue(int value) {spinBox->setValue(value);};
-	int getSpinBoxValue() {return spinBox->value();};
-
-	//virtual QSize sizeHint() const {
-
-	//	return optimalSize;
-	//}
-
-private:
-	QSpinBox* spinBox;
-	QLabel* upperLabel;
-	QLabel* lowerLabel;
-	QWidget* lowerWidget;
-	QVBoxLayout* vboxLayout;
-	QHBoxLayout* hboxLowerLayout;
-	QSize optimalSize;
-};
-
-class DkDoubleSpinBoxWidget : public QWidget {
-	Q_OBJECT;
-public:	
-	DkDoubleSpinBoxWidget(QWidget* parent = 0);
-	DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent=0, int step = 1, int decimals = 2);
-	QDoubleSpinBox* getSpinBox() { return spinBox;};
-	void setSpinBoxValue(float value) {spinBox->setValue(value);};
-	float getSpinBoxValue() {return spinBox->value();};
-
-	//virtual QSize sizeHint() const {
-
-	//	return optimalSize;
-	//}
-
-private:
-	QDoubleSpinBox* spinBox;
-	QLabel* upperLabel;
-	QLabel* lowerLabel;
-	QWidget* lowerWidget;
-	QVBoxLayout* vboxLayout;
-	QHBoxLayout* hboxLowerLayout;
-	QSize optimalSize;
 };
 
 };

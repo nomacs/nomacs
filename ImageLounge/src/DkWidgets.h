@@ -65,6 +65,17 @@
 #include <QGraphicsItem>
 #include <QtConcurrentRun>
 #include <QMimeData>
+#include <QTimeLine>
+#include <QGraphicsItemAnimation>
+
+#ifdef WIN32
+#pragma warning(disable: 4275)	// there are some weird things happening if qtconcurrentmap.h is included - we ignore this elegantly
+#endif
+
+#include <QThread>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <qtconcurrentmap.h>
 
 #if QT_VERSION < 0x050000
 #include <QPlastiqueStyle>
@@ -651,12 +662,12 @@ public:
 	};
 
 signals:
-	void firstSignal(bool silent = true);
-	void lastSignal(bool silent = true);
-	void nextSignal(bool silent = true);
-	void previousSignal(bool silent = true);
+	void nextSignal();
+	void previousSignal();
 	void saveImageSignal(QFileInfo path);
 	void infoSignal(QString msg, int msec);
+	void lastSignal();
+	void firstSignal();
 
 public slots:
 
@@ -689,6 +700,10 @@ public slots:
 
 	virtual void show(int ms = 0);
 
+	bool isPlaying() const {
+		return playing;
+	};
+
 protected:
 	void resizeEvent(QResizeEvent *event);
 	void init();
@@ -705,14 +720,15 @@ protected:
 	//QWidget* container;
 
 	QVector<QAction*> actions;
-
+	int playing;
 };
+
 
 class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkFilePreview(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkFilePreview(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	
 	~DkFilePreview() {
 	};
@@ -738,6 +754,8 @@ public slots:
 	void leaveEvent(QEvent *event);
 	void moveImages();
 	void updateFileIdx(int fileIdx);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -745,12 +763,7 @@ signals:
 	void changeFileSignal(int idx);
 	
 private:
-	//QVector<QSharedPointer<DkThumbNailT>> thumbs;
-	DkThumbPool* thumbPool;
-	//DkThumbsLoader* thumbsLoader;
-	QDir thumbsDir;
-
-	
+	QVector<QSharedPointer<DkImageContainerT> > thumbs;
 	QWidget* parent;
 	QTransform worldMatrix;
 	
@@ -788,7 +801,7 @@ private:
 	QRectF newFileRect;
 	bool scrollToCurrentImage;
 	bool isPainted;
-
+	
 	void init();
 	//void clearThumbs();
 	//void indexDir(int force = DkThumbsLoader::not_forced);
@@ -797,16 +810,20 @@ private:
 	void createCurrentImg(const QImage& img);
 };
 
-class DkThumbLabel : public QObject, public QGraphicsPixmapItem {
+class DkThumbLabel : public QGraphicsObject {
 	Q_OBJECT
 
 public:
 	DkThumbLabel(QSharedPointer<DkThumbNailT> thumb = QSharedPointer<DkThumbNailT>(), QGraphicsItem* parent = 0);
+	~DkThumbLabel();
 
 	void setThumb(QSharedPointer<DkThumbNailT> thumb);
 	QSharedPointer<DkThumbNailT> getThumb() {return thumb;};
 	QRectF boundingRect() const;
+	QPainterPath shape() const;
 	void updateSize();
+	void setVisible(bool visible);
+	QPixmap pixmap() const;
 
 public slots:
 	void updateLabel();
@@ -823,50 +840,57 @@ protected:
 	void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 	QSharedPointer<DkThumbNailT> thumb;
+	QGraphicsPixmapItem icon;
+	QGraphicsTextItem text;
 	QLabel* imgLabel;
 	bool thumbInitialized;
+	bool fetchingThumb;
 	QPen noImagePen;
 	QBrush noImageBrush;
 	QPen selectPen;
 	QBrush selectBrush;
 	bool isHovered;
+	QPointF lastMove;
 };
 
 class DkThumbScene : public QGraphicsScene {
 	Q_OBJECT
 
 public:
-	DkThumbScene(DkThumbPool* thumbPool = 0, QWidget* parent = 0);
+	DkThumbScene(QWidget* parent = 0);
 
 	void updateLayout();
 	QList<QUrl> getSelectedUrls() const;
-	void setFile(const QFileInfo& file);
 
 public slots:
 	void updateThumbLabels();
 	void loadFile(QFileInfo& file);
 	void increaseThumbs();
 	void decreaseThumbs();
+	void toggleSquaredThumbs(bool squares);
 	void resizeThumbs(float dx);
 	void showFile(const QFileInfo& file);
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 
 signals:
 	void loadFileSignal(QFileInfo file);
 	void statusInfoSignal(QString msg, int pos = 0);
+	void thumbLoadedSignal();
 
 protected:
+	QVector<QSharedPointer<DkImageContainerT> > thumbs;
 	//void wheelEvent(QWheelEvent *event);
 
-	DkThumbPool* thumbPool;
 	int xOffset;
 	int numRows;
 	int numCols;
 	bool firstLayout;
 	bool itemClicked;
 
-	QVector<QSharedPointer<DkThumbLabel> > thumbLabels;
+	QVector<DkThumbLabel* > thumbLabels;
+	QList<DkThumbLabel* > thumbsNotLoaded;
 };
 
 class DkThumbsView : public QGraphicsView {
@@ -874,6 +898,12 @@ class DkThumbsView : public QGraphicsView {
 
 public:
 	DkThumbsView(DkThumbScene* scene, QWidget* parent = 0);
+
+signals:
+	void updateDirSignal(QFileInfo file);
+
+public slots:
+	void fetchThumbs();
 
 protected:
 	void wheelEvent(QWheelEvent *event);
@@ -897,18 +927,26 @@ public:
 		select_all,
 		zoom_in,
 		zoom_out,
+		display_squares,
 
 		actions_end
 	};
 
-	DkThumbScrollWidget(DkThumbPool* thumbPool = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkThumbScrollWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	DkThumbScene* getThumbWidget() {
 		return thumbsScene;
 	};
 
+	void addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle = "");
+
 public slots:
 	virtual void setVisible(bool visible);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void setDir(QFileInfo file);
+
+signals:
+	void updateDirSignal(QFileInfo file);
 
 protected:
 	void createActions();
@@ -916,11 +954,11 @@ protected:
 	void contextMenuEvent(QContextMenuEvent *event);
 
 	DkThumbScene* thumbsScene;
-	DkThumbPool* thumbPool;
 	DkThumbsView* view;
 
 	QMenu* contextMenu;
 	QVector<QAction*> actions;
+	QVector<QAction*> parentActions;
 
 };
 
@@ -961,7 +999,8 @@ public:
 	};
 
 public slots:
-	void updateDir(QFileInfo file, int force = DkThumbsLoader::not_forced);
+	void updateDir(QVector<QSharedPointer<DkImageContainerT> > images);
+	void updateFile(QSharedPointer<DkImageContainerT> imgC);
 	void update(const QVector<QColor>& colors, const QVector<int>& indexes);
 
 	// DkWidget
@@ -974,6 +1013,7 @@ public slots:
 
 protected slots:
 	void emitFileSignal(int i);
+	void colorUpdated();
 
 signals:
 	void changeFileSignal(int idx);
@@ -986,15 +1026,17 @@ protected:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent *event);
-	
-	void indexDir(int force = DkThumbsLoader::not_forced);
-	
-	QDir currentDir;
-	QFileInfo currentFile;
-	QStringList files;
-	DkColorLoader* colorLoader;
+	int fileIdx(QSharedPointer<DkImageContainerT> imgC);
+	void updateColors();
+
+	QSharedPointer<DkImageContainerT> cImg;
+	QVector<QSharedPointer<DkImageContainerT> > images;
+	//DkColorLoader* colorLoader;
 	QVector<QColor> colors;
+	QVector<int> indexes;
 	bool sliding;
+	bool updateFolder;
+	int updatesWaiting;
 	QLabel* handle;
 	DkWidget* dummyWidget;
 	int minHandleWidth;
@@ -1018,19 +1060,27 @@ class DkThumbsSaver : public DkWidget {
 	Q_OBJECT
 
 public:
-	DkThumbsSaver() : thumbsLoader(0), pd(0) {};
+	DkThumbsSaver(QWidget* parent = 0);
 
-	void processDir(const QDir& dir, bool forceLoad);
+	void processDir(QVector<QSharedPointer<DkImageContainerT> > images, bool forceSave);
+
+signals:
+	void numFilesSignal(int currentFileIdx);
 
 public slots:
 	void stopProgress();
+	void thumbLoaded(bool loaded);
+	void loadNext();
 
 protected:
-	std::vector<DkThumbNail> thumbs;
-	DkThumbsLoader* thumbsLoader;
 
 	QFileInfo currentDir;
 	QProgressDialog* pd;
+	int cLoadIdx;
+	QVector<QSharedPointer<DkImageContainerT> > images;
+	bool stop;
+	bool forceSave;
+	int numSaved;
 };
 
 class DkFileSystemModel : public QFileSystemModel {
@@ -1147,9 +1197,6 @@ class DkMetaDataInfo : public DkWidget {
 	Q_OBJECT
 
 public:
-
-	static QString sCamDataTags;
-	static QString sDescriptionTags;
 		
 	DkMetaDataInfo(QWidget* parent = 0);
 	~DkMetaDataInfo() {};
@@ -1157,43 +1204,24 @@ public:
 	void draw(QPainter* painter);
 	void createLabels();
 	void resizeEvent(QResizeEvent *resizeW);
-	void getResolution(float &xResolution, float &yResolution);
-	QString getGPSCoordinates();
+	//void getResolution(float &xResolution, float &yResolution);
 	
 	//DkMetaData* getMetaData() {
 	//	return &metaData;
 	//};
-	
-signals:
-	void enableGpsSignal(bool);
-	
-public slots:
-	void setFileInfo(QFileInfo file, QSize s) {
 		
-		this->file = file;
-		imgSize = s;
-		worldMatrix = QTransform();
-
-		DkImageLoader::imgMetaData.setFileName(file);
-
-		//DkTimer dt;
-		readTags();
-			
-		emit enableGpsSignal(!getGPSCoordinates().isEmpty());
-
-		if (isVisible())
-			createLabels();
-		//qDebug() << "reading tags & creating labels: " << QString::fromStdString(dt.getTotal());
-	}
-
+public slots:
+	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setRating(int rating);
-	void setResolution(int xRes, int yRes);
+	//void setResolution(int xRes, int yRes);
 	void updateLabels();
 	void mouseMoveEvent(QMouseEvent *event);
 	void setVisible(bool visible) {
 
-		if (visible)
+		if (visible) {
+			readTags();
 			createLabels();
+		}
 
 		qDebug() << "[DkMetaData] setVisible: " << visible;
 
@@ -1205,7 +1233,6 @@ protected:
 	void readTags();
 	void layoutLabels();
 	void paintEvent(QPaintEvent *event);
-	
 
 	QWidget* parent;
 	QPoint lastMousePos;
@@ -1226,16 +1253,12 @@ protected:
 
 	QVector<int> maxLenLabel;
 
-	QFileInfo file;
-	//DkMetaData metaData;
 	QVector<DkLabel *> pLabels;
 	QVector<DkLabel *> pValues;
-	QSize imgSize;
+	//QSize imgSize;
 
-	QStringList camDTags;
 	QStringList camDValues;
 
-	QStringList descTags;
 	QStringList descValues;
 
 	QRect leftGradientRect;
@@ -1244,8 +1267,7 @@ protected:
 	QLinearGradient rightGradient;
 
 	QMap<int, int> mapIptcExif;
-	QStringList exposureModes;
-	QMap<int, QString> flashModes;
+	QSharedPointer<DkImageContainerT> imgC;
 
 };
 
@@ -1821,5 +1843,117 @@ protected:
 	QSlider* slider;
 	QSpinBox* sliderBox;
 };
+
+class DkFileInfo {
+
+public:
+	DkFileInfo();
+	DkFileInfo(const QFileInfo& fileInfo);
+
+	QFileInfo getFileInfo() const;
+	bool exists() const;
+	void setExists(bool fileExists);
+
+	bool inUse() const;
+	void setInUse(bool inUse);
+
+protected:
+	QFileInfo fileInfo;
+	bool fileExists;
+	bool used;
+};
+
+class DkFolderLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+signals:
+	void loadFileSignal(QFileInfo);
+
+protected:
+	void mousePressEvent(QMouseEvent *ev);
+
+	DkFileInfo fileInfo;
+};
+
+class DkImageLabel : public QLabel {
+	Q_OBJECT
+
+public:
+	DkImageLabel(const QFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	bool hasFile() const;
+	QSharedPointer<DkThumbNailT> getThumb() const;
+
+signals:
+	void labelLoaded();
+	void loadFileSignal(QFileInfo);
+
+public slots:
+	void thumbLoaded();
+	void removeFileFromList();
+
+protected:
+	void mousePressEvent(QMouseEvent *ev);
+	void enterEvent(QEvent *ev);
+	void leaveEvent(QEvent *ev);
+	void createLayout();
+
+	QLabel* imageLabel;
+	QLabel* highLightLabel;
+	QPushButton* removeFileButton;
+	QSharedPointer<DkThumbNailT> thumb;
+};
+
+class DkRecentFilesWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkRecentFilesWidget(QWidget* parent = 0);
+	~DkRecentFilesWidget();
+	static void mappedFileExists(DkFileInfo& fileInfo);
+	void setCustomStyle(bool imgLoadedStyle = false);
+
+signals:
+	void loadFileSignal(QFileInfo fileInfo);
+
+public slots:
+	void updateFiles();
+	void updateFolders();
+	virtual void setVisible(bool visible);
+	//void clearFileHistory();
+	//void clearFolderHistory();
+
+protected:
+	void createLayout();
+	void updateFileList();
+
+	QVector<QFileInfo> recentFiles;
+	QVector<DkFileInfo> recentFolders;
+	//QFutureWatcher<void> fileWatcher;
+	QFutureWatcher<void> folderWatcher;
+	QVector<DkImageLabel*> fileLabels;
+	QVector<DkFolderLabel*> folderLabels;
+
+	QGridLayout* filesLayout;
+	QVBoxLayout* folderLayout;
+
+	QWidget* filesWidget;
+	QWidget* folderWidget;
+
+	QLabel* folderTitle;
+	QLabel* filesTitle;
+	QLabel* bgLabel;
+
+	QLabel* clearFiles;
+	QLabel* clearFolders;
+
+	int rFileIdx;
+	int numActiveLabels;
+};
+
+
 
 };

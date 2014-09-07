@@ -1,0 +1,6 @@
+#ifndef H_MUSICARTIST_
+#define H_MUSICARTIST_
+
+#include "public/hmusicartist.h"
+
+#endif // H_MUSICARTIST_

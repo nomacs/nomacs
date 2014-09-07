@@ -1,0 +1,6 @@
+#ifndef H_MEDIASERVER_DEVICECONFIGURATION_
+#define H_MEDIASERVER_DEVICECONFIGURATION_
+
+#include "public/hmediaserver_deviceconfiguration.h"
+
+#endif // H_MEDIASERVER_DEVICECONFIGURATION_

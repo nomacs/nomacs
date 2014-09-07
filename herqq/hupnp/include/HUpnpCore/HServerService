@@ -1,0 +1,6 @@
+#ifndef H_SERVER_SERVICE
+#define H_SERVER_SERVICE
+
+#include "public/hserverservice.h"
+
+#endif // H_SERVER_SERVICE

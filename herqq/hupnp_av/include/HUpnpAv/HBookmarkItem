@@ -1,0 +1,6 @@
+#ifndef H_BOOKMARKITEM_
+#define H_BOOKMARKITEM_
+
+#include "public/hbookmarkitem.h"
+
+#endif // H_BOOKMARKITEM_

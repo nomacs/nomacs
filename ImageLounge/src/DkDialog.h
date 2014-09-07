@@ -31,6 +31,7 @@
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
+#include <QWidget>
 #include <QDialog>
 #include <QLabel>
 #include <QRadioButton>
@@ -51,6 +52,11 @@
 #include <QHeaderView>
 #include <QTreeView>
 #include <QMimeData>
+#include <QStringListModel>
+#include <QListView>
+#include <QDialogButtonBox>
+#include <QListWidget>
+#include <QProgressDialog>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -61,6 +67,11 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+
+// quazip
+#ifdef WITH_QUAZIP
+#include <JlCompress.h>
+#endif
 
 #include "DkWidgets.h"
 #include "DkViewPort.h"
@@ -90,38 +101,6 @@ protected:
 	}
 private:
 	bool selectOnMousePressEvent; 
-};
-
-class DkMessageBox : public QDialog {
-	Q_OBJECT
-
-public:
-	DkMessageBox(QMessageBox::Icon icon, 
-		const QString& title, 
-		const QString& text, 
-		QMessageBox::StandardButtons buttons = QMessageBox::NoButton,
-		QWidget* parent = 0, 
-		Qt::WindowFlags f = Qt::Dialog);
-	DkMessageBox(QWidget* parent = 0);
-
-	~DkMessageBox();
-
-	virtual void setVisible(bool visible);
-
-public slots:
-	void buttonClicked(QAbstractButton* button);
-	int exec();
-
-protected:
-	
-	QLabel* iconLabel;
-	QLabel* textLabel;
-	QMessageBox::Icon icon;
-	QDialogButtonBox* buttonBox;
-	QCheckBox* showAgain;
-
-	void createLayout(const QMessageBox::Icon& userIcon, const QString& userText, QMessageBox::StandardButtons buttons);
-	void updateSize();
 };
 
 class DkSelectAllDoubleSpinBox : public QDoubleSpinBox {
@@ -366,7 +345,7 @@ class DkResizeDialog : public QDialog {
 
 public:
 	DkResizeDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	~DkResizeDialog();
+	~DkResizeDialog() {};
 
 	enum{ipl_nearest, ipl_area, ipl_linear, ipl_cubic, ipl_lanczos, ipl_end};
 	enum{size_pixel, size_percent, size_end};
@@ -375,7 +354,7 @@ public:
 
 	void setImage(QImage img) {
 		this->img = img;
-		initBoxes();
+		initBoxes(true);
 		updateSnippets();
 		drawPreview();
 		wPixelEdit->selectAll();
@@ -430,6 +409,9 @@ protected slots:
 		QDialog::setVisible(visible);
 	}
 
+public slots:
+	virtual void accept();
+
 protected:
 	int leftSpacing;
 	int margin;
@@ -455,6 +437,7 @@ protected:
 	QDoubleSpinBox* resolutionEdit;
 	QComboBox* resUnitBox;
 	QCheckBox* resampleCheck;
+	QCheckBox* gammaCorrection;
 	QComboBox* resampleBox;
 
 	float exifDpi;
@@ -462,7 +445,7 @@ protected:
 	QVector<float> resFactor;
 
 	void init();
-	void initBoxes();
+	void initBoxes(bool updateSettings = false);
 	void createLayout();
 	void updateSnippets();
 	void updateHeight();
@@ -513,34 +496,6 @@ protected:
 	QKeySequence ks;
 
 };
-
-// from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
-class TreeItem {
-
-public:
-	TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);
-	~TreeItem();
-
-	void appendChild(TreeItem *child);
-
-	TreeItem *child(int row);
-	int childCount() const;
-	int columnCount() const;
-	QVariant data(int column) const;
-	void setData(const QVariant& value, int column);
-	int row() const;
-	TreeItem* parent() const;
-	TreeItem* find(const QVariant& value, int column);
-	void setParent(TreeItem* parent);
-
-
-private:
-	QVector<TreeItem*> childItems;
-	QVector<QVariant> itemData;
-	TreeItem *parentItem;
-};
-
-
 
 class DkShortcutsModel : public QAbstractTableModel {
 	Q_OBJECT
@@ -700,7 +655,7 @@ public:
 	};
 
 	DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
+	void setImage(QImage img, float dpi);
 	void init();
 
 public slots:
@@ -727,6 +682,7 @@ private slots:
 
 private:
 	void setFitting(bool on);
+	void scaleImage();
 	bool isFitting() {
 		return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
 	};
@@ -843,6 +799,43 @@ protected:
 	};
 };
 #ifdef WITH_OPENCV
+class DkUnsharpDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkUnsharpDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	QImage getImage();
+
+public slots:
+	void on_sigmaSlider_valueChanged(int i);
+	void on_amountSlider_valueChanged(int i);
+	void setFile(const QFileInfo& file);
+	void setImage(const QImage& img);
+	void computePreview();
+	void reject();
+	QImage computeUnsharp(const QImage img, int sigma, int amount);
+	void unsharpFinished();
+
+signals:
+	void updateImage(QImage img);
+
+protected:
+	void createLayout();
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+
+	DkBaseViewPort* viewport;
+	QLabel* preview;
+	QDialogButtonBox* buttons;
+	QFutureWatcher<QImage> unsharpWatcher;
+
+	DkSlider* sigmaSlider;
+	DkSlider* amountSlider;
+
+	bool processing;
+	QImage img;
+};
+
 class DkMosaicDialog : public QDialog {
 	Q_OBJECT
 
@@ -955,5 +948,63 @@ protected:
 	QCheckBox* cbForceSave;
 };
 
+class DkWelcomeDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkWelcomeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	bool isLanguageChanged();
+
+public slots:
+	virtual void accept();
+
+protected:
+	void createLayout();
+	
+	QComboBox* languageCombo;
+	QCheckBox* registerFilesCheckBox;
+	QStringList languages;
+	bool languageChanged;
+};
+
+#ifdef WITH_QUAZIP
+class DkArchiveExtractionDialog : public QDialog {
+	Q_OBJECT
+	
+public:
+	DkArchiveExtractionDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	void setCurrentFile(const QFileInfo& file, bool isZip);
+
+public slots:
+	void textChanged(QString text);
+	void checkbocChecked(int state);
+	void dirTextChanged(QString text);
+	void loadArchive(QString filePath = "");
+	void openArchive();
+	void openDir();
+	void accept();
+
+protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+
+	void createLayout();
+	void userFeedback(const QString& msg, bool error = false);
+	QStringList extractFilesWithProgress(QString fileCompressed, QStringList files, QString dir, bool removeSubfolders);
+
+	DkFileValidator fileValidator;
+	QDialogButtonBox* buttons;
+	QLineEdit* archivePathEdit;
+	QLineEdit* dirPathEdit;
+	QListWidget* fileListDisplay;
+	QLabel* feedbackLabel;
+	QCheckBox* removeSubfolders;
+
+	QStringList fileList;
+	QFileInfo cFile;
+};
+#endif
 
 }

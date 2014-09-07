@@ -1,0 +1,6 @@
+#ifndef H_CLIENTSTATEVARIABLE_
+#define H_CLIENTSTATEVARIABLE_
+
+#include "public/hclientstatevariable.h"
+
+#endif // H_CLIENTSTATEVARIABLE_

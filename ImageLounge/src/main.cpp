@@ -43,7 +43,7 @@
 
 #include "DkNoMacs.h"
 #include "DkSettings.h"
-#include "DkViewPort.h"
+
 //#include "DkPong.h"
 //#include "DkUtils.h"
 //#include "DkTimer.h"
@@ -56,6 +56,37 @@
 
 #include <iostream>
 #include <cassert>
+
+#ifdef WIN32
+#include <shlobj.h>
+#endif
+
+void createPluginsPath() {
+
+#ifdef WITH_PLUGINS
+	// initialize plugin paths -----------------------------------------
+#ifdef WIN32
+	QDir pluginsDir;
+	if (!nmc::DkSettings::isPortable())
+		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+	else
+		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+#else
+	QDir pluginsDir = QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/plugins/");
+#endif // WIN32
+
+
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
+	qDebug() << "plugins dir set to: " << nmc::DkSettings::global.pluginsDir;
+	
+	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
+
+#endif // WITH_PLUGINS
+
+}
 
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
@@ -75,22 +106,29 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationName("nomacs");
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge - Fotobox");
-
-	QSettings settings;
-	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
-	nmc::DkSettings::app.currentAppMode = mode;
+	
+	//qDebug() << "settings: " << settings.fileName();
 
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
 #if !defined(Q_WS_MAC) && !defined(QT5)
 	QApplication::setGraphicsSystem("raster");
-#elif !defined(QT5)
-	if (mode != nmc::DkSettings::mode_frameless)
-		QApplication::setGraphicsSystem("raster");
+//#elif !defined(QT5)
+//	if (mode != nmc::DkSettings::mode_frameless)
+//		QApplication::setGraphicsSystem("raster");
 #endif
 
 	QApplication a(argc, (char**)argv);
 	QStringList args = a.arguments();
+	nmc::DkSettings::initFileFilters();
+	QSettings& settings = nmc::Settings::instance().getSettings();
+	
+	nmc::DkSettings::load();
+
+	int mode = settings.value("AppSettings/appMode", nmc::DkSettings::app.appMode).toInt();
+	nmc::DkSettings::app.currentAppMode = mode;
+
+	createPluginsPath();
 
 	//// pong --------------------------------------------------------------------
 	//nmc::DkPong *p = new nmc::DkPong();
@@ -107,16 +145,12 @@ int main(int argc, char *argv[]) {
 	qDebug() << "\n";
 	// DEBUG --------------------------------------------------------------------
 
-
+	qDebug() << "data location: " << QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).absolutePath();
 	//QSettings settings;
-	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 
+	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 	QTranslator translator;
-	if (!translator.load(translationName, qApp->applicationDirPath())) {
-		QDir appDir = QDir(qApp->applicationDirPath());
-		if (!translator.load(translationName, appDir.filePath("../share/nomacs/translations/")) && !translationName.contains("_en"))
-			qDebug() << "unable to load translation: " << translationName;
-	}
+	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
 	
 	if (mode == nmc::DkSettings::mode_frameless) {
@@ -131,12 +165,13 @@ int main(int argc, char *argv[]) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
 	QString imgDir = settings.value("Fotobox/defaultImgPath", nmc::DkSettings::foto.defaultImgPath).toString();
-
-	if (args.size() > 1)
-		w->loadFile(QFileInfo(args[1]), true);	// update folder + be silent
+	if (args.size() > 1 && QFileInfo(args[1]).exists())
+		w->loadFile(QFileInfo(args[1]));	// update folder + be silent
+	//else if (nmc::DkSettings::app.showRecentFiles)
+	//	w->showRecentFiles();
 	else {
-		w->viewport()->getImageLoader()->setDir(QDir(imgDir));
-		w->viewport()->getImageLoader()->firstFile();
+		w->loadFile(imgDir);
+		//w->viewport()->getImageLoader()->firstFile();
 	}
 
 	int fullScreenMode = settings.value("AppSettings/currentAppMode", nmc::DkSettings::app.currentAppMode).toInt();
@@ -154,7 +189,7 @@ int main(int argc, char *argv[]) {
 	QObject::connect(osxEventFilter, SIGNAL(loadFile(const QFileInfo&)),
 		w, SLOT(loadFile(const QFileInfo&)));
 #endif
-		
+
 	int rVal = a.exec();
 	delete w;	// we need delete so that settings are saved (from destructors)
 

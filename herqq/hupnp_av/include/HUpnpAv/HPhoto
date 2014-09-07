@@ -1,0 +1,6 @@
+#ifndef H_PHOTO_
+#define H_PHOTO_
+
+#include "public/hphoto.h"
+
+#endif // H_PHOTO_

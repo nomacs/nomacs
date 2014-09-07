@@ -1,0 +1,6 @@
+#ifndef H_GENRECONTAINER_
+#define H_GENRECONTAINER_
+
+#include "public/hgenrecontainer.h"
+
+#endif // H_GENRECONTAINER_

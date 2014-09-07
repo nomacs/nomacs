@@ -61,6 +61,7 @@
 	#pragma warning(disable: 4996)
 #endif
 
+
 #ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
 #include "opencv/cv.h"
 #else
@@ -91,21 +92,39 @@ namespace nmc {
 
 class DkTcpMenu;
 class DkCompressDialog;
+class DkSettingsDialog;
 class DkTifDialog;
 class DkOpacityDialog;
 class DkResizeDialog;
 class DkUpdateDialog;
 class DkForceThumbDialog;
 class DkTrainDialog;
+#ifdef WITH_QUAZIP
+class DkArchiveExtractionDialog;
+#endif
 class DkExplorer;
+class DkMetaDataDock;
 class DkExportTiffDialog;
-class DkMosaicDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
+class DkTranslationUpdater;
 class DkLocalManagerThread;
 class DkLanManagerThread;
+class DkRCManagerThread;
 class DkTransferToolBar;
+class DkPluginManager;
 class DkAppManager;
+class DkImageContainerT;	// TODO: add include to suppress warning C4150
+class DkThumbsSaver;
+class DkPrintPreviewDialog;
+class FileDownloader;
+
+#ifdef WITH_UPNP
+class DkUpnpControlPoint;
+class DkUpnpDeviceHost;
+class DkUpnpRendererDeviceHost;
+#endif // WITH_UPNP
+
 
 
 // keyboard shortcuts
@@ -130,6 +149,7 @@ enum {
 	shortcut_next_file		= Qt::Key_Right,
 	shortcut_rename			= Qt::Key_F2,
 	shortcut_goto			= Qt::CTRL + Qt::Key_G,
+	shortcut_extract		= Qt::CTRL + Qt::Key_E,
 
 	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
 	shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
@@ -153,6 +173,7 @@ enum {
 	shortcut_fit_frame		= Qt::CTRL + Qt::Key_2,
 	shortcut_show_overview	= Qt::Key_O,
 	shortcut_show_explorer	= Qt::Key_E,
+	shortcut_show_metadata_dock = Qt::ALT + Qt::Key_M,
 	shortcut_show_player	= Qt::Key_P,
 	shortcut_show_exif		= Qt::Key_M,
 	shortcut_show_info		= Qt::Key_I,
@@ -165,6 +186,7 @@ enum {
 	shortcut_tp_pattern		= Qt::Key_B,
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
+	shortcut_recent_files	= Qt::CTRL + Qt::Key_R,
 	//shortcut_play			= Qt::Key_Space,
 
 	// edit
@@ -176,6 +198,7 @@ enum {
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
 	shortcut_crop			= Qt::Key_C,
 	shortcut_copy_buffer	= Qt::CTRL + Qt::SHIFT + Qt::Key_C,
+	shortcut_copy_color		= Qt::CTRL + Qt::ALT + Qt::Key_C,
 	shortcut_auto_adjust	= Qt::CTRL + Qt::SHIFT + Qt::Key_L,
 	shortcut_norm_image		= Qt::CTRL + Qt::SHIFT + Qt::Key_N,
 
@@ -209,6 +232,7 @@ enum fileActions {
 	menu_file_goto,
 	menu_file_find,
 	menu_file_recursive,
+	menu_file_show_recent,
 	menu_file_print,
 	menu_file_reload,
 	menu_file_next,
@@ -216,6 +240,7 @@ enum fileActions {
 	menu_file_train_format,
 	menu_file_new_instance,
 	menu_file_exit,
+	menu_file_extract_archive,
 	//menu_file_share_fb,
 
 	menu_file_end,	// nothing beyond this point
@@ -226,9 +251,9 @@ enum sortActions {
 	menu_sort_filename,
 	menu_sort_date_created,
 	menu_sort_date_modified,
+	menu_sort_random,
 	menu_sort_ascending,
 	menu_sort_descending,
-	menu_sort_random,
 
 	menu_sort_end,
 };
@@ -239,6 +264,7 @@ enum editActions {
 	menu_edit_rotate_180,
 	menu_edit_copy,
 	menu_edit_copy_buffer,
+	menu_edit_copy_color,
 	menu_edit_paste,
 	menu_edit_shortcuts,
 	menu_edit_preferences,
@@ -250,6 +276,7 @@ enum editActions {
 	menu_edit_invert,
 	menu_edit_norm,
 	menu_edit_auto_adjust,
+	menu_edit_unsharp,
 	menu_edit_wallpaper,
 
 	menu_edit_end,	// nothing beyond this point
@@ -282,6 +309,7 @@ enum panelActions {
 	menu_panel_explorer,
 	menu_panel_social_button,
 	menu_panel_qrcode,
+	menu_panel_metadata_dock,
 
 	menu_panel_end,
 };
@@ -328,8 +356,19 @@ enum syncActions {
 	menu_sync_pos,
 	menu_sync_arrange,
 	menu_sync_connect_all,
+	menu_sync_all_actions,
+	menu_sync_start_upnp,
+
+	menu_sync_remote_control,
+	menu_sync_remote_display,
 
 	menu_sync_end,	// nothing beyond this point
+};
+
+enum pluginsActions {
+	menu_plugin_manager,
+	
+	menu_plugins_end,	// nothing beyond this point
 };
 
 enum lanSyncActions {
@@ -341,6 +380,7 @@ enum lanSyncActions {
 
 enum helpActions {
 	menu_help_update,
+	menu_help_update_translation,
 	menu_help_bug,
 	menu_help_feature,
 	menu_help_documentation,
@@ -451,18 +491,22 @@ public:
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getFotoActions();
 	QVector<QAction* > getSyncActions();
-	void loadFile(const QFileInfo& file, bool silent = false);
+	void loadFile(const QFileInfo& file);
 
 	static void updateAll();
 
 	bool saveSettings;
+
+	QString getCurrRunningPlugin() {return currRunningPlugin;};
 
 signals:
 	void sendTitleSignal(QString newTitle);
 	void sendPositionSignal(QRect newRect, bool overlaid);
 	void sendArrangeSignal(bool overlaid);
 	void synchronizeWithSignal(quint16);
+	void stopSynchronizeWithSignal();
 	void synchronizeWithServerPortSignal(quint16);
+	void synchronizeRemoteControl(quint16);
 	void closeSignal();
 	void saveTempFileSignal(QImage img);
 	void sendQuitLocalClientsSignal();
@@ -474,6 +518,8 @@ public slots:
 	void openKeyboardShortcuts();
 	void openSettings();
 	void showExplorer(bool show);
+	void showMetaDataDock(bool show);
+	void showRecentFiles(bool show = true);
 	void openDir();
 	void openFile();
 	void renameFile();
@@ -484,6 +530,7 @@ public slots:
 	void saveFile();
 	void saveFileAs(bool silent = false);
 	void saveFileWeb();
+	void extractImagesFromArchive();
 	void trainFormat();
 	void resizeImage();
 	void openImgManipulationDialog();
@@ -506,8 +553,10 @@ public slots:
 	void openDocumentation();
 	void bugReport();
 	void featureRequest();
-	void errorDialog(QString msg, QString title = "Error");
+	//void errorDialog(QString msg, QString title = "Error");
+	void errorDialog(const QString& msg);
 	void loadRecursion();
+	void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
 	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
@@ -529,11 +578,13 @@ public slots:
 	void showStatusMessage(QString msg, int which = status_pixel_info);
 	void copyImage();
 	void copyImageBuffer();
+	void copyPixelColorValue();
 	void pasteImage();
 	void flipImageHorizontal();
 	void flipImageVertical();
 	void normalizeImage();
 	void autoAdjustImage();
+	void unsharpMask();
 	void invertImage();
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
@@ -541,6 +592,7 @@ public slots:
 	void performUpdate();
 	void updateProgress(qint64 received, qint64 total);
 	void startSetup(QString);
+	void updateTranslations();
 	virtual void enableNoImageActions(bool enable = true);
 	void checkForUpdate();
 	void setFrameless(bool frameless);
@@ -548,12 +600,21 @@ public slots:
 	void setRecursiveScan(bool recursive);
 	void setContrast(bool contrast);
 	void enableMovieActions(bool enable);
+	void runLoadedPlugin();
+	void openPluginManager();
+	void initPluginManager();
+	void runPluginFromShortcut();
+	void closePlugin(bool askForSaving, bool alreadySaving);
+	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
 	void clearFolderHistory();
+	void downloadFile(const QUrl& url);
+	void fileDownloaded();
 	//void shareFacebook();
 
 	// batch actions
 	void computeThumbsBatch();
+	void onWindowLoaded();
 
 protected:
 	
@@ -583,6 +644,8 @@ protected:
 	bool gestureEvent(QGestureEvent *event);
 
 	void assignCustomShortcuts(QVector<QAction*> actions);
+	void assignCustomPluginShortcuts();
+	void savePluginActions(QVector<QAction *> actions);
 
 	bool otherKeyPressed;
 	QPoint posGrabKey;
@@ -590,6 +653,8 @@ protected:
 
 	// vars
 	QWidget *parent;
+	DkPluginManager* pluginManager;
+	QString currRunningPlugin;
 
 	QVector<QShortcut*> shortcuts;	
 	QVector<QAction *> fileActions;
@@ -601,6 +666,8 @@ protected:
 	QVector<QAction *> viewActions;
 	QVector<QAction *> fotoActions;
 	QVector<QAction *> syncActions;
+	QVector<QAction *> pluginsActions;
+	QVector<QAction *> pluginsDummyActions;
 	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
@@ -622,12 +689,13 @@ protected:
 	QMenu* viewMenu;
 	QMenu* fotoMenu;
 	QMenu* syncMenu;
+	QMenu* pluginsMenu;
 	QMenu* helpMenu;
 	QMenu* contextMenu;
 
 	// sub menus
-	QMenu* fileFilesMenu;
-	QMenu* fileFoldersMenu;
+	//QMenu* fileFilesMenu;
+	//QMenu* fileFoldersMenu;
 	QMenu* panelToolsMenu;
 	DkTcpMenu* tcpViewerMenu;
 	DkTcpMenu* tcpLanMenu;
@@ -652,11 +720,19 @@ protected:
 	QProgressDialog* progressDialog;
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
+#ifdef WITH_QUAZIP
+	DkArchiveExtractionDialog* archiveExtractionDialog;
+#endif
 	DkExplorer* explorer;
+	DkMetaDataDock* metaDataDock;
 	DkExportTiffDialog* exportTiffDialog;
-	DkMosaicDialog* mosaicDialog;
+	DkSettingsDialog* settingsDialog;
+	DkThumbsSaver* thumbSaver;
 
 	DkImageManipulationDialog* imgManipulationDialog;
+
+	DkPrintPreviewDialog* printPreviewDialog;
+	FileDownloader* fileDownloader;
 
 	DkAppManager* appManager;
 
@@ -664,6 +740,8 @@ protected:
 	//DkLocalClientManager* localClientManager;
 	//DkLANClientManager* lanClientManager;
 	DkUpdater* updater;
+	DkTranslationUpdater* translationUpdater;	
+	
 
 	QRect oldGeometry;
 	QList<QToolBar *> hiddenToolbars;
@@ -687,6 +765,9 @@ protected:
 
 	virtual void readSettings();
 
+	// plugin functions
+	void addPluginsToMenu();
+	void createPluginsMenu();
 };
 
 class DllExport DkNoMacsSync : public DkNoMacs {
@@ -700,12 +781,20 @@ public:
 	
 signals:
 	void clientInitializedSignal();
+	void startRCServerSignal(bool start);
+	void startTCPServerSignal(bool start);
 
 public slots:
 	void tcpConnectAll();
+	void tcpChangeSyncMode(int syncMode, bool connectWithWhiteList = false);
+	void tcpRemoteControl(bool start);
+	void tcpRemoteDisplay(bool start);
+	void tcpAutoConnect(bool connect);
+	void startUpnpRenderer(bool start);
 	void settingsChanged();
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
+	void startTCPServer(bool start);
 
 protected:
 
@@ -715,6 +804,7 @@ protected:
 
 	// functions
 	void initLanClient();
+	bool connectWhiteList(int mode, bool connect = true);
 
 	// gui
 	virtual void createActions();
@@ -723,6 +813,12 @@ protected:
 	// network layer
 	DkLocalManagerThread* localClient;
 	DkLanManagerThread* lanClient;
+	DkRCManagerThread* rcClient;
+#ifdef WITH_UPNP
+	QSharedPointer<DkUpnpControlPoint> upnpControlPoint;
+	QSharedPointer<DkUpnpDeviceHost> upnpDeviceHost;
+	QSharedPointer<DkUpnpRendererDeviceHost> upnpRendererDeviceHost;
+#endif // WITH_UPNP
 
 };
 

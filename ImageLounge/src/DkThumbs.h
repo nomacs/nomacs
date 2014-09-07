@@ -36,6 +36,8 @@
 #include <QImageReader>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+#include <QSharedPointer>
+#include <QTimer>
 
 #ifdef WIN32
 	#include <winsock2.h>	// needed since libraw 0.16
@@ -82,9 +84,7 @@ public:
 	 * Sets the thumbnail image.
 	 * @param img the thumbnail
 	 **/ 
-	void setImage(QImage img) {
-		this->img = img;
-	}
+	virtual void setImage(QImage img);
 
 	void removeBlackBorder(QImage& img);
 
@@ -105,7 +105,7 @@ public:
 		return file;
 	};
 
-	void compute(bool forceLoad = false, bool forceSave = false);
+	void compute(int forceLoad = do_not_force);
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
@@ -119,6 +119,10 @@ public:
 			return not_loaded;
 		else
 			return exists_not;
+	};
+
+	QColor getMeanColor() const {
+		return meanColor;
 	};
 
 	void setMaxThumbSize(int maxSize) {
@@ -157,8 +161,17 @@ public:
 	//	return s;
 	//};
 
+	enum {
+		do_not_force,
+		force_exif_thumb,
+		force_full_thumb,
+		save_thumb,
+		force_save_thumb,
+	};
+
 protected:
-	QImage computeIntern(QFileInfo file, bool forceLoad, bool forceSave, int maxThumbSize, int minThumbSize, bool rescale);
+	QImage computeIntern(QFileInfo file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
+	QColor computeColorIntern();
 
 	QImage img;
 	QFileInfo file;
@@ -167,6 +180,8 @@ protected:
 	int maxThumbSize;
 	int minThumbSize;
 	bool rescale;
+	QColor meanColor;
+	bool colorExists;
 };
 
 class DkThumbNailT : public QObject, public DkThumbNail {
@@ -176,7 +191,8 @@ public:
 	DkThumbNailT(QFileInfo file = QFileInfo(), QImage img = QImage());
 	~DkThumbNailT();
 
-	void fetchThumb(bool forceLoad = false, bool forceSave = false);
+	bool fetchThumb(int forceLoad = do_not_force, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	void fetchColor();
 
 	/**
 	 * Returns whether the thumbnail was loaded, or does not exist.
@@ -184,58 +200,69 @@ public:
 	 **/ 
 	int hasImage() const {
 		
-		if (watcher.isRunning())
+		if (thumbWatcher.isRunning())
 			return loading;
 		else
 			return DkThumbNail::hasImage();
 	};
 
+	void setImage(QImage img) {
+		DkThumbNail::setImage(img);
+		emit thumbLoadedSignal(true);
+	};
+
 signals:
-	void thumbUpdated();
+	void thumbLoadedSignal(bool loaded = true);
+	void colorUpdated();
 
 protected slots:
 	void thumbLoaded();
+	void colorLoaded();
 
 protected:
-	QImage computeCall(bool forceLoad, bool forceSave);
+	QImage computeCall(int forceLoad, QSharedPointer<QByteArray> ba);
+	QColor computeColorCall();
 
-	QFutureWatcher<QImage> watcher;
+	QFutureWatcher<QImage> thumbWatcher;
+	QFutureWatcher<QColor> colorWatcher;
 	bool fetching;
+	bool fetchingColor;
+	int forceLoad;
 };
 
-class DkThumbPool : public QObject {
-	Q_OBJECT
-
-public:
-	DkThumbPool(QFileInfo file = QFileInfo(), QObject* parent = 0);
-	
-	QFileInfo getCurrentFile();
-	int getCurrentFileIdx();
-	int fileIdx(const QFileInfo& file);
-
-	QVector<QSharedPointer<DkThumbNailT> > getThumbs();
-
-public slots:
-	void setFile(const QFileInfo& files, int force = false);
-	void thumbUpdated();
-	void updateDir(const QFileInfo& currentFile);
-	void getUpdates(QObject* obj, bool isActive);
-
-signals:
-	void thumbUpdatedSignal();
-	void numThumbChangedSignal();
-	void newFileIdxSignal(int idx);
-
-protected:
-	void indexDir(const QFileInfo& currentFile);
-	QDir dir(const QFileInfo& file) const;	// fixes a Qt 'bug'
-	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
-
-	QVector<QSharedPointer<DkThumbNailT> > thumbs;
-	QFileInfo currentFile;
-	QStringList files;
-	QVector<QObject*> listenerList;
-};
+//class DkThumbPool : public QObject {
+//	Q_OBJECT
+//
+//public:
+//	DkThumbPool(QFileInfo file = QFileInfo(), QObject* parent = 0);
+//	
+//	QFileInfo getCurrentFile();
+//	int getCurrentFileIdx();
+//	int fileIdx(const QFileInfo& file);
+//
+//	QVector<QSharedPointer<DkThumbNailT> > getThumbs();
+//
+//public slots:
+//	void setFile(const QFileInfo& files, int force = false);
+//	void thumbUpdated();
+//	void updateDir(const QFileInfo& currentFile);
+//	void getUpdates(QObject* obj, bool isActive);
+//
+//signals:
+//	void thumbUpdatedSignal();
+//	void numThumbChangedSignal();
+//	void newFileIdxSignal(int idx);
+//
+//protected:
+//	void indexDir(const QFileInfo& currentFile);
+//	QDir dir(const QFileInfo& file) const;	// fixes a Qt 'bug'
+//	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
+//
+//	QVector<QSharedPointer<DkThumbNailT> > thumbs;
+//	QFileInfo currentFile;
+//	QStringList files;
+//	QVector<QObject*> listenerList;
+//};
 
 
 /**
@@ -250,13 +277,12 @@ class DkThumbsLoader : public QThread {
 	Q_OBJECT
 
 public:
-	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QStringList files = QStringList());
+	DkThumbsLoader(std::vector<DkThumbNail>* thumbs = 0, QDir dir = QDir(), QFileInfoList files = QFileInfoList());
 	~DkThumbsLoader() {};
 
-	static QImage createThumb(const QImage& image);
 	void run();
 	int getFileIdx(QFileInfo& file);
-	QStringList getFiles() {
+	QFileInfoList getFiles() {
 		return files;
 	};
 	QDir getDir() {
@@ -300,61 +326,13 @@ private:
 	bool loadAllThumbs;
 	bool forceSave;
 	bool forceLoad;
-	QStringList files;
+	QFileInfoList files;
 
 	//// function
 	//QImage getThumbNailQt(QFileInfo file);
 	//QImage getThumbNailWin(QFileInfo file);
 	void init();
 	void loadThumbs();
-};
-
-class DkColorLoader : public QThread {
-	Q_OBJECT
-
-public:
-	DkColorLoader(QDir dir = QDir(), QStringList files = QStringList());
-	~DkColorLoader() {};
-
-	void stop();
-	void run();
-
-	const QVector<QColor>& getColors() const {
-		return cols;
-	};
-
-	const QVector<int>& getIndexes() const {
-		return indexes;
-	};
-
-	int maxFiles() const {
-		return maxThumbs;
-	};
-
-	QString getFilename(int idx) const {
-
-		if (idx < 0 || idx >= files.size())
-			return QString("");
-
-		return files.at(idx);
-	}
-
-signals:
-	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);
-
-protected:
-	void init();
-	void loadThumbs();
-	void loadColor(int fileIdx);
-	QColor computeColor(QImage& thumb);
-
-	QVector<QColor> cols;
-	QVector<int> indexes;
-	QDir dir;
-	QStringList files;
-	bool isActive;
-	QMutex mutex;
-	int maxThumbs;
 };
 
 };

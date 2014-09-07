@@ -1,0 +1,6 @@
+#ifndef H_FUNCTOR_
+#define H_FUNCTOR_
+
+#include "public/hfunctor.h"
+
+#endif // H_FUNCTOR_

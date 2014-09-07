@@ -37,6 +37,10 @@
 #include <QPainter>
 #include <QFuture>
 #include <QtConcurrentRun>
+#include <QDir>
+#include <QComboBox>
+#include <QCoreApplication>
+#include <QTranslator>
 
 #include <cmath>
 #include <sstream>
@@ -47,15 +51,20 @@
 #include <fstream>
 
 #include "DkError.h"
+#include "DkSettings.h"
 
 #ifdef Q_OS_WIN
-	#include <wtypes.h>
-	#include <windows.h>
+
+#include <winsock2.h>	// needed since libraw 0.16
+#include <wtypes.h>
+#include <windows.h>
+
+#include "shlwapi.h"
+#pragma comment (lib, "shlwapi.lib")
+
 #else
 	#include <time.h>
 #endif
-
-
 
 #ifdef WITH_OPENCV
 
@@ -77,21 +86,70 @@ using namespace cv;
 
 #endif
 
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
 namespace nmc {
 
 enum morphTypes {DK_ERODE=0, DK_DILATE};
 enum DebugLevel {DK_NONE=0,DK_WARNING, DK_MODULE, DK_DEBUG_A, DK_DEBUG_B, DK_DEBUG_C, DK_DEBUG_ALL};
 enum SpeedLebel {DK_NO_SPEED_UP=0, DK_SPEED_UP, DK_APPROXIMATE};
 
+
 /**
  * This class contains general functions which are useful.
  **/
-class DkUtils {
+class DllExport DkUtils {
 
 private:
 	static int debugLevel;
 
 public:
+
+
+#ifdef WIN32
+	
+	/**
+	 * Logical string compare function.
+	 * This function is used to sort:
+	 * a1.png
+	 * a2.png
+	 * a10.png
+	 * instead of:
+	 * a1.png
+	 * a10.png
+	 * a2.png
+	 * @param lhs left string
+	 * @param rhs right string
+	 * @return bool true if left string < right string
+	 **/ 
+	static bool wCompLogic(const std::wstring & lhs, const std::wstring & rhs);
+#endif
+
+	static bool compLogicQString(const QString & lhs, const QString & rhs);
+
+	static bool compFilename(const QFileInfo & lhf, const QFileInfo & rhf);
+
+	static bool compFilenameInv(const QFileInfo & lhf, const QFileInfo & rhf);
+
+	static bool compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compDateModified(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static bool compRandom(const QFileInfo& lhf, const QFileInfo& rhf);
+
+	static void addLanguages(QComboBox* langCombo, QStringList& languages);
 
 	/**
 	 * Sleeps n ms.
@@ -324,7 +382,30 @@ public:
 		return stringify(rounded/std::pow(10,n));
 	};
 
-	static QString convertDate(const QString& date, const QFileInfo& file = QFileInfo()) {
+	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo()) {
+
+		// convert date
+		QDateTime dateCreated;
+		QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+
+		if (dateSplit.size() >= 3) {
+
+			QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
+			QTime time;
+
+			if (dateSplit.size() >= 6)
+				time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
+
+			dateCreated = QDateTime(dateV, time);
+		}
+		else if (file.exists())
+			dateCreated = file.created();
+
+		return dateCreated;
+	};
+
+	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo()) {
+		
 		// convert date
 		QString dateConverted;
 		QStringList dateSplit = date.split(QRegExp("[/: \t]"));
@@ -466,6 +547,32 @@ public:
 
 	static double getTotalMemory();
 	static double getFreeMemory();
+};
+
+// from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
+class TreeItem {
+
+public:
+	TreeItem(const QVector<QVariant> &data, TreeItem *parent = 0);
+	~TreeItem();
+
+	void appendChild(TreeItem *child);
+
+	TreeItem *child(int row);
+	int childCount() const;
+	int columnCount() const;
+	QVariant data(int column) const;
+	void setData(const QVariant& value, int column);
+	int row() const;
+	TreeItem* parent() const;
+	TreeItem* find(const QVariant& value, int column);
+	void setParent(TreeItem* parent);
+	void clear();
+
+private:
+	QVector<TreeItem*> childItems;
+	QVector<QVariant> itemData;
+	TreeItem *parentItem;
 };
 
 };

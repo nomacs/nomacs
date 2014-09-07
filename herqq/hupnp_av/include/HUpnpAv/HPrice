@@ -1,0 +1,6 @@
+#ifndef H_PRICE_
+#define H_PRICE_
+
+#include "public/hprice.h"
+
+#endif // H_PRICE_

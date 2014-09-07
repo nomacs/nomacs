@@ -1,0 +1,6 @@
+#ifndef H_DEVICEHOST_RUNTIMESTATUS_
+#define H_DEVICEHOST_RUNTIMESTATUS_
+
+#include "public/hdevicehost.h"
+
+#endif // H_DEVICEHOST_RUNTIMESTATUS_

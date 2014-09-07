@@ -1,0 +1,6 @@
+#ifndef H_ABSTRACTMEDIASERVER_DEVICE_
+#define H_ABSTRACTMEDIASERVER_DEVICE_
+
+#include "public/habstractmediaserver_device.h"
+
+#endif // H_ABSTRACTMEDIASERVER_DEVICE_

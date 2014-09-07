@@ -32,7 +32,7 @@
 
 namespace nmc {
 
-QStringList DkMetaDataSettingsWidget::scamDataDesc = QStringList() << 
+QStringList DkSettings::scamDataDesc = QStringList() << 
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Image Size") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Orientation") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Make") <<
@@ -44,7 +44,7 @@ QStringList DkMetaDataSettingsWidget::scamDataDesc = QStringList() <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Mode") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Exposure Time");
 
-QStringList DkMetaDataSettingsWidget::sdescriptionDesc = QStringList() <<
+QStringList DkSettings::sdescriptionDesc = QStringList() <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Rating") <<
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","User Comment") << 
 												QT_TRANSLATE_NOOP("nmc::DkMetaData","Date Time") <<
@@ -83,6 +83,20 @@ DkSettings::MetaData DkSettings::meta_d;
 DkSettings::Resources DkSettings::resources_d;
 DkSettings::Foto DkSettings::foto_d;
 
+// well this is pretty shitty... but we need the filter without description too
+QStringList DkSettings::fileFilters = QStringList();
+
+// formats we can save
+QStringList DkSettings::saveFilters = QStringList();
+
+// formats we can load
+QStringList DkSettings::openFilters = QStringList();
+
+// container formats
+QStringList DkSettings::containerFilters = QStringList();
+
+QString DkSettings::containerRawFilters = "";
+
 DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
 DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
@@ -93,7 +107,6 @@ DkSettings::Resources& DkSettings::resources = DkSettings::getResourceSettings()
 DkSettings::Foto& DkSettings::foto = DkSettings::getFotoSettings();
 
 DkSettings::App& DkSettings::getAppSettings() {
-	load();
 	return app_p;
 }
 
@@ -151,11 +164,140 @@ QStringList DkSettings::getDefaultStrings() {
 	return strings.toList();
 }
 
+void DkSettings::initFileFilters() {
+
+	if (!openFilters.empty())
+		return;
+
+	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
+
+	// formats we can save
+	if (qtFormats.contains("png"))		saveFilters.append("PNG (*.png)");
+	if (qtFormats.contains("jpg"))		saveFilters.append("JPEG (*.jpg *.jpeg)");
+	if (qtFormats.contains("j2k"))		saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
+	if (qtFormats.contains("tif"))		saveFilters.append("TIFF (*.tif *.tiff)");
+	if (qtFormats.contains("bmp"))		saveFilters.append("Windows Bitmap (*.bmp)");
+	if (qtFormats.contains("ppm"))		saveFilters.append("Portable Pixmap (*.ppm)");
+	if (qtFormats.contains("xbm"))		saveFilters.append("X11 Bitmap (*.xbm)");
+	if (qtFormats.contains("xpm"))		saveFilters.append("X11 Pixmap (*.xpm)");
+
+	// internal filters
+#ifdef WITH_WEBP
+	saveFilters.append("WebP (*.webp)");
+#endif
+
+	// formats we can load
+	openFilters += saveFilters;
+	if (qtFormats.contains("gif"))		openFilters.append("Graphic Interchange Format (*.gif)");
+	if (qtFormats.contains("pbm"))		openFilters.append("Portable Bitmap (*.pbm)");
+	if (qtFormats.contains("pgm"))		openFilters.append("Portable Graymap (*.pgm)");
+	if (qtFormats.contains("ico"))		openFilters.append("Icon Files (*.ico)");
+	if (qtFormats.contains("tga"))		openFilters.append("Targa Image File (*.tga)");
+	if (qtFormats.contains("mng"))		openFilters.append("Multi-Image Network Graphics (*.mng)");
+
+#ifdef WITH_OPENCV
+	// raw format
+	openFilters.append("Nikon Raw (*.nef)");
+	openFilters.append("Canon Raw (*.crw *.cr2)");
+	openFilters.append("Sony Raw (*.arw)");
+	openFilters.append("Digital Negativ (*.dng)");
+	openFilters.append("Panasonic Raw (*.rw2)");
+	openFilters.append("Minolta Raw (*.mrw)");
+#endif
+
+	// stereo formats
+	openFilters.append("JPEG Stereo (*.jps)");
+	openFilters.append("PNG Stereo (*.pns)");
+	openFilters.append("Multi Picture Object (*.mpo)");
+
+	// other formats
+	openFilters.append("Adobe Photoshop (*.psd)");
+	openFilters.append("Large Document Format (*.psb)");
+
+	// archive formats
+	containerFilters.append("ZIP Archive (*.zip)");
+	containerFilters.append("Microsoft Word Document (*.docx)");
+	containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
+	containerFilters.append("Microsoft Excel Document (*.xlsx)");
+	
+	openFilters += containerFilters;
+
+	containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
+
+	// finally: fabians filter
+	openFilters.append("Rohkost (*.roh)");
+
+	// load user filters
+	QSettings& settings = Settings::instance().getSettings();
+	openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
+
+	for (int idx = 0; idx < openFilters.size(); idx++) {
+
+		QString cFilter = openFilters[idx];
+		cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
+		cFilter = cFilter.replace(")", "");
+		fileFilters += cFilter.split(" ");
+	}
+
+	QString allFilters = fileFilters.join(" ");
+
+	// add unknown formats from Qt plugins
+	for (int idx = 0; idx < qtFormats.size(); idx++) {
+
+		if (!allFilters.contains(qtFormats.at(idx))) {
+			openFilters.append("Image Format (*." + qtFormats.at(idx) + ")");
+			fileFilters.append("*." + qtFormats.at(idx));
+		}
+	}
+
+	openFilters.prepend("Image Files (" + fileFilters.join(" ") + ")");
+
+	qDebug() << "supported: " << qtFormats;
+
+#ifdef Q_OS_WIN
+	fileFilters.append("*.lnk");
+#endif
+
+}
+
+void DkSettings::loadTranslation(const QString& fileName, QTranslator& translator) {
+
+	QStringList translationDirs = getTranslationDirs();
+
+	for (int idx = 0; idx < translationDirs.size(); idx++) {
+
+		if (translator.load(fileName, translationDirs[idx])) {
+			qDebug() << "translation loaded from: " << translationDirs[idx] << "/" << fileName;
+			break;
+		}
+	}
+}
+
+QStringList DkSettings::getTranslationDirs() {
+
+	QStringList translationDirs;
+	if (!DkSettings::isPortable())
+		translationDirs.append(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
+	translationDirs.append(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+	
+	QDir p((qApp->applicationDirPath()));
+	translationDirs.append(p.absolutePath());
+	if (p.cd("translations"))
+		translationDirs.append(p.absolutePath());
+	p = QDir(qApp->applicationDirPath());
+	if (p.cd("../share/nomacs/translations/"))
+		translationDirs.append(p.absolutePath());
+
+	return translationDirs;
+}
+
 void DkSettings::load(bool force) {
 
 	setToDefaultSettings();
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
+	qDebug() << "loading settings from: " << settings.fileName();
+
 	settings.beginGroup("AppSettings");
 	
 	app_p.showMenuBar = settings.value("showMenuBar", app_p.showMenuBar).toBool();
@@ -191,6 +333,20 @@ void DkSettings::load(bool force) {
 		app_p.showOverview = tmpShow;
 
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
+	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
+	
+	QStringList tmpFileFilters = fileFilters;
+	QStringList tmpContainerFilters = containerRawFilters.split(" ");
+	for (int idx = 0; idx < tmpContainerFilters.size(); idx++) {
+		tmpFileFilters.removeAll(tmpContainerFilters.at(idx));
+	}
+	app_p.browseFilters = settings.value("browseFilters", tmpFileFilters).toStringList();
+
+	// double-check (if user removes all filters he can't browse anymore - so override this case)
+	if (app_p.browseFilters.empty())
+		app_p.browseFilters = tmpFileFilters;
+
+	app_p.registerFilters = settings.value("registerFilters", app_p.registerFilters).toStringList();
 	app_p.advancedSettings = settings.value("advancedSettings", app_p.advancedSettings).toBool();
 
 	settings.endGroup();
@@ -225,7 +381,7 @@ void DkSettings::load(bool force) {
 	settings.beginGroup("GlobalSettings");
 
 	global_p.skipImgs = settings.value("skipImgs", global_p.skipImgs).toInt();
-	global_p.numFiles = settings.value("numFiles", global_p.numFiles).toInt();
+	//global_p.numFiles = settings.value("numFiles", global_p.numFiles).toInt();
 
 	global_p.loop = settings.value("loop", global_p.loop).toBool();
 	global_p.scanSubFolders = settings.value("scanRecursive", global_p.scanSubFolders).toBool();
@@ -233,6 +389,7 @@ void DkSettings::load(bool force) {
 	global_p.searchHistory = settings.value("searchHistory", global_p.searchHistory).toStringList();
 	global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
 	global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
+	global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
 	global_p.useTmpPath= settings.value("useTmpPath", global_p.useTmpPath).toBool();
 	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
 	global_p.language = settings.value("language", global_p.language).toString();
@@ -249,20 +406,22 @@ void DkSettings::load(bool force) {
 
 	display_p.keepZoom = settings.value("keepZoom", display_p.keepZoom).toInt();
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
-	display_p.highlightColor = settings.value("highlightColor", display_p.highlightColor).value<QColor>();
-	display_p.bgColorWidget = settings.value("bgColor", display_p.bgColorWidget).value<QColor>();
-	display_p.bgColor = settings.value("bgColorNoMacs", display_p.bgColor).value<QColor>();
-	display_p.iconColor = settings.value("iconColor", display_p.iconColor).value<QColor>();
+	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
+	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.bgColorWidget.rgba()).toInt());
+	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
+	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
 
-	display_p.bgColorFrameless = settings.value("bgColorFrameless", display_p.bgColorFrameless).value<QColor>();
+	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
-	display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
+	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
 	display_p.tpPattern = settings.value("tpPattern", display_p.tpPattern).toBool();
 	display_p.smallIcons = settings.value("smallIcons", display_p.smallIcons).toBool();
 	display_p.toolbarGradient = settings.value("toolbarGradient", display_p.toolbarGradient).toBool();
 	display_p.showBorder = settings.value("showBorder", display_p.showBorder).toBool();
+	display_p.displaySquaredThumbs = settings.value("displaySquaredThumbs", display_p.displaySquaredThumbs).toBool();
+	display_p.fadeSec = settings.value("fadeSec", display_p.fadeSec).toFloat();
 	display_p.useDefaultColor = settings.value("useDefaultColor", display_p.useDefaultColor).toBool();
 	display_p.defaultIconColor = settings.value("defaultIconColor", display_p.defaultIconColor).toBool();
 	display_p.interpolateZoomLevel = settings.value("interpolateZoomlevel", display_p.interpolateZoomLevel).toInt();
@@ -274,7 +433,7 @@ void DkSettings::load(bool force) {
 	QBitArray tmpMetaData = settings.value("metaData", meta_p.metaDataBits).toBitArray();
 	if (tmpMetaData.size() == meta_p.metaDataBits.size())
 		meta_p.metaDataBits = tmpMetaData;
-
+	
 	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
 	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
 
@@ -284,7 +443,8 @@ void DkSettings::load(bool force) {
 
 	slideShow_p.filter = settings.value("filter", slideShow_p.filter).toInt();
 	slideShow_p.time = settings.value("time", slideShow_p.time).toFloat();
-	slideShow_p.backgroundColor = settings.value("backgroundColor", slideShow_p.backgroundColor).value<QColor>();
+	slideShow_p.moveSpeed = settings.value("moveSpeed", slideShow_p.moveSpeed).toFloat();
+	slideShow_p.backgroundColor = QColor::fromRgba(settings.value("backgroundColorRGBA", slideShow_p.backgroundColor.rgba()).toInt());
 	slideShow_p.silentFullscreen = settings.value("silentFullscreen", slideShow_p.silentFullscreen).toBool();
 	QBitArray tmpDisplay = settings.value("display", slideShow_p.display).toBitArray();
 
@@ -304,17 +464,25 @@ void DkSettings::load(bool force) {
 	sync_p.lastUpdateCheck = settings.value("lastUpdateCheck", sync_p.lastUpdateCheck).toDate();
 	sync_p.syncAbsoluteTransform = settings.value("syncAbsoluteTransform", sync_p.syncAbsoluteTransform).toBool();
 	sync_p.switchModifier = settings.value("switchModifier", sync_p.switchModifier).toBool();
+	//sync_p.syncMode = settings.value("syncMode", sync_p.syncMode).toInt();
+	sync_p.syncActions = settings.value("syncActions", sync_p.syncActions).toBool();
+	sync_p.recentSyncNames = settings.value("recentSyncNames", sync_p.recentSyncNames).toStringList();
+	sync_p.syncWhiteList = settings.value("syncWhiteList", sync_p.syncWhiteList).toStringList();
+	sync_p.recentLastSeen = settings.value("recentLastSeen", sync_p.recentLastSeen).toHash();
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------
 	settings.beginGroup("ResourceSettings");
 
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
+	resources_p.maxImagesCached = settings.value("maxImagesCached", resources_p.maxImagesCached).toFloat();
 	resources_p.fastThumbnailPreview = settings.value("fastThumbnailPreview", resources_p.fastThumbnailPreview).toBool();
+	resources_p.waitForLastImg = settings.value("waitForLastImg", resources_p.waitForLastImg).toBool();
 	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
 	resources_p.loadRawThumb = settings.value("loadRawThumb", resources_p.loadRawThumb).toInt();	
 	resources_p.filterDuplicats = settings.value("filterDuplicates", resources_p.filterDuplicats).toBool();
 	resources_p.preferredExtension = settings.value("preferredExtension", resources_p.preferredExtension).toString();	
+	resources_p.gammaCorrection = settings.value("gammaCorrection", resources_p.gammaCorrection).toBool();
 
 	if (sync_p.switchModifier) {
 		global_p.altMod = Qt::ControlModifier;
@@ -324,6 +492,8 @@ void DkSettings::load(bool force) {
 		global_p.altMod = Qt::AltModifier;
 		global_p.ctrlMod = Qt::ControlModifier;
 	}
+
+	settings.endGroup();
 
 	// keep loaded settings in mind
 	app_d = app_p;
@@ -338,7 +508,7 @@ void DkSettings::load(bool force) {
 
 void DkSettings::save(bool force) {
 		
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("AppSettings");
 
 	if (!force && app_p.showMenuBar != app_d.showMenuBar)
@@ -380,6 +550,12 @@ void DkSettings::save(bool force) {
 		settings.setValue("currentAppMode", app_p.currentAppMode);
 	if (!force && app_p.closeOnEsc != app_d.closeOnEsc)
 		settings.setValue("closeOnEsc", app_p.closeOnEsc);
+	if (!force && app_p.showRecentFiles != app_d.showRecentFiles)
+		settings.setValue("showRecentFiles", app_p.showRecentFiles);
+	if (!force && app_p.browseFilters != app_d.browseFilters)
+		settings.setValue("browseFilters", app_p.browseFilters);
+	if (!force && app_p.registerFilters != app_d.registerFilters)
+		settings.setValue("registerFilters", app_p.registerFilters);
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
@@ -387,8 +563,8 @@ void DkSettings::save(bool force) {
 
 	if (!force && global_p.skipImgs != global_d.skipImgs)
 		settings.setValue("skipImgs",global_p.skipImgs);
-	if (!force && global_p.numFiles != global_d.numFiles)
-		settings.setValue("numFiles",global_p.numFiles);
+	//if (!force && global_p.numFiles != global_d.numFiles)
+	//	settings.setValue("numFiles",global_p.numFiles);
 	if (!force && global_p.loop != global_d.loop)
 		settings.setValue("loop",global_p.loop);
 	if (!force && global_p.scanSubFolders != global_d.scanSubFolders)
@@ -401,6 +577,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("recentFolders", global_p.recentFolders);
 	if (!force && global_p.recentFiles != global_d.recentFiles)
 		settings.setValue("recentFiles", global_p.recentFiles);
+	if (!force && global_p.logRecentFiles != global_d.logRecentFiles)
+		settings.setValue("logRecentFiles", global_p.logRecentFiles);
 	if (!force && global_p.useTmpPath != global_d.useTmpPath)
 		settings.setValue("useTmpPath", global_p.useTmpPath);
 	if (!force && global_p.tmpPath != global_d.tmpPath)
@@ -427,21 +605,21 @@ void DkSettings::save(bool force) {
 	if (!force && display_p.invertZoom != display_d.invertZoom)
 		settings.setValue("invertZoom",display_p.invertZoom);
 	if (!force && display_p.highlightColor != display_d.highlightColor)
-		settings.setValue("highlightColor", display_p.highlightColor);
+		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
 	if (!force && display_p.bgColorWidget != display_d.bgColorWidget)
-		settings.setValue("bgColor", display_p.bgColorWidget);
+		settings.setValue("bgColorWidgetRGBA", display_p.bgColorWidget.rgba());
 	if (!force && display_p.bgColor != display_d.bgColor)
-		settings.setValue("bgColorNoMacs", display_p.bgColor);
+		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
 	if (!force && display_p.iconColor != display_d.iconColor)
-		settings.setValue("iconColor", display_p.iconColor);
+		settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
 	if (!force && display_p.bgColorFrameless != display_d.bgColorFrameless)
-		settings.setValue("bgColorFrameless", display_p.bgColorFrameless);
+		settings.setValue("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba());
 	if (!force && display_p.thumbSize != display_d.thumbSize)
 		settings.setValue("thumbSize", display_p.thumbSize);
 	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
 		settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
-	if (!force && display_p.saveThumb != display_d.saveThumb)
-		settings.setValue("saveThumb", display_p.saveThumb);
+	//if (!force && display_p.saveThumb != display_d.saveThumb)
+	//	settings.setValue("saveThumb", display_p.saveThumb);
 	if (!force && display_p.antiAliasing != display_d.antiAliasing)
 		settings.setValue("antiAliasing", display_p.antiAliasing);
 	if (!force && display_p.tpPattern != display_d.tpPattern)
@@ -452,6 +630,10 @@ void DkSettings::save(bool force) {
 		settings.setValue("toolbarGradient", display_p.toolbarGradient);
 	if (!force && display_p.showBorder != display_d.showBorder)
 		settings.setValue("showBorder", display_p.showBorder);
+	if (!force && display_p.displaySquaredThumbs != display_d.displaySquaredThumbs)
+		settings.setValue("displaySquaredThumbs", display_p.displaySquaredThumbs);
+	if (!force && display_p.fadeSec != display_d.fadeSec)
+		settings.setValue("fadeSec", display_p.fadeSec);
 	if (!force && display_p.useDefaultColor != display_d.useDefaultColor)
 		settings.setValue("useDefaultColor", display_p.useDefaultColor);
 	if (!force && display_p.defaultIconColor != display_d.defaultIconColor)
@@ -478,10 +660,12 @@ void DkSettings::save(bool force) {
 		settings.setValue("filter", slideShow_p.filter);
 	if (!force && slideShow_p.time != slideShow_d.time)
 		settings.setValue("time", slideShow_p.time);
+	if (!force && slideShow_p.moveSpeed != slideShow_d.moveSpeed)
+		settings.setValue("moveSpeed", slideShow_p.moveSpeed);
 	if (!force && slideShow_p.display != slideShow_d.display)
 		settings.setValue("display", slideShow_p.display);
 	if (!force && slideShow_p.backgroundColor != slideShow_d.backgroundColor)
-		settings.setValue("backgroundColor", slideShow_p.backgroundColor);
+		settings.setValue("backgroundColorRGBA", slideShow_p.backgroundColor.rgba());
 	if (!force && slideShow_p.silentFullscreen != slideShow_d.silentFullscreen)
 		settings.setValue("silentFullscreen", slideShow_p.silentFullscreen);
 
@@ -507,6 +691,16 @@ void DkSettings::save(bool force) {
 		settings.setValue("syncAbsoluteTransform", sync_p.syncAbsoluteTransform);
 	if (!force && sync_p.switchModifier != sync_d.switchModifier)
 		settings.setValue("switchModifier", sync_p.switchModifier);
+	//if (!force && sync_p.syncMode != sync_d.syncMode)
+	//	settings.setValue("syncMode", sync_p.syncMode);
+	if (!force && sync_p.syncActions != sync_d.syncActions)
+		settings.setValue("syncActions", sync_p.syncActions);
+	if (!force && sync_p.recentSyncNames != sync_d.recentSyncNames)
+		settings.setValue("recentSyncNames", sync_p.recentSyncNames);
+	if (!force && sync_p.syncWhiteList != sync_d.syncWhiteList)
+		settings.setValue("syncWhiteList", sync_p.syncWhiteList);
+	if (!force && sync_p.recentLastSeen != sync_d.recentLastSeen)
+		settings.setValue("recentLastSeen", sync_p.recentLastSeen);
 
 	settings.endGroup();
 	// Resource Settings --------------------------------------------------------------------
@@ -514,8 +708,12 @@ void DkSettings::save(bool force) {
 
 	if (!force && resources_p.cacheMemory != resources_d.cacheMemory)
 		settings.setValue("cacheMemory", resources_p.cacheMemory);
+	if (!force && resources_p.maxImagesCached != resources_d.maxImagesCached)
+		settings.setValue("maxImagesCached", resources_p.maxImagesCached);
 	if (!force && resources_p.fastThumbnailPreview != resources_d.fastThumbnailPreview)
 		settings.setValue("fastThumbnailPreview", resources_p.fastThumbnailPreview);
+	if (!force && resources_p.waitForLastImg != resources_d.waitForLastImg)
+		settings.setValue("waitForLastImg", resources_p.waitForLastImg);
 	if (!force && resources_p.filterRawImages != resources_d.filterRawImages)
 		settings.setValue("filterRawImages", resources_p.filterRawImages);
 	if (!force && resources_p.loadRawThumb != resources_d.loadRawThumb)
@@ -524,6 +722,9 @@ void DkSettings::save(bool force) {
 		settings.setValue("filterDuplicates", resources_p.filterDuplicats);
 	if (!force && resources_p.preferredExtension != resources_d.preferredExtension)
 		settings.setValue("preferredExtension", resources_p.preferredExtension);
+	if (!force && resources_p.gammaCorrection != resources_d.gammaCorrection)
+		settings.setValue("gammaCorrection", resources_p.gammaCorrection);
+	settings.endGroup();
 
 	settings.endGroup();
 	// Fotobox Settings --------------------------------------------------------------------
@@ -579,6 +780,8 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showOverview = QBitArray(mode_end, true);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;
+	app_p.showRecentFiles = true;
+	app_p.browseFilters = QStringList();
 	app_p.showMenuBar = true;
 
 	// now set default show options
@@ -598,7 +801,7 @@ void DkSettings::setToDefaultSettings() {
 	foto_p.facebookPath = QString("C:\\fotobox\\facebook");
 
 	global_p.skipImgs = 10;
-	global_p.numFiles = 10;
+	global_p.numFiles = 50;
 	global_p.loop = false;
 	global_p.scanSubFolders = false;
 	global_p.lastDir = QString();
@@ -606,6 +809,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.recentFiles = QStringList();
 	global_p.searchHistory = QStringList();
 	global_p.recentFolders = QStringList();
+	global_p.logRecentFiles = true;
 	global_p.useTmpPath = false;
 	global_p.tmpPath = QString();
 	global_p.language = QString();
@@ -635,52 +839,54 @@ void DkSettings::setToDefaultSettings() {
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;
 	display_p.thumbPreviewSize = 64;
-	display_p.saveThumb = false;
+	//display_p.saveThumb = false;
 	display_p.antiAliasing = true;
 	display_p.tpPattern = false;
 	display_p.smallIcons = true;
 	display_p.toolbarGradient = false;
-	display_p.showBorder = true;
+	display_p.showBorder = false;
+	display_p.displaySquaredThumbs = true;
+	display_p.fadeSec = 2.0f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;
 
 	slideShow_p.filter = 0;
 	slideShow_p.time = 3.0;
-	slideShow_p.display = QBitArray(DkDisplaySettingsWidget::display_end, true);
+	slideShow_p.moveSpeed = 0;		// TODO: set to 1 for finishing slideshow
+	slideShow_p.display = QBitArray(display_end, true);
 	slideShow_p.backgroundColor = QColor(86, 86, 90, 255);
 	slideShow_p.silentFullscreen = true;
 
-	meta_p.metaDataBits = QBitArray(DkMetaDataSettingsWidget::desc_end, false);
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_size] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_orientation] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_make] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_model] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_aperture] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_iso] = true;
+	meta_p.metaDataBits = QBitArray(desc_end, false);
+	meta_p.metaDataBits[camData_size] = false;
+	meta_p.metaDataBits[camData_orientation] = false;
+	meta_p.metaDataBits[camData_make] = true;
+	meta_p.metaDataBits[camData_model] = true;
+	meta_p.metaDataBits[camData_aperture] = true;
+	meta_p.metaDataBits[camData_iso] = true;
 	//MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_flash] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_focallength] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuremode] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::camData_exposuretime] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_rating] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_usercomment] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_date] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_datetimeoriginal] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_imagedescription] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_creator] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_creatortitle] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_city] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_country] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_headline] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_caption] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_copyright] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_keywords] = false;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_path] = true;
-	meta_p.metaDataBits[DkMetaDataSettingsWidget::desc_filesize] = true;
+	meta_p.metaDataBits[camData_flash] = true;
+	meta_p.metaDataBits[camData_focallength] = true;
+	meta_p.metaDataBits[camData_exposuremode] = false;
+	meta_p.metaDataBits[camData_exposuretime] = true;
+	meta_p.metaDataBits[desc_rating] = false;
+	meta_p.metaDataBits[desc_usercomment] = false;
+	meta_p.metaDataBits[desc_date] = false;
+	meta_p.metaDataBits[desc_datetimeoriginal] = true;
+	meta_p.metaDataBits[desc_imagedescription] = false;
+	meta_p.metaDataBits[desc_creator] = false;
+	meta_p.metaDataBits[desc_creatortitle] = false;
+	meta_p.metaDataBits[desc_city] = false;
+	meta_p.metaDataBits[desc_country] = false;
+	meta_p.metaDataBits[desc_headline] = false;
+	meta_p.metaDataBits[desc_caption] = false;
+	meta_p.metaDataBits[desc_copyright] = false;
+	meta_p.metaDataBits[desc_keywords] = false;
+	meta_p.metaDataBits[desc_path] = true;
+	meta_p.metaDataBits[desc_filesize] = true;
 	meta_p.saveExifOrientation = true;
 	meta_p.ignoreExifOrientation = false;
-
 
 	sync_p.enableNetworkSync = false;
 	sync_p.allowTransformation = true;
@@ -690,1147 +896,163 @@ void DkSettings::setToDefaultSettings() {
 	sync_p.updateDialogShown = false;
 	sync_p.lastUpdateCheck = QDate(1970 , 1, 1);
 	sync_p.syncAbsoluteTransform = true;
+	sync_p.syncMode = DkSettings::sync_mode_default;
+	sync_p.syncActions = false;
 
 	resources_p.cacheMemory = 0;
+	resources_p.maxImagesCached = 5;
+	resources_p.fastThumbnailPreview = false;
 	resources_p.fastThumbnailPreview = false;
 	resources_p.filterRawImages = true;
 	resources_p.loadRawThumb = raw_thumb_always;
 	resources_p.filterDuplicats = false;
 	resources_p.preferredExtension = "*.jpg";
+	resources_p.numThumbsLoading = 0;
+	resources_p.maxThumbsLoading = 5;
+	resources_p.gammaCorrection = true;
+	resources_p.waitForLastImg = true;
 
 	qDebug() << "ok... default settings are set";
 }
 
-// DkSettingsDialog --------------------------------------------------------------------
-DkSettingsDialog::DkSettingsDialog(QWidget* parent) : QDialog(parent) {
+bool DkSettings::isPortable() {
 
-	//this->resize(600,420);
+	QFileInfo settingsFile = getSettingsFile();
+	return settingsFile.isFile() && settingsFile.exists();
+}
 
-	createLayout();
-	createSettingsWidgets();
-	for (int i = 0; i < widgetList.size(); i++) {
-		if (!DkSettings::app.advancedSettings) {
-			listView->setRowHidden(i, widgetList[i]->showOnlyInAdvancedMode);
-		}
-		else
-			listView->setRowHidden(i, false);
+QFileInfo DkSettings::getSettingsFile() {
+
+	return QFileInfo(QCoreApplication::applicationDirPath(), "settings.nfo");
+}
+
+Settings::Settings() {
+	m_settings = DkSettings::isPortable() ? QSharedPointer<QSettings>(new QSettings(DkSettings::getSettingsFile().absoluteFilePath(), QSettings::IniFormat)) : QSharedPointer<QSettings>(new QSettings());
+	qDebug() << "portable nomacs: " << DkSettings::isPortable();
+}
+
+Settings& Settings::instance() { 
+	static QSharedPointer<Settings> inst;
+	if (!inst)
+		inst = QSharedPointer<Settings>(new Settings());
+	return *inst; 
+}
+
+QSettings& Settings::getSettings() {
+	//QMutexLocker(&mutex);
+	return *m_settings;
+}
+
+
+
+QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {
+
+#ifdef WIN32
+
+	QString nomacsPath = "HKEY_CURRENT_USER\\SOFTWARE\\Classes\\";
+	QString nomacsKey = "nomacs" + ext + ".2";
+
+	QSettings settings(nomacsPath, QSettings::NativeFormat);
+	
+	if (add) {
+		settings.beginGroup(nomacsKey);
+		settings.setValue("Default", friendlyName);
+		//settings.setValue("AppUserModelID", "nomacs.ImageLounge");
+		//settings.setValue("EditFlags", 1);
+		//settings.setValue("CurVer", nomacsKey);
+		settings.beginGroup("DefaultIcon");
+		settings.setValue("Default","\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\", 1");
+		settings.endGroup();
+		settings.beginGroup("shell");
+		settings.beginGroup("open");
+		settings.beginGroup("command");
+		settings.setValue("Default", "\"" + QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + "\" \"%1\"");
+		settings.endGroup();
+		settings.endGroup();
+		settings.endGroup();
+
+		qDebug() << nomacsKey << " written";
 	}
-	init();
-
-	//setMinimumSize(1000,1000);
-	this->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-
-	connect(listView, SIGNAL(activated(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
-	connect(listView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
-	connect(listView, SIGNAL(entered(const QModelIndex &)), this, SLOT(listViewSelected(const QModelIndex &)));
-
-	connect(buttonOk, SIGNAL(clicked()), this, SLOT(saveSettings()));
-	connect(buttonCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
-	connect(globalSettingsWidget, SIGNAL(applyDefault()), this, SLOT(setToDefault()));
-	connect(cbAdvancedSettings, SIGNAL(stateChanged(int)), this, SLOT(advancedSettingsChanged(int)));
-}
-
-DkSettingsDialog::~DkSettingsDialog() {
-
-	QItemSelectionModel *m = listView->selectionModel();
-	if (m)
-		delete m;
-
-}
-
-void DkSettingsDialog::init() {
-	setWindowTitle(tr("Settings"));
-	foreach (DkSettingsWidget* curWidget, widgetList) {
-		curWidget->hide();
-		curWidget->toggleAdvancedOptions(DkSettings::app.advancedSettings);
-		centralLayout->addWidget(curWidget);
-	}
-	widgetList[0]->show(); // display first;
-	cbAdvancedSettings->setChecked(DkSettings::app.advancedSettings);
-}
-
-void DkSettingsDialog::createLayout() {
-	
-	QWidget* leftWidget = new QWidget(this);
-	QWidget* bottomWidget = new QWidget(this);
-
-	// left Widget
-	QVBoxLayout* leftWidgetVBoxLayout = new QVBoxLayout(leftWidget);
-	leftLabel = new QLabel;
-	leftLabel->setText(tr("Categories"));
-
-	listView = new DkSettingsListView(this); 
-	listView->setMaximumWidth(100);
-	//listView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-	listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	listView->setSelectionMode(QAbstractItemView::SingleSelection);
-
-	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("Resources");
-	QItemSelectionModel *m = listView->selectionModel();
-	listView->setModel(new QStringListModel(stringList, this));
-	delete m;
-	
-	leftWidgetVBoxLayout->addWidget(leftLabel);
-	leftWidgetVBoxLayout->addWidget(listView);
-
-	// bottom widget
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
-	buttonOk = new QPushButton;
-	buttonOk->setText(tr("Ok"));
-
-	buttonCancel = new QPushButton;
-	buttonCancel->setText(tr("Cancel"));
-
-	cbAdvancedSettings = new QCheckBox(tr("Advanced"));
-
-	bottomWidgetHBoxLayout->addWidget(cbAdvancedSettings);
-	bottomWidgetHBoxLayout->addStretch();
-	bottomWidgetHBoxLayout->addWidget(buttonOk);
-	bottomWidgetHBoxLayout->addWidget(buttonCancel);
-
-
-	borderLayout = new BorderLayout(this);
-	borderLayout->addWidget(leftWidget, BorderLayout::West);
-	borderLayout->addWidget(bottomWidget, BorderLayout::South);
-	this->setSizeGripEnabled(false);
-
-	// central widget
-	centralWidget = new QWidget(this);
-	borderLayout->addWidget(centralWidget, BorderLayout::Center);
-
-	centralLayout = new QHBoxLayout(centralWidget);
-}
-
-void DkSettingsDialog::createSettingsWidgets() {
-	globalSettingsWidget = new DkGlobalSettingsWidget(centralWidget);
-	displaySettingsWidget = new DkDisplaySettingsWidget(centralWidget);
-	slideshowSettingsWidget = new DkFileWidget(centralWidget);
-	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(centralWidget);
-	exifSettingsWidget = new DkMetaDataSettingsWidget(centralWidget);
-	resourceSettingsWidget = new DkResourceSettingsWidgets(centralWidget);
-
-	widgetList.clear();
-	widgetList.push_back(globalSettingsWidget);
-	widgetList.push_back(displaySettingsWidget);
-	widgetList.push_back(slideshowSettingsWidget);
-	widgetList.push_back(synchronizeSettingsWidget);
-	widgetList.push_back(exifSettingsWidget);
-	widgetList.push_back(resourceSettingsWidget);
-}
-
-void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
-	if (listView->isRowHidden(qmodel.row()))
-		return;
-
-	foreach (DkSettingsWidget* curWidget, widgetList) {
-		curWidget->hide();
-	}
-	widgetList[qmodel.row()]->show(); // display selected;
-}
-
-void DkSettingsDialog::saveSettings() {
-	
-	QString curLanguage = DkSettings::global.language;
-	QColor curBgColWidget = DkSettings::display.bgColorWidget;
-	QColor curBgCol = DkSettings::display.bgColor;
-	QColor curIconCol = DkSettings::display.iconColor;
-	QColor curBgColFrameless = DkSettings::display.bgColorFrameless;
-	bool curIcons = DkSettings::display.smallIcons;
-	bool curGradient = DkSettings::display.toolbarGradient;
-	bool curUseCol = DkSettings::display.useDefaultColor;
-	bool curUseIconCol = DkSettings::display.defaultIconColor;
-	
-	foreach (DkSettingsWidget* curWidget, widgetList) {
-		curWidget->writeSettings();
-	}
-
-	DkSettings* settings = new DkSettings();
-	settings->save();
-	this->close();
-	
-	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
-	if (curLanguage != DkSettings::global.language ||
-		DkSettings::display.bgColor != curBgCol ||
-		DkSettings::display.iconColor != curIconCol ||
-		DkSettings::display.bgColorWidget != curBgColWidget ||
-		DkSettings::display.bgColorFrameless != curBgColFrameless ||
-		DkSettings::display.useDefaultColor != curUseCol ||
-		DkSettings::display.defaultIconColor != curUseIconCol ||
-		DkSettings::display.smallIcons != curIcons ||
-		DkSettings::display.toolbarGradient != curGradient)
-		emit languageChanged();
 	else
-		emit settingsChanged();
+		settings.remove(nomacsKey);
 
-	if (settings)
-		delete settings;
+	return nomacsKey;
+#else
+	return QString();
+#endif
 }
 
-void DkSettingsDialog::initWidgets() {
-	qDebug() << "initializing widgets...";
-	foreach (DkSettingsWidget* curWidget, widgetList) {
-		curWidget->init();
-	}
+void DkFileFilterHandling::registerExtension(const QString& ext, const QString& progKey, bool add) {
 
-}
+#ifdef WIN32
 
-void DkSettingsDialog::advancedSettingsChanged(int state) {
+	QSettings settings2("HKEY_CURRENT_USER\\SOFTWARE\\Classes\\", QSettings::NativeFormat);
+	settings2.beginGroup(ext);
+	//if (add)
+	//	settings2.setValue("Default", progKey);	
+	settings2.beginGroup("OpenWithProgIds");
+	//settings.beginGroup("nomacs.exe");
 
-	DkSettings::app.advancedSettings = cbAdvancedSettings->isChecked();
-
-	QModelIndex selection = listView->currentIndex();
-
-	foreach (DkSettingsWidget* curWidget, widgetList) {
-		curWidget->toggleAdvancedOptions(DkSettings::app.advancedSettings);
-	}
-
-	bool wasSelected = false;
-	for (int i = 0; i < widgetList.size(); i++) {
-		if (!DkSettings::app.advancedSettings) {
-			listView->setRowHidden(i, widgetList[i]->showOnlyInAdvancedMode);
-			if (widgetList[i]->showOnlyInAdvancedMode && selection.row() == i) wasSelected = true;
-		}
-		else
-			listView->setRowHidden(i, false);
-	}
-
-	if (wasSelected) {
-		listView->setCurrentIndex(selection.model()->index(0,0)); 
-		listViewSelected(selection.model()->index(0,0));
-	};
-	
-	
-}
-
-// DkGlobalSettingsWidget --------------------------------------------------------------------
-
-DkGlobalSettingsWidget::DkGlobalSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	createLayout();
-	init();
-
-}
-
-void DkGlobalSettingsWidget::init() {
-	cbShowMenu->setChecked(DkSettings::app.showMenuBar);
-	cbShowStatusbar->setChecked(DkSettings::app.showStatusBar);
-	cbShowToolbar->setChecked(DkSettings::app.showToolBar);
-	cbSmallIcons->setChecked(DkSettings::display.smallIcons);
-	cbToolbarGradient->setChecked(DkSettings::display.toolbarGradient);
-	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
-	cbZoomOnWheel->setChecked(DkSettings::global.zoomOnWheel);
-
-	curLanguage = DkSettings::global.language;
-	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
-	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
-		langCombo->setCurrentIndex(0);
-
-	displayTimeSpin->setSpinBoxValue(DkSettings::slideShow.time);
-
-	connect(buttonDefaultSettings, SIGNAL(clicked()), this, SLOT(setToDefaultPressed()));
-	connect(buttonDefaultSettings, SIGNAL(clicked()), highlightColorChooser, SLOT(on_resetButton_clicked()));
-	connect(buttonDefaultSettings, SIGNAL(clicked()), fullscreenColChooser, SLOT(on_resetButton_clicked()));
-	connect(buttonDefaultSettings, SIGNAL(clicked()), bgColorChooser, SLOT(on_resetButton_clicked()));
-	connect(buttonDefaultSettings, SIGNAL(clicked()), iconColorChooser, SLOT(on_resetButton_clicked()));
-	connect(buttonDefaultSettings, SIGNAL(clicked()), bgColorWidgetChooser, SLOT(on_resetButton_clicked()));
-
-}
-
-void DkGlobalSettingsWidget::createLayout() {
-	
-	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
-	QVBoxLayout* leftLayout = new QVBoxLayout();
-	QVBoxLayout* rightLayout = new QVBoxLayout();
-	QWidget* rightWidget = new QWidget(this);
-	rightWidget->setLayout(rightLayout);
-
-	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
-	highlightColorChooser->setColor(DkSettings::display.highlightColor);
-
-	iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"), this);
-	iconColorChooser->setColor(DkSettings::display.iconColor);
-	connect(iconColorChooser, SIGNAL(resetClicked()), this, SLOT(iconColorReset()));
-
-	bgColorChooser = new DkColorChooser(QColor(100, 100, 100, 255), tr("Background Color"), this);
-	bgColorChooser->setColor(DkSettings::display.bgColor);
-	connect(bgColorChooser, SIGNAL(resetClicked()), this, SLOT(bgColorReset()));
-
-	bgColorWidgetChooser = new DkColorChooser(QColor(0, 0, 0, 100), tr("Widget Color"), this);
-	bgColorWidgetChooser->setColor((DkSettings::app.appMode == DkSettings::mode_frameless) ?
-		DkSettings::display.bgColorFrameless : DkSettings::display.bgColorWidget);
-
-	fullscreenColChooser = new DkColorChooser(QColor(86,86,90), tr("Fullscreen Color"), this);
-	fullscreenColChooser->setColor(DkSettings::slideShow.backgroundColor);
-
-	displayTimeSpin = new DkDoubleSpinBoxWidget(tr("Display Time:"), tr("sec"), 0.1f, 99, this, 1, 1);
-
-	QWidget* langWidget = new QWidget(rightWidget);
-	QGridLayout* langLayout = new QGridLayout(langWidget);
-	langLayout->setMargin(0);
-	QLabel* langLabel = new QLabel("choose language:", langWidget);
-	langCombo = new QComboBox(langWidget);
-
-	QDir qmDir = qApp->applicationDirPath();
-	QStringList fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
-	if (fileNames.size() == 0) {
-		QDir appDir = QDir(qApp->applicationDirPath());
-		qmDir = QDir(appDir.filePath("../share/nomacs/translations/"));
-		fileNames = qmDir.entryList(QStringList("nomacs_*.qm"));
-	}
-
-	langCombo->addItem("English");
-	languages << "en";
-
-	for (int i = 0; i < fileNames.size(); ++i) {
-		QString locale = fileNames[i];
-		locale.remove(0, locale.indexOf('_') + 1);
-		locale.chop(3);
-
-		QTranslator translator;
-		if (translator.load(fileNames[i], qmDir.absolutePath()))
-			qDebug() << "translation loaded";
-		else
-			qDebug() << "translation NOT loaded";
-
-		//: this should be the name of the language in which nomacs is translated to
-		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");
-		if (language.isEmpty())
-			continue;
-
-		langCombo->addItem(language);
-		languages << locale;
-
-		if (locale == curLanguage) {
-			langCombo->setCurrentIndex(i+1); // +1 because of english
-		}
-	}
-
-	QLabel* translateLabel = new QLabel("<a href=\"http://www.nomacs.org/how-to-translate-nomacs/\">translate nomacs</a>", langWidget);
-	translateLabel->setToolTip(tr("if you want to help us and translate nomacs"));
-	QFont font;
-	font.setPointSize(7);
-	translateLabel->setFont(font);
-	translateLabel->setOpenExternalLinks(true);
-
-	langLayout->addWidget(langLabel,0,0);
-	langLayout->addWidget(langCombo,1,0);
-	langLayout->addWidget(translateLabel,2,0,Qt::AlignRight);
-
-	QWidget* showBarsWidget = new QWidget(rightWidget);
-	QVBoxLayout* showBarsLayout = new QVBoxLayout(showBarsWidget);
-	cbShowMenu = new QCheckBox(tr("Show Menu"), showBarsWidget);
-	cbShowToolbar = new QCheckBox(tr("Show Toolbar"), showBarsWidget);
-	cbShowStatusbar = new QCheckBox(tr("Show Statusbar"), showBarsWidget);
-	cbSmallIcons = new QCheckBox(tr("Small Icons"), showBarsWidget);
-	cbToolbarGradient = new QCheckBox(tr("Toolbar Gradient"), showBarsWidget);
-	cbCloseOnEsc = new QCheckBox(tr("Close on ESC"), showBarsWidget);
-	cbZoomOnWheel = new QCheckBox(tr("Mouse Wheel Zooms"), showBarsWidget);
-	cbZoomOnWheel->setToolTip(tr("If unchecked, the mouse wheel switches between images."));
-	cbZoomOnWheel->setMinimumSize(cbZoomOnWheel->sizeHint());
-	showBarsLayout->addWidget(cbShowMenu);
-	showBarsLayout->addWidget(cbShowToolbar);
-	showBarsLayout->addWidget(cbShowStatusbar);
-	showBarsLayout->addWidget(cbSmallIcons);
-	showBarsLayout->addWidget(cbToolbarGradient);
-	showBarsLayout->addWidget(cbCloseOnEsc);
-	showBarsLayout->addWidget(cbZoomOnWheel);
-
-	// set to default
-	QWidget* defaultSettingsWidget = new QWidget(rightWidget);
-	QHBoxLayout* defaultSettingsLayout = new QHBoxLayout(defaultSettingsWidget);
-	defaultSettingsLayout->setContentsMargins(0,0,0,0);
-	defaultSettingsLayout->setDirection(QHBoxLayout::RightToLeft);
-	buttonDefaultSettings = new QPushButton(tr("Apply default settings"), defaultSettingsWidget);
-	buttonDefaultSettings->setMinimumSize(buttonDefaultSettings->sizeHint());
-	defaultSettingsLayout->addWidget(buttonDefaultSettings);
-	defaultSettingsLayout->addStretch();
-
-	defaultSettingsWidget->setMinimumSize(defaultSettingsWidget->sizeHint());
-
-	leftLayout->addWidget(bgColorChooser);
-	leftLayout->addWidget(highlightColorChooser);
-	leftLayout->addWidget(bgColorWidgetChooser);
-	leftLayout->addWidget(fullscreenColChooser);
-	leftLayout->addWidget(iconColorChooser);
-	leftLayout->addWidget(displayTimeSpin);
-	leftLayout->addStretch();
-	rightLayout->addWidget(langWidget);
-	rightLayout->addWidget(showBarsWidget);
-	rightLayout->addStretch();
-	rightLayout->addWidget(defaultSettingsWidget);
-
-
-	widgetLayout->addLayout(leftLayout);
-	widgetLayout->addWidget(rightWidget);
-}
-
-void DkGlobalSettingsWidget::writeSettings() {
-	DkSettings::app.showMenuBar = cbShowMenu->isChecked();
-	DkSettings::app.showStatusBar = cbShowStatusbar->isChecked();
-	DkSettings::app.showToolBar = cbShowToolbar->isChecked();
-	DkSettings::app.closeOnEsc = cbCloseOnEsc->isChecked();
-	DkSettings::global.zoomOnWheel = cbZoomOnWheel->isChecked();
-	DkSettings::display.smallIcons = cbSmallIcons->isChecked();
-	DkSettings::display.toolbarGradient = cbToolbarGradient->isChecked();
-	DkSettings::slideShow.time = displayTimeSpin->getSpinBoxValue();
-
-	if (DkSettings::app.appMode == DkSettings::mode_frameless)
-		DkSettings::display.bgColorFrameless = bgColorWidgetChooser->getColor();
+	if (add)
+		settings2.setValue(progKey, "");	// tell system that nomacs can handle this file type
 	else
-		DkSettings::display.bgColorWidget = bgColorWidgetChooser->getColor();
-
-	if (bgColorChooser->isAccept())
-		DkSettings::display.useDefaultColor = false;
-
-	if (iconColorChooser->isAccept())
-		DkSettings::display.defaultIconColor = false;
-
-	DkSettings::display.iconColor = iconColorChooser->getColor();
-	DkSettings::display.bgColor = bgColorChooser->getColor();
-	DkSettings::display.highlightColor = highlightColorChooser->getColor();
-	DkSettings::slideShow.backgroundColor = fullscreenColChooser->getColor();
-
-	DkSettings::global.language = languages.at(langCombo->currentIndex());
+		settings2.remove(progKey);
+#endif
 }
 
+void DkFileFilterHandling::registerFileType(const QString& filterString, const QString& attribute, bool add) {
 
+#ifdef WIN32
 
-// DkDisplaySettingsWidget --------------------------------------------------------------------
-DkDisplaySettingsWidget::DkDisplaySettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	showOnlyInAdvancedMode = true;
+	QStringList tmp = filterString.split("(");
 
-	createLayout();
-	init();
-	//showOnlyInAdvancedMode = true;
-
-	connect(cbName, SIGNAL(clicked(bool)), this, SLOT(showFileName(bool)));
-	connect(cbCreationDate, SIGNAL(clicked(bool)), this, SLOT(showCreationDate(bool)));
-	connect(cbRating, SIGNAL(clicked(bool)), this, SLOT(showRating(bool)));
-}
-
-void DkDisplaySettingsWidget::init() {
-	cbName->setChecked(DkSettings::slideShow.display.testBit(display_file_name));
-	cbCreationDate->setChecked(DkSettings::slideShow.display.testBit(display_creation_date));
-	cbRating->setChecked(DkSettings::slideShow.display.testBit(display_file_rating));
-
-	cbInvertZoom->setChecked(DkSettings::display.invertZoom);
-	keepZoomButtons[DkSettings::display.keepZoom]->setChecked(true);
-	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
-	cbSaveThumb->setChecked(DkSettings::display.saveThumb);
-	interpolateWidget->setSpinBoxValue(DkSettings::display.interpolateZoomLevel);
-
-	cbShowBorder->setChecked(DkSettings::display.showBorder);
-	cbSilentFullscreen->setChecked(DkSettings::slideShow.silentFullscreen);
-}
-
-void DkDisplaySettingsWidget::createLayout() {
-	QHBoxLayout* widgetLayout = new QHBoxLayout(this);
-	QVBoxLayout* leftLayout = new QVBoxLayout(this);
-	QVBoxLayout* rightLayout = new QVBoxLayout(this);
-
-	QGroupBox* gbZoom = new QGroupBox(tr("Zoom"));
-	gbZoom->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	QVBoxLayout* gbZoomLayout = new QVBoxLayout(gbZoom);
-	interpolateWidget = new DkSpinBoxWidget(tr("Stop interpolating at:"), tr("% zoom level"), 0, 7000, this, 10);
-	QWidget* zoomCheckBoxes = new QWidget(this);
-	zoomCheckBoxes->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	QVBoxLayout* vbCheckBoxLayout = new QVBoxLayout(zoomCheckBoxes);
-	vbCheckBoxLayout->setContentsMargins(11,0,11,0);
-	cbInvertZoom = new QCheckBox(tr("Invert Zoom"), this);
-
-
-	QGroupBox* gbRawLoader = new QGroupBox(tr("Keep Zoom Settings"));
-
-	keepZoomButtonGroup = new QButtonGroup(this);
-
-	keepZoomButtons.resize(DkSettings::raw_thumb_end);
-	keepZoomButtons[DkSettings::zoom_always_keep] = new QRadioButton(tr("Always keep zoom"), this);
-	keepZoomButtons[DkSettings::zoom_keep_same_size] = new QRadioButton(tr("Keep zoom if equal size"), this);
-	keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
-	keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
-
-	QWidget* keepZoomWidget = new QWidget();
-	keepZoomWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	QVBoxLayout* keepZoomButtonLayout = new QVBoxLayout(keepZoomWidget);
-
-	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
-		keepZoomButtonGroup->addButton(keepZoomButtons[idx]);
-		keepZoomButtonLayout->addWidget(keepZoomButtons[idx]);
-	}
-
-	//QGridLayout* rawLoaderLayout = new QGridLayout(gbRawLoader);
-	//cbFilterRawImages = new QCheckBox(tr("filter raw images"));
-
-	//rawLoaderLayout->addWidget(rawThumbWidget);
-	//rawLoaderLayout->addWidget(dupWidget);
-	//rawLoaderLayout->addWidget(cbFilterRawImages);
-
-	
-	vbCheckBoxLayout->addWidget(cbInvertZoom);
-	vbCheckBoxLayout->addWidget(keepZoomWidget);
-	gbZoomLayout->addWidget(interpolateWidget);
-	gbZoomLayout->addWidget(zoomCheckBoxes);
-
-	QGroupBox* gbThumbs = new QGroupBox(tr("Thumbnails"));
-	QVBoxLayout* gbThumbsLayout = new QVBoxLayout(gbThumbs);
-	maximalThumbSizeWidget = new DkSpinBoxWidget(tr("maximal size:"), tr("pixel"), 16, 160, this);
-	maximalThumbSizeWidget->setSpinBoxValue(DkSettings::display.thumbSize);
-	cbSaveThumb = new QCheckBox(tr("save Thumbnails"), this);
-	cbSaveThumb->setToolTip(tr("saves thumbnails to images (EXPERIMENTAL)"));
-	gbThumbsLayout->addWidget(maximalThumbSizeWidget);
-	gbThumbsLayout->addWidget(cbSaveThumb);
-
-	QGroupBox* gbFileInfo = new QGroupBox(tr("File Information"));
-	QVBoxLayout* gbLayout = new QVBoxLayout(gbFileInfo);
-	cbName = new QCheckBox(tr("Image Name"));
-	gbLayout->addWidget(cbName);
-	cbCreationDate = new QCheckBox(tr("Creation Date"));
-	gbLayout->addWidget(cbCreationDate);
-	cbRating = new QCheckBox(tr("Rating"));
-	gbLayout->addWidget(cbRating);
-
-	QGroupBox* gbFrameless = new QGroupBox(tr("Frameless"));
-	QVBoxLayout* gbFramelessLayout = new QVBoxLayout(gbFrameless);
-	cbShowBorder = new QCheckBox(tr("Show Border"));
-	gbFramelessLayout->addWidget(cbShowBorder);
-
-	QGroupBox* gbFullscreen = new QGroupBox(tr("Fullscreen"));
-	QVBoxLayout* gbFullScreenLayout = new QVBoxLayout(gbFullscreen);
-	cbSilentFullscreen = new QCheckBox(tr("Silent Fullscreen"));
-	gbFullScreenLayout->addWidget(cbSilentFullscreen);
-
-
-	leftLayout->addWidget(gbZoom);
-	leftLayout->addWidget(gbThumbs);
-	leftLayout->addStretch();
-	rightLayout->addWidget(gbFileInfo);
-	rightLayout->addWidget(gbFrameless);
-	rightLayout->addWidget(gbFullscreen);
-	rightLayout->addStretch();
-
-	widgetLayout->addLayout(leftLayout, 1);
-	widgetLayout->addLayout(rightLayout, 1);
-	adjustSize();
-}
-
-void DkDisplaySettingsWidget::writeSettings() {
-
-	DkSettings::display.invertZoom = (cbInvertZoom->isChecked()) ? true : false;
-
-	for (int idx = 0; idx < keepZoomButtons.size(); idx++) {
-		if (keepZoomButtons[idx]->isChecked()) {
-			DkSettings::display.keepZoom = idx;
-			break;
-		}
-	}
-
-	DkSettings::slideShow.silentFullscreen = cbSilentFullscreen->isChecked();
-
-	DkSettings::slideShow.display.setBit(display_file_name, cbName->isChecked());
-	DkSettings::slideShow.display.setBit(display_creation_date, cbCreationDate->isChecked());
-	DkSettings::slideShow.display.setBit(display_file_rating, cbRating->isChecked());
-
-	DkSettings::display.thumbSize = maximalThumbSizeWidget->getSpinBoxValue();
-	DkSettings::display.saveThumb = cbSaveThumb->isChecked();
-	DkSettings::display.interpolateZoomLevel = interpolateWidget->getSpinBoxValue();
-	DkSettings::display.showBorder = cbShowBorder->isChecked();
-}
-
-void DkDisplaySettingsWidget::showFileName(bool checked) {
-	DkSettings::slideShow.display.setBit(display_file_name, checked);
-}
-
-void DkDisplaySettingsWidget::showCreationDate(bool checked) {
-	DkSettings::slideShow.display.setBit(display_creation_date, checked);
-}
-
-void DkDisplaySettingsWidget::showRating(bool checked) {
-	DkSettings::slideShow.display.setBit(display_file_rating, checked);
-}
-
-
-// DkFileWidget --------------------------------------------------------------------
-
-DkFileWidget::DkFileWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	showOnlyInAdvancedMode = true;
-
-	createLayout();
-	init();
-}
-
-void DkFileWidget::init() {
-
-	//spFilter->setValue(DkSettings::SlideShowSettings::filter);
-
-	cbWrapImages->setChecked(DkSettings::global.loop);
-	skipImgWidget->setSpinBoxValue(DkSettings::global.skipImgs);
-	numberFiles->setSpinBoxValue(DkSettings::global.numFiles);
-	cbUseTmpPath->setChecked(DkSettings::global.useTmpPath);
-	tmpPath = DkSettings::global.tmpPath;
-	leTmpPath->setText(tmpPath);
-	if (!DkSettings::global.useTmpPath) {
-		leTmpPath->setDisabled(true);
-		pbTmpPath->setDisabled(true);
-	}
-	
-	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
-	connect(cbUseTmpPath, SIGNAL(stateChanged(int)), this, SLOT(useTmpPathChanged(int)));
-	connect(leTmpPath, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
-
-	lineEditChanged(tmpPath);
-}
-
-void DkFileWidget::createLayout() {
-	QVBoxLayout* widgetLayout = new QVBoxLayout(this);
-	QHBoxLayout* subWidgetLayout = new QHBoxLayout();
-	QVBoxLayout* leftLayout = new QVBoxLayout;
-	QVBoxLayout* rightLayout = new QVBoxLayout;
-
-	gbDragDrop = new QGroupBox(tr("Drag && Drop"));
-	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
-	QWidget* tmpPathWidget = new QWidget(this);
-	QVBoxLayout* vbTmpPathWidget = new QVBoxLayout(tmpPathWidget);
-
-	cbUseTmpPath = new QCheckBox(tr("use temporary folder"), this);
-
-	QWidget* lineEditWidget = new QWidget(this);
-	QHBoxLayout* hbLineEditWidget = new QHBoxLayout(lineEditWidget);
-	leTmpPath = new QLineEdit(this);
-	pbTmpPath = new QPushButton(tr("..."), this);
-	pbTmpPath->setMaximumWidth(40);
-	hbLineEditWidget->addWidget(leTmpPath);
-	hbLineEditWidget->addWidget(pbTmpPath);
-	vboxGbDragDrop->addWidget(tmpPathWidget);
-
-	vbTmpPathWidget->addWidget(cbUseTmpPath);
-	vbTmpPathWidget->addWidget(lineEditWidget);
-
-	
-	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
-	numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
-	QWidget* checkBoxWidget = new QWidget(this);
-	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
-	cbWrapImages = new QCheckBox(tr("Loop Images"));
-
-	widgetLayout->addWidget(gbDragDrop);
-	leftLayout->addWidget(skipImgWidget);
-	leftLayout->addWidget(numberFiles);
-	leftLayout->addWidget(cbWrapImages);
-	leftLayout->addStretch();
-	subWidgetLayout->addLayout(leftLayout);
-	subWidgetLayout->addLayout(rightLayout);
-	widgetLayout->addLayout(subWidgetLayout);
-
-}
-
-void DkFileWidget::writeSettings() {
-	DkSettings::global.skipImgs = skipImgWidget->getSpinBoxValue();
-	DkSettings::global.numFiles = numberFiles->getSpinBoxValue();
-	DkSettings::global.loop = cbWrapImages->isChecked();
-	DkSettings::global.useTmpPath = cbUseTmpPath->isChecked();
-	DkSettings::global.tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
-
-}
-
-void DkFileWidget::lineEditChanged(QString path) {
-	existsDirectory(path) ? leTmpPath->setStyleSheet("color:black") : leTmpPath->setStyleSheet("color:red");
-}
-
-bool DkFileWidget::existsDirectory(QString path) {
-	QFileInfo* fi = new QFileInfo(path);
-	return fi->exists();
-}
-
-void DkFileWidget::tmpPathButtonPressed() {
-	tmpPath = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),tmpPath);
-
-	if (tmpPath.isEmpty())
+	if (tmp.size() != 2) {
+		qDebug() << "WARNING: wrong filter string!";
 		return;
-
-	leTmpPath->setText(tmpPath);
-}
-
-void DkFileWidget::useTmpPathChanged(int state) {
-	if (cbUseTmpPath->isChecked()) {
-		lineEditChanged(tmpPath);
-		leTmpPath->setDisabled(false);
-		pbTmpPath->setDisabled(false);
-	} else {
-		leTmpPath->setStyleSheet("color:black");
-		leTmpPath->setDisabled(true);
-		pbTmpPath->setDisabled(true);
-	}
-}
-
-// DkNetworkSettingsWidget --------------------------------------------------------------------
-
-DkSynchronizeSettingsWidget::DkSynchronizeSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	showOnlyInAdvancedMode = true;
-
-	createLayout();
-	init();
-}
-
-void DkSynchronizeSettingsWidget::init() {
-	connect(cbEnableNetwork, SIGNAL(stateChanged(int)), this, SLOT(enableNetworkCheckBoxChanged(int)));
-
-	cbAllowFile->setChecked(DkSettings::sync.allowFile);
-	cbAllowImage->setChecked(DkSettings::sync.allowImage);
-	cbAllowPosition->setChecked(DkSettings::sync.allowPosition);
-	cbAllowTransformation->setChecked(DkSettings::sync.allowTransformation);
-	cbEnableNetwork->setChecked(DkSettings::sync.enableNetworkSync);
-	DkSettings::sync.syncAbsoluteTransform ? rbSyncAbsoluteTransform->setChecked(true) : rbSyncRelativeTransform->setChecked(true);
-	cbSwitchModifier->setChecked(DkSettings::sync.switchModifier);
-
-	enableNetworkCheckBoxChanged(0);
-}
-
-void DkSynchronizeSettingsWidget::createLayout() {
-	vboxLayout = new QVBoxLayout(this);
-
-	QGroupBox* gbSyncSettings = new QGroupBox(tr("Synchronization"), this);
-	QVBoxLayout* syncSettingsLayout = new QVBoxLayout(gbSyncSettings);
-
-	rbSyncAbsoluteTransform = new QRadioButton(tr("synchronize absolute transformation"));
-	rbSyncRelativeTransform = new QRadioButton(tr("synchronize relative transformation"));
-
-	syncSettingsLayout->addWidget(rbSyncAbsoluteTransform);
-	syncSettingsLayout->addWidget(rbSyncRelativeTransform);
-
-
-	gbNetworkSettings = new QGroupBox(tr("Network Synchronization"));
-	QVBoxLayout* gbNetworkSettingsLayout = new QVBoxLayout(gbNetworkSettings);
-
-	cbEnableNetwork = new QCheckBox(tr("enable network sync"), this);
-
-	QWidget* networkSettings = new QWidget(this);
-	QVBoxLayout* networkSettingsLayout = new QVBoxLayout(networkSettings);
-	QLabel* clientsCan = new QLabel(tr("clients can:"), this);
-	cbAllowFile = new QCheckBox(tr("switch files"), this);
-	cbAllowImage = new QCheckBox(tr("send new images"), this);
-	cbAllowPosition = new QCheckBox(tr("control window position"), this);
-	cbAllowTransformation = new QCheckBox(tr("synchronize pan and zoom"), this);
-
-	networkSettingsLayout->addWidget(clientsCan);
-	networkSettingsLayout->addWidget(cbAllowFile);
-	networkSettingsLayout->addWidget(cbAllowImage);
-	networkSettingsLayout->addWidget(cbAllowPosition);
-	networkSettingsLayout->addWidget(cbAllowTransformation);
-
-	buttonGroup = new QButtonGroup(this);
-	buttonGroup->setExclusive(false);
-	buttonGroup->addButton(cbAllowFile);
-	buttonGroup->addButton(cbAllowImage);
-	buttonGroup->addButton(cbAllowPosition);
-	buttonGroup->addButton(cbAllowTransformation);
-
-
-	cbSwitchModifier = new QCheckBox(tr("switch ALT and CTRL key"));	
-
-	gbNetworkSettingsLayout->addWidget(cbEnableNetwork);
-	gbNetworkSettingsLayout->addWidget(networkSettings);
-	vboxLayout->addWidget(gbSyncSettings);
-	vboxLayout->addWidget(gbNetworkSettings);
-	vboxLayout->addWidget(cbSwitchModifier);
-	vboxLayout->addStretch();
-}
-
-void DkSynchronizeSettingsWidget::writeSettings() {
-	DkSettings::sync.enableNetworkSync = cbEnableNetwork->isChecked();
-	DkSettings::sync.allowFile = cbAllowFile->isChecked();
-	DkSettings::sync.allowImage = cbAllowImage->isChecked();
-	DkSettings::sync.allowPosition = cbAllowPosition->isChecked();
-	DkSettings::sync.allowTransformation = cbAllowTransformation->isChecked();
-	DkSettings::sync.syncAbsoluteTransform = rbSyncAbsoluteTransform->isChecked();
-	DkSettings::sync.switchModifier = cbSwitchModifier->isChecked();
-	if (DkSettings::sync.switchModifier) {
-		DkSettings::global.altMod = Qt::ControlModifier;
-		DkSettings::global.ctrlMod = Qt::AltModifier;
-	}
-	else {
-		DkSettings::global.altMod = Qt::AltModifier;
-		DkSettings::global.ctrlMod = Qt::ControlModifier;
-	}
-}
-
-void DkSynchronizeSettingsWidget::enableNetworkCheckBoxChanged(int state) {
-	if (cbEnableNetwork->isChecked()) {
-		foreach(QAbstractButton* button, buttonGroup->buttons())
-			button->setEnabled(true);
-	}
-	else {
-		foreach(QAbstractButton* button, buttonGroup->buttons())
-		button->setEnabled(false);
 	}
 
-}
+	QString friendlyName = tmp.at(0) + attribute;
+	QString filters = tmp.at(1);
+	filters.replace(")", "");
+	filters.replace("*", "");
 
-// DkSettingsListView --------------------------------------------------------------------
+	QStringList extList = filters.split(" ");
 
-void DkSettingsListView::previousIndex() {
-	QModelIndex curIndex = currentIndex();
-	
-		
-	if (this->model()->hasIndex(curIndex.row()-1, 0)) {
-		QModelIndex newIndex = this->model()->index(curIndex.row()-1, 0);
-		this->selectionModel()->setCurrentIndex(newIndex, QItemSelectionModel::SelectCurrent);
-		emit activated(newIndex);
-	}
-		
-}
-
-void DkSettingsListView::nextIndex() {
-	QModelIndex curIndex = currentIndex();
-	
-	
-	if (this->model()->hasIndex(curIndex.row()+1, 0)) {
-		QModelIndex newIndex = this->model()->index(curIndex.row()+1, 0);
-		this->selectionModel()->setCurrentIndex(newIndex, QItemSelectionModel::SelectCurrent);
-		emit activated(newIndex);
+	if (extList.empty()) {
+		qDebug() << "nothing to do here, not registering: " << filterString;
+		return;
 	}
 
-}
+	// register a new progID
+	QString progKey = registerProgID(extList.at(0), friendlyName, add);
 
-// DkMetaDataSettings --------------------------------------------------------------------------
+	// register the extension
+	for (int idx = 0; idx < extList.size(); idx++) {
 
-DkMetaDataSettingsWidget::DkMetaDataSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	showOnlyInAdvancedMode = true;
-
-	createLayout();
-	init();
-}
-
-void DkMetaDataSettingsWidget::init() {
-
-	for (int i=0; i<desc_end;i++) {
-		pCbMetaData[i]->setChecked(DkSettings::metaData.metaDataBits[i]);
-	}
-}
-
-void DkMetaDataSettingsWidget::createLayout() {
-
-	//QString DkMetaDataSettingsWidget::sExifDesc = QString("Image Width;Image Length;Orientation;Make;Model;Rating;Aperture Value;Shutter Speed Value;Flash;FocalLength;") %
-	//	QString("Exposure Mode;Exposure Time;User Comment;Date Time;Date Time Original;Image Description");
-
-	//QString DkMetaDataSettingsWidget::sIptcDesc = QString("Creator CreatorTitle City Country Headline Caption Copyright Keywords");
-
-	//QHBoxLayout* gbHbox = new QHBoxLayout(gbThumb);
-
-	QHBoxLayout* hboxLayout = new QHBoxLayout(this);
-
-	QGroupBox* gbCamData = new QGroupBox(tr("Camera Data"), this);
-	QGroupBox* gbDescription = new QGroupBox(tr("Description"), this);
-
-	QVBoxLayout* camDataLayout = new QVBoxLayout(gbCamData);
-	QVBoxLayout* descriptionLayout = new QVBoxLayout(gbDescription);
-
-	//QWidget* leftCol = new QWidget();
-	//leftCol->setLayout(vboxLayoutLeft);
-	//QWidget* rightCol = new QWidget();/
-	//rightCol->setLayout(vboxLayoutRight);
-
-	//QLabel* topLabel = new QLabel;
-	QStringList sDescription;
-	for (int i = 0; i  < scamDataDesc.size(); i++) 
-		sDescription << qApp->translate("nmc::DkMetaData", scamDataDesc.at(i).toLatin1());
-	
-	for (int i = 0; i  < sdescriptionDesc.size(); i++) 
-		sDescription << qApp->translate("nmc::DkMetaData", sdescriptionDesc.at(i).toLatin1());
-	
-
-	//QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");
-
-	for (int i=0; i<desc_end;i++) {
-		pCbMetaData.append(new QCheckBox(sDescription.at(i), gbDescription));
+		qDebug() << "registering: " << extList.at(idx);
+		registerExtension(extList.at(idx), progKey, add);
+		setAsDefaultApp(extList.at(idx), progKey, add);		// this is not working on Win8
 	}
 
-	for(int i=0; i<camData_end;i++) {
-		camDataLayout->addWidget(pCbMetaData[i]);
+#endif
+}
+
+void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& progKey, bool add) {
+
+#ifdef WIN32
+	
+	QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts", QSettings::NativeFormat);
+	settings.beginGroup(ext);
+
+	if (add) {
+		settings.beginGroup("UserChoice");
+		settings.setValue("ProgId", progKey);
+		qDebug() << "default app set";
 	}
-	camDataLayout->addStretch();
+	else
+		settings.setValue("Default", "");
+#endif
 
-	for(int i=camData_end; i<desc_end;i++) {
-		descriptionLayout->addWidget(pCbMetaData[i]);
-	}
-
-	descriptionLayout->addStretch();
-	
-	QGroupBox* gbOrientation = new QGroupBox(tr("Exif Orientation"), this);
-
-	cbIgnoreOrientation = new QCheckBox(tr("Ignore Exif Orientation"), gbOrientation);
-	cbIgnoreOrientation->setChecked(DkSettings::metaData.ignoreExifOrientation);
-	cbIgnoreOrientation->setToolTip(tr("Note: instead of checking this option\n you should fix your images."));
-
-	cbSaveOrientation = new QCheckBox(tr("Save Exif Orientation"), gbOrientation);
-	cbSaveOrientation->setChecked(DkSettings::metaData.saveExifOrientation);
-	cbSaveOrientation->setToolTip(tr("Note: unchecking this option decreases the speed of rotating images."));
-
-	QVBoxLayout* orientationLayout = new QVBoxLayout(gbOrientation);
-	orientationLayout->addWidget(cbIgnoreOrientation);
-	orientationLayout->addWidget(cbSaveOrientation);
-
-	QWidget* rightWidget = new QWidget(this);
-	QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
-	rightLayout->addWidget(gbCamData);
-	rightLayout->addWidget(gbOrientation);
-	rightLayout->addStretch();
-	//vboxLayoutDescription->addStretch();
-
-	hboxLayout->addWidget(gbDescription);
-	hboxLayout->addWidget(rightWidget);
-
-}
-
-void DkMetaDataSettingsWidget::writeSettings() {
-
-	for (int i=0; i<desc_end;i++) {
-		DkSettings::metaData.metaDataBits[i] = pCbMetaData[i]->isChecked();
-	}
-
-	DkSettings::metaData.ignoreExifOrientation = cbIgnoreOrientation->isChecked();
-	DkSettings::metaData.saveExifOrientation = cbSaveOrientation->isChecked();
-}
-
-
-// DkResourceSettings --------------------------------------------------------------------
-DkResourceSettingsWidgets::DkResourceSettingsWidgets(QWidget* parent) : DkSettingsWidget(parent) {
-	showOnlyInAdvancedMode = true;
-
-	stepSize = 1000;
-	createLayout();
-	init();
-}
-
-void DkResourceSettingsWidgets::init() {
-	
-	totalMemory = DkMemory::getTotalMemory();
-	if (totalMemory <= 0)
-		totalMemory = 2048;	// assume at least 2048 MB RAM
-	
-	float curCache = DkSettings::resources.cacheMemory/totalMemory * stepSize * 100;
-
-	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
-	
-	sliderMemory->setValue(curCache);
-	this->memorySliderChanged(curCache);
-	cbFastThumbnailPreview->setChecked(DkSettings::resources.fastThumbnailPreview);
-	cbFilterRawImages->setChecked(DkSettings::resources.filterRawImages);
-	cbRemoveDuplicates->setChecked(DkSettings::resources.filterDuplicats);
-	
-	rawThumbButtons[DkSettings::resources.loadRawThumb]->setChecked(true);
-}
-
-void DkResourceSettingsWidgets::createLayout() {
-	QVBoxLayout* widgetVBoxLayout = new QVBoxLayout(this);
-	
-	QGroupBox* gbCache = new QGroupBox(tr("Cache Settings"));
-	QGridLayout* cacheLayout = new QGridLayout(gbCache);
-	QLabel* labelPercentage = new QLabel(tr("Percentage of memory which should be used for caching:"), gbCache);
-	labelPercentage->setMinimumSize(labelPercentage->sizeHint());
-	sliderMemory = new QSlider(Qt::Horizontal, gbCache);
-	sliderMemory->setMinimum(0);
-	sliderMemory->setMaximum(10*stepSize);
-	sliderMemory->setPageStep(40);
-	sliderMemory->setSingleStep(40);
-	sliderMemory->setContentsMargins(11,11,11,0);
-
-	// widget starts on hide
-	QGraphicsOpacityEffect* opacityEffect = new QGraphicsOpacityEffect(this);
-	opacityEffect->setOpacity(0.7);
-	setGraphicsEffect(opacityEffect);
-
-	QWidget* memoryGradient = new QWidget;
-	memoryGradient->setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #185a2b, stop: 1 #66131c);");
-	memoryGradient->setMinimumHeight(5);
-	memoryGradient->setContentsMargins(0,0,0,0);
-	memoryGradient->setWindowOpacity(0.3);
-	memoryGradient->setGraphicsEffect(opacityEffect);	
-
-	QWidget* captionWidget = new QWidget;
-	captionWidget->setContentsMargins(0,0,0,0);
-	
-	QHBoxLayout* captionLayout = new QHBoxLayout(captionWidget);
-	captionLayout->setContentsMargins(0,0,0,0);
-	
-	QLabel* labelMinPercent = new QLabel(QString::number(sliderMemory->minimum()/stepSize)+"%");
-	labelMinPercent->setContentsMargins(0,0,0,0);
-	
-	QLabel* labelMaxPercent = new QLabel(QString::number(sliderMemory->maximum()/stepSize)+"%");
-	labelMaxPercent->setContentsMargins(0,0,0,0);
-	labelMaxPercent->setAlignment(Qt::AlignRight);
-	captionLayout->addWidget(labelMinPercent);
-	captionLayout->addWidget(labelMaxPercent);
-
-	labelMemory = new QLabel;
-	labelMemory->setContentsMargins(10,-5,0,0);
-	labelMemory->setAlignment(Qt::AlignCenter);
-
-	cacheLayout->addWidget(labelPercentage,0,0);
-	cacheLayout->addWidget(sliderMemory,1,0);
-	cacheLayout->addWidget(labelMemory,1,1);
-	cacheLayout->addWidget(memoryGradient,2,0);
-	cacheLayout->addWidget(captionWidget,3,0);
-
-	QGroupBox* gbFastPreview = new QGroupBox(tr("Fast Preview Settings"));
-	QGridLayout* fastPreviewLayuot = new QGridLayout(gbFastPreview);
-	cbFastThumbnailPreview = new QCheckBox(tr("enable fast thumbnail preview"));
-	fastPreviewLayuot->addWidget(cbFastThumbnailPreview);
-
-	QGroupBox* gbRawLoader = new QGroupBox(tr("Raw Loader Settings"));
-	
-	rawThumbButtonGroup = new QButtonGroup(this);
-
-	rawThumbButtons.resize(DkSettings::raw_thumb_end);
-
-	rawThumbButtons[DkSettings::raw_thumb_always] = new QRadioButton(tr("Always load JPG if embedded"), this);
-	rawThumbButtons[DkSettings::raw_thumb_if_large] = new QRadioButton(tr("Load JPG if it fits the screen resolution"), this);
-	rawThumbButtons[DkSettings::raw_thumb_never] = new QRadioButton(tr("Never load embedded JPG"), this);
-
-	QWidget* rawThumbWidget = new QWidget();
-	QVBoxLayout* rawThumbButtonLayout = new QVBoxLayout(rawThumbWidget);
-
-	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
-		rawThumbButtonGroup->addButton(rawThumbButtons[idx]);
-		rawThumbButtonLayout->addWidget(rawThumbButtons[idx]);
-	}
-
-
-	QWidget* dupWidget = new QWidget();
-	QHBoxLayout* hLayout = new QHBoxLayout(dupWidget);
-	hLayout->setContentsMargins(0,0,0,0);
-	
-	cbRemoveDuplicates = new QCheckBox(tr("Hide Duplicates"));
-	cbRemoveDuplicates->setChecked(DkSettings::resources.filterRawImages);
-	cbRemoveDuplicates->setToolTip(tr("If checked, duplicated images are not shown (e.g. RAW+JPG"));
-
-	QLabel* preferredLabel = new QLabel(tr("Preferred Extension: "));
-
-	QString pExt = DkSettings::resources.preferredExtension;
-	if (pExt.isEmpty()) pExt = "*.jpg";	// best default
-	cmExtensions = new QComboBox();
-	cmExtensions->addItems(DkImageLoader::fileFilters);
-	cmExtensions->setCurrentIndex(DkImageLoader::fileFilters.indexOf(pExt));
-	
-	qDebug() << "preferred extension: " << pExt;
-
-	hLayout->addWidget(cbRemoveDuplicates);
-	hLayout->addWidget(preferredLabel);
-	hLayout->addWidget(cmExtensions);
-	hLayout->addStretch();
-
-	QGridLayout* rawLoaderLayout = new QGridLayout(gbRawLoader);
-	cbFilterRawImages = new QCheckBox(tr("filter raw images"));
-	
-	rawLoaderLayout->addWidget(rawThumbWidget);
-	rawLoaderLayout->addWidget(dupWidget);
-	rawLoaderLayout->addWidget(cbFilterRawImages);
-
-	widgetVBoxLayout->addWidget(gbCache);
-	widgetVBoxLayout->addWidget(gbFastPreview);
-	widgetVBoxLayout->addWidget(gbRawLoader);
-	widgetVBoxLayout->addStretch();
-}
-
-void DkResourceSettingsWidgets::writeSettings() {
-	
-	DkSettings::resources.cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
-	DkSettings::resources.fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
-	DkSettings::resources.filterRawImages = cbFilterRawImages->isChecked();
-	DkSettings::resources.filterDuplicats = cbRemoveDuplicates->isChecked();
-	DkSettings::resources.preferredExtension = DkImageLoader::fileFilters.at(cmExtensions->currentIndex());
-	
-	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
-		if (rawThumbButtons[idx]->isChecked()) {
-			DkSettings::resources.loadRawThumb = idx;
-			break;
-		}
-	}
-}
-
-void DkResourceSettingsWidgets::memorySliderChanged(int newValue) {
-	labelMemory->setText(QString::number((double)(newValue/stepSize)/100.0*totalMemory,'f',0) + " MB / "+ QString::number(totalMemory,'f',0) + " MB");
-}
-
-// DkSpinBoxWiget --------------------------------------------------------------------
-DkSpinBoxWidget::DkSpinBoxWidget(QWidget* parent) : QWidget(parent) {
-	spinBox = new QSpinBox(this);
-	lowerLabel = new QLabel(this);
-	lowerWidget = new QWidget(this);
-	vboxLayout = new QVBoxLayout(this);
-	hboxLowerLayout = new QHBoxLayout(lowerWidget);
-
-	hboxLowerLayout->addWidget(spinBox);
-	hboxLowerLayout->addWidget(lowerLabel);
-	hboxLowerLayout->addStretch();
-	vboxLayout->addWidget(upperLabel);
-	vboxLayout->addWidget(lowerWidget);
-
-}
-
-DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int spinBoxMin, int spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/) : QWidget(parent) {
-	spinBox = new QSpinBox();
-	spinBox->setMaximum(spinBoxMax);
-	spinBox->setMinimum(spinBoxMin);
-	spinBox->setSingleStep(step);
-	upperLabel = new QLabel(upperString);
-	lowerLabel = new QLabel(lowerString);
-	lowerWidget = new QWidget();
-
-	vboxLayout = new QVBoxLayout(this) ;
-	hboxLowerLayout = new QHBoxLayout(lowerWidget);
-
-	hboxLowerLayout->addWidget(spinBox);
-	hboxLowerLayout->addWidget(lowerLabel);
-	hboxLowerLayout->addStretch();
-	vboxLayout->addWidget(upperLabel);
-	vboxLayout->addWidget(lowerWidget);
-	setMinimumSize(sizeHint());
-	//adjustSize();
-	//optimalSize = size();
-
-}
-
-
-// DkDoubleSpinBoxWiget --------------------------------------------------------------------
-DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) {
-	spinBox = new QDoubleSpinBox(this);
-	lowerLabel = new QLabel(this);
-	lowerWidget = new QWidget(this);
-	vboxLayout = new QVBoxLayout(this);
-	hboxLowerLayout = new QHBoxLayout(lowerWidget);
-
-	hboxLowerLayout->addWidget(spinBox);
-	hboxLowerLayout->addWidget(lowerLabel);
-	hboxLowerLayout->addStretch();
-	vboxLayout->addWidget(upperLabel);
-	vboxLayout->addWidget(lowerWidget);
-
-}
-
-DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent/* =0 */, int step/* =1*/, int decimals/* =2*/) : QWidget(parent) {
-	spinBox = new QDoubleSpinBox(this);
-	spinBox->setMaximum(spinBoxMax);
-	spinBox->setMinimum(spinBoxMin);
-	spinBox->setSingleStep(step);
-	spinBox->setDecimals(decimals);
-	upperLabel = new QLabel(upperString);
-	lowerLabel = new QLabel(lowerString);
-	lowerWidget = new QWidget(this);
-
-	vboxLayout = new QVBoxLayout(this);
-	hboxLowerLayout = new QHBoxLayout(lowerWidget);
-
-	hboxLowerLayout->addWidget(spinBox);
-	hboxLowerLayout->addWidget(lowerLabel);
-	hboxLowerLayout->addStretch();
-	vboxLayout->addWidget(upperLabel);
-	vboxLayout->addWidget(lowerWidget);
-	vboxLayout->addStretch();
-	//adjustSize();
-	//optimalSize = size();
-
-	//setLayout(vboxLayout);
-	setMinimumSize(sizeHint());
 }
 
 }

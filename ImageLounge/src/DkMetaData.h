@@ -31,15 +31,9 @@
 #include <QImage>
 #include <QDebug>
 #include <QBuffer>
-
-
-#ifdef HAVE_EXIV2_HPP
-#include <exiv2/exiv2.hpp>
-#else
-#include <exiv2/image.hpp>
-#include <iomanip>
-#endif
-
+#include <QVector2D>
+#include <QSharedPointer>
+#include <QStringList>
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -51,87 +45,114 @@
 #endif
 #endif
 
+#ifdef HAVE_EXIV2_HPP
+#include <exiv2/exiv2.hpp>
+#else
+#include <exiv2/image.hpp>
+#include <iomanip>
+#endif
+
+// OS 2 does not define byte so we safely assume, that other programmers agree to call an 8 bit a byte
+#ifndef byte
+typedef unsigned char byte;
+#endif
+
 namespace nmc {
 
-class DllExport DkMetaData {
+class DllExport DkMetaDataT {
 
 public:
-	DkMetaData(QFileInfo file = QFileInfo());
+	DkMetaDataT();
 
-	DkMetaData(const DkMetaData& metaData);
+	void readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool saveMetaData(const QFileInfo& fileInfo, bool force = false);
+	bool saveMetaData(QSharedPointer<QByteArray>& ba, bool force = false);
 
-	~DkMetaData() {};
+	int getOrientation() const;
+	int getRating() const;
+	QVector2D getResolution() const;
+	QString getNativeExifValue(const QString& key) const;
+	QString getXmpValue(const QString& key) const;
+	QString getExifValue(const QString& key) const;
+	QString getIptcValue(const QString& key) const;
+	QImage getThumbnail() const;
+	QStringList getExifKeys() const;
+	QStringList getExifValues() const;
+	QStringList getIptcKeys() const;
+	QStringList getIptcValues() const;
+	QStringList getXmpKeys() const;
+	void getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const;
+	void setResolution(const QVector2D& res);
+	void clearOrientation();
+	void setOrientation(int o);
+	void setRating(int r);
+	void setExifValue(QString key, QString taginfo);
+	void setThumbnail(QImage thumb);
 
-	DkMetaData& operator=(const DkMetaData& metadata) {
+	bool hasMetaData() const;
+	bool isLoaded() const;
+	bool isTiff() const;
+	bool isJpg() const;
+	bool isRaw() const;
+	bool isDirty() const;
+	void printMetaData() const; //only for debug
 
-		if (this == &metadata)
-			return *this;
-
-		this->file = metadata.file;
-		this->mdata = false;
-		this->hasMetaData = metadata.hasMetaData;
-		this->dirty = metadata.dirty;
-
-		return *this;
-	};
-
-	void setFileName(QFileInfo file) {
-
-		// do nothing if the same file is set
-		if (this->file == file)
-			return;
-
-		this->file = file;
-		mdata = false;
-		hasMetaData = true;
-		dirty = false;
-	};
-
-	QFileInfo getFile() const {
-		return file;
-	};
-
-	bool isDirty() {
-		return dirty;
-	};
-
-	void reloadImg();
-
-	void saveMetaDataToFile(QFileInfo fileN = QFileInfo(), int orientation = 0);
-
-	std::string getNativeExifValue(std::string key);
-	std::string getExifValue(std::string key);
-	bool setExifValue(std::string key, std::string taginfo);
-	std::string getIptcValue(std::string key);
-	int getOrientation();
-	QImage getThumbnail();
-	void saveThumbnail(QImage thumb, QFileInfo saveFile);
-	void saveOrientation(int o);
-	int getHorizontalFlipped();
-	void saveHorizontalFlipped(int f);
-	float getRating();
-	void saveRating(int r);
-	bool isTiff();
-	bool isJpg();
-	bool isRaw();
-	void printMetaData(); //only for debug
-	QStringList getExifKeys();
-	QStringList getExifValues();
-	QStringList getIptcKeys();
-	QStringList getIptcValues();
-
-
-private:
-
-	void readMetaData();
-
+protected:
 	Exiv2::Image::AutoPtr exifImg;
 	QFileInfo file;
 
-	bool mdata;
-	bool hasMetaData;
-	bool dirty;
+	enum {
+		not_loaded,
+		no_data,
+		loaded,
+		dirty,
+	};
 
+	int exifState;
+};
+
+class DllExport DkMetaDataHelper {
+
+public:
+
+	static DkMetaDataHelper& getInstance() {
+
+		static DkMetaDataHelper instance;
+
+		return instance;
+	}
+
+	QString getApertureValue(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getFocalLength(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getExposureTime(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getExposureMode(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getFlashMode(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const;
+	bool hasGPS(QSharedPointer<DkMetaDataT> metaData) const;
+	QString translateKey(const QString& key) const;
+	QString resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData, const QString& key, const QString& value) const;
+
+	QStringList getCamSearchTags() const;
+	QStringList getDescSearchTags() const;
+	QStringList getTranslatedCamTags() const;
+	QStringList getTranslatedDescTags() const;
+	QStringList getAllExposureModes() const;
+	QMap<int, QString> getAllFlashModes() const;
+
+protected:
+	DkMetaDataHelper() { init(); };
+	DkMetaDataHelper(DkMetaDataHelper const&);		// hide
+	void operator=(DkMetaDataHelper const&);		// hide
+	void init();
+
+	QStringList camSearchTags;
+	QStringList descSearchTags;
+
+	QStringList translatedCamTags;
+	QStringList translatedDescTags;
+
+	QStringList exposureModes;
+	QMap<int, QString> flashModes;
 };
 
 };

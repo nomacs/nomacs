@@ -1,0 +1,6 @@
+#ifndef H_CLIENTSERVICE_ADAPTER_
+#define H_CLIENTSERVICE_ADAPTER_
+
+#include "public/hclientservice_adapter.h"
+
+#endif // H_CLIENTSERVICE_ADAPTER_

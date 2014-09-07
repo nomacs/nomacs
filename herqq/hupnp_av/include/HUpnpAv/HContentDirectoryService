@@ -1,0 +1,6 @@
+#ifndef H_CONTENTDIRECTORY_SERVICE_
+#define H_CONTENTDIRECTORY_SERVICE_
+
+#include "public/hcontentdirectory_service.h"
+
+#endif // H_CONTENTDIRECTORY_SERVICE_

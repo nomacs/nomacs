@@ -83,12 +83,13 @@ DkCompressDialog::~DkCompressDialog() {
 
 void DkCompressDialog::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 	settings.setValue("Compression" + QString::number(dialogMode), getCompression());
 	
 	if (dialogMode != webp_dialog)
-		settings.setValue("BackgroundColor" + QString::number(dialogMode), getBackgroundColor());
+		settings.setValue("bgCompressionColor" + QString::number(dialogMode), getBackgroundColor().rgba());
+	settings.endGroup();
 }
 
 
@@ -96,15 +97,16 @@ void DkCompressDialog::loadSettings() {
 
 	qDebug() << "loading new settings...";
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
-	bgCol = settings.value("BackgroundColor" + QString::number(dialogMode), QColor(255,255,255)).value<QColor>();
+	bgCol = settings.value("bgCompressionColor" + QString::number(dialogMode), QColor(255,255,255).rgba()).toInt();
 	int compression = settings.value("Compression" + QString::number(dialogMode), 80).toInt();
 
 	slider->setValue(compression);
 	colChooser->setColor(bgCol);
 	newBgCol();
+	settings.endGroup();
 }
 
 void DkCompressDialog::init() {
@@ -178,7 +180,7 @@ void DkCompressDialog::createLayout() {
 	// size combo for web
 	sizeCombo = new QComboBox(this);
 	sizeCombo->addItem(tr("Small  (800 x 600)"), 600);
-	sizeCombo->addItem(tr("Medium (1024 x 768)"), 786);
+	sizeCombo->addItem(tr("Medium (1024 x 786)"), 786);
 	sizeCombo->addItem(tr("Large  (1920 x 1080)"), 1080);
 	sizeCombo->addItem(tr("Original Size"), -1);
 	connect(sizeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(changeSizeWeb(int)));
@@ -270,9 +272,9 @@ void DkCompressDialog::drawPreview() {
 	if ((dialogMode == jpg_dialog || dialogMode == j2k_dialog) && hasAlpha)
 		newImg.fill(bgCol.rgb());
 	else if ((dialogMode == jpg_dialog || dialogMode == web_dialog) && !hasAlpha)
-		newImg.fill(palette().color(QPalette::Background));
+		newImg.fill(palette().color(QPalette::Background).rgb());
 	else
-		newImg.fill(QColor(0,0,0,0));
+		newImg.fill(QColor(0,0,0,0).rgba());
 	 
 	QPainter bgPainter(&newImg);
 	bgPainter.drawImage(origImg.rect(), origImg, origImg.rect());
@@ -300,11 +302,12 @@ void DkCompressDialog::drawPreview() {
 	else if (dialogMode == webp_dialog && getCompression() != -1) {
 		// pre-compute the webp compression
 		DkBasicLoader loader;
-		QByteArray buffer;
-		loader.encodeWebP(buffer, newImg, getCompression(), 0);
-		loader.decodeWebP(buffer);
+		QSharedPointer<QByteArray> buffer(new QByteArray());
+		loader.saveWebPFile(newImg, buffer, getCompression(), 0);
+		qDebug() << "webP buffer size: " << buffer->size();
+		loader.loadWebPFile(QFileInfo(), buffer);
 		newImg = loader.image();
-		updateFileSizeLabel(buffer.size(), origImg.size());
+		updateFileSizeLabel(buffer->size(), origImg.size());
 	}
 	else if (dialogMode == web_dialog) {
 

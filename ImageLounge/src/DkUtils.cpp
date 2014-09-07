@@ -36,7 +36,6 @@ int nmc::DkUtils::debugLevel = DK_MODULE;
 namespace nmc {
 
 // code based on: http://stackoverflow.com/questions/8565430/complete-these-3-methods-with-linux-and-mac-code-memory-info-platform-independe
-
 double DkMemory::getTotalMemory() {
 
 	double mem = -1;
@@ -95,7 +94,7 @@ double DkMemory::getFreeMemory() {
 
 #elif defined Q_WS_MAC
 
-	// TODO: could somebody (with a make please add the corresponding calls?
+	// TODO: could somebody with a mac please add the corresponding calls?
 
 #endif
 
@@ -107,6 +106,128 @@ double DkMemory::getFreeMemory() {
 }
 
 // DkUtils --------------------------------------------------------------------
+#ifdef WIN32
+
+bool DkUtils::wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
+	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
+	//return true;
+}
+
+bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+#if QT_VERSION < 0x050000
+	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
+	//return true;
+#else
+	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
+#endif
+}
+#else
+
+bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+	
+	// check if the filenames are numbers only
+	// using double here lets nomacs sort correctly for files such as "1.jpg", "1.5.jpg", "2.jpg", which is nice
+	// double is accurate to approximately 16 significant digits, where using long long would work to about 19, so no big drawback.
+	bool lhs_isNum;
+	bool rhs_isNum;
+	double lhn = lhs.left(lhs.lastIndexOf(".")).toDouble(&lhs_isNum);
+	double rhn = rhs.left(rhs.lastIndexOf(".")).toDouble(&rhs_isNum);
+	
+	// if both filenames convert to clean numbers, compare them
+	if (lhs_isNum && rhs_isNum) {
+		return lhn < rhn;
+	}
+
+	// if not, let clean numbers always be sorted before mixed numbers and letters
+	// logic here is deliberately spelled out, the compiler will do the optimization
+	if (lhs_isNum && !rhs_isNum) {
+		return true;
+	}
+	if (!lhs_isNum && rhs_isNum) {
+		return false;
+	}
+
+	return lhs.localeAwareCompare(rhs) < 0;
+}
+#endif
+
+
+
+
+bool DkUtils::compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return lhf.created() < rhf.created();
+}
+
+bool DkUtils::compDateCreatedInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compDateCreated(lhf, rhf);
+}
+
+bool DkUtils::compDateModified(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return lhf.lastModified() < rhf.lastModified();
+}
+
+bool DkUtils::compDateModifiedInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compDateModified(lhf, rhf);
+}
+
+bool DkUtils::compFilename(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return compLogicQString(lhf.fileName(), rhf.fileName());
+}
+
+bool DkUtils::compFilenameInv(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return !compFilename(lhf, rhf);
+}
+
+bool DkUtils::compRandom(const QFileInfo& lhf, const QFileInfo& rhf) {
+
+	return qrand() % 2;
+}
+
+void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
+
+	QDir qmDir = qApp->applicationDirPath();
+	
+	// find all translations
+	QStringList translationDirs = DkSettings::getTranslationDirs();
+	QStringList fileNames;
+
+	for (int idx = 0; idx < translationDirs.size(); idx++) {
+		fileNames += QDir(translationDirs[idx]).entryList(QStringList("nomacs_*.qm"));
+	}
+
+	langCombo->addItem("English");
+	languages << "en";
+
+	for (int i = 0; i < fileNames.size(); ++i) {
+		QString locale = fileNames[i];
+		locale.remove(0, locale.indexOf('_') + 1);
+		locale.chop(3);
+
+		QTranslator translator;
+		DkSettings::loadTranslation(fileNames[i], translator);
+
+		//: this should be the name of the language in which nomacs is translated to
+		QString language = translator.translate("nmc::DkGlobalSettingsWidget", "English");
+		if (language.isEmpty())
+			continue;
+
+		langCombo->addItem(language);
+		languages << locale;
+	}
+	
+	langCombo->setCurrentIndex(languages.indexOf(DkSettings::global.language));
+	if (langCombo->currentIndex() == -1) // set index to English if language has not been found
+		langCombo->setCurrentIndex(0);
+
+}
+
+
 void DkUtils::mSleep(int ms) {
 
 #ifdef Q_OS_WIN
@@ -159,6 +280,92 @@ QString DkUtils::stdWStringToQString(const std::wstring &str) {
 #else
 	return QString::fromStdWString(str);
 #endif
+}
+
+// TreeItem --------------------------------------------------------------------
+TreeItem::TreeItem(const QVector<QVariant> &data, TreeItem *parent) {
+	parentItem = parent;
+	itemData = data;
+}
+
+TreeItem::~TreeItem() {
+	clear();
+}
+
+void TreeItem::clear() {
+	qDeleteAll(childItems);
+	childItems.clear();
+}
+
+void TreeItem::appendChild(TreeItem *item) {
+	childItems.append(item);
+	//item->setParent(this);
+}
+
+TreeItem* TreeItem::child(int row) {
+
+	if (row < 0 || row >= childItems.size())
+		return 0;
+
+	return childItems[row];
+}
+
+int TreeItem::childCount() const {
+	return childItems.size();
+}
+
+int TreeItem::row() const {
+
+	if (parentItem)
+		return parentItem->childItems.indexOf(const_cast<TreeItem*>(this));
+
+	return 0;
+}
+
+int TreeItem::columnCount() const {
+
+	int columns = itemData.size();
+
+	for (int idx = 0; idx < childItems.size(); idx++)
+		columns = qMax(columns, childItems[idx]->columnCount());
+
+	return columns;
+}
+
+QVariant TreeItem::data(int column) const {
+	return itemData.value(column);
+}
+
+void TreeItem::setData(const QVariant& value, int column) {
+
+	if (column < 0 || column >= itemData.size())
+		return;
+
+	qDebug() << "replacing: " << itemData[0] << " with: " << value;
+	itemData.replace(column, value);
+}
+
+TreeItem* TreeItem::find(const QVariant& value, int column) {
+
+	if (column < 0)
+		return 0;
+
+	if (column < itemData.size() && itemData[column] == value)
+		return this;
+
+	for (int idx = 0; idx < childItems.size(); idx++) 
+		if (TreeItem* child = childItems[idx]->find(value, column))
+			return child;
+
+	return 0;
+}
+
+TreeItem* TreeItem::parent() const {
+	return parentItem;
+}
+
+void TreeItem::setParent(TreeItem* parent) {
+	parentItem = parent;
 }
 
 

@@ -277,7 +277,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 	imgStorage.setImage(newImg);
 	QRectF oldImgRect = imgRect;
 	this->imgRect = QRectF(0, 0, newImg.width(), newImg.height());
-
+	
 	emit enableNoImageSignal(!newImg.isNull());
 
 	if (!DkSettings::display.keepZoom || imgRect != oldImgRect)
@@ -285,6 +285,7 @@ void DkBaseViewPort::setImage(QImage newImg) {
 
 	updateImageMatrix();
 	update();
+	emit newImageSignal(&newImg);
 }
 
 QImage DkBaseViewPort::getImage() {
@@ -316,7 +317,9 @@ QImage DkBaseViewPort::getCurrentImageRegion() {
 	return imgR;
 }
 
-void DkBaseViewPort::unloadImage() {
+bool DkBaseViewPort::unloadImage(bool fileChange) {
+
+	return true;
 }
 
 // events --------------------------------------------------------------------
@@ -352,6 +355,9 @@ void DkBaseViewPort::paintEvent(QPaintEvent* event) {
 }
 
 void DkBaseViewPort::resizeEvent(QResizeEvent *event) {
+
+	if (event->oldSize() == event->size())
+		return;
 
 	viewportRect = QRect(0, 0, event->size().width(), event->size().height());
 
@@ -588,7 +594,7 @@ void DkBaseViewPort::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 // protected functions --------------------------------------------------------------------
-void DkBaseViewPort::draw(QPainter *painter) {
+void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 
 	//QImage imgDraw = getScaledImage(imgMatrix.m11()*worldMatrix.m11());
 	//painter->drawImage(imgViewRect, imgDraw, QRect(QPoint(), imgDraw.size()));
@@ -618,12 +624,15 @@ void DkBaseViewPort::draw(QPainter *painter) {
 		painter->drawRect(imgViewRect);
 	}
 
+	float oldOp = painter->opacity();
+	painter->setOpacity(opacity);
 
 	if (!movie || !movie->isValid())
 		painter->drawImage(imgViewRect, imgQt, imgQt.rect());
-	else {
+	else
 		painter->drawPixmap(imgViewRect, movie->currentPixmap(), movie->frameRect());
-	}
+
+	painter->setOpacity(oldOp);
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 

@@ -1,0 +1,6 @@
+#ifndef H_MUSICTRACK_
+#define H_MUSICTRACK_
+
+#include "public/hmusictrack.h"
+
+#endif // H_MUSICTRACK_

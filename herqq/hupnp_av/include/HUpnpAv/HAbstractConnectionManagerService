@@ -1,0 +1,6 @@
+#ifndef H_ABSTRACTCONNECTIONMANAGERSERVICE_
+#define H_ABSTRACTCONNECTIONMANAGERSERVICE_
+
+#include "public/habstractconnectionmanager_service.h"
+
+#endif // H_ABSTRACTCONNECTIONMANAGERSERVICE_

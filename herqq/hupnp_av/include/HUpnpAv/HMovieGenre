@@ -1,0 +1,6 @@
+#ifndef H_MOVIEGENRE_
+#define H_MOVIEGENRE_
+
+#include "public/hmoviegenre.h"
+
+#endif // H_MOVIEGENRE_

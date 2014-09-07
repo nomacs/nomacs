@@ -1,0 +1,6 @@
+#ifndef H_RECORDMEDIUMWRITESTATUS_
+#define H_RECORDMEDIUMWRITESTATUS_
+
+#include "public/hrecordmediumwritestatus.h"
+
+#endif // H_RECORDMEDIUMWRITESTATUS_

@@ -1,0 +1,6 @@
+#ifndef H_EPGCONTAINER_
+#define H_EPGCONTAINER_
+
+#include "public/hepgcontainer.h"
+
+#endif // H_EPGCONTAINER_

@@ -1,0 +1,6 @@
+#ifndef H_SERVICEID_
+#define H_SERVICEID_
+
+#include "public/hserviceid.h"
+
+#endif // H_SERVICEID_

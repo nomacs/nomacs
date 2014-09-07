@@ -1,0 +1,6 @@
+#ifndef H_CONNECTIONMANAGER_ID_
+#define H_CONNECTIONMANAGER_ID_
+
+#include "public/hconnectionmanager_id.h"
+
+#endif // H_CONNECTIONMANAGER_ID_

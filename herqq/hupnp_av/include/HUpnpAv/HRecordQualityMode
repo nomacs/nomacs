@@ -1,0 +1,6 @@
+#ifndef H_RECORDQUALITYMODE_
+#define H_RECORDQUALITYMODE_
+
+#include "public/hrecordqualitymode.h"
+
+#endif // H_RECORDQUALITYMODE_

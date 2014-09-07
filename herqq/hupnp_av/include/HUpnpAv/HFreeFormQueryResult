@@ -1,0 +1,6 @@
+#ifndef H_FREEFORMQUERYRESULT_
+#define H_FREEFORMQUERYRESULT_
+
+#include "public/hfreeformqueryresult.h"
+
+#endif // H_FREEFORMQUERYRESULT_

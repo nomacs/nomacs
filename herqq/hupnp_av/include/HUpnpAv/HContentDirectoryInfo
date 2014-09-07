@@ -1,0 +1,6 @@
+#ifndef H_CONTENTDIRECTORYINFO_
+#define H_CONTENTDIRECTORYINFO_
+
+#include "public/hcontentdirectory_info.h"
+
+#endif // H_CONTENTDIRECTORYINFO_

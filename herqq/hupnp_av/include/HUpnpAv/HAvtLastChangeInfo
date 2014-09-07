@@ -1,0 +1,6 @@
+#ifndef H_AVT_LASTCHANGE_INFO_
+#define H_AVT_LASTCHANGE_INFO_
+
+#include "public/havt_lastchange_info.h"
+
+#endif // H_AVT_LASTCHANGE_INFO_
