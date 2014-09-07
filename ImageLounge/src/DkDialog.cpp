@@ -741,6 +741,8 @@ DkChangeTranslationDialog::DkChangeTranslationDialog(QWidget* parent /* = 0 */, 
 		origStrings = defaultStrings;
 	}
 
+	settings.endGroup();
+
 	createLayout();
 }
 
@@ -825,7 +827,8 @@ void DkChangeTranslationDialog::accept() {
 	QSettings settings;
 	settings.beginGroup("Fotobox");
 	settings.setValue("origFotoStrings", origStrings);
-
+	settings.endGroup();
+	
 	DkSettings::foto.fotoStrings = strings;
 	DkSettings::save();
 

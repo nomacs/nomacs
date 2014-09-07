@@ -45,6 +45,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	//thumbPool = new DkThumbPool(QFileInfo(), this);
 	thumbScrollWidget = new DkThumbScrollWidget(this, flags);
 	thumbScrollWidget->hide();
+
 	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
@@ -106,6 +107,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 }
 
 void DkControlWidget::init() {
+
+	this->installEventFilter(filePreview);
 
 	//// debug: show invisible widgets
 	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
@@ -257,7 +260,7 @@ void DkControlWidget::init() {
 	//hudLayout->addWidget(thumbWidget, 0, 0);
 
 	// add elements
-	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
+	//hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
 	hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
 	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
@@ -317,8 +320,6 @@ void DkControlWidget::connectWidgets() {
 		
 		connect(player, SIGNAL(saveImageSignal(QFileInfo)), loader, SLOT(copyImageToTemp(QFileInfo)));
 		connect(socialConfirmDialog, SIGNAL(saveImageSignal(QFileInfo)), loader, SLOT(copyImageToTemp(QFileInfo)));
-
-
 	}
 
 	// thumbs widget
@@ -367,7 +368,6 @@ void DkControlWidget::connectWidgets() {
 	// hide the opposite
 	connect(socialButton, SIGNAL(showConfirmDialogSignal()), qrCodeConfirmDialog, SLOT(hide()));
 	connect(qrCode, SIGNAL(showConfirmDialogSignal()), socialConfirmDialog, SLOT(hide()));
-
 }
 
 void DkControlWidget::update() {
@@ -375,6 +375,13 @@ void DkControlWidget::update() {
 	overviewWindow->update();
 
 	QWidget::update();
+}
+
+void DkControlWidget::resizeEvent(QResizeEvent *event) {
+
+	filePreview->setFixedSize(event->size());
+
+	QWidget::resizeEvent(event);
 }
 
 void DkControlWidget::showWidgetsSettings() {
@@ -778,8 +785,6 @@ void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 
 	QWidget::mouseMoveEvent(event);
 }
-
-
 
 void DkControlWidget::keyPressEvent(QKeyEvent *event) {
 	
@@ -1390,7 +1395,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		// TODO: if fading is active we interpolate with background instead of the other image
 		draw(&painter, 1.0f-fadeOpacity);
 
-		if (/*fadeTimer->isActive() && */!fadeBuffer.isNull()) {
+		if (/*fadeTimer->isActive() && */!DkSettings::foto.stripMode && !fadeBuffer.isNull()) {
 			float oldOp = painter.opacity();
 			painter.setOpacity(fadeOpacity);
 			painter.drawImage(fadeImgViewRect, fadeBuffer, fadeBuffer.rect());

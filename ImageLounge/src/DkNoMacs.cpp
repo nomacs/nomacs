@@ -698,6 +698,7 @@ void DkNoMacs::createMenu() {
 	fotoMenu->addAction(fotoActions[menu_foto_change_default_path]);
 	fotoMenu->addAction(fotoActions[menu_foto_change_print_path]);
 	fotoMenu->addAction(fotoActions[menu_foto_change_facebook_path]);
+	fotoMenu->addAction(fotoActions[menu_foto_strip_mode]);
 
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
@@ -1349,6 +1350,12 @@ void DkNoMacs::createActions() {
 	fotoActions[menu_foto_change_facebook_path] = new QAction(tr("Change S&ocial Media Path"), this);
 	fotoActions[menu_foto_change_facebook_path]->setStatusTip(tr("set the default image path"));
 	connect(fotoActions[menu_foto_change_facebook_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
+
+	fotoActions[menu_foto_strip_mode] = new QAction(tr("Strip Mode"), this);
+	fotoActions[menu_foto_strip_mode]->setStatusTip(tr("foto strip mode"));
+	fotoActions[menu_foto_strip_mode]->setCheckable(true);
+	fotoActions[menu_foto_strip_mode]->setChecked(DkSettings::foto.stripMode);
+	connect(fotoActions[menu_foto_strip_mode], SIGNAL(triggered(bool)), this, SLOT(toggleStripMode(bool)));
 
 	// help menu
 	helpActions.resize(menu_help_end);
@@ -2306,6 +2313,14 @@ void DkNoMacs::fotoChangeDefaultPath() {
 	*newPath = dirName;
 	DkSettings::save();
 	restart();
+}
+
+void DkNoMacs::toggleStripMode(bool stripMode) {
+
+	DkSettings::foto.stripMode = stripMode;
+
+	viewport()->updateImage(viewport()->getImageLoader()->getCurrentImage());
+	viewport()->getController()->getFilePreview()->update();
 }
 
 void DkNoMacs::fotoIntervalTimer() {

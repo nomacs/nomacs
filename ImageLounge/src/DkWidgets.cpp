@@ -643,7 +643,6 @@ void DkFilePreview::init() {
 	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 	wheelButton->setPixmap(wp);
 	wheelButton->hide();
-
 }
 
 void DkFilePreview::paintEvent(QPaintEvent* event) {
@@ -651,7 +650,14 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (minHeight != DkSettings::display.thumbSize + yOffset) {
+	if (DkSettings::foto.stripMode && parent && minHeight != parent->height()-150) {
+
+		xOffset = 10;
+		yOffset = 100;
+		minHeight = parent->height()-150;
+		setFixedHeight(minHeight);
+	}
+	else if (!DkSettings::foto.stripMode && minHeight != DkSettings::display.thumbSize + yOffset) {
 
 		xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
@@ -661,7 +667,6 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 		//if (fileLabel->height() >= height() && fileLabel->isVisible())
 		//	fileLabel->hide();
-
 	}
 	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
 	//resize(parent->width(), minHeight);
@@ -782,9 +787,14 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			sr.moveCenter(r.center());
 			painter->drawPixmap(sr, currentImg, QRect(QPoint(), currentImg.size()));
 		}
-		else
+		else {
+			float oldOp = painter->opacity();
+			
+			if (DkSettings::foto.stripMode)
+				painter->setOpacity(0.5);
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
-
+			painter->setOpacity(oldOp);
+		}
 		//painter->fillRect(QRect(0,0,200, 110), leftGradient);
 	}
 
@@ -855,7 +865,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	if (event->size() == event->oldSize() && this->width() == parent->width())
 		return;
 
-	minHeight = DkSettings::display.thumbSize + yOffset;
+	minHeight = (DkSettings::foto.stripMode && parent) ? parent->height()-150 : DkSettings::display.thumbSize + yOffset;
 	setMinimumHeight(1);
 	setMaximumHeight(minHeight);
 
@@ -874,7 +884,31 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	
 	//update();
 	QWidget::resizeEvent(event);
-	
+}
+
+bool DkFilePreview::eventFilter(QObject *obj, QEvent *ev) {
+
+	// ok obviously QGraphicsView eats all mouse events -> so we simply redirect these to QWidget in order to get them delivered here
+	if (ev->type() == QEvent::MouseButtonPress || 
+		ev->type() == QEvent::MouseButtonDblClick || 
+		ev->type() == QEvent::MouseButtonRelease || 
+		ev->type() == QEvent::MouseMove || 
+		ev->type() == QEvent::Wheel || 
+		ev->type() == QEvent::KeyPress || 
+		ev->type() == QEvent::KeyRelease) {
+
+			QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
+
+			if (mev && geometry().contains(this->mapFromParent(mev->pos()))) {
+				qDebug() << "redirecting event...";
+				// mouse events that double are now fixed, since the viewport is now overlayed by the controller
+				return QWidget::event(ev);
+			}
+	}
+	else
+		return false;
+
+	return false;
 }
 
 void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {

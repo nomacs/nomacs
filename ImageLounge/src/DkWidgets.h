@@ -744,6 +744,8 @@ public:
 
 	void setVisible(bool visible);
 
+	virtual bool eventFilter(QObject *obj, QEvent *ev);
+
 public slots:
 	void paintEvent(QPaintEvent *event);
 	void resizeEvent(QResizeEvent *event);
@@ -761,7 +763,7 @@ signals:
 	void loadFileSignal(QFileInfo file);
 	//void loadThumbsSignal(int start, int end);
 	void changeFileSignal(int idx);
-	
+
 private:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;
 	QWidget* parent;

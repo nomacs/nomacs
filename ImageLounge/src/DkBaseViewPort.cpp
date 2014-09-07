@@ -610,29 +610,32 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
-	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+	if (!DkSettings::foto.stripMode) {
+		QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
 
-	if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
+		if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
 
-		// don't scale the pattern...
-		QTransform scaleIv;
-		scaleIv.scale(worldMatrix.m11(), worldMatrix.m22());
-		pattern.setTransform(scaleIv.inverted());
+			// don't scale the pattern...
+			QTransform scaleIv;
+			scaleIv.scale(worldMatrix.m11(), worldMatrix.m22());
+			pattern.setTransform(scaleIv.inverted());
 
-		painter->setPen(QPen(Qt::NoPen));	// no border
-		painter->setBrush(pattern);
-		painter->drawRect(imgViewRect);
+			painter->setPen(QPen(Qt::NoPen));	// no border
+			painter->setBrush(pattern);
+			painter->drawRect(imgViewRect);
+		}
+
+		float oldOp = painter->opacity();
+		painter->setOpacity(opacity);
+
+		if (!movie || !movie->isValid())
+			painter->drawImage(imgViewRect, imgQt, imgQt.rect());
+		else
+			painter->drawPixmap(imgViewRect, movie->currentPixmap(), movie->frameRect());
+
+		painter->setOpacity(oldOp);
 	}
 
-	float oldOp = painter->opacity();
-	painter->setOpacity(opacity);
-
-	if (!movie || !movie->isValid())
-		painter->drawImage(imgViewRect, imgQt, imgQt.rect());
-	else
-		painter->drawPixmap(imgViewRect, movie->currentPixmap(), movie->frameRect());
-
-	painter->setOpacity(oldOp);
 	//qDebug() << "view rect: " << imgStorage.getImage().size()*imgMatrix.m11()*worldMatrix.m11() << " img rect: " << imgQt.size();
 }
 

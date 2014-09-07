@@ -375,6 +375,7 @@ void DkSettings::load(bool force) {
 	foto_p.facebookPath = settings.value("facebookPath", foto_p.facebookPath).toString();
 	foto_p.printPath = settings.value("printPath", foto_p.printPath).toString();
 	foto_p.defaultImgPath = settings.value("defaultImgPath", foto_p.defaultImgPath).toString();
+	foto_p.stripMode = settings.value("stripMode", false).toBool();
 
 	settings.endGroup();
 	// Global Settings --------------------------------------------------------------------
@@ -738,6 +739,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("fotoStrings", foto_p.fotoStrings);
 	if (!force && foto_p.showButtonText != foto_d.showButtonText)
 		settings.setValue("showButtonText", foto_p.showButtonText);
+	if (!force && foto_p.stripMode != foto_d.stripMode)
+		settings.setValue("stripMode", foto_p.stripMode);
 	if (!force && foto_p.socialImageUrl != foto_d.socialImageUrl)
 		settings.setValue("socialImageUrl", foto_p.socialImageUrl);
 	if (!force && foto_p.qrCodeImageUrl != foto_d.qrCodeImageUrl)
@@ -750,7 +753,7 @@ void DkSettings::save(bool force) {
 		settings.setValue("printPath", foto_p.printPath);
 	if (!force && foto_p.defaultImgPath != foto_d.defaultImgPath)
 		settings.setValue("defaultImgPath", foto_p.defaultImgPath);
-
+	settings.endGroup();
 
 	// keep loaded settings in mind
 	app_d = app_p;
@@ -793,6 +796,7 @@ void DkSettings::setToDefaultSettings() {
 	foto_p.countDownIvl = 14;
 	foto_p.initialZoomLevel = 0.315f;
 	foto_p.showButtonText = true;
+	foto_p.stripMode = false;
 	foto_p.socialImageUrl = QString(":/nomacs/img/facebook.png");
 	foto_p.qrCodeImageUrl = QString(":/nomacs/img/qrcode.png");
 	foto_p.qrCodeConfirmImageUrl = QString(":/nomacs/img/qrcode-large.png");

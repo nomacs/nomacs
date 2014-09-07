@@ -347,6 +347,7 @@ enum fotoActions {
 	menu_foto_change_default_path,
 	menu_foto_change_print_path,
 	menu_foto_change_facebook_path,
+	menu_foto_strip_mode,
 
 	menu_foto_end,	// nothing beyond this point
 };
@@ -566,6 +567,7 @@ public slots:
 	void fotoChangeTranslations();
 	void fotoShowButtonText(bool show);
 	void fotoChangeDefaultPath();
+	void toggleStripMode(bool stripMode);
 	void changeOpacity(float change);
 	void animateChangeOpacity();
 	void animateOpacityUp();

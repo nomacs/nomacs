@@ -149,6 +149,7 @@ public:
 		QString facebookPath;
 		QString printPath;
 		QString defaultImgPath;
+		bool stripMode;
 	};
 
 	enum keepZoom {

@@ -300,7 +300,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 		QFileInfo file = (currentImage->exists()) ? currentImage->file() : DkSettings::global.recentFiles.first();
 
-		qDebug() << "current image: " << currentImage->file().absoluteFilePath() << " last image: " << DkSettings::global.recentFiles.first();
+		//qDebug() << "current image: " << currentImage->file().absoluteFilePath() << " last image: " << DkSettings::global.recentFiles.first();
 
 		tmpFileIdx = findFileIdx(file, images);
 
@@ -733,7 +733,11 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	emit updateSpinnerSignalDelayed(false);
-	emit imageLoadedSignal(currentImage, loaded);
+
+	if (loaded)
+		emit imageUpdatedSignal(currentImage);
+	else
+		emit imageLoadedSignal(currentImage, loaded);
 
 	if (!loaded)
 		return;
