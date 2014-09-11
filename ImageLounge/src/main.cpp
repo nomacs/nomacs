@@ -144,7 +144,8 @@ int main(int argc, char *argv[]) {
 	qDebug() << "\n";
 	// DEBUG --------------------------------------------------------------------
 
-	qDebug() << "data location: " << QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).absolutePath();
+// 	qDebug() << "data location: " << QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).absolutePath();
+	qDebug() << "data location: " << QDir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName());
 	//QSettings settings;
 
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";

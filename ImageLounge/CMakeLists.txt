@@ -26,7 +26,7 @@ option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_WEBP "Compile with webP support (webP)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
-option(ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
+option(ENABLE_QT5 "Compile with Qt5 (Qt5)" ON)
 
 if(MSVC)
   option(ENABLE_UPNP "Compile with UPNP" ON)
