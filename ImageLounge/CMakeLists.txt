@@ -27,7 +27,7 @@ option(ENABLE_WEBP "Compile with webP support (webP)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 option(ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
-option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
+option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
 
 if(MSVC)
   option(ENABLE_UPNP "Compile with UPNP" ON)
@@ -45,8 +45,6 @@ endif()
 # find Qt
 NMC_FINDQT()
 
-# webp for all platforms
-#NMC_ENABLE_WEBP()
 
 if(MSVC)
 	include(${CMAKE_SOURCE_DIR}/cmake/Win.cmake)

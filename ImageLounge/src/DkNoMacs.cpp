@@ -95,7 +95,9 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	progressDialog = 0;
 	forceDialog = 0;
 	trainDialog = 0;
+#ifdef WITH_QUAZIP
 	archiveExtractionDialog = 0;
+#endif 
 	pluginManager = 0;
 	explorer = 0;
 	metaDataDock = 0;

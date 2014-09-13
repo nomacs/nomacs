@@ -60,6 +60,7 @@ macro(NMC_FINDQT)
 		
 		find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
 		
+		set(QT_LIBRARIES ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY})
 		include(${QT_USE_FILE})
 	else()
 		if(NOT QT_QMAKE_EXECUTABLE)
@@ -83,6 +84,7 @@ macro(NMC_FINDQT)
 		find_package(Qt5Concurrent)
 		
 		set(QT_INCLUDES ${Qt5Widgets_INCLUDE_DIRS} ${Qt5LinguistTools_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5PrintSupport_INCLUDE_DIRS} ${Qt5Concurrent_INCLUDE_DIRS})
+		set(QT_LIBRARIES ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${Qt5Concurrent_LIBRARIES} ${Qt5Core_LIBARIES} ${Qt5Gui_LIBRARIES} ${Qt5PrintSupport_LIBRARIES} ${Qt5Widgets_LIBRARIES})
 
 		message(STATUS "QT_INCLUDES: ${QT_INCLUDES}")
 		add_definitions(-DQT5)
