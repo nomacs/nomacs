@@ -162,7 +162,7 @@ QStringList DkSettings::getDefaultStrings() {
 	strings[foto_qrconfirm_url]	= "www.fb.com/fotojiffy";
 	
 	strings[foto_strip_finished]	= "Ihr Fotostreifen ist fertig!";
-	strings[foto_strip_choose]	= "W‰hlen Sie Ihren Streifen links im Viewer aus oder schieﬂen Sie vier neue Bilder";
+	strings[foto_strip_choose]	= "W‰hlen Sie Ihren Streifen links im\n Viewer aus oder schieﬂen Sie\n vier neue Bilder";
 	strings[foto_strip_show_in_viewer]	= "Streifen im Viewer anzeigen";
 	strings[foto_strip_new]	= "Neuen Streifen beginnen";
 	strings[foto_strip_status]	= "Status aktueller Fotostreifen:";
@@ -385,6 +385,7 @@ void DkSettings::load(bool force) {
 	foto_p.facebookPath = settings.value("facebookPath", foto_p.facebookPath).toString();
 	foto_p.printPath = settings.value("printPath", foto_p.printPath).toString();
 	foto_p.defaultImgPath = settings.value("defaultImgPath", foto_p.defaultImgPath).toString();
+	foto_p.stripPath = settings.value("stripPath", foto_p.stripPath).toString();
 	foto_p.stripMode = settings.value("stripMode", false).toBool();
 
 	settings.endGroup();
@@ -763,6 +764,9 @@ void DkSettings::save(bool force) {
 		settings.setValue("printPath", foto_p.printPath);
 	if (!force && foto_p.defaultImgPath != foto_d.defaultImgPath)
 		settings.setValue("defaultImgPath", foto_p.defaultImgPath);
+	if (!force && foto_p.stripPath != foto_d.stripPath)
+		settings.setValue("stripPath", foto_p.stripPath);
+
 	settings.endGroup();
 
 	// keep loaded settings in mind
@@ -811,6 +815,7 @@ void DkSettings::setToDefaultSettings() {
 	foto_p.qrCodeImageUrl = QString(":/nomacs/img/qrcode.png");
 	foto_p.qrCodeConfirmImageUrl = QString(":/nomacs/img/qrcode-large.png");
 	foto_p.defaultImgPath = QString("C:\\fotobox\\3_gallery_nomacs");
+	foto_p.stripPath = QString("C:\\fotobox\\Strip-Preview");
 	foto_p.printPath = QString("C:\\fotobox\\print");
 	foto_p.facebookPath = QString("C:\\fotobox\\facebook");
 

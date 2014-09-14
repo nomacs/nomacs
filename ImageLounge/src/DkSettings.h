@@ -158,6 +158,7 @@ public:
 		QString facebookPath;
 		QString printPath;
 		QString defaultImgPath;
+		QString stripPath;
 		bool stripMode;
 	};
 

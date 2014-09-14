@@ -700,6 +700,8 @@ void DkNoMacs::createMenu() {
 	fotoMenu->addAction(fotoActions[menu_foto_change_default_path]);
 	fotoMenu->addAction(fotoActions[menu_foto_change_print_path]);
 	fotoMenu->addAction(fotoActions[menu_foto_change_facebook_path]);
+	fotoMenu->addAction(fotoActions[menu_foto_change_strip_path]);
+	fotoMenu->addSeparator();
 	fotoMenu->addAction(fotoActions[menu_foto_strip_mode]);
 
 	// no sync menu in frameless view
@@ -1352,6 +1354,10 @@ void DkNoMacs::createActions() {
 	fotoActions[menu_foto_change_facebook_path] = new QAction(tr("Change S&ocial Media Path"), this);
 	fotoActions[menu_foto_change_facebook_path]->setStatusTip(tr("set the default image path"));
 	connect(fotoActions[menu_foto_change_facebook_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
+
+	fotoActions[menu_foto_change_strip_path] = new QAction(tr("Change S&trip Path"), this);
+	fotoActions[menu_foto_change_strip_path]->setStatusTip(tr("set the default strip image path"));
+	connect(fotoActions[menu_foto_change_strip_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
 
 	fotoActions[menu_foto_strip_mode] = new QAction(tr("Strip Mode"), this);
 	fotoActions[menu_foto_strip_mode]->setStatusTip(tr("foto strip mode"));
@@ -2298,6 +2304,10 @@ void DkNoMacs::fotoChangeDefaultPath() {
 		message = tr("Change the Social Media Path");
 		newPath = &DkSettings::fotojiffy.facebookPath;
 	}
+	else if (sender && sender == fotoActions[menu_foto_change_strip_path]) {
+		message = tr("Change the Strip Path");
+		newPath = &DkSettings::fotojiffy.stripPath;
+	}
 	else
 		return;
 
@@ -2553,6 +2563,7 @@ void DkNoMacs::showStripModeDock(bool show) {
 
 		stripModeDock = new DkStripDock(tr("Foto Strip"));
 		addDockWidget((Qt::DockWidgetArea)dockLocation, stripModeDock);
+		connect(stripModeDock, SIGNAL(loadLastImageSignal()), viewport(), SLOT(loadLast()));
 	}
 
 	stripModeDock->setVisible(show);
