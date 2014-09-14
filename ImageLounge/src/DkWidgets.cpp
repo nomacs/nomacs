@@ -163,10 +163,10 @@ void DkSocialConfirmDialog::createLayout() {
 	checkBox->setFlat(true);
 	connect(checkBox, SIGNAL(toggled(bool)), this, SLOT(confirmToggled(bool)));
 
-	okButton = new QPushButton(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_ok], this);
+	okButton = new QPushButton(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_confirm_ok], this);
 	//okButton->setFlat(true);
 	okButton->setObjectName("okButton");
-	cancelButton	= new QPushButton(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_cancel], this);
+	cancelButton	= new QPushButton(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_confirm_cancel], this);
 	cancelButton->setObjectName("cancelButton");
 	okButton->setStyleSheet(QString("QPushButton{background-color: #71c9c2; color: white; font: bold 14px;") +
 							QString("border: 0px; width: 130px; padding: 10px 0px 10px 0px; margin-bottom: 30px; margin-right: 30px}") +
@@ -182,7 +182,7 @@ void DkSocialConfirmDialog::createLayout() {
 	hLayout->addWidget(okButton);
 	buttonWidget->adjustSize();
 	
-	infoText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_confirm_text], this);
+	infoText = new QLabel(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_confirm_text], this);
 	infoText->setWordWrap(true);
 	infoText->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
 	infoText->setStyleSheet("QLabel{color: white; font: italic 12px; margin: 0 30 10 30;} QLabel::disabled{color: #d64949;}");
@@ -252,7 +252,7 @@ void DkSocialConfirmDialog::confirmToggled(bool checked) {
 
 void DkSocialConfirmDialog::on_okButton_clicked() {
 
-	emit saveImageSignal(DkSettings::foto.facebookPath);
+	emit saveImageSignal(DkSettings::fotojiffy.facebookPath);
 	hide();
 }
 
@@ -293,17 +293,17 @@ void DkQrCodeConfirmDialog::createLayout() {
 	cm->addAction(changeImage);
 	
 	imgLabel = new QLabel(this);
-	imgLabel->setPixmap(DkSettings::foto.qrCodeConfirmImageUrl);
+	imgLabel->setPixmap(DkSettings::fotojiffy.qrCodeConfirmImageUrl);
 	imgLabel->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
 	imgLabel->setStyleSheet("QLabel{margin-top: 0px;}");
 
-	infoText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_qrconfirm_info], this);
+	infoText = new QLabel(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_qrconfirm_info], this);
 	infoText->setWordWrap(true);
 	infoText->setFixedWidth(180);
 	infoText->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	infoText->setStyleSheet("QLabel{color: #8a8a8a; font: 12px; margin-left: 10px; margin-top: 0px;} QLabel::disabled{color: #d64949;}");
 
-	urlText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_qrconfirm_url], this);
+	urlText = new QLabel(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_qrconfirm_url], this);
 	urlText->setWordWrap(true);
 	urlText->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	urlText->setStyleSheet("QLabel{color: white; font: bold italic 12px; margin-left: 0px; margin-bottom: 10px; margin-top: 5px;} QLabel::disabled{color: #d64949;}");
@@ -357,7 +357,7 @@ void DkQrCodeConfirmDialog::changeImage() {
 	if (testP.isNull())
 		return;
 
-	DkSettings::foto.qrCodeConfirmImageUrl = fileName;
+	DkSettings::fotojiffy.qrCodeConfirmImageUrl = fileName;
 	imgLabel->setPixmap(fileName);
 
 	DkSettings::save();
@@ -437,11 +437,11 @@ void DkSocialButton::init() {
 	cm->addAction(changeImage);
 
 	if (mode == facebook) {
-		setPixmap(DkSettings::foto.socialImageUrl);
-		qDebug() << DkSettings::foto.socialImageUrl << " loaded...";
+		setPixmap(DkSettings::fotojiffy.socialImageUrl);
+		qDebug() << DkSettings::fotojiffy.socialImageUrl << " loaded...";
 	}
 	else if (mode == qrcode)
-		setPixmap(DkSettings::foto.qrCodeImageUrl);
+		setPixmap(DkSettings::fotojiffy.qrCodeImageUrl);
 	else
 		qDebug() << "mode: " << mode << " is not a known social media mode!";
 }
@@ -492,9 +492,9 @@ void DkSocialButton::changeImage() {
 		return;
 
 	if (mode == facebook)
-		DkSettings::foto.socialImageUrl = fileName;
+		DkSettings::fotojiffy.socialImageUrl = fileName;
 	else if (mode == qrcode)
-		DkSettings::foto.qrCodeImageUrl = fileName;
+		DkSettings::fotojiffy.qrCodeImageUrl = fileName;
 
 	setPixmap(fileName);
 
@@ -594,7 +594,7 @@ void DkFilePreview::init() {
 	xOffset = qRound(DkSettings::display.thumbSize*0.1f);
 	yOffset = qRound(DkSettings::display.thumbSize*0.1f);
 
-	if (DkSettings::foto.stripMode) {
+	if (DkSettings::fotojiffy.stripMode) {
 		xOffset = 20;
 		yOffset = 100;
 	}
@@ -655,14 +655,14 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (DkSettings::foto.stripMode && parent && minHeight != parent->height()-180) {
+	if (DkSettings::fotojiffy.stripMode && parent && minHeight != parent->height()-180) {
 
 		xOffset = 10;
 		yOffset = 100;
 		minHeight = parent->height()-180;
 		setFixedHeight(minHeight);
 	}
-	else if (!DkSettings::foto.stripMode && minHeight != DkSettings::display.thumbSize + yOffset) {
+	else if (!DkSettings::fotojiffy.stripMode && minHeight != DkSettings::display.thumbSize + yOffset) {
 
 		xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
@@ -675,7 +675,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	}
 	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
 	//resize(parent->width(), minHeight);
-	qDebug() << "painting thumbs...";
+	//qDebug() << "painting thumbs...";
 	QPainter painter(this);
 	painter.setBackground(bgCol);
 	
@@ -696,7 +696,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		return;
 	}
 
-	painter.setRenderHint(QPainter::SmoothPixmapTransform);
+	//painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	drawThumbs(&painter);
 
 	if (currentFileIdx != oldFileIdx && currentFileIdx >= 0) {
@@ -773,20 +773,20 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		bool isRightGradient = imgWorldRect.right() > rightGradient.start().x();
 
 		// create effect before gradient (otherwise the effect might be transparent : )
-		if ((idx == currentFileIdx || thumbs.at(idx)->isSelected()) && 
+		if (!DkSettings::fotojiffy.stripMode && (idx == currentFileIdx || thumbs.at(idx)->isSelected()) && 
 			(currentImg.isNull() || currentFileIdx != oldFileIdx || currentImg.width()-4 != r.width() || currentImg.height()-4 != r.height())) {
 			createCurrentImg(img);
 		}
 
-		// show that there are more images...
-		if (isLeftGradient)
-			drawFadeOut(leftGradient, imgWorldRect, &img);
-		if (isRightGradient)
-			drawFadeOut(rightGradient, imgWorldRect, &img);
+		//// show that there are more images...
+		//if (isLeftGradient)
+		//	drawFadeOut(leftGradient, imgWorldRect, &img);
+		//if (isRightGradient)
+		//	drawFadeOut(rightGradient, imgWorldRect, &img);
 		
-		if (idx == selected && !selectedImg.isNull())
-			painter->drawPixmap(r, selectedImg, QRect(QPoint(), selectedImg.size()));
-		else if (idx == currentFileIdx && !currentImg.isNull()) {
+		//if (idx == selected && !selectedImg.isNull())
+		//	painter->drawPixmap(r, selectedImg, QRect(QPoint(), selectedImg.size()));
+		/*else */if (idx == currentFileIdx && !currentImg.isNull()) {
 
 			QRectF sr = currentImg.rect();
 			sr.moveCenter(r.center());
@@ -795,11 +795,22 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		else {
 			float oldOp = painter->opacity();
 			
-			if (DkSettings::foto.stripMode)
+			if (DkSettings::fotojiffy.stripMode && idx != currentFileIdx)
 				painter->setOpacity(0.5);
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
 			painter->setOpacity(oldOp);
 		}
+		if (idx == currentFileIdx && DkSettings::fotojiffy.stripMode) {
+			
+			QPen oldPen = painter->pen();
+			QPen selectionPen(DkSettings::display.highlightColor);
+			selectionPen.setWidth(3);
+			painter->setPen(selectionPen);
+			//painter->setPen(DkSettings::display.highlightColor);
+			painter->drawRect(r);
+			painter->setPen(oldPen);
+		}
+
 		//painter->fillRect(QRect(0,0,200, 110), leftGradient);
 	}
 
@@ -837,7 +848,7 @@ void DkFilePreview::createCurrentImg(const QImage& img) {
 
 	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
 	
-	QSize effectSize = (DkSettings::foto.stripMode) ? QSize(4, 4) : QSize(2,2);
+	QSize effectSize = (DkSettings::fotojiffy.stripMode) ? QSize(4, 4) : QSize(2,2);
 
 	currentImg = QPixmap(r.width()+effectSize.width()*2, r.height()+effectSize.height()*2);
 #if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
@@ -872,7 +883,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	if (event->size() == event->oldSize() && this->width() == parent->width())
 		return;
 
-	minHeight = (DkSettings::foto.stripMode && parent) ? parent->height()-180 : DkSettings::display.thumbSize + yOffset;
+	minHeight = (DkSettings::fotojiffy.stripMode && parent) ? parent->height()-180 : DkSettings::display.thumbSize + yOffset;
 	setMinimumHeight(1);
 	setMaximumHeight(minHeight);
 
@@ -889,7 +900,7 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	rightGradient.setStart(QPoint(width()-borderTrigger, 0));
 	rightGradient.setFinalStop(QPoint(width(), 0));
 	
-	if (DkSettings::foto.stripMode)
+	if (DkSettings::fotojiffy.stripMode)
 		DkSettings::display.thumbSize = event->size().height()-yOffset;
 
 	//update();
@@ -977,37 +988,37 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		moveImageTimer->stop();
 
 	// select the current thumbnail
-	if (dx > borderTrigger*0.5) {
+	//if (dx > borderTrigger*0.5) {
 
-		int oldSelection = selected;
-		selected = -1;
+	//	int oldSelection = selected;
+	//	selected = -1;
 
-		// find out where the mouse is
-		for (int idx = 0; idx < thumbRects.size(); idx++) {
+	//	// find out where the mouse is
+	//	for (int idx = 0; idx < thumbRects.size(); idx++) {
 
-			if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
-				selected = idx;
+	//		if (worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
+	//			selected = idx;
 
-				if (selected <= thumbs.size() && selected >= 0) {
-					QSharedPointer<DkThumbNailT> thumb = thumbs.at(selected)->getThumb();
-					selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettings::display.highlightColor, 0.3f);
-				
-					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
-					//if (fileLabel->height() < height())
-					//	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
-					//setToolTip(thumb->getFile().fileName());
-					setStatusTip(thumb->getFile().fileName());
-				}
-				break;
-			}
-		}
+	//			if (selected <= thumbs.size() && selected >= 0) {
+	//				QSharedPointer<DkThumbNailT> thumb = thumbs.at(selected)->getThumb();
+	//				selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettings::display.highlightColor, 0.3f);
+	//			
+	//				// important: setText shows the label - if you then hide it here again you'll get a stack overflow
+	//				//if (fileLabel->height() < height())
+	//				//	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
+	//				//setToolTip(thumb->getFile().fileName());
+	//				setStatusTip(thumb->getFile().fileName());
+	//			}
+	//			break;
+	//		}
+	//	}
 
-		if (selected != -1 || selected != oldSelection)
-			update();
-		//else if (selected == -1)
-		//	fileLabel->hide();
-	}
-	else
+	//	if (selected != -1 || selected != oldSelection)
+	//		update();
+	//	//else if (selected == -1)
+	//	//	fileLabel->hide();
+	//}
+	//else
 		selected = -1;
 
 	//if (selected == -1)
@@ -3131,7 +3142,7 @@ void DkButton::init() {
 	mode = default_button;
 	setIcon(checkedIcon);
 
-	if (!checkedIcon.availableSizes().empty() && !DkSettings::foto.showButtonText)
+	if (!checkedIcon.availableSizes().empty() && !DkSettings::fotojiffy.showButtonText)
 		this->setMaximumSize(checkedIcon.availableSizes()[0]);	// crashes if the image is empty!!
 	else if (!checkedIcon.availableSizes().empty()) {
 		
@@ -3168,7 +3179,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 	painter.setOpacity(opacity);
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
-	if (!mySize.isEmpty() && DkSettings::foto.showButtonText && mode == print_button) {
+	if (!mySize.isEmpty() && DkSettings::fotojiffy.showButtonText && mode == print_button) {
 
 		offset = QPoint((float)(size().width()-mySize.width())*0.5f, (float)(size().height()-mySize.height())*0.5f+15);
 		s = mySize;
@@ -3198,7 +3209,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 
 	painter.drawPixmap(r, pm2draw);
 
-	if (DkSettings::foto.showButtonText && !text().isEmpty() && mode != default_button) {
+	if (DkSettings::fotojiffy.showButtonText && !text().isEmpty() && mode != default_button) {
 
 		// render text
 		QTextOption option;
@@ -3265,7 +3276,7 @@ void DkPrintButton::init() {
 	animationTimer->setSingleShot(true);
 	connect(animationTimer, SIGNAL(timeout()), this, SLOT(update()));
 
-	countDownNum = DkSettings::foto.countDownIvl;
+	countDownNum = DkSettings::fotojiffy.countDownIvl;
 	connect(this, SIGNAL(pressed()), this, SLOT(startCountDown()));
 	setObjectName("DkPrintButton");
 
@@ -3336,7 +3347,7 @@ void DkPrintButton::mouseReleaseEvent(QMouseEvent *event) {
 
 	// eat the events...
 	if (isChecked()) {
-		emit infoSignal(DkSettings::foto.fotoStrings[DkSettings::foto_info_still_printing], 2000);
+		emit infoSignal(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_still_printing], 2000);
 		return;
 	}
 
@@ -3360,7 +3371,7 @@ void DkPrintButton::startCountDown() {
 	if (isChecked())
 		return;
 
-	countDownNum = DkSettings::foto.countDownIvl;
+	countDownNum = DkSettings::fotojiffy.countDownIvl;
 	countDownTimer->start();
 	opacityUpVal = 0.0f;
 	opacityDownVal = 1.0f;
@@ -3641,19 +3652,19 @@ void DkPlayer::init() {
 	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(printPressed()));
 
 	QPixmap icon = QPixmap(":/nomacs/img/player-back.png");
-	previousButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_prev_img], this);
+	previousButton = new DkButton(icon, DkSettings::fotojiffy.fotoStrings[DkSettings::foto_prev_img], this);
 	previousButton->keepAspectRatio = false;
 	previousButton->setMode(DkButton::skip_button);
 	connect(previousButton, SIGNAL(pressed()), this, SLOT(previous()));
 
 	icon = QPixmap(":/nomacs/img/print.png");
 	QPixmap icon2 = QPixmap(":/nomacs/img/print-empty.png");
-	playButton = new DkPrintButton(icon2, icon, DkSettings::foto.fotoStrings[DkSettings::foto_print], this);
+	playButton = new DkPrintButton(icon2, icon, DkSettings::fotojiffy.fotoStrings[DkSettings::foto_print], this);
 	playButton->keepAspectRatio = false;
 	playButton->setChecked(false);
 	playButton->addAction(actions[play_action]);
 
-	if (DkSettings::foto.showButtonText) {
+	if (DkSettings::fotojiffy.showButtonText) {
 		QSize s = icon.size();
 		s.setHeight(s.height()+30);
 		playButton->setFixedSize(s);
@@ -3663,19 +3674,19 @@ void DkPlayer::init() {
 
 
 	icon = QPixmap(":/nomacs/img/player-next.png");
-	nextButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_next_img], this);
+	nextButton = new DkButton(icon, DkSettings::fotojiffy.fotoStrings[DkSettings::foto_next_img], this);
 	nextButton->keepAspectRatio = false;
 	nextButton->setMode(DkButton::skip_button);
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
 
 	icon = QPixmap(":/nomacs/img/player-last.png");
-	lastButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_last_img], this);
+	lastButton = new DkButton(icon, DkSettings::fotojiffy.fotoStrings[DkSettings::foto_last_img], this);
 	lastButton->keepAspectRatio = false;
 	lastButton->setMode(DkButton::skip_button);
 	connect(lastButton, SIGNAL(pressed()), this, SLOT(last()));
 
 	icon = QPixmap(":/nomacs/img/player-first.png");
-	firstButton = new DkButton(icon, DkSettings::foto.fotoStrings[DkSettings::foto_first_img], this);
+	firstButton = new DkButton(icon, DkSettings::fotojiffy.fotoStrings[DkSettings::foto_first_img], this);
 	firstButton->keepAspectRatio = false;
 	firstButton->setMode(DkButton::skip_button);
 	connect(firstButton, SIGNAL(pressed()), this, SLOT(first()));
@@ -3696,7 +3707,7 @@ void DkPlayer::init() {
 	//setMinimumSize(15, 5);
 	//setMaximumSize(570, 118);
 	
-	if (DkSettings::foto.showButtonText)
+	if (DkSettings::fotojiffy.showButtonText)
 		setFixedSize(510,148);	
 	else
 		setFixedSize(510,118);	

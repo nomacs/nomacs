@@ -674,7 +674,7 @@ public slots:
 	void printPressed() {
 		show();
 		if (!playButton->isChecked())
-			emit saveImageSignal(DkSettings::foto.printPath);
+			emit saveImageSignal(DkSettings::fotojiffy.printPath);
 	};
 
 	void autoNext() {

@@ -610,7 +610,7 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
-	if (!DkSettings::foto.stripMode) {
+	if (!DkSettings::fotojiffy.stripMode) {
 		QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
 
 		if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {

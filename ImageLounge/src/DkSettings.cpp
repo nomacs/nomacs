@@ -104,7 +104,7 @@ DkSettings::SlideShow& DkSettings::slideShow = DkSettings::getSlideShowSettings(
 DkSettings::Sync& DkSettings::sync = DkSettings::getSyncSettings();
 DkSettings::MetaData& DkSettings::metaData = DkSettings::getMetaDataSettings();
 DkSettings::Resources& DkSettings::resources = DkSettings::getResourceSettings();
-DkSettings::Foto& DkSettings::foto = DkSettings::getFotoSettings();
+DkSettings::Foto& DkSettings::fotojiffy = DkSettings::getFotoSettings();
 
 DkSettings::App& DkSettings::getAppSettings() {
 	return app_p;
@@ -160,6 +160,16 @@ QStringList DkSettings::getDefaultStrings() {
 	strings[foto_confirm_cancel]= "Abbrechen";
 	strings[foto_qrconfirm_info]= "Um den QR-Code lesen zu können benötigen Sie eine entsprechende App auf ihrem Smartphone oder Tablet. Sollten Sie keine App auf Ihrem Gerät installiert haben, können Sie die Webgalerie über den nachfolgenden Link aufrufen:";
 	strings[foto_qrconfirm_url]	= "www.fb.com/fotojiffy";
+	
+	strings[foto_strip_finished]	= "Ihr Fotostreifen ist fertig!";
+	strings[foto_strip_choose]	= "Wählen Sie Ihren Streifen links im Viewer aus oder schießen Sie vier neue Bilder";
+	strings[foto_strip_show_in_viewer]	= "Streifen im Viewer anzeigen";
+	strings[foto_strip_new]	= "Neuen Streifen beginnen";
+	strings[foto_strip_status]	= "Status aktueller Fotostreifen:";
+	strings[foto_strip_generating]	= "Ihr Fotostreifen wird generiert...";
+	strings[foto_strip_missing]	= "noch #Num Fotos schießen";
+	strings[foto_strip_reset]	= "Fotostreifen zurücksetzen";
+	strings[foto_strip_wait]	= "Ein Moment.";
 
 	return strings.toList();
 }
@@ -850,7 +860,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
-	display_p.fadeSec = 2.0f;
+	display_p.fadeSec = 0.0f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;

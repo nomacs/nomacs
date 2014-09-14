@@ -134,6 +134,15 @@ public:
 		foto_confirm_ok,
 		foto_qrconfirm_info,
 		foto_qrconfirm_url,
+		foto_strip_finished,
+		foto_strip_choose,
+		foto_strip_show_in_viewer,
+		foto_strip_new,
+		foto_strip_status,
+		foto_strip_generating,
+		foto_strip_missing,
+		foto_strip_reset,
+		foto_strip_wait,
 
 		foto_strings_end,
 	};
@@ -367,7 +376,7 @@ public:
 	static Sync& sync;
 	static MetaData& metaData;
 	static Resources& resources;
-	static Foto& foto;
+	static Foto& fotojiffy;
 
 protected:
 	static App app_p;

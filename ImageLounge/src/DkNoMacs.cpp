@@ -41,6 +41,7 @@
 #include "DkSettingsWidgets.h"
 #include "DkMessageBox.h"
 #include "DkMetaDataWidgets.h"
+#include "DkFotojiffy.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -101,6 +102,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	pluginManager = 0;
 	explorer = 0;
 	metaDataDock = 0;
+	stripModeDock = 0;
 	appManager = 0;
 	settingsDialog = 0;
 	printPreviewDialog = 0;
@@ -180,8 +182,6 @@ void DkNoMacs::init() {
 	viewport()->addActions(helpActions.toList());
 	viewport()->addActions(fotoActions.toList());
 
-
-
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
 		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
@@ -248,6 +248,8 @@ void DkNoMacs::init() {
 		}
 	}
 #endif // Q_WS_WIN
+
+	toggleStripMode(DkSettings::fotojiffy.stripMode);
 
 	QTimer::singleShot(0, this, SLOT(onWindowLoaded()));
 }
@@ -1328,7 +1330,7 @@ void DkNoMacs::createActions() {
 	fotoActions[menu_foto_show_button_text] = new QAction(tr("&Show Button Text"), this);
 	fotoActions[menu_foto_show_button_text]->setStatusTip(tr("if checked, the print buttons have text"));
 	fotoActions[menu_foto_show_button_text]->setCheckable(true);
-	fotoActions[menu_foto_show_button_text]->setChecked(DkSettings::foto.showButtonText);
+	fotoActions[menu_foto_show_button_text]->setChecked(DkSettings::fotojiffy.showButtonText);
 	connect(fotoActions[menu_foto_show_button_text], SIGNAL(toggled(bool)), this, SLOT(fotoShowButtonText(bool)));
 
 	fotoActions[menu_foto_interval] = new QAction(tr("&Print Timer"), this);
@@ -1354,7 +1356,7 @@ void DkNoMacs::createActions() {
 	fotoActions[menu_foto_strip_mode] = new QAction(tr("Strip Mode"), this);
 	fotoActions[menu_foto_strip_mode]->setStatusTip(tr("foto strip mode"));
 	fotoActions[menu_foto_strip_mode]->setCheckable(true);
-	fotoActions[menu_foto_strip_mode]->setChecked(DkSettings::foto.stripMode);
+	fotoActions[menu_foto_strip_mode]->setChecked(DkSettings::fotojiffy.stripMode);
 	connect(fotoActions[menu_foto_strip_mode], SIGNAL(triggered(bool)), this, SLOT(toggleStripMode(bool)));
 
 	// help menu
@@ -2259,7 +2261,7 @@ void DkNoMacs::opacityUp() {
 
 void DkNoMacs::fotoShowButtonText(bool show) {
 
-	DkSettings::foto.showButtonText = show;
+	DkSettings::fotojiffy.showButtonText = show;
 	DkSettings::save();
 	restart();
 }
@@ -2286,15 +2288,15 @@ void DkNoMacs::fotoChangeDefaultPath() {
 
 	if (sender && sender == fotoActions[menu_foto_change_default_path]) {
 		message = tr("Change the Default Path");
-		newPath = &DkSettings::foto.defaultImgPath;
+		newPath = &DkSettings::fotojiffy.defaultImgPath;
 	}
 	else if (sender && sender == fotoActions[menu_foto_change_print_path]) {
 		message = tr("Change the Print Path");
-		newPath = &DkSettings::foto.printPath;
+		newPath = &DkSettings::fotojiffy.printPath;
 	}
 	else if (sender && sender == fotoActions[menu_foto_change_facebook_path]) {
 		message = tr("Change the Social Media Path");
-		newPath = &DkSettings::foto.facebookPath;
+		newPath = &DkSettings::fotojiffy.facebookPath;
 	}
 	else
 		return;
@@ -2317,28 +2319,30 @@ void DkNoMacs::fotoChangeDefaultPath() {
 
 void DkNoMacs::toggleStripMode(bool stripMode) {
 
-	DkSettings::foto.stripMode = stripMode;
+	DkSettings::fotojiffy.stripMode = stripMode;
 
 	viewport()->updateImage(viewport()->getImageLoader()->getCurrentImage());
 	viewport()->getController()->getFilePreview()->update();
+
+	showStripModeDock(stripMode);
 }
 
 void DkNoMacs::fotoIntervalTimer() {
 
 	bool ok = false;
-	int countDownIvl = QInputDialog::getInteger(this, tr("Print Button Interval"), tr("Seconds:"), DkSettings::foto.countDownIvl, 1, 1000, 1, &ok);
+	int countDownIvl = QInputDialog::getInteger(this, tr("Print Button Interval"), tr("Seconds:"), DkSettings::fotojiffy.countDownIvl, 1, 1000, 1, &ok);
 
 	if (ok)
-		DkSettings::foto.countDownIvl = countDownIvl;
+		DkSettings::fotojiffy.countDownIvl = countDownIvl;
 }
 
 void DkNoMacs::fotoInitialZoomLevel() {
 
 	bool ok = false;
-	float initialZoomLevel = QInputDialog::getDouble(this, tr("Initial Zoom Level"), tr("Set Initial Zoom Level:"), DkSettings::foto.initialZoomLevel*100.0f, 0.5, 3000, 2, &ok);
+	float initialZoomLevel = QInputDialog::getDouble(this, tr("Initial Zoom Level"), tr("Set Initial Zoom Level:"), DkSettings::fotojiffy.initialZoomLevel*100.0f, 0.5, 3000, 2, &ok);
 
 	if (ok) {
-		DkSettings::foto.initialZoomLevel = initialZoomLevel/100.0f;
+		DkSettings::fotojiffy.initialZoomLevel = initialZoomLevel/100.0f;
 		viewport()->updateImage(viewport()->getImageLoader()->getCurrentImage());
 	}
 }
@@ -2537,6 +2541,21 @@ void DkNoMacs::showMetaDataDock(bool show) {
 
 	if (viewport()->getImageLoader()->hasFile())
 		metaDataDock->setImage(viewport()->getImageLoader()->getCurrentImage());
+
+}
+
+void DkNoMacs::showStripModeDock(bool show) {
+
+	if (!stripModeDock) {
+		// get last location
+		QSettings& settings = Settings::instance().getSettings();
+		int dockLocation = settings.value("stripModeDockLocation", Qt::RightDockWidgetArea).toInt();
+
+		stripModeDock = new DkStripDock(tr("Foto Strip"));
+		addDockWidget((Qt::DockWidgetArea)dockLocation, stripModeDock);
+	}
+
+	stripModeDock->setVisible(show);
 
 }
 

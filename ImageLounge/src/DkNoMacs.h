@@ -104,6 +104,7 @@ class DkArchiveExtractionDialog;
 #endif
 class DkExplorer;
 class DkMetaDataDock;
+class DkStripDock;
 class DkExportTiffDialog;
 class DkImageManipulationDialog;
 class DkUpdater;
@@ -520,6 +521,7 @@ public slots:
 	void openSettings();
 	void showExplorer(bool show);
 	void showMetaDataDock(bool show);
+	void showStripModeDock(bool show);
 	void showRecentFiles(bool show = true);
 	void openDir();
 	void openFile();
@@ -727,6 +729,7 @@ protected:
 #endif
 	DkExplorer* explorer;
 	DkMetaDataDock* metaDataDock;
+	DkStripDock* stripModeDock;
 	DkExportTiffDialog* exportTiffDialog;
 	DkSettingsDialog* settingsDialog;
 	DkThumbsSaver* thumbSaver;

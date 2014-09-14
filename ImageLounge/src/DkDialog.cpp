@@ -829,7 +829,7 @@ void DkChangeTranslationDialog::accept() {
 	settings.setValue("origFotoStrings", origStrings);
 	settings.endGroup();
 	
-	DkSettings::foto.fotoStrings = strings;
+	DkSettings::fotojiffy.fotoStrings = strings;
 	DkSettings::save();
 
 	QDialog::accept();
@@ -843,7 +843,7 @@ QList<QStandardItem* > DkChangeTranslationDialog::getItems(int idx) {
 	//item->setFlags(Qt::ItemIsSelectable);
 	
 	items.append(item);
-	item = new QStandardItem(DkSettings::foto.fotoStrings[idx]);
+	item = new QStandardItem(DkSettings::fotojiffy.fotoStrings[idx]);
 	item->setFlags(item->flags() | Qt::ItemIsEditable);
 	//item->setFlags(Qt::ItemIsSelectable);
 	items.append(item);

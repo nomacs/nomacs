@@ -55,13 +55,13 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	socialButton = new DkSocialButton(DkSocialButton::facebook, this);
 	socialButton->setStyleSheet("QLabel{margin-right: 30px;}");
-	socialButtonText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_social_media], this);
+	socialButtonText = new QLabel(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_social_media], this);
 	socialButtonText->setStyleSheet("QLabel{color: #FFFFFF; margin-bottom: 30px; margin-right: 30px;}");
 	socialButtonText->hide();
 
 	qrCode = new DkSocialButton(DkSocialButton::qrcode, this);
 	qrCode->setStyleSheet("QLabel{margin-left: 30px;}");
-	qrCodeText = new QLabel(DkSettings::foto.fotoStrings[DkSettings::foto_qr_code], this);
+	qrCodeText = new QLabel(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_qr_code], this);
 	qrCodeText->setStyleSheet("QLabel{color: #FFFFFF; margin-bottom: 30px; margin-left: 30px;}");
 	qrCodeText->hide();
 
@@ -1275,7 +1275,7 @@ void DkViewPort::updateImageMatrix() {
 		worldMatrix.translate(dx, dy);
 	}
 
-	float newZoom = DkSettings::foto.initialZoomLevel/imgMatrix.m11();
+	float newZoom = DkSettings::fotojiffy.initialZoomLevel/imgMatrix.m11();
 
 	if (parent && parent->isFullScreen() && DkSettings::display.keepZoom == DkSettings::zoom_never_keep && newZoom < worldMatrix.m11()) {
 		worldMatrix.reset();	// overrides keep zoom ?!
@@ -1395,7 +1395,7 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 		// TODO: if fading is active we interpolate with background instead of the other image
 		draw(&painter, 1.0f-fadeOpacity);
 
-		if (/*fadeTimer->isActive() && */!DkSettings::foto.stripMode && !fadeBuffer.isNull()) {
+		if (/*fadeTimer->isActive() && */!DkSettings::fotojiffy.stripMode && !fadeBuffer.isNull()) {
 			float oldOp = painter.opacity();
 			painter.setOpacity(fadeOpacity);
 			painter.drawImage(fadeImgViewRect, fadeBuffer, fadeBuffer.rect());

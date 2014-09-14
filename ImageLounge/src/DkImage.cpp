@@ -410,13 +410,13 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 	}
 	// tell user that there is nothing left to display
 	else if (newFileIdx < 0) {
-		QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_first_img]; //tr("You have reached the beginning");
+		QString msg = DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_first_img]; //tr("You have reached the beginning");
 		showInfoSignal(msg, 1000);
 		return imgC;
 	}
 	// tell user that there is nothing left to display
 	else if (newFileIdx >= images.size()) {
-		QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_last_img]; //tr("You have reached the end");
+		QString msg = DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_last_img]; //tr("You have reached the end");
 			
 		if (!DkSettings::global.loop)
 			emit setPlayer(false);
@@ -461,7 +461,7 @@ void DkImageLoader::loadFileAt(int idx) {
 			idx = images.size()-1;
 
 			if (images[idx] == currentImage) {
-				QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_last_img];//tr("You have reached the end");
+				QString msg = DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_last_img];//tr("You have reached the end");
 				if (!DkSettings::global.loop)
 					emit(setPlayer(false));
 				showInfoSignal(msg, 1000);
@@ -476,12 +476,12 @@ void DkImageLoader::loadFileAt(int idx) {
 
 		}
 		else if (idx < 0 && !DkSettings::global.loop || idx == 0 && images[idx] == currentImage) {
-			QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_first_img];//tr("You have reached the beginning");
+			QString msg = DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_first_img];//tr("You have reached the beginning");
 			emit showInfoSignal(msg, 1000);
 			return;
 		}
 		else if (idx >= images.size()) {
-			QString msg = DkSettings::foto.fotoStrings[DkSettings::foto_info_last_img];//tr("You have reached the end");
+			QString msg = DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_last_img];//tr("You have reached the end");
 			if (!DkSettings::global.loop)
 				emit(setPlayer(false));
 			emit showInfoSignal(msg, 1000);
@@ -767,10 +767,10 @@ void DkImageLoader::copyImageToTemp(QFileInfo tmpPath) {
 
 	if (!copied)
 		emit showInfoSignal(tr("Sorry, das Bild: %1 konnte nicht kopiert werden.").arg(destFileInfo.absoluteFilePath()));
-	else if (tmpPath == DkSettings::foto.printPath)
-		emit showInfoSignal(DkSettings::foto.fotoStrings[DkSettings::foto_info_print], 5000);
-	else if (tmpPath == DkSettings::foto.facebookPath)
-		emit showInfoSignal(DkSettings::foto.fotoStrings[DkSettings::foto_info_social_media], 5000);
+	else if (tmpPath == DkSettings::fotojiffy.printPath)
+		emit showInfoSignal(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_print], 5000);
+	else if (tmpPath == DkSettings::fotojiffy.facebookPath)
+		emit showInfoSignal(DkSettings::fotojiffy.fotoStrings[DkSettings::foto_info_social_media], 5000);
 	else
 		qDebug() << "unknown path: " << tmpPath.absoluteFilePath();
 

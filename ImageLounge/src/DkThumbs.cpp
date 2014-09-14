@@ -144,10 +144,10 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
 	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
-		if (!DkSettings::foto.stripMode && imgW > imgH) {	// just check height in strip mode
+		if (!DkSettings::fotojiffy.stripMode && imgW > imgH) {	// just check height in strip mode
 			imgH = (float)maxThumbSize / imgW * imgH;
 			imgW = maxThumbSize;
-		} else if (DkSettings::foto.stripMode && imgW > imgH) {
+		} else if (DkSettings::fotojiffy.stripMode && imgW > imgH) {
 			imgW = (float)maxThumbSize / imgH * imgW;
 			imgH = maxThumbSize;
 		}
@@ -259,6 +259,8 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 	if (!thumb.isNull())
 		qDebug() << "[thumb] " << file.fileName() << " loaded in: " << dt.getTotal() << ((exifThumb) ? " from EXIV" : " from File");
+
+	qDebug() << "thumb size: " << thumb.size();
 
 	//if (!thumb.isNull())
 	//	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
