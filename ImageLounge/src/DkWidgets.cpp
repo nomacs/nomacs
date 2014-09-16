@@ -657,7 +657,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 	if (DkSettings::fotojiffy.stripMode && parent && minHeight != parent->height()-180) {
 
-		xOffset = 10;
+		xOffset = 20;
 		yOffset = 100;
 		minHeight = parent->height()-180;
 		setFixedHeight(minHeight);
@@ -668,7 +668,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 		
 		minHeight = DkSettings::display.thumbSize + yOffset;
-		setMaximumHeight(minHeight);
+		setFixedHeight(minHeight);
 
 		//if (fileLabel->height() >= height() && fileLabel->isVisible())
 		//	fileLabel->hide();
@@ -765,7 +765,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		if (thumb->hasImage() == DkThumbNail::not_loaded && 
 			DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading) {
-			thumb->fetchThumb();
+			thumb->setMinThumbSize(DkSettings::display.thumbSize);
+				thumb->fetchThumb();
 			connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
 		}
 
@@ -779,15 +780,15 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		}
 
 		//// show that there are more images...
-		//if (isLeftGradient)
-		//	drawFadeOut(leftGradient, imgWorldRect, &img);
-		//if (isRightGradient)
-		//	drawFadeOut(rightGradient, imgWorldRect, &img);
+		if (isLeftGradient && !DkSettings::fotojiffy.stripMode)
+			drawFadeOut(leftGradient, imgWorldRect, &img);
+		if (isRightGradient && !DkSettings::fotojiffy.stripMode)
+			drawFadeOut(rightGradient, imgWorldRect, &img);
 		
 		//if (idx == selected && !selectedImg.isNull())
 		//	painter->drawPixmap(r, selectedImg, QRect(QPoint(), selectedImg.size()));
 		/*else */if (idx == currentFileIdx && !currentImg.isNull()) {
-
+			
 			QRectF sr = currentImg.rect();
 			sr.moveCenter(r.center());
 			painter->drawPixmap(sr, currentImg, QRect(QPoint(), currentImg.size()));
@@ -801,14 +802,17 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			painter->setOpacity(oldOp);
 		}
 		if (idx == currentFileIdx && DkSettings::fotojiffy.stripMode) {
-			
+
 			QPen oldPen = painter->pen();
+			QBrush oldBrush = painter->brush();
 			QPen selectionPen(DkSettings::display.highlightColor);
 			selectionPen.setWidth(3);
+			painter->setBrush(QColor(0,0,0,0));
 			painter->setPen(selectionPen);
 			//painter->setPen(DkSettings::display.highlightColor);
 			painter->drawRect(r);
 			painter->setPen(oldPen);
+			painter->setBrush(oldBrush);
 		}
 
 		//painter->fillRect(QRect(0,0,200, 110), leftGradient);
@@ -1207,6 +1211,41 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thu
 void DkFilePreview::setVisible(bool visible) {
 
 	DkWidget::setVisible(visible);
+}
+
+void DkFilePreview::toggleStripMode(bool stripMode /* = false */) {
+
+	selectedImg = QPixmap();
+	currentImg = QPixmap();
+	minHeight = 0;
+
+	if (DkSettings::fotojiffy.stripMode) {
+
+		DkSettings::display.thumbSize = height()-yOffset;
+
+		xOffset = 20;
+		yOffset = 100;
+		minHeight = parent->height()-180;
+		setFixedHeight(minHeight);
+	}
+	else if (!DkSettings::fotojiffy.stripMode) {
+
+		DkSettings::display.thumbSize = DkSettings::display.thumbSizeNormal;
+
+		xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
+		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
+
+		qDebug() << "thunmb size: " << DkSettings::display.thumbSize;
+
+		minHeight = DkSettings::display.thumbSize + yOffset;
+		setFixedHeight(minHeight);
+
+		//if (fileLabel->height() >= height() && fileLabel->isVisible())
+		//	fileLabel->hide();
+	}
+
+
+	update();
 }
 
 // DkThumbLabel --------------------------------------------------------------------

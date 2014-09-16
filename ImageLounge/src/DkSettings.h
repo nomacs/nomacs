@@ -159,6 +159,7 @@ public:
 		QString printPath;
 		QString defaultImgPath;
 		QString stripPath;
+		QString stripTmpPath;
 		bool stripMode;
 	};
 
@@ -213,6 +214,7 @@ public:
 		bool useDefaultColor;
 		bool defaultIconColor;
 		int thumbSize;
+		int thumbSizeNormal;
 		int thumbPreviewSize;
 		//bool saveThumb;
 		int interpolateZoomLevel;

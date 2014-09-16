@@ -701,6 +701,7 @@ void DkNoMacs::createMenu() {
 	fotoMenu->addAction(fotoActions[menu_foto_change_print_path]);
 	fotoMenu->addAction(fotoActions[menu_foto_change_facebook_path]);
 	fotoMenu->addAction(fotoActions[menu_foto_change_strip_path]);
+	fotoMenu->addAction(fotoActions[menu_foto_change_strip_tmp_path]);
 	fotoMenu->addSeparator();
 	fotoMenu->addAction(fotoActions[menu_foto_strip_mode]);
 
@@ -1358,6 +1359,10 @@ void DkNoMacs::createActions() {
 	fotoActions[menu_foto_change_strip_path] = new QAction(tr("Change S&trip Path"), this);
 	fotoActions[menu_foto_change_strip_path]->setStatusTip(tr("set the default strip image path"));
 	connect(fotoActions[menu_foto_change_strip_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
+
+	fotoActions[menu_foto_change_strip_tmp_path] = new QAction(tr("Change S&trip Temp Path"), this);
+	fotoActions[menu_foto_change_strip_tmp_path]->setStatusTip(tr("set the default strip temp path (pictures of strips are copied there)"));
+	connect(fotoActions[menu_foto_change_strip_tmp_path], SIGNAL(triggered()), this, SLOT(fotoChangeDefaultPath()));
 
 	fotoActions[menu_foto_strip_mode] = new QAction(tr("Strip Mode"), this);
 	fotoActions[menu_foto_strip_mode]->setStatusTip(tr("foto strip mode"));
@@ -2308,6 +2313,10 @@ void DkNoMacs::fotoChangeDefaultPath() {
 		message = tr("Change the Strip Path");
 		newPath = &DkSettings::fotojiffy.stripPath;
 	}
+	else if (sender && sender == fotoActions[menu_foto_change_strip_tmp_path]) {
+		message = tr("Change the Strip Temp Path");
+		newPath = &DkSettings::fotojiffy.stripTmpPath;
+	}
 	else
 		return;
 
@@ -2331,10 +2340,12 @@ void DkNoMacs::toggleStripMode(bool stripMode) {
 
 	DkSettings::fotojiffy.stripMode = stripMode;
 
-	viewport()->updateImage(viewport()->getImageLoader()->getCurrentImage());
-	viewport()->getController()->getFilePreview()->update();
+	//viewport()->updateImage(viewport()->getImageLoader()->getCurrentImage());
+	viewport()->getController()->getFilePreview()->toggleStripMode(stripMode);
 
 	showStripModeDock(stripMode);
+
+	viewport()->getImageLoader()->reloadImage();
 }
 
 void DkNoMacs::fotoIntervalTimer() {

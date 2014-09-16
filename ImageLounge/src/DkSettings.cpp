@@ -386,6 +386,7 @@ void DkSettings::load(bool force) {
 	foto_p.printPath = settings.value("printPath", foto_p.printPath).toString();
 	foto_p.defaultImgPath = settings.value("defaultImgPath", foto_p.defaultImgPath).toString();
 	foto_p.stripPath = settings.value("stripPath", foto_p.stripPath).toString();
+	foto_p.stripTmpPath = settings.value("stripTmpPath", foto_p.stripTmpPath).toString();
 	foto_p.stripMode = settings.value("stripMode", false).toBool();
 
 	settings.endGroup();
@@ -425,6 +426,7 @@ void DkSettings::load(bool force) {
 
 	display_p.bgColorFrameless = QColor::fromRgba(settings.value("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba()).toInt());
 	display_p.thumbSize = settings.value("thumbSize", display_p.thumbSize).toInt();
+	display_p.thumbSizeNormal = display_p.thumbSize;
 	display_p.thumbPreviewSize = settings.value("thumbPreviewSize", display_p.thumbPreviewSize).toInt();
 	//display_p.saveThumb = settings.value("saveThumb", display_p.saveThumb).toBool();
 	display_p.antiAliasing = settings.value("antiAliasing", display_p.antiAliasing).toBool();
@@ -626,7 +628,7 @@ void DkSettings::save(bool force) {
 		settings.setValue("iconColorRGBA", display_p.iconColor.rgba());
 	if (!force && display_p.bgColorFrameless != display_d.bgColorFrameless)
 		settings.setValue("bgColorFramelessRGBA", display_p.bgColorFrameless.rgba());
-	if (!force && display_p.thumbSize != display_d.thumbSize)
+	if (!force && display_p.thumbSize != display_d.thumbSize && !DkSettings::fotojiffy.stripMode)
 		settings.setValue("thumbSize", display_p.thumbSize);
 	if (!force && display_p.thumbPreviewSize != display_d.thumbPreviewSize)
 		settings.setValue("thumbPreviewSize", display_p.thumbPreviewSize);
@@ -766,6 +768,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("defaultImgPath", foto_p.defaultImgPath);
 	if (!force && foto_p.stripPath != foto_d.stripPath)
 		settings.setValue("stripPath", foto_p.stripPath);
+	if (!force && foto_p.stripTmpPath != foto_d.stripTmpPath)
+		settings.setValue("stripTmpPath", foto_p.stripTmpPath);
 
 	settings.endGroup();
 
@@ -816,6 +820,7 @@ void DkSettings::setToDefaultSettings() {
 	foto_p.qrCodeConfirmImageUrl = QString(":/nomacs/img/qrcode-large.png");
 	foto_p.defaultImgPath = QString("C:\\fotobox\\3_gallery_nomacs");
 	foto_p.stripPath = QString("C:\\fotobox\\Strip-Preview");
+	foto_p.stripTmpPath = QString("C:\\fotobox\\Strip-Temp");
 	foto_p.printPath = QString("C:\\fotobox\\print");
 	foto_p.facebookPath = QString("C:\\fotobox\\facebook");
 
@@ -857,6 +862,7 @@ void DkSettings::setToDefaultSettings() {
 	//display_p.bgColor = QColor(219, 89, 2, 255);
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;
+	display_p.thumbSizeNormal = display_p.thumbSize;
 	display_p.thumbPreviewSize = 64;
 	//display_p.saveThumb = false;
 	display_p.antiAliasing = true;

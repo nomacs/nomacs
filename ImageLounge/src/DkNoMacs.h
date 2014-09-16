@@ -347,6 +347,7 @@ enum fotoActions {
 	menu_foto_show_button_text,
 	menu_foto_change_default_path,
 	menu_foto_change_strip_path,
+	menu_foto_change_strip_tmp_path,
 	menu_foto_change_print_path,
 	menu_foto_change_facebook_path,
 	menu_foto_strip_mode,

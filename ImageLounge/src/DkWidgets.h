@@ -758,6 +758,7 @@ public slots:
 	void updateFileIdx(int fileIdx);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 	void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
+	void toggleStripMode(bool stripMode = false);
 
 signals:
 	void loadFileSignal(QFileInfo file);
