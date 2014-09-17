@@ -282,7 +282,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	highlightColorChooser = new DkColorChooser(QColor(0, 204, 255), tr("Highlight Color"), this);
 	highlightColorChooser->setColor(DkSettings::display.highlightColor);
 
-	iconColorChooser = new DkColorChooser(QColor(219, 89, 2, 255), tr("Icon Color"), this);
+	iconColorChooser = new DkColorChooser(QColor(114, 201, 193, 255), tr("Strip Color"), this);
 	iconColorChooser->setColor(DkSettings::display.iconColor);
 	connect(iconColorChooser, SIGNAL(resetClicked()), this, SLOT(iconColorReset()));
 

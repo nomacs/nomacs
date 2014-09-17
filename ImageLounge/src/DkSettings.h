@@ -155,6 +155,7 @@ public:
 		QString socialImageUrl;
 		QString qrCodeImageUrl;
 		QString qrCodeConfirmImageUrl;
+		QString resetStripUrl;
 		QString facebookPath;
 		QString printPath;
 		QString defaultImgPath;

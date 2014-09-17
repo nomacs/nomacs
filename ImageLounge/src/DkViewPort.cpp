@@ -29,6 +29,8 @@
 
 #include "DkNoMacs.h"	// currently needed for some enums
 
+#include "DkFotojiffy.h"
+
 namespace nmc {
 
 // DkControlWidget --------------------------------------------------------------------

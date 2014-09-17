@@ -86,6 +86,10 @@
 
 namespace nmc {
 
+class DkSocialButton;
+class DkSocialConfirmDialog;
+class DkQrCodeConfirmDialog;
+
 class DkDelayedInfo : public QObject {
 	Q_OBJECT
 

@@ -382,6 +382,7 @@ void DkSettings::load(bool force) {
 	foto_p.socialImageUrl = settings.value("socialImageUrl", foto_p.socialImageUrl).toString();
 	foto_p.qrCodeImageUrl = settings.value("qrCodeImageUrl", foto_p.qrCodeImageUrl).toString();
 	foto_p.qrCodeConfirmImageUrl = settings.value("qrCodeConfirmImageUrl", foto_p.qrCodeConfirmImageUrl).toString();
+	foto_p.resetStripUrl = settings.value("resetStripUrl", foto_p.resetStripUrl).toString();
 	foto_p.facebookPath = settings.value("facebookPath", foto_p.facebookPath).toString();
 	foto_p.printPath = settings.value("printPath", foto_p.printPath).toString();
 	foto_p.defaultImgPath = settings.value("defaultImgPath", foto_p.defaultImgPath).toString();
@@ -760,6 +761,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("qrCodeImageUrl", foto_p.qrCodeImageUrl);
 	if (!force && foto_p.qrCodeConfirmImageUrl != foto_d.qrCodeConfirmImageUrl)
 		settings.setValue("qrCodeConfirmImageUrl", foto_p.qrCodeConfirmImageUrl);
+	if (!force && foto_p.resetStripUrl != foto_d.resetStripUrl)
+		settings.setValue("resetStripUrl", foto_p.resetStripUrl);
 	if (!force && foto_p.facebookPath != foto_d.facebookPath)
 		settings.setValue("facebookPath", foto_p.facebookPath);
 	if (!force && foto_p.printPath != foto_d.printPath)
@@ -818,6 +821,7 @@ void DkSettings::setToDefaultSettings() {
 	foto_p.socialImageUrl = QString(":/nomacs/img/facebook.png");
 	foto_p.qrCodeImageUrl = QString(":/nomacs/img/qrcode.png");
 	foto_p.qrCodeConfirmImageUrl = QString(":/nomacs/img/qrcode-large.png");
+	foto_p.resetStripUrl = QString(":/nomacs/img/reset-strip.png");
 	foto_p.defaultImgPath = QString("C:\\fotobox\\3_gallery_nomacs");
 	foto_p.stripPath = QString("C:\\fotobox\\Strip-Preview");
 	foto_p.stripTmpPath = QString("C:\\fotobox\\Strip-Temp");
@@ -858,7 +862,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.bgColorWidget = QColor(0, 0, 0, 100);
 	display_p.bgColor = QColor(100, 100, 100, 255);
-	display_p.iconColor = QColor(100,100,100,255);
+	display_p.iconColor = QColor(114,201,193,255);
 	//display_p.bgColor = QColor(219, 89, 2, 255);
 	display_p.bgColorFrameless = QColor(0, 0, 0, 180);
 	display_p.thumbSize = 64;

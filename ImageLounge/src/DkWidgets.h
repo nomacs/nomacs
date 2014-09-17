@@ -139,6 +139,8 @@ public:
 		return hiding;
 	};
 
+	void setReallyHide(bool reallyHide = false);
+
 
 signals:
 	void visibleSignal(bool visible);
@@ -157,6 +159,7 @@ protected:
 	bool blocked;
 	bool hiding;
 	bool showing;
+	bool reallyHide;
 
 	QGraphicsOpacityEffect* opacityEffect;
 	QBitArray* displaySettingsBits;
@@ -164,126 +167,6 @@ protected:
 	// functions
 	void init();
 };
-
-class DkSocialConfirmDialog : public DkWidget {
-	Q_OBJECT
-
-public:
-	DkSocialConfirmDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
-public slots:
-	void show();
-	void toggleShow();
-
-signals:
-	void saveImageSignal(QFileInfo path);
-
-protected slots:
-	void confirmToggled(bool checked);
-	void on_okButton_clicked();
-	void on_cancelButton_clicked();
-	
-protected:
-	QLabel* infoText;
-	QPushButton* okButton;
-	QPushButton* cancelButton;
-	QPushButton* checkBox;
-
-	void createLayout();
-	void paintEvent(QPaintEvent *event);
-};
-
-class DkQrCodeConfirmDialog : public DkWidget {
-	Q_OBJECT
-
-public:
-	DkQrCodeConfirmDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
-public slots:
-	void changeImage();
-	void toggleShow();
-
-protected:
-	QLabel* infoText;
-	QLabel* urlText;
-	QLabel* imgLabel;
-	QMenu* cm;
-
-	void createLayout();
-	void paintEvent(QPaintEvent *event);
-	void contextMenuEvent(QContextMenuEvent *event);
-};
-
-class DkSocialButton : public QLabel {
-	Q_OBJECT
-
-public:
-	enum mode {
-		facebook,
-		qrcode,
-
-		mode_end
-	};
-	
-	DkSocialButton(int mode, QWidget* parent = 0, Qt::WFlags flags = 0);
-
-	void registerAction(QAction* action) {
-		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
-	};
-
-	void setDisplaySettings(QBitArray* displayBits) {
-		displaySettingsBits = displayBits;
-	};
-
-	bool getCurrentDisplaySetting() {
-
-		if (!displaySettingsBits)
-			return false;
-
-		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
-			return false;
-		}
-
-		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
-	};
-
-	bool isHiding() const {
-		return hiding;
-	};
-
-
-signals:
-	void visibleSignal(bool visible);
-	void showConfirmDialogSignal();
-
-public slots:
-	virtual void show();
-	virtual void hide();
-	virtual void setVisible(bool visible);
-
-	void animateOpacityUp();
-	void animateOpacityDown();
-	void changeImage();
-
-protected:
-	bool hiding;
-	bool showing;
-	int mode;
-
-	QGraphicsOpacityEffect* opacityEffect;
-	QBitArray* displaySettingsBits;
-	DkSocialConfirmDialog* confirmDialog;
-
-	QMenu* cm;
-
-	// functions
-	void init();
-	void contextMenuEvent(QContextMenuEvent *event);
-	void mousePressEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent *event);
-};
-
 
 class DllExport DkLabel : public QLabel {
 	Q_OBJECT
