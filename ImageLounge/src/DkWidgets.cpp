@@ -765,8 +765,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		if (thumb->hasImage() == DkThumbNail::not_loaded && 
 			DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading) {
-			thumb->setMinThumbSize(DkSettings::display.thumbSize);
-				thumb->fetchThumb();
+			thumb->setMinThumbSize(DkSettings::display.thumbSize);	// guarantee correct size
+			thumb->fetchThumb();
 			connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
 		}
 
