@@ -309,10 +309,19 @@ QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 		}
 
 		if (pos != exifData.end() && pos->count() != 0) {
-			Exiv2::Value::AutoPtr v = pos->getValue();
 			
-			info = QString::fromStdString(pos->toString());
+			if (pos->count () < 2000) {	// diem: this is about performance - adobe obviously embeds whole images into tiff exiv data 
+
+				qDebug() << "pos count: " << pos->count();
+				Exiv2::Value::AutoPtr v = pos->getValue();
+			
+				info = QString::fromStdString(pos->toString());
+			}
+			else {
+				info = QObject::tr("<data too large to display>");
+			}
 		}
+			
 	}
 
 	return info;

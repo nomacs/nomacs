@@ -417,7 +417,14 @@ void DkMetaDataDock::thumbLoaded(bool loaded) {
 
 	if (loaded) {
 		QImage thumbImg = thumb->getImage();
-		thumbNailLabel->setFixedHeight(thumbImg.height());
+		
+		if (thumbImg.width() > width()) {
+			thumbNailLabel->setFixedWidth(width()-20);
+			thumbImg = thumbImg.scaled(QSize(width(), thumbImg.height()), Qt::KeepAspectRatio);
+		}
+		else
+			thumbNailLabel->setFixedHeight(thumbImg.height());
+
 		thumbNailLabel->setPixmap(QPixmap::fromImage(thumbImg));
 		thumbNailLabel->show();
 	}
