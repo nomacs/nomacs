@@ -2781,8 +2781,8 @@ void DkButton::paintEvent(QPaintEvent *event) {
 
 	if (!isEnabled())
 		opacity = 0.5f;
-	else if(!mouseOver)
-		opacity = 0.7f;
+	//else if(!mouseOver)
+	//	opacity = 0.7f;
 
 	painter.setOpacity(opacity);
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
