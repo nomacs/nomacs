@@ -86,6 +86,10 @@
 
 namespace nmc {
 
+// some dummies
+class DkFilePreview;
+class DkThumbScrollWidget;
+
 class DkDelayedInfo : public QObject {
 	Q_OBJECT
 

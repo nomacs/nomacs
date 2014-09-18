@@ -28,6 +28,7 @@
 #include "DkViewPort.h"
 
 #include "DkNoMacs.h"	// currently needed for some enums
+#include "DkThumbsWidgets.h"
 
 namespace nmc {
 

@@ -41,6 +41,7 @@
 #include "DkSettingsWidgets.h"
 #include "DkMessageBox.h"
 #include "DkMetaDataWidgets.h"
+#include "DkThumbsWidgets.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
