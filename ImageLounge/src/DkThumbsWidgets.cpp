@@ -80,17 +80,6 @@ void DkFilePreview::init() {
 
 	selected = -1;
 
-	//// load a default image
-	//QImageReader imageReader(":/nomacs/img/dummy-img.png");
-	//float fw = (float)DkSettings::display.thumbSize/(float)imageReader.size().width();
-	//QSize newSize = QSize(imageReader.size().width()*fw, imageReader.size().height()*fw);
-	//imageReader.setScaledSize(newSize);
-	//stubImg = imageReader.read();
-
-	// load a default image
-	QImageReader imageReader(":/nomacs/img/dummy-img.png");
-	stubImg = imageReader.read();
-
 	// wheel label
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
 	wheelButton = new QLabel(this);
@@ -157,6 +146,9 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 	DkTimer dt;
 
+	// mouse over effect
+	QPoint p = worldMatrix.inverted().map(mapFromGlobal(QCursor::pos()));
+
 	for (int idx = 0; idx < thumbs.size(); idx++) {
 
 		QSharedPointer<DkThumbNailT> thumb = thumbs.at(idx)->getThumb();
@@ -169,10 +161,8 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		QImage img;
 		if (thumb->hasImage() == DkThumbNail::loaded)
 			img = thumb->getImage();
-		else
-			img = stubImg;
 
-		QRectF r = QRectF(bufferDim.topRight(), img.size());
+		QRectF r = !img.isNull() ? QRectF(bufferDim.topRight(), img.size()) : QRectF(bufferDim.topRight(), QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
 		if (height()-yOffset < r.height())
 			r.setSize(QSizeF(qFloor(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
 
@@ -210,11 +200,11 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		bool isLeftGradient = worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x();
 		bool isRightGradient = imgWorldRect.right() > rightGradient.start().x();
 
-		// create effect before gradient (otherwise the effect might be transparent : )
-		if ((idx == currentFileIdx || thumbs.at(idx)->isSelected()) && 
-			(currentImg.isNull() || currentFileIdx != oldFileIdx || currentImg.width()-4 != r.width() || currentImg.height()-4 != r.height())) {
-				createCurrentImg(img);
-		}
+		//// create effect before gradient (otherwise the effect might be transparent : )
+		//if ((idx == currentFileIdx || thumbs.at(idx)->isSelected()) && 
+		//	(currentImg.isNull() || currentFileIdx != oldFileIdx || currentImg.width()-4 != r.width() || currentImg.height()-4 != r.height())) {
+		//		createCurrentImg(img);
+		//}
 
 		// show that there are more images...
 		if (isLeftGradient)
@@ -222,20 +212,83 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		if (isRightGradient)
 			drawFadeOut(rightGradient, imgWorldRect, &img);
 
-		if (idx == selected && !selectedImg.isNull())
-			painter->drawPixmap(r, selectedImg, QRect(QPoint(), selectedImg.size()));
-		else if (idx == currentFileIdx && !currentImg.isNull()) {
 
-			QRectF sr = currentImg.rect();
-			sr.moveCenter(r.center());
-			painter->drawPixmap(sr, currentImg, QRect(QPoint(), currentImg.size()));
-		}
-		else
+		//if (idx == currentFileIdx && !currentImg.isNull()) {
+
+		//	QRectF sr = currentImg.rect();
+		//	sr.moveCenter(r.center());
+		//	painter->drawPixmap(sr, currentImg, QRect(QPoint(), currentImg.size()));
+		//}
+		//else
+
+		if (!img.isNull())
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
+		else 
+			drawNoImgEffect(painter, r);
+				
+		if (idx == currentFileIdx)
+			drawCurrentImgEffect(painter, r);
+		else if (idx == selected && r.contains(p))
+			drawSelectedEffect(painter, r);
+
 
 		//painter->fillRect(QRect(0,0,200, 110), leftGradient);
 	}
+}
 
+void DkFilePreview::drawNoImgEffect(QPainter* painter, const QRectF& r) {
+
+	QBrush oldBrush = painter->brush();
+	QPen oldPen = painter->pen();
+
+	QPen noImgPen(DkSettings::display.bgColor);
+	painter->setPen(noImgPen);
+	painter->setBrush(QColor(0,0,0,0));
+	painter->drawRect(r);
+	painter->setPen(oldPen);
+	painter->setBrush(oldBrush);
+}
+
+void DkFilePreview::drawSelectedEffect(QPainter* painter, const QRectF& r) {
+
+	QBrush oldBrush = painter->brush();
+	float oldOp = painter->opacity();
+	
+	// drawing
+	painter->setOpacity(0.4);
+	painter->setBrush(DkSettings::display.highlightColor);
+	painter->drawRect(r);
+	
+	// reset painter
+	painter->setOpacity(oldOp);
+	painter->setBrush(oldBrush);
+}
+
+void DkFilePreview::drawCurrentImgEffect(QPainter* painter, const QRectF& r) {
+
+	QPen oldPen = painter->pen();
+	QBrush oldBrush = painter->brush();
+	float oldOp = painter->opacity();
+
+	// draw
+	QRectF cr = r;
+	cr.setSize(QSize(cr.width()+1, cr.height()+1));
+	cr.moveCenter(cr.center() + QPointF(-1,-1));
+
+	QPen cPen(DkSettings::display.highlightColor, 1);
+	painter->setBrush(QColor(0,0,0,0));
+	painter->setOpacity(1.0);
+	painter->setPen(cPen);
+	painter->drawRect(cr);
+
+	painter->setOpacity(0.5);
+	cr.setSize(QSize(cr.width()+2, cr.height()+2));
+	cr.moveCenter(cr.center() + QPointF(-1,-1));
+	painter->drawRect(cr);
+
+	painter->setBrush(oldBrush);
+	painter->setOpacity(oldOp);
+	painter->setPen(oldPen);
 }
 
 void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img) {
@@ -262,41 +315,41 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 	img->setAlphaChannel(mask);
 }
 
-void DkFilePreview::createCurrentImg(const QImage& img) {
-
-	QRectF r = img.rect();
-	if (height()-yOffset < r.height())
-		r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
-
-	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
-
-	currentImg = QPixmap(r.width()+4, r.height()+4);
-#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-	currentImg.fill(qRgba(0,0,0,0));	// sets alpha wrong
-#else
-	currentImg.fill(QColor(0,0,0,0));	// introduced in Qt 4.8
-#endif
-	//currentImg = QPixmap::fromImage(img);
-
-	QPainter painter(&currentImg);
-	painter.setRenderHint(QPainter::SmoothPixmapTransform);
-	// create border
-	QRectF sr = r;
-	sr.setSize(sr.size()+QSize(2, 2));
-	sr.moveCenter(QRectF(currentImg.rect()).center());
-	painter.setOpacity(0.8);
-	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
-
-	sr.setSize(sr.size()+QSize(2, 2));
-	sr.moveCenter(QRectF(currentImg.rect()).center());
-	painter.setOpacity(0.3);
-	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
-
-	sr = r;
-	sr.moveCenter(QRectF(currentImg.rect()).center());
-	painter.setOpacity(1.0);
-	painter.drawImage(sr, img, QRect(QPoint(), img.size()));
-}
+//void DkFilePreview::createCurrentImg(const QImage& img) {
+//
+//	QRectF r = img.rect();
+//	if (height()-yOffset < r.height())
+//		r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
+//
+//	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
+//
+//	currentImg = QPixmap(r.width()+4, r.height()+4);
+//#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
+//	currentImg.fill(qRgba(0,0,0,0));	// sets alpha wrong
+//#else
+//	currentImg.fill(QColor(0,0,0,0));	// introduced in Qt 4.8
+//#endif
+//	//currentImg = QPixmap::fromImage(img);
+//
+//	QPainter painter(&currentImg);
+//	painter.setRenderHint(QPainter::SmoothPixmapTransform);
+//	// create border
+//	QRectF sr = r;
+//	sr.setSize(sr.size()+QSize(2, 2));
+//	sr.moveCenter(QRectF(currentImg.rect()).center());
+//	painter.setOpacity(0.8);
+//	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
+//
+//	sr.setSize(sr.size()+QSize(2, 2));
+//	sr.moveCenter(QRectF(currentImg.rect()).center());
+//	painter.setOpacity(0.3);
+//	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
+//
+//	sr = r;
+//	sr.moveCenter(QRectF(currentImg.rect()).center());
+//	painter.setOpacity(1.0);
+//	painter.drawImage(sr, img, QRect(QPoint(), img.size()));
+//}
 
 void DkFilePreview::resizeEvent(QResizeEvent *event) {
 
@@ -394,7 +447,7 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 				if (selected <= thumbs.size() && selected >= 0) {
 					QSharedPointer<DkThumbNailT> thumb = thumbs.at(selected)->getThumb();
-					selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettings::display.highlightColor, 0.3f);
+					//selectedImg = DkImage::colorizePixmap(QPixmap::fromImage(thumb->getImage()), DkSettings::display.highlightColor, 0.3f);
 
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
 					//if (fileLabel->height() < height())

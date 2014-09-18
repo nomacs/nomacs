@@ -53,23 +53,23 @@ public:
 
 	void setVisible(bool visible);
 
-	public slots:
-		void paintEvent(QPaintEvent *event);
-		void resizeEvent(QResizeEvent *event);
-		void mouseMoveEvent(QMouseEvent *event);
-		void mousePressEvent(QMouseEvent *event);
-		void mouseReleaseEvent(QMouseEvent *event);
-		void wheelEvent(QWheelEvent *event);
-		void leaveEvent(QEvent *event);
-		void moveImages();
-		void updateFileIdx(int fileIdx);
-		void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
-		void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
+public slots:
+	void paintEvent(QPaintEvent *event);
+	void resizeEvent(QResizeEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void wheelEvent(QWheelEvent *event);
+	void leaveEvent(QEvent *event);
+	void moveImages();
+	void updateFileIdx(int fileIdx);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
 
 signals:
-		void loadFileSignal(QFileInfo file);
-		//void loadThumbsSignal(int start, int end);
-		void changeFileSignal(int idx);
+	void loadFileSignal(QFileInfo file);
+	//void loadThumbsSignal(int start, int end);
+	void changeFileSignal(int idx);
 
 private:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;
@@ -78,7 +78,7 @@ private:
 
 	QPoint lastMousePos;
 	QPoint enterPos;
-
+	Qt::Orientation orientation;
 	QTimer* moveImageTimer;
 
 	QRectF bufferDim;
@@ -86,10 +86,9 @@ private:
 
 	QLinearGradient leftGradient;
 	QLinearGradient rightGradient;
-	QPixmap selectedImg;
-	QPixmap currentImg;
+	//QPixmap selectedImg;
+	//QPixmap currentImg;
 
-	QImage stubImg;
 	int mouseTrace;
 	QFileInfo currentFile;
 	int currentFileIdx;
@@ -116,7 +115,10 @@ private:
 	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
-	void createCurrentImg(const QImage& img);
+	void drawSelectedEffect(QPainter* painter, const QRectF& r);
+	void drawCurrentImgEffect(QPainter* painter, const QRectF& r);
+	void drawNoImgEffect(QPainter* painter, const QRectF& r);
+	//void createCurrentImg(const QImage& img);
 };
 
 class DkThumbLabel : public QGraphicsObject {
