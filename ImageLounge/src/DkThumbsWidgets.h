@@ -111,6 +111,7 @@ private:
 	bool isPainted;
 
 	void init();
+	void initOrientations();
 	//void clearThumbs();
 	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);

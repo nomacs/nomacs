@@ -33,6 +33,8 @@ namespace nmc {
 DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	this->parent = parent;
+	orientation = Qt::Vertical;
+
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
 
@@ -42,7 +44,7 @@ void DkFilePreview::init() {
 
 	setObjectName("DkFilePreview");
 	setMouseTracking(true);	//receive mouse event everytime
-	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+	
 	//thumbsLoader = 0;
 
 	xOffset = qRound(DkSettings::display.thumbSize*0.1f);
@@ -58,7 +60,7 @@ void DkFilePreview::init() {
 	isPainted = false;
 
 	winPercent = 0.1f;
-	borderTrigger = (float)width()*winPercent;
+	borderTrigger = (orientation == Qt::Horizontal) ? (float)width()*winPercent : (float)height()*winPercent;
 	//fileLabel = new DkGradientLabel(this);
 
 	worldMatrix = QTransform();
@@ -67,17 +69,16 @@ void DkFilePreview::init() {
 	moveImageTimer->setInterval(5);	// reduce cpu utilization
 	connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
 
-	leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
-	rightGradient = QLinearGradient(QPoint(width()-borderTrigger, 0), QPoint(width(), 0));
+	leftGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0)) : QLinearGradient(QPoint(0, 0), QPoint(0, borderTrigger));
+	rightGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(width()-borderTrigger, 0), QPoint(width(), 0)) : QLinearGradient(QPoint(0, height()-borderTrigger), QPoint(0, height()));
 	leftGradient.setColorAt(1, Qt::white);
 	leftGradient.setColorAt(0, Qt::black);
 	rightGradient.setColorAt(1, Qt::black);
 	rightGradient.setColorAt(0, Qt::white);
 
 	minHeight = DkSettings::display.thumbSize + yOffset;
-	resize(parent->width(), minHeight);
-	setMaximumHeight(minHeight);
-
+	//resize(parent->width(), minHeight);
+	
 	selected = -1;
 
 	// wheel label
@@ -87,6 +88,30 @@ void DkFilePreview::init() {
 	wheelButton->setPixmap(wp);
 	wheelButton->hide();
 
+	initOrientations();
+}
+
+void DkFilePreview::initOrientations() {
+
+	if (orientation == Qt::Horizontal) {
+		setMaximumHeight(minHeight);
+		setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+		borderTrigger = (float)width()*winPercent;
+		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
+		rightGradient = QLinearGradient(QPoint(width()-borderTrigger, 0), QPoint(width(), 0));
+	}
+	else {
+		setMaximumWidth(minHeight);
+		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+		borderTrigger = (float)height()*winPercent;
+		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(0, borderTrigger));
+		rightGradient = QLinearGradient(QPoint(0, height()-borderTrigger), QPoint(0, height()));
+	}
+
+	leftGradient.setColorAt(1, Qt::white);
+	leftGradient.setColorAt(0, Qt::black);
+	rightGradient.setColorAt(1, Qt::black);
+	rightGradient.setColorAt(0, Qt::white);
 }
 
 void DkFilePreview::paintEvent(QPaintEvent* event) {
@@ -100,7 +125,11 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 
 		minHeight = DkSettings::display.thumbSize + yOffset;
-		setMaximumHeight(minHeight);
+		
+		if (orientation == Qt::Horizontal)
+			setMaximumHeight(minHeight);
+		else
+			setMaximumWidth(minHeight);
 
 		//if (fileLabel->height() >= height() && fileLabel->isVisible())
 		//	fileLabel->hide();
@@ -108,6 +137,8 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	}
 	//minHeight = DkSettings::DisplaySettings::thumbSize + yOffset;
 	//resize(parent->width(), minHeight);
+
+	//qDebug() << "size: " << size();
 
 	QPainter painter(this);
 	painter.setBackground(bgCol);
@@ -141,7 +172,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 	//qDebug() << "drawing thumbs: " << worldMatrix.dx();
 
-	bufferDim = QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0));
+	bufferDim = (orientation == Qt::Horizontal) ? QRectF(QPointF(0, yOffset/2), QSize(xOffset, 0)) : QRectF(QPointF(yOffset/2, 0), QSize(0, xOffset));
 	thumbRects.clear();
 
 	DkTimer dt;
@@ -162,19 +193,28 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 		if (thumb->hasImage() == DkThumbNail::loaded)
 			img = thumb->getImage();
 
-		QRectF r = !img.isNull() ? QRectF(bufferDim.topRight(), img.size()) : QRectF(bufferDim.topRight(), QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
-		if (height()-yOffset < r.height())
+		QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
+		QRectF r = !img.isNull() ? QRectF(anchor, img.size()) : QRectF(anchor, QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
+		if (orientation == Qt::Horizontal && height()-yOffset < r.height())
 			r.setSize(QSizeF(qFloor(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
+		else if (orientation == Qt::Vertical && width()-yOffset < r.width())
+			r.setSize(QSizeF(width()-yOffset, qFloor(r.height()*(float)(width()-yOffset)/r.width())));
 
 		// check if the size is still valid
 		if (r.width() < 1 || r.height() < 1) 
 			continue;
 
 		// center vertically
-		r.moveCenter(QPoint(qFloor(r.center().x()), height()/2));
+		if (orientation == Qt::Horizontal)
+			r.moveCenter(QPoint(qFloor(r.center().x()), height()/2));
+		else
+			r.moveCenter(QPoint(width()/2, qFloor(r.center().y())));
 
 		// update the buffer dim
-		bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
+		if (orientation == Qt::Horizontal)
+			bufferDim.setRight(qFloor(bufferDim.right() + r.width()) + cvCeil(xOffset/2.0f));
+		else
+			bufferDim.setBottom(qFloor(bufferDim.bottom() + r.height()) + cvCeil(xOffset/2.0f));
 		thumbRects.push_back(r);
 
 		QRectF imgWorldRect = worldMatrix.mapRect(r);
@@ -184,11 +224,11 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			newFileRect = imgWorldRect;
 
 		// is the current image within the canvas?
-		if (imgWorldRect.right() < 0)
+		if (orientation == Qt::Horizontal && imgWorldRect.right() < 0 || orientation == Qt::Vertical && imgWorldRect.bottom() < 0)
 			continue;
-		if (imgWorldRect.left() > width() && scrollToCurrentImage) 
+		if ((orientation == Qt::Horizontal && imgWorldRect.left() > width() || orientation == Qt::Vertical && imgWorldRect.top() > height()) && scrollToCurrentImage) 
 			continue;
-		else if (imgWorldRect.left() > width())
+		else if (orientation == Qt::Horizontal && imgWorldRect.left() > width() || orientation == Qt::Vertical && imgWorldRect.top() > height())
 			break;
 
 		if (thumb->hasImage() == DkThumbNail::not_loaded && 
@@ -197,29 +237,16 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 				connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(update()));
 		}
 
-		bool isLeftGradient = worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x();
-		bool isRightGradient = imgWorldRect.right() > rightGradient.start().x();
-
-		//// create effect before gradient (otherwise the effect might be transparent : )
-		//if ((idx == currentFileIdx || thumbs.at(idx)->isSelected()) && 
-		//	(currentImg.isNull() || currentFileIdx != oldFileIdx || currentImg.width()-4 != r.width() || currentImg.height()-4 != r.height())) {
-		//		createCurrentImg(img);
-		//}
-
+		bool isLeftGradient = (orientation == Qt::Horizontal && worldMatrix.dx() < 0 && imgWorldRect.left() < leftGradient.finalStop().x()) ||
+			(orientation == Qt::Vertical && worldMatrix.dy() < 0 && imgWorldRect.top() < leftGradient.finalStop().y());
+		bool isRightGradient = orientation == Qt::Horizontal && imgWorldRect.right() > rightGradient.start().x() ||
+			orientation == Qt::Vertical && imgWorldRect.bottom() > rightGradient.start().y();
 		// show that there are more images...
-		if (isLeftGradient)
+		if (isLeftGradient && !img.isNull())
 			drawFadeOut(leftGradient, imgWorldRect, &img);
-		if (isRightGradient)
+		if (isRightGradient && !img.isNull())
 			drawFadeOut(rightGradient, imgWorldRect, &img);
 
-
-		//if (idx == currentFileIdx && !currentImg.isNull()) {
-
-		//	QRectF sr = currentImg.rect();
-		//	sr.moveCenter(r.center());
-		//	painter->drawPixmap(sr, currentImg, QRect(QPoint(), currentImg.size()));
-		//}
-		//else
 
 		if (!img.isNull())
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
@@ -300,11 +327,22 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 	QPointF scale(img->width()/imgRect.width(), img->height()/imgRect.height());
 	QTransform wm;
 	wm.scale(scale.x(), scale.y());
-	wm.translate(-imgRect.left(), 0);
+	
+	if (orientation == Qt::Horizontal)
+		wm.translate(-imgRect.left(), 0);
+	else
+		wm.translate(0, -imgRect.top());
 
 	QLinearGradient imgGradient = gradient;
-	imgGradient.setStart(wm.map(gradient.start()).x(), 0);
-	imgGradient.setFinalStop(wm.map(gradient.finalStop()).x(), 0);
+	
+	if (orientation == Qt::Horizontal) {
+		imgGradient.setStart(wm.map(gradient.start()).x(), 0);
+		imgGradient.setFinalStop(wm.map(gradient.finalStop()).x(), 0);
+	}
+	else {
+		imgGradient.setStart(0, wm.map(gradient.start()).y());
+		imgGradient.setFinalStop(0, wm.map(gradient.finalStop()).y());
+	}
 
 	QImage mask = *img;
 	QPainter painter(&mask);
@@ -353,14 +391,26 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 
 void DkFilePreview::resizeEvent(QResizeEvent *event) {
 
-	if (event->size() == event->oldSize() && this->width() == parent->width())
-		return;
+	if (event->size() == event->oldSize() && 
+		(orientation == Qt::Horizontal && this->width() == parent->width()  ||
+		orientation == Qt::Vertical && this->height() == parent->height())) {
+	
+			qDebug() << "parent size: " << parent->height();
+			return;
+	}
 
-	minHeight = DkSettings::display.thumbSize + yOffset;
-	setMinimumHeight(1);
-	setMaximumHeight(minHeight);
+	//minHeight = DkSettings::display.thumbSize + yOffset;
 
-	resize(parent->width(), event->size().height());
+	//if (orientation == Qt::Horizontal) {
+	//	setMinimumHeight(1);
+	//	setMaximumHeight(minHeight);
+	//	resize(parent->width(), event->size().height());
+	//}
+	//else {
+	//	setMinimumWidth(1);
+	//	setMaximumWidth(minHeight);
+	//	resize(parent->height(), event->size().width());
+	//}
 
 	if (currentFileIdx >= 0 && isVisible()) {
 		scrollToCurrentImage = true;
@@ -368,10 +418,12 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 	}
 
 	// now update...
-	borderTrigger = (float)width()*winPercent;
-	leftGradient.setFinalStop(QPoint(borderTrigger, 0));
-	rightGradient.setStart(QPoint(width()-borderTrigger, 0));
-	rightGradient.setFinalStop(QPoint(width(), 0));
+	borderTrigger = (orientation == Qt::Horizontal) ? (float)width()*winPercent : (float)height()*winPercent;
+	leftGradient.setFinalStop((orientation == Qt::Horizontal) ? QPoint(borderTrigger, 0) : QPoint(0, borderTrigger));
+	rightGradient.setStart((orientation == Qt::Horizontal) ? QPoint(width()-borderTrigger, 0) : QPoint(0, height()-borderTrigger));
+	rightGradient.setFinalStop((orientation == Qt::Horizontal) ?  QPoint(width(), 0) : QPoint(0, height()));
+
+	qDebug() << "file preview size: " << event->size();
 
 	//update();
 	QWidget::resizeEvent(event);
@@ -391,19 +443,24 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
+	float eventPos = orientation == Qt::Horizontal ? event->pos().x() : event->pos().y();
+	float lastMousePosC = orientation == Qt::Horizontal ? lastMousePos.x() : lastMousePos.y();
+	int limit = orientation == Qt::Horizontal ? width() : height();
+
 	if (event->buttons() == Qt::MiddleButton) {
 
-		float dx = std::fabs((float)(enterPos.x() - event->pos().x()))*0.015;
+		float enterPosC = orientation == Qt::Horizontal ? enterPos.x() : enterPos.y();
+		float dx = std::fabs((float)(enterPosC - eventPos))*0.015;
 		dx = std::exp(dx);
 
-		if (enterPos.x() - event->pos().x() < 0)
+		if (enterPosC - eventPos < 0)
 			dx = -dx;
 
 		currentDx = dx;	// update dx
 		return;
 	}
 
-	int mouseDir = event->pos().x() - lastMousePos.x();
+	int mouseDir = eventPos - lastMousePosC;
 
 	if (event->buttons() == Qt::LeftButton) {
 		currentDx = mouseDir;
@@ -417,8 +474,8 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 	unsetCursor();
 
-	int ndx = width() - event->pos().x();
-	int pdx = event->pos().x();
+	int ndx = limit - eventPos;
+	int pdx = eventPos;
 
 	bool left = pdx < ndx;
 	float dx = (left) ? pdx : ndx;
@@ -561,10 +618,13 @@ void DkFilePreview::moveImages() {
 		return;
 	}
 
-	if (scrollToCurrentImage) {
-		float cDist = width()/2.0f - newFileRect.center().x();
+	int limit = orientation == Qt::Horizontal ? width() : height();
+	float center = orientation == Qt::Horizontal ? newFileRect.center().x() : newFileRect.center().y();
 
-		if (fabs(cDist) < width()) {
+	if (scrollToCurrentImage) {
+		float cDist = limit/2.0f - center;
+
+		if (fabs(cDist) < limit) {
 			currentDx = sqrt(fabs(cDist))/1.3f;
 			if (cDist < 0) currentDx *= -1.0f;
 		}
@@ -576,7 +636,7 @@ void DkFilePreview::moveImages() {
 
 		// end position
 		if (fabs(cDist) <= 2) {
-			currentDx = width()/2.0f-newFileRect.center().x();
+			currentDx = limit/2.0f-center;
 			moveImageTimer->stop();
 			scrollToCurrentImage = false;
 		}
@@ -584,18 +644,24 @@ void DkFilePreview::moveImages() {
 			isPainted = false;
 	}
 
+	float translation = orientation == Qt::Horizontal ? worldMatrix.dx() : worldMatrix.dy();
+	float bufferPos = orientation == Qt::Horizontal ? bufferDim.right() : bufferDim.bottom();
+
 	// do not scroll out of the thumbs
-	if (worldMatrix.dx() >= width()*0.5 && currentDx > 0 || worldMatrix.dx() <= -(bufferDim.right()-width()*0.5+xOffset) && currentDx < 0)
+	if (translation >= limit*0.5 && currentDx > 0 || translation <= -(bufferPos-limit*0.5+xOffset) && currentDx < 0)
 		return;
 
 	// set the last step to match the center of the screen...	(nicer if user scrolls very fast)
-	if (worldMatrix.dx() < width()*0.5 && currentDx > 0 && worldMatrix.dx()+currentDx > width()*0.5 && currentDx > 0)
-		currentDx = width()*0.5-worldMatrix.dx();
-	else if (worldMatrix.dx() > -(bufferDim.right()-width()*0.5+xOffset) && worldMatrix.dx()+currentDx <= -(bufferDim.right()-width()*0.5+xOffset) && currentDx < 0)
-		currentDx = -(bufferDim.right()-width()*0.5+xOffset+worldMatrix.dx());
+	if (translation < limit*0.5 && currentDx > 0 && translation+currentDx > limit*0.5 && currentDx > 0)
+		currentDx = limit*0.5-translation;
+	else if (translation > -(bufferPos-limit*0.5+xOffset) && translation+currentDx <= -(bufferPos-limit*0.5+xOffset) && currentDx < 0)
+		currentDx = -(bufferPos-limit*0.5+xOffset+worldMatrix.dx());
 
 	//qDebug() << "currentDx: " << currentDx;
-	worldMatrix.translate(currentDx, 0);
+	if (orientation == Qt::Horizontal)
+		worldMatrix.translate(currentDx, 0);
+	else
+		worldMatrix.translate(0, currentDx);
 	//qDebug() << "dx: " << worldMatrix.dx();
 	update();
 }

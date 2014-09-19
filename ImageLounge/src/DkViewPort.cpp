@@ -94,7 +94,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 void DkControlWidget::init() {
 
 	// debug: show invisible widgets
-	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -232,7 +232,7 @@ void DkControlWidget::init() {
 	//hudLayout->addWidget(thumbWidget, 0, 0);
 
 	// add elements
-	hudLayout->addWidget(filePreview, top, left, 1, hor_pos_end);
+	hudLayout->addWidget(filePreview, top, right_thumbs, ver_pos_end, 1);
 	hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
 	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);

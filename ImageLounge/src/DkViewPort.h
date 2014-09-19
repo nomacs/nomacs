@@ -191,7 +191,7 @@ class DllExport DkControlWidget : public QWidget {
 public:
 	
 	enum VerPos {top_scroll = 0, top, top_info, ver_center, bottom_info, bottom, ver_pos_end};
-	enum HorPos {left= 0, hor_center, right, hor_pos_end};
+	enum HorPos {left= 0, hor_center, right, right_thumbs, hor_pos_end};
 
 	enum InfoPos {
 		center_label,
