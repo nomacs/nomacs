@@ -94,7 +94,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 void DkControlWidget::init() {
 
 	// debug: show invisible widgets
-	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -225,14 +225,15 @@ void DkControlWidget::init() {
 	lastActiveWidget = widgets[hud_widget];
 
 	// global controller layout
-	QGridLayout* hudLayout = new QGridLayout(widgets[hud_widget]);
+	hudLayout = new QGridLayout(widgets[hud_widget]);
 	hudLayout->setContentsMargins(0,0,0,0);
 	hudLayout->setSpacing(0);
 
 	//hudLayout->addWidget(thumbWidget, 0, 0);
 
 	// add elements
-	hudLayout->addWidget(filePreview, top, right_thumbs, ver_pos_end, 1);
+	changeThumbNailPosition(filePreview->getWindowPosition());
+	//hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, 1, hor_pos_end);
 	hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
 	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
@@ -292,6 +293,7 @@ void DkControlWidget::connectWidgets() {
 	// thumbs widget
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
+	connect(filePreview, SIGNAL(positionChangeSignal(int)), this, SLOT(changeThumbNailPosition(int)));
 
 	// recent files widget
 	connect(recentFilesWidget, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
@@ -598,6 +600,22 @@ void DkControlWidget::setSpinnerDelayed(bool start, int time) {
 		delayedSpinner->stop();
 }
 
+void DkControlWidget::changeThumbNailPosition(int pos) {
+
+	if (pos == DkFilePreview::cm_pos_west) {
+		hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, ver_pos_end, 1);	
+	}
+	else if (pos == DkFilePreview::cm_pos_east) {
+		hudLayout->addWidget(filePreview, top_thumbs, right_thumbs, ver_pos_end, 1);	
+	}
+	else if (pos == DkFilePreview::cm_pos_north) {
+		hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, 1, hor_pos_end);	
+	}
+	else if (pos == DkFilePreview::cm_pos_south) {
+		hudLayout->addWidget(filePreview, bottom_thumbs, left_thumbs, 1, hor_pos_end);	
+	}
+
+}
 
 void DkControlWidget::stopLabels() {
 

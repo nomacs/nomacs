@@ -190,8 +190,8 @@ class DllExport DkControlWidget : public QWidget {
 
 public:
 	
-	enum VerPos {top_scroll = 0, top, top_info, ver_center, bottom_info, bottom, ver_pos_end};
-	enum HorPos {left= 0, hor_center, right, right_thumbs, hor_pos_end};
+	enum VerPos {top_scroll = 0, top_thumbs, top_info, ver_center, bottom_info, bottom, bottom_thumbs, ver_pos_end};
+	enum HorPos {left_thumbs = 0, left, hor_center, right, right_thumbs, hor_pos_end};
 
 	enum InfoPos {
 		center_label,
@@ -279,6 +279,7 @@ public slots:
 	void showThumbView(bool visible);
 	void showRecentFiles(bool visible);
 	void switchWidget(QWidget* widget = 0);
+	void changeThumbNailPosition(int pos);
 
 	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
@@ -310,6 +311,7 @@ protected:
 	QVector<QWidget*> widgets;
 	QStackedLayout* layout;
 	QWidget* lastActiveWidget;
+	QGridLayout* hudLayout;
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;

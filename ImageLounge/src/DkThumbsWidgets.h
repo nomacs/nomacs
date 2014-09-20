@@ -37,9 +37,20 @@ class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
 public:
+
+	enum {
+		cm_pos_west,
+		cm_pos_north,
+		cm_pos_east,
+		cm_pos_south,
+
+		cm_end,
+	};
+
 	DkFilePreview(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	~DkFilePreview() {
+		saveSettings();
 	};
 
 	void setCurrentDx(float dx) {
@@ -53,7 +64,25 @@ public:
 
 	void setVisible(bool visible);
 
+	int getWindowPosition() {
+
+		return windowPosition;
+	};
+
 public slots:
+	void moveImages();
+	void updateFileIdx(int fileIdx);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
+	void newPosition();
+
+signals:
+	void loadFileSignal(QFileInfo file);
+	//void loadThumbsSignal(int start, int end);
+	void changeFileSignal(int idx);
+	void positionChangeSignal(int pos);
+
+protected:
 	void paintEvent(QPaintEvent *event);
 	void resizeEvent(QResizeEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
@@ -61,15 +90,9 @@ public slots:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void wheelEvent(QWheelEvent *event);
 	void leaveEvent(QEvent *event);
-	void moveImages();
-	void updateFileIdx(int fileIdx);
-	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
-	void setFileInfo(QSharedPointer<DkImageContainerT> cImage);
-
-signals:
-	void loadFileSignal(QFileInfo file);
-	//void loadThumbsSignal(int start, int end);
-	void changeFileSignal(int idx);
+	void contextMenuEvent(QContextMenuEvent *event);
+	void loadSettings();
+	void saveSettings();
 
 private:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;
@@ -96,8 +119,6 @@ private:
 	float currentDx;
 	QLabel* wheelButton;
 
-	//DkGradientLabel* fileLabel;
-
 	int selected;
 	float winPercent;
 	float borderTrigger;
@@ -106,20 +127,24 @@ private:
 	int yOffset;
 	int minHeight;
 
+	int windowPosition;
+
 	QRectF newFileRect;
 	bool scrollToCurrentImage;
 	bool isPainted;
 
+	QMenu* contextMenu;
+	QVector<QAction*> contextMenuActions;
+
 	void init();
 	void initOrientations();
-	//void clearThumbs();
-	//void indexDir(int force = DkThumbsLoader::not_forced);
 	void drawThumbs(QPainter* painter);
 	void drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage *img);
 	void drawSelectedEffect(QPainter* painter, const QRectF& r);
 	void drawCurrentImgEffect(QPainter* painter, const QRectF& r);
 	void drawNoImgEffect(QPainter* painter, const QRectF& r);
-	//void createCurrentImg(const QImage& img);
+	void createContextMenu();
+
 };
 
 class DkThumbLabel : public QGraphicsObject {

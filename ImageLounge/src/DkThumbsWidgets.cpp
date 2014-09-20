@@ -33,11 +33,16 @@ namespace nmc {
 DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	this->parent = parent;
-	orientation = Qt::Vertical;
+	orientation = Qt::Horizontal;
+	windowPosition = cm_pos_north;
 
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
 
+	loadSettings();
+	initOrientations();
+
+	createContextMenu();
 }
 
 void DkFilePreview::init() {
@@ -87,21 +92,24 @@ void DkFilePreview::init() {
 	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 	wheelButton->setPixmap(wp);
 	wheelButton->hide();
-
-	initOrientations();
 }
 
 void DkFilePreview::initOrientations() {
 
+	if (windowPosition == cm_pos_north || windowPosition == cm_pos_south)
+		orientation = Qt::Horizontal;
+	else if (windowPosition == cm_pos_east || windowPosition == cm_pos_west)
+		orientation = Qt::Vertical;
+
 	if (orientation == Qt::Horizontal) {
-		setMaximumHeight(minHeight);
+		setMaximumSize(QWIDGETSIZE_MAX, minHeight);
 		setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 		borderTrigger = (float)width()*winPercent;
 		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
 		rightGradient = QLinearGradient(QPoint(width()-borderTrigger, 0), QPoint(width(), 0));
 	}
 	else {
-		setMaximumWidth(minHeight);
+		setMaximumSize(minHeight, QWIDGETSIZE_MAX);
 		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 		borderTrigger = (float)height()*winPercent;
 		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(0, borderTrigger));
@@ -112,7 +120,56 @@ void DkFilePreview::initOrientations() {
 	leftGradient.setColorAt(0, Qt::black);
 	rightGradient.setColorAt(1, Qt::black);
 	rightGradient.setColorAt(0, Qt::white);
+
+	worldMatrix.reset();
+	currentDx = 0;
+	scrollToCurrentImage = true;
+	update();
+
 }
+
+void DkFilePreview::loadSettings() {
+
+	QSettings settings;
+	settings.beginGroup(objectName());
+	windowPosition = settings.value("windowPosition", windowPosition).toInt();
+	settings.endGroup();
+
+}
+
+void DkFilePreview::saveSettings() {
+
+	QSettings settings;
+	settings.beginGroup(objectName());
+	settings.setValue("windowPosition", windowPosition);
+	settings.endGroup();
+}
+
+void DkFilePreview::createContextMenu() {
+
+	contextMenuActions.resize(cm_end);
+
+	contextMenuActions[cm_pos_west] = new QAction(tr("Show Left"), this);
+	contextMenuActions[cm_pos_west]->setStatusTip(tr("Shows the Thumbnail Bar on the Left"));
+	connect(contextMenuActions[cm_pos_west], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	contextMenuActions[cm_pos_north] = new QAction(tr("Show Top"), this);
+	contextMenuActions[cm_pos_north]->setStatusTip(tr("Shows the Thumbnail Bar at the Top"));
+	connect(contextMenuActions[cm_pos_north], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	contextMenuActions[cm_pos_east] = new QAction(tr("Show Right"), this);
+	contextMenuActions[cm_pos_east]->setStatusTip(tr("Shows the Thumbnail Bar on the Right"));
+	connect(contextMenuActions[cm_pos_east], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	contextMenuActions[cm_pos_south] = new QAction(tr("Show Bottom"), this);
+	contextMenuActions[cm_pos_south]->setStatusTip(tr("Shows the Thumbnail Bar at the Bottom"));
+	connect(contextMenuActions[cm_pos_south], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	contextMenu = new QMenu(tr("File Preview Menu"), this);
+	contextMenu->addActions(contextMenuActions.toList());
+}
+
+
 
 void DkFilePreview::paintEvent(QPaintEvent* event) {
 
@@ -127,9 +184,9 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 		minHeight = DkSettings::display.thumbSize + yOffset;
 		
 		if (orientation == Qt::Horizontal)
-			setMaximumHeight(minHeight);
+			setMaximumSize(QWIDGETSIZE_MAX, minHeight);
 		else
-			setMaximumWidth(minHeight);
+			setMaximumSize(minHeight, QWIDGETSIZE_MAX);
 
 		//if (fileLabel->height() >= height() && fileLabel->isVisible())
 		//	fileLabel->hide();
@@ -596,8 +653,13 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 			update();
 		}
 	}
-	else
-		emit changeFileSignal((event->delta() > 0) ? -1 : 1);
+	else {
+		
+		int fc = (event->delta() > 0) ? -1 : 1;
+		currentFileIdx += fc;
+		scrollToCurrentImage = true;
+		emit changeFileSignal(fc);
+	}
 }
 
 void DkFilePreview::leaveEvent(QEvent *event) {
@@ -609,6 +671,45 @@ void DkFilePreview::leaveEvent(QEvent *event) {
 	}
 	//fileLabel->hide();
 	update();
+}
+
+void DkFilePreview::contextMenuEvent(QContextMenuEvent *event) {
+
+	contextMenu->exec(event->globalPos());
+	event->accept();
+
+	DkWidget::contextMenuEvent(event);
+}
+
+void DkFilePreview::newPosition() {
+
+	QAction* sender = static_cast<QAction*>(QObject::sender());
+
+	if (!sender)
+		return;
+
+	int pos = 0;
+
+	if (sender == contextMenuActions[cm_pos_west]) {
+		pos = cm_pos_west;
+		orientation = Qt::Vertical;
+	}
+	else if (sender == contextMenuActions[cm_pos_east]) {
+		pos = cm_pos_east;
+		orientation = Qt::Vertical;
+	}
+	else if (sender == contextMenuActions[cm_pos_north]) {
+		pos = cm_pos_north;
+		orientation = Qt::Horizontal;
+	}
+	else if (sender == contextMenuActions[cm_pos_south]) {
+		pos = cm_pos_south;
+		orientation = Qt::Horizontal;
+	}
+
+	windowPosition = pos;
+	initOrientations();
+	emit positionChangeSignal(windowPosition);
 }
 
 void DkFilePreview::moveImages() {

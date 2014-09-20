@@ -1793,6 +1793,7 @@ DkMetaDataInfo::DkMetaDataInfo(QWidget* parent) : DkWidget(parent) {
 	yMargin = 6;
 	xMargin = 8;
 
+	setMaximumSize(QWIDGETSIZE_MAX, exifHeight);
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 }
 
@@ -1834,12 +1835,12 @@ void DkMetaDataInfo::init() {
 	QColor tmpCol = bgCol;
 	tmpCol.setAlpha(0);
 
-	leftGradientRect = QRect(QPoint(), QSize(gradientWidth, size().height()));
+	leftGradientRect = QRect(QPoint(), QSize(gradientWidth, exifHeight));
 	leftGradient = QLinearGradient(leftGradientRect.topLeft(), leftGradientRect.topRight());
 	leftGradient.setColorAt(0, tmpCol);
 	leftGradient.setColorAt(1, bgCol);
 
-	rightGradientRect = QRect(QPoint(size().width()-gradientWidth, 0), QSize(gradientWidth, size().height()));
+	rightGradientRect = QRect(QPoint(size().width()-gradientWidth, 0), QSize(gradientWidth, exifHeight));
 	rightGradient = QLinearGradient(rightGradientRect.topLeft(), rightGradientRect.topRight());
 	rightGradient.setColorAt(0, bgCol);
 	rightGradient.setColorAt(1, tmpCol);
@@ -2087,7 +2088,7 @@ void DkMetaDataInfo::layoutLabels() {
 	//} else exifHeight = 120;
 
 	//widget size
-	if (parent->width() < minWidth)
+	if (width() < minWidth)
 		QWidget::setCursor(Qt::OpenHandCursor);
 	else
 		QWidget::unsetCursor();
@@ -2096,12 +2097,12 @@ void DkMetaDataInfo::layoutLabels() {
 	//if (widthParent)
 	//	width = widthParent > minWidth ? widthParent : minWidth;
 	//else
-	width = parent->width() > minWidth ? parent->width() : minWidth;
+	width = this->width() > minWidth ? this->width() : minWidth;
 
 	//qDebug() << "width" << parent->width();
 
 	//set Geometry if exif height is changed
-	setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
+	//setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
 
 	//subtract label length
 	for (int i=0; i<maxLenLabel.size(); i++) width -= (maxLenLabel[i] + xMargin);
@@ -2197,37 +2198,36 @@ void DkMetaDataInfo::resizeEvent(QResizeEvent *resizeW) {
 	//qDebug() << "resizeW:" << resizeW->size().width();
 	//qDebug() << parent->width();
 
-	setMinimumHeight(1);
-	setMaximumHeight(exifHeight);
+	//setMinimumHeight(1);
+	//setMaximumHeight(exifHeight);
 
-	resize(parent->width(), resizeW->size().height());
-	//setGeometry(0, parent->height()-exifHeight, parent->width(), exifHeight);
+	//resize(parent->width(), resizeW->size().height());
 	
 	int gw = qMin(gradientWidth, qRound(0.2f*resizeW->size().width()));
 
-	rightGradientRect.setTopLeft(QPoint(parent->width()-gw, 0));
-	rightGradientRect.setSize(QSize(gw, exifHeight));
-	leftGradientRect.setSize(QSize(gw, exifHeight));
+	rightGradientRect.setTopLeft(QPoint(resizeW->size().width()-gw, 0));
+	rightGradientRect.setSize(QSize(gw, resizeW->size().height()));
+	leftGradientRect.setSize(QSize(gw, resizeW->size().height()));
 
 	rightGradient.setStart(rightGradientRect.topLeft());
 	rightGradient.setFinalStop(rightGradientRect.topRight());
 	leftGradient.setStart(leftGradientRect.topLeft());
 	leftGradient.setFinalStop(leftGradientRect.topRight());
 
-	if (parent->width() > minWidth) {
+	if (resizeW->size().width() > minWidth) {
 		worldMatrix = QTransform();
 		layoutLabels();
 		//qDebug() << "parent->width() > minWidth  d.h. layoutlabels";
 	}
 
-	if (parent->width() < minWidth && worldMatrix.dx() == 0) {
+	if (resizeW->size().width() < minWidth && worldMatrix.dx() == 0) {
 		layoutLabels();
 	}
 
-	if ((parent->width() < minWidth) && (worldMatrix.dx()+minWidth < parent->width())) {
+	if ((resizeW->size().width() < minWidth) && (worldMatrix.dx()+minWidth < resizeW->size().width())) {
 		//layoutLabels();
 		QTransform tmpMatrix = QTransform();
-		int dX = (parent->width()-minWidth) - worldMatrix.dx();
+		int dX = (resizeW->size().width()-minWidth) - worldMatrix.dx();
 		
 		tmpMatrix.translate(dX, 0);
 		worldMatrix.translate(dX, 0);
@@ -2240,7 +2240,6 @@ void DkMetaDataInfo::resizeEvent(QResizeEvent *resizeW) {
 	}
 
 	DkWidget::resizeEvent(resizeW);
-	update();
 }
 
 void DkMetaDataInfo::draw(QPainter* painter) {
@@ -2251,7 +2250,7 @@ void DkMetaDataInfo::draw(QPainter* painter) {
 		return;
 
 	//labels are left outside of the widget -> set gradient
-	if (parent->width() < minWidth && worldMatrix.dx() < 0) {
+	if (width() < minWidth && worldMatrix.dx() < 0) {
 		
 		if (-worldMatrix.dx() < leftGradientRect.width())
 			leftGradient.setFinalStop(-worldMatrix.dx(), 0);
@@ -2261,9 +2260,9 @@ void DkMetaDataInfo::draw(QPainter* painter) {
 		painter->fillRect(leftGradientRect, bgCol);
 
 	//labels are right outside of the widget -> set gradient
-	if (parent->width() < minWidth && worldMatrix.dx()+minWidth > parent->width()) {
+	if (width() < minWidth && worldMatrix.dx()+minWidth > width()) {
 		
-		int rightOffset = worldMatrix.dx()+minWidth-parent->width();
+		int rightOffset = worldMatrix.dx()+minWidth-width();
 		if (rightOffset < rightGradientRect.width())
 			rightGradient.setStart(rightGradientRect.left()+(rightGradientRect.width() - rightOffset), 0);
 		painter->fillRect(rightGradientRect, rightGradient);
@@ -2283,11 +2282,11 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
-	if (event->buttons() == Qt::LeftButton && parent->width() < minWidth)
+	if (event->buttons() == Qt::LeftButton && width() < minWidth)
 		QWidget::setCursor(Qt::ClosedHandCursor);
-	if (event->buttons() != Qt::LeftButton && parent->width() > minWidth)
+	if (event->buttons() != Qt::LeftButton && width() > minWidth)
 		QWidget::unsetCursor();
-	if (event->buttons() != Qt::LeftButton && parent->width() < minWidth)
+	if (event->buttons() != Qt::LeftButton && width() < minWidth)
 		QWidget::setCursor(Qt::OpenHandCursor);
 
 
@@ -2297,7 +2296,7 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 	int mouseDir = event->pos().x() - lastMousePos.x();
 
 
-	if (parent->width() < minWidth && event->buttons() == Qt::LeftButton) {
+	if (width() < minWidth && event->buttons() == Qt::LeftButton) {
 		
 		currentDx = mouseDir;
 
@@ -2306,7 +2305,7 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 		QTransform tmpMatrix = QTransform();
 		tmpMatrix.translate(currentDx, 0);
 
-		if (((worldMatrix.dx()+currentDx)+minWidth >= parent->width() && currentDx < 0) ||
+		if (((worldMatrix.dx()+currentDx)+minWidth >= width() && currentDx < 0) ||
 		    ((worldMatrix.dx()+currentDx) <= 0 && currentDx > 0)) {
 
 			worldMatrix.translate(currentDx, 0);
