@@ -502,6 +502,8 @@ public slots:
 	void openSettings();
 	void showExplorer(bool show);
 	void showMetaDataDock(bool show);
+	void showThumbsDock(bool show);
+	void thumbsDockAreaChanged();
 	void showRecentFiles(bool show = true);
 	void openDir();
 	void openFile();
@@ -701,6 +703,7 @@ protected:
 #endif
 	DkExplorer* explorer;
 	DkMetaDataDock* metaDataDock;
+	QDockWidget* thumbsDock;
 	DkExportTiffDialog* exportTiffDialog;
 	DkSettingsDialog* settingsDialog;
 	DkThumbsSaver* thumbSaver;

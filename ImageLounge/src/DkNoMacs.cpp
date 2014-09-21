@@ -96,9 +96,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	progressDialog = 0;
 	forceDialog = 0;
 	trainDialog = 0;
-#ifdef WITH_QUAZIP
-	archiveExtractionDialog = 0;
-#endif 
 	pluginManager = 0;
 	explorer = 0;
 	metaDataDock = 0;
@@ -106,6 +103,10 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	settingsDialog = 0;
 	printPreviewDialog = 0;
 	fileDownloader = 0;
+	thumbsDock = 0;
+#ifdef WITH_QUAZIP
+	archiveExtractionDialog = 0;
+#endif 
 
 	currRunningPlugin = QString();
 
@@ -1109,6 +1110,7 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_preview]->setStatusTip(tr("Show Thumbnails"));
 	panelActions[menu_panel_preview]->setCheckable(true);
 	connect(panelActions[menu_panel_preview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showPreview(bool)));
+	connect(panelActions[menu_panel_preview], SIGNAL(toggled(bool)), this, SLOT(showThumbsDock(bool)));
 
 	panelActions[menu_panel_thumbview] = new QAction(tr("&Thumbnail Preview"), this);
 	panelActions[menu_panel_thumbview]->setShortcut(QKeySequence(shortcut_open_thumbview));
@@ -1526,6 +1528,8 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
 		if (metaDataDock)
 			settings.setValue("metaDataDockLocation", QMainWindow::dockWidgetArea(metaDataDock));
+		if (thumbsDock)
+			settings.setValue("thumbsDockLocation", QMainWindow::dockWidgetArea(thumbsDock));
 
 		DkSettings::save();
 	}
@@ -2356,7 +2360,7 @@ void DkNoMacs::showMetaDataDock(bool show) {
 		QSettings& settings = Settings::instance().getSettings();
 		int dockLocation = settings.value("metaDataDockLocation", Qt::RightDockWidgetArea).toInt();
 
-		metaDataDock = new DkMetaDataDock(tr("Meta Data Info"));
+		metaDataDock = new DkMetaDataDock(tr("Meta Data Info"), this);
 		addDockWidget((Qt::DockWidgetArea)dockLocation, metaDataDock);
 		connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
 	}
@@ -2368,6 +2372,49 @@ void DkNoMacs::showMetaDataDock(bool show) {
 
 }
 
+void DkNoMacs::showThumbsDock(bool show) {
+
+	// TODO: trigger show event of widget
+	int winPos = viewport()->getController()->getFilePreview()->getWindowPosition();
+
+	if (winPos != DkFilePreview::cm_pos_dock_hor && winPos != DkFilePreview::cm_pos_dock_ver) {
+		if (thumbsDock)
+			thumbsDock->hide();
+		return;
+	}
+
+	if (!thumbsDock) {
+		QSettings& settings = Settings::instance().getSettings();
+		int dockLocation = settings.value("thumbsDockLocation", Qt::RightDockWidgetArea).toInt();
+
+		thumbsDock = new QDockWidget(tr("Thumbnails"), this);
+		thumbsDock->setWidget(viewport()->getController()->getFilePreview());
+		addDockWidget((Qt::DockWidgetArea)dockLocation, thumbsDock);
+		thumbsDockAreaChanged();
+
+		QLabel* thumbsTitle = new QLabel(thumbsDock);
+		thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+		thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
+		thumbsDock->setTitleBarWidget(thumbsTitle);
+
+		connect(thumbsDock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(thumbsDockAreaChanged()));
+	}
+
+	thumbsDock->setVisible(show);
+}
+
+void DkNoMacs::thumbsDockAreaChanged() {
+
+	Qt::DockWidgetArea area = dockWidgetArea(thumbsDock);
+
+	int thumbsOrientation = DkFilePreview::cm_pos_dock_hor;
+
+	if (area == Qt::DockWidgetArea::LeftDockWidgetArea || area == Qt::DockWidgetArea::RightDockWidgetArea)
+		thumbsOrientation = DkFilePreview::cm_pos_dock_ver;
+
+	viewport()->getController()->getFilePreview()->setWindowPosition(thumbsOrientation);
+
+}
 
 void DkNoMacs::openDir() {
 

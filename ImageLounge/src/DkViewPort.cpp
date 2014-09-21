@@ -234,7 +234,7 @@ void DkControlWidget::init() {
 	// add elements
 	changeThumbNailPosition(filePreview->getWindowPosition());
 	//hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, 1, hor_pos_end);
-	hudLayout->addWidget(folderScroll, top_scroll, left, 1, hor_pos_end);
+	hudLayout->addWidget(folderScroll, top_scroll, left_thumbs, 1, hor_pos_end);
 	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
 	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);

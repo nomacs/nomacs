@@ -60,11 +60,12 @@
         <file>img/crop-invert.png</file>
         <file>img/crop-invert-checked.png</file>
         <file>img/info.png</file>
-		<file>descriptions/nomacs-device.xml</file>
-		<file>descriptions/nomacs-service.xml</file>
-		<file>descriptions/nomacs_avtransport_scpd.xml</file>
-		<file>descriptions/nomacs_connectionmanager_sink_scpd.xml</file>
-		<file>descriptions/nomacs_mediarenderer_description.xml</file>
-		<file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
-    </qresource>
+        <file>img/widget-separator.png</file>
+        <file>descriptions/nomacs-device.xml</file>
+		    <file>descriptions/nomacs-service.xml</file>
+		    <file>descriptions/nomacs_avtransport_scpd.xml</file>
+		    <file>descriptions/nomacs_connectionmanager_sink_scpd.xml</file>
+		    <file>descriptions/nomacs_mediarenderer_description.xml</file>
+		    <file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
+        </qresource>
 </RCC>

@@ -29,6 +29,37 @@
 
 namespace nmc {
 
+// DkFilePreviewDock --------------------------------------------------------------------
+DkFilePreviewDock::DkFilePreviewDock(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) :
+	QDockWidget(title, parent, flags) {
+
+		init();
+}
+
+DkFilePreviewDock::DkFilePreviewDock(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) :
+	QDockWidget(parent, flags) {
+
+		init();
+}
+
+void DkFilePreviewDock::init() {
+	connect(this, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(dockLocationChangedSlot(Qt::DockWidgetArea)));
+}
+
+void DkFilePreviewDock::dockLocationChangedSlot(Qt::DockWidgetArea widgetArea) {
+
+	DkFilePreview* filePreview = static_cast<DkFilePreview*>(widget());
+
+	if (filePreview) {
+
+		//if (dock)
+
+		//filePreview->setWindowPosition(DkFilePreview::)
+
+	}
+
+}
+
 // DkFilePreview --------------------------------------------------------------------
 DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
@@ -96,12 +127,19 @@ void DkFilePreview::init() {
 
 void DkFilePreview::initOrientations() {
 
-	if (windowPosition == cm_pos_north || windowPosition == cm_pos_south)
+	if (windowPosition == cm_pos_north || windowPosition == cm_pos_south || windowPosition == cm_pos_dock_hor)
 		orientation = Qt::Horizontal;
-	else if (windowPosition == cm_pos_east || windowPosition == cm_pos_west)
+	else if (windowPosition == cm_pos_east || windowPosition == cm_pos_west || windowPosition == cm_pos_dock_ver)
 		orientation = Qt::Vertical;
 
+	if (windowPosition == cm_pos_dock_ver || windowPosition == cm_pos_dock_hor)
+		minHeight = 160;
+	else
+		minHeight = DkSettings::display.thumbSize;
+
 	if (orientation == Qt::Horizontal) {
+
+		setMinimumSize(20, 20);
 		setMaximumSize(QWIDGETSIZE_MAX, minHeight);
 		setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 		borderTrigger = (float)width()*winPercent;
@@ -109,6 +147,8 @@ void DkFilePreview::initOrientations() {
 		rightGradient = QLinearGradient(QPoint(width()-borderTrigger, 0), QPoint(width(), 0));
 	}
 	else {
+
+		setMinimumSize(20, 20);
 		setMaximumSize(minHeight, QWIDGETSIZE_MAX);
 		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 		borderTrigger = (float)height()*winPercent;
@@ -147,7 +187,7 @@ void DkFilePreview::saveSettings() {
 
 void DkFilePreview::createContextMenu() {
 
-	contextMenuActions.resize(cm_end);
+	contextMenuActions.resize(cm_end - 1);	// -1 because we just need to know of one dock widget
 
 	contextMenuActions[cm_pos_west] = new QAction(tr("Show Left"), this);
 	contextMenuActions[cm_pos_west]->setStatusTip(tr("Shows the Thumbnail Bar on the Left"));
@@ -164,6 +204,10 @@ void DkFilePreview::createContextMenu() {
 	contextMenuActions[cm_pos_south] = new QAction(tr("Show Bottom"), this);
 	contextMenuActions[cm_pos_south]->setStatusTip(tr("Shows the Thumbnail Bar at the Bottom"));
 	connect(contextMenuActions[cm_pos_south], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	contextMenuActions[cm_pos_dock_hor] = new QAction(tr("Undock"), this);
+	contextMenuActions[cm_pos_dock_hor]->setStatusTip(tr("Undock the thumbnails"));
+	connect(contextMenuActions[cm_pos_dock_hor], SIGNAL(triggered()), this, SLOT(newPosition()));
 
 	contextMenu = new QMenu(tr("File Preview Menu"), this);
 	contextMenu->addActions(contextMenuActions.toList());
@@ -202,8 +246,11 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(bgCol);
-	QRect r = QRect(QPoint(), this->size());
-	painter.drawRect(r);
+	
+	if (windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
+		QRect r = QRect(QPoint(), this->size());
+		painter.drawRect(r);
+	}
 
 	painter.setWorldTransform(worldMatrix);
 	painter.setWorldMatrixEnabled(true);
@@ -706,10 +753,17 @@ void DkFilePreview::newPosition() {
 		pos = cm_pos_south;
 		orientation = Qt::Horizontal;
 	}
+	else if (sender == contextMenuActions[cm_pos_dock_hor]) {
+		pos = cm_pos_dock_hor;
+		orientation = Qt::Horizontal;
+	}
 
 	windowPosition = pos;
 	initOrientations();
 	emit positionChangeSignal(windowPosition);
+
+	hide();
+	show();
 }
 
 void DkFilePreview::moveImages() {

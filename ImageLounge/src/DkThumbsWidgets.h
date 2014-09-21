@@ -33,6 +33,21 @@
 
 namespace nmc {
 
+class DkFilePreviewDock : public QDockWidget {
+	Q_OBJECT
+
+public:
+	DkFilePreviewDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	DkFilePreviewDock(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+protected slots:
+	void dockLocationChangedSlot(Qt::DockWidgetArea widgetArea);
+
+protected:
+	void init();
+};
+
+
 class DkFilePreview : public DkWidget {
 	Q_OBJECT
 
@@ -43,6 +58,8 @@ public:
 		cm_pos_north,
 		cm_pos_east,
 		cm_pos_south,
+		cm_pos_dock_hor,
+		cm_pos_dock_ver,
 
 		cm_end,
 	};
@@ -63,6 +80,12 @@ public:
 	};
 
 	void setVisible(bool visible);
+
+	void setWindowPosition(int position) {
+
+		windowPosition = position;
+		initOrientations();
+	};
 
 	int getWindowPosition() {
 
