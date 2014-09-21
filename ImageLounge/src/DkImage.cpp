@@ -189,6 +189,12 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		else 
 			files = getFilteredFileInfoList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
+		if (dirWatcher) {
+			if (!dirWatcher->directories().isEmpty())
+				dirWatcher->removePaths(dirWatcher->directories());
+			dirWatcher->addPath(dir.absolutePath());
+		}
+
 		if (files.empty()) {
 			emit showInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
 			return false;
@@ -747,6 +753,9 @@ void DkImageLoader::copyImageToTemp(QFileInfo tmpPath) {
 
 	//QFileInfo tmpPath = QFileInfo(DkSettings::global.tmpPath + "\\");
 
+	if (!currentImage)
+		return;
+
 	if (!tmpPath.exists()) {
 		// try default path specified
 		tmpPath = QFileInfo("C:\\fotobox\\print\\");		// TODO: update for different paths
@@ -1189,11 +1198,16 @@ void DkImageLoader::directoryChanged(const QString& path) {
 		// greater offset and slow down the system
 		if ((path.isEmpty() && timerBlockedUpdate) || (!path.isEmpty() && !delayedUpdateTimer.isActive())) {
 
+			bool filesWereEmpty = images.size() == 0;
+
 			loadDir(dir, false);
 			timerBlockedUpdate = false;
 
 			if (!path.isEmpty())
 				delayedUpdateTimer.start(500);
+
+			if (filesWereEmpty)
+				firstFile();
 		}
 		else
 			timerBlockedUpdate = true;

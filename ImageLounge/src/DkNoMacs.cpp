@@ -1530,7 +1530,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	panelActions[menu_panel_overview]->setEnabled(enable);
 	panelActions[menu_panel_player]->setEnabled(enable);
 	
-	viewActions[menu_view_fullscreen]->setEnabled(enable);
+	//viewActions[menu_view_fullscreen]->setEnabled(enable);
 	viewActions[menu_view_reset]->setEnabled(enable);
 	viewActions[menu_view_100]->setEnabled(enable);
 	viewActions[menu_view_fit_frame]->setEnabled(enable);

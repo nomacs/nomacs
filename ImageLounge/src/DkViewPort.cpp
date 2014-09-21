@@ -388,18 +388,18 @@ void DkControlWidget::resizeEvent(QResizeEvent *event) {
 
 void DkControlWidget::showWidgetsSettings() {
 
-	if (viewport->getImage().isNull()) {
-		showPreview(false);
-		showScroller(false);
-		showMetaData(false);
-		showFileInfo(false);
-		//showPlayer(false);
-		overviewWindow->hide();
-		showHistogram(false);
-		qrCodeConfirmDialog->hide();
-		socialConfirmDialog->hide();
-		return;
-	}
+	//if (viewport->getImage().isNull()) {
+	//	showPreview(false);
+	//	showScroller(false);
+	//	showMetaData(false);
+	//	showFileInfo(false);
+	//	//showPlayer(false);
+	//	overviewWindow->hide();
+	//	showHistogram(false);
+	//	qrCodeConfirmDialog->hide();
+	//	socialConfirmDialog->hide();
+	//	return;
+	//}
 
 	//qDebug() << "current app mode: " << DkSettings::app.currentAppMode;
 
@@ -1434,6 +1434,18 @@ void DkViewPort::drawBackground(QPainter *painter) {
 	
 	if (controller->getThumbWidget()->isVisible())
 		return;
+
+	if (parent && parent->isFullScreen()) {
+		painter->setWorldMatrixEnabled(false);
+		painter->fillRect(QRect(QPoint(), size()), DkSettings::slideShow.backgroundColor);
+		painter->setWorldMatrixEnabled(true);
+	}
+
+	if (backgroundBrush() != Qt::NoBrush) {
+		painter->setWorldMatrixEnabled(false);
+		painter->fillRect(QRect(QPoint(), size()), backgroundBrush());
+		painter->setWorldMatrixEnabled(true);
+	}
 
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
