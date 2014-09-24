@@ -106,8 +106,25 @@ double DkMemory::getFreeMemory() {
 }
 
 // DkUtils --------------------------------------------------------------------
-bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+#ifdef WIN32
 
+bool DkUtils::wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
+	return StrCmpLogicalW(lhs.c_str(),rhs.c_str()) < 0;
+	//return true;
+}
+
+bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+#if QT_VERSION < 0x050000
+	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
+	//return true;
+#else
+	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
+#endif
+}
+#else
+
+bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
+	
 	// check if the filenames are numbers only
 	// using double here lets nomacs sort correctly for files such as "1.jpg", "1.5.jpg", "2.jpg", which is nice
 	// double is accurate to approximately 16 significant digits, where using long long would work to about 19, so no big drawback.
@@ -130,22 +147,11 @@ bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 		return false;
 	}
 
-	// if none are numbers, fall back to string comparison - different code for windows and linux
-#ifdef WIN32
-
-	#if QT_VERSION < 0x050000
-		return StrCmpLogicalW(lhs.toStdWString(), rhs.toStdWString()) < 0;
-	#else
-		return StrCmpLogicalW((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16()) < 0;	// TODO: is this nice?
-	#endif
-
-#else // not WIN32
-
 	return lhs.localeAwareCompare(rhs) < 0;
-
+}
 #endif
 
-}
+
 
 
 bool DkUtils::compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {

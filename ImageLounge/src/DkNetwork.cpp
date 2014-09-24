@@ -1391,7 +1391,12 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 	else
 		storageLocation = QDir(QDir::home().absolutePath() + "/AppData/Roaming/nomacs/translations");
 #else
+#if QT_VERSION >= 0x050000
+	QDir storageLocation(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/data/" + QCoreApplication::organizationName() + "/" + QCoreApplication::applicationName());
+#else
 	QDir storageLocation(QDesktopServices::storageLocation(QDesktopServices::DataLocation)+"/translations/");
+#endif
+
 #endif //  WIN32
 
 	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
