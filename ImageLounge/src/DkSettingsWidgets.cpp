@@ -330,7 +330,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	cbZoomOnWheel = new QCheckBox(tr("Mouse Wheel Zooms"), showBarsWidget);
 	cbZoomOnWheel->setToolTip(tr("If unchecked, the mouse wheel switches between images."));
 	cbZoomOnWheel->setMinimumSize(cbZoomOnWheel->sizeHint());
-	cbCheckForUpdates = new QCheckBox(tr("Check for Updates"));
+	cbCheckForUpdates = new QCheckBox(tr("Check for Updates"), showBarsWidget);
 	showBarsLayout->addWidget(cbShowMenu);
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
@@ -340,6 +340,10 @@ void DkGlobalSettingsWidget::createLayout() {
 	showBarsLayout->addWidget(cbCloseOnEsc);
 	showBarsLayout->addWidget(cbZoomOnWheel);
 	showBarsLayout->addWidget(cbCheckForUpdates);
+
+#ifdef Q_WS_X11 // hide checkbox in linux
+	cbCheckForUpdates->hide();
+#endif
 
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(rightWidget);
