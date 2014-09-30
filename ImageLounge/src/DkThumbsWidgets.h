@@ -33,21 +33,6 @@
 
 namespace nmc {
 
-class DkFilePreviewDock : public QDockWidget {
-	Q_OBJECT
-
-public:
-	DkFilePreviewDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	DkFilePreviewDock(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
-protected slots:
-	void dockLocationChangedSlot(Qt::DockWidgetArea widgetArea);
-
-protected:
-	void init();
-};
-
-
 class DkFilePreview : public DkWidget {
 	Q_OBJECT
 

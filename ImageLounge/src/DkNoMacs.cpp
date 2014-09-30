@@ -2363,6 +2363,7 @@ void DkNoMacs::showMetaDataDock(bool show) {
 		metaDataDock = new DkMetaDataDock(tr("Meta Data Info"), this);
 		addDockWidget((Qt::DockWidgetArea)dockLocation, metaDataDock);
 		connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
+
 	}
 
 	metaDataDock->setVisible(show);
@@ -2374,7 +2375,6 @@ void DkNoMacs::showMetaDataDock(bool show) {
 
 void DkNoMacs::showThumbsDock(bool show) {
 
-	// TODO: trigger show event of widget
 	int winPos = viewport()->getController()->getFilePreview()->getWindowPosition();
 
 	if (winPos != DkFilePreview::cm_pos_dock_hor && winPos != DkFilePreview::cm_pos_dock_ver) {
@@ -2395,6 +2395,8 @@ void DkNoMacs::showThumbsDock(bool show) {
 		QLabel* thumbsTitle = new QLabel(thumbsDock);
 		thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 		thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
+		thumbsTitle->setStyleSheet("QLabel{background: rgba(0,0,0,40);}");
+		thumbsTitle->setFixedHeight(16);
 		thumbsDock->setTitleBarWidget(thumbsTitle);
 
 		connect(thumbsDock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(thumbsDockAreaChanged()));

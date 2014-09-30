@@ -29,37 +29,6 @@
 
 namespace nmc {
 
-// DkFilePreviewDock --------------------------------------------------------------------
-DkFilePreviewDock::DkFilePreviewDock(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) :
-	QDockWidget(title, parent, flags) {
-
-		init();
-}
-
-DkFilePreviewDock::DkFilePreviewDock(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) :
-	QDockWidget(parent, flags) {
-
-		init();
-}
-
-void DkFilePreviewDock::init() {
-	connect(this, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(dockLocationChangedSlot(Qt::DockWidgetArea)));
-}
-
-void DkFilePreviewDock::dockLocationChangedSlot(Qt::DockWidgetArea widgetArea) {
-
-	DkFilePreview* filePreview = static_cast<DkFilePreview*>(widget());
-
-	if (filePreview) {
-
-		//if (dock)
-
-		//filePreview->setWindowPosition(DkFilePreview::)
-
-	}
-
-}
-
 // DkFilePreview --------------------------------------------------------------------
 DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
