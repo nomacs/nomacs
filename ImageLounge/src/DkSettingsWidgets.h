@@ -416,6 +416,7 @@ private:
 	QCheckBox* cbCloseOnEsc;
 	QCheckBox* cbShowRecentFiles;
 	QCheckBox* cbZoomOnWheel;
+	QCheckBox* cbCheckForUpdates;
 
 	DkColorChooser* highlightColorChooser;
 	DkColorChooser* bgColorWidgetChooser;

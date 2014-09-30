@@ -218,6 +218,7 @@ public:
 		bool allowPosition;
 		bool allowFile;
 		bool allowImage;
+		bool checkForUpdates;
 		bool updateDialogShown;
 		QDate lastUpdateCheck;
 		bool syncAbsoluteTransform;
