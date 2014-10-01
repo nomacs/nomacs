@@ -2411,7 +2411,7 @@ void DkNoMacs::thumbsDockAreaChanged() {
 
 	int thumbsOrientation = DkFilePreview::cm_pos_dock_hor;
 
-	if (area == Qt::DockWidgetArea::LeftDockWidgetArea || area == Qt::DockWidgetArea::RightDockWidgetArea)
+	if (area == Qt::LeftDockWidgetArea || area == Qt::RightDockWidgetArea)
 		thumbsOrientation = DkFilePreview::cm_pos_dock_ver;
 
 	viewport()->getController()->getFilePreview()->setWindowPosition(thumbsOrientation);
