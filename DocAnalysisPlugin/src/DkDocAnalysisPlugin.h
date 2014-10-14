@@ -137,6 +137,7 @@ class DkDocAnalysisToolBar : public QToolBar {
 
 public:
 
+	/**< Enum to handle all icons for this toolbar **/
 	enum {
 		linedetection_icon = 0,
 		showbottomlines_icon,
@@ -149,44 +150,66 @@ public:
 		icons_end,
 	};
 
+	/**< Enum to handle all actions for this toolbar **/
+	enum {
+		linedetection_action = 0,
+		showbottomlines_action,
+		showtoplines_action,
+		distance_action,
+		magic_action,
+		savecut_action,
+		clearselection_action,
+
+		actions_end,
+	};
+
+
 	DkDocAnalysisToolBar(const QString & title, QWidget * parent = 0);
 	virtual ~DkDocAnalysisToolBar();
 
+	void enableNoImageActions(bool enable);
 
 public slots:
+	
+	virtual void setVisible(bool visible);
+
+	// slots connected to the toolbar icons
 	void on_linedetectionAction_triggered();
-	void on_showbottomlinesAction_toggled(bool checked);
-	void on_showtoplinesAction_toggled(bool checked);
+	void on_showbottomlinesAction_triggered();
+	void on_showtoplinesAction_triggered();
 	void on_distanceAction_toggled(bool checked);
 	void on_magicAction_toggled(bool checked);
 	void on_savecutAction_triggered();
 	void on_clearselectionAction_triggered();
 	void on_toleranceBox_valueChanged(int val);
 
-	virtual void setVisible(bool visible);
+	// slots for signals coming from the view port
+	void pickSeedpointCanceled();
+	void pickSeedpointStarted();
+	void measureDistanceCanceled();
+	void measureDistanceStarted();
+	void enableButtonSaveCut(bool enable);
+	void enableButtonShowTextLines(bool enable);
+	void toggleBottomTextLinesButton(bool toggle);
+	void toggleTopTextLinesButton(bool toggle);
 
 signals:
-	void applySignal();
-	void cancelSignal();
-	void colorSignal(QColor color);
-	void widthSignal(int width);
-	void paintHint(int paintMode);
-	void shadingHint(bool invert);
-	void panSignal(bool checked);
+	// signals to the viewport
+	void pickSeedpointRequest(bool);  /**< Signal to either start or cancel the magic cut selection tool **/
+	void clearSelectionSignal(); /**< Signal to declare that the current selection shall be resetted **/
+	void toleranceChanged(int); /**< Signal to signal if the tolerance setting has been changed **/
+	void measureDistanceRequest(bool); /**< Signal to either start or cancel the distance measure tool **/
+	void openCutDialogSignal(); /**< Signal to open the save magic cut dialog **/
+	void detectLinesSignal(); /**< Signal to start the line detection on the current image **/
+	void showBottomTextLinesSignal(bool); /**< Signal to either show or hide the previously detected bottom text lines **/
+	void showTopTextLinesSignal(bool); /**< Signal to either show or hide the previously detected top text lines **/
 
 protected:
 	void createLayout();
 	void createIcons();
 
-	QPushButton* penColButton;
-	QColorDialog* colorDialog;
-	QSpinBox* widthBox;
-	QSpinBox* alphaBox;
-	QColor penCol;
-	int penAlpha;
-	QAction* panAction;
-
-	QVector<QIcon> icons;		// needed for colorizing
+	QVector<QIcon> icons; /**< List of all icons **/
+	QVector<QAction *> actions; /**< List of all actions **/
 	
 };
 

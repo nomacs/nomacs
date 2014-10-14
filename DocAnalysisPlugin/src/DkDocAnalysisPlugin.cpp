@@ -449,6 +449,16 @@ DkDocAnalysisToolBar::~DkDocAnalysisToolBar() {
 	qDebug() << "[DOCANALYSIS TOOLBAR] deleted...";
 }
 
+/**
+* Enables/Disables All the actions which require a loaded image
+**/
+void DkDocAnalysisToolBar::enableNoImageActions(bool enable) {
+
+	actions[linedetection_action]->setEnabled(enable);
+	actions[distance_action]->setEnabled(enable);
+	actions[magic_action]->setEnabled(enable);
+}
+
 void DkDocAnalysisToolBar::createIcons() {
 
 	// create icons
@@ -478,6 +488,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	/*QList<QKeySequence> enterSc;
 	enterSc.append(QKeySequence(Qt::Key_Enter));
 	enterSc.append(QKeySequence(Qt::Key_Return));*/
+	actions.resize(actions_end);
 
 	QAction* linedetectionAction = new QAction(icons[linedetection_icon], tr("Detect text lines"), this);
 	linedetectionAction->setShortcut(Qt::SHIFT + Qt::Key_D);
@@ -486,6 +497,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	linedetectionAction->setChecked(false);
 	linedetectionAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
 	linedetectionAction->setObjectName("linedetectionAction");
+	actions[linedetection_action] = linedetectionAction;
 
 	QAction* showbottomlinesAction = new QAction(icons[showbottomlines_icon], tr("Show detected bottom text lines"), this);
 	showbottomlinesAction->setShortcut(Qt::SHIFT + Qt::Key_L);
@@ -495,6 +507,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	showbottomlinesAction->setEnabled(false);
 	showbottomlinesAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
 	showbottomlinesAction->setObjectName("showbottomlinesAction");
+	actions[showbottomlines_action] = showbottomlinesAction;
 
 	QAction* showtoplinesAction = new QAction(icons[showtoplines_icon], tr("Show detected top text lines"), this);
 	showtoplinesAction->setShortcut(Qt::SHIFT + Qt::Key_U);
@@ -504,6 +517,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	showtoplinesAction->setEnabled(false);
 	showtoplinesAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
 	showtoplinesAction->setObjectName("showtoplinesAction");
+	actions[showtoplines_action] = showtoplinesAction;
 
 	QAction* distanceAction = new QAction(icons[distance_icon], tr("Measure distance"), this);
 	distanceAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_D);
@@ -512,6 +526,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	distanceAction->setChecked(false);
 	distanceAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
 	distanceAction->setObjectName("distanceAction");
+	actions[distance_action] = distanceAction;
 
 	QAction* magicAction = new QAction(icons[magic_icon], tr("Select region"), this);
 	magicAction->setShortcut(Qt::SHIFT + Qt::Key_S);
@@ -520,6 +535,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	magicAction->setChecked(false);
 	magicAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
 	magicAction->setObjectName("magicAction");
+	actions[magic_action] = magicAction;
 
 	QAction* savecutAction = new QAction(icons[savecut_icon], tr("Save the selected region"), this);
 	savecutAction->setStatusTip(tr("Open the Save Dialog for saving the currently selected region"));
@@ -528,6 +544,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	savecutAction->setEnabled(false);
 	savecutAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
 	savecutAction->setObjectName("savecutAction");
+	actions[savecut_action] = savecutAction;
 
 	QAction* clearselectionAction = new QAction(icons[clearselection_icon], tr("Clear selection"), this);
 	clearselectionAction->setShortcut(Qt::SHIFT + Qt::Key_C);
@@ -537,6 +554,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	clearselectionAction->setEnabled(false);
 	clearselectionAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
 	clearselectionAction->setObjectName("clearselectionAction");
+	actions[clearselection_action] = clearselectionAction;
 
 	QLabel *lbl_tolerance = new QLabel(tr("Tolerance:"));
 	lbl_tolerance->setStatusTip(tr("Set the maximum color difference tolerance for flood-filling"));
@@ -563,45 +581,153 @@ void DkDocAnalysisToolBar::createLayout() {
 	addWidget(toleranceBox);
 }
 
+/**
+* Make the DocAnalyis toolbar visible
+**/
 void DkDocAnalysisToolBar::setVisible(bool visible) {
-
-	
 
 	qDebug() << "[DOCANALYSIS TOOLBAR] set visible: " << visible;
 
 	QToolBar::setVisible(visible);
 }
 
+/**
+* Called when the detect lines tool icon is clicked.
+* Emits signal (a request) to open the configuration dialog for detecting text lines.
+* \sa detectLinesSignal() DkViewPortContrast::openLineDetectionDialog() DkLineDetection
+**/
 void DkDocAnalysisToolBar::on_linedetectionAction_triggered() {
-
+	emit detectLinesSignal();
 }
 
-void DkDocAnalysisToolBar::on_showbottomlinesAction_toggled(bool checked) {
-
+/**
+* Called when the show bottom text lines tool icon is pressed.
+* Willd display the previously detected bottom text lines if available.
+* Emits signal (a request) to display/hide the lines.
+* \sa showBottomTextLinesSignal(bool) DkViewPortContrast::showBottomTextLines(bool show) DkLineDetection
+**/
+void DkDocAnalysisToolBar::on_showbottomlinesAction_triggered() {
+	emit showBottomTextLinesSignal(actions[showbottomlines_action]->isChecked());
 }
 
-void DkDocAnalysisToolBar::on_showtoplinesAction_toggled(bool checked) {
-
+/**
+* Called when the show top text lines tool icon is pressed.
+* Willd display the previously detected top text lines if available.
+* Emits signal (a request) to display/hide the lines.
+* \sa showTopTextLinesSignal(bool) DkViewPortContrast::showBottomTextLines(bool show) DkLineDetection
+**/
+void DkDocAnalysisToolBar::on_showtoplinesAction_triggered() {
+	emit showTopTextLinesSignal(actions[showtoplines_action]->isChecked());
 }
 
+/**
+* Called when the measure distance tool icon is clicked.
+* Emits signal (a request) to start/end this tool.
+* \sa measureDistanceRequest(bool) DkViewPortContrast::pickDistancePoint(bool pick) DkDistanceMeasure
+**/
 void DkDocAnalysisToolBar::on_distanceAction_toggled(bool checked) {
-
+	emit measureDistanceRequest(actions[distance_action]->isChecked());
 }
 
+/**
+* Called when the magic cut tool icon is clicked.
+* Emits signal (a request) to start/end this tool.
+* \sa pickSeedpointRequest(bool) DkViewPortContrast::pickSeedpoint(bool pick) DkMagicCut
+**/
 void DkDocAnalysisToolBar::on_magicAction_toggled(bool checked) {
-
+	emit pickSeedpointRequest(actions[magic_action]->isChecked());
 }
 
+/**
+* Called when the currently selected magic cut areas shall be saved (click on the icon)
+* \sa openCutDialogSignal() DkViewPortContrast::openMagicCutDialog() DkMagicCutDialog
+**/
 void DkDocAnalysisToolBar::on_savecutAction_triggered() {
-
+	emit openCutDialogSignal();
 }
 
+/**
+* Called when the clear magic cut selection tool icon is clicked.
+* Emits signal (a request) to clear all selected magic cut regions.
+* \sa clearSelectionSignal() DkViewPortContrast::clearMagicCut() DkMagicCut
+**/
 void DkDocAnalysisToolBar::on_clearselectionAction_triggered() {
-
+	emit clearSelectionSignal();
 }
 
+/**
+* Called when the tolerance value has changed within the toolbar.
+* @param value The new tolerance value
+* \sa toeranceChanged(int) DkViewPortContrast::setMagicCutTolerance(int) DkMagicCut::magicwand(QPoint)
+**/
 void DkDocAnalysisToolBar::on_toleranceBox_valueChanged(int value) {
+	emit toleranceChanged(value);
+}
 
+
+/**
+* Slot - called when the user canceles during picking a seedpoint in the magic cut tool.
+* Untoggles the corresponding tool icon.
+**/
+void DkDocAnalysisToolBar::pickSeedpointCanceled() {
+	actions[magic_action]->setChecked(false);
+}
+
+/**
+* Slot - called when the user starts the picking seedpoints for magic cut tool (e.g. via shortcut).
+* Toggles the corresponding tool icon.
+**/
+void DkDocAnalysisToolBar::pickSeedpointStarted() {
+	actions[magic_action]->setChecked(true);
+}
+
+/**
+* Slot - called when the user canceles during picking a distance measure point.
+* Untoggles the corresponding tool icon.
+**/
+void DkDocAnalysisToolBar::measureDistanceCanceled() {
+	actions[distance_action]->setChecked(false);
+}
+
+/**
+* Slot - called when the user requests to measure the distance (e.g. via shortcut).
+* Toggles the corresponding tool icon.
+**/
+void DkDocAnalysisToolBar::measureDistanceStarted() {
+	actions[distance_action]->setChecked(true);
+}
+
+/**
+* Slot - called when the icon should be enabled or disabled (e.g. nothing selected, no image, ...)
+**/
+void DkDocAnalysisToolBar::enableButtonSaveCut(bool enable) {
+	actions[savecut_action]->setEnabled(enable);
+	// also enable the clear selection, since something has been selected
+	actions[clearselection_action]->setEnabled(enable);
+}
+
+/**
+* Slot - called when the icon should be enabled or disabled (e.g. no image, no text lines detected...)
+**/
+void DkDocAnalysisToolBar::enableButtonShowTextLines(bool enable) {
+	actions[showbottomlines_action]->setEnabled(enable);
+	actions[showtoplines_action]->setEnabled(enable);
+}
+
+/**
+* Slot - called when after calculation of text lines the bottom text lines are automatically
+* displayed to also toggle the corresponding icon
+**/
+void DkDocAnalysisToolBar::toggleBottomTextLinesButton(bool toggle) {
+	actions[showbottomlines_action]->setChecked(toggle);
+}
+
+/**
+* Slot - called when after calculation of text lines the top text lines are automatically
+* enabled, in case they have been enabled in a previous text line calculation
+**/
+void DkDocAnalysisToolBar::toggleTopTextLinesButton(bool toggle) {
+	actions[showtoplines_action]->setChecked(toggle);
 }
 
 
