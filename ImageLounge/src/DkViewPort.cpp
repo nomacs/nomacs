@@ -617,6 +617,8 @@ void DkControlWidget::changeThumbNailPosition(int pos) {
 	else if (pos == DkFilePreview::cm_pos_south) {
 		hudLayout->addWidget(filePreview, bottom_thumbs, left_thumbs, 1, hor_pos_end);	
 	}
+	else 
+		filePreview->hide();
 
 }
 

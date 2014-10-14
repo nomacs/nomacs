@@ -142,6 +142,7 @@ void DkNoMacs::release() {
 
 void DkNoMacs::init() {
 
+	//setStyleSheet("QMainWindow::separator{width: 1px; background: " + DkUtils::colorToString(DkSettings::display.bgColor) + "}");
 	//setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
 
 // assign icon -> in windows the 32px version
@@ -232,6 +233,7 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialog(const QString&)));
+	connect(viewport()->getController()->getFilePreview(), SIGNAL(showThumbsDockSignal(bool)), this, SLOT(showThumbsDock(bool)));
 
 	enableMovieActions(false);
 
@@ -2395,14 +2397,15 @@ void DkNoMacs::showThumbsDock(bool show) {
 		QLabel* thumbsTitle = new QLabel(thumbsDock);
 		thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 		thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
-		thumbsTitle->setStyleSheet("QLabel{background: rgba(0,0,0,40);}");
+		thumbsTitle->setStyleSheet("QLabel{background: rgba(0,0,0,1);}");
 		thumbsTitle->setFixedHeight(16);
 		thumbsDock->setTitleBarWidget(thumbsTitle);
 
 		connect(thumbsDock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)), this, SLOT(thumbsDockAreaChanged()));
 	}
 
-	thumbsDock->setVisible(show);
+	if (show != thumbsDock->isVisible())
+		thumbsDock->setVisible(show);
 }
 
 void DkNoMacs::thumbsDockAreaChanged() {

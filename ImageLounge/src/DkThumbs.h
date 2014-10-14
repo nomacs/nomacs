@@ -49,6 +49,8 @@
 
 namespace nmc {
 
+#define max_thumb_size 160
+
 /**
  * This class holds thumbnails.
  **/ 
@@ -319,7 +321,6 @@ private:
 	bool somethingTodo;
 	int numFilesLoaded;
 	QMutex mutex;
-	static int maxThumbSize;
 	int loadLimit;
 	int startIdx;
 	int endIdx;

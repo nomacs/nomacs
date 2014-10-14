@@ -124,6 +124,7 @@ public:
 
 	bool getCurrentDisplaySetting() {
 		
+
 		if (!displaySettingsBits)
 			return false;
 

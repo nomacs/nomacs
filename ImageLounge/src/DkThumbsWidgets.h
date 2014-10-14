@@ -89,6 +89,7 @@ signals:
 	//void loadThumbsSignal(int start, int end);
 	void changeFileSignal(int idx);
 	void positionChangeSignal(int pos);
+	void showThumbsDockSignal(bool show);
 
 protected:
 	void paintEvent(QPaintEvent *event);

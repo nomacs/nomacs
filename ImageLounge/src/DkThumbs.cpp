@@ -31,9 +31,6 @@
 
 namespace nmc {
 
-
-int DkThumbsLoader::maxThumbSize = 160;
-
 /**
 * Default constructor.
 * @param file the corresponding file

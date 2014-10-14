@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkThumbsWidgets.h"
+#include "DkThumbs.h"
 
 namespace nmc {
 
@@ -102,7 +103,7 @@ void DkFilePreview::initOrientations() {
 		orientation = Qt::Vertical;
 
 	if (windowPosition == cm_pos_dock_ver || windowPosition == cm_pos_dock_hor)
-		minHeight = 160;
+		minHeight = max_thumb_size;
 	else
 		minHeight = DkSettings::display.thumbSize;
 
@@ -189,7 +190,7 @@ void DkFilePreview::paintEvent(QPaintEvent* event) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (minHeight != DkSettings::display.thumbSize + yOffset) {
+	if (minHeight != DkSettings::display.thumbSize + yOffset && windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
 
 		xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
@@ -650,7 +651,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkFilePreview::wheelEvent(QWheelEvent *event) {
 
-	if (event->modifiers() == Qt::CTRL) {
+	if (event->modifiers() == Qt::CTRL && windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
 
 		int newSize = DkSettings::display.thumbSize;
 		newSize += qRound(event->delta()*0.05f);
@@ -705,34 +706,44 @@ void DkFilePreview::newPosition() {
 		return;
 
 	int pos = 0;
+	Qt::Orientation or;
 
 	if (sender == contextMenuActions[cm_pos_west]) {
 		pos = cm_pos_west;
-		orientation = Qt::Vertical;
+		or = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_east]) {
 		pos = cm_pos_east;
-		orientation = Qt::Vertical;
+		or = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_north]) {
 		pos = cm_pos_north;
-		orientation = Qt::Horizontal;
+		or = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_south]) {
 		pos = cm_pos_south;
-		orientation = Qt::Horizontal;
+		or = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_dock_hor]) {
 		pos = cm_pos_dock_hor;
-		orientation = Qt::Horizontal;
+		or = Qt::Horizontal;
 	}
 
+	// don't apply twice
+	if (windowPosition == pos || pos == cm_pos_dock_hor && windowPosition == cm_pos_dock_ver)
+		return;
+
+
+
 	windowPosition = pos;
+	orientation = or;
 	initOrientations();
 	emit positionChangeSignal(windowPosition);
 
 	hide();
 	show();
+
+	//emit showThumbsDockSignal(true);
 }
 
 void DkFilePreview::moveImages() {
@@ -837,6 +848,8 @@ void DkFilePreview::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thu
 }
 
 void DkFilePreview::setVisible(bool visible) {
+
+	emit showThumbsDockSignal(visible);
 
 	DkWidget::setVisible(visible);
 }
