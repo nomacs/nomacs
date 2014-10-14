@@ -36,23 +36,19 @@ endif(NOT EXIV2_FOUND)
 # search for opencv
 unset(OpenCV_FOUND CACHE)
 if(ENABLE_OPENCV)
-	set(OpenCV_LIBS "")
-	set(OpenCV_FOUND false)
-	if(PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
-		pkg_check_modules(OpenCV  opencv>=2.1.0)
-		set(OpenCV_LIBS ${OpenCV_LIBRARIES})
-	endif(PKG_CONFIG_FOUND)
-
-	if(OpenCV_LIBS STREQUAL "")
-		find_package(OpenCV 2.1.0 REQUIRED core imgproc)
-	endif(OpenCV_LIBS STREQUAL "")
-
+	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
 	if(NOT OpenCV_FOUND)
-		message(FATAL_ERROR "OpenCV not found.") 
-	else()
-		add_definitions(-DWITH_OPENCV)
+		# Older OpenCV versions only supplied pkg-config files
+		if(PKG_CONFIG_FOUND)
+			pkg_check_modules(OpenCV opencv>=2.1.0)
+		endif()
 	endif()
 
+	if(NOT OpenCV_FOUND)
+		message(FATAL_ERROR "OpenCV not found, but requested.")
+	endif()
+
+	add_definitions(-DWITH_OPENCV)
 	if(${OpenCV_VERSION} EQUAL "2.1.0")
 		add_definitions(-DDISABLE_LANCZOS)
 	endif()
