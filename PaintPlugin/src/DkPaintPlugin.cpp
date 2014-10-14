@@ -338,8 +338,9 @@ QImage DkPaintViewPort::getPaintedImage() {
 
 				QPainter painter(&img);
 
-				if (worldMatrix)
-					painter.setWorldTransform(*worldMatrix);
+				// >DIR: do not apply world matrix if painting in the image [14.10.2014 markus]
+				//if (worldMatrix)
+				//	painter.setWorldTransform(*worldMatrix);
 
 				for (int idx = 0; idx < paths.size(); idx++) {
 					painter.setPen(pathsPen.at(idx));
