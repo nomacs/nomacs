@@ -41,6 +41,7 @@
 #include <QColorDialog>
 #include <QSpinBox>
 #include <QPushButton>
+#include <QLabel>
 
 #include "DkPluginInterface.h"
 #include "DkNoMacs.h"
@@ -50,13 +51,13 @@
 #include "DkImageStorage.h"
 
 // Workaround
-//#define PLUGIN_ID "5232a9d4459e431fb9b686365e693a30"
-//#define PLUGIN_VERSION "1.0.0"
+#define PLUGIN_ID "5232a9d4459e431fb9b686365e693a30"
+#define PLUGIN_VERSION "1.0.0"
 
 namespace nmc {
 
-class DkPaintViewPort;
-class DkPaintToolBar;
+class DkDocAnalysisViewPort;
+class DkDocAnalysisToolBar;
 
 class DkDocAnalysisPlugin : public QObject, DkViewPortInterface {
     Q_OBJECT
@@ -87,12 +88,12 @@ protected slots:
 	void viewportDestroyed();
 };
 
-class DkPaintViewPort : public DkPluginViewPort {
+class DkDocAnalysisViewPort : public DkPluginViewPort {
 	Q_OBJECT
 
 public:
-	DkPaintViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	~DkPaintViewPort();
+	DkDocAnalysisViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	~DkDocAnalysisViewPort();
 	
 	QBrush getBrush() const;
 	QPen getPen() const;
@@ -125,36 +126,43 @@ protected:
 	QPen pen;
 	QPointF lastPoint;
 	bool panning;
-	DkPaintToolBar* paintToolbar;
+	DkDocAnalysisToolBar* docAnalysisToolbar;
 	QCursor defaultCursor;
 };
 
 
-class DkPaintToolBar : public QToolBar {
+class DkDocAnalysisToolBar : public QToolBar {
 	Q_OBJECT
 
 
 public:
 
 	enum {
-		apply_icon = 0,
-		cancel_icon,
-		pan_icon,
+		linedetection_icon = 0,
+		showbottomlines_icon,
+		showtoplines_icon,
+		distance_icon,
+		magic_icon,
+		savecut_icon,
+		clearselection_icon,
 
 		icons_end,
 	};
 
-	DkPaintToolBar(const QString & title, QWidget * parent = 0);
-	virtual ~DkPaintToolBar();
+	DkDocAnalysisToolBar(const QString & title, QWidget * parent = 0);
+	virtual ~DkDocAnalysisToolBar();
 
 
 public slots:
-	void on_applyAction_triggered();
-	void on_cancelAction_triggered();
-	void on_panAction_toggled(bool checked);
-	void on_penColButton_clicked();
-	void on_widthBox_valueChanged(int val);
-	void on_alphaBox_valueChanged(int val);
+	void on_linedetectionAction_triggered();
+	void on_showbottomlinesAction_toggled(bool checked);
+	void on_showtoplinesAction_toggled(bool checked);
+	void on_distanceAction_toggled(bool checked);
+	void on_magicAction_toggled(bool checked);
+	void on_savecutAction_triggered();
+	void on_clearselectionAction_triggered();
+	void on_toleranceBox_valueChanged(int val);
+
 	virtual void setVisible(bool visible);
 
 signals:

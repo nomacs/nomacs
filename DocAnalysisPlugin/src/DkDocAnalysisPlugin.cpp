@@ -137,7 +137,7 @@ QImage DkDocAnalysisPlugin::runPlugin(const QString &runID, const QImage &image)
 	//for a viewport plugin runID and image are null
 	if (viewport) {
 
-		DkPaintViewPort* paintViewport = dynamic_cast<DkPaintViewPort*>(viewport);
+		DkDocAnalysisViewPort* paintViewport = dynamic_cast<DkDocAnalysisViewPort*>(viewport);
 
 		QImage retImg = QImage();
 		if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
@@ -156,7 +156,7 @@ QImage DkDocAnalysisPlugin::runPlugin(const QString &runID, const QImage &image)
 DkPluginViewPort* DkDocAnalysisPlugin::getViewPort() {
 
 	if (!viewport) {
-		viewport = new DkPaintViewPort();
+		viewport = new DkDocAnalysisViewPort();
 		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
 	}
 	return viewport;
@@ -182,26 +182,26 @@ void DkDocAnalysisPlugin::deleteViewPort() {
 Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkDocAnalysisPlugin/1.0", DkDocAnalysisPlugin)
 
 
-/*-----------------------------------DkPaintViewPort ---------------------------------------------*/
+/*-----------------------------------DkDocAnalysisViewPort ---------------------------------------------*/
 
-DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
+DkDocAnalysisViewPort::DkDocAnalysisViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
 
 	init();
 }
 
-DkPaintViewPort::~DkPaintViewPort() {
+DkDocAnalysisViewPort::~DkDocAnalysisViewPort() {
 	qDebug() << "[PAINT VIEWPORT] deleted...";
 	
 	// acitive deletion since the MainWindow takes ownership...
 	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
 	// however, then we have lot's of toolbars in memory if the user opens the plugin again and again
-	if (paintToolbar) {
-		delete paintToolbar;
-		paintToolbar = 0;
+	if (docAnalysisToolbar) {
+		delete docAnalysisToolbar;
+		docAnalysisToolbar = 0;
 	}
 }
 
-void DkPaintViewPort::init() {
+void DkDocAnalysisViewPort::init() {
 	
 	panning = false;
 	cancelTriggered = false;
@@ -213,18 +213,18 @@ void DkPaintViewPort::init() {
 	pen.setJoinStyle(Qt::RoundJoin);
 	pen.setWidth(1);
 	
-	paintToolbar = new DkPaintToolBar(tr("Paint Toolbar"), this);
+	docAnalysisToolbar = new DkDocAnalysisToolBar(tr("Paint Toolbar"), this);
 
-	connect(paintToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
-	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
-	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
-	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
-	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
+	connect(docAnalysisToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
+	connect(docAnalysisToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
+	connect(docAnalysisToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
+	connect(docAnalysisToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
+	connect(docAnalysisToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 	
 	DkPluginViewPort::init();
 }
 
-void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
+void DkDocAnalysisViewPort::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->buttons() == Qt::LeftButton && 
@@ -258,7 +258,7 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 	// no propagation
 }
 
-void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
+void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->modifiers() == DkSettings::global.altMod ||
@@ -297,7 +297,7 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 	//QWidget::mouseMoveEvent(event);	// do not propagate mouse event
 }
 
-void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
+void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
 	if (event->modifiers() == DkSettings::global.altMod || panning) {
@@ -308,7 +308,7 @@ void DkPaintViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	}
 }
 
-void DkPaintViewPort::paintEvent(QPaintEvent *event) {
+void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
 	
@@ -326,7 +326,7 @@ void DkPaintViewPort::paintEvent(QPaintEvent *event) {
 	DkPluginViewPort::paintEvent(event);
 }
 
-QImage DkPaintViewPort::getPaintedImage() {
+QImage DkDocAnalysisViewPort::getPaintedImage() {
 
 	if(parent()) {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
@@ -355,25 +355,25 @@ QImage DkPaintViewPort::getPaintedImage() {
 	return QImage();
 }
 
-void DkPaintViewPort::setBrush(const QBrush& brush) {
+void DkDocAnalysisViewPort::setBrush(const QBrush& brush) {
 	this->brush = brush;
 }
 
-void DkPaintViewPort::setPen(const QPen& pen) {
+void DkDocAnalysisViewPort::setPen(const QPen& pen) {
 	this->pen = pen;
 }
 
-void DkPaintViewPort::setPenWidth(int width) {
+void DkDocAnalysisViewPort::setPenWidth(int width) {
 
 	this->pen.setWidth(width);
 }
 
-void DkPaintViewPort::setPenColor(QColor color) {
+void DkDocAnalysisViewPort::setPenColor(QColor color) {
 
 	this->pen.setColor(color);
 }
 
-void DkPaintViewPort::setPanning(bool checked) {
+void DkDocAnalysisViewPort::setPanning(bool checked) {
 
 	this->panning = checked;
 	if(checked) defaultCursor = Qt::OpenHandCursor;
@@ -381,40 +381,40 @@ void DkPaintViewPort::setPanning(bool checked) {
 	setCursor(defaultCursor);
 }
 
-void DkPaintViewPort::applyChangesAndClose() {
+void DkDocAnalysisViewPort::applyChangesAndClose() {
 
 	cancelTriggered = false;
 	emit closePlugin();
 }
 
-void DkPaintViewPort::discardChangesAndClose() {
+void DkDocAnalysisViewPort::discardChangesAndClose() {
 
 	cancelTriggered = true;
 	emit closePlugin();
 }
 
-QBrush DkPaintViewPort::getBrush() const {
+QBrush DkDocAnalysisViewPort::getBrush() const {
 	return brush;
 }
 
-QPen DkPaintViewPort::getPen() const {
+QPen DkDocAnalysisViewPort::getPen() const {
 	return pen;
 }
 
-bool DkPaintViewPort::isCanceled() {
+bool DkDocAnalysisViewPort::isCanceled() {
 	return cancelTriggered;
 }
 
-void DkPaintViewPort::setVisible(bool visible) {
-
-	if (paintToolbar)
-		emit showToolbar(paintToolbar, visible);
+void DkDocAnalysisViewPort::setVisible(bool visible) {
+	
+	if (docAnalysisToolbar)
+		emit showToolbar(docAnalysisToolbar, visible);
 
 	DkPluginViewPort::setVisible(visible);
 }
 
-/*-----------------------------------DkPaintToolBar ---------------------------------------------*/
-DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
+/*-----------------------------------DkDocAnalysisToolBar ---------------------------------------------*/
+DkDocAnalysisToolBar::DkDocAnalysisToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
 
 	createIcons();
 	createLayout();
@@ -441,23 +441,27 @@ DkPaintToolBar::DkPaintToolBar(const QString & title, QWidget * parent /* = 0 */
 	else
 		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
 
-	qDebug() << "[PAINT TOOLBAR] created...";
+	qDebug() << "[DOCANALYSIS TOOLBAR] created...";
 }
 
-DkPaintToolBar::~DkPaintToolBar() {
+DkDocAnalysisToolBar::~DkDocAnalysisToolBar() {
 
-	qDebug() << "[PAINT TOOLBAR] deleted...";
+	qDebug() << "[DOCANALYSIS TOOLBAR] deleted...";
 }
 
-void DkPaintToolBar::createIcons() {
+void DkDocAnalysisToolBar::createIcons() {
 
 	// create icons
 	icons.resize(icons_end);
 
-	icons[apply_icon] = QIcon(":/nomacsPluginPaint/img/apply.png");
-	icons[cancel_icon] = QIcon(":/nomacsPluginPaint/img/cancel.png");
-	icons[pan_icon] = 	QIcon(":/nomacsPluginPaint/img/pan.png");
-	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginPaint/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+	icons[linedetection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/detect_lines.png");
+	icons[showbottomlines_icon] = QIcon(":/nomacsPluginDocAnalysis/img/lower_lines.png");
+	icons[showtoplines_icon] = QIcon(":/nomacsPluginDocAnalysis/img/upper_lines.png");
+	icons[distance_icon] = QIcon(":/nomacsPluginDocAnalysis/img/distance.png");
+	icons[magic_icon] = QIcon(":/nomacsPluginDocAnalysis/img/magic_wand.png");
+	icons[savecut_icon] = QIcon(":/nomacsPluginDocAnalysis/img/save_cut.png");
+	icons[clearselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/reset_cut.png");
+
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
@@ -469,119 +473,136 @@ void DkPaintToolBar::createIcons() {
 	}
 }
 
-void DkPaintToolBar::createLayout() {
+void DkDocAnalysisToolBar::createLayout() {
 
-	QList<QKeySequence> enterSc;
+	/*QList<QKeySequence> enterSc;
 	enterSc.append(QKeySequence(Qt::Key_Enter));
-	enterSc.append(QKeySequence(Qt::Key_Return));
+	enterSc.append(QKeySequence(Qt::Key_Return));*/
 
-	QAction* applyAction = new QAction(icons[apply_icon], tr("Apply (ENTER)"), this);
-	applyAction->setShortcuts(enterSc);
-	applyAction->setObjectName("applyAction");
+	QAction* linedetectionAction = new QAction(icons[linedetection_icon], tr("Detect text lines"), this);
+	linedetectionAction->setShortcut(Qt::SHIFT + Qt::Key_D);
+	linedetectionAction->setStatusTip(tr("Opens dialog to configure and start the detection of text lines for the current image"));
+	linedetectionAction->setCheckable(false);
+	linedetectionAction->setChecked(false);
+	linedetectionAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	linedetectionAction->setObjectName("linedetectionAction");
 
-	QAction* cancelAction = new QAction(icons[cancel_icon], tr("Cancel (ESC)"), this);
-	cancelAction->setShortcut(QKeySequence(Qt::Key_Escape));
-	cancelAction->setObjectName("cancelAction");
+	QAction* showbottomlinesAction = new QAction(icons[showbottomlines_icon], tr("Show detected bottom text lines"), this);
+	showbottomlinesAction->setShortcut(Qt::SHIFT + Qt::Key_L);
+	showbottomlinesAction->setStatusTip(tr("Displays the previously calculated lower text lines for the image"));
+	showbottomlinesAction->setCheckable(true);
+	showbottomlinesAction->setChecked(false);
+	showbottomlinesAction->setEnabled(false);
+	showbottomlinesAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	showbottomlinesAction->setObjectName("showbottomlinesAction");
 
-	panAction = new QAction(icons[pan_icon], tr("Pan"), this);
-	panAction->setShortcut(QKeySequence(Qt::Key_P));
-	panAction->setObjectName("panAction");
-	panAction->setCheckable(true);
-	panAction->setChecked(false);
+	QAction* showtoplinesAction = new QAction(icons[showtoplines_icon], tr("Show detected top text lines"), this);
+	showtoplinesAction->setShortcut(Qt::SHIFT + Qt::Key_U);
+	showtoplinesAction->setStatusTip(tr("Displays the previously calculated upper text lines for the image"));
+	showtoplinesAction->setCheckable(true);
+	showtoplinesAction->setChecked(false);
+	showtoplinesAction->setEnabled(false);
+	showtoplinesAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	showtoplinesAction->setObjectName("showtoplinesAction");
 
-	// pen color
-	penCol = QColor(0,0,0);
-	penColButton = new QPushButton(this);
-	penColButton->setObjectName("penColButton");
-	penColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
-	penColButton->setToolTip(tr("Background Color"));
-	penColButton->setStatusTip(penColButton->toolTip());
+	QAction* distanceAction = new QAction(icons[distance_icon], tr("Measure distance"), this);
+	distanceAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_D);
+	distanceAction->setStatusTip(tr("Measure the distance between 2 points (in cm)"));
+	distanceAction->setCheckable(true);
+	distanceAction->setChecked(false);
+	distanceAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	distanceAction->setObjectName("distanceAction");
 
-	colorDialog = new QColorDialog(this);
-	colorDialog->setObjectName("colorDialog");
+	QAction* magicAction = new QAction(icons[magic_icon], tr("Select region"), this);
+	magicAction->setShortcut(Qt::SHIFT + Qt::Key_S);
+	magicAction->setStatusTip(tr("Select regions with similar color"));
+	magicAction->setCheckable(true);
+	magicAction->setChecked(false);
+	magicAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	magicAction->setObjectName("magicAction");
 
-	// pen width
-	widthBox = new QSpinBox(this);
-	widthBox->setObjectName("widthBox");
-	widthBox->setSuffix("px");
-	widthBox->setMinimum(1);
-	widthBox->setMaximum(500);	// huge sizes since images might have high resolutions
+	QAction* savecutAction = new QAction(icons[savecut_icon], tr("Save the selected region"), this);
+	savecutAction->setStatusTip(tr("Open the Save Dialog for saving the currently selected region"));
+	savecutAction->setCheckable(false);
+	savecutAction->setChecked(false);
+	savecutAction->setEnabled(false);
+	savecutAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	savecutAction->setObjectName("savecutAction");
 
-	// pen alpha
-	alphaBox = new QSpinBox(this);
-	alphaBox->setObjectName("alphaBox");
-	alphaBox->setSuffix("%");
-	alphaBox->setMinimum(0);
-	alphaBox->setMaximum(100);
+	QAction* clearselectionAction = new QAction(icons[clearselection_icon], tr("Clear selection"), this);
+	clearselectionAction->setShortcut(Qt::SHIFT + Qt::Key_C);
+	clearselectionAction->setStatusTip(tr("Clear the current selection"));
+	clearselectionAction->setCheckable(false);
+	clearselectionAction->setChecked(false);
+	clearselectionAction->setEnabled(false);
+	clearselectionAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	clearselectionAction->setObjectName("clearselectionAction");
 
-	addAction(applyAction);
-	addAction(cancelAction);
+	QLabel *lbl_tolerance = new QLabel(tr("Tolerance:"));
+	lbl_tolerance->setStatusTip(tr("Set the maximum color difference tolerance for flood-filling"));
+	lbl_tolerance->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+
+	QSpinBox *toleranceBox = new QSpinBox();
+	toleranceBox->setStatusTip(tr("Set the maximum color difference tolerance for flood-filling"));
+	toleranceBox->setRange(0, 255);
+	toleranceBox->setValue(40);
+	toleranceBox->setWhatsThis(tr("alwaysenabled"));
+	toleranceBox->setObjectName("toleranceBox");
+
+	// actually add things to interface
+	addAction(linedetectionAction);
+	addAction(showbottomlinesAction);
+	addAction(showtoplinesAction);
 	addSeparator();
-	addAction(panAction);
+	addAction(distanceAction);
 	addSeparator();
-	addWidget(widthBox);
-	addWidget(penColButton);
-	addWidget(alphaBox);
+	addAction(magicAction);
+	addAction(savecutAction);
+	addAction(clearselectionAction);
+	addWidget(lbl_tolerance);
+	addWidget(toleranceBox);
 }
 
-void DkPaintToolBar::setVisible(bool visible) {
+void DkDocAnalysisToolBar::setVisible(bool visible) {
 
-	if (!visible)
-		emit colorSignal(QColor(0,0,0));
-	else {
-		emit colorSignal(penCol);
-		widthBox->setValue(10);
-		alphaBox->setValue(100);
-		panAction->setChecked(false);
-	}
+	
 
-	qDebug() << "[PAINT TOOLBAR] set visible: " << visible;
+	qDebug() << "[DOCANALYSIS TOOLBAR] set visible: " << visible;
 
 	QToolBar::setVisible(visible);
 }
 
-void DkPaintToolBar::on_applyAction_triggered() {
-	emit applySignal();
-}
-
-void DkPaintToolBar::on_cancelAction_triggered() {
-	emit cancelSignal();
-}
-
-void DkPaintToolBar::on_panAction_toggled(bool checked) {
-
-	emit panSignal(checked);
-}
-
-void DkPaintToolBar::on_widthBox_valueChanged(int val) {
-
-	emit widthSignal(val);
-}
-
-void DkPaintToolBar::on_alphaBox_valueChanged(int val) {
-
-	penAlpha = val;
-	QColor penColWA = penCol;
-	penColWA.setAlphaF(penAlpha/100.0);
-	emit colorSignal(penColWA);
-}
-
-void DkPaintToolBar::on_penColButton_clicked() {
-
-	QColor tmpCol = penCol;
-	
-	colorDialog->setCurrentColor(tmpCol);
-	int ok = colorDialog->exec();
-
-	if (ok == QDialog::Accepted) {
-		penCol = colorDialog->currentColor();
-		penColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
-		
-		QColor penColWA = penCol;
-		penColWA.setAlphaF(penAlpha/100.0);
-		emit colorSignal(penColWA);
-	}
+void DkDocAnalysisToolBar::on_linedetectionAction_triggered() {
 
 }
+
+void DkDocAnalysisToolBar::on_showbottomlinesAction_toggled(bool checked) {
+
+}
+
+void DkDocAnalysisToolBar::on_showtoplinesAction_toggled(bool checked) {
+
+}
+
+void DkDocAnalysisToolBar::on_distanceAction_toggled(bool checked) {
+
+}
+
+void DkDocAnalysisToolBar::on_magicAction_toggled(bool checked) {
+
+}
+
+void DkDocAnalysisToolBar::on_savecutAction_triggered() {
+
+}
+
+void DkDocAnalysisToolBar::on_clearselectionAction_triggered() {
+
+}
+
+void DkDocAnalysisToolBar::on_toleranceBox_valueChanged(int value) {
+
+}
+
 
 };

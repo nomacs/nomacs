@@ -1,9 +1,12 @@
 <RCC>
-    <qresource prefix="/nomacsPluginPaint">
+    <qresource prefix="/nomacsPluginDocAnalysis">
         <file>img/description.png</file>
-        <file>img/pan.png</file>
-        <file>img/pan_checked.png</file>
-        <file>img/apply.png</file>
-        <file>img/cancel.png</file>
+        <file>img/detect_lines.png</file>
+        <file>img/distance.png</file>
+        <file>img/lower_lines.png</file>
+        <file>img/magic_wand.png</file>
+        <file>img/reset_cut.png</file>
+        <file>img/save_cut.png</file>
+        <file>img/upper_lines.png</file>
     </qresource>
 </RCC>
