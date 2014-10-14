@@ -751,6 +751,7 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 		imgs.clear();
 	}
 
+	emit infoSignal((antiAliasing) ? tr("Anti Aliasing Enabled") : tr("Anti Aliasing Disabled"));
 	emit imageUpdated();
 
 }

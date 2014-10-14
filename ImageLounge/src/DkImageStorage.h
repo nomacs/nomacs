@@ -259,6 +259,7 @@ public slots:
 
 signals:
 	void imageUpdated();
+	void infoSignal(QString msg);
 
 protected:
 	QImage img;

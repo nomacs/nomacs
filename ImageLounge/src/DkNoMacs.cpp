@@ -2036,11 +2036,11 @@ void DkNoMacs::restart() {
 
 void DkNoMacs::enterFullScreen() {
 	
-	// switch off fullscreen if it's in it already
-	if (isFullScreen()) {
-		exitFullScreen();
-		return;
-	}
+	//// switch off fullscreen if it's in it already
+	//if (isFullScreen()) {
+	//	exitFullScreen();
+	//	return;
+	//}
 
 	DkSettings::app.currentAppMode += DkSettings::mode_end*0.5f;
 	if (DkSettings::app.currentAppMode < 0) {

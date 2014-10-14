@@ -326,6 +326,9 @@ void DkControlWidget::connectWidgets() {
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
 	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
+
+	// viewport
+	connect(viewport, SIGNAL(infoSignal(QString)), this, SLOT(setInfo(QString)));
 }
 
 void DkControlWidget::update() {
@@ -799,6 +802,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	//connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
 	//connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
+	connect(&imgStorage, SIGNAL(infoSignal(QString)), this, SIGNAL(infoSignal(QString)));
 	
 	createShortcuts();
 
@@ -1736,6 +1740,13 @@ void DkViewPort::animateFade() {
 void DkViewPort::animateMove() {
 
 	moveView(moveStep/worldMatrix.m11());
+}
+
+void DkViewPort::togglePattern(bool show) {
+
+	controller->setInfo((show) ? tr("Transparency Pattern Enabled") : tr("Transparency Pattern Disabled"));
+
+	DkBaseViewPort::togglePattern(show);
 }
 
 // edit image --------------------------------------------------------------------

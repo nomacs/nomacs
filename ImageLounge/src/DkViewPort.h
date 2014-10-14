@@ -419,6 +419,7 @@ signals:
 	void statusInfoSignal(QString msg, int);
 	void newClientConnectedSignal(bool connect, bool local);
 	void movieLoadedSignal(bool isMovie);
+	void infoSignal(QString msg);	// needed to forward signals
 
 public slots:
 	void rotateCW();
@@ -468,6 +469,7 @@ public slots:
 	void previousMovieFrame();
 	void animateFade();
 	void animateMove();
+	virtual void togglePattern(bool show);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event);
