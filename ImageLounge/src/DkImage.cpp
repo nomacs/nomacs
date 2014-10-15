@@ -831,6 +831,7 @@ void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter,
 			endSuffix = qMin(newSuffix.indexOf(")"), newSuffix.indexOf(" "));
 
 		filePath.append(newSuffix.left(endSuffix));
+		file = QFileInfo(filePath);
 	}
 
 	emit updateSpinnerSignalDelayed(true);
