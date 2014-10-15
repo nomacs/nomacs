@@ -706,27 +706,27 @@ void DkFilePreview::newPosition() {
 		return;
 
 	int pos = 0;
-	Qt::Orientation or;
+	Qt::Orientation orient;
 
 	if (sender == contextMenuActions[cm_pos_west]) {
 		pos = cm_pos_west;
-		or = Qt::Vertical;
+		orient = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_east]) {
 		pos = cm_pos_east;
-		or = Qt::Vertical;
+		orient = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_north]) {
 		pos = cm_pos_north;
-		or = Qt::Horizontal;
+		orient = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_south]) {
 		pos = cm_pos_south;
-		or = Qt::Horizontal;
+		orient = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_dock_hor]) {
 		pos = cm_pos_dock_hor;
-		or = Qt::Horizontal;
+		orient = Qt::Horizontal;
 	}
 
 	// don't apply twice
@@ -736,7 +736,7 @@ void DkFilePreview::newPosition() {
 
 
 	windowPosition = pos;
-	orientation = or;
+	orientation = orient;
 	initOrientations();
 	emit positionChangeSignal(windowPosition);
 
