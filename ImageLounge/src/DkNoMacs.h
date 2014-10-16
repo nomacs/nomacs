@@ -829,6 +829,7 @@ public slots:
 protected:
 	void closeEvent(QCloseEvent *event);
 	bool eventFilter(QObject *obj, QEvent *event);
+	virtual void createContextMenu();
 
 	QDesktopWidget* dw;
 };

@@ -2377,11 +2377,25 @@ void DkNoMacs::showMetaDataDock(bool show) {
 
 void DkNoMacs::showThumbsDock(bool show) {
 
+	
+	// nothing todo here
+	if (thumbsDock && thumbsDock->isVisible() && show)
+		return;
+	
 	int winPos = viewport()->getController()->getFilePreview()->getWindowPosition();
 
 	if (winPos != DkFilePreview::cm_pos_dock_hor && winPos != DkFilePreview::cm_pos_dock_ver) {
-		if (thumbsDock)
+		if (thumbsDock) {
+
+			//DkSettings::display.thumbDockSize = qMin(thumbsDock->width(), thumbsDock->height());
+			QSettings& settings = Settings::instance().getSettings();
+			settings.setValue("thumbsDockLocation", QMainWindow::dockWidgetArea(thumbsDock));
+
 			thumbsDock->hide();
+			thumbsDock->setWidget(0);
+			thumbsDock->deleteLater();
+			thumbsDock = 0;
+		}
 		return;
 	}
 
@@ -2397,7 +2411,7 @@ void DkNoMacs::showThumbsDock(bool show) {
 		QLabel* thumbsTitle = new QLabel(thumbsDock);
 		thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 		thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
-		thumbsTitle->setStyleSheet("QLabel{background: rgba(0,0,0,1);}");
+		thumbsTitle->setStyleSheet("QLabel{background: rgba(0,0,0,30);}");
 		thumbsTitle->setFixedHeight(16);
 		thumbsDock->setTitleBarWidget(thumbsTitle);
 
@@ -4735,6 +4749,14 @@ DkNoMacsFrameless::~DkNoMacsFrameless() {
 }
 
 void DkNoMacsFrameless::release() {
+}
+
+void DkNoMacsFrameless::createContextMenu() {
+
+	DkNoMacs::createContextMenu();
+
+	contextMenu->addSeparator();
+	contextMenu->addAction(fileActions[menu_file_exit]);
 }
 
 void DkNoMacsFrameless::enableNoImageActions(bool enable) {
