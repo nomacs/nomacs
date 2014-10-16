@@ -940,7 +940,6 @@ void DkResourceSettingsWidgets::init() {
 
 	sliderMemory->setValue(curCache);
 	this->memorySliderChanged(curCache);
-	cbFastThumbnailPreview->setChecked(DkSettings::resources.fastThumbnailPreview);
 	cbFilterRawImages->setChecked(DkSettings::resources.filterRawImages);
 	cbRemoveDuplicates->setChecked(DkSettings::resources.filterDuplicats);
 
@@ -998,11 +997,6 @@ void DkResourceSettingsWidgets::createLayout() {
 	cacheLayout->addWidget(memoryGradient,2,0);
 	cacheLayout->addWidget(captionWidget,3,0);
 
-	QGroupBox* gbFastPreview = new QGroupBox(tr("Fast Preview Settings"));
-	QGridLayout* fastPreviewLayuot = new QGridLayout(gbFastPreview);
-	cbFastThumbnailPreview = new QCheckBox(tr("enable fast thumbnail preview"));
-	fastPreviewLayuot->addWidget(cbFastThumbnailPreview);
-
 	QGroupBox* gbRawLoader = new QGroupBox(tr("Raw Loader Settings"));
 
 	rawThumbButtonGroup = new QButtonGroup(this);
@@ -1053,7 +1047,6 @@ void DkResourceSettingsWidgets::createLayout() {
 	rawLoaderLayout->addWidget(cbFilterRawImages);
 
 	widgetVBoxLayout->addWidget(gbCache);
-	widgetVBoxLayout->addWidget(gbFastPreview);
 	widgetVBoxLayout->addWidget(gbRawLoader);
 	widgetVBoxLayout->addStretch();
 }
@@ -1061,7 +1054,6 @@ void DkResourceSettingsWidgets::createLayout() {
 void DkResourceSettingsWidgets::writeSettings() {
 
 	DkSettings::resources.cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
-	DkSettings::resources.fastThumbnailPreview = cbFastThumbnailPreview->isChecked();
 	DkSettings::resources.filterRawImages = cbFilterRawImages->isChecked();
 	DkSettings::resources.filterDuplicats = cbRemoveDuplicates->isChecked();
 	DkSettings::resources.preferredExtension = DkSettings::fileFilters.at(cmExtensions->currentIndex());

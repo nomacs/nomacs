@@ -415,7 +415,6 @@ void DkSettings::load(bool force) {
 
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
 	resources_p.maxImagesCached = settings.value("maxImagesCached", resources_p.maxImagesCached).toFloat();
-	resources_p.fastThumbnailPreview = settings.value("fastThumbnailPreview", resources_p.fastThumbnailPreview).toBool();
 	resources_p.waitForLastImg = settings.value("waitForLastImg", resources_p.waitForLastImg).toBool();
 	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
 	resources_p.loadRawThumb = settings.value("loadRawThumb", resources_p.loadRawThumb).toInt();	
@@ -646,8 +645,6 @@ void DkSettings::save(bool force) {
 		settings.setValue("cacheMemory", resources_p.cacheMemory);
 	if (!force && resources_p.maxImagesCached != resources_d.maxImagesCached)
 		settings.setValue("maxImagesCached", resources_p.maxImagesCached);
-	if (!force && resources_p.fastThumbnailPreview != resources_d.fastThumbnailPreview)
-		settings.setValue("fastThumbnailPreview", resources_p.fastThumbnailPreview);
 	if (!force && resources_p.waitForLastImg != resources_d.waitForLastImg)
 		settings.setValue("waitForLastImg", resources_p.waitForLastImg);
 	if (!force && resources_p.filterRawImages != resources_d.filterRawImages)
@@ -743,7 +740,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.toolbarGradient = false;
 	display_p.showBorder = false;
 	display_p.displaySquaredThumbs = true;
-	display_p.fadeSec = 2.0f;
+	display_p.fadeSec = 0.5f;
 	display_p.useDefaultColor = true;
 	display_p.defaultIconColor = true;
 	display_p.interpolateZoomLevel = 200;
@@ -798,8 +795,6 @@ void DkSettings::setToDefaultSettings() {
 
 	resources_p.cacheMemory = 0;
 	resources_p.maxImagesCached = 5;
-	resources_p.fastThumbnailPreview = false;
-	resources_p.fastThumbnailPreview = false;
 	resources_p.filterRawImages = true;
 	resources_p.loadRawThumb = raw_thumb_always;
 	resources_p.filterDuplicats = false;

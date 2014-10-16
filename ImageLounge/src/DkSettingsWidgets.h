@@ -366,7 +366,6 @@ private:
 	void init();
 	void createLayout();
 
-	QCheckBox* cbFastThumbnailPreview;
 	QCheckBox* cbFilterRawImages;
 	QCheckBox* cbRemoveDuplicates;
 	QComboBox* cmExtensions;

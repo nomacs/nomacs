@@ -673,8 +673,11 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 	else {
 		
 		int fc = (event->delta() > 0) ? -1 : 1;
-		currentFileIdx += fc;
-		scrollToCurrentImage = true;
+		
+		if (DkSettings::resources.waitForLastImg) {
+			currentFileIdx += fc;
+			scrollToCurrentImage = true;
+		}
 		emit changeFileSignal(fc);
 	}
 }

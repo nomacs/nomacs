@@ -511,10 +511,6 @@ void DkImageContainerT::fetchImage() {
 	qDebug() << "fetching: " << fileInfo.absoluteFilePath();
 	fetchingImage = true;
 
-	// TODO: fastThumbPreview is obsolete?!
-	if (DkSettings::resources.fastThumbnailPreview && thumb->hasImage() == DkThumbNail::not_loaded)
-		thumb->fetchThumb(DkThumbNailT::force_exif_thumb, fileBuffer);
-
 	QFuture<QSharedPointer<DkBasicLoader> > future = QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::loadImageIntern, fileInfo, loader, fileBuffer);
 
@@ -556,9 +552,9 @@ void DkImageContainerT::loadingFinished() {
 		loadState = exists_not;
 		return;
 	}
-	//else {
-	//	thumb->setImage(DkImage::createThumb(loader->image()));
-	//}
+	else if (!thumb->hasImage()) {
+		thumb->setImage(DkImage::createThumb(loader->image()));
+	}
 
 	// clear file buffer if it exceeds a certain size?! e.g. psd files
 	if (fileBuffer && fileBuffer->size()/(1024.0f*1024.0f) > DkSettings::resources.cacheMemory*0.5f)

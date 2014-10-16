@@ -237,7 +237,6 @@ public:
 	struct Resources {
 		float cacheMemory;
 		int maxImagesCached;
-		bool fastThumbnailPreview;
 		bool waitForLastImg;
 		bool filterRawImages;
 		bool filterDuplicats;
