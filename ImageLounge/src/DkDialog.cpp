@@ -4087,7 +4087,10 @@ void DkWelcomeDialog::accept() {
 			rFilters.removeAll(DkSettings::containerFilters.at(idx));
 
 		for (int idx = 1; idx < rFilters.size(); idx++) {
-			fh.registerFileType(rFilters.at(idx), tr("Image"), true);
+
+			// remove the icon file -> otherwise icons might be destroyed (e.g. acrobat)
+			if (!rFilters.at(idx).contains("ico"))	
+				fh.registerFileType(rFilters.at(idx), tr("Image"), true);
 		}
 	}
 

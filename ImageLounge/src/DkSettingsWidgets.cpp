@@ -133,6 +133,7 @@ void DkSettingsDialog::createLayout() {
 }
 
 void DkSettingsDialog::createSettingsWidgets() {
+	
 	globalSettingsWidget = new DkGlobalSettingsWidget(centralWidget);
 	displaySettingsWidget = new DkDisplaySettingsWidget(centralWidget);
 	slideshowSettingsWidget = new DkFileWidget(centralWidget);
@@ -1258,7 +1259,7 @@ void DkFileFilterSettingWidget::createLayout() {
 
 bool DkFileFilterSettingWidget::checkFilter(const QString& cFilter, const QStringList& filters) const {
 
-	if (filters.empty() && DkSettings::containerFilters.contains(cFilter))
+	if (filters.empty() && (DkSettings::containerFilters.contains(cFilter) || cFilter.contains(".ico")))
 		return false;
 
 	if (filters.empty())
