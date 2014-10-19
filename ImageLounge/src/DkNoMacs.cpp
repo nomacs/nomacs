@@ -545,11 +545,6 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
-#ifdef WITH_QUAZIP
-	fileMenu->addAction(fileActions[menu_file_extract_archive]);
-	fileMenu->addSeparator();
-#endif
-
 	//fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
 	//connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
 	//connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
@@ -682,6 +677,9 @@ void DkNoMacs::createMenu() {
 #endif
 #ifdef WITH_LIBTIFF
 	toolsMenu->addAction(toolsActions[menu_tools_export_tiff]);
+#endif
+#ifdef WITH_QUAZIP
+	toolsMenu->addAction(toolsActions[menu_tools_extract_archive]);
 #endif
 #ifdef WITH_OPENCV
 	toolsMenu->addAction(toolsActions[menu_tools_mosaic]);
@@ -830,11 +828,6 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_save_web] = new QAction(tr("&Save for Web"), this);
 	fileActions[menu_file_save_web]->setStatusTip(tr("Save an Image for Web Applications"));
 	connect(fileActions[menu_file_save_web], SIGNAL(triggered()), this, SLOT(saveFileWeb()));
-
-	fileActions[menu_file_extract_archive] = new QAction(tr("Extract from archive"), this);
-	fileActions[menu_file_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::containerRawFilters));		
-	fileActions[menu_file_extract_archive]->setShortcut(QKeySequence(shortcut_extract));
-	connect(fileActions[menu_file_extract_archive], SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 
 	fileActions[menu_file_print] = new QAction(fileIcons[icon_file_print], tr("&Print"), this);
 	fileActions[menu_file_print]->setShortcuts(QKeySequence::Print);
@@ -1267,6 +1260,11 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_export_tiff] = new QAction(tr("Export Multipage &TIFF"), this);
 	toolsActions[menu_tools_export_tiff]->setStatusTip(tr("Export TIFF pages to multiple tiff files"));
 	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
+
+	toolsActions[menu_tools_extract_archive] = new QAction(tr("Extract From Archive"), this);
+	toolsActions[menu_tools_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::containerRawFilters));		
+	toolsActions[menu_tools_extract_archive]->setShortcut(QKeySequence(shortcut_extract));
+	connect(toolsActions[menu_tools_extract_archive], SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 
 	toolsActions[menu_tools_mosaic] = new QAction(tr("&Mosaic Image"), this);
 	toolsActions[menu_tools_mosaic]->setStatusTip(tr("Create a Mosaic Image"));
@@ -2467,7 +2465,6 @@ void DkNoMacs::openFile() {
 	//openDialog->setDirectory(loader->getDir());
 	//openDialog->setOption(QFileDialog::DontResolveSymlinks);
 
-
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
 		loader->getDir().absolutePath(), 
@@ -3369,7 +3366,6 @@ void DkNoMacs::setContrast(bool contrast) {
 
 void DkNoMacs::showRecentFiles(bool show) {
 
-	// TODO: add setting
 	if (DkSettings::app.appMode != DkSettings::mode_frameless && !DkSettings::global.recentFiles.empty())
 		viewport()->getController()->showRecentFiles(show);
 

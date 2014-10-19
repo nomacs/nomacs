@@ -240,7 +240,6 @@ enum fileActions {
 	menu_file_train_format,
 	menu_file_new_instance,
 	menu_file_exit,
-	menu_file_extract_archive,
 	//menu_file_share_fb,
 
 	menu_file_end,	// nothing beyond this point
@@ -287,6 +286,7 @@ enum toolsActions {
 	menu_tools_filter,
 	menu_tools_manipulation,
 	menu_tools_export_tiff,
+	menu_tools_extract_archive,
 	menu_tools_mosaic,
 
 	menu_tools_end,

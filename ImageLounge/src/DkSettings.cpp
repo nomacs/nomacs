@@ -161,14 +161,19 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("tga"))		openFilters.append("Targa Image File (*.tga)");
 	if (qtFormats.contains("mng"))		openFilters.append("Multi-Image Network Graphics (*.mng)");
 
-#ifdef WITH_OPENCV
+#ifdef WITH_OPENCV // TODO: change to WITH_RAW ?!
 	// raw format
 	openFilters.append("Nikon Raw (*.nef)");
 	openFilters.append("Canon Raw (*.crw *.cr2)");
 	openFilters.append("Sony Raw (*.arw)");
 	openFilters.append("Digital Negativ (*.dng)");
-	openFilters.append("Panasonic Raw (*.rw2)");
+	openFilters.append("Panasonic Raw (*.raw *.rw2)");
 	openFilters.append("Minolta Raw (*.mrw)");
+	openFilters.append("Samsung Raw (*.srw)");
+	openFilters.append("Hasselblad Raw (*.3fr)");
+	openFilters.append("Sigma Raw (*.x3f)");
+	openFilters.append("Leaf Raw (*.mos)");
+	openFilters.append("Pentax Raw (*.pef)");
 #endif
 
 	// stereo formats
