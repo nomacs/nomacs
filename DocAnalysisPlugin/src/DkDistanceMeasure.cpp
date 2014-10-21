@@ -36,9 +36,8 @@ namespace nmc {
 * @param metaInfo The metadata to use
 * \sa DkMetaDataInfo
 **/
-DkDistanceMeasure::DkDistanceMeasure(DkMetaDataInfo *metaInfo) {
+DkDistanceMeasure::DkDistanceMeasure() {
 
-	this->metaInfo = metaInfo;
 	dist_cm = 0.0;
 	dist_inch = 5.0;
 	points[0] = QPoint();
@@ -49,6 +48,12 @@ DkDistanceMeasure::DkDistanceMeasure(DkMetaDataInfo *metaInfo) {
 
 DkDistanceMeasure::~DkDistanceMeasure() {
 	
+}
+
+void DkDistanceMeasure::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
+
+	this->metaData = metaData;
+
 }
 
 /**
@@ -114,8 +119,16 @@ void DkDistanceMeasure::calculateStartEndDistance() {
 	// get the image resolution for distance calculation
 	// TODO: resolution not there anymore
 	//metaInfo->getResolution(x_res, y_res);
-	x_res = 1;
-	y_res = 1;
+	x_res = 72;		// markus: 72 dpi is the default value assumed
+	y_res = 72;
+
+	// >DIR: get metadata resolution if available [21.10.2014 markus]
+	if (metaData) {
+
+		QVector2D res = metaData->getResolution();
+		x_res = res.x();
+		y_res = res.y();
+	}
 
 	float length_x_inch, length_y_inch;
 

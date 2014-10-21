@@ -71,6 +71,11 @@ IF (ENABLE_PAINT)
 	add_subdirectory(PaintPlugin)
 ENDIF(ENABLE_PAINT)
 
+OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
+IF (ENABLE_DOC)
+	add_subdirectory(DocAnalysisPlugin)
+ENDIF(ENABLE_DOC)
+
 OPTION (ENABLE_TEST "Compile Test plugin" OFF)
 IF (ENABLE_TEST)
 	add_subdirectory(TestPlugin)

@@ -42,7 +42,7 @@ namespace nmc {
 class DkDistanceMeasure {
 
 public:
-	DkDistanceMeasure(DkMetaDataInfo *metaInfo);
+	DkDistanceMeasure();
 	~DkDistanceMeasure();
 
 	void setPoint(QPoint point);
@@ -54,13 +54,14 @@ public:
 	bool hasStartPoint();
 	void setSnapping(bool snap);
 	bool isSnapping();
+	void setMetaData(QSharedPointer<DkMetaDataT> metaData);
 	
 	QPoint getStartPoint() { return points[0]; };
 	QPoint getEndPoint() { return points[1]; };
 	QPoint getCurPoint() { return curPoint; };
 
 private:
-	DkMetaDataInfo *metaInfo; /**< metadata containing the image resolution **/
+	QSharedPointer<DkMetaDataT> metaData; /**< metadata containing the image resolution **/
 	QPoint points[2]; /**< start and end point **/
 	QPoint curPoint; /**< The current point when moving the mouse **/
 	float dist_cm; /**< The current distance in cm **/ 

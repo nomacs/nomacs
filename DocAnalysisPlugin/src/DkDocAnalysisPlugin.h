@@ -53,9 +53,9 @@
 #include "DkMagicCutWidgets.h"
 #include "DkLineDetection.h"
 
-// Workaround
-#define PLUGIN_ID "5232a9d4459e431fb9b686365e693a30"
-#define PLUGIN_VERSION "1.0.0"
+//// Workaround
+//#define PLUGIN_ID "5232a9d4459e431fb9b686365e693a30"
+//#define PLUGIN_VERSION "1.0.0"
 
 namespace nmc {
 
@@ -109,13 +109,16 @@ public:
 		else 
 			return true;
 	};
-	void stopEditing();
+	// >DIR: uncomment if function is added again [21.10.2014 markus]
+	//void stopEditing();
 	bool editingDrawingActive();
 
 
 	//TODO: old paint - remove
 	bool isCanceled();
 	QImage getPaintedImage();
+	
+	void setMainWindow(QMainWindow* win);
 
 signals:
 	// distance measure functions
@@ -135,41 +138,48 @@ signals:
 
 public slots:
 	// measure distance functions
-	void pickDistancePoint(bool pick);
-	void pickDistancePoint();
-	// magic wand selection functions
-	void pickSeedpoint(bool pick);
-	void pickSeedpoint();
-	void setMagicCutTolerance(int tol);
-	void clearMagicCut();
-	void openMagicCutDialog();
-	void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
-	void magicCutSaved(bool saved);
-	// animation of contours
-	virtual void updateAnimatedContours();
-	// line detection functions
-	void openLineDetectionDialog();
-	void showBottomTextLines(bool show);
-	void showTopTextLines(bool show);
-	void showBottomTextLines();
-	void showTopTextLines();
+	
+	// >DIR: uncomment if function is added again [21.10.2014 markus]
+	//void pickDistancePoint(bool pick);
+	//void pickDistancePoint();
+	//// magic wand selection functions
+	//void pickSeedpoint(bool pick);
+	//void pickSeedpoint();
+	//void setMagicCutTolerance(int tol);
+	//void clearMagicCut();
+	
+	// >DIR: uncomment if function is added again [21.10.2014 markus]
+	//void openMagicCutDialog();
+	//// animation of contours
+	//virtual void updateAnimatedContours();
+	//void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
+	//void magicCutSaved(bool saved);
+
+	// >DIR: uncomment if function is added again [21.10.2014 markus]
+	//// line detection functions
+	//void openLineDetectionDialog();
+	//void showBottomTextLines(bool show);
+	//void showTopTextLines(bool show);
+	//void showBottomTextLines();
+	//void showTopTextLines();
 
 
-	// TODO: olda paint - remove
+	// TODO: old paint - remove
 	void setPanning(bool checked);
 	virtual void setVisible(bool visible);
 
 protected:
-	virtual void draw(QPainter *painter);
+	// >DIR: uncomment if function is added again [21.10.2014 markus]
+	//virtual void draw(QPainter *painter);
+	//virtual void keyReleaseEvent(QKeyEvent *event);
+	//virtual void mouseDoubleClickEvent(QMouseEvent *event);
+
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	//virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void keyPressEvent(QKeyEvent *event);
-	virtual void keyReleaseEvent(QKeyEvent *event);
-	virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
 	// TODO: update these functions
 	void mouseMoveEvent(QMouseEvent *event);
-	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
 
@@ -194,27 +204,25 @@ protected:
 
 	// distance measure section
 	DkDistanceMeasure *distance; /**< Tool to measure distances between two points **/
-	void drawDistanceLine(QPainter *painter);
+	
+	// >DIR: uncomment if function is added again [21.10.2014 markus]
+	//void drawDistanceLine(QPainter *painter);
+	//void drawContours(QPainter *painter);
+
 	// magic wand selection variables
 	DkMagicCut *magicCut; /**< Tool to make a magic cut from an image (magic wand) **/
 	DkMagicCutDialog *magicCutDialog;
-	void drawContours(QPainter *painter);
 	// line detection variables
 	DkLineDetection *lineDetection; /**< Tool for detecting text lines within an image **/
 	DkLineDetectionDialog *lineDetectionDialog;
-
-
-
-
-	//TODO: old paint - remove
-	QVector<QPainterPath> paths;
-	QVector<QPen> pathsPen;
 
 	bool cancelTriggered;
 	bool isOutside;
 	bool panning;
 	DkDocAnalysisToolBar* docAnalysisToolbar;
 	QCursor defaultCursor;
+
+	QMainWindow* win; // >DIR: we'll retrieve the current image container from here [21.10.2014 markus]
 };
 
 
@@ -297,7 +305,6 @@ protected:
 
 	QVector<QIcon> icons; /**< List of all icons **/
 	QVector<QAction *> actions; /**< List of all actions **/
-	
 };
 
 

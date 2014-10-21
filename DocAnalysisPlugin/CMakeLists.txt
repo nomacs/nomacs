@@ -18,7 +18,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
 	  cmake_policy(SET CMP0005 NEW)
-	endif(COMMAND cmake_policy)
+endif(COMMAND cmake_policy)
 
 #find nomacs build directory
 MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
@@ -74,10 +74,17 @@ IF (NOT OpenCV_FOUND)
 ELSE()
 	add_definitions(-DWITH_OPENCV)
 ENDIF()
+
+find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
+				PATHS "${NOMACS_BUILD_DIRECTORY}/../exiv2-0.23/msvc64/include" 
+				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
+MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
+
 	
 include_directories (
 	${QT_INCLUDES}
 	${OpenCV_INCLUDE_DIRS}
+	${EXIV2_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${NOMACS_INCLUDE_DIRECTORY}
 )

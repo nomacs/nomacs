@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkDocAnalysisPlugin.h"
+#include "DkViewPort.h"
 
 namespace nmc {
 
@@ -104,7 +105,7 @@ QString DkDocAnalysisPlugin::pluginVersion() const {
 QStringList DkDocAnalysisPlugin::runID() const {
 
 	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "b04b54c4b92b43aa86eb14e65accf3bc";
+	return QStringList() << PLUGIN_ID;
 };
 
 /**
@@ -113,7 +114,7 @@ QStringList DkDocAnalysisPlugin::runID() const {
 **/
 QString DkDocAnalysisPlugin::pluginMenuName(const QString &runID) const {
 
-	if (runID=="b04b54c4b92b43aa86eb14e65accf3bc") return "Document Analysis";
+	if (runID==PLUGIN_ID) return "Document Analysis";
 	return "Wrong GUID!";
 };
 
@@ -123,7 +124,7 @@ QString DkDocAnalysisPlugin::pluginMenuName(const QString &runID) const {
 **/
 QString DkDocAnalysisPlugin::pluginStatusTip(const QString &runID) const {
 
-	if (runID=="b04b54c4b92b43aa86eb14e65accf3bc") return "Tools for Document Analysis";
+	if (runID==PLUGIN_ID) return "Tools for Document Analysis";
 	return "Wrong GUID!";
 };
 
@@ -156,8 +157,10 @@ QImage DkDocAnalysisPlugin::runPlugin(const QString &runID, const QImage &image)
 DkPluginViewPort* DkDocAnalysisPlugin::getViewPort() {
 
 	if (!viewport) {
-		viewport = new DkDocAnalysisViewPort();
-		//connect(viewport, SIGNAL(destroyed()), this, SLOT(viewportDestroyed()));
+		DkDocAnalysisViewPort* vp = new DkDocAnalysisViewPort();
+		vp->setMainWindow(getMainWidnow());
+
+		viewport = vp;
 	}
 	return viewport;
 }
@@ -226,7 +229,7 @@ void DkDocAnalysisViewPort::init() {
     timer->start(850);
 
 	// the distance tool
-	distance = new DkDistanceMeasure(/*controller->getMetaDataWidget()*/);
+	distance = new DkDistanceMeasure();
 	
 	// the line detection tool
 	lineDetection = new DkLineDetection();
@@ -259,13 +262,15 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 					
 					switch(editMode) {
 
-					case mode_pickColor:
+					case mode_pickColor: {
 						this->setCursor(Qt::CrossCursor);
 						break;
-					case mode_pickSeedpoint:
+					}
+					case mode_pickSeedpoint: {
 						this->setCursor(Qt::PointingHandCursor);
 						break;
-					case mode_pickDistance:
+					}
+					case mode_pickDistance: {
 						if(distance->hasStartPoint() && !distance->hastStartAndEndPoint()) {
 							this->setCursor(Qt::BlankCursor);
 						} else {
@@ -278,6 +283,7 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 						distance->setCurPoint(imgPos.toPoint());
 						update();
 						break;
+					}
 					default:
 						break;
 					}
@@ -317,12 +323,15 @@ void DkDocAnalysisViewPort::keyPressEvent(QKeyEvent* event) {
 
 	if ((event->key() == Qt::Key_Escape) && (editMode != mode_default)) {
 		
-		stopEditing();	
+		// >DIR: uncomment if function is added again [21.10.2014 markus]
+		//stopEditing();	
 	}
 	else if (event->key() == Qt::Key_Return) {
 		// use Alt + Enter for MagicCut to distinguish from ordinary cut (which is only Enter)
 		if(event->modifiers() == Qt::AltModifier && !event->isAutoRepeat()) {
-			openMagicCutDialog();
+
+			// >DIR: uncomment if function is added again [21.10.2014 markus]
+			//openMagicCutDialog();
 		}
 	}
 	else if (editMode == mode_pickDistance && event->key() == Qt::Key_Shift) {
@@ -372,14 +381,14 @@ void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 
 		// draw Contours
 		if (magicCut->hasContours()) {
-		
-			drawContours(&painter);
+			// >DIR: uncomment if function is added again [21.10.2014 markus]		
+			//drawContours(&painter);
 		}
 
 		// draw distance line
 		if (editMode == mode_pickDistance) {
-
-			drawDistanceLine(&painter);
+			// >DIR: uncomment if function is added again [21.10.2014 markus]
+			//drawDistanceLine(&painter);
 		}
 	}
 
@@ -393,31 +402,54 @@ QImage DkDocAnalysisViewPort::getPaintedImage() {
 	if(parent()) {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 		if (viewport) {
-
-			if (!paths.isEmpty()) {   // if nothing is drawn there is no need to change the image
-
-				QImage img = viewport->getImage();
-
-				QPainter painter(&img);
-
-				if (worldMatrix)
-					painter.setWorldTransform(*worldMatrix);
-
-				for (int idx = 0; idx < paths.size(); idx++) {
-					painter.setPen(pathsPen.at(idx));
-					painter.drawPath(paths.at(idx));
-				}
-				painter.end();
-
-				return img;
-			}
+			QImage img = viewport->getImage();
+			return img;
 		}
 	}
 	
 	return QImage();
 }
 
+void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
+	this->win = win;
 
+	QSharedPointer<DkMetaDataT> metadata;
+	// >DIR: OK, let's get the current image metadata [21.10.2014 markus]
+	// all ifs are to be 100% save : )
+	// TODO: add error dialogs if we cannot retrieve metadata...
+	if (win) {
+
+		// this should usually work - since we are a nomacs plugin
+		DkNoMacs* nmcWin = dynamic_cast<DkNoMacs*>(win);
+
+		if (nmcWin) {
+
+			DkViewPort* vp = nmcWin->viewport();
+
+			if (vp) {
+				DkImageLoader* loader = vp->getImageLoader();
+
+				if (loader) {
+					QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+
+					if (imgC) {
+
+						metadata = imgC->getMetaData();
+					}
+				}
+			}
+
+		}
+	}
+
+	if (metadata)
+		qDebug() << "metadata received, the image has: " << metadata->getResolution() << " dpi";
+	else
+		qDebug() << "WARNING: I could not retrieve the image metadata...";
+
+	distance->setMetaData(metadata);
+
+}
 
 void DkDocAnalysisViewPort::setPanning(bool checked) {
 

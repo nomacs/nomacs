@@ -26,6 +26,9 @@
  *******************************************************************************************************/
 
 #include "DkLineDetection.h"
+#include <time.h>
+#include <QPushButton>
+#include <QMessageBox>
 
 namespace nmc {
 
@@ -393,8 +396,12 @@ void DkLineDetection::findLocalMinima() {
 
 	if (debug) {
 			debugOutputMat(&filtered, "lpp_image filtered with gaussian derivative");
-			cv::namedWindow( "lpp_image filtered with gaussian derivative", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			cv::imshow( "lpp_image filtered with gaussian derivative", filtered);
+
+			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
+			// in order to display debug output - you can either draw them in the viewport or save these images
+			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
+			//cv::namedWindow( "lpp_image filtered with gaussian derivative", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+			//cv::imshow( "lpp_image filtered with gaussian derivative", filtered);
 	}
 
 	cv::Mat histogram, extrHist, maxima, minima;
@@ -412,8 +419,13 @@ void DkLineDetection::findLocalMinima() {
 
 	if (debug) {
 			debugOutputMat(&extrHist, "filtered filtered with diffkernel");
-			cv::namedWindow( "filtered filtered with diffkernel", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			cv::imshow( "filtered filtered with diffkernel", extrHist);
+
+			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
+			// in order to display debug output - you can either draw them in the viewport or save these images
+			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
+
+			//cv::namedWindow( "filtered filtered with diffkernel", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+			//cv::imshow( "filtered filtered with diffkernel", extrHist);
 	}
 
 	extrHist.setTo(-1, extrHist < 0);
@@ -421,8 +433,13 @@ void DkLineDetection::findLocalMinima() {
 
 	if (debug) {
 			debugOutputMat(&extrHist, "-1 to 1 matrix for extrHist < 0 > 0");
-			cv::namedWindow( "-1 to 1 matrix for extrHist < 0 > 0", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			cv::imshow( "-1 to 1 matrix for extrHist < 0 > 0", extrHist);
+
+			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
+			// in order to display debug output - you can either draw them in the viewport or save these images
+			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
+
+			//cv::namedWindow( "-1 to 1 matrix for extrHist < 0 > 0", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+			//cv::imshow( "-1 to 1 matrix for extrHist < 0 > 0", extrHist);
 	}
 
 
@@ -430,8 +447,13 @@ void DkLineDetection::findLocalMinima() {
 
 	if (debug) {
 			debugOutputMat(&extrHist, "filtered with sx kernel");
-			cv::namedWindow( "filtered with sx kernel", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			cv::imshow( "filtered with sx kernel", extrHist);
+
+			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
+			// in order to display debug output - you can either draw them in the viewport or save these images
+			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
+
+			//cv::namedWindow( "filtered with sx kernel", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+			//cv::imshow( "filtered with sx kernel", extrHist);
 	}
 
 	// now find local maxima and minima
@@ -446,8 +468,13 @@ void DkLineDetection::findLocalMinima() {
 
 	if (debug) {
 			debugOutputMat(&minima, "minima");
-			cv::namedWindow( "minima", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			cv::imshow( "minima", minima);
+
+			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
+			// in order to display debug output - you can either draw them in the viewport or save these images
+			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
+
+			//cv::namedWindow( "minima", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+			//cv::imshow( "minima", minima);
 	}
 
 	cv::Mat lower, upper;
@@ -497,8 +524,13 @@ void DkLineDetection::findLocalMinima() {
 	//upper.copyTo(upperTextLines);
 	if (debug) {
 			debugOutputMat(&lowerTextLines, "lowerTextLines");
-			cv::namedWindow( "lowerTextLines", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			cv::imshow( "lowerTextLines", lowerTextLines);
+
+			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
+			// in order to display debug output - you can either draw them in the viewport or save these images
+			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
+
+			//cv::namedWindow( "lowerTextLines", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+			//cv::imshow( "lowerTextLines", lowerTextLines);
 	}
 
 	if (debug)
@@ -515,8 +547,12 @@ bool DkLineDetection::compareMat(cv::Mat in1, cv::Mat in2, std::string text) {
 
     cv::compare(in1, in2, diff, cv::CMP_NE);
 
-	cv::namedWindow(text, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-	cv::imshow(text, diff);
+	// >DIR: these are no-go dependencies ( [21.10.2014 markus]
+	// in order to display debug output - you can either draw them in the viewport or save these images
+	// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
+
+	//cv::namedWindow(text, CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+	//cv::imshow(text, diff);
 
 	int count = cv::countNonZero(diff);
 	std::cout << count << " pixels differ... " << std::endl;
@@ -939,17 +975,17 @@ Mat DkLineDetection::removeShortLines(Mat img, int minLength) {
  **/
 Mat DkLineDetection::convolveIntegralImage(const Mat src, const int kernelSizeX, const int kernelSizeY, const int norm = DK_BORDER_ZERO) {
 
-	if (src.channels() > 1) {
-		std::string msg = "the image needs to have 1 channel, but it has: " + 
-			DkUtils::stringify(src.channels());
-		throw DkMatException(msg, __LINE__, __FILE__);
-	}
+	//if (src.channels() > 1) {
+	//	std::string msg = "the image needs to have 1 channel, but it has: " + 
+	//		DkUtils::stringify(src.channels());
+	//	throw DkMatException(msg, __LINE__, __FILE__);
+	//}
 
-	if (src.type() != CV_64FC1) {
-		std::string msg = "the image needs to be CV_64FC1, it is: " + 
-			DkUtils::getMatInfo(src);
-		throw DkMatException(msg, __LINE__, __FILE__);
-	}
+	//if (src.type() != CV_64FC1) {
+	//	std::string msg = "the image needs to be CV_64FC1, it is: " + 
+	//		DkUtils::getMatInfo(src);
+	//	throw DkMatException(msg, __LINE__, __FILE__);
+	//}
 
 	//int ksY = (kernelSizeY != 0) ? kernelSizeY : kernelSizeX;	// make squared kernel
 
@@ -985,8 +1021,6 @@ Mat DkLineDetection::convolveIntegralImage(const Mat src, const int kernelSizeX,
 	float cs = (float)halfKCols;
 	float area = rs*cs;
 	
-	DkTimer dt = DkTimer();
-
 	for (int row = 0; row < dst.rows; row++) {
 
 		for (int col = 0; col < dst.cols; col++) {

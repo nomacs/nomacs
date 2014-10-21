@@ -104,7 +104,7 @@ QString DkPaintPlugin::pluginVersion() const {
 QStringList DkPaintPlugin::runID() const {
 
 	//GUID without hyphens generated at http://www.guidgenerator.com/
-	return QStringList() << "15ac610607d247d7a8b3bb5ea0fef5cc";
+	return QStringList() << PLUGIN_ID;
 };
 
 /**
@@ -113,7 +113,7 @@ QStringList DkPaintPlugin::runID() const {
 **/
 QString DkPaintPlugin::pluginMenuName(const QString &runID) const {
 
-	if (runID=="15ac610607d247d7a8b3bb5ea0fef5cc") return "Paint on image";
+	if (runID==PLUGIN_ID) return "Paint on image";
 	return "Wrong GUID!";
 };
 
@@ -123,7 +123,7 @@ QString DkPaintPlugin::pluginMenuName(const QString &runID) const {
 **/
 QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
 
-	if (runID=="15ac610607d247d7a8b3bb5ea0fef5cc") return "Paint on image with colored brush";
+	if (runID==PLUGIN_ID) return "Paint on image with colored brush";
 	return "Wrong GUID!";
 };
 
