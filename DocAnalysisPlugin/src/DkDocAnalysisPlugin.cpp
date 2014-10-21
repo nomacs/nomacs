@@ -47,7 +47,7 @@ DkDocAnalysisPlugin::DkDocAnalysisPlugin() {
 **/
 DkDocAnalysisPlugin::~DkDocAnalysisPlugin() {
 
-	qDebug() << "[PAINT PLUGIN] deleted...";
+	qDebug() << "[DOCUMENT ANALYSIS PLUGIN] deleted...";
 
 	if (viewport) {
 		viewport->deleteLater();
@@ -190,7 +190,7 @@ DkDocAnalysisViewPort::DkDocAnalysisViewPort(QWidget* parent, Qt::WindowFlags fl
 }
 
 DkDocAnalysisViewPort::~DkDocAnalysisViewPort() {
-	qDebug() << "[PAINT VIEWPORT] deleted...";
+	qDebug() << "[DOCUMENT ANALYSIS VIEWPORT] deleted...";
 	
 	// acitive deletion since the MainWindow takes ownership...
 	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
@@ -206,57 +206,36 @@ void DkDocAnalysisViewPort::init() {
 	panning = false;
 	cancelTriggered = false;
 	isOutside = false;
-	defaultCursor = Qt::CrossCursor;
+	defaultCursor = Qt::ArrowCursor;
 	setCursor(defaultCursor);
-	pen = QColor(0,0,0);
-	pen.setCapStyle(Qt::RoundCap);
-	pen.setJoinStyle(Qt::RoundJoin);
-	pen.setWidth(1);
-	
-	docAnalysisToolbar = new DkDocAnalysisToolBar(tr("Paint Toolbar"), this);
 
-	connect(docAnalysisToolbar, SIGNAL(colorSignal(QColor)), this, SLOT(setPenColor(QColor)));
-	connect(docAnalysisToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
-	connect(docAnalysisToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
-	connect(docAnalysisToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
-	connect(docAnalysisToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
+	editMode = mode_default;
+	showBottomLines = false;
+	showTopLines = false;
 	
+	docAnalysisToolbar = new DkDocAnalysisToolBar(tr("Document Analysis Toolbar"), this);
+
+	connect(docAnalysisToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
+	
+	// the magic cut tool
+	magicCut = new DkMagicCut();
+	magicCutDialog = 0;
+	// regular update of contours
+	QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateAnimatedContours()));
+    timer->start(850);
+
+	// the distance tool
+	distance = new DkDistanceMeasure(/*controller->getMetaDataWidget()*/);
+	
+	// the line detection tool
+	lineDetection = new DkLineDetection();
+	lineDetectionDialog = 0;
+
+
 	DkPluginViewPort::init();
 }
 
-void DkDocAnalysisViewPort::mousePressEvent(QMouseEvent *event) {
-
-	// panning -> redirect to viewport
-	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
-		setCursor(Qt::ClosedHandCursor);
-		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
-		event->ignore();
-		return;
-	}
-
-	if (event->buttons() == Qt::LeftButton) {
-		if(parent()) {
-
-			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
-			if(viewport) {
-		
-				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
-					
-					isOutside = false;
-					paths.append(QPainterPath());
-					paths.last().moveTo(mapToImage(event->posF()));
-					paths.last().lineTo(mapToImage(event->posF())+QPointF(0.1,0));
-					pathsPen.append(pen);
-					update();
-				}
-				else isOutside = true;
-			}
-		}
-	}
-
-	// no propagation
-}
 
 void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 
@@ -277,7 +256,33 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 			if(viewport) {
 		
 				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
-					if (isOutside) {
+					
+					switch(editMode) {
+
+					case mode_pickColor:
+						this->setCursor(Qt::CrossCursor);
+						break;
+					case mode_pickSeedpoint:
+						this->setCursor(Qt::PointingHandCursor);
+						break;
+					case mode_pickDistance:
+						if(distance->hasStartPoint() && !distance->hastStartAndEndPoint()) {
+							this->setCursor(Qt::BlankCursor);
+						} else {
+							this->setCursor(Qt::CrossCursor);
+						}
+						//imgPos = worldMatrix.inverted().map(event->pos());
+						//imgPos = imgMatrix.inverted().map(imgPos);
+						QPointF imgPos;
+						imgPos = mapToImage(event->posF());
+						distance->setCurPoint(imgPos.toPoint());
+						update();
+						break;
+					default:
+						break;
+					}
+					
+					/*if (isOutside) {
 						paths.append(QPainterPath());
 						paths.last().moveTo(mapToImage(event->posF()));
 						pathsPen.append(pen);
@@ -286,7 +291,7 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 						QPointF point = mapToImage(event->posF());
 						paths.last().lineTo(point);
 						update();
-					}
+					}*/
 					isOutside = false;
 				}
 				else isOutside = true;
@@ -308,17 +313,74 @@ void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	}
 }
 
-void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
+void DkDocAnalysisViewPort::keyPressEvent(QKeyEvent* event) {
 
+	if ((event->key() == Qt::Key_Escape) && (editMode != mode_default)) {
+		
+		stopEditing();	
+	}
+	else if (event->key() == Qt::Key_Return) {
+		// use Alt + Enter for MagicCut to distinguish from ordinary cut (which is only Enter)
+		if(event->modifiers() == Qt::AltModifier && !event->isAutoRepeat()) {
+			openMagicCutDialog();
+		}
+	}
+	else if (editMode == mode_pickDistance && event->key() == Qt::Key_Shift) {
+		// if shift is held, perform snapping for distance measure tool
+		distance->setSnapping(true);
+		if(!event->isAutoRepeat()) {
+			if(distance->hasStartPoint()) {
+				// update immediately
+				distance->setCurPoint(distance->getCurPoint());
+			}
+		}
+		update();
+	}
+	else {
+		//DkViewPort::keyPressEvent(event);
+		// propagate event
+		QWidget::keyPressEvent(event);
+	}
+
+}
+
+void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
+	
 	QPainter painter(this);
 	
 	if (worldMatrix)
 		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
-	for (int idx = 0; idx < paths.size(); idx++) {
+	/*for (int idx = 0; idx < paths.size(); idx++) {
 
 		painter.setPen(pathsPen.at(idx));
 		painter.drawPath(paths.at(idx));
+	}*/
+	if(parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+		
+		// show the bottom text lines if toggled
+		if (showBottomLines) {
+			QImage botTextLines = lineDetection->getBottomLines();
+			painter.drawImage(viewport->getImageViewRect(), botTextLines, QRect(QPoint(), botTextLines.size()));
+		}
+		if (showTopLines) {
+			QImage topTextLines = lineDetection->getTopLines();
+			painter.drawImage(viewport->getImageViewRect(), topTextLines, QRect(QPoint(), topTextLines.size()));
+		}
+
+
+		// draw Contours
+		if (magicCut->hasContours()) {
+		
+			drawContours(&painter);
+		}
+
+		// draw distance line
+		if (editMode == mode_pickDistance) {
+
+			drawDistanceLine(&painter);
+		}
 	}
 
 	painter.end();
@@ -355,23 +417,7 @@ QImage DkDocAnalysisViewPort::getPaintedImage() {
 	return QImage();
 }
 
-void DkDocAnalysisViewPort::setBrush(const QBrush& brush) {
-	this->brush = brush;
-}
 
-void DkDocAnalysisViewPort::setPen(const QPen& pen) {
-	this->pen = pen;
-}
-
-void DkDocAnalysisViewPort::setPenWidth(int width) {
-
-	this->pen.setWidth(width);
-}
-
-void DkDocAnalysisViewPort::setPenColor(QColor color) {
-
-	this->pen.setColor(color);
-}
 
 void DkDocAnalysisViewPort::setPanning(bool checked) {
 
@@ -379,26 +425,6 @@ void DkDocAnalysisViewPort::setPanning(bool checked) {
 	if(checked) defaultCursor = Qt::OpenHandCursor;
 	else defaultCursor = Qt::CrossCursor;
 	setCursor(defaultCursor);
-}
-
-void DkDocAnalysisViewPort::applyChangesAndClose() {
-
-	cancelTriggered = false;
-	emit closePlugin();
-}
-
-void DkDocAnalysisViewPort::discardChangesAndClose() {
-
-	cancelTriggered = true;
-	emit closePlugin();
-}
-
-QBrush DkDocAnalysisViewPort::getBrush() const {
-	return brush;
-}
-
-QPen DkDocAnalysisViewPort::getPen() const {
-	return pen;
 }
 
 bool DkDocAnalysisViewPort::isCanceled() {
@@ -594,7 +620,7 @@ void DkDocAnalysisToolBar::setVisible(bool visible) {
 /**
 * Called when the detect lines tool icon is clicked.
 * Emits signal (a request) to open the configuration dialog for detecting text lines.
-* \sa detectLinesSignal() DkViewPortContrast::openLineDetectionDialog() DkLineDetection
+* \sa detectLinesSignal() DkDocAnalysisViewPort::openLineDetectionDialog() DkLineDetection
 **/
 void DkDocAnalysisToolBar::on_linedetectionAction_triggered() {
 	emit detectLinesSignal();
@@ -604,7 +630,7 @@ void DkDocAnalysisToolBar::on_linedetectionAction_triggered() {
 * Called when the show bottom text lines tool icon is pressed.
 * Willd display the previously detected bottom text lines if available.
 * Emits signal (a request) to display/hide the lines.
-* \sa showBottomTextLinesSignal(bool) DkViewPortContrast::showBottomTextLines(bool show) DkLineDetection
+* \sa showBottomTextLinesSignal(bool) DkDocAnalysisViewPort::showBottomTextLines(bool show) DkLineDetection
 **/
 void DkDocAnalysisToolBar::on_showbottomlinesAction_triggered() {
 	emit showBottomTextLinesSignal(actions[showbottomlines_action]->isChecked());
@@ -614,7 +640,7 @@ void DkDocAnalysisToolBar::on_showbottomlinesAction_triggered() {
 * Called when the show top text lines tool icon is pressed.
 * Willd display the previously detected top text lines if available.
 * Emits signal (a request) to display/hide the lines.
-* \sa showTopTextLinesSignal(bool) DkViewPortContrast::showBottomTextLines(bool show) DkLineDetection
+* \sa showTopTextLinesSignal(bool) DkDocAnalysisViewPort::showBottomTextLines(bool show) DkLineDetection
 **/
 void DkDocAnalysisToolBar::on_showtoplinesAction_triggered() {
 	emit showTopTextLinesSignal(actions[showtoplines_action]->isChecked());
@@ -623,7 +649,7 @@ void DkDocAnalysisToolBar::on_showtoplinesAction_triggered() {
 /**
 * Called when the measure distance tool icon is clicked.
 * Emits signal (a request) to start/end this tool.
-* \sa measureDistanceRequest(bool) DkViewPortContrast::pickDistancePoint(bool pick) DkDistanceMeasure
+* \sa measureDistanceRequest(bool) DkDocAnalysisViewPort::pickDistancePoint(bool pick) DkDistanceMeasure
 **/
 void DkDocAnalysisToolBar::on_distanceAction_toggled(bool checked) {
 	emit measureDistanceRequest(actions[distance_action]->isChecked());
@@ -632,7 +658,7 @@ void DkDocAnalysisToolBar::on_distanceAction_toggled(bool checked) {
 /**
 * Called when the magic cut tool icon is clicked.
 * Emits signal (a request) to start/end this tool.
-* \sa pickSeedpointRequest(bool) DkViewPortContrast::pickSeedpoint(bool pick) DkMagicCut
+* \sa pickSeedpointRequest(bool) DkDocAnalysisViewPort::pickSeedpoint(bool pick) DkMagicCut
 **/
 void DkDocAnalysisToolBar::on_magicAction_toggled(bool checked) {
 	emit pickSeedpointRequest(actions[magic_action]->isChecked());
@@ -640,7 +666,7 @@ void DkDocAnalysisToolBar::on_magicAction_toggled(bool checked) {
 
 /**
 * Called when the currently selected magic cut areas shall be saved (click on the icon)
-* \sa openCutDialogSignal() DkViewPortContrast::openMagicCutDialog() DkMagicCutDialog
+* \sa openCutDialogSignal() DkDocAnalysisViewPort::openMagicCutDialog() DkMagicCutDialog
 **/
 void DkDocAnalysisToolBar::on_savecutAction_triggered() {
 	emit openCutDialogSignal();
@@ -649,7 +675,7 @@ void DkDocAnalysisToolBar::on_savecutAction_triggered() {
 /**
 * Called when the clear magic cut selection tool icon is clicked.
 * Emits signal (a request) to clear all selected magic cut regions.
-* \sa clearSelectionSignal() DkViewPortContrast::clearMagicCut() DkMagicCut
+* \sa clearSelectionSignal() DkDocAnalysisViewPort::clearMagicCut() DkMagicCut
 **/
 void DkDocAnalysisToolBar::on_clearselectionAction_triggered() {
 	emit clearSelectionSignal();
@@ -658,7 +684,7 @@ void DkDocAnalysisToolBar::on_clearselectionAction_triggered() {
 /**
 * Called when the tolerance value has changed within the toolbar.
 * @param value The new tolerance value
-* \sa toeranceChanged(int) DkViewPortContrast::setMagicCutTolerance(int) DkMagicCut::magicwand(QPoint)
+* \sa toeranceChanged(int) DkDocAnalysisViewPort::setMagicCutTolerance(int) DkMagicCut::magicwand(QPoint)
 **/
 void DkDocAnalysisToolBar::on_toleranceBox_valueChanged(int value) {
 	emit toleranceChanged(value);

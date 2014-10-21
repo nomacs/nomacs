@@ -49,6 +49,9 @@
 #include "DkUtils.h"
 #include "DkBaseViewPort.h"
 #include "DkImageStorage.h"
+#include "DkDistanceMeasure.h"
+#include "DkMagicCutWidgets.h"
+#include "DkLineDetection.h"
 
 // Workaround
 #define PLUGIN_ID "5232a9d4459e431fb9b686365e693a30"
@@ -95,36 +98,120 @@ public:
 	DkDocAnalysisViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkDocAnalysisViewPort();
 	
-	QBrush getBrush() const;
-	QPen getPen() const;
+	/**
+	* Function to check if nomacs is in any of the editing modes (pick seedpoint/color/distance) 
+	* @returns true, if any editing function is active (!= mode_default)
+	* \sa editModes
+	**/
+	bool editingActive() {
+		if(editMode == mode_default)
+			return false;
+		else 
+			return true;
+	};
+	void stopEditing();
+	bool editingDrawingActive();
+
+
+	//TODO: old paint - remove
 	bool isCanceled();
 	QImage getPaintedImage();
 
+signals:
+	// distance measure functions
+	void cancelDistanceMeasureRequest();
+	void startDistanceMeasureRequest();
+
+	// magic wand functions
+	void cancelPickSeedpointRequest();
+	void startPickSeedpointRequest();
+	void saveMagicCutRequest(QImage saveImg, int xCoord, int yCoord, int height, int width);
+	void enableSaveCutSignal(bool enable);
+
+	// text line detection functions
+	void enableShowTextLinesSignal(bool enable);
+	void toggleBottomTextLinesButtonSignal(bool toggle);
+	void toggleTopTextLinesButtonSignal(bool toggle);
+
 public slots:
-	void setBrush(const QBrush& brush);
-	void setPen(const QPen& pen);
-	void setPenWidth(int width);
-	void setPenColor(QColor color);
+	// measure distance functions
+	void pickDistancePoint(bool pick);
+	void pickDistancePoint();
+	// magic wand selection functions
+	void pickSeedpoint(bool pick);
+	void pickSeedpoint();
+	void setMagicCutTolerance(int tol);
+	void clearMagicCut();
+	void openMagicCutDialog();
+	void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
+	void magicCutSaved(bool saved);
+	// animation of contours
+	virtual void updateAnimatedContours();
+	// line detection functions
+	void openLineDetectionDialog();
+	void showBottomTextLines(bool show);
+	void showTopTextLines(bool show);
+	void showBottomTextLines();
+	void showTopTextLines();
+
+
+	// TODO: olda paint - remove
 	void setPanning(bool checked);
-	void applyChangesAndClose();
-	void discardChangesAndClose();
 	virtual void setVisible(bool visible);
 
 protected:
+	virtual void draw(QPainter *painter);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
+	//virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
+	virtual void mouseDoubleClickEvent(QMouseEvent *event);
+
+	// TODO: update these functions
 	void mouseMoveEvent(QMouseEvent *event);
-	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent*event);
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
 
+	/**
+	* The editing mode which is currently active. State is defined by user interaction:
+	* mode_default: the default viewing mode
+	* mode_pickColor: user picks color for contrast enhancement
+	* mode_pickSeedpoint: user picks seedpoints for the magic wand tool
+	* mode_pickDistance: user picks points to measure the distance
+	* \sa DkDistanceMeasure DkMagicCut
+	**/
+	enum editModes {
+		mode_default,
+		mode_pickColor,
+		mode_pickSeedpoint,
+		mode_pickDistance,
+	};
+
+	int editMode; /**< The current editing state that the program is in **/
+	bool showBottomLines; /**< Flag for rendering to show or hide bottom text lines **/
+	bool showTopLines; /**< Flag for rendering to show or hide top text lines **/
+
+	// distance measure section
+	DkDistanceMeasure *distance; /**< Tool to measure distances between two points **/
+	void drawDistanceLine(QPainter *painter);
+	// magic wand selection variables
+	DkMagicCut *magicCut; /**< Tool to make a magic cut from an image (magic wand) **/
+	DkMagicCutDialog *magicCutDialog;
+	void drawContours(QPainter *painter);
+	// line detection variables
+	DkLineDetection *lineDetection; /**< Tool for detecting text lines within an image **/
+	DkLineDetectionDialog *lineDetectionDialog;
+
+
+
+
+	//TODO: old paint - remove
 	QVector<QPainterPath> paths;
 	QVector<QPen> pathsPen;
 
 	bool cancelTriggered;
 	bool isOutside;
-	QBrush brush;
-	QPen pen;
-	QPointF lastPoint;
 	bool panning;
 	DkDocAnalysisToolBar* docAnalysisToolbar;
 	QCursor defaultCursor;
