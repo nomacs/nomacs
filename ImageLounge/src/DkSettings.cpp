@@ -700,7 +700,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.appMode = 0;
 	
 	global_p.skipImgs = 10;
-	global_p.numFiles = 50;
+	global_p.numFiles = 80;
 	global_p.loop = false;
 	global_p.scanSubFolders = false;
 	global_p.lastDir = QString();

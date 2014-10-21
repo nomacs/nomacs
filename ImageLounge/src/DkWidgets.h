@@ -87,7 +87,7 @@
 #include <QMovie>
 // gif animation label -----
 
-#include "DkImage.h"
+//#include "DkImage.h"
 #include "DkNetwork.h"
 #include "DkSettings.h"
 #include "DkMath.h"
