@@ -319,7 +319,8 @@ static jas_image_cmpt_t *jas_image_cmpt_create(uint_fast32_t tlx, uint_fast32_t 
 	cmpt->cps_ = (depth + 7) / 8;
 
 	size = cmpt->width_ * cmpt->height_ * cmpt->cps_;
-	cmpt->stream_ = (inmem) ? jas_stream_memopen(0, size) : jas_stream_tmpfile();
+	// >DIR: always load files in memory [21.10.2014 markus]
+	cmpt->stream_ = jas_stream_memopen(0, size);
 	if (!cmpt->stream_) {
 		jas_image_cmpt_destroy(cmpt);
 		return 0;
