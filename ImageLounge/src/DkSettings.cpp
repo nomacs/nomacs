@@ -451,6 +451,9 @@ void DkSettings::load(bool force) {
 
 void DkSettings::save(bool force) {
 		
+	if (DkSettings::app.privateMode)
+		return;
+
 	QSettings& settings = Settings::instance().getSettings();
 	
 	settings.beginGroup("AppSettings");
@@ -698,7 +701,8 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showFileInfoLabel.setBit(mode_contrast, false);
 
 	app_p.appMode = 0;
-	
+	app_p.privateMode = false;
+
 	global_p.skipImgs = 10;
 	global_p.numFiles = 80;
 	global_p.loop = false;
@@ -900,6 +904,9 @@ void DkFileFilterHandling::registerExtension(const QString& ext, const QString& 
 void DkFileFilterHandling::registerFileType(const QString& filterString, const QString& attribute, bool add) {
 
 #ifdef WIN32
+
+	if (DkSettings::app.privateMode)
+		return;
 
 	QStringList tmp = filterString.split("(");
 

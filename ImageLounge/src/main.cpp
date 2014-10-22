@@ -151,7 +151,13 @@ int main(int argc, char *argv[]) {
 	QTranslator translator;
 	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
-	
+
+	// show pink icons if nomacs is in private mode
+	if(args.size() > 1 && args[1] == "-p") {
+		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
+		nmc::DkSettings::app.privateMode = true;
+	}
+
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
@@ -163,8 +169,11 @@ int main(int argc, char *argv[]) {
 	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
-	if (args.size() > 1 && QFileInfo(args[1]).exists())
-		w->loadFile(QFileInfo(args[1]));	// update folder + be silent
+	// TODO: time to switch -> qt 5 has a command line parser
+	if (args.size() > 1 && args[1] == "-p") {
+	}
+	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists())
+		w->loadFile(QFileInfo(args[args.size()-1]));	// update folder + be silent
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
 

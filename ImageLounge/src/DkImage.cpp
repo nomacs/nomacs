@@ -966,7 +966,7 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
  **/ 
 void DkImageLoader::updateHistory() {
 
-	if (!DkSettings::global.logRecentFiles)
+	if (!DkSettings::global.logRecentFiles || DkSettings::app.privateMode)
 		return;
 
 	QFileInfo file = currentImage->file();

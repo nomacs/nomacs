@@ -79,7 +79,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	saveSettings = true;
 
 	// load settings
-	DkSettings::load();
+	//DkSettings::load();
 	
 	openDialog = 0;
 	saveDialog = 0;
@@ -502,29 +502,8 @@ void DkNoMacs::createIcons() {
 	toolsIcons.resize(icon_tools_end);
 	toolsIcons[icon_tools_manipulation] = ICON("", ":/nomacs/img/manipulation.png");
 
-	if (!DkSettings::display.defaultIconColor) {
-		// now colorize all icons
-		for (int idx = 0; idx < fileIcons.size(); idx++) {
-
-			// never colorize these large icons
-			if (idx == icon_file_open_large || idx == icon_file_dir_large)
-				continue;
-
-			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
-		}
-
-		// now colorize all icons
-		for (int idx = 0; idx < editIcons.size(); idx++)
-			editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
-
-		for (int idx = 0; idx < viewIcons.size(); idx++)
-			viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
-
-		for (int idx = 0; idx < toolsIcons.size(); idx++)
-			toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
-
-	}
+	if (DkSettings::display.iconColor != DkSettings::display.defaultIconColor)
+		colorizeIcons(DkSettings::display.iconColor);
 }
 
 void DkNoMacs::createMenu() {
@@ -584,6 +563,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_train_format]);
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_new_instance]);
+	fileMenu->addAction(fileActions[menu_file_private_instance]);
 	fileMenu->addAction(fileActions[menu_file_exit]);
 
 	editMenu = menu->addMenu(tr("&Edit"));
@@ -869,6 +849,11 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_new_instance]->setShortcut(QKeySequence(shortcut_new_instance));
 	fileActions[menu_file_new_instance]->setStatusTip(tr("Open file in new instance"));
 	connect(fileActions[menu_file_new_instance], SIGNAL(triggered()), this, SLOT(newInstance()));
+
+	fileActions[menu_file_private_instance] = new QAction(tr("St&art Private Instance"), this);
+	fileActions[menu_file_private_instance]->setShortcut(QKeySequence(shortcut_private_instance));
+	fileActions[menu_file_private_instance]->setStatusTip(tr("Open private instance"));
+	connect(fileActions[menu_file_private_instance], SIGNAL(triggered()), this, SLOT(newInstance()));
 
 	fileActions[menu_file_find] = new QAction(tr("&Find && Filter"), this);
 	fileActions[menu_file_find]->setShortcut(QKeySequence::Find);
@@ -1363,6 +1348,37 @@ void DkNoMacs::assignCustomPluginShortcuts() {
 	}
 
 #endif // WITH_PLUGINS
+}
+
+void DkNoMacs::colorizeIcons(QColor col) {
+
+	// show pink icons if nomacs is in private mode
+	if (DkSettings::app.privateMode)
+		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
+
+	if (!DkSettings::display.defaultIconColor) {
+		// now colorize all icons
+		for (int idx = 0; idx < fileIcons.size(); idx++) {
+
+			// never colorize these large icons
+			if (idx == icon_file_open_large || idx == icon_file_dir_large)
+				continue;
+
+			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		}
+
+		// now colorize all icons
+		for (int idx = 0; idx < editIcons.size(); idx++)
+			editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
+
+		for (int idx = 0; idx < viewIcons.size(); idx++)
+			viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
+
+		for (int idx = 0; idx < toolsIcons.size(); idx++)
+			toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
+
+	}
 }
 
 void DkNoMacs::createShortcuts() {
@@ -3311,6 +3327,11 @@ void DkNoMacs::newInstance(QFileInfo file) {
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
 
+	QAction* a = static_cast<QAction*>(sender());
+
+	if (a && a == fileActions[menu_file_private_instance])
+		args.append("-p");
+
 	if (!file.exists())
 		args.append(viewport()->getImageLoader()->file().absoluteFilePath());
 	else
@@ -3592,8 +3613,11 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	QString title = file.fileName();
 	title = title.remove(".lnk");
 	
-	if (title.isEmpty())
+	if (title.isEmpty()) {
 		title = "nomacs - Image Lounge";
+		if (DkSettings::app.privateMode) 
+			title.append(tr(" [Private Mode]"));
+	}
 
 	if (edited)
 		title.append("[*]");
@@ -3607,6 +3631,8 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 		attributes.sprintf(" - %i x %i", size.width(), size.height());
 	if (size.isEmpty() && viewport())
 		attributes.sprintf(" - %i x %i", viewport()->getImage().width(), viewport()->getImage().height());
+	if (DkSettings::app.privateMode) 
+		attributes.append(tr(" [Private Mode]"));
 
 	QMainWindow::setWindowTitle(title.append(attributes));
 	setWindowFilePath(file.absoluteFilePath());

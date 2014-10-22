@@ -183,6 +183,7 @@ enum {
 	shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_H,
 	shortcut_an_opacity		= Qt::ALT  + Qt::Key_H,
 	shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
+	shortcut_private_instance = Qt::CTRL + Qt::ALT + Qt::Key_P,
 	shortcut_tp_pattern		= Qt::Key_B,
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
@@ -239,6 +240,7 @@ enum fileActions {
 	menu_file_prev,
 	menu_file_train_format,
 	menu_file_new_instance,
+	menu_file_private_instance,
 	menu_file_exit,
 	//menu_file_share_fb,
 
@@ -481,6 +483,7 @@ public:
 	bool saveSettings;
 
 	QString getCurrRunningPlugin() {return currRunningPlugin;};
+	void colorizeIcons(QColor col);
 
 signals:
 	void sendTitleSignal(QString newTitle);

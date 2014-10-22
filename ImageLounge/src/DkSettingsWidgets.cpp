@@ -184,8 +184,12 @@ void DkSettingsDialog::saveSettings() {
 	settings->save();
 	this->close();
 
+	if (DkSettings::app.privateMode) {
+		QMessageBox::information(this, tr("Private Mode"), tr("Settings are not saved in the private mode"), QMessageBox::Ok, QMessageBox::Ok);
+	}
+
 	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
-	if (curLanguage != DkSettings::global.language ||
+	if (!DkSettings::app.privateMode && (curLanguage != DkSettings::global.language ||
 		DkSettings::display.bgColor != curBgCol ||
 		DkSettings::display.iconColor != curIconCol ||
 		DkSettings::display.bgColorWidget != curBgColWidget ||
@@ -193,7 +197,7 @@ void DkSettingsDialog::saveSettings() {
 		DkSettings::display.useDefaultColor != curUseCol ||
 		DkSettings::display.defaultIconColor != curUseIconCol ||
 		DkSettings::display.smallIcons != curIcons ||
-		DkSettings::display.toolbarGradient != curGradient)
+		DkSettings::display.toolbarGradient != curGradient))
 		emit languageChanged();
 	else
 		emit settingsChanged();
@@ -573,6 +577,7 @@ void DkFileWidget::init() {
 	//spFilter->setValue(DkSettings::SlideShowSettings::filter);
 
 	cbWrapImages->setChecked(DkSettings::global.loop);
+	cbLogRecentFiles->setChecked(DkSettings::global.logRecentFiles);
 	skipImgWidget->setSpinBoxValue(DkSettings::global.skipImgs);
 	//numberFiles->setSpinBoxValue(DkSettings::global.numFiles);
 	cbUseTmpPath->setChecked(DkSettings::global.useTmpPath);
@@ -637,12 +642,14 @@ void DkFileWidget::createLayout() {
 	QWidget* checkBoxWidget = new QWidget(this);
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	cbWrapImages = new QCheckBox(tr("Loop Images"));
+	cbLogRecentFiles = new QCheckBox(tr("Log Recent Files"));
 
 	widgetLayout->addWidget(gbDragDrop);
 	widgetLayout->addWidget(gbImageLoading);
 	leftLayout->addWidget(skipImgWidget);
 	//leftLayout->addWidget(numberFiles);
 	leftLayout->addWidget(cbWrapImages);
+	leftLayout->addWidget(cbLogRecentFiles);
 	leftLayout->addStretch();
 	subWidgetLayout->addLayout(leftLayout);
 	subWidgetLayout->addLayout(rightLayout);
@@ -653,10 +660,10 @@ void DkFileWidget::writeSettings() {
 	DkSettings::global.skipImgs = skipImgWidget->getSpinBoxValue();
 	//DkSettings::global.numFiles = numberFiles->getSpinBoxValue();
 	DkSettings::global.loop = cbWrapImages->isChecked();
+	DkSettings::global.logRecentFiles = cbLogRecentFiles->isChecked();
 	DkSettings::global.useTmpPath = cbUseTmpPath->isChecked();
 	DkSettings::global.tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
 	DkSettings::resources.waitForLastImg = rbWaitForImage->isChecked();
-
 }
 
 void DkFileWidget::lineEditChanged(QString path) {

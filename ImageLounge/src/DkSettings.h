@@ -147,6 +147,7 @@ public:
 		bool showRecentFiles;
 		int appMode;
 		int currentAppMode;
+		bool privateMode;
 		bool advancedSettings;
 		bool closeOnEsc;
 		QStringList browseFilters;
