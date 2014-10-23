@@ -502,7 +502,7 @@ void DkNoMacs::createIcons() {
 	toolsIcons.resize(icon_tools_end);
 	toolsIcons[icon_tools_manipulation] = ICON("", ":/nomacs/img/manipulation.png");
 
-	if (DkSettings::display.iconColor != DkSettings::display.defaultIconColor)
+	if (!DkSettings::display.defaultIconColor)
 		colorizeIcons(DkSettings::display.iconColor);
 }
 
@@ -1353,32 +1353,26 @@ void DkNoMacs::assignCustomPluginShortcuts() {
 void DkNoMacs::colorizeIcons(QColor col) {
 
 	// show pink icons if nomacs is in private mode
-	if (DkSettings::app.privateMode)
-		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
+	// now colorize all icons
+	for (int idx = 0; idx < fileIcons.size(); idx++) {
 
-	if (!DkSettings::display.defaultIconColor) {
-		// now colorize all icons
-		for (int idx = 0; idx < fileIcons.size(); idx++) {
+		// never colorize these large icons
+		if (idx == icon_file_open_large || idx == icon_file_dir_large)
+			continue;
 
-			// never colorize these large icons
-			if (idx == icon_file_open_large || idx == icon_file_dir_large)
-				continue;
-
-			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-			fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
-		}
-
-		// now colorize all icons
-		for (int idx = 0; idx < editIcons.size(); idx++)
-			editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
-
-		for (int idx = 0; idx < viewIcons.size(); idx++)
-			viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
-
-		for (int idx = 0; idx < toolsIcons.size(); idx++)
-			toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
-
+		fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
+		fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 	}
+
+	// now colorize all icons
+	for (int idx = 0; idx < editIcons.size(); idx++)
+		editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
+
+	for (int idx = 0; idx < viewIcons.size(); idx++)
+		viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
+
+	for (int idx = 0; idx < toolsIcons.size(); idx++)
+		toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
 }
 
 void DkNoMacs::createShortcuts() {
