@@ -502,7 +502,7 @@ void DkNoMacs::createIcons() {
 	toolsIcons.resize(icon_tools_end);
 	toolsIcons[icon_tools_manipulation] = ICON("", ":/nomacs/img/manipulation.png");
 
-	if (!DkSettings::display.defaultIconColor)
+	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
 		colorizeIcons(DkSettings::display.iconColor);
 }
 
@@ -1352,7 +1352,6 @@ void DkNoMacs::assignCustomPluginShortcuts() {
 
 void DkNoMacs::colorizeIcons(QColor col) {
 
-	// show pink icons if nomacs is in private mode
 	// now colorize all icons
 	for (int idx = 0; idx < fileIcons.size(); idx++) {
 
