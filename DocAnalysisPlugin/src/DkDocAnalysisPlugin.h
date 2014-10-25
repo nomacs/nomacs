@@ -98,19 +98,8 @@ public:
 	DkDocAnalysisViewPort(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkDocAnalysisViewPort();
 	
-	/**
-	* Function to check if nomacs is in any of the editing modes (pick seedpoint/color/distance) 
-	* @returns true, if any editing function is active (!= mode_default)
-	* \sa editModes
-	**/
-	bool editingActive() {
-		if(editMode == mode_default)
-			return false;
-		else 
-			return true;
-	};
-	// >DIR: uncomment if function is added again [21.10.2014 markus]
-	//void stopEditing();
+	bool editingActive();
+	void stopEditing();
 	bool editingDrawingActive();
 
 
@@ -138,10 +127,9 @@ signals:
 
 public slots:
 	// measure distance functions
-	
+	void pickDistancePoint(bool pick);
+	void pickDistancePoint();
 	// >DIR: uncomment if function is added again [21.10.2014 markus]
-	//void pickDistancePoint(bool pick);
-	//void pickDistancePoint();
 	//// magic wand selection functions
 	//void pickSeedpoint(bool pick);
 	//void pickSeedpoint();
@@ -171,18 +159,25 @@ public slots:
 protected:
 	// >DIR: uncomment if function is added again [21.10.2014 markus]
 	//virtual void draw(QPainter *painter);
-	//virtual void keyReleaseEvent(QKeyEvent *event);
-	//virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	//virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void keyPressEvent(QKeyEvent *event);
-
-	// TODO: update these functions
+	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
+	virtual void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent *event);
+	void mouseDoubleClickEvent(QMouseEvent *event);
+	
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
 
+	bool cancelTriggered;
+	bool isOutside;
+	bool panning;
+	DkDocAnalysisToolBar* docAnalysisToolbar;
+	QCursor defaultCursor;
+
+	QMainWindow* win; // >DIR: we'll retrieve the current image container from here [21.10.2014 markus]
+
+private:
 	/**
 	* The editing mode which is currently active. State is defined by user interaction:
 	* mode_default: the default viewing mode
@@ -204,25 +199,16 @@ protected:
 
 	// distance measure section
 	DkDistanceMeasure *distance; /**< Tool to measure distances between two points **/
-	
-	// >DIR: uncomment if function is added again [21.10.2014 markus]
-	//void drawDistanceLine(QPainter *painter);
-	//void drawContours(QPainter *painter);
+	void drawDistanceLine(QPainter *painter);
 
 	// magic wand selection variables
 	DkMagicCut *magicCut; /**< Tool to make a magic cut from an image (magic wand) **/
 	DkMagicCutDialog *magicCutDialog;
+	void drawContours(QPainter *painter);
 	// line detection variables
 	DkLineDetection *lineDetection; /**< Tool for detecting text lines within an image **/
 	DkLineDetectionDialog *lineDetectionDialog;
 
-	bool cancelTriggered;
-	bool isOutside;
-	bool panning;
-	DkDocAnalysisToolBar* docAnalysisToolbar;
-	QCursor defaultCursor;
-
-	QMainWindow* win; // >DIR: we'll retrieve the current image container from here [21.10.2014 markus]
 };
 
 

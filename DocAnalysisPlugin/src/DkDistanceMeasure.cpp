@@ -117,8 +117,6 @@ void DkDistanceMeasure::calculateStartEndDistance() {
 	if (points[0].isNull()) return;
 
 	// get the image resolution for distance calculation
-	// TODO: resolution not there anymore
-	//metaInfo->getResolution(x_res, y_res);
 	x_res = 72;		// markus: 72 dpi is the default value assumed
 	y_res = 72;
 

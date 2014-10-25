@@ -218,8 +218,25 @@ void DkDocAnalysisViewPort::init() {
 	
 	docAnalysisToolbar = new DkDocAnalysisToolBar(tr("Document Analysis Toolbar"), this);
 
+	// connect signals from toolbar to viewport
 	connect(docAnalysisToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
-	
+	connect(docAnalysisToolbar, SIGNAL(measureDistanceRequest(bool)), this, SLOT(pickDistancePoint(bool)));
+	connect(docAnalysisToolbar, SIGNAL(pickSeedpointRequest(bool)),  this, SLOT(pickSeedpoint(bool)));
+	connect(docAnalysisToolbar, SIGNAL(clearSelectionSignal()), this, SLOT(clearMagicCut()));
+	connect(docAnalysisToolbar, SIGNAL(toleranceChanged(int)), this, SLOT(setMagicCutTolerance(int)));
+	connect(docAnalysisToolbar, SIGNAL(openCutDialogSignal()), this, SLOT(openMagicCutDialog()));
+	connect(docAnalysisToolbar, SIGNAL(detectLinesSignal()), this, SLOT(openLineDetectionDialog()));
+	connect(docAnalysisToolbar, SIGNAL(showBottomTextLinesSignal(bool)), this, SLOT(showBottomTextLines(bool)));
+	connect(docAnalysisToolbar, SIGNAL(showTopTextLinesSignal(bool)), this, SLOT(showTopTextLines(bool)));
+	connect(this, SIGNAL(cancelPickSeedpointRequest()), docAnalysisToolbar, SLOT(pickSeedpointCanceled()));
+	connect(this, SIGNAL(cancelDistanceMeasureRequest()), docAnalysisToolbar, SLOT(measureDistanceCanceled()));
+	connect(this, SIGNAL(enableSaveCutSignal(bool)), docAnalysisToolbar, SLOT(enableButtonSaveCut(bool)));
+	connect(this, SIGNAL(enableShowTextLinesSignal(bool)), docAnalysisToolbar, SLOT(enableButtonShowTextLines(bool)));
+	connect(this, SIGNAL(toggleBottomTextLinesButtonSignal(bool)), docAnalysisToolbar, SLOT(toggleBottomTextLinesButton(bool)));
+	connect(this, SIGNAL(toggleTopTextLinesButtonSignal(bool)), docAnalysisToolbar, SLOT(toggleTopTextLinesButton(bool)));
+	connect(this, SIGNAL(startDistanceMeasureRequest()), docAnalysisToolbar, SLOT(measureDistanceStarted()));
+	connect(this, SIGNAL(startPickSeedpointRequest()), docAnalysisToolbar, SLOT(pickSeedpointStarted()));
+
 	// the magic cut tool
 	magicCut = new DkMagicCut();
 	magicCutDialog = 0;
@@ -243,16 +260,16 @@ void DkDocAnalysisViewPort::init() {
 void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod ||
+	/*if (event->modifiers() == DkSettings::global.altMod ||
 		panning) {
 
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
 		update();
 		return;
-	}
+	}*/
 
-	if (event->buttons() == Qt::LeftButton) {
+	if (editingActive()) {
 		if(parent()) {
 			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 
@@ -308,6 +325,15 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 	//QWidget::mouseMoveEvent(event);	// do not propagate mouse event
 }
 
+void DkDocAnalysisViewPort::mouseDoubleClickEvent(QMouseEvent *event) {
+
+	// if any editing operation is going on then do not allow full screen
+	if (editingActive() || editingDrawingActive() )
+		return;
+	else
+		QWidget::mouseDoubleClickEvent(event);
+}
+
 void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
@@ -317,14 +343,85 @@ void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 		event->ignore();
 		return;
 	}
+
+	QPointF imgPos;
+	QPoint xy;
+	imgPos = mapToImage(event->posF());
+	xy = imgPos.toPoint();
+
+	if(parent()) {
+		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+
+		if(viewport) {
+			// check if point is within image
+			if(QRectF(QPointF(), viewport->getImage().size()).contains(imgPos)) {
+
+				switch(editMode) {
+
+				case mode_pickSeedpoint:
+					//imgPos = worldMatrix.inverted().map(event->pos());
+					//imgPos = imgMatrix.inverted().map(imgPos);
+					
+					if (event->button() == Qt::LeftButton)
+						if(!magicCut->magicwand(xy)) {
+								QString tooLargeAreaString = QString("Selected area is too big");
+								QMessageBox tooLargeAreaDialog(this);
+								tooLargeAreaDialog.setWindowTitle("Area too big");
+								tooLargeAreaDialog.setIcon(QMessageBox::Information);
+								tooLargeAreaDialog.setText(tooLargeAreaString);
+								tooLargeAreaDialog.show();
+								tooLargeAreaDialog.exec();
+						}
+					if (event->button() == Qt::RightButton) {
+						magicCut->resetRegionMask(xy);
+					}
+					update();
+					// check if the save-button has to be enabled or disabled
+					if(magicCut->hasContours())
+						emit enableSaveCutSignal(true);
+					else
+						emit enableSaveCutSignal(false);
+
+					this->setCursor(Qt::PointingHandCursor);
+					break;
+
+				case mode_pickDistance: 
+
+					if(distance->hastStartAndEndPoint()) {
+						distance->resetPoints();
+					}
+
+					distance->setPoint(xy);
+					update();
+
+					/*if(distance->hastStartAndEndPoint())
+					{
+						QString distanceString = QString("Distance: %1 cm (%2 inch)").arg(distance->getDistanceInCm()).arg(distance->getDistanceInInch());
+						QMessageBox distanceDialog(this);
+						distanceDialog.setWindowTitle("Distance");
+						distanceDialog.setIcon(QMessageBox::Information);
+						distanceDialog.setText(distanceString);
+						distanceDialog.show();
+						distanceDialog.exec();
+
+						distance->resetPoints();
+						// go back to default mode
+						stopEditing();
+					}*/
+		
+					this->setCursor(Qt::CrossCursor);
+					break;
+				}
+			}
+		}
+	}
 }
 
 void DkDocAnalysisViewPort::keyPressEvent(QKeyEvent* event) {
 
 	if ((event->key() == Qt::Key_Escape) && (editMode != mode_default)) {
 		
-		// >DIR: uncomment if function is added again [21.10.2014 markus]
-		//stopEditing();	
+		stopEditing();	
 	}
 	else if (event->key() == Qt::Key_Return) {
 		// use Alt + Enter for MagicCut to distinguish from ordinary cut (which is only Enter)
@@ -353,6 +450,59 @@ void DkDocAnalysisViewPort::keyPressEvent(QKeyEvent* event) {
 
 }
 
+void DkDocAnalysisViewPort::keyReleaseEvent(QKeyEvent *event) {
+	distance->setSnapping(false);
+}
+
+/**
+* Function to check if nomacs is in any of the editing modes (pick seedpoint/color/distance) 
+* @returns true, if any editing function is active (!= mode_default)
+* \sa editModes
+**/
+bool DkDocAnalysisViewPort::editingActive() {
+		if(editMode == mode_default)
+			return false;
+		else 
+			return true;
+}
+
+/**
+* Check if any drawing specific to the editing operations is active
+* @returns true if contour drawing or distance drawing is currently active
+**/
+bool DkDocAnalysisViewPort::editingDrawingActive() {
+
+	if(magicCut)
+		return magicCut->hasContours();
+	if(distance)
+		return distance->hasStartPoint();
+
+	return false;
+}
+
+/**
+* Stops the current editing and sends corresponding signals to the Tool Bar
+* \sa cancelDistanceMeasureRequest() DkMagicCutToolBar::measureDistanceCanceled()
+* \sa cancelPickSeedpointRequest() DkMagicCutToolBar::pickSeedpointCanceled()
+**/
+void DkDocAnalysisViewPort::stopEditing() {
+
+	switch(editMode) {
+	case mode_pickDistance:
+		emit cancelDistanceMeasureRequest();
+		distance->resetPoints();
+		break;
+	case mode_pickSeedpoint:
+		emit cancelPickSeedpointRequest();
+		break;
+	case mode_pickColor:
+		break;
+	}
+	editMode = mode_default;
+	this->unsetCursor();
+	update();
+}
+
 void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 	
 	QPainter painter(this);
@@ -360,11 +510,6 @@ void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 	if (worldMatrix)
 		painter.setWorldTransform((*imgMatrix) * (*worldMatrix));	// >DIR: using both matrices allows for correct resizing [16.10.2013 markus]
 
-	/*for (int idx = 0; idx < paths.size(); idx++) {
-
-		painter.setPen(pathsPen.at(idx));
-		painter.drawPath(paths.at(idx));
-	}*/
 	if(parent()) {
 		DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 		
@@ -380,21 +525,140 @@ void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 
 
 		// draw Contours
-		if (magicCut->hasContours()) {
-			// >DIR: uncomment if function is added again [21.10.2014 markus]		
-			//drawContours(&painter);
+		if (magicCut->hasContours()) {	
+			drawContours(&painter);
 		}
 
 		// draw distance line
 		if (editMode == mode_pickDistance) {
-			// >DIR: uncomment if function is added again [21.10.2014 markus]
-			//drawDistanceLine(&painter);
+			drawDistanceLine(&painter);
 		}
 	}
 
 	painter.end();
 
 	DkPluginViewPort::paintEvent(event);
+}
+
+/**
+* Draws the contours of selected regions (made using the magic cut tool)
+* @param painter The painter to use
+* \sa DkMagicCut
+**/ 
+void DkDocAnalysisViewPort::drawContours(QPainter *painter) {
+
+	QPen pen = painter->pen();
+	painter->setPen(magicCut->getContourPen());
+	painter->drawPath(magicCut->getContourPath());
+	painter->setPen(pen);
+}
+
+
+/**
+* Draws lines and points referring to the distance measure tool
+* @param painter The painter to use
+* \sa DkDistanceMeasure
+**/
+void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
+	
+	// return if no start point yet
+	if(!distance->hasStartPoint()) return;
+
+	QPoint point = distance->getStartPoint();
+	// ? point = imgMatrix.map(point);
+	
+	// test
+	
+
+
+	// special handling of drawing cross - to avoid zooming of cross lines
+	// ? QPointF startPointMapped = worldMatrix.map(point);
+	QPointF startPointMapped = mapToViewport(QPoint(point));
+	QPointF crossTransP1 = startPointMapped;
+	crossTransP1.setY(crossTransP1.y() + 7);
+	QPointF crossTransP2 = startPointMapped;
+	crossTransP2.setY(crossTransP2.y() - 7);
+	painter->setWorldMatrixEnabled(false);
+	painter->drawLine(crossTransP1, crossTransP2);
+	painter->setWorldMatrixEnabled(true);
+	crossTransP1 = startPointMapped;
+	crossTransP1.setX(crossTransP1.x() + 7);
+	crossTransP2 = startPointMapped;
+	crossTransP2.setX(crossTransP2.x() - 7);
+	painter->setWorldMatrixEnabled(false);
+	painter->drawLine(crossTransP1, crossTransP2);
+	painter->setWorldMatrixEnabled(true);
+	//painter->drawLine(point.x(), point.y()+3, point.x(), point.y()-3);
+	//painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
+	
+	
+	QPoint point_end = distance->getCurPoint();
+	// ? point_end = imgMatrix.map(point_end);
+
+	QString dist_text = QString::number(distance->getDistanceInCm(), 'f', 2) + " cm";
+
+	// draw the line
+	painter->drawLine(point, point_end);
+	// draw the text containing the current distance
+
+
+	QPoint pos_text = QPoint(point_end.x(), point_end.y());
+
+	QFont font = painter->font();
+	font.setPointSizeF(12);
+
+	painter->setFont(font);
+
+	QFontMetricsF fm(font);
+	QRectF rect = fm.boundingRect(dist_text);
+	// ? QPointF transP = worldMatrix.map(pos_text);
+	QPointF transP = mapToViewport(QPointF(pos_text));
+
+	if (point_end.x() < point.x())
+		transP.setX(transP.x());
+	else
+		transP.setX(transP.x() - rect.width());
+
+	if (point_end.y() > point.y()) 
+		transP.setY(transP.y() + rect.height());
+	else
+		transP.setY(transP.y());
+	
+	painter->setWorldMatrixEnabled(false);
+	painter->drawText(transP.x(), transP.y(), dist_text);
+	painter->setWorldMatrixEnabled(true);
+
+	point = distance->getCurPoint();
+	// ? point = imgMatrix.map(point);
+
+	// special handling of drawing cross - to avoid zooming of cross lines
+	// ? QPointF endPointMapped = worldMatrix.map(point);
+	QPointF endPointMapped = mapToViewport(QPointF(point));
+	crossTransP1 = endPointMapped;
+	crossTransP1.setY(crossTransP1.y() + 7);
+	crossTransP2 = endPointMapped;
+	crossTransP2.setY(crossTransP2.y() - 7);
+	painter->setWorldMatrixEnabled(false);
+	painter->drawLine(crossTransP1, crossTransP2);
+	painter->setWorldMatrixEnabled(true);
+	crossTransP1 = endPointMapped;
+	crossTransP1.setX(crossTransP1.x() + 7);
+	crossTransP2 = endPointMapped;
+	crossTransP2.setX(crossTransP2.x() - 7);
+	painter->setWorldMatrixEnabled(false);
+	painter->drawLine(crossTransP1, crossTransP2);
+	painter->setWorldMatrixEnabled(true);
+	//painter->drawLine(point.x(), point.y()+3, point.x(), point.y()-3);
+	//painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
+	
+
+	/*if(distance->hastStartAndEndPoint()) {
+		point = distance->getEndPoint();
+		point = imgMatrix.map(point);
+		painter->drawLine(point.x(), point.y()+3, point.x(), point.y()-3);
+		painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
+	}*/
+
 }
 
 QImage DkDocAnalysisViewPort::getPaintedImage() {
@@ -470,6 +734,55 @@ void DkDocAnalysisViewPort::setVisible(bool visible) {
 
 	DkPluginViewPort::setVisible(visible);
 }
+
+
+/**
+* Starts/ends the distance points picking mode.
+* Cancels any other active modes.
+* @param pick start or end the mode
+* \sa cancelPickSeedpointRequest() DkMagicCutToolBar::pickSeedpointCanceled()
+**/
+void DkDocAnalysisViewPort::pickDistancePoint(bool pick) {
+
+	switch(editMode) {
+	case mode_pickColor:
+		break;
+	case mode_pickSeedpoint:
+		emit cancelPickSeedpointRequest();
+		break;
+	}
+
+	if(pick) {
+		editMode = mode_pickDistance;
+		distance->resetPoints();
+		this->setCursor(Qt::CrossCursor);
+	} else
+		editMode = mode_default;	
+}
+
+/**
+* Starts the distance points picking mode if not yet active
+* Cancels any other active modes.
+* \sa cancelPickSeedpointRequest() DkMagicCutToolBar::pickSeedpointCanceled(), startDistanceMeasureRequest()
+**/
+void DkDocAnalysisViewPort::pickDistancePoint() {
+
+	switch(editMode) {
+	case mode_pickDistance:
+		return;
+	case mode_pickColor:
+		break;
+	case mode_pickSeedpoint:
+		emit cancelPickSeedpointRequest();
+		break;
+	}
+
+	editMode = mode_pickDistance;
+	emit startDistanceMeasureRequest();
+	distance->resetPoints();
+	this->setCursor(Qt::CrossCursor);
+}
+
 
 /*-----------------------------------DkDocAnalysisToolBar ---------------------------------------------*/
 DkDocAnalysisToolBar::DkDocAnalysisToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
