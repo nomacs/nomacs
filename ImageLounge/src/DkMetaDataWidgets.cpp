@@ -1106,6 +1106,7 @@ void DkCommentWidget::createLayout() {
 	QHBoxLayout* titleLayout = new QHBoxLayout(titleWidget);
 	titleLayout->setAlignment(Qt::AlignLeft);
 	titleLayout->setContentsMargins(0, 0, 0, 0);
+	titleLayout->setSpacing(0);
 	titleLayout->addWidget(titleLabel);
 	titleLayout->addStretch();
 	titleLayout->addWidget(cancelButton, 0, Qt::AlignVCenter);
