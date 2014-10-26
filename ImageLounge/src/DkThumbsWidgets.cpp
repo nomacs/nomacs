@@ -269,9 +269,9 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		QPointF anchor = orientation == Qt::Horizontal ? bufferDim.topRight() : bufferDim.bottomLeft();
 		QRectF r = !img.isNull() ? QRectF(anchor, img.size()) : QRectF(anchor, QSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize));
-		if (orientation == Qt::Horizontal && height()-yOffset < r.height())
+		if (orientation == Qt::Horizontal && height()-yOffset < r.height()*2)
 			r.setSize(QSizeF(qFloor(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
-		else if (orientation == Qt::Vertical && width()-yOffset < r.width())
+		else if (orientation == Qt::Vertical && width()-yOffset < r.width()*2)
 			r.setSize(QSizeF(width()-yOffset, qFloor(r.height()*(float)(width()-yOffset)/r.width())));
 
 		// check if the size is still valid
@@ -320,7 +320,6 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 			drawFadeOut(leftGradient, imgWorldRect, &img);
 		if (isRightGradient && !img.isNull())
 			drawFadeOut(rightGradient, imgWorldRect, &img);
-
 
 		if (!img.isNull())
 			painter->drawImage(r, img, QRect(QPoint(), img.size()));
