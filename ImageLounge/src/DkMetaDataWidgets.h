@@ -34,6 +34,7 @@
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
+#include "DkWidgets.h"
 
 namespace nmc {
 
@@ -93,6 +94,97 @@ protected:
 	QLabel* thumbNailLabel;
 	QSharedPointer<DkThumbNailT> thumb;
 	QStringList expandedNames;
+};
+
+class DkMetaDataInfo : public DkWidget {
+	Q_OBJECT
+
+public:
+
+	DkMetaDataInfo(QWidget* parent = 0);
+	~DkMetaDataInfo() {};
+
+	void draw(QPainter* painter);
+	void createLabels();
+	void resizeEvent(QResizeEvent *resizeW);
+	//void getResolution(float &xResolution, float &yResolution);
+
+	//DkMetaData* getMetaData() {
+	//	return &metaData;
+	//};
+
+public slots:
+	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
+	void setRating(int rating);
+	//void setResolution(int xRes, int yRes);
+	void updateLabels();
+	void mouseMoveEvent(QMouseEvent *event);
+	void setVisible(bool visible) {
+
+		if (visible) {
+			readTags();
+			createLabels();
+		}
+
+		qDebug() << "[DkMetaData] setVisible: " << visible;
+
+		DkWidget::setVisible(visible);
+	};
+
+protected:
+	void init();
+	void readTags();
+	void layoutLabels();
+	void paintEvent(QPaintEvent *event);
+
+	QWidget* parent;
+	QPoint lastMousePos;
+	QTransform worldMatrix;
+	int exifHeight;
+	int fontSize;
+	int textMargin;
+	int numLines;
+	int maxCols;
+	int numLabels;
+	int minWidth;
+	int gradientWidth;
+
+	int yMargin;
+	int xMargin;
+
+	float currentDx;
+
+	QVector<int> maxLenLabel;
+
+	QVector<DkLabel *> pLabels;
+	QVector<DkLabel *> pValues;
+	//QSize imgSize;
+
+	QStringList camDValues;
+
+	QStringList descValues;
+
+	QRect leftGradientRect;
+	QLinearGradient leftGradient;
+	QRect rightGradientRect;
+	QLinearGradient rightGradient;
+
+	QMap<int, int> mapIptcExif;
+	QSharedPointer<DkImageContainerT> imgC;
+
+};
+
+class DkCommentWidget : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkCommentWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	~DkCommentWidget() {};
+
+protected:
+	QLabel* commentLabel;
+
+	void createLayout();
 };
 
 };

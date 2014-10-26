@@ -29,6 +29,7 @@
 
 #include "DkNoMacs.h"	// currently needed for some enums
 #include "DkThumbsWidgets.h"
+#include "DkMetaDataWidgets.h"
 
 namespace nmc {
 
@@ -94,7 +95,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 void DkControlWidget::init() {
 
 	// debug: show invisible widgets
-	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);

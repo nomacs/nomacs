@@ -183,7 +183,7 @@ enum {
 	shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_H,
 	shortcut_an_opacity		= Qt::ALT  + Qt::Key_H,
 	shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
-	shortcut_private_instance = Qt::CTRL + Qt::ALT + Qt::Key_P,
+	shortcut_private_instance = Qt::CTRL + Qt::ALT + Qt::Key_N,
 	shortcut_tp_pattern		= Qt::Key_B,
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
