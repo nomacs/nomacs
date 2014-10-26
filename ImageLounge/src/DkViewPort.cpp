@@ -144,6 +144,15 @@ void DkControlWidget::init() {
 	zLayout->addWidget(bottomLeftLabel);
 	zLayout->addStretch();
 
+	// comment widget
+	QWidget* cw = new QWidget();
+	cw->setContentsMargins(0,20,0,20);
+	cw->setMouseTracking(true);
+	QBoxLayout* coLayout = new QBoxLayout(QBoxLayout::RightToLeft, cw);
+	coLayout->setAlignment(Qt::AlignLeft);
+	coLayout->setContentsMargins(0,0,0,0);
+	coLayout->addWidget(commentWidget);
+
 	// left column widget
 	QWidget* leftWidget = new QWidget();
 	leftWidget->setMouseTracking(true);
@@ -154,6 +163,7 @@ void DkControlWidget::init() {
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
 	ulLayout->addWidget(dw);
+	ulLayout->addWidget(cw);
 
 	// center column
 	QWidget* cW = new QWidget();
@@ -209,20 +219,12 @@ void DkControlWidget::init() {
 	hwLayout->setContentsMargins(0,0,0,0);
 	hwLayout->addWidget(histogram);
 
-	QWidget* cw = new QWidget();
-	cw->setContentsMargins(0,20,0,0);
-	cw->setMouseTracking(true);
-	QBoxLayout* coLayout = new QBoxLayout(QBoxLayout::RightToLeft, cw);
-	coLayout->setContentsMargins(0,0,0,0);
-	coLayout->addWidget(commentWidget);
-
 	// right column
 	QWidget* rightWidget = new QWidget();
 	rightWidget->setMouseTracking(true);
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
 	lrLayout->addWidget(hw);
-	lrLayout->addWidget(cw);
 	lrLayout->addStretch();
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
@@ -337,6 +339,9 @@ void DkControlWidget::connectWidgets() {
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
 	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
+
+	// comment widget
+	connect(commentWidget, SIGNAL(showInfoSignal(QString)), this, SLOT(setInfo(QString)));
 
 	// viewport
 	connect(viewport, SIGNAL(infoSignal(QString)), this, SLOT(setInfo(QString)));

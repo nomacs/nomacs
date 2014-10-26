@@ -87,8 +87,8 @@ public:
 	void clearOrientation();
 	void setOrientation(int o);
 	void setRating(int r);
-	void setDescription(const QString& description);
-	void setExifValue(QString key, QString taginfo);
+	bool setDescription(const QString& description);
+	bool setExifValue(QString key, QString taginfo);
 	void setThumbnail(QImage thumb);
 
 	bool hasMetaData() const;

@@ -1058,7 +1058,8 @@ void DkCommentTextEdit::focusOutEvent(QFocusEvent *focusEvent) {
 DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkFadeLabel(parent) {
 
 	textChanged = false;
-
+	dummyText = tr("Empty");
+	setMaximumSize(200, 200);
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 }
@@ -1068,18 +1069,54 @@ void DkCommentWidget::createLayout() {
 	setObjectName("DkCommentWidget");
 	setStyleSheet("QLabel#DkCommentWidget{background-color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}");
 
+	titleLabel = new QLabel(tr("NOTES"), this);
+	titleLabel->setObjectName("titleLabel");
+	titleLabel->setStyleSheet("QLabel#titleLabel{color: #FFFFFF; margin: 0; padding: 0; font-size: 25px; font-family: Segoe UI; font-weight: light;}");
+
+	QString scrollbarStyle = 
+		QString("QScrollBar:vertical {border: 1px solid #FFF; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
+		+ QString("QScrollBar::handle:vertical {background: #FFF; min-height: 0px;}")
+		+ QString("QScrollBar::add-line:vertical {height: 0px;}")
+		+ QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
+		+ QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}");
+
 	commentLabel = new DkCommentTextEdit(this);
 	commentLabel->setObjectName("CommentLabel");
 	commentLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	commentLabel->setStyleSheet("QTextEdit{border: 0; background-color: rgba(0,0,0,0); color: #FFFFFF; font-size: 15px;}");
+	commentLabel->setStyleSheet(scrollbarStyle + "QTextEdit{border: 0; padding-top: 10px; background-color: rgba(0,0,0,0); " +
+		" border-top: 2px dotted #FFFFFF; color: #FFFFFF; font-size: 15px; selection-background-color: " + 
+		DkUtils::colorToString(DkSettings::display.highlightColor) + "}");
+	commentLabel->setToolTip(tr("Enter your notes here. They will be saved to the image metadata."));
 
+	QPushButton* saveButton = new QPushButton(this);
+	saveButton->setObjectName("saveButton");
+	saveButton->setFlat(true);
+	saveButton->setIcon(QIcon(DkImage::colorizePixmap(QPixmap(":/nomacs/img/save.png"), QColor(255,255,255,255), 1.0f)));
+	saveButton->setToolTip(tr("Save Note (CTRL + ENTER)"));
+	saveButton->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Return));
+
+	QPushButton* cancelButton = new QPushButton(this);
+	cancelButton->setObjectName("cancelButton");
+	cancelButton->setFlat(true);
+	cancelButton->setIcon(QIcon(DkImage::colorizePixmap(QPixmap(":/nomacs/img/cancel2.png"), QColor(255,255,255,255), 1.0f)));
+	cancelButton->setToolTip(tr("Discard Changes (ESC)"));
+	cancelButton->setShortcut(QKeySequence(Qt::Key_Escape));
+
+	QWidget* titleWidget = new QWidget(this);
+	QHBoxLayout* titleLayout = new QHBoxLayout(titleWidget);
+	titleLayout->setAlignment(Qt::AlignLeft);
+	titleLayout->setContentsMargins(0, 0, 0, 0);
+	titleLayout->addWidget(titleLabel);
+	titleLayout->addStretch();
+	titleLayout->addWidget(cancelButton, 0, Qt::AlignVCenter);
+	titleLayout->addWidget(saveButton, 0, Qt::AlignVCenter);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
-	layout->setContentsMargins(0,0,0,0);
+	//layout->setContentsMargins(0,0,0,0);
+	layout->addWidget(titleWidget);
 	layout->addWidget(commentLabel);
 
 	setLayout(layout);
-
 }
 
 void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
@@ -1091,16 +1128,24 @@ void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
 void DkCommentWidget::setComment(const QString& description) {
 	
 	if (description.isEmpty())
-		commentLabel->setText(tr("No Description"));
+		commentLabel->setText(dummyText);
 	else
 		commentLabel->setText(description);
+
+	oldText = description;
+	dirty = false;
 }
 
 void DkCommentWidget::saveComment() {
 
-	if (textChanged && metaData)
-		metaData->setDescription(commentLabel->toPlainText());
-
+	if (textChanged && commentLabel->toPlainText() != dummyText && metaData) {
+		
+		if (!metaData->setDescription(commentLabel->toPlainText())) {
+			emit showInfoSignal(tr("Sorry, I cannot save comments for this image format."));
+		}
+		else
+			dirty = true;
+	}
 }
 
 void DkCommentWidget::on_CommentLabel_textChanged() {
@@ -1111,6 +1156,25 @@ void DkCommentWidget::on_CommentLabel_textChanged() {
 void DkCommentWidget::on_CommentLabel_focusLost() {
 
 	saveComment();
+}
+
+void DkCommentWidget::on_saveButton_clicked() {
+
+	commentLabel->clearFocus();
+	if (parent)
+		parent->setFocus(Qt::MouseFocusReason);
+}
+
+void DkCommentWidget::on_cancelButton_clicked() {
+
+	textChanged = false;
+	commentLabel->clearFocus();
+	commentLabel->setText(oldText);
+
+	if (dirty)
+		saveComment();
+	if (parent)
+		parent->setFocus(Qt::MouseFocusReason);
 }
 
 }

@@ -201,11 +201,22 @@ public:
 public slots:
 	void on_CommentLabel_textChanged();
 	void on_CommentLabel_focusLost();
+	void on_saveButton_clicked();
+	void on_cancelButton_clicked();
+
+signals:
+	void showInfoSignal(QString msg);
 
 protected:
+	QPushButton* saveButton;
+	QPushButton* cancelButton;
+	QLabel* titleLabel;
 	DkCommentTextEdit* commentLabel;
 	QSharedPointer<DkMetaDataT> metaData;
 	bool textChanged;
+	bool dirty;
+	QString oldText;
+	QString dummyText;
 
 	void setComment(const QString& description);
 	void saveComment();

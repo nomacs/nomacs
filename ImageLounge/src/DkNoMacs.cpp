@@ -1124,9 +1124,9 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_histogram]->setCheckable(true);
 	connect(panelActions[menu_panel_histogram], SIGNAL(toggled(bool)), vp->getController(), SLOT(showHistogram(bool)));
 
-	panelActions[menu_panel_comment] = new QAction(tr("&Description"), this);
+	panelActions[menu_panel_comment] = new QAction(tr("Image &Notes"), this);
 	panelActions[menu_panel_comment]->setShortcut(QKeySequence(shortcut_show_comment));
-	panelActions[menu_panel_comment]->setStatusTip(tr("Shows Image Description"));
+	panelActions[menu_panel_comment]->setStatusTip(tr("Shows Image Notes"));
 	panelActions[menu_panel_comment]->setCheckable(true);
 	connect(panelActions[menu_panel_comment], SIGNAL(toggled(bool)), vp->getController(), SLOT(showCommentWidget(bool)));
 

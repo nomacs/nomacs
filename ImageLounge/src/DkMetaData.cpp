@@ -878,12 +878,12 @@ void DkMetaDataT::setOrientation(int o) {
 	exifState = dirty;
 }
 
-void DkMetaDataT::setDescription(const QString& description) {
+bool DkMetaDataT::setDescription(const QString& description) {
 
 	if (exifState == not_loaded || exifState == no_data)
-		return;
+		return false;
 
-	setExifValue("Exif.Image.ImageDescription", description);
+	return setExifValue("Exif.Image.ImageDescription", description);
 }
 
 void DkMetaDataT::setRating(int r) {
@@ -939,30 +939,37 @@ void DkMetaDataT::setRating(int r) {
 	exifState = dirty;
 }
 
-void DkMetaDataT::setExifValue(QString key, QString taginfo) {
+bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 	if (exifState == not_loaded || exifState == no_data)
-		return;
+		return false;
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
+
+	bool setExifSuccessfull = false;
 
 	if (!exifData.empty() && getExifKeys().contains(key)) {
 
 		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
 
-		if (!tag.setValue(taginfo.toStdString()))
+		if (!tag.setValue(taginfo.toStdString())) {
 			exifState = dirty;
+			setExifSuccessfull = true;
+		}
 	}
 	else if (!exifData.empty()) {
 
 		Exiv2::ExifKey exivKey(key.toStdString());
 		Exiv2::Exifdatum tag(exivKey);
-		if (!tag.setValue(taginfo.toStdString()))
+		if (!tag.setValue(taginfo.toStdString())) {
 			exifState = dirty;
+			setExifSuccessfull = true;
+		}
 
 		exifData.add(tag);
-
 	}
+
+	return setExifSuccessfull;
 }
 
 void DkMetaDataT::printMetaData() const {
