@@ -3023,11 +3023,6 @@ void DkNoMacs::resizeImage() {
 
 	if (resizeDialog->resample()) {
 
-		//// do not load the old image -> as the transformed image is not the same anymore
-		//viewport()->getImageLoader()->enableWatcher(false);
-		//viewport()->getImageLoader()->clearFileWatcher();
-
-		// TODO: redirect resize to basic loader here
 		QImage rImg = resizeDialog->getResizedImage();
 
 		if (!rImg.isNull()) {
@@ -3042,6 +3037,8 @@ void DkNoMacs::resizeImage() {
 	else if (metaData) {
 		// ok, user just wants to change the resolution
 		metaData->setResolution(QVector2D(resizeDialog->getExifDpi(), resizeDialog->getExifDpi()));
+		qDebug() << "setting resolution to: " << resizeDialog->getExifDpi();
+		//viewport()->setEditedImage(viewport()->getImage());
 	}
 }
 

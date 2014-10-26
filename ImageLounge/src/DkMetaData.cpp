@@ -909,16 +909,18 @@ void DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
 
-		if (tag.setValue(taginfo.toStdString()))
+		if (!tag.setValue(taginfo.toStdString()))
 			exifState = dirty;
 	}
 	else if (!exifData.empty()) {
 
 		Exiv2::ExifKey exivKey(key.toStdString());
 		Exiv2::Exifdatum tag(exivKey);
-		tag.setValue(taginfo.toStdString());
+		if (!tag.setValue(taginfo.toStdString()))
+			exifState = dirty;
 
 		exifData.add(tag);
+
 	}
 }
 
