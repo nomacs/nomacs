@@ -185,6 +185,39 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	return true;
 }
 
+QString DkMetaDataT::getDescription() const {
+
+	QString description;
+
+	if (exifState != loaded && exifState != dirty)
+		return description;
+
+	try {
+		Exiv2::ExifData &exifData = exifImg->exifData();
+
+		if (!exifData.empty()) {
+
+			Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.ImageDescription");
+			Exiv2::ExifData::iterator pos = exifData.findKey(key);
+
+			if (pos != exifData.end() && pos->count() != 0) {
+
+				Exiv2::Value::AutoPtr v = pos->getValue();
+
+				description = QString::fromStdString(pos->toString());
+			}
+		}
+	}
+	catch (...) {
+
+		qDebug() << "[DkMetaDataT] Error: could not load description";
+		return description;
+	}
+
+	return description;
+
+}
+
 int DkMetaDataT::getOrientation() const {
 
 	if (exifState != loaded && exifState != dirty)
@@ -843,6 +876,14 @@ void DkMetaDataT::setOrientation(int o) {
 	exifImg->setExifData(exifData);
 
 	exifState = dirty;
+}
+
+void DkMetaDataT::setDescription(const QString& description) {
+
+	if (exifState == not_loaded || exifState == no_data)
+		return;
+
+	setExifValue("Exif.Image.ImageDescription", description);
 }
 
 void DkMetaDataT::setRating(int r) {

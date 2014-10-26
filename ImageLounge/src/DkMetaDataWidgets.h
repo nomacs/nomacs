@@ -30,6 +30,7 @@
 #include <QDockWidget>
 #include <QTreeView>
 #include <QLabel>
+#include <QTextEdit>
 
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
@@ -174,16 +175,40 @@ protected:
 
 };
 
-class DkCommentWidget : public DkWidget {
+class DkCommentTextEdit : public QTextEdit {
+	Q_OBJECT
+
+public:
+	DkCommentTextEdit(QWidget* parent = 0);
+
+signals:
+	void focusLost();
+
+protected:
+	void focusOutEvent(QFocusEvent *focusEvent);
+
+};
+
+class DkCommentWidget : public DkFadeLabel {
 	Q_OBJECT
 
 public:
 	DkCommentWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 	~DkCommentWidget() {};
+	
+	void setMetaData(QSharedPointer<DkMetaDataT> metaData);
+
+public slots:
+	void on_CommentLabel_textChanged();
+	void on_CommentLabel_focusLost();
 
 protected:
-	QLabel* commentLabel;
+	DkCommentTextEdit* commentLabel;
+	QSharedPointer<DkMetaDataT> metaData;
+	bool textChanged;
 
+	void setComment(const QString& description);
+	void saveComment();
 	void createLayout();
 };
 

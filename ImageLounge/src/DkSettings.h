@@ -144,6 +144,7 @@ public:
 		QBitArray showHistogram;
 		QBitArray showOverview;
 		QBitArray showScroller;
+		QBitArray showComment;
 		bool showRecentFiles;
 		int appMode;
 		int currentAppMode;

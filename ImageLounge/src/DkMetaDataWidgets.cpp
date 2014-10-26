@@ -1044,13 +1044,73 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 	QWidget::mouseMoveEvent(event);
 }
 
+// DkCommentTextEdit --------------------------------------------------------------------
+DkCommentTextEdit::DkCommentTextEdit(QWidget* parent /* = 0 */) : QTextEdit(parent) {
+
+}
+
+void DkCommentTextEdit::focusOutEvent(QFocusEvent *focusEvent) {
+	emit focusLost();
+	QTextEdit::focusOutEvent(focusEvent);
+}
+
 // DkCommentWidget --------------------------------------------------------------------
-DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkWidget(parent, f) {
+DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkFadeLabel(parent) {
+
+	textChanged = false;
 
 	createLayout();
+	QMetaObject::connectSlotsByName(this);
 }
 
 void DkCommentWidget::createLayout() {
 
+	setObjectName("DkCommentWidget");
+	setStyleSheet("QLabel#DkCommentWidget{background-color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}");
+
+	commentLabel = new DkCommentTextEdit(this);
+	commentLabel->setObjectName("CommentLabel");
+	commentLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	commentLabel->setStyleSheet("QTextEdit{border: 0; background-color: rgba(0,0,0,0); color: #FFFFFF; font-size: 15px;}");
+
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->setContentsMargins(0,0,0,0);
+	layout->addWidget(commentLabel);
+
+	setLayout(layout);
+
 }
+
+void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
+
+	this->metaData = metaData;
+	setComment(metaData->getDescription());
+}
+
+void DkCommentWidget::setComment(const QString& description) {
+	
+	if (description.isEmpty())
+		commentLabel->setText(tr("No Description"));
+	else
+		commentLabel->setText(description);
+}
+
+void DkCommentWidget::saveComment() {
+
+	if (textChanged && metaData)
+		metaData->setDescription(commentLabel->toPlainText());
+
+}
+
+void DkCommentWidget::on_CommentLabel_textChanged() {
+
+	textChanged = true;
+}
+
+void DkCommentWidget::on_CommentLabel_focusLost() {
+
+	saveComment();
+}
+
 }

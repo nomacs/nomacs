@@ -70,6 +70,7 @@ public:
 
 	int getOrientation() const;
 	int getRating() const;
+	QString getDescription() const;
 	QVector2D getResolution() const;
 	QString getNativeExifValue(const QString& key) const;
 	QString getXmpValue(const QString& key) const;
@@ -86,6 +87,7 @@ public:
 	void clearOrientation();
 	void setOrientation(int o);
 	void setRating(int r);
+	void setDescription(const QString& description);
 	void setExifValue(QString key, QString taginfo);
 	void setThumbnail(QImage thumb);
 

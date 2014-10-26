@@ -178,6 +178,7 @@ enum {
 	shortcut_show_exif		= Qt::Key_M,
 	shortcut_show_info		= Qt::Key_I,
 	shortcut_show_histogram	= Qt::Key_H,
+	shortcut_show_comment	= Qt::Key_D,
 	shortcut_opacity_down	= Qt::CTRL + Qt::Key_H,
 	shortcut_opacity_up		= Qt::CTRL + Qt::SHIFT + Qt::Key_H,
 	shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_H,
@@ -310,6 +311,7 @@ enum panelActions {
 	menu_panel_overview,
 	menu_panel_explorer,
 	menu_panel_metadata_dock,
+	menu_panel_comment,
 
 	menu_panel_end,
 };

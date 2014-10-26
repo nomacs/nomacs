@@ -648,6 +648,7 @@ void DkNoMacs::createMenu() {
 	panelMenu->addAction(panelActions[menu_panel_player]);
 	panelMenu->addAction(panelActions[menu_panel_info]);
 	panelMenu->addAction(panelActions[menu_panel_histogram]);
+	panelMenu->addAction(panelActions[menu_panel_comment]);
 
 	toolsMenu = menu->addMenu(tr("&Tools"));
 	toolsMenu->addAction(toolsActions[menu_tools_thumbs]);
@@ -727,6 +728,7 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(panelActions[menu_panel_player]);
 	contextMenu->addAction(panelActions[menu_panel_info]);
 	contextMenu->addAction(panelActions[menu_panel_histogram]);
+	contextMenu->addAction(panelActions[menu_panel_comment]);
 	contextMenu->addSeparator();
 	
 	contextMenu->addAction(editActions[menu_edit_copy_buffer]);
@@ -1122,6 +1124,12 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_histogram]->setCheckable(true);
 	connect(panelActions[menu_panel_histogram], SIGNAL(toggled(bool)), vp->getController(), SLOT(showHistogram(bool)));
 
+	panelActions[menu_panel_comment] = new QAction(tr("&Description"), this);
+	panelActions[menu_panel_comment]->setShortcut(QKeySequence(shortcut_show_comment));
+	panelActions[menu_panel_comment]->setStatusTip(tr("Shows Image Description"));
+	panelActions[menu_panel_comment]->setCheckable(true);
+	connect(panelActions[menu_panel_comment], SIGNAL(toggled(bool)), vp->getController(), SLOT(showCommentWidget(bool)));
+
 	viewActions.resize(menu_view_end);
 	viewActions[menu_view_fit_frame] = new QAction(tr("&Fit Window"), this);
 	viewActions[menu_view_fit_frame]->setShortcut(QKeySequence(shortcut_fit_frame));
@@ -1434,6 +1442,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #else
 	panelActions[menu_panel_histogram]->setEnabled(false);
 #endif
+	panelActions[menu_panel_comment]->setEnabled(enable);
 	panelActions[menu_panel_preview]->setEnabled(enable);
 	panelActions[menu_panel_scroller]->setEnabled(enable);
 	panelActions[menu_panel_exif]->setEnabled(enable);
@@ -4678,6 +4687,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+	vp->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
 	vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 	DkSettings::app.appMode = 0;
 
@@ -4729,6 +4739,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
 		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+		vp->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
 
 		// in frameless, you cannot control if menu is visible...
 		panelActions[menu_panel_menu]->setEnabled(false);
@@ -4905,6 +4916,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 		vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
+		vp->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
 
 		initLanClient();
 		emit sendTitleSignal(windowTitle());

@@ -58,6 +58,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	fileInfoLabel = new DkFileInfoLabel(this);
 	ratingLabel = new DkRatingLabelBg(2, this, flags);
 	addActions(ratingLabel->getActions().toList());		// register actions
+	commentWidget = new DkCommentWidget(this);
 
 	// delayed info
 	delayedInfo = new DkDelayedMessage();
@@ -95,7 +96,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 void DkControlWidget::init() {
 
 	// debug: show invisible widgets
-	setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
+	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -107,6 +108,7 @@ void DkControlWidget::init() {
 	fileInfoLabel->setDisplaySettings(&DkSettings::app.showFileInfoLabel);
 	player->setDisplaySettings(&DkSettings::app.showPlayer);
 	histogram->setDisplaySettings(&DkSettings::app.showHistogram);
+	commentWidget->setDisplaySettings(&DkSettings::app.showComment);
 
 	// some adjustments
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -120,6 +122,7 @@ void DkControlWidget::init() {
 	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	thumbScrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	spinnerLabel->halfSize();
+	commentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	// dummy
 	QWidget* dw = new QWidget();
@@ -205,7 +208,13 @@ void DkControlWidget::init() {
 	QBoxLayout* hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
 	hwLayout->setContentsMargins(0,0,0,0);
 	hwLayout->addWidget(histogram);
-	hwLayout->addStretch();
+
+	QWidget* cw = new QWidget();
+	cw->setContentsMargins(0,20,0,0);
+	cw->setMouseTracking(true);
+	QBoxLayout* coLayout = new QBoxLayout(QBoxLayout::RightToLeft, cw);
+	coLayout->setContentsMargins(0,0,0,0);
+	coLayout->addWidget(commentWidget);
 
 	// right column
 	QWidget* rightWidget = new QWidget();
@@ -213,6 +222,7 @@ void DkControlWidget::init() {
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
 	lrLayout->addWidget(hw);
+	lrLayout->addWidget(cw);
 	lrLayout->addStretch();
 	lrLayout->addWidget(fw);
 	lrLayout->addWidget(rw);
@@ -349,6 +359,7 @@ void DkControlWidget::showWidgetsSettings() {
 		showPlayer(false);
 		overviewWindow->hide();
 		showHistogram(false);
+		showCommentWidget(false);
 		return;
 	}
 
@@ -360,6 +371,7 @@ void DkControlWidget::showWidgetsSettings() {
 	showFileInfo(fileInfoLabel->getCurrentDisplaySetting());
 	showPlayer(player->getCurrentDisplaySetting());
 	showHistogram(histogram->getCurrentDisplaySetting());
+	showCommentWidget(commentWidget->getCurrentDisplaySetting());
 }
 
 void DkControlWidget::showPreview(bool visible) {
@@ -507,7 +519,19 @@ void DkControlWidget::showHistogram(bool visible) {
 	else if (!visible && histogram->isVisible()) {
 		histogram->hide();
 	}
+}
 
+void DkControlWidget::showCommentWidget(bool visible) {
+
+	if (!commentWidget)
+		return;
+
+	if (visible && !commentWidget->isVisible()) {
+		commentWidget->show();
+	}
+	else if (!visible && commentWidget->isVisible()) {
+		commentWidget->hide();
+	}
 }
 
 void DkControlWidget::switchWidget(QWidget* widget) {
@@ -560,6 +584,7 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	QString dateString = metaData->getExifValue("DateTimeOriginal");
 	fileInfoLabel->updateInfo(imgC->file(), "", dateString, metaData->getRating());
 	fileInfoLabel->setEdited(imgC->isEdited());
+	commentWidget->setMetaData(metaData);
 	updateRating(metaData->getRating());
 }
 

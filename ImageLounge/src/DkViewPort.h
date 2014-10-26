@@ -90,6 +90,7 @@ namespace nmc {
 class DkFilePreview;
 class DkThumbScrollWidget;
 class DkMetaDataInfo;
+class DkCommentWidget;
 
 class DkDelayedInfo : public QObject {
 	Q_OBJECT
@@ -232,6 +233,10 @@ public:
 		return metaDataInfo;
 	}
 
+	DkCommentWidget* getCommentWidget() {
+		return commentWidget;
+	}
+
 	DkOverview* getOverview() {
 		return overviewWindow;
 	}
@@ -277,6 +282,7 @@ public slots:
 	void showCrop(bool visible);
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
+	void showCommentWidget(bool visible);
 	void showThumbView(bool visible);
 	void showRecentFiles(bool visible);
 	void switchWidget(QWidget* widget = 0);
@@ -321,6 +327,7 @@ protected:
 	DkFilePreview* filePreview;
 	DkThumbScrollWidget* thumbScrollWidget;
 	DkMetaDataInfo* metaDataInfo;
+	DkCommentWidget* commentWidget;
 	DkOverview* overviewWindow;
 	DkPlayer* player;
 	DkHistogram* histogram;
