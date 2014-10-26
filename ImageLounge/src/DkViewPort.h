@@ -521,6 +521,7 @@ protected:
 	virtual int swipeRecognition(QNativeGestureEvent* event);
 #endif
 #endif
+	virtual int swipeRecognition(QPoint start, QPoint end);
 	virtual void swipeAction(int swipeGesture);
 	virtual void createShortcuts();
 

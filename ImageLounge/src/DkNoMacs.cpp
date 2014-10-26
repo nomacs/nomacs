@@ -1589,12 +1589,12 @@ void DkNoMacs::mousePressEvent(QMouseEvent* event) {
 
 	mousePos = event->pos();
 
-	//QMainWindow::mousePressEvent(event);
+	QMainWindow::mousePressEvent(event);
 }
 
 void DkNoMacs::mouseReleaseEvent(QMouseEvent *event) {
 
-	//QMainWindow::mouseReleaseEvent(event);
+	QMainWindow::mouseReleaseEvent(event);
 }
 
 void DkNoMacs::contextMenuEvent(QContextMenuEvent *event) {
@@ -1614,9 +1614,9 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			&& viewport() 
 			&& viewport()->imageInside()
 			&& !viewport()->getImage().isNull()
-			&& viewport()->getImageLoader()) {
-
-
+			&& viewport()->getImageLoader()
+			&& !QApplication::widgetAt(event->globalPos())) {	// is NULL if the mouse leaves the window
+				
 			qDebug() << viewport()->getImageLoader()->file().absoluteFilePath();
 
 			// TODO: check if we do it correct (network locations that are not mounted)
@@ -1640,7 +1640,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 			qDebug() << "creating drag: " << fileUrl;
 	}
 
-	//QMainWindow::mouseMoveEvent(event);
+	QMainWindow::mouseMoveEvent(event);
 }
 
 bool DkNoMacs::gestureEvent(QGestureEvent *event) {

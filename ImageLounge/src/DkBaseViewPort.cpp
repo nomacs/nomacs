@@ -517,8 +517,9 @@ void DkBaseViewPort::mousePressEvent(QMouseEvent *event) {
 	// ok, start panning
 	if (worldMatrix.m11() > 1 && !imageInside() && event->buttons() == Qt::LeftButton) {
 		setCursor(Qt::ClosedHandCursor);
-		posGrab = event->pos();
 	}
+
+	posGrab = event->pos();
 
 	QWidget::mousePressEvent(event);
 }

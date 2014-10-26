@@ -1512,6 +1512,11 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	
 	repeatZoomTimer->stop();
 
+	if (imageInside()) {
+		int sa = swipeRecognition(event->pos(), posGrab.toPoint());
+		swipeAction(sa);
+	}
+
 	DkBaseViewPort::mouseReleaseEvent(event);
 }
 
@@ -1585,7 +1590,14 @@ int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 		return no_swipe;
 	}
 
-	DkVector vec(event->position.x()-posGrab.x(), event->position.y()-posGrab.y());
+	return swipeRecognition(event->position, posGrab.toPoint());
+}
+#endif
+#endif
+
+int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
+
+	DkVector vec(start.x()-end.x(), start.y()-end.y());
 	float length = vec.norm();
 
 	if (fabs(vec.norm()) < 50) {
@@ -1603,7 +1615,7 @@ int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	else
 		return no_swipe;	// angles ~45° are not accepted
 
-	QPoint startPos = QWidget::mapFromGlobal(posGrab.toPoint());
+	QPoint startPos = QWidget::mapFromGlobal(end);
 
 	qDebug() << "vec: " << vec.x << ", " << vec.y;
 
@@ -1635,10 +1647,7 @@ int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	}
 
 	return no_swipe;
-
 }
-#endif
-#endif
 
 void DkViewPort::swipeAction(int swipeGesture) {
 
