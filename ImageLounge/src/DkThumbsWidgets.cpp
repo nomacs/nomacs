@@ -1059,7 +1059,7 @@ void DkThumbLabel::setVisible(bool visible) {
 }
 
 void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-
+	qDebug() << "im Thumblabel::paint";
 	if (!fetchingThumb && thumb->hasImage() == DkThumbNail::not_loaded && 
 		DkSettings::resources.numThumbsLoading < DkSettings::resources.maxThumbsLoading*2) {
 			thumb->fetchThumb();

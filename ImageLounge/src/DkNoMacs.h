@@ -118,6 +118,7 @@ class DkImageContainerT;	// TODO: add include to suppress warning C4150
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
 class FileDownloader;
+class DkBatchDialog;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -290,6 +291,7 @@ enum toolsActions {
 	menu_tools_export_tiff,
 	menu_tools_extract_archive,
 	menu_tools_mosaic,
+	menu_tools_batch,
 
 	menu_tools_end,
 };
@@ -524,6 +526,7 @@ public slots:
 	void openImgManipulationDialog();
 	void exportTiff();
 	void computeMosaic();
+	void computeBatch();
 	void deleteFile();
 	void openAppManager();
 	void setWallpaper();
@@ -710,7 +713,7 @@ protected:
 	DkExportTiffDialog* exportTiffDialog;
 	DkSettingsDialog* settingsDialog;
 	DkThumbsSaver* thumbSaver;
-
+	DkBatchDialog* batchDialog;
 	DkImageManipulationDialog* imgManipulationDialog;
 
 	DkPrintPreviewDialog* printPreviewDialog;
