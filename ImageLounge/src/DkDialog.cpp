@@ -1208,7 +1208,7 @@ void DkResizeDialog::createLayout() {
 	gridLayout->addWidget(resampleBox, 4, 1, 1, 3);
 
 	gammaCorrection = new QCheckBox(tr("Gamma Correction"));
-	gammaCorrection->setChecked(true);
+	gammaCorrection->setChecked(false);	// default: false since gamma might destroy soft gradients
 
 	gridLayout->addWidget(gammaCorrection, 5, 1, 1, 3);
 
