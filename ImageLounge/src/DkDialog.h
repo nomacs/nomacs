@@ -375,6 +375,7 @@ protected slots:
 	void on_resampleBox_currentIndexChanged(int idx);
 
 	void on_resampleCheck_clicked();
+	void on_gammaCorrection_clicked();
 
 	void drawPreview();
 

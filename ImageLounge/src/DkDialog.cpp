@@ -1208,6 +1208,7 @@ void DkResizeDialog::createLayout() {
 	gridLayout->addWidget(resampleBox, 4, 1, 1, 3);
 
 	gammaCorrection = new QCheckBox(tr("Gamma Correction"));
+	gammaCorrection->setObjectName("gammaCorrection");
 	gammaCorrection->setChecked(false);	// default: false since gamma might destroy soft gradients
 
 	gridLayout->addWidget(gammaCorrection, 5, 1, 1, 3);
@@ -1484,6 +1485,11 @@ void DkResizeDialog::on_resampleCheck_clicked() {
 		drawPreview();
 }
 
+void DkResizeDialog::on_gammaCorrection_clicked() {
+
+	drawPreview();	// diem: just update
+}
+
 void DkResizeDialog::on_resampleBox_currentIndexChanged(int idx) {
 	drawPreview();
 }
@@ -1525,38 +1531,13 @@ void DkResizeDialog::drawPreview() {
 		return;
 
 	newImg = origView->getCurrentImageRegion();
+
+	// TODO: thread here!
 	QImage img = resizeImg(newImg);
 
-	//previewLabel->setScaledContents(true);
-
-	//QSize s = QSize(previewLabel->width(), previewLabel->height());	// fixes layout issues
-	//img = img.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
-	
+	// TODO: is there a better way of mapping the pixels? (ipl here introduces artifacts that are not in the final image)
 	img = img.scaled(previewLabel->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 	previewLabel->setPixmap(QPixmap::fromImage(img));
-
-
-	//QImage preview = QImage(origImg.width()*2 + 10, origImg.height(), QImage::Format_ARGB32);
-	//preview.fill(Qt::transparent);
-	//QRect pos = QRect(QPoint(), origImg.size());
-	//QRect posM = pos;
-	//posM.setSize(QSize(pos.size().width()-1, pos.size().height()-1));
-
-	//QPainter painter(&preview);
-	//painter.setBackgroundMode(Qt::TransparentMode);
-	//painter.drawImage(pos, origImg, QRect(QPoint(), origImg.size()));
-	//painter.setPen(QColor(0,0,0,30));
-	//painter.drawRect(posM);
-	//pos.moveTopLeft(QPoint(origImg.width()+10, 0));
-	//posM.moveTopLeft(QPoint(origImg.width()+10, 0));
-	//painter.drawImage(pos, newImg, QRect(QPoint(), newImg.size()));
-	//painter.drawRect(posM);
-
-	////previewLabel->setGeometry(QRect(QPoint(slider->geometry().left(), slider->geometry().bottom() + margin*4), preview.size()));
-	//previewLabel->setGeometry(QRect(QPoint(40, margin*4), preview.size()));
-	//previewLabel->setPixmap(QPixmap::fromImage(preview));
-
-	//updateSnippets();
 }
 
 QImage DkResizeDialog::resizeImg(QImage img, bool silent) {

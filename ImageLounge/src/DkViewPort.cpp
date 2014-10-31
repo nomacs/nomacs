@@ -124,7 +124,7 @@ void DkControlWidget::init() {
 	spinnerLabel->halfSize();
 	commentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-	// dummy
+	// dummy - needed for three equal columns @markus: do not delete!
 	QWidget* dw = new QWidget();
 	dw->setMouseTracking(true);
 	QBoxLayout* dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
@@ -135,23 +135,26 @@ void DkControlWidget::init() {
 	// zoom widget
 	QWidget* bw = new QWidget();
 	bw->setMouseTracking(true);
-	bw->setMinimumHeight(40);
-	bw->setMaximumHeight(80);
-	QBoxLayout* zLayout = new QBoxLayout(QBoxLayout::TopToBottom, bw);
-	zLayout->setContentsMargins(0,0,0,0);
+	//bw->setMinimumHeight(40);
+	//bw->setMaximumHeight(80);
+	QVBoxLayout* zLayout = new QVBoxLayout(bw);
+	zLayout->setAlignment(Qt::AlignBottom);
+	zLayout->setContentsMargins(0,0,0,20);
 	zLayout->setSpacing(0);
 	zLayout->addWidget(bottomLabel);
 	zLayout->addWidget(bottomLeftLabel);
-	zLayout->addStretch();
+	zLayout->addWidget(commentWidget);
 
-	// comment widget
-	QWidget* cw = new QWidget();
-	cw->setContentsMargins(0,20,0,20);
-	cw->setMouseTracking(true);
-	QBoxLayout* coLayout = new QBoxLayout(QBoxLayout::RightToLeft, cw);
-	coLayout->setAlignment(Qt::AlignLeft);
-	coLayout->setContentsMargins(0,0,0,0);
-	coLayout->addWidget(commentWidget);
+	//// comment widget
+	//QWidget* cw = new QWidget();
+	//cw->setContentsMargins(0,20,0,20);
+	//cw->setMouseTracking(true);
+	//cw->setMinimumHeight(40);
+	//cw->setMaximumHeight(80);
+	//QBoxLayout* coLayout = new QBoxLayout(QBoxLayout::RightToLeft, cw);
+	//coLayout->setAlignment(Qt::AlignLeft);
+	//coLayout->setContentsMargins(0,0,0,0);
+	//coLayout->addWidget(commentWidget);
 
 	// left column widget
 	QWidget* leftWidget = new QWidget();
@@ -163,7 +166,7 @@ void DkControlWidget::init() {
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
 	ulLayout->addWidget(dw);
-	ulLayout->addWidget(cw);
+	//ulLayout->addWidget(cw);
 
 	// center column
 	QWidget* cW = new QWidget();
