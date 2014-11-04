@@ -16,12 +16,23 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Release)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
 
-# search for exiv2
-if(CMAKE_CL_64)
-	SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/x64/" )
-else()
-	SET(EXIV_SEARCH_PATH "../exiv2-0.23/msvc64/exiv2lib/Win32/" )
-endif()
+if (MSVC11)
+	# use precompiled code if msvc 11 is found
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.24/precompiled-nomacs/exiv2lib/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.24/precompiled-nomacs/exiv2lib/Win32/" )
+	endif()
+
+else ()
+	# search for exiv2
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.24/msvc2012-nomacs/exiv2lib/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.24/msvc2012-nomacs/exiv2lib/Win32/" )
+	endif()
+endif ()
+
 
 find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
 									"ReleaseDLL/exiv2.dll"
@@ -31,7 +42,7 @@ find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
 				DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 				
 find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
-				PATHS "../exiv2-0.23/msvc64/include" 
+				PATHS "../exiv2-0.24/msvc2012-nomacs/include" 
 				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
 

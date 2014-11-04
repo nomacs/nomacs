@@ -175,7 +175,11 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 	Exiv2::DataBuf exifBuf = exifImgN->io().read(exifImgN->io().size());
 	if (exifBuf.pData_) {
 		QSharedPointer<QByteArray> tmp = QSharedPointer<QByteArray>(new QByteArray((const char*)exifBuf.pData_, exifBuf.size_));
-		ba = tmp;
+
+		if (tmp->size() > qRound(ba->size()*0.5f))
+			ba = tmp;
+		else
+			return false;	// catch exif bug - observed e.g. for hasselblad RAW (3fr) files - see: Bug #995 (http://dev.exiv2.org/issues/995)
 	} else
 		return false;
 
