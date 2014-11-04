@@ -259,6 +259,7 @@ void DkGlobalSettingsWidget::init() {
 	cbCloseOnEsc->setChecked(DkSettings::app.closeOnEsc);
 	cbShowRecentFiles->setChecked(DkSettings::app.showRecentFiles);
 	cbZoomOnWheel->setChecked(DkSettings::global.zoomOnWheel);
+	cbCheckForUpdates->setChecked(DkSettings::sync.checkForUpdates);
 
 	curLanguage = DkSettings::global.language;
 	langCombo->setCurrentIndex(languages.indexOf(curLanguage));
@@ -334,6 +335,7 @@ void DkGlobalSettingsWidget::createLayout() {
 	cbZoomOnWheel = new QCheckBox(tr("Mouse Wheel Zooms"), showBarsWidget);
 	cbZoomOnWheel->setToolTip(tr("If unchecked, the mouse wheel switches between images."));
 	cbZoomOnWheel->setMinimumSize(cbZoomOnWheel->sizeHint());
+	cbCheckForUpdates = new QCheckBox(tr("Check for Updates"), showBarsWidget);
 	showBarsLayout->addWidget(cbShowMenu);
 	showBarsLayout->addWidget(cbShowToolbar);
 	showBarsLayout->addWidget(cbShowStatusbar);
@@ -342,6 +344,11 @@ void DkGlobalSettingsWidget::createLayout() {
 	showBarsLayout->addWidget(cbToolbarGradient);
 	showBarsLayout->addWidget(cbCloseOnEsc);
 	showBarsLayout->addWidget(cbZoomOnWheel);
+	showBarsLayout->addWidget(cbCheckForUpdates);
+
+#ifdef Q_WS_X11 // hide checkbox in linux
+	cbCheckForUpdates->hide();
+#endif
 
 	// set to default
 	QWidget* defaultSettingsWidget = new QWidget(rightWidget);
@@ -382,6 +389,7 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::display.smallIcons = cbSmallIcons->isChecked();
 	DkSettings::display.toolbarGradient = cbToolbarGradient->isChecked();
 	DkSettings::slideShow.time = displayTimeSpin->getSpinBoxValue();
+	DkSettings::sync.checkForUpdates = cbCheckForUpdates->isChecked();
 
 	if (DkSettings::app.appMode == DkSettings::mode_frameless)
 		DkSettings::display.bgColorFrameless = bgColorWidgetChooser->getColor();

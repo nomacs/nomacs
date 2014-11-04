@@ -4671,7 +4671,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
 #ifndef Q_WS_X11
-	if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck)
+	if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)
 		updater->checkForUpdates();	// TODO: is threaded??
 
 #endif
@@ -4728,7 +4728,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
 #ifndef Q_WS_X11
-		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck)
+		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)
 			updater->checkForUpdates();
 #endif
 
@@ -4900,7 +4900,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
 #ifndef Q_WS_X11
-		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck)
+		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)
 			updater->checkForUpdates();	// TODO: is threaded??
 #endif
 
