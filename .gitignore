@@ -5,8 +5,6 @@
 *.pdb
 *.filters
 *.htm
-build2012
-build2012-qt5
 release
 _UpgradeReport_Files
 Backup
@@ -23,8 +21,7 @@ build
 Win32
 _UpgradeReport_Files
 Backup
-exiv2
-build2010x86
+build2012x86
 build2012x64
 x64
 /.project
