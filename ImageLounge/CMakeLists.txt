@@ -27,7 +27,7 @@ option(ENABLE_WEBP "Compile with webP support (webP)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
 option(ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
-option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" OFF)
+option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 
 if(MSVC)
   option(ENABLE_UPNP "Compile with UPNP" ON)
