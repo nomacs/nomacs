@@ -127,7 +127,7 @@
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="181"/>
       <source>Medium (1024 x 786)</source>
-      <translation type="unfinished">Medium (1024 x 786)</translation>
+      <translation type="unfinished">Střední (1024 x 786)</translation>
     </message>
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="187"/>
@@ -177,17 +177,17 @@
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="180"/>
       <source>Small  (800 x 600)</source>
-      <translation type="unfinished">Small  (800 x 600)</translation>
+      <translation type="unfinished">Malý (800 x 600)</translation>
     </message>
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="182"/>
       <source>Large  (1920 x 1080)</source>
-      <translation type="unfinished">Large  (1920 x 1080)</translation>
+      <translation type="unfinished">Velký (1920 x 1080)</translation>
     </message>
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="183"/>
       <source>Original Size</source>
-      <translation type="unfinished">Original Size</translation>
+      <translation type="unfinished">Počáteční velikost</translation>
     </message>
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="342"/>
@@ -304,12 +304,12 @@
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1319"/>
       <source>&lt;i&gt;Select a table row to show the plugin description.&lt;/i&gt;</source>
-      <translation type="unfinished">&lt;i&gt;Select a table row to show the plugin description.&lt;/i&gt;</translation>
+      <translation type="unfinished">&lt;i&gt;Vyberte řádek v tabulce k zobrazení popisu rozšíření.&lt;/i&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1346"/>
       <source>Wrong plugin GUID!</source>
-      <translation type="unfinished">Wrong plugin GUID!</translation>
+      <translation type="unfinished">Chybné GUID rozšíření!</translation>
     </message>
   </context>
   <context>
@@ -342,12 +342,12 @@
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="452"/>
       <source>Keep zoom if equal size</source>
-      <translation type="unfinished">Keep zoom if equal size</translation>
+      <translation type="unfinished">Zachovat zoom při stejné velikosti</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="453"/>
       <source>If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</source>
-      <translation type="unfinished">If checked, the zoom level is only kept, if the image loaded has the same level as the previous.</translation>
+      <translation type="unfinished">Je-li zaškrtnuto, úroveň zoomu se uchová pouze v případě, že načtený obrázek je na stejné úrovni jako předchozí.</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="454"/>
@@ -412,12 +412,12 @@
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="506"/>
       <source>Slide Show</source>
-      <translation type="unfinished">Slide Show</translation>
+      <translation type="unfinished">Prezentace</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="508"/>
       <source>Fade Images:</source>
-      <translation type="unfinished">Fade Images:</translation>
+      <translation type="unfinished">Stmívání obrázků:</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="508"/>
@@ -430,7 +430,7 @@
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1000"/>
       <source>Download and Install</source>
-      <translation type="unfinished">Download and Install</translation>
+      <translation type="unfinished">Stáhnout a instalovat</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1017"/>
@@ -440,12 +440,12 @@
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1019"/>
       <source>Version</source>
-      <translation type="unfinished">Version</translation>
+      <translation type="unfinished">Verze</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1021"/>
       <source>Download and install plugin</source>
-      <translation type="unfinished">Download and install plugin</translation>
+      <translation type="unfinished">Stažení a instalace rozšíření</translation>
     </message>
   </context>
   <context>
@@ -532,7 +532,7 @@
     <message>
       <location filename="../src/DkDialog.cpp" line="2893"/>
       <source>Sorry, I could not load page: %1</source>
-      <translation type="unfinished">Sorry, I could not load page: %1</translation>
+      <translation type="unfinished">Nelze načíst stránku: %1</translation>
     </message>
   </context>
   <context>
@@ -563,7 +563,7 @@
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1317"/>
       <source>Image</source>
-      <translation type="unfinished">Image</translation>
+      <translation type="unfinished">Obrázek</translation>
     </message>
   </context>
   <context>
@@ -766,7 +766,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="328"/>
       <source>Show Recent Files on Start</source>
-      <translation type="unfinished">Show Recent Files on Start</translation>
+      <translation type="unfinished">Zobrazit poslední otevřené soubory po startu</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="329"/>
@@ -797,17 +797,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkImageContainer.cpp" line="386"/>
       <source>Sorry, the file: %1 does not exist... </source>
-      <translation type="unfinished">Sorry, the file: %1 does not exist... </translation>
+      <translation type="unfinished">Soubor: %1 neexistuje... </translation>
     </message>
     <message>
       <location filename="../src/DkImageContainer.cpp" line="393"/>
       <source>Sorry, you are not allowed to read: %1</source>
-      <translation type="unfinished">Sorry, you are not allowed to read: %1</translation>
+      <translation type="unfinished">Nemáte oprávnění ke čtení: %1</translation>
     </message>
     <message>
       <location filename="../src/DkImageContainer.cpp" line="497"/>
       <source>Sorry, I could not load: %1</source>
-      <translation type="unfinished">Sorry, I could not load: %1</translation>
+      <translation type="unfinished">Nelze načíst: %1</translation>
     </message>
     <message>
       <location filename="../src/DkImageContainer.cpp" line="568"/>
@@ -912,7 +912,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="830"/>
       <source>Uninstall</source>
-      <translation type="unfinished">Uninstall</translation>
+      <translation type="unfinished">Odinstalovat</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="843"/>
@@ -922,17 +922,17 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="845"/>
       <source>Version</source>
-      <translation type="unfinished">Version</translation>
+      <translation type="unfinished">Verze</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="847"/>
       <source>Enabled/Disabled</source>
-      <translation type="unfinished">Enabled/Disabled</translation>
+      <translation type="unfinished">Povoleno/Zakázáno</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="849"/>
       <source>Uninstall plugin</source>
-      <translation type="unfinished">Uninstall plugin</translation>
+      <translation type="unfinished">Odinstalování rozšíření</translation>
     </message>
   </context>
   <context>
@@ -1390,7 +1390,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="3257"/>
       <source>If this label turns red, the computation might be slower.</source>
-      <translation type="unfinished">If this label turns red, the computation might be slower.</translation>
+      <translation type="unfinished">Pokud tento popisek zčervená, výpočet může být pomalejší.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="3260"/>
@@ -1541,7 +1541,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="532"/>
       <source>Open &amp;With</source>
-      <translation>Otevřít &amp;s</translation>
+      <translation>Otevřít &amp;v</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="797"/>
@@ -1581,7 +1581,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="815"/>
       <source>Save an image as</source>
-      <translation>Save an image as</translation>
+      <translation>Uloží obrázek pod jiným jménem</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="822"/>
@@ -1858,7 +1858,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="687"/>
       <source>Pl&amp;ugins</source>
-      <translation type="unfinished">Pl&amp;ugins</translation>
+      <translation type="unfinished">Rozšíř&amp;ení</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="792"/>
@@ -1883,22 +1883,22 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="827"/>
       <source>&amp;Recent Files and Folders</source>
-      <translation type="unfinished">&amp;Recent Files and Folders</translation>
+      <translation type="unfinished">Poslední soubo&amp;ry a složky</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="831"/>
       <source>Show Recent Files and Folders</source>
-      <translation type="unfinished">Show Recent Files and Folders</translation>
+      <translation type="unfinished">Zobrazí poslední otevřené soubory a složky</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="866"/>
       <source>Scan Folder Re&amp;cursive</source>
-      <translation type="unfinished">Scan Folder Re&amp;cursive</translation>
+      <translation type="unfinished">Rekurzivně prohledat adresář</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="867"/>
       <source>Step through Folder and Sub Folders</source>
-      <translation type="unfinished">Step through Folder and Sub Folders</translation>
+      <translation type="unfinished">Procházet složky a podsložky</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="905"/>
@@ -1953,12 +1953,12 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="997"/>
       <source>Nor&amp;malize Image</source>
-      <translation type="unfinished">Nor&amp;malize Image</translation>
+      <translation type="unfinished">Nor&amp;malizovat obrázek</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1000"/>
       <source>Normalize the Image</source>
-      <translation type="unfinished">Normalize the Image</translation>
+      <translation type="unfinished">Normalizovaný obrázek</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1003"/>
@@ -1973,22 +1973,22 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1009"/>
       <source>&amp;Invert Image</source>
-      <translation type="unfinished">&amp;Invert Image</translation>
+      <translation type="unfinished">&amp;Inverze obrázku</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1012"/>
       <source>Invert the Image</source>
-      <translation type="unfinished">Invert the Image</translation>
+      <translation type="unfinished">Převede obrázek do odstínů šedi</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1015"/>
       <source>&amp;Unsharp Mask</source>
-      <translation type="unfinished">&amp;Unsharp Mask</translation>
+      <translation type="unfinished">&amp;Maska doostření</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1016"/>
       <source>Stretches the Local Contrast of an Image</source>
-      <translation type="unfinished">Stretches the Local Contrast of an Image</translation>
+      <translation type="unfinished">Změní kontrast obrázku</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1054"/>
@@ -2168,7 +2168,7 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1164"/>
       <source>if checked, a pattern will be displayed for transparent objects</source>
-      <translation>je-li políčko zaškrtnuto, vzor bude zobrazen pro průhledné objekty</translation>
+      <translation>Je-li zaškrtnuto, vzor bude zobrazen pro průhledné objekty</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1169"/>
@@ -2234,22 +2234,22 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1204"/>
       <source>pause the current movie</source>
-      <translation type="unfinished">pozastaví přehrávání filmu</translation>
+      <translation type="unfinished">Pozastaví přehrávání filmu</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1209"/>
       <source>P&amp;revious Frame</source>
-      <translation type="unfinished">P&amp;revious Frame</translation>
+      <translation type="unfinished">Pře&amp;dchozí snímek</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1210"/>
       <source>show previous frame</source>
-      <translation type="unfinished">Zobrazí předešlý snímek</translation>
+      <translation type="unfinished">Zobrazí předchozí snímek</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1213"/>
       <source>&amp;Next Frame</source>
-      <translation type="unfinished">&amp;Next Frame</translation>
+      <translation type="unfinished">&amp;Následující snímek</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1214"/>
@@ -2314,12 +2314,12 @@ neobsahuje žádný obrázek</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1250"/>
       <source>&amp;Plugin manager</source>
-      <translation type="unfinished">&amp;Plugin manager</translation>
+      <translation type="unfinished">S&amp;právce rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1251"/>
       <source>manage installed plugins and download new ones</source>
-      <translation type="unfinished">manage installed plugins and download new ones</translation>
+      <translation type="unfinished">Správce instaluje a stahuje nová rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1255"/>
@@ -2385,32 +2385,32 @@ neobsahuje žádný obrázek</translation>
       <location filename="../src/DkNoMacs.cpp" line="1811"/>
       <location filename="../src/DkNoMacs.cpp" line="1827"/>
       <source>Sorry, I cannot Flip the Image...</source>
-      <translation type="unfinished">Sorry, I cannot Flip the Image...</translation>
+      <translation type="unfinished">Promiňte, obrázek nelze otočit...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1844"/>
       <source>Sorry, I cannot Invert the Image...</source>
-      <translation type="unfinished">Sorry, I cannot Invert the Image...</translation>
+      <translation type="unfinished">Nelze obrázek převézt...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1862"/>
       <source>The Image is Already Normalized...</source>
-      <translation type="unfinished">The Image is Already Normalized...</translation>
+      <translation type="unfinished">Obrázek byl vpořádku normalizován...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1879"/>
       <source>Sorry, I cannot Auto Adjust</source>
-      <translation type="unfinished">Sorry, I cannot Auto Adjust</translation>
+      <translation type="unfinished">Nelze automaticky upravit</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2032"/>
       <source>Recursive Folder Scan is Now Enabled</source>
-      <translation type="unfinished">Recursive Folder Scan is Now Enabled</translation>
+      <translation type="unfinished">Rekurzivní prohledávání adresáře je nyní povoleno</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2034"/>
       <source>Recursive Folder Scan is Now Disabled</source>
-      <translation type="unfinished">Recursive Folder Scan is Now Disabled</translation>
+      <translation type="unfinished">Rekurzivní prohledávání adresáře je nyní zakázáno</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2044"/>
@@ -2558,12 +2558,12 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3849"/>
       <source>Closing plugin...</source>
-      <translation type="unfinished">Closing plugin...</translation>
+      <translation type="unfinished">Zavírám rozšíření...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3851"/>
       <source>Do you want to apply plugin changes?</source>
-      <translation type="unfinished">Do you want to apply plugin changes?</translation>
+      <translation type="unfinished">Chcete provést změny rozšíření?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2802"/>
@@ -2681,7 +2681,7 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="4211"/>
       <source>Sorry, I could not find any clients.</source>
-      <translation type="unfinished">Sorry, I could not find any clients.</translation>
+      <translation type="unfinished">Nelze najít klienta.</translation>
     </message>
   </context>
   <context>
@@ -2731,22 +2731,22 @@ Chcete jej nahradit?</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1470"/>
       <source>Downloading file information...</source>
-      <translation type="unfinished">Downloading file information...</translation>
+      <translation type="unfinished">Stahuji informaci o souboru...</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1491"/>
       <source>Downloading plugin files: %1 of %2</source>
-      <translation type="unfinished">Downloading plugin files: %1 of %2</translation>
+      <translation type="unfinished">Stahuji soubory: %1 z %2</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1532"/>
       <source>Updating plugin %1 of %2 (file: %3 of %4)</source>
-      <translation type="unfinished">Updating plugin %1 of %2 (file: %3 of %4)</translation>
+      <translation type="unfinished">Aktualizuji rozšíření %1 z %2 (soubor: %3 z %4)</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1554"/>
       <source>Sorry, I could not download plugin information.</source>
-      <translation type="unfinished">Sorry, I could not download plugin information.</translation>
+      <translation type="unfinished">Promiňte, informace o rozšíření nelze stáhnout.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1554"/>
@@ -2757,33 +2757,33 @@ Chcete jej nahradit?</translation>
       <location filename="../src/DkPluginManager.cpp" line="1645"/>
       <location filename="../src/DkPluginManager.cpp" line="1680"/>
       <source>Plugin manager</source>
-      <translation type="unfinished">Plugin manager</translation>
+      <translation type="unfinished">Správce rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1555"/>
       <source>Sorry, I could not download plugin preview.</source>
-      <translation type="unfinished">Sorry, I could not download plugin preview.</translation>
+      <translation type="unfinished">Promiňte, náhled rozšíření nelze stáhnout.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1556"/>
       <source>Sorry, I could not download plugin.</source>
-      <translation type="unfinished">Sorry, I could not download plugin.</translation>
+      <translation type="unfinished">Promiňte, rozšíření nelze stáhnout.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1609"/>
       <source>Sorry, I could not parse the downloaded plugin data xml</source>
-      <translation type="unfinished">Sorry, I could not parse the downloaded plugin data xml</translation>
+      <translation type="unfinished">Promiňte, nelze ověřit stažené xml data rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1637"/>
       <location filename="../src/DkPluginManager.cpp" line="1645"/>
       <source>Sorry, the plugin could not be saved.</source>
-      <translation type="unfinished">Sorry, the plugin could not be saved.</translation>
+      <translation type="unfinished">Promiňte, rozšíření nelze uložit.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1680"/>
       <source>Could not find plugins to download.</source>
-      <translation type="unfinished">Could not find plugins to download.</translation>
+      <translation type="unfinished">Nenalezeno rozšíření pro stažení.</translation>
     </message>
   </context>
   <context>
@@ -2792,29 +2792,29 @@ Chcete jej nahradit?</translation>
       <location filename="../src/DkPluginManager.cpp" line="60"/>
       <location filename="../src/DkPluginManager.cpp" line="348"/>
       <source>Plugin manager</source>
-      <translation type="unfinished">Plugin manager</translation>
+      <translation type="unfinished">Správce rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="75"/>
       <source>Manage installed plugins</source>
-      <translation type="unfinished">Manage installed plugins</translation>
+      <translation type="unfinished">Správa instalovaných rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="77"/>
       <source>Download new plugins</source>
-      <translation type="unfinished">Download new plugins</translation>
+      <translation type="unfinished">Stažení nových rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="86"/>
       <source>&amp;Close</source>
-      <translation type="unfinished">&amp;Close</translation>
+      <translation type="unfinished">&amp;Zavřít</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="348"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation type="unfinished">The dll could not be deleted!
-Please restart nomacs and try again.</translation>
+      <translation type="unfinished">DLL soubor nelze smazat!
+Restartujte nomacs a zkuste to znovu.</translation>
     </message>
   </context>
   <context>
@@ -2822,60 +2822,60 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="378"/>
       <source>&amp;Search plugins: </source>
-      <translation type="unfinished">&amp;Search plugins: </translation>
+      <translation type="unfinished">&amp;Vyhledat rozšíření: </translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="449"/>
       <source>Plugin description:</source>
-      <translation type="unfinished">Plugin description:</translation>
+      <translation type="unfinished">Popis rozšíření:</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="453"/>
       <source>Plugin preview:</source>
-      <translation type="unfinished">Plugin preview:</translation>
+      <translation type="unfinished">Náhled rozšíření:</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="503"/>
       <location filename="../src/DkPluginManager.cpp" line="596"/>
       <source>Plugin manager</source>
-      <translation type="unfinished">Plugin manager</translation>
+      <translation type="unfinished">Správce rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="520"/>
       <location filename="../src/DkPluginManager.cpp" line="560"/>
       <source>Plugins up to date</source>
-      <translation type="unfinished">Plugins up to date</translation>
+      <translation type="unfinished">Rozšíření jsou aktuální</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="521"/>
       <location filename="../src/DkPluginManager.cpp" line="561"/>
       <source>No available updates.</source>
-      <translation type="unfinished">No available updates.</translation>
+      <translation type="unfinished">Aktualizace jsou nedostupné.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="551"/>
       <source>Available updates: %1</source>
-      <translation type="unfinished">Available updates: %1</translation>
+      <translation type="unfinished">Dostupné aktualizace: %1</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="554"/>
       <source>Updates:&lt;br&gt;&lt;i&gt;%1&lt;/i&gt;</source>
-      <translation type="unfinished">Updates:&lt;br&gt;&lt;i&gt;%1&lt;/i&gt;</translation>
+      <translation type="unfinished">Aktualizuji:&lt;br&gt;&lt;i&gt;%1&lt;/i&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="596"/>
       <source>The plugins have been updated.</source>
-      <translation type="unfinished">The plugins have been updated.</translation>
+      <translation type="unfinished">Rozšíření byly aktualizovány.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="619"/>
       <source>Uninstall plugins</source>
-      <translation type="unfinished">Uninstall plugins</translation>
+      <translation type="unfinished">Odinstalovat rozšíření</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="621"/>
       <source>Do you really want to uninstall the plugin &lt;i&gt;%1&lt;/i&gt;?</source>
-      <translation type="unfinished">Do you really want to uninstall the plugin &lt;i&gt;%1&lt;/i&gt;?</translation>
+      <translation type="unfinished">Skutečně chcete odinstalovat rozšíření &lt;i&gt;%1&lt;/i&gt;?</translation>
     </message>
   </context>
   <context>
@@ -3002,12 +3002,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="5237"/>
       <source>Recent Files</source>
-      <translation type="unfinished">Recent Files</translation>
+      <translation type="unfinished">Poslední soubory</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="5240"/>
       <source>Recent Folders</source>
-      <translation type="unfinished">Recent Folders</translation>
+      <translation type="unfinished">Poslední složky</translation>
     </message>
   </context>
   <context>
@@ -3077,7 +3077,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1201"/>
       <source>Gamma Correction</source>
-      <translation type="unfinished">Gamma Correction</translation>
+      <translation type="unfinished">Gama korekce</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="1211"/>
@@ -3538,7 +3538,7 @@ Vytvářím náhledy...
       <location filename="../src/DkToolbars.cpp" line="479"/>
       <location filename="../src/DkToolbars.cpp" line="733"/>
       <source>Disables the Pseudo Color function</source>
-      <translation type="unfinished">Disables the Pseudo Color function</translation>
+      <translation type="unfinished">Zakáže funkci pseudobarev</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="488"/>
@@ -3558,7 +3558,7 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkToolbars.cpp" line="564"/>
       <source>Resets the pseudocolor function</source>
-      <translation>Obnovit funkce barev</translation>
+      <translation>Obnoví funkce barev</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="567"/>
@@ -3573,12 +3573,12 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkToolbars.cpp" line="570"/>
       <source>Save Gradient</source>
-      <translation type="unfinished">Save Gradient</translation>
+      <translation type="unfinished">Uložit přechod</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="571"/>
       <source>Saves the current Gradient</source>
-      <translation type="unfinished">Saves the current Gradient</translation>
+      <translation type="unfinished">Uloží aktuální přechod</translation>
     </message>
     <message>
       <location filename="../src/DkToolbars.cpp" line="698"/>
@@ -3608,7 +3608,7 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkToolbars.cpp" line="735"/>
       <source>Enables the Pseudo Color function</source>
-      <translation type="unfinished">Enables the Pseudo Color function</translation>
+      <translation type="unfinished">Povolí funkci pseudobarev</translation>
     </message>
   </context>
   <context>
@@ -3660,7 +3660,7 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkDialog.cpp" line="2951"/>
       <source>Sharpen Image</source>
-      <translation type="unfinished">Sharpen Image</translation>
+      <translation type="unfinished">Doostření obrázku</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2987"/>
@@ -3670,7 +3670,7 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkDialog.cpp" line="2992"/>
       <source>Amount</source>
-      <translation type="unfinished">Amount</translation>
+      <translation type="unfinished">Množství</translation>
     </message>
   </context>
   <context>
@@ -3735,7 +3735,7 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkNetwork.cpp" line="1358"/>
       <source>Unable to connect to server ... please try again later</source>
-      <translation type="unfinished">Unable to connect to server ... please try again later</translation>
+      <translation type="unfinished">Nelze se spojit se serverem ... zkuste to později prosím</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1279"/>
@@ -3783,7 +3783,7 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkViewPort.cpp" line="1801"/>
       <source>Attempted to set NULL image</source>
-      <translation type="unfinished">Attempted to set NULL image</translation>
+      <translation type="unfinished">Pokus o nastavení neplatného obrázku</translation>
     </message>
     <message>
       <location filename="../src/DkViewPort.cpp" line="2063"/>
@@ -3804,17 +3804,17 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkDialog.cpp" line="4110"/>
       <source>Welcome</source>
-      <translation type="unfinished">Welcome</translation>
+      <translation type="unfinished">Vítejte</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4119"/>
       <source>Welcome to nomacs, please choose your preferred language below.</source>
-      <translation type="unfinished">Welcome to nomacs, please choose your preferred language below.</translation>
+      <translation type="unfinished">Vítejte v nomacs, vyberte si prosím váš preferovaný jazyk.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4124"/>
       <source>Register File Associations</source>
-      <translation type="unfinished">Register File Associations</translation>
+      <translation type="unfinished">Přidružit typ souboru</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4129"/>
@@ -3829,7 +3829,7 @@ Vytvářím náhledy...
     <message>
       <location filename="../src/DkDialog.cpp" line="4156"/>
       <source>Image</source>
-      <translation type="unfinished">Image</translation>
+      <translation type="unfinished">Obrázek</translation>
     </message>
   </context>
   <context>

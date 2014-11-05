@@ -127,7 +127,7 @@
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="181"/>
       <source>Medium (1024 x 786)</source>
-      <translation type="unfinished">Medium (1024 x 786)</translation>
+      <translation type="unfinished">Средний (1024 x 786)</translation>
     </message>
     <message>
       <location filename="../src/DkSaveDialog.cpp" line="187"/>
@@ -304,12 +304,12 @@
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1319"/>
       <source>&lt;i&gt;Select a table row to show the plugin description.&lt;/i&gt;</source>
-      <translation type="unfinished">&lt;i&gt;Select a table row to show the plugin description.&lt;/i&gt;</translation>
+      <translation type="unfinished">&lt;i&gt;Выберите строку таблицы, чтобы показать описание плагина.&lt;/i&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1346"/>
       <source>Wrong plugin GUID!</source>
-      <translation type="unfinished">Wrong plugin GUID!</translation>
+      <translation type="unfinished">Неверный GUID плагина!</translation>
     </message>
   </context>
   <context>
@@ -412,7 +412,7 @@
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="506"/>
       <source>Slide Show</source>
-      <translation type="unfinished">Slide Show</translation>
+      <translation type="unfinished">Слайд-шоу</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="508"/>
@@ -430,7 +430,7 @@
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1000"/>
       <source>Download and Install</source>
-      <translation type="unfinished">Download and Install</translation>
+      <translation type="unfinished">Загрузить и установить</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1017"/>
@@ -440,12 +440,12 @@
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1019"/>
       <source>Version</source>
-      <translation type="unfinished">Version</translation>
+      <translation type="unfinished">Версия</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1021"/>
       <source>Download and install plugin</source>
-      <translation type="unfinished">Download and install plugin</translation>
+      <translation type="unfinished">Скачать и установить плагин</translation>
     </message>
   </context>
   <context>
@@ -563,7 +563,7 @@
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="1317"/>
       <source>Image</source>
-      <translation type="unfinished">Image</translation>
+      <translation type="unfinished">Изображение</translation>
     </message>
   </context>
   <context>
@@ -766,7 +766,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="328"/>
       <source>Show Recent Files on Start</source>
-      <translation type="unfinished">Show Recent Files on Start</translation>
+      <translation type="unfinished">Показывать последние файлы при старте</translation>
     </message>
     <message>
       <location filename="../src/DkSettingsWidgets.cpp" line="329"/>
@@ -911,7 +911,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="830"/>
       <source>Uninstall</source>
-      <translation type="unfinished">Uninstall</translation>
+      <translation type="unfinished">Удалить</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="843"/>
@@ -921,17 +921,17 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="845"/>
       <source>Version</source>
-      <translation type="unfinished">Version</translation>
+      <translation type="unfinished">Версия</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="847"/>
       <source>Enabled/Disabled</source>
-      <translation type="unfinished">Enabled/Disabled</translation>
+      <translation type="unfinished">Разрешить/Запретить</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="849"/>
       <source>Uninstall plugin</source>
-      <translation type="unfinished">Uninstall plugin</translation>
+      <translation type="unfinished">Удалить плагин</translation>
     </message>
   </context>
   <context>
@@ -1858,7 +1858,7 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="687"/>
       <source>Pl&amp;ugins</source>
-      <translation type="unfinished">Pl&amp;ugins</translation>
+      <translation type="unfinished">Пл&amp;агины</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="792"/>
@@ -1883,12 +1883,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="827"/>
       <source>&amp;Recent Files and Folders</source>
-      <translation type="unfinished">&amp;Recent Files and Folders</translation>
+      <translation type="unfinished">&amp;Последние файлы и папки</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="831"/>
       <source>Show Recent Files and Folders</source>
-      <translation type="unfinished">Show Recent Files and Folders</translation>
+      <translation type="unfinished">Показать последние файлы и папки</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="866"/>
@@ -2314,12 +2314,12 @@ Do you want to show them again?</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1250"/>
       <source>&amp;Plugin manager</source>
-      <translation type="unfinished">&amp;Plugin manager</translation>
+      <translation type="unfinished">&amp;Менеджер плагинов</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1251"/>
       <source>manage installed plugins and download new ones</source>
-      <translation type="unfinished">manage installed plugins and download new ones</translation>
+      <translation type="unfinished">управление установленными плагинами и загрузка новых</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="1255"/>
@@ -2558,12 +2558,12 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3849"/>
       <source>Closing plugin...</source>
-      <translation type="unfinished">Closing plugin...</translation>
+      <translation type="unfinished">Закрытие плагина...</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="3851"/>
       <source>Do you want to apply plugin changes?</source>
-      <translation type="unfinished">Do you want to apply plugin changes?</translation>
+      <translation type="unfinished">Вы хотите применить изменение плагина?</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2802"/>
@@ -2681,7 +2681,7 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="4211"/>
       <source>Sorry, I could not find any clients.</source>
-      <translation type="unfinished">Sorry, I could not find any clients.</translation>
+      <translation type="unfinished">К сожалению, я не мог найти каких-либо клиентов.</translation>
     </message>
   </context>
   <context>
@@ -2736,17 +2736,17 @@ then press CTRL+SHIFT+ALT+B</source>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1491"/>
       <source>Downloading plugin files: %1 of %2</source>
-      <translation type="unfinished">Downloading plugin files: %1 of %2</translation>
+      <translation type="unfinished">Загрузка файлов плагина: %1 %2</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1532"/>
       <source>Updating plugin %1 of %2 (file: %3 of %4)</source>
-      <translation type="unfinished">Updating plugin %1 of %2 (file: %3 of %4)</translation>
+      <translation type="unfinished">Обновление плагина %1 %2 (файл: %3 %4)</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1554"/>
       <source>Sorry, I could not download plugin information.</source>
-      <translation type="unfinished">Sorry, I could not download plugin information.</translation>
+      <translation type="unfinished">Невозможно загрузить информацию о плагине.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1554"/>
@@ -2757,33 +2757,33 @@ then press CTRL+SHIFT+ALT+B</source>
       <location filename="../src/DkPluginManager.cpp" line="1645"/>
       <location filename="../src/DkPluginManager.cpp" line="1680"/>
       <source>Plugin manager</source>
-      <translation type="unfinished">Plugin manager</translation>
+      <translation type="unfinished">Менеджер плагинов</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1555"/>
       <source>Sorry, I could not download plugin preview.</source>
-      <translation type="unfinished">Sorry, I could not download plugin preview.</translation>
+      <translation type="unfinished">Невозможно загрузить предпросмотр плагина.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1556"/>
       <source>Sorry, I could not download plugin.</source>
-      <translation type="unfinished">Sorry, I could not download plugin.</translation>
+      <translation type="unfinished">Невозможно загрузить плагин.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1609"/>
       <source>Sorry, I could not parse the downloaded plugin data xml</source>
-      <translation type="unfinished">Sorry, I could not parse the downloaded plugin data xml</translation>
+      <translation type="unfinished">Невозможно разобрать xml-данные загруженного плагина</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1637"/>
       <location filename="../src/DkPluginManager.cpp" line="1645"/>
       <source>Sorry, the plugin could not be saved.</source>
-      <translation type="unfinished">Sorry, the plugin could not be saved.</translation>
+      <translation type="unfinished">К сожалению, плагин не может быть сохранен.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="1680"/>
       <source>Could not find plugins to download.</source>
-      <translation type="unfinished">Could not find plugins to download.</translation>
+      <translation type="unfinished">Не удалось найти плагины для загрузки.</translation>
     </message>
   </context>
   <context>
@@ -2792,29 +2792,29 @@ then press CTRL+SHIFT+ALT+B</source>
       <location filename="../src/DkPluginManager.cpp" line="60"/>
       <location filename="../src/DkPluginManager.cpp" line="348"/>
       <source>Plugin manager</source>
-      <translation type="unfinished">Plugin manager</translation>
+      <translation type="unfinished">Менеджер плагинов</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="75"/>
       <source>Manage installed plugins</source>
-      <translation type="unfinished">Manage installed plugins</translation>
+      <translation type="unfinished">Управление установленными плагинами</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="77"/>
       <source>Download new plugins</source>
-      <translation type="unfinished">Download new plugins</translation>
+      <translation type="unfinished">Скачать новые плагины</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="86"/>
       <source>&amp;Close</source>
-      <translation type="unfinished">&amp;Close</translation>
+      <translation type="unfinished">&amp;Закрыть</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="348"/>
       <source>The dll could not be deleted!
 Please restart nomacs and try again.</source>
-      <translation type="unfinished">The dll could not be deleted!
-Please restart nomacs and try again.</translation>
+      <translation type="unfinished">Библиотека dll не может быть удалена!
+Перезагрузите Nomacs и попробуйте еще раз.</translation>
     </message>
   </context>
   <context>
@@ -2822,23 +2822,23 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="378"/>
       <source>&amp;Search plugins: </source>
-      <translation type="unfinished">&amp;Search plugins: </translation>
+      <translation type="unfinished">&amp;Поиск плагинов: </translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="449"/>
       <source>Plugin description:</source>
-      <translation type="unfinished">Plugin description:</translation>
+      <translation type="unfinished">Описание плагина:</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="453"/>
       <source>Plugin preview:</source>
-      <translation type="unfinished">Plugin preview:</translation>
+      <translation type="unfinished">Предпросмотр плагина:</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="503"/>
       <location filename="../src/DkPluginManager.cpp" line="596"/>
       <source>Plugin manager</source>
-      <translation type="unfinished">Plugin manager</translation>
+      <translation type="unfinished">Менеджер плагинов</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="520"/>
@@ -2850,32 +2850,32 @@ Please restart nomacs and try again.</translation>
       <location filename="../src/DkPluginManager.cpp" line="521"/>
       <location filename="../src/DkPluginManager.cpp" line="561"/>
       <source>No available updates.</source>
-      <translation type="unfinished">No available updates.</translation>
+      <translation type="unfinished">Нет доступных обновлений.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="551"/>
       <source>Available updates: %1</source>
-      <translation type="unfinished">Available updates: %1</translation>
+      <translation type="unfinished">Доступные обновления: %1</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="554"/>
       <source>Updates:&lt;br&gt;&lt;i&gt;%1&lt;/i&gt;</source>
-      <translation type="unfinished">Updates:&lt;br&gt;&lt;i&gt;%1&lt;/i&gt;</translation>
+      <translation type="unfinished">Обновления: &lt;br&gt;&lt;i&gt;%1&lt;/i&gt;</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="596"/>
       <source>The plugins have been updated.</source>
-      <translation type="unfinished">The plugins have been updated.</translation>
+      <translation type="unfinished">Плагины были обновлены.</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="619"/>
       <source>Uninstall plugins</source>
-      <translation type="unfinished">Uninstall plugins</translation>
+      <translation type="unfinished">Удалить плагины</translation>
     </message>
     <message>
       <location filename="../src/DkPluginManager.cpp" line="621"/>
       <source>Do you really want to uninstall the plugin &lt;i&gt;%1&lt;/i&gt;?</source>
-      <translation type="unfinished">Do you really want to uninstall the plugin &lt;i&gt;%1&lt;/i&gt;?</translation>
+      <translation type="unfinished">Вы действительно хотите удалить плагин &lt;i&gt;%1&lt;/i&gt;?</translation>
     </message>
   </context>
   <context>
@@ -3002,12 +3002,12 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkWidgets.cpp" line="5237"/>
       <source>Recent Files</source>
-      <translation type="unfinished">Recent Files</translation>
+      <translation type="unfinished">Недавние файлы</translation>
     </message>
     <message>
       <location filename="../src/DkWidgets.cpp" line="5240"/>
       <source>Recent Folders</source>
-      <translation type="unfinished">Recent Folders</translation>
+      <translation type="unfinished">Недавние папки</translation>
     </message>
   </context>
   <context>
@@ -3077,7 +3077,7 @@ Please restart nomacs and try again.</translation>
     <message>
       <location filename="../src/DkDialog.cpp" line="1201"/>
       <source>Gamma Correction</source>
-      <translation type="unfinished">Gamma Correction</translation>
+      <translation type="unfinished">Гамма-коррекция</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="1211"/>
@@ -3660,17 +3660,17 @@ Creating thumbnails...
     <message>
       <location filename="../src/DkDialog.cpp" line="2951"/>
       <source>Sharpen Image</source>
-      <translation type="unfinished">Sharpen Image</translation>
+      <translation type="unfinished">Резкость изображения</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2987"/>
       <source>Sigma</source>
-      <translation type="unfinished">Sigma</translation>
+      <translation type="unfinished">Сигма</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="2992"/>
       <source>Amount</source>
-      <translation type="unfinished">Amount</translation>
+      <translation type="unfinished">Сумма</translation>
     </message>
   </context>
   <context>
@@ -3735,7 +3735,7 @@ Creating thumbnails...
     <message>
       <location filename="../src/DkNetwork.cpp" line="1358"/>
       <source>Unable to connect to server ... please try again later</source>
-      <translation type="unfinished">Unable to connect to server ... please try again later</translation>
+      <translation type="unfinished">Не удается подключиться к серверу... Пожалуйста, повторите попытку позже</translation>
     </message>
     <message>
       <location filename="../src/DkNetwork.cpp" line="1279"/>
@@ -3804,17 +3804,17 @@ Creating thumbnails...
     <message>
       <location filename="../src/DkDialog.cpp" line="4110"/>
       <source>Welcome</source>
-      <translation type="unfinished">Welcome</translation>
+      <translation type="unfinished">Добро пожаловать</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4119"/>
       <source>Welcome to nomacs, please choose your preferred language below.</source>
-      <translation type="unfinished">Welcome to nomacs, please choose your preferred language below.</translation>
+      <translation type="unfinished">Добро пожаловать на nomacs, пожалуйста, выберите предпочитаемый язык.</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4124"/>
       <source>Register File Associations</source>
-      <translation type="unfinished">Register File Associations</translation>
+      <translation type="unfinished">Регистрация ассоциаций файлов</translation>
     </message>
     <message>
       <location filename="../src/DkDialog.cpp" line="4129"/>
@@ -3829,7 +3829,7 @@ Creating thumbnails...
     <message>
       <location filename="../src/DkDialog.cpp" line="4156"/>
       <source>Image</source>
-      <translation type="unfinished">Image</translation>
+      <translation type="unfinished">Изображение</translation>
     </message>
   </context>
   <context>

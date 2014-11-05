@@ -1576,12 +1576,12 @@ enthält keine Bilder</translation>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="813"/>
       <source>&amp;Save As</source>
-      <translation>&amp;Speichere als</translation>
+      <translation>&amp;Speichern Unter</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="815"/>
       <source>Save an image as</source>
-      <translation>Speichere Bild als</translation>
+      <translation>Bild speichern als</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="822"/>
@@ -2511,7 +2511,7 @@ bevor die Klicks weitergegeben werden</translation>
       <location filename="../src/DkNoMacs.cpp" line="2553"/>
       <location filename="../src/DkNoMacs.cpp" line="2715"/>
       <source>Save File %1</source>
-      <translation>Speichere Datei %1</translation>
+      <translation>%1 Speichern</translation>
     </message>
     <message>
       <location filename="../src/DkNoMacs.cpp" line="2919"/>
