@@ -76,7 +76,7 @@ ELSE()
 ENDIF()
 
 find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
-				PATHS "${NOMACS_BUILD_DIRECTORY}/../exiv2-0.23/msvc64/include" 
+				PATHS "${NOMACS_BUILD_DIRECTORY}/../exiv2-0.24/msvc2012-nomacs/include" 
 				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
 
