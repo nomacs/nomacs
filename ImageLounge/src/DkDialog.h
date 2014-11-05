@@ -118,14 +118,19 @@ public:
 	DkSplashScreen(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkSplashScreen() {};
 
-	//protected:
-	//	void mousePressEvent(QMouseEvent *event);
+protected:
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void showClose();
 
 private:
+	QPoint mouseGrab;
 	QString text;
 	QLabel* textLabel;
 	QLabel* imgLabel;
-
+	QTimer* showTimer;
+	QPushButton* exitButton;
 };
 
 class DkFileValidator : public QValidator {
