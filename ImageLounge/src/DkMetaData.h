@@ -49,6 +49,7 @@
 #include <exiv2/exiv2.hpp>
 #else
 #include <exiv2/image.hpp>
+#include <exiv2/preview.hpp>
 #include <iomanip>
 #endif
 
@@ -77,7 +78,7 @@ public:
 	QString getExifValue(const QString& key) const;
 	QString getIptcValue(const QString& key) const;
 	QImage getThumbnail() const;
-	QImage getPreviewImage() const;
+	QImage getPreviewImage(int minPreviewWidth = 0) const;
 	QStringList getExifKeys() const;
 	QStringList getExifValues() const;
 	QStringList getIptcKeys() const;

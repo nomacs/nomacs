@@ -572,39 +572,50 @@ QImage DkMetaDataT::getThumbnail() const {
 	return qThumb;
 }
 
-QImage DkMetaDataT::getPreviewImage() const {
+QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const {
 
-	QImage qThumb;
+	QImage qImg;
 
 	if (exifState != loaded && exifState != dirty)
-		return qThumb;
+		return qImg;
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
 
 	if (exifData.empty())
-		return qThumb;
+		return qImg;
 
 	try {
 
+		Exiv2::PreviewManager loader(*exifImg);
+		Exiv2::PreviewPropertiesList pList = loader.getPreviewProperties();
 
-		// TODO: get sub-image
-		//Exiv2::PreviewManager manager(exifImg);
-		//Exiv2::PreviewImage img = 
+		int maxWidth = 0;
+		int mIdx = -1;
 
-		//Exiv2::ExifThumb thumb(exifData);
-		//Exiv2::DataBuf buffer = thumb.copy();
-		//// ok, get the buffer...
-		//std::pair<Exiv2::byte*, long> stdBuf = buffer.release();
-		//QByteArray ba = QByteArray((char*)stdBuf.first, (int)stdBuf.second);
-		//qThumb.loadFromData(ba);
+		// select the largest preview image
+		for (int idx = 0; idx < pList.size(); idx++) {
+			
+			if (pList[idx].width_ > (uint32_t)maxWidth && pList[idx].width_ > (uint32_t)minPreviewWidth) {
+				mIdx = idx;
+				maxWidth = pList[idx].width_;
+			}
+		}
 
-		//delete stdBuf.first;
+		if (mIdx == -1)
+			return qImg;
+		
+		// Get the selected preview image
+		Exiv2::PreviewImage preview = loader.getPreviewImage(pList[mIdx]);
+
+		QByteArray ba((const char*)preview.pData(), preview.size());
+		if (!qImg.loadFromData(ba))
+			return QImage();
 	}
 	catch (...) {
 		qDebug() << "Sorry, I could not load the thumb from the exif data...";
 	}
 
-	return qThumb;
+	return qImg;
 }
 
 

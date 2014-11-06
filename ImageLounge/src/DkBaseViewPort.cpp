@@ -406,7 +406,8 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 	case  QNativeGestureEvent::Zoom:
 
 		if (lastZoom != 0 && startZoom != 0) {
-			float scale = (cZoom-lastZoom)/startZoom;
+			float scale = cZoom-lastZoom;
+			scale /= 100;	// tested on surface 2 - is pretty handy like this...
 
 			if (fabs(scale) > FLT_EPSILON) {
 				zoom(1.0f+scale, event->position-QWidget::mapToGlobal(pos()));
