@@ -266,6 +266,11 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	try {
 
+		// TODO: get preview image from exiv2
+		//if (metaData) {
+		//	
+		//}
+
 #ifdef WITH_LIBRAW
 
 		LibRaw iProcessor;

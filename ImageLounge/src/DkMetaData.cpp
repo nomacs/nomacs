@@ -572,6 +572,42 @@ QImage DkMetaDataT::getThumbnail() const {
 	return qThumb;
 }
 
+QImage DkMetaDataT::getPreviewImage() const {
+
+	QImage qThumb;
+
+	if (exifState != loaded && exifState != dirty)
+		return qThumb;
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+
+	if (exifData.empty())
+		return qThumb;
+
+	try {
+
+
+		// TODO: get sub-image
+		//Exiv2::PreviewManager manager(exifImg);
+		//Exiv2::PreviewImage img = 
+
+		//Exiv2::ExifThumb thumb(exifData);
+		//Exiv2::DataBuf buffer = thumb.copy();
+		//// ok, get the buffer...
+		//std::pair<Exiv2::byte*, long> stdBuf = buffer.release();
+		//QByteArray ba = QByteArray((char*)stdBuf.first, (int)stdBuf.second);
+		//qThumb.loadFromData(ba);
+
+		//delete stdBuf.first;
+	}
+	catch (...) {
+		qDebug() << "Sorry, I could not load the thumb from the exif data...";
+	}
+
+	return qThumb;
+}
+
+
 bool DkMetaDataT::hasMetaData() const {
 
 	return !(exifState == no_data || exifState == not_loaded);

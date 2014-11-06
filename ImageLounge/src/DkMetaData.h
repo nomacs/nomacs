@@ -77,6 +77,7 @@ public:
 	QString getExifValue(const QString& key) const;
 	QString getIptcValue(const QString& key) const;
 	QImage getThumbnail() const;
+	QImage getPreviewImage() const;
 	QStringList getExifKeys() const;
 	QStringList getExifValues() const;
 	QStringList getIptcKeys() const;
