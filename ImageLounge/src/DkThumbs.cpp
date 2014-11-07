@@ -150,6 +150,9 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	//else if (!thumb.isNull())
 	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
+	if (file.fileName().contains("2014-10-03 14"))
+		qDebug() << "you're image...";
+
 	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
 		if (imgW > imgH) {
 			imgH = (float)maxThumbSize / imgW * imgH;
@@ -165,7 +168,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		}
 	}
 
-	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb) {
+	if (!forceLoad == force_exif_thumb && (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb)) {
 		
 		// flip size if the image is rotated by 90°
 		if (metaData.isTiff() && abs(orientation) == 90) {
@@ -225,13 +228,14 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	}
 	else if (rescale) {
 		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		//qDebug() << "thumb loaded from exif...";
+		qDebug() << "thumb rescaled...";
 	}
 
 	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)orientation);
 		thumb = thumb.transformed(rotationMatrix);
+		qDebug() << "thumb rotated...";
 	}
 
 	// save the thumbnail if the caller either forces it, or the save thumb is requested and the image did not have any before
