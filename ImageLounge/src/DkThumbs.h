@@ -86,7 +86,7 @@ public:
 	 * Sets the thumbnail image.
 	 * @param img the thumbnail
 	 **/ 
-	virtual void setImage(QImage img);
+	virtual void setImage(const QImage img);
 
 	void removeBlackBorder(QImage& img);
 
@@ -208,7 +208,7 @@ public:
 			return DkThumbNail::hasImage();
 	};
 
-	void setImage(QImage img) {
+	void setImage(const QImage img) {
 		DkThumbNail::setImage(img);
 		emit thumbLoadedSignal(true);
 	};
@@ -231,41 +231,6 @@ protected:
 	bool fetchingColor;
 	int forceLoad;
 };
-
-//class DkThumbPool : public QObject {
-//	Q_OBJECT
-//
-//public:
-//	DkThumbPool(QFileInfo file = QFileInfo(), QObject* parent = 0);
-//	
-//	QFileInfo getCurrentFile();
-//	int getCurrentFileIdx();
-//	int fileIdx(const QFileInfo& file);
-//
-//	QVector<QSharedPointer<DkThumbNailT> > getThumbs();
-//
-//public slots:
-//	void setFile(const QFileInfo& files, int force = false);
-//	void thumbUpdated();
-//	void updateDir(const QFileInfo& currentFile);
-//	void getUpdates(QObject* obj, bool isActive);
-//
-//signals:
-//	void thumbUpdatedSignal();
-//	void numThumbChangedSignal();
-//	void newFileIdxSignal(int idx);
-//
-//protected:
-//	void indexDir(const QFileInfo& currentFile);
-//	QDir dir(const QFileInfo& file) const;	// fixes a Qt 'bug'
-//	QSharedPointer<DkThumbNailT> createThumb(const QFileInfo& file);
-//
-//	QVector<QSharedPointer<DkThumbNailT> > thumbs;
-//	QFileInfo currentFile;
-//	QStringList files;
-//	QVector<QObject*> listenerList;
-//};
-
 
 /**
  * This class provides a method for reading thumbnails.

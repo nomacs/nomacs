@@ -47,6 +47,10 @@ DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
 	s = qMax(img.width(), img.height());
 };
 
+/**
+ * Loads the thumbnail.
+ * @param forceLoad flag for loading/saving the thumbnail from exif only.
+ **/ 
 void DkThumbNail::compute(int forceLoad) {
 	
 	// we do this that complicated to be thread-safe
@@ -54,6 +58,10 @@ void DkThumbNail::compute(int forceLoad) {
 	this->img = computeIntern(file, QSharedPointer<QByteArray>(), forceLoad, maxThumbSize, minThumbSize, rescale);
 }
 
+/**
+ * Compute the mean color of an image.
+ * @return QColor the mean color.
+ **/ 
 QColor DkThumbNail::computeColorIntern() {
 
 	QImage img = computeIntern(file, QSharedPointer<QByteArray>(), force_exif_thumb, maxThumbSize, minThumbSize, rescale);
@@ -69,6 +77,11 @@ QColor DkThumbNail::computeColorIntern() {
  * If no thumbnail is embedded, the whole image
  * is loaded and downsampled in a fast manner.
  * @param file the file to be loaded
+ * @param ba the file buffer (can be empty)
+ * @param forceLoad the loading flag (e.g. exiv only)
+ * @param maxThumbSize the maximal thumbnail size to be loaded
+ * @param minThumbSize the minimal thumbnail size to be loaded
+ * @param rescale if true, the thumbnail is rescaled to maxThumbSize
  * @return QImage the loaded image. Null if no image
  * could be loaded at all.
  **/ 
@@ -137,6 +150,9 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	//else if (!thumb.isNull())
 	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
+	if (file.fileName().contains("2014-10-03 14"))
+		qDebug() << "you're image...";
+
 	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
 		if (imgW > imgH) {
 			imgH = (float)maxThumbSize / imgW * imgH;
@@ -152,7 +168,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		}
 	}
 
-	if (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb) {
+	if (!forceLoad == force_exif_thumb && (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb)) {
 		
 		// flip size if the image is rotated by 90°
 		if (metaData.isTiff() && abs(orientation) == 90) {
@@ -212,13 +228,14 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	}
 	else if (rescale) {
 		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		//qDebug() << "thumb loaded from exif...";
+		qDebug() << "thumb rescaled...";
 	}
 
 	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)orientation);
 		thumb = thumb.transformed(rotationMatrix);
+		qDebug() << "thumb rotated...";
 	}
 
 	// save the thumbnail if the caller either forces it, or the save thumb is requested and the image did not have any before
@@ -258,6 +275,11 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	return thumb;
 }
 
+/**
+ * Removes potential black borders.
+ * These borders can be found e.g. in Nikon One images (16:9 vs 4:3)
+ * @param img the image whose borders are removed.
+ **/ 
 void DkThumbNail::removeBlackBorder(QImage& img) {
 
 	int rIdx = 0;
@@ -311,11 +333,20 @@ void DkThumbNail::removeBlackBorder(QImage& img) {
 
 }
 
-void DkThumbNail::setImage(QImage img) {
+/**
+ * Creates a thumbnail from the image provided and stores it internally.
+ * @param img the image to be converted to a thumbnail
+ **/ 
+void DkThumbNail::setImage(const QImage img) {
 	
 	this->img = DkImage::createThumb(img);
 }
 
+/**
+ * This class provides threaded access to image thumbnails.
+ * @param file the thumbnail's file
+ * @param img optional: a thumb image.
+ **/ 
 DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) {
 
 	fetching = false;
@@ -414,158 +445,6 @@ void DkThumbNailT::thumbLoaded() {
 	DkSettings::resources.numThumbsLoading--;
 	emit thumbLoadedSignal(!img.isNull());
 }
-
-//// DkThumbPool --------------------------------------------------------------------
-//DkThumbPool::DkThumbPool(QFileInfo file /* = QFileInfo */, QObject* parent /* = 0 */) : QObject(parent) {
-//	this->currentFile = file;
-//}
-//
-//void DkThumbPool::setFile(const QFileInfo& file, int force) {
-//
-//	// >DIR: TODO: updating is not working properly e.g. DSC_4068.jpg  [19.12.2013 markus]
-//	qDebug() << "[thumbpool] current file: " << currentFile.absoluteFilePath() << " new file: " << file.absoluteFilePath();
-//
-//	if (!file.exists()) {
-//		qDebug() << file.absoluteFilePath() << " does not exist";
-//		return;
-//	}
-//
-//	if (!listenerList.empty() && (force == DkThumbsLoader::user_updated || dir(currentFile) != dir(file)))
-//		indexDir(file);
-//	else if (!listenerList.empty() && force == DkThumbsLoader::dir_updated)
-//		updateDir(file);
-//
-//	if (currentFile != file || force != DkThumbsLoader::not_forced)
-//		emit newFileIdxSignal(fileIdx(file));
-//
-//	currentFile = file;
-//}
-//
-//QFileInfo DkThumbPool::getCurrentFile() {
-//	return currentFile;
-//}
-//
-//QDir DkThumbPool::dir(const QFileInfo& file) const {
-//
-//	return (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absoluteDir();
-//}
-//
-//int DkThumbPool::fileIdx(const QFileInfo& file) {
-//
-//	int tIdx = -1;
-//	
-//	for (int idx = 0; idx < thumbs.size(); idx++) {
-//		if (file == thumbs.at(idx)->getFile()) {
-//			tIdx = idx;
-//			break;
-//		}
-//	}
-//
-//	return tIdx;
-//}
-//
-//int DkThumbPool::getCurrentFileIdx() {
-//
-//	if (thumbs.empty())
-//		indexDir(currentFile);
-//	
-//	return fileIdx(currentFile);
-//}
-//
-//QVector<QSharedPointer<DkThumbNailT> > DkThumbPool::getThumbs() {
-//
-//	if (thumbs.empty())
-//		indexDir(currentFile);
-//	
-//	emit newFileIdxSignal(getCurrentFileIdx());
-//
-//	return thumbs;
-//}
-//
-//void DkThumbPool::getUpdates(QObject* obj, bool isActive) {
-//
-//	bool registered = false;
-//	for (int idx = 0; idx < listenerList.size(); idx++) {
-//
-//		if (!isActive && listenerList.at(idx) == obj) {
-//			listenerList.remove(idx);
-//			break;
-//		}
-//		else if (isActive && listenerList.at(idx) == obj) {
-//			registered = true;
-//			break;
-//		}
-//	}
-//
-//	if (!registered && isActive) {
-//		
-//		// we need an update here if the listener list was empty
-//		if (listenerList.isEmpty())
-//			updateDir(currentFile);
-//
-//		listenerList.append(obj);
-//	}
-//
-//}
-//
-//void DkThumbPool::indexDir(const QFileInfo& currentFile) {
-//
-//	thumbs.clear();
-//
-//	// imho this is a Qt bug
-//	QDir cDir = dir(currentFile);
-//
-//	files = DkImageLoader::getFilteredFileList(cDir);
-//
-//	for (int idx = 0; idx < files.size(); idx++) {
-//		QSharedPointer<DkThumbNailT> t = createThumb(QFileInfo(cDir, files.at(idx)));
-//		thumbs.append(t);
-//	}
-//	
-//	if (!thumbs.empty())
-//		emit numThumbChangedSignal();
-//
-//}
-//
-//void DkThumbPool::updateDir(const QFileInfo& currentFile) {
-//
-//	QVector<QSharedPointer<DkThumbNailT> > newThumbs;
-//
-//	QDir cDir = dir(currentFile);
-//	files = DkImageLoader::getFilteredFileList(cDir);
-//
-//	for (int idx = 0; idx < files.size(); idx++) {
-//
-//		QFileInfo cFile(cDir, files.at(idx));
-//		int fIdx = fileIdx(cFile);
-//
-//		if (fIdx != -1 && thumbs.at(fIdx)->getFile().lastModified() == cFile.lastModified())
-//			newThumbs.append(thumbs.at(fIdx));
-//		else {
-//			QSharedPointer<DkThumbNailT> t = createThumb(cFile);
-//			newThumbs.append(t);
-//		}
-//	}
-//	
-//	if (!thumbs.empty() && thumbs.size() != newThumbs.size())
-//		emit numThumbChangedSignal();
-//
-//	thumbs = newThumbs;
-//}
-//
-//QSharedPointer<DkThumbNailT> DkThumbPool::createThumb(const QFileInfo& file) {
-//
-//	QSharedPointer<DkThumbNailT> thumb(new DkThumbNailT(file));
-//	connect(thumb.data(), SIGNAL(thumbUpdated()), this, SLOT(thumbUpdated()));
-//	return thumb;
-//}
-//
-//void DkThumbPool::thumbUpdated() {
-//
-//	// maybe we have to add a timer here to ignore too many calls at the same time
-//	emit thumbUpdatedSignal();
-//}
-
 
 /**
  * Default constructor of the thumbnail loader.
@@ -789,117 +668,6 @@ void DkThumbsLoader::loadAll() {
 	somethingTodo = true;
 	setLoadLimits(0, (int)thumbs->size());
 }
-
-//QImage DkThumbsLoader::getThumbNailWin(QFileInfo file) {
-//
-//	CoInitialize(NULL);
-//
-//	DkTimer dt;
-//
-//	QImage thumb;
-//
-//	// allocate some unmanaged memory for our strings and divide the file name
-//	// into a folder path and file name.
-//	//String* fileName = file.absoluteFilePath();
-//	//IntPtr dirPtr = Marshal::StringToHGlobalUni(Path::GetDirectoryName(fileName));
-//	//IntPtr filePtr = Marshal::StringToHGlobalUni(Path::GetFileName(fileName));
-//
-//	QString winPath = QDir::toNativeSeparators(file.absolutePath());
-//	QString winFile = QDir::toNativeSeparators(file.fileName());
-//	winPath.append("\\");	
-//
-//	WCHAR* wDirName = new WCHAR[winPath.length()];
-//	WCHAR* wFileName = new WCHAR[winFile.length()];
-//
-//	int dirLength = winPath.toWCharArray(wDirName);
-//	int fileLength = winFile.toWCharArray(wFileName);
-//
-//	wDirName[dirLength] = L'\0';
-//	wFileName[fileLength] = L'\0';
-//
-//	IShellFolder* pDesktop = NULL;
-//	IShellFolder* pSub = NULL;
-//	IExtractImage* pIExtract = NULL;
-//	LPITEMIDLIST pList = NULL;
-//
-//	// get the desktop directory
-//	if (SUCCEEDED(SHGetDesktopFolder(&pDesktop)))
-//	{   
-//		// get the pidl for the directory
-//		HRESULT hr = pDesktop->ParseDisplayName(NULL, NULL, wDirName, NULL, &pList, NULL);
-//		if (FAILED(hr)) {
-//			//throw new Exception(S"Failed to parse the directory name");
-//
-//			return thumb;
-//		}
-//
-//		// get the directory IShellFolder interface
-//		hr = pDesktop->BindToObject(pList, NULL, IID_IShellFolder, (void**)&pSub);
-//		if (FAILED(hr))	{
-//			//throw new Exception(S"Failed to bind to the directory");
-//			return thumb;
-//		}
-//
-//		// get the file's pidl
-//		hr = pSub->ParseDisplayName(NULL, NULL, wFileName, NULL, &pList, NULL);
-//		if (FAILED(hr))	{
-//			//throw new Exception(S"Failed to parse the file name");
-//			return thumb;
-//		}
-//
-//		// get the IExtractImage interface
-//		LPCITEMIDLIST pidl = pList;
-//		hr = pSub->GetUIObjectOf(NULL, 1, &pidl, IID_IExtractImage,
-//			NULL, (void**)&pIExtract);
-//
-//		// set our desired image size
-//		SIZE size;
-//		size.cx = maxThumbSize;
-//		size.cy = maxThumbSize;      
-//
-//		if(pIExtract == NULL) {
-//			return thumb;
-//		}         
-//
-//		HBITMAP hBmp = NULL;
-//
-//		// The IEIFLAG_ORIGSIZE flag tells it to use the original aspect
-//		// ratio for the image size. The IEIFLAG_QUALITY flag tells the 
-//		// interface we want the image to be the best possible quality.
-//		DWORD dwFlags = IEIFLAG_ORIGSIZE | IEIFLAG_QUALITY;      
-//
-//		OLECHAR pathBuffer[MAX_PATH];
-//		hr = pIExtract->GetLocation(pathBuffer, MAX_PATH, NULL, &size, 4, &dwFlags);         // TODO: color depth!! (1)
-//		if (FAILED(hr)) {
-//			//throw new Exception(S"The call to GetLocation failed");
-//			return thumb;
-//		}
-//
-//		hr = pIExtract->Extract(&hBmp);
-//
-//		// It is possible for Extract to fail if there is no thumbnail image
-//		// so we won't check for success here
-//
-//		pIExtract->Release();
-//
-//		if (hBmp != NULL) {
-//			thumb = QPixmap::fromWinHBITMAP(hBmp, QPixmap::Alpha).toImage();
-//		}      
-//	}
-//
-//	// Release the COM objects we have a reference to.
-//	pDesktop->Release();
-//	pSub->Release(); 
-//
-//	// delete the unmanaged memory we allocated
-//	//Marshal::FreeCoTaskMem(dirPtr);
-//	//Marshal::FreeCoTaskMem(filePtr);
-//	//delete[] wDirName;
-//	//delete[] wFileName;
-//
-//
-//	return thumb;
-//}
 
 /**
  * Stops the current loading process.
