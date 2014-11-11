@@ -221,6 +221,7 @@ void DkControlWidget::init() {
 	QBoxLayout* hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
 	hwLayout->setContentsMargins(0,0,0,0);
 	hwLayout->addWidget(histogram);
+	hwLayout->addStretch();
 
 	// right column
 	QWidget* rightWidget = new QWidget();
