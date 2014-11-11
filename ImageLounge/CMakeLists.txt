@@ -117,6 +117,7 @@ set(NOMACS_TRANSLATIONS
 	translations/nomacs_es.ts		
 	translations/nomacs_fr.ts
 	translations/nomacs_it.ts
+	translations/nomacs_ja.ts
 	translations/nomacs_pl.ts
 	translations/nomacs_pt.ts
 	translations/nomacs_ru.ts
