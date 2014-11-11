@@ -593,7 +593,7 @@ QImage DkMetaDataT::getPreviewImage(int minPreviewWidth) const {
 		int mIdx = -1;
 
 		// select the largest preview image
-		for (int idx = 0; idx < pList.size(); idx++) {
+		for (size_t idx = 0; idx < pList.size(); idx++) {
 			
 			if (pList[idx].width_ > (uint32_t)maxWidth && pList[idx].width_ > (uint32_t)minPreviewWidth) {
 				mIdx = idx;
