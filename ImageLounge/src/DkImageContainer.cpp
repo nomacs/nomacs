@@ -614,8 +614,6 @@ bool DkImageContainerT::saveImageThreaded(const QFileInfo fileInfo, int compress
 
 bool DkImageContainerT::saveImageThreaded(const QFileInfo fileInfo, const QImage saveImg, int compression /* = -1 */) {
 
-	if(isFromZip()) return false;
-
 	saveImageWatcher.waitForFinished();
 
 	if (saveImg.isNull()) {
