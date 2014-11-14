@@ -4394,11 +4394,6 @@ void DkArchiveExtractionDialog::dragEnterEvent(QDragEnterEvent *event) {
 
 QStringList DkArchiveExtractionDialog::extractFilesWithProgress(QString fileCompressed, QStringList files, QString dir, bool removeSubfolders) {
 
-    QuaZip zip(fileCompressed);
-    if(!zip.open(QuaZip::mdUnzip)) {
-        return QStringList();
-    }
-
     QProgressDialog progressDialog(this);
     progressDialog.setCancelButtonText(tr("&Cancel"));
     progressDialog.setRange(0, files.size() - 1);
@@ -4419,21 +4414,14 @@ QStringList DkArchiveExtractionDialog::extractFilesWithProgress(QString fileComp
 		else
 			absPath = QDir(dir).absoluteFilePath(files.at(i));
 
-        if (!JlCompress::extractFile(&zip, files.at(i), absPath)) {
-            JlCompress::removeFile(extracted);
-            return QStringList();
-        }
+		if (JlCompress::extractFile(fileCompressed, files.at(i), absPath).isEmpty()) {
+			qDebug() << "unable to extract:" << files.at(i);
+			//return QStringList();
+		}
         extracted.append(absPath);
 		if(progressDialog.wasCanceled()) {
-			JlCompress::removeFile(extracted);
 			return QStringList("userCanceled");
 		}
-    }
-
-    zip.close();
-    if(zip.getZipError()!=0) {
-        JlCompress::removeFile(extracted);
-        return QStringList();
     }
 
 	progressDialog.close();

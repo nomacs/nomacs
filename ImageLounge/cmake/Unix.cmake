@@ -13,6 +13,11 @@ else()
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
+# try to use system libraries or not
+option(USE_SYSTEM_WEBP "Use webp libary provided by system" ON)
+option(USE_SYSTEM_QUAZIP "Use webp libary provided by system" ON)
+
+
 # search for pkgConfig, needed for exvi2, libraw, and older OpenCV versions
 find_package(PkgConfig)
 
@@ -91,6 +96,7 @@ unset(QUAZIP_LIBS CACHE)
 unset(QUAZIP_BUILD_DIRECTORY CACHE)
 unset(QUAZIP_DEPENDENCY CACHE)
 unset(QUAZIP_FOUND CACHE)
+unset(QUAZIP_LIBRARIES CACHE)
 
 unset(QUAZIP_HEADERS CACHE)
 unset(QUAZIP_SOURCES CACHE)
@@ -98,21 +104,31 @@ unset(QUAZIP_MOCS CACHE)
 unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
-  find_package(ZLIB REQUIRED)
-  set(QUAZIP_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip")
-  
-  file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c*")
-  file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
-  file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
-  
-  IF (NOT ENABLE_QT5)
-    QT4_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
-  ELSE()
-    QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
-  ENDIF()
-  add_definitions(-DWITH_QUAZIP)
+  if(USE_SYSTEM_QUAZIP)
+    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+    
+    find_package(QuaZIP REQUIRED)
+    if(NOT QUAZIP_FOUND)
+	    message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP") 
+    else()
+	    add_definitions(-DWITH_QUAZIP)
+    endif()
+  else()
+    find_package(ZLIB REQUIRED)
+    set(QUAZIP_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip")
+    
+    file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c*")
+    file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
+    file(GLOB QUAZIP_MOCS "3rdparty/quazip-0.7/quazip/*.h")
+    
+    IF (NOT ENABLE_QT5)
+      QT4_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
+    ELSE()
+      QT5_WRAP_CPP(QUAZIP_MOC_SRC ${QUAZIP_MOCS})
+    ENDIF()
+    add_definitions(-DWITH_QUAZIP)
+  endif(USE_SYSTEM_QUAZIP)
 endif(ENABLE_QUAZIP)
-
 
 # add libqpsd
 file(GLOB LIBQPSD_SOURCES "3rdparty/libqpsd/*.cpp")
@@ -125,9 +141,18 @@ ELSE()
 ENDIF()
 
 # add webp
-SET(WEBP_INCLUDE_DIR "")
+SET(WEBP_INCLUDEDIR "")
 SET(WEBP_SOURCE "")
+SET(WEBP_LIBRARIES "")
 if(ENABLE_WEBP)
+  if(USE_SYSTEM_WEBP)
+    pkg_check_modules(WEBP  libwebp>=0.4.0)
+    if(NOT WEBP_FOUND)
+	    message(FATAL_ERROR "libwebp not found. It's mandatory when used with ENABLE_WEBP enabled, you can also disable USE_SYSTEM_WEBP") 
+    else()
+	    add_definitions(-DWITH_WEBP)
+    endif()
+  else()
 	add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
 
 	file(GLOB WEBP_DEC_SRCS
@@ -160,6 +185,7 @@ if(ENABLE_WEBP)
 		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src/mux/*c
 	)
 	set(WEBP_SOURCE ${WEBP_DEC_SRCS} ${WEBP_DEMUX_SRCS} ${WEBP_DSP_SRCS} ${WEBP_ENC_SRCS} ${WEBP_UTILS_SRCS} ${WEBP_MUX_SRC})
-	set(WEBP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src)
+	set(WEBP_INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libwebp/src)
 	add_definitions(-DWITH_WEBP)
+  endif(USE_SYSTEM_WEBP)
 endif(ENABLE_WEBP)

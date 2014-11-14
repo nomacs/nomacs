@@ -70,7 +70,7 @@
 
 // quazip
 #ifdef WITH_QUAZIP
-#include <JlCompress.h>
+#include <quazip/JlCompress.h>
 #endif
 
 #include "DkWidgets.h"
