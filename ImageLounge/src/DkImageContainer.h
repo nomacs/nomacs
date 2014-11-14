@@ -36,7 +36,7 @@
 
 // quazip
 #ifdef WITH_QUAZIP
-#include <JlCompress.h>
+#include <quazip/JlCompress.h>
 #endif
 
 #include "DkMetaData.h"
