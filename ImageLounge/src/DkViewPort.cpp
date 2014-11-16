@@ -1920,7 +1920,7 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	
 	if (movie && success) {
 		movie->stop();
-		delete movie;
+		delete movie; 
 		movie = 0;
 	}
 

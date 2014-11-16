@@ -42,6 +42,7 @@
 #include "DkMessageBox.h"
 #include "DkMetaDataWidgets.h"
 #include "DkThumbsWidgets.h"
+#include "DkCentralWidget.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -602,6 +603,10 @@ void DkNoMacs::createMenu() {
 	viewMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewMenu->addSeparator();
 
+	viewMenu->addAction(viewActions[menu_view_new_tab]);
+	viewMenu->addAction(viewActions[menu_view_close_tab]);
+	viewMenu->addSeparator();
+
 	viewMenu->addAction(viewActions[menu_view_reset]);
 	viewMenu->addAction(viewActions[menu_view_100]);
 	viewMenu->addAction(viewActions[menu_view_fit_frame]);
@@ -874,7 +879,7 @@ void DkNoMacs::createActions() {
 	//connect(fileActions[menu_file_share_fb], SIGNAL(triggered()), this, SLOT(shareFacebook()));
 
 	fileActions[menu_file_exit] = new QAction(tr("&Exit"), this);
-	fileActions[menu_file_exit]->setShortcuts(QKeySequence::Close);
+	//fileActions[menu_file_exit]->setShortcuts(QKeySequence::Close);
 	fileActions[menu_file_exit]->setStatusTip(tr("Exit"));
 	connect(fileActions[menu_file_exit], SIGNAL(triggered()), this, SLOT(close()));
 
@@ -1184,6 +1189,16 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_frameless]->setCheckable(true);
 	viewActions[menu_view_frameless]->setChecked(false);
 	connect(viewActions[menu_view_frameless], SIGNAL(toggled(bool)), this, SLOT(setFrameless(bool)));
+
+	viewActions[menu_view_new_tab] = new QAction(tr("New &Tab"), this);
+	viewActions[menu_view_new_tab]->setShortcut(QKeySequence(shortcut_new_tab));
+	viewActions[menu_view_new_tab]->setStatusTip(tr("Open a new tab"));
+	connect(viewActions[menu_view_new_tab], SIGNAL(triggered()), centralWidget(), SLOT(addTab()));
+
+	viewActions[menu_view_close_tab] = new QAction(tr("&Close Tab"), this);
+	viewActions[menu_view_close_tab]->setShortcut(QKeySequence(shortcut_close_tab));
+	viewActions[menu_view_close_tab]->setStatusTip(tr("Close current tab"));
+	connect(viewActions[menu_view_close_tab], SIGNAL(triggered()), centralWidget(), SLOT(removeTab()));
 
 	viewActions[menu_view_opacity_change] = new QAction(tr("&Change Opacity"), this);
 	viewActions[menu_view_opacity_change]->setShortcut(QKeySequence(shortcut_opacity_change));
@@ -1495,7 +1510,13 @@ void DkNoMacs::clearFolderHistory() {
 
 
 DkViewPort* DkNoMacs::viewport() {
-	return (DkViewPort*)centralWidget();
+
+	DkCentralWidget* cw = dynamic_cast<DkCentralWidget*>(centralWidget());
+
+	if (!cw)
+		return 0;
+
+	return cw->getViewPort();
 }
 
 void DkNoMacs::updateAll() {
@@ -4649,7 +4670,9 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 		// init members
 	DkViewPort* vp = new DkViewPort(this);
 	vp->setAlignment(Qt::AlignHCenter);
-	setCentralWidget(vp);
+
+	DkCentralWidget* cw = new DkCentralWidget(vp, this);
+	setCentralWidget(cw);
 
 	localClient = new DkLocalManagerThread(this);
 	localClient->setObjectName("localClient");
@@ -4714,7 +4737,9 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		// init members
 		DkViewPortFrameless* vp = new DkViewPortFrameless(this);
 		vp->setAlignment(Qt::AlignHCenter);
-		setCentralWidget(vp);
+
+		DkCentralWidget* cw = new DkCentralWidget(vp, this);
+		setCentralWidget(cw);
 
 		init();
 		
@@ -4877,7 +4902,9 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		// init members
 		DkViewPortContrast* vp = new DkViewPortContrast(this);
 		vp->setAlignment(Qt::AlignHCenter);
-		setCentralWidget(vp);
+
+		DkCentralWidget* cw = new DkCentralWidget(vp, this);
+		setCentralWidget(cw);
 
 		localClient = new DkLocalManagerThread(this);
 		localClient->setObjectName("localClient");
