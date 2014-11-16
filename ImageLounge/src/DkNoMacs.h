@@ -160,6 +160,8 @@ enum {
 	// view
 	shortcut_new_tab		= Qt::CTRL + Qt::Key_T,
 	shortcut_close_tab		= Qt::CTRL + Qt::Key_W,
+	shortcut_next_tab		= Qt::CTRL + Qt::Key_Tab,
+	shortcut_previous_tab	= Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
 	shortcut_show_toolbar	= Qt::CTRL + Qt::Key_B,
 	shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
 	shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
@@ -211,8 +213,8 @@ enum {
 	shortcut_shortcuts		= Qt::CTRL + Qt::Key_K,
 	shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
 	shortcut_sync			= Qt::CTRL + Qt::Key_D,
-	shortcut_tab			= Qt::CTRL + Qt::Key_Tab,
-	shortcut_arrange		= Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
+	shortcut_tab			= Qt::ALT + Qt::Key_O,
+	shortcut_arrange		= Qt::ALT + Qt::Key_A,
 	shortcut_send_img		= Qt::ALT + Qt::Key_I,
 	shortcut_connect_all	= Qt::CTRL + Qt::Key_A,
 
@@ -331,6 +333,8 @@ enum viewActions {
 	menu_view_frameless,
 	menu_view_new_tab,
 	menu_view_close_tab,
+	menu_view_previous_tab,
+	menu_view_next_tab,
 	menu_view_opacity_up,
 	menu_view_opacity_down,
 	menu_view_opacity_an,

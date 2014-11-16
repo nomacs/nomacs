@@ -605,6 +605,8 @@ void DkNoMacs::createMenu() {
 
 	viewMenu->addAction(viewActions[menu_view_new_tab]);
 	viewMenu->addAction(viewActions[menu_view_close_tab]);
+	viewMenu->addAction(viewActions[menu_view_previous_tab]);
+	viewMenu->addAction(viewActions[menu_view_next_tab]);
 	viewMenu->addSeparator();
 
 	viewMenu->addAction(viewActions[menu_view_reset]);
@@ -1199,6 +1201,16 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_close_tab]->setShortcut(QKeySequence(shortcut_close_tab));
 	viewActions[menu_view_close_tab]->setStatusTip(tr("Close current tab"));
 	connect(viewActions[menu_view_close_tab], SIGNAL(triggered()), centralWidget(), SLOT(removeTab()));
+
+	viewActions[menu_view_previous_tab] = new QAction(tr("&Previous Tab"), this);
+	viewActions[menu_view_previous_tab]->setShortcut(QKeySequence(shortcut_previous_tab));
+	viewActions[menu_view_previous_tab]->setStatusTip(tr("Switch to previous tab"));
+	connect(viewActions[menu_view_previous_tab], SIGNAL(triggered()), centralWidget(), SLOT(previousTab()));
+
+	viewActions[menu_view_next_tab] = new QAction(tr("&Next Tab"), this);
+	viewActions[menu_view_next_tab]->setShortcut(QKeySequence(shortcut_next_tab));
+	viewActions[menu_view_next_tab]->setStatusTip(tr("Switch to next tab"));
+	connect(viewActions[menu_view_next_tab], SIGNAL(triggered()), centralWidget(), SLOT(nextTab()));
 
 	viewActions[menu_view_opacity_change] = new QAction(tr("&Change Opacity"), this);
 	viewActions[menu_view_opacity_change]->setShortcut(QKeySequence(shortcut_opacity_change));
