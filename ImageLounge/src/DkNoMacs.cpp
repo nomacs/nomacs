@@ -42,6 +42,7 @@
 #include "DkMessageBox.h"
 #include "DkMetaDataWidgets.h"
 #include "DkThumbsWidgets.h"
+#include "DkBatch.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -665,6 +666,7 @@ void DkNoMacs::createMenu() {
 #ifdef WITH_OPENCV
 	toolsMenu->addAction(toolsActions[menu_tools_mosaic]);
 #endif
+	toolsMenu->addAction(toolsActions[menu_tools_batch]);
 
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
@@ -1262,6 +1264,10 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_mosaic] = new QAction(tr("&Mosaic Image"), this);
 	toolsActions[menu_tools_mosaic]->setStatusTip(tr("Create a Mosaic Image"));
 	connect(toolsActions[menu_tools_mosaic], SIGNAL(triggered()), this, SLOT(computeMosaic()));
+
+	toolsActions[menu_tools_batch] = new QAction(tr("Batch processing"), this);
+	toolsActions[menu_tools_batch]->setStatusTip(tr("Apply actions to multiple images"));
+	connect(toolsActions[menu_tools_batch], SIGNAL(triggered()), this, SLOT(computeBatch()));
 	// plugins menu
 	pluginsActions.resize(menu_plugins_end);
 	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin manager"), this);
@@ -3110,6 +3116,13 @@ void DkNoMacs::computeMosaic() {
 
 	mosaicDialog->deleteLater();
 #endif
+}
+
+void DkNoMacs::computeBatch() {
+	batchDialog = new DkBatchDialog(viewport()->getImageLoader()->getDir(), this, Qt::WindowMinimizeButtonHint);
+	
+	//batchDialog->setInputDir(viewport()->getImageLoader()->getDir().absolutePath());
+	int response = batchDialog->exec();
 }
 
 void DkNoMacs::openImgManipulationDialog() {

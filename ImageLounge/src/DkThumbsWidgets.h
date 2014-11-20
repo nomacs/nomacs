@@ -268,7 +268,7 @@ protected:
 class DkThumbScrollWidget : public DkWidget {
 	Q_OBJECT
 
-public:
+	public:
 	enum {
 		select_all,
 		zoom_in,
@@ -286,25 +286,26 @@ public:
 
 	void addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle = "");
 
+
 	public slots:
 		virtual void setVisible(bool visible);
 		void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 		void setDir(QFileInfo file);
 
-signals:
+	signals:
 		void updateDirSignal(QFileInfo file);
 
-protected:
-	void createActions();
-	void resizeEvent(QResizeEvent *event);
-	void contextMenuEvent(QContextMenuEvent *event);
+	protected:
+		void createActions();
+		void resizeEvent(QResizeEvent *event);
+		void contextMenuEvent(QContextMenuEvent *event);
 
-	DkThumbScene* thumbsScene;
-	DkThumbsView* view;
+		DkThumbScene* thumbsScene;
+		DkThumbsView* view;
 
-	QMenu* contextMenu;
-	QVector<QAction*> actions;
-	QVector<QAction*> parentActions;
+		QMenu* contextMenu;
+		QVector<QAction*> actions;
+		QVector<QAction*> parentActions;
 
 };
 
