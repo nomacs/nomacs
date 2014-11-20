@@ -38,11 +38,30 @@
 
 namespace nmc {
 
-class DkFileSelection : public QLabel {
+class DkBatchWidget : public QWidget {
+	Q_OBJECT
+	public:
+		DkBatchWidget(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	
+		void setTitle(QString title);
+		void setHeader(QString header);
+	protected:
+		virtual void createLayout();
+		QWidget* contentWidget;
+
+	private:
+		QString titleString, headerString;
+		QLabel* titleLabel; 
+		QLabel* headerLabel;
+		
+};
+
+
+class DkFileSelection : public DkBatchWidget {
 	Q_OBJECT
 
 	public:
-		DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
+		DkFileSelection(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	QDir getDir() {
 		return cDir;
@@ -65,11 +84,20 @@ class DkFileSelection : public QLabel {
 		void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
 
 	protected:
-		void createLayout();
+		virtual void createLayout();
 
 		QDir cDir;
 		QListView* fileWidget;
 		DkThumbScrollWidget* thumbScrollWidget;
+};
+
+class DkBatchOutput : public DkBatchWidget {
+	public:
+		DkBatchOutput(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	protected:
+		virtual void createLayout();
+
 };
 
 class DkBatchDialog : public QDialog {
@@ -90,6 +118,7 @@ class DkBatchDialog : public QDialog {
 		QLabel* inputDirLabel;
 		QLabel* outputDirLabel;
 		DkFileSelection* fileSelection;
+		DkBatchOutput* outputSelection;
 		DkImageLoader* loader;
 		QDir outputDir;
 		QDir currentDirectory;

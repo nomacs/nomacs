@@ -29,8 +29,60 @@
 
 namespace nmc {
 
+// DkBatchWidget --------------------------------------------------------------------
+DkBatchWidget::DkBatchWidget(QString titleString, QString headerString, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
+	this->titleString = titleString;
+	this->headerString = headerString;
+	createLayout();
+
+}
+
+void DkBatchWidget::createLayout() {
+	
+	contentWidget = new QWidget();
+
+	DkButton* showButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
+	showButton->setFixedSize(QSize(16,16));
+	showButton->setObjectName("showSelectionButton");
+	showButton->setCheckable(true);
+	showButton->setChecked(true);
+	connect(showButton, SIGNAL(toggled(bool)), contentWidget, SLOT(setVisible(bool)));
+
+	titleLabel = new QLabel(titleString);
+	titleLabel->setStyleSheet("QLabel{font-size: 16px;}");
+	titleLabel->setAlignment(Qt::AlignBottom);
+	headerLabel = new QLabel(headerString);
+	headerLabel->setStyleSheet("QLabel{color: #666;}");
+	headerLabel->setAlignment(Qt::AlignBottom);
+	
+	QWidget* headerWidget = new QWidget();
+	QHBoxLayout* headerWidgetLayout = new QHBoxLayout(headerWidget);
+	headerWidgetLayout->setContentsMargins(0,0,0,0);
+	headerWidgetLayout->addWidget(showButton);
+	headerWidgetLayout->addWidget(titleLabel);
+	headerWidgetLayout->addWidget(headerLabel);
+	headerWidgetLayout->addStretch();
+
+	QVBoxLayout* batchWidgetLayout = new QVBoxLayout;
+	batchWidgetLayout->addWidget(headerWidget);
+	batchWidgetLayout->addWidget(contentWidget, 5);
+	batchWidgetLayout->addStretch();
+	setLayout(batchWidgetLayout);
+}
+
+void DkBatchWidget::setTitle(QString titleString) {
+	this->titleString = titleString;
+	titleLabel->setText(titleString);
+}
+
+void DkBatchWidget::setHeader(QString headerString) {
+	this->headerString = headerString;
+	headerLabel->setText(headerString);
+}
+
+
 // File Selection --------------------------------------------------------------------
-DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+DkFileSelection::DkFileSelection(QString titleString, QString headerString, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkBatchWidget(titleString, headerString, parent, f) {
 
 	setObjectName("DkFileSelection");
 	setStyleSheet("QLabel#DkFileSelection{border-radius: 5px; border: 1px solid #AAAAAA;}");
@@ -52,14 +104,17 @@ void DkFileSelection::createLayout() {
 	//fileWidget->setModel(fileModel);
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
+	
 	connect(this, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
-	QGridLayout* fsLayout = new QGridLayout(this);
+	//contentWidget = new QWidget(this);
+	QGridLayout* fsLayout = new QGridLayout(contentWidget);
 	fsLayout->addWidget(filterEdit, 0, 0, 1, 4);
 	fsLayout->addWidget(browseButton, 0, 4);
 	fsLayout->addWidget(thumbScrollWidget, 1, 0, 1, 5);	// change to 4 if we support thumbs
+	//setContentWidget(contentWidget);
 	//fsLayout->setRowStretch(2, 300);
 
-	setLayout(fsLayout);
+	//setLayout(fsLayout);
 }
 
 void DkFileSelection::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -94,6 +149,24 @@ QList<QUrl> DkFileSelection::getSelectedFiles() {
 	return thumbScrollWidget->getThumbWidget()->getSelectedUrls();
 }
 
+// DkBatchOutput --------------------------------------------------------------------
+DkBatchOutput::DkBatchOutput(QString titleString, QString headerString, QWidget* parent , Qt::WindowFlags f ) : DkBatchWidget(titleString, headerString, parent, f) {
+	setObjectName("DkBatchOutput");
+	createLayout();
+}
+
+void DkBatchOutput::createLayout() {
+	QGridLayout* contentLayout = new QGridLayout(contentWidget);
+
+	QLineEdit* outputlineEdit= new QLineEdit();
+
+	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
+	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browseOutputDir()));
+
+	contentLayout->addWidget(outputlineEdit, 0, 0);
+	contentLayout->addWidget(outputBrowseButton, 0, 1);
+}
+
 // Batch Dialog --------------------------------------------------------------------
 
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
@@ -108,64 +181,47 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 }
 
 void DkBatchDialog::createLayout() {
-	// File Selection
-	fileSelection = new DkFileSelection(this);
+	// Input Directory
+	fileSelection = new DkFileSelection("Input Directory", "directory not set", this);
 	connect(fileSelection, SIGNAL(dirSignal(const QString&)), this, SLOT(setInputDir(const QString&)));
 	//fileSelection->hide();
+	
 
-	DkButton* showButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
-	showButton->setFixedSize(QSize(16,16));
-	showButton->setObjectName("showSelectionButton");
-	showButton->setCheckable(true);
-	showButton->setChecked(true);
-	connect(showButton, SIGNAL(toggled(bool)), fileSelection, SLOT(setVisible(bool)));
 
-	QLabel* fileSelectionLabel = new QLabel(tr("File Selection"));
-	fileSelectionLabel->setStyleSheet("QLabel{font-size: 16px;}");
-	fileSelectionLabel->setAlignment(Qt::AlignBottom);
-	inputDirLabel = new QLabel(tr("No Directory selected"));
-	inputDirLabel->setStyleSheet("QLabel{color: #666;}");
-	inputDirLabel->setAlignment(Qt::AlignBottom);
+	outputSelection = new DkBatchOutput("Output", "not set", this);
 
-	QWidget* fileSelectionWidget = new QWidget();
-	QHBoxLayout* fileSelectionLayout = new QHBoxLayout(fileSelectionWidget);
-	fileSelectionLayout->setContentsMargins(0,0,0,0);
-	fileSelectionLayout->addWidget(showButton);
-	fileSelectionLayout->addWidget(fileSelectionLabel);
-	fileSelectionLayout->addWidget(inputDirLabel);
-	fileSelectionLayout->addStretch();
 
 	// File Output
-	QWidget* outputSelection = new QWidget();
+	//QWidget* outputSelection = new QWidget();
 
-	DkButton* outputButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
-	outputButton->setFixedSize(QSize(16,16));
-	outputButton->setObjectName("showOutputButton");
-	outputButton->setCheckable(true);
-	outputButton->setChecked(true);
-	connect(outputButton, SIGNAL(toggled(bool)), outputSelection, SLOT(setVisible(bool)));	// TODO
+	//DkButton* outputButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
+	//outputButton->setFixedSize(QSize(16,16));
+	//outputButton->setObjectName("showOutputButton");
+	//outputButton->setCheckable(true);
+	//outputButton->setChecked(true);
+	//connect(outputButton, SIGNAL(toggled(bool)), outputSelection, SLOT(setVisible(bool)));	// TODO
 
-	QLabel* outputLabel = new QLabel(tr("File Output"));
-	outputLabel->setStyleSheet("QLabel{font-size: 15px;}");
-	outputDirLabel = new QLabel(tr("No Directory selected"));
-	outputDirLabel->setStyleSheet("QLabel{color: #333;}");
+	//QLabel* outputLabel = new QLabel(tr("File Output"));
+	//outputLabel->setStyleSheet("QLabel{font-size: 15px;}");
+	//outputDirLabel = new QLabel(tr("No Directory selected"));
+	//outputDirLabel->setStyleSheet("QLabel{color: #333;}");
 
-	QWidget* outputWidget = new QWidget();
-	QHBoxLayout* outputLayout = new QHBoxLayout(outputWidget);
-	outputLayout->setContentsMargins(0,0,0,0);
-	outputLayout->addWidget(outputButton);
-	outputLayout->addWidget(outputLabel);
-	outputLayout->addWidget(outputDirLabel);
-	outputLayout->addStretch();
+	//QWidget* outputWidget = new QWidget();
+	//QHBoxLayout* outputLayout = new QHBoxLayout(outputWidget);
+	//outputLayout->setContentsMargins(0,0,0,0);
+	//outputLayout->addWidget(outputButton);
+	//outputLayout->addWidget(outputLabel);
+	//outputLayout->addWidget(outputDirLabel);
+	//outputLayout->addStretch();
 
-	QLineEdit* outputlineEdit= new QLineEdit();
+	//QLineEdit* outputlineEdit= new QLineEdit();
 
-	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
-	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browseOutputDir()));
-	
-	QHBoxLayout* outputSelLayout = new QHBoxLayout(outputSelection);
-	outputSelLayout->addWidget(outputlineEdit);
-	outputSelLayout->addWidget(outputBrowseButton);
+	//QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
+	//connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browseOutputDir()));
+	//
+	//QHBoxLayout* outputSelLayout = new QHBoxLayout(outputSelection);
+	//outputSelLayout->addWidget(outputlineEdit);
+	//outputSelLayout->addWidget(outputBrowseButton);
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
@@ -176,10 +232,10 @@ void DkBatchDialog::createLayout() {
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QVBoxLayout* dialogLayout = new QVBoxLayout();
-	dialogLayout->addWidget(fileSelectionWidget);
+	//dialogLayout->addWidget(fileSelectionWidget);
 	dialogLayout->addWidget(fileSelection);
-	dialogLayout->addWidget(outputWidget);
 	dialogLayout->addWidget(outputSelection);
+	//dialogLayout->addWidget(outputSelection);
 	dialogLayout->addStretch();
 	dialogLayout->addWidget(buttons);
 
@@ -188,7 +244,7 @@ void DkBatchDialog::createLayout() {
 
 void DkBatchDialog::setInputDir(const QString& dirName) {
 	qDebug() << "BatchDialog: inputDir set to " << dirName;
-	inputDirLabel->setText(dirName);
+	fileSelection->setHeader(dirName);
 	loader->loadDir(QDir(dirName));
 }
 
