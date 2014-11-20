@@ -1222,7 +1222,7 @@ void DkThumbScene::updateThumbLabels() {
 	qDebug() << "updating thumb labels...";
 
 	QWidget* p = reinterpret_cast<QWidget*>(parent());
-	if (p && !p->isVisible())
+	if (p && !p->isVisible())		// save some memory & give us speed (I feel the need the need for speed)
 		return;
 
 	DkTimer dt;

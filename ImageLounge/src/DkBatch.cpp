@@ -67,9 +67,16 @@ void DkBatchWidget::createLayout() {
 }
 
 void DkBatchWidget::setContentWidget(QWidget* batchContent) {
+	
+	this->batchContent = dynamic_cast<DkBatchContent*>(batchContent);
 	batchWidgetLayout->addWidget(batchContent);
 	connect(showButton, SIGNAL(toggled(bool)), batchContent, SLOT(setVisible(bool)));
 	connect(batchContent, SIGNAL(newHeaderText(QString)), this, SLOT(setHeader(QString)));
+}
+
+QWidget* DkBatchWidget::contentWidget() const {
+	
+	return dynamic_cast<QWidget*>(batchContent);
 }
 
 void DkBatchWidget::setTitle(QString titleString) {
@@ -94,7 +101,8 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 	setMinimumHeight(300);
 
 	loader = new DkImageLoader();
-	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
+	//connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
+	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 }
 
 void DkFileSelection::createLayout() {
@@ -116,7 +124,7 @@ void DkFileSelection::createLayout() {
 
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
-	connect(this, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	//connect(this, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 
 	QVBoxLayout* widgetLayout = new QVBoxLayout();
 	widgetLayout->addWidget(upperWidget);
@@ -129,6 +137,12 @@ void DkFileSelection::updateDir(QVector<QSharedPointer<DkImageContainerT> > thum
 	emit updateDirSignal(thumbs);
 }
 
+void DkFileSelection::setVisible(bool visible) {
+
+	QWidget::setVisible(visible);
+	thumbScrollWidget->getThumbWidget()->updateLayout();
+}
+
 void DkFileSelection::browse() {
 
 	// load system default open dialog
@@ -138,20 +152,9 @@ void DkFileSelection::browse() {
 	if (dirName.isEmpty())
 		return;
 
-	cDir = QDir(dirName);
-	//indexDir();
-
-	setDir(cDir);
+	setDir(QDir(dirName));
 }
 
-void DkFileSelection::indexDir() {
-
-	emit dirSignal(cDir.absolutePath());
-
-	cDir.setSorting(QDir::LocaleAware);
-	thumbScrollWidget->setDir(QFileInfo(cDir.absolutePath()));
-	
-}
 
 QList<QUrl> DkFileSelection::getSelectedFiles() {
 	return thumbScrollWidget->getThumbWidget()->getSelectedUrls();
@@ -164,7 +167,6 @@ void DkFileSelection::setDir(const QDir& dir) {
 		emit newHeaderText(cDir.absolutePath());
 		loader->setDir(cDir);
 
-		indexDir();
 }
 
 // DkBatchOutput --------------------------------------------------------------------
@@ -173,6 +175,8 @@ DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : QWidget(par
 	this->rUserInput = false;
 	setObjectName("DkBatchOutput");
 	createLayout();
+
+	outputDirectory = QDir();
 }
 
 void DkBatchOutput::createLayout() {
@@ -182,17 +186,17 @@ void DkBatchOutput::createLayout() {
 	outDirGroupBox->setTitle(tr("Output Directory"));
 	QHBoxLayout* outDirGBLayout = new QHBoxLayout(outDirGroupBox);
 
-	DkDirectoryEdit* outputlineEdit= new DkDirectoryEdit();
+	outputlineEdit= new DkDirectoryEdit();
 	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
 	// TODO
-	//connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browseOutputDir()));
+	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
 	outDirGBLayout->addWidget(outputlineEdit);
 	outDirGBLayout->addWidget(outputBrowseButton);
 
 	// Filename Groupbox
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
 	filenameGroupBox->setTitle(tr("Filename"));
-	QHBoxLayout* filenameGBLayout = new QHBoxLayout(filenameGroupBox);
+	QGridLayout* filenameGBLayout = new QGridLayout(filenameGroupBox);
 
 
 
@@ -210,6 +214,24 @@ void DkBatchOutput::createLayout() {
 	setLayout(contentLayout);
 }
 
+void DkBatchOutput::browse() {
+
+	// load system default open dialog
+	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
+		outputDirectory.absolutePath());
+
+	if (dirName.isEmpty())
+		return;
+
+	setDir(QDir(dirName));
+}
+
+void DkBatchOutput::setDir(QDir dir) {
+	outputDirectory = dir;
+	emit newHeaderText(dir.absolutePath());
+	outputlineEdit->setText(dir.absolutePath());
+}
+
 // Batch Dialog --------------------------------------------------------------------
 
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
@@ -217,13 +239,11 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
-
-
 }
 
 
 void DkBatchDialog::createLayout() {
-	widgets.resize(batchWdidgets_end);
+	widgets.resize(batchWidgets_end);
 	// Input Directory
 	widgets[batchWdidgets_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
 	DkFileSelection* fileSelection  = new DkFileSelection(widgets[batchWdidgets_input]);
@@ -247,9 +267,6 @@ void DkBatchDialog::createLayout() {
 	for (int i=0; i < widgets.size(); i++) {
 		dialogLayout->addWidget(widgets[i]);
 	}
-	//dialogLayout->addWidget(fileSelection);
-	//dialogLayout->addWidget(outputSelection);
-	dialogLayout->addStretch();
 	dialogLayout->addWidget(buttons);
 
 	setLayout(dialogLayout);
