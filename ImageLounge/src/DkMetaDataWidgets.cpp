@@ -1059,7 +1059,7 @@ DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 
 	textChanged = false;
 	dummyText = tr("Empty");
-	setMaximumSize(180, 150);
+	setMaximumSize(220, 150);
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
 }

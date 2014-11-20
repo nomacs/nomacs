@@ -964,6 +964,22 @@ void DkViewPort::loadImage(QImage newImg) {
 	}
 }
 
+void DkViewPort::loadImage(QSharedPointer<DkImageContainerT> img) {
+
+	if (loader) {
+
+		if (!unloadImage(true))
+			return;
+
+		if (img->hasImage()) {
+			loader->setCurrentImage(img);
+			setImage(img->image());
+		}
+		loader->load(img);
+	}
+
+}
+
 void DkViewPort::setImage(QImage newImg) {
 
 	DkTimer dt;
@@ -1920,7 +1936,7 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	
 	if (movie && success) {
 		movie->stop();
-		delete movie;
+		delete movie; 
 		movie = 0;
 	}
 

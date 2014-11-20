@@ -617,7 +617,7 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 	if (newImg)
 		loadDir(newImg->file());
 	else
-		qDebug() << "empty image assinged";
+		qDebug() << "empty image assigned";
 	
 	// if the file stays the same, we just want to update the pointer
 	bool updatePointer = newImg && currentImage && newImg->file().absoluteFilePath() == currentImage->file().absoluteFilePath();

@@ -152,7 +152,6 @@ public:
 
 	virtual bool imageInside();	// always return false?!
 
-
 signals:
 	void enableNoImageSignal(bool enable);
 	void showStatusBar(bool show, bool permanent);
@@ -182,7 +181,6 @@ public slots:
 	virtual bool unloadImage(bool fileChange = true);
 
 	virtual void setImage(QImage newImg);
-
 
 protected:
 	virtual bool event(QEvent *event);

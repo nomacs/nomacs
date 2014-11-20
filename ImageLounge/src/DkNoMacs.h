@@ -118,6 +118,7 @@ class DkImageContainerT;	// TODO: add include to suppress warning C4150
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
 class FileDownloader;
+class DkViewPort;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -157,6 +158,10 @@ enum {
 	shortcut_next_file_sync	= Qt::ALT + Qt::Key_Right,
 
 	// view
+	shortcut_new_tab		= Qt::CTRL + Qt::Key_T,
+	shortcut_close_tab		= Qt::CTRL + Qt::Key_W,
+	shortcut_next_tab		= Qt::CTRL + Qt::Key_Tab,
+	shortcut_previous_tab	= Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
 	shortcut_show_toolbar	= Qt::CTRL + Qt::Key_B,
 	shortcut_show_statusbar	= Qt::CTRL + Qt::Key_I,
 	shortcut_full_screen_ad	= Qt::CTRL + Qt::Key_L,
@@ -179,22 +184,22 @@ enum {
 	shortcut_show_info		= Qt::Key_I,
 	shortcut_show_histogram	= Qt::Key_H,
 	shortcut_show_comment	= Qt::Key_N,
-	shortcut_opacity_down	= Qt::CTRL + Qt::Key_H,
-	shortcut_opacity_up		= Qt::CTRL + Qt::SHIFT + Qt::Key_H,
-	shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_H,
-	shortcut_an_opacity		= Qt::ALT  + Qt::Key_H,
+	shortcut_opacity_down	= Qt::CTRL + Qt::Key_J,
+	shortcut_opacity_up		= Qt::CTRL + Qt::SHIFT + Qt::Key_J,
+	shortcut_opacity_change	= Qt::ALT + Qt::SHIFT + Qt::Key_J,
+	shortcut_an_opacity		= Qt::ALT  + Qt::Key_J,
 	shortcut_new_instance	= Qt::CTRL + Qt::Key_N,
 	shortcut_private_instance = Qt::CTRL + Qt::ALT + Qt::Key_N,
 	shortcut_tp_pattern		= Qt::Key_B,
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
-	shortcut_recent_files	= Qt::CTRL + Qt::Key_R,
+	shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
 	//shortcut_play			= Qt::Key_Space,
 
 	// edit
 	shortcut_rotate_cw		= Qt::Key_R,
 	shortcut_rotate_ccw		= Qt::SHIFT + Qt::Key_R,
-	shortcut_transform		= Qt::CTRL + Qt::Key_T,
+	shortcut_transform		= Qt::CTRL + Qt::Key_R,
 	shortcut_manipulation   = Qt::CTRL + Qt::SHIFT + Qt::Key_M,
 	shortcut_paste			= Qt::Key_Insert,
 	shortcut_delete_silent	= Qt::SHIFT + Qt::Key_Delete,
@@ -208,8 +213,8 @@ enum {
 	shortcut_shortcuts		= Qt::CTRL + Qt::Key_K,
 	shortcut_settings		= Qt::CTRL + Qt::SHIFT + Qt::Key_P,
 	shortcut_sync			= Qt::CTRL + Qt::Key_D,
-	shortcut_tab			= Qt::CTRL + Qt::Key_Tab,
-	shortcut_arrange		= Qt::CTRL + Qt::SHIFT + Qt::Key_Tab,
+	shortcut_tab			= Qt::ALT + Qt::Key_O,
+	shortcut_arrange		= Qt::ALT + Qt::Key_A,
 	shortcut_send_img		= Qt::ALT + Qt::Key_I,
 	shortcut_connect_all	= Qt::CTRL + Qt::Key_A,
 
@@ -326,6 +331,10 @@ enum viewActions {
 	menu_view_anti_aliasing,
 	menu_view_tp_pattern,
 	menu_view_frameless,
+	menu_view_new_tab,
+	menu_view_close_tab,
+	menu_view_previous_tab,
+	menu_view_next_tab,
 	menu_view_opacity_up,
 	menu_view_opacity_down,
 	menu_view_opacity_an,
@@ -454,8 +463,6 @@ protected:
 
 };
 
-
-class DkViewPort;
 class DkMenuBar;
 
 class DllExport DkNoMacs : public QMainWindow {
