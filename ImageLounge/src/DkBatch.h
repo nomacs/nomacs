@@ -31,48 +31,64 @@
 #include <QListView>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QGroupBox>
 
+#include "DkWidgets.h"
 #include "DkThumbsWidgets.h"
 
 
 
 namespace nmc {
 
+enum batchWidgets {
+	batchWdidgets_input,
+	batchWdidgets_output,
+
+	batchWdidgets_end
+};
+
+
 class DkBatchWidget : public QWidget {
 	Q_OBJECT
 	public:
 		DkBatchWidget(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	
+		void setContentWidget(QWidget* batchContent);
+
+	public slots:
 		void setTitle(QString title);
 		void setHeader(QString header);
+		
+
 	protected:
 		virtual void createLayout();
-		QWidget* contentWidget;
 
 	private:
+		DkBatchContent* batchContent;
+		QVBoxLayout* batchWidgetLayout;
 		QString titleString, headerString;
 		QLabel* titleLabel; 
 		QLabel* headerLabel;
-		
+		DkButton* showButton;
 };
 
 
-class DkFileSelection : public DkBatchWidget {
+class DkFileSelection : public QWidget, public DkBatchContent  {
 	Q_OBJECT
 
 	public:
-		DkFileSelection(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
+		DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	QDir getDir() {
-		return cDir;
-	};
+		QDir getDir() {
+			return cDir;
+		};
 
-	void setDir(const QDir& dir) {
-		cDir = dir;
-		indexDir();
-	};
+		void setDir(const QDir& dir);
 
-	QList<QUrl> getSelectedFiles();
+		QList<QUrl> getSelectedFiles();
+
+		virtual bool hasUserInput() {return hUserInput;};
+		virtual bool requiresUserInput() {return rUserInput;};
 
 	public slots:
 		void browse();
@@ -82,6 +98,7 @@ class DkFileSelection : public DkBatchWidget {
 	signals:
 		void dirSignal(const QString& dir);
 		void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
+		void newHeaderText(QString);
 
 	protected:
 		virtual void createLayout();
@@ -89,14 +106,33 @@ class DkFileSelection : public DkBatchWidget {
 		QDir cDir;
 		QListView* fileWidget;
 		DkThumbScrollWidget* thumbScrollWidget;
+		DkImageLoader* loader;
+		DkDirectoryEdit* directoryEdit;
+
+	private:
+		bool hUserInput;
+		bool rUserInput;
+
 };
 
-class DkBatchOutput : public DkBatchWidget {
+class DkBatchOutput : public QWidget, public DkBatchContent {
+	Q_OBJECT
+
 	public:
-		DkBatchOutput(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
+		DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+		virtual bool hasUserInput()  {return hUserInput;};;
+		virtual bool requiresUserInput()  {return rUserInput;};;
+
+	signals:
+		void newHeaderText(QString);
 
 	protected:
 		virtual void createLayout();
+
+	private:
+		bool hUserInput;
+		bool rUserInput;
 
 };
 
@@ -108,19 +144,13 @@ class DkBatchDialog : public QDialog {
 
 	public slots:
 		virtual void accept();
-		void browseOutputDir();
-		void setInputDir(const QString& dirName);
 
 	protected:
 		void createLayout();
-
 		
-		QLabel* inputDirLabel;
-		QLabel* outputDirLabel;
-		DkFileSelection* fileSelection;
-		DkBatchOutput* outputSelection;
-		DkImageLoader* loader;
-		QDir outputDir;
+	private:
+		QVector<DkBatchWidget*> widgets;
+		
 		QDir currentDirectory;
 };
 }

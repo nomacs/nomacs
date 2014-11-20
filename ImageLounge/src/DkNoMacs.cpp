@@ -3152,7 +3152,7 @@ void DkNoMacs::computeMosaic() {
 }
 
 void DkNoMacs::computeBatch() {
-	batchDialog = new DkBatchDialog(viewport()->getImageLoader()->getDir(), this, Qt::WindowMinimizeButtonHint);
+	batchDialog = new DkBatchDialog(viewport()->getImageLoader()->getDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 	
 	//batchDialog->setInputDir(viewport()->getImageLoader()->getDir().absolutePath());
 	int response = batchDialog->exec();

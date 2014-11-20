@@ -598,9 +598,7 @@ void DkFileWidget::init() {
 
 	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
 	connect(cbUseTmpPath, SIGNAL(stateChanged(int)), this, SLOT(useTmpPathChanged(int)));
-	connect(leTmpPath, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
 
-	lineEditChanged(tmpPath);
 }
 
 void DkFileWidget::createLayout() {
@@ -618,7 +616,7 @@ void DkFileWidget::createLayout() {
 
 	QWidget* lineEditWidget = new QWidget(this);
 	QHBoxLayout* hbLineEditWidget = new QHBoxLayout(lineEditWidget);
-	leTmpPath = new QLineEdit(this);
+	leTmpPath = new DkDirectoryEdit(this);
 	pbTmpPath = new QPushButton(tr("..."), this);
 	pbTmpPath->setMaximumWidth(40);
 	hbLineEditWidget->addWidget(leTmpPath);
@@ -670,18 +668,11 @@ void DkFileWidget::writeSettings() {
 	DkSettings::global.loop = cbWrapImages->isChecked();
 	DkSettings::global.logRecentFiles = cbLogRecentFiles->isChecked();
 	DkSettings::global.useTmpPath = cbUseTmpPath->isChecked();
-	DkSettings::global.tmpPath = existsDirectory(leTmpPath->text()) ? leTmpPath->text() : QString();
+	QFileInfo fi = QFileInfo(leTmpPath->text());
+	DkSettings::global.tmpPath = fi.exists() ? leTmpPath->text() : QString();
 	DkSettings::resources.waitForLastImg = rbWaitForImage->isChecked();
 }
 
-void DkFileWidget::lineEditChanged(QString path) {
-	existsDirectory(path) ? leTmpPath->setStyleSheet("color:black") : leTmpPath->setStyleSheet("color:red");
-}
-
-bool DkFileWidget::existsDirectory(QString path) {
-	QFileInfo* fi = new QFileInfo(path);
-	return fi->exists();
-}
 
 void DkFileWidget::tmpPathButtonPressed() {
 	tmpPath = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),tmpPath);
@@ -694,7 +685,7 @@ void DkFileWidget::tmpPathButtonPressed() {
 
 void DkFileWidget::useTmpPathChanged(int state) {
 	if (cbUseTmpPath->isChecked()) {
-		lineEditChanged(tmpPath);
+		//lineEditChanged(tmpPath);
 		leTmpPath->setDisabled(false);
 		pbTmpPath->setDisabled(false);
 	} else {

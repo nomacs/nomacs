@@ -3306,6 +3306,26 @@ void DkRecentFilesWidget::mappedFileExists(DkFileInfo& fileInfo) {
 	fileInfo.setExists(fileInfo.getFileInfo().exists());
 }
 
+
+// DkDirectoryEdit --------------------------------------------------------------------
+DkDirectoryEdit::DkDirectoryEdit(QWidget* parent /* = 0 */) : QLineEdit(parent) {
+	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+}
+
+DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) {
+	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+	setText(content);
+}
+
+void DkDirectoryEdit::lineEditChanged(QString path) {
+	existsDirectory(path) ? this->setStyleSheet("color:black") : this->setStyleSheet("color:red");
+}
+
+bool DkDirectoryEdit::existsDirectory(QString path) {
+	QFileInfo* fi = new QFileInfo(path);
+	return fi->exists();
+}
+
 }
 
 
