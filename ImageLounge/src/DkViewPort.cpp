@@ -221,6 +221,7 @@ void DkControlWidget::init() {
 	QBoxLayout* hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
 	hwLayout->setContentsMargins(0,0,0,0);
 	hwLayout->addWidget(histogram);
+	hwLayout->addStretch();
 
 	// right column
 	QWidget* rightWidget = new QWidget();
@@ -961,6 +962,22 @@ void DkViewPort::loadImage(QImage newImg) {
 		// save to temp folder
 		loader->saveTempFile(newImg);
 	}
+}
+
+void DkViewPort::loadImage(QSharedPointer<DkImageContainerT> img) {
+
+	if (loader) {
+
+		if (!unloadImage(true))
+			return;
+
+		if (img->hasImage()) {
+			loader->setCurrentImage(img);
+			setImage(img->image());
+		}
+		loader->load(img);
+	}
+
 }
 
 void DkViewPort::setImage(QImage newImg) {
@@ -1919,7 +1936,7 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	
 	if (movie && success) {
 		movie->stop();
-		delete movie;
+		delete movie; 
 		movie = 0;
 	}
 

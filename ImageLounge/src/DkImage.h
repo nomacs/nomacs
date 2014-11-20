@@ -95,7 +95,7 @@ using namespace cv;
 
 // quazip
 #ifdef WITH_QUAZIP
-#include <JlCompress.h>
+#include <quazip/JlCompress.h>
 #endif
 
 // my classes

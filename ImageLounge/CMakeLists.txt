@@ -12,7 +12,7 @@ endif(COMMAND cmake_policy)
 ######################## begin of project
 project(nomacs)
 
-set(NOMACS_VERSION 2.0.2)
+set(NOMACS_VERSION 2.2.0)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
@@ -65,7 +65,7 @@ include_directories (
 	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}/src
-	${WEBP_INCLUDE_DIR}
+	${WEBP_INCLUDEDIR}
 	${TIFF_INCLUDE_DIR}
 	${TIFF_CONFIG_DIR}
 	${HUPNP_INCLUDE_DIR}
@@ -117,6 +117,7 @@ set(NOMACS_TRANSLATIONS
 	translations/nomacs_es.ts		
 	translations/nomacs_fr.ts
 	translations/nomacs_it.ts
+	translations/nomacs_ja.ts
 	translations/nomacs_pl.ts
 	translations/nomacs_pt.ts
 	translations/nomacs_ru.ts
@@ -156,5 +157,5 @@ endif()
 #debug for printing out all variables 
 # get_cmake_property(_variableNames VARIABLES)
 # foreach (_variableName ${_variableNames})
-    # message(STATUS "${_variableName}=${${_variableName}}")
+#     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()

@@ -161,7 +161,7 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("tga"))		openFilters.append("Targa Image File (*.tga)");
 	if (qtFormats.contains("mng"))		openFilters.append("Multi-Image Network Graphics (*.mng)");
 
-#ifdef WITH_OPENCV // TODO: change to WITH_RAW ?!
+#ifdef WITH_LIBRAW
 	// raw format
 	openFilters.append("Nikon Raw (*.nef)");
 	openFilters.append("Canon Raw (*.crw *.cr2)");

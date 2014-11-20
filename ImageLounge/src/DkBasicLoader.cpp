@@ -266,6 +266,27 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	try {
 
+		// try to get preview image from exiv2
+		if (metaData) { 
+			if (fast || DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
+				DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large) {
+
+				metaData->readMetaData(fileInfo, ba);
+
+				int minWidth = 0;
+
+#ifdef WITH_LIBRAW	// if nomacs has libraw - we can still hope for a fallback -> otherwise try whatever we have here
+				if (DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large)
+					minWidth = 1920;
+#endif
+				qImg = metaData->getPreviewImage(minWidth);
+
+				if (!qImg.isNull()) {
+					qDebug() << "[RAW] loaded with exiv2";
+					return true;
+				}
+			}
+		}
 #ifdef WITH_LIBRAW
 
 		LibRaw iProcessor;

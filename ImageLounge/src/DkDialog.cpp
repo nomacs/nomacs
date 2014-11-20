@@ -35,21 +35,40 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 
 	QPixmap img(":/nomacs/img/splash-screen.png");
 	setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	setMouseTracking(true);
     
 #ifdef Q_WS_MAC
     setStyleSheet("background-color:white");
 #else
 	setAttribute(Qt::WA_TranslucentBackground);
 #endif
-    
+
 	imgLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
-	//imgLabel->setAttribute(Qt::WA_TranslucentBackground);
+	imgLabel->setMouseTracking(true);
+	imgLabel->setScaledContents(true);
 	imgLabel->setPixmap(img);
+	imgLabel->setFixedSize(600, 474);
 	imgLabel->show();
 
-	// create exit shortcuts
-	QShortcut* escExit = new QShortcut(Qt::Key_Escape, this);
-	QObject::connect(escExit, SIGNAL( activated()), this, SLOT( close() ));
+	setFixedSize(imgLabel->size());
+
+	//// create exit shortcuts
+	//QShortcut* escExit = new QShortcut(Qt::Key_Escape, this);
+	//QObject::connect(escExit, SIGNAL(activated()), this, SLOT(close()));
+
+	//QPushButton* exitButton = new QPushButton(tr("Close"));
+	//exitButton->setFlat(true);
+
+	exitButton = new QPushButton(tr("CLOSE"), this);
+	exitButton->setStyleSheet("QPushButton{font-size: 15px; font: bold; color: rgba(0,0,0,200)}");
+	exitButton->setObjectName("cancelButton");
+	exitButton->setFlat(true);
+	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QPixmap(":/nomacs/img/cancel2.png"), QColor(0,0,0,200), 1.0f)));
+	exitButton->setToolTip(tr("Close (ESC)"));
+	exitButton->setShortcut(QKeySequence(Qt::Key_Escape));
+	exitButton->move(10, 435);
+	exitButton->hide();
+	connect(exitButton, SIGNAL(clicked()), this, SLOT(close()))	;
 
 	// set the text
 	text = 
@@ -61,17 +80,20 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 		"<a href=\"mailto:developers@nomacs.org\">developers@nomacs.org</a><br><br>" 
 
 		"This program is licensed under GNU General Public License v3<br>"
-		"&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2013<br><br>"
+		"&#169; Markus Diem, Stefan Fiel and Florian Kleber, 2011-2014<br><br>"
 
 		"Press [ESC] to exit");
 
 	textLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	textLabel->setMouseTracking(true);
 	textLabel->setScaledContents(true);
 	textLabel->setTextFormat(Qt::RichText);
 	textLabel->setText(text);
 	textLabel->move(131, 280);
 	textLabel->setOpenExternalLinks(true);
-
+	setStyleSheet("QLabel{font-size: 11px;}");	// set fixed font size - to prevent text overflow in OS other than windows
+	//textLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+	
 	QLabel* versionLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
 	versionLabel->setTextFormat(Qt::RichText);
 
@@ -86,7 +108,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 		qDebug() << "nomacs is not portable: " << DkSettings::getSettingsFile().absoluteFilePath();
 
 	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  "<br>" %
-#ifdef WITH_OPENCV
+#ifdef WITH_LIBRAW
 		"RAW support: Yes"
 #else
 		"RAW support: No"
@@ -95,14 +117,48 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 		);
 
 	versionLabel->move(360, 280);
+	versionLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
+	showTimer = new QTimer(this);
+	showTimer->setInterval(5000);
+	showTimer->setSingleShot(true);
+	connect(showTimer, SIGNAL(timeout()), exitButton, SLOT(hide()));
+	
 	qDebug() << "splash screen created...";
 }
 
-//void DkSplashScreen::mousePressEvent(QMouseEvent* event) {
-//
-//	close();
-//}
+void DkSplashScreen::mousePressEvent(QMouseEvent* event) {
+
+	setCursor(Qt::ClosedHandCursor);
+	mouseGrab = event->globalPos();
+	QDialog::mousePressEvent(event);
+}
+
+void DkSplashScreen::mouseMoveEvent(QMouseEvent *event) {
+
+	if (event->buttons() == Qt::LeftButton) {
+		move(pos()-(mouseGrab-event->globalPos()));
+		mouseGrab = event->globalPos();
+		qDebug() << "moving...";
+	}
+	else
+		setCursor(Qt::OpenHandCursor);
+	showClose();
+	QDialog::mouseMoveEvent(event);
+}
+
+void DkSplashScreen::mouseReleaseEvent(QMouseEvent *event) {
+
+	setCursor(Qt::OpenHandCursor);
+	showClose();
+	QDialog::mouseReleaseEvent(event);
+}
+
+void DkSplashScreen::showClose() {
+
+	exitButton->show();
+	showTimer->start();
+}
 
 // file validator --------------------------------------------------------------------
 DkFileValidator::DkFileValidator(QString lastFile, QObject * parent) : QValidator(parent) {
@@ -4338,11 +4394,6 @@ void DkArchiveExtractionDialog::dragEnterEvent(QDragEnterEvent *event) {
 
 QStringList DkArchiveExtractionDialog::extractFilesWithProgress(QString fileCompressed, QStringList files, QString dir, bool removeSubfolders) {
 
-    QuaZip zip(fileCompressed);
-    if(!zip.open(QuaZip::mdUnzip)) {
-        return QStringList();
-    }
-
     QProgressDialog progressDialog(this);
     progressDialog.setCancelButtonText(tr("&Cancel"));
     progressDialog.setRange(0, files.size() - 1);
@@ -4363,21 +4414,14 @@ QStringList DkArchiveExtractionDialog::extractFilesWithProgress(QString fileComp
 		else
 			absPath = QDir(dir).absoluteFilePath(files.at(i));
 
-        if (!JlCompress::extractFile(&zip, files.at(i), absPath)) {
-            JlCompress::removeFile(extracted);
-            return QStringList();
-        }
+		if (JlCompress::extractFile(fileCompressed, files.at(i), absPath).isEmpty()) {
+			qDebug() << "unable to extract:" << files.at(i);
+			//return QStringList();
+		}
         extracted.append(absPath);
 		if(progressDialog.wasCanceled()) {
-			JlCompress::removeFile(extracted);
 			return QStringList("userCanceled");
 		}
-    }
-
-    zip.close();
-    if(zip.getZipError()!=0) {
-        JlCompress::removeFile(extracted);
-        return QStringList();
     }
 
 	progressDialog.close();
