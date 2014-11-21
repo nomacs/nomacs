@@ -52,7 +52,7 @@ void DkTabInfo::saveSettings(const QSettings& settings) const {
 
 void DkTabInfo::setFileInfo(const QFileInfo& fileInfo) {
 
-	QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo));
+	imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo));
 }
 
 QFileInfo DkTabInfo::getFileInfo() const {
@@ -94,11 +94,8 @@ QIcon DkTabInfo::getIcon() {
 
 	QImage img = thumb->getImage();
 
-	if (img.isNull())
-		thumb->fetchThumb(DkThumbNailT::force_exif_thumb);
-	else {
+	if (!img.isNull())
 		icon = QPixmap::fromImage(img);
-	}
 
 	return icon;
 }
@@ -236,9 +233,10 @@ void DkCentralWidget::removeTab(int tabIdx) {
 		if (tabInfos.at(idx).getTabIdx() == tabIdx) {
 			tabbar->removeTab(tabInfos.at(idx).getTabIdx());
 			tabInfos.remove(idx);
-			break;
 		}
 	}
+
+	updateTabIdx();
 
 	if (tabInfos.size() <= 1)
 		tabbar->hide();
@@ -258,6 +256,13 @@ void DkCentralWidget::updateTab(DkTabInfo& tabInfo) {
 
 	tabbar->setTabText(tabInfo.getTabIdx(), tabInfo.getTabText());
 	tabbar->setTabIcon(tabInfo.getTabIdx(), tabInfo.getIcon());
+}
+
+void DkCentralWidget::updateTabIdx() {
+
+	for (int idx = 0; idx < tabInfos.size(); idx++) {
+		tabInfos[idx].setTabIdx(idx);
+	}
 }
 
 void DkCentralWidget::nextTab() const {
@@ -281,34 +286,6 @@ void DkCentralWidget::previousTab() const {
 	if (idx < 0)
 		idx = tabInfos.size()-1;
 	tabbar->setCurrentIndex(idx);
-}
-
-void DkCentralWidget::updateTabIcon(bool isLoaded) {
-
-	if (!isLoaded)
-		return;
-
-	//const DkImageContainerT* imgC = dynamic_cast<const DkImageContainerT*>(QObject::sender());
-
-	//if (!imgC)
-	//	return;
-
-	//DkTabInfo tabInfo;
-
-	//for (int idx = 0; idx < tabInfos.size(); idx++) {
-
-	//	QSharedPointer<DkImageContainerT*> cImg = tabInfos.at(idx).getImage();
-
-	//	if (cImg && cImg == imgC) {
-	//		tabInfo = tabInfos.at(idx);
-	//		return;
-	//	}
-	//}
-
-	//if (!tabInfo.getImage())
-	//	return;
-
-	//updateTab(tabInfo);
 }
 
 void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {

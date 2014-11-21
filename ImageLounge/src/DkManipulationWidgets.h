@@ -213,6 +213,7 @@ class DkSaturation : public DkImageManipulationWidget {
 
 	protected slots:
 		void setSliderStyle(QString sColor);
+
 };
 
 class DkHue : public DkImageManipulationWidget {

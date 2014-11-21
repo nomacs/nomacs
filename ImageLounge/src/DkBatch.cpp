@@ -49,10 +49,10 @@ void DkBatchWidget::createLayout() {
 	connect(showButton, SIGNAL(toggled(bool)), contentWidget, SLOT(setVisible(bool)));
 
 	titleLabel = new QLabel(titleString);
-	titleLabel->setStyleSheet("QLabel{font-size: 16px;}");
+	titleLabel->setObjectName("DkBatchTitle");
 	titleLabel->setAlignment(Qt::AlignBottom);
 	headerLabel = new QLabel(headerString);
-	headerLabel->setStyleSheet("QLabel{color: #666;}");
+	headerLabel->setObjectName("DkDecentInfo");
 	headerLabel->setAlignment(Qt::AlignBottom);
 	
 	QWidget* headerWidget = new QWidget();
@@ -65,8 +65,8 @@ void DkBatchWidget::createLayout() {
 
 	QVBoxLayout* batchWidgetLayout = new QVBoxLayout;
 	batchWidgetLayout->addWidget(headerWidget);
-	batchWidgetLayout->addWidget(contentWidget, 5);
-	batchWidgetLayout->addStretch();
+	batchWidgetLayout->addWidget(contentWidget);
+	//batchWidgetLayout->addStretch();
 	setLayout(batchWidgetLayout);
 }
 
@@ -85,7 +85,6 @@ void DkBatchWidget::setHeader(QString headerString) {
 DkFileSelection::DkFileSelection(QString titleString, QString headerString, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkBatchWidget(titleString, headerString, parent, f) {
 
 	setObjectName("DkFileSelection");
-	setStyleSheet("QLabel#DkFileSelection{border-radius: 5px; border: 1px solid #AAAAAA;}");
 	createLayout();
 	setMinimumHeight(300);
 }
@@ -236,7 +235,7 @@ void DkBatchDialog::createLayout() {
 	dialogLayout->addWidget(fileSelection);
 	dialogLayout->addWidget(outputSelection);
 	//dialogLayout->addWidget(outputSelection);
-	dialogLayout->addStretch();
+	//dialogLayout->addStretch();
 	dialogLayout->addWidget(buttons);
 
 	setLayout(dialogLayout);

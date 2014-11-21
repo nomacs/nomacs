@@ -38,6 +38,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	viewport = parent;
 	setObjectName("DkControlWidget");
+	qDebug() << this->metaObject()->className();
 
 	// cropping
 	cropWidget = new DkCropWidget(QRectF(), this);
@@ -96,7 +97,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 void DkControlWidget::init() {
 
 	// debug: show invisible widgets
-	//setStyleSheet("QWidget{background-color: QColor(0,0,0,20); border: 1px solid #000000;}");
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
@@ -815,10 +815,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(moveTimer, SIGNAL(timeout()), this, SLOT(animateMove()));
 
 	setAcceptDrops(true);
-	setObjectName(QString::fromUtf8("DkViewPort"));
 
 	//no border
-	//setStyleSheet( "QGraphicsView { border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4); }" );
 	setMouseTracking (true);//receive mouse event everytime
 	
 	loader = new DkImageLoader();

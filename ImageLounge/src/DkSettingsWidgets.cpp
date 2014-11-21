@@ -619,6 +619,7 @@ void DkFileWidget::createLayout() {
 	QWidget* lineEditWidget = new QWidget(this);
 	QHBoxLayout* hbLineEditWidget = new QHBoxLayout(lineEditWidget);
 	leTmpPath = new QLineEdit(this);
+	leTmpPath->setObjectName("DkWarningEdit");
 	pbTmpPath = new QPushButton(tr("..."), this);
 	pbTmpPath->setMaximumWidth(40);
 	hbLineEditWidget->addWidget(leTmpPath);
@@ -675,7 +676,10 @@ void DkFileWidget::writeSettings() {
 }
 
 void DkFileWidget::lineEditChanged(QString path) {
-	existsDirectory(path) ? leTmpPath->setStyleSheet("color:black") : leTmpPath->setStyleSheet("color:red");
+	 leTmpPath->setProperty("error", !existsDirectory(path));
+	 leTmpPath->style()->unpolish(leTmpPath);
+	 leTmpPath->style()->polish(leTmpPath);
+	 leTmpPath->update();
 }
 
 bool DkFileWidget::existsDirectory(QString path) {
@@ -698,10 +702,14 @@ void DkFileWidget::useTmpPathChanged(int state) {
 		leTmpPath->setDisabled(false);
 		pbTmpPath->setDisabled(false);
 	} else {
-		leTmpPath->setStyleSheet("color:black");
+		leTmpPath->setProperty("error", false);
 		leTmpPath->setDisabled(true);
 		pbTmpPath->setDisabled(true);
 	}
+
+	leTmpPath->style()->unpolish(leTmpPath);
+	leTmpPath->style()->polish(leTmpPath);
+	leTmpPath->update();
 }
 
 // DkNetworkSettingsWidget --------------------------------------------------------------------
@@ -980,14 +988,14 @@ void DkResourceSettingsWidgets::createLayout() {
 	opacityEffect->setOpacity(0.7);
 	setGraphicsEffect(opacityEffect);
 
-	QWidget* memoryGradient = new QWidget;
-	memoryGradient->setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #185a2b, stop: 1 #66131c);");
+	QWidget* memoryGradient = new QWidget(this);
+	memoryGradient->setObjectName("memoryGradient");
 	memoryGradient->setMinimumHeight(5);
 	memoryGradient->setContentsMargins(0,0,0,0);
 	memoryGradient->setWindowOpacity(0.3);
 	memoryGradient->setGraphicsEffect(opacityEffect);	
 
-	QWidget* captionWidget = new QWidget;
+	QWidget* captionWidget = new QWidget(this);
 	captionWidget->setContentsMargins(0,0,0,0);
 
 	QHBoxLayout* captionLayout = new QHBoxLayout(captionWidget);
@@ -1002,7 +1010,7 @@ void DkResourceSettingsWidgets::createLayout() {
 	captionLayout->addWidget(labelMinPercent);
 	captionLayout->addWidget(labelMaxPercent);
 
-	labelMemory = new QLabel;
+	labelMemory = new QLabel(this);
 	labelMemory->setContentsMargins(10,-5,0,0);
 	labelMemory->setAlignment(Qt::AlignCenter);
 

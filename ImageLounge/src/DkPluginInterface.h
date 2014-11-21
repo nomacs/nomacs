@@ -150,7 +150,7 @@ protected:
 		imgMatrix = 0;
 
 		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-		setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
+		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
 		//setMouseTracking(true);
 	};
 

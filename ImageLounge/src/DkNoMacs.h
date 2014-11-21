@@ -747,6 +747,7 @@ protected:
 
 	virtual void init();
 	
+	void loadStyleSheet();
 	void registerFileVersion();
 	virtual void createIcons();
 	virtual void createToolbar();

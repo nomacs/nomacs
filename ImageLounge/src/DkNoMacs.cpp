@@ -144,9 +144,6 @@ void DkNoMacs::release() {
 
 void DkNoMacs::init() {
 
-	//setStyleSheet("QMainWindow::separator{width: 1px; background: " + DkUtils::colorToString(DkSettings::display.bgColor) + "}");
-	//setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
-
 // assign icon -> in windows the 32px version
 #ifdef WIN32
 	QString iconPath = ":/nomacs/img/nomacs32.png";
@@ -154,9 +151,11 @@ void DkNoMacs::init() {
 	QString iconPath = ":/nomacs/img/nomacs.png";
 #endif
 
+	loadStyleSheet();
+
 	QIcon dirIcon = QIcon(iconPath);
 	setObjectName("DkNoMacs");
-
+	
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
 
@@ -334,40 +333,8 @@ void DkNoMacs::createToolbar() {
 	qDebug() << toolbar->styleSheet();
 
 	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		toolbar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
+		toolbar->setObjectName("toolBarWithGradient");
 	}
-	//else if (!DkSettings::display.useDefaultColor)
-	//	toolbar->setStyleSheet("QToolBar#EditToolBar{background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" );
-
-	//// file
-	//DkButton* test = new DkButton(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
-	//test->setFixedSize(QSize(16,16));
-	//test->addAction(fileActions[menu_file_prev]);
-	//toolbar->addWidget(test);
-
-
-	//// add this to get auto-repeat (but it is triggered twice then?)
-	//QToolButton *prevButton = static_cast<QToolButton *>(toolbar->widgetForAction(fileActions[menu_file_prev]));
-	//prevButton->setAutoRepeat(true);
-	////prevButton->setAutoRepeatInterval(100);
-	////prevButton->setAutoRepeatDelay(200);
-	//connect(prevButton, SIGNAL(pressed()), viewport(), SLOT(loadPrevFileFast()));
-
-	//QToolButton *nextButton = static_cast<QToolButton *>(toolbar->widgetForAction(fileActions[menu_file_next]));
-	//nextButton->setAutoRepeat(true);
-	////nextButton->setAutoRepeatInterval(100);
-	////nextButton->setAutoRepeatDelay(200);
-	//connect(nextButton, SIGNAL(pressed()), viewport(), SLOT(loadNextFileFast()));
 
 	toolbar->addAction(fileActions[menu_file_prev]);
 	toolbar->addAction(fileActions[menu_file_next]);
@@ -404,19 +371,8 @@ void DkNoMacs::createToolbar() {
 	movieToolbar->addAction(viewActions[menu_view_movie_pause]);
 	movieToolbar->addAction(viewActions[menu_view_movie_next]);
 
-	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		movieToolbar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
-	}
+	if (DkSettings::display.toolbarGradient)
+		movieToolbar->setObjectName("toolBarWithGradient");
 
 	if (DkSettings::display.smallIcons)
 		movieToolbar->setIconSize(QSize(16, 16));
@@ -438,30 +394,49 @@ void DkNoMacs::createStatusbar() {
 	QColor col = QColor(200, 200, 230, 100);
 
 	if (DkSettings::display.toolbarGradient)
-		statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));	
-	//else if (!DkSettings::display.useDefaultColor)
-	//	statusbar->setStyleSheet("QStatusBar#DkStatusBar{background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}");
-
-
+		statusbar->setObjectName("statusBarWithGradient");	
 
 	statusbar->addWidget(statusbarLabels[status_pixel_info]);
 	statusbar->hide();
 
 	for (int idx = 1; idx < statusbarLabels.size(); idx++) {
-		statusbarLabels[idx] = new QLabel();
+		statusbarLabels[idx] = new QLabel(this);
+		statusbarLabels[idx]->setObjectName("statusBarLabel");
 		statusbarLabels[idx]->hide();
-		statusbarLabels[idx]->setStyleSheet("QLabel{color: #555555;}");
 		statusbar->addPermanentWidget(statusbarLabels[idx]);
-
 	}
 
 	//statusbar->addPermanentWidget()
 	this->setStatusBar(statusbar);
 }
 
+void DkNoMacs::loadStyleSheet() {
+	
+	// TODO: if we first load from disk, people can style nomacs themselves
+	QFileInfo cssInfo(":/nomacs/stylesheet.qss");
+	QFile file(cssInfo.absoluteFilePath());
+
+	if (file.open(QFile::ReadOnly)) {
+
+		QString cssString = file.readAll();
+
+		// replace color placeholders
+		cssString.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettings::display.highlightColor));
+		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColorWidget));
+		cssString.replace("HUD_FONT_COLOR", DkUtils::colorToString(QColor(255,255,255)));
+		cssString.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColor));
+		cssString.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
+
+		qApp->setStyleSheet(cssString);
+		file.close();
+
+		qDebug() << "CSS loaded from: " << cssInfo.absoluteFilePath();
+		qDebug() << "style: \n" << cssString;
+	}
+}
 
 void DkNoMacs::createIcons() {
-
+	
 	// this is unbelievable dirty - but for now the quickest way to turn themes off if someone uses customized icons...
 	if (DkSettings::display.defaultIconColor) {
 		#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
@@ -2464,9 +2439,9 @@ void DkNoMacs::showThumbsDock(bool show) {
 		thumbsDockAreaChanged();
 
 		QLabel* thumbsTitle = new QLabel(thumbsDock);
+		thumbsTitle->setObjectName("thumbsTitle");
 		thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 		thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
-		thumbsTitle->setStyleSheet("QLabel{background: rgba(0,0,0,30);}");
 		thumbsTitle->setFixedHeight(16);
 		thumbsDock->setTitleBarWidget(thumbsTitle);
 
@@ -5018,20 +4993,8 @@ void DkNoMacsContrast::createTransferToolbar() {
 		transferToolBar->setIconSize(QSize(32, 32));
 
 
-	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		transferToolBar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
-	}
-
+	if (DkSettings::display.toolbarGradient)
+		transferToolBar->setObjectName("toolBarWithGradient");
 
 }
 }

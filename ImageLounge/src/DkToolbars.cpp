@@ -832,25 +832,10 @@ DkCropToolBar::DkCropToolBar(const QString & title, QWidget * parent /* = 0 */) 
 	else
 		setIconSize(QSize(32, 32));
 
-	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); spacing: 3px; padding: 3px;}")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
-	}
-	else
-		setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
-
-	//loadSettings();
-
-	//setContentsMargins(100, 0, 100, 0);
+	if (DkSettings::display.toolbarGradient) 
+		setObjectName("toolBarWithGradient");
+	//else
+	//	setStyleSheet("QToolBar{spacing: 3px; padding: 3px;}");
 }
 
 DkCropToolBar::~DkCropToolBar() {

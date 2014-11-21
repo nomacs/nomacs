@@ -874,12 +874,7 @@ DkBrightness::DkBrightness(QWidget *parent, DkImageManipulationDialog *parentDia
 	slider->setOrientation(Qt::Horizontal);
 	slider->setTickPosition(QSlider::TicksBelow);
 	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ")
-		+ QString(";} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+	slider->setObjectName("DkBrightnessSlider");
 
 	sliderSpinBox = new QSpinBox(this);
 	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
@@ -973,12 +968,7 @@ DkContrast::DkContrast(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	slider->setOrientation(Qt::Horizontal);
 	slider->setTickPosition(QSlider::TicksBelow);
 	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ")
-		+ QString(";} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+	slider->setObjectName("DkBrightnessSlider");
 
 	sliderSpinBox = new QSpinBox(this);
 	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
@@ -1072,11 +1062,7 @@ DkSaturation::DkSaturation(QWidget *parent, DkImageManipulationDialog *parentDia
 	slider->setOrientation(Qt::Horizontal);
 	slider->setTickPosition(QSlider::TicksBelow);
 	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00ffff);} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+	slider->setObjectName("DkSaturationSlider");
 
 	sliderSpinBox = new QSpinBox(this);
 	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
@@ -1150,6 +1136,7 @@ void DkSaturation::redrawImage() {
 
 // change saturation slider style
 void DkSaturation::setSliderStyle(QString sColor) {
+	
 	slider->setStyleSheet(
 		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
 		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 ")+ sColor + QString(");} ")
@@ -1178,11 +1165,7 @@ DkHue::DkHue(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	slider->setOrientation(Qt::Horizontal);
 	slider->setTickPosition(QSlider::TicksBelow);
 	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-	
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ff0000, stop:0.167 #ffff00, stop:0.333 #00ff00, stop:0.5 #00ffff, stop:0.666 #0000ff, stop:0.833 #ff00ff, stop:1 #ff0000);} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+	slider->setObjectName("DkHueSlider");
 
 	sliderSpinBox = new QSpinBox(this);
 	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
@@ -1284,12 +1267,7 @@ DkGamma::DkGamma(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	slider->setOrientation(Qt::Horizontal);
 	slider->setTickPosition(QSlider::TicksBelow);
 	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ")
-		+ QString(";} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+	slider->setObjectName("DkBrightnessSlider");
 
 	sliderSpinBoxDouble = new QDoubleSpinBox(this);
 	sliderSpinBoxDouble->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
@@ -1387,12 +1365,7 @@ DkExposure::DkExposure(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	slider->setOrientation(Qt::Horizontal);
 	slider->setTickPosition(QSlider::TicksBelow);
 	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-
-	slider->setStyleSheet(
-		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
-		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3c3c3c, stop:1 #c8c8c8) ")
-		+ QString(";} ")
-		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
+	slider->setObjectName("DkBrightnessSlider");
 
 	sliderSpinBoxDouble = new QDoubleSpinBox(this);
 	sliderSpinBoxDouble->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);

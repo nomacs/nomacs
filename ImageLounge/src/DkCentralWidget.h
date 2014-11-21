@@ -81,7 +81,6 @@ signals:
 
 public slots:
 	void imageLoaded(QSharedPointer<DkImageContainerT> img);
-	void updateTabIcon(bool isLoaded);
 	void currentTabChanged(int idx);
 	void tabCloseRequested(int idx);
 	void tabMoved(int from, int to);
@@ -99,6 +98,7 @@ protected:
 	void createLayout();
 	void loadSettings();
 	void saveSettings() const;
+	void updateTabIdx();
 };
 
 
