@@ -431,7 +431,7 @@ void DkNoMacs::loadStyleSheet() {
 		file.close();
 
 		qDebug() << "CSS loaded from: " << cssInfo.absoluteFilePath();
-		qDebug() << "style: \n" << cssString;
+		//qDebug() << "style: \n" << cssString;
 	}
 }
 

@@ -64,6 +64,7 @@ void DkThumbNail::compute(int forceLoad) {
  **/ 
 QColor DkThumbNail::computeColorIntern() {
 
+	// TODO: crash detected if nomacs is closed while computin colors!
 	QImage img = computeIntern(file, QSharedPointer<QByteArray>(), force_exif_thumb, maxThumbSize, minThumbSize, rescale);
 
 	if (!img.isNull())
