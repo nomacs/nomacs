@@ -222,7 +222,7 @@ void DkPaintViewPort::loadSettings() {
 
 	settings.beginGroup(objectName());
 	pen.setColor(QColor::fromRgba(settings.value("penColor", pen.color().rgba()).toInt()));
-	pen.setWidth(settings.value("penWidth", pen.width()).toInt());
+	pen.setWidth(settings.value("penWidth", 15).toInt());
 	settings.endGroup();
 
 }
@@ -245,6 +245,7 @@ void DkPaintViewPort::init() {
 	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
 	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
+	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()));
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 	
 	DkPluginViewPort::init();
@@ -252,6 +253,16 @@ void DkPaintViewPort::init() {
 	loadSettings();
 	paintToolbar->setPenColor(pen.color());
 	paintToolbar->setPenWidth(pen.width());
+}
+
+void DkPaintViewPort::undoLastPaint() {
+
+	if (paths.empty())
+		return;		// nothing to undo
+
+	paths.pop_back();
+	pathsPen.pop_back();
+	update();
 }
 
 void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
@@ -492,6 +503,7 @@ void DkPaintToolBar::createIcons() {
 	icons[cancel_icon] = QIcon(":/nomacsPluginPaint/img/cancel.png");
 	icons[pan_icon] = 	QIcon(":/nomacsPluginPaint/img/pan.png");
 	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginPaint/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+	icons[undo_icon] = 	QIcon(":/nomacsPluginPaint/img/undo.png");
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
@@ -531,6 +543,11 @@ void DkPaintToolBar::createLayout() {
 	penColButton->setToolTip(tr("Background Color"));
 	penColButton->setStatusTip(penColButton->toolTip());
 
+	// undo Button
+	undoAction = new QAction(icons[undo_icon], tr("Undo (CTRL+Z)"), this);
+	undoAction->setShortcut(QKeySequence::Undo);
+	undoAction->setObjectName("undoAction");
+
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
 
@@ -552,6 +569,7 @@ void DkPaintToolBar::createLayout() {
 	addAction(cancelAction);
 	addSeparator();
 	addAction(panAction);
+	addAction(undoAction);
 	addSeparator();
 	addWidget(widthBox);
 	addWidget(penColButton);
@@ -585,6 +603,10 @@ void DkPaintToolBar::setPenColor(const QColor& col) {
 void DkPaintToolBar::setPenWidth(int width) {
 
 	widthBox->setValue(width);
+}
+
+void DkPaintToolBar::on_undoAction_triggered() {
+	emit undoSignal();
 }
 
 void DkPaintToolBar::on_applyAction_triggered() {

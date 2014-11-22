@@ -104,6 +104,7 @@ public slots:
 	void applyChangesAndClose();
 	void discardChangesAndClose();
 	virtual void setVisible(bool visible);
+	void undoLastPaint();
 
 protected:
 	void mouseMoveEvent(QMouseEvent *event);
@@ -139,6 +140,7 @@ public:
 		apply_icon = 0,
 		cancel_icon,
 		pan_icon,
+		undo_icon,
 
 		icons_end,
 	};
@@ -157,6 +159,7 @@ public slots:
 	void on_penColButton_clicked();
 	void on_widthBox_valueChanged(int val);
 	void on_alphaBox_valueChanged(int val);
+	void on_undoAction_triggered();
 	virtual void setVisible(bool visible);
 
 signals:
@@ -167,6 +170,7 @@ signals:
 	void paintHint(int paintMode);
 	void shadingHint(bool invert);
 	void panSignal(bool checked);
+	void undoSignal();
 
 protected:
 	void createLayout();
@@ -179,6 +183,7 @@ protected:
 	QColor penCol;
 	int penAlpha;
 	QAction* panAction;
+	QAction* undoAction;
 
 	QVector<QIcon> icons;		// needed for colorizing
 	

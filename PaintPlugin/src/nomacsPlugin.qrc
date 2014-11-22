@@ -5,5 +5,6 @@
         <file>img/pan_checked.png</file>
         <file>img/apply.png</file>
         <file>img/cancel.png</file>
+        <file>img/undo.png</file>
     </qresource>
 </RCC>
