@@ -112,6 +112,9 @@ protected:
 	void paintEvent(QPaintEvent *event);
 	virtual void init();
 
+	void loadSettings();
+	void saveSettings() const;
+
 	QVector<QPainterPath> paths;
 	QVector<QPen> pathsPen;
 
@@ -142,6 +145,9 @@ public:
 
 	DkPaintToolBar(const QString & title, QWidget * parent = 0);
 	virtual ~DkPaintToolBar();
+
+	void setPenColor(const QColor& col);
+	void setPenWidth(int width);
 
 
 public slots:
