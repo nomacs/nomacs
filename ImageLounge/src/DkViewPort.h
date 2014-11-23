@@ -91,6 +91,7 @@ class DkFilePreview;
 class DkThumbScrollWidget;
 class DkMetaDataInfo;
 class DkCommentWidget;
+class FileDownloader;
 
 class DkDelayedInfo : public QObject {
 	Q_OBJECT
@@ -428,6 +429,7 @@ signals:
 	void newClientConnectedSignal(bool connect, bool local);
 	void movieLoadedSignal(bool isMovie);
 	void infoSignal(QString msg);	// needed to forward signals
+	void addTabSignal(const QFileInfo& fileInfo);
 
 public slots:
 	void rotateCW();
@@ -480,7 +482,13 @@ public slots:
 	void animateMove();
 	virtual void togglePattern(bool show);
 
+	void downloadFile(const QUrl& url);
+	void fileDownloaded();
+
 protected:
+	virtual void dragEnterEvent(QDragEnterEvent *event);
+	virtual void dragLeaveEvent(QDragLeaveEvent *event);
+	virtual void dropEvent(QDropEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
@@ -514,12 +522,12 @@ protected:
 	float targetScale;
 	QTimer* moveTimer;
 	
-
 	QImage imgBg;
 
 	QVBoxLayout* paintLayout;
 	DkControlWidget* controller;
 	DkImageLoader* loader;
+	FileDownloader* fileDownloader;
 
 	QPoint currentPixelPos;
 	//bool pluginImageWasApplied;

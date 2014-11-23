@@ -153,6 +153,7 @@ void DkCentralWidget::createLayout() {
 
 	// connections
 	connect(this, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(viewport, SIGNAL(addTabSignal(const QFileInfo&)), this, SLOT(addTab(const QFileInfo&)));
 	connect(viewport->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)));
 
 	connect(tabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));

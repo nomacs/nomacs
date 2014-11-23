@@ -117,7 +117,6 @@ class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
-class FileDownloader;
 class DkBatchDialog;
 class DkViewPort;
 
@@ -603,8 +602,6 @@ public slots:
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
 	void clearFolderHistory();
-	void downloadFile(const QUrl& url);
-	void fileDownloaded();
 	//void shareFacebook();
 
 	// batch actions
@@ -621,10 +618,6 @@ protected:
 
 	// mouse events
 	void moveEvent(QMoveEvent *event);
-	void dragLeaveEvent(QDragLeaveEvent *event);
-	void dragMoveEvent(QDragMoveEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
 
 	// window events
 	void contextMenuEvent(QContextMenuEvent *event);
@@ -726,7 +719,6 @@ protected:
 	DkImageManipulationDialog* imgManipulationDialog;
 
 	DkPrintPreviewDialog* printPreviewDialog;
-	FileDownloader* fileDownloader;
 
 	DkAppManager* appManager;
 
@@ -794,6 +786,7 @@ public slots:
 protected:
 
 	// mouse events
+	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 

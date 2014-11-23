@@ -30,6 +30,7 @@
 #include "DkNoMacs.h"	// currently needed for some enums
 #include "DkThumbsWidgets.h"
 #include "DkMetaDataWidgets.h"
+#include "DkNetwork.h"
 
 namespace nmc {
 
@@ -100,7 +101,7 @@ void DkControlWidget::init() {
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus(Qt::TabFocusReason);
 	setMouseTracking(true);
-	
+
 	// connect widgets with their settings
 	filePreview->setDisplaySettings(&DkSettings::app.showFilePreview);
 	folderScroll->setDisplaySettings(&DkSettings::app.showScroller);
@@ -792,8 +793,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	visibleStatusbar = false;
 	//pluginImageWasApplied = false;
 	fadeOpacity = 0.0f;
+	fileDownloader = 0;
 
-	imgBg = QImage();
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
 	loader = 0;
@@ -825,7 +826,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	paintLayout->setContentsMargins(0,0,0,0);
 
 	controller = new DkControlWidget(this, flags);
-	controller->show();
+	//controller->show();
 
 	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
 	controller->getCropWidget()->setWorldTransform(&worldMatrix);
@@ -1522,7 +1523,9 @@ bool DkViewPort::event(QEvent *event) {
 		event->type() == QEvent::MouseMove || 
 		event->type() == QEvent::Wheel || 
 		event->type() == QEvent::KeyPress || 
-		event->type() == QEvent::KeyRelease) {
+		event->type() == QEvent::KeyRelease || 
+		event->type() == QEvent::DragEnter ||
+		event->type() == QEvent::Drop) {
 
 		//qDebug() << "redirecting event...";
 		// mouse events that double are now fixed, since the viewport is now overlayed by the controller
@@ -1532,6 +1535,109 @@ bool DkViewPort::event(QEvent *event) {
 		return DkBaseViewPort::event(event);
 	
 }
+
+void DkViewPort::dragLeaveEvent(QDragLeaveEvent *event) {
+
+	qDebug() << "";
+	event->accept();	
+}
+
+void DkViewPort::dragEnterEvent(QDragEnterEvent *event) {
+
+	printf("drag enter event\n");
+
+	//if (event->source() == this)
+	//	return;
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+
+		QList<QUrl> urls = event->mimeData()->urls();
+
+		for (int idx = 0; idx < urls.size(); idx++)
+			qDebug() << "url: " << urls.at(idx);
+
+		url = url.toLocalFile();
+
+		// TODO: check if we accept appropriately (network drives that are not mounted)
+		QFileInfo file = QFileInfo(url.toString());
+
+		// just accept image files
+		if (DkImageLoader::isValid(file))
+			event->acceptProposedAction();
+		else if (file.isDir())
+			event->acceptProposedAction();
+		else if (event->mimeData()->urls().at(0).isValid() && DkImageLoader::hasValidSuffix(event->mimeData()->urls().at(0).toString()))
+			event->acceptProposedAction();
+
+	}
+	if (event->mimeData()->hasImage()) {
+		event->acceptProposedAction();
+	}
+
+	QGraphicsView::dragEnterEvent(event);
+}
+
+void DkViewPort::dropEvent(QDropEvent *event) {
+
+	if (event->source() == this) {
+		event->accept();
+		return;
+	}
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		qDebug() << "dropping: " << url;
+
+		QFileInfo file = QFileInfo(url.toLocalFile());
+		QList<QUrl> urls = event->mimeData()->urls();
+
+		// merge OpenCV vec files if multiple vec files are dropped
+		if (urls.size() > 1 && file.suffix() == "vec") {
+
+			QVector<QFileInfo> vecFiles;
+
+			for (int idx = 0; idx < urls.size(); idx++)
+				vecFiles.append(urls.at(idx).toLocalFile());
+
+			// ask user for filename
+			QFileInfo sInfo(QFileDialog::getSaveFileName(this, tr("Save File"),
+				vecFiles.at(0).absolutePath(), "Cascade Training File (*.vec)"));
+
+			DkBasicLoader loader;
+			int numFiles = loader.mergeVecFiles(vecFiles, sInfo);
+
+			if (numFiles) {
+				loadFile(sInfo);
+				controller->setInfo(tr("%1 vec files merged").arg(numFiles));
+			}
+
+
+			return;
+		}
+		else
+			qDebug() << urls.size() << file.suffix() << " files dropped";
+
+		// just accept image files
+		if (DkImageLoader::isValid(file))
+			loadFile(file);
+		else if (url.isValid())
+			downloadFile(url);
+		else
+			qDebug() << url.toString() << " is not valid...";
+
+		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
+			emit addTabSignal(QFileInfo(urls[idx].toLocalFile()));
+	}
+	else if (event->mimeData()->hasImage()) {
+
+		QImage dropImg = qvariant_cast<QImage>(event->mimeData()->imageData());
+		loadImage(dropImg);
+	}
+
+	qDebug() << "drop event...";
+}
+
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
@@ -1598,6 +1704,38 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 			}
 		}
 		tcpSynchronize();
+	}
+
+	int dist = QPoint(event->pos()-posGrab.toPoint()).manhattanLength();
+	qDebug() << "distance: " << dist;
+	if (event->buttons() == Qt::LeftButton 
+		&& dist > QApplication::startDragDistance()
+		&& imageInside()
+		&& !getImage().isNull()
+		&& loader
+		&& !QApplication::widgetAt(event->globalPos())) {	// is NULL if the mouse leaves the window
+
+			qDebug() << loader->file().absoluteFilePath();
+
+			// TODO: check if we do it correct (network locations that are not mounted)
+			QUrl fileUrl = QUrl::fromLocalFile(loader->file().absoluteFilePath());
+
+			// TODO: we cannot drag&drop files with # in them because # starts a new fragment
+			QList<QUrl> urls;
+			urls.append(fileUrl);
+
+			// who deletes me?
+			QMimeData* mimeData = new QMimeData;
+
+			if (loader->file().exists() && !loader->isEdited())
+				mimeData->setUrls(urls);
+			else if (!getImage().isNull())
+				mimeData->setImageData(getImage());
+
+			QDrag* drag = new QDrag(this);
+			drag->setMimeData(mimeData);
+			Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+			qDebug() << "creating drag: " << fileUrl;
 	}
 
 	// send to parent
@@ -1886,6 +2024,39 @@ void DkViewPort::settingsChanged() {
 	ctrlMod = DkSettings::global.ctrlMod;
 
 	controller->settingsChanged();
+}
+
+void DkViewPort::downloadFile(const QUrl& url) {
+
+	if (!fileDownloader) {
+		fileDownloader = new FileDownloader(url, this);
+		connect(fileDownloader, SIGNAL(downloaded()), this, SLOT(fileDownloaded()));
+		qDebug() << "trying to download: " << url;
+	}
+	else
+		fileDownloader->downloadFile(url);
+
+}
+
+void DkViewPort::fileDownloaded() {
+
+	if (!fileDownloader) {
+		qDebug() << "empty fileDownloader, where it should not be";
+		return;
+	}
+
+	QSharedPointer<QByteArray> ba = fileDownloader->downloadedData();
+
+	if (!ba || ba->isEmpty()) {
+		qDebug() << fileDownloader->getUrl() << " not downloaded...";
+		return;
+	}
+
+	DkBasicLoader loader;
+	if (loader.loadGeneral(QFileInfo(), ba, true))
+		loadImage(loader.image());
+	else
+		controller->setInfo(tr("Sorry, I could not load: %1").arg(fileDownloader->getUrl().toString()));
 }
 
 void DkViewPort::setEditedImage(QImage newImg) {
