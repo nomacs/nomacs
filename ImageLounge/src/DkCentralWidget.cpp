@@ -209,6 +209,7 @@ void DkCentralWidget::currentTabChanged(int idx) {
 
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx).getImage();
 	if (imgC) {
+		viewport->unloadImage();
 		viewport->loadImage(imgC);
 		DkTabInfo tabInfo = tabInfos.at(idx);
 		updateTab(tabInfo);
@@ -236,10 +237,7 @@ void DkCentralWidget::tabMoved(int from, int to) {
 	tabInfos.remove(from);
 	tabInfos.insert(to, tabInfo);
 
-	for (int idx = to; idx < tabInfos.size(); idx++) {
-		tabInfos[idx].setTabIdx(idx);
-	}
-
+	updateTabIdx();
 }
 
 void DkCentralWidget::addTab(const QFileInfo& fileInfo, int idx /* = -1 */) {
