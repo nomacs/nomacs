@@ -107,7 +107,7 @@ protected:
 
 	void createLayout();
 	void loadSettings();
-	void saveSettings() const;
+	void saveSettings();
 	void updateTabIdx();
 };
 

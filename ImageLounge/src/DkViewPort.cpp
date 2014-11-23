@@ -1594,8 +1594,8 @@ bool DkViewPort::loadFromMime(const QMimeData* mimeData) {
 	if (!mimeData)
 		return false;
 
-	if (mimeData->hasUrls() && mimeData->urls().size() > 0) {
-		QUrl url = mimeData->urls().at(0);
+	if (mimeData->hasUrls() && mimeData->urls().size() > 0 || mimeData->hasText()) {
+		QUrl url = mimeData->hasText() ? QUrl::fromUserInput(mimeData->text()) : QUrl::fromUserInput(mimeData->urls().at(0).toString());
 		qDebug() << "dropping: " << url;
 
 		QFileInfo file = QFileInfo(url.toLocalFile());
@@ -1718,7 +1718,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	int dist = QPoint(event->pos()-posGrab.toPoint()).manhattanLength();
-	qDebug() << "distance: " << dist;
+	
 	if (event->buttons() == Qt::LeftButton 
 		&& dist > QApplication::startDragDistance()
 		&& imageInside()
@@ -2130,14 +2130,17 @@ void DkViewPort::fileDownloaded() {
 
 	if (!ba || ba->isEmpty()) {
 		qDebug() << fileDownloader->getUrl() << " not downloaded...";
+		controller->setInfo(tr("Sorry, I could not download:\n%1").arg(fileDownloader->getUrl().toString()));
 		return;
 	}
 
 	DkBasicLoader loader;
-	if (loader.loadGeneral(QFileInfo(), ba, true))
+	if (loader.loadGeneral(QFileInfo(), ba, true)) {
 		loadImage(loader.image());
+		qDebug() << (tr("Package size: %1").arg(ba->size()));
+	}
 	else
-		controller->setInfo(tr("Sorry, I could not load: %1").arg(fileDownloader->getUrl().toString()));
+		controller->setInfo(tr("Sorry, I could not load:\n%1\nPackage size:%2").arg(fileDownloader->getUrl().toString()).arg(ba->size()));
 }
 
 void DkViewPort::setEditedImage(QImage newImg) {

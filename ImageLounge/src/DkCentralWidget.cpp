@@ -27,6 +27,7 @@
 
 #include "DkCentralWidget.h"
 #include "DkViewPort.h"
+#include "DkMessageBox.h"
 
 namespace nmc {
 
@@ -161,19 +162,37 @@ void DkCentralWidget::createLayout() {
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
 }
 
-void DkCentralWidget::saveSettings() const {
+void DkCentralWidget::saveSettings() {
+
+	if (tabInfos.size() <= 1)	// nothing to save here
+		return;
+
+	DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Quit nomacs"), 
+		tr("Do you want nomacs to save your tabs?"), 
+		(QMessageBox::Yes | QMessageBox::No), this);
+	msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
+	msg->setButtonText(QMessageBox::No, tr("&Quit"));
+	msg->setObjectName("saveTabsDialog");
+
+	//msg->show();
+	int answer = msg->exec();
+
 
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
 	settings.remove("Tabs");
-	settings.beginWriteArray("Tabs");
 
-	for (int idx = 0; idx < tabInfos.size(); idx++) {
-		settings.setArrayIndex(idx);
-		tabInfos.at(idx).saveSettings(settings);
+	if (answer == QMessageBox::Yes) {
+
+		settings.beginWriteArray("Tabs");
+
+		for (int idx = 0; idx < tabInfos.size(); idx++) {
+			settings.setArrayIndex(idx);
+			tabInfos.at(idx).saveSettings(settings);
+		}
+		settings.endArray();
 	}
-	settings.endArray();
 	settings.endGroup();
 
 }
