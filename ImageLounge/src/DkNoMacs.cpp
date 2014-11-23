@@ -927,19 +927,19 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_copy]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
 	editActions[menu_edit_copy]->setStatusTip(tr("copy image"));
-	connect(editActions[menu_edit_copy], SIGNAL(triggered()), this, SLOT(copyImage()));
+	connect(editActions[menu_edit_copy], SIGNAL(triggered()), vp, SLOT(copyImage()));
 
 	editActions[menu_edit_copy_buffer] = new QAction(tr("Copy &Buffer"), this);
 	editActions[menu_edit_copy_buffer]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
 	editActions[menu_edit_copy_buffer]->setStatusTip(tr("copy image"));
-	connect(editActions[menu_edit_copy_buffer], SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
+	connect(editActions[menu_edit_copy_buffer], SIGNAL(triggered()), vp, SLOT(copyImageBuffer()));
 
 	editActions[menu_edit_copy_color] = new QAction(tr("Copy Co&lor"), this);
 	editActions[menu_edit_copy_color]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy_color]->setShortcut(shortcut_copy_color);
 	editActions[menu_edit_copy_color]->setStatusTip(tr("copy pixel color value as HEX"));
-	connect(editActions[menu_edit_copy_color], SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
+	connect(editActions[menu_edit_copy_color], SIGNAL(triggered()), vp, SLOT(copyPixelColorValue()));
 
 	QList<QKeySequence> pastScs;
 	pastScs.append(QKeySequence::Paste);
@@ -948,7 +948,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_paste]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_paste]->setShortcuts(pastScs);
 	editActions[menu_edit_paste]->setStatusTip(tr("paste image"));
-	connect(editActions[menu_edit_paste], SIGNAL(triggered()), this, SLOT(pasteImage()));
+	connect(editActions[menu_edit_paste], SIGNAL(triggered()), vp, SLOT(pasteImage()));
 
 	editActions[menu_edit_transform] = new QAction(editIcons[icon_edit_resize], tr("R&esize Image"), this);
 	editActions[menu_edit_transform]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -1695,109 +1695,6 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 	//	pinchTriggered(static_cast<QPinchGesture *>(pinch));
 	return true;
-}
-
-void DkNoMacs::copyImage() {
-	
-	qDebug() << "copying...";
-
-	if (!viewport() || viewport()->getImage().isNull() || !viewport()->getImageLoader())
-		return;
-
-	QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->file().absoluteFilePath());
-	
-	QList<QUrl> urls;
-	urls.append(fileUrl);
-
-	QMimeData* mimeData = new QMimeData;
-	
-	if (viewport()->getImageLoader()->file().exists() && !viewport()->getImageLoader()->isEdited())
-		mimeData->setUrls(urls);
-	else if (!viewport()->getImage().isNull())
-		mimeData->setImageData(viewport()->getImage());
-	
-	mimeData->setText(viewport()->getImageLoader()->file().absoluteFilePath());
-
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData);
-
-	qDebug() << "copying: " << fileUrl;
-}
-
-void DkNoMacs::copyPixelColorValue() {
-	
-	if (!viewport() || viewport()->getImage().isNull())
-		return;
-
-	QMimeData* mimeData = new QMimeData;
-
-	if (!viewport()->getImage().isNull())
-		mimeData->setText(viewport()->getCurrentPixelHexValue());
-
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData);
-}
-
-void DkNoMacs::copyImageBuffer() {
-
-	qDebug() << "copying...";
-
-	if (!viewport() || viewport()->getImage().isNull())
-		return;
-
-	QMimeData* mimeData = new QMimeData;
-
-	if (!viewport()->getImage().isNull())
-		mimeData->setImageData(viewport()->getImage());
-
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData);
-
-}
-
-void DkNoMacs::pasteImage() {
-	
-	qDebug() << "pasting...";
-
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
-
-	QClipboard* clipboard = QApplication::clipboard();
-
-	if (clipboard->mimeData()->hasUrls() && clipboard->mimeData()->urls().size() > 0) {
-		QUrl url = clipboard->mimeData()->urls().at(0);
-		qDebug() << "pasting: " << url.toString();
-		
-		QFileInfo fInfo(url.toLocalFile());
-		if (DkImageLoader::isValid(fInfo))
-			viewport()->loadFile(fInfo);
-		//else if (url.isValid() && DkImageLoader::hasValidSuffix(url.toString()))
-			//downloadFile(url);
-
-	}
-	else if (clipboard->mimeData()->hasImage()) {
-
-		QImage dropImg = qvariant_cast<QImage>(clipboard->mimeData()->imageData());
-
-		if (viewport())
-			viewport()->loadImage(dropImg);
-
-	} 
-	else if (clipboard->mimeData()->hasText()) {
-
-		QString msg = clipboard->mimeData()->text();
-		QFileInfo file = QFileInfo(msg);
-
-		if (file.exists()) {
-			viewport()->loadFile(file);
-		}
-		//else if (QUrl(msg).isValid())
-			//downloadFile(QUrl(msg));
-		else
-			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
-	}
-	else if (viewport())
-		viewport()->getController()->setInfo("Clipboard has no image...");
-
 }
 
 void DkNoMacs::flipImageHorizontal() {

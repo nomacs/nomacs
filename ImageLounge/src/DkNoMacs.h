@@ -570,10 +570,6 @@ public slots:
 	void tcpSendArrange();
 	virtual void newClientConnected(bool connected, bool local);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
-	void copyImage();
-	void copyImageBuffer();
-	void copyPixelColorValue();
-	void pasteImage();
 	void flipImageHorizontal();
 	void flipImageVertical();
 	void normalizeImage();
@@ -782,7 +778,7 @@ public slots:
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
 	void startTCPServer(bool start);
-
+	
 protected:
 
 	// mouse events

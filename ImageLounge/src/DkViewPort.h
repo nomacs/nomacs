@@ -462,10 +462,17 @@ public slots:
 	void loadSkipNext10();
 	void loadSkipPrev10();
 	void loadLena();
+	bool loadFromMime(const QMimeData* mimeData);
 	bool unloadImage(bool fileChange = true);
 	//void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 	void repeatZoom();
+
+	// copy & paste
+	void copyPixelColorValue();
+	void copyImageBuffer();
+	void copyImage();
+	void pasteImage();
 
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(QImage newImg);

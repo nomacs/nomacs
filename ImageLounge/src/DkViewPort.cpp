@@ -1585,12 +1585,21 @@ void DkViewPort::dropEvent(QDropEvent *event) {
 		return;
 	}
 
-	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-		QUrl url = event->mimeData()->urls().at(0);
+	if (!loadFromMime(event->mimeData()))
+		controller->setInfo(tr("Sorry, I could not drop the content."));
+}
+
+bool DkViewPort::loadFromMime(const QMimeData* mimeData) {
+
+	if (!mimeData)
+		return false;
+
+	if (mimeData->hasUrls() && mimeData->urls().size() > 0) {
+		QUrl url = mimeData->urls().at(0);
 		qDebug() << "dropping: " << url;
 
 		QFileInfo file = QFileInfo(url.toLocalFile());
-		QList<QUrl> urls = event->mimeData()->urls();
+		QList<QUrl> urls = mimeData->urls();
 
 		// merge OpenCV vec files if multiple vec files are dropped
 		if (urls.size() > 1 && file.suffix() == "vec") {
@@ -1610,10 +1619,10 @@ void DkViewPort::dropEvent(QDropEvent *event) {
 			if (numFiles) {
 				loadFile(sInfo);
 				controller->setInfo(tr("%1 vec files merged").arg(numFiles));
+				return true;
 			}
 
-
-			return;
+			return false;
 		}
 		else
 			qDebug() << urls.size() << file.suffix() << " files dropped";
@@ -1624,20 +1633,22 @@ void DkViewPort::dropEvent(QDropEvent *event) {
 		else if (url.isValid())
 			downloadFile(url);
 		else
-			qDebug() << url.toString() << " is not valid...";
+			return false;
 
 		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
 			emit addTabSignal(QFileInfo(urls[idx].toLocalFile()));
+		return true;
 	}
-	else if (event->mimeData()->hasImage()) {
+	else if (mimeData->hasImage()) {
 
-		QImage dropImg = qvariant_cast<QImage>(event->mimeData()->imageData());
+		QImage dropImg = qvariant_cast<QImage>(mimeData->imageData());
 		loadImage(dropImg);
+		return true;
 	}
 
+	return false;
 	qDebug() << "drop event...";
 }
-
 
 void DkViewPort::mousePressEvent(QMouseEvent *event) {
 
@@ -1913,6 +1924,76 @@ QString DkViewPort::getCurrentPixelHexValue() {
 	
 	return col.name().toUpper().remove(0,1);
 }
+
+// Copy & Paste --------------------------------------------------------
+void DkViewPort::copyPixelColorValue() {
+
+	if (getImage().isNull())
+		return;
+
+	QMimeData* mimeData = new QMimeData;
+
+	if (!getImage().isNull())
+		mimeData->setText(getCurrentPixelHexValue());
+
+	QClipboard* clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData);
+}
+
+void DkViewPort::copyImage() {
+
+	qDebug() << "copying...";
+
+	if (getImage().isNull() || !loader)
+		return;
+
+	QUrl fileUrl = QUrl("file:///" + loader->file().absoluteFilePath());
+
+	QList<QUrl> urls;
+	urls.append(fileUrl);
+
+	QMimeData* mimeData = new QMimeData;
+
+	if (loader->file().exists() && !loader->isEdited())
+		mimeData->setUrls(urls);
+	else if (!getImage().isNull())
+		mimeData->setImageData(getImage());
+
+	mimeData->setText(loader->file().absoluteFilePath());
+
+	QClipboard* clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData);
+
+	qDebug() << "copying: " << fileUrl;
+}
+
+void DkViewPort::copyImageBuffer() {
+
+	qDebug() << "copying...";
+
+	if (getImage().isNull())
+		return;
+
+	QMimeData* mimeData = new QMimeData;
+
+	if (!getImage().isNull())
+		mimeData->setImageData(getImage());
+
+	QClipboard* clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData);
+}
+
+void DkViewPort::pasteImage() {
+
+	qDebug() << "pasting...";
+
+	QClipboard* clipboard = QApplication::clipboard();
+
+	if (!loadFromMime(clipboard->mimeData()))
+		controller->setInfo("Clipboard has no image...");
+
+}
+
 
 void DkViewPort::animateFade() {
 
