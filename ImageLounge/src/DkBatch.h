@@ -156,13 +156,6 @@ class DkBatchDialog : public QDialog {
 	public:
 		DkBatchDialog(QDir currentDirectory = QDir(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-		void setDir(QDir dir) {
-			DkFileSelection* fs = static_cast<DkFileSelection*>(widgets[batchWdidgets_input]->contentWidget());
-
-			if (fs)
-				fs->setDir(dir);
-		}
-
 	public slots:
 		virtual void accept();
 

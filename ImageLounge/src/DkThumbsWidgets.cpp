@@ -1132,7 +1132,8 @@ DkThumbScene::DkThumbScene(QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
 	numRows = 0;
 	firstLayout = true;
 
-	setBackgroundBrush(DkSettings::slideShow.backgroundColor);
+	// TODO: let the parent decide how my bg looks like
+	//setBackgroundBrush(DkSettings::slideShow.backgroundColor);
 }
 
 void DkThumbScene::updateLayout() {
@@ -1222,6 +1223,8 @@ void DkThumbScene::updateThumbLabels() {
 	qDebug() << "updating thumb labels...";
 
 	QWidget* p = reinterpret_cast<QWidget*>(parent());
+	
+	// TODO: markus - think about this when migrating the ThumbScene to tabs
 	if (p && !p->isVisible())		// save some memory & give us speed (I feel the need the need for speed)
 		return;
 
