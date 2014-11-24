@@ -119,6 +119,7 @@ class DkThumbsSaver;
 class DkPrintPreviewDialog;
 class DkBatchDialog;
 class DkViewPort;
+class DkCentralWidget;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -479,7 +480,8 @@ public:
 	static int dialog(QString msg, QWidget* parent = 0, QString title = "Error");
 	static QWidget* getDialogParent();
 
-	virtual DkViewPort* viewport();
+	virtual DkViewPort* viewport() const;
+	virtual DkCentralWidget* getTabWidget() const;
 	
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();

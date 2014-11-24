@@ -181,9 +181,7 @@ void DkNoMacs::init() {
 	viewport()->addActions(syncActions.toList());
 	viewport()->addActions(pluginsActions.toList());
 	viewport()->addActions(helpActions.toList());
-
-
-
+	
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
 		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
@@ -223,9 +221,9 @@ void DkNoMacs::init() {
 	connect(viewport(), SIGNAL(showStatusBar(bool, bool)), this, SLOT(showStatusBar(bool, bool)));
 	connect(viewport(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
-	connect(viewport()->getController()->getThumbWidget()->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
+	connect(getTabWidget()->getThumbScrollWidget()->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 
 	connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
 	connect(viewport()->getImageLoader(), SIGNAL(imageHasGPSSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
@@ -234,6 +232,17 @@ void DkNoMacs::init() {
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialog(const QString&)));
 	connect(viewport()->getController()->getFilePreview(), SIGNAL(showThumbsDockSignal(bool)), this, SLOT(showThumbsDock(bool)));
+
+	getTabWidget()->getThumbScrollWidget()->registerAction(panelActions[menu_panel_thumbview]);
+	viewport()->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
+	viewport()->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
+	viewport()->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
+	viewport()->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
+	viewport()->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
+	viewport()->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
+	viewport()->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
+	viewport()->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
+	viewport()->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 
 	enableMovieActions(false);
 
@@ -1085,7 +1094,7 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_thumbview]->setShortcut(QKeySequence(shortcut_open_thumbview));
 	panelActions[menu_panel_thumbview]->setStatusTip(tr("Show Thumbnails Preview"));
 	panelActions[menu_panel_thumbview]->setCheckable(true);
-	connect(panelActions[menu_panel_thumbview], SIGNAL(toggled(bool)), vp->getController(), SLOT(showThumbView(bool)));
+	connect(panelActions[menu_panel_thumbview], SIGNAL(toggled(bool)), getTabWidget(), SLOT(showThumbView(bool)));
 
 	panelActions[menu_panel_scroller] = new QAction(tr("&Folder Scrollbar"), this);
 	panelActions[menu_panel_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
@@ -1315,7 +1324,7 @@ void DkNoMacs::createActions() {
 	assignCustomPluginShortcuts();
 
 	// add sort actions to the thumbscene
-	viewport()->getController()->getThumbWidget()->addContextMenuActions(sortActions, tr("&Sort"));
+	getTabWidget()->getThumbScrollWidget()->addContextMenuActions(sortActions, tr("&Sort"));
 }
 
 void DkNoMacs::assignCustomShortcuts(QVector<QAction*> actions) {
@@ -1505,7 +1514,7 @@ void DkNoMacs::clearFolderHistory() {
 }
 
 
-DkViewPort* DkNoMacs::viewport() {
+DkViewPort* DkNoMacs::viewport() const {
 
 	DkCentralWidget* cw = dynamic_cast<DkCentralWidget*>(centralWidget());
 
@@ -1513,6 +1522,12 @@ DkViewPort* DkNoMacs::viewport() {
 		return 0;
 
 	return cw->getViewPort();
+}
+
+DkCentralWidget* DkNoMacs::getTabWidget() const {
+
+	DkCentralWidget* cw = dynamic_cast<DkCentralWidget*>(centralWidget());
+	return cw;
 }
 
 void DkNoMacs::updateAll() {
@@ -2143,7 +2158,7 @@ void DkNoMacs::showExplorer(bool show) {
 		explorer = new DkExplorer(tr("File Explorer"));
 		addDockWidget((Qt::DockWidgetArea)dockLocation, explorer);
 		connect(explorer, SIGNAL(openFile(QFileInfo)), viewport()->getImageLoader(), SLOT(load(QFileInfo)));
-		connect(explorer, SIGNAL(openDir(QFileInfo)), viewport()->getController()->getThumbWidget(), SLOT(setDir(QFileInfo)));
+		connect(explorer, SIGNAL(openDir(QFileInfo)), getTabWidget()->getThumbScrollWidget(), SLOT(setDir(QFileInfo)));
 		connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo)), explorer, SLOT(setCurrentPath(QFileInfo)));
 	}
 
@@ -4456,16 +4471,6 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	// sync signals
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
-	vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
-	vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
-	vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
-	vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
-	vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
-	vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
-	vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
-	vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
-	vp->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
-	vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 	DkSettings::app.appMode = 0;
 
 	initLanClient();
@@ -4510,15 +4515,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)
 			updater->checkForUpdates();
 #endif
-
-		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
-		vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
-		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
-		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
-		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
-		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
-		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
-		vp->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
 
 		// in frameless, you cannot control if menu is visible...
 		panelActions[menu_panel_menu]->setEnabled(false);
@@ -4688,17 +4684,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		// sync signals
 		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 		
-		vp->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
-		vp->getController()->getThumbWidget()->registerAction(panelActions[menu_panel_thumbview]);
-		vp->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
-		vp->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
-		vp->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
-		vp->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
-		vp->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
-		vp->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
-		vp->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
-		vp->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
-
 		initLanClient();
 		emit sendTitleSignal(windowTitle());
 

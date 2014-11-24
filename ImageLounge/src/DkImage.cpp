@@ -150,7 +150,7 @@ bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) 
 }
 
 /**
- * Loads a given directory and the first image in this directory.
+ * Loads a given directory.
  * @param newDir the directory to be loaded.
  **/ 
 bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
@@ -231,7 +231,7 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 	}
 
 	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
-	qDebug() << "[DkImageLoader] " << images.size() << " indexed in " << dt.getTotal();
+	qDebug() << "[DkImageLoader] " << images.size() << " containers created in " << dt.getTotal();
 }
 
 /**

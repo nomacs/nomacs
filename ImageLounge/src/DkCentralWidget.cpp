@@ -28,6 +28,7 @@
 #include "DkCentralWidget.h"
 #include "DkViewPort.h"
 #include "DkMessageBox.h"
+#include "DkThumbsWidgets.h"
 
 namespace nmc {
 
@@ -83,6 +84,7 @@ int DkTabInfo::getTabIdx() const {
 void DkTabInfo::setImage(QSharedPointer<DkImageContainerT> imgC) {
 	
 	this->imgC = imgC;
+	tabMode = tab_single_image;
 }
 
 QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const {
@@ -126,6 +128,16 @@ QString DkTabInfo::getTabText() const {
 	return tabText;
 }
 
+int DkTabInfo::getMode() const {
+
+	return tabMode;
+}
+
+void DkTabInfo::setMode(int mode) {
+
+	this->tabMode = mode;
+}
+
 DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidget(parent) {
 
 	this->viewport = viewport;
@@ -139,6 +151,12 @@ DkCentralWidget::~DkCentralWidget() {
 
 void DkCentralWidget::createLayout() {
 
+	thumbScrollWidget = new DkThumbScrollWidget(this);
+	thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettings::slideShow.backgroundColor);
+	//thumbScrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+	thumbScrollWidget->hide();
+
 	tabbar = new QTabBar(this);
 	tabbar->setShape(QTabBar::RoundedNorth);
 	tabbar->setTabsClosable(true);
@@ -146,11 +164,21 @@ void DkCentralWidget::createLayout() {
 	tabbar->hide();
 	//addTab(QFileInfo());
 
+	widgets.resize(widget_end);
+	widgets[viewport_widget] = viewport;
+	widgets[thumbs_widget] = thumbScrollWidget;
+
+	QWidget* viewWidget = new QWidget(this);
+	viewLayout = new QStackedLayout(viewWidget);
+
+	for each (QWidget* w in widgets)
+		viewLayout->addWidget(w);
+
 	QVBoxLayout* vbLayout = new QVBoxLayout(this);
 	vbLayout->setContentsMargins(0,0,0,0);
 	vbLayout->setSpacing(0);
 	vbLayout->addWidget(tabbar);
-	vbLayout->addWidget(viewport);
+	vbLayout->addWidget(viewWidget);
 
 	// connections
 	connect(this, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
@@ -160,6 +188,11 @@ void DkCentralWidget::createLayout() {
 	connect(tabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	connect(tabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
+
+	// thumbnail preview widget
+	connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 }
 
 void DkCentralWidget::saveSettings(bool clearTabs) {
@@ -211,25 +244,35 @@ DkViewPort* DkCentralWidget::getViewPort() const {
 	return viewport;
 }
 
+DkThumbScrollWidget* DkCentralWidget::getThumbScrollWidget() const {
+
+	return thumbScrollWidget;
+}
+
 void DkCentralWidget::currentTabChanged(int idx) {
 
 	if (idx < 0 && idx >= tabInfos.size())
 		return;
 
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx).getImage();
-	if (imgC) {
+	if (imgC && tabInfos.at(idx).getMode() == DkTabInfo::tab_single_image) {
 		viewport->unloadImage();
 		viewport->loadImage(imgC);
 		DkTabInfo tabInfo = tabInfos.at(idx);
 		updateTab(tabInfo);
 		qDebug() << "triggering: " << imgC->file().absoluteFilePath();
 	}
-	else {// TODO: add option for file preview
+	else if (tabInfos.at(idx).getMode() == DkTabInfo::tab_thumb_preview) {
+		qDebug() << "I SHOULD - change to thumbs mode...";
+	}
+	else {
 		viewport->unloadImage();
 		viewport->getImageLoader()->clearPath();
 		viewport->setImage(QImage());
 		viewport->getController()->showRecentFiles(true);
 	}
+
+	switchWidget(tabInfos.at(idx).getMode());
 }
 
 void DkCentralWidget::tabCloseRequested(int idx) {
@@ -355,6 +398,7 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
 		tabInfos.replace(idx, tabInfo);
 
 		updateTab(tabInfo);
+		switchWidget(tabInfo.getMode());
 	}
 }
 
@@ -362,5 +406,69 @@ QVector<DkTabInfo> DkCentralWidget::getTabs() const {
 
 	return tabInfos;
 }
+
+void DkCentralWidget::showThumbView(bool show) {
+
+	//if (show == thumbScrollWidget->isVisible())
+	//	return;
+
+	if (show) {
+
+		tabInfos[tabbar->currentIndex()].setMode(DkTabInfo::tab_thumb_preview);
+
+		// clear viewport
+		viewport->unloadImage();
+		viewport->hide();
+
+		switchWidget(widgets[thumbs_widget]);
+		thumbScrollWidget->getThumbWidget()->updateLayout();
+	}
+	else {
+
+		// set again the last image
+		if (widgets[thumbs_widget]->isVisible())
+			viewport->setImage(viewport->getImageLoader()->getImage());
+		switchWidget();
+	}
+}
+
+void DkCentralWidget::showViewPort(bool show /* = true */) {
+
+	if (show)
+		switchWidget(widgets[viewport_widget]);
+	else
+		switchWidget(widgets[thumbs_widget]);
+}
+
+void DkCentralWidget::switchWidget(int widget) {
+
+	if (widget == DkTabInfo::tab_single_image)
+		switchWidget(widgets[viewport_widget]);
+	else if (widget == DkTabInfo::tab_thumb_preview)
+		switchWidget(widgets[thumbs_widget]);
+	else
+		qDebug() << "Sorry, I cannot switch to widget: " << widget;
+
+}
+
+void DkCentralWidget::switchWidget(QWidget* widget) {
+
+	if (viewLayout->currentWidget() == widget)
+		return;
+
+	if (widget)
+		viewLayout->setCurrentWidget(widget);
+	else
+		viewLayout->setCurrentWidget(widgets[viewport_widget]);
+
+	if (!tabInfos.isEmpty()) {
+		
+		int mode = widget == widgets[viewport_widget] ? DkTabInfo::tab_single_image : DkTabInfo::tab_thumb_preview;
+		tabInfos[tabbar->currentIndex()].setMode(mode);
+	}
+
+
+}
+
 
 }

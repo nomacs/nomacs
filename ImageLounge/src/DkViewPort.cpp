@@ -47,8 +47,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	//// thumbnails, metadata
 	//thumbPool = new DkThumbPool(QFileInfo(), this);
-	thumbScrollWidget = new DkThumbScrollWidget(this, flags);
-	thumbScrollWidget->hide();
 	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
@@ -121,7 +119,6 @@ void DkControlWidget::init() {
 	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	recentFilesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
-	thumbScrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	spinnerLabel->halfSize();
 	commentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
@@ -239,7 +236,6 @@ void DkControlWidget::init() {
 	widgets[hud_widget] = new QWidget(this);
 	widgets[crop_widget] = cropWidget;
 	widgets[recent_files_widget] = recentFilesWidget;
-	widgets[thumb_widget] = thumbScrollWidget;
 	lastActiveWidget = widgets[hud_widget];
 
 	// global controller layout
@@ -291,7 +287,6 @@ void DkControlWidget::connectWidgets() {
 
 		qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
 
-		connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 		connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), filePreview, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), filePreview, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataInfo, SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
@@ -315,11 +310,6 @@ void DkControlWidget::connectWidgets() {
 
 	// recent files widget
 	connect(recentFilesWidget, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
-
-	// thumbnail preview widget
-	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
-	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
-	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 
 	// file scroller
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
@@ -490,29 +480,6 @@ void DkControlWidget::showCrop(bool visible) {
 	}
 	else
 		switchWidget();
-
-}
-
-void DkControlWidget::showThumbView(bool visible) {
-
-	if (visible) {
-
-		// clear viewport
-		viewport->setImage(QImage());
-		switchWidget(widgets[thumb_widget]);
-		thumbScrollWidget->getThumbWidget()->updateLayout();
-	}
-	else {
-		
-		// TODO
-		//if (!viewport->getImageLoader()->hasImage())
-		//	viewport->loadFile(thumbPool->getCurrentFile());
-
-		// set again the last image
-		if (widgets[thumb_widget]->isVisible())
-			viewport->setImage(viewport->getImageLoader()->getImage());
-		switchWidget();
-	}
 
 }
 
@@ -1408,9 +1375,6 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 // drawing functions --------------------------------------------------------------------
 void DkViewPort::drawBackground(QPainter *painter) {
 	
-	if (controller->getThumbWidget()->isVisible())
-		return;
-
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
 	// fit to viewport
@@ -2206,13 +2170,12 @@ void DkViewPort::loadFile(QFileInfo file) {
 	if (loader && file.isDir()) {
 		QDir dir = QDir(file.absoluteFilePath());
 
-		qDebug() << "thumb widget visible: " << controller->getThumbWidget()->isVisible();
-
-		if (loader && controller && controller->getThumbWidget()->isVisible()) {
-			loader->loadDir(dir);
-			//controller->getThumbWidget()->getThumbWidget()->setFile(file);
-		}
-		else
+		//// TODO: create this behavior again
+		//if (loader && controller && controller->getThumbWidget()->isVisible()) {
+		//	loader->loadDir(dir);
+		//	//controller->getThumbWidget()->getThumbWidget()->setFile(file);
+		//}
+		//else
 			loader->setDir(dir);
 
 	} else if (loader)

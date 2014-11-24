@@ -27,7 +27,8 @@
 
 #pragma once
 
-#include "QWidget"
+#include <QWidget>
+#include <QStackedLayout>
 
 #include "DkSettings.h"
 #include "DkImageContainer.h"
@@ -64,6 +65,9 @@ public:
 	QIcon getIcon();
 	QString getTabText() const;
 
+	int getMode() const;
+	void setMode(int mode);
+
 protected:
 	QSharedPointer<DkImageContainerT> imgC;
 	int tabIdx;
@@ -71,6 +75,7 @@ protected:
 };
 
 class DkViewPort;
+class DkThumbScrollWidget;
 
 class DllExport DkCentralWidget : public QWidget {
 	Q_OBJECT
@@ -80,6 +85,7 @@ public:
 	~DkCentralWidget();
 
 	DkViewPort* getViewPort() const;
+	DkThumbScrollWidget* getThumbScrollWidget() const;
 
 	void clearAllTabs();
 	void updateTabs();
@@ -101,15 +107,31 @@ public slots:
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
 	void previousTab() const;
+	void showThumbView(bool show);
+	void showViewPort(bool show);
 
 protected:
 	DkViewPort* viewport;
+	DkThumbScrollWidget* thumbScrollWidget;
+
 	QTabBar* tabbar;
 	QVector<DkTabInfo> tabInfos;
+
+	QVector<QWidget*> widgets;
+	QStackedLayout* viewLayout;
 
 	void createLayout();
 	void loadSettings();
 	void updateTabIdx();
+	void switchWidget(int widget);
+	void switchWidget(QWidget* widget = 0);
+
+	enum {
+		viewport_widget,
+		thumbs_widget,
+
+		widget_end
+	};
 };
 
 
