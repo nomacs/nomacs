@@ -170,6 +170,83 @@ void DkFileSelection::setDir(const QDir& dir) {
 
 }
 
+// DkFileNameWdiget --------------------------------------------------------------------
+DkFilenameWidget::DkFilenameWidget(QWidget* parent) : QWidget(parent) {
+	createLayout();
+	showOnlyFilename();
+}
+
+void DkFilenameWidget::createLayout() {
+	cBType = new QComboBox(this);
+	cBType->insertItem(fileNameTypes_fileName, tr("current filename"));
+	cBType->insertItem(fileNameTypes_Text, tr("text"));
+	cBType->insertItem(fileNameTypes_Number, tr("number"));
+	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(cbIndexChanged(int)));
+
+	cBCase = new QComboBox(this);
+	cBCase->addItem(tr("keep case"));
+	cBCase->addItem(tr("to lowercase"));
+	cBCase->addItem(tr("to UPPERCASE"));
+
+	sBNumber = new QSpinBox(this);
+
+	cBDigits = new QComboBox(this);
+	cBDigits->addItem(tr("1 digit"));
+	cBDigits->addItem(tr("2 digits"));
+	cBDigits->addItem(tr("3 digits"));
+	cBDigits->addItem(tr("4 digits"));
+	cBDigits->addItem(tr("5 digits"));
+
+	lEText = new QLineEdit(this);
+
+	pbPlus = new QPushButton("+", this);
+	pbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	pbPlus->setMinimumSize(10,10);
+	pbPlus->setMaximumSize(30,30);
+	pbMinus = new QPushButton("-", this);
+	pbMinus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	pbMinus->setMinimumSize(10,10);
+	pbMinus->setMaximumSize(30,30);
+}
+
+void DkFilenameWidget::cbIndexChanged(int index) {
+	qDebug() << "index: " << index;
+	switch (index) {
+		case fileNameTypes_fileName: {showOnlyFilename(); break;};
+		case fileNameTypes_Text: {showOnlyText(); break;};
+		case fileNameTypes_Number: {showOnlyNumber(); break;};
+		default:
+			break;
+	}
+}
+
+void DkFilenameWidget::showOnlyFilename() {
+	curLayout = new QHBoxLayout(this);
+	curLayout->insertWidget(fileNameWidget_type, cBType);
+	curLayout->insertWidget(fileNameWidget_input1, cBCase);
+	curLayout->insertWidget(fileNameWidget_input2, new QWidget());
+	curLayout->insertWidget(fileNameWidget_plus, pbPlus);
+	curLayout->insertWidget(fileNameWidget_minus, pbMinus);
+}
+
+void DkFilenameWidget::showOnlyNumber() {
+	curLayout = new QHBoxLayout(this);
+	curLayout->insertWidget(fileNameWidget_type, cBType);
+	curLayout->insertWidget(fileNameWidget_input1, sBNumber);
+	curLayout->insertWidget(fileNameWidget_input2, cBDigits);
+	curLayout->insertWidget(fileNameWidget_plus, pbPlus);
+	curLayout->insertWidget(fileNameWidget_minus, pbMinus);
+}
+
+void DkFilenameWidget::showOnlyText() {
+	curLayout = new QHBoxLayout(this);
+	curLayout->insertWidget(fileNameWidget_type, cBType);
+	curLayout->insertWidget(fileNameWidget_input1, lEText);
+	curLayout->insertWidget(fileNameWidget_input2, new QWidget());
+	curLayout->insertWidget(fileNameWidget_plus, pbPlus);
+	curLayout->insertWidget(fileNameWidget_minus, pbMinus);
+}
+
 // DkBatchOutput --------------------------------------------------------------------
 DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : QWidget(parent, f) {
 	this->hUserInput = false;
@@ -197,8 +274,23 @@ void DkBatchOutput::createLayout() {
 	// Filename Groupbox
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
 	filenameGroupBox->setTitle(tr("Filename"));
-	QGridLayout* filenameGBLayout = new QGridLayout(filenameGroupBox);
+	QVBoxLayout* filenameVBLayout = new QVBoxLayout(filenameGroupBox);
+	filenameVBLayout->addWidget(new DkFilenameWidget(this));
+	filenameVBLayout->addWidget(new DkFilenameWidget(this));
 
+	QWidget* extensionWidget = new QWidget(this);
+	QHBoxLayout* extensionLayout = new QHBoxLayout(extensionWidget);
+	cBExtension = new QComboBox(this);
+	cBExtension->addItem(tr("keep extension"));
+	cBExtension->addItem(tr("convert to"));
+
+	cBNewExtension = new QComboBox(this);
+	cBNewExtension->addItem("add extensions here");
+
+	extensionLayout->addWidget(cBExtension);
+	extensionLayout->addWidget(cBNewExtension);
+	extensionLayout->addStretch();
+	filenameVBLayout->addWidget(extensionWidget);
 
 
 	// Preview Widget
