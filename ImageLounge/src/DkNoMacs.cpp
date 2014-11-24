@@ -104,7 +104,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	appManager = 0;
 	settingsDialog = 0;
 	printPreviewDialog = 0;
-	fileDownloader = 0;
 	thumbsDock = 0;
 #ifdef WITH_QUAZIP
 	archiveExtractionDialog = 0;
@@ -144,9 +143,6 @@ void DkNoMacs::release() {
 
 void DkNoMacs::init() {
 
-	//setStyleSheet("QMainWindow::separator{width: 1px; background: " + DkUtils::colorToString(DkSettings::display.bgColor) + "}");
-	//setStyleSheet( "QMainWindow { border-style: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }" );
-
 // assign icon -> in windows the 32px version
 #ifdef WIN32
 	QString iconPath = ":/nomacs/img/nomacs32.png";
@@ -154,9 +150,11 @@ void DkNoMacs::init() {
 	QString iconPath = ":/nomacs/img/nomacs.png";
 #endif
 
+	loadStyleSheet();
+
 	QIcon dirIcon = QIcon(iconPath);
 	setObjectName("DkNoMacs");
-
+	
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
 
@@ -334,40 +332,8 @@ void DkNoMacs::createToolbar() {
 	qDebug() << toolbar->styleSheet();
 
 	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		toolbar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
+		toolbar->setObjectName("toolBarWithGradient");
 	}
-	//else if (!DkSettings::display.useDefaultColor)
-	//	toolbar->setStyleSheet("QToolBar#EditToolBar{background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" );
-
-	//// file
-	//DkButton* test = new DkButton(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
-	//test->setFixedSize(QSize(16,16));
-	//test->addAction(fileActions[menu_file_prev]);
-	//toolbar->addWidget(test);
-
-
-	//// add this to get auto-repeat (but it is triggered twice then?)
-	//QToolButton *prevButton = static_cast<QToolButton *>(toolbar->widgetForAction(fileActions[menu_file_prev]));
-	//prevButton->setAutoRepeat(true);
-	////prevButton->setAutoRepeatInterval(100);
-	////prevButton->setAutoRepeatDelay(200);
-	//connect(prevButton, SIGNAL(pressed()), viewport(), SLOT(loadPrevFileFast()));
-
-	//QToolButton *nextButton = static_cast<QToolButton *>(toolbar->widgetForAction(fileActions[menu_file_next]));
-	//nextButton->setAutoRepeat(true);
-	////nextButton->setAutoRepeatInterval(100);
-	////nextButton->setAutoRepeatDelay(200);
-	//connect(nextButton, SIGNAL(pressed()), viewport(), SLOT(loadNextFileFast()));
 
 	toolbar->addAction(fileActions[menu_file_prev]);
 	toolbar->addAction(fileActions[menu_file_next]);
@@ -404,19 +370,8 @@ void DkNoMacs::createToolbar() {
 	movieToolbar->addAction(viewActions[menu_view_movie_pause]);
 	movieToolbar->addAction(viewActions[menu_view_movie_next]);
 
-	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		movieToolbar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
-	}
+	if (DkSettings::display.toolbarGradient)
+		movieToolbar->setObjectName("toolBarWithGradient");
 
 	if (DkSettings::display.smallIcons)
 		movieToolbar->setIconSize(QSize(16, 16));
@@ -438,30 +393,49 @@ void DkNoMacs::createStatusbar() {
 	QColor col = QColor(200, 200, 230, 100);
 
 	if (DkSettings::display.toolbarGradient)
-		statusbar->setStyleSheet(QString("QStatusBar {border-top: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }"));	
-	//else if (!DkSettings::display.useDefaultColor)
-	//	statusbar->setStyleSheet("QStatusBar#DkStatusBar{background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}");
-
-
+		statusbar->setObjectName("statusBarWithGradient");	
 
 	statusbar->addWidget(statusbarLabels[status_pixel_info]);
 	statusbar->hide();
 
 	for (int idx = 1; idx < statusbarLabels.size(); idx++) {
-		statusbarLabels[idx] = new QLabel();
+		statusbarLabels[idx] = new QLabel(this);
+		statusbarLabels[idx]->setObjectName("statusBarLabel");
 		statusbarLabels[idx]->hide();
-		statusbarLabels[idx]->setStyleSheet("QLabel{color: #555555;}");
 		statusbar->addPermanentWidget(statusbarLabels[idx]);
-
 	}
 
 	//statusbar->addPermanentWidget()
 	this->setStatusBar(statusbar);
 }
 
+void DkNoMacs::loadStyleSheet() {
+	
+	// TODO: if we first load from disk, people can style nomacs themselves
+	QFileInfo cssInfo(":/nomacs/stylesheet.qss");
+	QFile file(cssInfo.absoluteFilePath());
+
+	if (file.open(QFile::ReadOnly)) {
+
+		QString cssString = file.readAll();
+
+		// replace color placeholders
+		cssString.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettings::display.highlightColor));
+		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColorWidget));
+		cssString.replace("HUD_FONT_COLOR", DkUtils::colorToString(QColor(255,255,255)));
+		cssString.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColor));
+		cssString.replace("WINDOW_COLOR", DkUtils::colorToString(QPalette().color(QPalette::Window)));
+
+		qApp->setStyleSheet(cssString);
+		file.close();
+
+		qDebug() << "CSS loaded from: " << cssInfo.absoluteFilePath();
+		//qDebug() << "style: \n" << cssString;
+	}
+}
 
 void DkNoMacs::createIcons() {
-
+	
 	// this is unbelievable dirty - but for now the quickest way to turn themes off if someone uses customized icons...
 	if (DkSettings::display.defaultIconColor) {
 		#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
@@ -953,19 +927,19 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_copy]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
 	editActions[menu_edit_copy]->setStatusTip(tr("copy image"));
-	connect(editActions[menu_edit_copy], SIGNAL(triggered()), this, SLOT(copyImage()));
+	connect(editActions[menu_edit_copy], SIGNAL(triggered()), vp, SLOT(copyImage()));
 
 	editActions[menu_edit_copy_buffer] = new QAction(tr("Copy &Buffer"), this);
 	editActions[menu_edit_copy_buffer]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy_buffer]->setShortcut(shortcut_copy_buffer);
 	editActions[menu_edit_copy_buffer]->setStatusTip(tr("copy image"));
-	connect(editActions[menu_edit_copy_buffer], SIGNAL(triggered()), this, SLOT(copyImageBuffer()));
+	connect(editActions[menu_edit_copy_buffer], SIGNAL(triggered()), vp, SLOT(copyImageBuffer()));
 
 	editActions[menu_edit_copy_color] = new QAction(tr("Copy Co&lor"), this);
 	editActions[menu_edit_copy_color]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy_color]->setShortcut(shortcut_copy_color);
 	editActions[menu_edit_copy_color]->setStatusTip(tr("copy pixel color value as HEX"));
-	connect(editActions[menu_edit_copy_color], SIGNAL(triggered()), this, SLOT(copyPixelColorValue()));
+	connect(editActions[menu_edit_copy_color], SIGNAL(triggered()), vp, SLOT(copyPixelColorValue()));
 
 	QList<QKeySequence> pastScs;
 	pastScs.append(QKeySequence::Paste);
@@ -974,7 +948,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_paste]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_paste]->setShortcuts(pastScs);
 	editActions[menu_edit_paste]->setStatusTip(tr("paste image"));
-	connect(editActions[menu_edit_paste], SIGNAL(triggered()), this, SLOT(pasteImage()));
+	connect(editActions[menu_edit_paste], SIGNAL(triggered()), vp, SLOT(pasteImage()));
 
 	editActions[menu_edit_transform] = new QAction(editIcons[icon_edit_resize], tr("R&esize Image"), this);
 	editActions[menu_edit_transform]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -1655,39 +1629,6 @@ void DkNoMacs::contextMenuEvent(QContextMenuEvent *event) {
 
 void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 
-	int dist = QPoint(event->pos()-mousePos).manhattanLength();
-
-	if (event->buttons() == Qt::LeftButton 
-			&& dist > QApplication::startDragDistance()
-			&& viewport() 
-			&& viewport()->imageInside()
-			&& !viewport()->getImage().isNull()
-			&& viewport()->getImageLoader()
-			&& !QApplication::widgetAt(event->globalPos())) {	// is NULL if the mouse leaves the window
-				
-			qDebug() << viewport()->getImageLoader()->file().absoluteFilePath();
-
-			// TODO: check if we do it correct (network locations that are not mounted)
-			QUrl fileUrl = QUrl::fromLocalFile(viewport()->getImageLoader()->file().absoluteFilePath());
-
-			// TODO: we cannot drag&drop files with # in them because # starts a new fragment
-			QList<QUrl> urls;
-			urls.append(fileUrl);
-			
-			// who deletes me?
-			QMimeData* mimeData = new QMimeData;
-			
-			if (viewport()->getImageLoader()->file().exists() && !viewport()->getImageLoader()->isEdited())
-				mimeData->setUrls(urls);
-			else if (!viewport()->getImage().isNull())
-				mimeData->setImageData(viewport()->getImage());
-
-			QDrag* drag = new QDrag(this);
-			drag->setMimeData(mimeData);
-			Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
-			qDebug() << "creating drag: " << fileUrl;
-	}
-
 	QMainWindow::mouseMoveEvent(event);
 }
 
@@ -1754,219 +1695,6 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 	//	pinchTriggered(static_cast<QPinchGesture *>(pinch));
 	return true;
-}
-
-void DkNoMacs::dragMoveEvent(QDragMoveEvent *event) {
-}
-
-void DkNoMacs::dragLeaveEvent(QDragLeaveEvent *event) {
-
-	qDebug() << "";
-	event->accept();	
-}
-
-void DkNoMacs::dragEnterEvent(QDragEnterEvent *event) {
-
-	printf("drag enter event\n");
-
-	//if (event->source() == this)
-	//	return;
-
-	if (event->mimeData()->hasFormat("network/sync-dir")) {
-		event->accept();
-	}
-	if (event->mimeData()->hasUrls()) {
-		QUrl url = event->mimeData()->urls().at(0);
-
-		QList<QUrl> urls = event->mimeData()->urls();
-		
-		for (int idx = 0; idx < urls.size(); idx++)
-			qDebug() << "url: " << urls.at(idx);
-		
-		url = url.toLocalFile();
-		
-		// TODO: check if we accept appropriately (network drives that are not mounted)
-		QFileInfo file = QFileInfo(url.toString());
-
-		// just accept image files
-		if (DkImageLoader::isValid(file))
-			event->acceptProposedAction();
-		else if (file.isDir())
-			event->acceptProposedAction();
-		else if (event->mimeData()->urls().at(0).isValid() && DkImageLoader::hasValidSuffix(event->mimeData()->urls().at(0).toString()))
-			event->acceptProposedAction();
-		
-	}
-	if (event->mimeData()->hasImage()) {
-		event->acceptProposedAction();
-	}
-
-	QMainWindow::dragEnterEvent(event);
-
-}
-
-void DkNoMacs::dropEvent(QDropEvent *event) {
-
-	if (event->source() == this) {
-		event->accept();
-		return;
-	}
-
-	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-		QUrl url = event->mimeData()->urls().at(0);
-		qDebug() << "dropping: " << url;
-		
-		QFileInfo file = QFileInfo(url.toLocalFile());
-		QList<QUrl> urls = event->mimeData()->urls();
-
-		// merge OpenCV vec files if multiple vec files are dropped
-		if (urls.size() > 1 && file.suffix() == "vec") {
-
-			QVector<QFileInfo> vecFiles;
-
-			for (int idx = 0; idx < urls.size(); idx++)
-				vecFiles.append(urls.at(idx).toLocalFile());
-
-			// ask user for filename
-			QFileInfo sInfo(QFileDialog::getSaveFileName(this, tr("Save File"),
-				vecFiles.at(0).absolutePath(), "Cascade Training File (*.vec)"));
-			
-			DkBasicLoader loader;
-			int numFiles = loader.mergeVecFiles(vecFiles, sInfo);
-			
-			if (numFiles) {
-				viewport()->loadFile(sInfo);
-				viewport()->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
-			}
-
-
-			return;
-		}
-		else
-			qDebug() << urls.size() << file.suffix() << " files dropped";
-
-		// just accept image files
-		if (DkImageLoader::isValid(file))
-			viewport()->loadFile(file);
-		else if (url.isValid())
-			downloadFile(url);
-		else
-			qDebug() << url.toString() << " is not valid...";
-		
-		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
-			newInstance(QFileInfo(urls[idx].toLocalFile()));
-		
-	}
-	else if (event->mimeData()->hasImage()) {
-
-		QImage dropImg = qvariant_cast<QImage>(event->mimeData()->imageData());
-		viewport()->loadImage(dropImg);
-	}
-
-	qDebug() << "drop event...";
-}
-
-void DkNoMacs::copyImage() {
-	
-	qDebug() << "copying...";
-
-	if (!viewport() || viewport()->getImage().isNull() || !viewport()->getImageLoader())
-		return;
-
-	QUrl fileUrl = QUrl("file:///" + viewport()->getImageLoader()->file().absoluteFilePath());
-	
-	QList<QUrl> urls;
-	urls.append(fileUrl);
-
-	QMimeData* mimeData = new QMimeData;
-	
-	if (viewport()->getImageLoader()->file().exists() && !viewport()->getImageLoader()->isEdited())
-		mimeData->setUrls(urls);
-	else if (!viewport()->getImage().isNull())
-		mimeData->setImageData(viewport()->getImage());
-	
-	mimeData->setText(viewport()->getImageLoader()->file().absoluteFilePath());
-
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData);
-
-	qDebug() << "copying: " << fileUrl;
-}
-
-void DkNoMacs::copyPixelColorValue() {
-	
-	if (!viewport() || viewport()->getImage().isNull())
-		return;
-
-	QMimeData* mimeData = new QMimeData;
-
-	if (!viewport()->getImage().isNull())
-		mimeData->setText(viewport()->getCurrentPixelHexValue());
-
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData);
-}
-
-void DkNoMacs::copyImageBuffer() {
-
-	qDebug() << "copying...";
-
-	if (!viewport() || viewport()->getImage().isNull())
-		return;
-
-	QMimeData* mimeData = new QMimeData;
-
-	if (!viewport()->getImage().isNull())
-		mimeData->setImageData(viewport()->getImage());
-
-	QClipboard* clipboard = QApplication::clipboard();
-	clipboard->setMimeData(mimeData);
-
-}
-
-void DkNoMacs::pasteImage() {
-	
-	qDebug() << "pasting...";
-
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
-
-	QClipboard* clipboard = QApplication::clipboard();
-
-	if (clipboard->mimeData()->hasUrls() && clipboard->mimeData()->urls().size() > 0) {
-		QUrl url = clipboard->mimeData()->urls().at(0);
-		qDebug() << "pasting: " << url.toString();
-		
-		QFileInfo fInfo(url.toLocalFile());
-		if (DkImageLoader::isValid(fInfo))
-			viewport()->loadFile(fInfo);
-		else if (url.isValid() && DkImageLoader::hasValidSuffix(url.toString()))
-			downloadFile(url);
-
-	}
-	else if (clipboard->mimeData()->hasImage()) {
-
-		QImage dropImg = qvariant_cast<QImage>(clipboard->mimeData()->imageData());
-
-		if (viewport())
-			viewport()->loadImage(dropImg);
-
-	} 
-	else if (clipboard->mimeData()->hasText()) {
-
-		QString msg = clipboard->mimeData()->text();
-		QFileInfo file = QFileInfo(msg);
-
-		if (file.exists()) {
-			viewport()->loadFile(file);
-		}
-		else if (QUrl(msg).isValid())
-			downloadFile(QUrl(msg));
-		else
-			viewport()->getController()->setInfo("Could not find a valid file url, sorry");
-	}
-	else if (viewport())
-		viewport()->getController()->setInfo("Clipboard has no image...");
-
 }
 
 void DkNoMacs::flipImageHorizontal() {
@@ -2209,7 +1937,6 @@ void DkNoMacs::setRecursiveScan(bool recursive) {
 		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Disabled"));
 
 	loader->updateSubFolders(loader->getDir());
-
 }
 
 void DkNoMacs::showOpacityDialog() {
@@ -2285,7 +2012,7 @@ void DkNoMacs::lockWindow(bool lock) {
 	
 	qDebug() << "locking: " << lock;
 
-	if (lock && windowOpacity() < 1.0f) {
+	if (lock) {
 		//setAttribute(Qt::WA_TransparentForMouseEvents);
 		HWND hwnd = (HWND) winId(); // get handle of the widget
 		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
@@ -2464,9 +2191,9 @@ void DkNoMacs::showThumbsDock(bool show) {
 		thumbsDockAreaChanged();
 
 		QLabel* thumbsTitle = new QLabel(thumbsDock);
+		thumbsTitle->setObjectName("thumbsTitle");
 		thumbsTitle->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 		thumbsTitle->setPixmap(QPixmap(":/nomacs/img/widget-separator.png").scaled(QSize(16, 4)));
-		thumbsTitle->setStyleSheet("QLabel{background: rgba(0,0,0,30);}");
 		thumbsTitle->setFixedHeight(16);
 		thumbsDock->setTitleBarWidget(thumbsTitle);
 
@@ -2755,38 +2482,6 @@ void DkNoMacs::extractImagesFromArchive() {
 #endif
 }
 
-void DkNoMacs::downloadFile(const QUrl& url) {
-
-	if (!fileDownloader) {
-		fileDownloader = new FileDownloader(url, this);
-		connect(fileDownloader, SIGNAL(downloaded()), this, SLOT(fileDownloaded()));
-		qDebug() << "trying to download: " << url;
-	}
-	else
-		fileDownloader->downloadFile(url);
-
-}
-
-void DkNoMacs::fileDownloaded() {
-
-	if (!fileDownloader) {
-		qDebug() << "empty fileDownloader, where it should not be";
-		return;
-	}
-
-	QSharedPointer<QByteArray> ba = fileDownloader->downloadedData();
-
-	if (!ba || ba->isEmpty()) {
-		qDebug() << fileDownloader->getUrl() << " not downloaded...";
-		return;
-	}
-
-	DkBasicLoader loader;
-	if (loader.loadGeneral(QFileInfo(), ba, true))
-		viewport()->loadImage(loader.image());
-	else
-		viewport()->getController()->setInfo(tr("Sorry, I could not load: %1").arg(fileDownloader->getUrl().toString()));
-}
 
 void DkNoMacs::saveFile() {
 
@@ -4496,6 +4191,15 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event) {
 
 }
 
+void DkNoMacsSync::dragEnterEvent(QDragEnterEvent *event) {
+
+	if (event->mimeData()->hasFormat("network/sync-dir")) {
+		event->accept();
+	}
+
+	QMainWindow::dragEnterEvent(event);
+}
+
 void DkNoMacsSync::dropEvent(QDropEvent *event) {
 
 	if (event->source() == this) {
@@ -4514,7 +4218,7 @@ void DkNoMacsSync::dropEvent(QDropEvent *event) {
 		qDebug() << "drop server port: " << peerId;
 	}
 	else
-		DkNoMacs::dropEvent(event);
+		QMainWindow::dropEvent(event);
 
 }
 
@@ -5018,20 +4722,8 @@ void DkNoMacsContrast::createTransferToolbar() {
 		transferToolBar->setIconSize(QSize(32, 32));
 
 
-	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		transferToolBar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
-	}
-
+	if (DkSettings::display.toolbarGradient)
+		transferToolBar->setObjectName("toolBarWithGradient");
 
 }
 }

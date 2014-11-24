@@ -68,5 +68,6 @@
 		    <file>descriptions/nomacs_connectionmanager_sink_scpd.xml</file>
 		    <file>descriptions/nomacs_mediarenderer_description.xml</file>
 		    <file>descriptions/nomacs_renderingcontrol_scpd.xml</file>
+        <file>stylesheet.qss</file>
         </qresource>
 </RCC>

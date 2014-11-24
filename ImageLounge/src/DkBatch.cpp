@@ -47,10 +47,10 @@ void DkBatchWidget::createLayout() {
 	
 
 	titleLabel = new QLabel(titleString);
-	titleLabel->setStyleSheet("QLabel{font-size: 16px;}");
+	titleLabel->setObjectName("DkBatchTitle");
 	titleLabel->setAlignment(Qt::AlignBottom);
 	headerLabel = new QLabel(headerString);
-	headerLabel->setStyleSheet("QLabel{color: #666;}");
+	headerLabel->setObjectName("DkDecentInfo");
 	headerLabel->setAlignment(Qt::AlignBottom);
 	
 	QWidget* headerWidget = new QWidget();
@@ -63,6 +63,8 @@ void DkBatchWidget::createLayout() {
 
 	batchWidgetLayout = new QVBoxLayout;
 	batchWidgetLayout->addWidget(headerWidget);
+	batchWidgetLayout->addWidget(contentWidget);
+	//batchWidgetLayout->addStretch();
 	setLayout(batchWidgetLayout);
 }
 
@@ -96,7 +98,6 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 	this->rUserInput = false;
 	
 	setObjectName("DkFileSelection");
-	setStyleSheet("QLabel#DkFileSelection{border-radius: 5px; border: 1px solid #AAAAAA;}");
 	createLayout();
 	setMinimumHeight(300);
 

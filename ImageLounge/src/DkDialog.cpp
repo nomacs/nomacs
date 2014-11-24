@@ -38,12 +38,14 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 	setMouseTracking(true);
     
 #ifdef Q_WS_MAC
-    setStyleSheet("background-color:white");
+    setObjectName("DkSplashScreenMac");
 #else
+	setObjectName("DkSplashScreen");
 	setAttribute(Qt::WA_TranslucentBackground);
 #endif
 
 	imgLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	imgLabel->setObjectName("DkSplashInfoLabel");
 	imgLabel->setMouseTracking(true);
 	imgLabel->setScaledContents(true);
 	imgLabel->setPixmap(img);
@@ -60,8 +62,7 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 	//exitButton->setFlat(true);
 
 	exitButton = new QPushButton(tr("CLOSE"), this);
-	exitButton->setStyleSheet("QPushButton{font-size: 15px; font: bold; color: rgba(0,0,0,200)}");
-	exitButton->setObjectName("cancelButton");
+	exitButton->setObjectName("cancelButtonSplash");
 	exitButton->setFlat(true);
 	exitButton->setIcon(QIcon(DkImage::colorizePixmap(QPixmap(":/nomacs/img/cancel2.png"), QColor(0,0,0,200), 1.0f)));
 	exitButton->setToolTip(tr("Close (ESC)"));
@@ -85,16 +86,18 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 		"Press [ESC] to exit");
 
 	textLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	textLabel->setObjectName("DkSplashInfoLabel");
 	textLabel->setMouseTracking(true);
 	textLabel->setScaledContents(true);
 	textLabel->setTextFormat(Qt::RichText);
 	textLabel->setText(text);
 	textLabel->move(131, 280);
 	textLabel->setOpenExternalLinks(true);
-	setStyleSheet("QLabel{font-size: 11px;}");	// set fixed font size - to prevent text overflow in OS other than windows
+	
 	//textLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 	
 	QLabel* versionLabel = new QLabel(this, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+	versionLabel->setObjectName("DkSplashInfoLabel");
 	versionLabel->setTextFormat(Qt::RichText);
 
 	QString platform = "";
@@ -192,16 +195,18 @@ DkTrainDialog::DkTrainDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(p
 void DkTrainDialog::createLayout() {
 
 	// first row
-	QLabel* newImageLabel = new QLabel(tr("Load New Image Format"));
-	pathEdit = new QLineEdit();
+	QLabel* newImageLabel = new QLabel(tr("Load New Image Format"), this);
+	pathEdit = new QLineEdit(this);
 	pathEdit->setValidator(&fileValidator);
+	pathEdit->setObjectName("DkWarningEdit");
 	connect(pathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(pathEdit, SIGNAL(editingFinished()), this, SLOT(loadFile()));
 
-	QPushButton* openButton = new QPushButton("&Browse");
+	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
 	connect(openButton, SIGNAL(pressed()), this, SLOT(openFile()));
 
-	feedbackLabel = new QLabel("");
+	feedbackLabel = new QLabel("", this);
+	feedbackLabel->setObjectName("DkDecentInfo");
 
 	// shows the image if it could be loaded
 	viewport = new DkBaseViewPort(this);
@@ -232,9 +237,13 @@ void DkTrainDialog::createLayout() {
 void DkTrainDialog::textChanged(QString text) {
 	
 	if (QFileInfo(text).exists())
-		pathEdit->setStyleSheet("color:black");
+		pathEdit->setProperty("warning", false);
 	else
-		pathEdit->setStyleSheet("color:red");
+		pathEdit->setProperty("warning", false);
+
+	pathEdit->style()->unpolish(pathEdit);
+	pathEdit->style()->polish(pathEdit);
+	pathEdit->update();
 }
 
 void DkTrainDialog::openFile() {
@@ -252,11 +261,14 @@ void DkTrainDialog::openFile() {
 void DkTrainDialog::userFeedback(const QString& msg, bool error) {
 
 	if (!error)
-		feedbackLabel->setStyleSheet("color:black");
+		feedbackLabel->setProperty("warning", false);
 	else
-		feedbackLabel->setStyleSheet("color:red");
+		feedbackLabel->setProperty("warning", true);
 
 	feedbackLabel->setText(msg);
+	feedbackLabel->style()->unpolish(feedbackLabel);
+	feedbackLabel->style()->polish(feedbackLabel);
+	feedbackLabel->update();
 }
 
 void DkTrainDialog::loadFile(QString filePath) {
@@ -794,27 +806,25 @@ void DkSearchDialog::init() {
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
-	QCompleter* history = new QCompleter(DkSettings::global.searchHistory);
+	QCompleter* history = new QCompleter(DkSettings::global.searchHistory, this);
 	history->setCompletionMode(QCompleter::InlineCompletion);
 	searchBar = new QLineEdit();
 	searchBar->setObjectName("searchBar");
 	searchBar->setToolTip(tr("Type a search word or a regular expression"));
 	searchBar->setCompleter(history);
 
-	stringModel = new QStringListModel();
+	stringModel = new QStringListModel(this);
 
-	resultListView = new QListView();
+	resultListView = new QListView(this);
 	resultListView->setObjectName("resultListView");
 	resultListView->setModel(stringModel);
 	resultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	resultListView->setSelectionMode(QAbstractItemView::SingleSelection);
-	defaultStyleSheet = resultListView->styleSheet();
 
 	//// TODO: add cursor down - cursor up action
 	//QAction* focusAction = new QAction(tr("Focus Action"), searchBar);
 	//focusAction->setShortcut(Qt::Key_Down);
 	//connect(focusAction, SIGNAL(triggered()), resultListView, SLOT(/*createSLOT*/));
-
 
 	// buttons
 	buttons.resize(button_end);
@@ -885,7 +895,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		answerList.append(tr("No Matching Items"));
 		stringModel->setStringList(answerList);
 
-		resultListView->setStyleSheet("QListView{color: #777777; font-style: italic;}");
+		resultListView->setProperty("empty", true);
 		buttons[filter_button]->setEnabled(false);
 		buttons[find_button]->setEnabled(false);
 		//cancelButton->setFocus();
@@ -895,8 +905,12 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		buttons[find_button]->setEnabled(true);
 		stringModel->setStringList(makeViewable(resultList));
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
-		resultListView->setStyleSheet(defaultStyleSheet);
+		resultListView->setProperty("empty", false);
 	}
+
+	resultListView->style()->unpolish(resultListView);
+	resultListView->style()->polish(resultListView);
+	resultListView->update();
 
 	qDebug() << "searching takes (total): " << dt.getTotal();
 }
@@ -942,7 +956,7 @@ void DkSearchDialog::on_filterButton_pressed() {
 	done(filter_button);
 }
 
-void DkSearchDialog::on_cancelButton_pressed() {
+void DkSearchDialog::on_cancelButtonSplash_pressed() {
 
 	reject();
 }
@@ -1084,17 +1098,7 @@ void DkResizeDialog::createLayout() {
 	// central widget
 	centralWidget = new QWidget(this);
 
-	//QLabel* previewWidget = new QLabel(this);
-	//previewWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	//previewWidget->setStyleSheet("QWidget{background-color: #CCC;}");
-	//QGridLayout* previewLayout = new QGridLayout(previewWidget);
-	//previewLayout->setAlignment(Qt::AlignHCenter);
-	//previewLayout->setColumnStretch(0,1);
-	//previewLayout->setColumnStretch(1,1);
-
-	//// preview
-	//QSize s = QSize(width()-2*leftSpacing-10, width()-2*leftSpacing-10);
-	//s *= 0.5;
+	// preview
 	int minPx = 1;
 	int maxPx = 100000;
 	double minWidth = 0.001;
@@ -2045,17 +2049,17 @@ void DkShortcutsDialog::createLayout() {
 	// create our beautiful shortcut view
 	model = new DkShortcutsModel();
 	
-	DkShortcutDelegate* scDelegate = new DkShortcutDelegate();
+	DkShortcutDelegate* scDelegate = new DkShortcutDelegate(this);
 
-	treeView = new QTreeView();
+	treeView = new QTreeView(this);
 	treeView->setModel(model);
 	treeView->setItemDelegate(scDelegate);
 	treeView->setAlternatingRowColors(true);
 	treeView->setIndentation(8);
-	//treeView->setStyleSheet("QTreeView{border-color: #C3C3C4; alternate-background-color: blue; background: #AAAAAA;}");
 
-	notificationLabel = new QLabel();
-	notificationLabel->setStyleSheet("QLabel{color: #9f1d1d;}");
+	notificationLabel = new QLabel(this);
+	notificationLabel->setObjectName("DkDecentInfo");
+	notificationLabel->setProperty("warning", true);
 	//notificationLabel->setTextFormat(Qt::)
 
 	connect(scDelegate, SIGNAL(checkDuplicateSignal(QString, void*)), model, SLOT(checkDuplicate(QString, void*)));
@@ -2355,19 +2359,8 @@ void DkPrintPreviewDialog::createLayout() {
 	toolbar->addAction(pageSetupAction);
 	toolbar->addAction(printAction);
 
-	if (DkSettings::display.toolbarGradient) {
-
-		QColor hCol = DkSettings::display.highlightColor;
-		hCol.setAlpha(80);
-
-		toolbar->setStyleSheet(
-			//QString("QToolBar {border-bottom: 1px solid #b6bccc;") +
-			QString("QToolBar {border: none; background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); }")
-			+ QString("QToolBar::separator {background: #656565; width: 1px; height: 1px; margin: 3px;}")
-			//+ QString("QToolButton:disabled{background-color: rgba(0,0,0,10);}")
-			+ QString("QToolButton:hover{border: none; background-color: rgba(255,255,255,80);} QToolButton:pressed{margin: 0px; border: none; background-color: " + DkUtils::colorToString(hCol) + ";}")
-			);
-	}
+	if (DkSettings::display.toolbarGradient)
+		toolbar->setObjectName("toolbarWithGradient");
 
 	if (DkSettings::display.smallIcons)
 		toolbar->setIconSize(QSize(16, 16));
@@ -2666,7 +2659,7 @@ void DkExportTiffDialog::createLayout() {
 	progress->hide();
 
 	msgLabel = new QLabel(this);
-	msgLabel->setStyleSheet("QLabel{color: #FF0000;}");
+	msgLabel->setObjectName("DkWarningInfo");
 	msgLabel->hide();
 
 	// open handles
@@ -3141,7 +3134,7 @@ void DkMosaicDialog::createLayout() {
 	progress->hide();
 
 	msgLabel = new QLabel(this);
-	msgLabel->setStyleSheet("QLabel{color: #FF0000;}");
+	msgLabel->setObjectName("DkWarningInfo");
 	msgLabel->hide();
 
 	// post processing sliders
@@ -3209,17 +3202,18 @@ void DkMosaicDialog::createLayout() {
 	// num patch handles
 	QLabel* patchLabel = new QLabel(tr("Patches:"));
 	patchLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	numPatchesH = new QSpinBox();
+	numPatchesH = new QSpinBox(this);
 	numPatchesH->setObjectName("numPatchesH");
 	numPatchesH->setToolTip(tr("Number of Horizontal Patches"));
 	numPatchesH->setMinimum(1);
 	numPatchesH->setMaximum(1000);
-	numPatchesV = new QSpinBox();
+	numPatchesV = new QSpinBox(this);
 	numPatchesV->setObjectName("numPatchesV");
 	numPatchesV->setToolTip(tr("Number of Vertical Patches"));
 	numPatchesV->setMinimum(1);
 	numPatchesV->setMaximum(1000);
-	patchResLabel = new QLabel("");
+	patchResLabel = new QLabel("", this);
+	patchResLabel->setObjectName("DkDecentInfo");
 	patchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
 
 	// file filters
@@ -3398,9 +3392,13 @@ void DkMosaicDialog::updatePatchRes() {
 
 	// show the user if we can work with the thumbnails or not
 	if (patchResD > 97)
-		patchResLabel->setStyleSheet("QLabel{color: #AA0000;}");
+		patchResLabel->setProperty("warning", true);
 	else
-		patchResLabel->setStyleSheet("QLabel{color: #AAAAAA;}");
+		patchResLabel->setProperty("warning", false);
+
+	patchResLabel->style()->unpolish(patchResLabel);
+	patchResLabel->style()->polish(patchResLabel);
+	patchResLabel->update();
 }
 
 QImage DkMosaicDialog::getImage() {
@@ -4160,8 +4158,9 @@ DkArchiveExtractionDialog::DkArchiveExtractionDialog(QWidget* parent, Qt::Window
 void DkArchiveExtractionDialog::createLayout() {
 
 	// archive file path
-	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(DkSettings::containerRawFilters.replace(" *", ", *")));
-	archivePathEdit = new QLineEdit();
+	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(DkSettings::containerRawFilters.replace(" *", ", *")), this);
+	archivePathEdit = new QLineEdit(this);
+	archivePathEdit->setObjectName("DkWarningEdit");
 	archivePathEdit->setValidator(&fileValidator);
 	connect(archivePathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(archivePathEdit, SIGNAL(editingFinished()), this, SLOT(loadArchive()));
@@ -4178,11 +4177,12 @@ void DkArchiveExtractionDialog::createLayout() {
 	QPushButton* openDirButton = new QPushButton("&Browse");
 	connect(openDirButton, SIGNAL(pressed()), this, SLOT(openDir()));
 
-	feedbackLabel = new QLabel("");
+	feedbackLabel = new QLabel("", this);
+	feedbackLabel->setObjectName("DkDecentInfo");
 
-	fileListDisplay = new QListWidget();
+	fileListDisplay = new QListWidget(this);
 
-	removeSubfolders = new QCheckBox("Remove subfolders", this);
+	removeSubfolders = new QCheckBox("Remove Subfolders", this);
 	removeSubfolders->setChecked(false);
 	connect(removeSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
 
@@ -4228,16 +4228,28 @@ void DkArchiveExtractionDialog::setCurrentFile(const QFileInfo& file, bool isZip
 
 void DkArchiveExtractionDialog::textChanged(QString text) {
 	
+	bool oldStyle = archivePathEdit->property("error").toBool();
+	bool newStyle = false;
+
 	if (QFileInfo(text).exists() && DkBasicLoader::isContainer(text)) {
-		archivePathEdit->setStyleSheet("color:black");
+		newStyle = false;
+		archivePathEdit->setProperty("error", newStyle);
 		loadArchive(text);
 	}
 	else {
-		archivePathEdit->setStyleSheet("color:red");
+		newStyle = true;
+		archivePathEdit->setProperty("error", newStyle);
 		userFeedback("", false);	
 		fileListDisplay->clear();
 		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	}
+
+	if (oldStyle != newStyle) {
+		archivePathEdit->style()->unpolish(archivePathEdit);
+		archivePathEdit->style()->polish(archivePathEdit);
+		archivePathEdit->update();
+	}
+
 
 }
 
@@ -4279,11 +4291,14 @@ void DkArchiveExtractionDialog::openDir() {
 void DkArchiveExtractionDialog::userFeedback(const QString& msg, bool error) {
 
 	if (!error)
-		feedbackLabel->setStyleSheet("color:black");
+		feedbackLabel->setProperty("warning", false);
 	else
-		feedbackLabel->setStyleSheet("color:red");
+		feedbackLabel->setProperty("warning", true);
 
 	feedbackLabel->setText(msg);
+	feedbackLabel->style()->unpolish(feedbackLabel);
+	feedbackLabel->style()->polish(feedbackLabel);
+	feedbackLabel->update();
 }
 
 void DkArchiveExtractionDialog::loadArchive(QString filePath) {

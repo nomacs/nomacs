@@ -64,6 +64,7 @@ void DkThumbNail::compute(int forceLoad) {
  **/ 
 QColor DkThumbNail::computeColorIntern() {
 
+	// TODO: crash detected if nomacs is closed while computin colors!
 	QImage img = computeIntern(file, QSharedPointer<QByteArray>(), force_exif_thumb, maxThumbSize, minThumbSize, rescale);
 
 	if (!img.isNull())
@@ -150,9 +151,6 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	//else if (!thumb.isNull())
 	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
-	if (file.fileName().contains("2014-10-03 14"))
-		qDebug() << "you're image...";
-
 	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
 		if (imgW > imgH) {
 			imgH = (float)maxThumbSize / imgW * imgH;

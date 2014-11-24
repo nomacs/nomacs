@@ -1067,11 +1067,9 @@ DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 void DkCommentWidget::createLayout() {
 
 	setObjectName("DkCommentWidget");
-	setStyleSheet("QLabel#DkCommentWidget{background-color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}");
 
 	titleLabel = new QLabel(tr("NOTES"), this);
-	titleLabel->setObjectName("titleLabel");
-	titleLabel->setStyleSheet("QLabel#titleLabel{color: #FFFFFF; margin: 0; padding: 0; font-size: 25px; font-family: Segoe UI; font-weight: light;}");
+	titleLabel->setObjectName("commentTitleLabel");
 
 	QString scrollbarStyle = 
 		QString("QScrollBar:vertical {border: 1px solid #FFF; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
@@ -1083,9 +1081,7 @@ void DkCommentWidget::createLayout() {
 	commentLabel = new DkCommentTextEdit(this);
 	commentLabel->setObjectName("CommentLabel");
 	commentLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	commentLabel->setStyleSheet(scrollbarStyle + "QTextEdit{border: 0; padding-top: 10px; background-color: rgba(0,0,0,0); " +
-		" border-top: 2px dotted #FFFFFF; color: #FFFFFF; font-size: 15px; selection-background-color: " + 
-		DkUtils::colorToString(DkSettings::display.highlightColor) + "}");
+	commentLabel->setStyleSheet(scrollbarStyle + commentLabel->styleSheet());
 	commentLabel->setToolTip(tr("Enter your notes here. They will be saved to the image metadata."));
 
 	QPushButton* saveButton = new QPushButton(this);

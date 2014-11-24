@@ -27,11 +27,13 @@
 
 #include "DkCentralWidget.h"
 #include "DkViewPort.h"
+#include "DkMessageBox.h"
 
 namespace nmc {
 
 DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx) {
 
+	this->tabMode = tab_single_image;
 	this->imgC = imgC;
 	this->tabIdx = idx;
 
@@ -44,15 +46,23 @@ bool DkTabInfo::operator ==(const DkTabInfo& o) const {
 
 void DkTabInfo::loadSettings(const QSettings& settings) {
 
+	QFileInfo file = settings.value("tabFileInfo", "").toString();
+	tabMode = settings.value("tabMode", tab_single_image).toInt();
+
+	if (file.exists())
+		imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(file));
 }
 
-void DkTabInfo::saveSettings(const QSettings& settings) const {
+void DkTabInfo::saveSettings(QSettings& settings) const {
 
+	if (imgC)
+		settings.setValue("tabFileInfo", imgC->file().absoluteFilePath());
+	settings.setValue("tabMode", tabMode);
 }
 
 void DkTabInfo::setFileInfo(const QFileInfo& fileInfo) {
 
-	QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo));
+	imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo));
 }
 
 QFileInfo DkTabInfo::getFileInfo() const {
@@ -94,11 +104,8 @@ QIcon DkTabInfo::getIcon() {
 
 	QImage img = thumb->getImage();
 
-	if (img.isNull())
-		thumb->fetchThumb(DkThumbNailT::force_exif_thumb);
-	else {
+	if (!img.isNull())
 		icon = QPixmap::fromImage(img);
-	}
 
 	return icon;
 }
@@ -123,6 +130,11 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	this->viewport = viewport;
 	setObjectName("DkCentralWidget");
 	createLayout();
+	loadSettings();
+}
+
+DkCentralWidget::~DkCentralWidget() {
+	saveSettings();
 }
 
 void DkCentralWidget::createLayout() {
@@ -142,6 +154,7 @@ void DkCentralWidget::createLayout() {
 
 	// connections
 	connect(this, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(viewport, SIGNAL(addTabSignal(const QFileInfo&)), this, SLOT(addTab(const QFileInfo&)));
 	connect(viewport->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)));
 
 	connect(tabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
@@ -149,12 +162,59 @@ void DkCentralWidget::createLayout() {
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
 }
 
-void DkCentralWidget::saveSettings() const {
+void DkCentralWidget::saveSettings() {
+
+	if (tabInfos.size() <= 1)	// nothing to save here
+		return;
+
+	DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Quit nomacs"), 
+		tr("Do you want nomacs to save your tabs?"), 
+		(QMessageBox::Yes | QMessageBox::No), this);
+	msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
+	msg->setButtonText(QMessageBox::No, tr("&Quit"));
+	msg->setObjectName("saveTabsDialog");
+
+	//msg->show();
+	int answer = msg->exec();
+
+
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(objectName());
+	settings.remove("Tabs");
+
+	if (answer == QMessageBox::Yes) {
+
+		settings.beginWriteArray("Tabs");
+
+		for (int idx = 0; idx < tabInfos.size(); idx++) {
+			settings.setArrayIndex(idx);
+			tabInfos.at(idx).saveSettings(settings);
+		}
+		settings.endArray();
+	}
+	settings.endGroup();
 
 }
 
 void DkCentralWidget::loadSettings() {
 
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(objectName());
+
+	int size = settings.beginReadArray("Tabs");
+	for (int idx = 0; idx < size; idx++) {
+		settings.setArrayIndex(idx);
+
+		DkTabInfo tabInfo;
+		tabInfo.loadSettings(settings);
+		tabInfo.setTabIdx(idx);
+		addTab(tabInfo);
+	}
+
+	settings.endArray();
+	settings.endGroup();
 }
 
 DkViewPort* DkCentralWidget::getViewPort() const {
@@ -169,6 +229,7 @@ void DkCentralWidget::currentTabChanged(int idx) {
 
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx).getImage();
 	if (imgC) {
+		viewport->unloadImage();
 		viewport->loadImage(imgC);
 		DkTabInfo tabInfo = tabInfos.at(idx);
 		updateTab(tabInfo);
@@ -196,10 +257,7 @@ void DkCentralWidget::tabMoved(int from, int to) {
 	tabInfos.remove(from);
 	tabInfos.insert(to, tabInfo);
 
-	for (int idx = to; idx < tabInfos.size(); idx++) {
-		tabInfos[idx].setTabIdx(idx);
-	}
-
+	updateTabIdx();
 }
 
 void DkCentralWidget::addTab(const QFileInfo& fileInfo, int idx /* = -1 */) {
@@ -213,13 +271,15 @@ void DkCentralWidget::addTab(QSharedPointer<DkImageContainerT> imgC, int idx /* 
 	if (idx == -1)
 		idx = tabInfos.size();
 
-	if (imgC)
-		connect(imgC.data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(updateTabIcon(bool)));
-
 	DkTabInfo tabInfo(imgC, idx);
+	addTab(tabInfo);
+}
+
+void DkCentralWidget::addTab(const DkTabInfo& tabInfo) {
+
 	tabInfos.push_back(tabInfo);
 	tabbar->addTab(tabInfo.getTabText());
-	tabbar->setCurrentIndex(idx);
+	tabbar->setCurrentIndex(tabInfo.getTabIdx());
 	//tabbar->setTabButton(idx, QTabBar::ButtonPosition::RightSide, new DkButton(QPixmap(":/nomacs/img/close.png"), tr("Close")));
 
 	if (tabInfos.size() > 1)
@@ -236,9 +296,10 @@ void DkCentralWidget::removeTab(int tabIdx) {
 		if (tabInfos.at(idx).getTabIdx() == tabIdx) {
 			tabbar->removeTab(tabInfos.at(idx).getTabIdx());
 			tabInfos.remove(idx);
-			break;
 		}
 	}
+
+	updateTabIdx();
 
 	if (tabInfos.size() <= 1)
 		tabbar->hide();
@@ -258,6 +319,13 @@ void DkCentralWidget::updateTab(DkTabInfo& tabInfo) {
 
 	tabbar->setTabText(tabInfo.getTabIdx(), tabInfo.getTabText());
 	tabbar->setTabIcon(tabInfo.getTabIdx(), tabInfo.getIcon());
+}
+
+void DkCentralWidget::updateTabIdx() {
+
+	for (int idx = 0; idx < tabInfos.size(); idx++) {
+		tabInfos[idx].setTabIdx(idx);
+	}
 }
 
 void DkCentralWidget::nextTab() const {
@@ -281,34 +349,6 @@ void DkCentralWidget::previousTab() const {
 	if (idx < 0)
 		idx = tabInfos.size()-1;
 	tabbar->setCurrentIndex(idx);
-}
-
-void DkCentralWidget::updateTabIcon(bool isLoaded) {
-
-	if (!isLoaded)
-		return;
-
-	//const DkImageContainerT* imgC = dynamic_cast<const DkImageContainerT*>(QObject::sender());
-
-	//if (!imgC)
-	//	return;
-
-	//DkTabInfo tabInfo;
-
-	//for (int idx = 0; idx < tabInfos.size(); idx++) {
-
-	//	QSharedPointer<DkImageContainerT*> cImg = tabInfos.at(idx).getImage();
-
-	//	if (cImg && cImg == imgC) {
-	//		tabInfo = tabInfos.at(idx);
-	//		return;
-	//	}
-	//}
-
-	//if (!tabInfo.getImage())
-	//	return;
-
-	//updateTab(tabInfo);
 }
 
 void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {

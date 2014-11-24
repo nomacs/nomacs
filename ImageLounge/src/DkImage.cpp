@@ -27,6 +27,7 @@
 
 #include "DkImage.h"
 #include "DkNoMacs.h"
+
 #include <QPluginLoader>
 #include <qmath.h>
 
@@ -725,6 +726,10 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	emit updateSpinnerSignalDelayed(false);
+
+	if (!currentImage)
+		return;
+
 	emit imageLoadedSignal(currentImage, loaded);
 
 	if (!loaded)
@@ -969,9 +974,10 @@ void DkImageLoader::updateHistory() {
 	if (!DkSettings::global.logRecentFiles || DkSettings::app.privateMode)
 		return;
 
-	QFileInfo file = currentImage->file();
 	if (!currentImage || currentImage->hasImage() != DkImageContainer::loaded)
 		return;
+
+	QFileInfo file = currentImage->file();
 
 	// sync with other instances
 	QSettings& settings = Settings::instance().getSettings();

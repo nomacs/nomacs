@@ -288,7 +288,7 @@ public slots:
 	void on_searchBar_textChanged(const QString& text);
 	void on_okButton_pressed();
 	void on_filterButton_pressed();
-	void on_cancelButton_pressed();
+	void on_cancelButtonSplash_pressed();
 	void on_resultListView_doubleClicked(const QModelIndex& modelIndex);
 	void on_resultListView_clicked(const QModelIndex& modelIndex);
 
@@ -314,7 +314,6 @@ protected:
 	QStringList fileList;
 	QStringList resultList;
 
-	QString defaultStyleSheet;
 	QString endMessage;
 
 	bool allDisplayed;

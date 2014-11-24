@@ -167,6 +167,13 @@ void DkMessageBox::setDefaultButton(QMessageBox::StandardButton button) {
 
 }
 
+void DkMessageBox::setButtonText(QMessageBox::StandardButton button, const QString &text) {
+	
+	if (QAbstractButton *abstractButton = buttonBox->button(QDialogButtonBox::StandardButton(button)))
+		abstractButton->setText(text);
+}
+
+
 void DkMessageBox::buttonClicked(QAbstractButton* button) {
 
 	QAbstractButton* clickedButton = button;

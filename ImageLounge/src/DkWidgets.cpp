@@ -159,9 +159,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 
 	handle = new QLabel(this);
 	handle->setMouseTracking(true);
-	handle->setStyleSheet(QString("QLabel{border: 1px solid ")
-		+ DkUtils::colorToString(DkSettings::display.highlightColor) + 
-		QString("; background-color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + QString(";}"));
+	handle->setObjectName("DkFolderScrollBarHandle");
 	updateFolder = false;
 	updatesWaiting = 0;
 	init();
@@ -1483,7 +1481,6 @@ void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
 DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 
 	setObjectName("DkFileInfoLabel");
-	setStyleSheet("QLabel#DkFileInfoLabel{background-color: " + DkUtils::colorToString(bgCol) + ";} QLabel{color: white;}");
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
 	minWidth = 110;
@@ -2442,6 +2439,7 @@ DkAnimationLabel::~DkAnimationLabel() {
 
 void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
 	
+	setObjectName("DkAnimationLabel");
 	animation = new QMovie(animationPath);
 	margin = QSize(14, 14);
 
@@ -2458,8 +2456,7 @@ void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
 	setFixedSize(s);
 	setMovie(animation);
 	hide();
-
-	setStyleSheet("QLabel {background-color: " + DkUtils::colorToString(bgCol) + "; border-radius: 10px;}");
+		
 }
 
 void DkAnimationLabel::halfSize() {
@@ -2986,7 +2983,7 @@ void DkImageLabel::createLayout() {
 
 	removeFileButton = new QPushButton(QIcon(":/nomacs/img/close.png"), tr(""), this);
 	removeFileButton->setFlat(true);
-	removeFileButton->setStyleSheet("QPushButton{margin: 0 0 0 0; padding: 0 0 0 0; border: none;}");
+	removeFileButton->setObjectName("removeFileButton");
 	removeFileButton->move(width()-17, 0);
 	removeFileButton->hide();
 

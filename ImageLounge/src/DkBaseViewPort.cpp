@@ -62,17 +62,16 @@ DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WindowFlags flags) : QGraphi
 
 	pattern.setTexture(QPixmap(":/nomacs/img/tp-pattern.png"));
 
-	setObjectName(QString::fromUtf8("DkBaseViewPort"));
-
 	if (DkSettings::display.useDefaultColor) {
 
 		if (DkSettings::display.toolbarGradient)
-			setStyleSheet("QGraphicsView{border-style: none; background: QLinearGradient(x1: 0, y1: 0.7, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #d9dbe4);}" );
+			setObjectName("DkBaseViewPortGradient");
 		else
-			setStyleSheet("QGraphicsView{border-style: none; background-color: " + DkUtils::colorToString(QPalette().color(QPalette::Window)) + ";}" );		
+			setObjectName("DkBaseViewPortDefaultColor");		
 	}
 	else
-		setStyleSheet("QGraphicsView{border-style: none; background-color: " + DkUtils::colorToString(DkSettings::display.bgColor) + ";}" );
+		setObjectName("DkBaseViewPort");
+
 
 	setMouseTracking(true);
 
