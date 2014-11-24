@@ -48,6 +48,7 @@
 
 #include "DkSettings.h"
 #include "BorderLayout.h"
+#include "DkWidgets.h"
 
 namespace nmc {
 
@@ -193,7 +194,6 @@ public:
 private slots:
 	void tmpPathButtonPressed();
 	void useTmpPathChanged(int state);
-	void lineEditChanged(QString path);
 
 private:
 	void init();
@@ -202,7 +202,7 @@ private:
 
 
 	QVBoxLayout* vBoxLayout;
-	QLineEdit* leTmpPath;
+	DkDirectoryEdit* leTmpPath;
 	QPushButton* pbTmpPath;
 	QCheckBox* cbUseTmpPath;
 	DkSpinBoxWidget* skipImgWidget;

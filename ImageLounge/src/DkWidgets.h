@@ -67,6 +67,8 @@
 #include <QMimeData>
 #include <QTimeLine>
 #include <QGraphicsItemAnimation>
+#include <QLineEdit>
+
 
 #ifdef WIN32
 #pragma warning(disable: 4275)	// there are some weird things happening if qtconcurrentmap.h is included - we ignore this elegantly
@@ -100,6 +102,13 @@
 #endif
 
 namespace nmc {
+
+
+class DkBatchContent {
+	public:
+		virtual bool hasUserInput() = 0;
+		virtual bool requiresUserInput() = 0;
+};
 
 class DkThumbNail;
 
@@ -1486,5 +1495,16 @@ protected:
 };
 
 
+class DkDirectoryEdit : public QLineEdit {
+	Q_OBJECT
+	public:	
+		DkDirectoryEdit(QWidget* parent = 0);
+		DkDirectoryEdit(QString content, QWidget* parent = 0);
+	public slots:
+		void lineEditChanged(QString path);
+
+	private:
+		bool existsDirectory(QString path);
+};
 
 };
