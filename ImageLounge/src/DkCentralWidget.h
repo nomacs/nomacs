@@ -37,6 +37,14 @@ namespace nmc {
 class DkTabInfo {
 	
 public:
+
+	enum {
+		tab_single_image,
+		tab_thumb_preview,
+
+		tab_end
+	};
+
 	DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int idx = -1);
 
 	bool operator==(const DkTabInfo& o) const;
@@ -50,8 +58,8 @@ public:
 	int getTabIdx() const;
 	void setTabIdx(int idx);
 	
-	void saveSettings(const QSettings& settings) const;
 	void loadSettings(const QSettings& settings);
+	void saveSettings(QSettings& settings) const;
 
 	QIcon getIcon();
 	QString getTabText() const;
@@ -59,7 +67,7 @@ public:
 protected:
 	QSharedPointer<DkImageContainerT> imgC;
 	int tabIdx;
-	int mode;
+	int tabMode;
 };
 
 class DkViewPort;
@@ -69,6 +77,7 @@ class DllExport DkCentralWidget : public QWidget {
 
 public:
 	DkCentralWidget(DkViewPort* viewport, QWidget* parent = 0);
+	~DkCentralWidget();
 
 	DkViewPort* getViewPort() const;
 
@@ -86,6 +95,7 @@ public slots:
 	void tabMoved(int from, int to);
 	void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1);
 	void addTab(const QFileInfo& fileInfo, int idx = -1);
+	void addTab(const DkTabInfo& tabInfo);
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
 	void previousTab() const;
@@ -97,7 +107,7 @@ protected:
 
 	void createLayout();
 	void loadSettings();
-	void saveSettings() const;
+	void saveSettings();
 	void updateTabIdx();
 };
 

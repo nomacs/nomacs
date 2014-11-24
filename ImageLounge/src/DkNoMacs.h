@@ -117,7 +117,6 @@ class DkAppManager;
 class DkImageContainerT;	// TODO: add include to suppress warning C4150
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
-class FileDownloader;
 class DkBatchDialog;
 class DkViewPort;
 
@@ -571,10 +570,6 @@ public slots:
 	void tcpSendArrange();
 	virtual void newClientConnected(bool connected, bool local);
 	void showStatusMessage(QString msg, int which = status_pixel_info);
-	void copyImage();
-	void copyImageBuffer();
-	void copyPixelColorValue();
-	void pasteImage();
 	void flipImageHorizontal();
 	void flipImageVertical();
 	void normalizeImage();
@@ -603,8 +598,6 @@ public slots:
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
 	void clearFileHistory();
 	void clearFolderHistory();
-	void downloadFile(const QUrl& url);
-	void fileDownloaded();
 	//void shareFacebook();
 
 	// batch actions
@@ -621,10 +614,6 @@ protected:
 
 	// mouse events
 	void moveEvent(QMoveEvent *event);
-	void dragLeaveEvent(QDragLeaveEvent *event);
-	void dragMoveEvent(QDragMoveEvent *event);
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
 
 	// window events
 	void contextMenuEvent(QContextMenuEvent *event);
@@ -726,7 +715,6 @@ protected:
 	DkImageManipulationDialog* imgManipulationDialog;
 
 	DkPrintPreviewDialog* printPreviewDialog;
-	FileDownloader* fileDownloader;
 
 	DkAppManager* appManager;
 
@@ -790,10 +778,11 @@ public slots:
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
 	void startTCPServer(bool start);
-
+	
 protected:
 
 	// mouse events
+	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
 

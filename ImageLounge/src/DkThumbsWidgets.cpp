@@ -816,6 +816,9 @@ void DkFilePreview::updateFileIdx(int idx) {
 
 void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage) {
 
+	if (!cImage)
+		return;
+
 	int tIdx = -1;
 
 	for (int idx = 0; idx < thumbs.size(); idx++) {

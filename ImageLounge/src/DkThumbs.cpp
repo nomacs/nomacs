@@ -151,9 +151,6 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	//else if (!thumb.isNull())
 	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
-	if (file.fileName().contains("2014-10-03 14"))
-		qDebug() << "you're image...";
-
 	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
 		if (imgW > imgH) {
 			imgH = (float)maxThumbSize / imgW * imgH;
