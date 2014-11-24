@@ -32,6 +32,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QGroupBox>
+#include <QComboBox>
 
 #include "DkWidgets.h"
 #include "DkThumbsWidgets.h"
@@ -45,6 +46,24 @@ enum batchWidgets {
 	batchWdidgets_output,
 
 	batchWidgets_end
+};
+
+enum fileNameTypes {
+	fileNameTypes_fileName,
+	fileNameTypes_Number,
+	fileNameTypes_Text,
+
+	fileNameTypes_end
+};
+
+enum fileNameWidget {
+	fileNameWidget_type,
+	fileNameWidget_input1,
+	fileNameWidget_input2,
+	fileNameWidget_plus,
+	fileNameWidget_minus,
+
+	fileNameWidget_end
 };
 
 
@@ -116,11 +135,32 @@ class DkFileSelection : public QWidget, public DkBatchContent  {
 };
 
 class DkFilenameWidget : public QWidget {
+	Q_OBJECT
+
 	public:	
-		DkFilenameWidget();
+		DkFilenameWidget(QWidget* parent = 0);
+
+	private slots:
+		void cbIndexChanged(int index);
 
 	private:	
-		QCheckBox* cb;
+		void createLayout();
+		void showOnlyText();
+		void showOnlyNumber();
+		void showOnlyFilename();
+
+		QComboBox* cBType;
+		
+		QLineEdit* lEText;
+		QComboBox* cBCase;
+
+		QSpinBox* sBNumber;
+		QComboBox* cBDigits;
+		
+		QPushButton* pbPlus;
+		QPushButton* pbMinus;
+
+		QHBoxLayout* curLayout;
 };
 
 class DkBatchOutput : public QWidget, public DkBatchContent {
@@ -147,6 +187,10 @@ class DkBatchOutput : public QWidget, public DkBatchContent {
 		bool rUserInput;
 		QDir outputDirectory;
 		DkDirectoryEdit* outputlineEdit;
+		QVector<DkFilenameWidget*> filenameWidgets;
+
+		QComboBox* cBExtension;
+		QComboBox* cBNewExtension;
 
 };
 
