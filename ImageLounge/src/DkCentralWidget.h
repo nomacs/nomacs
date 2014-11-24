@@ -84,6 +84,8 @@ public:
 	void clearAllTabs();
 	void updateTabs();
 	void updateTab(DkTabInfo& tabInfo);
+	QVector<DkTabInfo> getTabs() const;
+	void saveSettings(bool clearTabs = false);
 
 signals:
 	void loadFileSignal(QFileInfo);
@@ -107,7 +109,6 @@ protected:
 
 	void createLayout();
 	void loadSettings();
-	void saveSettings();
 	void updateTabIdx();
 };
 

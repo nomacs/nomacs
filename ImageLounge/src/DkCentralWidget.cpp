@@ -92,7 +92,8 @@ QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const {
 
 QIcon DkTabInfo::getIcon() {
 
-	QIcon icon(":/nomacs/img/nomacs32.png");
+	//QIcon icon(":/nomacs/img/nomacs32.png");	// uncomment if you want our icon as default icon
+	QIcon icon;
 
 	if (!imgC)
 		return icon;
@@ -134,7 +135,6 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 }
 
 DkCentralWidget::~DkCentralWidget() {
-	saveSettings();
 }
 
 void DkCentralWidget::createLayout() {
@@ -162,28 +162,17 @@ void DkCentralWidget::createLayout() {
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
 }
 
-void DkCentralWidget::saveSettings() {
+void DkCentralWidget::saveSettings(bool clearTabs) {
 
 	if (tabInfos.size() <= 1)	// nothing to save here
 		return;
-
-	DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Quit nomacs"), 
-		tr("Do you want nomacs to save your tabs?"), 
-		(QMessageBox::Yes | QMessageBox::No), this);
-	msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
-	msg->setButtonText(QMessageBox::No, tr("&Quit"));
-	msg->setObjectName("saveTabsDialog");
-
-	//msg->show();
-	int answer = msg->exec();
-
 
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
 	settings.remove("Tabs");
 
-	if (answer == QMessageBox::Yes) {
+	if (clearTabs) {
 
 		settings.beginWriteArray("Tabs");
 
@@ -294,8 +283,8 @@ void DkCentralWidget::removeTab(int tabIdx) {
 	for (int idx = 0; idx < tabInfos.size(); idx++) {
 		
 		if (tabInfos.at(idx).getTabIdx() == tabIdx) {
-			tabbar->removeTab(tabInfos.at(idx).getTabIdx());
 			tabInfos.remove(idx);
+			tabbar->removeTab(tabIdx);
 		}
 	}
 
@@ -367,6 +356,11 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
 
 		updateTab(tabInfo);
 	}
+}
+
+QVector<DkTabInfo> DkCentralWidget::getTabs() const {
+
+	return tabInfos;
 }
 
 }

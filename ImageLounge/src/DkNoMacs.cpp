@@ -1541,6 +1541,27 @@ QWidget* DkNoMacs::getDialogParent() {
 // Qt how-to
 void DkNoMacs::closeEvent(QCloseEvent *event) {
 
+	DkCentralWidget* cw = static_cast<DkCentralWidget*>(centralWidget());
+
+	if (cw && cw->getTabs().size() > 1) {
+		
+		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Quit nomacs"), 
+			tr("Do you want nomacs to save your tabs?"), 
+			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), this);
+		msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
+		msg->setButtonText(QMessageBox::No, tr("&Quit"));
+		msg->setObjectName("saveTabsDialog");
+
+		int answer = msg->exec();
+	
+		if (answer == QMessageBox::Cancel || answer == QMessageBox::NoButton) {	// User canceled - do not close
+			event->ignore();
+			return;
+		}
+
+		cw->saveSettings(answer == QMessageBox::Yes);
+	}
+
 	if (viewport()) {
 		if (!viewport()->unloadImage(true)) {
 			// do not close if the user hit cancel in the save changes dialog

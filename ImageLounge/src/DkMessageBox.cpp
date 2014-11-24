@@ -147,9 +147,13 @@ int DkMessageBox::exec() {
 
 	answer = QDialog::exec();	// destroys dialog - be careful with what you do afterwards
 
-	// save show again
 	settings.beginGroup("DkDialog");
-	settings.setValue(objName + "-answer", answer);
+	if (answer != QMessageBox::NoButton && answer != QMessageBox::Cancel) {
+		// save show again
+		settings.setValue(objName + "-answer", answer);
+	}
+	else
+		settings.setValue(objName, true);
 	settings.endGroup();
 
 	return answer;
