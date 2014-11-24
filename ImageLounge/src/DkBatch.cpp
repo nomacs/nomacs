@@ -63,7 +63,7 @@ void DkBatchWidget::createLayout() {
 
 	batchWidgetLayout = new QVBoxLayout;
 	batchWidgetLayout->addWidget(headerWidget);
-	batchWidgetLayout->addWidget(contentWidget);
+	//batchWidgetLayout->addWidget(contentWidget);
 	//batchWidgetLayout->addStretch();
 	setLayout(batchWidgetLayout);
 }
