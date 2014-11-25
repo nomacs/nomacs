@@ -14,8 +14,9 @@ else()
 endif()
 
 # try to use system libraries or not
-option(USE_SYSTEM_WEBP "Use webp libary provided by system" ON)
-option(USE_SYSTEM_QUAZIP "Use webp libary provided by system" ON)
+# currently disabled due to packaging problems
+option(USE_SYSTEM_WEBP "Use webp libary provided by system" OFF)
+option(USE_SYSTEM_QUAZIP "Use webp libary provided by system" OFF)
 
 
 # search for pkgConfig, needed for exvi2, libraw, and older OpenCV versions
