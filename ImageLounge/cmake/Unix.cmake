@@ -116,7 +116,7 @@ if(ENABLE_QUAZIP)
     endif()
   else()
     find_package(ZLIB REQUIRED)
-    set(QUAZIP_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip")
+    set(QUAZIP_INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/quazip ${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7/")
     
     file(GLOB QUAZIP_SOURCES "3rdparty/quazip-0.7/quazip/*.c*")
     file(GLOB QUAZIP_HEADERS "3rdparty/quazip-0.7/quazip/*.h")
