@@ -151,12 +151,13 @@ class DkFilenameWidget : public QWidget {
 		void changed();
 
 	private slots:
-		void cbIndexChanged(int index);
+		void typeCBChanged(int index);
 		void pbPlusPressed();
 		void pbMinusPressed();
 		void checkForUserInput();
+		void digitCBChanged(int index);
 
-	private:	
+	private:
 		void createLayout();
 		void showOnlyText();
 		void showOnlyNumber();

@@ -189,7 +189,7 @@ void DkFilenameWidget::createLayout() {
 	cBType->insertItem(fileNameTypes_fileName, tr("current filename"));
 	cBType->insertItem(fileNameTypes_Text, tr("text"));
 	cBType->insertItem(fileNameTypes_Number, tr("number"));
-	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(cbIndexChanged(int)));
+	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeCBChanged(int)));
 	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
 
 	cBCase = new QComboBox(this);
@@ -199,6 +199,9 @@ void DkFilenameWidget::createLayout() {
 	connect(cBCase, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
 
 	sBNumber = new QSpinBox(this);
+	sBNumber->setValue(1);
+	sBNumber->setMinimum(0);
+	sBNumber->setMaximum(9);
 
 	cBDigits = new QComboBox(this);
 	cBDigits->addItem(tr("1 digit"));
@@ -206,6 +209,7 @@ void DkFilenameWidget::createLayout() {
 	cBDigits->addItem(tr("3 digits"));
 	cBDigits->addItem(tr("4 digits"));
 	cBDigits->addItem(tr("5 digits"));
+	connect(cBDigits, SIGNAL(currentIndexChanged(int)), this, SLOT(digitCBChanged(int)));
 
 	lEText = new QLineEdit(this);
 
@@ -221,7 +225,7 @@ void DkFilenameWidget::createLayout() {
 	connect(pbMinus, SIGNAL(clicked()), this, SLOT(pbMinusPressed()));
 }
 
-void DkFilenameWidget::cbIndexChanged(int index) {
+void DkFilenameWidget::typeCBChanged(int index) {
 	switch (index) {
 		case fileNameTypes_fileName: {showOnlyFilename(); break;};
 		case fileNameTypes_Text: {showOnlyText(); break;};
@@ -298,6 +302,9 @@ void DkFilenameWidget::checkForUserInput() {
 	emit changed();
 }
 
+void DkFilenameWidget::digitCBChanged(int index) {
+	sBNumber->setMaximum(std::pow(10, index+1)-1);
+}
 
 // DkBatchOutput --------------------------------------------------------------------
 DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : QWidget(parent, f) {
@@ -415,6 +422,7 @@ void DkBatchOutput::extensionCBChanged(int index) {
 	cBNewExtension->setEnabled(index > 0);
 	emit changed();
 }
+
 
 bool DkBatchOutput::hasUserInput() {
 	// TODO add output directory 
