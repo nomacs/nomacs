@@ -109,6 +109,7 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 void DkFileSelection::createLayout() {
 	
 	directoryEdit = new DkDirectoryEdit(this);
+	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
 
 	QPushButton* browseButton = new QPushButton(tr("Browse"));
 	connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
@@ -170,23 +171,32 @@ void DkFileSelection::setDir(const QDir& dir) {
 
 }
 
+void DkFileSelection::emitChangedSignal() {
+	emit changed();
+}
 // DkFileNameWdiget --------------------------------------------------------------------
 DkFilenameWidget::DkFilenameWidget(QWidget* parent) : QWidget(parent) {
 	createLayout();
 	showOnlyFilename();
+	hasChanged = false;
 }
 
 void DkFilenameWidget::createLayout() {
+	curLayout = new QGridLayout(this);
+
 	cBType = new QComboBox(this);
+	cBType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 	cBType->insertItem(fileNameTypes_fileName, tr("current filename"));
 	cBType->insertItem(fileNameTypes_Text, tr("text"));
 	cBType->insertItem(fileNameTypes_Number, tr("number"));
 	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(cbIndexChanged(int)));
+	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
 
 	cBCase = new QComboBox(this);
 	cBCase->addItem(tr("keep case"));
 	cBCase->addItem(tr("to lowercase"));
 	cBCase->addItem(tr("to UPPERCASE"));
+	connect(cBCase, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
 
 	sBNumber = new QSpinBox(this);
 
@@ -207,10 +217,11 @@ void DkFilenameWidget::createLayout() {
 	pbMinus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	pbMinus->setMinimumSize(10,10);
 	pbMinus->setMaximumSize(30,30);
+	connect(pbPlus, SIGNAL(clicked()), this, SLOT(pbPlusPressed()));
+	connect(pbMinus, SIGNAL(clicked()), this, SLOT(pbMinusPressed()));
 }
 
 void DkFilenameWidget::cbIndexChanged(int index) {
-	qDebug() << "index: " << index;
 	switch (index) {
 		case fileNameTypes_fileName: {showOnlyFilename(); break;};
 		case fileNameTypes_Text: {showOnlyText(); break;};
@@ -221,35 +232,75 @@ void DkFilenameWidget::cbIndexChanged(int index) {
 }
 
 void DkFilenameWidget::showOnlyFilename() {
-	curLayout = new QHBoxLayout(this);
-	curLayout->insertWidget(fileNameWidget_type, cBType);
-	curLayout->insertWidget(fileNameWidget_input1, cBCase);
-	curLayout->insertWidget(fileNameWidget_input2, new QWidget());
-	curLayout->insertWidget(fileNameWidget_plus, pbPlus);
-	curLayout->insertWidget(fileNameWidget_minus, pbMinus);
+	cBCase->show();
+
+	sBNumber->hide();
+	cBDigits->hide();
+	lEText->hide();
+
+	curLayout->addWidget(cBType, 0, fileNameWidget_type);
+	curLayout->addWidget(cBCase, 0, fileNameWidget_input1);
+	//curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2 );
+	curLayout->addWidget(pbPlus, 0, fileNameWidget_plus);
+	curLayout->addWidget(pbMinus, 0, fileNameWidget_minus);
 }
 
 void DkFilenameWidget::showOnlyNumber() {
-	curLayout = new QHBoxLayout(this);
-	curLayout->insertWidget(fileNameWidget_type, cBType);
-	curLayout->insertWidget(fileNameWidget_input1, sBNumber);
-	curLayout->insertWidget(fileNameWidget_input2, cBDigits);
-	curLayout->insertWidget(fileNameWidget_plus, pbPlus);
-	curLayout->insertWidget(fileNameWidget_minus, pbMinus);
+	sBNumber->show();
+	cBDigits->show();
+
+	cBCase->hide();
+	lEText->hide();
+
+	curLayout->addWidget(cBType, 0, fileNameWidget_type);
+	curLayout->addWidget(sBNumber, 0, fileNameWidget_input1);
+	curLayout->addWidget(cBDigits, 0, fileNameWidget_input2);
+	curLayout->addWidget(pbPlus, 0, fileNameWidget_plus);
+	curLayout->addWidget(pbMinus, 0, fileNameWidget_minus);
 }
 
 void DkFilenameWidget::showOnlyText() {
-	curLayout = new QHBoxLayout(this);
-	curLayout->insertWidget(fileNameWidget_type, cBType);
-	curLayout->insertWidget(fileNameWidget_input1, lEText);
-	curLayout->insertWidget(fileNameWidget_input2, new QWidget());
-	curLayout->insertWidget(fileNameWidget_plus, pbPlus);
-	curLayout->insertWidget(fileNameWidget_minus, pbMinus);
+	lEText->show();
+
+	sBNumber->hide();
+	cBDigits->hide();
+	cBCase->hide();
+	
+
+	curLayout->addWidget(cBType, 0, fileNameWidget_type);
+	curLayout->addWidget(lEText, 0, fileNameWidget_input1);
+	//curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2);
+	curLayout->addWidget(pbPlus, 0, fileNameWidget_plus);
+	curLayout->addWidget(pbMinus, 0, fileNameWidget_minus);
 }
+
+void DkFilenameWidget::pbPlusPressed() {
+	emit plusPressed(this);
+}
+
+void DkFilenameWidget::pbMinusPressed() {
+	emit minusPressed(this);
+}
+
+void DkFilenameWidget::enableMinusButton(bool enable) {
+	pbMinus->setEnabled(enable);
+}
+
+void DkFilenameWidget::enablePlusButton(bool enable) {
+	pbPlus->setEnabled(enable);
+}
+
+void DkFilenameWidget::checkForUserInput() {
+	if(cBType->currentIndex() == 0 && cBCase->currentIndex() == 0)
+		hasChanged = false;
+	else
+		hasChanged = true;
+	emit changed();
+}
+
 
 // DkBatchOutput --------------------------------------------------------------------
 DkBatchOutput::DkBatchOutput(QWidget* parent , Qt::WindowFlags f ) : QWidget(parent, f) {
-	this->hUserInput = false;
 	this->rUserInput = false;
 	setObjectName("DkBatchOutput");
 	createLayout();
@@ -264,28 +315,36 @@ void DkBatchOutput::createLayout() {
 	outDirGroupBox->setTitle(tr("Output Directory"));
 	QHBoxLayout* outDirGBLayout = new QHBoxLayout(outDirGroupBox);
 
-	outputlineEdit= new DkDirectoryEdit();
+	outputlineEdit = new DkDirectoryEdit();
 	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
 	// TODO
 	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
+	connect(outputlineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
 	outDirGBLayout->addWidget(outputlineEdit);
 	outDirGBLayout->addWidget(outputBrowseButton);
 
 	// Filename Groupbox
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
 	filenameGroupBox->setTitle(tr("Filename"));
-	QVBoxLayout* filenameVBLayout = new QVBoxLayout(filenameGroupBox);
-	filenameVBLayout->addWidget(new DkFilenameWidget(this));
-	filenameVBLayout->addWidget(new DkFilenameWidget(this));
+	filenameVBLayout = new QVBoxLayout(filenameGroupBox);
+	DkFilenameWidget* fwidget = new DkFilenameWidget(this);
+	fwidget->enableMinusButton(false);
+	filenameWidgets.push_back(fwidget);
+	filenameVBLayout->addWidget(fwidget);
+	connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
+	connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
+	connect(fwidget, SIGNAL(changed()), this, SLOT(emitChangedSignal()));
 
 	QWidget* extensionWidget = new QWidget(this);
 	QHBoxLayout* extensionLayout = new QHBoxLayout(extensionWidget);
 	cBExtension = new QComboBox(this);
 	cBExtension->addItem(tr("keep extension"));
 	cBExtension->addItem(tr("convert to"));
+	connect(cBExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
 
 	cBNewExtension = new QComboBox(this);
 	cBNewExtension->addItem("add extensions here");
+	cBNewExtension->setEnabled(false);
 
 	extensionLayout->addWidget(cBExtension);
 	extensionLayout->addWidget(cBNewExtension);
@@ -297,8 +356,6 @@ void DkBatchOutput::createLayout() {
 	QGroupBox* previewGroupBox = new QGroupBox(this);
 	previewGroupBox->setTitle(tr("Filename Preview"));
 	QHBoxLayout* previewGBLayout = new QHBoxLayout(previewGroupBox);
-
-	
 
 	QVBoxLayout* contentLayout = new QVBoxLayout(this);
 	contentLayout->addWidget(outDirGroupBox);
@@ -325,6 +382,53 @@ void DkBatchOutput::setDir(QDir dir) {
 	outputlineEdit->setText(dir.absolutePath());
 }
 
+void DkBatchOutput::plusPressed(DkFilenameWidget* widget) {
+	DkFilenameWidget* fwidget = new DkFilenameWidget(this);
+	filenameWidgets.push_back(fwidget);
+	if (filenameWidgets.size() > 4) {
+		for (int i = 0; i  < filenameWidgets.size(); i++)
+			filenameWidgets[i]->enablePlusButton(false);
+	}
+	filenameVBLayout->insertWidget(filenameWidgets.size()-1, fwidget);
+	connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
+	connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
+	connect(fwidget, SIGNAL(changed()), this, SLOT(emitChangedSignal()));
+
+	emit changed();
+}
+
+void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
+	filenameVBLayout->removeWidget(widget);
+	filenameWidgets.remove(filenameWidgets.indexOf(widget));
+	if (filenameWidgets.size() <= 4) {
+		for (int i = 0; i  < filenameWidgets.size(); i++)
+			filenameWidgets[i]->enablePlusButton(true);
+	}
+
+	widget->hide();
+
+	emit changed();
+}
+
+void DkBatchOutput::extensionCBChanged(int index) {
+	//index > 0 ? cBNewExtension->show() : cBNewExtension->hide();
+	cBNewExtension->setEnabled(index > 0);
+	emit changed();
+}
+
+bool DkBatchOutput::hasUserInput() {
+	// TODO add output directory 
+	return filenameWidgets.size() > 1 || filenameWidgets[0]->hasUserInput() || cBExtension->currentIndex() == 1;
+}
+
+void DkBatchOutput::emitChangedSignal() {
+	emit changed();
+}
+
+QDir DkBatchOutput::getOutputDirectory() {
+	return outputlineEdit->existsDirectory() ? QDir(outputlineEdit->text()) : QDir();
+}
+
 // Batch Dialog --------------------------------------------------------------------
 
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
@@ -349,9 +453,10 @@ void DkBatchDialog::createLayout() {
 	widgets[batchWdidgets_output]->setContentWidget(outputSelection);
 
 	// buttons
-	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
@@ -359,6 +464,7 @@ void DkBatchDialog::createLayout() {
 	QVBoxLayout* dialogLayout = new QVBoxLayout();
 	for (int i=0; i < widgets.size(); i++) {
 		dialogLayout->addWidget(widgets[i]);
+		connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 	}
 	dialogLayout->addWidget(buttons);
 
@@ -371,6 +477,17 @@ void DkBatchDialog::accept() {
 	//for (int i = 0; i < urls.size(); i++) {
 	//	qDebug() << urls[i];
 	//}
+}
+
+void  DkBatchDialog::widgetChanged() {
+	if (widgets[batchWdidgets_output] != 0 && widgets[batchWdidgets_input])  {
+		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batchWdidgets_output]->contentWidget())->hasUserInput();
+		QDir inputDir = dynamic_cast<DkFileSelection*>(widgets[batchWdidgets_input]->contentWidget())->getDir();
+		QDir outputDir = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget())->getOutputDirectory();
+		qDebug() << "outputDir:" << outputDir ;
+		
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(!outputChanged && inputDir != QDir() && outputDir != QDir());
+	}
 }
 
 }

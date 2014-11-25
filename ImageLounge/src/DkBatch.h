@@ -100,7 +100,7 @@ class DkFileSelection : public QWidget, public DkBatchContent  {
 		DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 		QDir getDir() {
-			return cDir;
+			return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()) : QDir();
 		};
 
 		void setDir(const QDir& dir);
@@ -114,10 +114,12 @@ class DkFileSelection : public QWidget, public DkBatchContent  {
 		void browse();
 		void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
 		void setVisible(bool visible);
+		void emitChangedSignal();
 
 	signals:
 		void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
 		void newHeaderText(QString);
+		void changed();
 
 	protected:
 		virtual void createLayout();
@@ -139,9 +141,20 @@ class DkFilenameWidget : public QWidget {
 
 	public:	
 		DkFilenameWidget(QWidget* parent = 0);
+		void enableMinusButton(bool enable);
+		void enablePlusButton(bool enable);
+		bool hasUserInput() {return hasChanged;};
+
+	signals:
+		void plusPressed(DkFilenameWidget*);
+		void minusPressed(DkFilenameWidget*);
+		void changed();
 
 	private slots:
 		void cbIndexChanged(int index);
+		void pbPlusPressed();
+		void pbMinusPressed();
+		void checkForUserInput();
 
 	private:	
 		void createLayout();
@@ -160,7 +173,9 @@ class DkFilenameWidget : public QWidget {
 		QPushButton* pbPlus;
 		QPushButton* pbMinus;
 
-		QHBoxLayout* curLayout;
+		QGridLayout* curLayout;
+
+		bool hasChanged;
 };
 
 class DkBatchOutput : public QWidget, public DkBatchContent {
@@ -169,14 +184,20 @@ class DkBatchOutput : public QWidget, public DkBatchContent {
 	public:
 		DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-		virtual bool hasUserInput()  {return hUserInput;};;
-		virtual bool requiresUserInput()  {return rUserInput;};;
+		virtual bool hasUserInput();
+		virtual bool requiresUserInput()  {return rUserInput;};
+		QDir getOutputDirectory();
 
 	signals:
 		void newHeaderText(QString);
+		void changed();
 
 	protected slots:
 		void browse();
+		void plusPressed(DkFilenameWidget* widget);
+		void minusPressed(DkFilenameWidget* widget);
+		void extensionCBChanged(int index);
+		void emitChangedSignal();
 
 	protected:
 		virtual void createLayout();
@@ -188,6 +209,7 @@ class DkBatchOutput : public QWidget, public DkBatchContent {
 		QDir outputDirectory;
 		DkDirectoryEdit* outputlineEdit;
 		QVector<DkFilenameWidget*> filenameWidgets;
+		QVBoxLayout* filenameVBLayout;
 
 		QComboBox* cBExtension;
 		QComboBox* cBNewExtension;
@@ -202,6 +224,7 @@ class DkBatchDialog : public QDialog {
 
 	public slots:
 		virtual void accept();
+		void widgetChanged();
 
 	protected:
 		void createLayout();
@@ -210,5 +233,6 @@ class DkBatchDialog : public QDialog {
 		QVector<DkBatchWidget*> widgets;
 		
 		QDir currentDirectory;
+		QDialogButtonBox* buttons;
 };
 }

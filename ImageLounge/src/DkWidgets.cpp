@@ -3327,7 +3327,7 @@ void DkDirectoryEdit::lineEditChanged(QString path) {
 
 bool DkDirectoryEdit::existsDirectory(QString path) {
 	QFileInfo* fi = new QFileInfo(path);
-	return fi->exists();
+	return fi->isDir();
 }
 
 }
