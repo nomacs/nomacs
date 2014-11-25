@@ -171,7 +171,8 @@ void DkCentralWidget::createLayout() {
 	QWidget* viewWidget = new QWidget(this);
 	viewLayout = new QStackedLayout(viewWidget);
 
-	for each (QWidget* w in widgets)
+	//for each (QWidget* w in widgets)
+	for (QWidget* w : widgets)
 		viewLayout->addWidget(w);
 
 	QVBoxLayout* vbLayout = new QVBoxLayout(this);
