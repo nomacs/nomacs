@@ -99,8 +99,8 @@ class DkFileSelection : public QWidget, public DkBatchContent  {
 	public:
 		DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-		QDir getDir() {
-			return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()) : QDir();
+		QString getDir() {
+			return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()).absolutePath() : "";
 		};
 
 		void setDir(const QDir& dir);
@@ -186,7 +186,7 @@ class DkBatchOutput : public QWidget, public DkBatchContent {
 
 		virtual bool hasUserInput();
 		virtual bool requiresUserInput()  {return rUserInput;};
-		QDir getOutputDirectory();
+		QString getOutputDirectory();
 
 	signals:
 		void newHeaderText(QString);
