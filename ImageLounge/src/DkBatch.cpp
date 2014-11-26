@@ -425,8 +425,8 @@ void DkBatchOutput::emitChangedSignal() {
 	emit changed();
 }
 
-QDir DkBatchOutput::getOutputDirectory() {
-	return outputlineEdit->existsDirectory() ? QDir(outputlineEdit->text()) : QDir();
+QString DkBatchOutput::getOutputDirectory() {
+	return outputlineEdit->existsDirectory() ? QDir(outputlineEdit->text()).absolutePath() : "";
 }
 
 // Batch Dialog --------------------------------------------------------------------
@@ -482,11 +482,23 @@ void DkBatchDialog::accept() {
 void  DkBatchDialog::widgetChanged() {
 	if (widgets[batchWdidgets_output] != 0 && widgets[batchWdidgets_input])  {
 		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batchWdidgets_output]->contentWidget())->hasUserInput();
-		QDir inputDir = dynamic_cast<DkFileSelection*>(widgets[batchWdidgets_input]->contentWidget())->getDir();
-		QDir outputDir = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget())->getOutputDirectory();
-		qDebug() << "outputDir:" << outputDir ;
+		QString inputDirPath = dynamic_cast<DkFileSelection*>(widgets[batchWdidgets_input]->contentWidget())->getDir();
+		QString outputDirPath = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget())->getOutputDirectory();
 		
-		buttons->button(QDialogButtonBox::Ok)->setEnabled(!outputChanged && inputDir != QDir() && outputDir != QDir());
+		if (inputDirPath == "" || outputDirPath == "") {
+			qDebug() << "inputDir or outputDir empty ... input:" << inputDirPath << " output:" << outputDirPath;
+			return;
+		}
+		qDebug() << "outputDir:" << outputDirPath ;
+		qDebug() << "inputDir:" << inputDirPath;
+
+		bool enableButton = false;
+		if (!outputChanged && inputDirPath.toLower() != outputDirPath.toLower())
+			enableButton = true;
+		else if (outputChanged)
+			enableButton = true;
+
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(enableButton);
 	}
 }
 
