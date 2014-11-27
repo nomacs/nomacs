@@ -256,6 +256,10 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		return;
 
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx).getImage();
+
+	if (imgC && imgC == viewport->getImageLoader()->getCurrentImage())
+		return;
+
 	if (imgC && tabInfos.at(idx).getMode() == DkTabInfo::tab_single_image) {
 		viewport->unloadImage();
 		viewport->loadImage(imgC);
@@ -265,6 +269,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	}
 	else if (tabInfos.at(idx).getMode() == DkTabInfo::tab_thumb_preview) {
 		qDebug() << "I SHOULD - change to thumbs mode...";
+		viewport->unloadImage();
+		viewport->getImageLoader()->clearPath();
+		viewport->setImage(QImage());
 	}
 	else {
 		viewport->unloadImage();
