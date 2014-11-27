@@ -28,6 +28,7 @@
 #pragma once
 
 #include <QProcess>
+#include <QDrag>
 
 #include "DkWidgets.h"
 
