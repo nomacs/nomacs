@@ -143,17 +143,15 @@ public slots:
 	//void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
 	//void magicCutSaved(bool saved);
 
-	// >DIR: uncomment if function is added again [21.10.2014 markus]
 	//// line detection functions
-	//void openLineDetectionDialog();
-	//void showBottomTextLines(bool show);
-	//void showTopTextLines(bool show);
-	//void showBottomTextLines();
-	//void showTopTextLines();
+	void openLineDetectionDialog();
+	void showBottomTextLines(bool show);
+	void showTopTextLines(bool show);
+	void showBottomTextLines();
+	void showTopTextLines();
 
 
 	// TODO: old paint - remove
-	void setPanning(bool checked);
 	virtual void setVisible(bool visible);
 
 protected:
@@ -171,7 +169,6 @@ protected:
 
 	bool cancelTriggered;
 	bool isOutside;
-	bool panning;
 	DkDocAnalysisToolBar* docAnalysisToolbar;
 	QCursor defaultCursor;
 
@@ -181,14 +178,12 @@ private:
 	/**
 	* The editing mode which is currently active. State is defined by user interaction:
 	* mode_default: the default viewing mode
-	* mode_pickColor: user picks color for contrast enhancement
 	* mode_pickSeedpoint: user picks seedpoints for the magic wand tool
 	* mode_pickDistance: user picks points to measure the distance
 	* \sa DkDistanceMeasure DkMagicCut
 	**/
 	enum editModes {
 		mode_default,
-		mode_pickColor,
 		mode_pickSeedpoint,
 		mode_pickDistance,
 	};

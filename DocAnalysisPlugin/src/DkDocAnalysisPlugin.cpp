@@ -199,6 +199,15 @@ DkDocAnalysisViewPort::~DkDocAnalysisViewPort() {
 	// acitive deletion since the MainWindow takes ownership...
 	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
 	// however, then we have lot's of toolbars in memory if the user opens the plugin again and again
+	if (magicCut) {
+		delete magicCut;
+	}
+	if (lineDetection) {
+		delete lineDetection;
+	}
+	if (lineDetectionDialog) {
+		delete lineDetectionDialog;
+	}
 	if (docAnalysisToolbar) {
 		delete docAnalysisToolbar;
 		docAnalysisToolbar = 0;
@@ -209,12 +218,11 @@ DkDocAnalysisViewPort::~DkDocAnalysisViewPort() {
 
 void DkDocAnalysisViewPort::init() {
 	
-	panning = false;
 	cancelTriggered = false;
 	isOutside = false;
 	defaultCursor = Qt::ArrowCursor;
 	setCursor(defaultCursor);
-
+	
 	editMode = mode_default;
 	showBottomLines = false;
 	showTopLines = false;
@@ -222,7 +230,6 @@ void DkDocAnalysisViewPort::init() {
 	docAnalysisToolbar = new DkDocAnalysisToolBar(tr("Document Analysis Toolbar"), this);
 
 	// connect signals from toolbar to viewport
-	connect(docAnalysisToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(docAnalysisToolbar, SIGNAL(measureDistanceRequest(bool)), this, SLOT(pickDistancePoint(bool)));
 	connect(docAnalysisToolbar, SIGNAL(pickSeedpointRequest(bool)),  this, SLOT(pickSeedpoint(bool)));
 	connect(docAnalysisToolbar, SIGNAL(clearSelectionSignal()), this, SLOT(clearMagicCut()));
@@ -247,10 +254,8 @@ void DkDocAnalysisViewPort::init() {
 	QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateAnimatedContours()));
     timer->start(850);
-
 	// the distance tool
 	distance = new DkDistanceMeasure();
-	
 	// the line detection tool
 	lineDetection = new DkLineDetection();
 	lineDetectionDialog = 0;
@@ -262,30 +267,16 @@ void DkDocAnalysisViewPort::init() {
 
 void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
-	/*if (event->modifiers() == DkSettings::global.altMod ||
-		panning) {
-
-		event->setModifiers(Qt::NoModifier);
-		event->ignore();
-		update();
-		return;
-	}*/
-
 	if (editingActive()) {
 		if(parent()) {
 			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
-
+			
 			if(viewport) {
 		
 				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
 					
 					switch(editMode) {
 
-					case mode_pickColor: {
-						this->setCursor(Qt::CrossCursor);
-						break;
-					}
 					case mode_pickSeedpoint: {
 						this->setCursor(Qt::PointingHandCursor);
 						break;
@@ -323,9 +314,11 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 				else isOutside = true;
 			}
 		}
+	} else {
+		// propagate mouse event (for panning)
+		this->unsetCursor();
+		QWidget::mouseMoveEvent(event);
 	}
-
-	//QWidget::mouseMoveEvent(event);	// do not propagate mouse event
 }
 
 void DkDocAnalysisViewPort::mouseDoubleClickEvent(QMouseEvent *event) {
@@ -338,14 +331,6 @@ void DkDocAnalysisViewPort::mouseDoubleClickEvent(QMouseEvent *event) {
 }
 
 void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
-
-	// panning -> redirect to viewport
-	if (event->modifiers() == DkSettings::global.altMod || panning) {
-		setCursor(defaultCursor);
-		event->setModifiers(Qt::NoModifier);
-		event->ignore();
-		return;
-	}
 
 	QPointF imgPos;
 	QPoint xy;
@@ -498,8 +483,6 @@ void DkDocAnalysisViewPort::stopEditing() {
 	case mode_pickSeedpoint:
 		emit cancelPickSeedpointRequest();
 		break;
-	case mode_pickColor:
-		break;
 	}
 	editMode = mode_default;
 	this->unsetCursor();
@@ -519,11 +502,11 @@ void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 		// show the bottom text lines if toggled
 		if (showBottomLines) {
 			QImage botTextLines = lineDetection->getBottomLines();
-			painter.drawImage(viewport->getImageViewRect(), botTextLines, QRect(QPoint(), botTextLines.size()));
+			painter.drawImage(botTextLines.rect(), botTextLines);
 		}
 		if (showTopLines) {
 			QImage topTextLines = lineDetection->getTopLines();
-			painter.drawImage(viewport->getImageViewRect(), topTextLines, QRect(QPoint(), topTextLines.size()));
+			painter.drawImage(topTextLines.rect(), topTextLines);
 		}
 
 
@@ -671,6 +654,7 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 	this->win = win;
 
 	QSharedPointer<DkMetaDataT> metadata;
+	QImage image;
 	// >DIR: OK, let's get the current image metadata [21.10.2014 markus]
 	// all ifs are to be 100% save : )
 	// TODO: add error dialogs if we cannot retrieve metadata...
@@ -685,13 +669,14 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 
 			if (vp) {
 				DkImageLoader* loader = vp->getImageLoader();
-
+				
 				if (loader) {
 					QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
-
+					
 					if (imgC) {
 
 						metadata = imgC->getMetaData();
+						image = imgC->image();
 					}
 				}
 			}
@@ -699,21 +684,34 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 		}
 	}
 
-	if (metadata)
+	if (metadata) {
 		qDebug() << "metadata received, the image has: " << metadata->getResolution() << " dpi";
-	else
+	} else {
 		qDebug() << "WARNING: I could not retrieve the image metadata...";
-
+		QMessageBox dialog(this);
+		dialog.setIcon(QMessageBox::Warning);
+		dialog.setText(tr("Could not retrieve image metadata"));
+		dialog.show();
+		dialog.exec();
+	}
 	distance->setMetaData(metadata);
 
-}
-
-void DkDocAnalysisViewPort::setPanning(bool checked) {
-
-	this->panning = checked;
-	if(checked) defaultCursor = Qt::OpenHandCursor;
-	else defaultCursor = Qt::CrossCursor;
-	setCursor(defaultCursor);
+	if (!image.isNull()) {
+		cv::Mat img = DkImage::qImage2Mat(image);
+		// set image for magic cut
+		magicCut->setImage(img, imgMatrix);
+		// disable the save region button
+		emit enableSaveCutSignal(false);
+		// the line detection part
+		lineDetection->setImage(img);
+		if(lineDetectionDialog) {
+			lineDetectionDialog->setDefaultConfiguration();
+		}
+		// disable the display text lines button
+		showBottomTextLines(false);
+		showTopTextLines(false);
+		emit enableShowTextLinesSignal(false);
+	}
 }
 
 bool DkDocAnalysisViewPort::isCanceled() {
@@ -738,8 +736,6 @@ void DkDocAnalysisViewPort::setVisible(bool visible) {
 void DkDocAnalysisViewPort::pickDistancePoint(bool pick) {
 
 	switch(editMode) {
-	case mode_pickColor:
-		break;
 	case mode_pickSeedpoint:
 		emit cancelPickSeedpointRequest();
 		break;
@@ -763,8 +759,6 @@ void DkDocAnalysisViewPort::pickDistancePoint() {
 	switch(editMode) {
 	case mode_pickDistance:
 		return;
-	case mode_pickColor:
-		break;
 	case mode_pickSeedpoint:
 		emit cancelPickSeedpointRequest();
 		break;
@@ -775,6 +769,71 @@ void DkDocAnalysisViewPort::pickDistancePoint() {
 	distance->resetPoints();
 	this->setCursor(Qt::CrossCursor);
 }
+
+/**
+* Opens the line detection configuration dialog and automatically displays the bottom text lines
+* when lines were detected
+* \sa DkLineDetectionDialog DkLineDetection
+**/
+void DkDocAnalysisViewPort::openLineDetectionDialog() {
+
+	DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+	if (viewport->getImage().isNull()) return;
+
+	if (!lineDetectionDialog) {
+		lineDetectionDialog = new DkLineDetectionDialog(lineDetection, this, 0);
+		//connect(magicCutDialog, SIGNAL(savePressed(QImage, QString)), this, SLOT(saveMagicCutPressed(QImage, QString)));
+	}
+
+	bool done = lineDetectionDialog->exec();
+
+	if(lineDetection->hasTextLines()) {
+		emit enableShowTextLinesSignal(true);
+		showBottomTextLines(true);
+		
+	}
+}
+
+/**
+* Sets the flag to indicate that the bottom text lines are shown - used for rendering
+* @param show Bottom text lines shall be shown/hidden
+**/
+void DkDocAnalysisViewPort::showBottomTextLines(bool show) {
+	showBottomLines = show;
+	emit toggleBottomTextLinesButtonSignal(show);
+	update();
+}
+
+/**
+* Sets the flag to indicate that the top text lines are shown - used for rendering
+* @param show Top text lines shall be shown/hidden
+**/
+void DkDocAnalysisViewPort::showTopTextLines(bool show) {
+	showTopLines = show;
+	emit toggleTopTextLinesButtonSignal(show);
+	update();
+}
+
+/**
+* Sets the flag to indicate that the bottom text lines are shown or not, depending on the
+* previous state
+**/
+void DkDocAnalysisViewPort::showBottomTextLines() {
+	showBottomLines = !showBottomLines;
+	emit toggleBottomTextLinesButtonSignal(showBottomLines);
+	update();
+}
+
+/**
+* Sets the flag to indicate that the top text lines are shown or not, depending on the
+* previous state
+**/
+void DkDocAnalysisViewPort::showTopTextLines() {
+	showTopLines = !showTopLines;
+	emit toggleTopTextLinesButtonSignal(showTopLines);
+	update();
+}
+
 
 
 /*-----------------------------------DkDocAnalysisToolBar ---------------------------------------------*/
