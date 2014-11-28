@@ -188,7 +188,8 @@ Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkDocAnalysisPlugin/1.0", DkDocAnalysis
 /*-----------------------------------DkDocAnalysisViewPort ---------------------------------------------*/
 
 DkDocAnalysisViewPort::DkDocAnalysisViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
-
+	setFocusPolicy(Qt::StrongFocus);
+	setMouseTracking(true);
 	init();
 }
 
@@ -202,6 +203,8 @@ DkDocAnalysisViewPort::~DkDocAnalysisViewPort() {
 		delete docAnalysisToolbar;
 		docAnalysisToolbar = 0;
 	}
+	setMouseTracking(false);
+	setFocusPolicy(Qt::NoFocus);
 }
 
 void DkDocAnalysisViewPort::init() {
@@ -560,20 +563,19 @@ void DkDocAnalysisViewPort::drawContours(QPainter *painter) {
 * \sa DkDistanceMeasure
 **/
 void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
-	
+
 	// return if no start point yet
 	if(!distance->hasStartPoint()) return;
 
+	if (distance->getCurPoint().isNull()) {
+		distance->setCurPoint(distance->getStartPoint());
+	}
+
 	QPoint point = distance->getStartPoint();
-	// ? point = imgMatrix.map(point);
+	point = imgMatrix->map(point);
 	
-	// test
-	
-
-
 	// special handling of drawing cross - to avoid zooming of cross lines
-	// ? QPointF startPointMapped = worldMatrix.map(point);
-	QPointF startPointMapped = mapToViewport(QPoint(point));
+	QPointF startPointMapped = worldMatrix->map(point);
 	QPointF crossTransP1 = startPointMapped;
 	crossTransP1.setY(crossTransP1.y() + 7);
 	QPointF crossTransP2 = startPointMapped;
@@ -588,20 +590,15 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	painter->setWorldMatrixEnabled(false);
 	painter->drawLine(crossTransP1, crossTransP2);
 	painter->setWorldMatrixEnabled(true);
-	//painter->drawLine(point.x(), point.y()+3, point.x(), point.y()-3);
-	//painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
 	
-	
-	QPoint point_end = distance->getCurPoint();
-	// ? point_end = imgMatrix.map(point_end);
-
-	QString dist_text = QString::number(distance->getDistanceInCm(), 'f', 2) + " cm";
-
 	// draw the line
-	painter->drawLine(point, point_end);
+	painter->drawLine(distance->getStartPoint(), distance->getCurPoint());
 	// draw the text containing the current distance
 
+	QPoint point_end = distance->getCurPoint();
+	point_end = imgMatrix->map(point_end);
 
+	QString dist_text = QString::number(distance->getDistanceInCm(), 'f', 2) + " cm";
 	QPoint pos_text = QPoint(point_end.x(), point_end.y());
 
 	QFont font = painter->font();
@@ -611,8 +608,7 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 
 	QFontMetricsF fm(font);
 	QRectF rect = fm.boundingRect(dist_text);
-	// ? QPointF transP = worldMatrix.map(pos_text);
-	QPointF transP = mapToViewport(QPointF(pos_text));
+	QPointF transP = worldMatrix->map(pos_text);
 
 	if (point_end.x() < point.x())
 		transP.setX(transP.x());
@@ -629,11 +625,10 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	painter->setWorldMatrixEnabled(true);
 
 	point = distance->getCurPoint();
-	// ? point = imgMatrix.map(point);
+	point = imgMatrix->map(point);
 
 	// special handling of drawing cross - to avoid zooming of cross lines
-	// ? QPointF endPointMapped = worldMatrix.map(point);
-	QPointF endPointMapped = mapToViewport(QPointF(point));
+	QPointF endPointMapped = worldMatrix->map(point);
 	crossTransP1 = endPointMapped;
 	crossTransP1.setY(crossTransP1.y() + 7);
 	crossTransP2 = endPointMapped;
@@ -648,9 +643,6 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	painter->setWorldMatrixEnabled(false);
 	painter->drawLine(crossTransP1, crossTransP2);
 	painter->setWorldMatrixEnabled(true);
-	//painter->drawLine(point.x(), point.y()+3, point.x(), point.y()-3);
-	//painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
-	
 
 	/*if(distance->hastStartAndEndPoint()) {
 		point = distance->getEndPoint();
@@ -658,6 +650,7 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 		painter->drawLine(point.x(), point.y()+3, point.x(), point.y()-3);
 		painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
 	}*/
+
 
 }
 

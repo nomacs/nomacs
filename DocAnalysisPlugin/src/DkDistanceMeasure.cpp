@@ -103,6 +103,7 @@ void DkDistanceMeasure::resetPoints() {
 
 	points[0] = QPoint();
 	points[1] = QPoint();
+	curPoint = QPoint();
 }
 
 /**

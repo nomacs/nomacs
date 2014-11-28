@@ -162,7 +162,7 @@ protected:
 
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
-	virtual void keyPressEvent(QKeyEvent *event);
+	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	void mouseDoubleClickEvent(QMouseEvent *event);
 	
