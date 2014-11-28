@@ -186,19 +186,45 @@ Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkPaintPlugin/1.0", DkPaintPlugin)
 
 DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
 
+	setObjectName("DkPaintViewPort");
 	init();
 }
 
 DkPaintViewPort::~DkPaintViewPort() {
 	qDebug() << "[PAINT VIEWPORT] deleted...";
 	
-	// acitive deletion since the MainWindow takes ownership...
+	saveSettings();
+
+	// active deletion since the MainWindow takes ownership...
 	// if we have issues with this, we could disconnect all signals between viewport and toolbar too
 	// however, then we have lot's of toolbars in memory if the user opens the plugin again and again
 	if (paintToolbar) {
 		delete paintToolbar;
 		paintToolbar = 0;
 	}
+}
+
+
+void DkPaintViewPort::saveSettings() const {
+
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(objectName());
+	settings.setValue("penColor", pen.color().rgba());
+	settings.setValue("penWidth", pen.width());
+	settings.endGroup();
+
+}
+
+void DkPaintViewPort::loadSettings() {
+
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(objectName());
+	pen.setColor(QColor::fromRgba(settings.value("penColor", pen.color().rgba()).toInt()));
+	pen.setWidth(settings.value("penWidth", 15).toInt());
+	settings.endGroup();
+
 }
 
 void DkPaintViewPort::init() {
@@ -219,9 +245,24 @@ void DkPaintViewPort::init() {
 	connect(paintToolbar, SIGNAL(widthSignal(int)), this, SLOT(setPenWidth(int)));
 	connect(paintToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(paintToolbar, SIGNAL(cancelSignal()), this, SLOT(discardChangesAndClose()));
+	connect(paintToolbar, SIGNAL(undoSignal()), this, SLOT(undoLastPaint()));
 	connect(paintToolbar, SIGNAL(applySignal()), this, SLOT(applyChangesAndClose()));
 	
 	DkPluginViewPort::init();
+
+	loadSettings();
+	paintToolbar->setPenColor(pen.color());
+	paintToolbar->setPenWidth(pen.width());
+}
+
+void DkPaintViewPort::undoLastPaint() {
+
+	if (paths.empty())
+		return;		// nothing to undo
+
+	paths.pop_back();
+	pathsPen.pop_back();
+	update();
 }
 
 void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
@@ -342,6 +383,9 @@ QImage DkPaintViewPort::getPaintedImage() {
 				//if (worldMatrix)
 				//	painter.setWorldTransform(*worldMatrix);
 
+				painter.setRenderHint(QPainter::HighQualityAntialiasing);
+				painter.setRenderHint(QPainter::Antialiasing);
+
 				for (int idx = 0; idx < paths.size(); idx++) {
 					painter.setPen(pathsPen.at(idx));
 					painter.drawPath(paths.at(idx));
@@ -459,6 +503,7 @@ void DkPaintToolBar::createIcons() {
 	icons[cancel_icon] = QIcon(":/nomacsPluginPaint/img/cancel.png");
 	icons[pan_icon] = 	QIcon(":/nomacsPluginPaint/img/pan.png");
 	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginPaint/img/pan_checked.png"), QIcon::Normal, QIcon::On);
+	icons[undo_icon] = 	QIcon(":/nomacsPluginPaint/img/undo.png");
 
 	if (!DkSettings::display.defaultIconColor) {
 		// now colorize all icons
@@ -498,6 +543,11 @@ void DkPaintToolBar::createLayout() {
 	penColButton->setToolTip(tr("Background Color"));
 	penColButton->setStatusTip(penColButton->toolTip());
 
+	// undo Button
+	undoAction = new QAction(icons[undo_icon], tr("Undo (CTRL+Z)"), this);
+	undoAction->setShortcut(QKeySequence::Undo);
+	undoAction->setObjectName("undoAction");
+
 	colorDialog = new QColorDialog(this);
 	colorDialog->setObjectName("colorDialog");
 
@@ -519,6 +569,7 @@ void DkPaintToolBar::createLayout() {
 	addAction(cancelAction);
 	addSeparator();
 	addAction(panAction);
+	addAction(undoAction);
 	addSeparator();
 	addWidget(widthBox);
 	addWidget(penColButton);
@@ -527,18 +578,35 @@ void DkPaintToolBar::createLayout() {
 
 void DkPaintToolBar::setVisible(bool visible) {
 
-	if (!visible)
-		emit colorSignal(QColor(0,0,0));
-	else {
-		emit colorSignal(penCol);
-		widthBox->setValue(10);
-		alphaBox->setValue(100);
+	//if (!visible)
+	//	emit colorSignal(QColor(0,0,0));
+	if (visible) {
+		//emit colorSignal(penCol);
+		//widthBox->setValue(10);
+		//alphaBox->setValue(100);
 		panAction->setChecked(false);
 	}
 
 	qDebug() << "[PAINT TOOLBAR] set visible: " << visible;
 
 	QToolBar::setVisible(visible);
+}
+
+void DkPaintToolBar::setPenColor(const QColor& col) {
+
+	penCol = col;
+	penColButton->setStyleSheet("QPushButton {background-color: " + DkUtils::colorToString(penCol) + "; border: 1px solid #888;}");
+	penAlpha = col.alpha();
+	alphaBox->setValue(col.alphaF()*100);
+}
+
+void DkPaintToolBar::setPenWidth(int width) {
+
+	widthBox->setValue(width);
+}
+
+void DkPaintToolBar::on_undoAction_triggered() {
+	emit undoSignal();
 }
 
 void DkPaintToolBar::on_applyAction_triggered() {

@@ -6,7 +6,7 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 ENDIF()
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 1.1.1)
+set(PLUGIN_VERSION 1.2.0)
 set(PLUGIN_ID ad970ef36cc24737afd2b53ad015ff0d) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
