@@ -255,6 +255,9 @@ public:
 	virtual void writeSettings();
 	virtual void init();
 
+public slots:
+	void itemChanged(QStandardItem* item);
+
 protected:
 	void createLayout();
 	QList<QStandardItem*> getItems(const QString& filter, bool browse, bool reg);
@@ -263,7 +266,7 @@ protected:
 	QTableView* filterTableView;
 	QStandardItemModel* model;
 	QCheckBox* browseAll, registerAll;
-
+	bool saveSettings;
 };
 
 class DkDisplaySettingsWidget : public DkSettingsWidget {

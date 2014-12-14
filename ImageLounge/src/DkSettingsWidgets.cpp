@@ -1229,6 +1229,7 @@ DkFileFilterSettingWidget::DkFileFilterSettingWidget(QWidget* parent) : DkSettin
 
 void DkFileFilterSettingWidget::init() {
 
+	saveSettings = false;
 	createLayout();
 }
 
@@ -1243,6 +1244,8 @@ void DkFileFilterSettingWidget::createLayout() {
 	model->setHeaderData(0, Qt::Horizontal, tr("Filter"));
 	model->setHeaderData(1, Qt::Horizontal, tr("Browse"));
 	model->setHeaderData(2, Qt::Horizontal, tr("Register"));
+
+	connect(model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(itemChanged(QStandardItem*)));
 
 	filterTableView = new QTableView(this);
 	filterTableView->setModel(model);
@@ -1296,7 +1299,15 @@ QList<QStandardItem*> DkFileFilterSettingWidget::getItems(const QString& filter,
 
 }
 
+void DkFileFilterSettingWidget::itemChanged(QStandardItem* item) {
+
+	saveSettings = true;
+}
+
 void DkFileFilterSettingWidget::writeSettings() {
+
+	if (!saveSettings)
+		return;
 
 	DkFileFilterHandling fh;
 	DkSettings::app.browseFilters.clear();
