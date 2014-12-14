@@ -6,9 +6,8 @@ QTabBar::close-button:hover {
 	image: url(:/nomacs/img/close-tab-hover.png);
 }
 
-QTabBar page#2
+QTabBar::tab:selected
 {
-	background-color: #f00;
 }
 
 /* NoMacs */

@@ -3149,6 +3149,9 @@ void DkRecentFilesWidget::setVisible(bool visible) {
 
 void DkRecentFilesWidget::updateFileList() {
 
+	if (folderWatcher.isRunning())
+		return;
+
 	delete folderLayout;
 	delete filesLayout;
 	rFileIdx = 0;
