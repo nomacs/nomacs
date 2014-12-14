@@ -1,3 +1,15 @@
+QTabBar::close-button {
+    image: url(:/nomacs/img/close-tab.png);
+}
+
+QTabBar::close-button:hover {
+	image: url(:/nomacs/img/close-tab-hover.png);
+}
+
+QTabBar page#2
+{
+	background-color: #f00;
+}
 
 /* NoMacs */
 QToolBar#toolBarWithGradient {
