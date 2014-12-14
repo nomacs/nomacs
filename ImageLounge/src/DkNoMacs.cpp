@@ -172,15 +172,15 @@ void DkNoMacs::init() {
 	enableNoImageActions(false);
 
 	// add actions since they are ignored otherwise if the menu is hidden
-	viewport()->addActions(fileActions.toList());
-	viewport()->addActions(sortActions.toList());
-	viewport()->addActions(editActions.toList());
-	viewport()->addActions(toolsActions.toList());
-	viewport()->addActions(panelActions.toList());
-	viewport()->addActions(viewActions.toList());
-	viewport()->addActions(syncActions.toList());
-	viewport()->addActions(pluginsActions.toList());
-	viewport()->addActions(helpActions.toList());
+	centralWidget()->addActions(fileActions.toList());
+	centralWidget()->addActions(sortActions.toList());
+	centralWidget()->addActions(editActions.toList());
+	centralWidget()->addActions(toolsActions.toList());
+	centralWidget()->addActions(panelActions.toList());
+	centralWidget()->addActions(viewActions.toList());
+	centralWidget()->addActions(syncActions.toList());
+	centralWidget()->addActions(pluginsActions.toList());
+	centralWidget()->addActions(helpActions.toList());
 	
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
@@ -707,7 +707,7 @@ void DkNoMacs::createOpenWithMenu(QMenu* menu) {
 	if (!appActions.empty())
 		openWithMenu->addSeparator();
 	openWithMenu->addAction(fileActions[menu_file_app_manager]);
-	viewport()->addActions(appActions.toList());
+	centralWidget()->addActions(appActions.toList());
 }
 
 void DkNoMacs::createContextMenu() {
@@ -1372,7 +1372,7 @@ void DkNoMacs::assignCustomPluginShortcuts() {
 		}
 
 		settings.endGroup();
-		viewport()->addActions(pluginsDummyActions.toList());
+		centralWidget()->addActions(pluginsDummyActions.toList());
 	}
 
 #endif // WITH_PLUGINS
@@ -3717,7 +3717,7 @@ void DkNoMacs::addPluginsToMenu() {
 			pluginAction->setData(sortedNames.at(i).first);
 			connect(pluginAction, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
 
-			viewport()->addAction(pluginAction);
+			centralWidget()->addAction(pluginAction);
 			pluginsMenu->addAction(pluginAction);
 			pluginAction->setToolTip(pluginAction->statusTip());
 

@@ -977,6 +977,7 @@ void DkThumbLabel::updateLabel() {
 		qDebug() << "update called on empty thumb label!";
 
 	if (!pm.isNull()) {
+		icon.setTransformationMode(Qt::SmoothTransformation);
 		icon.setPixmap(pm);
 		setFlag(ItemIsSelectable, true);
 		icon.setFlag(ItemIsSelectable, true);
