@@ -247,6 +247,7 @@ void DkFilenameWidget::showOnlyFilename() {
 	//curLayout->addWidget(new QWidget(this), 0, fileNameWidget_input2 );
 	curLayout->addWidget(pbPlus, 0, fileNameWidget_plus);
 	curLayout->addWidget(pbMinus, 0, fileNameWidget_minus);
+
 }
 
 void DkFilenameWidget::showOnlyNumber() {
