@@ -175,6 +175,7 @@ public:
 		bool toolbarGradient;
 		bool showBorder;
 		bool displaySquaredThumbs;
+		bool showThumbLabel;
 		float fadeSec;
 	};
 

@@ -144,6 +144,9 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	setObjectName("DkCentralWidget");
 	createLayout();
 	loadSettings();
+
+	if (tabInfos.empty())
+		addTab();
 }
 
 DkCentralWidget::~DkCentralWidget() {

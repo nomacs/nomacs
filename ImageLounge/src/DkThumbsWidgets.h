@@ -215,6 +215,7 @@ public:
 		void increaseThumbs();
 		void decreaseThumbs();
 		void toggleSquaredThumbs(bool squares);
+		void toggleThumbLabels(bool show);
 		void resizeThumbs(float dx);
 		void showFile(const QFileInfo& file);
 		void selectThumbs(bool select = true, int from = 0, int to = -1);
@@ -275,6 +276,7 @@ class DkThumbScrollWidget : public DkWidget {
 		zoom_in,
 		zoom_out,
 		display_squares,
+		show_labels,
 
 		actions_end
 	};

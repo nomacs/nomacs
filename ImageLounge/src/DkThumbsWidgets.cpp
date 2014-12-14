@@ -894,7 +894,7 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
 
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(updateLabel()));
 	//setStatusTip(thumb->getFile().fileName());
-	//setToolTip(thumb->getFile().fileName());
+	setToolTip(thumb->getFile().fileName());
 
 	// style dummy
 	noImagePen.setColor(QColor(150,150,150));
@@ -914,10 +914,10 @@ QPixmap DkThumbLabel::pixmap() const {
 
 QRectF DkThumbLabel::boundingRect() const {
 
-	if (icon.pixmap().isNull())
-		return QRectF(QPoint(1,1), QSize(DkSettings::display.thumbPreviewSize-2, DkSettings::display.thumbPreviewSize-2));
+	//if (icon.pixmap().isNull())
+		return QRectF(QPoint(0,0), QSize(DkSettings::display.thumbPreviewSize, DkSettings::display.thumbPreviewSize));
 
-	// TODO: add toggle
+	//// TODO: add toggle
 	//if (true) {
 	//	QRectF ri = icon.boundingRect();
 	//	QRectF rt = text.boundingRect();
@@ -926,25 +926,25 @@ QRectF DkThumbLabel::boundingRect() const {
 	//	return ri.united(rt);
 	//}
 
-	return icon.boundingRect();
+	//return icon.boundingRect();
 }
 
 QPainterPath DkThumbLabel::shape() const {
 
 	QPainterPath path;
 
-	if (icon.pixmap().isNull()) {
+	//if (icon.pixmap().isNull()) {
 		path.addRect(boundingRect());
 		return path;
-	}
-	else
-		path = icon.shape();
+	//}
+	//else
+	//	path = icon.shape();
 
-	//if (false)
+	//if (true)
 	//	path.addPath(text.shape());
 
 
-	return path;
+	//return path;
 }
 
 void DkThumbLabel::updateLabel() {
@@ -985,9 +985,9 @@ void DkThumbLabel::updateLabel() {
 	}
 
 	// update label
-	text.setPos(0, icon.boundingRect().bottom());
+	text.setPos(0, pm.height());
 	text.setDefaultTextColor(QColor(255,255,255));
-	text.setTextWidth(icon.boundingRect().width()-5);
+	//text.setTextWidth(icon.boundingRect().width());
 	QFont font;
 	font.setBold(false);
 	font.setPixelSize(10);
@@ -1001,7 +1001,6 @@ void DkThumbLabel::updateLabel() {
 
 void DkThumbLabel::updateSize() {
 
-
 	if (icon.pixmap().isNull())
 		return;
 
@@ -1011,9 +1010,9 @@ void DkThumbLabel::updateSize() {
 	int maxSize = qMax(icon.pixmap().width(), icon.pixmap().height());
 	int ps = DkSettings::display.thumbPreviewSize;
 
-	if ((float)ps/maxSize != scale()) {
-		setScale((float)ps/maxSize);
-		moveBy(-(icon.pixmap().width()*scale()-ps)*0.5f, -(icon.pixmap().height()*scale()-ps)*0.5f);
+	if ((float)ps/maxSize != icon.scale()) {
+		icon.setScale((float)ps/maxSize);
+		icon.moveBy(-(icon.pixmap().width()*icon.scale()-ps)*0.5f, -(icon.pixmap().height()*icon.scale()-ps)*0.5f);
 	}
 
 	//update();
@@ -1102,12 +1101,32 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 		noSelOption.state &= ~QStyle::State_Selected;
 	}
 
-	painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-	icon.paint(painter, &noSelOption, widget);
-	//text.paint(painter, &noSelOption, widget);
+	//painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 
-	// debug
-	//painter->drawRect(text.boundingRect());
+	QTransform mt = painter->worldTransform();
+	QTransform it = mt;
+	it.scale(icon.scale(), icon.scale());
+	it.translate(icon.pos().x(), icon.pos().y());
+
+	painter->setTransform(it);
+	icon.paint(painter, &noSelOption, widget);
+	painter->setTransform(mt);
+
+	// draw text
+	if (boundingRect().width() > 50 && DkSettings::display.showThumbLabel) {
+		
+		QTransform tt = mt;
+		tt.translate(0, boundingRect().height()-text.boundingRect().height());
+
+		QRectF r = text.boundingRect();
+		r.setWidth(boundingRect().width());
+		painter->setPen(Qt::NoPen);
+		painter->setWorldTransform(tt);
+		painter->setBrush(DkSettings::display.bgColorWidget);
+		painter->drawRect(r);
+		text.paint(painter, &noSelOption, widget);
+		painter->setWorldTransform(mt);
+	}
 
 	// render hovered
 	if (isHovered) {
@@ -1272,6 +1291,18 @@ void DkThumbScene::showFile(const QFileInfo& file) {
 		emit statusInfoSignal(tr("%1 Images").arg(QString::number(thumbLabels.size())));
 	else
 		emit statusInfoSignal(file.fileName());
+}
+
+void DkThumbScene::toggleThumbLabels(bool show) {
+
+	DkSettings::display.showThumbLabel = show;
+
+	for (int idx = 0; idx < thumbLabels.size(); idx++)
+		thumbLabels.at(idx)->updateLabel();
+
+	//// well, that's not too beautiful
+	//if (DkSettings::display.displaySquaredThumbs)
+	//	updateLayout();
 }
 
 void DkThumbScene::toggleSquaredThumbs(bool squares) {
@@ -1574,6 +1605,11 @@ void DkThumbScrollWidget::createActions() {
 	actions[display_squares]->setCheckable(true);
 	actions[display_squares]->setChecked(DkSettings::display.displaySquaredThumbs);
 	connect(actions[display_squares], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleSquaredThumbs(bool)));
+
+	actions[show_labels] = new QAction(tr("Show &Filename"), this);
+	actions[show_labels]->setCheckable(true);
+	actions[show_labels]->setChecked(DkSettings::display.showThumbLabel);
+	connect(actions[show_labels], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleThumbLabels(bool)));
 
 	contextMenu = new QMenu(tr("Thumb"), this);
 	for (int idx = 0; idx < actions.size(); idx++) {
