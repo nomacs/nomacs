@@ -1984,6 +1984,27 @@ void DkShortcutsModel::checkDuplicate(QString text, void* item) {
 		emit duplicateSignal("");
 }
 
+void DkShortcutsModel::resetActions() {
+
+	QSettings& settings = Settings::instance().getSettings();
+	settings.beginGroup("CustomShortcuts");
+
+	for (int pIdx = 0; pIdx < actions.size(); pIdx++) {
+		
+		QVector<QAction*> cActions = actions.at(pIdx);
+		
+		for (int idx = 0; idx < cActions.size(); idx++) {
+			QString val = settings.value(cActions[idx]->text(), "no-shortcut").toString();
+
+			if (val != "no-shortcut") {
+				cActions[idx]->setShortcut(QKeySequence());
+			}
+		}
+	}
+
+	settings.endGroup();
+}
+
 void DkShortcutsModel::saveActions() {
 
 	if (!rootItem)
@@ -2062,6 +2083,10 @@ void DkShortcutsDialog::createLayout() {
 	notificationLabel->setProperty("warning", true);
 	//notificationLabel->setTextFormat(Qt::)
 
+	defaultButton = new QPushButton(tr("Set to &Default"), this);
+	defaultButton->setToolTip(tr("Removes All Custom Shortcuts"));
+	connect(defaultButton, SIGNAL(clicked()), this, SLOT(defaultButtonClicked()));
+
 	connect(scDelegate, SIGNAL(checkDuplicateSignal(QString, void*)), model, SLOT(checkDuplicate(QString, void*)));
 	connect(model, SIGNAL(duplicateSignal(QString)), notificationLabel, SLOT(setText(QString)));
 
@@ -2069,6 +2094,8 @@ void DkShortcutsDialog::createLayout() {
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->addButton(defaultButton, QDialogButtonBox::ActionRole);
+	
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -2088,6 +2115,16 @@ void DkShortcutsDialog::addActions(const QVector<QAction*>& actions, const QStri
 
 void DkShortcutsDialog::contextMenu(const QPoint& cur) {
 
+}
+
+void DkShortcutsDialog::defaultButtonClicked() {
+
+	if (model) model->resetActions();
+
+	QSettings& settings = Settings::instance().getSettings();
+	settings.remove("CustomShortcuts");
+
+	QDialog::reject();
 }
 
 void DkShortcutsDialog::accept() {

@@ -506,6 +506,7 @@ public:
 
 	void addDataActions(QVector<QAction*> actions, QString name);
 
+	void resetActions();
 	void saveActions();
 
 public slots:
@@ -536,6 +537,7 @@ public slots:
 
 protected slots:
 	void contextMenu(const QPoint& cur);
+	void defaultButtonClicked();
 
 protected:
 	void createLayout();
@@ -545,7 +547,7 @@ protected:
 	QTableView* actionTable;
 	DkShortcutsModel* model;
 	QLabel* notificationLabel;
-
+	QPushButton* defaultButton;
 
 };
 

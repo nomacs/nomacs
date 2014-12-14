@@ -3466,6 +3466,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
 
 	shortcutsDialog->exec();
+
 }
 
 void DkNoMacs::openSettings() {
