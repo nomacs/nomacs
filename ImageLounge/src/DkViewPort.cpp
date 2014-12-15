@@ -3079,16 +3079,15 @@ void DkViewPortContrast::mousePressEvent(QMouseEvent *event) {
 			int colorIdx = imgs[activeChannel].pixelIndex(xy);
 			qreal normedPos = (qreal) colorIdx / 255;
 			emit tFSliderAdded(normedPos);
-
 		}
 
 		unsetCursor();
 		isColorPickerActive = false;
 
 	} 
-	else
-		DkViewPort::mousePressEvent(event);
 
+	// always forward events (fixes #397)
+	DkViewPort::mousePressEvent(event);
 }
 
 void DkViewPortContrast::keyPressEvent(QKeyEvent* event) {
