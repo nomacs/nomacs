@@ -186,16 +186,16 @@ void DkFilenameWidget::createLayout() {
 
 	cBType = new QComboBox(this);
 	cBType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	cBType->insertItem(fileNameTypes_fileName, tr("current filename"));
-	cBType->insertItem(fileNameTypes_Text, tr("text"));
-	cBType->insertItem(fileNameTypes_Number, tr("number"));
+	cBType->insertItem(fileNameTypes_fileName, tr("Current Filename"));
+	cBType->insertItem(fileNameTypes_Text, tr("Text"));
+	cBType->insertItem(fileNameTypes_Number, tr("Number"));
 	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeCBChanged(int)));
 	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
 
 	cBCase = new QComboBox(this);
-	cBCase->addItem(tr("keep case"));
-	cBCase->addItem(tr("to lowercase"));
-	cBCase->addItem(tr("to UPPERCASE"));
+	cBCase->addItem(tr("Keep Case"));
+	cBCase->addItem(tr("To lowercase"));
+	cBCase->addItem(tr("To UPPERCASE"));
 	connect(cBCase, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
 
 	sBNumber = new QSpinBox(this);
@@ -305,6 +305,36 @@ void DkFilenameWidget::checkForUserInput() {
 
 void DkFilenameWidget::digitCBChanged(int index) {
 	sBNumber->setMaximum(std::pow(10, index+1)-1);
+	emit changed();
+}
+
+QString DkFilenameWidget::getTag() const {
+
+	QString tag;
+
+	switch (cBType->currentIndex()) {
+		
+	case fileNameTypes_Number: 
+		{
+			tag += "<d:"; 
+			tag += QString::number(cBDigits->currentIndex());	// is sensitive to the index
+			tag += ">";
+			break;
+		}
+	case fileNameTypes_fileName: 
+		{
+			tag += "<c:"; 
+			tag += QString::number(cBCase->currentIndex());	// is sensitive to the index
+			tag += ">";
+			break;
+		}
+	case fileNameTypes_Text:
+		{
+			tag += lEText->text();
+		}
+	}
+
+	return tag;
 }
 
 // DkBatchOutput --------------------------------------------------------------------
@@ -359,11 +389,23 @@ void DkBatchOutput::createLayout() {
 	extensionLayout->addStretch();
 	filenameVBLayout->addWidget(extensionWidget);
 	
+	QLabel* oldLabel = new QLabel(tr("Old: "));
+	oldFileNameLabel = new QLabel("");
+
+	QLabel* newLabel = new QLabel(tr("New: "));
+	newFileNameLabel = new QLabel("");
+
 	// Preview Widget
 	QGroupBox* previewGroupBox = new QGroupBox(this);
 	previewGroupBox->setTitle(tr("Filename Preview"));
-	QHBoxLayout* previewGBLayout = new QHBoxLayout(previewGroupBox);
-
+	QGridLayout* previewGBLayout = new QGridLayout(previewGroupBox);
+	//previewGroupBox->hide();	// show if more than 1 file is selected
+	previewGBLayout->addWidget(oldLabel, 0, 0);
+	previewGBLayout->addWidget(oldFileNameLabel, 0, 1);
+	previewGBLayout->addWidget(newLabel, 1, 0);
+	previewGBLayout->addWidget(newFileNameLabel, 1, 1);
+	previewGBLayout->setColumnStretch(3, 10);
+	
 	QVBoxLayout* contentLayout = new QVBoxLayout(this);
 	contentLayout->addWidget(outDirGroupBox);
 	contentLayout->addWidget(filenameGroupBox);
@@ -401,7 +443,7 @@ void DkBatchOutput::plusPressed(DkFilenameWidget* widget) {
 	connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
 	connect(fwidget, SIGNAL(changed()), this, SLOT(emitChangedSignal()));
 
-	emit changed();
+	emitChangedSignal();
 }
 
 void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
@@ -414,13 +456,13 @@ void DkBatchOutput::minusPressed(DkFilenameWidget* widget) {
 
 	widget->hide();
 
-	emit changed();
+	emitChangedSignal();
 }
 
 void DkBatchOutput::extensionCBChanged(int index) {
 	//index > 0 ? cBNewExtension->show() : cBNewExtension->hide();
 	cBNewExtension->setEnabled(index > 0);
-	emit changed();
+	emitChangedSignal();
 }
 
 
@@ -430,6 +472,40 @@ bool DkBatchOutput::hasUserInput() {
 }
 
 void DkBatchOutput::emitChangedSignal() {
+	
+	QString fName = "test-filename.jpg";
+	QString pattern = "";
+
+	for (int idx = 0; idx < filenameWidgets.size(); idx++)
+		pattern += filenameWidgets.at(idx)->getTag();	
+
+	if (cBExtension->currentIndex() == 0) {
+		pattern += ".<old>";
+	}
+	else {
+		// TODO: get extension
+		QString ext = cBNewExtension->itemText(cBNewExtension->currentIndex());
+
+		QStringList tmp = ext.split("(");
+
+		if (tmp.size() == 2) {
+
+			QString filters = tmp.at(1);
+			filters.replace(")", "");
+			filters.replace("*", "");
+
+			QStringList extList = filters.split(" ");
+
+			if (!extList.empty())
+				pattern += extList[0];
+		}
+	}
+
+	DkFileNameConverter converter(fName, pattern, 1);
+
+	oldFileNameLabel->setText(fName);
+	newFileNameLabel->setText(converter.getConvertedFileName());
+	
 	emit changed();
 }
 

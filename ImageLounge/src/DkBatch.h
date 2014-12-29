@@ -143,6 +143,7 @@ class DkFilenameWidget : public QWidget {
 		void enableMinusButton(bool enable);
 		void enablePlusButton(bool enable);
 		bool hasUserInput() {return hasChanged;};
+		QString getTag() const;
 
 	signals:
 		void plusPressed(DkFilenameWidget*);
@@ -213,6 +214,8 @@ class DkBatchOutput : public QWidget, public DkBatchContent {
 
 		QComboBox* cBExtension;
 		QComboBox* cBNewExtension;
+		QLabel* oldFileNameLabel;
+		QLabel* newFileNameLabel;
 
 };
 

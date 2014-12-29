@@ -439,6 +439,19 @@ DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString&
 	this->cIdx = cIdx;
 }
 
+/**
+ * Converts file names with a given pattern (used for e.g. batch rename)
+ * The pattern is:
+ * <d:3> is replaced with the cIdx value (:3 -> zero padding up to 3 digits)
+ * <c:0> int (0 = no change, 1 = to lower, 2 = to upper)
+ * 
+ * if it ends with .jpg we assume a fixed extension.
+ * .<old> is replaced with the fileName extension.
+ * 
+ * So a filename could look like this:
+ * some-fixed-name-<c:1><d:3>.<old>
+ * @return QString
+ **/ 
 QString DkFileNameConverter::getConvertedFileName() {
 	
 	QString newFileName = pattern;
