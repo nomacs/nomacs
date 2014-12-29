@@ -37,10 +37,9 @@
 #include "DkWidgets.h"
 #include "DkThumbsWidgets.h"
 
-
-
 namespace nmc {
 
+// TODO: these enums are global - they should be put into the respective classes
 enum batchWidgets {
 	batchWdidgets_input,
 	batchWdidgets_output,
@@ -236,4 +235,5 @@ class DkBatchDialog : public QDialog {
 		QDir currentDirectory;
 		QDialogButtonBox* buttons;
 };
+
 }

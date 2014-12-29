@@ -351,15 +351,14 @@ void DkBatchOutput::createLayout() {
 	connect(cBExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
 
 	cBNewExtension = new QComboBox(this);
-	cBNewExtension->addItem("add extensions here");
+	cBNewExtension->addItems(DkSettings::saveFilters);
 	cBNewExtension->setEnabled(false);
 
 	extensionLayout->addWidget(cBExtension);
 	extensionLayout->addWidget(cBNewExtension);
 	extensionLayout->addStretch();
 	filenameVBLayout->addWidget(extensionWidget);
-
-
+	
 	// Preview Widget
 	QGroupBox* previewGroupBox = new QGroupBox(this);
 	previewGroupBox->setTitle(tr("Filename Preview"));

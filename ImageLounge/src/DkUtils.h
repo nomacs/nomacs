@@ -552,6 +552,25 @@ public:
 	static double getFreeMemory();
 };
 
+class DkConvertFileName {
+
+public:
+	DkConvertFileName(const QString& fileName, const QString& pattern, int cIdx);
+
+	QString getConvertedFileName();
+
+protected:
+	bool resolveNext(QString& str);
+	QString resolveFilename(const QString& tag);
+	QString resolveText(const QString& tag);
+	QString resolveIdx(QString& tag);
+
+	QString fileName;
+	QString pattern;
+	QString newFileName;
+	int cIdx;
+};
+
 // from: http://qt-project.org/doc/qt-4.8/itemviews-simpletreemodel.html
 class TreeItem {
 

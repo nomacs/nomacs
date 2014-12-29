@@ -161,7 +161,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		QFileInfoList files = getFilteredFileInfoList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 		createImages(files);
 
-		// might get empty too (e.g. someone deletes all images
+		// might get empty too (e.g. someone deletes all images)
 		if (files.empty()) {
 			emit showInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
 			return false;
@@ -1360,7 +1360,7 @@ void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {
 			continue;
 		}
 
-		if (idx >= cIdx-1 && idx <= idx+DkSettings::resources.maxImagesCached)
+		if (idx >= cIdx-1 && idx <= cIdx+DkSettings::resources.maxImagesCached)
 			mem += images.at(idx)->getMemoryUsage();
 		else {
 			images.at(idx)->clear();

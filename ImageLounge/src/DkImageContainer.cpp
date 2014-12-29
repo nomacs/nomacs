@@ -232,6 +232,11 @@ QImage DkImageContainer::image() {
 	return loader->image();
 }
 
+void DkImageContainer::setImage(const QImage& img) {
+
+	setImage(img, fileInfo);
+}
+
 void DkImageContainer::setImage(const QImage& img, const QFileInfo& fileInfo) {
 
 	this->fileInfo = fileInfo;
@@ -257,6 +262,20 @@ bool DkImageContainer::loadImage() {
 	loader = loadImageIntern(fileInfo, loader, fileBuffer);
 
 	return loader->hasImage();
+}
+
+bool DkImageContainer::saveImage(const QFileInfo fileInfo, int compression /* = -1 */) {
+	return saveImage(fileInfo, loader->image(), compression);
+}
+
+bool DkImageContainer::saveImage(const QFileInfo fileInfo, const QImage saveImg, int compression /* = -1 */) {
+
+	QFileInfo saveFile = saveImageIntern(fileInfo, loader, saveImg, compression);
+
+	saveFile.refresh();
+	qDebug() << "save file: " << saveFile.absoluteFilePath();
+
+	return !saveFile.exists() || !saveFile.isFile();
 }
 
 QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {
@@ -663,9 +682,6 @@ void DkImageContainerT::savingFinished() {
 			fileUpdateTimer.start();
 		}
 		emit fileSavedSignal(saveFile);
-
-
-
 	}
 }
 

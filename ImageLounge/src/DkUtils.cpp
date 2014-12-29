@@ -431,6 +431,37 @@ QString DkUtils::stdWStringToQString(const std::wstring &str) {
 #endif
 }
 
+// DkConvertFileName --------------------------------------------------------------------
+DkConvertFileName::DkConvertFileName(const QString& fileName, const QString& pattern, int cIdx) {
+
+	this->fileName = fileName;
+	this->pattern = pattern;
+	this->cIdx = cIdx;
+
+}
+
+QString DkConvertFileName::getConvertedFileName() {
+	
+	QString newFileName = pattern;
+
+
+	for (int idx = 0; idx < 1000; idx++) {	// safety first
+
+		if (!resolveNext(newFileName))
+			break;
+	}
+
+	return newFileName;
+}
+
+bool DkConvertFileName::resolveNext(QString& newFileName) {
+
+	QString tag = newFileName.section(QRegExp("<.>"), 0);
+	// TODO: go on here...
+
+	return true;
+}
+
 // TreeItem --------------------------------------------------------------------
 TreeItem::TreeItem(const QVector<QVariant> &data, TreeItem *parent) {
 	parentItem = parent;

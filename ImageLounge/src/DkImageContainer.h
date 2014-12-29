@@ -99,7 +99,10 @@ public:
 
 	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo fileInfo);
 	bool loadImage();
+	void setImage(const QImage& img);
 	void setImage(const QImage& img, const QFileInfo& fileInfo);
+	bool saveImage(const QFileInfo fileInfo, const QImage saveImg, int compression = -1);
+	bool saveImage(const QFileInfo fileInfo, int compression = -1);
 	void saveMetaData();
 	virtual void clear();
 
@@ -117,8 +120,8 @@ protected:
 	bool selected;
 
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
-	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void saveMetaDataIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
+	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void init();
 };
 

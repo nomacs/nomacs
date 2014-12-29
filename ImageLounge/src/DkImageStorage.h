@@ -90,31 +90,39 @@ public:
 		Mat mat2;
 		QImage cImg;	// must be initialized here!	(otherwise the data is lost before clone())
 
-		if (img.format() == QImage::Format_RGB32)
-			qDebug() << "we have an RGB32 in memory...";
+		try {
+			if (img.format() == QImage::Format_RGB32)
+				qDebug() << "we have an RGB32 in memory...";
 
-		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
-			mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
-			//qDebug() << "ARGB32 or RGB32";
+			if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
+				mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
+				//qDebug() << "ARGB32 or RGB32";
+			}
+			else if (img.format() == QImage::Format_RGB888) {
+				mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
+				//qDebug() << "RGB888";
+			}
+			//// converting to indexed8 causes bugs in the qpainter
+			//// see: http://qt-project.org/doc/qt-4.8/qimage.html
+			//else if (img.format() == QImage::Format_Indexed8) {
+			//	mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar*)img.bits(), img.bytesPerLine());
+			//	//qDebug() << "indexed...";
+			//}
+			else {
+				//qDebug() << "image flag: " << img.format();
+				cImg = img.convertToFormat(QImage::Format_ARGB32);
+				mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
+				//qDebug() << "I need to convert the QImage to ARGB32";
+			}
+
+			mat2 = mat2.clone();	// we need to own the pointer
 		}
-		else if (img.format() == QImage::Format_RGB888) {
-			mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
-			//qDebug() << "RGB888";
-		}
-		//// converting to indexed8 causes bugs in the qpainter
-		//// see: http://qt-project.org/doc/qt-4.8/qimage.html
-		//else if (img.format() == QImage::Format_Indexed8) {
-		//	mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar*)img.bits(), img.bytesPerLine());
-		//	//qDebug() << "indexed...";
-		//}
-		else {
-			//qDebug() << "image flag: " << img.format();
-			cImg = img.convertToFormat(QImage::Format_ARGB32);
-			mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
-			//qDebug() << "I need to convert the QImage to ARGB32";
+		catch (...) {	// something went seriously wrong (e.g. out of memory)
+			//DkNoMacs::dialog(QObject::tr("Sorry, could not convert image."));
+			qDebug() << "[DkImage::qImage2Mat] could not convert image - something is seriously wrong down here...";
+
 		}
 
-		mat2 = mat2.clone();	// we need to own the pointer
 
 		return mat2; 
 	}
