@@ -432,34 +432,101 @@ QString DkUtils::stdWStringToQString(const std::wstring &str) {
 }
 
 // DkConvertFileName --------------------------------------------------------------------
-DkConvertFileName::DkConvertFileName(const QString& fileName, const QString& pattern, int cIdx) {
+DkFileNameConverter::DkFileNameConverter(const QString& fileName, const QString& pattern, int cIdx) {
 
 	this->fileName = fileName;
 	this->pattern = pattern;
 	this->cIdx = cIdx;
-
 }
 
-QString DkConvertFileName::getConvertedFileName() {
+QString DkFileNameConverter::getConvertedFileName() {
 	
 	QString newFileName = pattern;
+	QRegExp rx("<.*>");
+	rx.setMinimal(true);
 
+	while (rx.indexIn(newFileName) != -1) {
+		QString tag = rx.cap();
+		QString res = "";
 
-	for (int idx = 0; idx < 1000; idx++) {	// safety first
+		qDebug() << "tag: " << tag;
 
-		if (!resolveNext(newFileName))
-			break;
+		if (tag.contains("<c:"))
+			res = resolveFilename(tag);
+		else if (tag.contains("<d:"))
+			res = resolveIdx(tag);
+		else if (tag.contains("<old>"))
+			res = resolveExt(tag);
+
+		// replace() replaces all matches - so if two tags are the very same, we save a little computing
+		newFileName = newFileName.replace(tag, res);
+
 	}
 
 	return newFileName;
 }
 
-bool DkConvertFileName::resolveNext(QString& newFileName) {
+QString DkFileNameConverter::resolveFilename(const QString& tag) const {
 
-	QString tag = newFileName.section(QRegExp("<.>"), 0);
-	// TODO: go on here...
+	QString result = fileName;
+	
+	// remove extension (Qt's QFileInfo.baseName() does a bad job if you have filenames with dots)
+	result = result.replace("." + QFileInfo(fileName).suffix(), "");
 
-	return true;
+	int attr = getIntAttribute(tag);
+
+	if (attr == 1)
+		result = result.toLower();
+	else if (attr == 2)
+		result = result.toUpper();
+
+	return result;
+}
+
+QString DkFileNameConverter::resolveIdx(const QString& tag) const {
+
+	QString result = "";
+
+	// append zeros
+	int numZeros = getIntAttribute(tag);
+
+	if (numZeros > 0) {
+
+		// zero padding
+		for (int idx = 0; idx <= numZeros - std::floor(std::log(cIdx)); idx++) {
+			result += "0";
+		}
+	}
+
+	result += QString::number(cIdx);
+
+	return result;
+}
+
+QString DkFileNameConverter::resolveExt(const QString& tag) const {
+
+	QString result = QFileInfo(fileName).suffix();
+
+	return result;
+}
+
+int DkFileNameConverter::getIntAttribute(const QString& tag) const {
+
+	int attr = 0;
+
+	QStringList num = tag.split(":");
+
+	if (num.length() == 2) {
+		QString attrStr = num.at(1);
+		attrStr.replace(">", "");
+		attr = attrStr.toInt();
+
+		// no negative idx
+		if (attr < 0)
+			return 0;
+	}
+
+	return attr;
 }
 
 // TreeItem --------------------------------------------------------------------

@@ -150,6 +150,11 @@ void DkNoMacs::init() {
 	QString iconPath = ":/nomacs/img/nomacs.png";
 #endif
 
+	nmc::DkFileNameConverter converter("test.xx.y.jpg", "josef-<d:3>-<c:1>.<old>", 99);
+
+	qDebug() << "new filename: " << converter.getConvertedFileName();
+
+
 	loadStyleSheet();
 
 	QIcon dirIcon = QIcon(iconPath);

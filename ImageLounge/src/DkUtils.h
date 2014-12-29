@@ -552,18 +552,18 @@ public:
 	static double getFreeMemory();
 };
 
-class DkConvertFileName {
+class DkFileNameConverter {
 
 public:
-	DkConvertFileName(const QString& fileName, const QString& pattern, int cIdx);
+	DkFileNameConverter(const QString& fileName, const QString& pattern, int cIdx);
 
 	QString getConvertedFileName();
 
 protected:
-	bool resolveNext(QString& str);
-	QString resolveFilename(const QString& tag);
-	QString resolveText(const QString& tag);
-	QString resolveIdx(QString& tag);
+	QString resolveFilename(const QString& tag) const;
+	QString resolveIdx(const QString& tag) const;
+	QString resolveExt(const QString& tag) const;
+	int getIntAttribute(const QString& tag) const;
 
 	QString fileName;
 	QString pattern;
