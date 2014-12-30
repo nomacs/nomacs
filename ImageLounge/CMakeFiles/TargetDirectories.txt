@@ -1,0 +1,2 @@
+/home/dutt/nomacs/ImageLounge/CMakeFiles/dist.dir
+/home/dutt/nomacs/ImageLounge/CMakeFiles/nomacs.dir
