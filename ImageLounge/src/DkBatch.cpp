@@ -543,7 +543,7 @@ void DkBatchDialog::createLayout() {
 	widgets.resize(batchWidgets_end);
 	// Input Directory
 	widgets[batchWdidgets_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
-	DkFileSelection* fileSelection  = new DkFileSelection(widgets[batchWdidgets_input]);
+	fileSelection  = new DkFileSelection(widgets[batchWdidgets_input]);
 	widgets[batchWdidgets_input]->setContentWidget(fileSelection);
 	fileSelection->setDir(currentDirectory);
 	
@@ -574,10 +574,10 @@ void DkBatchDialog::createLayout() {
 void DkBatchDialog::accept() {
 	
 	qDebug() << "accept is currently empty";
-	//QList<QUrl> urls = fileSelection->getSelectedFiles();
-	//for (int i = 0; i < urls.size(); i++) {
-	//	qDebug() << urls[i];
-	//}
+	QList<QUrl> urls = fileSelection->getSelectedFiles();
+	for (int i = 0; i < urls.size(); i++) {
+		qDebug() << urls[i];
+	}
 }
 
 void  DkBatchDialog::widgetChanged() {

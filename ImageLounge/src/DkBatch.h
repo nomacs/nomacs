@@ -237,6 +237,7 @@ class DkBatchDialog : public QDialog {
 		
 		QDir currentDirectory;
 		QDialogButtonBox* buttons;
+		DkFileSelection* fileSelection;
 };
 
 }

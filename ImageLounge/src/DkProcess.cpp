@@ -86,7 +86,7 @@ DkBatchProcess::DkBatchProcess(const QFileInfo& fileInfoIn, const QFileInfo& fil
 	this->fileInfoOut = fileInfoOut;
 	compression = -1;
 
-	mode = mode_skip_existing;
+	mode = DkBatchConfig::mode_skip_existing;
 }
 
 void DkBatchProcess::setProcessChain(const QVector<DkAbstractBatch*> processes) {
@@ -102,7 +102,7 @@ void DkBatchProcess::setMode(int mode) {
 void DkBatchProcess::compute() {
 
 	// check errors
-	if (fileInfoOut.exists() && mode == mode_skip_existing) {
+	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_skip_existing) {
 		logStrings.append(QObject::tr("Skipping because file already exists."));
 		return;
 	}
@@ -180,7 +180,7 @@ bool DkBatchProcess::copyFile() {
 	// if processes are empty - it is a simple copy operation
 	QFile file(fileInfoIn.absoluteFilePath());
 
-	if (fileInfoOut.exists() && mode == mode_overwrite) {
+	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_overwrite) {
 		if (!deleteExisting())
 			return false;	// early break
 	}
@@ -198,7 +198,7 @@ bool DkBatchProcess::copyFile() {
 
 bool DkBatchProcess::deleteExisting() {
 
-	if (fileInfoOut.exists() && mode == mode_overwrite) {
+	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_overwrite) {
 		QFile file(fileInfoIn.absoluteFilePath());
 
 		if (!file.remove()) {
@@ -211,5 +211,52 @@ bool DkBatchProcess::deleteExisting() {
 	return true;
 }
 
+// DkBatchProcessing --------------------------------------------------------------------
+DkBatchProcessing::DkBatchProcessing(const DkBatchConfig& config, QWidget* parent /*= 0*/) : QObject(parent) {
+
+	this->batchConfig = config;
+
+	connect(&batchWatcher, SIGNAL(resultReadyAt(int)), this, SIGNAL(resultReadyAt(int)));
+	connect(&batchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
+}
+
+void DkBatchProcessing::init() {
+
+	batchItems.clear();
+	
+	QList<QUrl>& urls = batchConfig.getUrls();
+
+	for (int idx = 0; idx < urls.size(); idx++) {
+
+		QFileInfo cFileInfo(urls.at(idx).toLocalFile());
+
+		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx+batchConfig.getStartIdx());
+		QFileInfo newFileInfo(batchConfig.getOutputDir(), converter.getConvertedFileName());
+
+		DkBatchProcess cProcess(cFileInfo, newFileInfo);
+		cProcess.setMode(batchConfig.getMode());
+		cProcess.setProcessChain(batchConfig.getProcessFunctions());
+
+		batchItems.push_back(cProcess);
+	}
+}
+
+void DkBatchProcessing::compute() {
+
+	init();
+
+	QFuture<void> future = QtConcurrent::map(batchItems, &nmc::DkBatchProcessing::computeItem);
+	batchWatcher.setFuture(future);
+}
+
+void DkBatchProcessing::computeItem(DkBatchProcess& item) {
+
+	item.compute();
+}
+
+void DkBatchProcessing::cancel() {
+
+	batchWatcher.cancel();
+}
 
 }

@@ -27,6 +27,11 @@
 
 #pragma once;
 
+#include <QUrl>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrentMap>
+
 #include "DkImageContainer.h"
 
 namespace nmc {
@@ -62,13 +67,6 @@ class DkBatchProcess {
 
 public:
 
-	enum {
-		mode_overwrite,
-		mode_skip_existing,
-
-		mode_end
-	};
-
 	DkBatchProcess(const QFileInfo& fileInfoIn = QFileInfo(), const QFileInfo& fileInfoOut = QFileInfo());
 
 	void setProcessChain(const QVector<DkAbstractBatch*> processes);
@@ -89,6 +87,83 @@ protected:
 	bool deleteExisting();
 	bool copyFile();
 	bool renameFile();
+};
+
+class DkBatchConfig {
+
+public:
+	DkBatchConfig() {};
+	DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern) {
+	
+		this->urls = urls;
+		this->outputDir = outputDir;
+		this->fileNamePattern = fileNamePattern;
+	};
+
+	void setUrls(const QList<QUrl>& urls) { this->urls = urls; };
+	void setOutputDir(const QDir& outputDir) {this->outputDir = outputDir; };
+	void setFileNamePattern(const QString& pattern) {this->fileNamePattern = pattern; };
+	void setStartIdx(int startIdx) { this->startIdx = startIdx; };
+	void setProcessFunctions(const QVector<DkAbstractBatch*>& processFunctions) { this->processFunctions = processFunctions; };
+	void setCompression(int compression) { this->compression = compression; };
+	void setMode(int mode) { this->mode = mode; };
+
+	QList<QUrl> getUrls() const { return urls; };
+	QDir getOutputDir() const { return outputDir; };
+	QString getFileNamePattern() const { return fileNamePattern; };
+	int getStartIdx() const { return startIdx; };
+	QVector<DkAbstractBatch*> getProcessFunctions() const { return processFunctions; };
+	int getCompression() const { return compression; };
+	int getMode() const { return mode; };
+
+	enum {
+		mode_overwrite,
+		mode_skip_existing,
+
+		mode_end
+	};
+
+protected:
+	QList<QUrl> urls;
+	QDir outputDir;
+	QString fileNamePattern;
+	int startIdx;
+	int compression;
+	int mode;
+	QVector<DkAbstractBatch*> processFunctions;
+};
+
+class DkBatchProcessing : public QObject {
+	Q_OBJECT
+
+public:
+	DkBatchProcessing(const DkBatchConfig& config = DkBatchConfig(), QWidget* parent = 0);
+
+	void compute();
+	static void computeItem(DkBatchProcess& item);
+	
+	QStringList getLog() const;	// TODO
+	
+	// getter, setter
+	void setBatchConfig(const DkBatchConfig& config) { this->batchConfig = config; };
+	DkBatchConfig getBatchConfig() const { return batchConfig; };
+
+public slots:
+	// user interaction
+	void cancel();
+
+signals:
+	void resultReadyAt(int idx);
+	void finished();
+
+protected:
+	DkBatchConfig batchConfig;
+	QVector<DkBatchProcess> batchItems;
+	
+	// threading
+	QFutureWatcher<void> batchWatcher;
+	
+	void init();
 };
 
 }
