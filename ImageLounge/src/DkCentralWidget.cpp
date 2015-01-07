@@ -327,6 +327,17 @@ void DkCentralWidget::addTab(const DkTabInfo& tabInfo) {
 
 	if (tabInfos.size() > 1)
 		tabbar->show();
+
+	// TODO: add a plus button
+	//// Create button what must be placed in tabs row
+	//QToolButton* tb = new QToolButton();
+	//tb->setText("+");
+	//// Add empty, not enabled tab to tabWidget
+	//tabbar->addTab("");
+	//tabbar->setTabEnabled(0, false);
+	//// Add tab button to current tab. Button will be enabled, but tab -- not
+	//
+	//tabbar->setTabButton(0, QTabBar::RightSide, tb);
 }
 
 void DkCentralWidget::removeTab(int tabIdx) {

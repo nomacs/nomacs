@@ -1248,8 +1248,9 @@ void DkThumbScene::updateThumbLabels() {
 	QWidget* p = reinterpret_cast<QWidget*>(parent());
 	
 	// TODO: markus - think about this when migrating the ThumbScene to tabs
-	if (p && !p->isVisible())		// save some memory & give us speed (I feel the need the need for speed)
-		return;
+	//if (p && !p->isVisible())		// save some memory & give us speed (I feel the need the need for speed)
+	//	return;
+	// TODO: uncomment & fix
 
 	DkTimer dt;
 

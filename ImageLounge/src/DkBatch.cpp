@@ -34,7 +34,6 @@ DkBatchWidget::DkBatchWidget(QString titleString, QString headerString, QWidget*
 	this->titleString = titleString;
 	this->headerString = headerString;
 	createLayout();
-
 }
 
 void DkBatchWidget::createLayout() {
@@ -44,7 +43,6 @@ void DkBatchWidget::createLayout() {
 	showButton->setObjectName("showSelectionButton");
 	showButton->setCheckable(true);
 	showButton->setChecked(true);
-	
 
 	titleLabel = new QLabel(titleString);
 	titleLabel->setObjectName("DkBatchTitle");
@@ -119,6 +117,7 @@ void DkFileSelection::createLayout() {
 
 	QWidget* upperWidget = new QWidget(this);
 	QGridLayout* upperWidgetLayout = new QGridLayout(upperWidget);
+	upperWidgetLayout->setContentsMargins(0,0,0,0);
 	upperWidgetLayout->addWidget(directoryEdit, 0,0);
 	upperWidgetLayout->addWidget(browseButton, 0, 1);
 	upperWidgetLayout->addWidget(filterEdit, 1, 0);
@@ -163,15 +162,21 @@ QList<QUrl> DkFileSelection::getSelectedFiles() {
 }
 
 void DkFileSelection::setDir(const QDir& dir) {
-		cDir = dir;
-		qDebug() << "setting directory to:" << dir;
-		directoryEdit->setText(cDir.absolutePath());
-		emit newHeaderText(cDir.absolutePath());
-		loader->setDir(cDir);
 
+	cDir = dir;
+	qDebug() << "setting directory to:" << dir;
+	directoryEdit->setText(cDir.absolutePath());
+	emit newHeaderText(cDir.absolutePath());
+	loader->setDir(cDir);
 }
 
 void DkFileSelection::emitChangedSignal() {
+	
+	QDir newDir = directoryEdit->text();
+		
+	if (newDir.exists() && newDir != cDir)
+		setDir(newDir);
+
 	emit changed();
 }
 // DkFileNameWdiget --------------------------------------------------------------------
@@ -182,7 +187,10 @@ DkFilenameWidget::DkFilenameWidget(QWidget* parent) : QWidget(parent) {
 }
 
 void DkFilenameWidget::createLayout() {
+	
 	curLayout = new QGridLayout(this);
+	curLayout->setContentsMargins(0,0,0,5);
+	setMaximumWidth(500);
 
 	cBType = new QComboBox(this);
 	cBType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
@@ -201,7 +209,7 @@ void DkFilenameWidget::createLayout() {
 	sBNumber = new QSpinBox(this);
 	sBNumber->setValue(1);
 	sBNumber->setMinimum(0);
-	sBNumber->setMaximum(9);
+	sBNumber->setMaximum(999);	// change - if cbDigits->setCurrentIndex() is changed!
 
 	cBDigits = new QComboBox(this);
 	cBDigits->addItem(tr("1 digit"));
@@ -209,6 +217,7 @@ void DkFilenameWidget::createLayout() {
 	cBDigits->addItem(tr("3 digits"));
 	cBDigits->addItem(tr("4 digits"));
 	cBDigits->addItem(tr("5 digits"));
+	cBDigits->setCurrentIndex(2);	// see sBNumber->setMaximum()
 	connect(cBDigits, SIGNAL(currentIndexChanged(int)), this, SLOT(digitCBChanged(int)));
 
 	lEText = new QLineEdit(this);
@@ -365,6 +374,8 @@ void DkBatchOutput::createLayout() {
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
 	filenameGroupBox->setTitle(tr("Filename"));
 	filenameVBLayout = new QVBoxLayout(filenameGroupBox);
+	filenameVBLayout->setSpacing(0);
+	//filenameVBLayout->setContentsMargins(0,0,0,0);
 	DkFilenameWidget* fwidget = new DkFilenameWidget(this);
 	fwidget->enableMinusButton(false);
 	filenameWidgets.push_back(fwidget);
@@ -375,6 +386,8 @@ void DkBatchOutput::createLayout() {
 
 	QWidget* extensionWidget = new QWidget(this);
 	QHBoxLayout* extensionLayout = new QHBoxLayout(extensionWidget);
+	//extensionLayout->setSpacing(0);
+	extensionLayout->setContentsMargins(0,0,0,0);
 	cBExtension = new QComboBox(this);
 	cBExtension->addItem(tr("keep extension"));
 	cBExtension->addItem(tr("convert to"));
@@ -514,8 +527,8 @@ QString DkBatchOutput::getOutputDirectory() {
 }
 
 // Batch Dialog --------------------------------------------------------------------
-
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
+	
 	this->currentDirectory  = currentDirectory;
 
 	setWindowTitle(tr("Batch Conversion"));
@@ -524,6 +537,9 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 
 
 void DkBatchDialog::createLayout() {
+
+	//setStyleSheet("QWidget{border: 1px solid #000000;}");
+
 	widgets.resize(batchWidgets_end);
 	// Input Directory
 	widgets[batchWdidgets_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
@@ -556,6 +572,7 @@ void DkBatchDialog::createLayout() {
 }
 
 void DkBatchDialog::accept() {
+	
 	qDebug() << "accept is currently empty";
 	//QList<QUrl> urls = fileSelection->getSelectedFiles();
 	//for (int i = 0; i < urls.size(); i++) {
@@ -564,6 +581,7 @@ void DkBatchDialog::accept() {
 }
 
 void  DkBatchDialog::widgetChanged() {
+	
 	if (widgets[batchWdidgets_output] != 0 && widgets[batchWdidgets_input])  {
 		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batchWdidgets_output]->contentWidget())->hasUserInput();
 		QString inputDirPath = dynamic_cast<DkFileSelection*>(widgets[batchWdidgets_input]->contentWidget())->getDir();
