@@ -188,6 +188,7 @@ class DkBatchOutput : public QWidget, public DkBatchContent {
 		virtual bool hasUserInput();
 		virtual bool requiresUserInput()  {return rUserInput;};
 		QString getOutputDirectory();
+		QString getFilePattern();
 
 	signals:
 		void newHeaderText(QString);
@@ -219,6 +220,8 @@ class DkBatchOutput : public QWidget, public DkBatchContent {
 
 };
 
+class DkBatchProcessing;	// DkProcess.h
+
 class DkBatchDialog : public QDialog {
 	Q_OBJECT
 
@@ -238,6 +241,7 @@ class DkBatchDialog : public QDialog {
 		QDir currentDirectory;
 		QDialogButtonBox* buttons;
 		DkFileSelection* fileSelection;
+		DkBatchProcessing* batchProcessing;
 };
 
 }

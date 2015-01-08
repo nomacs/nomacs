@@ -26,6 +26,7 @@
  *******************************************************************************************************/
 
 #include "DkBatch.h"
+#include "DkProcess.h"
 
 namespace nmc {
 
@@ -487,6 +488,21 @@ bool DkBatchOutput::hasUserInput() {
 void DkBatchOutput::emitChangedSignal() {
 	
 	QString fName = "test-filename.jpg";
+
+	DkFileNameConverter converter(fName, getFilePattern(), 1);
+
+	oldFileNameLabel->setText(fName);
+	newFileNameLabel->setText(converter.getConvertedFileName());
+	
+	emit changed();
+}
+
+QString DkBatchOutput::getOutputDirectory() {
+	return outputlineEdit->existsDirectory() ? QDir(outputlineEdit->text()).absolutePath() : "";
+}
+
+QString DkBatchOutput::getFilePattern() {
+
 	QString pattern = "";
 
 	for (int idx = 0; idx < filenameWidgets.size(); idx++)
@@ -496,7 +512,6 @@ void DkBatchOutput::emitChangedSignal() {
 		pattern += ".<old>";
 	}
 	else {
-		// TODO: get extension
 		QString ext = cBNewExtension->itemText(cBNewExtension->currentIndex());
 
 		QStringList tmp = ext.split("(");
@@ -514,22 +529,14 @@ void DkBatchOutput::emitChangedSignal() {
 		}
 	}
 
-	DkFileNameConverter converter(fName, pattern, 1);
-
-	oldFileNameLabel->setText(fName);
-	newFileNameLabel->setText(converter.getConvertedFileName());
-	
-	emit changed();
-}
-
-QString DkBatchOutput::getOutputDirectory() {
-	return outputlineEdit->existsDirectory() ? QDir(outputlineEdit->text()).absolutePath() : "";
+	return pattern;
 }
 
 // Batch Dialog --------------------------------------------------------------------
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 	
 	this->currentDirectory  = currentDirectory;
+	batchProcessing = new DkBatchProcessing();
 
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
@@ -574,10 +581,31 @@ void DkBatchDialog::createLayout() {
 void DkBatchDialog::accept() {
 	
 	qDebug() << "accept is currently empty";
-	QList<QUrl> urls = fileSelection->getSelectedFiles();
-	for (int i = 0; i < urls.size(); i++) {
-		qDebug() << urls[i];
+	//QList<QUrl> urls = fileSelection->getSelectedFiles();
+	//for (int i = 0; i < urls.size(); i++) {
+	//	qDebug() << urls[i];
+	//}
+
+	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget());
+
+	if (!outputWidget) {
+		qDebug() << "FATAL ERROR: could not cast output widget";
+		return;
 	}
+
+	DkBatchConfig config(fileSelection->getSelectedFiles(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
+	config.setStartIdx(1); // TODO
+	
+	// TODO: collect all batch processes
+	if (!config.isOk()) {
+
+		// TODO: write a warning
+		qDebug() << "config not ok - canceling";
+		return;
+	}
+
+	batchProcessing->setBatchConfig(config);
+	batchProcessing->compute();
 }
 
 void  DkBatchDialog::widgetChanged() {

@@ -93,12 +93,9 @@ class DkBatchConfig {
 
 public:
 	DkBatchConfig() {};
-	DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern) {
-	
-		this->urls = urls;
-		this->outputDir = outputDir;
-		this->fileNamePattern = fileNamePattern;
-	};
+	DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern);
+
+	bool isOk() const;
 
 	void setUrls(const QList<QUrl>& urls) { this->urls = urls; };
 	void setOutputDir(const QDir& outputDir) {this->outputDir = outputDir; };

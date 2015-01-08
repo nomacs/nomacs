@@ -106,8 +106,9 @@ void DkBatchProcess::compute() {
 		logStrings.append(QObject::tr("Skipping because file already exists."));
 		return;
 	}
-	else if (fileInfoIn.exists()) {
+	else if (!fileInfoIn.exists()) {
 		logStrings.append(QObject::tr("Error: input file does not exist"));
+		logStrings.append(QObject::tr("Input: %1").arg(fileInfoIn.absoluteFilePath()));
 		return;
 	}
 	else if (fileInfoIn == fileInfoOut && processFunctions.empty()) {
@@ -170,7 +171,7 @@ bool DkBatchProcess::renameFile() {
 		return false;
 	}
 	else
-		logStrings.append(QObject::tr("Success"));
+		logStrings.append(QObject::tr("Renaming: %1 -> %2").arg(fileInfoIn.absoluteFilePath()).arg(fileInfoOut.absoluteFilePath()));
 
 	return true;
 }
@@ -187,11 +188,13 @@ bool DkBatchProcess::copyFile() {
 
 	if (!file.copy(fileInfoOut.absoluteFilePath())) {
 		logStrings.append(QObject::tr("Error: could not copy file"));
+		logStrings.append(QObject::tr("Input: %1").arg(fileInfoIn.absoluteFilePath()));
+		logStrings.append(QObject::tr("Output: %1").arg(fileInfoOut.absoluteFilePath()));
 		logStrings.append(file.errorString());
 		return false;
 	}
 	else
-		logStrings.append(QObject::tr("Success"));
+		logStrings.append(QObject::tr("Copying: %1 -> %2").arg(fileInfoIn.absoluteFilePath()).arg(fileInfoOut.absoluteFilePath()));
 
 	return true;
 }
@@ -209,6 +212,34 @@ bool DkBatchProcess::deleteExisting() {
 	}
 
 	return true;
+}
+
+// DkBatchConfig --------------------------------------------------------------------
+DkBatchConfig::DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern) {
+
+	this->urls = urls;
+	this->outputDir = outputDir;
+	this->fileNamePattern = fileNamePattern;
+};
+
+bool DkBatchConfig::isOk() const {
+
+	if (!outputDir.exists()) {
+		if (!outputDir.mkpath("."))
+			return false;	// output dir does not exist & i cannot create it
+	}
+
+	if (outputDir == QDir())
+		return false; // do not allow to write into my (exe) directory
+
+	if (urls.empty())
+		return false;
+
+	if (fileNamePattern.isEmpty())
+		return false;
+
+	return true;
+
 }
 
 // DkBatchProcessing --------------------------------------------------------------------
@@ -245,6 +276,8 @@ void DkBatchProcessing::compute() {
 
 	init();
 
+	qDebug() << "computing...";
+
 	QFuture<void> future = QtConcurrent::map(batchItems, &nmc::DkBatchProcessing::computeItem);
 	batchWatcher.setFuture(future);
 }
@@ -252,6 +285,7 @@ void DkBatchProcessing::compute() {
 void DkBatchProcessing::computeItem(DkBatchProcess& item) {
 
 	item.compute();
+	qDebug() << "" << item.getLog();
 }
 
 void DkBatchProcessing::cancel() {
