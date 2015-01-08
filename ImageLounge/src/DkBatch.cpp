@@ -27,6 +27,7 @@
 
 #include "DkBatch.h"
 #include "DkProcess.h"
+#include "DkDialog.h"
 
 namespace nmc {
 
@@ -537,11 +538,12 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 	
 	this->currentDirectory  = currentDirectory;
 	batchProcessing = new DkBatchProcessing();
+	connect(batchProcessing, SIGNAL(resultsReadyAt(int)), this, SLOT(updateProgress(int)));
+	connect(batchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
 
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
 }
-
 
 void DkBatchDialog::createLayout() {
 
@@ -560,11 +562,18 @@ void DkBatchDialog::createLayout() {
 	widgets[batchWdidgets_output]->setContentWidget(outputSelection);
 
 	// buttons
+	logButton = new QPushButton(tr("Show &Log"), this);
+	logButton->setToolTip(tr("Removes All Custom Shortcuts"));
+	logButton->setEnabled(false);
+	connect(logButton, SIGNAL(clicked()), this, SLOT(logButtonClicked()));
+
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->addButton(logButton, QDialogButtonBox::ActionRole);
+
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -605,18 +614,51 @@ void DkBatchDialog::accept() {
 	}
 
 	// create processing functions
-	DkResizeBatch resizeBatch;
-	resizeBatch.setProperties(0.5f);
+	QSharedPointer<DkResizeBatch> resizeBatch(new DkResizeBatch);
+	resizeBatch->setProperties(0.5f);
 
-	QVector<DkAbstractBatch*> processFunctions;
-	processFunctions.append(&resizeBatch);
+	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
+	processFunctions.append(resizeBatch);
 
 	config.setProcessFunctions(processFunctions);
 	batchProcessing->setBatchConfig(config);
 	batchProcessing->compute();
 }
 
-void  DkBatchDialog::widgetChanged() {
+void DkBatchDialog::reject() {
+
+	if (batchProcessing->isComputing()) {
+		batchProcessing->cancel();
+		// TODO: GUI changes
+		logButton->setEnabled(true);
+	}
+	else
+		QDialog::reject();
+}
+
+void DkBatchDialog::processingFinished() {
+
+	logButton->setEnabled(true);
+}
+
+void DkBatchDialog::updateProgress(int progress) {
+
+	// TODO: update the progess bar
+}
+
+void DkBatchDialog::logButtonClicked() {
+
+	QStringList log = batchProcessing->getLog();
+
+	DkTextDialog* textDialog = new DkTextDialog(this);
+	textDialog->setText(log);
+
+	textDialog->exec();
+
+	// TODO: open log file
+}
+
+void DkBatchDialog::widgetChanged() {
 	
 	if (widgets[batchWdidgets_output] != 0 && widgets[batchWdidgets_input])  {
 		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batchWdidgets_output]->contentWidget())->hasUserInput();

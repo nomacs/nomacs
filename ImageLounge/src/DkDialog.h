@@ -57,6 +57,7 @@
 #include <QDialogButtonBox>
 #include <QListWidget>
 #include <QProgressDialog>
+#include <QTextEdit>
 
 #include <QPrintPreviewWidget>
 #include <QPageSetupDialog>
@@ -549,6 +550,23 @@ protected:
 	QLabel* notificationLabel;
 	QPushButton* defaultButton;
 
+};
+
+class DkTextDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkTextDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+	void setText(const QStringList& text);
+
+public slots:
+	virtual void save();
+
+protected:
+	void createLayout();
+
+	QTextEdit* textEdit;
 };
 
 class DkUpdateDialog : public QDialog {

@@ -33,7 +33,6 @@
 #define lanUDPPortEnd 28576
 #define rcUDPPort 28565
 
-
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QTcpSocket>

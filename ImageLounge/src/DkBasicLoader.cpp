@@ -1132,7 +1132,7 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fileInfo.suffix().toStdString().c_str());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
-		saved = imgWriter->write(sImg);		// TODO: J2K crash detected
+		saved = imgWriter->write(sImg);
 		delete imgWriter;
 	}
 
@@ -1143,7 +1143,7 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 			metaData->clearOrientation();
 			metaData->setThumbnail(DkImage::createThumb(img));
 			metaData->saveMetaData(ba, true);
-			metaData->printMetaData();
+			//metaData->printMetaData();	// debug
 		} 
 		catch (...) {
 			// is it still throwing anything?

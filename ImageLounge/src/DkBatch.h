@@ -1,29 +1,29 @@
 /*******************************************************************************************************
- DkNoMacs.h
- Created on:	26.10.2014
+DkNoMacs.h
+Created on:	26.10.2014
  
- nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
+nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
- Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
- Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
- Copyright (C) 2011-2014 Florian Kleber <florian@nomacs.org>
+Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
+Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
+Copyright (C) 2011-2014 Florian Kleber <florian@nomacs.org>
 
- This file is part of nomacs.
+This file is part of nomacs.
 
- nomacs is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+nomacs is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
- nomacs is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+nomacs is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
- *******************************************************************************************************/
+*******************************************************************************************************/
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -41,207 +41,212 @@ namespace nmc {
 
 // TODO: these enums are global - they should be put into the respective classes
 enum batchWidgets {
-	batchWdidgets_input,
-	batchWdidgets_output,
+batchWdidgets_input,
+batchWdidgets_output,
 
-	batchWidgets_end
+batchWidgets_end
 };
 
 enum fileNameTypes {
-	fileNameTypes_fileName,
-	fileNameTypes_Number,
-	fileNameTypes_Text,
+fileNameTypes_fileName,
+fileNameTypes_Number,
+fileNameTypes_Text,
 
-	fileNameTypes_end
+fileNameTypes_end
 };
 
 enum fileNameWidget {
-	fileNameWidget_type,
-	fileNameWidget_input1,
-	fileNameWidget_input2,
-	fileNameWidget_plus,
-	fileNameWidget_minus,
+fileNameWidget_type,
+fileNameWidget_input1,
+fileNameWidget_input2,
+fileNameWidget_plus,
+fileNameWidget_minus,
 
-	fileNameWidget_end
+fileNameWidget_end
 };
 
 
 class DkBatchWidget : public QWidget {
-	Q_OBJECT
-	public:
-		DkBatchWidget(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
+Q_OBJECT
+public:
+	DkBatchWidget(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	
-		void setContentWidget(QWidget* batchContent);
-		QWidget* contentWidget() const;
+	void setContentWidget(QWidget* batchContent);
+	QWidget* contentWidget() const;
 
-	public slots:
-		void setTitle(QString title);
-		void setHeader(QString header);
+public slots:
+	void setTitle(QString title);
+	void setHeader(QString header);
 		
 
-	protected:
-		virtual void createLayout();
+protected:
+	virtual void createLayout();
 
-	private:
-		DkBatchContent* batchContent;
-		QVBoxLayout* batchWidgetLayout;
-		QString titleString, headerString;
-		QLabel* titleLabel; 
-		QLabel* headerLabel;
-		DkButton* showButton;
+private:
+	DkBatchContent* batchContent;
+	QVBoxLayout* batchWidgetLayout;
+	QString titleString, headerString;
+	QLabel* titleLabel; 
+	QLabel* headerLabel;
+	DkButton* showButton;
 };
 
 
 class DkFileSelection : public QWidget, public DkBatchContent  {
-	Q_OBJECT
+Q_OBJECT
 
-	public:
-		DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
+public:
+	DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-		QString getDir() {
-			return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()).absolutePath() : "";
-		};
+	QString getDir() {
+		return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()).absolutePath() : "";
+	};
 
-		void setDir(const QDir& dir);
+	void setDir(const QDir& dir);
 
-		QList<QUrl> getSelectedFiles();
+	QList<QUrl> getSelectedFiles();
 
-		virtual bool hasUserInput() {return hUserInput;};
-		virtual bool requiresUserInput() {return rUserInput;};
+	virtual bool hasUserInput() {return hUserInput;};
+	virtual bool requiresUserInput() {return rUserInput;};
 
-	public slots:
-		void browse();
-		void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
-		void setVisible(bool visible);
-		void emitChangedSignal();
+public slots:
+	void browse();
+	void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
+	void setVisible(bool visible);
+	void emitChangedSignal();
 
-	signals:
-		void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
-		void newHeaderText(QString);
-		void changed();
+signals:
+	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
+	void newHeaderText(QString);
+	void changed();
 
-	protected:
-		virtual void createLayout();
+protected:
+	virtual void createLayout();
 
-		QDir cDir;
-		QListView* fileWidget;
-		DkThumbScrollWidget* thumbScrollWidget;
-		DkImageLoader* loader;
-		DkDirectoryEdit* directoryEdit;
+	QDir cDir;
+	QListView* fileWidget;
+	DkThumbScrollWidget* thumbScrollWidget;
+	DkImageLoader* loader;
+	DkDirectoryEdit* directoryEdit;
 
-	private:
-		bool hUserInput;
-		bool rUserInput;
+private:
+	bool hUserInput;
+	bool rUserInput;
 
 };
 
 class DkFilenameWidget : public QWidget {
-	Q_OBJECT
+Q_OBJECT
 
-	public:	
-		DkFilenameWidget(QWidget* parent = 0);
-		void enableMinusButton(bool enable);
-		void enablePlusButton(bool enable);
-		bool hasUserInput() {return hasChanged;};
-		QString getTag() const;
+public:	
+	DkFilenameWidget(QWidget* parent = 0);
+	void enableMinusButton(bool enable);
+	void enablePlusButton(bool enable);
+	bool hasUserInput() {return hasChanged;};
+	QString getTag() const;
 
-	signals:
-		void plusPressed(DkFilenameWidget*);
-		void minusPressed(DkFilenameWidget*);
-		void changed();
+signals:
+	void plusPressed(DkFilenameWidget*);
+	void minusPressed(DkFilenameWidget*);
+	void changed();
 
-	private slots:
-		void typeCBChanged(int index);
-		void pbPlusPressed();
-		void pbMinusPressed();
-		void checkForUserInput();
-		void digitCBChanged(int index);
+private slots:
+	void typeCBChanged(int index);
+	void pbPlusPressed();
+	void pbMinusPressed();
+	void checkForUserInput();
+	void digitCBChanged(int index);
 
-	private:
-		void createLayout();
-		void showOnlyText();
-		void showOnlyNumber();
-		void showOnlyFilename();
+private:
+	void createLayout();
+	void showOnlyText();
+	void showOnlyNumber();
+	void showOnlyFilename();
 
-		QComboBox* cBType;
+	QComboBox* cBType;
 		
-		QLineEdit* lEText;
-		QComboBox* cBCase;
+	QLineEdit* lEText;
+	QComboBox* cBCase;
 
-		QSpinBox* sBNumber;
-		QComboBox* cBDigits;
+	QSpinBox* sBNumber;
+	QComboBox* cBDigits;
 		
-		QPushButton* pbPlus;
-		QPushButton* pbMinus;
+	QPushButton* pbPlus;
+	QPushButton* pbMinus;
 
-		QGridLayout* curLayout;
+	QGridLayout* curLayout;
 
-		bool hasChanged;
+	bool hasChanged;
 };
 
 class DkBatchOutput : public QWidget, public DkBatchContent {
-	Q_OBJECT
+Q_OBJECT
 
-	public:
-		DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = 0);
+public:
+	DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-		virtual bool hasUserInput();
-		virtual bool requiresUserInput()  {return rUserInput;};
-		QString getOutputDirectory();
-		QString getFilePattern();
+	virtual bool hasUserInput();
+	virtual bool requiresUserInput()  {return rUserInput;};
+	QString getOutputDirectory();
+	QString getFilePattern();
 
-	signals:
-		void newHeaderText(QString);
-		void changed();
+signals:
+	void newHeaderText(QString);
+	void changed();
 
-	protected slots:
-		void browse();
-		void plusPressed(DkFilenameWidget* widget);
-		void minusPressed(DkFilenameWidget* widget);
-		void extensionCBChanged(int index);
-		void emitChangedSignal();
+protected slots:
+	void browse();
+	void plusPressed(DkFilenameWidget* widget);
+	void minusPressed(DkFilenameWidget* widget);
+	void extensionCBChanged(int index);
+	void emitChangedSignal();
 
-	protected:
-		virtual void createLayout();
-		void setDir(QDir dir);
+protected:
+	virtual void createLayout();
+	void setDir(QDir dir);
 
-	private:
-		bool hUserInput;
-		bool rUserInput;
-		QDir outputDirectory;
-		DkDirectoryEdit* outputlineEdit;
-		QVector<DkFilenameWidget*> filenameWidgets;
-		QVBoxLayout* filenameVBLayout;
+private:
+	bool hUserInput;
+	bool rUserInput;
+	QDir outputDirectory;
+	DkDirectoryEdit* outputlineEdit;
+	QVector<DkFilenameWidget*> filenameWidgets;
+	QVBoxLayout* filenameVBLayout;
 
-		QComboBox* cBExtension;
-		QComboBox* cBNewExtension;
-		QLabel* oldFileNameLabel;
-		QLabel* newFileNameLabel;
+	QComboBox* cBExtension;
+	QComboBox* cBNewExtension;
+	QLabel* oldFileNameLabel;
+	QLabel* newFileNameLabel;
 
 };
 
 class DkBatchProcessing;	// DkProcess.h
 
 class DkBatchDialog : public QDialog {
-	Q_OBJECT
+Q_OBJECT
 
-	public:
-		DkBatchDialog(QDir currentDirectory = QDir(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+public:
+	DkBatchDialog(QDir currentDirectory = QDir(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	public slots:
-		virtual void accept();
-		void widgetChanged();
+public slots:
+	virtual void accept();
+	virtual void reject();
+	void widgetChanged();
+	void logButtonClicked();
+	void processingFinished();
+	void updateProgress(int progress);
 
-	protected:
-		void createLayout();
+protected:
+	void createLayout();
 		
-	private:
-		QVector<DkBatchWidget*> widgets;
+private:
+	QVector<DkBatchWidget*> widgets;
 		
-		QDir currentDirectory;
-		QDialogButtonBox* buttons;
-		DkFileSelection* fileSelection;
-		DkBatchProcessing* batchProcessing;
+	QDir currentDirectory;
+	QDialogButtonBox* buttons;
+	DkFileSelection* fileSelection;
+	DkBatchProcessing* batchProcessing;
+	QPushButton* logButton;
 };
 
 }

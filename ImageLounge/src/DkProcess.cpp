@@ -30,6 +30,15 @@
 namespace nmc {
 
 // DkAbstractBatch --------------------------------------------------------------------
+
+/**
+ * Generic compute method.
+ * This method allows for a simplified interface if a derived class
+ * just needs to process the image itself (not meta data).
+ * @param container the image container to be processed
+ * @param logStrings log strings
+ * @return bool true on success
+ **/ 
 bool DkAbstractBatch::compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const {
 	
 	QImage img = container->image();
@@ -89,7 +98,7 @@ DkBatchProcess::DkBatchProcess(const QFileInfo& fileInfoIn, const QFileInfo& fil
 	mode = DkBatchConfig::mode_skip_existing;
 }
 
-void DkBatchProcess::setProcessChain(const QVector<DkAbstractBatch*> processes) {
+void DkBatchProcess::setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes) {
 
 	this->processFunctions = processes;
 }
@@ -136,6 +145,8 @@ QStringList DkBatchProcess::getLog() const {
 
 bool DkBatchProcess::process() {
 
+	logStrings.append(QObject::tr("processing %1").arg(fileInfoIn.absoluteFilePath()));
+
 	QSharedPointer<DkImageContainer> imgC(new DkImageContainer(fileInfoIn));
 
 	if (!imgC->loadImage() || imgC->image().isNull()) {
@@ -143,10 +154,10 @@ bool DkBatchProcess::process() {
 		return false;
 	}
 
-	for (DkAbstractBatch* batch : processFunctions) {
+	for (QSharedPointer<DkAbstractBatch> batch : processFunctions) {
 
 		if (!batch) {
-			logStrings.append(QObject::tr("Warning: cannot compute, NULL process"));
+			logStrings.append(QObject::tr("Error: cannot process a NULL function."));
 			continue;
 		}
 
@@ -156,6 +167,7 @@ bool DkBatchProcess::process() {
 	}
 
 	imgC->saveImage(fileInfoOut, compression);
+	logStrings.append(QObject::tr("%1 saved...").arg(fileInfoOut.absoluteFilePath()));
 
 	return true;
 }
@@ -289,6 +301,23 @@ void DkBatchProcessing::computeItem(DkBatchProcess& item) {
 
 	item.compute();
 	qDebug() << "" << item.getLog();
+}
+
+QStringList DkBatchProcessing::getLog() const {
+
+	QStringList log;
+
+	for (DkBatchProcess batch : batchItems) {
+
+		log << batch.getLog();
+	}
+
+	return log;
+}
+
+bool DkBatchProcessing::isComputing() const {
+
+	return batchWatcher.isRunning();
 }
 
 void DkBatchProcessing::cancel() {

@@ -2135,6 +2135,40 @@ void DkShortcutsDialog::accept() {
 	QDialog::accept();
 }
 
+// DkTextDialog --------------------------------------------------------------------
+DkTextDialog::DkTextDialog(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDialog(parent, flags) {
+
+	createLayout();
+}
+
+void DkTextDialog::createLayout() {
+
+	textEdit = new QTextEdit(this);
+
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Save"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+
+	connect(buttons, SIGNAL(accepted()), this, SLOT(save()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	// dialog layout
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(textEdit);
+	layout->addWidget(buttons);
+}
+
+void DkTextDialog::setText(const QStringList& text) {
+	textEdit->setText(text.join("\n"));
+}
+
+void DkTextDialog::save() {
+
+	// TODO: save dialog
+
+}
+
 // DkUpdateDialog --------------------------------------------------------------------
 DkUpdateDialog::DkUpdateDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 	init();

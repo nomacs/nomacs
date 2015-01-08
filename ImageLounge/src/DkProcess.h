@@ -45,6 +45,17 @@ public:
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
 	virtual bool compute(QImage& img, QStringList& logStrings) const {return true;};
 	virtual QString name() const {return "Abstract Batch";};
+
+private:
+	// ok, this is important:
+	// we are using the abstract class to process specialized items
+	// if we allow copy operations - we get slicing issues
+	// so we just allow pointers to the batch processing functions.
+	// but pointers result in threading issues - so we just use
+	// QSharedPointers -> problem solved : )
+	DkAbstractBatch(const DkAbstractBatch& o);
+	DkAbstractBatch& operator=( const DkAbstractBatch& o);
+
 };
 
 class DkResizeBatch : public DkAbstractBatch {
@@ -69,7 +80,7 @@ public:
 
 	DkBatchProcess(const QFileInfo& fileInfoIn = QFileInfo(), const QFileInfo& fileInfoOut = QFileInfo());
 
-	void setProcessChain(const QVector<DkAbstractBatch*> processes);
+	void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes);
 	void setMode(int mode);
 	void compute();	// do the work
 	QStringList getLog() const;
@@ -80,7 +91,7 @@ protected:
 	int mode;
 	int compression;
 
-	QVector<DkAbstractBatch*> processFunctions;
+	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 	QStringList logStrings;
 
 	bool process();
@@ -101,7 +112,7 @@ public:
 	void setOutputDir(const QDir& outputDir) {this->outputDir = outputDir; };
 	void setFileNamePattern(const QString& pattern) {this->fileNamePattern = pattern; };
 	void setStartIdx(int startIdx) { this->startIdx = startIdx; };
-	void setProcessFunctions(const QVector<DkAbstractBatch*>& processFunctions) { this->processFunctions = processFunctions; };
+	void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch> >& processFunctions) { this->processFunctions = processFunctions; };
 	void setCompression(int compression) { this->compression = compression; };
 	void setMode(int mode) { this->mode = mode; };
 
@@ -109,7 +120,7 @@ public:
 	QDir getOutputDir() const { return outputDir; };
 	QString getFileNamePattern() const { return fileNamePattern; };
 	int getStartIdx() const { return startIdx; };
-	QVector<DkAbstractBatch*> getProcessFunctions() const { return processFunctions; };
+	QVector<QSharedPointer<DkAbstractBatch> > getProcessFunctions() const { return processFunctions; };
 	int getCompression() const { return compression; };
 	int getMode() const { return mode; };
 
@@ -127,7 +138,7 @@ protected:
 	int startIdx;
 	int compression;
 	int mode;
-	QVector<DkAbstractBatch*> processFunctions;
+	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 };
 
 class DkBatchProcessing : public QObject {
@@ -141,6 +152,8 @@ public:
 	
 	QStringList getLog() const;	// TODO
 	
+	bool isComputing() const;
+
 	// getter, setter
 	void setBatchConfig(const DkBatchConfig& config) { this->batchConfig = config; };
 	DkBatchConfig getBatchConfig() const { return batchConfig; };
