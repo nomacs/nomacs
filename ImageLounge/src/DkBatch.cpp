@@ -604,6 +604,14 @@ void DkBatchDialog::accept() {
 		return;
 	}
 
+	// create processing functions
+	DkResizeBatch resizeBatch;
+	resizeBatch.setProperties(0.5f);
+
+	QVector<DkAbstractBatch*> processFunctions;
+	processFunctions.append(&resizeBatch);
+
+	config.setProcessFunctions(processFunctions);
 	batchProcessing->setBatchConfig(config);
 	batchProcessing->compute();
 }

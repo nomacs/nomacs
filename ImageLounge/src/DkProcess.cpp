@@ -121,7 +121,7 @@ void DkBatchProcess::compute() {
 		renameFile();
 		return;
 	}
-	else if (processFunctions.empty())	{	// copy?
+	else if (processFunctions.empty() && fileInfoIn.suffix() == fileInfoOut.suffix())	{	// copy?
 		copyFile();
 		return;
 	}
@@ -162,7 +162,11 @@ bool DkBatchProcess::process() {
 
 bool DkBatchProcess::renameFile() {
 
-	// if processes are empty - it is a simple copy operation
+	if (fileInfoOut.exists()) {
+		logStrings.append(QObject::tr("Error: could not rename file, the target file exists already."));
+		return false;
+	}
+
 	QFile file(fileInfoIn.absoluteFilePath());
 
 	if (!file.rename(fileInfoOut.absoluteFilePath())) {
@@ -178,7 +182,6 @@ bool DkBatchProcess::renameFile() {
 
 bool DkBatchProcess::copyFile() {
 
-	// if processes are empty - it is a simple copy operation
 	QFile file(fileInfoIn.absoluteFilePath());
 
 	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_overwrite) {
