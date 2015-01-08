@@ -187,6 +187,7 @@ public:
 
 	virtual bool hasUserInput();
 	virtual bool requiresUserInput()  {return rUserInput;};
+	int overwriteMode();
 	QString getOutputDirectory();
 	QString getFilePattern();
 
@@ -212,6 +213,7 @@ private:
 	DkDirectoryEdit* outputlineEdit;
 	QVector<DkFilenameWidget*> filenameWidgets;
 	QVBoxLayout* filenameVBLayout;
+	QCheckBox* cbOverwriteExisting;
 
 	QComboBox* cBExtension;
 	QComboBox* cBNewExtension;

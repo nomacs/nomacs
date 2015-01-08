@@ -112,7 +112,7 @@ void DkBatchProcess::compute() {
 
 	// check errors
 	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_skip_existing) {
-		logStrings.append(QObject::tr("Skipping because file already exists."));
+		logStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(fileInfoOut.absoluteFilePath()));
 		return;
 	}
 	else if (!fileInfoIn.exists()) {
@@ -130,7 +130,7 @@ void DkBatchProcess::compute() {
 		renameFile();
 		return;
 	}
-	else if (processFunctions.empty() && fileInfoIn.suffix() == fileInfoOut.suffix())	{	// copy?
+	else if (processFunctions.empty() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// copy?
 		copyFile();
 		return;
 	}
@@ -235,7 +235,15 @@ DkBatchConfig::DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, con
 	this->urls = urls;
 	this->outputDir = outputDir;
 	this->fileNamePattern = fileNamePattern;
+	init();
 };
+
+void DkBatchConfig::init() {
+
+	startIdx = 0;
+	compression = -1;
+	mode = mode_skip_existing;
+}
 
 bool DkBatchConfig::isOk() const {
 
@@ -254,7 +262,6 @@ bool DkBatchConfig::isOk() const {
 		return false;
 
 	return true;
-
 }
 
 // DkBatchProcessing --------------------------------------------------------------------
@@ -292,6 +299,9 @@ void DkBatchProcessing::compute() {
 	init();
 
 	qDebug() << "computing...";
+
+	if (batchWatcher.isRunning())
+		batchWatcher.waitForFinished();
 
 	QFuture<void> future = QtConcurrent::map(batchItems, &nmc::DkBatchProcessing::computeItem);
 	batchWatcher.setFuture(future);

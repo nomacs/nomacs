@@ -103,7 +103,7 @@ protected:
 class DkBatchConfig {
 
 public:
-	DkBatchConfig() {};
+	DkBatchConfig() { init(); };
 	DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern);
 
 	bool isOk() const;
@@ -132,6 +132,8 @@ public:
 	};
 
 protected:
+	void init();
+
 	QList<QUrl> urls;
 	QDir outputDir;
 	QString fileNamePattern;

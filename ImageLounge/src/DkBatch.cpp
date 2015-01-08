@@ -362,15 +362,25 @@ void DkBatchOutput::createLayout() {
 	// Output Directory Groupbox
 	QGroupBox* outDirGroupBox = new QGroupBox(this);
 	outDirGroupBox->setTitle(tr("Output Directory"));
-	QHBoxLayout* outDirGBLayout = new QHBoxLayout(outDirGroupBox);
+
+	QWidget* outDirWidget = new QWidget(this);
+	QHBoxLayout* outDirLayout = new QHBoxLayout(outDirWidget);
 
 	outputlineEdit = new DkDirectoryEdit();
 	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
 	// TODO
 	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
 	connect(outputlineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
-	outDirGBLayout->addWidget(outputlineEdit);
-	outDirGBLayout->addWidget(outputBrowseButton);
+	outDirLayout->addWidget(outputlineEdit);
+	outDirLayout->addWidget(outputBrowseButton);
+
+	// overwrite existing
+	cbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files."));
+	cbOverwriteExisting->setStatusTip("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!");
+
+	QVBoxLayout* outDirGBLayout = new QVBoxLayout(outDirGroupBox);
+	outDirGBLayout->addWidget(outDirWidget);
+	outDirGBLayout->addWidget(cbOverwriteExisting);
 
 	// Filename Groupbox
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
@@ -532,6 +542,14 @@ QString DkBatchOutput::getFilePattern() {
 	return pattern;
 }
 
+int DkBatchOutput::overwriteMode() {
+
+	if (cbOverwriteExisting->isChecked())
+		return DkBatchConfig::mode_overwrite;
+
+	return DkBatchConfig::mode_skip_existing;
+}
+
 // Batch Dialog --------------------------------------------------------------------
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 	
@@ -573,7 +591,7 @@ void DkBatchDialog::createLayout() {
 	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
 	buttons->addButton(logButton, QDialogButtonBox::ActionRole);
 
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -585,7 +603,7 @@ void DkBatchDialog::createLayout() {
 		connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 	}
 	dialogLayout->addWidget(progressBar);
-	dialogLayout->addStretch(10);
+	//dialogLayout->addStretch(10);
 	dialogLayout->addWidget(buttons);
 
 	setLayout(dialogLayout);
@@ -593,6 +611,11 @@ void DkBatchDialog::createLayout() {
 
 void DkBatchDialog::accept() {
 	
+	// check if we are good to go
+	if (fileSelection->getSelectedFiles().empty()) {
+		QMessageBox::critical(this, tr("Error"), tr("No files selected."), QMessageBox::Ok, QMessageBox::Ok);
+	}
+
 	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget());
 
 	if (!outputWidget) {
@@ -602,7 +625,8 @@ void DkBatchDialog::accept() {
 
 	DkBatchConfig config(fileSelection->getSelectedFiles(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
 	config.setStartIdx(1); // TODO
-	
+	config.setMode(outputWidget->overwriteMode());
+
 	// TODO: collect all batch processes
 	if (!config.isOk()) {
 
@@ -630,7 +654,8 @@ void DkBatchDialog::reject() {
 
 	if (batchProcessing->isComputing()) {
 		batchProcessing->cancel();
-		stopProcessing();
+		buttons->button(QDialogButtonBox::Cancel)->setEnabled(false);
+		//stopProcessing();
 	}
 	else
 		QDialog::reject();
@@ -646,7 +671,9 @@ void DkBatchDialog::startProcessing() {
 	progressBar->show();
 	progressBar->reset();
 	progressBar->setMaximum(fileSelection->getSelectedFiles().size());
+	logButton->setEnabled(false);
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 }
 
 void DkBatchDialog::stopProcessing() {
@@ -655,6 +682,8 @@ void DkBatchDialog::stopProcessing() {
 	progressBar->reset();
 	logButton->setEnabled(true);
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
+	buttons->button(QDialogButtonBox::Cancel)->setEnabled(true);
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
 }
 
 void DkBatchDialog::updateProgress(int progress) {
