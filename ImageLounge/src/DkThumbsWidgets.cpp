@@ -873,6 +873,7 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem* pa
 	//imgLabel->setFixedSize(10,10);
 	//setStyleSheet("QLabel{background: transparent;}");
 	setThumb(thumb);
+	setFlag(ItemIsSelectable, true);
 
 	//setFlag(QGraphicsItem::ItemIsSelectable, false);
 
@@ -979,10 +980,11 @@ void DkThumbLabel::updateLabel() {
 	if (!pm.isNull()) {
 		icon.setTransformationMode(Qt::SmoothTransformation);
 		icon.setPixmap(pm);
-		setFlag(ItemIsSelectable, true);
 		icon.setFlag(ItemIsSelectable, true);
 		//QFlags<enum> f;
 	}
+	if (pm.isNull())
+		setFlag(ItemIsSelectable, false);	// if we cannot load it -> disable selection
 
 	// update label
 	text.setPos(0, pm.height());

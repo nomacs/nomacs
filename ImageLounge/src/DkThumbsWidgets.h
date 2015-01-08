@@ -209,23 +209,23 @@ public:
 	void updateLayout();
 	QList<QUrl> getSelectedUrls() const;
 
-	public slots:
-		void updateThumbLabels();
-		void loadFile(QFileInfo& file);
-		void increaseThumbs();
-		void decreaseThumbs();
-		void toggleSquaredThumbs(bool squares);
-		void toggleThumbLabels(bool show);
-		void resizeThumbs(float dx);
-		void showFile(const QFileInfo& file);
-		void selectThumbs(bool select = true, int from = 0, int to = -1);
-		void selectAllThumbs(bool select = true);
-		void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+public slots:
+	void updateThumbLabels();
+	void loadFile(QFileInfo& file);
+	void increaseThumbs();
+	void decreaseThumbs();
+	void toggleSquaredThumbs(bool squares);
+	void toggleThumbLabels(bool show);
+	void resizeThumbs(float dx);
+	void showFile(const QFileInfo& file);
+	void selectThumbs(bool select = true, int from = 0, int to = -1);
+	void selectAllThumbs(bool select = true);
+	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 
 signals:
-		void loadFileSignal(QFileInfo file);
-		void statusInfoSignal(QString msg, int pos = 0);
-		void thumbLoadedSignal();
+	void loadFileSignal(QFileInfo file);
+	void statusInfoSignal(QString msg, int pos = 0);
+	void thumbLoadedSignal();
 
 protected:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;

@@ -363,24 +363,32 @@ void DkBatchOutput::createLayout() {
 	QGroupBox* outDirGroupBox = new QGroupBox(this);
 	outDirGroupBox->setTitle(tr("Output Directory"));
 
-	QWidget* outDirWidget = new QWidget(this);
-	QHBoxLayout* outDirLayout = new QHBoxLayout(outDirWidget);
-
 	outputlineEdit = new DkDirectoryEdit();
 	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
 	// TODO
 	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
 	connect(outputlineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
+
+	QWidget* outDirWidget = new QWidget(this);
+	QHBoxLayout* outDirLayout = new QHBoxLayout(outDirWidget);
+	outDirLayout->setContentsMargins(0, 0, 0, 0);
+
 	outDirLayout->addWidget(outputlineEdit);
 	outDirLayout->addWidget(outputBrowseButton);
 
 	// overwrite existing
-	cbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files."));
-	cbOverwriteExisting->setStatusTip("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!");
+	cbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
+	cbOverwriteExisting->setToolTip("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!");
+
+	QWidget* cbWidget = new QWidget(this);	// needed for spacing
+	QHBoxLayout* cbLayout = new QHBoxLayout(cbWidget);
+	cbLayout->setContentsMargins(0, 0, 0, 0);
+	cbLayout->addWidget(cbOverwriteExisting);
 
 	QVBoxLayout* outDirGBLayout = new QVBoxLayout(outDirGroupBox);
+	outDirGroupBox->setContentsMargins(0, 10, 0, 0);
 	outDirGBLayout->addWidget(outDirWidget);
-	outDirGBLayout->addWidget(cbOverwriteExisting);
+	outDirGBLayout->addWidget(cbWidget);
 
 	// Filename Groupbox
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
@@ -401,8 +409,8 @@ void DkBatchOutput::createLayout() {
 	//extensionLayout->setSpacing(0);
 	extensionLayout->setContentsMargins(0,0,0,0);
 	cBExtension = new QComboBox(this);
-	cBExtension->addItem(tr("keep extension"));
-	cBExtension->addItem(tr("convert to"));
+	cBExtension->addItem(tr("Keep Extension"));
+	cBExtension->addItem(tr("Convert To"));
 	connect(cBExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
 
 	cBNewExtension = new QComboBox(this);
@@ -411,6 +419,7 @@ void DkBatchOutput::createLayout() {
 
 	extensionLayout->addWidget(cBExtension);
 	extensionLayout->addWidget(cBNewExtension);
+	extensionLayout->addStretch();
 	filenameVBLayout->addWidget(extensionWidget);
 	
 	QLabel* oldLabel = new QLabel(tr("Old: "));
