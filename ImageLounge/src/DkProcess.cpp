@@ -262,7 +262,7 @@ DkBatchProcessing::DkBatchProcessing(const DkBatchConfig& config, QWidget* paren
 
 	this->batchConfig = config;
 
-	connect(&batchWatcher, SIGNAL(resultReadyAt(int)), this, SIGNAL(resultReadyAt(int)));
+	connect(&batchWatcher, SIGNAL(progressValueChanged(int)), this, SIGNAL(progressValueChanged(int)));
 	connect(&batchWatcher, SIGNAL(finished()), this, SIGNAL(finished()));
 }
 
@@ -310,6 +310,7 @@ QStringList DkBatchProcessing::getLog() const {
 	for (DkBatchProcess batch : batchItems) {
 
 		log << batch.getLog();
+		log << "";	// add empty line between images
 	}
 
 	return log;

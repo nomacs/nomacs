@@ -462,8 +462,6 @@ QString DkFileNameConverter::getConvertedFileName() {
 		QString tag = rx.cap();
 		QString res = "";
 
-		qDebug() << "tag: " << tag;
-
 		if (tag.contains("<c:"))
 			res = resolveFilename(tag);
 		else if (tag.contains("<d:"))

@@ -247,6 +247,10 @@ private:
 	DkFileSelection* fileSelection;
 	DkBatchProcessing* batchProcessing;
 	QPushButton* logButton;
+	QProgressBar* progressBar;
+
+	void startProcessing();
+	void stopProcessing();
 };
 
 }

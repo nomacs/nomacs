@@ -401,7 +401,6 @@ void DkBatchOutput::createLayout() {
 
 	extensionLayout->addWidget(cBExtension);
 	extensionLayout->addWidget(cBNewExtension);
-	extensionLayout->addStretch();
 	filenameVBLayout->addWidget(extensionWidget);
 	
 	QLabel* oldLabel = new QLabel(tr("Old: "));
@@ -538,7 +537,8 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 	
 	this->currentDirectory  = currentDirectory;
 	batchProcessing = new DkBatchProcessing();
-	connect(batchProcessing, SIGNAL(resultsReadyAt(int)), this, SLOT(updateProgress(int)));
+
+	connect(batchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
 	connect(batchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
 
 	setWindowTitle(tr("Batch Conversion"));
@@ -556,10 +556,12 @@ void DkBatchDialog::createLayout() {
 	widgets[batchWdidgets_input]->setContentWidget(fileSelection);
 	fileSelection->setDir(currentDirectory);
 	
-
 	widgets[batchWdidgets_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
 	DkBatchOutput* outputSelection = new DkBatchOutput(widgets[batchWdidgets_output]);
 	widgets[batchWdidgets_output]->setContentWidget(outputSelection);
+
+	progressBar = new QProgressBar(this);
+	progressBar->setVisible(false);
 
 	// buttons
 	logButton = new QPushButton(tr("Show &Log"), this);
@@ -582,6 +584,8 @@ void DkBatchDialog::createLayout() {
 		dialogLayout->addWidget(widgets[i]);
 		connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 	}
+	dialogLayout->addWidget(progressBar);
+	dialogLayout->addStretch(10);
 	dialogLayout->addWidget(buttons);
 
 	setLayout(dialogLayout);
@@ -589,12 +593,6 @@ void DkBatchDialog::createLayout() {
 
 void DkBatchDialog::accept() {
 	
-	qDebug() << "accept is currently empty";
-	//QList<QUrl> urls = fileSelection->getSelectedFiles();
-	//for (int i = 0; i < urls.size(); i++) {
-	//	qDebug() << urls[i];
-	//}
-
 	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget());
 
 	if (!outputWidget) {
@@ -622,15 +620,17 @@ void DkBatchDialog::accept() {
 
 	config.setProcessFunctions(processFunctions);
 	batchProcessing->setBatchConfig(config);
+
+	startProcessing();
 	batchProcessing->compute();
+
 }
 
 void DkBatchDialog::reject() {
 
 	if (batchProcessing->isComputing()) {
 		batchProcessing->cancel();
-		// TODO: GUI changes
-		logButton->setEnabled(true);
+		stopProcessing();
 	}
 	else
 		QDialog::reject();
@@ -638,12 +638,28 @@ void DkBatchDialog::reject() {
 
 void DkBatchDialog::processingFinished() {
 
+	stopProcessing();
+}
+
+void DkBatchDialog::startProcessing() {
+
+	progressBar->show();
+	progressBar->reset();
+	progressBar->setMaximum(fileSelection->getSelectedFiles().size());
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+}
+
+void DkBatchDialog::stopProcessing() {
+
+	progressBar->hide();
+	progressBar->reset();
 	logButton->setEnabled(true);
+	buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
 }
 
 void DkBatchDialog::updateProgress(int progress) {
 
-	// TODO: update the progess bar
+	progressBar->setValue(progress);
 }
 
 void DkBatchDialog::logButtonClicked() {
@@ -654,8 +670,6 @@ void DkBatchDialog::logButtonClicked() {
 	textDialog->setText(log);
 
 	textDialog->exec();
-
-	// TODO: open log file
 }
 
 void DkBatchDialog::widgetChanged() {

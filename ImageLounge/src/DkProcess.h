@@ -163,7 +163,7 @@ public slots:
 	void cancel();
 
 signals:
-	void resultReadyAt(int idx);
+	void progressValueChanged(int idx);
 	void finished();
 
 protected:
