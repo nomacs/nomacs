@@ -256,7 +256,7 @@ void DkBatchProcess::compute() {
 	}
 
 	// do the work
-	if (processFunctions.empty() && fileInfoIn.absolutePath() == fileInfoOut.absolutePath()) {	// rename?
+	if (processFunctions.empty() && fileInfoIn.absolutePath() == fileInfoOut.absolutePath() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// rename?
 		renameFile();
 		return;
 	}
@@ -311,6 +311,7 @@ bool DkBatchProcess::renameFile() {
 
 	QFile file(fileInfoIn.absoluteFilePath());
 
+	// Note: if two images are renamed at the same time to the same name, one image is lost -> see Qt comment Race Condition
 	if (!file.rename(fileInfoOut.absoluteFilePath())) {
 		logStrings.append(QObject::tr("Error: could not rename file"));
 		logStrings.append(file.errorString());

@@ -1013,8 +1013,11 @@ void DkThumbLabel::updateSize() {
 	int ps = DkSettings::display.thumbPreviewSize;
 
 	if ((float)ps/maxSize != icon.scale()) {
+		icon.setScale(1.0f);
+		icon.setPos(0,0);
+
 		icon.setScale((float)ps/maxSize);
-		icon.moveBy(-(icon.pixmap().width()*icon.scale()-ps)*0.5f, -(icon.pixmap().height()*icon.scale()-ps)*0.5f);
+		icon.moveBy((ps-icon.pixmap().width()*icon.scale())*0.5f, (ps-icon.pixmap().height()*icon.scale())*0.5);
 	}
 
 	//update();
@@ -1107,8 +1110,10 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 
 	QTransform mt = painter->worldTransform();
 	QTransform it = mt;
-	it.scale(icon.scale(), icon.scale());
 	it.translate(icon.pos().x(), icon.pos().y());
+	it.scale(icon.scale(), icon.scale());
+
+	qDebug() << "icon pos (paint): " << icon.pos();
 
 	painter->setTransform(it);
 	icon.paint(painter, &noSelOption, widget);
