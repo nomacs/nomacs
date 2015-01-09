@@ -352,7 +352,7 @@ void DkBatchProcessing::init() {
 
 	batchItems.clear();
 	
-	QList<QUrl>& urls = batchConfig.getUrls();
+	QList<QUrl> urls = batchConfig.getUrls();
 
 	for (int idx = 0; idx < urls.size(); idx++) {
 
