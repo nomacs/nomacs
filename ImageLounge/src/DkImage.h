@@ -226,7 +226,7 @@ public slots:
 	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
 	void load(const QFileInfo& file);
-	void deleteFile();
+	bool deleteFile();
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false);
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();

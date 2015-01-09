@@ -21,7 +21,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define MUI_WELCOMEPAGE_TEXT "Thank you for choosing nomacs - Image Lounge which is a free image viewer. We hope you enjoy it."
+!define MUI_WELCOMEPAGE_TEXT "Thank you for choosing nomacs - Image Lounge which is a free image viewer. We hope you enjoy it.$\r$\n$\r$\n"
 
 !define MUI_WELCOMEFINISHPAGE_BITMAP ".\src\img\installer.bmp"
 ; !define MUI_HEADERIMAGE_BITMAP ".\src\img\installer.bmp"

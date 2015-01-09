@@ -1033,19 +1033,23 @@ void DkImageLoader::updateHistory() {
 /**
  * Deletes the currently loaded file.
  **/ 
-void DkImageLoader::deleteFile() {
+bool DkImageLoader::deleteFile() {
 	
 	if (currentImage && currentImage->exists()) {
 
 		QFile fileHandle(currentImage->file().absoluteFilePath());
-		if (fileHandle.remove())
+
+		if (fileHandle.remove()) {
+			QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
+			load(imgC);
 			emit showInfoSignal(tr("%1 deleted...").arg(currentImage->file().fileName()));
+			return true;
+		}
 		else
 			emit showInfoSignal(tr("Sorry, I could not delete: %1").arg(currentImage->file().fileName()));
-
-		QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
-		load(imgC);
 	}
+
+	return false;
 }
 
 /**

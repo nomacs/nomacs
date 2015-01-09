@@ -2836,8 +2836,12 @@ void DkNoMacs::deleteFile() {
 
 	QFileInfo file = viewport()->getImageLoader()->file();
 
-	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes)
-		viewport()->getImageLoader()->deleteFile();
+	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes) {
+		viewport()->stopMovie();	// movies keep file handles so stop it before we can delete files
+		
+		if (!viewport()->getImageLoader()->deleteFile())
+			viewport()->loadMovie();	// load the movie again, if we could not delete it
+	}
 }
 
 void DkNoMacs::openAppManager() {

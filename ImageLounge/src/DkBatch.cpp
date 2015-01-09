@@ -539,6 +539,9 @@ void DkBatchOutput::emitChangedSignal() {
 
 void DkBatchOutput::updateFileLabelPreview() {
 
+	if (exampleName.isEmpty())
+		return;
+
 	DkFileNameConverter converter(exampleName, getFilePattern(), 0);
 
 	oldFileNameLabel->setText(exampleName);

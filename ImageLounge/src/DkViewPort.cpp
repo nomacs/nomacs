@@ -1443,6 +1443,16 @@ void DkViewPort::previousMovieFrame() {
 	update();
 }
 
+void DkViewPort::stopMovie() {
+
+	if (!movie)
+		return;		
+	
+	movie->stop();
+	delete movie; 
+	movie = 0;
+}
+
 void DkViewPort::drawPolygon(QPainter *painter, QPolygon *polygon) {
 
 	QPoint lastPoint;

@@ -476,6 +476,8 @@ public slots:
 
 	void settingsChanged();
 	void pauseMovie(bool paused);
+	void stopMovie();
+	virtual void loadMovie();
 	void nextMovieFrame();
 	void previousMovieFrame();
 	void animateFade();
@@ -542,7 +544,6 @@ protected:
 	virtual void swipeAction(int swipeGesture);
 	virtual void createShortcuts();
 
-	virtual void loadMovie();
 	void drawPolygon(QPainter *painter, QPolygon *polygon);
 	virtual void drawBackground(QPainter *painter);
 	virtual void updateImageMatrix();
