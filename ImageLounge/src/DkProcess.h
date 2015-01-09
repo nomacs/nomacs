@@ -135,7 +135,6 @@ public:
 	void setUrls(const QList<QUrl>& urls) { this->urls = urls; };
 	void setOutputDir(const QDir& outputDir) {this->outputDir = outputDir; };
 	void setFileNamePattern(const QString& pattern) {this->fileNamePattern = pattern; };
-	void setStartIdx(int startIdx) { this->startIdx = startIdx; };
 	void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch> >& processFunctions) { this->processFunctions = processFunctions; };
 	void setCompression(int compression) { this->compression = compression; };
 	void setMode(int mode) { this->mode = mode; };
@@ -143,7 +142,6 @@ public:
 	QList<QUrl> getUrls() const { return urls; };
 	QDir getOutputDir() const { return outputDir; };
 	QString getFileNamePattern() const { return fileNamePattern; };
-	int getStartIdx() const { return startIdx; };
 	QVector<QSharedPointer<DkAbstractBatch> > getProcessFunctions() const { return processFunctions; };
 	int getCompression() const { return compression; };
 	int getMode() const { return mode; };
@@ -161,7 +159,6 @@ protected:
 	QList<QUrl> urls;
 	QDir outputDir;
 	QString fileNamePattern;
-	int startIdx;
 	int compression;
 	int mode;
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;

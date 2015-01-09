@@ -282,6 +282,7 @@ private:
 	QDir currentDirectory;
 	QDialogButtonBox* buttons;
 	DkFileSelection* fileSelection;
+	DkBatchResize* resizeWidget;
 	DkBatchProcessing* batchProcessing;
 	QPushButton* logButton;
 	QProgressBar* progressBar;

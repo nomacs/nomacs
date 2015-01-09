@@ -77,7 +77,7 @@ void DkResizeBatch::setProperties(float scaleFactor, int mode, int prop, int ipl
 
 bool DkResizeBatch::isActive() const {
 
-	if (!mode_default)
+	if (mode != mode_default)
 		return true;
 
 	if (scaleFactor != 1.0f)
@@ -98,7 +98,7 @@ bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
 	QImage tmpImg;
 
 	if (prepareProperties(img.size(), size, sf, logStrings))
-		DkImage::resizeImage(img, size, sf, iplMethod, correctGamma);
+		tmpImg = DkImage::resizeImage(img, size, sf, iplMethod, correctGamma);
 	else {
 		logStrings.append(QObject::tr("%1 no need for resizing.").arg(name()));
 		return true;
@@ -109,7 +109,11 @@ bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
 		return false;
 	}
 
-	logStrings.append(QObject::tr("%1 image resized.").arg(name()));
+	if (mode == mode_default)
+		logStrings.append(QObject::tr("%1 image resized, scale factor: %2%%").arg(name()).arg(scaleFactor*100.0f));
+	else
+		logStrings.append(QObject::tr("%1 image resized, new side: %2 px").arg(name()).arg(scaleFactor));
+
 	img = tmpImg;
 
 	return true;
@@ -121,22 +125,21 @@ bool DkResizeBatch::prepareProperties(const QSize& imgSize, QSize& size, float& 
 	QSize normalizedSize = imgSize; 
 	bool transposed = false;
 
-
-	if (mode_default) {
+	if (mode == mode_default) {
 		scaleFactor = this->scaleFactor;
 		return true;
 	}
-	else if (mode_long_side) {
+	else if (mode == mode_long_side) {
 		
 		if (imgSize.width() < imgSize.height())
 			normalizedSize.transpose();
 	}
-	else if (mode_short_side) {
+	else if (mode == mode_short_side) {
 
 		if (imgSize.width() > imgSize.height())
 			normalizedSize.transpose();
 	}
-	else if (mode_height)
+	else if (mode == mode_height)
 		normalizedSize.transpose();
 
 	sf = this->scaleFactor/normalizedSize.width();
@@ -237,7 +240,7 @@ bool DkBatchProcess::process() {
 		}
 
 		if (!batch->compute(imgC, logStrings)) {
-			logStrings.append(QObject::tr("Warning: %1 failed").arg(batch->name()));
+			logStrings.append(QObject::tr("%1 failed").arg(batch->name()));
 		}
 	}
 
@@ -315,7 +318,6 @@ DkBatchConfig::DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, con
 
 void DkBatchConfig::init() {
 
-	startIdx = 0;
 	compression = -1;
 	mode = mode_skip_existing;
 }
@@ -324,7 +326,7 @@ bool DkBatchConfig::isOk() const {
 
 	if (!outputDir.exists()) {
 		if (!outputDir.mkpath("."))
-			return false;	// output dir does not exist & i cannot create it
+			return false;	// output dir does not exist & I cannot create it
 	}
 
 	if (outputDir == QDir())
@@ -358,7 +360,7 @@ void DkBatchProcessing::init() {
 
 		QFileInfo cFileInfo(urls.at(idx).toLocalFile());
 
-		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx+batchConfig.getStartIdx());
+		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx);
 		QFileInfo newFileInfo(batchConfig.getOutputDir(), converter.getConvertedFileName());
 
 		DkBatchProcess cProcess(cFileInfo, newFileInfo);

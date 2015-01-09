@@ -563,7 +563,7 @@ protected:
 	QString resolveFilename(const QString& tag) const;
 	QString resolveIdx(const QString& tag) const;
 	QString resolveExt(const QString& tag) const;
-	int getIntAttribute(const QString& tag) const;
+	int getIntAttribute(const QString& tag, int idx = 1) const;
 
 	QString fileName;
 	QString pattern;

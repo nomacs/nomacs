@@ -197,6 +197,7 @@ void DkFileSelection::emitChangedSignal() {
 
 	emit changed();
 }
+
 // DkFileNameWdiget --------------------------------------------------------------------
 DkFilenameWidget::DkFilenameWidget(QWidget* parent) : QWidget(parent) {
 	createLayout();
@@ -228,6 +229,7 @@ void DkFilenameWidget::createLayout() {
 	sBNumber->setValue(1);
 	sBNumber->setMinimum(0);
 	sBNumber->setMaximum(999);	// change - if cbDigits->setCurrentIndex() is changed!
+	//connect(sBNumber, SIGNAL(valueChanged()), this, SIGNAL(changed()));
 
 	cBDigits = new QComboBox(this);
 	cBDigits->addItem(tr("1 digit"));
@@ -345,6 +347,7 @@ QString DkFilenameWidget::getTag() const {
 		{
 			tag += "<d:"; 
 			tag += QString::number(cBDigits->currentIndex());	// is sensitive to the index
+			tag += ":" + QString::number(sBNumber->value());
 			tag += ">";
 			break;
 		}
@@ -395,6 +398,7 @@ void DkBatchOutput::createLayout() {
 	// overwrite existing
 	cbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
 	cbOverwriteExisting->setToolTip("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!");
+	connect(cbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
 
 	QWidget* cbWidget = new QWidget(this);	// needed for spacing
 	QHBoxLayout* cbLayout = new QHBoxLayout(cbWidget);
@@ -521,7 +525,6 @@ bool DkBatchOutput::hasUserInput() {
 }
 
 void DkBatchOutput::emitChangedSignal() {
-	
 
 	updateFileLabelPreview();
 	emit changed();
@@ -529,7 +532,7 @@ void DkBatchOutput::emitChangedSignal() {
 
 void DkBatchOutput::updateFileLabelPreview() {
 
-	DkFileNameConverter converter(exampleName, getFilePattern(), 1);
+	DkFileNameConverter converter(exampleName, getFilePattern(), 0);
 
 	oldFileNameLabel->setText(exampleName);
 	newFileNameLabel->setText(converter.getConvertedFileName());
@@ -600,7 +603,7 @@ void DkBatchResize::createLayout() {
 
 	comboProperties = new QComboBox(this);
 	QStringList propertyItems;
-	propertyItems << tr("Transform All") << tr("Enlarge Only") << tr("Shrink Only");
+	propertyItems << tr("Transform All") << tr("Shrink Only") << tr("Enlarge Only");
 	comboProperties->addItems(propertyItems);
 
 	sbPercent = new QDoubleSpinBox(this);
@@ -659,7 +662,7 @@ void DkBatchResize::pxChanged(int val) {
 void DkBatchResize::transferProperties(QSharedPointer<DkResizeBatch> batchResize) const {
 
 	if (comboMode->currentIndex() == DkResizeBatch::mode_default) {
-		batchResize->setProperties((float)sbPercent->value(), comboMode->currentIndex());
+		batchResize->setProperties((float)sbPercent->value()/100.0f, comboMode->currentIndex());
 	}
 	else {
 		batchResize->setProperties((float)sbPx->value(), comboMode->currentIndex(), comboProperties->currentIndex());
@@ -691,13 +694,12 @@ void DkBatchDialog::createLayout() {
 	fileSelection->setDir(currentDirectory);
 	
 	widgets[batch_resize] = new DkBatchWidget(tr("Resize"), tr("default"), this);
-	DkBatchResize* resizeWidget = new DkBatchResize(widgets[batch_resize]);
+	resizeWidget = new DkBatchResize(widgets[batch_resize]);
 	widgets[batch_resize]->setContentWidget(resizeWidget);
 
 	widgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
 	DkBatchOutput* outputSelection = new DkBatchOutput(widgets[batch_output]);
 	widgets[batch_output]->setContentWidget(outputSelection);
-
 
 	progressBar = new QProgressBar(this);
 	progressBar->setVisible(false);
@@ -745,7 +747,6 @@ void DkBatchDialog::accept() {
 	}
 
 	DkBatchConfig config(fileSelection->getSelectedFiles(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
-	config.setStartIdx(1); // TODO
 	config.setMode(outputWidget->overwriteMode());
 
 	// TODO: collect all batch processes
@@ -758,7 +759,7 @@ void DkBatchDialog::accept() {
 
 	// create processing functions
 	QSharedPointer<DkResizeBatch> resizeBatch(new DkResizeBatch);
-	dynamic_cast<DkBatchResize*>(widgets[batch_resize]->contentWidget())->transferProperties(resizeBatch);
+	resizeWidget->transferProperties(resizeBatch);
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 	
@@ -833,6 +834,7 @@ void DkBatchDialog::widgetChanged() {
 		
 		if (inputDirPath == "" || outputDirPath == "") {
 			qDebug() << "inputDir or outputDir empty ... input:" << inputDirPath << " output:" << outputDirPath;
+			buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 			return;
 		}
 		qDebug() << "outputDir:" << outputDirPath ;
@@ -842,6 +844,8 @@ void DkBatchDialog::widgetChanged() {
 		if (!outputChanged && inputDirPath.toLower() != outputDirPath.toLower())
 			enableButton = true;
 		else if (outputChanged)
+			enableButton = true;
+		else if (dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->overwriteMode() == DkBatchConfig::mode_overwrite)
 			enableButton = true;
 
 		buttons->button(QDialogButtonBox::Ok)->setEnabled(enableButton);

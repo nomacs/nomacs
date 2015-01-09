@@ -500,16 +500,18 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 
 	// append zeros
 	int numZeros = getIntAttribute(tag);
+	int startIdx = getIntAttribute(tag, 2);
+	int fIdx = startIdx+cIdx;
 
 	if (numZeros > 0) {
 
 		// zero padding
-		for (int idx = 0; idx < numZeros - std::floor(std::log10(cIdx)); idx++) {
+		for (int idx = 0; idx < numZeros - std::floor(std::log10(fIdx)); idx++) {
 			result += "0";
 		}
 	}
 
-	result += QString::number(cIdx);
+	result += QString::number(fIdx);
 
 	return result;
 }
@@ -521,14 +523,14 @@ QString DkFileNameConverter::resolveExt(const QString& tag) const {
 	return result;
 }
 
-int DkFileNameConverter::getIntAttribute(const QString& tag) const {
+int DkFileNameConverter::getIntAttribute(const QString& tag, int idx) const {
 
 	int attr = 0;
 
 	QStringList num = tag.split(":");
 
-	if (num.length() == 2) {
-		QString attrStr = num.at(1);
+	if (num.length() > idx) {
+		QString attrStr = num.at(idx);
 		attrStr.replace(">", "");
 		attr = attrStr.toInt();
 

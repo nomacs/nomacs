@@ -1256,7 +1256,10 @@ void DkThumbScene::updateThumbLabels() {
 
 	DkTimer dt;
 
+	blockSignals(true);	// do not emit selection changed while clearing!
 	clear();	// deletes the thumbLabels
+	blockSignals(false);
+
 	qDebug() << "clearing viewport: " << dt.getTotal();
 	thumbLabels.clear();
 	thumbsNotLoaded.clear();
@@ -1284,6 +1287,8 @@ void DkThumbScene::updateThumbLabels() {
 
 	if (!thumbs.empty())
 		updateLayout();
+
+	emit selectionChanged();
 
 	qDebug() << "initializing labels takes: " << dt.getTotal();
 }
@@ -1371,7 +1376,7 @@ QList<QUrl> DkThumbScene::getSelectedUrls() const {
 
 	for (int idx = 0; idx < thumbLabels.size(); idx++) {
 
-		if (thumbLabels.at(idx)->isSelected()) {
+		if (thumbLabels.at(idx) && thumbLabels.at(idx)->isSelected()) {
 			urls.append("file:///" + thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
 		}
 	}
