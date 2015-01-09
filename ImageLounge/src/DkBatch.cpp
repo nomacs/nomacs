@@ -40,7 +40,7 @@ DkBatchWidget::DkBatchWidget(QString titleString, QString headerString, QWidget*
 
 void DkBatchWidget::createLayout() {
 	
-	showButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
+	showButton = new DkButton(QIcon(":/nomacs/img/minus.png"), QIcon(":/nomacs/img/plus.png"), "Plus");
 	showButton->setFixedSize(QSize(16,16));
 	showButton->setObjectName("showSelectionButton");
 	showButton->setCheckable(true);
@@ -71,6 +71,7 @@ void DkBatchWidget::createLayout() {
 void DkBatchWidget::setContentWidget(QWidget* batchContent) {
 	
 	this->batchContent = dynamic_cast<DkBatchContent*>(batchContent);
+
 	batchWidgetLayout->addWidget(batchContent);
 	connect(showButton, SIGNAL(toggled(bool)), batchContent, SLOT(setVisible(bool)));
 	connect(batchContent, SIGNAL(newHeaderText(QString)), this, SLOT(setHeader(QString)));
@@ -79,6 +80,12 @@ void DkBatchWidget::setContentWidget(QWidget* batchContent) {
 QWidget* DkBatchWidget::contentWidget() const {
 	
 	return dynamic_cast<QWidget*>(batchContent);
+}
+
+void DkBatchWidget::showContent(bool show) {
+
+	showButton->click();
+	//contentWidget()->setVisible(show);
 }
 
 void DkBatchWidget::setTitle(QString titleString) {
@@ -519,7 +526,7 @@ void DkBatchOutput::extensionCBChanged(int index) {
 }
 
 
-bool DkBatchOutput::hasUserInput() {
+bool DkBatchOutput::hasUserInput() const {
 	// TODO add output directory 
 	return filenameWidgets.size() > 1 || filenameWidgets[0]->hasUserInput() || cBExtension->currentIndex() == 1;
 }
@@ -649,7 +656,7 @@ void DkBatchResize::modeChanged(int idx) {
 void DkBatchResize::percentChanged(double val) {
 
 	if (val == 100.0)
-		emit newHeaderText(tr("default"));
+		emit newHeaderText(tr("inactive"));
 	else
 		emit newHeaderText(QString::number(val) + "%");
 }
@@ -667,6 +674,16 @@ void DkBatchResize::transferProperties(QSharedPointer<DkResizeBatch> batchResize
 	else {
 		batchResize->setProperties((float)sbPx->value(), comboMode->currentIndex(), comboProperties->currentIndex());
 	}
+}
+
+bool DkBatchResize::hasUserInput() const {
+
+	return !(comboMode->currentIndex() == DkResizeBatch::mode_default && sbPercent->value() == 100.0);
+}
+
+bool DkBatchResize::requiresUserInput() const {
+
+	return false;
 }
 
 // Batch Dialog --------------------------------------------------------------------
@@ -693,9 +710,11 @@ void DkBatchDialog::createLayout() {
 	widgets[batch_input]->setContentWidget(fileSelection);
 	fileSelection->setDir(currentDirectory);
 	
-	widgets[batch_resize] = new DkBatchWidget(tr("Resize"), tr("default"), this);
+	// fold content
+	widgets[batch_resize] = new DkBatchWidget(tr("Resize"), tr("inactive"), this);
 	resizeWidget = new DkBatchResize(widgets[batch_resize]);
 	widgets[batch_resize]->setContentWidget(resizeWidget);
+	widgets[batch_resize]->showContent(false);
 
 	widgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
 	DkBatchOutput* outputSelection = new DkBatchOutput(widgets[batch_output]);
@@ -833,12 +852,9 @@ void DkBatchDialog::widgetChanged() {
 		QString outputDirPath = dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->getOutputDirectory();
 		
 		if (inputDirPath == "" || outputDirPath == "") {
-			qDebug() << "inputDir or outputDir empty ... input:" << inputDirPath << " output:" << outputDirPath;
 			buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 			return;
 		}
-		qDebug() << "outputDir:" << outputDirPath ;
-		qDebug() << "inputDir:" << inputDirPath;
 
 		bool enableButton = false;
 		if (!outputChanged && inputDirPath.toLower() != outputDirPath.toLower())
@@ -855,7 +871,6 @@ void DkBatchDialog::widgetChanged() {
 		QFileInfo fi(fileSelection->getSelectedFiles().first().toLocalFile());
 		dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->setExampleFilename(fi.fileName());
 	}
-
 }
 
 }

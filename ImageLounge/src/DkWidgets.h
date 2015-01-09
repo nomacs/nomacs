@@ -106,8 +106,8 @@ namespace nmc {
 
 class DkBatchContent {
 	public:
-		virtual bool hasUserInput() = 0;
-		virtual bool requiresUserInput() = 0;
+		virtual bool hasUserInput() const = 0;
+		virtual bool requiresUserInput() const = 0;
 };
 
 class DkThumbNail;

@@ -75,7 +75,7 @@ public:
 public slots:
 	void setTitle(QString title);
 	void setHeader(QString header);
-		
+	void showContent(bool show);
 
 protected:
 	virtual void createLayout();
@@ -104,8 +104,8 @@ public:
 
 	QList<QUrl> getSelectedFiles();
 
-	virtual bool hasUserInput() {return hUserInput;};
-	virtual bool requiresUserInput() {return rUserInput;};
+	virtual bool hasUserInput() const {return hUserInput;};
+	virtual bool requiresUserInput() const {return rUserInput;};
 
 public slots:
 	void browse();
@@ -142,7 +142,7 @@ public:
 	DkFilenameWidget(QWidget* parent = 0);
 	void enableMinusButton(bool enable);
 	void enablePlusButton(bool enable);
-	bool hasUserInput() {return hasChanged;};
+	bool hasUserInput() const {return hasChanged;};
 	QString getTag() const;
 
 signals:
@@ -185,8 +185,8 @@ Q_OBJECT
 public:
 	DkBatchOutput(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	virtual bool hasUserInput();
-	virtual bool requiresUserInput()  {return rUserInput;};
+	virtual bool hasUserInput() const;
+	virtual bool requiresUserInput() const {return rUserInput;};
 	int overwriteMode();
 	QString getOutputDirectory();
 	QString getFilePattern();
@@ -226,13 +226,15 @@ private:
 
 };
 
-class DkBatchResize : public QWidget {
+class DkBatchResize : public QWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
 	DkBatchResize(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
+	bool hasUserInput() const;
+	bool requiresUserInput() const;
 
 public slots:
 	void modeChanged(int idx);
