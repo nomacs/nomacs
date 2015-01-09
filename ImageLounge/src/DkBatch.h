@@ -24,6 +24,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 *******************************************************************************************************/
+#pragma once;
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -40,13 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace nmc {
 
 // TODO: these enums are global - they should be put into the respective classes
-enum batchWidgets {
-batchWdidgets_input,
-batchWdidgets_output,
-
-batchWidgets_end
-};
-
 enum fileNameTypes {
 fileNameTypes_fileName,
 fileNameTypes_Number,
@@ -64,6 +58,10 @@ fileNameWidget_minus,
 
 fileNameWidget_end
 };
+
+// from Process.h
+class DkResizeBatch;
+class DkBatchProcessing;
 
 
 class DkBatchWidget : public QWidget {
@@ -114,6 +112,7 @@ public slots:
 	void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
 	void setVisible(bool visible);
 	void emitChangedSignal();
+	void selectionChanged();
 
 signals:
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
@@ -128,6 +127,7 @@ protected:
 	DkThumbScrollWidget* thumbScrollWidget;
 	DkImageLoader* loader;
 	DkDirectoryEdit* directoryEdit;
+	QLabel* infoLabel;
 
 private:
 	bool hUserInput;
@@ -190,6 +190,7 @@ public:
 	int overwriteMode();
 	QString getOutputDirectory();
 	QString getFilePattern();
+	void setExampleFilename(const QString& exampleName);
 
 signals:
 	void newHeaderText(QString);
@@ -207,6 +208,8 @@ protected:
 	void setDir(QDir dir);
 
 private:
+	void updateFileLabelPreview();
+
 	bool hUserInput;
 	bool rUserInput;
 	QDir outputDirectory;
@@ -219,16 +222,48 @@ private:
 	QComboBox* cBNewExtension;
 	QLabel* oldFileNameLabel;
 	QLabel* newFileNameLabel;
+	QString exampleName;
 
 };
 
-class DkBatchProcessing;	// DkProcess.h
+class DkBatchResize : public QWidget {
+	Q_OBJECT
+
+public:
+	DkBatchResize(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
+
+public slots:
+	void modeChanged(int idx);
+	void percentChanged(double val);
+	void pxChanged(int val);
+
+signals:
+	void newHeaderText(QString txt);
+
+protected:
+	void createLayout();
+
+	QComboBox* comboMode;
+	QComboBox* comboProperties;
+	QSpinBox* sbPx;
+	QDoubleSpinBox* sbPercent;
+};
 
 class DkBatchDialog : public QDialog {
-Q_OBJECT
+	Q_OBJECT
 
 public:
 	DkBatchDialog(QDir currentDirectory = QDir(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	enum batchWidgets {
+		batch_input,
+		batch_resize,
+		batch_output,
+
+		batchWidgets_end
+	};
 
 public slots:
 	virtual void accept();

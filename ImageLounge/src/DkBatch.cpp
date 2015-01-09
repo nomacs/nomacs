@@ -104,6 +104,7 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 	loader = new DkImageLoader();
 	//connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
 }
 
 void DkFileSelection::createLayout() {
@@ -129,9 +130,12 @@ void DkFileSelection::createLayout() {
 	thumbScrollWidget->setVisible(true);
 	//connect(this, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 
+	infoLabel = new QLabel(tr("No Files Selected"), this);
+
 	QVBoxLayout* widgetLayout = new QVBoxLayout();
 	widgetLayout->addWidget(upperWidget);
 	widgetLayout->addWidget(thumbScrollWidget);
+	widgetLayout->addWidget(infoLabel);
 	setLayout(widgetLayout);
 }
 
@@ -170,6 +174,18 @@ void DkFileSelection::setDir(const QDir& dir) {
 	directoryEdit->setText(cDir.absolutePath());
 	emit newHeaderText(cDir.absolutePath());
 	loader->setDir(cDir);
+}
+
+void DkFileSelection::selectionChanged() {
+
+	if (getSelectedFiles().empty())
+		infoLabel->setText(tr("No Files Selected"));
+	else if (getSelectedFiles().size() == 1)
+		infoLabel->setText(tr("%1 File Selected").arg(getSelectedFiles().size()));
+	else
+		infoLabel->setText(tr("%1 Files Selected").arg(getSelectedFiles().size()));
+
+	emit changed();
 }
 
 void DkFileSelection::emitChangedSignal() {
@@ -506,14 +522,17 @@ bool DkBatchOutput::hasUserInput() {
 
 void DkBatchOutput::emitChangedSignal() {
 	
-	QString fName = "test-filename.jpg";
 
-	DkFileNameConverter converter(fName, getFilePattern(), 1);
-
-	oldFileNameLabel->setText(fName);
-	newFileNameLabel->setText(converter.getConvertedFileName());
-	
+	updateFileLabelPreview();
 	emit changed();
+}
+
+void DkBatchOutput::updateFileLabelPreview() {
+
+	DkFileNameConverter converter(exampleName, getFilePattern(), 1);
+
+	oldFileNameLabel->setText(exampleName);
+	newFileNameLabel->setText(converter.getConvertedFileName());
 }
 
 QString DkBatchOutput::getOutputDirectory() {
@@ -559,6 +578,94 @@ int DkBatchOutput::overwriteMode() {
 	return DkBatchConfig::mode_skip_existing;
 }
 
+void DkBatchOutput::setExampleFilename(const QString& exampleName) {
+
+	this->exampleName = exampleName;
+	updateFileLabelPreview();
+}
+
+// DkResizeWidget --------------------------------------------------------------------
+DkBatchResize::DkBatchResize(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) {
+
+	createLayout();
+	modeChanged(0);	// init gui
+}
+
+void DkBatchResize::createLayout() {
+
+	comboMode = new QComboBox(this);
+	QStringList modeItems;
+	modeItems << tr("Percent") << tr("Long Side") << tr("Short Side") << tr("Width") << tr("Height");
+	comboMode->addItems(modeItems);
+
+	comboProperties = new QComboBox(this);
+	QStringList propertyItems;
+	propertyItems << tr("Transform All") << tr("Enlarge Only") << tr("Shrink Only");
+	comboProperties->addItems(propertyItems);
+
+	sbPercent = new QDoubleSpinBox(this);
+	sbPercent->setSuffix(tr("%"));
+	sbPercent->setMaximum(1000);
+	sbPercent->setMinimum(0.1);
+	sbPercent->setValue(100.0);
+
+	sbPx = new QSpinBox(this);
+	sbPx->setSuffix(tr(" px"));
+	sbPx->setMaximum(SHRT_MAX);
+	sbPx->setMinimum(1);
+	sbPx->setValue(1920);
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->addWidget(comboMode);
+	layout->addWidget(sbPercent);
+	layout->addWidget(sbPx);
+	layout->addWidget(comboProperties);
+	layout->addStretch();
+
+	connect(comboMode, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChanged(int)));
+	connect(sbPercent, SIGNAL(valueChanged(double)), this, SLOT(percentChanged(double)));
+	connect(sbPx, SIGNAL(valueChanged(int)), this, SLOT(pxChanged(int)));
+}
+
+void DkBatchResize::modeChanged(int idx) {
+
+	if (comboMode->currentIndex() == DkResizeBatch::mode_default) {
+		sbPx->hide();
+		sbPercent->show();
+		comboProperties->hide();
+		percentChanged(sbPercent->value());
+	}
+	else {
+		sbPx->show();
+		sbPercent->hide();
+		comboProperties->show();
+		pxChanged(sbPx->value());
+	}
+}
+
+void DkBatchResize::percentChanged(double val) {
+
+	if (val == 100.0)
+		emit newHeaderText(tr("default"));
+	else
+		emit newHeaderText(QString::number(val) + "%");
+}
+
+void DkBatchResize::pxChanged(int val) {
+
+	emit newHeaderText(comboMode->itemText(comboMode->currentIndex()) + ": " + QString::number(val) + " px");
+}
+
+void DkBatchResize::transferProperties(QSharedPointer<DkResizeBatch> batchResize) const {
+
+	if (comboMode->currentIndex() == DkResizeBatch::mode_default) {
+		batchResize->setProperties((float)sbPercent->value(), comboMode->currentIndex());
+	}
+	else {
+		batchResize->setProperties((float)sbPx->value(), comboMode->currentIndex(), comboProperties->currentIndex());
+	}
+}
+
 // Batch Dialog --------------------------------------------------------------------
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 	
@@ -578,14 +685,19 @@ void DkBatchDialog::createLayout() {
 
 	widgets.resize(batchWidgets_end);
 	// Input Directory
-	widgets[batchWdidgets_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
-	fileSelection  = new DkFileSelection(widgets[batchWdidgets_input]);
-	widgets[batchWdidgets_input]->setContentWidget(fileSelection);
+	widgets[batch_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
+	fileSelection  = new DkFileSelection(widgets[batch_input]);
+	widgets[batch_input]->setContentWidget(fileSelection);
 	fileSelection->setDir(currentDirectory);
 	
-	widgets[batchWdidgets_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
-	DkBatchOutput* outputSelection = new DkBatchOutput(widgets[batchWdidgets_output]);
-	widgets[batchWdidgets_output]->setContentWidget(outputSelection);
+	widgets[batch_resize] = new DkBatchWidget(tr("Resize"), tr("default"), this);
+	DkBatchResize* resizeWidget = new DkBatchResize(widgets[batch_resize]);
+	widgets[batch_resize]->setContentWidget(resizeWidget);
+
+	widgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
+	DkBatchOutput* outputSelection = new DkBatchOutput(widgets[batch_output]);
+	widgets[batch_output]->setContentWidget(outputSelection);
+
 
 	progressBar = new QProgressBar(this);
 	progressBar->setVisible(false);
@@ -625,7 +737,7 @@ void DkBatchDialog::accept() {
 		QMessageBox::critical(this, tr("Error"), tr("No files selected."), QMessageBox::Ok, QMessageBox::Ok);
 	}
 
-	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget());
+	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget());
 
 	if (!outputWidget) {
 		qDebug() << "FATAL ERROR: could not cast output widget";
@@ -646,10 +758,12 @@ void DkBatchDialog::accept() {
 
 	// create processing functions
 	QSharedPointer<DkResizeBatch> resizeBatch(new DkResizeBatch);
-	resizeBatch->setProperties(0.5f);
+	dynamic_cast<DkBatchResize*>(widgets[batch_resize]->contentWidget())->transferProperties(resizeBatch);
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
-	processFunctions.append(resizeBatch);
+	
+	if (resizeBatch->isActive())
+		processFunctions.append(resizeBatch);
 
 	config.setProcessFunctions(processFunctions);
 	batchProcessing->setBatchConfig(config);
@@ -712,10 +826,10 @@ void DkBatchDialog::logButtonClicked() {
 
 void DkBatchDialog::widgetChanged() {
 	
-	if (widgets[batchWdidgets_output] != 0 && widgets[batchWdidgets_input])  {
-		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batchWdidgets_output]->contentWidget())->hasUserInput();
-		QString inputDirPath = dynamic_cast<DkFileSelection*>(widgets[batchWdidgets_input]->contentWidget())->getDir();
-		QString outputDirPath = dynamic_cast<DkBatchOutput*>(widgets[batchWdidgets_output]->contentWidget())->getOutputDirectory();
+	if (widgets[batch_output] != 0 && widgets[batch_input])  {
+		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batch_output]->contentWidget())->hasUserInput();
+		QString inputDirPath = dynamic_cast<DkFileSelection*>(widgets[batch_input]->contentWidget())->getDir();
+		QString outputDirPath = dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->getOutputDirectory();
 		
 		if (inputDirPath == "" || outputDirPath == "") {
 			qDebug() << "inputDir or outputDir empty ... input:" << inputDirPath << " output:" << outputDirPath;
@@ -732,6 +846,12 @@ void DkBatchDialog::widgetChanged() {
 
 		buttons->button(QDialogButtonBox::Ok)->setEnabled(enableButton);
 	}
+
+	if (!fileSelection->getSelectedFiles().isEmpty()) {
+		QFileInfo fi(fileSelection->getSelectedFiles().first().toLocalFile());
+		dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->setExampleFilename(fi.fileName());
+	}
+
 }
 
 }

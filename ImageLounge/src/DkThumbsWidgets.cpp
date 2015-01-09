@@ -1363,7 +1363,6 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 	for (int idx = from; idx < to && idx < thumbLabels.size(); idx++) {
 		thumbLabels.at(idx)->setSelected(selected);
 	}
-
 }
 
 QList<QUrl> DkThumbScene::getSelectedUrls() const {

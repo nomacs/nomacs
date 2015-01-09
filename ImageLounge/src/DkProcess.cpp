@@ -56,6 +56,9 @@ DkResizeBatch::DkResizeBatch() {
 	scaleFactor = 1.0f;
 	iplMethod = DkImage::ipl_area;
 	correctGamma = false;
+
+	mode = mode_default;
+	property = prop_default;
 }
 
 QString DkResizeBatch::name() const {
@@ -63,10 +66,24 @@ QString DkResizeBatch::name() const {
 	return QObject::tr("[Resize Batch]");
 }
 
-void DkResizeBatch::setProperties(float scaleFactor, int iplMethod, bool correctGamma) {
+void DkResizeBatch::setProperties(float scaleFactor, int mode, int prop, int iplMethod, bool correctGamma) {
+
 	this->scaleFactor = scaleFactor;
+	this->mode = mode;
+	this->property = prop;
 	this->iplMethod = iplMethod;
 	this->correctGamma = correctGamma;
+}
+
+bool DkResizeBatch::isActive() const {
+
+	if (!mode_default)
+		return true;
+
+	if (scaleFactor != 1.0f)
+		return true;
+
+	return false;
 }
 
 bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
@@ -76,15 +93,73 @@ bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
 		return true;
 	}
 
-	QImage tmpImg = DkImage::resizeImage(img, QSize(), scaleFactor, iplMethod, false);
+	QSize size;
+	float sf = 1.0f;
+	QImage tmpImg;
+
+	if (prepareProperties(img.size(), size, sf, logStrings))
+		DkImage::resizeImage(img, size, sf, iplMethod, correctGamma);
+	else {
+		logStrings.append(QObject::tr("%1 no need for resizing.").arg(name()));
+		return true;
+	}
 
 	if (tmpImg.isNull()) {
 		logStrings.append(QObject::tr("%1 could not resize image.").arg(name()));
 		return false;
 	}
 
-	logStrings.append(QObject::tr("%1 image resized, scale factor: %2").arg(name()).arg(scaleFactor));
+	logStrings.append(QObject::tr("%1 image resized.").arg(name()));
 	img = tmpImg;
+
+	return true;
+}
+
+bool DkResizeBatch::prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const {
+
+	float sf = 1.0f;
+	QSize normalizedSize = imgSize; 
+	bool transposed = false;
+
+
+	if (mode_default) {
+		scaleFactor = this->scaleFactor;
+		return true;
+	}
+	else if (mode_long_side) {
+		
+		if (imgSize.width() < imgSize.height())
+			normalizedSize.transpose();
+	}
+	else if (mode_short_side) {
+
+		if (imgSize.width() > imgSize.height())
+			normalizedSize.transpose();
+	}
+	else if (mode_height)
+		normalizedSize.transpose();
+
+	sf = this->scaleFactor/normalizedSize.width();
+
+	if (sf > 1.0 && this->property == prop_decrease_only) {
+		
+		logStrings.append(QObject::tr("%1 I need to increase the image, but the option is set to decrease only -> skipping.").arg(name()));
+		return false;
+	}
+	else if (sf < 1.0f && this->property == prop_increase_only) {
+		logStrings.append(QObject::tr("%1 I need to decrease the image, but the option is set to increase only -> skipping.").arg(name()));
+		return false;
+	}
+	else if (sf == 1.0f) {
+		logStrings.append(QObject::tr("%1 image size matches scale factor -> skipping.").arg(name()));
+		return false;
+	}
+
+	size.setWidth(qRound(this->scaleFactor));
+	size.setHeight(sf*normalizedSize.height());
+
+	if (normalizedSize != imgSize)
+		size.transpose();
 
 	return true;
 }

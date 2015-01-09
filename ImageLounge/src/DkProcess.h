@@ -43,8 +43,9 @@ public:
 
 	virtual void setProperties(...) {};
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
-	virtual bool compute(QImage& img, QStringList& logStrings) const {return true;};
+	virtual bool compute(QImage& img, QStringList& logStrings) const { return true; };
 	virtual QString name() const {return "Abstract Batch";};
+	virtual bool isActive() const { return false; };
 
 private:
 	// ok, this is important:
@@ -63,11 +64,34 @@ class DkResizeBatch : public DkAbstractBatch {
 public:
 	DkResizeBatch();
 
-	virtual void setProperties(float scaleFactor, int iplMethod = DkImage::ipl_area, bool correctGamma = false);
+	virtual void setProperties(float scaleFactor, int mode = mode_default, int prop = prop_default, int iplMethod = DkImage::ipl_area, bool correctGamma = false);
 	virtual bool compute(QImage& img, QStringList& logStrings) const;
 	virtual QString name() const;
+	virtual bool isActive() const;
+
+	enum {
+		mode_default,
+		mode_long_side,
+		mode_short_side,
+		mode_width,
+		mode_height,
+
+		mode_end
+	};
+
+	enum {
+		prop_default,
+		prop_decrease_only,
+		prop_increase_only,
+
+		prop_end
+	};
 
 protected:
+	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
+
+	int mode;
+	int property;
 	float scaleFactor;
 	int iplMethod;
 	bool correctGamma;
