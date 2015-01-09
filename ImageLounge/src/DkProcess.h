@@ -95,7 +95,23 @@ protected:
 	float scaleFactor;
 	int iplMethod;
 	bool correctGamma;
+};
 
+class DkBatchTransform : public DkAbstractBatch {
+
+public:
+	DkBatchTransform();
+
+	virtual void setProperties(int angle, bool horizontalFlip = false, bool verticalFlip = false);
+	virtual bool compute(QImage& img, QStringList& logStrings) const;
+	virtual QString name() const;
+	virtual bool isActive() const;
+
+protected:
+
+	int angle;
+	bool horizontalFlip;
+	bool verticalFlip;
 };
 
 class DkBatchProcess {

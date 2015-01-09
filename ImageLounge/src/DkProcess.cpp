@@ -167,6 +167,58 @@ bool DkResizeBatch::prepareProperties(const QSize& imgSize, QSize& size, float& 
 	return true;
 }
 
+// DkTransformBatch --------------------------------------------------------------------
+DkBatchTransform::DkBatchTransform() {
+	angle = 0;
+	horizontalFlip = false;
+	verticalFlip = false;
+}
+
+QString DkBatchTransform::name() const {
+	return QObject::tr("[Transform Batch]");
+}
+
+void DkBatchTransform::setProperties(int angle, bool horizontalFlip /* = false */, bool verticalFlip /* = false */) {
+	
+	this->angle = angle;
+	this->horizontalFlip = horizontalFlip;
+	this->verticalFlip = verticalFlip;
+}
+
+bool DkBatchTransform::isActive() const {
+
+	return horizontalFlip || verticalFlip || angle != 0;
+}
+
+bool DkBatchTransform::compute(QImage& img, QStringList& logStrings) const {
+
+	if (!isActive()) {
+		logStrings.append(QObject::tr("%1 inactive -> skipping").arg(name()));
+		return true;
+	}
+
+	QImage tmpImg;
+
+	if (angle != 0) {
+		QTransform rotationMatrix;
+		rotationMatrix.rotate((double)angle);
+		tmpImg = img.transformed(rotationMatrix);
+	}
+
+	tmpImg = tmpImg.mirrored(horizontalFlip, verticalFlip);
+
+	if (!tmpImg.isNull()) {
+		img = tmpImg;
+		logStrings.append(QObject::tr("%1 image transformed.").arg(name()));
+	}
+	else {
+		logStrings.append(QObject::tr("%1 error, could not transform image.").arg(name()));
+		return false;
+	}
+
+	return true;
+}
+
 // DkBatchProcess --------------------------------------------------------------------
 DkBatchProcess::DkBatchProcess(const QFileInfo& fileInfoIn, const QFileInfo& fileInfoOut) {
 	this->fileInfoIn = fileInfoIn;

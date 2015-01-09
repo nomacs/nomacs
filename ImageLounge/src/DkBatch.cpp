@@ -595,13 +595,13 @@ void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 }
 
 // DkResizeWidget --------------------------------------------------------------------
-DkBatchResize::DkBatchResize(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) {
+DkBatchResizeWidget::DkBatchResizeWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) {
 
 	createLayout();
 	modeChanged(0);	// init gui
 }
 
-void DkBatchResize::createLayout() {
+void DkBatchResizeWidget::createLayout() {
 
 	comboMode = new QComboBox(this);
 	QStringList modeItems;
@@ -637,7 +637,7 @@ void DkBatchResize::createLayout() {
 	connect(sbPx, SIGNAL(valueChanged(int)), this, SLOT(pxChanged(int)));
 }
 
-void DkBatchResize::modeChanged(int idx) {
+void DkBatchResizeWidget::modeChanged(int idx) {
 
 	if (comboMode->currentIndex() == DkResizeBatch::mode_default) {
 		sbPx->hide();
@@ -653,7 +653,7 @@ void DkBatchResize::modeChanged(int idx) {
 	}
 }
 
-void DkBatchResize::percentChanged(double val) {
+void DkBatchResizeWidget::percentChanged(double val) {
 
 	if (val == 100.0)
 		emit newHeaderText(tr("inactive"));
@@ -661,12 +661,12 @@ void DkBatchResize::percentChanged(double val) {
 		emit newHeaderText(QString::number(val) + "%");
 }
 
-void DkBatchResize::pxChanged(int val) {
+void DkBatchResizeWidget::pxChanged(int val) {
 
 	emit newHeaderText(comboMode->itemText(comboMode->currentIndex()) + ": " + QString::number(val) + " px");
 }
 
-void DkBatchResize::transferProperties(QSharedPointer<DkResizeBatch> batchResize) const {
+void DkBatchResizeWidget::transferProperties(QSharedPointer<DkResizeBatch> batchResize) const {
 
 	if (comboMode->currentIndex() == DkResizeBatch::mode_default) {
 		batchResize->setProperties((float)sbPercent->value()/100.0f, comboMode->currentIndex());
@@ -676,14 +676,108 @@ void DkBatchResize::transferProperties(QSharedPointer<DkResizeBatch> batchResize
 	}
 }
 
-bool DkBatchResize::hasUserInput() const {
+bool DkBatchResizeWidget::hasUserInput() const {
 
 	return !(comboMode->currentIndex() == DkResizeBatch::mode_default && sbPercent->value() == 100.0);
 }
 
-bool DkBatchResize::requiresUserInput() const {
+bool DkBatchResizeWidget::requiresUserInput() const {
 
 	return false;
+}
+
+// DkBatchTransform --------------------------------------------------------------------
+DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+
+	createLayout();
+}
+
+void DkBatchTransformWidget::createLayout() {
+
+	rbRotate0 = new QRadioButton(tr("Do &Not Rotate"));
+	rbRotate0->setChecked(true);
+	rbRotateLeft = new QRadioButton(tr("9&0° Counter Clockwise"));
+	rbRotateRight = new QRadioButton(tr("&90° Clockwise"));
+	rbRotate180 = new QRadioButton(tr("&180°"));
+
+	rotateGroup = new QButtonGroup(this);
+
+	rotateGroup->addButton(rbRotate0);
+	rotateGroup->addButton(rbRotateLeft);
+	rotateGroup->addButton(rbRotateRight);
+	rotateGroup->addButton(rbRotate180);
+
+	cbFlipH = new QCheckBox(tr("Flip &Horizontal"));
+	cbFlipV = new QCheckBox(tr("Flip &Vertical"));
+
+	QGridLayout* layout = new QGridLayout(this);
+	layout->addWidget(rbRotate0, 0, 0);
+	layout->addWidget(rbRotateRight, 1, 0);
+	layout->addWidget(rbRotateLeft, 2, 0);
+	layout->addWidget(rbRotate180, 3, 0);
+
+	layout->addWidget(cbFlipH, 0, 1);
+	layout->addWidget(cbFlipV, 1, 1);
+
+	connect(rotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(radioButtonClicked(int)));
+	connect(cbFlipV, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
+	connect(cbFlipH, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
+}
+
+bool DkBatchTransformWidget::hasUserInput() const {
+	
+	return !rbRotate0->isChecked() || cbFlipH->isChecked() || cbFlipV->isChecked();
+}
+
+bool DkBatchTransformWidget::requiresUserInput() const {
+
+	return false;
+}
+
+void DkBatchTransformWidget::radioButtonClicked(int id) {
+
+	updateHeader();
+}
+
+void DkBatchTransformWidget::checkBoxClicked() {
+
+	updateHeader();
+}
+
+void DkBatchTransformWidget::updateHeader() const {
+
+	if (!hasUserInput())
+		emit newHeaderText(tr("inactive"));
+	else {
+		
+		QString txt;
+		if (getAngle() != 0)
+			txt += tr("Rotating by: %1").arg(getAngle());
+		if (cbFlipH->isChecked() || cbFlipV->isChecked()) {
+			txt += tr(" Flipping");
+		}
+		
+		emit newHeaderText(txt);
+	}
+}
+
+void DkBatchTransformWidget::transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const {
+
+	batchTransform->setProperties(getAngle(), cbFlipH->isChecked(), cbFlipV->isChecked());
+}
+
+int DkBatchTransformWidget::getAngle() const {
+
+	if (rbRotate0->isChecked())
+		return 0;
+	else if (rbRotateLeft->isChecked())
+		return -90;
+	else if (rbRotateRight->isChecked())
+		return 90;
+	else if (rbRotate180->isChecked())
+		return 180;
+
+	return 0;
 }
 
 // Batch Dialog --------------------------------------------------------------------
@@ -712,9 +806,14 @@ void DkBatchDialog::createLayout() {
 	
 	// fold content
 	widgets[batch_resize] = new DkBatchWidget(tr("Resize"), tr("inactive"), this);
-	resizeWidget = new DkBatchResize(widgets[batch_resize]);
+	resizeWidget = new DkBatchResizeWidget(widgets[batch_resize]);
 	widgets[batch_resize]->setContentWidget(resizeWidget);
 	widgets[batch_resize]->showContent(false);
+
+	widgets[batch_transform] = new DkBatchWidget(tr("Transform"), tr("inactive"), this);
+	transformWidget = new DkBatchTransformWidget(widgets[batch_transform]);
+	widgets[batch_transform]->setContentWidget(transformWidget);
+	widgets[batch_transform]->showContent(false);
 
 	widgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
 	DkBatchOutput* outputSelection = new DkBatchOutput(widgets[batch_output]);
@@ -780,17 +879,23 @@ void DkBatchDialog::accept() {
 	QSharedPointer<DkResizeBatch> resizeBatch(new DkResizeBatch);
 	resizeWidget->transferProperties(resizeBatch);
 
+	// create processing functions
+	QSharedPointer<DkBatchTransform> transformBatch(new DkBatchTransform);
+	transformWidget->transferProperties(transformBatch);
+
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 	
 	if (resizeBatch->isActive())
 		processFunctions.append(resizeBatch);
+
+	if (transformBatch->isActive())
+		processFunctions.append(transformBatch);
 
 	config.setProcessFunctions(processFunctions);
 	batchProcessing->setBatchConfig(config);
 
 	startProcessing();
 	batchProcessing->compute();
-
 }
 
 void DkBatchDialog::reject() {

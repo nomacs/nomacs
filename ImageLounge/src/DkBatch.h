@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QComboBox>
+#include <QButtonGroup>
 
 #include "DkWidgets.h"
 #include "DkThumbsWidgets.h"
@@ -62,10 +63,12 @@ fileNameWidget_end
 // from Process.h
 class DkResizeBatch;
 class DkBatchProcessing;
+class DkBatchTransform;
 
 
 class DkBatchWidget : public QWidget {
-Q_OBJECT
+	Q_OBJECT
+
 public:
 	DkBatchWidget(QString titleString, QString headerString, QWidget* parent = 0, Qt::WindowFlags f = 0);
 	
@@ -226,11 +229,11 @@ private:
 
 };
 
-class DkBatchResize : public QWidget, public DkBatchContent {
+class DkBatchResizeWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
 
 public:
-	DkBatchResize(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkBatchResizeWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	void transferProperties(QSharedPointer<DkResizeBatch> batchResize) const;
 	bool hasUserInput() const;
@@ -253,6 +256,39 @@ protected:
 	QDoubleSpinBox* sbPercent;
 };
 
+class DkBatchTransformWidget : public QWidget, public DkBatchContent {
+	Q_OBJECT
+
+public:
+	DkBatchTransformWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	void transferProperties(QSharedPointer<DkBatchTransform> batchTransform) const;
+	bool hasUserInput() const;
+	bool requiresUserInput() const;
+
+public slots:
+	void radioButtonClicked(int id);
+	void checkBoxClicked();
+
+signals:
+	void newHeaderText(QString txt) const;
+
+protected:
+	void createLayout();
+	void updateHeader() const;
+	int getAngle() const;
+
+	QButtonGroup* rotateGroup;
+	QRadioButton* rbRotate0;
+	QRadioButton* rbRotateLeft;
+	QRadioButton* rbRotateRight;
+	QRadioButton* rbRotate180;
+
+	QCheckBox* cbFlipH;
+	QCheckBox* cbFlipV;
+};
+
+
 class DkBatchDialog : public QDialog {
 	Q_OBJECT
 
@@ -262,6 +298,7 @@ public:
 	enum batchWidgets {
 		batch_input,
 		batch_resize,
+		batch_transform,
 		batch_output,
 
 		batchWidgets_end
@@ -284,7 +321,8 @@ private:
 	QDir currentDirectory;
 	QDialogButtonBox* buttons;
 	DkFileSelection* fileSelection;
-	DkBatchResize* resizeWidget;
+	DkBatchResizeWidget* resizeWidget;
+	DkBatchTransformWidget* transformWidget;
 	DkBatchProcessing* batchProcessing;
 	QPushButton* logButton;
 	QProgressBar* progressBar;
