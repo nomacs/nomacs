@@ -117,6 +117,7 @@ public slots:
 	void emitChangedSignal();
 	void selectionChanged();
 	void filterTextChanged(const QString& filterText);
+	void setFileInfo(QFileInfo file);
 
 signals:
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
@@ -130,6 +131,7 @@ protected:
 	QListView* fileWidget;
 	DkThumbScrollWidget* thumbScrollWidget;
 	DkImageLoader* loader;
+	DkExplorer* explorer;
 	DkDirectoryEdit* directoryEdit;
 	QLabel* infoLabel;
 

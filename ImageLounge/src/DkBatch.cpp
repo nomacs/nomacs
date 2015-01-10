@@ -113,6 +113,7 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 	//connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
 }
 
 void DkFileSelection::createLayout() {
@@ -120,18 +121,18 @@ void DkFileSelection::createLayout() {
 	directoryEdit = new DkDirectoryEdit(this);
 	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
 
-	QPushButton* browseButton = new QPushButton(tr("Browse"));
-	connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
+	//QPushButton* browseButton = new QPushButton(tr("Browse"));
+	//connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
 
 	QLineEdit* filterEdit = new QLineEdit("", this);
 	filterEdit->setPlaceholderText(tr("Filter Files"));
-	filterEdit->setMaximumWidth(300);
+	filterEdit->setMaximumWidth(250);
 	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SLOT(filterTextChanged(const QString&)));
 
 	QWidget* upperWidget = new QWidget(this);
 	QGridLayout* upperWidgetLayout = new QGridLayout(upperWidget);
 	upperWidgetLayout->setContentsMargins(0,0,0,0);
-	upperWidgetLayout->addWidget(browseButton, 0, 0);
+	//upperWidgetLayout->addWidget(browseButton, 0, 0);
 	upperWidgetLayout->addWidget(directoryEdit, 0, 1);
 	upperWidgetLayout->addWidget(filterEdit, 0, 2);
 
@@ -141,10 +142,24 @@ void DkFileSelection::createLayout() {
 
 	infoLabel = new QLabel(tr("No Files Selected"), this);
 
-	QVBoxLayout* widgetLayout = new QVBoxLayout();
-	widgetLayout->addWidget(upperWidget);
-	widgetLayout->addWidget(thumbScrollWidget);
-	widgetLayout->addWidget(infoLabel);
+	// add explorer
+	explorer = new DkExplorer(tr("File Explorer"));
+	//explorer->setTitleBarWidget(new QWidget(explorer));	// no title bar
+	explorer->getModel()->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs);
+	explorer->getModel()->setNameFilters(QStringList());
+	explorer->setMaximumWidth(300);
+	connect(explorer, SIGNAL(openDir(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
+
+	QStringList folders = DkSettings::global.recentFiles;
+
+	if (folders.size() > 0)
+		explorer->setCurrentPath(folders[0]);
+
+	QGridLayout* widgetLayout = new QGridLayout(this);
+	widgetLayout->addWidget(explorer, 0, 0, 3, 1);
+	widgetLayout->addWidget(upperWidget, 0, 1);
+	widgetLayout->addWidget(thumbScrollWidget, 1, 1);
+	widgetLayout->addWidget(infoLabel, 2, 1);
 	setLayout(widgetLayout);
 }
 
@@ -176,7 +191,14 @@ QList<QUrl> DkFileSelection::getSelectedFiles() {
 	return thumbScrollWidget->getThumbWidget()->getSelectedUrls();
 }
 
+void DkFileSelection::setFileInfo(QFileInfo file) {
+
+	setDir(QDir(file.absoluteFilePath()));
+}
+
 void DkFileSelection::setDir(const QDir& dir) {
+
+	explorer->setCurrentPath(QFileInfo(dir, ""));
 
 	cDir = dir;
 	qDebug() << "setting directory to:" << dir;
@@ -785,14 +807,15 @@ int DkBatchTransformWidget::getAngle() const {
 // Batch Dialog --------------------------------------------------------------------
 DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 	
-	this->currentDirectory  = currentDirectory;
-	batchProcessing = new DkBatchProcessing();
+	this->currentDirectory = currentDirectory;
+	batchProcessing = new DkBatchProcessing(DkBatchConfig(), this);
 
 	connect(batchProcessing, SIGNAL(progressValueChanged(int)), this, SLOT(updateProgress(int)));
 	connect(batchProcessing, SIGNAL(finished()), this, SLOT(processingFinished()));
 
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
+	fileSelection->setDir(currentDirectory);
 }
 
 void DkBatchDialog::createLayout() {
@@ -947,6 +970,7 @@ void DkBatchDialog::logButtonClicked() {
 	QStringList log = batchProcessing->getLog();
 
 	DkTextDialog* textDialog = new DkTextDialog(this);
+	textDialog->getTextEdit()->setReadOnly(true);
 	textDialog->setText(log);
 
 	textDialog->exec();

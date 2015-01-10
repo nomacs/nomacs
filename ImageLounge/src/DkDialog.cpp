@@ -2140,6 +2140,7 @@ void DkShortcutsDialog::accept() {
 // DkTextDialog --------------------------------------------------------------------
 DkTextDialog::DkTextDialog(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDialog(parent, flags) {
 
+	setWindowTitle(tr("Text Editor"));
 	createLayout();
 }
 
@@ -2150,7 +2151,7 @@ void DkTextDialog::createLayout() {
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Save"));
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
 
 	connect(buttons, SIGNAL(accepted()), this, SLOT(save()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
@@ -2167,8 +2168,33 @@ void DkTextDialog::setText(const QStringList& text) {
 
 void DkTextDialog::save() {
 
-	// TODO: save dialog
+	QStringList folders = DkSettings::global.recentFolders;
+	QString savePath = QDir::rootPath();
 
+	if (folders.size() > 0)
+		savePath = folders.first();
+
+	QString saveFilters("Text File (*.txt);;All Files (*.*)");
+
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Text File"),
+		savePath, saveFilters);
+
+	if (fileName.isEmpty())
+		return;
+
+	QFile file(fileName);
+	
+	if (file.open(QIODevice::WriteOnly)) {
+		QTextStream stream(&file);
+		stream << textEdit->toPlainText();
+	}
+	else {
+		QMessageBox::critical(this, tr("Error"), tr("Could not save: %1\n%2").arg(fileName).arg(file.errorString()));
+		return;
+	}
+
+	file.close();
+	accept();
 }
 
 // DkUpdateDialog --------------------------------------------------------------------

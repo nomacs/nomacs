@@ -559,6 +559,7 @@ public:
 	DkTextDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 	void setText(const QStringList& text);
+	QTextEdit* getTextEdit() { return textEdit; };
 
 public slots:
 	virtual void save();

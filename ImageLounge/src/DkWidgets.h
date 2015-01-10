@@ -729,6 +729,8 @@ public:
 	DkExplorer(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkExplorer();
 
+	DkFileSystemModel* getModel() { return fileModel; };
+
 public slots:
 	void setCurrentPath(QFileInfo fileInfo);
 	void fileClicked(const QModelIndex &index) const;
