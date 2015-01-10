@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'DkNoMacs.h'
 **
-** Created: Tue Dec 30 16:47:45 2014
+** Created: Sat Jan 10 12:20:29 2015
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -292,7 +292,7 @@ static const char qt_meta_stringdata_nmc__DkNoMacs[] = {
     "pasteImage()\0flipImageHorizontal()\0"
     "flipImageVertical()\0normalizeImage()\0"
     "autoAdjustImage()\0unsharpMask()\0"
-    "invertImage()\0convertImage()\0"
+    "invertImage()\0convert2gray()\0"
     "settingsChanged()\0msg,title\0"
     "showUpdaterMessage(QString,QString)\0"
     "showUpdateDialog(QString,QString)\0"
@@ -410,7 +410,7 @@ void nmc::DkNoMacs::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 86: _t->autoAdjustImage(); break;
         case 87: _t->unsharpMask(); break;
         case 88: _t->invertImage(); break;
-        case 89: _t->convertImage(); break;
+        case 89: _t->convert2gray(); break;
         case 90: _t->settingsChanged(); break;
         case 91: _t->showUpdaterMessage((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         case 92: _t->showUpdateDialog((*reinterpret_cast< QString(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;

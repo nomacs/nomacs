@@ -586,7 +586,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_auto_adjust]);
 	editMenu->addAction(editActions[menu_edit_norm]);
 	editMenu->addAction(editActions[menu_edit_invert]);
-	editMenu->addAction(editActions[menu_edit_gray_convert]);		//shree edit
+	editMenu->addAction(editActions[menu_edit_gray_convert]);
 #ifdef WITH_OPENCV
 	editMenu->addAction(editActions[menu_edit_unsharp]);
 #endif
@@ -1022,11 +1022,11 @@ void DkNoMacs::createActions() {
 	connect(editActions[menu_edit_invert], SIGNAL(triggered()), this, SLOT(invertImage()));
 
 	
-//shree - grayscale
+
 	editActions[menu_edit_gray_convert] = new QAction(tr("&Convert to Grayscale"), this);	
 	editActions[menu_edit_gray_convert]->setStatusTip(tr("Convert to Grayscale"));		   
-	connect(editActions[menu_edit_gray_convert], SIGNAL(triggered()), this, SLOT(convertImage()));
-//shree - over
+	connect(editActions[menu_edit_gray_convert], SIGNAL(triggered()), this, SLOT(convert2gray()));
+
 
 
 
@@ -1473,7 +1473,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_unsharp]->setEnabled(false);
 #endif
 	editActions[menu_edit_invert]->setEnabled(enable);
-	editActions[menu_edit_gray_convert]->setEnabled(enable);	//added by shree
+	editActions[menu_edit_gray_convert]->setEnabled(enable);	
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 	
@@ -2030,8 +2030,8 @@ void DkNoMacs::invertImage() {
 }
 
 
-//shree new function begin
-void DkNoMacs::convertImage() {
+
+void DkNoMacs::convert2gray() {
 
 	DkViewPort* vp = viewport();
 
@@ -2057,7 +2057,7 @@ void DkNoMacs::convertImage() {
 		vp->setEditedImage(img);
 
 }
-//shree new function ends
+
 
 
 

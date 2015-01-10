@@ -108,6 +108,12 @@ QDebug
 DkSettings.h
 /home/dutt/nomacs/ImageLounge/src/DkSettings.h
 
+/home/dutt/nomacs/ImageLounge/src/DkDialog.cpp
+DkDialog.h
+/home/dutt/nomacs/ImageLounge/src/DkDialog.h
+DkNoMacs.h
+/home/dutt/nomacs/ImageLounge/src/DkNoMacs.h
+
 /home/dutt/nomacs/ImageLounge/src/DkDialog.h
 winsock2.h
 -
@@ -196,6 +202,16 @@ exception
 string
 -
 DkUtils.h
+-
+
+/home/dutt/nomacs/ImageLounge/src/DkImage.cpp
+DkImage.h
+/home/dutt/nomacs/ImageLounge/src/DkImage.h
+DkNoMacs.h
+/home/dutt/nomacs/ImageLounge/src/DkNoMacs.h
+QPluginLoader
+-
+qmath.h
 -
 
 /home/dutt/nomacs/ImageLounge/src/DkImage.h
@@ -449,6 +465,14 @@ DkThumbs.h
 /home/dutt/nomacs/ImageLounge/src/DkThumbs.h
 DkWidgets.h
 /home/dutt/nomacs/ImageLounge/src/DkWidgets.h
+
+/home/dutt/nomacs/ImageLounge/src/DkNetwork.cpp
+DkNetwork.h
+/home/dutt/nomacs/ImageLounge/src/DkNetwork.h
+DkNoMacs.h
+/home/dutt/nomacs/ImageLounge/src/DkNoMacs.h
+DkViewPort.h
+/home/dutt/nomacs/ImageLounge/src/DkViewPort.h
 
 /home/dutt/nomacs/ImageLounge/src/DkNetwork.h
 QtNetwork/QTcpServer
@@ -966,6 +990,16 @@ opencv/cv.h
 opencv2/core/core.hpp
 /home/dutt/nomacs/ImageLounge/src/opencv2/core/core.hpp
 
+/home/dutt/nomacs/ImageLounge/src/DkViewPort.cpp
+DkViewPort.h
+/home/dutt/nomacs/ImageLounge/src/DkViewPort.h
+DkNoMacs.h
+/home/dutt/nomacs/ImageLounge/src/DkNoMacs.h
+DkThumbsWidgets.h
+/home/dutt/nomacs/ImageLounge/src/DkThumbsWidgets.h
+DkMetaDataWidgets.h
+/home/dutt/nomacs/ImageLounge/src/DkMetaDataWidgets.h
+
 /home/dutt/nomacs/ImageLounge/src/DkViewPort.h
 QDesktopWidget
 -
@@ -1017,6 +1051,12 @@ DkPluginInterface.h
 /home/dutt/nomacs/ImageLounge/src/DkPluginInterface.h
 DkMath.h
 /home/dutt/nomacs/ImageLounge/src/DkMath.h
+
+/home/dutt/nomacs/ImageLounge/src/DkWidgets.cpp
+DkWidgets.h
+/home/dutt/nomacs/ImageLounge/src/DkWidgets.h
+DkNoMacs.h
+/home/dutt/nomacs/ImageLounge/src/DkNoMacs.h
 
 /home/dutt/nomacs/ImageLounge/src/DkWidgets.h
 QApplication
@@ -1139,6 +1179,36 @@ QtGui/qevent.h
 -
 f32file.h
 -
+
+/home/dutt/nomacs/ImageLounge/src/main.cpp
+shlwapi.h
+/home/dutt/nomacs/ImageLounge/src/shlwapi.h
+QObject
+-
+DkNoMacs.h
+/home/dutt/nomacs/ImageLounge/src/DkNoMacs.h
+DkSettings.h
+/home/dutt/nomacs/ImageLounge/src/DkSettings.h
+QApplication
+-
+QFileInfo
+-
+QProcess
+-
+QTranslator
+-
+QDebug
+-
+iostream
+-
+cassert
+-
+shlobj.h
+-
+
+/home/dutt/nomacs/ImageLounge/src/moc_DkNoMacs.cxx
+DkNoMacs.h
+/home/dutt/nomacs/ImageLounge/src/DkNoMacs.h
 
 /usr/include/qt4/Qt3Support/q3cstring.h
 QtCore/qbytearray.h
