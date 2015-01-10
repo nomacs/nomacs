@@ -281,6 +281,7 @@ enum editActions {
 	menu_edit_flip_h,
 	menu_edit_flip_v,
 	menu_edit_invert,
+	menu_edit_gray_convert,	
 	menu_edit_norm,
 	menu_edit_auto_adjust,
 	menu_edit_unsharp,
@@ -578,6 +579,7 @@ public slots:
 	void autoAdjustImage();
 	void unsharpMask();
 	void invertImage();
+	void convert2gray();
 	virtual void settingsChanged();
 	void showUpdaterMessage(QString msg, QString title);
 	void showUpdateDialog(QString msg, QString title);
