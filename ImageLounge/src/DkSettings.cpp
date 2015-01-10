@@ -170,6 +170,7 @@ void DkSettings::initFileFilters() {
 	openFilters.append("Panasonic Raw (*.raw *.rw2)");
 	openFilters.append("Minolta Raw (*.mrw)");
 	openFilters.append("Samsung Raw (*.srw)");
+	openFilters.append("Olympus Raw (*.orf)");
 	openFilters.append("Hasselblad Raw (*.3fr)");
 	openFilters.append("Sigma Raw (*.x3f)");
 	openFilters.append("Leaf Raw (*.mos)");

@@ -116,6 +116,7 @@ public slots:
 	void setVisible(bool visible);
 	void emitChangedSignal();
 	void selectionChanged();
+	void filterTextChanged(const QString& filterText);
 
 signals:
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);

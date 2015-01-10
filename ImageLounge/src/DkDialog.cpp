@@ -848,6 +848,8 @@ void DkSearchDialog::init() {
 	layout->addWidget(resultListView);
 	layout->addWidget(buttonWidget);
 
+	searchBar->setFocus(Qt::MouseFocusReason);
+
 	QMetaObject::connectSlotsByName(this);
 }
 

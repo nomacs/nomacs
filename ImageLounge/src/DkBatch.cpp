@@ -53,7 +53,7 @@ void DkBatchWidget::createLayout() {
 	headerLabel->setObjectName("DkDecentInfo");
 	headerLabel->setAlignment(Qt::AlignBottom);
 	
-	QWidget* headerWidget = new QWidget();
+	QWidget* headerWidget = new QWidget(this);
 	QHBoxLayout* headerWidgetLayout = new QHBoxLayout(headerWidget);
 	headerWidgetLayout->setContentsMargins(0,0,0,0);
 	headerWidgetLayout->addWidget(showButton);
@@ -61,7 +61,8 @@ void DkBatchWidget::createLayout() {
 	headerWidgetLayout->addWidget(headerLabel);
 	headerWidgetLayout->addStretch();
 
-	batchWidgetLayout = new QVBoxLayout;
+	batchWidgetLayout = new QVBoxLayout(this);
+	batchWidgetLayout->setContentsMargins(0,0,0,0);
 	batchWidgetLayout->addWidget(headerWidget);
 	//batchWidgetLayout->addWidget(contentWidget);
 	//batchWidgetLayout->addStretch();
@@ -122,16 +123,17 @@ void DkFileSelection::createLayout() {
 	QPushButton* browseButton = new QPushButton(tr("Browse"));
 	connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
 
-	QLineEdit* filterEdit = new QLineEdit("not implemented yet", this);
-	QPushButton* filterButton = new QPushButton(tr("Apply Filter"));
+	QLineEdit* filterEdit = new QLineEdit("", this);
+	filterEdit->setPlaceholderText(tr("Filter Files"));
+	filterEdit->setMaximumWidth(300);
+	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SLOT(filterTextChanged(const QString&)));
 
 	QWidget* upperWidget = new QWidget(this);
 	QGridLayout* upperWidgetLayout = new QGridLayout(upperWidget);
 	upperWidgetLayout->setContentsMargins(0,0,0,0);
-	upperWidgetLayout->addWidget(directoryEdit, 0,0);
-	upperWidgetLayout->addWidget(browseButton, 0, 1);
-	upperWidgetLayout->addWidget(filterEdit, 1, 0);
-	upperWidgetLayout->addWidget(filterButton, 1, 1);
+	upperWidgetLayout->addWidget(browseButton, 0, 0);
+	upperWidgetLayout->addWidget(directoryEdit, 0, 1);
+	upperWidgetLayout->addWidget(filterEdit, 0, 2);
 
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
@@ -203,6 +205,12 @@ void DkFileSelection::emitChangedSignal() {
 		setDir(newDir);
 
 	emit changed();
+}
+
+void DkFileSelection::filterTextChanged(const QString& filterText) {
+
+	
+	loader->setFolderFilters(filterText.split(" "));
 }
 
 // DkFileNameWdiget --------------------------------------------------------------------
@@ -389,33 +397,22 @@ void DkBatchOutput::createLayout() {
 	QGroupBox* outDirGroupBox = new QGroupBox(this);
 	outDirGroupBox->setTitle(tr("Output Directory"));
 
-	outputlineEdit = new DkDirectoryEdit();
 	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
-	// TODO
+	outputlineEdit = new DkDirectoryEdit(this);
+	outputlineEdit->setPlaceholderText(tr("Select a Directory"));
 	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
 	connect(outputlineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
-
-	QWidget* outDirWidget = new QWidget(this);
-	QHBoxLayout* outDirLayout = new QHBoxLayout(outDirWidget);
-	outDirLayout->setContentsMargins(0, 0, 0, 0);
-
-	outDirLayout->addWidget(outputlineEdit);
-	outDirLayout->addWidget(outputBrowseButton);
 
 	// overwrite existing
 	cbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
 	cbOverwriteExisting->setToolTip("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!");
 	connect(cbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
 
-	QWidget* cbWidget = new QWidget(this);	// needed for spacing
-	QHBoxLayout* cbLayout = new QHBoxLayout(cbWidget);
-	cbLayout->setContentsMargins(0, 0, 0, 0);
-	cbLayout->addWidget(cbOverwriteExisting);
-
-	QVBoxLayout* outDirGBLayout = new QVBoxLayout(outDirGroupBox);
-	outDirGroupBox->setContentsMargins(0, 10, 0, 0);
-	outDirGBLayout->addWidget(outDirWidget);
-	outDirGBLayout->addWidget(cbWidget);
+	QGridLayout* outDirLayout = new QGridLayout(outDirGroupBox);
+	//outDirLayout->setContentsMargins(0, 0, 0, 0);
+	outDirLayout->addWidget(outputBrowseButton, 0, 0);
+	outDirLayout->addWidget(outputlineEdit, 0, 1);
+	outDirLayout->addWidget(cbOverwriteExisting, 1, 1);
 
 	// Filename Groupbox
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
@@ -465,11 +462,12 @@ void DkBatchOutput::createLayout() {
 	previewGBLayout->addWidget(newLabel, 1, 0);
 	previewGBLayout->addWidget(newFileNameLabel, 1, 1);
 	previewGBLayout->setColumnStretch(3, 10);
+	previewGBLayout->setAlignment(Qt::AlignTop);
 	
-	QVBoxLayout* contentLayout = new QVBoxLayout(this);
-	contentLayout->addWidget(outDirGroupBox);
-	contentLayout->addWidget(filenameGroupBox);
-	contentLayout->addWidget(previewGroupBox);
+	QGridLayout* contentLayout = new QGridLayout(this);
+	contentLayout->addWidget(outDirGroupBox, 0, 0, 1, 2);
+	contentLayout->addWidget(filenameGroupBox, 1, 0);
+	contentLayout->addWidget(previewGroupBox, 1, 1);
 	setLayout(contentLayout);
 }
 
@@ -721,6 +719,7 @@ void DkBatchTransformWidget::createLayout() {
 
 	layout->addWidget(cbFlipH, 0, 1);
 	layout->addWidget(cbFlipV, 1, 1);
+	layout->setColumnStretch(3, 10);
 
 	connect(rotateGroup, SIGNAL(buttonClicked(int)), this, SLOT(radioButtonClicked(int)));
 	connect(cbFlipV, SIGNAL(clicked()), this, SLOT(checkBoxClicked()));
@@ -841,7 +840,8 @@ void DkBatchDialog::createLayout() {
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	QVBoxLayout* dialogLayout = new QVBoxLayout();
+	QVBoxLayout* dialogLayout = new QVBoxLayout(this);
+	dialogLayout->setAlignment(Qt::AlignTop);
 	for (int i=0; i < widgets.size(); i++) {
 		dialogLayout->addWidget(widgets[i]);
 		connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
