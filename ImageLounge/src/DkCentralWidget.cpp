@@ -442,7 +442,7 @@ void DkCentralWidget::showThumbView(bool show) {
 		viewport->unloadImage();
 		viewport->hide();
 
-		switchWidget(widgets[thumbs_widget]);
+		switchWidget(thumbs_widget);
 		thumbScrollWidget->getThumbWidget()->updateLayout();
 	}
 	else {
@@ -489,8 +489,6 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 		tabInfos[tabbar->currentIndex()].setMode(mode);
 	}
 
-
 }
-
 
 }

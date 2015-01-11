@@ -168,6 +168,7 @@ public:
 	QFileInfo file() const;
 	QStringList getFileNames();
 	QVector<QSharedPointer<DkImageContainerT> > getImages();
+	void setImages(QVector<QSharedPointer<DkImageContainerT> > images);
 	void firstFile();
 	void lastFile();
 	void loadFileAt(int idx);

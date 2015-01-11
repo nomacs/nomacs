@@ -562,6 +562,12 @@ QVector<QSharedPointer<DkImageContainerT> > DkImageLoader::getImages() {
 	return images;
 }
 
+void DkImageLoader::setImages(QVector<QSharedPointer<DkImageContainerT> > images) {
+
+	this->images = images;
+	emit updateDirSignal(images);
+}
+
 /**
  * Loads the first file of the current directory.
  **/ 

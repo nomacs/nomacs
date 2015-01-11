@@ -1113,8 +1113,6 @@ void DkThumbLabel::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 	it.translate(icon.pos().x(), icon.pos().y());
 	it.scale(icon.scale(), icon.scale());
 
-	qDebug() << "icon pos (paint): " << icon.pos();
-
 	painter->setTransform(it);
 	icon.paint(painter, &noSelOption, widget);
 	painter->setTransform(mt);
