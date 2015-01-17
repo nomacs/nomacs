@@ -100,6 +100,7 @@ signals:
 protected slots:
 	void viewportDestroyed();
 
+public slots:
 	void saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width);
 };
 

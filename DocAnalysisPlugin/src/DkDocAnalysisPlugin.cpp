@@ -138,18 +138,12 @@ QImage DkDocAnalysisPlugin::runPlugin(const QString &runID, const QImage &image)
 	//for a viewport plugin runID and image are null
 	if (viewport) {
 
-		DkDocAnalysisViewPort* paintViewport = dynamic_cast<DkDocAnalysisViewPort*>(viewport);
+		DkDocAnalysisViewPort* docAnalysisViewport = dynamic_cast<DkDocAnalysisViewPort*>(viewport);
 
 		QImage retImg = QImage();
-		if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
+		if (!docAnalysisViewport->isCanceled()) retImg = docAnalysisViewport->getPaintedImage();
 
 		viewport->setVisible(false);
-	
-
-		// signal for saving magic cut
-		connect(viewport, SIGNAL(saveMagicCutRequest(QImage, int, int, int, int)), this, SLOT(saveMagicCut(QImage, int, int, int, int)));
-		connect(this, SIGNAL(magicCutSavedSignal(bool)), viewport, SLOT(magicCutSaved(bool)));
-
 
 		return retImg;
 	}
@@ -169,6 +163,10 @@ DkPluginViewPort* DkDocAnalysisPlugin::getViewPort() {
 		vp->setMainWindow(getMainWidnow());
 
 		viewport = vp;
+
+		// signal for saving magic cut
+		connect(viewport, SIGNAL(saveMagicCutRequest(QImage, int, int, int, int)), this, SLOT(saveMagicCut(QImage, int, int, int, int)));
+		connect(this, SIGNAL(magicCutSavedSignal(bool)), viewport, SLOT(magicCutSaved(bool)));
 	}
 	return viewport;
 }
@@ -207,8 +205,6 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 	DkImageLoader* loader;
 	DkNoMacs* nmcWin;
-	//QSharedPointer<DkMetaDataT> metadata;
-	//QImage image;
 	QMainWindow* win = getMainWidnow();
 	if (win) {
 
@@ -306,7 +302,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
 
 		if (!jpgDialog)
-			jpgDialog = new DkCompressDialog(nmcWin);
+			jpgDialog = 0; //new DkCompressDialog(nmcWin);
 
 		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
 			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
@@ -338,7 +334,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains("webp")) {
 
 		if (!jpgDialog)
-			jpgDialog = new DkCompressDialog(nmcWin);
+			jpgDialog = 0; // new DkCompressDialog(nmcWin);
 
 		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
 
@@ -354,7 +350,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains("tif")) {
 		
 		if (!tifDialog)
-			tifDialog = new DkTifDialog(nmcWin);
+			tifDialog = 0; //new DkTifDialog(nmcWin);
 
 		if (!tifDialog->exec())
 			return;
@@ -392,6 +388,7 @@ void DkDocAnalysisPlugin::contextMenuEvent(QContextMenuEvent *event) {
 	if( ((DkDocAnalysisViewPort *)viewport)->editingActive() )
 		event->ignore();
 	else
+		return;
 		//QWidget::contextMenuEvent(event);
 		//return; //DkNoMacs::contextMenuEvent(event);
 }
