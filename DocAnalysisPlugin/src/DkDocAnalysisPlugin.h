@@ -52,6 +52,8 @@
 #include "DkDistanceMeasure.h"
 #include "DkMagicCutWidgets.h"
 #include "DkLineDetection.h"
+//#include "DkDialog.h"
+#include "DkSaveDialog.h"
 
 //// Workaround
 //#define PLUGIN_ID "5232a9d4459e431fb9b686365e693a30"
@@ -87,8 +89,18 @@ public:
 protected:
 	DkPluginViewPort* viewport;
 
+	DkCompressDialog *jpgDialog;
+	DkTifDialog *tifDialog;
+
+	virtual void contextMenuEvent(QContextMenuEvent *event);
+
+signals:
+	void magicCutSavedSignal(bool); /**< Signal for confirming if the magic cut could be saved or not **/
+	
 protected slots:
 	void viewportDestroyed();
+
+	void saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width);
 };
 
 class DkDocAnalysisViewPort : public DkPluginViewPort {
@@ -103,7 +115,6 @@ public:
 	bool editingDrawingActive();
 
 
-	//TODO: old paint - remove
 	bool isCanceled();
 	QImage getPaintedImage();
 	
@@ -129,19 +140,17 @@ public slots:
 	// measure distance functions
 	void pickDistancePoint(bool pick);
 	void pickDistancePoint();
-	// >DIR: uncomment if function is added again [21.10.2014 markus]
-	//// magic wand selection functions
-	//void pickSeedpoint(bool pick);
-	//void pickSeedpoint();
-	//void setMagicCutTolerance(int tol);
-	//void clearMagicCut();
 	
-	// >DIR: uncomment if function is added again [21.10.2014 markus]
-	//void openMagicCutDialog();
+	//// magic wand selection functions
+	void pickSeedpoint(bool pick);
+	void pickSeedpoint();
+	void setMagicCutTolerance(int tol);
+	void clearMagicCut();
+	void openMagicCutDialog();
 	//// animation of contours
-	//virtual void updateAnimatedContours();
-	//void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
-	//void magicCutSaved(bool saved);
+	void updateAnimatedContours();
+	void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
+	void magicCutSaved(bool saved);
 
 	//// line detection functions
 	void openLineDetectionDialog();
@@ -151,7 +160,6 @@ public slots:
 	void showTopTextLines();
 
 
-	// TODO: old paint - remove
 	virtual void setVisible(bool visible);
 
 protected:

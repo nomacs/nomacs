@@ -145,11 +145,19 @@ QImage DkDocAnalysisPlugin::runPlugin(const QString &runID, const QImage &image)
 
 		viewport->setVisible(false);
 	
+
+		// signal for saving magic cut
+		connect(viewport, SIGNAL(saveMagicCutRequest(QImage, int, int, int, int)), this, SLOT(saveMagicCut(QImage, int, int, int, int)));
+		connect(this, SIGNAL(magicCutSavedSignal(bool)), viewport, SLOT(magicCutSaved(bool)));
+
+
 		return retImg;
 	}
 	
 	return image;
 };
+
+
 
 /**
 * returns paintViewPort
@@ -180,6 +188,215 @@ void DkDocAnalysisPlugin::deleteViewPort() {
 		viewport = 0;
 	}
 }
+
+/**
+* function for saving a magic cut.
+* Saves the image using it's original name and appending the x- and y-Coordinates to the name.
+* Additional metadata to where the cut is located in the original image
+* is written in the Comment string of the image.
+* @param saveImg The image to be saved
+* @param xCoord The x-coordinate of the upper left corner of the bounding box of the cut
+* @param yCoord The y-coordinate of the upper left corner of the bounding box of the but
+* @param height The height of the bounding box (y-extent)
+* @param width The width of the bounding box (x-extent)
+* \sa magicCutSavedSignal(bool) 
+**/
+void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width/* QString saveNameAppendix*/) {
+
+	qDebug() << "saving...";
+
+	DkImageLoader* loader;
+	DkNoMacs* nmcWin;
+	//QSharedPointer<DkMetaDataT> metadata;
+	//QImage image;
+	QMainWindow* win = getMainWidnow();
+	if (win) {
+
+		// this should usually work - since we are a nomacs plugin
+		nmcWin = dynamic_cast<DkNoMacs*>(getMainWidnow());
+
+		if (nmcWin) {
+
+			DkViewPort* vp = nmcWin->viewport();
+
+			if (vp) {
+				loader = vp->getImageLoader();
+			}
+
+		}
+	}
+	
+	QString selectedFilter;
+	QString saveName;
+	QFileInfo saveFile;
+
+	QString saveNameAppendix = QString("_%1").arg(xCoord);
+	saveNameAppendix.append(QString("_%1").arg(yCoord));
+
+	if (loader->hasFile()) {
+		saveFile = loader->file();
+		saveName = saveFile.fileName();
+
+		qDebug() << "saveName: " << saveName; //.toStdString();
+		
+		qDebug() << "save dir: " << loader->getSaveDir();
+
+		if (loader->getSaveDir() != saveFile.absoluteDir())
+			saveFile = QFileInfo(loader->getSaveDir(), saveName);
+
+		int filterIdx = -1;
+
+		QStringList sF = DkSettings::saveFilters;
+		//qDebug() << sF;
+
+		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
+		exp.setPatternSyntax(QRegExp::Wildcard);
+
+		for (int idx = 0; idx < sF.size(); idx++) {
+
+			//qDebug() << exp;
+			//qDebug() << saveFile.suffix();
+			//qDebug() << sF.at(idx);
+
+			if (exp.exactMatch(sF.at(idx))) {
+				selectedFilter = sF.at(idx);
+				filterIdx = idx;
+				break;
+			}
+		}
+
+		if (filterIdx == -1)
+			saveName.remove("." + saveFile.suffix());
+	}
+
+	// note: basename removes the whole file name from the first dot...
+	QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+
+	savePath.insert(savePath.length()-saveFile.completeSuffix().length()-1, saveNameAppendix);
+
+	QString fileName = QFileDialog::getSaveFileName(viewport, tr("Save Magic Cut"),
+		savePath, DkSettings::saveFilters.join(";;"), &selectedFilter);
+
+	//qDebug() << "selected Filter: " << selectedFilter;
+
+	if (fileName.isEmpty())
+		return;
+
+
+	QString ext = QFileInfo(fileName).suffix();
+
+	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
+
+		QStringList sF = DkSettings::saveFilters;
+
+		for (int idx = 0; idx < sF.size(); idx++) {
+
+			if (sF.at(idx).contains(ext)) {
+				selectedFilter = sF.at(idx);
+				break;
+			}
+		}
+	}
+
+	// TODO: if more than one file is opened -> open new threads
+	QFileInfo sFile = QFileInfo(fileName);
+	int compression = -1;	// default value
+
+	//if (saveDialog->selectedNameFilter().contains("jpg")) {
+	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
+
+		if (!jpgDialog)
+			jpgDialog = new DkCompressDialog(nmcWin);
+
+		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
+			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
+		else
+			jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
+
+		jpgDialog->imageHasAlpha(saveImage.hasAlphaChannel());
+		//jpgDialog->show();
+		if (!jpgDialog->exec())
+			return;
+
+		compression = jpgDialog->getCompression();
+
+
+		if (saveImage.hasAlphaChannel()) {
+
+			QRect imgRect = QRect(QPoint(), saveImage.size());
+			QImage tmpImg = QImage(saveImage.size(), QImage::Format_RGB32);
+			QPainter painter(&tmpImg);
+			painter.fillRect(imgRect, jpgDialog->getBackgroundColor());
+			painter.drawImage(imgRect, saveImage, imgRect);
+
+			saveImage = tmpImg;
+		}
+
+	//	qDebug() << "returned: " << ret;
+	}
+
+	if (selectedFilter.contains("webp")) {
+
+		if (!jpgDialog)
+			jpgDialog = new DkCompressDialog(nmcWin);
+
+		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
+
+		jpgDialog->setImage(&saveImage);
+
+		if (!jpgDialog->exec())
+			return;
+
+		compression = jpgDialog->getCompression();
+	}
+
+	//if (saveDialog->selectedNameFilter().contains("tif")) {
+	if (selectedFilter.contains("tif")) {
+		
+		if (!tifDialog)
+			tifDialog = new DkTifDialog(nmcWin);
+
+		if (!tifDialog->exec())
+			return;
+
+		compression = tifDialog->getCompression();
+	}
+
+	QImageWriter* imgWriter = new QImageWriter(sFile.absoluteFilePath());
+	imgWriter->setCompression(compression);
+	imgWriter->setQuality(compression);
+	
+	if (imgWriter->supportsOption(QImageIOHandler::Description)) {
+		QString comment = QString(saveName);
+		comment.append(QString("; %1").arg(xCoord));
+		comment.append(QString("; %1").arg(yCoord));
+		comment.append(QString("; %1").arg(height));
+		comment.append(QString("; %1").arg(width));
+
+		imgWriter->setText("Comment", comment);
+	}
+	
+	bool saved = imgWriter->write(saveImage);
+	//imgWriter->setFileName(QFileInfo().absoluteFilePath());
+	delete imgWriter;
+
+
+	emit magicCutSavedSignal(saved);
+	//bool saved = sImg.save(filePath, 0, compression);
+	//qDebug() << "jpg compression: " << compression;
+}
+
+void DkDocAnalysisPlugin::contextMenuEvent(QContextMenuEvent *event) {
+
+	// ignore context menu event if any editing is active
+	if( ((DkDocAnalysisViewPort *)viewport)->editingActive() )
+		event->ignore();
+	else
+		//QWidget::contextMenuEvent(event);
+		//return; //DkNoMacs::contextMenuEvent(event);
+}
+
+
 
 /* macro for exporting plugin */
 Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkDocAnalysisPlugin/1.0", DkDocAnalysisPlugin)
@@ -415,8 +632,7 @@ void DkDocAnalysisViewPort::keyPressEvent(QKeyEvent* event) {
 		// use Alt + Enter for MagicCut to distinguish from ordinary cut (which is only Enter)
 		if(event->modifiers() == Qt::AltModifier && !event->isAutoRepeat()) {
 
-			// >DIR: uncomment if function is added again [21.10.2014 markus]
-			//openMagicCutDialog();
+			openMagicCutDialog();
 		}
 	}
 	else if (editMode == mode_pickDistance && event->key() == Qt::Key_Shift) {
@@ -524,6 +740,17 @@ void DkDocAnalysisViewPort::paintEvent(QPaintEvent *event) {
 	painter.end();
 
 	DkPluginViewPort::paintEvent(event);
+}
+
+/**
+* Slot - A timed function, called regularly to generate an animated effect
+* for the drawn contours of the magic cut areas
+* \sa DkMagicCut DkMagicCut::updateAnimateContours()
+**/
+void DkDocAnalysisViewPort::updateAnimatedContours() {
+
+	magicCut->updateAnimateContours();
+	update();
 }
 
 /**
@@ -768,6 +995,134 @@ void DkDocAnalysisViewPort::pickDistancePoint() {
 	emit startDistanceMeasureRequest();
 	distance->resetPoints();
 	this->setCursor(Qt::CrossCursor);
+}
+
+
+/**
+* Starts/ends the seed points picking mode for region selection.
+* Cancels any other active modes.
+* @param pick start or end the mode
+* \sa cancelDistanceMeasureRequest() DkMagicCutToolBar::measureDistanceCanceled()
+**/
+void DkDocAnalysisViewPort::pickSeedpoint(bool pick) {
+
+	switch(editMode) {
+	case mode_pickDistance:
+		emit cancelDistanceMeasureRequest();
+		distance->resetPoints();
+		break;
+	}
+
+	if(pick) {
+		editMode = mode_pickSeedpoint;
+		this->setCursor(Qt::PointingHandCursor);
+	} else
+		editMode = mode_default;	
+}
+
+/**
+* Starts the seed points pickcing picking mode if not yet active.
+* Cancels any other active modes.
+* @param pick start or end the mode
+* \sa cancelDistanceMeasureRequest() DkMagicCutToolBar::measureDistanceCanceled(), startPickSeedpointRequest()
+**/
+void DkDocAnalysisViewPort::pickSeedpoint() {
+
+	switch(editMode) {
+	case mode_pickSeedpoint:
+		return;
+	case mode_pickDistance:
+		emit cancelDistanceMeasureRequest();
+		distance->resetPoints();
+		break;
+	}
+
+	editMode = mode_pickSeedpoint;
+	emit startPickSeedpointRequest();
+	this->setCursor(Qt::PointingHandCursor);
+}
+
+/**
+* Opens the dialog to save the magic cut, if anything is selected.
+* \sa DkMagicCutDialog DkMagicCut
+**/
+void DkDocAnalysisViewPort::openMagicCutDialog() {
+
+	DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
+	if (viewport->getImage().isNull()) return;
+
+	// make sure that at least one region is outlined
+	if (!magicCut->hasContours()) {
+		/*QString msg = tr("Please select at least one region before saving.\n");
+		QMessageBox errorDialog(this);
+		errorDialog.setWindowTitle("Information");
+		errorDialog.setIcon(QMessageBox::Information);
+		errorDialog.setText(msg);
+		errorDialog.show();
+	    errorDialog.exec();*/
+		return;
+	}
+
+	if (!magicCutDialog) {
+		magicCutDialog = new DkMagicCutDialog(magicCut, this, 0);
+		connect(magicCutDialog, SIGNAL(savePressed(QImage, int, int, int, int)), this, SLOT(saveMagicCutPressed(QImage, int, int, int, int)));
+	}
+
+	bool done = magicCutDialog->exec();
+
+}
+
+/**
+* Sets the changed magic cut tolerance in the tool to the new value.
+* @param tol The new color tolerance value
+* \sa DkMagicCut::setTolerance(int)
+**/
+void DkDocAnalysisViewPort::setMagicCutTolerance(int tol) {
+
+	magicCut->setTolerance(tol);
+}
+
+/**
+* Clears all selected regions and resets the region mask in the magic cut tool.
+* \sa DkMagicCut::resetRegionMask()
+**/
+void DkDocAnalysisViewPort::clearMagicCut() {
+
+	magicCut->resetRegionMask();
+	emit enableSaveCutSignal(false);
+}
+
+/**
+* Emits a signal that the magic cut should be saved.
+* \a saveMagicCutRequest(QImage, int, int, int, int) DkNoMacs::saveMagicCut(QImage, int, int, int, int)
+**/
+void DkDocAnalysisViewPort::saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width) {
+
+	//std::cout << "SAVE MAGIC CUT: " << nameAppendix.toStdString() << std::endl;
+	emit saveMagicCutRequest(saveImg, xCoord, yCoord, height, width);
+}
+
+/**
+* Called after the magic cut has been saved, resets masks, displays error message when needed.
+* @param saved true if successfully saved, false otherwise
+* \sa DkMagicCut::resetRegionMask()
+**/
+void DkDocAnalysisViewPort::magicCutSaved(bool saved) {
+
+	if(saved) {
+		magicCut->resetRegionMask();
+		emit enableSaveCutSignal(false);
+	}
+	else {
+
+		QString msg = tr("Sorry, the magic cut could not be saved\n");
+		QMessageBox errorDialog(this);
+		errorDialog.setWindowTitle("Error saving magic cut");
+		errorDialog.setIcon(QMessageBox::Critical);
+		errorDialog.setText(msg);
+		errorDialog.show();
+	    errorDialog.exec();
+	}
 }
 
 /**

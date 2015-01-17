@@ -238,7 +238,7 @@ void DkMagicCut::calculateContours() {
 	cv::Mat roi = mask(Range(1,mask.rows-1),Range(1,mask.cols-1));
 	cv::Mat roi_clone = roi.clone();
 	// dilate the found blobs to receive better results
-	cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+	cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
 	cv::dilate(roi_clone, roi_clone, element);
 	// + closing of small holes
 	cv::dilate(roi_clone, roi_clone, element);
@@ -272,7 +272,7 @@ void DkMagicCut::calculateContours() {
 		points.push_back(QPoint(points_cv.at(0).x, points_cv.at(0).y));
 
 		// map to image and add polygon to painter path
-		contours.addPolygon(imgMatrix->map(QPolygon(points)));
+		contours.addPolygon(QPolygon(points)/*imgMatrix->map(QPolygon(points))*/);
 	}
 
 	// get minimum bounding rect for selected regions
