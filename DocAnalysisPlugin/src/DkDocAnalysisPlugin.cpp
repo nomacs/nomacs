@@ -302,7 +302,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
 
 		if (!jpgDialog)
-			jpgDialog = 0; //new DkCompressDialog(nmcWin);
+			jpgDialog = new DkCompressDialog(nmcWin);
 
 		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
 			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
