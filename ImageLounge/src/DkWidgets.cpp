@@ -3320,12 +3320,14 @@ DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) {
 }
 
 void DkDirectoryEdit::lineEditChanged(QString path) {
-
+	
 	setProperty("error", !existsDirectory(path));
 	style()->unpolish(this);
 	style()->polish(this);
 	update();
-
+	
+	if (existsDirectory(path))
+		emit directoryChanged(QDir(path));
 }
 
 bool DkDirectoryEdit::existsDirectory(QString path) {

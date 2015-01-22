@@ -120,6 +120,7 @@ void DkFileSelection::createLayout() {
 	
 	directoryEdit = new DkDirectoryEdit(this);
 	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
+	connect(directoryEdit, SIGNAL(directoryChanged(QDir)), this, SLOT(setDir(QDir)));
 
 	//QPushButton* browseButton = new QPushButton(tr("Browse"));
 	//connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
@@ -267,7 +268,7 @@ void DkFilenameWidget::createLayout() {
 	sBNumber = new QSpinBox(this);
 	sBNumber->setValue(1);
 	sBNumber->setMinimum(0);
-	sBNumber->setMaximum(999);	// change - if cbDigits->setCurrentIndex() is changed!
+	sBNumber->setMaximum(999);	// changes - if cbDigits->setCurrentIndex() is changed!
 	connect(sBNumber, SIGNAL(valueChanged(int)), this, SIGNAL(changed()));
 
 	cBDigits = new QComboBox(this);
@@ -293,8 +294,8 @@ void DkFilenameWidget::createLayout() {
 	pbMinus->setMaximumSize(30,30);
 	connect(pbPlus, SIGNAL(clicked()), this, SLOT(pbPlusPressed()));
 	connect(pbMinus, SIGNAL(clicked()), this, SLOT(pbMinusPressed()));
-	connect(pbPlus, SIGNAL(clicked(int)), this, SIGNAL(changed()));
-	connect(pbMinus, SIGNAL(clicked(int)), this, SIGNAL(changed()));
+	connect(pbPlus, SIGNAL(clicked()), this, SIGNAL(changed()));
+	connect(pbMinus, SIGNAL(clicked()), this, SIGNAL(changed()));
 }
 
 void DkFilenameWidget::typeCBChanged(int index) {
@@ -501,9 +502,10 @@ void DkBatchOutput::createLayout() {
 
 void DkBatchOutput::browse() {
 
+	
 	// load system default open dialog
 	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		outputDirectory.absolutePath());
+		outputlineEdit->text());
 
 	if (dirName.isEmpty())
 		return;
@@ -518,13 +520,14 @@ void DkBatchOutput::setDir(QDir dir) {
 }
 
 void DkBatchOutput::plusPressed(DkFilenameWidget* widget) {
+	int index = filenameVBLayout->indexOf(widget);
 	DkFilenameWidget* fwidget = new DkFilenameWidget(this);
-	filenameWidgets.push_back(fwidget);
+	filenameWidgets.insert(index + 1, fwidget);
 	if (filenameWidgets.size() > 4) {
 		for (int i = 0; i  < filenameWidgets.size(); i++)
 			filenameWidgets[i]->enablePlusButton(false);
 	}
-	filenameVBLayout->insertWidget(filenameWidgets.size()-1, fwidget);
+	filenameVBLayout->insertWidget(index + 1, fwidget); // append to current widget
 	connect(fwidget, SIGNAL(plusPressed(DkFilenameWidget*)), this, SLOT(plusPressed(DkFilenameWidget*)));
 	connect(fwidget, SIGNAL(minusPressed(DkFilenameWidget*)), this, SLOT(minusPressed(DkFilenameWidget*)));
 	connect(fwidget, SIGNAL(changed()), this, SLOT(emitChangedSignal()));
@@ -822,6 +825,7 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
 	fileSelection->setDir(currentDirectory);
+	outputSelection->setDir(currentDirectory);
 }
 
 void DkBatchDialog::createLayout() {
@@ -847,7 +851,7 @@ void DkBatchDialog::createLayout() {
 	widgets[batch_transform]->showContent(false);
 
 	widgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
-	DkBatchOutput* outputSelection = new DkBatchOutput(widgets[batch_output]);
+	outputSelection = new DkBatchOutput(widgets[batch_output]);
 	widgets[batch_output]->setContentWidget(outputSelection);
 
 	progressBar = new QProgressBar(this);
@@ -873,8 +877,11 @@ void DkBatchDialog::createLayout() {
 	dialogLayout->setAlignment(Qt::AlignTop);
 	for (int i=0; i < widgets.size(); i++) {
 		dialogLayout->addWidget(widgets[i]);
-		connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
+		//connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); // most widgets do not have (and need) a changed signal ... perhaps uncomment this again 
 	}
+	connect(widgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
+	connect(widgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); 
+
 	dialogLayout->addWidget(progressBar);
 	//dialogLayout->addStretch(10);
 	dialogLayout->addWidget(buttons);
