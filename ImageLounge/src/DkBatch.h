@@ -208,13 +208,13 @@ protected slots:
 	void minusPressed(DkFilenameWidget* widget);
 	void extensionCBChanged(int index);
 	void emitChangedSignal();
+	void updateFileLabelPreview();
 
 protected:
 	virtual void createLayout();
 	void setDir(QDir dir);
 
 private:
-	void updateFileLabelPreview();
 
 	bool hUserInput;
 	bool rUserInput;

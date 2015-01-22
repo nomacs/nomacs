@@ -255,18 +255,20 @@ void DkFilenameWidget::createLayout() {
 	cBType->insertItem(fileNameTypes_Number, tr("Number"));
 	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeCBChanged(int)));
 	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
+	connect(cBType, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
 
 	cBCase = new QComboBox(this);
 	cBCase->addItem(tr("Keep Case"));
 	cBCase->addItem(tr("To lowercase"));
 	cBCase->addItem(tr("To UPPERCASE"));
 	connect(cBCase, SIGNAL(currentIndexChanged(int)), this, SLOT(checkForUserInput()));
+	connect(cBCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
 
 	sBNumber = new QSpinBox(this);
 	sBNumber->setValue(1);
 	sBNumber->setMinimum(0);
 	sBNumber->setMaximum(999);	// change - if cbDigits->setCurrentIndex() is changed!
-	//connect(sBNumber, SIGNAL(valueChanged()), this, SIGNAL(changed()));
+	connect(sBNumber, SIGNAL(valueChanged(int)), this, SIGNAL(changed()));
 
 	cBDigits = new QComboBox(this);
 	cBDigits->addItem(tr("1 digit"));
@@ -278,6 +280,8 @@ void DkFilenameWidget::createLayout() {
 	connect(cBDigits, SIGNAL(currentIndexChanged(int)), this, SLOT(digitCBChanged(int)));
 
 	lEText = new QLineEdit(this);
+	connect(cBCase, SIGNAL(currentIndexChanged(int)), this, SIGNAL(changed()));
+	connect(lEText, SIGNAL(textChanged(QString)), this, SIGNAL(changed()));
 
 	pbPlus = new QPushButton("+", this);
 	pbPlus->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -289,6 +293,8 @@ void DkFilenameWidget::createLayout() {
 	pbMinus->setMaximumSize(30,30);
 	connect(pbPlus, SIGNAL(clicked()), this, SLOT(pbPlusPressed()));
 	connect(pbMinus, SIGNAL(clicked()), this, SLOT(pbMinusPressed()));
+	connect(pbPlus, SIGNAL(clicked(int)), this, SIGNAL(changed()));
+	connect(pbMinus, SIGNAL(clicked(int)), this, SIGNAL(changed()));
 }
 
 void DkFilenameWidget::typeCBChanged(int index) {
