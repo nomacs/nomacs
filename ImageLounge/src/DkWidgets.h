@@ -1504,6 +1504,10 @@ class DkDirectoryEdit : public QLineEdit {
 		DkDirectoryEdit(QString content, QWidget* parent = 0);
 		
 		bool existsDirectory() { return existsDirectory(text());};
+
+	signals:
+		bool directoryChanged(QDir path);
+
 	public slots:
 		void lineEditChanged(QString path);
 

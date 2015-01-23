@@ -103,7 +103,7 @@ public:
 		return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()).absolutePath() : "";
 	};
 
-	void setDir(const QDir& dir);
+
 
 	QList<QUrl> getSelectedFiles();
 
@@ -111,6 +111,7 @@ public:
 	virtual bool requiresUserInput() const {return rUserInput;};
 
 public slots:
+	void setDir(const QDir& dir);
 	void browse();
 	void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
 	void setVisible(bool visible);
@@ -197,6 +198,7 @@ public:
 	QString getOutputDirectory();
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
+	void setDir(QDir);
 
 signals:
 	void newHeaderText(QString);
@@ -208,13 +210,13 @@ protected slots:
 	void minusPressed(DkFilenameWidget* widget);
 	void extensionCBChanged(int index);
 	void emitChangedSignal();
+	void updateFileLabelPreview();
 
 protected:
 	virtual void createLayout();
-	void setDir(QDir dir);
+	
 
 private:
-	void updateFileLabelPreview();
 
 	bool hUserInput;
 	bool rUserInput;
@@ -324,6 +326,7 @@ private:
 	QDir currentDirectory;
 	QDialogButtonBox* buttons;
 	DkFileSelection* fileSelection;
+	DkBatchOutput* outputSelection;
 	DkBatchResizeWidget* resizeWidget;
 	DkBatchTransformWidget* transformWidget;
 	DkBatchProcessing* batchProcessing;
