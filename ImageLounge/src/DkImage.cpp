@@ -229,9 +229,9 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 		else
 			images.append(QSharedPointer<DkImageContainerT >(new DkImageContainerT(files.at(idx))));
 	}
-
-	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
 	qDebug() << "[DkImageLoader] " << images.size() << " containers created in " << dt.getTotal();
+	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
+	qDebug() << "[DkImageLoader] after sorting: " << dt.getTotal();
 }
 
 /**
@@ -687,14 +687,15 @@ void DkImageLoader::load(const QFileInfo& file) {
 	hasZipMarker = file.absoluteFilePath().contains(DkZipContainer::zipMarker());
 #endif
 
-	loadDir(file);
-
 	if (file.isFile() || hasZipMarker) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
 		load(currentImage);
 	}
-	else 
+
+	loadDir(file);
+
+	if (!(file.isFile() || hasZipMarker))
 		firstFile();
 	
 }

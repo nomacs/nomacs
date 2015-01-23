@@ -350,9 +350,6 @@ DkThumbNailT::DkThumbNailT(QFileInfo file, QImage img) : DkThumbNail(file, img) 
 	fetching = false;
 	fetchingColor = false;
 	forceLoad = do_not_force;
-
-	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
-	connect(&colorWatcher, SIGNAL(finished()), this, SLOT(colorLoaded()));
 }
 
 DkThumbNailT::~DkThumbNailT() {
@@ -372,10 +369,9 @@ void DkThumbNailT::fetchColor() {
 	// watcher.isRunning() returns false if the thread is waiting in the pool
 	fetchingColor = true;
 
-	QFuture<QColor> future = QtConcurrent::run(this, 
-		&nmc::DkThumbNailT::computeColorCall);
-
-	colorWatcher.setFuture(future);
+	connect(&colorWatcher, SIGNAL(finished()), this, SLOT(colorLoaded()));
+	colorWatcher.setFuture(QtConcurrent::run(this, 
+		&nmc::DkThumbNailT::computeColorCall));
 }
 
 QColor DkThumbNailT::computeColorCall() {
@@ -411,10 +407,10 @@ bool DkThumbNailT::fetchThumb(int forceLoad /* = false */,  QSharedPointer<QByte
 	fetching = true;
 	this->forceLoad = forceLoad;
 
-	QFuture<QImage> future = QtConcurrent::run(this, 
-		&nmc::DkThumbNailT::computeCall, forceLoad, ba);
-
-	thumbWatcher.setFuture(future);
+	connect(&thumbWatcher, SIGNAL(finished()), this, SLOT(thumbLoaded()));
+	thumbWatcher.setFuture(QtConcurrent::run(this, 
+		&nmc::DkThumbNailT::computeCall, forceLoad, ba));
+	
 	DkSettings::resources.numThumbsLoading++;
 
 	return true;
