@@ -505,8 +505,11 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 
 	if (numZeros > 0) {
 
+		// if fIdx <= 0, log10 must not be evaluated
+		int cNumZeros = fIdx > 0 ? numZeros - std::floor(std::log10(fIdx)) : numZeros;
+
 		// zero padding
-		for (int idx = 0; idx < numZeros - std::floor(std::log10(fIdx)); idx++) {
+		for (int idx = 0; idx < cNumZeros; idx++) {
 			result += "0";
 		}
 	}
