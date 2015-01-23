@@ -507,8 +507,10 @@ QSharedPointer<DkImageContainerT> DkImageLoader::findFile(const QFileInfo& file)
 
 		if (images[0]->isFromZip()) {
 			int idx = findFileIdx(file, images);
-			if (idx < 0) return QSharedPointer<DkImageContainerT>();
-			else return images[idx];
+			if (idx < 0) 
+				return QSharedPointer<DkImageContainerT>();
+			else 
+				return images[idx];
 		}
 	}
 

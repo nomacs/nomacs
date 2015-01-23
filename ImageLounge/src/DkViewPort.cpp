@@ -513,7 +513,7 @@ void DkControlWidget::showCommentWidget(bool visible) {
 
 void DkControlWidget::switchWidget(QWidget* widget) {
 
-	if (layout->currentWidget() == widget)
+	if (layout->currentWidget() == widget || !widget && layout->currentWidget() == widgets[hud_widget])
 		return;
 
 	if (widget)

@@ -589,7 +589,7 @@ void DkImageContainerT::loadingFinished() {
 		return;
 	}
 	else if (!getThumb()->hasImage()) {
-		getThumb()->setImage(DkImage::createThumb(getLoader()->image()));
+		getThumb()->setImage(getLoader()->image());
 	}
 
 	// clear file buffer if it exceeds a certain size?! e.g. psd files
@@ -598,7 +598,6 @@ void DkImageContainerT::loadingFinished() {
 	
 	loadState = loaded;
 	emit fileLoadedSignal(true);
-	
 }
 
 void DkImageContainerT::cancel() {
