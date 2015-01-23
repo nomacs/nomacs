@@ -1136,21 +1136,26 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		delete imgWriter;
 	}
 
-	if (saved && metaData->isLoaded()) {
-		try {
-			metaData->setExifValue("Exif.Image.ImageWidth", QString::number(img.width()));
-			metaData->setExifValue("Exif.Image.ImageLength", QString::number(img.height()));
-			metaData->clearOrientation();
-			metaData->setThumbnail(DkImage::createThumb(img));
-			metaData->saveMetaData(ba, true);
-			//metaData->printMetaData();	// debug
-		} 
-		catch (...) {
-			// is it still throwing anything?
-			qDebug() << "Sorry, I could not save the meta data...";
+	if (saved && !metaData->isLoaded()) {
+		
+		metaData->readMetaData(fileInfo, ba);	// also creates metadata
+
+		if (metaData->isLoaded()) {
+			try {
+				metaData->setExifValue("Exif.Image.ImageWidth", QString::number(img.width()));
+				metaData->setExifValue("Exif.Image.ImageLength", QString::number(img.height()));
+				metaData->clearOrientation();
+				metaData->setThumbnail(DkImage::createThumb(img));
+				metaData->saveMetaData(ba, true);
+				//metaData->printMetaData();	// debug
+			} 
+			catch (...) {
+				// is it still throwing anything?
+				qDebug() << "Sorry, I could not save the meta data...";
+			}
 		}
 	}
-	
+
 	if (!saved)
 		emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fileInfo.fileName()));
 
