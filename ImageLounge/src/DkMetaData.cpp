@@ -128,6 +128,19 @@ bool DkMetaDataT::saveMetaData(const QFileInfo& fileInfo, bool force) {
 	return true;
 }
 
+void DkMetaDataT::create() {
+
+	// TODO: create the exifImg itself here...
+
+	//Exiv2::ExifData &exifData = exifImg->exifData();
+
+	//if (exifData.empty()) {
+	//	exifData = Exiv2::ExifData();
+	//	exifState = dirty;
+	//}
+
+}
+
 bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 
 	if (!ba)

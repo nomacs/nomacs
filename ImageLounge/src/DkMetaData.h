@@ -69,6 +69,7 @@ public:
 	bool saveMetaData(const QFileInfo& fileInfo, bool force = false);
 	bool saveMetaData(QSharedPointer<QByteArray>& ba, bool force = false);
 
+	void create();
 	int getOrientation() const;
 	int getRating() const;
 	QString getDescription() const;

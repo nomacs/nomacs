@@ -198,6 +198,8 @@ public:
 	 **/ 
 	void setImage(QImage img, QFileInfo file) {
 
+		if (!file.exists())
+			metaData->create();
 		this->file = file;
 		qImg = img;
 	};
