@@ -208,6 +208,7 @@ private:
 	DkSpinBoxWidget* skipImgWidget;
 	//DkSpinBoxWidget* numberFiles;
 	QCheckBox* cbWrapImages;
+	QCheckBox* cbAskToSaveDeletedFiles;
 	QCheckBox* cbLogRecentFiles;
 
 	QGroupBox* 	gbDragDrop;

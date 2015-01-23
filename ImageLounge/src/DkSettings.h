@@ -191,6 +191,7 @@ public:
 		QStringList recentFolders;
 		bool logRecentFiles;
 		bool useTmpPath;
+		bool askToSaveDeletedFiles;
 		QString tmpPath;
 		QString language;
 		QStringList searchHistory;

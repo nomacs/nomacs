@@ -403,10 +403,10 @@ void DkImageContainerT::checkForFileUpdates() {
 	
 	// if image exists_not don't do this
 	if (!fileInfo.exists() && loadState == loaded) {
-		edited = true;
+		if (DkSettings::global.askToSaveDeletedFiles)
+			edited = true;
 		emit fileLoadedSignal(true);
 	}
-
 
 	if (fileInfo.lastModified() != modifiedBefore)
 		waitForUpdate = true;
