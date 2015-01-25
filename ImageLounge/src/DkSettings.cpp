@@ -357,6 +357,7 @@ void DkSettings::load(bool force) {
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
 	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
 	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.bgColorWidget.rgba()).toInt());
+	display_p.fontColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.fontColor.rgba()).toInt());
 	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
 	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
 
@@ -562,6 +563,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
 	if (!force && display_p.bgColorWidget != display_d.bgColorWidget)
 		settings.setValue("bgColorWidgetRGBA", display_p.bgColorWidget.rgba());
+	if (!force && display_p.fontColor != display_d.fontColor)
+		settings.setValue("fontColorRGBA", display_p.fontColor.rgba());
 	if (!force && display_p.bgColor != display_d.bgColor)
 		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
 	if (!force && display_p.iconColor != display_d.iconColor)
@@ -753,6 +756,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.invertZoom = false;
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.bgColorWidget = QColor(0, 0, 0, 100);
+	display_p.fontColor = QColor(255, 255, 255);
 	display_p.bgColor = QColor(100, 100, 100, 255);
 	display_p.iconColor = QColor(100,100,100,255);
 	//display_p.bgColor = QColor(219, 89, 2, 255);

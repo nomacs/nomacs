@@ -163,6 +163,7 @@ public:
 		QColor bgColorWidget;
 		QColor bgColor;
 		QColor bgColorFrameless;
+		QColor fontColor;
 		QColor iconColor;
 		bool useDefaultColor;
 		bool defaultIconColor;

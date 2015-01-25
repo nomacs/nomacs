@@ -238,6 +238,10 @@ public:
 	}
 
 	DkOverview* getOverview() {
+		return overviewWindow->getOverview();
+	}
+
+	DkZoomWidget* getZoomWidget() const {
 		return overviewWindow;
 	}
 
@@ -322,7 +326,7 @@ protected:
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;
 	DkCommentWidget* commentWidget;
-	DkOverview* overviewWindow;
+	DkZoomWidget* overviewWindow;
 	DkPlayer* player;
 	DkHistogram* histogram;
 	DkFolderScrollBar* folderScroll;

@@ -167,6 +167,25 @@ QLabel#DkCommentWidget{
 	background-color: HUD_BACKGROUND_COLOR;
 }
 
+QSlider#slZoom::groove:horizontal {
+    height: 5px;
+    border: 1px solid HUD_FONT_COLOR;
+}
+
+QSlider#slZoom::handle:horizontal {
+    width: 5px;
+    border-radius: 3px;
+	background: HUD_FONT_COLOR;
+}
+
+QLabel#DkOverview {
+	background: HUD_BACKGROUND_COLOR;
+}
+
+QLabel#DkOverviewSliderWidget {
+	background: HUD_BACKGROUND_COLOR;
+}
+
 QLabel#commentTitleLabel{
 	color: HUD_FONT_COLOR; 
 	margin: 0; 

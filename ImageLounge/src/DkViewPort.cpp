@@ -50,7 +50,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
-	overviewWindow = new DkOverview(this);
+	overviewWindow = new DkZoomWidget(this);
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
 
@@ -315,8 +315,8 @@ void DkControlWidget::connectWidgets() {
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 	
 	// overview
-	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
-	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
+	connect(overviewWindow->getOverview(), SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
+	connect(overviewWindow->getOverview(), SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
 
 	// waiting
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
@@ -1357,11 +1357,11 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	if (worldMatrix.m11() > 1 && !imageInside() && 
 		DkSettings::app.showOverview.testBit(DkSettings::app.currentAppMode)) {
 
-		if (!controller->getOverview()->isVisible())
-			controller->getOverview()->show();
+		if (!controller->getZoomWidget()->isVisible())
+			controller->getZoomWidget()->show();
 	}
-	else if (controller->getOverview()->isVisible())
-		controller->getOverview()->hide();
+	else if (controller->getZoomWidget()->isVisible())
+		controller->getZoomWidget()->hide();
 
 	painter.end();
 
