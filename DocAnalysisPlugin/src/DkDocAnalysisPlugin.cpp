@@ -758,7 +758,11 @@ void DkDocAnalysisViewPort::updateAnimatedContours() {
 void DkDocAnalysisViewPort::drawContours(QPainter *painter) {
 
 	QPen pen = painter->pen();
-	painter->setPen(magicCut->getContourPen());
+	QPen contourPen = magicCut->getContourPen();
+	if (avgBrightness < brightnessThreshold)
+		contourPen.setColor(QColor(255,255,255));
+
+	painter->setPen(contourPen);
 	painter->drawPath(magicCut->getContourPath());
 	painter->setPen(pen);
 }
@@ -776,6 +780,12 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 
 	if (distance->getCurPoint().isNull()) {
 		distance->setCurPoint(distance->getStartPoint());
+	}
+
+	QPen pen = painter->pen();
+	// set pen color to white
+	if (avgBrightness < brightnessThreshold) {
+		painter->setPen(QColor(255,255,255));
 	}
 
 	QPoint point = distance->getStartPoint();
@@ -799,7 +809,7 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	painter->setWorldMatrixEnabled(true);
 	
 	// draw the line
-	painter->drawLine(distance->getStartPoint(), distance->getCurPoint());
+	//painter->drawLine(distance->getStartPoint(), distance->getCurPoint());
 	// draw the text containing the current distance
 
 	QPoint point_end = distance->getCurPoint();
@@ -849,7 +859,10 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 	crossTransP2.setX(crossTransP2.x() - 7);
 	painter->setWorldMatrixEnabled(false);
 	painter->drawLine(crossTransP1, crossTransP2);
+	// draw the distance line
+	painter->drawLine(startPointMapped, endPointMapped);
 	painter->setWorldMatrixEnabled(true);
+
 
 	/*if(distance->hastStartAndEndPoint()) {
 		point = distance->getEndPoint();
@@ -858,6 +871,8 @@ void DkDocAnalysisViewPort::drawDistanceLine(QPainter *painter) {
 		painter->drawLine(point.x()-3, point.y(), point.x()+3, point.y());
 	}*/
 
+	// reset pen color to white
+	painter->setPen(pen);
 
 }
 
@@ -876,6 +891,7 @@ QImage DkDocAnalysisViewPort::getPaintedImage() {
 
 void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 	this->win = win;
+	brightnessThreshold = 0.3;
 
 	QSharedPointer<DkMetaDataT> metadata;
 	QImage image;
@@ -935,6 +951,15 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 		showBottomTextLines(false);
 		showTopTextLines(false);
 		emit enableShowTextLinesSignal(false);
+
+		// calculate the average brightness of the image by converting to YUV format
+		cv::Mat yuvImg;
+		cv::cvtColor(img, yuvImg, CV_BGR2YUV);
+		std::vector<Mat> ImgChannels;
+		cv::split(yuvImg, ImgChannels);
+		// calculate average vallue of luma component (Y channel)
+		cv::Scalar sum = cv::sum(ImgChannels[0]);
+		avgBrightness = (sum[0] / (ImgChannels[0].size().width * ImgChannels[0].size().height)) / 255;
 	}
 }
 
@@ -948,6 +973,30 @@ void DkDocAnalysisViewPort::setVisible(bool visible) {
 		emit showToolbar(docAnalysisToolbar, visible);
 
 	DkPluginViewPort::setVisible(visible);
+}
+
+/**
+* Calculates the average Brigtness of a cv::Mat
+**/
+void DkDocAnalysisViewPort::getBrightness(const Mat& frame, double& brightness)
+{
+	Mat temp, lum; //color[3];
+	std::vector<Mat> color;
+	temp = frame;
+
+	split(temp, color);
+
+	color[0] = color[0] * 0.299;
+	color[1] = color[1] * 0.587;
+	color[2] = color[2] * 0.114;
+
+
+	lum = color[0] + color [1] + color[2];
+
+	Scalar summ = sum(lum);
+
+
+	brightness = summ[0]/((pow(2,64)-1)*frame.rows * frame.cols) * 2; //-- percentage conversion factor
 }
 
 

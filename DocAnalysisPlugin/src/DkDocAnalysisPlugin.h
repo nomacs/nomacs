@@ -121,6 +121,8 @@ public:
 	
 	void setMainWindow(QMainWindow* win);
 
+	void getBrightness(const Mat& frame, double& brightness);
+
 signals:
 	// distance measure functions
 	void cancelDistanceMeasureRequest();
@@ -200,6 +202,8 @@ private:
 	int editMode; /**< The current editing state that the program is in **/
 	bool showBottomLines; /**< Flag for rendering to show or hide bottom text lines **/
 	bool showTopLines; /**< Flag for rendering to show or hide top text lines **/
+	double avgBrightness; /**< Saves the average brightness of the image usingthe HSV color model **/
+	double brightnessThreshold; /**< brightness threshold for using white pen **/
 
 	// distance measure section
 	DkDistanceMeasure *distance; /**< Tool to measure distances between two points **/
