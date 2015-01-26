@@ -163,6 +163,7 @@ public:
 		QColor bgColorWidget;
 		QColor bgColor;
 		QColor bgColorFrameless;
+		QColor fontColor;
 		QColor iconColor;
 		bool useDefaultColor;
 		bool defaultIconColor;
@@ -191,6 +192,7 @@ public:
 		QStringList recentFolders;
 		bool logRecentFiles;
 		bool useTmpPath;
+		bool askToSaveDeletedFiles;
 		QString tmpPath;
 		QString language;
 		QStringList searchHistory;

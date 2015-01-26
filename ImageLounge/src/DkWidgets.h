@@ -755,15 +755,12 @@ protected:
 	QVector<QAction*> columnActions;
 };
 
-class DkOverview : public DkWidget {
+class DkOverview : public QLabel {
 	Q_OBJECT
 
 public:
-	DkOverview(QWidget * parent = 0, Qt::WindowFlags f = 0);
+	DkOverview(QWidget * parent = 0);
 	~DkOverview() {};
-
-	void resize(int w, int h);
-	void resize(const QSize& size);
 
 	void setImage(QImage img) {
 		this->img = img;
@@ -779,6 +776,7 @@ public:
 
 	void setViewPortRect(QRectF viewPortRect) {
 		this->viewPortRect = viewPortRect;	
+		updateVirtualViewport();
 	};
 
 	void setVisible(bool visible) {
@@ -786,7 +784,7 @@ public:
 		if (visible)
 			resizeImg();
 
-		DkWidget::setVisible(visible);
+		QWidget::setVisible(visible);
 	};
 
 signals:
@@ -802,7 +800,7 @@ protected:
 	QRectF viewPortRect;
 	QPointF posGrab;
 	QPointF enterPos;
-	QWidget* parent;
+	QSizeF virtualVPSize;
 
 	void resizeImg();
 	void paintEvent(QPaintEvent *event);
@@ -810,7 +808,33 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent* event);
+	QRectF getImageRect() const;
+	void updateVirtualViewport();
 	QTransform getScaledImageMatrix();
+};
+
+class DkZoomWidget : public DkFadeLabel {
+	Q_OBJECT
+
+public:
+	DkZoomWidget(QWidget* parent = 0);
+
+	DkOverview* getOverview() const;
+
+signals:
+	void zoomSignal(float zoomLevel);
+
+public slots:
+	void updateZoom(float zoomLevel);
+	void on_sbZoom_valueChanged(double zoomLevel);
+	void on_slZoom_valueChanged(int zoomLevel);
+
+protected:
+	DkOverview* overview;
+	QSlider* slZoom;
+	QDoubleSpinBox* sbZoom;
+
+	void createLayout();
 };
 
 // TODO: move to DkMath

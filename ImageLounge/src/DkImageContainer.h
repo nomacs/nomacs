@@ -85,13 +85,14 @@ public:
 	bool isSelected() const;
 	int getPageIdx() const;
 	QString getTitleAttribute() const;
-	QSharedPointer<DkBasicLoader> getLoader() const;
-	QSharedPointer<DkMetaDataT> getMetaData() const;
-	QSharedPointer<DkThumbNailT> getThumb() const;
 	float getMemoryUsage() const;
 	float getFileSize() const;
+	virtual QSharedPointer<DkBasicLoader> getLoader();
+	virtual QSharedPointer<DkMetaDataT> getMetaData();
+	virtual QSharedPointer<DkThumbNailT> getThumb();
+	virtual QSharedPointer<QByteArray> getFileBuffer();
 #ifdef WITH_QUAZIP
-	QSharedPointer<DkZipContainer> getZipData() const;
+	QSharedPointer<DkZipContainer> getZipData();
 #endif
 
 	bool exists();
@@ -144,6 +145,9 @@ public:
 	bool saveImageThreaded(const QFileInfo fileInfo, const QImage saveImg, int compression = -1);
 	bool saveImageThreaded(const QFileInfo fileInfo, int compression = -1);
 	void saveMetaDataThreaded();
+
+	virtual QSharedPointer<DkBasicLoader> getLoader();
+	virtual QSharedPointer<DkThumbNailT> getThumb();
 
 signals:
 	void fileLoadedSignal(bool loaded = true);

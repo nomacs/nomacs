@@ -338,7 +338,8 @@ void DkSettings::load(bool force) {
 	global_p.recentFolders = settings.value("recentFolders", global_p.recentFolders).toStringList();
 	global_p.recentFiles = settings.value("recentFiles", global_p.recentFiles).toStringList();
 	global_p.logRecentFiles = settings.value("logRecentFiles", global_p.logRecentFiles).toBool();
-	global_p.useTmpPath= settings.value("useTmpPath", global_p.useTmpPath).toBool();
+	global_p.useTmpPath = settings.value("useTmpPath", global_p.useTmpPath).toBool();
+	global_p.askToSaveDeletedFiles = settings.value("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles).toBool();
 	global_p.tmpPath = settings.value("tmpPath", global_p.tmpPath).toString();
 	global_p.language = settings.value("language", global_p.language).toString();
 
@@ -356,6 +357,7 @@ void DkSettings::load(bool force) {
 	display_p.invertZoom = settings.value("invertZoom", display_p.invertZoom).toBool();
 	display_p.highlightColor = QColor::fromRgba(settings.value("highlightColorRGBA", display_p.highlightColor.rgba()).toInt());
 	display_p.bgColorWidget = QColor::fromRgba(settings.value("bgColorWidgetRGBA", display_p.bgColorWidget.rgba()).toInt());
+	display_p.fontColor = QColor::fromRgba(settings.value("fontColorRGBA", display_p.fontColor.rgba()).toInt());
 	display_p.bgColor = QColor::fromRgba(settings.value("bgColorNoMacsRGBA", display_p.bgColor.rgba()).toInt());
 	display_p.iconColor = QColor::fromRgba(settings.value("iconColorRGBA", display_p.iconColor.rgba()).toInt());
 
@@ -532,6 +534,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("logRecentFiles", global_p.logRecentFiles);
 	if (!force && global_p.useTmpPath != global_d.useTmpPath)
 		settings.setValue("useTmpPath", global_p.useTmpPath);
+	if (!force && global_p.askToSaveDeletedFiles != global_d.askToSaveDeletedFiles)
+		settings.setValue("askToSaveDeletedFiles", global_p.askToSaveDeletedFiles);
 	if (!force && global_p.tmpPath != global_d.tmpPath)
 		settings.setValue("tmpPath", global_p.tmpPath);
 	if (!force && global_p.language != global_d.language)
@@ -559,6 +563,8 @@ void DkSettings::save(bool force) {
 		settings.setValue("highlightColorRGBA", display_p.highlightColor.rgba());
 	if (!force && display_p.bgColorWidget != display_d.bgColorWidget)
 		settings.setValue("bgColorWidgetRGBA", display_p.bgColorWidget.rgba());
+	if (!force && display_p.fontColor != display_d.fontColor)
+		settings.setValue("fontColorRGBA", display_p.fontColor.rgba());
 	if (!force && display_p.bgColor != display_d.bgColor)
 		settings.setValue("bgColorNoMacsRGBA", display_p.bgColor.rgba());
 	if (!force && display_p.iconColor != display_d.iconColor)
@@ -718,7 +724,7 @@ void DkSettings::setToDefaultSettings() {
 
 	global_p.skipImgs = 10;
 	global_p.numFiles = 80;
-	global_p.loop = false;
+	global_p.loop = true;
 	global_p.scanSubFolders = false;
 	global_p.lastDir = QString();
 	global_p.lastSaveDir = QString();
@@ -727,6 +733,7 @@ void DkSettings::setToDefaultSettings() {
 	global_p.recentFolders = QStringList();
 	global_p.logRecentFiles = true;
 	global_p.useTmpPath = false;
+	global_p.askToSaveDeletedFiles = false;
 	global_p.tmpPath = QString();
 	global_p.language = QString();
 	global_p.setupPath = "";
@@ -749,6 +756,7 @@ void DkSettings::setToDefaultSettings() {
 	display_p.invertZoom = false;
 	display_p.highlightColor = QColor(0, 204, 255);
 	display_p.bgColorWidget = QColor(0, 0, 0, 100);
+	display_p.fontColor = QColor(255, 255, 255);
 	display_p.bgColor = QColor(100, 100, 100, 255);
 	display_p.iconColor = QColor(100,100,100,255);
 	//display_p.bgColor = QColor(219, 89, 2, 255);

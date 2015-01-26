@@ -194,7 +194,7 @@ void DkCentralWidget::createLayout() {
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
 
 	// thumbnail preview widget
-	connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	//connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 }
@@ -443,6 +443,7 @@ void DkCentralWidget::showThumbView(bool show) {
 		viewport->hide();
 
 		switchWidget(thumbs_widget);
+		thumbScrollWidget->updateThumbs(viewport->getImageLoader()->getImages());
 		thumbScrollWidget->getThumbWidget()->updateLayout();
 	}
 	else {

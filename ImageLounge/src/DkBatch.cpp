@@ -373,7 +373,7 @@ void DkFilenameWidget::checkForUserInput() {
 		hasChanged = false;
 	else
 		hasChanged = true;
-	emit changed();
+	//emit changed();
 }
 
 void DkFilenameWidget::digitCBChanged(int index) {
@@ -900,6 +900,7 @@ void DkBatchDialog::accept() {
 
 	if (!outputWidget) {
 		qDebug() << "FATAL ERROR: could not cast output widget";
+		QMessageBox::critical(this, tr("Fatal Error"), tr("I am missing a widget."), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 
@@ -911,6 +912,7 @@ void DkBatchDialog::accept() {
 
 		// TODO: write a warning
 		qDebug() << "config not ok - canceling";
+		QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot process the files requested."), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 

@@ -117,7 +117,6 @@ bool DkUtils::wCompLogic(const std::wstring & lhs, const std::wstring & rhs) {
 bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 #if QT_VERSION < 0x050000
 	return wCompLogic(lhs.toStdWString(), rhs.toStdWString());
-	//return true;
 #else
 	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
 #endif
@@ -505,8 +504,11 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 
 	if (numZeros > 0) {
 
+		// if fIdx <= 0, log10 must not be evaluated
+		int cNumZeros = fIdx > 0 ? numZeros - std::floor(std::log10(fIdx)) : numZeros;
+
 		// zero padding
-		for (int idx = 0; idx < numZeros - std::floor(std::log10(fIdx)); idx++) {
+		for (int idx = 0; idx < cNumZeros; idx++) {
 			result += "0";
 		}
 	}

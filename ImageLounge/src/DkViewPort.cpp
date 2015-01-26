@@ -50,7 +50,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
-	overviewWindow = new DkOverview(this);
+	overviewWindow = new DkZoomWidget(this);
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
 
@@ -315,8 +315,12 @@ void DkControlWidget::connectWidgets() {
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 	
 	// overview
-	connect(overviewWindow, SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
-	connect(overviewWindow, SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
+	connect(overviewWindow->getOverview(), SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
+	connect(overviewWindow->getOverview(), SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
+
+	// zoom widget
+	connect(overviewWindow, SIGNAL(zoomSignal(float)), viewport, SLOT(zoomTo(float)));
+	connect(viewport, SIGNAL(zoomSignal(float)), overviewWindow, SLOT(updateZoom(float)));
 
 	// waiting
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
@@ -513,7 +517,7 @@ void DkControlWidget::showCommentWidget(bool visible) {
 
 void DkControlWidget::switchWidget(QWidget* widget) {
 
-	if (layout->currentWidget() == widget)
+	if (layout->currentWidget() == widget || !widget && layout->currentWidget() == widgets[hud_widget])
 		return;
 
 	if (widget)
@@ -1148,7 +1152,15 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	update();
 
 	tcpSynchronize();
+
+	emit zoomSignal(worldMatrix.m11()*imgMatrix.m11()*100);
 	
+}
+
+void DkViewPort::zoomTo(float zoomLevel, const QPoint& pos /* = QPoint */) {
+
+	worldMatrix.reset();
+	zoom(zoomLevel/imgMatrix.m11());
 }
 
 void DkViewPort::resetView() {
@@ -1357,11 +1369,11 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	if (worldMatrix.m11() > 1 && !imageInside() && 
 		DkSettings::app.showOverview.testBit(DkSettings::app.currentAppMode)) {
 
-		if (!controller->getOverview()->isVisible())
-			controller->getOverview()->show();
+		if (!controller->getZoomWidget()->isVisible())
+			controller->getZoomWidget()->show();
 	}
-	else if (controller->getOverview()->isVisible())
-		controller->getOverview()->hide();
+	else if (controller->getZoomWidget()->isVisible())
+		controller->getZoomWidget()->hide();
 
 	painter.end();
 
@@ -2518,7 +2530,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 	update();
 
 	tcpSynchronize();
-
+	emit zoomSignal(worldMatrix.m11()*imgMatrix.m11()*100);
 }
 
 void DkViewPortFrameless::resetView() {

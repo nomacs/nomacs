@@ -585,6 +585,7 @@ void DkFileWidget::init() {
 	//spFilter->setValue(DkSettings::SlideShowSettings::filter);
 
 	cbWrapImages->setChecked(DkSettings::global.loop);
+	cbAskToSaveDeletedFiles->setChecked(DkSettings::global.askToSaveDeletedFiles);
 	cbLogRecentFiles->setChecked(DkSettings::global.logRecentFiles);
 	skipImgWidget->setSpinBoxValue(DkSettings::global.skipImgs);
 	//numberFiles->setSpinBoxValue(DkSettings::global.numFiles);
@@ -602,11 +603,9 @@ void DkFileWidget::init() {
 }
 
 void DkFileWidget::createLayout() {
+	
 	QVBoxLayout* widgetLayout = new QVBoxLayout(this);
-	QHBoxLayout* subWidgetLayout = new QHBoxLayout();
-	QVBoxLayout* leftLayout = new QVBoxLayout;
-	QVBoxLayout* rightLayout = new QVBoxLayout;
-
+	
 	gbDragDrop = new QGroupBox(tr("Drag && Drop"));
 	QVBoxLayout* vboxGbDragDrop = new QVBoxLayout(gbDragDrop);
 	QWidget* tmpPathWidget = new QWidget(this);
@@ -649,18 +648,21 @@ void DkFileWidget::createLayout() {
 	QWidget* checkBoxWidget = new QWidget(this);
 	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	cbWrapImages = new QCheckBox(tr("Loop Images"));
+	cbAskToSaveDeletedFiles = new QCheckBox(tr("Ask to Save Deleted Files"));
+	cbAskToSaveDeletedFiles->setToolTip(tr("If checked, nomacs asks if you want to save files that are deleted while displaying."));
 	cbLogRecentFiles = new QCheckBox(tr("Log Recent Files"));
 
 	widgetLayout->addWidget(gbDragDrop);
 	widgetLayout->addWidget(gbImageLoading);
-	leftLayout->addWidget(skipImgWidget);
-	//leftLayout->addWidget(numberFiles);
-	leftLayout->addWidget(cbWrapImages);
-	leftLayout->addWidget(cbLogRecentFiles);
-	leftLayout->addStretch();
-	subWidgetLayout->addLayout(leftLayout);
-	subWidgetLayout->addLayout(rightLayout);
-	widgetLayout->addLayout(subWidgetLayout);
+	
+	QGridLayout* leftLayout = new QGridLayout(this);
+	leftLayout->addWidget(skipImgWidget, 0, 0);
+	leftLayout->addWidget(cbWrapImages, 1, 0);
+	leftLayout->addWidget(cbLogRecentFiles, 2, 0);
+	leftLayout->addWidget(cbAskToSaveDeletedFiles, 1, 1);
+	leftLayout->setRowStretch(3, 10);
+	leftLayout->setColumnStretch(3, 10);
+	widgetLayout->addLayout(leftLayout);
 }
 
 void DkFileWidget::writeSettings() {
@@ -669,6 +671,7 @@ void DkFileWidget::writeSettings() {
 	DkSettings::global.loop = cbWrapImages->isChecked();
 	DkSettings::global.logRecentFiles = cbLogRecentFiles->isChecked();
 	DkSettings::global.useTmpPath = cbUseTmpPath->isChecked();
+	DkSettings::global.askToSaveDeletedFiles = cbAskToSaveDeletedFiles->isChecked();
 	QFileInfo fi = QFileInfo(leTmpPath->text());
 	DkSettings::global.tmpPath = fi.exists() ? leTmpPath->text() : QString();
 	DkSettings::resources.waitForLastImg = rbWaitForImage->isChecked();

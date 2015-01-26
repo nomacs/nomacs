@@ -626,7 +626,7 @@ bool DkMetaDataT::hasMetaData() const {
 
 bool DkMetaDataT::isLoaded() const {
 
-	return exifState == loaded || exifState == dirty;
+	return exifState == loaded || exifState == dirty || exifState == no_data;
 }
 
 bool DkMetaDataT::isTiff() const {

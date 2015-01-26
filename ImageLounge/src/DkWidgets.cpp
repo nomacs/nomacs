@@ -749,13 +749,95 @@ void DkExplorer::readSettings() {
 	settings.endGroup();
 }
 
+// DkZoomWidget --------------------------------------------------------------------
+DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
+
+	setObjectName("DkZoomWidget");
+	createLayout();
+
+	setMinimumSize(70, 0);
+	setMaximumSize(200, 240);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkZoomWidget::createLayout() {
+
+	overview = new DkOverview(this);
+
+	slZoom = new QSlider(Qt::Horizontal, this);
+	slZoom->setObjectName("slZoom");
+	slZoom->setCursor(Qt::ArrowCursor);
+	slZoom->setMinimum(0);	// add a mapping here
+	slZoom->setMaximum(100);
+
+	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
+		DkUtils::colorToString(DkSettings::display.fontColor) + 
+		"; background-color: rgba(0,0,0,0); border: none; selection-background-color: " +
+		DkUtils::colorToString(DkSettings::display.highlightColor) + ";}";
+	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";
+	//styleString += "QDoubleSpinBox::up-bottom, QDoubleSpinBox::down-bottom {width: 0px; heihgt: 0px;}";
+
+	sbZoom = new QDoubleSpinBox(this);
+	sbZoom->setObjectName("sbZoom");
+	sbZoom->setStyleSheet(styleString);
+	sbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
+	sbZoom->setSuffix("%");
+	sbZoom->setDecimals(0);
+	sbZoom->setMinimum(0.2);
+	sbZoom->setValue(100);
+	sbZoom->setMaximum(6000);
+
+	QLabel* sliderWidget = new QLabel(this);
+	sliderWidget->setObjectName("DkOverviewSliderWidget");
+	QHBoxLayout* sliderLayout = new QHBoxLayout(sliderWidget);
+	sliderLayout->setContentsMargins(10,0,0,0);
+	sliderLayout->setSpacing(10);
+	sliderLayout->addWidget(slZoom);
+	sliderLayout->addWidget(sbZoom);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	//layout->setContentsMargins(10,10,10,10);
+	layout->setSpacing(0);
+	layout->addWidget(overview);
+	layout->addWidget(sliderWidget);
+}
+
+void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
+	updateZoom(zoomLevel);
+	emit zoomSignal(zoomLevel/100.0f);
+}
+
+void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
+	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
+	updateZoom(level);
+	emit zoomSignal(level/100.0f);
+	qDebug() << "new zoomLevel: " << level/100.0f;
+}
+
+void DkZoomWidget::updateZoom(float zoomLevel) {
+
+	slZoom->blockSignals(true);
+	sbZoom->blockSignals(true);
+	
+	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
+	slZoom->setValue(slVal);
+	sbZoom->setValue(zoomLevel);
+	slZoom->blockSignals(false);
+	sbZoom->blockSignals(false);
+}
+
+DkOverview* DkZoomWidget::getOverview() const {
+	return overview;
+}
+
 // DkOverview --------------------------------------------------------------------
-DkOverview::DkOverview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
+DkOverview::DkOverview(QWidget* parent) : QLabel(parent) {
 
 	setObjectName("DkOverview");
-	this->parent = parent;
 	setMinimumSize(0, 0);
 	setMaximumSize(200, 200);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 void DkOverview::paintEvent(QPaintEvent *event) {
@@ -772,23 +854,14 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	
 	if (viewSize.width() > 2 && viewSize.height() > 2) {
 	
-		QRectF imgRect = QRectF(QPoint(), img.size());
-		QRectF overviewRect = QRectF(QPoint(lm, tm), QSize(viewSize.width()-1, viewSize.height()-1));			// get the overview rect
-		overviewRect = overviewRect.toRect();	// force round
+		//QRectF overviewRect = QRectF(QPoint(0,0), QSize(virtualVPSize.width()-1, virtualVPSize.height()-1));			// get the overview rect
+		//overviewRect.moveCenter(QPointF(viewSize.width()*0.5f, viewSize.height()*0.5f));
+		//overviewRect = overviewRect.toRect();	// force round
 
-		QRectF overviewImgRect(lm+1, tm+1, imgT.width(), imgT.height());
-		overviewImgRect.moveCenter(overviewRect.center());
 
 		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
-		//QRectF overviewImgRect = overviewImgMatrix.mapRect(imgRect);
-		//overviewImgRect.moveTop(overviewImgRect.top()+tm+1);
-		//overviewImgRect.moveLeft(overviewImgRect.left()+lm+1);
-		//overviewImgRect = overviewImgRect.toRect();	// force round
-		//overviewImgRect.setWidth(overviewImgRect.width()-2);
-		//overviewImgRect.setHeight(overviewImgRect.height()-2);
 
-		//qDebug() << "overview image rect: " << overviewImgRect;
-		//qDebug() << "overview img size: " << imgT.size();
+		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), img.size()));
 
 		// now render the current view
 		QRectF viewRect = viewPortRect;
@@ -797,15 +870,16 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		viewRect = overviewImgMatrix.mapRect(viewRect);
 		viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
 
-		if(viewRect.topLeft().x() < overviewRect.topLeft().x()) viewRect.setTopLeft(QPointF(overviewRect.topLeft().x(), viewRect.topLeft().y()));
-		if(viewRect.topLeft().y() < overviewRect.topLeft().y()) viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewRect.topLeft().y()));
-		if(viewRect.bottomRight().x() > overviewRect.bottomRight().x()) viewRect.setBottomRight(QPointF(overviewRect.bottomRight().x(), viewRect.bottomRight().y()));
-		if(viewRect.bottomRight().y() > overviewRect.bottomRight().y()) viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewRect.bottomRight().y()));		
+		if(viewRect.topLeft().x() < overviewImgRect.topLeft().x()) viewRect.setTopLeft(QPointF(overviewImgRect.topLeft().x(), viewRect.topLeft().y()));
+		if(viewRect.topLeft().y() < overviewImgRect.topLeft().y()) viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewImgRect.topLeft().y()));
+		if(viewRect.bottomRight().x() > overviewImgRect.bottomRight().x()) viewRect.setBottomRight(QPointF(overviewImgRect.bottomRight().x(), viewRect.bottomRight().y()));
+		if(viewRect.bottomRight().y() > overviewImgRect.bottomRight().y()) viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewImgRect.bottomRight().y()));		
 
 		//draw the image's location
-		painter.setBrush(bgCol);
+		painter.setRenderHints(QPainter::SmoothPixmapTransform);
+		painter.setBrush(DkSettings::display.bgColorWidget);
 		painter.setPen(QColor(200, 200, 200));
-		painter.drawRect(overviewRect);
+		//painter.drawRect(overviewRect);
 		painter.setOpacity(0.8f);
 		painter.drawImage(overviewImgRect, imgT, QRect(0, 0, imgT.width(), imgT.height()));
 
@@ -819,7 +893,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	}
 	painter.end();
 
-	DkWidget::paintEvent(event);
+	QWidget::paintEvent(event);
 }
 
 void DkOverview::mousePressEvent(QMouseEvent *event) {
@@ -875,29 +949,33 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 
 void DkOverview::resizeEvent(QResizeEvent* event) {
 
-	QSizeF newSize = event->size();
-	newSize.setHeight(newSize.width() * viewPortRect.height()/viewPortRect.width());
+	updateVirtualViewport();
 
-	// in rare cases, the window won't be resized if width = maxWidth & height is < 1
-	if (newSize.height() < 1)
-		newSize.setWidth(0);
+	QWidget::resizeEvent(event);
+}
+
+QRectF DkOverview::getImageRect() const {
 	
-	resize(newSize.toSize());
+	QRectF imgRect = QRectF(QPoint(), size());			// get the overview rect
 
-	DkWidget::resizeEvent(event);
+	if ((float)imgT.width()/imgT.height() < (float)imgRect.width()/imgRect.height())
+		imgRect.setWidth(width() * (float)height()/(float)imgT.height());
+	else
+		imgRect.setHeight(height() * (float)width()/(float)imgT.width());
+
+	//imgRect = imgRect.toRect();	// force round
+
+	return imgRect;
 }
 
-void DkOverview::resize(int w, int h) {
+void DkOverview::updateVirtualViewport() {
+	
+	virtualVPSize = size();
 
-	resize(QSize(w, h));
-}
-
-void DkOverview::resize(const QSize& size) {
-
-	DkWidget::resize(size);
-
-	// update image
-	resizeImg();
+	if (virtualVPSize.width() * viewPortRect.height()/viewPortRect.width() < height())
+		virtualVPSize.setHeight(virtualVPSize.width() * viewPortRect.height()/viewPortRect.width());
+	else
+		virtualVPSize.setWidth(virtualVPSize.height() * viewPortRect.width()/viewPortRect.height());
 }
 
 void DkOverview::resizeImg() {
@@ -905,25 +983,19 @@ void DkOverview::resizeImg() {
 	if (img.isNull())
 		return;
 
-	int lm, tm, rm, bm;
-	getContentsMargins(&lm, &tm, &rm, &bm);
-
-	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the viewport....
-	QRectF overviewRect = QRectF(QPoint(lm, tm), QSize(viewSize.width()-2, viewSize.height()-2));			// get the overview rect
-	overviewRect = overviewRect.toRect();	// force round
-
+	//QRectF overviewRect = getImageRect();
 	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
 	
 	// is the overviewImgMatrix empty?
 	if (overviewImgMatrix.isIdentity())
 		return;
 	
-	if (overviewRect.width() <= 1|| overviewRect.height() <= 1)
-		return;
+	//if (overviewRect.width() <= 1|| overviewRect.height() <= 1)
+	//	return;
 
 	// fast downscaling
-	imgT = img.scaled(overviewRect.size().width()*2, overviewRect.size().height()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
-	imgT = imgT.scaled(overviewRect.size().width(), overviewRect.size().height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	imgT = img.scaled(maximumWidth()*2, maximumHeight()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
+	imgT = imgT.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 QTransform DkOverview::getScaledImageMatrix() {
