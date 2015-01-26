@@ -427,6 +427,7 @@ signals:
 	void movieLoadedSignal(bool isMovie);
 	void infoSignal(QString msg);	// needed to forward signals
 	void addTabSignal(const QFileInfo& fileInfo);
+	void zoomSignal(float zoomLevel);
 
 public slots:
 	void rotateCW();
@@ -436,6 +437,7 @@ public slots:
 	void fullView();
 	void resizeEvent(QResizeEvent* event);
 	void toggleResetMatrix();
+	void zoomTo(float zoomLevel, const QPoint& pos = QPoint(-1, -1));
 	
 	// tcp actions
 	void tcpSetTransforms(QTransform worldMatrix, QTransform imgMatrix, QPointF canvasSize);

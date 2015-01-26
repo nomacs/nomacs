@@ -318,6 +318,10 @@ void DkControlWidget::connectWidgets() {
 	connect(overviewWindow->getOverview(), SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
 	connect(overviewWindow->getOverview(), SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
 
+	// zoom widget
+	connect(overviewWindow, SIGNAL(zoomSignal(float)), viewport, SLOT(zoomTo(float)));
+	connect(viewport, SIGNAL(zoomSignal(float)), overviewWindow, SLOT(updateZoom(float)));
+
 	// waiting
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
 	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
@@ -1148,7 +1152,15 @@ void DkViewPort::zoom(float factor, QPointF center) {
 	update();
 
 	tcpSynchronize();
+
+	emit zoomSignal(worldMatrix.m11()*imgMatrix.m11()*100);
 	
+}
+
+void DkViewPort::zoomTo(float zoomLevel, const QPoint& pos /* = QPoint */) {
+
+	worldMatrix.reset();
+	zoom(zoomLevel/imgMatrix.m11());
 }
 
 void DkViewPort::resetView() {
@@ -2518,7 +2530,7 @@ void DkViewPortFrameless::zoom(float factor, QPointF center) {
 	update();
 
 	tcpSynchronize();
-
+	emit zoomSignal(worldMatrix.m11()*imgMatrix.m11()*100);
 }
 
 void DkViewPortFrameless::resetView() {

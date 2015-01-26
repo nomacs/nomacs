@@ -822,10 +822,10 @@ public:
 	DkOverview* getOverview() const;
 
 signals:
-	void zoomSignal(double zoomLevel);
+	void zoomSignal(float zoomLevel);
 
 public slots:
-	void updateZoom(double zoomLevel);
+	void updateZoom(float zoomLevel);
 	void on_sbZoom_valueChanged(double zoomLevel);
 	void on_slZoom_valueChanged(int zoomLevel);
 

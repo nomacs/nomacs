@@ -756,7 +756,7 @@ DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
 	createLayout();
 
 	setMinimumSize(70, 0);
-	setMaximumSize(200, 200);
+	setMaximumSize(200, 240);
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QMetaObject::connectSlotsByName(this);
 }
@@ -767,6 +767,7 @@ void DkZoomWidget::createLayout() {
 
 	slZoom = new QSlider(Qt::Horizontal, this);
 	slZoom->setObjectName("slZoom");
+	slZoom->setCursor(Qt::ArrowCursor);
 	slZoom->setMinimum(0);	// add a mapping here
 	slZoom->setMaximum(100);
 
@@ -782,36 +783,44 @@ void DkZoomWidget::createLayout() {
 	sbZoom->setStyleSheet(styleString);
 	sbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
 	sbZoom->setSuffix("%");
+	sbZoom->setDecimals(0);
 	sbZoom->setMinimum(0.2);
+	sbZoom->setValue(100);
 	sbZoom->setMaximum(6000);
 
 	QLabel* sliderWidget = new QLabel(this);
 	sliderWidget->setObjectName("DkOverviewSliderWidget");
 	QHBoxLayout* sliderLayout = new QHBoxLayout(sliderWidget);
-	sliderLayout->setContentsMargins(0,0,0,0);
+	sliderLayout->setContentsMargins(10,0,0,0);
+	sliderLayout->setSpacing(10);
 	sliderLayout->addWidget(slZoom);
 	sliderLayout->addWidget(sbZoom);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
+	//layout->setContentsMargins(10,10,10,10);
+	layout->setSpacing(0);
 	layout->addWidget(overview);
 	layout->addWidget(sliderWidget);
 }
 
 void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
 	updateZoom(zoomLevel);
+	emit zoomSignal(zoomLevel/100.0f);
 }
 
 void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
-	double level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * sbZoom->maximum() + 100.0f : zoomLevel*2.0f;
+	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
 	updateZoom(level);
+	emit zoomSignal(level/100.0f);
+	qDebug() << "new zoomLevel: " << level/100.0f;
 }
 
-void DkZoomWidget::updateZoom(double zoomLevel) {
+void DkZoomWidget::updateZoom(float zoomLevel) {
 
 	slZoom->blockSignals(true);
 	sbZoom->blockSignals(true);
 	
-	int slVal = (zoomLevel > 100.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.5f);
+	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
 	slZoom->setValue(slVal);
 	sbZoom->setValue(zoomLevel);
 	slZoom->blockSignals(false);

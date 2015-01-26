@@ -250,6 +250,8 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 	changeCursor();
 
 	update();
+
+
 }
 
 void DkBaseViewPort::stopBlockZooming() {
