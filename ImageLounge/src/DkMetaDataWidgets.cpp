@@ -1114,6 +1114,7 @@ void DkCommentWidget::createLayout() {
 	layout->addWidget(commentLabel);
 
 	setLayout(layout);
+	setCursor(Qt::ArrowCursor);
 }
 
 void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {

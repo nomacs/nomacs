@@ -50,7 +50,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	filePreview = new DkFilePreview(this, flags);
 	folderScroll = new DkFolderScrollBar(this);
 	metaDataInfo = new DkMetaDataInfo(this);
-	overviewWindow = new DkZoomWidget(this);
+	zoomWidget = new DkZoomWidget(this);
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
 
@@ -114,7 +114,7 @@ void DkControlWidget::init() {
 	bottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
-	overviewWindow->setContentsMargins(10, 10, 0, 0);
+	zoomWidget->setContentsMargins(10, 10, 0, 0);
 	//cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	recentFilesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -160,7 +160,7 @@ void DkControlWidget::init() {
 	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, leftWidget);
 	ulLayout->setContentsMargins(0,0,0,0);
 	ulLayout->setSpacing(0);
-	ulLayout->addWidget(overviewWindow);
+	ulLayout->addWidget(zoomWidget);
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
 	ulLayout->addWidget(dw);
@@ -315,12 +315,12 @@ void DkControlWidget::connectWidgets() {
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 	
 	// overview
-	connect(overviewWindow->getOverview(), SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
-	connect(overviewWindow->getOverview(), SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
+	connect(zoomWidget->getOverview(), SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
+	connect(zoomWidget->getOverview(), SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
 
 	// zoom widget
-	connect(overviewWindow, SIGNAL(zoomSignal(float)), viewport, SLOT(zoomTo(float)));
-	connect(viewport, SIGNAL(zoomSignal(float)), overviewWindow, SLOT(updateZoom(float)));
+	connect(zoomWidget, SIGNAL(zoomSignal(float)), viewport, SLOT(zoomTo(float)));
+	connect(viewport, SIGNAL(zoomSignal(float)), zoomWidget, SLOT(updateZoom(float)));
 
 	// waiting
 	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
@@ -348,7 +348,7 @@ void DkControlWidget::connectWidgets() {
 
 void DkControlWidget::update() {
 
-	overviewWindow->update();
+	zoomWidget->update();
 
 	QWidget::update();
 }
@@ -361,7 +361,7 @@ void DkControlWidget::showWidgetsSettings() {
 		showMetaData(false);
 		showFileInfo(false);
 		showPlayer(false);
-		overviewWindow->hide();
+		zoomWidget->hide();
 		showHistogram(false);
 		showCommentWidget(false);
 		return;
@@ -441,17 +441,18 @@ void DkControlWidget::showPlayer(bool visible) {
 
 void DkControlWidget::showOverview(bool visible) {
 
-	if (!overviewWindow)
+	if (!zoomWidget)
 		return;
 
 	// viewport decides whether to show overview or not
 	DkSettings::app.showOverview.setBit(DkSettings::app.currentAppMode, visible);
 
-	if (visible && !overviewWindow->isVisible()) {		
+	if (visible && !zoomWidget->isVisible()) {		
 		viewport->update();
+		//overviewWindow->show();
 	}
-	else if (!visible && overviewWindow->isVisible()) {
-		overviewWindow->hide();
+	else if (!visible && zoomWidget->isVisible()) {
+		zoomWidget->hide();
 	}
 
 }
