@@ -32,6 +32,7 @@
 
 #include "DkWidgets.h"
 
+
 namespace nmc {
 
 class DkFilePreview : public DkWidget {
