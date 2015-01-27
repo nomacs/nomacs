@@ -153,6 +153,12 @@ public:
 		bool closeOnEsc;
 		QStringList browseFilters;
 		QStringList registerFilters;
+
+		QStringList fileFilters;	// just the filters
+		QStringList openFilters;	// for open dialog
+		QStringList saveFilters;	// for save dialog
+		QStringList containerFilters;
+		QString containerRawFilters;
 	};
 
 	struct Display {
@@ -300,12 +306,6 @@ public:
 
 	static QStringList scamDataDesc;
 	static QStringList sdescriptionDesc;
-
-	static QStringList fileFilters;	// just the filters
-	static QStringList openFilters;	// for open dialog
-	static QStringList saveFilters;	// for save dialog
-	static QStringList containerFilters;
-	static QString containerRawFilters;
 
 	static App& getAppSettings();
 	static Display& getDisplaySettings();

@@ -80,20 +80,6 @@ DkSettings::Sync DkSettings::sync_d;
 DkSettings::MetaData DkSettings::meta_d;
 DkSettings::Resources DkSettings::resources_d;
 
-// well this is pretty shitty... but we need the filter without description too
-QStringList DkSettings::fileFilters = QStringList();
-
-// formats we can save
-QStringList DkSettings::saveFilters = QStringList();
-
-// formats we can load
-QStringList DkSettings::openFilters = QStringList();
-
-// container formats
-QStringList DkSettings::containerFilters = QStringList();
-
-QString DkSettings::containerRawFilters = "";
-
 DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
 DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
@@ -132,102 +118,102 @@ DkSettings::Resources& DkSettings::getResourceSettings() {
 
 void DkSettings::initFileFilters() {
 
-	if (!openFilters.empty())
+	if (!app_p.openFilters.empty())
 		return;
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 
 	// formats we can save
-	if (qtFormats.contains("png"))		saveFilters.append("PNG (*.png)");
-	if (qtFormats.contains("jpg"))		saveFilters.append("JPEG (*.jpg *.jpeg)");
-	if (qtFormats.contains("j2k"))		saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
-	if (qtFormats.contains("tif"))		saveFilters.append("TIFF (*.tif *.tiff)");
-	if (qtFormats.contains("bmp"))		saveFilters.append("Windows Bitmap (*.bmp)");
-	if (qtFormats.contains("ppm"))		saveFilters.append("Portable Pixmap (*.ppm)");
-	if (qtFormats.contains("xbm"))		saveFilters.append("X11 Bitmap (*.xbm)");
-	if (qtFormats.contains("xpm"))		saveFilters.append("X11 Pixmap (*.xpm)");
+	if (qtFormats.contains("png"))		app_p.saveFilters.append("PNG (*.png)");
+	if (qtFormats.contains("jpg"))		app_p.saveFilters.append("JPEG (*.jpg *.jpeg)");
+	if (qtFormats.contains("j2k"))		app_p.saveFilters.append("JPEG 2000 (*.jp2 *.j2k *.jpf *.jpx *.jpm *.jpgx)");
+	if (qtFormats.contains("tif"))		app_p.saveFilters.append("TIFF (*.tif *.tiff)");
+	if (qtFormats.contains("bmp"))		app_p.saveFilters.append("Windows Bitmap (*.bmp)");
+	if (qtFormats.contains("ppm"))		app_p.saveFilters.append("Portable Pixmap (*.ppm)");
+	if (qtFormats.contains("xbm"))		app_p.saveFilters.append("X11 Bitmap (*.xbm)");
+	if (qtFormats.contains("xpm"))		app_p.saveFilters.append("X11 Pixmap (*.xpm)");
 
 	// internal filters
 #ifdef WITH_WEBP
-	saveFilters.append("WebP (*.webp)");
+	app_p.saveFilters.append("WebP (*.webp)");
 #endif
 
 	// formats we can load
-	openFilters += saveFilters;
-	if (qtFormats.contains("gif"))		openFilters.append("Graphic Interchange Format (*.gif)");
-	if (qtFormats.contains("pbm"))		openFilters.append("Portable Bitmap (*.pbm)");
-	if (qtFormats.contains("pgm"))		openFilters.append("Portable Graymap (*.pgm)");
-	if (qtFormats.contains("ico"))		openFilters.append("Icon Files (*.ico)");
-	if (qtFormats.contains("tga"))		openFilters.append("Targa Image File (*.tga)");
-	if (qtFormats.contains("mng"))		openFilters.append("Multi-Image Network Graphics (*.mng)");
+	app_p.openFilters += app_p.saveFilters;
+	if (qtFormats.contains("gif"))		app_p.openFilters.append("Graphic Interchange Format (*.gif)");
+	if (qtFormats.contains("pbm"))		app_p.openFilters.append("Portable Bitmap (*.pbm)");
+	if (qtFormats.contains("pgm"))		app_p.openFilters.append("Portable Graymap (*.pgm)");
+	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
+	if (qtFormats.contains("tga"))		app_p.openFilters.append("Targa Image File (*.tga)");
+	if (qtFormats.contains("mng"))		app_p.openFilters.append("Multi-Image Network Graphics (*.mng)");
 
 #ifdef WITH_LIBRAW
 	// raw format
-	openFilters.append("Nikon Raw (*.nef)");
-	openFilters.append("Canon Raw (*.crw *.cr2)");
-	openFilters.append("Sony Raw (*.arw)");
-	openFilters.append("Digital Negativ (*.dng)");
-	openFilters.append("Panasonic Raw (*.raw *.rw2)");
-	openFilters.append("Minolta Raw (*.mrw)");
-	openFilters.append("Samsung Raw (*.srw)");
-	openFilters.append("Olympus Raw (*.orf)");
-	openFilters.append("Hasselblad Raw (*.3fr)");
-	openFilters.append("Sigma Raw (*.x3f)");
-	openFilters.append("Leaf Raw (*.mos)");
-	openFilters.append("Pentax Raw (*.pef)");
+	app_p.openFilters.append("Nikon Raw (*.nef)");
+	app_p.openFilters.append("Canon Raw (*.crw *.cr2)");
+	app_p.openFilters.append("Sony Raw (*.arw)");
+	app_p.openFilters.append("Digital Negativ (*.dng)");
+	app_p.openFilters.append("Panasonic Raw (*.raw *.rw2)");
+	app_p.openFilters.append("Minolta Raw (*.mrw)");
+	app_p.openFilters.append("Samsung Raw (*.srw)");
+	app_p.openFilters.append("Olympus Raw (*.orf)");
+	app_p.openFilters.append("Hasselblad Raw (*.3fr)");
+	app_p.openFilters.append("Sigma Raw (*.x3f)");
+	app_p.openFilters.append("Leaf Raw (*.mos)");
+	app_p.openFilters.append("Pentax Raw (*.pef)");
 #endif
 
 	// stereo formats
-	openFilters.append("JPEG Stereo (*.jps)");
-	openFilters.append("PNG Stereo (*.pns)");
-	openFilters.append("Multi Picture Object (*.mpo)");
+	app_p.openFilters.append("JPEG Stereo (*.jps)");
+	app_p.openFilters.append("PNG Stereo (*.pns)");
+	app_p.openFilters.append("Multi Picture Object (*.mpo)");
 
 	// other formats
-	openFilters.append("Adobe Photoshop (*.psd)");
-	openFilters.append("Large Document Format (*.psb)");
+	app_p.openFilters.append("Adobe Photoshop (*.psd)");
+	app_p.openFilters.append("Large Document Format (*.psb)");
 
 	// archive formats
-	containerFilters.append("ZIP Archive (*.zip)");
-	containerFilters.append("Microsoft Word Document (*.docx)");
-	containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
-	containerFilters.append("Microsoft Excel Document (*.xlsx)");
+	app_p.containerFilters.append("ZIP Archive (*.zip)");
+	app_p.containerFilters.append("Microsoft Word Document (*.docx)");
+	app_p.containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
+	app_p.containerFilters.append("Microsoft Excel Document (*.xlsx)");
 	
-	openFilters += containerFilters;
+	app_p.openFilters += app_p.containerFilters;
 
-	containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
+	app_p.containerRawFilters = "*.docx *.pptx *.xlsx *.zip";
 
 	// finally: fabians filter
-	openFilters.append("Rohkost (*.roh)");
+	app_p.openFilters.append("Rohkost (*.roh)");
 
 	// load user filters
 	QSettings& settings = Settings::instance().getSettings();
-	openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
+	app_p.openFilters += settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 
-	for (int idx = 0; idx < openFilters.size(); idx++) {
+	for (int idx = 0; idx < app_p.openFilters.size(); idx++) {
 
-		QString cFilter = openFilters[idx];
+		QString cFilter = app_p.openFilters[idx];
 		cFilter = cFilter.section(QRegExp("(\\(|\\))"), 1);
 		cFilter = cFilter.replace(")", "");
-		fileFilters += cFilter.split(" ");
+		app_p.fileFilters += cFilter.split(" ");
 	}
 
-	QString allFilters = fileFilters.join(" ");
+	QString allFilters = app_p.fileFilters.join(" ");
 
 	// add unknown formats from Qt plugins
 	for (int idx = 0; idx < qtFormats.size(); idx++) {
 
 		if (!allFilters.contains(qtFormats.at(idx))) {
-			openFilters.append("Image Format (*." + qtFormats.at(idx) + ")");
-			fileFilters.append("*." + qtFormats.at(idx));
+			app_p.openFilters.append("Image Format (*." + qtFormats.at(idx) + ")");
+			app_p.fileFilters.append("*." + qtFormats.at(idx));
 		}
 	}
 
-	openFilters.prepend("Image Files (" + fileFilters.join(" ") + ")");
+	app_p.openFilters.prepend("Image Files (" + app_p.fileFilters.join(" ") + ")");
 
 	qDebug() << "supported: " << qtFormats;
 
 #ifdef Q_OS_WIN
-	fileFilters.append("*.lnk");
+	app_p.fileFilters.append("*.lnk");
 #endif
 
 }
@@ -310,8 +296,8 @@ void DkSettings::load(bool force) {
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
 	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
 	
-	QStringList tmpFileFilters = fileFilters;
-	QStringList tmpContainerFilters = containerRawFilters.split(" ");
+	QStringList tmpFileFilters = app_p.fileFilters;
+	QStringList tmpContainerFilters = app_p.containerRawFilters.split(" ");
 	for (int idx = 0; idx < tmpContainerFilters.size(); idx++) {
 		tmpFileFilters.removeAll(tmpContainerFilters.at(idx));
 	}
@@ -866,8 +852,6 @@ QSettings& Settings::getSettings() {
 	//QMutexLocker(&mutex);
 	return *m_settings;
 }
-
-
 
 QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {
 

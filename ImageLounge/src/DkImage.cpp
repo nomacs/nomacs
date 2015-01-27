@@ -178,7 +178,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 		// update save directory
 		dir = newDir;
-		dir.setNameFilters(DkSettings::fileFilters);
+		dir.setNameFilters(DkSettings::app.fileFilters);
 		dir.setSorting(QDir::LocaleAware);		// TODO: extend
 		folderUpdated = false;
 
@@ -1475,7 +1475,7 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 	// true file list
 	QDir tmpDir = dir;
 	tmpDir.setSorting(QDir::LocaleAware);
-	QStringList fileList = tmpDir.entryList(DkSettings::fileFilters);
+	QStringList fileList = tmpDir.entryList(DkSettings::app.fileFilters);
 	qDebug() << "Qt, sorted file list computed in: " << dt.getIvl();
 	qDebug() << fileList;
 
@@ -1692,9 +1692,9 @@ bool DkImageLoader::isValid(const QFileInfo& fileInfo) {
 
 bool DkImageLoader::hasValidSuffix(const QString& fileName) {
 
-	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
+	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
 
-		QRegExp exp = QRegExp(DkSettings::fileFilters.at(idx), Qt::CaseInsensitive);
+		QRegExp exp = QRegExp(DkSettings::app.fileFilters.at(idx), Qt::CaseInsensitive);
 		exp.setPatternSyntax(QRegExp::Wildcard);
 		if (exp.exactMatch(fileName))
 			return true;

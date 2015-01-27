@@ -554,7 +554,7 @@ DkFileSystemModel::DkFileSystemModel(QObject* parent /* = 0 */) : QFileSystemMod
 
 	// some custom settings
 	setRootPath(QDir::rootPath());
-	setNameFilters(DkSettings::fileFilters);
+	setNameFilters(DkSettings::app.fileFilters);
 	setReadOnly(false);
 	//setSupportedDragActions(Qt::CopyAction | Qt::MoveAction);
 

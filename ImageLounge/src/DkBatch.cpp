@@ -467,7 +467,7 @@ void DkBatchOutput::createLayout() {
 	connect(cBExtension, SIGNAL(currentIndexChanged(int)), this, SLOT(extensionCBChanged(int)));
 
 	cBNewExtension = new QComboBox(this);
-	cBNewExtension->addItems(DkSettings::saveFilters);
+	cBNewExtension->addItems(DkSettings::app.saveFilters);
 	cBNewExtension->setEnabled(false);
 
 	extensionLayout->addWidget(cBExtension);

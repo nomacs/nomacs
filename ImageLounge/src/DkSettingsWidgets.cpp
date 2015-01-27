@@ -1043,8 +1043,8 @@ void DkResourceSettingsWidgets::createLayout() {
 	QString pExt = DkSettings::resources.preferredExtension;
 	if (pExt.isEmpty()) pExt = "*.jpg";	// best default
 	cmExtensions = new QComboBox();
-	cmExtensions->addItems(DkSettings::fileFilters);
-	cmExtensions->setCurrentIndex(DkSettings::fileFilters.indexOf(pExt));
+	cmExtensions->addItems(DkSettings::app.fileFilters);
+	cmExtensions->setCurrentIndex(DkSettings::app.fileFilters.indexOf(pExt));
 
 	qDebug() << "preferred extension: " << pExt;
 
@@ -1070,7 +1070,7 @@ void DkResourceSettingsWidgets::writeSettings() {
 	DkSettings::resources.cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
 	DkSettings::resources.filterRawImages = cbFilterRawImages->isChecked();
 	DkSettings::resources.filterDuplicats = cbRemoveDuplicates->isChecked();
-	DkSettings::resources.preferredExtension = DkSettings::fileFilters.at(cmExtensions->currentIndex());
+	DkSettings::resources.preferredExtension = DkSettings::app.fileFilters.at(cmExtensions->currentIndex());
 
 	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
 		if (rawThumbButtons[idx]->isChecked()) {
@@ -1238,7 +1238,7 @@ void DkFileFilterSettingWidget::init() {
 
 void DkFileFilterSettingWidget::createLayout() {
 
-	QStringList fileFilters = DkSettings::openFilters;
+	QStringList fileFilters = DkSettings::app.openFilters;
 
 	model = new QStandardItemModel(this);
 	for (int rIdx = 1; rIdx < fileFilters.size(); rIdx++)
@@ -1268,7 +1268,7 @@ void DkFileFilterSettingWidget::createLayout() {
 
 bool DkFileFilterSettingWidget::checkFilter(const QString& cFilter, const QStringList& filters) const {
 
-	if (filters.empty() && (DkSettings::containerFilters.contains(cFilter) || cFilter.contains(".ico")))
+	if (filters.empty() && (DkSettings::app.containerFilters.contains(cFilter) || cFilter.contains(".ico")))
 		return false;
 
 	if (filters.empty())

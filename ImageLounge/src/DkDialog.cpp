@@ -298,7 +298,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 		return;
 	}
 
-	if (DkSettings::fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
+	if (DkSettings::app.fileFilters.join(" ").contains(fileInfo.suffix(), Qt::CaseInsensitive)) {
 		userFeedback(tr("*.%1 is already supported.").arg(fileInfo.suffix()), false);
 		imgLoaded = false;
 	}
@@ -316,7 +316,7 @@ void DkTrainDialog::loadFile(QString filePath) {
 void DkTrainDialog::accept() {
 
 	// add the extension to user filters
-	if (!DkSettings::fileFilters.join(" ").contains(acceptedFile.suffix(), Qt::CaseInsensitive)) {
+	if (!DkSettings::app.fileFilters.join(" ").contains(acceptedFile.suffix(), Qt::CaseInsensitive)) {
 
 		QString name = QInputDialog::getText(this, "Format Name", tr("Please name the new format:"), QLineEdit::Normal, "Your File Format");
 		QString tag = name + " (*." + acceptedFile.suffix() + ")";
@@ -326,8 +326,8 @@ void DkTrainDialog::accept() {
 		QStringList userFilters = settings.value("ResourceSettings/userFilters", QStringList()).toStringList();
 		userFilters.append(tag);
 		settings.setValue("ResourceSettings/userFilters", userFilters);
-		DkSettings::openFilters.append(tag);
-		DkSettings::fileFilters.append("*." + acceptedFile.suffix());
+		DkSettings::app.openFilters.append(tag);
+		DkSettings::app.fileFilters.append("*." + acceptedFile.suffix());
 		DkSettings::app.browseFilters += acceptedFile.suffix();
 	}
 
@@ -2787,8 +2787,8 @@ void DkExportTiffDialog::createLayout() {
 	fileEdit->setObjectName("fileEdit");
 
 	suffixBox = new QComboBox(this);
-	suffixBox->addItems(DkSettings::saveFilters);
-	suffixBox->setCurrentIndex(DkSettings::saveFilters.indexOf(QRegExp(".*tif.*")));
+	suffixBox->addItems(DkSettings::app.saveFilters);
+	suffixBox->setCurrentIndex(DkSettings::app.saveFilters.indexOf(QRegExp(".*tif.*")));
 
 	// export handles
 	QLabel* exportLabel = new QLabel(tr("Export Pages"));
@@ -2850,7 +2850,7 @@ void DkExportTiffDialog::on_openButton_pressed() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
 		cFile.absolutePath(), 
-		DkSettings::saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
+		DkSettings::app.saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
 
 	setFile(fileName);
 }
@@ -2895,9 +2895,9 @@ void DkExportTiffDialog::accept() {
 
 	QString suffix = suffixBox->currentText();
 
-	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
-		if (suffix.contains("(" + DkSettings::fileFilters.at(idx))) {
-			suffix = DkSettings::fileFilters.at(idx);
+	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
+		if (suffix.contains("(" + DkSettings::app.fileFilters.at(idx))) {
+			suffix = DkSettings::app.fileFilters.at(idx);
 			suffix.replace("*","");
 			break;
 		}
@@ -3323,7 +3323,7 @@ void DkMosaicDialog::createLayout() {
 	filterEdit->setObjectName("fileEdit");
 	filterEdit->setToolTip(tr("You can split multiple ignore words with ;"));
 
-	QStringList filters = DkSettings::openFilters;
+	QStringList filters = DkSettings::app.openFilters;
 	filters.pop_front();	// replace for better readability
 	filters.push_front("All Images");
 	suffixBox = new QComboBox(this);
@@ -3398,7 +3398,7 @@ void DkMosaicDialog::on_openButton_pressed() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
 		cFile.absolutePath(), 
-		DkSettings::openFilters.join(";;"));
+		DkSettings::app.openFilters.join(";;"));
 
 	setFile(fileName);
 }
@@ -3572,9 +3572,9 @@ void DkMosaicDialog::compute() {
 	QString suffixTmp = suffixBox->currentText();
 	QString suffix;
 
-	for (int idx = 0; idx < DkSettings::fileFilters.size(); idx++) {
-		if (suffixTmp.contains("(" + DkSettings::fileFilters.at(idx))) {
-			suffix = DkSettings::fileFilters.at(idx);
+	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
+		if (suffixTmp.contains("(" + DkSettings::app.fileFilters.at(idx))) {
+			suffix = DkSettings::app.fileFilters.at(idx);
 			break;
 		}
 	}
@@ -3914,7 +3914,7 @@ QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& 
 
 	// TODO: remove hierarchy
 
-	QStringList fileFilters = (suffix.isEmpty()) ? DkSettings::fileFilters : QStringList(suffix);
+	QStringList fileFilters = (suffix.isEmpty()) ? DkSettings::app.fileFilters : QStringList(suffix);
 
 	// get all dirs
 	QFileInfoList entries = QDir(cPath).entryInfoList(QStringList(), QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -4215,10 +4215,10 @@ void DkWelcomeDialog::accept() {
 	if (registerFilesCheckBox->isChecked()) {
 		DkFileFilterHandling fh;
 
-		QStringList rFilters = DkSettings::openFilters;
+		QStringList rFilters = DkSettings::app.openFilters;
 		
-		for (int idx = 0; idx < DkSettings::containerFilters.size(); idx++)
-			rFilters.removeAll(DkSettings::containerFilters.at(idx));
+		for (int idx = 0; idx < DkSettings::app.containerFilters.size(); idx++)
+			rFilters.removeAll(DkSettings::app.containerFilters.at(idx));
 
 		for (int idx = 1; idx < rFilters.size(); idx++) {
 
@@ -4257,7 +4257,7 @@ DkArchiveExtractionDialog::DkArchiveExtractionDialog(QWidget* parent, Qt::Window
 void DkArchiveExtractionDialog::createLayout() {
 
 	// archive file path
-	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(DkSettings::containerRawFilters.replace(" *", ", *")), this);
+	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(DkSettings::app.containerRawFilters.replace(" *", ", *")), this);
 	archivePathEdit = new QLineEdit(this);
 	archivePathEdit->setObjectName("DkWarningEdit");
 	archivePathEdit->setValidator(&fileValidator);
@@ -4369,7 +4369,7 @@ void DkArchiveExtractionDialog::openArchive() {
 
 	// load system default open dialog
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Archive"),
-		(archivePathEdit->text().isEmpty()) ? cFile.absolutePath() : archivePathEdit->text(), tr("Archives (%1)").arg(DkSettings::containerRawFilters.remove(",")));
+		(archivePathEdit->text().isEmpty()) ? cFile.absolutePath() : archivePathEdit->text(), tr("Archives (%1)").arg(DkSettings::app.containerRawFilters.remove(",")));
 
 	if (QFileInfo(filePath).exists()) {
 		archivePathEdit->setText(filePath);

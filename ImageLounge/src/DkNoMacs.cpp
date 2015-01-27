@@ -1271,7 +1271,7 @@ void DkNoMacs::createActions() {
 	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
 
 	toolsActions[menu_tools_extract_archive] = new QAction(tr("Extract From Archive"), this);
-	toolsActions[menu_tools_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::containerRawFilters));		
+	toolsActions[menu_tools_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::app.containerRawFilters));		
 	toolsActions[menu_tools_extract_archive]->setShortcut(QKeySequence(shortcut_extract));
 	connect(toolsActions[menu_tools_extract_archive], SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 
@@ -2292,7 +2292,7 @@ void DkNoMacs::openFile() {
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
 		loader->getDir().absolutePath(), 
-		DkSettings::openFilters.join(";;"));
+		DkSettings::app.openFilters.join(";;"));
 
 	//// show the dialog
 	//if(openDialog->exec())
@@ -2551,7 +2551,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 		int filterIdx = -1;
 
-		QStringList sF = DkSettings::saveFilters;
+		QStringList sF = DkSettings::app.saveFilters;
 		//qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
@@ -2591,7 +2591,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
 
 		fileName = QFileDialog::getSaveFileName(this, tr("Save File %1").arg(saveName),
-			savePath, DkSettings::saveFilters.join(";;"), &selectedFilter);
+			savePath, DkSettings::app.saveFilters.join(";;"), &selectedFilter);
 	}
 
 
@@ -2630,7 +2630,7 @@ void DkNoMacs::saveFileAs(bool silent) {
 
 	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
 
-		QStringList sF = DkSettings::saveFilters;
+		QStringList sF = DkSettings::app.saveFilters;
 
 		for (int idx = 0; idx < sF.size(); idx++) {
 
@@ -2741,10 +2741,10 @@ void DkNoMacs::saveFileWeb() {
 	QString suffix = imgHasAlpha ? ".png" : ".jpg";
 	QString saveFilterGui;
 
-	for (int idx = 0; idx < DkSettings::saveFilters.size(); idx++) {
+	for (int idx = 0; idx < DkSettings::app.saveFilters.size(); idx++) {
 
-		if (DkSettings::saveFilters.at(idx).contains(suffix)) {
-			saveFilterGui = DkSettings::saveFilters.at(idx);
+		if (DkSettings::app.saveFilters.at(idx).contains(suffix)) {
+			saveFilterGui = DkSettings::app.saveFilters.at(idx);
 			break;
 		}
 	}

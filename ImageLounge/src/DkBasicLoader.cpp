@@ -1210,9 +1210,9 @@ bool DkBasicLoader::isContainer(const QFileInfo& fileInfo) {
 
 	QString suffix = fileInfo.suffix();
 
-	for (int idx = 0; idx < DkSettings::containerFilters.size(); idx++) {
+	for (int idx = 0; idx < DkSettings::app.containerFilters.size(); idx++) {
 
-		if (DkSettings::containerFilters[idx].contains(suffix))
+		if (DkSettings::app.containerFilters[idx].contains(suffix))
 			return true;
 	}
 
