@@ -58,7 +58,7 @@ protected:
 
 };
 
-class DkCompressDialog : public QDialog {
+class DllExport DkCompressDialog : public QDialog {
 	Q_OBJECT
 
 public:

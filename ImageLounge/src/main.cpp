@@ -152,6 +152,9 @@ int main(int argc, char *argv[]) {
 	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
 
+	QStringList xxx = nmc::DkSettings::saveFilters;
+	qDebug() << xxx;
+
 	// show pink icons if nomacs is in private mode
 	if(args.size() > 1 && args[1] == "-p") {
 		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
