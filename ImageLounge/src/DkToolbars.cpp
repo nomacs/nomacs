@@ -560,7 +560,7 @@ void DkTransferToolBar::createIcons() {
 	
 	toolBarActions.resize(toolbar_end);
 	toolBarActions[toolbar_reset] = new QAction(toolBarIcons[icon_toolbar_reset], tr("Reset"), this);
-	toolBarActions[toolbar_reset]->setStatusTip(tr("Resets the pseudocolor function"));
+	toolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
 	//toolBarActions[toolbar_reset]->setToolTip("was geht?");
 
 	toolBarActions[toolbar_pipette] = new QAction(toolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);

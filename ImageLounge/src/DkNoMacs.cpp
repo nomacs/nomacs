@@ -1138,7 +1138,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_fullscreen] = new QAction(viewIcons[icon_view_fullscreen], tr("Fu&ll Screen"), this);
 	viewActions[menu_view_fullscreen]->setShortcuts(scs);
 	viewActions[menu_view_fullscreen]->setStatusTip(tr("Full Screen"));
-	connect(viewActions[menu_view_fullscreen], SIGNAL(triggered()), this, SLOT(enterFullScreen()));
+	connect(viewActions[menu_view_fullscreen], SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
 	viewActions[menu_view_reset] = new QAction(viewIcons[icon_view_reset], tr("&Reset Canvas"), this);
 	viewActions[menu_view_reset]->setShortcut(QKeySequence(shortcut_reset_view));
@@ -1592,6 +1592,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 
 	if (saveSettings) {
 		QSettings& settings = Settings::instance().getSettings();
+		settings.setValue("geometryNomacs", geometry());
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
 		
@@ -1839,6 +1840,13 @@ void DkNoMacs::readSettings() {
 	
 	qDebug() << "reading settings...";
 	QSettings& settings = Settings::instance().getSettings();
+
+#ifdef Q_WS_WIN
+	// fixes #392 - starting maximized on 2nd screen - tested on win8 only
+	QRect r = settings.value("geometryNomacs", geometry()).toRect();
+	setGeometry(r);
+#endif
+
 	restoreGeometry(settings.value("geometry").toByteArray());
 	restoreState(settings.value("windowState").toByteArray());
 }
@@ -1857,6 +1865,14 @@ void DkNoMacs::restart() {
 	// close me if the new instance started
 	if (started)
 		close();
+}
+
+void DkNoMacs::toggleFullScreen() {
+
+	if (isFullScreen())
+		exitFullScreen();
+	else
+		enterFullScreen();
 }
 
 void DkNoMacs::enterFullScreen() {
@@ -1900,6 +1916,7 @@ void DkNoMacs::exitFullScreen() {
 		showNormal();
 		update();	// if no resize is triggered, the viewport won't change its color
 	}
+
 
 	if (viewport())
 		viewport()->setFullScreen(false);

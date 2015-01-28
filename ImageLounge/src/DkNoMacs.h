@@ -511,6 +511,7 @@ signals:
 
 public slots:
 	void restart();
+	void toggleFullScreen();
 	void enterFullScreen();
 	void exitFullScreen();
 	void openKeyboardShortcuts();
