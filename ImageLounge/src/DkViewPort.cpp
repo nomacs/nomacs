@@ -108,6 +108,7 @@ void DkControlWidget::init() {
 	player->setDisplaySettings(&DkSettings::app.showPlayer);
 	histogram->setDisplaySettings(&DkSettings::app.showHistogram);
 	commentWidget->setDisplaySettings(&DkSettings::app.showComment);
+	zoomWidget->setDisplaySettings(&DkSettings::app.showOverview);
 
 	// some adjustments
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -361,7 +362,8 @@ void DkControlWidget::showWidgetsSettings() {
 		showMetaData(false);
 		showFileInfo(false);
 		showPlayer(false);
-		zoomWidget->hide();
+		//zoomWidget->hide();
+		showOverview(false);
 		showHistogram(false);
 		showCommentWidget(false);
 		return;
@@ -369,6 +371,7 @@ void DkControlWidget::showWidgetsSettings() {
 
 	//qDebug() << "current app mode: " << DkSettings::app.currentAppMode;
 
+	showOverview(zoomWidget->getCurrentDisplaySetting());
 	showPreview(filePreview->getCurrentDisplaySetting());
 	showScroller(folderScroll->getCurrentDisplaySetting());
 	showMetaData(metaDataInfo->getCurrentDisplaySetting());
@@ -444,12 +447,8 @@ void DkControlWidget::showOverview(bool visible) {
 	if (!zoomWidget)
 		return;
 
-	// viewport decides whether to show overview or not
-	DkSettings::app.showOverview.setBit(DkSettings::app.currentAppMode, visible);
-
 	if (visible && !zoomWidget->isVisible()) {		
-		viewport->update();
-		//overviewWindow->show();
+		zoomWidget->show();
 	}
 	else if (!visible && zoomWidget->isVisible()) {
 		zoomWidget->hide();
@@ -1027,7 +1026,7 @@ void DkViewPort::setImage(QImage newImg) {
 		tcpSendImage(true);
 
 	emit newImageSignal(&newImg);
-
+	emit zoomSignal(worldMatrix.m11()*imgMatrix.m11()*100);
 }
 
 void DkViewPort::setThumbImage(QImage newImg) {
@@ -1189,7 +1188,9 @@ void DkViewPort::showZoom() {
 
 	QString zoomStr;
 	zoomStr.sprintf("%.1f%%", imgMatrix.m11()*worldMatrix.m11()*100);
-	controller->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
+	
+	if (!controller->getZoomWidget()->isVisible())
+		controller->setInfo(zoomStr, 3000, DkControlWidget::bottom_left_label);
 }
 
 void DkViewPort::repeatZoom() {
@@ -1366,15 +1367,18 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	else
 		drawBackground(&painter);
 
-	//in mode zoom/panning
-	if (worldMatrix.m11() > 1 && !imageInside() && 
-		DkSettings::app.showOverview.testBit(DkSettings::app.currentAppMode)) {
+	// this was the auto-show function of the zoom widget
+	//DkZoomWidget* zw = controller->getZoomWidget();
 
-		if (!controller->getZoomWidget()->isVisible())
-			controller->getZoomWidget()->show();
-	}
-	else if (controller->getZoomWidget()->isVisible())
-		controller->getZoomWidget()->hide();
+	////in mode zoom/panning
+	//if (worldMatrix.m11() > 1 && !imageInside() && 
+	//	DkSettings::app.showOverview.testBit(DkSettings::app.currentAppMode)) {
+
+	//	if (!zw->isVisible())
+	//		zw->setVisible(true, true);
+	//}
+	//else if (zw->isVisible() && zw->isAutoHide())
+	//	controller->getZoomWidget()->hide();
 
 	painter.end();
 

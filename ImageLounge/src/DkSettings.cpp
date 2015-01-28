@@ -694,7 +694,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showPlayer = QBitArray(mode_end, false);
 	app_p.showHistogram = QBitArray(mode_end, false);
 	app_p.showComment = QBitArray(mode_end, false);
-	app_p.showOverview = QBitArray(mode_end, true);
+	app_p.showOverview = QBitArray(mode_end, false);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;
 	app_p.showRecentFiles = true;

@@ -749,94 +749,13 @@ void DkExplorer::readSettings() {
 	settings.endGroup();
 }
 
-// DkZoomWidget --------------------------------------------------------------------
-DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
-
-	setObjectName("DkZoomWidget");
-	createLayout();
-
-	setMinimumSize(70, 0);
-	setMaximumSize(200, 240);
-	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	QMetaObject::connectSlotsByName(this);
-}
-
-void DkZoomWidget::createLayout() {
-
-	overview = new DkOverview(this);
-
-	slZoom = new QSlider(Qt::Horizontal, this);
-	slZoom->setObjectName("slZoom");
-	slZoom->setCursor(Qt::ArrowCursor);
-	slZoom->setMinimum(0);	// add a mapping here
-	slZoom->setMaximum(100);
-
-	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
-		DkUtils::colorToString(DkSettings::display.fontColor) + 
-		"; background-color: rgba(0,0,0,0); border: none; selection-background-color: " +
-		DkUtils::colorToString(DkSettings::display.highlightColor) + ";}";
-	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";
-	//styleString += "QDoubleSpinBox::up-bottom, QDoubleSpinBox::down-bottom {width: 0px; heihgt: 0px;}";
-
-	sbZoom = new QDoubleSpinBox(this);
-	sbZoom->setObjectName("sbZoom");
-	sbZoom->setStyleSheet(styleString);
-	sbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
-	sbZoom->setSuffix("%");
-	sbZoom->setDecimals(0);
-	sbZoom->setMinimum(0.2);
-	sbZoom->setValue(100);
-	sbZoom->setMaximum(6000);
-
-	QLabel* sliderWidget = new QLabel(this);
-	sliderWidget->setObjectName("DkOverviewSliderWidget");
-	QHBoxLayout* sliderLayout = new QHBoxLayout(sliderWidget);
-	sliderLayout->setContentsMargins(10,0,0,0);
-	sliderLayout->setSpacing(10);
-	sliderLayout->addWidget(slZoom);
-	sliderLayout->addWidget(sbZoom);
-
-	QVBoxLayout* layout = new QVBoxLayout(this);
-	//layout->setContentsMargins(10,10,10,10);
-	layout->setSpacing(0);
-	layout->addWidget(overview);
-	layout->addWidget(sliderWidget);
-}
-
-void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
-	updateZoom(zoomLevel);
-	emit zoomSignal(zoomLevel/100.0f);
-}
-
-void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
-	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
-	updateZoom(level);
-	emit zoomSignal(level/100.0f);
-	qDebug() << "new zoomLevel: " << level/100.0f;
-}
-
-void DkZoomWidget::updateZoom(float zoomLevel) {
-
-	slZoom->blockSignals(true);
-	sbZoom->blockSignals(true);
-	
-	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
-	slZoom->setValue(slVal);
-	sbZoom->setValue(zoomLevel);
-	slZoom->blockSignals(false);
-	sbZoom->blockSignals(false);
-}
-
-DkOverview* DkZoomWidget::getOverview() const {
-	return overview;
-}
-
 // DkOverview --------------------------------------------------------------------
 DkOverview::DkOverview(QWidget* parent) : QLabel(parent) {
 
 	setObjectName("DkOverview");
 	setMinimumSize(0, 0);
 	setMaximumSize(200, 200);
+	setCursor(Qt::ArrowCursor);
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
@@ -870,10 +789,12 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		viewRect = overviewImgMatrix.mapRect(viewRect);
 		viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
 
+		bool drawViewRect = !viewRect.contains(overviewImgRect);
+
 		if(viewRect.topLeft().x() < overviewImgRect.topLeft().x()) viewRect.setTopLeft(QPointF(overviewImgRect.topLeft().x(), viewRect.topLeft().y()));
 		if(viewRect.topLeft().y() < overviewImgRect.topLeft().y()) viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewImgRect.topLeft().y()));
-		if(viewRect.bottomRight().x() > overviewImgRect.bottomRight().x()) viewRect.setBottomRight(QPointF(overviewImgRect.bottomRight().x(), viewRect.bottomRight().y()));
-		if(viewRect.bottomRight().y() > overviewImgRect.bottomRight().y()) viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewImgRect.bottomRight().y()));		
+		if(viewRect.bottomRight().x() > overviewImgRect.bottomRight().x()) viewRect.setBottomRight(QPointF(overviewImgRect.bottomRight().x()-1, viewRect.bottomRight().y()));
+		if(viewRect.bottomRight().y() > overviewImgRect.bottomRight().y()) viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewImgRect.bottomRight().y()-1));		
 
 		//draw the image's location
 		painter.setRenderHints(QPainter::SmoothPixmapTransform);
@@ -888,7 +809,9 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		painter.setPen(col);
 		col.setAlpha(50);
 		painter.setBrush(col);
-		painter.drawRect(viewRect);
+
+		if (drawViewRect)
+			painter.drawRect(viewRect);
 
 	}
 	painter.end();
@@ -1031,6 +954,106 @@ QTransform DkOverview::getScaledImageMatrix() {
 	return imgMatrix;
 }
 
+
+// DkZoomWidget --------------------------------------------------------------------
+DkZoomWidget::DkZoomWidget(QWidget* parent) : DkFadeLabel(parent) {
+
+	autoHide = false;
+	setObjectName("DkZoomWidget");
+	createLayout();
+
+	setMinimumSize(70, 0);
+	setMaximumSize(200, 240);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkZoomWidget::createLayout() {
+
+	overview = new DkOverview(this);
+
+	slZoom = new QSlider(Qt::Horizontal, this);
+	slZoom->setObjectName("slZoom");
+	slZoom->setCursor(Qt::ArrowCursor);
+	slZoom->setMinimum(0);	// add a mapping here
+	slZoom->setMaximum(100);
+
+	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
+		DkUtils::colorToString(DkSettings::display.fontColor) + 
+		"; background-color: rgba(0,0,0,0); border: none; selection-background-color: " +
+		DkUtils::colorToString(DkSettings::display.highlightColor) + ";}";
+	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";
+	//styleString += "QDoubleSpinBox::up-bottom, QDoubleSpinBox::down-bottom {width: 0px; heihgt: 0px;}";
+
+	sbZoom = new QDoubleSpinBox(this);
+	sbZoom->setObjectName("sbZoom");
+	sbZoom->setStyleSheet(styleString);
+	sbZoom->setButtonSymbols(QAbstractSpinBox::NoButtons);
+	sbZoom->setSuffix("%");
+	sbZoom->setDecimals(0);
+	sbZoom->setMinimum(0.2);
+	sbZoom->setValue(100);
+	sbZoom->setMaximum(6000);
+
+	QLabel* sliderWidget = new QLabel(this);
+	sliderWidget->setObjectName("DkOverviewSliderWidget");
+	QHBoxLayout* sliderLayout = new QHBoxLayout(sliderWidget);
+	sliderLayout->setContentsMargins(10,0,0,0);
+	sliderLayout->setSpacing(10);
+	sliderLayout->addWidget(slZoom);
+	sliderLayout->addWidget(sbZoom);
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	//layout->setContentsMargins(10,10,10,10);
+	layout->setSpacing(0);
+	layout->addWidget(overview);
+	layout->addWidget(sliderWidget);
+}
+
+void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
+	updateZoom(zoomLevel);
+	autoHide = false;
+	emit zoomSignal(zoomLevel/100.0f);
+}
+
+void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
+	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
+	if (level < 0.2f) level = 0.2f;
+	autoHide = false;
+	updateZoom(level);
+	emit zoomSignal(level/100.0f);
+}
+
+void DkZoomWidget::updateZoom(float zoomLevel) {
+
+	slZoom->blockSignals(true);
+	sbZoom->blockSignals(true);
+	
+	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
+	slZoom->setValue(slVal);
+	sbZoom->setValue(zoomLevel);
+	slZoom->blockSignals(false);
+	sbZoom->blockSignals(false);
+}
+
+DkOverview* DkZoomWidget::getOverview() const {
+	return overview;
+}
+
+void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */) {
+	
+	if (!isVisible() && visible)
+		this->autoHide = autoHide;
+
+	if (!visible)
+		autoHide = false;
+
+	DkFadeLabel::setVisible(visible);
+}
+
+bool DkZoomWidget::isAutoHide() const {
+	return autoHide;
+}
 
 // DkLabel --------------------------------------------------------------------
 DkLabel::DkLabel(QWidget* parent, const QString& text) : QLabel(text, parent) {

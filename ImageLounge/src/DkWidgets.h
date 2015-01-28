@@ -821,10 +821,14 @@ public:
 
 	DkOverview* getOverview() const;
 
+	bool isAutoHide() const;
+
 signals:
 	void zoomSignal(float zoomLevel);
 
 public slots:
+	virtual void setVisible(bool visible, bool autoHide = false);
+
 	void updateZoom(float zoomLevel);
 	void on_sbZoom_valueChanged(double zoomLevel);
 	void on_slZoom_valueChanged(int zoomLevel);
@@ -833,6 +837,7 @@ protected:
 	DkOverview* overview;
 	QSlider* slZoom;
 	QDoubleSpinBox* sbZoom;
+	bool autoHide;
 
 	void createLayout();
 };
