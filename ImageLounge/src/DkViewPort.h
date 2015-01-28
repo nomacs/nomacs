@@ -508,6 +508,7 @@ protected:
 	bool thumbLoaded;
 	bool testLoaded;
 	bool visibleStatusbar;
+	bool gestureStarted;
 
 	QRectF oldImgRect;
 	QRectF oldImgViewRect;
@@ -633,6 +634,8 @@ public slots:
 protected:
 	virtual void draw(QPainter *painter, float opacity = 1.0f);
 	virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void keyPressEvent(QKeyEvent *event);
 private:
 	QImage falseColorImg;

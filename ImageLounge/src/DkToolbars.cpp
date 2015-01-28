@@ -176,7 +176,6 @@ DkGradient::DkGradient(QWidget *parent)
 
 DkGradient::~DkGradient() {
 
-
 };
 
 void DkGradient::init() {
@@ -590,8 +589,8 @@ void DkTransferToolBar::saveSettings() {
 
 		for (int sIdx = 0; sIdx < stops.size(); sIdx++) {
 			settings.setArrayIndex(sIdx);
-			settings.setValue("pos", stops.at(sIdx).first);
-			settings.setValue("color", stops.at(sIdx).second);
+			settings.setValue("pos", (float)stops.at(sIdx).first);
+			settings.setValue("colorRGBA", stops.at(sIdx).second.rgba());
 		}
 		settings.endArray();
 	}
@@ -618,7 +617,7 @@ void DkTransferToolBar::loadSettings() {
 			
 			QGradientStop s;
 			s.first = settings.value("pos", 0).toFloat();
-			s.second = settings.value("color", QColor()).value<QColor>();
+			s.second = QColor::fromRgba(settings.value("colorRGBA", QColor().rgba()).toInt());
 			qDebug() << "pos: " << s.first << " col: " << s.second;
 			stops.append(s);
 		}

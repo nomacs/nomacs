@@ -773,13 +773,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	
 	if (viewSize.width() > 2 && viewSize.height() > 2) {
 	
-		//QRectF overviewRect = QRectF(QPoint(0,0), QSize(virtualVPSize.width()-1, virtualVPSize.height()-1));			// get the overview rect
-		//overviewRect.moveCenter(QPointF(viewSize.width()*0.5f, viewSize.height()*0.5f));
-		//overviewRect = overviewRect.toRect();	// force round
-
-
 		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
-
 		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), img.size()));
 
 		// now render the current view
@@ -788,8 +782,6 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		viewRect = imgMatrix->inverted().mapRect(viewRect);
 		viewRect = overviewImgMatrix.mapRect(viewRect);
 		viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
-
-		bool drawViewRect = !viewRect.contains(overviewImgRect);
 
 		if(viewRect.topLeft().x() < overviewImgRect.topLeft().x()) viewRect.setTopLeft(QPointF(overviewImgRect.topLeft().x(), viewRect.topLeft().y()));
 		if(viewRect.topLeft().y() < overviewImgRect.topLeft().y()) viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewImgRect.topLeft().y()));
@@ -810,7 +802,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		col.setAlpha(50);
 		painter.setBrush(col);
 
-		if (drawViewRect)
+		if (viewRect.width()+1 < overviewImgRect.width() || viewRect.height()+1 < overviewImgRect.height())	// draw viewrect if we do not see all parts of the image
 			painter.drawRect(viewRect);
 
 	}

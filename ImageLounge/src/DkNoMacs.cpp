@@ -4729,8 +4729,8 @@ void DkNoMacsContrast::createTransferToolbar() {
 	connect(transferToolBar, SIGNAL(channelChanged(int)),  viewport(), SLOT(changeChannel(int)));
 	connect(transferToolBar, SIGNAL(pickColorRequest()),  viewport(), SLOT(pickColor()));
 	connect(transferToolBar, SIGNAL(tFEnabled(bool)), viewport(), SLOT(enableTF(bool)));
-	connect((DkViewPortContrast*)centralWidget(), SIGNAL(tFSliderAdded(qreal)), transferToolBar, SLOT(insertSlider(qreal)));
-	connect((DkViewPortContrast*)centralWidget(), SIGNAL(imageModeSet(int)), transferToolBar, SLOT(setImageMode(int)));
+	connect((DkViewPortContrast*)viewport(), SIGNAL(tFSliderAdded(qreal)), transferToolBar, SLOT(insertSlider(qreal)));
+	connect((DkViewPortContrast*)viewport(), SIGNAL(imageModeSet(int)), transferToolBar, SLOT(setImageMode(int)));
 
 	if (DkSettings::display.smallIcons)
 		transferToolBar->setIconSize(QSize(16, 16));

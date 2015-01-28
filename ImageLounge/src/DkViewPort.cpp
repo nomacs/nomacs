@@ -762,6 +762,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	testLoaded = false;
 	thumbLoaded = false;
 	visibleStatusbar = false;
+	gestureStarted = false;
 	//pluginImageWasApplied = false;
 	fadeOpacity = 0.0f;
 	fileDownloader = 0;
@@ -1661,6 +1662,14 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 		posGrab = event->pos();
 	}
 	
+	// keep in mind if the gesture was started in the viewport
+	// this fixes issues if some HUD widgets or child widgets
+	// do not implement mouse events correctly
+	if (event->buttons() == Qt::LeftButton)
+		gestureStarted = true;
+	else
+		gestureStarted = false;
+
 	// should be sent to QWidget?!
 	DkBaseViewPort::mousePressEvent(event);
 }
@@ -1669,10 +1678,12 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	
 	repeatZoomTimer->stop();
 
-	if (imageInside()) {
+	if (imageInside() && gestureStarted) {
 		int sa = swipeRecognition(event->pos(), posGrab.toPoint());
 		swipeAction(sa);
 	}
+
+	gestureStarted = false;
 
 	DkBaseViewPort::mouseReleaseEvent(event);
 }
@@ -1789,7 +1800,7 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
 	DkVector vec(start.x()-end.x(), start.y()-end.y());
 	float length = vec.norm();
 
-	if (fabs(vec.norm()) < 50) {
+	if (fabs(vec.norm()) < 100) {
 		qDebug() << "ignoring, too small: " << vec.norm();
 		return no_swipe;
 	}
@@ -3088,6 +3099,19 @@ void DkViewPortContrast::enableTF(bool enable) {
 
 void DkViewPortContrast::mousePressEvent(QMouseEvent *event) {
 
+	if (!isColorPickerActive)
+		DkViewPort::mousePressEvent(event);	// just propagate events, if the color picker is not active
+}
+
+void DkViewPortContrast::mouseMoveEvent(QMouseEvent *event) {
+
+	if (!isColorPickerActive)
+		DkViewPort::mouseMoveEvent(event); // just propagate events, if the color picker is not active
+	else if (visibleStatusbar)
+		getPixelInfo(event->pos());
+}
+
+void DkViewPortContrast::mouseReleaseEvent(QMouseEvent *event) {
 
 	if (isColorPickerActive) {
 
@@ -3108,13 +3132,11 @@ void DkViewPortContrast::mousePressEvent(QMouseEvent *event) {
 			emit tFSliderAdded(normedPos);
 		}
 
-		unsetCursor();
-		isColorPickerActive = false;
-
+		//unsetCursor();
+		//isColorPickerActive = false;
 	} 
-
-	// always forward events (fixes #397)
-	DkViewPort::mousePressEvent(event);
+	else
+		DkViewPort::mouseReleaseEvent(event);
 }
 
 void DkViewPortContrast::keyPressEvent(QKeyEvent* event) {

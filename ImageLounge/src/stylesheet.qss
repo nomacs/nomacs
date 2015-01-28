@@ -173,7 +173,7 @@ QSlider#slZoom::groove:horizontal {
 }
 
 QSlider#slZoom::handle:horizontal {
-    width: 5px;
+    width: 10px;
     border-radius: 3px;
 	background: HUD_FONT_COLOR;
 }
