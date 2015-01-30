@@ -42,6 +42,8 @@ DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkDocAnalysisPlugin::DkDocAnalysisPlugin() {
 
 	viewport = 0;
+	jpgDialog = 0;
+	tifDialog = 0;
 }
 
 /**
@@ -55,6 +57,8 @@ DkDocAnalysisPlugin::~DkDocAnalysisPlugin() {
 		viewport->deleteLater();
 		viewport = 0;
 	}
+	jpgDialog = 0;
+	tifDialog = 0;
 }
 
 /**
@@ -333,7 +337,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains("webp")) {
 
 		if (!jpgDialog)
-			jpgDialog = 0; // new DkCompressDialog(nmcWin);
+			jpgDialog = new DkCompressDialog(nmcWin);
 
 		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
 
@@ -349,7 +353,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains("tif")) {
 		
 		if (!tifDialog)
-			tifDialog = 0; //new DkTifDialog(nmcWin);
+			tifDialog = 0; //TODO: new DkTifDialog(nmcWin);
 
 		if (!tifDialog->exec())
 			return;
