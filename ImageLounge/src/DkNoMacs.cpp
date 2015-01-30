@@ -1893,6 +1893,12 @@ void DkNoMacs::enterFullScreen() {
 	toolbar->hide();
 	movieToolbar->hide();
 	statusbar->hide();
+
+	DkCentralWidget* cw = reinterpret_cast<DkCentralWidget*>(centralWidget());
+	
+	if (cw)
+		cw->showTabs(true);
+
 	showFullScreen();
 
 	if (viewport())
@@ -1914,6 +1920,12 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettings::app.showToolBar) toolbar->show();
 		if (DkSettings::app.showStatusBar) statusbar->show();
 		showNormal();
+
+		DkCentralWidget* cw = reinterpret_cast<DkCentralWidget*>(centralWidget());
+
+		if (cw)
+			cw->showTabs(true);
+
 		update();	// if no resize is triggered, the viewport won't change its color
 	}
 

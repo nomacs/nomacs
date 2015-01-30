@@ -153,6 +153,7 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	if (tabInfos.empty()) {
 		DkTabInfo info;
 		info.setMode(DkTabInfo::tab_empty);
+		info.setTabIdx(0);
 		addTab(info);
 	}
 }
@@ -371,6 +372,7 @@ void DkCentralWidget::clearAllTabs() {
 
 void DkCentralWidget::updateTab(DkTabInfo& tabInfo) {
 
+	qDebug() << tabInfo.getTabText() << " set at tab location: " << tabInfo.getTabIdx();
 	tabbar->setTabText(tabInfo.getTabIdx(), tabInfo.getTabText());
 	tabbar->setTabIcon(tabInfo.getTabIdx(), tabInfo.getIcon());
 }
@@ -417,10 +419,12 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
 	else {
 		DkTabInfo tabInfo = tabInfos.at(idx);
 		tabInfo.setImage(img);
-		tabInfos.replace(idx, tabInfo);
 
 		updateTab(tabInfo);
 		switchWidget(tabInfo.getMode());
+
+		tabInfos.replace(idx, tabInfo);
+
 	}
 }
 
@@ -466,6 +470,14 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 
 		switchWidget(widgets[viewport_widget]);
 	}
+}
+
+void DkCentralWidget::showTabs(bool show) {
+
+	if (show && tabInfos.size() > 1)
+		tabbar->show();
+	else
+		tabbar->hide();
 }
 
 void DkCentralWidget::switchWidget(int widget) {

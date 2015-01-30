@@ -111,8 +111,9 @@ public slots:
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
 	void previousTab() const;
-	void showThumbView(bool show);
-	void showViewPort(bool show);
+	void showThumbView(bool show = true);
+	void showViewPort(bool show = true);
+	void showTabs(bool show = true);
 
 protected:
 	DkViewPort* viewport;
