@@ -206,6 +206,7 @@ void DkFileSelection::setDir(const QDir& dir) {
 	directoryEdit->setText(cDir.absolutePath());
 	emit newHeaderText(cDir.absolutePath());
 	loader->setDir(cDir);
+	thumbScrollWidget->updateThumbs(loader->getImages());
 }
 
 void DkFileSelection::selectionChanged() {

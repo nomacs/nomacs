@@ -231,6 +231,7 @@ void DkNoMacs::init() {
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialog(const QString&)));
 	connect(viewport()->getController()->getFilePreview(), SIGNAL(showThumbsDockSignal(bool)), this, SLOT(showThumbsDock(bool)));
+	connect(centralWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 
 	getTabWidget()->getThumbScrollWidget()->registerAction(panelActions[menu_panel_thumbview]);
 	viewport()->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);

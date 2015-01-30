@@ -96,6 +96,7 @@ public:
 
 signals:
 	void loadFileSignal(QFileInfo);
+	void statusInfoSignal(QString, int);
 
 public slots:
 	void imageLoaded(QSharedPointer<DkImageContainerT> img);
