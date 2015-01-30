@@ -527,7 +527,6 @@ public slots:
 	void changeSorting(bool change);
 	void goTo();
 	void find(bool filterAction = true);
-	void updateFilterState(QStringList filters);
 	void saveFile();
 	void saveFileAs(bool silent = false);
 	void saveFileWeb();

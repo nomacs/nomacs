@@ -2439,15 +2439,6 @@ void DkNoMacs::find(bool filterAction) {
 
 }
 
-void DkNoMacs::updateFilterState(QStringList filters) {
-	
-	// TODO: remove
-	//qDebug() << "filters: " << filters;
-	//toolsActions[menu_tools_filter]->blockSignals(true);
-	//toolsActions[menu_tools_filter]->setChecked(!filters.empty());
-	//toolsActions[menu_tools_filter]->blockSignals(false);
-}
-
 void DkNoMacs::changeSorting(bool change) {
 
 	if (change) {

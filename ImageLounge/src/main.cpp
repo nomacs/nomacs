@@ -175,8 +175,9 @@ int main(int argc, char *argv[]) {
 	// TODO: time to switch -> qt 5 has a command line parser
 	if (args.size() > 1 && args[1] == "-p") {
 	}
-	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists())
+	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists()) {
 		w->loadFile(QFileInfo(args[args.size()-1]));	// update folder + be silent
+	}
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
 

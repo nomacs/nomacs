@@ -42,6 +42,8 @@ public:
 	enum {
 		tab_single_image,
 		tab_thumb_preview,
+		tab_recent_files,
+		tab_empty,
 
 		tab_end
 	};

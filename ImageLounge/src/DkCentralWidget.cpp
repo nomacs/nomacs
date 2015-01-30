@@ -34,7 +34,7 @@ namespace nmc {
 
 DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx) {
 
-	this->tabMode = tab_single_image;
+	this->tabMode = tab_recent_files;
 	this->imgC = imgC;
 	this->tabIdx = idx;
 
@@ -150,8 +150,11 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	createLayout();
 	loadSettings();
 
-	if (tabInfos.empty())
-		addTab();
+	if (tabInfos.empty()) {
+		DkTabInfo info;
+		info.setMode(DkTabInfo::tab_empty);
+		addTab(info);
+	}
 }
 
 DkCentralWidget::~DkCentralWidget() {
@@ -273,7 +276,7 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	else if (tabInfos.at(idx).getMode() == DkTabInfo::tab_thumb_preview) {
 		showThumbView(true);
 	}
-	else {
+	else if (tabInfos.at(idx).getMode() == DkTabInfo::tab_recent_files) {
 		viewport->unloadImage();
 		viewport->getImageLoader()->clearPath();
 		viewport->setImage(QImage());
