@@ -92,8 +92,6 @@ protected:
 	DkCompressDialog *jpgDialog;
 	DkTifDialog *tifDialog;
 
-	virtual void contextMenuEvent(QContextMenuEvent *event);
-
 signals:
 	void magicCutSavedSignal(bool); /**< Signal for confirming if the magic cut could be saved or not **/
 	

@@ -200,7 +200,6 @@ void DkDocAnalysisPlugin::deleteViewPort() {
 * \sa magicCutSavedSignal(bool) 
 **/
 void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width/* QString saveNameAppendix*/) {
-
 	qDebug() << "saving...";
 
 	DkImageLoader* loader;
@@ -212,7 +211,6 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 		nmcWin = dynamic_cast<DkNoMacs*>(getMainWidnow());
 
 		if (nmcWin) {
-
 			DkViewPort* vp = nmcWin->viewport();
 
 			if (vp) {
@@ -381,18 +379,6 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	//bool saved = sImg.save(filePath, 0, compression);
 	//qDebug() << "jpg compression: " << compression;
 }
-
-void DkDocAnalysisPlugin::contextMenuEvent(QContextMenuEvent *event) {
-
-	// ignore context menu event if any editing is active
-	if( ((DkDocAnalysisViewPort *)viewport)->editingActive() )
-		event->ignore();
-	else
-		return;
-		//QWidget::contextMenuEvent(event);
-		//return; //DkNoMacs::contextMenuEvent(event);
-}
-
 
 
 /* macro for exporting plugin */
