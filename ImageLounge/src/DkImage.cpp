@@ -46,6 +46,8 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	dirWatcher = new QFileSystemWatcher(this);
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
+	loadCanceled = false;
+	isLoading = false;
 	folderUpdated = false;
 	tmpFileIdx = 0;
 
@@ -69,6 +71,12 @@ DkImageLoader::~DkImageLoader() {
 
 	//delete dirWatcher;	// needed?
 
+}
+
+void DkImageLoader::cancelLoading() {
+	
+	if (isLoading)
+		loadCanceled = true;
 }
 
 /**
@@ -614,11 +622,6 @@ bool DkImageLoader::unloadFile() {
 	}
 
 	return true;
-	//if (currentImage->isEdited())
-		// ask user for saving
-
-	// TODO: add save metadata (rating etc...)
-
 }
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
@@ -689,15 +692,14 @@ void DkImageLoader::load(const QFileInfo& file) {
 	hasZipMarker = file.absoluteFilePath().contains(DkZipContainer::zipMarker());
 #endif
 
+	loadDir(file);
+
 	if (file.isFile() || hasZipMarker) {
 		QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(file);
 		setCurrentImage(newImg);
 		load(currentImage);
 	}
-
-	loadDir(file);
-
-	if (!(file.isFile() || hasZipMarker))
+	else
 		firstFile();
 	
 }
@@ -727,17 +729,22 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 	
 	if (!loaded)
 		emit updateSpinnerSignalDelayed(false);
-	
+	else
+		isLoading = true;
+
 	// if loaded is false, we definitively know that the file does not exist -> early exception here?
 
 }
 
 void DkImageLoader::imageLoaded(bool loaded /* = false */) {
-
+	
 	emit updateSpinnerSignalDelayed(false);
+	isLoading = false;
 
-	if (!currentImage)
+	if (!currentImage || loadCanceled) {
+		loadCanceled = false;
 		return;
+	}
 
 	emit imageLoadedSignal(currentImage, loaded);
 

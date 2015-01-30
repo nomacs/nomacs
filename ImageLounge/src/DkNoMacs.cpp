@@ -223,7 +223,6 @@ void DkNoMacs::init() {
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(statusInfoSignal(QString)), this, SLOT(showStatusMessage(QString)));
 	connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
-	connect(getTabWidget()->getThumbScrollWidget()->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 
 	connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
 	connect(viewport()->getImageLoader(), SIGNAL(imageHasGPSSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));

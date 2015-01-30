@@ -92,6 +92,7 @@ public:
 	void updateTab(DkTabInfo& tabInfo);
 	QVector<DkTabInfo> getTabs() const;
 	void saveSettings(bool clearTabs = false);
+	int currentViewMode() const;
 
 signals:
 	void loadFileSignal(QFileInfo);

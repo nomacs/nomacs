@@ -111,7 +111,7 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 
 	loader = new DkImageLoader();
 	//connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
-	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	//connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
 }

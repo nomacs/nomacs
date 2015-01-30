@@ -93,12 +93,14 @@ QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const {
 }
 
 QIcon DkTabInfo::getIcon() {
-
-	//QIcon icon(":/nomacs/img/nomacs32.png");	// uncomment if you want our icon as default icon
+	
 	QIcon icon;
 
 	if (!imgC)
 		return icon;
+
+	if (tabMode == tab_thumb_preview)
+		return QIcon(":/nomacs/img/thumbs-view.png");
 
 	QSharedPointer<DkThumbNailT> thumb = imgC->getThumb();
 
@@ -116,6 +118,9 @@ QIcon DkTabInfo::getIcon() {
 QString DkTabInfo::getTabText() const {
 
 	QString tabText(QObject::tr("New Tab"));
+
+	if (tabMode == tab_thumb_preview)
+		return QObject::tr("Thumbnail Preview");
 
 	if (imgC) {
 
@@ -197,6 +202,8 @@ void DkCentralWidget::createLayout() {
 	//connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
+
 }
 
 void DkCentralWidget::saveSettings(bool clearTabs) {
@@ -259,22 +266,13 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		return;
 
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx).getImage();
-
-	if (imgC && imgC == viewport->getImageLoader()->getCurrentImage())
-		return;
+	viewport->getImageLoader()->cancelLoading();
 
 	if (imgC && tabInfos.at(idx).getMode() == DkTabInfo::tab_single_image) {
-		viewport->unloadImage();
-		viewport->loadImage(imgC);
-		DkTabInfo tabInfo = tabInfos.at(idx);
-		updateTab(tabInfo);
-		qDebug() << "triggering: " << imgC->file().absoluteFilePath();
+		showViewPort(true);
 	}
 	else if (tabInfos.at(idx).getMode() == DkTabInfo::tab_thumb_preview) {
-		qDebug() << "I SHOULD - change to thumbs mode...";
-		viewport->unloadImage();
-		viewport->getImageLoader()->clearPath();
-		viewport->setImage(QImage());
+		showThumbView(true);
 	}
 	else {
 		viewport->unloadImage();
@@ -436,31 +434,34 @@ void DkCentralWidget::showThumbView(bool show) {
 
 	if (show) {
 
-		tabInfos[tabbar->currentIndex()].setMode(DkTabInfo::tab_thumb_preview);
+		
+		DkTabInfo& tabInfo = tabInfos[tabbar->currentIndex()];
+		tabInfo.setMode(DkTabInfo::tab_thumb_preview);
 
 		// clear viewport
 		viewport->unloadImage();
-		viewport->hide();
+		viewport->getImageLoader()->clearPath();
+		viewport->setImage(QImage());
 
 		switchWidget(thumbs_widget);
-		thumbScrollWidget->updateThumbs(viewport->getImageLoader()->getImages());
-		thumbScrollWidget->getThumbWidget()->updateLayout();
+		DkImageLoader* loader = viewport->getImageLoader();
+		loader->setCurrentImage(tabInfo.getImage());
+		thumbScrollWidget->updateThumbs(loader->getImages());
+		//thumbScrollWidget->getThumbWidget()->updateLayout();
 	}
-	else {
-
-		// set again the last image
-		if (widgets[thumbs_widget]->isVisible())
-			viewport->setImage(viewport->getImageLoader()->getImage());
-		switchWidget();
-	}
+	else
+		showViewPort(true);	// TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
 }
 
 void DkCentralWidget::showViewPort(bool show /* = true */) {
 
-	if (show)
+	if (show) {
+		QSharedPointer<DkImageContainerT> imgC = tabInfos[tabbar->currentIndex()].getImage();
+		if (imgC && imgC != viewport->getImageLoader()->getCurrentImage())
+			viewport->loadImage(imgC);
+
 		switchWidget(widgets[viewport_widget]);
-	else
-		switchWidget(widgets[thumbs_widget]);
+	}
 }
 
 void DkCentralWidget::switchWidget(int widget) {
@@ -488,8 +489,14 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 		
 		int mode = widget == widgets[viewport_widget] ? DkTabInfo::tab_single_image : DkTabInfo::tab_thumb_preview;
 		tabInfos[tabbar->currentIndex()].setMode(mode);
+		updateTab(tabInfos[tabbar->currentIndex()]);
 	}
+	
+}
 
+int DkCentralWidget::currentViewMode() const {
+
+	return tabInfos[tabbar->currentIndex()].getMode();
 }
 
 }
