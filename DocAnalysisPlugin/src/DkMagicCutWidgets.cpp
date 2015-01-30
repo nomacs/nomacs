@@ -238,7 +238,7 @@ void DkMagicCut::calculateContours() {
 	cv::Mat roi = mask(Range(1,mask.rows-1),Range(1,mask.cols-1));
 	cv::Mat roi_clone = roi.clone();
 	// dilate the found blobs to receive better results
-	cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+	cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(7, 7));
 	cv::dilate(roi_clone, roi_clone, element);
 	// + closing of small holes
 	cv::dilate(roi_clone, roi_clone, element);

@@ -42,7 +42,7 @@ DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 DkDocAnalysisPlugin::DkDocAnalysisPlugin() {
 
 	viewport = 0;
-	jpgDialog = 0;
+	jpgDialog = 0;	
 	tifDialog = 0;
 }
 
@@ -353,7 +353,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	if (selectedFilter.contains("tif")) {
 		
 		if (!tifDialog)
-			tifDialog = 0; //TODO: new DkTifDialog(nmcWin);
+			tifDialog = 0; // TODO: fix new DkTifDialog(nmcWin);
 
 		if (!tifDialog->exec())
 			return;
@@ -443,6 +443,8 @@ void DkDocAnalysisViewPort::init() {
 	connect(docAnalysisToolbar, SIGNAL(detectLinesSignal()), this, SLOT(openLineDetectionDialog()));
 	connect(docAnalysisToolbar, SIGNAL(showBottomTextLinesSignal(bool)), this, SLOT(showBottomTextLines(bool)));
 	connect(docAnalysisToolbar, SIGNAL(showTopTextLinesSignal(bool)), this, SLOT(showTopTextLines(bool)));
+	connect(docAnalysisToolbar, SIGNAL(pickSeedpointRequest(bool)),  this, SLOT(pickSeedpoint(bool)));
+	connect(docAnalysisToolbar, SIGNAL(clearSingleSelectionRequest(bool)), this, SLOT(pickResetRegionPoint(bool)));
 	connect(this, SIGNAL(cancelPickSeedpointRequest()), docAnalysisToolbar, SLOT(pickSeedpointCanceled()));
 	connect(this, SIGNAL(cancelDistanceMeasureRequest()), docAnalysisToolbar, SLOT(measureDistanceCanceled()));
 	connect(this, SIGNAL(enableSaveCutSignal(bool)), docAnalysisToolbar, SLOT(enableButtonSaveCut(bool)));
@@ -451,6 +453,8 @@ void DkDocAnalysisViewPort::init() {
 	connect(this, SIGNAL(toggleTopTextLinesButtonSignal(bool)), docAnalysisToolbar, SLOT(toggleTopTextLinesButton(bool)));
 	connect(this, SIGNAL(startDistanceMeasureRequest()), docAnalysisToolbar, SLOT(measureDistanceStarted()));
 	connect(this, SIGNAL(startPickSeedpointRequest()), docAnalysisToolbar, SLOT(pickSeedpointStarted()));
+	connect(this, SIGNAL(startClearSingleRegionRequest()), docAnalysisToolbar, SLOT(clearSingleRegionStarted()));
+	connect(this, SIGNAL(cancelClearSingleRegionRequest()), docAnalysisToolbar, SLOT(clearSingleRegionCanceled()));
 
 	// the magic cut tool
 	magicCut = new DkMagicCut();
@@ -483,6 +487,10 @@ void DkDocAnalysisViewPort::mouseMoveEvent(QMouseEvent *event) {
 					switch(editMode) {
 
 					case mode_pickSeedpoint: {
+						this->setCursor(Qt::PointingHandCursor);
+						break;
+					}
+					case mode_cancelSeedpoint: {
 						this->setCursor(Qt::PointingHandCursor);
 						break;
 					}
@@ -565,7 +573,19 @@ void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 								tooLargeAreaDialog.show();
 								tooLargeAreaDialog.exec();
 						}
-					if (event->button() == Qt::RightButton) {
+					
+					update();
+					// check if the save-button has to be enabled or disabled
+					if(magicCut->hasContours())
+						emit enableSaveCutSignal(true);
+					else
+						emit enableSaveCutSignal(false);
+
+					this->setCursor(Qt::PointingHandCursor);
+					break;
+				case mode_cancelSeedpoint:
+					
+					if (event->button() == Qt::LeftButton) {
 						magicCut->resetRegionMask(xy);
 					}
 					update();
@@ -577,7 +597,6 @@ void DkDocAnalysisViewPort::mouseReleaseEvent(QMouseEvent *event) {
 
 					this->setCursor(Qt::PointingHandCursor);
 					break;
-
 				case mode_pickDistance: 
 
 					if(distance->hastStartAndEndPoint()) {
@@ -686,6 +705,9 @@ void DkDocAnalysisViewPort::stopEditing() {
 		break;
 	case mode_pickSeedpoint:
 		emit cancelPickSeedpointRequest();
+		break;
+	case mode_cancelSeedpoint:
+		emit cancelClearSingleRegionRequest();
 		break;
 	}
 	editMode = mode_default;
@@ -1003,6 +1025,9 @@ void DkDocAnalysisViewPort::pickDistancePoint(bool pick) {
 	case mode_pickSeedpoint:
 		emit cancelPickSeedpointRequest();
 		break;
+	case mode_cancelSeedpoint:
+		emit cancelClearSingleRegionRequest();
+		break;
 	}
 
 	if(pick) {
@@ -1026,6 +1051,9 @@ void DkDocAnalysisViewPort::pickDistancePoint() {
 	case mode_pickSeedpoint:
 		emit cancelPickSeedpointRequest();
 		break;
+	case mode_cancelSeedpoint:
+		emit cancelClearSingleRegionRequest();
+		break;
 	}
 
 	editMode = mode_pickDistance;
@@ -1048,6 +1076,9 @@ void DkDocAnalysisViewPort::pickSeedpoint(bool pick) {
 		emit cancelDistanceMeasureRequest();
 		distance->resetPoints();
 		break;
+	case mode_cancelSeedpoint:
+		emit cancelClearSingleRegionRequest();
+		break;
 	}
 
 	if(pick) {
@@ -1058,7 +1089,7 @@ void DkDocAnalysisViewPort::pickSeedpoint(bool pick) {
 }
 
 /**
-* Starts the seed points pickcing picking mode if not yet active.
+* Starts the seed points picking mode if not yet active.
 * Cancels any other active modes.
 * @param pick start or end the mode
 * \sa cancelDistanceMeasureRequest() DkMagicCutToolBar::measureDistanceCanceled(), startPickSeedpointRequest()
@@ -1068,6 +1099,9 @@ void DkDocAnalysisViewPort::pickSeedpoint() {
 	switch(editMode) {
 	case mode_pickSeedpoint:
 		return;
+	case mode_cancelSeedpoint:
+		emit cancelClearSingleRegionRequest();
+		break;
 	case mode_pickDistance:
 		emit cancelDistanceMeasureRequest();
 		distance->resetPoints();
@@ -1076,6 +1110,56 @@ void DkDocAnalysisViewPort::pickSeedpoint() {
 
 	editMode = mode_pickSeedpoint;
 	emit startPickSeedpointRequest();
+	this->setCursor(Qt::PointingHandCursor);
+}
+
+/**
+* Starts/ends the seed points picking mode for region selection.
+* Cancels any other active modes.
+* @param pick start or end the mode
+* \sa cancelDistanceMeasureRequest() cancelPickSeedpointRequest DkMagicCutToolBar::measureDistanceCanceled()
+**/
+void DkDocAnalysisViewPort::pickResetRegionPoint(bool pick) {
+
+	switch(editMode) {
+	case mode_pickDistance:
+		emit cancelDistanceMeasureRequest();
+		distance->resetPoints();
+		break;
+	case mode_pickSeedpoint:
+		emit cancelPickSeedpointRequest();
+		break;
+	}
+
+	if(pick) {
+		editMode = mode_cancelSeedpoint;
+		this->setCursor(Qt::PointingHandCursor);
+	} else
+		editMode = mode_default;	
+}
+
+/**
+* Starts the reset single region points picking mode if not yet active.
+* Cancels any other active modes.
+* @param pick start or end the mode
+* \sa cancelDistanceMeasureRequest() DkMagicCutToolBar::measureDistanceCanceled() startClearSingleRegionRequest() cancelPickSeedpointRequest()
+**/
+void DkDocAnalysisViewPort::pickResetRegionPoint() {
+
+	switch(editMode) {
+	case mode_pickSeedpoint:
+		emit cancelPickSeedpointRequest();
+		break;
+	case mode_cancelSeedpoint:
+		return;
+	case mode_pickDistance:
+		emit cancelDistanceMeasureRequest();
+		distance->resetPoints();
+		break;
+	}
+
+	editMode = mode_cancelSeedpoint;
+	emit startClearSingleRegionRequest();
 	this->setCursor(Qt::PointingHandCursor);
 }
 
@@ -1286,6 +1370,7 @@ void DkDocAnalysisToolBar::createIcons() {
 	icons[magic_icon] = QIcon(":/nomacsPluginDocAnalysis/img/magic_wand.png");
 	icons[savecut_icon] = QIcon(":/nomacsPluginDocAnalysis/img/save_cut.png");
 	icons[clearselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/reset_cut.png");
+	icons[clearsingleselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/reset_cut_single.png");
 
 
 	if (!DkSettings::display.defaultIconColor) {
@@ -1361,8 +1446,18 @@ void DkDocAnalysisToolBar::createLayout() {
 	savecutAction->setObjectName("savecutAction");
 	actions[savecut_action] = savecutAction;
 
+	QAction* clearsingleselectionAction = new QAction(icons[clearsingleselection_icon], tr("Clear selection of a single region"), this);
+	clearsingleselectionAction->setShortcut(Qt::SHIFT + Qt::Key_C);
+	clearsingleselectionAction->setStatusTip(tr("Select selected region to cleared"));
+	clearsingleselectionAction->setCheckable(true);
+	clearsingleselectionAction->setChecked(false);
+	clearsingleselectionAction->setEnabled(false);
+	clearsingleselectionAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	clearsingleselectionAction->setObjectName("clearsingleselectionAction");
+	actions[clearsingleselection_action] = clearsingleselectionAction;
+
 	QAction* clearselectionAction = new QAction(icons[clearselection_icon], tr("Clear selection"), this);
-	clearselectionAction->setShortcut(Qt::SHIFT + Qt::Key_C);
+	clearselectionAction->setShortcut(Qt::ALT + Qt::Key_C);
 	clearselectionAction->setStatusTip(tr("Clear the current selection"));
 	clearselectionAction->setCheckable(false);
 	clearselectionAction->setChecked(false);
@@ -1391,6 +1486,7 @@ void DkDocAnalysisToolBar::createLayout() {
 	addSeparator();
 	addAction(magicAction);
 	addAction(savecutAction);
+	addAction(clearsingleselectionAction);
 	addAction(clearselectionAction);
 	addWidget(lbl_tolerance);
 	addWidget(toleranceBox);
@@ -1462,6 +1558,15 @@ void DkDocAnalysisToolBar::on_savecutAction_triggered() {
 }
 
 /**
+* Called when the clear single magic cut selection tool icon is clicked.
+* Emits signal (a request) to start/end a tool for clearing single selected regions by selecting them again.
+* \sa clearSingleSelectionRequest(bool) DkDocAnalysisViewPort::pickResetRegionPoint(bool pick) DkMagicCut
+**/
+void DkDocAnalysisToolBar::on_clearsingleselectionAction_toggled(bool checked) {
+	emit clearSingleSelectionRequest(actions[clearsingleselection_action]->isChecked());
+}
+
+/**
 * Called when the clear magic cut selection tool icon is clicked.
 * Emits signal (a request) to clear all selected magic cut regions.
 * \sa clearSelectionSignal() DkDocAnalysisViewPort::clearMagicCut() DkMagicCut
@@ -1497,6 +1602,22 @@ void DkDocAnalysisToolBar::pickSeedpointStarted() {
 }
 
 /**
+* Slot - called when the user canceles during clearing single selected regions in the magic cut tool.
+* Untoggles the corresponding tool icon.
+**/
+void DkDocAnalysisToolBar::clearSingleRegionCanceled() {
+	actions[clearsingleselection_action]->setChecked(false);
+}
+
+/**
+* Slot - called when the user starts the clearing single selected regions magic cut tool (e.g. via shortcut).
+* Toggles the corresponding tool icon.
+**/
+void DkDocAnalysisToolBar::clearSingleRegionStarted() {
+	actions[clearsingleselection_action]->setChecked(true);
+}
+
+/**
 * Slot - called when the user canceles during picking a distance measure point.
 * Untoggles the corresponding tool icon.
 **/
@@ -1519,6 +1640,7 @@ void DkDocAnalysisToolBar::enableButtonSaveCut(bool enable) {
 	actions[savecut_action]->setEnabled(enable);
 	// also enable the clear selection, since something has been selected
 	actions[clearselection_action]->setEnabled(enable);
+	actions[clearsingleselection_action]->setEnabled(enable);
 }
 
 /**

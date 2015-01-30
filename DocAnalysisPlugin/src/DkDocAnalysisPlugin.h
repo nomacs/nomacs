@@ -129,6 +129,8 @@ signals:
 	// magic wand functions
 	void cancelPickSeedpointRequest();
 	void startPickSeedpointRequest();
+	void cancelClearSingleRegionRequest();
+	void startClearSingleRegionRequest();
 	void saveMagicCutRequest(QImage saveImg, int xCoord, int yCoord, int height, int width);
 	void enableSaveCutSignal(bool enable);
 
@@ -146,6 +148,8 @@ public slots:
 	void pickSeedpoint(bool pick);
 	void pickSeedpoint();
 	void setMagicCutTolerance(int tol);
+	void pickResetRegionPoint(bool pick);
+	void pickResetRegionPoint();
 	void clearMagicCut();
 	void openMagicCutDialog();
 	//// animation of contours
@@ -195,6 +199,7 @@ private:
 		mode_default,
 		mode_pickSeedpoint,
 		mode_pickDistance,
+		mode_cancelSeedpoint
 	};
 
 	int editMode; /**< The current editing state that the program is in **/
@@ -233,6 +238,7 @@ public:
 		magic_icon,
 		savecut_icon,
 		clearselection_icon,
+		clearsingleselection_icon,
 
 		icons_end,
 	};
@@ -246,6 +252,7 @@ public:
 		magic_action,
 		savecut_action,
 		clearselection_action,
+		clearsingleselection_action,
 
 		actions_end,
 	};
@@ -268,11 +275,14 @@ public slots:
 	void on_magicAction_toggled(bool checked);
 	void on_savecutAction_triggered();
 	void on_clearselectionAction_triggered();
+	void on_clearsingleselectionAction_toggled(bool checked);
 	void on_toleranceBox_valueChanged(int val);
 
 	// slots for signals coming from the view port
 	void pickSeedpointCanceled();
 	void pickSeedpointStarted();
+	void clearSingleRegionCanceled();
+	void clearSingleRegionStarted();
 	void measureDistanceCanceled();
 	void measureDistanceStarted();
 	void enableButtonSaveCut(bool enable);
@@ -283,6 +293,7 @@ public slots:
 signals:
 	// signals to the viewport
 	void pickSeedpointRequest(bool);  /**< Signal to either start or cancel the magic cut selection tool **/
+	void clearSingleSelectionRequest(bool); /**<Signal to either start or cancel the clear a single region of the magic cut selections **/
 	void clearSelectionSignal(); /**< Signal to declare that the current selection shall be resetted **/
 	void toleranceChanged(int); /**< Signal to signal if the tolerance setting has been changed **/
 	void measureDistanceRequest(bool); /**< Signal to either start or cancel the distance measure tool **/
