@@ -34,6 +34,7 @@ namespace nmc {
 
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
 DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
+DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 
 /**
 *	Constructor
@@ -240,7 +241,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 		int filterIdx = -1;
 
-		QStringList sF = DkSettings::saveFilters;
+		QStringList sF = nmc::DkSettings::app.saveFilters;
 		//qDebug() << sF;
 
 		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
@@ -269,7 +270,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	savePath.insert(savePath.length()-saveFile.completeSuffix().length()-1, saveNameAppendix);
 
 	QString fileName = QFileDialog::getSaveFileName(viewport, tr("Save Magic Cut"),
-		savePath, DkSettings::saveFilters.join(";;"), &selectedFilter);
+		savePath, DkSettings::app.saveFilters.join(";;"), &selectedFilter);
 
 	//qDebug() << "selected Filter: " << selectedFilter;
 
@@ -281,7 +282,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
 
-		QStringList sF = DkSettings::saveFilters;
+		QStringList sF = DkSettings::app.saveFilters;
 
 		for (int idx = 0; idx < sF.size(); idx++) {
 
