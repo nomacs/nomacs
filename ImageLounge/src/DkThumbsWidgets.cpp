@@ -1646,10 +1646,10 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 
 	DkWidget::setVisible(visible);
 
-	if (visible)
+	if (visible) {
 		thumbsScene->updateThumbLabels();
-
-	qDebug() << "showing thumb scroll widget...";
+		qDebug() << "showing thumb scroll widget...";
+	}
 }
 
 void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {

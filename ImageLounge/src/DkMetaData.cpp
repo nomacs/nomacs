@@ -1256,7 +1256,8 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 				valS = help.at(i);
 				coordP = valS.split("/");
 				if (coordP.size() != 2)
-					throw DkException(QObject::tr("could not parse GPS Data").toStdString());
+					return QString();
+					//throw DkException(QObject::tr("could not parse GPS Data").toStdString());
 
 				val1 = coordP.at(0).toFloat();
 				val2 = coordP.at(1).toFloat();

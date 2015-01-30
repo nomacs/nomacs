@@ -46,8 +46,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	dirWatcher = new QFileSystemWatcher(this);
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
-	loadCanceled = false;
-	isLoading = false;
 	folderUpdated = false;
 	tmpFileIdx = 0;
 
@@ -71,12 +69,6 @@ DkImageLoader::~DkImageLoader() {
 
 	//delete dirWatcher;	// needed?
 
-}
-
-void DkImageLoader::cancelLoading() {
-	
-	if (isLoading)
-		loadCanceled = true;
 }
 
 /**
@@ -729,8 +721,6 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 	
 	if (!loaded)
 		emit updateSpinnerSignalDelayed(false);
-	else
-		isLoading = true;
 
 	// if loaded is false, we definitively know that the file does not exist -> early exception here?
 
@@ -739,10 +729,8 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 	
 	emit updateSpinnerSignalDelayed(false);
-	isLoading = false;
 
-	if (!currentImage || loadCanceled) {
-		loadCanceled = false;
+	if (!currentImage) {
 		return;
 	}
 

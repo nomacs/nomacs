@@ -237,14 +237,11 @@ public slots:
 	void imageSaved(QFileInfo file, bool saved = true);
 	bool unloadFile();
 	void reloadImage();
-	void cancelLoading();
 
 protected:
 
 	QTimer delayedUpdateTimer;
 	bool timerBlockedUpdate;
-	bool loadCanceled;
-	bool isLoading;
 	QDir dir;
 	QDir saveDir;
 	QFileSystemWatcher *dirWatcher;

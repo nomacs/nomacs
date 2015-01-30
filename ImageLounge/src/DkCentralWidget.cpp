@@ -266,7 +266,6 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		return;
 
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx).getImage();
-	viewport->getImageLoader()->cancelLoading();
 
 	if (imgC && tabInfos.at(idx).getMode() == DkTabInfo::tab_single_image) {
 		showViewPort(true);
@@ -459,6 +458,8 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 		QSharedPointer<DkImageContainerT> imgC = tabInfos[tabbar->currentIndex()].getImage();
 		if (imgC && imgC != viewport->getImageLoader()->getCurrentImage())
 			viewport->loadImage(imgC);
+		else
+			viewport->getImageLoader()->firstFile();
 
 		switchWidget(widgets[viewport_widget]);
 	}
