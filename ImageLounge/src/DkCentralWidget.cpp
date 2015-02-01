@@ -203,7 +203,6 @@ void DkCentralWidget::createLayout() {
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
 
 	// thumbnail preview widget
-	//connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)));
@@ -454,9 +453,12 @@ void DkCentralWidget::showThumbView(bool show) {
 		loader->setCurrentImage(tabInfo.getImage());
 		thumbScrollWidget->updateThumbs(loader->getImages());
 		//thumbScrollWidget->getThumbWidget()->updateLayout();
+		connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	}
-	else
+	else {
+		disconnect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 		showViewPort(true);	// TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
+	}
 }
 
 void DkCentralWidget::showViewPort(bool show /* = true */) {

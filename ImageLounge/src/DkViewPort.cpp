@@ -2208,12 +2208,12 @@ void DkViewPort::loadFile(QFileInfo file) {
 	if (loader && file.isDir()) {
 		QDir dir = QDir(file.absoluteFilePath());
 
-		//// TODO: create this behavior again
-		//if (loader && controller && controller->getThumbWidget()->isVisible()) {
-		//	loader->loadDir(dir);
-		//	//controller->getThumbWidget()->getThumbWidget()->setFile(file);
-		//}
-		//else
+		// TODO: this should not happen in viewport -> put it in central widget
+		if (loader && !isVisible()) {
+			loader->loadDir(dir);
+			//controller->getThumbWidget()->getThumbWidget()->setFile(file);
+		}
+		else
 			loader->setDir(dir);
 
 	} else if (loader)
