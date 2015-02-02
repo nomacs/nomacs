@@ -30,6 +30,9 @@
 #include "DkMessageBox.h"
 #include "DkThumbsWidgets.h"
 
+#include <QFileDialog>
+#include <QClipboard>
+
 namespace nmc {
 
 DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx) {
@@ -149,6 +152,8 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	setObjectName("DkCentralWidget");
 	createLayout();
 	loadSettings();
+
+	setAcceptDrops(true);
 
 	if (tabInfos.empty()) {
 		DkTabInfo info;
@@ -423,7 +428,6 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
 		switchWidget(tabInfo.getMode());
 
 		tabInfos.replace(idx, tabInfo);
-
 	}
 }
 
@@ -515,6 +519,130 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 int DkCentralWidget::currentViewMode() const {
 
 	return tabInfos[tabbar->currentIndex()].getMode();
+}
+
+// DropEvents --------------------------------------------------------------------
+void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
+
+	printf("[DkCentralWidget] drag enter event\n");
+
+	//if (event->source() == this)
+	//	return;
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+
+		QList<QUrl> urls = event->mimeData()->urls();
+
+		for (int idx = 0; idx < urls.size(); idx++)
+			qDebug() << "url: " << urls.at(idx);
+
+		url = url.toLocalFile();
+
+		// TODO: check if we accept appropriately (network drives that are not mounted)
+		QFileInfo file = QFileInfo(url.toString());
+
+		// just accept image files
+		if (DkImageLoader::isValid(file))
+			event->acceptProposedAction();
+		else if (file.isDir())
+			event->acceptProposedAction();
+		else if (event->mimeData()->urls().at(0).isValid() && DkImageLoader::hasValidSuffix(event->mimeData()->urls().at(0).toString()))
+			event->acceptProposedAction();
+
+	}
+	if (event->mimeData()->hasImage()) {
+		event->acceptProposedAction();
+	}
+
+	QWidget::dragEnterEvent(event);
+}
+
+void DkCentralWidget::pasteImage() {
+
+	qDebug() << "pasting...";
+
+	QClipboard* clipboard = QApplication::clipboard();
+
+	if (!loadFromMime(clipboard->mimeData()))
+		viewport->getController()->setInfo("Clipboard has no image...");
+
+}
+
+void DkCentralWidget::dropEvent(QDropEvent *event) {
+
+	if (event->source() == this) {
+		event->accept();
+		return;
+	}
+
+	if (!loadFromMime(event->mimeData()))
+		viewport->getController()->setInfo(tr("Sorry, I could not drop the content."));
+}
+
+bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
+
+	if (!mimeData)
+		return false;
+
+	if (mimeData->hasUrls() && mimeData->urls().size() > 0 || mimeData->hasText()) {
+		QUrl url = mimeData->hasText() ? QUrl::fromUserInput(mimeData->text()) : QUrl::fromUserInput(mimeData->urls().at(0).toString());
+		qDebug() << "dropping: " << url;
+
+		QFileInfo file = QFileInfo(url.toLocalFile());
+		QList<QUrl> urls = mimeData->urls();
+
+		// merge OpenCV vec files if multiple vec files are dropped
+		if (urls.size() > 1 && file.suffix() == "vec") {
+
+			QVector<QFileInfo> vecFiles;
+
+			for (int idx = 0; idx < urls.size(); idx++)
+				vecFiles.append(urls.at(idx).toLocalFile());
+
+			// ask user for filename
+			QFileInfo sInfo(QFileDialog::getSaveFileName(this, tr("Save File"),
+				vecFiles.at(0).absolutePath(), "Cascade Training File (*.vec)"));
+
+			DkBasicLoader loader;
+			int numFiles = loader.mergeVecFiles(vecFiles, sInfo);
+
+			if (numFiles) {
+				viewport->loadFile(sInfo);
+				viewport->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
+				return true;
+			}
+
+			return false;
+		}
+		else
+			qDebug() << urls.size() << file.suffix() << " files dropped";
+
+		if (tabInfos[tabbar->currentIndex()].getMode() == DkTabInfo::tab_thumb_preview) {
+			viewport->getImageLoader()->loadDir(QDir(file.absoluteFilePath()));
+		}
+		else {
+			// just accept image files
+			if (DkImageLoader::isValid(file))
+				viewport->loadFile(file);
+			else if (url.isValid())
+				viewport->getImageLoader()->downloadFile(url);
+			else
+				return false;
+		}
+
+		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
+			addTab(QFileInfo(urls[idx].toLocalFile()));
+		return true;
+	}
+	else if (mimeData->hasImage()) {
+
+		QImage dropImg = qvariant_cast<QImage>(mimeData->imageData());
+		viewport->loadImage(dropImg);
+		return true;
+	}
+
+	return false;
 }
 
 }

@@ -297,6 +297,10 @@ void DkImageContainer::saveMetaDataIntern(const QFileInfo fileInfo, QSharedPoint
 	loader->saveMetaData(fileInfo, fileBuffer);
 }
 
+void DkImageContainer::setEdited(bool edited) {
+	this->edited = edited;
+}
+
 bool DkImageContainer::isEdited() const {
 
 	return edited;
@@ -379,6 +383,7 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 	fileUpdateTimer.setSingleShot(false);
 	fileUpdateTimer.setInterval(500);
 	waitForUpdate = false;
+	downloaded = false;
 
 	connect(&fileUpdateTimer, SIGNAL(timeout()), this, SLOT(checkForFileUpdates()));
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
@@ -600,6 +605,38 @@ void DkImageContainerT::loadingFinished() {
 	emit fileLoadedSignal(true);
 }
 
+void DkImageContainerT::downloadFile(const QUrl& url) {
+
+	if (!fileDownloader) {
+		fileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, this));
+		connect(fileDownloader.data(), SIGNAL(downloaded()), this, SLOT(fileDownloaded()));
+		qDebug() << "trying to download: " << url;
+	}
+	else
+		fileDownloader->downloadFile(url);
+}
+
+void DkImageContainerT::fileDownloaded() {
+
+	if (!fileDownloader) {
+		qDebug() << "empty fileDownloader, where it should not be";
+		emit fileLoadedSignal(false);
+		return;
+	}
+
+	fileBuffer = fileDownloader->downloadedData();
+
+	if (!fileBuffer || fileBuffer->isEmpty()) {
+		qDebug() << fileDownloader->getUrl() << " not downloaded...";
+		emit showInfoSignal(tr("Sorry, I could not download:\n%1").arg(fileDownloader->getUrl().toString()));
+		emit fileLoadedSignal(false);
+		return;
+	}
+
+	downloaded = true;
+	fetchImage();
+}
+
 void DkImageContainerT::cancel() {
 
 	if (loadState != loading)
@@ -694,6 +731,7 @@ void DkImageContainerT::savingFinished() {
 			fileBuffer->clear();	// do a complete clear?
 		fileInfo = saveFile;
 		edited = false;
+		downloaded = false;
 		if (selected) {
 			loadImageThreaded(true);	// force a reload
 			fileUpdateTimer.start();
@@ -742,6 +780,11 @@ QSharedPointer<DkThumbNailT> DkImageContainerT::getThumb() {
 	}
 
 	return thumb;
+}
+
+bool DkImageContainerT::isFileDownloaded() const {
+
+	return downloaded;
 }
 
 };

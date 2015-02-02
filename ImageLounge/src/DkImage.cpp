@@ -746,10 +746,22 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	QApplication::sendPostedEvents();	// force an event post here
 
+	if (currentImage->isFileDownloaded())
+		saveTempFile(currentImage->image());
+
 	updateCacher(currentImage);
 	updateHistory();
 
 	emit imageHasGPSSignal(DkMetaDataHelper::getInstance().hasGPS(currentImage->getMetaData()));
+}
+
+void DkImageLoader::downloadFile(const QUrl& url, const QFileInfo& editFile) {
+
+	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(QFileInfo());
+	setCurrentImage(newImg);
+	newImg->downloadFile(url);
+	newImg->setEdited(true);
+	emit updateSpinnerSignalDelayed(true);
 }
 
 /**
@@ -978,7 +990,7 @@ void DkImageLoader::updateHistory() {
 	if (!DkSettings::global.logRecentFiles || DkSettings::app.privateMode)
 		return;
 
-	if (!currentImage || currentImage->hasImage() != DkImageContainer::loaded)
+	if (!currentImage || currentImage->hasImage() != DkImageContainer::loaded || !currentImage->exists())
 		return;
 
 	QFileInfo file = currentImage->file();

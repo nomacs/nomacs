@@ -91,7 +91,6 @@ class DkFilePreview;
 class DkThumbScrollWidget;
 class DkMetaDataInfo;
 class DkCommentWidget;
-class FileDownloader;
 
 class DkDelayedInfo : public QObject {
 	Q_OBJECT
@@ -461,7 +460,6 @@ public slots:
 	void loadSkipNext10();
 	void loadSkipPrev10();
 	void loadLena();
-	bool loadFromMime(const QMimeData* mimeData);
 	bool unloadImage(bool fileChange = true);
 	//void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
@@ -471,7 +469,6 @@ public slots:
 	void copyPixelColorValue();
 	void copyImageBuffer();
 	void copyImage();
-	void pasteImage();
 
 	virtual void updateImage(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	virtual void loadImage(QImage newImg);
@@ -490,13 +487,8 @@ public slots:
 	void animateMove();
 	virtual void togglePattern(bool show);
 
-	void downloadFile(const QUrl& url);
-	void fileDownloaded();
-
 protected:
-	virtual void dragEnterEvent(QDragEnterEvent *event);
 	virtual void dragLeaveEvent(QDragLeaveEvent *event);
-	virtual void dropEvent(QDropEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
@@ -536,7 +528,6 @@ protected:
 	QVBoxLayout* paintLayout;
 	DkControlWidget* controller;
 	DkImageLoader* loader;
-	FileDownloader* fileDownloader;
 
 	QPoint currentPixelPos;
 	//bool pluginImageWasApplied;

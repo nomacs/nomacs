@@ -114,6 +114,7 @@ public slots:
 	void showThumbView(bool show = true);
 	void showViewPort(bool show = true);
 	void showTabs(bool show = true);
+	void pasteImage();
 
 protected:
 	DkViewPort* viewport;
@@ -130,6 +131,9 @@ protected:
 	void updateTabIdx();
 	void switchWidget(int widget);
 	void switchWidget(QWidget* widget = 0);
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	bool loadFromMime(const QMimeData* mimeData);
 
 	enum {
 		viewport_widget,

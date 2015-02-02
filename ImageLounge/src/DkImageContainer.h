@@ -83,6 +83,7 @@ public:
 	bool isFromZip() const;
 	bool isEdited() const;
 	bool isSelected() const;
+	void setEdited(bool edited);
 	int getPageIdx() const;
 	QString getTitleAttribute() const;
 	float getMemoryUsage() const;
@@ -140,11 +141,13 @@ public:
 	void cancel();
 	void clear();
 	void receiveUpdates(QObject* obj, bool connectSignals = true);
+	void downloadFile(const QUrl& url);
 
 	bool loadImageThreaded(bool force = false);
 	bool saveImageThreaded(const QFileInfo fileInfo, const QImage saveImg, int compression = -1);
 	bool saveImageThreaded(const QFileInfo fileInfo, int compression = -1);
 	void saveMetaDataThreaded();
+	bool isFileDownloaded() const;
 
 	virtual QSharedPointer<DkBasicLoader> getLoader();
 	virtual QSharedPointer<DkThumbNailT> getThumb();
@@ -164,6 +167,7 @@ protected slots:
 	void imageLoaded();
 	void savingFinished();
 	void loadingFinished();
+	void fileDownloaded();
 
 protected:
 	void fetchImage();
@@ -172,15 +176,18 @@ protected:
 	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer);
-
+	
 	QFutureWatcher<QSharedPointer<QByteArray> > bufferWatcher;
 	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;
 	QFutureWatcher<QFileInfo> saveImageWatcher;
 	QFutureWatcher<bool> saveMetaDataWatcher;
 
+	QSharedPointer<FileDownloader> fileDownloader;
+
 	bool fetchingImage;
 	bool fetchingBuffer;
 	bool waitForUpdate;
+	bool downloaded;
 
 	QTimer fileUpdateTimer;
 	//bool savingImage;

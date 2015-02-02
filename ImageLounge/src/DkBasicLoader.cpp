@@ -32,6 +32,8 @@
 
 #include <qmath.h>
 
+#include <QUrl>
+
 namespace nmc {
 
 // Basic loader and image edit class --------------------------------------------------------------------
@@ -1437,6 +1439,40 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 	return true;
 }
 #endif
+
+// FileDownloader --------------------------------------------------------------------
+// File Downloader --------------------------------------------------------------------
+FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
+	connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)),
+		SLOT(fileDownloaded(QNetworkReply*)));
+
+	downloadFile(imageUrl);
+}
+
+FileDownloader::~FileDownloader() {
+}
+
+void FileDownloader::downloadFile(const QUrl& url) {
+
+	QNetworkRequest request(url);
+	m_WebCtrl.get(request);
+	this->url = url;
+}
+
+void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
+	m_DownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
+	//emit a signal
+	pReply->deleteLater();
+	emit downloaded();
+}
+
+QSharedPointer<QByteArray> FileDownloader::downloadedData() const {
+	return m_DownloadedData;
+}
+
+QUrl FileDownloader::getUrl() const {
+	return url;
+}
 
 #ifdef WITH_QUAZIP
 

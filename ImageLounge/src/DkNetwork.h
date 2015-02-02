@@ -639,32 +639,5 @@ class DkTranslationUpdater : public QObject {
 //	QWebView* view;
 //};
 
-// file downloader from: http://qt-project.org/wiki/Download_Data_from_URL
-class FileDownloader : public QObject {
-	Q_OBJECT
-public:
-	explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
-
-	virtual ~FileDownloader();
-
-	QSharedPointer<QByteArray> downloadedData() const;
-	QUrl getUrl() const;
-	void downloadFile(const QUrl& url);
-
-signals:
-	void downloaded();
-
-private slots:
-	void fileDownloaded(QNetworkReply* pReply);
-
-private:
-
-	QNetworkAccessManager m_WebCtrl;
-	QSharedPointer<QByteArray> m_DownloadedData;
-	QUrl url;
-
-};
-
-
 };
 

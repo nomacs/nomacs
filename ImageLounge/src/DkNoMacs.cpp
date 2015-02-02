@@ -961,7 +961,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_paste]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_paste]->setShortcuts(pastScs);
 	editActions[menu_edit_paste]->setStatusTip(tr("paste image"));
-	connect(editActions[menu_edit_paste], SIGNAL(triggered()), vp, SLOT(pasteImage()));
+	connect(editActions[menu_edit_paste], SIGNAL(triggered()), centralWidget(), SLOT(pasteImage()));
 
 	editActions[menu_edit_transform] = new QAction(editIcons[icon_edit_resize], tr("R&esize Image"), this);
 	editActions[menu_edit_transform]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
