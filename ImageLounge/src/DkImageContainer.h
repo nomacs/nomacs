@@ -80,7 +80,7 @@ public:
 	bool hasImage() const;
 	int getLoadState() const;
 	QFileInfo file() const;
-	bool isFromZip() const;
+	bool isFromZip();
 	bool isEdited() const;
 	bool isSelected() const;
 	void setEdited(bool edited);

@@ -657,7 +657,7 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 	if (DkImageLoader::isValid(cFile))
 		emit openFile(cFile);
 	else if (cFile.isDir())
-		emit openDir(cFile);
+		emit openDir(QDir(cFile.absoluteFilePath()));
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {

@@ -102,10 +102,10 @@ QFileInfo DkImageContainer::file() const {
 	return fileInfo;
 }
 
-bool DkImageContainer::isFromZip() const {
+bool DkImageContainer::isFromZip() {
 
 #ifdef WITH_QUAZIP
-	return zipData && zipData->isZip();
+	return getZipData() && getZipData()->isZip();
 #else
 	return false;
 #endif
@@ -153,7 +153,7 @@ QSharedPointer<DkThumbNailT> DkImageContainer::getThumb() {
 	if (!thumb) {
 #ifdef WITH_QUAZIP	
 		if(isFromZip()) 
-			thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(zipData->getEncodedFileInfo()));
+			thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(getZipData()->getEncodedFileInfo()));
 		else
 			thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(fileInfo));
 #else
@@ -253,7 +253,7 @@ QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fi
 
 #ifdef WITH_QUAZIP
 	if (isFromZip()) 
-		return zipData->extractImage(zipData->getZipFileInfo(), zipData->getImageFileInfo());
+		return getZipData()->extractImage(getZipData()->getZipFileInfo(), getZipData()->getImageFileInfo());
 #endif
 
 	if (fInfo.suffix().contains("psd")) {	// for now just psd's are not cached because their file might be way larger than the part we need to read
@@ -322,7 +322,7 @@ QSharedPointer<DkZipContainer> DkImageContainer::getZipData() {
 
 	if (!zipData) {
 		this->zipData = QSharedPointer<DkZipContainer>(new DkZipContainer(fileInfo));
-		if(isFromZip())
+		if (zipData->isZip())
 			this->fileInfo = zipData->getImageFileInfo();
 	}
 
@@ -417,7 +417,7 @@ void DkImageContainerT::clear() {
 void DkImageContainerT::checkForFileUpdates() {
 
 #ifdef WITH_QUAZIP
-	if(isFromZip()) fileInfo = zipData->getZipFileInfo();
+	if(isFromZip()) fileInfo = getZipData()->getZipFileInfo();
 #endif
 
 	QDateTime modifiedBefore = fileInfo.lastModified();
@@ -434,7 +434,7 @@ void DkImageContainerT::checkForFileUpdates() {
 		waitForUpdate = true;
 
 #ifdef WITH_QUAZIP
-	if(isFromZip()) fileInfo = zipData->getImageFileInfo();
+	if(isFromZip()) fileInfo = getZipData()->getImageFileInfo();
 #endif
 
 	if (edited) {
@@ -459,7 +459,7 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 
 #ifdef WITH_QUAZIP
 	//zip archives: get zip file fileInfo for checks
-	if(isFromZip()) fileInfo = zipData->getZipFileInfo();
+	if(isFromZip()) fileInfo = getZipData()->getZipFileInfo();
 #endif
 	
 	// check file for updates
@@ -490,7 +490,7 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 
 #ifdef WITH_QUAZIP
 	//zip archives: use the image file info from now on
-	if(isFromZip()) fileInfo = zipData->getImageFileInfo();
+	if(isFromZip()) fileInfo = getZipData()->getImageFileInfo();
 #endif
 	
 	loadState = loading;

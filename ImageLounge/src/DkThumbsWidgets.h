@@ -173,12 +173,12 @@ public:
 	void setVisible(bool visible);
 	QPixmap pixmap() const;
 
-	public slots:
-		void updateLabel();
+public slots:
+	void updateLabel();
 
 signals:
-		void loadFileSignal(QFileInfo& file);
-		void showFileSignal(const QFileInfo& file);
+	void loadFileSignal(QFileInfo& file);
+	void showFileSignal(const QFileInfo& file);
 
 protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -249,10 +249,10 @@ public:
 	DkThumbsView(DkThumbScene* scene, QWidget* parent = 0);
 
 signals:
-	void updateDirSignal(QFileInfo file);
+	void updateDirSignal(QDir dir);
 
-	public slots:
-		void fetchThumbs();
+public slots:
+	void fetchThumbs();
 
 protected:
 	void wheelEvent(QWheelEvent *event);
@@ -294,10 +294,10 @@ public:
 public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
-	void setDir(QFileInfo file);
+	void setDir(QDir dir);
 
 signals:
-	void updateDirSignal(QFileInfo file);
+	void updateDirSignal(QDir dir);
 
 protected:
 	void createActions();

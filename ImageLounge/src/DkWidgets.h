@@ -739,7 +739,7 @@ public slots:
 
 signals:
 	void openFile(QFileInfo fileInfo) const;
-	void openDir(QFileInfo dir) const;
+	void openDir(QDir dir) const;
 
 protected:
 	void closeEvent(QCloseEvent *event);

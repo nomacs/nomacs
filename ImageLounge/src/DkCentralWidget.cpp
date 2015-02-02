@@ -209,7 +209,7 @@ void DkCentralWidget::createLayout() {
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
-	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), viewport->getImageLoader(), SLOT(loadDir(QDir)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)));
 
 }
@@ -619,11 +619,13 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 			qDebug() << urls.size() << file.suffix() << " files dropped";
 
 		if (tabInfos[tabbar->currentIndex()].getMode() == DkTabInfo::tab_thumb_preview) {
-			viewport->getImageLoader()->loadDir(QDir(file.absoluteFilePath()));
+			
+			QDir newDir = (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absolutePath();
+			viewport->getImageLoader()->loadDir(newDir);
 		}
 		else {
 			// just accept image files
-			if (DkImageLoader::isValid(file))
+			if (DkImageLoader::isValid(file) || file.isDir())
 				viewport->loadFile(file);
 			else if (url.isValid())
 				viewport->getImageLoader()->downloadFile(url);

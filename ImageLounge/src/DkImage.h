@@ -188,8 +188,6 @@ public:
 	QSharedPointer<DkImageContainerT> findFile(const QFileInfo& file) const;
 	int findFileIdx(const QFileInfo& file, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
 	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
-	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
-	bool loadDir(QDir newDir, bool scanRecursive = true);
 #ifdef WITH_QUAZIP
 	bool loadZipArchive(QFileInfo zipFile);
 #endif
@@ -232,6 +230,8 @@ public slots:
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false);
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();
+	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
+	bool loadDir(QDir newDir, bool scanRecursive = true);
 
 	// new slots
 	void imageLoaded(bool loaded = false);

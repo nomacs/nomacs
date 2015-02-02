@@ -1159,9 +1159,6 @@ DkThumbScene::DkThumbScene(QWidget* parent /* = 0 */) : QGraphicsScene(parent) {
 	numCols = 0;
 	numRows = 0;
 	firstLayout = true;
-
-	// TODO: let the parent decide how my bg looks like
-	//setBackgroundBrush(DkSettings::slideShow.backgroundColor);
 }
 
 void DkThumbScene::updateLayout() {
@@ -1481,14 +1478,69 @@ void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
 }
 
 void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
+//
+//	qDebug() << event->source() << " I am: " << this;
+//
+//	if (event->source() == this)
+//		event->acceptProposedAction();
+//	else if (event->mimeData()->hasUrls()) {
+//		QUrl url = event->mimeData()->urls().at(0);
+//		url = url.toLocalFile();
+//
+//		QFileInfo file = QFileInfo(url.toString());
+//
+//		// just accept image files
+//		if (DkImageLoader::isValid(file))
+//			event->acceptProposedAction();
+//		else if (file.isDir())
+//			event->acceptProposedAction();
+//	}
+//
+//	//QGraphicsView::dragEnterEvent(event);
+//}
 
 	if (event->source() == this)
 		event->acceptProposedAction();
 	else if (event->mimeData()->hasUrls()) {
 		QUrl url = event->mimeData()->urls().at(0);
 		url = url.toLocalFile();
+//		QUrl url = event->mimeData()->urls().at(0);
+//		url = url.toLocalFile();
+//
+//		QFileInfo file = QFileInfo(url.toString());
+//
+//		// just accept image files
+//		if (DkImageLoader::isValid(file))
+//			event->acceptProposedAction();
+//		else if (file.isDir())
+//			event->acceptProposedAction();
+//	}
+//
+//	//QGraphicsView::dragMoveEvent(event);
+//}
 
 		QFileInfo file = QFileInfo(url.toString());
+//
+//	if (event->source() == this) {
+//		event->accept();
+//		return;
+//	}
+//
+//	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+//		QUrl url = event->mimeData()->urls().at(0);
+//		qDebug() << "dropping: " << url;
+//		url = url.toLocalFile();
+//
+//		QFileInfo file = QFileInfo(url.toString());
+//		QDir newDir = file.isDir() ? file.absoluteFilePath() : file.absolutePath();
+//
+//		emit updateDirSignal(newDir);
+//	}
+//
+//	QGraphicsView::dropEvent(event);
+//
+//	qDebug() << "drop event...";
+//}
 
 		// just accept image files
 		if (DkImageLoader::isValid(file))
@@ -1513,8 +1565,9 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 		url = url.toLocalFile();
 
 		QFileInfo file = QFileInfo(url.toString());
+		QDir newDir = (file.isDir()) ? file.absoluteFilePath() : file.absolutePath();
 
-		emit updateDirSignal(file);
+		emit updateDirSignal(newDir);
 	}
 
 	QGraphicsView::dropEvent(event);
@@ -1569,7 +1622,7 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	//thumbsView->setContentsMargins(0,0,0,0);
 
 	view = new DkThumbsView(thumbsScene, this);
-	connect(view, SIGNAL(updateDirSignal(QFileInfo)), this, SIGNAL(updateDirSignal(QFileInfo)));
+	connect(view, SIGNAL(updateDirSignal(QDir)), this, SIGNAL(updateDirSignal(QDir)));
 
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
@@ -1636,10 +1689,10 @@ void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT>
 	thumbsScene->updateThumbs(thumbs);
 }
 
-void DkThumbScrollWidget::setDir(QFileInfo file) {
+void DkThumbScrollWidget::setDir(QDir dir) {
 
 	if (isVisible())
-		emit updateDirSignal(file);
+		emit updateDirSignal(dir);
 }
 
 void DkThumbScrollWidget::setVisible(bool visible) {
