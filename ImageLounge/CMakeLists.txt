@@ -45,6 +45,14 @@ endif()
 # find Qt
 NMC_FINDQT()
 
+if (DISABLE_QT_DEBUG)
+	message (STATUS "disabling qt debug messages")
+	add_definitions(-DQT_NO_DEBUG_OUTPUT)
+endif()
+
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DQT_NO_DEBUG)
+endif()
 
 if(MSVC)
 	include(${CMAKE_SOURCE_DIR}/cmake/Win.cmake)
@@ -136,11 +144,6 @@ ELSE()
  QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
  QT5_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
 ENDIF()
-
-if (DISABLE_QT_DEBUG)
-	message (STATUS "disabling qt debug messages")
-	add_definitions(-DQT_NO_DEBUG_OUTPUT)
-endif()
 
 if(MSVC)
 	include(${CMAKE_SOURCE_DIR}/cmake/WinBuildTarget.cmake)

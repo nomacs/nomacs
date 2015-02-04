@@ -410,6 +410,7 @@ public:
 	};
 	
 	QString getCurrentPixelHexValue();
+	QPoint mapToImage(const QPoint& windowPos) const;
 	
 	void applyPluginChanges();
 	//void setPluginImageWasApplied(bool pluginImageWasApplied) {
@@ -427,6 +428,7 @@ signals:
 	void infoSignal(QString msg);	// needed to forward signals
 	void addTabSignal(const QFileInfo& fileInfo);
 	void zoomSignal(float zoomLevel);
+	void mouseClickSignal(QMouseEvent* event, QPoint imgPos);
 
 public slots:
 	void rotateCW();

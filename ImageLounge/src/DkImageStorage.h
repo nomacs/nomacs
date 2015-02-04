@@ -256,6 +256,7 @@ public:
 	DkImageStorage(QImage img = QImage());
 
 	void setImage(QImage img);
+	QImage getImageConst() const;
 	QImage getImage(float factor = 1.0f);
 	bool hasImage() const {
 		return !img.isNull();

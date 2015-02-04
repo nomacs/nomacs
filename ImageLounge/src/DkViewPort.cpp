@@ -1570,10 +1570,16 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	
 	repeatZoomTimer->stop();
 
+	int sa = swipeRecognition(event->pos(), posGrab.toPoint());
+	QPoint pos = mapToImage(event->pos());
+
 	if (imageInside() && gestureStarted) {
-		int sa = swipeRecognition(event->pos(), posGrab.toPoint());
-		swipeAction(sa);
+			swipeAction(sa);
 	}
+
+	// needed for scientific projects...
+	if (pos.x() != -1 && pos.y() != -1)
+		emit mouseClickSignal(event, pos);
 
 	gestureStarted = false;
 
@@ -1773,17 +1779,27 @@ void DkViewPort::setFullScreen(bool fullScreen) {
 	toggleLena();
 }
 
+QPoint DkViewPort::mapToImage(const QPoint& windowPos) const {
+
+	QPointF imgPos = worldMatrix.inverted().map(QPointF(windowPos));
+	imgPos = imgMatrix.inverted().map(imgPos);
+
+	QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
+
+	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgStorage.getImageConst().width() || xy.y() >= imgStorage.getImageConst().height())
+		return QPoint(-1,-1);
+
+	return xy;
+}
+
 void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	if (imgStorage.getImage().isNull())
 		return;
 
-	QPointF imgPos = worldMatrix.inverted().map(QPointF(pos));
-	imgPos = imgMatrix.inverted().map(imgPos);
+	QPoint xy = mapToImage(pos);
 
-	QPoint xy(qFloor(imgPos.x()), qFloor(imgPos.y()));
-
-	if (xy.x() < 0 || xy.y() < 0 || xy.x() >= imgStorage.getImage().width() || xy.y() >= imgStorage.getImage().height())
+	if (xy.x() == -1 || xy.y() == -1)
 		return;
 
 	QColor col = imgStorage.getImage().pixel(xy);

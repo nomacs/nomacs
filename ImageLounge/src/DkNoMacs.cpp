@@ -781,7 +781,7 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_app_manager]->setStatusTip(tr("Manage Applications which are Automatically Opened"));
 	fileActions[menu_file_app_manager]->setShortcut(QKeySequence(shortcut_app_manager));
 	connect(fileActions[menu_file_app_manager], SIGNAL(triggered()), this, SLOT(openAppManager()));
-
+		
 	fileActions[menu_file_rename] = new QAction(tr("Re&name"), this);
 	fileActions[menu_file_rename]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	fileActions[menu_file_rename]->setShortcut(QKeySequence(shortcut_rename));

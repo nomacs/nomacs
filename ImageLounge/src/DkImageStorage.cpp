@@ -756,6 +756,11 @@ void DkImageStorage::antiAliasingChanged(bool antiAliasing) {
 
 }
 
+QImage DkImageStorage::getImageConst() const {
+	
+	return img;
+}
+
 QImage DkImageStorage::getImage(float factor) {
 
 	if (factor >= 0.5f || img.isNull() || !DkSettings::display.antiAliasing)

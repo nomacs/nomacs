@@ -619,7 +619,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 			qDebug() << urls.size() << file.suffix() << " files dropped";
 
 		if (tabInfos[tabbar->currentIndex()].getMode() == DkTabInfo::tab_thumb_preview) {
-			
+			// TODO: this event won't be called if the thumbs view is visible
 			QDir newDir = (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absolutePath();
 			viewport->getImageLoader()->loadDir(newDir);
 		}
