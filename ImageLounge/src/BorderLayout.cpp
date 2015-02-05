@@ -56,7 +56,7 @@
 
  BorderLayout::~BorderLayout()
  {
-	 foreach (ItemWrapper* wrapper, list) {
+	 for (ItemWrapper* wrapper : list) {
 		 if (wrapper->item)
 			 delete wrapper->item;
 		 wrapper->item = 0;

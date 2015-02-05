@@ -423,11 +423,11 @@ void DkImageContainerT::checkForFileUpdates() {
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
 	
+	bool changed = false;
+
 	// if image exists_not don't do this
 	if (!fileInfo.exists() && loadState == loaded) {
-		if (DkSettings::global.askToSaveDeletedFiles)
-			edited = true;
-		emit fileLoadedSignal(true);
+		changed = true;
 	}
 
 	if (fileInfo.lastModified() != modifiedBefore)
@@ -437,8 +437,12 @@ void DkImageContainerT::checkForFileUpdates() {
 	if(isFromZip()) fileInfo = getZipData()->getImageFileInfo();
 #endif
 
-	if (edited) {
+	if (changed) {
 		fileUpdateTimer.stop();
+		if (DkSettings::global.askToSaveDeletedFiles) {
+			edited = changed;
+			emit fileLoadedSignal(true);
+		}
 		return;
 	}
 
