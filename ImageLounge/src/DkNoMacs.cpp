@@ -813,9 +813,7 @@ void DkNoMacs::createActions() {
 	connect(fileActions[menu_file_print], SIGNAL(triggered()), this, SLOT(printDialog()));
 
 	fileActions[menu_file_show_recent] = new QAction(tr("&Recent Files and Folders"), this);
-#ifdef WIN32	// CTRL+R is reload for Linux
 	fileActions[menu_file_show_recent]->setShortcut(QKeySequence(shortcut_recent_files));
-#endif
 	fileActions[menu_file_show_recent]->setCheckable(true);
 	fileActions[menu_file_show_recent]->setChecked(false);
 	fileActions[menu_file_show_recent]->setStatusTip(tr("Show Recent Files and Folders"));
