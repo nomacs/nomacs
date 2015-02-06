@@ -3182,6 +3182,8 @@ void DkRecentFilesWidget::createLayout() {
 
 	filesWidget = new QWidget(this);
 	filesLayout = new QGridLayout(filesWidget);
+	filesLayout->setAlignment(Qt::AlignTop);
+	//filesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	folderWidget = new QWidget(this);
 	folderLayout = new QVBoxLayout(folderWidget);
@@ -3199,6 +3201,7 @@ void DkRecentFilesWidget::createLayout() {
 	layout->addWidget(bgLabel);
 	QHBoxLayout* hLayout = new QHBoxLayout(bgLabel);
 
+	hLayout->setAlignment(Qt::AlignTop);
 	hLayout->addWidget(filesWidget);
 	hLayout->addWidget(folderWidget);
 	hLayout->addStretch();
@@ -3279,10 +3282,9 @@ void DkRecentFilesWidget::updateFileList() {
 	for (int idx = 0; idx < DkSettings::global.recentFolders.size(); idx++)
 		recentFolders.append(QFileInfo(DkSettings::global.recentFolders.at(idx)));
 
-	//fileWatcher.setFuture(QtConcurrent::map(recentFiles, &nmc::DkRecentFilesWidget::mappedFileExists));
+	updateFiles();
 	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &nmc::DkRecentFilesWidget::mappedFileExists));
 
-	updateFiles();
 }
 
 void DkRecentFilesWidget::updateFiles() {
@@ -3327,7 +3329,6 @@ void DkRecentFilesWidget::updateFiles() {
 		connect(cLabel, SIGNAL(labelLoaded()), this, SLOT(updateFiles()));
 		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
-
 	}
 
 	update();

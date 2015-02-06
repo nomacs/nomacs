@@ -78,6 +78,7 @@ protected:
 
 class DkViewPort;
 class DkThumbScrollWidget;
+class DkRecentFilesWidget;
 
 class DllExport DkCentralWidget : public QWidget {
 	Q_OBJECT
@@ -88,6 +89,7 @@ public:
 
 	DkViewPort* getViewPort() const;
 	DkThumbScrollWidget* getThumbScrollWidget() const;
+	DkRecentFilesWidget* getRecentFilesWidget() const;
 
 	void clearAllTabs();
 	void updateTabs();
@@ -113,12 +115,14 @@ public slots:
 	void previousTab() const;
 	void showThumbView(bool show = true);
 	void showViewPort(bool show = true);
+	void showRecentFiles(bool show = true);
 	void showTabs(bool show = true);
 	void pasteImage();
 
 protected:
 	DkViewPort* viewport;
 	DkThumbScrollWidget* thumbScrollWidget;
+	DkRecentFilesWidget* recentFilesWidget;
 
 	QTabBar* tabbar;
 	QVector<DkTabInfo> tabInfos;

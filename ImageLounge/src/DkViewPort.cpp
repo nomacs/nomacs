@@ -43,7 +43,6 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 
 	// cropping
 	cropWidget = new DkCropWidget(QRectF(), this);
-	recentFilesWidget = new DkRecentFilesWidget(this);
 
 	//// thumbnails, metadata
 	//thumbPool = new DkThumbPool(QFileInfo(), this);
@@ -118,7 +117,6 @@ void DkControlWidget::init() {
 	zoomWidget->setContentsMargins(10, 10, 0, 0);
 	//cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	recentFilesWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	spinnerLabel->halfSize();
 	commentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -236,7 +234,6 @@ void DkControlWidget::init() {
 	widgets.resize(widget_end);
 	widgets[hud_widget] = new QWidget(this);
 	widgets[crop_widget] = cropWidget;
-	widgets[recent_files_widget] = recentFilesWidget;
 	lastActiveWidget = widgets[hud_widget];
 
 	// global controller layout
@@ -308,9 +305,6 @@ void DkControlWidget::connectWidgets() {
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 	connect(filePreview, SIGNAL(positionChangeSignal(int)), this, SLOT(changeThumbNailPosition(int)));
-
-	// recent files widget
-	connect(recentFilesWidget, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 
 	// file scroller
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
@@ -452,18 +446,6 @@ void DkControlWidget::showOverview(bool visible) {
 	}
 	else if (!visible && zoomWidget->isVisible()) {
 		zoomWidget->hide();
-	}
-
-}
-
-void DkControlWidget::showRecentFiles(bool visible) {
-
-	if (visible) {
-		recentFilesWidget->setCustomStyle(!viewport->getImage().isNull());
-		switchWidget(widgets[recent_files_widget]);
-	}
-	else {
-		switchWidget();
 	}
 
 }
@@ -1054,19 +1036,6 @@ void DkViewPort::setThumbImage(QImage newImg) {
 	
 	controller->getOverview()->setImage(newImg);
 	controller->stopLabels();
-
-	//// TODO: this is a fast fix
-	//// if this thread uses the static metadata object 
-	//// nomacs crashes when images are loaded fast (2 threads try to access DkMetaData simultaneously)
-	//// currently we need to read the metadata twice (not nice either)
-	//DkImageLoader::imgMetaData.setFileName(loader->getFile());
-
-	//controller->updateRating(DkImageLoader::imgMetaData.getRating());
-
-	//if (controller->getFileInfoLabel()->isVisible()) {
-	//	QString dateString = QString::fromStdString(DkImageLoader::imgMetaData.getExifValue("DateTimeOriginal"));
-	//	controller->getFileInfoLabel()->updateInfo(loader->getFile(), dateString, DkImageLoader::imgMetaData.getRating());
-	//}
 
 	thumbLoaded = true;
 

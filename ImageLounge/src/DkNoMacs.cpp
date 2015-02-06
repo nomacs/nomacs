@@ -234,6 +234,7 @@ void DkNoMacs::init() {
 	connect(centralWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SLOT(showStatusMessage(QString, int)));
 
 	getTabWidget()->getThumbScrollWidget()->registerAction(panelActions[menu_panel_thumbview]);
+	getTabWidget()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 	viewport()->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
 	viewport()->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 	viewport()->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
@@ -242,7 +243,6 @@ void DkNoMacs::init() {
 	viewport()->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	viewport()->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 	viewport()->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
-	viewport()->getController()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 
 	enableMovieActions(false);
 
@@ -817,7 +817,7 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_show_recent]->setCheckable(true);
 	fileActions[menu_file_show_recent]->setChecked(false);
 	fileActions[menu_file_show_recent]->setStatusTip(tr("Show Recent Files and Folders"));
-	connect(fileActions[menu_file_show_recent], SIGNAL(triggered(bool)), vp->getController(), SLOT(showRecentFiles(bool)));
+	connect(fileActions[menu_file_show_recent], SIGNAL(triggered(bool)), centralWidget(), SLOT(showRecentFiles(bool)));
 
 	fileActions[menu_file_reload] = new QAction(tr("&Reload File"), this);
 	fileActions[menu_file_reload]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -3191,7 +3191,7 @@ void DkNoMacs::setContrast(bool contrast) {
 void DkNoMacs::showRecentFiles(bool show) {
 
 	if (DkSettings::app.appMode != DkSettings::mode_frameless && !DkSettings::global.recentFiles.empty())
-		viewport()->getController()->showRecentFiles(show);
+		getTabWidget()->showRecentFiles(show);
 
 }
 

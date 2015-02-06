@@ -206,7 +206,6 @@ public:
 		last_widget = -1,
 		hud_widget,
 		crop_widget,
-		recent_files_widget,
 
 		widget_end
 	};
@@ -260,10 +259,6 @@ public:
 		return cropWidget;
 	}
 
-	DkRecentFilesWidget* getRecentFilesWidget() {
-		return recentFilesWidget;
-	}
-
 	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
 
 	void stopLabels();
@@ -282,7 +277,6 @@ public slots:
 	void showOverview(bool visible);
 	void showHistogram(bool visible);
 	void showCommentWidget(bool visible);
-	void showRecentFiles(bool visible);
 	void switchWidget(QWidget* widget = 0);
 	void changeThumbNailPosition(int pos);
 
@@ -320,7 +314,6 @@ protected:
 
 	DkViewPort* viewport;
 	DkCropWidget* cropWidget;
-	DkRecentFilesWidget* recentFilesWidget;
 
 	DkFilePreview* filePreview;
 	DkMetaDataInfo* metaDataInfo;

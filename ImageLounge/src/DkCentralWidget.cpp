@@ -171,7 +171,6 @@ void DkCentralWidget::createLayout() {
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettings::slideShow.backgroundColor);
 	//thumbScrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
 	thumbScrollWidget->hide();
 
 	tabbar = new QTabBar(this);
@@ -198,6 +197,10 @@ void DkCentralWidget::createLayout() {
 	vbLayout->addWidget(tabbar);
 	vbLayout->addWidget(viewWidget);
 
+	recentFilesWidget = new DkRecentFilesWidget(viewWidget);
+	// TODO: read the desktop size here...
+	recentFilesWidget->setFixedSize(1920, 1080);	// TODO: this number will (hopefully : ) get old - bug for now WHXGA is enough
+	
 	// connections
 	connect(this, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(viewport, SIGNAL(addTabSignal(const QFileInfo&)), this, SLOT(addTab(const QFileInfo&)));
@@ -206,6 +209,9 @@ void DkCentralWidget::createLayout() {
 	connect(tabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	connect(tabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
+
+	// recent files widget
+	connect(recentFilesWidget, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
@@ -268,6 +274,11 @@ DkThumbScrollWidget* DkCentralWidget::getThumbScrollWidget() const {
 	return thumbScrollWidget;
 }
 
+DkRecentFilesWidget* DkCentralWidget::getRecentFilesWidget() const {
+
+	return recentFilesWidget;
+}
+
 void DkCentralWidget::currentTabChanged(int idx) {
 
 	if (idx < 0 && idx >= tabInfos.size())
@@ -285,7 +296,7 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		viewport->unloadImage();
 		viewport->getImageLoader()->clearPath();
 		viewport->setImage(QImage());
-		viewport->getController()->showRecentFiles(true);
+		showRecentFiles(true);
 	}
 
 	switchWidget(tabInfos.at(idx).getMode());
@@ -429,6 +440,8 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
 
 		tabInfos.replace(idx, tabInfo);
 	}
+
+	recentFilesWidget->hide();
 }
 
 QVector<DkTabInfo> DkCentralWidget::getTabs() const {
@@ -478,6 +491,17 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 	}
 }
 
+void DkCentralWidget::showRecentFiles(bool show) {
+
+	if (show) {
+		recentFilesWidget->setCustomStyle(!viewport->getImage().isNull() || thumbScrollWidget->isVisible());
+		recentFilesWidget->show();
+		qDebug() << "recent files size: " << recentFilesWidget->size();
+	}
+	else
+		recentFilesWidget->hide();
+}
+
 void DkCentralWidget::showTabs(bool show) {
 
 	if (show && tabInfos.size() > 1)
@@ -495,6 +519,7 @@ void DkCentralWidget::switchWidget(int widget) {
 	else
 		qDebug() << "Sorry, I cannot switch to widget: " << widget;
 
+	//recentFilesWidget->hide();
 }
 
 void DkCentralWidget::switchWidget(QWidget* widget) {
@@ -507,13 +532,14 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 	else
 		viewLayout->setCurrentWidget(widgets[viewport_widget]);
 
+	recentFilesWidget->hide();
+
 	if (!tabInfos.isEmpty()) {
 		
 		int mode = widget == widgets[viewport_widget] ? DkTabInfo::tab_single_image : DkTabInfo::tab_thumb_preview;
 		tabInfos[tabbar->currentIndex()].setMode(mode);
 		updateTab(tabInfos[tabbar->currentIndex()]);
 	}
-	
 }
 
 int DkCentralWidget::currentViewMode() const {
