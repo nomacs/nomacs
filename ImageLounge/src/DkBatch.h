@@ -26,11 +26,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************************************/
 #pragma once;
 
-#include "DkWidgets.h"
-#include "DkThumbsWidgets.h"
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QWidget>
+#include <QUrl>
+#include <QDir>
+#include <QDialog>
+#pragma warning(pop)		// no warnings from includes - end
 
 // Qt defines
 class QListView;
+class QVBoxLayout;
+class QLabel;
+class QFileInfo;
+class QComboBox;
+class QLineEdit;
+class QSpinBox;
+class QDoubleSpinBox;
+class QPushButton;
+class QGridLayout;
+class QCheckBox;
+class QButtonGroup;
+class QRadioButton;
+class QDialogButtonBox;
+class QProgressBar;
 
 namespace nmc {
 
@@ -53,11 +71,23 @@ fileNameWidget_minus,
 fileNameWidget_end
 };
 
-// from Process.h
+// nomacs defines
 class DkResizeBatch;
 class DkBatchProcessing;
 class DkBatchTransform;
+class DkBatchContent;
+class DkButton;
+class DkImageContainerT;
+class DkThumbScrollWidget;
+class DkImageLoader;
+class DkExplorer;
+class DkDirectoryEdit;
 
+class DkBatchContent {
+public:
+	virtual bool hasUserInput() const = 0;
+	virtual bool requiresUserInput() const = 0;
+};
 
 class DkBatchWidget : public QWidget {
 	Q_OBJECT
@@ -92,13 +122,8 @@ Q_OBJECT
 public:
 	DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	QString getDir() {
-		return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()).absolutePath() : "";
-	};
-
-
-
-	QList<QUrl> getSelectedFiles();
+	QString getDir() const;
+	QList<QUrl> getSelectedFiles() const;
 
 	virtual bool hasUserInput() const {return hUserInput;};
 	virtual bool requiresUserInput() const {return rUserInput;};
@@ -285,7 +310,6 @@ protected:
 	QCheckBox* cbFlipH;
 	QCheckBox* cbFlipV;
 };
-
 
 class DkBatchDialog : public QDialog {
 	Q_OBJECT

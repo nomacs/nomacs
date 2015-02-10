@@ -449,7 +449,7 @@ public slots:
 	void loadFullFile();
 	void loadNextFileFast();
 	void loadPrevFileFast();
-	void loadFileFast(int skipIdx, int rec = 0);
+	void loadFileFast(int skipIdx);
 	void loadFile(int skipIdx);
 	void loadFirst();
 	void loadLast();

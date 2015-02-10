@@ -195,13 +195,12 @@ public:
 
 private slots:
 	void tmpPathButtonPressed();
-	void useTmpPathChanged(int state);
+	void useTmpPathChanged();
 
 private:
 	void init();
 	void createLayout();
 	bool existsDirectory(QString path);
-
 
 	QVBoxLayout* vBoxLayout;
 	DkDirectoryEdit* leTmpPath;
@@ -507,7 +506,7 @@ private slots:
 		emit setToDefaultSignal();
 		emit settingsChanged();
 	};
-	void advancedSettingsChanged(int state);
+	void advancedSettingsChanged();
 
 protected:
 	BorderLayout* borderLayout;

@@ -1538,8 +1538,6 @@ void DkNoMacs::updateAll() {
 
 QWidget* DkNoMacs::getDialogParent() {
 
-	QWidget* w = 0;
-
 	QWidgetList wList = QApplication::topLevelWidgets();
 	for (int idx = 0; idx < wList.size(); idx++) {
 		if (wList[idx]->objectName().contains(QString("DkNoMacs")))
@@ -1715,17 +1713,13 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 		//if (pinchG->changeFlags() == QPinchGesture::ChangeFlag.ScaleFactorChanged) {
 		qDebug() << "scale Factor: " << pinchG->scaleFactor();
 		if (pinchG->scaleFactor() != 0 && vp) {
-			vp->zoom(pinchG->scaleFactor());
+			vp->zoom((float)pinchG->scaleFactor());
 		}
 		else if (pinchG->rotationAngle() != 0 && vp) {
 
-			float angle = pinchG->rotationAngle();
-
-			
+			float angle = (float)pinchG->rotationAngle();
 			qDebug() << "angle: " << angle;
-
 			//vp->rotate(angle);
-
 		}
 	}
 
@@ -1823,7 +1817,7 @@ void DkNoMacs::unsharpMask() {
 #ifdef WITH_OPENCV
 	DkUnsharpDialog* unsharpDialog = new DkUnsharpDialog(this);
 	unsharpDialog->setImage(viewport()->getImage());
-	bool answer = unsharpDialog->exec();
+	int answer = unsharpDialog->exec();
 	if (answer == QDialog::Accepted) {
 		QImage editedImage = unsharpDialog->getImage();
 		viewport()->setEditedImage(editedImage);
@@ -1882,7 +1876,7 @@ void DkNoMacs::enterFullScreen() {
 	//	return;
 	//}
 
-	DkSettings::app.currentAppMode += DkSettings::mode_end*0.5f;
+	DkSettings::app.currentAppMode += qFloor(DkSettings::mode_end*0.5f);
 	if (DkSettings::app.currentAppMode < 0) {
 		qDebug() << "illegal state: " << DkSettings::app.currentAppMode;
 		DkSettings::app.currentAppMode = DkSettings::mode_default;
@@ -1909,7 +1903,7 @@ void DkNoMacs::enterFullScreen() {
 void DkNoMacs::exitFullScreen() {
 
 	if (isFullScreen()) {
-		DkSettings::app.currentAppMode -= DkSettings::mode_end*0.5f;
+		DkSettings::app.currentAppMode -= qFloor(DkSettings::mode_end*0.5f);
 		if (DkSettings::app.currentAppMode < 0) {
 			qDebug() << "illegal state: " << DkSettings::app.currentAppMode;
 			DkSettings::app.currentAppMode = DkSettings::mode_default;
@@ -1933,7 +1927,7 @@ void DkNoMacs::exitFullScreen() {
 		viewport()->setFullScreen(false);
 }
 
-void DkNoMacs::setFrameless(bool frameless) {
+void DkNoMacs::setFrameless(bool) {
 
 	if (!viewport()) 
 		return;
@@ -2030,7 +2024,7 @@ void DkNoMacs::opacityUp() {
 
 void DkNoMacs::changeOpacity(float change) {
 
-	float newO = windowOpacity() + change;
+	float newO = (float)windowOpacity() + change;
 	if (newO > 1) newO = 1.0f;
 	if (newO < 0.1) newO = 0.1f;
 	setWindowOpacity(newO);
@@ -2038,7 +2032,7 @@ void DkNoMacs::changeOpacity(float change) {
 
 void DkNoMacs::animateOpacityDown() {
 
-	float newO = windowOpacity() - 0.03f;
+	float newO = (float)windowOpacity() - 0.03f;
 
 	if (newO < 0.3f) {
 		setWindowOpacity(0.3f);
@@ -2051,7 +2045,7 @@ void DkNoMacs::animateOpacityDown() {
 
 void DkNoMacs::animateOpacityUp() {
 
-	float newO = windowOpacity() + 0.03f;
+	float newO = (float)windowOpacity() + 0.03f;
 
 	if (newO > 1.0f) {
 		setWindowOpacity(1.0f);
@@ -2065,7 +2059,7 @@ void DkNoMacs::animateOpacityUp() {
 // >DIR: diem - why can't we put it in viewport?
 void DkNoMacs::animateChangeOpacity() {
 
-	float newO = windowOpacity();
+	float newO = (float)windowOpacity();
 
 	if (newO >= 1.0f)
 		animateOpacityDown();
@@ -2108,7 +2102,7 @@ void DkNoMacs::lockWindow(bool lock) {
 #endif
 }
 
-void DkNoMacs::newClientConnected(bool connected, bool local) {
+void DkNoMacs::newClientConnected(bool connected, bool) {
 	overlaid = false;
 	// add methods if clients are connected
 
@@ -2508,7 +2502,7 @@ void DkNoMacs::trainFormat() {
 		trainDialog = new DkTrainDialog(this);
 
 	trainDialog->setCurrentFile(viewport()->getImageLoader()->file());
-	bool okPressed = trainDialog->exec();
+	bool okPressed = trainDialog->exec() != 0;
 
 	if (okPressed) {
 		viewport()->getImageLoader()->load(trainDialog->getAcceptedFile());
@@ -2533,10 +2527,9 @@ void DkNoMacs::extractImagesFromArchive() {
 	}
 	else archiveExtractionDialog->setCurrentFile(viewport()->getImageLoader()->file(), false);
 
-	bool okPressed = archiveExtractionDialog->exec();
+	bool okPressed = archiveExtractionDialog->exec() != 0;
 
 	if (okPressed) {
-
 	}
 #endif
 }
@@ -2813,7 +2806,7 @@ void DkNoMacs::resizeImage() {
 	if (imgC) {
 		metaData = imgC->getMetaData();
 		QVector2D res = metaData->getResolution();
-		resizeDialog->setExifDpi(res.x());
+		resizeDialog->setExifDpi((float)res.x());
 	}
 
 	qDebug() << "resize image: " << viewport()->getImage().size();
@@ -2913,7 +2906,7 @@ void DkNoMacs::computeBatch() {
 	
 	batchDialog = new DkBatchDialog(viewport()->getImageLoader()->getDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 	//batchDialog->setInputDir(viewport()->getImageLoader()->getDir().absolutePath());
-	int response = batchDialog->exec();
+	batchDialog->exec();
 	batchDialog->deleteLater();
 }
 
@@ -2932,7 +2925,7 @@ void DkNoMacs::openImgManipulationDialog() {
 	QImage tmpImg = viewport()->getImage();
 	imgManipulationDialog->setImage(&tmpImg);
 
-	bool ok = imgManipulationDialog->exec();
+	bool ok = imgManipulationDialog->exec() != 0;
 
 	if (ok) {
 
@@ -3019,9 +3012,9 @@ void DkNoMacs::printDialog() {
 	//QPrintPreviewDialog* previewDialog = new QPrintPreviewDialog();
 	QImage img = viewport()->getImage();
 	if (!printPreviewDialog)
-		printPreviewDialog = new DkPrintPreviewDialog(img, res.x(), 0, this);
+		printPreviewDialog = new DkPrintPreviewDialog(img, (float)res.x(), 0, this);
 	else
-		printPreviewDialog->setImage(img, res.x());
+		printPreviewDialog->setImage(img, (float)res.x());
 
 	printPreviewDialog->show();
 	printPreviewDialog->updateZoomFactor(); // otherwise the initial zoom factor is wrong
@@ -3233,7 +3226,7 @@ void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 }
 
 // >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)
-bool DkNoMacs::eventFilter(QObject *obj, QEvent *event) {
+bool DkNoMacs::eventFilter(QObject*, QEvent* event) {
 
 	if (event->type() == QEvent::ShortcutOverride) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
@@ -3459,7 +3452,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 		showStatusMessage("", status_time_info);	// hide label
 
 	if (file.exists())
-		showStatusMessage(DkUtils::readableByte(file.size()), status_filesize_info);
+		showStatusMessage(DkUtils::readableByte((float)file.size()), status_filesize_info);
 	else 
 		showStatusMessage("", status_filesize_info);
 
@@ -3582,8 +3575,8 @@ void DkNoMacs::performUpdate() {
 }
 
 void DkNoMacs::updateProgress(qint64 received, qint64 total) {
-	progressDialog->setMaximum(total);
-	progressDialog->setValue(received);
+	progressDialog->setMaximum((int)total);
+	progressDialog->setValue((int)received);
 }
 
 void DkNoMacs::startSetup(QString filePath) {
@@ -3826,7 +3819,7 @@ void DkNoMacs::openPluginManager() {
 		return;
 	}
 
-	bool done = pluginManager->exec();
+	pluginManager->exec();
 	createPluginsMenu();
 #endif // WITH_PLUGINS
 }
@@ -3927,7 +3920,7 @@ void DkNoMacs::runPluginFromShortcut() {
 #endif // WITH_PLUGINS
 }
 
-void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
+void DkNoMacs::closePlugin(bool askForSaving, bool) {
 #ifdef WITH_PLUGINS
 
 	if (currRunningPlugin.isEmpty())
@@ -4595,7 +4588,7 @@ void DkNoMacsFrameless::enableNoImageActions(bool enable) {
 
 }
 
-void DkNoMacsFrameless::updateScreenSize(int screen) {
+void DkNoMacsFrameless::updateScreenSize(int) {
 
 	if (!dw)
 		return;
@@ -4636,7 +4629,7 @@ void DkNoMacsFrameless::exitFullScreen() {
 
 
 // >DIR diem: eating shortcut overrides
-bool DkNoMacsFrameless::eventFilter(QObject *obj, QEvent *event) {
+bool DkNoMacsFrameless::eventFilter(QObject* , QEvent* event) {
 
 	if (event->type() == QEvent::ShortcutOverride) {
 		QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);

@@ -1066,7 +1066,7 @@ void DkCommentTextEdit::paintEvent(QPaintEvent* e) {
 }
 
 // DkCommentWidget --------------------------------------------------------------------
-DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkFadeLabel(parent) {
+DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags /* = 0 */) : DkFadeLabel(parent) {
 
 	textChanged = false;
 	setMaximumSize(220, 150);

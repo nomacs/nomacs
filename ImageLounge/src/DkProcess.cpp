@@ -123,7 +123,6 @@ bool DkResizeBatch::prepareProperties(const QSize& imgSize, QSize& size, float& 
 
 	float sf = 1.0f;
 	QSize normalizedSize = imgSize; 
-	bool transposed = false;
 
 	if (mode == mode_default) {
 		scaleFactor = this->scaleFactor;
@@ -159,7 +158,7 @@ bool DkResizeBatch::prepareProperties(const QSize& imgSize, QSize& size, float& 
 	}
 
 	size.setWidth(qRound(this->scaleFactor));
-	size.setHeight(sf*normalizedSize.height());
+	size.setHeight(qRound(sf*normalizedSize.height()));
 
 	if (normalizedSize != imgSize)
 		size.transpose();

@@ -28,13 +28,10 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QFileInfo>
-#include <QImage>
-#include <QDebug>
-#include <QBuffer>
-#include <QVector2D>
 #include <QSharedPointer>
+#include <QFileInfo>
 #include <QStringList>
+#include <QMap>
 
 #ifdef HAVE_EXIV2_HPP
 #include <exiv2/exiv2.hpp>
@@ -43,6 +40,7 @@
 #include <exiv2/preview.hpp>
 #include <iomanip>
 #endif
+
 #pragma warning(pop)
 
 #pragma warning(disable: 4251)	// TODO: remove
@@ -61,6 +59,11 @@
 #ifndef byte
 typedef unsigned char byte;
 #endif
+
+// Qt defines
+class QFileInfo;
+class QVector2D;
+class QImage;
 
 namespace nmc {
 

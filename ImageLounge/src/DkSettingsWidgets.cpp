@@ -214,7 +214,7 @@ void DkSettingsDialog::initWidgets() {
 
 }
 
-void DkSettingsDialog::advancedSettingsChanged(int state) {
+void DkSettingsDialog::advancedSettingsChanged() {
 
 	DkSettings::app.advancedSettings = cbAdvancedSettings->isChecked();
 
@@ -646,7 +646,6 @@ void DkFileWidget::createLayout() {
 	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
 	//numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
 	QWidget* checkBoxWidget = new QWidget(this);
-	QGridLayout* vbCheckBoxLayout = new QGridLayout(checkBoxWidget);
 	cbWrapImages = new QCheckBox(tr("Loop Images"));
 	cbAskToSaveDeletedFiles = new QCheckBox(tr("Ask to Save Deleted Files"));
 	cbAskToSaveDeletedFiles->setToolTip(tr("If checked, nomacs asks if you want to save files that are deleted while displaying."));
@@ -687,7 +686,7 @@ void DkFileWidget::tmpPathButtonPressed() {
 	leTmpPath->setText(tmpPath);
 }
 
-void DkFileWidget::useTmpPathChanged(int state) {
+void DkFileWidget::useTmpPathChanged() {
 	if (cbUseTmpPath->isChecked()) {
 		//lineEditChanged(tmpPath);
 		leTmpPath->setDisabled(false);

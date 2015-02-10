@@ -507,7 +507,7 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 
 }
 
-void DkThumbsSaver::thumbLoaded(bool loaded) {
+void DkThumbsSaver::thumbLoaded(bool) {
 
 	numSaved++;
 	emit numFilesSignal(numSaved);
@@ -706,7 +706,7 @@ void DkExplorer::setEditable(bool editable) {
 	fileModel->setReadOnly(!editable);	
 }
 
-void DkExplorer::closeEvent(QCloseEvent* event) {
+void DkExplorer::closeEvent(QCloseEvent*) {
 
 	writeSettings();
 }
@@ -832,7 +832,7 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 		viewRect = getScaledImageMatrix().mapRect(viewRect);
 		QPointF currentViewPoint = viewRect.center();
 
-		float panningSpeed = -(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
+		float panningSpeed = (float)-(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
 
 		QPointF cPos = event->pos()-QPointF(lm, tm);
 		QPointF dxy = (cPos - currentViewPoint)/worldMatrix->m11()*panningSpeed;
@@ -849,7 +849,7 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() != Qt::LeftButton)
 		return;
 
-	float panningSpeed = -(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
+	float panningSpeed = (float)-(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
 
 	QPointF cPos = event->pos();
 	QPointF dxy = (cPos - posGrab)/worldMatrix->m11()*panningSpeed;
@@ -927,7 +927,7 @@ QTransform DkOverview::getScaledImageMatrix() {
 
 	// the image resizes as we zoom
 	QRectF imgRect = QRectF(QPoint(lm, tm), img.size());
-	float ratioImg = imgRect.width()/imgRect.height();
+	float ratioImg = (float)(imgRect.width()/imgRect.height());
 	float ratioWin = (float)(iSize.width())/(float)(iSize.height());
 
 	QTransform imgMatrix;
@@ -935,7 +935,7 @@ QTransform DkOverview::getScaledImageMatrix() {
 	if (imgRect.width() == 0 || imgRect.height() == 0)
 		s = 1.0f;
 	else
-		s = (ratioImg > ratioWin) ? (float)iSize.width()/imgRect.width() : (float)iSize.height()/imgRect.height();
+		s = (ratioImg > ratioWin) ? (float)(iSize.width()/imgRect.width()) : (float)(iSize.height()/imgRect.height());
 
 	imgMatrix.scale(s, s);
 
@@ -1002,13 +1002,13 @@ void DkZoomWidget::createLayout() {
 }
 
 void DkZoomWidget::on_sbZoom_valueChanged(double zoomLevel) {
-	updateZoom(zoomLevel);
+	updateZoom((float)zoomLevel);
 	autoHide = false;
-	emit zoomSignal(zoomLevel/100.0f);
+	emit zoomSignal((float)zoomLevel/100.0f);
 }
 
 void DkZoomWidget::on_slZoom_valueChanged(int zoomLevel) {
-	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
+	float level = (zoomLevel > 50) ? (zoomLevel-50.0f)/50.0f * (float)sbZoom->maximum() + 200.0f : zoomLevel*4.0f;
 	if (level < 0.2f) level = 0.2f;
 	autoHide = false;
 	updateZoom(level);
@@ -1389,7 +1389,7 @@ void DkButton::setFixedSize(QSize size) {
 	this->setMaximumSize(size);
 }
 
-void DkButton::paintEvent(QPaintEvent *event) {
+void DkButton::paintEvent(QPaintEvent*) {
 
  	QPainter painter(this);
 	QPoint offset;
@@ -1406,7 +1406,7 @@ void DkButton::paintEvent(QPaintEvent *event) {
 
 	if (!mySize.isEmpty()) {
 		
-		offset = QPoint((float)(size().width()-mySize.width())*0.5f, (float)(size().height()-mySize.height())*0.5f);
+		offset = QPoint(qRound((float)(size().width()-mySize.width())*0.5f), qRound((float)(size().height()-mySize.height())*0.5f));
 		s = mySize;
 	}
 	else
@@ -1438,19 +1438,19 @@ QPixmap DkButton::createSelectedEffect(QPixmap* pm) {
 	return DkImage::colorizePixmap(*pm, DkSettings::display.highlightColor, 1.0f);
 }
 
-void DkButton::focusInEvent(QFocusEvent * event) {
+void DkButton::focusInEvent(QFocusEvent*) {
 	mouseOver = true;
 }
 
-void DkButton::focusOutEvent(QFocusEvent * event) {
+void DkButton::focusOutEvent(QFocusEvent*) {
 	mouseOver = false;
 }
 
-void DkButton::enterEvent(QEvent *event) {
+void DkButton::enterEvent(QEvent*) {
 	mouseOver = true;
 }
 
-void DkButton::leaveEvent(QEvent *event) {
+void DkButton::leaveEvent(QEvent*) {
 	mouseOver = false;
 }
 
@@ -1462,8 +1462,6 @@ DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags)
 	init();
 
 	int iconSize = 16;
-	int lastStarRight = 0;
-	int timeToDisplay = 3000;
 
 	layout = new QBoxLayout(QBoxLayout::LeftToRight);
 	layout->setContentsMargins(0,0,0,0);
@@ -1711,7 +1709,7 @@ void DkPlayer::init() {
 
 	// slide show
 	int timeToDisplayPlayer = 3000;
-	timeToDisplay = DkSettings::slideShow.time*1000;
+	timeToDisplay = qRound(DkSettings::slideShow.time*1000);
 	playing = false;
 	displayTimer = new QTimer(this);
 	displayTimer->setInterval(timeToDisplay);
@@ -1767,8 +1765,8 @@ void DkPlayer::resizeEvent(QResizeEvent *event) {
 	// always preserve the player's aspect ratio
 	QSizeF s = event->size();
 	QSizeF ms = maximumSize();
-	float aRatio = s.width()/s.height();
-	float amRatio = ms.width()/ms.height();
+	float aRatio = (float)(s.width()/s.height());
+	float amRatio = (float)(ms.width()/ms.height());
 	
 	if (aRatio != amRatio && s.width() / amRatio <= s.height()) {
 		s.setHeight(s.width() / amRatio);
@@ -1924,7 +1922,7 @@ void DkTransformRect::mouseReleaseEvent(QMouseEvent *event) {
 	QWidget::mouseReleaseEvent(event);
 }
 
-void DkTransformRect::enterEvent(QEvent *event) {
+void DkTransformRect::enterEvent(QEvent*) {
 
 	if (rect)
 		setCursor(rect->cpCursor(parentIdx));
@@ -1990,18 +1988,18 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 	QRectF imgViewRect(*imgRect);
 	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
 
-	float x = pos.x();
-	float y = pos.y();
+	float x = (float)pos.x();
+	float y = (float)pos.y();
 
 	if (x < imgViewRect.left())
-		x = imgViewRect.left();
+		x = (float)imgViewRect.left();
 	if (x > imgViewRect.right())
-		x = imgViewRect.right();
+		x = (float)imgViewRect.right();
 
 	if (y < imgViewRect.top())
-		y = imgViewRect.top();
+		y = (float)imgViewRect.top();
 	if (y > imgViewRect.bottom())
-		y = imgViewRect.bottom();
+		y = (float)imgViewRect.bottom();
 
 	return QPointF(x,y);		// round
 }
@@ -2139,7 +2137,7 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 	DkVector lp = p[1]-p[0];	// parallel to drawing
 	DkVector l9 = p[3]-p[0];	// perpendicular to drawing
 
-	int nLines = (paintMode == DkCropToolBar::rule_of_thirds) ? 3 : l9.norm()/20;
+	int nLines = (paintMode == DkCropToolBar::rule_of_thirds) ? 3 : qRound(l9.norm()/20.0f);
 	DkVector offset = l9;
 	offset.normalize();
 	offset *= l9.norm()/nLines;
@@ -2158,7 +2156,7 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 	lp = p[3]-p[0];	// parallel to drawing
 	l9 = p[1]-p[0];	// perpendicular to drawing
 
-	nLines = (paintMode == DkCropToolBar::rule_of_thirds) ? 3 : l9.norm()/20;
+	nLines = (paintMode == DkCropToolBar::rule_of_thirds) ? 3 : qRound(l9.norm()/20);
 	offset = l9;
 	offset.normalize();
 	offset *= l9.norm()/nLines;
@@ -2355,7 +2353,7 @@ void DkEditableRect::applyTransform() {
 	// Cropping tool fix start
 
 	// Check the order or vertexes
-	float signedArea = (p[1].x() - p[0].x()) * (p[2].y() - p[0].y()) - (p[1].y()- p[0].y()) * (p[2].x() - p[0].x());
+	float signedArea = (float)((p[1].x() - p[0].x()) * (p[2].y() - p[0].y()) - (p[1].y()- p[0].y()) * (p[2].x() - p[0].x()));
 	// If it's wrong, just change it
 	if (signedArea > 0) {
 		QPointF tmp = p[1];
@@ -2405,7 +2403,7 @@ void DkEditableRect::setPaintHint(int paintMode /* = DkCropToolBar::no_guide */)
 	update();
 }
 
-void DkEditableRect::setShadingHint(bool invert) {
+void DkEditableRect::setShadingHint(bool) {
 
 	QColor col = brush.color();
 	col = QColor(255-col.red(), 255-col.green(), 255-col.blue(), col.alpha());
@@ -2670,7 +2668,7 @@ DkHistogram::~DkHistogram() {
 /**
  * Paints the image histogram
  **/
-void DkHistogram::paintEvent(QPaintEvent* event) {
+void DkHistogram::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
 	painter.setPen(QColor(200, 200, 200));
@@ -2908,7 +2906,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 
 	if (event->buttons() == Qt::LeftButton) {
 		
-		float cp = height() - event->pos().y();
+		float cp = (float)(height() - event->pos().y());
 		
 		if (cp > 0) {
 			scaleFactor = height() / cp;
@@ -3400,7 +3398,7 @@ DkDirectoryEdit::DkDirectoryEdit(QWidget* parent /* = 0 */) : QLineEdit(parent) 
 	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
 }
 
-DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) {
+DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) : QLineEdit(parent) {
 	setObjectName("DkWarningEdit");
 	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
 	setText(content);

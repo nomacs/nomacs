@@ -42,7 +42,6 @@
 #pragma warning(disable: 4251)	// TODO: remove
 #endif
 
-//#include <libraw/libraw.h>
 #ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
 #include "opencv/cv.h"
 #else

@@ -28,32 +28,6 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QWidget>
-#include <QImageWriter>
-#include <QFileSystemWatcher>
-#include <QFileInfo>
-#include <QFile>
-#include <QSettings>
-#include <QImageReader>
-#include <QDir>
-#include <QThread>
-#include <QBuffer>
-#include <QStringBuilder>
-#include <QDebug>
-#include <QMutex>
-#include <QFileIconProvider>
-#include <QStringList>
-#include <QMessageBox>
-#include <QDirIterator>
-#include <QProgressDialog>
-#include <QReadLocker>
-#include <QWriteLocker>
-#include <QReadWriteLock>
-#include <QTimer>
-#include <QMovie>
-#include <QByteArray>
-#include <QCoreApplication>
-#include <QApplication>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -96,18 +70,13 @@ using namespace cv;
 #endif
 #endif
 
-// my classes
-//#include "DkNoMacs.h"
-#include "DkImageStorage.h"
-#include "DkBasicLoader.h"
-#include "DkTimer.h"
-#include "DkSettings.h"
-#include "DkThumbs.h"
-#include "DkMetaData.h"
-#include "DkBasicLoader.h"
-#include "DkImageContainer.h"
-#include "DkMessageBox.h"
+// Qt defines
+class QFileSystemWatcher;
 
+// my classes
+#include "DkBasicLoader.h"
+#include "DkMetaData.h"
+#include "DkImageContainer.h"
 
 #ifdef Q_WS_X11
 	typedef  unsigned char byte;
@@ -243,7 +212,7 @@ protected:
 	bool timerBlockedUpdate;
 	QDir dir;
 	QDir saveDir;
-	QFileSystemWatcher *dirWatcher;
+	QFileSystemWatcher* dirWatcher;
 	QStringList subFolders;
 	QVector<QSharedPointer<DkImageContainerT > > images;
 	QSharedPointer<DkImageContainerT > currentImage;

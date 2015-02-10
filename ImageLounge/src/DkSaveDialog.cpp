@@ -287,7 +287,7 @@ void DkCompressDialog::drawPreview() {
 		buffer.open(QIODevice::ReadWrite);
 		newImg.save(&buffer, "JPG", slider->value());
 		newImg.loadFromData(ba, "JPG");
-		updateFileSizeLabel(ba.size(), origImg.size());
+		updateFileSizeLabel((float)ba.size(), origImg.size());
 	}
 	else if (dialogMode == j2k_dialog) {
 		// pre-compute the jpg compression
@@ -296,7 +296,7 @@ void DkCompressDialog::drawPreview() {
 		buffer.open(QIODevice::ReadWrite);
 		newImg.save(&buffer, "J2K", slider->value());
 		newImg.loadFromData(ba, "J2K");
-		updateFileSizeLabel(ba.size(), origImg.size());
+		updateFileSizeLabel((float)ba.size(), origImg.size());
 		qDebug() << "using j2k...";
 	}
 	else if (dialogMode == webp_dialog && getCompression() != -1) {
@@ -307,7 +307,7 @@ void DkCompressDialog::drawPreview() {
 		qDebug() << "webP buffer size: " << buffer->size();
 		loader.loadWebPFile(QFileInfo(), buffer);
 		newImg = loader.image();
-		updateFileSizeLabel(buffer->size(), origImg.size());
+		updateFileSizeLabel((float)buffer->size(), origImg.size());
 	}
 	else if (dialogMode == web_dialog) {
 
@@ -322,7 +322,7 @@ void DkCompressDialog::drawPreview() {
 			buffer.open(QIODevice::ReadWrite);
 			newImg.save(&buffer, "JPG", getCompression());
 			newImg.loadFromData(ba, "JPG");
-			updateFileSizeLabel(ba.size(), origImg.size(), factor);
+			updateFileSizeLabel((float)ba.size(), origImg.size(), factor);
 		}
 		else
 			updateFileSizeLabel();
@@ -350,7 +350,7 @@ void DkCompressDialog::updateFileSizeLabel(float bufferSize, QSize bufferImgSize
 	if (factor == -1.0f)
 		factor = 1.0f;
 
-	float depth = (dialogMode == jpg_dialog || dialogMode == j2k_dialog || (dialogMode == web_dialog && hasAlpha)) ? 24 : img->depth();	// jpg uses always 24 bit
+	float depth = (dialogMode == jpg_dialog || dialogMode == j2k_dialog || (dialogMode == web_dialog && hasAlpha)) ? 24.0f : (float)img->depth();	// jpg uses always 24 bit
 	
 	float rawBufferSize = bufferImgSize.width()*bufferImgSize.height()*depth/8.0f;
 	float rawImgSize = factor*(img->width()*img->height()*depth/8.0f);

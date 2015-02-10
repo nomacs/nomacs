@@ -25,13 +25,17 @@
 
  *******************************************************************************************************/
 
+#include "DkMetaData.h"
+#include "DkImage.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTranslator>
 #include <QObject>
+#include <QImage>
+#include <QDebug>
+#include <QBuffer>
+#include <QVector2D>
 #pragma warning(pop)		// no warnings from includes - end
-
-#include "DkMetaData.h"
-#include "DkImage.h"
 
 namespace nmc {
 
@@ -1216,7 +1220,7 @@ QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) 
 		// if exposure time is less than a second -> compute the gcd for nice values (1/500 instead of 2/1000)
 		if (nom <= denom) {
 			int gcd = DkMath::gcd(denom, nom);
-			value = QString::number(nom/gcd) % QString("/") % QString::number(denom/gcd);
+			value = QString::number(nom/gcd) + QString("/") + QString::number(denom/gcd);
 		}
 		else
 			value = QString::fromStdString(DkUtils::stringify((float)nom/(float)denom,1));

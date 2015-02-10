@@ -37,6 +37,7 @@
 #include <QImageReader>
 #include <QImageWriter>
 #include <QNetworkReply>
+#include <QBuffer>
 
 #include <qmath.h>
 #pragma warning(pop)

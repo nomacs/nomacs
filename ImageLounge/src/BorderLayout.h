@@ -41,8 +41,6 @@
  #ifndef BORDERLAYOUT_H
  #define BORDERLAYOUT_H
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#pragma warning(pop)		// no warnings from includes - end
 #pragma warning(disable: 4251)	// TODO: remove
 
 #ifndef DllExport

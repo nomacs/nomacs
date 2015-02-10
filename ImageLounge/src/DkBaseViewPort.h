@@ -38,7 +38,6 @@
 #endif
 
 #pragma warning(pop)	// no warnings from includes - end
-
 #pragma warning(disable: 4251)	// TODO: remove
 
 #include <float.h>
@@ -54,8 +53,6 @@
 #define DllExport
 #endif
 #endif
-
-// Qt class definitions
 
 namespace nmc {
 

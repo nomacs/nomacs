@@ -28,9 +28,10 @@
 #include "DkBatch.h"
 #include "DkProcess.h"
 #include "DkDialog.h"
+#include "DkWidgets.h"
+#include "DkThumbsWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QListView>
@@ -198,8 +199,12 @@ void DkFileSelection::browse() {
 	setDir(QDir(dirName));
 }
 
+QString DkFileSelection::getDir() const {
 
-QList<QUrl> DkFileSelection::getSelectedFiles() {
+	return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()).absolutePath() : "";
+}
+
+QList<QUrl> DkFileSelection::getSelectedFiles() const {
 	return thumbScrollWidget->getThumbWidget()->getSelectedUrls();
 }
 

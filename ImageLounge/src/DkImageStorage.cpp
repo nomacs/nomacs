@@ -388,7 +388,7 @@ bool DkImage::normImage(QImage& img) {
 			if (hasAlpha && cIdx % 4 == 3)
 				continue;
 
-			*ptr = qRound(255.0f*(*ptr-minVal)/(maxVal-minVal));
+			*ptr = (uchar)qRound(255.0f*(*ptr-minVal)/(maxVal-minVal));
 		}
 		
 		ptr += pad;
@@ -509,7 +509,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 
 			// don't check values - speed (but you see under-/overflows anyway)
 			if (!ignoreR && *ptr < maxR)
-				*ptr = qRound(255.0f*((float)*ptr-minR)/(maxR-minR));
+				*ptr = (uchar)qRound(255.0f*((float)*ptr-minR)/(maxR-minR));
 			else if (!ignoreR)
 				*ptr = 255;
 
@@ -517,7 +517,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 			cIdx++;
 
 			if (!ignoreG && *ptr < maxG)
-				*ptr = qRound(255.0f*((float)*ptr-minG)/(maxG-minG));
+				*ptr = (uchar)qRound(255.0f*((float)*ptr-minG)/(maxG-minG));
 			else if (!ignoreG)
 				*ptr = 255;
 
@@ -525,7 +525,7 @@ bool DkImage::autoAdjustImage(QImage& img) {
 			cIdx++;
 
 			if (!ignoreB && *ptr < maxB)
-				*ptr = qRound(255.0f*((float)*ptr-minB)/(maxB-minB));
+				*ptr = (uchar)qRound(255.0f*((float)*ptr-minB)/(maxB-minB));
 			else if (!ignoreB)
 				*ptr = 255;
 			ptr++;

@@ -479,7 +479,7 @@ Mat DkImageManipulationWidget::createMatLut16() {
 	unsigned short *ptrU;
 	for(int i = 0; i < 3; i++) {
 		ptrU = lut.ptr<unsigned short>(i);
-		for (int j = 0; j < 65536; j++) ptrU[j] = j;
+		for (int j = 0; j < 65536; j++) ptrU[j] = (unsigned short)j;
 	}
 
 	return lut;

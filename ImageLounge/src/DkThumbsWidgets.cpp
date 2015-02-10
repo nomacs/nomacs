@@ -75,8 +75,9 @@ void DkFilePreview::init() {
 	moveImageTimer->setInterval(5);	// reduce cpu utilization
 	connect(moveImageTimer, SIGNAL(timeout()), this, SLOT(moveImages()));
 
-	leftGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0)) : QLinearGradient(QPoint(0, 0), QPoint(0, borderTrigger));
-	rightGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(width()-borderTrigger, 0), QPoint(width(), 0)) : QLinearGradient(QPoint(0, height()-borderTrigger), QPoint(0, height()));
+	int borderTriggerI = qRound(borderTrigger);
+	leftGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(0, 0), QPoint(borderTriggerI, 0)) : QLinearGradient(QPoint(0, 0), QPoint(0, borderTriggerI));
+	rightGradient = (orientation == Qt::Horizontal) ? QLinearGradient(QPoint(width()-borderTriggerI, 0), QPoint(width(), 0)) : QLinearGradient(QPoint(0, height()-borderTriggerI), QPoint(0, height()));
 	leftGradient.setColorAt(1, Qt::white);
 	leftGradient.setColorAt(0, Qt::black);
 	rightGradient.setColorAt(1, Qt::black);
@@ -113,8 +114,9 @@ void DkFilePreview::initOrientations() {
 		setMaximumSize(QWIDGETSIZE_MAX, minHeight);
 		setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
 		borderTrigger = (float)width()*winPercent;
-		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTrigger, 0));
-		rightGradient = QLinearGradient(QPoint(width()-borderTrigger, 0), QPoint(width(), 0));
+		int borderTriggerI = qRound(borderTrigger);
+		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(borderTriggerI, 0));
+		rightGradient = QLinearGradient(QPoint(width()-borderTriggerI, 0), QPoint(width(), 0));
 	}
 	else {
 
@@ -122,8 +124,9 @@ void DkFilePreview::initOrientations() {
 		setMaximumSize(minHeight, QWIDGETSIZE_MAX);
 		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 		borderTrigger = (float)height()*winPercent;
-		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(0, borderTrigger));
-		rightGradient = QLinearGradient(QPoint(0, height()-borderTrigger), QPoint(0, height()));
+		int borderTriggerI = qRound(borderTrigger);
+		leftGradient = QLinearGradient(QPoint(0, 0), QPoint(0, borderTriggerI));
+		rightGradient = QLinearGradient(QPoint(0, height()-borderTriggerI), QPoint(0, height()));
 	}
 
 	leftGradient.setColorAt(1, Qt::white);
@@ -185,7 +188,7 @@ void DkFilePreview::createContextMenu() {
 
 
 
-void DkFilePreview::paintEvent(QPaintEvent* event) {
+void DkFilePreview::paintEvent(QPaintEvent*) {
 
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
@@ -352,7 +355,7 @@ void DkFilePreview::drawNoImgEffect(QPainter* painter, const QRectF& r) {
 void DkFilePreview::drawSelectedEffect(QPainter* painter, const QRectF& r) {
 
 	QBrush oldBrush = painter->brush();
-	float oldOp = painter->opacity();
+	float oldOp = (float)painter->opacity();
 	
 	// drawing
 	painter->setOpacity(0.4);
@@ -368,11 +371,11 @@ void DkFilePreview::drawCurrentImgEffect(QPainter* painter, const QRectF& r) {
 
 	QPen oldPen = painter->pen();
 	QBrush oldBrush = painter->brush();
-	float oldOp = painter->opacity();
+	float oldOp = (float)painter->opacity();
 
 	// draw
 	QRectF cr = r;
-	cr.setSize(QSize(cr.width()+1, cr.height()+1));
+	cr.setSize(QSize((int)cr.width()+1, (int)cr.height()+1));
 	cr.moveCenter(cr.center() + QPointF(-1,-1));
 
 	QPen cPen(DkSettings::display.highlightColor, 1);
@@ -382,7 +385,7 @@ void DkFilePreview::drawCurrentImgEffect(QPainter* painter, const QRectF& r) {
 	painter->drawRect(cr);
 
 	painter->setOpacity(0.5);
-	cr.setSize(QSize(cr.width()+2, cr.height()+2));
+	cr.setSize(QSize((int)cr.width()+2, (int)cr.height()+2));
 	cr.moveCenter(cr.center() + QPointF(-1,-1));
 	painter->drawRect(cr);
 
@@ -492,8 +495,9 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 
 	// now update...
 	borderTrigger = (orientation == Qt::Horizontal) ? (float)width()*winPercent : (float)height()*winPercent;
-	leftGradient.setFinalStop((orientation == Qt::Horizontal) ? QPoint(borderTrigger, 0) : QPoint(0, borderTrigger));
-	rightGradient.setStart((orientation == Qt::Horizontal) ? QPoint(width()-borderTrigger, 0) : QPoint(0, height()-borderTrigger));
+	int borderTriggerI = qRound(borderTrigger);
+	leftGradient.setFinalStop((orientation == Qt::Horizontal) ? QPoint(borderTriggerI, 0) : QPoint(0, borderTriggerI));
+	rightGradient.setStart((orientation == Qt::Horizontal) ? QPoint(width()-borderTriggerI, 0) : QPoint(0, height()-borderTriggerI));
 	rightGradient.setFinalStop((orientation == Qt::Horizontal) ?  QPoint(width(), 0) : QPoint(0, height()));
 
 	qDebug() << "file preview size: " << event->size();
@@ -512,18 +516,18 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	if (mouseTrace < 21) {
-		mouseTrace += fabs(QPointF(lastMousePos - event->pos()).manhattanLength());
+		mouseTrace += qRound(fabs(QPointF(lastMousePos - event->pos()).manhattanLength()));
 		return;
 	}
 
-	float eventPos = orientation == Qt::Horizontal ? event->pos().x() : event->pos().y();
-	float lastMousePosC = orientation == Qt::Horizontal ? lastMousePos.x() : lastMousePos.y();
+	float eventPos = orientation == Qt::Horizontal ? (float)event->pos().x() : (float)event->pos().y();
+	float lastMousePosC = orientation == Qt::Horizontal ? (float)lastMousePos.x() : (float)lastMousePos.y();
 	int limit = orientation == Qt::Horizontal ? width() : height();
 
 	if (event->buttons() == Qt::MiddleButton) {
 
-		float enterPosC = orientation == Qt::Horizontal ? enterPos.x() : enterPos.y();
-		float dx = std::fabs((float)(enterPosC - eventPos))*0.015;
+		float enterPosC = orientation == Qt::Horizontal ? (float)enterPos.x() : (float)enterPos.y();
+		float dx = std::fabs((float)(enterPosC - eventPos))*0.015f;
 		dx = std::exp(dx);
 
 		if (enterPosC - eventPos < 0)
@@ -533,10 +537,10 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 		return;
 	}
 
-	int mouseDir = eventPos - lastMousePosC;
+	int mouseDir = qRound(eventPos - lastMousePosC);
 
 	if (event->buttons() == Qt::LeftButton) {
-		currentDx = mouseDir;
+		currentDx = (float)mouseDir;
 		lastMousePos = event->pos();
 		selected = -1;
 		setCursor(Qt::ClosedHandCursor);
@@ -547,11 +551,11 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 
 	unsetCursor();
 
-	int ndx = limit - eventPos;
-	int pdx = eventPos;
+	int ndx = limit - qRound(eventPos);
+	int pdx = qRound(eventPos);
 
 	bool left = pdx < ndx;
-	float dx = (left) ? pdx : ndx;
+	float dx = (left) ? (float)pdx : (float)ndx;
 
 	if (dx < borderTrigger && (mouseDir < 0 && left || mouseDir > 0 && !left)) {
 		dx = std::exp((borderTrigger - dx)/borderTrigger*3);
@@ -681,7 +685,7 @@ void DkFilePreview::wheelEvent(QWheelEvent *event) {
 	}
 }
 
-void DkFilePreview::leaveEvent(QEvent *event) {
+void DkFilePreview::leaveEvent(QEvent*) {
 
 	selected = -1;
 	if (!scrollToCurrentImage) {
@@ -708,7 +712,7 @@ void DkFilePreview::newPosition() {
 		return;
 
 	int pos = 0;
-	Qt::Orientation orient;
+	Qt::Orientation orient = Qt::Horizontal;
 
 	if (sender == contextMenuActions[cm_pos_west]) {
 		pos = cm_pos_west;
@@ -754,7 +758,7 @@ void DkFilePreview::moveImages() {
 	}
 
 	int limit = orientation == Qt::Horizontal ? width() : height();
-	float center = orientation == Qt::Horizontal ? newFileRect.center().x() : newFileRect.center().y();
+	float center = orientation == Qt::Horizontal ? (float)newFileRect.center().x() : (float)newFileRect.center().y();
 
 	if (scrollToCurrentImage) {
 		float cDist = limit/2.0f - center;
@@ -779,8 +783,8 @@ void DkFilePreview::moveImages() {
 			isPainted = false;
 	}
 
-	float translation = orientation == Qt::Horizontal ? worldMatrix.dx() : worldMatrix.dy();
-	float bufferPos = orientation == Qt::Horizontal ? bufferDim.right() : bufferDim.bottom();
+	float translation	= orientation == Qt::Horizontal ? (float)worldMatrix.dx() : (float)worldMatrix.dy();
+	float bufferPos		= orientation == Qt::Horizontal ? (float)bufferDim.right() : (float)bufferDim.bottom();
 
 	// do not scroll out of the thumbs
 	if (translation >= limit*0.5 && currentDx > 0 || translation <= -(bufferPos-limit*0.5+xOffset) && currentDx < 0)
@@ -788,9 +792,9 @@ void DkFilePreview::moveImages() {
 
 	// set the last step to match the center of the screen...	(nicer if user scrolls very fast)
 	if (translation < limit*0.5 && currentDx > 0 && translation+currentDx > limit*0.5 && currentDx > 0)
-		currentDx = limit*0.5-translation;
+		currentDx = limit*0.5f-translation;
 	else if (translation > -(bufferPos-limit*0.5+xOffset) && translation+currentDx <= -(bufferPos-limit*0.5+xOffset) && currentDx < 0)
-		currentDx = -(bufferPos-limit*0.5+xOffset+worldMatrix.dx());
+		currentDx = -(bufferPos-limit*0.5f+xOffset+(float)worldMatrix.dx());
 
 	//qDebug() << "currentDx: " << currentDx;
 	if (orientation == Qt::Horizontal)
@@ -1043,14 +1047,14 @@ void DkThumbLabel::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 	}
 }
 
-void DkThumbLabel::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+void DkThumbLabel::hoverEnterEvent(QGraphicsSceneHoverEvent*) {
 
 	isHovered = true;
 	emit showFileSignal(thumb->getFile());
 	update();
 }
 
-void DkThumbLabel::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+void DkThumbLabel::hoverLeaveEvent(QGraphicsSceneHoverEvent*) {
 
 	isHovered = false;
 	emit showFileSignal(QFileInfo());
@@ -1169,14 +1173,10 @@ void DkThumbScene::updateLayout() {
 	if (!views().empty())
 		pSize = QSize(views().first()->viewport()->size());
 
-	int oldNumCols = numCols;
-	int oldNumRows = numRows;
-
 	xOffset = qCeil(DkSettings::display.thumbPreviewSize*0.1f);
 	numCols = qMax(qFloor(((float)pSize.width()-xOffset)/(DkSettings::display.thumbPreviewSize + xOffset)), 1);
 	numCols = qMin(thumbLabels.size(), numCols);
 	numRows = qCeil((float)thumbLabels.size()/numCols);
-	int rIdx = 0;
 
 	qDebug() << "num rows x num cols: " << numCols*numRows;
 	qDebug() << " thumb labels size: " << thumbLabels.size();
@@ -1244,13 +1244,6 @@ void DkThumbScene::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thum
 void DkThumbScene::updateThumbLabels() {
 
 	qDebug() << "updating thumb labels...";
-
-	QWidget* p = reinterpret_cast<QWidget*>(parent());
-	
-	// TODO: markus - think about this when migrating the ThumbScene to tabs
-	//if (p && !p->isVisible())		// save some memory & give us speed (I feel the need the need for speed)
-	//	return;
-	// TODO: uncomment & fix
 
 	DkTimer dt;
 
@@ -1338,7 +1331,7 @@ void DkThumbScene::resizeThumbs(float dx) {
 	if (dx < 0)
 		dx += 2.0f;
 
-	int newSize = DkSettings::display.thumbPreviewSize * dx;
+	int newSize = qRound(DkSettings::display.thumbPreviewSize * dx);
 	qDebug() << "delta: " << dx;
 	qDebug() << "newsize: " << newSize;
 
@@ -1428,7 +1421,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 
 	if (event->buttons() == Qt::LeftButton) {
 
-		int dist = QPointF(event->pos()-mousePos).manhattanLength();
+		int dist = qRound(QPointF(event->pos()-mousePos).manhattanLength());
 
 		if (dist > QApplication::startDragDistance()) {
 
@@ -1440,7 +1433,7 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 				mimeData->setUrls(urls);
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
-				Qt::DropAction dropAction = drag->exec(Qt::CopyAction);
+				drag->exec(Qt::CopyAction);
 			}
 		}
 	}

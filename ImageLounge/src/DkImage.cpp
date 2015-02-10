@@ -27,9 +27,57 @@
 
 #include "DkImage.h"
 #include "DkNoMacs.h"
+#include "DkMessageBox.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QWidget>
+#include <QImageWriter>
+#include <QFileSystemWatcher>
+#include <QFileInfo>
+#include <QFile>
+#include <QSettings>
+#include <QImageReader>
+#include <QDir>
+#include <QThread>
+#include <QBuffer>
+#include <QStringBuilder>
+#include <QDebug>
+#include <QMutex>
+#include <QFileIconProvider>
+#include <QStringList>
+#include <QMessageBox>
+#include <QDirIterator>
+#include <QProgressDialog>
+#include <QReadLocker>
+#include <QWriteLocker>
+#include <QReadWriteLock>
+#include <QTimer>
+#include <QMovie>
+#include <QByteArray>
+#include <QCoreApplication>
+#include <QApplication>
 #include <QPluginLoader>
 #include <qmath.h>
+
+// quazip
+#ifdef WITH_QUAZIP
+#include <quazip/JlCompress.h>
+#endif
+
+// opencv
+#ifdef WITH_OPENCV
+
+#ifdef WIN32
+#pragma warning(disable: 4996)
+#endif
+
+#ifdef WITH_LIBRAW
+#include <libraw/libraw.h>
+#endif
+
+#endif 
+
+#pragma warning(pop)	// no warnings from includes - end
 
 namespace nmc {
 
