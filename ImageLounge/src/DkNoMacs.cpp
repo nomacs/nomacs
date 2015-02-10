@@ -226,7 +226,6 @@ void DkNoMacs::init() {
 
 	connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
 	connect(viewport()->getImageLoader(), SIGNAL(imageHasGPSSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-	connect(viewport()->getImageLoader(), SIGNAL(folderFiltersChanged(QStringList)), this, SLOT(updateFilterState(QStringList)));
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
 	connect(viewport()->getImageLoader(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialog(const QString&)));
@@ -1407,10 +1406,10 @@ void DkNoMacs::createShortcuts() {
 	shortcuts.resize(sc_end);
 
 	shortcuts[sc_test_img] = new QShortcut(shortcut_test_img, this);
-	QObject::connect(shortcuts[sc_test_img], SIGNAL( activated ()), vp, SLOT( loadLena() ));
+	QObject::connect(shortcuts[sc_test_img], SIGNAL(activated()), vp, SLOT(loadLena()));
 
 	shortcuts[sc_test_rec] = new QShortcut(shortcut_test_rec, this);
-	QObject::connect(shortcuts[sc_test_rec], SIGNAL( activated ()), this, SLOT( loadRecursion() ));
+	QObject::connect(shortcuts[sc_test_rec], SIGNAL(activated()), this, SLOT(loadRecursion()));
 
 	for (int idx = 0; idx < shortcuts.size(); idx++) {
 
@@ -1841,8 +1840,10 @@ void DkNoMacs::readSettings() {
 
 #ifdef Q_WS_WIN
 	// fixes #392 - starting maximized on 2nd screen - tested on win8 only
-	QRect r = settings.value("geometryNomacs", geometry()).toRect();
-	setGeometry(r);
+	QRect r = settings.value("geometryNomacs", QRect()).toRect();
+
+	if (r.width() && r.height())	// do not set the geometry if nomacs is loaded the first time
+		setGeometry(r);
 #endif
 
 	restoreGeometry(settings.value("geometry").toByteArray());
@@ -3345,6 +3346,9 @@ void DkNoMacs::openFileWith(QAction* action) {
 	
 	if (app.fileName() == "explorer.exe")
 		args << "/select," << QDir::toNativeSeparators(viewport()->getImageLoader()->file().absoluteFilePath());
+	else if (app.fileName().toLower() == "outlook.exe") {
+		args << "/a" << QDir::toNativeSeparators(viewport()->getImageLoader()->file().absoluteFilePath());
+	}
 	else
 		args << QDir::toNativeSeparators(viewport()->getImageLoader()->file().absoluteFilePath());
 
@@ -3352,7 +3356,7 @@ void DkNoMacs::openFileWith(QAction* action) {
 	bool started = process.startDetached(app.absoluteFilePath(), args);
 
 	if (started)
-		qDebug() << "starting: " << app.fileName();
+		qDebug() << "starting: " << app.fileName() << args;
 	else if (viewport())
 		viewport()->getController()->setInfo("Sorry, I could not start: " % app.absoluteFilePath());
 }
@@ -3975,7 +3979,7 @@ void DkNoMacs::closePlugin(bool askForSaving, bool alreadySaving) {
 
 	viewport()->getController()->setPluginWidget(vPlugin, true);
 
-	if(!alreadySaving && isSaveNeeded) saveFileAs();
+	//if(!alreadySaving && isSaveNeeded) saveFileAs();
 
 	//viewport()->setPluginImageWasApplied(true);
 
@@ -4152,6 +4156,7 @@ void DkNoMacsSync::createActions() {
 	connect(syncActions[menu_sync_arrange], SIGNAL(triggered()), this, SLOT(tcpSendArrange()));
 
 	syncActions[menu_sync_connect_all] = new QAction(tr("Connect &All"), this);
+	fileActions[menu_sync_connect_all]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	syncActions[menu_sync_connect_all]->setShortcut(QKeySequence(shortcut_connect_all));
 	syncActions[menu_sync_connect_all]->setStatusTip(tr("connect all instances"));
 	connect(syncActions[menu_sync_connect_all], SIGNAL(triggered()), this, SLOT(tcpConnectAll()));

@@ -110,17 +110,11 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 	setMinimumHeight(300);
 
 	loader = new DkImageLoader();
-	//connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
-	//connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
-	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
-	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
 }
 
 void DkFileSelection::createLayout() {
 	
 	directoryEdit = new DkDirectoryEdit(this);
-	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
-	connect(directoryEdit, SIGNAL(directoryChanged(QDir)), this, SLOT(setDir(QDir)));
 
 	//QPushButton* browseButton = new QPushButton(tr("Browse"));
 	//connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
@@ -128,7 +122,6 @@ void DkFileSelection::createLayout() {
 	QLineEdit* filterEdit = new QLineEdit("", this);
 	filterEdit->setPlaceholderText(tr("Filter Files"));
 	filterEdit->setMaximumWidth(250);
-	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SLOT(filterTextChanged(const QString&)));
 
 	QWidget* upperWidget = new QWidget(this);
 	QGridLayout* upperWidgetLayout = new QGridLayout(upperWidget);
@@ -149,7 +142,6 @@ void DkFileSelection::createLayout() {
 	explorer->getModel()->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs);
 	explorer->getModel()->setNameFilters(QStringList());
 	explorer->setMaximumWidth(300);
-	connect(explorer, SIGNAL(openDir(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
 
 	QStringList folders = DkSettings::global.recentFiles;
 
@@ -162,6 +154,13 @@ void DkFileSelection::createLayout() {
 	widgetLayout->addWidget(thumbScrollWidget, 1, 1);
 	widgetLayout->addWidget(infoLabel, 2, 1);
 	setLayout(widgetLayout);
+
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
+	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
+	connect(directoryEdit, SIGNAL(directoryChanged(QDir)), this, SLOT(setDir(QDir)));
+	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SLOT(filterTextChanged(const QString&)));
+	connect(explorer, SIGNAL(openDir(QDir)), this, SLOT(setDir(QDir)));
 }
 
 void DkFileSelection::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -197,7 +196,7 @@ void DkFileSelection::setFileInfo(QFileInfo file) {
 	setDir(QDir(file.absoluteFilePath()));
 }
 
-void DkFileSelection::setDir(const QDir& dir) {
+void DkFileSelection::setDir(QDir dir) {
 
 	explorer->setCurrentPath(QFileInfo(dir, ""));
 
@@ -225,10 +224,12 @@ void DkFileSelection::emitChangedSignal() {
 	
 	QDir newDir = directoryEdit->text();
 		
-	if (newDir.exists() && newDir != cDir)
-		setDir(newDir);
+	qDebug() << "edit text newDir: " << newDir.absolutePath() << " cDir " << cDir.absolutePath();
 
-	emit changed();
+	if (newDir.exists() && newDir.absolutePath() != cDir.absolutePath()) {
+		setDir(newDir);
+		emit changed();
+	}
 }
 
 void DkFileSelection::filterTextChanged(const QString& filterText) {

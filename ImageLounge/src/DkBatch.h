@@ -111,7 +111,7 @@ public:
 	virtual bool requiresUserInput() const {return rUserInput;};
 
 public slots:
-	void setDir(const QDir& dir);
+	void setDir(QDir dir);
 	void browse();
 	void updateDir(QVector<QSharedPointer<DkImageContainerT> >);
 	void setVisible(bool visible);

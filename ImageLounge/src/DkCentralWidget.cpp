@@ -432,13 +432,11 @@ void DkCentralWidget::imageLoaded(QSharedPointer<DkImageContainerT> img) {
 	else if (idx > tabInfos.size())
 		addTab(img, idx);
 	else {
-		DkTabInfo tabInfo = tabInfos.at(idx);
+		DkTabInfo& tabInfo = tabInfos[idx];
 		tabInfo.setImage(img);
 
 		updateTab(tabInfo);
 		switchWidget(tabInfo.getMode());
-
-		tabInfos.replace(idx, tabInfo);
 	}
 
 	recentFilesWidget->hide();
@@ -482,9 +480,13 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 
 	if (show) {
 		QSharedPointer<DkImageContainerT> imgC = tabInfos[tabbar->currentIndex()].getImage();
-		if (imgC && imgC != viewport->getImageLoader()->getCurrentImage())
+		if (imgC && imgC != viewport->getImageLoader()->getCurrentImage()) {
 			viewport->loadImage(imgC);
-		else
+		}
+		else if (imgC && viewport->getImage().isNull()) {
+			viewport->setImage(imgC->image());
+		}
+		else if (!imgC)
 			viewport->getImageLoader()->firstFile();
 
 		switchWidget(widgets[viewport_widget]);

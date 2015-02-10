@@ -140,7 +140,7 @@ void DkFilePreview::initOrientations() {
 
 void DkFilePreview::loadSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 	windowPosition = settings.value("windowPosition", windowPosition).toInt();
 	settings.endGroup();
@@ -149,7 +149,7 @@ void DkFilePreview::loadSettings() {
 
 void DkFilePreview::saveSettings() {
 
-	QSettings settings;
+	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 	settings.setValue("windowPosition", windowPosition);
 	settings.endGroup();
@@ -734,8 +734,6 @@ void DkFilePreview::newPosition() {
 	// don't apply twice
 	if (windowPosition == pos || pos == cm_pos_dock_hor && windowPosition == cm_pos_dock_ver)
 		return;
-
-
 
 	windowPosition = pos;
 	orientation = orient;
@@ -1657,11 +1655,11 @@ void DkThumbScrollWidget::createActions() {
 	connect(actions[select_all], SIGNAL(triggered(bool)), thumbsScene, SLOT(selectAllThumbs(bool)));
 
 	actions[zoom_in] = new QAction(tr("Zoom &In"), this);
-	actions[zoom_in]->setShortcut(Qt::CTRL + Qt::Key_Plus);
+	actions[zoom_in]->setShortcut(QKeySequence::ZoomIn);
 	connect(actions[zoom_in], SIGNAL(triggered()), thumbsScene, SLOT(increaseThumbs()));
 
 	actions[zoom_out] = new QAction(tr("Zoom &Out"), this);
-	actions[zoom_out]->setShortcut(Qt::CTRL + Qt::Key_Minus);
+	actions[zoom_out]->setShortcut(QKeySequence::ZoomOut);
 	connect(actions[zoom_out], SIGNAL(triggered()), thumbsScene, SLOT(decreaseThumbs()));
 
 	actions[display_squares] = new QAction(tr("Display &Squares"), this);

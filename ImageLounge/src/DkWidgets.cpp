@@ -3414,13 +3414,16 @@ void DkDirectoryEdit::lineEditChanged(QString path) {
 	style()->polish(this);
 	update();
 	
-	if (existsDirectory(path))
+	// converting to QDir since D:/img == D:/img/ then
+	if (QDir(path).absolutePath() != QDir(oldPath).absolutePath() && existsDirectory(path)) {
+		oldPath = path;
 		emit directoryChanged(QDir(path));
+	}
 }
 
 bool DkDirectoryEdit::existsDirectory(QString path) {
-	QFileInfo* fi = new QFileInfo(path);
-	return fi->isDir();
+	
+	return QDir(path).exists();
 }
 
 }

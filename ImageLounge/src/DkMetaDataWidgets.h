@@ -185,8 +185,8 @@ signals:
 	void focusLost();
 
 protected:
-	void focusOutEvent(QFocusEvent *focusEvent);
-
+	void focusOutEvent(QFocusEvent* focusEvent);
+	void paintEvent(QPaintEvent* e);
 };
 
 class DkCommentWidget : public DkFadeLabel {
@@ -216,7 +216,6 @@ protected:
 	bool textChanged;
 	bool dirty;
 	QString oldText;
-	QString dummyText;
 
 	void setComment(const QString& description);
 	void saveComment();

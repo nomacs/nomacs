@@ -1054,11 +1054,22 @@ void DkCommentTextEdit::focusOutEvent(QFocusEvent *focusEvent) {
 	QTextEdit::focusOutEvent(focusEvent);
 }
 
+void DkCommentTextEdit::paintEvent(QPaintEvent* e) {
+
+	if (toPlainText().isEmpty() && !viewport()->hasFocus()) {
+		QPainter p(viewport());
+		p.setOpacity(0.5);
+		p.drawText(QRect(QPoint(), viewport()->size()), Qt::AlignHCenter | Qt::AlignVCenter, tr("Click here to add notes"));
+		qDebug() << "painting placeholder...";
+	}
+	
+	QTextEdit::paintEvent(e);
+}
+
 // DkCommentWidget --------------------------------------------------------------------
 DkCommentWidget::DkCommentWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : DkFadeLabel(parent) {
 
 	textChanged = false;
-	dummyText = tr("Empty");
 	setMaximumSize(220, 150);
 	createLayout();
 	QMetaObject::connectSlotsByName(this);
@@ -1094,7 +1105,7 @@ void DkCommentWidget::createLayout() {
 	QPushButton* cancelButton = new QPushButton(this);
 	cancelButton->setObjectName("cancelButton");
 	cancelButton->setFlat(true);
-	cancelButton->setIcon(QIcon(DkImage::colorizePixmap(QPixmap(":/nomacs/img/cancel2.png"), QColor(255,255,255,255), 1.0f)));
+	cancelButton->setIcon(QIcon(DkImage::colorizePixmap(QPixmap(":/nomacs/img/trash.png"), QColor(255,255,255,255), 1.0f)));
 	cancelButton->setToolTip(tr("Discard Changes (ESC)"));
 	cancelButton->setShortcut(QKeySequence(Qt::Key_Escape));
 
@@ -1125,10 +1136,7 @@ void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 void DkCommentWidget::setComment(const QString& description) {
 	
-	if (description.isEmpty())
-		commentLabel->setText(dummyText);
-	else
-		commentLabel->setText(description);
+	commentLabel->setText(description);
 
 	oldText = description;
 	dirty = false;
@@ -1136,9 +1144,9 @@ void DkCommentWidget::setComment(const QString& description) {
 
 void DkCommentWidget::saveComment() {
 
-	if (textChanged && commentLabel->toPlainText() != dummyText && metaData) {
+	if (textChanged && commentLabel->toPlainText() != metaData->getDescription() && metaData) {
 		
-		if (!metaData->setDescription(commentLabel->toPlainText())) {
+		if (!metaData->setDescription(commentLabel->toPlainText()) && !commentLabel->toPlainText().isEmpty()) {
 			emit showInfoSignal(tr("Sorry, I cannot save comments for this image format."));
 		}
 		else
@@ -1167,10 +1175,10 @@ void DkCommentWidget::on_cancelButton_clicked() {
 
 	textChanged = false;
 	commentLabel->clearFocus();
-	commentLabel->setText(oldText);
+	commentLabel->setText("");
 
-	if (dirty)
-		saveComment();
+	saveComment();
+	
 	if (parent)
 		parent->setFocus(Qt::MouseFocusReason);
 }

@@ -1528,6 +1528,7 @@ protected:
 
 class DkDirectoryEdit : public QLineEdit {
 	Q_OBJECT
+
 	public:	
 		DkDirectoryEdit(QWidget* parent = 0);
 		DkDirectoryEdit(QString content, QWidget* parent = 0);
@@ -1542,6 +1543,7 @@ class DkDirectoryEdit : public QLineEdit {
 
 	private:
 		bool existsDirectory(QString path);
+		QString oldPath;
 };
 
 };
