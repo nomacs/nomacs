@@ -30,6 +30,7 @@
 #pragma once
 
 // Qt
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
 #include <QBoxLayout>
 #include <QShortcut>
@@ -53,12 +54,14 @@
 #include <QDesktopWidget>
 #include <QProgressDialog>
 #include <QDrag>
+#pragma warning(pop)		// no warnings from includes - end
 
 // OpenCV
 #ifdef WITH_OPENCV
 
 #ifdef WIN32
 	#pragma warning(disable: 4996)
+	#pragma warning(disable: 4251)	// TODO: remove
 #endif
 
 
@@ -495,7 +498,7 @@ public:
 	bool saveSettings;
 
 	QString getCurrRunningPlugin() {return currRunningPlugin;};
-	void colorizeIcons(QColor col);
+	void colorizeIcons(const QColor& col);
 
 signals:
 	void sendTitleSignal(QString newTitle);

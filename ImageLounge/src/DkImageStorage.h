@@ -27,16 +27,19 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
 #include <QMutex>
 #include <QImage>
 #include <QThread>
+#pragma warning(pop)		// no warnings from includes - end
 
 // opencv
 #ifdef WITH_OPENCV
 
 #ifdef WIN32
 #pragma warning(disable: 4996)
+#pragma warning(disable: 4251)	// TODO: remove
 #endif
 
 //#include <libraw/libraw.h>
@@ -219,7 +222,7 @@ public:
 		QString sizeStr;
 		//qDebug() << "dimension: " << size;
 
-		return size/(1024.0f*1024.0f);
+		return (float)size/(1024.0f*1024.0f);
 	}
 
 
@@ -249,7 +252,7 @@ public:
 	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
 };
 
-class DkImageStorage : public QObject {
+class DllExport DkImageStorage : public QObject {
 	Q_OBJECT
 
 public:

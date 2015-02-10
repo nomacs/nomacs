@@ -27,18 +27,8 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QGraphicsView>
-#include <QCoreApplication>
-#include <QTimer>
-#include <QMovie>
-#include <QShortcut>
-
-#include <float.h>
-
-// gestures
-#include <QSwipeGesture>
-
-#include "DkImageStorage.h"
 
 #if QT_VERSION < 0x050000
 // native gestures
@@ -46,6 +36,14 @@
 #include "extern/qevent_p.h"
 #endif
 #endif
+
+#pragma warning(pop)	// no warnings from includes - end
+
+#pragma warning(disable: 4251)	// TODO: remove
+
+#include <float.h>
+
+#include "DkImageStorage.h"
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -56,6 +54,8 @@
 #define DllExport
 #endif
 #endif
+
+// Qt class definitions
 
 namespace nmc {
 
@@ -102,7 +102,7 @@ public:
 
 	};
 	
-	DkBaseViewPort(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	DkBaseViewPort(QWidget *parent = 0);
 	virtual ~DkBaseViewPort();
 
 	virtual void release();
@@ -120,7 +120,7 @@ public:
 	float get100Factor() {
 		
 		updateImageMatrix();
-		return 1.0f/imgMatrix.m11();
+		return 1.0f/(float)imgMatrix.m11();
 	};
 
 	void setPanControl(QPointF panControl) {
@@ -196,10 +196,10 @@ protected:
 
 #ifndef QT_NO_GESTURES
 	virtual bool nativeGestureEvent(QNativeGestureEvent* event);
-	virtual int swipeRecognition(QNativeGestureEvent* event) { return no_swipe;};	// dummy
+	virtual int swipeRecognition(QNativeGestureEvent*) { return no_swipe;};	// dummy
 #endif
 	virtual bool gestureEvent(QGestureEvent* event);
-	virtual void swipeAction(int swipeGesture) {};
+	virtual void swipeAction(int) {};
 
 	QVector<QShortcut*> shortcuts;	
 

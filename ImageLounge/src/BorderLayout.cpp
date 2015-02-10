@@ -38,9 +38,14 @@
  **
  ****************************************************************************/
 
- #include <QtGui>
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QtGui>
+#include <QLayout>
+#include <QRect>
+#include <QWidgetItem>
+#pragma warning(pop)		// no warnings from includes - end
 
- #include "BorderLayout.h"
+#include "BorderLayout.h"
 
  BorderLayout::BorderLayout(QWidget *parent, int margin, int spacing)
      : QLayout(parent)

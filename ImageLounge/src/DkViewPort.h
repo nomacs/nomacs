@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 // Qt
 #include <QDesktopWidget>
 #include <QGraphicsView>
@@ -45,25 +46,25 @@
 #include <QSwipeGesture>
 #include <QStackedLayout>
 
+#if QT_VERSION < 0x050000
+#ifndef QT_NO_GESTURES
+#include "extern/qevent_p.h"
+#endif
+#endif
+
+#pragma warning(pop)		// no warnings from includes - end
+
 // OpenCV
 #ifdef WITH_OPENCV
-
 #ifdef WIN32
 #pragma warning(disable: 4996)
 #endif
-
 #endif
 
 //#ifdef Q_WS_WIN
 //#include <dwmapi.h>	// needed to see if aero is on
 //#pragma comment (lib, "dwmapi.lib")
 //#endif
-
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_GESTURES
-#include "extern/qevent_p.h"
-#endif
-#endif
 
 // my stuff
 #include "DkImage.h"

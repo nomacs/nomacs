@@ -646,11 +646,10 @@ void DkMetaDataInfo::readTags() {
 		}
 		//use getRating for Rating Value... otherwise the value is probably not correct: also Xmp.xmp.Rating, Xmp.MicrosoftPhoto.Rating is used
 		QString rating;
-		float tmp = metaData->getRating();
+		float tmp = (float)metaData->getRating();
 		if (tmp < 0) tmp=0;
 		rating.setNum(tmp);
 		descValues << rating;
-
 
 		for (int i=1; i<descSearchTags.size(); i++) {
 			QString tmp, Value;
@@ -674,7 +673,7 @@ void DkMetaDataInfo::readTags() {
 					Value = QString(file.absoluteFilePath());
 				}
 				else if (!tmp.compare("FileSize")) {
-					Value = DkUtils::readableByte(file.size());
+					Value = DkUtils::readableByte((float)file.size());
 				} else
 					Value = QString();
 
@@ -727,7 +726,7 @@ void DkMetaDataInfo::createLabels() {
 	}
 
 	// well that's a bit of a hack
-	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? ((float)numLabels+numLines-1)/numLines : 2;
+	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? qRound(((float)numLabels+numLines-1)/numLines) : 2;
 	numLines = cvCeil((float)numLabels/cols);
 
 
@@ -793,7 +792,7 @@ void DkMetaDataInfo::layoutLabels() {
 
 	// #Labels / numLines = #Spalten
 	numLines = 6;
-	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? ((float)numLabels+numLines-1)/numLines : 2;
+	int cols = ((float)numLabels+numLines-1)/numLines > 2 ? qRound(((float)numLabels+numLines-1)/numLines) : 2;
 	numLines = cvCeil((float)numLabels/cols);
 
 	//qDebug() << "numCols: " << cols;
@@ -945,7 +944,7 @@ void DkMetaDataInfo::resizeEvent(QResizeEvent *resizeW) {
 	if ((resizeW->size().width() < minWidth) && (worldMatrix.dx()+minWidth < resizeW->size().width())) {
 		//layoutLabels();
 		QTransform tmpMatrix = QTransform();
-		int dX = (resizeW->size().width()-minWidth) - worldMatrix.dx();
+		int dX = (resizeW->size().width()-minWidth) - qRound(worldMatrix.dx());
 
 		tmpMatrix.translate(dX, 0);
 		worldMatrix.translate(dX, 0);
@@ -980,7 +979,7 @@ void DkMetaDataInfo::draw(QPainter* painter) {
 	//labels are right outside of the widget -> set gradient
 	if (width() < minWidth && worldMatrix.dx()+minWidth > width()) {
 
-		int rightOffset = worldMatrix.dx()+minWidth-width();
+		int rightOffset = qRound(worldMatrix.dx())+minWidth-width();
 		if (rightOffset < rightGradientRect.width())
 			rightGradient.setStart(rightGradientRect.left()+(rightGradientRect.width() - rightOffset), 0);
 		painter->fillRect(rightGradientRect, rightGradient);
@@ -1016,7 +1015,7 @@ void DkMetaDataInfo::mouseMoveEvent(QMouseEvent *event) {
 
 	if (width() < minWidth && event->buttons() == Qt::LeftButton) {
 
-		currentDx = mouseDir;
+		currentDx = (float)mouseDir;
 
 		lastMousePos = event->pos();
 

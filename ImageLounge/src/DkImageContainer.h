@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
 #include <QImage>
 #include <QFileInfo>
@@ -38,6 +39,7 @@
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
 #endif
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkMetaData.h"
 #include "DkBasicLoader.h"

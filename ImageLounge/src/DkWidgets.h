@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QApplication>
 #include <QRadioButton>
 #include <QAction>
@@ -69,7 +70,6 @@
 #include <QGraphicsItemAnimation>
 #include <QLineEdit>
 
-
 #ifdef WIN32
 #pragma warning(disable: 4275)	// there are some weird things happening if qtconcurrentmap.h is included - we ignore this elegantly
 #endif
@@ -88,6 +88,8 @@
 #include <QLabel>
 #include <QMovie>
 // gif animation label -----
+
+#pragma warning(pop)		// no warnings from includes - end
 
 //#include "DkImage.h"
 #include "DkNetwork.h"
@@ -223,7 +225,7 @@ protected:
 	virtual void draw(QPainter* painter);
 
 	// for my children...
-	virtual void drawBackground(QPainter* painter) {};
+	virtual void drawBackground(QPainter*) {};
 	virtual void setTextToLabel();
 	virtual void updateStyleSheet();
 };
@@ -537,7 +539,7 @@ public slots:
 
 	void startTimer() {
 		if (playing) {
-			displayTimer->setInterval(DkSettings::slideShow.time*1000);	// if it was updated...
+			displayTimer->setInterval(qRound(DkSettings::slideShow.time*1000));	// if it was updated...
 			displayTimer->start();
 		}
 	};
@@ -974,16 +976,16 @@ public:
 
 			// new diagonal
 			float diagLength = (c2-cN).norm();
-			float diagAngle = (c2-cN).angle();
+			float diagAngle = (float)(c2-cN).angle();
 
 			// compute the idx-1 corner
-			float c1Angle = (c1-c0).angle();
+			float c1Angle = (float)(c1-c0).angle();
 			float newLength = cos(c1Angle - diagAngle)*diagLength;
 			DkVector nc1 = DkVector((newLength), 0);
 			nc1.rotate(-c1Angle);
 
 			// compute the idx-3 corner
-			float c3Angle = (c3-c0).angle();
+			float c3Angle = (float)(c3-c0).angle();
 			newLength = cos(c3Angle - diagAngle)*diagLength;
 			DkVector nc3 = DkVector((newLength), 0);
 			nc3.rotate(-c3Angle);
@@ -1072,7 +1074,7 @@ public:
 
 		// switch width/height for /\ and \/ quadrants
 		if (abs(angle) > CV_PI*0.25 && abs(angle) < CV_PI*0.75) {
-			float x = size.x();
+			float x = (float)size.x();
 			size.setX(size.y());
 			size.setY(x);
 		}

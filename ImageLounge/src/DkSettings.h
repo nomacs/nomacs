@@ -27,18 +27,14 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QSettings>
 #include <QBitArray>
 #include <QColor>
 #include <QDate>
-#include <QTranslator>
-#include <QFileInfo>
-#include <QSettings>
+#pragma warning(pop)	// no warnings from includes - end
 
-#include <QTableView>
-#include <QStandardItemModel>
-#include <QStandardItem>
-#include <QAbstractTableModel>
-#include <QStyledItemDelegate>
+#pragma warning(disable: 4251)	// TODO: remove
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -50,12 +46,14 @@
 #endif
 #endif
 
-
+class QFileInfo;
+class QTranslator;
 
 namespace nmc {
 
-class DkFileFilterHandling {
 class DkWhiteListViewModel;
+
+class DkFileFilterHandling {
 
 public:
 	DkFileFilterHandling() {};
@@ -318,7 +316,7 @@ public:
 	static void loadTranslation(const QString& fileName, QTranslator& translator);
 	static QStringList getTranslationDirs();
 
-	static void load(bool force = false);
+	static void load();
 	static void save(bool force = false);
 	static void setToDefaultSettings();
 

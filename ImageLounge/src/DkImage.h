@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
 #include <QImageWriter>
 #include <QFileSystemWatcher>
@@ -54,6 +55,11 @@
 #include <QCoreApplication>
 #include <QApplication>
 
+// quazip
+#ifdef WITH_QUAZIP
+#include <quazip/JlCompress.h>
+#endif
+
 // opencv
 #ifdef WITH_OPENCV
 
@@ -64,6 +70,8 @@
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
 #endif
+
+#pragma warning(pop)	// no warnings from includes - end
 
 #ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
 	#include "opencv/cv.h"
@@ -86,16 +94,6 @@ using namespace cv;
 #else
 #define DllExport
 #endif
-#endif
-
-// TODO: ifdef
-//#include <ShObjIdl.h>
-//#include <ShlObj.h>
-//#include <Windows.h>
-
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
 #endif
 
 // my classes
@@ -225,7 +223,7 @@ public slots:
 	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
 	void load(const QFileInfo& file);
-	void downloadFile(const QUrl& url, const QFileInfo& editFile = QFileInfo());
+	void downloadFile(const QUrl& url);
 	bool deleteFile();
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false);
 	void setFolderFilters(QStringList filters);

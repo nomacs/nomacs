@@ -41,9 +41,9 @@
  #ifndef BORDERLAYOUT_H
  #define BORDERLAYOUT_H
 
- #include <QLayout>
- #include <QRect>
- #include <QWidgetItem>
+#pragma warning(push, 0)	// no warnings from includes - begin
+#pragma warning(pop)		// no warnings from includes - end
+#pragma warning(disable: 4251)	// TODO: remove
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -55,9 +55,9 @@
 #endif
 #endif
 
- class DllExport BorderLayout : public QLayout
- {
- public:
+class DllExport BorderLayout : public QLayout {
+
+public:
      enum Position { West, North, South, East, Center };
 
      BorderLayout(QWidget *parent, int margin = 0, int spacing = -1);

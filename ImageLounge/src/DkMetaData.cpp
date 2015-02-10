@@ -25,8 +25,10 @@
 
  *******************************************************************************************************/
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTranslator>
 #include <QObject>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkMetaData.h"
 #include "DkImage.h"
@@ -319,7 +321,7 @@ int DkMetaDataT::getRating() const {
 	else
 		fRating = exifRating;
 
-	return fRating;
+	return qRound(fRating);
 }
 
 QString DkMetaDataT::getNativeExifValue(const QString& key) const {
@@ -478,7 +480,7 @@ void DkMetaDataT::getFileMetaData(QStringList& fileKeys, QStringList& fileValues
 	}
 
 	fileKeys.append(QObject::tr("Size"));
-	fileValues.append(DkUtils::readableByte(file.size()));
+	fileValues.append(DkUtils::readableByte((float)file.size()));
 
 	// date group
 	fileKeys.append(QObject::tr("Date") + "." + QObject::tr("Created"));
@@ -630,19 +632,19 @@ bool DkMetaDataT::isLoaded() const {
 bool DkMetaDataT::isTiff() const {
 
 	QString newSuffix = file.suffix();
-	return newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive));
+	return newSuffix.contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)) != 0;
 }
 
 bool DkMetaDataT::isJpg() const {
 
 	QString newSuffix = file.suffix();
-	return newSuffix.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive));
+	return newSuffix.contains(QRegExp("(jpg|jpeg)", Qt::CaseInsensitive)) != 0;
 }
 
 bool DkMetaDataT::isRaw() const {
 
 	QString newSuffix = file.suffix();
-	return newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive));
+	return newSuffix.contains(QRegExp("(nef|crw|cr2|arw)", Qt::CaseInsensitive)) != 0;
 }
 
 bool DkMetaDataT::isDirty() const {
@@ -1048,7 +1050,6 @@ void DkMetaDataT::printMetaData() const {
 	if (exifState != loaded && exifState != dirty)
 		return;
 
-	Exiv2::ExifData &exifData = exifImg->exifData();
 	Exiv2::IptcData &iptcData = exifImg->iptcData();
 	Exiv2::XmpData &xmpData = exifImg->xmpData();
 

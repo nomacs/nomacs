@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QtNetwork/QTcpSocket>
 #include <QBuffer>
 #include <QByteArray>
@@ -38,6 +39,7 @@
 #include <QHostInfo>
 #include <QThread>
 #include <QDebug>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkSettings.h"
 

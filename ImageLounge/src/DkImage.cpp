@@ -681,7 +681,7 @@ void DkImageLoader::load(const QFileInfo& file) {
 	bool hasZipMarker = false;
 
 #ifdef WITH_QUAZIP
-	hasZipMarker = file.absoluteFilePath().contains(DkZipContainer::zipMarker());
+	hasZipMarker = file.absoluteFilePath().contains(DkZipContainer::zipMarker()) != 0;
 #endif
 
 	loadDir(file);
@@ -755,7 +755,7 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 	emit imageHasGPSSignal(DkMetaDataHelper::getInstance().hasGPS(currentImage->getMetaData()));
 }
 
-void DkImageLoader::downloadFile(const QUrl& url, const QFileInfo& editFile) {
+void DkImageLoader::downloadFile(const QUrl& url) {
 
 	QSharedPointer<DkImageContainerT> newImg = findOrCreateFile(QFileInfo());
 	setCurrentImage(newImg);
@@ -1210,7 +1210,7 @@ bool DkImageLoader::hasMovie() {
 		return false;
 
 	QString newSuffix = currentImage->file().suffix();
-	return newSuffix.contains(QRegExp("(gif|mng)", Qt::CaseInsensitive));
+	return newSuffix.contains(QRegExp("(gif|mng)", Qt::CaseInsensitive)) != 0;
 
 }
 
@@ -1425,7 +1425,6 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 
 	QString winPath = QDir::toNativeSeparators(dir.path()) + "\\*.*";
 
-	wchar_t* fnameT = L"C:\\VSProjects\\img\\*.*";
 	const wchar_t* fname = reinterpret_cast<const wchar_t *>(winPath.utf16());
 
 	WIN32_FIND_DATAW findFileData;

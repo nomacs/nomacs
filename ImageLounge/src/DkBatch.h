@@ -26,18 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************************************/
 #pragma once;
 
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QListView>
-#include <QLineEdit>
-#include <QFileDialog>
-#include <QGroupBox>
-#include <QComboBox>
-#include <QButtonGroup>
-
 #include "DkWidgets.h"
 #include "DkThumbsWidgets.h"
+
+// Qt defines
+class QListView;
 
 namespace nmc {
 

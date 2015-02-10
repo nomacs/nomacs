@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialog>
 #include <QMessageBox>
 #include <QDialogButtonBox>
@@ -41,6 +42,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QPushButton>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 

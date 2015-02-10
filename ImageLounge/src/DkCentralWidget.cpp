@@ -30,8 +30,10 @@
 #include "DkMessageBox.h"
 #include "DkThumbsWidgets.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
 #include <QClipboard>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 

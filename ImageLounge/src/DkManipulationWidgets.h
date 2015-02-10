@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
 #include <QDockWidget>
 #include <QSlider>
@@ -35,6 +36,7 @@
 #include <QBoxLayout>
 #include <QProgressDialog>
 #include <QDialogButtonBox>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkViewPort.h"
 #include "BorderLayout.h"

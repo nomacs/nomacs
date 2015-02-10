@@ -27,8 +27,10 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
 #include <QStackedLayout>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkSettings.h"
 #include "DkImageContainer.h"

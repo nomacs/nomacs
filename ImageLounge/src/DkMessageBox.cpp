@@ -84,7 +84,7 @@ void DkMessageBox::createLayout(const QMessageBox::Icon& userIcon, const QString
 
 	buttonBox = new QDialogButtonBox;
 	buttonBox->setObjectName(QLatin1String("buttonBox"));
-	buttonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, 0, this));
+	buttonBox->setCenterButtons(style()->styleHint(QStyle::SH_MessageBox_CenterButtons, 0, this) != 0);
 	QObject::connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
 		this, SLOT(buttonClicked(QAbstractButton*)));
 

@@ -45,16 +45,16 @@
 #include "DkBatch.h"
 #include "DkCentralWidget.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#ifdef WITH_UPNP
+#include "DkUpnp.h"
+#endif // WITH_UPNP
+#pragma warning(pop)		// no warnings from includes - end
+
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
 #include "DkPluginManager.h"
 #endif //  WITH_PLUGINS
-
-
-#ifdef WITH_UPNP
-#include "DkUpnp.h"
-#endif // WITH_UPNP
-
 
 namespace nmc {
 
@@ -687,7 +687,7 @@ void DkNoMacs::createMenu() {
 
 }
 
-void DkNoMacs::createOpenWithMenu(QMenu* menu) {
+void DkNoMacs::createOpenWithMenu(QMenu*) {
 
 	QList<QAction* > oldActions = openWithMenu->findChildren<QAction* >();
 
@@ -1375,7 +1375,7 @@ void DkNoMacs::assignCustomPluginShortcuts() {
 #endif // WITH_PLUGINS
 }
 
-void DkNoMacs::colorizeIcons(QColor col) {
+void DkNoMacs::colorizeIcons(const QColor& col) {
 
 	// now colorize all icons
 	for (int idx = 0; idx < fileIcons.size(); idx++) {
@@ -1384,19 +1384,19 @@ void DkNoMacs::colorizeIcons(QColor col) {
 		if (idx == icon_file_open_large || idx == icon_file_dir_large)
 			continue;
 
-		fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), DkSettings::display.iconColor), QIcon::Normal, QIcon::On);
-		fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::On), col), QIcon::Normal, QIcon::On);
+		fileIcons[idx].addPixmap(DkImage::colorizePixmap(fileIcons[idx].pixmap(100, QIcon::Normal, QIcon::Off), col), QIcon::Normal, QIcon::Off);
 	}
 
 	// now colorize all icons
 	for (int idx = 0; idx < editIcons.size(); idx++)
-		editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), DkSettings::display.iconColor));
+		editIcons[idx].addPixmap(DkImage::colorizePixmap(editIcons[idx].pixmap(100), col));
 
 	for (int idx = 0; idx < viewIcons.size(); idx++)
-		viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), DkSettings::display.iconColor));
+		viewIcons[idx].addPixmap(DkImage::colorizePixmap(viewIcons[idx].pixmap(100), col));
 
 	for (int idx = 0; idx < toolsIcons.size(); idx++)
-		toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), DkSettings::display.iconColor));
+		toolsIcons[idx].addPixmap(DkImage::colorizePixmap(toolsIcons[idx].pixmap(100), col));
 }
 
 void DkNoMacs::createShortcuts() {

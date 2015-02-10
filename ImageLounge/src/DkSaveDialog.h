@@ -27,10 +27,12 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QButtonGroup>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseViewPort.h"
 #include "DkWidgets.h"
@@ -98,8 +100,8 @@ public:
 	float getResizeFactor() {
 
 		float factor = -1;
-		float finalEdge = sizeCombo->itemData(sizeCombo->currentIndex()).toInt();
-		float minEdge = std::min(img->width(), img->height());
+		float finalEdge = (float)sizeCombo->itemData(sizeCombo->currentIndex()).toInt();
+		float minEdge = (float)std::min(img->width(), img->height());
 
 		if (finalEdge != -1 && minEdge > finalEdge)
 			factor = finalEdge/minEdge;

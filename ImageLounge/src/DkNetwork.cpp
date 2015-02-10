@@ -30,7 +30,7 @@
 namespace nmc {
 
 // DkClientManager --------------------------------------------------------------------
-DkClientManager::DkClientManager(QString title, QObject* parent) {
+DkClientManager::DkClientManager(QString title, QObject* parent) : QThread(parent) {
 	newPeerId = 0;
 	this->currentTitle = title;
 	qRegisterMetaType<QList<quint16> >("QList<quint16>");
@@ -86,15 +86,15 @@ void DkClientManager::connectionSentNewTitle(DkConnection* connection, QString n
 	peerList.setTitle(connection->getPeerId(), newTitle);
 }
 
-void DkClientManager::connectionReceivedTransformation(DkConnection* connection, QTransform transform, QTransform imgTransform, QPointF canvasSize) {
+void DkClientManager::connectionReceivedTransformation(DkConnection*, QTransform transform, QTransform imgTransform, QPointF canvasSize) {
 	emit receivedTransformation(transform, imgTransform, canvasSize);
 }
 
-void DkClientManager::connectionReceivedPosition(DkConnection* connection, QRect rect, bool opacity, bool overlaid) {
+void DkClientManager::connectionReceivedPosition(DkConnection*, QRect rect, bool opacity, bool overlaid) {
 	emit receivedPosition(rect, opacity, overlaid);
 }
 
-void DkClientManager::connectionReceivedNewFile(DkConnection* connection, qint16 op, QString filename) {
+void DkClientManager::connectionReceivedNewFile(DkConnection*, qint16 op, QString filename) {
 	emit receivedNewFile(op, filename);
 }
 
@@ -106,7 +106,7 @@ void DkClientManager::connectionReceivedGoodBye(DkConnection* connection) {
 	emit updateConnectionSignal(peerList.getActivePeers());
 }
 
-void DkClientManager::connectionShowStatusMessage(DkConnection* connection, QString msg) {
+void DkClientManager::connectionShowStatusMessage(DkConnection*, QString msg) {
 	emit sendInfoSignal(msg, 2000);
 }
 
@@ -213,7 +213,7 @@ void DkLocalClientManager::searchForOtherClients() {
 			continue;
 		//qDebug() << "search For other clients on port:" << i;
 		DkConnection* connection = createConnection();
-		connection->connectToHost(QHostAddress::LocalHost,i);
+		connection->connectToHost(QHostAddress::LocalHost, (qint16)i);
 		
 
 		if (connection->waitForConnected(20)) {
@@ -291,7 +291,7 @@ void DkLocalClientManager::synchronizeWith(quint16 peerId) {
 
 }
 
-void DkLocalClientManager::stopSynchronizeWith(quint16 peerId) {
+void DkLocalClientManager::stopSynchronizeWith(quint16) {
 	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
 	
 	foreach (DkPeer peer , synchronizedPeers) {
@@ -313,7 +313,7 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
 		return;
 	int instancesPerRow = (connectedInstances == 2 || connectedInstances == 4) ? 2 : 3;
 
-	int rows = ceil((float)connectedInstances / (float)instancesPerRow);
+	int rows = (int)ceil((float)connectedInstances / (float)instancesPerRow);	// TODO: ceil should not be used
 	int width = screenGeometry.width() / instancesPerRow;
 	int height = screenGeometry.height() / rows;
 
@@ -322,7 +322,7 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
 	emit receivedPosition(QRect(curX, curY, width, height), false, overlaid);
 	curX += width;
 	int count = 1;
-	foreach (DkPeer peer, peerList.getSynchronizedPeers()) {
+	for (DkPeer peer : peerList.getSynchronizedPeers()) {
 		QRect newPosition = QRect(curX, curY, width, height);
 		connect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer.connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
 		emit sendNewPositionMessage(newPosition, false, overlaid);
@@ -582,7 +582,7 @@ void DkLANClientManager::connectionReceivedNewFile(DkConnection* connection, qin
 }
 
 
-void DkLANClientManager::connectionReceivedUpcomingImage(DkConnection* connection, QString imageTitle) {
+void DkLANClientManager::connectionReceivedUpcomingImage(DkConnection*, QString imageTitle) {
 	//qDebug() << "Connection will receive Image with title: " << imageTitle;
 	emit sendInfoSignal("receiving image:\n" + imageTitle, 2000);
 }
@@ -787,7 +787,7 @@ void DkRCClientManager::connectionReceivedPermission(DkConnection* connection, b
 	permissionList.insert(connection->getPeerId(), allowedToConnect);
 }
 
-void DkRCClientManager::connectionReceivedRCType(DkConnection* connection, int mode) {
+void DkRCClientManager::connectionReceivedRCType(DkConnection*, int mode) {
 	qDebug() << "connection received new remote control mode: " << mode;
 	emit(connectedReceivedNewMode(mode));
 }
@@ -828,7 +828,7 @@ DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
 	this->endPort = localTCPPortEnd;
 
 	for (int i = startPort; i < endPort; i++) {
-		if (listen(QHostAddress::LocalHost, i)) {
+		if (listen(QHostAddress::LocalHost, (quint16)i)) {
 			break;
 		}
 	}
@@ -950,7 +950,7 @@ void DkLANUdpSocket::readBroadcast() {
 		QHostAddress senderIP;
 		quint16 senderPort;
 		QByteArray datagram;
-		datagram.resize(this->pendingDatagramSize());
+		datagram.resize((int)this->pendingDatagramSize());
 		if (readDatagram(datagram.data(), datagram.size(), &senderIP, &senderPort) == -1)
 			continue;
 
@@ -958,7 +958,7 @@ void DkLANUdpSocket::readBroadcast() {
 		if (list.size() != 2)
 			continue;
 
-		quint16 senderServerPort = list.at(1).toInt();
+		quint16 senderServerPort = (quint16)list.at(1).toInt();
 
 		if (isLocalHostAddress(senderIP)) // ignore connections from localhost
 			continue;
@@ -1353,7 +1353,7 @@ void DkUpdater::cancelUpdate()  {
 	reply->abort(); 
 }
 
-void DkUpdater::replyError(QNetworkReply::NetworkError ne) {
+void DkUpdater::replyError(QNetworkReply::NetworkError) {
 	if (!silent)
 		emit showUpdaterMessage(tr("Unable to connect to server ... please try again later"), tr("updates"));
 }

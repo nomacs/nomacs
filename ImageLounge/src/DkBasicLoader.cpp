@@ -30,9 +30,16 @@
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
 
-#include <qmath.h>
+#pragma warning(push, 0)        
+#include <QObject>
+#include <QFileInfo>
+#include <QImage>
+#include <QImageReader>
+#include <QImageWriter>
+#include <QNetworkReply>
 
-#include <QUrl>
+#include <qmath.h>
+#pragma warning(pop)
 
 namespace nmc {
 
@@ -293,7 +300,6 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		LibRaw iProcessor;
 		QImage image;
-		int orientation = 0;
 
 		int error = LIBRAW_DATA_ERROR;
 
@@ -360,7 +366,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		//unpack the data
 		error = iProcessor.unpack();
-		if (iProcessor.version() != "0.13.5")	// fixes a bug specific to libraw 13 - version call is UNTESTED
+		if (std::strcmp(iProcessor.version(), "0.13.5") != 0)	// fixes a bug specific to libraw 13 - version call is UNTESTED
 			iProcessor.raw2image();
 
 		if (error != LIBRAW_SUCCESS)
@@ -414,7 +420,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		// 1. read raw image and normalize it according to dynamic range and black point
 		
 		//dynamic range is defined by maximum - black
-		float dynamicRange = iProcessor.imgdata.color.maximum-iProcessor.imgdata.color.black;	// iProcessor.imgdata.color.channel_maximum[0]-iProcessor.imgdata.color.black;	// dynamic range
+		float dynamicRange = (float)(iProcessor.imgdata.color.maximum-iProcessor.imgdata.color.black);	// iProcessor.imgdata.color.channel_maximum[0]-iProcessor.imgdata.color.black;	// dynamic range
 
 		if (iProcessor.imgdata.idata.filters) {
 
@@ -466,7 +472,6 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 				for (unsigned int col = 0; col < cols; col++) {
 
-					int colorIdx = iProcessor.COLOR(row, col);
 					ptrR[col] = (float)(iProcessor.imgdata.image[cols*(row) + col][0]);
 					ptrR[col] -= iProcessor.imgdata.color.black;
 					ptrR[col] /= dynamicRange;
@@ -564,32 +569,32 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 			for (uint col = 0; col < cols; col++)
 			{
 				//apply white balance correction
-				int tempR = ptrR[col] * mulWhite[0];
-				int tempG = ptrG[col] * mulWhite[1];
-				int tempB = ptrB[col] * mulWhite[2];
+				int tempR = qRound(ptrR[col] * mulWhite[0]);
+				int tempG = qRound(ptrG[col] * mulWhite[1]);
+				int tempB = qRound(ptrB[col] * mulWhite[2]);
 
 				//apply color correction					
-				int corrR = colorCorrMat[0][0] * tempR + colorCorrMat[0][1] * tempG  + colorCorrMat[0][2] * tempB;
-				int corrG = colorCorrMat[1][0] * tempR + colorCorrMat[1][1] * tempG  + colorCorrMat[1][2] * tempB;
-				int corrB = colorCorrMat[2][0] * tempR + colorCorrMat[2][1] * tempG  + colorCorrMat[2][2] * tempB;
+				int corrR = qRound(colorCorrMat[0][0] * tempR + colorCorrMat[0][1] * tempG  + colorCorrMat[0][2] * tempB);
+				int corrG = qRound(colorCorrMat[1][0] * tempR + colorCorrMat[1][1] * tempG  + colorCorrMat[1][2] * tempB);
+				int corrB = qRound(colorCorrMat[2][0] * tempR + colorCorrMat[2][1] * tempG  + colorCorrMat[2][2] * tempB);
 				// without color correction: change above three lines to the bottom ones
 				//int corrR = tempR;
 				//int corrG = tempG;
 				//int corrB = tempB;
 
 				//clipping
-				ptrR[col] = (corrR > 65535) ? 65535 : (corrR < 0) ? 0 : corrR;
-				ptrG[col] = (corrG > 65535) ? 65535 : (corrG < 0) ? 0 : corrG;
-				ptrB[col] = (corrB > 65535) ? 65535 : (corrB < 0) ? 0 : corrB;
+				ptrR[col] = (corrR > 65535) ? 65535 : (corrR < 0) ? 0 : (unsigned short)corrR;
+				ptrG[col] = (corrG > 65535) ? 65535 : (corrG < 0) ? 0 : (unsigned short)corrG;
+				ptrB[col] = (corrB > 65535) ? 65535 : (corrB < 0) ? 0 : (unsigned short)corrB;
 
 				//apply gamma correction
 				ptrR[col] = ptrR[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrR[col]*(float)iProcessor.imgdata.params.gamm[1]/257.0f) :
-					gammaTable[ptrR[col]] * 255;
+					(unsigned short)(gammaTable[ptrR[col]] * 255);
 				//									(1.099f*(float)(pow((float)ptrRaw[col], gamma))-0.099f);
 				ptrG[col] = ptrG[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrG[col]*(float)iProcessor.imgdata.params.gamm[1]/257.0f) :
-					gammaTable[ptrG[col]] * 255;
+					(unsigned short)(gammaTable[ptrG[col]] * 255);
 				ptrB[col] = ptrB[col] <= 0.018f * 65535.0f ? (unsigned short)(ptrB[col]*(float)iProcessor.imgdata.params.gamm[1]/257.0f) :
-					gammaTable[ptrB[col]] * 255;
+					(unsigned short)(gammaTable[ptrB[col]] * 255);
 			}
 		}
 
@@ -675,8 +680,11 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	return imgLoaded;
 }
 
+#ifdef WIN32
+bool DkBasicLoader::loadPSDFile(const QFileInfo&, QSharedPointer<QByteArray>) {
+#else
 bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
-#ifndef WIN32
+
 	// load from file?
 	if (!ba || ba->isEmpty()) {
 		QFile file(fileInfo.absoluteFilePath());
@@ -709,7 +717,7 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 #ifdef WITH_OPENCV
 
-bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, QSize s, int skipHeader) {
+bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, QSize s) {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
@@ -797,7 +805,6 @@ void DkBasicLoader::getPatchSizeFromFileName(const QString& fileName, int& width
 		QString tmpSec = sections[idx];
 		qDebug() << "section: " << tmpSec;
 
-		int sIdx = tmpSec.indexOf("w");
 		if (tmpSec.contains("w"))
 			width = tmpSec.remove("w").toInt();
 		else if (tmpSec.contains("h"))
@@ -1033,7 +1040,7 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 	qImg = QImage(width, height, QImage::Format_ARGB32);
 
 	const int stopOnError = 1;
-	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(qImg.bits()), ORIENTATION_TOPLEFT, stopOnError);
+	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(qImg.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
 
 	if (imgLoaded) {
 		for (uint32 y=0; y<height; ++y)
@@ -1397,7 +1404,7 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 		compression = 100;
 		lossless = true;
 	}
-	if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, compression)) return false;
+	if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, (float)compression)) return false;
 	if (lossless) config.lossless = 1;
 	config.method = speed;
 

@@ -27,7 +27,7 @@
 
 #pragma once
 
-
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
 #include <QMenuBar>
 
@@ -37,6 +37,7 @@
 #include <QPointer>
 #include <QTimer>
 #include <QStringBuilder>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkNetwork.h"
 #include "DkTimer.h"

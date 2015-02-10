@@ -82,7 +82,7 @@ QPixmap DkImage::fromWinHICON(HICON icon) {
 	ReleaseDC(0, screenDevice);
 
 	ICONINFO iconinfo;
-	bool result = GetIconInfo(icon, &iconinfo); //x and y Hotspot describes the icon center
+	bool result = (GetIconInfo(icon, &iconinfo) != 0); //x and y Hotspot describes the icon center
 	if (!result)
 		qWarning("QPixmap::fromWinHICON(), failed to GetIconInfo()");
 
@@ -153,7 +153,7 @@ QImage DkImage::resizeImage(const QImage img, const QSize& newSize, float factor
 		return img;
 
 	if (factor != 1.0f)
-		nSize = QSize(img.width()*factor, img.height()*factor);
+		nSize = QSize(qRound(img.width()*factor), qRound(img.height()*factor));
 
 	if (nSize.width() < 1 || nSize.height() < 1) {
 		return QImage();
@@ -262,10 +262,10 @@ QVector<uchar> DkImage::getLinear2GammaTable() {
 
 		double i = idx/255.0;
 		if (i <= 0.0031308) {
-			gammaTable.append(qRound(i*12.92*255.0));
+			gammaTable.append((uchar)qRound(i*12.92*255.0));
 		}
 		else {
-			gammaTable.append(qRound(((1+a)*std::pow(i,1/2.4)-a)*255.0));
+			gammaTable.append((uchar)qRound(((1+a)*std::pow(i,1/2.4)-a)*255.0));
 		}
 	}
 
@@ -287,10 +287,10 @@ QVector<uchar> DkImage::getGamma2LinearTable() {
 
 		double i = idx/255.0;
 		if (i <= 0.04045) {
-			gammaTable.append(qRound(i/12.92*255.0));
+			gammaTable.append((uchar)qRound(i/12.92*255.0));
 		}
 		else {
-			gammaTable.append(std::pow((i+a)/(1+a),2.4)*255 > 0 ? std::pow((i+a)/(1+a),2.4)*255 : 0);
+			gammaTable.append(std::pow((i+a)/(1+a),2.4)*255 > 0 ? (uchar)std::pow((i+a)/(1+a),2.4)*255 : 0);
 		}
 	}
 
@@ -622,7 +622,7 @@ bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {
 	cv::Mat imgCv = DkImage::qImage2Mat(img);
 
 	cv::Mat imgG;
-	cv::Mat gx = cv::getGaussianKernel(4*sigma+1, sigma);
+	cv::Mat gx = cv::getGaussianKernel(qRound(4*sigma+1), sigma);
 	cv::Mat gy = gx.t();
 	cv::sepFilter2D(imgCv, imgG, CV_8U, gx, gy);
 	//cv::GaussianBlur(imgCv, imgG, cv::Size(4*sigma+1, 4*sigma+1), sigma);		// this is awesomely slow
@@ -648,11 +648,11 @@ QImage DkImage::createThumb(const QImage& image) {
 
 	if (imgW > maxThumbSize || imgH > maxThumbSize) {
 		if (imgW > imgH) {
-			imgH = (float)maxThumbSize / imgW * imgH;
+			imgH = qRound((float)maxThumbSize / imgW * imgH);
 			imgW = maxThumbSize;
 		} 
 		else if (imgW < imgH) {
-			imgW = (float)maxThumbSize / imgH * imgW;
+			imgW = qRound((float)maxThumbSize / imgH * imgW);
 			imgH = maxThumbSize;
 		}
 		else {
@@ -717,7 +717,7 @@ QColor DkImage::getMeanColor(const QImage& img) {
 	}
 
 	if (maxColCount > 0)
-		return QColor((float)qRed(maxCol)/numCols*255, (float)qGreen(maxCol)/numCols*255, (float)qBlue(maxCol)/numCols*255);
+		return QColor(qRound((float)qRed(maxCol)/numCols*255), qRound((float)qGreen(maxCol)/numCols*255), qRound((float)qBlue(maxCol)/numCols*255));
 	else
 		return DkSettings::display.bgColorWidget;
 }

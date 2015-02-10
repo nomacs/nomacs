@@ -27,13 +27,10 @@
 
 #pragma once
 
-#include <QObject>
-#include <QFileInfo>
-#include <QImage>
-#include <QImageReader>
-#include <QImageWriter>
-#include <QNetworkReply>
+#pragma warning(push, 0)    
 #include <QNetworkAccessManager>
+#include <QUrl>
+#pragma warning(pop)
 
 #include "DkImageStorage.h"
 #include "DkMetaData.h"
@@ -87,6 +84,9 @@
 #endif
 
 #endif
+
+// Qt defines
+class QNetworkReply;
 
 namespace nmc {
 
@@ -260,13 +260,13 @@ public:
 
 #ifdef WITH_OPENCV
 	Mat getImageCv() { return cv::Mat(); };	// we should not need this
-	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0);
+	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize());
 	Mat getPatch(const unsigned char** dataPtr, QSize patchSize) const;
 	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const;
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;
 #else
-	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize(), int skipHeader = 0) {return false;};
+	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize()) {return false;};
 	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const {return 0;};
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {return false;};
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {};
@@ -327,15 +327,14 @@ public:
 signals:
 	void downloaded();
 
-	private slots:
-		void fileDownloaded(QNetworkReply* pReply);
+private slots:
+	void fileDownloaded(QNetworkReply* pReply);
 
 private:
 
 	QNetworkAccessManager m_WebCtrl;
 	QSharedPointer<QByteArray> m_DownloadedData;
 	QUrl url;
-
 };
 
 };

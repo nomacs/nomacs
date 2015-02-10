@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStringList>
 #include <QString>
 #include <QImage>
@@ -35,6 +36,7 @@
 #include <QFileInfo>
 #include <QApplication>
 #include <QMainWindow>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -62,7 +64,7 @@ public:
     virtual QStringList runID() const = 0;
     virtual QString pluginMenuName(const QString &runID = QString()) const = 0;
     virtual QString pluginStatusTip(const QString &runID = QString()) const = 0;
-	virtual QList<QAction*> pluginActions(QWidget* parent) { return QList<QAction*>();};
+	virtual QList<QAction*> pluginActions(QWidget*) { return QList<QAction*>();};
     virtual QImage runPlugin(const QString &runID = QString(), const QImage &image = QImage()) const = 0;
 	virtual int interfaceType() const {return interface_basic; };
 	virtual bool closesOnImageChange() {return true;};

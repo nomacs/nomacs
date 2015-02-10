@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QToolBar>
 #include <QWidget>
 #include <QObject>
@@ -53,6 +54,7 @@
 
 #include <QGridLayout>
 #include <QGraphicsOpacityEffect>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkMath.h"
 #include "DkImage.h"

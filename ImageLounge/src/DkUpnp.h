@@ -134,7 +134,7 @@ namespace nmc {
 	protected:
 		virtual qint32 doPlay(const QString &speed) { qDebug() << "doPlay: speed:" << speed; return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 		virtual qint32 doStop() { qDebug() << "doStop";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
-		virtual qint32 doSeek(const Herqq::Upnp::Av::HSeekInfo &seekinfo) { qDebug() << "doSeek";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doSeek(const Herqq::Upnp::Av::HSeekInfo&) { qDebug() << "doSeek";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 		virtual qint32 doNext() { qDebug() << "doNext";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 		virtual qint32 doPrevious() { qDebug() << "doPrevious";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 		virtual qint32 doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata=0);

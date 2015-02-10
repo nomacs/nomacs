@@ -27,7 +27,6 @@
 
 #include "DkPluginManager.h"
 
-
 namespace nmc {
 
 /**********************************************************************************
@@ -100,7 +99,7 @@ void DkPluginManager::closePressed() {
 	this->close();
 }
 
-void DkPluginManager::showEvent(QShowEvent *event) {
+void DkPluginManager::showEvent(QShowEvent*) {
 
 	loadPreviouslyInstalledPluginsList();
 	loadPlugins();
@@ -458,8 +457,6 @@ void DkPluginTableWidget::createLayout() {
 	bottomVertLayout->addLayout(topHorLayout);
 
 	QHBoxLayout* bottHorLayout = new QHBoxLayout();
-	int layoutHWidth = this->geometry().width();
-	int layoutHWidth2 = this->contentsRect().width();
 
 	//QTextEdit* decriptionEdit = new QTextEdit();
 	//decriptionEdit->setReadOnly(true);
@@ -799,12 +796,12 @@ DkInstalledPluginsModel::DkInstalledPluginsModel(QList<QString> data, QObject *p
 	loadPluginsEnabledSettings();
 }
 
-int DkInstalledPluginsModel::rowCount(const QModelIndex &parent) const {
+int DkInstalledPluginsModel::rowCount(const QModelIndex&) const {
 
 	return pluginData.size();
 }
 
-int DkInstalledPluginsModel::columnCount(const QModelIndex &parent) const {
+int DkInstalledPluginsModel::columnCount(const QModelIndex&) const {
 
 	return ip_column_size;
 }
@@ -880,7 +877,7 @@ bool DkInstalledPluginsModel::setData(const QModelIndex &index, const QVariant &
     return false;
 }
 
-bool DkInstalledPluginsModel::insertRows(int position, int rows, const QModelIndex &index) {
+bool DkInstalledPluginsModel::insertRows(int position, int rows, const QModelIndex&) {
 
     beginInsertRows(QModelIndex(), position, position+rows-1);
 
@@ -892,7 +889,7 @@ bool DkInstalledPluginsModel::insertRows(int position, int rows, const QModelInd
     return true;
 }
 
-bool DkInstalledPluginsModel::removeRows(int position, int rows, const QModelIndex &index) {
+bool DkInstalledPluginsModel::removeRows(int position, int rows, const QModelIndex&) {
 
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
@@ -973,12 +970,12 @@ DkDownloadPluginsModel::DkDownloadPluginsModel(QObject *parent) : QAbstractTable
 	pluginsInstalled = QMap<QString, bool>();
 }
 
-int DkDownloadPluginsModel::rowCount(const QModelIndex &parent) const {
+int DkDownloadPluginsModel::rowCount(const QModelIndex&) const {
 
 	return pluginData.size();
 }
 
-int DkDownloadPluginsModel::columnCount(const QModelIndex &parent) const {
+int DkDownloadPluginsModel::columnCount(const QModelIndex&) const {
 
 	return dp_column_size;
 }
@@ -1035,12 +1032,12 @@ Qt::ItemFlags DkDownloadPluginsModel::flags(const QModelIndex &index) const {
 	return QAbstractTableModel::flags(index);
 }
 
-bool DkDownloadPluginsModel::setData(const QModelIndex &index, const QVariant &value, int role) {
+bool DkDownloadPluginsModel::setData(const QModelIndex&, const QVariant&, int) {
 
     return false;
 }
 
-bool DkDownloadPluginsModel::insertRows(int position, int rows, const QModelIndex &index) {
+bool DkDownloadPluginsModel::insertRows(int position, int rows, const QModelIndex&) {
 
     beginInsertRows(QModelIndex(), position, position+rows-1);
 
@@ -1052,7 +1049,7 @@ bool DkDownloadPluginsModel::insertRows(int position, int rows, const QModelInde
     return true;
 }
 
-bool DkDownloadPluginsModel::removeRows(int position, int rows, const QModelIndex &index) {
+bool DkDownloadPluginsModel::removeRows(int position, int rows, const QModelIndex&) {
 
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
@@ -1193,7 +1190,7 @@ void DkPushButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	QApplication::style()->drawControl(QStyle::CE_PushButton, &pushButtonStyleOption, painter);
 }
 
-bool DkPushButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
+bool DkPushButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel*, const QStyleOptionViewItem &option, const QModelIndex &index) {
 	
 	if ((event->type() == QEvent::MouseButtonRelease) || (event->type() == QEvent::MouseButtonPress)) {
 
@@ -1269,7 +1266,7 @@ void DkDownloadDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 	}
 }
 
-bool DkDownloadDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
+bool DkDownloadDelegate::editorEvent(QEvent *event, QAbstractItemModel*, const QStyleOptionViewItem &option, const QModelIndex &index) {
 	
 	if (index.model()->data(index, Qt::UserRole).toBool()) return false;
 	else {
@@ -1331,7 +1328,6 @@ void DkDescriptionEdit::updateText() {
 			break;
 		default:
 			QString text = QString();
-			int row = selectionModel->selection().indexes().first().row();
 			QModelIndex sourceIndex = proxyModel->mapToSource(selectionModel->selection().indexes().first());
 			QString pluginID = QString();
 			if (parentTable->getOpenedTab()==tab_installed_plugins) {
@@ -1350,12 +1346,12 @@ void DkDescriptionEdit::updateText() {
 	}
 }
 
-void DkDescriptionEdit::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight) {
+void DkDescriptionEdit::dataChanged(const QModelIndex&, const QModelIndex&) {
 
 	updateText();
 }
 
-void DkDescriptionEdit::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+void DkDescriptionEdit::selectionChanged(const QItemSelection&, const QItemSelection&) {
 
 	updateText();
 }
@@ -1383,7 +1379,6 @@ void DkDescriptionImage::updateImage() {
 			this->setPixmap(QPixmap::fromImage(defaultImage));	
 			break;
 		default:
-			int row = selectionModel->selection().indexes().first().row();
 			QModelIndex sourceIndex = proxyModel->mapToSource(selectionModel->selection().indexes().first());
 			QString pluginID;
 			QImage img;
@@ -1408,12 +1403,12 @@ void DkDescriptionImage::updateImageFromReply(QImage img) {
 	else this->setPixmap(QPixmap::fromImage(defaultImage));
 }
 
-void DkDescriptionImage::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight) {
+void DkDescriptionImage::dataChanged(const QModelIndex&, const QModelIndex&) {
 
 	updateImage();
 }
 
-void DkDescriptionImage::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+void DkDescriptionImage::selectionChanged(const QItemSelection&, const QItemSelection&) {
 
 	updateImage();
 }
@@ -1551,7 +1546,6 @@ void DkPluginDownloader::replyFinished(QNetworkReply* reply) {
 	if(!downloadAborted) {
 		if (reply->error() != QNetworkReply::NoError) {
 			qDebug() << reply->error();
-			int err = reply->error();
 			if (requestType == request_xml) emit showDownloaderMessage(tr("Sorry, I could not download plugin information."), tr("Plugin manager"));
 			else if (requestType == request_preview) emit showDownloaderMessage(tr("Sorry, I could not download plugin preview."), tr("Plugin manager"));
 			else if (requestType == request_plugin_files_list || requestType == request_plugin) emit showDownloaderMessage(tr("Sorry, I could not download plugin."), tr("Plugin manager"));
@@ -1699,8 +1693,8 @@ void DkPluginDownloader::cancelUpdate()  {
 
 void DkPluginDownloader::updateDownloadProgress(qint64 received, qint64 total) { 
 
-	progressDialog->setMaximum(total);
-	progressDialog->setValue(received);
+	progressDialog->setMaximum((int)total);
+	progressDialog->setValue((int)received);
 }
 
 };

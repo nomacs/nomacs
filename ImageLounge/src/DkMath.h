@@ -27,22 +27,13 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <cmath>
 #include <QDebug>
 #include <QPointF>
-//#include <cfloat>
-//#include <algorithm>
-//#include <vector>
-//#include <list>
-//#include <QSize>
-//#include <QRect>
-//#include <QPoint>
-//#include <QPointF>
-//
-//#include "DkError.h"
+#pragma warning(pop)		// no warnings from includes - end
 
 #include <float.h>
-
 
 #ifdef WITH_OPENCV
 
@@ -271,7 +262,7 @@ public:
 		if (pt != iv && pt != 1)
 			pt = pt >> 1;
 
-		return pt;
+		return (float)pt;
 	}
 
 	/**
@@ -385,8 +376,8 @@ public:
 	 * @param p a QPointF
 	 **/ 
 	DkVector(QPointF p) {
-		this->x = p.x();
-		this->y = p.y();
+		this->x = (float)p.x();
+		this->y = (float)p.y();
 	};
 
 	/** 
@@ -804,7 +795,7 @@ public:
 	};
 
 	virtual DkVector round() const {
-		return DkVector(qRound(x), qRound(y));
+		return DkVector((float)qRound(x), (float)qRound(y));
 	} 
 
 	///** 

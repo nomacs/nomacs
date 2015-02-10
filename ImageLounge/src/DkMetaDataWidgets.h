@@ -27,10 +27,12 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDockWidget>
 #include <QTreeView>
 #include <QLabel>
 #include <QTextEdit>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkMetaData.h"
 #include "DkImageContainer.h"

@@ -932,7 +932,7 @@ void DkRCConnection::sendPermission() {
 
 	QByteArray ba;
 	QDataStream ds(&ba, QIODevice::ReadWrite);
-	ds << DkSettings::sync.syncWhiteList.contains(getClientName());
+	ds << (DkSettings::sync.syncWhiteList.contains(getClientName()) != 0);
 	ds << "dummyText";
 	QByteArray data = "PERMISSION";
 	data.append(SeparatorToken).append(QByteArray::number(ba.size())).append(SeparatorToken).append(ba);

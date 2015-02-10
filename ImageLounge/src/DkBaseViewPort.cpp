@@ -30,10 +30,21 @@
 #include "DkSettings.h"
 #include "DkUtils.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QCoreApplication>
+#include <QTimer>
+#include <QMovie>
+#include <QShortcut>
+
+// gestures
+#include <QSwipeGesture>
+#pragma warning(pop)		// no warnings from includes - end
+
+
 namespace nmc {
 	
 // DkBaseViewport --------------------------------------------------------------------
-DkBaseViewPort::DkBaseViewPort(QWidget *parent, Qt::WindowFlags flags) : QGraphicsView(parent) {
+DkBaseViewPort::DkBaseViewPort(QWidget *parent) : QGraphicsView(parent) {
 
 	grabGesture(Qt::PanGesture);
 	grabGesture(Qt::PinchGesture);
@@ -138,7 +149,7 @@ void DkBaseViewPort::resetView() {
 void DkBaseViewPort::fullView() {
 
 	worldMatrix.reset();
-	zoom(1.0f/imgMatrix.m11());
+	zoom(1.0f/(float)imgMatrix.m11());
 	changeCursor();
 
 	update();
@@ -152,25 +163,25 @@ void DkBaseViewPort::togglePattern(bool show) {
 
 void DkBaseViewPort::shiftLeft() {
 
-	float delta = 2*width()/(100.0*worldMatrix.m11());
+	float delta = 2*width()/(100.0f*(float)worldMatrix.m11());
 	moveView(QPointF(delta,0));
 }
 
 void DkBaseViewPort::shiftRight() {
 
-	float delta = -2*width()/(100.0*worldMatrix.m11());
+	float delta = -2*width()/(100.0f*(float)worldMatrix.m11());
 	moveView(QPointF(delta,0));
 }
 
 void DkBaseViewPort::shiftUp() {
 
-	float delta = 2*height()/(100.0*worldMatrix.m11());
+	float delta = 2*height()/(100.0f*(float)worldMatrix.m11());
 	moveView(QPointF(0,delta));
 }
 
 void DkBaseViewPort::shiftDown() {
 
-	float delta = -2*height()/(100.0*worldMatrix.m11());
+	float delta = -2*height()/(100.0f*(float)worldMatrix.m11());
 	moveView(QPointF(0,delta));
 }
 
@@ -241,7 +252,7 @@ void DkBaseViewPort::zoom(float factor, QPointF center) {
 
 	//inverse the transform
 	int a, b;
-	worldMatrix.inverted().map(center.x(), center.y(), &a, &b);
+	worldMatrix.inverted().map(qRound(center.x()), qRound(center.y()), &a, &b);
 
 	worldMatrix.translate(a-factor*a, b-factor*b);
 	worldMatrix.scale(factor, factor);
@@ -312,7 +323,7 @@ QImage DkBaseViewPort::getCurrentImageRegion() {
 	return imgR;
 }
 
-bool DkBaseViewPort::unloadImage(bool fileChange) {
+bool DkBaseViewPort::unloadImage(bool) {
 
 	return true;
 }
@@ -398,7 +409,7 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 #if QT_VERSION < 0x050000
 
 #ifdef WIN32
-	float cZoom = event->argument;
+	float cZoom = (float)event->argument;
 #else
 	float cZoom = 0;	// ignore on other os
 #endif
@@ -572,7 +583,7 @@ void DkBaseViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 void DkBaseViewPort::wheelEvent(QWheelEvent *event) {
 
-	float factor = -event->delta();
+	float factor = (float)-event->delta();
 	if (DkSettings::display.invertZoom) factor *= -1.0f;
 
 	factor /= -1200.0f;
@@ -607,7 +618,7 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 		painter->setWorldMatrixEnabled(true);
 	}
 
-	QImage imgQt = imgStorage.getImage(imgMatrix.m11()*worldMatrix.m11());
+	QImage imgQt = imgStorage.getImage((float)(imgMatrix.m11()*worldMatrix.m11()));
 
 	if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
 
@@ -621,7 +632,7 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 		painter->drawRect(imgViewRect);
 	}
 
-	float oldOp = painter->opacity();
+	float oldOp = (float)painter->opacity();
 	painter->setOpacity(opacity);
 
 	if (!movie || !movie->isValid())
@@ -661,7 +672,7 @@ void DkBaseViewPort::updateImageMatrix() {
 	// update world matrix
 	if (worldMatrix.m11() != 1) {
 
-		float scaleFactor = oldImgMatrix.m11()/imgMatrix.m11();
+		float scaleFactor = (float)(oldImgMatrix.m11()/imgMatrix.m11());
 		double dx = oldImgRect.x()/scaleFactor-imgViewRect.x();
 		double dy = oldImgRect.y()/scaleFactor-imgViewRect.y();
 
@@ -673,7 +684,7 @@ void DkBaseViewPort::updateImageMatrix() {
 QTransform DkBaseViewPort::getScaledImageMatrix() {
 
 	// the image resizes as we zoom
-	float ratioImg = imgRect.width()/imgRect.height();
+	float ratioImg = (float)imgRect.width()/(float)imgRect.height();
 	float ratioWin = (float)this->width()/(float)this->height();
 
 	QTransform imgMatrix;
@@ -681,7 +692,7 @@ QTransform DkBaseViewPort::getScaledImageMatrix() {
 	if (imgRect.width() == 0 || imgRect.height() == 0)
 		s = 1.0f;
 	else
-		s = (ratioImg > ratioWin) ? (float)width()/imgRect.width() : (float)height()/imgRect.height();
+		s = (ratioImg > ratioWin) ? (float)width()/(float)imgRect.width() : (float)height()/(float)imgRect.height();
 
 	imgMatrix.scale(s, s);
 
@@ -742,14 +753,14 @@ void DkBaseViewPort::controlImagePosition(float lb, float ub) {
 	QRectF imgRectWorld = worldMatrix.mapRect(imgViewRect);
 
 	if (lb == -1 && ub == -1 && panControl.x() != -1 && panControl.y() != -1) {
-		lb = panControl.x(); 
-		ub = panControl.y();
+		lb = (float)panControl.x(); 
+		ub = (float)panControl.y();
 	}
 	else {
 
 		// default behavior
-		if (lb == -1)	lb = viewportRect.width()/2;
-		if (ub == -1)	ub = viewportRect.height()/2;
+		if (lb == -1)	lb = (float)viewportRect.width()/2.0f;
+		if (ub == -1)	ub = (float)viewportRect.height()/2.0f;
 	}
 
 	if (imgRectWorld.left() > lb && imgRectWorld.width() > width())
@@ -772,8 +783,8 @@ void DkBaseViewPort::centerImage() {
 
 	// if black border - center the image
 	if (imgWorldRect.width() < (float)width()) {
-		dx = ((float)width()-imgWorldRect.width())*0.5f-imgViewRect.x()*worldMatrix.m11();
-		dx = (dx-worldMatrix.dx())/worldMatrix.m11();
+		dx = (float)((width()-imgWorldRect.width())*0.5f-imgViewRect.x()*worldMatrix.m11());
+		dx = (dx-(float)worldMatrix.dx())/(float)worldMatrix.m11();
 		worldMatrix.translate(dx, 0);
 	}
 	else if (imgWorldRect.left() > 0)
@@ -782,8 +793,8 @@ void DkBaseViewPort::centerImage() {
 		worldMatrix.translate((width()-imgWorldRect.right())/worldMatrix.m11(), 0);
 
 	if (imgWorldRect.height() < height()) {
-		dy = (height()-imgWorldRect.height())*0.5f-imgViewRect.y()*worldMatrix.m22();
-		dy = (dy-worldMatrix.dy())/worldMatrix.m22();
+		dy = (float)((height()-imgWorldRect.height())*0.5f-imgViewRect.y()*worldMatrix.m22());
+		dy = (float)((dy-worldMatrix.dy())/worldMatrix.m22());
 		worldMatrix.translate(0, dy);
 	}
 	else if (imgWorldRect.top() > 0) {

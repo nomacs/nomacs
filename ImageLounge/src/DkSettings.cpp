@@ -26,9 +26,21 @@
  *******************************************************************************************************/
 
 #include "DkSettings.h"
-//#include "DkWidgets.h"
-#include "DkDialog.h"
+//#include "DkDialog.h"
 #include "DkUtils.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QImageReader>
+#include <QDesktopServices>
+#include <QTranslator>
+#include <QFileInfo>
+
+#include <QTableView>
+#include <QStandardItemModel>
+#include <QStandardItem>
+#include <QAbstractTableModel>
+#include <QStyledItemDelegate>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -255,7 +267,7 @@ QStringList DkSettings::getTranslationDirs() {
 	return translationDirs;
 }
 
-void DkSettings::load(bool force) {
+void DkSettings::load() {
 
 	setToDefaultSettings();
 
@@ -413,7 +425,7 @@ void DkSettings::load(bool force) {
 	settings.beginGroup("ResourceSettings");
 
 	resources_p.cacheMemory = settings.value("cacheMemory", resources_p.cacheMemory).toFloat();
-	resources_p.maxImagesCached = settings.value("maxImagesCached", resources_p.maxImagesCached).toFloat();
+	resources_p.maxImagesCached = settings.value("maxImagesCached", resources_p.maxImagesCached).toInt();
 	resources_p.waitForLastImg = settings.value("waitForLastImg", resources_p.waitForLastImg).toBool();
 	resources_p.filterRawImages = settings.value("filterRawImages", resources_p.filterRawImages).toBool();	
 	resources_p.loadRawThumb = settings.value("loadRawThumb", resources_p.loadRawThumb).toInt();	

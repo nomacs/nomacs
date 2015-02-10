@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileInfo>
 #include <QImage>
 #include <QDebug>
@@ -34,6 +35,17 @@
 #include <QVector2D>
 #include <QSharedPointer>
 #include <QStringList>
+
+#ifdef HAVE_EXIV2_HPP
+#include <exiv2/exiv2.hpp>
+#else
+#include <exiv2/image.hpp>
+#include <exiv2/preview.hpp>
+#include <iomanip>
+#endif
+#pragma warning(pop)
+
+#pragma warning(disable: 4251)	// TODO: remove
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -43,14 +55,6 @@
 #else
 #define DllExport
 #endif
-#endif
-
-#ifdef HAVE_EXIV2_HPP
-#include <exiv2/exiv2.hpp>
-#else
-#include <exiv2/image.hpp>
-#include <exiv2/preview.hpp>
-#include <iomanip>
 #endif
 
 // OS 2 does not define byte so we safely assume, that other programmers agree to call an 8 bit a byte

@@ -27,7 +27,6 @@
 
 #include "DkManipulationWidgets.h"
 
-
 namespace nmc {
 
 // static variables
@@ -90,12 +89,12 @@ void DkImageManipulationDialog::init() {
  **/
 void DkImageManipulationDialog::resetValues() {
 	
-	brightnessWidget->setToolsValue(brightnessWidget->getDefaultValue());
-	contrastWidget->setToolsValue(contrastWidget->getDefaultValue());
-	saturationWidget->setToolsValue(saturationWidget->getDefaultValue());
-	hueWidget->setToolsValue(hueWidget->getDefaultValue());
-	gammaWidget->setToolsValue(gammaWidget->getDefaultValueF());
-	exposureWidget->setToolsValue(exposureWidget->convertSliderValToExposure(exposureWidget->getDefaultValueF()));
+	brightnessWidget->setToolsValue((float)brightnessWidget->getDefaultValue());
+	contrastWidget->setToolsValue((float)contrastWidget->getDefaultValue());
+	saturationWidget->setToolsValue((float)saturationWidget->getDefaultValue());
+	hueWidget->setToolsValue((float)hueWidget->getDefaultValue());
+	gammaWidget->setToolsValue((float)gammaWidget->getDefaultValueF());
+	exposureWidget->setToolsValue((float)exposureWidget->convertSliderValToExposure(exposureWidget->getDefaultValueF()));
 
 	DkImageManipulationWidget::clearHistoryVectors();
 	DkImageManipulationWidget::setEmptyManipulationType();
@@ -114,10 +113,6 @@ void DkImageManipulationDialog::resetValues() {
  **/
 void DkImageManipulationDialog::createLayout() {
 
-	// bottom widget - buttons	
-	QWidget* bottomWidget = new QWidget(this);
-	QHBoxLayout* bottomWidgetHBoxLayout = new QHBoxLayout(bottomWidget);
-	
 	// central widget - preview image
 	QWidget* centralWidget = new QWidget(this);
 	previewLabel = new QLabel(centralWidget);
@@ -184,12 +179,12 @@ void DkImageManipulationDialog::createImgPreview() {
 	float rMin = (rW < rH) ? rW : rH;
 
 	if(rMin < 1) {
-		if(rW < rH) lt = QPoint(0,(float) img->height() * (rH - rMin) / 2.0f);
+		if(rW < rH) lt = QPoint(0, qRound(img->height() * (rH - rMin) / 2.0f));
 		else {
-			 lt = QPoint((float) img->width() * (rW - rMin) / 2.0f, 0);
+			 lt = QPoint(qRound(img->width() * (rW - rMin) / 2.0f), 0);
 		}
 	}
-	else lt = QPoint((previewWidth - img->width()) / 2.0f, (previewHeight - img->height()) / 2.0f);
+	else lt = QPoint(qRound((previewWidth - img->width()) / 2.0f), qRound((previewHeight - img->height()) / 2.0f));
 
 	QSize imgSizeScaled = QSize(img->size());
 	if(rMin < 1) imgSizeScaled *= rMin;
@@ -339,7 +334,7 @@ void DkImageManipulationWidget::updateDoubleSliderVal(double val) {
 	
 	if(!valueUpdated) {
 		valueUpdated = true;		
-		if (this->name.compare("DkGamma") != 0) this->slider->setValue(val * 100);
+		if (this->name.compare("DkGamma") != 0) this->slider->setValue(qRound(val * 100));
 		else this->slider->setValue(findClosestValue(this->gammaSliderValues, val, 0, 199));		
 		if (!slidersReset && doARedraw) redrawImage();
 	}
@@ -354,12 +349,12 @@ void DkImageManipulationWidget::updateDoubleSliderVal(double val) {
 void DkImageManipulationWidget::resetSliderValues(char exceptionSlider) {
 	
 	slidersReset = true;
-	if (exceptionSlider != manipulationBrightness) manipDialog->getBrightnessWidget()->setToolsValue(manipDialog->getBrightnessWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationContrast) manipDialog->getContrastWidget()->setToolsValue(manipDialog->getContrastWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationSaturation) manipDialog->getSaturationWidget()->setToolsValue(manipDialog->getSaturationWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationHue) manipDialog->getHueWidget()->setToolsValue(manipDialog->getHueWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationGamma) manipDialog->getGammaWidget()->setToolsValue(manipDialog->getGammaWidget()->getDefaultValueF());
-	if (exceptionSlider != manipulationExposure) manipDialog->getExposureWidget()->setToolsValue(
+	if (exceptionSlider != manipulationBrightness) manipDialog->getBrightnessWidget()->setToolsValue((float)manipDialog->getBrightnessWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationContrast) manipDialog->getContrastWidget()->setToolsValue((float)manipDialog->getContrastWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationSaturation) manipDialog->getSaturationWidget()->setToolsValue((float)manipDialog->getSaturationWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationHue) manipDialog->getHueWidget()->setToolsValue((float)manipDialog->getHueWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationGamma) manipDialog->getGammaWidget()->setToolsValue((float)manipDialog->getGammaWidget()->getDefaultValueF());
+	if (exceptionSlider != manipulationExposure) manipDialog->getExposureWidget()->setToolsValue((float)
 		manipDialog->getExposureWidget()->convertSliderValToExposure(manipDialog->getExposureWidget()->getDefaultValueF()));
 	slidersReset = false;
 }
@@ -415,12 +410,12 @@ void DkImageManipulationWidget::setToolsValue(float val1, float val2) {
 **/
 float DkImageManipulationWidget::getToolsValue() {
 
-	if (this->name.compare("DkBrightness") == 0) return slider->value();
-	else if (this->name.compare("DkContrast") == 0) return slider->value();
-	else if (this->name.compare("DkSaturation") == 0) return slider->value();
-	else if (this->name.compare("DkHue") == 0) return slider->value();
-	else if (this->name.compare("DkGamma") == 0) return sliderSpinBoxDouble->value();
-	else if (this->name.compare("DkExposure") == 0) return sliderSpinBoxDouble->value();
+	if (this->name.compare("DkBrightness") == 0) return (float)slider->value();
+	else if (this->name.compare("DkContrast") == 0) return (float)slider->value();
+	else if (this->name.compare("DkSaturation") == 0) return (float)slider->value();
+	else if (this->name.compare("DkHue") == 0) return (float)slider->value();
+	else if (this->name.compare("DkGamma") == 0) return (float)sliderSpinBoxDouble->value();
+	else if (this->name.compare("DkExposure") == 0) return (float)sliderSpinBoxDouble->value();
 	else return 0;
 };
 
@@ -560,7 +555,7 @@ Mat DkImageManipulationWidget::applyLutToImage(Mat inImg, Mat inLUT, bool isMatH
 			{
 				unsigned char *ptrR = imgCh[0].ptr<unsigned char>(row);
 
-				for (int col = 0; col < tempImg.cols; col++) ptrR[col] = cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+				for (int col = 0; col < tempImg.cols; col++) ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
 
 			}
 		}
@@ -576,15 +571,15 @@ Mat DkImageManipulationWidget::applyLutToImage(Mat inImg, Mat inLUT, bool isMatH
 				{
 					if(isMatHsv) {
 
-						ptrR[col] = cvRound(ptrLutR[cvRound((ptrR[col] / 180.0f) * (inLUT.cols-1))] / 65535.0f * 180.0f);
-						ptrG[col] = cvRound(ptrLutG[cvRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
-						ptrB[col] = cvRound(ptrLutB[cvRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 180.0f) * (inLUT.cols-1))] / 65535.0f * 180.0f);
+						ptrG[col] = (unsigned char) cvRound(ptrLutG[cvRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrB[col] = (unsigned char) cvRound(ptrLutB[cvRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
 					}
 					else {
 
-						ptrR[col] = cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
-						ptrG[col] = cvRound(ptrLutG[cvRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
-						ptrB[col] = cvRound(ptrLutB[cvRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrG[col] = (unsigned char) cvRound(ptrLutG[cvRound((ptrG[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+						ptrB[col] = (unsigned char) cvRound(ptrLutB[cvRound((ptrB[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
 					}
 				}
 			}
@@ -691,7 +686,7 @@ Mat DkImageManipulationWidget::changeBrightnessAndContrast(Mat inLUT, float brig
 			if (v < 0) v = 0;
 			else if (v > 65535) v = 65535;
 
-			ptrU[col] = v;
+			ptrU[col] = (unsigned char)v;
 		}
 	}
 
@@ -713,7 +708,7 @@ Mat DkImageManipulationWidget::changeSaturationAndHue(Mat inLUT, float saturatio
 
 	// make a gaussian kernel for positive saturation -> this weights bright and dark colors less -> results in uniform saturation change
 	int ks = 65536;
-	float sigma = ks/6;
+	float sigma = ks/6.0f;
 	Mat gKernel = Mat(1, ks, CV_32FC1);
 	float* kernelPtr = gKernel.ptr<float>();
 
@@ -738,12 +733,12 @@ Mat DkImageManipulationWidget::changeSaturationAndHue(Mat inLUT, float saturatio
 	for (int col = 0; col < outLUT.cols; col++) {
 
 		if (sat > 0) {
-			sPtrU[col] += cvRound(sat * kernelPtr[cvRound(vPtrU[col]/65535.0f*(ks-1))]* (1.0f-sPtrU[col]/65535.0f));
+			sPtrU[col] += (unsigned short)cvRound(sat * kernelPtr[cvRound(vPtrU[col]/65535.0f*(ks-1))]* (1.0f-sPtrU[col]/65535.0f));
 		}
 		else {
 			// linear for negative saturation values
 			if (sPtrU[col] > -sat)
-				sPtrU[col] += sat;
+				sPtrU[col] += (unsigned short)sat;
 			else
 				sPtrU[col] = 0;
 		}
@@ -752,7 +747,7 @@ Mat DkImageManipulationWidget::changeSaturationAndHue(Mat inLUT, float saturatio
 		if(newHue >= 65535) newHue -= 65535;
 		else if(newHue < 0) newHue += 65535;
 
-		hPtrU[col] = newHue;
+		hPtrU[col] = (unsigned short)newHue;
 	}
 
 	return outLUT;
@@ -775,7 +770,7 @@ Mat DkImageManipulationWidget::changeGamma(Mat inLUT, float g) {
 
 		for (int col = 0; col < outLUT.cols; col++) {
 
-			ptrU[col] = cvRound(pow(ptrU[col] / (float)(outLUT.cols - 1), 1.0f/g) * (outLUT.cols - 1));
+			ptrU[col] = (unsigned short)cvRound(pow(ptrU[col] / (float)(outLUT.cols - 1), 1.0f/g) * (outLUT.cols - 1));
 		}
 	}
 
@@ -815,7 +810,7 @@ it under the terms of the one of three licenses as you choose:
 
 			ptrU = outLUT.ptr<unsigned short>(i);
 			for (int col = 0; col < outLUT.cols; col++) {
-				ptrU[col] = cvRound(ptrU[col] * exposure);
+				ptrU[col] = (unsigned short)cvRound(ptrU[col] * exposure);
 			}
 		}
 	else {
@@ -842,8 +837,8 @@ it under the terms of the one of three licenses as you choose:
 
 				float X = (float) ptrU[col];
 				float Y = A*powf(X, 1.0f/3.0f) + B*X + CC;
-				if (ptrU[col] < x1) ptrU[col] = cvRound((float) ptrU[col] * exposure);
-				else ptrU[col] = (Y < 0) ? 0 : ((Y > 65535) ? 65535 : cvRound(Y));
+				if (ptrU[col] < x1) ptrU[col] = (unsigned short)cvRound((float) ptrU[col] * exposure);
+				else ptrU[col] = (Y < 0) ? 0 : ((Y > 65535) ? 65535 : (unsigned short)cvRound(Y));
 			}
 		}
 	}
@@ -917,8 +912,8 @@ void DkBrightness::redrawImage() {
 	brightness = slider->value();
 	historyData currData;
 	currData.isHsv = false;
-	currData.arg1 = brightness;
-	currData.arg2 = contrast;
+	currData.arg1 = (float)brightness;
+	currData.arg2 = (float)contrast;
 
 	if (manipulationType != manipulationBrightness && manipulationType != manipulationContrast) {
 
@@ -1011,8 +1006,8 @@ void DkContrast::redrawImage() {
 	contrast = slider->value();
 	historyData currData;
 	currData.isHsv = false;
-	currData.arg1 = brightness;
-	currData.arg2 = contrast;
+	currData.arg1 = (float)brightness;
+	currData.arg2 = (float)contrast;
 
 	if (manipulationType != manipulationBrightness && manipulationType != manipulationContrast) {
 
@@ -1105,8 +1100,8 @@ void DkSaturation::redrawImage() {
 	saturation = slider->value();
 	historyData currData;
 	currData.isHsv = true;
-	currData.arg1 = saturation;
-	currData.arg2 = hue;
+	currData.arg1 = (float)saturation;
+	currData.arg2 = (float)hue;
 
 	if (manipulationType != manipulationSaturation && manipulationType != manipulationHue) {
 
@@ -1208,8 +1203,8 @@ void DkHue::redrawImage() {
 	hue = slider->value();
 	historyData currData;
 	currData.isHsv = true;
-	currData.arg1 = saturation;
-	currData.arg2 = hue;
+	currData.arg1 = (float)saturation;
+	currData.arg2 = (float)hue;
 
 	if (manipulationType != manipulationSaturation && manipulationType != manipulationHue) {
 
@@ -1288,7 +1283,7 @@ DkGamma::DkGamma(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	maxValLabel = new QLabel(QString::number(maxValD), this);
 	maxValLabel->move(slider->geometry().right() - 21, slider->geometry().bottom());
 
-	gamma = sliderSpinBoxDouble->value();
+	gamma = (float)sliderSpinBoxDouble->value();
 
 };
 
@@ -1299,7 +1294,7 @@ DkGamma::~DkGamma() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for a gamma change
-Mat DkGamma::compute(Mat inLut, float val1, float val2) {
+Mat DkGamma::compute(Mat inLut, float val1, float) {
 
 	return changeGamma(inLut, val1);
 };
@@ -1308,7 +1303,7 @@ Mat DkGamma::compute(Mat inLut, float val1, float val2) {
 // change gamma value and redraw image
 void DkGamma::redrawImage() {
 
-	gamma = sliderSpinBoxDouble->value();
+	gamma = (float)sliderSpinBoxDouble->value();
 	historyData currData;
 	currData.isHsv = false;
 	currData.arg1 = gamma;
@@ -1386,7 +1381,7 @@ DkExposure::DkExposure(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	maxValLabel = new QLabel(QString::number((int)maxValD), this);
 	maxValLabel->move(slider->geometry().right() - 6, slider->geometry().bottom());
 
-	exposure = sliderSpinBoxDouble->value();
+	exposure = (float)sliderSpinBoxDouble->value();
 
 };
 
@@ -1397,7 +1392,7 @@ DkExposure::~DkExposure() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for an exposure change
-Mat DkExposure::compute(Mat inLut, float val1, float val2) {
+Mat DkExposure::compute(Mat inLut, float val1, float) {
 
 	return changeExposure(inLut, val1);
 };
@@ -1419,7 +1414,7 @@ float DkExposure::convertExposureToSliderVal(float val) {
 // change exposure value and redraw image
 void DkExposure::redrawImage() {
 
-	exposure = sliderSpinBoxDouble->value();
+	exposure = (float)sliderSpinBoxDouble->value();
 	exposure = convertSliderValToExposure(exposure);
 
 	historyData currData;
@@ -1479,7 +1474,7 @@ DkUndoRedo::~DkUndoRedo() {
 
 #ifdef WITH_OPENCV
 // just a dummy function - needed because it is an virtual function
-Mat DkUndoRedo::compute(Mat inLut, float val1, float val2) {
+Mat DkUndoRedo::compute(Mat inLut, float, float) {
 	return inLut;
 };
 #endif
@@ -1544,7 +1539,7 @@ void DkUndoRedo::redoPressed() {
 		doARedraw = false;
 		historyToolsVec.back()->setToolsValue(historyDataVec.back().arg1, historyDataVec.back().arg2);
 		doARedraw = true;
-		manipulationType = manipulationTypeHist;
+		manipulationType = (char)manipulationTypeHist;
 	}
 
 	buttonUndo->setEnabled(true);

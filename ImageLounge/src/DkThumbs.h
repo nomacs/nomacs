@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileInfo>
 #include <QImage>
 #include <QStringList>
@@ -42,6 +43,7 @@
 #ifdef WIN32
 	#include <winsock2.h>	// needed since libraw 0.16
 #endif
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkTimer.h"
 #include "DkMetaData.h"

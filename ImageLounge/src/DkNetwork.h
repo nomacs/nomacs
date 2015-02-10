@@ -33,6 +33,7 @@
 #define lanUDPPortEnd 28576
 #define rcUDPPort 28565
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QTcpSocket>
@@ -53,20 +54,19 @@
 #include <QMutexLocker>
 #include <QNetworkCookieJar>
 #include <QDesktopServices>
-//#include <QtCore>
-
-#include <math.h>
-
-
-#ifdef WIN32
-	#include <winsock2.h>	// needed since libraw 0.16
-	#include <shlobj.h>
-#endif
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
 #endif // WITH_UPNP
 
+#pragma warning(pop)		// no warnings from includes - end
+
+#include <math.h>
+
+#ifdef WIN32
+	#include <winsock2.h>	// needed since libraw 0.16
+	#include <shlobj.h>
+#endif
 
 #include "DkConnection.h"
 
@@ -215,7 +215,7 @@ class DkLANClientManager : public DkClientManager {
 
 	public slots:
 		void sendTitle(QString newTitle);
-		virtual void synchronizeWithServerPort(quint16 port) {}; // dummy
+		virtual void synchronizeWithServerPort(quint16) {}; // dummy
 		void stopSynchronizeWith(quint16 peerId = -1);
 		void startServer(bool flag);
 		void sendNewImage(QImage image, QString title);

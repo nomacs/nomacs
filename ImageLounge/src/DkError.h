@@ -31,7 +31,6 @@
 #include <string>
 #include <DkUtils.h>
 
-
 namespace nmc {
 
 /**

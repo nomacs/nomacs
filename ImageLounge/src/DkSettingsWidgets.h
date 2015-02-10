@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
 #include <QDialog>
 #include <QModelIndex>
@@ -45,6 +46,7 @@
 #include <QStandardItem>
 #include <QTableView>
 #include <QStyledItemDelegate>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkSettings.h"
 #include "BorderLayout.h"
@@ -85,7 +87,7 @@ public:
 	DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent=0, int step = 1, int decimals = 2);
 	QDoubleSpinBox* getSpinBox() { return spinBox;};
 	void setSpinBoxValue(float value) {spinBox->setValue(value);};
-	float getSpinBoxValue() {return spinBox->value();};
+	float getSpinBoxValue() {return (float)spinBox->value();};
 
 	//virtual QSize sizeHint() const {
 
@@ -129,7 +131,7 @@ public:
 	virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
 	bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
-	virtual int columnCount(const QModelIndex& parent = QModelIndex()) const { return 3;};
+	virtual int columnCount(const QModelIndex& = QModelIndex()) const { return 3;};
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 	bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
 
@@ -178,7 +180,7 @@ public:
 	DkSettingsWidget(QWidget* parent) : QWidget(parent) { showOnlyInAdvancedMode = false;};
 	virtual void writeSettings() = 0;
 	virtual void init() = 0;
-	virtual void toggleAdvancedOptions(bool showAdvancedOptions) {};
+	virtual void toggleAdvancedOptions(bool) {};
 
 	bool showOnlyInAdvancedMode;
 };

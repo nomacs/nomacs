@@ -28,7 +28,6 @@
 #include "DkError.h"
 
 namespace nmc {
-using std::string;
 
 DkException::DkException(const std::string & msg) 
     : errMsg(msg),  errFile( "" ), errLine(-1) {
@@ -49,8 +48,8 @@ const char* DkException::what() const throw() {
 	return errMsg.c_str();
 }
 
-const string DkException::Msg() const {
-	string s;
+const std::string DkException::Msg() const {
+	std::string s;
 
 	s = "\n>> " + exceptionName + ": " + errMsg + 
 		"\n   in line: " + DkUtils::stringify(errLine) + " in file: " + errFile + "\n\n";
@@ -58,11 +57,11 @@ const string DkException::Msg() const {
     return s;
 }
 
-int DkException :: Line() const {
+int DkException::Line() const {
     return errLine;
 }
 
-const string & DkException :: File() const {
+const std::string & DkException::File() const {
     return errFile;
 }
 

@@ -29,6 +29,18 @@
 #include "DkProcess.h"
 #include "DkDialog.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QListView>
+#include <QLineEdit>
+#include <QFileDialog>
+#include <QGroupBox>
+#include <QComboBox>
+#include <QButtonGroup>
+#pragma warning(pop)		// no warnings from includes - end
+
 namespace nmc {
 
 // DkBatchWidget --------------------------------------------------------------------
@@ -83,7 +95,7 @@ QWidget* DkBatchWidget::contentWidget() const {
 	return dynamic_cast<QWidget*>(batchContent);
 }
 
-void DkBatchWidget::showContent(bool show) {
+void DkBatchWidget::showContent(bool) {
 
 	showButton->click();
 	//contentWidget()->setVisible(show);
@@ -379,7 +391,7 @@ void DkFilenameWidget::checkForUserInput() {
 }
 
 void DkFilenameWidget::digitCBChanged(int index) {
-	sBNumber->setMaximum(std::pow(10, index+1)-1);
+	sBNumber->setMaximum(qRound(std::pow(10, index+1)-1));
 	emit changed();
 }
 
@@ -629,7 +641,7 @@ void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 }
 
 // DkResizeWidget --------------------------------------------------------------------
-DkBatchResizeWidget::DkBatchResizeWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) {
+DkBatchResizeWidget::DkBatchResizeWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
 	createLayout();
 	modeChanged(0);	// init gui
@@ -671,7 +683,7 @@ void DkBatchResizeWidget::createLayout() {
 	connect(sbPx, SIGNAL(valueChanged(int)), this, SLOT(pxChanged(int)));
 }
 
-void DkBatchResizeWidget::modeChanged(int idx) {
+void DkBatchResizeWidget::modeChanged(int) {
 
 	if (comboMode->currentIndex() == DkResizeBatch::mode_default) {
 		sbPx->hide();
@@ -769,7 +781,7 @@ bool DkBatchTransformWidget::requiresUserInput() const {
 	return false;
 }
 
-void DkBatchTransformWidget::radioButtonClicked(int id) {
+void DkBatchTransformWidget::radioButtonClicked(int) {
 
 	updateHeader();
 }

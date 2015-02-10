@@ -27,10 +27,12 @@
 
 #pragma once;
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QUrl>
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentMap>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
 
@@ -43,7 +45,7 @@ public:
 
 	virtual void setProperties(...) {};
 	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
-	virtual bool compute(QImage& img, QStringList& logStrings) const { return true; };
+	virtual bool compute(QImage&, QStringList&) const { return true; };
 	virtual QString name() const {return "Abstract Batch";};
 	virtual bool isActive() const { return false; };
 

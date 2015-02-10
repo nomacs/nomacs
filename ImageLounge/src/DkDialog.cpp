@@ -31,7 +31,7 @@
 namespace nmc {
 
 // DkSplashScreen --------------------------------------------------------------------
-DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog(0, flags) {
+DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 
 	QPixmap img(":/nomacs/img/splash-screen.png");
 	setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
@@ -175,7 +175,7 @@ void DkFileValidator::fixup(QString& input) const {
 		input = lastFile;
 }
 
-QValidator::State DkFileValidator::validate(QString& input, int& pos) const {
+QValidator::State DkFileValidator::validate(QString& input, int&) const {
 
 	if (QFileInfo(input).exists())
 		return QValidator::Acceptable;
@@ -571,7 +571,7 @@ void DkAppManager::assignIcon(QAction* app) {
 
 	HICON largeIcon;
 	HICON smallIcon;
-	int err = ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
+	ExtractIconExW(wDirName, 0, &largeIcon, &smallIcon, 1);
 
 	if (nIcons != 0 && largeIcon != NULL)
 		appIcon = DkImage::fromWinHICON(smallIcon);
@@ -1139,11 +1139,10 @@ void DkResizeDialog::createLayout() {
 	//previewLayout->addWidget(previewLabel, 1, 1);
 
 	// all text dialogs...
-	QIntValidator* intValidator = new QIntValidator(1, 100000, 0);
 	QDoubleValidator* doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
 	doubleValidator->setRange(0, 100, 2);
 
-	QWidget* resizeBoxes = new QWidget();
+	QWidget* resizeBoxes = new QWidget(this);
 	resizeBoxes->setGeometry(QRect(QPoint(leftSpacing, 300), QSize(400, 170)));
 
 	QGridLayout* gridLayout = new QGridLayout(resizeBoxes);
@@ -1155,8 +1154,6 @@ void DkResizeDialog::createLayout() {
 	wPixelEdit->setRange(minPx, maxPx);
 	wPixelEdit->setDecimals(0);
 
-	QWidget* lockWidget = new QWidget();
-	QHBoxLayout* boxLayout = new QHBoxLayout(); 
 	lockButton = new DkButton(QIcon(":/nomacs/img/lock.png"), QIcon(":/nomacs/img/lock-unlocked.png"), "lock");
 	lockButton->setFixedSize(QSize(16,16));
 	lockButton->setObjectName("lockButton");
@@ -1328,10 +1325,10 @@ void DkResizeDialog::initBoxes(bool updateSettings) {
 
 void DkResizeDialog::updateWidth() {
 
-	float pWidth = wPixelEdit->text().toDouble();
+	float pWidth = (float)wPixelEdit->text().toDouble();
 
 	if (sizeBox->currentIndex() == size_percent)
-		pWidth = qRound(pWidth/100 * img.width()); 
+		pWidth = (float)qRound(pWidth/100 * img.width()); 
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
 	float width = pWidth/exifDpi * units;
@@ -1340,10 +1337,10 @@ void DkResizeDialog::updateWidth() {
 
 void DkResizeDialog::updateHeight() {
 
-	float pHeight = hPixelEdit->text().toDouble();
+	float pHeight = (float)hPixelEdit->text().toDouble();
 
 	if (sizeBox->currentIndex() == size_percent)
-		pHeight = qRound(pHeight/100 * img.height()); 
+		pHeight = (float)qRound(pHeight/100 * img.height()); 
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
 	float height = pHeight/exifDpi * units;
@@ -1353,8 +1350,8 @@ void DkResizeDialog::updateHeight() {
 void DkResizeDialog::updateResolution() {
 
 	qDebug() << "updating resolution...";
-	float wPixel = wPixelEdit->text().toDouble();
-	float width = widthEdit->text().toDouble();
+	float wPixel = (float)wPixelEdit->text().toDouble();
+	float width = (float)widthEdit->text().toDouble();
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
 	float resolution = wPixel/width * units;
@@ -1363,7 +1360,7 @@ void DkResizeDialog::updateResolution() {
 
 void DkResizeDialog::updatePixelHeight() {
 
-	float height = heightEdit->text().toDouble();
+	float height = (float)heightEdit->text().toDouble();
 
 	// *1000/10 is for more beautiful values
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
@@ -1374,7 +1371,7 @@ void DkResizeDialog::updatePixelHeight() {
 
 void DkResizeDialog::updatePixelWidth() {
 
-	float width = widthEdit->text().toDouble();
+	float width = (float)widthEdit->text().toDouble();
 
 	float units = resFactor.at(resUnitBox->currentIndex()) * unitFactor.at(unitBox->currentIndex());
 	float pixelWidth = (sizeBox->currentIndex() != size_percent) ? qRound(width*exifDpi / units) : qRound(1000.0f*width*exifDpi / (units * img.width()))/10.0f;
@@ -1414,7 +1411,7 @@ void DkResizeDialog::on_wPixelEdit_valueChanged(QString text) {
 		return;
 	}
 
-	int newHeight = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img.width() * img.height()) : text.toFloat();
+	int newHeight = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img.width() * img.height()) : qRound(text.toFloat());
 	hPixelEdit->setValue(newHeight);
 	updateHeight();
 	drawPreview();
@@ -1432,7 +1429,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 		return;
 	}
 
-	int newWidth = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img.height() * (float)img.width()) : text.toFloat();
+	int newWidth = (sizeBox->currentIndex() != size_percent) ? qRound((float)text.toInt()/(float)img.height() * (float)img.width()) : qRound(text.toFloat());
 	wPixelEdit->setValue(newWidth);
 	updateWidth();
 	drawPreview();
@@ -1487,7 +1484,7 @@ void DkResizeDialog::on_heightEdit_valueChanged(QString text) {
 
 void DkResizeDialog::on_resolutionEdit_valueChanged(QString text) {
 
-	exifDpi = text.toDouble();
+	exifDpi = (float)text.toDouble();
 
 	if (!resolutionEdit->hasFocus())
 		return;
@@ -1504,7 +1501,7 @@ void DkResizeDialog::on_resolutionEdit_valueChanged(QString text) {
 }
 
 
-void DkResizeDialog::on_unitBox_currentIndexChanged(int idx) {
+void DkResizeDialog::on_unitBox_currentIndexChanged(int) {
 
 	updateHeight();
 	updateWidth();
@@ -1526,7 +1523,7 @@ void DkResizeDialog::on_sizeBox_currentIndexChanged(int idx) {
 	updatePixelWidth();
 }
 
-void DkResizeDialog::on_resUnitBox_currentIndexChanged(int idx) {
+void DkResizeDialog::on_resUnitBox_currentIndexChanged(int) {
 
 	updateResolution();
 	//initBoxes();
@@ -1552,7 +1549,7 @@ void DkResizeDialog::on_gammaCorrection_clicked() {
 	drawPreview();	// diem: just update
 }
 
-void DkResizeDialog::on_resampleBox_currentIndexChanged(int idx) {
+void DkResizeDialog::on_resampleBox_currentIndexChanged(int) {
 	drawPreview();
 }
 
@@ -1610,7 +1607,7 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 	QSize newSize;
 
 	if (sizeBox->currentIndex() == size_percent)
-		newSize = QSize(wPixelEdit->text().toFloat()/100.0f * this->img.width(), hPixelEdit->text().toFloat()/100.0f * this->img.height());
+		newSize = QSize(qRound(wPixelEdit->text().toFloat()/100.0f * this->img.width()), qRound(hPixelEdit->text().toFloat()/100.0f * this->img.height()));
 	else
 		newSize = QSize(wPixelEdit->text().toInt(), hPixelEdit->text().toInt());
 
@@ -1629,7 +1626,7 @@ QImage DkResizeDialog::resizeImg(QImage img, bool silent) {
 
 		qDebug() << "relative size: " << newSize;
 
-		newSize = QSize(img.width()*relWidth, img.height()*relHeight);
+		newSize = QSize(qRound(img.width()*relWidth), qRound(img.height()*relHeight));
 	}
 
 	if (newSize.width() < wPixelEdit->minimum() || newSize.width() > wPixelEdit->maximum() || 
@@ -1909,8 +1906,6 @@ Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex& index) const {
 	if (!index.isValid())
 		return Qt::ItemIsEditable;
 
-	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
 	//// no editing on root items
 	//if (item->parent() == rootItem)
 	//	return QAbstractTableModel::flags(index);
@@ -2115,7 +2110,7 @@ void DkShortcutsDialog::addActions(const QVector<QAction*>& actions, const QStri
 
 }
 
-void DkShortcutsDialog::contextMenu(const QPoint& cur) {
+void DkShortcutsDialog::contextMenu(const QPoint&) {
 
 }
 
@@ -2273,9 +2268,9 @@ void DkPrintPreviewDialog::scaleImage() {
 		scaleFactor = rect.height()/(img.height()+FLT_EPSILON);
 	}
 
-	float inchW = printer->pageRect(QPrinter::Inch).width();
-	float pxW = printer->pageRect().width();
-	dpi = (pxW/inchW)/scaleFactor;
+	float inchW = (float)printer->pageRect(QPrinter::Inch).width();
+	float pxW = (float)printer->pageRect().width();
+	dpi = (pxW/inchW)/(float)scaleFactor;
 
 
 	qDebug() << "img:" << img.size();
@@ -2585,9 +2580,9 @@ void DkPrintPreviewDialog::dpiFactorChanged() {
 	if (ok) {
 		imgTransform.reset();
 
-		float inchW = printer->pageRect(QPrinter::Inch).width();
-		float pxW = printer->pageRect().width();
-		float scaleFactor = (((pxW/inchW)/factor));
+		float inchW = (float)printer->pageRect(QPrinter::Inch).width();
+		float pxW = (float)printer->pageRect().width();
+		float scaleFactor = (float)((pxW/inchW)/factor);
 
 		imgTransform.scale(scaleFactor, scaleFactor);
 
@@ -3091,12 +3086,12 @@ void DkUnsharpDialog::createLayout() {
 	layout->addWidget(buttons);
 }
 
-void DkUnsharpDialog::on_sigmaSlider_valueChanged(int i) {
+void DkUnsharpDialog::on_sigmaSlider_valueChanged(int) {
 
 	computePreview();
 }
 
-void DkUnsharpDialog::on_amountSlider_valueChanged(int i) {
+void DkUnsharpDialog::on_amountSlider_valueChanged(int) {
 
 	computePreview();
 }
@@ -3164,7 +3159,7 @@ void DkUnsharpDialog::unsharpFinished() {
 QImage DkUnsharpDialog::computeUnsharp(const QImage img, int sigma, int amount) {
 
 	QImage imgC = img.copy();
-	DkImage::unsharpMask(imgC, sigma, 1.0f+amount/100.0f);
+	DkImage::unsharpMask(imgC, (float)sigma, 1.0f+amount/100.0f);
 	return imgC;
 }
 
@@ -3421,7 +3416,7 @@ void DkMosaicDialog::on_fileEdit_textChanged(const QString& filename) {
 	qDebug() << "new file name: " << filename;
 }
 
-void DkMosaicDialog::on_newWidthBox_valueChanged(int i) {
+void DkMosaicDialog::on_newWidthBox_valueChanged(int) {
 
 	if (!loader.hasImage())
 		return;
@@ -3433,7 +3428,7 @@ void DkMosaicDialog::on_newWidthBox_valueChanged(int i) {
 	updatePatchRes();
 }
 
-void DkMosaicDialog::on_newHeightBox_valueChanged(int i) {
+void DkMosaicDialog::on_newHeightBox_valueChanged(int) {
 
 	if (!loader.hasImage())
 		return;
@@ -3445,7 +3440,7 @@ void DkMosaicDialog::on_newHeightBox_valueChanged(int i) {
 	updatePatchRes();
 }
 
-void DkMosaicDialog::on_numPatchesH_valueChanged(int i) {
+void DkMosaicDialog::on_numPatchesH_valueChanged(int) {
 
 	if (!loader.hasImage())
 		return;
@@ -3456,7 +3451,7 @@ void DkMosaicDialog::on_numPatchesH_valueChanged(int i) {
 	updatePatchRes();
 }
 
-void DkMosaicDialog::on_numPatchesV_valueChanged(int i) {
+void DkMosaicDialog::on_numPatchesV_valueChanged(int) {
 	
 	if (!loader.hasImage())
 		return;
@@ -3467,17 +3462,17 @@ void DkMosaicDialog::on_numPatchesV_valueChanged(int i) {
 	updatePatchRes();
 }
 
-void DkMosaicDialog::on_darkenSlider_valueChanged(int i) {
+void DkMosaicDialog::on_darkenSlider_valueChanged(int) {
 
 	updatePostProcess();
 }
 
-void DkMosaicDialog::on_lightenSlider_valueChanged(int i) {
+void DkMosaicDialog::on_lightenSlider_valueChanged(int) {
 
 	updatePostProcess();
 }
 
-void DkMosaicDialog::on_saturationSlider_valueChanged(int i) {
+void DkMosaicDialog::on_saturationSlider_valueChanged(int) {
 
 	updatePostProcess();
 }
@@ -3781,7 +3776,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 					ccD.ptr<unsigned char>(maxIdx.y)[maxIdx.x] = 0;
 
 				// update cc
-				ccPtr[maxIdx.x] = maxVal;
+				ccPtr[maxIdx.x] = (float)maxVal;
 
 				filesUsed[maxIdx.y*numPatchesH+maxIdx.x] = thumb.getFile();	// replaces additionally the old file
 				iDidNothing = 0;
@@ -3864,7 +3859,7 @@ void DkMosaicDialog::matchPatch(const cv::Mat& img, const cv::Mat& thumb, int pa
 			
 			cv::Mat absDiff;
 			cv::absdiff(cPatch, thumb, absDiff);
-			ccPtr[cIdx] = 1.0f-(cv::sum(absDiff)[0]/(patchRes*patchRes*255));
+			ccPtr[cIdx] = 1.0f-((float)cv::sum(absDiff)[0]/(patchRes*patchRes*255));
 		}
 	}
 }
@@ -4044,13 +4039,13 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 				darken *= lighten;	// mix with the mosaic pixel
 
 				// now stretch to the dynamic range and save it
-				*origPtr = qRound(darken*255.0f);
+				*origPtr = (unsigned char)qRound(darken*255.0f);
 
 				// now adopt the saturation
 				origPtr++;
-				*origPtr = qRound((*origPtr-128) * saturation)+128;
+				*origPtr = (unsigned char)qRound((*origPtr-128) * saturation)+128;
 				origPtr++;
-				*origPtr = qRound((*origPtr-128) * saturation)+128;
+				*origPtr = (unsigned char)qRound((*origPtr-128) * saturation)+128;
 				origPtr++;
 			}
 		}
@@ -4360,7 +4355,7 @@ void DkArchiveExtractionDialog::dirTextChanged(QString text) {
 	}
 }
 
-void DkArchiveExtractionDialog::checkbocChecked(int state) {
+void DkArchiveExtractionDialog::checkbocChecked(int) {
 
 	loadArchive();
 }

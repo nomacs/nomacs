@@ -27,7 +27,7 @@
 
 #pragma once
 
-
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
 #include <QSlider>
 #include <QSpinBox>
@@ -42,6 +42,7 @@
 #include <QScrollBar>
 #include <QTableView>
 #include <QXmlStreamReader>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include "DkViewPort.h"
 #include "DkPluginInterface.h"

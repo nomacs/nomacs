@@ -27,6 +27,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QString>
 #include <QFileInfo>
 #include <QDate>
@@ -41,6 +42,7 @@
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QTranslator>
+#pragma warning(pop)		// no warnings from includes - end
 
 #include <cmath>
 #include <sstream>
