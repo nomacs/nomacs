@@ -163,8 +163,6 @@ bool DkMetaDataT::saveMetaData(QSharedPointer<QByteArray>& ba, bool force) {
 
 	exifImgN->readMetadata();
 
-	qDebug() << "orientation for saving: " << getOrientation();
-
 	exifImgN->setExifData(exifData);
 	exifImgN->setXmpData(xmpData);
 	exifImgN->setIptcData(iptcData);
@@ -957,7 +955,7 @@ void DkMetaDataT::setRating(int r) {
 	Exiv2::ExifData &exifData = exifImg->exifData();		//Exif.Image.Rating  - short
 	Exiv2::XmpData &xmpData = exifImg->xmpData();			//Xmp.xmp.Rating - text
 
-	if (r>0) {
+	if (r > 0) {
 		exifData["Exif.Image.Rating"] = uint16_t(r);
 		exifData["Exif.Image.RatingPercent"] = uint16_t(r);
 
@@ -992,9 +990,29 @@ void DkMetaDataT::setRating(int r) {
 	exifState = dirty;
 }
 
+bool DkMetaDataT::updateImageMetaData(const QImage& img) {
+
+	bool success = true;
+
+	success &= setExifValue("Exif.Image.ImageWidth", QString::number(img.width()));
+	success &= setExifValue("Exif.Image.ImageLength", QString::number(img.height()));
+	success &= setExifValue("Exif.Image.Software", qApp->organizationName() + " - " + qApp->applicationName());
+
+	// TODO: convert Date Time to Date Time Original and set new Date Time
+
+	clearOrientation();
+	setThumbnail(DkImage::createThumb(img));
+
+	return success;
+}
+
 bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 	if (exifState == not_loaded || exifState == no_data)
+		return false;
+
+	if (exifImg->checkMode(Exiv2::mdExif) != Exiv2::amReadWrite &&
+		exifImg->checkMode(Exiv2::mdExif) != Exiv2::amWrite)
 		return false;
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
@@ -1010,7 +1028,7 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 			setExifSuccessfull = true;
 		}
 	}
-	else if (!exifData.empty()) {
+	else {
 
 		Exiv2::ExifKey exivKey(key.toStdString());
 		Exiv2::Exifdatum tag(exivKey);

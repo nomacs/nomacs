@@ -544,6 +544,7 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	this->imgC = imgC;
 
 	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
+
 	QString dateString = metaData->getExifValue("DateTimeOriginal");
 	fileInfoLabel->updateInfo(imgC->file(), "", dateString, metaData->getRating());
 	fileInfoLabel->setEdited(imgC->isEdited());

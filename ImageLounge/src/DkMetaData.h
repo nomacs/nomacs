@@ -91,6 +91,7 @@ public:
 	void setRating(int r);
 	bool setDescription(const QString& description);
 	bool setExifValue(QString key, QString taginfo);
+	bool updateImageMetaData(const QImage& img);
 	void setThumbnail(QImage thumb);
 
 	bool hasMetaData() const;

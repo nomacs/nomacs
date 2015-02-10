@@ -1091,7 +1091,7 @@ void DkCommentWidget::createLayout() {
 
 	commentLabel = new DkCommentTextEdit(this);
 	commentLabel->setObjectName("CommentLabel");
-	commentLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	commentLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	commentLabel->setStyleSheet(scrollbarStyle + commentLabel->styleSheet());
 	commentLabel->setToolTip(tr("Enter your notes here. They will be saved to the image metadata."));
 
