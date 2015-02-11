@@ -28,16 +28,21 @@
 #pragma once;
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QUrl>
-#include <QFuture>
+#include <QSharedPointer>
 #include <QFutureWatcher>
-#include <QtConcurrentMap>
+#include <QFileInfo>
 #include <QDir>
+#include <QStringList>
+#include <QUrl>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkImageContainer.h"
+// Qt defines
+class QImage;
 
 namespace nmc {
+
+// nomacs defines
+class DkImageContainer;
 
 class DkAbstractBatch {
 

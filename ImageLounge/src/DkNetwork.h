@@ -27,80 +27,56 @@
 
 #pragma  once
 
-#define localTCPPortStart 45454
-#define localTCPPortEnd 45484
-#define lanUDPPortStart 28566
-#define lanUDPPortEnd 28576
-#define rcUDPPort 28565
+#define local_tcp_port_start 45454
+#define local_tcp_port_end 45484
+#define lan_udp_port_start 28566
+#define lan_udp_port_end 28576
+#define rc_udp_port 28565
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QtNetwork/QTcpServer>
-#include <QtNetwork/QUdpSocket>
-#include <QtNetwork/QTcpSocket>
-#include <QStringBuilder>
-#include <QDir>
-//#include <QWebView>
-#include <QNetworkInterface>
-#include <QList>
-#include <QThread>
-#include <QTimer>
-#include <QHostInfo>
-#include <QUrl>
+#include <QTcpServer>
+#include <QUdpSocket>
 #include <QNetworkReply>
-#include <QNetworkAccessManager>
-#include <QApplication>
-#include <QDesktopWidget>
+#include <QThread>
 #include <QMutex>
-#include <QMutexLocker>
-#include <QNetworkCookieJar>
-#include <QDesktopServices>
-
-#ifdef WITH_UPNP
-#include "DkUpnp.h"
-#endif // WITH_UPNP
-
+#include <QSharedPointer>
 #pragma warning(pop)		// no warnings from includes - end
-
-#include <math.h>
-
-#ifdef WIN32
-	#include <winsock2.h>	// needed since libraw 0.16
-	#include <shlobj.h>
-#endif
 
 #include "DkConnection.h"
 
 namespace nmc {
 
+// nomacs defines
 class DkPeer;
 class DkLocalTcpServer;
 class DkLANTcpServer;
 class DkLANUdpSocket;
-
-
+class DkUpnpControlPoint;
+class DkUpnpDeviceHost;
 
 class DkPeerList {
-	public:
-		DkPeerList();
-		bool addPeer(DkPeer peer);
-		bool removePeer(quint16 peerId);
-		bool setSynchronized(quint16 peerId, bool synchronized);
-		bool setTitle(quint16 peerId, QString title);
-		bool setShowInMenu(quint16 peerId, bool showInMenu);
-		QList<DkPeer> getPeerList();
-		DkPeer getPeerById(quint16 id);
-		DkPeer getPeerByAddress(QHostAddress address, quint16 port);
 
-		QList<DkPeer> getSynchronizedPeers();
-		QList<quint16> getSynchronizedPeerServerPorts();
-		QList<DkPeer> getActivePeers();
+public:
+	DkPeerList();
+	bool addPeer(DkPeer peer);
+	bool removePeer(quint16 peerId);
+	bool setSynchronized(quint16 peerId, bool synchronized);
+	bool setTitle(quint16 peerId, QString title);
+	bool setShowInMenu(quint16 peerId, bool showInMenu);
+	QList<DkPeer> getPeerList();
+	DkPeer getPeerById(quint16 id);
+	DkPeer getPeerByAddress(QHostAddress address, quint16 port);
 
-		DkPeer getPeerByServerport(quint16 port);
-		bool alreadyConnectedTo(QHostAddress address, quint16 port);
-		void print();
+	QList<DkPeer> getSynchronizedPeers();
+	QList<quint16> getSynchronizedPeerServerPorts();
+	QList<DkPeer> getActivePeers();
 
-	private:
-		QMultiHash<quint16, DkPeer> peerList;
+	DkPeer getPeerByServerport(quint16 port);
+	bool alreadyConnectedTo(QHostAddress address, quint16 port);
+	void print();
+
+private:
+	QMultiHash<quint16, DkPeer> peerList;
 };
 
 class DkClientManager : public QThread {
@@ -205,7 +181,7 @@ class DkLocalClientManager : public DkClientManager {
 class DkLANClientManager : public DkClientManager {
 	Q_OBJECT;
 	public:
-		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = lanUDPPortStart, quint16 udpServerPortRangeEnd = lanUDPPortEnd);
+		DkLANClientManager(QString title, QObject* parent = 0, quint16 updServerPortRangeStart = lan_udp_port_start, quint16 udpServerPortRangeEnd = lan_udp_port_end);
 		virtual ~DkLANClientManager(); 
 		virtual QList<DkPeer> getPeerList();
 
@@ -299,7 +275,7 @@ class DkLocalTcpServer : public QTcpServer {
 class DkLANTcpServer : public QTcpServer {
 	Q_OBJECT;
 	public:
-		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = lanUDPPortStart, quint16 udpServerPortRangeEnd = lanUDPPortEnd);
+		DkLANTcpServer(QObject* parent = 0, quint16 updServerPortRangeStart = lan_udp_port_start, quint16 udpServerPortRangeEnd = lan_udp_port_end);
 
 	signals:
 		void serverReiceivedNewConnection(QHostAddress address , quint16 port , QString clientName);
@@ -325,7 +301,7 @@ class DkLANUdpSocket : public QUdpSocket {
 	Q_OBJECT;
 
 	public:
-		DkLANUdpSocket(quint16 startPort = lanUDPPortStart, quint16 endPort = lanUDPPortEnd, QObject* parent = 0);
+		DkLANUdpSocket(quint16 startPort = lan_udp_port_start, quint16 endPort = lan_udp_port_end, QObject* parent = 0);
 		void startBroadcast(quint16 tcpServerPort);
 		void stopBroadcast();
 		
@@ -354,62 +330,41 @@ class DkLANUdpSocket : public QUdpSocket {
 class DkPeer : public QObject{
 	Q_OBJECT;
 	
-	public:
-		DkPeer();
-		DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 peerServerPort, QString title, DkConnection* connection, bool sychronized = false, QString clientName="", bool showInMenu = false);
+public:
+	DkPeer();
+	DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 peerServerPort, QString title, DkConnection* connection, bool sychronized = false, QString clientName="", bool showInMenu = false);
 		
-		DkPeer(const DkPeer& peer);
-		~DkPeer();
+	DkPeer(const DkPeer& peer);
+	~DkPeer();
 
-		bool operator==(const DkPeer& peer) const {
+	bool operator==(const DkPeer& peer) const;
+	DkPeer& operator=(const DkPeer& peer);
 
-			return localServerPort == peer.localServerPort && sychronized == peer.sychronized && title == peer.title && hostAddress == peer.hostAddress;
-		}
+	bool isActive() {return hasChangedRecently;};
+	void setSynchronized(bool flag);
+	bool isSynchronized() {return sychronized;};
+	bool isLocal() {
+		return hostAddress == QHostAddress::LocalHost;
+	};
 
-		DkPeer& operator=(const DkPeer& peer) {
-			this->peerId = peer.peerId;
-			this->localServerPort = peer.localServerPort;
-			this->peerServerPort = peer.peerServerPort;
-			this->sychronized = peer.sychronized;
-			this->title = peer.title;
-			this->connection = peer.connection;
-			this->hasChangedRecently = peer.hasChangedRecently;
-			this->timer = peer.timer; 
-			this->hostAddress = peer.hostAddress;
-			this->clientName = peer.clientName;
-			this->showInMenu = peer.showInMenu;
+	quint16 peerId;
+	quint16 localServerPort;
+	quint16 peerServerPort;
+	QHostAddress hostAddress;
+	QString clientName;
+	QString title;
+	DkConnection* connection;
+	QTimer* timer;
+	bool showInMenu;
 
-			connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
-			//connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
+signals:
+	void sendGoodByeMessage();
+private slots:
+	void timerTimeout() {hasChangedRecently = false;};
 
-			return *this;
-		}
-
-		bool isActive() {return hasChangedRecently;};
-		void setSynchronized(bool flag);
-		bool isSynchronized() {return sychronized;};
-		bool isLocal() {
-			return hostAddress == QHostAddress::LocalHost;
-		};
-
-		quint16 peerId;
-		quint16 localServerPort;
-		quint16 peerServerPort;
-		QHostAddress hostAddress;
-		QString clientName;
-		QString title;
-		DkConnection* connection;
-		QTimer* timer;
-		bool showInMenu;
-
-	signals:
-		void sendGoodByeMessage();
-	private slots:
-		void timerTimeout() {hasChangedRecently = false;};
-
-	private:
-		bool hasChangedRecently;
-		bool sychronized;
+private:
+	bool hasChangedRecently;
+	bool sychronized;
 };
 
 class DkNoMacs;

@@ -56,16 +56,13 @@
 #include <QGraphicsOpacityEffect>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkMath.h"
-#include "DkImage.h"
-
 namespace nmc {
 
 class DkTransferToolBar;
+class DkVector;
 
 class DkColorSlider : public QWidget {
 	Q_OBJECT
-	
 	
 public:
 	//DkColorSlider(QWidget *parent);
@@ -232,16 +229,7 @@ private:
 class DkCropToolBar : public QToolBar {
 	Q_OBJECT
 
-
 public:
-
-	enum {
-		no_guide = 0,
-		rule_of_thirds,
-		grid,
-
-		mode_end,
-	};
 
 	enum {
 		crop_icon = 0,

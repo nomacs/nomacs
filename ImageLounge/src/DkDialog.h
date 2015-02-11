@@ -38,9 +38,6 @@
 #include <QFutureWatcher>
 #pragma warning(pop)		// no warnings from includes - end
 
-//#include "DkWidgets.h"
-//#include "DkViewPort.h"
-//#include "DkThumbs.h"
 #include "DkBasicLoader.h"
 
 // Qt defines

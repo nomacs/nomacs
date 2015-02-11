@@ -36,22 +36,18 @@
 	#pragma comment (linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
-//#include "DkImage.h"
-
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
-
-#include "DkNoMacs.h"
-#include "DkSettings.h"
-
-//#include "DkPong.h"
-//#include "DkUtils.h"
-//#include "DkTimer.h"
-
 #include <QApplication>
 #include <QFileInfo>
 #include <QProcess>
 #include <QTranslator>
 #include <QDebug>
+#include <QDir>
+#pragma warning(pop)	// no warnings from includes - end
+
+#include "DkNoMacs.h"
+#include "DkSettings.h"
 
 #include <iostream>
 #include <cassert>

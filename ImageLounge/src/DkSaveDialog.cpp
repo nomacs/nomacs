@@ -27,11 +27,20 @@
 
 #include "DkSaveDialog.h"
 #include "DkUtils.h"
+#include "DkWidgets.h"
+#include "DkBasicLoader.h"
+#include "DkBaseViewPort.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QBuffer>
+#include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QButtonGroup>
+#include <QVBoxLayout>
+#include <QRadioButton>
+#include <QPushButton>
+#include <QCheckBox>
 #pragma warning(pop)		// no warnings from includes - end
-
 
 namespace nmc {
 
@@ -71,6 +80,10 @@ void DkTifDialog::init() {
 	layout()->addWidget(buttons);
 }
 
+int DkTifDialog::getCompression() const {
+
+	return (noCompressionButton->isChecked()) ? 0 : 1;
+}
 
 // DkCompressionDialog --------------------------------------------------------------------
 DkCompressDialog::DkCompressDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
@@ -367,11 +380,84 @@ void DkCompressDialog::updateFileSizeLabel(float bufferSize, QSize bufferImgSize
 	previewSizeLabel->setText(tr("File Size: ~%1").arg(DkUtils::readableByte(rawImgSize*bufferSize/rawBufferSize)));
 }
 
+void DkCompressDialog::imageHasAlpha(bool hasAlpha) {
+	this->hasAlpha = hasAlpha;
+	colChooser->setEnabled(hasAlpha);
+}
+
+QColor DkCompressDialog::getBackgroundColor() const {
+	return bgCol;
+}
+
+int DkCompressDialog::getCompression() {
+
+	int compression = -1;
+	if ((dialogMode == jpg_dialog || !cbLossless->isChecked()) && dialogMode != web_dialog)
+		compression = slider->value();
+	else if (dialogMode == web_dialog)
+		compression = 80;
+
+	return compression;
+}
+
+float DkCompressDialog::getResizeFactor() {
+
+	float factor = -1;
+	float finalEdge = (float)sizeCombo->itemData(sizeCombo->currentIndex()).toInt();
+	float minEdge = (float)std::min(img->width(), img->height());
+
+	if (finalEdge != -1 && minEdge > finalEdge)
+		factor = finalEdge/minEdge;
+
+	qDebug() << "factor: " << factor;
+
+	return factor;
+}
+
+void DkCompressDialog::setImage(QImage* img) {
+	this->img = img;
+	updateSnippets();
+	drawPreview();
+}
+
+void DkCompressDialog::setDialogMode(int dialogMode) {
+	this->dialogMode = dialogMode;
+	init();
+}
+
 void DkCompressDialog::accept() {
 
 	saveSettings();
 
 	QDialog::accept();
+}
+
+// slots
+void DkCompressDialog::setVisible(bool visible) {
+
+	QDialog::setVisible(visible);
+
+	if (visible) {
+		updateSnippets();
+		drawPreview();
+		origView->zoomConstraints(origView->get100Factor());
+	}
+}
+
+void DkCompressDialog::newBgCol() {
+	bgCol = colChooser->getColor();
+	qDebug() << "new bg col...";
+	drawPreview();
+}
+
+void DkCompressDialog::losslessCompression(bool lossless) {
+
+	slider->setEnabled(!lossless);
+	drawPreview();
+}
+
+void DkCompressDialog::changeSizeWeb(int) {
+	drawPreview();
 }
 
 }

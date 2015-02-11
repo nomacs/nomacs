@@ -40,7 +40,6 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QtGui>
-#include <QLayout>
 #include <QRect>
 #include <QWidgetItem>
 #pragma warning(pop)		// no warnings from includes - end

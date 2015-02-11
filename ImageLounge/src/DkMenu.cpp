@@ -26,6 +26,17 @@
  *******************************************************************************************************/
 
 #include "DkMenu.h"
+#include "DkSettings.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QAction>
+#include <QFileInfo>
+#include <QList>
+#include <QObject>
+#include <QPointer>
+#include <QTimer>
+#include <QStringBuilder>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -129,6 +140,138 @@ void DkMenuBar::leaveEvent(QEvent* event) {
 
 	QMenuBar::leaveEvent(event);
 
+}
+
+// DkTcpMenu --------------------------------------------------------------------
+DkTcpMenu::DkTcpMenu(QWidget* parent, DkManagerThread* clientThread) : QMenu(parent) {
+	this->clientThread = clientThread;
+
+	connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
+
+	if (clientThread)
+		connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
+
+	noClientsFound = false;
+}
+
+DkTcpMenu::DkTcpMenu(const QString& title, QWidget* parent, DkManagerThread* clientThread) : QMenu(title, parent) {
+	this->clientThread = clientThread;
+
+	connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
+
+	if (clientThread)
+		connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
+
+	noClientsFound = false;
+}
+
+DkTcpMenu::~DkTcpMenu() {}
+
+void DkTcpMenu::setClientManager(DkManagerThread* clientThread) {
+	this->clientThread = clientThread;
+	if (clientThread)
+		connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
+}
+
+void DkTcpMenu::addTcpAction(QAction* tcpAction) {
+	tcpActions.append(tcpAction);
+}
+
+void DkTcpMenu::showNoClientsFound(bool show) {
+	noClientsFound = show;
+}
+
+void DkTcpMenu::clear() {
+	QMenu::clear();
+	peers.clear();
+	clients.clear();
+	tcpActions.clear();
+}
+
+void DkTcpMenu::enableActions(bool enable, bool local) {
+
+	updatePeers();
+
+	if (local)
+		return;
+
+	bool anyConnected = enable;
+
+	// let's see if any other connection is there
+	if (!anyConnected) {
+
+		for (int idx = 0; idx < tcpActions.size(); idx++) {
+
+			if (tcpActions.at(idx)->objectName() == "tcpAction" && tcpActions.at(idx)->isChecked()) {
+				anyConnected = true;
+				break;
+			}
+		}
+	}
+
+	for (int idx = 0; idx < tcpActions.size(); idx++) {
+
+		if (tcpActions.at(idx)->objectName() == "serverAction")
+			tcpActions.at(idx)->setEnabled(!anyConnected);
+		if (tcpActions.at(idx)->objectName() == "sendImageAction" && DkSettings::sync.syncMode == DkSettings::sync_mode_default)
+			tcpActions.at(idx)->setEnabled(anyConnected);
+	}
+
+}
+
+void DkTcpMenu::updatePeers() {	// find other clients on paint
+
+	if (!clientThread)
+		return;
+
+	QList<DkPeer> newPeers = clientThread->getPeerList();	// TODO: remove old style
+
+	// just update if the peers have changed...
+	QMenu::clear();
+
+	// show dummy action
+	if (newPeers.empty() && noClientsFound) {
+		qDebug() << "dummy node...\n";
+		QAction* defaultAction = new QAction(tr("no clients found"), this);
+		defaultAction->setEnabled(false);
+		addAction(defaultAction);
+		return;
+	}
+
+	if (!noClientsFound || !newPeers.empty()) {
+
+		for (int idx = 0; idx < tcpActions.size(); idx++) {
+
+			if (tcpActions.at(idx)->objectName() != "sendImageAction")
+				addAction(tcpActions.at(idx));
+		}
+
+		//QList<QAction*>::iterator actionIter = tcpActions.begin();
+		//while (actionIter != tcpActions.end()) {
+		//	addAction(*actionIter);
+		//	actionIter++;
+		//}
+	}
+
+	for (int idx = 0; idx < newPeers.size(); idx++) {
+
+		DkPeer currentPeer = newPeers[idx];
+
+		QString title = (noClientsFound) ? currentPeer.title : currentPeer.clientName % QString(": ") % currentPeer.title;
+
+		DkTcpAction* peerEntry = new DkTcpAction(currentPeer, title, this);
+		if (!noClientsFound) 
+			peerEntry->setTcpActions(&tcpActions);
+
+		connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
+		connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), clientThread, SLOT(stopSynchronizeWith(quint16)));
+		connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
+
+		addAction(peerEntry);
+
+	}
+
+	peers = newPeers;
 }
 
 }

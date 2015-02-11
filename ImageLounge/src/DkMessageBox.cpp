@@ -28,6 +28,19 @@
 #include "DkMessageBox.h"
 #include "DkSettings.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QDialogButtonBox>
+#include <QCheckBox>
+#include <QSettings>
+#include <QLabel>
+#include <QStyle>
+#include <QGridLayout>
+#include <QDebug>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QPushButton>
+#pragma warning(pop)		// no warnings from includes - end
+
 namespace nmc {
 
 // DkMessageBox --------------------------------------------------------------------

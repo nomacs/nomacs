@@ -29,28 +29,38 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialog>
-#include <QDialogButtonBox>
-#include <QGroupBox>
-#include <QButtonGroup>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkBaseViewPort.h"
-#include "DkWidgets.h"
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
+// Qt defines
+class QRadioButton;
+class QCheckBox;
+class QLabel;
+class QComboBox;
 
 namespace nmc {
 
-class DkTifDialog : public QDialog {
+// nomacs defines
+class DkSlider;
+class DkColorChooser;
+class DkBaseViewPort;
+
+class DllExport DkTifDialog : public QDialog {
 	Q_OBJECT
 
 public:
 	DkTifDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	int getCompression() {
-
-		return (noCompressionButton->isChecked()) ? 0 : 1;
-	};
-
-	// TODO: make it a bit more stylish
+	int getCompression() const;
 
 protected:
 	void init();
@@ -77,87 +87,22 @@ public:
 	DkCompressDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	virtual ~DkCompressDialog();
 
-	void imageHasAlpha(bool hasAlpha) {
-		this->hasAlpha = hasAlpha;
-		colChooser->setEnabled(hasAlpha);
-	};
-
-	QColor getBackgroundColor() {
-		return bgCol;
-	};
-
-	int getCompression() {
-
-		int compression = -1;
-		if ((dialogMode == jpg_dialog || !cbLossless->isChecked()) && dialogMode != web_dialog)
-			compression = slider->value();
-		else if (dialogMode == web_dialog)
-			compression = 80;
-
-		return compression;
-	};
-
-	float getResizeFactor() {
-
-		float factor = -1;
-		float finalEdge = (float)sizeCombo->itemData(sizeCombo->currentIndex()).toInt();
-		float minEdge = (float)std::min(img->width(), img->height());
-
-		if (finalEdge != -1 && minEdge > finalEdge)
-			factor = finalEdge/minEdge;
-
-		qDebug() << "factor: " << factor;
-
-		return factor;
-	};
-
-
-	void setImage(QImage* img) {
-		this->img = img;
-		updateSnippets();
-		drawPreview();
-	};
-
-	void setDialogMode(int dialogMode) {
-		this->dialogMode = dialogMode;
-		init();
-	};
-
+	void imageHasAlpha(bool hasAlpha);
+	QColor getBackgroundColor() const;
+	int getCompression();
+	float getResizeFactor();
+	void setImage(QImage* img);
+	void setDialogMode(int dialogMode);
 	virtual void accept();
 
 public slots:
-
-	void setVisible(bool visible) {
-
-		QDialog::setVisible(visible);
-
-		if (visible) {
-			updateSnippets();
-			drawPreview();
-			origView->zoomConstraints(origView->get100Factor());
-		}
-	};
+	void setVisible(bool visible);
 
 protected slots:
-
-	void newBgCol() {
-		bgCol = colChooser->getColor();
-		qDebug() << "new bg col...";
-		drawPreview();
-	};
-
-	void losslessCompression(bool lossless) {
-
-		slider->setEnabled(!lossless);
-		drawPreview();
-	};
-
-	void changeSizeWeb(int) {
-		drawPreview();
-	};
-
+	void newBgCol();
+	void losslessCompression(bool lossless);
+	void changeSizeWeb(int);
 	void drawPreview();
-
 	void updateFileSizeLabel(float bufferSize = -1, QSize bufferImgSize = QSize(), float factor = -1);
 	
 protected:
@@ -173,7 +118,6 @@ protected:
 	QImage newImg;
 	QLabel* previewLabel;
 	QLabel* previewSizeLabel;
-	//QLabel* origLabel;
 	DkBaseViewPort* origView;
 	QComboBox* sizeCombo;
 

@@ -26,6 +26,34 @@
  *******************************************************************************************************/
 
 #include "DkPluginManager.h"
+#include "DkSettings.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QWidget>
+#include <QSlider>
+#include <QSpinBox>
+#include <QTextEdit>
+#include <QProgressDialog>
+#include <QTabWidget>
+#include <QPluginLoader>
+#include <QHeaderView>
+#include <QSortFilterProxyModel>
+#include <QScrollBar>
+#include <QTableView>
+#include <QXmlStreamReader>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QDebug>
+#include <QDir>
+#include <QSettings>
+#include <QMessageBox>
+#include <QLineEdit>
+#include <QSortFilterProxyModel>
+#include <QMouseEvent>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 

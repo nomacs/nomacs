@@ -31,6 +31,7 @@
 #include "DkWidgets.h"
 #include "DkThumbsWidgets.h"
 #include "DkUtils.h"
+#include "DkImage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialogButtonBox>
@@ -43,6 +44,11 @@
 #include <QButtonGroup>
 #include <QProgressBar>
 #include <QTextEdit>
+#include <QCheckBox>
+#include <QDoubleSpinBox>
+#include <QHBoxLayout>
+#include <QRadioButton>
+#include <QMessageBox>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

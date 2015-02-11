@@ -32,6 +32,10 @@
 #include "DkMetaDataWidgets.h"
 #include "DkNetwork.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QClipboard>
+#pragma warning(pop)		// no warnings from includes - end
+
 namespace nmc {
 
 // DkControlWidget --------------------------------------------------------------------

@@ -28,47 +28,43 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QObject>
 #include <QDialog>
-#include <QModelIndex>
-#include <QGroupBox>
-#include <QSpinBox>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QListView>
-#include <QKeyEvent>
-#include <QCheckBox>
-#include <QRadioButton>
-#include <QComboBox>
-#include <QDebug>
-#include <QButtonGroup>
-#include <QFileDialog>
-#include <QStandardItem>
-#include <QTableView>
 #include <QStyledItemDelegate>
+#include <QListView>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkSettings.h"
-#include "BorderLayout.h"
-#include "DkWidgets.h"
+// Qt defines
+class BorderLayout;
+class QGroupBox;
+class QSpinBox;
+class QDoubleSpinBox;
+class QLabel;
+class QVBoxLayout;
+class QHBoxLayout;
+class QKeyEvent;
+class QCheckBox;
+class QRadioButton;
+class QButtonGroup;
+class QStandardItem;
+class QTableView;
+class QStandardItemModel;
+class QComboBox;
+class QGridLayout;
 
 namespace nmc {
 
+// nomacs defines
 class DkColorChooser;
+class DkDirectoryEdit;
 
 class DkSpinBoxWidget : public QWidget {
 	Q_OBJECT;
 public:	
 	DkSpinBoxWidget(QWidget* parent = 0);
 	DkSpinBoxWidget(QString upperString, QString lowerString, int spinBoxMin, int spinBoxMax, QWidget* parent=0, int step = 1);
-	QSpinBox* getSpinBox() { return spinBox;};
-	void setSpinBoxValue(int value) {spinBox->setValue(value);};
-	int getSpinBoxValue() {return spinBox->value();};
-
-	//virtual QSize sizeHint() const {
-
-	//	return optimalSize;
-	//}
+	QSpinBox* getSpinBox() const;
+	void setSpinBoxValue(int value);
+	int getSpinBoxValue() const;
 
 private:
 	QSpinBox* spinBox;
@@ -85,14 +81,9 @@ class DkDoubleSpinBoxWidget : public QWidget {
 public:	
 	DkDoubleSpinBoxWidget(QWidget* parent = 0);
 	DkDoubleSpinBoxWidget(QString upperString, QString lowerString, float spinBoxMin, float spinBoxMax, QWidget* parent=0, int step = 1, int decimals = 2);
-	QDoubleSpinBox* getSpinBox() { return spinBox;};
-	void setSpinBoxValue(float value) {spinBox->setValue(value);};
-	float getSpinBoxValue() {return (float)spinBox->value();};
-
-	//virtual QSize sizeHint() const {
-
-	//	return optimalSize;
-	//}
+	QDoubleSpinBox* getSpinBox() const;
+	void setSpinBoxValue(float value);
+	float getSpinBoxValue() const;
 
 private:
 	QDoubleSpinBox* spinBox;
@@ -156,18 +147,9 @@ public:
 	DkSettingsListView(QWidget* parent) : QListView(parent) {};
 	~DkSettingsListView() {QItemSelectionModel* sm = this->selectionModel(); delete sm;};
 
-	public slots:
-		void keyPressEvent(QKeyEvent *event) {
-			if (event->key() == Qt::Key_Up) {
-				previousIndex(); 
-				return;
-			}
-			else if (event->key() == Qt::Key_Down) {
-				nextIndex(); 
-				return;
-			}
-			QListView::keyPressEvent(event);
-		};
+public slots:
+	void keyPressEvent(QKeyEvent *event);
+
 private:
 	void previousIndex();
 	void nextIndex();
@@ -207,7 +189,6 @@ private:
 	QPushButton* pbTmpPath;
 	QCheckBox* cbUseTmpPath;
 	DkSpinBoxWidget* skipImgWidget;
-	//DkSpinBoxWidget* numberFiles;
 	QCheckBox* cbWrapImages;
 	QCheckBox* cbAskToSaveDeletedFiles;
 	QCheckBox* cbLogRecentFiles;
@@ -267,7 +248,8 @@ protected:
 
 	QTableView* filterTableView;
 	QStandardItemModel* model;
-	QCheckBox* browseAll, registerAll;
+	QCheckBox* browseAll;
+	QCheckBox* registerAll;
 	bool saveSettings;
 };
 
@@ -397,16 +379,9 @@ signals:
 	void applyDefault();
 
 private slots:
-	void setToDefaultPressed() {
-		qDebug() << "apply default pressed...";
-		emit applyDefault();
-	};
-	void bgColorReset() {
-		DkSettings::display.useDefaultColor = true;
-	};
-	void iconColorReset() {
-		DkSettings::display.defaultIconColor = true;
-	};
+	void setToDefaultPressed();
+	void bgColorReset();
+	void iconColorReset();
 
 private:
 	void init();
@@ -466,20 +441,6 @@ class DkSettingsDialog : public QDialog {
 
 public:
 	DkSettingsDialog(QWidget* parent);
-	//DkSettingsDialog(const DkSettingsDialog& dialog) {
-	//	this->borderLayout = dialog.borderLayout;
-	//	this->listView = dialog.listView;
-	//	this->rightWidget = dialog.rightWidget;
-	//	this->leftLabel = dialog.leftLabel;
-	//	this->buttonOk = dialog.buttonOk;
-	//	this->buttonCancel = dialog.buttonCancel;
-	//	this->widgetList = dialog.widgetList;
-	//	this->centralWidget = dialog.centralWidget;
-	//	this->centralLayout = dialog.centralLayout;
-	//	this->globalSettingsWidget = dialog.globalSettingsWidget;
-	//	this->slideshowSettingsWidget = dialog.slideshowSettingsWidget;
-	//	this->synchronizeSettingsWidget = dialog.synchronizeSettingsWidget;
-	//}
 	~DkSettingsDialog();
 
 signals:
@@ -497,15 +458,7 @@ private slots:
 	void saveSettings();
 	void cancelPressed() { close(); };
 	void initWidgets();
-	void setToDefault() {
-
-		DkSettings::setToDefaultSettings();
-		initWidgets();
-
-		// for main window
-		emit setToDefaultSignal();
-		emit settingsChanged();
-	};
+	void setToDefault();
 	void advancedSettingsChanged();
 
 protected:

@@ -26,8 +26,12 @@
  *******************************************************************************************************/
 
 #include "DkMetaDataWidgets.h"
+#include "DkBasicLoader.h"
+#include "DkImageContainer.h"
+#include "DkMetaData.h"
 #include "DkUtils.h"
 #include "DkTimer.h"
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDockWidget>
@@ -35,6 +39,8 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QVBoxLayout>
+#include <QResizeEvent>
+#include <QPushButton>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -853,10 +859,8 @@ void DkMetaDataInfo::layoutLabels() {
 
 		QPoint tmp = pos + QPoint(0, i*textHeight + i*yMargin);
 
-		//pLabels.at(i)->move(pos + QPoint(0, (i%numLines)*textHeight + (i%numLines)*yMargin));
 		QRect tmpRect = pLabels.at(i)->geometry();
 		tmpRect.moveTopRight(QPoint(pos.x(), pos.y() + (i%numLines)*textHeight + (i%numLines)*yMargin));
-		//qDebug() << "Pos X" << pos.x() << "PosY" << pos.y() + (i%numLines)*textHeight + (i%numLines)*yMargin;
 		pLabels.at(i)->setGeometry(tmpRect);
 
 		tmpRect = pValues.at(i)->geometry();
@@ -865,9 +869,6 @@ void DkMetaDataInfo::layoutLabels() {
 		pValues.at(i)->setFixedWidth(widthValues);
 
 	}
-
-	//update()
-
 }
 
 void DkMetaDataInfo::updateLabels() {
@@ -876,6 +877,18 @@ void DkMetaDataInfo::updateLabels() {
 		setImageInfo(imgC);
 
 	createLabels();
+}
+
+void DkMetaDataInfo::setVisible(bool visible) {
+
+	if (visible) {
+		readTags();
+		createLabels();
+	}
+
+	qDebug() << "[DkMetaData] setVisible: " << visible;
+
+	DkWidget::setVisible(visible);
 }
 
 void DkMetaDataInfo::setRating(int rating) {
@@ -892,26 +905,9 @@ void DkMetaDataInfo::setRating(int rating) {
 	}
 }
 
-//void DkMetaDataInfo::setResolution(int xRes, int yRes) {
-//
-//	QString x,y;
-//	x.setNum(xRes);
-//	y.setNum(yRes);
-//	x=x+"/1";
-//	y=y+"/1";
-//
-//	metaData.setExifValue("Exif.Image.XResolution",x.toStdString());
-//	metaData.setExifValue("Exif.Image.YResolution",y.toStdString());
-//
-//}
-
-
 void DkMetaDataInfo::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
-
-	//painter.setWorldTransform(worldMatrix);
-	//painter.setWorldMatrixEnabled(true);
 
 	draw(&painter);
 	painter.end();
@@ -920,11 +916,6 @@ void DkMetaDataInfo::paintEvent(QPaintEvent *event) {
 }
 
 void DkMetaDataInfo::resizeEvent(QResizeEvent *resizeW) {
-	//qDebug() << "resizeW:" << resizeW->size().width();
-	//qDebug() << parent->width();
-
-	//setMinimumHeight(1);
-	//setMaximumHeight(exifHeight);
 
 	//resize(parent->width(), resizeW->size().height());
 

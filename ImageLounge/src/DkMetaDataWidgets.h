@@ -28,21 +28,25 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QDockWidget>
-#include <QTreeView>
-#include <QLabel>
 #include <QTextEdit>
+#include <QAbstractTableModel>
+#include <QDockWidget>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkMetaData.h"
-#include "DkImageContainer.h"
-#include "DkThumbs.h"
-#include "DkWidgets.h"
+#include "DkBaseWidgets.h"
+
+// Qt defines
+class QTreeView;
+class QLabel;
+class QPushButton;
 
 namespace nmc {
 
 // nomacs defines
 class TreeItem;
+class DkMetaDataT;
+class DkImageContainerT;
+class DkThumbNailT;
 
 class DkMetaDataModel : public QAbstractTableModel {
 	Q_OBJECT
@@ -113,29 +117,13 @@ public:
 	void draw(QPainter* painter);
 	void createLabels();
 	void resizeEvent(QResizeEvent *resizeW);
-	//void getResolution(float &xResolution, float &yResolution);
-
-	//DkMetaData* getMetaData() {
-	//	return &metaData;
-	//};
 
 public slots:
 	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setRating(int rating);
-	//void setResolution(int xRes, int yRes);
 	void updateLabels();
-	void mouseMoveEvent(QMouseEvent *event);
-	void setVisible(bool visible) {
-
-		if (visible) {
-			readTags();
-			createLabels();
-		}
-
-		qDebug() << "[DkMetaData] setVisible: " << visible;
-
-		DkWidget::setVisible(visible);
-	};
+	void mouseMoveEvent(QMouseEvent *event);	// TODO: this should not be here
+	void setVisible(bool visible);
 
 protected:
 	void init();

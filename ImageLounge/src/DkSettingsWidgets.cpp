@@ -26,9 +26,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************************************/
 
 #include "DkSettingsWidgets.h"
-
 #include "DkDialog.h"
+#include "DkUtils.h"
+#include "BorderLayout.h"
+#include "DkWidgets.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QObject>
+#include <QModelIndex>
+#include <QGroupBox>
+#include <QSpinBox>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QListView>
+#include <QKeyEvent>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QComboBox>
+#include <QDebug>
+#include <QButtonGroup>
+#include <QFileDialog>
+#include <QStandardItem>
+#include <QTableView>
+#include <QStyledItemDelegate>
+#include <QStringListModel>
+#include <QWidget>
+#include <QPushButton>
+#include <QMessageBox>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -152,6 +177,16 @@ void DkSettingsDialog::createSettingsWidgets() {
 	widgetList.push_back(fileFilterSettingsWidget);
 	widgetList.push_back(resourceSettingsWidget);
 	widgetList.push_back(remoteControlWidget);
+}
+
+void DkSettingsDialog::setToDefault() {
+
+	DkSettings::setToDefaultSettings();
+	initWidgets();
+
+	// for main window
+	emit setToDefaultSignal();
+	emit settingsChanged();
 }
 
 void DkSettingsDialog::listViewSelected(const QModelIndex & qmodel) {
@@ -410,6 +445,18 @@ void DkGlobalSettingsWidget::writeSettings() {
 	DkSettings::global.language = languages.at(langCombo->currentIndex());
 }
 
+void DkGlobalSettingsWidget::setToDefaultPressed() {
+	qDebug() << "apply default pressed...";
+	emit applyDefault();
+}
+
+void DkGlobalSettingsWidget::bgColorReset() {
+	DkSettings::display.useDefaultColor = true;
+}
+
+void DkGlobalSettingsWidget::iconColorReset() {
+	DkSettings::display.defaultIconColor = true;
+}
 
 
 // DkDisplaySettingsWidget --------------------------------------------------------------------
@@ -645,7 +692,6 @@ void DkFileWidget::createLayout() {
 
 	skipImgWidget = new DkSpinBoxWidget(tr("Skip Images:"), tr("on PgUp and PgDown"), 1, 99, this);
 	//numberFiles = new DkSpinBoxWidget(tr("Number of Recent Files/Folders:"), tr("shown in Menu"), 1, 99, this);
-	QWidget* checkBoxWidget = new QWidget(this);
 	cbWrapImages = new QCheckBox(tr("Loop Images"));
 	cbAskToSaveDeletedFiles = new QCheckBox(tr("Ask to Save Deleted Files"));
 	cbAskToSaveDeletedFiles->setToolTip(tr("If checked, nomacs asks if you want to save files that are deleted while displaying."));
@@ -793,7 +839,7 @@ void DkSynchronizeSettingsWidget::writeSettings() {
 	}
 }
 
-void DkSynchronizeSettingsWidget::enableNetworkCheckBoxChanged(int state) {
+void DkSynchronizeSettingsWidget::enableNetworkCheckBoxChanged(int) {
 	if (cbEnableNetwork->isChecked()) {
 		foreach(QAbstractButton* button, buttonGroup->buttons())
 			button->setEnabled(true);
@@ -806,7 +852,6 @@ void DkSynchronizeSettingsWidget::enableNetworkCheckBoxChanged(int state) {
 }
 
 // DkSettingsListView --------------------------------------------------------------------
-
 void DkSettingsListView::previousIndex() {
 	QModelIndex curIndex = currentIndex();
 
@@ -831,8 +876,20 @@ void DkSettingsListView::nextIndex() {
 
 }
 
-// DkMetaDataSettings --------------------------------------------------------------------------
+void DkSettingsListView::keyPressEvent(QKeyEvent *event) {
+	if (event->key() == Qt::Key_Up) {
+		previousIndex(); 
+		return;
+	}
+	else if (event->key() == Qt::Key_Down) {
+		nextIndex(); 
+		return;
+	}
+	QListView::keyPressEvent(event);
+}
 
+
+// DkMetaDataSettings --------------------------------------------------------------------------
 DkMetaDataSettingsWidget::DkMetaDataSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
 	showOnlyInAdvancedMode = true;
 
@@ -947,12 +1004,12 @@ void DkResourceSettingsWidgets::init() {
 	if (totalMemory <= 0)
 		totalMemory = 2048;	// assume at least 2048 MB RAM
 
-	float curCache = DkSettings::resources.cacheMemory/totalMemory * stepSize * 100;
+	float curCache = (float)(DkSettings::resources.cacheMemory/totalMemory * stepSize * 100);
 
 	connect(sliderMemory,SIGNAL(valueChanged(int)), this, SLOT(memorySliderChanged(int)));
 
-	sliderMemory->setValue(curCache);
-	this->memorySliderChanged(curCache);
+	sliderMemory->setValue(qRound(curCache));
+	this->memorySliderChanged(qRound(curCache));
 	cbFilterRawImages->setChecked(DkSettings::resources.filterRawImages);
 	cbRemoveDuplicates->setChecked(DkSettings::resources.filterDuplicats);
 
@@ -968,7 +1025,7 @@ void DkResourceSettingsWidgets::createLayout() {
 	labelPercentage->setMinimumSize(labelPercentage->sizeHint());
 	sliderMemory = new QSlider(Qt::Horizontal, gbCache);
 	sliderMemory->setMinimum(0);
-	sliderMemory->setMaximum(10*stepSize);
+	sliderMemory->setMaximum(qRound(10*stepSize));
 	sliderMemory->setPageStep(40);
 	sliderMemory->setSingleStep(40);
 	sliderMemory->setContentsMargins(11,11,11,0);
@@ -1066,7 +1123,7 @@ void DkResourceSettingsWidgets::createLayout() {
 
 void DkResourceSettingsWidgets::writeSettings() {
 
-	DkSettings::resources.cacheMemory = (sliderMemory->value()/stepSize)/100.0 * totalMemory;
+	DkSettings::resources.cacheMemory = (float)((sliderMemory->value()/stepSize)/100.0 * totalMemory);
 	DkSettings::resources.filterRawImages = cbFilterRawImages->isChecked();
 	DkSettings::resources.filterDuplicats = cbRemoveDuplicates->isChecked();
 	DkSettings::resources.preferredExtension = DkSettings::app.fileFilters.at(cmExtensions->currentIndex());
@@ -1105,7 +1162,7 @@ void DkRemoteControlWidget::init() {
 	table->setSortingEnabled(true);
 
 	for(int i = 0; i < clients.size();i++) {
-		whiteListModel->addWhiteListEntry(DkSettings::sync.syncWhiteList.contains(clients[i]), clients[i], DkSettings::sync.recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
+		whiteListModel->addWhiteListEntry(DkSettings::sync.syncWhiteList.contains(clients[i]) != 0, clients[i], DkSettings::sync.recentLastSeen.value(clients[i],QDateTime::currentDateTime()).toDateTime());
 	}
 	table->setModel(proxyModel);
 	table->resizeColumnsToContents();
@@ -1177,6 +1234,19 @@ DkSpinBoxWidget::DkSpinBoxWidget(QString upperString, QString lowerString, int s
 
 }
 
+QSpinBox* DkSpinBoxWidget::getSpinBox() const { 
+	return spinBox;
+}
+
+void DkSpinBoxWidget::setSpinBoxValue(int value) {
+	spinBox->setValue(value);
+}
+
+int DkSpinBoxWidget::getSpinBoxValue() const {
+	return spinBox->value();
+}
+
+
 
 // DkDoubleSpinBoxWiget --------------------------------------------------------------------
 DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QWidget* parent) : QWidget(parent) {
@@ -1221,6 +1291,18 @@ DkDoubleSpinBoxWidget::DkDoubleSpinBoxWidget(QString upperString, QString lowerS
 
 	//setLayout(vboxLayout);
 	setMinimumSize(sizeHint());
+}
+
+QDoubleSpinBox* DkDoubleSpinBoxWidget::getSpinBox() const { 
+	return spinBox;
+}
+
+void DkDoubleSpinBoxWidget::setSpinBoxValue(float value) {
+	spinBox->setValue(value);
+}
+
+float DkDoubleSpinBoxWidget::getSpinBoxValue() const {
+	return (float)spinBox->value();
 }
 
 // DkFileFilterSettings --------------------------------------------------------------------
@@ -1301,7 +1383,7 @@ QList<QStandardItem*> DkFileFilterSettingWidget::getItems(const QString& filter,
 
 }
 
-void DkFileFilterSettingWidget::itemChanged(QStandardItem* item) {
+void DkFileFilterSettingWidget::itemChanged(QStandardItem*) {
 
 	saveSettings = true;
 }
@@ -1368,7 +1450,7 @@ QVariant DkWhiteListViewModel::headerData(int section, Qt::Orientation orientati
 
 }
 
-bool DkWhiteListViewModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role) {
+bool DkWhiteListViewModel::setHeaderData(int, Qt::Orientation, const QVariant&, int) {
 
 	return false;
 }
@@ -1397,7 +1479,7 @@ QVariant DkWhiteListViewModel::data(const QModelIndex & index, int role /* = Qt:
 	return QVariant();
 }
 
-bool DkWhiteListViewModel::setData(const QModelIndex &index, const QVariant &value, int role /* = Qt::EditRole */) {
+bool DkWhiteListViewModel::setData(const QModelIndex &index, const QVariant &value, int) {
 	qDebug() << __FUNCTION__;
 	if (!index.isValid()) {
 		qDebug() << "invalid row: " << index.row();
@@ -1438,7 +1520,7 @@ void DkWhiteListViewModel::addWhiteListEntry(bool checked, QString name, QDateTi
 
 // DkCheckBoxDelegate --------------------------------------------------------------------
 
-QWidget *DkCheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+QWidget *DkCheckBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem&, const QModelIndex&) const {
 	QCheckBox* editor = new QCheckBox(parent);
 	connect(editor, SIGNAL(stateChanged(int)), this, SLOT(cbChanged(int)));
 	return editor;
@@ -1481,7 +1563,7 @@ void DkCheckBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 		QStyledItemDelegate::paint(painter, option, index);
 }
 
-void DkCheckBoxDelegate::cbChanged(int state) {
+void DkCheckBoxDelegate::cbChanged(int) {
 	QCheckBox* cb = qobject_cast<QCheckBox*>(sender());
 	emit commitData(cb);
 	emit closeEditor(cb);

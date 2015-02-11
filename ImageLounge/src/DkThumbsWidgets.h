@@ -30,11 +30,25 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QProcess>
 #include <QDrag>
+#include <QSharedPointer>
+#include <QFileInfo>
+#include <QGraphicsObject>
+#include <QPen>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QDir>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkWidgets.h"
+#include "DkBaseWidgets.h"
+
+// Qt defines
+class QMenu;
 
 namespace nmc {
+
+// nomacs defines
+class DkImageContainerT;
+class DkThumbNailT;
 
 class DkFilePreview : public DkWidget {
 	Q_OBJECT

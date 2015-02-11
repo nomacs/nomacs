@@ -30,10 +30,6 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
 #include <QGraphicsView>
-#include <QTimer>
-#include <QDebug>
-#include <QVector2D>
-#include <QKeyEvent>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkMath.h"

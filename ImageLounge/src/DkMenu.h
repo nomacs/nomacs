@@ -28,19 +28,14 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QAction>
 #include <QMenuBar>
-
-#include <QFileInfo>
-#include <QList>
-#include <QObject>
 #include <QPointer>
-#include <QTimer>
-#include <QStringBuilder>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkNetwork.h"
-#include "DkTimer.h"
+
+// Qt includes
+class QTimer;
 
 namespace nmc {
 
@@ -58,7 +53,6 @@ class DkMenuBar : public QMenuBar {
 Q_OBJECT
 
 public:
-
 	
 	/**
 	 * Creates a DkMenuBar.
@@ -116,130 +110,7 @@ private:
 	bool active;
 	int timeToShow;
 	QPointer<QTimer> timerMenu;
-
 };
-
-//class DkHistoryMenu : public QMenu {
-//	Q_OBJECT
-//
-//public:
-//	DkHistoryMenu(const QString& title, QWidget* parent = 0, QStringList* recentFiles = 0) : QMenu(title, parent) {
-//
-//		connect(this, SIGNAL(aboutToShow()), this, SLOT(updateActions()));
-//		this->recentFiles = recentFiles;
-//	};
-//
-//signals:
-//	void loadFileSignal(QFileInfo file);
-//	void clearHistory();
-//
-//public slots:
-//
-//	void updateActions() {
-//		
-//		QMenu::clear();
-//
-//		int numItems = 0;
-//		for (int idx = 0; idx < recentFiles->size(); idx++) {
-//
-//			if (numItems >= DkSettings::global.numFiles)
-//				break;
-//
-//			DkTimer dt;
-//			QFileInfo file = recentFiles->at(idx);
-//
-//			//DkTimer dd;
-//			//QFileInfoList l = QDir::drives();
-//
-//			//for (int idx = 0; idx < l.size(); idx++)
-//			//	qDebug() << "drives: " << l.at(idx).absoluteFilePath() << " " << l.at(idx).exists() << " found in: " << QString::fromStdString(dd.getTotal());
-//
-//			//QDir(file.)
-//
-////#ifdef WIN32
-////
-////			// TODO: it crashed twice here!
-////
-////			// winAPI file exists should speed up things a bit (especially if network drives are currently not mounted)
-////			QString winPath = QDir::toNativeSeparators(file.absoluteFilePath());
-////			WCHAR* wDirName = new WCHAR[winPath.length()+1];	// +1 is bug fix (NULL character)
-////
-////			// CMakeLists.txt:
-////			// if compile error that toWCharArray is not recognized:
-////			// in msvc: Project Properties -> C/C++ -> Language -> Treat WChar_t as built-in type: set to No (/Zc:wchar_t-)
-////			int dirLength = winPath.toWCharArray(wDirName);
-////			wDirName[dirLength] = L'\0';	// append null character
-////
-////			DWORD dAttr = GetFileAttributesW(wDirName);
-////
-////			if (dAttr == INVALID_FILE_ATTRIBUTES) {
-////				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists (WIN32 reject) " << dt.getTotal();
-////				continue;
-////			}
-////#endif
-//			// TODO: this line is sometimes (iPhone: ducking) slow!!
-//			if (!DkUtils::exists(file)) {
-//				
-//				qDebug() << "folder " << file.absoluteFilePath() << " does NOT exists " << dt.getTotal();
-//				continue;
-//			}
-//
-//			qDebug() << "folder exists " << dt.getTotal();
-//
-//			QString title = (file.isDir()) ? file.absoluteFilePath() : file.fileName();
-//
-//			QAction* recentFileAction = new QAction(title, this);
-//			connect(recentFileAction, SIGNAL(triggered()), this, SLOT(loadRecentFile()));
-//
-//			QMenu::addAction(recentFileAction);
-//			numItems++;
-//
-//			qDebug() << "item processed in: " << dt.getTotal();
-//		}
-//
-//		if (numItems == 0) {
-//			QAction* noItems = new QAction(tr("no entries"), this);
-//			noItems->setEnabled(false);
-//			QMenu::addAction(noItems);
-//		}
-//		else {
-//			QMenu::addSeparator();
-//			QAction* clearHistory = new QAction(tr("Clear History"), this);
-//			connect(clearHistory, SIGNAL(triggered()), this, SIGNAL(clearHistory()));
-//			QMenu::addAction(clearHistory);
-//		}
-//
-//	};
-//
-//	void loadRecentFile() {
-//
-//		QAction* sender = dynamic_cast<QAction*>(QObject::sender());
-//
-//		int fileIdx = -1;
-//		for (int idx = 0; idx < recentFiles->size(); idx++) {
-//
-//			if (recentFiles->at(idx).isEmpty())
-//				continue;
-//
-//			QFileInfo file = recentFiles->at(idx);
-//
-//			if (file.fileName() == sender->text() || file.absoluteFilePath() == sender->text()) {
-//				fileIdx = idx;
-//				break;
-//			}
-//		}
-//
-//		if (fileIdx == -1)
-//			return;
-//
-//		emit loadFileSignal(recentFiles->at(fileIdx));
-//	};
-//
-//protected:
-//
-//	QStringList* recentFiles;
-//};
-
 
 class DkTcpAction : public QAction {
 	Q_OBJECT
@@ -298,153 +169,28 @@ protected:
 
 };
 
-
 class DkTcpMenu : public QMenu {
 	Q_OBJECT
 
 public:
 
-	DkTcpMenu(QWidget* parent = 0, DkManagerThread* clientThread = 0) : QMenu(parent) {
-		this->clientThread = clientThread;
+	DkTcpMenu(QWidget* parent = 0, DkManagerThread* clientThread = 0);
+	DkTcpMenu(const QString& title, QWidget* parent = 0, DkManagerThread* clientThread = 0);
+	~DkTcpMenu();
 
-		connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
-
-		if (clientThread)
-			connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
-
-		noClientsFound = false;
-	};
-
-
-	DkTcpMenu(const QString& title, QWidget* parent = 0, DkManagerThread* clientThread = 0) : QMenu(title, parent) {
-		this->clientThread = clientThread;
-
-		connect(this, SIGNAL(aboutToShow()), this, SLOT(updatePeers()));
-
-		if (clientThread)
-			connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
-
-		noClientsFound = false;
-	};
-
-	~DkTcpMenu() {};
-
-	void setClientManager(DkManagerThread* clientThread) {
-		this->clientThread = clientThread;
-		if (clientThread)
-			connect(this, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
-	};
-
-	void addTcpAction(QAction* tcpAction) {
-		tcpActions.append(tcpAction);
-	};
-
-	void showNoClientsFound(bool show) {
-		noClientsFound = show;
-	};
-
-	void clear() {
-		QMenu::clear();
-		peers.clear();
-		clients.clear();
-		tcpActions.clear();
-	};
-
+	void setClientManager(DkManagerThread* clientThread);
+	void addTcpAction(QAction* tcpAction);
+	void showNoClientsFound(bool show);
+	void clear();
 
 signals:
 	void synchronizeWithSignal(quint16);
 
 public slots:
-	void enableActions(bool enable = false, bool local = false) {
-
-		updatePeers();
-
-		if (local)
-			return;
-
-		bool anyConnected = enable;
-
-		// let's see if any other connection is there
-		if (!anyConnected) {
-
-			for (int idx = 0; idx < tcpActions.size(); idx++) {
-
-				if (tcpActions.at(idx)->objectName() == "tcpAction" && tcpActions.at(idx)->isChecked()) {
-					anyConnected = true;
-					break;
-				}
-			}
-		}
-
-		for (int idx = 0; idx < tcpActions.size(); idx++) {
-
-			if (tcpActions.at(idx)->objectName() == "serverAction")
-				tcpActions.at(idx)->setEnabled(!anyConnected);
-			if (tcpActions.at(idx)->objectName() == "sendImageAction" && DkSettings::sync.syncMode == DkSettings::sync_mode_default)
-				tcpActions.at(idx)->setEnabled(anyConnected);
-		}
-
-	}
+	void enableActions(bool enable = false, bool local = false);
 
 protected slots:
-		
-	void updatePeers() {	// find other clients on paint
-		
-		if (!clientThread)
-			return;
-
-		QList<DkPeer> newPeers = clientThread->getPeerList();	// TODO: remove old style
-
-		// just update if the peers have changed...
-		QMenu::clear();
-
-		// show dummy action
-		if (newPeers.empty() && noClientsFound) {
-			qDebug() << "dummy node...\n";
-			QAction* defaultAction = new QAction(tr("no clients found"), this);
-			defaultAction->setEnabled(false);
-			addAction(defaultAction);
-			return;
-		}
-
-		if (!noClientsFound || !newPeers.empty()) {
-			
-			for (int idx = 0; idx < tcpActions.size(); idx++) {
-				
-				if (tcpActions.at(idx)->objectName() != "sendImageAction")
-					addAction(tcpActions.at(idx));
-			}
-
-			//QList<QAction*>::iterator actionIter = tcpActions.begin();
-			//while (actionIter != tcpActions.end()) {
-			//	addAction(*actionIter);
-			//	actionIter++;
-			//}
-		}
-
-		for (int idx = 0; idx < newPeers.size(); idx++) {
-
-			DkPeer currentPeer = newPeers[idx];
-
-			QString title = (noClientsFound) ? currentPeer.title : currentPeer.clientName % QString(": ") % currentPeer.title;
-
-			DkTcpAction* peerEntry = new DkTcpAction(currentPeer, title, this);
-			if (!noClientsFound) 
-				peerEntry->setTcpActions(&tcpActions);
-			
-			connect(peerEntry, SIGNAL(synchronizeWithSignal(quint16)), clientThread, SLOT(synchronizeWith(quint16)));
-			connect(peerEntry, SIGNAL(disableSynchronizeWithSignal(quint16)), clientThread, SLOT(stopSynchronizeWith(quint16)));
-			connect(peerEntry, SIGNAL(enableActions(bool)), this, SLOT(enableActions(bool)));
-
-			addAction(peerEntry);
-
-		}
-
-		//enableActions();
-
-		peers = newPeers;
-
-	};
+	void updatePeers();
 
 protected:
 

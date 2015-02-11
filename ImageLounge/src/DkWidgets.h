@@ -28,212 +28,42 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QApplication>
-#include <QRadioButton>
-#include <QAction>
-#include <QBoxLayout>
-#include <QDialog>
-#include <QGraphicsBlurEffect>
-#include <QGraphicsPixmapItem>
-#include <QLabel>
-#include <QPainter>
 #include <QPushButton>
-#include <QMouseEvent>
-#include <QShortcut>
-#include <QToolButton>
-#include <QComboBox>
-#include <QMessageBox>
-#include <QStringBuilder>
-#include <QPointer>
-#include <QTimer>
-#include <QMap>
-#include <QDesktopServices>
-#include <QVector2D>
-#include <qmath.h>
 #include <QScrollBar>
 #include <QFileSystemModel>
-#include <QDockWidget>
-#include <QTreeView>
 #include <QSortFilterProxyModel>
-#include <QToolTip>
-#include <QProgressDialog>
-#include <QHeaderView>
-#include <QMenu>
-#include <QScrollArea>
-#include <QGraphicsView>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsItem>
-#include <QtConcurrentRun>
-#include <QMimeData>
-#include <QTimeLine>
-#include <QGraphicsItemAnimation>
-#include <QLineEdit>
-
-#ifdef WIN32
-#pragma warning(disable: 4275)	// there are some weird things happening if qtconcurrentmap.h is included - we ignore this elegantly
-#endif
-
-#include <QThread>
-#include <QFuture>
+#include <QDockWidget>
+#include <QPointer>
+#include <QPen>
 #include <QFutureWatcher>
-#include <qtconcurrentmap.h>
-#include <QColor>
-
-#if QT_VERSION < 0x050000
-#include <QPlastiqueStyle>
-#endif
-
-// gif animation label -----
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QMovie>
-// gif animation label -----
-
+#include <QLineEdit>
 #pragma warning(pop)		// no warnings from includes - end
 
-//#include "DkImage.h"
-#include "DkNetwork.h"
-#include "DkSettings.h"
-#include "DkMath.h"
-#include "DkToolbars.h"
-#include "DkBaseViewPort.h"
+#pragma warning(disable: 4251)	// TODO: remove
 
-#ifdef WIN32
-#include <ShObjIdl.h>
-#include <ShlObj.h>
-#endif
+#include "DkMath.h"
+#include "DkBaseWidgets.h"
+
+// Qt defines
+class QColorDialog;
+class QSpinBox;
+class QDoubleSpinBox;
+class QToolBar;
+class QBoxLayout;
+class QProgressDialog;
+class QMovie;
+class QTreeView;
+class QSlider;
+class QGridLayout;
+class QVBoxLayout;
 
 namespace nmc {
 
+// nomacs defines
 class DkThumbNail;
-
-class DkWidget : public QWidget {
-	Q_OBJECT
-
-public:
-	DkWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-
-	void registerAction(QAction* action) {
-		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
-	};
-
-	void block(bool blocked) {
-		this->blocked = blocked;
-		setVisible(false);
-	};
-
-	void setDisplaySettings(QBitArray* displayBits) {
-		displaySettingsBits = displayBits;
-	};
-
-	bool getCurrentDisplaySetting() {
-		
-
-		if (!displaySettingsBits)
-			return false;
-
-		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
-			return false;
-		}
-
-		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
-	};
-
-	bool isHiding() const {
-		return hiding;
-	};
-
-
-signals:
-	void visibleSignal(bool visible);
-
-public slots:
-	virtual void show();
-	virtual void hide();
-	virtual void setVisible(bool visible);
-
-	void animateOpacityUp();
-	void animateOpacityDown();
-
-protected:
-
-	QColor bgCol;
-	bool blocked;
-	bool hiding;
-	bool showing;
-
-	QGraphicsOpacityEffect* opacityEffect;
-	QBitArray* displaySettingsBits;
-
-	// functions
-	void init();
-};
-
-class DllExport DkLabel : public QLabel {
-	Q_OBJECT
-
-public:
-	DkLabel(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkLabel() {
-		if (timer) delete timer;
-		timer = 0;
-	};
-
-	virtual void showTimed(int time = 3000);
-	virtual void setText(const QString msg, int time = 3000);
-	QString getText();
-	void setFontSize(int fontSize);
-	void stop();
-	
-	void block(bool blocked) {
-		this->blocked = blocked;
-	};
-	
-	void setFixedWidth(int fixedWidth);
-	
-	void setMargin(const QPoint& margin) {
-		this->margin = margin;
-		updateStyleSheet();
-	};
-
-public slots:
-	virtual void hide();
-
-protected:
-	QWidget* parent;
-	QTimer* timer;
-	QString text;
-	QColor textCol;
-	int defaultTime;
-	int fontSize;
-	int time;
-	int fixedWidth;
-	QPoint margin;
-	bool blocked;
-	QColor bgCol;
-
-	virtual void init();
-	virtual void paintEvent(QPaintEvent *event);
-	virtual void draw(QPainter* painter);
-
-	// for my children...
-	virtual void drawBackground(QPainter*) {};
-	virtual void setTextToLabel();
-	virtual void updateStyleSheet();
-};
-
-class DkLabelBg : public DkLabel {
-	Q_OBJECT
-
-public:
-	DkLabelBg(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkLabelBg() {};
-
-protected:
-	virtual void updateStyleSheet();
-};
+class DkThumbNailT;
+class DkImageContainerT;
+class DkCropToolBar;
 
 class DkGradientLabel : public DkLabel {
 	Q_OBJECT
@@ -249,70 +79,6 @@ protected:
 
 	QImage gradient;
 	QImage end;
-
-};
-
-/**
- * This label fakes the DkWidget behavior.
- * (allows for registering actions + fades in and out)
- * we need this class too, since we cannot derive from DkLabel & DkWidget
- * at the same time -> both have QObject as common base class.
- **/
-class DkFadeLabel : public DkLabel {
-	Q_OBJECT
-
-public:
-	DkFadeLabel(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkFadeLabel() {};
-
-	void block(bool blocked) {
-		this->blocked = blocked;
-		setVisible(false);
-	};
-
-	void registerAction(QAction* action) {
-		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
-	};
-
-	void setDisplaySettings(QBitArray* displayBits) {
-		displaySettingsBits = displayBits;
-	};
-
-	bool getCurrentDisplaySetting() {
-
-		if (!displaySettingsBits)
-			return false;
-
-		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
-			return false;
-		}
-
-		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
-	};
-
-signals:
-	void visibleSignal(bool visible);
-
-public slots:
-	virtual void show();
-	virtual void hide();
-	virtual void setVisible(bool visible);
-
-protected slots:
-	void animateOpacityUp();
-	void animateOpacityDown();
-
-protected:
-
-	bool hiding;
-	bool showing;
-	QBitArray* displaySettingsBits;
-
-	QGraphicsOpacityEffect *opacityEffect;
-
-	// functions
-	void init();
 
 };
 
@@ -430,21 +196,10 @@ class DkRatingLabelBg : public DkRatingLabel {
 
 public:
 	DkRatingLabelBg(int rating = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	~DkRatingLabelBg() {
-		if (hideTimer) delete hideTimer;
-		hideTimer = 0;
-	};
+	~DkRatingLabelBg();
 
-	void changeRating(int newRating) {
-		DkRatingLabel::changeRating(newRating);
-		show();
-		hideTimer->start();
-	}
-
-	QVector<QAction*> getActions() {
-		return actions;
-	};
-
+	void changeRating(int newRating);
+	QVector<QAction*> getActions() const;
 
 protected:
 	QVector<QAction*> actions;
@@ -509,53 +264,14 @@ signals:
 	void previousSignal();
 
 public slots:
-	void play(bool play) {
-		
-		if (play != playing)	// emulate a click
-			playButton->setChecked(play);
-
-		playing = play;
-
-		if (play) {
-			displayTimer->start();
-			hideTimer->start();
-		}
-		else
-			displayTimer->stop();
-	};
-
-	void togglePlay() {
-		
-		show();
-		playing = !playing;
-		playButton->click();
-	};
-
-	void startTimer() {
-		if (playing) {
-			displayTimer->setInterval(qRound(DkSettings::slideShow.time*1000));	// if it was updated...
-			displayTimer->start();
-		}
-	};
-
-	void autoNext() {
-		emit nextSignal();
-	};
-
-	void next() {
-		hideTimer->stop();
-		emit nextSignal();
-	};
-	void previous() {
-		hideTimer->stop();
-		emit previousSignal();
-	};
-
+	void play(bool play);
+	void togglePlay();
+	void startTimer();
+	void autoNext();
+	void next();
+	void previous();
 	virtual void show(int ms = 0);
-
-	bool isPlaying() const {
-		return playing;
-	};
+	bool isPlaying() const;
 
 protected:
 	void resizeEvent(QResizeEvent *event);
@@ -572,7 +288,6 @@ protected:
 	QWidget* container;
 
 	QVector<QAction*> actions;
-
 };
 
 
@@ -585,39 +300,16 @@ public:
 
 	virtual void setValue(int i);
 
-	// DkWidget stuff
-	void registerAction(QAction* action) {
-		connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
-	};
-
-	void block(bool blocked) {
-		this->blocked = blocked;
-		setVisible(false);
-	};
-
-	void setDisplaySettings(QBitArray* displayBits) {
-		displaySettingsBits = displayBits;
-	};
-
-	bool getCurrentDisplaySetting() {
-
-		if (!displaySettingsBits)
-			return false;
-
-		if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits->size()) {
-			qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
-			return false;
-		}
-
-		return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
-	};
+	void registerAction(QAction* action);
+	void block(bool blocked);
+	void setDisplaySettings(QBitArray* displayBits);
+	bool getCurrentDisplaySetting();
 
 public slots:
 	void updateDir(QVector<QSharedPointer<DkImageContainerT> > images);
 	void updateFile(QSharedPointer<DkImageContainerT> imgC);
 	void update(const QVector<QColor>& colors, const QVector<int>& indexes);
 
-	// DkWidget
 	virtual void show();
 	virtual void hide();
 	virtual void setVisible(bool visible);
@@ -631,8 +323,6 @@ protected slots:
 
 signals:
 	void changeFileSignal(int idx);
-
-	// DkWidget
 	void visibleSignal(bool visible);
 
 protected:
@@ -838,276 +528,6 @@ protected:
 	void createLayout();
 };
 
-// TODO: move to DkMath
-class DkRotatingRect {
-
-public:
-	DkRotatingRect(QRectF rect = QRect()) {
-
-		if (rect.isEmpty()) {
-
-			for (int idx = 0; idx < 4; idx++)
-				this->rect.push_back(QPointF());
-		}
-		else
-			this->rect = rect;
-
-	};
-	
-	virtual ~DkRotatingRect() {};
-
-		friend std::ostream& operator<<(std::ostream& s, DkRotatingRect& r){
-
-		return r.put(s);
-	};
-
-	bool isEmpty() {
-
-		if (rect.size() < 4)
-			return true;
-
-		QPointF lp = rect[0]; 
-		for (int idx = 1; idx < rect.size(); idx++) {
-			
-			if (lp != rect[idx]) {
-				return false;
-			}
-			lp = rect[idx];
-		}
-		return true;
-	};
-
-	void setAllCorners(QPointF &p) {
-		
-		for (int idx = 0; idx < rect.size(); idx++)
-			rect[idx] = p;
-
-	};
-
-	DkVector getDiagonal(int cIdx) {
-
-		DkVector c0 = rect[cIdx % 4];
-		DkVector c2 = rect[(cIdx+2) % 4];
-
-		return c2 - c0;
-	};
-
-	QCursor cpCursor(int idx) {
-
-		double angle = 0;
-
-		if (idx >= 0 && idx < 4) {
-
-			// this seems a bit complicated...
-			// however the points are not necessarily stored in clockwise order...
-			DkVector e1 = rect[(idx+1) % 4] - rect[idx];
-			DkVector e2 = rect[(idx+3) % rect.size()] - rect[idx];
-			e1.normalize();
-			e2.normalize();
-			DkVector rv = e1-e2;
-			rv = rv.normalVec();
-			angle = rv.angle();
-		}
-		else {
-			DkVector edge = rect[(idx+1) % 4] - rect[idx % 4];
-			angle = edge.normalVec().angle();	// the angle of the normal vector
-		}
-
-		angle = DkMath::normAngleRad(angle, -CV_PI/8.0, 7.0*CV_PI/8.0);
-
-		if (angle > 5.0*CV_PI/8.0)
-			return QCursor(Qt::SizeBDiagCursor);
-		else if (angle > 3.0*CV_PI/8.0)
-			return QCursor(Qt::SizeVerCursor);
-		else if (angle > CV_PI/8.0)
-			return QCursor(Qt::SizeFDiagCursor);
-		else
-			return QCursor(Qt::SizeHorCursor);
-
-	};
-
-	void updateCorner(int cIdx, QPointF nC, DkVector oldDiag = DkVector()) {
-
-		// index does not exist
-		if (cIdx < 0 || cIdx >= rect.size()*2)
-			return;
-
-		if (rect[(cIdx+1) % 4] == rect[(cIdx+3) % 4]) {
-			QPointF oC = rect[(cIdx+2) % 4];	// opposite corner
-			rect[cIdx] = nC;
-			rect[(cIdx+1) % 4] = QPointF(nC.x(), oC.y());
-			rect[(cIdx+3) % 4] = QPointF(oC.x(), nC.y());
-		}
-		// these indices indicate the control points on edges
-		else if (cIdx >= 4 && cIdx < 8) {
-
-			DkVector c0 = rect[cIdx % 4];
-			DkVector n = (rect[(cIdx+1) % 4] - c0).normalVec();
-			n.normalize();
-
-			// compute the offset vector
-			DkVector oV = n * n.scalarProduct(nC-c0);
-
-			rect[cIdx % 4] = (rect[cIdx % 4] + oV).getQPointF();
-			rect[(cIdx+1) % 4] = (rect[(cIdx+1) % 4] + oV).getQPointF();
-		}
-		else {
-
-			// we have to update the n-1 and n+1 corner
-			DkVector cN = nC;
-			DkVector c0 = rect[cIdx];
-			DkVector c1 = rect[(cIdx+1) % 4];
-			DkVector c2 = rect[(cIdx+2) % 4];
-			DkVector c3 = rect[(cIdx+3) % 4];
-			
-			if (!oldDiag.isEmpty()) {
-				DkVector dN = oldDiag.normalVec();
-				dN.normalize();
-
-				float d = dN*(cN-c2);
-				cN += (dN*-d);
-			}
-
-			// new diagonal
-			float diagLength = (c2-cN).norm();
-			float diagAngle = (float)(c2-cN).angle();
-
-			// compute the idx-1 corner
-			float c1Angle = (float)(c1-c0).angle();
-			float newLength = cos(c1Angle - diagAngle)*diagLength;
-			DkVector nc1 = DkVector((newLength), 0);
-			nc1.rotate(-c1Angle);
-
-			// compute the idx-3 corner
-			float c3Angle = (float)(c3-c0).angle();
-			newLength = cos(c3Angle - diagAngle)*diagLength;
-			DkVector nc3 = DkVector((newLength), 0);
-			nc3.rotate(-c3Angle);
-			
-			rect[(cIdx+1) % 4] = (nc1+cN).getQPointF();			
-			rect[(cIdx+3) % 4] = (nc3+cN).getQPointF();
-			rect[cIdx] = cN.getQPointF();
-		}
-	};
-
-	QPolygonF& getPoly() {
-
-		return rect;
-	};
-
-	void setPoly(QPolygonF &poly) {
-		
-		rect = poly;
-	};
-
-	QPolygonF getClosedPoly() {
-
-		if (rect.isEmpty())
-			return QPolygonF();
-
-		QPolygonF closedPoly = rect;
-		closedPoly.push_back(closedPoly[0]);
-		
-		return closedPoly;
-	};
-
-	QPointF getCenter() {
-
-		if (rect.empty())
-			return QPointF();
-
-		DkVector c1 = rect[0];
-		DkVector c2 = rect[2];
-		
-		return ((c2-c1)*0.5f + c1).getQPointF();
-	};
-
-	void setCenter(const QPointF& center) {
-
-		if (rect.empty())
-			return;
-
-		DkVector diff = getCenter() - center;
-
-		for (int idx = 0; idx < rect.size(); idx++) {
-
-			rect[idx] = rect[idx] - diff.getQPointF();
-		}
-
-
-	}
-
-	double getAngle() {
-		
-		// default upper left corner is 0
-		DkVector xV = rect[3] - rect[0];
-		return xV.angle();
-	};
-
-	void getTransform(QTransform& tForm, QPointF& size) {
-
-		if (rect.size() < 4)
-			return;
-
-		// default upper left corner is 0
-		DkVector xV = DkVector(rect[3] - rect[0]).round();
-		DkVector yV = DkVector(rect[1] - rect[0]).round();
-
-		QPointF ul = QPointF(qRound(rect[0].x()), qRound(rect[0].y()));
-		size = QPointF(xV.norm(), yV.norm());
-
-		qDebug() << xV.getQPointF();
-		qDebug() << "size: " << size;
-
-
-		double angle = xV.angle();
-		angle = DkMath::normAngleRad(angle, -CV_PI, CV_PI);
-
-		if (abs(angle) > DBL_EPSILON)
-			qDebug() << "angle is > eps...";
-
-		// switch width/height for /\ and \/ quadrants
-		if (abs(angle) > CV_PI*0.25 && abs(angle) < CV_PI*0.75) {
-			float x = (float)size.x();
-			size.setX(size.y());
-			size.setY(x);
-		}
-
-		// invariance -> user does not want to make a difference between an upside down rect
-		if (angle > CV_PI*0.25 && angle < CV_PI*0.75) {
-			angle -= CV_PI*0.5;
-			ul = rect[1];
-		}
-		else if (angle > -CV_PI*0.75 && angle < -CV_PI*0.25) {
-			angle += CV_PI*0.5;
-			ul = rect[3];
-		}
-		else if (angle >= CV_PI*0.75 || angle <= -CV_PI*0.75) {
-			angle += CV_PI;
-			ul = rect[2];
-		}
-
-		tForm.rotateRadians(-angle);
-		tForm.translate(qRound(-ul.x()), qRound(-ul.y()));	// round guarantees that pixels are not interpolated
-
-	};
-
-protected:
-
-	virtual std::ostream& put(std::ostream& s) {
-
-		s << "DkRotatingRect: ";
-		for (int idx = 0; idx < rect.size(); idx++) {
-			DkVector vec = DkVector(rect[idx]);
-			s << vec << ", ";
-		}
-
-		return s;
-	};
-
-	QPolygonF rect;
-};
-
 class DkTransformRect : public QWidget {
 	Q_OBJECT
 
@@ -1146,6 +566,14 @@ class DkEditableRect : public DkWidget {
 	Q_OBJECT
 
 public:
+
+	enum {
+		no_guide = 0,
+		rule_of_thirds,
+		grid,
+
+		mode_end,
+	};
 
 	enum {
 		do_nothing,
@@ -1188,7 +616,7 @@ public slots:
 	void setFixedDiagonal(const DkVector& diag);
 	void setAngle(double angle, bool apply = true);
 	void setPanning(bool panning);
-	void setPaintHint(int paintMode = DkCropToolBar::no_guide);
+	void setPaintHint(int paintMode = no_guide);
 	void setShadingHint(bool invert);
 	void setShowInfo(bool showInfo);
 
@@ -1236,13 +664,11 @@ class DkCropWidget : public DkEditableRect {
 public:
 	DkCropWidget(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	virtual void setVisible(bool visible);
-	DkCropToolBar* getToolbar() {
-		return cropToolbar;
-	}
+	DkCropToolBar* getToolbar() const;
 
 public slots:
 	void crop();
+	virtual void setVisible(bool visible);
 
 signals:
 	void cancelSignal();
@@ -1273,12 +699,10 @@ public:
 	void halfSize();
 
 private:
-	
 	QSize margin;
 	QPointer<QMovie> animation;
 
 	void init(const QString& animationPath, const QSize& size);
-
 };
 
 class DkColorChooser : public QWidget {
@@ -1290,13 +714,8 @@ public:
 
 	void setColor(QColor color);
 	QColor getColor();
-	bool isAccept() {
-		return accept;
-	}
-
-	void enableAlpha(bool enable = true) {
-		colorDialog->setOption(QColorDialog::ShowAlphaChannel, enable);
-	}
+	bool isAccept() const;
+	void enableAlpha(bool enable = true);
 
 public slots:
 	void on_resetButton_clicked();
@@ -1354,48 +773,15 @@ class DkSlider : public QWidget {
 public:
 	DkSlider(QString title = "", QWidget* parent = 0);
 
-	QSlider* getSlider() {
-		return slider;
-	};
-
-	void setMinimum(int minValue) {
-		slider->setMinimum(minValue);
-		sliderBox->setMinimum(minValue);
-		minValLabel->setText(QString::number(minValue));
-	};
-
-	void setMaximum(int maxValue) {
-		slider->setMaximum(maxValue);
-		sliderBox->setMaximum(maxValue);
-		maxValLabel->setText(QString::number(maxValue));
-	};
-
-	void setTickInterval(int ticValue) {
-		slider->setTickInterval(ticValue);
-	};
-
-	int value() {
-		return slider->value();
-	};
-
-	void setFocus(Qt::FocusReason reason) {
-		sliderBox->setFocus(reason);
-	};
-
+	QSlider* getSlider() const;
+	void setMinimum(int minValue);
+	void setMaximum(int maxValue);
+	void setTickInterval(int ticValue);
+	int value() const;
+	void setFocus(Qt::FocusReason reason);
 
 public slots:
-void setValue(int value) {
-		
-	slider->blockSignals(true);
-	slider->setValue(value);
-	slider->blockSignals(false);
-
-	sliderBox->blockSignals(true);
-	sliderBox->setValue(value);
-	sliderBox->blockSignals(false);
-
-	emit valueChanged(value);
-}
+	void setValue(int value);
 
 signals:
 	void sliderMoved(int value);

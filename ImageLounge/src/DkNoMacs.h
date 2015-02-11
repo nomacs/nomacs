@@ -32,54 +32,14 @@
 // Qt
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
-#include <QBoxLayout>
-#include <QShortcut>
-#include <QResizeEvent>
-#include <QAction>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QToolBar>
-#include <QStatusBar>
-#include <QPanGesture>
-#include <QSplashScreen>
-#include <QErrorMessage>
-#include <QDesktopServices>
-#include <QClipboard>
-#include <QEvent>
-#include <QSettings>
-#include <QFileInfo>
-#include <QTimer>
 #include <QProcess>
-#include <QStringBuilder>
-#include <QDesktopWidget>
-#include <QProgressDialog>
-#include <QDrag>
+#include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
-
-// OpenCV
-#ifdef WITH_OPENCV
 
 #ifdef WIN32
 	#pragma warning(disable: 4996)
 	#pragma warning(disable: 4251)	// TODO: remove
 #endif
-
-
-#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
-#include "opencv/cv.h"
-#else
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#endif
-
-using namespace cv;
-#endif
-
-
-//#ifdef Q_WS_WIN
-//	#include <dwmapi.h>	// needed to see if aero is on
-//	#pragma comment (lib, "dwmapi.lib")
-//#endif
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -90,6 +50,13 @@ using namespace cv;
 #define DllExport
 #endif
 #endif
+
+// Qt defines
+class QGestureEvent;
+class QFileDialog;
+class QProgressDialog;
+class QDesktopWidget;
+class QLabel;
 
 namespace nmc {
 
@@ -460,7 +427,7 @@ public:
 	DkNomacsOSXEventFilter(QObject *parent = 0);
 
 signals:
-	void loadFile(const QFileInfo &fi);
+	void loadFile(const QFileInfo& fi);
 
 protected:
 	/*! Handle QFileOpenEvent for mac here */

@@ -61,6 +61,7 @@
 #include <QCoreApplication>
 #include <QApplication>
 #include <QPluginLoader>
+#include <QFileDialog>
 #include <qmath.h>
 
 // quazip

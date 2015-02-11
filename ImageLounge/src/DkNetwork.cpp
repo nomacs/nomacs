@@ -26,6 +26,31 @@
  *******************************************************************************************************/
 
 #include "DkNetwork.h"
+#include "DkSettings.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QTcpSocket>
+#include <QStringBuilder>
+#include <QDir>
+#include <QNetworkInterface>
+#include <QList>
+#include <QThread>
+#include <QTimer>
+#include <QHostInfo>
+#include <QUrl>
+#include <QNetworkAccessManager>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QNetworkCookieJar>
+#include <QDesktopServices>
+
+#ifdef WITH_UPNP
+#include "DkUpnp.h"
+#endif // WITH_UPNP
+
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -707,7 +732,7 @@ void DkLANClientManager::connectConnection(DkConnection* connection) {
 }
 
 // DkRemoteControllClientManager --------------------------------------------------------------------
-DkRCClientManager::DkRCClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, rcUDPPort, rcUDPPort) {
+DkRCClientManager::DkRCClientManager(QString title, QObject* parent /* = 0 */) : DkLANClientManager(title, parent, rc_udp_port, rc_udp_port) {
 	connect(server, SIGNAL(sendStopSynchronizationToAll()), this, SLOT(sendStopSynchronizationToAll()));
 
 	qDebug() << "remote control network service startet";
@@ -824,8 +849,8 @@ void DkRCClientManager::sendNewMode(int mode) {
 
 // DkLocalTcpServer --------------------------------------------------------------------
 DkLocalTcpServer::DkLocalTcpServer(QObject* parent) : QTcpServer(parent) {
-	this->startPort = localTCPPortStart;
-	this->endPort = localTCPPortEnd;
+	this->startPort = local_tcp_port_start;
+	this->endPort = local_tcp_port_end;
 
 	for (int i = startPort; i < endPort; i++) {
 		if (listen(QHostAddress::LocalHost, (quint16)i)) {
@@ -1050,6 +1075,31 @@ void DkPeer::setSynchronized(bool flag) {
 	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
 	timer->start(4000);
 };
+
+bool DkPeer::operator==(const DkPeer& peer) const {
+
+	return localServerPort == peer.localServerPort && sychronized == peer.sychronized && title == peer.title && hostAddress == peer.hostAddress;
+}
+
+DkPeer& DkPeer::operator=(const DkPeer& peer) {
+	this->peerId = peer.peerId;
+	this->localServerPort = peer.localServerPort;
+	this->peerServerPort = peer.peerServerPort;
+	this->sychronized = peer.sychronized;
+	this->title = peer.title;
+	this->connection = peer.connection;
+	this->hasChangedRecently = peer.hasChangedRecently;
+	this->timer = peer.timer; 
+	this->hostAddress = peer.hostAddress;
+	this->clientName = peer.clientName;
+	this->showInMenu = peer.showInMenu;
+
+	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
+
+	return *this;
+}
+
+
 
 // DkPeerList --------------------------------------------------------------------
 DkPeerList::DkPeerList() {

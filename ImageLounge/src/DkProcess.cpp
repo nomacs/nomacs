@@ -31,7 +31,6 @@
 #include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QUrl>
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentMap>

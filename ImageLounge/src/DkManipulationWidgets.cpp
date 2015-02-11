@@ -26,6 +26,21 @@
  *******************************************************************************************************/
 
 #include "DkManipulationWidgets.h"
+#include "BorderLayout.h"
+#include "DkImageStorage.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QWidget>
+#include <QDockWidget>
+#include <QSlider>
+#include <QSpinBox>
+#include <QLabel>
+#include <QBoxLayout>
+#include <QProgressDialog>
+#include <QDialogButtonBox>
+#include <QPushButton>
+#include <QPainter>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -45,9 +60,9 @@ QPushButton* DkUndoRedo::buttonUndo;
 QPushButton* DkUndoRedo::buttonRedo;
 bool DkImageManipulationWidget::doARedraw;
 #ifdef WITH_OPENCV
-		Mat DkImageManipulationWidget::imgMat;
-		Mat DkImageManipulationWidget::origMat;
-		Mat DkImageManipulationWidget::tempLUT;
+		cv::Mat DkImageManipulationWidget::imgMat;
+		cv::Mat DkImageManipulationWidget::origMat;
+		cv::Mat DkImageManipulationWidget::tempLUT;
 #endif
 
 /**
@@ -204,7 +219,7 @@ void DkImageManipulationDialog::createImgPreview() {
 
 #ifdef WITH_OPENCV
 	
-	Mat imgMat = DkImage::qImage2Mat(imgPreview);
+	cv::Mat imgMat = DkImage::qImage2Mat(imgPreview);
 	// imgMat.convertTo(imgMat, CV_32FC1, 1.0f/255.0f);  // for testing purposes
 	
 	DkImageManipulationWidget::setMatImg(imgMat);
@@ -473,9 +488,9 @@ void DkImageManipulationWidget::createMatLut() {
  * create initial 3 channels 16 bit lookup table with numbers from 0 .. 65535
  * @return 16 bit lut
  **/
-Mat DkImageManipulationWidget::createMatLut16() {
+cv::Mat DkImageManipulationWidget::createMatLut16() {
 
-	Mat lut = Mat(3, 65536, CV_16UC1);
+	cv::Mat lut = cv::Mat(3, 65536, CV_16UC1);
 	unsigned short *ptrU;
 	for(int i = 0; i < 3; i++) {
 		ptrU = lut.ptr<unsigned short>(i);
@@ -486,22 +501,22 @@ Mat DkImageManipulationWidget::createMatLut16() {
 }
 
 /**
- * apply a calculated CV_16U lookup table to an Mat image
+ * apply a calculated CV_16U lookup table to an cv::Mat image
  * @param input image
  * @param input LUT
  * @param is there a need to change to the HSV space (for changes of saturation and hue)
  * @return modified image
  **/
-Mat DkImageManipulationWidget::applyLutToImage(Mat inImg, Mat inLUT, bool isMatHsv) {	
+cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT, bool isMatHsv) {	
 
-	Mat tempImg;
+	cv::Mat tempImg;
 
 	if(isMatHsv) {
 		cvtColor(inImg, tempImg, CV_RGB2HSV);
 	}
 	else tempImg = inImg.clone();
 
-	std::vector<Mat> imgCh;
+	std::vector<cv::Mat> imgCh;
 	split(tempImg, imgCh);
 
 	unsigned short *ptrLutR = inLUT.ptr<unsigned short>(0);
@@ -588,13 +603,13 @@ Mat DkImageManipulationWidget::applyLutToImage(Mat inImg, Mat inLUT, bool isMatH
 	}
 	
 	if(isMatHsv) {
-		Mat retImg;
+		cv::Mat retImg;
 		cvtColor(tempImg, retImg, CV_HSV2RGB);
 
 		if(inImg.type() == CV_8UC4) {	// the retImg is always CV_8UC3, so for pics in CV_8UC4 we need to add one channel
-			std::vector<Mat> inImgCh;
+			std::vector<cv::Mat> inImgCh;
 			split(inImg, inImgCh);
-			std::vector<Mat> retImgCh;
+			std::vector<cv::Mat> retImgCh;
 			split(retImg, retImgCh);
 			retImgCh.push_back(inImgCh[3]);
 			merge(retImgCh, retImg);
@@ -610,10 +625,10 @@ Mat DkImageManipulationWidget::applyLutToImage(Mat inImg, Mat inLUT, bool isMatH
  * @param input image
  * @return modified image
  **/
-Mat DkImageManipulationWidget::manipulateImage(Mat inImg){
+cv::Mat DkImageManipulationWidget::manipulateImage(cv::Mat inImg){
 	
-	Mat outImg;
-	Mat nullImg;
+	cv::Mat outImg;
+	cv::Mat nullImg;
 
 	if (historyToolsVec.size() > 0) {
 
@@ -625,11 +640,11 @@ Mat DkImageManipulationWidget::manipulateImage(Mat inImg){
 		progress->setValue(0);	// finally set the progress to zero
 
 		outImg = inImg.clone();
-		Mat lut16 = createMatLut16();
+		cv::Mat lut16 = createMatLut16();
 		unsigned int i;
 		for (i = 0; i < historyToolsVec.size(); i++) {
 
-			Mat lut = lut16.clone();
+			cv::Mat lut = lut16.clone();
 			lut = historyToolsVec[i]->compute(lut, historyDataVec[i].arg1, historyDataVec[i].arg2);
 			progress->setValue((int)(step*(i+0.5f)));
 			if (progress->wasCanceled()) break;
@@ -654,9 +669,9 @@ Mat DkImageManipulationWidget::manipulateImage(Mat inImg){
  * @param contrast value
  * @return changed LUT
  **/
-Mat DkImageManipulationWidget::changeBrightnessAndContrast(Mat inLUT, float brightnessVal, float contrastVal) {
+cv::Mat DkImageManipulationWidget::changeBrightnessAndContrast(cv::Mat inLUT, float brightnessVal, float contrastVal) {
 
-	Mat outLUT = inLUT.clone();
+	cv::Mat outLUT = inLUT.clone();
 
 	unsigned short* ptrU;
 	double delta;
@@ -700,21 +715,21 @@ Mat DkImageManipulationWidget::changeBrightnessAndContrast(Mat inLUT, float brig
  * @param hue value
  * @return changed LUT
  **/
-Mat DkImageManipulationWidget::changeSaturationAndHue(Mat inLUT, float saturationVal, float hueVal) {
+cv::Mat DkImageManipulationWidget::changeSaturationAndHue(cv::Mat inLUT, float saturationVal, float hueVal) {
 
-	Mat outLUT = inLUT.clone();
+	cv::Mat outLUT = inLUT.clone();
 
 	hueVal *= -1.0f;	// fix the difference between label and real hue
 
 	// make a gaussian kernel for positive saturation -> this weights bright and dark colors less -> results in uniform saturation change
 	int ks = 65536;
 	float sigma = ks/6.0f;
-	Mat gKernel = Mat(1, ks, CV_32FC1);
+	cv::Mat gKernel = cv::Mat(1, ks, CV_32FC1);
 	float* kernelPtr = gKernel.ptr<float>();
 
 	for (int idx = 0, x = -cvFloor(ks/2); idx < ks; idx++,x++) 
 		kernelPtr[idx] = (float)(exp(-(x*x)/(2*sigma*sigma)));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
-	normalize(gKernel, gKernel, 1.0f, 0.0f, NORM_MINMAX);
+	normalize(gKernel, gKernel, 1.0f, 0.0f, cv::NORM_MINMAX);
 
 	//for (int idx = 0, x = -cvFloor(ks/2); idx < ks; idx++,x++) 
 	//	kernelPtr[idx] = ((idx < ks*0.5f) ? idx/(ks*0.5f) : 2.0f - (float)idx/(ks*0.5f));	// 1/(sqrt(2pi)*sigma) -> discrete normalization
@@ -759,9 +774,9 @@ Mat DkImageManipulationWidget::changeSaturationAndHue(Mat inLUT, float saturatio
  * @param gamma value
  * @return changed LUT
  **/
-Mat DkImageManipulationWidget::changeGamma(Mat inLUT, float g) {
+cv::Mat DkImageManipulationWidget::changeGamma(cv::Mat inLUT, float g) {
 
-	Mat outLUT = inLUT.clone();
+	cv::Mat outLUT = inLUT.clone();
 
 	unsigned short* ptrU;
 	for(int i = 0; i < 3; i++) {
@@ -783,7 +798,7 @@ Mat DkImageManipulationWidget::changeGamma(Mat inLUT, float g) {
  * @param exposure value
  * @return changed LUT
  **/
-Mat DkImageManipulationWidget::changeExposure(Mat inLUT, float exposure) {
+cv::Mat DkImageManipulationWidget::changeExposure(cv::Mat inLUT, float exposure) {
 
 /*
 The code for changing the exposire is based on LibRaw implementation
@@ -801,7 +816,7 @@ it under the terms of the one of three licenses as you choose:
    (See file LICENSE.LibRaw.pdf provided in LibRaw distribution archive for details).
 */
 
-	Mat outLUT = inLUT.clone();
+	cv::Mat outLUT = inLUT.clone();
 
 	unsigned short* ptrU;
 		
@@ -900,7 +915,7 @@ DkBrightness::~DkBrightness() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for a brightness change
-Mat DkBrightness::compute(Mat inLut, float val1, float val2) {
+cv::Mat DkBrightness::compute(cv::Mat inLut, float val1, float val2) {
 
 	return changeBrightnessAndContrast(inLut, val1, val2);
 };
@@ -935,7 +950,7 @@ void DkBrightness::redrawImage() {
 	}
 
 #ifdef WITH_OPENCV
-	Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
+	cv::Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
 	emit updateDialogImgSignal(DkImage::mat2QImage(applyLutToImage(imgMat, manipulationLUT, currData.isHsv)));
 #endif
 
@@ -994,7 +1009,7 @@ DkContrast::~DkContrast() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for a contrast change
-Mat DkContrast::compute(Mat inLut, float val1, float val2) {
+cv::Mat DkContrast::compute(cv::Mat inLut, float val1, float val2) {
 
 	return changeBrightnessAndContrast(inLut, val1, val2);
 };
@@ -1029,7 +1044,7 @@ void DkContrast::redrawImage() {
 	}
 
 #ifdef WITH_OPENCV
-	Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
+	cv::Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
 	emit updateDialogImgSignal(DkImage::mat2QImage(applyLutToImage(imgMat, manipulationLUT, currData.isHsv)));
 #endif
 
@@ -1088,7 +1103,7 @@ DkSaturation::~DkSaturation() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for a saturation change
-Mat DkSaturation::compute(Mat inLut, float val1, float val2) {
+cv::Mat DkSaturation::compute(cv::Mat inLut, float val1, float val2) {
 
 	return changeSaturationAndHue(inLut, val1, val2);
 };
@@ -1123,7 +1138,7 @@ void DkSaturation::redrawImage() {
 	}
 
 #ifdef WITH_OPENCV
-	Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
+	cv::Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
 	emit updateDialogImgSignal(DkImage::mat2QImage(applyLutToImage(imgMat, manipulationLUT, currData.isHsv)));
 #endif
 
@@ -1191,7 +1206,7 @@ DkHue::~DkHue() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for a hue change
-Mat DkHue::compute(Mat inLut, float val1, float val2) {
+cv::Mat DkHue::compute(cv::Mat inLut, float val1, float val2) {
 
 	return changeSaturationAndHue(inLut, val1, val2);
 };
@@ -1227,7 +1242,7 @@ void DkHue::redrawImage() {
 
 	setSaturationSliderColor(QColor(hueGradientImg.pixel(hue/2 + 90, 0)).name());
 #ifdef WITH_OPENCV
-	Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
+	cv::Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
 	emit updateDialogImgSignal(DkImage::mat2QImage(applyLutToImage(imgMat, manipulationLUT, currData.isHsv)));
 #endif
 
@@ -1294,7 +1309,7 @@ DkGamma::~DkGamma() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for a gamma change
-Mat DkGamma::compute(Mat inLut, float val1, float) {
+cv::Mat DkGamma::compute(cv::Mat inLut, float val1, float) {
 
 	return changeGamma(inLut, val1);
 };
@@ -1329,7 +1344,7 @@ void DkGamma::redrawImage() {
 	}
 
 #ifdef WITH_OPENCV
-	Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
+	cv::Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
 	emit updateDialogImgSignal(DkImage::mat2QImage(applyLutToImage(imgMat, manipulationLUT, currData.isHsv)));
 #endif
 
@@ -1392,7 +1407,7 @@ DkExposure::~DkExposure() {
 
 #ifdef WITH_OPENCV
 // compute a LUT for an exposure change
-Mat DkExposure::compute(Mat inLut, float val1, float) {
+cv::Mat DkExposure::compute(cv::Mat inLut, float val1, float) {
 
 	return changeExposure(inLut, val1);
 };
@@ -1442,7 +1457,7 @@ void DkExposure::redrawImage() {
 	}
 
 #ifdef WITH_OPENCV
-	Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
+	cv::Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
 	emit updateDialogImgSignal(DkImage::mat2QImage(applyLutToImage(imgMat, manipulationLUT, currData.isHsv)));
 #endif
 
@@ -1468,13 +1483,19 @@ DkUndoRedo::DkUndoRedo(QWidget *parent, DkImageManipulationDialog *parentDialog)
 };
 
 DkUndoRedo::~DkUndoRedo() {
-
-
 };
+
+void DkUndoRedo::enableUndoButton(bool val) { 
+	buttonUndo->setEnabled(val); 
+}
+
+void DkUndoRedo::enableRedoButton(bool val) { 
+	buttonRedo->setEnabled(val); 
+}
 
 #ifdef WITH_OPENCV
 // just a dummy function - needed because it is an virtual function
-Mat DkUndoRedo::compute(Mat inLut, float, float) {
+cv::Mat DkUndoRedo::compute(cv::Mat inLut, float, float) {
 	return inLut;
 };
 #endif
@@ -1505,10 +1526,10 @@ void DkUndoRedo::undoPressed() {
 #ifdef WITH_OPENCV
 	if (historyToolsVec.size() > 0) {
 
-		Mat imgToDisplay = origMat.clone();
+		cv::Mat imgToDisplay = origMat.clone();
 		for (unsigned int i = 0; i < historyToolsVec.size(); i++) {
 
-			Mat lut = historyToolsVec[i]->compute(tempLUT, historyDataVec[i].arg1, historyDataVec[i].arg2);
+			cv::Mat lut = historyToolsVec[i]->compute(tempLUT, historyDataVec[i].arg1, historyDataVec[i].arg2);
 			imgToDisplay = applyLutToImage(imgToDisplay, lut, historyDataVec[i].isHsv);
 		}
 
@@ -1545,10 +1566,10 @@ void DkUndoRedo::redoPressed() {
 	buttonUndo->setEnabled(true);
 
 #ifdef WITH_OPENCV
-	Mat imgToDisplay = origMat.clone();
+	cv::Mat imgToDisplay = origMat.clone();
 	for (unsigned int i = 0; i < historyToolsVec.size(); i++) {
 
-		Mat lut = historyToolsVec[i]->compute(tempLUT, historyDataVec[i].arg1, historyDataVec[i].arg2);
+		cv::Mat lut = historyToolsVec[i]->compute(tempLUT, historyDataVec[i].arg1, historyDataVec[i].arg2);
 		imgToDisplay = applyLutToImage(imgToDisplay, lut, historyDataVec[i].isHsv);
 	}
 

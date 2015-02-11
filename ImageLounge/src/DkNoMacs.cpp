@@ -56,6 +56,31 @@
 #include "DkPluginManager.h"
 #endif //  WITH_PLUGINS
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QBoxLayout>
+#include <QShortcut>
+#include <QResizeEvent>
+#include <QAction>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QToolBar>
+#include <QStatusBar>
+#include <QPanGesture>
+#include <QSplashScreen>
+#include <QErrorMessage>
+#include <QDesktopServices>
+#include <QClipboard>
+#include <QEvent>
+#include <QSettings>
+#include <QFileInfo>
+#include <QTimer>
+#include <QProcess>
+#include <QStringBuilder>
+#include <QDesktopWidget>
+#include <QProgressDialog>
+#include <QDrag>
+#pragma warning(pop)		// no warnings from includes - end
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {

@@ -29,17 +29,29 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
-#include <QDockWidget>
-#include <QSlider>
-#include <QSpinBox>
-#include <QLabel>
-#include <QBoxLayout>
-#include <QProgressDialog>
-#include <QDialogButtonBox>
+#include <QDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkViewPort.h"
-#include "BorderLayout.h"
+#ifdef WITH_OPENCV
+
+#ifdef WIN32
+#pragma warning(disable: 4996)
+#endif
+
+#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
+#include "opencv/cv.h"
+#else
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#endif
+#endif
+
+// Qt defines
+class QSpinBox;
+class QDoubleSpinBox;
+class QSlider;
+class QLabel;
+class QPushButton;
 
 namespace nmc {
 
@@ -71,21 +83,21 @@ class DkImageManipulationWidget : public QWidget {
 		static void clearHistoryVectors();
 
 #ifdef WITH_OPENCV
-		static void setMatImg(Mat newImg) {
+		static void setMatImg(cv::Mat newImg) {
 			imgMat = newImg;
 		}
-		static void setOrigMatImg(Mat newImg) {
+		static void setOrigMatImg(cv::Mat newImg) {
 			origMat = newImg;
 		}
 		static void createMatLut();
-		static Mat manipulateImage(Mat inImg);
+		static cv::Mat manipulateImage(cv::Mat inImg);
 
-		Mat changeBrightnessAndContrast(Mat inImgMat, float brightnessVal, float contrastVal);
-		Mat changeSaturationAndHue(Mat inImgMat, float saturationVal, float hueVal);
-		Mat changeGamma(Mat inImgMat, float gamma);
-		Mat changeExposure(Mat inImgMat, float exposure);
+		cv::Mat changeBrightnessAndContrast(cv::Mat inImgMat, float brightnessVal, float contrastVal);
+		cv::Mat changeSaturationAndHue(cv::Mat inImgMat, float saturationVal, float hueVal);
+		cv::Mat changeGamma(cv::Mat inImgMat, float gamma);
+		cv::Mat changeExposure(cv::Mat inImgMat, float exposure);
 		
-		virtual Mat compute(Mat inLut, float val1, float val2) = 0;
+		virtual cv::Mat compute(cv::Mat inLut, float val1, float val2) = 0;
 
 #endif
 
@@ -126,12 +138,12 @@ class DkImageManipulationWidget : public QWidget {
 		static bool prepareUndo;
 
 #ifdef WITH_OPENCV
-		static Mat imgMat;
-		static Mat tempLUT;
-		static Mat origMat;
+		static cv::Mat imgMat;
+		static cv::Mat tempLUT;
+		static cv::Mat origMat;
 
-		static Mat applyLutToImage(Mat inImg, Mat tempLUT, bool isMatHsv);
-		static Mat createMatLut16();
+		static cv::Mat applyLutToImage(cv::Mat inImg, cv::Mat tempLUT, bool isMatHsv);
+		static cv::Mat createMatLut16();
 #endif
 
 		int findClosestValue(double *values, double closestVal, int i1, int i2);
@@ -178,7 +190,7 @@ class DkBrightness : public DkImageManipulationWidget {
 	protected:
 		virtual void redrawImage();
 #ifdef WITH_OPENCV
-		virtual Mat compute(Mat inLut, float val1, float val2);
+		virtual cv::Mat compute(cv::Mat inLut, float val1, float val2);
 #endif
 
 };
@@ -194,7 +206,7 @@ class DkContrast : public DkImageManipulationWidget {
 	protected:
 		virtual void redrawImage();
 #ifdef WITH_OPENCV
-		virtual Mat compute(Mat inLut, float val1, float val2);
+		virtual cv::Mat compute(cv::Mat inLut, float val1, float val2);
 #endif
 
 };
@@ -210,7 +222,7 @@ class DkSaturation : public DkImageManipulationWidget {
 	protected:
 		virtual void redrawImage();
 #ifdef WITH_OPENCV
-		virtual Mat compute(Mat inLut, float val1, float val2);
+		virtual cv::Mat compute(cv::Mat inLut, float val1, float val2);
 #endif
 
 	protected slots:
@@ -229,7 +241,7 @@ class DkHue : public DkImageManipulationWidget {
 	protected:
 		virtual void redrawImage();
 #ifdef WITH_OPENCV
-		virtual Mat compute(Mat inLut, float val1, float val2);
+		virtual cv::Mat compute(cv::Mat inLut, float val1, float val2);
 #endif
 
 	signals:
@@ -247,7 +259,7 @@ class DkGamma : public DkImageManipulationWidget {
 	protected:
 		virtual void redrawImage();
 #ifdef WITH_OPENCV
-		virtual Mat compute(Mat inLut, float val1, float val2);
+		virtual cv::Mat compute(cv::Mat inLut, float val1, float val2);
 #endif
 
 };
@@ -265,7 +277,7 @@ public:
 protected:
 	virtual void redrawImage();
 #ifdef WITH_OPENCV
-	virtual Mat compute(Mat inLut, float val1, float val2);
+	virtual cv::Mat compute(cv::Mat inLut, float val1, float val2);
 #endif
 
 };
@@ -278,13 +290,13 @@ public:
 	DkUndoRedo(QWidget *parent, DkImageManipulationDialog *parentDialog);
 	~DkUndoRedo();
 
-	static void enableUndoButton(bool val) { buttonUndo->setEnabled(val); };
-	static void enableRedoButton(bool val) { buttonRedo->setEnabled(val); };
+	static void enableUndoButton(bool val);
+	static void enableRedoButton(bool val);
 	
 protected:
 	virtual void redrawImage();
 #ifdef WITH_OPENCV
-	virtual Mat compute(Mat inLut, float val1, float val2);
+	virtual cv::Mat compute(cv::Mat inLut, float val1, float val2);
 #endif
 	static QPushButton* buttonUndo;
 	static QPushButton* buttonRedo;

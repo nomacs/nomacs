@@ -31,9 +31,8 @@
 #include <cmath>
 #include <QDebug>
 #include <QPointF>
+#include <QPolygonF>
 #pragma warning(pop)		// no warnings from includes - end
-
-#include <float.h>
 
 #ifdef WITH_OPENCV
 
@@ -46,8 +45,6 @@
 #else
 	#include "opencv2/core/core.hpp"
 #endif
-
-using namespace cv;
 #else
 
 //#define int64 long long;
@@ -75,6 +72,8 @@ int cvFloor(float num);
 #define DllExport
 #endif
 #endif
+
+// Qt defines
 
 namespace nmc {
 
@@ -347,7 +346,7 @@ public:
 	 * Initializes an object by means of the OpenCV size.
 	 * @param s the size.
 	 **/
-	DkVector(Size s) {
+	DkVector(cv::Size s) {
 		this->width  = (float)s.width;
 		this->height = (float)s.height;
 	};
@@ -356,7 +355,7 @@ public:
 	 * Initializes a Vector by means of a OpenCV Point.
 	 * @param p the point
 	 **/
-	DkVector(Point2f p) {
+	DkVector(cv::Point2f p) {
 		this->x = p.x;
 		this->y = p.y;
 	};
@@ -365,7 +364,7 @@ public:
 	 * Initializes a Vector by means of a OpenCV Point.
 	 * @param p the point
 	 **/
-	DkVector(Point p) {
+	DkVector(cv::Point p) {
 		this->x = (float)p.x;
 		this->y = (float)p.y;
 	};
@@ -754,18 +753,6 @@ public:
 		y /= n;
 	};
 
-	///** 
-	// * Returns the normalized vector.
-	// * After normalization the vector's magnitude is |v| = 1
-	// * @return the normalized vector.
-	// */
-	//virtual DkVector getNormalized() const {
-	//	float n = norm();
-
-	//	return DkVector(x/n, y/n);
-	//};
-
-		
 	/** 
 	 * Returns the angle between two vectors
 	 *  @param vec vector
@@ -823,9 +810,9 @@ public:
 	 * Convert DkVector to cv::Point.
 	 * @return a cv::Point having the vector's coordinates.
 	 **/
-	virtual Point getCvPoint32f() const {
+	virtual cv::Point getCvPoint32f() const {
 
-		return Point_<float>(x, y);
+		return cv::Point_<float>(x, y);
 	};
 
 	/**
@@ -833,9 +820,9 @@ public:
 	 * The vectors coordinates are rounded.
 	 * @return a cv::Point having the vector's coordinates.
 	 **/
-	virtual Point getCvPoint() const {
+	virtual cv::Point getCvPoint() const {
 
-		return Point(qRound(x), qRound(y));
+		return cv::Point(qRound(x), qRound(y));
 	};
 
 	/**
@@ -843,10 +830,41 @@ public:
 	 * The vector coordinates are rounded.
 	 * @return a cv::Size having the vector's coordinates.
 	 **/
-	Size getCvSize() const {
+	cv::Size getCvSize() const {
 
-		return Size(qRound(width), qRound(height));
+		return cv::Size(qRound(width), qRound(height));
 	}
 #endif
 };
+
+class DkRotatingRect {
+
+public:
+	DkRotatingRect(QRectF rect = QRectF());
+	virtual ~DkRotatingRect();
+
+	friend std::ostream& operator<<(std::ostream& s, DkRotatingRect& r) {
+		return r.put(s);
+	};
+
+	bool isEmpty();
+	void setAllCorners(QPointF &p);
+	DkVector getDiagonal(int cIdx);
+	QCursor cpCursor(int idx);
+	void updateCorner(int cIdx, QPointF nC, DkVector oldDiag = DkVector());
+	QPolygonF& getPoly();
+	void setPoly(QPolygonF &poly);
+	QPolygonF getClosedPoly();
+	QPointF getCenter();
+	void setCenter(const QPointF& center);
+	double getAngle();
+	void getTransform(QTransform& tForm, QPointF& size);
+
+protected:
+
+	virtual std::ostream& put(std::ostream& s);
+
+	QPolygonF rect;
+};
+
 }

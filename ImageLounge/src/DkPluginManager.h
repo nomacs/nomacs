@@ -28,27 +28,30 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QWidget>
-#include <QSlider>
-#include <QSpinBox>
-#include <QLabel>
-#include <QTextEdit>
-#include <QProgressDialog>
-#include <QTabWidget>
-#include <QPluginLoader>
-#include <QHeaderView>
-#include <QSortFilterProxyModel>
+#include <QDialog>
+#include <QMap>
+#include <QAbstractTableModel>
 #include <QStyledItemDelegate>
-#include <QScrollBar>
-#include <QTableView>
-#include <QXmlStreamReader>
+#include <QTextEdit>
+#include <QLabel>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkViewPort.h"
 #include "DkPluginInterface.h"
+
+// Qt defines
+class QNetworkReply;
+class QNetworkAccessManager;
+class QPluginLoader;
+class QModelIndex;
+class QTableView;
+class QItemSelectionModel;
+class QItemSelection;
+class QProgressDialog;
+class QSortFilterProxyModel;
 
 namespace nmc {
 
+// nomacs defines
 class DkPluginTableWidget;
 class DkInstalledPluginsModel;
 class DkPluginDownloader;
@@ -268,8 +271,7 @@ private:
 
 // checkbox delegate based on code from http://stackoverflow.com/questions/3363190/qt-qtableview-how-to-have-a-checkbox-only-column
 class DkPluginCheckBoxDelegate : public QStyledItemDelegate {
-
-Q_OBJECT
+	Q_OBJECT
 
 public:
 	DkPluginCheckBoxDelegate(QObject *parent = 0);
@@ -282,8 +284,7 @@ private:
 
 // pushbutton delegate : adds buttons in the table column
 class DkPushButtonDelegate : public QStyledItemDelegate {
-
-Q_OBJECT
+	Q_OBJECT
 
 public:
 	DkPushButtonDelegate(QObject *parent = 0);

@@ -32,6 +32,7 @@
 #include "DkBaseViewPort.h"
 #include "DkTimer.h"
 #include "DkWidgets.h"
+#include "DkImage.h"
 
 #ifdef WIN32
 #include <winsock2.h>	// needed since libraw 0.16
@@ -65,7 +66,7 @@
 #include <QTextEdit>
 #include <QApplication>
 #include <QInputDialog>
-
+#include <QFileDialog>
 #include <QPageSetupDialog>
 #include <QPrintDialog>
 #include <QToolBar>
@@ -73,6 +74,11 @@
 #include <QProgressBar>
 #include <QFuture>
 #include <QtConcurrentRun>
+#include <QMouseEvent>
+#include <QAction>
+#include <QMessageBox>
+#include <QToolButton>
+#include <qmath.h>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -163,13 +169,13 @@ DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog
 	if (!DkSettings::isPortable())
 		qDebug() << "nomacs is not portable: " << DkSettings::getSettingsFile().absoluteFilePath();
 
-	versionLabel->setText("Version: " % QApplication::applicationVersion() % platform %  "<br>" %
+	versionLabel->setText("Version: " + QApplication::applicationVersion() + platform +  "<br>" +
 #ifdef WITH_LIBRAW
 		"RAW support: Yes"
 #else
 		"RAW support: No"
 #endif  		
-		% (DkSettings::isPortable() ? tr("<br>Portable") : "")
+		+ (DkSettings::isPortable() ? tr("<br>Portable") : "")
 		);
 
 	versionLabel->move(360, 280);

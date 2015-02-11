@@ -28,6 +28,21 @@
 #include "DkThumbsWidgets.h"
 #include "DkThumbs.h"
 #include "DkTimer.h"
+#include "DkImageContainer.h"
+#include "DkImage.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QTimer>
+#include <QAction>
+#include <QMenu>
+#include <qmath.h>
+#include <QResizeEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QApplication>
+#include <QUrl>
+#include <QScrollBar>
+#include <QHBoxLayout>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -430,42 +445,6 @@ void DkFilePreview::drawFadeOut(QLinearGradient gradient, QRectF imgRect, QImage
 	img->setAlphaChannel(mask);
 }
 
-//void DkFilePreview::createCurrentImg(const QImage& img) {
-//
-//	QRectF r = img.rect();
-//	if (height()-yOffset < r.height())
-//		r.setSize(QSizeF(qRound(r.width()*(float)(height()-yOffset)/r.height()), height()-yOffset));
-//
-//	QPixmap glow = DkImage::colorizePixmap(QPixmap::fromImage(img), DkSettings::display.highlightColor, 1.0f);
-//
-//	currentImg = QPixmap(r.width()+4, r.height()+4);
-//#if QT_VERSION < QT_VERSION_CHECK(4, 8, 0)
-//	currentImg.fill(qRgba(0,0,0,0));	// sets alpha wrong
-//#else
-//	currentImg.fill(QColor(0,0,0,0));	// introduced in Qt 4.8
-//#endif
-//	//currentImg = QPixmap::fromImage(img);
-//
-//	QPainter painter(&currentImg);
-//	painter.setRenderHint(QPainter::SmoothPixmapTransform);
-//	// create border
-//	QRectF sr = r;
-//	sr.setSize(sr.size()+QSize(2, 2));
-//	sr.moveCenter(QRectF(currentImg.rect()).center());
-//	painter.setOpacity(0.8);
-//	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
-//
-//	sr.setSize(sr.size()+QSize(2, 2));
-//	sr.moveCenter(QRectF(currentImg.rect()).center());
-//	painter.setOpacity(0.3);
-//	painter.drawPixmap(sr, glow, QRect(QPoint(), img.size()));
-//
-//	sr = r;
-//	sr.moveCenter(QRectF(currentImg.rect()).center());
-//	painter.setOpacity(1.0);
-//	painter.drawImage(sr, img, QRect(QPoint(), img.size()));
-//}
-
 void DkFilePreview::resizeEvent(QResizeEvent *event) {
 
 	if (event->size() == event->oldSize() && 
@@ -475,19 +454,6 @@ void DkFilePreview::resizeEvent(QResizeEvent *event) {
 			qDebug() << "parent size: " << parent->height();
 			return;
 	}
-
-	//minHeight = DkSettings::display.thumbSize + yOffset;
-
-	//if (orientation == Qt::Horizontal) {
-	//	setMinimumHeight(1);
-	//	setMaximumHeight(minHeight);
-	//	resize(parent->width(), event->size().height());
-	//}
-	//else {
-	//	setMinimumWidth(1);
-	//	setMaximumWidth(minHeight);
-	//	resize(parent->height(), event->size().width());
-	//}
 
 	if (currentFileIdx >= 0 && isVisible()) {
 		scrollToCurrentImage = true;
