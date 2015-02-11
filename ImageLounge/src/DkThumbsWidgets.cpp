@@ -30,6 +30,7 @@
 #include "DkTimer.h"
 #include "DkImageContainer.h"
 #include "DkImage.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTimer>
@@ -42,6 +43,7 @@
 #include <QUrl>
 #include <QScrollBar>
 #include <QHBoxLayout>
+#include <QStyleOptionGraphicsItem>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

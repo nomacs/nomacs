@@ -28,32 +28,11 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QString>
 #include <QFileInfo>
-#include <QDate>
-#include <QRegExp>
-#include <QStringList>
-#include <QColor>
-#include <QPixmap>
-#include <QPainter>
-#include <QFuture>
-#include <QtConcurrentRun>
-#include <QDir>
-#include <QComboBox>
-#include <QCoreApplication>
-#include <QTranslator>
+#include <QVector>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include <cmath>
-#include <sstream>
-#include <stdarg.h>
-
-// for svm params
-#include <iostream>
-#include <fstream>
-
 #include "DkError.h"
-#include "DkSettings.h"
 
 #ifdef Q_OS_WIN
 
@@ -85,7 +64,6 @@ using namespace cv;
 
 //#define int64 long long;
 #define CV_PI 3.141592653589793238462643383279
-
 #endif
 
 #ifndef DllExport
@@ -98,7 +76,14 @@ using namespace cv;
 #endif
 #endif
 
+// Qt defines
+class QComboBox;
+class QColor;
+
 namespace nmc {
+
+// nomacs defines
+class TreeItem;
 
 enum morphTypes {DK_ERODE=0, DK_DILATE};
 enum DebugLevel {DK_NONE=0,DK_WARNING, DK_MODULE, DK_DEBUG_A, DK_DEBUG_B, DK_DEBUG_C, DK_DEBUG_ALL};
@@ -173,30 +158,9 @@ public:
 	 * @return bool true if the file exists
 	 **/ 
 	static bool exists(const QFileInfo& file, int waitMs = 10);
-
 	static bool checkFile(const QFileInfo& file);
-
-	static QString colorToString(const QColor& col) {
-
-		return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
-	};
-
-	static QString readableByte(float bytes) {
-		
-		if (bytes >= 1024*1024*1024) {
-			return QString::number(bytes/(1024.0f*1024.0f*1024.0f), 'f', 2) + " GB";
-		}
-		else if (bytes >= 1024*1024) {
-			return QString::number(bytes/(1024.0f*1024.0f), 'f', 2) + " MB";
-		}
-		else if (bytes >= 1024) {
-			return QString::number(bytes/1024.0f, 'f', 2) + " KB";
-		}
-		else {
-			return QString::number(bytes, 'f', 2) + " B";
-		}
-
-	}
+	static QString colorToString(const QColor& col);
+	static QString readableByte(float bytes);
 
 #ifdef WITH_OPENCV
 	/**
@@ -385,55 +349,8 @@ public:
 	};
 
 	static QDateTime getConvertableDate(const QString& date);
-
-	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo()) {
-
-		// convert date
-		QDateTime dateCreated;
-		QStringList dateSplit = date.split(QRegExp("[/: \t]"));
-
-		if (dateSplit.size() >= 3) {
-
-			QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
-			QTime time;
-
-			if (dateSplit.size() >= 6)
-				time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
-
-			dateCreated = QDateTime(dateV, time);
-		}
-		else if (file.exists())
-			dateCreated = file.created();
-
-		return dateCreated;
-	};
-
-	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo()) {
-		
-		// convert date
-		QString dateConverted;
-		QStringList dateSplit = date.split(QRegExp("[/: \t]"));
-
-		if (dateSplit.size() >= 3) {
-
-			QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
-			dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
-
-			if (dateSplit.size() >= 6) {
-				QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
-				dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
-			}
-		}
-		else if (file.exists()) {
-			QDateTime dateCreated = file.created();
-			dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
-		}
-		else
-			dateConverted = "unknown date";
-
-		return dateConverted;
-	};
-
+	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo());
+	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString cleanFraction(const QString& frac);
 	static std::wstring qStringToStdWString(const QString &str);
 	static QString stdWStringToQString(const std::wstring &str);

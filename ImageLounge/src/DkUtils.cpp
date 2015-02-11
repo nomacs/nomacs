@@ -27,10 +27,28 @@
 
 #include "DkUtils.h"
 #include "DkMath.h"
+#include "DkSettings.h"
 
 #ifdef Q_WS_X11
 #include <sys/sysinfo.h>
 #endif
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QString>
+#include <QFileInfo>
+#include <QDate>
+#include <QRegExp>
+#include <QStringList>
+#include <QColor>
+#include <QPixmap>
+#include <QPainter>
+#include <QFuture>
+#include <QtConcurrentRun>
+#include <QDir>
+#include <QComboBox>
+#include <QCoreApplication>
+#include <QTranslator>
+#pragma warning(pop)		// no warnings from includes - end
 
 int nmc::DkUtils::debugLevel = DK_MODULE;
 
@@ -120,6 +138,76 @@ bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 #else
 	return wCompLogic((wchar_t*)lhs.utf16(), (wchar_t*)rhs.utf16());	// TODO: is this nice?
 #endif
+}
+
+QDateTime DkUtils::convertDate(const QString& date, const QFileInfo& file) {
+
+	// convert date
+	QDateTime dateCreated;
+	QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+
+	if (dateSplit.size() >= 3) {
+
+		QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
+		QTime time;
+
+		if (dateSplit.size() >= 6)
+			time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
+
+		dateCreated = QDateTime(dateV, time);
+	}
+	else if (file.exists())
+		dateCreated = file.created();
+
+	return dateCreated;
+};
+
+QString DkUtils::convertDateString(const QString& date, const QFileInfo& file) {
+
+	// convert date
+	QString dateConverted;
+	QStringList dateSplit = date.split(QRegExp("[/: \t]"));
+
+	if (dateSplit.size() >= 3) {
+
+		QDate dateV = QDate(dateSplit[0].toInt(), dateSplit[1].toInt(), dateSplit[2].toInt());
+		dateConverted = dateV.toString(Qt::SystemLocaleShortDate);
+
+		if (dateSplit.size() >= 6) {
+			QTime time = QTime(dateSplit[3].toInt(), dateSplit[4].toInt(), dateSplit[5].toInt());
+			dateConverted += " " + time.toString(Qt::SystemLocaleShortDate);
+		}
+	}
+	else if (file.exists()) {
+		QDateTime dateCreated = file.created();
+		dateConverted += dateCreated.toString(Qt::SystemLocaleShortDate);
+	}
+	else
+		dateConverted = "unknown date";
+
+	return dateConverted;
+}
+
+QString DkUtils::colorToString(const QColor& col) {
+
+	return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
+}
+
+QString DkUtils::readableByte(float bytes) {
+
+	if (bytes >= 1024*1024*1024) {
+		return QString::number(bytes/(1024.0f*1024.0f*1024.0f), 'f', 2) + " GB";
+	}
+	else if (bytes >= 1024*1024) {
+		return QString::number(bytes/(1024.0f*1024.0f), 'f', 2) + " MB";
+	}
+	else if (bytes >= 1024) {
+		return QString::number(bytes/1024.0f, 'f', 2) + " KB";
+	}
+	else {
+		return QString::number(bytes, 'f', 2) + " B";
+	}
+
 }
 
 #else // !WIN32

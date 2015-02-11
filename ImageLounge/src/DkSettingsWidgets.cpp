@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DkUtils.h"
 #include "BorderLayout.h"
 #include "DkWidgets.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
@@ -53,6 +54,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QWidget>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QGraphicsOpacityEffect>
+#include <QHeaderView>
+#include <QApplication>
+#include <QPainter>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

@@ -26,7 +26,6 @@
  *******************************************************************************************************/
 
 #include "DkSettings.h"
-//#include "DkDialog.h"
 #include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
@@ -34,12 +33,14 @@
 #include <QDesktopServices>
 #include <QTranslator>
 #include <QFileInfo>
-
+#include <QDebug>
 #include <QTableView>
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QAbstractTableModel>
 #include <QStyledItemDelegate>
+#include <QDir>
+#include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

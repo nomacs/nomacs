@@ -32,6 +32,8 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
 #include <QThread>
+#include <QPixmap>
+#include <QPainter>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

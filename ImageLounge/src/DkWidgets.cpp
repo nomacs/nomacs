@@ -34,6 +34,7 @@
 #include "DkImage.h"
 #include "DkToolbars.h"
 #include "DkImageStorage.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
@@ -1274,7 +1275,6 @@ DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags fl
 	stars[rating_5]->addAction(actions[rating_5]);
 	
 	connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
-
 }
 
 DkRatingLabelBg::~DkRatingLabelBg() {

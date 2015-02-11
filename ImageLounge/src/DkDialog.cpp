@@ -78,6 +78,7 @@
 #include <QAction>
 #include <QMessageBox>
 #include <QToolButton>
+#include <QComboBox>
 #include <qmath.h>
 
 // quazip

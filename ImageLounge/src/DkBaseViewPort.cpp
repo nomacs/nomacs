@@ -34,6 +34,7 @@
 #include <QTimer>
 #include <QMovie>
 #include <QShortcut>
+#include <QDebug>
 
 // gestures
 #include <QSwipeGesture>

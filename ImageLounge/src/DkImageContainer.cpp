@@ -37,6 +37,7 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
 #include <QImage>
+#include <QtConcurrentRun>
 
 // quazip
 #ifdef WITH_QUAZIP

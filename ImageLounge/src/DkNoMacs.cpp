@@ -79,6 +79,8 @@
 #include <QDesktopWidget>
 #include <QProgressDialog>
 #include <QDrag>
+#include <QVector2D>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

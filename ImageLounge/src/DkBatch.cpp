@@ -32,6 +32,7 @@
 #include "DkThumbsWidgets.h"
 #include "DkUtils.h"
 #include "DkImage.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialogButtonBox>

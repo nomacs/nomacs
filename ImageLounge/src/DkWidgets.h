@@ -79,7 +79,6 @@ protected:
 
 	QImage gradient;
 	QImage end;
-
 };
 
 class DkButton : public QPushButton {

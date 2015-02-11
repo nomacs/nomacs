@@ -32,6 +32,7 @@
 #include "DkUtils.h"
 #include "DkTimer.h"
 #include "DkImageStorage.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDockWidget>
@@ -41,6 +42,8 @@
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QPushButton>
+#include <QPainter>
+#include <QSettings>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

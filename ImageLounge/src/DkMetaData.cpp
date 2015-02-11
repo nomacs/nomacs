@@ -30,6 +30,7 @@
 #include "DkUtils.h"
 #include "DkMath.h"
 #include "DkImageStorage.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTranslator>
@@ -38,6 +39,7 @@
 #include <QDebug>
 #include <QBuffer>
 #include <QVector2D>
+#include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

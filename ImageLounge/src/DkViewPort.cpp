@@ -34,6 +34,9 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
+#include <QShortcut>
+#include <QMovie>
+#include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1777,16 +1780,15 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	QColor col = imgStorage.getImage().pixel(xy);
 	
-	QString msg = "<font color=#555555>x: " % QString::number(xy.x()) % " y: " % QString::number(xy.y()) % "</font>"
-		" | r: " % QString::number(col.red()) % " g: " % QString::number(col.green()) % " b: " % QString::number(col.blue());
+	QString msg = "<font color=#555555>x: " + QString::number(xy.x()) + " y: " + QString::number(xy.y()) + "</font>"
+		" | r: " + QString::number(col.red()) + " g: " + QString::number(col.green()) + " b: " + QString::number(col.blue());
 
 	if (imgStorage.getImage().hasAlphaChannel())
-		msg = msg % " a: " % QString::number(col.alpha());
+		msg += " a: " + QString::number(col.alpha());
 
-	msg = msg % " | <font color=#555555>" % col.name().toUpper() % "</font>";
+	msg += " | <font color=#555555>" + col.name().toUpper() + "</font>";
 
-		emit statusInfoSignal(msg, status_pixel_info);
-
+	emit statusInfoSignal(msg, status_pixel_info);
 }
 
 QString DkViewPort::getCurrentPixelHexValue() {

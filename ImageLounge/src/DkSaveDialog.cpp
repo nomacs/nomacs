@@ -30,6 +30,7 @@
 #include "DkWidgets.h"
 #include "DkBasicLoader.h"
 #include "DkBaseViewPort.h"
+#include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QBuffer>
@@ -40,6 +41,8 @@
 #include <QRadioButton>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QSettings>
+#include <QComboBox>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
