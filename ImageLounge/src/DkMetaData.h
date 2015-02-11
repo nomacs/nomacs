@@ -40,7 +40,6 @@
 #include <exiv2/preview.hpp>
 #include <iomanip>
 #endif
-
 #pragma warning(pop)
 
 #pragma warning(disable: 4251)	// TODO: remove

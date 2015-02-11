@@ -26,6 +26,16 @@
  *******************************************************************************************************/
 
 #include "DkProcess.h"
+#include "DkUtils.h"
+#include "DkImage.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QUrl>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrentMap>
+#include <QWidget>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 

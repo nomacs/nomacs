@@ -74,6 +74,7 @@
 #include "DkToolbars.h"
 #include "DkBaseViewPort.h"
 #include "DkPluginInterface.h"
+#include "DkTimer.h"
 
 //#include "DkDialog.h"
 

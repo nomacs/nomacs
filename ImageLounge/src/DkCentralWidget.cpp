@@ -29,6 +29,7 @@
 #include "DkViewPort.h"
 #include "DkMessageBox.h"
 #include "DkThumbsWidgets.h"
+#include "DkThumbs.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>

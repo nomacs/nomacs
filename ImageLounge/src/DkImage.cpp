@@ -28,6 +28,9 @@
 #include "DkImage.h"
 #include "DkNoMacs.h"
 #include "DkMessageBox.h"
+#include "DkSettings.h"
+#include "DkTimer.h"
+#include "DkThumbs.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>

@@ -35,6 +35,10 @@
 #include "DkSettings.h"
 #include "DkImageContainer.h"
 
+// Qt defines
+class QTabBar;
+class QMimeData;
+
 namespace nmc {
 
 class DkTabInfo {

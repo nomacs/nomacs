@@ -29,6 +29,9 @@
 
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
+#include "DkSettings.h"
+#include "DkError.h"
+#include "DkTimer.h"
 
 #pragma warning(push, 0)        
 #include <QObject>
@@ -40,6 +43,55 @@
 #include <QBuffer>
 
 #include <qmath.h>
+
+// quazip
+#ifdef WITH_QUAZIP
+#include <quazip/JlCompress.h>
+#endif
+
+#ifdef WITH_WEBP
+#include "webp/decode.h"
+#include "webp/encode.h"
+#endif
+
+// opencv
+#ifdef WITH_OPENCV
+
+#ifdef WIN32
+#pragma warning(disable: 4996)
+#endif
+
+#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
+#include "opencv/cv.h"
+#else
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#endif
+
+#ifdef WITH_LIBRAW
+#include <libraw/libraw.h>
+#endif
+
+#ifdef WITH_LIBTIFF
+#ifdef WIN32
+#include "tif_config.h"	
+#endif
+
+#ifdef Q_WS_MAC
+#define uint64 uint64_hack_
+#define int64 int64_hack_
+#endif // Q_WS_MAC
+
+#include "tiffio.h"
+
+#ifdef Q_WS_MAC
+#undef uint64
+#undef int64
+#endif // Q_WS_MAC
+#endif
+
+#endif
+
 #pragma warning(pop)
 
 namespace nmc {
@@ -629,7 +681,8 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 				qDebug() << "median blurred in: " << dMed.getTotal() << ", winSize: " << winSize;
 			}
-			else qDebug() << "median filter: unrecognizable ISO speed";
+			else 
+				qDebug() << "median filter: unrecognizable ISO speed";
 			
 		}
 

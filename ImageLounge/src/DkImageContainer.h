@@ -28,23 +28,13 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QObject>
-#include <QImage>
-#include <QFileInfo>
-#include <QFuture>
 #include <QFutureWatcher>
 #include <QTimer>
-
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
+#include <QFileInfo>
+#include <QSharedPointer>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkMetaData.h"
-#include "DkBasicLoader.h"
-#include "DkThumbs.h"
-
+#pragma warning(disable: 4251)	// TODO: remove
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -56,7 +46,16 @@
 #endif
 #endif
 
+#include "DkThumbs.h"
+
 namespace nmc {
+
+// nomacs defines
+//class DkThumbNailT;
+class DkBasicLoader;
+class DkMetaDataT;
+class DkZipContainer;
+class FileDownloader;
 
 class DllExport DkImageContainer {
 

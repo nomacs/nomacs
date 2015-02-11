@@ -26,6 +26,24 @@
  *******************************************************************************************************/
 
 #include "DkImageContainer.h"
+#include "DkThumbs.h"
+#include "DkBasicLoader.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QObject>
+#include <QImage>
+#include <QFileInfo>
+#include <QFuture>
+#include <QTimer>
+
+// quazip
+#ifdef WITH_QUAZIP
+#include <quazip/JlCompress.h>
+#endif
+#pragma warning(pop)		// no warnings from includes - end
+
+#pragma warning(disable: 4251)	// TODO: remove
+
 
 namespace nmc {
 
@@ -390,6 +408,7 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 }
 
 DkImageContainerT::~DkImageContainerT() {
+	
 	bufferWatcher.blockSignals(true);
 	bufferWatcher.cancel();
 	imageWatcher.blockSignals(true);
@@ -400,8 +419,6 @@ DkImageContainerT::~DkImageContainerT() {
 	// we have to wait here
 	saveMetaDataWatcher.blockSignals(true);
 	saveImageWatcher.blockSignals(true);
-	//saveImageWatcher.waitForFinished();
-	//saveMetaDataWatcher.waitForFinished();
 }
 
 void DkImageContainerT::clear() {

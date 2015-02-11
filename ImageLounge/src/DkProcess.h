@@ -32,6 +32,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentMap>
+#include <QDir>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
@@ -66,7 +67,8 @@ class DkResizeBatch : public DkAbstractBatch {
 public:
 	DkResizeBatch();
 
-	virtual void setProperties(float scaleFactor, int mode = mode_default, int prop = prop_default, int iplMethod = DkImage::ipl_area, bool correctGamma = false);
+	// TODO: where shall we put the defines now? e.g. DkImage::ipl_area
+	virtual void setProperties(float scaleFactor, int mode = mode_default, int prop = prop_default, int iplMethod = 1/*DkImage::ipl_area*/, bool correctGamma = false);
 	virtual bool compute(QImage& img, QStringList& logStrings) const;
 	virtual QString name() const;
 	virtual bool isActive() const;
