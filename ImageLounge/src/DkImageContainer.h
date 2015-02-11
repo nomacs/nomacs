@@ -51,7 +51,6 @@
 namespace nmc {
 
 // nomacs defines
-//class DkThumbNailT;
 class DkBasicLoader;
 class DkMetaDataT;
 class DkZipContainer;
@@ -69,7 +68,6 @@ public:
 	};
 
 	DkImageContainer(const QFileInfo& fileInfo);
-	//friend bool operator==(const DkImageContainer& lic, const DkImageContainer& ric);
 	bool operator==(const DkImageContainer& ric) const;
 	bool operator< (const DkImageContainer& o) const;
 	bool operator<= (const DkImageContainer& o) const;

@@ -26,8 +26,16 @@
  *******************************************************************************************************/
 
 #include "DkMetaDataWidgets.h"
+#include "DkUtils.h"
+#include "DkTimer.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QDockWidget>
+#include <QTreeView>
+#include <QLabel>
+#include <QTextEdit>
 #include <QVBoxLayout>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 

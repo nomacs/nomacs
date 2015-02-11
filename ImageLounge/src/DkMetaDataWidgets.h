@@ -41,6 +41,9 @@
 
 namespace nmc {
 
+// nomacs defines
+class TreeItem;
+
 class DkMetaDataModel : public QAbstractTableModel {
 	Q_OBJECT
 

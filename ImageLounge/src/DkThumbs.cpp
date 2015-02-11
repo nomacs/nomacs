@@ -27,6 +27,22 @@
 
 #include "DkThumbs.h"
 #include "DkImage.h"
+#include "DkTimer.h"
+#include "DkSettings.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QFileInfo>
+#include <QStringList>
+#include <QMutex>
+#include <QImageReader>
+#include <QtConcurrentRun>
+#include <QTimer>
+#include <QBuffer>
+
+#ifdef WIN32
+#include <winsock2.h>	// needed since libraw 0.16
+#endif
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -45,6 +61,8 @@ DkThumbNail::DkThumbNail(QFileInfo file, QImage img) {
 	meanColor = DkSettings::display.bgColorWidget;
 	s = qMax(img.width(), img.height());
 };
+
+DkThumbNail::~DkThumbNail() {}
 
 /**
  * Loads the thumbnail.
@@ -147,16 +165,14 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		imgW = imageReader->size().width();
 		imgH = imageReader->size().height();	// locks the file!
 	}
-	//else if (!thumb.isNull())
-	//	qDebug() << "EXIV thumb loaded: " << thumb.width() << " x " << thumb.height();
 	
 	if (rescale && (imgW > maxThumbSize || imgH > maxThumbSize)) {
 		if (imgW > imgH) {
-			imgH = (float)maxThumbSize / imgW * imgH;
+			imgH = qRound((float)maxThumbSize / imgW * imgH);
 			imgW = maxThumbSize;
 		} 
 		else if (imgW < imgH) {
-			imgW = (float)maxThumbSize / imgH * imgW;
+			imgW = qRound((float)maxThumbSize / imgH * imgW);
 			imgH = maxThumbSize;
 		}
 		else {
@@ -201,11 +217,11 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 			if (imgW > maxThumbSize || imgH > maxThumbSize) {
 				if (imgW > imgH) {
-					imgH = (float)maxThumbSize / imgW * imgH;
+					imgH = qRound((float)maxThumbSize / imgW * imgH);
 					imgW = maxThumbSize;
 				} 
 				else if (imgW < imgH) {
-					imgW = (float)maxThumbSize / imgH * imgW;
+					imgW = qRound((float)maxThumbSize / imgH * imgW);
 					imgH = maxThumbSize;
 				}
 				else {
@@ -225,14 +241,12 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 	}
 	else if (rescale) {
 		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		qDebug() << "thumb rescaled...";
 	}
 
 	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;
 		rotationMatrix.rotate((double)orientation);
 		thumb = thumb.transformed(rotationMatrix);
-		qDebug() << "thumb rotated...";
 	}
 
 	// save the thumbnail if the caller either forces it, or the save thumb is requested and the image did not have any before
@@ -264,10 +278,6 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 	if (!thumb.isNull())
 		qDebug() << "[thumb] " << file.fileName() << "(" << thumb.width() << " x " << thumb.height() << ") loaded in: " << dt.getTotal() << ((exifThumb) ? " from EXIV" : " from File");
-
-	//if (!thumb.isNull())
-	//	qDebug() << "thumb: " << thumb.width() << " x " << thumb.height();
-
 
 	return thumb;
 }
@@ -504,22 +514,19 @@ void DkThumbsLoader::init() {
  **/ 
 int DkThumbsLoader::getFileIdx(QFileInfo& file) {
 
-	//mutex.lock();
-
 	if (!file.exists() || !thumbs)
 		return -1;
 
 	QString cFilePath = file.absoluteFilePath();
-	unsigned int fileIdx = 0;
-	for ( ; fileIdx < thumbs->size(); fileIdx++) {
+	int fileIdx = 0;
+	for ( ; (size_t)fileIdx < thumbs->size(); fileIdx++) {
 
 		if (thumbs->at(fileIdx).getFile().absoluteFilePath() == cFilePath)
 			break;
 	}
 
-	if (fileIdx == thumbs->size()) fileIdx = -1;
-
-	//mutex.unlock();
+	if ((size_t)fileIdx == thumbs->size()) 
+		fileIdx = -1;
 
 	return fileIdx;
 
@@ -556,28 +563,6 @@ void DkThumbsLoader::run() {
 		if (somethingTodo)
 			loadThumbs();
 	}
-
-	//// locate the current file
-	//QStringList files = dir.entryList(DkImageLoader::fileFilters);
-
-	//DkTimer dtt;
-
-	//for (int idx = 0; idx < files.size(); idx++) {
-
-	//	QMutexLocker(&this->mutex);
-	//	if (!isActive) {
-	//		break;
-	//	}
-
-	//	QFileInfo cFile = QFileInfo(dir, files[idx]);
-
-	//	if (!cFile.exists() || !cFile.isReadable())
-	//		continue;
-
-	//	QImage img = getThumbNailQt(cFile);
-	//	//QImage img = getThumbNailWin(cFile);
-	//	thumbs->push_back(DkThumbNail(cFile, img));
-	//}
 
 }
 

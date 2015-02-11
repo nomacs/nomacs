@@ -28,13 +28,13 @@
 #include "DkImageContainer.h"
 #include "DkThumbs.h"
 #include "DkBasicLoader.h"
+#include "DkSettings.h"
+#include "DkUtils.h"
+#include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
 #include <QImage>
-#include <QFileInfo>
-#include <QFuture>
-#include <QTimer>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -52,10 +52,14 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
 #endif
 
 // DkImageContainer --------------------------------------------------------------------
+/**
+ * Creates a DkImageContainer.
+ * This class is the basic image management class.
+ * @param fileInfo the file of the given 
+ **/ 
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 	
 	this->fileInfo = fileInfo;
-
 	init();
 }
 
@@ -70,14 +74,9 @@ void DkImageContainer::init() {
 
 }
 
-bool DkImageContainer::operator ==(const DkImageContainer& ric) const {
+bool DkImageContainer::operator==(const DkImageContainer& ric) const {
 	return fileInfo.absoluteFilePath() == ric.file().absoluteFilePath();
 }
-
-//bool operator==(const DkImageContainer& lic, const DkImageContainer& ric) {
-//
-//	return lic.file().absoluteFilePath() == ric.file().absoluteFilePath();
-//}
 
 bool DkImageContainer::operator<=(const DkImageContainer& o) const {
 

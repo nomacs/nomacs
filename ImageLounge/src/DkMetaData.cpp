@@ -27,6 +27,8 @@
 
 #include "DkMetaData.h"
 #include "DkImage.h"
+#include "DkUtils.h"
+#include "DkMath.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTranslator>

@@ -28,26 +28,13 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QFileInfo>
-#include <QImage>
-#include <QStringList>
+#include <QFutureWatcher>
+#include <QSharedPointer>
+#include <QColor>
 #include <QDir>
 #include <QThread>
-#include <QMutex>
-#include <QImageReader>
-#include <QFutureWatcher>
-#include <QtConcurrentRun>
-#include <QSharedPointer>
-#include <QTimer>
-
-#ifdef WIN32
-	#include <winsock2.h>	// needed since libraw 0.16
-#endif
+#include <QImage>
 #pragma warning(pop)		// no warnings from includes - end
-
-#include "DkTimer.h"
-#include "DkMetaData.h"
-#include "DkSettings.h"
 
 namespace nmc {
 
@@ -77,7 +64,7 @@ public:
 	 * Default destructor.
 	 * @return 
 	 **/ 
-	virtual ~DkThumbNail() {};
+	virtual ~DkThumbNail();
 
 	friend bool operator==(const DkThumbNail& lt, const DkThumbNail& rt) {
 

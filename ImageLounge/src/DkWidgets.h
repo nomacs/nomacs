@@ -78,6 +78,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <qtconcurrentmap.h>
+#include <QColor>
 
 #if QT_VERSION < 0x050000
 #include <QPlastiqueStyle>

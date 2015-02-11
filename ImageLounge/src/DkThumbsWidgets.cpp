@@ -27,6 +27,7 @@
 
 #include "DkThumbsWidgets.h"
 #include "DkThumbs.h"
+#include "DkTimer.h"
 
 namespace nmc {
 

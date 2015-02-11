@@ -49,7 +49,7 @@ DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int
 	sliderHalfWidth = cvCeil((double)sliderWidth / 2);
 	//return (qreal)(pos) / (qreal)(width() - sliderWidth);
 	
-	int pos = normedPos * (parent->width() - sliderWidth - 1);
+	int pos = qRound(normedPos * (parent->width() - sliderWidth - 1));
 
 	setGeometry(pos, 23, sliderWidth + 1, sliderWidth + sliderHalfWidth + 1);
 
@@ -57,7 +57,7 @@ DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int
 
 };
 
-void DkColorSlider::paintEvent(QPaintEvent* event) {
+void DkColorSlider::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
 
@@ -90,21 +90,16 @@ void DkColorSlider::paintEvent(QPaintEvent* event) {
 
 void DkColorSlider::updatePos(int parentWidth) {
 
-	int pos =normedPos * (parentWidth - sliderWidth - 1);
-
+	int pos = qRound(normedPos * (parentWidth - sliderWidth - 1));
 	setGeometry(pos, 23, sliderWidth + 1, sliderWidth + sliderHalfWidth + 1);
-
 }
 
 void DkColorSlider::setActive(bool isActive) {
 
 	this->isActive = isActive;
-
 }
 
 DkColorSlider::~DkColorSlider() {
-
-
 };
 
 QColor DkColorSlider::getColor() {
@@ -140,7 +135,7 @@ void DkColorSlider::mouseMoveEvent(QMouseEvent *event) {
 		
 }
 
-void DkColorSlider::mouseDoubleClickEvent(QMouseEvent *event) {
+void DkColorSlider::mouseDoubleClickEvent(QMouseEvent*) {
 
 	QColor color = QColorDialog::getColor(this->color, this);
 	if (color.isValid())
@@ -277,7 +272,7 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 	qreal leftDist = initValue;
 	qreal rightDist = initValue;
 
-	int leftIdx, rightIdx;
+	int leftIdx = 0, rightIdx = 0;
 	
 	for (int i = 0; i < sliders.size(); i++) {
 		dist = sliders.at(i)->getNormedPos() - pos;
@@ -315,9 +310,9 @@ void DkGradient::insertSlider(qreal pos, QColor col) {
 		sliders.at(rightIdx)->getColor().getRgb(&rRight, &gRight, &bRight);
 		
 		qreal fac = leftDist / (leftDist + rightDist);
-		rNew = rLeft * (1 - fac) + rRight * fac;
-		gNew = gLeft * (1 - fac) + gRight * fac;
-		bNew = bLeft * (1 - fac) + bRight * fac;
+		rNew = qRound(rLeft * (1 - fac) + rRight * fac);
+		gNew = qRound(gLeft * (1 - fac) + gRight * fac);
+		bNew = qRound(bLeft * (1 - fac) + bRight * fac);
 
 		actColor = QColor(rNew, gNew, bNew);
 
@@ -424,16 +419,13 @@ int DkGradient::getAbsolutePos(qreal pos) {
 
 }
 
-void DkGradient::paintEvent(QPaintEvent* event) {
-
+void DkGradient::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
 	painter.setPen(Qt::gray);
 	
 	painter.fillRect(halfSliderWidth, 2, width() - sliderWidth, height() - clickAreaHeight, gradient);
 	painter.drawRect(halfSliderWidth, 2, width() - sliderWidth, height() - clickAreaHeight);
-	
-
 };
 
 
@@ -445,7 +437,7 @@ void DkGradient::mouseReleaseEvent(QMouseEvent *event) {
 
 }
 
-void DkGradient::changeColor(DkColorSlider *slider) {
+void DkGradient::changeColor(DkColorSlider*) {
 
 	updateGradient();
 	update();
@@ -1030,7 +1022,7 @@ void DkCropToolBar::on_infoAction_toggled(bool checked) {
 
 void DkCropToolBar::on_swapAction_triggered() {
 
-	int tmpV = horValBox->value();
+	int tmpV = qRound(horValBox->value());
 	horValBox->setValue(verValBox->value());
 	verValBox->setValue(tmpV);
 
@@ -1108,9 +1100,9 @@ void DkCropToolBar::on_verValBox_valueChanged(double val) {
 	on_horValBox_valueChanged(val);
 }
 
-void DkCropToolBar::on_horValBox_valueChanged(double val) {
+void DkCropToolBar::on_horValBox_valueChanged(double) {
 
-	DkVector diag = DkVector(horValBox->value(), verValBox->value());
+	DkVector diag = DkVector((float)horValBox->value(), (float)verValBox->value());
 	emit aspectRatio(diag);
 
 	QString rs = QString::number(horValBox->value()) + ":" + QString::number(verValBox->value());

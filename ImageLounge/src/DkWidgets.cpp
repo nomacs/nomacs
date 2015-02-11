@@ -27,6 +27,15 @@
 
 #include "DkWidgets.h"
 #include "DkNoMacs.h"
+#include "DkUtils.h"
+#include "DkTimer.h"
+#include "DkThumbs.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QObject>
+#include <QColor>
+#pragma warning(pop)		// no warnings from includes - end
+
 
 namespace nmc {
 

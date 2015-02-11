@@ -28,6 +28,7 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
+#include <QColor>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -56,7 +57,6 @@
 
 using namespace cv;
 #endif
-
 
 #include <set>
 
