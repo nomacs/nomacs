@@ -32,6 +32,9 @@
 #include "DkTimer.h"
 #include "DkThumbs.h"
 #include "DkImageStorage.h"
+#include "DkBasicLoader.h"
+#include "DkMetaData.h"
+#include "DkImageContainer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -1912,6 +1915,26 @@ void DkColorLoader::run() {
 
 	emit updateSignal(cols, indexes);
 
+}
+
+const QVector<QColor>& DkColorLoader::getColors() const {
+	return cols;
+}
+
+const QVector<int>& DkColorLoader::getIndexes() const {
+	return indexes;
+}
+
+int DkColorLoader::maxFiles() const {
+	return maxThumbs;
+}
+
+QString DkColorLoader::getFilename(int idx) const {
+
+	if (idx < 0 || idx >= images.size())
+		return QString("");
+
+	return images.at(idx)->file().fileName();
 }
 
 void DkColorLoader::loadColor(int fileIdx) {

@@ -26,11 +26,12 @@
  *******************************************************************************************************/
 
 #include "DkViewPort.h"
-
 #include "DkNoMacs.h"	// currently needed for some enums
 #include "DkThumbsWidgets.h"
+#include "DkMetaData.h"
 #include "DkMetaDataWidgets.h"
 #include "DkNetwork.h"
+#include "DkImageContainer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>

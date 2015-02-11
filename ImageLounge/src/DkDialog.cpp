@@ -33,6 +33,7 @@
 #include "DkTimer.h"
 #include "DkWidgets.h"
 #include "DkImage.h"
+#include "DkThumbs.h"
 
 #ifdef WIN32
 #include <winsock2.h>	// needed since libraw 0.16

@@ -44,6 +44,8 @@
 #include "DkThumbsWidgets.h"
 #include "DkBatch.h"
 #include "DkCentralWidget.h"
+#include "DkMetaData.h"
+#include "DkImageContainer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #ifdef WITH_UPNP

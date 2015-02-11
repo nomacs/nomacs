@@ -26,10 +26,11 @@
  *******************************************************************************************************/
 
 #include "DkThumbs.h"
-#include "DkImage.h"
 #include "DkTimer.h"
 #include "DkSettings.h"
 #include "DkImageStorage.h"
+#include "DkBasicLoader.h"
+#include "DkMetaData.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileInfo>

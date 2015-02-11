@@ -29,36 +29,17 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QColor>
+#include <QTimer>
+#include <QThread>
+#include <QMutex>
+#include <QStringList>
+#include <QImage>
 
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
-
-// opencv
-#ifdef WITH_OPENCV
-
-#ifdef WIN32
-#pragma warning(disable: 4996)
-#endif
-
+// TODO: get rid of this include
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
 #endif
-
 #pragma warning(pop)	// no warnings from includes - end
-
-#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
-	#include "opencv/cv.h"
-#else
-	#include "opencv2/core/core.hpp"
-	#include "opencv2/imgproc/imgproc.hpp"
-#endif
-
-using namespace cv;
-#endif
-
-#include <set>
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -70,36 +51,34 @@ using namespace cv;
 #endif
 #endif
 
-// Qt defines
-class QFileSystemWatcher;
-
 // my classes
-#include "DkBasicLoader.h"
-#include "DkMetaData.h"
 #include "DkImageContainer.h"
 
 #ifdef Q_WS_X11
 	typedef  unsigned char byte;
 #endif
 
-#ifdef WITH_LIBTIFF
-	#ifdef WIN32
-		#include "tif_config.h"	
-	#endif
+//#ifdef WITH_LIBTIFF
+//	#ifdef WIN32
+//		#include "tif_config.h"	
+//	#endif
+//
+//	#ifdef Q_WS_MAC
+//		#define uint64 uint64_hack_
+//		#define int64 int64_hack_
+//	#endif // Q_WS_MAC
+//
+//	#include "tiffio.h"
+//
+//	#ifdef Q_WS_MAC
+//		#undef uint64
+//		#undef int64
+//	#endif // Q_WS_MAC
+//#endif
 
-	#ifdef Q_WS_MAC
-		#define uint64 uint64_hack_
-		#define int64 int64_hack_
-	#endif // Q_WS_MAC
-
-	#include "tiffio.h"
-
-	#ifdef Q_WS_MAC
-		#undef uint64
-		#undef int64
-	#endif // Q_WS_MAC
-#endif
-
+// Qt defines
+class QFileSystemWatcher;
+class QUrl;
 
 namespace nmc {
 
@@ -111,7 +90,6 @@ namespace nmc {
  * and saves the image or the image metadata.
  **/ 
 class DllExport DkImageLoader : public QObject {
-
 	Q_OBJECT
 
 public:
@@ -241,25 +219,10 @@ public:
 	void stop();
 	void run();
 
-	const QVector<QColor>& getColors() const {
-		return cols;
-	};
-
-	const QVector<int>& getIndexes() const {
-		return indexes;
-	};
-
-	int maxFiles() const {
-		return maxThumbs;
-	};
-
-	QString getFilename(int idx) const {
-
-		if (idx < 0 || idx >= images.size())
-			return QString("");
-
-		return images.at(idx)->file().fileName();
-	}
+	const QVector<QColor>& getColors() const;
+	const QVector<int>& getIndexes() const;
+	int maxFiles() const;
+	QString getFilename(int idx) const;
 
 signals:
 	void updateSignal(const QVector<QColor>& cols, const QVector<int>& indexes);
