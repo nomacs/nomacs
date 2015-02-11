@@ -58,7 +58,7 @@ public:
 	 * Returns the error message.
 	 * @return The error message.
 	**/
-	virtual const char *what() const throw () ;
+	virtual const char* what() const throw () ;
 	/**
 	 * Returns the error message.
 	 * @return The error message.

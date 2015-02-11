@@ -29,6 +29,7 @@
 
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
+#include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkError.h"
 #include "DkTimer.h"
@@ -770,6 +771,10 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 }
 
 #ifdef WITH_OPENCV
+
+Mat DkBasicLoader::getImageCv() {
+	return cv::Mat();
+}
 
 bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, QSize s) {
 

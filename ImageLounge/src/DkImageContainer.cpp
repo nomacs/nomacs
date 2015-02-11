@@ -26,6 +26,8 @@
  *******************************************************************************************************/
 
 #include "DkImageContainer.h"
+#include "DkImageStorage.h"
+#include "DkMetaData.h"
 #include "DkThumbs.h"
 #include "DkBasicLoader.h"
 #include "DkSettings.h"

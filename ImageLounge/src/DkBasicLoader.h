@@ -29,15 +29,33 @@
 
 #pragma warning(push, 0)    
 #include <QNetworkAccessManager>
+#include <QSharedPointer>
 #include <QUrl>
+#include <QFileInfo>
+#include <QImage>
 #pragma warning(pop)
 
-#include "DkImageStorage.h"
-#include "DkMetaData.h"
+//#include "DkImageStorage.h"
 
 #ifndef WIN32
 #include "qpsdhandler.h"
 #endif
+
+// opencv
+#ifdef WITH_OPENCV
+
+#ifdef WIN32
+#pragma warning(disable: 4996)
+#endif
+
+#ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
+#include "opencv/cv.h"
+#else
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#endif
+#endif
+
 
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
@@ -223,9 +241,9 @@ public:
 	void release();
 
 #ifdef WITH_OPENCV
-	Mat getImageCv() { return cv::Mat(); };	// we should not need this
+	cv::Mat getImageCv();
 	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize());
-	Mat getPatch(const unsigned char** dataPtr, QSize patchSize) const;
+	cv::Mat getPatch(const unsigned char** dataPtr, QSize patchSize) const;
 	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const;
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;

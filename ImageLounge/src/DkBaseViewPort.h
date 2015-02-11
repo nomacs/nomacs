@@ -29,18 +29,9 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QGraphicsView>
-
-#if QT_VERSION < 0x050000
-// native gestures
-#ifndef QT_NO_GESTURES
-#include "extern/qevent_p.h"
-#endif
-#endif
-
 #pragma warning(pop)	// no warnings from includes - end
-#pragma warning(disable: 4251)	// TODO: remove
 
-#include <float.h>
+#pragma warning(disable: 4251)	// TODO: remove
 
 #include "DkImageStorage.h"
 
@@ -53,6 +44,10 @@
 #define DllExport
 #endif
 #endif
+
+// Qt defines
+class QNativeGestureEvent;
+class QGestureEvent;
 
 namespace nmc {
 

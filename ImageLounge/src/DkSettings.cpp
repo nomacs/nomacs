@@ -452,7 +452,6 @@ void DkSettings::load() {
 	sync_d = sync_p;
 	meta_d = meta_p;
 	resources_d = resources_p;
-
 }
 
 void DkSettings::save(bool force) {
@@ -467,7 +466,6 @@ void DkSettings::save(bool force) {
 	if (!force && app_p.showMenuBar != app_d.showMenuBar)
 		settings.setValue("showMenuBar", app_p.showMenuBar);
 
-	int myAppMode = app_p.appMode;
 	if (app_p.currentAppMode != mode_frameless && app_p.currentAppMode != mode_frameless_fullscreen) {
 		
 		if (!force && app_p.showToolBar != app_d.showToolBar)

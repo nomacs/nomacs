@@ -48,7 +48,7 @@ double DkMemory::getTotalMemory() {
 	MemoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
 
 	if (GlobalMemoryStatusEx(&MemoryStatus)) {
-		mem = MemoryStatus.ullTotalPhys;
+		mem = (double)MemoryStatus.ullTotalPhys;
 	}
 
 #elif defined Q_WS_X11
@@ -83,7 +83,7 @@ double DkMemory::getFreeMemory() {
 	MemoryStatus.dwLength = sizeof(MEMORYSTATUSEX);
 
 	if (GlobalMemoryStatusEx(&MemoryStatus)) {
-		mem = MemoryStatus.ullAvailPhys;
+		mem = (double)MemoryStatus.ullAvailPhys;
 	}
 
 #elif defined Q_WS_X11
@@ -278,9 +278,9 @@ bool DkUtils::compFilenameInv(const QFileInfo& lhf, const QFileInfo& rhf) {
 	return !compFilename(lhf, rhf);
 }
 
-bool DkUtils::compRandom(const QFileInfo& lhf, const QFileInfo& rhf) {
+bool DkUtils::compRandom(const QFileInfo&, const QFileInfo&) {
 
-	return qrand() % 2;
+	return qrand() % 2 != 0;
 }
 
 void DkUtils::addLanguages(QComboBox* langCombo, QStringList& languages) {
@@ -505,7 +505,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 	if (numZeros > 0) {
 
 		// if fIdx <= 0, log10 must not be evaluated
-		int cNumZeros = fIdx > 0 ? numZeros - std::floor(std::log10(fIdx)) : numZeros;
+		int cNumZeros = fIdx > 0 ? qRound(numZeros - std::floor(std::log10(fIdx))) : numZeros;
 
 		// zero padding
 		for (int idx = 0; idx < cNumZeros; idx++) {
@@ -518,7 +518,7 @@ QString DkFileNameConverter::resolveIdx(const QString& tag) const {
 	return result;
 }
 
-QString DkFileNameConverter::resolveExt(const QString& tag) const {
+QString DkFileNameConverter::resolveExt(const QString&) const {
 
 	QString result = QFileInfo(fileName).suffix();
 

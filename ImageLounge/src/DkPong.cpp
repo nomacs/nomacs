@@ -31,7 +31,7 @@
 namespace nmc {
 
 // DkPongPort --------------------------------------------------------------------
-DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags flags) : QGraphicsView(parent) {
+DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags) : QGraphicsView(parent) {
 
 	//setAttribute(Qt::WA_TranslucentBackground, true);
 
@@ -40,9 +40,9 @@ DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags flags) : QGraphicsView(p
 
 	unit = 10;
 	playerSpeed = unit;
-	minBallSpeed = 0.5*unit;
+	minBallSpeed = qRound(0.5*unit);
 	maxBallSpeed = 4*unit;
-	ballDir = DkVector(unit*0.15, unit*0.15);
+	ballDir = DkVector(unit*0.15f, unit*0.15f);
 	player1Speed = 0;
 	player2Speed = 0;
 	player1Pos = INT_MAX;
@@ -65,10 +65,10 @@ DkPongPort::DkPongPort(QWidget *parent, Qt::WindowFlags flags) : QGraphicsView(p
 
 void DkPongPort::initGame() {
 	
-	ballDir = DkVector(unit*0.5, unit*0.5);
-	ball.moveCenter(QPoint(width()*0.5, height()*0.5));
-	player1.moveCenter(QPoint(unit, height()*0.5));
-	player2.moveCenter(QPoint(width()-unit*1.5, height()*0.5));
+	ballDir = DkVector(unit*0.5f, unit*0.5f);
+	ball.moveCenter(QPoint(qRound(width()*0.5f), qRound(height()*0.5f)));
+	player1.moveCenter(QPoint(unit, qRound(height()*0.5f)));
+	player2.moveCenter(QPoint(qRound(width()-unit*1.5f), qRound(height()*0.5f)));
 
 }
 
@@ -96,8 +96,8 @@ void DkPongPort::resizeEvent(QResizeEvent *event) {
 	initGame();
 
 	field = QRect(QPoint(), event->size());
-	player1.setHeight(field.height()*0.3);
-	player2.setHeight(field.height()*0.3);
+	player1.setHeight(qRound(field.height()*0.3));
+	player2.setHeight(qRound(field.height()*0.3));
 
 	QWidget::resizeEvent(event);
 	
@@ -135,14 +135,12 @@ void DkPongPort::moveBall() {
 		qDebug() << "collision...";
 	}
 
-	double maxAngle = CV_PI*0.45;
-
 	// player collition
 	if ((player1.contains(ball.topLeft()) || player1.contains(ball.bottomLeft())) && ballDir.x < 0) {
 		
 		ballDir.rotate(-ballDir.angle()*2);
 		double mod = (player1Pos != INT_MAX) ? (player1.center().y() - player1Pos)/(float)field.height() : 0;
-		ballDir.y += mod*unit;
+		ballDir.y += (float)mod*unit;
 
 		//qDebug() << "ballDir: " << ballDir.angle();
 
@@ -166,15 +164,13 @@ void DkPongPort::moveBall() {
 		ballDir.rotate(-ballDir.angle()*2);
 		
 		double mod = (player2Pos != INT_MAX) ? (player2.center().y() - player2Pos)/(float)field.height() : 0;
-		ballDir.y += mod*unit;
+		ballDir.y += (float)mod*unit;
 	}
 
 
 	//if (abs(ballDir.x) < 1)
 	//	ballDir.x = (ballDir.x < 0) ? -unit*0.25 : unit*0.25;
 
-	double normAngle = DkMath::normAngleRad(ballDir.angle(), 0, CV_PI*0.5);
-	
 	//if (normAngle > maxAngle) {
 
 
@@ -185,11 +181,11 @@ void DkPongPort::moveBall() {
 
 	if (ballDir.norm() > maxBallSpeed) {
 		ballDir.normalize();
-		ballDir *= maxBallSpeed;
+		ballDir *= (float)maxBallSpeed;
 	}
 	else if (ballDir.norm() < minBallSpeed) {
 		ballDir.normalize();
-		ballDir *= minBallSpeed;
+		ballDir *= (float)minBallSpeed;
 	}
 
 	//qDebug() << ballDir.angle();

@@ -29,6 +29,7 @@
 #include "DkSettings.h"
 #include "DkMath.h"
 #include "DkUtils.h"
+#include "DkImageStorage.h"
 
 namespace nmc {
 

@@ -29,6 +29,7 @@
 #include "DkImage.h"
 #include "DkUtils.h"
 #include "DkMath.h"
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTranslator>

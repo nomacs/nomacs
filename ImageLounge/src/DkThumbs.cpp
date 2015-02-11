@@ -29,6 +29,7 @@
 #include "DkImage.h"
 #include "DkTimer.h"
 #include "DkSettings.h"
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileInfo>

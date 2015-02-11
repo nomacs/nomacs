@@ -28,10 +28,10 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QDebug>
-#include <QMutex>
 #include <QImage>
-#include <QThread>
+#include <QMutex>
+#include <QVector>
+#include <QObject>
 #pragma warning(pop)		// no warnings from includes - end
 
 // opencv
@@ -48,8 +48,6 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #endif
-
-using namespace cv;
 #endif
 
 #ifndef DllExport
@@ -61,6 +59,12 @@ using namespace cv;
 #define DllExport
 #endif
 #endif
+
+// Qt defines
+class QPixmap;
+class QString;
+class QSize;
+class QColor;
 
 namespace nmc {
 
@@ -81,159 +85,15 @@ public:
 #endif
 
 #ifdef WITH_OPENCV
-	
-	/**
-	 * Converts a QImage to a Mat
-	 * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
-	 * @return cv::Mat the corresponding Mat
-	 **/ 
-	static Mat qImage2Mat(const QImage img) {
-
-		Mat mat2;
-		QImage cImg;	// must be initialized here!	(otherwise the data is lost before clone())
-
-		try {
-			if (img.format() == QImage::Format_RGB32)
-				qDebug() << "we have an RGB32 in memory...";
-
-			if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
-				mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
-				//qDebug() << "ARGB32 or RGB32";
-			}
-			else if (img.format() == QImage::Format_RGB888) {
-				mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
-				//qDebug() << "RGB888";
-			}
-			//// converting to indexed8 causes bugs in the qpainter
-			//// see: http://qt-project.org/doc/qt-4.8/qimage.html
-			//else if (img.format() == QImage::Format_Indexed8) {
-			//	mat2 = Mat(img.height(), img.width(), CV_8UC1, (uchar*)img.bits(), img.bytesPerLine());
-			//	//qDebug() << "indexed...";
-			//}
-			else {
-				//qDebug() << "image flag: " << img.format();
-				cImg = img.convertToFormat(QImage::Format_ARGB32);
-				mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
-				//qDebug() << "I need to convert the QImage to ARGB32";
-			}
-
-			mat2 = mat2.clone();	// we need to own the pointer
-		}
-		catch (...) {	// something went seriously wrong (e.g. out of memory)
-			//DkNoMacs::dialog(QObject::tr("Sorry, could not convert image."));
-			qDebug() << "[DkImage::qImage2Mat] could not convert image - something is seriously wrong down here...";
-
-		}
-
-
-		return mat2; 
-	}
-
-	/**
-	 * Converts a cv::Mat to a QImage.
-	 * @param img supported formats CV8UC1 | CV_8UC3 | CV_8UC4
-	 * @return QImage the corresponding QImage
-	 **/ 
-	static QImage mat2QImage(Mat img) {
-
-		QImage qImg;
-
-		// since Mat header is copied, a new buffer should be allocated (check this!)
-		if (img.depth() == CV_32F)
-			img.convertTo(img, CV_8U, 255);
-
-		if (img.type() == CV_8UC1) {
-			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_Indexed8);	// opencv uses size_t for scaling in x64 applications
-			//Mat tmp;
-			//cvtColor(img, tmp, CV_GRAY2RGB);	// Qt does not support writing to index8 images
-			//img = tmp;
-		}
-		if (img.type() == CV_8UC3) {
-			
-			//cv::cvtColor(img, img, CV_RGB2BGR);
-			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_RGB888);
-		}
-		if (img.type() == CV_8UC4) {
-			qImg = QImage(img.data, (int)img.cols, (int)img.rows, (int)img.step, QImage::Format_ARGB32);
-		}
-
-		qImg = qImg.copy();
-
-		return qImg;
-	}
-
-	/**
-	 * Computes a 1D Gaussian filter kernel.
-	 * Generates a Gaussian kernel. The kernel's size is adjusted to
-	 * the standard deviation.
-	 * @param sigma the standard deviation of the Gaussian.
-	 * @return the gaussian kernel (CV_32FC1)
-	 **/
-	static Mat get1DGauss(double sigma);
-
+	static cv::Mat qImage2Mat(const QImage& img);
+	static QImage mat2QImage(cv::Mat img);
+	static cv::Mat get1DGauss(double sigma);
 #endif
 
-	/**
-	 * Returns a string with the buffer size of an image.
-	 * @param img a QImage
-	 * @return QString a human readable string containing the buffer size
-	 **/ 
-	static QString getBufferSize(const QImage img) {
-
-		return getBufferSize(img.size(), img.depth());
-	}
-
-	/**
-	 * Returns a string with the buffer size of an image.
-	 * @param imgSize the image size
-	 * @param depth the image depth
-	 * @return QString a human readable string containing the buffer size
-	 **/ 
-	static QString getBufferSize(const QSize imgSize, const int depth) {
-
-		double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
-		QString sizeStr;
-		qDebug() << "dimension: " << size;
-
-		if (size >= 1024*1024*1024) {
-			return QString::number(size/(1024.0f*1024.0f*1024.0f), 'f', 2) + " GB";
-		}
-		else if (size >= 1024*1024) {
-			return QString::number(size/(1024.0f*1024.0f), 'f', 2) + " MB";
-		}
-		else if (size >= 1024) {
-			return QString::number(size/1024.0f, 'f', 2) + " KB";
-		}
-		else {
-			return QString::number(size, 'f', 2) + " B";
-		}
-	}
-
-	/**
-	 * Returns a the buffer size of an image.
-	 * @param imgSize the image size
-	 * @param depth the image depth
-	 * @return buffer size in MB
-	 **/ 
-	static float getBufferSizeFloat(const QSize imgSize, const int depth) {
-
-		double size = (double)imgSize.width() * (double)imgSize.height() * (double)(depth/8.0f);
-		QString sizeStr;
-		//qDebug() << "dimension: " << size;
-
-		return (float)size/(1024.0f*1024.0f);
-	}
-
-
-	/**
-	 * This function resizes an image according to the interpolation method specified.
-	 * @param img the image to resize
-	 * @param newSize the new size
-	 * @param factor the resize factor
-	 * @param interpolation the interpolation method
-	 * @return QImage the resized image
-	 **/ 
-	static QImage resizeImage(const QImage img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic, bool correctGamma = true);
+	static QString getBufferSize(const QImage& img);
+	static QString getBufferSize(const QSize& imgSize, const int depth);
+	static float getBufferSizeFloat(const QSize& imgSize, const int depth);
+	static QImage resizeImage(const QImage& img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic, bool correctGamma = true);
 	static QVector<uchar> getGamma2LinearTable();
 	static QVector<uchar> getLinear2GammaTable();
 	static void gammaToLinear(QImage& img);

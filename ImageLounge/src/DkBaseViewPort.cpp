@@ -26,7 +26,6 @@
  *******************************************************************************************************/
 
 #include "DkBaseViewPort.h"
-
 #include "DkSettings.h"
 #include "DkUtils.h"
 
@@ -38,8 +37,16 @@
 
 // gestures
 #include <QSwipeGesture>
+
+#if QT_VERSION < 0x050000
+// native gestures
+#ifndef QT_NO_GESTURES
+#include "extern/qevent_p.h"
+#endif
+#endif
 #pragma warning(pop)		// no warnings from includes - end
 
+#include <float.h>
 
 namespace nmc {
 	
