@@ -29,17 +29,31 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
-#include <QStackedLayout>
+#include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkSettings.h"
-#include "DkImageContainer.h"
+#pragma warning(disable: 4251)	// TODO: remove
+
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
 
 // Qt defines
 class QTabBar;
 class QMimeData;
+class QSettings;
+class QStackedLayout;
 
 namespace nmc {
+
+// nomacs defines
+class DkImageContainerT;
 
 class DkTabInfo {
 	

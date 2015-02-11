@@ -34,6 +34,7 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
 #include <QClipboard>
+#include <QStackedLayout>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

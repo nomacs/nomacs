@@ -27,65 +27,53 @@
 
 #pragma once
 
-#ifdef WIN32
-#include <winsock2.h>	// needed since libraw 0.16
-#endif
-
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QWidget>
-#include <QDialog>
-#include <QLabel>
-#include <QRadioButton>
-#include <QSpinBox>
-#include <QSlider>
-#include <QColorDialog>
-#include <QPushButton>
-#include <QBoxLayout>
-#include <QCheckBox>
-#include <QFileInfo>
-#include <QTableView>
-#include <QCompleter>
-#include <QMainWindow>
-#include <QDialogButtonBox>
-#include <QStandardItemModel>
 #include <QItemDelegate>
-#include <QItemEditorFactory>
-#include <QHeaderView>
-#include <QTreeView>
-#include <QMimeData>
-#include <QStringListModel>
-#include <QListView>
-#include <QDialogButtonBox>
-#include <QListWidget>
-#include <QProgressDialog>
-#include <QTextEdit>
-
 #include <QPrintPreviewWidget>
-#include <QPageSetupDialog>
-#include <QPrintDialog>
-#include <QToolBar>
-#include <QFormLayout>
-#include <QProgressBar>
-#include <QFuture>
+#include <QLineEdit>
+#include <QDoubleSpinBox>
+#include <QMainWindow>
+#include <QDialog>
+#include <QDir>
 #include <QFutureWatcher>
-#include <QtConcurrentRun>
-
-// quazip
-#ifdef WITH_QUAZIP
-#include <quazip/JlCompress.h>
-#endif
-
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkWidgets.h"
-#include "DkViewPort.h"
-#include "DkThumbs.h"
+//#include "DkWidgets.h"
+//#include "DkViewPort.h"
+//#include "DkThumbs.h"
+#include "DkBasicLoader.h"
+
+// Qt defines
+class QStandardItemModel;
+class QStandardItem;
+class QTableView;
+class QStringListModel;
+class QListView;
+class QTextEdit;
+class QListWidget;
+class QDialogButtonBox;
+class QTreeView;
+class QActionGroup;
+class QPrintDialog;
+class QAbstractButton;
+class QLabel;
+class QComboBox;
+class QCheckBox;
+class QProgressBar;
 
 namespace nmc {
+
+// nomacs defines
+class DkBaseViewPort;
+class TreeItem;
+class DkSlider;
+class DkButton;
+class DkThumbNail;
 
 // needed because of http://stackoverflow.com/questions/1891744/pyqt4-qspinbox-selectall-not-working-as-expected 
 // and http://qt-project.org/forums/viewthread/8590
 class DkSelectAllLineEdit : public QLineEdit {
+
 public:
 	DkSelectAllLineEdit(QWidget* parent = 0) : QLineEdit(parent) {selectOnMousePressEvent = false;};
 
@@ -272,20 +260,9 @@ public:
 
 	DkSearchDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	void setFiles(QStringList fileList) {
-		this->fileList = fileList;
-		this->resultList = fileList;
-		stringModel->setStringList(makeViewable(fileList));
-	};
-
-	void setPath(QDir path) {
-		this->path = path;
-	};
-
-	bool filterPressed() {
-		return isFilterPressed;
-	};
-
+	void setFiles(QStringList fileList);
+	void setPath(QDir path);
+	bool filterPressed();
 	void setDefaultButton(int defaultButton = find_button);
 
 public slots:
@@ -336,35 +313,11 @@ public:
 	enum{unit_cm, unit_mm, unit_inch, unit_end};
 	enum{res_ppi, res_ppc, res_end};  
 
-	void setImage(QImage img) {
-		this->img = img;
-		initBoxes(true);
-		updateSnippets();
-		drawPreview();
-		wPixelEdit->selectAll();
-	};
-
-	QImage getResizedImage() {
-
-		return resizeImg(img, false);
-	};
-
-	void setExifDpi(float exifDpi) {
-
-		//if (exifDpi < 1)
-		//	return;
-
-		this->exifDpi = exifDpi;
-		resolutionEdit->setValue(exifDpi);
-	};
-
-	float getExifDpi() {
-		return exifDpi;
-	};
-
-	bool resample() {
-		return resampleCheck->isChecked();
-	};
+	void setImage(QImage img);
+	QImage getResizedImage();
+	void setExifDpi(float exifDpi);
+	float getExifDpi();
+	bool resample();
 
 protected slots:
 	void on_lockButtonDim_clicked();
@@ -688,11 +641,8 @@ private slots:
 private:
 	void setFitting(bool on);
 	void scaleImage();
-	bool isFitting() {
-		return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
-	};
+	bool isFitting();
 		
-
 	QImage img;
 
 	QActionGroup* fitGroup;
@@ -736,13 +686,9 @@ class DkOpacityDialog : public QDialog {
 
 public:
 	DkOpacityDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
-
-	int value() {
-		return slider->value();
-	};
+	int value() const;
 
 protected:
-
 	void createLayout();
 
 	DkSlider* slider;
@@ -939,11 +885,7 @@ class DkForceThumbDialog : public QDialog {
 public:
 	DkForceThumbDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-	bool forceSave() {
-
-		return cbForceSave->isChecked();
-	}
-
+	bool forceSave() const;
 	void setDir(const QDir& fileInfo);
 
 protected:

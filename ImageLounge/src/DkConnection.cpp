@@ -26,6 +26,16 @@
  *******************************************************************************************************/
 
 #include "DkConnection.h"
+#include "DkSettings.h"
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QBuffer>
+#include <QByteArray>
+#include <QTimer>
+#include <QHostInfo>
+#include <QThread>
+#include <QDebug>
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -39,9 +49,10 @@ DkConnection::DkConnection(QObject* parent) : QTcpSocket(parent) {
 	isSynchronizeMessageSent = false;
 	connectionCreated = false;
 	this->synchronizedTimer = new QTimer(this);
-	connect(synchronizedTimer, SIGNAL(timeout()), this, SLOT(synchronizedTimerTimeout()));
 
-	QObject::connect(this, SIGNAL(readyRead()), this, SLOT(processReadyRead()));
+	connect(synchronizedTimer, SIGNAL(timeout()), this, SLOT(synchronizedTimerTimeout()));
+	connect(this, SIGNAL(readyRead()), this, SLOT(processReadyRead()));
+
 	this->setReadBufferSize(MaxBufferSize);
 }
 

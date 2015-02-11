@@ -28,21 +28,15 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QtNetwork/QTcpSocket>
-#include <QBuffer>
-#include <QByteArray>
-#include <QImage>
-#include <QTransform>
+#include <QTcpSocket>
 #include <QRect>
-#include <QTimer>
+#include <QTransform>
 #include <QHostAddress>
-#include <QHostInfo>
-#include <QThread>
-#include <QDebug>
+#include <QImage>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkSettings.h"
-
+// Qt defines
+class QTimer;
 
 namespace nmc {
 
@@ -229,12 +223,9 @@ class DkLANConnection : public DkConnection {
 		bool allowImage;
 
 	private:
-		
 
 		QString clientName;
 		bool showInMenu;
-
-
 		bool iAmServer;
 };
 

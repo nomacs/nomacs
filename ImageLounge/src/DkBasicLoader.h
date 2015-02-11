@@ -56,7 +56,6 @@
 #endif
 #endif
 
-
 #ifndef DllExport
 #ifdef DK_DLL_EXPORT
 #define DllExport Q_DECL_EXPORT

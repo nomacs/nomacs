@@ -28,6 +28,11 @@
 #include "DkSaveDialog.h"
 #include "DkUtils.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QBuffer>
+#pragma warning(pop)		// no warnings from includes - end
+
+
 namespace nmc {
 
 // tiff dialog --------------------------------------------------------------------

@@ -27,6 +27,59 @@
 
 #include "DkDialog.h"
 #include "DkNoMacs.h"
+#include "DkImageStorage.h"
+#include "DkSettings.h"
+#include "DkBaseViewPort.h"
+#include "DkTimer.h"
+#include "DkWidgets.h"
+
+#ifdef WIN32
+#include <winsock2.h>	// needed since libraw 0.16
+#endif
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QWidget>
+#include <QLabel>
+#include <QRadioButton>
+#include <QSpinBox>
+#include <QSlider>
+#include <QColorDialog>
+#include <QPushButton>
+#include <QBoxLayout>
+#include <QCheckBox>
+#include <QFileInfo>
+#include <QTableView>
+#include <QCompleter>
+#include <QMainWindow>
+#include <QDialogButtonBox>
+#include <QStandardItemModel>
+#include <QItemEditorFactory>
+#include <QHeaderView>
+#include <QTreeView>
+#include <QMimeData>
+#include <QStringListModel>
+#include <QListView>
+#include <QDialogButtonBox>
+#include <QListWidget>
+#include <QProgressDialog>
+#include <QTextEdit>
+#include <QApplication>
+#include <QInputDialog>
+
+#include <QPageSetupDialog>
+#include <QPrintDialog>
+#include <QToolBar>
+#include <QFormLayout>
+#include <QProgressBar>
+#include <QFuture>
+#include <QtConcurrentRun>
+
+// quazip
+#ifdef WITH_QUAZIP
+#include <quazip/JlCompress.h>
+#endif
+
+#pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
@@ -853,6 +906,20 @@ void DkSearchDialog::init() {
 	QMetaObject::connectSlotsByName(this);
 }
 
+void DkSearchDialog::setFiles(QStringList fileList) {
+	this->fileList = fileList;
+	this->resultList = fileList;
+	stringModel->setStringList(makeViewable(fileList));
+}
+
+void DkSearchDialog::setPath(QDir path) {
+	this->path = path;
+}
+
+bool DkSearchDialog::filterPressed() {
+	return isFilterPressed;
+}
+
 void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 
 	qDebug() << " you wrote: " << text;
@@ -1321,6 +1388,33 @@ void DkResizeDialog::initBoxes(bool updateSettings) {
 
 	if (updateSettings)
 		loadSettings();
+}
+
+void DkResizeDialog::setImage(QImage img) {
+	this->img = img;
+	initBoxes(true);
+	updateSnippets();
+	drawPreview();
+	wPixelEdit->selectAll();
+}
+
+QImage DkResizeDialog::getResizedImage() {
+
+	return resizeImg(img, false);
+}
+
+void DkResizeDialog::setExifDpi(float exifDpi) {
+
+	this->exifDpi = exifDpi;
+	resolutionEdit->setValue(exifDpi);
+}
+
+float DkResizeDialog::getExifDpi() {
+	return exifDpi;
+}
+
+bool DkResizeDialog::resample() {
+	return resampleCheck->isChecked();
 }
 
 void DkResizeDialog::updateWidth() {
@@ -2510,6 +2604,10 @@ void DkPrintPreviewDialog::fitImage(QAction* action) {
 	updateZoomFactor();
 }
 
+bool DkPrintPreviewDialog::isFitting() {
+	return (fitGroup->isExclusive() && (fitWidthAction->isChecked() || fitPageAction->isChecked()));
+}
+
 void DkPrintPreviewDialog::centerImage() {
 	QRect imgRect = img.rect();
 	QRectF transRect = imgTransform.mapRect(imgRect);
@@ -2701,9 +2799,10 @@ void DkOpacityDialog::createLayout() {
 
 	layout->addWidget(slider);
 	layout->addWidget(buttons);
+}
 
-	//setStandardButton 
-
+int DkOpacityDialog::value() const {
+	return slider->value();
 }
 
 // DkExportTiffDialog --------------------------------------------------------------------
@@ -4155,6 +4254,11 @@ void DkForceThumbDialog::createLayout() {
 	layout->addWidget(cbForceSave);
 	layout->addWidget(buttons);
 
+}
+
+bool DkForceThumbDialog::forceSave() const {
+
+	return cbForceSave->isChecked();
 }
 
 void DkForceThumbDialog::setDir(const QDir& fileInfo) {
