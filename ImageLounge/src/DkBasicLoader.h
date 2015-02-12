@@ -131,7 +131,7 @@ public:
 	DkBasicLoader(int mode = mode_default);
 
 	~DkBasicLoader() {
-		release();
+		release(true);
 	};
 
 	/**
@@ -237,7 +237,7 @@ public:
 	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo& fileInfo) const;
 	bool writeBufferToFile(const QFileInfo& fileInfo, const QSharedPointer<QByteArray> ba) const;
 
-	void release();
+	void release(bool clear = false);
 
 #ifdef WITH_OPENCV
 	cv::Mat getImageCv();

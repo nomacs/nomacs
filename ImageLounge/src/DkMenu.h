@@ -116,34 +116,14 @@ class DkTcpAction : public QAction {
 	Q_OBJECT
 
 public:
-	DkTcpAction() : QAction(0) {};
+	DkTcpAction();
+	DkTcpAction(DkPeer peer, QObject* parent = 0);
+	DkTcpAction(DkPeer peer, const QString& text, QObject* parent = 0);
+	DkTcpAction(DkPeer peer, const QIcon& icon, const QString& text, QObject* parent);
+	~DkTcpAction();
 
-	DkTcpAction(DkPeer peer, QObject* parent = 0) : QAction(parent) {
-		this->peer = peer;
-		init();
-	};
-	DkTcpAction(DkPeer peer, const QString& text, QObject* parent = 0) : QAction(text, parent) {
-		this->peer = peer;
-		init();
-	};
-	DkTcpAction(DkPeer peer, const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent) {
-		this->peer = peer;
-		init();
-	};
-
-	~DkTcpAction() {};
-
-	void init() {
-		tcpActions = 0;
-		setObjectName("tcpAction");
-		setCheckable(true);
-		setChecked(peer.isSynchronized());
-		connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
-	};
-
-	void setTcpActions(QList<QAction*>* actions) {
-		tcpActions = actions;
-	};
+	void init();
+	void setTcpActions(QList<QAction*>* actions);
 
 signals:
 	void synchronizeWithSignal(quint16);
@@ -151,17 +131,7 @@ signals:
 	void enableActions(bool enable);
 
 public slots:
-	void synchronize(bool checked) {
-
-		if (checked)
-			emit synchronizeWithSignal(peer.peerId);
-		else
-			emit disableSynchronizeWithSignal(peer.peerId);
-
-		emit enableActions(checked);
-		qDebug() << "emitted a synchronize message...\n";
-	}
-
+	void synchronize(bool checked);
 
 protected:
 	DkPeer peer;

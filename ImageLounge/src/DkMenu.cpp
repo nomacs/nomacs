@@ -36,6 +36,7 @@
 #include <QPointer>
 #include <QTimer>
 #include <QStringBuilder>
+#include <QDebug>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -272,6 +273,49 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 	}
 
 	peers = newPeers;
+}
+
+// DkTcpAction --------------------------------------------------------------------
+DkTcpAction::DkTcpAction() : QAction(0) {}
+
+DkTcpAction::DkTcpAction(DkPeer peer, QObject* parent) : QAction(parent) {
+	this->peer = peer;
+	init();
+}
+
+DkTcpAction::DkTcpAction(DkPeer peer, const QString& text, QObject* parent) : QAction(text, parent) {
+	this->peer = peer;
+	init();
+}
+
+DkTcpAction::DkTcpAction(DkPeer peer, const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent) {
+	this->peer = peer;
+	init();
+}
+
+DkTcpAction::~DkTcpAction() {}
+
+void DkTcpAction::init() {
+	tcpActions = 0;
+	setObjectName("tcpAction");
+	setCheckable(true);
+	setChecked(peer.isSynchronized());
+	connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
+}
+
+void DkTcpAction::setTcpActions(QList<QAction*>* actions) {
+	tcpActions = actions;
+}
+
+void DkTcpAction::synchronize(bool checked) {
+
+	if (checked)
+		emit synchronizeWithSignal(peer.peerId);
+	else
+		emit disableSynchronizeWithSignal(peer.peerId);
+
+	emit enableActions(checked);
+	qDebug() << "emitted a synchronize message...\n";
 }
 
 }

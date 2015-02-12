@@ -117,7 +117,7 @@ class DkClientManager : public QThread {
 		void sendPosition(QRect newRect, bool overlaid);
 
 		void sendNewFile(qint16 op, QString filename);
-		virtual void sendNewImage(QImage image, QString title) {qDebug() << "DkClientManager: I am in the dummy method";}; // dummy
+		virtual void sendNewImage(QImage image, QString title) {}; // dummy
 		void sendGoodByeToAll();
 
 	protected slots:

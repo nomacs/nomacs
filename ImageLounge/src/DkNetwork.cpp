@@ -1050,7 +1050,7 @@ DkPeer::DkPeer(const DkPeer& peer) {
 	this->title = peer.title;
 	this->connection = peer.connection;	// that's dangerous!!
 	this->hasChangedRecently = peer.hasChangedRecently;
-	this->timer = peer.timer; 
+	this->timer = new QTimer(this); 
 	this->hostAddress = peer.hostAddress;
 	this->clientName = peer.clientName;
 	this->showInMenu = peer.showInMenu;
