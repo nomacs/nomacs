@@ -254,7 +254,7 @@ void DkSettingsDialog::initWidgets() {
 
 }
 
-void DkSettingsDialog::advancedSettingsChanged() {
+void DkSettingsDialog::advancedSettingsChanged(int) {
 
 	DkSettings::app.advancedSettings = cbAdvancedSettings->isChecked();
 
@@ -737,7 +737,8 @@ void DkFileWidget::tmpPathButtonPressed() {
 	leTmpPath->setText(tmpPath);
 }
 
-void DkFileWidget::useTmpPathChanged() {
+void DkFileWidget::useTmpPathChanged(int) {
+	
 	if (cbUseTmpPath->isChecked()) {
 		//lineEditChanged(tmpPath);
 		leTmpPath->setDisabled(false);

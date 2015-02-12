@@ -1346,7 +1346,7 @@ void DkBasicLoader::rotate(int orientation) {
 /**
  * Releases the currently loaded images.
  **/ 
-void DkBasicLoader::release() {
+void DkBasicLoader::release(bool clear) {
 
 	// TODO: auto save routines here?
 	//qDebug() << file.fileName() << " released...";
@@ -1355,7 +1355,7 @@ void DkBasicLoader::release() {
 	//metaData.clear();
 	
 	// TODO: where should we clear the metadata?
-	if (!metaData->isDirty())
+	if (clear || !metaData->isDirty())
 		metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 	
 #ifdef WITH_OPENCV
@@ -1504,7 +1504,6 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 #endif
 
 // FileDownloader --------------------------------------------------------------------
-// File Downloader --------------------------------------------------------------------
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
 	connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)),
 		SLOT(fileDownloaded(QNetworkReply*)));

@@ -177,7 +177,7 @@ public:
 
 private slots:
 	void tmpPathButtonPressed();
-	void useTmpPathChanged();
+	void useTmpPathChanged(int idx);
 
 private:
 	void init();
@@ -459,7 +459,7 @@ private slots:
 	void cancelPressed() { close(); };
 	void initWidgets();
 	void setToDefault();
-	void advancedSettingsChanged();
+	void advancedSettingsChanged(int idx);
 
 protected:
 	BorderLayout* borderLayout;
