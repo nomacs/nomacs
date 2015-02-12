@@ -81,6 +81,8 @@
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
+#elif WIN32
+#include <winsock2.h>	// needed since libraw 0.16
 #endif
 
 #endif 

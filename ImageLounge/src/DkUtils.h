@@ -36,12 +36,12 @@
 
 #ifdef Q_OS_WIN
 
-#include <winsock2.h>	// needed since libraw 0.16
-#include <wtypes.h>
-#include <windows.h>
-
-#include "shlwapi.h"
-#pragma comment (lib, "shlwapi.lib")
+//#include <winsock2.h>	// needed since libraw 0.16
+//#include <wtypes.h>
+//#include <windows.h>
+//
+//#include "shlwapi.h"
+//#pragma comment (lib, "shlwapi.lib")
 
 #else
 	#include <time.h>

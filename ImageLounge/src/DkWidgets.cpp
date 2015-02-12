@@ -3060,7 +3060,6 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 			QString("#DkFileLabel:hover{color: #FFFFFF;") + 
 			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ", stop: 1 rgba(0,0,0,0));}"));
 	}
-
 }
 
 void DkRecentFilesWidget::setVisible(bool visible) {
@@ -3071,6 +3070,11 @@ void DkRecentFilesWidget::setVisible(bool visible) {
 	}
 
 	DkWidget::setVisible(visible);
+}
+
+void DkRecentFilesWidget::hide() {
+
+	QWidget::hide();
 }
 
 void DkRecentFilesWidget::updateFileList() {

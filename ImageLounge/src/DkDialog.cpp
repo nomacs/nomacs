@@ -4651,12 +4651,6 @@ QStringList DkArchiveExtractionDialog::extractFilesWithProgress(QString fileComp
     return extracted;
 }
 
-
-
-
-
-
-
 #endif
 
 } // close namespace

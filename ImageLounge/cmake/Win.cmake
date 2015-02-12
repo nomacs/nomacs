@@ -215,8 +215,8 @@ endif(ENABLE_UPNP)
 
 # these variables need to be set before adding subdirectory with projects
 SET(CMAKE_SHARED_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
-set(CMAKE_CXX_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
-set(CMAKE_C_FLAGS_REALLYRELEASE "-W3 -O2 -DQT_NO_DEBUG_OUTPUT")
+set(CMAKE_CXX_FLAGS_REALLYRELEASE "-W4 -O2 -DQT_NO_DEBUG_OUTPUT")
+set(CMAKE_C_FLAGS_REALLYRELEASE "-W4 -O2 -DQT_NO_DEBUG_OUTPUT")
 set(NOMACS_BUILD_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 #search for quazip
