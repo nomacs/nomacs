@@ -50,6 +50,7 @@ class QTableView;
 class QStandardItemModel;
 class QComboBox;
 class QGridLayout;
+class QDateTime;
 
 namespace nmc {
 

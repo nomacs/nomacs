@@ -25,7 +25,7 @@
 
  *******************************************************************************************************/
 
-#pragma once;
+#pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QSharedPointer>

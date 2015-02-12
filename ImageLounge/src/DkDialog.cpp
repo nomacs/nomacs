@@ -81,6 +81,7 @@
 #include <QComboBox>
 #include <QTimer>
 #include <qmath.h>
+#include <QDesktopServices>
 
 // quazip
 #ifdef WITH_QUAZIP

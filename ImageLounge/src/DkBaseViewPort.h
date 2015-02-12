@@ -48,6 +48,7 @@
 // Qt defines
 class QNativeGestureEvent;
 class QGestureEvent;
+class QShortcut;
 
 namespace nmc {
 

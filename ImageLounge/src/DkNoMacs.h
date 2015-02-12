@@ -57,6 +57,7 @@ class QFileDialog;
 class QProgressDialog;
 class QDesktopWidget;
 class QLabel;
+class QShortcut;
 
 namespace nmc {
 
