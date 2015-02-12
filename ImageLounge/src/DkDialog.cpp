@@ -283,7 +283,7 @@ void DkTrainDialog::createLayout() {
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	QWidget* trainWidget = new QWidget();
+	QWidget* trainWidget = new QWidget(this);
 	QGridLayout* gdLayout = new QGridLayout(trainWidget);
 	gdLayout->addWidget(newImageLabel, 0, 0);
 	gdLayout->addWidget(pathEdit, 1, 0);
@@ -900,7 +900,7 @@ void DkSearchDialog::init() {
 	buttons[cancel_button] = new QPushButton(tr("&Cancel"), this);
 	buttons[cancel_button]->setObjectName("cancelButton");
 
-	QWidget* buttonWidget = new QWidget();
+	QWidget* buttonWidget = new QWidget(this);
 	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::RightToLeft, buttonWidget);
 	buttonLayout->addWidget(buttons[cancel_button]);
 	buttonLayout->addWidget(buttons[filter_button]);
@@ -4401,7 +4401,7 @@ void DkArchiveExtractionDialog::createLayout() {
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	QWidget* extractWidget = new QWidget();
+	QWidget* extractWidget = new QWidget(this);
 	QGridLayout* gdLayout = new QGridLayout(extractWidget);
 	gdLayout->addWidget(archiveLabel, 0, 0);
 	gdLayout->addWidget(archivePathEdit, 1, 0);

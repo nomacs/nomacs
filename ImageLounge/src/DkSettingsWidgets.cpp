@@ -518,7 +518,7 @@ void DkDisplaySettingsWidget::createLayout() {
 	keepZoomButtons[DkSettings::zoom_keep_same_size]->setToolTip(tr("If checked, the zoom level is only kept, if the image loaded has the same level as the previous."));
 	keepZoomButtons[DkSettings::zoom_never_keep] = new QRadioButton(tr("Never keep zoom"), this);
 
-	QWidget* keepZoomWidget = new QWidget();
+	QWidget* keepZoomWidget = new QWidget(this);
 	keepZoomWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	QVBoxLayout* keepZoomButtonLayout = new QVBoxLayout(keepZoomWidget);
 
@@ -1082,7 +1082,7 @@ void DkResourceSettingsWidgets::createLayout() {
 	rawThumbButtons[DkSettings::raw_thumb_if_large] = new QRadioButton(tr("Load JPG if it fits the screen resolution"), this);
 	rawThumbButtons[DkSettings::raw_thumb_never] = new QRadioButton(tr("Never load embedded JPG"), this);
 
-	QWidget* rawThumbWidget = new QWidget();
+	QWidget* rawThumbWidget = new QWidget(this);
 	QVBoxLayout* rawThumbButtonLayout = new QVBoxLayout(rawThumbWidget);
 
 	for (int idx = 0; idx < rawThumbButtons.size(); idx++) {
@@ -1090,8 +1090,7 @@ void DkResourceSettingsWidgets::createLayout() {
 		rawThumbButtonLayout->addWidget(rawThumbButtons[idx]);
 	}
 
-
-	QWidget* dupWidget = new QWidget();
+	QWidget* dupWidget = new QWidget(this);
 	QHBoxLayout* hLayout = new QHBoxLayout(dupWidget);
 	hLayout->setContentsMargins(0,0,0,0);
 

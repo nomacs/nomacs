@@ -130,7 +130,7 @@ void DkControlWidget::init() {
 	commentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	// dummy - needed for three equal columns @markus: do not delete!
-	QWidget* dw = new QWidget();
+	QWidget* dw = new QWidget(this);
 	dw->setMouseTracking(true);
 	QBoxLayout* dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
 	dLayout->setContentsMargins(0,0,0,0);
@@ -138,7 +138,7 @@ void DkControlWidget::init() {
 	dLayout->addStretch();
 
 	// zoom widget
-	QWidget* bw = new QWidget();
+	QWidget* bw = new QWidget(this);
 	bw->setMouseTracking(true);
 	//bw->setMinimumHeight(40);
 	//bw->setMaximumHeight(80);
@@ -162,7 +162,7 @@ void DkControlWidget::init() {
 	//coLayout->addWidget(commentWidget);
 
 	// left column widget
-	QWidget* leftWidget = new QWidget();
+	QWidget* leftWidget = new QWidget(this);
 	leftWidget->setMouseTracking(true);
 	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, leftWidget);
 	ulLayout->setContentsMargins(0,0,0,0);
@@ -174,7 +174,7 @@ void DkControlWidget::init() {
 	//ulLayout->addWidget(cw);
 
 	// center column
-	QWidget* cW = new QWidget();
+	QWidget* cW = new QWidget(this);
 	cW->setMouseTracking(true);
 	QBoxLayout* cwLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
 	cwLayout->setContentsMargins(0,0,0,0);
@@ -184,14 +184,14 @@ void DkControlWidget::init() {
 	cwLayout->addStretch();
 
 	// center player horizontally
-	QWidget* cP = new QWidget();
+	QWidget* cP = new QWidget(this);
 	cP->setMouseTracking(true);
 	QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
 	cpLayout->setContentsMargins(0,0,0,0);
 	cpLayout->addWidget(player);
 
 	// center column
-	QWidget* center = new QWidget();
+	QWidget* center = new QWidget(this);
 	center->setMouseTracking(true);
 	QBoxLayout* cLayout = new QBoxLayout(QBoxLayout::TopToBottom, center);
 	cLayout->setContentsMargins(0,0,0,0);
@@ -201,7 +201,7 @@ void DkControlWidget::init() {
 	cLayout->addWidget(cP);
 	
 	// rating widget
-	QWidget* rw = new QWidget();
+	QWidget* rw = new QWidget(this);
 	rw->setMouseTracking(true);
 	rw->setMinimumSize(0,0);
 	QBoxLayout* rLayout = new QBoxLayout(QBoxLayout::RightToLeft, rw);
@@ -210,7 +210,7 @@ void DkControlWidget::init() {
 	rLayout->addStretch();
 
 	// file info
-	QWidget* fw = new QWidget();
+	QWidget* fw = new QWidget(this);
 	fw->setContentsMargins(0,0,0,30);
 	fw->setMouseTracking(true);
 	fw->setMinimumSize(0,0);
@@ -220,7 +220,7 @@ void DkControlWidget::init() {
 	rwLayout->addStretch();
 
 	// right column
-	QWidget* hw = new QWidget();
+	QWidget* hw = new QWidget(this);
 	hw->setContentsMargins(0,10,10,0);
 	hw->setMouseTracking(true);
 	QBoxLayout* hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
@@ -229,7 +229,7 @@ void DkControlWidget::init() {
 	hwLayout->addStretch();
 
 	// right column
-	QWidget* rightWidget = new QWidget();
+	QWidget* rightWidget = new QWidget(this);
 	rightWidget->setMouseTracking(true);
 	QBoxLayout* lrLayout = new QBoxLayout(QBoxLayout::TopToBottom, rightWidget);
 	lrLayout->setContentsMargins(0,0,0,0);
