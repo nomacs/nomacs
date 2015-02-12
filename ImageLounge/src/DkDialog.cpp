@@ -32,7 +32,6 @@
 #include "DkBaseViewPort.h"
 #include "DkTimer.h"
 #include "DkWidgets.h"
-#include "DkImage.h"
 #include "DkThumbs.h"
 
 #ifdef WIN32
@@ -80,6 +79,7 @@
 #include <QMessageBox>
 #include <QToolButton>
 #include <QComboBox>
+#include <QTimer>
 #include <qmath.h>
 
 // quazip
@@ -3136,7 +3136,7 @@ void DkUnsharpDialog::dragEnterEvent(QDragEnterEvent *event) {
 		url = url.toLocalFile();
 		QFileInfo file = QFileInfo(url.toString());
 
-		if (file.exists() && DkImageLoader::isValid(file))
+		if (file.exists() && DkUtils::isValid(file))
 			event->acceptProposedAction();
 	}
 }
@@ -3323,7 +3323,7 @@ void DkMosaicDialog::dragEnterEvent(QDragEnterEvent *event) {
 		url = url.toLocalFile();
 		QFileInfo file = QFileInfo(url.toString());
 
-		if (file.exists() && DkImageLoader::isValid(file))
+		if (file.exists() && DkUtils::isValid(file))
 			event->acceptProposedAction();
 	}
 }

@@ -577,11 +577,11 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 		QFileInfo file = QFileInfo(url.toString());
 
 		// just accept image files
-		if (DkImageLoader::isValid(file))
+		if (DkUtils::isValid(file))
 			event->acceptProposedAction();
 		else if (file.isDir())
 			event->acceptProposedAction();
-		else if (event->mimeData()->urls().at(0).isValid() && DkImageLoader::hasValidSuffix(event->mimeData()->urls().at(0).toString()))
+		else if (event->mimeData()->urls().at(0).isValid() && DkUtils::hasValidSuffix(event->mimeData()->urls().at(0).toString()))
 			event->acceptProposedAction();
 
 	}
@@ -659,7 +659,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		}
 		else {
 			// just accept image files
-			if (DkImageLoader::isValid(file) || file.isDir())
+			if (DkUtils::isValid(file) || file.isDir())
 				viewport->loadFile(file);
 			else if (url.isValid())
 				viewport->getImageLoader()->downloadFile(url);

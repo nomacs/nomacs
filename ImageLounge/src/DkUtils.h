@@ -348,6 +348,8 @@ public:
 		return stringify(rounded/std::pow(10,n));
 	};
 
+	static bool isValid(const QFileInfo& fileInfo);
+	static bool hasValidSuffix(const QString& fileName);
 	static QDateTime getConvertableDate(const QString& date);
 	static QDateTime convertDate(const QString& date, const QFileInfo& file = QFileInfo());
 	static QString convertDateString(const QString& date, const QFileInfo& file = QFileInfo());

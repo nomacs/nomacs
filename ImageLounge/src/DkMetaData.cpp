@@ -26,7 +26,6 @@
  *******************************************************************************************************/
 
 #include "DkMetaData.h"
-#include "DkImage.h"
 #include "DkUtils.h"
 #include "DkMath.h"
 #include "DkImageStorage.h"

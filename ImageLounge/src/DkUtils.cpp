@@ -446,6 +446,41 @@ bool DkUtils::checkFile(const QFileInfo& file) {
 	return file.exists();
 }
 
+/**
+ * Returns if a file is supported by nomacs or not.
+ * Note: this function only checks for a valid extension.
+ * @param fileInfo the file info of the file to be validated.
+ * @return bool true if the file format is supported.
+ **/ 
+bool DkUtils::isValid(const QFileInfo& fileInfo) {
+
+	printf("accepting file...\n");
+
+	QFileInfo fInfo = fileInfo;
+	if (fInfo.isSymLink())
+		fInfo = fileInfo.symLinkTarget();
+
+	if (!fInfo.exists())
+		return false;
+
+	QString fileName = fInfo.fileName();
+
+	return hasValidSuffix(fileName);
+}
+
+bool DkUtils::hasValidSuffix(const QString& fileName) {
+
+	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
+
+		QRegExp exp = QRegExp(DkSettings::app.fileFilters.at(idx), Qt::CaseInsensitive);
+		exp.setPatternSyntax(QRegExp::Wildcard);
+		if (exp.exactMatch(fileName))
+			return true;
+	}
+
+	return false;
+}
+
 QDateTime DkUtils::getConvertableDate(const QString& date) {
 
 	QDateTime dateCreated;

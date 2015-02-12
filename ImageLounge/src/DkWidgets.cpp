@@ -31,7 +31,6 @@
 #include "DkTimer.h"
 #include "DkThumbs.h"
 #include "DkImageContainer.h"
-#include "DkImage.h"
 #include "DkToolbars.h"
 #include "DkImageStorage.h"
 #include "DkSettings.h"
@@ -642,7 +641,7 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 
 	qDebug() << "opening: " << cFile.absoluteFilePath();
 
-	if (DkImageLoader::isValid(cFile))
+	if (DkUtils::isValid(cFile))
 		emit openFile(cFile);
 	else if (cFile.isDir())
 		emit openDir(QDir(cFile.absoluteFilePath()));

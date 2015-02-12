@@ -29,7 +29,6 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkImageContainer.h"
-#include "DkImage.h"
 #include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
@@ -1428,7 +1427,7 @@ void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
 		QFileInfo file = QFileInfo(url.toString());
 
 		// just accept image files
-		if (DkImageLoader::isValid(file))
+		if (DkUtils::isValid(file))
 			event->acceptProposedAction();
 		else if (file.isDir())
 			event->acceptProposedAction();
@@ -1503,7 +1502,7 @@ void DkThumbsView::dragMoveEvent(QDragMoveEvent *event) {
 //}
 
 		// just accept image files
-		if (DkImageLoader::isValid(file))
+		if (DkUtils::isValid(file))
 			event->acceptProposedAction();
 		else if (file.isDir())
 			event->acceptProposedAction();

@@ -27,7 +27,7 @@
 
 #include "DkProcess.h"
 #include "DkUtils.h"
-#include "DkImage.h"
+#include "DkImageContainer.h"
 #include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
