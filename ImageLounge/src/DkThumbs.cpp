@@ -150,7 +150,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 	// as found at: http://olliwang.com/2010/01/30/creating-thumbnail-images-in-qt/
 	QString filePath = (file.isSymLink()) ? file.symLinkTarget() : file.absoluteFilePath();
-	QImageReader* imageReader;
+	QImageReader* imageReader = 0;
 	
 	if (!ba || ba->isEmpty())
 		imageReader = new QImageReader(filePath);
@@ -238,12 +238,13 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 
 		// is there a nice solution to do so??
 		imageReader->setFileName("josef");	// image reader locks the file -> but there should not be one so we just set it to another file...
-		delete imageReader;
-
 	}
 	else if (rescale) {
 		thumb = thumb.scaled(QSize(imgW, imgH), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	}
+
+	if (imageReader)
+		delete imageReader;
 
 	if (orientation != -1 && orientation != 0 && (metaData.isJpg() || metaData.isRaw())) {
 		QTransform rotationMatrix;

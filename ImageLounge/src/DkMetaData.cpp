@@ -571,7 +571,7 @@ QImage DkMetaDataT::getThumbnail() const {
 		QByteArray ba = QByteArray((char*)stdBuf.first, (int)stdBuf.second);
 		qThumb.loadFromData(ba);
 
-		free(stdBuf.first);
+		delete[] stdBuf.first;
 	}
 	catch (...) {
 		qDebug() << "Sorry, I could not load the thumb from the exif data...";
