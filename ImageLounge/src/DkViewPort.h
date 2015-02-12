@@ -98,7 +98,7 @@ class DkDelayedInfo : public QObject {
 	Q_OBJECT
 
 public:
-	DkDelayedInfo(int time = 0) {
+	DkDelayedInfo(int time = 0, QObject* parent = 0) : QObject(parent) {
 		timer = new QTimer();
 		timer->setSingleShot(true);
 		
@@ -153,7 +153,7 @@ class DkDelayedMessage : public DkDelayedInfo {
 	Q_OBJECT
 
 public:
-	DkDelayedMessage(QString msg  = QString(), int time = 0) : DkDelayedInfo(time) {
+	DkDelayedMessage(QString msg  = QString(), int time = 0, QObject* parent = 0) : DkDelayedInfo(time, parent) {
 		this->msg = msg;
 	}
 

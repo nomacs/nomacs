@@ -68,8 +68,8 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	commentWidget = new DkCommentWidget(this);
 
 	// delayed info
-	delayedInfo = new DkDelayedMessage();
-	delayedSpinner = new DkDelayedInfo(0);
+	delayedInfo = new DkDelayedMessage(QString(), 0, this); // TODO: make a nice constructor
+	delayedSpinner = new DkDelayedInfo(0, this);
 
 	// info labels
 	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
