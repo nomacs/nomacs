@@ -46,7 +46,6 @@ DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx) {
 	this->tabMode = tab_recent_files;
 	this->imgC = imgC;
 	this->tabIdx = idx;
-
 }
 
 bool DkTabInfo::operator ==(const DkTabInfo& o) const {
@@ -623,6 +622,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		QUrl url = mimeData->hasText() ? QUrl::fromUserInput(mimeData->text()) : QUrl::fromUserInput(mimeData->urls().at(0).toString());
 		qDebug() << "dropping: " << url;
 
+		// TODO: toLocalFile() has problems with filenames that contain #
 		QFileInfo file = QFileInfo(url.toLocalFile());
 		QList<QUrl> urls = mimeData->urls();
 
@@ -669,6 +669,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
 		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
 			addTab(QFileInfo(urls[idx].toLocalFile()));
+
 		return true;
 	}
 	else if (mimeData->hasImage()) {
