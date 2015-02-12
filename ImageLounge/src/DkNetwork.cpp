@@ -45,6 +45,7 @@
 #include <QMutexLocker>
 #include <QNetworkCookieJar>
 #include <QDesktopServices>
+#include <QDebug>
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
