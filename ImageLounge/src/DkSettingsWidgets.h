@@ -31,6 +31,7 @@
 #include <QDialog>
 #include <QStyledItemDelegate>
 #include <QListView>
+#include <QDateTime>
 #pragma warning(pop)		// no warnings from includes - end
 
 // Qt defines

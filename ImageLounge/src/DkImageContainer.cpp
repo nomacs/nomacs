@@ -66,6 +66,10 @@ DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 	init();
 }
 
+DkImageContainer::~DkImageContainer() {
+
+}
+
 void DkImageContainer::init() {
 
 	edited = false;

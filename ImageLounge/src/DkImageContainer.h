@@ -68,6 +68,7 @@ public:
 	};
 
 	DkImageContainer(const QFileInfo& fileInfo);
+	virtual ~DkImageContainer();
 	bool operator==(const DkImageContainer& ric) const;
 	bool operator< (const DkImageContainer& o) const;
 	bool operator<= (const DkImageContainer& o) const;
