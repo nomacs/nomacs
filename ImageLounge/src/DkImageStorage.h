@@ -32,22 +32,20 @@
 #include <QMutex>
 #include <QVector>
 #include <QObject>
-#pragma warning(pop)		// no warnings from includes - end
 
 // opencv
 #ifdef WITH_OPENCV
-
-#ifdef WIN32
-#pragma warning(disable: 4996)
-#pragma warning(disable: 4251)	// TODO: remove
-#endif
-
 #ifdef DISABLE_LANCZOS // opencv 2.1.0 is used, does not have opencv2 includes
 #include "opencv/cv.h"
 #else
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #endif
+#endif
+#pragma warning(pop)		// no warnings from includes - end
+
+#ifdef WIN32
+#pragma warning(disable: 4251)	// TODO: remove
 #endif
 
 #ifndef DllExport

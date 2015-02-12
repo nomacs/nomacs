@@ -4505,11 +4505,11 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	setAcceptDrops(true);
 	setMouseTracking (true);	//receive mouse event everytime
 
-	updater = new DkUpdater();
+	updater = new DkUpdater(this);
 	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
 	connect(updater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
-	translationUpdater = new DkTranslationUpdater();
+	translationUpdater = new DkTranslationUpdater(this);
 	connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
 #ifndef Q_WS_X11

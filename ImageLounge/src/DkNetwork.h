@@ -492,7 +492,7 @@ class DkUpdater : public QObject {
 public:
 	bool silent;
 	
-	DkUpdater();
+	DkUpdater(QObject* parent = 0);
 
 public slots:
 	void checkForUpdates();
@@ -527,7 +527,7 @@ class DkTranslationUpdater : public QObject {
 	Q_OBJECT;
 
 	public:
-		DkTranslationUpdater();
+		DkTranslationUpdater(QObject* parent = 0);
 
 	public slots:
 		virtual void checkForUpdates();

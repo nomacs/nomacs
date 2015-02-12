@@ -211,7 +211,7 @@ void DkClientManager::sendGoodByeToAll() {
 // DkLocalClientManager --------------------------------------------------------------------
 
 DkLocalClientManager::DkLocalClientManager(QString title, QObject* parent ) : DkClientManager(title, parent) {
-	server = new DkLocalTcpServer();
+	server = new DkLocalTcpServer(this);
 	connect(server, SIGNAL(serverReiceivedNewConnection(int)), this, SLOT(newConnection(int)));
 	searchForOtherClients();
 	//QFuture<void> future = QtConcurrent::run(this, &DkLocalClientManager::searchForOtherClients);
@@ -1033,7 +1033,7 @@ DkPeer::DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 p
 	this->title = title;
 	this->sychronized = sychronized;
 	this->connection = connection;
-	this->timer = new QTimer;
+	this->timer = new QTimer(this);
 	timer->setSingleShot(true);
 	this->clientName = clientName;
 	this->showInMenu = showInMenu;
@@ -1224,9 +1224,9 @@ void DkPeerList::print() {
 
 // DkUpdater  --------------------------------------------------------------------
 
-DkUpdater::DkUpdater() {
+DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
 	silent = true;
-	cookie = new QNetworkCookieJar();
+	cookie = new QNetworkCookieJar(this);
 	accessManagerSetup.setCookieJar(cookie);
 	connect(&accessManagerSetup, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinishedSlot(QNetworkReply*)));
 	updateAborted = false;
@@ -1409,7 +1409,7 @@ void DkUpdater::replyError(QNetworkReply::NetworkError) {
 }
 
 // DkTranslationUpdater --------------------------------------------------------------------
-DkTranslationUpdater::DkTranslationUpdater() {
+DkTranslationUpdater::DkTranslationUpdater(QObject* parent) : QObject(parent) {
 	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
 }
 
