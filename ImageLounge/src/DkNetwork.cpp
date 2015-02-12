@@ -868,7 +868,7 @@ void DkLocalTcpServer::incomingConnection ( int socketDescriptor )  {
 // DkLANTcpServer --------------------------------------------------------------------
 
 DkLANTcpServer::DkLANTcpServer( QObject* parent, quint16 udpServerPortRangeStart, quint16 updServerPortRangeEnd) : QTcpServer(parent) {
-	udpSocket = new DkLANUdpSocket(udpServerPortRangeStart, updServerPortRangeEnd);
+	udpSocket = new DkLANUdpSocket(udpServerPortRangeStart, updServerPortRangeEnd, this);
 	connect(udpSocket, SIGNAL(udpSocketNewServerOnline(QHostAddress, quint16, QString)), this, SLOT(udpNewServerFound(QHostAddress, quint16, QString)));
 	connect(this, SIGNAL(sendNewClientBroadcast()), udpSocket, SLOT(sendNewClientBroadcast()));
 	emit sendNewClientBroadcast();
@@ -1579,7 +1579,7 @@ void DkLocalManagerThread::createClient(QString title) {
 	if (clientManager)
 		delete clientManager;
 
-	clientManager = new DkLocalClientManager(title);
+	clientManager = new DkLocalClientManager(title, this);
 }
 
 // DkLanManagerThread --------------------------------------------------------------------
