@@ -50,7 +50,6 @@ class QTableView;
 class QStandardItemModel;
 class QComboBox;
 class QGridLayout;
-class QDateTime;
 
 namespace nmc {
 
@@ -100,7 +99,6 @@ class DkCheckBoxDelegate : public QStyledItemDelegate {
 	Q_OBJECT
 public:
 	DkCheckBoxDelegate(QObject* parent = 0) : QStyledItemDelegate(parent) {};
-
 
 	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
