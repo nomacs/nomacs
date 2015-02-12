@@ -27,6 +27,11 @@
 
 #include "DkDocAnalysisPlugin.h"
 #include "DkViewPort.h"
+#include "DkMetaData.h"
+
+#include <QFileDialog>
+#include <QImageWriter>
+#include <QVector2D>
 
 namespace nmc {
 

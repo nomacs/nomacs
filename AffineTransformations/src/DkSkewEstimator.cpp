@@ -26,6 +26,9 @@
  *******************************************************************************************************/
 
 #include "DkSkewEstimator.h"
+#include "DkImageStorage.h"
+
+#include <QDebug>
 
 namespace nmc {
 

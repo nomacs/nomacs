@@ -34,6 +34,8 @@
 
 namespace nmc {
 
+class DkMetaDataT;
+
 #define PI 3.14159265
 /**
 * Main class for measuring the distance between two points within the image (either in cm or inch)

@@ -27,6 +27,8 @@
 
 #include "DkImgTransformationsPlugin.h"
 
+#include <QMouseEvent>
+
 #define PI 3.14159265
 
 namespace nmc {

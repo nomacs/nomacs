@@ -29,6 +29,11 @@
 
 #include "MaidError.h"
 
+#include <QTimer>
+#include <QHBoxLayout>
+#include <QFileDialog>
+#include <QCloseEvent>
+
 namespace nmc {
 
 const int DkCamControls::stateRefreshInterval = 1000; // in ms

@@ -27,6 +27,9 @@
 
 #include "DkPaintPlugin.h"
 
+#include <QDebug>
+#include <QMouseEvent>
+
 namespace nmc {
 
 /*-----------------------------------DkPaintPlugin ---------------------------------------------*/

@@ -26,7 +26,9 @@
  *******************************************************************************************************/
 
 #include "DkDistanceMeasure.h"
+#include "DkMetaData.h"
 
+#include <QVector2D>
 
 namespace nmc {
 

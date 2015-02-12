@@ -274,7 +274,7 @@ void DkLineDetection::createTextLineImages() {
 * 1. Calculate a local projection profile
 * 2. Find the local minimas in each projection profile
 * 3. If optimization enabled: Optimize both line images
-* \sa calcLocalProjectionProfile() findLocalMinima() optimizeLineImg(Mat *segLineImg, Mat *lowertextLineImg, Mat *uppertextLineImg)
+* \sa calcLocalProjectionProfile() findLocalMinima() optimizeLineImg(cv::Mat *segLineImg, cv::Mat *lowertextLineImg, cv::Mat *uppertextLineImg)
 **/
 void DkLineDetection::startLineDetection() {
 
@@ -392,7 +392,7 @@ void DkLineDetection::findLocalMinima() {
 
 	cv::Mat filtered;
 	// filter with kernel
-	cv::filter2D(lpp_image, filtered, CV_64FC1, kernel, Point(-1,-1), 0.0, BORDER_REPLICATE); 
+	cv::filter2D(lpp_image, filtered, CV_64FC1, kernel, cv::Point(-1,-1), 0.0, cv::BORDER_REPLICATE); 
 
 	if (debug) {
 			debugOutputMat(&filtered, "lpp_image filtered with gaussian derivative");
@@ -415,7 +415,7 @@ void DkLineDetection::findLocalMinima() {
 			debugOutputMat(&sxkernel, "sxkernel");
 
 	// DEBUG DEBUG: try filtering without loop
-	cv::filter2D(filtered, extrHist, CV_64FC1, diffkernel, cv::Point(0,0), 0.0, BORDER_REPLICATE);
+	cv::filter2D(filtered, extrHist, CV_64FC1, diffkernel, cv::Point(0,0), 0.0, cv::BORDER_REPLICATE);
 
 	if (debug) {
 			debugOutputMat(&extrHist, "filtered filtered with diffkernel");
@@ -443,7 +443,7 @@ void DkLineDetection::findLocalMinima() {
 	}
 
 
-	cv::filter2D(extrHist, extrHist, CV_64FC1, sxkernel, cv::Point(0,1), 0.0, BORDER_CONSTANT);
+	cv::filter2D(extrHist, extrHist, CV_64FC1, sxkernel, cv::Point(0,1), 0.0, cv::BORDER_CONSTANT);
 
 	if (debug) {
 			debugOutputMat(&extrHist, "filtered with sx kernel");
@@ -495,12 +495,12 @@ void DkLineDetection::findLocalMinima() {
 		
 		// compute extrema in "histogram"
 		histogram = filtered.col(i);
-		cv::filter2D(histogram, extrHist, CV_64FC1, diffkernel, cv::Point(0,0), 0.0, BORDER_REPLICATE);
+		cv::filter2D(histogram, extrHist, CV_64FC1, diffkernel, cv::Point(0,0), 0.0, cv::BORDER_REPLICATE);
 
 		extrHist.setTo(-1, extrHist < 0);
 		extrHist.setTo(1, extrHist > 0);
 
-		cv::filter2D(extrHist, extrHist, CV_64FC1, sxkernel, cv::Point(0,1), 0.0, BORDER_CONSTANT);
+		cv::filter2D(extrHist, extrHist, CV_64FC1, sxkernel, cv::Point(0,1), 0.0, cv::BORDER_CONSTANT);
 
 		// now find local maxima and minima
 		maxima = extrHist > 0;
@@ -571,15 +571,15 @@ void DkLineDetection::nonExtremaSuppression2D(cv::Mat *filtered, cv::Mat *maxima
 	cv::Mat masked = cv::Mat::zeros(filtered->rows, filtered->cols, filtered->type());
 	// mask image to keep only max values
 	filtered->copyTo(masked, *maxima);
-	if( debug)
+	if (debug)
 		debugOutputMat(&masked, "masked with maxima");
 	
 	// dilate with non extrema kernel (uses max value of neighborhood as dialtion value)
 	cv::Mat dilatedMask;
 	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, params.nonExtremaKernelSize));
-	cv::dilate(masked, dilatedMask, element, Point(-1, -1));
+	cv::dilate(masked, dilatedMask, element, cv::Point(-1, -1));
 
-	if( debug)
+	if (debug)
 		debugOutputMat(&dilatedMask, "dilated maximum mask");
 
 	// set values to 0 which are below the given max threshold
@@ -589,7 +589,7 @@ void DkLineDetection::nonExtremaSuppression2D(cv::Mat *filtered, cv::Mat *maxima
 	dilatedMask.setTo(-1, dilatedMask == 0);
 	
 	cv::compare(masked, dilatedMask, *maxima, cv::CMP_EQ);
-	if( debug)
+	if (debug)
 		debugOutputMat(maxima, "real max");
 
 	// handle minimum ( = lower text lines)
@@ -613,7 +613,7 @@ void DkLineDetection::nonExtremaSuppression2D(cv::Mat *filtered, cv::Mat *maxima
 		debugOutputMat(&masked, "masked + minimum value");
 
 	// no matrix is ready to be dilated (which dilates maximum value)
-	cv::dilate(masked, dilatedMask, element, Point(-1, -1));
+	cv::dilate(masked, dilatedMask, element, cv::Point(-1, -1));
 
 	if( debug)
 		debugOutputMat(&dilatedMask, "dilated minimum mask");
@@ -727,7 +727,7 @@ void DkLineDetection::nonExtremaSuppression(cv::Mat *histogram, cv::Mat *maxima,
 		if(idx2 >= histogram->rows) idx2 = histogram->rows - 1;
 		
 		// extract neighborhood
-		neighborhood = (*histogram)(Range(idx1,idx2+1),Range(0,1));
+		neighborhood = (*histogram)(cv::Range(idx1,idx2+1),cv::Range(0,1));
 		// extract the current value
 		double hist_val = histogram->at<double>(i,0);
 
@@ -803,10 +803,10 @@ void DkLineDetection::nonExtremaSuppression(cv::Mat *histogram, cv::Mat *maxima,
 * @param lowertextLineImg Pointer to the basic calculated lower text line img mask (as CV_8UC1)
 * @param uppertextLineImg Pointer to the basic calculated upper text line img (as CV_8UC1)
 **/
-void DkLineDetection::optimizeLineImg(Mat *segLineImg,Mat *lowertextLineImg, Mat*uppertextLineImg) {
+void DkLineDetection::optimizeLineImg(cv::Mat *segLineImg,cv::Mat *lowertextLineImg, cv::Mat*uppertextLineImg) {
 	
 	// estimate text regions
-	Mat intImg = Mat(segLineImg->rows+1, segLineImg->cols+1, CV_64FC1);
+	cv::Mat intImg = cv::Mat(segLineImg->rows+1, segLineImg->cols+1, CV_64FC1);
 
 	cv::Mat filtered_gradX(segLineImg->rows, segLineImg->cols, segLineImg->type());
 	cv::Mat filtered_gradY(segLineImg->rows, segLineImg->cols, segLineImg->type());
@@ -820,11 +820,11 @@ void DkLineDetection::optimizeLineImg(Mat *segLineImg,Mat *lowertextLineImg, Mat
 
 	if(params.sobelFilterX) {
 		filtered_gradX = cv::abs(filtered_gradX);
-		normalize(filtered_gradX, filtered_gradX, 1.0f, 0.0f, NORM_MINMAX);
+		normalize(filtered_gradX, filtered_gradX, 1.0f, 0.0f, cv::NORM_MINMAX);
 	}
 	if(params.sobelFilterY) {
 		filtered_gradY = cv::abs(filtered_gradY);
-		normalize(filtered_gradY, filtered_gradY, 1.0f, 0.0f, NORM_MINMAX);
+		normalize(filtered_gradY, filtered_gradY, 1.0f, 0.0f, cv::NORM_MINMAX);
 	}
 	/*cv::namedWindow( "normalized sobel", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 	cv::imshow( "normalized sobel", filtered_gradX);*/
@@ -833,7 +833,7 @@ void DkLineDetection::optimizeLineImg(Mat *segLineImg,Mat *lowertextLineImg, Mat
 	if(params.sobelFilterX) {
 		integral(filtered_gradX, intImg);
 		filtered_gradX = DkLineDetection::convolveIntegralImage(intImg, cvCeil(params.boxFilterSizeX*params.rescale), cvCeil(params.boxFilterSizeY*params.rescale), DkLineDetection::DK_BORDER_ZERO);
-		normalize(filtered_gradX, filtered_gradX, 255, 0, NORM_MINMAX);
+		normalize(filtered_gradX, filtered_gradX, 255, 0, cv::NORM_MINMAX);
 		
 		if (filtered_gradX.depth() != CV_8UC1)
 			filtered_gradX.convertTo(filtered_gradX, CV_8UC1);
@@ -841,7 +841,7 @@ void DkLineDetection::optimizeLineImg(Mat *segLineImg,Mat *lowertextLineImg, Mat
 	if(params.sobelFilterY) {
 		integral(filtered_gradY, intImg);
 		filtered_gradY = DkLineDetection::convolveIntegralImage(intImg, cvCeil(params.boxFilterSizeX*params.rescale), cvCeil(params.boxFilterSizeY*params.rescale), DkLineDetection::DK_BORDER_ZERO);
-		normalize(filtered_gradY, filtered_gradY, 255, 0, NORM_MINMAX);
+		normalize(filtered_gradY, filtered_gradY, 255, 0, cv::NORM_MINMAX);
 
 		if (filtered_gradY.depth() != CV_8UC1)
 			filtered_gradY.convertTo(filtered_gradY, CV_8UC1);
@@ -860,12 +860,12 @@ void DkLineDetection::optimizeLineImg(Mat *segLineImg,Mat *lowertextLineImg, Mat
 	if(params.sobelFilterX) {
 		cv::threshold(filtered_gradX, filtered_gradX, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
 		filtered_gradX.convertTo(filtered_gradX, CV_32FC1);
-		normalize(filtered_gradX, filtered_gradX, 1.0f, 0.0f, NORM_MINMAX);
+		normalize(filtered_gradX, filtered_gradX, 1.0f, 0.0f, cv::NORM_MINMAX);
 	}
 	if(params.sobelFilterY) {
 		cv::threshold(filtered_gradY, filtered_gradY, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
 		filtered_gradY.convertTo(filtered_gradY, CV_32FC1);
-		normalize(filtered_gradY, filtered_gradY, 1.0f, 0.0f, NORM_MINMAX);
+		normalize(filtered_gradY, filtered_gradY, 1.0f, 0.0f, cv::NORM_MINMAX);
 	}
 
 	/*
@@ -925,7 +925,7 @@ void DkLineDetection::optimizeLineImg(Mat *segLineImg,Mat *lowertextLineImg, Mat
 * @param img The binary text line image to check
 * @param minLength 
 */
-Mat DkLineDetection::removeShortLines(Mat img, int minLength) {
+cv::Mat DkLineDetection::removeShortLines(cv::Mat img, int minLength) {
 
     if (img.channels() > 1)
         img.convertTo(img, CV_RGB2GRAY);
@@ -935,21 +935,21 @@ Mat DkLineDetection::removeShortLines(Mat img, int minLength) {
 
     img = img > 0;
 
-    vector<vector<Point> > contours;
-    vector<Vec4i> hierarchy;
+    std::vector<std::vector<cv::Point> > contours;
+    std::vector<cv::Vec4i> hierarchy;
 
     findContours(img, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-    vector<vector<Point>>::iterator contour = contours.begin();
+    std::vector<std::vector<cv::Point>>::iterator contour = contours.begin();
 
-    Scalar color(255);
+    cv::Scalar color(255);
 
     //Scalar color( 0, 0, 255 );
-    Mat dst = Mat::zeros(img.size(), CV_8UC1);
+    cv::Mat dst = cv::Mat::zeros(img.size(), CV_8UC1);
 	int idx = 0;
     for (; contour != contours.end(); ++contour) {
 
-        double extend = fabs(contourArea(Mat(*contour)));
+        double extend = fabs(contourArea(cv::Mat(*contour)));
 
         if (extend >= minLength)
             drawContours( dst, contours, idx, color, CV_FILLED, 8, hierarchy );
@@ -973,7 +973,7 @@ Mat DkLineDetection::removeShortLines(Mat img, int minLength) {
  * @param norm if DK_BORDER_ZERO an image sum is computed, if DK_BORDER_FLIP a mean filtering is applied.
  * @return the convolved image CV_32FC1
  **/
-Mat DkLineDetection::convolveIntegralImage(const Mat src, const int kernelSizeX, const int kernelSizeY, const int norm = DK_BORDER_ZERO) {
+cv::Mat DkLineDetection::convolveIntegralImage(const cv::Mat src, const int kernelSizeX, const int kernelSizeY, const int norm = DK_BORDER_ZERO) {
 
 	//if (src.channels() > 1) {
 	//	std::string msg = "the image needs to have 1 channel, but it has: " + 
@@ -989,7 +989,7 @@ Mat DkLineDetection::convolveIntegralImage(const Mat src, const int kernelSizeX,
 
 	//int ksY = (kernelSizeY != 0) ? kernelSizeY : kernelSizeX;	// make squared kernel
 
-	Mat dst = Mat(src.rows-1, src.cols-1, CV_32FC1);
+	cv::Mat dst = cv::Mat(src.rows-1, src.cols-1, CV_32FC1);
 	
 	int halfKRows = (kernelSizeY < dst.rows) ? cvFloor((float)kernelSizeY*0.5)+1 : cvFloor((float)(dst.rows-1)*0.5)-1;
 	int halfKCols = (kernelSizeX < dst.cols) ? cvFloor((float)kernelSizeX*0.5)+1 : cvFloor((float)(dst.cols-1)*0.5)-1;
