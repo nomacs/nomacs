@@ -63,6 +63,7 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 	
 	this->fileInfo = fileInfo;
+	loadState = not_loaded;
 	init();
 }
 
