@@ -256,7 +256,7 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, float facto
 		
 		if (correctGamma)
 			DkImage::gammaToLinear(qImg);
-		Mat resizeImage = DkImage::qImage2Mat(qImg);
+		cv::Mat resizeImage = DkImage::qImage2Mat(qImg);
 
 		// is the image convertible?
 		if (resizeImage.empty()) {
@@ -264,7 +264,7 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, float facto
 		}
 		else {
 
-			Mat tmp;
+			cv::Mat tmp;
 			cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
 			resizeImage = tmp;
 			qImg = DkImage::mat2QImage(resizeImage);
@@ -663,9 +663,9 @@ QPixmap DkImage::colorizePixmap(const QPixmap& icon, const QColor& col, float op
  * @param img formats supported: ARGB32 | RGB32 | RGB888 | Indexed8
  * @return cv::Mat the corresponding Mat
  **/ 
-Mat DkImage::qImage2Mat(const QImage& img) {
+cv::Mat DkImage::qImage2Mat(const QImage& img) {
 
-	Mat mat2;
+	cv::Mat mat2;
 	QImage cImg;	// must be initialized here!	(otherwise the data is lost before clone())
 
 	try {
@@ -673,11 +673,11 @@ Mat DkImage::qImage2Mat(const QImage& img) {
 			qDebug() << "we have an RGB32 in memory...";
 
 		if (img.format() == QImage::Format_ARGB32 || img.format() == QImage::Format_RGB32) {
-			mat2 = Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
+			mat2 = cv::Mat(img.height(), img.width(), CV_8UC4, (uchar*)img.bits(), img.bytesPerLine());
 			//qDebug() << "ARGB32 or RGB32";
 		}
 		else if (img.format() == QImage::Format_RGB888) {
-			mat2 = Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
+			mat2 = cv::Mat(img.height(), img.width(), CV_8UC3, (uchar*)img.bits(), img.bytesPerLine());
 			//qDebug() << "RGB888";
 		}
 		//// converting to indexed8 causes bugs in the qpainter
@@ -689,7 +689,7 @@ Mat DkImage::qImage2Mat(const QImage& img) {
 		else {
 			//qDebug() << "image flag: " << img.format();
 			cImg = img.convertToFormat(QImage::Format_ARGB32);
-			mat2 = Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
+			mat2 = cv::Mat(cImg.height(), cImg.width(), CV_8UC4, (uchar*)cImg.bits(), cImg.bytesPerLine());
 			//qDebug() << "I need to convert the QImage to ARGB32";
 		}
 
@@ -709,7 +709,7 @@ Mat DkImage::qImage2Mat(const QImage& img) {
  * @param img supported formats CV8UC1 | CV_8UC3 | CV_8UC4
  * @return QImage the corresponding QImage
  **/ 
-QImage DkImage::mat2QImage(Mat img) {
+QImage DkImage::mat2QImage(cv::Mat img) {
 
 	QImage qImg;
 
@@ -744,7 +744,7 @@ cv::Mat DkImage::get1DGauss(double sigma) {
 	if (kernelsize < 3) kernelsize = 3;
 	if ((kernelsize % 2) != 1) kernelsize+=1;
 
-	Mat gKernel = Mat(1, kernelsize, CV_32F);
+	cv::Mat gKernel = cv::Mat(1, kernelsize, CV_32F);
 	float* kernelPtr = gKernel.ptr<float>();
 
 	for (int idx = 0, x = -cvFloor(kernelsize/2); idx < kernelsize; idx++,x++) {
