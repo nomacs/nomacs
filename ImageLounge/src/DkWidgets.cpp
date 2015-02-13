@@ -3073,8 +3073,9 @@ void DkRecentFilesWidget::setVisible(bool visible) {
 }
 
 void DkRecentFilesWidget::hide() {
-
-	QWidget::hide();
+	
+	QWidget::hide();	// no animation effect on hide
+	DkWidget::hide();
 }
 
 void DkRecentFilesWidget::updateFileList() {

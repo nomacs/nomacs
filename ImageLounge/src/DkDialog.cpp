@@ -3746,7 +3746,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	mImg = mImg.rowRange(qFloor(shR), mImg.rows-qCeil(shR)).colRange(qFloor(shC), mImg.cols-qCeil(shC));
 	cv::Mat mImgLab;
 	cv::cvtColor(mImg, mImgLab, CV_RGB2Lab);
-	std::vector<Mat> channels;
+	std::vector<cv::Mat> channels;
 	cv::split(mImgLab, channels);
 	cv::Mat imgL = channels[0];
 
@@ -3987,7 +3987,7 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 
 	cv::Mat cvThumb = DkImage::qImage2Mat(img);
 	cv::cvtColor(cvThumb, cvThumb, CV_RGB2Lab);
-	std::vector<Mat> channels;
+	std::vector<cv::Mat> channels;
 	cv::split(cvThumb, channels);
 	cvThumb = channels[0];
 	channels.clear();

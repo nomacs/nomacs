@@ -656,8 +656,10 @@ void DkImageContainerT::fileDownloaded() {
 
 	if (!fileBuffer || fileBuffer->isEmpty()) {
 		qDebug() << fileDownloader->getUrl() << " not downloaded...";
+		edited = false;
 		emit showInfoSignal(tr("Sorry, I could not download:\n%1").arg(fileDownloader->getUrl().toString()));
 		emit fileLoadedSignal(false);
+		loadState = exists_not;
 		return;
 	}
 

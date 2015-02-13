@@ -71,9 +71,6 @@ class QNetworkReply;
 
 namespace nmc {
 
-// results in compiler warning C4150
-// as far as I understand, the warning can be ignored because
-// the destructor of DkMetaDataT is trivial - could someone check for this so we can suppress it?
 class DkMetaDataT;
 
 #ifdef WITH_QUAZIP
@@ -247,10 +244,10 @@ public:
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;
 #else
-	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize()) {return false;};
-	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const {return 0;};
-	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const {return false;};
-	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const {};
+	bool loadOpenCVVecFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>(), QSize = QSize()) {return false;};
+	int mergeVecFiles(const QVector<QFileInfo>&, QFileInfo&) const {return 0;};
+	bool readHeader(const unsigned char**, int&, int&) const {return false;};
+	void getPatchSizeFromFileName(const QString&, int&, int&) const {};
 
 #endif
 
@@ -260,9 +257,9 @@ public:
 	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression);
 	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4);
 #else
-	bool loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>()) {return false;};	// not supported if webP was not linked
-	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression) {return false;};
-	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4) {return false;};
+	bool loadWebPFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>()) {return false;};	// not supported if webP was not linked
+	bool saveWebPFile(const QFileInfo&, const QImage, int) {return false;};
+	bool saveWebPFile(const QImage, QSharedPointer<QByteArray>&, int, int = 4) {return false;};
 #endif
 
 signals:

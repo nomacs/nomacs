@@ -34,11 +34,6 @@
 #include <QMutex>
 #include <QStringList>
 #include <QImage>
-
-// TODO: get rid of this include
-#ifdef WITH_LIBRAW
-#include <libraw/libraw.h>
-#endif
 #pragma warning(pop)	// no warnings from includes - end
 
 #ifndef DllExport

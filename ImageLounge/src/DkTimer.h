@@ -107,11 +107,11 @@ public:
 		else if (ct < 60)
 			msg += DkUtils::stringify(ct) + " sec";
 		else if (ct < 3600) {
-			double m = cvFloor(ct/60.0f);
+			double m = cvFloor((float)(ct/60.0));
 			msg += DkUtils::stringify(m) + " min " + DkUtils::stringify(ct-m*60, 0) + " sec";
 		}
 		else {
-			double h = cvFloor(ct/3600.0f);
+			double h = cvFloor((float)(ct/3600.0));
 			msg += DkUtils::stringify(h) + " hours " + DkUtils::stringify(ct-h*3600.0f, 0) + " min";
 		}
 

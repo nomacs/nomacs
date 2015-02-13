@@ -46,18 +46,16 @@
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
 
-#pragma warning(push, 0)	// no warnings from includes - begin
-#ifdef WITH_UPNP
-#include "DkUpnp.h"
-#endif // WITH_UPNP
-#pragma warning(pop)		// no warnings from includes - end
-
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
 #include "DkPluginManager.h"
 #endif //  WITH_PLUGINS
 
 #pragma warning(push, 0)	// no warnings from includes - begin
+#ifdef WITH_UPNP
+#include "DkUpnp.h"
+#endif // WITH_UPNP
+
 #include <QBoxLayout>
 #include <QShortcut>
 #include <QResizeEvent>
@@ -84,7 +82,7 @@
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
-#if !defined(WITH_LIBRAW) && defined(WIN32)
+#ifdef WIN32
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
