@@ -135,7 +135,7 @@ endforeach(QM)
 # set properties for Visual Studio Projects
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;ReallyRelease" CACHE STRING "limited configs" FORCE)
 add_definitions(/Zc:wchar_t-)
-set(CMAKE_CXX_FLAGS_REALLYRELEASE "/W4 /O2 ${CMAKE_CXX_FLAGS_RELEASE} /DQT_NO_DEBUG_OUTPUT")
+set(CMAKE_CXX_FLAGS_REALLYRELEASE "/W3 /O2 ${CMAKE_CXX_FLAGS_RELEASE} /DQT_NO_DEBUG_OUTPUT")
 set(CMAKE_EXE_LINKER_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE") # /subsystem:windows does not work due to a bug in cmake (see http://public.kitware.com/Bug/view.php?id=12566)
 
 set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_REALLYRELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE")

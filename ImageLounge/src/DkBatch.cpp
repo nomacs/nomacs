@@ -125,14 +125,15 @@ void DkBatchWidget::setHeader(QString headerString) {
 
 // File Selection --------------------------------------------------------------------
 DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+
 	this->hUserInput = false;
 	this->rUserInput = false;
+	loader = new DkImageLoader();
 	
 	setObjectName("DkFileSelection");
 	createLayout();
 	setMinimumHeight(300);
 
-	loader = new DkImageLoader();
 }
 
 void DkFileSelection::createLayout() {
@@ -155,7 +156,7 @@ void DkFileSelection::createLayout() {
 
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
-	//connect(this, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 
 	infoLabel = new QLabel(tr("No Files Selected"), this);
 
@@ -179,7 +180,7 @@ void DkFileSelection::createLayout() {
 	setLayout(widgetLayout);
 
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
-	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QFileInfo)), this, SLOT(setFileInfo(QFileInfo)));
+	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), this, SLOT(setDir(QDir)));
 	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
 	connect(directoryEdit, SIGNAL(directoryChanged(QDir)), this, SLOT(setDir(QDir)));
 	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SLOT(filterTextChanged(const QString&)));
@@ -260,7 +261,6 @@ void DkFileSelection::emitChangedSignal() {
 }
 
 void DkFileSelection::filterTextChanged(const QString& filterText) {
-
 	
 	loader->setFolderFilters(filterText.split(" "));
 }

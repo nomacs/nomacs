@@ -286,7 +286,7 @@ DkRecentFilesWidget* DkCentralWidget::getRecentFilesWidget() const {
 
 void DkCentralWidget::currentTabChanged(int idx) {
 
-	if (idx < 0 && idx >= tabInfos.size())
+	if (idx < 0 || idx >= tabInfos.size())
 		return;
 
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx).getImage();
@@ -620,10 +620,17 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
 	if (mimeData->hasUrls() && mimeData->urls().size() > 0 || mimeData->hasText()) {
 		QUrl url = mimeData->hasText() ? QUrl::fromUserInput(mimeData->text()) : QUrl::fromUserInput(mimeData->urls().at(0).toString());
-		qDebug() << "dropping: " << url;
 
-		// TODO: toLocalFile() has problems with filenames that contain #
-		QFileInfo file = QFileInfo(url.toLocalFile());
+		// try manual conversion first, this fixes the DSC#josef.jpg problems (url fragments)
+		QString fString = url.toString();
+		fString = fString.replace("file:///", "");
+
+		QFileInfo file = QFileInfo(fString);
+		if (!file.exists())	// try an alternative conversion
+			file = QFileInfo(url.toLocalFile());
+		
+		qDebug() << "dropping: " << file.absoluteFilePath();
+
 		QList<QUrl> urls = mimeData->urls();
 
 		// merge OpenCV vec files if multiple vec files are dropped

@@ -123,7 +123,7 @@ void DkControlWidget::init() {
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	zoomWidget->setContentsMargins(10, 10, 0, 0);
-	//cropWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
+	//cropWidget->setMaximumSize(16777215, 16777215);				// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	spinnerLabel->halfSize();

@@ -34,16 +34,11 @@
 
 #include "DkError.h"
 
-#ifdef Q_OS_WIN
+#ifdef QT_NO_DEBUG_OUTPUT
+#pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
+#endif
 
-//#include <winsock2.h>	// needed since libraw 0.16
-//#include <wtypes.h>
-//#include <windows.h>
-//
-//#include "shlwapi.h"
-//#pragma comment (lib, "shlwapi.lib")
-
-#else
+#ifndef Q_OS_WIN
 	#include <time.h>
 #endif
 
@@ -63,6 +58,7 @@ using namespace cv;
 #else
 
 //#define int64 long long;
+#include <sstream>
 #define CV_PI 3.141592653589793238462643383279
 #endif
 
