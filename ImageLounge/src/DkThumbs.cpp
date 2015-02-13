@@ -42,7 +42,7 @@
 #include <QBuffer>
 
 #ifdef WIN32
-#include <winsock2.h>	// needed since libraw 0.16
+//#include <winsock2.h>	// needed since libraw 0.16
 #endif
 #pragma warning(pop)		// no warnings from includes - end
 

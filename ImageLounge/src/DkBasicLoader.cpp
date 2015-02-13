@@ -1204,9 +1204,10 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		delete imgWriter;
 	}
 
-	if (saved && (!metaData->isLoaded() || !metaData->hasMetaData())) {
+	if (saved) {
 		
-		metaData->readMetaData(fileInfo, ba);
+		if (!metaData->isLoaded() || !metaData->hasMetaData())
+			metaData->readMetaData(fileInfo, ba);
 
 		if (metaData->isLoaded()) {
 			try {

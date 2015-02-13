@@ -50,6 +50,17 @@
 #include <QTranslator>
 #pragma warning(pop)		// no warnings from includes - end
 
+#ifdef Q_OS_WIN
+
+#include <winsock2.h>	// needed since libraw 0.16
+//#include <wtypes.h>
+//#include <windows.h>
+
+#include "shlwapi.h"
+#pragma comment (lib, "shlwapi.lib")
+
+#endif
+
 int nmc::DkUtils::debugLevel = DK_MODULE;
 
 namespace nmc {

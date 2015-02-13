@@ -84,6 +84,10 @@
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
+#if !defined(WITH_LIBRAW) && defined(WIN32)
+#include <winsock2.h>	// needed since libraw 0.16
+#endif
+
 namespace nmc {
 
 DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent) {

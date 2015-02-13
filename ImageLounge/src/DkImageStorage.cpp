@@ -36,6 +36,9 @@
 #include <QPainter>
 #pragma warning(pop)		// no warnings from includes - end
 
+#ifdef WIN32
+#include <winsock2.h>	// needed since libraw 0.16
+#endif
 namespace nmc {
 
 // DkImage --------------------------------------------------------------------

@@ -875,6 +875,7 @@ public slots:
 	void updateFiles();
 	void updateFolders();
 	virtual void setVisible(bool visible);
+	virtual void hide();
 	//void clearFileHistory();
 	//void clearFolderHistory();
 
