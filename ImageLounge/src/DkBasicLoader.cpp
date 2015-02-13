@@ -432,7 +432,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		unsigned short cols = iProcessor.imgdata.sizes.width,//.raw_width,
 			rows = iProcessor.imgdata.sizes.height;//.raw_height;
 
-		Mat rawMat, rgbImg;
+		cv::Mat rawMat, rgbImg;
 
 		// modifications sequence for changing from raw to rgb:
 		// 1. normalize according to black point and dynamic range
@@ -478,7 +478,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		if (iProcessor.imgdata.idata.filters) {
 
-			rawMat = Mat(rows, cols, CV_32FC1);
+			rawMat = cv::Mat(rows, cols, CV_32FC1);
 
 			for (uint row = 0; row < rows; row++) {
 				float *ptrRaw = rawMat.ptr<float>(row);
@@ -497,7 +497,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 			}
 			
 			// 2. demosaic raw image
-			rawMat.convertTo(rawMat,CV_16U);
+			rawMat.convertTo(rawMat, CV_16U);
 
 			//cvtColor(rawMat, rgbImg, CV_BayerBG2RGB);
 			unsigned long type = (unsigned long)iProcessor.imgdata.idata.filters;
@@ -513,9 +513,9 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		}
 		else {
 
-			rawMat = Mat(rows, cols, CV_32FC3);
+			rawMat = cv::Mat(rows, cols, CV_32FC3);
 			rawMat.setTo(0);
-			std::vector<Mat> rawCh;
+			std::vector<cv::Mat> rawCh;
 			split(rawMat, rawCh);
 
 			for (unsigned int row = 0; row < rows; row++) {
@@ -591,27 +591,8 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		if (mulWhite[3] == 0)
 			mulWhite[3] = mulWhite[1];
 
-		////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
-		////DkUtils::printDebug(DK_MODULE, "Bayer Pattern: %s\n", iProcessor.imgdata.idata.cdesc);
-		////DkUtils::printDebug(DK_MODULE, "Camera manufacturer: %s\n", iProcessor.imgdata.idata.make);
-		////DkUtils::printDebug(DK_MODULE, "Camera model: %s\n", iProcessor.imgdata.idata.model);
-		////DkUtils::printDebug(DK_MODULE, "canon_ev %f\n", (float)iProcessor.imgdata.color.canon_ev);
-
-		////DkUtils::printDebug(DK_MODULE, "white: [%.3f %.3f %.3f %.3f]\n", iProcessor.imgdata.color.cam_mul[0],
-		////	iProcessor.imgdata.color.cam_mul[1], iProcessor.imgdata.color.cam_mul[2],
-		////	iProcessor.imgdata.color.cam_mul[3]);
-		////DkUtils::printDebug(DK_MODULE, "white (processing): [%.3f %.3f %.3f %.3f]\n", mulWhite[0],
-		////	mulWhite[1], mulWhite[2],
-		////	mulWhite[3]);
-		////DkUtils::printDebug(DK_MODULE, "black: %i\n", iProcessor.imgdata.color.black);
-		////DkUtils::printDebug(DK_MODULE, "maximum: %.i %i\n", iProcessor.imgdata.color.maximum,
-		////	iProcessor.imgdata.params.adjust_maximum_thr);
-		////DkUtils::printDebug(DK_MODULE, "----------------\n", (float)iProcessor.imgdata.color.maximum);
-
-
-
 		//apply corrections
-		std::vector<Mat> corrCh;
+		std::vector<cv::Mat> corrCh;
 		split(rgbImg, corrCh);
 
 		for (uint row = 0; row < rows; row++)
@@ -697,7 +678,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		//check the pixel aspect ratio of the raw image
 		if (iProcessor.imgdata.sizes.pixel_aspect != 1.0f) {
-			cv::resize(rgbImg, rawMat, Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
+			cv::resize(rgbImg, rawMat, cv::Size(), (double)iProcessor.imgdata.sizes.pixel_aspect, 1.0f);
 			rgbImg = rawMat;
 		}
 
@@ -772,7 +753,7 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 #ifdef WITH_OPENCV
 
-Mat DkBasicLoader::getImageCv() {
+cv::Mat DkBasicLoader::getImageCv() {
 	return cv::Mat();
 }
 
@@ -831,7 +812,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 	int numCols = qCeil(nRowsCols);
 	int minusOneRow = (qFloor(nRowsCols) != qCeil(nRowsCols) && nRowsCols - qFloor(nRowsCols) < 0.5) ? 1 : 0;
 
-	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, Scalar(125));
+	cv::Mat allPatches((numCols-minusOneRow)*guessedH, numCols*guessedW, CV_8UC1, cv::Scalar(125));
 
 	for (int idx = 0; idx < numElements; idx++) {
 
@@ -886,9 +867,9 @@ bool DkBasicLoader::readHeader(const unsigned char** dataPtr, int& fileCount, in
 }
 
 // the double pointer is here needed to additionally increase the pointer value
-Mat DkBasicLoader::getPatch(const unsigned char** dataPtr, QSize patchSize) const {
+cv::Mat DkBasicLoader::getPatch(const unsigned char** dataPtr, QSize patchSize) const {
 	
-	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, Scalar(0));
+	cv::Mat img8U(patchSize.height(), patchSize.width(), CV_8UC1, cv::Scalar(0));
 
 	// ok, take just the second byte
 	for (int rIdx = 0; rIdx < img8U.rows; rIdx++) {
@@ -1309,7 +1290,7 @@ void DkBasicLoader::rotate(int orientation) {
 		DkVector nSr = nSz;
 
 		double angleRad = orientation*DK_RAD2DEG;
-		int interpolation = (orientation % 90 == 0) ? INTER_NEAREST : INTER_CUBIC;
+		int interpolation = (orientation % 90 == 0) ? cv::INTER_NEAREST : cv::INTER_CUBIC;
 
 		// compute
 		nSl.rotate(angleRad);
@@ -1324,7 +1305,7 @@ void DkBasicLoader::rotate(int orientation) {
 
 		DkVector center = nSl * 0.5f;
 
-		Mat rotMat = getRotationMatrix2D(center.getCvPoint32f(), DK_RAD2DEG*angleRad, 1.0);
+		cv::Mat rotMat = getRotationMatrix2D(center.getCvPoint32f(), DK_RAD2DEG*angleRad, 1.0);
 
 		// add a shift towards new center
 		DkVector cDiff = center - (nSz * 0.5f);
@@ -1335,8 +1316,8 @@ void DkBasicLoader::rotate(int orientation) {
 		transl[5] += (double)cDiff.y;
 
 		// img in wrapAffine must not be overwritten
-		Mat rImg = Mat(nSl.getCvSize(), cvImg.type());
-		warpAffine(cvImg, rImg, rotMat, rImg.size(), interpolation, BORDER_CONSTANT/*, borderValue*/);
+		cv::Mat rImg(nSl.getCvSize(), cvImg.type());
+		warpAffine(cvImg, rImg, rotMat, rImg.size(), interpolation, cv::BORDER_CONSTANT/*, borderValue*/);
 		cvImg = rImg;
 	} 
 

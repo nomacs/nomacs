@@ -53,8 +53,6 @@
 #else
 	#include "opencv2/core/core.hpp"
 #endif
-
-using namespace cv;
 #else
 
 //#define int64 long long;
@@ -166,7 +164,7 @@ public:
 	 * @param src an image CV_32FC1.
 	 * @param varName the variable name for Matlab.
 	 **/
-	static void printMat(const Mat src, const char* varName) {
+	static void printMat(const cv::Mat src, const char* varName) {
 
 		if (src.depth() != CV_32FC1) {
 			//qDebug() << "I could not visualize the mat: " << QString::fromAscii(varName);
@@ -184,7 +182,7 @@ public:
 	 * @param src an image CV_32FC1.
 	 * @param varName the variable name for Matlab.
 	 **/
-	static std::string printMat(const Mat src) {
+	static std::string printMat(const cv::Mat src) {
 
 		if (src.depth() != CV_32FC1) {
 
@@ -218,27 +216,27 @@ public:
 	}
 
 	/**
-	 * Prints the Mat's attributes to the standard output.
-	 * The Mat's attributes are: size, depth, number of channels and
+	 * Prints the cv::Mat's attributes to the standard output.
+	 * The cv::Mat's attributes are: size, depth, number of channels and
 	 * dynamic range.
 	 * @param img an image (if it has more than one channel, the dynamic range
 	 * is not displayed)
 	 * @param varname the name of the matrix
 	 **/
-	static void getMatInfo(Mat img, std::string varname) {
+	static void getMatInfo(cv::Mat img, std::string varname) {
 
 		printf("%s: %s\n", varname.c_str(), getMatInfo(img).c_str());
 	}
 
 	/**
-	 * Converts the Mat's attributes to a string.
-	 * The Mat's attributes are: size, depth, number of channels and
+	 * Converts the cv::Mat's attributes to a string.
+	 * The cv::Mat's attributes are: size, depth, number of channels and
 	 * dynamic range.
 	 * @param img an image (if it has more than one channel, the dynamic range
 	 * is not converted).
-	 * @return a string with the Mat's attributes.
+	 * @return a string with the cv::Mat's attributes.
 	 **/
-	static std::string getMatInfo(Mat img) {
+	static std::string getMatInfo(cv::Mat img) {
 
 		std::string info = "\n\nimage info:\n";
 

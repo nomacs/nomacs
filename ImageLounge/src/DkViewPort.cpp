@@ -2852,9 +2852,9 @@ void DkViewPortContrast::setImage(QImage newImg) {
 	else {	
 					
 			imgs = QVector<QImage>(4);
-			vector<Mat> planes;
+			std::vector<cv::Mat> planes;
 			
-			Mat imgUC3 = DkImage::qImage2Mat(imgStorage.getImage());
+			cv::Mat imgUC3 = DkImage::qImage2Mat(imgStorage.getImage());
 			//int format = imgQt.format();
 			//if (format == QImage::Format_RGB888)
 			//	imgUC3 = Mat(imgQt.height(), imgQt.width(), CV_8UC3, (uchar*)imgQt.bits(), imgQt.bytesPerLine());
@@ -2874,7 +2874,7 @@ void DkViewPortContrast::setImage(QImage newImg) {
 
 			}
 			// The first element in the vector contains the gray scale 'average' of the 3 channels:
-			Mat grayMat;
+			cv::Mat grayMat;
 			cv::cvtColor(imgUC3, grayMat, CV_BGR2GRAY);
 			imgs[0] = QImage((const unsigned char*)grayMat.data, (int)grayMat.cols, (int)grayMat.rows, (int)grayMat.step,  QImage::Format_Indexed8);
 			imgs[0] = imgs[0].copy();
