@@ -85,7 +85,7 @@ class DkRCManagerThread;
 class DkTransferToolBar;
 class DkPluginManager;
 class DkAppManager;
-class DkImageContainerT;	// TODO: add include to suppress warning C4150
+class DkImageContainerT;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
 class DkBatchDialog;
