@@ -82,7 +82,7 @@
 
 #ifdef WITH_LIBRAW
 #include <libraw/libraw.h>
-#elif WIN32
+#elif defined(WIN32) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 

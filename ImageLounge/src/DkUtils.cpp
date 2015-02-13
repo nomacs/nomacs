@@ -50,15 +50,13 @@
 #include <QTranslator>
 #pragma warning(pop)		// no warnings from includes - end
 
-#ifdef Q_OS_WIN
-
+#if defined(WIN32) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
-//#include <wtypes.h>
-//#include <windows.h>
+#endif
 
+#ifdef WIN32
 #include "shlwapi.h"
 #pragma comment (lib, "shlwapi.lib")
-
 #endif
 
 int nmc::DkUtils::debugLevel = DK_MODULE;

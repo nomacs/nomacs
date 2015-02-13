@@ -34,7 +34,7 @@
 #include "DkWidgets.h"
 #include "DkThumbs.h"
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
 #endif
 
