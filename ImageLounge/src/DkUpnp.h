@@ -54,6 +54,9 @@
 #include <HUpnpAv/HSeekInfo>
 #include <HUpnpAv/HProtocolInfo>
 
+#ifdef QT_NO_DEBUG_OUTPUT
+#pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
+#endif
 
 namespace nmc {
 
