@@ -1418,17 +1418,17 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 		qDebug() << "import error: " << errorCode;
 
 	// Set up a byte-writing method (write-to-memory, in this case):
-//SHREE EDIT
 
-//	WebPMemoryWriter writer;
-//	WebPMemoryWriterInit(&writer);
-//	webImg.writer = WebPMemoryWrite;
-//	webImg.custom_ptr = &writer;
+
+	WebPMemoryWriter writer;
+	WebPMemoryWriterInit(&writer);
+	webImg.writer = WebPMemoryWrite;
+	webImg.custom_ptr = &writer;
 
 	int ok = WebPEncode(&config, &webImg);
-//	if (!ok || writer.size == 0) return false;
+	if (!ok || writer.size == 0) return false;
 
-//	ba = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char*>(writer.mem), (int)writer.size));	// does a deep copy
+	ba = QSharedPointer<QByteArray>(new QByteArray(reinterpret_cast<const char*>(writer.mem), (int)writer.size));	// does a deep copy
 	WebPPictureFree(&webImg);
 
 	return true;
