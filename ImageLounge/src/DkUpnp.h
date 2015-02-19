@@ -11,6 +11,7 @@
 
 #pragma once
 
+#pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
 #include <QFile>
 #include <QUrl>
@@ -53,6 +54,7 @@
 #include <HUpnpAv/HRendererConnection>
 #include <HUpnpAv/HSeekInfo>
 #include <HUpnpAv/HProtocolInfo>
+#pragma warning(pop)		// no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
 #pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
@@ -141,7 +143,7 @@ namespace nmc {
 		virtual qint32 doNext() { qDebug() << "doNext";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 		virtual qint32 doPrevious() { qDebug() << "doPrevious";return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 		virtual qint32 doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata=0);
-		virtual qint32 doSetNextResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata=0) { qDebug() << "doSetNextResource url:" << resourceUri;return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
+		virtual qint32 doSetNextResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject * = 0) { qDebug() << "doSetNextResource url:" << resourceUri;return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 		virtual qint32 doSelectPreset(const QString &presetName) { qDebug() << "doSelectPreset preset:" << presetName;return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;};
 	private slots:
 		void finished();

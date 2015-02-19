@@ -156,7 +156,7 @@ DkUpnpService::DkUpnpService() {
 	// do nothing
 }
 
-DkUpnpService* DkUpnpDeviceModelCreator::createService(const Herqq::Upnp::HServiceInfo& serviceInfo, const Herqq::Upnp::HDeviceInfo& deviceInfo) const {
+DkUpnpService* DkUpnpDeviceModelCreator::createService(const Herqq::Upnp::HServiceInfo& serviceInfo, const Herqq::Upnp::HDeviceInfo& /*deviceInfo*/) const {
 	qDebug() << "DkUpnpDeviceModelCreator: creating service: " << serviceInfo.serviceType().toString();
 	if (serviceInfo.serviceType().toString() == "urn:nomacs-org:service:nomacsService:1") {
 		return new DkUpnpService();
@@ -166,14 +166,14 @@ DkUpnpService* DkUpnpDeviceModelCreator::createService(const Herqq::Upnp::HServi
 }
 
 // DkUpnpService --------------------------------------------------------------------
-qint32 DkUpnpService::getTCPServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs) {
+qint32 DkUpnpService::getTCPServerURL(const Herqq::Upnp::HActionArguments& /*inArgs*/, Herqq::Upnp::HActionArguments* outArgs) {
 	int port = stateVariables().value("tcpServerPort")->value().toInt();
 	qDebug() << "DkUpnpService::getTCPServerURL sending port:" << port;
 	outArgs->setValue("tcpServerPort", port);
 	return Herqq::Upnp::UpnpSuccess;
 }
 
-qint32 DkUpnpService::getWhiteListServerURL(const Herqq::Upnp::HActionArguments& inArgs, Herqq::Upnp::HActionArguments* outArgs) {
+qint32 DkUpnpService::getWhiteListServerURL(const Herqq::Upnp::HActionArguments& /*inArgs*/, Herqq::Upnp::HActionArguments* outArgs) {
 	int port = stateVariables().value("whiteListServerPort")->value().toInt();
 	qDebug() << "DkUpnpService::getWhiteListServerURL sending port:" << port;
 	outArgs->setValue("whiteListServerPort", port);
@@ -325,7 +325,7 @@ void DkUpnpControlPoint::invokeComplete(Herqq::Upnp::HClientAction* clientAction
 	int port = arguments.get("tcpServerPort").value().toInt();
 	if (port > 0 ) {
 		qDebug() << "emitting newLANNomacsFound:" << address << " port:" << port;
-		quint16 quintPort = port;
+		quint16 quintPort = (quint16)port;
 		emit newLANNomacsFound(address, quintPort, "");
 		//QCoreApplication::sendPostedEvents();
 	}
@@ -342,7 +342,7 @@ void DkUpnpControlPoint::invokeComplete(Herqq::Upnp::HClientAction* clientAction
 		}
 		QHostAddress address = QHostAddress(url.host());
 		qDebug() << "emitting newRCNomacsFound:" << address << " port:" << port;
-		emit newRCNomacsFound(address, port, "");
+		emit newRCNomacsFound(address, (quint16)port, "");
 	}
 }
 
@@ -352,7 +352,7 @@ void DkUpnpControlPoint::rootDeviceOffline(Herqq::Upnp::HClientDevice* clientDev
 	controlPoint->removeRootDevice(clientDevice);
 }
 
-void DkUpnpControlPoint::tcpValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent &event) {
+void DkUpnpControlPoint::tcpValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent & /*event*/) {
 	qDebug() << "im tcp value changed";
 	QList<QUrl> locations = source->parentService()->parentDevice()->locations();
 	QUrl url;
@@ -369,14 +369,14 @@ void DkUpnpControlPoint::tcpValueChanged(const Herqq::Upnp::HClientStateVariable
 		return;
 	}
 
-	quint16 port = source->value().toInt();
+	quint16 port = (quint16)source->value().toInt();
 	if (port == 0)
 		return;
 	qDebug() << "emitting newLANNomacsFound:" << address << " port:" << port;
 	emit newLANNomacsFound(address, port, "");
 }
 
-void DkUpnpControlPoint::wlValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent &event) {
+void DkUpnpControlPoint::wlValueChanged(const Herqq::Upnp::HClientStateVariable *source, const Herqq::Upnp::HStateVariableEvent & /*event*/) {
 	qDebug() << "im wl value changed";
 	QList<QUrl> locations = source->parentService()->parentDevice()->locations();
 	QUrl url;
@@ -393,7 +393,7 @@ void DkUpnpControlPoint::wlValueChanged(const Herqq::Upnp::HClientStateVariable 
 		return;
 	}
 
-	quint16 port = source->value().toInt();
+	quint16 port = (quint16)source->value().toInt();
 	if (port == 0)
 		return;
 	qDebug() << "emitting newRCNomacsFound:" << address << " port:" << port;
@@ -414,7 +414,7 @@ bool DkUpnpControlPoint::isStarted() {
 }
 
 // DkUpnpRendererConnectionManager --------------------------------------------------------------------
-Herqq::Upnp::Av::HRendererConnection* DkUpnpRendererConnectionManager::doCreate(Herqq::Upnp::Av::HAbstractConnectionManagerService* service, Herqq::Upnp::Av::HConnectionInfo* cinfo) {
+Herqq::Upnp::Av::HRendererConnection* DkUpnpRendererConnectionManager::doCreate(Herqq::Upnp::Av::HAbstractConnectionManagerService* /*service*/, Herqq::Upnp::Av::HConnectionInfo* cinfo) {
 	QString contentFormat = cinfo->protocolInfo().contentFormat();
 	qDebug() << "content:" << contentFormat;
 	rendererConnection = new DkUpnpRendererConnection();
@@ -519,11 +519,11 @@ void DkUpnpRendererDeviceHost::stopDevicehost() {
 DkUpnpRendererConnection::DkUpnpRendererConnection() {
 }
 
-qint32 DkUpnpRendererConnection::doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject *cdsMetadata/* =0 */) {
+qint32 DkUpnpRendererConnection::doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject * /*cdsMetadata =0 */) {
 	qDebug() << "doSetResource url:" << resourceUri;
 	QNetworkRequest req(resourceUri);
 	curResource = accessManager.get(req);
-	bool ok = connect(curResource, SIGNAL(finished()), this, SLOT(finished()));
+	connect(curResource, SIGNAL(finished()), this, SLOT(finished()));
 	
 	return Herqq::Upnp::UpnpErrorCode::UpnpSuccess;
 }

@@ -127,8 +127,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
  **/ 
 DkImageLoader::~DkImageLoader() {
 
-	//delete dirWatcher;	// needed?
-
 }
 
 /**
@@ -140,8 +138,10 @@ DkImageLoader::~DkImageLoader() {
 void DkImageLoader::clearPath() {
 
 	// lastFileLoaded must exist
-	if (!currentImage.isNull() && currentImage->exists())
+	if (!currentImage.isNull() && currentImage->exists()) {
 		lastImageLoaded = currentImage;
+		images.clear();
+	}
 
 	currentImage.clear();
 }
@@ -674,6 +674,37 @@ bool DkImageLoader::unloadFile() {
 	}
 
 	return true;
+}
+
+/**
+ * Convenience function see @activate.
+ **/ 
+void DkImageLoader::deactivate() {
+
+	activate(false);
+}
+
+
+/**
+ * Activates or deactivates the loader.
+ * If activated, the directory is indexed & the current image is loaded.
+ * If deactivated, the image list & the current image are deleted which
+ * should save some memory. In addition, all signals are blocked.
+ * @param isActive if true, the loader is activated
+ **/ 
+void DkImageLoader::activate(bool isActive /* = true */) {
+
+	if (!isActive) {
+		// go to sleep - schlofand wöhlar ihr camölar
+		blockSignals(true);
+		clearPath();
+	}
+	else {
+		// wake up again
+		blockSignals(false);
+		setCurrentImage(lastImageLoaded);
+	}
+
 }
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {

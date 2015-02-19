@@ -43,8 +43,10 @@ namespace nmc {
 
 DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx) {
 
+	imageLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
+	imageLoader->setCurrentImage(imgC);
+
 	this->tabMode = tab_recent_files;
-	this->imgC = imgC;
 	this->tabIdx = idx;
 }
 
@@ -59,24 +61,24 @@ void DkTabInfo::loadSettings(const QSettings& settings) {
 	tabMode = settings.value("tabMode", tab_single_image).toInt();
 
 	if (file.exists())
-		imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(file));
+		imageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(file)));
 }
 
 void DkTabInfo::saveSettings(QSettings& settings) const {
 
-	if (imgC)
-		settings.setValue("tabFileInfo", imgC->file().absoluteFilePath());
+	if (imageLoader->getCurrentImage())
+		settings.setValue("tabFileInfo", imageLoader->getCurrentImage()->file().absoluteFilePath());
 	settings.setValue("tabMode", tabMode);
 }
 
 void DkTabInfo::setFileInfo(const QFileInfo& fileInfo) {
 
-	imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo));
+	imageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo)));
 }
 
 QFileInfo DkTabInfo::getFileInfo() const {
 
-	return (imgC) ? imgC->file() : QFileInfo();
+	return (imageLoader->getCurrentImage()) ? imageLoader->getCurrentImage()->file() : QFileInfo();
 }
 
 void DkTabInfo::setTabIdx(int tabIdx) {
@@ -91,26 +93,36 @@ int DkTabInfo::getTabIdx() const {
 
 void DkTabInfo::setImage(QSharedPointer<DkImageContainerT> imgC) {
 	
-	this->imgC = imgC;
+	imageLoader->setCurrentImage(imgC);
 	tabMode = tab_single_image;
+}
+
+void DkTabInfo::deactivate() {
+
+	activate(false);
+}
+
+void DkTabInfo::activate(bool isActive) {
+	
+	imageLoader->activate(isActive);
 }
 
 QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const {
 
-	return imgC;
+	return imageLoader->getCurrentImage();
 }
 
 QIcon DkTabInfo::getIcon() {
 	
 	QIcon icon;
 
-	if (!imgC)
+	if (!imageLoader->getCurrentImage())
 		return icon;
 
 	if (tabMode == tab_thumb_preview)
 		return QIcon(":/nomacs/img/thumbs-view.png");
 
-	QSharedPointer<DkThumbNailT> thumb = imgC->getThumb();
+	QSharedPointer<DkThumbNailT> thumb = imageLoader->getCurrentImage()->getThumb();
 
 	if (!thumb)
 		return icon;
@@ -129,6 +141,8 @@ QString DkTabInfo::getTabText() const {
 
 	if (tabMode == tab_thumb_preview)
 		return QObject::tr("Thumbnail Preview");
+
+	QSharedPointer<DkImageContainerT> imgC = imageLoader->getCurrentImage();
 
 	if (imgC) {
 
@@ -204,7 +218,7 @@ void DkCentralWidget::createLayout() {
 
 	recentFilesWidget = new DkRecentFilesWidget(viewWidget);
 	// TODO: read the desktop size here...
-	recentFilesWidget->setFixedSize(1920, 1080);	// TODO: this number will (hopefully : ) get old - bug for now WHXGA is enough
+	recentFilesWidget->setFixedSize(1920, 1080);	// TODO: this number will (hopefully : ) get old - but it is not enough for WHXGA
 	
 	// connections
 	connect(this, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));

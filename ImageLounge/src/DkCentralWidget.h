@@ -54,6 +54,7 @@ namespace nmc {
 
 // nomacs defines
 class DkImageContainerT;
+class DkImageLoader;
 
 class DkTabInfo {
 	
@@ -78,6 +79,9 @@ public:
 	QSharedPointer<DkImageContainerT> getImage() const;
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
 
+	void deactivate();
+	void activate(bool isActive = true);
+
 	int getTabIdx() const;
 	void setTabIdx(int idx);
 	
@@ -91,8 +95,7 @@ public:
 	void setMode(int mode);
 
 protected:
-
-	QSharedPointer<DkImageContainerT> imgC;
+	QSharedPointer<DkImageLoader> imageLoader;
 	int tabIdx;
 	int tabMode;
 };

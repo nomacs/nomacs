@@ -130,6 +130,8 @@ public:
 	bool loadZipArchive(QFileInfo zipFile);
 #endif
 	
+	void deactivate();
+	void activate(bool isActive = true);
 	bool hasImage() const;
 	bool isEdited() const;
 	int numFiles() const;

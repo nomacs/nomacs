@@ -308,7 +308,7 @@ protected:
 	// functions
 	void init();
 	void connectWidgets();
-
+	
 	QVector<QWidget*> widgets;
 	QStackedLayout* layout;
 	QWidget* lastActiveWidget;
@@ -398,6 +398,7 @@ public:
 
 	// getter
 	//DkImageLoader* getImageLoader();
+	void setImageLoader(QSharedPointer<DkImageLoader> newLoader);
 	DkControlWidget* getController();
 	bool isTestLoaded() { return testLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {
@@ -408,13 +409,9 @@ public:
 	QPoint mapToImage(const QPoint& windowPos) const;
 	
 	void applyPluginChanges();
-	//void setPluginImageWasApplied(bool pluginImageWasApplied) {
-	//	this->pluginImageWasApplied = pluginImageWasApplied;
-	//};
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-	//void windowTitleSignal(QFileInfo file, QSize s = QSize(), bool edited = false);
 	void sendNewFileSignal(qint16 op, QString filename = "");
 	void sendImageSignal(QImage img, QString title);
 	void statusInfoSignal(QString msg, int);
@@ -493,6 +490,8 @@ protected:
 	virtual bool event(QEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
 
+	void connectLoader(QSharedPointer<DkImageLoader> loader);
+
 	QFileInfo thumbFile;
 	bool thumbLoaded;
 	bool testLoaded;
@@ -524,7 +523,7 @@ protected:
 
 	QVBoxLayout* paintLayout;
 	DkControlWidget* controller;
-	DkImageLoader* loader;
+	QSharedPointer<DkImageLoader> loader;
 
 	QPoint currentPixelPos;
 	//bool pluginImageWasApplied;

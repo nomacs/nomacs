@@ -286,27 +286,6 @@ void DkControlWidget::connectWidgets() {
 	if (!viewport)
 		return;
 
-	// >DIR: TODO [19.2.2015 markus]
-	//if (loader) {
-	//	qDebug() << "loader slots connected";
-
-	//	qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
-
-	//	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), filePreview, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
-	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), filePreview, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
-	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataInfo, SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
-	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
-
-	//	connect(loader, SIGNAL(showInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
-	//	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
-	//	connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
-
-	//	connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
-
-	//	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), folderScroll, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
-	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), folderScroll, SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
-	//}
-
 	// thumbs widget
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
@@ -757,8 +736,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
-	loader = 0;
-	
 	skipImageTimer = new QTimer(this);
 	skipImageTimer->setSingleShot(true);
 	connect(skipImageTimer, SIGNAL(timeout()), this, SLOT(loadFullFile()));
@@ -780,32 +757,25 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	//no border
 	setMouseTracking (true);//receive mouse event everytime
 	
-	loader = new DkImageLoader();
-
 	paintLayout = new QVBoxLayout(this);
 	paintLayout->setContentsMargins(0,0,0,0);
 
 	controller = new DkControlWidget(this, flags);
 	//controller->show();
 
+	loader = QSharedPointer<DkImageLoader>(new DkImageLoader());
+	connectLoader(loader);
+
 	controller->getOverview()->setTransforms(&worldMatrix, &imgMatrix);
 	controller->getCropWidget()->setWorldTransform(&worldMatrix);
 	controller->getCropWidget()->setImageTransform(&imgMatrix);
 	controller->getCropWidget()->setImageRect(&imgViewRect);
 
-	connect(loader, SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::QueuedConnection);
-	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::QueuedConnection);
-	//connect(loader, SIGNAL(updateImageSignal()), this, SLOT(updateImage()), Qt::QueuedConnection);
-	//connect(loader, SIGNAL(fileNotLoadedSignal(QFileInfo)), this, SLOT(fileNotLoaded(QFileInfo)));
 	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
 	connect(&imgStorage, SIGNAL(infoSignal(QString)), this, SIGNAL(infoSignal(QString)));
 	
 	createShortcuts();
-
 	qDebug() << "viewer created...";
-
-	//// >DIR:  [7.4.2011 diem]
-	//trayIcon = new QSystemTrayIcon(this->windowIcon(), this);
 
 	// TODO:
 	// one could blur the canvas if a transparent GUI is present
@@ -823,9 +793,6 @@ DkViewPort::~DkViewPort() {
 }
 
 void DkViewPort::release() {
-
-	if (loader) delete loader;
-	loader = 0;
 }
 
 void DkViewPort::createShortcuts() {
@@ -860,7 +827,6 @@ void DkViewPort::createShortcuts() {
 	connect(shortcuts[sc_prev_sync], SIGNAL(activated()), this, SLOT(loadPrevFileFast()));
 
 	shortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
-	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), loader, SLOT(deleteFile()));
 
 	for (int idx = 0; idx < shortcuts.size(); idx++) {
 		// assign widget shortcuts to all of them
@@ -2222,6 +2188,44 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 //
 //	return loader;
 //}
+
+void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader) {
+	
+	if (loader)
+		loader->deactivate();
+
+	loader = newLoader;
+	connectLoader(newLoader);
+	loader->activate();
+}
+
+void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader) {
+
+	if (!loader)
+		return;
+
+	//connect(loader.data(), SIGNAL(imageLoadedSignal(QSharedPointer<DkImageContainerT>, bool)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>, bool)), Qt::QueuedConnection);
+	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(updateImage(QSharedPointer<DkImageContainerT>)), Qt::QueuedConnection);
+
+	qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
+
+	connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getFilePreview(), SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getFilePreview(), SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
+	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getMetaDataWidget(), SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
+	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
+
+	connect(loader.data(), SIGNAL(showInfoSignal(QString, int, int)), controller, SLOT(setInfo(QString, int, int)));
+	connect(loader.data(), SIGNAL(updateInfoSignalDelayed(QString, bool, int)), controller, SLOT(setInfoDelayed(QString, bool, int)));
+	connect(loader.data(), SIGNAL(updateSpinnerSignalDelayed(bool, int)), controller, SLOT(setSpinnerDelayed(bool, int)));
+
+	connect(loader.data(), SIGNAL(setPlayer(bool)), controller->getPlayer(), SLOT(play(bool)));
+
+	connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
+	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
+
+	// not sure if this is elegant?!
+	connect(shortcuts[sc_delete_silent], SIGNAL(activated()), loader.data(), SLOT(deleteFile()));
+}
 
 DkControlWidget* DkViewPort::getController() {
 	
