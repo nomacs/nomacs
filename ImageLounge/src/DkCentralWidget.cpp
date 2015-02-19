@@ -209,7 +209,9 @@ void DkCentralWidget::createLayout() {
 	// connections
 	connect(this, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(viewport, SIGNAL(addTabSignal(const QFileInfo&)), this, SLOT(addTab(const QFileInfo&)));
-	connect(viewport->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)));
+
+	// >DIR: TODO [19.2.2015 markus]
+	//connect(viewport->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)));
 
 	connect(tabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	connect(tabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
@@ -220,7 +222,9 @@ void DkCentralWidget::createLayout() {
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
-	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), viewport->getImageLoader(), SLOT(loadDir(QDir)));
+	
+	// >DIR: TODO [19.2.2015 markus]
+	//connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), viewport->getImageLoader(), SLOT(loadDir(QDir)));
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)));
 
 }
@@ -299,7 +303,9 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	}
 	else if (tabInfos.at(idx).getMode() == DkTabInfo::tab_recent_files) {
 		viewport->unloadImage();
-		viewport->getImageLoader()->clearPath();
+
+		// >DIR: TODO [19.2.2015 markus]
+		//viewport->getImageLoader()->clearPath();
 		viewport->setImage(QImage());
 		showRecentFiles(true);
 	}
@@ -465,18 +471,24 @@ void DkCentralWidget::showThumbView(bool show) {
 
 		// clear viewport
 		viewport->unloadImage();
-		viewport->getImageLoader()->clearPath();
+
+		// >DIR: TODO [19.2.2015 markus]
+		//viewport->getImageLoader()->clearPath();
 		viewport->setImage(QImage());
 
 		switchWidget(thumbs_widget);
-		DkImageLoader* loader = viewport->getImageLoader();
-		loader->setCurrentImage(tabInfo.getImage());
-		thumbScrollWidget->updateThumbs(loader->getImages());
-		//thumbScrollWidget->getThumbWidget()->updateLayout();
-		connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+
+		// >DIR: TODO [19.2.2015 markus]
+		//DkImageLoader* loader = viewport->getImageLoader();
+		//loader->setCurrentImage(tabInfo.getImage());
+		//thumbScrollWidget->updateThumbs(loader->getImages());
+		
+		// >DIR: TODO [19.2.2015 markus]
+		//connect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	}
 	else {
-		disconnect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+		// >DIR: TODO [19.2.2015 markus]
+		//disconnect(viewport->getImageLoader(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 		showViewPort(true);	// TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
 	}
 }
@@ -485,14 +497,16 @@ void DkCentralWidget::showViewPort(bool show /* = true */) {
 
 	if (show) {
 		QSharedPointer<DkImageContainerT> imgC = tabInfos[tabbar->currentIndex()].getImage();
-		if (imgC && imgC != viewport->getImageLoader()->getCurrentImage()) {
-			viewport->loadImage(imgC);
-		}
-		else if (imgC && viewport->getImage().isNull()) {
-			viewport->setImage(imgC->image());
-		}
-		else if (!imgC)
-			viewport->getImageLoader()->firstFile();
+
+		// >DIR: TODO [19.2.2015 markus]
+		//if (imgC && imgC != viewport->getImageLoader()->getCurrentImage()) {
+		//	viewport->loadImage(imgC);
+		//}
+		//else if (imgC && viewport->getImage().isNull()) {
+		//	viewport->setImage(imgC->image());
+		//}
+		//else if (!imgC)
+		//	viewport->getImageLoader()->firstFile();
 
 		switchWidget(widgets[viewport_widget]);
 	}
@@ -552,6 +566,26 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 int DkCentralWidget::currentViewMode() const {
 
 	return tabInfos[tabbar->currentIndex()].getMode();
+}
+
+QSharedPointer<DkImageContainerT> DkCentralWidget::getCurrentImage() const {
+
+	return tabInfos[tabbar->currentIndex()].getImage();
+}
+
+QFileInfo DkCentralWidget::getCurrentFile() const {
+
+	if (!getCurrentImage())
+		return QFileInfo();
+
+	return getCurrentImage()->file();
+}
+
+QDir DkCentralWidget::getCurrentDir() const {
+
+	// >DIR: TODO [19.2.2015 markus]
+	//return tabInfos[tabbar->currentIndex()]->getImageLoader()->getDir();
+	return QDir();
 }
 
 // DropEvents --------------------------------------------------------------------
@@ -661,15 +695,19 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
 		if (tabInfos[tabbar->currentIndex()].getMode() == DkTabInfo::tab_thumb_preview) {
 			// TODO: this event won't be called if the thumbs view is visible
-			QDir newDir = (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absolutePath();
-			viewport->getImageLoader()->loadDir(newDir);
+
+			// >DIR: TODO [19.2.2015 markus]
+			//QDir newDir = (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absolutePath();
+			//viewport->getImageLoader()->loadDir(newDir);
 		}
 		else {
 			// just accept image files
 			if (DkUtils::isValid(file) || file.isDir())
 				viewport->loadFile(file);
-			else if (url.isValid())
-				viewport->getImageLoader()->downloadFile(url);
+			else if (url.isValid()) {
+				// >DIR: TODO [19.2.2015 markus]
+				//viewport->getImageLoader()->downloadFile(url);
+			}
 			else
 				return false;
 		}

@@ -286,28 +286,26 @@ void DkControlWidget::connectWidgets() {
 	if (!viewport)
 		return;
 
-	DkImageLoader* loader = viewport->getImageLoader();
+	// >DIR: TODO [19.2.2015 markus]
+	//if (loader) {
+	//	qDebug() << "loader slots connected";
 
-	if (loader) {
-		qDebug() << "loader slots connected";
+	//	qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
 
-		qRegisterMetaType<QVector<QSharedPointer<DkImageContainerT> > >( "QVector<QSharedPointer<DkImageContainerT> >");
+	//	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), filePreview, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), filePreview, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
+	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataInfo, SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
+	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
 
-		connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), filePreview, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
-		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), filePreview, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
-		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataInfo, SLOT(setImageInfo(QSharedPointer<DkImageContainerT>)));
-		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setFileInfo(QSharedPointer<DkImageContainerT>)));
+	//	connect(loader, SIGNAL(showInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
+	//	connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
+	//	connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
 
-		connect(loader, SIGNAL(showInfoSignal(QString, int, int)), this, SLOT(setInfo(QString, int, int)));
-		connect(loader, SIGNAL(updateInfoSignalDelayed(QString, bool, int)), this, SLOT(setInfoDelayed(QString, bool, int)));
-		connect(loader, SIGNAL(updateSpinnerSignalDelayed(bool, int)), this, SLOT(setSpinnerDelayed(bool, int)));
+	//	connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
 
-		connect(loader, SIGNAL(setPlayer(bool)), player, SLOT(play(bool)));
-
-		connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), folderScroll, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
-		connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), folderScroll, SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
-
-	}
+	//	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), folderScroll, SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
+	//	connect(loader, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), folderScroll, SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
+	//}
 
 	// thumbs widget
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
@@ -2220,10 +2218,10 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 	//DkSettings::sync.syncMode = oldMode;
 }
 
-DkImageLoader* DkViewPort::getImageLoader() {
-
-	return loader;
-}
+//DkImageLoader* DkViewPort::getImageLoader() {
+//
+//	return loader;
+//}
 
 DkControlWidget* DkViewPort::getController() {
 	

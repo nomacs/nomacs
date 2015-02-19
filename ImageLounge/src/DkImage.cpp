@@ -35,6 +35,8 @@
 #include "DkBasicLoader.h"
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
+#include "DkMessageBox.h"
+#include "DkSaveDialog.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
@@ -65,6 +67,7 @@
 #include <QApplication>
 #include <QPluginLoader>
 #include <QFileDialog>
+#include <QPainter>
 #include <qmath.h>
 
 // quazip
@@ -875,6 +878,246 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 	return QFileInfo();
 }
 
+void DkImageLoader::saveFileWeb(QImage saveImg) {
+	
+	QString saveName;
+	QFileInfo saveFileInfo;
+
+	if (hasFile()) {
+		saveFileInfo = file();
+		saveName = saveFileInfo.fileName();
+
+		qDebug() << "save dir: " << getSaveDir();
+
+		if (getSaveDir() != saveFileInfo.absoluteDir())
+			saveFileInfo = QFileInfo(getSaveDir(), saveName);
+	}
+
+	bool imgHasAlpha = DkImage::alphaChannelUsed(saveImg);
+
+	QString suffix = imgHasAlpha ? ".png" : ".jpg";
+	QString saveFilterGui;
+
+	for (int idx = 0; idx < DkSettings::app.saveFilters.size(); idx++) {
+
+		if (DkSettings::app.saveFilters.at(idx).contains(suffix)) {
+			saveFilterGui = DkSettings::app.saveFilters.at(idx);
+			break;
+		}
+	}
+
+	if (saveFileInfo.exists())
+		saveFileInfo = QFileInfo(saveFileInfo.absolutePath(), saveFileInfo.baseName() + suffix);
+
+	QString fileName = QFileDialog::getSaveFileName(qApp->activeWindow(), tr("Save File %1").arg(saveName),
+		saveFileInfo.absoluteFilePath(), saveFilterGui);
+
+	if (fileName.isEmpty())
+		return;
+
+	DkCompressDialog* jpgDialog = new DkCompressDialog(qApp->activeWindow());
+	jpgDialog->setDialogMode(DkCompressDialog::web_dialog);
+	jpgDialog->imageHasAlpha(imgHasAlpha);
+	jpgDialog->setImage(&saveImg);
+
+	if (!jpgDialog->exec())
+		return;
+
+	float factor = jpgDialog->getResizeFactor();
+	if (factor != -1)
+		saveImg = DkImage::resizeImage(saveImg, QSize(), factor, DkImage::ipl_area);
+
+	saveFile(fileName, saveImg, suffix, jpgDialog->getCompression());
+
+	jpgDialog->deleteLater();
+}
+
+void DkImageLoader::saveUserFileAs(QImage saveImg, bool silent) {
+
+	QString selectedFilter;
+	QString saveName;
+	QFileInfo saveFile;
+
+	if (hasFile()) {
+		saveFile = file();
+		saveName = saveFile.fileName();
+
+		qDebug() << "save dir: " << getSaveDir();
+
+		if (getSaveDir() != saveFile.absoluteDir())
+			saveFile = QFileInfo(getSaveDir(), saveName);
+
+		int filterIdx = -1;
+
+		QStringList sF = DkSettings::app.saveFilters;
+		//qDebug() << sF;
+
+		QRegExp exp = QRegExp("*." + saveFile.suffix() + "*", Qt::CaseInsensitive);
+		exp.setPatternSyntax(QRegExp::Wildcard);
+
+		for (int idx = 0; idx < sF.size(); idx++) {
+
+			if (exp.exactMatch(sF.at(idx))) {
+				selectedFilter = sF.at(idx);
+				filterIdx = idx;
+				break;
+			}
+		}
+
+		if (filterIdx == -1)
+			saveName.remove("." + saveFile.suffix());
+	}
+
+	QString fileName;
+
+	int answer = QDialog::Rejected;
+
+	// don't ask the user if save was hit & the file format is supported for saving
+	if (silent && !selectedFilter.isEmpty() && isEdited()) {
+		fileName = file().absoluteFilePath();
+		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Overwrite File"), 
+			tr("Do you want to overwrite:\n%1?").arg(fileName), 
+			(QMessageBox::Yes | QMessageBox::No), qApp->activeWindow());
+		msg->setObjectName("overwriteDialog");
+
+		//msg->show();
+		answer = msg->exec();
+
+	}
+	if (answer == QDialog::Rejected || answer == QMessageBox::No) {
+		// note: basename removes the whole file name from the first dot...
+		QString savePath = (!selectedFilter.isEmpty()) ? saveFile.absoluteFilePath() : QFileInfo(saveFile.absoluteDir(), saveName).absoluteFilePath();
+
+		fileName = QFileDialog::getSaveFileName(qApp->activeWindow(), tr("Save File %1").arg(saveName),
+			savePath, DkSettings::app.saveFilters.join(";;"), &selectedFilter);
+	}
+
+
+	//qDebug() << "selected Filter: " << selectedFilter;
+
+
+	// uncomment if you want to use native Qt dialog -> slow! ------------------------------------	
+	//if (!saveDialog)
+	//	saveDialog = new QFileDialog(this);
+
+	//saveDialog->setWindowTitle(tr("Save Image"));
+	//saveDialog->setAcceptMode(QFileDialog::AcceptSave);
+	//saveDialog->setFilters(DkImageLoader::saveFilters);
+	//
+	//if (loader->hasFile()) {
+	//	saveDialog->selectNameFilter(loader->getCurrentFilter());	// select the current file filter
+	//	saveDialog->setDirectory(loader->getSaveDir());
+	//	saveDialog->selectFile(loader->getFile().fileName());
+	//}
+
+	//saveDialog->show();
+
+	//// show the dialog
+	//if(saveDialog->exec())
+	//	fileNames = saveDialog->selectedFiles();
+
+	//if (fileNames.empty())
+	//	return;
+	// Uncomment if you want to use native Qt dialog -> slow! ------------------------------------
+
+	if (fileName.isEmpty())
+		return;
+
+
+	QString ext = QFileInfo(fileName).suffix();
+
+	if (!ext.isEmpty() && !selectedFilter.contains(ext)) {
+
+		QStringList sF = DkSettings::app.saveFilters;
+
+		for (int idx = 0; idx < sF.size(); idx++) {
+
+			if (sF.at(idx).contains(ext)) {
+				selectedFilter = sF.at(idx);
+				break;
+			}
+		}
+	}
+
+
+	// TODO: if more than one file is opened -> open new threads
+	QFileInfo sFile = QFileInfo(fileName);
+	int compression = -1;	// default value
+
+	DkCompressDialog* jpgDialog = 0;
+
+	if (selectedFilter.contains(QRegExp("(jpg|jpeg|j2k|jp2|jpf|jpx)", Qt::CaseInsensitive))) {
+		
+		if (!jpgDialog)
+			jpgDialog = new DkCompressDialog(qApp->activeWindow());
+
+		if (selectedFilter.contains(QRegExp("(j2k|jp2|jpf|jpx)")))
+			jpgDialog->setDialogMode(DkCompressDialog::j2k_dialog);
+		else
+			jpgDialog->setDialogMode(DkCompressDialog::jpg_dialog);
+
+		jpgDialog->imageHasAlpha(saveImg.hasAlphaChannel());
+		//jpgDialog->show();
+		jpgDialog->setImage(&saveImg);
+
+
+		if (!jpgDialog->exec())
+			return;
+
+		compression = jpgDialog->getCompression();
+
+		if (saveImg.hasAlphaChannel()) {
+
+			QRect imgRect = QRect(QPoint(), saveImg.size());
+			QImage tmpImg = QImage(saveImg.size(), QImage::Format_RGB32);
+			QPainter painter(&tmpImg);
+			painter.fillRect(imgRect, jpgDialog->getBackgroundColor());
+			painter.drawImage(imgRect, saveImg, imgRect);
+
+			saveImg = tmpImg;
+		}
+
+		//	qDebug() << "returned: " << ret;
+	}
+
+	if (selectedFilter.contains("webp")) {
+
+		if (!jpgDialog)
+			jpgDialog = new DkCompressDialog(qApp->activeWindow());
+
+		jpgDialog->setDialogMode(DkCompressDialog::webp_dialog);
+
+		jpgDialog->setImage(&saveImg);
+
+		if (!jpgDialog->exec())
+			return;
+
+		compression = jpgDialog->getCompression();
+	}
+
+	DkTifDialog* tifDialog = 0;
+
+	//if (saveDialog->selectedNameFilter().contains("tif")) {
+	if (selectedFilter.contains("tif")) {
+
+		if (!tifDialog)
+			tifDialog = new DkTifDialog(qApp->activeWindow());
+
+		if (!tifDialog->exec())
+			return;
+
+		compression = tifDialog->getCompression();
+	}
+
+	this->saveFile(sFile, saveImg, selectedFilter, compression);
+
+	if (tifDialog)
+		tifDialog->deleteLater();
+	if (jpgDialog)
+		jpgDialog->deleteLater();
+
+}
+
 /**
  * Saves a file (not threaded!)
  * If the file already exists, it will be replaced.
@@ -1256,7 +1499,7 @@ void DkImageLoader::directoryChanged(const QString& path) {
  * Returns true if a file was specified.
  * @return bool true if a file name/path was specified
  **/ 
-bool DkImageLoader::hasFile() {
+bool DkImageLoader::hasFile() const {
 
 	return currentImage && currentImage->exists();
 }
@@ -1683,7 +1926,7 @@ void DkImageLoader::sort() {
  * Returns the directory where files are saved to.
  * @return QDir the directory where the user saved the last file to.
  **/ 
-QDir DkImageLoader::getSaveDir() {
+QDir DkImageLoader::getSaveDir() const {
 
 	qDebug() << "save dir: " << dir;
 

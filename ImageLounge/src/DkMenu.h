@@ -32,12 +32,16 @@
 #include <QPointer>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "DkNetwork.h"
+//#include "DkNetwork.h"
 
 // Qt includes
 class QTimer;
 
 namespace nmc {
+
+// nomacs defines
+class DkPeer;
+class DkManagerThread;
 
 /**
  * This class perfectly acts like a QMenuBar.

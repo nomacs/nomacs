@@ -397,7 +397,7 @@ public:
 #endif
 
 	// getter
-	DkImageLoader* getImageLoader();
+	//DkImageLoader* getImageLoader();
 	DkControlWidget* getController();
 	bool isTestLoaded() { return testLoaded; };
 	void setVisibleStatusbar(bool visibleStatusbar) {

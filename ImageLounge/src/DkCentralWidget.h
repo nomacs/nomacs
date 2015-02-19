@@ -91,6 +91,7 @@ public:
 	void setMode(int mode);
 
 protected:
+
 	QSharedPointer<DkImageContainerT> imgC;
 	int tabIdx;
 	int tabMode;
@@ -110,6 +111,7 @@ public:
 	DkViewPort* getViewPort() const;
 	DkThumbScrollWidget* getThumbScrollWidget() const;
 	DkRecentFilesWidget* getRecentFilesWidget() const;
+	QDir getCurrentDir() const;
 
 	void clearAllTabs();
 	void updateTabs();
@@ -117,6 +119,8 @@ public:
 	QVector<DkTabInfo> getTabs() const;
 	void saveSettings(bool clearTabs = false);
 	int currentViewMode() const;
+	QSharedPointer<DkImageContainerT> getCurrentImage() const;
+	QFileInfo getCurrentFile() const;
 
 signals:
 	void loadFileSignal(QFileInfo);

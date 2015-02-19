@@ -112,12 +112,12 @@ public:
 	void loadFileAt(int idx);
 	void clearPath();
 	QDir getDir() const;
-	QDir getSaveDir();
+	QDir getSaveDir() const;
 	void loadLastDir();
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
 	QSharedPointer<DkImageContainerT> setImage(QImage img, QFileInfo editFile = QFileInfo());
-	bool hasFile();
+	bool hasFile() const;
 	bool hasMovie();
 	QString fileName();
 	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
@@ -160,6 +160,8 @@ signals:
 public slots:
 	void changeFile(int skipIdx);
 	void directoryChanged(const QString& path = QString());
+	void saveFileWeb(QImage saveImg);
+	void saveUserFileAs(QImage saveImg, bool silent);
 	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
 	void load(const QFileInfo& file);
