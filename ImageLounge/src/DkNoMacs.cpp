@@ -4326,10 +4326,10 @@ void DkNoMacsSync::syncWith(qint16 port) {
 // slots
 void DkNoMacsSync::tcpConnectAll() {
 
-	QList<DkPeer> peers = localClient->getPeerList();
+	QList<DkPeer*> peers = localClient->getPeerList();
 
 	for (int idx = 0; idx < peers.size(); idx++)
-		emit synchronizeWithSignal(peers.at(idx).peerId);
+		emit synchronizeWithSignal(peers.at(idx)->peerId);
 
 }
 
@@ -4417,14 +4417,14 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 
 	bool couldConnect = false;
 
-	QList<DkPeer> peers = rcClient->getPeerList();
+	QList<DkPeer*> peers = rcClient->getPeerList();
 	qDebug() << "number of peers in list:" << peers.size();
 
 	// TODO: add gui if idx != 1
 	if (connect && !peers.isEmpty()) {
-		DkPeer peer = peers[0];
+		DkPeer* peer = peers[0];
 
-		emit synchronizeRemoteControl(peer.peerId);
+		emit synchronizeRemoteControl(peer->peerId);
 		
 		if (mode == DkSettings::sync_mode_remote_control)
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here

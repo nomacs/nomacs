@@ -229,7 +229,7 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 	if (!clientThread)
 		return;
 
-	QList<DkPeer> newPeers = clientThread->getPeerList();	// TODO: remove old style
+	QList<DkPeer*> newPeers = clientThread->getPeerList();	// TODO: remove old style
 
 	// just update if the peers have changed...
 	QMenu::clear();
@@ -260,9 +260,9 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 
 	for (int idx = 0; idx < newPeers.size(); idx++) {
 
-		DkPeer currentPeer = newPeers[idx];
+		DkPeer* currentPeer = newPeers[idx];
 
-		QString title = (noClientsFound) ? currentPeer.title : currentPeer.clientName % QString(": ") % currentPeer.title;
+		QString title = (noClientsFound) ? currentPeer->title : currentPeer->clientName % QString(": ") % currentPeer->title;
 
 		DkTcpAction* peerEntry = new DkTcpAction(currentPeer, title, this);
 		if (!noClientsFound) 
@@ -282,17 +282,17 @@ void DkTcpMenu::updatePeers() {	// find other clients on paint
 // DkTcpAction --------------------------------------------------------------------
 DkTcpAction::DkTcpAction() : QAction(0) {}
 
-DkTcpAction::DkTcpAction(DkPeer peer, QObject* parent) : QAction(parent) {
+DkTcpAction::DkTcpAction(DkPeer* peer, QObject* parent) : QAction(parent) {
 	this->peer = peer;
 	init();
 }
 
-DkTcpAction::DkTcpAction(DkPeer peer, const QString& text, QObject* parent) : QAction(text, parent) {
+DkTcpAction::DkTcpAction(DkPeer* peer, const QString& text, QObject* parent) : QAction(text, parent) {
 	this->peer = peer;
 	init();
 }
 
-DkTcpAction::DkTcpAction(DkPeer peer, const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent) {
+DkTcpAction::DkTcpAction(DkPeer* peer, const QIcon& icon, const QString& text, QObject* parent) : QAction(icon, text, parent) {
 	this->peer = peer;
 	init();
 }
@@ -303,7 +303,7 @@ void DkTcpAction::init() {
 	tcpActions = 0;
 	setObjectName("tcpAction");
 	setCheckable(true);
-	setChecked(peer.isSynchronized());
+	setChecked(peer->isSynchronized());
 	connect(this, SIGNAL(triggered(bool)), this, SLOT(synchronize(bool)));
 }
 
@@ -314,9 +314,9 @@ void DkTcpAction::setTcpActions(QList<QAction*>* actions) {
 void DkTcpAction::synchronize(bool checked) {
 
 	if (checked)
-		emit synchronizeWithSignal(peer.peerId);
+		emit synchronizeWithSignal(peer->peerId);
 	else
-		emit disableSynchronizeWithSignal(peer.peerId);
+		emit disableSynchronizeWithSignal(peer->peerId);
 
 	emit enableActions(checked);
 	qDebug() << "emitted a synchronize message...\n";

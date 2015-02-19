@@ -117,9 +117,9 @@ class DkTcpAction : public QAction {
 
 public:
 	DkTcpAction();
-	DkTcpAction(DkPeer peer, QObject* parent = 0);
-	DkTcpAction(DkPeer peer, const QString& text, QObject* parent = 0);
-	DkTcpAction(DkPeer peer, const QIcon& icon, const QString& text, QObject* parent);
+	DkTcpAction(DkPeer* peer, QObject* parent = 0);
+	DkTcpAction(DkPeer* peer, const QString& text, QObject* parent = 0);
+	DkTcpAction(DkPeer* peer, const QIcon& icon, const QString& text, QObject* parent);
 	~DkTcpAction();
 
 	void init();
@@ -134,7 +134,7 @@ public slots:
 	void synchronize(bool checked);
 
 protected:
-	DkPeer peer;
+	DkPeer* peer;
 	QList<QAction*>* tcpActions;
 
 };
@@ -164,7 +164,7 @@ protected slots:
 
 protected:
 
-	QList<DkPeer> peers;
+	QList<DkPeer*> peers;
 	QList<QAction*> clients;
 	QList<QAction*> tcpActions;
 	DkManagerThread* clientThread;

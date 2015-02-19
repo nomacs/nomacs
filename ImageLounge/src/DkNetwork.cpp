@@ -64,7 +64,7 @@ DkClientManager::DkClientManager(QString title, QObject* parent) : QThread(paren
 	newPeerId = 0;
 	this->currentTitle = title;
 	qRegisterMetaType<QList<quint16> >("QList<quint16>");
-	qRegisterMetaType<QList<DkPeer> >("QList<DkPeer>");
+	qRegisterMetaType<QList<DkPeer*> >("QList<DkPeer*>");
 }
 
 DkClientManager::~DkClientManager() {
@@ -77,7 +77,7 @@ void DkClientManager::connectionReadyForUse(quint16 peerServerPort, QString titl
 	//qDebug() << "connection ready for use" << connection->peerPort() << " with title:" << title << " peerServerPort:" << peerServerPort;
 
 	newPeerId++;
-	DkPeer peer = DkPeer(connection->peerPort(), newPeerId, connection->peerAddress(), peerServerPort, title, connection, false);
+	DkPeer* peer = new DkPeer(connection->peerPort(), newPeerId, connection->peerAddress(), peerServerPort, title, connection, false, "", false, this);
 	connection->setPeerId(newPeerId);
 	peerList.addPeer(peer); 
 
@@ -143,39 +143,39 @@ void DkClientManager::connectionShowStatusMessage(DkConnection*, QString msg) {
 void DkClientManager::sendTitle(QString newTitle) {
 	this->currentTitle = newTitle;
 
-	QList<DkPeer> peers = peerList.getPeerList();
-	foreach (DkPeer peer , peers) {
-		connect(this,SIGNAL(sendNewTitleMessage(QString)), peer.connection, SLOT(sendNewTitleMessage(QString)));
+	QList<DkPeer*> peers = peerList.getPeerList();
+	foreach (DkPeer* peer , peers) {
+		connect(this,SIGNAL(sendNewTitleMessage(QString)), peer->connection, SLOT(sendNewTitleMessage(QString)));
 		emit sendNewTitleMessage(newTitle);
-		disconnect(this,SIGNAL(sendNewTitleMessage(QString)), peer.connection, SLOT(sendNewTitleMessage(QString)));
+		disconnect(this,SIGNAL(sendNewTitleMessage(QString)), peer->connection, SLOT(sendNewTitleMessage(QString)));
 	}
 
 }
 
 void DkClientManager::sendTransform(QTransform transform, QTransform imgTransform, QPointF canvasSize) {
-	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer , synchronizedPeers) {
-		connect(this,SIGNAL(sendNewTransformMessage(QTransform, QTransform, QPointF)), peer.connection, SLOT(sendNewTransformMessage(QTransform, QTransform, QPointF)));
+	QList<DkPeer*> synchronizedPeers = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer , synchronizedPeers) {
+		connect(this,SIGNAL(sendNewTransformMessage(QTransform, QTransform, QPointF)), peer->connection, SLOT(sendNewTransformMessage(QTransform, QTransform, QPointF)));
 		emit sendNewTransformMessage(transform, imgTransform, canvasSize);
-		disconnect(this,SIGNAL(sendNewTransformMessage(QTransform, QTransform, QPointF)), peer.connection, SLOT(sendNewTransformMessage(QTransform, QTransform, QPointF)));
+		disconnect(this,SIGNAL(sendNewTransformMessage(QTransform, QTransform, QPointF)), peer->connection, SLOT(sendNewTransformMessage(QTransform, QTransform, QPointF)));
 	}
 }
 
 void DkClientManager::sendPosition(QRect newRect, bool overlaid) {
-	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer , synchronizedPeers) {
-		connect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer.connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+	QList<DkPeer*> synchronizedPeers = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer , synchronizedPeers) {
+		connect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
 		emit sendNewPositionMessage(newRect, true, overlaid);
-		disconnect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer.connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+		disconnect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
 	}
 }
 
 void DkClientManager::sendNewFile(qint16 op, QString filename) {
-	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer , synchronizedPeers) {
-		connect(this,SIGNAL(sendNewFileMessage(qint16, QString)), peer.connection, SLOT(sendNewFileMessage(qint16, QString)));
+	QList<DkPeer*> synchronizedPeers = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer , synchronizedPeers) {
+		connect(this,SIGNAL(sendNewFileMessage(qint16, QString)), peer->connection, SLOT(sendNewFileMessage(qint16, QString)));
 		emit sendNewFileMessage(op, filename);
-		disconnect(this,SIGNAL(sendNewFileMessage(qint16, QString)), peer.connection, SLOT(sendNewFileMessage(qint16, QString)));
+		disconnect(this,SIGNAL(sendNewFileMessage(qint16, QString)), peer->connection, SLOT(sendNewFileMessage(qint16, QString)));
 	}
 }
 
@@ -205,11 +205,11 @@ void DkClientManager::connectConnection(DkConnection* connection) {
 
 void DkClientManager::sendGoodByeToAll() {
 	
-	foreach (DkPeer peer, peerList.getPeerList()) {
+	foreach (DkPeer* peer, peerList.getPeerList()) {
 		
-		connect(this,SIGNAL(sendGoodByeMessage()), peer.connection, SLOT(sendNewGoodbyeMessage()));
+		connect(this,SIGNAL(sendGoodByeMessage()), peer->connection, SLOT(sendNewGoodbyeMessage()));
 		emit sendGoodByeMessage();
-		disconnect(this,SIGNAL(sendGoodByeMessage()), peer.connection, SLOT(sendNewGoodbyeMessage()));
+		disconnect(this,SIGNAL(sendGoodByeMessage()), peer->connection, SLOT(sendNewGoodbyeMessage()));
 	}
 }
 
@@ -222,7 +222,7 @@ DkLocalClientManager::DkLocalClientManager(QString title, QObject* parent ) : Dk
 	//QFuture<void> future = QtConcurrent::run(this, &DkLocalClientManager::searchForOtherClients);
 }
 
-QList<DkPeer> DkLocalClientManager::getPeerList() {
+QList<DkPeer*> DkLocalClientManager::getPeerList() {
 	return peerList.getPeerList();
 }
 
@@ -232,8 +232,10 @@ quint16 DkLocalClientManager::getServerPort() {
 
 void DkLocalClientManager::synchronizeWithServerPort(quint16 port) {
 	//qDebug() << "DkClientManager::synchronizeWithServerPort port:" << port;
-	DkPeer peer = peerList.getPeerByServerport(port);
-	synchronizeWith(peer.peerId);
+	DkPeer* peer = peerList.getPeerByServerport(port);
+	if (!peer)
+		return;
+	synchronizeWith(peer->peerId);
 }
 
 void DkLocalClientManager::searchForOtherClients() {
@@ -270,13 +272,13 @@ void DkLocalClientManager::connectionSynchronized(QList<quint16> synchronizedPee
 	for (int i=0; i < synchronizedPeersOfOtherClient.size(); i++) {
 		if (synchronizedPeersOfOtherClient[i]!=server->serverPort()) {
 			
-			DkPeer peer = peerList.getPeerByServerport(synchronizedPeersOfOtherClient[i]);
-			if (peer.isSynchronized())
+			DkPeer* peer = peerList.getPeerByServerport(synchronizedPeersOfOtherClient[i]);
+			if (!peer)
 				continue;
 
-			connect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+			connect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 			emit sendSynchronizeMessage();
-			disconnect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));				
+			disconnect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));				
 
 		}
 	}
@@ -301,34 +303,34 @@ void DkLocalClientManager::connectionStopSynchronized(DkConnection* connection) 
 
 void DkLocalClientManager::synchronizeWith(quint16 peerId) {
 	qDebug() << "DkLocalClientManager::synchronizeWith  peerId:" << peerId;
-	QList<DkPeer> peers = peerList.getPeerList();
+	QList<DkPeer*> peers = peerList.getPeerList();
 
 	peerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 
-	DkPeer peer = peerList.getPeerById(peerId);
-	if (peer.connection == 0) {
-		qDebug() << "TcpClient: synchronizeWith: connection is null";
+	DkPeer* peer = peerList.getPeerById(peerId);
+	if (peer == 0 || peer->connection == 0) {
+		qDebug() << "TcpClient: synchronizeWith: Peer is null or connection is null";
 		return;
 	}
 
 	//qDebug() << "synchronizing with: " << peerId;
 
 
-	connect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	connect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 	emit sendSynchronizeMessage();
-	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 
 }
 
 void DkLocalClientManager::stopSynchronizeWith(quint16) {
-	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
+	QList<DkPeer*> synchronizedPeers = peerList.getSynchronizedPeers();
 	
-	foreach (DkPeer peer , synchronizedPeers) {
-		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+	foreach (DkPeer* peer , synchronizedPeers) {
+		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
 		emit sendDisableSynchronizeMessage();
-		peerList.setSynchronized(peer.peerId, false);
-		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+		peerList.setSynchronized(peer->peerId, false);
+		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
 	}
 
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
@@ -352,11 +354,11 @@ void DkLocalClientManager::sendArrangeInstances(bool overlaid) {
 	emit receivedPosition(QRect(curX, curY, width, height), false, overlaid);
 	curX += width;
 	int count = 1;
-	for (DkPeer peer : peerList.getSynchronizedPeers()) {
+	for (DkPeer* peer : peerList.getSynchronizedPeers()) {
 		QRect newPosition = QRect(curX, curY, width, height);
-		connect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer.connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+		connect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
 		emit sendNewPositionMessage(newPosition, false, overlaid);
-		disconnect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer.connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
+		disconnect(this,SIGNAL(sendNewPositionMessage(QRect, bool, bool)), peer->connection, SLOT(sendNewPositionMessage(QRect, bool, bool)));
 		
 		count++;
 		if (count < instancesPerRow)
@@ -401,10 +403,10 @@ DkLANClientManager::DkLANClientManager(QString title, QObject* parent, quint16 u
 DkLANClientManager::~DkLANClientManager() {
 }
 
-QList<DkPeer> DkLANClientManager::getPeerList() {
-	QList<DkPeer> list;
-	foreach(DkPeer peer, peerList.getPeerList()) {
-		if (peer.showInMenu)
+QList<DkPeer*> DkLANClientManager::getPeerList() {
+	QList<DkPeer*> list;
+	foreach(DkPeer* peer, peerList.getPeerList()) {
+		if (peer->showInMenu)
 			list.push_back(peer);
 	}
 	return list;
@@ -445,7 +447,7 @@ void DkLANClientManager::connectionReadyForUse(quint16 peerServerPort, QString t
 	//qDebug() << "connection ready for use" << connection->peerPort() << " with title:" << title << " peerServerPort:" << peerServerPort << "  showInMenu: " << connection->getShowInMenu();
 
 	newPeerId++;
-	DkPeer peer = DkPeer(connection->peerPort(), newPeerId, connection->peerAddress(), peerServerPort, title, connection, false, connection->getClientName(), connection->getShowInMenu());
+	DkPeer* peer = new DkPeer(connection->peerPort(), newPeerId, connection->peerAddress(), peerServerPort, title, connection, false, connection->getClientName(), connection->getShowInMenu(), this);
 	connection->setPeerId(newPeerId);
 	peerList.addPeer(peer); 
 
@@ -462,10 +464,10 @@ void DkLANClientManager::connectionSentNewTitle(DkConnection* connection, QStrin
 	peerList.setTitle(connection->getPeerId(), newTitle);
 
 	// propagate this message
-	QList<DkPeer> syncPeerList = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer, syncPeerList) {
-		if (peer.peerId != connection->getPeerId())
-			peer.connection->sendNewTitleMessage(newTitle);
+	QList<DkPeer*> syncPeerList = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer, syncPeerList) {
+		if (peer->peerId != connection->getPeerId())
+			peer->connection->sendNewTitleMessage(newTitle);
 	}
 }
 
@@ -480,9 +482,12 @@ void DkLANClientManager::connectionSynchronized(QList<quint16> synchronizedPeers
 	// ignore synchronized clients of other connection
 
 	// add to last seen for whitelisting
-	DkSettings::sync.recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
-	DkSettings::sync.recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
-	qDebug() << "added " << peerList.getPeerById(connection->getPeerId()).clientName << " to recently seen list";
+	DkPeer* syncedPeer = peerList.getPeerById(connection->getPeerId());
+	if (!syncedPeer)
+		return;
+	DkSettings::sync.recentSyncNames << syncedPeer->clientName;
+	DkSettings::sync.recentLastSeen.insert(syncedPeer->clientName, QDateTime::currentDateTime());
+	qDebug() << "added " << syncedPeer->clientName << " to recently seen list";
 }
 
 void DkLANClientManager::connectionStopSynchronized(DkConnection* connection) {
@@ -502,17 +507,17 @@ void DkLANClientManager::synchronizeWith(quint16 peerId) {
 	//qDebug() << "DkClientManager::synchronizeWith  peerId:" << peerId;
 
 	if (server->isListening()) {
-		DkPeer newServer = peerList.getPeerById(peerId);
-		foreach (DkPeer peer, peerList.getSynchronizedPeers()) {
+		DkPeer* newServer = peerList.getPeerById(peerId);
+		foreach (DkPeer* peer, peerList.getSynchronizedPeers()) {
 
-			connect(this,SIGNAL(sendSwitchServerMessage(QHostAddress, quint16)), peer.connection, SLOT(sendSwitchServerMessage(QHostAddress, quint16)));
-			emit sendSwitchServerMessage(newServer.hostAddress, newServer.localServerPort);
-			disconnect(this,SIGNAL(sendSwitchServerMessage(QHostAddress, quint16)), peer.connection, SLOT(sendSwitchServerMessage(QHostAddress, quint16)));
-			peerList.setShowInMenu(peer.peerId, false);
+			connect(this,SIGNAL(sendSwitchServerMessage(QHostAddress, quint16)), peer->connection, SLOT(sendSwitchServerMessage(QHostAddress, quint16)));
+			emit sendSwitchServerMessage(newServer->hostAddress, newServer->localServerPort);
+			disconnect(this,SIGNAL(sendSwitchServerMessage(QHostAddress, quint16)), peer->connection, SLOT(sendSwitchServerMessage(QHostAddress, quint16)));
+			peerList.setShowInMenu(peer->peerId, false);
 
-			connect(this,SIGNAL(sendGoodByeMessage()), peer.connection, SLOT(sendNewGoodbyeMessage()));
+			connect(this,SIGNAL(sendGoodByeMessage()), peer->connection, SLOT(sendNewGoodbyeMessage()));
 			emit sendGoodByeMessage();
-			disconnect(this,SIGNAL(sendGoodByeMessage()), peer.connection, SLOT(sendNewGoodbyeMessage()));
+			disconnect(this,SIGNAL(sendGoodByeMessage()), peer->connection, SLOT(sendNewGoodbyeMessage()));
 
 			//connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
 			//emit sendDisableSynchronizeMessage();
@@ -527,16 +532,16 @@ void DkLANClientManager::synchronizeWith(quint16 peerId) {
 	peerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 
-	DkPeer peer = peerList.getPeerById(peerId);
-	if (peer.connection == 0) {
+	DkPeer* peer = peerList.getPeerById(peerId);
+	if (peer->connection == 0) {
 		qDebug() << "TcpClient: synchronizeWith: connection is null";
 		return;
 	}
 
 	qDebug() << "DkLANClientManager synchronizing with: " << peerId;
-	connect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	connect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 	emit sendSynchronizeMessage();
-	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 
 }
 
@@ -547,25 +552,25 @@ void DkLANClientManager::stopSynchronizeWith(quint16 peerId) {
 
 	// disconnect all
 	if (peerId == -1) {
-		QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
-		foreach (DkPeer peer , synchronizedPeers) {
-			connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+		QList<DkPeer*> synchronizedPeers = peerList.getSynchronizedPeers();
+		foreach (DkPeer* peer , synchronizedPeers) {
+			connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
 			emit sendDisableSynchronizeMessage();
-			peerList.setSynchronized(peer.peerId, false);
-			disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+			peerList.setSynchronized(peer->peerId, false);
+			disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
 		}
 	}
 	else {
-		DkPeer peer = peerList.getPeerById(peerId);
-		if (peer.connection == 0 ) {
-			qDebug() << "peer is null ...  are you sure this peerId exists?";
+		DkPeer* peer = peerList.getPeerById(peerId);
+		if (!peer || peer->connection == 0 ) {
+			qDebug() << "peer or its connection is null ...  are you sure this peerId exists?";
 			return;
 		}
-		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
 		emit sendDisableSynchronizeMessage();
-		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
 
-		peerList.setSynchronized(peer.peerId, false);
+		peerList.setSynchronized(peer->peerId, false);
 		if (server->isListening()) // i am server
 			peerList.setShowInMenu(peerId, false);
 	}
@@ -579,10 +584,10 @@ void DkLANClientManager::connectionReceivedTransformation(DkConnection* connecti
 	emit receivedTransformation(transform, imgTransform, canvasSize);
 
 	// propagate this message
-	QList<DkPeer> syncPeerList = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer, syncPeerList) {
-		if (peer.peerId != connection->getPeerId())
-			peer.connection->sendNewTransformMessage(transform, imgTransform, canvasSize);
+	QList<DkPeer*> syncPeerList = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer, syncPeerList) {
+		if (peer->peerId != connection->getPeerId())
+			peer->connection->sendNewTransformMessage(transform, imgTransform, canvasSize);
 	}
 
 }
@@ -591,10 +596,10 @@ void DkLANClientManager::connectionReceivedPosition(DkConnection* connection, QR
 	emit receivedPosition(rect, opacity, overlaid);
 
 	// propagate this message
-	QList<DkPeer> syncPeerList = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer, syncPeerList) {
-		if (peer.peerId != connection->getPeerId())
-			peer.connection->sendNewPositionMessage(rect, opacity, overlaid);
+	QList<DkPeer*> syncPeerList = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer, syncPeerList) {
+		if (peer->peerId != connection->getPeerId())
+			peer->connection->sendNewPositionMessage(rect, opacity, overlaid);
 	}
 
 }
@@ -603,10 +608,10 @@ void DkLANClientManager::connectionReceivedNewFile(DkConnection* connection, qin
 	emit receivedNewFile(op, filename);
 
 	// propagate this message
-	QList<DkPeer> syncPeerList = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer, syncPeerList) {
-		if (peer.peerId != connection->getPeerId())
-			peer.connection->sendNewFileMessage(op, filename);
+	QList<DkPeer*> syncPeerList = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer, syncPeerList) {
+		if (peer->peerId != connection->getPeerId())
+			peer->connection->sendNewFileMessage(op, filename);
 	}
 
 }
@@ -625,10 +630,10 @@ void DkLANClientManager::connectionReceivedNewImage(DkConnection* connection, QI
 	//qDebug() << "received title: " << title;
 
 	// propagate this message
-	QList<DkPeer> syncPeerList = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer, syncPeerList) {
-		if (peer.peerId != connection->getPeerId()) {
-			DkLANConnection* connection = dynamic_cast<DkLANConnection*>(peer.connection); // TODO???? darf ich das
+	QList<DkPeer*> syncPeerList = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer, syncPeerList) {
+		if (peer->peerId != connection->getPeerId()) {
+			DkLANConnection* connection = dynamic_cast<DkLANConnection*>(peer->connection); // TODO???? darf ich das
 			connect(this,SIGNAL(sendNewImageMessage(QImage, QString)), connection, SLOT(sendNewImageMessage(QImage, QString)));
 			emit sendNewImageMessage(image, title);
 			connect(this,SIGNAL(sendNewImageMessage(QImage, QString)), connection, SLOT(sendNewImageMessage(QImage, QString)));
@@ -642,14 +647,18 @@ void DkLANClientManager::connectionReceivedSwitchServer(DkConnection* connection
 	if (!peerList.alreadyConnectedTo(address, port))
 		return;
 
-	DkPeer peer = peerList.getPeerByAddress(address, port);
-	connect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	DkPeer* peer = peerList.getPeerByAddress(address, port);
+	if (!peer) {
+		qDebug() << "DkLANClientManager::connectionSwitchServer: other peer not known";
+		return;
+	}
+	connect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 	emit sendSynchronizeMessage();
-	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 
 	connect(this,SIGNAL(sendDisableSynchronizeMessage()), connection, SLOT(sendStopSynchronizeMessage()));
 	emit sendDisableSynchronizeMessage();
-	peerList.setSynchronized(peer.peerId, false);
+	peerList.setSynchronized(peer->peerId, false);
 	if (server->isListening()) // i am server
 		peerList.setShowInMenu(connection->getPeerId(), false);
 	disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), connection, SLOT(sendStopSynchronizeMessage()));
@@ -660,20 +669,20 @@ void DkLANClientManager::sendTitle(QString newTitle) {
 	this->currentTitle = newTitle;
 
 	if (server->isListening()) { // only send title if instance is server
-		QList<DkPeer> peers = peerList.getPeerList();
-		foreach (DkPeer peer , peers) {
-			connect(this,SIGNAL(sendNewTitleMessage(QString)), peer.connection, SLOT(sendNewTitleMessage(QString)));
+		QList<DkPeer*> peers = peerList.getPeerList();
+		foreach (DkPeer* peer , peers) {
+			connect(this,SIGNAL(sendNewTitleMessage(QString)), peer->connection, SLOT(sendNewTitleMessage(QString)));
 			emit sendNewTitleMessage(newTitle);
-			disconnect(this,SIGNAL(sendNewTitleMessage(QString)), peer.connection, SLOT(sendNewTitleMessage(QString)));
+			disconnect(this,SIGNAL(sendNewTitleMessage(QString)), peer->connection, SLOT(sendNewTitleMessage(QString)));
 		}
 	}
 }
 
 void DkLANClientManager::sendNewImage(QImage image, QString title) {
 	//qDebug() << "sending new image";
-	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer , synchronizedPeers) {
-		DkLANConnection* connection = dynamic_cast<DkLANConnection*>(peer.connection);
+	QList<DkPeer*> synchronizedPeers = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer , synchronizedPeers) {
+		DkLANConnection* connection = dynamic_cast<DkLANConnection*>(peer->connection);
 		connect(this,SIGNAL(sendNewUpcomingImageMessage(QString)), connection, SLOT(sendNewUpcomingImageMessage(QString)));
 		emit sendNewUpcomingImageMessage(title);
 		disconnect(this,SIGNAL(sendNewUpcomingImageMessage(QString)), connection, SLOT(sendNewUpcomingImageMessage(QString)));
@@ -687,8 +696,8 @@ void DkLANClientManager::sendNewImage(QImage image, QString title) {
 
 void DkLANClientManager::startServer(bool flag) {
 	if (!flag) {
-		foreach (DkPeer peer, peerList.getPeerList()) {
-			peer.connection->sendNewGoodbyeMessage();
+		foreach (DkPeer* peer, peerList.getPeerList()) {
+			peer->connection->sendNewGoodbyeMessage();
 		}
 	}
 	server->startServer(flag);
@@ -704,20 +713,20 @@ void DkLANClientManager::startServer(bool flag) {
 
 
 void DkLANClientManager::sendStopSynchronizationToAll() {
-	foreach (DkPeer peer, peerList.getSynchronizedPeers()) {
-		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));
+	foreach (DkPeer* peer, peerList.getSynchronizedPeers()) {
+		connect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));
 		emit sendDisableSynchronizeMessage();
-		peerList.setSynchronized(peer.peerId, false);
-		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer.connection, SLOT(sendStopSynchronizeMessage()));	
+		peerList.setSynchronized(peer->peerId, false);
+		disconnect(this,SIGNAL(sendDisableSynchronizeMessage()), peer->connection, SLOT(sendStopSynchronizeMessage()));	
 	}
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 	emit updateConnectionSignal(peerList.getActivePeers());	
 
 	// second for loop needed for disconnect message
 	qDebug() << "disconnecting connections:";
-	foreach (DkPeer peer, peerList.getSynchronizedPeers()) {
-		qDebug() << peer.connection->disconnect();
-		peerList.removePeer(peer.peerId);
+	foreach (DkPeer* peer, peerList.getSynchronizedPeers()) {
+		qDebug() << peer->connection->disconnect();
+		peerList.removePeer(peer->peerId);
 	}		
 }
 
@@ -743,10 +752,10 @@ DkRCClientManager::DkRCClientManager(QString title, QObject* parent /* = 0 */) :
 	qDebug() << "remote control network service startet";
 }
 
-QList<DkPeer> DkRCClientManager::getPeerList() {
-	QList<DkPeer> list;
-	foreach(DkPeer peer, peerList.getPeerList()) {
-		if (permissionList.value(peer.peerId) && peer.connection->connectionCreated)
+QList<DkPeer*> DkRCClientManager::getPeerList() {
+	QList<DkPeer*> list;
+	foreach(DkPeer* peer, peerList.getPeerList()) {
+		if (permissionList.value(peer->peerId) && peer->connection->connectionCreated)
 			list.push_back(peer);
 	}
 	return list;
@@ -759,22 +768,24 @@ void DkRCClientManager::synchronizeWith(quint16 peerId) {
 
 	qDebug() << "DkRCClientManager: peer list:" << __FILE__ << __FUNCTION__;
 	peerList.print();
-	DkPeer peer = peerList.getPeerById(peerId);
-	if (peer.connection == 0) {
+	DkPeer* peer = peerList.getPeerById(peerId);
+	if (peer->connection == 0) {
 		qDebug() << "TcpClient: synchronizeWith: connection is null";
 		return;
 	}
 
 	//qDebug() << "synchronizing with: " << peerId;
-	connect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	connect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 	emit sendSynchronizeMessage();
-	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer.connection, SLOT(sendStartSynchronizeMessage()));
+	disconnect(this,SIGNAL(sendSynchronizeMessage()), peer->connection, SLOT(sendStartSynchronizeMessage()));
 
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 }
 
 void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersOfOtherClient, DkConnection* connection) {
-	DkPeer peer = peerList.getPeerById(connection->getPeerId());
+	DkPeer* peer = peerList.getPeerById(connection->getPeerId());
+	if (!peer)
+		return;
 
 	//qDebug() << "Connection synchronized with:" << connection->getPeerPort();
 	peerList.setSynchronized(connection->getPeerId(), true);
@@ -785,8 +796,8 @@ void DkRCClientManager::connectionSynchronized(QList<quint16> synchronizedPeersO
 	// ignore synchronized clients of other connection
 
 	// add to last seen for whitelisting
-	DkSettings::sync.recentSyncNames << peerList.getPeerById(connection->getPeerId()).clientName;
-	DkSettings::sync.recentLastSeen.insert(peerList.getPeerById(connection->getPeerId()).clientName, QDateTime::currentDateTime());
+	DkSettings::sync.recentSyncNames << peer->clientName;
+	DkSettings::sync.recentLastSeen.insert(peer->clientName, QDateTime::currentDateTime());
 
 }
 
@@ -802,7 +813,7 @@ void DkRCClientManager::connectionReadyForUse(quint16 peerServerPort, QString ti
 	//qDebug() << "connection ready for use" << connection->peerPort() << " with title:" << title << " peerServerPort:" << peerServerPort << "  showInMenu: " << connection->getShowInMenu();
 
 	newPeerId++;
-	DkPeer peer = DkPeer(connection->peerPort(), newPeerId, connection->peerAddress(), peerServerPort, title, connection, false, connection->getClientName(), connection->getShowInMenu());
+	DkPeer* peer = new DkPeer(connection->peerPort(), newPeerId, connection->peerAddress(), peerServerPort, title, connection, false, connection->getClientName(), connection->getShowInMenu(), this);
 	connection->setPeerId(newPeerId);
 	peerList.addPeer(peer); 
 
@@ -842,9 +853,9 @@ void DkRCClientManager::connectConnection(DkConnection* connection) {
 void DkRCClientManager::sendNewMode(int mode) {
 	
 	//qDebug() << "sending new image";
-	QList<DkPeer> synchronizedPeers = peerList.getSynchronizedPeers();
-	foreach (DkPeer peer , synchronizedPeers) {
-		DkRCConnection* connection = dynamic_cast<DkRCConnection*>(peer.connection);
+	QList<DkPeer*> synchronizedPeers = peerList.getSynchronizedPeers();
+	foreach (DkPeer* peer , synchronizedPeers) {
+		DkRCConnection* connection = dynamic_cast<DkRCConnection*>(peer->connection);
 		connect(this,SIGNAL(sendNewModeMessage(int)), connection, SLOT(sendRCType(int)));
 		emit sendNewModeMessage(mode);
 		disconnect(this,SIGNAL(sendNewModeMessage(int)), connection, SLOT(sendRCType(int)));
@@ -1015,22 +1026,22 @@ bool DkLANUdpSocket::isLocalHostAddress(const QHostAddress &address) {
 
 // DkPeer --------------------------------------------------------------------
 
-DkPeer::DkPeer() {
-	this->peerId = 0;
-	this->localServerPort = 0;
-	this->hostAddress = QHostAddress();
-	this->peerServerPort= 0;
-	this->title = "empty Peer";
-	this->connection = 0;
-	this->sychronized = false;
-	this->timer = new QTimer(this);
-	this->hasChangedRecently = false;
-	this->clientName = "";
-	//connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
-	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
-}
+//DkPeer::DkPeer(QObject* parent) : QObject(parent) {
+//	this->peerId = 0;
+//	this->localServerPort = 0;
+//	this->hostAddress = QHostAddress();
+//	this->peerServerPort= 0;
+//	this->title = "empty Peer";
+//	this->connection = 0;
+//	this->sychronized = false;
+//	this->timer = new QTimer(this);
+//	this->hasChangedRecently = false;
+//	this->clientName = "";
+//	//connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
+//	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
+//}
 
-DkPeer::DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 peerServerPort, QString title, DkConnection* connection, bool sychronized, QString clientName, bool showInMenu) {
+DkPeer::DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 peerServerPort, QString title, DkConnection* connection, bool sychronized, QString clientName, bool showInMenu, QObject* parent) : QObject(parent) {
 	this->peerId = peerId;
 	this->localServerPort = port;
 	this->peerServerPort = peerServerPort;
@@ -1047,22 +1058,22 @@ DkPeer::DkPeer(quint16 port, quint16 peerId, QHostAddress hostAddress, quint16 p
 	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
 }
 
-DkPeer::DkPeer(const DkPeer& peer) {
-	this->peerId = peer.peerId;
-	this->localServerPort = peer.localServerPort;
-	this->peerServerPort = peer.peerServerPort;
-	this->sychronized = peer.sychronized;
-	this->title = peer.title;
-	this->connection = peer.connection;	// that's dangerous!!
-	this->hasChangedRecently = peer.hasChangedRecently;
-	this->timer = new QTimer(this); 
-	this->hostAddress = peer.hostAddress;
-	this->clientName = peer.clientName;
-	this->showInMenu = peer.showInMenu;
-
-	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
-	//connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
-}
+//DkPeer::DkPeer(const DkPeer& peer) {
+//	this->peerId = peer.peerId;
+//	this->localServerPort = peer.localServerPort;
+//	this->peerServerPort = peer.peerServerPort;
+//	this->sychronized = peer.sychronized;
+//	this->title = peer.title;
+//	this->connection = peer.connection;	// that's dangerous!!
+//	this->hasChangedRecently = peer.hasChangedRecently;
+//	this->timer = new QTimer(this); 
+//	this->hostAddress = peer.hostAddress;
+//	this->clientName = peer.clientName;
+//	this->showInMenu = peer.showInMenu;
+//
+//	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
+//	//connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
+//}
 
 DkPeer::~DkPeer() {
 
@@ -1086,23 +1097,23 @@ bool DkPeer::operator==(const DkPeer& peer) const {
 	return localServerPort == peer.localServerPort && sychronized == peer.sychronized && title == peer.title && hostAddress == peer.hostAddress;
 }
 
-DkPeer& DkPeer::operator=(const DkPeer& peer) {
-	this->peerId = peer.peerId;
-	this->localServerPort = peer.localServerPort;
-	this->peerServerPort = peer.peerServerPort;
-	this->sychronized = peer.sychronized;
-	this->title = peer.title;
-	this->connection = peer.connection;
-	this->hasChangedRecently = peer.hasChangedRecently;
-	this->timer = peer.timer; 
-	this->hostAddress = peer.hostAddress;
-	this->clientName = peer.clientName;
-	this->showInMenu = peer.showInMenu;
-
-	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
-
-	return *this;
-}
+//DkPeer& DkPeer::operator=(const DkPeer& peer) {
+//	this->peerId = peer.peerId;
+//	this->localServerPort = peer.localServerPort;
+//	this->peerServerPort = peer.peerServerPort;
+//	this->sychronized = peer.sychronized;
+//	this->title = peer.title;
+//	this->connection = peer.connection;
+//	this->hasChangedRecently = peer.hasChangedRecently;
+//	this->timer = peer.timer; 
+//	this->hostAddress = peer.hostAddress;
+//	this->clientName = peer.clientName;
+//	this->showInMenu = peer.showInMenu;
+//
+//	connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()), Qt::UniqueConnection);
+//
+//	return *this;
+//}
 
 
 
@@ -1111,12 +1122,12 @@ DkPeerList::DkPeerList() {
 	// do nothing
 }
 
-bool DkPeerList::addPeer(DkPeer peer) {
+bool DkPeerList::addPeer(DkPeer* peer) {
 	
-	if (peerList.contains(peer.peerId))
+	if (peerList.contains(peer->peerId))
 		return false;
 	else {
-		peerList.insert(peer.peerId, peer);
+		peerList.insert(peer->peerId, peer);
 		return true;
 	}
 }
@@ -1134,9 +1145,9 @@ bool DkPeerList::setSynchronized(quint16 peerId, bool synchronized) {
 		
 	if (!peerList.contains(peerId))
 		return false;
-	DkPeer peer = peerList.value(peerId);
-	peer.setSynchronized(synchronized);
-	peerList.replace(peerId, peer);
+	DkPeer* peer = peerList.value(peerId);
+	peer->setSynchronized(synchronized);
+	//peerList.replace(peerId, peer);
 
 	return true;
 }
@@ -1144,9 +1155,9 @@ bool DkPeerList::setSynchronized(quint16 peerId, bool synchronized) {
 bool DkPeerList::setTitle(quint16 peerId, QString title) {
 	if (!peerList.contains(peerId))
 		return false;
-	DkPeer peer = peerList.value(peerId);
-	peer.title = title;
-	peerList.replace(peerId, peer);
+	DkPeer* peer = peerList.value(peerId);
+	peer->title = title;
+	//peerList.replace(peerId, peer);
 
 	return true;
 }
@@ -1154,76 +1165,76 @@ bool DkPeerList::setTitle(quint16 peerId, QString title) {
 bool DkPeerList::setShowInMenu(quint16 peerId, bool showInMenu) {
 	if (!peerList.contains(peerId))
 		return false;
-	DkPeer peer = peerList.value(peerId);
-	peer.showInMenu = showInMenu;
-	peerList.replace(peerId, peer);
+	DkPeer* peer = peerList.value(peerId);
+	peer->showInMenu = showInMenu;
+	//peerList.replace(peerId, peer);
 
 	return true;
 }
 
-QList<DkPeer> DkPeerList::getSynchronizedPeers() {
-	QList<DkPeer> sychronizedPeers;
-	foreach(DkPeer peer, peerList) {
-		if (peer.isSynchronized())
+QList<DkPeer*> DkPeerList::getSynchronizedPeers() {
+	QList<DkPeer*> sychronizedPeers;
+	foreach(DkPeer* peer, peerList) {
+		if (peer->isSynchronized())
 			sychronizedPeers.push_back(peer);
 	}
 	return sychronizedPeers;
 }
 
-QList<DkPeer> DkPeerList::getPeerList() {
+QList<DkPeer*> DkPeerList::getPeerList() {
 	return peerList.values();
 }
 
 QList<quint16> DkPeerList::getSynchronizedPeerServerPorts() {
 	QList<quint16> sychronizedPeerServerPorts;
-	foreach(DkPeer peer, peerList) {
-		if (peer.isSynchronized())
-			sychronizedPeerServerPorts.push_back(peer.peerServerPort);
+	foreach(DkPeer* peer, peerList) {
+		if (peer->isSynchronized())
+			sychronizedPeerServerPorts.push_back(peer->peerServerPort);
 	}
 	return sychronizedPeerServerPorts;
 }
 
-QList<DkPeer> DkPeerList::getActivePeers() {
-	QList<DkPeer> activePeers;
-	foreach(DkPeer peer, peerList) {
-		if (peer.isActive())
+QList<DkPeer*> DkPeerList::getActivePeers() {
+	QList<DkPeer*> activePeers;
+	foreach(DkPeer* peer, peerList) {
+		if (peer->isActive())
 			activePeers.push_back(peer);
 	}
 	return activePeers;
 }
 
-DkPeer DkPeerList::getPeerByServerport(quint16 port) {
-	foreach (DkPeer peer, peerList) {
-		if (peer.peerServerPort == port)
+DkPeer* DkPeerList::getPeerByServerport(quint16 port) {
+	foreach (DkPeer* peer, peerList) {
+		if (peer->peerServerPort == port)
 			return peer;
 	}
-	return DkPeer();
+	return 0;
 }
 
 bool DkPeerList::alreadyConnectedTo(QHostAddress address, quint16 port) {
-	foreach (DkPeer peer, peerList) {
-		if (peer.hostAddress == address && peer.localServerPort == port ) // TODO: wieso localserver port ... aber es funkt
+	foreach (DkPeer* peer, peerList) {
+		if (peer->hostAddress == address && peer->localServerPort == port ) // TODO: wieso localserver port ... aber es funkt
 			return true;
 	}
 	return false;
 }
 
-DkPeer DkPeerList::getPeerById(quint16 id) {
-	return peerList.value(id, DkPeer());
+DkPeer* DkPeerList::getPeerById(quint16 id) {
+	return peerList.value(id, 0);
 }
 
-DkPeer DkPeerList::getPeerByAddress(QHostAddress address, quint16 port) {
-	foreach (DkPeer peer, peerList) {
-		if (peer.hostAddress == address && peer.localServerPort == port)
+DkPeer* DkPeerList::getPeerByAddress(QHostAddress address, quint16 port) {
+	foreach (DkPeer* peer, peerList) {
+		if (peer->hostAddress == address && peer->localServerPort == port)
 			return peer;
 	}
-	return DkPeer(); // can not happen
+	return 0; // should not happen
 }
 
 void DkPeerList::print() {
-	foreach (DkPeer peer, peerList) {
-		qDebug() << peer.peerId << 	" " << peer.clientName << " " << peer.hostAddress << " serverPort:" << peer.peerServerPort << 
-			" localPort:" << peer.localServerPort << " " << peer.title << " sync:" << peer.isSynchronized() << " menu:" << peer.showInMenu << " connection:" << peer.connection;
+	foreach (DkPeer* peer, peerList) {
+		qDebug() << peer->peerId << 	" " << peer->clientName << " " << peer->hostAddress << " serverPort:" << peer->peerServerPort << 
+			" localPort:" << peer->localServerPort << " " << peer->title << " sync:" << peer->isSynchronized() << " menu:" << peer->showInMenu << " connection:" << peer->connection;
 	}
 }
 
@@ -1526,7 +1537,7 @@ void DkManagerThread::connectClient() {
 	connect(parent, SIGNAL(sendTitleSignal(QString)), clientManager, SLOT(sendTitle(QString)));
 	connect(vp, SIGNAL(sendNewFileSignal(qint16, QString)), clientManager, SLOT(sendNewFile(qint16, QString)));
 	connect(clientManager, SIGNAL(receivedNewFile(qint16, QString)), vp, SLOT(tcpLoadFile(qint16, QString)));
-	connect(clientManager, SIGNAL(updateConnectionSignal(QList<DkPeer>)), vp, SLOT(tcpShowConnections(QList<DkPeer>)));
+	connect(clientManager, SIGNAL(updateConnectionSignal(QList<DkPeer*>)), vp, SLOT(tcpShowConnections(QList<DkPeer*>)));
 
 	connect(clientManager, SIGNAL(receivedTransformation(QTransform, QTransform, QPointF)), vp, SLOT(tcpSetTransforms(QTransform, QTransform, QPointF)));
 	connect(clientManager, SIGNAL(receivedPosition(QRect, bool, bool)), parent, SLOT(tcpSetWindowRect(QRect, bool, bool)));

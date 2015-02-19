@@ -1282,33 +1282,33 @@ void DkViewPort::tcpForceSynchronize() {
 	DkSettings::sync.syncMode = oldMode;
 }
 
-void DkViewPort::tcpShowConnections(QList<DkPeer> peers) {
+void DkViewPort::tcpShowConnections(QList<DkPeer*> peers) {
 
 	QString newPeers;
 
 	for (int idx = 0; idx < peers.size(); idx++) {
 		
-		DkPeer cp = peers.at(idx);
+		DkPeer* cp = peers.at(idx);
 
-		if (cp.isSynchronized() && newPeers.isEmpty()) {
+		if (cp->isSynchronized() && newPeers.isEmpty()) {
 			newPeers = tr("connected with: ");
-			emit newClientConnectedSignal(true, cp.isLocal());
+			emit newClientConnectedSignal(true, cp->isLocal());
 		}
 		else if (newPeers.isEmpty()) {
 			newPeers = tr("disconnected with: ");
-			emit newClientConnectedSignal(false, cp.isLocal());
+			emit newClientConnectedSignal(false, cp->isLocal());
 		}
 
-		qDebug() << "cp address..." << cp.hostAddress;
+		qDebug() << "cp address..." << cp->hostAddress;
 
 		newPeers.append("\n\t");
 
-		if (!cp.clientName.isEmpty())
-			newPeers.append(cp.clientName);
-		if (!cp.clientName.isEmpty() && !cp.title.isEmpty())
+		if (!cp->clientName.isEmpty())
+			newPeers.append(cp->clientName);
+		if (!cp->clientName.isEmpty() && !cp->title.isEmpty())
 			newPeers.append(": ");
-		if (!cp.title.isEmpty())
-			newPeers.append(cp.title);
+		if (!cp->title.isEmpty())
+			newPeers.append(cp->title);
 	}
 
 	controller->setInfo(newPeers);
