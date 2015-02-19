@@ -104,6 +104,7 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 	sliding = false;
 
 	setMouseTracking(true);
+	mouseDown = false;	// needed to prevent recursive signals with loader
 
 	// apply style
 	QVector<QColor> dummy;
@@ -214,6 +215,9 @@ void DkFolderScrollBar::colorUpdated() {
 
 void DkFolderScrollBar::updateFile(QSharedPointer<DkImageContainerT> imgC) {
 	
+	if (mouseDown)
+		return;
+
 	if (!sliding)
 		cImg = imgC;
 
@@ -337,11 +341,13 @@ void DkFolderScrollBar::mouseMoveEvent(QMouseEvent *event) {
 
 void DkFolderScrollBar::mousePressEvent(QMouseEvent *event) {
 
+	mouseDown = true;
 	sliding = handle->geometry().contains(event->pos());
 }
 
 void DkFolderScrollBar::mouseReleaseEvent(QMouseEvent *event) {
 
+	mouseDown = false;
 	int offset = (handle->width() == minHandleWidth) ? handle->width() : 0;
 	setValue(qRound((float)(event->pos().x()-handle->width()*0.5)/(width()-offset)*maximum()));
 	sliding = false;
@@ -624,6 +630,14 @@ void DkExplorer::createLayout() {
 	fileTree->header()->setSortIndicator(0, Qt::AscendingOrder);
 
 	setWidget(fileTree);
+}
+
+void DkExplorer::setCurrentImage(QSharedPointer<DkImageContainerT> img) {
+
+	if (!img)
+		return;
+
+	setCurrentPath(img->file());
 }
 
 void DkExplorer::setCurrentPath(QFileInfo fileInfo) {

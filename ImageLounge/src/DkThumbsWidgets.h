@@ -305,6 +305,7 @@ public:
 
 	void addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle = "");
 
+	void clear();
 
 public slots:
 	virtual void setVisible(bool visible);

@@ -126,7 +126,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
  * Default destructor.
  **/ 
 DkImageLoader::~DkImageLoader() {
-
+	qDebug() << "loader released...";
 }
 
 /**
@@ -699,7 +699,7 @@ void DkImageLoader::activate(bool isActive /* = true */) {
 		blockSignals(true);
 		clearPath();
 	}
-	else {
+	else if (!currentImage) {
 		// wake up again
 		blockSignals(false);
 		setCurrentImage(lastImageLoaded);
@@ -837,13 +837,14 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	QApplication::sendPostedEvents();	// force an event post here
 
-	if (currentImage->isFileDownloaded())
+	if (currentImage && currentImage->isFileDownloaded())
 		saveTempFile(currentImage->image());
 
 	updateCacher(currentImage);
 	updateHistory();
 
-	emit imageHasGPSSignal(DkMetaDataHelper::getInstance().hasGPS(currentImage->getMetaData()));
+	if (currentImage)
+		emit imageHasGPSSignal(DkMetaDataHelper::getInstance().hasGPS(currentImage->getMetaData()));
 }
 
 void DkImageLoader::downloadFile(const QUrl& url) {
@@ -1163,7 +1164,7 @@ void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter,
 	setCurrentImage(imgC);
 
 	if (saveImg.isNull() && (!currentImage || !currentImage->hasImage()))
-		emit errorDialogSignal(tr("Sorry, I cannot save an empty image..."));	// info here?
+		emit showInfoSignal(tr("Sorry, I cannot save an empty image..."));
 
 	QString filePath = file.absoluteFilePath();
 
@@ -1678,6 +1679,17 @@ int DkImageLoader::getPrevFolderIdx(int folderIdx) {
 	}
 
 	return prevIdx;
+}
+
+void DkImageLoader::errorDialog(const QString& msg) const {
+
+	QMessageBox errorDialog(qApp->activeWindow());
+	errorDialog.setWindowTitle(tr("Error"));
+	errorDialog.setIcon(QMessageBox::Critical);
+	errorDialog.setText(msg);
+	errorDialog.show();
+
+	errorDialog.exec();
 }
 
 void DkImageLoader::updateCacher(QSharedPointer<DkImageContainerT> imgC) {

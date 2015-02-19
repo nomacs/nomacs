@@ -1648,6 +1648,11 @@ void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT>
 	thumbsScene->updateThumbs(thumbs);
 }
 
+void DkThumbScrollWidget::clear() {
+
+	thumbsScene->updateThumbs(QVector<QSharedPointer<DkImageContainerT> > ());
+}
+
 void DkThumbScrollWidget::setDir(QDir dir) {
 
 	if (isVisible())

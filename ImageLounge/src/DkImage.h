@@ -146,7 +146,6 @@ signals:
 	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
 	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
 	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false, QString attr = QString());
-	void newErrorDialog(QString msg, QString title = "Error");
 	void fileNotLoadedSignal(QFileInfo file);
 	void setPlayer(bool play);
 	void updateFileWatcherSignal(QFileInfo file);
@@ -155,7 +154,6 @@ signals:
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image);
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
-	void errorDialogSignal(const QString&);
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
 	void imageHasGPSSignal(bool hasGPS);
 
@@ -174,6 +172,8 @@ public slots:
 	QStringList getFolderFilters();
 	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
 	bool loadDir(QDir newDir, bool scanRecursive = true);
+	void errorDialog(const QString& msg) const;
+
 
 	// new slots
 	void imageLoaded(bool loaded = false);

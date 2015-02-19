@@ -350,6 +350,7 @@ protected:
 	bool blocked;
 	bool hiding;
 	bool showing;
+	bool mouseDown;
 
 	QGraphicsOpacityEffect* opacityEffect;
 	QBitArray* displaySettingsBits;
@@ -417,6 +418,7 @@ public:
 	DkFileSystemModel* getModel() { return fileModel; };
 
 public slots:
+	void setCurrentImage(QSharedPointer<DkImageContainerT> img);
 	void setCurrentPath(QFileInfo fileInfo);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);

@@ -56,8 +56,9 @@ namespace nmc {
 class DkImageContainerT;
 class DkImageLoader;
 
-class DkTabInfo {
-	
+class DkTabInfo : public QObject {
+	Q_OBJECT
+
 public:
 
 	enum {
@@ -69,7 +70,8 @@ public:
 		tab_end
 	};
 
-	DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int idx = -1);
+	DkTabInfo(const QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int idx = -1, QObject* parent = 0);
+	~DkTabInfo();
 
 	bool operator==(const DkTabInfo& o) const;
 
@@ -78,6 +80,8 @@ public:
 
 	QSharedPointer<DkImageContainerT> getImage() const;
 	void setImage(QSharedPointer<DkImageContainerT> imgC);
+
+	QSharedPointer<DkImageLoader> getImageLoader() const;
 
 	void deactivate();
 	void activate(bool isActive = true);
@@ -118,16 +122,19 @@ public:
 
 	void clearAllTabs();
 	void updateTabs();
-	void updateTab(DkTabInfo& tabInfo);
-	QVector<DkTabInfo> getTabs() const;
+	void updateTab(QSharedPointer<DkTabInfo> tabInfo);
+	QVector<QSharedPointer<DkTabInfo> > getTabs() const;
 	void saveSettings(bool clearTabs = false);
 	int currentViewMode() const;
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
 	QFileInfo getCurrentFile() const;
+	QSharedPointer<DkImageLoader> getCurrentImageLoader() const;
 
 signals:
 	void loadFileSignal(QFileInfo);
 	void statusInfoSignal(QString, int);
+	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>);
+	void imageHasGPSSignal(bool);
 
 public slots:
 	void imageLoaded(QSharedPointer<DkImageContainerT> img);
@@ -136,7 +143,7 @@ public slots:
 	void tabMoved(int from, int to);
 	void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1);
 	void addTab(const QFileInfo& fileInfo, int idx = -1);
-	void addTab(const DkTabInfo& tabInfo);
+	void addTab(const QSharedPointer<DkTabInfo> tabInfo);
 	void removeTab(int tabIdx = -1);
 	void nextTab() const;
 	void previousTab() const;
@@ -145,6 +152,7 @@ public slots:
 	void showRecentFiles(bool show = true);
 	void showTabs(bool show = true);
 	void pasteImage();
+	void loadFile(const QFileInfo& fileInfo);
 
 protected:
 	DkViewPort* viewport;
@@ -152,7 +160,7 @@ protected:
 	DkRecentFilesWidget* recentFilesWidget;
 
 	QTabBar* tabbar;
-	QVector<DkTabInfo> tabInfos;
+	QVector<QSharedPointer<DkTabInfo>> tabInfos;
 
 	QVector<QWidget*> widgets;
 	QStackedLayout* viewLayout;
@@ -165,6 +173,7 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 	bool loadFromMime(const QMimeData* mimeData);
+	void updateLoader(QSharedPointer<DkImageLoader> loader) const;
 
 	enum {
 		viewport_widget,

@@ -254,11 +254,9 @@ void DkNoMacs::init() {
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
 	// connections to the image loader
-	// >DIR: TODO [19.2.2015 markus]
 	//connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
-	//connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
-	//connect(viewport()->getImageLoader(), SIGNAL(imageHasGPSSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
-	//connect(viewport()->getImageLoader(), SIGNAL(errorDialogSignal(const QString&)), this, SLOT(errorDialog(const QString&)));
+	connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
+	connect(getTabWidget(), SIGNAL(imageHasGPSSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 
 	connect(viewport()->getController()->getCropWidget(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	connect(viewport(), SIGNAL(movieLoadedSignal(bool)), this, SLOT(enableMovieActions(bool)));
@@ -2025,18 +2023,17 @@ void DkNoMacs::setRecursiveScan(bool recursive) {
 
 	DkSettings::global.scanSubFolders = recursive;
 
-	// >DIR: TODO [19.2.2015 markus]
-	//DkImageLoader* loader = viewport()->getImageLoader();
+	QSharedPointer<DkImageLoader> loader = getTabWidget()->getCurrentImageLoader();
 	
-	//if (!loader)
-	//	return;
+	if (!loader)
+		return;
 
 	if (recursive)
 		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Enabled"));
 	else
 		viewport()->getController()->setInfo(tr("Recursive Folder Scan is Now Disabled"));
 
-	//loader->updateSubFolders(loader->getDir());
+	loader->updateSubFolders(loader->getDir());
 }
 
 void DkNoMacs::showOpacityDialog() {
@@ -2218,10 +2215,9 @@ void DkNoMacs::showExplorer(bool show) {
 		explorer = new DkExplorer(tr("File Explorer"));
 		addDockWidget((Qt::DockWidgetArea)dockLocation, explorer);
 
-		// >DIR: TODO [19.2.2015 markus]
-		//connect(explorer, SIGNAL(openFile(QFileInfo)), viewport()->getImageLoader(), SLOT(load(QFileInfo)));
+		connect(explorer, SIGNAL(openFile(QFileInfo)), getTabWidget(), SLOT(loadFile(QFileInfo)));
 		connect(explorer, SIGNAL(openDir(QDir)), getTabWidget()->getThumbScrollWidget(), SLOT(setDir(QDir)));
-		//connect(viewport()->getImageLoader(), SIGNAL(updateFileSignal(QFileInfo)), explorer, SLOT(setCurrentPath(QFileInfo)));
+		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), explorer, SLOT(setCurrentImage(QSharedPointer<DkImageContainerT>)));
 	}
 
 	explorer->setVisible(show);
@@ -2249,17 +2245,13 @@ void DkNoMacs::showMetaDataDock(bool show) {
 		metaDataDock = new DkMetaDataDock(tr("Meta Data Info"), this);
 		addDockWidget((Qt::DockWidgetArea)dockLocation, metaDataDock);
 
-		// >DIR: TODO [19.2.2015 markus]
-		//connect(viewport()->getImageLoader(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
-
+		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
 	}
 
 	metaDataDock->setVisible(show);
 
-	// >DIR: TODO [19.2.2015 markus]
-	//if (viewport()->getImageLoader()->hasFile())
-	//	metaDataDock->setImage(viewport()->getImageLoader()->getCurrentImage());
-
+	if (getTabWidget()->getCurrentImage())
+		metaDataDock->setImage(getTabWidget()->getCurrentImage());
 }
 
 void DkNoMacs::showThumbsDock(bool show) {
@@ -2333,7 +2325,7 @@ void DkNoMacs::openDir() {
 
 	qDebug() << "loading directory: " << dirName;
 	
-	viewport()->loadFile(QFileInfo(dirName));
+	getTabWidget()->loadFile(QFileInfo(dirName));
 }
 
 void DkNoMacs::openFile() {
@@ -2350,7 +2342,7 @@ void DkNoMacs::openFile() {
 		return;
 
 	qDebug() << "os filename: " << fileName;
-	viewport()->loadFile(QFileInfo(fileName));
+	getTabWidget()->loadFile(QFileInfo(fileName));
 }
 
 void DkNoMacs::loadFile(const QFileInfo& file) {
@@ -2358,7 +2350,7 @@ void DkNoMacs::loadFile(const QFileInfo& file) {
 	if (!viewport())
 		return;
 
-	viewport()->loadFile(file);
+	getTabWidget()->loadFile(file);
 }
 
 void DkNoMacs::renameFile() {
@@ -2421,7 +2413,7 @@ void DkNoMacs::renameFile() {
 		if (!renamed)
 			viewport()->getController()->setInfo(tr("Sorry, I can't rename: %1").arg(file.fileName()));
 		else
-			viewport()->loadFile(renamedFile.absoluteFilePath());
+			getTabWidget()->loadFile(renamedFile.absoluteFilePath());
 		
 	}
 
@@ -2442,23 +2434,19 @@ void DkNoMacs::find(bool filterAction) {
 		DkSearchDialog* searchDialog = new DkSearchDialog(this);
 		searchDialog->setDefaultButton(db);
 
-		// >DIR: TODO [19.2.2015 markus]
-		//searchDialog->setFiles(viewport()->getImageLoader()->getFileNames());
-		//searchDialog->setPath(viewport()->getImageLoader()->getDir());
+		searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
+		searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDir());
 
-		//connect(searchDialog, SIGNAL(filterSignal(QStringList)), viewport()->getImageLoader(), SLOT(setFolderFilters(QStringList)));
-		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
+		connect(searchDialog, SIGNAL(filterSignal(QStringList)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilters(QStringList)));
+		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), getTabWidget(), SLOT(loadFile(QFileInfo)));
 		int answer = searchDialog->exec();
 
 		toolsActions[menu_tools_filter]->setChecked(answer == DkSearchDialog::filter_button);		
 	}
 	else {
 		// remove the filter 
-
-		// >DIR: TODO [19.2.2015 markus]
-		//viewport()->getImageLoader()->setFolderFilters(QStringList());
+		getTabWidget()->getCurrentImageLoader()->setFolderFilters(QStringList());
 	}
-
 
 }
 
@@ -2481,9 +2469,8 @@ void DkNoMacs::changeSorting(bool change) {
 		else if (senderName == "menu_sort_descending")
 			DkSettings::global.sortDir = DkSettings::sort_descending;
 
-		// >DIR: TODO update [19.2.2015 markus]
-		//if (viewport() && viewport()->getImageLoader()) 
-		//	viewport()->getImageLoader()->sort();
+		if (getTabWidget()->getCurrentImageLoader()) 
+			getTabWidget()->getCurrentImageLoader()->sort();
 	}
 
 	for (int idx = 0; idx < sortActions.size(); idx++) {
@@ -2499,17 +2486,16 @@ void DkNoMacs::goTo() {
 
 	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
-	// >DIR: TODO [19.2.2015 markus] -> remove from nomacs
-	//if (!viewport() || !viewport()->getImageLoader())
-	//	return;
+	if (!viewport() || !getTabWidget()->getCurrentImageLoader())
+		return;
 
-	//DkImageLoader* loader = viewport()->getImageLoader();
+	QSharedPointer<DkImageLoader> loader = getTabWidget()->getCurrentImageLoader();
 	
-	//bool ok = false;
-	//int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 0, 0, loader->numFiles()-1, 1, &ok);
+	bool ok = false;
+	int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 0, 0, loader->numFiles()-1, 1, &ok);
 
-	//if (ok)
-	//	loader->loadFileAt(fileIdx);
+	if (ok)
+		loader->loadFileAt(fileIdx);
 
 }
 
@@ -2525,8 +2511,7 @@ void DkNoMacs::trainFormat() {
 	bool okPressed = trainDialog->exec() != 0;
 
 	if (okPressed) {
-		// >DIR: TODO [19.2.2015 markus]
-		//viewport()->getImageLoader()->load(trainDialog->getAcceptedFile());
+		getTabWidget()->getCurrentImageLoader()->load(trainDialog->getAcceptedFile());
 		restart();	// quick & dirty, but currently he messes up the filteredFileList if the same folder was already loaded
 	}
 
@@ -2562,24 +2547,19 @@ void DkNoMacs::saveFile() {
 	saveFileAs(true);
 }
 
-void DkNoMacs::saveFileAs(bool /*silent*/) {
+void DkNoMacs::saveFileAs(bool silent) {
 	
 	qDebug() << "saving...";
 
 	if(!currRunningPlugin.isEmpty()) 
 		applyPluginChanges(true, true);
 
-	// >DIR: TODO [19.2.2015 markus] - remove?!
-	// getTabWidget()->getImageLoader()->saveFileAs(silent);
-
-
-
+	getTabWidget()->getCurrentImageLoader()->saveUserFileAs(getTabWidget()->getViewPort()->getImage(), silent);
 }
 
 void DkNoMacs::saveFileWeb() {
 
-	// >DIR: TODO [19.2.2015 markus] move to tabwidget
-
+	getTabWidget()->getCurrentImageLoader()->saveFileWeb(getTabWidget()->getViewPort()->getImage());
 }
 
 void DkNoMacs::resizeImage() {
@@ -2643,9 +2623,8 @@ void DkNoMacs::deleteFile() {
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes) {
 		viewport()->stopMovie();	// movies keep file handles so stop it before we can delete files
 		
-		// >DIR: TODO [19.2.2015 markus] move to tabwidget?!
-		//if (!viewport()->getImageLoader()->deleteFile())
-		//	viewport()->loadMovie();	// load the movie again, if we could not delete it
+		if (!getTabWidget()->getCurrentImageLoader()->deleteFile())
+			viewport()->loadMovie();	// load the movie again, if we could not delete it
 	}
 }
 
@@ -2803,8 +2782,7 @@ void DkNoMacs::computeThumbsBatch() {
 	if (!thumbSaver)
 		thumbSaver = new DkThumbsSaver(this);
 	
-	// >DIR: TODO [19.2.2015 markus]
-	//thumbSaver->processDir(viewport()->getImageLoader()->getImages(), forceDialog->forceSave());
+	thumbSaver->processDir(getTabWidget()->getCurrentImageLoader()->getImages(), forceDialog->forceSave());
 }
 
 void DkNoMacs::aboutDialog() {
@@ -4053,6 +4031,13 @@ void DkNoMacsSync::dropEvent(QDropEvent *event) {
 	else
 		QMainWindow::dropEvent(event);
 
+}
+
+void DkNoMacsSync::enableNoImageActions(bool enable /* = true */) {
+
+	DkNoMacs::enableNoImageActions(enable);
+
+	syncActions[menu_sync_connect_all]->setEnabled(enable);
 }
 
 qint16 DkNoMacsSync::getServerPort() {

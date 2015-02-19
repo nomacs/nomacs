@@ -760,6 +760,8 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	paintLayout = new QVBoxLayout(this);
 	paintLayout->setContentsMargins(0,0,0,0);
 
+	createShortcuts();
+
 	controller = new DkControlWidget(this, flags);
 	//controller->show();
 
@@ -774,7 +776,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	connect(this, SIGNAL(enableNoImageSignal(bool)), controller, SLOT(imageLoaded(bool)));
 	connect(&imgStorage, SIGNAL(infoSignal(QString)), this, SIGNAL(infoSignal(QString)));
 	
-	createShortcuts();
 	qDebug() << "viewer created...";
 
 	// TODO:
@@ -1973,7 +1974,6 @@ void DkViewPort::applyPluginChanges() {
 
 bool DkViewPort::unloadImage(bool fileChange) {
 
-
 	// TODO: we have to check here - why loading is not stopped by applyPluginChanges()
 	/*if (!pluginImageWasApplied)*/ applyPluginChanges(); //prevent recursion
 	
@@ -1995,6 +1995,11 @@ bool DkViewPort::unloadImage(bool fileChange) {
 	}
 
 	return success != 0;
+}
+
+void DkViewPort::deactivate() {
+	
+	setImage(QImage());
 }
 
 void DkViewPort::loadFile(QFileInfo file) {
@@ -2176,8 +2181,9 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 				//if (loader) loader->loadFileAt(idx);
 		}
 	}
-	else 
-		loadFile(QFileInfo(filename));
+	// >DIR: TODO [19.2.2015 markus]
+	//else 
+	//	loadFile(QFileInfo(filename));
 
 	qDebug() << "loading file: " << filename;
 
@@ -2191,9 +2197,6 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 
 void DkViewPort::setImageLoader(QSharedPointer<DkImageLoader> newLoader) {
 	
-	if (loader)
-		loader->deactivate();
-
 	loader = newLoader;
 	connectLoader(newLoader);
 	loader->activate();

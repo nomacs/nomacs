@@ -455,6 +455,7 @@ public slots:
 	void loadSkipPrev10();
 	void loadLena();
 	bool unloadImage(bool fileChange = true);
+	void deactivate();
 	//void fileNotLoaded(QFileInfo file);
 	void cropImage(DkRotatingRect rect, const QColor& bgCol);
 	void repeatZoom();

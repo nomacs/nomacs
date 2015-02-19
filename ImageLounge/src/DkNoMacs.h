@@ -477,7 +477,7 @@ signals:
 	void synchronizeWithServerPortSignal(quint16);
 	void synchronizeRemoteControl(quint16);
 	void closeSignal();
-	void saveTempFileSignal(QImage img);
+	//void saveTempFileSignal(QImage img);
 	void sendQuitLocalClientsSignal();
 
 public slots:
@@ -751,7 +751,8 @@ public slots:
 	void clientInitialized();
 	void newClientConnected(bool connected, bool local);
 	void startTCPServer(bool start);
-	
+	virtual void enableNoImageActions(bool enable = true);
+
 protected:
 
 	// mouse events

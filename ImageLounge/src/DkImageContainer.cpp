@@ -529,7 +529,7 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 void DkImageContainerT::fetchFile() {
 	
 	if (fetchingBuffer && getLoadState() == loading_canceled) {
-		loadState = loading;
+		loadState = loading;	// uncancel loading - we had another call
 		return;
 	}
 	if (fetchingImage)
@@ -679,14 +679,14 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 
 	// !selected - do not connect twice
 	if (connectSignals && !selected) {
-		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SIGNAL(errorDialogSignal(const QString&)));
+		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)));
 		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
 		connect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
 		connect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
 		fileUpdateTimer.start();
 	}
 	else if (!connectSignals) {
-		disconnect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SIGNAL(errorDialogSignal(const QString&)));
+		disconnect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)));
 		disconnect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
 		disconnect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
 		disconnect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
