@@ -69,6 +69,7 @@
 #include <QFileDialog>
 #include <QPainter>
 #include <qmath.h>
+#include <QtConcurrentRun>
 
 // quazip
 #ifdef WITH_QUAZIP
@@ -106,8 +107,11 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	dirWatcher = new QFileSystemWatcher(this);
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
+	creatingImages = false;
 	folderUpdated = false;
 	tmpFileIdx = 0;
+
+	connect(&createImageWatcher, SIGNAL(finished()), this, SLOT(imagesSorted()));
 
 	delayedUpdateTimer.setSingleShot(true);
 	connect(&delayedUpdateTimer, SIGNAL(timeout()), this, SLOT(directoryChanged()));
@@ -115,7 +119,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 
 	//saveDir = DkSettings::global.lastSaveDir;	// loading save dir is obsolete ?!
 	saveDir = "";
-
+	 
 	if (file.exists())
 		loadDir(file);
 	else
@@ -126,6 +130,9 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
  * Default destructor.
  **/ 
 DkImageLoader::~DkImageLoader() {
+	
+	if (createImageWatcher.isRunning())
+		createImageWatcher.blockSignals(true);
 }
 
 /**
@@ -214,11 +221,15 @@ bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) 
  **/ 
 bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
+	if (creatingImages) {
+		//emit showInfoSignal(tr("Indexing folder..."), 4000);	// stop showing
+		return false;
+	}
+
 	// folder changed signal was emitted
 	if (folderUpdated && newDir.absolutePath() == dir.absolutePath()) {
 
 		QFileInfoList files = getFilteredFileInfoList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
-		createImages(files);
 
 		// might get empty too (e.g. someone deletes all images)
 		if (files.empty()) {
@@ -226,8 +237,9 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 			return false;
 		}
 
-		emit updateDirSignal(images);
-		folderUpdated = false;
+		createImages(files, false);
+		sortImagesThreaded(images);
+
 		qDebug() << "getting file list.....";
 	}
 	// new folder is loaded
@@ -258,20 +270,13 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		images.clear();
 		
 		// TODO: creating ~120 000 images takes about 2 secs
-		// but sorting takes (just filenames) takes ages (on windows)
+		// but sorting (just filenames) takes ages (on windows)
 		// so we should fix this using 2 strategies: 
 		// - thread the image creation process
 		// - while loading (if the user wants to move in the folder) we could display some message (e.g. indexing dir)
-		// - second we could speed up the sorting itself by caching the wchar along with the filenames
-		createImages(files);
+		createImages(files, false);
+		sortImagesThreaded(images);
 
-		emit updateDirSignal(images);
-
-		if (dirWatcher) {
-			if (!dirWatcher->directories().isEmpty())
-				dirWatcher->removePaths(dirWatcher->directories());
-			dirWatcher->addPath(dir.absolutePath());
-		}
 		qDebug() << "new folder path: " << newDir.absolutePath() << " contains: " << images.size() << " images";
 	}
 	//else
@@ -280,7 +285,41 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 	return true;
 }
 
-void DkImageLoader::createImages(const QFileInfoList& files) {
+void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT > > images) {
+
+	if (creatingImages)
+		return;
+
+	creatingImages = true;
+	createImageWatcher.setFuture(QtConcurrent::run(this, 
+		&nmc::DkImageLoader::sortImages, images));
+
+	qDebug() << "sorting images threaded...";
+}
+
+void DkImageLoader::imagesSorted() {
+
+	qDebug() << "threaded sorting created...";
+
+	creatingImages = false;
+	images = createImageWatcher.result();
+
+	for (int idx = 0; idx < images.size(); idx++) {
+		images.replace(idx, images.at(idx));
+	}
+
+	emit updateDirSignal(images);
+
+	if (dirWatcher) {
+		if (!dirWatcher->directories().isEmpty())
+			dirWatcher->removePaths(dirWatcher->directories());
+		dirWatcher->addPath(dir.absolutePath());
+	}
+
+	qDebug() << "images sorted...";
+}
+
+void DkImageLoader::createImages(const QFileInfoList& files, bool sort) {
 
 	DkTimer dt;
 	QVector<QSharedPointer<DkImageContainerT > > oldImages = images;
@@ -296,8 +335,19 @@ void DkImageLoader::createImages(const QFileInfoList& files) {
 			images.append(QSharedPointer<DkImageContainerT >(new DkImageContainerT(files.at(idx))));
 	}
 	qDebug() << "[DkImageLoader] " << images.size() << " containers created in " << dt.getTotal();
+
+	if (sort) {
+		qSort(images.begin(), images.end(), imageContainerLessThanPtr);
+		qDebug() << "[DkImageLoader] after sorting: " << dt.getTotal();
+	}
+
+}
+
+QVector<QSharedPointer<DkImageContainerT > > DkImageLoader::sortImages(QVector<QSharedPointer<DkImageContainerT > > images) const {
+
 	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
-	qDebug() << "[DkImageLoader] after sorting: " << dt.getTotal();
+
+	return images;
 }
 
 /**
@@ -341,6 +391,7 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 		return imgC;
 
 	DkTimer dt;
+
 
 	// load a page (e.g. within a tiff file)
 	if (currentImage->setPageIdx(skipIdx))
@@ -820,11 +871,12 @@ void DkImageLoader::load(QSharedPointer<DkImageContainerT> image /* = QSharedPoi
 		emit updateSpinnerSignalDelayed(false);
 
 	// if loaded is false, we definitively know that the file does not exist -> early exception here?
-
+	qDebug() << "load called...";
 }
 
 void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 	
+	qDebug() << "image loaded entered...";
 	emit updateSpinnerSignalDelayed(false);
 
 	if (!currentImage) {

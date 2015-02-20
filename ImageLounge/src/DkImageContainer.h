@@ -99,7 +99,6 @@ public:
 	std::wstring getFileNameWStr() const;
 #endif
 
-
 	bool exists();
 	bool setPageIdx(int skipIdx);
 

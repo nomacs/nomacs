@@ -178,6 +178,7 @@ public slots:
 	// new slots
 	void imageLoaded(bool loaded = false);
 	void imageSaved(QFileInfo file, bool saved = true);
+	void imagesSorted();
 	bool unloadFile();
 	void reloadImage();
 
@@ -194,6 +195,8 @@ protected:
 	QSharedPointer<DkImageContainerT > lastImageLoaded;
 	bool folderUpdated;
 	int tmpFileIdx;
+	bool creatingImages;
+	QFutureWatcher<QVector<QSharedPointer<DkImageContainerT > > > createImageWatcher;
 
 	// functions
 	void updateCacher(QSharedPointer<DkImageContainerT> imgC);
@@ -202,7 +205,9 @@ protected:
 	void updateHistory();
 	void sendFileSignal();
 	QString getTitleAttributeString();
-	void createImages(const QFileInfoList& files);
+	void sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT > > images);
+	void createImages(const QFileInfoList& files, bool sort = true);
+	QVector<QSharedPointer<DkImageContainerT > > sortImages(QVector<QSharedPointer<DkImageContainerT > > images) const;
 };
 
 // deprecated

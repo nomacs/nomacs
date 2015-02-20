@@ -658,31 +658,6 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 void DkCentralWidget::loadFile(const QFileInfo& fileInfo) {
 
 	viewport->loadFile(fileInfo);
-
-	//if (!viewport->unloadImage())
-	//	return;
-
-	//QSharedPointer<DkTabInfo> tabInfo = tabInfos[tabbar->currentIndex()];
-
-	//if (!tabInfo) {
-	//	qDebug() << "WARNING: tabInfo is empty, where it should not be...";
-	//	return;
-	//}
-
-	//showViewPort(true);
-
-	//if (fileInfo.isDir()) {
-	//	QDir dir = QDir(fileInfo.absoluteFilePath());
-	//	tabInfo->getImageLoader()->setDir(dir);
-	//} 
-	//else if (tabInfo->getImageLoader())
-	//	tabInfo->getImageLoader()->load(fileInfo);
-
-	//if ((qApp->keyboardModifiers() == DkSettings::global.altMod || 
-	//	DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display) && 
-	//	(viewport->hasFocus() || viewport->getController()->hasFocus()) && tabInfo->getImageLoader()->hasFile())
-	//	viewport->tcpLoadFile(0, fileInfo.absoluteFilePath());
-
 }
 
 void DkCentralWidget::pasteImage() {
