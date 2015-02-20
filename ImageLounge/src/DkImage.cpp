@@ -126,7 +126,6 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
  * Default destructor.
  **/ 
 DkImageLoader::~DkImageLoader() {
-	qDebug() << "loader released...";
 }
 
 /**
@@ -257,6 +256,13 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 		// ok new folder, this should speed-up loading
 		images.clear();
+		
+		// TODO: creating ~120 000 images takes about 2 secs
+		// but sorting takes (just filenames) takes ages (on windows)
+		// so we should fix this using 2 strategies: 
+		// - thread the image creation process
+		// - while loading (if the user wants to move in the folder) we could display some message (e.g. indexing dir)
+		// - second we could speed up the sorting itself by caching the wchar along with the filenames
 		createImages(files);
 
 		emit updateDirSignal(images);

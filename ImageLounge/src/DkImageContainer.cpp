@@ -62,6 +62,10 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
  **/ 
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 	
+#ifdef WIN32
+	fileNameStr = fileInfo.fileName().toStdWString();
+#endif
+
 	this->fileInfo = fileInfo;
 	loadState = not_loaded;
 	init();
@@ -354,6 +358,12 @@ QSharedPointer<DkZipContainer> DkImageContainer::getZipData() {
 	return zipData;
 }
 #endif
+#ifdef WIN32
+std::wstring DkImageContainer::getFileNameWStr() const {
+	
+	return fileNameStr;
+}
+#endif
 
 bool imageContainerLessThanPtr(const QSharedPointer<DkImageContainer> l, const QSharedPointer<DkImageContainer> r) {
 
@@ -368,12 +378,28 @@ bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r
 	switch(DkSettings::global.sortMode) {
 
 	case DkSettings::sort_filename:
-
+#ifdef WIN32
+		// not beautiful if you take a look at the code, but:
+		// time on Win8 with compFilename:
+		//		WinAPI, indexed ( 73872 ) files in:  " 92 ms"
+		//		[DkImageLoader]  73872  containers created in  " 1.825 sec"
+		//		[DkImageLoader] after sorting:  " 52.246 sec"
+		// time on Win8 with direct wCompLogic:
+		//		WinAPI, indexed ( 73872 ) files in:  " 63 ms"
+		//		[DkImageLoader]  73872  containers created in  " 1.203 sec"
+		//		[DkImageLoader] after sorting:  " 14.407 sec"
+		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
+			return DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
+		else
+			return !DkUtils::wCompLogic(l.getFileNameWStr(), r.getFileNameWStr());
+		break;
+#else
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
 			return DkUtils::compFilename(l.file(), r.file());
 		else
 			return DkUtils::compFilenameInv(l.file(), r.file());
 		break;
+#endif
 
 	case DkSettings::sort_date_created:
 		if (DkSettings::global.sortDir == DkSettings::sort_ascending)

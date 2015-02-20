@@ -95,6 +95,10 @@ public:
 #ifdef WITH_QUAZIP
 	QSharedPointer<DkZipContainer> getZipData();
 #endif
+#ifdef WIN32
+	std::wstring getFileNameWStr() const;
+#endif
+
 
 	bool exists();
 	bool setPageIdx(int skipIdx);
@@ -115,6 +119,9 @@ protected:
 	QSharedPointer<DkThumbNailT> thumb;
 #ifdef WITH_QUAZIP	
 	QSharedPointer<DkZipContainer> zipData;
+#endif
+#ifdef WIN32
+	std::wstring fileNameStr;	// speeds up sorting of filenames on windows
 #endif
 
 	int loadState;

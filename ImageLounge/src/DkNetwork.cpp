@@ -1595,7 +1595,9 @@ void DkLocalManagerThread::createClient(QString title) {
 	if (clientManager)
 		delete clientManager;
 
-	clientManager = new DkLocalClientManager(title, this);
+	// remember: if we set this as parent, we get a warning (different threads)
+	// but: take a look at a line which should be about 40 lines from here : )
+	clientManager = new DkLocalClientManager(title, 0);
 }
 
 // DkLanManagerThread --------------------------------------------------------------------
