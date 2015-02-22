@@ -215,7 +215,6 @@ void DkCentralWidget::createLayout() {
 	QWidget* viewWidget = new QWidget(this);
 	viewLayout = new QStackedLayout(viewWidget);
 
-	//for each (QWidget* w in widgets)
 	for (QWidget* w : widgets)
 		viewLayout->addWidget(w);
 
@@ -226,8 +225,8 @@ void DkCentralWidget::createLayout() {
 	vbLayout->addWidget(viewWidget);
 
 	recentFilesWidget = new DkRecentFilesWidget(viewWidget);
-	// TODO: read the desktop size here...
-	recentFilesWidget->setFixedSize(1920, 1080);	// TODO: this number will (hopefully : ) get old - but it is not enough for WHXGA
+	QRect screenRect = QApplication::desktop()->availableGeometry(this);
+	recentFilesWidget->setFixedSize(screenRect.width(), screenRect.height());
 	
 	// connections
 	connect(this, SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));

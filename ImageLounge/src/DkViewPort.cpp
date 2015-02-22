@@ -341,7 +341,6 @@ void DkControlWidget::showWidgetsSettings() {
 		showMetaData(false);
 		showFileInfo(false);
 		showPlayer(false);
-		//zoomWidget->hide();
 		showOverview(false);
 		showHistogram(false);
 		showCommentWidget(false);
@@ -368,7 +367,7 @@ void DkControlWidget::showPreview(bool visible) {
 	if (visible && !filePreview->isVisible())
 		filePreview->show();
 	else if (!visible && filePreview->isVisible())
-		filePreview->hide();
+		filePreview->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showScroller(bool visible) {
@@ -379,7 +378,7 @@ void DkControlWidget::showScroller(bool visible) {
 	if (visible && !folderScroll->isVisible())
 		folderScroll->show();
 	else if (!visible && folderScroll->isVisible())
-		folderScroll->hide();
+		folderScroll->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showMetaData(bool visible) {
@@ -392,7 +391,7 @@ void DkControlWidget::showMetaData(bool visible) {
 		qDebug() << "showing metadata...";
 	}
 	else if (!visible && metaDataInfo->isVisible())
-		metaDataInfo->hide();
+		metaDataInfo->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showFileInfo(bool visible) {
@@ -405,7 +404,7 @@ void DkControlWidget::showFileInfo(bool visible) {
 		ratingLabel->block(fileInfoLabel->isVisible());
 	}
 	else if (!visible && fileInfoLabel->isVisible()) {
-		fileInfoLabel->hide();
+		fileInfoLabel->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 		ratingLabel->block(false);
 	}
 }
@@ -418,7 +417,7 @@ void DkControlWidget::showPlayer(bool visible) {
 	if (visible)
 		player->show();
 	else
-		player->hide();
+		player->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
 void DkControlWidget::showOverview(bool visible) {
@@ -430,7 +429,7 @@ void DkControlWidget::showOverview(bool visible) {
 		zoomWidget->show();
 	}
 	else if (!visible && zoomWidget->isVisible()) {
-		zoomWidget->hide();
+		zoomWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 	}
 
 }
@@ -465,7 +464,7 @@ void DkControlWidget::showHistogram(bool visible) {
 		else  histogram->clearHistogram();
 	}
 	else if (!visible && histogram->isVisible()) {
-		histogram->hide();
+		histogram->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 	}
 }
 
@@ -478,7 +477,7 @@ void DkControlWidget::showCommentWidget(bool visible) {
 		commentWidget->show();
 	}
 	else if (!visible && commentWidget->isVisible()) {
-		commentWidget->hide();
+		commentWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 	}
 }
 

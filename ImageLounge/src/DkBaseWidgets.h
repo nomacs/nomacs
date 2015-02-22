@@ -63,13 +63,13 @@ public:
 signals:
 	void visibleSignal(bool visible);
 
-	public slots:
-		virtual void show();
-		virtual void hide();
-		virtual void setVisible(bool visible);
+public slots:
+	virtual void show(bool saveSetting = true);
+	virtual void hide(bool saveSetting = true);
+	virtual void setVisible(bool visible, bool saveSetting = true);
 
-		void animateOpacityUp();
-		void animateOpacityDown();
+	void animateOpacityUp();
+	void animateOpacityDown();
 
 protected:
 
@@ -166,9 +166,9 @@ signals:
 	void visibleSignal(bool visible);
 
 public slots:
-	virtual void show();
-	virtual void hide();
-	virtual void setVisible(bool visible);
+	virtual void show(bool saveSetting = true);
+	virtual void hide(bool saveSetting = true);
+	virtual void setVisible(bool visible, bool saveSetting = true);
 
 protected slots:
 	void animateOpacityUp();

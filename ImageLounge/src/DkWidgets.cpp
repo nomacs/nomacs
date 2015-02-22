@@ -387,18 +387,18 @@ void DkFolderScrollBar::init() {
 	setVisible(false);
 }
 
-void DkFolderScrollBar::show() {
+void DkFolderScrollBar::show(bool saveSettings) {
 
 	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
 	if (!blocked && !showing) {
 		hiding = false;
 		showing = true;
-		setVisible(true);
+		setVisible(true, saveSettings);
 		animateOpacityUp();
 	}
 }
 
-void DkFolderScrollBar::hide() {
+void DkFolderScrollBar::hide(bool saveSettings) {
 
 	if (!hiding) {
 		hiding = true;
@@ -406,13 +406,13 @@ void DkFolderScrollBar::hide() {
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
 			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
 		}
 	}
 }
 
-void DkFolderScrollBar::setVisible(bool visible) {
+void DkFolderScrollBar::setVisible(bool visible, bool saveSettings) {
 
 	if (blocked) {
 		QWidget::setVisible(false);
@@ -428,7 +428,7 @@ void DkFolderScrollBar::setVisible(bool visible) {
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
 		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
 	}
 }
@@ -459,7 +459,7 @@ void DkFolderScrollBar::animateOpacityDown() {
 	if (opacityEffect->opacity() <= 0.0f) {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
-		setVisible(false);	// finally hide the widget
+		setVisible(false, false);	// finally hide the widget
 		opacityEffect->setEnabled(false);
 		return;
 	}
@@ -3076,20 +3076,20 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 	}
 }
 
-void DkRecentFilesWidget::setVisible(bool visible) {
+void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
 	
-	if (visible) {
+	if (visible && !isVisible()) {
 		updateFileList();
 		qDebug() << "showing recent files...";
 	}
 
-	DkWidget::setVisible(visible);
+	DkWidget::setVisible(saveSettings);
 }
 
-void DkRecentFilesWidget::hide() {
+void DkRecentFilesWidget::hide(bool saveSettings) {
 	
 	QWidget::hide();	// no animation effect on hide
-	DkWidget::hide();
+	DkWidget::hide(saveSettings);
 }
 
 void DkRecentFilesWidget::updateFileList() {

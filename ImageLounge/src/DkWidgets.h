@@ -309,9 +309,9 @@ public slots:
 	void updateFile(QSharedPointer<DkImageContainerT> imgC);
 	void update(const QVector<QColor>& colors, const QVector<int>& indexes);
 
-	virtual void show();
-	virtual void hide();
-	virtual void setVisible(bool visible);
+	virtual void show(bool saveSettings = true);
+	virtual void hide(bool saveSettings = true);
+	virtual void setVisible(bool visible, bool saveSettings = true);
 
 	void animateOpacityUp();
 	void animateOpacityDown();
@@ -876,8 +876,8 @@ signals:
 public slots:
 	void updateFiles();
 	void updateFolders();
-	virtual void setVisible(bool visible);
-	virtual void hide();
+	virtual void setVisible(bool visible, bool saveSettings = true);
+	virtual void hide(bool saveSettings = true);
 	//void clearFileHistory();
 	//void clearFolderHistory();
 

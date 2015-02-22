@@ -107,6 +107,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	dirWatcher = new QFileSystemWatcher(this);
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
+	sortingIsDirty = false;
 	sortingImages = false;
 	folderUpdated = false;
 	tmpFileIdx = 0;
@@ -289,9 +290,12 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT > > images) {
 
-	if (sortingImages)
+	if (sortingImages) {
+		sortingIsDirty = true;
 		return;
+	}
 
+	sortingIsDirty = false;
 	sortingImages = true;
 	createImageWatcher.setFuture(QtConcurrent::run(this, 
 		&nmc::DkImageLoader::sortImages, images));
@@ -301,14 +305,17 @@ void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT 
 
 void DkImageLoader::imagesSorted() {
 
-	qDebug() << "threaded sorting created...";
-
 	sortingImages = false;
 	images = createImageWatcher.result();
 
-	for (int idx = 0; idx < images.size(); idx++) {
-		images.replace(idx, images.at(idx));
+	if (sortingIsDirty) {
+		qDebug() << "re-sorting because it's dirty...";
+		sortImagesThreaded(images);
+		return;
 	}
+
+	for (QSharedPointer<DkImageContainerT> img : images)
+		qDebug() << img->file().fileName();
 
 	emit updateDirSignal(images);
 
@@ -1130,7 +1137,6 @@ void DkImageLoader::saveUserFileAs(QImage saveImg, bool silent) {
 		}
 	}
 
-
 	// TODO: if more than one file is opened -> open new threads
 	QFileInfo sFile = QFileInfo(fileName);
 	int compression = -1;	// default value
@@ -1251,16 +1257,19 @@ void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter,
 
 	qDebug() << "saving: " << file.absoluteFilePath();
 
+	dirWatcher->blockSignals(true);
 	bool saveStarted = imgC->saveImageThreaded(file, sImg, compression);
 
-	if (!saveStarted)
+	if (!saveStarted) {
+		dirWatcher->blockSignals(false);
 		imageSaved(QFileInfo(), false);
-
+	}
 }
 
 void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 
 	emit updateSpinnerSignalDelayed(false);
+	dirWatcher->blockSignals(false);
 
 	if (!file.exists() || !file.isFile() || !saved)
 		return;
@@ -1271,7 +1280,6 @@ void DkImageLoader::imageSaved(QFileInfo file, bool saved) {
 	emit imageLoadedSignal(currentImage, true);
 	emit imageUpdatedSignal(currentImage);
 	qDebug() << "image updated: " << currentImage->file().fileName();
-	
 }
 
 ///**

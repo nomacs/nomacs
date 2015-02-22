@@ -112,7 +112,6 @@ public:
 	virtual void clear();
 
 protected:
-	QFileInfo fileInfo;
 	QSharedPointer<QByteArray> fileBuffer;
 	QSharedPointer<DkBasicLoader> loader;
 	QSharedPointer<DkThumbNailT> thumb;
@@ -131,6 +130,11 @@ protected:
 	void saveMetaDataIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
 	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void init();
+	void setFileInfo(const QFileInfo& fileInfo);
+
+private:
+	QFileInfo fileInfo;
+
 };
 
 bool imageContainerLessThan(const DkImageContainer& l, const DkImageContainer& r);

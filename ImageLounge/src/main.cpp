@@ -36,6 +36,10 @@
 	#pragma comment (linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
+#ifdef QT_NO_DEBUG_OUTPUT
+#pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
+#endif
+
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QObject>
 #include <QApplication>

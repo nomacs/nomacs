@@ -98,18 +98,18 @@ bool DkWidget::isHiding() const {
 	return hiding;
 }
 
-void DkWidget::show() {
+void DkWidget::show(bool saveSetting) {
 
 	// here is a strange problem if you add a DkWidget to another DkWidget -> painters crash
 	if (!blocked && !showing) {
 		hiding = false;
 		showing = true;
-		setVisible(true);
+		setVisible(true, saveSetting);
 		animateOpacityUp();
 	}
 }
 
-void DkWidget::hide() {
+void DkWidget::hide(bool saveSetting) {
 
 	if (!hiding) {
 		hiding = true;
@@ -117,13 +117,13 @@ void DkWidget::hide() {
 		animateOpacityDown();
 
 		// set display bit here too -> since the final call to setVisible takes a few seconds
-		if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
 			displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
 		}
 	}
 }
 
-void DkWidget::setVisible(bool visible) {
+void DkWidget::setVisible(bool visible, bool saveSetting) {
 
 	if (blocked) {
 		QWidget::setVisible(false);
@@ -136,9 +136,10 @@ void DkWidget::setVisible(bool visible) {
 	QWidget::setVisible(visible);
 	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
 
-	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
+	if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, true);
 	}
+
 }
 
 void DkWidget::animateOpacityUp() {
@@ -167,7 +168,7 @@ void DkWidget::animateOpacityDown() {
 	if (opacityEffect->opacity() <= 0.0f) {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
-		setVisible(false);	// finally hide the widget
+		setVisible(false, false);	// finally hide the widget
 		opacityEffect->setEnabled(false);
 		return;
 	}
@@ -396,26 +397,30 @@ bool DkFadeLabel::getCurrentDisplaySetting() {
 	return displaySettingsBits->testBit(DkSettings::app.currentAppMode);
 }
 
-void DkFadeLabel::show() {
+void DkFadeLabel::show(bool saveSettings) {
 
 	if (!blocked && !showing) {
 		hiding = false;
 		showing = true;
-		setVisible(true);
+		setVisible(true, saveSettings);
 		animateOpacityUp();
 	}
 }
 
-void DkFadeLabel::hide() {
+void DkFadeLabel::hide(bool saveSettings) {
 
 	if (!hiding) {
 		hiding = true;
 		showing = false;
 		animateOpacityDown();
 	}
+
+	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, false);
+	}
 }
 
-void DkFadeLabel::setVisible(bool visible) {
+void DkFadeLabel::setVisible(bool visible, bool saveSettings) {
 
 	if (blocked) {
 		DkLabel::setVisible(false);
@@ -428,8 +433,7 @@ void DkFadeLabel::setVisible(bool visible) {
 	emit visibleSignal(visible);
 	DkLabel::setVisible(visible);
 
-	if (displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-		qDebug() << "setting visible to: " << visible;
+	if (saveSettings && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
 		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
 	}
 
@@ -462,7 +466,7 @@ void DkFadeLabel::animateOpacityDown() {
 		opacityEffect->setOpacity(0.0f);
 		hiding = false;
 		opacityEffect->setEnabled(false);
-		setVisible(false);	// finally hide the widget
+		setVisible(false, false);	// finally hide the widget
 		return;
 	}
 

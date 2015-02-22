@@ -62,11 +62,7 @@ QString DkZipContainer::mZipMarker = "dIrChAr";
  **/ 
 DkImageContainer::DkImageContainer(const QFileInfo& fileInfo) {
 	
-#ifdef WIN32
-	fileNameStr = fileInfo.fileName().toStdWString();
-#endif
-
-	this->fileInfo = fileInfo;
+	setFileInfo(fileInfo);
 	loadState = not_loaded;
 	init();
 }
@@ -234,9 +230,18 @@ void DkImageContainer::setImage(const QImage& img) {
 
 void DkImageContainer::setImage(const QImage& img, const QFileInfo& fileInfo) {
 
-	this->fileInfo = fileInfo;
+	setFileInfo(fileInfo);
 	getLoader()->setImage(img, fileInfo);
 	edited = true;
+}
+
+void DkImageContainer::setFileInfo(const QFileInfo& fileInfo) {
+
+	this->fileInfo = fileInfo;
+
+#ifdef WIN32
+	this->fileNameStr = fileInfo.fileName().toStdWString();
+#endif
 }
 
 bool DkImageContainer::hasImage() const {
@@ -352,7 +357,7 @@ QSharedPointer<DkZipContainer> DkImageContainer::getZipData() {
 	if (!zipData) {
 		this->zipData = QSharedPointer<DkZipContainer>(new DkZipContainer(fileInfo));
 		if (zipData->isZip())
-			this->fileInfo = zipData->getImageFileInfo();
+			setFileInfo(zipData->getImageFileInfo());
 	}
 
 	return zipData;
@@ -467,11 +472,13 @@ void DkImageContainerT::clear() {
 void DkImageContainerT::checkForFileUpdates() {
 
 #ifdef WITH_QUAZIP
-	if(isFromZip()) fileInfo = getZipData()->getZipFileInfo();
+	if(isFromZip()) setFileInfo(getZipData()->getZipFileInfo());
 #endif
 
-	QDateTime modifiedBefore = fileInfo.lastModified();
+	QDateTime modifiedBefore = file().lastModified();
+	QFileInfo fileInfo = file();
 	fileInfo.refresh();
+	setFileInfo(fileInfo);
 	
 	bool changed = false;
 
@@ -484,7 +491,7 @@ void DkImageContainerT::checkForFileUpdates() {
 		waitForUpdate = true;
 
 #ifdef WITH_QUAZIP
-	if(isFromZip()) fileInfo = getZipData()->getImageFileInfo();
+	if(isFromZip()) setFileInfo(getZipData()->getImageFileInfo());
 #endif
 
 	if (changed) {
@@ -513,10 +520,11 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 
 #ifdef WITH_QUAZIP
 	//zip archives: get zip file fileInfo for checks
-	if(isFromZip()) fileInfo = getZipData()->getZipFileInfo();
+	if(isFromZip()) setFileInfo(getZipData()->getZipFileInfo());
 #endif
 	
 	// check file for updates
+	QFileInfo fileInfo = file();
 	QDateTime modifiedBefore = fileInfo.lastModified();
 	fileInfo.refresh();
 
@@ -534,9 +542,9 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 		loadState = exists_not;
 		return false;
 	}
-	else if (!fileInfo.permission(QFile::ReadUser)) {
+	else if (!file().permission(QFile::ReadUser)) {
 
-		QString msg = tr("Sorry, you are not allowed to read: %1").arg(fileInfo.fileName());
+		QString msg = tr("Sorry, you are not allowed to read: %1").arg(file().fileName());
 		emit showInfoSignal(msg);
 		loadState = exists_not;
 		return false;
@@ -544,7 +552,7 @@ bool DkImageContainerT::loadImageThreaded(bool force) {
 
 #ifdef WITH_QUAZIP
 	//zip archives: use the image file info from now on
-	if(isFromZip()) fileInfo = getZipData()->getImageFileInfo();
+	if(isFromZip()) setFileInfo(getZipData()->getImageFileInfo());
 #endif
 	
 	loadState = loading;
@@ -571,7 +579,7 @@ void DkImageContainerT::fetchFile() {
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()), Qt::UniqueConnection);
 
 	bufferWatcher.setFuture(QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadFileToBuffer, fileInfo));
+		&nmc::DkImageContainerT::loadFileToBuffer, file()));
 }
 
 void DkImageContainerT::bufferLoaded() {
@@ -603,13 +611,13 @@ void DkImageContainerT::fetchImage() {
 		return;
 	}
 	
-	qDebug() << "fetching: " << fileInfo.absoluteFilePath();
+	qDebug() << "fetching: " << file().absoluteFilePath();
 	fetchingImage = true;
 
 	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()), Qt::UniqueConnection);
 
 	imageWatcher.setFuture(QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::loadImageIntern, fileInfo, loader, fileBuffer));
+		&nmc::DkImageContainerT::loadImageIntern, file(), loader, fileBuffer));
 }
 
 void DkImageContainerT::imageLoaded() {
@@ -641,7 +649,7 @@ void DkImageContainerT::loadingFinished() {
 	if (!getLoader()->hasImage()) {
 		fileUpdateTimer.stop();
 		edited = false;
-		QString msg = tr("Sorry, I could not load: %1").arg(fileInfo.fileName());
+		QString msg = tr("Sorry, I could not load: %1").arg(file().fileName());
 		emit showInfoSignal(msg);
 		emit fileLoadedSignal(false);
 		loadState = exists_not;
@@ -730,7 +738,7 @@ void DkImageContainerT::saveMetaDataThreaded() {
 
 	fileUpdateTimer.stop();
 	QFuture<void> future = QtConcurrent::run(this, 
-		&nmc::DkImageContainerT::saveMetaDataIntern, fileInfo, getLoader(), getFileBuffer());
+		&nmc::DkImageContainerT::saveMetaDataIntern, file(), getLoader(), getFileBuffer());
 
 }
 
@@ -785,7 +793,7 @@ void DkImageContainerT::savingFinished() {
 
 		if (fileBuffer)
 			fileBuffer->clear();	// do a complete clear?
-		fileInfo = saveFile;
+		setFileInfo(saveFile);
 		edited = false;
 		downloaded = false;
 		if (selected) {
