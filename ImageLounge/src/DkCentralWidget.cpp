@@ -338,10 +338,8 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
 
 		QSharedPointer<DkImageLoader> l = tabInfos.at(tIdx)->getImageLoader();
 
-		if (l == loader)
-			continue;
-
-		tabInfos.at(tIdx)->deactivate();
+		if (l != loader)
+			tabInfos.at(tIdx)->deactivate();
 
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)));
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)));
@@ -355,7 +353,6 @@ void DkCentralWidget::updateLoader(QSharedPointer<DkImageLoader> loader) const {
 	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(imageLoaded(QSharedPointer<DkImageContainerT>)));
 	connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)));
 	connect(loader.data(), SIGNAL(imageHasGPSSignal(bool)), this, SIGNAL(imageHasGPSSignal(bool)));
-
 
 }
 

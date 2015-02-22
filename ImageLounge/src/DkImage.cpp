@@ -107,7 +107,7 @@ DkImageLoader::DkImageLoader(QFileInfo file) {
 	dirWatcher = new QFileSystemWatcher(this);
 	connect(dirWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(directoryChanged(QString)));
 
-	creatingImages = false;
+	sortingImages = false;
 	folderUpdated = false;
 	tmpFileIdx = 0;
 
@@ -144,7 +144,8 @@ DkImageLoader::~DkImageLoader() {
 void DkImageLoader::clearPath() {
 
 	// lastFileLoaded must exist
-	if (!currentImage.isNull() && currentImage->exists()) {
+	if (currentImage && currentImage->exists()) {
+		currentImage->receiveUpdates(this, false);
 		lastImageLoaded = currentImage;
 		images.clear();
 	}
@@ -221,14 +222,15 @@ bool DkImageLoader::loadDir(QFileInfo newFile, bool scanRecursive /* = true */) 
  **/ 
 bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
-	if (creatingImages) {
-		//emit showInfoSignal(tr("Indexing folder..."), 4000);	// stop showing
-		return false;
-	}
+	//if (creatingImages) {
+	//	//emit showInfoSignal(tr("Indexing folder..."), 4000);	// stop showing
+	//	return false;
+	//}
 
 	// folder changed signal was emitted
 	if (folderUpdated && newDir.absolutePath() == dir.absolutePath()) {
-
+		
+		folderUpdated = false;
 		QFileInfoList files = getFilteredFileInfoList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		// might get empty too (e.g. someone deletes all images)
@@ -287,10 +289,10 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 
 void DkImageLoader::sortImagesThreaded(QVector<QSharedPointer<DkImageContainerT > > images) {
 
-	if (creatingImages)
+	if (sortingImages)
 		return;
 
-	creatingImages = true;
+	sortingImages = true;
 	createImageWatcher.setFuture(QtConcurrent::run(this, 
 		&nmc::DkImageLoader::sortImages, images));
 
@@ -301,7 +303,7 @@ void DkImageLoader::imagesSorted() {
 
 	qDebug() << "threaded sorting created...";
 
-	creatingImages = false;
+	sortingImages = false;
 	images = createImageWatcher.result();
 
 	for (int idx = 0; idx < images.size(); idx++) {
@@ -765,6 +767,9 @@ void DkImageLoader::activate(bool isActive /* = true */) {
 }
 
 void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
+
+	if (currentImage == newImg)
+		return;
 
 	if (newImg)
 		loadDir(newImg->file());

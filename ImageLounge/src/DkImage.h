@@ -195,7 +195,7 @@ protected:
 	QSharedPointer<DkImageContainerT > lastImageLoaded;
 	bool folderUpdated;
 	int tmpFileIdx;
-	bool creatingImages;
+	bool sortingImages;
 	QFutureWatcher<QVector<QSharedPointer<DkImageContainerT > > > createImageWatcher;
 
 	// functions

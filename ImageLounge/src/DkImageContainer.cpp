@@ -436,7 +436,7 @@ DkImageContainerT::DkImageContainerT(const QFileInfo& file) : DkImageContainer(f
 	waitForUpdate = false;
 	downloaded = false;
 
-	connect(&fileUpdateTimer, SIGNAL(timeout()), this, SLOT(checkForFileUpdates()));
+	connect(&fileUpdateTimer, SIGNAL(timeout()), this, SLOT(checkForFileUpdates()), Qt::UniqueConnection);
 	//connect(&metaDataWatcher, SIGNAL(finished()), this, SLOT(metaDataLoaded()));
 }
 
@@ -568,7 +568,7 @@ void DkImageContainerT::fetchFile() {
 	}
 
 	fetchingBuffer = true;
-	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()));
+	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()), Qt::UniqueConnection);
 
 	bufferWatcher.setFuture(QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::loadFileToBuffer, fileInfo));
@@ -606,7 +606,7 @@ void DkImageContainerT::fetchImage() {
 	qDebug() << "fetching: " << fileInfo.absoluteFilePath();
 	fetchingImage = true;
 
-	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()));
+	connect(&imageWatcher, SIGNAL(finished()), this, SLOT(imageLoaded()), Qt::UniqueConnection);
 
 	imageWatcher.setFuture(QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::loadImageIntern, fileInfo, loader, fileBuffer));
@@ -663,7 +663,7 @@ void DkImageContainerT::downloadFile(const QUrl& url) {
 
 	if (!fileDownloader) {
 		fileDownloader = QSharedPointer<FileDownloader>(new FileDownloader(url, this));
-		connect(fileDownloader.data(), SIGNAL(downloaded()), this, SLOT(fileDownloaded()));
+		connect(fileDownloader.data(), SIGNAL(downloaded()), this, SLOT(fileDownloaded()), Qt::UniqueConnection);
 		qDebug() << "trying to download: " << url;
 	}
 	else
@@ -705,10 +705,10 @@ void DkImageContainerT::receiveUpdates(QObject* obj, bool connectSignals /* = tr
 
 	// !selected - do not connect twice
 	if (connectSignals && !selected) {
-		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)));
-		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)));
-		connect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)));
-		connect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)));
+		connect(this, SIGNAL(errorDialogSignal(const QString&)), obj, SLOT(errorDialog(const QString&)), Qt::UniqueConnection);
+		connect(this, SIGNAL(fileLoadedSignal(bool)), obj, SLOT(imageLoaded(bool)), Qt::UniqueConnection);
+		connect(this, SIGNAL(showInfoSignal(QString, int, int)), obj, SIGNAL(showInfoSignal(QString, int, int)), Qt::UniqueConnection);
+		connect(this, SIGNAL(fileSavedSignal(QFileInfo, bool)), obj, SLOT(imageSaved(QFileInfo, bool)), Qt::UniqueConnection);
 		fileUpdateTimer.start();
 	}
 	else if (!connectSignals) {
@@ -763,7 +763,7 @@ bool DkImageContainerT::saveImageThreaded(const QFileInfo fileInfo, const QImage
 	qDebug() << "attempting to save: " << fileInfo.absoluteFilePath();
 
 	fileUpdateTimer.stop();
-	connect(&saveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()));
+	connect(&saveImageWatcher, SIGNAL(finished()), this, SLOT(savingFinished()), Qt::UniqueConnection);
 
 	saveImageWatcher.setFuture(QtConcurrent::run(this, 
 		&nmc::DkImageContainerT::saveImageIntern, fileInfo, loader, saveImg, compression));
