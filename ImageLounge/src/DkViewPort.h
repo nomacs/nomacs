@@ -409,6 +409,7 @@ public:
 	QPoint mapToImage(const QPoint& windowPos) const;
 	
 	void applyPluginChanges();
+	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
@@ -490,8 +491,6 @@ protected:
 	virtual void wheelEvent(QWheelEvent *event);
 	virtual bool event(QEvent *event);
 	virtual void paintEvent(QPaintEvent* event);
-
-	void connectLoader(QSharedPointer<DkImageLoader> loader);
 
 	QFileInfo thumbFile;
 	bool thumbLoaded;

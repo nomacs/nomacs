@@ -1345,7 +1345,7 @@ void DkFileInfoLabel::createLayout() {
 	//layout->addStretch();
 }
 
-void DkFileInfoLabel::setVisible(bool visible) {
+void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 
 	// nothing to display??
 	if (!DkSettings::slideShow.display.testBit(DkSettings::display_file_name) &&
@@ -1372,7 +1372,7 @@ void DkFileInfoLabel::setVisible(bool visible) {
 			}
 	}
 
-	DkFadeLabel::setVisible(visible);
+	DkFadeLabel::setVisible(visible, saveSettings);
 	title->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_name));
 	date->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_creation_date));
 	rating->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_rating));

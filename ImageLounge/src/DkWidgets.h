@@ -224,7 +224,7 @@ public:
 	DkRatingLabel* getRatingLabel();
 
 public slots:
-	virtual void setVisible(bool visible);
+	virtual void setVisible(bool visible, bool saveSettings = true);
 
 protected:
 	QPoint offset;

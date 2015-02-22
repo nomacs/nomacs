@@ -19,14 +19,24 @@ QToolBar#toolBarWithGradient::separator {
 	background: #656565; width: 1px; height: 1px; margin: 3px;
 }
 
+QToolBar {
+	border-top: none;
+	border-bottom: 1px solid #cdcdcd;
+}
+
 QStatusBar#statusBarWithGradient {
 	border-top: none; 
 	background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #edeff9, stop: 1 #bebfc7); 
 }
- 
+  
 QLabel#thumbsTitle {
 	background: rgba(0,0,0,30);
 }
+
+QToolButton#DkThumbToolButton::menu-indicator { 
+	image: none; 
+}
+
 
 QLabel#statusBarLabel {
 	color: #555555;

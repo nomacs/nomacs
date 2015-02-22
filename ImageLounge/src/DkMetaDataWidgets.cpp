@@ -882,7 +882,7 @@ void DkMetaDataInfo::updateLabels() {
 	createLabels();
 }
 
-void DkMetaDataInfo::setVisible(bool visible) {
+void DkMetaDataInfo::setVisible(bool visible, bool showSettings) {
 
 	if (visible) {
 		readTags();
@@ -891,7 +891,7 @@ void DkMetaDataInfo::setVisible(bool visible) {
 
 	qDebug() << "[DkMetaData] setVisible: " << visible;
 
-	DkWidget::setVisible(visible);
+	DkWidget::setVisible(visible, showSettings);
 }
 
 void DkMetaDataInfo::setRating(int rating) {

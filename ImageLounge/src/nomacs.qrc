@@ -68,6 +68,8 @@
         <file>img/info.png</file>
         <file>img/widget-separator.png</file>
         <file>img/trash.png</file>
+        <file>img/sort.png</file>
+        <file>img/show-filename.png</file>
         <file>descriptions/nomacs-device.xml</file>
 		    <file>descriptions/nomacs-service.xml</file>
 		    <file>descriptions/nomacs_avtransport_scpd.xml</file>

@@ -168,6 +168,7 @@ public slots:
 	void downloadFile(const QUrl& url);
 	bool deleteFile();
 	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false);
+	void setFolderFilter(const QString& filter);
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();
 	bool loadDir(QFileInfo newFile, bool scanRecursive = true);

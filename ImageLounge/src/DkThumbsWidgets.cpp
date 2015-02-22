@@ -29,6 +29,7 @@
 #include "DkThumbs.h"
 #include "DkTimer.h"
 #include "DkImageContainer.h"
+#include "DkImageStorage.h"
 #include "DkSettings.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
@@ -43,6 +44,9 @@
 #include <QScrollBar>
 #include <QHBoxLayout>
 #include <QStyleOptionGraphicsItem>
+#include <QToolBar>
+#include <QToolButton>
+#include <QLineEdit>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1580,15 +1584,18 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	thumbsScene = new DkThumbScene(this);
 	//thumbsView->setContentsMargins(0,0,0,0);
 
+	createActions();
+	createToolbar();
+
 	view = new DkThumbsView(thumbsScene, this);
 	connect(view, SIGNAL(updateDirSignal(QDir)), this, SIGNAL(updateDirSignal(QDir)));
 
-	QHBoxLayout* layout = new QHBoxLayout(this);
+	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
+	layout->setSpacing(0);
+	layout->addWidget(toolbar);
 	layout->addWidget(view);
 	setLayout(layout);
-
-	createActions();
 }
 
 void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle) {
@@ -1598,12 +1605,59 @@ void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions
 	if (!menuTitle.isEmpty()) {
 		QMenu* m = contextMenu->addMenu(menuTitle);
 		m->addActions(parentActions.toList());
+
+		QToolButton* toolButton = new QToolButton(this);
+		toolButton->setObjectName("DkThumbToolButton");
+		toolButton->setMenu(m);
+		toolButton->setAccessibleName(menuTitle);
+		toolButton->setText(menuTitle);
+
+		if (menuTitle == tr("&Sort")) {	// that's an awful hack
+			QPixmap pm(":/nomacs/img/sort.png");
+			pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
+			toolButton->setIcon(pm);
+		}
+		toolButton->setPopupMode(QToolButton::InstantPopup);
+		toolbar->insertWidget(actions[display_squares], toolButton);
+
+		addActions(actions.toList());
 	}
 	else {
 		contextMenu->addSeparator();
 		contextMenu->addActions(parentActions.toList());
 	}
+}
 
+void DkThumbScrollWidget::createToolbar() {
+
+	toolbar = new QToolBar(tr("Thumb Preview Toolbar"), this);
+
+	if (DkSettings::display.smallIcons)
+		toolbar->setIconSize(QSize(16, 16));
+	else
+		toolbar->setIconSize(QSize(32, 32));
+
+	qDebug() << toolbar->styleSheet();
+
+	if (DkSettings::display.toolbarGradient) {
+		toolbar->setObjectName("toolBarWithGradient");
+	}
+
+	filterEdit = new QLineEdit("", this);
+	filterEdit->setPlaceholderText(tr("Filter Files"));
+	filterEdit->setMaximumWidth(250);
+	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
+
+	toolbar->addAction(actions[zoom_in]);
+	toolbar->addAction(actions[zoom_out]);
+	toolbar->addAction(actions[display_squares]);
+	toolbar->addAction(actions[show_labels]);
+	
+	// right align search filters
+	QWidget* spacer = new QWidget(this);
+	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	toolbar->addWidget(spacer);
+	toolbar->addWidget(filterEdit);
 }
 
 void DkThumbScrollWidget::createActions() {
@@ -1615,20 +1669,20 @@ void DkThumbScrollWidget::createActions() {
 	actions[select_all]->setCheckable(true);
 	connect(actions[select_all], SIGNAL(triggered(bool)), thumbsScene, SLOT(selectAllThumbs(bool)));
 
-	actions[zoom_in] = new QAction(tr("Zoom &In"), this);
+	actions[zoom_in] = new QAction(QIcon(":/nomacs/img/zoom-in.png"), tr("Zoom &In"), this);
 	actions[zoom_in]->setShortcut(QKeySequence::ZoomIn);
 	connect(actions[zoom_in], SIGNAL(triggered()), thumbsScene, SLOT(increaseThumbs()));
 
-	actions[zoom_out] = new QAction(tr("Zoom &Out"), this);
+	actions[zoom_out] = new QAction(QIcon(":/nomacs/img/zoom-out.png"), tr("Zoom &Out"), this);
 	actions[zoom_out]->setShortcut(QKeySequence::ZoomOut);
 	connect(actions[zoom_out], SIGNAL(triggered()), thumbsScene, SLOT(decreaseThumbs()));
 
-	actions[display_squares] = new QAction(tr("Display &Squares"), this);
+	actions[display_squares] = new QAction(QIcon(":/nomacs/img/thumbs-view.png"), tr("Display &Squares"), this);
 	actions[display_squares]->setCheckable(true);
 	actions[display_squares]->setChecked(DkSettings::display.displaySquaredThumbs);
 	connect(actions[display_squares], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleSquaredThumbs(bool)));
 
-	actions[show_labels] = new QAction(tr("Show &Filename"), this);
+	actions[show_labels] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("Show &Filename"), this);
 	actions[show_labels]->setCheckable(true);
 	actions[show_labels]->setChecked(DkSettings::display.showThumbLabel);
 	connect(actions[show_labels], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleThumbLabels(bool)));
@@ -1640,6 +1694,10 @@ void DkThumbScrollWidget::createActions() {
 		contextMenu->addAction(actions.at(idx));
 	}
 
+	// now colorize all icons
+	for (QAction* action : actions)
+		action->setIcon(DkImage::colorizePixmap(action->icon().pixmap(32), DkSettings::display.iconColor));
+	
 	addActions(actions.toList());
 }
 
@@ -1665,6 +1723,7 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 
 	if (visible) {
 		thumbsScene->updateThumbLabels();
+		filterEdit->setText("");
 		qDebug() << "showing thumb scroll widget...";
 	}
 }

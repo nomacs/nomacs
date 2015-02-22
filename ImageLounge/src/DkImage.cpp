@@ -314,9 +314,6 @@ void DkImageLoader::imagesSorted() {
 		return;
 	}
 
-	for (QSharedPointer<DkImageContainerT> img : images)
-		qDebug() << img->file().fileName();
-
 	emit updateDirSignal(images);
 
 	if (dirWatcher) {
@@ -1969,68 +1966,11 @@ QFileInfoList DkImageLoader::getFilteredFileInfoList(const QDir& dir, QStringLis
 	return fileInfoList;
 }
 
-
-//QStringList DkImageLoader::sort(const QStringList& files, const QDir& dir) {
-//
-//	QFileInfoList fList;
-//
-//	for (int idx = 0; idx < files.size(); idx++)
-//		fList.append(QFileInfo(dir, files.at(idx)));
-//
-//	switch(DkSettings::global.sortMode) {
-//
-//	case DkSettings::sort_filename:
-//		
-//		if (DkSettings::global.sortDir == DkSettings::sort_ascending)
-//			qSort(fList.begin(), fList.end(), compFilename);
-//		else
-//			qSort(fList.begin(), fList.end(), compFilenameInv);
-//		break;
-//
-//	case DkSettings::sort_date_created:
-//		if (DkSettings::global.sortDir == DkSettings::sort_ascending) {
-//			qSort(fList.begin(), fList.end(), compDateCreated);
-//			qSort(fList.begin(), fList.end(), compDateCreated);		// sort twice -> in order to guarantee that same entries are sorted correctly (thumbsloader)
-//		}
-//		else { 
-//			qSort(fList.begin(), fList.end(), compDateCreatedInv);
-//			qSort(fList.begin(), fList.end(), compDateCreatedInv);
-//		}
-//		break;
-//
-//	case DkSettings::sort_date_modified:
-//		if (DkSettings::global.sortDir == DkSettings::sort_ascending) {
-//			qSort(fList.begin(), fList.end(), compDateModified);
-//			qSort(fList.begin(), fList.end(), compDateModified);
-//		}
-//		else {
-//			qSort(fList.begin(), fList.end(), compDateModifiedInv);
-//			qSort(fList.begin(), fList.end(), compDateModifiedInv);
-//		}
-//		break;
-//	case DkSettings::sort_random:
-//			qSort(fList.begin(), fList.end(), compRandom);
-//		break;
-//
-//	default:
-//		// filename
-//		qSort(fList.begin(), fList.end(), compFilename);
-//
-//	}
-//
-//	QStringList sFiles;
-//	for (int idx = 0; idx < fList.size(); idx++)
-//		sFiles.append(fList.at(idx).fileName());
-//
-//	return sFiles;
-//}
-
 void DkImageLoader::sort() {
 	
 	qSort(images.begin(), images.end(), imageContainerLessThanPtr);
 	emit updateDirSignal(images);
 }
-
 
 /**
  * Returns the directory where files are saved to.
@@ -2090,6 +2030,11 @@ void DkImageLoader::loadLastDir() {
 
 	QDir lastDir = DkSettings::global.recentFolders[0];
 	setDir(lastDir);
+}
+
+void DkImageLoader::setFolderFilter(const QString& filter) {
+
+	setFolderFilters(filter.split(" "));
 }
 
 void DkImageLoader::setFolderFilters(QStringList filters) {

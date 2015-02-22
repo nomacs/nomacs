@@ -43,6 +43,8 @@
 
 // Qt defines
 class QMenu;
+class QToolBar;
+class QLineEdit;
 
 namespace nmc {
 
@@ -314,9 +316,11 @@ public slots:
 
 signals:
 	void updateDirSignal(QDir dir);
+	void filterChangedSignal(const QString& filters);
 
 protected:
 	void createActions();
+	void createToolbar();
 	void resizeEvent(QResizeEvent *event);
 	void contextMenuEvent(QContextMenuEvent *event);
 
@@ -326,7 +330,8 @@ protected:
 	QMenu* contextMenu;
 	QVector<QAction*> actions;
 	QVector<QAction*> parentActions;
-
+	QToolBar* toolbar;
+	QLineEdit* filterEdit;
 };
 
 

@@ -122,14 +122,14 @@ public slots:
 	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setRating(int rating);
 	void updateLabels();
-	void mouseMoveEvent(QMouseEvent *event);	// TODO: this should not be here
-	void setVisible(bool visible);
+	void setVisible(bool visible, bool showSettings = true);
 
 protected:
 	void init();
 	void readTags();
 	void layoutLabels();
 	void paintEvent(QPaintEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
 
 	QWidget* parent;
 	QPoint lastMousePos;
