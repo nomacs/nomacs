@@ -450,6 +450,7 @@ void DkDocAnalysisViewPort::init() {
 	connect(docAnalysisToolbar, SIGNAL(showTopTextLinesSignal(bool)), this, SLOT(showTopTextLines(bool)));
 	connect(docAnalysisToolbar, SIGNAL(pickSeedpointRequest(bool)),  this, SLOT(pickSeedpoint(bool)));
 	connect(docAnalysisToolbar, SIGNAL(clearSingleSelectionRequest(bool)), this, SLOT(pickResetRegionPoint(bool)));
+	connect(docAnalysisToolbar, SIGNAL(cancelPlugin()), this, SLOT(cancelPlugin()));
 	connect(this, SIGNAL(cancelPickSeedpointRequest()), docAnalysisToolbar, SLOT(pickSeedpointCanceled()));
 	connect(this, SIGNAL(cancelDistanceMeasureRequest()), docAnalysisToolbar, SLOT(measureDistanceCanceled()));
 	connect(this, SIGNAL(enableSaveCutSignal(bool)), docAnalysisToolbar, SLOT(enableButtonSaveCut(bool)));
@@ -1315,6 +1316,14 @@ void DkDocAnalysisViewPort::showTopTextLines() {
 	update();
 }
 
+/**
+* Emits the Signal to the base PluginViewPort class to close the Plugin
+* \sa DkPluginViewPort closePlugin()
+**/
+void DkDocAnalysisViewPort::cancelPlugin() {
+	emit closePlugin();
+}
+
 
 
 /*-----------------------------------DkDocAnalysisToolBar ---------------------------------------------*/
@@ -1376,6 +1385,7 @@ void DkDocAnalysisToolBar::createIcons() {
 	icons[savecut_icon] = QIcon(":/nomacsPluginDocAnalysis/img/save_cut.png");
 	icons[clearselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/reset_cut.png");
 	icons[clearsingleselection_icon] = QIcon(":/nomacsPluginDocAnalysis/img/reset_cut_single.png");
+	icons[cancel_icon] = QIcon(":/nomacsPluginDocAnalysis/img/cancel.png");
 
 
 	if (!DkSettings::display.defaultIconColor) {
@@ -1482,6 +1492,16 @@ void DkDocAnalysisToolBar::createLayout() {
 	toleranceBox->setWhatsThis(tr("alwaysenabled"));
 	toleranceBox->setObjectName("toleranceBox");
 
+	QAction* cancelpluginAction = new QAction(icons[cancel_icon], tr("Close the Plugin"), this);
+	//clearsingleselectionAction->setShortcut(Qt::SHIFT + Qt::Key_C);
+	cancelpluginAction->setStatusTip(tr("Close the Document Analysis Plugin"));
+	cancelpluginAction->setCheckable(false);
+	cancelpluginAction->setChecked(false);
+	cancelpluginAction->setEnabled(true);
+	cancelpluginAction->setWhatsThis(tr("alwaysenabled")); // set flag to always make this icon clickable
+	cancelpluginAction->setObjectName("cancelpluginAction");
+	actions[cancelplugin_action] = cancelpluginAction;
+
 	// actually add things to interface
 	addAction(linedetectionAction);
 	addAction(showbottomlinesAction);
@@ -1495,6 +1515,8 @@ void DkDocAnalysisToolBar::createLayout() {
 	addAction(clearselectionAction);
 	addWidget(lbl_tolerance);
 	addWidget(toleranceBox);
+	addSeparator();
+	addAction(cancelpluginAction);
 }
 
 /**
@@ -1578,6 +1600,15 @@ void DkDocAnalysisToolBar::on_clearsingleselectionAction_toggled(bool checked) {
 **/
 void DkDocAnalysisToolBar::on_clearselectionAction_triggered() {
 	emit clearSelectionSignal();
+}
+
+/**
+* Called when the user clicks the icon to cancel the Plugin.
+* Emits a signal to the Plugin to close it.
+* \sa cancelPlugin()
+**/
+void DkDocAnalysisToolBar::on_cancelpluginAction_triggered() {
+	emit cancelPlugin();
 }
 
 /**

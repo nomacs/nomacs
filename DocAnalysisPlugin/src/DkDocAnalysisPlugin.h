@@ -156,6 +156,7 @@ public slots:
 	void updateAnimatedContours();
 	void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
 	void magicCutSaved(bool saved);
+	void cancelPlugin();
 
 	//// line detection functions
 	void openLineDetectionDialog();
@@ -239,6 +240,7 @@ public:
 		savecut_icon,
 		clearselection_icon,
 		clearsingleselection_icon,
+		cancel_icon,
 
 		icons_end,
 	};
@@ -253,6 +255,7 @@ public:
 		savecut_action,
 		clearselection_action,
 		clearsingleselection_action,
+		cancelplugin_action,
 
 		actions_end,
 	};
@@ -275,6 +278,7 @@ public slots:
 	void on_magicAction_toggled(bool checked);
 	void on_savecutAction_triggered();
 	void on_clearselectionAction_triggered();
+	void on_cancelpluginAction_triggered();
 	void on_clearsingleselectionAction_toggled(bool checked);
 	void on_toleranceBox_valueChanged(int val);
 
@@ -301,6 +305,7 @@ signals:
 	void detectLinesSignal(); /**< Signal to start the line detection on the current image **/
 	void showBottomTextLinesSignal(bool); /**< Signal to either show or hide the previously detected bottom text lines **/
 	void showTopTextLinesSignal(bool); /**< Signal to either show or hide the previously detected top text lines **/
+	void cancelPlugin(); /**< Signal to close the plugin **/
 
 protected:
 	void createLayout();
