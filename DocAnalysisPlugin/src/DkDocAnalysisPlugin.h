@@ -146,10 +146,8 @@ public slots:
 	
 	//// magic wand selection functions
 	void pickSeedpoint(bool pick);
-	void pickSeedpoint();
 	void setMagicCutTolerance(int tol);
 	void pickResetRegionPoint(bool pick);
-	void pickResetRegionPoint();
 	void clearMagicCut();
 	void openMagicCutDialog();
 	//// animation of contours

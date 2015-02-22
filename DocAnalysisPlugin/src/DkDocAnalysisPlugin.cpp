@@ -120,7 +120,7 @@ QStringList DkDocAnalysisPlugin::runID() const {
 
 /**
 * Returns plugin name for every run ID
-* @param run ID
+* @param runID plugin ID
 **/
 QString DkDocAnalysisPlugin::pluginMenuName(const QString &runID) const {
 
@@ -130,7 +130,7 @@ QString DkDocAnalysisPlugin::pluginMenuName(const QString &runID) const {
 
 /**
 * Returns short description for status tip for every ID
-* @param plugin ID
+* @param runID plugin ID
 **/
 QString DkDocAnalysisPlugin::pluginStatusTip(const QString &runID) const {
 
@@ -140,8 +140,8 @@ QString DkDocAnalysisPlugin::pluginStatusTip(const QString &runID) const {
 
 /**
 * Main function: runs plugin based on its ID
-* @param run ID
-* @param current image in the Nomacs viewport
+* @param runID runID of the plugin 
+* @param image current image in the Nomacs viewport
 **/
 QImage DkDocAnalysisPlugin::runPlugin(const QString &runID, const QImage &image) const {
 	
@@ -202,7 +202,7 @@ void DkDocAnalysisPlugin::deleteViewPort() {
 * Saves the image using it's original name and appending the x- and y-Coordinates to the name.
 * Additional metadata to where the cut is located in the original image
 * is written in the Comment string of the image.
-* @param saveImg The image to be saved
+* @param saveImage The image to be saved
 * @param xCoord The x-coordinate of the upper left corner of the bounding box of the cut
 * @param yCoord The y-coordinate of the upper left corner of the bounding box of the but
 * @param height The height of the bounding box (y-extent)
@@ -448,7 +448,6 @@ void DkDocAnalysisViewPort::init() {
 	connect(docAnalysisToolbar, SIGNAL(detectLinesSignal()), this, SLOT(openLineDetectionDialog()));
 	connect(docAnalysisToolbar, SIGNAL(showBottomTextLinesSignal(bool)), this, SLOT(showBottomTextLines(bool)));
 	connect(docAnalysisToolbar, SIGNAL(showTopTextLinesSignal(bool)), this, SLOT(showTopTextLines(bool)));
-	connect(docAnalysisToolbar, SIGNAL(pickSeedpointRequest(bool)),  this, SLOT(pickSeedpoint(bool)));
 	connect(docAnalysisToolbar, SIGNAL(clearSingleSelectionRequest(bool)), this, SLOT(pickResetRegionPoint(bool)));
 	connect(docAnalysisToolbar, SIGNAL(cancelPlugin()), this, SLOT(cancelPlugin()));
 	connect(this, SIGNAL(cancelPickSeedpointRequest()), docAnalysisToolbar, SLOT(pickSeedpointCanceled()));
@@ -1095,31 +1094,6 @@ void DkDocAnalysisViewPort::pickSeedpoint(bool pick) {
 }
 
 /**
-* Starts the seed points picking mode if not yet active.
-* Cancels any other active modes.
-* @param pick start or end the mode
-* \sa cancelDistanceMeasureRequest() DkMagicCutToolBar::measureDistanceCanceled(), startPickSeedpointRequest()
-**/
-void DkDocAnalysisViewPort::pickSeedpoint() {
-
-	switch(editMode) {
-	case mode_pickSeedpoint:
-		return;
-	case mode_cancelSeedpoint:
-		emit cancelClearSingleRegionRequest();
-		break;
-	case mode_pickDistance:
-		emit cancelDistanceMeasureRequest();
-		distance->resetPoints();
-		break;
-	}
-
-	editMode = mode_pickSeedpoint;
-	emit startPickSeedpointRequest();
-	this->setCursor(Qt::PointingHandCursor);
-}
-
-/**
 * Starts/ends the seed points picking mode for region selection.
 * Cancels any other active modes.
 * @param pick start or end the mode
@@ -1142,31 +1116,6 @@ void DkDocAnalysisViewPort::pickResetRegionPoint(bool pick) {
 		this->setCursor(Qt::PointingHandCursor);
 	} else
 		editMode = mode_default;	
-}
-
-/**
-* Starts the reset single region points picking mode if not yet active.
-* Cancels any other active modes.
-* @param pick start or end the mode
-* \sa cancelDistanceMeasureRequest() DkMagicCutToolBar::measureDistanceCanceled() startClearSingleRegionRequest() cancelPickSeedpointRequest()
-**/
-void DkDocAnalysisViewPort::pickResetRegionPoint() {
-
-	switch(editMode) {
-	case mode_pickSeedpoint:
-		emit cancelPickSeedpointRequest();
-		break;
-	case mode_cancelSeedpoint:
-		return;
-	case mode_pickDistance:
-		emit cancelDistanceMeasureRequest();
-		distance->resetPoints();
-		break;
-	}
-
-	editMode = mode_cancelSeedpoint;
-	emit startClearSingleRegionRequest();
-	this->setCursor(Qt::PointingHandCursor);
 }
 
 /**
