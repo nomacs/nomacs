@@ -51,6 +51,7 @@ namespace nmc {
 // nomacs defines
 class DkImageContainerT;
 class DkThumbNailT;
+class DkImageLoader;
 
 class DkFilePreview : public DkWidget {
 	Q_OBJECT
@@ -226,6 +227,8 @@ public:
 
 	void updateLayout();
 	QList<QUrl> getSelectedUrls() const;
+	void setImageLoader(QSharedPointer<DkImageLoader> loader);
+	void copyImages(const QMimeData* mimeData) const;
 
 public slots:
 	void updateThumbLabels();
@@ -241,7 +244,7 @@ public slots:
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 	void deleteSelected() const;
 	void copySelected() const;
-	void pasteSelected() const;
+	void pasteImages() const;
 	void renameSelected() const;
 
 signals:
@@ -251,6 +254,7 @@ signals:
 
 protected:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;
+	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 	//void wheelEvent(QWheelEvent *event);
 
 	int xOffset;
@@ -261,6 +265,7 @@ protected:
 
 	QVector<DkThumbLabel* > thumbLabels;
 	QList<DkThumbLabel* > thumbsNotLoaded;
+	QSharedPointer<DkImageLoader> loader;
 };
 
 class DkThumbsView : public QGraphicsView {
@@ -299,10 +304,10 @@ public:
 		action_zoom_out,
 		action_display_squares,
 		action_show_labels,
-		action_delete,
 		action_copy,
-		action_move,
+		action_paste,
 		action_rename,
+		action_delete,
 
 		actions_end
 	};

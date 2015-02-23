@@ -31,6 +31,7 @@
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
 #include "DkSettings.h"
+#include "DkImage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTimer>
@@ -49,6 +50,7 @@
 #include <QLineEdit>
 #include <QClipboard>
 #include <QMessageBox>
+#include <QInputDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1255,6 +1257,26 @@ void DkThumbScene::updateThumbLabels() {
 	qDebug() << "initializing labels takes: " << dt.getTotal();
 }
 
+void DkThumbScene::setImageLoader(QSharedPointer<DkImageLoader> loader) {
+	
+	connectLoader(this->loader, false);		// disconnect
+	this->loader = loader;
+	connectLoader(loader);
+}
+
+void DkThumbScene::connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals) {
+
+	if (!loader)
+		return;
+
+	if (connectSignals) {
+		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
+	}
+	else {
+		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), this, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	}
+}
+
 void DkThumbScene::showFile(const QFileInfo& file) {
 
 	if (file.absoluteFilePath() == QDir::currentPath() || file.absoluteFilePath().isEmpty())
@@ -1348,9 +1370,37 @@ void DkThumbScene::copySelected() const {
 	}
 }
 
-void DkThumbScene::pasteSelected() const {
+void DkThumbScene::pasteImages() const {
 
+	copyImages(QApplication::clipboard()->mimeData());
+}
 
+void DkThumbScene::copyImages(const QMimeData* mimeData) const {
+
+	if (!mimeData || !mimeData->hasUrls() || !loader)
+		return;
+
+	QDir dir = loader->getDir();
+
+	for (QUrl url : mimeData->urls()) {
+
+		QFileInfo fileInfo = DkUtils::urlToLocalFile(url);
+		QFile file(fileInfo.absoluteFilePath());
+		QString newFilePath = QFileInfo(dir, fileInfo.fileName()).absoluteFilePath();
+
+		// ignore existing silently
+		if (QFileInfo(newFilePath).exists())
+			continue;
+
+		if (!file.copy(newFilePath)) {
+			int answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot copy %1 to %2")
+				.arg(fileInfo.absoluteFilePath(), newFilePath), QMessageBox::Ok | QMessageBox::Cancel);
+
+			if (answer == QMessageBox::Cancel) {
+				break;
+			}
+		}
+	}
 
 }
 
@@ -1361,10 +1411,13 @@ void DkThumbScene::deleteSelected() const {
 	if (urls.empty())
 		return;
 
-	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to delete %1 file(s)?").arg(urls.size()), QMessageBox::Yes | QMessageBox::No);
+	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to permanently delete %1 file(s)?").arg(urls.size()), QMessageBox::Yes | QMessageBox::No);
 
 	if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
 		
+		if (loader && urls.size() > 100)	// saves CPU
+			loader->deactivate();
+
 		for (QUrl url : urls) {
 
 			QString fString = url.toString();
@@ -1384,6 +1437,12 @@ void DkThumbScene::deleteSelected() const {
 				}
 			}
 		}
+
+		if (loader && urls.size() > 100)	// saves CPU
+			loader->activate();
+
+		if (loader)
+			loader->directoryChanged(loader->getDir().absolutePath());
 	}
 }
 
@@ -1394,12 +1453,31 @@ void DkThumbScene::renameSelected() const {
 	if (urls.empty())
 		return;
 
+	bool ok;
+	QString newFileName = QInputDialog::getText(qApp->activeWindow(), tr("Rename File(s)"),
+		tr("New Filename:"), QLineEdit::Normal,
+		"", &ok);
+	
+	if (ok && !newFileName.isEmpty()) {
 
-	// TODO: 
-	if (urls.size() == 1) {
+		for (int idx = 0; idx < urls.size(); idx++) {
 
+			QFileInfo fileInfo = DkUtils::urlToLocalFile(urls.at(idx).toString());
+			QFile file(fileInfo.absoluteFilePath());
+			QString pattern = (urls.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>";	// no index if just 1 file was added
+			DkFileNameConverter converter(fileInfo.fileName(), pattern, idx);
+			QFileInfo newFileInfo(fileInfo.dir(), converter.getConvertedFileName());
+			if (!file.rename(newFileInfo.absoluteFilePath())) {
+				
+				int answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot rename: %1 to %2")
+					.arg(fileInfo.fileName(), newFileInfo.fileName()), QMessageBox::Ok | QMessageBox::Cancel);
+
+				if (answer == QMessageBox::Cancel) {
+					break;
+				}
+			}
+		}
 	}
-
 }
 
 QList<QUrl> DkThumbScene::getSelectedUrls() const {
@@ -1593,6 +1671,12 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 	}
 
 	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		
+		if (event->mimeData()->urls().size() > 1) {
+			scene->copyImages(event->mimeData());
+			return;
+		}
+
 		QUrl url = event->mimeData()->urls().at(0);
 		qDebug() << "dropping: " << url;
 		url = url.toLocalFile();
@@ -1722,6 +1806,11 @@ void DkThumbScrollWidget::createToolbar() {
 	toolbar->addAction(actions[action_zoom_out]);
 	toolbar->addAction(actions[action_display_squares]);
 	toolbar->addAction(actions[action_show_labels]);
+	toolbar->addSeparator();
+	toolbar->addAction(actions[action_copy]);
+	toolbar->addAction(actions[action_paste]);
+	toolbar->addAction(actions[action_rename]);
+	toolbar->addAction(actions[action_delete]);
 	
 	// right align search filters
 	QWidget* spacer = new QWidget(this);
@@ -1761,15 +1850,15 @@ void DkThumbScrollWidget::createActions() {
 	actions[action_delete]->setShortcut(QKeySequence::Delete);
 	connect(actions[action_delete], SIGNAL(triggered()), thumbsScene, SLOT(deleteSelected()));
 
-	actions[action_copy] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("&Copy"), this);
+	actions[action_copy] = new QAction(QIcon(":/nomacs/img/copy.png"), tr("&Copy"), this);
 	actions[action_copy]->setShortcut(QKeySequence::Copy);
 	connect(actions[action_copy], SIGNAL(triggered()), thumbsScene, SLOT(copySelected()));
 
-	actions[action_move] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("&Move"), this);
-	actions[action_move]->setShortcut(QKeySequence::Cut);
-	connect(actions[action_move], SIGNAL(triggered()), thumbsScene, SLOT(moveSelected()));
+	actions[action_paste] = new QAction(QIcon(":/nomacs/img/paste.png"), tr("&Paste"), this);
+	actions[action_paste]->setShortcut(QKeySequence::Paste);
+	connect(actions[action_paste], SIGNAL(triggered()), thumbsScene, SLOT(pasteImages()));
 
-	actions[action_rename] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("&Rename"), this);
+	actions[action_rename] = new QAction(QIcon(":/nomacs/img/rename.png"), tr("&Rename"), this);
 	actions[action_rename]->setShortcut(QKeySequence(Qt::Key_F2));
 	connect(actions[action_rename], SIGNAL(triggered()), thumbsScene, SLOT(renameSelected()));
 

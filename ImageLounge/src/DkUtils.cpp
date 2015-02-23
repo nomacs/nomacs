@@ -48,6 +48,7 @@
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QTranslator>
+#include <QUrl>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -383,6 +384,21 @@ bool DkUtils::exists(const QFileInfo& file, int waitMs) {
 bool DkUtils::checkFile(const QFileInfo& file) {
 
 	return file.exists();
+}
+
+QFileInfo DkUtils::urlToLocalFile(const QUrl& url) {
+
+	QUrl lurl = QUrl::fromUserInput(url.toString());
+
+	// try manual conversion first, this fixes the DSC#josef.jpg problems (url fragments)
+	QString fString = lurl.toString();
+	fString = fString.replace("file:///", "");
+
+	QFileInfo file = QFileInfo(fString);
+	if (!file.exists())	// try an alternative conversion
+		file = QFileInfo(lurl.toLocalFile());
+
+	return file;
 }
 
 /**

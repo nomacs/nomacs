@@ -73,6 +73,7 @@
 // Qt defines
 class QComboBox;
 class QColor;
+class QUrl;
 
 namespace nmc {
 
@@ -153,6 +154,7 @@ public:
 	 **/ 
 	static bool exists(const QFileInfo& file, int waitMs = 10);
 	static bool checkFile(const QFileInfo& file);
+	static QFileInfo urlToLocalFile(const QUrl& url);
 	static QString colorToString(const QColor& col);
 	static QString readableByte(float bytes);
 

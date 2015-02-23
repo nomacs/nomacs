@@ -237,6 +237,8 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		// might get empty too (e.g. someone deletes all images)
 		if (files.empty()) {
 			emit showInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
+			images.clear();
+			emit updateDirSignal(images);
 			return false;
 		}
 

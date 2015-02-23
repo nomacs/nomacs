@@ -3,6 +3,9 @@
         <file>img/next.png</file>
         <file>img/previous.png</file>
         <file>img/crop.png</file>
+        <file>img/copy.png</file>
+        <file>img/paste.png</file>
+        <file>img/rename.png</file>
         <file>img/resize.png</file>
         <file>img/filter.png</file>
         <file>img/nofilter.png</file>
