@@ -47,6 +47,8 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QLineEdit>
+#include <QClipboard>
+#include <QMessageBox>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1235,9 +1237,6 @@ void DkThumbScene::updateThumbLabels() {
 		connect(thumb, SIGNAL(showFileSignal(const QFileInfo&)), this, SLOT(showFile(const QFileInfo&)));
 		connect(thumbs.at(idx).data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(thumbLoadedSignal()));
 
-		//if (lastThumb)
-		//	lastThumb->setBrother(thumb);
-
 		//thumb->show();
 		addItem(thumb);
 		thumbLabels.append(thumb);
@@ -1333,6 +1332,76 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 	}
 }
 
+void DkThumbScene::copySelected() const {
+
+	QList<QUrl> urls = getSelectedUrls();
+
+	if (urls.empty())
+		return;
+
+	QMimeData* mimeData = new QMimeData;
+
+	if (!urls.empty()) {
+		mimeData->setUrls(urls);
+		QClipboard* clipboard = QApplication::clipboard();
+		clipboard->setMimeData(mimeData);
+	}
+}
+
+void DkThumbScene::pasteSelected() const {
+
+
+
+}
+
+void DkThumbScene::deleteSelected() const {
+
+	QList<QUrl> urls = getSelectedUrls();
+
+	if (urls.empty())
+		return;
+
+	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to delete %1 file(s)?").arg(urls.size()), QMessageBox::Yes | QMessageBox::No);
+
+	if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
+		
+		for (QUrl url : urls) {
+
+			QString fString = url.toString();
+			fString = fString.replace("file:///", "");
+
+			QFileInfo file(fString);
+			if (!file.exists())	// try an alternative conversion
+				file = QFile(url.toLocalFile());
+			
+			QFile f(file.absoluteFilePath());
+
+			if (!f.remove()) {
+				answer = QMessageBox::critical(qApp->activeWindow(), tr("Error"), tr("Sorry, I cannot delete:\n%1").arg(file.fileName()), QMessageBox::Ok | QMessageBox::Cancel);
+
+				if (answer == QMessageBox::Cancel) {
+					break;
+				}
+			}
+		}
+	}
+}
+
+void DkThumbScene::renameSelected() const {
+
+	QList<QUrl> urls = getSelectedUrls();
+
+	if (urls.empty())
+		return;
+
+
+	// TODO: 
+	if (urls.size() == 1) {
+
+	}
+
+}
+
 QList<QUrl> DkThumbScene::getSelectedUrls() const {
 
 	QList<QUrl> urls;
@@ -1350,6 +1419,7 @@ QList<QUrl> DkThumbScene::getSelectedUrls() const {
 // DkThumbView --------------------------------------------------------------------
 DkThumbsView::DkThumbsView(DkThumbScene* scene, QWidget* parent /* = 0 */) : QGraphicsView(scene, parent) {
 
+	setObjectName("DkThumbsView");
 	this->scene = scene;
 	connect(scene, SIGNAL(thumbLoadedSignal()), this, SLOT(fetchThumbs()));
 
@@ -1618,7 +1688,7 @@ void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions
 			toolButton->setIcon(pm);
 		}
 		toolButton->setPopupMode(QToolButton::InstantPopup);
-		toolbar->insertWidget(actions[display_squares], toolButton);
+		toolbar->insertWidget(actions[action_display_squares], toolButton);
 
 		addActions(actions.toList());
 	}
@@ -1648,10 +1718,10 @@ void DkThumbScrollWidget::createToolbar() {
 	filterEdit->setMaximumWidth(250);
 	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
 
-	toolbar->addAction(actions[zoom_in]);
-	toolbar->addAction(actions[zoom_out]);
-	toolbar->addAction(actions[display_squares]);
-	toolbar->addAction(actions[show_labels]);
+	toolbar->addAction(actions[action_zoom_in]);
+	toolbar->addAction(actions[action_zoom_out]);
+	toolbar->addAction(actions[action_display_squares]);
+	toolbar->addAction(actions[action_show_labels]);
 	
 	// right align search filters
 	QWidget* spacer = new QWidget(this);
@@ -1664,34 +1734,53 @@ void DkThumbScrollWidget::createActions() {
 
 	actions.resize(actions_end);
 
-	actions[select_all] = new QAction(tr("Select &All"), this);
-	actions[select_all]->setShortcut(QKeySequence::SelectAll);
-	actions[select_all]->setCheckable(true);
-	connect(actions[select_all], SIGNAL(triggered(bool)), thumbsScene, SLOT(selectAllThumbs(bool)));
+	actions[action_select_all] = new QAction(tr("Select &All"), this);
+	actions[action_select_all]->setShortcut(QKeySequence::SelectAll);
+	actions[action_select_all]->setCheckable(true);
+	connect(actions[action_select_all], SIGNAL(triggered(bool)), thumbsScene, SLOT(selectAllThumbs(bool)));
 
-	actions[zoom_in] = new QAction(QIcon(":/nomacs/img/zoom-in.png"), tr("Zoom &In"), this);
-	actions[zoom_in]->setShortcut(QKeySequence::ZoomIn);
-	connect(actions[zoom_in], SIGNAL(triggered()), thumbsScene, SLOT(increaseThumbs()));
+	actions[action_zoom_in] = new QAction(QIcon(":/nomacs/img/zoom-in.png"), tr("Zoom &In"), this);
+	actions[action_zoom_in]->setShortcut(QKeySequence::ZoomIn);
+	connect(actions[action_zoom_in], SIGNAL(triggered()), thumbsScene, SLOT(increaseThumbs()));
 
-	actions[zoom_out] = new QAction(QIcon(":/nomacs/img/zoom-out.png"), tr("Zoom &Out"), this);
-	actions[zoom_out]->setShortcut(QKeySequence::ZoomOut);
-	connect(actions[zoom_out], SIGNAL(triggered()), thumbsScene, SLOT(decreaseThumbs()));
+	actions[action_zoom_out] = new QAction(QIcon(":/nomacs/img/zoom-out.png"), tr("Zoom &Out"), this);
+	actions[action_zoom_out]->setShortcut(QKeySequence::ZoomOut);
+	connect(actions[action_zoom_out], SIGNAL(triggered()), thumbsScene, SLOT(decreaseThumbs()));
 
-	actions[display_squares] = new QAction(QIcon(":/nomacs/img/thumbs-view.png"), tr("Display &Squares"), this);
-	actions[display_squares]->setCheckable(true);
-	actions[display_squares]->setChecked(DkSettings::display.displaySquaredThumbs);
-	connect(actions[display_squares], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleSquaredThumbs(bool)));
+	actions[action_display_squares] = new QAction(QIcon(":/nomacs/img/thumbs-view.png"), tr("Display &Squares"), this);
+	actions[action_display_squares]->setCheckable(true);
+	actions[action_display_squares]->setChecked(DkSettings::display.displaySquaredThumbs);
+	connect(actions[action_display_squares], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleSquaredThumbs(bool)));
 
-	actions[show_labels] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("Show &Filename"), this);
-	actions[show_labels]->setCheckable(true);
-	actions[show_labels]->setChecked(DkSettings::display.showThumbLabel);
-	connect(actions[show_labels], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleThumbLabels(bool)));
+	actions[action_show_labels] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("Show &Filename"), this);
+	actions[action_show_labels]->setCheckable(true);
+	actions[action_show_labels]->setChecked(DkSettings::display.showThumbLabel);
+	connect(actions[action_show_labels], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleThumbLabels(bool)));
+
+	actions[action_delete] = new QAction(QIcon(":/nomacs/img/trash.png"), tr("&Delete"), this);
+	actions[action_delete]->setShortcut(QKeySequence::Delete);
+	connect(actions[action_delete], SIGNAL(triggered()), thumbsScene, SLOT(deleteSelected()));
+
+	actions[action_copy] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("&Copy"), this);
+	actions[action_copy]->setShortcut(QKeySequence::Copy);
+	connect(actions[action_copy], SIGNAL(triggered()), thumbsScene, SLOT(copySelected()));
+
+	actions[action_move] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("&Move"), this);
+	actions[action_move]->setShortcut(QKeySequence::Cut);
+	connect(actions[action_move], SIGNAL(triggered()), thumbsScene, SLOT(moveSelected()));
+
+	actions[action_rename] = new QAction(QIcon(":/nomacs/img/show-filename.png"), tr("&Rename"), this);
+	actions[action_rename]->setShortcut(QKeySequence(Qt::Key_F2));
+	connect(actions[action_rename], SIGNAL(triggered()), thumbsScene, SLOT(renameSelected()));
 
 	contextMenu = new QMenu(tr("Thumb"), this);
 	for (int idx = 0; idx < actions.size(); idx++) {
 
 		actions[idx]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 		contextMenu->addAction(actions.at(idx));
+
+		if (idx == action_show_labels)
+			contextMenu->addSeparator();
 	}
 
 	// now colorize all icons

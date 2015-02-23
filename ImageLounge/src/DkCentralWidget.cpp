@@ -508,7 +508,7 @@ void DkCentralWidget::showThumbView(bool show) {
 		tabInfo->activate();
 		showViewPort(false);
 		thumbScrollWidget->updateThumbs(tabInfo->getImageLoader()->getImages());
-		viewport->connectLoader(tabInfo->getImageLoader(), false);
+		//viewport->connectLoader(tabInfo->getImageLoader(), false);
 		connect(tabInfo->getImageLoader().data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
 		connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), tabInfo->getImageLoader().data(), SLOT(loadDir(QDir)), Qt::UniqueConnection);
 		connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)), Qt::UniqueConnection);
@@ -519,7 +519,7 @@ void DkCentralWidget::showThumbView(bool show) {
 		disconnect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)));
 		disconnect(tabInfo->getImageLoader().data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 		disconnect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)));
-		viewport->connectLoader(tabInfo->getImageLoader(), true);
+		//viewport->connectLoader(tabInfo->getImageLoader(), true);
 		showViewPort(true);	// TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
 	}
 }

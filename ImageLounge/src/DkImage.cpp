@@ -2043,8 +2043,8 @@ void DkImageLoader::setFolderFilters(QStringList filters) {
 	folderUpdated = true;
 	loadDir(dir);	// simulate a folder update operation
 
-	if (!filters.empty() && !images.contains(currentImage))
-		loadFileAt(0);
+	//if (!filters.empty() && !images.contains(currentImage))
+	//	loadFileAt(0);
 
 	emit folderFiltersChanged(folderKeywords);
 }

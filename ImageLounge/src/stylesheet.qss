@@ -33,6 +33,10 @@ QLabel#thumbsTitle {
 	background: rgba(0,0,0,30);
 }
 
+QGraphicsView#DkThumbsView {
+	border: none;
+}
+
 QToolButton#DkThumbToolButton::menu-indicator { 
 	image: none; 
 }

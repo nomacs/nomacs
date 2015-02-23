@@ -239,6 +239,10 @@ public slots:
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
+	void deleteSelected() const;
+	void copySelected() const;
+	void pasteSelected() const;
+	void renameSelected() const;
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -290,11 +294,15 @@ class DkThumbScrollWidget : public DkWidget {
 
 public:
 	enum {
-		select_all,
-		zoom_in,
-		zoom_out,
-		display_squares,
-		show_labels,
+		action_select_all,
+		action_zoom_in,
+		action_zoom_out,
+		action_display_squares,
+		action_show_labels,
+		action_delete,
+		action_copy,
+		action_move,
+		action_rename,
 
 		actions_end
 	};
