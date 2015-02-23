@@ -128,7 +128,7 @@ DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /*
 
 	this->hUserInput = false;
 	this->rUserInput = false;
-	loader = new DkImageLoader();
+	loader = QSharedPointer<DkImageLoader>(new DkImageLoader());
 	
 	setObjectName("DkFileSelection");
 	createLayout();
@@ -143,20 +143,15 @@ void DkFileSelection::createLayout() {
 	//QPushButton* browseButton = new QPushButton(tr("Browse"));
 	//connect(browseButton, SIGNAL(clicked()), this, SLOT(browse()));
 
-	QLineEdit* filterEdit = new QLineEdit("", this);
-	filterEdit->setPlaceholderText(tr("Filter Files"));
-	filterEdit->setMaximumWidth(250);
-
 	QWidget* upperWidget = new QWidget(this);
 	QGridLayout* upperWidgetLayout = new QGridLayout(upperWidget);
 	upperWidgetLayout->setContentsMargins(0,0,0,0);
 	//upperWidgetLayout->addWidget(browseButton, 0, 0);
 	upperWidgetLayout->addWidget(directoryEdit, 0, 1);
-	upperWidgetLayout->addWidget(filterEdit, 0, 2);
 
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
-	connect(loader, SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	thumbScrollWidget->getThumbWidget()->setImageLoader(loader);
 
 	infoLabel = new QLabel(tr("No Files Selected"), this);
 
@@ -183,8 +178,10 @@ void DkFileSelection::createLayout() {
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), this, SLOT(setDir(QDir)));
 	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
 	connect(directoryEdit, SIGNAL(directoryChanged(QDir)), this, SLOT(setDir(QDir)));
-	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SLOT(filterTextChanged(const QString&)));
 	connect(explorer, SIGNAL(openDir(QDir)), this, SLOT(setDir(QDir)));
+	connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
+	connect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), loader.data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
+
 }
 
 void DkFileSelection::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -258,11 +255,6 @@ void DkFileSelection::emitChangedSignal() {
 		setDir(newDir);
 		emit changed();
 	}
-}
-
-void DkFileSelection::filterTextChanged(const QString& filterText) {
-	
-	loader->setFolderFilters(filterText.split(" "));
 }
 
 // DkFileNameWdiget --------------------------------------------------------------------

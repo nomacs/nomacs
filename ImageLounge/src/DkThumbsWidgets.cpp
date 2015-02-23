@@ -1343,9 +1343,12 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 		from = tmp;
 	}
 
+	blockSignals(true);
 	for (int idx = from; idx < to && idx < thumbLabels.size(); idx++) {
 		thumbLabels.at(idx)->setSelected(selected);
 	}
+	blockSignals(false);
+	emit selectionChanged();
 }
 
 void DkThumbScene::copySelected() const {
@@ -1548,15 +1551,17 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event) {
 
 	if (event->buttons() == Qt::LeftButton) {
 		mousePos = event->pos();
-		//itemClicked = itemAt(event->pos()) != 0;
-		//qDebug() << "item clicked: " << itemClicked;
 	}
 
 	qDebug() << "mouse pressed";
 
 	DkThumbLabel* itemClicked = static_cast<DkThumbLabel*>(scene->itemAt(mapToScene(event->pos())));
 
-	//if (!itemClicked && event->modifiers() == Qt::NoModifier)
+	// this is a bit of a hack
+	// what we want to achieve: if the user is selecting with e.g. shift or ctrl 
+	// and he clicks (unintentionally) into the background - the selection would be lost
+	// otherwise so we just don't propagate this event
+	if (itemClicked || event->modifiers() == Qt::NoModifier)	
 		QGraphicsView::mousePressEvent(event);
 }
 
