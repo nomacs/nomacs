@@ -562,7 +562,11 @@ void DkFilePreview::mouseMoveEvent(QMouseEvent *event) {
 					// important: setText shows the label - if you then hide it here again you'll get a stack overflow
 					//if (fileLabel->height() < height())
 					//	fileLabel->setText(thumbs.at(selected).getFile().fileName(), -1);
-					setToolTip(thumb->getFile().fileName());
+					QFileInfo fileInfo(thumb->getFile());
+					QString toolTipInfo = tr("Name: ") + thumb->getFile().fileName() + 
+						"\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + 
+						"\n" + tr("Created: ") + fileInfo.created().toString(Qt::SystemLocaleDate);
+					setToolTip(toolTipInfo);
 					setStatusTip(thumb->getFile().fileName());
 				}
 				break;
@@ -852,6 +856,7 @@ DkThumbLabel::DkThumbLabel(QSharedPointer<DkThumbNailT> thumb, QGraphicsItem* pa
 	//setStyleSheet("QLabel{background: transparent;}");
 	setThumb(thumb);
 	setFlag(ItemIsSelectable, true);
+	//setFlag(ItemIsMovable, true);	// uncomment this - it's fun : )
 
 	//setFlag(QGraphicsItem::ItemIsSelectable, false);
 
@@ -873,7 +878,12 @@ void DkThumbLabel::setThumb(QSharedPointer<DkThumbNailT> thumb) {
 
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(updateLabel()));
 	//setStatusTip(thumb->getFile().fileName());
-	setToolTip(thumb->getFile().fileName());
+	QFileInfo fileInfo(thumb->getFile());
+	QString toolTipInfo = tr("Name: ") + thumb->getFile().fileName() + 
+		"\n" + tr("Size: ") + DkUtils::readableByte((float)fileInfo.size()) + 
+		"\n" + tr("Created: ") + fileInfo.created().toString(Qt::SystemLocaleDate);
+
+	setToolTip(toolTipInfo);
 
 	// style dummy
 	noImagePen.setColor(QColor(150,150,150));
@@ -893,37 +903,15 @@ QPixmap DkThumbLabel::pixmap() const {
 
 QRectF DkThumbLabel::boundingRect() const {
 
-	//if (icon.pixmap().isNull())
-		return QRectF(QPoint(0,0), QSize(DkSettings::display.thumbPreviewSize, DkSettings::display.thumbPreviewSize));
-
-	//// TODO: add toggle
-	//if (true) {
-	//	QRectF ri = icon.boundingRect();
-	//	QRectF rt = text.boundingRect();
-	//	rt.moveTopLeft(text.pos());
-
-	//	return ri.united(rt);
-	//}
-
-	//return icon.boundingRect();
+	return QRectF(QPoint(0,0), QSize(DkSettings::display.thumbPreviewSize, DkSettings::display.thumbPreviewSize));
 }
 
 QPainterPath DkThumbLabel::shape() const {
 
 	QPainterPath path;
 
-	//if (icon.pixmap().isNull()) {
-		path.addRect(boundingRect());
-		return path;
-	//}
-	//else
-	//	path = icon.shape();
-
-	//if (true)
-	//	path.addPath(text.shape());
-
-
-	//return path;
+	path.addRect(boundingRect());
+	return path;
 }
 
 void DkThumbLabel::updateLabel() {
@@ -1349,6 +1337,12 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 	if (to == -1)
 		to = thumbLabels.size();
 
+	if (from > to) {
+		int tmp = to;
+		to = from;
+		from = tmp;
+	}
+
 	for (int idx = from; idx < to && idx < thumbLabels.size(); idx++) {
 		thumbLabels.at(idx)->setSelected(selected);
 	}
@@ -1494,6 +1488,29 @@ QList<QUrl> DkThumbScene::getSelectedUrls() const {
 	return urls;
 }
 
+int DkThumbScene::findThumb(DkThumbLabel* thumb) const {
+
+	int thumbIdx = -1;
+
+	for (int idx = 0; idx < thumbLabels.size(); idx++) {
+		if (thumb == thumbLabels.at(idx)) {
+			thumbIdx = idx;
+			break;
+		}
+	}
+
+	return thumbIdx;
+}
+
+bool DkThumbScene::allThumbsSelected() const {
+
+	for (DkThumbLabel* label : thumbLabels)
+		if (label->flags() & QGraphicsItem::ItemIsSelectable && !label->isSelected())
+			return false;
+
+	return true;
+}
+
 // DkThumbView --------------------------------------------------------------------
 DkThumbsView::DkThumbsView(DkThumbScene* scene, QWidget* parent /* = 0 */) : QGraphicsView(scene, parent) {
 
@@ -1506,6 +1523,7 @@ DkThumbsView::DkThumbsView(DkThumbScene* scene, QWidget* parent /* = 0 */) : QGr
 	setResizeAnchor(QGraphicsView::AnchorUnderMouse);
 	setAcceptDrops(true);
 
+	lastShiftIdx = -1;
 }
 
 void DkThumbsView::wheelEvent(QWheelEvent *event) {
@@ -1534,7 +1552,12 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event) {
 		//qDebug() << "item clicked: " << itemClicked;
 	}
 
-	QGraphicsView::mousePressEvent(event);
+	qDebug() << "mouse pressed";
+
+	DkThumbLabel* itemClicked = static_cast<DkThumbLabel*>(scene->itemAt(mapToScene(event->pos())));
+
+	//if (!itemClicked && event->modifiers() == Qt::NoModifier)
+		QGraphicsView::mousePressEvent(event);
 }
 
 void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
@@ -1562,8 +1585,22 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void DkThumbsView::mouseReleaseEvent(QMouseEvent *event) {
-
+	
 	QGraphicsView::mouseReleaseEvent(event);
+	
+	DkThumbLabel* itemClicked = static_cast<DkThumbLabel*>(scene->itemAt(mapToScene(event->pos())));
+
+	if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != 0) {
+		scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));
+		qDebug() << "selecting... with SHIFT from: " << lastShiftIdx << " to: " << scene->findThumb(itemClicked);
+	}
+	else if (itemClicked != 0) {
+		lastShiftIdx = scene->findThumb(itemClicked);
+		qDebug() << "starting shift: " << lastShiftIdx;
+	}
+	else
+		lastShiftIdx = -1;
+
 }
 
 void DkThumbsView::dragEnterEvent(QDragEnterEvent *event) {
@@ -1743,6 +1780,7 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 
 	view = new DkThumbsView(thumbsScene, this);
 	connect(view, SIGNAL(updateDirSignal(QDir)), this, SIGNAL(updateDirSignal(QDir)));
+	connect(thumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
@@ -1750,6 +1788,8 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	layout->addWidget(toolbar);
 	layout->addWidget(view);
 	setLayout(layout);
+
+	enableSelectionActions();
 }
 
 void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions, QString menuTitle) {
@@ -1924,6 +1964,15 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 	//QGraphicsView::contextMenuEvent(event);
 }
 
+void DkThumbScrollWidget::enableSelectionActions() {
 
+	bool enable = !thumbsScene->getSelectedUrls().isEmpty();
+
+	actions[action_copy]->setEnabled(enable);
+	actions[action_rename]->setEnabled(enable);
+	actions[action_delete]->setEnabled(enable);
+
+	actions[action_select_all]->setChecked(thumbsScene->allThumbsSelected());
+}
 
 }

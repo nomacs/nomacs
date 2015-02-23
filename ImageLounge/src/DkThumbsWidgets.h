@@ -229,6 +229,8 @@ public:
 	QList<QUrl> getSelectedUrls() const;
 	void setImageLoader(QSharedPointer<DkImageLoader> loader);
 	void copyImages(const QMimeData* mimeData) const;
+	int findThumb(DkThumbLabel* thumb) const;
+	bool allThumbsSelected() const;
 
 public slots:
 	void updateThumbLabels();
@@ -291,6 +293,7 @@ protected:
 
 	DkThumbScene* scene;
 	QPointF mousePos;
+	int lastShiftIdx;
 
 };
 
@@ -326,6 +329,7 @@ public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 	void setDir(QDir dir);
+	void enableSelectionActions();
 
 signals:
 	void updateDirSignal(QDir dir);
