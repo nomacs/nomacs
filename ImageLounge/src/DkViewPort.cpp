@@ -37,6 +37,7 @@
 #include <QClipboard>
 #include <QShortcut>
 #include <QMovie>
+#include <QMimeData>
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -1578,7 +1579,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 			urls.append(fileUrl);
 
 			// who deletes me?
-			QMimeData* mimeData = new QMimeData;
+			QMimeData* mimeData = new QMimeData();
 
 			if (loader->file().exists() && !loader->isEdited())
 				mimeData->setUrls(urls);

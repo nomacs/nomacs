@@ -566,9 +566,11 @@ QImage DkMetaDataT::getThumbnail() const {
 	try {
 		Exiv2::ExifThumb thumb(exifData);
 		Exiv2::DataBuf buffer = thumb.copy();
+		
 		// ok, get the buffer...
 		std::pair<Exiv2::byte*, long> stdBuf = buffer.release();
 		QByteArray ba = QByteArray((char*)stdBuf.first, (int)stdBuf.second);
+		
 		qThumb.loadFromData(ba);
 
 		delete[] stdBuf.first;

@@ -311,6 +311,7 @@ public:
 		action_paste,
 		action_rename,
 		action_delete,
+		action_filter,
 
 		actions_end
 	};
@@ -330,6 +331,7 @@ public slots:
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
 	void setDir(QDir dir);
 	void enableSelectionActions();
+	void setFilterFocus() const;
 
 signals:
 	void updateDirSignal(QDir dir);

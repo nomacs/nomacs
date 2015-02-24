@@ -37,6 +37,7 @@
 #include <QFileDialog>
 #include <QClipboard>
 #include <QStackedLayout>
+#include <QMimeData>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -46,7 +47,7 @@ DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObj
 	imageLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
 	imageLoader->setCurrentImage(imgC);
 
-	this->tabMode = tab_recent_files;
+	this->tabMode = (!imgC) ? tab_recent_files : tab_single_image;
 	this->tabIdx = idx;
 }
 
@@ -308,7 +309,6 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		return;
 
 	updateLoader(tabInfos.at(idx)->getImageLoader());
-
 	thumbScrollWidget->clear();
 
 	tabInfos.at(idx)->activate();
@@ -744,8 +744,13 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 				return false;
 		}
 
-		for (int idx = 1; idx < urls.size() && idx < 20; idx++)
-			addTab(QFileInfo(urls[idx].toLocalFile()));
+		for (int idx = 1; idx < urls.size() && idx < 20; idx++) {
+
+			QFileInfo fi = DkUtils::urlToLocalFile(urls[idx]);
+
+			if (DkUtils::isValid(fi))
+				addTab(QFileInfo(urls[idx].toLocalFile()));
+		}
 
 		return true;
 	}

@@ -32,6 +32,7 @@
 #include <QBitArray>
 #include <QColor>
 #include <QDate>
+#include <QSharedPointer>
 #pragma warning(pop)	// no warnings from includes - end
 
 #pragma warning(disable: 4251)	// TODO: remove

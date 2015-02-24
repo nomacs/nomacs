@@ -48,6 +48,7 @@
 #include <QTranslator>
 #include <QDebug>
 #include <QDir>
+#include <QTextStream>
 #pragma warning(pop)	// no warnings from includes - end
 
 #include "DkNoMacs.h"
@@ -94,6 +95,11 @@ int main(int argc, char *argv[]) {
 #endif
 
 	qDebug() << "nomacs - Image Lounge\n";
+
+	//QImage img(QString("D:/img/raws/small-bug/xbmpcc_1_2013-11-13_1251_C0000_000047.dng"));
+
+	//nmc::DkThumbNail* t1 = new nmc::DkThumbNail();
+	//t1->compute();
 
 	//qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
 	//qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";

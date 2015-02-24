@@ -44,6 +44,11 @@ endmacro(NMC_OPTION)
 
 # Searches for Qt with the required components
 macro(NMC_FINDQT)
+	
+	unset(QT_QTCORE_LIBRARY CACHE)
+	unset(QT_QTGUI_LIBRARY CACHE)
+	unset(QT_QTNETWORK_LIBRARY CACHE)
+	unset(QT_QTMAIN_LIBRARY CACHE)
 
 	# set(CMAKE_AUTOMOC ON)
 	set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -55,7 +60,7 @@ macro(NMC_FINDQT)
 		if(ENABLE_UPNP)
 			find_package(Qt4 REQUIRED QtCore QtGui QtNetwork QtXml)
 		else()
-			 find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
+			find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
 		endif(ENABLE_UPNP)
 		
 		find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)

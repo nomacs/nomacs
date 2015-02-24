@@ -240,7 +240,11 @@ void DkImageContainer::setFileInfo(const QFileInfo& fileInfo) {
 	this->fileInfo = fileInfo;
 
 #ifdef WIN32
+#if QT_VERSION < 0x050000
 	this->fileNameStr = fileInfo.fileName().toStdWString();
+#else
+	this->fileNameStr = DkUtils::qStringToStdWString(fileInfo.fileName());
+#endif
 #endif
 }
 

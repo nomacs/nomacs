@@ -82,7 +82,7 @@
 #include <QTimer>
 #include <qmath.h>
 #include <QDesktopServices>
-
+#include <QSplashScreen>
 // quazip
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
@@ -93,7 +93,7 @@
 namespace nmc {
 
 // DkSplashScreen --------------------------------------------------------------------
-DkSplashScreen::DkSplashScreen(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
+DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDialog(0, flags) {
 
 	QPixmap img(":/nomacs/img/splash-screen.png");
 	setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);

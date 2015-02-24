@@ -51,6 +51,7 @@
 #include <QClipboard>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QMimeData>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1335,7 +1336,7 @@ void DkThumbScene::selectAllThumbs(bool selected) {
 void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, int to /* = -1 */) {
 
 	if (to == -1)
-		to = thumbLabels.size();
+		to = thumbLabels.size()-1;
 
 	if (from > to) {
 		int tmp = to;
@@ -1344,7 +1345,7 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 	}
 
 	blockSignals(true);
-	for (int idx = from; idx < to && idx < thumbLabels.size(); idx++) {
+	for (int idx = from; idx <= to && idx < thumbLabels.size(); idx++) {
 		thumbLabels.at(idx)->setSelected(selected);
 	}
 	blockSignals(false);
@@ -1358,7 +1359,7 @@ void DkThumbScene::copySelected() const {
 	if (urls.empty())
 		return;
 
-	QMimeData* mimeData = new QMimeData;
+	QMimeData* mimeData = new QMimeData();
 
 	if (!urls.empty()) {
 		mimeData->setUrls(urls);
@@ -1555,7 +1556,11 @@ void DkThumbsView::mousePressEvent(QMouseEvent *event) {
 
 	qDebug() << "mouse pressed";
 
+#if QT_VERSION < 0x050000
 	DkThumbLabel* itemClicked = static_cast<DkThumbLabel*>(scene->itemAt(mapToScene(event->pos())));
+#else
+	DkThumbLabel* itemClicked = static_cast<DkThumbLabel*>(scene->itemAt(mapToScene(event->pos()), QTransform()));
+#endif
 
 	// this is a bit of a hack
 	// what we want to achieve: if the user is selecting with e.g. shift or ctrl 
@@ -1593,7 +1598,11 @@ void DkThumbsView::mouseReleaseEvent(QMouseEvent *event) {
 	
 	QGraphicsView::mouseReleaseEvent(event);
 	
+#if QT_VERSION < 0x050000
 	DkThumbLabel* itemClicked = static_cast<DkThumbLabel*>(scene->itemAt(mapToScene(event->pos())));
+#else
+	DkThumbLabel* itemClicked = static_cast<DkThumbLabel*>(scene->itemAt(mapToScene(event->pos()), QTransform()));
+#endif
 
 	if (lastShiftIdx != -1 && event->modifiers() & Qt::ShiftModifier && itemClicked != 0) {
 		scene->selectThumbs(true, lastShiftIdx, scene->findThumb(itemClicked));
@@ -1780,12 +1789,13 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 	thumbsScene = new DkThumbScene(this);
 	//thumbsView->setContentsMargins(0,0,0,0);
 
-	createActions();
-	createToolbar();
-
 	view = new DkThumbsView(thumbsScene, this);
+	view->setFocusPolicy(Qt::StrongFocus);
 	connect(view, SIGNAL(updateDirSignal(QDir)), this, SIGNAL(updateDirSignal(QDir)));
 	connect(thumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
+
+	createActions();
+	createToolbar();
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setContentsMargins(0,0,0,0);
@@ -1842,11 +1852,6 @@ void DkThumbScrollWidget::createToolbar() {
 		toolbar->setObjectName("toolBarWithGradient");
 	}
 
-	filterEdit = new QLineEdit("", this);
-	filterEdit->setPlaceholderText(tr("Filter Files"));
-	filterEdit->setMaximumWidth(250);
-	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
-
 	toolbar->addAction(actions[action_zoom_in]);
 	toolbar->addAction(actions[action_zoom_out]);
 	toolbar->addAction(actions[action_display_squares]);
@@ -1856,7 +1861,12 @@ void DkThumbScrollWidget::createToolbar() {
 	toolbar->addAction(actions[action_paste]);
 	toolbar->addAction(actions[action_rename]);
 	toolbar->addAction(actions[action_delete]);
-	
+
+	filterEdit = new QLineEdit("", this);
+	filterEdit->setPlaceholderText(tr("Filter Files (Ctrl + F)"));
+	filterEdit->setMaximumWidth(250);
+	connect(filterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(filterChangedSignal(const QString&)));
+
 	// right align search filters
 	QWidget* spacer = new QWidget(this);
 	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1891,6 +1901,10 @@ void DkThumbScrollWidget::createActions() {
 	actions[action_show_labels]->setChecked(DkSettings::display.showThumbLabel);
 	connect(actions[action_show_labels], SIGNAL(triggered(bool)), thumbsScene, SLOT(toggleThumbLabels(bool)));
 
+	actions[action_filter] = new QAction(tr("&Filter"), this);
+	actions[action_filter]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+	connect(actions[action_filter], SIGNAL(triggered()), this, SLOT(setFilterFocus()));
+
 	actions[action_delete] = new QAction(QIcon(":/nomacs/img/trash.png"), tr("&Delete"), this);
 	actions[action_delete]->setShortcut(QKeySequence::Delete);
 	connect(actions[action_delete], SIGNAL(triggered()), thumbsScene, SLOT(deleteSelected()));
@@ -1918,9 +1932,11 @@ void DkThumbScrollWidget::createActions() {
 	}
 
 	// now colorize all icons
-	for (QAction* action : actions)
-		action->setIcon(DkImage::colorizePixmap(action->icon().pixmap(32), DkSettings::display.iconColor));
-	
+	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
+		for (QAction* action : actions)
+			action->setIcon(DkImage::colorizePixmap(action->icon().pixmap(32), DkSettings::display.iconColor));
+	}
+
 	addActions(actions.toList());
 }
 
@@ -1949,6 +1965,11 @@ void DkThumbScrollWidget::setVisible(bool visible) {
 		filterEdit->setText("");
 		qDebug() << "showing thumb scroll widget...";
 	}
+}
+
+void DkThumbScrollWidget::setFilterFocus() const {
+
+	filterEdit->setFocus(Qt::MouseFocusReason);
 }
 
 void DkThumbScrollWidget::resizeEvent(QResizeEvent *event) {

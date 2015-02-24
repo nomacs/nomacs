@@ -80,6 +80,7 @@
 #include <QDrag>
 #include <QVector2D>
 #include <qmath.h>
+#include <QMimeData>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -1460,6 +1461,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	fileActions[menu_file_prev]->setEnabled(enable);
 	fileActions[menu_file_next]->setEnabled(enable);
 	fileActions[menu_file_goto]->setEnabled(enable);
+	fileActions[menu_file_find]->setEnabled(enable);
 
 	editActions[menu_edit_rotate_cw]->setEnabled(enable);
 	editActions[menu_edit_rotate_ccw]->setEnabled(enable);
@@ -2787,9 +2789,9 @@ void DkNoMacs::computeThumbsBatch() {
 
 void DkNoMacs::aboutDialog() {
 
-	DkSplashScreen* spScreen = new DkSplashScreen(this, 0/*, Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint*/);
+	DkSplashScreen* spScreen = new DkSplashScreen(this, 0);
 	spScreen->exec();
-	delete spScreen;
+	spScreen->deleteLater();
 }
 
 void DkNoMacs::openDocumentation() {
@@ -3991,7 +3993,7 @@ void DkNoMacsSync::mouseMoveEvent(QMouseEvent *event) {
 			qDebug() << "serverport: " << localClient->getServerPort();
 
 			QDrag* drag = new QDrag(this);
-			QMimeData *mimeData = new QMimeData;
+			QMimeData* mimeData = new QMimeData;
 			mimeData->setData("network/sync-dir", connectionData);
 
 			drag->setMimeData(mimeData);
