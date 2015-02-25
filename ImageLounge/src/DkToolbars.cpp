@@ -544,11 +544,13 @@ void DkTransferToolBar::createIcons() {
 
 	toolBarIcons[icon_toolbar_reset] = ICON("", ":/nomacs/img/gradient-reset.png");
 	toolBarIcons[icon_toolbar_pipette] = ICON("", ":/nomacs/img/pipette.png");
+	toolBarIcons[icon_toolbar_save] = ICON("", ":/nomacs/img/save.png");
 
-	if (!DkSettings::display.defaultIconColor) {
+	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
 		// now colorize the icons
 		toolBarIcons[icon_toolbar_reset].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_reset].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 		toolBarIcons[icon_toolbar_pipette].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_pipette].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
+		toolBarIcons[icon_toolbar_save].addPixmap(DkImage::colorizePixmap(toolBarIcons[icon_toolbar_save].pixmap(100, QIcon::Normal, QIcon::Off), DkSettings::display.iconColor), QIcon::Normal, QIcon::Off);
 	}
 	
 	toolBarActions.resize(toolbar_end);
@@ -559,7 +561,7 @@ void DkTransferToolBar::createIcons() {
 	toolBarActions[toolbar_pipette] = new QAction(toolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
 	toolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
 
-	toolBarActions[toolbar_save] = new QAction(QIcon(":/nomacs/img/save.png"), tr("Save Gradient"), this);
+	toolBarActions[toolbar_save] = new QAction(toolBarIcons[icon_toolbar_save], tr("Save Gradient"), this);
 	toolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
 	connect(toolBarActions[toolbar_save], SIGNAL(triggered()), this, SLOT(saveGradient()));
 

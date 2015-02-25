@@ -147,13 +147,14 @@ private:
 enum toolBarIcons {
 	icon_toolbar_reset,
 	icon_toolbar_pipette,
+	icon_toolbar_save,
 	icon_toolbar_end,	// nothing beyond this point
 };
 
 enum toolBarActions {
+	toolbar_save,
 	toolbar_reset,
 	toolbar_pipette,
-	toolbar_save,
 	toolbar_end,	// nothing beyond this point
 };
 
