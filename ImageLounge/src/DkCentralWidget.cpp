@@ -99,7 +99,9 @@ int DkTabInfo::getTabIdx() const {
 void DkTabInfo::setImage(QSharedPointer<DkImageContainerT> imgC) {
 	
 	imageLoader->setCurrentImage(imgC);
-	tabMode = tab_single_image;
+	
+	if (imgC)
+		tabMode = tab_single_image;
 }
 
 QSharedPointer<DkImageLoader> DkTabInfo::getImageLoader() const {
@@ -314,6 +316,11 @@ void DkCentralWidget::currentTabChanged(int idx) {
 	tabInfos.at(idx)->activate();
 	QSharedPointer<DkImageContainerT> imgC = tabInfos.at(idx)->getImage();
 
+	// TODO: this is a fast fix because we release today
+	// better solution: check why this state might happen
+	if (!imgC && tabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image)
+		tabInfos.at(idx)->setMode(DkTabInfo::tab_recent_files);
+
 	if (imgC && tabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image) {
 		tabInfos.at(idx)->getImageLoader()->load(imgC);
 		showViewPort();
@@ -327,6 +334,8 @@ void DkCentralWidget::currentTabChanged(int idx) {
 		viewport->deactivate();
 		showRecentFiles(true);
 	}
+
+	qDebug() << "[MARKUS] tab mode: " << tabInfos.at(idx)->getMode();
 
 	//switchWidget(tabInfos.at(idx)->getMode());
 }
