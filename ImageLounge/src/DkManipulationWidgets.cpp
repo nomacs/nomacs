@@ -40,6 +40,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QPainter>
+#include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -632,7 +633,7 @@ cv::Mat DkImageManipulationWidget::manipulateImage(cv::Mat inImg){
 
 	if (historyToolsVec.size() > 0) {
 
-		QProgressDialog* progress = new QProgressDialog("Applying changes to image...", "Cancel", 0, 100);
+		QProgressDialog* progress = new QProgressDialog("Applying changes to image...", "Cancel", 0, 100, qApp->activeWindow());
 		int step = (int) (100 / historyToolsVec.size());
 		progress->setWindowModality(Qt::WindowModal);
 		progress->setValue(1);	// a strange behavior of the progress dialog: first setValue shows an empty dialog (setting to zero won't work)

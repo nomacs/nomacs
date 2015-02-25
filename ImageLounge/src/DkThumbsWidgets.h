@@ -231,6 +231,7 @@ public:
 	void copyImages(const QMimeData* mimeData) const;
 	int findThumb(DkThumbLabel* thumb) const;
 	bool allThumbsSelected() const;
+	void ensureVisible(QSharedPointer<DkImageContainerT> img) const;
 
 public slots:
 	void updateThumbLabels();

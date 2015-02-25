@@ -199,7 +199,7 @@ void DkCentralWidget::createLayout() {
 
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->getThumbWidget()->setBackgroundBrush(DkSettings::slideShow.backgroundColor);
-	thumbScrollWidget->hide();
+	//thumbScrollWidget->hide();
 
 	tabbar = new QTabBar(this);
 	tabbar->setShape(QTabBar::RoundedNorth);
@@ -316,12 +316,13 @@ void DkCentralWidget::currentTabChanged(int idx) {
 
 	if (imgC && tabInfos.at(idx)->getMode() == DkTabInfo::tab_single_image) {
 		tabInfos.at(idx)->getImageLoader()->load(imgC);
-		showViewPort(true);
+		showViewPort();
 	}
 	else if (tabInfos.at(idx)->getMode() == DkTabInfo::tab_thumb_preview) {
-		showThumbView(true);
+		showThumbView();
 	}
 	else if (tabInfos.at(idx)->getMode() == DkTabInfo::tab_recent_files) {
+		showViewPort();
 		viewport->unloadImage();
 		viewport->deactivate();
 		showRecentFiles(true);
@@ -509,6 +510,11 @@ void DkCentralWidget::showThumbView(bool show) {
 		showViewPort(false);
 		thumbScrollWidget->updateThumbs(tabInfo->getImageLoader()->getImages());
 		thumbScrollWidget->getThumbWidget()->setImageLoader(tabInfo->getImageLoader());
+
+		if (tabInfo->getImage())
+			thumbScrollWidget->getThumbWidget()->ensureVisible(tabInfo->getImage());
+
+
 		//viewport->connectLoader(tabInfo->getImageLoader(), false);
 		connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), tabInfo->getImageLoader().data(), SLOT(loadDir(QDir)), Qt::UniqueConnection);
 		connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)), Qt::UniqueConnection);
@@ -541,6 +547,7 @@ void DkCentralWidget::showRecentFiles(bool show) {
 
 	if (show) {
 		recentFilesWidget->setCustomStyle(!viewport->getImage().isNull() || thumbScrollWidget->isVisible());
+		recentFilesWidget->raise();
 		recentFilesWidget->show();
 		qDebug() << "recent files size: " << recentFilesWidget->size();
 	}

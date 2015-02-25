@@ -386,6 +386,11 @@ void DkNoMacs::createToolbar() {
 	toolbar->addSeparator();
 
 	// edit
+	toolbar->addAction(editActions[menu_edit_copy]);
+	toolbar->addAction(editActions[menu_edit_paste]);
+	toolbar->addSeparator();
+
+	// edit
 	toolbar->addAction(editActions[menu_edit_rotate_ccw]);
 	toolbar->addAction(editActions[menu_edit_rotate_cw]);
 	toolbar->addSeparator();
@@ -507,6 +512,9 @@ void DkNoMacs::createIcons() {
 	editIcons[icon_edit_rotate_ccw] = ICON("object-rotate-left", ":/nomacs/img/rotate-cc.png");
 	editIcons[icon_edit_crop] = ICON("object-edit-crop", ":/nomacs/img/crop.png");
 	editIcons[icon_edit_resize] = ICON("object-edit-resize", ":/nomacs/img/resize.png");
+	editIcons[icon_edit_copy] = ICON("object-edit-copy", ":/nomacs/img/copy.png");
+	editIcons[icon_edit_paste] = ICON("object-edit-paste", ":/nomacs/img/paste.png");
+	editIcons[icon_edit_delete] = ICON("object-edit-delete", ":/nomacs/img/trash.png");
 
 	viewIcons.resize(icon_view_end);
 	viewIcons[icon_view_fullscreen] = ICON("view-fullscreen", ":/nomacs/img/fullscreen.png");
@@ -965,7 +973,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180°"));
 	connect(editActions[menu_edit_rotate_180], SIGNAL(triggered()), vp, SLOT(rotate180()));
 
-	editActions[menu_edit_copy] = new QAction(tr("&Copy"), this);
+	editActions[menu_edit_copy] = new QAction(editIcons[icon_edit_copy], tr("&Copy"), this);
 	editActions[menu_edit_copy]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_copy]->setShortcut(QKeySequence::Copy);
 	editActions[menu_edit_copy]->setStatusTip(tr("copy image"));
@@ -986,7 +994,7 @@ void DkNoMacs::createActions() {
 	QList<QKeySequence> pastScs;
 	pastScs.append(QKeySequence::Paste);
 	pastScs.append(shortcut_paste);
-	editActions[menu_edit_paste] = new QAction(tr("&Paste"), this);
+	editActions[menu_edit_paste] = new QAction(editIcons[icon_edit_paste], tr("&Paste"), this);
 	editActions[menu_edit_paste]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_paste]->setShortcuts(pastScs);
 	editActions[menu_edit_paste]->setStatusTip(tr("paste image"));
@@ -1040,7 +1048,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_unsharp]->setStatusTip(tr("Stretches the Local Contrast of an Image"));
 	connect(editActions[menu_edit_unsharp], SIGNAL(triggered()), this, SLOT(unsharpMask()));
 
-	editActions[menu_edit_delete] = new QAction(tr("&Delete"), this);
+	editActions[menu_edit_delete] = new QAction(editIcons[icon_edit_delete], tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
 	editActions[menu_edit_delete]->setStatusTip(tr("delete current file"));
@@ -1921,11 +1929,7 @@ void DkNoMacs::enterFullScreen() {
 	toolbar->hide();
 	movieToolbar->hide();
 	statusbar->hide();
-
-	DkCentralWidget* cw = reinterpret_cast<DkCentralWidget*>(centralWidget());
-	
-	if (cw)
-		cw->showTabs(true);
+	getTabWidget()->showTabs(false);
 
 	showFullScreen();
 
@@ -1949,14 +1953,11 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettings::app.showStatusBar) statusbar->show();
 		showNormal();
 
-		DkCentralWidget* cw = reinterpret_cast<DkCentralWidget*>(centralWidget());
-
-		if (cw)
-			cw->showTabs(true);
+		if (getTabWidget())
+			getTabWidget()->showTabs(true);
 
 		update();	// if no resize is triggered, the viewport won't change its color
 	}
-
 
 	if (viewport())
 		viewport()->setFullScreen(false);

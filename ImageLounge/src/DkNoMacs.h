@@ -385,6 +385,9 @@ enum editIcons {
 	icon_edit_rotate_ccw,
 	icon_edit_crop,
 	icon_edit_resize,
+	icon_edit_copy,
+	icon_edit_paste,
+	icon_edit_delete,
 
 	icon_edit_end,	// nothing beyond this point
 };

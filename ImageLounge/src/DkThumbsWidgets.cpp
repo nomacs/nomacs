@@ -1274,6 +1274,23 @@ void DkThumbScene::showFile(const QFileInfo& file) {
 		emit statusInfoSignal(file.fileName());
 }
 
+void DkThumbScene::ensureVisible(QSharedPointer<DkImageContainerT> img) const {
+
+	if (!img)
+		return;
+
+	for (DkThumbLabel* label : thumbLabels) {
+
+		if (label->getThumb()->getFile().absoluteFilePath() == img->file().absoluteFilePath()) {
+			label->ensureVisible();
+			break;
+		}
+
+
+	}
+
+}
+
 void DkThumbScene::toggleThumbLabels(bool show) {
 
 	DkSettings::display.showThumbLabel = show;
@@ -1823,7 +1840,10 @@ void DkThumbScrollWidget::addContextMenuActions(const QVector<QAction*>& actions
 
 		if (menuTitle == tr("&Sort")) {	// that's an awful hack
 			QPixmap pm(":/nomacs/img/sort.png");
-			pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
+			
+			if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode)
+				pm = DkImage::colorizePixmap(pm, DkSettings::display.iconColor);
+			
 			toolButton->setIcon(pm);
 		}
 		toolButton->setPopupMode(QToolButton::InstantPopup);

@@ -720,7 +720,7 @@ void DkSettings::setToDefaultSettings() {
 	app_p.privateMode = false;
 
 	global_p.skipImgs = 10;
-	global_p.numFiles = 80;
+	global_p.numFiles = 50;
 	global_p.loop = true;
 	global_p.scanSubFolders = false;
 	global_p.lastDir = QString();
