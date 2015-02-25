@@ -216,6 +216,7 @@ public:
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
 	void setDir(QDir);
+	void setInputDir(QDir dir);
 
 signals:
 	void newHeaderText(QString);
@@ -231,13 +232,13 @@ protected slots:
 
 protected:
 	virtual void createLayout();
-	
 
 private:
 
 	bool hUserInput;
 	bool rUserInput;
 	QDir outputDirectory;
+	QDir inputDirectory;
 	DkDirectoryEdit* outputlineEdit;
 	QVector<DkFilenameWidget*> filenameWidgets;
 	QVBoxLayout* filenameVBLayout;

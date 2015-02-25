@@ -523,10 +523,11 @@ void DkBatchOutput::createLayout() {
 
 void DkBatchOutput::browse() {
 
+	QString dirGuess = (outputlineEdit->text().isEmpty()) ? inputDirectory.absolutePath() : outputlineEdit->text();
 	
 	// load system default open dialog
 	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		outputlineEdit->text());
+		dirGuess);
 
 	if (dirName.isEmpty())
 		return;
@@ -538,6 +539,10 @@ void DkBatchOutput::setDir(QDir dir) {
 	outputDirectory = dir;
 	emit newHeaderText(dir.absolutePath());
 	outputlineEdit->setText(dir.absolutePath());
+}
+
+void DkBatchOutput::setInputDir(QDir dir) {
+	inputDirectory = dir;
 }
 
 void DkBatchOutput::plusPressed(DkFilenameWidget* widget) {
@@ -846,7 +851,8 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
 	fileSelection->setDir(currentDirectory);
-	outputSelection->setDir(currentDirectory);
+	outputSelection->setInputDir(currentDirectory);
+	//outputSelection->setDir(currentDirectory);
 }
 
 void DkBatchDialog::createLayout() {
@@ -914,7 +920,8 @@ void DkBatchDialog::accept() {
 	
 	// check if we are good to go
 	if (fileSelection->getSelectedFiles().empty()) {
-		QMessageBox::critical(this, tr("Error"), tr("No files selected."), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::information(this, tr("Wrong Configuration"), tr("Please select files for processing."), QMessageBox::Ok, QMessageBox::Ok);
+		return;
 	}
 
 	DkBatchOutput* outputWidget = dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget());
@@ -925,15 +932,42 @@ void DkBatchDialog::accept() {
 		return;
 	}
 
+	if (widgets[batch_output] && widgets[batch_input])  {
+		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batch_output]->contentWidget())->hasUserInput();
+		QString inputDirPath = dynamic_cast<DkFileSelection*>(widgets[batch_input]->contentWidget())->getDir();
+		QString outputDirPath = dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->getOutputDirectory();
+		
+		if (!outputChanged && inputDirPath.toLower() == outputDirPath.toLower() && dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->overwriteMode() != DkBatchConfig::mode_overwrite) {
+			QMessageBox::information(this, tr("Wrong Configuration"), tr("Please check 'Overwrite Existing Files' or choose a different output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			return;
+		}
+	}
+
+
 	DkBatchConfig config(fileSelection->getSelectedFiles(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
 	config.setMode(outputWidget->overwriteMode());
-
-	// TODO: collect all batch processes
+		
 	if (!config.isOk()) {
 
-		// TODO: write a warning
+		if (!config.getOutputDir().exists()) {
+			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
+			return;
+		}
+		else if (config.getUrls().empty()) {
+			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
+			return;
+		}
+		else if (config.getFileNamePattern().isEmpty()) {
+			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
+			return;
+		}
+		else if (config.getOutputDir() == QDir()) {
+			QMessageBox::information(this, tr("Input Missing"), tr("Please choose an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			return;
+		}
+
 		qDebug() << "config not ok - canceling";
-		QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot process the files requested."), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 
@@ -1015,24 +1049,13 @@ void DkBatchDialog::logButtonClicked() {
 void DkBatchDialog::widgetChanged() {
 	
 	if (widgets[batch_output] != 0 && widgets[batch_input])  {
-		bool outputChanged = dynamic_cast<DkBatchContent*>(widgets[batch_output]->contentWidget())->hasUserInput();
 		QString inputDirPath = dynamic_cast<DkFileSelection*>(widgets[batch_input]->contentWidget())->getDir();
 		QString outputDirPath = dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->getOutputDirectory();
 		
-		if (inputDirPath == "" || outputDirPath == "") {
+		if (inputDirPath == "" || outputDirPath == "")
 			buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
-			return;
-		}
-
-		bool enableButton = false;
-		if (!outputChanged && inputDirPath.toLower() != outputDirPath.toLower())
-			enableButton = true;
-		else if (outputChanged)
-			enableButton = true;
-		else if (dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->overwriteMode() == DkBatchConfig::mode_overwrite)
-			enableButton = true;
-
-		buttons->button(QDialogButtonBox::Ok)->setEnabled(enableButton);
+		else
+			buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
 	}
 
 	if (!fileSelection->getSelectedFiles().isEmpty()) {

@@ -213,6 +213,8 @@ bool DkBatchTransform::compute(QImage& img, QStringList& logStrings) const {
 		rotationMatrix.rotate((double)angle);
 		tmpImg = img.transformed(rotationMatrix);
 	}
+	else
+		tmpImg = img;
 
 	tmpImg = tmpImg.mirrored(horizontalFlip, verticalFlip);
 
