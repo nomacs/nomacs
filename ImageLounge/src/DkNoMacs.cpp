@@ -586,6 +586,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_auto_adjust]);
 	editMenu->addAction(editActions[menu_edit_norm]);
 	editMenu->addAction(editActions[menu_edit_invert]);
+	editMenu->addAction(editActions[menu_edit_gray_convert]);
 #ifdef WITH_OPENCV
 	editMenu->addAction(editActions[menu_edit_unsharp]);
 #endif
@@ -1011,12 +1012,24 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_auto_adjust]->setShortcut(shortcut_auto_adjust);
 	editActions[menu_edit_auto_adjust]->setStatusTip(tr("Auto Adjust Image Contrast and Color Balance"));
 	connect(editActions[menu_edit_auto_adjust], SIGNAL(triggered()), this, SLOT(autoAdjustImage()));
-	
+
+
+
 	editActions[menu_edit_invert] = new QAction(tr("&Invert Image"), this);
-	//editActions[menu_edit_invert]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-	//editActions[menu_edit_invert]->setShortcut();
-	editActions[menu_edit_invert]->setStatusTip(tr("Invert the Image"));
+//	editActions[menu_edit_invert]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+//	editActions[menu_edit_invert]->setShortcut();
+	editActions[menu_edit_invert]->setStatusTip(tr("Invert the Image"));		    
 	connect(editActions[menu_edit_invert], SIGNAL(triggered()), this, SLOT(invertImage()));
+
+	
+
+	editActions[menu_edit_gray_convert] = new QAction(tr("&Convert to Grayscale"), this);	
+	editActions[menu_edit_gray_convert]->setStatusTip(tr("Convert to Grayscale"));		   
+	connect(editActions[menu_edit_gray_convert], SIGNAL(triggered()), this, SLOT(convert2gray()));
+
+
+
+
 
 	editActions[menu_edit_unsharp] = new QAction(tr("&Unsharp Mask"), this);
 	editActions[menu_edit_unsharp]->setStatusTip(tr("Stretches the Local Contrast of an Image"));
@@ -1460,6 +1473,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_unsharp]->setEnabled(false);
 #endif
 	editActions[menu_edit_invert]->setEnabled(enable);
+	editActions[menu_edit_gray_convert]->setEnabled(enable);	
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
 	
@@ -2005,6 +2019,8 @@ void DkNoMacs::invertImage() {
 
 	QImage img = vp->getImage();
 	img.invertPixels();
+	/*img = img.mirrored(false, true);*/
+	
 
 	if (img.isNull())
 		vp->getController()->setInfo(tr("Sorry, I cannot Invert the Image..."));
@@ -2012,6 +2028,38 @@ void DkNoMacs::invertImage() {
 		vp->setEditedImage(img);
 
 }
+
+
+
+void DkNoMacs::convert2gray() {
+
+	DkViewPort* vp = viewport();
+
+	if (!vp)
+		return;
+
+	QImage img = vp->getImage();
+
+/*	new function for converting to grayscale here 	*/
+	QVector<QRgb> table(256);
+	for(int i=0;i<256;++i)
+		table[i]=qRgb(i,i,i);
+
+	img = img.convertToFormat(QImage::Format_Indexed8,table);//,Qt::ThresholdDither);
+
+/*	*/
+
+	
+
+	if (img.isNull())
+		vp->getController()->setInfo(tr("Sorry, I cannot convert the Image..."));
+	else
+		vp->setEditedImage(img);
+
+}
+
+
+
 
 void DkNoMacs::normalizeImage() {
 
@@ -3038,6 +3086,7 @@ void DkNoMacs::saveFileWeb() {
 
 void DkNoMacs::resizeImage() {
 
+
 	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
@@ -3057,6 +3106,7 @@ void DkNoMacs::resizeImage() {
 	}
 
 	qDebug() << "resize image: " << viewport()->getImage().size();
+
 
 	resizeDialog->setImage(viewport()->getImage());
 
