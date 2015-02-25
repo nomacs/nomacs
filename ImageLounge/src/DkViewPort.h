@@ -612,7 +612,7 @@ public slots:
 	//TODO: remove the functions, which are not used anymore:
 	void changeChannel(int channel);
 	void changeColorTable(QGradientStops stops);
-	void pickColor();
+	void pickColor(bool enable);
 	void enableTF(bool enable);
 	QImage getImage();
 

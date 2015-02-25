@@ -517,10 +517,6 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 	connect(enableTFCheckBox, SIGNAL(stateChanged(int)), this, SLOT(enableTFCheckBoxClicked(int)));
 	connect(gradient, SIGNAL(gradientChanged()), this, SLOT(applyTF()));
 
-	// Actions called triggered by toolbar buttons:
-	connect(toolBarActions[icon_toolbar_reset], SIGNAL(triggered()), this, SLOT(reset()));
-	connect(toolBarActions[toolbar_pipette], SIGNAL(triggered()), this, SLOT(pickColor()));
-
 	// needed for initialization
 	connect(this, SIGNAL(gradientChanged()), gradient, SIGNAL(gradientChanged()));
 
@@ -556,10 +552,15 @@ void DkTransferToolBar::createIcons() {
 	toolBarActions.resize(toolbar_end);
 	toolBarActions[toolbar_reset] = new QAction(toolBarIcons[icon_toolbar_reset], tr("Reset"), this);
 	toolBarActions[toolbar_reset]->setStatusTip(tr("Resets the Pseudo Color function"));
+	connect(toolBarActions[toolbar_reset], SIGNAL(triggered()), this, SLOT(resetGradient()));
+
 	//toolBarActions[toolbar_reset]->setToolTip("was geht?");
 
 	toolBarActions[toolbar_pipette] = new QAction(toolBarIcons[icon_toolbar_pipette], tr("Select Color"), this);
 	toolBarActions[toolbar_pipette]->setStatusTip(tr("Adds a slider at the selected color value"));
+	toolBarActions[toolbar_pipette]->setCheckable(true);
+	toolBarActions[toolbar_pipette]->setChecked(false);
+	connect(toolBarActions[toolbar_pipette], SIGNAL(triggered(bool)), this, SLOT(pickColor(bool)));
 
 	toolBarActions[toolbar_save] = new QAction(toolBarIcons[icon_toolbar_save], tr("Save Gradient"), this);
 	toolBarActions[toolbar_save]->setStatusTip(tr("Saves the current Gradient"));
@@ -584,7 +585,7 @@ void DkTransferToolBar::saveSettings() {
 
 		for (int sIdx = 0; sIdx < stops.size(); sIdx++) {
 			settings.setArrayIndex(sIdx);
-			settings.setValue("pos", (float)stops.at(sIdx).first);
+			settings.setValue("posRGBA", (float)stops.at(sIdx).first);
 			settings.setValue("colorRGBA", stops.at(sIdx).second.rgba());
 		}
 		settings.endArray();
@@ -611,7 +612,7 @@ void DkTransferToolBar::loadSettings() {
 			settings.setArrayIndex(sIdx);
 			
 			QGradientStop s;
-			s.first = settings.value("pos", 0).toFloat();
+			s.first = settings.value("posRGBA", 0).toFloat();
 			s.second = QColor::fromRgba(settings.value("colorRGBA", QColor().rgba()).toInt());
 			qDebug() << "pos: " << s.first << " col: " << s.second;
 			stops.append(s);
@@ -706,10 +707,9 @@ void DkTransferToolBar::applyImageMode(int mode) {
 
 };
 
-void DkTransferToolBar::pickColor() {
+void DkTransferToolBar::pickColor(bool enabled) {
 
-	emit pickColorRequest();
-	
+	emit pickColorRequest(enabled);
 };
 
 void DkTransferToolBar::enableTFCheckBoxClicked(int state) {
@@ -765,17 +765,14 @@ void DkTransferToolBar::changeChannel(int index) {
 
 }
 
-void DkTransferToolBar::reset() {
+void DkTransferToolBar::resetGradient() {
 
 	gradient->reset();
 
 	QGradientStops stops = gradient->getGradientStops();
 
 	emit colorTableChanged(stops);
-
 }
-
-
 
 void DkTransferToolBar::paintEvent(QPaintEvent* event) {
 

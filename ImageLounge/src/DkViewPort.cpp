@@ -2934,9 +2934,9 @@ void DkViewPortContrast::setImage(QImage newImg) {
 	
 }
 
-void DkViewPortContrast::pickColor() {
+void DkViewPortContrast::pickColor(bool enable) {
 
-	isColorPickerActive = true;
+	isColorPickerActive = enable;
 	this->setCursor(Qt::CrossCursor);
 
 }

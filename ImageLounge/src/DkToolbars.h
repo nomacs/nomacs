@@ -175,7 +175,7 @@ public:
 		
 
 signals:
-	void pickColorRequest();
+	void pickColorRequest(bool enabled);
 	void colorTableChanged(QGradientStops stops);
 	void channelChanged(int channel);
 	void transferFunctionChanged(int channel, QGradientStops stops);
@@ -189,13 +189,13 @@ public slots:
 	void saveGradient();
 	void deleteGradientMenu(QPoint pos);
 	void deleteGradient();
+	void resetGradient();
 
-private slots:
+protected slots:
 	void applyTF();
-	void pickColor();
+	void pickColor(bool enabled);
 	void changeChannel(int index);
 	void enableTFCheckBoxClicked(int state);
-	void reset();
 	void switchGradient(int idx);
 
 protected:
