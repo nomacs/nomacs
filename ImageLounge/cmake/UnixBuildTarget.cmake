@@ -11,7 +11,7 @@ if(NOT ENABLE_PLUGINS)
 	else()
 					message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 	endif()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAG} -Wno-unknown-pragmas")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
   #create the targets
   set(BINARY_NAME ${CMAKE_PROJECT_NAME})
   link_directories(${LIBRAW_LIBRARY_DIRS} ${OpenCV_LIBRARY_DIRS} ${EXIV2_LIBRARY_DIRS})
@@ -67,7 +67,7 @@ else()
 	else()
 					message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 	endif()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAG} -Wno-unknown-pragmas")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
 
   
   set(BINARY_NAME ${CMAKE_PROJECT_NAME})
