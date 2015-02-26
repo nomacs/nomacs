@@ -330,10 +330,10 @@ QVector<uchar> DkImage::getLinear2GammaTable() {
 
 		double i = idx/255.0;
 		if (i <= 0.0031308) {
-			gammaTable.append((uchar)qRound(i*12.92*255.0));
+			gammaTable.append((uchar)(qRound(i*12.92*255.0)));
 		}
 		else {
-			gammaTable.append((uchar)qRound(((1+a)*std::pow(i,1/2.4)-a)*255.0));
+			gammaTable.append((uchar)(qRound(((1+a)*std::pow(i,1/2.4)-a)*255.0)));
 		}
 	}
 
@@ -355,10 +355,10 @@ QVector<uchar> DkImage::getGamma2LinearTable() {
 
 		double i = idx/255.0;
 		if (i <= 0.04045) {
-			gammaTable.append((uchar)qRound(i/12.92*255.0));
+			gammaTable.append((uchar)(qRound(i/12.92*255.0)));
 		}
 		else {
-			gammaTable.append(std::pow((i+a)/(1+a),2.4)*255 > 0 ? (uchar)std::pow((i+a)/(1+a),2.4)*255 : 0);
+			gammaTable.append(std::pow((i+a)/(1+a),2.4)*255 > 0 ? (uchar)(std::pow((i+a)/(1+a),2.4)*255) : 0);
 		}
 	}
 
