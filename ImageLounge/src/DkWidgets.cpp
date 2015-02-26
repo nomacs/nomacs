@@ -3025,7 +3025,8 @@ DkRecentFilesWidget::~DkRecentFilesWidget() {
 
 	folderWatcher.blockSignals(true);
 	folderWatcher.cancel();
-	//folderWatcher.waitForFinished();
+	folderWatcher.waitForFinished();
+
 }
 
 void DkRecentFilesWidget::createLayout() {

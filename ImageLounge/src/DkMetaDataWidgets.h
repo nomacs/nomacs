@@ -34,6 +34,7 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseWidgets.h"
+#include "DkImageContainer.h"
 
 // Qt defines
 class QTreeView;
@@ -44,9 +45,6 @@ namespace nmc {
 
 // nomacs defines
 class TreeItem;
-class DkMetaDataT;
-class DkImageContainerT;
-class DkThumbNailT;
 
 class DkMetaDataModel : public QAbstractTableModel {
 	Q_OBJECT

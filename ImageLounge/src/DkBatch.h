@@ -33,6 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
+#include "DkImageContainer.h"
+
 // Qt defines
 class QListView;
 class QVBoxLayout;
@@ -77,7 +79,6 @@ class DkBatchProcessing;
 class DkBatchTransform;
 class DkBatchContent;
 class DkButton;
-class DkImageContainerT;
 class DkThumbScrollWidget;
 class DkImageLoader;
 class DkExplorer;

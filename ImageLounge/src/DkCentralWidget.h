@@ -32,6 +32,8 @@
 #include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
+#include "DkImageContainer.h"
+
 #pragma warning(disable: 4251)	// TODO: remove
 
 #ifndef DllExport
@@ -53,7 +55,6 @@ class QStackedLayout;
 namespace nmc {
 
 // nomacs defines
-class DkImageContainerT;
 class DkImageLoader;
 
 class DkTabInfo : public QObject {
