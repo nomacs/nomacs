@@ -12,7 +12,7 @@ endif(COMMAND cmake_policy)
 ######################## begin of project
 project(nomacs)
 
-set(NOMACS_VERSION 2.4.0)
+set(NOMACS_VERSION 2.4.1)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
