@@ -43,6 +43,7 @@
 
 #include "DkMath.h"
 #include "DkBaseWidgets.h"
+#include "DkImageContainer.h"
 
 // Qt defines
 class QColorDialog;
@@ -60,9 +61,6 @@ class QVBoxLayout;
 namespace nmc {
 
 // nomacs defines
-class DkThumbNail;
-class DkThumbNailT;
-class DkImageContainerT;
 class DkCropToolBar;
 
 class DkGradientLabel : public DkLabel {

@@ -36,6 +36,8 @@
 #include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
+#include "DkImageContainer.h"
+
 #ifdef WIN32
 	#pragma warning(disable: 4996)
 	#pragma warning(disable: 4251)	// TODO: remove
@@ -85,7 +87,6 @@ class DkRCManagerThread;
 class DkTransferToolBar;
 class DkPluginManager;
 class DkAppManager;
-class DkImageContainerT;
 class DkThumbsSaver;
 class DkPrintPreviewDialog;
 class DkBatchDialog;

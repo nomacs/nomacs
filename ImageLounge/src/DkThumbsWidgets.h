@@ -40,6 +40,7 @@
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseWidgets.h"
+#include "DkImageContainer.h"
 
 // Qt defines
 class QMenu;
@@ -49,8 +50,6 @@ class QLineEdit;
 namespace nmc {
 
 // nomacs defines
-class DkImageContainerT;
-class DkThumbNailT;
 class DkImageLoader;
 
 class DkFilePreview : public DkWidget {
