@@ -859,6 +859,9 @@ QVector2D DkMetaDataT::getResolution() const {
 
 void DkMetaDataT::setResolution(const QVector2D& res) {
 
+	if (getResolution() == res)
+		return;
+
 	QString x,y;
 	x.setNum(res.x());
 	y.setNum(res.y());
