@@ -1454,7 +1454,7 @@ bool DkImageLoader::deleteFile() {
 		if (fileHandle.remove()) {
 			QSharedPointer<DkImageContainerT> imgC = getSkippedImage(1);
 			load(imgC);
-			emit showInfoSignal(tr("%1 deleted...").arg(currentImage->file().fileName()));
+			emit showInfoSignal(tr("%1 deleted...").arg(QFileInfo(fileHandle.fileName()).fileName()));
 			return true;
 		}
 		else
