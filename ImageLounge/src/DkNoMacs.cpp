@@ -1534,6 +1534,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 
 void DkNoMacs::enableMovieActions(bool enable) {
 
+	DkSettings::app.showMovieToolBar=enable;
 	viewActions[menu_view_movie_pause]->setEnabled(enable);
 	viewActions[menu_view_movie_prev]->setEnabled(enable);
 	viewActions[menu_view_movie_next]->setEnabled(enable);
@@ -1978,6 +1979,7 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettings::app.showMenuBar) menu->show();
 		if (DkSettings::app.showToolBar) toolbar->show();
 		if (DkSettings::app.showStatusBar) statusbar->show();
+		if (DkSettings::app.showMovieToolBar) movieToolbar->show();
 		showNormal();
 
 		if (getTabWidget())
