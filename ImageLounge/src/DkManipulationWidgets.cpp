@@ -532,7 +532,8 @@ cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT,
 			{
 				float *ptrR = imgCh[0].ptr<float>(row);
 
-				for (int col = 0; col < tempImg.cols; col++) ptrR[col] = (float)ptrLutR[cvRound(ptrR[col] * (inLUT.cols-1))] / 65535.0f;
+				for (int col = 0; col < tempImg.cols; col++) 
+					ptrR[col] = (float)ptrLutR[cvRound(ptrR[col] * (inLUT.cols-1))] / 65535.0f;
 
 			}
 		}
@@ -571,7 +572,8 @@ cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT,
 			{
 				unsigned char *ptrR = imgCh[0].ptr<unsigned char>(row);
 
-				for (int col = 0; col < tempImg.cols; col++) ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
+				for (int col = 0; col < tempImg.cols; col++) 
+					ptrR[col] = (unsigned char) cvRound(ptrLutR[cvRound((ptrR[col] / 255.0f) * (inLUT.cols-1))] / 257.0f);
 
 			}
 		}
@@ -699,10 +701,12 @@ cv::Mat DkImageManipulationWidget::changeBrightnessAndContrast(cv::Mat inLUT, fl
 		for (int col = 0; col < outLUT.cols; col++) {
 
 			int v = cvRound((a * ptrU[col] / 257.0f + b) * 257);
-			if (v < 0) v = 0;
-			else if (v > 65535) v = 65535;
+			if (v < 0) 
+				v = 0;
+			else if (v > 65535) 
+				v = 65535;
 
-			ptrU[col] = (unsigned char)v;
+			ptrU[col] = (unsigned short)v;
 		}
 	}
 
