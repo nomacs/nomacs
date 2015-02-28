@@ -33,6 +33,7 @@
 #include "DkUtils.h"
 #include "DkImage.h"
 #include "DkSettings.h"
+#include "DkMessageBox.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDialogButtonBox>
@@ -50,6 +51,7 @@
 #include <QHBoxLayout>
 #include <QRadioButton>
 #include <QMessageBox>
+#include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -604,7 +606,7 @@ void DkBatchOutput::updateFileLabelPreview() {
 }
 
 QString DkBatchOutput::getOutputDirectory() {
-	return outputlineEdit->existsDirectory() ? QDir(outputlineEdit->text()).absolutePath() : "";
+	return QDir(outputlineEdit->text()).absolutePath();
 }
 
 QString DkBatchOutput::getFilePattern() {
@@ -943,10 +945,25 @@ void DkBatchDialog::accept() {
 		}
 	}
 
-
 	DkBatchConfig config(fileSelection->getSelectedFiles(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
 	config.setMode(outputWidget->overwriteMode());
-		
+
+	if (!config.getOutputDir().exists()) {
+
+		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Create Output Directory"), 
+			tr("Should I create:\n%1").arg(config.getOutputDir().absolutePath()), 
+			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), qApp->activeWindow());
+
+		msgBox->setDefaultButton(QMessageBox::Yes);
+		msgBox->setObjectName("batchOutputDirDialog");
+
+		int answer = msgBox->exec();
+
+		if (answer != QMessageBox::Accepted && answer != QMessageBox::Yes) {
+			return;
+		}
+	}
+
 	if (!config.isOk()) {
 
 		if (!config.getOutputDir().exists()) {
