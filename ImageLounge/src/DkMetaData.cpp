@@ -910,7 +910,7 @@ void DkMetaDataT::setOrientation(int o) {
 
 	Exiv2::Value::AutoPtr v = pos->getValue();
 	Exiv2::UShortValue* prv = dynamic_cast<Exiv2::UShortValue*>(v.release());
-	if (!prv)	return;
+	if (!prv) return;
 
 	Exiv2::UShortValue::AutoPtr rv = Exiv2::UShortValue::AutoPtr(prv);
 	if (rv->value_.empty())	return;
