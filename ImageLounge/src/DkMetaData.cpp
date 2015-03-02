@@ -213,10 +213,7 @@ QString DkMetaDataT::getDescription() const {
 			Exiv2::ExifData::iterator pos = exifData.findKey(key);
 
 			if (pos != exifData.end() && pos->count() != 0) {
-
-				Exiv2::Value::AutoPtr v = pos->getValue();
-
-				description = QString::fromStdString(pos->toString());
+				description = exiv2ToQString(pos->toString());
 			}
 		}
 	}
@@ -358,9 +355,9 @@ QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 			if (pos->count () < 2000) {	// diem: this is about performance - adobe obviously embeds whole images into tiff exiv data 
 
 				qDebug() << "pos count: " << pos->count();
-				Exiv2::Value::AutoPtr v = pos->getValue();
-			
-				info = QString::fromStdString(pos->toString());
+				//Exiv2::Value::AutoPtr v = pos->getValue();
+				info = exiv2ToQString(pos->toString());
+
 			}
 			else {
 				info = QObject::tr("<data too large to display>");
@@ -396,7 +393,7 @@ QString DkMetaDataT::getXmpValue(const QString& key) const {
 
 		if (pos != xmpData.end() && pos->count() != 0) {
 			Exiv2::Value::AutoPtr v = pos->getValue();
-			info = QString::fromStdString(pos->toString());
+			info = exiv2ToQString(pos->toString());
 		}
 	}
 
@@ -437,10 +434,11 @@ QString DkMetaDataT::getExifValue(const QString& key) const {
 		}
 
 		if (pos != exifData.end() && pos->count() != 0) {
-			Exiv2::Value::AutoPtr v = pos->getValue();
-			info = QString::fromStdString(pos->toString());
+			//Exiv2::Value::AutoPtr v = pos->getValue();
+			info = exiv2ToQString(pos->toString());
 		}
 	}
+
 
 	return info;
 }
@@ -467,7 +465,7 @@ QString DkMetaDataT::getIptcValue(const QString& key) const {
 
 		if (pos != iptcData.end() && pos->count() != 0) {
 			Exiv2::Value::AutoPtr v = pos->getValue();
-			info = QString::fromStdString(pos->toString());
+			info = exiv2ToQString(pos->toString());
 		}
 	}
 
@@ -715,28 +713,6 @@ QStringList DkMetaDataT::getXmpKeys() const {
 }
 
 
-QStringList DkMetaDataT::getExifValues() const {
-
-	QStringList exifValues;
-
-	if (exifState != loaded && exifState != dirty)
-		return QStringList();
-
-	Exiv2::ExifData &exifData = exifImg->exifData();
-	Exiv2::ExifData::const_iterator end = exifData.end();
-
-	if (exifData.empty())
-		return exifValues;
-
-	for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
-
-		std::string tmp = i->value().toString();
-		exifValues << QString::fromStdString(tmp);
-	}
-
-	return exifValues;
-}
-
 QStringList DkMetaDataT::getIptcKeys() const {
 
 	QStringList iptcKeys;
@@ -759,6 +735,29 @@ QStringList DkMetaDataT::getIptcKeys() const {
 	return iptcKeys;
 }
 
+QStringList DkMetaDataT::getExifValues() const {
+
+	QStringList exifValues;
+
+	if (exifState != loaded && exifState != dirty)
+		return QStringList();
+
+	Exiv2::ExifData &exifData = exifImg->exifData();
+	Exiv2::ExifData::const_iterator end = exifData.end();
+
+	if (exifData.empty())
+		return exifValues;
+
+	for (Exiv2::ExifData::const_iterator i = exifData.begin(); i != end; ++i) {
+
+		std::string tmp = i->value().toString();
+		QString info = exiv2ToQString(tmp); 
+		exifValues << info; 
+	}
+
+	return exifValues;
+}
+
 QStringList DkMetaDataT::getIptcValues() const {
 	
 	QStringList iptcValues;
@@ -774,7 +773,7 @@ QStringList DkMetaDataT::getIptcValues() const {
 	for (Exiv2::IptcData::iterator md = iptcData.begin(); md != endI; ++md) {
 
 		std::string tmp = md->value().toString();
-		iptcValues << QString::fromStdString(tmp);
+		iptcValues << exiv2ToQString(tmp);
 	}
 
 	return iptcValues;
@@ -1038,6 +1037,11 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 
 		Exiv2::Exifdatum& tag = exifData[key.toStdString()];
 
+		// TODO: save utf8 strings
+		//QByteArray ba = taginfo.toUtf8();
+		//Exiv2::DataValue val((const byte*)ba.data(), taginfo.size(), Exiv2::ByteOrder::bigEndian, Exiv2::TypeId::unsignedByte);
+
+		//tag.setValue(&val);
 		if (!tag.setValue(taginfo.toStdString())) {
 			exifState = dirty;
 			setExifSuccessfull = true;
@@ -1056,6 +1060,21 @@ bool DkMetaDataT::setExifValue(QString key, QString taginfo) {
 	}
 
 	return setExifSuccessfull;
+}
+
+QString DkMetaDataT::exiv2ToQString(std::string exifString) {
+
+	QString info;
+
+	if (QString::fromStdString(exifString).contains("charset=\"ASCII\"", Qt::CaseInsensitive)) {
+		info = QString::fromAscii((char*)(exifString.c_str()), exifString.size());
+		info = info.replace("charset=\"ASCII\" ", "", Qt::CaseInsensitive);
+	}
+	else {
+		info = QString::fromUtf8((char*)(exifString.c_str()), exifString.size());
+	}
+
+	return info;
 }
 
 void DkMetaDataT::printMetaData() const {
@@ -1393,6 +1412,24 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 	} 
 	else if (key == camSearchTags[DkSettings::camData_flash]) {
 		rValue = DkMetaDataHelper::getInstance().getFlashMode(metaData);
+	}
+	else if (value.contains("charset=")) {
+
+		if (value.contains("charset=\"unicode\"", Qt::CaseInsensitive)) {
+			rValue = rValue.replace("charset=\"unicode\" ", "", Qt::CaseInsensitive);
+
+			//// try to set the BOM ourselves (Note the string would not be released yet
+			//ushort* utfStr = new ushort[rValue.size()+2];
+			//utfStr[0] = 0xFF;
+			//utfStr[1] = 0xFE;
+			//utfStr = utfStr+2;
+			//
+			//utfStr = (ushort*)(rValue.data());
+			
+			qDebug() << "UNICODE conversion started...";
+			rValue = QString::fromUtf16((ushort*)(rValue.data()), rValue.size());
+		}
+
 	}
 
 	return rValue;

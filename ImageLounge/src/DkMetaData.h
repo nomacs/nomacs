@@ -99,6 +99,7 @@ public:
 	bool setExifValue(QString key, QString taginfo);
 	bool updateImageMetaData(const QImage& img);
 	void setThumbnail(QImage thumb);
+	static QString exiv2ToQString(std::string exifString);
 
 	bool hasMetaData() const;
 	bool isLoaded() const;
