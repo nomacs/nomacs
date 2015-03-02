@@ -136,6 +136,7 @@ public:
 		bool showToolBar;
 		bool showMenuBar;
 		bool showStatusBar;
+		bool showMovieToolBar;
 		QBitArray showFilePreview;
 		QBitArray showFileInfoLabel;
 		QBitArray showPlayer;

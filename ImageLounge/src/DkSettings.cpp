@@ -698,6 +698,7 @@ void DkSettings::setToDefaultSettings() {
 
 	app_p.showToolBar = true;
 	app_p.showStatusBar = false;
+	app_p.showMovieToolBar = false;
 	app_p.showFileInfoLabel = QBitArray(mode_end, true);
 	app_p.showFilePreview = QBitArray(mode_end, false);
 	app_p.showScroller = QBitArray(mode_end, false);
