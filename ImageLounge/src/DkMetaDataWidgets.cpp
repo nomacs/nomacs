@@ -49,7 +49,7 @@
 namespace nmc {
 
 // DkMetaDataModel --------------------------------------------------------------------
-DkMetaDataModel::DkMetaDataModel(QObject* parent /* = 0 */) : QAbstractTableModel(parent) {
+DkMetaDataModel::DkMetaDataModel(QObject* parent /* = 0 */) : QAbstractItemModel(parent) {
 
 	// create root
 	QVector<QVariant> rootData;

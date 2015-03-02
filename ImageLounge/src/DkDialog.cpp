@@ -83,6 +83,11 @@
 #include <qmath.h>
 #include <QDesktopServices>
 #include <QSplashScreen>
+
+#if QT_VERSION >= 0x050000
+#include <QKeySequenceEdit>
+#endif
+
 // quazip
 #ifdef WITH_QUAZIP
 #include <quazip/JlCompress.h>
@@ -135,8 +140,8 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 
 	// set the text
 	text = 
-		QString("Flo was here und wünscht<br>" 
-		"Stefan fiel Spaß während<br>" 
+		QString("Flo was here und w&uuml;nscht<br>" 
+		"Stefan fiel Spa&szlig; w&auml;hrend<br>" 
 		"Markus rockt... <br><br>" 
 
 		"<a href=\"http://www.nomacs.org\">www.nomacs.org</a><br>"
@@ -1766,9 +1771,17 @@ DkShortcutDelegate::DkShortcutDelegate(QObject* parent) : QItemDelegate(parent) 
 QWidget* DkShortcutDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
 	
 	QWidget* w = QItemDelegate::createEditor(parent, option, index);
+
+	if (!w)
+		return w;
+
+#if QT_VERSION < 0x050000
 	connect(w, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(w, SIGNAL(editingFinished()), this, SLOT(textChanged()));
-
+#else
+	connect(w, SIGNAL(keySequenceChanged(const QKeySequence&)), this, SLOT(keySequenceChanged(const QKeySequence&)));
+#endif	
+	
 	return w;
 }
 
@@ -1779,9 +1792,23 @@ bool DkShortcutDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, c
 	return QItemDelegate::editorEvent(event, model, option, index);
 }
 
+void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const {
+
+	const_cast<DkShortcutDelegate*>(this)->item = index.internalPointer();
+	emit clearDuplicateSignal();
+
+	QItemDelegate::setEditorData(editor, index);
+}
+
+#if QT_VERSION < 0x050000
 void DkShortcutDelegate::textChanged(QString text) {
 	emit checkDuplicateSignal(text, item);
 }
+#else
+void DkShortcutDelegate::keySequenceChanged(const QKeySequence& keySequence) {
+	emit checkDuplicateSignal(keySequence, item);
+}
+#endif
 
 // DkShortcutEditor --------------------------------------------------------------------
 DkShortcutEditor::DkShortcutEditor(QWidget *widget) : QLineEdit(widget) {
@@ -1866,7 +1893,7 @@ bool DkShortcutEditor::eventFilter(QObject *obj, QEvent *event) {
 //}
 
 // DkShortcutsModel --------------------------------------------------------------------
-DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractTableModel(parent) {
+DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractItemModel(parent) {
 
 	// create root
 	QVector<QVariant> rootData;
@@ -2000,6 +2027,7 @@ bool DkShortcutsModel::setData(const QModelIndex& index, const QVariant& value, 
 		item->setData(value, index.column());
 	}
 
+	//emit duplicateSignal("");		// TODO: we also have to clear if the user hits ESC
 	emit dataChanged(index, index);
 	return true;
 }
@@ -2016,9 +2044,9 @@ Qt::ItemFlags DkShortcutsModel::flags(const QModelIndex& index) const {
 	Qt::ItemFlags flags;
 
 	if (index.column() == 0)
-		flags = QAbstractTableModel::flags(index);
+		flags = QAbstractItemModel::flags(index);
 	if (index.column() == 1)
-		flags = QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+		flags = QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 
 	return flags;
 }
@@ -2063,8 +2091,17 @@ void DkShortcutsModel::checkDuplicate(QString text, void* item) {
 	}
 
 	QKeySequence ks(text);
+	checkDuplicate(ks, item);
+}
 
-	TreeItem* duplicate = rootItem->find(QKeySequence(text), 1);
+void DkShortcutsModel::checkDuplicate(const QKeySequence& ks, void* item) {
+
+	if (ks.isEmpty()) {
+		emit duplicateSignal("");
+		return;
+	}
+
+	TreeItem* duplicate = rootItem->find(ks, 1);
 
 	if (duplicate == item)
 		return;
@@ -2082,6 +2119,12 @@ void DkShortcutsModel::checkDuplicate(QString text, void* item) {
 	}
 	else 
 		emit duplicateSignal("");
+}
+
+void DkShortcutsModel::clearDuplicateInfo() const {
+
+	qDebug() << "duplicates cleared...";
+	emit duplicateSignal("");
 }
 
 void DkShortcutsModel::resetActions() {
@@ -2160,8 +2203,13 @@ void DkShortcutsDialog::createLayout() {
 	// register our special shortcut editor
 	QItemEditorFactory *factory = new QItemEditorFactory;
 
+#if QT_VERSION < 0x050000
 	QItemEditorCreatorBase *shortcutListCreator =
 		new QStandardItemEditorCreator<DkShortcutEditor>();
+#else
+	QItemEditorCreatorBase *shortcutListCreator =
+		new QStandardItemEditorCreator<QKeySequenceEdit>();
+#endif
 
 	factory->registerEditor(QVariant::KeySequence, shortcutListCreator);
 
@@ -2186,9 +2234,14 @@ void DkShortcutsDialog::createLayout() {
 	defaultButton = new QPushButton(tr("Set to &Default"), this);
 	defaultButton->setToolTip(tr("Removes All Custom Shortcuts"));
 	connect(defaultButton, SIGNAL(clicked()), this, SLOT(defaultButtonClicked()));
-
-	connect(scDelegate, SIGNAL(checkDuplicateSignal(QString, void*)), model, SLOT(checkDuplicate(QString, void*)));
 	connect(model, SIGNAL(duplicateSignal(QString)), notificationLabel, SLOT(setText(QString)));
+
+#if QT_VERSION < 0x050000
+	connect(scDelegate, SIGNAL(checkDuplicateSignal(QString, void*)), model, SLOT(checkDuplicate(QString, void*)));
+#else
+	connect(scDelegate, SIGNAL(checkDuplicateSignal(const QKeySequence&, void*)), model, SLOT(checkDuplicate(const QKeySequence&, void*)));
+	connect(scDelegate, SIGNAL(clearDuplicateSignal()), model, SLOT(clearDuplicateInfo()));
+#endif
 
 	// buttons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
