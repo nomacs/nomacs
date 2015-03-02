@@ -242,8 +242,12 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 			return false;
 		}
 
-		createImages(files, false);
-		sortImagesThreaded(images);
+		if (files.size() > 2000) {
+			createImages(files, false);
+			sortImagesThreaded(images);
+		}
+		else
+			createImages(files, true);
 
 		qDebug() << "getting file list.....";
 	}
@@ -279,8 +283,12 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		// so we should fix this using 2 strategies: 
 		// - thread the image creation process
 		// - while loading (if the user wants to move in the folder) we could display some message (e.g. indexing dir)
-		createImages(files, false);
-		sortImagesThreaded(images);
+		if (files.size() > 2000) {
+			createImages(files, false);
+			sortImagesThreaded(images);
+		}
+		else
+			createImages(files, true);
 
 		qDebug() << "new folder path: " << newDir.absolutePath() << " contains: " << images.size() << " images";
 	}
@@ -347,6 +355,14 @@ void DkImageLoader::createImages(const QFileInfoList& files, bool sort) {
 	if (sort) {
 		qSort(images.begin(), images.end(), imageContainerLessThanPtr);
 		qDebug() << "[DkImageLoader] after sorting: " << dt.getTotal();
+
+		emit updateDirSignal(images);
+
+		if (dirWatcher) {
+			if (!dirWatcher->directories().isEmpty())
+				dirWatcher->removePaths(dirWatcher->directories());
+			dirWatcher->addPath(dir.absolutePath());
+		}
 	}
 
 }
