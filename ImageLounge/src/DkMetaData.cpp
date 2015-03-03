@@ -1169,7 +1169,7 @@ void DkMetaDataHelper::init() {
 	exposureModes.append(QObject::tr("shutter priority"));
 	exposureModes.append(QObject::tr("program creative"));
 	exposureModes.append(QObject::tr("high-speed program"));
-	exposureModes.append(QObject::tr("porQObject::trait mode"));
+	exposureModes.append(QObject::tr("portrait mode"));
 	exposureModes.append(QObject::tr("landscape mode"));
 
 	// flash mapping is taken from: http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Flash
