@@ -29,6 +29,7 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <cmath>
+#include <float.h>
 #include <QDebug>
 #include <QPointF>
 #include <QPolygonF>
@@ -731,7 +732,7 @@ public:
 	/** 
 	 * Normal vector.
 	 * @return a vector which is normal to the current vector
-	 * (rotated by 90° counter clockwise).
+	 * (rotated by 90Â° counter clockwise).
 	 */
 	DkVector normalVec() const {
 
