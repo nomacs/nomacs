@@ -44,6 +44,7 @@
 #include <QListWidget>
 #include <QSlider>
 #include <QPushButton>
+#include <QMouseEvent>
 
 #include "DkPluginInterface.h"
 #include "DkNoMacs.h"

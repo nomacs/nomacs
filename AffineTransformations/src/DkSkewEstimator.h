@@ -36,6 +36,7 @@
 #include <cmath>
 #include <QProgressDialog>
 #include <QWidget>
+#include <QDebug>
 
 #include "DkImageStorage.h"
 

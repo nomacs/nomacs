@@ -47,6 +47,7 @@
 #include <QtCore/qmath.h>
 #include <QVector4D>
 #include <QSettings>
+#include <QMouseEvent>
 
 #include "DkPluginInterface.h"
 #include "DkNoMacs.h"

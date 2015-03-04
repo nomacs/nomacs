@@ -41,6 +41,7 @@
 #include <QColorDialog>
 #include <QSpinBox>
 #include <QPushButton>
+#include <QMouseEvent>
 
 #include "DkPluginInterface.h"
 #include "DkNoMacs.h"
