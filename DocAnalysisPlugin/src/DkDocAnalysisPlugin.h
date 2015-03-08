@@ -119,7 +119,7 @@ public:
 	
 	void setMainWindow(QMainWindow* win);
 
-	void getBrightness(const Mat& frame, double& brightness);
+	void getBrightness(const cv::Mat& frame, double& brightness);
 
 signals:
 	// distance measure functions

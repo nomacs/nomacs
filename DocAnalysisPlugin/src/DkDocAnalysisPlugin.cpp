@@ -973,7 +973,7 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 		// calculate the average brightness of the image by converting to YUV format
 		cv::Mat yuvImg;
 		cv::cvtColor(img, yuvImg, CV_BGR2YUV);
-		std::vector<Mat> ImgChannels;
+		std::vector<cv::Mat> ImgChannels;
 		cv::split(yuvImg, ImgChannels);
 		// calculate average vallue of luma component (Y channel)
 		cv::Scalar sum = cv::sum(ImgChannels[0]);
@@ -996,10 +996,10 @@ void DkDocAnalysisViewPort::setVisible(bool visible) {
 /**
 * Calculates the average Brigtness of a cv::Mat
 **/
-void DkDocAnalysisViewPort::getBrightness(const Mat& frame, double& brightness)
+void DkDocAnalysisViewPort::getBrightness(const cv::Mat& frame, double& brightness)
 {
-	Mat temp, lum; //color[3];
-	std::vector<Mat> color;
+	cv::Mat temp, lum; //color[3];
+	std::vector<cv::Mat> color;
 	temp = frame;
 
 	split(temp, color);
@@ -1011,7 +1011,7 @@ void DkDocAnalysisViewPort::getBrightness(const Mat& frame, double& brightness)
 
 	lum = color[0] + color [1] + color[2];
 
-	Scalar summ = sum(lum);
+	cv::Scalar summ = sum(lum);
 
 
 	brightness = summ[0]/((pow(2,64)-1)*frame.rows * frame.cols) * 2; //-- percentage conversion factor
