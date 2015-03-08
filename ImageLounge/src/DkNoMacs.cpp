@@ -361,7 +361,7 @@ void DkNoMacs::registerFileVersion() {
 
 void DkNoMacs::createToolbar() {
 
-	toolbar = addToolBar(tr("Edit"));
+	toolbar = new DkMainToolBar(tr("Edit"), this);
 	toolbar->setObjectName("EditToolBar");
 
 	if (DkSettings::display.smallIcons)
@@ -422,6 +422,8 @@ void DkNoMacs::createToolbar() {
 		movieToolbar->setIconSize(QSize(16, 16));
 	else
 		movieToolbar->setIconSize(QSize(32, 32));
+
+	toolbar->allActionsAdded();
 }
 
 

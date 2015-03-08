@@ -157,6 +157,7 @@ public:
 	static QFileInfo urlToLocalFile(const QUrl& url);
 	static QString colorToString(const QColor& col);
 	static QString readableByte(float bytes);
+	static QStringList filterStringList(const QString& query, const QStringList& list);
 
 #ifdef WITH_OPENCV
 	/**

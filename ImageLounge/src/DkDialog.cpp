@@ -940,33 +940,7 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 	if (text == currentSearch)
 		return;
 	
-	// white space is the magic thingy
-	QStringList queries = text.split(" ");
-	
-	if (queries.size() == 1) {
-		// if characters are added, use the result list -> speed-up
-		// I think we can't do that anymore for the sake of list view cropping...
-		resultList = (!text.contains(currentSearch) || !allDisplayed) ? fileList.filter(text, Qt::CaseInsensitive) : resultList.filter(text, Qt::CaseInsensitive);
-	}
-	else {
-		resultList = fileList;
-		for (int idx = 0; idx < queries.size(); idx++) {
-			resultList = resultList.filter(queries[idx], Qt::CaseInsensitive);
-			qDebug() << "query: " << queries[idx];
-		}
-	}
-
-	// if string match returns nothing -> try a regexp
-	if (resultList.empty()) {
-		QRegExp regExp(text);
-		resultList = fileList.filter(regExp);
-
-		if (resultList.empty()) {
-			regExp.setPatternSyntax(QRegExp::Wildcard);
-			resultList = fileList.filter(regExp);
-		}
-	}
-
+	resultList = DkUtils::filterStringList(text, fileList);
 	qDebug() << "searching takes: " << dt.getTotal();
 	currentSearch = text;
 

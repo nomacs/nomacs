@@ -92,6 +92,7 @@ class DkPrintPreviewDialog;
 class DkBatchDialog;
 class DkViewPort;
 class DkCentralWidget;
+class DkMainToolBar;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -664,7 +665,7 @@ protected:
 	QPoint mousePos;
 	
 	// toolbar
-	QToolBar* toolbar;
+	DkMainToolBar* toolbar;
 	QToolBar* movieToolbar;
 	QStatusBar* statusbar;
 	QVector<QLabel*> statusbarLabels;

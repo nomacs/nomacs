@@ -31,13 +31,106 @@
 #include "DkUtils.h"
 #include "DkImageStorage.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QToolBar>
+#include <QWidget>
+#include <QObject>
+#include <QPainter>
+#include <QLinearGradient>
+#include <QImage>
+#include <QPainterPath>
+#include <QDebug>
+#include <QMouseEvent>
+#include <QColorDialog>
+#include <QColor>
+#include <QGradientStops>
+#include <QPushButton>
+#include <QComboBox>
+#include <QLabel>
+#include <QCheckBox>
+#include <QHBoxLayout>
+#include <QLayout>
+#include <QIcon>
+#include <QAction>
+#include <QTranslator>
+#include <QDoubleSpinBox>
+#include <QMenu>
+#include <QLineEdit>
+#include <QCompleter>
+#include <QStringListModel>
+
+#include <QGridLayout>
+#include <QGraphicsOpacityEffect>
+#pragma warning(pop)		// no warnings from includes - end
+
 namespace nmc {
 
 #define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
 
+// DkQuickFilterCompleter --------------------------------------------------------------------
+DkQuickFilterCompleter::DkQuickFilterCompleter(QObject* parent /* = 0 */) : QCompleter(parent) {
+
+}
+
+void DkQuickFilterCompleter::setCompletionPrefix(const QString &prefix) {
+
+	QStringListModel* sm = static_cast<QStringListModel*>(model());
+
+	if (!sm)
+		QCompleter::setCompletionPrefix(prefix);
+
+
+	QStringList strings = sm->stringList();
+	strings = DkUtils::filterStringList(prefix, strings);
+	sm->setStringList(strings);
+
+}
+
+// DkMainToolBar --------------------------------------------------------------------
+DkMainToolBar::DkMainToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
+
+	createLayout();
+}
+
+void DkMainToolBar::createLayout() {
+
+	quickFilterEdit = new QLineEdit("", this);
+	quickFilterEdit->setPlaceholderText(tr("Quick Launch (Ctrl + Q)"));
+	quickFilterEdit->setMaximumWidth(150);
+	connect(quickFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(quickFilterSignal(const QString&)));
+
+	QStringList wordList;
+	wordList << "alpha" << "omega" << "omicron" << "zeta";
+
+	DkQuickFilterCompleter *completer = new DkQuickFilterCompleter(this);
+	completer->setModel(new QStringListModel(wordList, completer));
+	completer->setCaseSensitivity(Qt::CaseInsensitive);
+	quickFilterEdit->setCompleter(completer);
+
+
+	QAction* quickFilterAction = new QAction(tr("&Filter"), this);
+	quickFilterAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+	connect(quickFilterAction, SIGNAL(triggered()), this, SLOT(setQuickFilterFocus()));
+
+	addAction(quickFilterAction);
+}
+
+void DkMainToolBar::allActionsAdded() {
+
+	// right align search filters
+	QWidget* spacer = new QWidget(this);
+	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	addWidget(spacer);
+	addWidget(quickFilterEdit);
+}
+
+void DkMainToolBar::setQuickFilterFocus() {
+
+	quickFilterEdit->setFocus(Qt::MouseFocusReason);
+	qDebug() << "quick launch focus set";
+}
+
 // DkColorSlider:
-
-
 DkColorSlider::DkColorSlider(QWidget *parent, qreal normedPos, QColor color, int sliderWidth) 
 	: QWidget(parent) {
 

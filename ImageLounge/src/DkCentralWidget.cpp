@@ -38,6 +38,7 @@
 #include <QClipboard>
 #include <QStackedLayout>
 #include <QMimeData>
+#include <QTabBar>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

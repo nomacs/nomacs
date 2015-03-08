@@ -31,35 +31,54 @@
 #include <QToolBar>
 #include <QWidget>
 #include <QObject>
-#include <QPainter>
-#include <QLinearGradient>
-#include <QImage>
-#include <QPainterPath>
-#include <QDebug>
-#include <QMouseEvent>
-#include <QColorDialog>
-#include <QColor>
-#include <QGradientStops>
-#include <QPushButton>
-#include <QComboBox>
-#include <QLabel>
-#include <QCheckBox>
-#include <QHBoxLayout>
-#include <QLayout>
-#include <QIcon>
-#include <QAction>
-#include <QTranslator>
-#include <QDoubleSpinBox>
-#include <QMenu>
-
-#include <QGridLayout>
-#include <QGraphicsOpacityEffect>
+#include <QCompleter>
 #pragma warning(pop)		// no warnings from includes - end
+
+// Qt defines
+class QCheckBox;
+class QComboBox;
+class QLineEdit;
+class QGraphicsOpacityEffect;
+class QDoubleSpinBox;
+class QPushButton;
+class QColorDialog;
+
 
 namespace nmc {
 
 class DkTransferToolBar;
 class DkVector;
+
+class DkQuickFilterCompleter : public QCompleter {
+	Q_OBJECT
+
+public:
+	DkQuickFilterCompleter(QObject* parent = 0);
+
+public slots:
+	void setCompletionPrefix(const QString &prefix);
+
+protected:
+
+
+};
+
+class DkMainToolBar : public QToolBar {
+	Q_OBJECT
+
+public:
+	DkMainToolBar(const QString & title, QWidget * parent = 0);
+
+	void allActionsAdded();	// fast fix for now
+
+public slots:
+	void setQuickFilterFocus();
+
+protected:
+	void createLayout();
+
+	QLineEdit* quickFilterEdit;
+};
 
 class DkColorSlider : public QWidget {
 	Q_OBJECT

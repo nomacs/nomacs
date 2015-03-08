@@ -88,6 +88,9 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QMovie>
+#include <QColorDialog>
+#include <QCompleter>
+#include <QDirModel>
 
 #if QT_VERSION < 0x050000
 #include <QPlastiqueStyle>
@@ -3254,12 +3257,24 @@ void DkRecentFilesWidget::mappedFileExists(DkFileInfo& fileInfo) {
 DkDirectoryEdit::DkDirectoryEdit(QWidget* parent /* = 0 */) : QLineEdit(parent) {
 	setObjectName("DkWarningEdit");
 	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+
+	QCompleter *completer = new QCompleter(this);
+	QDirModel* model = new QDirModel(completer);
+	model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+	completer->setModel(model);
+	setCompleter(completer);
 }
 
 DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) : QLineEdit(parent) {
 	setObjectName("DkWarningEdit");
 	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
 	setText(content);
+
+	QCompleter *completer = new QCompleter(this);
+	QDirModel* model = new QDirModel(completer);
+	model->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+	completer->setModel(model);
+	setCompleter(completer);
 }
 
 void DkDirectoryEdit::lineEditChanged(QString path) {
