@@ -100,19 +100,21 @@ void DkMainToolBar::createLayout() {
 	connect(quickFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(quickFilterSignal(const QString&)));
 
 	QStringList wordList;
-	wordList << "alpha" << "omega" << "omicron" << "zeta";
+	wordList << "alpha" << "omega" << "omicron" << "zeta" << "markus diem";
 
-	DkQuickFilterCompleter *completer = new DkQuickFilterCompleter(this);
+	QCompleter *completer = new QCompleter(this);
+#if QT_VERSION >= 0x050000
+	completer->setFilterMode(Qt::MatchContains);
+#endif
 	completer->setModel(new QStringListModel(wordList, completer));
 	completer->setCaseSensitivity(Qt::CaseInsensitive);
 	quickFilterEdit->setCompleter(completer);
-
 
 	QAction* quickFilterAction = new QAction(tr("&Filter"), this);
 	quickFilterAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 	connect(quickFilterAction, SIGNAL(triggered()), this, SLOT(setQuickFilterFocus()));
 
-	addAction(quickFilterAction);
+	//addAction(quickFilterAction);
 }
 
 void DkMainToolBar::allActionsAdded() {
