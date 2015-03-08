@@ -259,6 +259,9 @@ public:
 		case CV_32F:
 			info += "CV_32F";
 			break;
+		case CV_16S:
+			info += "CV_16S";
+			break;
 		case CV_32S:
 			info += "CV_32S";
 			break;
@@ -271,6 +274,13 @@ public:
 		}
 
 		if (img.channels() == 1) {
+			info += "\n   dynamic range: ";
+
+			double min, max;
+			minMaxLoc(img, &min, &max);
+			info += "[" + DkUtils::stringify(min) + " " + DkUtils::stringify(max) + "]\n";
+		}
+		else if (img.channels() > 1) {
 			info += "\n   dynamic range: ";
 
 			double min, max;

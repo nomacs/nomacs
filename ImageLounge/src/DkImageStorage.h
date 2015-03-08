@@ -86,14 +86,20 @@ public:
 	static cv::Mat qImage2Mat(const QImage& img);
 	static QImage mat2QImage(cv::Mat img);
 	static cv::Mat get1DGauss(double sigma);
+	static void mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTable);
+	static void gammaToLinear(cv::Mat& img);
+	static void linearToGamma(cv::Mat& img);
 #endif
 
 	static QString getBufferSize(const QImage& img);
 	static QString getBufferSize(const QSize& imgSize, const int depth);
 	static float getBufferSizeFloat(const QSize& imgSize, const int depth);
 	static QImage resizeImage(const QImage& img, const QSize& newSize, float factor = 1.0f, int interpolation = ipl_cubic, bool correctGamma = true);
-	static QVector<uchar> getGamma2LinearTable();
-	static QVector<uchar> getLinear2GammaTable();
+
+	template <typename numFmt>
+	static QVector<numFmt> getGamma2LinearTable(int maxVal = USHRT_MAX);
+	template <typename numFmt>
+	static QVector<numFmt> getLinear2GammaTable(int maxVal = USHRT_MAX);
 	static void gammaToLinear(QImage& img);
 	static void linearToGamma(QImage& img);
 	static void mapGammaTable(QImage& img, const QVector<uchar>& gammaTable);

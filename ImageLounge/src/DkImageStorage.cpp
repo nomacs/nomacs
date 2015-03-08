@@ -252,26 +252,32 @@ QImage DkImage::resizeImage(const QImage& img, const QSize& newSize, float facto
 
 
 	try {
-		QImage qImg = img.copy();
 		
-		if (correctGamma)
-			DkImage::gammaToLinear(qImg);
-		cv::Mat resizeImage = DkImage::qImage2Mat(qImg);
+		QImage qImg;
+		cv::Mat resizeImage = DkImage::qImage2Mat(img);
+		
+		if (correctGamma) {
+			resizeImage.convertTo(resizeImage, CV_16U, USHRT_MAX/255.0f);
+			DkImage::gammaToLinear(resizeImage);
+		}
 
 		// is the image convertible?
 		if (resizeImage.empty()) {
-			qImg = qImg.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
+			qImg = img.scaled(newSize, Qt::IgnoreAspectRatio, iplQt);
 		}
 		else {
 
 			cv::Mat tmp;
 			cv::resize(resizeImage, tmp, cv::Size(nSize.width(), nSize.height()), 0, 0, ipl);
 			resizeImage = tmp;
+			
+			if (correctGamma) {
+				DkImage::linearToGamma(resizeImage);
+				resizeImage.convertTo(resizeImage, CV_8U, 255.0f/USHRT_MAX);
+			}
+
 			qImg = DkImage::mat2QImage(resizeImage);
 		}
-
-		if (correctGamma)
-			DkImage::linearToGamma(qImg);
 
 		if (!img.colorTable().isEmpty())
 			qImg.setColorTable(img.colorTable());
@@ -321,26 +327,28 @@ bool DkImage::alphaChannelUsed(const QImage& img) {
 	return false;
 }
 
-QVector<uchar> DkImage::getLinear2GammaTable() {
+template <typename numFmt>
+QVector<numFmt> DkImage::getLinear2GammaTable(int maxVal) {
 
-	QVector<uchar> gammaTable;
+	QVector<numFmt> gammaTable;
 	double a = 0.055;
 
-	for (int idx = 0; idx < 256; idx++) {
+	for (int idx = 0; idx <= maxVal; idx++) {
 
-		double i = idx/255.0;
+		double i = idx/(double)maxVal;
 		if (i <= 0.0031308) {
-			gammaTable.append((uchar)(qRound(i*12.92*255.0)));
+			gammaTable.append((numFmt)(qRound(i*12.92*(double)maxVal)));
 		}
 		else {
-			gammaTable.append((uchar)(qRound(((1+a)*std::pow(i,1/2.4)-a)*255.0)));
+			gammaTable.append((numFmt)(qRound(((1+a)*std::pow(i,1/2.4)-a)*(double)maxVal)));
 		}
 	}
 
 	return gammaTable;
 }
 
-QVector<uchar> DkImage::getGamma2LinearTable() {
+template <typename numFmt>
+QVector<numFmt> DkImage::getGamma2LinearTable(int maxVal) {
 
 	// the formula should be:
 	// i = px/255
@@ -348,17 +356,17 @@ QVector<uchar> DkImage::getGamma2LinearTable() {
 	// i > 0.04045 -> (i+0.055)/(1+0.055)^2.4
 
 	qDebug() << "gamma2Linear: ";
-	QVector<uchar> gammaTable;
+	QVector<numFmt> gammaTable;
 	double a = 0.055;
 
-	for (int idx = 0; idx < 256; idx++) {
+	for (int idx = 0; idx <= maxVal; idx++) {
 
-		double i = idx/255.0;
+		double i = idx/(double)maxVal;
 		if (i <= 0.04045) {
-			gammaTable.append((uchar)(qRound(i/12.92*255.0)));
+			gammaTable.append((numFmt)(qRound(i/12.92*maxVal)));
 		}
 		else {
-			gammaTable.append(std::pow((i+a)/(1+a),2.4)*255 > 0 ? (uchar)(std::pow((i+a)/(1+a),2.4)*255) : 0);
+			gammaTable.append(std::pow((i+a)/(1+a),2.4)*maxVal > 0 ? (numFmt)(std::pow((i+a)/(1+a),2.4)*maxVal) : 0);
 		}
 	}
 
@@ -367,13 +375,13 @@ QVector<uchar> DkImage::getGamma2LinearTable() {
 
 void DkImage::gammaToLinear(QImage& img) {
 
-	QVector<uchar> gt = getGamma2LinearTable();
+	QVector<uchar> gt = getGamma2LinearTable<uchar>(255);
 	mapGammaTable(img, gt);
 }
 
 void DkImage::linearToGamma(QImage& img) {
 
-	QVector<uchar> gt = getLinear2GammaTable();
+	QVector<uchar> gt = getLinear2GammaTable<uchar>(255);
 	mapGammaTable(img, gt);
 }
 
@@ -393,12 +401,14 @@ void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
 
 		for (int cIdx = 0; cIdx < bpl; cIdx++, mPtr++) {
 
-			if (*mPtr < 0 || *mPtr > 255)
+			if (*mPtr < 0 || *mPtr > gammaTable.size()) {
 				qDebug() << "WRONG VALUE: " << *mPtr;
-
-			if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > 255)
+				continue;
+			}
+			if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
 				qDebug() << "WRONG VALUE: " << *mPtr;
-
+				continue;
+			}
 
 			*mPtr = gammaTable[*mPtr];
 		}
@@ -407,7 +417,6 @@ void DkImage::mapGammaTable(QImage& img, const QVector<uchar>& gammaTable) {
 
 	qDebug() << "gamma computation takes: " << dt.getTotal();
 }
-
 
 QImage DkImage::normImage(const QImage& img) {
 
@@ -760,6 +769,48 @@ cv::Mat DkImage::get1DGauss(double sigma) {
 
 	return gKernel;
 }
+
+void DkImage::linearToGamma(cv::Mat& img) {
+
+	QVector<unsigned short> gt = getLinear2GammaTable<unsigned short>();
+	mapGammaTable(img, gt);
+}
+
+void DkImage::gammaToLinear(cv::Mat& img) {
+
+	QVector<unsigned short> gt = getGamma2LinearTable<unsigned short>();
+	mapGammaTable(img, gt);
+}
+
+void DkImage::mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTable) {
+
+	DkTimer dt;
+
+	for (int rIdx = 0; rIdx < img.rows; rIdx++) {
+
+		unsigned short* mPtr = img.ptr<unsigned short>(rIdx);
+
+		for (int cIdx = 0; cIdx < img.cols; cIdx++) {
+
+			for (int channelIdx = 0; channelIdx < img.channels(); channelIdx++, mPtr++) {
+
+				if (*mPtr < 0 || *mPtr > gammaTable.size()) {
+					qDebug() << "WRONG VALUE: " << *mPtr;
+					continue;
+				}
+				if ((int)gammaTable[*mPtr] < 0 || (int)gammaTable[*mPtr] > USHRT_MAX) {
+					qDebug() << "WRONG VALUE: " << *mPtr;
+					continue;
+				}
+
+				*mPtr = gammaTable[*mPtr];
+			}
+		}
+	}
+
+	qDebug() << "gamma computation takes: " << dt.getTotal();
+}
+
 #endif
 
 bool DkImage::unsharpMask(QImage& img, float sigma, float weight) {

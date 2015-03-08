@@ -2602,7 +2602,6 @@ void DkNoMacs::resizeImage() {
 	if (!resizeDialog)
 		resizeDialog = new DkResizeDialog(this);
 
-
 	QSharedPointer<DkImageContainerT> imgC = getTabWidget()->getCurrentImage();
 	QSharedPointer<DkMetaDataT> metaData;
 

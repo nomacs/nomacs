@@ -251,7 +251,7 @@ double DkRotatingRect::getAngle() const {
 
 float DkRotatingRect::getAngleDeg() const {
 
-	double sAngle = (getAngle())*DK_RAD2DEG;
+	float sAngle = (float)(getAngle()*DK_RAD2DEG);
 
 	while (sAngle > 90)
 		sAngle -= 180;
