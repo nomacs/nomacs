@@ -28,6 +28,7 @@
 #include "DkDocAnalysisPlugin.h"
 #include "DkViewPort.h"
 #include "DkMetaData.h"
+#include "DkCentralWidget.h"
 
 #include <QFileDialog>
 #include <QImageWriter>
@@ -212,7 +213,7 @@ void DkDocAnalysisPlugin::deleteViewPort() {
 void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width/* QString saveNameAppendix*/) {
 	qDebug() << "saving...";
 
-	DkImageLoader* loader;
+	QSharedPointer<DkImageLoader> loader;
 	DkNoMacs* nmcWin;
 	QMainWindow* win = getMainWidnow();
 	if (win) {
@@ -221,10 +222,10 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 		nmcWin = dynamic_cast<DkNoMacs*>(getMainWidnow());
 
 		if (nmcWin) {
-			DkViewPort* vp = nmcWin->viewport();
+			DkCentralWidget* cw = nmcWin->getTabWidget();
 
-			if (vp) {
-				loader = vp->getImageLoader();
+			if (cw) {
+				loader = cw->getCurrentImageLoader();
 			}
 
 		}
@@ -237,7 +238,7 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 	QString saveNameAppendix = QString("_%1").arg(xCoord);
 	saveNameAppendix.append(QString("_%1").arg(yCoord));
 
-	if (loader->hasFile()) {
+	if (loader && loader->hasFile()) {
 		saveFile = loader->file();
 		saveName = saveFile.fileName();
 
@@ -285,7 +286,6 @@ void DkDocAnalysisPlugin::saveMagicCut(QImage saveImage, int xCoord, int yCoord,
 
 	if (fileName.isEmpty())
 		return;
-
 
 	QString ext = QFileInfo(fileName).suffix();
 
@@ -923,10 +923,10 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 
 		if (nmcWin) {
 
-			DkViewPort* vp = nmcWin->viewport();
+			DkCentralWidget* cw = nmcWin->getTabWidget();
 
-			if (vp) {
-				DkImageLoader* loader = vp->getImageLoader();
+			if (cw) {
+				QSharedPointer<DkImageLoader> loader = cw->getCurrentImageLoader();
 				
 				if (loader) {
 					QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
