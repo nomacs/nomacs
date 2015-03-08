@@ -423,10 +423,7 @@ void DkTrainDialog::dragEnterEvent(QDragEnterEvent *event) {
 		if (file.exists())
 			event->acceptProposedAction();
 	}
-
 }
-
-
 
 // DkAppManager --------------------------------------------------------------------
 DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {

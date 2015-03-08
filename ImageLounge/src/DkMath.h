@@ -29,6 +29,7 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <cmath>
+#include <float.h>
 #include <QDebug>
 #include <QPointF>
 #include <QPolygonF>
