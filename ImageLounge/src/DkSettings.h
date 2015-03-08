@@ -151,6 +151,7 @@ public:
 		bool privateMode;
 		bool advancedSettings;
 		bool closeOnEsc;
+		bool maximizedMode;
 		QStringList browseFilters;
 		QStringList registerFilters;
 

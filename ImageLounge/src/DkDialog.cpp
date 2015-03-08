@@ -1036,8 +1036,7 @@ void DkSearchDialog::on_filterButton_pressed() {
 	done(filter_button);
 }
 
-void DkSearchDialog::on_cancelButtonSplash_pressed() {
-
+void DkSearchDialog::on_cancelButton_pressed() {
 	reject();
 }
 
