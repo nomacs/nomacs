@@ -1710,7 +1710,7 @@ void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() == Qt::LeftButton) {
 		
 		QPointF pt = initialPos+event->globalPos()-posGrab;
-		emit ctrlMovedSignal(parentIdx, pt, event->modifiers() == Qt::ShiftModifier, true);
+		emit ctrlMovedSignal(parentIdx, pt, event->modifiers(), true);
 		qDebug() << "accepted false...";
 	}
 
@@ -1756,7 +1756,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	for (int idx = 0; idx < 8; idx++) {
 		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
 		ctrlPoints[idx]->hide();
-		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, bool, bool)), this, SLOT(updateCorner(int, QPointF, bool, bool)));
+		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, Qt::KeyboardModifiers, bool)), this, SLOT(updateCorner(int, QPointF, Qt::KeyboardModifiers, bool)));
 		connect(ctrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
 	}
 	
@@ -1790,15 +1790,16 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 
 	float x = (float)pos.x();
 	float y = (float)pos.y();
+	float magicMargin = 5;	// 5 px for now
 
-	if (x < imgViewRect.left())
+	if (qAbs(x - imgViewRect.left()) < magicMargin)
 		x = (float)imgViewRect.left();
-	if (x > imgViewRect.right())
+	if (qAbs(x - imgViewRect.right()) < magicMargin)
 		x = (float)imgViewRect.right();
 
-	if (y < imgViewRect.top())
+	if (qAbs(y - imgViewRect.top()) < magicMargin)
 		y = (float)imgViewRect.top();
-	if (y > imgViewRect.bottom())
+	if (qAbs(y - imgViewRect.bottom()) < magicMargin)
 		y = (float)imgViewRect.bottom();
 
 	return QPointF(x,y);		// round
@@ -1840,14 +1841,19 @@ void DkEditableRect::setPanning(bool panning) {
 	qDebug() << "panning set...";
 }
 
-void DkEditableRect::updateCorner(int idx, QPointF point, bool isShiftDown, bool changeState) {
+void DkEditableRect::updateCorner(int idx, QPointF point, Qt::KeyboardModifiers modifiers, bool changeState) {
 
 	if (changeState)
 		state = scaling;
 
-	DkVector diag = (isShiftDown || fixedDiag.x != 0 && fixedDiag.y != 0) ? oldDiag : DkVector();
+	DkVector diag = (modifiers & Qt::ShiftModifier || fixedDiag.x != 0 && fixedDiag.y != 0) ? oldDiag : DkVector();
 
-	rect.updateCorner(idx, map(point), diag);
+	QPointF p = point;
+	
+	if ((modifiers & Qt::ControlModifier) == 0)
+		p = clipToImage(point);
+
+	rect.updateCorner(idx, map(p), diag);
 
 	// edge control -> remove aspect ratio constraint
 	if (idx >= 4 && idx < 8)
@@ -2093,14 +2099,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 		QPolygonF p = rect.getPoly();
 
-		double sAngle = (rect.getAngle()+angle)*DK_RAD2DEG;
-
-		while (sAngle > 90)
-			sAngle -= 180;
-		while (sAngle < -90)
-			sAngle += 180;
-
-		sAngle = qRound(sAngle*100)/100.0f;
+		float sAngle = rect.getAngleDeg();
 		int height = qRound(DkVector(p[1]-p[0]).norm());
 		int width = qRound(DkVector(p[3]-p[0]).norm());
 

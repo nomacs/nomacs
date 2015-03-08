@@ -852,18 +852,19 @@ public:
 		return r.put(s);
 	};
 
-	bool isEmpty();
+	bool isEmpty() const;
 	void setAllCorners(QPointF &p);
-	DkVector getDiagonal(int cIdx);
+	DkVector getDiagonal(int cIdx) const;
 	QCursor cpCursor(int idx);
 	void updateCorner(int cIdx, QPointF nC, DkVector oldDiag = DkVector());
-	QPolygonF& getPoly();
+	const QPolygonF& getPoly() const;
 	void setPoly(QPolygonF &poly);
 	QPolygonF getClosedPoly();
-	QPointF getCenter();
+	QPointF getCenter() const;
 	void setCenter(const QPointF& center);
-	double getAngle();
-	void getTransform(QTransform& tForm, QPointF& size);
+	double getAngle() const;
+	float getAngleDeg() const;
+	void getTransform(QTransform& tForm, QPointF& size) const;
 
 protected:
 
