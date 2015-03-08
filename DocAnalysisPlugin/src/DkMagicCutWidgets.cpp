@@ -346,9 +346,9 @@ void DkMagicCut::seededRegionGrowing(int x, int y, int ref_r, int ref_g, int ref
 
 /**
 * Image manipulation dialog with image manipulation tools and preview
-* @params magicCut The magic cut to be processed
-* @params parent The parent widget
-* @params flags The window flags for this dialog
+* @param magicCut The magic cut to be processed
+* @param parent The parent widget
+* @param flags The window flags for this dialog
 * \sa DkMagicCutDialog::init()
 **/
 DkMagicCutDialog::DkMagicCutDialog(DkMagicCut *magicCut, QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
@@ -550,7 +550,7 @@ void DkMagicCutDialog::createImgPreview() {
 
 /**
 * Update current preview image
-* @param updated The new image
+* @param updatedImg The new image
 * \sa DkMagiCutDialog::drawImgPreview()
 **/
 void DkMagicCutDialog::updateImg(QImage updatedImg) {
@@ -739,7 +739,7 @@ void DkBoundingBoxSliderWidget::updateSliderSpinBox(int val) {
 
 /**
  * Slider slot: update value and redraw image
- * @param changed value
+ * @param val changed value
  * \sa DkMagicCutDialog::createImgPreview()
  **/
 void DkBoundingBoxSliderWidget::updateSliderVal(int val) {

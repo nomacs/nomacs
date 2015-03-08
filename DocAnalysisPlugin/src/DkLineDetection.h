@@ -117,9 +117,9 @@ class DkLineDetection {
 		void setParameters(int stripeWidth, int nonExtrKernelSize, bool optimize, 
 			bool sobelX, bool sobelY, int sobelKernelSize, int boxFilterSizeX, 
 			int boxFilterSizeY, int removeShort/*, float rescale*/);
-		bool hasTextLines() { return hasLines; }
-		QImage getBottomLines() { return bottomLines; }
-		QImage getTopLines() { return topLines; }
+		bool hasTextLines() { return hasLines; } /** return wether or not text lines have been computed already in the current image **/
+		QImage getBottomLines() { return bottomLines; } /** returns the QImage which contains the calculated bottom text lines **/
+		QImage getTopLines() { return topLines; } /** returns the QImage which contains the calculated top text lines **/
 		
 
 };

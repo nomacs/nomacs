@@ -127,8 +127,10 @@ void DkLineDetection::debugOutputMat(cv::Mat *mat, std::string message) {
 * @param optimize Flag to declare if the optimization algorithm shall be run
 * @param sobelX 1 means to enable Sobel-filtering in x-direction for edge detection during optimization
 * @param sobelY 1 means to enable Sobel-filtering in y-direction for edge detection during optimization
+* @param sobelKernelSize Size of the sobel kernel for optimization in case sobelX or sobelY is enabled 
 * @param boxFilterSizeX Width of the box filter to blur the edge images
 * @param boxFilterSizeY Height of the box filter to blur the edge images
+* @param removeShort A flag to specifiy if very short text lines should be removed from the output
 **/
 void DkLineDetection::setParameters(int stripeWidth, int nonExtrKernelSize, bool optimize,
 									bool sobelX, bool sobelY, int sobelKernelSize,
