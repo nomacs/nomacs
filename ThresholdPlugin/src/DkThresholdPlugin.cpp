@@ -27,6 +27,8 @@
 
 #include "DkThresholdPlugin.h"
 
+#include <QMouseEvent>
+
 namespace nmc {
 
 /*-----------------------------------DkThresholdPlugin ---------------------------------------------*/

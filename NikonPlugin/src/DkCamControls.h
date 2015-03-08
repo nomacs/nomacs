@@ -50,6 +50,8 @@
 #include <QProgressBar>
 #include <QApplication>
 #include <QInputDialog>
+#include <QProgressDialog>
+#include <QThread>
 
 #include <QDockWidget>
 
@@ -64,6 +66,12 @@
 #include "DkImageStorage.h"
 #include "MaidFacade.h"
 #include "DkNoMacs.h"
+
+// Qt defines
+class QBoxLayout;
+class QHBoxLayout;
+class QSpacerItem;
+class QVBoxLayout;
 
 namespace nmc {
 

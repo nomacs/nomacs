@@ -52,6 +52,8 @@
 #include "DkDistanceMeasure.h"
 #include "DkMagicCutWidgets.h"
 #include "DkLineDetection.h"
+//#include "DkDialog.h"
+#include "DkSaveDialog.h"
 
 //// Workaround
 //#define PLUGIN_ID "5232a9d4459e431fb9b686365e693a30"
@@ -87,8 +89,17 @@ public:
 protected:
 	DkPluginViewPort* viewport;
 
+	DkCompressDialog *jpgDialog;
+	DkTifDialog *tifDialog;
+
+signals:
+	void magicCutSavedSignal(bool); /**< Signal for confirming if the magic cut could be saved or not **/
+	
 protected slots:
 	void viewportDestroyed();
+
+public slots:
+	void saveMagicCut(QImage saveImage, int xCoord, int yCoord, int height, int width);
 };
 
 class DkDocAnalysisViewPort : public DkPluginViewPort {
@@ -103,11 +114,12 @@ public:
 	bool editingDrawingActive();
 
 
-	//TODO: old paint - remove
 	bool isCanceled();
 	QImage getPaintedImage();
 	
 	void setMainWindow(QMainWindow* win);
+
+	void getBrightness(const cv::Mat& frame, double& brightness);
 
 signals:
 	// distance measure functions
@@ -117,6 +129,8 @@ signals:
 	// magic wand functions
 	void cancelPickSeedpointRequest();
 	void startPickSeedpointRequest();
+	void cancelClearSingleRegionRequest();
+	void startClearSingleRegionRequest();
 	void saveMagicCutRequest(QImage saveImg, int xCoord, int yCoord, int height, int width);
 	void enableSaveCutSignal(bool enable);
 
@@ -129,19 +143,18 @@ public slots:
 	// measure distance functions
 	void pickDistancePoint(bool pick);
 	void pickDistancePoint();
-	// >DIR: uncomment if function is added again [21.10.2014 markus]
-	//// magic wand selection functions
-	//void pickSeedpoint(bool pick);
-	//void pickSeedpoint();
-	//void setMagicCutTolerance(int tol);
-	//void clearMagicCut();
 	
-	// >DIR: uncomment if function is added again [21.10.2014 markus]
-	//void openMagicCutDialog();
+	//// magic wand selection functions
+	void pickSeedpoint(bool pick);
+	void setMagicCutTolerance(int tol);
+	void pickResetRegionPoint(bool pick);
+	void clearMagicCut();
+	void openMagicCutDialog();
 	//// animation of contours
-	//virtual void updateAnimatedContours();
-	//void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
-	//void magicCutSaved(bool saved);
+	void updateAnimatedContours();
+	void saveMagicCutPressed(QImage saveImg, int xCoord, int yCoord, int height, int width);
+	void magicCutSaved(bool saved);
+	void cancelPlugin();
 
 	//// line detection functions
 	void openLineDetectionDialog();
@@ -151,7 +164,6 @@ public slots:
 	void showTopTextLines();
 
 
-	// TODO: old paint - remove
 	virtual void setVisible(bool visible);
 
 protected:
@@ -186,11 +198,14 @@ private:
 		mode_default,
 		mode_pickSeedpoint,
 		mode_pickDistance,
+		mode_cancelSeedpoint
 	};
 
 	int editMode; /**< The current editing state that the program is in **/
 	bool showBottomLines; /**< Flag for rendering to show or hide bottom text lines **/
 	bool showTopLines; /**< Flag for rendering to show or hide top text lines **/
+	double avgBrightness; /**< Saves the average brightness of the image usingthe HSV color model **/
+	double brightnessThreshold; /**< brightness threshold for using white pen **/
 
 	// distance measure section
 	DkDistanceMeasure *distance; /**< Tool to measure distances between two points **/
@@ -222,6 +237,8 @@ public:
 		magic_icon,
 		savecut_icon,
 		clearselection_icon,
+		clearsingleselection_icon,
+		cancel_icon,
 
 		icons_end,
 	};
@@ -235,6 +252,8 @@ public:
 		magic_action,
 		savecut_action,
 		clearselection_action,
+		clearsingleselection_action,
+		cancelplugin_action,
 
 		actions_end,
 	};
@@ -257,11 +276,15 @@ public slots:
 	void on_magicAction_toggled(bool checked);
 	void on_savecutAction_triggered();
 	void on_clearselectionAction_triggered();
+	void on_cancelpluginAction_triggered();
+	void on_clearsingleselectionAction_toggled(bool checked);
 	void on_toleranceBox_valueChanged(int val);
 
 	// slots for signals coming from the view port
 	void pickSeedpointCanceled();
 	void pickSeedpointStarted();
+	void clearSingleRegionCanceled();
+	void clearSingleRegionStarted();
 	void measureDistanceCanceled();
 	void measureDistanceStarted();
 	void enableButtonSaveCut(bool enable);
@@ -272,6 +295,7 @@ public slots:
 signals:
 	// signals to the viewport
 	void pickSeedpointRequest(bool);  /**< Signal to either start or cancel the magic cut selection tool **/
+	void clearSingleSelectionRequest(bool); /**<Signal to either start or cancel the clear a single region of the magic cut selections **/
 	void clearSelectionSignal(); /**< Signal to declare that the current selection shall be resetted **/
 	void toleranceChanged(int); /**< Signal to signal if the tolerance setting has been changed **/
 	void measureDistanceRequest(bool); /**< Signal to either start or cancel the distance measure tool **/
@@ -279,6 +303,7 @@ signals:
 	void detectLinesSignal(); /**< Signal to start the line detection on the current image **/
 	void showBottomTextLinesSignal(bool); /**< Signal to either show or hide the previously detected bottom text lines **/
 	void showTopTextLinesSignal(bool); /**< Signal to either show or hide the previously detected top text lines **/
+	void cancelPlugin(); /**< Signal to close the plugin **/
 
 protected:
 	void createLayout();

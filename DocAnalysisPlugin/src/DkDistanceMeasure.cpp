@@ -26,15 +26,14 @@
  *******************************************************************************************************/
 
 #include "DkDistanceMeasure.h"
+#include "DkMetaData.h"
 
+#include <QVector2D>
 
 namespace nmc {
 
 /**
-* Constructor for the distance measure tool. Requires the metadata of the
-* current image to get the resolutions in x- and y-direction
-* @param metaInfo The metadata to use
-* \sa DkMetaDataInfo
+* Constructor for the distance measure tool.
 **/
 DkDistanceMeasure::DkDistanceMeasure() {
 

@@ -27,6 +27,9 @@
 
 #include "DkMagicCutWidgets.h"
 
+#include <QCheckBox>
+#include <QPainter>
+#include <QShowEvent>
 
 namespace nmc {
 
@@ -138,7 +141,7 @@ void DkMagicCut::resetRegionMask(int region, bool recalcContours) {
 	if (region == 0) {
 		label_it = 1;
 		// mask needs to be 2 pixles wider and 2 pixels taller for flood filling
-		mask = Scalar::all(0); //cv::Mat::zeros(img.rows+2, img.cols+2, CV_8UC1);
+		mask = cv::Scalar::all(0); //cv::Mat::zeros(img.rows+2, img.cols+2, CV_8UC1);
 	} else {
 		// reset only regions with value: region
 		mask.setTo(0, mask == region);
@@ -186,8 +189,8 @@ bool DkMagicCut::magicwand(QPoint xy) {
 	else label_it = 1;
 
 	area = cv::floodFill(imgUC3, mask, cv::Point(xy.x(), xy.y()), label_it, 0 /*&bRect*/,  
-						 Scalar(tolerance, tolerance, tolerance), 
-						 Scalar(tolerance, tolerance, tolerance), flags);
+						 cv::Scalar(tolerance, tolerance, tolerance), 
+						 cv::Scalar(tolerance, tolerance, tolerance), flags);
 
 	if(area >= maxSize) {
 		// area is too big - reset the mask and give a message
@@ -235,10 +238,10 @@ void DkMagicCut::calculateContours() {
 	// find contours changes the mask, therefore clone it
 	// select the ROI
 	//cv::Mat roi(mask, Rect(2,2,mask.cols-1,mask.rows-1));
-	cv::Mat roi = mask(Range(1,mask.rows-1),Range(1,mask.cols-1));
+	cv::Mat roi = mask(cv::Range(1,mask.rows-1),cv::Range(1,mask.cols-1));
 	cv::Mat roi_clone = roi.clone();
 	// dilate the found blobs to receive better results
-	cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+	cv::Mat element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(7, 7));
 	cv::dilate(roi_clone, roi_clone, element);
 	// + closing of small holes
 	cv::dilate(roi_clone, roi_clone, element);
@@ -272,7 +275,7 @@ void DkMagicCut::calculateContours() {
 		points.push_back(QPoint(points_cv.at(0).x, points_cv.at(0).y));
 
 		// map to image and add polygon to painter path
-		contours.addPolygon(imgMatrix->map(QPolygon(points)));
+		contours.addPolygon(QPolygon(points)/*imgMatrix->map(QPolygon(points))*/);
 	}
 
 	// get minimum bounding rect for selected regions
@@ -343,9 +346,9 @@ void DkMagicCut::seededRegionGrowing(int x, int y, int ref_r, int ref_g, int ref
 
 /**
 * Image manipulation dialog with image manipulation tools and preview
-* @params magicCut The magic cut to be processed
-* @params parent The parent widget
-* @params flags The window flags for this dialog
+* @param magicCut The magic cut to be processed
+* @param parent The parent widget
+* @param flags The window flags for this dialog
 * \sa DkMagicCutDialog::init()
 **/
 DkMagicCutDialog::DkMagicCutDialog(DkMagicCut *magicCut, QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
@@ -441,8 +444,7 @@ void DkMagicCutDialog::createLayout() {
 	toolsLayout->addWidget(BBslider, 1, 1, 1, 2);
 
 	toolsLayout->addWidget(new QLabel(tr("Apply Mask: ")), 2, 1);
-	QCheckBox* cbMask;
-	cbMask = new QCheckBox(this);
+	QCheckBox* cbMask = new QCheckBox(this);
 	toolsLayout->addWidget(cbMask, 2, 2);
 
 	eastWidget->setLayout(toolsLayout);
@@ -483,15 +485,15 @@ void DkMagicCutDialog::createImgPreview() {
 
 
 	// get bounding rect ROI from complete image
-	Mat imgRoi = ((*(magicCut->getImage()))(*roiRect)).clone();
+	cv::Mat imgRoi = ((*(magicCut->getImage()))(*roiRect)).clone();
 	// switch channels for correct displaying
 	cv::cvtColor(imgRoi, imgRoi, CV_BGR2RGB);
 
 	
 	
 	if(withMask) {
-		std::vector<Mat> ImgChannels;
-		Mat imgUC4;
+		std::vector<cv::Mat> ImgChannels;
+		cv::Mat imgUC4;
 		// For some unknown reason we have to switch channels again
 		cv::cvtColor(imgRoi, imgRoi, CV_BGR2RGB);
 		cv::split(imgRoi, ImgChannels);
@@ -548,7 +550,7 @@ void DkMagicCutDialog::createImgPreview() {
 
 /**
 * Update current preview image
-* @param updated The new image
+* @param updatedImg The new image
 * \sa DkMagiCutDialog::drawImgPreview()
 **/
 void DkMagicCutDialog::updateImg(QImage updatedImg) {
@@ -737,7 +739,7 @@ void DkBoundingBoxSliderWidget::updateSliderSpinBox(int val) {
 
 /**
  * Slider slot: update value and redraw image
- * @param changed value
+ * @param val changed value
  * \sa DkMagicCutDialog::createImgPreview()
  **/
 void DkBoundingBoxSliderWidget::updateSliderVal(int val) {

@@ -8,5 +8,7 @@
         <file>img/reset_cut.png</file>
         <file>img/save_cut.png</file>
         <file>img/upper_lines.png</file>
+        <file>img/reset_cut_single.png</file>
+        <file>img/cancel.png</file>
     </qresource>
 </RCC>

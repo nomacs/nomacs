@@ -27,12 +27,16 @@
 
 #include "DkPaintPlugin.h"
 
+#include <QDebug>
+#include <QMouseEvent>
+
 namespace nmc {
 
 /*-----------------------------------DkPaintPlugin ---------------------------------------------*/
 
 DkSettings::Display& DkSettings::display = DkSettings::getDisplaySettings();
 DkSettings::Global& DkSettings::global = DkSettings::getGlobalSettings();
+DkSettings::App& DkSettings::app = DkSettings::getAppSettings();
 
 /**
 *	Constructor
@@ -505,7 +509,7 @@ void DkPaintToolBar::createIcons() {
 	icons[pan_icon].addPixmap(QPixmap(":/nomacsPluginPaint/img/pan_checked.png"), QIcon::Normal, QIcon::On);
 	icons[undo_icon] = 	QIcon(":/nomacsPluginPaint/img/undo.png");
 
-	if (!DkSettings::display.defaultIconColor) {
+	if (!DkSettings::display.defaultIconColor || DkSettings::app.privateMode) {
 		// now colorize all icons
 		for (int idx = 0; idx < icons.size(); idx++) {
 
