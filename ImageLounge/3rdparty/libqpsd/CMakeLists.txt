@@ -14,6 +14,7 @@ ENDIF()
 
 SET(CMAKE_DEBUG_POSTFIX "d")
 
+message(STATUS "links:${PROJECT_NAME} ${QT_LIBRARIES}")
 add_library(${PROJECT_NAME} SHARED ${LIBQPSD_SOURCES} ${LIBQPSD_MOC_SRC})
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 

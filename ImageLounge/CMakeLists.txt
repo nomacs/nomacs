@@ -1,6 +1,6 @@
 
 # check cmake requirements
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW)
 	  
@@ -12,7 +12,7 @@ endif(COMMAND cmake_policy)
 ######################## begin of project
 project(nomacs)
 
-set(NOMACS_VERSION 2.4.2)
+set(NOMACS_VERSION 2.4.3)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
@@ -50,10 +50,6 @@ if (DISABLE_QT_DEBUG)
 	add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_definitions(-DQT_NO_DEBUG)
-endif()
-
 if(MSVC)
 	include(${CMAKE_SOURCE_DIR}/cmake/Win.cmake)
 elseif(APPLE)
@@ -67,10 +63,8 @@ endif()
 
 # gather information for building
 include_directories (
-	${QT_INCLUDES}
-	${EXIV2_INCLUDE_DIRS}
+	${EXIV2_INCLUDE_DIRS} 
 	${LIBRAW_INCLUDE_DIRS}
-	${OpenCV_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}/src
 	${WEBP_INCLUDEDIR}
@@ -78,7 +72,7 @@ include_directories (
 	${TIFF_CONFIG_DIR}
 	${HUPNP_INCLUDE_DIR}
 	${QUAZIP_INCLUDE_DIRECTORY}
-	${ZLIB_INCLUDE_DIRS}
+	# ${ZLIB_INCLUDE_DIRS}
 	${CMAKE_SOURCE_DIR}/3rdparty/libqpsd
 )
 
@@ -160,5 +154,5 @@ endif()
 #debug for printing out all variables 
 # get_cmake_property(_variableNames VARIABLES)
 # foreach (_variableName ${_variableNames})
-#     message(STATUS "${_variableName}=${${_variableName}}")
+    # message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()

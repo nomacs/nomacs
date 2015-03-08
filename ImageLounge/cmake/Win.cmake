@@ -114,6 +114,12 @@ if(ENABLE_OPENCV)
 	if(${OpenCV_VERSION} EQUAL "2.1.0")
 		add_definitions(-DDISABLE_LANCZOS)
 	endif()
+  
+  # unset include directories since OpenCV sets them global
+  get_property(the_include_dirs  DIRECTORY . PROPERTY INCLUDE_DIRECTORIES)
+  list(REMOVE_ITEM the_include_dirs ${OpenCV_INCLUDE_DIRS})
+  set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES ${the_include_dirs})
+  
 endif(ENABLE_OPENCV)
 
 # search for libraw
@@ -226,14 +232,9 @@ unset(QUAZIP_LIBS CACHE)
 unset(QUAZIP_BUILD_DIRECTORY CACHE)
 unset(QUAZIP_DEPENDENCY CACHE)
 unset(QUAZIP_FOUND CACHE)
-unset(QT_ROOT CACHE)
 
 if(ENABLE_QUAZIP)
 	# QT_ROOT needed by QuaZip cmake 
-    if ("${QT_ROOT}" STREQUAL "")
-        set(QT_ROOT ${QT_QTCORE_INCLUDE_DIR}/../..)
-    endif()    
-	
 	add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/quazip-0.7)
 	
 	set_target_properties(quazip PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/libs)

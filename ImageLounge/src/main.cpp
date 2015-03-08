@@ -49,6 +49,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QTextStream>
+#include <QDesktopServices>
 #pragma warning(pop)	// no warnings from includes - end
 
 #include "DkNoMacs.h"
