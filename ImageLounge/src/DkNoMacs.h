@@ -459,6 +459,8 @@ public:
 	virtual DkViewPort* viewport() const;
 	virtual DkCentralWidget* getTabWidget() const;
 
+    void setPanelActionChecked(const panelActions, const bool);
+
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();
 	QVector<QAction* > getPanelActions();

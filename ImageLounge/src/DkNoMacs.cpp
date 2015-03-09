@@ -3145,6 +3145,17 @@ void DkNoMacs::showGpsCoordinates() {
 	QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));
 }
 
+/**
+ *  Invoke setChecked() for panelActions.
+ *
+ *  @param action Index of panelActions.
+ *  @param value Boolean value which is passed to setChecked().
+ */
+void setPanelActionChecked(const panelActions action, const bool value) {
+
+    panelActions[action]->setChecked(value);
+}
+
 QVector <QAction* > DkNoMacs::getFileActions() {
 
 	return fileActions;

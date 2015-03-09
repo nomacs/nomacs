@@ -311,8 +311,7 @@ DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, 
 
 DkMetaDataDock::~DkMetaDataDock() {
     writeSettings();
-    QVector<QAction*> tempPanelActions = DkNoMacs::getPanelActions();
-    tempPanelActions[menu_panel_metadata_dock]->setChecked(false);
+    DkNoMacs::setPanelActionChecked(menu_panel_metadata_dock, false);
 }
 
 void DkMetaDataDock::writeSettings() {
