@@ -609,7 +609,9 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 }
 
 DkExplorer::~DkExplorer() {
-	writeSettings();
+    writeSettings();
+    QVector<QAction*> tempPanelActions = DkNoMacs::getPanelActions();
+    tempPanelActions[menu_panel_explorer]->setChecked(false);
 }
 
 void DkExplorer::createLayout() {
