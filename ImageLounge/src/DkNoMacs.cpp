@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkNoMacs.cpp
  Created on:	21.04.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -113,7 +113,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	// load settings
 	//DkSettings::load();
-	
+
 	openDialog = 0;
 	saveDialog = 0;
 	jpgDialog = 0;
@@ -138,7 +138,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	thumbsDock = 0;
 #ifdef WITH_QUAZIP
 	archiveExtractionDialog = 0;
-#endif 
+#endif
 
 	currRunningPlugin = QString();
 
@@ -185,7 +185,7 @@ void DkNoMacs::init() {
 
 	QIcon dirIcon = QIcon(iconPath);
 	setObjectName("DkNoMacs");
-	
+
 	if (!dirIcon.isNull())
 		setWindowIcon(dirIcon);
 
@@ -212,7 +212,7 @@ void DkNoMacs::init() {
 	centralWidget()->addActions(syncActions.toList());
 	centralWidget()->addActions(pluginsActions.toList());
 	centralWidget()->addActions(helpActions.toList());
-	
+
 	// automatically add status tip as tool tip
 	for (int idx = 0; idx < fileActions.size(); idx++)
 		fileActions[idx]->setToolTip(fileActions[idx]->statusTip());
@@ -301,7 +301,7 @@ void DkNoMacs::init() {
 //#include <string>
 
 void DkNoMacs::registerFileVersion() {
-	
+
 	// this function is based on code from:
 	// http://stackoverflow.com/questions/316626/how-do-i-read-from-a-version-resource-in-visual-c
 
@@ -368,7 +368,7 @@ void DkNoMacs::createToolbar() {
 		toolbar->setIconSize(QSize(16, 16));
 	else
 		toolbar->setIconSize(QSize(32, 32));
-	
+
 	qDebug() << toolbar->styleSheet();
 
 	if (DkSettings::display.toolbarGradient) {
@@ -438,7 +438,7 @@ void DkNoMacs::createStatusbar() {
 	QColor col = QColor(200, 200, 230, 100);
 
 	if (DkSettings::display.toolbarGradient)
-		statusbar->setObjectName("statusBarWithGradient");	
+		statusbar->setObjectName("statusBarWithGradient");
 
 	statusbar->addWidget(statusbarLabels[status_pixel_info]);
 	statusbar->hide();
@@ -455,7 +455,7 @@ void DkNoMacs::createStatusbar() {
 }
 
 void DkNoMacs::loadStyleSheet() {
-	
+
 	// TODO: if we first load from disk, people can style nomacs themselves
 	QFileInfo cssInfo(QCoreApplication::applicationDirPath(), "nomacs.qss");
 
@@ -484,7 +484,7 @@ void DkNoMacs::loadStyleSheet() {
 }
 
 void DkNoMacs::createIcons() {
-	
+
 	// this is unbelievable dirty - but for now the quickest way to turn themes off if someone uses customized icons...
 	if (DkSettings::display.defaultIconColor) {
 		#define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
@@ -506,7 +506,7 @@ void DkNoMacs::createIcons() {
 	fileIcons[icon_file_filter] = QIcon();
 	fileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/filter.png"), QIcon::Normal, QIcon::On);
 	fileIcons[icon_file_filter].addPixmap(QPixmap(":/nomacs/img/nofilter.png"), QIcon::Normal, QIcon::Off);
-	
+
 	editIcons.resize(icon_edit_end);
 	editIcons[icon_edit_rotate_cw] = ICON("object-rotate-right", ":/nomacs/img/rotate-cw.png");
 	editIcons[icon_edit_rotate_ccw] = ICON("object-rotate-left", ":/nomacs/img/rotate-cc.png");
@@ -540,7 +540,7 @@ void DkNoMacs::createMenu() {
 	fileMenu = menu->addMenu(tr("&File"));
 	fileMenu->addAction(fileActions[menu_file_open]);
 	fileMenu->addAction(fileActions[menu_file_open_dir]);
-	
+
 	openWithMenu = new QMenu(tr("Open &With"), fileMenu);
 	createOpenWithMenu(openWithMenu);
 	fileMenu->addMenu(openWithMenu);
@@ -567,7 +567,7 @@ void DkNoMacs::createMenu() {
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_print]);
 	fileMenu->addSeparator();
-	
+
 	sortMenu = new QMenu(tr("S&ort"), fileMenu);
 	sortMenu->addAction(sortActions[menu_sort_filename]);
 	sortMenu->addAction(sortActions[menu_sort_date_created]);
@@ -626,8 +626,8 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_preferences]);
 
 	viewMenu = menu->addMenu(tr("&View"));
-	
-	viewMenu->addAction(viewActions[menu_view_frameless]);	
+
+	viewMenu->addAction(viewActions[menu_view_frameless]);
 	viewMenu->addAction(viewActions[menu_view_fullscreen]);
 	viewMenu->addSeparator();
 
@@ -676,9 +676,9 @@ void DkNoMacs::createMenu() {
 	panelMenu->addAction(panelActions[menu_panel_thumbview]);
 	panelMenu->addAction(panelActions[menu_panel_scroller]);
 	panelMenu->addAction(panelActions[menu_panel_exif]);
-	
+
 	panelMenu->addSeparator();
-	
+
 	panelMenu->addAction(panelActions[menu_panel_overview]);
 	panelMenu->addAction(panelActions[menu_panel_player]);
 	panelMenu->addAction(panelActions[menu_panel_info]);
@@ -705,7 +705,7 @@ void DkNoMacs::createMenu() {
 	// no sync menu in frameless view
 	if (DkSettings::app.appMode != DkSettings::mode_frameless)
 		syncMenu = menu->addMenu(tr("&Sync"));
-	else 
+	else
 		syncMenu = 0;
 
 #ifdef WITH_PLUGINS
@@ -743,7 +743,7 @@ void DkNoMacs::createOpenWithMenu(QMenu*) {
 
 	assignCustomShortcuts(appActions);
 	openWithMenu->addActions(appActions.toList());
-	
+
 	if (!appActions.empty())
 		openWithMenu->addSeparator();
 	openWithMenu->addAction(fileActions[menu_file_app_manager]);
@@ -766,13 +766,13 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(panelActions[menu_panel_histogram]);
 	contextMenu->addAction(panelActions[menu_panel_comment]);
 	contextMenu->addSeparator();
-	
+
 	contextMenu->addAction(editActions[menu_edit_copy_buffer]);
 	contextMenu->addAction(editActions[menu_edit_copy]);
 	contextMenu->addAction(editActions[menu_edit_copy_color]);
 	contextMenu->addAction(editActions[menu_edit_paste]);
 	contextMenu->addSeparator();
-	
+
 	contextMenu->addAction(viewActions[menu_view_frameless]);
 	contextMenu->addSeparator();
 
@@ -806,7 +806,7 @@ void DkNoMacs::createActions() {
 	DkViewPort* vp = viewport();
 
 	fileActions.resize(menu_file_end);
-	
+
 	fileActions[menu_file_open] = new QAction(fileIcons[icon_file_open], tr("&Open"), this);
 	fileActions[menu_file_open]->setShortcuts(QKeySequence::Open);
 	fileActions[menu_file_open]->setStatusTip(tr("Open an image"));
@@ -821,7 +821,7 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_app_manager]->setStatusTip(tr("Manage Applications which are Automatically Opened"));
 	fileActions[menu_file_app_manager]->setShortcut(QKeySequence(shortcut_app_manager));
 	connect(fileActions[menu_file_app_manager], SIGNAL(triggered()), this, SLOT(openAppManager()));
-		
+
 	fileActions[menu_file_rename] = new QAction(tr("Re&name"), this);
 	fileActions[menu_file_rename]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	fileActions[menu_file_rename]->setShortcut(QKeySequence(shortcut_rename));
@@ -1042,11 +1042,11 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_invert] = new QAction(tr("&Invert Image"), this);
 //	editActions[menu_edit_invert]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 //	editActions[menu_edit_invert]->setShortcut();
-	editActions[menu_edit_invert]->setStatusTip(tr("Invert the Image"));		    
+	editActions[menu_edit_invert]->setStatusTip(tr("Invert the Image"));
 	connect(editActions[menu_edit_invert], SIGNAL(triggered()), this, SLOT(invertImage()));
 
-	editActions[menu_edit_gray_convert] = new QAction(tr("&Convert to Grayscale"), this);	
-	editActions[menu_edit_gray_convert]->setStatusTip(tr("Convert to Grayscale"));		   
+	editActions[menu_edit_gray_convert] = new QAction(tr("&Convert to Grayscale"), this);
+	editActions[menu_edit_gray_convert]->setStatusTip(tr("Convert to Grayscale"));
 	connect(editActions[menu_edit_gray_convert], SIGNAL(triggered()), this, SLOT(convert2gray()));
 
 	editActions[menu_edit_unsharp] = new QAction(tr("&Unsharp Mask"), this);
@@ -1288,7 +1288,7 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_gps_map]->setStatusTip(tr("shows the GPS coordinates"));
 	viewActions[menu_view_gps_map]->setEnabled(false);
 	connect(viewActions[menu_view_gps_map], SIGNAL(triggered()), this, SLOT(showGpsCoordinates()));
-	
+
 	// batch actions
 	toolsActions.resize(menu_tools_end);
 
@@ -1313,7 +1313,7 @@ void DkNoMacs::createActions() {
 	connect(toolsActions[menu_tools_export_tiff], SIGNAL(triggered()), this, SLOT(exportTiff()));
 
 	toolsActions[menu_tools_extract_archive] = new QAction(tr("Extract From Archive"), this);
-	toolsActions[menu_tools_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::app.containerRawFilters));		
+	toolsActions[menu_tools_extract_archive]->setStatusTip(tr("Extract images from an archive (%1)").arg(DkSettings::app.containerRawFilters));
 	toolsActions[menu_tools_extract_archive]->setShortcut(QKeySequence(shortcut_extract));
 	connect(toolsActions[menu_tools_extract_archive], SIGNAL(triggered()), this, SLOT(extractImagesFromArchive()));
 
@@ -1496,10 +1496,10 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	editActions[menu_edit_unsharp]->setEnabled(false);
 #endif
 	editActions[menu_edit_invert]->setEnabled(enable);
-	editActions[menu_edit_gray_convert]->setEnabled(enable);	
+	editActions[menu_edit_gray_convert]->setEnabled(enable);
 
 	toolsActions[menu_tools_thumbs]->setEnabled(enable);
-	
+
 	panelActions[menu_panel_info]->setEnabled(enable);
 #ifdef WITH_OPENCV
 	panelActions[menu_panel_histogram]->setEnabled(enable);
@@ -1512,7 +1512,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 	panelActions[menu_panel_exif]->setEnabled(enable);
 	panelActions[menu_panel_overview]->setEnabled(enable);
 	panelActions[menu_panel_player]->setEnabled(enable);
-	
+
 	viewActions[menu_view_fullscreen]->setEnabled(enable);
 	viewActions[menu_view_reset]->setEnabled(enable);
 	viewActions[menu_view_100]->setEnabled(enable);
@@ -1540,12 +1540,12 @@ void DkNoMacs::enableMovieActions(bool enable) {
 	viewActions[menu_view_movie_next]->setEnabled(enable);
 
 	viewActions[menu_view_movie_pause]->setChecked(false);
-	
+
 	if (enable)
 		addToolBar(movieToolbar);
 	else
 		removeToolBar(movieToolbar);
-	
+
 	if (toolbar->isVisible())
 		movieToolbar->setVisible(enable);
 }
@@ -1602,16 +1602,16 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 	DkCentralWidget* cw = static_cast<DkCentralWidget*>(centralWidget());
 
 	if (cw && cw->getTabs().size() > 1) {
-		
-		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Quit nomacs"), 
-			tr("Do you want nomacs to save your tabs?"), 
+
+		DkMessageBox* msg = new DkMessageBox(QMessageBox::Question, tr("Quit nomacs"),
+			tr("Do you want nomacs to save your tabs?"),
 			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), this);
 		msg->setButtonText(QMessageBox::Yes, tr("&Save and Quit"));
 		msg->setButtonText(QMessageBox::No, tr("&Quit"));
 		msg->setObjectName("saveTabsDialog");
 
 		int answer = msg->exec();
-	
+
 		if (answer == QMessageBox::Cancel || answer == QMessageBox::NoButton) {	// User canceled - do not close
 			event->ignore();
 			return;
@@ -1638,7 +1638,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		settings.setValue("geometryNomacs", geometry());
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
-		
+
 		if (explorer)
 			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
 		if (metaDataDock)
@@ -1655,7 +1655,7 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 void DkNoMacs::resizeEvent(QResizeEvent *event) {
 
 	QMainWindow::resizeEvent(event);
-	
+
 	if (!overlaid)
 		oldGeometry = geometry();
 	else if (windowOpacity() < 1.0f) {
@@ -1717,7 +1717,7 @@ void DkNoMacs::mouseMoveEvent(QMouseEvent *event) {
 }
 
 bool DkNoMacs::gestureEvent(QGestureEvent *event) {
-	
+
 	DkViewPort* vp = viewport();
 
 	if (QGesture *swipe = event->gesture(Qt::SwipeGesture)) {
@@ -1725,7 +1725,7 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 		qDebug() << "swipe detected\n";
 		if (vp) {
-			
+
 			if (swipeG->horizontalDirection() == QSwipeGesture::Left)
 				vp->loadNextFileFast();
 			else if (swipeG->horizontalDirection() == QSwipeGesture::Right)
@@ -1736,7 +1736,7 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 
 	}
 	else if (QGesture *pan = event->gesture(Qt::PanGesture)) {
-		
+
 		QPanGesture* panG = static_cast<QPanGesture *>(pan);
 
 		qDebug() << "you're speedy: " << panG->acceleration();
@@ -1744,7 +1744,7 @@ bool DkNoMacs::gestureEvent(QGestureEvent *event) {
 		QPointF delta = panG->delta();
 
 		if (panG->acceleration() > 10 && delta.x() && fabs(delta.y()/delta.x()) < 0.2) {
-			
+
 			if (delta.x() < 0)
 				vp->loadNextFileFast();
 			else
@@ -1856,7 +1856,7 @@ void DkNoMacs::normalizeImage() {
 		return;
 
 	QImage img = vp->getImage();
-	
+
 	bool normalized = DkImage::normImage(img);
 
 	if (!normalized || img.isNull())
@@ -1897,7 +1897,7 @@ void DkNoMacs::unsharpMask() {
 }
 
 void DkNoMacs::readSettings() {
-	
+
 	qDebug() << "reading settings...";
 	QSettings& settings = Settings::instance().getSettings();
 
@@ -1914,8 +1914,8 @@ void DkNoMacs::readSettings() {
 }
 
 void DkNoMacs::restart() {
-	
-	if (!viewport()) 
+
+	if (!viewport())
 		return;
 
 	QString exe = QApplication::applicationFilePath();
@@ -1940,13 +1940,12 @@ void DkNoMacs::toggleFullScreen() {
 }
 
 void DkNoMacs::enterFullScreen() {
-	
 	DkSettings::app.currentAppMode += qFloor(DkSettings::mode_end*0.5f);
 	if (DkSettings::app.currentAppMode < 0) {
 		qDebug() << "illegal state: " << DkSettings::app.currentAppMode;
 		DkSettings::app.currentAppMode = DkSettings::mode_default;
 	}
-	
+
 	menuBar()->hide();
 	toolbar->hide();
 	movieToolbar->hide();
@@ -1955,7 +1954,7 @@ void DkNoMacs::enterFullScreen() {
 
 	DkSettings::app.maximizedMode=isMaximized();
 	setWindowState(Qt::WindowFullScreen);
-	
+
 	if (viewport())
 		viewport()->setFullScreen(true);
 
@@ -1978,7 +1977,7 @@ void DkNoMacs::exitFullScreen() {
 
 		if(DkSettings::app.maximizedMode) setWindowState(Qt::WindowMaximized);
 		else setWindowState(Qt::WindowNoState);
-		
+
 		if (getTabWidget())
 			getTabWidget()->showTabs(true);
 
@@ -1991,7 +1990,7 @@ void DkNoMacs::exitFullScreen() {
 
 void DkNoMacs::setFrameless(bool) {
 
-	if (!viewport()) 
+	if (!viewport())
 		return;
 
 	QString exe = QApplication::applicationFilePath();
@@ -1999,7 +1998,7 @@ void DkNoMacs::setFrameless(bool) {
 
 	if (getTabWidget()->getCurrentImage())
 		args.append(getTabWidget()->getCurrentImage()->file().absoluteFilePath());
-	
+
 	if (objectName() != "DkNoMacsFrameless") {
 		DkSettings::app.appMode = DkSettings::mode_frameless;
         //args.append("-graphicssystem");
@@ -2007,9 +2006,9 @@ void DkNoMacs::setFrameless(bool) {
     } else {
 		DkSettings::app.appMode = DkSettings::mode_default;
     }
-	
+
 	DkSettings::save();
-	
+
 	bool started = process.startDetached(exe, args);
 
 	// close me if the new instance started
@@ -2030,12 +2029,12 @@ void DkNoMacs::fitFrame() {
 	QPointF c = nmRect.center();
 	nmRect.setSize(nmRect.size() + viewRect.size() - vpRect.size());
 	nmRect.moveCenter(c);
-	
+
 	// still fits on screen?
 	QDesktopWidget* dw = QApplication::desktop();
 	QRect screenRect = dw->availableGeometry(this);
 	QRect newGeometry = screenRect.intersected(nmRect.toRect());
-	
+
 	// correct frame
 	newGeometry.setSize(newGeometry.size()-frDiff);
 	newGeometry.moveTopLeft(newGeometry.topLeft() - frameGeometry().topLeft()+geometry().topLeft());
@@ -2053,7 +2052,7 @@ void DkNoMacs::setRecursiveScan(bool recursive) {
 	DkSettings::global.scanSubFolders = recursive;
 
 	QSharedPointer<DkImageLoader> loader = getTabWidget()->getCurrentImageLoader();
-	
+
 	if (!loader)
 		return;
 
@@ -2071,7 +2070,7 @@ void DkNoMacs::showOpacityDialog() {
 		opacityDialog = new DkOpacityDialog(this);
 		opacityDialog->setWindowTitle(tr("Change Opacity"));
 	}
-	
+
 	if (opacityDialog->exec())
 		setWindowOpacity(opacityDialog->value()/100.0f);
 }
@@ -2082,7 +2081,7 @@ void DkNoMacs::opacityDown() {
 }
 
 void DkNoMacs::opacityUp() {
-	
+
 	changeOpacity(0.3f);
 }
 
@@ -2133,16 +2132,16 @@ void DkNoMacs::animateChangeOpacity() {
 
 void DkNoMacs::lockWindow(bool lock) {
 
-	
+
 #ifdef WIN32
-	
+
 	qDebug() << "locking: " << lock;
 
 	if (lock) {
 		//setAttribute(Qt::WA_TransparentForMouseEvents);
 		HWND hwnd = (HWND) winId(); // get handle of the widget
 		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
-		SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT); 
+		SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT);
 		SetWindowPos((HWND)this->winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 		viewport()->getController()->setInfo(tr("Window Locked\nTo unlock: gain focus (ALT+Tab),\nthen press CTRL+SHIFT+ALT+B"), 5000);
 	}
@@ -2154,7 +2153,7 @@ void DkNoMacs::lockWindow(bool lock) {
 		qDebug() << "deactivating...";
 		HWND hwnd = (HWND) winId(); // get handle of the widget
 		LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
-		SetWindowLong(hwnd, GWL_EXSTYLE, styles & ~WS_EX_TRANSPARENT); 
+		SetWindowLong(hwnd, GWL_EXSTYLE, styles & ~WS_EX_TRANSPARENT);
 
 		SetWindowPos((HWND)this->winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
@@ -2203,14 +2202,14 @@ void DkNoMacs::tcpSetWindowRect(QRect newRect, bool opacity, bool overlaid) {
 #endif
 
 		oldGeometry = geometry();
-		
+
 		this->move(newRect.topLeft());
 		this->resize(newRect.size() - (frameGeometry().size() - geometry().size()));
 
 		//setGeometry(newRect);
 		if (opacity)
 			animateOpacityDown();
-		
+
 		//this->setActiveWindow();
 	}
 };
@@ -2228,7 +2227,7 @@ void DkNoMacs::tcpSendWindowRect() {
 };
 
 void DkNoMacs::tcpSendArrange() {
-	
+
 	overlaid = !overlaid;
 	emit sendArrangeSignal(overlaid);
 }
@@ -2240,7 +2239,7 @@ void DkNoMacs::showExplorer(bool show) {
 		// get last location
 		QSettings& settings = Settings::instance().getSettings();
 		int dockLocation = settings.value("explorerLocation", Qt::LeftDockWidgetArea).toInt();
-		
+
 		explorer = new DkExplorer(tr("File Explorer"));
 		addDockWidget((Qt::DockWidgetArea)dockLocation, explorer);
 
@@ -2285,11 +2284,11 @@ void DkNoMacs::showMetaDataDock(bool show) {
 
 void DkNoMacs::showThumbsDock(bool show) {
 
-	
+
 	// nothing todo here
 	if (thumbsDock && thumbsDock->isVisible() && show)
 		return;
-	
+
 	int winPos = viewport()->getController()->getFilePreview()->getWindowPosition();
 
 	if (winPos != DkFilePreview::cm_pos_dock_hor && winPos != DkFilePreview::cm_pos_dock_ver) {
@@ -2353,7 +2352,7 @@ void DkNoMacs::openDir() {
 		return;
 
 	qDebug() << "loading directory: " << dirName;
-	
+
 	getTabWidget()->loadFile(QFileInfo(dirName));
 }
 
@@ -2364,7 +2363,7 @@ void DkNoMacs::openFile() {
 
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
-		getTabWidget()->getCurrentDir().absolutePath(), 
+		getTabWidget()->getCurrentDir().absolutePath(),
 		DkSettings::app.openFilters.join(";;"));
 
 	if (fileName.isEmpty())
@@ -2399,10 +2398,10 @@ void DkNoMacs::renameFile() {
 	QString filename = QInputDialog::getText(this, file.baseName(), tr("Rename:"), QLineEdit::Normal, file.baseName(), &ok);
 
 	if (ok && !filename.isEmpty() && filename != file.baseName()) {
-		
+
 		if (!file.suffix().isEmpty())
 			filename.append("." + file.suffix());
-		
+
 		qDebug() << "renaming: " << file.fileName() << " -> " << filename;
 		QFileInfo renamedFile = QFileInfo(file.absoluteDir(), filename);
 
@@ -2437,13 +2436,13 @@ void DkNoMacs::renameFile() {
 
 		QFile newFile(file.absoluteFilePath());
 		bool renamed = newFile.rename(renamedFile.absoluteFilePath());
-		
+
 		// tell user that deleting went wrong, and stop the renaming
 		if (!renamed)
 			viewport()->getController()->setInfo(tr("Sorry, I can't rename: %1").arg(file.fileName()));
 		else
 			getTabWidget()->loadFile(renamedFile.absoluteFilePath());
-		
+
 	}
 
 }
@@ -2458,7 +2457,7 @@ void DkNoMacs::find(bool filterAction) {
 	if (filterAction) {
 
 		int db = (QObject::sender() == toolsActions[menu_tools_filter]) ? DkSearchDialog::filter_button : DkSearchDialog::find_button;
-		
+
 		qDebug() << "default button: " << db;
 		DkSearchDialog* searchDialog = new DkSearchDialog(this);
 		searchDialog->setDefaultButton(db);
@@ -2470,10 +2469,10 @@ void DkNoMacs::find(bool filterAction) {
 		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), getTabWidget(), SLOT(loadFile(QFileInfo)));
 		int answer = searchDialog->exec();
 
-		toolsActions[menu_tools_filter]->setChecked(answer == DkSearchDialog::filter_button);		
+		toolsActions[menu_tools_filter]->setChecked(answer == DkSearchDialog::filter_button);
 	}
 	else {
-		// remove the filter 
+		// remove the filter
 		getTabWidget()->getCurrentImageLoader()->setFolderFilters(QStringList());
 	}
 
@@ -2482,7 +2481,7 @@ void DkNoMacs::find(bool filterAction) {
 void DkNoMacs::changeSorting(bool change) {
 
 	if (change) {
-	
+
 		QString senderName = QObject::sender()->objectName();
 
 		if (senderName == "menu_sort_filename")
@@ -2498,7 +2497,7 @@ void DkNoMacs::changeSorting(bool change) {
 		else if (senderName == "menu_sort_descending")
 			DkSettings::global.sortDir = DkSettings::sort_descending;
 
-		if (getTabWidget()->getCurrentImageLoader()) 
+		if (getTabWidget()->getCurrentImageLoader())
 			getTabWidget()->getCurrentImageLoader()->sort();
 	}
 
@@ -2519,7 +2518,7 @@ void DkNoMacs::goTo() {
 		return;
 
 	QSharedPointer<DkImageLoader> loader = getTabWidget()->getCurrentImageLoader();
-	
+
 	bool ok = false;
 	int fileIdx = QInputDialog::getInt(this, tr("Go To Image"), tr("Image Index:"), 0, 0, loader->numFiles()-1, 1, &ok);
 
@@ -2558,10 +2557,10 @@ void DkNoMacs::extractImagesFromArchive() {
 	if (getTabWidget()->getCurrentImage()) {
 		if (getTabWidget()->getCurrentImage()->isFromZip())
 			archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentImage()->getZipData()->getZipFileInfo(), true);
-		else 
+		else
 			archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFile(), false);
 	}
-	else 
+	else
 		archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFile(), false);
 
 	archiveExtractionDialog->exec();
@@ -2577,10 +2576,10 @@ void DkNoMacs::saveFile() {
 }
 
 void DkNoMacs::saveFileAs(bool silent) {
-	
+
 	qDebug() << "saving...";
 
-	if(!currRunningPlugin.isEmpty()) 
+	if(!currRunningPlugin.isEmpty())
 		applyPluginChanges(true, true);
 
 	getTabWidget()->getCurrentImageLoader()->saveUserFileAs(getTabWidget()->getViewPort()->getImage(), silent);
@@ -2642,7 +2641,7 @@ void DkNoMacs::resizeImage() {
 
 void DkNoMacs::deleteFile() {
 
-	if(!getCurrRunningPlugin().isEmpty()) 
+	if(!getCurrRunningPlugin().isEmpty())
 		applyPluginChanges(false, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
@@ -2652,7 +2651,7 @@ void DkNoMacs::deleteFile() {
 
 	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes) {
 		viewport()->stopMovie();	// movies keep file handles so stop it before we can delete files
-		
+
 		if (!getTabWidget()->getCurrentImageLoader()->deleteFile())
 			viewport()->loadMovie();	// load the movie again, if we could not delete it
 	}
@@ -2704,7 +2703,7 @@ void DkNoMacs::computeMosaic() {
 }
 
 void DkNoMacs::computeBatch() {
-	
+
 	batchDialog = new DkBatchDialog(getTabWidget()->getCurrentDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 	batchDialog->exec();
 	batchDialog->deleteLater();
@@ -2719,7 +2718,7 @@ void DkNoMacs::openImgManipulationDialog() {
 
 	if (!imgManipulationDialog)
 		imgManipulationDialog = new DkImageManipulationDialog(this);
-	else 
+	else
 		imgManipulationDialog->resetValues();
 
 	QImage tmpImg = viewport()->getImage();
@@ -2751,7 +2750,7 @@ void DkNoMacs::setWallpaper() {
 
 	DkImageLoader* loader = new DkImageLoader();
 	QFileInfo tmpPath = loader->saveTempFile(dImg, "wallpaper", ".jpg", true);
-	
+
 	// is there a more elegant way to see if saveTempFile returned an empty path
 	if (tmpPath.absoluteFilePath() == QFileInfo().absoluteFilePath()) {
 		errorDialog(tr("Sorry, I could not create a wallpaper..."));
@@ -2780,7 +2779,7 @@ void DkNoMacs::printDialog() {
 
 	QVector2D res(150,150);
 	QSharedPointer<DkImageContainerT> imgC = getTabWidget()->getCurrentImage();
-	
+
 	if (imgC)
 		res = imgC->getMetaData()->getResolution();
 
@@ -2811,7 +2810,7 @@ void DkNoMacs::computeThumbsBatch() {
 
 	if (!thumbSaver)
 		thumbSaver = new DkThumbsSaver(this);
-	
+
 	thumbSaver->processDir(getTabWidget()->getCurrentImageLoader()->getImages(), forceDialog->forceSave());
 }
 
@@ -2852,12 +2851,12 @@ void DkNoMacs::bugReport() {
 	url += "";
 #endif
 
-	
+
 	QDesktopServices::openUrl(QUrl(url));
 }
 
 void DkNoMacs::featureRequest() {
-	
+
 	QString url = QString("http://www.nomacs.org/redmine/projects/nomacs/")
 		% QString("issues/new?issue[tracker_id]=2&issue[custom_field_values][1]=")
 		% QApplication::applicationVersion();
@@ -2894,7 +2893,7 @@ void DkNoMacs::cleanSettings() {
 
 void DkNoMacs::newInstance(QFileInfo file) {
 
-	if (!viewport()) 
+	if (!viewport())
 		return;
 
 	QString exe = QApplication::applicationFilePath();
@@ -2911,13 +2910,13 @@ void DkNoMacs::newInstance(QFileInfo file) {
 		args.append(file.absoluteFilePath());
 
 	if (objectName() == "DkNoMacsFrameless")
-		args.append("1");	
-	
+		args.append("1");
+
 	QProcess::startDetached(exe, args);
 }
 
 //void DkNoMacs::shareFacebook() {
-//	
+//
 //	DkFacebook fb;
 //
 //	fb.login(QString());
@@ -2937,13 +2936,13 @@ void DkNoMacs::setContrast(bool contrast) {
 
 	qDebug() << "contrast: " << contrast;
 
-	if (!viewport()) 
+	if (!viewport())
 		return;
 
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
 	args.append(getTabWidget()->getCurrentFile().absoluteFilePath());
-	
+
 	if (contrast)
 		DkSettings::app.appMode = DkSettings::mode_contrast;
 	else
@@ -2984,7 +2983,7 @@ void DkNoMacs::onWindowLoaded() {
 }
 
 void DkNoMacs::keyPressEvent(QKeyEvent *event) {
-	
+
 	if (event->key() == Qt::Key_Alt) {
 		posGrabKey = QCursor::pos();
 		otherKeyPressed = false;
@@ -2998,7 +2997,7 @@ void DkNoMacs::keyReleaseEvent(QKeyEvent* event) {
 
 	if (event->key() == Qt::Key_Alt && !otherKeyPressed && (posGrabKey - QCursor::pos()).manhattanLength() == 0)
 		menu->showMenu();
-	
+
 }
 
 // >DIR diem: eating shortcut overrides (this allows us to use navigation keys like arrows)
@@ -3058,7 +3057,7 @@ void DkNoMacs::showToolbarsTemporarily(bool show) {
 		QList<QToolBar *> toolbars = findChildren<QToolBar *>();
 
 		for (int idx = 0; idx < toolbars.size(); idx++) {
-			
+
 			if (toolbars.at(idx)->isVisible()) {
 				toolbars.at(idx)->hide();
 				hiddenToolbars.append(toolbars.at(idx));
@@ -3071,7 +3070,7 @@ void DkNoMacs::showToolbar(bool show) {
 
 	DkSettings::app.showToolBar = show;
 	panelActions[menu_panel_toolbar]->setChecked(DkSettings::app.showToolBar);
-	
+
 	if (DkSettings::app.showToolBar)
 		toolbar->show();
 	else
@@ -3112,7 +3111,7 @@ void DkNoMacs::openFileWith(QAction* action) {
 		viewport()->getController()->setInfo("Sorry, " % app.fileName() % " does not exist");
 
 	QStringList args;
-	
+
 	QFileInfo fileInfo = getTabWidget()->getCurrentFile();
 
 	if (app.fileName() == "explorer.exe")
@@ -3143,7 +3142,7 @@ void DkNoMacs::showGpsCoordinates() {
 
 	qDebug() << "gps: " << DkMetaDataHelper::getInstance().getGpsCoordinates(metaData);
 
-	QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));  
+	QDesktopServices::openUrl(QUrl(DkMetaDataHelper::getInstance().getGpsCoordinates(metaData)));
 }
 
 QVector <QAction* > DkNoMacs::getFileActions() {
@@ -3190,10 +3189,10 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 
 	QString title = file.fileName();
 	title = title.remove(".lnk");
-	
+
 	if (title.isEmpty()) {
 		title = "nomacs - Image Lounge";
-		if (DkSettings::app.privateMode) 
+		if (DkSettings::app.privateMode)
 			title.append(tr(" [Private Mode]"));
 	}
 
@@ -3209,7 +3208,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 		attributes.sprintf(" - %i x %i", size.width(), size.height());
 	if (size.isEmpty() && viewport())
 		attributes.sprintf(" - %i x %i", viewport()->getImage().width(), viewport()->getImage().height());
-	if (DkSettings::app.privateMode) 
+	if (DkSettings::app.privateMode)
 		attributes.append(tr(" [Private Mode]"));
 
 	QMainWindow::setWindowTitle(title.append(attributes));
@@ -3217,21 +3216,21 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 	emit sendTitleSignal(windowTitle());
 	setWindowModified(edited);
 
-	if ((!viewport()->getController()->getFileInfoLabel()->isVisible() || 
+	if ((!viewport()->getController()->getFileInfoLabel()->isVisible() ||
 		!DkSettings::slideShow.display.testBit(DkSettings::display_creation_date)) && getTabWidget()->getCurrentImage()) {
-		
+
 		// create statusbar info
 		QSharedPointer<DkMetaDataT> metaData = getTabWidget()->getCurrentImage()->getMetaData();
 		QString dateString = metaData->getExifValue("DateTimeOriginal");
 		dateString = DkUtils::convertDateString(dateString, file);
 		showStatusMessage(dateString, status_time_info);
 	}
-	else 
+	else
 		showStatusMessage("", status_time_info);	// hide label
 
 	if (file.exists())
 		showStatusMessage(DkUtils::readableByte((float)file.size()), status_filesize_info);
-	else 
+	else
 		showStatusMessage("", status_filesize_info);
 
 }
@@ -3283,7 +3282,7 @@ void DkNoMacs::openSettings() {
 }
 
 void DkNoMacs::settingsChanged() {
-	
+
 	if (!isFullScreen()) {
 		showMenuBar(DkSettings::app.showMenuBar);
 		showToolbar(DkSettings::app.showToolBar);
@@ -3313,7 +3312,7 @@ void DkNoMacs::showUpdaterMessage(QString msg, QString title) {
 }
 
 void DkNoMacs::showUpdateDialog(QString msg, QString title) {
-	if (progressDialog != 0 && !progressDialog->isHidden()) { // check if the progress bar is already open 
+	if (progressDialog != 0 && !progressDialog->isHidden()) { // check if the progress bar is already open
 		showUpdaterMessage(tr("Already downloading update"), "update");
 		return;
 	}
@@ -3321,7 +3320,7 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 	DkSettings::sync.updateDialogShown = true;
 
 	DkSettings::save();
-	
+
 	if (!updateDialog) {
 		updateDialog = new DkUpdateDialog(this);
 		updateDialog->setWindowTitle(title);
@@ -3358,9 +3357,9 @@ void DkNoMacs::updateProgress(qint64 received, qint64 total) {
 }
 
 void DkNoMacs::startSetup(QString filePath) {
-	
+
 	qDebug() << "starting setup filePath:" << filePath;
-	
+
 	if (!QFile::exists(filePath))
 		qDebug() << "file does not exist";
 	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath))) {
@@ -3425,7 +3424,7 @@ int DkNoMacs::infoDialog(QString msg, QWidget* parent, QString title) {
 * called in DkNoMacs::createPluginsMenu()
 **/
 void DkNoMacs::addPluginsToMenu() {
-	
+
 #ifdef WITH_PLUGINS
 
 	QMap<QString, DkPluginInterface *> loadedPlugins = pluginManager->getPlugins();
@@ -3462,16 +3461,16 @@ void DkNoMacs::addPluginsToMenu() {
 				sm->setStatusTip(cPlugin->pluginStatusTip());
 				sm->addActions(actions);
 				runId2PluginId.insert(cPlugin->pluginMenuName(), pluginIdList.at(i));
-			
+
 				pluginSubMenus.append(sm);
 			}
 			else {
-		
+
 				//QList<QPair<QString, QString> > sortedNames;
 
 
 				for (int j = 0; j < runID.size(); j++) {
-				
+
 					runId2PluginId.insert(runID.at(j), pluginIdList.at(i));
 					sortedNames.append(qMakePair(runID.at(j), cPlugin->pluginMenuName(runID.at(j))));
 				}
@@ -3481,7 +3480,7 @@ void DkNoMacs::addPluginsToMenu() {
 
 	/*
 	QList<QPair<QString, QString> > sortedNames;
-	QMapIterator<QString, QString> iter(pluginNames);		
+	QMapIterator<QString, QString> iter(pluginNames);
 	while(iter.hasNext()) {
 		iter.next();
 		sortedNames.append(qMakePair(iter.key(), loadedPlugins.value(iter.value())->pluginNames(iter.key())));
@@ -3491,7 +3490,7 @@ void DkNoMacs::addPluginsToMenu() {
 	*/
 
 	//pluginsActions.resize(menu_plugins_end + sortedNames.size() + pluginSubMenus.size());
-	
+
 	pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
 	pluginsMenu->addSeparator();
 
@@ -3520,7 +3519,7 @@ void DkNoMacs::addPluginsToMenu() {
 			pluginAction->setToolTip(pluginAction->statusTip());
 
 			pluginsActions.append(pluginAction);
-		}		
+		}
 	}
 
 	for (int idx = 0; idx < pluginSubMenus.size(); idx++) {
@@ -3552,7 +3551,7 @@ void DkNoMacs::savePluginActions(QVector<QAction *> actions) {
 
 
 /**
-* Creates the plugins menu 
+* Creates the plugins menu
 **/
 void DkNoMacs::createPluginsMenu() {
 #ifdef WITH_PLUGINS
@@ -3566,7 +3565,7 @@ void DkNoMacs::createPluginsMenu() {
 	}
 	else {
 		pluginsMenu->clear();
-		// delete old plugin actions	
+		// delete old plugin actions
 		for (int idx = pluginsActions.size(); idx > menu_plugins_end; idx--) {
 			pluginsActions.last()->deleteLater();
 			pluginsActions.last() = 0;
@@ -3586,7 +3585,7 @@ void DkNoMacs::openPluginManager() {
 	}
 
 	if (!currRunningPlugin.isEmpty()) {
-	   	   
+
 		QMessageBox infoDialog(this);
 		infoDialog.setWindowTitle("Close plugin");
 		infoDialog.setIcon(QMessageBox::Information);
@@ -3614,9 +3613,9 @@ void DkNoMacs::runLoadedPlugin() {
 	   closePlugin(true, false);
 
    if (!currRunningPlugin.isEmpty()) {
-	   
+
 	    // the plugin is not closed in time
-	   
+
 	   	QMessageBox infoDialog(this);
 		infoDialog.setWindowTitle("Close plugin");
 		infoDialog.setIcon(QMessageBox::Information);
@@ -3645,26 +3644,26 @@ void DkNoMacs::runLoadedPlugin() {
 	}
 
    if (cPlugin->interfaceType() == DkPluginInterface::interface_viewport) {
-	    
+
 		DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
 
-	   if(!vPlugin || !vPlugin->getViewPort()) 
+	   if(!vPlugin || !vPlugin->getViewPort())
 		   return;
 
 	   currRunningPlugin = key;
-	   	   
+
 	   connect(vPlugin->getViewPort(), SIGNAL(closePlugin(bool, bool)), this, SLOT(closePlugin(bool, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(showToolbar(QToolBar*, bool)), this, SLOT(showToolbar(QToolBar*, bool)));
 	   connect(vPlugin->getViewPort(), SIGNAL(loadFile(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
 	   connect(vPlugin->getViewPort(), SIGNAL(loadImage(QImage)), viewport(), SLOT(setImage(QImage)));
-	   
+
 	   viewport()->getController()->setPluginWidget(vPlugin, false);
    }
    else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
 
 	    QImage tmpImg = viewport()->getImage();
 		QImage result = cPlugin->runPlugin(key, tmpImg);
-		if(!result.isNull()) 
+		if(!result.isNull())
 			viewport()->setEditedImage(result);
    }
 #endif // WITH_PLUGINS
@@ -3690,7 +3689,7 @@ void DkNoMacs::runPluginFromShortcut() {
 		viewport()->removeAction(pluginsDummyActions.at(i));
 
 	initPluginManager();
-	
+
 	for (int i = 0; i < pluginsActions.size(); i++)
 		if (pluginsActions.at(i)->text().compare(actionName) == 0) {
 			pluginsActions.at(i)->trigger();
@@ -3714,11 +3713,11 @@ void DkNoMacs::closePlugin(bool askForSaving, bool) {
 	currRunningPlugin = QString();
 	bool isSaveNeeded = false;
 
-	if (!cPlugin) 
+	if (!cPlugin)
 		return;
 	DkViewPortInterface* vPlugin = dynamic_cast<DkViewPortInterface*>(cPlugin);
 
-	if (!vPlugin) 
+	if (!vPlugin)
 		return;
 
 	//viewport()->setPluginImageWasApplied(true);
@@ -3742,8 +3741,8 @@ void DkNoMacs::closePlugin(bool askForSaving, bool) {
 				isSaveNeeded = true;
 			}
 			msgBox.deleteLater();
-		}				
-		else 
+		}
+		else
 			viewport()->setEditedImage(pluginImage);
 	}
 
@@ -3873,9 +3872,9 @@ void DkNoMacsSync::initLanClient() {
 	}
 	rcClient->upnpDeviceHost = upnpDeviceHost;
 #endif // WITH_UPNP
-	
+
 	rcClient->start();
-	
+
 	connect(lanActions[menu_lan_server], SIGNAL(toggled(bool)), this, SLOT(startTCPServer(bool)));	// TODO: something that makes sense...
 	connect(lanActions[menu_lan_image], SIGNAL(triggered()), viewport(), SLOT(tcpSendImage()));
 
@@ -3893,7 +3892,7 @@ void DkNoMacsSync::initLanClient() {
 		emit startRCServerSignal(true);
 		//rcClient->startServer(true);
 	}
-	else 
+	else
 		qDebug() << "whitelist empty!!";
 
 
@@ -4118,10 +4117,10 @@ void DkNoMacsSync::tcpChangeSyncMode(int syncMode, bool connectWithWhiteList) {
 
 	// turn on the new mode
 	switch(syncMode) {
-		case DkSettings::sync_mode_remote_control: 
-			syncActions[menu_sync_remote_control]->setChecked(true);	
+		case DkSettings::sync_mode_remote_control:
+			syncActions[menu_sync_remote_control]->setChecked(true);
 			break;
-		case DkSettings::sync_mode_remote_display: 
+		case DkSettings::sync_mode_remote_display:
 			syncActions[menu_sync_remote_display]->setChecked(true);
 			break;
 	//default:
@@ -4181,7 +4180,7 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 		DkPeer* peer = peers[0];
 
 		emit synchronizeRemoteControl(peer->peerId);
-		
+
 		if (mode == DkSettings::sync_mode_remote_control)
 			rcClient->sendNewMode(DkSettings::sync_mode_remote_display);	// TODO: if we need this threaded emit a signal here
 		else
@@ -4206,12 +4205,12 @@ bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 void DkNoMacsSync::newClientConnected(bool connected, bool local) {
 
 	tcpLanMenu->enableActions(connected, local);
-	
+
 	DkNoMacs::newClientConnected(connected, local);
 }
 
 void DkNoMacsSync::startTCPServer(bool start) {
-	
+
 #ifdef WITH_UPNP
 	if (!upnpDeviceHost->isStarted())
 		upnpDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs-device.xml");
@@ -4226,7 +4225,7 @@ void DkNoMacsSync::settingsChanged() {
 }
 
 void DkNoMacsSync::clientInitialized() {
-	
+
 	//TODO: things that need to be done after the clientManager has finished initialization
 #ifdef WITH_UPNP
 	QObject* obj = QObject::sender();
@@ -4236,9 +4235,9 @@ void DkNoMacsSync::clientInitialized() {
 			qDebug() << "initializing upnpControlPoint";
 			upnpControlPoint->init();
 		}
-	} 
+	}
 #endif // WITH_UPNP
-	
+
 	emit clientInitializedSignal();
 }
 
@@ -4275,7 +4274,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 		updater->checkForUpdates();	// TODO: is threaded??
 
 #endif
-	
+
 	// sync signals
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
@@ -4297,7 +4296,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 
 		setObjectName("DkNoMacsFrameless");
 		DkSettings::app.appMode = DkSettings::mode_frameless;
-		
+
 		setWindowFlags(Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
 
@@ -4309,7 +4308,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		setCentralWidget(cw);
 
 		init();
-		
+
 		setAcceptDrops(true);
 		setMouseTracking (true);	//receive mouse event everytime
 
@@ -4332,7 +4331,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 
 		menu->setTimeToShow(5000);
 		menu->hide();
-		
+
 		vp->addStartActions(fileActions[menu_file_open], &fileIcons[icon_file_open_large]);
 		vp->addStartActions(fileActions[menu_file_open_dir], &fileIcons[icon_file_dir_large]);
 
@@ -4343,7 +4342,7 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		dw = QApplication::desktop();
 		updateScreenSize();
 		show();
-        
+
         connect(dw, SIGNAL(workAreaResized(int)), this, SLOT(updateScreenSize(int)));
 
 		setObjectName("DkNoMacsFrameless");
@@ -4491,7 +4490,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
 		// sync signals
 		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
-		
+
 		initLanClient();
 		emit sendTitleSignal(windowTitle());
 
@@ -4526,7 +4525,7 @@ void DkNoMacsContrast::createTransferToolbar() {
 	transferToolBar->setObjectName("TransferToolBar");
 
 	//transferToolBar->layout()->setSizeConstraint(QLayout::SetMinimumSize);
-	
+
 	connect(transferToolBar, SIGNAL(colorTableChanged(QGradientStops)),  viewport(), SLOT(changeColorTable(QGradientStops)));
 	connect(transferToolBar, SIGNAL(channelChanged(int)),  viewport(), SLOT(changeChannel(int)));
 	connect(transferToolBar, SIGNAL(pickColorRequest(bool)),  viewport(), SLOT(pickColor(bool)));
