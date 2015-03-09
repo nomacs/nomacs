@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkWidgets.cpp
  Created on:	17.05.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -110,9 +110,9 @@ DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizonta
 	QVector<QColor> dummy;
 	QVector<int> dummyIdx;
 	update(dummy, dummyIdx);
- 
+
 	dummyWidget = new DkWidget(this);
-	
+
 	connect(this, SIGNAL(valueChanged(int)), this, SLOT(emitFileSignal(int)));
 
 	qRegisterMetaType<QVector<QColor> >("QVector<QColor>");
@@ -214,7 +214,7 @@ void DkFolderScrollBar::colorUpdated() {
 }
 
 void DkFolderScrollBar::updateFile(QSharedPointer<DkImageContainerT> imgC) {
-	
+
 	if (mouseDown)
 		return;
 
@@ -225,7 +225,7 @@ void DkFolderScrollBar::updateFile(QSharedPointer<DkImageContainerT> imgC) {
 		blockSignals(true);
 		setValue(fileIdx(imgC));
 		blockSignals(false);
-	}	
+	}
 }
 
 void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>& indexes) {
@@ -249,13 +249,13 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 
 		QColor cCol = colors[idx];
 		//cCol.setAlphaF(0.7);
-		gs += ", stop: " + QString::number((float)indexes[idx]/(images.size()-1)*(1.0f-2.5f*offset)+offset) + " " + 
-			DkUtils::colorToString(cCol); 
+		gs += ", stop: " + QString::number((float)indexes[idx]/(images.size()-1)*(1.0f-2.5f*offset)+offset) + " " +
+			DkUtils::colorToString(cCol);
 	}
 
 	gs += ", stop: 1 " + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ");";
 
-	setStyleSheet(QString("QScrollBar:horizontal { ") + 
+	setStyleSheet(QString("QScrollBar:horizontal { ") +
 		QString("border: none;") +
 		QString("background: rgba(0,0,0,0);") +
 		QString("margin: 0px 0px 0px 0px;") +
@@ -263,7 +263,7 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 		// hide default handle
 		QString("QScrollBar::handle:horizontal {") +
 		QString("background-color: rgba(0,0,0,0); ") +
-		QString("border: none;") + 
+		QString("border: none;") +
 		QString("width: 0px; height: 0px;") +
 		QString("}") +
 		QString("QScrollBar::add-line:horizontal {") +
@@ -281,7 +281,7 @@ void DkFolderScrollBar::update(const QVector<QColor>& colors, const QVector<int>
 		);
 
 	qDebug() << "updating style...";
-	
+
 }
 
 void DkFolderScrollBar::setValue(int i) {
@@ -320,7 +320,7 @@ void DkFolderScrollBar::emitFileSignal(int i) {
 
 	qDebug() << "value: " << i;
 	int skipIdx = i-fileIdx(cImg);
-	
+
 	if (i >= 0 && i < images.size())
 		cImg = images.at(i);
 	emit changeFileSignal(skipIdx);
@@ -333,7 +333,7 @@ void DkFolderScrollBar::mouseMoveEvent(QMouseEvent *event) {
 
 	if (sliding && event->buttons() == Qt::LeftButton)
 		setValue(val);
-		
+
 	if (val >= 0 && val < images.size())
 		setToolTip(images.at(val)->file().fileName());
 
@@ -519,7 +519,7 @@ void DkThumbsSaver::thumbLoaded(bool) {
 }
 
 void DkThumbsSaver::loadNext() {
-	
+
 	if (stop)
 		return;
 
@@ -569,14 +569,14 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex& left, const QModelIndex& 
 		if (lf.suffix().isEmpty() && !rf.suffix().isEmpty())
 			return true;
 		else if (!lf.suffix().isEmpty() && rf.suffix().isEmpty())
-			return false;		
+			return false;
 
 
 		QString ls = (!lf.fileName().isEmpty()) ? lf.fileName() : lf.absoluteFilePath();	// otherwise e.g. C: is empty
 		QString rs = (!rf.fileName().isEmpty()) ? rf.fileName() : rf.absoluteFilePath();
 
 		QString ld = ls.section(QRegExp("[A-Z]:"), 1, -1, QString::SectionIncludeLeadingSep);
-		
+
 		// sort by drive letter if present
 		if (!ld.isEmpty()) {
 			ld.truncate(2);
@@ -609,13 +609,14 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 }
 
 DkExplorer::~DkExplorer() {
-	writeSettings();
+    writeSettings();
+    DkNoMacs::setPanelActionChecked(menu_panel_explorer, false);
 }
 
 void DkExplorer::createLayout() {
 
 	fileModel = new DkFileSystemModel(this);
-	
+
 	sortModel = new DkSortFileProxyModel(this);
 	sortModel->setSourceModel(fileModel);
 	sortModel->setSortLocaleAware(true);
@@ -670,7 +671,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
 	editAction->setCheckable(true);
 	editAction->setChecked(!fileModel->isReadOnly());
 	connect(editAction, SIGNAL(toggled(bool)), this, SLOT(setEditable(bool)));
-	
+
 	cm->addAction(editAction);
 	cm->addSeparator();
 
@@ -690,7 +691,7 @@ void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
 		cm->addAction(action);
 	}
 
-	cm->exec(event->globalPos());	
+	cm->exec(event->globalPos());
 }
 
 void DkExplorer::showColumn(bool show) {
@@ -705,7 +706,7 @@ void DkExplorer::showColumn(bool show) {
 }
 
 void DkExplorer::setEditable(bool editable) {
-	fileModel->setReadOnly(!editable);	
+	fileModel->setReadOnly(!editable);
 }
 
 void DkExplorer::closeEvent(QCloseEvent*) {
@@ -717,7 +718,7 @@ void DkExplorer::writeSettings() {
 
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
-	
+
 	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
 		QString headerVal = fileModel->headerData(idx, Qt::Horizontal).toString();
 		settings.setValue(headerVal + "Size", fileTree->columnWidth(idx));
@@ -726,7 +727,7 @@ void DkExplorer::writeSettings() {
 
 	settings.setValue("ReadOnly", fileModel->isReadOnly());
 	settings.endGroup();
-	
+
 }
 
 void DkExplorer::readSettings() {
@@ -735,11 +736,11 @@ void DkExplorer::readSettings() {
 	settings.beginGroup(objectName());
 
 	for (int idx = 0; idx < fileModel->columnCount(QModelIndex()); idx++) {
-		
+
 		QString headerVal = fileModel->headerData(idx, Qt::Horizontal).toString();
-		
+
 		int colWidth = settings.value(headerVal + "Size", -1).toInt();
-		if (colWidth != -1) 
+		if (colWidth != -1)
 			fileTree->setColumnWidth(idx, colWidth);
 
 		bool showCol = idx != 0;	// by default, show the first column only
@@ -771,9 +772,9 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	getContentsMargins(&lm, &tm, &rm, &bm);
 
 	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the viewport....
-	
+
 	if (viewSize.width() > 2 && viewSize.height() > 2) {
-	
+
 		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
 		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), img.size()));
 
@@ -787,7 +788,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 		if(viewRect.topLeft().x() < overviewImgRect.topLeft().x()) viewRect.setTopLeft(QPointF(overviewImgRect.topLeft().x(), viewRect.topLeft().y()));
 		if(viewRect.topLeft().y() < overviewImgRect.topLeft().y()) viewRect.setTopLeft(QPointF(viewRect.topLeft().x(), overviewImgRect.topLeft().y()));
 		if(viewRect.bottomRight().x() > overviewImgRect.bottomRight().x()) viewRect.setBottomRight(QPointF(overviewImgRect.bottomRight().x()-1, viewRect.bottomRight().y()));
-		if(viewRect.bottomRight().y() > overviewImgRect.bottomRight().y()) viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewImgRect.bottomRight().y()-1));		
+		if(viewRect.bottomRight().y() > overviewImgRect.bottomRight().y()) viewRect.setBottomRight(QPointF(viewRect.bottomRight().x(), overviewImgRect.bottomRight().y()-1));
 
 		//draw the image's location
 		painter.setRenderHints(QPainter::SmoothPixmapTransform);
@@ -813,7 +814,7 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 }
 
 void DkOverview::mousePressEvent(QMouseEvent *event) {
-	
+
 	enterPos = event->pos();
 	posGrab = event->pos();
 }
@@ -823,10 +824,10 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 	QPointF dxy = enterPos-QPointF(event->pos());
 
 	if (dxy.manhattanLength() < 4) {
-		
+
 		int lm, tm, rm, bm;
 		getContentsMargins(&lm, &tm, &rm, &bm);
-		
+
 		// move to the current position
 		QRectF viewRect = viewPortRect;
 		viewRect = worldMatrix->inverted().mapRect(viewRect);
@@ -871,7 +872,7 @@ void DkOverview::resizeEvent(QResizeEvent* event) {
 }
 
 QRectF DkOverview::getImageRect() const {
-	
+
 	QRectF imgRect = QRectF(QPoint(), size());			// get the overview rect
 
 	if ((float)imgT.width()/imgT.height() < (float)imgRect.width()/imgRect.height())
@@ -885,7 +886,7 @@ QRectF DkOverview::getImageRect() const {
 }
 
 void DkOverview::updateVirtualViewport() {
-	
+
 	virtualVPSize = size();
 
 	if (virtualVPSize.width() * viewPortRect.height()/viewPortRect.width() < height())
@@ -901,11 +902,11 @@ void DkOverview::resizeImg() {
 
 	//QRectF overviewRect = getImageRect();
 	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
-	
+
 	// is the overviewImgMatrix empty?
 	if (overviewImgMatrix.isIdentity())
 		return;
-	
+
 	//if (overviewRect.width() <= 1|| overviewRect.height() <= 1)
 	//	return;
 
@@ -971,8 +972,8 @@ void DkZoomWidget::createLayout() {
 	slZoom->setMinimum(0);	// add a mapping here
 	slZoom->setMaximum(100);
 
-	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " + 
-		DkUtils::colorToString(DkSettings::display.fontColor) + 
+	QString styleString = "QDoubleSpinBox{margin: 0px; padding: 0px; color: " +
+		DkUtils::colorToString(DkSettings::display.fontColor) +
 		"; background-color: rgba(0,0,0,0); border: none; selection-background-color: " +
 		DkUtils::colorToString(DkSettings::display.highlightColor) + ";}";
 	//styleString += "QDoubleSpinBox::up-arrow, QDoubleSpinBox::down-arrow {width: 0px; heihgt: 0px;}";
@@ -1021,7 +1022,7 @@ void DkZoomWidget::updateZoom(float zoomLevel) {
 
 	slZoom->blockSignals(true);
 	sbZoom->blockSignals(true);
-	
+
 	int slVal = (zoomLevel > 200.0f) ? qRound(zoomLevel/sbZoom->maximum()*50.0f + 50.0f) : qRound(zoomLevel*0.25f);
 	slZoom->setValue(slVal);
 	sbZoom->setValue(zoomLevel);
@@ -1034,7 +1035,7 @@ DkOverview* DkZoomWidget::getOverview() const {
 }
 
 void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */) {
-	
+
 	if (!isVisible() && visible)
 		this->autoHide = autoHide;
 
@@ -1060,15 +1061,15 @@ void DkGradientLabel::init() {
 	DkLabel::init();
 	gradient = QImage(":/nomacs/img/label-gradient.png");
 	end = QImage(":/nomacs/img/label-end.png");
-	
+
 	QLabel::setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
 	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: 5px " + QString::number(end.width()) + "px 5px 10px}");
-	
+
 }
 
 void DkGradientLabel::updateStyleSheet() {
-	
-	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: " + 
+
+	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: " +
 		QString::number(margin.y()) + "px " +
 		QString::number(end.width()) + "px " +		// the fade-out
 		QString::number(margin.y()) + "px " +
@@ -1107,7 +1108,7 @@ DkButton::DkButton(const QIcon& checkedIcon, const QIcon& uncheckedIcon, const Q
 	this->uncheckedIcon = uncheckedIcon;
 	this->setCheckable(true);
 	setText(text);
-	
+
 	init();
 }
 
@@ -1117,7 +1118,7 @@ void DkButton::init() {
 
 	if (!checkedIcon.availableSizes().empty())
 		this->setMaximumSize(checkedIcon.availableSizes()[0]);	// crashes if the image is empty!!
-	
+
 	mouseOver = false;
 	keepAspectRatio = true;
 }
@@ -1143,7 +1144,7 @@ void DkButton::paintEvent(QPaintEvent*) {
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
 	if (!mySize.isEmpty()) {
-		
+
 		offset = QPoint(qRound((float)(size().width()-mySize.width())*0.5f), qRound((float)(size().height()-mySize.height())*0.5f));
 		s = mySize;
 	}
@@ -1205,12 +1206,12 @@ DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags)
 	layout->setContentsMargins(0,0,0,0);
 	layout->setSpacing(3);
 	layout->addStretch();
-	
+
 	for (int idx = 0; idx < stars.size(); idx++) {
 		stars[idx]->setFixedSize(QSize(iconSize, iconSize));
 		layout->addWidget(stars[idx]);
 	}
-	
+
 	this->setLayout(layout);
 }
 
@@ -1220,7 +1221,7 @@ void DkRatingLabel::init() {
 	QPixmap starWhite = QPixmap(":/nomacs/img/star-white.png");
 
 	stars.resize(5);
-	
+
 	stars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
 	stars[rating_1]->setCheckable(true);
 	connect(stars[rating_1], SIGNAL(released()), this, SLOT(rating1()));
@@ -1286,7 +1287,7 @@ DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags fl
 	stars[rating_3]->addAction(actions[rating_3]);
 	stars[rating_4]->addAction(actions[rating_4]);
 	stars[rating_5]->addAction(actions[rating_5]);
-	
+
 	connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
 }
 
@@ -1330,7 +1331,7 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 	date->setTextInteractionFlags(Qt::TextSelectableByMouse);
 	rating = new DkRatingLabel(0, this);
 	setMinimumWidth(minWidth);
-	
+
 	createLayout();
 }
 
@@ -1351,7 +1352,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 	if (!DkSettings::slideShow.display.testBit(DkSettings::display_file_name) &&
 		!DkSettings::slideShow.display.testBit(DkSettings::display_creation_date) &&
 		!DkSettings::slideShow.display.testBit(DkSettings::display_file_rating) && visible) {
-			
+
 			QMessageBox infoDialog(parent);
 			infoDialog.setWindowTitle(tr("Info Box"));
 			infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
@@ -1414,7 +1415,7 @@ void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& attr, con
 }
 
 void DkFileInfoLabel::updateTitle(const QFileInfo& file, const QString& attr) {
-	
+
 	this->file = file;
 	updateDate();
 	this->title->setText(file.fileName() + " " + attr);
@@ -1434,7 +1435,7 @@ void DkFileInfoLabel::updateDate(const QString& date) {
 }
 
 void DkFileInfoLabel::updateRating(const int rating) {
-	
+
 	this->rating->setRating(rating);
 
 }
@@ -1443,10 +1444,10 @@ void DkFileInfoLabel::updateWidth() {
 
 	int width = 20;		// mar
 	width += qMax(qMax(title->sizeHint().width(), date->sizeHint().width()), rating->sizeHint().width());
-	
+
 	if (width < minimumWidth())
 		setMinimumWidth(width);
-	
+
 	setMaximumWidth(width);
 }
 
@@ -1457,7 +1458,7 @@ DkPlayer::DkPlayer(QWidget* parent) : DkWidget(parent) {
 }
 
 void DkPlayer::init() {
-	
+
 	setObjectName("DkPlayer");
 
 	// slide show
@@ -1520,7 +1521,7 @@ void DkPlayer::resizeEvent(QResizeEvent *event) {
 	QSizeF ms = maximumSize();
 	float aRatio = (float)(s.width()/s.height());
 	float amRatio = (float)(ms.width()/ms.height());
-	
+
 	if (aRatio != amRatio && s.width() / amRatio <= s.height()) {
 		s.setHeight(s.width() / amRatio);
 
@@ -1594,8 +1595,8 @@ void DkPlayer::setTimeToDisplay(int ms) {
 	displayTimer->setInterval(ms);
 }
 
-void DkPlayer::show(int ms) {		
-	
+void DkPlayer::show(int ms) {
+
 	if (ms > 0 && !hideTimer->isActive()) {
 		hideTimer->setInterval(ms);
 		hideTimer->start();
@@ -1610,7 +1611,7 @@ void DkPlayer::show(int ms) {
 		displaySettingsBits->setBit(DkSettings::app.currentAppMode, showPlayer);
 	}
 }
- 
+
 // DkMetaDataInfo ------------------------------------------------------------------
 
 ////enums for tags divided in exif and iptc
@@ -1670,7 +1671,7 @@ void DkTransformRect::draw(QPainter *painter) {
 	QPen penNoStroke;
 	penNoStroke.setWidth(0);
 	penNoStroke.setColor(QColor(0,0,0,0));
-	
+
 	QPen pen;
 	//pen.setWidth(1);
 	pen.setColor(QColor(255,255,0,100));
@@ -1694,7 +1695,7 @@ void DkTransformRect::draw(QPainter *painter) {
 }
 
 void DkTransformRect::mousePressEvent(QMouseEvent *event) {
-	
+
 	if (event->buttons() == Qt::LeftButton) {
 		posGrab = event->globalPos();
 		initialPos = geometry().topLeft();
@@ -1708,7 +1709,7 @@ void DkTransformRect::mousePressEvent(QMouseEvent *event) {
 void DkTransformRect::mouseMoveEvent(QMouseEvent *event) {
 
 	if (event->buttons() == Qt::LeftButton) {
-		
+
 		QPointF pt = initialPos+event->globalPos()-posGrab;
 		emit ctrlMovedSignal(parentIdx, pt, event->modifiers(), true);
 		qDebug() << "accepted false...";
@@ -1735,7 +1736,7 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	this->rect = rect;
 
 	rotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
-	
+
 	setAttribute(Qt::WA_MouseTracking);
 	paintMode = no_guide;
 	showInfo = false;
@@ -1752,14 +1753,14 @@ DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) 
 	imgRect = 0;
 
 	oldDiag = DkVector(-1.0f, -1.0f);
-	
+
 	for (int idx = 0; idx < 8; idx++) {
 		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
 		ctrlPoints[idx]->hide();
 		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, Qt::KeyboardModifiers, bool)), this, SLOT(updateCorner(int, QPointF, Qt::KeyboardModifiers, bool)));
 		connect(ctrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
 	}
-	
+
 	panning = false;
 }
 
@@ -1776,12 +1777,12 @@ QPointF DkEditableRect::map(const QPointF &pos) {
 	QPointF posM = pos;
 	if (worldTform) posM = worldTform->inverted().map(posM);
 	if (imgTform)	posM = imgTform->inverted().map(posM);
-	
+
 	return posM;
 }
 
 QPointF DkEditableRect::clipToImage(const QPointF &pos) {
-	
+
 	if (!imgRect)
 		return QPointF(pos);
 
@@ -1828,7 +1829,7 @@ void DkEditableRect::setFixedDiagonal(const DkVector& diag) {
 
 	QPointF c = rect.getCenter();
 
-	if (!rect.getPoly().isEmpty()) 
+	if (!rect.getPoly().isEmpty())
 		rect.updateCorner(0, rect.getPoly().at(0), fixedDiag);
 
 	rect.setCenter(c);
@@ -1868,13 +1869,13 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	QPainterPath path;
 	QRectF canvas = QRectF(geometry().x()-1, geometry().y()-1, geometry().width()+1, geometry().height()+1);
 	path.addRect(canvas);
-	
+
 	QPolygonF p;
 	if (!rect.isEmpty()) {
 		// TODO: directly map the points (it's easier and not slower at all)
 		p = rect.getClosedPoly();
 		p = tTform.map(p);
-		p = rTform.map(p); 
+		p = rTform.map(p);
 		p = tTform.inverted().map(p);
 		if (imgTform) p = imgTform->map(p);
 		if (worldTform) p = worldTform->map(p);
@@ -1889,17 +1890,17 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	painter.drawPath(path);
 
 	drawGuide(&painter, p, paintMode);
-	
+
 	//// debug
 	//painter.drawPoint(rect.getCenter());
 
 	// this changes the painter -> do it at the end
 	if (!rect.isEmpty()) {
-		
+
 		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
-			
+
 			QPointF cp;
-			
+
 			if (idx < 4) {
 				QPointF c = p[idx];
 				cp = c-ctrlPoints[idx]->getCenter();
@@ -1921,7 +1922,7 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 			ctrlPoints[idx]->draw(&painter);
 		}
 	}
- 
+
 	painter.end();
 
 	QWidget::paintEvent(event);
@@ -1985,7 +1986,7 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->buttons() == Qt::LeftButton && 
+	if (event->buttons() == Qt::LeftButton &&
 		(event->modifiers() == DkSettings::global.altMod || panning)) {
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
 		event->ignore();
@@ -2013,7 +2014,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	// panning -> redirect to viewport
 	if (event->modifiers() == DkSettings::global.altMod ||
 		panning) {
-		
+
 		if (event->buttons() != Qt::LeftButton)
 			setCursor(Qt::OpenHandCursor);
 		else
@@ -2026,7 +2027,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	QPointF posM = map(QPointF(event->pos()));
-	
+
 	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
 		// show rotating - moving
 		if (rect.getPoly().containsPoint(map(event->pos()), Qt::OddEvenFill))
@@ -2045,7 +2046,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		QPointF clipPos = clipToImage(QPointF(event->pos()));
 
 		if (!imgRect || !rect.isEmpty() || clipPos == QPointF(event->pos())) {
-			
+
 			if (rect.isEmpty()) {
 
 				for (int idx = 0; idx < ctrlPoints.size(); idx++)
@@ -2054,9 +2055,9 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 				QPointF p = map(clipToImage(clickPos));
 				rect.setAllCorners(p);
 			}
-			
+
 			DkVector diag;
-			
+
 			// when initializing shift should make the rect a square
 			if (event->modifiers() == Qt::ShiftModifier)
 				diag = DkVector(1.0f, 1.0f);
@@ -2065,10 +2066,10 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			rect.updateCorner(2, map(clipPos), diag);
 			update();
 		}
- 
+
 	}
 	else if (state == moving && event->buttons() == Qt::LeftButton) {
-		
+
 		QPointF dxy = posM-posGrab;
 		rTform.translate(dxy.x(), dxy.y());
 		posGrab = posM;
@@ -2091,7 +2092,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
 			angle -= angleRound;
 		}
-					
+
 		setAngle(angle, false);
 	}
 
@@ -2121,7 +2122,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to viewport
-	if (event->buttons() == Qt::LeftButton && 
+	if (event->buttons() == Qt::LeftButton &&
 		(event->modifiers() == DkSettings::global.altMod || panning)) {
 		setCursor(Qt::OpenHandCursor);
 		event->setModifiers(Qt::NoModifier);
@@ -2146,7 +2147,7 @@ void DkEditableRect::applyTransform() {
 	// apply transform
 	QPolygonF p = rect.getPoly();
 	p = tTform.map(p);
-	p = rTform.map(p); 
+	p = rTform.map(p);
 	p = tTform.inverted().map(p);
 
 	// Cropping tool fix start
@@ -2163,7 +2164,7 @@ void DkEditableRect::applyTransform() {
 
 	rect.setPoly(p);
 
-	rTform.reset();	
+	rTform.reset();
 	tTform.reset();
 	update();
 
@@ -2182,7 +2183,7 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 	//if (event->key() == Qt::Key_Escape)
 	//	hide();
 	//else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-	//	
+	//
 	//	if (!rect.isEmpty())
 	//		emit enterPressedSignal(rect);
 
@@ -2225,13 +2226,13 @@ void DkEditableRect::setAngle(double angle, bool apply) {
 
 	if (!tTform.isTranslating())
 		tTform.translate(-c.x, -c.y);
-	
+
 	rTform.reset();
 	if (apply)
 		rTform.rotateRadians(angle-rect.getAngle());
 	else
 		rTform.rotateRadians(angle);
-	
+
 	if (apply)
 		applyTransform();
 	else {
@@ -2244,7 +2245,7 @@ void DkEditableRect::setAngle(double angle, bool apply) {
 void DkEditableRect::setVisible(bool visible) {
 
 	if (!visible) {
-		
+
 		rect = DkRotatingRect();
 		for (int idx = 0; idx < ctrlPoints.size(); idx++)
 			ctrlPoints[idx]->hide();
@@ -2325,7 +2326,7 @@ DkAnimationLabel::~DkAnimationLabel() {
 }
 
 void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
-	
+
 	setObjectName("DkAnimationLabel");
 	animation = new QMovie(animationPath);
 	margin = QSize(14, 14);
@@ -2343,7 +2344,7 @@ void DkAnimationLabel::init(const QString& animationPath, const QSize& size) {
 	setFixedSize(s);
 	setMovie(animation);
 	hide();
-		
+
 }
 
 void DkAnimationLabel::halfSize() {
@@ -2357,11 +2358,11 @@ void DkAnimationLabel::halfSize() {
 }
 
 void DkAnimationLabel::showTimed(int time) {
-	
+
 	if(!this->animation.isNull() &&
 		(this->animation->state() == QMovie::NotRunning ||
 		 this->animation->state() == QMovie::Paused)) {
-		
+
 			this->animation->start();
 	}
 	DkLabel::showTimed(time);
@@ -2369,10 +2370,10 @@ void DkAnimationLabel::showTimed(int time) {
 
 
 void DkAnimationLabel::hide() {
-	
+
 	if(!this->animation.isNull()) {
 		if(this->animation->state() == QMovie::Running) {
-			
+
 			this->animation->stop();
 		}
 	}
@@ -2399,13 +2400,13 @@ void DkColorChooser::init() {
 
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->setContentsMargins(11,0,11,0);
-	
+
 	QLabel* colorLabel = new QLabel(text, this);
 	colorButton = new QPushButton("", this);
 	colorButton->setFlat(true);
 	colorButton->setObjectName("colorButton");
 	colorButton->setAutoDefault(false);
-	
+
 	QPushButton* resetButton = new QPushButton(tr("Reset"), this);
 	resetButton->setObjectName("resetButton");
 	resetButton->setAutoDefault(false);
@@ -2453,7 +2454,7 @@ void DkColorChooser::on_colorButton_clicked() {
 }
 
 void DkColorChooser::on_colorDialog_accepted() {
-	
+
 	setColor(colorDialog->currentColor());
 	accept = true;
 	emit accepted();
@@ -2461,7 +2462,7 @@ void DkColorChooser::on_colorDialog_accepted() {
 
 // Image histogram  -------------------------------------------------------------------
 DkHistogram::DkHistogram(QWidget *parent) : DkWidget(parent){
-	
+
 	setObjectName("DkHistogram");
 	this->parent = parent;
 	this->setMinimumWidth(260);
@@ -2498,7 +2499,7 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 			for(int j = 0; j <= maxLineHeight; j++) {
 
 				if(j <= rLineHeight && j <= gLineHeight && j <= bLineHeight) {
-				
+
 					// make last pixel lighter -> enhances visual appearence
 					int c = (j == vCombined && rLineHeight == gLineHeight && gLineHeight == bLineHeight) ? 200 : 100;
 					painter.setPen(QColor(c,c,c));
@@ -2509,7 +2510,7 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 				else if(j <= rLineHeight) painter.setPen(Qt::red);
 				else if(j <= gLineHeight) painter.setPen(Qt::green);
 				else if(j <= bLineHeight) painter.setPen(Qt::blue);
-				else 
+				else
 					continue;
 
 				painter.drawPoint(2 + i, height() - j - 2);
@@ -2521,7 +2522,7 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 /**
  * Goes through the image and counts pixels values. They are used to create the image histogram.
  * @param currently displayed image
- **/ 
+ **/
 void DkHistogram::drawHistogram(QImage imgQt) {
 
 	if (!isVisible() || imgQt.isNull()) {
@@ -2541,7 +2542,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 		histValues[1][idx] = 0;
 		histValues[2][idx] = 0;
 	}
-	
+
 
 	// 8 bit images
 	if (imgQt.depth() == 8) {
@@ -2562,7 +2563,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	}
 	// 24 bit images
 	else if (imgQt.depth() == 24) {
-		
+
 		qDebug() << "24 bit histogram -------------------";
 
 		// TODO: not tested!!
@@ -2581,11 +2582,11 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	}
 	// 32 bit images
 	else if (imgQt.depth() == 32) {
-		
+
 		for (int rIdx = 0; rIdx < imgQt.height(); rIdx++) {
-		
+
 			const QRgb* pixel = (QRgb*)(imgQt.constScanLine(rIdx));
-	
+
 			for (int cIdx = 0; cIdx < imgQt.width(); cIdx++, pixel++) {
 
 				histValues[0][qRed(*pixel)]++;
@@ -2598,7 +2599,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	int maxHistValue = 0;
 
 	for (int idx = 0; idx < 256; idx++) {
-		
+
 		if (histValues[0][idx] > maxHistValue)
 			maxHistValue = histValues[0][idx];
 		if (histValues[1][idx] > maxHistValue)
@@ -2628,7 +2629,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	//for (int i = 0; i < noChannels; i++) {
 
 	//	calcHist( &imgChannels[(noChannels - 1) - i], 1, 0, Mat(), hist, 1, &histSize, &histRange, true, false); // careful! channels are rotated: B,G,R
-	//	
+	//
 	//	for (int j = 0; j < 256; j++) histValues[i][j] = hist.at<float>(j);
 	//	hist.setTo(0);
 	//}
@@ -2637,15 +2638,15 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 
 	//	for (int i = 0; i < 256; i++) {
 	//		histValues[2][i] = histValues[1][i] = histValues[0][i];
-	//		
+	//
 	//		if(histValues[0][i] > maxHistValue) maxHistValue = histValues[0][i];
 	//	}
 	//}
 	//else {
 
 	//	for (int i = 0; i < 256; i++) {
-	//		long maxRGB = (histValues[0][i] > histValues[1][i]) ? 
-	//			((histValues[0][i] > histValues[2][i]) ? histValues[0][i] : histValues[2][i]) :  
+	//		long maxRGB = (histValues[0][i] > histValues[1][i]) ?
+	//			((histValues[0][i] > histValues[2][i]) ? histValues[0][i] : histValues[2][i]) :
 	//			((histValues[1][i] > histValues[2][i]) ? histValues[1][i] : histValues[2][i]);
 
 	//		if(maxRGB > maxHistValue) maxHistValue = maxRGB;
@@ -2662,7 +2663,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 	setPainted(false);
 
 #endif
-	
+
 	qDebug() << "drawing the histogram took me: " << dt.getTotal();
 
 	update();
@@ -2670,7 +2671,7 @@ void DkHistogram::drawHistogram(QImage imgQt) {
 
 /**
  * Clears the histogram panel
- **/ 
+ **/
 void DkHistogram::clearHistogram() {
 
 	setPainted(false);
@@ -2693,7 +2694,7 @@ void DkHistogram::setMaxHistogramValue(long maxValue) {
 /**
  * Updates histogram values.
  * @param values to be copied
- **/ 
+ **/
 void DkHistogram::updateHistogramValues(long histValues[][256]) {
 
 	for(int i = 0; i < 256; i++) {
@@ -2705,7 +2706,7 @@ void DkHistogram::updateHistogramValues(long histValues[][256]) {
 
 /**
  * Mouse events for scaling the histogram - enlarge the histogram between the bottom axis and the cursor position
- **/ 
+ **/
 void DkHistogram::mousePressEvent(QMouseEvent *event) {
 
 	// always propagate mouse events
@@ -2716,9 +2717,9 @@ void DkHistogram::mousePressEvent(QMouseEvent *event) {
 void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 
 	if (event->buttons() == Qt::LeftButton) {
-		
+
 		float cp = (float)(height() - event->pos().y());
-		
+
 		if (cp > 0) {
 			scaleFactor = height() / cp;
 			update();
@@ -2730,7 +2731,7 @@ void DkHistogram::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
-	
+
 	scaleFactor = 1;
 	update();
 
@@ -2742,12 +2743,12 @@ void DkHistogram::mouseReleaseEvent(QMouseEvent *event) {
 DkSlider::DkSlider(QString title, QWidget* parent) : QWidget(parent) {
 
 	createLayout();
-	
+
 	// init
 	titleLabel->setText(title);
-	
+
 	// defaults
-	setMinimum(0);	
+	setMinimum(0);
 	setMaximum(100);
 	setTickInterval(1);
 	setValue(50);
@@ -2758,7 +2759,7 @@ void DkSlider::createLayout() {
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setSpacing(0);
 	layout->setContentsMargins(0,0,0,0);
-	
+
 	QWidget* dummy = new QWidget(this);
 	QHBoxLayout* titleLayout = new QHBoxLayout(dummy);
 	titleLayout->setContentsMargins(0,0,0,5);
@@ -2768,7 +2769,7 @@ void DkSlider::createLayout() {
 	boundsLayout->setContentsMargins(0,0,0,0);
 
 	titleLabel = new QLabel(this);
-	
+
 	sliderBox = new QSpinBox(this);
 
 	slider = new QSlider(this);
@@ -2776,7 +2777,7 @@ void DkSlider::createLayout() {
 
 	minValLabel = new QLabel(this);
 	maxValLabel = new QLabel(this);
-	
+
 	titleLayout->addWidget(titleLabel);
 	titleLayout->addStretch();
 	titleLayout->addWidget(sliderBox);
@@ -2899,7 +2900,7 @@ DkImageLabel::DkImageLabel(const QFileInfo& fileInfo, QWidget* parent /* = 0 */,
 
 	setStatusTip(fileInfo.fileName());
 	setToolTip(fileInfo.fileName());
-	
+
 	createLayout();
 }
 
@@ -2932,7 +2933,7 @@ bool DkImageLabel::hasFile() const {
 }
 
 QSharedPointer<DkThumbNailT> DkImageLabel::getThumb() const {
-	
+
 	return thumb;
 }
 
@@ -2943,7 +2944,7 @@ void DkImageLabel::thumbLoaded() {
 		return;
 	}
 	//qDebug() << thumb->getFile().fileName() << " loaded...";
-	
+
 	QPixmap pm = QPixmap::fromImage(thumb->getImage());
 
 	QRect r(QPoint(), pm.size());
@@ -2979,7 +2980,7 @@ void DkImageLabel::removeFileFromList() {
 }
 
 void DkImageLabel::enterEvent(QEvent *ev) {
-	
+
 	if (imageLabel->isVisible()) {
 		highLightLabel->show();
 		removeFileButton->show();
@@ -2988,7 +2989,7 @@ void DkImageLabel::enterEvent(QEvent *ev) {
 }
 
 void DkImageLabel::leaveEvent(QEvent *ev) {
-	
+
 	if (imageLabel->isVisible())
 		highLightLabel->hide();
 	removeFileButton->hide();
@@ -3037,7 +3038,7 @@ void DkRecentFilesWidget::createLayout() {
 
 	folderWidget = new QWidget(this);
 	folderLayout = new QVBoxLayout(folderWidget);
-	
+
 	filesTitle = new QLabel(tr("Recent Files"), this);
 	filesTitle->setStyleSheet("QLabel{font-size: 20px;}");
 
@@ -3063,21 +3064,21 @@ void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 
 	if (imgLoadedStyle) {
 		setStyleSheet(QString("#bgLabel{background-color:") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" +
-			QString("QLabel{color: #FFFFFF; padding: 2 0 2 0; font-size: 13px;}") + 
-			QString("#DkFileLabel:hover{color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget)) + 
+			QString("QLabel{color: #FFFFFF; padding: 2 0 2 0; font-size: 13px;}") +
+			QString("#DkFileLabel:hover{color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget)) +
 			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 rgba(255,255,255,200), stop: 1 rgba(0,0,0,0));}"));
 
 	}
 	else {
 		setStyleSheet(QString("#bgLabel{background-color: rgba(0,0,0,0);}" +
-			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" + 
-			QString("#DkFileLabel:hover{color: #FFFFFF;") + 
+			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" +
+			QString("#DkFileLabel:hover{color: #FFFFFF;") +
 			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ", stop: 1 rgba(0,0,0,0));}"));
 	}
 }
 
 void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
-	
+
 	if (visible && !isVisible()) {
 		updateFileList();
 		qDebug() << "showing recent files...";
@@ -3087,7 +3088,7 @@ void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
 }
 
 void DkRecentFilesWidget::hide(bool saveSettings) {
-	
+
 	QWidget::hide();	// no animation effect on hide
 	DkWidget::hide(saveSettings);
 }
@@ -3179,7 +3180,7 @@ void DkRecentFilesWidget::updateFiles() {
 		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx), this);
 		cLabel->hide();
 		cLabel->setStyleSheet(QString("QLabel{background-color: rgba(0,0,0,0), border: solid 1px black;}"));
-		
+
 		fileLabels.append(cLabel);
 		connect(cLabel, SIGNAL(labelLoaded()), this, SLOT(updateFiles()));
 		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
@@ -3263,12 +3264,12 @@ DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) : Q
 }
 
 void DkDirectoryEdit::lineEditChanged(QString path) {
-	
+
 	setProperty("error", !existsDirectory(path));
 	style()->unpolish(this);
 	style()->polish(this);
 	update();
-	
+
 	// converting to QDir since D:/img == D:/img/ then
 	if (QDir(path).absolutePath() != QDir(oldPath).absolutePath() && existsDirectory(path)) {
 		oldPath = path;
@@ -3277,7 +3278,7 @@ void DkDirectoryEdit::lineEditChanged(QString path) {
 }
 
 bool DkDirectoryEdit::existsDirectory(QString path) {
-	
+
 	return QDir(path).exists();
 }
 

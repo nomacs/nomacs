@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkNoMacs.h
  Created on:	21.04.2011
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
@@ -103,11 +103,11 @@ class DkUpnpRendererDeviceHost;
 
 // keyboard shortcuts
 //we can change the keyboard shortcuts from here !
-enum {	
+enum {
 
 	// general
 	shortcut_esc			= Qt::Key_Escape,
-	
+
 	// file
 	shortcut_show_scroller	= Qt::Key_F,
 	shortcut_open_preview	= Qt::Key_T,
@@ -115,7 +115,7 @@ enum {
 	shortcut_open_dir		= Qt::CTRL + Qt::SHIFT + Qt::Key_O,
 	shortcut_app_manager	= Qt::CTRL + Qt::Key_M,
 	shortcut_save_as		= Qt::CTRL + Qt::SHIFT + Qt::Key_S,
-	shortcut_first_file		= Qt::Key_Home, 
+	shortcut_first_file		= Qt::Key_Home,
 	shortcut_last_file		= Qt::Key_End,
 	shortcut_skip_prev		= Qt::Key_PageUp,
 	shortcut_skip_next		= Qt::Key_PageDown,
@@ -125,7 +125,7 @@ enum {
 	shortcut_goto			= Qt::CTRL + Qt::Key_G,
 	shortcut_extract		= Qt::CTRL + Qt::Key_E,
 
-	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home, 
+	shortcut_first_file_sync= Qt::ALT + Qt::Key_Home,
 	shortcut_last_file_sync	= Qt::ALT + Qt::Key_End,
 	shortcut_prev_file_sync	= Qt::ALT + Qt::Key_Left,
 	shortcut_next_file_sync	= Qt::ALT + Qt::Key_Right,
@@ -254,7 +254,7 @@ enum editActions {
 	menu_edit_flip_h,
 	menu_edit_flip_v,
 	menu_edit_invert,
-	menu_edit_gray_convert,	
+	menu_edit_gray_convert,
 	menu_edit_norm,
 	menu_edit_auto_adjust,
 	menu_edit_unsharp,
@@ -339,7 +339,7 @@ enum syncActions {
 
 enum pluginsActions {
 	menu_plugin_manager,
-	
+
 	menu_plugins_end,	// nothing beyond this point
 };
 
@@ -357,7 +357,7 @@ enum helpActions {
 	menu_help_feature,
 	menu_help_documentation,
 	menu_help_about,
-	
+
 	menu_help_end,	// nothing beyond this point
 };
 
@@ -451,14 +451,16 @@ public:
 	virtual ~DkNoMacs();
 
 	void release();
-	
+
 	static int infoDialog(QString msg, QWidget* parent = 0, QString title = "Question");
 	static int dialog(QString msg, QWidget* parent = 0, QString title = "Error");
 	static QWidget* getDialogParent();
 
 	virtual DkViewPort* viewport() const;
 	virtual DkCentralWidget* getTabWidget() const;
-	
+
+    void setPanelActionChecked(const panelActions, const bool);
+
 	QVector<QAction* > getFileActions();
 	QVector<QAction* > getBatchActions();
 	QVector<QAction* > getPanelActions();
@@ -584,7 +586,7 @@ public slots:
 	void onWindowLoaded();
 
 protected:
-	
+
 	// mouse events
 	void mouseDoubleClickEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
@@ -619,7 +621,7 @@ protected:
 	DkPluginManager* pluginManager;
 	QString currRunningPlugin;
 
-	QVector<QShortcut*> shortcuts;	
+	QVector<QShortcut*> shortcuts;
 	QVector<QAction *> fileActions;
 	QVector<QAction *> sortActions;
 	QVector<QAction *> openWithActions;
@@ -633,7 +635,7 @@ protected:
 	QVector<QAction *> lanActions;
 	QVector<QAction *> helpActions;
 	//QVector<QAction *> tcpViewerActions;
-	
+
 	// icons
 	QVector<QIcon> fileIcons;
 	QVector<QIcon> editIcons;
@@ -660,15 +662,15 @@ protected:
 	QMenu* panelToolsMenu;
 	DkTcpMenu* tcpViewerMenu;
 	DkTcpMenu* tcpLanMenu;
-	
+
 	QPoint mousePos;
-	
+
 	// toolbar
 	QToolBar* toolbar;
 	QToolBar* movieToolbar;
 	QStatusBar* statusbar;
 	QVector<QLabel*> statusbarLabels;
-	
+
 
 	// file dialog
 	QFileDialog* openDialog;
@@ -701,8 +703,8 @@ protected:
 	//DkLocalClientManager* localClientManager;
 	//DkLANClientManager* lanClientManager;
 	DkUpdater* updater;
-	DkTranslationUpdater* translationUpdater;	
-	
+	DkTranslationUpdater* translationUpdater;
+
 
 	QRect oldGeometry;
 	QList<QToolBar *> hiddenToolbars;
@@ -713,7 +715,7 @@ protected:
 	DkNoMacs(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 
 	virtual void init();
-	
+
 	void loadStyleSheet();
 	void registerFileVersion();
 	virtual void createIcons();
@@ -740,7 +742,7 @@ public:
 	~DkNoMacsSync();
 	qint16 getServerPort();
 	void syncWith(qint16 port);
-	
+
 signals:
 	void clientInitializedSignal();
 	void startRCServerSignal(bool start);
@@ -801,11 +803,11 @@ class DllExport DkNoMacsFrameless : public DkNoMacs {
 
 public:
 	DkNoMacsFrameless(QWidget *parent = 0, Qt::WindowFlags flags = 0);
-	
+
 	virtual ~DkNoMacsFrameless();
 
 	void release();
-	
+
 public slots:
 	virtual void enableNoImageActions(bool enable = true);
 	void exitFullScreen();
@@ -824,9 +826,9 @@ class DllExport DkNoMacsContrast : public DkNoMacsSync {
 
 public:
 	DkNoMacsContrast(QWidget *parent = 0, Qt::WindowFlags flags = 0);
-	
+
 	virtual ~DkNoMacsContrast();
-	void release();	
+	void release();
 
 protected:
 	void createTransferToolbar();

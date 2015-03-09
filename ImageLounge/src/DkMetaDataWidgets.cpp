@@ -1,9 +1,9 @@
 /*******************************************************************************************************
  DkMetaDataWidgets.cpp
  Created on:	17.08.2014
- 
+
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
- 
+
  Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
  Copyright (C) 2011-2014 Florian Kleber <florian@nomacs.org>
@@ -33,6 +33,7 @@
 #include "DkTimer.h"
 #include "DkImageStorage.h"
 #include "DkSettings.h"
+#include "DkNoMacs.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDockWidget>
@@ -87,7 +88,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 	QStringList exifKeys = metaData->getExifKeys();
 
 	for (int idx = 0; idx < exifKeys.size(); idx++) {
-		
+
 		QString lastKey = exifKeys.at(idx).split(".").last();
 		QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
 		QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx));
@@ -151,7 +152,7 @@ void DkMetaDataModel::createItem(const QString& key, const QString& keyName, con
 	}
 
 	QString cleanValue = DkUtils::cleanFraction(value);
-	
+
 	QVector<QVariant> metaDataEntry;
 	metaDataEntry << keyName;
 
@@ -254,11 +255,11 @@ QVariant DkMetaDataModel::data(const QModelIndex& index, int role) const {
 
 QVariant DkMetaDataModel::headerData(int section, Qt::Orientation orientation, int role) const {
 
-	if (orientation != Qt::Horizontal || role != Qt::DisplayRole) 
+	if (orientation != Qt::Horizontal || role != Qt::DisplayRole)
 		return QVariant();
 
 	return rootItem->data(section);
-} 
+}
 
 //bool DkMetaDataModel::setData(const QModelIndex& index, const QVariant& value, int role) {
 //
@@ -299,7 +300,7 @@ QVariant DkMetaDataModel::headerData(int section, Qt::Orientation orientation, i
 
 
 // DkMetaDataDock --------------------------------------------------------------------
-DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */ ) : 
+DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */ ) :
 	QDockWidget(title, parent, flags) {
 
 		setObjectName("DkMetaDataDock");
@@ -309,14 +310,15 @@ DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, 
 }
 
 DkMetaDataDock::~DkMetaDataDock() {
-	writeSettings();
+    writeSettings();
+    DkNoMacs::setPanelActionChecked(menu_panel_metadata_dock, false);
 }
 
 void DkMetaDataDock::writeSettings() {
 
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
-	
+
 	for (int idx = 0; idx < model->columnCount(QModelIndex()); idx++) {
 
 		QString headerVal = model->headerData(idx, Qt::Horizontal).toString();
@@ -330,7 +332,7 @@ void DkMetaDataDock::writeSettings() {
 }
 
 void DkMetaDataDock::readSettings() {
-	
+
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup(objectName());
 
@@ -339,7 +341,7 @@ void DkMetaDataDock::readSettings() {
 		QString headerVal = model->headerData(idx, Qt::Horizontal).toString();
 
 		int colWidth = settings.value(headerVal + "Size", -1).toInt();
-		if (colWidth != -1) 
+		if (colWidth != -1)
 			treeView->setColumnWidth(idx, colWidth);
 	}
 	expandedNames = settings.value("expandedNames", QStringList()).toStringList();
@@ -399,7 +401,7 @@ void DkMetaDataDock::updateEntries() {
 		return;
 
 	model->addMetaData(imgC->getMetaData());
-	
+
 	treeView->setUpdatesEnabled(false);
 	numRows = model->rowCount(QModelIndex());
 	for (int idx = 0; idx < numRows; idx++)
@@ -434,7 +436,7 @@ void DkMetaDataDock::thumbLoaded(bool loaded) {
 
 	if (loaded) {
 		QImage thumbImg = thumb->getImage();
-		
+
 		if (thumbImg.width() > width()) {
 			thumbNailLabel->setFixedWidth(width()-20);
 			thumbImg = thumbImg.scaled(QSize(width(), thumbImg.height()), Qt::KeepAspectRatio);
@@ -611,7 +613,7 @@ void DkMetaDataInfo::readTags() {
 		QString preIptc = "Iptc.Application2.";
 
 		QFileInfo file = imgC->file();
-#ifdef WITH_QUAZIP		
+#ifdef WITH_QUAZIP
 		if(imgC->isFromZip()) file = imgC->getZipData()->getZipFileInfo();
 #endif
 		QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
@@ -641,12 +643,12 @@ void DkMetaDataInfo::readTags() {
 				else if (i == DkSettings::camData_exposuretime) {
 					Value = DkMetaDataHelper::getInstance().getExposureTime(metaData);
 				}
-				else if (i == DkSettings::camData_size) {	
+				else if (i == DkSettings::camData_size) {
 					Value = QString::number(imgC->image().width()) + " x " + QString::number(imgC->image().height());
 				}
 				else if (i == DkSettings::camData_exposuremode) {
-					Value = DkMetaDataHelper::getInstance().getExposureMode(metaData);						
-				} 
+					Value = DkMetaDataHelper::getInstance().getExposureMode(metaData);
+				}
 				else if (i == DkSettings::camData_flash) {
 					Value = DkMetaDataHelper::getInstance().getFlashMode(metaData);
 				}
@@ -769,7 +771,7 @@ void DkMetaDataInfo::createLabels() {
 			pv->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
 			pv->setMouseTracking(true);
 			pLabels << pl;
-			pValues << pv; 
+			pValues << pv;
 			if (pl->geometry().width() > maxLenLabel[numLabels/numLines]) maxLenLabel[numLabels/numLines] = pl->geometry().width();
 			numLabels++;
 		}
@@ -1063,7 +1065,7 @@ void DkCommentTextEdit::paintEvent(QPaintEvent* e) {
 		p.drawText(QRect(QPoint(), viewport()->size()), Qt::AlignHCenter | Qt::AlignVCenter, tr("Click here to add notes"));
 		qDebug() << "painting placeholder...";
 	}
-	
+
 	QTextEdit::paintEvent(e);
 }
 
@@ -1083,7 +1085,7 @@ void DkCommentWidget::createLayout() {
 	titleLabel = new QLabel(tr("NOTES"), this);
 	titleLabel->setObjectName("commentTitleLabel");
 
-	QString scrollbarStyle = 
+	QString scrollbarStyle =
 		QString("QScrollBar:vertical {border: 1px solid #FFF; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
 		+ QString("QScrollBar::handle:vertical {background: #FFF; min-height: 0px;}")
 		+ QString("QScrollBar::add-line:vertical {height: 0px;}")
@@ -1136,7 +1138,7 @@ void DkCommentWidget::setMetaData(QSharedPointer<DkMetaDataT> metaData) {
 }
 
 void DkCommentWidget::setComment(const QString& description) {
-	
+
 	commentLabel->setText(description);
 
 	oldText = description;
@@ -1146,7 +1148,7 @@ void DkCommentWidget::setComment(const QString& description) {
 void DkCommentWidget::saveComment() {
 
 	if (textChanged && commentLabel->toPlainText() != metaData->getDescription() && metaData) {
-		
+
 		if (!metaData->setDescription(commentLabel->toPlainText()) && !commentLabel->toPlainText().isEmpty()) {
 			emit showInfoSignal(tr("Sorry, I cannot save comments for this image format."));
 		}
@@ -1179,7 +1181,7 @@ void DkCommentWidget::on_cancelButton_clicked() {
 	commentLabel->setText("");
 
 	saveComment();
-	
+
 	if (parent)
 		parent->setFocus(Qt::MouseFocusReason);
 }
