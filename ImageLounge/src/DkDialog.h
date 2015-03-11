@@ -266,7 +266,7 @@ public slots:
 	void on_searchBar_textChanged(const QString& text);
 	void on_okButton_pressed();
 	void on_filterButton_pressed();
-	void on_cancelButtonSplash_pressed();
+	void on_cancelButton_pressed();
 	void on_resultListView_doubleClicked(const QModelIndex& modelIndex);
 	void on_resultListView_clicked(const QModelIndex& modelIndex);
 
@@ -403,12 +403,19 @@ public:
 
 signals:
 	void checkDuplicateSignal(QString text, void* item);
+	void checkDuplicateSignal(const QKeySequence& keySequence, void* item);
+	void clearDuplicateSignal() const;
 
 protected slots:
+#if QT_VERSION < 0x050000
 	void textChanged(QString text = QString());
+#else
+	void keySequenceChanged(const QKeySequence& keySequence);
+#endif
 
 protected:
 	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);
+	void setEditorData(QWidget* editor, const QModelIndex& index) const;
 	void* item;
 	//virtual void setEditorData(QWidget* editor, const QModelIndex& index) const;
 
@@ -432,7 +439,7 @@ protected:
 
 };
 
-class DkShortcutsModel : public QAbstractTableModel {
+class DkShortcutsModel : public QAbstractItemModel {
 	Q_OBJECT
 
 public:
@@ -444,8 +451,6 @@ public:
 	QModelIndex parent(const QModelIndex &index) const;
 
 	// return item of the model
-	//virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
-	//virtual QModelIndex parent(const QModelIndex& index) const;
 	virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
@@ -454,20 +459,18 @@ public:
 	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
-	//QVector<QVector<QPair<QString, QKeySequence> > >* getActions() {
-	//	return &actions;
-	//}
-
 	void addDataActions(QVector<QAction*> actions, QString name);
 
 	void resetActions();
 	void saveActions();
 
 public slots:
-	void checkDuplicate(QString text, void* item);
+	void checkDuplicate(QString text, void* item);		// deprecated (Qt4)
+	void checkDuplicate(const QKeySequence& ks, void* item);
+	void clearDuplicateInfo() const;
 
 signals:
-	void duplicateSignal(QString info);
+	void duplicateSignal(QString info) const;
 
 protected:
 

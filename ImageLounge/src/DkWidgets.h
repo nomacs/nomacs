@@ -542,7 +542,7 @@ public:
 	};
 
 signals:
-	void ctrlMovedSignal(int, QPointF, bool, bool);
+	void ctrlMovedSignal(int, QPointF, Qt::KeyboardModifiers, bool);
 	void updateDiagonal(int);
 
 protected:
@@ -610,7 +610,7 @@ signals:
 	void statusInfoSignal(QString msg);
 
 public slots:
-	void updateCorner(int idx, QPointF point, bool isShiftDown, bool changeState = false);
+	void updateCorner(int idx, QPointF point, Qt::KeyboardModifiers modifier, bool changeState = false);
 	void updateDiagonal(int idx);
 	void setFixedDiagonal(const DkVector& diag);
 	void setAngle(double angle, bool apply = true);

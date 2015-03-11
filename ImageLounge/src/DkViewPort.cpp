@@ -38,6 +38,7 @@
 #include <QShortcut>
 #include <QMovie>
 #include <QMimeData>
+#include <QAction>
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 

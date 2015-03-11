@@ -135,6 +135,7 @@ signals:
 	void loadFileSignal(QFileInfo);
 	void statusInfoSignal(QString, int);
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT>);
+	void imageLoadedSignal(QSharedPointer<DkImageContainerT>);
 	void imageHasGPSSignal(bool);
 
 public slots:

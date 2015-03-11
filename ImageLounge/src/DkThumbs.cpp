@@ -540,7 +540,7 @@ void DkThumbsLoader::run() {
 	if (!thumbs)
 		return;
 
-	while (true) {
+	for (;;) {
 
 		if (loadAllThumbs && numFilesLoaded >= (int)thumbs->size()) {
 			qDebug() << "[thumbs] thinks he has finished...";

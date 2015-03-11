@@ -518,6 +518,31 @@ QString DkUtils::colorToString(const QColor& col) {
 	return "rgba(" + QString::number(col.red()) + "," + QString::number(col.green()) + "," + QString::number(col.blue()) + "," + QString::number((float)col.alpha()/255.0f*100.0f) + "%)";
 }
 
+QStringList DkUtils::filterStringList(const QString& query, const QStringList& list) {
+
+	// white space is the magic thingy
+	QStringList queries = query.split(" ");
+	QStringList resultList = list;
+
+	for (int idx = 0; idx < queries.size(); idx++) {
+		resultList = resultList.filter(queries[idx], Qt::CaseInsensitive);
+		qDebug() << "query: " << queries[idx];
+	}
+
+	// if string match returns nothing -> try a regexp
+	if (resultList.empty()) {
+		QRegExp regExp(query);
+		resultList = list.filter(regExp);
+
+		if (resultList.empty()) {
+			regExp.setPatternSyntax(QRegExp::Wildcard);
+			resultList = list.filter(regExp);
+		}
+	}
+
+	return resultList;
+}
+
 QString DkUtils::readableByte(float bytes) {
 
 	if (bytes >= 1024*1024*1024) {

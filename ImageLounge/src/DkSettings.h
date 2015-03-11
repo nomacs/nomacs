@@ -136,6 +136,7 @@ public:
 		bool showToolBar;
 		bool showMenuBar;
 		bool showStatusBar;
+		bool showMovieToolBar;
 		QBitArray showFilePreview;
 		QBitArray showFileInfoLabel;
 		QBitArray showPlayer;
@@ -150,6 +151,7 @@ public:
 		bool privateMode;
 		bool advancedSettings;
 		bool closeOnEsc;
+		bool maximizedMode;
 		QStringList browseFilters;
 		QStringList registerFilters;
 

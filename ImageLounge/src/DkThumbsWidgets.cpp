@@ -811,8 +811,9 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage) {
 		}
 	}
 
-	if (tIdx == currentFileIdx)
+	if (tIdx == currentFileIdx) {
 		return;
+	}
 
 	currentFileIdx = tIdx;
 	if (currentFileIdx >= 0)

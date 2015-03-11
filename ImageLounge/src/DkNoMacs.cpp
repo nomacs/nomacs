@@ -361,7 +361,7 @@ void DkNoMacs::registerFileVersion() {
 
 void DkNoMacs::createToolbar() {
 
-	toolbar = addToolBar(tr("Edit"));
+	toolbar = new DkMainToolBar(tr("Edit"), this);
 	toolbar->setObjectName("EditToolBar");
 
 	if (DkSettings::display.smallIcons)
@@ -422,6 +422,8 @@ void DkNoMacs::createToolbar() {
 		movieToolbar->setIconSize(QSize(16, 16));
 	else
 		movieToolbar->setIconSize(QSize(32, 32));
+
+	toolbar->allActionsAdded();
 }
 
 
@@ -1534,6 +1536,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 
 void DkNoMacs::enableMovieActions(bool enable) {
 
+	DkSettings::app.showMovieToolBar=enable;
 	viewActions[menu_view_movie_pause]->setEnabled(enable);
 	viewActions[menu_view_movie_prev]->setEnabled(enable);
 	viewActions[menu_view_movie_next]->setEnabled(enable);
@@ -1940,12 +1943,6 @@ void DkNoMacs::toggleFullScreen() {
 
 void DkNoMacs::enterFullScreen() {
 	
-	//// switch off fullscreen if it's in it already
-	//if (isFullScreen()) {
-	//	exitFullScreen();
-	//	return;
-	//}
-
 	DkSettings::app.currentAppMode += qFloor(DkSettings::mode_end*0.5f);
 	if (DkSettings::app.currentAppMode < 0) {
 		qDebug() << "illegal state: " << DkSettings::app.currentAppMode;
@@ -1958,8 +1955,9 @@ void DkNoMacs::enterFullScreen() {
 	statusbar->hide();
 	getTabWidget()->showTabs(false);
 
-	showFullScreen();
-
+	DkSettings::app.maximizedMode=isMaximized();
+	setWindowState(Qt::WindowFullScreen);
+	
 	if (viewport())
 		viewport()->setFullScreen(true);
 
@@ -1978,8 +1976,11 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettings::app.showMenuBar) menu->show();
 		if (DkSettings::app.showToolBar) toolbar->show();
 		if (DkSettings::app.showStatusBar) statusbar->show();
-		showNormal();
+		if (DkSettings::app.showMovieToolBar) movieToolbar->show();
 
+		if(DkSettings::app.maximizedMode) setWindowState(Qt::WindowMaximized);
+		else setWindowState(Qt::WindowNoState);
+		
 		if (getTabWidget())
 			getTabWidget()->showTabs(true);
 
@@ -2602,7 +2603,6 @@ void DkNoMacs::resizeImage() {
 
 	if (!resizeDialog)
 		resizeDialog = new DkResizeDialog(this);
-
 
 	QSharedPointer<DkImageContainerT> imgC = getTabWidget()->getCurrentImage();
 	QSharedPointer<DkMetaDataT> metaData;

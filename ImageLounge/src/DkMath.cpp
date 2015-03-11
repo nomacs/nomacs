@@ -68,7 +68,7 @@ DkRotatingRect::DkRotatingRect(QRectF rect) {
 
 DkRotatingRect::~DkRotatingRect() {}
 
-bool DkRotatingRect::isEmpty() {
+bool DkRotatingRect::isEmpty() const {
 
 	if (rect.size() < 4)
 		return true;
@@ -91,7 +91,7 @@ void DkRotatingRect::setAllCorners(QPointF &p) {
 
 }
 
-DkVector DkRotatingRect::getDiagonal(int cIdx) {
+DkVector DkRotatingRect::getDiagonal(int cIdx) const {
 
 	DkVector c0 = rect[cIdx % 4];
 	DkVector c2 = rect[(cIdx+2) % 4];
@@ -197,7 +197,7 @@ void DkRotatingRect::updateCorner(int cIdx, QPointF nC, DkVector oldDiag) {
 	}
 }
 
-QPolygonF& DkRotatingRect::getPoly() {
+const QPolygonF& DkRotatingRect::getPoly() const {
 
 	return rect;
 }
@@ -218,7 +218,7 @@ QPolygonF DkRotatingRect::getClosedPoly() {
 	return closedPoly;
 }
 
-QPointF DkRotatingRect::getCenter() {
+QPointF DkRotatingRect::getCenter() const {
 
 	if (rect.empty())
 		return QPointF();
@@ -242,14 +242,28 @@ void DkRotatingRect::setCenter(const QPointF& center) {
 	}
 }
 
-double DkRotatingRect::getAngle() {
+double DkRotatingRect::getAngle() const {
 
 	// default upper left corner is 0
 	DkVector xV = rect[3] - rect[0];
 	return xV.angle();
 }
 
-void DkRotatingRect::getTransform(QTransform& tForm, QPointF& size) {
+float DkRotatingRect::getAngleDeg() const {
+
+	float sAngle = (float)(getAngle()*DK_RAD2DEG);
+
+	while (sAngle > 90)
+		sAngle -= 180;
+	while (sAngle < -90)
+		sAngle += 180;
+
+	sAngle = qRound(sAngle*100)/100.0f;	// round to 2 digits
+
+	return sAngle;
+}
+
+void DkRotatingRect::getTransform(QTransform& tForm, QPointF& size) const {
 
 	if (rect.size() < 4)
 		return;

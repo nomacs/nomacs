@@ -1332,6 +1332,7 @@ void DkBasicLoader::release(bool clear) {
 
 	// TODO: auto save routines here?
 	//qDebug() << file.fileName() << " released...";
+	saveMetaData(file);
 
 	qImg = QImage();
 	//metaData.clear();

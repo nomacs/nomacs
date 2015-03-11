@@ -174,6 +174,7 @@ void DkSettings::initFileFilters() {
 	app_p.openFilters.append("Sigma Raw (*.x3f)");
 	app_p.openFilters.append("Leaf Raw (*.mos)");
 	app_p.openFilters.append("Pentax Raw (*.pef)");
+	app_p.openFilters.append("Phase One (*.iiq)");
 #endif
 
 	// stereo formats
@@ -190,6 +191,7 @@ void DkSettings::initFileFilters() {
 	app_p.containerFilters.append("Microsoft Word Document (*.docx)");
 	app_p.containerFilters.append("Microsoft PowerPoint Document (*.pptx)");
 	app_p.containerFilters.append("Microsoft Excel Document (*.xlsx)");
+	app_p.containerFilters.append("Comic Book Archive (*.cbz)");
 	
 	app_p.openFilters += app_p.containerFilters;
 
@@ -698,6 +700,7 @@ void DkSettings::setToDefaultSettings() {
 
 	app_p.showToolBar = true;
 	app_p.showStatusBar = false;
+	app_p.showMovieToolBar = false;
 	app_p.showFileInfoLabel = QBitArray(mode_end, true);
 	app_p.showFilePreview = QBitArray(mode_end, false);
 	app_p.showScroller = QBitArray(mode_end, false);
