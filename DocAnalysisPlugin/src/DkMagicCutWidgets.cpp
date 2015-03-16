@@ -113,7 +113,6 @@ void DkMagicCut::updateAnimateContours() {
 	contourPen.setDashOffset(dash % 6);
 }
 
-
 /**
 * Resets the region mask according to the label at point xy
 * @param xy image point where to reset the area
@@ -125,6 +124,14 @@ void DkMagicCut::resetRegionMask(QPoint xy) {
 	ptr = mask.data + mask.step * (xy.y()+1);
 	int region = (int) (ptr[xy.x()+1]);
 	if (region != 0)
+	// find element in history vector and remove it
+	int position = 0;
+	for(std::vector<int>::size_type i = 0; i != label_history.size(); i++) {
+		if (region == label_history[i]) {
+			label_history.erase(label_history.begin() + i);
+			break;
+		}
+	}
 	resetRegionMask(region);
 }
 
@@ -139,7 +146,9 @@ void DkMagicCut::resetRegionMask(int region, bool recalcContours) {
 	if(mask.empty()) return;
 
 	if (region == 0) {
+		// reste whole mask
 		label_it = 1;
+		label_history.clear();
 		// mask needs to be 2 pixles wider and 2 pixels taller for flood filling
 		mask = cv::Scalar::all(0); //cv::Mat::zeros(img.rows+2, img.cols+2, CV_8UC1);
 	} else {
@@ -166,6 +175,22 @@ void DkMagicCut::resetRegionMask(int region, bool recalcContours) {
 	}
 }
 
+/**
+* Resets the region mask by resetting the last selected region.
+* @returns true, if there are still regions selected afterwards
+* \sa DkMagicCut resetRegionMask(int)
+**/
+bool DkMagicCut::undoSelection() {
+	if (label_history.empty()) {
+		return false;
+	}
+	int region = label_history.back();
+	label_history.pop_back();
+
+	resetRegionMask(region);
+
+	return !label_history.empty();
+}
 
 /**
 * The actual magic wand function performing an OpenCV flood filling starting from a seed point
@@ -198,6 +223,7 @@ bool DkMagicCut::magicwand(QPoint xy) {
 		resetRegionMask(label_it, false);
 		return false;
 	} else {
+		label_history.push_back(label_it-1);
 		calculateContours();
 	}
 

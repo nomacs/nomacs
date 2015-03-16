@@ -10,5 +10,6 @@
         <file>img/upper_lines.png</file>
         <file>img/reset_cut_single.png</file>
         <file>img/cancel.png</file>
+        <file>img/selection_undo.png</file>
     </qresource>
 </RCC>

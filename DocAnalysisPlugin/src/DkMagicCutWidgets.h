@@ -61,6 +61,7 @@ public:
 
 	// magic wand selection functions
 	bool magicwand(QPoint xy);
+	bool undoSelection();
 	void resetRegionMask(int region = 0, bool recalcContours = true);
 	void resetRegionMask(QPoint xy);
 	bool hasContours();
@@ -82,6 +83,7 @@ private:
 	cv::Rect bRect; /**< Bounding rect for selection */
 	int tolerance; /**< The tolerance depicting homogeneous regions */
 	int label_it; /**< Iterator for labeling the regions */
+	std::vector<int> label_history; /**< Contains the history of the labels of selected regions */
 	int maxSize; /**< The maximum size of a homogeneous regions */
 
 	// contour: drawing and animation
