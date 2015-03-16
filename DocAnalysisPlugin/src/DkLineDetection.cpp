@@ -302,8 +302,8 @@ void DkLineDetection::startLineDetection() {
 		// find the local minima for each projection profile
 		findLocalMinima();
 
-		/*cv::namedWindow( "lower text lines", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-		cv::imshow( "lower text lines", lowerTextLines);*/
+		/*cv::namedWindow( "Step 2: local minima and non-extrema", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+		cv::imshow( "Step 2: local minima and non-extrema", lowerTextLines);*/
 
 		// make lines a little thicker (for better visualisation)
 		cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2));
@@ -321,19 +321,23 @@ void DkLineDetection::startLineDetection() {
 
 	// optimize the line image (clear borders)
 	if (params.optimizeImage) {
-		const clock_t begin_time = clock();
+		//const clock_t begin_time = clock();
 		
 		lowerTextLines = basicLowerTextLines.clone();
 		upperTextLines = basicUpperTextLines.clone();
 		// optimize the text line images
 		optimizeLineImg(&image, &lowerTextLines, &upperTextLines);
 
-		std::cout << "Duration for optimization: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
+		//std::cout << "Duration for optimization: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
 
 	}
 
 	// create a Qt image with transparency
 	createTextLineImages();
+
+	/*cv::namedWindow( "Step 3: Optimization", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+	cv::imshow( "Step 3: Optimization", lowerTextLines);*/
+
 
 	// check if lines have been found
 	double maxValLower, maxValUpper;
@@ -482,6 +486,7 @@ void DkLineDetection::findLocalMinima() {
 	cv::Mat lower, upper;
 	const clock_t begin_time_n = clock();
 
+	/*
 	//if (true) {
 		nonExtremaSuppression2D(&filtered, &maxima, &minima);
 		minima.copyTo(lowerTextLines);
@@ -492,7 +497,7 @@ void DkLineDetection::findLocalMinima() {
 	std::cout << "Duration for 2D approach: " << float( clock () - begin_time_n ) /  CLOCKS_PER_SEC << std::endl;
 
 	const clock_t begin_time_o = clock();
-	//} else { // old 1d approach
+	//} else { // old 1d approach*/
 	for(int i=0; i<filtered.cols; i++) {
 		
 		// compute extrema in "histogram"
@@ -516,7 +521,7 @@ void DkLineDetection::findLocalMinima() {
 		maxima.copyTo(upperTextLines.col(i));
 
 	}
-	std::cout << "Duration for 1D approach: " <<  float( clock () - begin_time_o ) /  CLOCKS_PER_SEC << std::endl;
+	//std::cout << "Duration for 1D approach: " <<  float( clock () - begin_time_o ) /  CLOCKS_PER_SEC << std::endl;
 
 	//	}
 	//bool equal = compareMat(lower, lowerTextLines, "diff lower");
