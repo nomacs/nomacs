@@ -1198,7 +1198,9 @@ DkHue::DkHue(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
 
 	maxValLabel = new QLabel(QString::number(maxVal), this);
-	maxValLabel->move(slider->geometry().right() - 10, slider->geometry().bottom());
+	maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
+
+	// TODO: create a slider class & add a layout!!!
 
 	hue = slider->value(); // / 2;
 

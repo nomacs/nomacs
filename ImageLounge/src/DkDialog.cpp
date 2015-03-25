@@ -3477,7 +3477,7 @@ void DkMosaicDialog::createLayout() {
 
 	QStringList filters = DkSettings::app.openFilters;
 	filters.pop_front();	// replace for better readability
-	filters.push_front("All Images");
+	filters.push_front(tr("All Images"));
 	suffixBox = new QComboBox(this);
 	suffixBox->addItems(filters);
 	//suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
@@ -4421,7 +4421,7 @@ void DkArchiveExtractionDialog::createLayout() {
 	connect(archivePathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(archivePathEdit, SIGNAL(editingFinished()), this, SLOT(loadArchive()));
 
-	QPushButton* openArchiveButton = new QPushButton("&Browse");
+	QPushButton* openArchiveButton = new QPushButton(tr("&Browse"));
 	connect(openArchiveButton, SIGNAL(pressed()), this, SLOT(openArchive()));
 
 	// dir file path
@@ -4430,7 +4430,7 @@ void DkArchiveExtractionDialog::createLayout() {
 	dirPathEdit->setValidator(&fileValidator);
 	connect(dirPathEdit, SIGNAL(textChanged(QString)), this, SLOT(dirTextChanged(QString)));
 
-	QPushButton* openDirButton = new QPushButton("&Browse");
+	QPushButton* openDirButton = new QPushButton(tr("&Browse"));
 	connect(openDirButton, SIGNAL(pressed()), this, SLOT(openDir()));
 
 	feedbackLabel = new QLabel("", this);
@@ -4438,7 +4438,7 @@ void DkArchiveExtractionDialog::createLayout() {
 
 	fileListDisplay = new QListWidget(this);
 
-	removeSubfolders = new QCheckBox("Remove Subfolders", this);
+	removeSubfolders = new QCheckBox(tr("Remove Subfolders"), this);
 	removeSubfolders->setChecked(false);
 	connect(removeSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
 

@@ -463,10 +463,11 @@ void DkGradient::activateSlider(DkColorSlider *sender) {
 
 //
 DkTransferToolBar::DkTransferToolBar(QWidget * parent) 
-	: QToolBar(parent) {
+	: QToolBar(tr("Pseudo Color Toolbar"), parent) {
 
 	loadSettings();
 
+	
 	enableTFCheckBox = new QCheckBox(tr("Enable"));
 	enableTFCheckBox->setStatusTip(tr("Enables the Pseudo Color function"));
 

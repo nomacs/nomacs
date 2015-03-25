@@ -277,7 +277,7 @@ bool DkImageContainer::saveImage(const QFileInfo fileInfo, int compression /* = 
 
 bool DkImageContainer::saveImage(const QFileInfo fileInfo, const QImage saveImg, int compression /* = -1 */) {
 
-	QFileInfo saveFile = saveImageIntern(fileInfo, loader, saveImg, compression);
+	QFileInfo saveFile = saveImageIntern(fileInfo, getLoader(), saveImg, compression);
 
 	saveFile.refresh();
 	qDebug() << "save file: " << saveFile.absoluteFilePath();

@@ -235,7 +235,7 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 		QFileInfoList files = getFilteredFileInfoList(dir, ignoreKeywords, keywords, folderKeywords);		// this line takes seconds if you have lots of files and slow loading (e.g. network)
 
 		// might get empty too (e.g. someone deletes all images)
-		if (files.empty()) {
+ 		if (files.empty()) {
 			emit showInfoSignal(tr("%1 \n does not contain any image").arg(dir.absolutePath()), 4000);	// stop showing
 			images.clear();
 			emit updateDirSignal(images);
@@ -939,7 +939,7 @@ void DkImageLoader::downloadFile(const QUrl& url) {
  * Saves a temporary file to the folder specified in Settings.
  * @param img the image (which was in most cases pasted to nomacs)
  **/ 
-QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt, bool force) {
+QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt, bool force, bool threaded) {
 
 	// do not save temp images if we are remote control or remote display
 	if (DkSettings::sync.syncMode != DkSettings::sync_mode_default)
@@ -982,7 +982,7 @@ QFileInfo DkImageLoader::saveTempFile(QImage img, QString name, QString fileExt,
 
 	if (!tmpFile.exists()) {
 			
-		saveFile(tmpFile, img);
+		saveFile(tmpFile, img, "", -1, threaded);
 		return tmpFile;
 	}
 
@@ -1236,7 +1236,7 @@ void DkImageLoader::saveUserFileAs(QImage saveImg, bool silent) {
  * @param saveImg the image to be saved
  * @param compression the compression method (for jpg, tif)
  **/ 
-void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter, int compression) {
+void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter, int compression, bool threaded) {
 	
 	QSharedPointer<DkImageContainerT> imgC = (currentImage) ? currentImage : findOrCreateFile(file);
 	setCurrentImage(imgC);
@@ -1271,11 +1271,14 @@ void DkImageLoader::saveFile(QFileInfo file, QImage saveImg, QString fileFilter,
 	qDebug() << "saving: " << file.absoluteFilePath();
 
 	dirWatcher->blockSignals(true);
-	bool saveStarted = imgC->saveImageThreaded(file, sImg, compression);
+	bool saveStarted = (threaded) ? imgC->saveImageThreaded(file, sImg, compression) : imgC->saveImage(file, sImg, compression);
 
 	if (!saveStarted) {
 		dirWatcher->blockSignals(false);
 		imageSaved(QFileInfo(), false);
+	}
+	else if (saveStarted && !threaded) {
+		imageSaved(file);
 	}
 }
 

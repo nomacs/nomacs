@@ -162,12 +162,12 @@ public slots:
 	void directoryChanged(const QString& path = QString());
 	void saveFileWeb(QImage saveImg);
 	void saveUserFileAs(QImage saveImg, bool silent);
-	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1);
+	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1, bool threaded = true);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
 	void load(const QFileInfo& file);
 	void downloadFile(const QUrl& url);
 	bool deleteFile();
-	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false);
+	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilter(const QString& filter);
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();

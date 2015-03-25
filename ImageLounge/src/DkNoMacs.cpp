@@ -2749,8 +2749,8 @@ void DkNoMacs::setWallpaper() {
 
 	QImage dImg = img;
 
-	DkImageLoader* loader = new DkImageLoader();
-	QFileInfo tmpPath = loader->saveTempFile(dImg, "wallpaper", ".jpg", true);
+	QSharedPointer<DkImageLoader> loader = QSharedPointer<DkImageLoader>(new DkImageLoader());
+	QFileInfo tmpPath = loader->saveTempFile(dImg, "wallpaper", ".jpg", true, false);
 	
 	// is there a more elegant way to see if saveTempFile returned an empty path
 	if (tmpPath.absoluteFilePath() == QFileInfo().absoluteFilePath()) {
@@ -2768,8 +2768,6 @@ void DkNoMacs::setWallpaper() {
 	SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, (void*)ba.data(), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
 #endif
 	// TODO: add functionality for unix based systems
-
-	delete loader;
 }
 
 void DkNoMacs::printDialog() {
