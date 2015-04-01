@@ -231,6 +231,7 @@ void DkFileSelection::setDir(QDir dir) {
 	qDebug() << "setting directory to:" << dir;
 	directoryEdit->setText(cDir.absolutePath());
 	emit newHeaderText(cDir.absolutePath());
+	emit updateInputDir(cDir);
 	loader->setDir(cDir);
 	thumbScrollWidget->updateThumbs(loader->getImages());
 }
@@ -449,7 +450,7 @@ void DkBatchOutput::createLayout() {
 	QGroupBox* outDirGroupBox = new QGroupBox(this);
 	outDirGroupBox->setTitle(tr("Output Directory"));
 
-	QPushButton* outputBrowseButton = new QPushButton(tr("Browse"));
+	outputBrowseButton = new QPushButton(tr("Browse"));
 	outputlineEdit = new DkDirectoryEdit(this);
 	outputlineEdit->setPlaceholderText(tr("Select a Directory"));
 	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
@@ -460,11 +461,28 @@ void DkBatchOutput::createLayout() {
 	cbOverwriteExisting->setToolTip("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!");
 	connect(cbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
 
+	// Use Input Folder
+	cbUseInput = new QCheckBox(tr("Use Input Folder"));
+	cbUseInput->setToolTip("If checked, the batch is applied to the input folder - so be careful!");
+	connect(cbUseInput, SIGNAL(clicked(bool)), this, SLOT(useInputFolderChanged(bool)));
+
+	// delete original
+	cbDeleteOriginal = new QCheckBox(tr("Delete Input Files"));
+	cbDeleteOriginal->setToolTip("If checked, the original file will be deleted if the conversion was successful.\n So be careful!");
+
+	QWidget* cbWidget = new QWidget(this);
+	QHBoxLayout* cbLayout = new QHBoxLayout(cbWidget);
+	cbLayout->setContentsMargins(0,0,0,0);
+	cbLayout->addWidget(cbUseInput);
+	cbLayout->addWidget(cbOverwriteExisting);
+	cbLayout->addWidget(cbDeleteOriginal);
+	cbLayout->addStretch();
+
 	QGridLayout* outDirLayout = new QGridLayout(outDirGroupBox);
 	//outDirLayout->setContentsMargins(0, 0, 0, 0);
 	outDirLayout->addWidget(outputBrowseButton, 0, 0);
 	outDirLayout->addWidget(outputlineEdit, 0, 1);
-	outDirLayout->addWidget(cbOverwriteExisting, 1, 1);
+	outDirLayout->addWidget(cbWidget, 1, 1);
 
 	// Filename Groupbox
 	QGroupBox* filenameGroupBox = new QGroupBox(this);
@@ -548,6 +566,18 @@ void DkBatchOutput::setDir(QDir dir, bool updateLineEdit) {
 
 void DkBatchOutput::setInputDir(QDir dir) {
 	inputDirectory = dir;
+
+	if (cbUseInput->isChecked())
+		setDir(inputDirectory);
+}
+
+void DkBatchOutput::useInputFolderChanged(bool checked) {
+
+	outputlineEdit->setEnabled(!checked);
+	outputBrowseButton->setEnabled(!checked);
+
+	if (checked)
+		setDir(inputDirectory);
 }
 
 void DkBatchOutput::plusPressed(DkFilenameWidget* widget) {
@@ -864,6 +894,7 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
+	connect(fileSelection, SIGNAL(updateInputDir(QDir)), outputSelection, SLOT(setInputDir(QDir)));
 	fileSelection->setDir(currentDirectory);
 	outputSelection->setInputDir(currentDirectory);
 	//outputSelection->setDir(currentDirectory);

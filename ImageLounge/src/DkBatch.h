@@ -141,6 +141,7 @@ public slots:
 signals:
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
 	void newHeaderText(QString);
+	void updateInputDir(QDir);
 	void changed();
 
 protected:
@@ -217,11 +218,13 @@ public:
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
 	void setDir(QDir dir, bool updateLineEdit = true);
-	void setInputDir(QDir dir);
 
 signals:
 	void newHeaderText(QString);
 	void changed();
+
+public slots:
+	void setInputDir(QDir dir);
 
 protected slots:
 	void browse();
@@ -231,6 +234,7 @@ protected slots:
 	void emitChangedSignal();
 	void updateFileLabelPreview();
 	void outputTextChanged(QString text);
+	void useInputFolderChanged(bool checked);
 
 protected:
 	virtual void createLayout();
@@ -245,6 +249,9 @@ private:
 	QVector<DkFilenameWidget*> filenameWidgets;
 	QVBoxLayout* filenameVBLayout;
 	QCheckBox* cbOverwriteExisting;
+	QCheckBox* cbUseInput;
+	QCheckBox* cbDeleteOriginal;
+	QPushButton* outputBrowseButton;
 
 	QComboBox* cBExtension;
 	QComboBox* cBNewExtension;
