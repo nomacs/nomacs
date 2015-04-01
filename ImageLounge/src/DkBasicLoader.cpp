@@ -1046,11 +1046,23 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 
 	bool imgLoaded = false;
 
-#ifdef WITH_LIBTIFF
 	pageIdx += skipIdx;
 
 	// <= 1 since first page is loaded using qt
 	if (pageIdx > numPages || pageIdx <= 1)
+		return imgLoaded;
+
+	return loadPageAt(pageIdx);
+}
+
+bool DkBasicLoader::loadPageAt(int pageIdx) {
+
+	bool imgLoaded = false;
+
+#ifdef WITH_LIBTIFF
+
+	// <= 1 since first page is loaded using qt
+	if (pageIdx > numPages || pageIdx < 1)
 		return imgLoaded;
 
 	// first turn off nasty warning/error dialogs - (we do the GUI : )

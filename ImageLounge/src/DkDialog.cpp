@@ -2876,7 +2876,6 @@ DkExportTiffDialog::DkExportTiffDialog(QWidget* parent /* = 0 */, Qt::WindowFlag
 
 	setWindowTitle(tr("Export Multi-Page TIFF"));
 	createLayout();
-	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
 	processing = false;
 
@@ -3065,6 +3064,8 @@ void DkExportTiffDialog::accept() {
 
 	QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
 	
+	emit infoMessage("");
+	
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkExportTiffDialog::exportImages,
 		cFile,
@@ -3095,10 +3096,21 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 		QFileInfo sFile(saveFile.absolutePath(), saveFile.baseName() + QString::number(idx) + "." + saveFile.suffix());
 		qDebug() << "trying to save: " << sFile.absoluteFilePath();
 
+		emit updateProgress(idx-1);
+
 		// user wants to overwrite files
 		if (sFile.exists() && overwrite) {
 			QFile f(sFile.absoluteFilePath());
 			f.remove();
+		}
+		else if (sFile.exists()) {
+			emit infoMessage(tr("%1 exists, skipping...").arg(sFile.fileName()));
+			continue;
+		}
+
+		if (!loader.loadPageAt(idx)) {	// load next
+			emit infoMessage(tr("Sorry, I could not load page: %1").arg(idx));
+			continue;
 		}
 
 		QFileInfo saveFile = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
@@ -3107,8 +3119,6 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 		if (!saveFile.exists() || !saveFile.isFile())
 			emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
 
-		if (!loader.loadPage(1))	// load next
-			emit infoMessage(tr("Sorry, I could not load page: %1").arg(idx));
 		emit updateImage(loader.image());
 		emit updateProgress(idx);
 

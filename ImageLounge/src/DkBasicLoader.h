@@ -150,6 +150,7 @@ public:
 	 * @return bool true if we could load the page requested
 	 **/ 
 	bool loadPage(int skipIdx = 0);
+	bool loadPageAt(int pageIdx = 0);
 
 	int getNumPages() const {
 		return numPages;
