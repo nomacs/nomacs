@@ -1953,7 +1953,10 @@ void DkNoMacs::enterFullScreen() {
 	statusbar->hide();
 	getTabWidget()->showTabs(false);
 
-	DkSettings::app.maximizedMode=isMaximized();
+	showExplorer(DkDockWidget::testDisplaySettings(DkSettings::app.showExplorer), false);
+	showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettings::app.showMetaDataDock), false);
+
+	DkSettings::app.maximizedMode = isMaximized();
 	setWindowState(Qt::WindowFullScreen);
 	
 	if (viewport())
@@ -1975,9 +1978,13 @@ void DkNoMacs::exitFullScreen() {
 		if (DkSettings::app.showToolBar) toolbar->show();
 		if (DkSettings::app.showStatusBar) statusbar->show();
 		if (DkSettings::app.showMovieToolBar) movieToolbar->show();
+		showExplorer(DkDockWidget::testDisplaySettings(DkSettings::app.showExplorer), false);
+		showMetaDataDock(DkDockWidget::testDisplaySettings(DkSettings::app.showMetaDataDock), false);
 
-		if(DkSettings::app.maximizedMode) setWindowState(Qt::WindowMaximized);
-		else setWindowState(Qt::WindowNoState);
+		if(DkSettings::app.maximizedMode) 
+			setWindowState(Qt::WindowMaximized);
+		else 
+			setWindowState(Qt::WindowNoState);
 		
 		if (getTabWidget())
 			getTabWidget()->showTabs(true);
@@ -2233,7 +2240,7 @@ void DkNoMacs::tcpSendArrange() {
 	emit sendArrangeSignal(overlaid);
 }
 
-void DkNoMacs::showExplorer(bool show) {
+void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 
 	if (!explorer) {
 
@@ -2248,7 +2255,7 @@ void DkNoMacs::showExplorer(bool show) {
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), explorer, SLOT(setCurrentImage(QSharedPointer<DkImageContainerT>)));
 	}
 
-	explorer->setVisible(show);
+	explorer->setVisible(show, saveSettings);
 
 	if (getTabWidget()->getCurrentImage() && getTabWidget()->getCurrentFile().exists()) {
 		explorer->setCurrentPath(getTabWidget()->getCurrentFile());
@@ -2262,7 +2269,7 @@ void DkNoMacs::showExplorer(bool show) {
 
 }
 
-void DkNoMacs::showMetaDataDock(bool show) {
+void DkNoMacs::showMetaDataDock(bool show, bool saveSettings) {
 
 	if (!metaDataDock) {
 
@@ -2274,7 +2281,7 @@ void DkNoMacs::showMetaDataDock(bool show) {
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
 	}
 
-	metaDataDock->setVisible(show);
+	metaDataDock->setVisible(show, saveSettings);
 
 	if (getTabWidget()->getCurrentImage())
 		metaDataDock->setImage(getTabWidget()->getCurrentImage());

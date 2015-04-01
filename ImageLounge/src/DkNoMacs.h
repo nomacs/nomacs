@@ -493,8 +493,8 @@ public slots:
 	void exitFullScreen();
 	void openKeyboardShortcuts();
 	void openSettings();
-	void showExplorer(bool show);
-	void showMetaDataDock(bool show);
+	void showExplorer(bool show, bool saveSettings = true);
+	void showMetaDataDock(bool show, bool saveSettings = true);
 	void showThumbsDock(bool show);
 	void thumbsDockAreaChanged();
 	void showRecentFiles(bool show = true);
