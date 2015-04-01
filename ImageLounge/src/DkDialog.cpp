@@ -890,27 +890,21 @@ void DkSearchDialog::init() {
 	//focusAction->setShortcut(Qt::Key_Down);
 	//connect(focusAction, SIGNAL(triggered()), resultListView, SLOT(/*createSLOT*/));
 
-	// buttons
-	buttons.resize(button_end);
-	buttons[find_button] = new QPushButton(tr("F&ind"), this);
-	buttons[find_button]->setObjectName("okButton");
-	//buttons[find_button]->setDefault(true);
+	filterButton = new QPushButton(tr("&Filter"), this);
+	filterButton->setObjectName("filterButton");
 
-	buttons[filter_button] = new QPushButton(tr("&Filter"), this);
-	buttons[filter_button]->setObjectName("filterButton");
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
+	//buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->addButton(filterButton, QDialogButtonBox::ActionRole);
 
-	buttons[cancel_button] = new QPushButton(tr("&Cancel"), this);
-	buttons[cancel_button]->setObjectName("cancelButton");
-
-	QWidget* buttonWidget = new QWidget(this);
-	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::RightToLeft, buttonWidget);
-	buttonLayout->addWidget(buttons[cancel_button]);
-	buttonLayout->addWidget(buttons[filter_button]);
-	buttonLayout->addWidget(buttons[find_button]);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	layout->addWidget(searchBar);
 	layout->addWidget(resultListView);
-	layout->addWidget(buttonWidget);
+	layout->addWidget(buttons);
 
 	searchBar->setFocus(Qt::MouseFocusReason);
 
@@ -976,13 +970,14 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		stringModel->setStringList(answerList);
 
 		resultListView->setProperty("empty", true);
-		buttons[filter_button]->setEnabled(false);
-		buttons[find_button]->setEnabled(false);
+		
+		filterButton->setEnabled(false);
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 		//cancelButton->setFocus();
 	}
 	else {
-		buttons[filter_button]->setEnabled(true);
-		buttons[find_button]->setEnabled(true);
+		filterButton->setEnabled(true);
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
 		stringModel->setStringList(makeViewable(resultList));
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 		resultListView->setProperty("empty", false);
@@ -1012,6 +1007,12 @@ void DkSearchDialog::on_resultListView_clicked(const QModelIndex& modelIndex) {
 		stringModel->setStringList(makeViewable(resultList, true));
 }
 
+void DkSearchDialog::accept() {
+
+	on_okButton_pressed();
+	QDialog::accept();
+}
+
 void DkSearchDialog::on_okButton_pressed() {
 
 	if (resultListView->selectionModel()->currentIndex().data().toString() == endMessage) {
@@ -1027,7 +1028,6 @@ void DkSearchDialog::on_okButton_pressed() {
 
 	if (!fileName.isEmpty())
 		emit loadFileSignal(QFileInfo(path, fileName));
-	accept();
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
@@ -1036,14 +1036,16 @@ void DkSearchDialog::on_filterButton_pressed() {
 	done(filter_button);
 }
 
-void DkSearchDialog::on_cancelButton_pressed() {
-	reject();
-}
-
 void DkSearchDialog::setDefaultButton(int defaultButton /* = find_button */) {
 
-	for (int idx = 0; idx < buttons.size(); idx++)
-		buttons[idx]->setAutoDefault(defaultButton == idx);
+	if (defaultButton == find_button) {
+		buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
+		filterButton->setAutoDefault(false);
+	}
+	else if (defaultButton == filter_button) {
+		buttons->button(QDialogButtonBox::Ok)->setAutoDefault(false);
+		filterButton->setAutoDefault(true);
+	}
 }
 
 void DkSearchDialog::updateHistory() {
