@@ -681,12 +681,17 @@ QString DkBatchOutput::getFilePattern() {
 	return pattern;
 }
 
-int DkBatchOutput::overwriteMode() {
+int DkBatchOutput::overwriteMode() const {
 
 	if (cbOverwriteExisting->isChecked())
 		return DkBatchConfig::mode_overwrite;
 
 	return DkBatchConfig::mode_skip_existing;
+}
+
+bool DkBatchOutput::deleteOriginal() const {
+
+	return cbDeleteOriginal->isChecked();
 }
 
 void DkBatchOutput::setExampleFilename(const QString& exampleName) {
@@ -929,6 +934,11 @@ void DkBatchDialog::createLayout() {
 	progressBar = new QProgressBar(this);
 	progressBar->setVisible(false);
 
+	summaryLabel = new QLabel("", this);
+	summaryLabel->setObjectName("DkDecentInfo");
+	summaryLabel->setVisible(false);
+	summaryLabel->setAlignment(Qt::AlignRight);
+
 	// buttons
 	logButton = new QPushButton(tr("Show &Log"), this);
 	logButton->setToolTip(tr("Shows detailed status messages."));
@@ -955,6 +965,7 @@ void DkBatchDialog::createLayout() {
 	connect(widgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); 
 
 	dialogLayout->addWidget(progressBar);
+	dialogLayout->addWidget(summaryLabel);
 	//dialogLayout->addStretch(10);
 	dialogLayout->addWidget(buttons);
 
@@ -990,6 +1001,7 @@ void DkBatchDialog::accept() {
 
 	DkBatchConfig config(fileSelection->getSelectedFiles(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
 	config.setMode(outputWidget->overwriteMode());
+	config.setDeleteOriginal(outputWidget->deleteOriginal());
 
 	if (!config.getOutputDir().exists()) {
 
@@ -1088,6 +1100,18 @@ void DkBatchDialog::stopProcessing() {
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
 	buttons->button(QDialogButtonBox::Cancel)->setEnabled(true);
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Close"));
+
+	int numFailures = batchProcessing->getNumFailures();
+	int numProcessed = batchProcessing->getNumProcessed();
+	int numItems = batchProcessing->getNumItems();
+
+	summaryLabel->setText(tr("%1/%2 files processed... %3 failed.").arg(numProcessed).arg(numItems).arg(numFailures));
+	summaryLabel->show();
+
+	summaryLabel->setProperty("warning", numFailures > 0);
+	summaryLabel->style()->unpolish(this);
+	summaryLabel->style()->polish(this);
+	update();
 }
 
 void DkBatchDialog::updateProgress(int progress) {
@@ -1108,7 +1132,7 @@ void DkBatchDialog::logButtonClicked() {
 
 void DkBatchDialog::widgetChanged() {
 	
-	if (widgets[batch_output] != 0 && widgets[batch_input])  {
+	if (widgets[batch_output] && widgets[batch_input])  {
 		QString inputDirPath = dynamic_cast<DkFileSelection*>(widgets[batch_input]->contentWidget())->getDir();
 		QString outputDirPath = dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->getOutputDirectory();
 		
@@ -1129,6 +1153,7 @@ void DkBatchDialog::widgetChanged() {
 			cFileInfo = QFileInfo(url.toLocalFile());
 
 		dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->setExampleFilename(cFileInfo.fileName());
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
 	}
 }
 

@@ -213,7 +213,8 @@ public:
 
 	virtual bool hasUserInput() const;
 	virtual bool requiresUserInput() const {return rUserInput;};
-	int overwriteMode();
+	int overwriteMode() const;
+	bool deleteOriginal() const;
 	QString getOutputDirectory();
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
@@ -358,6 +359,7 @@ private:
 	DkBatchProcessing* batchProcessing;
 	QPushButton* logButton;
 	QProgressBar* progressBar;
+	QLabel* summaryLabel;
 
 	void startProcessing();
 	void stopProcessing();

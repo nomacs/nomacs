@@ -282,7 +282,7 @@ bool DkImageContainer::saveImage(const QFileInfo fileInfo, const QImage saveImg,
 	saveFile.refresh();
 	qDebug() << "save file: " << saveFile.absoluteFilePath();
 
-	return !saveFile.exists() || !saveFile.isFile();
+	return saveFile.exists() && saveFile.isFile();
 }
 
 QSharedPointer<QByteArray> DkImageContainer::loadFileToBuffer(const QFileInfo fileInfo) {

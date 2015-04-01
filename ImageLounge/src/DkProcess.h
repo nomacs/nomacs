@@ -131,20 +131,27 @@ public:
 
 	void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes);
 	void setMode(int mode);
+	void setDeleteOriginal(bool deleteOriginal);
 	void compute();	// do the work
 	QStringList getLog() const;
+	bool hasFailed() const;
+	bool wasProcessed() const;
 
 protected:
 	QFileInfo fileInfoIn;
 	QFileInfo fileInfoOut;
 	int mode;
+	bool deleteOriginal;
 	int compression;
+	int failure;
+	bool isProcessed;
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 	QStringList logStrings;
 
 	bool process();
 	bool deleteExisting();
+	bool deleteOriginalFile();
 	bool copyFile();
 	bool renameFile();
 };
@@ -163,6 +170,7 @@ public:
 	void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch> >& processFunctions) { this->processFunctions = processFunctions; };
 	void setCompression(int compression) { this->compression = compression; };
 	void setMode(int mode) { this->mode = mode; };
+	void setDeleteOriginal(bool deleteOriginal) { this->deleteOriginal = deleteOriginal; };
 
 	QList<QUrl> getUrls() const { return urls; };
 	QDir getOutputDir() const { return outputDir; };
@@ -170,6 +178,7 @@ public:
 	QVector<QSharedPointer<DkAbstractBatch> > getProcessFunctions() const { return processFunctions; };
 	int getCompression() const { return compression; };
 	int getMode() const { return mode; };
+	bool getDeleteOriginal() const { return deleteOriginal; };
 
 	enum {
 		mode_overwrite,
@@ -186,6 +195,7 @@ protected:
 	QString fileNamePattern;
 	int compression;
 	int mode;
+	bool deleteOriginal;
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 };
 
@@ -198,7 +208,10 @@ public:
 	void compute();
 	static void computeItem(DkBatchProcess& item);
 	
-	QStringList getLog() const;	// TODO
+	QStringList getLog() const;
+	int getNumFailures() const;
+	int getNumItems() const;
+	int getNumProcessed() const;
 	
 	bool isComputing() const;
 

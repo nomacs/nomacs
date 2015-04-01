@@ -120,7 +120,7 @@ bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
 	}
 
 	if (mode == mode_default)
-		logStrings.append(QObject::tr("%1 image resized, scale factor: %2%%").arg(name()).arg(scaleFactor*100.0f));
+		logStrings.append(QObject::tr("%1 image resized, scale factor: %2%").arg(name()).arg(scaleFactor*100.0f));
 	else
 		logStrings.append(QObject::tr("%1 image resized, new side: %2 px").arg(name()).arg(scaleFactor));
 
@@ -235,6 +235,8 @@ DkBatchProcess::DkBatchProcess(const QFileInfo& fileInfoIn, const QFileInfo& fil
 	this->fileInfoIn = fileInfoIn;
 	this->fileInfoOut = fileInfoOut;
 	compression = -1;
+	failure = 0;
+	isProcessed = false;
 
 	mode = DkBatchConfig::mode_skip_existing;
 }
@@ -249,30 +251,55 @@ void DkBatchProcess::setMode(int mode) {
 	this->mode = mode;
 }
 
+void DkBatchProcess::setDeleteOriginal(bool deleteOriginal) {
+
+	this->deleteOriginal = deleteOriginal;
+}
+
+bool DkBatchProcess::hasFailed() const {
+
+	return failure != 0;
+}
+
+bool DkBatchProcess::wasProcessed() const {
+	
+	return isProcessed;
+}
+
 void DkBatchProcess::compute() {
 
 	// check errors
 	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_skip_existing) {
 		logStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(fileInfoOut.absoluteFilePath()));
+		failure++;
 		return;
 	}
 	else if (!fileInfoIn.exists()) {
 		logStrings.append(QObject::tr("Error: input file does not exist"));
 		logStrings.append(QObject::tr("Input: %1").arg(fileInfoIn.absoluteFilePath()));
+		failure++;
 		return;
 	}
 	else if (fileInfoIn == fileInfoOut && processFunctions.empty()) {
 		logStrings.append(QObject::tr("Skipping: nothing to do here."));
+		failure++;
 		return;
 	}
 
+	isProcessed = true;
+
 	// do the work
 	if (processFunctions.empty() && fileInfoIn.absolutePath() == fileInfoOut.absolutePath() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// rename?
-		renameFile();
+		if (!renameFile())
+			failure++;
 		return;
 	}
 	else if (processFunctions.empty() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// copy?
-		copyFile();
+		if (!copyFile())
+			failure++;
+		else
+			deleteOriginalFile();
+
 		return;
 	}
 
@@ -292,6 +319,7 @@ bool DkBatchProcess::process() {
 
 	if (!imgC->loadImage() || imgC->image().isNull()) {
 		logStrings.append(QObject::tr("Error while loading..."));
+		failure++;
 		return false;
 	}
 
@@ -304,11 +332,20 @@ bool DkBatchProcess::process() {
 
 		if (!batch->compute(imgC, logStrings)) {
 			logStrings.append(QObject::tr("%1 failed").arg(batch->name()));
+			failure++;
 		}
 	}
 
-	imgC->saveImage(fileInfoOut, compression);
-	logStrings.append(QObject::tr("%1 saved...").arg(fileInfoOut.absoluteFilePath()));
+	deleteExisting();
+
+	if (imgC->saveImage(fileInfoOut, compression))
+		logStrings.append(QObject::tr("%1 saved...").arg(fileInfoOut.absoluteFilePath()));
+	else {
+		logStrings.append(QObject::tr("Could not save: %1").arg(fileInfoOut.absoluteFilePath()));
+		failure++;
+	}
+
+	deleteOriginalFile();
 
 	return true;
 }
@@ -359,7 +396,7 @@ bool DkBatchProcess::copyFile() {
 bool DkBatchProcess::deleteExisting() {
 
 	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_overwrite) {
-		QFile file(fileInfoIn.absoluteFilePath());
+		QFile file(fileInfoOut.absoluteFilePath());
 
 		if (!file.remove()) {
 			logStrings.append(QObject::tr("Error: could not delete existing file"));
@@ -367,6 +404,28 @@ bool DkBatchProcess::deleteExisting() {
 			return false;
 		}
 	}
+
+	return true;
+}
+
+bool DkBatchProcess::deleteOriginalFile() {
+
+	if (fileInfoIn.absoluteFilePath() == fileInfoOut.absoluteFilePath())
+		return true;
+
+	if (!failure && deleteOriginal) {
+		QFile oFile(fileInfoIn.absoluteFilePath());
+
+		if (oFile.remove())
+			logStrings.append(QObject::tr("%1 deleted.").arg(fileInfoIn.absoluteFilePath()));
+		else {
+			failure++;
+			logStrings.append(QObject::tr("I could not delete %1").arg(fileInfoIn.absoluteFilePath()));
+			return false;
+		}
+	}
+	else if (failure)
+		logStrings.append(QObject::tr("I did not delete the original because I detected %1 failure(s).").arg(failure));
 
 	return true;
 }
@@ -435,6 +494,7 @@ void DkBatchProcessing::init() {
 
 		DkBatchProcess cProcess(cFileInfo, newFileInfo);
 		cProcess.setMode(batchConfig.getMode());
+		cProcess.setDeleteOriginal(batchConfig.getDeleteOriginal());
 		cProcess.setProcessChain(batchConfig.getProcessFunctions());
 
 		batchItems.push_back(cProcess);
@@ -471,6 +531,37 @@ QStringList DkBatchProcessing::getLog() const {
 	}
 
 	return log;
+}
+
+int DkBatchProcessing::getNumFailures() const {
+
+	int numFailures = 0;
+
+	for (DkBatchProcess batch : batchItems) {
+		
+		if (batch.hasFailed())
+			numFailures++;
+	}
+
+	return numFailures;
+}
+
+int DkBatchProcessing::getNumProcessed() const {
+
+	int numProcessed = 0;
+
+	for (DkBatchProcess batch : batchItems) {
+
+		if (batch.wasProcessed())
+			numProcessed++;
+	}
+
+	return numProcessed;
+}
+
+int DkBatchProcessing::getNumItems() const {
+
+	return batchItems.size();
 }
 
 bool DkBatchProcessing::isComputing() const {
