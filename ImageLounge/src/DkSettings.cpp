@@ -307,6 +307,12 @@ void DkSettings::load() {
 	tmpShow = settings.value("showComment", app_p.showComment).toBitArray();
 	if (tmpShow.size() == app_p.showComment.size())	
 		app_p.showComment = tmpShow;
+	tmpShow = settings.value("showExplorer", app_p.showExplorer).toBitArray();
+	if (tmpShow.size() == app_p.showExplorer.size())	
+		app_p.showExplorer = tmpShow;
+	tmpShow = settings.value("showMetaDataDock", app_p.showMetaDataDock).toBitArray();
+	if (tmpShow.size() == app_p.showMetaDataDock.size())	
+		app_p.showMetaDataDock = tmpShow;
 
 	app_p.closeOnEsc = settings.value("closeOnEsc", app_p.closeOnEsc).toBool();
 	app_p.showRecentFiles = settings.value("showRecentFiles", app_p.showRecentFiles).toBool();
@@ -494,6 +500,10 @@ void DkSettings::save(bool force) {
 		settings.setValue("showComment", app_p.showComment);
 	if (!force && app_p.showOverview != app_d.showOverview)
 		settings.setValue("showOverview", app_p.showOverview);
+	if (!force && app_p.showExplorer != app_d.showExplorer)
+		settings.setValue("showExplorer", app_p.showExplorer);
+	if (!force && app_p.showMetaDataDock != app_d.showMetaDataDock)
+		settings.setValue("showMetaDataDock", app_p.showMetaDataDock);
 	if (!force && app_p.advancedSettings != app_d.advancedSettings)
 		settings.setValue("advancedSettings", app_p.advancedSettings);
 	//if (!force && app_p.appMode != app_d.appMode)
@@ -709,6 +719,8 @@ void DkSettings::setToDefaultSettings() {
 	app_p.showHistogram = QBitArray(mode_end, false);
 	app_p.showComment = QBitArray(mode_end, false);
 	app_p.showOverview = QBitArray(mode_end, false);
+	app_p.showExplorer = QBitArray(mode_end, false);
+	app_p.showMetaDataDock = QBitArray(mode_end, false);
 	app_p.advancedSettings = false;
 	app_p.closeOnEsc = false;
 	app_p.showRecentFiles = true;

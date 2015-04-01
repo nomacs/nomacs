@@ -75,7 +75,7 @@ protected:
 
 };
 
-class DkMetaDataDock : public QDockWidget {
+class DkMetaDataDock : public DkDockWidget {
 	Q_OBJECT
 
 public:

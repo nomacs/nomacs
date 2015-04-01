@@ -300,7 +300,7 @@ QVariant DkMetaDataModel::headerData(int section, Qt::Orientation orientation, i
 
 // DkMetaDataDock --------------------------------------------------------------------
 DkMetaDataDock::DkMetaDataDock(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */ ) : 
-	QDockWidget(title, parent, flags) {
+	DkDockWidget(title, parent, flags) {
 
 		setObjectName("DkMetaDataDock");
 

@@ -598,7 +598,7 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex& left, const QModelIndex& 
 }
 
 // DkExplorer --------------------------------------------------------------------
-DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDockWidget(title, parent, flags) {
+DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkDockWidget(title, parent, flags) {
 
 	setObjectName("DkExplorer");
 	createLayout();
@@ -708,9 +708,10 @@ void DkExplorer::setEditable(bool editable) {
 	fileModel->setReadOnly(!editable);	
 }
 
-void DkExplorer::closeEvent(QCloseEvent*) {
+void DkExplorer::closeEvent(QCloseEvent* event) {
 
 	writeSettings();
+	DkDockWidget::closeEvent(event);
 }
 
 void DkExplorer::writeSettings() {

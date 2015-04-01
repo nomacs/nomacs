@@ -1640,11 +1640,11 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 		settings.setValue("windowState", saveState());
 		
 		if (explorer)
-			settings.setValue("explorerLocation", QMainWindow::dockWidgetArea(explorer));
+			settings.setValue(explorer->objectName(), QMainWindow::dockWidgetArea(explorer));
 		if (metaDataDock)
-			settings.setValue("metaDataDockLocation", QMainWindow::dockWidgetArea(metaDataDock));
+			settings.setValue(metaDataDock->objectName(), QMainWindow::dockWidgetArea(metaDataDock));
 		if (thumbsDock)
-			settings.setValue("thumbsDockLocation", QMainWindow::dockWidgetArea(thumbsDock));
+			settings.setValue(thumbsDock->objectName(), QMainWindow::dockWidgetArea(thumbsDock));
 
 		DkSettings::save();
 	}
@@ -2238,11 +2238,10 @@ void DkNoMacs::showExplorer(bool show) {
 	if (!explorer) {
 
 		// get last location
-		QSettings& settings = Settings::instance().getSettings();
-		int dockLocation = settings.value("explorerLocation", Qt::LeftDockWidgetArea).toInt();
-		
 		explorer = new DkExplorer(tr("File Explorer"));
-		addDockWidget((Qt::DockWidgetArea)dockLocation, explorer);
+		explorer->registerAction(panelActions[menu_panel_explorer]);
+		explorer->setDisplaySettings(&DkSettings::app.showExplorer);
+		addDockWidget(explorer->getDockLocationSettings(Qt::LeftDockWidgetArea), explorer);
 
 		connect(explorer, SIGNAL(openFile(QFileInfo)), getTabWidget(), SLOT(loadFile(QFileInfo)));
 		connect(explorer, SIGNAL(openDir(QDir)), getTabWidget()->getThumbScrollWidget(), SLOT(setDir(QDir)));
@@ -2267,12 +2266,10 @@ void DkNoMacs::showMetaDataDock(bool show) {
 
 	if (!metaDataDock) {
 
-		// get last location
-		QSettings& settings = Settings::instance().getSettings();
-		int dockLocation = settings.value("metaDataDockLocation", Qt::RightDockWidgetArea).toInt();
-
 		metaDataDock = new DkMetaDataDock(tr("Meta Data Info"), this);
-		addDockWidget((Qt::DockWidgetArea)dockLocation, metaDataDock);
+		metaDataDock->registerAction(panelActions[menu_panel_metadata_dock]);
+		metaDataDock->setDisplaySettings(&DkSettings::app.showMetaDataDock);
+		addDockWidget(metaDataDock->getDockLocationSettings(Qt::RightDockWidgetArea), metaDataDock);
 
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), metaDataDock, SLOT(setImage(QSharedPointer<DkImageContainerT>)));
 	}
@@ -2308,12 +2305,11 @@ void DkNoMacs::showThumbsDock(bool show) {
 	}
 
 	if (!thumbsDock) {
-		QSettings& settings = Settings::instance().getSettings();
-		int dockLocation = settings.value("thumbsDockLocation", Qt::RightDockWidgetArea).toInt();
-
-		thumbsDock = new QDockWidget(tr("Thumbnails"), this);
+		thumbsDock = new DkDockWidget(tr("Thumbnails"), this);
+		thumbsDock->registerAction(panelActions[menu_panel_preview]);
+		thumbsDock->setDisplaySettings(&DkSettings::app.showFilePreview);
 		thumbsDock->setWidget(viewport()->getController()->getFilePreview());
-		addDockWidget((Qt::DockWidgetArea)dockLocation, thumbsDock);
+		addDockWidget(thumbsDock->getDockLocationSettings(Qt::TopDockWidgetArea), thumbsDock);
 		thumbsDockAreaChanged();
 
 		QLabel* thumbsTitle = new QLabel(thumbsDock);
@@ -2362,10 +2358,14 @@ void DkNoMacs::openFile() {
 	if (!viewport())
 		return;
 
+	QStringList openFilters = DkSettings::app.openFilters;
+	openFilters.pop_front();
+	openFilters.prepend(tr("All Files (*.*)"));
+
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
 		getTabWidget()->getCurrentDir().absolutePath(), 
-		DkSettings::app.openFilters.join(";;"));
+		openFilters.join(";;"));
 
 	if (fileName.isEmpty())
 		return;
@@ -2968,6 +2968,11 @@ void DkNoMacs::onWindowLoaded() {
 	QSettings& settings = Settings::instance().getSettings();
 	bool firstTime = settings.value("AppSettings/firstTime", true).toBool();
 
+	if (DkDockWidget::testDisplaySettings(DkSettings::app.showExplorer))
+		showExplorer(true);
+	if (DkDockWidget::testDisplaySettings(DkSettings::app.showMetaDataDock))
+		showMetaDataDock(true);
+
 	if (!firstTime)
 		return;
 
@@ -2979,6 +2984,7 @@ void DkNoMacs::onWindowLoaded() {
 
 	if (wecomeDialog->isLanguageChanged())
 		restart();
+
 }
 
 void DkNoMacs::keyPressEvent(QKeyEvent *event) {

@@ -145,6 +145,8 @@ public:
 		QBitArray showOverview;
 		QBitArray showScroller;
 		QBitArray showComment;
+		QBitArray showExplorer;
+		QBitArray showMetaDataDock;
 		bool showRecentFiles;
 		int appMode;
 		int currentAppMode;

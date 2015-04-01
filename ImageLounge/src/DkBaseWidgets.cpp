@@ -474,4 +474,65 @@ void DkFadeLabel::animateOpacityDown() {
 	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
 }
 
+// DkDockWidget --------------------------------------------------------------------
+DkDockWidget::DkDockWidget(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */ ) : QDockWidget(title, parent, flags) {
+	displaySettingsBits = 0;
+	setObjectName("DkDockWidget");
+}
+
+DkDockWidget::~DkDockWidget() {
+}
+
+void DkDockWidget::registerAction(QAction* action) {
+	connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+}
+
+void DkDockWidget::setDisplaySettings(QBitArray* displayBits) {
+	displaySettingsBits = displayBits;
+}
+
+bool DkDockWidget::getCurrentDisplaySetting() const {
+
+	if (!displaySettingsBits)
+		return false;
+
+	return testDisplaySettings(*displaySettingsBits);
+}
+
+bool DkDockWidget::testDisplaySettings(const QBitArray& displaySettingsBits) {
+
+	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits.size()) {
+		qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
+		return false;
+	}
+
+	return displaySettingsBits.testBit(DkSettings::app.currentAppMode);
+}
+
+void DkDockWidget::setVisible(bool visible, bool saveSetting) {
+
+	QDockWidget::setVisible(visible);
+	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+
+	if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
+	}
+}
+
+void DkDockWidget::closeEvent(QCloseEvent* event) {
+
+	setVisible(false);
+
+	QDockWidget::closeEvent(event);
+}
+
+Qt::DockWidgetArea DkDockWidget::getDockLocationSettings(const Qt::DockWidgetArea& defaultArea) const {
+	
+	QSettings& settings = Settings::instance().getSettings();
+	Qt::DockWidgetArea location = (Qt::DockWidgetArea)settings.value(objectName(), defaultArea).toInt();
+
+	return location;
+}
+
+
 }

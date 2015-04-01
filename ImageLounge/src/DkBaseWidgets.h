@@ -30,6 +30,7 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QWidget>
 #include <QLabel>
+#include <QDockWidget>
 #pragma warning(pop)	// no warnings from includes - end
 
 #ifndef DllExport
@@ -187,5 +188,30 @@ protected:
 
 };
 
+class DkDockWidget : public QDockWidget {
+	Q_OBJECT
+
+public:
+	DkDockWidget(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	~DkDockWidget();
+
+	void registerAction(QAction* action);
+	void setDisplaySettings(QBitArray* displayBits);
+	bool getCurrentDisplaySetting() const;
+	static bool testDisplaySettings(const QBitArray& displaySettingsBits);
+	Qt::DockWidgetArea getDockLocationSettings(const Qt::DockWidgetArea& defaultArea) const;
+
+public slots:
+	virtual void setVisible(bool visible, bool saveSetting = true);
+
+signals:
+	void visibleSignal(bool visible);
+
+protected:
+	virtual void closeEvent(QCloseEvent* event);
+
+	QBitArray* displaySettingsBits;
+
+};
 
 }

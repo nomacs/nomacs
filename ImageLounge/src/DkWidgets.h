@@ -406,7 +406,7 @@ protected:
 
 };
 
-class DkExplorer : public QDockWidget {
+class DkExplorer : public DkDockWidget {
 	Q_OBJECT
 
 public:

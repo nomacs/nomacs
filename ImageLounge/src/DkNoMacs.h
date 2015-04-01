@@ -92,6 +92,7 @@ class DkPrintPreviewDialog;
 class DkBatchDialog;
 class DkViewPort;
 class DkCentralWidget;
+class DkDockWidget;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -686,7 +687,7 @@ protected:
 #endif
 	DkExplorer* explorer;
 	DkMetaDataDock* metaDataDock;
-	QDockWidget* thumbsDock;
+	DkDockWidget* thumbsDock;
 	DkExportTiffDialog* exportTiffDialog;
 	DkSettingsDialog* settingsDialog;
 	DkThumbsSaver* thumbSaver;
