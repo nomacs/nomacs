@@ -422,7 +422,13 @@ void DkBatchProcessing::init() {
 
 	for (int idx = 0; idx < urls.size(); idx++) {
 
-		QFileInfo cFileInfo(urls.at(idx).toLocalFile());
+		QUrl url = urls.at(idx);
+		QString fString = url.toString();
+		fString = fString.replace("file:///", "");
+
+		QFileInfo cFileInfo = QFileInfo(fString);
+		if (!cFileInfo.exists())	// try an alternative conversion
+			cFileInfo = QFileInfo(url.toLocalFile());
 
 		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx);
 		QFileInfo newFileInfo(batchConfig.getOutputDir(), converter.getConvertedFileName());

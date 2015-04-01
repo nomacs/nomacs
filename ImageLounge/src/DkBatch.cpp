@@ -606,7 +606,8 @@ void DkBatchOutput::updateFileLabelPreview() {
 }
 
 QString DkBatchOutput::getOutputDirectory() {
-	return QDir(outputlineEdit->text()).absolutePath();
+	qDebug() << "ouptut dir: " << QDir(outputlineEdit->text()).absolutePath();
+	return outputlineEdit->text();
 }
 
 QString DkBatchOutput::getFilePattern() {
