@@ -2399,6 +2399,9 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* prin
 	printDialog = 0;
 	imgTransform = QTransform();
 	init();
+	if (!img.isNull() && img.width() > img.height()) 
+		preview->setLandscapeOrientation();
+
 	scaleImage();
 }
 
@@ -2435,11 +2438,13 @@ void DkPrintPreviewDialog::scaleImage() {
 	qDebug() << "dpi:" << dpi;
 	qDebug() << "origDpi:" << origdpi;
 
-	// use at least 150 dpi as default if image has less then 150
-	if ((origdpi < 150 || dpi < 150) && scaleFactor > 1) {
+	// use at least 150 dpi 
+	if (dpi < 150 && scaleFactor > 1) {
 		dpi = 150;
 		scaleFactor = (pxW/inchW)/dpi;
+		qDebug() << "new scale Factor:" << scaleFactor;
 	}
+
 
 	imgTransform.scale(scaleFactor, scaleFactor);
 
@@ -2459,6 +2464,7 @@ void DkPrintPreviewDialog::init() {
 	}
 	
 	preview = new DkPrintPreviewWidget(printer, this);
+
 	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
 	connect(preview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
 	
