@@ -905,8 +905,8 @@ void DkCropToolBar::createLayout() {
 
 	QStringList ratios;
 	ratios << "1:1" << "4:3" << "5:4" << "14:10" << "14:11" << "16:9" << "16:10";
-	ratios.prepend(QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "User Defined"));
-	ratios.prepend(QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "No Aspect Ratio"));
+	ratios.prepend(tr("User Defined"));
+	ratios.prepend(tr("No Aspect Ratio"));
 	ratioBox = new QComboBox(this);
 	ratioBox->addItems(ratios);
 	ratioBox->setObjectName("ratioBox");
@@ -948,9 +948,7 @@ void DkCropToolBar::createLayout() {
 
 	// crop customization
 	QStringList guides;
-	guides <<	QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "Guides") << 
-				QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "Rule of Thirds") << 
-				QT_TRANSLATE_NOOP("nmc::DkCropToolBar", "Grid");
+	guides << tr("Guides") << tr("Rule of Thirds") << tr("Grid");
 	guideBox = new QComboBox(this);
 	guideBox->addItems(guides);
 	guideBox->setObjectName("guideBox");
@@ -1031,7 +1029,6 @@ void DkCropToolBar::on_swapAction_triggered() {
 
 void DkCropToolBar::on_angleBox_valueChanged(double val) {
 
-	// something is wrong with the angle we provide!
 	emit angleSignal(DK_DEG2RAD*val);
 }
 

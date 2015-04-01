@@ -2321,7 +2321,9 @@ void DkTextDialog::save() {
 	if (folders.size() > 0)
 		savePath = folders.first();
 
-	QString saveFilters("Text File (*.txt);;All Files (*.*)");
+	QStringList extList;
+	extList << tr("Text File (*.txt)") << tr("All Files (*.*)");
+	QString saveFilters(extList.join(";;"));
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Text File"),
 		savePath, saveFilters);

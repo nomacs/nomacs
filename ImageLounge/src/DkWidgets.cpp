@@ -2085,7 +2085,6 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		xn = c-xn;
 		angle = xn.angle() - xt.angle();
 
-
 		// just rotate in CV_PI*0.25 steps if shift is pressed
 		if (event->modifiers() == Qt::ShiftModifier) {
 			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
@@ -2099,7 +2098,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 		QPolygonF p = rect.getPoly();
 
-		float sAngle = rect.getAngleDeg();
+		float sAngle = DkMath::getReadableAngle(rect.getAngle() + angle);
 		int height = qRound(DkVector(p[1]-p[0]).norm());
 		int width = qRound(DkVector(p[3]-p[0]).norm());
 

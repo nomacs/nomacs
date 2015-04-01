@@ -888,7 +888,7 @@ void DkBatchDialog::createLayout() {
 
 	// buttons
 	logButton = new QPushButton(tr("Show &Log"), this);
-	logButton->setToolTip(tr("Removes All Custom Shortcuts"));
+	logButton->setToolTip(tr("Shows detailed status messages."));
 	logButton->setEnabled(false);
 	connect(logButton, SIGNAL(clicked()), this, SLOT(logButtonClicked()));
 
