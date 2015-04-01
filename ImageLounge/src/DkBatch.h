@@ -216,7 +216,7 @@ public:
 	QString getOutputDirectory();
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
-	void setDir(QDir);
+	void setDir(QDir dir, bool updateLineEdit = true);
 	void setInputDir(QDir dir);
 
 signals:
@@ -230,6 +230,7 @@ protected slots:
 	void extensionCBChanged(int index);
 	void emitChangedSignal();
 	void updateFileLabelPreview();
+	void outputTextChanged(QString text);
 
 protected:
 	virtual void createLayout();

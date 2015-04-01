@@ -453,7 +453,7 @@ void DkBatchOutput::createLayout() {
 	outputlineEdit = new DkDirectoryEdit(this);
 	outputlineEdit->setPlaceholderText(tr("Select a Directory"));
 	connect(outputBrowseButton , SIGNAL(clicked()), this, SLOT(browse()));
-	connect(outputlineEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
+	connect(outputlineEdit, SIGNAL(textChanged(QString)), this, SLOT(outputTextChanged(QString)));
 
 	// overwrite existing
 	cbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
@@ -537,10 +537,13 @@ void DkBatchOutput::browse() {
 	setDir(QDir(dirName));
 }
 
-void DkBatchOutput::setDir(QDir dir) {
+void DkBatchOutput::setDir(QDir dir, bool updateLineEdit) {
+
 	outputDirectory = dir;
 	emit newHeaderText(dir.absolutePath());
-	outputlineEdit->setText(dir.absolutePath());
+	
+	if (updateLineEdit)
+		outputlineEdit->setText(dir.absolutePath());
 }
 
 void DkBatchOutput::setInputDir(QDir dir) {
@@ -596,6 +599,8 @@ void DkBatchOutput::emitChangedSignal() {
 
 void DkBatchOutput::updateFileLabelPreview() {
 
+	qDebug() << "updating file label, example name: " << exampleName;
+
 	if (exampleName.isEmpty())
 		return;
 
@@ -603,6 +608,11 @@ void DkBatchOutput::updateFileLabelPreview() {
 
 	oldFileNameLabel->setText(exampleName);
 	newFileNameLabel->setText(converter.getConvertedFileName());
+}
+
+void DkBatchOutput::outputTextChanged(QString text) {
+
+	setDir(QDir(text), false);
 }
 
 QString DkBatchOutput::getOutputDirectory() {
@@ -652,6 +662,7 @@ int DkBatchOutput::overwriteMode() {
 void DkBatchOutput::setExampleFilename(const QString& exampleName) {
 
 	this->exampleName = exampleName;
+	qDebug() << "example name: " << exampleName;
 	updateFileLabelPreview();
 }
 
@@ -1077,8 +1088,16 @@ void DkBatchDialog::widgetChanged() {
 	}
 
 	if (!fileSelection->getSelectedFiles().isEmpty()) {
-		QFileInfo fi(fileSelection->getSelectedFiles().first().toLocalFile());
-		dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->setExampleFilename(fi.fileName());
+
+		QUrl url = fileSelection->getSelectedFiles().first();
+		QString fString = url.toString();
+		fString = fString.replace("file:///", "");
+
+		QFileInfo cFileInfo = QFileInfo(fString);
+		if (!cFileInfo.exists())	// try an alternative conversion
+			cFileInfo = QFileInfo(url.toLocalFile());
+
+		dynamic_cast<DkBatchOutput*>(widgets[batch_output]->contentWidget())->setExampleFilename(cFileInfo.fileName());
 	}
 }
 
