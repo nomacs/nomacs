@@ -132,7 +132,7 @@ public:
 	void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes);
 	void setMode(int mode);
 	void setDeleteOriginal(bool deleteOriginal);
-	void compute();	// do the work
+	bool compute();	// do the work
 	QStringList getLog() const;
 	bool hasFailed() const;
 	bool wasProcessed() const;
@@ -203,10 +203,19 @@ class DkBatchProcessing : public QObject {
 	Q_OBJECT
 
 public:
+
+	enum {
+		batch_item_failed,
+		batch_item_succeeded,
+		batch_item_not_computed,
+
+		batch_item_end
+	};
+
 	DkBatchProcessing(const DkBatchConfig& config = DkBatchConfig(), QWidget* parent = 0);
 
 	void compute();
-	static void computeItem(DkBatchProcess& item);
+	static bool computeItem(DkBatchProcess& item);
 	
 	QStringList getLog() const;
 	int getNumFailures() const;
@@ -214,6 +223,7 @@ public:
 	int getNumProcessed() const;
 	
 	bool isComputing() const;
+	QList<int> getCurrentResults();
 
 	// getter, setter
 	void setBatchConfig(const DkBatchConfig& config) { this->batchConfig = config; };
@@ -230,6 +240,7 @@ signals:
 protected:
 	DkBatchConfig batchConfig;
 	QVector<DkBatchProcess> batchItems;
+	QList<int> resList;
 	
 	// threading
 	QFutureWatcher<void> batchWatcher;

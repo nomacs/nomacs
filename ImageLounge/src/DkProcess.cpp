@@ -266,33 +266,33 @@ bool DkBatchProcess::wasProcessed() const {
 	return isProcessed;
 }
 
-void DkBatchProcess::compute() {
+bool DkBatchProcess::compute() {
+
+	isProcessed = true;
 
 	// check errors
 	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_skip_existing) {
 		logStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(fileInfoOut.absoluteFilePath()));
 		failure++;
-		return;
+		return failure == 0;
 	}
 	else if (!fileInfoIn.exists()) {
 		logStrings.append(QObject::tr("Error: input file does not exist"));
 		logStrings.append(QObject::tr("Input: %1").arg(fileInfoIn.absoluteFilePath()));
 		failure++;
-		return;
+		return failure == 0;
 	}
 	else if (fileInfoIn == fileInfoOut && processFunctions.empty()) {
 		logStrings.append(QObject::tr("Skipping: nothing to do here."));
 		failure++;
-		return;
+		return failure == 0;
 	}
-
-	isProcessed = true;
-
+	
 	// do the work
 	if (processFunctions.empty() && fileInfoIn.absolutePath() == fileInfoOut.absolutePath() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// rename?
 		if (!renameFile())
 			failure++;
-		return;
+		return failure == 0;
 	}
 	else if (processFunctions.empty() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// copy?
 		if (!copyFile())
@@ -300,10 +300,12 @@ void DkBatchProcess::compute() {
 		else
 			deleteOriginalFile();
 
-		return;
+		return failure == 0;
 	}
 
 	process();
+
+	return failure == 0;
 }
 
 QStringList DkBatchProcess::getLog() const {
@@ -508,10 +510,9 @@ void DkBatchProcessing::compute() {
 	batchWatcher.setFuture(future);
 }
 
-void DkBatchProcessing::computeItem(DkBatchProcess& item) {
+bool DkBatchProcessing::computeItem(DkBatchProcess& item) {
 
-	item.compute();
-	qDebug() << "" << item.getLog();
+	return item.compute();
 }
 
 QStringList DkBatchProcessing::getLog() const {
@@ -551,6 +552,25 @@ int DkBatchProcessing::getNumProcessed() const {
 	}
 
 	return numProcessed;
+}
+
+QList<int> DkBatchProcessing::getCurrentResults() {
+
+	if (resList.empty()) {
+		for (int idx = 0; idx < batchItems.size(); idx++)
+			resList.append(batch_item_not_computed);
+	}
+
+	for (int idx = 0; idx < resList.size(); idx++) {
+
+		if (resList.at(idx) != batch_item_not_computed)
+			continue;
+
+		if (batchItems.at(idx).wasProcessed())
+			resList[idx] = batchItems.at(idx).hasFailed() ? batch_item_failed : batch_item_succeeded;
+	}
+
+	return resList;
 }
 
 int DkBatchProcessing::getNumItems() const {

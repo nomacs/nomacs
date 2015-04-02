@@ -52,6 +52,7 @@ class QButtonGroup;
 class QRadioButton;
 class QDialogButtonBox;
 class QProgressBar;
+class QTabWidget;
 
 namespace nmc {
 
@@ -126,6 +127,8 @@ public:
 	QStringList getFileList() const;
 	void appendDir(const QDir& newDir, bool recursive = false);
 	void insertFromMimeData(const QMimeData *src);
+	void setResultList(const QList<int>& resList);
+	void clear();
 
 signals:
 	void fileListChangedSignal() const;
@@ -139,19 +142,33 @@ protected:
 	void dragMoveEvent(QDragMoveEvent *event);
 	void appendFromMime(const QMimeData* mimeData);
 
+	QList<int> resultList;
 };
 
 class DkFileSelection : public QWidget, public DkBatchContent  {
 	Q_OBJECT
 
 public:
+
+	enum {
+		tab_thumbs = 0,
+		tab_text_input,
+		tab_results,
+
+		tab_end
+	};
+
 	DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	QString getDir() const;
 	QStringList getSelectedFiles() const;
+	QStringList getSelectedFilesBatch();
+	DkInputTextEdit* getInputEdit() const;
 
 	virtual bool hasUserInput() const {return hUserInput;};
 	virtual bool requiresUserInput() const {return rUserInput;};
+	void changeTab(int tabIdx) const;
+	void transferResults();
 
 public slots:
 	void setDir(QDir dir);
@@ -175,10 +192,12 @@ protected:
 	QListView* fileWidget;
 	DkThumbScrollWidget* thumbScrollWidget;
 	DkInputTextEdit* inputTextEdit;
+	QTextEdit* resultTextEdit;
 	QSharedPointer<DkImageLoader> loader;
 	DkExplorer* explorer;
 	DkDirectoryEdit* directoryEdit;
 	QLabel* infoLabel;
+	QTabWidget* inputTabs;
 
 private:
 	bool hUserInput;

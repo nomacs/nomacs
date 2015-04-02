@@ -52,6 +52,7 @@
 #include <QRadioButton>
 #include <QMessageBox>
 #include <QApplication>
+#include <QTextBlock>
 #include <QDropEvent>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -256,6 +257,50 @@ QStringList DkInputTextEdit::getFileList() const {
 	return fileList;
 }
 
+void DkInputTextEdit::setResultList(const QList<int>& resList) {
+
+	if (resultList.size() != resList.size()) {
+		resultList.clear();
+
+		for (int idx = 0; idx < resList.size(); idx++)
+			resultList.append(DkBatchProcessing::batch_item_not_computed);
+	}
+
+	for (int idx = 0; idx < resultList.size(); idx++) {
+
+		if (resultList.at(idx) != resList.at(idx)) {
+			QTextCursor txtCursor = textCursor();
+			QTextBlock tb = document()->findBlockByLineNumber(idx);
+			txtCursor.setPosition(tb.position() + tb.length()-1);
+
+			if (txtCursor.position() == -1)
+				continue;
+
+			qDebug() << "cursor position: " << txtCursor.position();
+			QString res;
+			if (resList.at(idx) == DkBatchProcessing::batch_item_succeeded)
+				res = " <span style=\" color:#00aa00;\">" + tr("[OK]") + "</span>";
+			else
+				res = " <span style=\" color:#aa0000;\">" + tr("[FAIL]") + "</span>";
+			
+			txtCursor.insertText("\t");
+			txtCursor.insertHtml(res);
+			setTextCursor(txtCursor);
+			resultList[idx] = resList.at(idx);
+		}
+	}
+
+	qDebug() << "results updated...";
+
+}
+
+void DkInputTextEdit::clear() {
+	
+	resultList.clear();
+	QTextEdit::clear();
+	setTextCursor(QTextCursor());
+}
+
 // File Selection --------------------------------------------------------------------
 DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
@@ -284,6 +329,9 @@ void DkFileSelection::createLayout() {
 
 	inputTextEdit = new DkInputTextEdit(this);
 
+	resultTextEdit = new QTextEdit(this);
+	resultTextEdit->setReadOnly(true);
+
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
 	thumbScrollWidget->getThumbWidget()->setImageLoader(loader);
@@ -303,7 +351,7 @@ void DkFileSelection::createLayout() {
 		explorer->setCurrentPath(folders[0]);
 
 	// tab widget
-	QTabWidget* inputTabs = new QTabWidget(this);
+	inputTabs = new QTabWidget(this);
 	inputTabs->addTab(thumbScrollWidget,  QIcon(":/nomacs/img/thumbs-view.png"), tr("Thumbnails"));
 	inputTabs->addTab(inputTextEdit, QIcon(":/nomacs/img/batch-processing.png"), tr("File List"));
 
@@ -324,6 +372,14 @@ void DkFileSelection::createLayout() {
 	connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
 	connect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), loader.data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
 
+}
+
+void DkFileSelection::changeTab(int tabIdx) const {
+
+	if (tabIdx < 0 || tabIdx >= inputTabs->count())
+		return;
+
+	inputTabs->setCurrentIndex(tabIdx);
 }
 
 void DkFileSelection::updateDir(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -362,6 +418,24 @@ QStringList DkFileSelection::getSelectedFiles() const {
 		return thumbScrollWidget->getThumbWidget()->getSelectedFiles();
 	else
 		return textList;
+}
+
+QStringList DkFileSelection::getSelectedFilesBatch() {
+
+	QStringList textList = inputTextEdit->getFileList();
+
+	if (textList.empty()) {
+		textList = thumbScrollWidget->getThumbWidget()->getSelectedFiles();
+		inputTextEdit->appendFiles(textList);
+	}
+
+	return textList;
+}
+
+
+DkInputTextEdit* DkFileSelection::getInputEdit() const {
+
+	return inputTextEdit;
 }
 
 void DkFileSelection::setFileInfo(QFileInfo file) {
@@ -404,6 +478,18 @@ void DkFileSelection::emitChangedSignal() {
 		setDir(newDir);
 		emit changed();
 	}
+}
+
+void DkFileSelection::transferResults() {
+
+	if (inputTabs->count() < 3) {
+		inputTabs->addTab(resultTextEdit, tr("Results"));
+	}
+
+	resultTextEdit->clear();
+	resultTextEdit->setHtml(inputTextEdit->toHtml());
+	inputTextEdit->clear();
+	inputTextEdit->setEnabled(true);
 }
 
 // DkFileNameWdiget --------------------------------------------------------------------
@@ -1145,7 +1231,7 @@ void DkBatchDialog::accept() {
 		}
 	}
 
-	DkBatchConfig config(fileSelection->getSelectedFiles(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
+	DkBatchConfig config(fileSelection->getSelectedFilesBatch(), outputWidget->getOutputDirectory(), outputWidget->getFilePattern());
 	config.setMode(outputWidget->overwriteMode());
 	config.setDeleteOriginal(outputWidget->deleteOriginal());
 
@@ -1230,6 +1316,9 @@ void DkBatchDialog::processingFinished() {
 
 void DkBatchDialog::startProcessing() {
 
+	fileSelection->changeTab(DkFileSelection::tab_text_input);
+	fileSelection->getInputEdit()->setEnabled(false);
+
 	progressBar->show();
 	progressBar->reset();
 	progressBar->setMaximum(fileSelection->getSelectedFiles().size());
@@ -1239,6 +1328,10 @@ void DkBatchDialog::startProcessing() {
 }
 
 void DkBatchDialog::stopProcessing() {
+
+	fileSelection->getInputEdit()->setResultList(batchProcessing->getCurrentResults());
+	fileSelection->transferResults();
+	fileSelection->changeTab(DkFileSelection::tab_results);
 
 	progressBar->hide();
 	progressBar->reset();
@@ -1263,6 +1356,8 @@ void DkBatchDialog::stopProcessing() {
 void DkBatchDialog::updateProgress(int progress) {
 
 	progressBar->setValue(progress);
+	fileSelection->getInputEdit()->setResultList(batchProcessing->getCurrentResults());
+	
 }
 
 void DkBatchDialog::logButtonClicked() {
