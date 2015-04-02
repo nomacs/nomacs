@@ -52,6 +52,7 @@
 #include <QRadioButton>
 #include <QMessageBox>
 #include <QApplication>
+#include <QDropEvent>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -127,6 +128,8 @@ void DkBatchWidget::setHeader(QString headerString) {
 // DkInputTextEdit --------------------------------------------------------------------
 DkInputTextEdit::DkInputTextEdit(QWidget* parent /* = 0 */) : QTextEdit(parent) {
 
+	setAcceptDrops(true);
+	connect(this, SIGNAL(textChanged()), this, SIGNAL(fileListChangedSignal()));
 }
 
 void DkInputTextEdit::appendFiles(const QStringList& fileList) {
@@ -141,8 +144,98 @@ void DkInputTextEdit::appendFiles(const QStringList& fileList) {
 			newFiles.append(cStr);
 	}
 
-	if (!newFiles.empty())
+	if (!newFiles.empty()) {
 		append(newFiles.join("\n"));
+		fileListChangedSignal();
+	}
+}
+
+void DkInputTextEdit::appendDir(const QDir& newDir, bool recursive) {
+
+	if (recursive) {
+		qDebug() << "adding recursive...";
+		QDir tmpDir = newDir;
+		QFileInfoList subDirs = tmpDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+
+		for (QFileInfo cDir : subDirs)
+			appendDir(QDir(cDir.absoluteFilePath()), recursive);
+	}
+
+	QDir tmpDir = newDir;
+	tmpDir.setSorting(QDir::LocaleAware);
+	QFileInfoList fileList = tmpDir.entryInfoList(DkSettings::app.fileFilters);
+	QStringList strFileList;
+
+	for (QFileInfo entry : fileList) {
+		strFileList.append(entry.absoluteFilePath());
+	}
+
+	qDebug() << "appending " << strFileList.size() << " files";
+
+	appendFiles(strFileList);
+}
+
+void DkInputTextEdit::appendFromMime(const QMimeData* mimeData) {
+
+	if (!mimeData || !mimeData->hasUrls())
+		return;
+
+	QStringList cFiles;
+
+	for (QUrl url : mimeData->urls()) {
+
+		QFileInfo cFile = DkUtils::urlToLocalFile(url);
+
+		if (cFile.isDir()) {
+			QDir newDir(cFile.absoluteFilePath());
+			appendDir(newDir, true);
+		}
+		else if (cFile.exists() && DkUtils::isValid(cFile)) {
+			cFiles.append(cFile.absoluteFilePath());
+		}
+	}
+
+	if (!cFiles.empty())
+		appendFiles(cFiles);
+}
+
+void DkInputTextEdit::insertFromMimeData(const QMimeData* mimeData) {
+
+	appendFromMime(mimeData);
+	QTextEdit::insertFromMimeData(mimeData);
+}
+
+void DkInputTextEdit::dragEnterEvent(QDragEnterEvent *event) {
+
+	QTextEdit::dragEnterEvent(event);
+
+	if (event->source() == this)
+		event->acceptProposedAction();
+	else if (event->mimeData()->hasUrls())
+		event->acceptProposedAction();
+}
+
+void DkInputTextEdit::dragMoveEvent(QDragMoveEvent *event) {
+
+	QTextEdit::dragMoveEvent(event);
+
+	if (event->source() == this)
+		event->acceptProposedAction();
+	else if (event->mimeData()->hasUrls())
+		event->acceptProposedAction();
+}
+
+
+void DkInputTextEdit::dropEvent(QDropEvent *event) {
+	
+	if (event->source() == this) {
+		event->accept();
+		return;
+	}
+
+	appendFromMime(event->mimeData());
+
+	QTextEdit::dropEvent(event);
 }
 
 QStringList DkInputTextEdit::getFileList() const {
@@ -152,20 +245,13 @@ QStringList DkInputTextEdit::getFileList() const {
 	QTextStream textStream(&textString);
 	textStream << toPlainText();
 
-	qDebug() << "text stream: " << textString;
-
-	//for (QString line : textStream.readLine())
-	//	fileList.append(line);
-
 	QString line;
 	do
 	{
-		line = textStream.readLine();
+		line = textStream.readLine();	// we don't want to get into troubles with carriage returns of different OS
 		if (!line.isNull())
 			fileList.append(line);
 	} while(!line.isNull());
-
-	qDebug() << "file list: " << fileList;
 
 	return fileList;
 }
@@ -229,6 +315,7 @@ void DkFileSelection::createLayout() {
 	setLayout(widgetLayout);
 
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+	connect(inputTextEdit, SIGNAL(fileListChangedSignal()), this, SLOT(selectionChanged()));
 	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), inputTextEdit, SLOT(appendFiles(const QStringList&)));
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), this, SLOT(setDir(QDir)));
 	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
@@ -268,7 +355,13 @@ QString DkFileSelection::getDir() const {
 }
 
 QStringList DkFileSelection::getSelectedFiles() const {
-	return thumbScrollWidget->getThumbWidget()->getSelectedFiles();
+	
+	QStringList textList = inputTextEdit->getFileList();
+
+	if (textList.empty())
+		return thumbScrollWidget->getThumbWidget()->getSelectedFiles();
+	else
+		return textList;
 }
 
 void DkFileSelection::setFileInfo(QFileInfo file) {

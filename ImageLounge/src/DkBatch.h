@@ -124,12 +124,20 @@ public:
 	DkInputTextEdit(QWidget* parent = 0);
 
 	QStringList getFileList() const;
-	
+	void appendDir(const QDir& newDir, bool recursive = false);
+	void insertFromMimeData(const QMimeData *src);
+
+signals:
+	void fileListChangedSignal() const;
+
 public slots:
 	void appendFiles(const QStringList& fileList);
 
 protected:
-
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void appendFromMime(const QMimeData* mimeData);
 
 };
 
