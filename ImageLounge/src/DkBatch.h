@@ -127,7 +127,6 @@ public:
 	QStringList getFileList() const;
 	void appendDir(const QDir& newDir, bool recursive = false);
 	void insertFromMimeData(const QMimeData *src);
-	void setResultList(const QList<int>& resList);
 	void clear();
 
 signals:
@@ -168,7 +167,10 @@ public:
 	virtual bool hasUserInput() const {return hUserInput;};
 	virtual bool requiresUserInput() const {return rUserInput;};
 	void changeTab(int tabIdx) const;
-	void transferResults();
+	void startProcessing();
+	void stopProcessing();
+	void setResults(const QStringList& results);
+
 
 public slots:
 	void setDir(QDir dir);
@@ -387,6 +389,7 @@ public slots:
 	void logButtonClicked();
 	void processingFinished();
 	void updateProgress(int progress);
+	void updateLog();
 
 protected:
 	void createLayout();
@@ -404,6 +407,8 @@ private:
 	QPushButton* logButton;
 	QProgressBar* progressBar;
 	QLabel* summaryLabel;
+	QTimer logUpdateTimer;
+	bool logNeedsUpdate;
 
 	void startProcessing();
 	void stopProcessing();

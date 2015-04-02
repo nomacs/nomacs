@@ -256,6 +256,16 @@ void DkBatchProcess::setDeleteOriginal(bool deleteOriginal) {
 	this->deleteOriginal = deleteOriginal;
 }
 
+QFileInfo DkBatchProcess::inputFile() const {
+
+	return fileInfoIn;
+}
+
+QFileInfo DkBatchProcess::outputFile() const {
+
+	return fileInfoOut;
+}
+
 bool DkBatchProcess::hasFailed() const {
 
 	return failure != 0;
@@ -571,6 +581,31 @@ QList<int> DkBatchProcessing::getCurrentResults() {
 	}
 
 	return resList;
+}
+
+QStringList DkBatchProcessing::getResultList() const {
+
+	QStringList results;
+
+	for (DkBatchProcess batch : batchItems) {
+
+		if (batch.wasProcessed())
+			results.append(getBatchSummary(batch));
+	}
+
+	return results;
+}
+
+QString DkBatchProcessing::getBatchSummary(const DkBatchProcess& batch) const {
+
+	QString res = batch.inputFile().absoluteFilePath() + "\t";
+
+	if (!batch.hasFailed())
+		res += " <span style=\" color:#00aa00;\">" + tr("[OK]") + "</span>";
+	else
+		res += " <span style=\" color:#aa0000;\">" + tr("[FAIL]") + "</span>";
+
+	return res;
 }
 
 int DkBatchProcessing::getNumItems() const {

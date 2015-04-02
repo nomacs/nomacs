@@ -126,7 +126,6 @@ protected:
 class DkBatchProcess {
 
 public:
-
 	DkBatchProcess(const QFileInfo& fileInfoIn = QFileInfo(), const QFileInfo& fileInfoOut = QFileInfo());
 
 	void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes);
@@ -136,6 +135,8 @@ public:
 	QStringList getLog() const;
 	bool hasFailed() const;
 	bool wasProcessed() const;
+	QFileInfo inputFile() const;
+	QFileInfo outputFile() const;
 
 protected:
 	QFileInfo fileInfoIn;
@@ -224,6 +225,8 @@ public:
 	
 	bool isComputing() const;
 	QList<int> getCurrentResults();
+	QStringList getResultList() const;
+	QString getBatchSummary(const DkBatchProcess& batch) const;
 
 	// getter, setter
 	void setBatchConfig(const DkBatchConfig& config) { this->batchConfig = config; };

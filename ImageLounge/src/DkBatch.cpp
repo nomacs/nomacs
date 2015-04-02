@@ -189,7 +189,7 @@ void DkInputTextEdit::appendFromMime(const QMimeData* mimeData) {
 
 		if (cFile.isDir()) {
 			QDir newDir(cFile.absoluteFilePath());
-			appendDir(newDir, true);
+			appendDir(newDir, false);	// TODO: ask user for recursive??
 		}
 		else if (cFile.exists() && DkUtils::isValid(cFile)) {
 			cFiles.append(cFile.absoluteFilePath());
@@ -250,55 +250,17 @@ QStringList DkInputTextEdit::getFileList() const {
 	do
 	{
 		line = textStream.readLine();	// we don't want to get into troubles with carriage returns of different OS
-		if (!line.isNull())
+		if (!line.isNull() && !line.trimmed().isEmpty())
 			fileList.append(line);
 	} while(!line.isNull());
 
 	return fileList;
 }
 
-void DkInputTextEdit::setResultList(const QList<int>& resList) {
-
-	if (resultList.size() != resList.size()) {
-		resultList.clear();
-
-		for (int idx = 0; idx < resList.size(); idx++)
-			resultList.append(DkBatchProcessing::batch_item_not_computed);
-	}
-
-	for (int idx = 0; idx < resultList.size(); idx++) {
-
-		if (resultList.at(idx) != resList.at(idx)) {
-			QTextCursor txtCursor = textCursor();
-			QTextBlock tb = document()->findBlockByLineNumber(idx);
-			txtCursor.setPosition(tb.position() + tb.length()-1);
-
-			if (txtCursor.position() == -1)
-				continue;
-
-			qDebug() << "cursor position: " << txtCursor.position();
-			QString res;
-			if (resList.at(idx) == DkBatchProcessing::batch_item_succeeded)
-				res = " <span style=\" color:#00aa00;\">" + tr("[OK]") + "</span>";
-			else
-				res = " <span style=\" color:#aa0000;\">" + tr("[FAIL]") + "</span>";
-			
-			txtCursor.insertText("\t");
-			txtCursor.insertHtml(res);
-			setTextCursor(txtCursor);
-			resultList[idx] = resList.at(idx);
-		}
-	}
-
-	qDebug() << "results updated...";
-
-}
-
 void DkInputTextEdit::clear() {
 	
 	resultList.clear();
 	QTextEdit::clear();
-	setTextCursor(QTextCursor());
 }
 
 // File Selection --------------------------------------------------------------------
@@ -480,14 +442,32 @@ void DkFileSelection::emitChangedSignal() {
 	}
 }
 
-void DkFileSelection::transferResults() {
+void DkFileSelection::setResults(const QStringList& results) {
 
 	if (inputTabs->count() < 3) {
 		inputTabs->addTab(resultTextEdit, tr("Results"));
 	}
 
 	resultTextEdit->clear();
-	resultTextEdit->setHtml(inputTextEdit->toHtml());
+	resultTextEdit->setHtml(results.join("<br> "));
+	QTextCursor c = resultTextEdit->textCursor();
+	c.movePosition(QTextCursor::End);
+	resultTextEdit->setTextCursor(c);
+}
+
+void DkFileSelection::startProcessing() {
+
+	if (inputTabs->count() < 3) {
+		inputTabs->addTab(resultTextEdit, tr("Results"));
+	}
+
+	changeTab(tab_results);
+	inputTextEdit->setEnabled(false);
+	resultTextEdit->clear();
+}
+
+void DkFileSelection::stopProcessing() {
+
 	inputTextEdit->clear();
 	inputTextEdit->setEnabled(true);
 }
@@ -1132,6 +1112,9 @@ DkBatchDialog::DkBatchDialog(QDir currentDirectory, QWidget* parent /* = 0 */, Q
 	setWindowTitle(tr("Batch Conversion"));
 	createLayout();
 	connect(fileSelection, SIGNAL(updateInputDir(QDir)), outputSelection, SLOT(setInputDir(QDir)));
+	
+	connect(&logUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLog()));
+
 	fileSelection->setDir(currentDirectory);
 	outputSelection->setInputDir(currentDirectory);
 	//outputSelection->setDir(currentDirectory);
@@ -1316,8 +1299,7 @@ void DkBatchDialog::processingFinished() {
 
 void DkBatchDialog::startProcessing() {
 
-	fileSelection->changeTab(DkFileSelection::tab_text_input);
-	fileSelection->getInputEdit()->setEnabled(false);
+	fileSelection->startProcessing();
 
 	progressBar->show();
 	progressBar->reset();
@@ -1325,13 +1307,14 @@ void DkBatchDialog::startProcessing() {
 	logButton->setEnabled(false);
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+
+	logNeedsUpdate = false;
+	logUpdateTimer.start(1000);
 }
 
 void DkBatchDialog::stopProcessing() {
 
-	fileSelection->getInputEdit()->setResultList(batchProcessing->getCurrentResults());
-	fileSelection->transferResults();
-	fileSelection->changeTab(DkFileSelection::tab_results);
+	fileSelection->stopProcessing();
 
 	progressBar->hide();
 	progressBar->reset();
@@ -1351,13 +1334,22 @@ void DkBatchDialog::stopProcessing() {
 	summaryLabel->style()->unpolish(this);
 	summaryLabel->style()->polish(this);
 	update();
+
+	logNeedsUpdate = false;
+	logUpdateTimer.stop();
+
+	updateLog();
+}
+
+void DkBatchDialog::updateLog() {
+
+	fileSelection->setResults(batchProcessing->getResultList());
 }
 
 void DkBatchDialog::updateProgress(int progress) {
 
 	progressBar->setValue(progress);
-	fileSelection->getInputEdit()->setResultList(batchProcessing->getCurrentResults());
-	
+	logNeedsUpdate = true;
 }
 
 void DkBatchDialog::logButtonClicked() {
