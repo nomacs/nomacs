@@ -1885,6 +1885,8 @@ void DkThumbScrollWidget::createToolbar() {
 	toolbar->addAction(actions[action_paste]);
 	toolbar->addAction(actions[action_rename]);
 	toolbar->addAction(actions[action_delete]);
+	toolbar->addSeparator();
+	toolbar->addAction(actions[action_batch]);
 
 	filterEdit = new QLineEdit("", this);
 	filterEdit->setPlaceholderText(tr("Filter Files (Ctrl + F)"));
@@ -1945,7 +1947,7 @@ void DkThumbScrollWidget::createActions() {
 	actions[action_rename]->setShortcut(QKeySequence(Qt::Key_F2));
 	connect(actions[action_rename], SIGNAL(triggered()), thumbsScene, SLOT(renameSelected()));
 
-	actions[action_batch] = new QAction(QIcon(":/nomacs/img/batch-process.png"), tr("&Batch Process"), this);
+	actions[action_batch] = new QAction(QIcon(":/nomacs/img/batch-processing.png"), tr("&Batch Process"), this);
 	actions[action_batch]->setToolTip(tr("Adds selected files to batch processing."));
 	actions[action_batch]->setShortcut(QKeySequence(Qt::Key_B));
 	connect(actions[action_batch], SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
@@ -1971,7 +1973,8 @@ void DkThumbScrollWidget::createActions() {
 
 void DkThumbScrollWidget::batchProcessFiles() const {
 
-
+	QStringList fileList = thumbsScene->getSelectedFiles();
+	emit batchProcessFilesSignal(fileList);
 
 }
 
@@ -2032,6 +2035,7 @@ void DkThumbScrollWidget::enableSelectionActions() {
 	actions[action_copy]->setEnabled(enable);
 	actions[action_rename]->setEnabled(enable);
 	actions[action_delete]->setEnabled(enable);
+	actions[action_batch]->setEnabled(enable);
 
 	actions[action_select_all]->setChecked(thumbsScene->allThumbsSelected());
 }

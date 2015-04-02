@@ -129,15 +129,44 @@ DkInputTextEdit::DkInputTextEdit(QWidget* parent /* = 0 */) : QTextEdit(parent) 
 
 }
 
-QStringList DkInputTextEdit::getSelectedFiles() const {
+void DkInputTextEdit::appendFiles(const QStringList& fileList) {
+
+	QStringList cFileList = getFileList();
+	QStringList newFiles;
+
+	// unique!
+	for (QString cStr : fileList) {
+
+		if (!cFileList.contains(cStr))
+			newFiles.append(cStr);
+	}
+
+	if (!newFiles.empty())
+		append(newFiles.join("\n"));
+}
+
+QStringList DkInputTextEdit::getFileList() const {
 
 	QStringList fileList;
-	QTextStream textStream;
+	QString textString;
+	QTextStream textStream(&textString);
 	textStream << toPlainText();
 
-	for (QString line : textStream.readLine())
-		fileList.append(line);
-	
+	qDebug() << "text stream: " << textString;
+
+	//for (QString line : textStream.readLine())
+	//	fileList.append(line);
+
+	QString line;
+	do
+	{
+		line = textStream.readLine();
+		if (!line.isNull())
+			fileList.append(line);
+	} while(!line.isNull());
+
+	qDebug() << "file list: " << fileList;
+
 	return fileList;
 }
 
@@ -200,6 +229,7 @@ void DkFileSelection::createLayout() {
 	setLayout(widgetLayout);
 
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), inputTextEdit, SLOT(appendFiles(const QStringList&)));
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), this, SLOT(setDir(QDir)));
 	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
 	connect(directoryEdit, SIGNAL(directoryChanged(QDir)), this, SLOT(setDir(QDir)));

@@ -118,11 +118,15 @@ private:
 };
 
 class DkInputTextEdit : public QTextEdit {
+	Q_OBJECT
 
 public:
 	DkInputTextEdit(QWidget* parent = 0);
 
-	QStringList getSelectedFiles() const;
+	QStringList getFileList() const;
+	
+public slots:
+	void appendFiles(const QStringList& fileList);
 
 protected:
 
@@ -130,7 +134,7 @@ protected:
 };
 
 class DkFileSelection : public QWidget, public DkBatchContent  {
-Q_OBJECT
+	Q_OBJECT
 
 public:
 	DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);

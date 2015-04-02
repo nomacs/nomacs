@@ -338,7 +338,7 @@ public slots:
 signals:
 	void updateDirSignal(QDir dir);
 	void filterChangedSignal(const QString& filters);
-	void batchProcessFilesSignal(const QStringList& fileList);
+	void batchProcessFilesSignal(const QStringList& fileList) const;
 
 protected:
 	void createActions();
