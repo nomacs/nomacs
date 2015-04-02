@@ -160,11 +160,11 @@ class DkBatchConfig {
 
 public:
 	DkBatchConfig() { init(); };
-	DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern);
+	DkBatchConfig(const QStringList& fileList, const QDir& outputDir, const QString& fileNamePattern);
 
 	bool isOk() const;
 
-	void setUrls(const QList<QUrl>& urls) { this->urls = urls; };
+	void setFileList(const QStringList& fileList) { this->fileList = fileList; };
 	void setOutputDir(const QDir& outputDir) {this->outputDir = outputDir; };
 	void setFileNamePattern(const QString& pattern) {this->fileNamePattern = pattern; };
 	void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch> >& processFunctions) { this->processFunctions = processFunctions; };
@@ -172,7 +172,7 @@ public:
 	void setMode(int mode) { this->mode = mode; };
 	void setDeleteOriginal(bool deleteOriginal) { this->deleteOriginal = deleteOriginal; };
 
-	QList<QUrl> getUrls() const { return urls; };
+	QStringList getFileList() const { return fileList; };
 	QDir getOutputDir() const { return outputDir; };
 	QString getFileNamePattern() const { return fileNamePattern; };
 	QVector<QSharedPointer<DkAbstractBatch> > getProcessFunctions() const { return processFunctions; };
@@ -190,7 +190,7 @@ public:
 protected:
 	void init();
 
-	QList<QUrl> urls;
+	QStringList fileList;
 	QDir outputDir;
 	QString fileNamePattern;
 	int compression;

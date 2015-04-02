@@ -1372,14 +1372,18 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 
 void DkThumbScene::copySelected() const {
 
-	QList<QUrl> urls = getSelectedUrls();
+	QStringList fileList = getSelectedFiles();
 
-	if (urls.empty())
+	if (fileList.empty())
 		return;
 
 	QMimeData* mimeData = new QMimeData();
 
-	if (!urls.empty()) {
+	if (!fileList.empty()) {
+
+		QList<QUrl> urls;
+		for (QString cStr : fileList)
+			urls.append(QUrl::fromLocalFile(cStr));
 		mimeData->setUrls(urls);
 		QClipboard* clipboard = QApplication::clipboard();
 		clipboard->setMimeData(mimeData);
@@ -1422,27 +1426,21 @@ void DkThumbScene::copyImages(const QMimeData* mimeData) const {
 
 void DkThumbScene::deleteSelected() const {
 
-	QList<QUrl> urls = getSelectedUrls();
+	QStringList fileList = getSelectedFiles();
 
-	if (urls.empty())
+	if (fileList.empty())
 		return;
 
-	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to permanently delete %1 file(s)?").arg(urls.size()), QMessageBox::Yes | QMessageBox::No);
+	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to permanently delete %1 file(s)?").arg(fileList.size()), QMessageBox::Yes | QMessageBox::No);
 
 	if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
 		
-		if (loader && urls.size() > 100)	// saves CPU
+		if (loader && fileList.size() > 100)	// saves CPU
 			loader->deactivate();
 
-		for (QUrl url : urls) {
-
-			QString fString = url.toString();
-			fString = fString.replace("file:///", "");
+		for (QString fString : fileList) {
 
 			QFileInfo file(fString);
-			if (!file.exists())	// try an alternative conversion
-				file = QFile(url.toLocalFile());
-			
 			QFile f(file.absoluteFilePath());
 
 			if (!f.remove()) {
@@ -1454,7 +1452,7 @@ void DkThumbScene::deleteSelected() const {
 			}
 		}
 
-		if (loader && urls.size() > 100)	// saves CPU
+		if (loader && fileList.size() > 100)	// saves CPU
 			loader->activate();
 
 		if (loader)
@@ -1464,9 +1462,9 @@ void DkThumbScene::deleteSelected() const {
 
 void DkThumbScene::renameSelected() const {
 
-	QList<QUrl> urls = getSelectedUrls();
+	QStringList fileList = getSelectedFiles();
 
-	if (urls.empty())
+	if (fileList.empty())
 		return;
 
 	bool ok;
@@ -1476,11 +1474,11 @@ void DkThumbScene::renameSelected() const {
 	
 	if (ok && !newFileName.isEmpty()) {
 
-		for (int idx = 0; idx < urls.size(); idx++) {
+		for (int idx = 0; idx < fileList.size(); idx++) {
 
-			QFileInfo fileInfo = DkUtils::urlToLocalFile(urls.at(idx).toString());
+			QFileInfo fileInfo = fileList.at(idx);
 			QFile file(fileInfo.absoluteFilePath());
-			QString pattern = (urls.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>";	// no index if just 1 file was added
+			QString pattern = (fileList.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>";	// no index if just 1 file was added
 			DkFileNameConverter converter(fileInfo.fileName(), pattern, idx);
 			QFileInfo newFileInfo(fileInfo.dir(), converter.getConvertedFileName());
 			if (!file.rename(newFileInfo.absoluteFilePath())) {
@@ -1496,18 +1494,18 @@ void DkThumbScene::renameSelected() const {
 	}
 }
 
-QList<QUrl> DkThumbScene::getSelectedUrls() const {
+QStringList DkThumbScene::getSelectedFiles() const {
 
-	QList<QUrl> urls;
+	QStringList fileList;
 
 	for (int idx = 0; idx < thumbLabels.size(); idx++) {
 
 		if (thumbLabels.at(idx) && thumbLabels.at(idx)->isSelected()) {
-			urls.append("file:///" + thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
+			fileList.append(thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
 		}
 	}
 
-	return urls;
+	return fileList;
 }
 
 int DkThumbScene::findThumb(DkThumbLabel* thumb) const {
@@ -1596,11 +1594,16 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 
 		if (dist > QApplication::startDragDistance()) {
 
-			QList<QUrl> urls = scene->getSelectedUrls();
+			QStringList fileList = scene->getSelectedFiles();
 
 			QMimeData* mimeData = new QMimeData;
 
-			if (!urls.empty()) {
+			if (!fileList.empty()) {
+
+				QList<QUrl> urls;
+				for (QString fStr : fileList)
+					urls.append(QUrl::fromLocalFile(fStr));
+
 				mimeData->setUrls(urls);
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
@@ -1942,6 +1945,11 @@ void DkThumbScrollWidget::createActions() {
 	actions[action_rename]->setShortcut(QKeySequence(Qt::Key_F2));
 	connect(actions[action_rename], SIGNAL(triggered()), thumbsScene, SLOT(renameSelected()));
 
+	actions[action_batch] = new QAction(QIcon(":/nomacs/img/batch-process.png"), tr("&Batch Process"), this);
+	actions[action_batch]->setToolTip(tr("Adds selected files to batch processing."));
+	actions[action_batch]->setShortcut(QKeySequence(Qt::Key_B));
+	connect(actions[action_batch], SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
+
 	contextMenu = new QMenu(tr("Thumb"), this);
 	for (int idx = 0; idx < actions.size(); idx++) {
 
@@ -1959,6 +1967,12 @@ void DkThumbScrollWidget::createActions() {
 	}
 
 	addActions(actions.toList());
+}
+
+void DkThumbScrollWidget::batchProcessFiles() const {
+
+
+
 }
 
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -2013,7 +2027,7 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 
 void DkThumbScrollWidget::enableSelectionActions() {
 
-	bool enable = !thumbsScene->getSelectedUrls().isEmpty();
+	bool enable = !thumbsScene->getSelectedFiles().isEmpty();
 
 	actions[action_copy]->setEnabled(enable);
 	actions[action_rename]->setEnabled(enable);

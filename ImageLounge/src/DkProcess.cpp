@@ -431,9 +431,9 @@ bool DkBatchProcess::deleteOriginalFile() {
 }
 
 // DkBatchConfig --------------------------------------------------------------------
-DkBatchConfig::DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern) {
+DkBatchConfig::DkBatchConfig(const QStringList& fileList, const QDir& outputDir, const QString& fileNamePattern) {
 
-	this->urls = urls;
+	this->fileList = fileList;
 	this->outputDir = outputDir;
 	this->fileNamePattern = fileNamePattern;
 	init();
@@ -455,7 +455,7 @@ bool DkBatchConfig::isOk() const {
 	if (outputDir == QDir())
 		return false; // do not allow to write into my (exe) directory
 
-	if (urls.empty())
+	if (fileList.empty())
 		return false;
 
 	if (fileNamePattern.isEmpty())
@@ -477,17 +477,11 @@ void DkBatchProcessing::init() {
 
 	batchItems.clear();
 	
-	QList<QUrl> urls = batchConfig.getUrls();
+	QStringList fileList = batchConfig.getFileList();
 
-	for (int idx = 0; idx < urls.size(); idx++) {
+	for (int idx = 0; idx < fileList.size(); idx++) {
 
-		QUrl url = urls.at(idx);
-		QString fString = url.toString();
-		fString = fString.replace("file:///", "");
-
-		QFileInfo cFileInfo = QFileInfo(fString);
-		if (!cFileInfo.exists())	// try an alternative conversion
-			cFileInfo = QFileInfo(url.toLocalFile());
+		QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
 
 		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx);
 		QFileInfo newFileInfo(batchConfig.getOutputDir(), converter.getConvertedFileName());

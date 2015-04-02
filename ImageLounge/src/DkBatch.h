@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QUrl>
 #include <QDir>
 #include <QDialog>
+#include <QTextEdit>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
@@ -116,6 +117,17 @@ private:
 	DkButton* showButton;
 };
 
+class DkInputTextEdit : public QTextEdit {
+
+public:
+	DkInputTextEdit(QWidget* parent = 0);
+
+	QStringList getSelectedFiles() const;
+
+protected:
+
+
+};
 
 class DkFileSelection : public QWidget, public DkBatchContent  {
 Q_OBJECT
@@ -124,7 +136,7 @@ public:
 	DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	QString getDir() const;
-	QList<QUrl> getSelectedFiles() const;
+	QStringList getSelectedFiles() const;
 
 	virtual bool hasUserInput() const {return hUserInput;};
 	virtual bool requiresUserInput() const {return rUserInput;};
@@ -150,6 +162,7 @@ protected:
 	QDir cDir;
 	QListView* fileWidget;
 	DkThumbScrollWidget* thumbScrollWidget;
+	DkInputTextEdit* inputTextEdit;
 	QSharedPointer<DkImageLoader> loader;
 	DkExplorer* explorer;
 	DkDirectoryEdit* directoryEdit;

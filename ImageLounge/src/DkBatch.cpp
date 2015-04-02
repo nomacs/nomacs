@@ -124,6 +124,22 @@ void DkBatchWidget::setHeader(QString headerString) {
 	headerLabel->setText(headerString);
 }
 
+// DkInputTextEdit --------------------------------------------------------------------
+DkInputTextEdit::DkInputTextEdit(QWidget* parent /* = 0 */) : QTextEdit(parent) {
+
+}
+
+QStringList DkInputTextEdit::getSelectedFiles() const {
+
+	QStringList fileList;
+	QTextStream textStream;
+	textStream << toPlainText();
+
+	for (QString line : textStream.readLine())
+		fileList.append(line);
+	
+	return fileList;
+}
 
 // File Selection --------------------------------------------------------------------
 DkFileSelection::DkFileSelection(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
@@ -151,6 +167,8 @@ void DkFileSelection::createLayout() {
 	//upperWidgetLayout->addWidget(browseButton, 0, 0);
 	upperWidgetLayout->addWidget(directoryEdit, 0, 1);
 
+	inputTextEdit = new DkInputTextEdit(this);
+
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
 	thumbScrollWidget->getThumbWidget()->setImageLoader(loader);
@@ -169,10 +187,15 @@ void DkFileSelection::createLayout() {
 	if (folders.size() > 0)
 		explorer->setCurrentPath(folders[0]);
 
+	// tab widget
+	QTabWidget* inputTabs = new QTabWidget(this);
+	inputTabs->addTab(thumbScrollWidget,  QIcon(":/nomacs/img/thumbs-view.png"), tr("Thumbnails"));
+	inputTabs->addTab(inputTextEdit, QIcon(":/nomacs/img/batch-processing.png"), tr("File List"));
+
 	QGridLayout* widgetLayout = new QGridLayout(this);
 	widgetLayout->addWidget(explorer, 0, 0, 3, 1);
 	widgetLayout->addWidget(upperWidget, 0, 1);
-	widgetLayout->addWidget(thumbScrollWidget, 1, 1);
+	widgetLayout->addWidget(inputTabs, 1, 1);
 	widgetLayout->addWidget(infoLabel, 2, 1);
 	setLayout(widgetLayout);
 
@@ -214,8 +237,8 @@ QString DkFileSelection::getDir() const {
 	return directoryEdit->existsDirectory() ? QDir(directoryEdit->text()).absolutePath() : "";
 }
 
-QList<QUrl> DkFileSelection::getSelectedFiles() const {
-	return thumbScrollWidget->getThumbWidget()->getSelectedUrls();
+QStringList DkFileSelection::getSelectedFiles() const {
+	return thumbScrollWidget->getThumbWidget()->getSelectedFiles();
 }
 
 void DkFileSelection::setFileInfo(QFileInfo file) {
@@ -1025,7 +1048,7 @@ void DkBatchDialog::accept() {
 			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
-		else if (config.getUrls().empty()) {
+		else if (config.getFileList().empty()) {
 			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot find files to process."), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
