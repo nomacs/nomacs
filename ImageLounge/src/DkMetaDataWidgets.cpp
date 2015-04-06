@@ -44,6 +44,7 @@
 #include <QPushButton>
 #include <QPainter>
 #include <QSettings>
+#include <QScrollArea>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -501,6 +502,222 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 //
 //	QDockWidget::setVisible(visible);
 //}
+
+// DkMetaDataHUD --------------------------------------------------------------------
+DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkWidget(parent) {
+
+	setObjectName("DkMetaDataHUD");
+	createLayout();
+
+	// debug
+	keyValues.append("File.Filename");
+	keyValues.append("File.Path");
+	keyValues.append("Exif.Image.Make");
+	keyValues.append("Xmp.xmp.Rating");
+	keyValues.append("Exif.Image.ImageWidth");
+	keyValues.append("Exif.Image.Model");
+	keyValues.append("Exif.Image.Orientation");
+	keyValues.append("Exif.Image.DateTime");
+	keyValues.append("Exif.Photo.ImageLength");
+}
+
+
+void DkMetaDataHUD::createLayout() {
+
+	//QScrollArea* scrollWidget = new QScrollArea(this);
+	//scrollWidget->setWidgetResizable(true);
+	//scrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	//scrollWidget->setMinimumSize(300, 2000);
+
+	
+	//QWidget* gridWidget = new QWidget(this);
+	//gridWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+	contentLayout = new QGridLayout(this);
+
+	//contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+
+	//setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+	//setMinimumSize(300, 2000);
+	qDebug() << "DkMetaDataHUD size policy: " << sizePolicy().horizontalPolicy() << ", " << sizePolicy().verticalPolicy();
+
+
+	updateLabels();
+
+	//scrollWidget->setWidget(gridWidget);
+
+	//QHBoxLayout* layout = new QHBoxLayout(scrollWidget);
+	
+	
+}
+
+void DkMetaDataHUD::loadSettings() {
+
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(objectName());
+
+	settings.endGroup();
+}
+
+void DkMetaDataHUD::saveSettings() const {
+
+	QSettings& settings = Settings::instance().getSettings();
+
+	settings.beginGroup(objectName());
+
+	settings.endGroup();
+}
+
+void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkImageContainerT> cImg) {
+
+	// clean up
+	for (QLabel* cLabel : entryKeyLabels)
+		cLabel->deleteLater();
+	for (QLabel* cLabel : entryValueLabels)
+		cLabel->deleteLater();
+
+	entryKeyLabels.clear();
+	entryValueLabels.clear();
+
+	if (cImg)
+		metaData = cImg->getMetaData();
+	else
+		metaData = QSharedPointer<DkMetaDataT>();
+
+	if (!metaData) {
+
+		// create dummy entries
+		for (QString cKey : keyValues) {
+			entryKeyLabels.append(createKeyLabel(cKey));
+		}
+
+		return;
+	}
+
+	DkTimer dt;
+
+	QStringList fileKeys, fileValues;
+	metaData->getFileMetaData(fileKeys, fileValues);
+
+	for (int idx = 0; idx < fileKeys.size(); idx++) {
+
+		QString cKey = fileKeys.at(idx);
+		qDebug() << "ckey: " << cKey;
+		if (keyValues.contains(cKey)) {
+			entryKeyLabels.append(createKeyLabel(cKey));
+			entryValueLabels.append(createValueLabel(fileValues.at(idx)));
+		}
+	}
+
+	QStringList exifKeys = metaData->getExifKeys();
+
+	for (int idx = 0; idx < exifKeys.size(); idx++) {
+
+		QString cKey = exifKeys.at(idx);
+
+		if (keyValues.contains(cKey)) {
+			QString lastKey = cKey.split(".").last();
+			QString exifValue = metaData->getNativeExifValue(exifKeys.at(idx));
+			exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+
+			entryKeyLabels.append(createKeyLabel(cKey));
+			entryValueLabels.append(createValueLabel(exifValue));
+		}
+	}
+
+	QStringList iptcKeys = metaData->getIptcKeys();
+
+	for (int idx = 0; idx < iptcKeys.size(); idx++) {
+
+		QString cKey = iptcKeys.at(idx);
+
+		if (keyValues.contains(cKey)) {
+
+			QString lastKey = iptcKeys.at(idx).split(".").last();
+			QString exifValue = metaData->getIptcValue(iptcKeys.at(idx));
+			exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+
+			entryKeyLabels.append(createKeyLabel(cKey));
+			entryValueLabels.append(createValueLabel(exifValue));
+		}
+	}
+
+	QStringList xmpKeys = metaData->getXmpKeys();
+
+	for (int idx = 0; idx < xmpKeys.size(); idx++) {
+
+		QString cKey = xmpKeys.at(idx);
+
+		if (keyValues.contains(cKey)) {
+
+			QString lastKey = xmpKeys.at(idx).split(".").last();
+			QString exifValue = metaData->getXmpValue(xmpKeys.at(idx));
+			exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+
+			entryKeyLabels.append(createKeyLabel(cKey));
+			entryValueLabels.append(createValueLabel(exifValue));
+		}
+	}
+
+	updateLabels();
+}
+
+void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
+
+	if (numColumns) {
+		for (int idx = 1; idx < 100; idx++) {
+
+			if ((float)entryKeyLabels.size()/idx < 6) {
+				numColumns = idx;
+				break;
+			}
+		} 
+	}
+
+	int cIdx = 0;
+	int rIdx = 0;
+	int nRows = cvFloor((float)(entryKeyLabels.size())/numColumns);
+
+	qDebug() << "num columns: " << numColumns;
+
+	for (int idx = 0; idx < entryKeyLabels.size(); idx++) {
+
+		if (idx && idx % nRows == 0) {
+			rIdx = 0;
+			cIdx += 2;
+			qDebug() << "switching..." << idx << " nrows: " << nRows;
+		}
+
+		contentLayout->addWidget(entryKeyLabels.at(idx), rIdx, cIdx);
+		contentLayout->addWidget(entryValueLabels.at(idx), rIdx, cIdx+1);
+		rIdx++;
+
+		qDebug() << "idx " << idx << " key " << entryKeyLabels.at(idx)->text();
+	}
+
+}
+
+QLabel* DkMetaDataHUD::createKeyLabel(const QString& key) {
+
+	QString labelString = key.split(".").last();
+	labelString = DkMetaDataHelper::getInstance().translateKey(labelString);
+	QLabel* keyLabel = new QLabel(labelString, this);
+	keyLabel->setObjectName("DkMetaDataLabel");
+	keyLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+	return keyLabel;
+}
+
+QLabel* DkMetaDataHUD::createValueLabel(const QString& val) {
+
+	QLabel* valLabel = new QLabel(val.trimmed(), this);
+	valLabel->setObjectName("DkMetaDataLabel");
+	valLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+	return valLabel;
+}
+
 
 //QString DkMetaDataInfo::sExifTags = QString("ImageWidth ImageLength Orientation Make Model Rating ApertureValue ShutterSpeedValue Flash FocalLength ") %
 //	QString("ExposureMode ExposureTime UserComment DateTime DateTimeOriginal ImageDescription");

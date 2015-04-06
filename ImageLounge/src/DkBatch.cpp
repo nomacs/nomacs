@@ -293,6 +293,7 @@ void DkFileSelection::createLayout() {
 
 	resultTextEdit = new QTextEdit(this);
 	resultTextEdit->setReadOnly(true);
+	resultTextEdit->setVisible(false);
 
 	thumbScrollWidget = new DkThumbScrollWidget(this);
 	thumbScrollWidget->setVisible(true);
@@ -453,6 +454,7 @@ void DkFileSelection::setResults(const QStringList& results) {
 	QTextCursor c = resultTextEdit->textCursor();
 	c.movePosition(QTextCursor::End);
 	resultTextEdit->setTextCursor(c);
+	resultTextEdit->setVisible(true);
 }
 
 void DkFileSelection::startProcessing() {

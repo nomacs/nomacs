@@ -92,6 +92,7 @@ namespace nmc {
 class DkFilePreview;
 class DkThumbScrollWidget;
 class DkMetaDataInfo;
+class DkMetaDataHUD;
 class DkCommentWidget;
 
 class DkDelayedInfo : public QObject {
@@ -229,7 +230,7 @@ public:
 		return folderScroll;
 	}
 
-	DkMetaDataInfo* getMetaDataWidget() {
+	DkMetaDataHUD* getMetaDataWidget() {
 		return metaDataInfo;
 	}
 
@@ -318,7 +319,7 @@ protected:
 	DkCropWidget* cropWidget;
 
 	DkFilePreview* filePreview;
-	DkMetaDataInfo* metaDataInfo;
+	DkMetaDataHUD* metaDataInfo;
 	DkCommentWidget* commentWidget;
 	DkZoomWidget* zoomWidget;
 	DkPlayer* player;

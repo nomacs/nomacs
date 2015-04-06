@@ -40,6 +40,7 @@
 class QTreeView;
 class QLabel;
 class QPushButton;
+class QGridLayout;
 
 namespace nmc {
 
@@ -102,6 +103,31 @@ protected:
 	QLabel* thumbNailLabel;
 	QSharedPointer<DkThumbNailT> thumb;
 	QStringList expandedNames;
+};
+
+class DkMetaDataHUD : public DkWidget {
+	Q_OBJECT
+
+public:
+	DkMetaDataHUD(QWidget* parent = 0);
+
+	void updateLabels(int numColumns = -1);
+
+public slots:
+	void updateMetaData(const QSharedPointer<DkImageContainerT> cImg = QSharedPointer<DkImageContainerT>());
+
+protected:
+	void createLayout();
+	void loadSettings();
+	void saveSettings() const;
+	QLabel* createKeyLabel(const QString& key);
+	QLabel* createValueLabel(const QString& val);
+
+	QSharedPointer<DkMetaDataT> metaData;
+	QVector<QLabel*> entryKeyLabels;
+	QVector<QLabel*> entryValueLabels;
+	QStringList keyValues;
+	QGridLayout* contentLayout;
 };
 
 class DkMetaDataInfo : public DkWidget {
