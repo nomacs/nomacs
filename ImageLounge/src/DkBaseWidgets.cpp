@@ -35,6 +35,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QPainter>
+#include <QStyleOption>
 #pragma warning(pop)	// no warnings from includes - end
 
 namespace nmc {
@@ -65,6 +66,17 @@ void DkWidget::init() {
 	setGraphicsEffect(opacityEffect);
 
 	setVisible(false);
+}
+
+void DkWidget::paintEvent(QPaintEvent *event) {
+	
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
 }
 
 void DkWidget::registerAction(QAction* action) {
@@ -204,7 +216,7 @@ void DkLabel::init() {
 	textCol = QColor(255, 255, 255);
 	blocked = false;
 
-	timer = new QTimer();
+	timer = new QTimer(this);
 	timer->setSingleShot(true);
 	connect(timer, SIGNAL(timeout()), this, SLOT(hide()));
 

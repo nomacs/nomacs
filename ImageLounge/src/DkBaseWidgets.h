@@ -84,6 +84,7 @@ protected:
 
 	// functions
 	void init();
+	void paintEvent(QPaintEvent *event);
 };
 
 class DllExport DkLabel : public QLabel {

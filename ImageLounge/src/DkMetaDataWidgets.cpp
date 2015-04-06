@@ -518,35 +518,19 @@ DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkWidget(parent) {
 	keyValues.append("Exif.Image.Model");
 	keyValues.append("Exif.Image.Orientation");
 	keyValues.append("Exif.Image.DateTime");
+	keyValues.append("Exif.Photo.FNumber");
+	keyValues.append("Exif.MaxApertureValue.Software");
+	keyValues.append("Exif.Image.DateTime");
+	keyValues.append("Exif.Image.DateTime");
+	keyValues.append("Exif.Image.DateTime");
 	keyValues.append("Exif.Photo.ImageLength");
 }
 
 
 void DkMetaDataHUD::createLayout() {
 
-	//QScrollArea* scrollWidget = new QScrollArea(this);
-	//scrollWidget->setWidgetResizable(true);
-	//scrollWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	//scrollWidget->setMinimumSize(300, 2000);
-
-	
-	//QWidget* gridWidget = new QWidget(this);
-	//gridWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
 	contentLayout = new QGridLayout(this);
-
-	//contentLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-
-	//setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-	//setMinimumSize(300, 2000);
-	qDebug() << "DkMetaDataHUD size policy: " << sizePolicy().horizontalPolicy() << ", " << sizePolicy().verticalPolicy();
-
-
 	updateLabels();
-
-	//scrollWidget->setWidget(gridWidget);
-
-	//QHBoxLayout* layout = new QHBoxLayout(scrollWidget);
 	
 	
 }
@@ -695,6 +679,9 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 
 		qDebug() << "idx " << idx << " key " << entryKeyLabels.at(idx)->text();
 	}
+
+	//if (numColumns == 1)
+	//	contentLayout->setColumnStretch(2, 10);
 
 }
 
@@ -1385,8 +1372,8 @@ void DkCommentWidget::on_CommentLabel_focusLost() {
 void DkCommentWidget::on_saveButton_clicked() {
 
 	commentLabel->clearFocus();
-	if (parent)
-		parent->setFocus(Qt::MouseFocusReason);
+	//if (parent)
+	//	parent->setFocus(Qt::MouseFocusReason);
 }
 
 void DkCommentWidget::on_cancelButton_clicked() {
@@ -1397,8 +1384,8 @@ void DkCommentWidget::on_cancelButton_clicked() {
 
 	saveComment();
 	
-	if (parent)
-		parent->setFocus(Qt::MouseFocusReason);
+	//if (parent)
+	//	parent->setFocus(Qt::MouseFocusReason);
 }
 
 }
