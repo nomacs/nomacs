@@ -154,30 +154,6 @@ bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 
 bool DkUtils::compLogicQString(const QString & lhs, const QString & rhs) {
 	
-	//// check if the filenames are numbers only
-	//// using double here lets nomacs sort correctly for files such as "1.jpg", "1.5.jpg", "2.jpg", which is nice
-	//// also files named e.g. "1e-6.jpg", "2e-6.jpg", "1e-5.jpg" are sorted naturally. 
-	//// double is accurate to approximately 16 significant digits, where using long long would work to about 19, so no big drawback.
-	//bool lhs_isNum;
-	//bool rhs_isNum;
-	//double lhn = lhs.left(lhs.lastIndexOf(".")).toDouble(&lhs_isNum);
-	//double rhn = rhs.left(rhs.lastIndexOf(".")).toDouble(&rhs_isNum);
-	//
-	//// if both filenames convert to clean numbers, compare them
-	//if (lhs_isNum && rhs_isNum) {
-	//	return lhn < rhn;
-	//}
-
-	//// if not, let clean numbers always be sorted before mixed numbers and letters
-	//// logic here is deliberately spelled out, the compiler will do the optimization
-	//if (lhs_isNum && !rhs_isNum) {
-	//	return true;
-	//}
-	//if (!lhs_isNum && rhs_isNum) {
-	//	return false;
-	//}
-
-    // if not clean numbers, call natural compare function
 	return naturalCompare(lhs, rhs, Qt::CaseInsensitive);
 }
 
