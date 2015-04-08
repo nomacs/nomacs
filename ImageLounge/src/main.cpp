@@ -158,8 +158,9 @@ int main(int argc, char *argv[]) {
 	QTranslator translator;
 	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
-	nmc::DkSettings::loadTranslation(translationNameQt, translator);
-	a.installTranslator(&translator);
+	QTranslator translatorQt;
+	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
+	a.installTranslator(&translatorQt);
 
 	//QStringList xxx = nmc::DkSettings::saveFilters;
 	//qDebug() << xxx;
