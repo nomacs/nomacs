@@ -17,6 +17,7 @@ endif()
 # currently disabled due to packaging problems
 option(USE_SYSTEM_WEBP "Use webp libary provided by system" OFF)
 option(USE_SYSTEM_QUAZIP "Use webp libary provided by system" OFF)
+option(USE_SYSTEM_LIBQPSD "Use qpsd libary provided by system" OFF)
 
 
 # search for pkgConfig, needed for exvi2, libraw, and older OpenCV versions
@@ -132,14 +133,21 @@ if(ENABLE_QUAZIP)
 endif(ENABLE_QUAZIP)
 
 # add libqpsd
-file(GLOB LIBQPSD_SOURCES "3rdparty/libqpsd/*.cpp")
-file(GLOB LIBQPSD_HEADERS "3rdparty/libqpsd/*.h")
-file(GLOB LIBQPSD_MOCS "3rdparty/libqpsd/*.h")
-IF (NOT ENABLE_QT5)
- QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+IF(USE_SYSTEM_LIBQPSD)
+    find_package(qpsd REQUIRED)
+    if(NOT QPSD_FOUND)
+	    message(FATAL_ERROR "QUAZIP not found. It's mandatory when used with ENABLE_QUAZIP enabled, you can also disable USE_SYSTEM_QUAZIP") 
+    endif()
 ELSE()
- QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
-ENDIF()
+  file(GLOB LIBQPSD_SOURCES "3rdparty/libqpsd/*.cpp")
+  file(GLOB LIBQPSD_HEADERS "3rdparty/libqpsd/*.h")
+  file(GLOB LIBQPSD_MOCS "3rdparty/libqpsd/*.h")
+  IF (NOT ENABLE_QT5)
+   QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+  ELSE()
+   QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+  ENDIF()
+ENDIF(USE_SYSTEM_LIBQPSD)
 
 # add webp
 SET(WEBP_INCLUDEDIR "")

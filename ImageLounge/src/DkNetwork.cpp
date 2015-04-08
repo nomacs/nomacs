@@ -109,8 +109,7 @@ void DkClientManager::removeConnection(DkConnection* connection) {
 	//qDebug() << "current peer list:";
 	//peerList.print();
 	//qDebug() << "--------------------";
-	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
-	emit updateConnectionSignal(peerList.getActivePeers());
+
 }
 
 void DkClientManager::connectionSentNewTitle(DkConnection* connection, QString newTitle) {
@@ -570,6 +569,12 @@ void DkLANClientManager::synchronizeWith(quint16 peerId) {
 	peerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 
+
+	//qDebug() << "--------------------";
+	//qDebug() << "current peer list:";
+	//peerList.print();
+	//qDebug() << "--------------------";
+
 	DkPeer* peer = peerList.getPeerById(peerId);
 	if (!peer || peer->connection == 0) {
 		qDebug() << "TcpClient: synchronizeWith: connection is null";
@@ -828,7 +833,10 @@ void DkRCClientManager::synchronizeWith(quint16 peerId) {
 	peerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
 
 	qDebug() << "DkRCClientManager: peer list:" << __FILE__ << __FUNCTION__;
+	qDebug() << "--------- peerList -------";
 	peerList.print();
+	qDebug() << "--------- peerList end----";
+
 	DkPeer* peer = peerList.getPeerById(peerId);
 	if (!peer || peer->connection == 0) {
 		qDebug() << "TcpClient: synchronizeWith: connection is null";
@@ -1617,7 +1625,6 @@ void DkManagerThread::connectClient() {
 	// TCP communication
 	connect(vp, SIGNAL(sendTransformSignal(QTransform, QTransform, QPointF)), clientManager, SLOT(sendTransform(QTransform, QTransform, QPointF)));
 	connect(parent, SIGNAL(sendPositionSignal(QRect, bool)), clientManager, SLOT(sendPosition(QRect, bool)));
-	connect(parent, SIGNAL(synchronizeWithSignal(quint16)), clientManager, SLOT(synchronizeWith(quint16)));
 	connect(parent, SIGNAL(synchronizeRemoteControl(quint16)), clientManager, SLOT(synchronizeWith(quint16)));
 	connect(parent, SIGNAL(synchronizeWithServerPortSignal(quint16)), clientManager, SLOT(synchronizeWithServerPort(quint16)));
 
@@ -1674,6 +1681,9 @@ void DkLocalManagerThread::connectClient() {
 	// just for local client
 	connect(parent, SIGNAL(sendArrangeSignal(bool)), clientManager, SLOT(sendArrangeInstances(bool)));
 	connect(parent, SIGNAL(sendQuitLocalClientsSignal()), clientManager, SLOT(sendQuitMessageToPeers()));
+	
+	// this connection to parent is only needed for the local client (synchronize all instances)
+	connect(parent, SIGNAL(synchronizeWithSignal(quint16)), clientManager, SLOT(synchronizeWith(quint16)));
 	DkManagerThread::connectClient();
 }
 
