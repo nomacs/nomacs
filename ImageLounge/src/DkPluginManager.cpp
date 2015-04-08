@@ -53,6 +53,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkProxyFactory>
 #pragma warning(pop)		// no warnings from includes - end
 
 #ifdef QT_NO_DEBUG_OUTPUT
@@ -1457,6 +1458,14 @@ DkPluginDownloader::DkPluginDownloader(QWidget* parent) {
 	downloadAborted = false;
 	QList<XmlPluginData> xmlPluginData = QList<XmlPluginData>();
 	accessManagerPlugin = new QNetworkAccessManager(this);
+
+	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		accessManagerPlugin->setProxy(listOfProxies[0]);
+	}
+
+
 	connect(accessManagerPlugin, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)) );
 	connect(this, SIGNAL(showDownloaderMessage(QString, QString)), parent, SLOT(showDownloaderMessage(QString, QString)));
 	connect(this, SIGNAL(parsingFinished(int)), parent, SLOT(manageParsedXmlData(int)));

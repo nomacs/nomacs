@@ -46,6 +46,7 @@
 #include <QNetworkCookieJar>
 #include <QDesktopServices>
 #include <QDebug>
+#include <QNetworkProxyFactory>
 
 #ifdef WITH_UPNP
 #include "DkUpnp.h"
@@ -1314,6 +1315,13 @@ void DkPeerList::print() {
 // DkUpdater  --------------------------------------------------------------------
 
 DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
+	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		accessManagerSetup.setProxy(listOfProxies[0]);
+		accessManagerVersion.setProxy(listOfProxies[0]);
+	}
+
 	silent = true;
 	cookie = new QNetworkCookieJar(this);
 	accessManagerSetup.setCookieJar(cookie);
@@ -1499,6 +1507,12 @@ void DkUpdater::replyError(QNetworkReply::NetworkError) {
 
 // DkTranslationUpdater --------------------------------------------------------------------
 DkTranslationUpdater::DkTranslationUpdater(QObject* parent) : QObject(parent) {
+	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		accessManager.setProxy(listOfProxies[0]);
+	}
+
 	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
 }
 

@@ -81,6 +81,7 @@
 #include <QVector2D>
 #include <qmath.h>
 #include <QMimeData>
+#include <QNetworkProxyFactory>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -3787,7 +3788,6 @@ void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
 
 // DkNoMacsSync --------------------------------------------------------------------
 DkNoMacsSync::DkNoMacsSync(QWidget *parent, Qt::WindowFlags flags) : DkNoMacs(parent, flags) {
-
 }
 
 DkNoMacsSync::~DkNoMacsSync() {

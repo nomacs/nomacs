@@ -11,6 +11,8 @@
 
 #include "DkUpnp.h"
 
+#include <QNetworkProxyFactory>
+
 namespace nmc{
 
 // DkUpnpDeviceHost --------------------------------------------------------------------
@@ -517,6 +519,11 @@ void DkUpnpRendererDeviceHost::stopDevicehost() {
 }
 
 DkUpnpRendererConnection::DkUpnpRendererConnection() {
+	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		accessManager.setProxy(listOfProxies[0]);
+	}
 }
 
 qint32 DkUpnpRendererConnection::doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject * /*cdsMetadata =0 */) {
