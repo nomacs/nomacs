@@ -1521,22 +1521,35 @@ DkTranslationUpdater::DkTranslationUpdater(QObject* parent) : QObject(parent) {
 		accessManager.setProxy(listOfProxies[0]);
 	}
 
-	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
+	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 void DkTranslationUpdater::checkForUpdates() {
 	QUrl url ("http://www.nomacs.org/translations/" + DkSettings::global.language + "/nomacs_" + DkSettings::global.language + ".qm");
 
+	
 	qDebug() << "checking for new translations at " << url;
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	reply = accessManager.get(QNetworkRequest(url));
+
+	url=QUrl("http://www.nomacs.org/translations/qt/qt_" + DkSettings::global.language + ".qm");
+	qDebug() << "checking for new translations at " << url;
+	request = QNetworkRequest(url);
+	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
+	reply = accessManager.get(QNetworkRequest(url));
+
 }
 
 void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
+	bool qtTranslation = false;
+	if (reply->url().toString().contains("qt_"))
+		qtTranslation = true;
+
 	if (reply->error()) {
-		qDebug() << "network reply error";
-		emit showUpdaterMessage(tr("Unable to download translation"), tr("update")); 
+		qDebug() << "network reply error : url: " << reply->url();
+		if (!qtTranslation)
+			emit showUpdaterMessage(tr("Unable to download translation"), tr("update")); 
 		return;
 	}
 
@@ -1560,16 +1573,18 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 #endif //  WIN32
 
-	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
+	QString translationName = qtTranslation ? "qt_"+ DkSettings::global.language + ".qm" : "nomacs_"+ DkSettings::global.language + ".qm";
+
 	QFile userTranslation(storageLocation.absoluteFilePath(translationName));
 	if (!userTranslation.exists() || QFileInfo(userTranslation).lastModified() < lastModifiedRemote) {
-		QString basename = "nomacs_" + DkSettings::global.language;
+		QString basename = qtTranslation ? "qt_" + DkSettings::global.language : "nomacs_" + DkSettings::global.language;
 		QString extension = ".qm";
 
 		if (!storageLocation.exists()) {
 			if (!storageLocation.mkpath(storageLocation.absolutePath())) {
 				qDebug() << "unable to create storage location ... aborting";
-				emit showUpdaterMessage(tr("Unable to update translation"), tr("update")); 
+				if (!qtTranslation)
+					emit showUpdaterMessage(tr("Unable to update translation"), tr("update")); 
 				return;
 			}
 		}
@@ -1590,11 +1605,13 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 		file.close();
 		
-		emit showUpdaterMessage(tr("Translation updated"), tr("update")); 
+		if (!qtTranslation)
+			emit showUpdaterMessage(tr("Translation updated"), tr("update")); 
 		qDebug() << "translation updated";
 	} else {
 		qDebug() << "no newer translations available";
-		emit showUpdaterMessage(tr("No newer translations found"), tr("update")); 
+		if (!qtTranslation)
+			emit showUpdaterMessage(tr("No newer translations found"), tr("update")); 
 	}
 }
 
