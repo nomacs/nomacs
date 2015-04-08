@@ -76,12 +76,10 @@ QGraphicsView#DkBaseViewPort {
 } 
 
 /* DEBUG */
-/*
-
- nmc--DkControlWidget > QWidget  {
+/*nmc--DkControlWidget > QWidget  {
 	background-color: QColor(0,0,0,20); border: 1px solid #000000;
-}
-*/
+}*/
+
  /* Batch Widgets */
  QLabel#DkBatchTitle {
 	font-size: 16px;
@@ -227,6 +225,14 @@ QLabel#DkFolderScrollBarHandle {
 nmc--DkFileInfoLabel {
 	background-color: HUD_BACKGROUND_COLOR;
 	color: HUD_FONT_COLOR;
+}
+
+QLabel#DkMetaDataLabel {
+	color: HUD_FONT_COLOR;
+}
+
+nmc--DkMetaDataHUD {
+	background-color: HUD_BACKGROUND_COLOR;
 }
 
 QLabel#DkAnimationLabel {
