@@ -231,6 +231,14 @@ QLabel#DkMetaDataLabel {
 	color: HUD_FONT_COLOR;
 }
 
+QLabel#DkMetaDataKeyLabel {
+	color: HUD_FONT_COLOR;
+}
+
+QLabel#DkMetadataValueLabel {
+	color: #666;
+}
+
 nmc--DkMetaDataHUD {
 	background-color: HUD_BACKGROUND_COLOR;
 }

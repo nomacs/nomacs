@@ -41,6 +41,8 @@ class QTreeView;
 class QLabel;
 class QPushButton;
 class QGridLayout;
+class QCheckBox;
+class QVBoxLayout;
 
 namespace nmc {
 
@@ -105,29 +107,93 @@ protected:
 	QStringList expandedNames;
 };
 
+class DkMetaDataSelection : public QWidget {
+	Q_OBJECT
+
+public:
+	DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget* parent = 0);
+
+	void setSelectedKeys(const QStringList& selKeys);
+	QStringList getSelectedKeys() const;
+
+public slots:
+	void checkAll(bool checked);
+	void selectionChanged();
+
+protected:
+	void createLayout();
+	void createEntries(QSharedPointer<DkMetaDataT> metaData, QStringList& outKeys, QStringList& outValues) const;
+	void appendGUIEntry(const QString& key, const QString& value, int idx = -1);
+
+	QSharedPointer<DkMetaDataT> metaData;
+
+	QStringList selectedKeys;
+	QStringList keys;
+	QStringList values;
+
+	QVector<QCheckBox*> selection;
+	QCheckBox* cbCheckAll;
+	QGridLayout* layout;
+};
+
 class DkMetaDataHUD : public DkWidget {
 	Q_OBJECT
 
 public:
 	DkMetaDataHUD(QWidget* parent = 0);
+	~DkMetaDataHUD();
 
 	void updateLabels(int numColumns = -1);
 
+	int getWindowPosition() const;
+
+	enum {
+		action_change_keys,
+		action_num_columns,
+		action_set_to_default,
+
+		action_pos_west,
+		action_pos_north,
+		action_pos_east,
+		action_pos_south,
+
+		action_end,
+	};
+
 public slots:
 	void updateMetaData(const QSharedPointer<DkImageContainerT> cImg = QSharedPointer<DkImageContainerT>());
+	void updateMetaData(const QSharedPointer<DkMetaDataT> cImg);
+	void changeKeys();
+	void changeNumColumns();
+	void setToDefault();
+	void newPosition();
+
+signals:
+	void positionChangeSignal(int newPos);
 
 protected:
 	void createLayout();
+	void createActions();
 	void loadSettings();
 	void saveSettings() const;
+	QStringList getDefaultKeys() const;
 	QLabel* createKeyLabel(const QString& key);
 	QLabel* createValueLabel(const QString& val);
+
+	void contextMenuEvent(QContextMenuEvent *event);
 
 	QSharedPointer<DkMetaDataT> metaData;
 	QVector<QLabel*> entryKeyLabels;
 	QVector<QLabel*> entryValueLabels;
 	QStringList keyValues;
 	QGridLayout* contentLayout;
+
+	QMenu* contextMenu;
+	QVector<QAction*> actions;
+
+	int numColumns;
+	int windowPosition;
+	Qt::Orientation orientation;
 };
 
 class DkMetaDataInfo : public DkWidget {

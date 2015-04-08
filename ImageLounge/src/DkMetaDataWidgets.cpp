@@ -45,6 +45,12 @@
 #include <QPainter>
 #include <QSettings>
 #include <QScrollArea>
+#include <QAction>
+#include <QMenu>
+#include <QCheckBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QInputDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -467,8 +473,6 @@ void DkMetaDataDock::getExpandedItemNames(const QModelIndex& index, QStringList&
 
 	int rows = model->rowCount(index);
 
-	qDebug() << "entry: " << entryName;
-
 	for (int idx = 0; idx < rows; idx++)
 		getExpandedItemNames(model->index(idx, 0, index), expandedNames);
 
@@ -503,36 +507,208 @@ void DkMetaDataDock::expandRows(const QModelIndex& index, const QStringList& exp
 //	QDockWidget::setVisible(visible);
 //}
 
+// DkMetaDataSelection --------------------------------------------------------------------
+DkMetaDataSelection::DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget* parent) : QWidget(parent) {
+
+	setObjectName("DkMetaDataSelection");
+	this->metaData = metaData;
+	createLayout();
+	selectionChanged();
+}
+
+void DkMetaDataSelection::createLayout() {
+
+	createEntries(metaData, keys, values);
+
+	QWidget* lWidget = new QWidget(this);
+	layout = new QGridLayout(lWidget);
+
+	for (int idx = 0; idx < keys.size(); idx++) {
+		appendGUIEntry(keys.at(idx), values.at(idx), idx);
+	}
+
+	layout->setColumnStretch(2, 10);
+
+	QScrollArea* scrollArea = new QScrollArea(this);
+	scrollArea->setWidgetResizable(true);
+	scrollArea->setMinimumSize(QSize(200, 200));
+	scrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	scrollArea->setBackgroundRole(QPalette::Light);
+	scrollArea->setWidget(lWidget);
+
+	cbCheckAll = new QCheckBox(tr("Check All"), this);
+	cbCheckAll->setTristate(true);
+	connect(cbCheckAll, SIGNAL(clicked(bool)), this, SLOT(checkAll(bool)));
+
+	QVBoxLayout* l = new QVBoxLayout(this);
+	l->addWidget(scrollArea);
+	l->addWidget(cbCheckAll);
+}
+
+void DkMetaDataSelection::appendGUIEntry(const QString& key, const QString& value, int idx) {
+
+	QString cleanKey = key;
+	cleanKey = cleanKey.replace(".", " > ");
+
+	QCheckBox* cb = new QCheckBox(cleanKey, this);
+	connect(cb, SIGNAL(clicked()), this, SLOT(selectionChanged()));
+	selection.append(cb);
+
+	QString cleanValue = DkUtils::cleanFraction(value);
+	QDateTime pd = DkUtils::getConvertableDate(cleanValue);
+
+	if (!pd.isNull())
+		cleanValue = pd.toString(Qt::SystemLocaleShortDate);
+
+	QLabel* label = new QLabel(cleanValue, this);
+	label->setObjectName("DkMetadataValueLabel");
+
+	if (idx == -1)
+		idx = keys.size();
+
+	layout->addWidget(cb, idx, 1);
+	layout->addWidget(label, idx, 2);
+}
+
+void DkMetaDataSelection::checkAll(bool checked) {
+
+	for (QCheckBox* cb : selection)
+		cb->setChecked(checked);
+
+}
+
+void DkMetaDataSelection::selectionChanged() {
+
+	bool sel = false;
+	bool partial = false;
+	cbCheckAll->setTristate(false);
+
+	for (int idx = 0; idx < selection.size(); idx++) {
+
+		if (idx > 0 && sel != selection.at(idx)->isChecked()) {
+			cbCheckAll->setCheckState(Qt::PartiallyChecked);
+			partial = true;
+			break;
+		}
+
+		sel = selection.at(idx)->isChecked();
+	}
+
+	if (!partial)
+		cbCheckAll->setChecked(sel);
+
+	qDebug() << "selection changed...";
+}
+
+void DkMetaDataSelection::setSelectedKeys(const QStringList& selKeys) {
+
+	for (QString key : selKeys) {
+
+		int idx = keys.indexOf(key);
+
+		if (idx != -1) {
+			selection.at(idx)->setChecked(true);
+		}
+		else {
+			
+			// append entries that are not available in the current image
+			keys.append(key);
+			appendGUIEntry(key, "");
+			selection.last()->setChecked(true);
+		}
+	}
+
+	selectionChanged();
+}
+
+QStringList DkMetaDataSelection::getSelectedKeys() const {
+
+	QStringList selKeys;
+
+	for (int idx = 0; idx < selection.size(); idx++) {
+		
+		if (selection.at(idx)->isChecked())
+			selKeys.append(keys.at(idx));
+	}
+
+	return selKeys;
+}
+
+void DkMetaDataSelection::createEntries(QSharedPointer<DkMetaDataT> metaData, QStringList& outKeys, QStringList& outValues) const {
+
+	if (!metaData)
+		return;
+
+	metaData->getFileMetaData(outKeys, outValues);
+	metaData->getAllMetaData(outKeys, outValues);
+}
+
 // DkMetaDataHUD --------------------------------------------------------------------
 DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkWidget(parent) {
 
 	setObjectName("DkMetaDataHUD");
-	createLayout();
 
-	// debug
-	keyValues.append("File.Filename");
-	keyValues.append("File.Path");
-	keyValues.append("Exif.Image.Make");
-	keyValues.append("Xmp.xmp.Rating");
-	keyValues.append("Exif.Image.ImageWidth");
-	keyValues.append("Exif.Image.Model");
-	keyValues.append("Exif.Image.Orientation");
-	keyValues.append("Exif.Image.DateTime");
-	keyValues.append("Exif.Photo.FNumber");
-	keyValues.append("Exif.MaxApertureValue.Software");
-	keyValues.append("Exif.Image.DateTime");
-	keyValues.append("Exif.Image.DateTime");
-	keyValues.append("Exif.Image.DateTime");
-	keyValues.append("Exif.Photo.ImageLength");
+	// some inits
+	numColumns = -1;
+	windowPosition = pos_south;
+	orientation = Qt::Horizontal;
+	keyValues = getDefaultKeys();
+	contextMenu = 0;
+
+	loadSettings();
+
+	if (windowPosition == pos_west || windowPosition == pos_east)
+		orientation = Qt::Vertical;
+
+	createLayout();
+	createActions();
 }
 
+DkMetaDataHUD::~DkMetaDataHUD() {
+
+	saveSettings();
+}
 
 void DkMetaDataHUD::createLayout() {
 
 	contentLayout = new QGridLayout(this);
 	updateLabels();
-	
-	
+}
+
+void DkMetaDataHUD::createActions() {
+
+	actions.resize(action_end);
+
+	actions[action_change_keys] = new QAction(tr("Change Entries"), this);
+	actions[action_change_keys]->setStatusTip(tr("You can customize the entries displayed here."));
+	connect(actions[action_change_keys], SIGNAL(triggered()), this, SLOT(changeKeys()));
+
+	actions[action_num_columns] = new QAction(tr("Number of Columns"), this);
+	actions[action_num_columns]->setStatusTip(tr("Select the desired number of columns."));
+	connect(actions[action_num_columns], SIGNAL(triggered()), this, SLOT(changeNumColumns()));
+
+	actions[action_set_to_default] = new QAction(tr("Set to Default"), this);
+	actions[action_set_to_default]->setStatusTip(tr("Reset the metadata panel."));
+	connect(actions[action_set_to_default], SIGNAL(triggered()), this, SLOT(setToDefault()));
+
+	// orientations
+	actions[action_pos_west] = new QAction(tr("Show Left"), this);
+	actions[action_pos_west]->setStatusTip(tr("Shows the Metadata on the Left"));
+	connect(actions[action_pos_west], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	actions[action_pos_north] = new QAction(tr("Show Top"), this);
+	actions[action_pos_north]->setStatusTip(tr("Shows the Metadata at the Top"));
+	connect(actions[action_pos_north], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	actions[action_pos_east] = new QAction(tr("Show Right"), this);
+	actions[action_pos_east]->setStatusTip(tr("Shows the Metadata on the Right"));
+	connect(actions[action_pos_east], SIGNAL(triggered()), this, SLOT(newPosition()));
+
+	actions[action_pos_south] = new QAction(tr("Show Bottom"), this);
+	actions[action_pos_south]->setStatusTip(tr("Shows the Metadata at the Bottom"));
+	connect(actions[action_pos_south], SIGNAL(triggered()), this, SLOT(newPosition()));
+
 }
 
 void DkMetaDataHUD::loadSettings() {
@@ -540,20 +716,67 @@ void DkMetaDataHUD::loadSettings() {
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-
+	QStringList keyVals = settings.value("keyValues", QStringList()).toStringList();
+	numColumns = settings.value("numColumns", numColumns).toInt();
+	windowPosition = settings.value("windowPosition", windowPosition).toInt();
 	settings.endGroup();
+
+	if (!keyVals.isEmpty())
+		keyValues = keyVals;
 }
 
 void DkMetaDataHUD::saveSettings() const {
 
+	if (keyValues.isEmpty())
+		return;
+
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-
+	settings.setValue("keyValues", keyValues);
+	settings.setValue("numColumns", numColumns);
+	settings.setValue("windowPosition", windowPosition);
 	settings.endGroup();
 }
 
+int DkMetaDataHUD::getWindowPosition() const {
+	
+	return windowPosition;
+}
+
+QStringList DkMetaDataHUD::getDefaultKeys() const {
+
+	QStringList keyValues;
+
+	// TODO: use useful ones
+	keyValues.append("File." + QObject::tr("Filename"));
+	keyValues.append("File." + QObject::tr("Path"));
+	keyValues.append("Exif.Image.Make");
+	keyValues.append("Xmp.xmp.Rating");
+	keyValues.append("Exif.Image.ImageWidth");
+	keyValues.append("Exif.Image.Model");
+	keyValues.append("Exif.Image.Orientation");
+	keyValues.append("Exif.Image.DateTime");
+	keyValues.append("Exif.Photo.FNumber");
+	keyValues.append("Exif.Photo.MaxApertureValue");
+	keyValues.append("Exif.Image.Software");
+	keyValues.append("Exif.Image.DateTime");
+	keyValues.append("Exif.Photo.ImageLength");
+
+	return keyValues;
+}
+
 void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkImageContainerT> cImg) {
+
+	if (cImg) {
+		metaData = cImg->getMetaData();
+		updateMetaData(metaData);
+	}
+	else
+		metaData = QSharedPointer<DkMetaDataT>();
+}
+
+void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData) {
 
 	// clean up
 	for (QLabel* cLabel : entryKeyLabels)
@@ -564,18 +787,12 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkImageContainerT> cImg)
 	entryKeyLabels.clear();
 	entryValueLabels.clear();
 
-	if (cImg)
-		metaData = cImg->getMetaData();
-	else
-		metaData = QSharedPointer<DkMetaDataT>();
-
 	if (!metaData) {
 
 		// create dummy entries
 		for (QString cKey : keyValues) {
 			entryKeyLabels.append(createKeyLabel(cKey));
 		}
-
 		return;
 	}
 
@@ -649,39 +866,38 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkImageContainerT> cImg)
 
 void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 
-	if (numColumns) {
-		for (int idx = 1; idx < 100; idx++) {
-
-			if ((float)entryKeyLabels.size()/idx < 6) {
-				numColumns = idx;
-				break;
-			}
-		} 
+	if (numColumns == -1 && this->numColumns == -1) {
+		int numLines = 6;
+		numColumns = ((float)entryKeyLabels.size()+numLines-1)/numLines > 2 ? qRound(((float)entryKeyLabels.size()+numLines-1)/numLines) : 2;
 	}
+	else if (numColumns == -1) {
+		numColumns = this->numColumns;
+	}
+
+	if (orientation == Qt::Vertical)
+		numColumns = 1;
 
 	int cIdx = 0;
 	int rIdx = 0;
-	int nRows = cvFloor((float)(entryKeyLabels.size())/numColumns);
-
-	qDebug() << "num columns: " << numColumns;
+	int nRows = cvCeil((float)(entryKeyLabels.size())/numColumns);
 
 	for (int idx = 0; idx < entryKeyLabels.size(); idx++) {
 
 		if (idx && idx % nRows == 0) {
 			rIdx = 0;
 			cIdx += 2;
-			qDebug() << "switching..." << idx << " nrows: " << nRows;
 		}
-
-		contentLayout->addWidget(entryKeyLabels.at(idx), rIdx, cIdx);
-		contentLayout->addWidget(entryValueLabels.at(idx), rIdx, cIdx+1);
+		 
+		contentLayout->addWidget(entryKeyLabels.at(idx), rIdx, cIdx, 1, 1, Qt::AlignTop);
+		contentLayout->addWidget(entryValueLabels.at(idx), rIdx, cIdx+1, 1, 1, Qt::AlignTop);
 		rIdx++;
-
-		qDebug() << "idx " << idx << " key " << entryKeyLabels.at(idx)->text();
 	}
 
-	//if (numColumns == 1)
-	//	contentLayout->setColumnStretch(2, 10);
+
+	if (orientation == Qt::Vertical)
+		contentLayout->setRowStretch(1000, 10);
+	else
+		contentLayout->setRowStretch(1000, 0);
 
 }
 
@@ -690,21 +906,123 @@ QLabel* DkMetaDataHUD::createKeyLabel(const QString& key) {
 	QString labelString = key.split(".").last();
 	labelString = DkMetaDataHelper::getInstance().translateKey(labelString);
 	QLabel* keyLabel = new QLabel(labelString, this);
-	keyLabel->setObjectName("DkMetaDataLabel");
+	keyLabel->setObjectName("DkMetaDataKeyLabel");
 	keyLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	keyLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
 	return keyLabel;
 }
 
 QLabel* DkMetaDataHUD::createValueLabel(const QString& val) {
 
-	QLabel* valLabel = new QLabel(val.trimmed(), this);
+	QString cleanValue = DkUtils::cleanFraction(val);
+	QDateTime pd = DkUtils::getConvertableDate(cleanValue);
+
+	if (!pd.isNull())
+		cleanValue = pd.toString(Qt::SystemLocaleShortDate);
+
+	QLabel* valLabel = new QLabel(cleanValue.trimmed(), this);
 	valLabel->setObjectName("DkMetaDataLabel");
 	valLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	valLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
 	return valLabel;
 }
 
+// events
+void DkMetaDataHUD::contextMenuEvent(QContextMenuEvent *event) {
+
+	if (!contextMenu) {
+		contextMenu = new QMenu(tr("Metadata Menu"), this);
+		contextMenu->addActions(actions.toList());
+	}
+
+	contextMenu->exec(event->globalPos());
+	event->accept();
+
+	//DkWidget::contextMenuEvent(event);
+}
+
+// public slots...
+void DkMetaDataHUD::newPosition() {
+
+	QAction* sender = static_cast<QAction*>(QObject::sender());
+
+	if (!sender)
+		return;
+
+	int pos = 0;
+	Qt::Orientation orient = Qt::Horizontal;
+
+	if (sender == actions[action_pos_west]) {
+		pos = pos_west;
+		orient = Qt::Vertical;
+	}
+	else if (sender == actions[action_pos_east]) {
+		pos = pos_east;
+		orient = Qt::Vertical;
+	}
+	else if (sender == actions[action_pos_north]) {
+		pos = pos_north;
+		orient = Qt::Horizontal;
+	}
+	else {
+		pos = pos_south;
+		orient = Qt::Horizontal;
+	}
+
+	windowPosition = pos;
+	orientation = orient;
+	emit positionChangeSignal(windowPosition);
+
+	updateLabels();
+}
+
+void DkMetaDataHUD::changeKeys() {
+
+	QDialog* dialog = new QDialog(this);
+	QVBoxLayout* layout = new QVBoxLayout(dialog);
+		
+	DkMetaDataSelection* selWidget = new DkMetaDataSelection(metaData, this);
+	selWidget->setSelectedKeys(keyValues);
+
+	// buttons
+	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
+	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(buttons, SIGNAL(accepted()), dialog, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
+
+	layout->addWidget(selWidget);
+	layout->addWidget(buttons);
+
+	int res = dialog->exec();
+
+	if (res == QDialog::Accepted) {
+		keyValues = selWidget->getSelectedKeys();
+		updateMetaData(metaData);
+	}
+
+	dialog->deleteLater();
+}
+
+void DkMetaDataHUD::changeNumColumns() {
+
+	bool ok;
+	int val = QInputDialog::getInt(this, tr("Number of Columns"), tr("Number of columns (-1 is default)"), numColumns, -1, 20, 1, &ok);
+
+	if (ok) {
+		numColumns = val;
+		updateLabels(numColumns);
+	}
+}
+
+void DkMetaDataHUD::setToDefault() {
+
+	numColumns = -1;
+	keyValues = getDefaultKeys();
+	updateMetaData(metaData);
+}
 
 //QString DkMetaDataInfo::sExifTags = QString("ImageWidth ImageLength Orientation Make Model Rating ApertureValue ShutterSpeedValue Flash FocalLength ") %
 //	QString("ExposureMode ExposureTime UserComment DateTime DateTimeOriginal ImageDescription");

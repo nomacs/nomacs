@@ -61,6 +61,17 @@ public:
 	bool getCurrentDisplaySetting();
 	bool isHiding() const;
 
+	enum {
+		pos_west,
+		pos_north,
+		pos_east,
+		pos_south,
+		pos_dock_hor,
+		pos_dock_ver,
+
+		pos_end,
+	};
+
 signals:
 	void visibleSignal(bool visible);
 
