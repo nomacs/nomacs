@@ -42,6 +42,7 @@
 #include <QImageWriter>
 #include <QNetworkReply>
 #include <QBuffer>
+#include <QNetworkProxyFactory>
 
 #include <qmath.h>
 
@@ -1500,6 +1501,12 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 
 // FileDownloader --------------------------------------------------------------------
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
+	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		m_WebCtrl.setProxy(listOfProxies[0]);
+	}
+
 	connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)),
 		SLOT(fileDownloaded(QNetworkReply*)));
 
