@@ -128,6 +128,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	exportTiffDialog = 0;
 	updateDialog = 0;
 	progressDialog = 0;
+	progressDialogTranslations = 0;
 	forceDialog = 0;
 	trainDialog = 0;
 	pluginManager = 0;
@@ -165,6 +166,11 @@ void DkNoMacs::release() {
 	if (progressDialog) {
 		delete progressDialog;
 		progressDialog = 0;
+	}
+
+	if (progressDialogTranslations) {
+		delete progressDialogTranslations;
+		progressDialogTranslations = 0;
 	}
 
 	if (appManager) {
@@ -2990,8 +2996,9 @@ void DkNoMacs::onWindowLoaded() {
 
 	settings.setValue("AppSettings/firstTime", false);
 
-	if (wecomeDialog->isLanguageChanged())
-		restart();
+	if (wecomeDialog->isLanguageChanged()) {
+		restartWithTranslationUpdate();
+	}
 
 }
 
@@ -3285,7 +3292,7 @@ void DkNoMacs::openSettings() {
 		settingsDialog = new DkSettingsDialog(this);
 		connect(settingsDialog, SIGNAL(setToDefaultSignal()), this, SLOT(cleanSettings()));
 		connect(settingsDialog, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
-		connect(settingsDialog, SIGNAL(languageChanged()), this, SLOT(restart()));
+		connect(settingsDialog, SIGNAL(languageChanged()), this, SLOT(restartWithTranslationUpdate()));
 		connect(settingsDialog, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
 	}
 
@@ -3369,6 +3376,12 @@ void DkNoMacs::updateProgress(qint64 received, qint64 total) {
 	progressDialog->setValue((int)received);
 }
 
+void DkNoMacs::updateProgressTranslations(qint64 received, qint64 total) {
+	qDebug() << "rec:" << received << "  total:" << total;
+	progressDialogTranslations->setMaximum((int)total);
+	progressDialogTranslations->setValue((int)received);
+}
+
 void DkNoMacs::startSetup(QString filePath) {
 	
 	qDebug() << "starting setup filePath:" << filePath;
@@ -3384,7 +3397,28 @@ void DkNoMacs::startSetup(QString filePath) {
 }
 
 void DkNoMacs::updateTranslations() {
+	if (!progressDialogTranslations) {
+		progressDialogTranslations = new QProgressDialog(tr("Downloading new translations..."), tr("Cancel"), 0, 100, this);
+		progressDialogTranslations->setWindowIcon(windowIcon());
+		connect(progressDialogTranslations, SIGNAL(canceled()), translationUpdater, SLOT(cancelUpdate()));
+		//connect(progressDialogTranslations, SIGNAL(canceled()), translationUpdater, SLOT(cancelUpdate()));
+		connect(translationUpdater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgressTranslations(qint64, qint64)));
+		connect(translationUpdater, SIGNAL(downloadFinished()), progressDialogTranslations, SLOT(close()));
+	}
+	progressDialogTranslations->setWindowModality(Qt::ApplicationModal);
+
+	progressDialogTranslations->show();
+	//progressDialog->raise();
+	//progressDialog->activateWindow();
+	progressDialogTranslations->setWindowModality(Qt::NonModal);
+
 	translationUpdater->checkForUpdates();
+}
+
+void DkNoMacs::restartWithTranslationUpdate() {
+	translationUpdater->silent = true;
+	connect(translationUpdater, SIGNAL(downloadFinished()), this, SLOT(restart()));
+	updateTranslations();
 }
 
 void DkNoMacs::errorDialog(const QString& msg) {
@@ -4278,7 +4312,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
 	connect(updater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
-	translationUpdater = new DkTranslationUpdater(this);
+	translationUpdater = new DkTranslationUpdater(false, this);
 	connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
 
 #ifndef Q_WS_X11

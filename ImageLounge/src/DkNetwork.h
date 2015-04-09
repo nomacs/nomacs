@@ -527,18 +527,29 @@ class DkTranslationUpdater : public QObject {
 	Q_OBJECT;
 
 	public:
-		DkTranslationUpdater(QObject* parent = 0);
+		DkTranslationUpdater(bool silent = false, QObject* parent = 0);
+		bool silent;
 
 	public slots:
 		virtual void checkForUpdates();
 		virtual void replyFinished(QNetworkReply*);
+		void updateDownloadProgress(qint64 received, qint64 total);
+		void updateDownloadProgressQt(qint64 received, qint64 total);
+		void cancelUpdate();
 
 	signals:
 		void translationUpdated();
 		void showUpdaterMessage(QString, QString);
+		void downloadProgress(qint64, qint64);
+		void downloadFinished();
+
 	private:
+		bool isRemoteFileNewer(QDateTime lastModifiedRemote, QString localTranslationName);
+		bool updateAborted, updateAbortedQt;
+		qint64 total, totalQt, received, receivedQt;
 		QNetworkAccessManager accessManager;
 		QNetworkReply* reply;
+		QNetworkReply* replyQt;
 };
 
 //// this code is based on code from: 
