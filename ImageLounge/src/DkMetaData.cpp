@@ -354,7 +354,7 @@ QString DkMetaDataT::getNativeExifValue(const QString& key) const {
 			
 			if (pos->count () < 2000) {	// diem: this is about performance - adobe obviously embeds whole images into tiff exiv data 
 
-				qDebug() << "pos count: " << pos->count();
+				//qDebug() << "pos count: " << pos->count();
 				//Exiv2::Value::AutoPtr v = pos->getValue();
 				info = exiv2ToQString(pos->toString());
 
@@ -547,6 +547,42 @@ void DkMetaDataT::getFileMetaData(QStringList& fileKeys, QStringList& fileValues
 	}
 
 	fileKeys = tmpKeys;
+}
+
+void DkMetaDataT::getAllMetaData(QStringList& keys, QStringList& values) const {
+
+	QStringList exifKeys = getExifKeys();
+
+	for (int idx = 0; idx < exifKeys.size(); idx++) {
+
+		QString cKey = exifKeys.at(idx);
+		QString exifValue = getNativeExifValue(cKey);
+
+		keys.append(cKey);
+		values.append(exifValue);
+	}
+
+	QStringList iptcKeys = getIptcKeys();
+
+	for (int idx = 0; idx < iptcKeys.size(); idx++) {
+
+		QString cKey = iptcKeys.at(idx);
+		QString exifValue = getIptcValue(iptcKeys.at(idx));
+
+		keys.append(cKey);
+		values.append(exifValue);
+	}
+
+	QStringList xmpKeys = getXmpKeys();
+
+	for (int idx = 0; idx < xmpKeys.size(); idx++) {
+
+		QString cKey = xmpKeys.at(idx);
+		QString exifValue = getXmpValue(xmpKeys.at(idx));
+
+		keys.append(cKey);
+		values.append(exifValue);
+	}
 }
 
 QImage DkMetaDataT::getThumbnail() const {
@@ -1398,7 +1434,7 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 
 	QString rValue = value;
 
-	if (key == camSearchTags[DkSettings::camData_aperture]) {
+	if (key == camSearchTags[DkSettings::camData_aperture] || key == "FNumber") {
 		rValue = DkMetaDataHelper::getInstance().getApertureValue(metaData);
 	}
 	else if (key == camSearchTags[DkSettings::camData_focallength]) {

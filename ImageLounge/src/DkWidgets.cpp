@@ -1612,43 +1612,6 @@ void DkPlayer::show(int ms) {
 	}
 }
  
-// DkMetaDataInfo ------------------------------------------------------------------
-
-////enums for tags divided in exif and iptc
-//static enum exifT {
-//	exif_width,
-//	exif_length,
-//	exif_orientation,
-//	exif_make,
-//	exif_model,
-//	exif_rating,
-//	exif_aperture,
-//	exif_shutterspeed,
-//	exif_flash,
-//	exif_focallength,
-//	exif_exposuredmode,
-//	exif_exposuretime,
-//	exif_usercomment,
-//	exif_datetime,
-//	exif_datetimeoriginal,
-//	exif_description,
-//
-//	exif_end
-//};
-//
-//static enum iptcT {
-//	iptc_creator = exif_end,
-//	iptc_creatortitle,
-//	iptc_city,
-//	iptc_country,
-//	iptc_headline,
-//	iptc_caption,
-//	iptc_copyright,
-//	iptc_keywords,
-//
-//	iptc_end
-//};
-
 // DkTransformRectangle --------------------------------------------------------------------
 DkTransformRect::DkTransformRect(int idx, DkRotatingRect* rect, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 

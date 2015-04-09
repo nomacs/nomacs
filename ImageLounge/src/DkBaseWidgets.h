@@ -31,6 +31,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QDockWidget>
+#include <QScrollArea>
 #pragma warning(pop)	// no warnings from includes - end
 
 #ifndef DllExport
@@ -60,6 +61,17 @@ public:
 	void setDisplaySettings(QBitArray* displayBits);
 	bool getCurrentDisplaySetting();
 	bool isHiding() const;
+
+	enum {
+		pos_west,
+		pos_north,
+		pos_east,
+		pos_south,
+		pos_dock_hor,
+		pos_dock_ver,
+
+		pos_end,
+	};
 
 signals:
 	void visibleSignal(bool visible);
@@ -212,6 +224,17 @@ protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 	QBitArray* displaySettingsBits;
+
+};
+
+class DkResizableScrollArea : public QScrollArea {
+	Q_OBJECT
+
+public:
+	DkResizableScrollArea(QWidget * parent = 0);
+
+	virtual QSize sizeHint() const;
+	virtual QSize minimumSizeHint() const;
 
 };
 

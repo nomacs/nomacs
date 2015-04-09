@@ -61,7 +61,7 @@ DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(
 
 	this->parent = parent;
 	orientation = Qt::Horizontal;
-	windowPosition = cm_pos_north;
+	windowPosition = pos_north;
 
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
@@ -124,12 +124,12 @@ void DkFilePreview::init() {
 
 void DkFilePreview::initOrientations() {
 
-	if (windowPosition == cm_pos_north || windowPosition == cm_pos_south || windowPosition == cm_pos_dock_hor)
+	if (windowPosition == pos_north || windowPosition == pos_south || windowPosition == pos_dock_hor)
 		orientation = Qt::Horizontal;
-	else if (windowPosition == cm_pos_east || windowPosition == cm_pos_west || windowPosition == cm_pos_dock_ver)
+	else if (windowPosition == pos_east || windowPosition == pos_west || windowPosition == pos_dock_ver)
 		orientation = Qt::Vertical;
 
-	if (windowPosition == cm_pos_dock_ver || windowPosition == cm_pos_dock_hor)
+	if (windowPosition == pos_dock_ver || windowPosition == pos_dock_hor)
 		minHeight = max_thumb_size;
 	else
 		minHeight = DkSettings::display.thumbSize;
@@ -219,7 +219,7 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (minHeight != DkSettings::display.thumbSize + yOffset && windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
+	if (minHeight != DkSettings::display.thumbSize + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
 		xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
@@ -246,7 +246,7 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(bgCol);
 	
-	if (windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
+	if (windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 		QRect r = QRect(QPoint(), this->size());
 		painter.drawRect(r);
 	}
@@ -635,7 +635,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkFilePreview::wheelEvent(QWheelEvent *event) {
 
-	if (event->modifiers() == Qt::CTRL && windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
+	if (event->modifiers() == Qt::CTRL && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
 		int newSize = DkSettings::display.thumbSize;
 		newSize += qRound(event->delta()*0.05f);
@@ -696,28 +696,28 @@ void DkFilePreview::newPosition() {
 	Qt::Orientation orient = Qt::Horizontal;
 
 	if (sender == contextMenuActions[cm_pos_west]) {
-		pos = cm_pos_west;
+		pos = pos_west;
 		orient = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_east]) {
-		pos = cm_pos_east;
+		pos = pos_east;
 		orient = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_north]) {
-		pos = cm_pos_north;
+		pos = pos_north;
 		orient = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_south]) {
-		pos = cm_pos_south;
+		pos = pos_south;
 		orient = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_dock_hor]) {
-		pos = cm_pos_dock_hor;
+		pos = pos_dock_hor;
 		orient = Qt::Horizontal;
 	}
 
 	// don't apply twice
-	if (windowPosition == pos || pos == cm_pos_dock_hor && windowPosition == cm_pos_dock_ver)
+	if (windowPosition == pos || pos == pos_dock_hor && windowPosition == pos_dock_ver)
 		return;
 
 	windowPosition = pos;

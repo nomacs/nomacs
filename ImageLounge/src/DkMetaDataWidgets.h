@@ -41,6 +41,8 @@ class QTreeView;
 class QLabel;
 class QPushButton;
 class QGridLayout;
+class QCheckBox;
+class QVBoxLayout;
 
 namespace nmc {
 
@@ -73,14 +75,13 @@ protected:
 	TreeItem* rootItem;
 
 	void createItem(const QString& key, const QString& keyName, const QString& value);
-
 };
 
 class DkMetaDataDock : public DkDockWidget {
 	Q_OBJECT
 
 public:
-	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkMetaDataDock();
 
 public slots:
@@ -105,91 +106,96 @@ protected:
 	QStringList expandedNames;
 };
 
+class DkMetaDataSelection : public QWidget {
+	Q_OBJECT
+
+public:
+	DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget* parent = 0);
+
+	void setSelectedKeys(const QStringList& selKeys);
+	QStringList getSelectedKeys() const;
+
+public slots:
+	void checkAll(bool checked);
+	void selectionChanged();
+
+protected:
+	void createLayout();
+	void createEntries(QSharedPointer<DkMetaDataT> metaData, QStringList& outKeys, QStringList& outValues) const;
+	void appendGUIEntry(const QString& key, const QString& value, int idx = -1);
+
+	QSharedPointer<DkMetaDataT> metaData;
+
+	QStringList selectedKeys;
+	QStringList keys;
+	QStringList values;
+
+	QVector<QCheckBox*> selection;
+	QCheckBox* cbCheckAll;
+	QGridLayout* layout;
+};
+
 class DkMetaDataHUD : public DkWidget {
 	Q_OBJECT
 
 public:
 	DkMetaDataHUD(QWidget* parent = 0);
+	~DkMetaDataHUD();
 
 	void updateLabels(int numColumns = -1);
 
+	int getWindowPosition() const;
+
+	enum {
+		action_change_keys,
+		action_num_columns,
+		action_set_to_default,
+
+		action_pos_west,
+		action_pos_north,
+		action_pos_east,
+		action_pos_south,
+
+		action_end,
+	};
+
 public slots:
 	void updateMetaData(const QSharedPointer<DkImageContainerT> cImg = QSharedPointer<DkImageContainerT>());
+	void updateMetaData(const QSharedPointer<DkMetaDataT> cImg);
+	void changeKeys();
+	void changeNumColumns();
+	void setToDefault();
+	void newPosition();
+	virtual void setVisible(bool visible, bool saveSetting = true);
+
+signals:
+	void positionChangeSignal(int newPos);
 
 protected:
 	void createLayout();
+	void createActions();
 	void loadSettings();
 	void saveSettings() const;
+	QStringList getDefaultKeys() const;
 	QLabel* createKeyLabel(const QString& key);
 	QLabel* createValueLabel(const QString& val);
+
+	void contextMenuEvent(QContextMenuEvent *event);
 
 	QSharedPointer<DkMetaDataT> metaData;
 	QVector<QLabel*> entryKeyLabels;
 	QVector<QLabel*> entryValueLabels;
 	QStringList keyValues;
 	QGridLayout* contentLayout;
-};
+	QWidget* contentWidget;
+	DkResizableScrollArea* scrollArea;
 
-class DkMetaDataInfo : public DkWidget {
-	Q_OBJECT
+	QMenu* contextMenu;
+	QVector<QAction*> actions;
 
-public:
-
-	DkMetaDataInfo(QWidget* parent = 0);
-	~DkMetaDataInfo() {};
-
-	void draw(QPainter* painter);
-	void createLabels();
-	void resizeEvent(QResizeEvent *resizeW);
-
-public slots:
-	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
-	void setRating(int rating);
-	void updateLabels();
-	void setVisible(bool visible, bool showSettings = true);
-
-protected:
-	void init();
-	void readTags();
-	void layoutLabels();
-	void paintEvent(QPaintEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-
-	QWidget* parent;
-	QPoint lastMousePos;
-	QTransform worldMatrix;
-	int exifHeight;
-	int fontSize;
-	int textMargin;
-	int numLines;
-	int maxCols;
-	int numLabels;
-	int minWidth;
-	int gradientWidth;
-
-	int yMargin;
-	int xMargin;
-
-	float currentDx;
-
-	QVector<int> maxLenLabel;
-
-	QVector<DkLabel *> pLabels;
-	QVector<DkLabel *> pValues;
-	//QSize imgSize;
-
-	QStringList camDValues;
-
-	QStringList descValues;
-
-	QRect leftGradientRect;
-	QLinearGradient leftGradient;
-	QRect rightGradientRect;
-	QLinearGradient rightGradient;
-
-	QMap<int, int> mapIptcExif;
-	QSharedPointer<DkImageContainerT> imgC;
-
+	int numColumns;
+	int windowPosition;
+	Qt::Orientation orientation;
 };
 
 class DkCommentTextEdit : public QTextEdit {

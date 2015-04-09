@@ -546,5 +546,41 @@ Qt::DockWidgetArea DkDockWidget::getDockLocationSettings(const Qt::DockWidgetAre
 	return location;
 }
 
+// DkResizableScrollArea --------------------------------------------------------------------
+DkResizableScrollArea::DkResizableScrollArea(QWidget * parent /* = 0 */) : QScrollArea(parent) {
+
+}
+
+QSize DkResizableScrollArea::sizeHint() const {
+
+	if (!widget())
+		return QScrollArea::sizeHint();
+
+	QSize s = QScrollArea::sizeHint();
+	QSize ws = widget()->sizeHint();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setHeight(ws.height());
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setWidth(ws.width());
+
+	return s;
+}
+
+QSize DkResizableScrollArea::minimumSizeHint() const {
+
+	if (!widget())
+		return QScrollArea::minimumSizeHint();
+
+	QSize s = QScrollArea::minimumSizeHint();
+	QSize ws = widget()->minimumSizeHint();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setHeight(ws.height());
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setWidth(ws.width());
+
+	return s;
+}
 
 }

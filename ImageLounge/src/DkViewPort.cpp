@@ -257,9 +257,9 @@ void DkControlWidget::init() {
 
 	// add elements
 	changeThumbNailPosition(filePreview->getWindowPosition());
+	changeMetaDataPosition(metaDataInfo->getWindowPosition());
 	//hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, 1, hor_pos_end);
 	hudLayout->addWidget(folderScroll, top_scroll, left_thumbs, 1, hor_pos_end);
-	hudLayout->addWidget(metaDataInfo, bottom, left, 1, hor_pos_end);
 	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
 	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
 	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
@@ -294,6 +294,9 @@ void DkControlWidget::connectWidgets() {
 	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 	connect(filePreview, SIGNAL(positionChangeSignal(int)), this, SLOT(changeThumbNailPosition(int)));
+
+	// metadata widget
+	connect(metaDataInfo, SIGNAL(positionChangeSignal(int)), this, SLOT(changeMetaDataPosition(int)));
 
 	// file scroller
 	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
@@ -581,18 +584,34 @@ void DkControlWidget::setSpinnerDelayed(bool start, int time) {
 		delayedSpinner->stop();
 }
 
+void DkControlWidget::changeMetaDataPosition(int pos) {
+
+	if (pos == DkWidget::pos_west) {
+		hudLayout->addWidget(metaDataInfo, top_metadata, left_metadata, bottom_metadata-top_metadata, 1);	
+	}
+	else if (pos == DkWidget::pos_east) {
+		hudLayout->addWidget(metaDataInfo, top_metadata, right_metadata, bottom_metadata-top_metadata, 1);	
+	}
+	else if (pos == DkWidget::pos_north) {
+		hudLayout->addWidget(metaDataInfo, top_metadata, left_metadata, 1, hor_pos_end-2);	
+	}
+	else if (pos == DkWidget::pos_south) {
+		hudLayout->addWidget(metaDataInfo, bottom_metadata, left_metadata, 1, hor_pos_end-2);	
+	}
+}
+
 void DkControlWidget::changeThumbNailPosition(int pos) {
 
-	if (pos == DkFilePreview::cm_pos_west) {
+	if (pos == DkWidget::pos_west) {
 		hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, ver_pos_end, 1);	
 	}
-	else if (pos == DkFilePreview::cm_pos_east) {
+	else if (pos == DkWidget::pos_east) {
 		hudLayout->addWidget(filePreview, top_thumbs, right_thumbs, ver_pos_end, 1);	
 	}
-	else if (pos == DkFilePreview::cm_pos_north) {
+	else if (pos == DkWidget::pos_north) {
 		hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, 1, hor_pos_end);	
 	}
-	else if (pos == DkFilePreview::cm_pos_south) {
+	else if (pos == DkWidget::pos_south) {
 		hudLayout->addWidget(filePreview, bottom_thumbs, left_thumbs, 1, hor_pos_end);	
 	}
 	else 

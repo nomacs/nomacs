@@ -91,6 +91,7 @@ public:
 	QStringList getIptcValues() const;
 	QStringList getXmpKeys() const;
 	void getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const;
+	void getAllMetaData(QStringList& keys, QStringList& values) const;
 	void setResolution(const QVector2D& res);
 	void clearOrientation();
 	void setOrientation(int o);
