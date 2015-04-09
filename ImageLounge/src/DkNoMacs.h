@@ -561,6 +561,7 @@ public slots:
 	void showUpdateDialog(QString msg, QString title);
 	void performUpdate();
 	void updateProgress(qint64 received, qint64 total);
+	void updateProgressTranslations(qint64 received, qint64 total);
 	void startSetup(QString);
 	void updateTranslations();
 	virtual void enableNoImageActions(bool enable = true);
@@ -579,6 +580,7 @@ public slots:
 	void clearFileHistory();
 	void clearFolderHistory();
 	//void shareFacebook();
+	void restartWithTranslationUpdate();
 
 	// batch actions
 	void computeThumbsBatch();
@@ -680,6 +682,7 @@ protected:
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
+	QProgressDialog* progressDialogTranslations;
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
 #ifdef WITH_QUAZIP
