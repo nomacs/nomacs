@@ -91,7 +91,6 @@ namespace nmc {
 // some dummies
 class DkFilePreview;
 class DkThumbScrollWidget;
-class DkMetaDataInfo;
 class DkMetaDataHUD;
 class DkCommentWidget;
 

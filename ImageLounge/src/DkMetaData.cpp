@@ -1434,7 +1434,7 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 
 	QString rValue = value;
 
-	if (key == camSearchTags[DkSettings::camData_aperture]) {
+	if (key == camSearchTags[DkSettings::camData_aperture] || key == "FNumber") {
 		rValue = DkMetaDataHelper::getInstance().getApertureValue(metaData);
 	}
 	else if (key == camSearchTags[DkSettings::camData_focallength]) {

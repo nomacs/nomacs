@@ -773,20 +773,19 @@ QStringList DkMetaDataHUD::getDefaultKeys() const {
 
 	QStringList keyValues;
 
-	// TODO: use useful ones
 	keyValues.append("File." + QObject::tr("Filename"));
 	keyValues.append("File." + QObject::tr("Path"));
+	keyValues.append("File." + QObject::tr("Size"));
 	keyValues.append("Exif.Image.Make");
-	keyValues.append("Xmp.xmp.Rating");
-	keyValues.append("Exif.Image.ImageWidth");
 	keyValues.append("Exif.Image.Model");
-	keyValues.append("Exif.Image.Orientation");
 	keyValues.append("Exif.Image.DateTime");
+	keyValues.append("Exif.Image.ImageDescription");
+
+	keyValues.append("Exif.Photo.ISO");
+	keyValues.append("Exif.Photo.FocalLength");
+	keyValues.append("Exif.Photo.ExposureTime");
+	keyValues.append("Exif.Photo.Flash");
 	keyValues.append("Exif.Photo.FNumber");
-	keyValues.append("Exif.Photo.MaxApertureValue");
-	keyValues.append("Exif.Image.Software");
-	keyValues.append("Exif.Image.DateTime");
-	keyValues.append("Exif.Photo.ImageLength");
 
 	return keyValues;
 }
