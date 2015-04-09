@@ -109,8 +109,7 @@ void DkClientManager::removeConnection(DkConnection* connection) {
 	//qDebug() << "current peer list:";
 	//peerList.print();
 	//qDebug() << "--------------------";
-	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
-	emit updateConnectionSignal(peerList.getActivePeers());
+
 }
 
 void DkClientManager::connectionSentNewTitle(DkConnection* connection, QString newTitle) {
@@ -570,6 +569,12 @@ void DkLANClientManager::synchronizeWith(quint16 peerId) {
 	peerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
 	emit synchronizedPeersListChanged(peerList.getSynchronizedPeerServerPorts());
 
+
+	//qDebug() << "--------------------";
+	//qDebug() << "current peer list:";
+	//peerList.print();
+	//qDebug() << "--------------------";
+
 	DkPeer* peer = peerList.getPeerById(peerId);
 	if (!peer || peer->connection == 0) {
 		qDebug() << "TcpClient: synchronizeWith: connection is null";
@@ -828,7 +833,10 @@ void DkRCClientManager::synchronizeWith(quint16 peerId) {
 	peerList.setSynchronized(peerId, true); // will be reset if other client does not response within 1 sec
 
 	qDebug() << "DkRCClientManager: peer list:" << __FILE__ << __FUNCTION__;
+	qDebug() << "--------- peerList -------";
 	peerList.print();
+	qDebug() << "--------- peerList end----";
+
 	DkPeer* peer = peerList.getPeerById(peerId);
 	if (!peer || peer->connection == 0) {
 		qDebug() << "TcpClient: synchronizeWith: connection is null";
@@ -1513,22 +1521,35 @@ DkTranslationUpdater::DkTranslationUpdater(QObject* parent) : QObject(parent) {
 		accessManager.setProxy(listOfProxies[0]);
 	}
 
-	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
+	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 void DkTranslationUpdater::checkForUpdates() {
 	QUrl url ("http://www.nomacs.org/translations/" + DkSettings::global.language + "/nomacs_" + DkSettings::global.language + ".qm");
 
+	
 	qDebug() << "checking for new translations at " << url;
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
 	reply = accessManager.get(QNetworkRequest(url));
+
+	url=QUrl("http://www.nomacs.org/translations/qt/qt_" + DkSettings::global.language + ".qm");
+	qDebug() << "checking for new translations at " << url;
+	request = QNetworkRequest(url);
+	request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork);
+	reply = accessManager.get(QNetworkRequest(url));
+
 }
 
 void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
+	bool qtTranslation = false;
+	if (reply->url().toString().contains("qt_"))
+		qtTranslation = true;
+
 	if (reply->error()) {
-		qDebug() << "network reply error";
-		emit showUpdaterMessage(tr("Unable to download translation"), tr("update")); 
+		qDebug() << "network reply error : url: " << reply->url();
+		if (!qtTranslation)
+			emit showUpdaterMessage(tr("Unable to download translation"), tr("update")); 
 		return;
 	}
 
@@ -1552,16 +1573,18 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 #endif //  WIN32
 
-	QString translationName = "nomacs_"+ DkSettings::global.language + ".qm";
+	QString translationName = qtTranslation ? "qt_"+ DkSettings::global.language + ".qm" : "nomacs_"+ DkSettings::global.language + ".qm";
+
 	QFile userTranslation(storageLocation.absoluteFilePath(translationName));
 	if (!userTranslation.exists() || QFileInfo(userTranslation).lastModified() < lastModifiedRemote) {
-		QString basename = "nomacs_" + DkSettings::global.language;
+		QString basename = qtTranslation ? "qt_" + DkSettings::global.language : "nomacs_" + DkSettings::global.language;
 		QString extension = ".qm";
 
 		if (!storageLocation.exists()) {
 			if (!storageLocation.mkpath(storageLocation.absolutePath())) {
 				qDebug() << "unable to create storage location ... aborting";
-				emit showUpdaterMessage(tr("Unable to update translation"), tr("update")); 
+				if (!qtTranslation)
+					emit showUpdaterMessage(tr("Unable to update translation"), tr("update")); 
 				return;
 			}
 		}
@@ -1582,11 +1605,13 @@ void DkTranslationUpdater::replyFinished(QNetworkReply* reply) {
 
 		file.close();
 		
-		emit showUpdaterMessage(tr("Translation updated"), tr("update")); 
+		if (!qtTranslation)
+			emit showUpdaterMessage(tr("Translation updated"), tr("update")); 
 		qDebug() << "translation updated";
 	} else {
 		qDebug() << "no newer translations available";
-		emit showUpdaterMessage(tr("No newer translations found"), tr("update")); 
+		if (!qtTranslation)
+			emit showUpdaterMessage(tr("No newer translations found"), tr("update")); 
 	}
 }
 
@@ -1617,7 +1642,6 @@ void DkManagerThread::connectClient() {
 	// TCP communication
 	connect(vp, SIGNAL(sendTransformSignal(QTransform, QTransform, QPointF)), clientManager, SLOT(sendTransform(QTransform, QTransform, QPointF)));
 	connect(parent, SIGNAL(sendPositionSignal(QRect, bool)), clientManager, SLOT(sendPosition(QRect, bool)));
-	connect(parent, SIGNAL(synchronizeWithSignal(quint16)), clientManager, SLOT(synchronizeWith(quint16)));
 	connect(parent, SIGNAL(synchronizeRemoteControl(quint16)), clientManager, SLOT(synchronizeWith(quint16)));
 	connect(parent, SIGNAL(synchronizeWithServerPortSignal(quint16)), clientManager, SLOT(synchronizeWithServerPort(quint16)));
 
@@ -1674,6 +1698,9 @@ void DkLocalManagerThread::connectClient() {
 	// just for local client
 	connect(parent, SIGNAL(sendArrangeSignal(bool)), clientManager, SLOT(sendArrangeInstances(bool)));
 	connect(parent, SIGNAL(sendQuitLocalClientsSignal()), clientManager, SLOT(sendQuitMessageToPeers()));
+	
+	// this connection to parent is only needed for the local client (synchronize all instances)
+	connect(parent, SIGNAL(synchronizeWithSignal(quint16)), clientManager, SLOT(synchronizeWith(quint16)));
 	DkManagerThread::connectClient();
 }
 

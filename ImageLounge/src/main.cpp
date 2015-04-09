@@ -154,9 +154,13 @@ int main(int argc, char *argv[]) {
 	//QSettings settings;
 
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
+	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 	QTranslator translator;
 	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
+	QTranslator translatorQt;
+	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
+	a.installTranslator(&translatorQt);
 
 	//QStringList xxx = nmc::DkSettings::saveFilters;
 	//qDebug() << xxx;
