@@ -31,6 +31,7 @@
 #include <QTextEdit>
 #include <QAbstractTableModel>
 #include <QDockWidget>
+#include <QScrollArea>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseWidgets.h"
@@ -43,6 +44,7 @@ class QPushButton;
 class QGridLayout;
 class QCheckBox;
 class QVBoxLayout;
+//class QScrollArea;
 
 namespace nmc {
 
@@ -136,6 +138,17 @@ protected:
 	QGridLayout* layout;
 };
 
+class DkResizableScrollArea : public QScrollArea {
+	Q_OBJECT
+
+public:
+	DkResizableScrollArea(QWidget * parent = 0);
+
+	virtual QSize sizeHint() const;
+	virtual QSize minimumSizeHint() const;
+
+};
+
 class DkMetaDataHUD : public DkWidget {
 	Q_OBJECT
 
@@ -187,6 +200,8 @@ protected:
 	QVector<QLabel*> entryValueLabels;
 	QStringList keyValues;
 	QGridLayout* contentLayout;
+	QWidget* contentWidget;
+	DkResizableScrollArea* scrollArea;
 
 	QMenu* contextMenu;
 	QVector<QAction*> actions;

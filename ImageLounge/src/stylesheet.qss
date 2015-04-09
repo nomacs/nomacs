@@ -76,9 +76,11 @@ QGraphicsView#DkBaseViewPort {
 } 
 
 /* DEBUG */
-/*nmc--DkControlWidget > QWidget  {
+/*
+nmc--DkControlWidget > QWidget  {
 	background-color: QColor(0,0,0,20); border: 1px solid #000000;
-}*/
+}
+*/
 
  /* Batch Widgets */
  QLabel#DkBatchTitle {
@@ -237,6 +239,16 @@ QLabel#DkMetaDataKeyLabel {
 
 QLabel#DkMetadataValueLabel {
 	color: #666;
+}
+
+nmc--DkMetaDataHUD > QScrollArea {
+	background-color: transparent;
+	border: none;
+}
+
+nmc--DkMetaDataHUD > QScrollArea > QWidget > QWidget {
+	background-color: transparent;
+	border: none;
 }
 
 nmc--DkMetaDataHUD {

@@ -644,6 +644,43 @@ void DkMetaDataSelection::createEntries(QSharedPointer<DkMetaDataT> metaData, QS
 	metaData->getAllMetaData(outKeys, outValues);
 }
 
+// DkResizableScrollArea --------------------------------------------------------------------
+DkResizableScrollArea::DkResizableScrollArea(QWidget * parent /* = 0 */) : QScrollArea(parent) {
+
+}
+
+QSize DkResizableScrollArea::sizeHint() const {
+
+	if (!widget())
+		return QScrollArea::sizeHint();
+
+	QSize s = QScrollArea::sizeHint();
+	QSize ws = widget()->sizeHint();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setHeight(ws.height());
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setWidth(ws.width());
+
+	return s;
+}
+
+QSize DkResizableScrollArea::minimumSizeHint() const {
+
+	if (!widget())
+		return QScrollArea::minimumSizeHint();
+
+	QSize s = QScrollArea::minimumSizeHint();
+	QSize ws = widget()->minimumSizeHint();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setHeight(ws.height());
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setWidth(ws.width());
+
+	return s;
+}
+
 // DkMetaDataHUD --------------------------------------------------------------------
 DkMetaDataHUD::DkMetaDataHUD(QWidget* parent) : DkWidget(parent) {
 
@@ -672,9 +709,34 @@ DkMetaDataHUD::~DkMetaDataHUD() {
 
 void DkMetaDataHUD::createLayout() {
 
-	contentLayout = new QGridLayout(this);
+	QString scrollbarStyle = 
+		QString("QScrollBar:vertical {border: 1px solid #FFF; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
+		+ QString("QScrollBar::handle:vertical {background: #FFF; min-height: 0px;}")
+		+ QString("QScrollBar::add-line:vertical {height: 0px;}")
+		+ QString("QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: rgba(0,0,0,0); width: 1px;}")
+		+ QString("QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {height: 0;}")
+	+ QString("QScrollBar:horizontal {border: 1px solid #FFF; background: rgba(0,0,0,0); height: 7px; margin: 0 0 0 0;}")	// horizontal
+		+ QString("QScrollBar::handle:horizontal {background: #FFF; min-width: 0px;}")
+		+ QString("QScrollBar::add-line:horizontal {width: 0px;}")
+		+ QString("QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: rgba(0,0,0,0); height: 1px;}")
+		+ QString("QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {width: 0;}");
+
+	scrollArea = new DkResizableScrollArea(this);
+	scrollArea->setObjectName("DkScrollAreaMetaData");
+	scrollArea->setWidgetResizable(true);
+	scrollArea->setStyleSheet(scrollbarStyle + scrollArea->styleSheet());
+
+	contentWidget = new QWidget(this);
+	contentLayout = new QGridLayout(contentWidget);
 	updateLabels();
-}
+
+	scrollArea->setWidget(contentWidget);
+
+	QVBoxLayout* l = new QVBoxLayout(this);
+	l->setSpacing(0);
+	l->setContentsMargins(3,3,3,3);
+	l->addWidget(scrollArea);
+} 
 
 void DkMetaDataHUD::createActions() {
 
@@ -780,9 +842,9 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData) {
 
 	// clean up
 	for (QLabel* cLabel : entryKeyLabels)
-		cLabel->deleteLater();
+		delete cLabel;
 	for (QLabel* cLabel : entryValueLabels)
-		cLabel->deleteLater();
+		delete cLabel;
 
 	entryKeyLabels.clear();
 	entryValueLabels.clear();
@@ -893,12 +955,24 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 		rIdx++;
 	}
 
+	if (orientation == Qt::Vertical) {
+		contentLayout->setRowStretch(1000, 10);	// stretch a reasonably high row (we assume to have less than 1000 entries)
 
-	if (orientation == Qt::Vertical)
-		contentLayout->setRowStretch(1000, 10);
-	else
+		// some scroll area settings need to be adopted to the orientation
+		scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		scrollArea->updateGeometry();
+	}
+	else {
 		contentLayout->setRowStretch(1000, 0);
 
+		// some scroll area settings need to be adopted to the orientation
+		scrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+		scrollArea->updateGeometry();
+	}
 }
 
 QLabel* DkMetaDataHUD::createKeyLabel(const QString& key) {
