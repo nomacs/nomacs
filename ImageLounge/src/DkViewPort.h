@@ -471,6 +471,7 @@ public slots:
 	virtual void loadImage(QImage newImg);
 	virtual void loadImage(QSharedPointer<DkImageContainerT> img);
 	virtual void setEditedImage(QImage newImg);
+	virtual void setEditedImage(QSharedPointer<DkImageContainerT> img);
 	virtual void setImage(QImage newImg);
 	virtual void setThumbImage(QImage newImg);
 

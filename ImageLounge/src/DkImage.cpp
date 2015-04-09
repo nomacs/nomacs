@@ -2111,6 +2111,15 @@ QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QImage img, QFileInfo 
 	return newImg;
 }
 
+
+QSharedPointer<DkImageContainerT> DkImageLoader::setImage(QSharedPointer<DkImageContainerT> img) {
+
+	setCurrentImage(img);
+	emit imageUpdatedSignal(currentImage);
+
+	return img;
+}
+
 /**
  * Returns the current file name.
  * @return QString the file name of the currently loaded file.

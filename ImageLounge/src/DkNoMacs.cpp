@@ -2643,7 +2643,8 @@ void DkNoMacs::resizeImage() {
 			if (metaData)
 				metaData->setResolution(QVector2D(resizeDialog->getExifDpi(), resizeDialog->getExifDpi()));
 
-			viewport()->setEditedImage(rImg);
+			imgC->setImage(rImg);
+			viewport()->setEditedImage(imgC);
 		}
 	}
 	else if (metaData) {

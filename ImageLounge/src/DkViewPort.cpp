@@ -1975,15 +1975,26 @@ void DkViewPort::setEditedImage(QImage newImg) {
 		return;
 	}
 
-	QFileInfo file = loader->file();
+	QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+	imgC->setImage(newImg);
 	unloadImage(false);
-	loader->setImage(newImg, file);
-	setImage(newImg);
+	loader->setImage(imgC);
 	qDebug() << "loader gets this size: " << newImg.size();
 
 	// TODO: contrast viewport does not add * 
 
 	// TODO: add functions such as save file on unload
+}
+
+void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
+
+	if (!img) {
+		controller->setInfo(tr("Attempted to set NULL image"));	// not sure if users understand that
+		return;
+	}
+
+	unloadImage(false);
+	loader->setImage(img);
 }
 
 void DkViewPort::applyPluginChanges() {
@@ -2311,7 +2322,9 @@ void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
 	painter.drawImage(QRect(QPoint(), getImage().size()), getImage(), QRect(QPoint(), getImage().size()));
 	painter.end();
 
-	setEditedImage(img);
+	QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+	imgC->setImage(img);
+	setEditedImage(imgC);
 	
 	//imgQt = img;
 	//update();

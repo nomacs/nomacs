@@ -690,6 +690,8 @@ void DkMetaDataHUD::createLayout() {
 	scrollArea->setStyleSheet(scrollbarStyle + scrollArea->styleSheet());
 
 	contentWidget = new QWidget(this);
+	contentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
 	contentLayout = new QGridLayout(contentWidget);
 	updateLabels();
 
@@ -923,20 +925,23 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 		contentLayout->setRowStretch(1000, 10);	// stretch a reasonably high row (we assume to have less than 1000 entries)
 
 		// some scroll area settings need to be adopted to the orientation
-		scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+		scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
 	else {
-		contentLayout->setRowStretch(1000, 0);
+		contentLayout->setRowStretch(1000, 10);
 
 		// some scroll area settings need to be adopted to the orientation
-		scrollArea->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+		scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	}
 
-	scrollArea->updateGeometry();
+	// TODO: I give now up on this:
+	// I do not understand why Qt does not simply resize according to the
+	// child widget's constraints if Qt::ScrollBarAlwaysOff is set
+	// to me, this would be intended behavior
 }
 
 QLabel* DkMetaDataHUD::createKeyLabel(const QString& key) {
