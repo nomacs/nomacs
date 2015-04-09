@@ -31,6 +31,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QDockWidget>
+#include <QScrollArea>
 #pragma warning(pop)	// no warnings from includes - end
 
 #ifndef DllExport
@@ -223,6 +224,17 @@ protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 	QBitArray* displaySettingsBits;
+
+};
+
+class DkResizableScrollArea : public QScrollArea {
+	Q_OBJECT
+
+public:
+	DkResizableScrollArea(QWidget * parent = 0);
+
+	virtual QSize sizeHint() const;
+	virtual QSize minimumSizeHint() const;
 
 };
 

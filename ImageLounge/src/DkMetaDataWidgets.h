@@ -31,7 +31,6 @@
 #include <QTextEdit>
 #include <QAbstractTableModel>
 #include <QDockWidget>
-#include <QScrollArea>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseWidgets.h"
@@ -44,7 +43,6 @@ class QPushButton;
 class QGridLayout;
 class QCheckBox;
 class QVBoxLayout;
-//class QScrollArea;
 
 namespace nmc {
 
@@ -77,14 +75,13 @@ protected:
 	TreeItem* rootItem;
 
 	void createItem(const QString& key, const QString& keyName, const QString& value);
-
 };
 
 class DkMetaDataDock : public DkDockWidget {
 	Q_OBJECT
 
 public:
-	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkMetaDataDock();
 
 public slots:
@@ -138,17 +135,6 @@ protected:
 	QGridLayout* layout;
 };
 
-class DkResizableScrollArea : public QScrollArea {
-	Q_OBJECT
-
-public:
-	DkResizableScrollArea(QWidget * parent = 0);
-
-	virtual QSize sizeHint() const;
-	virtual QSize minimumSizeHint() const;
-
-};
-
 class DkMetaDataHUD : public DkWidget {
 	Q_OBJECT
 
@@ -180,6 +166,7 @@ public slots:
 	void changeNumColumns();
 	void setToDefault();
 	void newPosition();
+	virtual void setVisible(bool visible, bool saveSetting = true);
 
 signals:
 	void positionChangeSignal(int newPos);
@@ -209,68 +196,6 @@ protected:
 	int numColumns;
 	int windowPosition;
 	Qt::Orientation orientation;
-};
-
-class DkMetaDataInfo : public DkWidget {
-	Q_OBJECT
-
-public:
-
-	DkMetaDataInfo(QWidget* parent = 0);
-	~DkMetaDataInfo() {};
-
-	void draw(QPainter* painter);
-	void createLabels();
-	void resizeEvent(QResizeEvent *resizeW);
-
-public slots:
-	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
-	void setRating(int rating);
-	void updateLabels();
-	void setVisible(bool visible, bool showSettings = true);
-
-protected:
-	void init();
-	void readTags();
-	void layoutLabels();
-	void paintEvent(QPaintEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
-
-	QWidget* parent;
-	QPoint lastMousePos;
-	QTransform worldMatrix;
-	int exifHeight;
-	int fontSize;
-	int textMargin;
-	int numLines;
-	int maxCols;
-	int numLabels;
-	int minWidth;
-	int gradientWidth;
-
-	int yMargin;
-	int xMargin;
-
-	float currentDx;
-
-	QVector<int> maxLenLabel;
-
-	QVector<DkLabel *> pLabels;
-	QVector<DkLabel *> pValues;
-	//QSize imgSize;
-
-	QStringList camDValues;
-
-	QStringList descValues;
-
-	QRect leftGradientRect;
-	QLinearGradient leftGradient;
-	QRect rightGradientRect;
-	QLinearGradient rightGradient;
-
-	QMap<int, int> mapIptcExif;
-	QSharedPointer<DkImageContainerT> imgC;
-
 };
 
 class DkCommentTextEdit : public QTextEdit {
