@@ -2976,7 +2976,7 @@ DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(p
 	createLayout();
 
 	//connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateFiles()));
-	//connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
+	connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
 }
 
 DkRecentFilesWidget::~DkRecentFilesWidget() {
@@ -2985,9 +2985,9 @@ DkRecentFilesWidget::~DkRecentFilesWidget() {
 	//fileWatcher.cancel();
 	//fileWatcher.waitForFinished();
 
-	//folderWatcher.blockSignals(true);
-	//folderWatcher.cancel();
-	//folderWatcher.waitForFinished();
+	folderWatcher.blockSignals(true);
+	folderWatcher.cancel();
+	folderWatcher.waitForFinished();
 
 }
 
@@ -3080,6 +3080,10 @@ void DkRecentFilesWidget::updateFileList() {
 	filesTitle->hide();
 	folderTitle->hide();
 
+	//fileWatcher.cancel();
+	//fileWatcher.waitForFinished();
+	folderWatcher.cancel();
+	folderWatcher.waitForFinished();
 	fileLabels.clear();
 	folderLabels.clear();
 	recentFiles.clear();
@@ -3091,7 +3095,7 @@ void DkRecentFilesWidget::updateFileList() {
 		recentFolders.append(QFileInfo(DkSettings::global.recentFolders.at(idx)));
 
 	updateFiles();
-	updateFolders();
+	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &nmc::DkRecentFilesWidget::mappedFileExists));
 }
 
 void DkRecentFilesWidget::updateFiles() {
