@@ -1768,6 +1768,30 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 	return QPointF(x,y);		// round
 }
 
+QPointF DkEditableRect::clipToImageForce(const QPointF &pos) {
+
+	if (!imgRect)
+		return QPointF(pos);
+
+	QRectF imgViewRect(*imgRect);
+	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+
+	float x = (float)pos.x();
+	float y = (float)pos.y();
+
+	if (x < imgViewRect.left())
+		x = (float)imgViewRect.left();
+	if (x > imgViewRect.right())
+		x = (float)imgViewRect.right();
+
+	if (y < imgViewRect.top())
+		y = (float)imgViewRect.top();
+	if (y > imgViewRect.bottom())
+		y = (float)imgViewRect.bottom();
+
+	return QPointF(x,y);		// round
+}
+
 void DkEditableRect::updateDiagonal(int idx) {
 
 	// we need to store the old diagonal in order to enable "keep aspect ratio"
@@ -2005,7 +2029,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
-		QPointF clipPos = clipToImage(QPointF(event->pos()));
+		QPointF clipPos = clipToImageForce(QPointF(event->pos()));
 
 		if (!imgRect || !rect.isEmpty() || clipPos == QPointF(event->pos())) {
 			
@@ -2014,7 +2038,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 				for (int idx = 0; idx < ctrlPoints.size(); idx++)
 					ctrlPoints[idx]->show();
 
-				QPointF p = map(clipToImage(clickPos));
+				QPointF p = map(clipToImageForce(clickPos));
 				rect.setAllCorners(p);
 			}
 			

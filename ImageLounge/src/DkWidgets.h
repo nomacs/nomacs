@@ -627,6 +627,7 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	QPointF clipToImage(const QPointF& pos);
+	QPointF clipToImageForce(const QPointF& pos);
 	void applyTransform();
 	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
 	
