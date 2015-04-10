@@ -1477,7 +1477,6 @@ void DkPlayer::init() {
 
 	actions.resize(1);
 	actions[play_action] = new QAction(tr("play"), this);
-	actions[play_action]->setShortcut(Qt::Key_Space);
 	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(togglePlay()));
 
 	QPixmap icon = QPixmap(":/nomacs/img/player-back.png");
@@ -3080,8 +3079,6 @@ void DkRecentFilesWidget::updateFileList() {
 	filesTitle->hide();
 	folderTitle->hide();
 
-	//fileWatcher.cancel();
-	//fileWatcher.waitForFinished();
 	folderWatcher.cancel();
 	folderWatcher.waitForFinished();
 	fileLabels.clear();

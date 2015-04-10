@@ -168,7 +168,6 @@ enum {
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
 	shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
-	//shortcut_play			= Qt::Key_Space,
 
 	// edit
 	shortcut_rotate_cw		= Qt::Key_R,
