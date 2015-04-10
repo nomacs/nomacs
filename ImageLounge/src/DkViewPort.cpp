@@ -1135,6 +1135,15 @@ void DkViewPort::resetView() {
 	tcpSynchronize();
 }
 
+void DkViewPort::zoomToFit() {
+
+	QSize imgSize = imgStorage.getImage().size();
+	QSize winSize = size();
+
+	float zoomLevel = qMin(winSize.width()/(float)imgSize.width(), winSize.height()/(float)imgSize.height());
+	zoomTo(zoomLevel);
+}
+
 void DkViewPort::fullView() {
 
 	worldMatrix.reset();

@@ -1189,10 +1189,10 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_fullscreen]->setStatusTip(tr("Full Screen"));
 	connect(viewActions[menu_view_fullscreen], SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
-	viewActions[menu_view_reset] = new QAction(viewIcons[icon_view_reset], tr("&Reset Canvas"), this);
+	viewActions[menu_view_reset] = new QAction(viewIcons[icon_view_reset], tr("&Zoom to Fit"), this);
 	viewActions[menu_view_reset]->setShortcut(QKeySequence(shortcut_reset_view));
 	viewActions[menu_view_reset]->setStatusTip(tr("Shows the initial view (no zooming)"));
-	connect(viewActions[menu_view_reset], SIGNAL(triggered()), vp, SLOT(resetView()));
+	connect(viewActions[menu_view_reset], SIGNAL(triggered()), vp, SLOT(zoomToFit()));
 
 	viewActions[menu_view_100] = new QAction(viewIcons[icon_view_100], tr("Show &100%"), this);
 	viewActions[menu_view_100]->setShortcut(QKeySequence(shortcut_zoom_full));
