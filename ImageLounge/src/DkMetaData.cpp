@@ -1186,7 +1186,6 @@ void DkMetaDataHelper::init() {
 	descSearchTags.append("Path");
 	descSearchTags.append("FileSize");
 
-
 	for (int i = 0; i  < DkSettings::scamDataDesc.size(); i++) 
 		translatedCamTags << qApp->translate("nmc::DkMetaData", DkSettings::scamDataDesc.at(i).toLatin1());
 
@@ -1261,12 +1260,11 @@ QString DkMetaDataHelper::getFocalLength(QSharedPointer<DkMetaDataT> metaData) c
 	QString key = camSearchTags.at(DkSettings::camData_focallength);
 
 	QString value = metaData->getExifValue(key);
-	QStringList sList = value.split('/');
 
-	if (sList.size() == 2) {
-		double val = sList[0].toDouble()/sList[1].toDouble();
-		value = QString::fromStdString(DkUtils::stringify(val,1)) + " mm";
-	}
+	float v = convertRational(value);
+
+	if (v != -1)
+		value = QString::number(v) + " mm";
 
 	return value;
 }
@@ -1317,6 +1315,17 @@ QString DkMetaDataHelper::getFlashMode(QSharedPointer<DkMetaDataT> metaData) con
 	return value;
 }
 
+QString DkMetaDataHelper::getGpsAltitude(const QString& val) const {
+
+	QString rVal = val;
+	float v = convertRational(val);
+
+	if (v != -1)
+		rVal = QString::number(v) + " m";
+
+	return rVal;
+}
+
 QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const {
 
 	QString Lat, LatRef, Lon, LonRef, gpsInfo;
@@ -1333,77 +1342,10 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 			//example url
 			//http://maps.google.at/maps?q=N+48°+8'+31.940001''+E16°+15'+35.009998''
 
-			gpsInfo = "http://maps.google.at/maps?q=" + LatRef + "+";
+			gpsInfo = "http://maps.google.at/maps?q=";
 
-			help = Lat.split(" ");
-			for (int i=0; i<help.size(); ++i) {
-				float val1, val2;
-				QString valS;
-				QStringList coordP;
-				valS = help.at(i);
-				coordP = valS.split("/");
-				if (coordP.size() != 2)
-					return QString();
-					//throw DkException(QObject::tr("could not parse GPS Data").toStdString());
-
-				val1 = coordP.at(0).toFloat();
-				val2 = coordP.at(1).toFloat();
-				val1 = val2 != 0 ? val1/val2 : val1;
-
-				if (i==0) {
-					valS.setNum((int)val1);
-					gpsInfo += valS + "°";
-				}
-				if (i==1) {
-					if (val2 > 1)							
-						valS.setNum(val1, 'f', 6);
-					else
-						valS.setNum((int)val1);
-					gpsInfo += "+" + valS + "'";
-				}
-				if (i==2) {
-					if (val1 != 0) {
-						valS.setNum(val1, 'f', 6);
-						gpsInfo += "+" + valS + "''";
-					}
-				}
-			}
-
-			gpsInfo += "+" + LonRef;
-			help = Lon.split(" ");
-			for (int i=0; i<help.size(); ++i) {
-				float val1, val2;
-				QString valS;
-				QStringList coordP;
-				valS = help.at(i);
-				coordP = valS.split("/");
-				if (coordP.size() != 2)
-					throw DkException(QObject::tr("could not parse GPS Data").toStdString());
-
-				val1 = coordP.at(0).toFloat();
-				val2 = coordP.at(1).toFloat();
-				val1 = val2 != 0 ? val1/val2 : val1;
-
-				if (i==0) {
-					valS.setNum((int)val1);
-					gpsInfo += valS + "°";
-					//gpsInfo += valS + QString::fromUtf16((ushort*)"0xb0");//QChar('°');
-					//gpsInfo += valS + QString::setUnicode("0xb0");//QChar('°');
-				}
-				if (i==1) {
-					if (val2 > 1)							
-						valS.setNum(val1, 'f', 6);
-					else
-						valS.setNum((int)val1);
-					gpsInfo += "+" + valS + "'";
-				}
-				if (i==2) {
-					if (val1 != 0) {
-						valS.setNum(val1, 'f', 6);
-						gpsInfo += "+" + valS + "''";
-					}
-				}
-			}
+			gpsInfo += "+" + LatRef + "+" + convertGpsCoordinates(Lat).join("+");
+			gpsInfo += "+" + LonRef + "+" + convertGpsCoordinates(Lon).join("+");
 
 		}
 
@@ -1413,6 +1355,66 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 	}
 
 	return gpsInfo;
+}
+
+QStringList DkMetaDataHelper::convertGpsCoordinates(const QString& coordString) const {
+
+	QStringList gpsInfo;
+	QStringList entries = coordString.split(" ");
+
+	for (int i = 0; i < entries.size(); i++) {
+		
+		float val1, val2;
+		QString valS;
+		QStringList coordP;
+		
+		valS = entries.at(i);
+		coordP = valS.split("/");
+		if (coordP.size() != 2)
+			return QStringList();
+
+		val1 = coordP.at(0).toFloat();
+		val2 = coordP.at(1).toFloat();
+		val1 = val2 != 0 ? val1/val2 : val1;
+
+		if (i==0) {
+			valS.setNum((int)val1);
+			gpsInfo.append(valS + "°");
+		}
+		if (i==1) {
+			if (val2 > 1)							
+				valS.setNum(val1, 'f', 6);
+			else
+				valS.setNum((int)val1);
+			gpsInfo.append(valS + "'");
+		}
+		if (i==2) {
+			if (val1 != 0) {
+				valS.setNum(val1, 'f', 6);
+				gpsInfo.append(valS + "''");
+			}
+		}
+	}
+
+	return gpsInfo;
+}
+
+float DkMetaDataHelper::convertRational(const QString& val) const {
+
+	float rVal = -1;
+	QStringList sList = val.split('/');
+
+	if (sList.size() == 2) {
+		bool ok1 = false;
+		bool ok2 = false;
+
+		rVal = sList[0].toFloat(&ok1)/sList[1].toFloat(&ok2);
+
+		if (!ok1 || !ok2)
+			rVal = -1;
+	}
+
+	return rVal;
 }
 
 QString DkMetaDataHelper::translateKey(const QString& key) const {
@@ -1435,19 +1437,25 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 	QString rValue = value;
 
 	if (key == camSearchTags[DkSettings::camData_aperture] || key == "FNumber") {
-		rValue = DkMetaDataHelper::getInstance().getApertureValue(metaData);
+		rValue = getApertureValue(metaData);
 	}
 	else if (key == camSearchTags[DkSettings::camData_focallength]) {
-		rValue = DkMetaDataHelper::getInstance().getFocalLength(metaData);
+		rValue = getFocalLength(metaData);
 	}
 	else if (key == camSearchTags[DkSettings::camData_exposuretime]) {
-		rValue = DkMetaDataHelper::getInstance().getExposureTime(metaData);
+		rValue = getExposureTime(metaData);
 	}
 	else if (key == camSearchTags[DkSettings::camData_exposuremode]) {
-		rValue = DkMetaDataHelper::getInstance().getExposureMode(metaData);						
+		rValue = getExposureMode(metaData);						
 	} 
 	else if (key == camSearchTags[DkSettings::camData_flash]) {
-		rValue = DkMetaDataHelper::getInstance().getFlashMode(metaData);
+		rValue = getFlashMode(metaData);
+	}
+	else if (key == "GPSLatitude" || key == "GPSLongitude") {
+		rValue = convertGpsCoordinates(value).join(" ");
+	}
+	else if (key == "GPSAltitude") {
+		rValue = getGpsAltitude(value);
 	}
 	else if (value.contains("charset=")) {
 
