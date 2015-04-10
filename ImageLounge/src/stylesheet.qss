@@ -219,6 +219,18 @@ nmc--DkCommentWidget > nmc--DkCommentTextEdit {
 	selection-background-color: HIGHLIGHT_COLOR; 
 }
 
+QLabel#DkMetaDataHUDTitle {
+	color: HUD_FONT_COLOR; 
+	margin: 0; 
+	font-size: 21px; 
+	font-family: Segoe UI; 
+	font-weight: light;
+}
+
+QLabel#DkSeparator {
+	border-top: 2px dotted HUD_FONT_COLOR; 
+}
+
 QLabel#DkFolderScrollBarHandle {
 	border: 1px solid HIGHLIGHT_COLOR;
 	background-color: HUD_BACKGROUND_COLOR;

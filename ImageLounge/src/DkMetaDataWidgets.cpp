@@ -672,6 +672,18 @@ DkMetaDataHUD::~DkMetaDataHUD() {
 
 void DkMetaDataHUD::createLayout() {
 
+
+	QLabel* titleLabel = new QLabel(tr("Image Information"), this);
+	titleLabel->setObjectName("DkMetaDataHUDTitle");
+
+	QLabel* titleSeparator = new QLabel("", this);
+	titleSeparator->setObjectName("DkSeparator");
+
+	titleWidget = new QWidget(this);
+	QVBoxLayout* titleLayout = new QVBoxLayout(titleWidget);
+	titleLayout->addWidget(titleLabel);
+	titleLayout->addWidget(titleSeparator);
+
 	QString scrollbarStyle = 
 		QString("QScrollBar:vertical {border: 1px solid #FFF; background: rgba(0,0,0,0); width: 7px; margin: 0 0 0 0;}")
 		+ QString("QScrollBar::handle:vertical {background: #FFF; min-height: 0px;}")
@@ -688,6 +700,7 @@ void DkMetaDataHUD::createLayout() {
 	scrollArea->setObjectName("DkScrollAreaMetaData");
 	scrollArea->setWidgetResizable(true);
 	scrollArea->setStyleSheet(scrollbarStyle + scrollArea->styleSheet());
+	scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	contentWidget = new QWidget(this);
 	contentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -909,31 +922,43 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 	int rIdx = 0;
 	int nRows = cvCeil((float)(entryKeyLabels.size())/numColumns);
 
+	// stretch between labels
+	// we need this for correct context menu handling
+	int cS = (orientation == Qt::Horizontal) ? 10 : 0;
+	contentLayout->setColumnStretch(cIdx, cS); cIdx++;
+	contentLayout->setRowStretch(rIdx, cS);
+
+	titleWidget->setVisible(orientation == Qt::Vertical);
+	if (orientation == Qt::Vertical)
+		contentLayout->addWidget(titleWidget, 0, 0, 1, 4);
+
 	for (int idx = 0; idx < entryKeyLabels.size(); idx++) {
 
 		if (idx && idx % nRows == 0) {
 			rIdx = 0;
-			cIdx += 2;
+			cIdx += 3;
+			contentLayout->setColumnStretch(cIdx-1, cS);
 		}
 		 
-		contentLayout->addWidget(entryKeyLabels.at(idx), rIdx, cIdx, 1, 1, Qt::AlignTop);
-		contentLayout->addWidget(entryValueLabels.at(idx), rIdx, cIdx+1, 1, 1, Qt::AlignTop);
+		contentLayout->addWidget(entryKeyLabels.at(idx), rIdx+1, cIdx, 1, 1, Qt::AlignTop);
+		contentLayout->addWidget(entryValueLabels.at(idx), rIdx+1, cIdx+1, 1, 1, Qt::AlignTop);
 		rIdx++;
 	}
+	
+	contentLayout->setColumnStretch(cIdx+1, cS);
+	contentLayout->setRowStretch(1000, 10);	// stretch a reasonably high row (we assume to have less than 1000 entries)
+
+	// remove old columnStretches
+	for (int idx = cIdx+2; idx < 40; idx++)
+		contentLayout->setColumnStretch(idx, 0);
 
 	if (orientation == Qt::Vertical) {
-		contentLayout->setRowStretch(1000, 10);	// stretch a reasonably high row (we assume to have less than 1000 entries)
-
 		// some scroll area settings need to be adopted to the orientation
-		scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	}
 	else {
-		contentLayout->setRowStretch(1000, 10);
-
 		// some scroll area settings need to be adopted to the orientation
-		scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 		scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	}
@@ -942,6 +967,8 @@ void DkMetaDataHUD::updateLabels(int numColumns /* = -1 */) {
 	// I do not understand why Qt does not simply resize according to the
 	// child widget's constraints if Qt::ScrollBarAlwaysOff is set
 	// to me, this would be intended behavior
+	// resizing itself is fixed, however, on layout changes it won't
+	// decrease it's size
 }
 
 QLabel* DkMetaDataHUD::createKeyLabel(const QString& key) {

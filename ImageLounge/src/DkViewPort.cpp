@@ -124,14 +124,9 @@ void DkControlWidget::init() {
 	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	centerLabel->setAlignment(Qt::AlignCenter);
 	zoomWidget->setContentsMargins(10, 10, 0, 0);
-	//cropWidget->setMaximumSize(16777215, 16777215);				// max widget size, why is it a 24 bit int??
 	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	//thumbScrollWidget->setMaximumSize(16777215, 16777215);		// max widget size, why is it a 24 bit int??
 	spinnerLabel->halfSize();
 	commentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	//metaDataInfo->setFixedHeight(100);
-	//metaDataInfo->setFixedWidth(1024);
-	//metaDataInfo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	// dummy - needed for three equal columns @markus: do not delete!
 	QWidget* dw = new QWidget(this);
