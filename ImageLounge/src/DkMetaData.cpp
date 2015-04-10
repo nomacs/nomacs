@@ -41,8 +41,6 @@
 #include <QApplication>
 #pragma warning(pop)		// no warnings from includes - end
 
-#include "C:\Qt\qt-everywhere-opensource-src-4.8.5-x86-native-gestures\src\3rdparty\libpng\png.h"
-
 namespace nmc {
 
 // DkMetaDataT --------------------------------------------------------------------
