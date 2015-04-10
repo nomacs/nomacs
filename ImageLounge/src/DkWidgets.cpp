@@ -2976,7 +2976,7 @@ DkRecentFilesWidget::DkRecentFilesWidget(QWidget* parent /* = 0 */) : DkWidget(p
 	createLayout();
 
 	//connect(&fileWatcher, SIGNAL(finished()), this, SLOT(updateFiles()));
-	connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
+	//connect(&folderWatcher, SIGNAL(finished()), this, SLOT(updateFolders()));
 }
 
 DkRecentFilesWidget::~DkRecentFilesWidget() {
@@ -2985,9 +2985,9 @@ DkRecentFilesWidget::~DkRecentFilesWidget() {
 	//fileWatcher.cancel();
 	//fileWatcher.waitForFinished();
 
-	folderWatcher.blockSignals(true);
-	folderWatcher.cancel();
-	folderWatcher.waitForFinished();
+	//folderWatcher.blockSignals(true);
+	//folderWatcher.cancel();
+	//folderWatcher.waitForFinished();
 
 }
 
@@ -3002,10 +3002,12 @@ void DkRecentFilesWidget::createLayout() {
 	folderLayout = new QVBoxLayout(folderWidget);
 	
 	filesTitle = new QLabel(tr("Recent Files"), this);
-	filesTitle->setStyleSheet("QLabel{font-size: 20px;}");
+	filesTitle->setObjectName("DkRecentFilesTitle");
+	filesTitle->setStyleSheet("QLabel{font-size: 15pt;}" + filesTitle->styleSheet());
 
 	folderTitle = new QLabel(tr("Recent Folders"), this);
-	folderTitle->setStyleSheet("QLabel{font-size: 20px;}");
+	folderTitle->setObjectName("DkRecentFilesTitle");
+	folderTitle->setStyleSheet("QLabel{font-size: 15pt;}" + folderTitle->styleSheet());
 
 	bgLabel = new QLabel(this);
 	bgLabel->setObjectName("bgLabel");
@@ -3024,19 +3026,12 @@ void DkRecentFilesWidget::createLayout() {
 
 void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 
-	if (imgLoadedStyle) {
-		setStyleSheet(QString("#bgLabel{background-color:") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" +
-			QString("QLabel{color: #FFFFFF; padding: 2 0 2 0; font-size: 13px;}") + 
-			QString("#DkFileLabel:hover{color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget)) + 
-			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 rgba(255,255,255,200), stop: 1 rgba(0,0,0,0));}"));
-
-	}
-	else {
-		setStyleSheet(QString("#bgLabel{background-color: rgba(0,0,0,0);}" +
-			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" + 
-			QString("#DkFileLabel:hover{color: #FFFFFF;") + 
-			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ", stop: 1 rgba(0,0,0,0));}"));
-	}
+	setProperty("imageLoaded", imgLoadedStyle);
+	style()->unpolish(bgLabel);
+	style()->unpolish(filesTitle);	// don't know why I need to unpolish every widget on it's own
+	style()->unpolish(folderTitle);
+	style()->unpolish(this);
+	ensurePolished();
 }
 
 void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
@@ -3085,11 +3080,6 @@ void DkRecentFilesWidget::updateFileList() {
 	filesTitle->hide();
 	folderTitle->hide();
 
-	//fileWatcher.cancel();
-	//fileWatcher.waitForFinished();
-	folderWatcher.cancel();
-	folderWatcher.waitForFinished();
-
 	fileLabels.clear();
 	folderLabels.clear();
 	recentFiles.clear();
@@ -3101,8 +3091,7 @@ void DkRecentFilesWidget::updateFileList() {
 		recentFolders.append(QFileInfo(DkSettings::global.recentFolders.at(idx)));
 
 	updateFiles();
-	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &nmc::DkRecentFilesWidget::mappedFileExists));
-
+	updateFolders();
 }
 
 void DkRecentFilesWidget::updateFiles() {
@@ -3113,7 +3102,6 @@ void DkRecentFilesWidget::updateFiles() {
 		filesTitle->show();
 		filesLayout->setRowStretch(recentFiles.size()+2, 100);
 		filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
-		//filesLayout->addItem(new QSpacerItem(30,10), 1, 0);
 	}
 
 	// show current
@@ -3128,11 +3116,6 @@ void DkRecentFilesWidget::updateFiles() {
 		// remove files which we can't load to keep the list clean...
 		DkSettings::global.recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFile().absoluteFilePath());		// remove recent files which we could not load...
 	}
-	//else if (rFileIdx >= fileLabels.size()) {
-	//	qDebug() << "index out of range";
-	//}
-	//else
-	//	qDebug() << "could not load thumb..." << fileLabels.at(rFileIdx)->hasFile();
 
 	if (!fileLabels.empty())
 		rFileIdx++;
@@ -3148,33 +3131,11 @@ void DkRecentFilesWidget::updateFiles() {
 		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
 	}
+	else {
+		qDebug() << "LOADING stopped at " << rFileIdx << " num files: " << recentFiles.size();
+	}
 
 	update();
-
-
-	//int cHeight = 0;
-
-	//for (int idx = 0; idx < recentFiles.size(); idx++) {
-
-	//	if (recentFiles.at(idx).inUse())
-	//		continue;
-
-	//	if (recentFiles.at(idx).exists()) {
-	//		recentFiles[idx].setInUse(true);
-
-	//		DkFolderLabel* fLabel = new DkFolderLabel(recentFiles.at(idx), this);
-	//		connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
-	//		fileLabels.append(fLabel);
-	//		filesLayout->addWidget(fLabel);
-
-	//		cHeight += fLabel->height();
-	//		if (cHeight > folderWidget->height())
-	//			break;
-
-	//	}
-	//}
-
-	//filesLayout->addStretch();
 }
 
 void DkRecentFilesWidget::updateFolders() {
@@ -3185,23 +3146,19 @@ void DkRecentFilesWidget::updateFolders() {
 
 	int cHeight = 0;
 
-	for (int idx = 0; idx < recentFolders.size(); idx++) {
+	for (DkFileInfo fi : recentFolders) {
 
-		if (recentFolders.at(idx).inUse())
+		if (!fi.getFileInfo().isDir())
 			continue;
 
-		if (recentFolders.at(idx).exists()) {
-			recentFolders[idx].setInUse(true);
+		DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
+		connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+		folderLayout->addWidget(fLabel);
+		folderLabels.append(fLabel);
 
-			DkFolderLabel* fLabel = new DkFolderLabel(recentFolders.at(idx), this);
-			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
-			folderLayout->addWidget(fLabel);
-			folderLabels.append(fLabel);
-
-			cHeight += fLabel->height();
-			if (cHeight > folderWidget->height())
-				break;
-		}
+		cHeight += fLabel->height();
+		if (cHeight > folderWidget->height())
+			break;
 	}
 
 	folderLayout->addStretch();

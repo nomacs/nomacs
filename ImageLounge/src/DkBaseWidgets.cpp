@@ -558,8 +558,6 @@ bool DkResizableScrollArea::eventFilter(QObject * o, QEvent * e) {
 	if(widget() && o == widget() && e->type() == QEvent::Resize) {
 
 		updateSize();
-
-		qDebug() << "FILTERED: " << widget()->minimumSizeHint().height();
 	}
 
 	return false;
@@ -605,8 +603,6 @@ QSize DkResizableScrollArea::sizeHint() const {
 	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setWidth(ws.width());
 
-	qDebug() << "size hint: " << s;
-
 	return s;
 }
 
@@ -622,8 +618,6 @@ QSize DkResizableScrollArea::minimumSizeHint() const {
 		s.setHeight(ws.height());
 	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
 		s.setWidth(ws.width());
-
-	qDebug() << "MINIMUM size hint: " << s;
 
 	return s;
 }
