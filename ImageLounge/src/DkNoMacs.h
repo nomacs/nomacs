@@ -284,7 +284,9 @@ enum panelActions {
 	menu_panel_player,
 	menu_panel_preview,
 	menu_panel_thumbview,
+#ifdef WITH_FOLDER_SCROLLBAR
 	menu_panel_scroller,
+#endif
 	menu_panel_exif,
 	menu_panel_info,
 	menu_panel_histogram,

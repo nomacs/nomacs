@@ -97,6 +97,7 @@
 
 namespace nmc {
 
+#ifdef WITH_FOLDER_SCROLLBAR
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
 //#include <QStyle>
@@ -467,7 +468,7 @@ void DkFolderScrollBar::animateOpacityDown() {
 	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
 	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
 }
-
+#endif
 
 // DkThumbsSaver --------------------------------------------------------------------
 DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkWidget(parent) {
@@ -2853,6 +2854,7 @@ void DkFileInfo::setInUse(bool inUse) {
 QFileInfo DkFileInfo::getFileInfo() const {
 	return fileInfo;
 }
+
 
 // DkFileLabel --------------------------------------------------------------------
 DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {

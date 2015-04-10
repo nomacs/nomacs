@@ -287,7 +287,7 @@ protected:
 	QVector<QAction*> actions;
 };
 
-
+#ifdef WITH_FOLDER_SCROLLBAR
 class DkFolderScrollBar : public QScrollBar {
 	Q_OBJECT
 
@@ -356,6 +356,7 @@ protected:
 	void init();
 
 };
+#endif
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
 class DkThumbsSaver : public DkWidget {
