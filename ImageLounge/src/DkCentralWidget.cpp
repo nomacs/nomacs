@@ -32,6 +32,7 @@
 #include "DkThumbs.h"
 #include "DkBasicLoader.h"
 #include "DkImageContainer.h"
+#include "DkBatch.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
@@ -243,6 +244,7 @@ void DkCentralWidget::createLayout() {
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
 
 }
 
@@ -674,6 +676,16 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 void DkCentralWidget::loadFile(const QFileInfo& fileInfo) {
 
 	viewport->loadFile(fileInfo);
+}
+
+void DkCentralWidget::startBatchProcessing(const QStringList& selectedFiles) {
+
+	DkBatchDialog* batchDialog = new DkBatchDialog(getCurrentDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+	batchDialog->setSelectedFiles(selectedFiles);
+
+	batchDialog->exec();
+	batchDialog->deleteLater();
+
 }
 
 void DkCentralWidget::pasteImage() {

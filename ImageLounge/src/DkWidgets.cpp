@@ -2944,8 +2944,6 @@ void DkImageLabel::thumbLoaded() {
 	}
 	pm = pm.copy(r);
 
-	qDebug() << pm.size();
-
 	imageLabel->setPixmap(pm);
 }
 

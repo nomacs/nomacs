@@ -326,14 +326,16 @@ void DkFileSelection::createLayout() {
 	setLayout(widgetLayout);
 
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
-	connect(inputTextEdit, SIGNAL(fileListChangedSignal()), this, SLOT(selectionChanged()));
 	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), inputTextEdit, SLOT(appendFiles(const QStringList&)));
 	connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), this, SLOT(setDir(QDir)));
+	connect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), loader.data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
+	
+	connect(inputTextEdit, SIGNAL(fileListChangedSignal()), this, SLOT(selectionChanged()));
+
 	connect(directoryEdit, SIGNAL(textChanged(QString)), this, SLOT(emitChangedSignal()));
 	connect(directoryEdit, SIGNAL(directoryChanged(QDir)), this, SLOT(setDir(QDir)));
 	connect(explorer, SIGNAL(openDir(QDir)), this, SLOT(setDir(QDir)));
 	connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), thumbScrollWidget, SLOT(updateThumbs(QVector<QSharedPointer<DkImageContainerT> >)));
-	connect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), loader.data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
 
 }
 
@@ -1251,7 +1253,7 @@ void DkBatchDialog::accept() {
 			return;
 		}
 		else if (config.getOutputDir() == QDir()) {
-			QMessageBox::information(this, tr("Input Missing"), tr("Please choose an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
 
@@ -1363,6 +1365,15 @@ void DkBatchDialog::logButtonClicked() {
 	textDialog->setText(log);
 
 	textDialog->exec();
+}
+
+void DkBatchDialog::setSelectedFiles(const QStringList& selFiles) {
+
+	if (!selFiles.empty()) {
+		fileSelection->getInputEdit()->appendFiles(selFiles);
+		fileSelection->changeTab(DkFileSelection::tab_text_input);
+	}
+
 }
 
 void DkBatchDialog::widgetChanged() {

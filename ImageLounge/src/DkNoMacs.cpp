@@ -1328,12 +1328,12 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_mosaic]->setStatusTip(tr("Create a Mosaic Image"));
 	connect(toolsActions[menu_tools_mosaic], SIGNAL(triggered()), this, SLOT(computeMosaic()));
 
-	toolsActions[menu_tools_batch] = new QAction(tr("Batch processing"), this);
+	toolsActions[menu_tools_batch] = new QAction(tr("Batch Processing"), this);
 	toolsActions[menu_tools_batch]->setStatusTip(tr("Apply actions to multiple images"));
-	connect(toolsActions[menu_tools_batch], SIGNAL(triggered()), this, SLOT(computeBatch()));
+	connect(toolsActions[menu_tools_batch], SIGNAL(triggered()), getTabWidget(), SLOT(startBatchProcessing()));
 	// plugins menu
 	pluginsActions.resize(menu_plugins_end);
-	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin manager"), this);
+	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin Manager"), this);
 	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plugins and download new ones"));
 	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
 	// help menu
@@ -2716,13 +2716,6 @@ void DkNoMacs::computeMosaic() {
 
 	mosaicDialog->deleteLater();
 #endif
-}
-
-void DkNoMacs::computeBatch() {
-	
-	batchDialog = new DkBatchDialog(getTabWidget()->getCurrentDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
-	batchDialog->exec();
-	batchDialog->deleteLater();
 }
 
 void DkNoMacs::openImgManipulationDialog() {

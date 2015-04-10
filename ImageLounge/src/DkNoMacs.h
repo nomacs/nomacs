@@ -512,7 +512,6 @@ public slots:
 	void openImgManipulationDialog();
 	void exportTiff();
 	void computeMosaic();
-	void computeBatch();
 	void deleteFile();
 	void openAppManager();
 	void setWallpaper();
