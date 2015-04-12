@@ -2404,7 +2404,7 @@ void DkNoMacs::loadFile(const QFileInfo& file) {
 	if (!viewport())
 		return;
 
-	getTabWidget()->loadFile(file);
+	getTabWidget()->loadFileToTab(file);
 }
 
 void DkNoMacs::renameFile() {

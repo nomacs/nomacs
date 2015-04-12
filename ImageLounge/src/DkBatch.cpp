@@ -54,6 +54,7 @@
 #include <QApplication>
 #include <QTextBlock>
 #include <QDropEvent>
+#include <QMimeData>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

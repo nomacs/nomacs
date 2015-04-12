@@ -72,8 +72,14 @@ void DkTabInfo::loadSettings(const QSettings& settings) {
 
 void DkTabInfo::saveSettings(QSettings& settings) const {
 
+	QSharedPointer<DkImageContainerT> imgC;
 	if (imageLoader->getCurrentImage())
-		settings.setValue("tabFileInfo", imageLoader->getCurrentImage()->file().absoluteFilePath());
+		imgC = imageLoader->getCurrentImage();
+	else
+		imgC = imageLoader->getLastImage();
+
+	if (imgC)
+		settings.setValue("tabFileInfo", imgC->file().absoluteFilePath());
 	settings.setValue("tabMode", tabMode);
 }
 
@@ -250,13 +256,13 @@ void DkCentralWidget::createLayout() {
 
 void DkCentralWidget::saveSettings(bool clearTabs) {
 
-	if (tabInfos.size() <= 1)	// nothing to save here
-		return;
+	//if (tabInfos.size() <= 1)	// nothing to save here
+	//	return;
 
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-	settings.remove("Tabs");
+	//settings.remove("");
 
 	if (clearTabs) {
 
@@ -676,6 +682,15 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 void DkCentralWidget::loadFile(const QFileInfo& fileInfo) {
 
 	viewport->loadFile(fileInfo);
+}
+
+
+void DkCentralWidget::loadFileToTab(const QFileInfo& fileInfo) {
+
+	if (tabInfos.size() > 1 || tabInfos.at(0)->getMode() != DkTabInfo::tab_empty)
+		addTab(fileInfo);
+	else
+		viewport->loadFile(fileInfo);
 }
 
 void DkCentralWidget::startBatchProcessing(const QStringList& selectedFiles) {

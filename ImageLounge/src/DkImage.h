@@ -103,6 +103,7 @@ public:
 
 	void rotateImage(double angle);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
+	QSharedPointer<DkImageContainerT> getLastImage() const;
 	QFileInfo file() const;
 	QStringList getFileNames();
 	QVector<QSharedPointer<DkImageContainerT> > getImages();
