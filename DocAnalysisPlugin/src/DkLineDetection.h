@@ -32,15 +32,17 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QLayout>
+#include <QVector2D>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <numeric>      // std::accumulate
 #include <windows.h> 
 #include <iostream>
 #include "BorderLayout.h"
-
+#include "DkMetaData.h"
 
 //#include "DkImage.h"
 #include "DkImageStorage.h"
@@ -133,10 +135,11 @@ class DkLineDetectionDialog : public QDialog {
 	Q_OBJECT
 
 	public:
-		DkLineDetectionDialog(DkLineDetection *lineDetector, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+		DkLineDetectionDialog(DkLineDetection *lineDetector, QSharedPointer<DkMetaDataT> metaData, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 		~DkLineDetectionDialog();
 
 		void setDefaultConfiguration();
+		void setMetaData(QSharedPointer<DkMetaDataT> metaData);
 
 	protected:
 		int dialogWidth;
@@ -151,14 +154,21 @@ class DkLineDetectionDialog : public QDialog {
 		void detectLinesPressed();
 		void cancelPressed();
 		void enableOptimizationSettings(int);
+		void stripeLengthSliderValChanged(int);
+		void stripeLengthSliderValChangedCM(double);
+		void lineHeightSliderValChanged(int);
+		void lineHeightSliderValChangedCM(double);
 
 	private:
 		DkLineDetection *lineDetector; /**< The corresponding line detector tool **/
+		QSharedPointer<DkMetaDataT> metaData; /**< metadata containing the image resolution **/
 
 		int margin;
 		// UI elements
-		QSpinBox *spinnerStripeLength;
-		QSpinBox *spinnerNonExtKernelSize;
+		QSpinBox *spinnerStripeLength; // parameter referring to the word length
+		QDoubleSpinBox *spinnerStripeLengthCM;
+		QSpinBox *spinnerNonExtKernelSize; // parameter referring to the line height
+		QDoubleSpinBox *spinnerNonExtKernelSizeCM;
 		QCheckBox *checkOptimize;
 		QCheckBox *checkSobelX;
 		QCheckBox *checkSobelY;
@@ -179,6 +189,9 @@ class DkLineDetectionDialog : public QDialog {
 		int oldBoxFilterSizeY; /**< Height of the box filter to blur the edge images **/
 		int oldRemoveShort; /**< 1 means to remove short lines during text line detection **/
 
+
+		bool changingStripeSlider;
+		bool changingLineHeightSlider;
 };
 
 };

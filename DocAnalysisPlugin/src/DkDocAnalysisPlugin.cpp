@@ -912,7 +912,6 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 	this->win = win;
 	brightnessThreshold = 0.3;
 
-	QSharedPointer<DkMetaDataT> metadata;
 	QImage image;
 	// >DIR: OK, let's get the current image metadata [21.10.2014 markus]
 	// all ifs are to be 100% save : )
@@ -965,6 +964,7 @@ void DkDocAnalysisViewPort::setMainWindow(QMainWindow* win) {
 		lineDetection->setImage(img);
 		if(lineDetectionDialog) {
 			lineDetectionDialog->setDefaultConfiguration();
+			lineDetectionDialog->setMetaData(metadata);
 		}
 		// disable the display text lines button
 		showBottomTextLines(false);
@@ -1220,7 +1220,7 @@ void DkDocAnalysisViewPort::openLineDetectionDialog() {
 	if (viewport->getImage().isNull()) return;
 
 	if (!lineDetectionDialog) {
-		lineDetectionDialog = new DkLineDetectionDialog(lineDetection, this, 0);
+		lineDetectionDialog = new DkLineDetectionDialog(lineDetection, metadata, this, 0);
 		//connect(magicCutDialog, SIGNAL(savePressed(QImage, QString)), this, SLOT(saveMagicCutPressed(QImage, QString)));
 	}
 

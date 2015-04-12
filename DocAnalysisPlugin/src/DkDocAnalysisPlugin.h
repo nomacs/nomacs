@@ -219,7 +219,7 @@ private:
 	// line detection variables
 	DkLineDetection *lineDetection; /**< Tool for detecting text lines within an image **/
 	DkLineDetectionDialog *lineDetectionDialog;
-
+	QSharedPointer<DkMetaDataT> metadata;
 };
 
 
