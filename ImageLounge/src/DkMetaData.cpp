@@ -984,7 +984,7 @@ bool DkMetaDataT::setDescription(const QString& description) {
 	if (exifState == not_loaded || exifState == no_data)
 		return false;
 
-	return setExifValue("Exif.Image.ImageDescription", description);
+	return setExifValue("Exif.Image.ImageDescription", description.toUtf8());
 }
 
 void DkMetaDataT::setRating(int r) {
