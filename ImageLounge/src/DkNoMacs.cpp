@@ -2477,9 +2477,10 @@ void DkNoMacs::renameFile() {
 
 void DkNoMacs::find(bool filterAction) {
 
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) 
+		applyPluginChanges(true, false);
 
-	if (!viewport())
+	if (!viewport() || getTabWidget()->getCurrentImageLoader())
 		return;
 
 	if (filterAction) {
@@ -2540,7 +2541,8 @@ void DkNoMacs::changeSorting(bool change) {
 
 void DkNoMacs::goTo() {
 
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) 
+		applyPluginChanges(true, false);
 
 	if (!viewport() || !getTabWidget()->getCurrentImageLoader())
 		return;
@@ -2566,7 +2568,7 @@ void DkNoMacs::trainFormat() {
 	trainDialog->setCurrentFile(getTabWidget()->getCurrentFile());
 	bool okPressed = trainDialog->exec() != 0;
 
-	if (okPressed) {
+	if (okPressed && getTabWidget()->getCurrentImageLoader()) {
 		getTabWidget()->getCurrentImageLoader()->load(trainDialog->getAcceptedFile());
 		restart();	// quick & dirty, but currently he messes up the filteredFileList if the same folder was already loaded
 	}
@@ -2610,18 +2612,21 @@ void DkNoMacs::saveFileAs(bool silent) {
 	if(!currRunningPlugin.isEmpty()) 
 		applyPluginChanges(true, true);
 
-	getTabWidget()->getCurrentImageLoader()->saveUserFileAs(getTabWidget()->getViewPort()->getImage(), silent);
+	if (getTabWidget()->getCurrentImageLoader())
+		getTabWidget()->getCurrentImageLoader()->saveUserFileAs(getTabWidget()->getViewPort()->getImage(), silent);
 }
 
 void DkNoMacs::saveFileWeb() {
 
-	getTabWidget()->getCurrentImageLoader()->saveFileWeb(getTabWidget()->getViewPort()->getImage());
+	if (getTabWidget()->getCurrentImageLoader())
+		getTabWidget()->getCurrentImageLoader()->saveFileWeb(getTabWidget()->getViewPort()->getImage());
 }
 
 void DkNoMacs::resizeImage() {
 
 
-	if(!getCurrRunningPlugin().isEmpty()) applyPluginChanges(true, false);
+	if(!getCurrRunningPlugin().isEmpty()) 
+		applyPluginChanges(true, false);
 
 	if (!viewport() || viewport()->getImage().isNull())
 		return;
@@ -2673,7 +2678,7 @@ void DkNoMacs::deleteFile() {
 	if(!getCurrRunningPlugin().isEmpty()) 
 		applyPluginChanges(false, false);
 
-	if (!viewport() || viewport()->getImage().isNull())
+	if (!viewport() || viewport()->getImage().isNull() || !getTabWidget()->getCurrentImageLoader())
 		return;
 
 	QFileInfo file = getTabWidget()->getCurrentFile();
@@ -2831,7 +2836,8 @@ void DkNoMacs::computeThumbsBatch() {
 	if (!thumbSaver)
 		thumbSaver = new DkThumbsSaver(this);
 	
-	thumbSaver->processDir(getTabWidget()->getCurrentImageLoader()->getImages(), forceDialog->forceSave());
+	if (getTabWidget()->getCurrentImageLoader())
+		thumbSaver->processDir(getTabWidget()->getCurrentImageLoader()->getImages(), forceDialog->forceSave());
 }
 
 void DkNoMacs::aboutDialog() {

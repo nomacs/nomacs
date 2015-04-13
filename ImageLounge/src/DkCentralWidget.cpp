@@ -557,6 +557,9 @@ QVector<QSharedPointer<DkTabInfo> > DkCentralWidget::getTabs() const {
 
 void DkCentralWidget::showThumbView(bool show) {
 
+	if (tabInfos.empty())
+		return;
+
 	QSharedPointer<DkTabInfo> tabInfo = tabInfos[tabbar->currentIndex()];
 
 	if (show) {
@@ -653,10 +656,16 @@ void DkCentralWidget::switchWidget(QWidget* widget) {
 
 int DkCentralWidget::currentViewMode() const {
 
+	if (tabInfos.empty())
+		return DkTabInfo::tab_empty;
+
 	return tabInfos[tabbar->currentIndex()]->getMode();
 }
 
 QSharedPointer<DkImageContainerT> DkCentralWidget::getCurrentImage() const {
+
+	if (tabInfos.empty())
+		return QSharedPointer<DkImageContainerT>();
 
 	return tabInfos[tabbar->currentIndex()]->getImage();
 }
@@ -670,6 +679,9 @@ QFileInfo DkCentralWidget::getCurrentFile() const {
 }
 
 QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const {
+
+	if (tabInfos.empty())
+		return QSharedPointer<DkImageLoader>();
 
 	return tabInfos[tabbar->currentIndex()]->getImageLoader();
 }
@@ -809,7 +821,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		else
 			qDebug() << urls.size() << file.suffix() << " files dropped";
 
-		if (tabInfos[tabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview) {
+		if (!tabInfos.empty() && tabInfos[tabbar->currentIndex()]->getMode() == DkTabInfo::tab_thumb_preview) {
 			// TODO: this event won't be called if the thumbs view is visible
 
 			// >DIR: TODO [19.2.2015 markus]
@@ -820,7 +832,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 			// just accept image files
 			if (DkUtils::isValid(file) || file.isDir())
 				loadFile(file);
-			else if (url.isValid()) {
+			else if (url.isValid() && !tabInfos.empty()) {
 				tabInfos[tabbar->currentIndex()]->getImageLoader()->downloadFile(url);
 			}
 			else

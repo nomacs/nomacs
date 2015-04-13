@@ -1769,15 +1769,18 @@ void DkThumbsView::fetchThumbs() {
 	int maxThreads = DkSettings::resources.maxThumbsLoading*2;
 
 	// don't do anything if it is loading anyway
-	if (DkSettings::resources.numThumbsLoading)
+	if (DkSettings::resources.numThumbsLoading/* > maxThreads*/) {
+		//qDebug() << "rejected because num thumbs loading: " << 
 		return;
+	}
 
+	qDebug() << "currently loading: " << DkSettings::resources.numThumbsLoading << " thumbs";
 
 	//bool firstReached = false;
 
 	QList<QGraphicsItem*> items = scene->items(mapToScene(viewport()->rect()).boundingRect(), Qt::IntersectsItemShape);
 
-	qDebug() << mapToScene(viewport()->rect()).boundingRect() << " number of items: " << items.size();
+	//qDebug() << mapToScene(viewport()->rect()).boundingRect() << " number of items: " << items.size();
 
 	for (int idx = 0; idx < items.size(); idx++) {
 
