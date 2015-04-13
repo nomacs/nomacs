@@ -182,13 +182,17 @@ protected:
 
 	void contextMenuEvent(QContextMenuEvent *event);
 
+	// current metadata
 	QSharedPointer<DkMetaDataT> metaData;
+	QStringList keyValues;
+
+	// gui elements
 	QVector<QLabel*> entryKeyLabels;
 	QVector<QLabel*> entryValueLabels;
-	QStringList keyValues;
 	QGridLayout* contentLayout;
 	QWidget* contentWidget;
 	DkResizableScrollArea* scrollArea;
+	QWidget* titleWidget;
 
 	QMenu* contextMenu;
 	QVector<QAction*> actions;
@@ -196,6 +200,7 @@ protected:
 	int numColumns;
 	int windowPosition;
 	Qt::Orientation orientation;
+	
 };
 
 class DkCommentTextEdit : public QTextEdit {

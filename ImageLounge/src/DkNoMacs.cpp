@@ -274,13 +274,16 @@ void DkNoMacs::init() {
 	getTabWidget()->getThumbScrollWidget()->registerAction(panelActions[menu_panel_thumbview]);
 	getTabWidget()->getRecentFilesWidget()->registerAction(fileActions[menu_file_show_recent]);
 	viewport()->getController()->getFilePreview()->registerAction(panelActions[menu_panel_preview]);
-	viewport()->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
 	viewport()->getController()->getMetaDataWidget()->registerAction(panelActions[menu_panel_exif]);
 	viewport()->getController()->getPlayer()->registerAction(panelActions[menu_panel_player]);
 	viewport()->getController()->getCropWidget()->registerAction(editActions[menu_edit_crop]);
 	viewport()->getController()->getFileInfoLabel()->registerAction(panelActions[menu_panel_info]);
 	viewport()->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 	viewport()->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
+
+#ifdef WITH_FOLDER_SCROLLBAR
+	viewport()->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
+#endif
 
 	enableMovieActions(false);
 
@@ -681,7 +684,9 @@ void DkNoMacs::createMenu() {
 	panelMenu->addAction(panelActions[menu_panel_metadata_dock]);
 	panelMenu->addAction(panelActions[menu_panel_preview]);
 	panelMenu->addAction(panelActions[menu_panel_thumbview]);
+#ifdef WITH_FOLDER_SCROLLBAR
 	panelMenu->addAction(panelActions[menu_panel_scroller]);
+#endif
 	panelMenu->addAction(panelActions[menu_panel_exif]);
 	
 	panelMenu->addSeparator();
@@ -765,7 +770,9 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(panelActions[menu_panel_metadata_dock]);
 	contextMenu->addAction(panelActions[menu_panel_preview]);
 	contextMenu->addAction(panelActions[menu_panel_thumbview]);
+#ifdef WITH_FOLDER_SCROLLBAR
 	contextMenu->addAction(panelActions[menu_panel_scroller]);
+#endif
 	contextMenu->addAction(panelActions[menu_panel_exif]);
 	contextMenu->addAction(panelActions[menu_panel_overview]);
 	contextMenu->addAction(panelActions[menu_panel_player]);
@@ -1145,11 +1152,13 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_thumbview]->setCheckable(true);
 	connect(panelActions[menu_panel_thumbview], SIGNAL(toggled(bool)), getTabWidget(), SLOT(showThumbView(bool)));
 
+#ifdef WITH_FOLDER_SCROLLBAR
 	panelActions[menu_panel_scroller] = new QAction(tr("&Folder Scrollbar"), this);
 	panelActions[menu_panel_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
 	panelActions[menu_panel_scroller]->setStatusTip(tr("Show Folder Scrollbar"));
 	panelActions[menu_panel_scroller]->setCheckable(true);
 	connect(panelActions[menu_panel_scroller], SIGNAL(toggled(bool)), vp->getController(), SLOT(showScroller(bool)));
+#endif
 
 	panelActions[menu_panel_exif] = new QAction(tr("&Metadata"), this);
 	panelActions[menu_panel_exif]->setShortcut(QKeySequence(shortcut_show_exif));
@@ -1189,10 +1198,10 @@ void DkNoMacs::createActions() {
 	viewActions[menu_view_fullscreen]->setStatusTip(tr("Full Screen"));
 	connect(viewActions[menu_view_fullscreen], SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
-	viewActions[menu_view_reset] = new QAction(viewIcons[icon_view_reset], tr("&Reset Canvas"), this);
+	viewActions[menu_view_reset] = new QAction(viewIcons[icon_view_reset], tr("&Zoom to Fit"), this);
 	viewActions[menu_view_reset]->setShortcut(QKeySequence(shortcut_reset_view));
 	viewActions[menu_view_reset]->setStatusTip(tr("Shows the initial view (no zooming)"));
-	connect(viewActions[menu_view_reset], SIGNAL(triggered()), vp, SLOT(resetView()));
+	connect(viewActions[menu_view_reset], SIGNAL(triggered()), vp, SLOT(zoomToFit()));
 
 	viewActions[menu_view_100] = new QAction(viewIcons[icon_view_100], tr("Show &100%"), this);
 	viewActions[menu_view_100]->setShortcut(QKeySequence(shortcut_zoom_full));
@@ -1328,12 +1337,12 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_mosaic]->setStatusTip(tr("Create a Mosaic Image"));
 	connect(toolsActions[menu_tools_mosaic], SIGNAL(triggered()), this, SLOT(computeMosaic()));
 
-	toolsActions[menu_tools_batch] = new QAction(tr("Batch processing"), this);
+	toolsActions[menu_tools_batch] = new QAction(tr("Batch Processing"), this);
 	toolsActions[menu_tools_batch]->setStatusTip(tr("Apply actions to multiple images"));
-	connect(toolsActions[menu_tools_batch], SIGNAL(triggered()), this, SLOT(computeBatch()));
+	connect(toolsActions[menu_tools_batch], SIGNAL(triggered()), getTabWidget(), SLOT(startBatchProcessing()));
 	// plugins menu
 	pluginsActions.resize(menu_plugins_end);
-	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin manager"), this);
+	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin Manager"), this);
 	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plugins and download new ones"));
 	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
 	// help menu
@@ -1513,9 +1522,11 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #else
 	panelActions[menu_panel_histogram]->setEnabled(false);
 #endif
+#ifdef WITH_FOLDER_SCROLLBAR
+	panelActions[menu_panel_scroller]->setEnabled(enable);
+#endif
 	panelActions[menu_panel_comment]->setEnabled(enable);
 	panelActions[menu_panel_preview]->setEnabled(enable);
-	panelActions[menu_panel_scroller]->setEnabled(enable);
 	panelActions[menu_panel_exif]->setEnabled(enable);
 	panelActions[menu_panel_overview]->setEnabled(enable);
 	panelActions[menu_panel_player]->setEnabled(enable);
@@ -2393,7 +2404,7 @@ void DkNoMacs::loadFile(const QFileInfo& file) {
 	if (!viewport())
 		return;
 
-	getTabWidget()->loadFile(file);
+	getTabWidget()->loadFileToTab(file);
 }
 
 void DkNoMacs::renameFile() {
@@ -2643,7 +2654,8 @@ void DkNoMacs::resizeImage() {
 			if (metaData)
 				metaData->setResolution(QVector2D(resizeDialog->getExifDpi(), resizeDialog->getExifDpi()));
 
-			viewport()->setEditedImage(rImg);
+			imgC->setImage(rImg);
+			viewport()->setEditedImage(imgC);
 		}
 	}
 	else if (metaData) {
@@ -2715,13 +2727,6 @@ void DkNoMacs::computeMosaic() {
 
 	mosaicDialog->deleteLater();
 #endif
-}
-
-void DkNoMacs::computeBatch() {
-	
-	batchDialog = new DkBatchDialog(getTabWidget()->getCurrentDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
-	batchDialog->exec();
-	batchDialog->deleteLater();
 }
 
 void DkNoMacs::openImgManipulationDialog() {

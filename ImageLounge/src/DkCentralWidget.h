@@ -155,6 +155,8 @@ public slots:
 	void showTabs(bool show = true);
 	void pasteImage();
 	void loadFile(const QFileInfo& fileInfo);
+	void loadFileToTab(const QFileInfo& fileInfo);
+	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
 
 protected:
 	DkViewPort* viewport;

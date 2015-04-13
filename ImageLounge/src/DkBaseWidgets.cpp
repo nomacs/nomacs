@@ -36,6 +36,8 @@
 #include <QTimer>
 #include <QPainter>
 #include <QStyleOption>
+#include <QEvent>
+#include <QScrollBar>
 #pragma warning(pop)	// no warnings from includes - end
 
 namespace nmc {
@@ -551,10 +553,47 @@ DkResizableScrollArea::DkResizableScrollArea(QWidget * parent /* = 0 */) : QScro
 
 }
 
+bool DkResizableScrollArea::eventFilter(QObject * o, QEvent * e) {
+
+	if(widget() && o == widget() && e->type() == QEvent::Resize) {
+
+		updateSize();
+	}
+
+	return false;
+}
+
+void DkResizableScrollArea::updateSize() {
+
+	if (!widget())
+		return;
+
+	updateGeometry();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+		
+		int height = widget()->minimumSizeHint().height();
+
+		if (horizontalScrollBar()->isVisible())
+			height += horizontalScrollBar()->height();
+		setMinimumHeight(height);
+	}
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+	
+		int width = widget()->minimumSizeHint().width();
+
+		if (verticalScrollBar()->isVisible())
+			width += verticalScrollBar()->height();
+		setMinimumWidth(width);
+	}
+}
+
 QSize DkResizableScrollArea::sizeHint() const {
 
 	if (!widget())
 		return QScrollArea::sizeHint();
+
+	widget()->updateGeometry();
 
 	QSize s = QScrollArea::sizeHint();
 	QSize ws = widget()->sizeHint();

@@ -168,7 +168,6 @@ enum {
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
 	shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
-	//shortcut_play			= Qt::Key_Space,
 
 	// edit
 	shortcut_rotate_cw		= Qt::Key_R,
@@ -285,7 +284,9 @@ enum panelActions {
 	menu_panel_player,
 	menu_panel_preview,
 	menu_panel_thumbview,
+#ifdef WITH_FOLDER_SCROLLBAR
 	menu_panel_scroller,
+#endif
 	menu_panel_exif,
 	menu_panel_info,
 	menu_panel_histogram,
@@ -513,7 +514,6 @@ public slots:
 	void openImgManipulationDialog();
 	void exportTiff();
 	void computeMosaic();
-	void computeBatch();
 	void deleteFile();
 	void openAppManager();
 	void setWallpaper();

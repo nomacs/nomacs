@@ -390,6 +390,7 @@ public slots:
 	void processingFinished();
 	void updateProgress(int progress);
 	void updateLog();
+	void setSelectedFiles(const QStringList& selFiles);
 
 protected:
 	void createLayout();

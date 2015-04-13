@@ -103,6 +103,7 @@ public:
 
 	void rotateImage(double angle);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
+	QSharedPointer<DkImageContainerT> getLastImage() const;
 	QFileInfo file() const;
 	QStringList getFileNames();
 	QVector<QSharedPointer<DkImageContainerT> > getImages();
@@ -117,6 +118,7 @@ public:
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
 	QSharedPointer<DkImageContainerT> setImage(QImage img, QFileInfo editFile = QFileInfo());
+	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
 	bool hasFile() const;
 	bool hasMovie();
 	QString fileName();

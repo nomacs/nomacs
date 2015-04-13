@@ -233,8 +233,13 @@ class DkResizableScrollArea : public QScrollArea {
 public:
 	DkResizableScrollArea(QWidget * parent = 0);
 
+	void updateSize();
+
 	virtual QSize sizeHint() const;
 	virtual QSize minimumSizeHint() const;
+
+protected:
+	bool eventFilter(QObject * o, QEvent * e);
 
 };
 

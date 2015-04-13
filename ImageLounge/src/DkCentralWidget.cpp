@@ -32,6 +32,7 @@
 #include "DkThumbs.h"
 #include "DkBasicLoader.h"
 #include "DkImageContainer.h"
+#include "DkBatch.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
@@ -71,8 +72,14 @@ void DkTabInfo::loadSettings(const QSettings& settings) {
 
 void DkTabInfo::saveSettings(QSettings& settings) const {
 
+	QSharedPointer<DkImageContainerT> imgC;
 	if (imageLoader->getCurrentImage())
-		settings.setValue("tabFileInfo", imageLoader->getCurrentImage()->file().absoluteFilePath());
+		imgC = imageLoader->getCurrentImage();
+	else
+		imgC = imageLoader->getLastImage();
+
+	if (imgC)
+		settings.setValue("tabFileInfo", imgC->file().absoluteFilePath());
 	settings.setValue("tabMode", tabMode);
 }
 
@@ -243,18 +250,19 @@ void DkCentralWidget::createLayout() {
 
 	// thumbnail preview widget
 	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
 
 }
 
 void DkCentralWidget::saveSettings(bool clearTabs) {
 
-	if (tabInfos.size() <= 1)	// nothing to save here
-		return;
+	//if (tabInfos.size() <= 1)	// nothing to save here
+	//	return;
 
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-	settings.remove("Tabs");
+	//settings.remove("");
 
 	if (clearTabs) {
 
@@ -674,6 +682,25 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 void DkCentralWidget::loadFile(const QFileInfo& fileInfo) {
 
 	viewport->loadFile(fileInfo);
+}
+
+
+void DkCentralWidget::loadFileToTab(const QFileInfo& fileInfo) {
+
+	if (tabInfos.size() > 1 || tabInfos.at(0)->getMode() != DkTabInfo::tab_empty)
+		addTab(fileInfo);
+	else
+		viewport->loadFile(fileInfo);
+}
+
+void DkCentralWidget::startBatchProcessing(const QStringList& selectedFiles) {
+
+	DkBatchDialog* batchDialog = new DkBatchDialog(getCurrentDir(), this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+	batchDialog->setSelectedFiles(selectedFiles);
+
+	batchDialog->exec();
+	batchDialog->deleteLater();
+
 }
 
 void DkCentralWidget::pasteImage() {

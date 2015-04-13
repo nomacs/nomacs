@@ -1975,7 +1975,6 @@ void DkThumbScrollWidget::batchProcessFiles() const {
 
 	QStringList fileList = thumbsScene->getSelectedFiles();
 	emit batchProcessFilesSignal(fileList);
-
 }
 
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
