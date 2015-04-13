@@ -2876,11 +2876,11 @@ void DkNoMacs::featureRequest() {
 
 	url += "&issue[custom_field_values][4]=";
 #if defined WIN32 &&	_MSC_VER == 1600
-	url += "Windows XP";
+	url += "Windows Vista/XP";
 #elif defined WIN32 && _WIN64
-	url += "Windows Vista/7/8 64bit";
+	url += "Windows 7/8/10 64bit";
 #elif defined WIN32 && _WIN32
-	url += "Windows Vista/7/8 32bit";
+	url += "Windows 7/8/10 32bit";
 #elif defined Q_WS_X11 && __x86_64__
 	url += "Linux 64bit";
 #elif defined Q_WS_X11 && __i386__
