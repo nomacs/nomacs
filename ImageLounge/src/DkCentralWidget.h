@@ -125,7 +125,8 @@ public:
 	void updateTabs();
 	void updateTab(QSharedPointer<DkTabInfo> tabInfo);
 	QVector<QSharedPointer<DkTabInfo> > getTabs() const;
-	void saveSettings(bool clearTabs = false);
+	void loadSettings();
+	void saveSettings(bool clearTabs = false) const;
 	int currentViewMode() const;
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
 	QFileInfo getCurrentFile() const;
@@ -170,7 +171,6 @@ protected:
 	QStackedLayout* viewLayout;
 
 	void createLayout();
-	void loadSettings();
 	void updateTabIdx();
 	void switchWidget(int widget);
 	void switchWidget(QWidget* widget = 0);

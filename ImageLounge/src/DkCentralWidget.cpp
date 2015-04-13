@@ -123,10 +123,14 @@ void DkTabInfo::deactivate() {
 
 void DkTabInfo::activate(bool isActive) {
 	
-	imageLoader->activate(isActive);
+	if (imageLoader)
+		imageLoader->activate(isActive);
 }
 
 QSharedPointer<DkImageContainerT> DkTabInfo::getImage() const {
+
+	if (!imageLoader)
+		return QSharedPointer<DkImageContainerT>();
 
 	return imageLoader->getCurrentImage();
 }
@@ -189,16 +193,16 @@ DkCentralWidget::DkCentralWidget(DkViewPort* viewport, QWidget* parent) : QWidge
 	this->viewport = viewport;
 	setObjectName("DkCentralWidget");
 	createLayout();
-	loadSettings();
+	//loadSettings();
 
 	setAcceptDrops(true);
 
-	if (tabInfos.empty()) {
-		QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
-		info->setMode(DkTabInfo::tab_empty);
-		info->setTabIdx(0);
-		addTab(info);
-	}
+	//if (tabInfos.empty()) {
+	//	QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
+	//	info->setMode(DkTabInfo::tab_empty);
+	//	info->setTabIdx(0);
+	//	addTab(info);
+	//}
 }
 
 DkCentralWidget::~DkCentralWidget() {
@@ -254,7 +258,7 @@ void DkCentralWidget::createLayout() {
 
 }
 
-void DkCentralWidget::saveSettings(bool saveTabs) {
+void DkCentralWidget::saveSettings(bool saveTabs) const {
 
 	QSettings& settings = Settings::instance().getSettings();
 
@@ -294,6 +298,14 @@ void DkCentralWidget::loadSettings() {
 
 	settings.endArray();
 	settings.endGroup();
+
+	if (tabInfos.empty()) {
+		QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
+		info->setMode(DkTabInfo::tab_empty);
+		info->setTabIdx(0);
+		addTab(info);
+	}
+
 }
 
 DkViewPort* DkCentralWidget::getViewPort() const {

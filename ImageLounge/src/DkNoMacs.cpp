@@ -2994,18 +2994,21 @@ void DkNoMacs::onWindowLoaded() {
 	if (DkDockWidget::testDisplaySettings(DkSettings::app.showMetaDataDock))
 		showMetaDataDock(true);
 
-	if (!firstTime)
-		return;
+	if (firstTime) {
 
-	// here are some first time requests
-	DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
-	wecomeDialog->exec();
+		// here are some first time requests
+		DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
+		wecomeDialog->exec();
 
-	settings.setValue("AppSettings/firstTime", false);
+		settings.setValue("AppSettings/firstTime", false);
 
-	if (wecomeDialog->isLanguageChanged()) {
-		restartWithTranslationUpdate();
+		if (wecomeDialog->isLanguageChanged()) {
+			restartWithTranslationUpdate();
+		}
 	}
+
+	// load settings AFTER everything is initialized
+	getTabWidget()->loadSettings();
 
 }
 
