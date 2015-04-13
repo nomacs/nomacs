@@ -300,7 +300,7 @@ void DkNoMacs::init() {
 	}
 #endif // Q_WS_WIN
 
-	QTimer::singleShot(0, this, SLOT(onWindowLoaded()));
+	//QTimer::singleShot(0, this, SLOT(onWindowLoaded()));
 }
 
 #ifdef WIN32	// windows specific versioning

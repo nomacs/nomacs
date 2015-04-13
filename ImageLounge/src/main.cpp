@@ -182,6 +182,9 @@ int main(int argc, char *argv[]) {
 	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
 
+	if (w)
+		w->onWindowLoaded();
+
 	// TODO: time to switch -> qt 5 has a command line parser
 	if (args.size() > 1 && args[1] == "-p") {
 	}

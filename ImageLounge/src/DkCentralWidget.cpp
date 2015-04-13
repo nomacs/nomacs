@@ -46,7 +46,9 @@ namespace nmc {
 DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObject* parent) : QObject(parent) {
 
 	imageLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
-	deactivate();
+	
+	if (!imgC)
+		deactivate();
 	imageLoader->setCurrentImage(imgC);
 
 	this->tabMode = (!imgC) ? tab_recent_files : tab_single_image;
@@ -167,6 +169,9 @@ QString DkTabInfo::getTabText() const {
 		return QObject::tr("Thumbnail Preview");
 
 	QSharedPointer<DkImageContainerT> imgC = imageLoader->getCurrentImage();
+
+	if (!imgC)
+		imgC = imageLoader->getLastImage();
 
 	if (imgC) {
 
@@ -719,8 +724,9 @@ void DkCentralWidget::loadFile(const QFileInfo& fileInfo) {
 
 void DkCentralWidget::loadFileToTab(const QFileInfo& fileInfo) {
 
-	if (tabInfos.size() > 1 || tabInfos.at(0)->getMode() != DkTabInfo::tab_empty)
+	if (tabInfos.size() > 1 || !tabInfos.empty() && tabInfos.at(0)->getMode() != DkTabInfo::tab_empty) {
 		addTab(fileInfo);
+	}
 	else
 		viewport->loadFile(fileInfo);
 }
