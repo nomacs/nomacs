@@ -2480,7 +2480,7 @@ void DkNoMacs::find(bool filterAction) {
 	if(!getCurrRunningPlugin().isEmpty()) 
 		applyPluginChanges(true, false);
 
-	if (!viewport() || getTabWidget()->getCurrentImageLoader())
+	if (!viewport() || !getTabWidget()->getCurrentImageLoader())
 		return;
 
 	if (filterAction) {

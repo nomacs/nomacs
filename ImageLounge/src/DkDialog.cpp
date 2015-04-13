@@ -428,6 +428,7 @@ void DkTrainDialog::dragEnterEvent(QDragEnterEvent *event) {
 // DkAppManager --------------------------------------------------------------------
 DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 	
+	firstTime = true;	// is false if settings contain paths
 	defaultNames.resize(app_idx_end);
 	defaultNames[app_photohsop]		= "PhotoshopAction";
 	defaultNames[app_picasa]		= "PicasaAction";
@@ -437,7 +438,8 @@ DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 
 	this->parent = parent;
 	loadSettings();
-	findDefaultSoftware();
+	if (firstTime)
+		findDefaultSoftware();
 
 	for (int idx = 0; idx < apps.size(); idx++) {
 		assignIcon(apps.at(idx));
@@ -475,7 +477,9 @@ void DkAppManager::loadSettings() {
 	settings.beginGroup("DkAppManager");
 	
 	int size = settings.beginReadArray("Apps");
-	
+	if (size > 0)
+		firstTime = false;
+
 	for (int idx = 0; idx < size; idx++) {
 		settings.setArrayIndex(idx);
 		QAction* action = new QAction(parent);

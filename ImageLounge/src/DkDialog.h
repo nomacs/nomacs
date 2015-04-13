@@ -216,6 +216,7 @@ protected:
 	QVector<QString> defaultNames;
 	QVector<QAction* > apps;
 	QWidget* parent;
+	bool firstTime;
 };
 
 class DkAppManagerDialog : public QDialog {
