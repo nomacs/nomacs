@@ -413,7 +413,7 @@ void DkLineDetection::findLocalMinima() {
 	cv::Mat histogram, extrHist, maxima, minima;
 	cv::Mat diffkernel = (cv::Mat_<double>(2,1) << -1, 1);
 	cv::Mat sxkernel = (cv::Mat_<double>(2,1) << 1, -1);
-
+	/*
 	if (debug)
 			debugOutputMat(&diffkernel, "diffkernel");
 
@@ -464,27 +464,11 @@ void DkLineDetection::findLocalMinima() {
 
 	// now find local maxima and minima
 	maxima = extrHist > 0;
-	minima = extrHist < 0;
+	minima = extrHist < 0;*/
 
-	if (debug) {
-			debugOutputMat(&maxima, "maxima");
-			//cv::namedWindow( "filtered with sx kernel", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			//cv::imshow( "filtered with sx kernel", extrHist);
-	}
 
-	if (debug) {
-			debugOutputMat(&minima, "minima");
-
-			// >DIR: these are no-go dependencies ( [21.10.2014 markus]
-			// in order to display debug output - you can either draw them in the viewport or save these images
-			// DkBasicLoader is pretty handy for saving... -> if you open another nomacs instance, images are automatically updated on writing
-
-			//cv::namedWindow( "minima", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-			//cv::imshow( "minima", minima);
-	}
-
-	cv::Mat lower, upper;
-	const clock_t begin_time_n = clock();
+	//cv::Mat lower, upper;
+	//const clock_t begin_time_n = clock();
 
 	/*
 	//if (true) {
@@ -764,8 +748,6 @@ void DkLineDetection::nonExtremaSuppression(cv::Mat *histogram, cv::Mat *maxima,
 	cv::Mat max_indices, min_indices;
 	max_indices = *maxima > 0;
     min_indices = *minima > 0; 
-	//cv::findNonZero(*maxima, max_indices);
-	//cv::findNonZero(*minima, min_indices);
 	
 	for(int i=0; i<max_indices.rows-1; i++) {
 
@@ -885,26 +867,31 @@ void DkLineDetection::optimizeLineImg(cv::Mat *segLineImg,cv::Mat *lowertextLine
 	lowertextLineImg->convertTo(*lowertextLineImg, CV_32FC1, 1.0f/255.0f);
 	uppertextLineImg->convertTo(*uppertextLineImg, CV_32FC1, 1.0f/255.0f);
 
-	cv::Mat mixed;
-	if(params.sobelFilterX && params.sobelFilterY) {
-		mixed = filtered_gradY.mul(filtered_gradX);
-	} else if (params.sobelFilterX) {
-		mixed = filtered_gradX;
-	} else {
-		mixed = filtered_gradY;
+	
+	if (params.sobelFilterX || params.sobelFilterY) {
+		cv::Mat mixed;
+		if(params.sobelFilterX && params.sobelFilterY) {
+			mixed = filtered_gradY.mul(filtered_gradX);
+		} else if (params.sobelFilterX) {
+			mixed = filtered_gradX;
+		} else {
+			mixed = filtered_gradY;
+		}
+
+		/*
+		cv::namedWindow( "otsu mixed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+		cv::imshow( "otsu mixed", mixed);
+		*/
+		cv::morphologyEx(mixed, mixed, cv::MORPH_DILATE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20,20/*15, 15*/)));
+		/*
+		cv::namedWindow( "otsu mixed closed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
+		cv::imshow( "otsu mixed closed", mixed);
+		*/
+		*lowertextLineImg = lowertextLineImg->mul(mixed);
+		*uppertextLineImg = uppertextLineImg->mul(mixed);
 	}
 
-	/*
-	cv::namedWindow( "otsu mixed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-	cv::imshow( "otsu mixed", mixed);
-	*/
-	cv::morphologyEx(mixed, mixed, cv::MORPH_DILATE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20,20/*15, 15*/)));
-	/*
-	cv::namedWindow( "otsu mixed closed", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
-	cv::imshow( "otsu mixed closed", mixed);
-	*/
-	*lowertextLineImg = lowertextLineImg->mul(mixed);
-	*uppertextLineImg = uppertextLineImg->mul(mixed);
+	
 
 	/*cv::namedWindow( "before removing short text lines lower", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL );
 	cv::imshow( "before removing short text lines lower", *lowertextLineImg);
