@@ -46,6 +46,7 @@ namespace nmc {
 DkTabInfo::DkTabInfo(const QSharedPointer<DkImageContainerT> imgC, int idx, QObject* parent) : QObject(parent) {
 
 	imageLoader = QSharedPointer<DkImageLoader>(new DkImageLoader());
+	deactivate();
 	imageLoader->setCurrentImage(imgC);
 
 	this->tabMode = (!imgC) ? tab_recent_files : tab_single_image;
@@ -282,6 +283,8 @@ void DkCentralWidget::saveSettings(bool saveTabs) const {
 
 void DkCentralWidget::loadSettings() {
 
+	QVector<QSharedPointer<DkTabInfo> > tabInfos;
+
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
@@ -293,11 +296,13 @@ void DkCentralWidget::loadSettings() {
 		QSharedPointer<DkTabInfo> tabInfo = QSharedPointer<DkTabInfo>(new DkTabInfo());
 		tabInfo->loadSettings(settings);
 		tabInfo->setTabIdx(idx);
-		addTab(tabInfo);
+		tabInfos.append(tabInfo);
 	}
 
 	settings.endArray();
 	settings.endGroup();
+
+	setTabList(tabInfos);
 
 	if (tabInfos.empty()) {
 		QSharedPointer<DkTabInfo> info = QSharedPointer<DkTabInfo>(new DkTabInfo());
@@ -399,6 +404,23 @@ void DkCentralWidget::tabMoved(int from, int to) {
 	tabInfos.insert(to, tabInfo);
 
 	updateTabIdx();
+}
+
+void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex /* = -1 */) {
+
+	this->tabInfos = tabInfos;
+	
+	for (QSharedPointer<DkTabInfo>& tabInfo : tabInfos)
+		tabbar->addTab(tabInfo->getTabText());
+	
+	if (activeIndex == -1)
+		activeIndex = tabInfos.size()-1;
+
+	tabbar->setCurrentIndex(activeIndex);
+
+	if (tabInfos.size() > 1)
+		tabbar->show();
+
 }
 
 void DkCentralWidget::addTab(const QFileInfo& fileInfo, int idx /* = -1 */) {
