@@ -254,17 +254,15 @@ void DkCentralWidget::createLayout() {
 
 }
 
-void DkCentralWidget::saveSettings(bool clearTabs) {
-
-	//if (tabInfos.size() <= 1)	// nothing to save here
-	//	return;
+void DkCentralWidget::saveSettings(bool saveTabs) {
 
 	QSettings& settings = Settings::instance().getSettings();
 
 	settings.beginGroup(objectName());
-	//settings.remove("");
+	settings.remove("Tabs");
 
-	if (clearTabs) {
+	// user wants to store tabs
+	if (saveTabs) {
 
 		settings.beginWriteArray("Tabs");
 

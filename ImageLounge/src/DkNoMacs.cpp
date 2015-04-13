@@ -1637,6 +1637,8 @@ void DkNoMacs::closeEvent(QCloseEvent *event) {
 
 		cw->saveSettings(answer == QMessageBox::Yes);
 	}
+	else
+		cw->saveSettings(false);
 
 	if (viewport()) {
 		if (!viewport()->unloadImage(true)) {
