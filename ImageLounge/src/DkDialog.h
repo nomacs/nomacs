@@ -216,6 +216,7 @@ protected:
 	QVector<QString> defaultNames;
 	QVector<QAction* > apps;
 	QWidget* parent;
+	bool firstTime;
 };
 
 class DkAppManagerDialog : public QDialog {
@@ -266,9 +267,9 @@ public slots:
 	void on_searchBar_textChanged(const QString& text);
 	void on_okButton_pressed();
 	void on_filterButton_pressed();
-	void on_cancelButton_pressed();
 	void on_resultListView_doubleClicked(const QModelIndex& modelIndex);
 	void on_resultListView_clicked(const QModelIndex& modelIndex);
+	virtual void accept();
 
 signals:
 	void loadFileSignal(QFileInfo file);
@@ -283,8 +284,10 @@ protected:
 	QStringListModel* stringModel;
 	QListView* resultListView;
 	QLineEdit* searchBar;
+	QDialogButtonBox* buttons;
 
-	QVector<QPushButton*> buttons;
+	QPushButton* filterButton;
+	//QVector<QPushButton*> buttons;
 
 	QString currentSearch;
 

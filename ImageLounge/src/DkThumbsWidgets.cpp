@@ -61,7 +61,7 @@ DkFilePreview::DkFilePreview(QWidget* parent, Qt::WindowFlags flags) : DkWidget(
 
 	this->parent = parent;
 	orientation = Qt::Horizontal;
-	windowPosition = cm_pos_north;
+	windowPosition = pos_north;
 
 	init();
 	//setStyleSheet("QToolTip{border: 0px; border-radius: 21px; color: white; background-color: red;}"); //" + DkUtils::colorToString(bgCol) + ";}");
@@ -124,12 +124,12 @@ void DkFilePreview::init() {
 
 void DkFilePreview::initOrientations() {
 
-	if (windowPosition == cm_pos_north || windowPosition == cm_pos_south || windowPosition == cm_pos_dock_hor)
+	if (windowPosition == pos_north || windowPosition == pos_south || windowPosition == pos_dock_hor)
 		orientation = Qt::Horizontal;
-	else if (windowPosition == cm_pos_east || windowPosition == cm_pos_west || windowPosition == cm_pos_dock_ver)
+	else if (windowPosition == pos_east || windowPosition == pos_west || windowPosition == pos_dock_ver)
 		orientation = Qt::Vertical;
 
-	if (windowPosition == cm_pos_dock_ver || windowPosition == cm_pos_dock_hor)
+	if (windowPosition == pos_dock_ver || windowPosition == pos_dock_hor)
 		minHeight = max_thumb_size;
 	else
 		minHeight = DkSettings::display.thumbSize;
@@ -219,7 +219,7 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 	//if (selected != -1)
 	//	resize(parent->width(), minHeight+fileLabel->height());	// catch parent resize...
 
-	if (minHeight != DkSettings::display.thumbSize + yOffset && windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
+	if (minHeight != DkSettings::display.thumbSize + yOffset && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
 		xOffset = qCeil(DkSettings::display.thumbSize*0.1f);
 		yOffset = qCeil(DkSettings::display.thumbSize*0.1f);
@@ -246,7 +246,7 @@ void DkFilePreview::paintEvent(QPaintEvent*) {
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(bgCol);
 	
-	if (windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
+	if (windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 		QRect r = QRect(QPoint(), this->size());
 		painter.drawRect(r);
 	}
@@ -635,7 +635,7 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 
 void DkFilePreview::wheelEvent(QWheelEvent *event) {
 
-	if (event->modifiers() == Qt::CTRL && windowPosition != cm_pos_dock_hor && windowPosition != cm_pos_dock_ver) {
+	if (event->modifiers() == Qt::CTRL && windowPosition != pos_dock_hor && windowPosition != pos_dock_ver) {
 
 		int newSize = DkSettings::display.thumbSize;
 		newSize += qRound(event->delta()*0.05f);
@@ -696,28 +696,28 @@ void DkFilePreview::newPosition() {
 	Qt::Orientation orient = Qt::Horizontal;
 
 	if (sender == contextMenuActions[cm_pos_west]) {
-		pos = cm_pos_west;
+		pos = pos_west;
 		orient = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_east]) {
-		pos = cm_pos_east;
+		pos = pos_east;
 		orient = Qt::Vertical;
 	}
 	else if (sender == contextMenuActions[cm_pos_north]) {
-		pos = cm_pos_north;
+		pos = pos_north;
 		orient = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_south]) {
-		pos = cm_pos_south;
+		pos = pos_south;
 		orient = Qt::Horizontal;
 	}
 	else if (sender == contextMenuActions[cm_pos_dock_hor]) {
-		pos = cm_pos_dock_hor;
+		pos = pos_dock_hor;
 		orient = Qt::Horizontal;
 	}
 
 	// don't apply twice
-	if (windowPosition == pos || pos == cm_pos_dock_hor && windowPosition == cm_pos_dock_ver)
+	if (windowPosition == pos || pos == pos_dock_hor && windowPosition == pos_dock_ver)
 		return;
 
 	windowPosition = pos;
@@ -1372,14 +1372,18 @@ void DkThumbScene::selectThumbs(bool selected /* = true */, int from /* = 0 */, 
 
 void DkThumbScene::copySelected() const {
 
-	QList<QUrl> urls = getSelectedUrls();
+	QStringList fileList = getSelectedFiles();
 
-	if (urls.empty())
+	if (fileList.empty())
 		return;
 
 	QMimeData* mimeData = new QMimeData();
 
-	if (!urls.empty()) {
+	if (!fileList.empty()) {
+
+		QList<QUrl> urls;
+		for (QString cStr : fileList)
+			urls.append(QUrl::fromLocalFile(cStr));
 		mimeData->setUrls(urls);
 		QClipboard* clipboard = QApplication::clipboard();
 		clipboard->setMimeData(mimeData);
@@ -1422,27 +1426,21 @@ void DkThumbScene::copyImages(const QMimeData* mimeData) const {
 
 void DkThumbScene::deleteSelected() const {
 
-	QList<QUrl> urls = getSelectedUrls();
+	QStringList fileList = getSelectedFiles();
 
-	if (urls.empty())
+	if (fileList.empty())
 		return;
 
-	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to permanently delete %1 file(s)?").arg(urls.size()), QMessageBox::Yes | QMessageBox::No);
+	int answer = QMessageBox::question(qApp->activeWindow(), tr("Delete Files"), tr("Are you sure you want to permanently delete %1 file(s)?").arg(fileList.size()), QMessageBox::Yes | QMessageBox::No);
 
 	if (answer == QMessageBox::Yes || answer == QMessageBox::Accepted) {
 		
-		if (loader && urls.size() > 100)	// saves CPU
+		if (loader && fileList.size() > 100)	// saves CPU
 			loader->deactivate();
 
-		for (QUrl url : urls) {
-
-			QString fString = url.toString();
-			fString = fString.replace("file:///", "");
+		for (QString fString : fileList) {
 
 			QFileInfo file(fString);
-			if (!file.exists())	// try an alternative conversion
-				file = QFile(url.toLocalFile());
-			
 			QFile f(file.absoluteFilePath());
 
 			if (!f.remove()) {
@@ -1454,7 +1452,7 @@ void DkThumbScene::deleteSelected() const {
 			}
 		}
 
-		if (loader && urls.size() > 100)	// saves CPU
+		if (loader && fileList.size() > 100)	// saves CPU
 			loader->activate();
 
 		if (loader)
@@ -1464,9 +1462,9 @@ void DkThumbScene::deleteSelected() const {
 
 void DkThumbScene::renameSelected() const {
 
-	QList<QUrl> urls = getSelectedUrls();
+	QStringList fileList = getSelectedFiles();
 
-	if (urls.empty())
+	if (fileList.empty())
 		return;
 
 	bool ok;
@@ -1476,11 +1474,11 @@ void DkThumbScene::renameSelected() const {
 	
 	if (ok && !newFileName.isEmpty()) {
 
-		for (int idx = 0; idx < urls.size(); idx++) {
+		for (int idx = 0; idx < fileList.size(); idx++) {
 
-			QFileInfo fileInfo = DkUtils::urlToLocalFile(urls.at(idx).toString());
+			QFileInfo fileInfo = fileList.at(idx);
 			QFile file(fileInfo.absoluteFilePath());
-			QString pattern = (urls.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>";	// no index if just 1 file was added
+			QString pattern = (fileList.size() == 1) ? newFileName + ".<old>" : newFileName + "<d:3>.<old>";	// no index if just 1 file was added
 			DkFileNameConverter converter(fileInfo.fileName(), pattern, idx);
 			QFileInfo newFileInfo(fileInfo.dir(), converter.getConvertedFileName());
 			if (!file.rename(newFileInfo.absoluteFilePath())) {
@@ -1496,18 +1494,18 @@ void DkThumbScene::renameSelected() const {
 	}
 }
 
-QList<QUrl> DkThumbScene::getSelectedUrls() const {
+QStringList DkThumbScene::getSelectedFiles() const {
 
-	QList<QUrl> urls;
+	QStringList fileList;
 
 	for (int idx = 0; idx < thumbLabels.size(); idx++) {
 
 		if (thumbLabels.at(idx) && thumbLabels.at(idx)->isSelected()) {
-			urls.append("file:///" + thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
+			fileList.append(thumbLabels.at(idx)->getThumb()->getFile().absoluteFilePath());
 		}
 	}
 
-	return urls;
+	return fileList;
 }
 
 int DkThumbScene::findThumb(DkThumbLabel* thumb) const {
@@ -1596,11 +1594,16 @@ void DkThumbsView::mouseMoveEvent(QMouseEvent *event) {
 
 		if (dist > QApplication::startDragDistance()) {
 
-			QList<QUrl> urls = scene->getSelectedUrls();
+			QStringList fileList = scene->getSelectedFiles();
 
 			QMimeData* mimeData = new QMimeData;
 
-			if (!urls.empty()) {
+			if (!fileList.empty()) {
+
+				QList<QUrl> urls;
+				for (QString fStr : fileList)
+					urls.append(QUrl::fromLocalFile(fStr));
+
 				mimeData->setUrls(urls);
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
@@ -1766,15 +1769,18 @@ void DkThumbsView::fetchThumbs() {
 	int maxThreads = DkSettings::resources.maxThumbsLoading*2;
 
 	// don't do anything if it is loading anyway
-	if (DkSettings::resources.numThumbsLoading)
+	if (DkSettings::resources.numThumbsLoading/* > maxThreads*/) {
+		//qDebug() << "rejected because num thumbs loading: " << 
 		return;
+	}
 
+	qDebug() << "currently loading: " << DkSettings::resources.numThumbsLoading << " thumbs";
 
 	//bool firstReached = false;
 
 	QList<QGraphicsItem*> items = scene->items(mapToScene(viewport()->rect()).boundingRect(), Qt::IntersectsItemShape);
 
-	qDebug() << mapToScene(viewport()->rect()).boundingRect() << " number of items: " << items.size();
+	//qDebug() << mapToScene(viewport()->rect()).boundingRect() << " number of items: " << items.size();
 
 	for (int idx = 0; idx < items.size(); idx++) {
 
@@ -1882,6 +1888,8 @@ void DkThumbScrollWidget::createToolbar() {
 	toolbar->addAction(actions[action_paste]);
 	toolbar->addAction(actions[action_rename]);
 	toolbar->addAction(actions[action_delete]);
+	toolbar->addSeparator();
+	toolbar->addAction(actions[action_batch]);
 
 	filterEdit = new QLineEdit("", this);
 	filterEdit->setPlaceholderText(tr("Filter Files (Ctrl + F)"));
@@ -1942,6 +1950,11 @@ void DkThumbScrollWidget::createActions() {
 	actions[action_rename]->setShortcut(QKeySequence(Qt::Key_F2));
 	connect(actions[action_rename], SIGNAL(triggered()), thumbsScene, SLOT(renameSelected()));
 
+	actions[action_batch] = new QAction(QIcon(":/nomacs/img/batch-processing.png"), tr("&Batch Process"), this);
+	actions[action_batch]->setToolTip(tr("Adds selected files to batch processing."));
+	actions[action_batch]->setShortcut(QKeySequence(Qt::Key_B));
+	connect(actions[action_batch], SIGNAL(triggered()), this, SLOT(batchProcessFiles()));
+
 	contextMenu = new QMenu(tr("Thumb"), this);
 	for (int idx = 0; idx < actions.size(); idx++) {
 
@@ -1959,6 +1972,12 @@ void DkThumbScrollWidget::createActions() {
 	}
 
 	addActions(actions.toList());
+}
+
+void DkThumbScrollWidget::batchProcessFiles() const {
+
+	QStringList fileList = thumbsScene->getSelectedFiles();
+	emit batchProcessFilesSignal(fileList);
 }
 
 void DkThumbScrollWidget::updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs) {
@@ -2013,11 +2032,12 @@ void DkThumbScrollWidget::contextMenuEvent(QContextMenuEvent *event) {
 
 void DkThumbScrollWidget::enableSelectionActions() {
 
-	bool enable = !thumbsScene->getSelectedUrls().isEmpty();
+	bool enable = !thumbsScene->getSelectedFiles().isEmpty();
 
 	actions[action_copy]->setEnabled(enable);
 	actions[action_rename]->setEnabled(enable);
 	actions[action_delete]->setEnabled(enable);
+	actions[action_batch]->setEnabled(enable);
 
 	actions[action_select_all]->setChecked(thumbsScene->allThumbsSelected());
 }

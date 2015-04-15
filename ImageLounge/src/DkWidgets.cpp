@@ -100,6 +100,7 @@
 
 namespace nmc {
 
+#ifdef WITH_FOLDER_SCROLLBAR
 // DkFolderScrollBar --------------------------------------------------------------------
 DkFolderScrollBar::DkFolderScrollBar(QWidget* parent) : QScrollBar(Qt::Horizontal, parent) {
 //#include <QStyle>
@@ -470,7 +471,7 @@ void DkFolderScrollBar::animateOpacityDown() {
 	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
 	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
 }
-
+#endif
 
 // DkThumbsSaver --------------------------------------------------------------------
 DkThumbsSaver::DkThumbsSaver(QWidget* parent) : DkWidget(parent) {
@@ -601,7 +602,7 @@ bool DkSortFileProxyModel::lessThan(const QModelIndex& left, const QModelIndex& 
 }
 
 // DkExplorer --------------------------------------------------------------------
-DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : QDockWidget(title, parent, flags) {
+DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */) : DkDockWidget(title, parent, flags) {
 
 	setObjectName("DkExplorer");
 	createLayout();
@@ -711,9 +712,10 @@ void DkExplorer::setEditable(bool editable) {
 	fileModel->setReadOnly(!editable);	
 }
 
-void DkExplorer::closeEvent(QCloseEvent*) {
+void DkExplorer::closeEvent(QCloseEvent* event) {
 
 	writeSettings();
+	DkDockWidget::closeEvent(event);
 }
 
 void DkExplorer::writeSettings() {
@@ -1479,7 +1481,6 @@ void DkPlayer::init() {
 
 	actions.resize(1);
 	actions[play_action] = new QAction(tr("play"), this);
-	actions[play_action]->setShortcut(Qt::Key_Space);
 	connect(actions[play_action], SIGNAL(triggered()), this, SLOT(togglePlay()));
 
 	QPixmap icon = QPixmap(":/nomacs/img/player-back.png");
@@ -1614,43 +1615,6 @@ void DkPlayer::show(int ms) {
 	}
 }
  
-// DkMetaDataInfo ------------------------------------------------------------------
-
-////enums for tags divided in exif and iptc
-//static enum exifT {
-//	exif_width,
-//	exif_length,
-//	exif_orientation,
-//	exif_make,
-//	exif_model,
-//	exif_rating,
-//	exif_aperture,
-//	exif_shutterspeed,
-//	exif_flash,
-//	exif_focallength,
-//	exif_exposuredmode,
-//	exif_exposuretime,
-//	exif_usercomment,
-//	exif_datetime,
-//	exif_datetimeoriginal,
-//	exif_description,
-//
-//	exif_end
-//};
-//
-//static enum iptcT {
-//	iptc_creator = exif_end,
-//	iptc_creatortitle,
-//	iptc_city,
-//	iptc_country,
-//	iptc_headline,
-//	iptc_caption,
-//	iptc_copyright,
-//	iptc_keywords,
-//
-//	iptc_end
-//};
-
 // DkTransformRectangle --------------------------------------------------------------------
 DkTransformRect::DkTransformRect(int idx, DkRotatingRect* rect, QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f) {
 
@@ -1803,6 +1767,30 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 	if (qAbs(y - imgViewRect.top()) < magicMargin)
 		y = (float)imgViewRect.top();
 	if (qAbs(y - imgViewRect.bottom()) < magicMargin)
+		y = (float)imgViewRect.bottom();
+
+	return QPointF(x,y);		// round
+}
+
+QPointF DkEditableRect::clipToImageForce(const QPointF &pos) {
+
+	if (!imgRect)
+		return QPointF(pos);
+
+	QRectF imgViewRect(*imgRect);
+	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+
+	float x = (float)pos.x();
+	float y = (float)pos.y();
+
+	if (x < imgViewRect.left())
+		x = (float)imgViewRect.left();
+	if (x > imgViewRect.right())
+		x = (float)imgViewRect.right();
+
+	if (y < imgViewRect.top())
+		y = (float)imgViewRect.top();
+	if (y > imgViewRect.bottom())
 		y = (float)imgViewRect.bottom();
 
 	return QPointF(x,y);		// round
@@ -2045,7 +2033,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	if (state == initializing && event->buttons() == Qt::LeftButton) {
 
-		QPointF clipPos = clipToImage(QPointF(event->pos()));
+		QPointF clipPos = clipToImageForce(QPointF(event->pos()));
 
 		if (!imgRect || !rect.isEmpty() || clipPos == QPointF(event->pos())) {
 			
@@ -2054,7 +2042,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 				for (int idx = 0; idx < ctrlPoints.size(); idx++)
 					ctrlPoints[idx]->show();
 
-				QPointF p = map(clipToImage(clickPos));
+				QPointF p = map(clipToImageForce(clickPos));
 				rect.setAllCorners(p);
 			}
 			
@@ -2088,7 +2076,6 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 		xn = c-xn;
 		angle = xn.angle() - xt.angle();
 
-
 		// just rotate in CV_PI*0.25 steps if shift is pressed
 		if (event->modifiers() == Qt::ShiftModifier) {
 			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
@@ -2102,7 +2089,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 		QPolygonF p = rect.getPoly();
 
-		float sAngle = rect.getAngleDeg();
+		float sAngle = DkMath::getReadableAngle(rect.getAngle() + angle);
 		int height = qRound(DkVector(p[1]-p[0]).norm());
 		int width = qRound(DkVector(p[3]-p[0]).norm());
 
@@ -2871,6 +2858,7 @@ QFileInfo DkFileInfo::getFileInfo() const {
 	return fileInfo;
 }
 
+
 // DkFileLabel --------------------------------------------------------------------
 DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
@@ -2961,8 +2949,6 @@ void DkImageLabel::thumbLoaded() {
 	}
 	pm = pm.copy(r);
 
-	qDebug() << pm.size();
-
 	imageLabel->setPixmap(pm);
 }
 
@@ -3042,10 +3028,12 @@ void DkRecentFilesWidget::createLayout() {
 	folderLayout = new QVBoxLayout(folderWidget);
 	
 	filesTitle = new QLabel(tr("Recent Files"), this);
-	filesTitle->setStyleSheet("QLabel{font-size: 20px;}");
+	filesTitle->setObjectName("DkRecentFilesTitle");
+	filesTitle->setStyleSheet("QLabel{font-size: 15pt;}" + filesTitle->styleSheet());
 
 	folderTitle = new QLabel(tr("Recent Folders"), this);
-	folderTitle->setStyleSheet("QLabel{font-size: 20px;}");
+	folderTitle->setObjectName("DkRecentFilesTitle");
+	folderTitle->setStyleSheet("QLabel{font-size: 15pt;}" + folderTitle->styleSheet());
 
 	bgLabel = new QLabel(this);
 	bgLabel->setObjectName("bgLabel");
@@ -3064,19 +3052,12 @@ void DkRecentFilesWidget::createLayout() {
 
 void DkRecentFilesWidget::setCustomStyle(bool imgLoadedStyle) {
 
-	if (imgLoadedStyle) {
-		setStyleSheet(QString("#bgLabel{background-color:") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" +
-			QString("QLabel{color: #FFFFFF; padding: 2 0 2 0; font-size: 13px;}") + 
-			QString("#DkFileLabel:hover{color: " + DkUtils::colorToString(DkSettings::display.bgColorWidget)) + 
-			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 rgba(255,255,255,200), stop: 1 rgba(0,0,0,0));}"));
-
-	}
-	else {
-		setStyleSheet(QString("#bgLabel{background-color: rgba(0,0,0,0);}" +
-			QString("QLabel{padding: 2 0 2 0; font-size: 13px; color: ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ";}" + 
-			QString("#DkFileLabel:hover{color: #FFFFFF;") + 
-			QString("; background: qlineargradient(x1: 0.7, y1: 0, x2: 1, y2: 0, stop: 0 ") + DkUtils::colorToString(DkSettings::display.bgColorWidget) + ", stop: 1 rgba(0,0,0,0));}"));
-	}
+	setProperty("imageLoaded", imgLoadedStyle);
+	style()->unpolish(bgLabel);
+	style()->unpolish(filesTitle);	// don't know why I need to unpolish every widget on it's own
+	style()->unpolish(folderTitle);
+	style()->unpolish(this);
+	ensurePolished();
 }
 
 void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
@@ -3125,11 +3106,8 @@ void DkRecentFilesWidget::updateFileList() {
 	filesTitle->hide();
 	folderTitle->hide();
 
-	//fileWatcher.cancel();
-	//fileWatcher.waitForFinished();
 	folderWatcher.cancel();
 	folderWatcher.waitForFinished();
-
 	fileLabels.clear();
 	folderLabels.clear();
 	recentFiles.clear();
@@ -3142,7 +3120,6 @@ void DkRecentFilesWidget::updateFileList() {
 
 	updateFiles();
 	folderWatcher.setFuture(QtConcurrent::map(recentFolders, &nmc::DkRecentFilesWidget::mappedFileExists));
-
 }
 
 void DkRecentFilesWidget::updateFiles() {
@@ -3153,7 +3130,6 @@ void DkRecentFilesWidget::updateFiles() {
 		filesTitle->show();
 		filesLayout->setRowStretch(recentFiles.size()+2, 100);
 		filesLayout->addWidget(filesTitle, 0, 0, 1, columns, Qt::AlignRight);
-		//filesLayout->addItem(new QSpacerItem(30,10), 1, 0);
 	}
 
 	// show current
@@ -3168,11 +3144,6 @@ void DkRecentFilesWidget::updateFiles() {
 		// remove files which we can't load to keep the list clean...
 		DkSettings::global.recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFile().absoluteFilePath());		// remove recent files which we could not load...
 	}
-	//else if (rFileIdx >= fileLabels.size()) {
-	//	qDebug() << "index out of range";
-	//}
-	//else
-	//	qDebug() << "could not load thumb..." << fileLabels.at(rFileIdx)->hasFile();
 
 	if (!fileLabels.empty())
 		rFileIdx++;
@@ -3188,33 +3159,11 @@ void DkRecentFilesWidget::updateFiles() {
 		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
 	}
+	else {
+		qDebug() << "LOADING stopped at " << rFileIdx << " num files: " << recentFiles.size();
+	}
 
 	update();
-
-
-	//int cHeight = 0;
-
-	//for (int idx = 0; idx < recentFiles.size(); idx++) {
-
-	//	if (recentFiles.at(idx).inUse())
-	//		continue;
-
-	//	if (recentFiles.at(idx).exists()) {
-	//		recentFiles[idx].setInUse(true);
-
-	//		DkFolderLabel* fLabel = new DkFolderLabel(recentFiles.at(idx), this);
-	//		connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
-	//		fileLabels.append(fLabel);
-	//		filesLayout->addWidget(fLabel);
-
-	//		cHeight += fLabel->height();
-	//		if (cHeight > folderWidget->height())
-	//			break;
-
-	//	}
-	//}
-
-	//filesLayout->addStretch();
 }
 
 void DkRecentFilesWidget::updateFolders() {
@@ -3225,15 +3174,15 @@ void DkRecentFilesWidget::updateFolders() {
 
 	int cHeight = 0;
 
-	for (int idx = 0; idx < recentFolders.size(); idx++) {
+	for (DkFileInfo& fi : recentFolders) {
 
-		if (recentFolders.at(idx).inUse())
+		if (fi.inUse())
 			continue;
 
-		if (recentFolders.at(idx).exists()) {
-			recentFolders[idx].setInUse(true);
+		if (fi.exists()) {
+			fi.setInUse(true);
 
-			DkFolderLabel* fLabel = new DkFolderLabel(recentFolders.at(idx), this);
+			DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
 			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
 			folderLayout->addWidget(fLabel);
 			folderLabels.append(fLabel);

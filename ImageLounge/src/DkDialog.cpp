@@ -428,6 +428,7 @@ void DkTrainDialog::dragEnterEvent(QDragEnterEvent *event) {
 // DkAppManager --------------------------------------------------------------------
 DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 	
+	firstTime = true;	// is false if settings contain paths
 	defaultNames.resize(app_idx_end);
 	defaultNames[app_photohsop]		= "PhotoshopAction";
 	defaultNames[app_picasa]		= "PicasaAction";
@@ -437,7 +438,8 @@ DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 
 	this->parent = parent;
 	loadSettings();
-	findDefaultSoftware();
+	if (firstTime)
+		findDefaultSoftware();
 
 	for (int idx = 0; idx < apps.size(); idx++) {
 		assignIcon(apps.at(idx));
@@ -475,7 +477,9 @@ void DkAppManager::loadSettings() {
 	settings.beginGroup("DkAppManager");
 	
 	int size = settings.beginReadArray("Apps");
-	
+	if (size > 0)
+		firstTime = false;
+
 	for (int idx = 0; idx < size; idx++) {
 		settings.setArrayIndex(idx);
 		QAction* action = new QAction(parent);
@@ -890,27 +894,21 @@ void DkSearchDialog::init() {
 	//focusAction->setShortcut(Qt::Key_Down);
 	//connect(focusAction, SIGNAL(triggered()), resultListView, SLOT(/*createSLOT*/));
 
-	// buttons
-	buttons.resize(button_end);
-	buttons[find_button] = new QPushButton(tr("F&ind"), this);
-	buttons[find_button]->setObjectName("okButton");
-	//buttons[find_button]->setDefault(true);
+	filterButton = new QPushButton(tr("&Filter"), this);
+	filterButton->setObjectName("filterButton");
 
-	buttons[filter_button] = new QPushButton(tr("&Filter"), this);
-	buttons[filter_button]->setObjectName("filterButton");
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	buttons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
+	//buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	buttons->addButton(filterButton, QDialogButtonBox::ActionRole);
 
-	buttons[cancel_button] = new QPushButton(tr("&Cancel"), this);
-	buttons[cancel_button]->setObjectName("cancelButton");
-
-	QWidget* buttonWidget = new QWidget(this);
-	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::RightToLeft, buttonWidget);
-	buttonLayout->addWidget(buttons[cancel_button]);
-	buttonLayout->addWidget(buttons[filter_button]);
-	buttonLayout->addWidget(buttons[find_button]);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	layout->addWidget(searchBar);
 	layout->addWidget(resultListView);
-	layout->addWidget(buttonWidget);
+	layout->addWidget(buttons);
 
 	searchBar->setFocus(Qt::MouseFocusReason);
 
@@ -950,13 +948,14 @@ void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 		stringModel->setStringList(answerList);
 
 		resultListView->setProperty("empty", true);
-		buttons[filter_button]->setEnabled(false);
-		buttons[find_button]->setEnabled(false);
+		
+		filterButton->setEnabled(false);
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
 		//cancelButton->setFocus();
 	}
 	else {
-		buttons[filter_button]->setEnabled(true);
-		buttons[find_button]->setEnabled(true);
+		filterButton->setEnabled(true);
+		buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
 		stringModel->setStringList(makeViewable(resultList));
 		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
 		resultListView->setProperty("empty", false);
@@ -986,6 +985,12 @@ void DkSearchDialog::on_resultListView_clicked(const QModelIndex& modelIndex) {
 		stringModel->setStringList(makeViewable(resultList, true));
 }
 
+void DkSearchDialog::accept() {
+
+	on_okButton_pressed();
+	QDialog::accept();
+}
+
 void DkSearchDialog::on_okButton_pressed() {
 
 	if (resultListView->selectionModel()->currentIndex().data().toString() == endMessage) {
@@ -1001,7 +1006,6 @@ void DkSearchDialog::on_okButton_pressed() {
 
 	if (!fileName.isEmpty())
 		emit loadFileSignal(QFileInfo(path, fileName));
-	accept();
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
@@ -1010,14 +1014,16 @@ void DkSearchDialog::on_filterButton_pressed() {
 	done(filter_button);
 }
 
-void DkSearchDialog::on_cancelButton_pressed() {
-	reject();
-}
-
 void DkSearchDialog::setDefaultButton(int defaultButton /* = find_button */) {
 
-	for (int idx = 0; idx < buttons.size(); idx++)
-		buttons[idx]->setAutoDefault(defaultButton == idx);
+	if (defaultButton == find_button) {
+		buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
+		filterButton->setAutoDefault(false);
+	}
+	else if (defaultButton == filter_button) {
+		buttons->button(QDialogButtonBox::Ok)->setAutoDefault(false);
+		filterButton->setAutoDefault(true);
+	}
 }
 
 void DkSearchDialog::updateHistory() {
@@ -2295,7 +2301,9 @@ void DkTextDialog::save() {
 	if (folders.size() > 0)
 		savePath = folders.first();
 
-	QString saveFilters("Text File (*.txt);;All Files (*.*)");
+	QStringList extList;
+	extList << tr("Text File (*.txt)") << tr("All Files (*.*)");
+	QString saveFilters(extList.join(";;"));
 
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Text File"),
 		savePath, saveFilters);
@@ -2371,6 +2379,9 @@ DkPrintPreviewDialog::DkPrintPreviewDialog(QImage img, float dpi, QPrinter* prin
 	printDialog = 0;
 	imgTransform = QTransform();
 	init();
+	if (!img.isNull() && img.width() > img.height()) 
+		preview->setLandscapeOrientation();
+
 	scaleImage();
 }
 
@@ -2407,11 +2418,13 @@ void DkPrintPreviewDialog::scaleImage() {
 	qDebug() << "dpi:" << dpi;
 	qDebug() << "origDpi:" << origdpi;
 
-	// use at least 150 dpi as default if image has less then 150
-	if ((origdpi < 150 || dpi < 150) && scaleFactor > 1) {
+	// use at least 150 dpi 
+	if (dpi < 150 && scaleFactor > 1) {
 		dpi = 150;
 		scaleFactor = (pxW/inchW)/dpi;
+		qDebug() << "new scale Factor:" << scaleFactor;
 	}
+
 
 	imgTransform.scale(scaleFactor, scaleFactor);
 
@@ -2431,6 +2444,7 @@ void DkPrintPreviewDialog::init() {
 	}
 	
 	preview = new DkPrintPreviewWidget(printer, this);
+
 	connect(preview, SIGNAL(paintRequested(QPrinter*)), this, SLOT(paintRequested(QPrinter*)));
 	connect(preview, SIGNAL(zoomChanged()), this, SLOT(updateZoomFactor()));
 	
@@ -2842,7 +2856,6 @@ DkExportTiffDialog::DkExportTiffDialog(QWidget* parent /* = 0 */, Qt::WindowFlag
 
 	setWindowTitle(tr("Export Multi-Page TIFF"));
 	createLayout();
-	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
 	processing = false;
 
@@ -3031,6 +3044,8 @@ void DkExportTiffDialog::accept() {
 
 	QFileInfo sFile(saveDir, fileEdit->text() + "-" + suffix);
 	
+	emit infoMessage("");
+	
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkExportTiffDialog::exportImages,
 		cFile,
@@ -3061,10 +3076,21 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 		QFileInfo sFile(saveFile.absolutePath(), saveFile.baseName() + QString::number(idx) + "." + saveFile.suffix());
 		qDebug() << "trying to save: " << sFile.absoluteFilePath();
 
+		emit updateProgress(idx-1);
+
 		// user wants to overwrite files
 		if (sFile.exists() && overwrite) {
 			QFile f(sFile.absoluteFilePath());
 			f.remove();
+		}
+		else if (sFile.exists()) {
+			emit infoMessage(tr("%1 exists, skipping...").arg(sFile.fileName()));
+			continue;
+		}
+
+		if (!loader.loadPageAt(idx)) {	// load next
+			emit infoMessage(tr("Sorry, I could not load page: %1").arg(idx));
+			continue;
 		}
 
 		QFileInfo saveFile = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
@@ -3073,8 +3099,6 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 		if (!saveFile.exists() || !saveFile.isFile())
 			emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
 
-		if (!loader.loadPage(1))	// load next
-			emit infoMessage(tr("Sorry, I could not load page: %1").arg(idx));
 		emit updateImage(loader.image());
 		emit updateProgress(idx);
 
@@ -3451,7 +3475,7 @@ void DkMosaicDialog::createLayout() {
 
 	QStringList filters = DkSettings::app.openFilters;
 	filters.pop_front();	// replace for better readability
-	filters.push_front("All Images");
+	filters.push_front(tr("All Images"));
 	suffixBox = new QComboBox(this);
 	suffixBox->addItems(filters);
 	//suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
@@ -4395,7 +4419,7 @@ void DkArchiveExtractionDialog::createLayout() {
 	connect(archivePathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(archivePathEdit, SIGNAL(editingFinished()), this, SLOT(loadArchive()));
 
-	QPushButton* openArchiveButton = new QPushButton("&Browse");
+	QPushButton* openArchiveButton = new QPushButton(tr("&Browse"));
 	connect(openArchiveButton, SIGNAL(pressed()), this, SLOT(openArchive()));
 
 	// dir file path
@@ -4404,7 +4428,7 @@ void DkArchiveExtractionDialog::createLayout() {
 	dirPathEdit->setValidator(&fileValidator);
 	connect(dirPathEdit, SIGNAL(textChanged(QString)), this, SLOT(dirTextChanged(QString)));
 
-	QPushButton* openDirButton = new QPushButton("&Browse");
+	QPushButton* openDirButton = new QPushButton(tr("&Browse"));
 	connect(openDirButton, SIGNAL(pressed()), this, SLOT(openDir()));
 
 	feedbackLabel = new QLabel("", this);
@@ -4412,7 +4436,7 @@ void DkArchiveExtractionDialog::createLayout() {
 
 	fileListDisplay = new QListWidget(this);
 
-	removeSubfolders = new QCheckBox("Remove Subfolders", this);
+	removeSubfolders = new QCheckBox(tr("Remove Subfolders"), this);
 	removeSubfolders->setChecked(false);
 	connect(removeSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
 

@@ -42,6 +42,7 @@
 #include <QImageWriter>
 #include <QNetworkReply>
 #include <QBuffer>
+#include <QNetworkProxyFactory>
 
 #include <qmath.h>
 
@@ -1046,11 +1047,23 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 
 	bool imgLoaded = false;
 
-#ifdef WITH_LIBTIFF
 	pageIdx += skipIdx;
 
 	// <= 1 since first page is loaded using qt
 	if (pageIdx > numPages || pageIdx <= 1)
+		return imgLoaded;
+
+	return loadPageAt(pageIdx);
+}
+
+bool DkBasicLoader::loadPageAt(int pageIdx) {
+
+	bool imgLoaded = false;
+
+#ifdef WITH_LIBTIFF
+
+	// <= 1 since first page is loaded using qt
+	if (pageIdx > numPages || pageIdx < 1)
 		return imgLoaded;
 
 	// first turn off nasty warning/error dialogs - (we do the GUI : )
@@ -1185,7 +1198,7 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		delete imgWriter;
 	}
 
-	if (saved) {
+	if (saved && metaData) {
 		
 		if (!metaData->isLoaded() || !metaData->hasMetaData())
 			metaData->readMetaData(fileInfo, ba);
@@ -1488,6 +1501,12 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 
 // FileDownloader --------------------------------------------------------------------
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent) {
+	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		m_WebCtrl.setProxy(listOfProxies[0]);
+	}
+
 	connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)),
 		SLOT(fileDownloaded(QNetworkReply*)));
 

@@ -126,25 +126,33 @@ protected:
 class DkBatchProcess {
 
 public:
-
 	DkBatchProcess(const QFileInfo& fileInfoIn = QFileInfo(), const QFileInfo& fileInfoOut = QFileInfo());
 
 	void setProcessChain(const QVector<QSharedPointer<DkAbstractBatch> > processes);
 	void setMode(int mode);
-	void compute();	// do the work
+	void setDeleteOriginal(bool deleteOriginal);
+	bool compute();	// do the work
 	QStringList getLog() const;
+	bool hasFailed() const;
+	bool wasProcessed() const;
+	QFileInfo inputFile() const;
+	QFileInfo outputFile() const;
 
 protected:
 	QFileInfo fileInfoIn;
 	QFileInfo fileInfoOut;
 	int mode;
+	bool deleteOriginal;
 	int compression;
+	int failure;
+	bool isProcessed;
 
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 	QStringList logStrings;
 
 	bool process();
 	bool deleteExisting();
+	bool deleteOriginalFile();
 	bool copyFile();
 	bool renameFile();
 };
@@ -153,23 +161,25 @@ class DkBatchConfig {
 
 public:
 	DkBatchConfig() { init(); };
-	DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern);
+	DkBatchConfig(const QStringList& fileList, const QDir& outputDir, const QString& fileNamePattern);
 
 	bool isOk() const;
 
-	void setUrls(const QList<QUrl>& urls) { this->urls = urls; };
+	void setFileList(const QStringList& fileList) { this->fileList = fileList; };
 	void setOutputDir(const QDir& outputDir) {this->outputDir = outputDir; };
 	void setFileNamePattern(const QString& pattern) {this->fileNamePattern = pattern; };
 	void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch> >& processFunctions) { this->processFunctions = processFunctions; };
 	void setCompression(int compression) { this->compression = compression; };
 	void setMode(int mode) { this->mode = mode; };
+	void setDeleteOriginal(bool deleteOriginal) { this->deleteOriginal = deleteOriginal; };
 
-	QList<QUrl> getUrls() const { return urls; };
+	QStringList getFileList() const { return fileList; };
 	QDir getOutputDir() const { return outputDir; };
 	QString getFileNamePattern() const { return fileNamePattern; };
 	QVector<QSharedPointer<DkAbstractBatch> > getProcessFunctions() const { return processFunctions; };
 	int getCompression() const { return compression; };
 	int getMode() const { return mode; };
+	bool getDeleteOriginal() const { return deleteOriginal; };
 
 	enum {
 		mode_overwrite,
@@ -181,11 +191,12 @@ public:
 protected:
 	void init();
 
-	QList<QUrl> urls;
+	QStringList fileList;
 	QDir outputDir;
 	QString fileNamePattern;
 	int compression;
 	int mode;
+	bool deleteOriginal;
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 };
 
@@ -193,14 +204,29 @@ class DkBatchProcessing : public QObject {
 	Q_OBJECT
 
 public:
+
+	enum {
+		batch_item_failed,
+		batch_item_succeeded,
+		batch_item_not_computed,
+
+		batch_item_end
+	};
+
 	DkBatchProcessing(const DkBatchConfig& config = DkBatchConfig(), QWidget* parent = 0);
 
 	void compute();
-	static void computeItem(DkBatchProcess& item);
+	static bool computeItem(DkBatchProcess& item);
 	
-	QStringList getLog() const;	// TODO
+	QStringList getLog() const;
+	int getNumFailures() const;
+	int getNumItems() const;
+	int getNumProcessed() const;
 	
 	bool isComputing() const;
+	QList<int> getCurrentResults();
+	QStringList getResultList() const;
+	QString getBatchSummary(const DkBatchProcess& batch) const;
 
 	// getter, setter
 	void setBatchConfig(const DkBatchConfig& config) { this->batchConfig = config; };
@@ -217,6 +243,7 @@ signals:
 protected:
 	DkBatchConfig batchConfig;
 	QVector<DkBatchProcess> batchItems;
+	QList<int> resList;
 	
 	// threading
 	QFutureWatcher<void> batchWatcher;

@@ -40,6 +40,9 @@
 class QTreeView;
 class QLabel;
 class QPushButton;
+class QGridLayout;
+class QCheckBox;
+class QVBoxLayout;
 
 namespace nmc {
 
@@ -62,7 +65,7 @@ public:
 	virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-	//virtual Qt::ItemFlags flags(const QModelIndex& index) const;
+	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	//virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
 	virtual void addMetaData(QSharedPointer<DkMetaDataT> metaData);
@@ -72,14 +75,13 @@ protected:
 	TreeItem* rootItem;
 
 	void createItem(const QString& key, const QString& keyName, const QString& value);
-
 };
 
-class DkMetaDataDock : public QDockWidget {
+class DkMetaDataDock : public DkDockWidget {
 	Q_OBJECT
 
 public:
-	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	DkMetaDataDock(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkMetaDataDock();
 
 public slots:
@@ -104,66 +106,101 @@ protected:
 	QStringList expandedNames;
 };
 
-class DkMetaDataInfo : public DkWidget {
+class DkMetaDataSelection : public QWidget {
 	Q_OBJECT
 
 public:
+	DkMetaDataSelection(const QSharedPointer<DkMetaDataT> metaData, QWidget* parent = 0);
 
-	DkMetaDataInfo(QWidget* parent = 0);
-	~DkMetaDataInfo() {};
-
-	void draw(QPainter* painter);
-	void createLabels();
-	void resizeEvent(QResizeEvent *resizeW);
+	void setSelectedKeys(const QStringList& selKeys);
+	QStringList getSelectedKeys() const;
 
 public slots:
-	void setImageInfo(QSharedPointer<DkImageContainerT> imgC);
-	void setRating(int rating);
-	void updateLabels();
-	void setVisible(bool visible, bool showSettings = true);
+	void checkAll(bool checked);
+	void selectionChanged();
 
 protected:
-	void init();
-	void readTags();
-	void layoutLabels();
-	void paintEvent(QPaintEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
+	void createLayout();
+	void createEntries(QSharedPointer<DkMetaDataT> metaData, QStringList& outKeys, QStringList& outValues) const;
+	void appendGUIEntry(const QString& key, const QString& value, int idx = -1);
 
-	QWidget* parent;
-	QPoint lastMousePos;
-	QTransform worldMatrix;
-	int exifHeight;
-	int fontSize;
-	int textMargin;
-	int numLines;
-	int maxCols;
-	int numLabels;
-	int minWidth;
-	int gradientWidth;
+	QSharedPointer<DkMetaDataT> metaData;
 
-	int yMargin;
-	int xMargin;
+	QStringList selectedKeys;
+	QStringList keys;
+	QStringList values;
 
-	float currentDx;
+	QVector<QCheckBox*> selection;
+	QCheckBox* cbCheckAll;
+	QGridLayout* layout;
+};
 
-	QVector<int> maxLenLabel;
+class DkMetaDataHUD : public DkWidget {
+	Q_OBJECT
 
-	QVector<DkLabel *> pLabels;
-	QVector<DkLabel *> pValues;
-	//QSize imgSize;
+public:
+	DkMetaDataHUD(QWidget* parent = 0);
+	~DkMetaDataHUD();
 
-	QStringList camDValues;
+	void updateLabels(int numColumns = -1);
 
-	QStringList descValues;
+	int getWindowPosition() const;
 
-	QRect leftGradientRect;
-	QLinearGradient leftGradient;
-	QRect rightGradientRect;
-	QLinearGradient rightGradient;
+	enum {
+		action_change_keys,
+		action_num_columns,
+		action_set_to_default,
 
-	QMap<int, int> mapIptcExif;
-	QSharedPointer<DkImageContainerT> imgC;
+		action_pos_west,
+		action_pos_north,
+		action_pos_east,
+		action_pos_south,
 
+		action_end,
+	};
+
+public slots:
+	void updateMetaData(const QSharedPointer<DkImageContainerT> cImg = QSharedPointer<DkImageContainerT>());
+	void updateMetaData(const QSharedPointer<DkMetaDataT> cImg);
+	void changeKeys();
+	void changeNumColumns();
+	void setToDefault();
+	void newPosition();
+	virtual void setVisible(bool visible, bool saveSetting = true);
+
+signals:
+	void positionChangeSignal(int newPos);
+
+protected:
+	void createLayout();
+	void createActions();
+	void loadSettings();
+	void saveSettings() const;
+	QStringList getDefaultKeys() const;
+	QLabel* createKeyLabel(const QString& key);
+	QLabel* createValueLabel(const QString& val);
+
+	void contextMenuEvent(QContextMenuEvent *event);
+
+	// current metadata
+	QSharedPointer<DkMetaDataT> metaData;
+	QStringList keyValues;
+
+	// gui elements
+	QVector<QLabel*> entryKeyLabels;
+	QVector<QLabel*> entryValueLabels;
+	QGridLayout* contentLayout;
+	QWidget* contentWidget;
+	DkResizableScrollArea* scrollArea;
+	QWidget* titleWidget;
+
+	QMenu* contextMenu;
+	QVector<QAction*> actions;
+
+	int numColumns;
+	int windowPosition;
+	Qt::Orientation orientation;
+	
 };
 
 class DkCommentTextEdit : public QTextEdit {

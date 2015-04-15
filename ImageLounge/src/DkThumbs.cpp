@@ -186,7 +186,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 			int tmpW = imgW;
 			imgW = imgH;
 			imgH = tmpW;
-			qDebug() << "EXIV size is flipped...";
+			qDebug() << "EXIF size is flipped...";
 		}
 
 		QSize initialSize = imageReader->size();

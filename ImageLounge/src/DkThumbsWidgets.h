@@ -225,7 +225,7 @@ public:
 	DkThumbScene(QWidget* parent = 0);
 
 	void updateLayout();
-	QList<QUrl> getSelectedUrls() const;
+	QStringList getSelectedFiles() const;
 	void setImageLoader(QSharedPointer<DkImageLoader> loader);
 	void copyImages(const QMimeData* mimeData) const;
 	int findThumb(DkThumbLabel* thumb) const;
@@ -312,6 +312,7 @@ public:
 		action_rename,
 		action_delete,
 		action_filter,
+		action_batch,
 
 		actions_end
 	};
@@ -332,10 +333,12 @@ public slots:
 	void setDir(QDir dir);
 	void enableSelectionActions();
 	void setFilterFocus() const;
+	void batchProcessFiles() const;
 
 signals:
 	void updateDirSignal(QDir dir);
 	void filterChangedSignal(const QString& filters);
+	void batchProcessFilesSignal(const QStringList& fileList) const;
 
 protected:
 	void createActions();

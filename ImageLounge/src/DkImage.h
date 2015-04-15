@@ -103,6 +103,7 @@ public:
 
 	void rotateImage(double angle);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
+	QSharedPointer<DkImageContainerT> getLastImage() const;
 	QFileInfo file() const;
 	QStringList getFileNames();
 	QVector<QSharedPointer<DkImageContainerT> > getImages();
@@ -117,6 +118,7 @@ public:
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
 	QSharedPointer<DkImageContainerT> setImage(QImage img, QFileInfo editFile = QFileInfo());
+	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
 	bool hasFile() const;
 	bool hasMovie();
 	QString fileName();
@@ -162,12 +164,12 @@ public slots:
 	void directoryChanged(const QString& path = QString());
 	void saveFileWeb(QImage saveImg);
 	void saveUserFileAs(QImage saveImg, bool silent);
-	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1);
+	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1, bool threaded = true);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
 	void load(const QFileInfo& file);
 	void downloadFile(const QUrl& url);
 	bool deleteFile();
-	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false);
+	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilter(const QString& filter);
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();

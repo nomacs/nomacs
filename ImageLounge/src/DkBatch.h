@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QUrl>
 #include <QDir>
 #include <QDialog>
+#include <QTextEdit>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
@@ -51,6 +52,7 @@ class QButtonGroup;
 class QRadioButton;
 class QDialogButtonBox;
 class QProgressBar;
+class QTabWidget;
 
 namespace nmc {
 
@@ -116,18 +118,59 @@ private:
 	DkButton* showButton;
 };
 
-
-class DkFileSelection : public QWidget, public DkBatchContent  {
-Q_OBJECT
+class DkInputTextEdit : public QTextEdit {
+	Q_OBJECT
 
 public:
+	DkInputTextEdit(QWidget* parent = 0);
+
+	QStringList getFileList() const;
+	void appendDir(const QDir& newDir, bool recursive = false);
+	void insertFromMimeData(const QMimeData *src);
+	void clear();
+
+signals:
+	void fileListChangedSignal() const;
+
+public slots:
+	void appendFiles(const QStringList& fileList);
+
+protected:
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dragMoveEvent(QDragMoveEvent *event);
+	void appendFromMime(const QMimeData* mimeData);
+
+	QList<int> resultList;
+};
+
+class DkFileSelection : public QWidget, public DkBatchContent  {
+	Q_OBJECT
+
+public:
+
+	enum {
+		tab_thumbs = 0,
+		tab_text_input,
+		tab_results,
+
+		tab_end
+	};
+
 	DkFileSelection(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	QString getDir() const;
-	QList<QUrl> getSelectedFiles() const;
+	QStringList getSelectedFiles() const;
+	QStringList getSelectedFilesBatch();
+	DkInputTextEdit* getInputEdit() const;
 
 	virtual bool hasUserInput() const {return hUserInput;};
 	virtual bool requiresUserInput() const {return rUserInput;};
+	void changeTab(int tabIdx) const;
+	void startProcessing();
+	void stopProcessing();
+	void setResults(const QStringList& results);
+
 
 public slots:
 	void setDir(QDir dir);
@@ -141,6 +184,7 @@ public slots:
 signals:
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >);
 	void newHeaderText(QString);
+	void updateInputDir(QDir);
 	void changed();
 
 protected:
@@ -149,10 +193,13 @@ protected:
 	QDir cDir;
 	QListView* fileWidget;
 	DkThumbScrollWidget* thumbScrollWidget;
+	DkInputTextEdit* inputTextEdit;
+	QTextEdit* resultTextEdit;
 	QSharedPointer<DkImageLoader> loader;
 	DkExplorer* explorer;
 	DkDirectoryEdit* directoryEdit;
 	QLabel* infoLabel;
+	QTabWidget* inputTabs;
 
 private:
 	bool hUserInput;
@@ -212,16 +259,19 @@ public:
 
 	virtual bool hasUserInput() const;
 	virtual bool requiresUserInput() const {return rUserInput;};
-	int overwriteMode();
+	int overwriteMode() const;
+	bool deleteOriginal() const;
 	QString getOutputDirectory();
 	QString getFilePattern();
 	void setExampleFilename(const QString& exampleName);
-	void setDir(QDir);
-	void setInputDir(QDir dir);
+	void setDir(QDir dir, bool updateLineEdit = true);
 
 signals:
 	void newHeaderText(QString);
 	void changed();
+
+public slots:
+	void setInputDir(QDir dir);
 
 protected slots:
 	void browse();
@@ -230,6 +280,8 @@ protected slots:
 	void extensionCBChanged(int index);
 	void emitChangedSignal();
 	void updateFileLabelPreview();
+	void outputTextChanged(QString text);
+	void useInputFolderChanged(bool checked);
 
 protected:
 	virtual void createLayout();
@@ -244,6 +296,9 @@ private:
 	QVector<DkFilenameWidget*> filenameWidgets;
 	QVBoxLayout* filenameVBLayout;
 	QCheckBox* cbOverwriteExisting;
+	QCheckBox* cbUseInput;
+	QCheckBox* cbDeleteOriginal;
+	QPushButton* outputBrowseButton;
 
 	QComboBox* cBExtension;
 	QComboBox* cBNewExtension;
@@ -334,6 +389,8 @@ public slots:
 	void logButtonClicked();
 	void processingFinished();
 	void updateProgress(int progress);
+	void updateLog();
+	void setSelectedFiles(const QStringList& selFiles);
 
 protected:
 	void createLayout();
@@ -350,6 +407,9 @@ private:
 	DkBatchProcessing* batchProcessing;
 	QPushButton* logButton;
 	QProgressBar* progressBar;
+	QLabel* summaryLabel;
+	QTimer logUpdateTimer;
+	bool logNeedsUpdate;
 
 	void startProcessing();
 	void stopProcessing();

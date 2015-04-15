@@ -11,6 +11,15 @@
 
 #include "DkUpnp.h"
 
+#pragma warning(push, 0)	// no warnings from includes - begin
+#include <QNetworkProxyFactory>
+
+#ifdef QT_NO_DEBUG_OUTPUT
+#pragma warning(disable: 4127)		// no 'conditional expression is constant' if qDebug() messages are removed
+#endif
+
+#pragma warning(pop)		// no warnings from includes - end
+
 namespace nmc{
 
 // DkUpnpDeviceHost --------------------------------------------------------------------
@@ -517,6 +526,11 @@ void DkUpnpRendererDeviceHost::stopDevicehost() {
 }
 
 DkUpnpRendererConnection::DkUpnpRendererConnection() {
+	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		accessManager.setProxy(listOfProxies[0]);
+	}
 }
 
 qint32 DkUpnpRendererConnection::doSetResource(const QUrl &resourceUri, Herqq::Upnp::Av::HObject * /*cdsMetadata =0 */) {

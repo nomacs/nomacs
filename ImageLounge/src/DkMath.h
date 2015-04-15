@@ -231,6 +231,20 @@ public:
 		return angle;
 	}
 
+	static float getReadableAngle(double angle) {
+
+		double sAngle = angle*DK_RAD2DEG;
+
+		while (sAngle > 90)
+			sAngle -= 180;
+		while (sAngle < -90)
+			sAngle += 180;
+
+		sAngle = qRound(sAngle*100)/100.0f;
+
+		return (float)sAngle;
+	}
+
 	static double distAngle(const double angle1, const double angle2) {
 
 		double nAngle1 = normAngleRad(angle1);

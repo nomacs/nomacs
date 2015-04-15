@@ -628,7 +628,8 @@ void DkBaseViewPort::draw(QPainter *painter, float opacity) {
 
 	QImage imgQt = imgStorage.getImage((float)(imgMatrix.m11()*worldMatrix.m11()));
 
-	if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel()) {
+	// opacity == 1.0f -> do not show pattern if we crossfade two images
+	if (DkSettings::display.tpPattern && imgQt.hasAlphaChannel() && opacity == 1.0f) {
 
 		// don't scale the pattern...
 		QTransform scaleIv;

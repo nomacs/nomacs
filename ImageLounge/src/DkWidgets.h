@@ -287,7 +287,7 @@ protected:
 	QVector<QAction*> actions;
 };
 
-
+#ifdef WITH_FOLDER_SCROLLBAR
 class DkFolderScrollBar : public QScrollBar {
 	Q_OBJECT
 
@@ -356,6 +356,7 @@ protected:
 	void init();
 
 };
+#endif
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
 class DkThumbsSaver : public DkWidget {
@@ -406,7 +407,7 @@ protected:
 
 };
 
-class DkExplorer : public QDockWidget {
+class DkExplorer : public DkDockWidget {
 	Q_OBJECT
 
 public:
@@ -627,6 +628,7 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 	QPointF clipToImage(const QPointF& pos);
+	QPointF clipToImageForce(const QPointF& pos);
 	void applyTransform();
 	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
 	

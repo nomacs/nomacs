@@ -35,6 +35,9 @@
 #include <QDebug>
 #include <QTimer>
 #include <QPainter>
+#include <QStyleOption>
+#include <QEvent>
+#include <QScrollBar>
 #pragma warning(pop)	// no warnings from includes - end
 
 namespace nmc {
@@ -65,6 +68,17 @@ void DkWidget::init() {
 	setGraphicsEffect(opacityEffect);
 
 	setVisible(false);
+}
+
+void DkWidget::paintEvent(QPaintEvent *event) {
+	
+	// fixes stylesheets which are not applied to custom widgets
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+	QWidget::paintEvent(event);
 }
 
 void DkWidget::registerAction(QAction* action) {
@@ -204,7 +218,7 @@ void DkLabel::init() {
 	textCol = QColor(255, 255, 255);
 	blocked = false;
 
-	timer = new QTimer();
+	timer = new QTimer(this);
 	timer->setSingleShot(true);
 	connect(timer, SIGNAL(timeout()), this, SLOT(hide()));
 
@@ -472,6 +486,140 @@ void DkFadeLabel::animateOpacityDown() {
 
 	QTimer::singleShot(20, this, SLOT(animateOpacityDown()));
 	opacityEffect->setOpacity(opacityEffect->opacity()-0.05);
+}
+
+// DkDockWidget --------------------------------------------------------------------
+DkDockWidget::DkDockWidget(const QString& title, QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */ ) : QDockWidget(title, parent, flags) {
+	displaySettingsBits = 0;
+	setObjectName("DkDockWidget");
+}
+
+DkDockWidget::~DkDockWidget() {
+}
+
+void DkDockWidget::registerAction(QAction* action) {
+	connect(this, SIGNAL(visibleSignal(bool)), action, SLOT(setChecked(bool)));
+}
+
+void DkDockWidget::setDisplaySettings(QBitArray* displayBits) {
+	displaySettingsBits = displayBits;
+}
+
+bool DkDockWidget::getCurrentDisplaySetting() const {
+
+	if (!displaySettingsBits)
+		return false;
+
+	return testDisplaySettings(*displaySettingsBits);
+}
+
+bool DkDockWidget::testDisplaySettings(const QBitArray& displaySettingsBits) {
+
+	if (DkSettings::app.currentAppMode < 0 || DkSettings::app.currentAppMode >= displaySettingsBits.size()) {
+		qDebug() << "[WARNING] illegal app mode: " << DkSettings::app.currentAppMode;
+		return false;
+	}
+
+	return displaySettingsBits.testBit(DkSettings::app.currentAppMode);
+}
+
+void DkDockWidget::setVisible(bool visible, bool saveSetting) {
+
+	QDockWidget::setVisible(visible);
+	emit visibleSignal(visible);	// if this gets slow -> put it into hide() or show()
+
+	if (saveSetting && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		displaySettingsBits->setBit(DkSettings::app.currentAppMode, visible);
+	}
+}
+
+void DkDockWidget::closeEvent(QCloseEvent* event) {
+
+	setVisible(false);
+
+	QDockWidget::closeEvent(event);
+}
+
+Qt::DockWidgetArea DkDockWidget::getDockLocationSettings(const Qt::DockWidgetArea& defaultArea) const {
+	
+	QSettings& settings = Settings::instance().getSettings();
+	Qt::DockWidgetArea location = (Qt::DockWidgetArea)settings.value(objectName(), defaultArea).toInt();
+
+	return location;
+}
+
+// DkResizableScrollArea --------------------------------------------------------------------
+DkResizableScrollArea::DkResizableScrollArea(QWidget * parent /* = 0 */) : QScrollArea(parent) {
+
+}
+
+bool DkResizableScrollArea::eventFilter(QObject * o, QEvent * e) {
+
+	if(widget() && o == widget() && e->type() == QEvent::Resize) {
+
+		updateSize();
+	}
+
+	return false;
+}
+
+void DkResizableScrollArea::updateSize() {
+
+	if (!widget())
+		return;
+
+	updateGeometry();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+		
+		int height = widget()->minimumSizeHint().height();
+
+		if (horizontalScrollBar()->isVisible())
+			height += horizontalScrollBar()->height();
+		setMinimumHeight(height);
+	}
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff) {
+	
+		int width = widget()->minimumSizeHint().width();
+
+		if (verticalScrollBar()->isVisible())
+			width += verticalScrollBar()->height();
+		setMinimumWidth(width);
+	}
+}
+
+QSize DkResizableScrollArea::sizeHint() const {
+
+	if (!widget())
+		return QScrollArea::sizeHint();
+
+	widget()->updateGeometry();
+
+	QSize s = QScrollArea::sizeHint();
+	QSize ws = widget()->sizeHint();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setHeight(ws.height());
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setWidth(ws.width());
+
+	return s;
+}
+
+QSize DkResizableScrollArea::minimumSizeHint() const {
+
+	if (!widget())
+		return QScrollArea::minimumSizeHint();
+
+	QSize s = QScrollArea::minimumSizeHint();
+	QSize ws = widget()->minimumSizeHint();
+
+	if (this->verticalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setHeight(ws.height());
+	if (this->horizontalScrollBarPolicy() == Qt::ScrollBarAlwaysOff)
+		s.setWidth(ws.width());
+
+	return s;
 }
 
 }

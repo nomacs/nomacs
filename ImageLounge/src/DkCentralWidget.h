@@ -125,7 +125,8 @@ public:
 	void updateTabs();
 	void updateTab(QSharedPointer<DkTabInfo> tabInfo);
 	QVector<QSharedPointer<DkTabInfo> > getTabs() const;
-	void saveSettings(bool clearTabs = false);
+	void loadSettings();
+	void saveSettings(bool clearTabs = false) const;
 	int currentViewMode() const;
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
 	QFileInfo getCurrentFile() const;
@@ -143,6 +144,7 @@ public slots:
 	void currentTabChanged(int idx);
 	void tabCloseRequested(int idx);
 	void tabMoved(int from, int to);
+	void setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, int activeIndex = -1);
 	void addTab(QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(), int tabIdx = -1);
 	void addTab(const QFileInfo& fileInfo, int idx = -1);
 	void addTab(const QSharedPointer<DkTabInfo> tabInfo);
@@ -155,6 +157,8 @@ public slots:
 	void showTabs(bool show = true);
 	void pasteImage();
 	void loadFile(const QFileInfo& fileInfo);
+	void loadFileToTab(const QFileInfo& fileInfo);
+	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
 
 protected:
 	DkViewPort* viewport;
@@ -168,7 +172,6 @@ protected:
 	QStackedLayout* viewLayout;
 
 	void createLayout();
-	void loadSettings();
 	void updateTabIdx();
 	void switchWidget(int widget);
 	void switchWidget(QWidget* widget = 0);

@@ -54,6 +54,7 @@
 
 #include "DkNoMacs.h"
 #include "DkSettings.h"
+#include "DkTimer.h"
 
 #include <iostream>
 #include <cassert>
@@ -155,9 +156,13 @@ int main(int argc, char *argv[]) {
 	//QSettings settings;
 
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
+	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 	QTranslator translator;
 	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
+	QTranslator translatorQt;
+	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
+	a.installTranslator(&translatorQt);
 
 	//QStringList xxx = nmc::DkSettings::saveFilters;
 	//qDebug() << xxx;
@@ -167,6 +172,8 @@ int main(int argc, char *argv[]) {
 		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
 		nmc::DkSettings::app.privateMode = true;
 	}
+
+	nmc::DkTimer dt;
 
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
@@ -178,6 +185,11 @@ int main(int argc, char *argv[]) {
 	}
 	else
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsIpl());	// slice it
+
+	if (w)
+		w->onWindowLoaded();
+
+	qDebug() << "Initialization takes: " << dt.getTotal();
 
 	// TODO: time to switch -> qt 5 has a command line parser
 	if (args.size() > 1 && args[1] == "-p") {

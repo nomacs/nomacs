@@ -91,6 +91,7 @@ public:
 	QStringList getIptcValues() const;
 	QStringList getXmpKeys() const;
 	void getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const;
+	void getAllMetaData(QStringList& keys, QStringList& values) const;
 	void setResolution(const QVector2D& res);
 	void clearOrientation();
 	void setOrientation(int o);
@@ -140,6 +141,9 @@ public:
 	QString getExposureMode(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getFlashMode(QSharedPointer<DkMetaDataT> metaData) const;
 	QString getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData) const;
+	QString getGpsAltitude(const QString& val) const;
+	QStringList convertGpsCoordinates(const QString& coordString) const;
+	float convertRational(const QString& val) const;
 	bool hasGPS(QSharedPointer<DkMetaDataT> metaData) const;
 	QString translateKey(const QString& key) const;
 	QString resolveSpecialValue(QSharedPointer<DkMetaDataT> metaData, const QString& key, const QString& value) const;

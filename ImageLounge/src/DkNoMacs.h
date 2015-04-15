@@ -93,6 +93,7 @@ class DkBatchDialog;
 class DkViewPort;
 class DkCentralWidget;
 class DkMainToolBar;
+class DkDockWidget;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -168,7 +169,6 @@ enum {
 	shortcut_anti_aliasing	= Qt::Key_A,
 	shortcut_lock_window	= Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_B,
 	shortcut_recent_files	= Qt::CTRL + Qt::Key_H,
-	//shortcut_play			= Qt::Key_Space,
 
 	// edit
 	shortcut_rotate_cw		= Qt::Key_R,
@@ -285,7 +285,9 @@ enum panelActions {
 	menu_panel_player,
 	menu_panel_preview,
 	menu_panel_thumbview,
+#ifdef WITH_FOLDER_SCROLLBAR
 	menu_panel_scroller,
+#endif
 	menu_panel_exif,
 	menu_panel_info,
 	menu_panel_histogram,
@@ -493,8 +495,8 @@ public slots:
 	void exitFullScreen();
 	void openKeyboardShortcuts();
 	void openSettings();
-	void showExplorer(bool show);
-	void showMetaDataDock(bool show);
+	void showExplorer(bool show, bool saveSettings = true);
+	void showMetaDataDock(bool show, bool saveSettings = true);
 	void showThumbsDock(bool show);
 	void thumbsDockAreaChanged();
 	void showRecentFiles(bool show = true);
@@ -513,7 +515,6 @@ public slots:
 	void openImgManipulationDialog();
 	void exportTiff();
 	void computeMosaic();
-	void computeBatch();
 	void deleteFile();
 	void openAppManager();
 	void setWallpaper();
@@ -561,6 +562,7 @@ public slots:
 	void showUpdateDialog(QString msg, QString title);
 	void performUpdate();
 	void updateProgress(qint64 received, qint64 total);
+	void updateProgressTranslations(qint64 received, qint64 total);
 	void startSetup(QString);
 	void updateTranslations();
 	virtual void enableNoImageActions(bool enable = true);
@@ -579,6 +581,7 @@ public slots:
 	void clearFileHistory();
 	void clearFolderHistory();
 	//void shareFacebook();
+	void restartWithTranslationUpdate();
 
 	// batch actions
 	void computeThumbsBatch();
@@ -680,6 +683,7 @@ protected:
 	DkResizeDialog* resizeDialog;
 	DkUpdateDialog* updateDialog;
 	QProgressDialog* progressDialog;
+	QProgressDialog* progressDialogTranslations;
 	DkForceThumbDialog* forceDialog;
 	DkTrainDialog* trainDialog;
 #ifdef WITH_QUAZIP
@@ -687,7 +691,7 @@ protected:
 #endif
 	DkExplorer* explorer;
 	DkMetaDataDock* metaDataDock;
-	QDockWidget* thumbsDock;
+	DkDockWidget* thumbsDock;
 	DkExportTiffDialog* exportTiffDialog;
 	DkSettingsDialog* settingsDialog;
 	DkThumbsSaver* thumbSaver;

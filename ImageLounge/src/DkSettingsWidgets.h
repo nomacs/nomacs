@@ -193,6 +193,9 @@ private:
 	QCheckBox* cbAskToSaveDeletedFiles;
 	QCheckBox* cbLogRecentFiles;
 
+	QCheckBox* cbIgnoreOrientation;
+	QCheckBox* cbSaveOrientation;
+
 	QGroupBox* 	gbDragDrop;
 
 	QRadioButton* rbWaitForImage;
@@ -294,50 +297,6 @@ private:
 
 };
 
-
-class DkMetaDataSettingsWidget : public DkSettingsWidget {
-	Q_OBJECT
-
-public:
-
-	DkMetaDataSettingsWidget(QWidget* parent);
-
-	void writeSettings();
-
-private:
-	void init();
-	void createLayout();
-
-	QCheckBox* cbIgnoreOrientation;
-	QCheckBox* cbSaveOrientation;
-
-	//Checkboxes
-	QVector<QCheckBox *> pCbMetaData;
-
-	//Tags not used, but maybe later...
-	//Exif.Image.BitsPerSample
-	//Exif.Image.ImageDescription
-	//Exif.Image.XResolution, Exif.Image.YResolution
-	//Exif.Image.ISOSpeedRatings
-	//Exif.Image.BrightnessValue
-	//Exif.Image.ExposureBiasValue
-	//Exif.Image.MaxApertureValue
-	//Exif.Image.LightSource
-	//Exif.Image.Noise
-
-	//IPTC
-	//Iptc.Application2.DateCreated
-
-	////XMP
-	//CreateDate
-	//CreatorTool
-	//Identifier
-	//Label
-	//MetaDataDate
-	//ModifyDate
-	//Nickname
-	//Rating
-};
 
 class DkResourceSettingsWidgets: public DkSettingsWidget {
 	Q_OBJECT
@@ -477,7 +436,6 @@ protected:
 	DkDisplaySettingsWidget* displaySettingsWidget;
 	DkFileWidget* slideshowSettingsWidget;
 	DkSynchronizeSettingsWidget* synchronizeSettingsWidget;
-	DkMetaDataSettingsWidget* exifSettingsWidget;
 	DkResourceSettingsWidgets* resourceSettingsWidget;
 	DkFileFilterSettingWidget* fileFilterSettingsWidget;
 	DkRemoteControlWidget* remoteControlWidget;

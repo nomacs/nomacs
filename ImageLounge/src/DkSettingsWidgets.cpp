@@ -127,7 +127,7 @@ void DkSettingsDialog::createLayout() {
 	listView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	QStringList stringList;
-	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("Exif") << tr("File Filters") << tr("Resources") << tr("Whitelist");
+	stringList << tr("General") << tr("Display") << tr("File Info") << tr("Synchronize") << tr("File Filters") << tr("Resources") << tr("Whitelist");
 	QItemSelectionModel *m = listView->selectionModel();
 	listView->setModel(new QStringListModel(stringList, this));
 	delete m;
@@ -168,7 +168,6 @@ void DkSettingsDialog::createSettingsWidgets() {
 	displaySettingsWidget = new DkDisplaySettingsWidget(centralWidget);
 	slideshowSettingsWidget = new DkFileWidget(centralWidget);
 	synchronizeSettingsWidget = new DkSynchronizeSettingsWidget(centralWidget);
-	exifSettingsWidget = new DkMetaDataSettingsWidget(centralWidget);
 	resourceSettingsWidget = new DkResourceSettingsWidgets(centralWidget);
 	fileFilterSettingsWidget = new DkFileFilterSettingWidget(centralWidget);
 	remoteControlWidget = new DkRemoteControlWidget(centralWidget);
@@ -178,7 +177,6 @@ void DkSettingsDialog::createSettingsWidgets() {
 	widgetList.push_back(displaySettingsWidget);
 	widgetList.push_back(slideshowSettingsWidget);
 	widgetList.push_back(synchronizeSettingsWidget);
-	widgetList.push_back(exifSettingsWidget);
 	widgetList.push_back(fileFilterSettingsWidget);
 	widgetList.push_back(resourceSettingsWidget);
 	widgetList.push_back(remoteControlWidget);
@@ -649,6 +647,7 @@ void DkFileWidget::init() {
 		pbTmpPath->setDisabled(true);
 	}
 
+
 	connect(pbTmpPath, SIGNAL(clicked()), this, SLOT(tmpPathButtonPressed()));
 	connect(cbUseTmpPath, SIGNAL(stateChanged(int)), this, SLOT(useTmpPathChanged(int)));
 
@@ -686,6 +685,20 @@ void DkFileWidget::createLayout() {
 	rbWaitForImage->setToolTip(tr("A new image is loaded after displaying the last image"));
 	rbWaitForImage->setChecked(DkSettings::resources.waitForLastImg);
 
+	QGroupBox* gbOrientation = new QGroupBox(tr("Exif Orientation"), this);
+
+	cbIgnoreOrientation = new QCheckBox(tr("Ignore Exif Orientation"), gbOrientation);
+	cbIgnoreOrientation->setChecked(DkSettings::metaData.ignoreExifOrientation);
+	cbIgnoreOrientation->setToolTip(tr("Note: instead of checking this option\n you should fix your images."));
+
+	cbSaveOrientation = new QCheckBox(tr("Save Exif Orientation"), gbOrientation);
+	cbSaveOrientation->setChecked(DkSettings::metaData.saveExifOrientation);
+	cbSaveOrientation->setToolTip(tr("Note: unchecking this option decreases the speed of rotating images."));
+
+	QVBoxLayout* orientationLayout = new QVBoxLayout(gbOrientation);
+	orientationLayout->addWidget(cbIgnoreOrientation);
+	orientationLayout->addWidget(cbSaveOrientation);
+
 	QButtonGroup* bgImageLoading = new QButtonGroup(this);
 	bgImageLoading->addButton(rbSkipImage);
 	bgImageLoading->addButton(rbWaitForImage);
@@ -702,9 +715,15 @@ void DkFileWidget::createLayout() {
 	cbAskToSaveDeletedFiles->setToolTip(tr("If checked, nomacs asks if you want to save files that are deleted while displaying."));
 	cbLogRecentFiles = new QCheckBox(tr("Log Recent Files"));
 
+	QWidget* imgWidget = new QWidget(this);
+	QHBoxLayout* imgLayout = new QHBoxLayout(imgWidget);
+	imgLayout->setContentsMargins(0,0,0,0);
+	imgLayout->addWidget(gbImageLoading);
+	imgLayout->addWidget(gbOrientation);
+
 	widgetLayout->addWidget(gbDragDrop);
-	widgetLayout->addWidget(gbImageLoading);
-	
+	widgetLayout->addWidget(imgWidget);
+
 	QGridLayout* leftLayout = new QGridLayout(this);
 	leftLayout->addWidget(skipImgWidget, 0, 0);
 	leftLayout->addWidget(cbWrapImages, 1, 0);
@@ -716,6 +735,7 @@ void DkFileWidget::createLayout() {
 }
 
 void DkFileWidget::writeSettings() {
+
 	DkSettings::global.skipImgs = skipImgWidget->getSpinBoxValue();
 	//DkSettings::global.numFiles = numberFiles->getSpinBoxValue();
 	DkSettings::global.loop = cbWrapImages->isChecked();
@@ -725,6 +745,10 @@ void DkFileWidget::writeSettings() {
 	QFileInfo fi = QFileInfo(leTmpPath->text());
 	DkSettings::global.tmpPath = fi.exists() ? leTmpPath->text() : QString();
 	DkSettings::resources.waitForLastImg = rbWaitForImage->isChecked();
+
+	DkSettings::metaData.ignoreExifOrientation = cbIgnoreOrientation->isChecked();
+	DkSettings::metaData.saveExifOrientation = cbSaveOrientation->isChecked();
+
 }
 
 
@@ -892,106 +916,6 @@ void DkSettingsListView::keyPressEvent(QKeyEvent *event) {
 		return;
 	}
 	QListView::keyPressEvent(event);
-}
-
-
-// DkMetaDataSettings --------------------------------------------------------------------------
-DkMetaDataSettingsWidget::DkMetaDataSettingsWidget(QWidget* parent) : DkSettingsWidget(parent) {
-	showOnlyInAdvancedMode = true;
-
-	createLayout();
-	init();
-}
-
-void DkMetaDataSettingsWidget::init() {
-
-	for (int i=0; i<DkSettings::desc_end;i++) {
-		pCbMetaData[i]->setChecked(DkSettings::metaData.metaDataBits[i]);
-	}
-}
-
-void DkMetaDataSettingsWidget::createLayout() {
-
-	//QString DkMetaDataSettingsWidget::sExifDesc = QString("Image Width;Image Length;Orientation;Make;Model;Rating;Aperture Value;Shutter Speed Value;Flash;FocalLength;") %
-	//	QString("Exposure Mode;Exposure Time;User Comment;Date Time;Date Time Original;Image Description");
-
-	//QString DkMetaDataSettingsWidget::sIptcDesc = QString("Creator CreatorTitle City Country Headline Caption Copyright Keywords");
-
-	//QHBoxLayout* gbHbox = new QHBoxLayout(gbThumb);
-
-	QHBoxLayout* hboxLayout = new QHBoxLayout(this);
-
-	QGroupBox* gbCamData = new QGroupBox(tr("Camera Data"), this);
-	QGroupBox* gbDescription = new QGroupBox(tr("Description"), this);
-
-	QVBoxLayout* camDataLayout = new QVBoxLayout(gbCamData);
-	QVBoxLayout* descriptionLayout = new QVBoxLayout(gbDescription);
-
-	//QWidget* leftCol = new QWidget();
-	//leftCol->setLayout(vboxLayoutLeft);
-	//QWidget* rightCol = new QWidget();/
-	//rightCol->setLayout(vboxLayoutRight);
-
-	//QLabel* topLabel = new QLabel;
-	QStringList sDescription;
-	for (int i = 0; i  < DkSettings::scamDataDesc.size(); i++) 
-		sDescription << qApp->translate("nmc::DkMetaData", DkSettings::scamDataDesc.at(i).toLatin1());
-
-	for (int i = 0; i  < DkSettings::sdescriptionDesc.size(); i++) 
-		sDescription << qApp->translate("nmc::DkMetaData", DkSettings::sdescriptionDesc.at(i).toLatin1());
-
-
-	//QStringList sDescription = qApp->translate("nmc::DkMetaData",scamDataDesc.toAscii()).split(";") + qApp->translate("nmc::DkMetaData",sdescriptionDesc.toAscii()).split(";");
-
-	for (int i=0; i<DkSettings::desc_end;i++) {
-		pCbMetaData.append(new QCheckBox(sDescription.at(i), gbDescription));
-	}
-
-	for(int i=0; i<DkSettings::camData_end;i++) {
-		camDataLayout->addWidget(pCbMetaData[i]);
-	}
-	camDataLayout->addStretch();
-
-	for(int i=DkSettings::camData_end; i<DkSettings::desc_end;i++) {
-		descriptionLayout->addWidget(pCbMetaData[i]);
-	}
-
-	descriptionLayout->addStretch();
-
-	QGroupBox* gbOrientation = new QGroupBox(tr("Exif Orientation"), this);
-
-	cbIgnoreOrientation = new QCheckBox(tr("Ignore Exif Orientation"), gbOrientation);
-	cbIgnoreOrientation->setChecked(DkSettings::metaData.ignoreExifOrientation);
-	cbIgnoreOrientation->setToolTip(tr("Note: instead of checking this option\n you should fix your images."));
-
-	cbSaveOrientation = new QCheckBox(tr("Save Exif Orientation"), gbOrientation);
-	cbSaveOrientation->setChecked(DkSettings::metaData.saveExifOrientation);
-	cbSaveOrientation->setToolTip(tr("Note: unchecking this option decreases the speed of rotating images."));
-
-	QVBoxLayout* orientationLayout = new QVBoxLayout(gbOrientation);
-	orientationLayout->addWidget(cbIgnoreOrientation);
-	orientationLayout->addWidget(cbSaveOrientation);
-
-	QWidget* rightWidget = new QWidget(this);
-	QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
-	rightLayout->addWidget(gbCamData);
-	rightLayout->addWidget(gbOrientation);
-	rightLayout->addStretch();
-	//vboxLayoutDescription->addStretch();
-
-	hboxLayout->addWidget(gbDescription);
-	hboxLayout->addWidget(rightWidget);
-
-}
-
-void DkMetaDataSettingsWidget::writeSettings() {
-
-	for (int i=0; i<DkSettings::desc_end;i++) {
-		DkSettings::metaData.metaDataBits[i] = pCbMetaData[i]->isChecked();
-	}
-
-	DkSettings::metaData.ignoreExifOrientation = cbIgnoreOrientation->isChecked();
-	DkSettings::metaData.saveExifOrientation = cbSaveOrientation->isChecked();
 }
 
 

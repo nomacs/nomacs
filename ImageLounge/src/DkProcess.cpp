@@ -120,7 +120,7 @@ bool DkResizeBatch::compute(QImage& img, QStringList& logStrings) const {
 	}
 
 	if (mode == mode_default)
-		logStrings.append(QObject::tr("%1 image resized, scale factor: %2%%").arg(name()).arg(scaleFactor*100.0f));
+		logStrings.append(QObject::tr("%1 image resized, scale factor: %2%").arg(name()).arg(scaleFactor*100.0f));
 	else
 		logStrings.append(QObject::tr("%1 image resized, new side: %2 px").arg(name()).arg(scaleFactor));
 
@@ -235,6 +235,8 @@ DkBatchProcess::DkBatchProcess(const QFileInfo& fileInfoIn, const QFileInfo& fil
 	this->fileInfoIn = fileInfoIn;
 	this->fileInfoOut = fileInfoOut;
 	compression = -1;
+	failure = 0;
+	isProcessed = false;
 
 	mode = DkBatchConfig::mode_skip_existing;
 }
@@ -249,34 +251,71 @@ void DkBatchProcess::setMode(int mode) {
 	this->mode = mode;
 }
 
-void DkBatchProcess::compute() {
+void DkBatchProcess::setDeleteOriginal(bool deleteOriginal) {
+
+	this->deleteOriginal = deleteOriginal;
+}
+
+QFileInfo DkBatchProcess::inputFile() const {
+
+	return fileInfoIn;
+}
+
+QFileInfo DkBatchProcess::outputFile() const {
+
+	return fileInfoOut;
+}
+
+bool DkBatchProcess::hasFailed() const {
+
+	return failure != 0;
+}
+
+bool DkBatchProcess::wasProcessed() const {
+	
+	return isProcessed;
+}
+
+bool DkBatchProcess::compute() {
+
+	isProcessed = true;
 
 	// check errors
 	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_skip_existing) {
 		logStrings.append(QObject::tr("%1 already exists -> skipping (check 'overwrite' if you want to overwrite the file)").arg(fileInfoOut.absoluteFilePath()));
-		return;
+		failure++;
+		return failure == 0;
 	}
 	else if (!fileInfoIn.exists()) {
 		logStrings.append(QObject::tr("Error: input file does not exist"));
 		logStrings.append(QObject::tr("Input: %1").arg(fileInfoIn.absoluteFilePath()));
-		return;
+		failure++;
+		return failure == 0;
 	}
 	else if (fileInfoIn == fileInfoOut && processFunctions.empty()) {
 		logStrings.append(QObject::tr("Skipping: nothing to do here."));
-		return;
+		failure++;
+		return failure == 0;
 	}
-
+	
 	// do the work
 	if (processFunctions.empty() && fileInfoIn.absolutePath() == fileInfoOut.absolutePath() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// rename?
-		renameFile();
-		return;
+		if (!renameFile())
+			failure++;
+		return failure == 0;
 	}
 	else if (processFunctions.empty() && fileInfoIn.suffix() == fileInfoOut.suffix()) {	// copy?
-		copyFile();
-		return;
+		if (!copyFile())
+			failure++;
+		else
+			deleteOriginalFile();
+
+		return failure == 0;
 	}
 
 	process();
+
+	return failure == 0;
 }
 
 QStringList DkBatchProcess::getLog() const {
@@ -292,6 +331,7 @@ bool DkBatchProcess::process() {
 
 	if (!imgC->loadImage() || imgC->image().isNull()) {
 		logStrings.append(QObject::tr("Error while loading..."));
+		failure++;
 		return false;
 	}
 
@@ -304,11 +344,20 @@ bool DkBatchProcess::process() {
 
 		if (!batch->compute(imgC, logStrings)) {
 			logStrings.append(QObject::tr("%1 failed").arg(batch->name()));
+			failure++;
 		}
 	}
 
-	imgC->saveImage(fileInfoOut, compression);
-	logStrings.append(QObject::tr("%1 saved...").arg(fileInfoOut.absoluteFilePath()));
+	deleteExisting();
+
+	if (imgC->saveImage(fileInfoOut, compression))
+		logStrings.append(QObject::tr("%1 saved...").arg(fileInfoOut.absoluteFilePath()));
+	else {
+		logStrings.append(QObject::tr("Could not save: %1").arg(fileInfoOut.absoluteFilePath()));
+		failure++;
+	}
+
+	deleteOriginalFile();
 
 	return true;
 }
@@ -359,7 +408,7 @@ bool DkBatchProcess::copyFile() {
 bool DkBatchProcess::deleteExisting() {
 
 	if (fileInfoOut.exists() && mode == DkBatchConfig::mode_overwrite) {
-		QFile file(fileInfoIn.absoluteFilePath());
+		QFile file(fileInfoOut.absoluteFilePath());
 
 		if (!file.remove()) {
 			logStrings.append(QObject::tr("Error: could not delete existing file"));
@@ -371,10 +420,32 @@ bool DkBatchProcess::deleteExisting() {
 	return true;
 }
 
-// DkBatchConfig --------------------------------------------------------------------
-DkBatchConfig::DkBatchConfig(const QList<QUrl>& urls, const QDir& outputDir, const QString& fileNamePattern) {
+bool DkBatchProcess::deleteOriginalFile() {
 
-	this->urls = urls;
+	if (fileInfoIn.absoluteFilePath() == fileInfoOut.absoluteFilePath())
+		return true;
+
+	if (!failure && deleteOriginal) {
+		QFile oFile(fileInfoIn.absoluteFilePath());
+
+		if (oFile.remove())
+			logStrings.append(QObject::tr("%1 deleted.").arg(fileInfoIn.absoluteFilePath()));
+		else {
+			failure++;
+			logStrings.append(QObject::tr("I could not delete %1").arg(fileInfoIn.absoluteFilePath()));
+			return false;
+		}
+	}
+	else if (failure)
+		logStrings.append(QObject::tr("I did not delete the original because I detected %1 failure(s).").arg(failure));
+
+	return true;
+}
+
+// DkBatchConfig --------------------------------------------------------------------
+DkBatchConfig::DkBatchConfig(const QStringList& fileList, const QDir& outputDir, const QString& fileNamePattern) {
+
+	this->fileList = fileList;
 	this->outputDir = outputDir;
 	this->fileNamePattern = fileNamePattern;
 	init();
@@ -396,7 +467,7 @@ bool DkBatchConfig::isOk() const {
 	if (outputDir == QDir())
 		return false; // do not allow to write into my (exe) directory
 
-	if (urls.empty())
+	if (fileList.empty())
 		return false;
 
 	if (fileNamePattern.isEmpty())
@@ -418,17 +489,18 @@ void DkBatchProcessing::init() {
 
 	batchItems.clear();
 	
-	QList<QUrl> urls = batchConfig.getUrls();
+	QStringList fileList = batchConfig.getFileList();
 
-	for (int idx = 0; idx < urls.size(); idx++) {
+	for (int idx = 0; idx < fileList.size(); idx++) {
 
-		QFileInfo cFileInfo(urls.at(idx).toLocalFile());
+		QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
 
 		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx);
 		QFileInfo newFileInfo(batchConfig.getOutputDir(), converter.getConvertedFileName());
 
 		DkBatchProcess cProcess(cFileInfo, newFileInfo);
 		cProcess.setMode(batchConfig.getMode());
+		cProcess.setDeleteOriginal(batchConfig.getDeleteOriginal());
 		cProcess.setProcessChain(batchConfig.getProcessFunctions());
 
 		batchItems.push_back(cProcess);
@@ -448,10 +520,9 @@ void DkBatchProcessing::compute() {
 	batchWatcher.setFuture(future);
 }
 
-void DkBatchProcessing::computeItem(DkBatchProcess& item) {
+bool DkBatchProcessing::computeItem(DkBatchProcess& item) {
 
-	item.compute();
-	qDebug() << "" << item.getLog();
+	return item.compute();
 }
 
 QStringList DkBatchProcessing::getLog() const {
@@ -465,6 +536,81 @@ QStringList DkBatchProcessing::getLog() const {
 	}
 
 	return log;
+}
+
+int DkBatchProcessing::getNumFailures() const {
+
+	int numFailures = 0;
+
+	for (DkBatchProcess batch : batchItems) {
+		
+		if (batch.hasFailed())
+			numFailures++;
+	}
+
+	return numFailures;
+}
+
+int DkBatchProcessing::getNumProcessed() const {
+
+	int numProcessed = 0;
+
+	for (DkBatchProcess batch : batchItems) {
+
+		if (batch.wasProcessed())
+			numProcessed++;
+	}
+
+	return numProcessed;
+}
+
+QList<int> DkBatchProcessing::getCurrentResults() {
+
+	if (resList.empty()) {
+		for (int idx = 0; idx < batchItems.size(); idx++)
+			resList.append(batch_item_not_computed);
+	}
+
+	for (int idx = 0; idx < resList.size(); idx++) {
+
+		if (resList.at(idx) != batch_item_not_computed)
+			continue;
+
+		if (batchItems.at(idx).wasProcessed())
+			resList[idx] = batchItems.at(idx).hasFailed() ? batch_item_failed : batch_item_succeeded;
+	}
+
+	return resList;
+}
+
+QStringList DkBatchProcessing::getResultList() const {
+
+	QStringList results;
+
+	for (DkBatchProcess batch : batchItems) {
+
+		if (batch.wasProcessed())
+			results.append(getBatchSummary(batch));
+	}
+
+	return results;
+}
+
+QString DkBatchProcessing::getBatchSummary(const DkBatchProcess& batch) const {
+
+	QString res = batch.inputFile().absoluteFilePath() + "\t";
+
+	if (!batch.hasFailed())
+		res += " <span style=\" color:#00aa00;\">" + tr("[OK]") + "</span>";
+	else
+		res += " <span style=\" color:#aa0000;\">" + tr("[FAIL]") + "</span>";
+
+	return res;
+}
+
+int DkBatchProcessing::getNumItems() const {
+
+	return batchItems.size();
 }
 
 bool DkBatchProcessing::isComputing() const {

@@ -91,7 +91,7 @@ namespace nmc {
 // some dummies
 class DkFilePreview;
 class DkThumbScrollWidget;
-class DkMetaDataInfo;
+class DkMetaDataHUD;
 class DkCommentWidget;
 
 class DkDelayedInfo : public QObject {
@@ -194,8 +194,8 @@ class DllExport DkControlWidget : public QWidget {
 
 public:
 	
-	enum VerPos {top_scroll = 0, top_thumbs, top_info, ver_center, bottom_info, bottom, bottom_thumbs, ver_pos_end};
-	enum HorPos {left_thumbs = 0, left, hor_center, right, right_thumbs, hor_pos_end};
+	enum VerPos {top_scroll = 0, top_thumbs, top_metadata, top_info, ver_center, bottom_info, bottom, bottom_metadata, bottom_thumbs, ver_pos_end};
+	enum HorPos {left_thumbs = 0, left_metadata, left, hor_center, right, right_metadata, right_thumbs, hor_pos_end};
 
 	enum InfoPos {
 		center_label,
@@ -225,11 +225,13 @@ public:
 		return filePreview;
 	}
 
+#ifdef WITH_FOLDER_SCROLLBAR
 	DkFolderScrollBar* getScroller() {
 		return folderScroll;
 	}
+#endif
 
-	DkMetaDataInfo* getMetaDataWidget() {
+	DkMetaDataHUD* getMetaDataWidget() {
 		return metaDataInfo;
 	}
 
@@ -270,7 +272,6 @@ public:
 
 public slots:
 	void showPreview(bool visible);
-	void showScroller(bool visible);
 	void showMetaData(bool visible);
 	void showFileInfo(bool visible);
 	void showPlayer(bool visible);
@@ -280,7 +281,12 @@ public slots:
 	void showHistogram(bool visible);
 	void showCommentWidget(bool visible);
 	void switchWidget(QWidget* widget = 0);
+	void changeMetaDataPosition(int pos);
 	void changeThumbNailPosition(int pos);
+
+#ifdef WITH_FOLDER_SCROLLBAR
+	void showScroller(bool visible);
+#endif
 
 	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
@@ -318,13 +324,15 @@ protected:
 	DkCropWidget* cropWidget;
 
 	DkFilePreview* filePreview;
-	DkMetaDataInfo* metaDataInfo;
+	DkMetaDataHUD* metaDataInfo;
 	DkCommentWidget* commentWidget;
 	DkZoomWidget* zoomWidget;
 	DkPlayer* player;
 	DkHistogram* histogram;
+	
+#ifdef WITH_FOLDER_SCROLLBAR
 	DkFolderScrollBar* folderScroll;
-
+#endif
 	DkFileInfoLabel* fileInfoLabel;
 	DkRatingLabelBg* ratingLabel;
 
@@ -428,6 +436,7 @@ public slots:
 	void rotateCCW();
 	void rotate180();
 	void resetView();
+	void zoomToFit();
 	void fullView();
 	void resizeEvent(QResizeEvent* event);
 	void toggleResetMatrix();
@@ -470,6 +479,7 @@ public slots:
 	virtual void loadImage(QImage newImg);
 	virtual void loadImage(QSharedPointer<DkImageContainerT> img);
 	virtual void setEditedImage(QImage newImg);
+	virtual void setEditedImage(QSharedPointer<DkImageContainerT> img);
 	virtual void setImage(QImage newImg);
 	virtual void setThumbImage(QImage newImg);
 
