@@ -287,22 +287,22 @@ QVariant DkMetaDataModel::headerData(int section, Qt::Orientation orientation, i
 //	return true;
 //}
 //
-//Qt::ItemFlags DkMetaDataModel::flags(const QModelIndex& index) const {
-//
-//	if (!index.isValid())
-//		return Qt::ItemIsEditable;
-//
-//	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-//
-//	Qt::ItemFlags flags;
-//
-//	if (index.column() == 0)
-//		flags = QAbstractTableModel::flags(index);
-//	if (index.column() == 1)	// TODO: check if the value is editable
-//		flags = QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
-//
-//	return flags;
-//}
+Qt::ItemFlags DkMetaDataModel::flags(const QModelIndex& index) const {
+
+	if (!index.isValid())
+		return Qt::ItemIsEditable;
+
+	//TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+
+	Qt::ItemFlags flags;
+
+	if (index.column() == 0)
+		flags = QAbstractItemModel::flags(index);
+	if (index.column() == 1)
+		flags = QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+
+	return flags;
+}
 
 
 // DkMetaDataDock --------------------------------------------------------------------
