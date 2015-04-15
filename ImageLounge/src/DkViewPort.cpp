@@ -1157,7 +1157,7 @@ void DkViewPort::zoomToFit() {
 	QSizeF imgSize = imgStorage.getImage().size();
 	QSizeF winSize = size();
 
-	float zoomLevel = qMin(winSize.width()/imgSize.width(), winSize.height()/imgSize.height());
+	float zoomLevel = (float)qMin(winSize.width()/imgSize.width(), winSize.height()/imgSize.height());
 	zoomTo(zoomLevel);
 }
 

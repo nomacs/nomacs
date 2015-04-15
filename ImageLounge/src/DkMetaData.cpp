@@ -1103,11 +1103,11 @@ QString DkMetaDataT::exiv2ToQString(std::string exifString) {
 	QString info;
 
 	if (QString::fromStdString(exifString).contains("charset=\"ASCII\"", Qt::CaseInsensitive)) {
-		info = QString::fromLocal8Bit((char*)(exifString.c_str()), exifString.size());
+		info = QString::fromLocal8Bit((char*)(exifString.c_str()), (int)exifString.size());
 		info = info.replace("charset=\"ASCII\" ", "", Qt::CaseInsensitive);
 	}
 	else {
-		info = QString::fromUtf8((char*)(exifString.c_str()), exifString.size());
+		info = QString::fromUtf8((char*)(exifString.c_str()), (int)exifString.size());
 	}
 
 	return info;
