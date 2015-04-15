@@ -1344,8 +1344,12 @@ QString DkMetaDataHelper::getGpsCoordinates(QSharedPointer<DkMetaDataT> metaData
 
 			gpsInfo = "http://maps.google.at/maps?q=";
 
-			gpsInfo += "+" + LatRef + "+" + convertGpsCoordinates(Lat).join("+");
-			gpsInfo += "+" + LonRef + "+" + convertGpsCoordinates(Lon).join("+");
+			QString latStr = convertGpsCoordinates(Lat).join("+");
+			QString lonStr = convertGpsCoordinates(Lon).join("+");
+			if (latStr.isEmpty() || lonStr.isEmpty())
+				return "";
+			gpsInfo += "+" + LatRef + "+" + latStr;
+			gpsInfo += "+" + LonRef + "+" + lonStr;
 
 		}
 
