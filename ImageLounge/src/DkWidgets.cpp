@@ -3171,19 +3171,23 @@ void DkRecentFilesWidget::updateFolders() {
 
 	int cHeight = 0;
 
-	for (DkFileInfo fi : recentFolders) {
+	for (DkFileInfo& fi : recentFolders) {
 
-		if (!fi.getFileInfo().isDir())
+		if (fi.inUse())
 			continue;
 
-		DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
-		connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
-		folderLayout->addWidget(fLabel);
-		folderLabels.append(fLabel);
+		if (fi.exists()) {
+			fi.setInUse(true);
 
-		cHeight += fLabel->height();
-		if (cHeight > folderWidget->height())
-			break;
+			DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
+			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+			folderLayout->addWidget(fLabel);
+			folderLabels.append(fLabel);
+
+			cHeight += fLabel->height();
+			if (cHeight > folderWidget->height())
+				break;
+		}
 	}
 
 	folderLayout->addStretch();
