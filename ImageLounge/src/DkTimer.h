@@ -30,6 +30,16 @@
 #include "DkMath.h"
 #include "DkUtils.h"
 
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
+#endif
+#endif
+
 namespace nmc {
 
 /**
@@ -37,7 +47,7 @@ namespace nmc {
  * This class is designed to measure the time of a method, especially
  * intervals and the total time can be measured.
  **/
-class DkTimer {
+class DllExport DkTimer {
 
 protected:
 	clock_t firstTick;	/**< the first tick**/

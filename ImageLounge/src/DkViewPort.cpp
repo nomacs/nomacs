@@ -322,7 +322,7 @@ void DkControlWidget::connectWidgets() {
 	// rating
 	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
 	connect(ratingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
-	connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
+	//connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
 
 	// playing
 	connect(player, SIGNAL(previousSignal()), viewport, SLOT(loadPrevFileFast()));
@@ -2120,8 +2120,11 @@ void DkViewPort::loadFileFast(int skipIdx) {
 		DkSettings::sync.syncMode == DkSettings::sync_mode_remote_control)) {
 		QApplication::sendPostedEvents();
 
+		int sIdx = skipIdx;
+
 		for (int idx = 0; idx < loader->getImages().size(); idx++) {
-			QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(skipIdx);
+
+			QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(sIdx);
 		
 			if (!imgC)
 				break;
@@ -2134,6 +2137,8 @@ void DkViewPort::loadFileFast(int skipIdx) {
 			}
 			else
 				qDebug() << "image does not exist - skipping";
+
+			sIdx += skipIdx;
 		}
 	}	
 

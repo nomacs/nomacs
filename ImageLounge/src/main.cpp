@@ -53,6 +53,7 @@
 
 #include "DkNoMacs.h"
 #include "DkSettings.h"
+#include "DkTimer.h"
 
 #include <iostream>
 #include <cassert>
@@ -171,6 +172,8 @@ int main(int argc, char *argv[]) {
 		nmc::DkSettings::app.privateMode = true;
 	}
 
+	nmc::DkTimer dt;
+
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
@@ -184,6 +187,8 @@ int main(int argc, char *argv[]) {
 
 	if (w)
 		w->onWindowLoaded();
+
+	qDebug() << "Initialization takes: " << dt.getTotal();
 
 	// TODO: time to switch -> qt 5 has a command line parser
 	if (args.size() > 1 && args[1] == "-p") {
