@@ -94,6 +94,7 @@ class DkViewPort;
 class DkCentralWidget;
 class DkMainToolBar;
 class DkDockWidget;
+class DkQuickAccess;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
@@ -205,6 +206,7 @@ enum {
 enum fileActions {
 	menu_file_open,
 	menu_file_open_dir,
+	menu_file_quick_launch,
 	menu_file_app_manager,
 	menu_file_save,
 	menu_file_save_as,
@@ -502,6 +504,7 @@ public slots:
 	void showRecentFiles(bool show = true);
 	void openDir();
 	void openFile();
+	void openQuickLaunch();
 	void renameFile();
 	void changeSorting(bool change);
 	void goTo();
@@ -672,6 +675,7 @@ protected:
 	QToolBar* movieToolbar;
 	QStatusBar* statusbar;
 	QVector<QLabel*> statusbarLabels;
+	DkQuickAccess* quickAccess;
 	
 
 	// file dialog

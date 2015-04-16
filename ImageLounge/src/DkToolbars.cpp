@@ -30,6 +30,7 @@
 #include "DkMath.h"
 #include "DkUtils.h"
 #include "DkImageStorage.h"
+#include "DkQuickAccess.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QToolBar>
@@ -57,7 +58,9 @@
 #include <QMenu>
 #include <QLineEdit>
 #include <QCompleter>
-#include <QStringListModel>
+//#include <QStringListModel>
+#include <QStandardItemModel>
+#include <QAbstractItemView>
 
 #include <QGridLayout>
 #include <QGraphicsOpacityEffect>
@@ -66,25 +69,6 @@
 namespace nmc {
 
 #define ICON(theme, backup) QIcon::fromTheme((theme), QIcon((backup)))
-
-// DkQuickFilterCompleter --------------------------------------------------------------------
-DkQuickFilterCompleter::DkQuickFilterCompleter(QObject* parent /* = 0 */) : QCompleter(parent) {
-
-}
-
-void DkQuickFilterCompleter::setCompletionPrefix(const QString &prefix) {
-
-	QStringListModel* sm = static_cast<QStringListModel*>(model());
-
-	if (!sm)
-		QCompleter::setCompletionPrefix(prefix);
-
-
-	QStringList strings = sm->stringList();
-	strings = DkUtils::filterStringList(prefix, strings);
-	sm->setStringList(strings);
-
-}
 
 // DkMainToolBar --------------------------------------------------------------------
 DkMainToolBar::DkMainToolBar(const QString & title, QWidget * parent /* = 0 */) : QToolBar(title, parent) {
@@ -96,25 +80,39 @@ void DkMainToolBar::createLayout() {
 
 	quickFilterEdit = new QLineEdit("", this);
 	quickFilterEdit->setPlaceholderText(tr("Quick Launch (Ctrl + Q)"));
-	quickFilterEdit->setMaximumWidth(150);
-	connect(quickFilterEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(quickFilterSignal(const QString&)));
+	quickFilterEdit->setMaximumWidth(250);
+	quickFilterEdit->hide();
 
-	QStringList wordList;
-	wordList << "alpha" << "omega" << "omicron" << "zeta" << "markus diem";
-
-	QCompleter *completer = new QCompleter(this);
+	completer = new QCompleter(this);
+	connect(completer, SIGNAL(activated(const QModelIndex&)), this, SLOT(closeQuickAccess()));
+	connect(quickFilterEdit, SIGNAL(editingFinished()), this, SLOT(quickAccessFinished()));
 #if QT_VERSION >= 0x050000
 	completer->setFilterMode(Qt::MatchContains);
 #endif
-	completer->setModel(new QStringListModel(wordList, completer));
 	completer->setCaseSensitivity(Qt::CaseInsensitive);
 	quickFilterEdit->setCompleter(completer);
+}
 
-	QAction* quickFilterAction = new QAction(tr("&Filter"), this);
-	quickFilterAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
-	connect(quickFilterAction, SIGNAL(triggered()), this, SLOT(setQuickFilterFocus()));
+void DkMainToolBar::setQuickAccessModel(QStandardItemModel* model) {
+	
+	completer->setModel(model);
+	quickFilterEdit->show();
+	quickFilterEdit->clear();
+	filterAction = addWidget(quickFilterEdit);
 
-	//addAction(quickFilterAction);
+	quickFilterEdit->setFocus(Qt::MouseFocusReason);
+	qDebug() << "should get the focus";
+}
+
+void DkMainToolBar::closeQuickAccess() {
+
+	//quickFilterEdit->editingFinished();
+	quickFilterEdit->clear();
+	//quickFilterEdit->clearFocus();
+	quickFilterEdit->hide();
+	//this->setFocus(Qt::MouseFocusReason);
+	//removeAction(filterAction);
+	qDebug() << "here";
 }
 
 void DkMainToolBar::allActionsAdded() {
@@ -123,13 +121,7 @@ void DkMainToolBar::allActionsAdded() {
 	QWidget* spacer = new QWidget(this);
 	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	addWidget(spacer);
-	addWidget(quickFilterEdit);
-}
-
-void DkMainToolBar::setQuickFilterFocus() {
-
-	quickFilterEdit->setFocus(Qt::MouseFocusReason);
-	qDebug() << "quick launch focus set";
+	//addWidget(quickFilterEdit);
 }
 
 // DkColorSlider:

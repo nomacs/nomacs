@@ -42,26 +42,14 @@ class QGraphicsOpacityEffect;
 class QDoubleSpinBox;
 class QPushButton;
 class QColorDialog;
+class QStandardItemModel;
 
 
 namespace nmc {
 
 class DkTransferToolBar;
 class DkVector;
-
-class DkQuickFilterCompleter : public QCompleter {
-	Q_OBJECT
-
-public:
-	DkQuickFilterCompleter(QObject* parent = 0);
-
-public slots:
-	void setCompletionPrefix(const QString &prefix);
-
-protected:
-
-
-};
+class DkQuickAccess;
 
 class DkMainToolBar : public QToolBar {
 	Q_OBJECT
@@ -70,14 +58,18 @@ public:
 	DkMainToolBar(const QString & title, QWidget * parent = 0);
 
 	void allActionsAdded();	// fast fix for now
+	void setQuickAccessModel(QStandardItemModel* model);
+	QCompleter* getCompleter() { return completer; };
 
 public slots:
-	void setQuickFilterFocus();
+	void closeQuickAccess();
 
 protected:
 	void createLayout();
 
 	QLineEdit* quickFilterEdit;
+	QCompleter* completer;
+	QAction* filterAction;
 };
 
 class DkColorSlider : public QWidget {

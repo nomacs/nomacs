@@ -45,6 +45,7 @@
 #include "DkCentralWidget.h"
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
+#include "DkQuickAccess.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -138,6 +139,7 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	settingsDialog = 0;
 	printPreviewDialog = 0;
 	thumbsDock = 0;
+	quickAccess = 0;
 #ifdef WITH_QUAZIP
 	archiveExtractionDialog = 0;
 #endif 
@@ -556,6 +558,7 @@ void DkNoMacs::createMenu() {
 	openWithMenu = new QMenu(tr("Open &With"), fileMenu);
 	createOpenWithMenu(openWithMenu);
 	fileMenu->addMenu(openWithMenu);
+	fileMenu->addAction(fileActions[menu_file_quick_launch]);
 
 	fileMenu->addSeparator();
 	fileMenu->addAction(fileActions[menu_file_save]);
@@ -832,6 +835,12 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_open_dir]->setShortcut(QKeySequence(shortcut_open_dir));
 	fileActions[menu_file_open_dir]->setStatusTip(tr("Open a directory and load its first image"));
 	connect(fileActions[menu_file_open_dir], SIGNAL(triggered()), this, SLOT(openDir()));
+
+	fileActions[menu_file_quick_launch] = new QAction(tr("&Quick Launch"), this);
+	fileActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+	fileActions[menu_file_quick_launch]->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+	connect(fileActions[menu_file_quick_launch], SIGNAL(triggered()), this, SLOT(openQuickLaunch()));
+
 
 	fileActions[menu_file_app_manager] = new QAction(tr("&Manage Applications"), this);
 	fileActions[menu_file_app_manager]->setStatusTip(tr("Manage Applications which are Automatically Opened"));
@@ -2403,6 +2412,38 @@ void DkNoMacs::openFile() {
 	getTabWidget()->loadFile(QFileInfo(fileName));
 }
 
+void DkNoMacs::openQuickLaunch() {
+
+	// create new model
+	if (!quickAccess) {
+		quickAccess = new DkQuickAccess(this);
+		
+		// add all actions
+		quickAccess->addActions(fileActions);
+		quickAccess->addActions(openWithMenu->actions().toVector());
+		quickAccess->addActions(sortActions);
+		quickAccess->addActions(editActions);
+		quickAccess->addActions(viewActions);
+		quickAccess->addActions(panelActions);
+		quickAccess->addActions(toolsActions);
+		quickAccess->addActions(syncActions);
+#ifdef WITH_PLUGINS
+		initPluginManager();
+		quickAccess->addActions(pluginsActions);
+#endif // WITH_PLUGINS
+		quickAccess->addActions(helpActions);
+
+		connect(toolbar->getCompleter(), SIGNAL(activated(const QModelIndex&)), quickAccess, SLOT(fireAction(const QModelIndex&)));
+		connect(quickAccess, SIGNAL(loadFileSignal(const QFileInfo&)), getTabWidget(), SLOT(loadFile(const QFileInfo&)));
+		//connect(toolbar, SIGNAL(quickAccessFinishedSignal(const QModelIndex&)), quickAccess, SLOT(fireAction(const QModelIndex&)));
+	}
+	
+	quickAccess->addDirs(DkSettings::global.recentFolders);
+	quickAccess->addFiles(DkSettings::global.recentFiles);
+
+	toolbar->setQuickAccessModel(quickAccess->getModel());
+}
+
 void DkNoMacs::loadFile(const QFileInfo& file) {
 
 	if (!viewport())
@@ -3276,18 +3317,10 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 void DkNoMacs::openKeyboardShortcuts() {
 
 	QList<QAction* > openWithActionList = openWithMenu->actions();
-	QVector<QAction* > openWithActions;
-
-	for (int idx = 0; idx < openWithActionList.size(); idx++) {
-		if (!openWithActionList.at(idx)->text().isEmpty())
-			openWithActions.append(openWithActionList.at(idx));
-		else
-			qDebug() << "Empty action detected!";
-	}
 
 	DkShortcutsDialog* shortcutsDialog = new DkShortcutsDialog(this);
 	shortcutsDialog->addActions(fileActions, fileMenu->title());
-	shortcutsDialog->addActions(openWithActions, openWithMenu->title());
+	shortcutsDialog->addActions(openWithActionList.toVector(), openWithMenu->title());
 	shortcutsDialog->addActions(sortActions, sortMenu->title());
 	shortcutsDialog->addActions(editActions, editMenu->title());
 	shortcutsDialog->addActions(viewActions, viewMenu->title());
