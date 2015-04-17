@@ -226,9 +226,12 @@ void DkSettingsDialog::saveSettings() {
 		QMessageBox::information(this, tr("Private Mode"), tr("Settings are not saved in the private mode"), QMessageBox::Ok, QMessageBox::Ok);
 	}
 
+	if (!DkSettings::app.privateMode && curLanguage != DkSettings::global.language)
+		emit languageChanged();
+
 	// if the language changed we need to restart nomacs (re-translating while running is pretty hard to accomplish)
-	if (!DkSettings::app.privateMode && (curLanguage != DkSettings::global.language ||
-		DkSettings::display.bgColor != curBgCol ||
+	if (!DkSettings::app.privateMode && 
+		(DkSettings::display.bgColor != curBgCol ||
 		DkSettings::display.iconColor != curIconCol ||
 		DkSettings::display.bgColorWidget != curBgColWidget ||
 		DkSettings::display.bgColorFrameless != curBgColFrameless ||
@@ -236,7 +239,7 @@ void DkSettingsDialog::saveSettings() {
 		DkSettings::display.defaultIconColor != curUseIconCol ||
 		DkSettings::display.smallIcons != curIcons ||
 		DkSettings::display.toolbarGradient != curGradient))
-		emit languageChanged();
+		emit settingsChangedRestart();
 	else
 		emit settingsChanged();
 

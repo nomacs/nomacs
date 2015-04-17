@@ -404,6 +404,7 @@ public:
 
 signals:
 	void languageChanged();
+	void settingsChangedRestart();
 	void settingsChanged();
 	void setToDefaultSignal();
 

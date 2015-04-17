@@ -3311,6 +3311,7 @@ void DkNoMacs::openSettings() {
 		connect(settingsDialog, SIGNAL(setToDefaultSignal()), this, SLOT(cleanSettings()));
 		connect(settingsDialog, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
 		connect(settingsDialog, SIGNAL(languageChanged()), this, SLOT(restartWithTranslationUpdate()));
+		connect(settingsDialog, SIGNAL(settingsChangedRestart()), this, SLOT(restart()));
 		connect(settingsDialog, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
 	}
 
@@ -3333,9 +3334,8 @@ void DkNoMacs::checkForUpdate(bool silent) {
 	// updates are supported on windows only
 #ifndef Q_WS_X11
 
-
-	//// do we really need to check for update?
-	//if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates) {
+	// do we really need to check for update?
+	if (!silent || !DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates) {
 
 		DkTimer dt;
 
@@ -3348,7 +3348,7 @@ void DkNoMacs::checkForUpdate(bool silent) {
 		updater->checkForUpdates();
 
 		qDebug() << "checking for updates takes: " << dt.getTotal();
-	//}
+	}
 #endif // !#ifndef Q_WS_X11
 }
 
