@@ -110,25 +110,7 @@ set (NOMACS_RESOURCES
 		src/nomacs.qrc
 )
 
-set(NOMACS_TRANSLATIONS
-	translations/nomacs_als.ts
-	translations/nomacs_az.ts
-	translations/nomacs_ar.ts
-	translations/nomacs_cs.ts		
-	translations/nomacs_de.ts
-	translations/nomacs_en.ts
-	translations/nomacs_es.ts		
-	translations/nomacs_fr.ts
-	translations/nomacs_it.ts
-	translations/nomacs_ja.ts
-	translations/nomacs_pl.ts
-	translations/nomacs_pt.ts
-	translations/nomacs_ru.ts
-	translations/nomacs_sk.ts
-	translations/nomacs_sl.ts
-	translations/nomacs_sr.ts		
-	translations/nomacs_zh.ts		
-)
+file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 
 IF (NOT ENABLE_QT5)
  QT4_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
