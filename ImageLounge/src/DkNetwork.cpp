@@ -1432,12 +1432,12 @@ void DkUpdater::replyFinished(QNetworkReply* reply) {
 		}
 		else if (!silent)
 			emit showUpdaterMessage(tr("nomacs is up-to-date"), tr("updates"));
-
 	}
 	
 }
 
 void DkUpdater::startDownload(QUrl downloadUrl) {
+	
 	if (downloadUrl.isEmpty())
 		emit showUpdaterMessage(tr("sorry, unable to download the new version"), tr("updates"));
 
@@ -1446,7 +1446,7 @@ void DkUpdater::startDownload(QUrl downloadUrl) {
 	
 	//updateAborted = false;	// reset - it may have been canceled before
 	QNetworkRequest req(downloadUrl);
-	req.setRawHeader("User-Agent", " ");
+	req.setRawHeader("User-Agent", "Auto-Updater");
 	reply = accessManagerSetup.get(req);
 	connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownloadProgress(qint64, qint64)));
 }
