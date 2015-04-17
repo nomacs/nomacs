@@ -27,6 +27,7 @@
 
 #include "DkNetwork.h"
 #include "DkSettings.h"
+#include "DkTimer.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTcpSocket>
@@ -1323,13 +1324,7 @@ void DkPeerList::print() {
 // DkUpdater  --------------------------------------------------------------------
 
 DkUpdater::DkUpdater(QObject* parent) : QObject(parent) {
-	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
-	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
-	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
-		accessManagerSetup.setProxy(listOfProxies[0]);
-		accessManagerVersion.setProxy(listOfProxies[0]);
-	}
-
+	
 	silent = true;
 	cookie = new QNetworkCookieJar(this);
 	accessManagerSetup.setCookieJar(cookie);
@@ -1353,6 +1348,21 @@ void DkUpdater::checkForUpdates() {
 	QUrl url ("http://www.nomacs.org/version");
 #endif
 
+	// the proxy settings take > 2 sec on Win7
+	// that is why proxy settings are only set
+	// for manual updates
+	if (!silent) {
+		DkTimer dt;
+		QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+		QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+
+		if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+			accessManagerSetup.setProxy(listOfProxies[0]);
+			accessManagerVersion.setProxy(listOfProxies[0]);
+		}
+		qDebug() << "checking for proxy takes: " << dt.getTotal();
+	}
+
 	qDebug() << "checking for updates";
 	connect(&accessManagerVersion, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));	
 	QNetworkRequest request = QNetworkRequest(url);
@@ -1362,6 +1372,7 @@ void DkUpdater::checkForUpdates() {
 }
 
 void DkUpdater::replyFinished(QNetworkReply* reply) {
+	
 	if (reply->error())
 		return;
 
@@ -1515,12 +1526,8 @@ void DkUpdater::replyError(QNetworkReply::NetworkError) {
 
 // DkTranslationUpdater --------------------------------------------------------------------
 DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject* parent) : QObject(parent) {
+
 	this->silent = silent;
-	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
-	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
-	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
-		accessManager.setProxy(listOfProxies[0]);
-	}
 	connect(&accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
 	updateAborted = false;
@@ -1528,12 +1535,20 @@ DkTranslationUpdater::DkTranslationUpdater(bool silent, QObject* parent) : QObje
 }
 
 void DkTranslationUpdater::checkForUpdates() {
+
 	total = -1;
 	totalQt = -1;
 	received = 0;
 	receivedQt = 0;
 	updateAborted = false;
 	updateAbortedQt = false;
+
+	// that line takes 2 secs on win7!
+	QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
+		accessManager.setProxy(listOfProxies[0]);
+	}
 
 	QUrl url ("http://www.nomacs.org/translations/" + DkSettings::global.language + "/nomacs_" + DkSettings::global.language + ".qm");
 	qDebug() << "checking for new translations at " << url;
@@ -1803,12 +1818,15 @@ void DkLocalManagerThread::connectClient() {
 
 void DkLocalManagerThread::createClient(QString title) {
 
+	DkTimer dt;
 	if (clientManager)
 		delete clientManager;
 
 	// remember: if we set this as parent, we get a warning (different threads)
 	// but: take a look at a line which should be about 40 lines from here : )
 	clientManager = new DkLocalClientManager(title, 0);
+
+	qDebug() << "client created in: " << dt.getTotal();	// takes 1 sec in the main thread
 }
 
 // DkLanManagerThread --------------------------------------------------------------------
