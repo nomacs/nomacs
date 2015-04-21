@@ -7,7 +7,7 @@
 !include "nsProcess.nsh"
 
 ; your install directories
-!define BUILD_DIR "..\build2012x86\ReallyRelease"
+; !define BUILD_DIR "..\build2012x86\ReallyRelease"
 
 !ifndef BUILD_DIR
 !define BUILD_DIR "..\build2012x64\ReallyRelease"
@@ -16,7 +16,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs"
-!define PRODUCT_VERSION "2.4.4"
+!define PRODUCT_VERSION "2.4.5"
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
