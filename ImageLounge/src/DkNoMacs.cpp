@@ -3075,8 +3075,9 @@ void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
 
 	showToolbarsTemporarily(!show);
 
-	if (show)
-		addToolBar(toolbar);
+	if (show) {
+		addToolBar(toolBarArea(this->toolbar), toolbar);
+	}
 	else
 		removeToolBar(toolbar);
 
