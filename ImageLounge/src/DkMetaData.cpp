@@ -882,6 +882,7 @@ QVector2D DkMetaDataT::getResolution() const {
 			//qDebug() << "Resolution"  << xRes << " " << yRes;
 			if (res.size() != 2)
 				return resV;
+
 			if (res.at(0).toFloat() != 0 && res.at(1).toFloat() != 0)
 				resV.setY(res.at(0).toFloat()/res.at(1).toFloat());
 		}

@@ -1387,7 +1387,9 @@ QImage DkResizeDialog::getResizedImage() {
 void DkResizeDialog::setExifDpi(float exifDpi) {
 
 	this->exifDpi = exifDpi;
+	resolutionEdit->blockSignals(true);
 	resolutionEdit->setValue(exifDpi);
+	resolutionEdit->blockSignals(false);
 }
 
 float DkResizeDialog::getExifDpi() {
