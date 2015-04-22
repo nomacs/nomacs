@@ -866,7 +866,6 @@ QVector2D DkMetaDataT::getResolution() const {
 	try {
 
 		if (hasMetaData()) {
-			//metaData = DkImageLoader::imgMetaData;
 			xRes = getExifValue("XResolution");
 			QStringList res;
 			res = xRes.split("/");

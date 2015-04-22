@@ -1184,16 +1184,7 @@ void DkResizeDialog::createLayout() {
 	// shows the preview
 	previewLabel = new QLabel(this);
 	previewLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	//previewLabel->setScaledContents(true);
 	previewLabel->setMinimumHeight(100);
-	//previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
-	//previewLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
-
-	//previewLayout->addWidget(origLabelText, 0, 0);
-	//previewLayout->addWidget(newLabel, 0, 1);
-	//previewLayout->addWidget(origView, 1, 0);
-	//previewLayout->addWidget(previewLabel, 1, 1);
 
 	// all text dialogs...
 	QDoubleValidator* doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
