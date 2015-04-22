@@ -91,6 +91,7 @@ unset(OpenCV_CONFIG_PATH CACHE)
 unset(OpenCV_LIB_DIR_DBG CACHE)
 unset(OpenCV_LIB_DIR_OPT CACHE)
 unset(OpenCV_LIBRARY_DIRS CACHE)
+unset(OpenCV_DIR CACHE)
 if(ENABLE_OPENCV)
 	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
 	if(OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error

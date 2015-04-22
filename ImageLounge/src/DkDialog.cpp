@@ -1781,6 +1781,9 @@ void DkShortcutDelegate::textChanged(QString text) {
 	emit checkDuplicateSignal(text, item);
 }
 #else
+
+void DkShortcutDelegate::textChanged(QString) {}	// dummy since the moccer is to dumb to get #if defs
+
 void DkShortcutDelegate::keySequenceChanged(const QKeySequence& keySequence) {
 	emit checkDuplicateSignal(keySequence, item);
 }
