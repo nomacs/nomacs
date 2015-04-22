@@ -436,6 +436,8 @@ void DkNoMacs::createToolbar() {
 		movieToolbar->setIconSize(QSize(32, 32));
 
 	toolbar->allActionsAdded();
+
+	addToolBar(toolbar);
 }
 
 
