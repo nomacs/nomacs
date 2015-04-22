@@ -869,20 +869,21 @@ QVector2D DkMetaDataT::getResolution() const {
 			xRes = getExifValue("XResolution");
 			QStringList res;
 			res = xRes.split("/");
-			if (res.size() != 2) {
-				//throw DkException("no x resolution found\n");
+
+			if (res.size() != 2) 
 				return resV;
-			}
-			resV.setX(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
+
+			if (res.at(0).toFloat() != 0 && res.at(1).toFloat() != 0)
+				resV.setX(res.at(0).toFloat()/res.at(1).toFloat());
 
 			yRes = getExifValue("YResolution");
 			res = yRes.split("/");
 
-			qDebug() << "Resolution"  << xRes << " " << yRes;
+			//qDebug() << "Resolution"  << xRes << " " << yRes;
 			if (res.size() != 2)
 				return resV;
-				//throw DkException("no y resolution found\n");
-			resV.setY(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
+			if (res.at(0).toFloat() != 0 && res.at(1).toFloat() != 0)
+				resV.setY(res.at(0).toFloat()/res.at(1).toFloat());
 		}
 	} catch (...) {
 		qDebug() << "could not load Exif resolution, set to 72dpi";

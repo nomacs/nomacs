@@ -1160,7 +1160,7 @@ void DkResizeDialog::createLayout() {
 	// preview
 	int minPx = 1;
 	int maxPx = 100000;
-	double minWidth = 0.001;
+	double minWidth = 1;
 	double maxWidth = 500000;
 	int decimals = 2;
 
