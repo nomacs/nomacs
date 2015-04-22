@@ -496,7 +496,7 @@ void DkCentralWidget::clearAllTabs() {
 
 void DkCentralWidget::updateTab(QSharedPointer<DkTabInfo> tabInfo) {
 
-	qDebug() << tabInfo->getTabText() << " set at tab location: " << tabInfo->getTabIdx();
+	//qDebug() << tabInfo->getTabText() << " set at tab location: " << tabInfo->getTabIdx();
 	tabbar->setTabText(tabInfo->getTabIdx(), tabInfo->getTabText());
 	tabbar->setTabIcon(tabInfo->getTabIdx(), tabInfo->getIcon());
 }

@@ -569,7 +569,7 @@ public slots:
 	void startSetup(QString);
 	void updateTranslations();
 	virtual void enableNoImageActions(bool enable = true);
-	void checkForUpdate();
+	void checkForUpdate(bool silent = false);
 	void setFrameless(bool frameless);
 	void fitFrame();
 	void setRecursiveScan(bool recursive);

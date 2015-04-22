@@ -3056,6 +3056,8 @@ void DkNoMacs::onWindowLoaded() {
 		}
 	}
 
+	checkForUpdate(true);
+
 	// load settings AFTER everything is initialized
 	getTabWidget()->loadSettings();
 
@@ -3344,6 +3346,7 @@ void DkNoMacs::openSettings() {
 		connect(settingsDialog, SIGNAL(setToDefaultSignal()), this, SLOT(cleanSettings()));
 		connect(settingsDialog, SIGNAL(settingsChanged()), viewport(), SLOT(settingsChanged()));
 		connect(settingsDialog, SIGNAL(languageChanged()), this, SLOT(restartWithTranslationUpdate()));
+		connect(settingsDialog, SIGNAL(settingsChangedRestart()), this, SLOT(restart()));
 		connect(settingsDialog, SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
 	}
 
@@ -3361,18 +3364,31 @@ void DkNoMacs::settingsChanged() {
 	}
 }
 
-void DkNoMacs::checkForUpdate() {
+void DkNoMacs::checkForUpdate(bool silent) {
 
-	if (!updater) {
-		updater = new DkUpdater();
-		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+	// updates are supported on windows only
+#ifndef Q_WS_X11
+
+	// do we really need to check for update?
+	if (!silent || !DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates) {
+
+		DkTimer dt;
+
+		if (!updater) {
+			updater = new DkUpdater(this);
+			connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
+			connect(updater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+		}
+		updater->silent = silent;
+		updater->checkForUpdates();
+
+		qDebug() << "checking for updates takes: " << dt.getTotal();
 	}
-	updater->silent = false;
-	updater->checkForUpdates();
-
+#endif // !#ifndef Q_WS_X11
 }
 
 void DkNoMacs::showUpdaterMessage(QString msg, QString title) {
+	
 	QMessageBox infoDialog(this);
 	infoDialog.setWindowTitle(title);
 	infoDialog.setIcon(QMessageBox::Information);
@@ -3383,6 +3399,7 @@ void DkNoMacs::showUpdaterMessage(QString msg, QString title) {
 }
 
 void DkNoMacs::showUpdateDialog(QString msg, QString title) {
+	
 	if (progressDialog != 0 && !progressDialog->isHidden()) { // check if the progress bar is already open 
 		showUpdaterMessage(tr("Already downloading update"), "update");
 		return;
@@ -3403,6 +3420,12 @@ void DkNoMacs::showUpdateDialog(QString msg, QString title) {
 }
 
 void DkNoMacs::performUpdate() {
+	
+	if (!updater) {
+		qDebug() << "WARNING updater is NULL where it should not be.";
+		return;
+	}
+
 	updater->performUpdate();
 
 	if (!progressDialog) {
@@ -3448,6 +3471,12 @@ void DkNoMacs::startSetup(QString filePath) {
 }
 
 void DkNoMacs::updateTranslations() {
+	
+	if (!translationUpdater) {
+		translationUpdater = new DkTranslationUpdater(false, this);
+		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+	}
+
 	if (!progressDialogTranslations) {
 		progressDialogTranslations = new QProgressDialog(tr("Downloading new translations..."), tr("Cancel"), 0, 100, this);
 		progressDialogTranslations->setWindowIcon(windowIcon());
@@ -3467,6 +3496,12 @@ void DkNoMacs::updateTranslations() {
 }
 
 void DkNoMacs::restartWithTranslationUpdate() {
+	
+	if (!translationUpdater) {
+		translationUpdater = new DkTranslationUpdater(false, this);
+		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
+	}
+
 	translationUpdater->silent = true;
 	connect(translationUpdater, SIGNAL(downloadFinished()), this, SLOT(restart()));
 	updateTranslations();
@@ -3906,6 +3941,7 @@ DkNoMacsSync::~DkNoMacsSync() {
 
 void DkNoMacsSync::initLanClient() {
 
+	DkTimer dt;
 	if (lanClient) {
 
 		lanClient->quit();
@@ -3922,6 +3958,8 @@ void DkNoMacsSync::initLanClient() {
 
 		delete rcClient;
 	}
+
+	qDebug() << "client clearing takes: " << dt.getTotal();
 
 	if (!DkSettings::sync.enableNetworkSync) {
 
@@ -3978,7 +4016,6 @@ void DkNoMacsSync::initLanClient() {
 	connect(this, SIGNAL(startTCPServerSignal(bool)), lanClient, SLOT(startServer(bool)));
 	connect(this, SIGNAL(startRCServerSignal(bool)), rcClient, SLOT(startServer(bool)), Qt::QueuedConnection);
 
-	DkTimer dt;
 	if (!DkSettings::sync.syncWhiteList.empty()) {
 		qDebug() << "whitelist not empty .... starting server";
 #ifdef WITH_UPNP
@@ -4359,32 +4396,20 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	setAcceptDrops(true);
 	setMouseTracking (true);	//receive mouse event everytime
 
-	updater = new DkUpdater(this);
-	connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-	connect(updater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
-
-	translationUpdater = new DkTranslationUpdater(false, this);
-	connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
-
-#ifndef Q_WS_X11
-	if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)
-		updater->checkForUpdates();	// TODO: is threaded??
-
-#endif
-	
+	DkTimer dt;
+		
 	// sync signals
 	connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));
 
 	DkSettings::app.appMode = 0;
-
 	initLanClient();
 	//emit sendTitleSignal(windowTitle());
-
+	qDebug() << "LAN client created in: " << dt.getTotal();
 	// show it...
 	show();
 	DkSettings::app.appMode = DkSettings::mode_default;
 
-	qDebug() << "viewport (normal) created...";
+	qDebug() << "viewport (normal) created in " << dt.getTotal();
 }
 
 // FramelessNoMacs --------------------------------------------------------------------
@@ -4408,17 +4433,6 @@ DkNoMacsFrameless::DkNoMacsFrameless(QWidget *parent, Qt::WindowFlags flags)
 		
 		setAcceptDrops(true);
 		setMouseTracking (true);	//receive mouse event everytime
-
-		updater = new DkUpdater();
-		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-
-		translationUpdater = new DkTranslationUpdater();
-		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
-
-#ifndef Q_WS_X11
-		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)
-			updater->checkForUpdates();
-#endif
 
 		// in frameless, you cannot control if menu is visible...
 		panelActions[menu_panel_menu]->setEnabled(false);
@@ -4573,17 +4587,6 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 
 		setAcceptDrops(true);
 		setMouseTracking (true);	//receive mouse event everytime
-
-		updater = new DkUpdater();
-		connect(updater, SIGNAL(displayUpdateDialog(QString, QString)), this, SLOT(showUpdateDialog(QString, QString)));
-
-		translationUpdater = new DkTranslationUpdater();
-		connect(translationUpdater, SIGNAL(showUpdaterMessage(QString, QString)), this, SLOT(showUpdaterMessage(QString, QString)));
-
-#ifndef Q_WS_X11
-		if (!DkSettings::sync.updateDialogShown && QDate::currentDate() > DkSettings::sync.lastUpdateCheck && DkSettings::sync.checkForUpdates)
-			updater->checkForUpdates();	// TODO: is threaded??
-#endif
 
 		// sync signals
 		connect(vp, SIGNAL(newClientConnectedSignal(bool, bool)), this, SLOT(newClientConnected(bool, bool)));

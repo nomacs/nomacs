@@ -572,6 +572,9 @@ void DkImageContainerT::fetchFile() {
 	}
 	if (fetchingImage)
 		imageWatcher.waitForFinished();
+	// I think we missed to return here
+	if (fetchingBuffer)
+		return;
 
 	// ignore doubled calls
 	if (fileBuffer && !fileBuffer->isEmpty()) {
@@ -579,7 +582,7 @@ void DkImageContainerT::fetchFile() {
 		return;
 	}
 
-	fetchingBuffer = true;
+	fetchingBuffer = true;	// saves the threaded call
 	connect(&bufferWatcher, SIGNAL(finished()), this, SLOT(bufferLoaded()), Qt::UniqueConnection);
 
 	bufferWatcher.setFuture(QtConcurrent::run(this, 
@@ -589,7 +592,9 @@ void DkImageContainerT::fetchFile() {
 void DkImageContainerT::bufferLoaded() {
 
 	fetchingBuffer = false;
-	fileBuffer = bufferWatcher.result();
+
+	if (!bufferWatcher.isCanceled())
+		fileBuffer = bufferWatcher.result();
 
 	if (getLoadState() == loading)
 		fetchImage();

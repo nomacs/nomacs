@@ -30,7 +30,7 @@ class QPsdPlugin : public QImageIOPlugin
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
-    //Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "QPsdPlugin.json")
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "QPsdPlugin.json")
 #endif // QT_VERSION >= 0x050000
     
 public:

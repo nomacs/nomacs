@@ -81,6 +81,9 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 	//metaData->printMetaData();
 
+	if (!metaData)
+		return;
+
 	DkTimer dt;
 	QStringList fileKeys, fileValues;
 	metaData->getFileMetaData(fileKeys, fileValues);
@@ -109,7 +112,7 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 
 		QString lastKey = iptcKeys.at(idx).split(".").last();
 		QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
-		QString exifValue = metaData->getIptcValue(exifKeys.at(idx));
+		QString exifValue = metaData->getIptcValue(iptcKeys.at(idx));
 		exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
 
 		createItem(iptcKeys.at(idx), translatedKey, exifValue);
@@ -1117,7 +1120,7 @@ void DkCommentTextEdit::paintEvent(QPaintEvent* e) {
 		QPainter p(viewport());
 		p.setOpacity(0.5);
 		p.drawText(QRect(QPoint(), viewport()->size()), Qt::AlignHCenter | Qt::AlignVCenter, tr("Click here to add notes"));
-		qDebug() << "painting placeholder...";
+		//qDebug() << "painting placeholder...";
 	}
 	
 	QTextEdit::paintEvent(e);

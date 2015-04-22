@@ -7,16 +7,21 @@
 !include "nsProcess.nsh"
 
 ; your install directories
-; !define BUILD_DIR "..\build2012x86\ReallyRelease"
+!define BUILD_DIR "..\build2012x86\ReallyRelease"
 
 !ifndef BUILD_DIR
 !define BUILD_DIR "..\build2012x64\ReallyRelease"
+!define STR_64 " [x64]"
+!define IS_64 ""
+!else
+!define STR_64 ""
 !endif
 !define README_DIR "Readme"
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs"
-!define PRODUCT_VERSION "2.4.5"
+!define PRODUCT_VERSION "2.4.5 ${STR_64}"
+
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -29,7 +34,13 @@
 BrandingText "nomacs - Image Lounge"
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "nomacs-setup.exe"
-InstallDir "$PROGRAMFILES\nomacs"
+
+!ifndef IS_64
+InstallDir "$PROGRAMFILES\nomacs\"
+!else
+InstallDir "$PROGRAMFILES64\nomacs\"
+!endif
+
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
@@ -132,8 +143,8 @@ Section "MainSection" SEC01#
   SetOutPath "$INSTDIR"
   SetOverwrite on
   File "${BUILD_DIR}\nomacs.exe"
-  CreateDirectory "$SMPROGRAMS\nomacs - image lounge"
-  CreateShortCut "$SMPROGRAMS\nomacs - image lounge\nomacs - image lounge.lnk" "$INSTDIR\nomacs.exe"
+  CreateDirectory "$SMPROGRAMS\nomacs - Image Lounge"
+  CreateShortCut "$SMPROGRAMS\nomacs - Image Lounge\nomacs - Image Lounge.lnk" "$INSTDIR\nomacs.exe"
   
   File "${BUILD_DIR}\libnomacs.dll"
   File "${BUILD_DIR}\exiv2.dll"

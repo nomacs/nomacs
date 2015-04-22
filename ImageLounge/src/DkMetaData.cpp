@@ -1192,11 +1192,6 @@ void DkMetaDataHelper::init() {
 	for (int i = 0; i  < DkSettings::sdescriptionDesc.size(); i++)
 		translatedDescTags << qApp->translate("nmc::DkMetaData", DkSettings::sdescriptionDesc.at(i).toLatin1());
 
-	if (translatedCamTags.size() != DkSettings::camData_end)
-		qDebug() << "wrong definition of Camera Data (Exif). Size of CamData tags is different from enum";
-	if (translatedDescTags.size() != DkSettings::desc_end - DkSettings::camData_end)
-		qDebug() << "wrong definition of Description Data (Exif). Size of Descriptions tags is different from enum";
-
 	exposureModes.append(QObject::tr("not defined"));
 	exposureModes.append(QObject::tr("manual"));
 	exposureModes.append(QObject::tr("normal"));
@@ -1257,7 +1252,7 @@ QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData)
 QString DkMetaDataHelper::getFocalLength(QSharedPointer<DkMetaDataT> metaData) const {
 
 	// focal length
-	QString key = camSearchTags.at(DkSettings::camData_focallength);
+	QString key = camSearchTags.at(DkSettings::camData_focal_length);
 
 	QString value = metaData->getExifValue(key);
 
@@ -1271,7 +1266,7 @@ QString DkMetaDataHelper::getFocalLength(QSharedPointer<DkMetaDataT> metaData) c
 
 QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) const {
 
-	QString key = camSearchTags.at(DkSettings::camData_exposuretime);
+	QString key = camSearchTags.at(DkSettings::camData_exposure_time);
 	QString value = metaData->getExifValue(key);
 	QStringList sList = value.split('/');
 
@@ -1295,7 +1290,7 @@ QString DkMetaDataHelper::getExposureTime(QSharedPointer<DkMetaDataT> metaData) 
 
 QString DkMetaDataHelper::getExposureMode(QSharedPointer<DkMetaDataT> metaData) const {
 
-	QString key = camSearchTags.at(DkSettings::camData_exposuremode);
+	QString key = camSearchTags.at(DkSettings::camData_exposure_mode);
 	QString value = metaData->getExifValue(key);
 	int mode = value.toInt();
 
@@ -1307,7 +1302,7 @@ QString DkMetaDataHelper::getExposureMode(QSharedPointer<DkMetaDataT> metaData) 
 
 QString DkMetaDataHelper::getFlashMode(QSharedPointer<DkMetaDataT> metaData) const {
 
-	QString key = camSearchTags.at(DkSettings::camData_exposuremode);
+	QString key = camSearchTags.at(DkSettings::camData_exposure_mode);
 	QString value = metaData->getExifValue(key);
 	unsigned int mode = value.toUInt();
 	value = flashModes[mode];
@@ -1443,13 +1438,13 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 	if (key == camSearchTags[DkSettings::camData_aperture] || key == "FNumber") {
 		rValue = getApertureValue(metaData);
 	}
-	else if (key == camSearchTags[DkSettings::camData_focallength]) {
+	else if (key == camSearchTags[DkSettings::camData_focal_length]) {
 		rValue = getFocalLength(metaData);
 	}
-	else if (key == camSearchTags[DkSettings::camData_exposuretime]) {
+	else if (key == camSearchTags[DkSettings::camData_exposure_time]) {
 		rValue = getExposureTime(metaData);
 	}
-	else if (key == camSearchTags[DkSettings::camData_exposuremode]) {
+	else if (key == camSearchTags[DkSettings::camData_exposure_mode]) {
 		rValue = getExposureMode(metaData);						
 	} 
 	else if (key == camSearchTags[DkSettings::camData_flash]) {

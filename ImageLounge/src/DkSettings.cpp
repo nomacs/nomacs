@@ -388,10 +388,6 @@ void DkSettings::load() {
 	// MetaData Settings --------------------------------------------------------------------
 	settings.beginGroup("MetaDataSettings");
 
-	QBitArray tmpMetaData = settings.value("metaData", meta_p.metaDataBits).toBitArray();
-	if (tmpMetaData.size() == meta_p.metaDataBits.size())
-		meta_p.metaDataBits = tmpMetaData;
-	
 	meta_p.ignoreExifOrientation = settings.value("ignoreExifOrientation", meta_p.ignoreExifOrientation).toBool();
 	meta_p.saveExifOrientation = settings.value("saveExifOrientation", meta_p.saveExifOrientation).toBool();
 
@@ -613,8 +609,6 @@ void DkSettings::save(bool force) {
 	// MetaData Settings --------------------------------------------------------------------
 	settings.beginGroup("MetaDataSettings");
 	
-	if (!force && meta_p.metaDataBits != meta_d.metaDataBits)
-		settings.setValue("metaData", meta_p.metaDataBits);
 	if (!force && meta_p.ignoreExifOrientation != meta_d.ignoreExifOrientation)
 		settings.setValue("ignoreExifOrientation", meta_p.ignoreExifOrientation);
 	if (!force && meta_p.saveExifOrientation != meta_d.saveExifOrientation)
@@ -795,33 +789,6 @@ void DkSettings::setToDefaultSettings() {
 	slideShow_p.backgroundColor = QColor(86, 86, 90, 255);
 	slideShow_p.silentFullscreen = true;
 
-	meta_p.metaDataBits = QBitArray(desc_end, false);
-	meta_p.metaDataBits[camData_size] = false;
-	meta_p.metaDataBits[camData_orientation] = false;
-	meta_p.metaDataBits[camData_make] = true;
-	meta_p.metaDataBits[camData_model] = true;
-	meta_p.metaDataBits[camData_aperture] = true;
-	meta_p.metaDataBits[camData_iso] = true;
-	//MetaDataSettings::metaDataBits[DkMetaDataSettingsWidget::camData_shutterspeed] = false;
-	meta_p.metaDataBits[camData_flash] = true;
-	meta_p.metaDataBits[camData_focallength] = true;
-	meta_p.metaDataBits[camData_exposuremode] = false;
-	meta_p.metaDataBits[camData_exposuretime] = true;
-	meta_p.metaDataBits[desc_rating] = false;
-	meta_p.metaDataBits[desc_usercomment] = false;
-	meta_p.metaDataBits[desc_date] = false;
-	meta_p.metaDataBits[desc_datetimeoriginal] = true;
-	meta_p.metaDataBits[desc_imagedescription] = false;
-	meta_p.metaDataBits[desc_creator] = false;
-	meta_p.metaDataBits[desc_creatortitle] = false;
-	meta_p.metaDataBits[desc_city] = false;
-	meta_p.metaDataBits[desc_country] = false;
-	meta_p.metaDataBits[desc_headline] = false;
-	meta_p.metaDataBits[desc_caption] = false;
-	meta_p.metaDataBits[desc_copyright] = false;
-	meta_p.metaDataBits[desc_keywords] = false;
-	meta_p.metaDataBits[desc_path] = true;
-	meta_p.metaDataBits[desc_filesize] = true;
 	meta_p.saveExifOrientation = true;
 	meta_p.ignoreExifOrientation = false;
 
