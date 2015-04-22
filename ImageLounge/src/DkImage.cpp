@@ -442,8 +442,6 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getSkippedImage(int skipIdx, bo
 
 		QFileInfo file = (currentImage->exists()) ? currentImage->file() : DkSettings::global.recentFiles.first();
 
-		qDebug() << "current image: " << currentImage->file().absoluteFilePath() << " last image: " << DkSettings::global.recentFiles.first();
-
 		tmpFileIdx = findFileIdx(file, images);
 
 		// could not locate the file -> it was deleted?!

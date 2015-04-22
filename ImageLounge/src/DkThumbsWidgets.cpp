@@ -305,7 +305,7 @@ void DkFilePreview::drawThumbs(QPainter* painter) {
 
 		// check if the size is still valid
 		if (r.width() < 1 || r.height() < 1) 
-			continue;
+			continue;	// this brings us in serious problems with the selection
 
 		// center vertically
 		if (orientation == Qt::Horizontal)
@@ -811,9 +811,12 @@ void DkFilePreview::setFileInfo(QSharedPointer<DkImageContainerT> cImage) {
 		}
 	}
 
-	if (tIdx == currentFileIdx) {
-		return;
-	}
+	//// don't know why we needed this statement
+	//// however, if we break here, the file preview
+	//// might not update correctly
+	//if (tIdx == currentFileIdx) {
+	//	return;
+	//}
 
 	currentFileIdx = tIdx;
 	if (currentFileIdx >= 0)

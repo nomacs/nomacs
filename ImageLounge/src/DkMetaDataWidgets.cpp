@@ -1120,7 +1120,7 @@ void DkCommentTextEdit::paintEvent(QPaintEvent* e) {
 		QPainter p(viewport());
 		p.setOpacity(0.5);
 		p.drawText(QRect(QPoint(), viewport()->size()), Qt::AlignHCenter | Qt::AlignVCenter, tr("Click here to add notes"));
-		qDebug() << "painting placeholder...";
+		//qDebug() << "painting placeholder...";
 	}
 	
 	QTextEdit::paintEvent(e);
