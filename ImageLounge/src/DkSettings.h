@@ -244,7 +244,6 @@ public:
 		bool syncActions;
 	};
 	struct MetaData {
-		QBitArray metaDataBits;
 		bool ignoreExifOrientation;
 		bool saveExifOrientation;
 	};
@@ -269,34 +268,13 @@ public:
 		camData_make,
 		camData_model,
 		camData_aperture,
-		//camData_shutterspeed,
 		camData_iso,
 		camData_flash,
-		camData_focallength,
-		camData_exposuremode,
-		camData_exposuretime,
+		camData_focal_length,
+		camData_exposure_mode,
+		camData_exposure_time,
 
 		camData_end
-	};
-
-	enum descriptionT {
-		desc_rating = camData_end,
-		desc_usercomment,
-		desc_date,
-		desc_datetimeoriginal,
-		desc_imagedescription,
-		desc_creator,
-		desc_creatortitle,
-		desc_city,
-		desc_country,
-		desc_headline,
-		desc_caption,
-		desc_copyright,
-		desc_keywords,
-		desc_path,
-		desc_filesize,
-
-		desc_end
 	};
 
 	enum DisplayItems{
