@@ -2439,6 +2439,8 @@ void DkColorChooser::on_resetButton_clicked() {
 }
 
 void DkColorChooser::on_colorButton_clicked() {
+	
+	// incorrect color? - see: https://bugreports.qt.io/browse/QTBUG-42988
 	colorDialog->show();
 }
 

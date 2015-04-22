@@ -242,7 +242,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 			if (!DkSettings::metaData.ignoreExifOrientation) {
 				int orientation = metaData->getOrientation();
 
-				if (!metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+				if (!metaData->isJpg() && !metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
 					rotate(orientation);
 			}
 		} catch(...) {}	// ignore if we cannot read the metadata
