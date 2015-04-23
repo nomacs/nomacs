@@ -443,11 +443,12 @@ bool DkBatchProcess::deleteOriginalFile() {
 }
 
 // DkBatchConfig --------------------------------------------------------------------
-DkBatchConfig::DkBatchConfig(const QStringList& fileList, const QDir& outputDir, const QString& fileNamePattern) {
+DkBatchConfig::DkBatchConfig(const QStringList& fileList, const QString& outputDir, const QString& fileNamePattern) {
 
 	this->fileList = fileList;
-	this->outputDir = outputDir;
+	this->outputDirPath = outputDir;
 	this->fileNamePattern = fileNamePattern;
+	
 	init();
 };
 
@@ -459,13 +460,15 @@ void DkBatchConfig::init() {
 
 bool DkBatchConfig::isOk() const {
 
-	if (!outputDir.exists()) {
-		if (!outputDir.mkpath("."))
+	if (outputDirPath.isEmpty())
+		return false;
+
+	QDir oDir(outputDirPath);
+
+	if (!oDir.exists()) {
+		if (!oDir.mkpath("."))
 			return false;	// output dir does not exist & I cannot create it
 	}
-
-	if (outputDir == QDir())
-		return false; // do not allow to write into my (exe) directory
 
 	if (fileList.empty())
 		return false;
@@ -496,7 +499,7 @@ void DkBatchProcessing::init() {
 		QFileInfo cFileInfo = QFileInfo(fileList.at(idx));
 
 		DkFileNameConverter converter(cFileInfo.fileName(), batchConfig.getFileNamePattern(), idx);
-		QFileInfo newFileInfo(batchConfig.getOutputDir(), converter.getConvertedFileName());
+		QFileInfo newFileInfo(batchConfig.getOutputDirPath(), converter.getConvertedFileName());
 
 		DkBatchProcess cProcess(cFileInfo, newFileInfo);
 		cProcess.setMode(batchConfig.getMode());

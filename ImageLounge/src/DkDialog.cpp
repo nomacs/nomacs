@@ -174,10 +174,17 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	platform = " [x86] ";
 #endif
 
+	QString qtVersion = "";
+#if QT_VERSION < 0x050000
+	qtVersion = "Qt4 ";
+#else
+	qtVersion = "Qt5 ";
+#endif
+
 	if (!DkSettings::isPortable())
 		qDebug() << "nomacs is not portable: " << DkSettings::getSettingsFile().absoluteFilePath();
 
-	versionLabel->setText("Version: " + QApplication::applicationVersion() + platform +  "<br>" +
+	versionLabel->setText("Version: " + QApplication::applicationVersion() + platform + qtVersion + "<br>" +
 #ifdef WITH_LIBRAW
 		"RAW support: Yes"
 #else

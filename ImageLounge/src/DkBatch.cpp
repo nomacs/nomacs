@@ -1223,10 +1223,10 @@ void DkBatchDialog::accept() {
 	config.setMode(outputWidget->overwriteMode());
 	config.setDeleteOriginal(outputWidget->deleteOriginal());
 
-	if (!config.getOutputDir().exists()) {
+	if (!config.getOutputDirPath().isEmpty() && !QDir(config.getOutputDirPath()).exists()) {
 
 		DkMessageBox* msgBox = new DkMessageBox(QMessageBox::Question, tr("Create Output Directory"), 
-			tr("Should I create:\n%1").arg(config.getOutputDir().absolutePath()), 
+			tr("Should I create:\n%1").arg(config.getOutputDirPath()), 
 			(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel), qApp->activeWindow());
 
 		msgBox->setDefaultButton(QMessageBox::Yes);
@@ -1241,8 +1241,12 @@ void DkBatchDialog::accept() {
 
 	if (!config.isOk()) {
 
-		if (!config.getOutputDir().exists()) {
-			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
+		if (config.getOutputDirPath().isEmpty()) {
+			QMessageBox::critical(this, tr("Fatal Error"), tr("Please select an output directory."), QMessageBox::Ok, QMessageBox::Ok);
+			return;
+		}
+		else if (!QDir(config.getOutputDirPath()).exists()) {
+			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, I cannot create %1.").arg(config.getOutputDirPath()), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
 		else if (config.getFileList().empty()) {
@@ -1253,10 +1257,10 @@ void DkBatchDialog::accept() {
 			QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
 			return;
 		}
-		else if (config.getOutputDir() == QDir()) {
-			QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
-			return;
-		}
+		//else if (config.getOutputDir() == QDir()) {
+		//	QMessageBox::information(this, tr("Input Missing"), tr("Please choose a valid output directory\n%1").arg(config.getOutputDir().absolutePath()), QMessageBox::Ok, QMessageBox::Ok);
+		//	return;
+		//}
 
 		qDebug() << "config not ok - canceling";
 		QMessageBox::critical(this, tr("Fatal Error"), tr("Sorry, the file pattern is empty."), QMessageBox::Ok, QMessageBox::Ok);
