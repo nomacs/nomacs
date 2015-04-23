@@ -1791,6 +1791,8 @@ void DkShortcutDelegate::keySequenceChanged(const QKeySequence& keySequence) {
 }
 #endif
 
+// fun fact: there are ~10^4500 (binary) images of size 128x128 
+
 // DkShortcutEditor --------------------------------------------------------------------
 DkShortcutEditor::DkShortcutEditor(QWidget *widget) : QLineEdit(widget) {
 

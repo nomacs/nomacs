@@ -111,6 +111,7 @@ public:
 	static bool alphaChannelUsed(const QImage& img);
 	static QPixmap colorizePixmap(const QPixmap& icon, const QColor& col, float opacity = 1.0f);
 	static QImage createThumb(const QImage& img);
+	static bool addToImage(QImage& img, unsigned char val = 1);
 	static QColor getMeanColor(const QImage& img);
 	static uchar findHistPeak(const int* hist, float quantile = 0.005f);
 };

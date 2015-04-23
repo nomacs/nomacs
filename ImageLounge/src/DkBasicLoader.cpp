@@ -171,12 +171,14 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		imgLoaded = loadPSDFile(file, ba);
 		if (imgLoaded) loader = psd_loader;
 	}
+#if QT_VERSION < 0x050000	// >DIR: qt5 ships with webp : ) [23.4.2015 markus]
 	// WEBP loader
 	if (!imgLoaded) {
 
 		imgLoaded = loadWebPFile(file, ba);
 		if (imgLoaded) loader = webp_loader;
 	}
+#endif
 
 	// RAW loader
 	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {

@@ -767,6 +767,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	thumbLoaded = false;
 	visibleStatusbar = false;
 	gestureStarted = false;
+	dissolveImage = false;
 	//pluginImageWasApplied = false;
 	fadeOpacity = 0.0f;
 
@@ -1339,6 +1340,13 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 			painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
 		}
 
+		if (dissolveImage) {
+			QImage imgQt = imgStorage.getImage();
+			DkImage::addToImage(imgQt, 255);
+			imgStorage.setImage(imgQt);
+			qDebug() << "added to image...";
+		}
+
 		// TODO: if fading is active we interpolate with background instead of the other image
 		draw(&painter, 1.0f-fadeOpacity);
 
@@ -1375,6 +1383,12 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	// propagate
 	QGraphicsView::paintEvent(event);
 
+	// NOTE: never ever do this
+	// here it is just for fun!
+	if (dissolveImage)
+		update();
+
+	qDebug() << "painted...";
 }
 
 // drawing functions --------------------------------------------------------------------
@@ -1962,6 +1976,14 @@ void DkViewPort::loadLena() {
 		else
 			controller->setInfo(tr("%1 is wrong...").arg(text));
 	}
+}
+
+void DkViewPort::toggleDissolve() {
+
+	qDebug() << "dissolving: " << dissolveImage;
+	dissolveImage = !dissolveImage;
+
+	update();
 }
 
 void DkViewPort::toggleLena() {

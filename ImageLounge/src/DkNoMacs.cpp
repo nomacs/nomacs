@@ -2997,8 +2997,21 @@ void DkNoMacs::newInstance(QFileInfo file) {
 
 void DkNoMacs::loadRecursion() {
 
-	QImage img = QPixmap::grabWindow(this->winId()).toImage();
-	viewport()->setImage(img);
+	if (!getTabWidget()->getCurrentImage())
+		return;
+
+	viewport()->toggleDissolve();
+
+
+	//QImage img = getTabWidget()->getCurrentImage()->image();
+
+	//while (DkImage::addToImage(img, 1)) {
+	//	viewport()->setEditedImage(img);
+	//	QApplication::sendPostedEvents();
+	//}
+
+	//QImage img = QPixmap::grabWindow(this->winId()).toImage();
+	//viewport()->setImage(img);
 }
 
 // Added by fabian for transfer function:
