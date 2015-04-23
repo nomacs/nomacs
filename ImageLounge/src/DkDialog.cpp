@@ -1780,6 +1780,8 @@ void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 void DkShortcutDelegate::textChanged(QString text) {
 	emit checkDuplicateSignal(text, item);
 }
+
+void DkShortcutDelegate::keySequenceChanged(const QKeySequence&) {}
 #else
 
 void DkShortcutDelegate::textChanged(QString) {}	// dummy since the moccer is to dumb to get #if defs
