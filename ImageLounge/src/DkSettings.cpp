@@ -147,10 +147,14 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("ppm"))		app_p.saveFilters.append("Portable Pixmap (*.ppm)");
 	if (qtFormats.contains("xbm"))		app_p.saveFilters.append("X11 Bitmap (*.xbm)");
 	if (qtFormats.contains("xpm"))		app_p.saveFilters.append("X11 Pixmap (*.xpm)");
+	if (qtFormats.contains("dds"))		app_p.saveFilters.append("Direct Draw Surface (*.dds)");
+	if (qtFormats.contains("wbmp"))		app_p.saveFilters.append("Wireless Bitmap (*.wbmp)");
+	if (qtFormats.contains("icns"))		app_p.saveFilters.append("Apple Icon Image (*.icns)");
 
+	if (qtFormats.contains("webp"))		app_p.saveFilters.append("WebP (*.webp)");
 	// internal filters
 #ifdef WITH_WEBP
-	app_p.saveFilters.append("WebP (*.webp)");
+	else								app_p.saveFilters.append("WebP (*.webp)");
 #endif
 
 	// formats we can load
@@ -159,7 +163,7 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("pbm"))		app_p.openFilters.append("Portable Bitmap (*.pbm)");
 	if (qtFormats.contains("pgm"))		app_p.openFilters.append("Portable Graymap (*.pgm)");
 	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
-	if (qtFormats.contains("tga"))		app_p.openFilters.append("Targa Image File (*.tga)");
+	if (qtFormats.contains("tga"))		app_p.openFilters.append("Truvision Graphics Adapter (*.tga)");
 	if (qtFormats.contains("mng"))		app_p.openFilters.append("Multi-Image Network Graphics (*.mng)");
 
 #ifdef WITH_LIBRAW
