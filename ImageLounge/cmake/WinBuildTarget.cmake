@@ -148,7 +148,7 @@ set_target_properties(${EXE_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKE
 
 set(_moc ${CMAKE_CURRENT_BINARY_DIR}/GeneratedFiles)
 file(GLOB NOMACS_AUTOMOC "${CMAKE_BINARY_DIR}/*_automoc.cpp")
-source_group("Generated Files" FILES ${NOMACS_MOC_SRC} ${NOMACS_RCC} ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
+source_group("Generated Files" FILES ${NOMACS_UI} ${NOMACS_RC} ${NOMACS_QM} ${NOMACS_AUTOMOC})
 set_source_files_properties(${NOMACS_TRANSLATIONS} PROPERTIES HEADER_FILE_ONLY TRUE)
 source_group("Translations" FILES ${NOMACS_TRANSLATIONS})
 
