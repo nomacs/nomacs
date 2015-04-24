@@ -154,7 +154,10 @@ void DkCompressDialog::init() {
 		colChooser->setEnabled(false);
 		slider->show();
 		colChooser->show();
+
+#if QT_VERSION < 0x050000
 		cbLossless->show();
+#endif
 		sizeCombo->hide();
 		losslessCompression(cbLossless->isChecked());
 	}

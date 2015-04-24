@@ -1175,11 +1175,13 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 
 	qDebug() << "extension: " << fileInfo.suffix();
 
+#if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
+
 	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(img, ba, compression);
 	}
 	else {
-
+#endif
 		bool hasAlpha = DkImage::alphaChannelUsed(img);
 		QImage sImg = img;
 
@@ -1198,7 +1200,9 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		imgWriter->setQuality(compression);
 		saved = imgWriter->write(sImg);
 		delete imgWriter;
+#if QT_VERSION < 0x050000
 	}
+#endif
 
 	if (saved && metaData) {
 		
