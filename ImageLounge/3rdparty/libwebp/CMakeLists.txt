@@ -1,6 +1,16 @@
 project (webp C)
 cmake_minimum_required(VERSION 2.6)
 
+if(COMMAND cmake_policy)
+	cmake_policy(SET CMP0003 NEW)
+	  
+	IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
+		cmake_policy(SET CMP0020 NEW)	# qt warnings
+    cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings    
+	ENDIF()
+endif(COMMAND cmake_policy)
+
+
 add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
 
 file(GLOB WEBP_DEC_SRCS
