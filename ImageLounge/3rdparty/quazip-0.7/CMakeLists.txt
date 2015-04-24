@@ -6,9 +6,12 @@ if(COMMAND cmake_policy)
 	  
 	IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
 		cmake_policy(SET CMP0020 NEW)	# qt warnings
-    cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings    
 	ENDIF()
+  IF(CMAKE_VERSION VERSION_GREATER 2.8.12)
+    cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings
+  ENDIF()
 endif(COMMAND cmake_policy)
+
 
 #added by stefan for nomacs
 SET(CMAKE_DEBUG_POSTFIX "d")
