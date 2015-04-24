@@ -5,6 +5,13 @@ file(GLOB PUBLIC_HEADERS "*.h")
 # Must be added to enable export macro
 ADD_DEFINITIONS(-DQUAZIP_BUILD)
 
+IF (NOT ENABLE_QT5)
+ QT4_WRAP_CPP(MOC_SRCS ${PUBLIC_HEADERS})
+ELSE()
+ QT5_WRAP_CPP(MOC_SRCS ${PUBLIC_HEADERS})
+ENDIF()
+set(SRCS ${SRCS} ${MOC_SRCS})
+
 add_library(quazip SHARED ${SRCS})
 set_target_properties(quazip PROPERTIES VERSION 1.0.0 SOVERSION 1)
 target_include_directories(quazip PRIVATE 	${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${ZLIB_INCLUDE_DIRS})

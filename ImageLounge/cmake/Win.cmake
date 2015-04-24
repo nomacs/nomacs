@@ -262,6 +262,11 @@ endif(ENABLE_QUAZIP)
 #add libqpsd
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/libqpsd)
 set(LIBQPSD_LIBRARY "qpsd")
+IF (NOT ENABLE_QT5)
+ QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ELSE()
+ QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
+ENDIF()
 
 #add webp
 unset(WEBP_LIBRARY CACHE)
