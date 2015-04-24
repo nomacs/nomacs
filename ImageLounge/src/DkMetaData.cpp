@@ -583,6 +583,14 @@ void DkMetaDataT::getAllMetaData(QStringList& keys, QStringList& values) const {
 		keys.append(cKey);
 		values.append(exifValue);
 	}
+
+	QStringList qtKeys = getQtKeys();
+
+	for (QString cKey : qtKeys) {
+
+		keys.append(cKey);
+		values.append(getQtValue(cKey));
+	}
 }
 
 QImage DkMetaDataT::getThumbnail() const {
@@ -814,6 +822,38 @@ QStringList DkMetaDataT::getIptcValues() const {
 
 	return iptcValues;
 }
+
+void DkMetaDataT::setQtValues(const QImage& cImg) {
+
+	qtKeys = cImg.textKeys();
+
+	for (QString cKey : qtKeys) {
+
+		qtValues.append(cImg.text(cKey));
+	}
+}
+
+QString DkMetaDataT::getQtValue(const QString& key) const {
+
+	int idx = qtKeys.indexOf(key);
+
+	if (idx >= 0 && idx < qtValues.size())
+		return qtValues.at(idx);
+
+	return QString();
+}
+
+
+QStringList DkMetaDataT::getQtKeys() const {
+
+	return qtKeys;
+}
+
+QStringList DkMetaDataT::getQtValues() const {
+	
+	return qtValues;
+}
+
 
 void DkMetaDataT::setThumbnail(QImage thumb) {
 

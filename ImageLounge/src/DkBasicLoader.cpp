@@ -238,6 +238,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		
 		try {
 			metaData->readMetaData(fileInfo, ba);
+			metaData->setQtValues(qImg);
 		
 			if (!DkSettings::metaData.ignoreExifOrientation) {
 				int orientation = metaData->getOrientation();
@@ -250,6 +251,8 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	else if (!metaData) {
 		qDebug() << "metaData is NULL!";
 	}
+
+	qDebug() << qImg.text();
 
 	return imgLoaded;
 }
