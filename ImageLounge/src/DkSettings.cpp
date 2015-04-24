@@ -149,7 +149,7 @@ void DkSettings::initFileFilters() {
 	if (qtFormats.contains("xpm"))		app_p.saveFilters.append("X11 Pixmap (*.xpm)");
 	if (qtFormats.contains("dds"))		app_p.saveFilters.append("Direct Draw Surface (*.dds)");
 	if (qtFormats.contains("wbmp"))		app_p.saveFilters.append("Wireless Bitmap (*.wbmp)");
-	if (qtFormats.contains("icns"))		app_p.saveFilters.append("Apple Icon Image (*.icns)");
+	//if (qtFormats.contains("icns"))		app_p.saveFilters.append("Apple Icon Image (*.icns)");
 
 	if (qtFormats.contains("webp"))		app_p.saveFilters.append("WebP (*.webp)");
 	// internal filters
