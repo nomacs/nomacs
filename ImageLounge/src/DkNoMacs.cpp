@@ -4252,8 +4252,8 @@ void DkNoMacsSync::tcpAutoConnect(bool connect) {
 	DkSettings::sync.syncActions = connect;
 }
 
-void DkNoMacsSync::startUpnpRenderer(bool start) {
 #ifdef WITH_UPNP
+void DkNoMacsSync::startUpnpRenderer(bool start) {
 	if (!upnpRendererDeviceHost) {
 		upnpRendererDeviceHost = QSharedPointer<DkUpnpRendererDeviceHost>(new DkUpnpRendererDeviceHost());
 		connect(upnpRendererDeviceHost.data(), SIGNAL(newImage(QImage)), viewport(), SLOT(setImage(QImage)));
@@ -4262,8 +4262,10 @@ void DkNoMacsSync::startUpnpRenderer(bool start) {
 		upnpRendererDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs_mediarenderer_description.xml");
 	else
 		upnpDeviceHost->stopDevicehost();
-#endif // WITH_UPNP
 }
+#else
+void DkNoMacsSync::startUpnpRenderer(bool) {}	// dummy
+#endif // WITH_UPNP
 
 bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 
@@ -4522,7 +4524,6 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 	saveSettings = false;
 
 	DkNoMacs::closeEvent(event);
-
 }
 
 // Transfer function:
