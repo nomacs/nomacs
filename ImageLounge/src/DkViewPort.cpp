@@ -2155,10 +2155,10 @@ void DkViewPort::loadFileFast(int skipIdx) {
 				loader->load(imgC);
 				break;
 			}
-			else
+			else {
 				qDebug() << "image does not exist - skipping";
-
-			sIdx += skipIdx;
+				sIdx += skipIdx;
+			}
 		}
 	}	
 
