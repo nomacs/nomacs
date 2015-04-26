@@ -179,7 +179,7 @@ QImage DkThumbNail::computeIntern(const QFileInfo file, const QSharedPointer<QBy
 		}
 	}
 
-	if (!forceLoad == force_exif_thumb && (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb)) {
+	if (forceLoad != force_exif_thumb && (thumb.isNull() || thumb.width() < tS && thumb.height() < tS || forceLoad == force_full_thumb || forceLoad == force_save_thumb)) {
 		
 		// flip size if the image is rotated by 90°
 		if (metaData.isTiff() && abs(orientation) == 90) {
