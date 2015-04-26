@@ -846,6 +846,51 @@ QSettings& Settings::getSettings() {
 	return *m_settings;
 }
 
+void DkFileFilterHandling::registerNomacs() {
+
+#ifdef WIN32
+
+	// TODO: this is still not working for me on win8??
+	QString capName = "Capabilities";
+	QString capPath = "Software\\" + QApplication::organizationName() + "\\" + QApplication::applicationName() + "\\" + capName;
+	QSettings settings("HKEY_CURRENT_USER\\" + capPath, QSettings::NativeFormat);
+
+	settings.setValue("ApplicationDescription", QObject::tr("nomacs - Image Lounge is a lightweight image viewer."));
+	settings.setValue("ApplicationName", QApplication::organizationName() + " " + QApplication::applicationName());
+	settings.setValue("ApplicationIcon", QApplication::applicationFilePath() + ",0");
+
+	settings.beginGroup("FileAssociations");
+	QStringList rFilters = DkSettings::app.openFilters;
+
+	for (int idx = 0; idx < DkSettings::app.containerFilters.size(); idx++)
+		rFilters.removeAll(DkSettings::app.containerFilters.at(idx));
+
+	for (int idx = 0; idx < rFilters.size(); idx++) {
+
+		// remove the icon file -> otherwise icons might be destroyed (e.g. acrobat)
+		if (!rFilters.at(idx).contains("ico")) {	
+			QStringList extList = getExtensions(rFilters.at(idx));
+			
+			for (QString cExt : extList)
+				settings.setValue(cExt, "nomacs Image");
+		}
+	}
+	settings.endGroup();
+
+
+	QString softwarePath = "HKEY_CURRENT_USER\\Software\\";
+	QSettings wsettings(softwarePath, QSettings::NativeFormat);
+
+	wsettings.beginGroup("RegisteredApplications");
+	wsettings.setValue("nomacs.ImageLounge." + QApplication::applicationVersion(), capPath);
+	wsettings.endGroup();
+
+	qDebug() << "nomacs registered ============================";
+
+#endif
+
+}
+
 QString DkFileFilterHandling::registerProgID(const QString& ext, const QString& friendlyName, bool add) {
 
 #ifdef WIN32
@@ -908,24 +953,10 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 	if (DkSettings::app.privateMode)
 		return;
 
-	QStringList tmp = filterString.split("(");
 
-	if (tmp.size() != 2) {
-		qDebug() << "WARNING: wrong filter string!";
-		return;
-	}
-
-	QString friendlyName = tmp.at(0) + attribute;
-	QString filters = tmp.at(1);
-	filters.replace(")", "");
-	filters.replace("*", "");
-
-	QStringList extList = filters.split(" ");
-
-	if (extList.empty()) {
-		qDebug() << "nothing to do here, not registering: " << filterString;
-		return;
-	}
+	QString friendlyName;
+	QStringList extList = getExtensions(filterString, friendlyName);
+	friendlyName += attribute;
 
 	// register a new progID
 	QString progKey = registerProgID(extList.at(0), friendlyName, add);
@@ -939,6 +970,36 @@ void DkFileFilterHandling::registerFileType(const QString& filterString, const Q
 	}
 
 #endif
+}
+
+QStringList DkFileFilterHandling::getExtensions(const QString& filter) const {
+
+	QString dummy;
+	return getExtensions(filter, dummy);
+}
+
+QStringList DkFileFilterHandling::getExtensions(const QString& filter, QString& friendlyName) const {
+
+	QStringList tmp = filter.split("(");
+
+	if (tmp.size() != 2) {
+		qDebug() << "WARNING: wrong filter string!";
+		return QStringList();
+	}
+
+	friendlyName = tmp.at(0);
+	QString filters = tmp.at(1);
+	filters.replace(")", "");
+	filters.replace("*", "");
+
+	QStringList extList = filters.split(" ");
+
+	if (extList.empty()) {
+		qDebug() << "nothing to do here, not registering: " << filter;
+		return QStringList();
+	}
+
+	return extList;
 }
 
 void DkFileFilterHandling::setAsDefaultApp(const QString& ext, const QString& progKey, bool add) {
