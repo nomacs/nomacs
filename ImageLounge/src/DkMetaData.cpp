@@ -825,11 +825,18 @@ QStringList DkMetaDataT::getIptcValues() const {
 
 void DkMetaDataT::setQtValues(const QImage& cImg) {
 
-	qtKeys = cImg.textKeys();
+	QStringList qtKeysInit = cImg.textKeys();
 
-	for (QString cKey : qtKeys) {
+	for (QString cKey : qtKeysInit) {
 
-		qtValues.append(cImg.text(cKey));
+		if (!cKey.isEmpty() && cKey != "Raw profile type exif") {
+			QString val = cImg.text(cKey).size() < 5000 ? cImg.text(cKey) : QObject::tr("<data too large to display>");
+
+			if (!val.isEmpty()) {
+				qtValues.append(val);
+				qtKeys.append(cKey);
+			}
+		}
 	}
 }
 
