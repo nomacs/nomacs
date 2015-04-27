@@ -12,6 +12,7 @@ if(COMMAND cmake_policy)
   ENDIF()
 endif(COMMAND cmake_policy)
 
+
 add_definitions(-DNDEBUG -DWEBP_USE_THREAD)
 
 file(GLOB WEBP_DEC_SRCS

@@ -12,6 +12,7 @@ if(COMMAND cmake_policy)
   ENDIF()
 endif(COMMAND cmake_policy)
 
+
 #added by stefan for nomacs
 SET(CMAKE_DEBUG_POSTFIX "d")
 # Use system zlib on unix and Qt ZLIB on Windows
