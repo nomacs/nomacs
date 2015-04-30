@@ -174,10 +174,17 @@ DkSplashScreen::DkSplashScreen(QWidget* /*parent*/, Qt::WindowFlags flags) : QDi
 	platform = " [x86] ";
 #endif
 
+	QString qtVersion = "";
+#if QT_VERSION < 0x050000
+	qtVersion = "Qt4 ";
+#else
+	qtVersion = "Qt5 ";
+#endif
+
 	if (!DkSettings::isPortable())
 		qDebug() << "nomacs is not portable: " << DkSettings::getSettingsFile().absoluteFilePath();
 
-	versionLabel->setText("Version: " + QApplication::applicationVersion() + platform +  "<br>" +
+	versionLabel->setText("Version: " + QApplication::applicationVersion() + platform + qtVersion + "<br>" +
 #ifdef WITH_LIBRAW
 		"RAW support: Yes"
 #else
@@ -1160,7 +1167,7 @@ void DkResizeDialog::createLayout() {
 	// preview
 	int minPx = 1;
 	int maxPx = 100000;
-	double minWidth = 0.001;
+	double minWidth = 1;
 	double maxWidth = 500000;
 	int decimals = 2;
 
@@ -1184,16 +1191,7 @@ void DkResizeDialog::createLayout() {
 	// shows the preview
 	previewLabel = new QLabel(this);
 	previewLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-	//previewLabel->setScaledContents(true);
 	previewLabel->setMinimumHeight(100);
-	//previewLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
-	//previewLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	//previewLabel->setStyleSheet("QLabel{border: 1px solid #888;}");
-
-	//previewLayout->addWidget(origLabelText, 0, 0);
-	//previewLayout->addWidget(newLabel, 0, 1);
-	//previewLayout->addWidget(origView, 1, 0);
-	//previewLayout->addWidget(previewLabel, 1, 1);
 
 	// all text dialogs...
 	QDoubleValidator* doubleValidator = new QDoubleValidator(1, 1000000, 2, 0);
@@ -1396,7 +1394,9 @@ QImage DkResizeDialog::getResizedImage() {
 void DkResizeDialog::setExifDpi(float exifDpi) {
 
 	this->exifDpi = exifDpi;
+	resolutionEdit->blockSignals(true);
 	resolutionEdit->setValue(exifDpi);
+	resolutionEdit->blockSignals(false);
 }
 
 float DkResizeDialog::getExifDpi() {
@@ -1780,11 +1780,18 @@ void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 void DkShortcutDelegate::textChanged(QString text) {
 	emit checkDuplicateSignal(text, item);
 }
+
+void DkShortcutDelegate::keySequenceChanged(const QKeySequence&) {}
 #else
+
+void DkShortcutDelegate::textChanged(QString) {}	// dummy since the moccer is to dumb to get #if defs
+
 void DkShortcutDelegate::keySequenceChanged(const QKeySequence& keySequence) {
 	emit checkDuplicateSignal(keySequence, item);
 }
 #endif
+
+// fun fact: there are ~10^4500 (binary) images of size 128x128 
 
 // DkShortcutEditor --------------------------------------------------------------------
 DkShortcutEditor::DkShortcutEditor(QWidget *widget) : QLineEdit(widget) {

@@ -1,22 +1,25 @@
 project (qpsd)
 cmake_minimum_required(VERSION 2.6)
 
+if(COMMAND cmake_policy)
+	cmake_policy(SET CMP0003 NEW)
+	  
+	IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
+		cmake_policy(SET CMP0020 NEW)	# qt warnings
+	ENDIF()
+  IF(CMAKE_VERSION VERSION_GREATER 2.8.12.9)
+    cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings
+  ENDIF()
+endif(COMMAND cmake_policy)
+
+
+
 file(GLOB LIBQPSD_SOURCES "*.cpp")
 file(GLOB LIBQPSD_HEADERS "*.h")
-file(GLOB LIBQPSD_MOCS "*.h")
-
-IF (NOT ENABLE_QT5)
- QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
-ELSE()
- QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
- 
-ENDIF()
-
 
 SET(CMAKE_DEBUG_POSTFIX "d")
 
-message(STATUS "links:${PROJECT_NAME} ${QT_LIBRARIES}")
-add_library(${PROJECT_NAME} SHARED ${LIBQPSD_SOURCES} ${LIBQPSD_MOC_SRC})
+add_library(${PROJECT_NAME} SHARED ${LIBQPSD_SOURCES})
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 
 IF (ENABLE_QT5)

@@ -436,6 +436,8 @@ void DkNoMacs::createToolbar() {
 		movieToolbar->setIconSize(QSize(32, 32));
 
 	toolbar->allActionsAdded();
+
+	addToolBar(toolbar);
 }
 
 
@@ -2995,8 +2997,21 @@ void DkNoMacs::newInstance(QFileInfo file) {
 
 void DkNoMacs::loadRecursion() {
 
-	QImage img = QPixmap::grabWindow(this->winId()).toImage();
-	viewport()->setImage(img);
+	if (!getTabWidget()->getCurrentImage())
+		return;
+
+	viewport()->toggleDissolve();
+
+
+	//QImage img = getTabWidget()->getCurrentImage()->image();
+
+	//while (DkImage::addToImage(img, 1)) {
+	//	viewport()->setEditedImage(img);
+	//	QApplication::sendPostedEvents();
+	//}
+
+	//QImage img = QPixmap::grabWindow(this->winId()).toImage();
+	//viewport()->setImage(img);
 }
 
 // Added by fabian for transfer function:
@@ -3118,8 +3133,9 @@ void DkNoMacs::showToolbar(QToolBar* toolbar, bool show) {
 
 	showToolbarsTemporarily(!show);
 
-	if (show)
-		addToolBar(toolbar);
+	if (show) {
+		addToolBar(toolBarArea(this->toolbar), toolbar);
+	}
 	else
 		removeToolBar(toolbar);
 
@@ -4286,8 +4302,8 @@ void DkNoMacsSync::tcpAutoConnect(bool connect) {
 	DkSettings::sync.syncActions = connect;
 }
 
-void DkNoMacsSync::startUpnpRenderer(bool start) {
 #ifdef WITH_UPNP
+void DkNoMacsSync::startUpnpRenderer(bool start) {
 	if (!upnpRendererDeviceHost) {
 		upnpRendererDeviceHost = QSharedPointer<DkUpnpRendererDeviceHost>(new DkUpnpRendererDeviceHost());
 		connect(upnpRendererDeviceHost.data(), SIGNAL(newImage(QImage)), viewport(), SLOT(setImage(QImage)));
@@ -4296,8 +4312,10 @@ void DkNoMacsSync::startUpnpRenderer(bool start) {
 		upnpRendererDeviceHost->startDevicehost(":/nomacs/descriptions/nomacs_mediarenderer_description.xml");
 	else
 		upnpDeviceHost->stopDevicehost();
-#endif // WITH_UPNP
 }
+#else
+void DkNoMacsSync::startUpnpRenderer(bool) {}	// dummy
+#endif // WITH_UPNP
 
 bool DkNoMacsSync::connectWhiteList(int mode, bool connect) {
 
@@ -4556,7 +4574,6 @@ void DkNoMacsFrameless::closeEvent(QCloseEvent *event) {
 	saveSettings = false;
 
 	DkNoMacs::closeEvent(event);
-
 }
 
 // Transfer function:

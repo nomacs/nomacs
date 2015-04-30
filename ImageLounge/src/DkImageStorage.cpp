@@ -869,6 +869,41 @@ QImage DkImage::createThumb(const QImage& image) {
 	return thumb;
 };
 
+bool DkImage::addToImage(QImage& img, unsigned char val) {
+
+	// number of bytes per line used
+	int bpl = (img.width() * img.depth() + 7) / 8;
+	int pad = img.bytesPerLine() - bpl;
+	uchar* ptr = img.bits();
+	bool done = false;
+
+	for (int rIdx = 0; rIdx < img.height(); rIdx++) {
+
+		for (int cIdx = 0; cIdx < bpl; ) {
+
+			// add it & we're done
+			if (*ptr <= 255-val) {
+				*ptr += val;
+				done = true;
+				break;
+			}
+
+			int ov = *ptr+(int)val;	// compute the overflow
+			val = (char)(ov-255);
+
+			*ptr = val;
+			ptr++;
+		}
+
+		if (done)
+			break;
+
+		ptr += pad;
+	}
+
+	return done;
+};
+
 QColor DkImage::getMeanColor(const QImage& img) {
 
 	// some speed-up params

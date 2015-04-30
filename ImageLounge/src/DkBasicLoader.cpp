@@ -171,12 +171,14 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		imgLoaded = loadPSDFile(file, ba);
 		if (imgLoaded) loader = psd_loader;
 	}
+#if QT_VERSION < 0x050000	// >DIR: qt5 ships with webp : ) [23.4.2015 markus]
 	// WEBP loader
 	if (!imgLoaded) {
 
 		imgLoaded = loadWebPFile(file, ba);
 		if (imgLoaded) loader = webp_loader;
 	}
+#endif
 
 	// RAW loader
 	if (!imgLoaded && !qtFormats.contains(suf.toStdString().c_str())) {
@@ -238,11 +240,12 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		
 		try {
 			metaData->readMetaData(fileInfo, ba);
+			metaData->setQtValues(qImg);
 		
 			if (!DkSettings::metaData.ignoreExifOrientation) {
 				int orientation = metaData->getOrientation();
 
-				if (!metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+				if (!metaData->isJpg() && !metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
 					rotate(orientation);
 			}
 		} catch(...) {}	// ignore if we cannot read the metadata
@@ -250,6 +253,8 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	else if (!metaData) {
 		qDebug() << "metaData is NULL!";
 	}
+
+	qDebug() << qImg.text();
 
 	return imgLoaded;
 }
@@ -1173,11 +1178,13 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 
 	qDebug() << "extension: " << fileInfo.suffix();
 
+#if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
+
 	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(img, ba, compression);
 	}
 	else {
-
+#endif
 		bool hasAlpha = DkImage::alphaChannelUsed(img);
 		QImage sImg = img;
 
@@ -1196,7 +1203,9 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		imgWriter->setQuality(compression);
 		saved = imgWriter->write(sImg);
 		delete imgWriter;
+#if QT_VERSION < 0x050000
 	}
+#endif
 
 	if (saved && metaData) {
 		

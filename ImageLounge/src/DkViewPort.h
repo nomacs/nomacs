@@ -419,6 +419,9 @@ public:
 	void applyPluginChanges();
 	void connectLoader(QSharedPointer<DkImageLoader> loader, bool connectSignals = true);
 
+	// fun
+	void toggleDissolve();
+
 signals:
 	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
 	void sendNewFileSignal(qint16 op, QString filename = "");
@@ -528,6 +531,9 @@ protected:
 	QPoint moveStep;
 	float targetScale;
 	QTimer* moveTimer;
+
+	// fun
+	bool dissolveImage;
 	
 	QImage imgBg;
 

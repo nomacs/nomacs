@@ -130,6 +130,18 @@ void DkMetaDataModel::addMetaData(QSharedPointer<DkMetaDataT> metaData) {
 		createItem(xmpKeys.at(idx), translatedKey, exifValue);
 	}
 
+	QStringList qtKeys = metaData->getQtKeys();
+
+	for (QString cKey : qtKeys) {
+
+		QString lastKey = cKey.split(".").last();
+		QString translatedKey = DkMetaDataHelper::getInstance().translateKey(lastKey);
+		QString exifValue = metaData->getQtValue(cKey);
+		exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+
+		createItem(tr("Data.") + cKey, translatedKey, exifValue);
+	}
+
 	qDebug() << "model refreshed in: " << dt.getTotal();
 }
 
@@ -904,6 +916,24 @@ void DkMetaDataHUD::updateMetaData(const QSharedPointer<DkMetaDataT> metaData) {
 			entryValueLabels.append(createValueLabel(exifValue));
 		}
 	}
+
+	QStringList qtKeys = metaData->getQtKeys();
+
+	for (int idx = 0; idx < qtKeys.size(); idx++) {
+
+		QString cKey = qtKeys.at(idx);
+
+		if (keyValues.contains(cKey)) {
+
+			QString lastKey = cKey.split(".").last();
+			QString exifValue = metaData->getQtValue(cKey);
+			exifValue = DkMetaDataHelper::getInstance().resolveSpecialValue(metaData, lastKey, exifValue);
+
+			entryKeyLabels.append(createKeyLabel(cKey));
+			entryValueLabels.append(createValueLabel(exifValue));
+		}
+	}
+
 
 	updateLabels();
 }

@@ -410,11 +410,8 @@ signals:
 	void clearDuplicateSignal() const;
 
 protected slots:
-#if QT_VERSION < 0x050000
 	void textChanged(QString text = QString());
-#else
 	void keySequenceChanged(const QKeySequence& keySequence);
-#endif
 
 protected:
 	bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index);

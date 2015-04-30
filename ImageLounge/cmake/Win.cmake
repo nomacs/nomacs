@@ -91,6 +91,7 @@ unset(OpenCV_CONFIG_PATH CACHE)
 unset(OpenCV_LIB_DIR_DBG CACHE)
 unset(OpenCV_LIB_DIR_OPT CACHE)
 unset(OpenCV_LIBRARY_DIRS CACHE)
+unset(OpenCV_DIR CACHE)
 if(ENABLE_OPENCV)
 	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
 	if(OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
@@ -182,12 +183,20 @@ if(ENABLE_TIFF)
 		message(FATAL_ERROR, "could not locate libtiff liberaries. Needs TIFF_BUILD_PATH which contains /Release/libtiff.lib, /Debug/libtiffd.lib Note: tif_config.h (which is also mandatory) is only available if you have compiled OpenCV on yourself. If you want to use the precompiled version you have to disable TIFF")
 	endif()
 
-	set(TIFF_LIBRARIES optimized "libtiff" debug "libtiffd")		
 	find_path(TIFF_CONFIG_DIR NAMES "tif_config.h" HINTS "${OpenCV_DIR}/3rdparty/libtiff" )
 
 	# @stefan we need here the path to opencv/3rdparty/libtiff ... update 10.07.2013 stefan: currently not possible with the cmake of opencv
 	find_path(TIFF_INCLUDE_DIR NAMES "tiffio.h" HINTS "${OpenCV_DIR}/../3rdparty/libtiff" "${OpenCV_DIR}/../sources/3rdparty/libtiff" "${OpenCV_DIR}/../opencv/3rdparty/libtiff")
 
+  # copy zlib from opencv ... Qt zlib is no longer working with Qt5
+	if(EXISTS "${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib" AND EXISTS "${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib")
+		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Debug/zlibd.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+		FILE(COPY ${OpenCV_DIR}/3rdparty/lib/Release/zlib.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+	else()
+		message(FATAL_ERROR, "could not locate zlib liberaries from OpenCV. Needs OpenCV_DIR which contains /3rdparty/lib/Release/zlib.lib, /3rdparty/lib/Debug/zlibd.lib ")
+	endif()
+  set(TIFF_LIBRARIES optimized "libtiff;zlib" debug "libtiffd;zlibd")		
+  
 	if(TIFF_LIBRARIES AND EXISTS ${TIFF_CONFIG_DIR} AND EXISTS ${TIFF_INCLUDE_DIR})
 		add_definitions(-DWITH_LIBTIFF)
 	else(NOT EXISTS ${TIFF_CONFIG_DIR})
@@ -253,11 +262,6 @@ endif(ENABLE_QUAZIP)
 #add libqpsd
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/libqpsd)
 set(LIBQPSD_LIBRARY "qpsd")
-IF (NOT ENABLE_QT5)
- QT4_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
-ELSE()
- QT5_WRAP_CPP(LIBQPSD_MOC_SRC ${LIBQPSD_MOCS})
-ENDIF()
 
 #add webp
 unset(WEBP_LIBRARY CACHE)

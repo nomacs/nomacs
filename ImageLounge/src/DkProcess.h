@@ -161,12 +161,12 @@ class DkBatchConfig {
 
 public:
 	DkBatchConfig() { init(); };
-	DkBatchConfig(const QStringList& fileList, const QDir& outputDir, const QString& fileNamePattern);
+	DkBatchConfig(const QStringList& fileList, const QString& outputDir, const QString& fileNamePattern);
 
 	bool isOk() const;
 
 	void setFileList(const QStringList& fileList) { this->fileList = fileList; };
-	void setOutputDir(const QDir& outputDir) {this->outputDir = outputDir; };
+	void setOutputDir(const QString& outputDir) {this->outputDirPath = outputDir; };
 	void setFileNamePattern(const QString& pattern) {this->fileNamePattern = pattern; };
 	void setProcessFunctions(const QVector<QSharedPointer<DkAbstractBatch> >& processFunctions) { this->processFunctions = processFunctions; };
 	void setCompression(int compression) { this->compression = compression; };
@@ -174,7 +174,7 @@ public:
 	void setDeleteOriginal(bool deleteOriginal) { this->deleteOriginal = deleteOriginal; };
 
 	QStringList getFileList() const { return fileList; };
-	QDir getOutputDir() const { return outputDir; };
+	QString getOutputDirPath() const { return outputDirPath; };
 	QString getFileNamePattern() const { return fileNamePattern; };
 	QVector<QSharedPointer<DkAbstractBatch> > getProcessFunctions() const { return processFunctions; };
 	int getCompression() const { return compression; };
@@ -192,11 +192,12 @@ protected:
 	void init();
 
 	QStringList fileList;
-	QDir outputDir;
+	QString outputDirPath;
 	QString fileNamePattern;
 	int compression;
 	int mode;
 	bool deleteOriginal;
+	
 	QVector<QSharedPointer<DkAbstractBatch> > processFunctions;
 };
 

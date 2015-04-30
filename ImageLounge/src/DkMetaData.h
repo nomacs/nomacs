@@ -83,11 +83,14 @@ public:
 	QString getXmpValue(const QString& key) const;
 	QString getExifValue(const QString& key) const;
 	QString getIptcValue(const QString& key) const;
+	QString getQtValue(const QString& key) const;
 	QImage getThumbnail() const;
 	QImage getPreviewImage(int minPreviewWidth = 0) const;
 	QStringList getExifKeys() const;
 	QStringList getExifValues() const;
 	QStringList getIptcKeys() const;
+	QStringList getQtKeys() const;
+	QStringList getQtValues() const;
 	QStringList getIptcValues() const;
 	QStringList getXmpKeys() const;
 	void getFileMetaData(QStringList& fileKeys, QStringList& fileValues) const;
@@ -100,6 +103,7 @@ public:
 	bool setExifValue(QString key, QString taginfo);
 	bool updateImageMetaData(const QImage& img);
 	void setThumbnail(QImage thumb);
+	void setQtValues(const QImage& cImg);
 	static QString exiv2ToQString(std::string exifString);
 
 	bool hasMetaData() const;
@@ -113,6 +117,8 @@ public:
 protected:
 	Exiv2::Image::AutoPtr exifImg;
 	QFileInfo file;
+	QStringList qtKeys;
+	QStringList qtValues;
 
 	enum {
 		not_loaded,

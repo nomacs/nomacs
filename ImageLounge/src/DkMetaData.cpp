@@ -583,6 +583,14 @@ void DkMetaDataT::getAllMetaData(QStringList& keys, QStringList& values) const {
 		keys.append(cKey);
 		values.append(exifValue);
 	}
+
+	QStringList qtKeys = getQtKeys();
+
+	for (QString cKey : qtKeys) {
+
+		keys.append(cKey);
+		values.append(getQtValue(cKey));
+	}
 }
 
 QImage DkMetaDataT::getThumbnail() const {
@@ -815,6 +823,45 @@ QStringList DkMetaDataT::getIptcValues() const {
 	return iptcValues;
 }
 
+void DkMetaDataT::setQtValues(const QImage& cImg) {
+
+	QStringList qtKeysInit = cImg.textKeys();
+
+	for (QString cKey : qtKeysInit) {
+
+		if (!cKey.isEmpty() && cKey != "Raw profile type exif") {
+			QString val = cImg.text(cKey).size() < 5000 ? cImg.text(cKey) : QObject::tr("<data too large to display>");
+
+			if (!val.isEmpty()) {
+				qtValues.append(val);
+				qtKeys.append(cKey);
+			}
+		}
+	}
+}
+
+QString DkMetaDataT::getQtValue(const QString& key) const {
+
+	int idx = qtKeys.indexOf(key);
+
+	if (idx >= 0 && idx < qtValues.size())
+		return qtValues.at(idx);
+
+	return QString();
+}
+
+
+QStringList DkMetaDataT::getQtKeys() const {
+
+	return qtKeys;
+}
+
+QStringList DkMetaDataT::getQtValues() const {
+	
+	return qtValues;
+}
+
+
 void DkMetaDataT::setThumbnail(QImage thumb) {
 
 	if (exifState == not_loaded || exifState == no_data) 
@@ -866,24 +913,25 @@ QVector2D DkMetaDataT::getResolution() const {
 	try {
 
 		if (hasMetaData()) {
-			//metaData = DkImageLoader::imgMetaData;
 			xRes = getExifValue("XResolution");
 			QStringList res;
 			res = xRes.split("/");
-			if (res.size() != 2) {
-				//throw DkException("no x resolution found\n");
+
+			if (res.size() != 2) 
 				return resV;
-			}
-			resV.setX(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
+
+			if (res.at(0).toFloat() != 0 && res.at(1).toFloat() != 0)
+				resV.setX(res.at(0).toFloat()/res.at(1).toFloat());
 
 			yRes = getExifValue("YResolution");
 			res = yRes.split("/");
 
-			qDebug() << "Resolution"  << xRes << " " << yRes;
+			//qDebug() << "Resolution"  << xRes << " " << yRes;
 			if (res.size() != 2)
 				return resV;
-				//throw DkException("no y resolution found\n");
-			resV.setY(res.at(1).toFloat() != 0 ? res.at(0).toFloat()/res.at(1).toFloat() : 72);
+
+			if (res.at(0).toFloat() != 0 && res.at(1).toFloat() != 0)
+				resV.setY(res.at(0).toFloat()/res.at(1).toFloat());
 		}
 	} catch (...) {
 		qDebug() << "could not load Exif resolution, set to 72dpi";

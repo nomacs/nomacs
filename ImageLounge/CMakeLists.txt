@@ -7,15 +7,22 @@ if(COMMAND cmake_policy)
 	IF(CMAKE_VERSION VERSION_GREATER 2.8.10)
 		cmake_policy(SET CMP0020 NEW)	# qt warnings
 	ENDIF()
+  IF(CMAKE_VERSION VERSION_GREATER 2.8.12.9)
+    cmake_policy(SET CMP0043 NEW)	# COMPILE_DEFINITIONS_<CONFIG> warnings
+  ENDIF()
 endif(COMMAND cmake_policy)
 
 ######################## begin of project
 project(nomacs)
 
-set(NOMACS_VERSION 2.4.5)
+set(NOMACS_VERSION 2.5.2)
 add_definitions(-DNOMACS_VERSION="${NOMACS_VERSION}")
 
 set(BINARY_NAME ${CMAKE_PROJECT_NAME})
+
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 # include macros needed
 include("cmake/Utils.cmake")
@@ -26,7 +33,7 @@ option(ENABLE_RAW "Compile with raw images support (libraw)" ON)
 option(ENABLE_WEBP "Compile with webP support (webP)" ON)
 option(ENABLE_TIFF "Compile with multi-layer tiff" ON)
 option(DISABLE_QT_DEBUG "Disable Qt Debug Messages" OFF)
-option(ENABLE_QT5 "Compile with Qt5 (Qt5)" OFF)
+option(ENABLE_QT5 "Compile with Qt5 (Qt5)" ON)
 option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 
 if(MSVC)
@@ -85,41 +92,33 @@ endif (APPLE)
 
 file(GLOB NOMACS_MOCS "src/*.h")
 
-IF(NOT ENABLE_UPNP)
-	LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/DkUpnp.cpp)
-	LIST(REMOVE_ITEM NOMACS_MOCS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
-	LIST(REMOVE_ITEM NOMACS_HEADERS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
-ENDIF(NOT ENABLE_UPNP)
+ IF(NOT ENABLE_UPNP)
+	 LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/DkUpnp.cpp)
+	 LIST(REMOVE_ITEM NOMACS_MOCS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
+	 LIST(REMOVE_ITEM NOMACS_HEADERS ${CMAKE_SOURCE_DIR}/src/DkUpnp.h)
+ ENDIF(NOT ENABLE_UPNP)
 
-IF(NOT ENABLE_PLUGINS)
-	LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/DkPluginManager.cpp)
-	LIST(REMOVE_ITEM NOMACS_MOCS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
-	LIST(REMOVE_ITEM NOMACS_HEADERS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
-ENDIF(NOT ENABLE_PLUGINS)
+ IF(NOT ENABLE_PLUGINS)
+	 LIST(REMOVE_ITEM NOMACS_SOURCES ${CMAKE_SOURCE_DIR}/src/DkPluginManager.cpp)
+	 LIST(REMOVE_ITEM NOMACS_MOCS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
+	 LIST(REMOVE_ITEM NOMACS_HEADERS ${CMAKE_SOURCE_DIR}/src/DkPluginManager.h)
+ ENDIF(NOT ENABLE_PLUGINS)
 
 
 set (NOMACS_FORMS
-        src/nomacs.ui
+  src/nomacs.ui
 )
 
 set (NOMACS_RESOURCES
-		src/nomacs.qrc
-)
-
-set (NOMACS_RESOURCES
-		src/nomacs.qrc
+  src/nomacs.qrc
 )
 
 file(GLOB NOMACS_TRANSLATIONS "translations/*.ts")
 
 IF (NOT ENABLE_QT5)
  QT4_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
- QT4_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
- QT4_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
 ELSE()
  QT5_ADD_TRANSLATION(NOMACS_QM ${NOMACS_TRANSLATIONS})
- QT5_ADD_RESOURCES(NOMACS_RCC ${NOMACS_RESOURCES})
- QT5_WRAP_CPP(NOMACS_MOC_SRC ${NOMACS_MOCS})
 ENDIF()
 
 if(MSVC)
