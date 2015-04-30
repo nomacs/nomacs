@@ -2141,11 +2141,12 @@ void DkViewPort::loadFileFast(int skipIdx) {
 		QApplication::sendPostedEvents();
 
 		int sIdx = skipIdx;
+		QSharedPointer<DkImageContainerT> lastImg;
 
 		for (int idx = 0; idx < loader->getImages().size(); idx++) {
 
 			QSharedPointer<DkImageContainerT> imgC = loader->getSkippedImage(sIdx);
-		
+
 			if (!imgC)
 				break;
 
@@ -2155,10 +2156,14 @@ void DkViewPort::loadFileFast(int skipIdx) {
 				loader->load(imgC);
 				break;
 			}
+			else if (lastImg == imgC) {
+				sIdx += skipIdx;	// get me out of endless loops (self referencing shortcuts)
+			}
 			else {
 				qDebug() << "image does not exist - skipping";
-				sIdx += skipIdx;
 			}
+
+			lastImg = imgC;
 		}
 	}	
 

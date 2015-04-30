@@ -4382,7 +4382,7 @@ void DkWelcomeDialog::accept() {
 		for (int idx = 0; idx < DkSettings::app.containerFilters.size(); idx++)
 			rFilters.removeAll(DkSettings::app.containerFilters.at(idx));
 
-		for (int idx = 1; idx < rFilters.size(); idx++) {
+		for (int idx = 0; idx < rFilters.size(); idx++) {
 
 			// remove the icon file -> otherwise icons might be destroyed (e.g. acrobat)
 			if (!rFilters.at(idx).contains("ico"))	

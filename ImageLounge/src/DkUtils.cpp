@@ -176,19 +176,44 @@ bool DkUtils::naturalCompare(const QString &s1, const QString &s2, Qt::CaseSensi
 			break;
 
 	// if both values start with a digit
-	if (s1[sIdx].isDigit() && s2[sIdx].isDigit()) {
+	if (sIdx < s1.length() && sIdx < s2.length() && s1[sIdx].isDigit() && s2[sIdx].isDigit()) {
 
-		double n1 = getLongestNumber(s1, sIdx);
-		double n2 = getLongestNumber(s2, sIdx);
+		QString prefix = "";
 
-		return n1 < n2;
+		// if the number has zeros we get into troubles:
+		// 101 and 12 result in '01' and '2'
+		// for double sort this means: 01 < 2 (though 101 > 12)
+		// so we simply search the last non zero number that was equal and prepend that
+		// if there is no such number (e.g. img001 vs img101) we are fine already
+		// this fixes #469
+		if (s1[sIdx] == '0' || s2[sIdx] == '0') {
+
+			for (int idx = sIdx-1; idx >= 0; idx--) {
+				
+				if (s1[idx] != '0' && s1[idx].isDigit()) {	// find the last non-zero number (just check one string they are the same)
+					prefix = s1[idx];
+					break;
+				}
+				else if (s1[idx] != '0')
+					break;
+			}
+		}
+
+		QString cs1 = prefix + getLongestNumber(s1, sIdx);
+		QString cs2 = prefix + getLongestNumber(s2, sIdx);
+
+		double n1 = cs1.toDouble();
+		double n2 = cs2.toDouble();
+
+		if (n1 != n2)
+			return n1 < n2;
 	}
 
 	// we're good to go with a string compare here...
 	return QString::compare(s1, s2, cs) < 0;
 }
 
-double DkUtils::getLongestNumber(const QString& str, int startIdx) {
+QString DkUtils::getLongestNumber(const QString& str, int startIdx) {
 
 	int idx;
 
@@ -198,7 +223,7 @@ double DkUtils::getLongestNumber(const QString& str, int startIdx) {
 			break;
 	}
 
-	return str.mid(startIdx, idx-startIdx).toDouble();
+	return str.mid(startIdx, idx-startIdx);
 }
 
 bool DkUtils::compDateCreated(const QFileInfo& lhf, const QFileInfo& rhf) {
