@@ -3002,8 +3002,6 @@ void DkNoMacs::onWindowLoaded() {
 
 	if (firstTime) {
 
-		DkFileFilterHandling fh;
-
 		// here are some first time requests
 		DkWelcomeDialog* wecomeDialog = new DkWelcomeDialog(this);
 		wecomeDialog->exec();
