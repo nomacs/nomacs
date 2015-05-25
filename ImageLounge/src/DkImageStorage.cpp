@@ -426,7 +426,148 @@ QImage DkImage::normImage(const QImage& img) {
 	return imgN;
 }
 
+void DkImage::logPolar(const CvArr* srcarr, CvArr* dstarr, CvPoint2D32f center, double M, int flags) {
+
+		cv::Ptr<CvMat> mapx, mapy;
+
+		CvMat srcstub, *src = cvGetMat(srcarr, &srcstub);
+		CvMat dststub, *dst = cvGetMat(dstarr, &dststub);
+		CvSize ssize, dsize;
+
+		if( !CV_ARE_TYPES_EQ( src, dst ))
+			CV_Error( CV_StsUnmatchedFormats, "" );
+
+		if( M <= 0 )
+			CV_Error( CV_StsOutOfRange, "M should be >0" );
+
+		ssize.height = src->rows;
+		ssize.width = src->cols;
+		dsize.height = dst->rows;
+		dsize.width = dst->cols;
+
+		mapx = cvCreateMat( dsize.height, dsize.width, CV_32F );
+		mapy = cvCreateMat( dsize.height, dsize.width, CV_32F );
+
+		if( !(flags & CV_WARP_INVERSE_MAP) )
+		{
+			int phi, rho;
+			cv::AutoBuffer<double> _exp_tab(dsize.width);
+			double* exp_tab = _exp_tab;
+
+			for( rho = 0; rho < dst->width; rho++ )
+				exp_tab[rho] = std::exp(rho/M);
+
+			for( phi = 0; phi < dsize.height; phi++ )
+			{
+				double cp = cos(phi*2*CV_PI/dsize.height);
+				double sp = sin(phi*2*CV_PI/dsize.height);
+				float* mx = (float*)(mapx->data.ptr + phi*mapx->step);
+				float* my = (float*)(mapy->data.ptr + phi*mapy->step);
+
+				for( rho = 0; rho < dsize.width; rho++ )
+				{
+					double r = exp_tab[rho];
+					double x = r*cp + center.x;
+					double y = r*sp + center.y;
+
+					mx[rho] = (float)x;
+					my[rho] = (float)y;
+				}
+			}
+		}
+		else
+		{
+			int x, y;
+			CvMat bufx, bufy, bufp, bufa;
+			double ascale = ssize.height/(2*CV_PI);
+			cv::AutoBuffer<float> _buf(4*dsize.width);
+			float* buf = _buf;
+
+			bufx = cvMat( 1, dsize.width, CV_32F, buf );
+			bufy = cvMat( 1, dsize.width, CV_32F, buf + dsize.width );
+			bufp = cvMat( 1, dsize.width, CV_32F, buf + dsize.width*2 );
+			bufa = cvMat( 1, dsize.width, CV_32F, buf + dsize.width*3 );
+
+			for( x = 0; x < dsize.width; x++ )
+				bufx.data.fl[x] = (float)x - center.x;
+
+			for( y = 0; y < dsize.height; y++ )
+			{
+				float* mx = (float*)(mapx->data.ptr + y*mapx->step);
+				float* my = (float*)(mapy->data.ptr + y*mapy->step);
+
+				for( x = 0; x < dsize.width; x++ )
+					bufy.data.fl[x] = (float)y - center.y;
+
+#if 1
+				cvCartToPolar( &bufx, &bufy, &bufp, &bufa );
+
+				for( x = 0; x < dsize.width; x++ ) {
+					bufp.data.fl[x] /= 200.0f;
+					bufp.data.fl[x] += 1.0f;
+				}
+
+				cvLog( &bufp, &bufp );
+
+				for( x = 0; x < dsize.width; x++ )
+				{
+					double rho = bufp.data.fl[x]*2000;
+					double phi = bufa.data.fl[x] + CV_PI;
+
+					if (phi < 0)
+						phi += 2*CV_PI;
+					else if (phi > 2*CV_PI)
+						phi -= 2*CV_PI;
+
+					phi *= ascale;
+
+					//qDebug() << "phi: " << bufa.data.fl[x];
+
+					mx[x] = (float)rho;
+					my[x] = (float)phi;
+				}
+#else
+				for( x = 0; x < dsize.width; x++ )
+				{
+					double xx = bufx.data.fl[x];
+					double yy = bufy.data.fl[x];
+
+					double s = 200;
+
+					double p = log(sqrt(xx*xx + yy*yy)/s + 1.)*2000;
+					double a = atan2(yy,xx);	// TODO: induce rotation
+					if( a < 0)
+						a = 2*CV_PI + a;
+					a *= ascale;
+
+					mx[x] = (float)p;
+					my[x] = (float)a;
+				}
+#endif
+			}
+		}
+
+		cvRemap( src, dst, mapx, mapy, flags, cvScalarAll(0) );
+}
+
 bool DkImage::normImage(QImage& img) {
+
+	QTransform rotationMatrix;
+	rotationMatrix.rotate((double)90);
+	img = img.transformed(rotationMatrix);
+
+	QTransform scaleMatrix;
+	scaleMatrix.scale(2, 1);
+	img = img.transformed(scaleMatrix);
+
+	cv::Mat mImg = DkImage::qImage2Mat(img);
+	CvMat oldMat(mImg);
+
+	logPolar(&oldMat, &oldMat, cv::Point2d(mImg.cols*0.5, mImg.rows*0.5), 800, CV_WARP_INVERSE_MAP+CV_WARP_FILL_OUTLIERS);
+
+	img = DkImage::mat2QImage(mImg);
+
+	return true;
 
 	uchar maxVal = 0;
 	uchar minVal = 255;

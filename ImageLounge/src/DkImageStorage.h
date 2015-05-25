@@ -40,6 +40,7 @@
 #else
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
 #endif
 #endif
 #pragma warning(pop)		// no warnings from includes - end
@@ -103,6 +104,7 @@ public:
 	static void gammaToLinear(QImage& img);
 	static void linearToGamma(QImage& img);
 	static void mapGammaTable(QImage& img, const QVector<uchar>& gammaTable);
+	static void logPolar(const CvArr* srcarr, CvArr* dstarr, CvPoint2D32f center, double M, int flags);
 	static QImage normImage(const QImage& img);
 	static bool normImage(QImage& img);
 	static QImage autoAdjustImage(const QImage& img);
