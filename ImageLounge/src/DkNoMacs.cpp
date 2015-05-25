@@ -633,6 +633,7 @@ void DkNoMacs::createMenu() {
 	editMenu->addAction(editActions[menu_edit_gray_convert]);
 #ifdef WITH_OPENCV
 	editMenu->addAction(editActions[menu_edit_unsharp]);
+	editMenu->addAction(editActions[menu_edit_tiny_planet]);
 #endif
 	editMenu->addSeparator();
 #ifdef WIN32
@@ -1080,6 +1081,10 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_unsharp]->setStatusTip(tr("Stretches the Local Contrast of an Image"));
 	connect(editActions[menu_edit_unsharp], SIGNAL(triggered()), this, SLOT(unsharpMask()));
 
+	editActions[menu_edit_tiny_planet] = new QAction(tr("&Tiny Planet"), this);
+	editActions[menu_edit_tiny_planet]->setStatusTip(tr("Computes a tiny planet image"));
+	connect(editActions[menu_edit_tiny_planet], SIGNAL(triggered()), this, SLOT(tinyPlanet()));
+
 	editActions[menu_edit_delete] = new QAction(editIcons[icon_edit_delete], tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
@@ -1524,6 +1529,12 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #else
 	editActions[menu_edit_unsharp]->setEnabled(false);
 #endif
+#ifdef WITH_OPENCV
+	editActions[menu_edit_tiny_planet]->setEnabled(enable);
+#else
+	editActions[menu_edit_tiny_planet]->setEnabled(false);
+#endif
+
 	editActions[menu_edit_invert]->setEnabled(enable);
 	editActions[menu_edit_gray_convert]->setEnabled(enable);	
 
@@ -1926,6 +1937,20 @@ void DkNoMacs::unsharpMask() {
 	}
 
 	unsharpDialog->deleteLater();
+#endif
+}
+
+void DkNoMacs::tinyPlanet() {
+#ifdef WITH_OPENCV
+	DkTinyPlanetDialog* tinyPlanetDialog = new DkTinyPlanetDialog(this);
+	tinyPlanetDialog->setImage(viewport()->getImage());
+	int answer = tinyPlanetDialog->exec();
+	if (answer == QDialog::Accepted) {
+		QImage editedImage = tinyPlanetDialog->getImage();
+		viewport()->setEditedImage(editedImage);
+	}
+
+	tinyPlanetDialog->deleteLater();
 #endif
 }
 

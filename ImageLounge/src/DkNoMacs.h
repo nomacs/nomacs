@@ -261,6 +261,7 @@ enum editActions {
 	menu_edit_norm,
 	menu_edit_auto_adjust,
 	menu_edit_unsharp,
+	menu_edit_tiny_planet,
 	menu_edit_wallpaper,
 
 	menu_edit_end,	// nothing beyond this point
@@ -558,6 +559,7 @@ public slots:
 	void normalizeImage();
 	void autoAdjustImage();
 	void unsharpMask();
+	void tinyPlanet();
 	void invertImage();
 	void convert2gray();
 	virtual void settingsChanged();

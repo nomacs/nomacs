@@ -90,6 +90,8 @@ public:
 	static void mapGammaTable(cv::Mat& img, const QVector<unsigned short>& gammaTable);
 	static void gammaToLinear(cv::Mat& img);
 	static void linearToGamma(cv::Mat& img);
+	static void logPolar(const cv::Mat& src, cv::Mat& dst, CvPoint2D32f center, double scaleLog, double scale, double angle, int flags);
+	static void tinyPlanet(QImage& img, double scaleLog, double scale, double angle, QSize s, bool invert = false);
 #endif
 
 	static QString getBufferSize(const QImage& img);
@@ -104,7 +106,6 @@ public:
 	static void gammaToLinear(QImage& img);
 	static void linearToGamma(QImage& img);
 	static void mapGammaTable(QImage& img, const QVector<uchar>& gammaTable);
-	static void logPolar(const CvArr* srcarr, CvArr* dstarr, CvPoint2D32f center, double M, int flags);
 	static QImage normImage(const QImage& img);
 	static bool normImage(QImage& img);
 	static QImage autoAdjustImage(const QImage& img);

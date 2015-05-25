@@ -787,6 +787,49 @@ protected:
 	QImage img;
 };
 
+class DkTinyPlanetDialog : public QDialog {
+	Q_OBJECT
+
+public:
+	DkTinyPlanetDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+	QImage getImage();
+
+public slots:
+	void on_scaleSlider_valueChanged(int i);
+	void on_scaleLogSlider_valueChanged(int i);
+	void on_angleSlider_valueChanged(int i);
+	void on_invertBox_toggled(bool t);
+	void setFile(const QFileInfo& file);
+	void setImage(const QImage& img);
+	void computePreview();
+	void updateImageSlot(QImage);
+	void reject();
+	QImage computeTinyPlanet(const QImage img, float scaleLog, float scale, double angle, QSize s);
+	void tinyPlanetFinished();
+
+signals:
+	void updateImage(QImage img);
+
+protected:
+	void createLayout();
+	void dropEvent(QDropEvent *event);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void resizeEvent(QResizeEvent *event);
+
+	QLabel* imgPreview;
+	QLabel* preview;
+	QDialogButtonBox* buttons;
+	QFutureWatcher<QImage> unsharpWatcher;
+
+	DkSlider* scaleSlider;
+	DkSlider* scaleLogSlider;
+	DkSlider* angleSlider;
+	QCheckBox* invertBox;
+
+	bool processing;
+	QImage img;
+};
+
 class DkMosaicDialog : public QDialog {
 	Q_OBJECT
 

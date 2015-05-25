@@ -3340,6 +3340,221 @@ void DkUnsharpDialog::setFile(const QFileInfo& file) {
 	setImage(loader.image());
 }
 
+// DkTinyPlanetDialog --------------------------------------------------------------------
+DkTinyPlanetDialog::DkTinyPlanetDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
+
+	processing = false;
+
+	setWindowTitle(tr("Tiny Planet"));
+	createLayout();
+	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
+	setAcceptDrops(true);
+
+	connect(this, SIGNAL(updateImage(QImage)), this, SLOT(updateImageSlot(QImage)));
+	connect(&unsharpWatcher, SIGNAL(finished()), this, SLOT(tinyPlanetFinished()));
+	QMetaObject::connectSlotsByName(this);
+}
+
+void DkTinyPlanetDialog::dropEvent(QDropEvent *event) {
+
+	if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+
+		setFile(url.toString());
+	}
+}
+
+void DkTinyPlanetDialog::dragEnterEvent(QDragEnterEvent *event) {
+
+	if (event->mimeData()->hasUrls()) {
+		QUrl url = event->mimeData()->urls().at(0);
+		url = url.toLocalFile();
+		QFileInfo file = QFileInfo(url.toString());
+
+		if (file.exists() && DkUtils::isValid(file))
+			event->acceptProposedAction();
+	}
+}
+
+void DkTinyPlanetDialog::createLayout() {
+
+	// post processing sliders
+	scaleLogSlider = new DkSlider(tr("Planet Size"), this);
+	scaleLogSlider->setObjectName("scaleLogSlider");
+	scaleLogSlider->setMinimum(1);
+	scaleLogSlider->setMaximum(1000);
+	scaleLogSlider->setValue(30);
+
+	//darkenSlider->hide();
+
+	scaleSlider = new DkSlider(tr("Scale"), this);
+	scaleSlider->setObjectName("scaleSlider");
+	scaleSlider->setMinimum(1);
+	scaleSlider->setMaximum(3000);
+	scaleSlider->setValue(300);
+
+	angleSlider = new DkSlider(tr("Angle"), this);
+	angleSlider->setObjectName("angleSlider");
+	angleSlider->setValue(0);
+	angleSlider->setMinimum(-180);
+	angleSlider->setMaximum(179);
+
+	invertBox = new QCheckBox(tr("Invert Planet"), this);
+	invertBox->setObjectName("invertBox");
+
+	QWidget* sliderWidget = new QWidget(this);
+	QVBoxLayout* sliderLayout = new QVBoxLayout(sliderWidget);
+	sliderLayout->addWidget(scaleLogSlider);
+	sliderLayout->addWidget(scaleSlider);
+	sliderLayout->addWidget(angleSlider);
+	sliderLayout->addWidget(invertBox);
+
+	// shows the image if it could be loaded
+	imgPreview = new QLabel(this);
+	//imgPreview->setScaledContents(true);
+	imgPreview->setMinimumSize(QSize(200, 200));
+
+	preview = new QLabel(this);
+	//preview->setScaledContents(true);
+	preview->setMinimumSize(QSize(200, 200));
+	//preview->setForceFastRendering(true);
+	//preview->setPanControl(QPointF(0.0f, 0.0f));
+
+	QWidget* viewports = new QWidget(this);
+	QHBoxLayout* viewLayout = new QHBoxLayout(viewports);
+	//viewLayout->setColumnStretch(0,1);
+	//viewLayout->setColumnStretch(1,1);
+	viewLayout->addStretch();
+	viewLayout->addWidget(imgPreview);
+	viewLayout->addWidget(preview);
+	viewLayout->addStretch();
+
+	// buttons
+	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+
+	QVBoxLayout* layout = new QVBoxLayout(this);
+	layout->addWidget(viewports);
+	layout->addWidget(sliderWidget);
+	layout->addWidget(buttons);
+}
+
+void DkTinyPlanetDialog::on_scaleSlider_valueChanged(int) {
+
+	computePreview();
+}
+
+void DkTinyPlanetDialog::on_scaleLogSlider_valueChanged(int) {
+
+	scaleSlider->setValue(std::max(scaleLogSlider->value()*10, 200));
+	//computePreview();
+}
+
+void DkTinyPlanetDialog::on_angleSlider_valueChanged(int) {
+
+	computePreview();
+}
+
+void DkTinyPlanetDialog::on_invertBox_toggled(bool) {
+
+	computePreview();
+}
+
+void DkTinyPlanetDialog::resizeEvent(QResizeEvent *event) {
+
+	updateImageSlot(img);
+	QDialog::resizeEvent(event);
+}
+
+QImage DkTinyPlanetDialog::getImage() {
+	
+	int mSize = std::max(img.width(), img.height());
+	if (mSize > 7000)
+		mSize = 7000;	// currently max supported size (x86)
+	float f = (mSize > 1000) ? mSize/1000 : 1.0f;
+	QSize s(mSize, mSize);
+
+	float slInv = scaleLogSlider->value()*f;
+	if (invertBox->isChecked())
+		slInv *= -1.0f;
+
+	return computeTinyPlanet(img, slInv, scaleSlider->value()*f, angleSlider->value()*DK_DEG2RAD, s);
+}
+
+void DkTinyPlanetDialog::reject() {
+
+	QDialog::reject();
+
+}
+
+void DkTinyPlanetDialog::updateImageSlot(QImage img) {
+
+	imgPreview->setPixmap(QPixmap::fromImage(img.scaled(imgPreview->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation)));
+	computePreview();
+}
+
+void DkTinyPlanetDialog::computePreview() {
+
+	if (processing)
+		return;
+
+	QImage rImg = img;
+	int mSide = qMax(img.width(), img.height()) > 1000 ? 1000 : qMax(img.width(), img.height());
+	rImg = rImg.scaled(QSize(mSide, mSide), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	int slVal = scaleLogSlider->value();
+	
+	// encode invert bool into sign
+	if (invertBox->isChecked())
+		slVal *= -1;
+
+	QFuture<QImage> future = QtConcurrent::run(this, 
+		&nmc::DkTinyPlanetDialog::computeTinyPlanet,
+		rImg,
+		slVal,
+		scaleSlider->value(),
+		angleSlider->value()*DK_DEG2RAD,
+		QSize(mSide, mSide)); 
+	unsharpWatcher.setFuture(future);
+	processing = true;
+}
+
+void DkTinyPlanetDialog::tinyPlanetFinished() {
+
+	QImage img = unsharpWatcher.result();
+	img = img.scaled(preview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	preview->setPixmap(QPixmap::fromImage(img));
+
+	//update();
+	processing = false;
+}
+
+QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage img, float scaleLog, float scale, double angle, QSize s) {
+
+	bool inverted = scaleLog < 0;
+	scaleLog = fabs(scaleLog);
+
+	QImage imgC = img.copy();
+	DkImage::tinyPlanet(imgC, (double)scaleLog, (double) scale, angle, s, inverted);
+	return imgC;
+}
+
+void DkTinyPlanetDialog::setImage(const QImage& img) {
+	this->img = img;
+	updateImageSlot(img);
+	//viewport->fullView();
+	//viewport->zoomConstraints(viewport->get100Factor());
+	computePreview();
+}
+
+void DkTinyPlanetDialog::setFile(const QFileInfo& file) {
+
+	DkBasicLoader loader;
+	loader.loadGeneral(file, true);
+	setImage(loader.image());
+}
+
 // DkMosaicDialog --------------------------------------------------------------------
 DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
