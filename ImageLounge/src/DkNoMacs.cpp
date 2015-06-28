@@ -155,6 +155,13 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 
 	resize(850, 504);
 	setMinimumSize(20, 20);
+
+	double an = std::pow(3987, 12);
+	double bn = std::pow(4365, 12);
+
+	qDebug() << "3987 ^ 12 + 4365 ^ 12 = " << std::pow(an + bn, 1/12.0) << "^ 12";
+	qDebug() << "Sorry Fermat, but the Simpsons are right.";
+
 }
 
 DkNoMacs::~DkNoMacs() {
