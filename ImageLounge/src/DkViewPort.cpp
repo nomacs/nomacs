@@ -553,6 +553,13 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	fileInfoLabel->setEdited(imgC->isEdited());
 	commentWidget->setMetaData(metaData);
 	updateRating(metaData->getRating());
+
+	
+	//code for metadata cropping:
+
+	//metaData->printMetaData();
+	//metaData->metaDataCrop();
+	metaData->xmpSidecarTest();
 }
 
 void DkControlWidget::setInfo(QString msg, int time, int location) {

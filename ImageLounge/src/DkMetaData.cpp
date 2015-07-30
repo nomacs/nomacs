@@ -80,6 +80,7 @@ void DkMetaDataT::readMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteAr
 		qDebug() << "[Exiv2] could not open file for exif data";
 		return;
 	}
+	
 
 	if (exifImg.get() == 0) {
 		exifState = no_data;
@@ -283,6 +284,7 @@ int DkMetaDataT::getRating() const {
 	float xmpRating = -1;
 	float fRating = 0;
 
+	
 	Exiv2::ExifData &exifData = exifImg->exifData();		//Exif.Image.Rating  - short
 	Exiv2::XmpData &xmpData = exifImg->xmpData();			//Xmp.xmp.Rating - text
 
@@ -710,6 +712,7 @@ QStringList DkMetaDataT::getExifKeys() const {
 
 	if (exifState != loaded && exifState != dirty)
 		return exifKeys;
+
 
 	Exiv2::ExifData &exifData = exifImg->exifData();
 	Exiv2::ExifData::const_iterator end = exifData.end();
@@ -1201,7 +1204,126 @@ void DkMetaDataT::printMetaData() const {
 			<< std::endl;
 	}
 
+
+	std::string xmpPacket;
+	if (0 != Exiv2::XmpParser::encode(xmpPacket, xmpData)) {
+		throw Exiv2::Error(1, "Failed to serialize XMP data");
+	}
+	std::cout << xmpPacket << "\n";
+	
 }
+
+
+void DkMetaDataT::saveRectToXMP(DkRotatingRect rect) {
+
+	Exiv2::Image::AutoPtr xmpImg = getExternalXmp();
+
+
+
+}
+
+Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {
+
+	Exiv2::Image::AutoPtr xmpImg;
+
+	//TODO: check if the file type supports xmp
+
+	// Create the path to the XMP file:	
+
+	QString dir = file.absoluteFilePath();
+	QString ext = file.suffix();
+	QString xmpPath = dir.left(dir.length() - ext.length() - 1);
+	QString xmpExt = ".xmp";
+	QString xmpFilePath = xmpPath + xmpExt;
+
+	QFileInfo xmpFileInfo = QFileInfo(xmpFilePath);
+
+	qDebug() << "XMP sidecar path: " << xmpFilePath;
+
+	if (xmpFileInfo.exists()) {
+		xmpImg = Exiv2::ImageFactory::open(xmpFilePath.toStdString());
+		xmpImg->readMetadata();
+	}
+	else {
+		// Create a new XMP sidecar, unfortunately this one has fewer attributes than the adobe version:
+		xmpImg = Exiv2::ImageFactory::create(Exiv2::ImageType::xmp, xmpFilePath.toStdString());
+		xmpImg->setMetadata(*exifImg);
+
+	}
+
+	return xmpImg;
+
+}
+
+
+bool DkMetaDataT::setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue) {
+
+	Exiv2::XmpKey key = Exiv2::XmpKey(xmpKey.toStdString());
+
+	bool setXMPValueSuccessful = false;
+
+	if (!xmpData.empty()) {
+
+		Exiv2::XmpKey key = Exiv2::XmpKey(xmpKey.toStdString());
+
+		Exiv2::XmpData::iterator pos = xmpData.findKey(key);
+
+
+		//Update the tag if it is set:
+		if (pos != xmpData.end() && pos->count() != 0) {
+			//sidecarXmpData.erase(pos);
+			if (!pos->setValue(xmpValue.toStdString())) 
+				setXMPValueSuccessful = true;
+		}
+		else {
+			Exiv2::Value::AutoPtr v = Exiv2::Value::create(Exiv2::xmpText);
+			if (!v->read(xmpValue.toStdString())) {
+				if (!xmpData.add(Exiv2::XmpKey(key), v.get()))
+					setXMPValueSuccessful = true;
+			}
+			
+		}
+
+	}
+
+	return setXMPValueSuccessful;
+
+}
+
+
+void DkMetaDataT::xmpSidecarTest() {
+
+
+	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
+	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
+
+	// Set the cropping coordinates here in percentage:
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", "0.086687");
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropLeft", "0.334223");
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropBottom", "0.800616");
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropRight", "0.567775");
+
+	// 
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropAngle", "28.074855");
+
+	
+	setXMPValue(sidecarXmpData, "Xmp.crs.HasCrop", "True");
+	// These key values are set by camera raw automatically, but I have found no documentation for them
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
+	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
+	
+
+	xmpSidecar->setXmpData(sidecarXmpData);
+	xmpSidecar->writeMetadata();
+
+
+
+}
+
+
+
+
+
 
 // DkMetaDataHelper --------------------------------------------------------------------
 
