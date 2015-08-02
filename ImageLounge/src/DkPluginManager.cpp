@@ -1454,6 +1454,8 @@ void DkDescriptionImage::selectionChanged(const QItemSelection&, const QItemSele
 DkPluginDownloader::DkPluginDownloader(QWidget* parent) {
 
 	reply = 0;
+	progressDialog = 0;
+
 	requestType = request_none;
 	downloadAborted = false;
 	QList<XmlPluginData> xmlPluginData = QList<XmlPluginData>();
@@ -1465,15 +1467,10 @@ DkPluginDownloader::DkPluginDownloader(QWidget* parent) {
 		accessManagerPlugin->setProxy(listOfProxies[0]);
 	}
 
-
 	connect(accessManagerPlugin, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)) );
 	connect(this, SIGNAL(showDownloaderMessage(QString, QString)), parent, SLOT(showDownloaderMessage(QString, QString)));
 	connect(this, SIGNAL(parsingFinished(int)), parent, SLOT(manageParsedXmlData(int)));
 
-	progressDialog = new QProgressDialog("", tr("Cancel Update"), 0, 100, parent);
-	connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelUpdate()));
-	connect(this, SIGNAL(pluginDownloaded(const QModelIndex &)), progressDialog, SLOT(hide()));	
-	connect(this, SIGNAL(allPluginsUpdated(bool)), progressDialog, SLOT(hide()));
 }
 
 void DkPluginDownloader::downloadXml(int usage) {
@@ -1500,6 +1497,9 @@ void DkPluginDownloader::downloadPreviewImg(QString url) {
 
 void DkPluginDownloader::downloadPluginFileList(QString url) {
 
+	if (!progressDialog)
+		createProgressDialog();
+
 	filesToDownload = QStringList();
 	requestType = request_plugin_files_list;
 	downloadAborted = false;
@@ -1519,6 +1519,9 @@ void DkPluginDownloader::downloadPluginFileList(QString url) {
 }
 
 void DkPluginDownloader::downloadPlugin(const QModelIndex &index, QString url, QString pluginName) {
+
+	if (!progressDialog)
+		createProgressDialog();
 
 	downloadPluginFileList(url);
 	if (downloadAborted) return;
@@ -1557,6 +1560,9 @@ void DkPluginDownloader::downloadSingleFile(QString url) {
 
 void DkPluginDownloader::updatePlugins(QList<QString> urls) {
 
+	if (!progressDialog)
+		createProgressDialog();
+
 	for (int i = 0; i < urls.size(); i++) {
 
 		downloadPluginFileList(urls.at(i));
@@ -1583,6 +1589,9 @@ void DkPluginDownloader::updatePlugins(QList<QString> urls) {
 }
 
 void DkPluginDownloader::replyFinished(QNetworkReply* reply) {
+
+	if (!reply)
+		return;
 
 	if(!downloadAborted) {
 		if (reply->error() != QNetworkReply::NoError) {
@@ -1613,6 +1622,9 @@ void DkPluginDownloader::replyFinished(QNetworkReply* reply) {
 
 void DkPluginDownloader::parseXml(QNetworkReply* reply) {
 	
+	if (!reply)
+		return;
+
 	qDebug() << "xml with plugin data downloaded, starting parsing";
 
 	QXmlStreamReader xml(reply->readAll());
@@ -1653,6 +1665,9 @@ void DkPluginDownloader::parseXml(QNetworkReply* reply) {
 
 void DkPluginDownloader::replyToImg(QNetworkReply* reply) {
 
+	if (!reply)
+		return;
+
     QByteArray imgData = reply->readAll();
 	QImage downloadedImg;
 	downloadedImg.loadFromData(imgData);
@@ -1660,6 +1675,9 @@ void DkPluginDownloader::replyToImg(QNetworkReply* reply) {
 }
 
 void DkPluginDownloader::startPluginDownload(QNetworkReply* reply) {
+
+	if (!reply)
+		return;
 
 	QDir pluginsDir = DkSettings::global.pluginsDir;
 
@@ -1727,6 +1745,9 @@ QList<XmlPluginData> DkPluginDownloader::getXmlPluginData() {
 
 void DkPluginDownloader::cancelUpdate()  {
 
+	if (!reply)
+		return;
+
 	reply->abort();
 	downloadAborted = true;
 	emit pluginFilesDownloadingFinished();
@@ -1734,9 +1755,19 @@ void DkPluginDownloader::cancelUpdate()  {
 
 void DkPluginDownloader::updateDownloadProgress(qint64 received, qint64 total) { 
 
+	if (!progressDialog)
+		createProgressDialog();
+
 	progressDialog->setMaximum((int)total);
 	progressDialog->setValue((int)received);
 }
 
+void DkPluginDownloader::createProgressDialog() {
+	
+	progressDialog = new QProgressDialog("", tr("Cancel Update"), 0, 100, QApplication::activeWindow());
+	connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelUpdate()));
+	connect(this, SIGNAL(pluginDownloaded(const QModelIndex &)), progressDialog, SLOT(hide()));
+	connect(this, SIGNAL(allPluginsUpdated(bool)), progressDialog, SLOT(hide()));
+}
 };
 

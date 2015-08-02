@@ -19,11 +19,19 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
 if (MSVC11)
 	# use precompiled code if msvc 11 is found
 	if(CMAKE_CL_64)
-		SET(EXIV_SEARCH_PATH "../exiv2-0.24/precompiled-nomacs/exiv2lib/x64/" )
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/exiv2lib/x64/" )
 	else()
-		SET(EXIV_SEARCH_PATH "../exiv2-0.24/precompiled-nomacs/exiv2lib/Win32/" )
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2012-precompiled/exiv2lib/Win32/" )
 	endif()
 
+elseif (MSVC14)
+	# use precompiled code if msvc 14 is found
+	if(CMAKE_CL_64)
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/x64/" )
+	else()
+		SET(EXIV_SEARCH_PATH "../exiv2-0.25/msvc2015-precompiled/Win32/" )
+	endif()
+	
 else ()
 	# search for exiv2
 	if(CMAKE_CL_64)
@@ -34,33 +42,33 @@ else ()
 endif ()
 
 
-find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/exiv2.lib"
-									"ReleaseDLL/exiv2.dll"
-									"DebugDLL/exiv2d.lib"
-									"DebugDLL/exiv2d.dll"
+find_path(EXIV2_BUILD_PATH NAMES "ReleaseDLL/libexiv2.lib"
+									"ReleaseDLL/libexiv2.dll"
+									"DebugDLL/libexiv2d.lib"
+									"DebugDLL/libexiv2d.dll"
 				PATHS ${EXIV_SEARCH_PATH}
 				DOC "Path to the exiv2 build directory" NO_DEFAULT_PATH)
 				
 find_path(EXIV2_INCLUDE_DIRS "exiv2/exiv2.hpp" 
-				PATHS "../exiv2-0.24/msvc2012-nomacs/include" 
+				PATHS "../exiv2-0.25/include" 
 				DOC "Path to exiv2/exiv2.hpp" NO_DEFAULT_PATH)
 MARK_AS_ADVANCED(EXIV2_INCLUDE_DIRS)
 
 # copy files to the build directory
-if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
-	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll AND 
-	EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.lib AND 
-	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.lib)
+if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll AND
+	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll AND 
+	EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib AND 
+	EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib)
 	if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll AND 
 		EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/libexpat.dll)
 		if(EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll AND
-			EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/zlib1d.dll )
+			EXISTS ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll )
 	
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/exiv2d.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
+			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexiv2.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
+			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/libexiv2.lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs)
 
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/libexpat.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
@@ -68,9 +76,9 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)
 			file(COPY ${EXIV2_BUILD_PATH}/ReleaseDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ReallyRelease)
-			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/zlib1d.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
+			file(COPY ${EXIV2_BUILD_PATH}/DebugDLL/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Debug)
 			
-			set(EXIV2_LIBRARIES optimized exiv2.lib debug exiv2d.lib)
+			set(EXIV2_LIBRARIES optimized libexiv2.lib debug libexiv2.lib)
 			set(EXIV2_LIBRARY_DIRS "")
 			set(EXIV2_FOUND true)
 		else()
@@ -80,7 +88,7 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 		message(WARNING "expat build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexpat.dll and DebugDLL/libexpat.dll")
 	endif()
 else()
-	message(WARNING "exiv build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/exiv2.dll, ReleaseDLL/exiv2.lib, DebugDLL/exiv2d.dll and DebugDLL/exiv2d.lib")
+	message(WARNING "exiv build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/libexiv2.dll, ReleaseDLL/libexiv2.lib, DebugDLL/libexiv2d.dll and DebugDLL/libexiv2d.lib")
 endif()	
 
 # search for opencv

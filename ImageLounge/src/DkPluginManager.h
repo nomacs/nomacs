@@ -383,7 +383,8 @@ signals:
 	void allPluginsUpdated(bool finishedSuccessfully);
 	void pluginFilesDownloadingFinished();
 	void reloadPlugins();
-protected slots:
+
+	protected slots:
 	void replyFinished(QNetworkReply*);
 	void updateDownloadProgress(qint64 received, qint64 total);
 	void cancelUpdate();
@@ -405,6 +406,7 @@ private:
 	void parseFileList(QNetworkReply* reply);
 	void downloadSingleFile(QString url);
 	void downloadPluginFileList(QString url);
+	void createProgressDialog();
 };
 
 
