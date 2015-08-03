@@ -42,9 +42,8 @@ set_target_properties(${DLL_NAME} PROPERTIES LINK_FLAGS_DEBUG "${CMAKE_EXE_LINKE
 set_target_properties(${DLL_NAME} PROPERTIES DEBUG_OUTPUT_NAME ${DLL_NAME}d)
 set_target_properties(${DLL_NAME} PROPERTIES RELEASE_OUTPUT_NAME ${DLL_NAME})
 
-
 # copy required dlls to the directories
-set(OpenCV_REQUIRED_MODULES core imgproc)
+set(OpenCV_REQUIRED_MODULES core imgproc FORCE)
 foreach(opencvlib ${OpenCV_REQUIRED_MODULES})
 	file(GLOB dllpath ${OpenCV_DIR}/bin/Release/opencv_${opencvlib}*.dll)
 	file(COPY ${dllpath} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Release)

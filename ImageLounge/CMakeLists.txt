@@ -37,7 +37,7 @@ option(ENABLE_QT5 "Compile with Qt5 (Qt5)" ON)
 option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 
 if(MSVC)
-  option(ENABLE_UPNP "Compile with UPNP" ON)
+  option(ENABLE_UPNP "Compile with UPNP" OFF)
   option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" ON)
 else()
   option(ENABLE_UPNP "Compile with UPNP" OFF)
