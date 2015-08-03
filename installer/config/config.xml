@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>nomacs | Image Lounge</Name>
+    <Version>3.0.0</Version>
+    <Title>nomacs |</Title>
+    <Publisher>nomacs</Publisher>
+    <StartMenuDir>nomacs | Image Lounge</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/nomacs</TargetDir>
+	<InstallerWindowIcon>logo.png</InstallerWindowIcon>
+	<InstallerApplicationIcon>nomacs.ico</InstallerApplicationIcon>
+</Installer>
