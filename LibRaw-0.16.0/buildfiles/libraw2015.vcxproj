@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,26 +21,27 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{767E57ED-6D37-32A1-B51E-C39E7C1CD02A}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -63,26 +64,26 @@
     <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\build2012\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\build2015\$(Platform)\$(Configuration)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -90,13 +91,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>..;d:\Qt\4.7.3\mkspecs\win32-msvc2008;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -MP %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerListingLocation>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
-      <ObjectFileName>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</ObjectFileName>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WINDOWS_MEAN_AND_LEAN;_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;LIBRAW_BUILDLIB;_DEBUG;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
@@ -109,7 +110,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration />
-      <OutputFile>$(SolutionDir)\build2012\bin\$(Platform)\$(Configuration)\$(ProjectName).dll</OutputFile>
+      <OutputFile>$(SolutionDir)\build2015\bin\$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile />
       <SubSystem>NotSet</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -127,13 +128,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>..;d:\Qt\4.7.3\mkspecs\win32-msvc2008;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -MP %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerListingLocation>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
-      <ObjectFileName>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</ObjectFileName>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WINDOWS_MEAN_AND_LEAN;_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;LIBRAW_BUILDLIB;_DEBUG;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
@@ -147,7 +148,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <OutputFile>$(SolutionDir)\build2012\bin\$(Platform)\$(Configuration)\$(ProjectName).dll</OutputFile>
+      <OutputFile>$(SolutionDir)\build2015\bin\$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
       <SubSystem>NotSet</SubSystem>
@@ -166,13 +167,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>..;d:\Qt\4.7.3\mkspecs\win32-msvc2008;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -MP %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerListingLocation>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat />
       <ExceptionHandling>Sync</ExceptionHandling>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
-      <ObjectFileName>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>WINDOWS_MEAN_AND_LEAN;QT_NO_DEBUG;NDEBUG;_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;LIBRAW_BUILDLIB;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
@@ -185,7 +186,7 @@
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration />
-      <OutputFile>$(SolutionDir)\build2012\bin\$(Platform)\$(Configuration)\$(ProjectName).dll</OutputFile>
+      <OutputFile>$(SolutionDir)\build2015\bin\$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile />
       <SubSystem>NotSet</SubSystem>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -203,14 +204,14 @@
     <ClCompile>
       <AdditionalIncludeDirectories>..;d:\Qt\4.7.3\mkspecs\win32-msvc2008;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -MP %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerListingLocation>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
+      <AssemblerListingLocation>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
-      <ObjectFileName>$(SolutionDir)\build2012\obj\$(Platform)\$(Configuration)\</ObjectFileName>
+      <ObjectFileName>$(SolutionDir)\build2015\obj\$(Platform)\$(Configuration)\</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>WINDOWS_MEAN_AND_LEAN;QT_NO_DEBUG;NDEBUG;_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;LIBRAW_BUILDLIB;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>.\</ProgramDataBaseFileName>
@@ -224,7 +225,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
-      <OutputFile>$(SolutionDir)\build2012\bin\$(Platform)\$(Configuration)\$(ProjectName).dll</OutputFile>
+      <OutputFile>$(SolutionDir)\build2015\bin\$(Platform)\$(Configuration)\libraw.dll</OutputFile>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
       <SubSystem>NotSet</SubSystem>
