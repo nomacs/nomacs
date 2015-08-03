@@ -1,0 +1,22 @@
+# List of source files with translatable strings, generated with
+# $ grep -l '[N ]_(' src/*.cpp src/*.hpp | sort
+# Note: Please run 'make update-po' after changing this list
+
+src/actions.cpp
+src/canonmn.cpp
+src/crwimage.cpp
+src/datasets.cpp
+src/error.cpp
+src/exiv2.cpp
+src/fujimn.cpp
+src/minoltamn.cpp
+src/nikonmn.cpp
+src/olympusmn.cpp
+src/panasonicmn.cpp
+src/pentaxmn.cpp
+src/properties.cpp
+src/sigmamn.cpp
+src/sonymn.cpp
+src/tags.cpp
+src/tiffimage.cpp
+src/tiffvisitor.cpp

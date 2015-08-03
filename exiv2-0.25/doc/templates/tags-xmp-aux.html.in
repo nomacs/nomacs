@@ -1,0 +1,28 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>Exif Schema for Additional Exif Properties</h2>
+<p>The following table lists additional XMP properties that describe the equipment used to produce
+Exif data.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.aux.&lt;Property&gt;</code></b>
+  <li>The schema namespace URI is <b><code>http://ns.adobe.com/exif/1.0/aux/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>aux</code></b></li>
+ </ul>
+Reference: <a href="http://www.adobe.com/devnet/xmp.html" title="XMP specification">XMP Specification and Documentation</a>
+</p>
+<p>Click on a column header to sort the table.</p>
+
+__xmp_aux__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+organize uses the Boost library (http://www.boost.org).
+Configuration settings for Boost are in the file boost.mk
+in this directory and should be changed as required.

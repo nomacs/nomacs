@@ -1,0 +1,26 @@
+__doctype__
+<html>
+__header2__
+<body>
+
+<div id="content">
+__index1__
+__index2__
+
+<h2>digiKam Photo Management Schema</h2>
+<p>This schema specifies XMP properties used by digiKam.
+ <ul>
+  <li>Exiv2 keys are <b><code>Xmp.digiKam.&lt;Property&gt;</code></b>
+  <li>The schema namespace URI is <b><code>http://www.digikam.org/ns/1.0/</code></b></li>
+  <li>The preferred schema namespace prefix is <b><code>digiKam</code></b></li>
+ </ul>
+</p>
+<p>Click on a column header to sort the table.</p>
+
+__xmp_digiKam__
+
+</div>
+<!-- closes content -->
+
+</body>
+</html>
