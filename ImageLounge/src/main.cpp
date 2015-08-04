@@ -54,7 +54,6 @@
 
 #include "DkNoMacs.h"
 #include "DkSettings.h"
-//#include "DkTimer.h"
 
 #include <iostream>
 #include <cassert>
@@ -174,8 +173,6 @@ int main(int argc, char *argv[]) {
 		nmc::DkSettings::display.iconColor = QColor(136, 0, 125);
 		nmc::DkSettings::app.privateMode = true;
 	}
-
-	//nmc::DkTimer dt;
 
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());

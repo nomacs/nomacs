@@ -1082,10 +1082,15 @@ void DkMetaDataT::setRating(int r) {
 		if (pos2 != xmpData.end()) xmpData.erase(pos2);
 	}
 
-	exifImg->setExifData(exifData);
-	exifImg->setXmpData(xmpData);
+	try {
+		exifImg->setExifData(exifData);
+		exifImg->setXmpData(xmpData);
 
-	exifState = dirty;
+		exifState = dirty;
+	}
+	catch (...) {
+		qDebug() << "[WARNING] I could not set the exif data for this image format...";
+	}
 }
 
 bool DkMetaDataT::updateImageMetaData(const QImage& img) {
