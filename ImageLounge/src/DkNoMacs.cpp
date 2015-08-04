@@ -192,11 +192,11 @@ void DkNoMacs::init() {
 
 	loadStyleSheet();
 
-	QIcon dirIcon = QIcon(iconPath);
+	QIcon nmcIcon = QIcon(iconPath);
 	setObjectName("DkNoMacs");
 	
-	if (!dirIcon.isNull())
-		setWindowIcon(dirIcon);
+	if (!nmcIcon.isNull())
+		setWindowIcon(nmcIcon);
 
 	appManager = new DkAppManager(this);
 	connect(appManager, SIGNAL(openFileSignal(QAction*)), this, SLOT(openFileWith(QAction*)));
