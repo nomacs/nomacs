@@ -157,14 +157,21 @@ void DkSettings::initFileFilters() {
 	else								app_p.saveFilters.append("WebP (*.webp)");
 #endif
 
+#ifdef Q_OS_WIN
+	if (qtFormats.contains("ico"))		app_p.saveFilters.append("Icon Files (*.ico)");
+#endif
+
 	// formats we can load
 	app_p.openFilters += app_p.saveFilters;
 	if (qtFormats.contains("gif"))		app_p.openFilters.append("Graphic Interchange Format (*.gif)");
 	if (qtFormats.contains("pbm"))		app_p.openFilters.append("Portable Bitmap (*.pbm)");
 	if (qtFormats.contains("pgm"))		app_p.openFilters.append("Portable Graymap (*.pgm)");
-	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
 	if (qtFormats.contains("tga"))		app_p.openFilters.append("Truvision Graphics Adapter (*.tga)");
 	if (qtFormats.contains("mng"))		app_p.openFilters.append("Multi-Image Network Graphics (*.mng)");
+
+#ifndef Q_OS_WIN
+	if (qtFormats.contains("ico"))		app_p.openFilters.append("Icon Files (*.ico)");
+#endif
 
 #ifdef WITH_LIBRAW
 	// raw format

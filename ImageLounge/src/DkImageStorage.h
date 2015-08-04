@@ -81,6 +81,10 @@ public:
 #ifdef WIN32
 	static QImage fromWinHBITMAP(HDC hdc, HBITMAP bitmap, int w, int h);
 	static QPixmap fromWinHICON(HICON icon);
+
+	static HBITMAP createIconMask(const QBitmap& bitmap);
+	static HBITMAP toWinHBITMAP(const QPixmap& pm);
+	static HICON toWinHICON(const QPixmap& pm);
 #endif
 
 #ifdef WITH_OPENCV

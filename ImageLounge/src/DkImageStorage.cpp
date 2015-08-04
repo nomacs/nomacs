@@ -34,6 +34,7 @@
 #include <QThread>
 #include <QPixmap>
 #include <QPainter>
+#include <QBitmap>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
@@ -152,6 +153,94 @@ QPixmap DkImage::fromWinHICON(HICON icon) {
 	DeleteDC(hdc);
 	return QPixmap::fromImage(image);
 }
+
+HBITMAP DkImage::toWinHBITMAP(const QPixmap& pm) {
+	
+	if (pm.isNull())
+		return 0;
+
+	HBITMAP bitmap = 0;
+
+	int w = pm.width();
+	int h = pm.height();
+
+	HDC display_dc = GetDC(0);
+
+	// Define the header
+	BITMAPINFO bmi;
+	memset(&bmi, 0, sizeof(bmi));
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = w;
+	bmi.bmiHeader.biHeight = -h;
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = 32;
+	bmi.bmiHeader.biCompression = BI_RGB;
+	bmi.bmiHeader.biSizeImage = w * h * 4;
+
+	// Create the pixmap
+	uchar *pixels = 0;
+	bitmap = CreateDIBSection(display_dc, &bmi, DIB_RGB_COLORS, (void **)&pixels, 0, 0);
+	ReleaseDC(0, display_dc);
+	if (!bitmap) {
+		qErrnoWarning("QPixmap::toWinHBITMAP(), failed to create dibsection");
+		return 0;
+	}
+	if (!pixels) {
+		qErrnoWarning("QPixmap::toWinHBITMAP(), did not allocate pixel data");
+		return 0;
+	}
+
+	// Copy over the data
+	const QImage image = pm.toImage().convertToFormat(QImage::Format_ARGB32);
+	
+	int bytes_per_line = w * 4;
+	for (int y = 0; y<h; ++y)
+		memcpy(pixels + y * bytes_per_line, image.scanLine(y), bytes_per_line);
+
+	return bitmap;
+}
+
+HBITMAP DkImage::createIconMask(const QBitmap& bitmap) {
+	
+	QImage bm = bitmap.toImage().convertToFormat(QImage::Format_Mono);
+	int w = bm.width();
+	int h = bm.height();
+	int bpl = ((w + 15) / 16) * 2;                        // bpl, 16 bit alignment
+	uchar *bits = new uchar[bpl*h];
+	bm.invertPixels();
+	for (int y = 0; y<h; y++)
+		memcpy(bits + y*bpl, bm.scanLine(y), bpl);
+	HBITMAP hbm = CreateBitmap(w, h, 1, 1, bits);
+	delete[] bits;
+	
+	return hbm;
+}
+
+HICON DkImage::toWinHICON(const QPixmap& pm) {
+	
+	QBitmap maskBitmap = pm.mask();
+	
+	if (maskBitmap.isNull()) {
+		maskBitmap = QBitmap(pm.size());
+		maskBitmap.fill(Qt::color1);
+	}
+
+	ICONINFO ii;
+	ii.fIcon = true;
+	ii.hbmMask = createIconMask(maskBitmap);
+	ii.hbmColor = toWinHBITMAP(pm);
+	ii.xHotspot = 0;
+	ii.yHotspot = 0;
+
+	HICON hIcon = CreateIconIndirect(&ii);
+
+	DeleteObject(ii.hbmColor);
+	DeleteObject(ii.hbmMask);
+
+	return hIcon;
+}
+
+
 #endif
 
 /**

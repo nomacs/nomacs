@@ -43,6 +43,7 @@
 #include <QNetworkReply>
 #include <QBuffer>
 #include <QNetworkProxyFactory>
+#include <QPixmap>
 
 #include <qmath.h>
 
@@ -120,6 +121,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, bool loadMetaData, bo
  * @return bool true if the image could be loaded.
  **/ 
 bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast) {
+
 
 	bool imgLoaded = false;
 	
@@ -254,7 +256,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		qDebug() << "metaData is NULL!";
 	}
 
-	qDebug() << qImg.text();
+	//qDebug() << qImg.text();
 
 	return imgLoaded;
 }
@@ -1178,13 +1180,18 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 
 	qDebug() << "extension: " << fileInfo.suffix();
 
+
+	if (fileInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
+		saved = saveWindowsIcon(img, ba);
+	}
 #if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
 
-	if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
+	else if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(img, ba, compression);
 	}
-	else {
 #endif
+	else {
+
 		bool hasAlpha = DkImage::alphaChannelUsed(img);
 		QImage sImg = img;
 
@@ -1203,9 +1210,7 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		imgWriter->setQuality(compression);
 		saved = imgWriter->write(sImg);
 		delete imgWriter;
-#if QT_VERSION < 0x050000
 	}
-#endif
 
 	if (saved && metaData) {
 		
@@ -1432,35 +1437,6 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 		sImg = img.convertToFormat(QImage::Format_RGB888);	// for now
 	else 
 		sImg = img;
-	//char* buffer;
-	//size_t bufSize;
-
-	//if (compression < 0) {
-
-	//	if (!img.hasAlphaChannel())
-	//		qDebug() << "no alpha...";
-
-
-	//	if (img.hasAlphaChannel())
-	//		bufSize = WebPEncodeLosslessBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
-	//	// // without alpha there is something wrong...
-	//	else
-	//		bufSize = WebPEncodeLosslessRGB(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), reinterpret_cast<uint8_t**>(&buffer));
-	//}
-	//else {
-	//	
-	//	if (img.hasAlphaChannel())
-	//		bufSize = WebPEncodeBGRA(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
-	//	else
-	//		bufSize = WebPEncodeRGB(reinterpret_cast<const uint8_t*>(img.constBits()), img.width(), img.height(), img.bytesPerLine(), compression, reinterpret_cast<uint8_t**>(&buffer));
-	//}
-
-	//if (!bufSize) return false;
-
-	//QFile file(fileInfo.absoluteFilePath());
-	//file.open(QIODevice::WriteOnly);
-	//file.write(buffer, bufSize);
-	//free(buffer);
 
 	WebPConfig config;
 	bool lossless = false;
@@ -1473,7 +1449,9 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 	config.method = speed;
 
 	WebPPicture webImg;
-	if (!WebPPictureInit(&webImg)) return false;
+	if (!WebPPictureInit(&webImg)) 
+		return false;
+	
 	webImg.width = sImg.width();
 	webImg.height = sImg.height();
 	webImg.use_argb = true;		// we never use YUV
@@ -1506,6 +1484,176 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 
 	return true;
 }
+#endif
+
+#ifdef WIN32
+bool DkBasicLoader::saveWindowsIcon(const QFileInfo& fileInfo, const QImage& img) const {
+
+	QSharedPointer<QByteArray> ba;
+
+	if (saveWindowsIcon(img, ba) && ba && !ba->isEmpty()) {
+
+		writeBufferToFile(fileInfo, ba);
+		return true;
+	}
+
+	return false;
+}
+
+//#include <olectl.h>
+//#pragma comment(lib, "oleaut32.lib")
+
+struct ICONDIRENTRY
+{
+	UCHAR nWidth;
+	UCHAR nHeight;
+	UCHAR nNumColorsInPalette; // 0 if no palette
+	UCHAR nReserved; // should be 0
+	WORD nNumColorPlanes; // 0 or 1
+	WORD nBitsPerPixel;
+	ULONG nDataLength; // length in bytes
+	ULONG nOffset; // offset of BMP or PNG data from beginning of file
+};
+
+bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const {
+	
+	if (!ba)
+		ba = QSharedPointer<QByteArray>(new QByteArray());
+
+	HICON hIcon = DkImage::toWinHICON(QPixmap::fromImage(img));
+	int nColorBits = 32;
+
+	QBuffer buffer(ba.data());
+	buffer.open(QIODevice::WriteOnly);
+
+	if (!hIcon)
+		return false;
+
+	HDC screenDevice = GetDC(0);
+
+	// Write header:
+	UCHAR icoHeader[6] = { 0, 0, 1, 0, 1, 0 }; // ICO file with 1 image
+	buffer.write((const char*)(&icoHeader), sizeof(icoHeader));
+
+	// Get information about icon:
+	ICONINFO iconInfo;
+	GetIconInfo(hIcon, &iconInfo);
+	HGDIOBJ handle1(iconInfo.hbmColor), handle2(iconInfo.hbmMask); // free bitmaps when function ends
+	BITMAPINFO bmInfo = { 0 };
+	bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmInfo.bmiHeader.biBitCount = 0;    // don't get the color table     
+	if (!GetDIBits(screenDevice, iconInfo.hbmColor, 0, 0, NULL, &bmInfo, DIB_RGB_COLORS))
+	{
+		return false;
+	}
+
+	// Allocate size of bitmap info header plus space for color table:
+	int nBmInfoSize = sizeof(BITMAPINFOHEADER);
+	if (nColorBits < 24)
+	{
+		nBmInfoSize += sizeof(RGBQUAD) * (int)(1 << nColorBits);
+	}
+
+	QSharedPointer<UCHAR> bitmapInfo(new UCHAR[nBmInfoSize]);
+	BITMAPINFO* pBmInfo = (BITMAPINFO*)bitmapInfo.data();
+	memcpy(pBmInfo, &bmInfo, sizeof(BITMAPINFOHEADER));
+
+	// Get bitmap data:
+	QSharedPointer<UCHAR> bits(new UCHAR[bmInfo.bmiHeader.biSizeImage]);
+	pBmInfo->bmiHeader.biBitCount = nColorBits;
+	pBmInfo->bmiHeader.biCompression = BI_RGB;
+	if (!GetDIBits(screenDevice, iconInfo.hbmColor, 0, bmInfo.bmiHeader.biHeight, bits.data(), pBmInfo, DIB_RGB_COLORS))
+	{
+		return false;
+	}
+
+	// Get mask data:
+	BITMAPINFO maskInfo = { 0 };
+	maskInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	maskInfo.bmiHeader.biBitCount = 0;  // don't get the color table     
+	if (!GetDIBits(screenDevice, iconInfo.hbmMask, 0, 0, NULL, &maskInfo, DIB_RGB_COLORS))
+	{
+		return false;
+	}
+	
+	QSharedPointer<UCHAR> maskBits(new UCHAR[maskInfo.bmiHeader.biSizeImage]);
+	QSharedPointer<UCHAR> maskInfoBytes(new UCHAR[sizeof(BITMAPINFO) + 2 * sizeof(RGBQUAD)]);
+	BITMAPINFO* pMaskInfo = (BITMAPINFO*)maskInfoBytes.data();
+	memcpy(pMaskInfo, &maskInfo, sizeof(maskInfo));
+	if (!GetDIBits(screenDevice, iconInfo.hbmMask, 0, maskInfo.bmiHeader.biHeight, maskBits.data(), pMaskInfo, DIB_RGB_COLORS))
+	{
+		return false;
+	}
+
+	// Write directory entry:
+	ICONDIRENTRY dir;
+	dir.nWidth = (UCHAR)pBmInfo->bmiHeader.biWidth;
+	dir.nHeight = (UCHAR)pBmInfo->bmiHeader.biHeight;
+	dir.nNumColorsInPalette = (nColorBits == 4 ? 16 : 0);
+	dir.nReserved = 0;
+	dir.nNumColorPlanes = 0;
+	dir.nBitsPerPixel = pBmInfo->bmiHeader.biBitCount;
+	dir.nDataLength = pBmInfo->bmiHeader.biSizeImage + pMaskInfo->bmiHeader.biSizeImage + nBmInfoSize;
+	dir.nOffset = sizeof(dir) + sizeof(icoHeader);
+	buffer.write((const char*)&dir, sizeof(dir));
+
+	// Write DIB header (including color table):
+	int nBitsSize = pBmInfo->bmiHeader.biSizeImage;
+	pBmInfo->bmiHeader.biHeight *= 2; // because the header is for both image and mask
+	pBmInfo->bmiHeader.biCompression = 0;
+	pBmInfo->bmiHeader.biSizeImage += pMaskInfo->bmiHeader.biSizeImage; // because the header is for both image and mask
+	buffer.write((const char*)&pBmInfo->bmiHeader, nBmInfoSize);
+
+	// Write image data:
+	buffer.write((const char*)bits.data(), nBitsSize);
+
+	// Write mask data:
+	buffer.write((const char*)maskBits.data(), pMaskInfo->bmiHeader.biSizeImage);
+
+	buffer.close();
+
+	DeleteObject(handle1);
+
+	return true;
+
+
+	// writes 16bit icon files
+	//// Create the IPicture intrface
+	//PICTDESC desc = { sizeof(PICTDESC) };
+	//desc.picType = PICTYPE_ICON;
+	//desc.icon.hicon = hIcon;
+	//IPicture* pPicture = 0;
+	//HRESULT hr = OleCreatePictureIndirect(&desc, IID_IPicture, FALSE, (void**)&pPicture);
+	//
+	//if (FAILED(hr)) 
+	//	return false;
+
+	//// Create a stream and save the image
+	//IStream* pStream = 0;
+	//CreateStreamOnHGlobal(0, TRUE, &pStream);
+	//LONG cbSize = 0;
+	//hr = pPicture->SaveAsFile(pStream, TRUE, &cbSize);
+
+	//if (FAILED(hr))
+	//	return false;
+
+	//LARGE_INTEGER move;
+	//memset(&move, 0, sizeof(LARGE_INTEGER));
+	//pStream->Seek(move, STREAM_SEEK_SET, NULL);
+	//
+	//ba->resize(cbSize);
+
+	//ULONG bytesRead = 0;
+	//hr = pStream->Read(ba->data(), cbSize, &bytesRead);
+
+	//qDebug() << "I read back: " << bytesRead << " bytes...";
+
+	//if (FAILED(hr))
+	//	return false;
+
+	//return true;
+}
+
 #endif
 
 // FileDownloader --------------------------------------------------------------------

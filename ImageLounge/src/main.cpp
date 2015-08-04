@@ -86,6 +86,8 @@ void createPluginsPath() {
 	
 	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
 
+	QCoreApplication::addLibraryPath("./imageformats");
+
 #endif // WITH_PLUGINS
 
 }

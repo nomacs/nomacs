@@ -133,7 +133,7 @@ public:
 
 	/**
 	 * Convenience function.
-	 **/ 
+	 **/
 	bool loadGeneral(const QFileInfo& file, bool loadMetaData = false, bool fast = false);
 
 	/**
@@ -141,14 +141,14 @@ public:
 	 * @param file an image file
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
-	 **/ 
+	 **/
 	bool loadGeneral(const QFileInfo& file, const QSharedPointer<QByteArray> ba, bool loadMetaData = false, bool fast = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
 	 * @param skipIdx number of pages to skip
 	 * @return bool true if we could load the page requested
-	 **/ 
+	 **/
 	bool loadPage(int skipIdx = 0);
 	bool loadPageAt(int pageIdx = 0);
 
@@ -176,7 +176,7 @@ public:
 	 * Sets a new image (if edited outside the basicLoader class)
 	 * @param img the new image
 	 * @param file assigns the current file name
-	 **/ 
+	 **/
 	void setImage(QImage img, QFileInfo file) {
 
 		this->file = file;
@@ -202,7 +202,7 @@ public:
 	/**
 	 * Returns the 8-bit image, which is rendered.
 	 * @return QImage an 8bit image
-	 **/ 
+	 **/
 	QImage image() {
 		return qImg;
 	};
@@ -218,7 +218,7 @@ public:
 	/**
 	 * Returns the current image size.
 	 * @return QSize the image size.
-	 **/ 
+	 **/
 	QSize size() {
 		return qImg.size();
 	};
@@ -226,7 +226,7 @@ public:
 	/**
 	 * Returns true if an image is currently loaded.
 	 * @return bool true if an image is loaded.
-	 **/ 
+	 **/
 	bool hasImage() {
 		return !qImg.isNull();
 	};
@@ -245,9 +245,9 @@ public:
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;
 #else
-	bool loadOpenCVVecFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>(), QSize = QSize()) {return false;};
-	int mergeVecFiles(const QVector<QFileInfo>&, QFileInfo&) const {return 0;};
-	bool readHeader(const unsigned char**, int&, int&) const {return false;};
+	bool loadOpenCVVecFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>(), QSize = QSize()) { return false; };
+	int mergeVecFiles(const QVector<QFileInfo>&, QFileInfo&) const { return 0; };
+	bool readHeader(const unsigned char**, int&, int&) const { return false; };
 	void getPatchSizeFromFileName(const QString&, int&, int&) const {};
 
 #endif
@@ -258,9 +258,17 @@ public:
 	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression);
 	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4);
 #else
-	bool loadWebPFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>()) {return false;};	// not supported if webP was not linked
-	bool saveWebPFile(const QFileInfo&, const QImage, int) {return false;};
-	bool saveWebPFile(const QImage, QSharedPointer<QByteArray>&, int, int = 4) {return false;};
+	bool loadWebPFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>()) { return false; };	// not supported if webP was not linked
+	bool saveWebPFile(const QFileInfo&, const QImage, int) { return false; };
+	bool saveWebPFile(const QImage, QSharedPointer<QByteArray>&, int, int = 4) { return false; };
+#endif
+
+#ifdef WIN32
+	bool saveWindowsIcon(const QFileInfo& fileInfo, const QImage& img) const;
+	bool saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const;
+#else
+	bool saveWebPFile(const QFileInfo& fileInfo, const QImage& img) const { return false; };
+	bool saveWebPFile(const QImage& img, QSharedPointer<QByteArray>& ba) const { return false; };
 #endif
 
 signals:
