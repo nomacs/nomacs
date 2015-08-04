@@ -154,6 +154,9 @@ QPixmap DkImage::fromWinHICON(HICON icon) {
 	return QPixmap::fromImage(image);
 }
 
+// this function is copied from Qt 4.8.5 qpixmap_win.cpp since Qt removed the conversion from
+// the QPixmap class in Qt5 and we are not interested in more Qt5/4 conversions. In addition,
+// we would need another module int Qt 5
 HBITMAP DkImage::toWinHBITMAP(const QPixmap& pm) {
 	
 	if (pm.isNull())
@@ -200,6 +203,9 @@ HBITMAP DkImage::toWinHBITMAP(const QPixmap& pm) {
 	return bitmap;
 }
 
+// this function is copied from Qt 4.8.5 qpixmap_win.cpp since Qt removed the conversion from
+// the QPixmap class in Qt5 and we are not interested in more Qt5/4 conversions. In addition,
+// we would need another module int Qt 5
 HBITMAP DkImage::createIconMask(const QBitmap& bitmap) {
 	
 	QImage bm = bitmap.toImage().convertToFormat(QImage::Format_Mono);
@@ -216,6 +222,9 @@ HBITMAP DkImage::createIconMask(const QBitmap& bitmap) {
 	return hbm;
 }
 
+// this function is copied from Qt 4.8.5 qpixmap_win.cpp since Qt removed the conversion from
+// the QPixmap class in Qt5 and we are not interested in more Qt5/4 conversions. In addition,
+// we would need another module int Qt 5
 HICON DkImage::toWinHICON(const QPixmap& pm) {
 	
 	QBitmap maskBitmap = pm.mask();
@@ -239,7 +248,6 @@ HICON DkImage::toWinHICON(const QPixmap& pm) {
 
 	return hIcon;
 }
-
 
 #endif
 

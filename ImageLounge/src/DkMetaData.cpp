@@ -960,7 +960,7 @@ void DkMetaDataT::clearOrientation() {
 	if (exifState == not_loaded || exifState == no_data)
 		return;
 
-	setExifValue("Exif.Image.Orientation", "0");
+	setExifValue("Exif.Image.Orientation", "1");	// we wrote "0" here - that was against the standard!
 }
 
 void DkMetaDataT::setOrientation(int o) {
@@ -974,7 +974,7 @@ void DkMetaDataT::setOrientation(int o) {
 	if (o==-180) o=180;
 	if (o== 270) o=-90;
 
-	int orientation;
+	int orientation = 1;
 
 	Exiv2::ExifData& exifData = exifImg->exifData();
 	Exiv2::ExifKey key = Exiv2::ExifKey("Exif.Image.Orientation");

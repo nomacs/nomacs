@@ -144,6 +144,33 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	// identify raw images:
 	//newSuffix.contains(QRegExp("(nef|crw|cr2|arw|rw2|mrw|dng)", Qt::CaseInsensitive)))
 
+	int orientation = -1;
+
+	// this fixes an issue with the new jpg loader
+	// Qt considers an orientation of 0 as wrong and fails to load these jpgs
+	// however, the old nomacs wrote 0 if the orientation should be cleared
+	// so we simply adopt the memory here
+	if (loadMetaData && metaData) {
+
+		try {
+			metaData->readMetaData(fileInfo, ba);
+
+			if (!DkSettings::metaData.ignoreExifOrientation) {
+				orientation = metaData->getOrientation();
+				
+				if (orientation == 0) {
+					metaData->clearOrientation();
+					metaData->saveMetaData(ba);
+				}
+			}
+		}
+		catch (...) {}	// ignore if we cannot read the metadata
+	}
+	else if (!metaData) {
+		qDebug() << "metaData is NULL!";
+	}
+
+
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
 	QString suf = file.suffix().toLower();
 
@@ -241,15 +268,11 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	if (imgLoaded && loadMetaData && metaData) {
 		
 		try {
-			metaData->readMetaData(fileInfo, ba);
 			metaData->setQtValues(qImg);
 		
-			if (!DkSettings::metaData.ignoreExifOrientation) {
-				int orientation = metaData->getOrientation();
+			if (orientation != -1 && !metaData->isJpg() && !metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+				rotate(orientation);
 
-				if (!metaData->isJpg() && !metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
-					rotate(orientation);
-			}
 		} catch(...) {}	// ignore if we cannot read the metadata
 	}
 	else if (!metaData) {
@@ -1517,6 +1540,9 @@ struct ICONDIRENTRY
 
 bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const {
 	
+	// this code is an adopted version of:
+	// http://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
+
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
 
