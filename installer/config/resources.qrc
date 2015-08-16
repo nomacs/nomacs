@@ -1,6 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
-        <file>background.png</file>
         <file>logo.png</file>
         <file>nomacs.ico</file>
     </qresource>
