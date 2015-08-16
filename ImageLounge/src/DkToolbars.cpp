@@ -570,7 +570,7 @@ DkTransferToolBar::DkTransferToolBar(QWidget * parent)
 
 	historyCombo = new QComboBox(this);
 
-	QAction* delGradientAction = new QAction("Delete", historyCombo);
+	QAction* delGradientAction = new QAction(tr("Delete"), historyCombo);
 	connect(delGradientAction, SIGNAL(triggered()), this, SLOT(deleteGradient()));
 
 	historyCombo->addAction(delGradientAction);
