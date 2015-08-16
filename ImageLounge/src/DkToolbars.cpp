@@ -1017,7 +1017,7 @@ void DkCropToolBar::createLayout() {
 
 	angleBox = new QDoubleSpinBox(this);
 	angleBox->setObjectName("angleBox");
-	angleBox->setSuffix("°");
+	angleBox->setSuffix(dk_degree_str);
 	angleBox->setMinimum(-180);
 	angleBox->setMaximum(180);
 

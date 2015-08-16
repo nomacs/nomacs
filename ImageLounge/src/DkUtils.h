@@ -70,6 +70,9 @@
 #endif
 #endif
 
+// fixes Qt's damn no latin1 on tr() policy
+#define dk_degree_str QString::fromLatin1("°")
+
 // Qt defines
 class QComboBox;
 class QColor;

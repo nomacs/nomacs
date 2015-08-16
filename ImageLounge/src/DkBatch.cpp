@@ -1020,9 +1020,9 @@ void DkBatchTransformWidget::createLayout() {
 
 	rbRotate0 = new QRadioButton(tr("Do &Not Rotate"));
 	rbRotate0->setChecked(true);
-	rbRotateLeft = new QRadioButton(tr("9&0° Counter Clockwise"));
-	rbRotateRight = new QRadioButton(tr("&90° Clockwise"));
-	rbRotate180 = new QRadioButton(tr("&180°"));
+	rbRotateLeft = new QRadioButton(tr("9&0%1 Counter Clockwise").arg(dk_degree_str));
+	rbRotateRight = new QRadioButton(tr("&90%1 Clockwise").arg(dk_degree_str));
+	rbRotate180 = new QRadioButton(tr("&180%1").arg(dk_degree_str));
 
 	rotateGroup = new QButtonGroup(this);
 

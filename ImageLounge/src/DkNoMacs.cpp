@@ -993,20 +993,20 @@ void DkNoMacs::createActions() {
 
 	editActions.resize(menu_edit_end);
 
-	editActions[menu_edit_rotate_cw] = new QAction(editIcons[icon_edit_rotate_cw], tr("9&0° Clockwise"), this);
+	editActions[menu_edit_rotate_cw] = new QAction(editIcons[icon_edit_rotate_cw], tr("9&0%1 Clockwise").arg(dk_degree_str), this);
 	editActions[menu_edit_rotate_cw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_rotate_cw]->setShortcut(QKeySequence(shortcut_rotate_cw));
-	editActions[menu_edit_rotate_cw]->setStatusTip(tr("rotate the image 90° clockwise"));
+	editActions[menu_edit_rotate_cw]->setStatusTip(tr("rotate the image 90%1 clockwise").arg(dk_degree_str));
 	connect(editActions[menu_edit_rotate_cw], SIGNAL(triggered()), vp, SLOT(rotateCW()));
 
-	editActions[menu_edit_rotate_ccw] = new QAction(editIcons[icon_edit_rotate_ccw], tr("&90° Counter Clockwise"), this);
+	editActions[menu_edit_rotate_ccw] = new QAction(editIcons[icon_edit_rotate_ccw], tr("&90%1 Counter Clockwise").arg(dk_degree_str), this);
 	editActions[menu_edit_rotate_ccw]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_rotate_ccw]->setShortcut(QKeySequence(shortcut_rotate_ccw));
-	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90° counter clockwise"));
+	editActions[menu_edit_rotate_ccw]->setStatusTip(tr("rotate the image 90%1 counter clockwise").arg(dk_degree_str));
 	connect(editActions[menu_edit_rotate_ccw], SIGNAL(triggered()), vp, SLOT(rotateCCW()));
 
-	editActions[menu_edit_rotate_180] = new QAction(tr("1&80°"), this);
-	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180°"));
+	editActions[menu_edit_rotate_180] = new QAction(tr("1&80%1").arg(dk_degree_str), this);
+	editActions[menu_edit_rotate_180]->setStatusTip(tr("rotate the image by 180%1").arg(dk_degree_str));
 	connect(editActions[menu_edit_rotate_180], SIGNAL(triggered()), vp, SLOT(rotate180()));
 
 	editActions[menu_edit_copy] = new QAction(editIcons[icon_edit_copy], tr("&Copy"), this);

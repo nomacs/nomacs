@@ -1431,7 +1431,7 @@ QStringList DkMetaDataHelper::convertGpsCoordinates(const QString& coordString) 
 
 		if (i==0) {
 			valS.setNum((int)val1);
-			gpsInfo.append(valS + "°");
+			gpsInfo.append(valS + dk_degree_str);
 		}
 		if (i==1) {
 			if (val2 > 1)							

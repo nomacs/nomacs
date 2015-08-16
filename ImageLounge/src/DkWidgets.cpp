@@ -2097,11 +2097,11 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			QToolTip::showText(event->globalPos(),
 				QString::number(width) + " x " +
 				QString::number(height) + " px\n" +
-				QString::number(sAngle) + "°",
+				QString::number(sAngle) + dk_degree_str,
 				this);
 		}
 
-		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + "°");
+		emit statusInfoSignal(QString::number(width) + " x " + QString::number(height) + " px | " + QString::number(sAngle) + dk_degree_str);
 	}
 
 	//QWidget::mouseMoveEvent(event);
