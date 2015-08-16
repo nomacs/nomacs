@@ -1324,8 +1324,8 @@ void DkResizeDialog::createLayout() {
 
 	resUnitBox = new QComboBox();
 	QStringList resUnitList;
-	resUnitList.insert(res_ppi, "pixel/inch");
-	resUnitList.insert(res_ppc, "pixel/cm");
+	resUnitList.insert(res_ppi, tr("pixel/inch"));
+	resUnitList.insert(res_ppc, tr("pixel/cm"));
 	resUnitBox->addItems(resUnitList);
 	resUnitBox->setObjectName("resUnitBox");
 

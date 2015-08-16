@@ -1561,7 +1561,7 @@ void DkViewPort::mouseReleaseEvent(QMouseEvent *event) {
 	QPoint pos = mapToImage(event->pos());
 
 	if (imageInside() && gestureStarted) {
-			swipeAction(sa);
+		swipeAction(sa);
 	}
 
 	// needed for scientific projects...

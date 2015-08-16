@@ -531,7 +531,7 @@ void DkPluginTableWidget::manageParsedXmlData(int usage) {
 
 	if (usage == xml_usage_download) fillDownloadTable();
 	else if (usage == xml_usage_update) getListOfUpdates();
-	else showDownloaderMessage("Sorry, too many connections at once.", tr("Plugin manager"));
+	else showDownloaderMessage(tr("Sorry, too many connections at once."), tr("Plugin manager"));
 }
 
 void DkPluginTableWidget::getListOfUpdates() {
