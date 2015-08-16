@@ -73,6 +73,7 @@ if( EXISTS ${EXIV2_BUILD_PATH}/ReleaseDLL/exiv2.dll AND
 			set(EXIV2_LIBRARIES optimized exiv2.lib debug exiv2d.lib)
 			set(EXIV2_LIBRARY_DIRS "")
 			set(EXIV2_FOUND true)
+			add_definitions(-DEXV_UNICODE_PATH)
 		else()
 			message(WARNING "zlib build directory not found. Needs EXIV2_BUILD_PATH which contains ReleaseDLL/zlib1.dll and DebugDLL/zlib1d.dll")
 		endif()
