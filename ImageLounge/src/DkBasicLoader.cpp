@@ -187,9 +187,9 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		if (!ba || ba->isEmpty())
-			imgLoaded = qImg.load(file.absoluteFilePath());
+			imgLoaded = qImg.load(file.absoluteFilePath(), suf.toStdString().c_str());
 		else
-			imgLoaded = qImg.loadFromData(*ba.data());
+			imgLoaded = qImg.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
 
 		if (imgLoaded) loader = qt_loader;
 	}
@@ -270,7 +270,7 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		try {
 			metaData->setQtValues(qImg);
 		
-			if (orientation != -1 && !metaData->isJpg() && !metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+			if (orientation != -1 && !metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
 				rotate(orientation);
 
 		} catch(...) {}	// ignore if we cannot read the metadata
