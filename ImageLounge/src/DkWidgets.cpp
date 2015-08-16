@@ -2105,7 +2105,6 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	//QWidget::mouseMoveEvent(event);
-	//qDebug() << "edit rect mouse move";
 }
 
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {

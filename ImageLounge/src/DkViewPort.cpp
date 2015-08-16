@@ -1387,8 +1387,6 @@ void DkViewPort::paintEvent(QPaintEvent* event) {
 	// here it is just for fun!
 	if (dissolveImage)
 		update();
-
-	qDebug() << "painted...";
 }
 
 // drawing functions --------------------------------------------------------------------
@@ -1711,7 +1709,6 @@ int DkViewPort::swipeRecognition(QPoint start, QPoint end) {
 		return no_swipe;	// angles ~45° are not accepted
 
 	QPoint startPos = QWidget::mapFromGlobal(end);
-
 	qDebug() << "vec: " << vec.x << ", " << vec.y;
 
 	if (horizontal) {
