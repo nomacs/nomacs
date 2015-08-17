@@ -815,7 +815,12 @@ void DkImageLoader::setCurrentImage(QSharedPointer<DkImageContainerT> newImg) {
 			if (currentImage->getLoadState() == DkImageContainer::loading_canceled)
 				emit showInfoSignal(newImg->file().fileName(), 3000, 1);
 
-			currentImage->saveMetaDataThreaded();
+			// this causes a crash 
+			// because the release will trigger the saving of
+			// metadata (in a different thread) - and
+			// the auto_ptr does not like that at all
+			// anyhow we don't need to save the metadata twice
+			//currentImage->saveMetaDataThreaded();
 
 			if (!DkSettings::resources.cacheMemory)
 				currentImage->clear();
