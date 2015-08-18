@@ -49,9 +49,12 @@ Component.prototype.createOperations = function()
     try {
         // call the base create operations function
         component.createOperations();
+	
+		component.addOperation("CreateShortcut", "@TargetDir@/nomacs.exe",   "@StartMenuDir@/nomacs - Image Lounge.lnk", "workingDirectory=@TargetDir@");
     } catch (e) {
         console.log(e);
     }
+
 }
 
 Component.prototype.loaded = function ()
@@ -78,7 +81,9 @@ Component.prototype.installationFinished = function()
 {
     try {
         if (installer.isInstaller() && installer.status == QInstaller.Success) {
-            var isOpenAppCheckBoxChecked = component.userInterface( "OpenAppCheckBoxForm" ).openAppCheckBox.checked;
+
+			// open nomacs
+			var isOpenAppCheckBoxChecked = component.userInterface( "OpenAppCheckBoxForm" ).openAppCheckBox.checked;
             if (isOpenAppCheckBoxChecked) {
                 QDesktopServices.openUrl("file:///" + installer.value("TargetDir") + "/nomacs.exe");
             }
