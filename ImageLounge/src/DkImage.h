@@ -110,7 +110,6 @@ public:
 	void setImages(QVector<QSharedPointer<DkImageContainerT> > images);
 	void firstFile();
 	void lastFile();
-	void loadFileAt(int idx);
 	void clearPath();
 	QDir getDir() const;
 	QDir getSaveDir() const;
@@ -154,6 +153,7 @@ signals:
 
 	// new signals
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image);
+	void imageUpdatedSignal(int idx);	// folder scrollbar needs that
 	void imageLoadedSignal(QSharedPointer<DkImageContainerT> image, bool loaded = true);
 	void showInfoSignal(QString msg, int time = 3000, int position = 0);
 	void updateDirSignal(QVector<QSharedPointer<DkImageContainerT> > images);
@@ -176,7 +176,7 @@ public slots:
 	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
 	bool loadDir(QDir newDir, bool scanRecursive = true);
 	void errorDialog(const QString& msg) const;
-
+	void loadFileAt(int idx);
 
 	// new slots
 	void imageLoaded(bool loaded = false);

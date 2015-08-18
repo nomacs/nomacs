@@ -6,8 +6,7 @@ QTabBar::close-button:hover {
 	image: url(:/nomacs/img/close-tab-hover.png);
 }
 
-QTabBar::tab:selected
-{
+QTabBar::tab:selected {
 }
 
 /* NoMacs */
@@ -256,9 +255,23 @@ QLabel#DkSeparator {
 	border-top: 2px dotted HUD_FONT_COLOR; 
 }
 
-QLabel#DkFolderScrollBarHandle {
-	border: 1px solid HIGHLIGHT_COLOR;
+nmc--DkFolderScrollBar {
 	background-color: HUD_BACKGROUND_COLOR;
+	max-height: 15px;
+	border: 1px solid #000;
+}
+
+nmc--DkFolderScrollBar:handle {
+	background-color: HIGHLIGHT_LIGHT;
+	width: 30px;
+}
+
+nmc--DkFolderScrollBar:handle:hover {
+	background-color: HIGHLIGHT_COLOR;
+}
+
+nmc--DkFolderScrollBar::groove:horizontal {
+	background-color: rgba(0,0,0,0);
 }
 
 nmc--DkFileInfoLabel {

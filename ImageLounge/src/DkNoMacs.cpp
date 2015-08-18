@@ -290,9 +290,7 @@ void DkNoMacs::init() {
 	viewport()->getController()->getHistogram()->registerAction(panelActions[menu_panel_histogram]);
 	viewport()->getController()->getCommentWidget()->registerAction(panelActions[menu_panel_comment]);
 
-#ifdef WITH_FOLDER_SCROLLBAR
 	viewport()->getController()->getScroller()->registerAction(panelActions[menu_panel_scroller]);
-#endif
 
 	enableMovieActions(false);
 
@@ -491,8 +489,12 @@ void DkNoMacs::loadStyleSheet() {
 
 		QString cssString = file.readAll();
 
+		QColor hc = DkSettings::display.highlightColor;
+		hc.setAlpha(150);
+
 		// replace color placeholders
 		cssString.replace("HIGHLIGHT_COLOR", DkUtils::colorToString(DkSettings::display.highlightColor));
+		cssString.replace("HIGHLIGHT_LIGHT", DkUtils::colorToString(hc));
 		cssString.replace("HUD_BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColorWidget));
 		cssString.replace("HUD_FONT_COLOR", DkUtils::colorToString(QColor(255,255,255)));
 		cssString.replace("BACKGROUND_COLOR", DkUtils::colorToString(DkSettings::display.bgColor));
@@ -699,9 +701,7 @@ void DkNoMacs::createMenu() {
 	panelMenu->addAction(panelActions[menu_panel_metadata_dock]);
 	panelMenu->addAction(panelActions[menu_panel_preview]);
 	panelMenu->addAction(panelActions[menu_panel_thumbview]);
-#ifdef WITH_FOLDER_SCROLLBAR
 	panelMenu->addAction(panelActions[menu_panel_scroller]);
-#endif
 	panelMenu->addAction(panelActions[menu_panel_exif]);
 	
 	panelMenu->addSeparator();
@@ -785,9 +785,7 @@ void DkNoMacs::createContextMenu() {
 	contextMenu->addAction(panelActions[menu_panel_metadata_dock]);
 	contextMenu->addAction(panelActions[menu_panel_preview]);
 	contextMenu->addAction(panelActions[menu_panel_thumbview]);
-#ifdef WITH_FOLDER_SCROLLBAR
 	contextMenu->addAction(panelActions[menu_panel_scroller]);
-#endif
 	contextMenu->addAction(panelActions[menu_panel_exif]);
 	contextMenu->addAction(panelActions[menu_panel_overview]);
 	contextMenu->addAction(panelActions[menu_panel_player]);
@@ -1177,13 +1175,11 @@ void DkNoMacs::createActions() {
 	panelActions[menu_panel_thumbview]->setCheckable(true);
 	connect(panelActions[menu_panel_thumbview], SIGNAL(toggled(bool)), getTabWidget(), SLOT(showThumbView(bool)));
 
-#ifdef WITH_FOLDER_SCROLLBAR
 	panelActions[menu_panel_scroller] = new QAction(tr("&Folder Scrollbar"), this);
 	panelActions[menu_panel_scroller]->setShortcut(QKeySequence(shortcut_show_scroller));
 	panelActions[menu_panel_scroller]->setStatusTip(tr("Show Folder Scrollbar"));
 	panelActions[menu_panel_scroller]->setCheckable(true);
 	connect(panelActions[menu_panel_scroller], SIGNAL(toggled(bool)), vp->getController(), SLOT(showScroller(bool)));
-#endif
 
 	panelActions[menu_panel_exif] = new QAction(tr("&Metadata"), this);
 	panelActions[menu_panel_exif]->setShortcut(QKeySequence(shortcut_show_exif));
@@ -1553,9 +1549,7 @@ void DkNoMacs::enableNoImageActions(bool enable) {
 #else
 	panelActions[menu_panel_histogram]->setEnabled(false);
 #endif
-#ifdef WITH_FOLDER_SCROLLBAR
 	panelActions[menu_panel_scroller]->setEnabled(enable);
-#endif
 	panelActions[menu_panel_comment]->setEnabled(enable);
 	panelActions[menu_panel_preview]->setEnabled(enable);
 	panelActions[menu_panel_exif]->setEnabled(enable);

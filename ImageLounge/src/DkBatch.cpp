@@ -68,7 +68,7 @@ DkBatchWidget::DkBatchWidget(QString titleString, QString headerString, QWidget*
 
 void DkBatchWidget::createLayout() {
 	
-	showButton = new DkButton(QIcon(":/nomacs/img/minus.png"), QIcon(":/nomacs/img/plus.png"), "Plus");
+	showButton = new DkButton(QIcon(":/nomacs/img/minus.png"), QIcon(":/nomacs/img/plus.png"), tr("Plus"));
 	showButton->setFixedSize(QSize(16,16));
 	showButton->setObjectName("showSelectionButton");
 	showButton->setCheckable(true);
@@ -675,17 +675,17 @@ void DkBatchOutput::createLayout() {
 
 	// overwrite existing
 	cbOverwriteExisting = new QCheckBox(tr("Overwrite Existing Files"));
-	cbOverwriteExisting->setToolTip("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!");
+	cbOverwriteExisting->setToolTip(tr("If checked, existing files are overwritten.\nThis option might destroy your images - so be careful!"));
 	connect(cbOverwriteExisting, SIGNAL(clicked()), this, SIGNAL(changed()));
 
 	// Use Input Folder
 	cbUseInput = new QCheckBox(tr("Use Input Folder"));
-	cbUseInput->setToolTip("If checked, the batch is applied to the input folder - so be careful!");
+	cbUseInput->setToolTip(tr("If checked, the batch is applied to the input folder - so be careful!"));
 	connect(cbUseInput, SIGNAL(clicked(bool)), this, SLOT(useInputFolderChanged(bool)));
 
 	// delete original
 	cbDeleteOriginal = new QCheckBox(tr("Delete Input Files"));
-	cbDeleteOriginal->setToolTip("If checked, the original file will be deleted if the conversion was successful.\n So be careful!");
+	cbDeleteOriginal->setToolTip(tr("If checked, the original file will be deleted if the conversion was successful.\n So be careful!"));
 
 	QWidget* cbWidget = new QWidget(this);
 	QHBoxLayout* cbLayout = new QHBoxLayout(cbWidget);
