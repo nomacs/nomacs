@@ -2352,7 +2352,7 @@ DkViewPortFrameless::DkViewPortFrameless(QWidget *parent, Qt::WindowFlags flags)
 #endif
 
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	setCursor(Qt::OpenHandCursor);
+	//setCursor(Qt::OpenHandCursor);
     
 //#ifdef Q_WS_MAC
 	// setAttribute( Qt::WA_MacNoShadow );
@@ -2619,7 +2619,8 @@ void DkViewPortFrameless::mouseReleaseEvent(QMouseEvent *event) {
 		}
 	}
 
-	setCursor(Qt::OpenHandCursor);
+	unsetCursor();
+	//setCursor(Qt::OpenHandCursor);
 	DkViewPort::mouseReleaseEvent(event);
 }
 
@@ -2639,9 +2640,9 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 			}
 		}
 
-		// TODO: change if closed hand cursor is present...
-		if (idx == startActionsRects.size())
-			setCursor(Qt::OpenHandCursor);
+		//// TODO: change if closed hand cursor is present...
+		//if (idx == startActionsRects.size())
+		//	setCursor(Qt::OpenHandCursor);
 	}
 
 	if (visibleStatusbar)

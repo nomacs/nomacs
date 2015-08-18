@@ -20,7 +20,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "nomacs"
-!define PRODUCT_VERSION "2.4.5 ${STR_64}"
+!define PRODUCT_VERSION "2.4.6 ${STR_64}"
 
 !define PRODUCT_WEB_SITE "http://www.nomacs.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\nomacs.exe"
