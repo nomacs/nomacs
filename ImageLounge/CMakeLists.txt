@@ -118,11 +118,13 @@ set (NOMACS_RESOURCES
 
 set(NOMACS_TRANSLATIONS
 	translations/nomacs_als.ts
+	translations/nomacs_ar.ts
 	translations/nomacs_az.ts
 	translations/nomacs_cs.ts		
 	translations/nomacs_de.ts
 	translations/nomacs_en.ts
-	translations/nomacs_es.ts		
+	translations/nomacs_es.ts
+	translations/nomacs_nl.ts	
 	translations/nomacs_fr.ts
 	translations/nomacs_it.ts
 	translations/nomacs_ja.ts
