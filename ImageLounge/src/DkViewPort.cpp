@@ -61,9 +61,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	player = new DkPlayer(this);
 	addActions(player->getActions().toList());
 
-#ifdef WITH_FOLDER_SCROLLBAR
 	folderScroll = new DkFolderScrollBar(this);
-#endif
 
 	// file info - overview
 	fileInfoLabel = new DkFileInfoLabel(this);
@@ -119,10 +117,7 @@ void DkControlWidget::init() {
 	histogram->setDisplaySettings(&DkSettings::app.showHistogram);
 	commentWidget->setDisplaySettings(&DkSettings::app.showComment);
 	zoomWidget->setDisplaySettings(&DkSettings::app.showOverview);
-
-#ifdef WITH_FOLDER_SCROLLBAR
 	folderScroll->setDisplaySettings(&DkSettings::app.showScroller);
-#endif
 
 	// some adjustments
 	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -263,10 +258,7 @@ void DkControlWidget::init() {
 	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
 	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
 	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
-
-#ifdef WITH_FOLDER_SCROLLBAR
 	hudLayout->addWidget(folderScroll, top_scroll, left_thumbs, 1, hor_pos_end);
-#endif
 
 	//// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
 	//QHBoxLayout* editLayout = new QHBoxLayout(widgets[crop_widget]);
@@ -301,11 +293,6 @@ void DkControlWidget::connectWidgets() {
 
 	// metadata widget
 	connect(metaDataInfo, SIGNAL(positionChangeSignal(int)), this, SLOT(changeMetaDataPosition(int)));
-
-#ifdef WITH_FOLDER_SCROLLBAR
-	// file scroller
-	connect(folderScroll, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
-#endif
 
 	// overview
 	connect(zoomWidget->getOverview(), SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
@@ -350,9 +337,7 @@ void DkControlWidget::showWidgetsSettings() {
 
 	if (viewport->getImage().isNull()) {
 		showPreview(false);
-#ifdef WITH_FOLDER_SCROLLBAR
 		showScroller(false);
-#endif
 		showMetaData(false);
 		showFileInfo(false);
 		showPlayer(false);
@@ -371,9 +356,7 @@ void DkControlWidget::showWidgetsSettings() {
 	showPlayer(player->getCurrentDisplaySetting());
 	showHistogram(histogram->getCurrentDisplaySetting());
 	showCommentWidget(commentWidget->getCurrentDisplaySetting());
-#ifdef WITH_FOLDER_SCROLLBAR
 	showScroller(folderScroll->getCurrentDisplaySetting());
-#endif
 }
 
 void DkControlWidget::showPreview(bool visible) {
@@ -387,7 +370,6 @@ void DkControlWidget::showPreview(bool visible) {
 		filePreview->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
 
-#ifdef WITH_FOLDER_SCROLLBAR
 void DkControlWidget::showScroller(bool visible) {
 
 	if (!folderScroll)
@@ -398,7 +380,6 @@ void DkControlWidget::showScroller(bool visible) {
 	else if (!visible && folderScroll->isVisible())
 		folderScroll->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
 }
-#endif
 
 void DkControlWidget::showMetaData(bool visible) {
 
@@ -952,6 +933,8 @@ void DkViewPort::setImage(QImage newImg) {
 		oldWorldMatrix = worldMatrix;
 		oldImgMatrix = imgMatrix;
 	}
+
+	stopMovie();	// just to be sure
 
 	//imgPyramid.clear();
 
@@ -2285,10 +2268,9 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 
 		connect(loader.data(), SIGNAL(setPlayer(bool)), controller->getPlayer(), SLOT(play(bool)), Qt::UniqueConnection);
 
-#ifdef WITH_FOLDER_SCROLLBAR
 		connect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)), Qt::UniqueConnection);
-		connect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)), Qt::UniqueConnection);
-#endif
+		connect(loader.data(), SIGNAL(imageUpdatedSignal(int)), controller->getScroller(), SLOT(updateFile(int)), Qt::UniqueConnection);
+		connect(controller->getScroller(), SIGNAL(valueChanged(int)), loader.data(), SLOT(loadFileAt(int)));
 
 		// not sure if this is elegant?!
 		connect(shortcuts[sc_delete_silent], SIGNAL(activated()), loader.data(), SLOT(deleteFile()), Qt::UniqueConnection);
@@ -2308,10 +2290,9 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 
 		disconnect(loader.data(), SIGNAL(setPlayer(bool)), controller->getPlayer(), SLOT(play(bool)));
 
-#ifdef WITH_FOLDER_SCROLLBAR
 		disconnect(loader.data(), SIGNAL(updateDirSignal(QVector<QSharedPointer<DkImageContainerT> >)), controller->getScroller(), SLOT(updateDir(QVector<QSharedPointer<DkImageContainerT> >)));
 		disconnect(loader.data(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), controller->getScroller(), SLOT(updateFile(QSharedPointer<DkImageContainerT>)));
-#endif
+		
 		// not sure if this is elegant?!
 		disconnect(shortcuts[sc_delete_silent], SIGNAL(activated()), loader.data(), SLOT(deleteFile()));
 	}

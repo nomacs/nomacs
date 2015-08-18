@@ -225,11 +225,9 @@ public:
 		return filePreview;
 	}
 
-#ifdef WITH_FOLDER_SCROLLBAR
 	DkFolderScrollBar* getScroller() {
 		return folderScroll;
 	}
-#endif
 
 	DkMetaDataHUD* getMetaDataWidget() {
 		return metaDataInfo;
@@ -283,10 +281,7 @@ public slots:
 	void switchWidget(QWidget* widget = 0);
 	void changeMetaDataPosition(int pos);
 	void changeThumbNailPosition(int pos);
-
-#ifdef WITH_FOLDER_SCROLLBAR
 	void showScroller(bool visible);
-#endif
 
 	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
 	void setInfo(QString msg, int time = 3000, int location = center_label);
@@ -330,9 +325,7 @@ protected:
 	DkPlayer* player;
 	DkHistogram* histogram;
 	
-#ifdef WITH_FOLDER_SCROLLBAR
 	DkFolderScrollBar* folderScroll;
-#endif
 	DkFileInfoLabel* fileInfoLabel;
 	DkRatingLabelBg* ratingLabel;
 

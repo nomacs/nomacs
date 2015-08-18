@@ -29,7 +29,7 @@
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QPushButton>
-#include <QScrollBar>
+#include <QSlider>
 #include <QFileSystemModel>
 #include <QSortFilterProxyModel>
 #include <QDockWidget>
@@ -287,8 +287,7 @@ protected:
 	QVector<QAction*> actions;
 };
 
-#ifdef WITH_FOLDER_SCROLLBAR
-class DkFolderScrollBar : public QScrollBar {
+class DkFolderScrollBar : public QSlider {
 	Q_OBJECT
 
 public: 
@@ -304,8 +303,6 @@ public:
 
 public slots:
 	void updateDir(QVector<QSharedPointer<DkImageContainerT> > images);
-	void updateFile(QSharedPointer<DkImageContainerT> imgC);
-	void update(const QVector<QColor>& colors, const QVector<int>& indexes);
 
 	virtual void show(bool saveSettings = true);
 	virtual void hide(bool saveSettings = true);
@@ -315,35 +312,16 @@ public slots:
 	void animateOpacityDown();
 
 protected slots:
-	void emitFileSignal(int i);
-	void colorUpdated();
+	void updateFile(int idx);
 
 signals:
-	void changeFileSignal(int idx);
-	void visibleSignal(bool visible);
+	void loadFileSignal(int idx) const;
+	void visibleSignal(bool visible) const;
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
-	void mouseMoveEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
-	void resizeEvent(QResizeEvent *event);
-	int fileIdx(QSharedPointer<DkImageContainerT> imgC);
-	void updateColors();
 
-	QSharedPointer<DkImageContainerT> cImg;
-	QVector<QSharedPointer<DkImageContainerT> > images;
-	//DkColorLoader* colorLoader;
-	QVector<QColor> colors;
-	QVector<int> indexes;
-	bool sliding;
-	bool updateFolder;
-	int updatesWaiting;
-	QLabel* handle;
-	DkWidget* dummyWidget;
-	int minHandleWidth;
-
-
-	// DkWidget
 	QColor bgCol;
 	bool blocked;
 	bool hiding;
@@ -356,7 +334,6 @@ protected:
 	void init();
 
 };
-#endif
 
 // this class is one of the first batch processing classes -> move them to a new file in the (near) future
 class DkThumbsSaver : public DkWidget {

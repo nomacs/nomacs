@@ -623,8 +623,10 @@ void DkFilePreview::mouseReleaseEvent(QMouseEvent *event) {
 		for (int idx = 0; idx < thumbRects.size(); idx++) {
 
 			if (idx < thumbs.size() && worldMatrix.mapRect(thumbRects.at(idx)).contains(event->pos())) {
-				if (thumbs.at(idx)->isFromZip()) emit changeFileSignal(idx - currentFileIdx);
-				else emit loadFileSignal(thumbs.at(idx)->file());
+				if (thumbs.at(idx)->isFromZip()) 
+					emit changeFileSignal(idx - currentFileIdx);
+				else 
+					emit loadFileSignal(thumbs.at(idx)->file());
 			}
 		}
 	}

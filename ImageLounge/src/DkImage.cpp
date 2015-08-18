@@ -242,11 +242,12 @@ bool DkImageLoader::loadDir(QDir newDir, bool scanRecursive) {
 			return false;
 		}
 
-		if (files.size() > 2000) {
-			createImages(files, false);
-			sortImagesThreaded(images);
-		}
-		else
+		// disabled threaded sorting - people didn't like it (#484 and #460)
+		//if (files.size() > 2000) {
+		//	createImages(files, false);
+		//	sortImagesThreaded(images);
+		//}
+		//else
 			createImages(files, true);
 
 		qDebug() << "getting file list.....";
@@ -625,7 +626,6 @@ void DkImageLoader::loadFileAt(int idx) {
 	setCurrentImage(images.at(idx));
 
 	load(currentImage);
-
 }
 
 QSharedPointer<DkImageContainerT> DkImageLoader::findOrCreateFile(const QFileInfo& file) const {
@@ -919,8 +919,13 @@ void DkImageLoader::imageLoaded(bool loaded /* = false */) {
 
 	emit imageUpdatedSignal(currentImage);
 
-	if (currentImage)
+	if (currentImage) {
 		emit updateFileSignal(currentImage->file());
+
+		// this signal is needed by the folder scrollbar
+		int idx = findFileIdx(currentImage->file(), images);
+		emit imageUpdatedSignal(idx);
+	}
 
 	QApplication::sendPostedEvents();	// force an event post here
 
