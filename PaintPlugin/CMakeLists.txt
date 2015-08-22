@@ -9,14 +9,12 @@ ENDIF()
 include("../cmake/Utils.cmake")
 
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 1.2.0)
+set(PLUGIN_VERSION 2.0.0)
 set(PLUGIN_ID ad970ef36cc24737afd2b53ad015ff0d) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
 add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
-
-option(ENABLE_QT5 "Compile with Qt5 (Qt5)" ON)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)
@@ -55,32 +53,10 @@ endif ()
 # ENDIF(MSVC)
 
 # find the Qt
-set(QT_MIN_VERSION "4.7.0")
-set(QT_USE_GUI 1)
-set(QT_USE_QTNETWORK 1)
-
 NMC_FINDQT()
 
-# include(${QT_USE_FILE})
-	          
 # OpenCV
-SET(OpenCV_LIBS "")
-if (PKG_CONFIG_FOUND) # not sure: pkgconfig is needed for old linux  with old old opencv systems
-	pkg_check_modules(OpenCV  opencv>=2.1.0)
-	SET(OpenCV_LIBS ${OpenCV_LIBRARIES})
-endif(PKG_CONFIG_FOUND)
-IF (OpenCV_LIBS STREQUAL "") 
-	find_package(OpenCV 2.1.0 REQUIRED core imgproc)
-ENDIF()
-IF (OpenCV_VERSION VERSION_LESS 2.4.0 AND OpenCV_FOUND AND MSVC) # OpenCV didn't allow to define packages before version 2.4.0 ... nomacs was linking against all libs even if they were not compiled -> error
-	string(REGEX REPLACE "\\." "" OpenCV_SHORT_VERSION ${OpenCV_VERSION})
-	SET(OpenCV_LIBS "debug;opencv_imgproc${OpenCV_SHORT_VERSION}d;optimized;opencv_imgproc${OpenCV_SHORT_VERSION};debug;opencv_core${OpenCV_SHORT_VERSION}d;optimized;opencv_core${OpenCV_SHORT_VERSION};")
-ENDIF()
-IF (NOT OpenCV_FOUND)
-	message(FATAL_ERROR "OpenCV not found. It's mandatory when used with ENABLE_RAW enabled") 
-ELSE()
-	add_definitions(-DWITH_OPENCV)
-ENDIF()
+NMC_FIND_OPENCV()
 	
 include_directories (
 	${QT_INCLUDES}
@@ -102,14 +78,8 @@ ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
 ADD_DEFINITIONS(-DQT_DLL)
 
-IF (NOT ENABLE_QT5)
-	QT4_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
-	QT4_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
-ELSE ()
-	QT5_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
-	QT5_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
-	
-ENDIF ()
+QT5_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
+QT5_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
 
 link_directories(${OpenCV_LIBRARY_DIRS} ${NOMACS_BUILD_DIRECTORY}/$(CONFIGURATION) ${NOMACS_BUILD_DIRECTORY}/libs ${NOMACS_BUILD_DIRECTORY})
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_MOC_SRC} ${PLUGIN_RCC} ${PLUGIN_HEADERS})	
@@ -142,7 +112,7 @@ IF (MSVC)
 	endif()
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/${PROJECT_NAME}.dll DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/${PLUGIN_ARCHITECTURE}/ CONFIGURATIONS Release)
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/d.txt DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/ CONFIGURATIONS Release)
-	
-	qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
-	
+		
 ENDIF(MSVC)
+
+qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)

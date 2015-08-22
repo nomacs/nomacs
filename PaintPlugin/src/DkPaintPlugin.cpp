@@ -182,12 +182,6 @@ void DkPaintPlugin::deleteViewPort() {
 	}
 }
 
-#if QT_VERSION < 0x050000
-/* macro for exporting plugin */
-Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkPaintPlugin/1.0", DkPaintPlugin)		// diem: depcrecated (22.08.2015)
-#endif // QT_VERSION >= 0x050000
-
-
 /*-----------------------------------DkPaintViewPort ---------------------------------------------*/
 
 DkPaintViewPort::DkPaintViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {

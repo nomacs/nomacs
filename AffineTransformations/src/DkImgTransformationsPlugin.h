@@ -83,6 +83,7 @@ enum {
 class DkImgTransformationsPlugin : public QObject, DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkAffineTransformationsPlugin/2.0" FILE "DkAffineTransformationsPlugin.json")
 
 public:
 

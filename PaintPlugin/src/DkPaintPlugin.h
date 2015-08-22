@@ -58,7 +58,7 @@ class DkPaintToolBar;
 class DkPaintPlugin : public QObject, DkViewPortInterface {
     Q_OBJECT
     Q_INTERFACES(nmc::DkViewPortInterface)
-	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPaintPlugin/1.0" FILE "DkPaintPlugin.json")
+	Q_PLUGIN_METADATA(IID "com.nomacs.ImageLounge.DkPaintPlugin/2.0" FILE "DkPaintPlugin.json")
 
 public:
     

@@ -181,10 +181,6 @@ void DkImgTransformationsPlugin::deleteViewPort() {
 	}
 }
 
-/* macro for exporting plugin */
-Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkImgTransformationsPlugin/1.0", DkImgTransformationsPlugin)
-
-
 /*-----------------------------------DkImgTransformationsViewPort ---------------------------------------------*/
 
 DkImgTransformationsViewPort::DkImgTransformationsViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
@@ -942,9 +938,10 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	rotationBox->setSingleStep(0.1);
 	rotationBox->setDecimals(1);
 	rotationBox->setWrapping(true);
-	rotationBox->setSuffix("°");
-	rotationBox->setToolTip(tr("Rotation angle"));
-	rotationBox->setStatusTip(tr("Rotation angle [-180°,180°]"));
+	rotationBox->setSuffix(dk_degree_str);
+	QString tip = tr("Rotation angle [-180%1,180%2]").arg(dk_degree_str).arg(dk_degree_str);
+	rotationBox->setToolTip(tip);
+	rotationBox->setStatusTip(tip);
 
 
 	//auto rotation selection

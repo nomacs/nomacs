@@ -166,7 +166,7 @@ cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralS
 		int lastValue = progress->value();
 
 		for (int r = H2 + qCeil(delta/2); r < integral.rows - H2 - qCeil(delta/2); r++) {
-			progress->setValue(lastValue + qRound(30 * (r - H2 - qCeil(delta/2)) / progressStep));
+			progress->setValue(lastValue + qRound(30.0 * (r - H2 - qCeil(delta/2)) / (double)progressStep));
 			if (progress->wasCanceled()) break;
 			for (int c = W2 + qCeil(delta/2); c < integral.cols - W2 - qCeil(delta/2); c++) {
 
@@ -192,7 +192,7 @@ cv::Mat DkSkewEstimator::computeSeparability(cv::Mat integral, cv::Mat integralS
 		int lastValue = progress->value();
 
 		for (int r = W2 + qCeil(delta/2); r < integral.rows - W2 - qCeil(delta/2); r++) {
-			progress->setValue(lastValue + qRound(30 * (r - W2 - qCeil(delta/2)) / progressStep));
+			progress->setValue(lastValue + qRound(30.0 * (r - W2 - qCeil(delta/2)) / (double)progressStep));
 			if (progress->wasCanceled()) break;
 
 			for (int c = H2 + qCeil(delta/2); c < integral.cols - H2 - qCeil(delta/2); c++) {
@@ -237,7 +237,7 @@ cv::Mat DkSkewEstimator::computeEdgeMap(cv::Mat separability, double thr, int di
 
 		float* p;
 		for (int r = H2 + kMax; r < separability.rows - H2 - kMax; r++) {
-			progress->setValue(lastValue + qRound(5 * (r - H2 - kMax) / progressStep));
+			progress->setValue(lastValue + qRound(5.0 * (r - H2 - kMax) / (double)progressStep));
 			if (progress->wasCanceled()) break;
 
 			p = separability.ptr<float>(r);
@@ -270,7 +270,7 @@ cv::Mat DkSkewEstimator::computeEdgeMap(cv::Mat separability, double thr, int di
 
 		float* p;
 		for (int r = W2; r < separability.rows - W2; r++) {
-			progress->setValue(lastValue + qRound(5 * (r - W2 - kMax) / progressStep));
+			progress->setValue(lastValue + qRound(5.0 * (r - W2 - kMax) / (double)progressStep));
 			if (progress->wasCanceled()) break;
 
 			p = separability.ptr<float>(r);
@@ -314,7 +314,7 @@ QVector<QVector3D> DkSkewEstimator::computeWeights(cv::Mat edgeMap, int directio
 	int lastValue = progress->value();
 
 	for(size_t i = 0; i < lines.size(); i++) {
-		progress->setValue(lastValue + qRound(15 * i / lines.size()));
+		progress->setValue(lastValue + qRound(15.0 * (float)i / lines.size()));
 		if (progress->wasCanceled()) break;
 
 		Vec4i l = lines[i];		

@@ -184,10 +184,6 @@ void DkThresholdPlugin::deleteViewPort() {
 	}
 }
 
-/* macro for exporting plugin */
-Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkThresholdPlugin/1.0", DkThresholdPlugin)
-
-
 /*-----------------------------------DkThresholdViewPort ---------------------------------------------*/
 
 DkThresholdViewPort::DkThresholdViewPort(QWidget* parent, Qt::WindowFlags flags) : DkPluginViewPort(parent, flags) {
