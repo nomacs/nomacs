@@ -1361,11 +1361,13 @@ void DkNoMacs::createActions() {
 	toolsActions[menu_tools_batch] = new QAction(tr("Batch Processing"), this);
 	toolsActions[menu_tools_batch]->setStatusTip(tr("Apply actions to multiple images"));
 	connect(toolsActions[menu_tools_batch], SIGNAL(triggered()), getTabWidget(), SLOT(startBatchProcessing()));
+	
 	// plugins menu
 	pluginsActions.resize(menu_plugins_end);
 	pluginsActions[menu_plugin_manager] = new QAction(tr("&Plugin Manager"), this);
 	pluginsActions[menu_plugin_manager]->setStatusTip(tr("manage installed plugins and download new ones"));
 	connect(pluginsActions[menu_plugin_manager], SIGNAL(triggered()), this, SLOT(openPluginManager()));
+	
 	// help menu
 	helpActions.resize(menu_help_end);
 	helpActions[menu_help_about] = new QAction(tr("&About Nomacs"), this);

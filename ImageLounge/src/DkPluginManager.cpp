@@ -84,7 +84,7 @@ void DkPluginManager::init() {
 	pluginFiles = QMap<QString, QString>();
 	pluginIdList = QList<QString>();
 	runId2PluginId = QMap<QString, QString>();
-	loadEnabledPlugins(); //pluginLoadingDebuging -> comment this line
+	//loadEnabledPlugins(); //pluginLoadingDebuging -> comment this line
 
 	dialogWidth = 700;
 	dialogHeight = 500;
@@ -172,7 +172,7 @@ bool DkPluginManager::singlePluginLoad(QString filePath) {
 	QPluginLoader* loader = new QPluginLoader(filePath);
 	
 	if (!loader->load()) {
-        //qDebug() << "Could not load: " << filePath;
+        qDebug() << "Could not load: " << filePath;
 		return false;
     }
 	
@@ -223,7 +223,8 @@ void DkPluginManager::loadPlugins() {
 			QPluginLoader* pluginLoader = pluginLoaders.take(pluginIdList.at(i));
 			qDebug() << pluginLoader->errorString();
 			
-			if(!pluginLoader->unload()) qDebug() << "Could not unload plugin loader!";
+			if(!pluginLoader->unload()) 
+				qDebug() << "Could not unload plugin loader!";
 			
 			delete pluginLoader;
 			pluginLoader = 0;
@@ -246,10 +247,12 @@ void DkPluginManager::loadPlugins() {
 		QDir pluginsDir(libPaths.at(idx));
 		qDebug() << "trying to load from: " << pluginsDir.absolutePath();
 
-		foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
+		for(const QString& fileName : pluginsDir.entryList(QDir::Files)) {
 
 			QString shortFileName = fileName.split("/").last();
 			if (!loadedPluginFileNames.contains(shortFileName)) { // prevent double loading of the same plugin
+
+				qDebug() << "close to loading:" << pluginsDir.absoluteFilePath(fileName);
 				if (singlePluginLoad(pluginsDir.absoluteFilePath(fileName)))
 					loadedPluginFileNames.append(shortFileName);
 			}
@@ -291,7 +294,8 @@ QMap<QString, QString> DkPluginManager::getPreviouslyInstalledPlugins() {
 //Loads enabled plugins when the menu is first hit
 void DkPluginManager::loadEnabledPlugins() {
 
-	if (!loadedPlugins.isEmpty()) qDebug() << "This should be empty!";
+	if (!loadedPlugins.isEmpty()) 
+		qDebug() << "Plugin list is not empty where it should be!";
 
 	QMap<QString, QString> pluginsPaths = QMap<QString, QString>();
 	QList<QString> disabledPlugins = QList<QString>();
@@ -315,6 +319,7 @@ void DkPluginManager::loadEnabledPlugins() {
 
 	while(iter.hasNext()) {
 		iter.next();
+		qDebug() << "trying to load: " << iter.value();
 		/*if (!disabledPlugins.contains(iter.key()))*/ singlePluginLoad(iter.value());
 	}
 }
