@@ -5,6 +5,9 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 ENDIF()
 
+# include macros needed
+include("../cmake/Utils.cmake")
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 set(PLUGIN_VERSION 1.2.0)
 set(PLUGIN_ID ad970ef36cc24737afd2b53ad015ff0d) #GUID without hyphens generated at http://www.guidgenerator.com/
@@ -13,6 +16,7 @@ set(PLUGIN_ID ad970ef36cc24737afd2b53ad015ff0d) #GUID without hyphens generated 
 add_definitions(-DPLUGIN_VERSION="${PLUGIN_VERSION}")
 add_definitions(-DPLUGIN_ID="${PLUGIN_ID}")
 
+option(ENABLE_QT5 "Compile with Qt5 (Qt5)" ON)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 if(COMMAND cmake_policy)
@@ -22,6 +26,7 @@ endif(COMMAND cmake_policy)
 
 #find nomacs build directory
 MARK_AS_ADVANCED(CMAKE_INSTALL_PREFIX)
+
 find_package(nomacs)
 if(NOT NOMACS_FOUND)
 	SET(NOMACS_BUILD_DIRECTORY "NOT_SET" CACHE PATH "Path to the nomacs build directory")
@@ -53,8 +58,10 @@ endif ()
 set(QT_MIN_VERSION "4.7.0")
 set(QT_USE_GUI 1)
 set(QT_USE_QTNETWORK 1)
-find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
-include(${QT_USE_FILE})
+
+NMC_FINDQT()
+
+# include(${QT_USE_FILE})
 	          
 # OpenCV
 SET(OpenCV_LIBS "")
@@ -87,7 +94,7 @@ file(GLOB PLUGIN_HEADERS "src/*.h")
 file(GLOB PLUGIN_MOCS "src/*.h" "${NOMACS_INCLUDE_DIRECTORY}/DkPluginInterface.h")
 
 set (PLUGIN_RESOURCES
-        src/nomacsPlugin.qrc
+    src/nomacsPlugin.qrc
 )
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -95,8 +102,14 @@ ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
 ADD_DEFINITIONS(-DQT_DLL)
 
-QT4_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
-QT4_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
+IF (NOT ENABLE_QT5)
+	QT4_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
+	QT4_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
+ELSE ()
+	QT5_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
+	QT5_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
+	
+ENDIF ()
 
 link_directories(${OpenCV_LIBRARY_DIRS} ${NOMACS_BUILD_DIRECTORY}/$(CONFIGURATION) ${NOMACS_BUILD_DIRECTORY}/libs ${NOMACS_BUILD_DIRECTORY})
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_MOC_SRC} ${PLUGIN_RCC} ${PLUGIN_HEADERS})	
@@ -129,5 +142,7 @@ IF (MSVC)
 	endif()
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Release/${PROJECT_NAME}.dll DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/${PLUGIN_ARCHITECTURE}/ CONFIGURATIONS Release)
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/d.txt DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/ CONFIGURATIONS Release)
+	
+	qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
 	
 ENDIF(MSVC)

@@ -182,8 +182,10 @@ void DkPaintPlugin::deleteViewPort() {
 	}
 }
 
+#if QT_VERSION < 0x050000
 /* macro for exporting plugin */
-Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkPaintPlugin/1.0", DkPaintPlugin)
+Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkPaintPlugin/1.0", DkPaintPlugin)		// diem: depcrecated (22.08.2015)
+#endif // QT_VERSION >= 0x050000
 
 
 /*-----------------------------------DkPaintViewPort ---------------------------------------------*/
@@ -286,12 +288,12 @@ void DkPaintViewPort::mousePressEvent(QMouseEvent *event) {
 			DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
 			if(viewport) {
 		
-				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
+				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
 					
 					isOutside = false;
 					paths.append(QPainterPath());
-					paths.last().moveTo(mapToImage(event->posF()));
-					paths.last().lineTo(mapToImage(event->posF())+QPointF(0.1,0));
+					paths.last().moveTo(mapToImage(event->pos()));
+					paths.last().lineTo(mapToImage(event->pos())+QPointF(0.1,0));
 					pathsPen.append(pen);
 					update();
 				}
@@ -321,14 +323,14 @@ void DkPaintViewPort::mouseMoveEvent(QMouseEvent *event) {
 
 			if(viewport) {
 		
-				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->posF()))) {
+				if(QRectF(QPointF(), viewport->getImage().size()).contains(mapToImage(event->pos()))) {
 					if (isOutside) {
 						paths.append(QPainterPath());
-						paths.last().moveTo(mapToImage(event->posF()));
+						paths.last().moveTo(mapToImage(event->pos()));
 						pathsPen.append(pen);
 					}
 					else {
-						QPointF point = mapToImage(event->posF());
+						QPointF point = mapToImage(event->pos());
 						paths.last().lineTo(point);
 						update();
 					}
