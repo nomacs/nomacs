@@ -27,12 +27,12 @@
 
 #pragma once
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpinBox>
-#include <QtGui/QSlider>
+#include <QWidget>
+#include <QLabel>
+#include <QBoxLayout>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QSlider>
 #include <QDialog>
 #include <QPainter>
 #include <QMouseEvent>

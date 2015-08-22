@@ -5,8 +5,11 @@ IF(EXISTS ${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 	include(${CMAKE_SOURCE_DIR}/CMakeUser.txt)
 ENDIF()
 
+# include macros needed
+include("../cmake/Utils.cmake")
+
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
-set(PLUGIN_VERSION 1.0.0)
+set(PLUGIN_VERSION 2.0.0)
 set(PLUGIN_ID a2ac7b68866b4ab29fb1df3e170b8f0d) #GUID without hyphens generated at http://www.guidgenerator.com/
 ######################################################### CHANGE THIS FOR NEW PLUGINS ###################################################
 
@@ -51,11 +54,7 @@ endif ()
 # ENDIF(MSVC)
 
 # find the Qt
-set(QT_MIN_VERSION "4.7.0")
-set(QT_USE_GUI 1)
-set(QT_USE_QTNETWORK 1)
-find_package(Qt4 REQUIRED QtCore QtGui QtNetwork)
-include(${QT_USE_FILE})
+NMC_FINDQT()
 	          
 # OpenCV
 SET(OpenCV_LIBS "")
@@ -96,8 +95,8 @@ ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
 ADD_DEFINITIONS(-DQT_DLL)
 
-QT4_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
-QT4_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
+QT5_WRAP_CPP(PLUGIN_MOC_SRC ${PLUGIN_MOCS})
+QT5_ADD_RESOURCES(PLUGIN_RCC ${PLUGIN_RESOURCES})
 
 link_directories(${OpenCV_LIBRARY_DIRS} ${NOMACS_BUILD_DIRECTORY}/$(CONFIGURATION) ${NOMACS_BUILD_DIRECTORY}/libs ${NOMACS_BUILD_DIRECTORY})
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${PLUGIN_SOURCES} ${PLUGIN_MOC_SRC} ${PLUGIN_RCC} ${PLUGIN_HEADERS})	
@@ -132,3 +131,5 @@ IF (MSVC)
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/d.txt DESTINATION ${NOMACS_PLUGIN_INSTALL_DIRECTORY}/${PLUGIN_ID}/${PLUGIN_VERSION}/ CONFIGURATIONS Release)
 	
 ENDIF(MSVC)
+
+qt5_use_modules(${PROJECT_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)

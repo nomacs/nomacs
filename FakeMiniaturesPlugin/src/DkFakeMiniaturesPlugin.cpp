@@ -139,7 +139,5 @@ QImage DkFakeMiniaturesPlugin::runPlugin(const QString &runID, const QImage &ima
 	return image;
 };
 
-Q_EXPORT_PLUGIN2("com.nomacs.ImageLounge.DkFakeMiniaturesPlugin/1.0", DkFakeMiniaturesPlugin)
-
 };
 
