@@ -535,6 +535,25 @@ QString DkUtils::cleanFraction(const QString& frac) {
 	return cleanFrac;
 }
 
+QString DkUtils::resolveFraction(const QString& frac) {
+
+	QString result = frac;
+	QStringList sList = frac.split('/');
+
+	if (sList.size() == 2) {
+	
+		bool nok = false;
+		bool dok = false;
+		int nom = sList[0].toInt(&nok);
+		int denom = sList[1].toInt(&dok);
+
+		if (nok && dok && denom)
+			result = QString::number((double)nom/denom);
+	}
+
+	return result;
+}
+
 // code from: http://stackoverflow.com/questions/5625884/conversion-of-stdwstring-to-qstring-throws-linker-error
 std::wstring DkUtils::qStringToStdWString(const QString &str) {
 #ifdef _MSC_VER

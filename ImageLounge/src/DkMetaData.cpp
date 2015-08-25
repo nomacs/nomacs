@@ -1290,13 +1290,17 @@ QString DkMetaDataHelper::getApertureValue(QSharedPointer<DkMetaDataT> metaData)
 	QString key = camSearchTags.at(DkSettings::camData_aperture); 
 
 	QString value = metaData->getExifValue(key);
-	if (value.isEmpty()) value = metaData->getExifValue("FNumber");	// try alternative tag
-
 	QStringList sList = value.split('/');
 
 	if (sList.size() == 2) {
 		double val = std::pow(1.4142, sList[0].toDouble()/sList[1].toDouble());	// see the exif documentation (e.g. http://www.media.mit.edu/pia/Research/deepview/exif.html)
 		value = QString::fromStdString(DkUtils::stringify(val,1));
+	}
+
+	// just divide the fnumber
+	if (value.isEmpty()) {
+		value = metaData->getExifValue("FNumber");	// try alternative tag
+		value = DkUtils::resolveFraction(value);
 	}
 
 	return value;
@@ -1525,7 +1529,9 @@ QString DkMetaDataHelper::resolveSpecialValue(QSharedPointer<DkMetaDataT> metaDa
 			qDebug() << "UNICODE conversion started...";
 			rValue = QString::fromUtf16((ushort*)(rValue.data()), rValue.size());
 		}
-
+	}
+	else {
+		rValue = DkUtils::resolveFraction(rValue);	// resolve fractions
 	}
 
 	return rValue;

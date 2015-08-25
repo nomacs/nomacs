@@ -84,7 +84,7 @@ void DkPluginManager::init() {
 	pluginFiles = QMap<QString, QString>();
 	pluginIdList = QList<QString>();
 	runId2PluginId = QMap<QString, QString>();
-	//loadEnabledPlugins(); //pluginLoadingDebuging -> comment this line
+	loadEnabledPlugins(); //pluginLoadingDebuging -> comment this line
 
 	dialogWidth = 700;
 	dialogHeight = 500;
