@@ -70,7 +70,6 @@ if(NOT ENABLE_PLUGINS)
   
   
 else()
-  message(WARNING "ENABLE_PLUGINS is highly experimentally for Unix/Linux")
   add_definitions(-DWITH_PLUGINS)
 
 	include(CheckCXXCompilerFlag)
@@ -106,10 +105,11 @@ else()
   target_include_directories(${DLL_NAME} PRIVATE  ${OpenCV_INCLUDE_DIRS})
   target_link_libraries(${DLL_NAME} ${QT_LIBRARIES} ${EXIV2_LIBRARIES} ${LIBRAW_LIBRARIES} ${OpenCV_LIBRARIES} ${VERSION_LIB} ${TIFF_LIBRARIES} ${HUPNP_LIBS} ${HUPNPAV_LIBS} ${WEBP_LIBRARIES} ${WEBP_STATIC_LIBRARIES})
   add_dependencies(${BINARY_NAME} ${DLL_NAME})
+  set_target_properties(${DLL_NAME} PROPERTIES PREFIX "")
 
   if (ENABLE_QT5)
 	  qt5_use_modules(${BINARY_NAME} Widgets Gui Network LinguistTools PrintSupport)
-	  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport)
+	  qt5_use_modules(${DLL_NAME} Widgets Gui Network LinguistTools PrintSupport Concurrent)
   ENDIF()
 
 
