@@ -120,9 +120,11 @@ public:
 
 	//code for metadata crop:
 	void xmpSidecarTest();
-	void saveRectToXMP(DkRotatingRect rect);
+	void saveRectToXMP(DkRotatingRect rect, int imgWidth, int imgHeight);
+	float getFloatPrecision(float value, double precision);
 	Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp();
 	bool setXMPValue(Exiv2::XmpData& xmpData, QString xmpKey, QString xmpValue);
+	void getRectCoordinates(DkRotatingRect rect, int imgWidth, int imgHeight, float& top, float& bottom, float& left, float& right);
 
 protected:
 	Exiv2::Image::AutoPtr exifImg;

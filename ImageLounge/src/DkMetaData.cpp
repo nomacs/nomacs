@@ -1214,12 +1214,96 @@ void DkMetaDataT::printMetaData() const {
 }
 
 
-void DkMetaDataT::saveRectToXMP(DkRotatingRect rect) {
+void DkMetaDataT::saveRectToXMP(DkRotatingRect rect, int imgWidth, int imgHeight) {
 
-	Exiv2::Image::AutoPtr xmpImg = getExternalXmp();
+	Exiv2::Image::AutoPtr xmpSidecar = getExternalXmp();
+	Exiv2::XmpData sidecarXmpData = xmpSidecar->xmpData();
 
 
 
+	float top, bottom, left, right;
+
+	getRectCoordinates(rect, imgWidth, imgHeight, top, bottom, left, right);
+
+	// precision = 6 is what Adobe Camera Raw uses (as it seems)
+	QString topStr, bottomStr, leftStr, rightStr, cropAngleStr;
+	
+	topStr.setNum(top, 'g', 6);
+	bottomStr.setNum(bottom, 'g', 6);
+	leftStr.setNum(left, 'g', 6);
+	rightStr.setNum(right, 'g', 6);
+
+	double radian = rect.getAngle();
+	double degree = radian * 180 / CV_PI;
+
+	cropAngleStr.setNum(degree, 'g', 6);
+
+	qDebug() << topStr;
+
+	// Set the cropping coordinates here in percentage:
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropTop", topStr);
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropLeft", leftStr);
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropBottom", bottomStr);
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropRight", rightStr);
+
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropAngle", cropAngleStr);
+
+	setXMPValue(sidecarXmpData, "Xmp.crs.HasCrop", "True");
+	// These key values are set by camera raw automatically, but I have found no documentation for them:
+	setXMPValue(sidecarXmpData, "Xmp.crs.CropConstrainToWarp", "1");
+	setXMPValue(sidecarXmpData, "Xmp.crs.crs:AlreadyApplied", "False");
+
+
+	// Save the crop coordinates to the sidecar file:
+	xmpSidecar->setXmpData(sidecarXmpData);
+	xmpSidecar->writeMetadata();
+
+	
+
+}
+
+void DkMetaDataT::getRectCoordinates(DkRotatingRect rect, int imgWidth, int imgHeight, float& top, float& bottom, float& left, float& right) {
+
+	top = imgHeight;
+	bottom = 0;
+	left = imgWidth;
+	right = 0;
+		
+	QPolygonF polygon = rect.getPoly();
+
+
+	for (int i = 0; i < polygon.size(); i++) {
+
+		QPointF point = polygon.at(i);
+		
+		if (point.x() < left)
+			left = point.x();
+		if (point.x() > right)
+			right = point.x();
+
+		if (point.y() < top)
+			top = point.y();
+		if (point.y() > bottom)
+			bottom = point.y();
+
+	}
+
+	// qDebug() << "boundary: " << "left: " << left << " right: " << right << " top: " << top << " bottom: " << bottom;	
+	// qDebug() << "polygon: " << polygon.at(i);
+
+	// Normalize the coordinates:
+
+	top /= imgHeight;
+	bottom /= imgHeight;
+	left /= imgWidth;
+	right /= imgWidth;
+	
+
+}
+
+float DkMetaDataT::getFloatPrecision(float value, double precision)
+{
+    return (floor((value * pow(10, precision) + 0.5)) / pow(10, precision)); 
 }
 
 Exiv2::Image::AutoPtr DkMetaDataT::getExternalXmp() {

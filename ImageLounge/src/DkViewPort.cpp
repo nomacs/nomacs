@@ -328,6 +328,7 @@ void DkControlWidget::connectWidgets() {
 	connect(player, SIGNAL(previousSignal()), viewport, SLOT(loadPrevFileFast()));
 	connect(player, SIGNAL(nextSignal()), viewport, SLOT(loadNextFileFast()));
 
+	
 	// cropping
 	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
 	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
@@ -555,11 +556,6 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	updateRating(metaData->getRating());
 
 	
-	//code for metadata cropping:
-
-	//metaData->printMetaData();
-	//metaData->metaDataCrop();
-	metaData->xmpSidecarTest();
 }
 
 void DkControlWidget::setInfo(QString msg, int time, int location) {
@@ -2360,10 +2356,21 @@ void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
 	painter.drawImage(QRect(QPoint(), getImage().size()), getImage(), QRect(QPoint(), getImage().size()));
 	painter.end();
 
+
+	// freud:
+	QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
+	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
+
+	
+
+	metaData->saveRectToXMP(rect, imgC->image().width(), imgC->image().height());
+	
+
+/* freud
 	QSharedPointer<DkImageContainerT> imgC = loader->getCurrentImage();
 	imgC->setImage(img);
 	setEditedImage(imgC);
-	
+*/	
 	//imgQt = img;
 	//update();
 
