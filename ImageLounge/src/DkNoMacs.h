@@ -658,6 +658,7 @@ protected:
 	QMenu* viewMenu;
 	QMenu* syncMenu;
 	QMenu* pluginsMenu;
+	QVector<QMenu*> pluginSubMenus;
 	QMenu* helpMenu;
 	QMenu* contextMenu;
 

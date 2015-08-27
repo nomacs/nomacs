@@ -1450,6 +1450,7 @@ void DkNoMacs::assignCustomPluginShortcuts() {
 			// assign widget shortcuts to all of them
 			action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 			pluginsDummyActions.append(action);
+			qDebug() << "new plugin action: " << psKeys.at(i);
 		}
 
 		settings.endGroup();
@@ -3375,7 +3376,14 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
 #ifdef WITH_PLUGINS
 	initPluginManager();
-	shortcutsDialog->addActions(pluginsActions, pluginsMenu->title());
+
+	QVector<QAction*> allPluginActions = pluginsActions;
+
+	for (const QMenu* m : pluginSubMenus) {
+		allPluginActions << m->actions().toVector();
+	}
+
+	shortcutsDialog->addActions(allPluginActions, pluginsMenu->title());
 #endif // WITH_PLUGINS
 	shortcutsDialog->addActions(helpActions, helpMenu->title());
 
@@ -3611,8 +3619,6 @@ void DkNoMacs::addPluginsToMenu() {
 	QList<QPair<QString, QString> > sortedNames = QList<QPair<QString, QString> >();
 	QStringList pluginMenu = QStringList();
 
-	QVector<QMenu*> pluginSubMenus = QVector<QMenu*>();
-
 	for (int i = 0; i < pluginIdList.size(); i++) {
 
 		DkPluginInterface* cPlugin = loadedPlugins.value(pluginIdList.at(i));
@@ -3734,6 +3740,8 @@ void DkNoMacs::createPluginsMenu() {
 #ifdef WITH_PLUGINS
 
 	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+
+	qDebug() << "id list: " << pluginIdList;
 
 	if(pluginIdList.isEmpty()) { // no  plugins
 		pluginsMenu->clear();
@@ -3867,9 +3875,15 @@ void DkNoMacs::runPluginFromShortcut() {
 
 	initPluginManager();
 	
-	for (int i = 0; i < pluginsActions.size(); i++)
-		if (pluginsActions.at(i)->text().compare(actionName) == 0) {
-			pluginsActions.at(i)->trigger();
+	QVector<QAction*> allPluginActions = pluginsActions;
+
+	for (const QMenu* m : pluginSubMenus) {
+		allPluginActions << m->actions().toVector();
+	}
+
+	for (int i = 0; i < allPluginActions.size(); i++)
+		if (allPluginActions.at(i)->text().compare(actionName) == 0) {
+			allPluginActions.at(i)->trigger();
 			break;
 		}
 #endif // WITH_PLUGINS
