@@ -70,3 +70,8 @@ OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
 IF (ENABLE_DOC)
 	add_subdirectory(DocAnalysisPlugin)
 ENDIF(ENABLE_DOC)
+
+OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" OFF)
+IF (ENABLE_PAGE)
+	add_subdirectory(PageExtractionPlugin)
+ENDIF(ENABLE_PAGE)
