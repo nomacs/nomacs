@@ -174,9 +174,9 @@ QList<QAction*> PLUGIN_CLASS_NAME::pluginActions(QWidget* parent) {
 **/
 QImage PLUGIN_CLASS_NAME::runPlugin(const QString &runID, const QImage &image) const {
 
-	if(!runID.isEmpty()) {
-		bool horizontally = (runID == mRunIDs[ID_ACTION1]);
-		return image.mirrored(horizontally, !horizontally);
+	if(runID == mRunIDs[ID_ACTION1]) {
+		// do what every you want e.g.:
+		return image.mirrored(true, false);
 	}
 
 	// wrong runID? - do nothing

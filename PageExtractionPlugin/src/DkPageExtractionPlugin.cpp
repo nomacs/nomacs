@@ -28,19 +28,6 @@
 #include <QAction>
 #pragma warning(pop)		// no warnings from includes - end
 
- /*******************************************************************************************************
-  * DkPageExtractionPlugin	- enter the plugin class name (e.g. DkPageExtractionPlugin)
-  * Markus Diem			- your name/pseudonym whatever
-  * 27.08.2015				- today...
-  * Detects document pages in images		- describe your plugin in one sentence
-  * Document Page Extraction			- a user friendly name (e.g. Flip Image)
-  * Detects page borders in images (or more generally speaking: rectangles)	- status tip of your plugin
-  * 1638a7f56b814ee48c6eb8a7710e74b4			- generate an ID using: GUID without hyphens generated at http://www.guidgenerator.com/
-  * id_crop_to_page			- your action name (e.g. id_flip_horizontally)
-  * Crop to Page		- your action name (e.g. Flip Horizotally - user friendly!)
-  * Finds a page in a document image and then crops the image to that page.		- your action status tip (e.g. Flips an image horizontally - user friendly!)
-  *******************************************************************************************************/
-
 namespace nmc {
 
 /**
@@ -175,9 +162,9 @@ QList<QAction*> DkPageExtractionPlugin::pluginActions(QWidget* parent) {
 **/
 QImage DkPageExtractionPlugin::runPlugin(const QString &runID, const QImage &image) const {
 
-	if(!runID.isEmpty()) {
-		bool horizontally = (runID == mRunIDs[id_crop_to_page]);
-		return image.mirrored(horizontally, !horizontally);
+	if(!runID.isEmpty() && runID == mRunIDs[id_crop_to_page]) {
+		// do what every you want e.g.:
+		return image.mirrored(true, false);
 	}
 
 	// wrong runID? - do nothing
