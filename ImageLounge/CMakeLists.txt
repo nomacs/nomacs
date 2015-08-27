@@ -38,10 +38,16 @@ option(ENABLE_QUAZIP "Compile with QuaZip (allows opening .zip files)" ON)
 
 if(MSVC)
   option(ENABLE_UPNP "Compile with UPNP" OFF)
-  option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" ON)
+  option(ENABLE_PLUGINS "Compile with plugin system" ON)
+elseif(APPLE)
+  option(ENABLE_UPNP "Compile with UPNP" OFF)
+  option(ENABLE_PLUGINS "Compile with plugin system" OFF)
+elseif(UNIX)
+  option(ENABLE_UPNP "Compile with UPNP" OFF)
+  option(ENABLE_PLUGINS "Compile with plugin system" ON)
 else()
   option(ENABLE_UPNP "Compile with UPNP" OFF)
-  option(ENABLE_PLUGINS "Compile with plugin system (currently only windows is supported)" OFF)
+  option(ENABLE_PLUGINS "Compile with plugin system" OFF)
 endif()
 
 # load paths from the user file if exists 
@@ -138,3 +144,9 @@ endif()
 # foreach (_variableName ${_variableNames})
     # message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
+
+if(UNIX AND ENABLE_PLUGINS)
+  SET(NOMACS_FOUND true)
+	add_subdirectory(plugins)
+endif()
+
