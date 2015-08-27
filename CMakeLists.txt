@@ -35,9 +35,9 @@ if(CMAKE_CL_64)
 else()
 	SET(PLUGIN_ARCHITECTURE "x86")
 endif()
+
+
 set(BUILDING_MULTIPLE_PLUGINS true)
-
-
 
 IF (ENABLE_JP2K)
 	add_subdirectory(jasper-1.900.1)
