@@ -1231,8 +1231,10 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fileInfo.suffix().toStdString().c_str());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
+#if QT_VERSION >= 0x050500
 		imgWriter->setOptimizedWrite(true);			// this saves space TODO: user option here?
 		imgWriter->setProgressiveScanWrite(true);
+#endif
 		saved = imgWriter->write(sImg);
 		delete imgWriter;
 	}

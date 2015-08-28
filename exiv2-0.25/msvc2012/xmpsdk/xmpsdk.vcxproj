@@ -160,6 +160,7 @@
       <BrowseInformation />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)xmpsdk.lib</OutputFile>
@@ -206,6 +207,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)xmpsdk.lib</OutputFile>
@@ -251,6 +253,7 @@
       <PrecompiledHeader />
       <BrowseInformation />
       <WarningLevel>Level3</WarningLevel>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)xmpsdk.lib</OutputFile>
@@ -296,6 +299,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)xmpsdk.lib</OutputFile>
