@@ -22,12 +22,15 @@ OPTION (ENABLE_TRANSFORM "Compile Transform plugin" ON)
 OPTION (ENABLE_THRESHOLD "Compile Threshold plugin" ON)
 OPTION (ENABLE_PAINT "Compile Paint plugin" ON)
 OPTION (ENABLE_DOC "Compile DocAnalysis plugin" OFF)
+OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" OFF)
+
 
 NMC_PREPARE_PLUGIN()
 
 NMC_FINDQT()
 
 # OpenCV
+# TODO ein if wenn zumindest 1 projekt ausgewählt ist das opencv braucht
 NMC_FIND_OPENCV()
 
 if(CMAKE_CL_64)
@@ -74,7 +77,6 @@ IF (ENABLE_DOC)
 	add_subdirectory(DocAnalysisPlugin)
 ENDIF(ENABLE_DOC)
 
-OPTION (ENABLE_PAGE "Compile Document Page Extraction plugin" OFF)
 IF (ENABLE_PAGE)
 	add_subdirectory(PageExtractionPlugin)
 ENDIF(ENABLE_PAGE)
