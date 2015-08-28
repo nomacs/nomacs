@@ -202,8 +202,8 @@ void DkIntersectPoly::computeBoundingBox(std::vector<DkVector> vec, DkVector *mi
 
 	for (unsigned int idx = 0; idx < vec.size(); idx++) {
 
-		*minRange = minRange->getMinVec(vec[idx]);
-		*maxRange = maxRange->getMaxVec(vec[idx]);	// in our case it's the max vector
+		*minRange = minRange->minVec(vec[idx]);
+		*maxRange = maxRange->maxVec(vec[idx]);	// in our case it's the max vector
 	}
 };
 
@@ -349,7 +349,7 @@ void DkPolyRect::draw(cv::Mat& img, const cv::Scalar& col) const {
 
 	const cv::Point* p = &cvPts[0];
 	int n = (int)cvPts.size();
-	polylines(img, &p, &n, 1, true, col, 3, CV_AA);
+	cv::polylines(img, &p, &n, 1, true, col, 4);
 }
 
 std::vector<DkVector> DkPolyRect::getCorners() const {

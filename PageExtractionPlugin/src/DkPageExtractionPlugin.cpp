@@ -23,9 +23,13 @@
  *******************************************************************************************************/
 
 #include "DkPageExtractionPlugin.h"
+#include "DkPageSegmentation.h"
+
+#include "DkImageStorage.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QAction>
+#include <QDebug>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -40,13 +44,15 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	runIds.resize(id_end);
 
 	runIds[id_crop_to_page] = "1638a7f56b814ee48c6eb8a7710e74b4";
+	runIds[id_draw_to_page] = "2af5c9f018ce4a0fbfaacc5e3a48a4b5";
 	mRunIDs = runIds.toList();
 
 	// create menu actions
 	QVector<QString> menuNames;
 	menuNames.resize(id_end);
-
+		
 	menuNames[id_crop_to_page] = tr("Crop to Page");
+	menuNames[id_draw_to_page] = tr("Draw to Page");
 	mMenuNames = menuNames.toList();
 
 	// create menu status tips
@@ -54,6 +60,7 @@ DkPageExtractionPlugin::DkPageExtractionPlugin(QObject* parent) : QObject(parent
 	statusTips.resize(id_end);
 
 	statusTips[id_crop_to_page] = tr("Finds a page in a document image and then crops the image to that page.");
+	statusTips[id_draw_to_page] = tr("Finds a page in a document image and then draws the found document boundaries.");
 	mMenuStatusTips = statusTips.toList();
 }
 
@@ -145,11 +152,11 @@ QList<QAction*> DkPageExtractionPlugin::pluginActions(QWidget* parent) {
 		ca->setData(mRunIDs[id_crop_to_page]);	// runID needed for calling function runPlugin()
 		mActions.append(ca);
 
-		//QAction* ca = new QAction(mMenuNames[ID_ACTION2], this);
-		//ca->setObjectName(mMenuNames[ID_ACTION2]);
-		//ca->setStatusTip(mMenuStatusTips[ID_ACTION2]);
-		//ca->setData(mRunIDs[ID_ACTION2]);	// runID needed for calling function runPlugin()
-		//mActions.append(ca);
+		ca = new QAction(mMenuNames[id_draw_to_page], this);
+		ca->setObjectName(mMenuNames[id_draw_to_page]);
+		ca->setStatusTip(mMenuStatusTips[id_draw_to_page]);
+		ca->setData(mRunIDs[id_draw_to_page]);	// runID needed for calling function runPlugin()
+		mActions.append(ca);
 	}
 
 	return mActions;
@@ -162,9 +169,25 @@ QList<QAction*> DkPageExtractionPlugin::pluginActions(QWidget* parent) {
 **/
 QImage DkPageExtractionPlugin::runPlugin(const QString &runID, const QImage &image) const {
 
-	if(!runID.isEmpty() && runID == mRunIDs[id_crop_to_page]) {
-		// do what every you want e.g.:
-		return image.mirrored(true, false);
+	if (!mRunIDs.contains(runID))
+		return image;
+
+	cv::Mat img = DkImage::qImage2Mat(image);
+
+	// run the page segmentation
+	DkPageSegmentation segM(img);
+	segM.compute();
+	segM.filterDuplicates();
+
+	// do whatever the user requested
+	if(runID == mRunIDs[id_crop_to_page]) {
+		return segM.getCropped(image);
+	}
+	else if(runID == mRunIDs[id_draw_to_page]) {
+		
+		cv::Mat dImg = DkImage::qImage2Mat(image);
+		segM.draw(dImg);
+		return DkImage::mat2QImage(dImg);
 	}
 
 	// wrong runID? - do nothing

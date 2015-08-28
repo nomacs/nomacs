@@ -24,27 +24,72 @@
 
 #include "DkPageSegmentation.h"
 #include "DkPageSegmentationUtils.h"
+#include "DkMath.h"	// nomacs
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <QPainter>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
 
 // DkSegmentBurger --------------------------------------------------------------------
 // This code is based on OpenCV's rectangle sample (squares.cpp)
-DkBurgerSegmentation::DkBurgerSegmentation(const cv::Mat& colImg /* = cv::Mat */) {
+DkPageSegmentation::DkPageSegmentation(const cv::Mat& colImg /* = cv::Mat */) {
 
 	this->img = colImg;
 }
 
-cv::Mat DkBurgerSegmentation::getDebugImg() const {
+cv::Mat DkPageSegmentation::getDebugImg() const {
 
 	return dbgImg;	// is NULL if releaseDebug is DK_RELEASE_IMGS
 }
 
-void DkBurgerSegmentation::compute() {
+QImage DkPageSegmentation::getCropped(const QImage & img) const {
+
+	// find the largest rectangle
+	std::vector<cv::Point> largeRect;
+	double maxArea = -1;
+
+	for (const DkPolyRect& p : rects) {
+		
+		double ca = p.getAreaConst();
+
+		if (ca > maxArea) {
+			maxArea = ca;
+			largeRect = p.toCvPoints();
+		}
+	}
+
+	if (maxArea != -1) {
+		
+		cv::RotatedRect rect = cv::minAreaRect(largeRect);
+
+		// convert to corners
+		DkVector xVec = DkVector(rect.size.width * 0.5f, 0);
+		xVec.rotate(-rect.angle);
+
+		DkVector yVec = DkVector(0, rect.size.height * 0.5f);
+		yVec.rotate(-rect.angle);
+
+		QPolygonF poly;
+		poly.append(DkVector(rect.center - xVec - yVec).getQPointF());
+		poly.append(DkVector(rect.center + xVec - yVec).getQPointF());
+		poly.append(DkVector(rect.center + xVec + yVec).getQPointF());
+		poly.append(DkVector(rect.center - xVec + yVec).getQPointF());
+
+		DkRotatingRect rr;
+		rr.setPoly(poly);
+
+		//largeRect.clip(img.size());
+		return cropToRect(img, rr);
+	}
+
+	return img;	// no document page found
+}
+
+void DkPageSegmentation::compute() {
 
 	cv::Mat imgLab;
 
@@ -58,7 +103,7 @@ void DkBurgerSegmentation::compute() {
 	qDebug() << "[DkPageSegmentation] " << rects.size() << " rectangles circles found resize factor: " << scale;
 }
 
-cv::Mat DkBurgerSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
+cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPolyRect>& rects) const {
 
 	cv::Mat tImg, gray;
 
@@ -182,28 +227,60 @@ cv::Mat DkBurgerSegmentation::findRectangles(const cv::Mat& img, std::vector<DkP
 
 		DkBox b = p.getBBox();
 
-		if (!(b.size().maxCoord() > std::max(img.rows, img.cols)*maxSideFactor ||
-			b.size().minCoord() > std::min(img.rows, img.cols)*maxSideFactor))
+		if (!(b.size().height > img.rows*maxSideFactor ||
+			b.size().width > img.cols*maxSideFactor)) {
 			noLargeRects.push_back(p);
-		//else {
-		//	moutc << "[" << className << "] filtered because: " <<  b.size().maxCoord() << ">" << std::max(img.rows, img.cols)*maxSideFactor 
-		//		<< " OR " << b.size().minCoord() << ">" << std::min(img.rows, img.cols)*maxSideFactor << dkendl;
-		//}
+		}
 	}
+
 	rects = noLargeRects;
 
 	return lImg;
 }
 
-void DkBurgerSegmentation::filterDuplicates(float overlap, float areaRatio) {
+QImage DkPageSegmentation::cropToRect(const QImage & img, const DkRotatingRect & rect, const QColor & bgCol) const {
+	
+	QTransform tForm; 
+	QPointF cImgSize;
+
+	rect.getTransform(tForm, cImgSize);
+
+	if (cImgSize.x() < 0.5f || cImgSize.y() < 0.5f) {
+		return img;
+	}
+
+	qDebug() << cImgSize;
+
+	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
+	double minD = qMin(abs(angle), abs(angle-CV_PI*0.5));
+
+	QImage cImg = QImage(qRound(cImgSize.x()), qRound(cImgSize.y()), QImage::Format_ARGB32);
+	cImg.fill(bgCol.rgba());
+
+	// render the image into the new coordinate system
+	QPainter painter(&cImg);
+	painter.setWorldTransform(tForm);
+
+	// for rotated rects we want perfect anti-aliasing
+	if (minD > FLT_EPSILON)
+		painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+
+	painter.drawImage(QRect(QPoint(),img.size()), img, QRect(QPoint(), img.size()));
+	painter.end();
+
+	return cImg;
+}
+
+void DkPageSegmentation::filterDuplicates(float overlap, float areaRatio) {
 
 	filterDuplicates(rects, overlap, areaRatio);
 }
 
-void DkBurgerSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, float overlap, float areaRatio) const {
+void DkPageSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, float overlap, float areaRatio) const {
 
 	std::vector<int> delIdx;
 	std::sort(rects.rbegin(), rects.rend(), &DkPolyRect::compArea);	// rbegin() -> sort descending
+	qDebug() << "area ratio: " << areaRatio;
 
 	for (int idx = 0; idx < (int)rects.size(); idx++) {
 
@@ -226,8 +303,11 @@ void DkBurgerSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, floa
 			double oA = oR.getArea();
 
 			// ignore rectangles with totally different area
-			if (cA/oA < areaRatio)	// since we sort, we know that oA is larger
+			if (oA/cA < areaRatio)	// since we sort, we know that oA is larger
 				continue;
+			else {
+				qDebug() << "area ratio:" << cA/oA;
+			}
 
 			double intersection = abs(oR.intersectArea(cR));
 
@@ -274,15 +354,14 @@ void DkBurgerSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, floa
 	}
 }
 
-void DkBurgerSegmentation::draw(cv::Mat& img, const cv::Scalar& col) const {
+void DkPageSegmentation::draw(cv::Mat& img, const cv::Scalar& col) const {
 
 	draw(img, rects, col);
 }
 
-void DkBurgerSegmentation::draw(cv::Mat& img, const std::vector<DkPolyRect>& rects, const cv::Scalar& col) const {
+void DkPageSegmentation::draw(cv::Mat& img, const std::vector<DkPolyRect>& rects, const cv::Scalar& col) const {
 
-	for(size_t idx = 0; idx < rects.size(); idx++) {
-		const DkPolyRect& r = rects[idx];
+	for(const DkPolyRect& r : rects) {
 		r.draw(img, col);
 	}
 }
