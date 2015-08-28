@@ -185,9 +185,9 @@ QImage DkPageExtractionPlugin::runPlugin(const QString &runID, const QImage &ima
 	}
 	else if(runID == mRunIDs[id_draw_to_page]) {
 		
-		cv::Mat dImg = DkImage::qImage2Mat(image);
+		QImage dImg = image;
 		segM.draw(dImg);
-		return DkImage::mat2QImage(dImg);
+		return dImg;
 	}
 
 	// wrong runID? - do nothing

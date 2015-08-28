@@ -46,14 +46,14 @@ cv::Mat DkPageSegmentation::getDebugImg() const {
 	return dbgImg;	// is NULL if releaseDebug is DK_RELEASE_IMGS
 }
 
-QImage DkPageSegmentation::getCropped(const QImage & img) const {
+DkPolyRect DkPageSegmentation::getMaxRect() const {
 
 	// find the largest rectangle
-	std::vector<cv::Point> largeRect;
+	DkPolyRect largeRect;
 	double maxArea = -1;
 
 	for (const DkPolyRect& p : rects) {
-		
+
 		double ca = p.getAreaConst();
 
 		if (ca > maxArea) {
@@ -62,7 +62,15 @@ QImage DkPageSegmentation::getCropped(const QImage & img) const {
 		}
 	}
 
-	if (maxArea != -1) {
+	return largeRect;
+}
+
+QImage DkPageSegmentation::getCropped(const QImage & img) const {
+
+	// find the largest rectangle
+	std::vector<cv::Point> largeRect = getMaxRect().toCvPoints();
+	
+	if (!rects.empty()) {
 		
 		cv::RotatedRect rect = cv::minAreaRect(largeRect);
 
@@ -364,6 +372,38 @@ void DkPageSegmentation::filterDuplicates(std::vector<DkPolyRect>& rects, float 
 void DkPageSegmentation::draw(cv::Mat& img, const cv::Scalar& col) const {
 
 	draw(img, rects, col);
+}
+
+void DkPageSegmentation::draw(QImage& img, const QColor& col) const {
+
+	double mA = getMaxRect().getArea();
+	std::vector<DkPolyRect> fRects;
+
+	for (const DkPolyRect& r : rects) {
+
+		if (r.getAreaConst() > mA*0.9)
+			fRects.push_back(r);
+	}
+
+	QColor colA = col;
+	colA.setAlpha(30);
+
+	QPen pen;
+	pen.setColor(col);
+	pen.setWidth(10);
+
+	QPainter p(&img);
+	p.setPen(pen);
+
+	for (const DkPolyRect& r : fRects) {
+		
+		QPolygonF poly = r.toPolygon();
+		p.drawPolygon(poly);
+
+		QPainterPath pa;
+		pa.addPolygon(poly);
+		p.fillPath(pa, colA);
+	}
 }
 
 void DkPageSegmentation::draw(cv::Mat& img, const std::vector<DkPolyRect>& rects, const cv::Scalar& col) const {

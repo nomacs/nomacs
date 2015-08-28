@@ -385,5 +385,16 @@ std::vector<cv::Point> DkPolyRect::toCvPoints() const {
 	return cvPts;
 }
 
+QPolygonF DkPolyRect::toPolygon() const {
+
+	QPolygonF poly;
+
+	for (const DkVector& v : pts) {
+		poly.append(v.getQPointF());
+	}
+
+	return poly;
+}
+
 };
 

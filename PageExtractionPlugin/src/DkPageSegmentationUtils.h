@@ -431,6 +431,7 @@ public:
 	double getMaxCosine() const { return maxCosine; };
 	void draw(cv::Mat& img, const cv::Scalar& col = cv::Scalar(0, 100, 255)) const;
 	std::vector<cv::Point> toCvPoints() const;
+	QPolygonF toPolygon() const;
 	std::vector<DkVector> getCorners() const;
 	DkBox getBBox() const;
 	double intersectArea(const DkPolyRect& pr) const;
