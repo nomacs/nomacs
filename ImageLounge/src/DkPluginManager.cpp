@@ -84,7 +84,10 @@ void DkPluginManager::init() {
 	pluginFiles = QMap<QString, QString>();
 	pluginIdList = QList<QString>();
 	runId2PluginId = QMap<QString, QString>();
+
+//#ifndef _DEBUG
 	loadEnabledPlugins(); //pluginLoadingDebuging -> comment this line
+//#endif
 
 	dialogWidth = 700;
 	dialogHeight = 500;
@@ -200,7 +203,7 @@ bool DkPluginManager::singlePluginLoad(QString filePath) {
 	}
 	else {
 		delete loader;
-		//qDebug() << "could not load: " << filePath;
+		qDebug() << "could not load: " << filePath << "NULL Object";
 		return false;
 	}
 
@@ -252,7 +255,7 @@ void DkPluginManager::loadPlugins() {
 			QString shortFileName = fileName.split("/").last();
 			if (!loadedPluginFileNames.contains(shortFileName)) { // prevent double loading of the same plugin
 
-				qDebug() << "close to loading:" << pluginsDir.absoluteFilePath(fileName);
+				//qDebug() << "close to loading:" << pluginsDir.absoluteFilePath(fileName);
 				if (singlePluginLoad(pluginsDir.absoluteFilePath(fileName)))
 					loadedPluginFileNames.append(shortFileName);
 			}
