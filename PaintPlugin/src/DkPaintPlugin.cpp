@@ -136,19 +136,21 @@ QString DkPaintPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QImage DkPaintPlugin::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<DkImageContainerT> DkPaintPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> image) const {
 	
+	if (!image)
+		image = QSharedPointer<DkImageContainerT>();
+
 	//for a viewport plugin runID and image are null
 	if (viewport) {
 
 		DkPaintViewPort* paintViewport = dynamic_cast<DkPaintViewPort*>(viewport);
 
-		QImage retImg = QImage();
-		if (!paintViewport->isCanceled()) retImg = paintViewport->getPaintedImage();
+		if (!paintViewport->isCanceled()) 
+			image->setImage(paintViewport->getPaintedImage());
 
 		viewport->setVisible(false);
-	
-		return retImg;
+		
 	}
 	
 	return image;

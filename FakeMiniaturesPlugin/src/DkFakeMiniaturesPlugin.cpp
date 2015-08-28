@@ -2,7 +2,7 @@
  DkFakeMiniaturesPlugin.cpp
  Created on:	14.04.2013
 
- nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
+ nomacs is a fast and small imgC viewer with the capability of synchronizing multiple instances
 
  Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
@@ -51,8 +51,8 @@ QString DkFakeMiniaturesPlugin::pluginName() const {
 **/
 QString DkFakeMiniaturesPlugin::pluginDescription() const {
 
-   return QString("<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Apply a fake miniature filter (tilt shift effect) to the image.<br><b>Usage:</b> On the ") +
-	    QString("preview image select (by mouse click move and release) the region without blurring. A blur is applyied depending on the distance from this region. ") +
+   return QString("<b>Created by:</b> Tim Jerman<br><b>Modified:</b> November 2013<br><b>Description:</b> Apply a fake miniature filter (tilt shift effect) to the imgC.<br><b>Usage:</b> On the ") +
+	    QString("preview imgC select (by mouse click move and release) the region without blurring. A blur is applyied depending on the distance from this region. ") +
 		QString("The amount of blur and saturation can be changed with the sliders on the right of the dialog.");
 };
 
@@ -109,26 +109,29 @@ QString DkFakeMiniaturesPlugin::pluginStatusTip(const QString &runID) const {
 /**
 * Main function: runs plug-in based on its ID
 * @param plug-in ID
-* @param current image in the Nomacs viewport
+* @param current imgC in the Nomacs viewport
 **/
-QImage DkFakeMiniaturesPlugin::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<DkImageContainerT> DkFakeMiniaturesPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
 
-	if (runID == "4d29da2b322f44979c55ea0ed4ff158b") {
+	if (runID == "4d29da2b322f44979c55ea0ed4ff158b" && imgC) {
 		QMainWindow* mainWindow = this->getMainWidnow();
 		DkFakeMiniaturesDialog* fakeMiniaturesDialog;
-		if(mainWindow) fakeMiniaturesDialog = new DkFakeMiniaturesDialog(mainWindow);
-		else fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
+		if(mainWindow) 
+			fakeMiniaturesDialog = new DkFakeMiniaturesDialog(mainWindow);
+		else 
+			fakeMiniaturesDialog = new DkFakeMiniaturesDialog();
 
-		fakeMiniaturesDialog->setImage(&image);
+		fakeMiniaturesDialog->setImage(&imgC->image());
 
 		bool done = fakeMiniaturesDialog->exec();
 
-		QImage returnImg(image);
-		if (fakeMiniaturesDialog->wasOkPressed()) returnImg = fakeMiniaturesDialog->getImage();
+		QImage returnImg(imgC->image());
+		if (fakeMiniaturesDialog->wasOkPressed()) 
+			returnImg = fakeMiniaturesDialog->getImage();
 
 		fakeMiniaturesDialog->deleteLater();
 
-		if(!returnImg.isNull()) return returnImg;
+		imgC->setImage(returnImg);
 	}
 	else {
 		QMessageBox msgBox;
@@ -136,7 +139,8 @@ QImage DkFakeMiniaturesPlugin::runPlugin(const QString &runID, const QImage &ima
 		msgBox.setIcon(QMessageBox::Warning);
 		msgBox.exec();
 	}
-	return image;
+
+	return imgC;
 };
 
 };

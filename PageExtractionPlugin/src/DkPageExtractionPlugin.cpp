@@ -167,12 +167,12 @@ QList<QAction*> DkPageExtractionPlugin::pluginActions(QWidget* parent) {
 * @param plugin ID
 * @param image to be processed
 **/
-QImage DkPageExtractionPlugin::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<DkImageContainerT> DkPageExtractionPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
 
-	if (!mRunIDs.contains(runID))
-		return image;
+	if (!mRunIDs.contains(runID) || !imgC)
+		return imgC;
 
-	cv::Mat img = DkImage::qImage2Mat(image);
+	cv::Mat img = DkImage::qImage2Mat(imgC->image());
 
 	// run the page segmentation
 	DkPageSegmentation segM(img);
@@ -181,17 +181,17 @@ QImage DkPageExtractionPlugin::runPlugin(const QString &runID, const QImage &ima
 
 	// do whatever the user requested
 	if(runID == mRunIDs[id_crop_to_page]) {
-		return segM.getCropped(image);
+		imgC->setImage(segM.getCropped(imgC->image()));
 	}
 	else if(runID == mRunIDs[id_draw_to_page]) {
 		
-		QImage dImg = image;
+		QImage dImg = imgC->image();
 		segM.draw(dImg);
-		return dImg;
+		imgC->setImage(dImg);
 	}
 
 	// wrong runID? - do nothing
-	return image;
+	return imgC;
 };
 
 };

@@ -2,7 +2,7 @@
  DkImgTransformationsPlugin.cpp
  Created on:	01.06.2014
 
- nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
+ nomacs is a fast and small imgC viewer with the capability of synchronizing multiple instances
 
  Copyright (C) 2011-2014 Markus Diem <markus@nomacs.org>
  Copyright (C) 2011-2014 Stefan Fiel <stefan@nomacs.org>
@@ -79,11 +79,11 @@ QString DkImgTransformationsPlugin::pluginName() const {
 **/
 QString DkImgTransformationsPlugin::pluginDescription() const {
 
-   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> July 2014<br><b>Description:</b> Apply affine transformations to the selected image. The available transformations are: scale, rotation (with automatic skewness detection), and shear.";
+   return "<b>Created by:</b> Tim Jerman<br><b>Modified:</b> July 2014<br><b>Description:</b> Apply affine transformations to the selected imgC. The available transformations are: scale, rotation (with automatic skewness detection), and shear.";
 };
 
 /**
-* Returns descriptive image
+* Returns descriptive imgC
 **/
 QImage DkImgTransformationsPlugin::pluginDescriptionImage() const {
 
@@ -116,8 +116,9 @@ QStringList DkImgTransformationsPlugin::runID() const {
 **/
 QString DkImgTransformationsPlugin::pluginMenuName(const QString &runID) const {
 
-	if (runID=="e3b02e3999d344d2be3a5f1960c7d616") return "Affine transformations";
-	return "Wrong GUID!";
+	if (runID=="e3b02e3999d344d2be3a5f1960c7d616") 
+		return tr("Affine Transformations");
+	return tr("Wrong GUID!");
 };
 
 /**
@@ -126,31 +127,34 @@ QString DkImgTransformationsPlugin::pluginMenuName(const QString &runID) const {
 **/
 QString DkImgTransformationsPlugin::pluginStatusTip(const QString &runID) const {
 
-	if (runID=="e3b02e3999d344d2be3a5f1960c7d616") return "ImgTransformations on image with colored brush";
-	return "Wrong GUID!";
+	if (runID=="e3b02e3999d344d2be3a5f1960c7d616")
+		return tr("Image Transformations of images");
+	return tr("Wrong GUID!");
 };
 
 /**
 * Main function: runs plugin based on its ID
 * @param run ID
-* @param current image in the Nomacs viewport
+* @param current imgC in the Nomacs viewport
 **/
-QImage DkImgTransformationsPlugin::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<DkImageContainerT> DkImgTransformationsPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
 
-	//for a viewport plugin runID and image are null
-	if (viewport) {
+	//for a viewport plugin runID and imgC are null
+	if (viewport && imgC) {
 
 		DkImgTransformationsViewPort* imgTransformationsViewport = dynamic_cast<DkImgTransformationsViewPort*>(viewport);
 
 		QImage retImg = QImage();
-		if (!imgTransformationsViewport->isCanceled()) retImg = imgTransformationsViewport->getTransformedImage();
+		if (!imgTransformationsViewport->isCanceled()) 
+			retImg = imgTransformationsViewport->getTransformedImage();
 
 		viewport->setVisible(false);
+		imgC->setImage(retImg);
 
-		return retImg;
+		return imgC;
 	}
 
-	return image;
+	return imgC;
 };
 
 /**
@@ -947,7 +951,7 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	//auto rotation selection
 	autoRotateButton = new QPushButton(tr("Auto &Rotate"), this);
 	autoRotateButton->setObjectName("autoRotateButton");
-	autoRotateButton->setToolTip(tr("Automatically rotate image for small skewness"));
+	autoRotateButton->setToolTip(tr("Automatically rotate imgC for small skewness"));
 	autoRotateButton->setStatusTip(autoRotateButton->toolTip());
 
 	//show lines for automatic angle detection
@@ -957,11 +961,11 @@ void DkImgTransformationsToolBar::createLayout(int defaultMode) {
 	showLinesBox->setToolTip(tr("Show lines for angle detection."));
 	showLinesBox->setStatusTip(tr("Show lines (red) for angle detection. Green lines correspond to the selected angle."));
 
-	//crop rotated image
-	cropEnabledBox = new QCheckBox(tr("Crop image"), this);
+	//crop rotated imgC
+	cropEnabledBox = new QCheckBox(tr("Crop imgC"), this);
 	cropEnabledBox->setObjectName("cropEnabledBox");
 	cropEnabledBox->setCheckState(Qt::Unchecked);
-	cropEnabledBox->setToolTip(tr("Crop rotated image if possible"));
+	cropEnabledBox->setToolTip(tr("Crop rotated imgC if possible"));
 	cropEnabledBox->setStatusTip(cropEnabledBox->toolTip());
 
 

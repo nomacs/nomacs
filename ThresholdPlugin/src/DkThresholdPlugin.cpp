@@ -113,8 +113,9 @@ QStringList DkThresholdPlugin::runID() const {
 **/
 QString DkThresholdPlugin::pluginMenuName(const QString &runID) const {
 
-	if (runID=="e46b000ca4804d26b440a7a07c6d9664") return "Threshold on image";
-	return "Wrong GUID!";
+	if (runID=="e46b000ca4804d26b440a7a07c6d9664") 
+		return tr("Threshold Image");
+	return tr("Wrong GUID!");
 };
 
 /**
@@ -123,8 +124,9 @@ QString DkThresholdPlugin::pluginMenuName(const QString &runID) const {
 **/
 QString DkThresholdPlugin::pluginStatusTip(const QString &runID) const {
 
-	if (runID=="e46b000ca4804d26b440a7a07c6d9664") return "Threshold on image with colored brush";
-	return "Wrong GUID!";
+	if (runID=="e46b000ca4804d26b440a7a07c6d9664") 
+		return tr("Creates a binary image.");
+	return tr("Wrong GUID!");
 };
 
 /**
@@ -132,28 +134,28 @@ QString DkThresholdPlugin::pluginStatusTip(const QString &runID) const {
 * @param run ID
 * @param current image in the Nomacs viewport
 **/
-QImage DkThresholdPlugin::runPlugin(const QString &runID, const QImage &image) const {
+QSharedPointer<DkImageContainerT> DkThresholdPlugin::runPlugin(const QString &runID, QSharedPointer<DkImageContainerT> imgC) const {
 
-	//for a viewport plugin runID and image are null
-	if (viewport) {
+	//for a viewport plugin runID and imgC are null
+	if (viewport && imgC) {
 
 		DkThresholdViewPort* thresholdViewport = dynamic_cast<DkThresholdViewPort*>(viewport);
 
 		QImage retImg = QImage();
-		if (!thresholdViewport->isCanceled()) retImg = thresholdViewport->getThresholdedImage(true);
+		if (!thresholdViewport->isCanceled()) 
+			imgC->setImage(thresholdViewport->getThresholdedImage(true));
 		else {
 			if (parent()) {
 				DkBaseViewPort* viewport = dynamic_cast<DkBaseViewPort*>(parent());
-				if (viewport) viewport->setImage(thresholdViewport->getOriginalImage());
+				if (viewport) 
+					viewport->setImage(thresholdViewport->getOriginalImage());
 			}
 		}
 
 		viewport->setVisible(false);
-
-		return retImg;
 	}
 
-	return image;
+	return imgC;
 };
 
 /**
@@ -568,7 +570,7 @@ void DkThresholdToolBar::createLayout() {
 	panAction->setCheckable(true);
 	panAction->setChecked(false);
 
-	//image channel
+	//imgC channel
 	QStringList thrChannels;
 	thrChannels.append(QT_TRANSLATE_NOOP("nmc::DkThresholdToolBar", "Gray"));
 	thrChannels.append(QT_TRANSLATE_NOOP("nmc::DkThresholdToolBar", "Red"));
