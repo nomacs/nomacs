@@ -3714,8 +3714,14 @@ void DkNoMacs::addPluginsToMenu() {
 
 	pluginManager->setRunId2PluginId(runId2PluginId);
 
-	assignCustomShortcuts(pluginsActions);
-	savePluginActions(pluginsActions);
+	QVector<QAction*> allPluginActions = pluginsActions;
+
+	for (const QMenu* m : pluginSubMenus) {
+		allPluginActions << m->actions().toVector();
+	}
+
+	assignCustomShortcuts(allPluginActions);
+	savePluginActions(allPluginActions);
 
 #endif // WITH_PLUGINS
 }
@@ -3866,6 +3872,8 @@ void DkNoMacs::initPluginManager() {
 
 void DkNoMacs::runPluginFromShortcut() {
 #ifdef WITH_PLUGINS
+
+	qDebug() << "running plugin shortcut...";
 
 	QAction* action = qobject_cast<QAction*>(sender());
 	QString actionName = action->text();

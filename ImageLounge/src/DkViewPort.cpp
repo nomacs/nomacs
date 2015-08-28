@@ -2318,6 +2318,7 @@ void DkViewPort::connectLoader(QSharedPointer<DkImageLoader> loader, bool connec
 	}
 }
 
+
 DkControlWidget* DkViewPort::getController() {
 	
 	return controller;
