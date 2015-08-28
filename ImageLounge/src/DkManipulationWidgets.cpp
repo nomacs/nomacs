@@ -182,7 +182,7 @@ void DkImageManipulationDialog::createLayout() {
 }
 
 /**
-* rescale viewport image - it is used as a preview for the manipulation tools changes
+* mRescale viewport image - it is used as a preview for the manipulation tools changes
  **/
 void DkImageManipulationDialog::createImgPreview() {
 

@@ -132,7 +132,6 @@ DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	progressDialogTranslations = 0;
 	forceDialog = 0;
 	trainDialog = 0;
-	pluginManager = 0;
 	explorer = 0;
 	metaDataDock = 0;
 	appManager = 0;
@@ -738,7 +737,7 @@ void DkNoMacs::createMenu() {
 #ifdef WITH_PLUGINS
 	// plugin menu
 	pluginsMenu = menu->addMenu(tr("Pl&ugins"));
-	connect(pluginsMenu, SIGNAL(aboutToShow()), this, SLOT(initPluginManager()));
+	connect(pluginsMenu, SIGNAL(aboutToShow()), this, SLOT(createPluginsMenu()));
 #endif // WITH_PLUGINS
 
 	helpMenu = menu->addMenu(tr("&?"));
@@ -2459,7 +2458,7 @@ void DkNoMacs::openQuickLaunch() {
 		quickAccess->addActions(toolsActions);
 		quickAccess->addActions(syncActions);
 #ifdef WITH_PLUGINS
-		initPluginManager();
+		createPluginsMenu();
 		quickAccess->addActions(pluginsActions);
 #endif // WITH_PLUGINS
 		quickAccess->addActions(helpActions);
@@ -3375,7 +3374,7 @@ void DkNoMacs::openKeyboardShortcuts() {
 	shortcutsDialog->addActions(toolsActions, toolsMenu->title());
 	shortcutsDialog->addActions(syncActions, syncMenu->title());
 #ifdef WITH_PLUGINS
-	initPluginManager();
+	createPluginsMenu();
 
 	QVector<QAction*> allPluginActions = pluginsActions;
 
@@ -3612,8 +3611,8 @@ void DkNoMacs::addPluginsToMenu() {
 	
 #ifdef WITH_PLUGINS
 
-	QMap<QString, DkPluginInterface *> loadedPlugins = pluginManager->getPlugins();
-	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+	QMap<QString, DkPluginInterface *> loadedPlugins = DkPluginManager::instance().getPlugins();
+	QList<QString> pluginIdList = DkPluginManager::instance().getPluginIdList();
 
 	QMap<QString, QString> runId2PluginId = QMap<QString, QString>();
 	QList<QPair<QString, QString> > sortedNames = QList<QPair<QString, QString> >();
@@ -3629,12 +3628,7 @@ void DkNoMacs::addPluginsToMenu() {
 			QList<QAction*> actions = cPlugin->pluginActions(this);
 
 			if (!actions.empty()) {
-				/*
-				QAction* runPlugin = new QAction(cPlugin->pluginName(), this);
-				connect(runPlugin, SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
-				runPlugin->setData(cPlugin->pluginID());
-				actions.prepend(runPlugin);
-				*/
+				
 				for (int iAction = 0; iAction < actions.size(); iAction++) {
 					connect(actions.at(iAction), SIGNAL(triggered()), this, SLOT(runLoadedPlugin()));
 					runId2PluginId.insert(actions.at(iAction)->data().toString(), pluginIdList.at(i));
@@ -3646,12 +3640,12 @@ void DkNoMacs::addPluginsToMenu() {
 				runId2PluginId.insert(cPlugin->pluginMenuName(), pluginIdList.at(i));
 			
 				pluginSubMenus.append(sm);
+
+				
 			}
 			else {
 		
-				//QList<QPair<QString, QString> > sortedNames;
-
-
+				// deprecated!
 				for (int j = 0; j < runID.size(); j++) {
 				
 					runId2PluginId.insert(runID.at(j), pluginIdList.at(i));
@@ -3661,19 +3655,6 @@ void DkNoMacs::addPluginsToMenu() {
 		}
 	}
 
-	/*
-	QList<QPair<QString, QString> > sortedNames;
-	QMapIterator<QString, QString> iter(pluginNames);		
-	while(iter.hasNext()) {
-		iter.next();
-		sortedNames.append(qMakePair(iter.key(), loadedPlugins.value(iter.value())->pluginNames(iter.key())));
-	}
-	// Ordering ascending
-	qSort(sortedNames.begin(), sortedNames.end(), QPairSecondComparer());
-	*/
-
-	//pluginsActions.resize(menu_plugins_end + sortedNames.size() + pluginSubMenus.size());
-	
 	pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
 	pluginsMenu->addSeparator();
 
@@ -3712,7 +3693,7 @@ void DkNoMacs::addPluginsToMenu() {
 
 	}
 
-	pluginManager->setRunId2PluginId(runId2PluginId);
+	DkPluginManager::instance().setRunId2PluginId(runId2PluginId);
 
 	QVector<QAction*> allPluginActions = pluginsActions;
 
@@ -3744,26 +3725,31 @@ void DkNoMacs::savePluginActions(QVector<QAction *> actions) {
 **/
 void DkNoMacs::createPluginsMenu() {
 #ifdef WITH_PLUGINS
+	qDebug() << "CREATING plugin menu";
 
-	QList<QString> pluginIdList = pluginManager->getPluginIdList();
+	if (!mPluginMenuCreated) {
+		QList<QString> pluginIdList = DkPluginManager::instance().getPluginIdList();
 
-	qDebug() << "id list: " << pluginIdList;
+		qDebug() << "id list: " << pluginIdList;
 
-	if(pluginIdList.isEmpty()) { // no  plugins
-		pluginsMenu->clear();
-		pluginsActions.resize(menu_plugins_end);
-		pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
-	}
-	else {
-		pluginsMenu->clear();
-		// delete old plugin actions	
-		for (int idx = pluginsActions.size(); idx > menu_plugins_end; idx--) {
-			pluginsActions.last()->deleteLater();
-			pluginsActions.last() = 0;
-			pluginsActions.pop_back();
+		if (pluginIdList.isEmpty()) { // no  plugins
+			pluginsMenu->clear();
+			pluginsActions.resize(menu_plugins_end);
+			pluginsMenu->addAction(pluginsActions[menu_plugin_manager]);
 		}
-		pluginsActions.resize(menu_plugins_end);
-		addPluginsToMenu();
+		else {
+			pluginsMenu->clear();
+			// delete old plugin actions	
+			for (int idx = pluginsActions.size(); idx > menu_plugins_end; idx--) {
+				pluginsActions.last()->deleteLater();
+				pluginsActions.last() = 0;
+				pluginsActions.pop_back();
+			}
+			pluginsActions.resize(menu_plugins_end);
+			addPluginsToMenu();
+		}
+
+		mPluginMenuCreated = true;
 	}
 #endif // WITH_PLUGINS
 }
@@ -3787,7 +3773,7 @@ void DkNoMacs::openPluginManager() {
 		return;
 	}
 
-	pluginManager->exec();
+	DkPluginManager::instance().exec();
 	createPluginsMenu();
 #endif // WITH_PLUGINS
 }
@@ -3818,7 +3804,7 @@ void DkNoMacs::runLoadedPlugin() {
    }
 
    QString key = action->data().toString();
-   DkPluginInterface* cPlugin = pluginManager->getPlugin(key);
+   DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(key);
 
    // something is wrong if no plugin is loaded
    if (!cPlugin) {
@@ -3852,21 +3838,10 @@ void DkNoMacs::runLoadedPlugin() {
    }
    else if (cPlugin->interfaceType() == DkPluginInterface::interface_basic) {
 
-	    QImage tmpImg = viewport()->getImage();
-		QImage result = cPlugin->runPlugin(key, tmpImg);
-		if(!result.isNull()) 
+		QSharedPointer<DkImageContainerT> result = cPlugin->runPlugin(key, getTabWidget()->getCurrentImage());
+		if(result) 
 			viewport()->setEditedImage(result);
    }
-#endif // WITH_PLUGINS
-}
-
-void DkNoMacs::initPluginManager() {
-#ifdef WITH_PLUGINS
-
-	if(!pluginManager) {
-		pluginManager = new DkPluginManager(this);
-		createPluginsMenu();
-	}
 #endif // WITH_PLUGINS
 }
 
@@ -3881,7 +3856,7 @@ void DkNoMacs::runPluginFromShortcut() {
 	for (int i = 0; i < pluginsDummyActions.size(); i++)
 		viewport()->removeAction(pluginsDummyActions.at(i));
 
-	initPluginManager();
+	createPluginsMenu();
 	
 	QVector<QAction*> allPluginActions = pluginsActions;
 
@@ -3906,7 +3881,7 @@ void DkNoMacs::closePlugin(bool askForSaving, bool) {
 	if (!viewport())
 		return;
 
-	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
+	DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(currRunningPlugin);
 
 
 	currRunningPlugin = QString();
@@ -3921,9 +3896,9 @@ void DkNoMacs::closePlugin(bool askForSaving, bool) {
 
 	//viewport()->setPluginImageWasApplied(true);
 
-	QImage pluginImage = vPlugin->runPlugin();	// empty vars - viewport plugin doesn't need them
+	QSharedPointer<DkImageContainerT> pluginImage = vPlugin->runPlugin("", getTabWidget()->getCurrentImage());	// empty vars - viewport plugin doesn't need them
 
-	if (!pluginImage.isNull()) {
+	if (pluginImage) {
 		if (askForSaving) {
 
 			QMessageBox msgBox(this);
@@ -3962,7 +3937,7 @@ void DkNoMacs::applyPluginChanges(bool askForSaving, bool alreadySaving) {
 	if (currRunningPlugin.isEmpty())
 		return;
 
-	DkPluginInterface* cPlugin = pluginManager->getPlugin(currRunningPlugin);
+	DkPluginInterface* cPlugin = DkPluginManager::instance().getPlugin(currRunningPlugin);
 
 	// does the plugin want to be closed on image changes?
 	if (!cPlugin->closesOnImageChange())

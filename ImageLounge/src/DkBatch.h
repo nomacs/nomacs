@@ -77,6 +77,7 @@ fileNameWidget_end
 
 // nomacs defines
 class DkResizeBatch;
+class DkPluginBatch;
 class DkBatchProcessing;
 class DkBatchTransform;
 class DkBatchContent;
@@ -335,6 +336,27 @@ protected:
 	QDoubleSpinBox* sbPercent;
 };
 
+class DkBatchPluginWidget : public QWidget, public DkBatchContent {
+	Q_OBJECT
+
+public:
+	DkBatchPluginWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+	void transferProperties(QSharedPointer<DkPluginBatch> batchResize) const;
+	bool hasUserInput() const;
+	bool requiresUserInput() const;
+
+public slots:
+
+signals:
+	void newHeaderText(QString txt);
+
+protected:
+	void createLayout();
+
+
+};
+
 class DkBatchTransformWidget : public QWidget, public DkBatchContent {
 	Q_OBJECT
 
@@ -377,6 +399,7 @@ public:
 		batch_input,
 		batch_resize,
 		batch_transform,
+		batch_plugin,
 		batch_output,
 
 		batchWidgets_end
@@ -403,6 +426,7 @@ private:
 	DkFileSelection* fileSelection;
 	DkBatchOutput* outputSelection;
 	DkBatchResizeWidget* resizeWidget;
+	DkBatchPluginWidget* pluginWidget;
 	DkBatchTransformWidget* transformWidget;
 	DkBatchProcessing* batchProcessing;
 	QPushButton* logButton;

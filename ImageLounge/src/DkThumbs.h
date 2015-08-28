@@ -143,7 +143,7 @@ public:
 	};
 	
 	void setRescale(bool rescale) {
-		this->rescale = rescale;
+		this->mRescale = rescale;
 	};
 
 	/**
@@ -171,7 +171,7 @@ public:
 	};
 
 protected:
-	QImage computeIntern(QFileInfo file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool rescale);
+	QImage computeIntern(QFileInfo file, QSharedPointer<QByteArray> ba, int forceLoad, int maxThumbSize, int minThumbSize, bool mRescale);
 	QColor computeColorIntern();
 
 	QImage img;
@@ -180,7 +180,7 @@ protected:
 	bool imgExists;
 	int maxThumbSize;
 	int minThumbSize;
-	bool rescale;
+	bool mRescale;
 	QColor meanColor;
 	bool colorExists;
 };

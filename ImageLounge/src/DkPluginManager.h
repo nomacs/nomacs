@@ -120,7 +120,7 @@ class DkPluginManager : public QDialog {
 Q_OBJECT
 
 public:
-	DkPluginManager(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	static DkPluginManager& instance();
 	~DkPluginManager();
 		
 	void loadPlugins();
@@ -158,6 +158,13 @@ protected:
 	void createLayout();
 	void showEvent(QShowEvent *event);
 	void loadPreviouslyInstalledPluginsList();
+
+	QSharedPointer<DkPluginManager> inst;
+
+private:
+	DkPluginManager();
+	DkPluginManager(DkPluginManager const&);	// remove
+	void operator=(DkPluginManager const&);	// remove
 };
 
 // widget with all plug-in information

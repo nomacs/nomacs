@@ -55,6 +55,7 @@
 #include <QTextBlock>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QSplitter>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -1010,6 +1011,26 @@ bool DkBatchResizeWidget::requiresUserInput() const {
 	return false;
 }
 
+// DkBatchPlugin --------------------------------------------------------------------
+DkBatchPluginWidget::DkBatchPluginWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
+
+	createLayout();
+}
+
+void DkBatchPluginWidget::transferProperties(QSharedPointer<DkPluginBatch> batchResize) const {
+}
+
+bool DkBatchPluginWidget::hasUserInput() const {
+	return false;	// TODO
+}
+
+bool DkBatchPluginWidget::requiresUserInput() const {
+	return false;
+}
+
+void DkBatchPluginWidget::createLayout() {
+}
+
 // DkBatchTransform --------------------------------------------------------------------
 DkBatchTransformWidget::DkBatchTransformWidget(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QWidget(parent, f) {
 
@@ -1130,6 +1151,7 @@ void DkBatchDialog::createLayout() {
 	//setStyleSheet("QWidget{border: 1px solid #000000;}");
 
 	widgets.resize(batchWidgets_end);
+
 	// Input Directory
 	widgets[batch_input] = new DkBatchWidget(tr("Input Directory"), tr("directory not set"), this);
 	fileSelection  = new DkFileSelection(widgets[batch_input]);
@@ -1146,6 +1168,11 @@ void DkBatchDialog::createLayout() {
 	transformWidget = new DkBatchTransformWidget(widgets[batch_transform]);
 	widgets[batch_transform]->setContentWidget(transformWidget);
 	widgets[batch_transform]->showContent(false);
+
+	widgets[batch_plugin] = new DkBatchWidget(tr("Plugins"), tr("inactive"), this);
+	pluginWidget = new DkBatchPluginWidget(widgets[batch_plugin]);
+	widgets[batch_resize]->setContentWidget(pluginWidget);
+	widgets[batch_resize]->showContent(false);
 
 	widgets[batch_output] = new DkBatchWidget(tr("Output"), tr("not set"), this);
 	outputSelection = new DkBatchOutput(widgets[batch_output]);
@@ -1175,15 +1202,25 @@ void DkBatchDialog::createLayout() {
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	QVBoxLayout* dialogLayout = new QVBoxLayout(this);
-	dialogLayout->setAlignment(Qt::AlignTop);
+
+	QWidget* batchWidget = new QWidget(this);
+	QVBoxLayout* batchLayout = new QVBoxLayout(batchWidget);
+	batchLayout->setAlignment(Qt::AlignTop);
 	for (int i=0; i < widgets.size(); i++) {
-		dialogLayout->addWidget(widgets[i]);
+
+		if (i != batch_input)
+			batchLayout->addWidget(widgets[i]);
 		//connect(widgets[i]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); // most widgets do not have (and need) a changed signal ... perhaps uncomment this again 
 	}
 	connect(widgets[batch_input]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged()));
 	connect(widgets[batch_output]->contentWidget(), SIGNAL(changed()), this, SLOT(widgetChanged())); 
 
+	QSplitter* splitter = new QSplitter(this);
+	splitter->addWidget(widgets[batch_input]);
+	splitter->addWidget(batchWidget);
+
+	QVBoxLayout* dialogLayout = new QVBoxLayout(this);
+	dialogLayout->addWidget(splitter);		// almost everything
 	dialogLayout->addWidget(progressBar);
 	dialogLayout->addWidget(summaryLabel);
 	//dialogLayout->addStretch(10);

@@ -65,13 +65,18 @@ namespace nmc {
 /**********************************************************************************
 * Plugin manager dialog
 **********************************************************************************/
-DkPluginManager::DkPluginManager(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
-
+DkPluginManager::DkPluginManager() {
 	init();
-}
+};
 
-DkPluginManager::~DkPluginManager() {
+DkPluginManager::~DkPluginManager() {}
 
+DkPluginManager& DkPluginManager::instance() { 
+
+	static QSharedPointer<DkPluginManager> inst;
+	if (!inst)
+		inst = QSharedPointer<DkPluginManager>(new DkPluginManager());
+	return *inst; 
 }
 
 /**

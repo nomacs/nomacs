@@ -331,7 +331,7 @@ void VP8SetSegmentParams(VP8Encoder* const enc, float quality) {
   // We map it to the safe maximal range of MAX/MIN_DQ_UV for dq_uv.
   dq_uv_ac = (enc->uv_alpha_ - MID_ALPHA) * (MAX_DQ_UV - MIN_DQ_UV)
                                           / (MAX_ALPHA - MIN_ALPHA);
-  // we rescale by the user-defined strength of adaptation
+  // we mRescale by the user-defined strength of adaptation
   dq_uv_ac = dq_uv_ac * enc->config_->sns_strength / 100;
   // and make it safe.
   dq_uv_ac = clip(dq_uv_ac, MIN_DQ_UV, MAX_DQ_UV);

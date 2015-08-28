@@ -106,6 +106,23 @@ protected:
 	bool correctGamma;
 };
 
+class DkPluginBatch : public DkAbstractBatch {
+
+public:
+	DkPluginBatch();
+
+	// TODO: where shall we put the defines now? e.g. DkImage::ipl_area
+	virtual void setProperties(const QStringList& pluginList);
+	virtual bool compute(QSharedPointer<DkImageContainer> container, QStringList& logStrings) const;
+	virtual QString name() const;
+	virtual bool isActive() const;
+
+protected:
+	bool prepareProperties(const QSize& imgSize, QSize& size, float& scaleFactor, QStringList& logStrings) const;
+
+	QStringList mPluginList;
+};
+
 class DkBatchTransform : public DkAbstractBatch {
 
 public:

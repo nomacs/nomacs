@@ -577,7 +577,6 @@ public slots:
 	void enableMovieActions(bool enable);
 	void runLoadedPlugin();
 	void openPluginManager();
-	void initPluginManager();
 	void runPluginFromShortcut();
 	void closePlugin(bool askForSaving, bool alreadySaving);
 	void applyPluginChanges(bool askForSaving, bool alreadySaving);
@@ -589,6 +588,8 @@ public slots:
 	// batch actions
 	void computeThumbsBatch();
 	void onWindowLoaded();
+
+	void createPluginsMenu();
 
 protected:
 	
@@ -623,7 +624,6 @@ protected:
 
 	// vars
 	QWidget *parent;
-	DkPluginManager* pluginManager;
 	QString currRunningPlugin;
 
 	QVector<QShortcut*> shortcuts;	
@@ -739,7 +739,7 @@ protected:
 
 	// plugin functions
 	void addPluginsToMenu();
-	void createPluginsMenu();
+	bool mPluginMenuCreated = false;
 };
 
 class DllExport DkNoMacsSync : public DkNoMacs {

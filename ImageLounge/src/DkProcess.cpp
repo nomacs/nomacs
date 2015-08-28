@@ -230,6 +230,30 @@ bool DkBatchTransform::compute(QImage& img, QStringList& logStrings) const {
 	return true;
 }
 
+// DkPluginBatch --------------------------------------------------------------------
+DkPluginBatch::DkPluginBatch() {
+}
+
+void DkPluginBatch::setProperties(const QStringList & pluginList) {
+
+}
+
+bool DkPluginBatch::compute(QSharedPointer<DkImageContainer> container, QStringList & logStrings) const {
+
+	
+
+	return false;
+}
+
+QString DkPluginBatch::name() const {
+	return QObject::tr("[Plugin Batch]");
+}
+
+bool DkPluginBatch::isActive() const {
+	
+	return !mPluginList.empty();
+}
+
 // DkBatchProcess --------------------------------------------------------------------
 DkBatchProcess::DkBatchProcess(const QFileInfo& fileInfoIn, const QFileInfo& fileInfoOut) {
 	this->fileInfoIn = fileInfoIn;
