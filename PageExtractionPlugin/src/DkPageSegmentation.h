@@ -71,5 +71,4 @@ protected:
 	QImage cropToRect(const QImage& img, const DkRotatingRect& rect, const QColor& bgCol = QColor(0,0,0)) const;
 };
 
-
 };

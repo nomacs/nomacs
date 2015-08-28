@@ -68,16 +68,16 @@ QImage DkPageSegmentation::getCropped(const QImage & img) const {
 
 		// convert to corners
 		DkVector xVec = DkVector(rect.size.width * 0.5f, 0);
-		xVec.rotate(-rect.angle);
+		xVec.rotate(-rect.angle*DK_DEG2RAD);
 
 		DkVector yVec = DkVector(0, rect.size.height * 0.5f);
-		yVec.rotate(-rect.angle);
+		yVec.rotate(-rect.angle*DK_DEG2RAD);
 
 		QPolygonF poly;
-		poly.append(DkVector(rect.center - xVec - yVec).getQPointF());
-		poly.append(DkVector(rect.center + xVec - yVec).getQPointF());
-		poly.append(DkVector(rect.center + xVec + yVec).getQPointF());
 		poly.append(DkVector(rect.center - xVec + yVec).getQPointF());
+		poly.append(DkVector(rect.center + xVec + yVec).getQPointF());
+		poly.append(DkVector(rect.center + xVec - yVec).getQPointF());
+		poly.append(DkVector(rect.center - xVec - yVec).getQPointF());
 
 		DkRotatingRect rr;
 		rr.setPoly(poly);
@@ -227,8 +227,8 @@ cv::Mat DkPageSegmentation::findRectangles(const cv::Mat& img, std::vector<DkPol
 
 		DkBox b = p.getBBox();
 
-		if (!(b.size().height > img.rows*maxSideFactor ||
-			b.size().width > img.cols*maxSideFactor)) {
+		if (b.size().height < img.rows*maxSideFactor &&
+			b.size().width < img.cols*maxSideFactor) {
 			noLargeRects.push_back(p);
 		}
 	}
@@ -250,6 +250,7 @@ QImage DkPageSegmentation::cropToRect(const QImage & img, const DkRotatingRect &
 	}
 
 	qDebug() << cImgSize;
+	qDebug() << "transform: " << tForm;
 
 	double angle = DkMath::normAngleRad(rect.getAngle(), 0, CV_PI*0.5);
 	double minD = qMin(abs(angle), abs(angle-CV_PI*0.5));
@@ -269,6 +270,12 @@ QImage DkPageSegmentation::cropToRect(const QImage & img, const DkRotatingRect &
 	painter.end();
 
 	return cImg;
+
+	//QImage dImg = img;
+	//QPainter p1(&dImg);
+	//p1.drawPolygon(rect.getPoly());
+
+	//return dImg;
 }
 
 void DkPageSegmentation::filterDuplicates(float overlap, float areaRatio) {

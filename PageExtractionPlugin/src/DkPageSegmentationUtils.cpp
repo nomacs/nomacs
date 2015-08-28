@@ -362,9 +362,13 @@ DkBox DkPolyRect::getBBox() const {
 
 	for (size_t idx = 0; idx < pts.size(); idx++) {
 
-		uc.minVec(pts[idx]);
-		lc.maxVec(pts[idx]);
+		uc = uc.minVec(pts[idx]);
+		lc = lc.maxVec(pts[idx]);
 	}
+
+
+	if (pts.empty())
+		qDebug() << "bbox of empty poly rect requested!!";
 
 	DkBox box(uc, lc-uc);
 
