@@ -33,6 +33,7 @@
 #include "DkBasicLoader.h"
 #include "DkImageContainer.h"
 #include "DkBatch.h"
+#include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
@@ -67,10 +68,10 @@ bool DkTabInfo::operator ==(const DkTabInfo& o) const {
 
 void DkTabInfo::loadSettings(const QSettings& settings) {
 
-	QFileInfo file = settings.value("tabFileInfo", "").toString();
+	QString file = settings.value("tabFileInfo", "").toString();
 	tabMode = settings.value("tabMode", tab_single_image).toInt();
 
-	if (file.exists())
+	if (QFileInfo(file).exists())
 		imageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(file)));
 }
 
@@ -83,18 +84,18 @@ void DkTabInfo::saveSettings(QSettings& settings) const {
 		imgC = imageLoader->getLastImage();
 
 	if (imgC)
-		settings.setValue("tabFileInfo", imgC->file().absoluteFilePath());
+		settings.setValue("tabFileInfo", imgC->filePath());
 	settings.setValue("tabMode", tabMode);
 }
 
-void DkTabInfo::setFileInfo(const QFileInfo& fileInfo) {
+void DkTabInfo::setFilePath(const QString& filePath) {
 
-	imageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo)));
+	imageLoader->setCurrentImage(QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath)));
 }
 
-QFileInfo DkTabInfo::getFileInfo() const {
+QString DkTabInfo::getFilePath() const {
 
-	return (imageLoader->getCurrentImage()) ? imageLoader->getCurrentImage()->file() : QFileInfo();
+	return (imageLoader->getCurrentImage()) ? imageLoader->getCurrentImage()->filePath() : QString();
 }
 
 void DkTabInfo::setTabIdx(int tabIdx) {
@@ -176,7 +177,7 @@ QString DkTabInfo::getTabText() const {
 
 	if (imgC) {
 
-		tabText = imgC->file().fileName();
+		tabText = QFileInfo(imgC->filePath()).fileName();
 		
 		if (imgC->isEdited())
 			tabText += "*";
@@ -249,18 +250,18 @@ void DkCentralWidget::createLayout() {
 	recentFilesWidget->setFixedSize(screenRect.width(), screenRect.height());
 	
 	// connections
-	connect(this, SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));
-	connect(viewport, SIGNAL(addTabSignal(const QFileInfo&)), this, SLOT(addTab(const QFileInfo&)));
+	connect(this, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
+	connect(viewport, SIGNAL(addTabSignal(const QString&)), this, SLOT(addTab(const QString&)));
 
 	connect(tabbar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 	connect(tabbar, SIGNAL(tabCloseRequested(int)), this, SLOT(tabCloseRequested(int)));
 	connect(tabbar, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoved(int, int)));
 
 	// recent files widget
-	connect(recentFilesWidget, SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));
+	connect(recentFilesWidget, SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 
 	// thumbnail preview widget
-	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(QFileInfo)), this, SLOT(loadFile(QFileInfo)));
+	connect(thumbScrollWidget->getThumbWidget(), SIGNAL(loadFileSignal(const QString&)), this, SLOT(loadFile(const QString&)));
 	connect(thumbScrollWidget, SIGNAL(batchProcessFilesSignal(const QStringList&)), this, SLOT(startBatchProcessing(const QStringList&)));
 
 }
@@ -429,9 +430,9 @@ void DkCentralWidget::setTabList(QVector<QSharedPointer<DkTabInfo>> tabInfos, in
 
 }
 
-void DkCentralWidget::addTab(const QFileInfo& fileInfo, int idx /* = -1 */) {
+void DkCentralWidget::addTab(const QString& filePath, int idx /* = -1 */) {
 
-	QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(fileInfo));
+	QSharedPointer<DkImageContainerT> imgC = QSharedPointer<DkImageContainerT>(new DkImageContainerT(filePath));
 	addTab(imgC, idx);
 }
 
@@ -575,7 +576,7 @@ void DkCentralWidget::showThumbView(bool show) {
 			thumbScrollWidget->getThumbWidget()->ensureVisible(tabInfo->getImage());
 
 
-		//viewport->connectLoader(tabInfo->getImageLoader(), false);
+		//mViewport->connectLoader(tabInfo->getImageLoader(), false);
 		connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), tabInfo->getImageLoader().data(), SLOT(loadDir(QDir)), Qt::UniqueConnection);
 		connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)), Qt::UniqueConnection);
 		connect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
@@ -584,7 +585,7 @@ void DkCentralWidget::showThumbView(bool show) {
 		disconnect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), tabInfo->getImageLoader().data(), SLOT(loadDir(QDir)));
 		disconnect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)));
 		disconnect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)));
-		//viewport->connectLoader(tabInfo->getImageLoader(), true);
+		//mViewport->connectLoader(tabInfo->getImageLoader(), true);
 		showViewPort(true);	// TODO: this triggers switchWidget - but switchWidget might also trigger showThumbView(false)
 	}
 }
@@ -671,12 +672,12 @@ QSharedPointer<DkImageContainerT> DkCentralWidget::getCurrentImage() const {
 	return tabInfos[tabbar->currentIndex()]->getImage();
 }
 
-QFileInfo DkCentralWidget::getCurrentFile() const {
+QString DkCentralWidget::getCurrentFilePath() const {
 
 	if (!getCurrentImage())
-		return QFileInfo();
+		return QString();
 
-	return getCurrentImage()->file();
+	return getCurrentImage()->filePath();
 }
 
 QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const {
@@ -729,19 +730,19 @@ void DkCentralWidget::dragEnterEvent(QDragEnterEvent *event) {
 	QWidget::dragEnterEvent(event);
 }
 
-void DkCentralWidget::loadFile(const QFileInfo& fileInfo) {
+void DkCentralWidget::loadFile(const QString& filePath) {
 
-	viewport->loadFile(fileInfo);
+	viewport->loadFile(filePath);
 }
 
 
-void DkCentralWidget::loadFileToTab(const QFileInfo& fileInfo) {
+void DkCentralWidget::loadFileToTab(const QString& filePath) {
 
 	if (tabInfos.size() > 1 || !tabInfos.empty() && tabInfos.at(0)->getMode() != DkTabInfo::tab_empty) {
-		addTab(fileInfo);
+		addTab(filePath);
 	}
 	else
-		viewport->loadFile(fileInfo);
+		viewport->loadFile(filePath);
 }
 
 void DkCentralWidget::startBatchProcessing(const QStringList& selectedFiles) {
@@ -799,20 +800,20 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 		// merge OpenCV vec files if multiple vec files are dropped
 		if (urls.size() > 1 && file.suffix() == "vec") {
 
-			QVector<QFileInfo> vecFiles;
+			QStringList vecFiles;
 
 			for (int idx = 0; idx < urls.size(); idx++)
 				vecFiles.append(urls.at(idx).toLocalFile());
 
 			// ask user for filename
-			QFileInfo sInfo(QFileDialog::getSaveFileName(this, tr("Save File"),
-				vecFiles.at(0).absolutePath(), "Cascade Training File (*.vec)"));
+			QString sPath(QFileDialog::getSaveFileName(this, tr("Save File"),
+				QFileInfo(vecFiles.first()).absolutePath(), "Cascade Training File (*.vec)"));
 
 			DkBasicLoader loader;
-			int numFiles = loader.mergeVecFiles(vecFiles, sInfo);
+			int numFiles = loader.mergeVecFiles(vecFiles, sPath);
 
 			if (numFiles) {
-				loadFile(sInfo);
+				loadFile(sPath);
 				viewport->getController()->setInfo(tr("%1 vec files merged").arg(numFiles));
 				return true;
 			}
@@ -827,12 +828,12 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 
 			// >DIR: TODO [19.2.2015 markus]
 			//QDir newDir = (file.isDir()) ? QDir(file.absoluteFilePath()) : file.absolutePath();
-			//viewport->getImageLoader()->loadDir(newDir);
+			//mViewport->getImageLoader()->loadDir(newDir);
 		}
 		else {
 			// just accept image files
 			if (DkUtils::isValid(file) || file.isDir())
-				loadFile(file);
+				loadFile(fString);
 			else if (url.isValid() && !tabInfos.empty()) {
 				tabInfos[tabbar->currentIndex()]->getImageLoader()->downloadFile(url);
 			}
@@ -845,7 +846,7 @@ bool DkCentralWidget::loadFromMime(const QMimeData* mimeData) {
 			QFileInfo fi = DkUtils::urlToLocalFile(urls[idx]);
 
 			if (DkUtils::isValid(fi))
-				addTab(QFileInfo(urls[idx].toLocalFile()));
+				addTab(urls[idx].toLocalFile());
 		}
 
 		return true;

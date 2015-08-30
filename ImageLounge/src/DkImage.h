@@ -89,7 +89,7 @@ class DllExport DkImageLoader : public QObject {
 
 public:
 
-	DkImageLoader(QFileInfo file = QFileInfo());
+	DkImageLoader(const QString& filePath = QString());
 
 	virtual ~DkImageLoader();
 
@@ -104,7 +104,7 @@ public:
 	void rotateImage(double angle);
 	QSharedPointer<DkImageContainerT> getCurrentImage() const;
 	QSharedPointer<DkImageContainerT> getLastImage() const;
-	QFileInfo file() const;
+	QString filePath() const;
 	QStringList getFileNames();
 	QVector<QSharedPointer<DkImageContainerT> > getImages();
 	void setImages(QVector<QSharedPointer<DkImageContainerT> > images);
@@ -116,19 +116,19 @@ public:
 	void loadLastDir();
 	void setDir(QDir& dir);
 	void setSaveDir(QDir& dir);
-	QSharedPointer<DkImageContainerT> setImage(QImage img, QFileInfo editFile = QFileInfo());
+	QSharedPointer<DkImageContainerT> setImage(const QImage& img, const QString& editFilePath = QString());
 	QSharedPointer<DkImageContainerT> setImage(QSharedPointer<DkImageContainerT> img);
 	bool hasFile() const;
 	bool hasMovie();
 	QString fileName();
 	QSharedPointer<DkImageContainerT> getSkippedImage(int skipIdx, bool searchFile = true, bool recursive = false);
 	void sort();
-	QSharedPointer<DkImageContainerT> findOrCreateFile(const QFileInfo& file) const;
-	QSharedPointer<DkImageContainerT> findFile(const QFileInfo& file) const;
-	int findFileIdx(const QFileInfo& file, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
+	QSharedPointer<DkImageContainerT> findOrCreateFile(const QString& filePath) const;
+	QSharedPointer<DkImageContainerT> findFile(const QString& filePath) const;
+	int findFileIdx(const QString& filePath, const QVector<QSharedPointer<DkImageContainerT> >& images) const;
 	void setCurrentImage(QSharedPointer<DkImageContainerT> newImg);
 #ifdef WITH_QUAZIP
-	bool loadZipArchive(QFileInfo zipFile);
+	bool loadZipArchive(const QString& zipPath);
 #endif
 	
 	void deactivate();
@@ -139,17 +139,17 @@ public:
 	QImage getImage();
 	bool dirtyTiff();
 
-	static bool restoreFile(const QFileInfo &fileInfo);
+	static bool restoreFile(const QString &filePath);
 
 signals:
-	void folderFiltersChanged(QStringList filters);
-	void updateImageSignal();
-	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700);
-	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700);
-	void updateFileSignal(QFileInfo file, QSize s = QSize(), bool edited = false, QString attr = QString());
-	void fileNotLoadedSignal(QFileInfo file);
-	void setPlayer(bool play);
-	void updateFileWatcherSignal(QFileInfo file);
+	void folderFiltersChanged(QStringList filters) const;
+	void updateImageSignal() const;
+	void updateInfoSignalDelayed(QString msg, bool start = false, int timeDelayed = 700) const;
+	void updateSpinnerSignalDelayed(bool start = false, int timeDelayed = 700) const;
+	void updateFileSignal(const QString& filePath, QSize s = QSize(), bool edited = false, QString attr = QString()) const;
+	void fileNotLoadedSignal(const QString& filePath) const;
+	void setPlayer(bool play) const;
+	void updateFileWatcherSignal(const QString& filePath) const;
 
 	// new signals
 	void imageUpdatedSignal(QSharedPointer<DkImageContainerT> image);
@@ -164,23 +164,23 @@ public slots:
 	void directoryChanged(const QString& path = QString());
 	void saveFileWeb(QImage saveImg);
 	void saveUserFileAs(QImage saveImg, bool silent);
-	void saveFile(QFileInfo filename, QImage saveImg = QImage(), QString fileFilter = "", int compression = -1, bool threaded = true);
+	void saveFile(const QString& filename, const QImage& saveImg = QImage(), const QString& fileFilter = "", int compression = -1, bool threaded = true);
 	void load(QSharedPointer<DkImageContainerT> image = QSharedPointer<DkImageContainerT>());
-	void load(const QFileInfo& file);
+	void load(const QString& filePath);
 	void downloadFile(const QUrl& url);
 	bool deleteFile();
-	QFileInfo saveTempFile(QImage img, QString name = "img", QString fileExt = ".png", bool force = false, bool threaded = true);
+	QString saveTempFile(const QImage& img, const QString& name = "img", const QString& fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilter(const QString& filter);
 	void setFolderFilters(QStringList filters);
 	QStringList getFolderFilters();
-	bool loadDir(QFileInfo newFile, bool scanRecursive = true);
+	bool loadDir(const QString& newFilePath, bool scanRecursive = true);
 	bool loadDir(QDir newDir, bool scanRecursive = true);
 	void errorDialog(const QString& msg) const;
 	void loadFileAt(int idx);
 
 	// new slots
 	void imageLoaded(bool loaded = false);
-	void imageSaved(QFileInfo file, bool saved = true);
+	void imageSaved(const QString& file, bool saved = true);
 	void imagesSorted();
 	bool unloadFile();
 	void reloadImage();

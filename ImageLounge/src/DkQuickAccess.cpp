@@ -107,8 +107,7 @@ void DkQuickAccess::fireAction(const QModelIndex& index) const {
 	QString key = index.data().toString();
 
 	if (filePaths.contains(key)) {
-		QFileInfo fileInfo(key);
-		emit loadFileSignal(fileInfo);
+		emit loadFileSignal(key);
 		return;
 	}
 

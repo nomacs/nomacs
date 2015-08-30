@@ -295,7 +295,7 @@ void DkThumbsSaver::processDir(QVector<QSharedPointer<DkImageContainerT> > image
 	cLoadIdx = 0;
 	numSaved = 0;
 
-	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->file().absolutePath(), tr("Cancel"), 0, (int)images.size(), DkNoMacs::getDialogParent());
+	pd = new QProgressDialog(tr("\nCreating thumbnails...\n") + images.first()->filePath(), tr("Cancel"), 0, (int)images.size(), DkNoMacs::getDialogParent());
 	pd->setWindowTitle(tr("Thumbnails"));
 
 	//pd->setWindowModality(Qt::WindowModal);
@@ -447,16 +447,16 @@ void DkExplorer::setCurrentImage(QSharedPointer<DkImageContainerT> img) {
 	if (!img)
 		return;
 
-	setCurrentPath(img->file());
+	setCurrentPath(img->filePath());
 }
 
-void DkExplorer::setCurrentPath(QFileInfo fileInfo) {
+void DkExplorer::setCurrentPath(const QString& filePath) {
 
 	// expand folders
-	if (fileInfo.isDir())
-		fileTree->expand(sortModel->mapFromSource(fileModel->index(fileInfo.absoluteFilePath())));
+	if (QFileInfo(filePath).isDir())
+		fileTree->expand(sortModel->mapFromSource(fileModel->index(filePath)));
 
-	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(fileInfo.absoluteFilePath())));
+	fileTree->setCurrentIndex(sortModel->mapFromSource(fileModel->index(filePath)));
 }
 
 void DkExplorer::fileClicked(const QModelIndex &index) const {
@@ -466,7 +466,7 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 	qDebug() << "opening: " << cFile.absoluteFilePath();
 
 	if (DkUtils::isValid(cFile))
-		emit openFile(cFile);
+		emit openFile(cFile.absoluteFilePath());
 	else if (cFile.isDir())
 		emit openDir(QDir(cFile.absoluteFilePath()));
 }
@@ -581,11 +581,11 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	int lm, tm, rm, bm;
 	getContentsMargins(&lm, &tm, &rm, &bm);
 
-	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the viewport....
+	QSize viewSize = QSize(width()-lm-rm, height()-tm-bm);	// overview shall take 15% of the mViewport....
 	
 	if (viewSize.width() > 2 && viewSize.height() > 2) {
 	
-		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
+		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current mViewport
 		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), img.size()));
 
 		// now render the current view
@@ -711,7 +711,7 @@ void DkOverview::resizeImg() {
 		return;
 
 	//QRectF overviewRect = getImageRect();
-	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current viewport
+	QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current mViewport
 	
 	// is the overviewImgMatrix empty?
 	if (overviewImgMatrix.isIdentity())
@@ -857,42 +857,6 @@ void DkZoomWidget::setVisible(bool visible, bool autoHide /* = false */) {
 
 bool DkZoomWidget::isAutoHide() const {
 	return autoHide;
-}
-
-// DkGradientLabel --------------------------------------------------------------------
-DkGradientLabel::DkGradientLabel(QWidget* parent, const QString& text) : DkLabel(parent, text) {
-
-	init();
-	hide();
-}
-
-void DkGradientLabel::init() {
-
-	DkLabel::init();
-	gradient = QImage(":/nomacs/img/label-gradient.png");
-	end = QImage(":/nomacs/img/label-end.png");
-	
-	QLabel::setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
-	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: 5px " + QString::number(end.width()) + "px 5px 10px}");
-	
-}
-
-void DkGradientLabel::updateStyleSheet() {
-	
-	QLabel::setStyleSheet("QLabel{color: " + textCol.name() + "; margin: " + 
-		QString::number(margin.y()) + "px " +
-		QString::number(end.width()) + "px " +		// the fade-out
-		QString::number(margin.y()) + "px " +
-		QString::number(margin.x()) + "px;}");
-}
-
-void DkGradientLabel::drawBackground(QPainter* painter) {
-
-	QRect textRect = QRect(QPoint(), size());
-	textRect.setWidth(textRect.width()-end.width()-1);
-	QRectF endRect = QRect(textRect.right()+1, 0, end.width(), geometry().height());
-	painter->drawImage(textRect, gradient);
-	painter->drawImage(endRect, end);
 }
 
 // DkButton --------------------------------------------------------------------
@@ -1119,7 +1083,7 @@ QVector<QAction*> DkRatingLabelBg::getActions() const {
 void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
 
 	QPainter painter(this);
-	painter.fillRect(QRect(QPoint(), this->size()), bgCol);
+	painter.fillRect(QRect(QPoint(), this->size()), mBgCol);
 	painter.end();
 
 	DkRatingLabel::paintEvent(event);
@@ -1215,16 +1179,16 @@ DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
 	return rating;
 }
 
-void DkFileInfoLabel::updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating) {
+void DkFileInfoLabel::updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating) {
 
-	updateTitle(file, attr);
+	updateTitle(filePath, attr);
 	updateDate(date);
 	updateRating(rating);
 
 	updateWidth();
 }
 
-void DkFileInfoLabel::updateTitle(const QFileInfo& file, const QString& attr) {
+void DkFileInfoLabel::updateTitle(const QString& filePath, const QString& attr) {
 	
 	this->file = file;
 	updateDate();
@@ -1415,9 +1379,9 @@ void DkPlayer::show(int ms) {
 
 	DkWidget::show();
 
-	// automatic showing, don't store it in the display bits
-	if (ms > 0 && displaySettingsBits && displaySettingsBits->size() > DkSettings::app.currentAppMode) {
-		displaySettingsBits->setBit(DkSettings::app.currentAppMode, showPlayer);
+	// automatic mShowing, don't store it in the display bits
+	if (ms > 0 && mDisplaySettingsBits && mDisplaySettingsBits->size() > DkSettings::app.currentAppMode) {
+		mDisplaySettingsBits->setBit(DkSettings::app.currentAppMode, showPlayer);
 	}
 }
  
@@ -1781,10 +1745,10 @@ void DkEditableRect::drawGuide(QPainter* painter, const QPolygonF& p, int paintM
 // make events callable
 void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton && 
 		(event->modifiers() == DkSettings::global.altMod || panning)) {
-		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the viewport
+		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the mViewport
 		event->ignore();
 		return;
 	}
@@ -1807,7 +1771,7 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->modifiers() == DkSettings::global.altMod ||
 		panning) {
 		
@@ -1915,7 +1879,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
-	// panning -> redirect to viewport
+	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton && 
 		(event->modifiers() == DkSettings::global.altMod || panning)) {
 		setCursor(Qt::OpenHandCursor);
@@ -2280,7 +2244,7 @@ void DkHistogram::paintEvent(QPaintEvent*) {
 
 	QPainter painter(this);
 	painter.setPen(QColor(200, 200, 200));
-	painter.fillRect(1, 1, width() - 3, height() - 2, bgCol);
+	painter.fillRect(1, 1, width() - 3, height() - 2, mBgCol);
 	painter.drawRect(1, 1, width() - 3, height() - 2);
 
 	if(isPainted && maxValue > 0){
@@ -2661,18 +2625,19 @@ void DkFileInfo::setInUse(bool inUse) {
 	used = inUse;
 }
 
-QFileInfo DkFileInfo::getFileInfo() const {
-	return fileInfo;
+QString DkFileInfo::getFilePath() const {
+	return fileInfo.absoluteFilePath();
 }
 
 
 // DkFileLabel --------------------------------------------------------------------
 DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
-	if (fileInfo.getFileInfo().isDir())
-		setText(fileInfo.getFileInfo().absoluteFilePath());
+	QFileInfo fInfo(fileInfo.getFilePath());
+	if (fInfo.isDir())
+		setText(fInfo.absoluteFilePath());
 	else
-		setText(fileInfo.getFileInfo().fileName());
+		setText(fInfo.fileName());
 
 	this->fileInfo = fileInfo;
 	setObjectName("DkFileLabel");
@@ -2680,23 +2645,24 @@ DkFolderLabel::DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent /* = 0 
 
 void DkFolderLabel::mousePressEvent(QMouseEvent *ev) {
 
-	emit loadFileSignal(fileInfo.getFileInfo());
+	emit loadFileSignal(fileInfo.getFilePath());
 
 	QLabel::mousePressEvent(ev);
 }
 
 // DkImageLabel --------------------------------------------------------------------
-DkImageLabel::DkImageLabel(const QFileInfo& fileInfo, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
+DkImageLabel::DkImageLabel(const QString& filePath, QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QLabel(parent, f) {
 
-	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(fileInfo));
+	thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(filePath));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SIGNAL(labelLoaded()));
 	connect(thumb.data(), SIGNAL(thumbLoadedSignal()), this, SLOT(thumbLoaded()));
 
 	setFixedSize(DkSettings::display.thumbSize, DkSettings::display.thumbSize);
 	setMouseTracking(true);
 
-	setStatusTip(fileInfo.fileName());
-	setToolTip(fileInfo.fileName());
+	QFileInfo fInfo(filePath);
+	setStatusTip(fInfo.fileName());
+	setToolTip(fInfo.fileName());
 	
 	createLayout();
 }
@@ -2737,10 +2703,9 @@ QSharedPointer<DkThumbNailT> DkImageLabel::getThumb() const {
 void DkImageLabel::thumbLoaded() {
 
 	if (thumb->getImage().isNull()) {
-		qDebug() << thumb->getFile().fileName() << " not loaded...";
+		qDebug() << QFileInfo(thumb->getFilePath()).fileName() << " not loaded...";
 		return;
 	}
-	//qDebug() << thumb->getFile().fileName() << " loaded...";
 	
 	QPixmap pm = QPixmap::fromImage(thumb->getImage());
 
@@ -2769,7 +2734,7 @@ void DkImageLabel::removeFileFromList() {
 
 	for (int idx = 0; idx < DkSettings::global.recentFiles.size(); idx++) {
 
-		if (thumb->getFile().absoluteFilePath() == DkSettings::global.recentFiles.at(idx))
+		if (thumb->getFilePath() == DkSettings::global.recentFiles.at(idx))
 			DkSettings::global.recentFiles.removeAt(idx);
 	}
 }
@@ -2793,7 +2758,7 @@ void DkImageLabel::leaveEvent(QEvent *ev) {
 
 void DkImageLabel::mousePressEvent(QMouseEvent *ev) {
 
-	emit loadFileSignal(thumb->getFile());
+	emit loadFileSignal(thumb->getFilePath());
 
 	QLabel::mousePressEvent(ev);
 }
@@ -2871,7 +2836,7 @@ void DkRecentFilesWidget::setVisible(bool visible, bool saveSettings) {
 	
 	if (visible && !isVisible()) {
 		updateFileList();
-		qDebug() << "showing recent files...";
+		qDebug() << "mShowing recent files...";
 	}
 
 	DkWidget::setVisible(saveSettings);
@@ -2949,7 +2914,7 @@ void DkRecentFilesWidget::updateFiles() {
 		fileLabels.at(rFileIdx)->hide();
 
 		// remove files which we can't load to keep the list clean...
-		DkSettings::global.recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFile().absoluteFilePath());		// remove recent files which we could not load...
+		DkSettings::global.recentFiles.removeAll(fileLabels.at(rFileIdx)->getThumb()->getFilePath());		// remove recent files which we could not load...
 	}
 
 	if (!fileLabels.empty())
@@ -2957,13 +2922,13 @@ void DkRecentFilesWidget::updateFiles() {
 
 	// load next
 	if ((rFileIdx/(float)columns*DkSettings::display.thumbSize < filesWidget->height()-200 || !(rFileIdx+1 % columns)) && rFileIdx < recentFiles.size()) {
-		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx), this);
+		DkImageLabel* cLabel = new DkImageLabel(recentFiles.at(rFileIdx).absoluteFilePath(), this);
 		cLabel->hide();
 		cLabel->setStyleSheet(QString("QLabel{background-color: rgba(0,0,0,0), border: solid 1px black;}"));
 		
 		fileLabels.append(cLabel);
 		connect(cLabel, SIGNAL(labelLoaded()), this, SLOT(updateFiles()));
-		connect(cLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+		connect(cLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
 		cLabel->getThumb()->fetchThumb(DkThumbNailT::force_exif_thumb);
 	}
 	else {
@@ -2990,7 +2955,7 @@ void DkRecentFilesWidget::updateFolders() {
 			fi.setInUse(true);
 
 			DkFolderLabel* fLabel = new DkFolderLabel(fi, this);
-			connect(fLabel, SIGNAL(loadFileSignal(QFileInfo)), this, SIGNAL(loadFileSignal(QFileInfo)));
+			connect(fLabel, SIGNAL(loadFileSignal(const QString&)), this, SIGNAL(loadFileSignal(const QString&)));
 			folderLayout->addWidget(fLabel);
 			folderLabels.append(fLabel);
 
@@ -3005,7 +2970,7 @@ void DkRecentFilesWidget::updateFolders() {
 
 void DkRecentFilesWidget::mappedFileExists(DkFileInfo& fileInfo) {
 
-	fileInfo.setExists(fileInfo.getFileInfo().exists());
+	fileInfo.setExists(QFileInfo(fileInfo.getFilePath()).exists());
 }
 
 

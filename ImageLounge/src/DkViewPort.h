@@ -416,16 +416,16 @@ public:
 	void toggleDissolve();
 
 signals:
-	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize);
-	void sendNewFileSignal(qint16 op, QString filename = "");
-	void sendImageSignal(QImage img, QString title);
-	void statusInfoSignal(QString msg, int);
-	void newClientConnectedSignal(bool connect, bool local);
-	void movieLoadedSignal(bool isMovie);
-	void infoSignal(QString msg);	// needed to forward signals
-	void addTabSignal(const QFileInfo& fileInfo);
-	void zoomSignal(float zoomLevel);
-	void mouseClickSignal(QMouseEvent* event, QPoint imgPos);
+	void sendTransformSignal(QTransform transform, QTransform imgTransform, QPointF canvasSize) const;
+	void sendNewFileSignal(qint16 op, QString filename = "") const;
+	void sendImageSignal(QImage img, QString title) const;
+	void statusInfoSignal(const QString& msg, int) const;
+	void newClientConnectedSignal(bool connect, bool local) const;
+	void movieLoadedSignal(bool isMovie) const;
+	void infoSignal(const QString& msg) const;	// needed to forward signals
+	void addTabSignal(const QString& filePath) const;
+	void zoomSignal(float zoomLevel) const;
+	void mouseClickSignal(QMouseEvent* event, QPoint imgPos) const;
 
 public slots:
 	void rotateCW();
@@ -448,9 +448,8 @@ public slots:
 	void tcpSendImage(bool silent = false);
 	
 	// file actions
-	void loadFile(QFileInfo file);
+	void loadFile(const QString& filePath);
 	void reloadFile();
-	void loadFullFile();
 	void loadNextFileFast();
 	void loadPrevFileFast();
 	void loadFileFast(int skipIdx);
@@ -509,7 +508,6 @@ protected:
 	QTransform oldWorldMatrix;
 	QTransform oldImgMatrix;
 
-	QTimer* skipImageTimer;
 	QTimer* repeatZoomTimer;
 	
 	// fading stuff

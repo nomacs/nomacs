@@ -446,7 +446,7 @@ void DkMetaDataDock::setImage(QSharedPointer<DkImageContainerT> imgC) {
 
 		// we need to load the thumbnail fresh to guarantee, that we just consider the exif thumb
 		// the imgC thumbnail might be created from the image
-		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(imgC->file()));
+		thumb = QSharedPointer<DkThumbNailT>(new DkThumbNailT(imgC->filePath()));
 		connect(thumb.data(), SIGNAL(thumbLoadedSignal(bool)), this, SLOT(thumbLoaded(bool)));
 		thumb->fetchThumb(DkThumbNailT::force_exif_thumb);
 	}
@@ -1096,7 +1096,7 @@ void DkMetaDataHUD::changeKeys() {
 	DkMetaDataSelection* selWidget = new DkMetaDataSelection(metaData, this);
 	selWidget->setSelectedKeys(keyValues);
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));

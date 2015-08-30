@@ -412,7 +412,7 @@ void DkFileSelection::setFileInfo(QFileInfo file) {
 
 void DkFileSelection::setDir(QDir dir) {
 
-	explorer->setCurrentPath(QFileInfo(dir, ""));
+	explorer->setCurrentPath(dir.absolutePath());
 
 	cDir = dir;
 	qDebug() << "setting directory to:" << dir;
@@ -1186,7 +1186,7 @@ void DkBatchDialog::createLayout() {
 	summaryLabel->setVisible(false);
 	summaryLabel->setAlignment(Qt::AlignRight);
 
-	// buttons
+	// mButtons
 	logButton = new QPushButton(tr("Show &Log"), this);
 	logButton->setToolTip(tr("Shows detailed status messages."));
 	logButton->setEnabled(false);

@@ -58,7 +58,7 @@ public slots:
 	void fireAction(const QModelIndex& index) const;
 
 signals:
-	void loadFileSignal(const QFileInfo& fileInfo) const;
+	void loadFileSignal(const QString& filePath) const;
 
 protected:
 	QStandardItemModel* model;

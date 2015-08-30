@@ -33,7 +33,6 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QMainWindow>
 #include <QProcess>
-#include <QFileInfo>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkImageContainer.h"
@@ -437,7 +436,7 @@ public:
 	DkNomacsOSXEventFilter(QObject *parent = 0);
 
 signals:
-	void loadFile(const QFileInfo& fi);
+	void loadFile(const QString& fi) const;
 
 protected:
 	/*! Handle QFileOpenEvent for mac here */
@@ -468,7 +467,7 @@ public:
 	QVector<QAction* > getPanelActions();
 	QVector<QAction* > getViewActions();
 	QVector<QAction* > getSyncActions();
-	void loadFile(const QFileInfo& file);
+	void loadFile(const QString& filePath);
 
 	static void updateAll();
 
@@ -522,7 +521,7 @@ public slots:
 	void setWallpaper();
 	void printDialog();
 	void cleanSettings();
-	void newInstance(QFileInfo file = QFileInfo());
+	void newInstance(const QString& filePath = QString());
 	void showStatusBar(bool show, bool permanent = true);
 	void showMenuBar(bool show);
 	void showToolbarsTemporarily(bool show);
@@ -538,7 +537,7 @@ public slots:
 	void errorDialog(const QString& msg);
 	void loadRecursion();
 	void setWindowTitle(QSharedPointer<DkImageContainerT> imgC);
-	void setWindowTitle(QFileInfo file, QSize size = QSize(), bool edited = false, QString attr = QString());
+	void setWindowTitle(const QString& filePath, const QSize& size = QSize(), bool edited = false, const QString& attr = QString());
 	void showOpacityDialog();
 	void opacityUp();
 	void opacityDown();

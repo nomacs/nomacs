@@ -33,6 +33,7 @@
 #include "DkSettings.h"
 #include "DkError.h"
 #include "DkTimer.h"
+#include "DkMath.h"
 
 #pragma warning(push, 0)        
 #include <QObject>
@@ -101,44 +102,49 @@ namespace nmc {
 
 // Basic loader and image edit class --------------------------------------------------------------------
 DkBasicLoader::DkBasicLoader(int mode) {
-	this->mode = mode;
-	training = false;
-	pageIdxDirty = false;
-	numPages = 1;
-	pageIdx = 1;
-	loader = no_loader;
+	
+	mMode = mode;
+	mTraining = false;
+	mPageIdxDirty = false;
+	mNumPages = 1;
+	mPageIdx = 1;
+	mLoader = no_loader;
 
-	this->metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+	mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 }
 
-bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, bool loadMetaData, bool fast) {
+bool DkBasicLoader::loadGeneral(const QString& filePath, bool loadMetaData, bool fast) {
 
-	return loadGeneral(fileInfo, QSharedPointer<QByteArray>(), loadMetaData, fast);
+	return loadGeneral(filePath, QSharedPointer<QByteArray>(), loadMetaData, fast);
 }
 /**
  * This function loads the images.
  * @param file the image file that should be loaded.
  * @return bool true if the image could be loaded.
  **/ 
-bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast) {
+bool DkBasicLoader::loadGeneral(const QString& filePath, QSharedPointer<QByteArray> ba, bool loadMetaData, bool fast) {
 
 
 	bool imgLoaded = false;
 	
-	if (fileInfo.isSymLink())
-		file = fileInfo.symLinkTarget();
-	else
-		file = fileInfo;
-	
-	QString newSuffix = file.suffix();
+	QFileInfo fInfo(filePath);
 
-	QImage oldImg = qImg;
+	if (fInfo.isSymLink())
+		mFile = fInfo.symLinkTarget();
+	else
+		mFile = filePath;
+	
+
+	fInfo = QFileInfo(mFile);	// resolved lnk
+	QString newSuffix = fInfo.suffix();
+
+	QImage oldImg = mImg;
 #ifdef WITH_OPENCV
-	cv::Mat oldMat = cvImg;
+	cv::Mat oldMat = mCvImg;	// deprecated?! (30.08.2015)
 #endif
 	release();
 
-	if (pageIdxDirty)
+	if (mPageIdxDirty)
 		imgLoaded = loadPage();
 
 	// identify raw images:
@@ -150,35 +156,35 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 	// Qt considers an orientation of 0 as wrong and fails to load these jpgs
 	// however, the old nomacs wrote 0 if the orientation should be cleared
 	// so we simply adopt the memory here
-	if (loadMetaData && metaData) {
+	if (loadMetaData && mMetaData) {
 
 		try {
-			metaData->readMetaData(fileInfo, ba);
+			mMetaData->readMetaData(filePath, ba);
 
 			if (!DkSettings::metaData.ignoreExifOrientation) {
-				orientation = metaData->getOrientation();
+				orientation = mMetaData->getOrientation();
 				
 				if (orientation == 0) {
-					metaData->clearOrientation();
-					metaData->saveMetaData(ba);
+					mMetaData->clearOrientation();
+					mMetaData->saveMetaData(ba);
 				}
 			}
 		}
 		catch (...) {}	// ignore if we cannot read the metadata
 	}
-	else if (!metaData) {
+	else if (!mMetaData) {
 		qDebug() << "metaData is NULL!";
 	}
 
 
 	QList<QByteArray> qtFormats = QImageReader::supportedImageFormats();
-	QString suf = file.suffix().toLower();
+	QString suf = fInfo.suffix().toLower();
 
-	if (!imgLoaded && !file.exists() && ba && !ba->isEmpty()) {
-		imgLoaded = qImg.loadFromData(*ba.data());
+	if (!imgLoaded && !fInfo.exists() && ba && !ba->isEmpty()) {
+		imgLoaded = mImg.loadFromData(*ba.data());
 
 		if (imgLoaded)
-			loader = qt_loader;
+			mLoader = qt_loader;
 	}
 
 	// default Qt loader
@@ -187,18 +193,18 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		// if image has Indexed8 + alpha channel -> we crash... sorry for that
 		if (!ba || ba->isEmpty())
-			imgLoaded = qImg.load(file.absoluteFilePath(), suf.toStdString().c_str());
+			imgLoaded = mImg.load(mFile, suf.toStdString().c_str());
 		else
-			imgLoaded = qImg.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
+			imgLoaded = mImg.loadFromData(*ba.data(), suf.toStdString().c_str());	// toStdString() in order get 1 byte per char
 
-		if (imgLoaded) loader = qt_loader;
+		if (imgLoaded) mLoader = qt_loader;
 	}
 
 	// PSD loader
 	if (!imgLoaded) {
 
-		imgLoaded = loadPSDFile(file, ba);
-		if (imgLoaded) loader = psd_loader;
+		imgLoaded = loadPSDFile(mFile, ba);
+		if (imgLoaded) mLoader = psd_loader;
 	}
 #if QT_VERSION < 0x050000	// >DIR: qt5 ships with webp : ) [23.4.2015 markus]
 	// WEBP loader
@@ -214,8 +220,8 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		
 		// TODO: sometimes (e.g. _DSC6289.tif) strange opencv errors are thrown - catch them!
 		// load raw files
-		imgLoaded = loadRawFile(file, ba, fast);
-		if (imgLoaded) loader = raw_loader;
+		imgLoaded = loadRawFile(mFile, ba, fast);
+		if (imgLoaded) mLoader = raw_loader;
 	}
 
 	// default Qt loader
@@ -223,26 +229,26 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		// if we first load files to buffers, we can additionally load images with wrong extensions (rainer bugfix : )
 		// TODO: add warning here
-		QByteArray ba;
-		loadFileToBuffer(file, ba);
-		imgLoaded = qImg.loadFromData(ba);
+		QByteArray lba;
+		loadFileToBuffer(mFile, lba);
+		imgLoaded = mImg.loadFromData(lba);
 		
-		if (imgLoaded) loader = qt_loader;
+		if (imgLoaded) mLoader = qt_loader;
 	}  
 
 	// this loader is a bit buggy -> be carefull
 	if (!imgLoaded && newSuffix.contains(QRegExp("(roh)", Qt::CaseInsensitive))) {
 		
-		imgLoaded = loadRohFile(file, ba);
-		if (imgLoaded) loader = roh_loader;
+		imgLoaded = loadRohFile(mFile, ba);
+		if (imgLoaded) mLoader = roh_loader;
 
 	} 
 
 	// this loader is for OpenCV cascade training files
 	if (!imgLoaded && newSuffix.contains(QRegExp("(vec)", Qt::CaseInsensitive))) {
 
-		imgLoaded = loadOpenCVVecFile(file, ba);
-		if (imgLoaded) loader = roh_loader;
+		imgLoaded = loadOpenCVVecFile(mFile, ba);
+		if (imgLoaded) mLoader = roh_loader;
 
 	} 
 
@@ -254,28 +260,28 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 	// ok, play back the old images
 	if (!imgLoaded) {
-		qImg = oldImg;
+		mImg = oldImg;
 #ifdef WITH_OPENCV
-		cvImg = oldMat;
+		mCvImg = oldMat;
 #endif
 	}
 
 	// tiff things
-	if (imgLoaded && !pageIdxDirty)
-		indexPages(file);
-	pageIdxDirty = false;
+	if (imgLoaded && !mPageIdxDirty)
+		indexPages(mFile);
+	mPageIdxDirty = false;
 
-	if (imgLoaded && loadMetaData && metaData) {
+	if (imgLoaded && loadMetaData && mMetaData) {
 		
 		try {
-			metaData->setQtValues(qImg);
+			mMetaData->setQtValues(mImg);
 		
-			if (orientation != -1 && !metaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
+			if (orientation != -1 && !mMetaData->isTiff() && !DkSettings::metaData.ignoreExifOrientation)
 				rotate(orientation);
 
 		} catch(...) {}	// ignore if we cannot read the metadata
 	}
-	else if (!metaData) {
+	else if (!mMetaData) {
 		qDebug() << "metaData is NULL!";
 	}
 
@@ -289,10 +295,10 @@ bool DkBasicLoader::loadGeneral(const QFileInfo& fileInfo, QSharedPointer<QByteA
  * @param fileName the filename of the file to be loaded.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRohFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
+bool DkBasicLoader::loadRohFile(const QString& filePath, QSharedPointer<QByteArray> ba) {
 
 	if (!ba)
-		ba = loadFileToBuffer(fileInfo);
+		ba = loadFileToBuffer(filePath);
 	if (!ba || ba->isEmpty())
 		return false;
 
@@ -324,9 +330,9 @@ bool DkBasicLoader::loadRohFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		
 		}
 
-		qImg = QImage(buffer, rohW, rohH, QImage::Format_Indexed8);
+		mImg = QImage(buffer, rohW, rohH, QImage::Format_Indexed8);
 
-		if (qImg.isNull())
+		if (mImg.isNull())
 			return imgLoaded;
 		else
 			imgLoaded = true;
@@ -338,7 +344,7 @@ bool DkBasicLoader::loadRohFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		for (int i = 0; i < 256; i++)
 			colorTable.push_back(QColor(i, i, i).rgb());
 		
-		qImg.setColorTable(colorTable);
+		mImg.setColorTable(colorTable);
 
 	} catch(...) {
 		imgLoaded = false;
@@ -354,18 +360,18 @@ bool DkBasicLoader::loadRohFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
  * @param ba the file loaded into a bytearray.
  * @return bool true if the file could be loaded.
  **/ 
-bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, bool fast) {
+bool DkBasicLoader::loadRawFile(const QString& filePath, QSharedPointer<QByteArray> ba, bool fast) {
 	
 	bool imgLoaded = false;
 
 	try {
 
 		// try to get preview image from exiv2
-		if (metaData) { 
+		if (mMetaData) { 
 			if (fast || DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_always ||
 				DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large) {
 
-				metaData->readMetaData(fileInfo, ba);
+				mMetaData->readMetaData(filePath, ba);
 
 				int minWidth = 0;
 
@@ -373,9 +379,9 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 				if (DkSettings::resources.loadRawThumb == DkSettings::raw_thumb_if_large)
 					minWidth = 1920;
 #endif
-				qImg = metaData->getPreviewImage(minWidth);
+				mImg = mMetaData->getPreviewImage(minWidth);
 
-				if (!qImg.isNull()) {
+				if (!mImg.isNull()) {
 					qDebug() << "[RAW] loaded with exiv2";
 					return true;
 				}
@@ -390,7 +396,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 		//use iprocessor from libraw to read the data
 		if (!ba || ba->isEmpty()) {
-			error = iProcessor.open_file(fileInfo.absoluteFilePath().toStdString().c_str());
+			error = iProcessor.open_file(filePath.toStdString().c_str());
 		}
 		else {
 			// the buffer check is because:
@@ -434,7 +440,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 
 				if (!tmp.isNull()) {
 					imgLoaded = true;
-					qImg = tmp;
+					mImg = tmp;
 					qDebug() << "[RAW] I loaded the RAW's thumbnail";
 
 					return imgLoaded;
@@ -725,7 +731,7 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		//case 6: orientation = 90; break;
 		//}
 
-		qImg = image.copy();
+		mImg = image.copy();
 		//if (orientation!=0) {
 		//	QTransform rotationMatrix;
 		//	rotationMatrix.rotate((double)orientation);
@@ -748,13 +754,13 @@ bool DkBasicLoader::loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 }
 
 #ifdef WIN32
-bool DkBasicLoader::loadPSDFile(const QFileInfo&, QSharedPointer<QByteArray>) {
+bool DkBasicLoader::loadPSDFile(const QString&, QSharedPointer<QByteArray>) {
 #else
-bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
+bool DkBasicLoader::loadPSDFile(const QString& filePath, QSharedPointer<QByteArray> ba) {
 
 	// load from file?
 	if (!ba || ba->isEmpty()) {
-		QFile file(fileInfo.absoluteFilePath());
+		QFile file(filePath);
 		file.open(QIODevice::ReadOnly);
 
 		QPsdHandler psdHandler;
@@ -762,7 +768,7 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		//psdHandler.setFormat(fileInfo.suffix().toLocal8Bit());
 
 		if (psdHandler.canRead(&file))
-			return psdHandler.read(&this->qImg);
+			return psdHandler.read(&mImg);
 	}
 	else {
 	
@@ -775,7 +781,7 @@ bool DkBasicLoader::loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteA
 		//psdHandler.setFormat(file.suffix().toLocal8Bit());
 
 		if (psdHandler.canRead(&buffer))
-			return psdHandler.read(&this->qImg);
+			return psdHandler.read(&mImg);
 	}
 
 #endif // !WIN32
@@ -788,14 +794,14 @@ cv::Mat DkBasicLoader::getImageCv() {
 	return cv::Mat();
 }
 
-bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba, QSize s) {
+bool DkBasicLoader::loadOpenCVVecFile(const QString& filePath, QSharedPointer<QByteArray> ba, QSize s) {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
 
 	// load from file?
 	if (ba->isEmpty())
-		ba = loadFileToBuffer(fileInfo);
+		ba = loadFileToBuffer(filePath);
 
 	if (ba->isEmpty())
 		return false;
@@ -809,7 +815,7 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 	int guessedW = 0;
 	int guessedH = 0;
 
-	getPatchSizeFromFileName(fileInfo.fileName(), guessedW, guessedH);
+	getPatchSizeFromFileName(QFileInfo(filePath).fileName(), guessedW, guessedH);
 
 	qDebug() << "patch size from filename: " << guessedW << " x " << guessedH;
 
@@ -860,8 +866,8 @@ bool DkBasicLoader::loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<
 			cPatch.copyTo(cPatchAll);
 	}
 
-	this->qImg = DkImage::mat2QImage(allPatches);
-	this->qImg = this->qImg.convertToFormat(QImage::Format_ARGB32);
+	mImg = DkImage::mat2QImage(allPatches);
+	mImg = mImg.convertToFormat(QImage::Format_ARGB32);
 
 	return true;
 }
@@ -916,7 +922,7 @@ cv::Mat DkBasicLoader::getPatch(const unsigned char** dataPtr, QSize patchSize) 
 	return img8U;
 }
 
-int DkBasicLoader::mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const {
+int DkBasicLoader::mergeVecFiles(const QStringList& vecFilePaths, QString& saveFilePath) const {
 
 	int lastVecSize = 0;
 	int totalFileCount = 0;
@@ -924,10 +930,10 @@ int DkBasicLoader::mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileIn
 	int pWidth = 0, pHeight = 0;
 	QByteArray vecBuffer;
 
-	for (int idx = 0; idx < vecFileInfos.size(); idx++) {
+	for (const QString& filePath : vecFilePaths) {
 
-		QFileInfo fInfo = vecFileInfos.at(idx);
-		QSharedPointer<QByteArray> ba = loadFileToBuffer(fInfo);
+		QFileInfo fInfo(filePath);
+		QSharedPointer<QByteArray> ba = loadFileToBuffer(filePath);
 		if (ba->isEmpty()){
 			qDebug() << "could not load: " << fInfo.fileName();
 			continue;
@@ -966,6 +972,8 @@ int DkBasicLoader::mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileIn
 
 	vecBuffer.prepend((const char*) header, 3*sizeof(int));
 
+	QFileInfo saveFileInfo(saveFilePath);
+
 	// append width, height if we don't know
 	if (pWidth && pHeight) {
 		QString whString = "-w" + QString::number(pWidth) + "-h" + QString::number(pHeight);
@@ -982,27 +990,27 @@ int DkBasicLoader::mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileIn
 
 #endif
 
-void DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba) const {
+void DkBasicLoader::loadFileToBuffer(const QString& fileInfo, QByteArray& ba) const {
 
 #ifdef WITH_QUAZIP
-	if (file.dir().path().contains(DkZipContainer::zipMarker())) 
-		DkZipContainer::extractImage(DkZipContainer::decodeZipFile(file), DkZipContainer::decodeImageFile(file), ba);
+	if (QFileInfo(fileInfo).dir().path().contains(DkZipContainer::zipMarker())) 
+		DkZipContainer::extractImage(DkZipContainer::decodeZipFile(fileInfo), DkZipContainer::decodeImageFile(fileInfo), ba);
 #endif
 	
-	QFile file(fileInfo.absoluteFilePath());
+	QFile file(fileInfo);
 	file.open(QIODevice::ReadOnly);
 
 	ba = file.readAll();
 }
 
-QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QFileInfo& fileInfo) const {
+QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QString& fileInfo) const {
 
 #ifdef WITH_QUAZIP
-	if (file.dir().path().contains(DkZipContainer::zipMarker())) 
-		return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(file), DkZipContainer::decodeImageFile(file));
+	if (QFileInfo(fileInfo).dir().path().contains(DkZipContainer::zipMarker())) 
+		return DkZipContainer::extractImage(DkZipContainer::decodeZipFile(fileInfo), DkZipContainer::decodeImageFile(fileInfo));
 #endif
 
-	QFile file(fileInfo.absoluteFilePath());
+	QFile file(fileInfo);
 	file.open(QIODevice::ReadOnly);
 
 	QSharedPointer<QByteArray> ba(new QByteArray(file.readAll()));
@@ -1011,12 +1019,12 @@ QSharedPointer<QByteArray> DkBasicLoader::loadFileToBuffer(const QFileInfo& file
 	return ba;
 }
 
-bool DkBasicLoader::writeBufferToFile(const QFileInfo& fileInfo, const QSharedPointer<QByteArray> ba) const {
+bool DkBasicLoader::writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const {
 
 	if (!ba || ba->isEmpty())
 		return false;
 
-	QFile file(fileInfo.absoluteFilePath());
+	QFile file(fileInfo);
 	file.open(QIODevice::WriteOnly);
 	qint64 bytesWritten = file.write(*ba.data(), ba->size());
 	file.close();
@@ -1028,16 +1036,18 @@ bool DkBasicLoader::writeBufferToFile(const QFileInfo& fileInfo, const QSharedPo
 	return true;
 }
 
-void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
+void DkBasicLoader::indexPages(const QString& filePath) {
 
 	// reset counters
-	numPages = 1;
-	pageIdx = 1;
+	mNumPages = 1;
+	mPageIdx = 1;
 
 #ifdef WITH_LIBTIFF
 
+	QFileInfo fInfo(filePath);
+
 	// for now we just support tiff's
-	if (!fileInfo.suffix().contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)))
+	if (!fInfo.suffix().contains(QRegExp("(tif|tiff)", Qt::CaseInsensitive)))
 		return;
 
 	// first turn off nasty warning/error dialogs - (we do the GUI : )
@@ -1046,7 +1056,7 @@ void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 	oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
 	DkTimer dt;
-	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toLatin1(), "r");
+	TIFF* tiff = TIFFOpen(filePath.toLatin1(), "r");	// this->mFile was here before - not sure why
 
 	if (!tiff) 
 		return;
@@ -1059,10 +1069,10 @@ void DkBasicLoader::indexPages(const QFileInfo& fileInfo) {
 
 	} while (TIFFReadDirectory(tiff));
 
-	numPages = dircount;
+	mNumPages = dircount;
 
-	if (numPages > 1)
-		pageIdx = 1;
+	if (mNumPages > 1)
+		mPageIdx = 1;
 
 	qDebug() << dircount << " TIFF directories... " << dt.getTotal();
 	TIFFClose(tiff);
@@ -1077,13 +1087,13 @@ bool DkBasicLoader::loadPage(int skipIdx) {
 
 	bool imgLoaded = false;
 
-	pageIdx += skipIdx;
+	mPageIdx += skipIdx;
 
 	// <= 1 since first page is loaded using qt
-	if (pageIdx > numPages || pageIdx <= 1)
+	if (mPageIdx > mNumPages || mPageIdx <= 1)
 		return imgLoaded;
 
-	return loadPageAt(pageIdx);
+	return loadPageAt(mPageIdx);
 }
 
 bool DkBasicLoader::loadPageAt(int pageIdx) {
@@ -1093,7 +1103,7 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 #ifdef WITH_LIBTIFF
 
 	// <= 1 since first page is loaded using qt
-	if (pageIdx > numPages || pageIdx < 1)
+	if (pageIdx > mNumPages || pageIdx < 1)
 		return imgLoaded;
 
 	// first turn off nasty warning/error dialogs - (we do the GUI : )
@@ -1102,7 +1112,7 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	oldErrorHandler = TIFFSetErrorHandler(NULL); 
 
 	DkTimer dt;
-	TIFF* tiff = TIFFOpen(this->file.absoluteFilePath().toLatin1(), "r");
+	TIFF* tiff = TIFFOpen(mFile.toLatin1(), "r");
 
 	if (!tiff)
 		return imgLoaded;
@@ -1120,14 +1130,14 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 	}
 
 	// init the qImage
-	qImg = QImage(width, height, QImage::Format_ARGB32);
+	mImg = QImage(width, height, QImage::Format_ARGB32);
 
 	const int stopOnError = 1;
-	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(qImg.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
+	imgLoaded = TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(mImg.bits()), ORIENTATION_TOPLEFT, stopOnError) != 0;
 
 	if (imgLoaded) {
 		for (uint32 y=0; y<height; ++y)
-			convert32BitOrder(qImg.scanLine(y), width);
+			convert32BitOrder(mImg.scanLine(y), width);
 	}
 
 	TIFFClose(tiff);
@@ -1142,25 +1152,25 @@ bool DkBasicLoader::loadPageAt(int pageIdx) {
 bool DkBasicLoader::setPageIdx(int skipIdx) {
 
 	// do nothing if we don't have tiff pages
-	if (numPages <= 1)
+	if (mNumPages <= 1)
 		return false;
 
-	pageIdxDirty = false;
+	mPageIdxDirty = false;
 
-	int newPageIdx = pageIdx + skipIdx;
+	int newPageIdx = mPageIdx + skipIdx;
 
-	if (newPageIdx > 0 && newPageIdx <= numPages) {
-		pageIdxDirty = true;
-		pageIdx = newPageIdx;
+	if (newPageIdx > 0 && newPageIdx <= mNumPages) {
+		mPageIdxDirty = true;
+		mPageIdx = newPageIdx;
 	}
 
-	return pageIdxDirty;
+	return mPageIdxDirty;
 }
 
 void DkBasicLoader::resetPageIdx() {
 
-	pageIdxDirty = false;
-	pageIdx = 1;
+	mPageIdxDirty = false;
+	mPageIdx = 1;
 }
 
 void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
@@ -1179,37 +1189,38 @@ void DkBasicLoader::convert32BitOrder(void *buffer, int width) {
 #endif
 }
 
-QFileInfo DkBasicLoader::save(const QFileInfo& fileInfo, const QImage& img, int compression) {
+QString DkBasicLoader::save(const QString& filePath, const QImage& img, int compression) {
 
 	QSharedPointer<QByteArray> ba;
 
-	qDebug() << "saving: " << fileInfo.absoluteFilePath();
+	qDebug() << "saving: " << filePath;
 
-	if (saveToBuffer(fileInfo, img, ba, compression) && ba) {
+	if (saveToBuffer(filePath, img, ba, compression) && ba) {
 
-		if (writeBufferToFile(fileInfo, ba))
-			return fileInfo;
+		if (writeBufferToFile(filePath, ba))
+			return filePath;
 	}
 
-	return QFileInfo();
+	return QString();
 }
 
-bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray>& ba, int compression) {
+bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression) {
 
 	if (!ba) 
 		ba = QSharedPointer<QByteArray>(new QByteArray());
 
 	bool saved = false;
 
-	qDebug() << "extension: " << fileInfo.suffix();
+	QFileInfo fInfo(filePath);
+	qDebug() << "extension: " << fInfo.suffix();
 
 
-	if (fileInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
+	if (fInfo.suffix().contains("ico", Qt::CaseInsensitive)) {
 		saved = saveWindowsIcon(img, ba);
 	}
 #if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
 
-	else if (fileInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
+	else if (fInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
 		saved = saveWebPFile(img, ba, compression);
 	}
 #endif
@@ -1219,16 +1230,16 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		QImage sImg = img;
 
 		// JPEG 2000 can only handle 32 or 8bit images
-		if (!hasAlpha && !fileInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")))
+		if (!hasAlpha && !fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")))
 			sImg = sImg.convertToFormat(QImage::Format_RGB888);
-		else if (fileInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8)
+		else if (fInfo.suffix().contains(QRegExp("(j2k|jp2|jpf|jpx)")) && sImg.depth() != 32 && sImg.depth() != 8)
 			sImg = sImg.convertToFormat(QImage::Format_RGB32);
 
 		qDebug() << "img has alpha: " << (sImg.format() != QImage::Format_RGB888) << " img uses alpha: " << hasAlpha;
 
 		QBuffer fileBuffer(ba.data());
 		fileBuffer.open(QIODevice::WriteOnly);
-		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fileInfo.suffix().toStdString().c_str());
+		QImageWriter* imgWriter = new QImageWriter(&fileBuffer, fInfo.suffix().toStdString().c_str());
 		imgWriter->setCompression(compression);
 		imgWriter->setQuality(compression);
 #if QT_VERSION >= 0x050500
@@ -1239,15 +1250,15 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 		delete imgWriter;
 	}
 
-	if (saved && metaData) {
+	if (saved && mMetaData) {
 		
-		if (!metaData->isLoaded() || !metaData->hasMetaData())
-			metaData->readMetaData(fileInfo, ba);
+		if (!mMetaData->isLoaded() || !mMetaData->hasMetaData())
+			mMetaData->readMetaData(fInfo, ba);
 
-		if (metaData->isLoaded()) {
+		if (mMetaData->isLoaded()) {
 			try {
-				metaData->updateImageMetaData(img);
-				metaData->saveMetaData(ba, true);
+				mMetaData->updateImageMetaData(img);
+				mMetaData->saveMetaData(ba, true);
 				//metaData->printMetaData();	// debug
 			} 
 			catch (...) {
@@ -1258,58 +1269,59 @@ bool DkBasicLoader::saveToBuffer(const QFileInfo& fileInfo, const QImage& img, Q
 	}
 
 	if (!saved)
-		emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fileInfo.fileName()));
+		emit errorDialogSignal(tr("Sorry, I could not save: %1").arg(fInfo.fileName()));
 
 	return saved;
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo) {
+void DkBasicLoader::saveThumbToMetaData(const QString& filePath) {
 
 	QSharedPointer<QByteArray> ba;	// dummy
-	saveThumbToMetaData(fileInfo, ba);
+	saveThumbToMetaData(filePath, ba);
 }
 
-void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo) {
+void DkBasicLoader::saveMetaData(const QString& filePath) {
 
 	QSharedPointer<QByteArray> ba;	// dummy
-	saveMetaData(fileInfo, ba);
+	saveMetaData(filePath, ba);
 }
 
-void DkBasicLoader::saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
+void DkBasicLoader::saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
 	
-	if (qImg.isNull())
+	if (mImg.isNull())
 		return;
 
-	metaData->setThumbnail(DkImage::createThumb(qImg));
-	saveMetaData(fileInfo, ba);
+	mMetaData->setThumbnail(DkImage::createThumb(mImg));
+	saveMetaData(filePath, ba);
 }
 
-void DkBasicLoader::saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba) {
+void DkBasicLoader::saveMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba) {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
 
-	if (ba->isEmpty() && metaData->isDirty())
-		ba = loadFileToBuffer(fileInfo);
+	if (ba->isEmpty() && mMetaData->isDirty())
+		ba = loadFileToBuffer(filePath);
 
 	bool saved = false;
 	try {
-		saved = metaData->saveMetaData(ba);
+		saved = mMetaData->saveMetaData(ba);
 	} 
 	catch(...) {
 	}
 	
 	if (saved)
-		writeBufferToFile(fileInfo, ba);
+		writeBufferToFile(filePath, ba);
 
 }
 
-bool DkBasicLoader::isContainer(const QFileInfo& fileInfo) {
+bool DkBasicLoader::isContainer(const QString& filePath) {
 
-	if (!fileInfo.isFile() || !fileInfo.exists())
+	QFileInfo fInfo(filePath);
+	if (!fInfo.isFile() || !fInfo.exists())
 		return false;
 
-	QString suffix = fileInfo.suffix();
+	QString suffix = fInfo.suffix();
 
 	for (int idx = 0; idx < DkSettings::app.containerFilters.size(); idx++) {
 
@@ -1332,14 +1344,14 @@ void DkBasicLoader::rotate(int orientation) {
 
 	QTransform rotationMatrix;
 	rotationMatrix.rotate((double)orientation);
-	qImg = qImg.transformed(rotationMatrix);
+	mImg = mImg.transformed(rotationMatrix);
 
 // TODO: test without OpenCV
 #ifdef WITH_OPENCV
 
-	if (!cvImg.empty()) {
+	if (!mCvImg.empty()) {
 
-		DkVector nSz = DkVector(cvImg.size());	// *0.5f?
+		DkVector nSz = DkVector(mCvImg.size());	// *0.5f?
 		DkVector nSl = nSz;
 		DkVector nSr = nSz;
 
@@ -1370,9 +1382,9 @@ void DkBasicLoader::rotate(int orientation) {
 		transl[5] += (double)cDiff.y;
 
 		// img in wrapAffine must not be overwritten
-		cv::Mat rImg(nSl.getCvSize(), cvImg.type());
-		warpAffine(cvImg, rImg, rotMat, rImg.size(), interpolation, cv::BORDER_CONSTANT/*, borderValue*/);
-		cvImg = rImg;
+		cv::Mat rImg(nSl.getCvSize(), mCvImg.type());
+		warpAffine(mCvImg, rImg, rotMat, rImg.size(), interpolation, cv::BORDER_CONSTANT/*, borderValue*/);
+		mCvImg = rImg;
 	} 
 
 #endif
@@ -1386,56 +1398,58 @@ void DkBasicLoader::release(bool clear) {
 
 	// TODO: auto save routines here?
 	//qDebug() << file.fileName() << " released...";
-	saveMetaData(file);
+	saveMetaData(mFile);
 
-	qImg = QImage();
+	mImg = QImage();
 	//metaData.clear();
 	
 	// TODO: where should we clear the metadata?
-	if (clear || !metaData->isDirty())
-		metaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
+	if (clear || !mMetaData->isDirty())
+		mMetaData = QSharedPointer<DkMetaDataT>(new DkMetaDataT());
 	
 #ifdef WITH_OPENCV
-	cvImg.release();
+	mCvImg.release();
 #endif
 
 }
 
 #ifdef WITH_WEBP
 
-bool DkBasicLoader::loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba) {
+bool DkBasicLoader::loadWebPFile(const QString& filePath, QSharedPointer<QByteArray> ba) {
 
 	if (!ba || ba->isEmpty())
-		ba = loadFileToBuffer(fileInfo);
+		ba = loadFileToBuffer(filePath);
 	if (ba->isEmpty())
 		return false;
 
 	// retrieve the image features (size, alpha etc.)
 	WebPBitstreamFeatures features;
 	int error = WebPGetFeatures((const uint8_t*)ba->data(), ba->size(), &features);
-	if (error) return false;
+	if (error) 
+		return false;
 
 	uint8_t* webData = 0;
 
 	if (features.has_alpha) {
 		webData = WebPDecodeBGRA((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
-		qImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
+		mImg = QImage(webData, (int)features.width, (int)features.height, QImage::Format_ARGB32);
 	}
 	else {
 		webData = WebPDecodeRGB((const uint8_t*) ba->data(), ba->size(), &features.width, &features.height);
 		if (!webData) return false;
-		qImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
+		mImg = QImage(webData, (int)features.width, (int)features.height, features.width*3, QImage::Format_RGB888);
 	}
 
 	// clone the image so we own the buffer
-	qImg = qImg.copy();
-	if (webData) free(webData);
+	mImg = mImg.copy();
+	if (webData) 
+		free(webData);
 
 	return true;
 }
 
-bool DkBasicLoader::saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression) {
+bool DkBasicLoader::saveWebPFile(const QString& filePath, const QImage& img, int compression) {
 	
 	qDebug() << "format: " << img.format();
 
@@ -1443,14 +1457,14 @@ bool DkBasicLoader::saveWebPFile(const QFileInfo& fileInfo, const QImage img, in
 
 	if (saveWebPFile(img, ba, compression) && ba && !ba->isEmpty()) {
 
-		writeBufferToFile(fileInfo, ba);
+		writeBufferToFile(filePath, ba);
 		return true;
 	}
 
 	return false;
 }
 
-bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed) {
+bool DkBasicLoader::saveWebPFile(const QImage& img, QSharedPointer<QByteArray>& ba, int compression, int speed) {
 
 	if (!ba)
 		ba = QSharedPointer<QByteArray>(new QByteArray());
@@ -1514,13 +1528,13 @@ bool DkBasicLoader::saveWebPFile(const QImage img, QSharedPointer<QByteArray>& b
 #endif
 
 #ifdef WIN32
-bool DkBasicLoader::saveWindowsIcon(const QFileInfo& fileInfo, const QImage& img) const {
+bool DkBasicLoader::saveWindowsIcon(const QString& filePath, const QImage& img) const {
 
 	QSharedPointer<QByteArray> ba;
 
 	if (saveWindowsIcon(img, ba) && ba && !ba->isEmpty()) {
 
-		writeBufferToFile(fileInfo, ba);
+		writeBufferToFile(filePath, ba);
 		return true;
 	}
 
@@ -1543,7 +1557,7 @@ struct ICONDIRENTRY
 };
 
 bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const {
-	
+
 	// this code is an adopted version of:
 	// http://stackoverflow.com/questions/2289894/how-can-i-save-hicon-to-an-ico-file
 
@@ -1568,7 +1582,7 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 	// Get information about icon:
 	ICONINFO iconInfo;
 	GetIconInfo(hIcon, &iconInfo);
-	HGDIOBJ handle1(iconInfo.hbmColor), handle2(iconInfo.hbmMask); // free bitmaps when function ends
+	HGDIOBJ handle1(iconInfo.hbmColor); // free bitmaps when function ends
 	BITMAPINFO bmInfo = { 0 };
 	bmInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmInfo.bmiHeader.biBitCount = 0;    // don't get the color table     
@@ -1590,7 +1604,7 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 
 	// Get bitmap data:
 	QSharedPointer<UCHAR> bits(new UCHAR[bmInfo.bmiHeader.biSizeImage]);
-	pBmInfo->bmiHeader.biBitCount = nColorBits;
+	pBmInfo->bmiHeader.biBitCount = (WORD)nColorBits;
 	pBmInfo->bmiHeader.biCompression = BI_RGB;
 	if (!GetDIBits(screenDevice, iconInfo.hbmColor, 0, bmInfo.bmiHeader.biHeight, bits.data(), pBmInfo, DIB_RGB_COLORS))
 	{
@@ -1605,7 +1619,7 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 	{
 		return false;
 	}
-	
+
 	QSharedPointer<UCHAR> maskBits(new UCHAR[maskInfo.bmiHeader.biSizeImage]);
 	QSharedPointer<UCHAR> maskInfoBytes(new UCHAR[sizeof(BITMAPINFO) + 2 * sizeof(RGBQUAD)]);
 	BITMAPINFO* pMaskInfo = (BITMAPINFO*)maskInfoBytes.data();
@@ -1645,43 +1659,6 @@ bool DkBasicLoader::saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray
 	DeleteObject(handle1);
 
 	return true;
-
-
-	// writes 16bit icon files
-	//// Create the IPicture intrface
-	//PICTDESC desc = { sizeof(PICTDESC) };
-	//desc.picType = PICTYPE_ICON;
-	//desc.icon.hicon = hIcon;
-	//IPicture* pPicture = 0;
-	//HRESULT hr = OleCreatePictureIndirect(&desc, IID_IPicture, FALSE, (void**)&pPicture);
-	//
-	//if (FAILED(hr)) 
-	//	return false;
-
-	//// Create a stream and save the image
-	//IStream* pStream = 0;
-	//CreateStreamOnHGlobal(0, TRUE, &pStream);
-	//LONG cbSize = 0;
-	//hr = pPicture->SaveAsFile(pStream, TRUE, &cbSize);
-
-	//if (FAILED(hr))
-	//	return false;
-
-	//LARGE_INTEGER move;
-	//memset(&move, 0, sizeof(LARGE_INTEGER));
-	//pStream->Seek(move, STREAM_SEEK_SET, NULL);
-	//
-	//ba->resize(cbSize);
-
-	//ULONG bytesRead = 0;
-	//hr = pStream->Read(ba->data(), cbSize, &bytesRead);
-
-	//qDebug() << "I read back: " << bytesRead << " bytes...";
-
-	//if (FAILED(hr))
-	//	return false;
-
-	//return true;
 }
 
 #endif
@@ -1691,10 +1668,10 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 	QNetworkProxyQuery npq(QUrl("http://www.nomacs.org"));
 	QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
 	if (!listOfProxies.empty() && listOfProxies[0].hostName() != "") {
-		m_WebCtrl.setProxy(listOfProxies[0]);
+		mWebCtrl.setProxy(listOfProxies[0]);
 	}
 
-	connect(&m_WebCtrl, SIGNAL(finished(QNetworkReply*)),
+	connect(&mWebCtrl, SIGNAL(finished(QNetworkReply*)),
 		SLOT(fileDownloaded(QNetworkReply*)));
 
 	downloadFile(imageUrl);
@@ -1706,67 +1683,69 @@ FileDownloader::~FileDownloader() {
 void FileDownloader::downloadFile(const QUrl& url) {
 
 	QNetworkRequest request(url);
-	m_WebCtrl.get(request);
-	this->url = url;
+	mWebCtrl.get(request);
+	mUrl = url;
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* pReply) {
-	m_DownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
+	mDownloadedData = QSharedPointer<QByteArray>(new QByteArray(pReply->readAll()));
 	//emit a signal
 	pReply->deleteLater();
 	emit downloaded();
 }
 
 QSharedPointer<QByteArray> FileDownloader::downloadedData() const {
-	return m_DownloadedData;
+	return mDownloadedData;
 }
 
 QUrl FileDownloader::getUrl() const {
-	return url;
+	return mUrl;
 }
 
 #ifdef WITH_QUAZIP
 
 // DkZipContainer --------------------------------------------------------------------
-DkZipContainer::DkZipContainer(const QFileInfo& fileInfo) {
+DkZipContainer::DkZipContainer(const QString& fileName) {
 
-	encodedFileInfo = QFileInfo();
-	zipFileInfo = QFileInfo();
-	imageFileInfo = QFileInfo();
-
-	if(fileInfo.dir().path().contains(mZipMarker)) {
-		imageInZip = true;
-		encodedFileInfo = fileInfo;
-		zipFileInfo = decodeZipFile(fileInfo);
-		imageFileInfo = decodeImageFile(fileInfo);
+	if(fileName.contains(mZipMarker)) {
+		mImageInZip = true;
+		mEncodedFileInfo = fileName;
+		mZipFileInfo = decodeZipFile(fileName);
+		mImageFileInfo = decodeImageFile(fileName);
 	}
-	else {
-		imageInZip = false;
-	}
+	else
+		mImageInZip = false;
 }
 
-QFileInfo DkZipContainer::encodeZipFile(const QFileInfo& zipFile, const QString& imageFile) {
+QString DkZipContainer::encodeZipFile(const QString& zipFile, const QString& imageFile) {
 
-	return QFileInfo(QDir(zipFile.absoluteFilePath() + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)),(imageFile.lastIndexOf("/") < 0) ? imageFile : imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1));
+	if ((zipFile + mZipMarker + imageFile.left(imageFile.lastIndexOf("/") + 1).replace("/", mZipMarker)), (imageFile.lastIndexOf("/") < 0))
+		return imageFile;
+	else
+		return imageFile.right(imageFile.size() - imageFile.lastIndexOf("/") - 1);
 }
 
-QFileInfo DkZipContainer::decodeZipFile(const QFileInfo& encodedFileInfo) {
+QString DkZipContainer::decodeZipFile(const QString& encodedFileInfo) {
 
-	return encodedFileInfo.dir().path().left(encodedFileInfo.dir().path().indexOf(mZipMarker));
+	QString encodedDir = QFileInfo(encodedFileInfo).dir().path();
+
+	return encodedDir.left(encodedDir.indexOf(mZipMarker));
 }
 
-QFileInfo DkZipContainer::decodeImageFile(const QFileInfo& encodedFileInfo) {
+QString DkZipContainer::decodeImageFile(const QString& encodedFileInfo) {
 
-	return encodedFileInfo.dir().path().right(encodedFileInfo.dir().path().size() - encodedFileInfo.dir().path().indexOf(mZipMarker) - QString(mZipMarker).size()).replace(mZipMarker,"/") + encodedFileInfo.fileName();
+	QString encodedDir = QFileInfo(encodedFileInfo).dir().path();
+
+	return encodedDir.right(encodedDir.size() - encodedDir.indexOf(mZipMarker) - QString(mZipMarker).size()).replace(mZipMarker,"/") + QFileInfo(encodedFileInfo).fileName();
 }
 
-QSharedPointer<QByteArray> DkZipContainer::extractImage(QFileInfo zipFile, QFileInfo imageFile) {
+QSharedPointer<QByteArray> DkZipContainer::extractImage(const QString& zipFile, const QString& imageFile) {
 
-	QuaZip zip(zipFile.absoluteFilePath());		
+	QuaZip zip(zipFile);		
 	if(!zip.open(QuaZip::mdUnzip)) 
 		return QSharedPointer<QByteArray>(new QByteArray());
 
-	zip.setCurrentFile(imageFile.filePath());
+	zip.setCurrentFile(imageFile);
 	QuaZipFile extractedFile(&zip);
 	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
 		return QSharedPointer<QByteArray>(new QByteArray());
@@ -1779,13 +1758,13 @@ QSharedPointer<QByteArray> DkZipContainer::extractImage(QFileInfo zipFile, QFile
 	return ba;
 }
 
-void DkZipContainer::extractImage(QFileInfo zipFile, QFileInfo imageFile, QByteArray& ba) {
+void DkZipContainer::extractImage(const QString& zipFile, const QString& imageFile, QByteArray& ba) {
 
-	QuaZip zip(zipFile.absoluteFilePath());		
+	QuaZip zip(zipFile);		
 	if(!zip.open(QuaZip::mdUnzip)) 
 		return;
 
-	zip.setCurrentFile(imageFile.filePath());
+	zip.setCurrentFile(imageFile);
 	QuaZipFile extractedFile(&zip);
 	if(!extractedFile.open(QIODevice::ReadOnly) || extractedFile.getZipError() != UNZ_OK) 
 		return;
@@ -1799,22 +1778,22 @@ void DkZipContainer::extractImage(QFileInfo zipFile, QFileInfo imageFile, QByteA
 
 bool DkZipContainer::isZip() {
 
-	return imageInZip;
+	return mImageInZip;
 }
 
-QFileInfo DkZipContainer::getZipFileInfo() {
+QString DkZipContainer::getZipFileInfo() {
 
-	return zipFileInfo;
+	return mZipFileInfo;
 }
 
-QFileInfo DkZipContainer::getImageFileInfo() {
+QString DkZipContainer::getImageFileInfo() {
 
-	return imageFileInfo;
+	return mImageFileInfo;
 }
 
-QFileInfo DkZipContainer::getEncodedFileInfo() {
+QString DkZipContainer::getEncodedFileInfo() {
 
-	return encodedFileInfo;
+	return mEncodedFileInfo;
 }
 
 QString DkZipContainer::zipMarker() {

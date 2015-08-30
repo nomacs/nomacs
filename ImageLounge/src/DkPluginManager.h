@@ -289,7 +289,7 @@ private:
 	QTableView* parentTable;
 };
 
-// pushbutton delegate : adds buttons in the table column
+// pushbutton delegate : adds mButtons in the table column
 class DkPushButtonDelegate : public QStyledItemDelegate {
 	Q_OBJECT
 

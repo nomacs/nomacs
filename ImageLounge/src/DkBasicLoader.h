@@ -31,7 +31,6 @@
 #include <QNetworkAccessManager>
 #include <QSharedPointer>
 #include <QUrl>
-#include <QFileInfo>
 #include <QImage>
 #pragma warning(pop)
 
@@ -77,26 +76,25 @@ class DkMetaDataT;
 class DllExport DkZipContainer {
 
 public:
-	DkZipContainer(const QFileInfo& fileInfo);
+	DkZipContainer(const QString& fileName);
 
 	bool isZip();
-	QFileInfo getZipFileInfo();
-	QFileInfo getImageFileInfo();
-	QFileInfo getEncodedFileInfo();
+	QString getZipFileInfo();
+	QString getImageFileInfo();
+	QString getEncodedFileInfo();
 	static QString zipMarker();
-	static QSharedPointer<QByteArray> extractImage(QFileInfo zipFile, QFileInfo imageFile);
-	static void extractImage(QFileInfo zipFile, QFileInfo imageFile, QByteArray& ba);
-	static QFileInfo decodeZipFile(const QFileInfo& encodedFileInfo);
-	static QFileInfo decodeImageFile(const QFileInfo& encodedFileInfo);
-	static QFileInfo encodeZipFile(const QFileInfo& zipFile, const QString& imageFile);
+	static QSharedPointer<QByteArray> extractImage(const QString& zipFile, const QString& imageFile);
+	static void extractImage(const QString& zipFile, const QString& imageFile, QByteArray& ba);
+	static QString decodeZipFile(const QString& encodedFileInfo);
+	static QString decodeImageFile(const QString& encodedFileInfo);
+	static QString encodeZipFile(const QString& zipFile, const QString& imageFile);
 
 protected:
-	QFileInfo encodedFileInfo;
-	QFileInfo zipFileInfo;
-	QFileInfo imageFileInfo;
-	bool imageInZip;
+	QString mEncodedFileInfo;
+	QString mZipFileInfo;
+	QString mImageFileInfo;
+	bool mImageInZip;
 	static QString mZipMarker;
-
 };
 #endif
 
@@ -134,7 +132,7 @@ public:
 	/**
 	 * Convenience function.
 	 **/
-	bool loadGeneral(const QFileInfo& file, bool loadMetaData = false, bool fast = false);
+	bool loadGeneral(const QString& filePath, bool loadMetaData = false, bool fast = false);
 
 	/**
 	 * Loads the image for the given file
@@ -142,7 +140,7 @@ public:
 	 * @param skipIdx the number of (internal) pages to be skipped
 	 * @return bool true if the image was loaded
 	 **/
-	bool loadGeneral(const QFileInfo& file, const QSharedPointer<QByteArray> ba, bool loadMetaData = false, bool fast = false);
+	bool loadGeneral(const QString& filePath, const QSharedPointer<QByteArray> ba, bool loadMetaData = false, bool fast = false);
 
 	/**
 	 * Loads the page requested (with respect to the current page)
@@ -153,34 +151,34 @@ public:
 	bool loadPageAt(int pageIdx = 0);
 
 	int getNumPages() const {
-		return numPages;
+		return mNumPages;
 	};
 
 	int getPageIdx() const {
-		return pageIdx;
+		return mPageIdx;
 	};
 
 	bool setPageIdx(int skipIdx);
 	void resetPageIdx();
 
-	QFileInfo save(const QFileInfo& fileInfo, const QImage& img, int compression = -1);
-	bool saveToBuffer(const QFileInfo& fileInfo, const QImage& img, QSharedPointer<QByteArray>& ba, int compression = -1);
-	void saveThumbToMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba);
-	void saveMetaData(const QFileInfo& fileInfo, QSharedPointer<QByteArray>& ba);
-	void saveThumbToMetaData(const QFileInfo& fileInfo);
-	void saveMetaData(const QFileInfo& fileInfo);
+	QString save(const QString& filePath, const QImage& img, int compression = -1);
+	bool saveToBuffer(const QString& filePath, const QImage& img, QSharedPointer<QByteArray>& ba, int compression = -1);
+	void saveThumbToMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba);
+	void saveMetaData(const QString& filePath, QSharedPointer<QByteArray>& ba);
+	void saveThumbToMetaData(const QString& filePath);
+	void saveMetaData(const QString& filePath);
 
-	static bool isContainer(const QFileInfo& fileInfo);
+	static bool isContainer(const QString& filePath);
 
 	/**
 	 * Sets a new image (if edited outside the basicLoader class)
 	 * @param img the new image
 	 * @param file assigns the current file name
 	 **/
-	void setImage(QImage img, QFileInfo file) {
+	void setImage(const QImage& img, const QString& file) {
 
-		this->file = file;
-		qImg = img;
+		mFile = file;
+		mImg = img;
 	};
 
 	void setTraining(bool training) {
@@ -188,31 +186,31 @@ public:
 	};
 
 	bool getTraining() {
-		return training;
+		return mTraining;
 	};
 
 	int getLoader() {
-		return loader;
+		return mLoader;
 	};
 
 	QSharedPointer<DkMetaDataT> getMetaData() const {
-		return metaData;
+		return mMetaData;
 	};
 
 	/**
 	 * Returns the 8-bit image, which is rendered.
 	 * @return QImage an 8bit image
 	 **/
-	QImage image() {
-		return qImg;
+	QImage image() const {
+		return mImg;
 	};
 
-	QFileInfo getFile() {
-		return file;
+	QString getFile() {
+		return mFile;
 	};
 
 	bool isDirty() {
-		return pageIdxDirty;
+		return mPageIdxDirty;
 	};
 
 	/**
@@ -220,7 +218,7 @@ public:
 	 * @return QSize the image size.
 	 **/
 	QSize size() {
-		return qImg.size();
+		return mImg.size();
 	};
 
 	/**
@@ -228,46 +226,46 @@ public:
 	 * @return bool true if an image is loaded.
 	 **/
 	bool hasImage() {
-		return !qImg.isNull();
+		return !mImg.isNull();
 	};
 
-	void loadFileToBuffer(const QFileInfo& fileInfo, QByteArray& ba) const;
-	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo& fileInfo) const;
-	bool writeBufferToFile(const QFileInfo& fileInfo, const QSharedPointer<QByteArray> ba) const;
+	void loadFileToBuffer(const QString& filePath, QByteArray& ba) const;
+	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath) const;
+	bool writeBufferToFile(const QString& fileInfo, const QSharedPointer<QByteArray> ba) const;
 
 	void release(bool clear = false);
 
 #ifdef WITH_OPENCV
 	cv::Mat getImageCv();
-	bool loadOpenCVVecFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize());
+	bool loadOpenCVVecFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), QSize s = QSize());
 	cv::Mat getPatch(const unsigned char** dataPtr, QSize patchSize) const;
-	int mergeVecFiles(const QVector<QFileInfo>& vecFileInfos, QFileInfo& saveFileInfo) const;
+	int mergeVecFiles(const QStringList& vecFilePaths, QString& saveFileInfo) const;
 	bool readHeader(const unsigned char** dataPtr, int& fileCount, int& vecSize) const;
 	void getPatchSizeFromFileName(const QString& fileName, int& width, int& height) const;
 #else
-	bool loadOpenCVVecFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>(), QSize = QSize()) { return false; };
-	int mergeVecFiles(const QVector<QFileInfo>&, QFileInfo&) const { return 0; };
+	bool loadOpenCVVecFile(const QString&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>(), QSize = QSize()) { return false; };
+	int mergeVecFiles(const QStringList&, QString&) const { return 0; };
 	bool readHeader(const unsigned char**, int&, int&) const { return false; };
 	void getPatchSizeFromFileName(const QString&, int&, int&) const {};
 
 #endif
 
-	bool loadPSDFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool loadPSDFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
 #ifdef WITH_WEBP
-	bool loadWebPFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-	bool saveWebPFile(const QFileInfo& fileInfo, const QImage img, int compression);
-	bool saveWebPFile(const QImage img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4);
+	bool loadWebPFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool saveWebPFile(const QString& filePath, const QImage& img, int compression);
+	bool saveWebPFile(const QImage& img, QSharedPointer<QByteArray>& ba, int compression, int speed = 4);
 #else
-	bool loadWebPFile(const QFileInfo&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>()) { return false; };	// not supported if webP was not linked
-	bool saveWebPFile(const QFileInfo&, const QImage, int) { return false; };
-	bool saveWebPFile(const QImage, QSharedPointer<QByteArray>&, int, int = 4) { return false; };
+	bool loadWebPFile(const QString&, QSharedPointer<QByteArray> = QSharedPointer<QByteArray>()) { return false; };	// not supported if webP was not linked
+	bool saveWebPFile(const QString&, const QImage&, int) { return false; };
+	bool saveWebPFile(const QImage&, QSharedPointer<QByteArray>&, int, int = 4) { return false; };
 #endif
 
 #ifdef WIN32
-	bool saveWindowsIcon(const QFileInfo& fileInfo, const QImage& img) const;
+	bool saveWindowsIcon(const QString& filePath, const QImage& img) const;
 	bool saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const;
 #else
-	bool saveWindowsIcon(const QFileInfo& fileInfo, const QImage& img) const { return false; };
+	bool saveWindowsIcon(const QString& filePath, const QImage& img) const { return false; };
 	bool saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const { return false; };
 #endif
 
@@ -278,23 +276,23 @@ public slots:
 	void rotate(int orientation);
 
 protected:
-	bool loadRohFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
-	bool loadRawFile(const QFileInfo& fileInfo, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false);
-	void indexPages(const QFileInfo& fileInfo);
+	bool loadRohFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>());
+	bool loadRawFile(const QString& filePath, QSharedPointer<QByteArray> ba = QSharedPointer<QByteArray>(), bool fast = false);
+	void indexPages(const QString& filePath);
 	void convert32BitOrder(void *buffer, int width);
 
-	int loader;
-	bool training;
-	int mode;
-	QImage qImg;
-	QFileInfo file;
-	int numPages;
-	int pageIdx;
-	bool pageIdxDirty;
-	QSharedPointer<DkMetaDataT> metaData;
+	int mLoader;
+	bool mTraining;
+	int mMode;
+	QImage mImg;
+	QString mFile;
+	int mNumPages;
+	int mPageIdx;
+	bool mPageIdxDirty;
+	QSharedPointer<DkMetaDataT> mMetaData;
 
 #ifdef WITH_OPENCV
-	cv::Mat cvImg;
+	cv::Mat mCvImg;
 #endif
 };
 
@@ -319,9 +317,9 @@ private slots:
 
 private:
 
-	QNetworkAccessManager m_WebCtrl;
-	QSharedPointer<QByteArray> m_DownloadedData;
-	QUrl url;
+	QNetworkAccessManager mWebCtrl;
+	QSharedPointer<QByteArray> mDownloadedData;
+	QUrl mUrl;
 };
 
 };

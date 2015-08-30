@@ -96,7 +96,7 @@ void DkMenuBar::showMenu() {
 
 	timerMenu->start(timeToShow);
 	show();
-	qDebug() << "showing menu\n";
+	qDebug() << "mShowing menu\n";
 }
 
 void DkMenuBar::hideMenu() {

@@ -72,7 +72,7 @@ void DkTifDialog::init() {
 	vBox->addWidget(noCompressionButton);
 	vBox->addWidget(compressionButton);
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -251,7 +251,7 @@ void DkCompressDialog::createLayout() {
 	previewLayout->addWidget(sizeCombo, 4, 0);
 	previewLayout->addWidget(previewSizeLabel, 4, 1);
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	buttons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
@@ -330,7 +330,7 @@ void DkCompressDialog::drawPreview() {
 		QSharedPointer<QByteArray> buffer(new QByteArray());
 		loader.saveWebPFile(newImg, buffer, getCompression(), 0);
 		qDebug() << "webP buffer size: " << buffer->size();
-		loader.loadWebPFile(QFileInfo(), buffer);
+		loader.loadWebPFile(QString(), buffer);
 		newImg = loader.image();
 		updateFileSizeLabel((float)buffer->size(), origImg.size());
 	}

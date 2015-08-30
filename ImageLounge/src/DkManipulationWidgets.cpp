@@ -164,7 +164,7 @@ void DkImageManipulationDialog::createLayout() {
 
 	eastWidget->setLayout(toolsLayout);
 	
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -182,7 +182,7 @@ void DkImageManipulationDialog::createLayout() {
 }
 
 /**
-* mRescale viewport image - it is used as a preview for the manipulation tools changes
+* mRescale mViewport image - it is used as a preview for the manipulation tools changes
  **/
 void DkImageManipulationDialog::createImgPreview() {
 
@@ -258,7 +258,7 @@ void DkImageManipulationDialog::drawImgPreview() {
 /**
  * constructor for the abstract class DkImageManipulationWidget - all image manipulation widgets are created from it
  * @param parent widget
- * @param viewport - needed for getting current images
+ * @param mViewport - needed for getting current images
  **/
 DkImageManipulationWidget::DkImageManipulationWidget(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	: QWidget(parent) {
@@ -624,7 +624,7 @@ cv::Mat DkImageManipulationWidget::applyLutToImage(cv::Mat inImg, cv::Mat inLUT,
 }
 
 /**
- * called from DkNoMacs.cpp: applies manipulation history to the viewport image
+ * called from DkNoMacs.cpp: applies manipulation history to the mViewport image
  * @param input image
  * @return modified image
  **/

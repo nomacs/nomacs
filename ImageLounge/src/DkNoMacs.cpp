@@ -46,6 +46,8 @@
 #include "DkMetaData.h"
 #include "DkImageContainer.h"
 #include "DkQuickAccess.h"
+#include "DkError.h"
+#include "DkUtils.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -97,7 +99,7 @@ DkNomacsOSXEventFilter::DkNomacsOSXEventFilter(QObject *parent) : QObject(parent
 /*! Handle QFileOpenEvent for mac here */
 bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 	if (event->type() == QEvent::FileOpen) {
-		emit loadFile(QFileInfo(static_cast<QFileOpenEvent*>(event)->file()));
+		emit loadFile(static_cast<QFileOpenEvent*>(event)->file());
 		return true;
 	}
 	return QObject::eventFilter(obj, event);
@@ -106,7 +108,7 @@ bool DkNomacsOSXEventFilter::eventFilter(QObject *obj, QEvent *event) {
 DkNoMacs::DkNoMacs(QWidget *parent, Qt::WindowFlags flags)
 	: QMainWindow(parent, flags) {
 
-	QMainWindow::setWindowTitle("nomacs - Image Lounge");
+	QMainWindow::setWindowTitle("nomacs | Image Lounge");
 	setObjectName("DkNoMacs");
 
 	registerFileVersion();
@@ -270,7 +272,7 @@ void DkNoMacs::init() {
 	connect(viewport(), SIGNAL(enableNoImageSignal(bool)), this, SLOT(enableNoImageActions(bool)));
 
 	// connections to the image loader
-	//connect(this, SIGNAL(saveTempFileSignal(QImage)), viewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
+	//connect(this, SIGNAL(saveTempFileSignal(QImage)), mViewport()->getImageLoader(), SLOT(saveTempFile(QImage)));
 	connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), this, SLOT(setWindowTitle(QSharedPointer<DkImageContainerT>)));
 	connect(getTabWidget(), SIGNAL(imageHasGPSSignal(bool)), viewActions[menu_view_gps_map], SLOT(setEnabled(bool)));
 
@@ -327,7 +329,7 @@ void DkNoMacs::registerFileVersion() {
 		// get the filename of the executable containing the version resource
 		TCHAR szFilename[MAX_PATH + 1] = {0};
 		if (GetModuleFileName(NULL, szFilename, MAX_PATH) == 0) {
-			DkFileException("Sorry, I can't read the module file name\n", __LINE__, __FILE__);
+			DkFileException("Sorry, I can't read the module fileInfo name\n", __LINE__, __FILE__);
 		}
 
 		// allocate a block of memory for the version info
@@ -577,16 +579,6 @@ void DkNoMacs::createMenu() {
 	fileMenu->addAction(fileActions[menu_file_rename]);
 	fileMenu->addSeparator();
 
-	//fileFilesMenu = new DkHistoryMenu(tr("Recent &Files"), fileMenu, &DkSettings::global.recentFiles);
-	//connect(fileFilesMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
-	//connect(fileFilesMenu, SIGNAL(clearHistory()), this, SLOT(clearFileHistory()));
-
-	//fileFoldersMenu = new DkHistoryMenu(tr("Recent Fo&lders"), fileMenu, &DkSettings::global.recentFolders);
-	//connect(fileFoldersMenu, SIGNAL(loadFileSignal(QFileInfo)), viewport(), SLOT(loadFile(QFileInfo)));
-	//connect(fileFoldersMenu, SIGNAL(clearHistory()), this, SLOT(clearFolderHistory()));
-
-	//fileMenu->addMenu(fileFilesMenu);
-	//fileMenu->addMenu(fileFoldersMenu);
 	fileMenu->addAction(fileActions[menu_file_show_recent]);
 
 	fileMenu->addSeparator();
@@ -906,7 +898,7 @@ void DkNoMacs::createActions() {
 	fileActions[menu_file_prev] = new QAction(fileIcons[icon_file_prev], tr("Pre&vious File"), this);
 	fileActions[menu_file_prev]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	fileActions[menu_file_prev]->setShortcut(QKeySequence(shortcut_prev_file));
-	fileActions[menu_file_prev]->setStatusTip(tr("Load previous file"));
+	fileActions[menu_file_prev]->setStatusTip(tr("Load previous fileInfo"));
 	connect(fileActions[menu_file_prev], SIGNAL(triggered()), vp, SLOT(loadPrevFileFast()));
 
 	fileActions[menu_file_train_format] = new QAction(tr("Add Image Format"), this);
@@ -915,7 +907,7 @@ void DkNoMacs::createActions() {
 
 	fileActions[menu_file_new_instance] = new QAction(tr("St&art New Instance"), this);
 	fileActions[menu_file_new_instance]->setShortcut(QKeySequence(shortcut_new_instance));
-	fileActions[menu_file_new_instance]->setStatusTip(tr("Open file in new instance"));
+	fileActions[menu_file_new_instance]->setStatusTip(tr("Open fileInfo in new instance"));
 	connect(fileActions[menu_file_new_instance], SIGNAL(triggered()), this, SLOT(newInstance()));
 
 	fileActions[menu_file_private_instance] = new QAction(tr("St&art Private Instance"), this);
@@ -1092,7 +1084,7 @@ void DkNoMacs::createActions() {
 	editActions[menu_edit_delete] = new QAction(editIcons[icon_edit_delete], tr("&Delete"), this);
 	editActions[menu_edit_delete]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 	editActions[menu_edit_delete]->setShortcut(QKeySequence::Delete);
-	editActions[menu_edit_delete]->setStatusTip(tr("delete current file"));
+	editActions[menu_edit_delete]->setStatusTip(tr("delete current fileInfo"));
 	connect(editActions[menu_edit_delete], SIGNAL(triggered()), this, SLOT(deleteFile()));
 
 	editActions[menu_edit_wallpaper] = new QAction(tr("&Wallpaper"), this);
@@ -1983,7 +1975,7 @@ void DkNoMacs::restart() {
 	QStringList args;
 
 	if (getTabWidget()->getCurrentImage())
-		args.append(getTabWidget()->getCurrentImage()->file().absoluteFilePath());
+		args.append(getTabWidget()->getCurrentImage()->filePath());
 
 	bool started = process.startDetached(exe, args);
 
@@ -2050,7 +2042,7 @@ void DkNoMacs::exitFullScreen() {
 		if (getTabWidget())
 			getTabWidget()->showTabs(true);
 
-		update();	// if no resize is triggered, the viewport won't change its color
+		update();	// if no resize is triggered, the mViewport won't change its color
 	}
 
 	if (viewport())
@@ -2066,7 +2058,7 @@ void DkNoMacs::setFrameless(bool) {
 	QStringList args;
 
 	if (getTabWidget()->getCurrentImage())
-		args.append(getTabWidget()->getCurrentImage()->file().absoluteFilePath());
+		args.append(getTabWidget()->getCurrentImage()->filePath());
 	
 	if (objectName() != "DkNoMacsFrameless") {
 		DkSettings::app.appMode = DkSettings::mode_frameless;
@@ -2110,7 +2102,7 @@ void DkNoMacs::fitFrame() {
 
 	setGeometry(newGeometry);
 
-	// reset viewport if we did not clip -> compensates round-off errors
+	// reset mViewport if we did not clip -> compensates round-off errors
 	if (screenRect.contains(nmRect.toRect()))
 		viewport()->resetView();
 
@@ -2188,7 +2180,7 @@ void DkNoMacs::animateOpacityUp() {
 	QTimer::singleShot(20, this, SLOT(animateOpacityUp()));
 }
 
-// >DIR: diem - why can't we put it in viewport?
+// >DIR: diem - why can't we put it in mViewport?
 void DkNoMacs::animateChangeOpacity() {
 
 	float newO = (float)windowOpacity();
@@ -2311,15 +2303,15 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 		explorer->setDisplaySettings(&DkSettings::app.showExplorer);
 		addDockWidget(explorer->getDockLocationSettings(Qt::LeftDockWidgetArea), explorer);
 
-		connect(explorer, SIGNAL(openFile(QFileInfo)), getTabWidget(), SLOT(loadFile(QFileInfo)));
+		connect(explorer, SIGNAL(openFile(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 		connect(explorer, SIGNAL(openDir(QDir)), getTabWidget()->getThumbScrollWidget(), SLOT(setDir(QDir)));
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), explorer, SLOT(setCurrentImage(QSharedPointer<DkImageContainerT>)));
 	}
 
 	explorer->setVisible(show, saveSettings);
 
-	if (getTabWidget()->getCurrentImage() && getTabWidget()->getCurrentFile().exists()) {
-		explorer->setCurrentPath(getTabWidget()->getCurrentFile());
+	if (getTabWidget()->getCurrentImage() && QFileInfo(getTabWidget()->getCurrentFilePath()).exists()) {
+		explorer->setCurrentPath(getTabWidget()->getCurrentFilePath());
 	}
 	else {
 		QStringList folders = DkSettings::global.recentFiles;
@@ -2418,7 +2410,7 @@ void DkNoMacs::openDir() {
 
 	qDebug() << "loading directory: " << dirName;
 	
-	getTabWidget()->loadFile(QFileInfo(dirName));
+	getTabWidget()->loadFile(dirName);
 }
 
 void DkNoMacs::openFile() {
@@ -2439,7 +2431,7 @@ void DkNoMacs::openFile() {
 		return;
 
 	qDebug() << "os filename: " << fileName;
-	getTabWidget()->loadFile(QFileInfo(fileName));
+	getTabWidget()->loadFile(fileName);
 }
 
 void DkNoMacs::openQuickLaunch() {
@@ -2464,7 +2456,7 @@ void DkNoMacs::openQuickLaunch() {
 		quickAccess->addActions(helpActions);
 
 		connect(toolbar->getCompleter(), SIGNAL(activated(const QModelIndex&)), quickAccess, SLOT(fireAction(const QModelIndex&)));
-		connect(quickAccess, SIGNAL(loadFileSignal(const QFileInfo&)), getTabWidget(), SLOT(loadFile(const QFileInfo&)));
+		connect(quickAccess, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 		//connect(toolbar, SIGNAL(quickAccessFinishedSignal(const QModelIndex&)), quickAccess, SLOT(fireAction(const QModelIndex&)));
 	}
 	
@@ -2474,24 +2466,24 @@ void DkNoMacs::openQuickLaunch() {
 	toolbar->setQuickAccessModel(quickAccess->getModel());
 }
 
-void DkNoMacs::loadFile(const QFileInfo& file) {
+void DkNoMacs::loadFile(const QString& filePath) {
 
 	if (!viewport())
 		return;
 
-	getTabWidget()->loadFileToTab(file);
+	getTabWidget()->loadFileToTab(filePath);
 }
 
 void DkNoMacs::renameFile() {
 
-	QFileInfo file = getTabWidget()->getCurrentFile();
+	QFileInfo file = getTabWidget()->getCurrentFilePath();
 
 	if (!file.absoluteDir().exists()) {
 		viewport()->getController()->setInfo(tr("Sorry, the directory: %1  does not exist\n").arg(file.absolutePath()));
 		return;
 	}
 	if (file.exists() && !file.isWritable()) {
-		viewport()->getController()->setInfo(tr("Sorry, I can't write to the file: %1").arg(file.fileName()));
+		viewport()->getController()->setInfo(tr("Sorry, I can't write to the fileInfo: %1").arg(file.fileName()));
 		return;
 	}
 
@@ -2511,7 +2503,7 @@ void DkNoMacs::renameFile() {
 
 			QMessageBox infoDialog(this);
 			infoDialog.setWindowTitle(tr("Question"));
-			infoDialog.setText(tr("The file: %1  already exists.\n Do you want to replace it?").arg(filename));
+			infoDialog.setText(tr("The fileInfo: %1  already exists.\n Do you want to replace it?").arg(filename));
 			infoDialog.setIcon(QMessageBox::Question);
 			infoDialog.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 			infoDialog.setDefaultButton(QMessageBox::No);
@@ -2568,7 +2560,7 @@ void DkNoMacs::find(bool filterAction) {
 		searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDir());
 
 		connect(searchDialog, SIGNAL(filterSignal(QStringList)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilters(QStringList)));
-		connect(searchDialog, SIGNAL(loadFileSignal(QFileInfo)), getTabWidget(), SLOT(loadFile(QFileInfo)));
+		connect(searchDialog, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 		int answer = searchDialog->exec();
 
 		toolsActions[menu_tools_filter]->setChecked(answer == DkSearchDialog::filter_button);		
@@ -2638,7 +2630,7 @@ void DkNoMacs::trainFormat() {
 	if (!trainDialog)
 		trainDialog = new DkTrainDialog(this);
 
-	trainDialog->setCurrentFile(getTabWidget()->getCurrentFile());
+	trainDialog->setCurrentFile(getTabWidget()->getCurrentFilePath());
 	bool okPressed = trainDialog->exec() != 0;
 
 	if (okPressed && getTabWidget()->getCurrentImageLoader()) {
@@ -2661,14 +2653,12 @@ void DkNoMacs::extractImagesFromArchive() {
 		if (getTabWidget()->getCurrentImage()->isFromZip())
 			archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentImage()->getZipData()->getZipFileInfo(), true);
 		else 
-			archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFile(), false);
+			archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
 	}
 	else 
-		archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFile(), false);
+		archiveExtractionDialog->setCurrentFile(getTabWidget()->getCurrentFilePath(), false);
 
 	archiveExtractionDialog->exec();
-	//bool okPressed = archiveExtractionDialog->exec() != 0;
-
 #endif
 }
 
@@ -2742,7 +2732,7 @@ void DkNoMacs::resizeImage() {
 		// ok, user just wants to change the resolution
 		metaData->setResolution(QVector2D(resizeDialog->getExifDpi(), resizeDialog->getExifDpi()));
 		qDebug() << "setting resolution to: " << resizeDialog->getExifDpi();
-		//viewport()->setEditedImage(viewport()->getImage());
+		//mViewport()->setEditedImage(mViewport()->getImage());
 	}
 }
 
@@ -2754,9 +2744,9 @@ void DkNoMacs::deleteFile() {
 	if (!viewport() || viewport()->getImage().isNull() || !getTabWidget()->getCurrentImageLoader())
 		return;
 
-	QFileInfo file = getTabWidget()->getCurrentFile();
+	QFileInfo fileInfo = getTabWidget()->getCurrentFilePath();
 
-	if (infoDialog(tr("Do you want to permanently delete %1").arg(file.fileName()), this) == QMessageBox::Yes) {
+	if (infoDialog(tr("Do you want to permanently delete %1").arg(fileInfo.fileName()), this) == QMessageBox::Yes) {
 		viewport()->stopMovie();	// movies keep file handles so stop it before we can delete files
 		
 		if (!getTabWidget()->getCurrentImageLoader()->deleteFile())
@@ -2782,7 +2772,7 @@ void DkNoMacs::exportTiff() {
 	if (!exportTiffDialog)
 		exportTiffDialog = new DkExportTiffDialog(this);
 
-	exportTiffDialog->setFile(getTabWidget()->getCurrentFile());
+	exportTiffDialog->setFile(getTabWidget()->getCurrentFilePath());
 	exportTiffDialog->exec();
 #endif
 }
@@ -2795,7 +2785,7 @@ void DkNoMacs::computeMosaic() {
 	//if (!mosaicDialog)
 	DkMosaicDialog* mosaicDialog = new DkMosaicDialog(this, Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
 
-	mosaicDialog->setFile(getTabWidget()->getCurrentFile());
+	mosaicDialog->setFile(getTabWidget()->getCurrentFilePath());
 
 	int response = mosaicDialog->exec();
 
@@ -2990,7 +2980,7 @@ void DkNoMacs::cleanSettings() {
 	move(100, 100);
 }
 
-void DkNoMacs::newInstance(QFileInfo file) {
+void DkNoMacs::newInstance(const QString& filePath) {
 
 	if (!viewport()) 
 		return;
@@ -3003,25 +2993,16 @@ void DkNoMacs::newInstance(QFileInfo file) {
 	if (a && a == fileActions[menu_file_private_instance])
 		args.append("-p");
 
-	if (!file.exists())
-		args.append(getTabWidget()->getCurrentFile().absoluteFilePath());
+	if (filePath.isEmpty())
+		args.append(getTabWidget()->getCurrentFilePath());
 	else
-		args.append(file.absoluteFilePath());
+		args.append(filePath);
 
 	if (objectName() == "DkNoMacsFrameless")
 		args.append("1");	
 	
 	QProcess::startDetached(exe, args);
 }
-
-//void DkNoMacs::shareFacebook() {
-//	
-//	DkFacebook fb;
-//
-//	fb.login(QString());
-//	qDebug() << "login called...";
-//
-//}
 
 void DkNoMacs::loadRecursion() {
 
@@ -3034,12 +3015,12 @@ void DkNoMacs::loadRecursion() {
 	//QImage img = getTabWidget()->getCurrentImage()->image();
 
 	//while (DkImage::addToImage(img, 1)) {
-	//	viewport()->setEditedImage(img);
+	//	mViewport()->setEditedImage(img);
 	//	QApplication::sendPostedEvents();
 	//}
 
 	//QImage img = QPixmap::grabWindow(this->winId()).toImage();
-	//viewport()->setImage(img);
+	//mViewport()->setImage(img);
 }
 
 // Added by fabian for transfer function:
@@ -3053,7 +3034,7 @@ void DkNoMacs::setContrast(bool contrast) {
 
 	QString exe = QApplication::applicationFilePath();
 	QStringList args;
-	args.append(getTabWidget()->getCurrentFile().absoluteFilePath());
+	args.append(getTabWidget()->getCurrentFilePath());
 	
 	if (contrast)
 		DkSettings::app.appMode = DkSettings::mode_contrast;
@@ -3237,15 +3218,15 @@ void DkNoMacs::openFileWith(QAction* action) {
 
 	QStringList args;
 	
-	QFileInfo fileInfo = getTabWidget()->getCurrentFile();
+	QString filePath = getTabWidget()->getCurrentFilePath();
 
 	if (app.fileName() == "explorer.exe")
-		args << "/select," << QDir::toNativeSeparators(fileInfo.absoluteFilePath());
+		args << "/select," << QDir::toNativeSeparators(filePath);
 	else if (app.fileName().toLower() == "outlook.exe") {
-		args << "/a" << QDir::toNativeSeparators(fileInfo.absoluteFilePath());
+		args << "/a" << QDir::toNativeSeparators(filePath);
 	}
 	else
-		args << QDir::toNativeSeparators(fileInfo.absoluteFilePath());
+		args << QDir::toNativeSeparators(filePath);
 
 	//bool started = process.startDetached("psOpenImages.exe", args);	// already deprecated
 	bool started = process.startDetached(app.absoluteFilePath(), args);
@@ -3298,21 +3279,19 @@ QVector <QAction* > DkNoMacs::getSyncActions() {
 void DkNoMacs::setWindowTitle(QSharedPointer<DkImageContainerT> imgC) {
 
 	if (!imgC) {
-		setWindowTitle(QFileInfo());
+		setWindowTitle(QString());
 		return;
 	}
 
-	setWindowTitle(imgC->file(), imgC->image().size(), imgC->isEdited(), imgC->getTitleAttribute());
+	setWindowTitle(imgC->filePath(), imgC->image().size(), imgC->isEdited(), imgC->getTitleAttribute());
 }
 
-void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString attr) {
+void DkNoMacs::setWindowTitle(const QString& filePath, const QSize& size, bool edited, const QString& attr) {
 
 	// TODO: rename!
 
-	////  do not tell the viewport (he should know it)
-	//viewport()->setTitleLabel(file, -1);
-
-	QString title = file.fileName();
+	QFileInfo fInfo = filePath;
+	QString title = QFileInfo(filePath).fileName();
 	title = title.remove(".lnk");
 	
 	if (title.isEmpty()) {
@@ -3337,7 +3316,7 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 		attributes.append(tr(" [Private Mode]"));
 
 	QMainWindow::setWindowTitle(title.append(attributes));
-	setWindowFilePath(file.absoluteFilePath());
+	setWindowFilePath(filePath);
 	emit sendTitleSignal(windowTitle());
 	setWindowModified(edited);
 
@@ -3347,14 +3326,14 @@ void DkNoMacs::setWindowTitle(QFileInfo file, QSize size, bool edited, QString a
 		// create statusbar info
 		QSharedPointer<DkMetaDataT> metaData = getTabWidget()->getCurrentImage()->getMetaData();
 		QString dateString = metaData->getExifValue("DateTimeOriginal");
-		dateString = DkUtils::convertDateString(dateString, file);
+		dateString = DkUtils::convertDateString(dateString, fInfo);
 		showStatusMessage(dateString, status_time_info);
 	}
 	else 
 		showStatusMessage("", status_time_info);	// hide label
 
-	if (file.exists())
-		showStatusMessage(DkUtils::readableByte((float)file.size()), status_filesize_info);
+	if (fInfo.exists())
+		showStatusMessage(DkUtils::readableByte((float)fInfo.size()), status_filesize_info);
 	else 
 		showStatusMessage("", status_filesize_info);
 
@@ -3512,7 +3491,7 @@ void DkNoMacs::startSetup(QString filePath) {
 	qDebug() << "starting setup filePath:" << filePath;
 	
 	if (!QFile::exists(filePath))
-		qDebug() << "file does not exist";
+		qDebug() << "fileInfo does not exist";
 	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(filePath))) {
 		QString msg = tr("Unable to install new version<br>") +
 			tr("You can download the new version from our web page") +
@@ -3894,9 +3873,9 @@ void DkNoMacs::closePlugin(bool askForSaving, bool) {
 	if (!vPlugin) 
 		return;
 
-	//viewport()->setPluginImageWasApplied(true);
+	//mViewport()->setPluginImageWasApplied(true);
 
-	QSharedPointer<DkImageContainerT> pluginImage = vPlugin->runPlugin("", getTabWidget()->getCurrentImage());	// empty vars - viewport plugin doesn't need them
+	QSharedPointer<DkImageContainerT> pluginImage = vPlugin->runPlugin("", getTabWidget()->getCurrentImage());	// empty vars - mViewport plugin doesn't need them
 
 	if (pluginImage) {
 		if (askForSaving) {
@@ -3926,7 +3905,7 @@ void DkNoMacs::closePlugin(bool askForSaving, bool) {
 
 	//if(!alreadySaving && isSaveNeeded) saveFileAs();
 
-	//viewport()->setPluginImageWasApplied(true);
+	//mViewport()->setPluginImageWasApplied(true);
 
 #endif // WITH_PLUGINS
 }
@@ -4452,7 +4431,7 @@ DkNoMacsIpl::DkNoMacsIpl(QWidget *parent, Qt::WindowFlags flags) : DkNoMacsSync(
 	show();
 	DkSettings::app.appMode = DkSettings::mode_default;
 
-	qDebug() << "viewport (normal) created in " << dt.getTotal();
+	qDebug() << "mViewport (normal) created in " << dt.getTotal();
 }
 
 // FramelessNoMacs --------------------------------------------------------------------
@@ -4647,7 +4626,7 @@ DkNoMacsContrast::DkNoMacsContrast(QWidget *parent, Qt::WindowFlags flags)
 		panelActions[menu_panel_transfertoolbar]->setChecked(true);
 		panelActions[menu_panel_transfertoolbar]->blockSignals(false);
 
-		qDebug() << "viewport (normal) created...";
+		qDebug() << "mViewport (normal) created...";
 }
 
 DkNoMacsContrast::~DkNoMacsContrast() {

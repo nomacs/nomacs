@@ -30,7 +30,6 @@
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFutureWatcher>
 #include <QTimer>
-#include <QFileInfo>
 #include <QSharedPointer>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -67,7 +66,7 @@ public:
 		loaded,
 	};
 
-	DkImageContainer(const QFileInfo& fileInfo);
+	DkImageContainer(const QString& filePath);
 	virtual ~DkImageContainer();
 	bool operator==(const DkImageContainer& ric) const;
 	bool operator< (const DkImageContainer& o) const;
@@ -79,7 +78,10 @@ public:
 
 	bool hasImage() const;
 	int getLoadState() const;
-	QFileInfo file() const;
+	QFileInfo fileInfo() const;
+	QString filePath() const;
+	QString dirPath() const;
+	QString fileName() const;
 	bool isFromZip();
 	bool isEdited() const;
 	bool isSelected() const;
@@ -102,12 +104,12 @@ public:
 	bool exists();
 	bool setPageIdx(int skipIdx);
 
-	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo fileInfo);
+	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath);
 	bool loadImage();
 	void setImage(const QImage& img);
-	void setImage(const QImage& img, const QFileInfo& fileInfo);
-	bool saveImage(const QFileInfo fileInfo, const QImage saveImg, int compression = -1);
-	bool saveImage(const QFileInfo fileInfo, int compression = -1);
+	void setImage(const QImage& img, const QString& filePath);
+	bool saveImage(const QString& filePath, const QImage saveImg, int compression = -1);
+	bool saveImage(const QString& filePath, int compression = -1);
 	void saveMetaData();
 	virtual void clear();
 
@@ -119,21 +121,23 @@ protected:
 	QSharedPointer<DkZipContainer> zipData;
 #endif
 #ifdef WIN32
-	std::wstring fileNameStr;	// speeds up sorting of filenames on windows
+	std::wstring mFileNameStr;	// speeds up sorting of filenames on windows
 #endif
 
 	int loadState;
 	bool edited;
 	bool selected;
 
-	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
-	void saveMetaDataIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
-	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
+	void saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer = QSharedPointer<QByteArray>());
+	QString saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
 	void init();
-	void setFileInfo(const QFileInfo& fileInfo);
+	void setFilePath(const QString& filePath);
+
+	QFileInfo mFileInfo;
 
 private:
-	QFileInfo fileInfo;
+	QString mFilePath;
 
 };
 
@@ -144,7 +148,7 @@ class DllExport DkImageContainerT : public QObject, public DkImageContainer {
 	Q_OBJECT
 
 public:
-	DkImageContainerT(const QFileInfo& file);
+	DkImageContainerT(const QString& filePath);
 	virtual ~DkImageContainerT();
 
 	void fetchFile();
@@ -154,8 +158,8 @@ public:
 	void downloadFile(const QUrl& url);
 
 	bool loadImageThreaded(bool force = false);
-	bool saveImageThreaded(const QFileInfo fileInfo, const QImage saveImg, int compression = -1);
-	bool saveImageThreaded(const QFileInfo fileInfo, int compression = -1);
+	bool saveImageThreaded(const QString& filePath, const QImage saveImg, int compression = -1);
+	bool saveImageThreaded(const QString& filePath, int compression = -1);
 	void saveMetaDataThreaded();
 	bool isFileDownloaded() const;
 
@@ -163,11 +167,11 @@ public:
 	virtual QSharedPointer<DkThumbNailT> getThumb();
 
 signals:
-	void fileLoadedSignal(bool loaded = true);
-	void fileSavedSignal(QFileInfo fileInfo, bool saved = true);
-	void showInfoSignal(QString msg, int time = 3000, int position = 0);
-	void errorDialogSignal(const QString& msg);
-	void thumbLoadedSignal(bool loaded = true);
+	void fileLoadedSignal(bool loaded = true) const;
+	void fileSavedSignal(const QString& fileInfo, bool saved = true) const;
+	void showInfoSignal(QString msg, int time = 3000, int position = 0) const;
+	void errorDialogSignal(const QString& msg) const;
+	void thumbLoadedSignal(bool loaded = true) const;
 
 public slots:
 	void checkForFileUpdates(); 
@@ -182,14 +186,14 @@ protected slots:
 protected:
 	void fetchImage();
 	
-	QSharedPointer<QByteArray> loadFileToBuffer(const QFileInfo fileInfo);
-	QSharedPointer<DkBasicLoader> loadImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
-	QFileInfo saveImageIntern(const QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
-	void saveMetaDataIntern(QFileInfo fileInfo, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer);
+	QSharedPointer<QByteArray> loadFileToBuffer(const QString& filePath);
+	QSharedPointer<DkBasicLoader> loadImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, const QSharedPointer<QByteArray> fileBuffer);
+	QString saveImageIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QImage saveImg, int compression);
+	void saveMetaDataIntern(const QString& filePath, QSharedPointer<DkBasicLoader> loader, QSharedPointer<QByteArray> fileBuffer);
 	
 	QFutureWatcher<QSharedPointer<QByteArray> > bufferWatcher;
 	QFutureWatcher<QSharedPointer<DkBasicLoader> > imageWatcher;
-	QFutureWatcher<QFileInfo> saveImageWatcher;
+	QFutureWatcher<QString> saveImageWatcher;
 	QFutureWatcher<bool> saveMetaDataWatcher;
 
 	QSharedPointer<FileDownloader> fileDownloader;

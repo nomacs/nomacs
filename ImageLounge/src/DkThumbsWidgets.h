@@ -104,11 +104,10 @@ public slots:
 	void newPosition();
 
 signals:
-	void loadFileSignal(QFileInfo file);
-	//void loadThumbsSignal(int start, int end);
-	void changeFileSignal(int idx);
-	void positionChangeSignal(int pos);
-	void showThumbsDockSignal(bool show);
+	void loadFileSignal(const QString& filePath) const;
+	void changeFileSignal(int idx) const;
+	void positionChangeSignal(int pos) const;
+	void showThumbsDockSignal(bool show) const;
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -194,8 +193,8 @@ public slots:
 	void updateLabel();
 
 signals:
-	void loadFileSignal(QFileInfo& file);
-	void showFileSignal(const QFileInfo& file);
+	void loadFileSignal(const QString& filePath) const;
+	void showFileSignal(const QString& filePath = QString()) const;
 
 protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -234,13 +233,13 @@ public:
 
 public slots:
 	void updateThumbLabels();
-	void loadFile(QFileInfo& file);
+	void loadFile(const QString& filePath) const;
 	void increaseThumbs();
 	void decreaseThumbs();
 	void toggleSquaredThumbs(bool squares);
 	void toggleThumbLabels(bool show);
 	void resizeThumbs(float dx);
-	void showFile(const QFileInfo& file);
+	void showFile(const QString& filePath = QString());
 	void selectThumbs(bool select = true, int from = 0, int to = -1);
 	void selectAllThumbs(bool select = true);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
@@ -250,9 +249,9 @@ public slots:
 	void renameSelected() const;
 
 signals:
-	void loadFileSignal(QFileInfo file);
-	void statusInfoSignal(QString msg, int pos = 0);
-	void thumbLoadedSignal();
+	void loadFileSignal(const QString& filePath) const;
+	void statusInfoSignal(const QString& msg, int pos = 0) const;
+	void thumbLoadedSignal() const;
 
 protected:
 	QVector<QSharedPointer<DkImageContainerT> > thumbs;

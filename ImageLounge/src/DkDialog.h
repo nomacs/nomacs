@@ -126,16 +126,16 @@ class DkFileValidator : public QValidator {
 	Q_OBJECT
 
 public:
-	DkFileValidator(QString lastFile = "", QObject * parent = 0);
+	DkFileValidator(const QString& lastFile = "", QObject * parent = 0);
 
 	void setLastFile(QString lastFile) {
-		this->lastFile = lastFile;
+		mLastFile = lastFile;
 	};
 	virtual void fixup(QString& input) const;
 	virtual State validate(QString& input, int& pos) const;
 
 protected:
-	QString lastFile;
+	QString mLastFile;
 };
 
 class DkTrainDialog : public QDialog {
@@ -144,17 +144,17 @@ class DkTrainDialog : public QDialog {
 public:
 	DkTrainDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	QFileInfo getAcceptedFile() {
-		return acceptedFile;
+	QString getAcceptedFile() {
+		return mAcceptedFile;
 	};
 
-	void setCurrentFile(const QFileInfo& file) {
-		cFile = file;
+	void setCurrentFile(const QString& file) {
+		mFile = file;
 	};
 
 public slots:
-	void textChanged(QString text);
-	void loadFile(QString filePath = "");
+	void textChanged(const QString& text);
+	void loadFile(const QString& filePath = "");
 	void openFile();
 	void accept();
 
@@ -165,14 +165,14 @@ protected:
 	void createLayout();
 	void userFeedback(const QString& msg, bool error = false);
 
-	DkFileValidator fileValidator;
-	QDialogButtonBox* buttons;
-	QLineEdit* pathEdit;
-	QLabel* feedbackLabel;
-	DkBaseViewPort* viewport;
+	DkFileValidator mFileValidator;
+	QDialogButtonBox* mButtons;
+	QLineEdit* mPathEdit;
+	QLabel* mFeedbackLabel;
+	DkBaseViewPort* mViewport;
 	
-	QFileInfo acceptedFile;
-	QFileInfo cFile;
+	QString mAcceptedFile;
+	QString mFile;
 };
 
 class DkAppManager : public QObject{
@@ -272,8 +272,8 @@ public slots:
 	virtual void accept();
 
 signals:
-	void loadFileSignal(QFileInfo file);
-	void filterSignal(QStringList);
+	void loadFileSignal(const QString& filePath) const;
+	void filterSignal(QStringList) const;
 
 protected:
 
@@ -287,7 +287,7 @@ protected:
 	QDialogButtonBox* buttons;
 
 	QPushButton* filterButton;
-	//QVector<QPushButton*> buttons;
+	//QVector<QPushButton*> mButtons;
 
 	QString currentSearch;
 
@@ -704,10 +704,10 @@ public slots:
 	void on_openButton_pressed();
 	void on_saveButton_pressed();
 	void on_fileEdit_textChanged(const QString& filename);
-	void setFile(const QFileInfo& file);
+	void setFile(const QString& filePath);
 	void accept();
 	void reject();
-	int exportImages(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite);
+	int exportImages(const QString& filePath, const QString& saveFilePath, int from, int to, bool overwrite);
 	void processingFinished();
 
 signals:
@@ -735,7 +735,7 @@ protected:
 	QWidget* controlWidget;
 	QCheckBox* overwrite;
 
-	QFileInfo cFile;
+	QString mFilePath;
 	QDir saveDir;
 	DkBasicLoader loader;
 	QFutureWatcher<int> watcher;
@@ -760,7 +760,7 @@ public:
 public slots:
 	void on_sigmaSlider_valueChanged(int i);
 	void on_amountSlider_valueChanged(int i);
-	void setFile(const QFileInfo& file);
+	void setFile(const QString& filePath);
 	void setImage(const QImage& img);
 	void computePreview();
 	void reject();
@@ -799,7 +799,7 @@ public slots:
 	void on_scaleLogSlider_valueChanged(int i);
 	void on_angleSlider_valueChanged(int i);
 	void on_invertBox_toggled(bool t);
-	void setFile(const QFileInfo& file);
+	void setFile(const QString& filePath);
 	void setImage(const QImage& img);
 	void computePreview();
 	void updateImageSlot(QImage);
@@ -848,19 +848,20 @@ public slots:
 	void on_darkenSlider_valueChanged(int i);
 	void on_lightenSlider_valueChanged(int i);
 	void on_saturationSlider_valueChanged(int i);
-	void setFile(const QFileInfo& file);
+	
+	void setFile(const QString& file);
 	void compute();
 	void reject();
-	int computeMosaic(QFileInfo file, QString filter, QString suffix, int from, int to);
+	int computeMosaic(const QString& filePath, const QString& filter, const QString& suffix, int from, int to);		// TODO: make const!
 	void mosaicFinished();
 	void postProcessFinished();
 	void buttonClicked(QAbstractButton* button);
 	void updatePatchRes();
 
 signals:
-	void updateImage(QImage img);
-	void updateProgress(int);
-	void infoMessage(QString msg);
+	void updateImage(QImage img) const;
+	void updateProgress(int) const;
+	void infoMessage(QString msg) const;
 
 protected:
 	void updatePostProcess();
@@ -897,7 +898,7 @@ protected:
 	QSlider* lightenSlider;
 	QSlider* saturationSlider;
 
-	QFileInfo cFile;
+	QString mFilePath;
 	QDir saveDir;
 	DkBasicLoader loader;
 	QFutureWatcher<int> mosaicWatcher;

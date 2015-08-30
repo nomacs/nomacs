@@ -33,6 +33,7 @@
 #include "DkTimer.h"
 #include "DkWidgets.h"
 #include "DkThumbs.h"
+#include "DkUtils.h"
 
 #if defined(WIN32) && !defined(SOCK_STREAM)
 #include <winsock2.h>	// needed since libraw 0.16
@@ -234,15 +235,15 @@ void DkSplashScreen::showClose() {
 }
 
 // file validator --------------------------------------------------------------------
-DkFileValidator::DkFileValidator(QString lastFile, QObject * parent) : QValidator(parent) {
+DkFileValidator::DkFileValidator(const QString& lastFile, QObject * parent) : QValidator(parent) {
 
-	this->lastFile = lastFile;
+	mLastFile = lastFile;
 }
 
 void DkFileValidator::fixup(QString& input) const {
 
 	if(!QFileInfo(input).exists())
-		input = lastFile;
+		input = mLastFile;
 }
 
 QValidator::State DkFileValidator::validate(QString& input, int&) const {
@@ -266,64 +267,64 @@ void DkTrainDialog::createLayout() {
 
 	// first row
 	QLabel* newImageLabel = new QLabel(tr("Load New Image Format"), this);
-	pathEdit = new QLineEdit(this);
-	pathEdit->setValidator(&fileValidator);
-	pathEdit->setObjectName("DkWarningEdit");
-	connect(pathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
-	connect(pathEdit, SIGNAL(editingFinished()), this, SLOT(loadFile()));
+	mPathEdit = new QLineEdit(this);
+	mPathEdit->setValidator(&mFileValidator);
+	mPathEdit->setObjectName("DkWarningEdit");
+	connect(mPathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(mPathEdit, SIGNAL(editingFinished()), this, SLOT(loadFile()));
 
 	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
 	connect(openButton, SIGNAL(pressed()), this, SLOT(openFile()));
 
-	feedbackLabel = new QLabel("", this);
-	feedbackLabel->setObjectName("DkDecentInfo");
+	mFeedbackLabel = new QLabel("", this);
+	mFeedbackLabel->setObjectName("DkDecentInfo");
 
 	// shows the image if it could be loaded
-	viewport = new DkBaseViewPort(this);
-	viewport->setForceFastRendering(true);
-	viewport->setPanControl(QPointF(0.0f, 0.0f));
+	mViewport = new DkBaseViewPort(this);
+	mViewport->setForceFastRendering(true);
+	mViewport->setPanControl(QPointF(0.0f, 0.0f));
 
-	// buttons
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Add"));
-	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	// mButtons
+	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	mButtons->button(QDialogButtonBox::Ok)->setText(tr("&Add"));
+	mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
+	mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QWidget* trainWidget = new QWidget(this);
 	QGridLayout* gdLayout = new QGridLayout(trainWidget);
 	gdLayout->addWidget(newImageLabel, 0, 0);
-	gdLayout->addWidget(pathEdit, 1, 0);
+	gdLayout->addWidget(mPathEdit, 1, 0);
 	gdLayout->addWidget(openButton, 1, 1);
-	gdLayout->addWidget(feedbackLabel, 2, 0, 1, 2);
-	gdLayout->addWidget(viewport, 3, 0, 1, 2);
+	gdLayout->addWidget(mFeedbackLabel, 2, 0, 1, 2);
+	gdLayout->addWidget(mViewport, 3, 0, 1, 2);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(trainWidget);
-	layout->addWidget(buttons);
+	layout->addWidget(mButtons);
 }
 
-void DkTrainDialog::textChanged(QString text) {
+void DkTrainDialog::textChanged(const QString& text) {
 	
 	if (QFileInfo(text).exists())
-		pathEdit->setProperty("warning", false);
+		mPathEdit->setProperty("warning", false);
 	else
-		pathEdit->setProperty("warning", false);
+		mPathEdit->setProperty("warning", false);
 
-	pathEdit->style()->unpolish(pathEdit);
-	pathEdit->style()->polish(pathEdit);
-	pathEdit->update();
+	mPathEdit->style()->unpolish(mPathEdit);
+	mPathEdit->style()->polish(mPathEdit);
+	mPathEdit->update();
 }
 
 void DkTrainDialog::openFile() {
 
 	// load system default open dialog
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"),
-		cFile.absolutePath(), tr("All Files (*.*)"));
+		mFile, tr("All Files (*.*)"));
 
 	if (QFileInfo(filePath).exists()) {
-		pathEdit->setText(filePath);
+		mPathEdit->setText(filePath);
 		loadFile(filePath);
 	}
 }
@@ -331,39 +332,41 @@ void DkTrainDialog::openFile() {
 void DkTrainDialog::userFeedback(const QString& msg, bool error) {
 
 	if (!error)
-		feedbackLabel->setProperty("warning", false);
+		mFeedbackLabel->setProperty("warning", false);
 	else
-		feedbackLabel->setProperty("warning", true);
+		mFeedbackLabel->setProperty("warning", true);
 
-	feedbackLabel->setText(msg);
-	feedbackLabel->style()->unpolish(feedbackLabel);
-	feedbackLabel->style()->polish(feedbackLabel);
-	feedbackLabel->update();
+	mFeedbackLabel->setText(msg);
+	mFeedbackLabel->style()->unpolish(mFeedbackLabel);
+	mFeedbackLabel->style()->polish(mFeedbackLabel);
+	mFeedbackLabel->update();
 }
 
-void DkTrainDialog::loadFile(QString filePath) {
+void DkTrainDialog::loadFile(const QString& filePath) {
 
-	if (filePath.isEmpty() && !pathEdit->text().isEmpty())
-		filePath = pathEdit->text();
+	QString lFilePath = filePath;
+
+	if (filePath.isEmpty() && !mPathEdit->text().isEmpty())
+		lFilePath = mPathEdit->text();
 	else if (filePath.isEmpty())
 		return;
 
-	QFileInfo fileInfo(filePath);
-	if (!fileInfo.exists() || acceptedFile.absoluteFilePath() == fileInfo.absoluteFilePath())
+	QFileInfo fileInfo(lFilePath);
+	if (!fileInfo.exists() || mAcceptedFile == lFilePath)
 		return;	// error message?!
 
 	// update validator
-	fileValidator.setLastFile(filePath);
+	mFileValidator.setLastFile(lFilePath);
 
 	DkBasicLoader basicLoader;
 	basicLoader.setTraining(true);
 
 	// TODO: archives cannot be trained currently
-	bool imgLoaded = basicLoader.loadGeneral(fileInfo, true);
+	bool imgLoaded = basicLoader.loadGeneral(filePath, true);
 
 	if (!imgLoaded) {
-		viewport->setImage(QImage());	// remove the image
-		acceptedFile = QFileInfo();
+		mViewport->setImage(QImage());	// remove the image
+		mAcceptedFile = "";
 		userFeedback(tr("Sorry, currently we don't support: *.%1 files").arg(fileInfo.suffix()), true);
 		return;
 	}
@@ -375,21 +378,23 @@ void DkTrainDialog::loadFile(QString filePath) {
 	else
 		userFeedback(tr("*.%1 is supported.").arg(fileInfo.suffix()), false);
 
-	viewport->setImage(basicLoader.image());
-	acceptedFile = fileInfo;
+	mViewport->setImage(basicLoader.image());
+	mAcceptedFile = lFilePath;
 
 	// try loading the file
 	// if loaded !
-	buttons->button(QDialogButtonBox::Ok)->setEnabled(imgLoaded);
+	mButtons->button(QDialogButtonBox::Ok)->setEnabled(imgLoaded);
 }
 
 void DkTrainDialog::accept() {
 
+	QFileInfo acceptedFileInfo(mAcceptedFile);
+
 	// add the extension to user filters
-	if (!DkSettings::app.fileFilters.join(" ").contains(acceptedFile.suffix(), Qt::CaseInsensitive)) {
+	if (!DkSettings::app.fileFilters.join(" ").contains(acceptedFileInfo.suffix(), Qt::CaseInsensitive)) {
 
 		QString name = QInputDialog::getText(this, "Format Name", tr("Please name the new format:"), QLineEdit::Normal, "Your File Format");
-		QString tag = name + " (*." + acceptedFile.suffix() + ")";
+		QString tag = name + " (*." + acceptedFileInfo.suffix() + ")";
 
 		// load user filters
 		QSettings& settings = Settings::instance().getSettings();
@@ -397,8 +402,8 @@ void DkTrainDialog::accept() {
 		userFilters.append(tag);
 		settings.setValue("ResourceSettings/userFilters", userFilters);
 		DkSettings::app.openFilters.append(tag);
-		DkSettings::app.fileFilters.append("*." + acceptedFile.suffix());
-		DkSettings::app.browseFilters += acceptedFile.suffix();
+		DkSettings::app.fileFilters.append("*." + acceptedFileInfo.suffix());
+		DkSettings::app.browseFilters += acceptedFileInfo.suffix();
 	}
 
 	QDialog::accept();
@@ -411,7 +416,7 @@ void DkTrainDialog::dropEvent(QDropEvent *event) {
 		qDebug() << "dropping: " << url;
 		url = url.toLocalFile();
 
-		pathEdit->setText(url.toString());
+		mPathEdit->setText(url.toString());
 		loadFile();
 	}
 }
@@ -744,7 +749,7 @@ void DkAppManagerDialog::createLayout() {
 	deleteButton->setObjectName("deleteButton");
 	deleteButton->setShortcut(QKeySequence::Delete);
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -903,7 +908,7 @@ void DkSearchDialog::init() {
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
-	//buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	//mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	buttons->addButton(filterButton, QDialogButtonBox::ActionRole);
 
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
@@ -978,7 +983,7 @@ void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelInd
 		return;
 	}
 
-	emit loadFileSignal(QFileInfo(path, modelIndex.data().toString()));
+	emit loadFileSignal(QFileInfo(path, modelIndex.data().toString()).absoluteFilePath());
 	close();
 }
 
@@ -1008,7 +1013,7 @@ void DkSearchDialog::on_okButton_pressed() {
 	qDebug() << "opening filename: " << fileName;
 
 	if (!fileName.isEmpty())
-		emit loadFileSignal(QFileInfo(path, fileName));
+		emit loadFileSignal(QFileInfo(path, fileName).absoluteFilePath());
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
@@ -1326,7 +1331,7 @@ void DkResizeDialog::createLayout() {
 	// add stretch
 	gridLayout->setColumnStretch(6, 1);
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -2222,7 +2227,7 @@ void DkShortcutsDialog::createLayout() {
 	connect(scDelegate, SIGNAL(clearDuplicateSignal()), model, SLOT(clearDuplicateInfo()));
 #endif
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -2839,7 +2844,7 @@ void DkOpacityDialog::createLayout() {
 	slider = new DkSlider(tr("Window Opacity"), this);
 	slider->setMinimum(5);
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -2970,7 +2975,7 @@ void DkExportTiffDialog::createLayout() {
 	viewport->setForceFastRendering(true);
 	viewport->setPanControl(QPointF(0.0f, 0.0f));
 
-	// buttons
+	// mButtons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Export"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -2991,7 +2996,7 @@ void DkExportTiffDialog::on_openButton_pressed() {
 
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
-		cFile.absolutePath(), 
+		mFilePath, 
 		DkSettings::app.saveFilters.filter(QRegExp(".*tif.*")).join(";;"));
 
 	setFile(fileName);
@@ -3051,8 +3056,8 @@ void DkExportTiffDialog::accept() {
 	
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkExportTiffDialog::exportImages,
-		cFile,
-		sFile, 
+		mFilePath,
+		sFile.absoluteFilePath(), 
 		fromPage->value(), 
 		toPage->value(),
 		overwrite->isChecked());
@@ -3069,25 +3074,27 @@ void DkExportTiffDialog::processingFinished() {
 		QDialog::accept();
 }
 
-int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int from, int to, bool overwrite) {
+int DkExportTiffDialog::exportImages(const QString& filePath, const QString& saveFilePath, int from, int to, bool overwrite) {
 
 	processing = true;
+
+	QFileInfo saveInfo(saveFilePath);
 
 	// Do your job
 	for (int idx = from; idx <= to; idx++) {
 
-		QFileInfo sFile(saveFile.absolutePath(), saveFile.baseName() + QString::number(idx) + "." + saveFile.suffix());
-		qDebug() << "trying to save: " << sFile.absoluteFilePath();
+		QFileInfo cInfo(saveFilePath, saveInfo.baseName() + QString::number(idx) + "." + saveInfo.suffix());
+		qDebug() << "trying to save: " << cInfo.absoluteFilePath();
 
 		emit updateProgress(idx-1);
 
 		// user wants to overwrite files
-		if (sFile.exists() && overwrite) {
-			QFile f(sFile.absoluteFilePath());
+		if (cInfo.exists() && overwrite) {
+			QFile f(cInfo.absoluteFilePath());
 			f.remove();
 		}
-		else if (sFile.exists()) {
-			emit infoMessage(tr("%1 exists, skipping...").arg(sFile.fileName()));
+		else if (cInfo.exists()) {
+			emit infoMessage(tr("%1 exists, skipping...").arg(cInfo.fileName()));
 			continue;
 		}
 
@@ -3096,11 +3103,11 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 			continue;
 		}
 
-		QFileInfo saveFile = loader.save(sFile, loader.image(), 90);		//TODO: ask user for compression?
-		saveFile.refresh();
+		QString saveFilePath = loader.save(cInfo.absoluteFilePath(), loader.image(), 90);		//TODO: ask user for compression?
+		QFileInfo saveInfo(saveFilePath);
 
-		if (!saveFile.exists() || !saveFile.isFile())
-			emit infoMessage(tr("Sorry, I could not save: %1").arg(sFile.fileName()));
+		if (!saveInfo.exists() || !saveInfo.isFile())
+			emit infoMessage(tr("Sorry, I could not save: %1").arg(cInfo.fileName()));
 
 		emit updateImage(loader.image());
 		emit updateProgress(idx);
@@ -3115,18 +3122,19 @@ int DkExportTiffDialog::exportImages(QFileInfo file, QFileInfo saveFile, int fro
 	return QDialog::Accepted;
 }
 
-void DkExportTiffDialog::setFile(const QFileInfo& file) {
+void DkExportTiffDialog::setFile(const QString& filePath) {
 	
-	if (!file.exists())
+	if (!QFileInfo(filePath).exists())
 		return;
 	
-	cFile = file;
-	saveDir = file.absolutePath();
+	QFileInfo fInfo(filePath);
+	mFilePath = filePath;	// TODO - switch to qstring
+	saveDir = fInfo.absolutePath();
 	folderLabel->setText(saveDir.absolutePath());
-	tiffLabel->setText(file.absoluteFilePath());
-	fileEdit->setText(file.baseName());
+	tiffLabel->setText(filePath);
+	fileEdit->setText(fInfo.baseName());
 
-	loader.loadGeneral(cFile, true);
+	loader.loadGeneral(filePath, true);
 	viewport->setImage(loader.image());
 
 	enableTIFFSave(loader.getNumPages() > 1);
@@ -3228,15 +3236,15 @@ void DkUnsharpDialog::createLayout() {
 	viewLayout->addWidget(viewport, 0,0);
 	viewLayout->addWidget(preview, 0, 1);
 
-	// buttons
+	// mButtons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	//buttons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
-	//buttons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
-	//buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	//mButtons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
+	//mButtons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
+	//mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	//connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
+	//connect(mButtons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-	//buttons->button(QDialogButtonBox::Save)->setEnabled(false);
+	//mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(viewports);
@@ -3267,7 +3275,7 @@ void DkUnsharpDialog::reject() {
 
 //void DkMosaicDialog::buttonClicked(QAbstractButton* button) {
 //
-//	if (button == buttons->button(QDialogButtonBox::Save)) {
+//	if (button == mButtons->button(QDialogButtonBox::Save)) {
 //
 //		// render the full image
 //		if (!mosaic.isNull()) {
@@ -3286,7 +3294,7 @@ void DkUnsharpDialog::reject() {
 //			postProcessWatcher.setFuture(future);
 //		}
 //	}
-//	else if (button == buttons->button(QDialogButtonBox::Apply))
+//	else if (button == mButtons->button(QDialogButtonBox::Apply))
 //		compute();
 //}
 
@@ -3329,10 +3337,10 @@ void DkUnsharpDialog::setImage(const QImage& img) {
 	computePreview();
 }
 
-void DkUnsharpDialog::setFile(const QFileInfo& file) {
+void DkUnsharpDialog::setFile(const QString& filePath) {
 
 	DkBasicLoader loader;
-	loader.loadGeneral(file, true);
+	loader.loadGeneral(filePath, true);
 	setImage(loader.image());
 }
 
@@ -3426,7 +3434,7 @@ void DkTinyPlanetDialog::createLayout() {
 	viewLayout->addWidget(preview);
 	viewLayout->addStretch();
 
-	// buttons
+	// mButtons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
@@ -3539,15 +3547,15 @@ QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage img, float scaleLog, f
 void DkTinyPlanetDialog::setImage(const QImage& img) {
 	this->img = img;
 	updateImageSlot(img);
-	//viewport->fullView();
-	//viewport->zoomConstraints(viewport->get100Factor());
+	//mViewport->fullView();
+	//mViewport->zoomConstraints(mViewport->get100Factor());
 	computePreview();
 }
 
-void DkTinyPlanetDialog::setFile(const QFileInfo& file) {
+void DkTinyPlanetDialog::setFile(const QString& filePath) {
 
 	DkBasicLoader loader;
-	loader.loadGeneral(file, true);
+	loader.loadGeneral(filePath, true);
 	setImage(loader.image());
 }
 
@@ -3740,12 +3748,12 @@ void DkMosaicDialog::createLayout() {
 	viewLayout->addWidget(viewport);
 	viewLayout->addWidget(preview);
 
-	// buttons
+	// mButtons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
 	buttons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	//connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	//connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
 	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
 	buttons->button(QDialogButtonBox::Save)->setEnabled(false);
@@ -3765,8 +3773,7 @@ void DkMosaicDialog::on_openButton_pressed() {
 
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open TIFF"),
-		cFile.absolutePath(), 
-		DkSettings::app.openFilters.join(";;"));
+		mFilePath, DkSettings::app.openFilters.join(";;"));
 
 	setFile(fileName);
 }
@@ -3948,10 +3955,12 @@ void DkMosaicDialog::compute() {
 	}
 
 	QString filter = filterEdit->text();
+	filesUsed.clear();
 
+	processing = true;
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::computeMosaic,
-		cFile,
+		mFilePath,
 		filter,
 		suffix, 
 		newWidthBox->value(), 
@@ -3987,15 +3996,13 @@ void DkMosaicDialog::mosaicFinished() {
 		enableAll(true);
 }
 
-int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix, int newWidth, int numPatchesH) {
+int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter, const QString& suffix, int newWidth, int numPatchesH) {
 
 	DkTimer dt;
-	processing = true;
 
 	// compute new image size
 	cv::Mat mImg = DkImage::qImage2Mat(loader.image());
 
-	filesUsed.clear();
 	QSize numPatches = QSize(numPatchesH, 0);
 
 	// compute new image size
@@ -4044,7 +4051,6 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 	bool force = false;
 	bool useTwice = false;
 
-	//for (int idx = 0; idx < 10; idx++) {
 	while (iDidNothing < 10000) {
 
 		if (!processing)
@@ -4076,7 +4082,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 
 		try {
 
-			DkThumbNail thumb = DkThumbNail(QFileInfo(imgPath));
+			DkThumbNail thumb = DkThumbNail(imgPath);
 			thumb.setMinThumbSize(patchResO);
 			thumb.setRescale(false);
 			thumb.compute();
@@ -4151,7 +4157,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 				// update cc
 				ccPtr[maxIdx.x] = (float)maxVal;
 
-				filesUsed[maxIdx.y*numPatchesH+maxIdx.x] = thumb.getFile();	// replaces additionally the old file
+				filesUsed[maxIdx.y*numPatchesH+maxIdx.x] = thumb.getFilePath();	// replaces additionally the old file
 				iDidNothing = 0;
 			}
 			else
@@ -4191,7 +4197,7 @@ int DkMosaicDialog::computeMosaic(QFileInfo file, QString filter, QString suffix
 				continue;
 			}
 
-			cv::Mat thumbPatch = createPatch(DkThumbNail(cFile), patchResD);
+			cv::Mat thumbPatch = createPatch(DkThumbNail(cFile.absoluteFilePath()), patchResD);
 
 			cv::Mat dPatch = dImg.rowRange(rIdx*patchResD, rIdx*patchResD+patchResD)
 				.colRange(cIdx*patchResD, cIdx*patchResD+patchResD);
@@ -4244,7 +4250,7 @@ cv::Mat DkMosaicDialog::createPatch(const DkThumbNail& thumb, int patchRes) {
 	// load full image if we have not enough resolution
 	if (qMin(thumb.getImage().width(), thumb.getImage().height()) < patchRes) {
 		DkBasicLoader loader;
-		loader.loadGeneral(thumb.getFile(), true, true);
+		loader.loadGeneral(thumb.getFilePath(), true, true);
 		img = loader.image();
 	}
 	else
@@ -4448,18 +4454,19 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 
 }
 
-void DkMosaicDialog::setFile(const QFileInfo& file) {
+void DkMosaicDialog::setFile(const QString& filePath) {
 
-	if (!file.exists())
+	QFileInfo fInfo(filePath);
+	if (!fInfo.exists())
 		return;
 
-	cFile = file;
-	saveDir = file.absolutePath();
+	mFilePath = filePath;
+	saveDir = fInfo.absolutePath();
 	folderLabel->setText(saveDir.absolutePath());
-	fileLabel->setText(file.absoluteFilePath());
+	fileLabel->setText(filePath);
 	//filterEdit->setText(file.baseName());
 
-	loader.loadGeneral(cFile, true);
+	loader.loadGeneral(filePath, true);
 	viewport->setImage(loader.image());
 
 	enableMosaicSave(loader.hasImage());
@@ -4517,7 +4524,7 @@ void DkForceThumbDialog::createLayout() {
 	cbForceSave = new QCheckBox(tr("Overwrite Existing Thumbnails"));
 	cbForceSave->setToolTip("If checked, existing thumbnails will be replaced");
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -4560,7 +4567,7 @@ void DkWelcomeDialog::createLayout() {
 	registerFilesCheckBox = new QCheckBox(tr("Register File Associations"), this);
 	registerFilesCheckBox->setChecked(true);
 
-	// buttons
+	// mButtons
 	QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&OK"));
 	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
@@ -4658,7 +4665,7 @@ void DkArchiveExtractionDialog::createLayout() {
 	removeSubfolders->setChecked(false);
 	connect(removeSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
 
-	// buttons
+	// mButtons
 	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Extract"));
 	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);

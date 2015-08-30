@@ -94,7 +94,7 @@ DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QW
 	init();
 	connectWidgets();
 
-	// add mousetracking to all widgets which allows the viewport for status updates
+	// add mousetracking to all widgets which allows the mViewport for status updates
 	QObjectList widgets = children();
 	for (int idx = 0; idx < widgets.size(); idx++) {
 		if (QWidget* w = qobject_cast<QWidget*>(widgets.at(idx))) {
@@ -288,7 +288,7 @@ void DkControlWidget::connectWidgets() {
 		return;
 
 	// thumbs widget
-	connect(filePreview, SIGNAL(loadFileSignal(QFileInfo)), viewport, SLOT(loadFile(QFileInfo)));
+	connect(filePreview, SIGNAL(loadFileSignal(const QString&)), viewport, SLOT(loadFile(const QString&)));
 	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
 	connect(filePreview, SIGNAL(positionChangeSignal(int)), this, SLOT(changeThumbNailPosition(int)));
 
@@ -323,7 +323,7 @@ void DkControlWidget::connectWidgets() {
 	// comment widget
 	connect(commentWidget, SIGNAL(showInfoSignal(QString)), this, SLOT(setInfo(QString)));
 
-	// viewport
+	// mViewport
 	connect(viewport, SIGNAL(infoSignal(QString)), this, SLOT(setInfo(QString)));
 }
 
@@ -368,7 +368,7 @@ void DkControlWidget::showPreview(bool visible) {
 	if (visible && !filePreview->isVisible())
 		filePreview->show();
 	else if (!visible && filePreview->isVisible())
-		filePreview->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		filePreview->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showScroller(bool visible) {
@@ -379,7 +379,7 @@ void DkControlWidget::showScroller(bool visible) {
 	if (visible && !folderScroll->isVisible())
 		folderScroll->show();
 	else if (!visible && folderScroll->isVisible())
-		folderScroll->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		folderScroll->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showMetaData(bool visible) {
@@ -389,10 +389,10 @@ void DkControlWidget::showMetaData(bool visible) {
 
 	if (visible && !metaDataInfo->isVisible()) {
 		metaDataInfo->show();
-		qDebug() << "showing metadata...";
+		qDebug() << "mShowing metadata...";
 	}
 	else if (!visible && metaDataInfo->isVisible())
-		metaDataInfo->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		metaDataInfo->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showFileInfo(bool visible) {
@@ -405,7 +405,7 @@ void DkControlWidget::showFileInfo(bool visible) {
 		ratingLabel->block(fileInfoLabel->isVisible());
 	}
 	else if (!visible && fileInfoLabel->isVisible()) {
-		fileInfoLabel->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		fileInfoLabel->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 		ratingLabel->block(false);
 	}
 }
@@ -418,7 +418,7 @@ void DkControlWidget::showPlayer(bool visible) {
 	if (visible)
 		player->show();
 	else
-		player->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		player->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showOverview(bool visible) {
@@ -430,7 +430,7 @@ void DkControlWidget::showOverview(bool visible) {
 		zoomWidget->show();
 	}
 	else if (!visible && zoomWidget->isVisible()) {
-		zoomWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		zoomWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 	}
 
 }
@@ -465,7 +465,7 @@ void DkControlWidget::showHistogram(bool visible) {
 		else  histogram->clearHistogram();
 	}
 	else if (!visible && histogram->isVisible()) {
-		histogram->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		histogram->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 	}
 }
 
@@ -478,7 +478,7 @@ void DkControlWidget::showCommentWidget(bool visible) {
 		commentWidget->show();
 	}
 	else if (!visible && commentWidget->isVisible()) {
-		commentWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the viewport
+		commentWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 	}
 }
 
@@ -531,7 +531,7 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 
 	QString dateString = metaData->getExifValue("DateTimeOriginal");
-	fileInfoLabel->updateInfo(imgC->file(), "", dateString, metaData->getRating());
+	fileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
 	fileInfoLabel->setEdited(imgC->isEdited());
 	commentWidget->setMetaData(metaData);
 	updateRating(metaData->getRating());
@@ -754,10 +754,6 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 
 	imgBg.load(":/nomacs/img/nomacs-bg.png");
 
-	skipImageTimer = new QTimer(this);
-	skipImageTimer->setSingleShot(true);
-	connect(skipImageTimer, SIGNAL(timeout()), this, SLOT(loadFullFile()));
-
 	repeatZoomTimer = new QTimer(this);
 	repeatZoomTimer->setInterval(20);
 	connect(repeatZoomTimer, SIGNAL(timeout()), this, SLOT(repeatZoom()));
@@ -800,7 +796,7 @@ DkViewPort::DkViewPort(QWidget *parent, Qt::WindowFlags flags) : DkBaseViewPort(
 	// one could blur the canvas if a transparent GUI is present
 	// what we would need: QGraphicsBlurEffect...
 	// render all widgets to the alpha channel (bw)
-	// pre-render the viewport to that image... apply blur
+	// pre-render the mViewport to that image... apply blur
 	// and then render the blurred image after the widget is rendered...
 	// performance?!
 	
@@ -950,7 +946,7 @@ void DkViewPort::setImage(QImage newImg) {
 
 	emit enableNoImageSignal(!newImg.isNull());
 
-	//qDebug() << "new image (viewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
+	//qDebug() << "new image (mViewport) loaded,  size: " << newImg.size() << "channel: " << imgQt.format();
 	//qDebug() << "keep zoom is always: " << (DkSettings::display.keepZoom == DkSettings::zoom_always_keep);
 
 	if (!DkSettings::slideShow.moveSpeed && (DkSettings::display.keepZoom == DkSettings::zoom_never_keep || 
@@ -1235,7 +1231,7 @@ void DkViewPort::tcpSetTransforms(QTransform newWorldMatrix, QTransform newImgMa
 		// go to world coordinates
 		imgPos = worldMatrix.map(imgPos);
 
-		// compute difference to current viewport center - in world coordinates
+		// compute difference to current mViewport center - in world coordinates
 		imgPos = QPointF(width()*0.5f, height()*0.5f) - imgPos;
 
 		// back to screen coordinates
@@ -1377,7 +1373,7 @@ void DkViewPort::drawBackground(QPainter *painter) {
 	
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
-	// fit to viewport
+	// fit to mViewport
 	QSize s = imgBg.size();
 	if (s.width() > (float)(size().width()*0.5))
 		s = s*((size().width()*0.5)/s.width());
@@ -1401,7 +1397,7 @@ void DkViewPort::loadMovie() {
 		movie = 0;
 	}
 
-	movie = new QMovie(loader->file().absoluteFilePath());
+	movie = new QMovie(loader->filePath());
 	connect(movie, SIGNAL(frameChanged(int)), this, SLOT(update()));
 	movie->start();
 	emit movieLoadedSignal(true);
@@ -1503,7 +1499,7 @@ bool DkViewPort::event(QEvent *event) {
 		event->type() == QEvent::Drop) {
 
 		//qDebug() << "redirecting event...";
-		// mouse events that double are now fixed, since the viewport is now overlayed by the controller
+		// mouse events that double are now fixed, since the mViewport is now overlayed by the controller
 		return QWidget::event(event);
 	}
 	else
@@ -1537,7 +1533,7 @@ void DkViewPort::mousePressEvent(QMouseEvent *event) {
 		posGrab = event->pos();
 	}
 	
-	// keep in mind if the gesture was started in the viewport
+	// keep in mind if the gesture was started in the mViewport
 	// this fixes issues if some HUD widgets or child widgets
 	// do not implement mouse events correctly
 	if (event->buttons() == Qt::LeftButton)
@@ -1609,10 +1605,10 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 		&& loader
 		&& !QApplication::widgetAt(event->globalPos())) {	// is NULL if the mouse leaves the window
 
-			qDebug() << loader->file().absoluteFilePath();
+			qDebug() << loader->filePath();
 
 			// TODO: check if we do it correct (network locations that are not mounted)
-			QUrl fileUrl = QUrl::fromLocalFile(loader->file().absoluteFilePath());
+			QUrl fileUrl = QUrl::fromLocalFile(loader->filePath());
 
 			QList<QUrl> urls;
 			urls.append(fileUrl);
@@ -1620,7 +1616,7 @@ void DkViewPort::mouseMoveEvent(QMouseEvent *event) {
 			// who deletes me?
 			QMimeData* mimeData = new QMimeData();
 
-			if (loader->file().exists() && !loader->isEdited())
+			if (QFileInfo(loader->filePath()).exists() && !loader->isEdited())
 				mimeData->setUrls(urls);
 			else if (!getImage().isNull())
 				mimeData->setImageData(getImage());
@@ -1833,19 +1829,19 @@ void DkViewPort::copyImage() {
 	if (getImage().isNull() || !loader)
 		return;
 
-	QUrl fileUrl = QUrl("file:///" + loader->file().absoluteFilePath());
+	QUrl fileUrl = QUrl("file:///" + loader->filePath());
 
 	QList<QUrl> urls;
 	urls.append(fileUrl);
 
 	QMimeData* mimeData = new QMimeData;
 
-	if (loader->file().exists() && !loader->isEdited())
+	if (QFileInfo(loader->filePath()).exists() && !loader->isEdited())
 		mimeData->setUrls(urls);
 	else if (!getImage().isNull())
 		mimeData->setImageData(getImage());
 
-	mimeData->setText(loader->file().absoluteFilePath());
+	mimeData->setText(loader->filePath());
 
 	QClipboard* clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData);
@@ -1973,9 +1969,9 @@ void DkViewPort::toggleLena() {
 
 	if (loader) {
 		if (parent && parent->isFullScreen())
-			loader->load(QFileInfo(":/nomacs/img/lena-full.jpg"));
+			loader->load(":/nomacs/img/lena-full.jpg");
 		else
-			loader->load(QFileInfo(":/nomacs/img/lena.jpg"));
+			loader->load(":/nomacs/img/lena.jpg");
 	}
 }
 
@@ -2002,7 +1998,7 @@ void DkViewPort::setEditedImage(QImage newImg) {
 	loader->setImage(imgC);
 	qDebug() << "loader gets this size: " << newImg.size();
 
-	// TODO: contrast viewport does not add * 
+	// TODO: contrast mViewport does not add * 
 
 	// TODO: add functions such as save file on unload
 }
@@ -2057,23 +2053,23 @@ void DkViewPort::deactivate() {
 	setImage(QImage());
 }
 
-void DkViewPort::loadFile(QFileInfo file) {
+void DkViewPort::loadFile(const QString& filePath) {
 
 	if (!unloadImage())
 		return;
 
 	testLoaded = false;
 
-	if (loader && file.isDir()) {
-		QDir dir = QDir(file.absoluteFilePath());
+	if (loader && QFileInfo(filePath).isDir()) {
+		QDir dir = QDir(filePath);
 		loader->setDir(dir);
 	} 
 	else if (loader)
-		loader->load(file);
+		loader->load(filePath);
 
 	qDebug() << "sync mode: " << (DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display);
 	if ((qApp->keyboardModifiers() == altMod || DkSettings::sync.syncMode == DkSettings::sync_mode_remote_display) && (hasFocus() || controller->hasFocus()) && loader->hasFile())
-		tcpLoadFile(0, file.absoluteFilePath());
+		tcpLoadFile(0, filePath);
 }
 
 void DkViewPort::reloadFile() {
@@ -2158,15 +2154,6 @@ void DkViewPort::loadFileFast(int skipIdx) {
 	//skipImageTimer->start(50);	// load full image in 50 ms if there is not a fast load again
 }
 
-// deprecated
-void DkViewPort::loadFullFile() {
-
-	if (thumbFile.exists()) {
-		//unloadImage();	// TODO: unload image clears the image -> makes an empty file
-		loader->load(thumbFile);
-	}
-}
-
 void DkViewPort::loadFirst() {
 
 	if (!unloadImage())
@@ -2247,7 +2234,7 @@ void DkViewPort::tcpLoadFile(qint16 idx, QString filename) {
 		}
 	}
 	else 
-		loadFile(QFileInfo(filename));
+		loadFile(filename);
 
 	qDebug() << "loading file: " << filename;
 
@@ -2540,7 +2527,7 @@ void DkViewPortFrameless::drawBackground(QPainter *painter) {
 	initialRect = cT.mapRect(initialRect);
 	initialRect.moveCenter(oldCenter);
 
-	// fit to viewport
+	// fit to mViewport
 	QSize s = imgBg.size();
 
 	QRectF bgRect(QPoint(), s);
@@ -2678,7 +2665,7 @@ void DkViewPortFrameless::mouseMoveEvent(QMouseEvent *event) {
 	}
 
 	//// scroll thumbs preview
-	//if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
+	//if (filePreview && filePreview->isVisible() && event->mButtons() == Qt::MiddleButton) {
 
 	//	float dx = std::fabs(enterPos.x() - event->pos().x())*0.015;
 	//	dx = std::exp(dx);

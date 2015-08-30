@@ -32,6 +32,7 @@
 #include <QLabel>
 #include <QDockWidget>
 #include <QScrollArea>
+#include <QTimer>
 #pragma warning(pop)	// no warnings from includes - end
 
 #ifndef DllExport
@@ -86,13 +87,13 @@ public slots:
 
 protected:
 
-	QColor bgCol;
-	bool blocked;
-	bool hiding;
-	bool showing;
+	QColor mBgCol;
+	bool mBlocked;
+	bool mHiding;
+	bool mShowing;
 
-	QGraphicsOpacityEffect* opacityEffect;
-	QBitArray* displaySettingsBits;
+	QGraphicsOpacityEffect* mOpacityEffect;
+	QBitArray* mDisplaySettingsBits;
 
 	// functions
 	void init();
@@ -114,11 +115,11 @@ public:
 	void setFixedWidth(int fixedWidth);
 
 	void block(bool blocked) {
-		this->blocked = blocked;
+		mBlocked = blocked;
 	};
 	
 	void setMargin(const QPoint& margin) {
-		this->margin = margin;
+		mMargin = margin;
 		updateStyleSheet();
 	};
 
@@ -126,18 +127,19 @@ public slots:
 	virtual void hide();
 
 protected:
-	QWidget* parent;
-	QTimer* timer;
-	QString text;
-	QColor textCol;
-	int defaultTime;
-	int fontSize;
-	int time;
-	int fixedWidth;
-	QPoint margin;
-	bool blocked;
-	QColor bgCol;
+	QWidget* mParent;
+	QTimer mTimer;
+	QString mText;
+	QColor mTextCol;
+	int mDefaultTime;
+	int mFontSize;
+	int mTime;
+	int mFixedWidth;
+	QPoint mMargin;
+	bool mBlocked;
+	QColor mBgCol;
 
+	// functions
 	virtual void init();
 	virtual void paintEvent(QPaintEvent *event);
 	virtual void draw(QPainter* painter);

@@ -28,6 +28,7 @@
 #include "DkImageStorage.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
+#include "DkError.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QDebug>

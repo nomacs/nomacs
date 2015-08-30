@@ -63,22 +63,6 @@ namespace nmc {
 // nomacs defines
 class DkCropToolBar;
 
-class DkGradientLabel : public DkLabel {
-	Q_OBJECT
-
-public:
-	DkGradientLabel(QWidget* parent = 0, const QString& text = QString());
-	virtual ~DkGradientLabel() {};
-
-protected:
-	void init();
-	void drawBackground(QPainter* painter);
-	void updateStyleSheet();
-
-	QImage gradient;
-	QImage end;
-};
-
 class DkButton : public QPushButton {
 	Q_OBJECT
 
@@ -214,8 +198,8 @@ public:
 	~DkFileInfoLabel() {};
 
 	void createLayout();
-	void updateInfo(const QFileInfo& file, const QString& attr, const QString& date, const int rating);
-	void updateTitle(const QFileInfo& file, const QString& attr);
+	void updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating);
+	void updateTitle(const QString& filePath, const QString& attr);
 	void updateDate(const QString& date = QString());
 	void updateRating(const int rating);
 	void setEdited(bool edited);
@@ -395,13 +379,13 @@ public:
 
 public slots:
 	void setCurrentImage(QSharedPointer<DkImageContainerT> img);
-	void setCurrentPath(QFileInfo fileInfo);
+	void setCurrentPath(const QString& filePath);
 	void fileClicked(const QModelIndex &index) const;
 	void showColumn(bool show);
 	void setEditable(bool editable);
 
 signals:
-	void openFile(QFileInfo fileInfo) const;
+	void openFile(const QString& filePath) const;
 	void openDir(QDir dir) const;
 
 protected:
@@ -781,7 +765,7 @@ public:
 	DkFileInfo();
 	DkFileInfo(const QFileInfo& fileInfo);
 
-	QFileInfo getFileInfo() const;
+	QString getFilePath() const;
 	bool exists() const;
 	void setExists(bool fileExists);
 
@@ -801,7 +785,7 @@ public:
 	DkFolderLabel(const DkFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 signals:
-	void loadFileSignal(QFileInfo);
+	void loadFileSignal(const QString&) const;
 
 protected:
 	void mousePressEvent(QMouseEvent *ev);
@@ -813,14 +797,14 @@ class DkImageLabel : public QLabel {
 	Q_OBJECT
 
 public:
-	DkImageLabel(const QFileInfo& fileInfo, QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkImageLabel(const QString& filePath, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
 	bool hasFile() const;
 	QSharedPointer<DkThumbNailT> getThumb() const;
 
 signals:
-	void labelLoaded();
-	void loadFileSignal(QFileInfo);
+	void labelLoaded() const;
+	void loadFileSignal(const QString&) const;
 
 public slots:
 	void thumbLoaded();
@@ -848,7 +832,7 @@ public:
 	void setCustomStyle(bool imgLoadedStyle = false);
 
 signals:
-	void loadFileSignal(QFileInfo fileInfo);
+	void loadFileSignal(const QString& filePath) const;
 
 public slots:
 	void updateFiles();

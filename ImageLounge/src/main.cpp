@@ -54,6 +54,7 @@
 
 #include "DkNoMacs.h"
 #include "DkSettings.h"
+#include "DkTimer.h"
 
 #include <iostream>
 #include <cassert>
@@ -62,34 +63,7 @@
 #include <shlobj.h>
 #endif
 
-void createPluginsPath() {
-
-#ifdef WITH_PLUGINS
-	// initialize plugin paths -----------------------------------------
-#ifdef WIN32
-	QDir pluginsDir;
-	if (!nmc::DkSettings::isPortable())
-		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
-	else
-		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
-#else
-	QDir pluginsDir = QDir("/usr/lib/nomacs-plugins/");
-#endif // WIN32
-
-
-	if (!pluginsDir.exists())
-		pluginsDir.mkpath(pluginsDir.absolutePath());
-
-	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
-	qDebug() << "plugins dir set to: " << nmc::DkSettings::global.pluginsDir;
-	
-	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
-
-	QCoreApplication::addLibraryPath("./imageformats");
-
-#endif // WITH_PLUGINS
-
-}
+void createPluginsPath();
 
 #ifdef WIN32
 int main(int argc, wchar_t *argv[]) {
@@ -99,14 +73,6 @@ int main(int argc, char *argv[]) {
 
 	qDebug() << "nomacs - Image Lounge\n";
 
-	//QImage img(QString("D:/img/raws/small-bug/xbmpcc_1_2013-11-13_1251_C0000_000047.dng"));
-
-	//nmc::DkThumbNail* t1 = new nmc::DkThumbNail();
-	//t1->compute();
-
-	//qDebug() << "total memory: " << nmc::DkMemory::getTotalMemory() << " MB";
-	//qDebug() << "free memory: " << nmc::DkMemory::getFreeMemory() << " MB";
-
 	//! \warning those QSettings setup *must* go before QApplication object
     //           to prevent random crashes (well, crashes are regular on mac
     //           opening from Finder)
@@ -115,8 +81,6 @@ int main(int argc, char *argv[]) {
 	QCoreApplication::setOrganizationDomain("http://www.nomacs.org");
 	QCoreApplication::setApplicationName("Image Lounge");
 	
-	//qDebug() << "settings: " << settings.fileName();
-
 	// NOTE: raster option destroys the frameless view on mac
 	// but raster is so much faster when zooming
 #if !defined(Q_WS_MAC) && !defined(QT5)
@@ -138,35 +102,27 @@ int main(int argc, char *argv[]) {
 
 	createPluginsPath();
 
-	//// pong --------------------------------------------------------------------
-	//nmc::DkPong *p = new nmc::DkPong();
-	//int pVal = a.exec();
-	//return pVal;
-	//// pong --------------------------------------------------------------------
-
 	nmc::DkNoMacs* w;
 
+#ifdef _DEBUG
 	// DEBUG --------------------------------------------------------------------
 	qDebug() << "input arguments:";
 	for (int idx = 0; idx < args.size(); idx++)
 		qDebug() << args[idx];
 	qDebug() << "\n";
 	// DEBUG --------------------------------------------------------------------
-
-//  	qDebug() << "data location: " << QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).absolutePath();
-	//QSettings settings;
+#endif
 
 	QString translationName = "nomacs_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
 	QString translationNameQt = "qt_"+ settings.value("GlobalSettings/language", nmc::DkSettings::global.language).toString() + ".qm";
+	
 	QTranslator translator;
 	nmc::DkSettings::loadTranslation(translationName, translator);
 	a.installTranslator(&translator);
+	
 	QTranslator translatorQt;
 	nmc::DkSettings::loadTranslation(translationNameQt, translatorQt);
 	a.installTranslator(&translatorQt);
-
-	//QStringList xxx = nmc::DkSettings::saveFilters;
-	//qDebug() << xxx;
 
 	// show pink icons if nomacs is in private mode
 	if(args.size() > 1 && args[1] == "-p") {
@@ -174,6 +130,9 @@ int main(int argc, char *argv[]) {
 		nmc::DkSettings::app.privateMode = true;
 	}
 
+	nmc::DkTimer dt;
+
+	// initialize nomacs
 	if (mode == nmc::DkSettings::mode_frameless) {
 		w = static_cast<nmc::DkNoMacs*> (new nmc::DkNoMacsFrameless());
 		qDebug() << "this is the frameless nomacs...";
@@ -188,13 +147,13 @@ int main(int argc, char *argv[]) {
 	if (w)
 		w->onWindowLoaded();
 
-	//qDebug() << "Initialization takes: " << dt.getTotal();
+	qDebug() << "Initialization takes: " << dt.getTotal();
 
 	// TODO: time to switch -> qt 5 has a command line parser
 	if (args.size() > 1 && args[1] == "-p") {
 	}
 	if (args.size() > 1 && QFileInfo(args[args.size()-1]).exists()) {
-		w->loadFile(QFileInfo(args[args.size()-1]));	// update folder + be silent
+		w->loadFile(args[args.size()-1]);	// update folder + be silent
 	}
 	else if (nmc::DkSettings::app.showRecentFiles)
 		w->showRecentFiles();
@@ -222,4 +181,33 @@ int main(int argc, char *argv[]) {
 #endif
 
 	return rVal;
+}
+
+void createPluginsPath() {
+
+#ifdef WITH_PLUGINS
+	// initialize plugin paths -----------------------------------------
+#ifdef WIN32
+	QDir pluginsDir;
+	if (!nmc::DkSettings::isPortable())
+		pluginsDir = QDir::home().absolutePath() + "/AppData/Roaming/nomacs/plugins";
+	else
+		pluginsDir = QCoreApplication::applicationDirPath() + "/plugins";
+#else
+	QDir pluginsDir = QDir("/usr/lib/nomacs-plugins/");
+#endif // WIN32
+
+
+	if (!pluginsDir.exists())
+		pluginsDir.mkpath(pluginsDir.absolutePath());
+
+	nmc::DkSettings::global.pluginsDir = pluginsDir.absolutePath();
+	qDebug() << "plugins dir set to: " << nmc::DkSettings::global.pluginsDir;
+
+	QCoreApplication::addLibraryPath(nmc::DkSettings::global.pluginsDir);
+
+	QCoreApplication::addLibraryPath("./imageformats");
+
+#endif // WITH_PLUGINS
+
 }

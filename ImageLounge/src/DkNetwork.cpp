@@ -1879,9 +1879,9 @@ void DkRCManagerThread::createClient(QString title) {
 void DkRCManagerThread::connectClient() {
 	// not sure if we need something here
 
-	//connect(parent->viewport(), SIGNAL(sendImageSignal(QImage, QString)), clientManager, SLOT(sendNewImage(QImage, QString)));
-	//connect(clientManager, SIGNAL(receivedImage(QImage)), parent->viewport(), SLOT(loadImage(QImage)));
-	//connect(clientManager, SIGNAL(sendInfoSignal(QString, int)), parent->viewport()->getController(), SLOT(setInfo(QString, int)));
+	//connect(parent->mViewport(), SIGNAL(sendImageSignal(QImage, QString)), clientManager, SLOT(sendNewImage(QImage, QString)));
+	//connect(clientManager, SIGNAL(receivedImage(QImage)), parent->mViewport(), SLOT(loadImage(QImage)));
+	//connect(clientManager, SIGNAL(sendInfoSignal(QString, int)), parent->mViewport()->getController(), SLOT(setInfo(QString, int)));
 	//connect(clientManager, SIGNAL(receivedImageTitle(QString)), parent, SLOT(setWindowTitle(QString)));
 	//connect(this, SIGNAL(startServerSignal(bool)), clientManager, SLOT(startServer(bool)));
 	connect(this, SIGNAL(newModeSignal(int)), clientManager, SLOT(sendNewMode(int)));
