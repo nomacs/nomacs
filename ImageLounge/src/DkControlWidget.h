@@ -1,6 +1,6 @@
 /*******************************************************************************************************
- DkViewPort.h
- Created on:	05.05.2011
+ DkControlWidget.h
+ Created on:	31.08.2015
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
  
