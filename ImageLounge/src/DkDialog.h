@@ -311,7 +311,7 @@ public:
 	enum{unit_cm, unit_mm, unit_inch, unit_end};
 	enum{res_ppi, res_ppc, res_end};  
 
-	void setImage(QImage img);
+	void setImage(const QImage& img);
 	QImage getResizedImage();
 	void setExifDpi(float exifDpi);
 	float getExifDpi();
@@ -604,7 +604,7 @@ public slots:
 	void updateZoomFactor();
 
 protected:
-	void setup_Actions();
+	void setupActions();
 	void createLayout();
 	void setIcon(QAction* action, const QLatin1String &name);
 	void createIcons();
@@ -663,7 +663,6 @@ private:
 
 	float mDpi = 150;
 	float mOrigDpi = 150;
-	//bool mInitialPaint;
 };
 
 class DkOpacityDialog : public QDialog {
@@ -696,9 +695,9 @@ public slots:
 	void processingFinished();
 
 signals:
-	void updateImage(QImage img);
-	void updateProgress(int);
-	void infoMessage(QString msg);
+	void updateImage(const QImage& img) const;
+	void updateProgress(int) const;
+	void infoMessage(const QString& msg) const;
 
 protected:
 	void createLayout();
@@ -707,25 +706,25 @@ protected:
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 
-	DkBaseViewPort* viewport;
-	QLabel* tiffLabel;
-	QLabel* folderLabel;
-	QLineEdit* fileEdit;
-	QComboBox* suffixBox;
-	QSpinBox* fromPage;
-	QSpinBox* toPage;
-	QDialogButtonBox* buttons;
-	QProgressBar* progress;
-	QLabel* msgLabel;
-	QWidget* controlWidget;
-	QCheckBox* overwrite;
+	DkBaseViewPort* mViewport;
+	QLabel* mTiffLabel;
+	QLabel* mFolderLabel;
+	QLineEdit* mFileEdit;
+	QComboBox* mSuffixBox;
+	QSpinBox* mFromPage;
+	QSpinBox* mToPage;
+	QDialogButtonBox* mButtons;
+	QProgressBar* mProgress;
+	QLabel* mMsgLabel;
+	QWidget* mControlWidget;
+	QCheckBox* mOverwrite;
 
 	QString mFilePath;
-	QDir saveDir;
-	DkBasicLoader loader;
-	QFutureWatcher<int> watcher;
+	QString mSaveDirPath;
+	DkBasicLoader mLoader;
+	QFutureWatcher<int> mWatcher;
 
-	bool processing;
+	bool mProcessing = false;
 
 	enum {
 		finished,
