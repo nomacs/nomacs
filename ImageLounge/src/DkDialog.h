@@ -691,7 +691,7 @@ public slots:
 	void setFile(const QString& filePath);
 	void accept();
 	void reject();
-	int exportImages(const QString& filePath, const QString& saveFilePath, int from, int to, bool overwrite);
+	int exportImages(const QString& saveFilePath, int from, int to, bool overwrite);
 	void processingFinished();
 
 signals:
@@ -733,6 +733,7 @@ protected:
 
 	};
 };
+
 #ifdef WITH_OPENCV
 class DkUnsharpDialog : public QDialog {
 	Q_OBJECT

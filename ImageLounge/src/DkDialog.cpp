@@ -3011,7 +3011,6 @@ void DkExportTiffDialog::accept() {
 	
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkExportTiffDialog::exportImages,
-		mFilePath,
 		sFile.absoluteFilePath(), 
 		mFromPage->value(), 
 		mToPage->value(),
@@ -3029,7 +3028,7 @@ void DkExportTiffDialog::processingFinished() {
 		QDialog::accept();
 }
 
-int DkExportTiffDialog::exportImages(const QString& filePath, const QString& saveFilePath, int from, int to, bool overwrite) {
+int DkExportTiffDialog::exportImages(const QString& saveFilePath, int from, int to, bool overwrite) {
 
 	mProcessing = true;
 
@@ -3038,7 +3037,7 @@ int DkExportTiffDialog::exportImages(const QString& filePath, const QString& sav
 	// Do your job
 	for (int idx = from; idx <= to; idx++) {
 
-		QFileInfo cInfo(saveFilePath, saveInfo.baseName() + QString::number(idx) + "." + saveInfo.suffix());
+		QFileInfo cInfo(saveInfo.absolutePath(), saveInfo.baseName() + QString::number(idx) + "." + saveInfo.suffix());
 		qDebug() << "trying to save: " << cInfo.absoluteFilePath();
 
 		emit updateProgress(idx-1);
@@ -3058,10 +3057,10 @@ int DkExportTiffDialog::exportImages(const QString& filePath, const QString& sav
 			continue;
 		}
 
-		QString saveFilePath = mLoader.save(cInfo.absoluteFilePath(), mLoader.image(), 90);		//TODO: ask user for compression?
-		QFileInfo saveInfo(saveFilePath);
+		QString lSaveFilePath = mLoader.save(cInfo.absoluteFilePath(), mLoader.image(), 90);		//TODO: ask user for compression?
+		QFileInfo lSaveInfo = QFileInfo(lSaveFilePath);
 
-		if (!saveInfo.exists() || !saveInfo.isFile())
+		if (!lSaveInfo.exists() || !lSaveInfo.isFile())
 			emit infoMessage(tr("Sorry, I could not save: %1").arg(cInfo.fileName()));
 
 		emit updateImage(mLoader.image());
