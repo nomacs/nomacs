@@ -113,18 +113,18 @@ public:
 	~DkRatingLabel() {};
 
 	void setRating(int rating) {
-		this->rating = rating;
+		this->mRating = rating;
 		updateRating();
 	};
 
 	virtual void changeRating(int newRating) {
-		rating = newRating;
+		mRating = newRating;
 		updateRating();
-		emit newRatingSignal(rating);
+		emit newRatingSignal(mRating);
 	};
 
 	int getRating() {
-		return rating;
+		return mRating;
 	};
 
 signals:
@@ -156,16 +156,14 @@ public slots:
 	};
 
 protected:
-	QVector<DkButton*> stars;
-	QBoxLayout* layout;
-	int rating;
-	QPoint margin;
-	int spacing;
+	QVector<DkButton*> mStars;
+	QBoxLayout* mLayout = 0;
+	int mRating = 0;
 
 	void updateRating() {
 		
-		for (int idx = 0; idx < stars.size(); idx++) {
-			stars[idx]->setChecked(idx < rating);
+		for (int idx = 0; idx < mStars.size(); idx++) {
+			mStars[idx]->setChecked(idx < mRating);
 		}
 	};
 
@@ -183,9 +181,9 @@ public:
 	QVector<QAction*> getActions() const;
 
 protected:
-	QVector<QAction*> actions;
-	QTimer* hideTimer;
-	int timeToDisplay;
+	QVector<QAction*> mActions;
+	QTimer* mHideTimer;
+	int mTimeToDisplay = 4000;
 	
 	virtual void paintEvent(QPaintEvent *event);
 };
@@ -209,15 +207,12 @@ public slots:
 	virtual void setVisible(bool visible, bool saveSettings = true);
 
 protected:
-	QPoint offset;
-	QFileInfo file;
+	QString mFilePath;
 
-	QBoxLayout* layout;
-	QWidget* parent;
-	QLabel* title;
-	QLabel* date;
-	DkRatingLabel* rating;
-	int minWidth;
+	QBoxLayout* mLayout;
+	QLabel* mTitleLabel;
+	QLabel* mDateLabel;
+	DkRatingLabel* mRatingLabel;
 
 	void updateWidth();
 };

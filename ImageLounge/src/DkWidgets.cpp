@@ -808,7 +808,7 @@ void DkZoomWidget::createLayout() {
 	sliderLayout->addWidget(sbZoom);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
-	//layout->setContentsMargins(10,10,10,10);
+	//mLayout->setContentsMargins(10,10,10,10);
 	layout->setSpacing(0);
 	layout->addWidget(overview);
 	layout->addWidget(sliderWidget);
@@ -971,22 +971,22 @@ void DkButton::leaveEvent(QEvent*) {
 DkRatingLabel::DkRatingLabel(int rating, QWidget* parent, Qt::WindowFlags flags) : DkWidget(parent, flags) {
 
 	setObjectName("DkRatingLabel");
-	this->rating = rating;
+	mRating = rating;
 	init();
 
 	int iconSize = 16;
 
-	layout = new QBoxLayout(QBoxLayout::LeftToRight);
-	layout->setContentsMargins(0,0,0,0);
-	layout->setSpacing(3);
-	layout->addStretch();
+	mLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	mLayout->setContentsMargins(0,0,0,0);
+	mLayout->setSpacing(3);
+	mLayout->addStretch();
 	
-	for (int idx = 0; idx < stars.size(); idx++) {
-		stars[idx]->setFixedSize(QSize(iconSize, iconSize));
-		layout->addWidget(stars[idx]);
+	for (int idx = 0; idx < mStars.size(); idx++) {
+		mStars[idx]->setFixedSize(QSize(iconSize, iconSize));
+		mLayout->addWidget(mStars[idx]);
 	}
 	
-	this->setLayout(layout);
+	setLayout(mLayout);
 }
 
 void DkRatingLabel::init() {
@@ -994,90 +994,86 @@ void DkRatingLabel::init() {
 	QPixmap starDark = QPixmap(":/nomacs/img/star-dark.png");
 	QPixmap starWhite = QPixmap(":/nomacs/img/star-white.png");
 
-	stars.resize(5);
+	mStars.resize(5);
 	
-	stars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
-	stars[rating_1]->setCheckable(true);
-	connect(stars[rating_1], SIGNAL(released()), this, SLOT(rating1()));
+	mStars[rating_1] = new DkButton(starWhite, starDark, tr("one star"), this);
+	mStars[rating_1]->setCheckable(true);
+	connect(mStars[rating_1], SIGNAL(released()), this, SLOT(rating1()));
 
-	stars[rating_2] = new DkButton(starWhite, starDark, tr("two stars"), this);
-	stars[rating_2]->setCheckable(true);
-	connect(stars[rating_2], SIGNAL(released()), this, SLOT(rating2()));
+	mStars[rating_2] = new DkButton(starWhite, starDark, tr("two stars"), this);
+	mStars[rating_2]->setCheckable(true);
+	connect(mStars[rating_2], SIGNAL(released()), this, SLOT(rating2()));
 
-	stars[rating_3] = new DkButton(starWhite, starDark, tr("three star"), this);
-	stars[rating_3]->setCheckable(true);
-	connect(stars[rating_3], SIGNAL(released()), this, SLOT(rating3()));
+	mStars[rating_3] = new DkButton(starWhite, starDark, tr("three star"), this);
+	mStars[rating_3]->setCheckable(true);
+	connect(mStars[rating_3], SIGNAL(released()), this, SLOT(rating3()));
 
-	stars[rating_4] = new DkButton(starWhite, starDark, tr("four star"), this);
-	stars[rating_4]->setCheckable(true);
-	connect(stars[rating_4], SIGNAL(released()), this, SLOT(rating4()));
+	mStars[rating_4] = new DkButton(starWhite, starDark, tr("four star"), this);
+	mStars[rating_4]->setCheckable(true);
+	connect(mStars[rating_4], SIGNAL(released()), this, SLOT(rating4()));
 
-	stars[rating_5] = new DkButton(starWhite, starDark, tr("five star"), this);
-	stars[rating_5]->setCheckable(true);
-	connect(stars[rating_5], SIGNAL(released()), this, SLOT(rating5()));
+	mStars[rating_5] = new DkButton(starWhite, starDark, tr("five star"), this);
+	mStars[rating_5]->setCheckable(true);
+	connect(mStars[rating_5], SIGNAL(released()), this, SLOT(rating5()));
 
 }
 
 // DkRatingLabelBg --------------------------------------------------------------------
 DkRatingLabelBg::DkRatingLabelBg(int rating, QWidget* parent, Qt::WindowFlags flags) : DkRatingLabel(rating, parent, flags) {
 
-	timeToDisplay = 4000;
-	hideTimer = new QTimer(this);
-	hideTimer->setInterval(timeToDisplay);
-	hideTimer->setSingleShot(true);
+	mHideTimer = new QTimer(this);
+	mHideTimer->setInterval(mTimeToDisplay);
+	mHideTimer->setSingleShot(true);
 
 	// we want a margin
-	layout->setContentsMargins(10,4,10,4);
-	layout->setSpacing(4);
+	mLayout->setContentsMargins(10,4,10,4);
+	mLayout->setSpacing(4);
 
-	actions.resize(6);
+	mActions.resize(6);
 
-	actions[rating_0] = new QAction(tr("no rating"), this);
-	actions[rating_0]->setShortcut(Qt::Key_0);
-	connect(actions[rating_0], SIGNAL(triggered()), this, SLOT(rating0()));
+	mActions[rating_0] = new QAction(tr("no rating"), this);
+	mActions[rating_0]->setShortcut(Qt::Key_0);
+	connect(mActions[rating_0], SIGNAL(triggered()), this, SLOT(rating0()));
 
-	actions[rating_1] = new QAction(tr("one star"), this);
-	actions[rating_1]->setShortcut(Qt::Key_1);
-	connect(actions[rating_1], SIGNAL(triggered()), this, SLOT(rating1()));
+	mActions[rating_1] = new QAction(tr("one star"), this);
+	mActions[rating_1]->setShortcut(Qt::Key_1);
+	connect(mActions[rating_1], SIGNAL(triggered()), this, SLOT(rating1()));
 
-	actions[rating_2] = new QAction(tr("two stars"), this);
-	actions[rating_2]->setShortcut(Qt::Key_2);
-	connect(actions[rating_2], SIGNAL(triggered()), this, SLOT(rating2()));
+	mActions[rating_2] = new QAction(tr("two stars"), this);
+	mActions[rating_2]->setShortcut(Qt::Key_2);
+	connect(mActions[rating_2], SIGNAL(triggered()), this, SLOT(rating2()));
 
-	actions[rating_3] = new QAction(tr("three stars"), this);
-	actions[rating_3]->setShortcut(Qt::Key_3);
-	connect(actions[rating_3], SIGNAL(triggered()), this, SLOT(rating3()));
+	mActions[rating_3] = new QAction(tr("three stars"), this);
+	mActions[rating_3]->setShortcut(Qt::Key_3);
+	connect(mActions[rating_3], SIGNAL(triggered()), this, SLOT(rating3()));
 
-	actions[rating_4] = new QAction(tr("four stars"), this);
-	actions[rating_4]->setShortcut(Qt::Key_4);
-	connect(actions[rating_4], SIGNAL(triggered()), this, SLOT(rating4()));
+	mActions[rating_4] = new QAction(tr("four stars"), this);
+	mActions[rating_4]->setShortcut(Qt::Key_4);
+	connect(mActions[rating_4], SIGNAL(triggered()), this, SLOT(rating4()));
 
-	actions[rating_5] = new QAction(tr("five stars"), this);
-	actions[rating_5]->setShortcut(Qt::Key_5);
-	connect(actions[rating_5], SIGNAL(triggered()), this, SLOT(rating5()));
+	mActions[rating_5] = new QAction(tr("five stars"), this);
+	mActions[rating_5]->setShortcut(Qt::Key_5);
+	connect(mActions[rating_5], SIGNAL(triggered()), this, SLOT(rating5()));
 
-	stars[rating_1]->addAction(actions[rating_1]);
-	stars[rating_2]->addAction(actions[rating_2]);
-	stars[rating_3]->addAction(actions[rating_3]);
-	stars[rating_4]->addAction(actions[rating_4]);
-	stars[rating_5]->addAction(actions[rating_5]);
+	mStars[rating_1]->addAction(mActions[rating_1]);
+	mStars[rating_2]->addAction(mActions[rating_2]);
+	mStars[rating_3]->addAction(mActions[rating_3]);
+	mStars[rating_4]->addAction(mActions[rating_4]);
+	mStars[rating_5]->addAction(mActions[rating_5]);
 	
-	connect(hideTimer, SIGNAL(timeout()), this, SLOT(hide()));
+	connect(mHideTimer, SIGNAL(timeout()), this, SLOT(hide()));
 }
 
-DkRatingLabelBg::~DkRatingLabelBg() {
-	if (hideTimer) delete hideTimer;
-	hideTimer = 0;
-}
+DkRatingLabelBg::~DkRatingLabelBg() {}
 
 void DkRatingLabelBg::changeRating(int newRating) {
 	DkRatingLabel::changeRating(newRating);
 	show();
-	hideTimer->start();
+	mHideTimer->start();
 }
 
 QVector<QAction*> DkRatingLabelBg::getActions() const {
-	return actions;
+	return mActions;
 }
 
 void DkRatingLabelBg::paintEvent(QPaintEvent *event) {
@@ -1095,29 +1091,27 @@ DkFileInfoLabel::DkFileInfoLabel(QWidget* parent) : DkFadeLabel(parent) {
 	setObjectName("DkFileInfoLabel");
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
-	minWidth = 110;
-	this->parent = parent;
-	title = new QLabel(this);
-	title->setMouseTracking(true);
-	title->setTextInteractionFlags(Qt::TextSelectableByMouse);
-	date = new QLabel(this);
-	date->setMouseTracking(true);
-	date->setTextInteractionFlags(Qt::TextSelectableByMouse);
-	rating = new DkRatingLabel(0, this);
-	setMinimumWidth(minWidth);
+	mTitleLabel = new QLabel(this);
+	mTitleLabel->setMouseTracking(true);
+	mTitleLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	mDateLabel = new QLabel(this);
+	mDateLabel->setMouseTracking(true);
+	mDateLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	mRatingLabel = new DkRatingLabel(0, this);
+	setMinimumWidth(110);
 	
 	createLayout();
 }
 
 void DkFileInfoLabel::createLayout() {
 
-	layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-	layout->setSpacing(2);
+	mLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+	mLayout->setSpacing(2);
 
-	layout->addWidget(title);
-	layout->addWidget(date);
-	layout->addWidget(rating);
-	//layout->addStretch();
+	mLayout->addWidget(mTitleLabel);
+	mLayout->addWidget(mDateLabel);
+	mLayout->addWidget(mRatingLabel);
+	//mLayout->addStretch();
 }
 
 void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
@@ -1127,7 +1121,7 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 		!DkSettings::slideShow.display.testBit(DkSettings::display_creation_date) &&
 		!DkSettings::slideShow.display.testBit(DkSettings::display_file_rating) && visible) {
 			
-			QMessageBox infoDialog(parent);
+			QMessageBox infoDialog(QApplication::activeWindow());
 			infoDialog.setWindowTitle(tr("Info Box"));
 			infoDialog.setText(tr("All information fields are currently hidden.\nDo you want to show them again?"));
 			infoDialog.setIcon(QMessageBox::Information);
@@ -1148,17 +1142,17 @@ void DkFileInfoLabel::setVisible(bool visible, bool saveSettings) {
 	}
 
 	DkFadeLabel::setVisible(visible, saveSettings);
-	title->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_name));
-	date->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_creation_date));
-	rating->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_rating));
+	mTitleLabel->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_name));
+	mDateLabel->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_creation_date));
+	mRatingLabel->setVisible(DkSettings::slideShow.display.testBit(DkSettings::display_file_rating));
 
 	int height = 32;
-	if (title->isVisible())
-		height += title->sizeHint().height();
-	if (date->isVisible())
-		height += date->sizeHint().height();
-	if (rating->isVisible())
-		height += rating->sizeHint().height();
+	if (mTitleLabel->isVisible())
+		height += mTitleLabel->sizeHint().height();
+	if (mDateLabel->isVisible())
+		height += mDateLabel->sizeHint().height();
+	if (mRatingLabel->isVisible())
+		height += mRatingLabel->sizeHint().height();
 
 	qDebug() << "my minimum height: " << height;
 	setMinimumHeight(height);
@@ -1170,17 +1164,18 @@ void DkFileInfoLabel::setEdited(bool edited) {
 	if (!isVisible() || !edited)
 		return;
 
-	QString cFileName = title->text() + "*";
-	this->title->setText(cFileName);
+	QString cFileName = mTitleLabel->text() + "*";
+	this->mTitleLabel->setText(cFileName);
 
 }
 
 DkRatingLabel* DkFileInfoLabel::getRatingLabel() {
-	return rating;
+	return mRatingLabel;
 }
 
 void DkFileInfoLabel::updateInfo(const QString& filePath, const QString& attr, const QString& date, const int rating) {
 
+	mFilePath = filePath;
 	updateTitle(filePath, attr);
 	updateDate(date);
 	updateRating(rating);
@@ -1190,34 +1185,32 @@ void DkFileInfoLabel::updateInfo(const QString& filePath, const QString& attr, c
 
 void DkFileInfoLabel::updateTitle(const QString& filePath, const QString& attr) {
 	
-	this->file = file;
 	updateDate();
-	this->title->setText(file.fileName() + " " + attr);
-	this->title->setAlignment(Qt::AlignRight);
+	mTitleLabel->setText(QFileInfo(filePath).fileName() + " " + attr);
+	mTitleLabel->setAlignment(Qt::AlignRight);
 
 	updateWidth();
 }
 
 void DkFileInfoLabel::updateDate(const QString& date) {
 
-	QString dateConverted = DkUtils::convertDateString(date, file);
+	QString dateConverted = DkUtils::convertDateString(date, QFileInfo(mFilePath));
 
-	this->date->setText(dateConverted);
-	this->date->setAlignment(Qt::AlignRight);
+	mDateLabel->setText(dateConverted);
+	mDateLabel->setAlignment(Qt::AlignRight);
 
 	updateWidth();
 }
 
 void DkFileInfoLabel::updateRating(const int rating) {
 	
-	this->rating->setRating(rating);
-
+	mRatingLabel->setRating(rating);
 }
 
 void DkFileInfoLabel::updateWidth() {
 
 	int width = 20;		// mar
-	width += qMax(qMax(title->sizeHint().width(), date->sizeHint().width()), rating->sizeHint().width());
+	width += qMax(qMax(mTitleLabel->sizeHint().width(), mDateLabel->sizeHint().width()), mRatingLabel->sizeHint().width());
 	
 	if (width < minimumWidth())
 		setMinimumWidth(width);
@@ -1271,7 +1264,7 @@ void DkPlayer::init() {
 	nextButton->keepAspectRatio = false;
 	connect(nextButton, SIGNAL(pressed()), this, SLOT(next()));
 
-	// now add to layout
+	// now add to mLayout
 	container = new QWidget(this);
 	QHBoxLayout *layout = new QHBoxLayout(container);
 	layout->setContentsMargins(0,0,0,0);
