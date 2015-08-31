@@ -28,50 +28,23 @@
 #pragma once
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-// Qt
-#include <QDesktopWidget>
-#include <QGraphicsView>
-#include <QPrintDialog>
-#include <QPrintPreviewDialog>
-#include <QMessageBox>
 #include <QWidget>
-#include <QLabel>
-#include <QInputDialog>
-#include <QPainterPathStroker>
-#include <QBitmap>
-#include <QApplication>
-#include <QUrl>
-#include <QPrinter>
-#include <QGradientStops>
-#include <QSwipeGesture>
-#include <QStackedLayout>
-
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_GESTURES
-#include "extern/qevent_p.h"
-#endif
-#endif
-
+#include <QSharedPointer>
 #pragma warning(pop)		// no warnings from includes - end
 
-// OpenCV
-#ifdef WITH_OPENCV
-#ifdef WIN32
-#pragma warning(disable: 4996)
+#ifndef DllExport
+#ifdef DK_DLL_EXPORT
+#define DllExport Q_DECL_EXPORT
+#elif DK_DLL_IMPORT
+#define DllExport Q_DECL_IMPORT
+#else
+#define DllExport
 #endif
 #endif
 
-// my stuff
-#include "DkImage.h"
-#include "DkWidgets.h"
-#include "DkNetwork.h"
-#include "DkSettings.h"
-#include "DkToolbars.h"
-#include "DkBaseViewPort.h"
-#include "DkPluginInterface.h"
-#include "DkTimer.h"
-
-#include "DkMath.h"
+class QStackedLayout;
+class QGridLayout;
+class QLabel;
 
 namespace nmc {
 
@@ -81,6 +54,22 @@ class DkThumbScrollWidget;
 class DkMetaDataHUD;
 class DkCommentWidget;
 class DkViewPort;
+class DkCropWidget;
+class DkZoomWidget;
+class DkPlayer;
+class DkFolderScrollBar;
+class DkRatingLabelBg;
+class DkDelayedMessage;
+class DkFileInfoLabel;
+class DkHistogram;
+class DkLabelBg;
+class DkAnimationLabel;
+class DkPluginViewPort;
+class DkMetaDataT;
+class DkImageContainerT;
+class DkDelayedInfo;
+class DkOverview;
+class DkViewPortInterface;
 
 class DllExport DkControlWidget : public QWidget {
 	Q_OBJECT
@@ -110,49 +99,16 @@ public:
 
 	void setFullScreen(bool fullscreen);
 
-	//DkThumbPool* getThumbPool() {
-	//	return thumbPool;
-	//}
-
-	DkFilePreview* getFilePreview() {
-		return filePreview;
-	}
-
-	DkFolderScrollBar* getScroller() {
-		return folderScroll;
-	}
-
-	DkMetaDataHUD* getMetaDataWidget() {
-		return metaDataInfo;
-	}
-
-	DkCommentWidget* getCommentWidget() {
-		return commentWidget;
-	}
-
-	DkOverview* getOverview() {
-		return zoomWidget->getOverview();
-	}
-
-	DkZoomWidget* getZoomWidget() const {
-		return zoomWidget;
-	}
-
-	DkPlayer* getPlayer() {
-		return player;
-	}
-
-	DkFileInfoLabel* getFileInfoLabel() {
-		return fileInfoLabel;
-	}
-
-	DkHistogram* getHistogram() {
-		return histogram;
-	}
-
-	DkCropWidget* getCropWidget() {
-		return cropWidget;
-	}
+	DkFilePreview* getFilePreview() const;
+	DkFolderScrollBar* getScroller() const;
+	DkMetaDataHUD* getMetaDataWidget() const;
+	DkCommentWidget* getCommentWidget() const;
+	DkOverview* getOverview() const;
+	DkZoomWidget* getZoomWidget() const;
+	DkPlayer* getPlayer() const;
+	DkFileInfoLabel* getFileInfoLabel() const;
+	DkHistogram* getHistogram() const;
+	DkCropWidget* getCropWidget() const;
 
 	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
 
@@ -197,47 +153,42 @@ protected:
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
 
-	//void resizeEvent(QResizeEvent *event);
-
 	// functions
 	void init();
 	void connectWidgets();
 	
-	QVector<QWidget*> widgets;
-	QStackedLayout* layout;
-	QWidget* lastActiveWidget;
-	QGridLayout* hudLayout;
+	// layout (switching of HUD contexts)
+	QVector<QWidget*> mWidgets;
+	QStackedLayout* mLayout;
+	QGridLayout* mHudLayout;
 
-	DkViewPort* viewport;
-	DkCropWidget* cropWidget;
+	DkViewPort* mViewport;
+	DkCropWidget* mCropWidget;
 
-	DkFilePreview* filePreview;
-	DkMetaDataHUD* metaDataInfo;
-	DkCommentWidget* commentWidget;
-	DkZoomWidget* zoomWidget;
-	DkPlayer* player;
-	DkHistogram* histogram;
+	DkFilePreview* mFilePreview;
+	DkMetaDataHUD* mMetaDataInfo;
+	DkCommentWidget* mCommentWidget;
+	DkZoomWidget* mZoomWidget;
+	DkPlayer* mPlayer;
+	DkHistogram* mHistogram;
 	
-	DkFolderScrollBar* folderScroll;
-	DkFileInfoLabel* fileInfoLabel;
-	DkRatingLabelBg* ratingLabel;
+	DkFolderScrollBar* mFolderScroll;
+	DkFileInfoLabel* mFileInfoLabel;
+	DkRatingLabelBg* mRatingLabel;
 
-	DkDelayedMessage* delayedInfo;
-	DkDelayedInfo* delayedSpinner;
+	DkDelayedMessage* mDelayedInfo;
+	DkDelayedInfo* mDelayedSpinner;
 
-	DkAnimationLabel* spinnerLabel;
-	DkLabelBg* centerLabel;
-	DkLabelBg* bottomLabel;
-	DkLabelBg* bottomLeftLabel;
+	DkAnimationLabel* mSpinnerLabel;
+	DkLabelBg* mCenterLabel;
+	DkLabelBg* mBottomLabel;
+	DkLabelBg* mBottomLeftLabel;
 
-//	DkThumbPool* thumbPool;
+	QSharedPointer<DkImageContainerT> mImgC;
 
-	QSharedPointer<DkImageContainerT> imgC;
+	QLabel* mWheelButton;
 
-	QLabel* wheelButton;
-
-	QPointF enterPos;
-	int rating;
+	QPointF mEnterPos;
 
 };
 

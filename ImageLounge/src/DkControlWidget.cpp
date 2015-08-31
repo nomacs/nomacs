@@ -27,21 +27,17 @@
 
 #include "DkControlWidget.h"
 
-#include "DkNoMacs.h"	// currently needed for some enums
-#include "DkThumbsWidgets.h"
-#include "DkMetaData.h"
-#include "DkMetaDataWidgets.h"
-#include "DkNetwork.h"
-#include "DkImageContainer.h"
 #include "DkViewPort.h"
+#include "DkWidgets.h"
+#include "DkThumbsWidgets.h"
+#include "DkMetaDataWidgets.h"
+#include "DkMetaData.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
-#include <QClipboard>
-#include <QShortcut>
-#include <QMovie>
-#include <QMimeData>
-#include <QAction>
-#include <qmath.h>
+#include <QStackedLayout>
+#include <QSharedPointer>
+#include <QGridLayout>
+#include <QTransform>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {
@@ -49,49 +45,49 @@ namespace nmc {
 // DkControlWidget --------------------------------------------------------------------
 DkControlWidget::DkControlWidget(DkViewPort *parent, Qt::WindowFlags flags) : QWidget(parent, flags) {
 
-	viewport = parent;
+	mViewport = parent;
 	setObjectName("DkControlWidget");
-	qDebug() << this->metaObject()->className();
+	qDebug() << metaObject()->className();
 
 	// cropping
-	cropWidget = new DkCropWidget(QRectF(), this);
+	mCropWidget = new DkCropWidget(QRectF(), this);
 
 	//// thumbnails, metadata
 	//thumbPool = new DkThumbPool(QFileInfo(), this);
-	filePreview = new DkFilePreview(this, flags);
-	metaDataInfo = new DkMetaDataHUD(this);
-	zoomWidget = new DkZoomWidget(this);
-	player = new DkPlayer(this);
-	addActions(player->getActions().toList());
+	mFilePreview = new DkFilePreview(this, flags);
+	mMetaDataInfo = new DkMetaDataHUD(this);
+	mZoomWidget = new DkZoomWidget(this);
+	mPlayer = new DkPlayer(this);
+	addActions(mPlayer->getActions().toList());
 
-	folderScroll = new DkFolderScrollBar(this);
+	mFolderScroll = new DkFolderScrollBar(this);
 
 	// file info - overview
-	fileInfoLabel = new DkFileInfoLabel(this);
-	ratingLabel = new DkRatingLabelBg(2, this, flags);
-	addActions(ratingLabel->getActions().toList());		// register actions
-	commentWidget = new DkCommentWidget(this);
+	mFileInfoLabel = new DkFileInfoLabel(this);
+	mRatingLabel = new DkRatingLabelBg(2, this, flags);
+	addActions(mRatingLabel->getActions().toList());		// register actions
+	mCommentWidget = new DkCommentWidget(this);
 
 	// delayed info
-	delayedInfo = new DkDelayedMessage(QString(), 0, this); // TODO: make a nice constructor
-	delayedSpinner = new DkDelayedInfo(0, this);
+	mDelayedInfo = new DkDelayedMessage(QString(), 0, this); // TODO: make a nice constructor
+	mDelayedSpinner = new DkDelayedInfo(0, this);
 
 	// info labels
-	spinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
-	centerLabel = new DkLabelBg(this, "");
-	bottomLabel = new DkLabelBg(this, "");
-	bottomLeftLabel = new DkLabelBg(this, "");
+	mSpinnerLabel = new DkAnimationLabel(":/nomacs/img/loading.gif", this);
+	mCenterLabel = new DkLabelBg(this, "");
+	mBottomLabel = new DkLabelBg(this, "");
+	mBottomLeftLabel = new DkLabelBg(this, "");
 
 	// wheel label
 	QPixmap wp = QPixmap(":/nomacs/img/thumbs-move.png");
-	wheelButton = new QLabel(this);
-	wheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
-	wheelButton->setPixmap(wp);
-	wheelButton->adjustSize();
-	wheelButton->hide();
+	mWheelButton = new QLabel(this);
+	mWheelButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+	mWheelButton->setPixmap(wp);
+	mWheelButton->adjustSize();
+	mWheelButton->hide();
 
 	// image histogram
-	histogram = new DkHistogram(this);
+	mHistogram = new DkHistogram(this);
 	
 	init();
 	connectWidgets();
@@ -113,31 +109,31 @@ void DkControlWidget::init() {
 	setMouseTracking(true);
 
 	// connect widgets with their settings
-	filePreview->setDisplaySettings(&DkSettings::app.showFilePreview);
-	metaDataInfo->setDisplaySettings(&DkSettings::app.showMetaData);
-	fileInfoLabel->setDisplaySettings(&DkSettings::app.showFileInfoLabel);
-	player->setDisplaySettings(&DkSettings::app.showPlayer);
-	histogram->setDisplaySettings(&DkSettings::app.showHistogram);
-	commentWidget->setDisplaySettings(&DkSettings::app.showComment);
-	zoomWidget->setDisplaySettings(&DkSettings::app.showOverview);
-	folderScroll->setDisplaySettings(&DkSettings::app.showScroller);
+	mFilePreview->setDisplaySettings(&DkSettings::app.showFilePreview);
+	mMetaDataInfo->setDisplaySettings(&DkSettings::app.showMetaData);
+	mFileInfoLabel->setDisplaySettings(&DkSettings::app.showFileInfoLabel);
+	mPlayer->setDisplaySettings(&DkSettings::app.showPlayer);
+	mHistogram->setDisplaySettings(&DkSettings::app.showHistogram);
+	mCommentWidget->setDisplaySettings(&DkSettings::app.showComment);
+	mZoomWidget->setDisplaySettings(&DkSettings::app.showOverview);
+	mFolderScroll->setDisplaySettings(&DkSettings::app.showScroller);
 
 	// some adjustments
-	bottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	bottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	ratingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	centerLabel->setAlignment(Qt::AlignCenter);
-	zoomWidget->setContentsMargins(10, 10, 0, 0);
-	cropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-	spinnerLabel->halfSize();
-	commentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	mBottomLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	mBottomLeftLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	mRatingLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	mCenterLabel->setAlignment(Qt::AlignCenter);
+	mZoomWidget->setContentsMargins(10, 10, 0, 0);
+	mCropWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	mSpinnerLabel->halfSize();
+	mCommentWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	// dummy - needed for three equal columns @markus: do not delete!
 	QWidget* dw = new QWidget(this);
 	dw->setMouseTracking(true);
 	QBoxLayout* dLayout = new QBoxLayout(QBoxLayout::LeftToRight, dw);
 	dLayout->setContentsMargins(0,0,0,0);
-	dLayout->addWidget(bottomLabel);
+	dLayout->addWidget(mBottomLabel);
 	dLayout->addStretch();
 
 	// zoom widget
@@ -149,9 +145,9 @@ void DkControlWidget::init() {
 	zLayout->setAlignment(Qt::AlignBottom);
 	zLayout->setContentsMargins(0,0,0,20);
 	zLayout->setSpacing(0);
-	zLayout->addWidget(bottomLabel);
-	zLayout->addWidget(bottomLeftLabel);
-	zLayout->addWidget(commentWidget);
+	zLayout->addWidget(mBottomLabel);
+	zLayout->addWidget(mBottomLeftLabel);
+	zLayout->addWidget(mCommentWidget);
 
 	//// comment widget
 	//QWidget* cw = new QWidget();
@@ -170,7 +166,7 @@ void DkControlWidget::init() {
 	QBoxLayout* ulLayout = new QBoxLayout(QBoxLayout::TopToBottom, leftWidget);
 	ulLayout->setContentsMargins(0,0,0,0);
 	ulLayout->setSpacing(0);
-	ulLayout->addWidget(zoomWidget);
+	ulLayout->addWidget(mZoomWidget);
 	ulLayout->addStretch();
 	ulLayout->addWidget(bw);
 	ulLayout->addWidget(dw);
@@ -182,8 +178,8 @@ void DkControlWidget::init() {
 	QBoxLayout* cwLayout = new QBoxLayout(QBoxLayout::LeftToRight, cW);
 	cwLayout->setContentsMargins(0,0,0,0);
 	cwLayout->addStretch();
-	cwLayout->addWidget(centerLabel);
-	cwLayout->addWidget(spinnerLabel);
+	cwLayout->addWidget(mCenterLabel);
+	cwLayout->addWidget(mSpinnerLabel);
 	cwLayout->addStretch();
 
 	// center player horizontally
@@ -191,7 +187,7 @@ void DkControlWidget::init() {
 	cP->setMouseTracking(true);
 	QBoxLayout* cpLayout = new QBoxLayout(QBoxLayout::LeftToRight, cP);
 	cpLayout->setContentsMargins(0,0,0,0);
-	cpLayout->addWidget(player);
+	cpLayout->addWidget(mPlayer);
 
 	// center column
 	QWidget* center = new QWidget(this);
@@ -209,7 +205,7 @@ void DkControlWidget::init() {
 	rw->setMinimumSize(0,0);
 	QBoxLayout* rLayout = new QBoxLayout(QBoxLayout::RightToLeft, rw);
 	rLayout->setContentsMargins(0,0,0,17);
-	rLayout->addWidget(ratingLabel);
+	rLayout->addWidget(mRatingLabel);
 	rLayout->addStretch();
 
 	// file info
@@ -219,7 +215,7 @@ void DkControlWidget::init() {
 	fw->setMinimumSize(0,0);
 	QBoxLayout* rwLayout = new QBoxLayout(QBoxLayout::RightToLeft, fw);
 	rwLayout->setContentsMargins(0,0,0,0);
-	rwLayout->addWidget(fileInfoLabel);
+	rwLayout->addWidget(mFileInfoLabel);
 	rwLayout->addStretch();
 
 	// right column
@@ -228,7 +224,7 @@ void DkControlWidget::init() {
 	hw->setMouseTracking(true);
 	QBoxLayout* hwLayout = new QBoxLayout(QBoxLayout::RightToLeft, hw);
 	hwLayout->setContentsMargins(0,0,0,0);
-	hwLayout->addWidget(histogram);
+	hwLayout->addWidget(mHistogram);
 	hwLayout->addStretch();
 
 	// right column
@@ -242,37 +238,36 @@ void DkControlWidget::init() {
 	lrLayout->addWidget(rw);
 	
 	// init main widgets
-	widgets.resize(widget_end);
-	widgets[hud_widget] = new QWidget(this);
-	widgets[crop_widget] = cropWidget;
-	lastActiveWidget = widgets[hud_widget];
+	mWidgets.resize(widget_end);
+	mWidgets[hud_widget] = new QWidget(this);
+	mWidgets[crop_widget] = mCropWidget;
 
 	// global controller layout
-	hudLayout = new QGridLayout(widgets[hud_widget]);
-	hudLayout->setContentsMargins(0,0,0,0);
-	hudLayout->setSpacing(0);
+	mHudLayout = new QGridLayout(mWidgets[hud_widget]);
+	mHudLayout->setContentsMargins(0,0,0,0);
+	mHudLayout->setSpacing(0);
 
 	//hudLayout->addWidget(thumbWidget, 0, 0);
 
 	// add elements
-	changeThumbNailPosition(filePreview->getWindowPosition());
-	changeMetaDataPosition(metaDataInfo->getWindowPosition());
+	changeThumbNailPosition(mFilePreview->getWindowPosition());
+	changeMetaDataPosition(mMetaDataInfo->getWindowPosition());
 	//hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, 1, hor_pos_end);
-	hudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
-	hudLayout->addWidget(center, ver_center, hor_center, 1, 1);
-	hudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
-	hudLayout->addWidget(folderScroll, top_scroll, left_thumbs, 1, hor_pos_end);
+	mHudLayout->addWidget(leftWidget, ver_center, left, 1, 1);
+	mHudLayout->addWidget(center, ver_center, hor_center, 1, 1);
+	mHudLayout->addWidget(rightWidget, ver_center, right, 1, 1);
+	mHudLayout->addWidget(mFolderScroll, top_scroll, left_thumbs, 1, hor_pos_end);
 
 	//// we need to put everything into extra widgets (which are exclusive) in order to handle the mouse events correctly
 	//QHBoxLayout* editLayout = new QHBoxLayout(widgets[crop_widget]);
 	//editLayout->setContentsMargins(0,0,0,0);
 	//editLayout->addWidget(cropWidget);
 
-	layout = new QStackedLayout(this);
-	layout->setContentsMargins(0,0,0,0);
+	mLayout = new QStackedLayout(this);
+	mLayout->setContentsMargins(0,0,0,0);
 	
-	for (int idx = 0; idx < widgets.size(); idx++)
-		layout->addWidget(widgets[idx]);
+	for (int idx = 0; idx < mWidgets.size(); idx++)
+		mLayout->addWidget(mWidgets[idx]);
 
 	//// TODO: remove...
 	//centerLabel->setText("ich bin richtig...", -1);
@@ -286,59 +281,59 @@ void DkControlWidget::init() {
 
 void DkControlWidget::connectWidgets() {
 
-	if (!viewport)
+	if (!mViewport)
 		return;
 
 	// thumbs widget
-	connect(filePreview, SIGNAL(loadFileSignal(const QString&)), viewport, SLOT(loadFile(const QString&)));
-	connect(filePreview, SIGNAL(changeFileSignal(int)), viewport, SLOT(loadFileFast(int)));
-	connect(filePreview, SIGNAL(positionChangeSignal(int)), this, SLOT(changeThumbNailPosition(int)));
+	connect(mFilePreview, SIGNAL(loadFileSignal(const QString&)), mViewport, SLOT(loadFile(const QString&)));
+	connect(mFilePreview, SIGNAL(changeFileSignal(int)), mViewport, SLOT(loadFileFast(int)));
+	connect(mFilePreview, SIGNAL(positionChangeSignal(int)), this, SLOT(changeThumbNailPosition(int)));
 
 	// metadata widget
-	connect(metaDataInfo, SIGNAL(positionChangeSignal(int)), this, SLOT(changeMetaDataPosition(int)));
+	connect(mMetaDataInfo, SIGNAL(positionChangeSignal(int)), this, SLOT(changeMetaDataPosition(int)));
 
 	// overview
-	connect(zoomWidget->getOverview(), SIGNAL(moveViewSignal(QPointF)), viewport, SLOT(moveView(QPointF)));
-	connect(zoomWidget->getOverview(), SIGNAL(sendTransformSignal()), viewport, SLOT(tcpSynchronize()));
+	connect(mZoomWidget->getOverview(), SIGNAL(moveViewSignal(QPointF)), mViewport, SLOT(moveView(QPointF)));
+	connect(mZoomWidget->getOverview(), SIGNAL(sendTransformSignal()), mViewport, SLOT(tcpSynchronize()));
 
 	// zoom widget
-	connect(zoomWidget, SIGNAL(zoomSignal(float)), viewport, SLOT(zoomTo(float)));
-	connect(viewport, SIGNAL(zoomSignal(float)), zoomWidget, SLOT(updateZoom(float)));
+	connect(mZoomWidget, SIGNAL(zoomSignal(float)), mViewport, SLOT(zoomTo(float)));
+	connect(mViewport, SIGNAL(zoomSignal(float)), mZoomWidget, SLOT(updateZoom(float)));
 
 	// waiting
-	connect(delayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
-	connect(delayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
+	connect(mDelayedInfo, SIGNAL(infoSignal(QString, int)), this, SLOT(setInfo(QString, int)));
+	connect(mDelayedSpinner, SIGNAL(infoSignal(int)), this, SLOT(setSpinner(int)));
 	
 	// rating
-	connect(fileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
-	connect(ratingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
+	connect(mFileInfoLabel->getRatingLabel(), SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
+	connect(mRatingLabel, SIGNAL(newRatingSignal(int)), this, SLOT(updateRating(int)));
 	//connect(ratingLabel, SIGNAL(newRatingSignal(int)), metaDataInfo, SLOT(setRating(int)));
 
 	// playing
-	connect(player, SIGNAL(previousSignal()), viewport, SLOT(loadPrevFileFast()));
-	connect(player, SIGNAL(nextSignal()), viewport, SLOT(loadNextFileFast()));
+	connect(mPlayer, SIGNAL(previousSignal()), mViewport, SLOT(loadPrevFileFast()));
+	connect(mPlayer, SIGNAL(nextSignal()), mViewport, SLOT(loadNextFileFast()));
 
 	// cropping
-	connect(cropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), viewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
-	connect(cropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
+	connect(mCropWidget, SIGNAL(enterPressedSignal(DkRotatingRect, const QColor&)), mViewport, SLOT(cropImage(DkRotatingRect, const QColor&)));
+	connect(mCropWidget, SIGNAL(cancelSignal()), this, SLOT(hideCrop()));
 
 	// comment widget
-	connect(commentWidget, SIGNAL(showInfoSignal(QString)), this, SLOT(setInfo(QString)));
+	connect(mCommentWidget, SIGNAL(showInfoSignal(QString)), this, SLOT(setInfo(QString)));
 
 	// mViewport
-	connect(viewport, SIGNAL(infoSignal(QString)), this, SLOT(setInfo(QString)));
+	connect(mViewport, SIGNAL(infoSignal(QString)), this, SLOT(setInfo(QString)));
 }
 
 void DkControlWidget::update() {
 
-	zoomWidget->update();
+	mZoomWidget->update();
 
 	QWidget::update();
 }
 
 void DkControlWidget::showWidgetsSettings() {
 
-	if (viewport->getImage().isNull()) {
+	if (mViewport->getImage().isNull()) {
 		showPreview(false);
 		showScroller(false);
 		showMetaData(false);
@@ -352,87 +347,87 @@ void DkControlWidget::showWidgetsSettings() {
 
 	//qDebug() << "current app mode: " << DkSettings::app.currentAppMode;
 
-	showOverview(zoomWidget->getCurrentDisplaySetting());
-	showPreview(filePreview->getCurrentDisplaySetting());
-	showMetaData(metaDataInfo->getCurrentDisplaySetting());
-	showFileInfo(fileInfoLabel->getCurrentDisplaySetting());
-	showPlayer(player->getCurrentDisplaySetting());
-	showHistogram(histogram->getCurrentDisplaySetting());
-	showCommentWidget(commentWidget->getCurrentDisplaySetting());
-	showScroller(folderScroll->getCurrentDisplaySetting());
+	showOverview(mZoomWidget->getCurrentDisplaySetting());
+	showPreview(mFilePreview->getCurrentDisplaySetting());
+	showMetaData(mMetaDataInfo->getCurrentDisplaySetting());
+	showFileInfo(mFileInfoLabel->getCurrentDisplaySetting());
+	showPlayer(mPlayer->getCurrentDisplaySetting());
+	showHistogram(mHistogram->getCurrentDisplaySetting());
+	showCommentWidget(mCommentWidget->getCurrentDisplaySetting());
+	showScroller(mFolderScroll->getCurrentDisplaySetting());
 }
 
 void DkControlWidget::showPreview(bool visible) {
 
-	if (!filePreview)
+	if (!mFilePreview)
 		return;
 
-	if (visible && !filePreview->isVisible())
-		filePreview->show();
-	else if (!visible && filePreview->isVisible())
-		filePreview->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+	if (visible && !mFilePreview->isVisible())
+		mFilePreview->show();
+	else if (!visible && mFilePreview->isVisible())
+		mFilePreview->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showScroller(bool visible) {
 
-	if (!folderScroll)
+	if (!mFolderScroll)
 		return;
 
-	if (visible && !folderScroll->isVisible())
-		folderScroll->show();
-	else if (!visible && folderScroll->isVisible())
-		folderScroll->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+	if (visible && !mFolderScroll->isVisible())
+		mFolderScroll->show();
+	else if (!visible && mFolderScroll->isVisible())
+		mFolderScroll->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showMetaData(bool visible) {
 
-	if (!metaDataInfo)
+	if (!mMetaDataInfo)
 		return;
 
-	if (visible && !metaDataInfo->isVisible()) {
-		metaDataInfo->show();
+	if (visible && !mMetaDataInfo->isVisible()) {
+		mMetaDataInfo->show();
 		qDebug() << "mShowing metadata...";
 	}
-	else if (!visible && metaDataInfo->isVisible())
-		metaDataInfo->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+	else if (!visible && mMetaDataInfo->isVisible())
+		mMetaDataInfo->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showFileInfo(bool visible) {
 
-	if (!fileInfoLabel)
+	if (!mFileInfoLabel)
 		return;
 
-	if (visible && !fileInfoLabel->isVisible()) {
-		fileInfoLabel->show();
-		ratingLabel->block(fileInfoLabel->isVisible());
+	if (visible && !mFileInfoLabel->isVisible()) {
+		mFileInfoLabel->show();
+		mRatingLabel->block(mFileInfoLabel->isVisible());
 	}
-	else if (!visible && fileInfoLabel->isVisible()) {
-		fileInfoLabel->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
-		ratingLabel->block(false);
+	else if (!visible && mFileInfoLabel->isVisible()) {
+		mFileInfoLabel->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+		mRatingLabel->block(false);
 	}
 }
 
 void DkControlWidget::showPlayer(bool visible) {
 
-	if (!player)
+	if (!mPlayer)
 		return;
 
 	if (visible)
-		player->show();
+		mPlayer->show();
 	else
-		player->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+		mPlayer->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 }
 
 void DkControlWidget::showOverview(bool visible) {
 
-	if (!zoomWidget)
+	if (!mZoomWidget)
 		return;
 
-	if (visible && !zoomWidget->isVisible()) {		
-		zoomWidget->show();
+	if (visible && !mZoomWidget->isVisible()) {		
+		mZoomWidget->show();
 	}
-	else if (!visible && zoomWidget->isVisible()) {
-		zoomWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+	else if (!visible && mZoomWidget->isVisible()) {
+		mZoomWidget->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 	}
 
 }
@@ -444,12 +439,12 @@ void DkControlWidget::hideCrop(bool hide /* = true */) {
 
 void DkControlWidget::showCrop(bool visible) {
 
-	viewport->applyPluginChanges();
+	mViewport->applyPluginChanges();
 
 	if (visible) {
-		cropWidget->reset();
-		switchWidget(widgets[crop_widget]);
-		connect(cropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), viewport, SLOT(setBackgroundBrush(const QBrush&)));
+		mCropWidget->reset();
+		switchWidget(mWidgets[crop_widget]);
+		connect(mCropWidget->getToolbar(), SIGNAL(colorSignal(const QBrush&)), mViewport, SLOT(setBackgroundBrush(const QBrush&)));
 	}
 	else
 		switchWidget();
@@ -458,48 +453,48 @@ void DkControlWidget::showCrop(bool visible) {
 
 void DkControlWidget::showHistogram(bool visible) {
 	
-	if (!histogram)
+	if (!mHistogram)
 		return;
 
-	if (visible && !histogram->isVisible()) {
-		histogram->show();
-		if(!viewport->getImage().isNull()) histogram->drawHistogram(viewport->getImage());
-		else  histogram->clearHistogram();
+	if (visible && !mHistogram->isVisible()) {
+		mHistogram->show();
+		if(!mViewport->getImage().isNull()) mHistogram->drawHistogram(mViewport->getImage());
+		else  mHistogram->clearHistogram();
 	}
-	else if (!visible && histogram->isVisible()) {
-		histogram->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+	else if (!visible && mHistogram->isVisible()) {
+		mHistogram->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 	}
 }
 
 void DkControlWidget::showCommentWidget(bool visible) {
 
-	if (!commentWidget)
+	if (!mCommentWidget)
 		return;
 
-	if (visible && !commentWidget->isVisible()) {
-		commentWidget->show();
+	if (visible && !mCommentWidget->isVisible()) {
+		mCommentWidget->show();
 	}
-	else if (!visible && commentWidget->isVisible()) {
-		commentWidget->hide(!viewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
+	else if (!visible && mCommentWidget->isVisible()) {
+		mCommentWidget->hide(!mViewport->getImage().isNull());	// do not save settings if we have no image in the mViewport
 	}
 }
 
 void DkControlWidget::switchWidget(QWidget* widget) {
 
-	if (layout->currentWidget() == widget || !widget && layout->currentWidget() == widgets[hud_widget])
+	if (mLayout->currentWidget() == widget || !widget && mLayout->currentWidget() == mWidgets[hud_widget])
 		return;
 
 	if (widget)
-		layout->setCurrentWidget(widget);
+		mLayout->setCurrentWidget(widget);
 	else
-		layout->setCurrentWidget(widgets[hud_widget]);
+		mLayout->setCurrentWidget(mWidgets[hud_widget]);
 
-	if (layout->currentWidget())
-		qDebug() << "changed to widget: " << layout->currentWidget();
+	if (mLayout->currentWidget())
+		qDebug() << "changed to widget: " << mLayout->currentWidget();
 
 	// ok, this is really nasty... however, the fileInfo layout is destroyed otherwise
-	if (layout->currentIndex() == hud_widget && fileInfoLabel->isVisible()) {
-		fileInfoLabel->setVisible(false);
+	if (mLayout->currentIndex() == hud_widget && mFileInfoLabel->isVisible()) {
+		mFileInfoLabel->setVisible(false);
 		showFileInfo(true);
 	}
 
@@ -512,11 +507,11 @@ void DkControlWidget::setPluginWidget(DkViewPortInterface* pluginWidget, bool re
 	if (!pluginViewport) return;
 
 	if (!removeWidget) {
-		pluginViewport->setWorldMatrix(viewport->getWorldMatrixPtr());
-		pluginViewport->setImgMatrix(viewport->getImageMatrixPtr());
+		pluginViewport->setWorldMatrix(mViewport->getWorldMatrixPtr());
+		pluginViewport->setImgMatrix(mViewport->getImageMatrixPtr());
 	}
 
-	viewport->setPaintWidget(dynamic_cast<QWidget*>(pluginViewport), removeWidget);
+	mViewport->setPaintWidget(dynamic_cast<QWidget*>(pluginViewport), removeWidget);
 	
 	if (removeWidget) {
 		pluginWidget->deleteViewPort();
@@ -528,99 +523,99 @@ void DkControlWidget::setFileInfo(QSharedPointer<DkImageContainerT> imgC) {
 	if (!imgC)
 		return;
 
-	this->imgC = imgC;
+	mImgC = imgC;
 
 	QSharedPointer<DkMetaDataT> metaData = imgC->getMetaData();
 
 	QString dateString = metaData->getExifValue("DateTimeOriginal");
-	fileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
-	fileInfoLabel->setEdited(imgC->isEdited());
-	commentWidget->setMetaData(metaData);
+	mFileInfoLabel->updateInfo(imgC->filePath(), "", dateString, metaData->getRating());
+	mFileInfoLabel->setEdited(imgC->isEdited());
+	mCommentWidget->setMetaData(metaData);
 	updateRating(metaData->getRating());
 }
 
 void DkControlWidget::setInfo(QString msg, int time, int location) {
 
-	if (location == center_label && centerLabel)
-		centerLabel->setText(msg, time);
-	else if (location == bottom_left_label && bottomLabel)
-		bottomLabel->setText(msg, time);
-	else if (location == top_left_label && bottomLeftLabel)
-		bottomLeftLabel->setText(msg, time);
+	if (location == center_label && mCenterLabel)
+		mCenterLabel->setText(msg, time);
+	else if (location == bottom_left_label && mBottomLabel)
+		mBottomLabel->setText(msg, time);
+	else if (location == top_left_label && mBottomLeftLabel)
+		mBottomLeftLabel->setText(msg, time);
 
 	update();
 }
 
 void DkControlWidget::setInfoDelayed(QString msg, bool start, int delayTime) {
 
-	if (!centerLabel)
+	if (!mCenterLabel)
 		return;
 
 	if (start)
-		delayedInfo->setInfo(msg, delayTime);
+		mDelayedInfo->setInfo(msg, delayTime);
 	else
-		delayedInfo->stop();
+		mDelayedInfo->stop();
 
 }
 
 void DkControlWidget::setSpinner(int time) {
 
-	if (spinnerLabel)
-		spinnerLabel->showTimed(time);
+	if (mSpinnerLabel)
+		mSpinnerLabel->showTimed(time);
 }
 
 void DkControlWidget::setSpinnerDelayed(bool start, int time) {
 
-	if (!spinnerLabel) 
+	if (!mSpinnerLabel) 
 		return;
 
 	if (start)
-		delayedSpinner->setInfo(time);
+		mDelayedSpinner->setInfo(time);
 	else
-		delayedSpinner->stop();
+		mDelayedSpinner->stop();
 }
 
 void DkControlWidget::changeMetaDataPosition(int pos) {
 
 	if (pos == DkWidget::pos_west) {
-		hudLayout->addWidget(metaDataInfo, top_metadata, left_metadata, bottom_metadata-top_metadata, 1);	
+		mHudLayout->addWidget(mMetaDataInfo, top_metadata, left_metadata, bottom_metadata-top_metadata, 1);	
 	}
 	else if (pos == DkWidget::pos_east) {
-		hudLayout->addWidget(metaDataInfo, top_metadata, right_metadata, bottom_metadata-top_metadata, 1);	
+		mHudLayout->addWidget(mMetaDataInfo, top_metadata, right_metadata, bottom_metadata-top_metadata, 1);	
 	}
 	else if (pos == DkWidget::pos_north) {
-		hudLayout->addWidget(metaDataInfo, top_metadata, left_metadata, 1, hor_pos_end-2);	
+		mHudLayout->addWidget(mMetaDataInfo, top_metadata, left_metadata, 1, hor_pos_end-2);	
 	}
 	else if (pos == DkWidget::pos_south) {
-		hudLayout->addWidget(metaDataInfo, bottom_metadata, left_metadata, 1, hor_pos_end-2);	
+		mHudLayout->addWidget(mMetaDataInfo, bottom_metadata, left_metadata, 1, hor_pos_end-2);	
 	}
 }
 
 void DkControlWidget::changeThumbNailPosition(int pos) {
 
 	if (pos == DkWidget::pos_west) {
-		hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, ver_pos_end, 1);	
+		mHudLayout->addWidget(mFilePreview, top_thumbs, left_thumbs, ver_pos_end, 1);	
 	}
 	else if (pos == DkWidget::pos_east) {
-		hudLayout->addWidget(filePreview, top_thumbs, right_thumbs, ver_pos_end, 1);	
+		mHudLayout->addWidget(mFilePreview, top_thumbs, right_thumbs, ver_pos_end, 1);	
 	}
 	else if (pos == DkWidget::pos_north) {
-		hudLayout->addWidget(filePreview, top_thumbs, left_thumbs, 1, hor_pos_end);	
+		mHudLayout->addWidget(mFilePreview, top_thumbs, left_thumbs, 1, hor_pos_end);	
 	}
 	else if (pos == DkWidget::pos_south) {
-		hudLayout->addWidget(filePreview, bottom_thumbs, left_thumbs, 1, hor_pos_end);	
+		mHudLayout->addWidget(mFilePreview, bottom_thumbs, left_thumbs, 1, hor_pos_end);	
 	}
 	else 
-		filePreview->hide();
+		mFilePreview->hide();
 
 }
 
 void DkControlWidget::stopLabels() {
 
-	centerLabel->stop();
-	bottomLabel->stop();
+	mCenterLabel->stop();
+	mBottomLabel->stop();
 	//topLeftLabel->stop();
-	spinnerLabel->stop();
+	mSpinnerLabel->stop();
 
 	//showCrop(false);
 	//showThumbView(false);
@@ -630,7 +625,7 @@ void DkControlWidget::stopLabels() {
 
 void DkControlWidget::settingsChanged() {
 
-	if (fileInfoLabel && fileInfoLabel->isVisible()) {
+	if (mFileInfoLabel && mFileInfoLabel->isVisible()) {
 		showFileInfo(false);	// just a hack but all states are preserved this way
 		showFileInfo(true);
 	}
@@ -639,17 +634,15 @@ void DkControlWidget::settingsChanged() {
 
 void DkControlWidget::updateRating(int rating) {
 
-	if (!imgC)
+	if (!mImgC)
 		return;
 
-	this->rating = rating;
+	mRatingLabel->setRating(rating);
 
-	ratingLabel->setRating(rating);
+	if (mFileInfoLabel)
+		mFileInfoLabel->updateRating(rating);
 
-	if (fileInfoLabel)
-		fileInfoLabel->updateRating(rating);
-
-	QSharedPointer<DkMetaDataT> metaDataInfo = imgC->getMetaData();
+	QSharedPointer<DkMetaDataT> metaDataInfo = mImgC->getMetaData();
 	metaDataInfo->setRating(rating);
 }
 
@@ -662,8 +655,48 @@ void DkControlWidget::setFullScreen(bool fullscreen) {
 
 	showWidgetsSettings();
 
-	if (fullscreen &&!player->isVisible())
-		player->show(3000);		
+	if (fullscreen &&!mPlayer->isVisible())
+		mPlayer->show(3000);		
+}
+
+DkMetaDataHUD * DkControlWidget::getMetaDataWidget() const {
+	return mMetaDataInfo;
+}
+
+DkCommentWidget * DkControlWidget::getCommentWidget() const {
+	return mCommentWidget;
+}
+
+DkOverview * DkControlWidget::getOverview() const {
+	return mZoomWidget->getOverview();
+}
+
+DkZoomWidget * DkControlWidget::getZoomWidget() const {
+	return mZoomWidget;
+}
+
+DkPlayer * DkControlWidget::getPlayer() const {
+	return mPlayer;
+}
+
+DkFileInfoLabel * DkControlWidget::getFileInfoLabel() const {
+	return mFileInfoLabel;
+}
+
+DkHistogram * DkControlWidget::getHistogram() const {
+	return mHistogram;
+}
+
+DkCropWidget * DkControlWidget::getCropWidget() const {
+	return mCropWidget;
+}
+
+DkFilePreview * DkControlWidget::getFilePreview() const {
+	return mFilePreview;
+}
+
+DkFolderScrollBar * DkControlWidget::getScroller() const {
+	return mFolderScroll;
 }
 
 // DkControlWidget - Events --------------------------------------------------------------------
@@ -671,16 +704,16 @@ void DkControlWidget::mousePressEvent(QMouseEvent *event) {
 
 	qDebug() << "has mouse tracking: " << hasMouseTracking();
 
-	enterPos = event->pos();
+	mEnterPos = event->pos();
 
-	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
+	if (mFilePreview && mFilePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
 
-		QTimer* mImgTimer = filePreview->getMoveImageTimer();
+		QTimer* mImgTimer = mFilePreview->getMoveImageTimer();
 		mImgTimer->start(1);
 
 		// show icon
-		wheelButton->move(event->pos().x()-16, event->pos().y()-16);
-		wheelButton->show();
+		mWheelButton->move(event->pos().x()-16, event->pos().y()-16);
+		mWheelButton->show();
 	}
 
 	QWidget::mousePressEvent(event);
@@ -688,11 +721,11 @@ void DkControlWidget::mousePressEvent(QMouseEvent *event) {
 
 void DkControlWidget::mouseReleaseEvent(QMouseEvent *event) {
 
-	if (filePreview && filePreview->isVisible()) {
-		filePreview->setCurrentDx(0);
-		QTimer* mImgTimer = filePreview->getMoveImageTimer();
+	if (mFilePreview && mFilePreview->isVisible()) {
+		mFilePreview->setCurrentDx(0);
+		QTimer* mImgTimer = mFilePreview->getMoveImageTimer();
 		mImgTimer->stop();
-		wheelButton->hide();
+		mWheelButton->hide();
 	}
 
 	QWidget::mouseReleaseEvent(event);
@@ -701,14 +734,14 @@ void DkControlWidget::mouseReleaseEvent(QMouseEvent *event) {
 void DkControlWidget::mouseMoveEvent(QMouseEvent *event) {
 
 	// scroll thumbs preview
-	if (filePreview && filePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
+	if (mFilePreview && mFilePreview->isVisible() && event->buttons() == Qt::MiddleButton) {
 		
-		float dx = (float)std::fabs(enterPos.x() - event->pos().x())*0.015f;
+		float dx = (float)std::fabs(mEnterPos.x() - event->pos().x())*0.015f;
 		dx = std::exp(dx);
-		if (enterPos.x() - event->pos().x() < 0)
+		if (mEnterPos.x() - event->pos().x() < 0)
 			dx = -dx;
 
-		filePreview->setCurrentDx(dx);	// update dx
+		mFilePreview->setCurrentDx(dx);	// update dx
 	}
 
 	QWidget::mouseMoveEvent(event);
