@@ -100,9 +100,9 @@ public:
 	void setMode(int mode);
 
 protected:
-	QSharedPointer<DkImageLoader> imageLoader;
-	int tabIdx;
-	int tabMode;
+	QSharedPointer<DkImageLoader> mImageLoader;
+	int mTabIdx = 0;
+	int mTabMode = tab_recent_files;
 };
 
 class DkViewPort;
@@ -122,7 +122,6 @@ public:
 	QString getCurrentDir() const;
 
 	void clearAllTabs();
-	void updateTabs();
 	void updateTab(QSharedPointer<DkTabInfo> tabInfo);
 	QVector<QSharedPointer<DkTabInfo> > getTabs() const;
 	void loadSettings();
@@ -161,15 +160,15 @@ public slots:
 	void startBatchProcessing(const QStringList& selectedFiles = QStringList());
 
 protected:
-	DkViewPort* viewport;
-	DkThumbScrollWidget* thumbScrollWidget;
-	DkRecentFilesWidget* recentFilesWidget;
+	DkViewPort* mViewport = 0;
+	DkThumbScrollWidget* mThumbScrollWidget = 0;
+	DkRecentFilesWidget* mRecentFilesWidget = 0;
 
-	QTabBar* tabbar;
-	QVector<QSharedPointer<DkTabInfo>> tabInfos;
+	QTabBar* mTabbar = 0;
+	QVector<QSharedPointer<DkTabInfo>> mTabInfos;
 
-	QVector<QWidget*> widgets;
-	QStackedLayout* viewLayout;
+	QVector<QWidget*> mWidgets;
+	QStackedLayout* mViewLayout = 0;
 
 	void createLayout();
 	void updateTabIdx();
