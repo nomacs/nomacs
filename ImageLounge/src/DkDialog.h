@@ -349,36 +349,31 @@ public slots:
 	virtual void accept();
 
 protected:
-	int leftSpacing;
-	int margin;
-	QImage img;
-	QImage origImg;
-	QImage newImg;
-	QWidget* centralWidget;
-	QLabel* previewLabel;
+	QImage mImg;
+	QLabel* mPreviewLabel = 0;
 	
-	DkBaseViewPort* origView;
+	DkBaseViewPort* mOrigView = 0;
 
 	// resize gui:
-	QDoubleSpinBox* wPixelEdit;
-	QDoubleSpinBox* hPixelEdit;
-	DkButton* lockButton;
+	QDoubleSpinBox* mWPixelEdit = 0;
+	QDoubleSpinBox* mHPixelEdit = 0;
+	DkButton* mLockButton = 0;
 
-	QDoubleSpinBox* widthEdit;
-	QDoubleSpinBox* heightEdit;
-	QComboBox* unitBox;
-	QComboBox* sizeBox;
-	DkButton* lockButtonDim;
+	QDoubleSpinBox* mWidthEdit = 0;
+	QDoubleSpinBox* mHeightEdit = 0;
+	QComboBox* mUnitBox = 0;
+	QComboBox* mSizeBox = 0;
+	DkButton* mLockButtonDim = 0;
 
-	QDoubleSpinBox* resolutionEdit;
-	QComboBox* resUnitBox;
-	QCheckBox* resampleCheck;
-	QCheckBox* gammaCorrection;
-	QComboBox* resampleBox;
+	QDoubleSpinBox* mResolutionEdit = 0;
+	QComboBox* mResUnitBox = 0;
+	QCheckBox* mResampleCheck = 0;
+	QCheckBox* mGammaCorrection = 0;
+	QComboBox* mResampleBox = 0;
 
-	float exifDpi;
-	QVector<float> unitFactor;
-	QVector<float> resFactor;
+	float mExifDpi = 72;
+	QVector<float> mUnitFactor;
+	QVector<float> mResFactor;
 
 	void init();
 	void initBoxes(bool updateSettings = false);
@@ -457,25 +452,22 @@ public:
 	virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 	virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
-	void addDataActions(QVector<QAction*> actions, QString name);
+	void addDataActions(QVector<QAction*> actions, const QString& name);
 
 	void resetActions();
-	void saveActions();
+	void saveActions() const;
 
 public slots:
-	void checkDuplicate(QString text, void* item);		// deprecated (Qt4)
+	void checkDuplicate(const QString& text, void* item);		// deprecated (Qt4)
 	void checkDuplicate(const QKeySequence& ks, void* item);
 	void clearDuplicateInfo() const;
 
 signals:
-	void duplicateSignal(QString info) const;
+	void duplicateSignal(const QString& info) const;
 
 protected:
-
-	void setupModelData(const QVector<QAction*> actions, TreeItem* parent = 0);
-
-	TreeItem* rootItem;
-	QVector<QVector<QAction*> > actions;
+	TreeItem* mRootItem;
+	QVector<QVector<QAction*> > mActions;
 
 };
 
@@ -488,7 +480,7 @@ public:
 	void addActions(const QVector<QAction*>& actions, const QString& name);
 
 public slots:
-	void accept();
+	void accept() override;
 
 protected slots:
 	void contextMenu(const QPoint& cur);
@@ -497,12 +489,9 @@ protected slots:
 protected:
 	void createLayout();
 	
-	QVector<QAction*> actions;
-	QTreeView* treeView;
-	QTableView* actionTable;
-	DkShortcutsModel* model;
-	QLabel* notificationLabel;
-	QPushButton* defaultButton;
+	DkShortcutsModel* mModel;
+	QLabel* mNotificationLabel;
+	QPushButton* mDefaultButton;
 
 };
 
@@ -553,10 +542,7 @@ public:
 	DkPrintPreviewWidget(QPrinter* printer, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
 signals:
-	void zoomChanged();
-
-//public slots:
-	//virtual void paintEvent(QPaintEvent* event);
+	void zoomChanged() const;
 
 protected:
 	virtual void wheelEvent(QWheelEvent *event);		
@@ -610,8 +596,8 @@ public:
 		print_end,
 	};
 
-	DkPrintPreviewDialog(QImage img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
-	void setImage(QImage img, float dpi);
+	DkPrintPreviewDialog(const QImage& img, float dpi, QPrinter* printer = 0, QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	void setImage(const QImage& img, float dpi);
 	void init();
 
 public slots:
@@ -641,42 +627,43 @@ private:
 	void scaleImage();
 	bool isFitting();
 		
-	QImage img;
+	QImage mImg;
 
-	QActionGroup* fitGroup;
-	QAction *fitWidthAction;
-	QAction *fitPageAction;
+	QActionGroup* mFitGroup = 0;
+	QAction* mFitWidthAction = 0;
+	QAction* mFitPageAction = 0;
+	
+	QActionGroup* mZoomGroup = 0;
+	QAction* mZoomInAction = 0;
+	QAction* mZoomOutAction = 0;
 
-	QActionGroup* zoomGroup;
-	QAction *zoomInAction;
-	QAction *zoomOutAction;
+	QActionGroup* mOrientationGroup = 0;
+	QAction* mPortraitAction = 0;
+	QAction* mLandscapeAction = 0;
 
-	QActionGroup* orientationGroup;
-	QAction *portraitAction;
-	QAction *landscapeAction;
+	QActionGroup* mPrinterGroup = 0;
+	QAction* mPrintAction = 0;
+	QAction* mPageSetupAction = 0;
 
-	QActionGroup *printerGroup;
-	QAction *printAction;
-	QAction *pageSetupAction;
+	QActionGroup* mDpiGroup = 0;
+	QAction* mResetDpiAction = 0;
 
-	QActionGroup *dpiGroup;
-	QAction *resetDpiAction;
-
-	QComboBox *zoomFactor;
-	QComboBox *dpiFactor;
-	QString dpiEditorSuffix;
+	QComboBox* mZoomFactor = 0;
+	QComboBox* mDpiFactor = 0;
+	QString mDpiEditorSuffix;
 
 
-	DkPrintPreviewWidget* preview;
-	QPrinter* printer;
-	QPrintDialog* printDialog;
+	DkPrintPreviewWidget* mPreview = 0;
+	QPrinter* mPrinter = 0;
+	QPrintDialog* mPrintDialog = 0;
 
-	QVector<QIcon> icons;
+	QVector<QIcon> mIcons;
 
-	QTransform imgTransform;
+	QTransform mImgTransform;
 
-	float dpi, origdpi;
-	bool initialPaint;
+	float mDpi = 150;
+	float mOrigDpi = 150;
+	//bool mInitialPaint;
 };
 
 class DkOpacityDialog : public QDialog {
