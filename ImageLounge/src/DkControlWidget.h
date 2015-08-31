@@ -42,6 +42,11 @@
 #endif
 #endif
 
+
+#ifdef WIN32
+#pragma warning(disable: 4251)	// TODO: remove
+#endif
+
 class QStackedLayout;
 class QGridLayout;
 class QLabel;

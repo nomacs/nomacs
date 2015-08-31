@@ -51,7 +51,7 @@ int DkImageManipulationWidget::contrast;
 int DkImageManipulationWidget::saturation;
 int DkImageManipulationWidget::hue;
 float DkImageManipulationWidget::gamma;
-float DkImageManipulationWidget::exposure;
+float DkImageManipulationWidget::sExposure;
 char DkImageManipulationWidget::manipulationType;
 bool DkImageManipulationWidget::slidersReset;
 std::vector<historyData> DkImageManipulationWidget::historyDataVec;
@@ -83,12 +83,12 @@ DkImageManipulationDialog::~DkImageManipulationDialog() {
  **/
 void DkImageManipulationDialog::init() {
 
-	dialogWidth = 700;
-	dialogHeight = 600;
-	toolsWidth = 200;
-	previewMargin = 20;
-	previewWidth = dialogWidth - toolsWidth - 2 * previewMargin;
-	previewHeight = dialogHeight - previewMargin - 70;
+	int dialogWidth = 700;
+	int dialogHeight = 600;
+	mToolsWidth = 200;
+	mPreviewMargin = 20;
+	mPreviewWidth = dialogWidth - mToolsWidth - 2 * mPreviewMargin;
+	mPreviewHeight = dialogHeight - mPreviewMargin - 70;
 
 	setWindowTitle(tr("Image Manipulation Tools"));
 	setFixedSize(dialogWidth, dialogHeight);
@@ -105,12 +105,12 @@ void DkImageManipulationDialog::init() {
  **/
 void DkImageManipulationDialog::resetValues() {
 	
-	brightnessWidget->setToolsValue((float)brightnessWidget->getDefaultValue());
-	contrastWidget->setToolsValue((float)contrastWidget->getDefaultValue());
-	saturationWidget->setToolsValue((float)saturationWidget->getDefaultValue());
-	hueWidget->setToolsValue((float)hueWidget->getDefaultValue());
-	gammaWidget->setToolsValue((float)gammaWidget->getDefaultValueF());
-	exposureWidget->setToolsValue((float)exposureWidget->convertSliderValToExposure(exposureWidget->getDefaultValueF()));
+	mBrightnessWidget->setToolsValue((float)mBrightnessWidget->getDefaultValue());
+	mContrastWidget->setToolsValue((float)mContrastWidget->getDefaultValue());
+	mSaturationWidget->setToolsValue((float)mSaturationWidget->getDefaultValue());
+	mHueWidget->setToolsValue((float)mHueWidget->getDefaultValue());
+	mGammaWidget->setToolsValue((float)mGammaWidget->getDefaultValueF());
+	mExposureWidget->setToolsValue((float)mExposureWidget->convertSliderValToExposure(mExposureWidget->getDefaultValueF()));
 
 	DkImageManipulationWidget::clearHistoryVectors();
 	DkImageManipulationWidget::setEmptyManipulationType();
@@ -131,36 +131,36 @@ void DkImageManipulationDialog::createLayout() {
 
 	// central widget - preview image
 	QWidget* centralWidget = new QWidget(this);
-	previewLabel = new QLabel(centralWidget);
-	previewLabel->setGeometry(QRect(QPoint(previewMargin, previewMargin), QSize(previewWidth, previewHeight)));
+	mPreviewLabel = new QLabel(centralWidget);
+	mPreviewLabel->setGeometry(QRect(QPoint(mPreviewMargin, mPreviewMargin), QSize(mPreviewWidth, mPreviewHeight)));
 
 	// east widget - sliders
 	QWidget* eastWidget = new QWidget(this);
-	eastWidget->setMinimumWidth(toolsWidth);
-	eastWidget->setMaximumWidth(toolsWidth);
+	eastWidget->setMinimumWidth(mToolsWidth);
+	eastWidget->setMaximumWidth(mToolsWidth);
 	eastWidget->setContentsMargins(0,10,10,0);
 	QVBoxLayout* toolsLayout = new QVBoxLayout(eastWidget);
 	toolsLayout->setContentsMargins(0,0,0,0);
 
-	brightnessWidget = new DkBrightness(eastWidget, this);
-	contrastWidget = new DkContrast(eastWidget, this);
-	saturationWidget = new DkSaturation(eastWidget, this);
-	hueWidget = new DkHue(eastWidget, this);
-	gammaWidget = new DkGamma(eastWidget, this);
-	exposureWidget = new DkExposure(eastWidget, this);
-	undoredoWidget = new DkUndoRedo(eastWidget, this);
+	mBrightnessWidget = new DkBrightness(eastWidget, this);
+	mContrastWidget = new DkContrast(eastWidget, this);
+	mSaturationWidget = new DkSaturation(eastWidget, this);
+	mHueWidget = new DkHue(eastWidget, this);
+	mGammaWidget = new DkGamma(eastWidget, this);
+	mExposureWidget = new DkExposure(eastWidget, this);
+	mUndoRedoWidget = new DkUndoRedo(eastWidget, this);
 
-	connect(this, SIGNAL(isNotGrayscaleImg(bool)), saturationWidget, SLOT(setEnabled(bool)));
-	connect(this, SIGNAL(isNotGrayscaleImg(bool)), hueWidget, SLOT(setEnabled(bool)));
-	connect(hueWidget, SIGNAL(setSaturationSliderColor(QString)), saturationWidget, SLOT(setSliderStyle(QString)));
+	connect(this, SIGNAL(isNotGrayscaleImg(bool)), mSaturationWidget, SLOT(setEnabled(bool)));
+	connect(this, SIGNAL(isNotGrayscaleImg(bool)), mHueWidget, SLOT(setEnabled(bool)));
+	connect(mHueWidget, SIGNAL(setSaturationSliderColor(QString)), mSaturationWidget, SLOT(setSliderStyle(QString)));
 
-	toolsLayout->addWidget(brightnessWidget);
-	toolsLayout->addWidget(contrastWidget);
-	toolsLayout->addWidget(saturationWidget);
-	toolsLayout->addWidget(hueWidget);
-	toolsLayout->addWidget(gammaWidget);
-	toolsLayout->addWidget(exposureWidget);
-	toolsLayout->addWidget(undoredoWidget);
+	toolsLayout->addWidget(mBrightnessWidget);
+	toolsLayout->addWidget(mContrastWidget);
+	toolsLayout->addWidget(mSaturationWidget);
+	toolsLayout->addWidget(mHueWidget);
+	toolsLayout->addWidget(mGammaWidget);
+	toolsLayout->addWidget(mExposureWidget);
+	toolsLayout->addWidget(mUndoRedoWidget);
 
 	eastWidget->setLayout(toolsLayout);
 	
@@ -186,41 +186,41 @@ void DkImageManipulationDialog::createLayout() {
  **/
 void DkImageManipulationDialog::createImgPreview() {
 
-	if (!img || img->isNull())
+	if (!mImg || mImg->isNull())
 		return;
 	
 	QPoint lt;
-	float rW = previewWidth / (float) img->width();
-	float rH = previewHeight / (float) img->height();
+	float rW = mPreviewWidth / (float) mImg->width();
+	float rH = mPreviewHeight / (float) mImg->height();
 	float rMin = (rW < rH) ? rW : rH;
 
 	if(rMin < 1) {
-		if(rW < rH) lt = QPoint(0, qRound(img->height() * (rH - rMin) / 2.0f));
+		if(rW < rH) lt = QPoint(0, qRound(mImg->height() * (rH - rMin) / 2.0f));
 		else {
-			 lt = QPoint(qRound(img->width() * (rW - rMin) / 2.0f), 0);
+			 lt = QPoint(qRound(mImg->width() * (rW - rMin) / 2.0f), 0);
 		}
 	}
-	else lt = QPoint(qRound((previewWidth - img->width()) / 2.0f), qRound((previewHeight - img->height()) / 2.0f));
+	else lt = QPoint(qRound((mPreviewWidth - mImg->width()) / 2.0f), qRound((mPreviewHeight - mImg->height()) / 2.0f));
 
-	QSize imgSizeScaled = QSize(img->size());
+	QSize imgSizeScaled = QSize(mImg->size());
 	if(rMin < 1) imgSizeScaled *= rMin;
 
-	previewImgRect = QRect(lt, imgSizeScaled);
+	mPreviewImgRect = QRect(lt, imgSizeScaled);
 
-	previewImgRect.setTop(previewImgRect.top()+1);
-	previewImgRect.setLeft(previewImgRect.left()+1);
-	previewImgRect.setWidth(previewImgRect.width()-1);			// we have a border... correct that...
-	previewImgRect.setHeight(previewImgRect.height()-1);
+	mPreviewImgRect.setTop(mPreviewImgRect.top()+1);
+	mPreviewImgRect.setLeft(mPreviewImgRect.left()+1);
+	mPreviewImgRect.setWidth(mPreviewImgRect.width()-1);			// we have a border... correct that...
+	mPreviewImgRect.setHeight(mPreviewImgRect.height()-1);
 
-	if(rMin < 1) imgPreview = img->scaled(imgSizeScaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-	else imgPreview = *img;
+	if(rMin < 1) mImgPreview = mImg->scaled(imgSizeScaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	else mImgPreview = *mImg;
 	
-	if (imgPreview.format() == QImage::Format_Mono || imgPreview.format() == QImage::Format_MonoLSB || 
-		imgPreview.format() == QImage::Format_Indexed8 || imgPreview.isGrayscale()) emit isNotGrayscaleImg(false);
+	if (mImgPreview.format() == QImage::Format_Mono || mImgPreview.format() == QImage::Format_MonoLSB || 
+		mImgPreview.format() == QImage::Format_Indexed8 || mImgPreview.isGrayscale()) emit isNotGrayscaleImg(false);
 
 #ifdef WITH_OPENCV
 	
-	cv::Mat imgMat = DkImage::qImage2Mat(imgPreview);
+	cv::Mat imgMat = DkImage::qImage2Mat(mImgPreview);
 	// imgMat.convertTo(imgMat, CV_32FC1, 1.0f/255.0f);  // for testing purposes
 	
 	DkImageManipulationWidget::setMatImg(imgMat);
@@ -235,7 +235,7 @@ void DkImageManipulationDialog::createImgPreview() {
 **/
 void DkImageManipulationDialog::updateImg(QImage updatedImg) {
 
-	imgPreview = updatedImg;
+	mImgPreview = updatedImg;
 	drawImgPreview();
 }
 
@@ -244,15 +244,15 @@ void DkImageManipulationDialog::updateImg(QImage updatedImg) {
  **/
 void DkImageManipulationDialog::drawImgPreview() {
 
-	QImage preview = QImage(previewWidth,previewHeight, QImage::Format_ARGB32);
+	QImage preview = QImage(mPreviewWidth,mPreviewHeight, QImage::Format_ARGB32);
 	preview.fill(Qt::transparent);
 	QPainter painter(&preview);
 	painter.setPen(QColor(0,0,0));
-	painter.drawRect(0, 0, previewWidth - 1, previewHeight - 1);
+	painter.drawRect(0, 0, mPreviewWidth - 1, mPreviewHeight - 1);
 	painter.setBackgroundMode(Qt::TransparentMode);
-	painter.drawImage(previewImgRect, imgPreview);
+	painter.drawImage(mPreviewImgRect, mImgPreview);
 
-	previewLabel->setPixmap(QPixmap::fromImage(preview));
+	mPreviewLabel->setPixmap(QPixmap::fromImage(preview));
 }
 
 /**
@@ -263,20 +263,16 @@ void DkImageManipulationDialog::drawImgPreview() {
 DkImageManipulationWidget::DkImageManipulationWidget(QWidget *parent, DkImageManipulationDialog *parentDialog)
 	: QWidget(parent) {
 
-	this->leftSpacing = 10;
-	this->topSpacing = 10;
-	this->margin = 10;
-	this->sliderLength = parent->minimumWidth() - 2 * leftSpacing;
-	this->valueUpdated = false;
-	this->manipDialog = parentDialog;
+	this->mSliderLength = parent->minimumWidth() - 2 * mLeftSpacing;
+	this->mManipDialog = parentDialog;
 	slidersReset = false;
 	this->doARedraw = true;
 
 	connect(this, SIGNAL(updateDialogImgSignal(QImage)), parent->parentWidget(), SLOT(updateImg(QImage)));
 
 	// create gradient for changing saturation slider background
-	hueGradientImg = QImage(181, 10, QImage::Format_ARGB32);
-	QLinearGradient hueGradient = QLinearGradient(hueGradientImg.rect().topLeft(), hueGradientImg.rect().topRight());
+	mHueGradientImg = QImage(181, 10, QImage::Format_ARGB32);
+	QLinearGradient hueGradient = QLinearGradient(mHueGradientImg.rect().topLeft(), mHueGradientImg.rect().topRight());
 	hueGradient.setColorAt(0,  QColor("#ff0000"));
 	hueGradient.setColorAt(0.167,  QColor("#ffff00"));
 	hueGradient.setColorAt(0.333,  QColor("#00ff00"));
@@ -285,8 +281,8 @@ DkImageManipulationWidget::DkImageManipulationWidget(QWidget *parent, DkImageMan
 	hueGradient.setColorAt(0.833,  QColor("#ff00ff"));
 	hueGradient.setColorAt(1,  QColor("#ff0000"));
 
-	QPainter painter(&hueGradientImg);
-	painter.fillRect(hueGradientImg.rect(), hueGradient);
+	QPainter painter(&mHueGradientImg);
+	painter.fillRect(mHueGradientImg.rect(), hueGradient);
 	painter.end();
 
 };
@@ -302,12 +298,12 @@ DkImageManipulationWidget::~DkImageManipulationWidget() {
  **/
 void DkImageManipulationWidget::updateSliderSpinBox(int val) {
 
-	if(!valueUpdated) {
-		valueUpdated = true;
-		this->sliderSpinBox->setValue(val);
+	if(!mValueUpdated) {
+		mValueUpdated = true;
+		this->mSliderSpinBox->setValue(val);
 		if (!slidersReset && doARedraw) redrawImage();
 	}
-	else valueUpdated = false;
+	else mValueUpdated = false;
 
 };
 
@@ -317,13 +313,13 @@ void DkImageManipulationWidget::updateSliderSpinBox(int val) {
  **/
 void DkImageManipulationWidget::updateDoubleSliderSpinBox(int val) {
 
-	if(!valueUpdated) {
-		valueUpdated = true;
-		if (this->name.compare("DkGamma") != 0) this->sliderSpinBoxDouble->setValue(val/100.0);
-		else this->sliderSpinBoxDouble->setValue(this->gammaSliderValues[val]);
+	if(!mValueUpdated) {
+		mValueUpdated = true;
+		if (this->mName.compare("DkGamma") != 0) this->mSliderSpinBoxDouble->setValue(val/100.0);
+		else this->mSliderSpinBoxDouble->setValue(this->mGammaSliderValues[val]);
 		if (!slidersReset && doARedraw) redrawImage();
 	}
-	else valueUpdated = false;
+	else mValueUpdated = false;
 
 };
 
@@ -333,12 +329,12 @@ void DkImageManipulationWidget::updateDoubleSliderSpinBox(int val) {
  **/
 void DkImageManipulationWidget::updateSliderVal(int val) {
 
-	if(!valueUpdated) {
-		valueUpdated = true;
-		this->slider->setValue(val);
+	if(!mValueUpdated) {
+		mValueUpdated = true;
+		this->mSlider->setValue(val);
 		if (!slidersReset && doARedraw) redrawImage();
 	}
-	else valueUpdated = false;
+	else mValueUpdated = false;
 
 };
 
@@ -348,13 +344,13 @@ void DkImageManipulationWidget::updateSliderVal(int val) {
  **/
 void DkImageManipulationWidget::updateDoubleSliderVal(double val) {
 	
-	if(!valueUpdated) {
-		valueUpdated = true;		
-		if (this->name.compare("DkGamma") != 0) this->slider->setValue(qRound(val * 100));
-		else this->slider->setValue(findClosestValue(this->gammaSliderValues, val, 0, 199));		
+	if(!mValueUpdated) {
+		mValueUpdated = true;		
+		if (this->mName.compare("DkGamma") != 0) this->mSlider->setValue(qRound(val * 100));
+		else this->mSlider->setValue(findClosestValue(this->mGammaSliderValues, val, 0, 199));		
 		if (!slidersReset && doARedraw) redrawImage();
 	}
-	else valueUpdated = false;
+	else mValueUpdated = false;
 
 };
 
@@ -365,13 +361,13 @@ void DkImageManipulationWidget::updateDoubleSliderVal(double val) {
 void DkImageManipulationWidget::resetSliderValues(char exceptionSlider) {
 	
 	slidersReset = true;
-	if (exceptionSlider != manipulationBrightness) manipDialog->getBrightnessWidget()->setToolsValue((float)manipDialog->getBrightnessWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationContrast) manipDialog->getContrastWidget()->setToolsValue((float)manipDialog->getContrastWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationSaturation) manipDialog->getSaturationWidget()->setToolsValue((float)manipDialog->getSaturationWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationHue) manipDialog->getHueWidget()->setToolsValue((float)manipDialog->getHueWidget()->getDefaultValue());
-	if (exceptionSlider != manipulationGamma) manipDialog->getGammaWidget()->setToolsValue((float)manipDialog->getGammaWidget()->getDefaultValueF());
-	if (exceptionSlider != manipulationExposure) manipDialog->getExposureWidget()->setToolsValue((float)
-		manipDialog->getExposureWidget()->convertSliderValToExposure(manipDialog->getExposureWidget()->getDefaultValueF()));
+	if (exceptionSlider != manipulationBrightness) mManipDialog->getBrightnessWidget()->setToolsValue((float)mManipDialog->getBrightnessWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationContrast) mManipDialog->getContrastWidget()->setToolsValue((float)mManipDialog->getContrastWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationSaturation) mManipDialog->getSaturationWidget()->setToolsValue((float)mManipDialog->getSaturationWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationHue) mManipDialog->getHueWidget()->setToolsValue((float)mManipDialog->getHueWidget()->getDefaultValue());
+	if (exceptionSlider != manipulationGamma) mManipDialog->getGammaWidget()->setToolsValue((float)mManipDialog->getGammaWidget()->getDefaultValueF());
+	if (exceptionSlider != manipulationExposure) mManipDialog->getExposureWidget()->setToolsValue((float)
+		mManipDialog->getExposureWidget()->convertSliderValToExposure(mManipDialog->getExposureWidget()->getDefaultValueF()));
 	slidersReset = false;
 }
 
@@ -381,12 +377,12 @@ void DkImageManipulationWidget::resetSliderValues(char exceptionSlider) {
 **/
 void DkImageManipulationWidget::setToolsValue(float val) {
 
-	if (this->name.compare("DkBrightness") == 0) { brightness = (int)val; slider->setValue((int)val);}
-	else if (this->name.compare("DkContrast") == 0) { contrast = (int)val; slider->setValue((int)val);}
-	else if (this->name.compare("DkSaturation") == 0) { saturation = (int)val; slider->setValue((int)val);}
-	else if (this->name.compare("DkHue") == 0) { hue = (int)val; slider->setValue((int)val);}
-	else if (this->name.compare("DkGamma") == 0) { gamma = val; sliderSpinBoxDouble->setValue(val);}
-	else if (this->name.compare("DkExposure") == 0) { exposure = val; sliderSpinBoxDouble->setValue(manipDialog->getExposureWidget()->convertExposureToSliderVal(val));}
+	if (this->mName.compare("DkBrightness") == 0) { brightness = (int)val; mSlider->setValue((int)val);}
+	else if (this->mName.compare("DkContrast") == 0) { contrast = (int)val; mSlider->setValue((int)val);}
+	else if (this->mName.compare("DkSaturation") == 0) { saturation = (int)val; mSlider->setValue((int)val);}
+	else if (this->mName.compare("DkHue") == 0) { hue = (int)val; mSlider->setValue((int)val);}
+	else if (this->mName.compare("DkGamma") == 0) { gamma = val; mSliderSpinBoxDouble->setValue(val);}
+	else if (this->mName.compare("DkExposure") == 0) { sExposure = val; mSliderSpinBoxDouble->setValue(mManipDialog->getExposureWidget()->convertExposureToSliderVal(val));}
 
 };
 
@@ -397,25 +393,25 @@ void DkImageManipulationWidget::setToolsValue(float val) {
 **/
 void DkImageManipulationWidget::setToolsValue(float val1, float val2) {
 
-	if (this->name.compare("DkBrightness") == 0 || this->name.compare("DkContrast") == 0) { 
+	if (this->mName.compare("DkBrightness") == 0 || this->mName.compare("DkContrast") == 0) { 
 		brightness = (int)val1; 
-		manipDialog->getBrightnessWidget()->slider->setValue((int)val1);
+		mManipDialog->getBrightnessWidget()->mSlider->setValue((int)val1);
 		contrast = (int)val2; 
-		manipDialog->getContrastWidget()->slider->setValue((int)val2);
+		mManipDialog->getContrastWidget()->mSlider->setValue((int)val2);
 	}
-	if (this->name.compare("DkSaturation") == 0 || this->name.compare("DkHue") == 0) { 
+	if (this->mName.compare("DkSaturation") == 0 || this->mName.compare("DkHue") == 0) { 
 		saturation = (int)val1; 
-		manipDialog->getSaturationWidget()->slider->setValue((int)val1);
+		mManipDialog->getSaturationWidget()->mSlider->setValue((int)val1);
 		hue = (int)val2; 
-		manipDialog->getHueWidget()->slider->setValue((int)val2);
+		mManipDialog->getHueWidget()->mSlider->setValue((int)val2);
 	}
-	else if (this->name.compare("DkGamma") == 0) { 
+	else if (this->mName.compare("DkGamma") == 0) { 
 		gamma = val1; 
-		sliderSpinBoxDouble->setValue(val1);
+		mSliderSpinBoxDouble->setValue(val1);
 	}
-	else if (this->name.compare("DkExposure") == 0) { 
-		exposure = val1; 
-		sliderSpinBoxDouble->setValue(manipDialog->getExposureWidget()->convertExposureToSliderVal(val1));
+	else if (this->mName.compare("DkExposure") == 0) { 
+		sExposure = val1; 
+		mSliderSpinBoxDouble->setValue(mManipDialog->getExposureWidget()->convertExposureToSliderVal(val1));
 	}
 
 };
@@ -426,12 +422,12 @@ void DkImageManipulationWidget::setToolsValue(float val1, float val2) {
 **/
 float DkImageManipulationWidget::getToolsValue() {
 
-	if (this->name.compare("DkBrightness") == 0) return (float)slider->value();
-	else if (this->name.compare("DkContrast") == 0) return (float)slider->value();
-	else if (this->name.compare("DkSaturation") == 0) return (float)slider->value();
-	else if (this->name.compare("DkHue") == 0) return (float)slider->value();
-	else if (this->name.compare("DkGamma") == 0) return (float)sliderSpinBoxDouble->value();
-	else if (this->name.compare("DkExposure") == 0) return (float)sliderSpinBoxDouble->value();
+	if (this->mName.compare("DkBrightness") == 0) return (float)mSlider->value();
+	else if (this->mName.compare("DkContrast") == 0) return (float)mSlider->value();
+	else if (this->mName.compare("DkSaturation") == 0) return (float)mSlider->value();
+	else if (this->mName.compare("DkHue") == 0) return (float)mSlider->value();
+	else if (this->mName.compare("DkGamma") == 0) return (float)mSliderSpinBoxDouble->value();
+	else if (this->mName.compare("DkExposure") == 0) return (float)mSliderSpinBoxDouble->value();
 	else return 0;
 };
 
@@ -871,45 +867,42 @@ it under the terms of the one of three licenses as you choose:
 DkBrightness::DkBrightness(QWidget *parent, DkImageManipulationDialog *parentDialog) 
 	: DkImageManipulationWidget(parent, parentDialog){
 
-	name = QString("DkBrightness");
-	defaultValue = 0;
+	mName = QString("DkBrightness");
+	mDefaultValue = 0;
+	mMiddleVal = mDefaultValue;
 
-	minVal = -100;
-	middleVal = defaultValue;
-	maxVal = 100;
+	mSliderTitle = new QLabel(tr("Brightness"), this);
+	mSliderTitle->move(mLeftSpacing, mTopSpacing);
 
-	sliderTitle = new QLabel(tr("Brightness"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+	mSlider = new QSlider(this);
+	mSlider->setMinimum(mMinVal);
+	mSlider->setMaximum(mMaxVal);
+	mSlider->setValue(mMiddleVal);
+	mSlider->setTickInterval(50);
+	mSlider->setOrientation(Qt::Horizontal);
+	mSlider->setTickPosition(QSlider::TicksBelow);
+	mSlider->setGeometry(QRect(mLeftSpacing, mSliderTitle->geometry().bottom() - 5, mSliderLength, 20));
+	mSlider->setObjectName("DkBrightnessSlider");
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setTickInterval(50);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setTickPosition(QSlider::TicksBelow);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-	slider->setObjectName("DkBrightnessSlider");
+	mSliderSpinBox = new QSpinBox(this);
+	mSliderSpinBox->setGeometry(mSlider->geometry().right() - 45, mSliderTitle->geometry().top(), 45, 20);
+	mSliderSpinBox->setMinimum(mMinVal);
+	mSliderSpinBox->setMaximum(mMaxVal);
+	mSliderSpinBox->setValue(mSlider->value());
 
-	sliderSpinBox = new QSpinBox(this);
-	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBox->setMinimum(minVal);
-	sliderSpinBox->setMaximum(maxVal);
-	sliderSpinBox->setValue(slider->value());
+	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
+	connect(mSliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
-	connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
+	mMinValLabel = new QLabel(QString::number(mMinVal), this);
+	mMinValLabel->move(mLeftSpacing, mSlider->geometry().bottom());
 
-	minValLabel = new QLabel(QString::number(minVal), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+	mMiddleValLabel = new QLabel(QString::number(mMiddleVal), this);
+	mMiddleValLabel->move(mLeftSpacing + mSliderLength / 2 - 2, mSlider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number(middleVal), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
-
-	maxValLabel = new QLabel(QString::number(maxVal), this);
-	maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
+	mMaxValLabel = new QLabel(QString::number(mMaxVal), this);
+	mMaxValLabel->move(mSlider->geometry().right() - 20, mSlider->geometry().bottom());
 	
-	brightness = slider->value();
+	brightness = mSlider->value();
 
 };
 
@@ -929,7 +922,7 @@ cv::Mat DkBrightness::compute(cv::Mat inLut, float val1, float val2) {
 // change brightness value and redraw image
 void DkBrightness::redrawImage() {
 
-	brightness = slider->value();
+	brightness = mSlider->value();
 	historyData currData;
 	currData.isHsv = false;
 	currData.arg1 = (float)brightness;
@@ -939,7 +932,7 @@ void DkBrightness::redrawImage() {
 
 		resetSliderValues(manipulationBrightness);
 #ifdef WITH_OPENCV
-		imgMat = DkImage::qImage2Mat(manipDialog->getImgPreview());
+		imgMat = DkImage::qImage2Mat(mManipDialog->getImgPreview());
 #endif
 
 		historyDataVec.push_back(currData);
@@ -965,45 +958,45 @@ void DkBrightness::redrawImage() {
 DkContrast::DkContrast(QWidget *parent, DkImageManipulationDialog *parentDialog) 
 	: DkImageManipulationWidget(parent, parentDialog){
 
-	name = QString("DkContrast");
-	defaultValue = 0;
+	mName = QString("DkContrast");
+	mDefaultValue = 0;
 
-	minVal = -100;
-	middleVal = defaultValue;
-	maxVal = 100;
+	mMinVal = -100;
+	mMiddleVal = mDefaultValue;
+	mMaxVal = 100;
 
-	sliderTitle = new QLabel(tr("Contrast"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+	mSliderTitle = new QLabel(tr("Contrast"), this);
+	mSliderTitle->move(mLeftSpacing, mTopSpacing);
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setTickInterval(50);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setTickPosition(QSlider::TicksBelow);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-	slider->setObjectName("DkBrightnessSlider");
+	mSlider = new QSlider(this);
+	mSlider->setMinimum(mMinVal);
+	mSlider->setMaximum(mMaxVal);
+	mSlider->setValue(mMiddleVal);
+	mSlider->setTickInterval(50);
+	mSlider->setOrientation(Qt::Horizontal);
+	mSlider->setTickPosition(QSlider::TicksBelow);
+	mSlider->setGeometry(QRect(mLeftSpacing, mSliderTitle->geometry().bottom() - 5, mSliderLength, 20));
+	mSlider->setObjectName("DkBrightnessSlider");
 
-	sliderSpinBox = new QSpinBox(this);
-	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBox->setMinimum(minVal);
-	sliderSpinBox->setMaximum(maxVal);
-	sliderSpinBox->setValue(slider->value());
+	mSliderSpinBox = new QSpinBox(this);
+	mSliderSpinBox->setGeometry(mSlider->geometry().right() - 45, mSliderTitle->geometry().top(), 45, 20);
+	mSliderSpinBox->setMinimum(mMinVal);
+	mSliderSpinBox->setMaximum(mMaxVal);
+	mSliderSpinBox->setValue(mSlider->value());
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
-	connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
+	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
+	connect(mSliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
 
-	minValLabel = new QLabel(QString::number(minVal), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+	mMinValLabel = new QLabel(QString::number(mMinVal), this);
+	mMinValLabel->move(mLeftSpacing, mSlider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number(middleVal), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
+	mMiddleValLabel = new QLabel(QString::number(mMiddleVal), this);
+	mMiddleValLabel->move(mLeftSpacing + mSliderLength / 2 - 2, mSlider->geometry().bottom());
 
-	maxValLabel = new QLabel(QString::number(maxVal), this);
-	maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
+	mMaxValLabel = new QLabel(QString::number(mMaxVal), this);
+	mMaxValLabel->move(mSlider->geometry().right() - 20, mSlider->geometry().bottom());
 
-	contrast = slider->value();
+	contrast = mSlider->value();
 
 };
 
@@ -1023,7 +1016,7 @@ cv::Mat DkContrast::compute(cv::Mat inLut, float val1, float val2) {
 // change contrast value and redraw image
 void DkContrast::redrawImage() {
 
-	contrast = slider->value();
+	contrast = mSlider->value();
 	historyData currData;
 	currData.isHsv = false;
 	currData.arg1 = (float)brightness;
@@ -1033,7 +1026,7 @@ void DkContrast::redrawImage() {
 
 		resetSliderValues(manipulationContrast);
 #ifdef WITH_OPENCV
-		imgMat = DkImage::qImage2Mat(manipDialog->getImgPreview());
+		imgMat = DkImage::qImage2Mat(mManipDialog->getImgPreview());
 #endif
 
 		historyDataVec.push_back(currData);
@@ -1059,45 +1052,45 @@ void DkContrast::redrawImage() {
 DkSaturation::DkSaturation(QWidget *parent, DkImageManipulationDialog *parentDialog) 
 	: DkImageManipulationWidget(parent, parentDialog){
 
-	name = QString("DkSaturation");
-	defaultValue = 0;
+	mName = QString("DkSaturation");
+	mDefaultValue = 0;
 
-	minVal = -255;
-	middleVal = defaultValue;
-	maxVal = 255;
+	mMinVal = -255;
+	mMiddleVal = mDefaultValue;
+	mMaxVal = 255;
 
-	sliderTitle = new QLabel(tr("Saturation"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+	mSliderTitle = new QLabel(tr("Saturation"), this);
+	mSliderTitle->move(mLeftSpacing, mTopSpacing);
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setTickInterval(255/5);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setTickPosition(QSlider::TicksBelow);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-	slider->setObjectName("DkSaturationSlider");
+	mSlider = new QSlider(this);
+	mSlider->setMinimum(mMinVal);
+	mSlider->setMaximum(mMaxVal);
+	mSlider->setValue(mMiddleVal);
+	mSlider->setTickInterval(255/5);
+	mSlider->setOrientation(Qt::Horizontal);
+	mSlider->setTickPosition(QSlider::TicksBelow);
+	mSlider->setGeometry(QRect(mLeftSpacing, mSliderTitle->geometry().bottom() - 5, mSliderLength, 20));
+	mSlider->setObjectName("DkSaturationSlider");
 
-	sliderSpinBox = new QSpinBox(this);
-	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBox->setMinimum(minVal);
-	sliderSpinBox->setMaximum(maxVal);
-	sliderSpinBox->setValue(slider->value());
+	mSliderSpinBox = new QSpinBox(this);
+	mSliderSpinBox->setGeometry(mSlider->geometry().right() - 45, mSliderTitle->geometry().top(), 45, 20);
+	mSliderSpinBox->setMinimum(mMinVal);
+	mSliderSpinBox->setMaximum(mMaxVal);
+	mSliderSpinBox->setValue(mSlider->value());
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
-	connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
+	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
+	connect(mSliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
 
-	minValLabel = new QLabel(QString::number(minVal), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+	mMinValLabel = new QLabel(QString::number(mMinVal), this);
+	mMinValLabel->move(mLeftSpacing, mSlider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number(middleVal), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
+	mMiddleValLabel = new QLabel(QString::number(mMiddleVal), this);
+	mMiddleValLabel->move(mLeftSpacing + mSliderLength / 2 - 2, mSlider->geometry().bottom());
 
-	maxValLabel = new QLabel(QString::number(maxVal), this);
-	maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
+	mMaxValLabel = new QLabel(QString::number(mMaxVal), this);
+	mMaxValLabel->move(mSlider->geometry().right() - 20, mSlider->geometry().bottom());
 
-	saturation = slider->value();
+	saturation = mSlider->value();
 
 };
 
@@ -1117,7 +1110,7 @@ cv::Mat DkSaturation::compute(cv::Mat inLut, float val1, float val2) {
 // change saturation value and redraw image
 void DkSaturation::redrawImage() {
 
-	saturation = slider->value();
+	saturation = mSlider->value();
 	historyData currData;
 	currData.isHsv = true;
 	currData.arg1 = (float)saturation;
@@ -1127,7 +1120,7 @@ void DkSaturation::redrawImage() {
 
 		resetSliderValues(manipulationSaturation);
 #ifdef WITH_OPENCV
-		imgMat = DkImage::qImage2Mat(manipDialog->getImgPreview());
+		imgMat = DkImage::qImage2Mat(mManipDialog->getImgPreview());
 #endif
 
 		historyDataVec.push_back(currData);
@@ -1152,7 +1145,7 @@ void DkSaturation::redrawImage() {
 // change saturation slider style
 void DkSaturation::setSliderStyle(QString sColor) {
 	
-	slider->setStyleSheet(
+	mSlider->setStyleSheet(
 		QString("QSlider::groove:horizontal {border: 1px solid #999999; height: 4px; margin: 2px 0;")
 		+ QString("background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 ")+ sColor + QString(");} ")
 		+ QString("QSlider::handle:horizontal {background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #d2d2d2, stop:1 #e6e6e6); border: 1px solid #5c5c5c; width: 6px; margin:-4px 0px -6px 0px ;border-radius: 3px;}"));
@@ -1162,47 +1155,47 @@ void DkSaturation::setSliderStyle(QString sColor) {
 DkHue::DkHue(QWidget *parent, DkImageManipulationDialog *parentDialog) 
 	: DkImageManipulationWidget(parent, parentDialog){
 
-	name = QString("DkHue");
-	defaultValue = 0;
+	mName = QString("DkHue");
+	mDefaultValue = 0;
 
-	minVal = -180;
-	middleVal = defaultValue;
-	maxVal = 180;
+	mMinVal = -180;
+	mMiddleVal = mDefaultValue;
+	mMaxVal = 180;
 
-	sliderTitle = new QLabel(tr("Hue"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+	mSliderTitle = new QLabel(tr("Hue"), this);
+	mSliderTitle->move(mLeftSpacing, mTopSpacing);
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setTickInterval(90);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setTickPosition(QSlider::TicksBelow);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-	slider->setObjectName("DkHueSlider");
+	mSlider = new QSlider(this);
+	mSlider->setMinimum(mMinVal);
+	mSlider->setMaximum(mMaxVal);
+	mSlider->setValue(mMiddleVal);
+	mSlider->setTickInterval(90);
+	mSlider->setOrientation(Qt::Horizontal);
+	mSlider->setTickPosition(QSlider::TicksBelow);
+	mSlider->setGeometry(QRect(mLeftSpacing, mSliderTitle->geometry().bottom() - 5, mSliderLength, 20));
+	mSlider->setObjectName("DkHueSlider");
 
-	sliderSpinBox = new QSpinBox(this);
-	sliderSpinBox->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBox->setMinimum(minVal);
-	sliderSpinBox->setMaximum(maxVal);
-	sliderSpinBox->setValue(slider->value());
+	mSliderSpinBox = new QSpinBox(this);
+	mSliderSpinBox->setGeometry(mSlider->geometry().right() - 45, mSliderTitle->geometry().top(), 45, 20);
+	mSliderSpinBox->setMinimum(mMinVal);
+	mSliderSpinBox->setMaximum(mMaxVal);
+	mSliderSpinBox->setValue(mSlider->value());
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
-	connect(sliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
+	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(updateSliderSpinBox(int)));
+	connect(mSliderSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateSliderVal(int)));
 
-	minValLabel = new QLabel(QString::number(minVal), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+	mMinValLabel = new QLabel(QString::number(mMinVal), this);
+	mMinValLabel->move(mLeftSpacing, mSlider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number(middleVal), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
+	mMiddleValLabel = new QLabel(QString::number(mMiddleVal), this);
+	mMiddleValLabel->move(mLeftSpacing + mSliderLength / 2 - 2, mSlider->geometry().bottom());
 
-	maxValLabel = new QLabel(QString::number(maxVal), this);
-	maxValLabel->move(slider->geometry().right() - 20, slider->geometry().bottom());
+	mMaxValLabel = new QLabel(QString::number(mMaxVal), this);
+	mMaxValLabel->move(mSlider->geometry().right() - 20, mSlider->geometry().bottom());
 
 	// TODO: create a slider class & add a layout!!!
 
-	hue = slider->value(); // / 2;
+	hue = mSlider->value(); // / 2;
 
 };
 
@@ -1222,7 +1215,7 @@ cv::Mat DkHue::compute(cv::Mat inLut, float val1, float val2) {
 // change hue value and redraw image
 void DkHue::redrawImage() {
 
-	hue = slider->value();
+	hue = mSlider->value();
 	historyData currData;
 	currData.isHsv = true;
 	currData.arg1 = (float)saturation;
@@ -1232,7 +1225,7 @@ void DkHue::redrawImage() {
 
 		resetSliderValues(manipulationHue);
 #ifdef WITH_OPENCV
-		imgMat = DkImage::qImage2Mat(manipDialog->getImgPreview());
+		imgMat = DkImage::qImage2Mat(mManipDialog->getImgPreview());
 #endif
 
 		historyDataVec.push_back(currData);
@@ -1247,7 +1240,7 @@ void DkHue::redrawImage() {
 		historyToolsVec.back() = this;
 	}
 
-	setSaturationSliderColor(QColor(hueGradientImg.pixel(hue/2 + 90, 0)).name());
+	setSaturationSliderColor(QColor(mHueGradientImg.pixel(hue/2 + 90, 0)).name());
 #ifdef WITH_OPENCV
 	cv::Mat manipulationLUT = compute(tempLUT, currData.arg1, currData.arg2);
 	emit updateDialogImgSignal(DkImage::mat2QImage(applyLutToImage(imgMat, manipulationLUT, currData.isHsv)));
@@ -1259,53 +1252,53 @@ void DkHue::redrawImage() {
 DkGamma::DkGamma(QWidget *parent, DkImageManipulationDialog *parentDialog) 
 	: DkImageManipulationWidget(parent, parentDialog){
 
-	name = QString("DkGamma");
-	defaultValueF = 1.0f;
+	mName = QString("DkGamma");
+	mDefaultValueF = 1.0f;
 
-	minValD = 0.01f;
-	middleValD = defaultValueF;
-	maxValD = 9.99f;
-	minVal = 0;
-	middleVal = 99;
-	maxVal = 199;
+	mMinValD = 0.01f;
+	mMiddleValD = mDefaultValueF;
+	mMaxValD = 9.99f;
+	mMinVal = 0;
+	mMiddleVal = 99;
+	mMaxVal = 199;
 
-	for(int i = 0; i < 100; i++) gammaSliderValues[i] = (i+1) / 100.0;
-	for(int i = 0; i < 99; i++) gammaSliderValues[100 + i] = (int)(100 * pow(10, (i+1) / 100.0)) / 100.0;
-	gammaSliderValues[199] = 9.99;
+	for(int i = 0; i < 100; i++) mGammaSliderValues[i] = (i+1) / 100.0;
+	for(int i = 0; i < 99; i++) mGammaSliderValues[100 + i] = (int)(100 * pow(10, (i+1) / 100.0)) / 100.0;
+	mGammaSliderValues[199] = 9.99;
 
-	sliderTitle = new QLabel(tr("Gamma"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+	mSliderTitle = new QLabel(tr("Gamma"), this);
+	mSliderTitle->move(mLeftSpacing, mTopSpacing);
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setTickInterval(100);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setTickPosition(QSlider::TicksBelow);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-	slider->setObjectName("DkBrightnessSlider");
+	mSlider = new QSlider(this);
+	mSlider->setMinimum(mMinVal);
+	mSlider->setMaximum(mMaxVal);
+	mSlider->setValue(mMiddleVal);
+	mSlider->setTickInterval(100);
+	mSlider->setOrientation(Qt::Horizontal);
+	mSlider->setTickPosition(QSlider::TicksBelow);
+	mSlider->setGeometry(QRect(mLeftSpacing, mSliderTitle->geometry().bottom() - 5, mSliderLength, 20));
+	mSlider->setObjectName("DkBrightnessSlider");
 
-	sliderSpinBoxDouble = new QDoubleSpinBox(this);
-	sliderSpinBoxDouble->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBoxDouble->setMinimum(minValD);
-	sliderSpinBoxDouble->setMaximum(maxValD);
-	sliderSpinBoxDouble->setValue(middleValD);
-	sliderSpinBoxDouble->setSingleStep(0.01);
+	mSliderSpinBoxDouble = new QDoubleSpinBox(this);
+	mSliderSpinBoxDouble->setGeometry(mSlider->geometry().right() - 45, mSliderTitle->geometry().top(), 45, 20);
+	mSliderSpinBoxDouble->setMinimum(mMinValD);
+	mSliderSpinBoxDouble->setMaximum(mMaxValD);
+	mSliderSpinBoxDouble->setValue(mMiddleValD);
+	mSliderSpinBoxDouble->setSingleStep(0.01);
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateDoubleSliderSpinBox(int)));
-	connect(sliderSpinBoxDouble, SIGNAL(valueChanged(double)), this, SLOT(updateDoubleSliderVal(double)));
+	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(updateDoubleSliderSpinBox(int)));
+	connect(mSliderSpinBoxDouble, SIGNAL(valueChanged(double)), this, SLOT(updateDoubleSliderVal(double)));
 
-	minValLabel = new QLabel(QString::number(minValD), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+	mMinValLabel = new QLabel(QString::number(mMinValD), this);
+	mMinValLabel->move(mLeftSpacing, mSlider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number(middleValD), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
+	mMiddleValLabel = new QLabel(QString::number(mMiddleValD), this);
+	mMiddleValLabel->move(mLeftSpacing + mSliderLength / 2 - 2, mSlider->geometry().bottom());
 
-	maxValLabel = new QLabel(QString::number(maxValD), this);
-	maxValLabel->move(slider->geometry().right() - 21, slider->geometry().bottom());
+	mMaxValLabel = new QLabel(QString::number(mMaxValD), this);
+	mMaxValLabel->move(mSlider->geometry().right() - 21, mSlider->geometry().bottom());
 
-	gamma = (float)sliderSpinBoxDouble->value();
+	gamma = (float)mSliderSpinBoxDouble->value();
 
 };
 
@@ -1325,7 +1318,7 @@ cv::Mat DkGamma::compute(cv::Mat inLut, float val1, float) {
 // change gamma value and redraw image
 void DkGamma::redrawImage() {
 
-	gamma = (float)sliderSpinBoxDouble->value();
+	gamma = (float)mSliderSpinBoxDouble->value();
 	historyData currData;
 	currData.isHsv = false;
 	currData.arg1 = gamma;
@@ -1335,7 +1328,7 @@ void DkGamma::redrawImage() {
 
 		resetSliderValues(manipulationGamma);
 #ifdef WITH_OPENCV
-		imgMat = DkImage::qImage2Mat(manipDialog->getImgPreview());
+		imgMat = DkImage::qImage2Mat(mManipDialog->getImgPreview());
 #endif
 
 		historyDataVec.push_back(currData);
@@ -1361,49 +1354,49 @@ void DkGamma::redrawImage() {
 DkExposure::DkExposure(QWidget *parent, DkImageManipulationDialog *parentDialog) 
 	: DkImageManipulationWidget(parent, parentDialog){
 
-	name = QString("DkExposure");
-	defaultValueF = 0.0f;
+	mName = QString("DkExposure");
+	mDefaultValueF = 0.0f;
 
-	minValD = -6.0f;
-	middleValD = defaultValueF;
-	maxValD = 6.0f;
-	minVal = -600;
-	middleVal = 0;
-	maxVal = 600;
+	mMinValD = -6.0f;
+	mMiddleValD = mDefaultValueF;
+	mMaxValD = 6.0f;
+	mMinVal = -600;
+	mMiddleVal = 0;
+	mMaxVal = 600;
 
-	sliderTitle = new QLabel(tr("Exposure"), this);
-	sliderTitle->move(leftSpacing, topSpacing);
+	mSliderTitle = new QLabel(tr("Exposure"), this);
+	mSliderTitle->move(mLeftSpacing, mTopSpacing);
 
-	slider = new QSlider(this);
-	slider->setMinimum(minVal);
-	slider->setMaximum(maxVal);
-	slider->setValue(middleVal);
-	slider->setTickInterval(100);
-	slider->setOrientation(Qt::Horizontal);
-	slider->setTickPosition(QSlider::TicksBelow);
-	slider->setGeometry(QRect(leftSpacing, sliderTitle->geometry().bottom() - 5, sliderLength, 20));
-	slider->setObjectName("DkBrightnessSlider");
+	mSlider = new QSlider(this);
+	mSlider->setMinimum(mMinVal);
+	mSlider->setMaximum(mMaxVal);
+	mSlider->setValue(mMiddleVal);
+	mSlider->setTickInterval(100);
+	mSlider->setOrientation(Qt::Horizontal);
+	mSlider->setTickPosition(QSlider::TicksBelow);
+	mSlider->setGeometry(QRect(mLeftSpacing, mSliderTitle->geometry().bottom() - 5, mSliderLength, 20));
+	mSlider->setObjectName("DkBrightnessSlider");
 
-	sliderSpinBoxDouble = new QDoubleSpinBox(this);
-	sliderSpinBoxDouble->setGeometry(slider->geometry().right() - 45, sliderTitle->geometry().top(), 45, 20);
-	sliderSpinBoxDouble->setMinimum(minValD);
-	sliderSpinBoxDouble->setMaximum(maxValD);
-	sliderSpinBoxDouble->setValue(middleValD);
-	sliderSpinBoxDouble->setSingleStep(0.01);
+	mSliderSpinBoxDouble = new QDoubleSpinBox(this);
+	mSliderSpinBoxDouble->setGeometry(mSlider->geometry().right() - 45, mSliderTitle->geometry().top(), 45, 20);
+	mSliderSpinBoxDouble->setMinimum(mMinValD);
+	mSliderSpinBoxDouble->setMaximum(mMaxValD);
+	mSliderSpinBoxDouble->setValue(mMiddleValD);
+	mSliderSpinBoxDouble->setSingleStep(0.01);
 
-	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(updateDoubleSliderSpinBox(int)));
-	connect(sliderSpinBoxDouble, SIGNAL(valueChanged(double)), this, SLOT(updateDoubleSliderVal(double)));
+	connect(mSlider, SIGNAL(valueChanged(int)), this, SLOT(updateDoubleSliderSpinBox(int)));
+	connect(mSliderSpinBoxDouble, SIGNAL(valueChanged(double)), this, SLOT(updateDoubleSliderVal(double)));
 
-	minValLabel = new QLabel(QString::number((int)minValD), this);
-	minValLabel->move(leftSpacing, slider->geometry().bottom());
+	mMinValLabel = new QLabel(QString::number((int)mMinValD), this);
+	mMinValLabel->move(mLeftSpacing, mSlider->geometry().bottom());
 
-	middleValLabel = new QLabel(QString::number((int)middleValD), this);
-	middleValLabel->move(leftSpacing + sliderLength / 2 - 2, slider->geometry().bottom());
+	mMiddleValLabel = new QLabel(QString::number((int)mMiddleValD), this);
+	mMiddleValLabel->move(mLeftSpacing + mSliderLength / 2 - 2, mSlider->geometry().bottom());
 
-	maxValLabel = new QLabel(QString::number((int)maxValD), this);
-	maxValLabel->move(slider->geometry().right() - 6, slider->geometry().bottom());
+	mMaxValLabel = new QLabel(QString::number((int)mMaxValD), this);
+	mMaxValLabel->move(mSlider->geometry().right() - 6, mSlider->geometry().bottom());
 
-	exposure = (float)sliderSpinBoxDouble->value();
+	sExposure = (float)mSliderSpinBoxDouble->value();
 
 };
 
@@ -1436,19 +1429,19 @@ float DkExposure::convertExposureToSliderVal(float val) {
 // change exposure value and redraw image
 void DkExposure::redrawImage() {
 
-	exposure = (float)sliderSpinBoxDouble->value();
-	exposure = convertSliderValToExposure(exposure);
+	sExposure = (float)mSliderSpinBoxDouble->value();
+	sExposure = convertSliderValToExposure(sExposure);
 
 	historyData currData;
 	currData.isHsv = false;
-	currData.arg1 = exposure;
+	currData.arg1 = sExposure;
 	currData.arg2 = 0;
 
 	if (manipulationType != manipulationExposure) {
 
 		resetSliderValues(manipulationExposure);
 #ifdef WITH_OPENCV
-		imgMat = DkImage::qImage2Mat(manipDialog->getImgPreview());
+		imgMat = DkImage::qImage2Mat(mManipDialog->getImgPreview());
 #endif
 
 		historyDataVec.push_back(currData);

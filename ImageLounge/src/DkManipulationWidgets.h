@@ -77,8 +77,8 @@ class DkImageManipulationWidget : public QWidget {
 		void setToolsValue(float val1, float val2);
 		float getToolsValue();
 
-		int getDefaultValue() { return defaultValue; };
-		float getDefaultValueF() { return defaultValueF; };
+		int getDefaultValue() { return mDefaultValue; };
+		float getDefaultValueF() { return mDefaultValueF; };
 
 		static void clearHistoryVectors();
 
@@ -102,30 +102,29 @@ class DkImageManipulationWidget : public QWidget {
 #endif
 
 	protected:
-		QSpinBox* sliderSpinBox;
-		QDoubleSpinBox* sliderSpinBoxDouble;
-		QSlider* slider;
-		QLabel* sliderTitle;
-		QLabel* minValLabel;
-		QLabel* maxValLabel;
-		QLabel* middleValLabel;
-		int leftSpacing;
-		int topSpacing;
-		int sliderLength;
-		int margin;
-		int minVal;
-		int maxVal;
-		int middleVal;
-		double minValD;
-		double maxValD;
-		double middleValD;
-		bool valueUpdated;
-		QImage hueGradientImg;
-		QString name;
-		double gammaSliderValues[200];
-		DkImageManipulationDialog *manipDialog;
-		int defaultValue;
-		float defaultValueF;
+		QSpinBox* mSliderSpinBox;
+		QDoubleSpinBox* mSliderSpinBoxDouble;
+		QSlider* mSlider;
+		QLabel* mSliderTitle;
+		QLabel* mMinValLabel;
+		QLabel* mMaxValLabel;
+		QLabel* mMiddleValLabel;
+		int mLeftSpacing		= 10;
+		int mTopSpacing			= 10;
+		int mSliderLength		= 0;
+		int mMinVal				= -100;	
+		int mMaxVal				= 100;
+		int mMiddleVal			= 0;
+		double mMinValD			= -100.0;
+		double mMaxValD			= 100.0;
+		double mMiddleValD		= 0.0;
+		bool mValueUpdated		= false;
+		QImage mHueGradientImg;
+		QString mName;
+		double mGammaSliderValues[200];
+		DkImageManipulationDialog* mManipDialog = 0;
+		int mDefaultValue		= 0;
+		float mDefaultValueF	= 0.0f;
 		
 		static bool doARedraw;
 
@@ -134,7 +133,7 @@ class DkImageManipulationWidget : public QWidget {
 		static int saturation;
 		static int hue;
 		static float gamma;
-		static float exposure;
+		static float sExposure;
 		static bool prepareUndo;
 
 #ifdef WITH_OPENCV
@@ -319,44 +318,43 @@ class DkImageManipulationDialog : public QDialog {
 public:
 	DkImageManipulationDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 	~DkImageManipulationDialog();
+	
 	void setImage(QImage *img) {
-		this->img = img;
+		this->mImg = img;
 		createImgPreview();
 		drawImgPreview();
 	};
 
 	void resetValues();
-	QImage getImgPreview() {return imgPreview;};
+	QImage getImgPreview() {return mImgPreview;};
 
-	DkBrightness *getBrightnessWidget() { return brightnessWidget;};
-	DkContrast *getContrastWidget() { return contrastWidget;};
-	DkSaturation *getSaturationWidget() { return saturationWidget;};
-	DkHue *getHueWidget() { return hueWidget;};
-	DkGamma *getGammaWidget() { return gammaWidget;};
-	DkExposure *getExposureWidget() { return exposureWidget;};
+	DkBrightness *getBrightnessWidget() { return mBrightnessWidget;};
+	DkContrast *getContrastWidget() { return mContrastWidget;};
+	DkSaturation *getSaturationWidget() { return mSaturationWidget;};
+	DkHue *getHueWidget() { return mHueWidget;};
+	DkGamma *getGammaWidget() { return mGammaWidget;};
+	DkExposure *getExposureWidget() { return mExposureWidget;};
 
 protected slots:
 	void updateImg(QImage updatedImg);
 
 protected:
-	QImage *img;
-	QImage imgPreview;
-	int dialogWidth;
-	int dialogHeight;
-	QRect previewImgRect;
-	QLabel* previewLabel;
-	int previewWidth;
-	int previewHeight;
-	int toolsWidth;
-	int previewMargin;
+	QImage *mImg;
+	QImage mImgPreview;
+	QRect mPreviewImgRect;
+	QLabel* mPreviewLabel;
+	int mPreviewWidth;
+	int mPreviewHeight;
+	int mToolsWidth;
+	int mPreviewMargin;
 
-	DkContrast* contrastWidget;
-	DkBrightness* brightnessWidget;
-	DkSaturation* saturationWidget;
-	DkHue* hueWidget;
-	DkGamma* gammaWidget;
-	DkExposure* exposureWidget;
-	DkUndoRedo* undoredoWidget;
+	DkContrast* mContrastWidget;
+	DkBrightness* mBrightnessWidget;
+	DkSaturation* mSaturationWidget;
+	DkHue* mHueWidget;
+	DkGamma* mGammaWidget;
+	DkExposure* mExposureWidget;
+	DkUndoRedo* mUndoRedoWidget;
 
 	void init();
 	void createLayout();

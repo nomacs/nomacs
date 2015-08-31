@@ -111,11 +111,11 @@ public:
 	};
 
 	void setWorldMatrix(QTransform* worldMatrix) {
-		this->worldMatrix = worldMatrix;
+		this->mWorldMatrix = worldMatrix;
 	};
 
 	void setImgMatrix(QTransform* imgMatrix) {
-		this->imgMatrix = imgMatrix;
+		this->mImgMatrix = imgMatrix;
 	};
 
 signals:
@@ -132,34 +132,32 @@ protected:
 
 	virtual QPointF mapToImage(const QPointF& pos) const {
 		
-		if (!worldMatrix || !imgMatrix)
+		if (!mWorldMatrix || !mImgMatrix)
 			return pos;
 		
-		QPointF imgPos = worldMatrix->inverted().map(pos);
-		imgPos = imgMatrix->inverted().map(imgPos);
+		QPointF imgPos = mWorldMatrix->inverted().map(pos);
+		imgPos = mImgMatrix->inverted().map(imgPos);
 
 		return imgPos;
 	};
 
 	virtual QPointF mapToViewport(const QPointF& pos) const {
 
-		if (!worldMatrix)
+		if (!mWorldMatrix)
 			return pos;
 
-		return worldMatrix->inverted().map(pos);
+		return mWorldMatrix->inverted().map(pos);
 	};
 
 	virtual void init() {
-		worldMatrix = 0;
-		imgMatrix = 0;
 
 		setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 		//setStyleSheet("QGraphicsView{background-color: QColor(100,0,0,20); border: 1px solid #FFFFFF;}");
 		//setMouseTracking(true);
 	};
 
-	QTransform* worldMatrix;
-	QTransform* imgMatrix;
+	QTransform* mWorldMatrix = 0;
+	QTransform* mImgMatrix = 0;
 };
 
 };
