@@ -415,7 +415,6 @@ DkExplorer::DkExplorer(const QString& title, QWidget* parent /* = 0 */, Qt::Wind
 	readSettings();
 
 	connect(fileTree, SIGNAL(clicked(const QModelIndex&)), this, SLOT(fileClicked(const QModelIndex&)));
-	//connect(fileTree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showContextMenu(const QPoint&)));
 }
 
 DkExplorer::~DkExplorer() {
@@ -537,7 +536,6 @@ void DkExplorer::writeSettings() {
 
 	settings.setValue("ReadOnly", fileModel->isReadOnly());
 	settings.endGroup();
-	
 }
 
 void DkExplorer::readSettings() {
@@ -557,7 +555,7 @@ void DkExplorer::readSettings() {
 		fileTree->setColumnHidden(idx, settings.value(headerVal + "Hidden", showCol).toBool());
 	}
 
-	fileModel->setReadOnly(settings.value("ReadOnly", false).toBool());
+	fileModel->setReadOnly(settings.value("ReadOnly", true).toBool());
 	settings.endGroup();
 }
 

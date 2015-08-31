@@ -176,9 +176,9 @@ int main(int argc, char *argv[]) {
 
 	int rVal = a.exec();
 
-#if QT_VERSION < 0x050000
+//#if QT_VERSION < 0x050000
 	delete w;	// we need delete so that settings are saved (from destructors)
-#endif
+//#endif
 
 	return rVal;
 }

@@ -65,7 +65,7 @@ namespace nmc {
 /**********************************************************************************
 * Plugin manager dialog
 **********************************************************************************/
-DkPluginManager::DkPluginManager() {
+DkPluginManager::DkPluginManager() : QDialog() {
 	init();
 };
 

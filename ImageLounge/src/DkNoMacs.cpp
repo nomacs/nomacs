@@ -191,6 +191,7 @@ void DkNoMacs::release() {
 		delete appManager;
 		appManager = 0;
 	}
+
 }
 
 void DkNoMacs::init() {
