@@ -31,7 +31,7 @@
 #include "DkImageContainer.h"
 #include "DkImageStorage.h"
 #include "DkSettings.h"
-#include "DkImage.h"
+#include "DkImageLoader.h"
 #include "DkUtils.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin

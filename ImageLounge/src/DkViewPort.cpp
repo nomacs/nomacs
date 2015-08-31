@@ -28,7 +28,7 @@
 #include "DkViewPort.h"
 
 #include "DkControlWidget.h"
-#include "DkImage.h"
+#include "DkImageLoader.h"
 #include "DkWidgets.h"
 #include "DkSettings.h"
 #include "DkNetwork.h"

@@ -31,7 +31,7 @@
 #include "DkWidgets.h"
 #include "DkThumbsWidgets.h"
 #include "DkUtils.h"
-#include "DkImage.h"
+#include "DkImageLoader.h"
 #include "DkSettings.h"
 #include "DkMessageBox.h"
 

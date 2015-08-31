@@ -1,5 +1,5 @@
 /*******************************************************************************************************
- DkImage.h
+ DkDialog.h
  Created on:	21.04.2011
  
  nomacs is a fast and small image viewer with the capability of synchronizing multiple instances

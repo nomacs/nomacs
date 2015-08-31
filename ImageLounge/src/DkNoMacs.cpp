@@ -49,7 +49,7 @@
 #include "DkError.h"
 #include "DkUtils.h"
 #include "DkControlWidget.h"
-#include "DkImage.h"
+#include "DkImageLoader.h"
 #include "DkTimer.h"
 
 #ifdef  WITH_PLUGINS
