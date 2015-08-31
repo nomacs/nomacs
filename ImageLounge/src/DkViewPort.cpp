@@ -27,13 +27,14 @@
 
 #include "DkViewPort.h"
 
-#include "DkNoMacs.h"	// currently needed for some enums
-#include "DkThumbsWidgets.h"
-#include "DkMetaData.h"
-#include "DkMetaDataWidgets.h"
-#include "DkNetwork.h"
-#include "DkImageContainer.h"
 #include "DkControlWidget.h"
+#include "DkImage.h"
+#include "DkWidgets.h"
+#include "DkSettings.h"
+#include "DkNetwork.h"
+#include "DkThumbsWidgets.h"		// needed in the connects -> shall we move them to controller?
+#include "DkMetaDataWidgets.h"
+#include "DkToolbars.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QClipboard>
@@ -41,6 +42,13 @@
 #include <QMovie>
 #include <QMimeData>
 #include <QAction>
+#include <QApplication>
+#include <QVBoxLayout>
+#include <QDragLeaveEvent>
+#include <QDrag>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QDesktopWidget>
 #include <qmath.h>
 #pragma warning(pop)		// no warnings from includes - end
 
@@ -125,37 +133,39 @@ void DkViewPort::createShortcuts() {
 
 	mShortcuts.resize(scf_end);
 
-	// files
-	mShortcuts[sc_first_file] = new QShortcut(shortcut_first_file, this);
-	connect(mShortcuts[sc_first_file], SIGNAL(activated()), this, SLOT(loadFirst()));
-	mShortcuts[sc_last_file] = new QShortcut(shortcut_last_file, this);
-	connect(mShortcuts[sc_last_file], SIGNAL(activated()), this, SLOT(loadLast()));
+	// TODO: make actions!!
 
-	mShortcuts[sc_skip_prev] = new QShortcut(shortcut_skip_prev, this);
-	mShortcuts[sc_skip_prev]->setContext(Qt::WidgetWithChildrenShortcut);
-	connect(mShortcuts[sc_skip_prev], SIGNAL(activated()), this, SLOT(loadSkipPrev10()));
-	mShortcuts[sc_skip_next] = new QShortcut(shortcut_skip_next, this);
-	mShortcuts[sc_skip_next]->setContext(Qt::WidgetWithChildrenShortcut);
-	connect(mShortcuts[sc_skip_next], SIGNAL(activated()), this, SLOT(loadSkipNext10()));
-	
-	mShortcuts[sc_first_sync] = new QShortcut(shortcut_first_file_sync, this);
-	connect(mShortcuts[sc_first_sync], SIGNAL(activated()), this, SLOT(loadFirst()));
+	//// files
+	//mShortcuts[sc_first_file] = new QShortcut(shortcut_first_file, this);
+	//connect(mShortcuts[sc_first_file], SIGNAL(activated()), this, SLOT(loadFirst()));
+	//mShortcuts[sc_last_file] = new QShortcut(shortcut_last_file, this);
+	//connect(mShortcuts[sc_last_file], SIGNAL(activated()), this, SLOT(loadLast()));
 
-	mShortcuts[sc_last_sync] = new QShortcut(shortcut_last_file_sync, this);
-	connect(mShortcuts[sc_last_sync], SIGNAL(activated()), this, SLOT(loadLast()));
+	//mShortcuts[sc_skip_prev] = new QShortcut(shortcut_skip_prev, this);
+	//mShortcuts[sc_skip_prev]->setContext(Qt::WidgetWithChildrenShortcut);
+	//connect(mShortcuts[sc_skip_prev], SIGNAL(activated()), this, SLOT(loadSkipPrev10()));
+	//mShortcuts[sc_skip_next] = new QShortcut(shortcut_skip_next, this);
+	//mShortcuts[sc_skip_next]->setContext(Qt::WidgetWithChildrenShortcut);
+	//connect(mShortcuts[sc_skip_next], SIGNAL(activated()), this, SLOT(loadSkipNext10()));
+	//
+	//mShortcuts[sc_first_sync] = new QShortcut(shortcut_first_file_sync, this);
+	//connect(mShortcuts[sc_first_sync], SIGNAL(activated()), this, SLOT(loadFirst()));
 
-	mShortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
-	connect(mShortcuts[sc_next_sync], SIGNAL(activated()), this, SLOT(loadNextFileFast()));
+	//mShortcuts[sc_last_sync] = new QShortcut(shortcut_last_file_sync, this);
+	//connect(mShortcuts[sc_last_sync], SIGNAL(activated()), this, SLOT(loadLast()));
 
-	mShortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
-	connect(mShortcuts[sc_prev_sync], SIGNAL(activated()), this, SLOT(loadPrevFileFast()));
+	//mShortcuts[sc_next_sync] = new QShortcut(shortcut_next_file_sync, this);
+	//connect(mShortcuts[sc_next_sync], SIGNAL(activated()), this, SLOT(loadNextFileFast()));
 
-	mShortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
+	//mShortcuts[sc_prev_sync] = new QShortcut(shortcut_prev_file_sync, this);
+	//connect(mShortcuts[sc_prev_sync], SIGNAL(activated()), this, SLOT(loadPrevFileFast()));
 
-	for (int idx = 0; idx < mShortcuts.size(); idx++) {
-		// assign widget shortcuts to all of them
-		mShortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
-	}
+	//mShortcuts[sc_delete_silent] = new QShortcut(shortcut_delete_silent, this);
+
+	//for (int idx = 0; idx < mShortcuts.size(); idx++) {
+	//	// assign widget shortcuts to all of them
+	//	mShortcuts[idx]->setContext(Qt::WidgetWithChildrenShortcut);
+	//}
 
 
 }
@@ -1092,7 +1102,7 @@ void DkViewPort::getPixelInfo(const QPoint& pos) {
 
 	msg += " | <font color=#555555>" + col.name().toUpper() + "</font>";
 
-	emit statusInfoSignal(msg, status_pixel_info);
+	emit statusInfoSignal(msg, 0);// status_pixel_info); TODO: fix include
 }
 
 QString DkViewPort::getCurrentPixelHexValue() {
@@ -1323,13 +1333,13 @@ void DkViewPort::setEditedImage(QSharedPointer<DkImageContainerT> img) {
 void DkViewPort::applyPluginChanges() {
 
 	// TODO: that's dangerous! - remove -> pluginManager is singelton soon anyway
-	DkNoMacs* noMacs = dynamic_cast<DkNoMacs*>(parentWidget());
+	//DkNoMacs* noMacs = dynamic_cast<DkNoMacs*>(parentWidget());
 
-	if (!noMacs) 
-		return;
+	//if (!noMacs) 
+	//	return;
 
-	if(!noMacs->getCurrRunningPlugin().isEmpty()) 
-		noMacs->applyPluginChanges(true, false);
+	//if(!noMacs->getCurrRunningPlugin().isEmpty()) 
+	//	noMacs->applyPluginChanges(true, false);
 }
 
 bool DkViewPort::unloadImage(bool fileChange) {
@@ -1619,7 +1629,7 @@ DkControlWidget* DkViewPort::getController() {
 	return controller;
 }
 
-void DkViewPort::cropImage(DkRotatingRect rect, const QColor& bgCol) {
+void DkViewPort::cropImage(const DkRotatingRect& rect, const QColor& bgCol) {
 
 	QTransform tForm; 
 	QPointF cImgSize;
@@ -2274,7 +2284,6 @@ void DkViewPortContrast::setImage(QImage newImg) {
 	}
 
 #endif
-	
 	
 	falseColorImg = imgs[activeChannel];
 	falseColorImg.setColorTable(colorTable);

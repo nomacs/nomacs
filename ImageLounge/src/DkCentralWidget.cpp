@@ -36,6 +36,9 @@
 #include "DkImageContainer.h"
 #include "DkBatch.h"
 #include "DkUtils.h"
+#include "DkImage.h"
+#include "DkSettings.h"
+#include "DkWidgets.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QFileDialog>
@@ -43,6 +46,11 @@
 #include <QStackedLayout>
 #include <QMimeData>
 #include <QTabBar>
+#include <QSettings>
+#include <QIcon>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QDragEnterEvent>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

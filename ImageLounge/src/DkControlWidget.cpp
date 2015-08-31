@@ -32,12 +32,16 @@
 #include "DkThumbsWidgets.h"
 #include "DkMetaDataWidgets.h"
 #include "DkMetaData.h"
+#include "DkSettings.h"
+#include "DkPluginInterface.h"
+#include "DkToolbars.h"
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QStackedLayout>
 #include <QSharedPointer>
 #include <QGridLayout>
 #include <QTransform>
+#include <QMouseEvent>
 #pragma warning(pop)		// no warnings from includes - end
 
 namespace nmc {

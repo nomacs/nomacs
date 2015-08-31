@@ -49,6 +49,8 @@
 #include "DkError.h"
 #include "DkUtils.h"
 #include "DkControlWidget.h"
+#include "DkImage.h"
+#include "DkTimer.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
@@ -86,6 +88,7 @@
 #include <qmath.h>
 #include <QMimeData>
 #include <QNetworkProxyFactory>
+#include <QInputDialog>
 #pragma warning(pop)		// no warnings from includes - end
 
 #if defined(WIN32) && !defined(SOCK_STREAM)

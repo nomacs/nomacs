@@ -176,7 +176,6 @@ enum imageModes {
 	mode_rgb,
 };
 
-
 class DkTransferToolBar : public QToolBar {
 	Q_OBJECT
 

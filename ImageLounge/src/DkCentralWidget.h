@@ -55,6 +55,7 @@ namespace nmc {
 
 // nomacs defines
 class DkImageLoader;
+class DkViewPort;
 
 class DkTabInfo : public QObject {
 	Q_OBJECT

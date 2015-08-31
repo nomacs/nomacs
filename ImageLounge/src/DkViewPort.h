@@ -27,24 +27,11 @@
 
 #pragma once
 
+#include "DkBaseViewPort.h"
+#include "DkImageContainer.h"
+#include "DkTimer.h"
+
 #pragma warning(push, 0)	// no warnings from includes - begin
-// Qt
-#include <QDesktopWidget>
-#include <QGraphicsView>
-#include <QPrintDialog>
-#include <QPrintPreviewDialog>
-#include <QMessageBox>
-#include <QWidget>
-#include <QLabel>
-#include <QInputDialog>
-#include <QPainterPathStroker>
-#include <QBitmap>
-#include <QApplication>
-#include <QUrl>
-#include <QPrinter>
-#include <QGradientStops>
-#include <QSwipeGesture>
-#include <QStackedLayout>
 
 #if QT_VERSION < 0x050000
 #ifndef QT_NO_GESTURES
@@ -61,30 +48,16 @@
 #endif
 #endif
 
-// my stuff
-#include "DkImage.h"
-#include "DkWidgets.h"
-#include "DkNetwork.h"
-#include "DkSettings.h"
-#include "DkToolbars.h"
-#include "DkBaseViewPort.h"
-#include "DkPluginInterface.h"
-#include "DkTimer.h"
-
-#include "DkMath.h"
+class QVBoxLayout;
 
 namespace nmc {
 
 // some dummies
-//class DkFilePreview;
-//class DkThumbScrollWidget;
-//class DkMetaDataHUD;
-//class DkCommentWidget;
-//class DkViewPort;
-
 class DkImageLoader;
 class DkLoader;
 class DkControlWidget;
+class DkPeer;
+class DkRotatingRect;
 
 class DllExport DkViewPort : public DkBaseViewPort {
 	Q_OBJECT
@@ -197,7 +170,7 @@ public slots:
 	bool unloadImage(bool fileChange = true);
 	void deactivate();
 	//void fileNotLoaded(QFileInfo file);
-	void cropImage(DkRotatingRect rect, const QColor& bgCol);
+	void cropImage(const DkRotatingRect& rect, const QColor& bgCol);
 	void repeatZoom();
 
 	// copy & paste

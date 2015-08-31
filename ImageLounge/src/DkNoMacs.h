@@ -94,6 +94,7 @@ class DkCentralWidget;
 class DkMainToolBar;
 class DkDockWidget;
 class DkQuickAccess;
+class DkImageLoader;
 
 #ifdef WITH_UPNP
 class DkUpnpControlPoint;
