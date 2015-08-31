@@ -573,7 +573,7 @@ DkOverview::DkOverview(QWidget* parent) : QLabel(parent) {
 
 void DkOverview::paintEvent(QPaintEvent *event) {
 
-	if (img.isNull() || !imgMatrix || !worldMatrix)
+	if (mImg.isNull() || !mImgMatrix || !mWorldMatrix)
 		return;
 
 	QPainter painter(this);
@@ -586,12 +586,12 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 	if (viewSize.width() > 2 && viewSize.height() > 2) {
 	
 		QTransform overviewImgMatrix = getScaledImageMatrix();			// matrix that always resizes the image to the current mViewport
-		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), img.size()));
+		QRectF overviewImgRect = getScaledImageMatrix().mapRect(QRectF(QPointF(), mImg.size()));
 
 		// now render the current view
-		QRectF viewRect = viewPortRect;
-		viewRect = worldMatrix->inverted().mapRect(viewRect);
-		viewRect = imgMatrix->inverted().mapRect(viewRect);
+		QRectF viewRect = mViewPortRect;
+		viewRect = mWorldMatrix->inverted().mapRect(viewRect);
+		viewRect = mImgMatrix->inverted().mapRect(viewRect);
 		viewRect = overviewImgMatrix.mapRect(viewRect);
 		viewRect.moveTopLeft(viewRect.topLeft()+QPointF(lm, tm));
 
@@ -625,13 +625,13 @@ void DkOverview::paintEvent(QPaintEvent *event) {
 
 void DkOverview::mousePressEvent(QMouseEvent *event) {
 	
-	enterPos = event->pos();
-	posGrab = event->pos();
+	mEnterPos = event->pos();
+	mPosGrab = event->pos();
 }
 
 void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 
-	QPointF dxy = enterPos-QPointF(event->pos());
+	QPointF dxy = mEnterPos-QPointF(event->pos());
 
 	if (dxy.manhattanLength() < 4) {
 		
@@ -639,16 +639,16 @@ void DkOverview::mouseReleaseEvent(QMouseEvent *event) {
 		getContentsMargins(&lm, &tm, &rm, &bm);
 		
 		// move to the current position
-		QRectF viewRect = viewPortRect;
-		viewRect = worldMatrix->inverted().mapRect(viewRect);
-		viewRect = imgMatrix->inverted().mapRect(viewRect);
+		QRectF viewRect = mViewPortRect;
+		viewRect = mWorldMatrix->inverted().mapRect(viewRect);
+		viewRect = mImgMatrix->inverted().mapRect(viewRect);
 		viewRect = getScaledImageMatrix().mapRect(viewRect);
 		QPointF currentViewPoint = viewRect.center();
 
-		float panningSpeed = (float)-(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
+		float panningSpeed = (float)-(mWorldMatrix->m11()/(getScaledImageMatrix().m11()/mImgMatrix->m11()));
 
 		QPointF cPos = event->pos()-QPointF(lm, tm);
-		QPointF dxy = (cPos - currentViewPoint)/worldMatrix->m11()*panningSpeed;
+		QPointF dxy = (cPos - currentViewPoint)/mWorldMatrix->m11()*panningSpeed;
 		emit moveViewSignal(dxy);
 
 		if (event->modifiers() == DkSettings::global.altMod)
@@ -662,11 +662,11 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 	if (event->buttons() != Qt::LeftButton)
 		return;
 
-	float panningSpeed = (float)-(worldMatrix->m11()/(getScaledImageMatrix().m11()/imgMatrix->m11()));
+	float panningSpeed = (float)-(mWorldMatrix->m11()/(getScaledImageMatrix().m11()/mImgMatrix->m11()));
 
 	QPointF cPos = event->pos();
-	QPointF dxy = (cPos - posGrab)/worldMatrix->m11()*panningSpeed;
-	posGrab = cPos;
+	QPointF dxy = (cPos - mPosGrab)/mWorldMatrix->m11()*panningSpeed;
+	mPosGrab = cPos;
 	emit moveViewSignal(dxy);
 
 	if (event->modifiers() == DkSettings::global.altMod)
@@ -675,8 +675,6 @@ void DkOverview::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void DkOverview::resizeEvent(QResizeEvent* event) {
-
-	updateVirtualViewport();
 
 	QWidget::resizeEvent(event);
 }
@@ -695,19 +693,9 @@ QRectF DkOverview::getImageRect() const {
 	return imgRect;
 }
 
-void DkOverview::updateVirtualViewport() {
-	
-	virtualVPSize = size();
-
-	if (virtualVPSize.width() * viewPortRect.height()/viewPortRect.width() < height())
-		virtualVPSize.setHeight(virtualVPSize.width() * viewPortRect.height()/viewPortRect.width());
-	else
-		virtualVPSize.setWidth(virtualVPSize.height() * viewPortRect.width()/viewPortRect.height());
-}
-
 void DkOverview::resizeImg() {
 
-	if (img.isNull())
+	if (mImg.isNull())
 		return;
 
 	//QRectF overviewRect = getImageRect();
@@ -721,13 +709,13 @@ void DkOverview::resizeImg() {
 	//	return;
 
 	// fast downscaling
-	imgT = img.scaled(maximumWidth()*2, maximumHeight()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
+	imgT = mImg.scaled(maximumWidth()*2, maximumHeight()*2, Qt::KeepAspectRatio, Qt::FastTransformation);
 	imgT = imgT.scaled(maximumWidth(), maximumHeight(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 QTransform DkOverview::getScaledImageMatrix() {
 
-	if (img.isNull())
+	if (mImg.isNull())
 		return QTransform();
 
 	int lm, tm, rm, bm;
@@ -739,7 +727,7 @@ QTransform DkOverview::getScaledImageMatrix() {
 		return QTransform();
 
 	// the image resizes as we zoom
-	QRectF imgRect = QRectF(QPoint(lm, tm), img.size());
+	QRectF imgRect = QRectF(QPoint(lm, tm), mImg.size());
 	float ratioImg = (float)(imgRect.width()/imgRect.height());
 	float ratioWin = (float)(iSize.width())/(float)(iSize.height());
 

@@ -297,7 +297,7 @@ void DkControlWidget::connectWidgets() {
 	connect(mMetaDataInfo, SIGNAL(positionChangeSignal(int)), this, SLOT(changeMetaDataPosition(int)));
 
 	// overview
-	connect(mZoomWidget->getOverview(), SIGNAL(moveViewSignal(QPointF)), mViewport, SLOT(moveView(QPointF)));
+	connect(mZoomWidget->getOverview(), SIGNAL(moveViewSignal(const QPointF&)), mViewport, SLOT(moveView(const QPointF&)));
 	connect(mZoomWidget->getOverview(), SIGNAL(sendTransformSignal()), mViewport, SLOT(tcpSynchronize()));
 
 	// zoom widget

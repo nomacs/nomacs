@@ -1221,7 +1221,7 @@ bool DkBasicLoader::saveToBuffer(const QString& filePath, const QImage& img, QSh
 #if QT_VERSION < 0x050000 // qt5 natively supports r/w webp
 
 	else if (fInfo.suffix().contains("webp", Qt::CaseInsensitive)) {
-		saved = saveWebPFile(img, ba, compression);
+		saved = saveWebPFile(mImg, ba, compression);
 	}
 #endif
 	else {

@@ -929,12 +929,12 @@ void DkViewPort::wheelEvent(QWheelEvent *event) {
 int DkViewPort::swipeRecognition(QNativeGestureEvent* event) {
 	
 
-	if (posGrab.isNull()) {
-		posGrab = event->position;
+	if (mPosGrab.isNull()) {
+		mPosGrab = event->position;
 		return no_swipe;
 	}
 
-	return swipeRecognition(event->position, posGrab.toPoint());
+	return swipeRecognition(event->position, mPosGrab.toPoint());
 }
 #endif
 #endif

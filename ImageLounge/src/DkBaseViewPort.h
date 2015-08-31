@@ -158,7 +158,7 @@ public slots:
 	virtual void shiftRight();
 	virtual void shiftUp();
 	virtual void shiftDown();
-	virtual void moveView(QPointF);
+	virtual void moveView(const QPointF&);
 	virtual void zoomIn();
 	virtual void zoomOut();
 	virtual void resetView();

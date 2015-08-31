@@ -404,21 +404,20 @@ public:
 	DkOverview(QWidget * parent = 0);
 	~DkOverview() {};
 
-	void setImage(QImage img) {
-		this->img = img;
+	void setImage(const QImage& img) {
+		mImg = img;
 
 		if (isVisible())
 			resizeImg();
 	};
 
 	void setTransforms(QTransform* worldMatrix, QTransform* imgMatrix){
-		this->worldMatrix = worldMatrix;
-		this->imgMatrix = imgMatrix;
+		mWorldMatrix = worldMatrix;
+		mImgMatrix = imgMatrix;
 	};
 
-	void setViewPortRect(QRectF viewPortRect) {
-		this->viewPortRect = viewPortRect;	
-		updateVirtualViewport();
+	void setViewPortRect(const QRectF& viewPortRect) {
+		mViewPortRect = viewPortRect;	
 	};
 
 	void setVisible(bool visible) {
@@ -430,19 +429,18 @@ public:
 	};
 
 signals:
-	void moveViewSignal(QPointF dxy);
-	void sendTransformSignal();
+	void moveViewSignal(const QPointF& dxy) const;
+	void sendTransformSignal() const;
 
 protected:
-	QImage img;
+	QImage mImg;
 	QImage imgT;
-	QTransform* scaledImgMatrix;
-	QTransform* worldMatrix;
-	QTransform* imgMatrix;
-	QRectF viewPortRect;
-	QPointF posGrab;
-	QPointF enterPos;
-	QSizeF virtualVPSize;
+	QTransform* mScaledImgMatrix;
+	QTransform* mWorldMatrix;
+	QTransform* mImgMatrix;
+	QRectF mViewPortRect;
+	QPointF mPosGrab;
+	QPointF mEnterPos;
 
 	void resizeImg();
 	void paintEvent(QPaintEvent *event);
@@ -451,7 +449,6 @@ protected:
 	void mousePressEvent(QMouseEvent *event);
 	void resizeEvent(QResizeEvent* event);
 	QRectF getImageRect() const;
-	void updateVirtualViewport();
 	QTransform getScaledImageMatrix();
 };
 

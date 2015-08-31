@@ -197,15 +197,16 @@ void DkBaseViewPort::shiftDown() {
 	moveView(QPointF(0,delta));
 }
 
-void DkBaseViewPort::moveView(QPointF delta) {
+void DkBaseViewPort::moveView(const QPointF& delta) {
 
+	QPointF lDelta = delta;
 	QRectF imgWorldRect = mWorldMatrix.mapRect(mImgViewRect);
 	if (imgWorldRect.width() < this->width())
-		delta.setX(0);
+		lDelta.setX(0);
 	if (imgWorldRect.height() < this->height())
-		delta.setY(0);
+		lDelta.setY(0);
 
-	mWorldMatrix.translate(delta.x(), delta.y());
+	mWorldMatrix.translate(lDelta.x(), lDelta.y());
 	controlImagePosition();
 	update();
 }

@@ -265,8 +265,8 @@ public:
 	bool saveWindowsIcon(const QString& filePath, const QImage& img) const;
 	bool saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const;
 #else
-	bool saveWindowsIcon(const QString& filePath, const QImage& img) const { return false; };
-	bool saveWindowsIcon(const QImage& img, QSharedPointer<QByteArray>& ba) const { return false; };
+	bool saveWindowsIcon(const QString& filePath, const QImage& mImg) const { return false; };
+	bool saveWindowsIcon(const QImage& mImg, QSharedPointer<QByteArray>& ba) const { return false; };
 #endif
 
 signals:
