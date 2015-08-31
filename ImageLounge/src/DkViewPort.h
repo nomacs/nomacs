@@ -380,15 +380,15 @@ public:
 	void setFullScreen(bool fullScreen);
 		
 	QTransform getWorldMatrix() { 
-		return worldMatrix;
+		return mWorldMatrix;
 	};
 
 	QTransform* getWorldMatrixPtr() {
-		return &worldMatrix;
+		return &mWorldMatrix;
 	};
 
 	QTransform* getImageMatrixPtr() {
-		return &imgMatrix;
+		return &mImgMatrix;
 	};
 
 	void setPaintWidget(QWidget* widget, bool removeWidget);
