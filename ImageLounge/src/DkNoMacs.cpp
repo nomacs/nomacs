@@ -176,22 +176,6 @@ DkNoMacs::~DkNoMacs() {
 }
 
 void DkNoMacs::release() {
-
-	if (progressDialog) {
-		delete progressDialog;
-		progressDialog = 0;
-	}
-
-	if (progressDialogTranslations) {
-		delete progressDialogTranslations;
-		progressDialogTranslations = 0;
-	}
-
-	if (appManager) {
-		delete appManager;
-		appManager = 0;
-	}
-
 }
 
 void DkNoMacs::init() {
@@ -3464,7 +3448,7 @@ void DkNoMacs::performUpdate() {
 	updater->performUpdate();
 
 	if (!progressDialog) {
-		progressDialog = new QProgressDialog(tr("Downloading update..."), tr("Cancel Update"), 0, 100);
+		progressDialog = new QProgressDialog(tr("Downloading update..."), tr("Cancel Update"), 0, 100, this);
 		progressDialog->setWindowIcon(windowIcon());
 		connect(progressDialog, SIGNAL(canceled()), updater, SLOT(cancelUpdate()));
 		connect(updater, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateProgress(qint64, qint64)));

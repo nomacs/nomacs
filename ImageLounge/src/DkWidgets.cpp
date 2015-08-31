@@ -1445,43 +1445,30 @@ void DkTransformRect::enterEvent(QEvent*) {
 }
 
 // DkEditableRectangle --------------------------------------------------------------------
-DkEditableRect::DkEditableRect(QRectF rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
+DkEditableRect::DkEditableRect(const QRectF& rect, QWidget* parent, Qt::WindowFlags f) : DkWidget(parent, f) {
 
-	this->parent = parent;
-	this->rect = rect;
-
-	rotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
+	mRect = rect;
+	mRotatingCursor = QCursor(QPixmap(":/nomacs/img/rotating-cursor.png"));
 	
 	setAttribute(Qt::WA_MouseTracking);
-	paintMode = no_guide;
-	showInfo = false;
 
-	pen = QPen(QColor(0, 0, 0, 255), 1);
-	pen.setCosmetic(true);
-	brush = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
+	mPen = QPen(QColor(0, 0, 0, 255), 1);
+	mPen.setCosmetic(true);
+	mBrush = (DkSettings::app.appMode == DkSettings::mode_frameless) ?
 		DkSettings::display.bgColorFrameless :
 		DkSettings::display.bgColorWidget;
 
-	state = do_nothing;
-	worldTform = 0;
-	imgTform = 0;
-	imgRect = 0;
-
-	oldDiag = DkVector(-1.0f, -1.0f);
-	
 	for (int idx = 0; idx < 8; idx++) {
-		ctrlPoints.push_back(new DkTransformRect(idx, &this->rect, this));
-		ctrlPoints[idx]->hide();
-		connect(ctrlPoints[idx], SIGNAL(ctrlMovedSignal(int, QPointF, Qt::KeyboardModifiers, bool)), this, SLOT(updateCorner(int, QPointF, Qt::KeyboardModifiers, bool)));
-		connect(ctrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
+		mCtrlPoints.push_back(new DkTransformRect(idx, &this->mRect, this));
+		mCtrlPoints[idx]->hide();
+		connect(mCtrlPoints[idx], SIGNAL(ctrlMovedSignal(int, const QPointF&, Qt::KeyboardModifiers, bool)), this, SLOT(updateCorner(int, const QPointF&, Qt::KeyboardModifiers, bool)));
+		connect(mCtrlPoints[idx], SIGNAL(updateDiagonal(int)), this, SLOT(updateDiagonal(int)));
 	}
-	
-	panning = false;
 }
 
 void DkEditableRect::reset() {
 
-	rect = QRectF();
+	mRect = QRectF();
 	//for (int idx = 0; idx < ctrlPoints.size(); idx++)
 	//	ctrlPoints[idx]->reset();
 
@@ -1490,19 +1477,19 @@ void DkEditableRect::reset() {
 QPointF DkEditableRect::map(const QPointF &pos) {
 
 	QPointF posM = pos;
-	if (worldTform) posM = worldTform->inverted().map(posM);
-	if (imgTform)	posM = imgTform->inverted().map(posM);
+	if (mWorldTform) posM = mWorldTform->inverted().map(posM);
+	if (mImgTform)	posM = mImgTform->inverted().map(posM);
 	
 	return posM;
 }
 
 QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 	
-	if (!imgRect)
+	if (!mImgRect)
 		return QPointF(pos);
 
-	QRectF imgViewRect(*imgRect);
-	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+	QRectF imgViewRect(*mImgRect);
+	if (mWorldTform) imgViewRect = mWorldTform->mapRect(imgViewRect);
 
 	float x = (float)pos.x();
 	float y = (float)pos.y();
@@ -1523,11 +1510,11 @@ QPointF DkEditableRect::clipToImage(const QPointF &pos) {
 
 QPointF DkEditableRect::clipToImageForce(const QPointF &pos) {
 
-	if (!imgRect)
+	if (!mImgRect)
 		return QPointF(pos);
 
-	QRectF imgViewRect(*imgRect);
-	if (worldTform) imgViewRect = worldTform->mapRect(imgViewRect);
+	QRectF imgViewRect(*mImgRect);
+	if (mWorldTform) imgViewRect = mWorldTform->mapRect(imgViewRect);
 
 	float x = (float)pos.x();
 	float y = (float)pos.y();
@@ -1548,52 +1535,52 @@ QPointF DkEditableRect::clipToImageForce(const QPointF &pos) {
 void DkEditableRect::updateDiagonal(int idx) {
 
 	// we need to store the old diagonal in order to enable "keep aspect ratio"
-	if (rect.isEmpty())
-		oldDiag = DkVector(-1.0f, -1.0f);
+	if (mRect.isEmpty())
+		mOldDiag = DkVector(-1.0f, -1.0f);
 	else
-		oldDiag = rect.getDiagonal(idx);
+		mOldDiag = mRect.getDiagonal(idx);
 }
 
 void DkEditableRect::setFixedDiagonal(const DkVector& diag) {
 
-	fixedDiag = diag;
+	mFixedDiag = diag;
 
-	qDebug() << "after rotating: " << fixedDiag.getQPointF();
+	qDebug() << "after rotating: " << mFixedDiag.getQPointF();
 
 	// don't update in that case
 	if (diag.x == 0 || diag.y == 0)
 		return;
 	else
-		fixedDiag.rotate(-rect.getAngle());
+		mFixedDiag.rotate(-mRect.getAngle());
 
-	QPointF c = rect.getCenter();
+	QPointF c = mRect.getCenter();
 
-	if (!rect.getPoly().isEmpty()) 
-		rect.updateCorner(0, rect.getPoly().at(0), fixedDiag);
+	if (!mRect.getPoly().isEmpty()) 
+		mRect.updateCorner(0, mRect.getPoly().at(0), mFixedDiag);
 
-	rect.setCenter(c);
+	mRect.setCenter(c);
 	update();
 }
 
 void DkEditableRect::setPanning(bool panning) {
-	this->panning = panning;
+	this->mPanning = panning;
 	setCursor(Qt::OpenHandCursor);
 	qDebug() << "panning set...";
 }
 
-void DkEditableRect::updateCorner(int idx, QPointF point, Qt::KeyboardModifiers modifiers, bool changeState) {
+void DkEditableRect::updateCorner(int idx, const QPointF& point, Qt::KeyboardModifiers modifiers, bool changeState) {
 
 	if (changeState)
-		state = scaling;
+		mState = scaling;
 
-	DkVector diag = (modifiers & Qt::ShiftModifier || fixedDiag.x != 0 && fixedDiag.y != 0) ? oldDiag : DkVector();
+	DkVector diag = (modifiers & Qt::ShiftModifier || mFixedDiag.x != 0 && mFixedDiag.y != 0) ? mOldDiag : DkVector();
 
 	QPointF p = point;
 	
 	if ((modifiers & Qt::ControlModifier) == 0)
 		p = clipToImage(point);
 
-	rect.updateCorner(idx, map(p), diag);
+	mRect.updateCorner(idx, map(p), diag);
 
 	// edge control -> remove aspect ratio constraint
 	if (idx >= 4 && idx < 8)
@@ -1610,43 +1597,43 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 	path.addRect(canvas);
 	
 	QPolygonF p;
-	if (!rect.isEmpty()) {
+	if (!mRect.isEmpty()) {
 		// TODO: directly map the points (it's easier and not slower at all)
-		p = rect.getClosedPoly();
-		p = tTform.map(p);
-		p = rTform.map(p); 
-		p = tTform.inverted().map(p);
-		if (imgTform) p = imgTform->map(p);
-		if (worldTform) p = worldTform->map(p);
+		p = mRect.getClosedPoly();
+		p = mTtform.map(p);
+		p = mRtform.map(p); 
+		p = mTtform.inverted().map(p);
+		if (mImgTform) p = mImgTform->map(p);
+		if (mWorldTform) p = mWorldTform->map(p);
 		path.addPolygon(p);
 	}
 
 	// now draw
 	QPainter painter(this);
 
-	painter.setPen(pen);
-	painter.setBrush(brush);
+	painter.setPen(mPen);
+	painter.setBrush(mBrush);
 	painter.drawPath(path);
 
-	drawGuide(&painter, p, paintMode);
+	drawGuide(&painter, p, mPaintMode);
 	
 	//// debug
 	//painter.drawPoint(rect.getCenter());
 
 	// this changes the painter -> do it at the end
-	if (!rect.isEmpty()) {
+	if (!mRect.isEmpty()) {
 		
-		for (int idx = 0; idx < ctrlPoints.size(); idx++) {
+		for (int idx = 0; idx < mCtrlPoints.size(); idx++) {
 			
 			QPointF cp;
 			
 			if (idx < 4) {
 				QPointF c = p[idx];
-				cp = c-ctrlPoints[idx]->getCenter();
+				cp = c-mCtrlPoints[idx]->getCenter();
 			}
 			// paint control points in the middle of the edge
 			else if (idx >= 4) {
-				QPointF s = ctrlPoints[idx]->getCenter();
+				QPointF s = mCtrlPoints[idx]->getCenter();
 
 				QPointF lp = p[idx % 4];
 				QPointF rp = p[(idx+1) % 4];
@@ -1657,8 +1644,8 @@ void DkEditableRect::paintEvent(QPaintEvent *event) {
 				cp = (lv + 0.5*(rv - lv)).toPointF();
 			}
 
-			ctrlPoints[idx]->move(qRound(cp.x()+0.5f), qRound(cp.y()+0.5f));
-			ctrlPoints[idx]->draw(&painter);
+			mCtrlPoints[idx]->move(qRound(cp.x()+0.5f), qRound(cp.y()+0.5f));
+			mCtrlPoints[idx]->draw(&painter);
 		}
 	}
  
@@ -1726,24 +1713,24 @@ void DkEditableRect::mousePressEvent(QMouseEvent *event) {
 
 	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
+		(event->modifiers() == DkSettings::global.altMod || mPanning)) {
 		event->setModifiers(Qt::NoModifier);	// we want a 'normal' action in the mViewport
 		event->ignore();
 		return;
 	}
 
-	posGrab = map(QPointF(event->pos()));
-	clickPos = QPointF(event->pos());
+	mPosGrab = map(QPointF(event->pos()));
+	mClickPos = QPointF(event->pos());
 
-	if (rect.isEmpty()) {
-		state = initializing;
+	if (mRect.isEmpty()) {
+		mState = initializing;
 		setAngle(0);
 	}
-	else if (rect.getPoly().containsPoint(posGrab, Qt::OddEvenFill)) {
-		state = moving;
+	else if (mRect.getPoly().containsPoint(mPosGrab, Qt::OddEvenFill)) {
+		mState = moving;
 	}
 	else {
-		state = rotating;
+		mState = rotating;
 	}
 
 }
@@ -1752,7 +1739,7 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	// panning -> redirect to mViewport
 	if (event->modifiers() == DkSettings::global.altMod ||
-		panning) {
+		mPanning) {
 		
 		if (event->buttons() != Qt::LeftButton)
 			setCursor(Qt::OpenHandCursor);
@@ -1767,32 +1754,32 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 	QPointF posM = map(QPointF(event->pos()));
 	
-	if (event->buttons() != Qt::LeftButton && !rect.isEmpty()) {
+	if (event->buttons() != Qt::LeftButton && !mRect.isEmpty()) {
 		// show rotating - moving
-		if (rect.getPoly().containsPoint(map(event->pos()), Qt::OddEvenFill))
+		if (mRect.getPoly().containsPoint(map(event->pos()), Qt::OddEvenFill))
 			setCursor(Qt::SizeAllCursor);
 		else
-			setCursor(rotatingCursor);
+			setCursor(mRotatingCursor);
 	}
-	else if (rect.isEmpty())
+	else if (mRect.isEmpty())
 		setCursor(Qt::CrossCursor);
 
 	// additionally needed for showToolTip
 	double angle = 0;
 
-	if (state == initializing && event->buttons() == Qt::LeftButton) {
+	if (mState == initializing && event->buttons() == Qt::LeftButton) {
 
 		QPointF clipPos = clipToImageForce(QPointF(event->pos()));
 
-		if (!imgRect || !rect.isEmpty() || clipPos == QPointF(event->pos())) {
+		if (!mImgRect || !mRect.isEmpty() || clipPos == QPointF(event->pos())) {
 			
-			if (rect.isEmpty()) {
+			if (mRect.isEmpty()) {
 
-				for (int idx = 0; idx < ctrlPoints.size(); idx++)
-					ctrlPoints[idx]->show();
+				for (int idx = 0; idx < mCtrlPoints.size(); idx++)
+					mCtrlPoints[idx]->show();
 
-				QPointF p = map(clipToImageForce(clickPos));
-				rect.setAllCorners(p);
+				QPointF p = map(clipToImageForce(mClickPos));
+				mRect.setAllCorners(p);
 			}
 			
 			DkVector diag;
@@ -1801,23 +1788,23 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 			if (event->modifiers() == Qt::ShiftModifier)
 				diag = DkVector(1.0f, 1.0f);
 			else
-				diag = fixedDiag;
-			rect.updateCorner(2, map(clipPos), diag);
+				diag = mFixedDiag;
+			mRect.updateCorner(2, map(clipPos), diag);
 			update();
 		}
  
 	}
-	else if (state == moving && event->buttons() == Qt::LeftButton) {
+	else if (mState == moving && event->buttons() == Qt::LeftButton) {
 		
-		QPointF dxy = posM-posGrab;
-		rTform.translate(dxy.x(), dxy.y());
-		posGrab = posM;
+		QPointF dxy = posM-mPosGrab;
+		mRtform.translate(dxy.x(), dxy.y());
+		mPosGrab = posM;
 		update();
 	}
-	else if (state == rotating && event->buttons() == Qt::LeftButton) {
+	else if (mState == rotating && event->buttons() == Qt::LeftButton) {
 
-		DkVector c(rect.getCenter());
-		DkVector xt(posGrab);
+		DkVector c(mRect.getCenter());
+		DkVector xt(mPosGrab);
 		DkVector xn(posM);
 
 		// compute the direction vector;
@@ -1827,22 +1814,22 @@ void DkEditableRect::mouseMoveEvent(QMouseEvent *event) {
 
 		// just rotate in CV_PI*0.25 steps if shift is pressed
 		if (event->modifiers() == Qt::ShiftModifier) {
-			double angleRound = DkMath::normAngleRad(angle+rect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
+			double angleRound = DkMath::normAngleRad(angle+mRect.getAngle(), -CV_PI*0.125, CV_PI*0.125);
 			angle -= angleRound;
 		}
 					
 		setAngle(angle, false);
 	}
 
-	if (event->buttons() == Qt::LeftButton && state != moving) {
+	if (event->buttons() == Qt::LeftButton && mState != moving) {
 
-		QPolygonF p = rect.getPoly();
+		QPolygonF p = mRect.getPoly();
 
-		float sAngle = DkMath::getReadableAngle(rect.getAngle() + angle);
+		float sAngle = DkMath::getReadableAngle(mRect.getAngle() + angle);
 		int height = qRound(DkVector(p[1]-p[0]).norm());
 		int width = qRound(DkVector(p[3]-p[0]).norm());
 
-		if (showInfo) {
+		if (mShowInfo) {
 			QToolTip::showText(event->globalPos(),
 				QString::number(width) + " x " +
 				QString::number(height) + " px\n" +
@@ -1860,14 +1847,14 @@ void DkEditableRect::mouseReleaseEvent(QMouseEvent *event) {
 
 	// panning -> redirect to mViewport
 	if (event->buttons() == Qt::LeftButton && 
-		(event->modifiers() == DkSettings::global.altMod || panning)) {
+		(event->modifiers() == DkSettings::global.altMod || mPanning)) {
 		setCursor(Qt::OpenHandCursor);
 		event->setModifiers(Qt::NoModifier);
 		event->ignore();
 		return;
 	}
 
-	state = do_nothing;
+	mState = do_nothing;
 
 	applyTransform();
 	//QWidget::mouseReleaseEvent(event);
@@ -1882,10 +1869,10 @@ void DkEditableRect::wheelEvent(QWheelEvent* event) {
 void DkEditableRect::applyTransform() {
 
 	// apply transform
-	QPolygonF p = rect.getPoly();
-	p = tTform.map(p);
-	p = rTform.map(p); 
-	p = tTform.inverted().map(p);
+	QPolygonF p = mRect.getPoly();
+	p = mTtform.map(p);
+	p = mRtform.map(p); 
+	p = mTtform.inverted().map(p);
 
 	// Cropping tool fix start
 
@@ -1899,10 +1886,10 @@ void DkEditableRect::applyTransform() {
 	}
 	// Cropping tool fix end
 
-	rect.setPoly(p);
+	mRect.setPoly(p);
 
-	rTform.reset();	
-	tTform.reset();
+	mRtform.reset();	
+	mTtform.reset();
 	update();
 
 }
@@ -1936,44 +1923,44 @@ void DkEditableRect::keyReleaseEvent(QKeyEvent *event) {
 void DkEditableRect::setPaintHint(int paintMode /* = DkCropToolBar::no_guide */) {
 
 	qDebug() << "painting mode: " << paintMode;
-	this->paintMode = paintMode;
+	this->mPaintMode = paintMode;
 	update();
 }
 
 void DkEditableRect::setShadingHint(bool) {
 
-	QColor col = brush.color();
+	QColor col = mBrush.color();
 	col = QColor(255-col.red(), 255-col.green(), 255-col.blue(), col.alpha());
-	brush.setColor(col);
+	mBrush.setColor(col);
 
-	col = pen.color();
+	col = mPen.color();
 	col = QColor(255-col.red(), 255-col.green(), 255-col.blue(), col.alpha());
-	pen.setColor(col);
+	mPen.setColor(col);
 
 	update();
 }
 
 void DkEditableRect::setShowInfo(bool showInfo) {
-	this->showInfo = showInfo;
+	this->mShowInfo = showInfo;
 }
 
 void DkEditableRect::setAngle(double angle, bool apply) {
 
-	DkVector c(rect.getCenter());
+	DkVector c(mRect.getCenter());
 
-	if (!tTform.isTranslating())
-		tTform.translate(-c.x, -c.y);
+	if (!mTtform.isTranslating())
+		mTtform.translate(-c.x, -c.y);
 	
-	rTform.reset();
+	mRtform.reset();
 	if (apply)
-		rTform.rotateRadians(angle-rect.getAngle());
+		mRtform.rotateRadians(angle-mRect.getAngle());
 	else
-		rTform.rotateRadians(angle);
+		mRtform.rotateRadians(angle);
 	
 	if (apply)
 		applyTransform();
 	else {
-		emit angleSignal(rect.getAngle()+angle);
+		emit angleSignal(mRect.getAngle()+angle);
 		update();
 	}
 
@@ -1983,9 +1970,9 @@ void DkEditableRect::setVisible(bool visible) {
 
 	if (!visible) {
 		
-		rect = DkRotatingRect();
-		for (int idx = 0; idx < ctrlPoints.size(); idx++)
-			ctrlPoints[idx]->hide();
+		mRect = DkRotatingRect();
+		for (int idx = 0; idx < mCtrlPoints.size(); idx++)
+			mCtrlPoints[idx]->hide();
 	}
 	else {
 		//setFocus(Qt::ActiveWindowFocusReason);
@@ -2012,7 +1999,7 @@ void DkCropWidget::createToolbar() {
 	connect(cropToolbar, SIGNAL(panSignal(bool)), this, SLOT(setPanning(bool)));
 	connect(cropToolbar, SIGNAL(paintHint(int)), this, SLOT(setPaintHint(int)));
 	connect(cropToolbar, SIGNAL(shadingHint(bool)), this, SLOT(setShadingHint(bool)));
-	connect(cropToolbar, SIGNAL(showInfo(bool)), this, SLOT(setShowInfo(bool)));
+	connect(cropToolbar, SIGNAL(mShowInfo(bool)), this, SLOT(setShowInfo(bool)));
 	connect(this, SIGNAL(angleSignal(double)), cropToolbar, SLOT(angleChanged(double)));
 	connect(this, SIGNAL(aRatioSignal(const QPointF&)), cropToolbar, SLOT(setAspectRatio(const QPointF&)));
 
@@ -2029,8 +2016,8 @@ void DkCropWidget::crop() {
 	if (!cropToolbar)
 		return;
 
-	if (!rect.isEmpty())
-		emit enterPressedSignal(rect, cropToolbar->getColor());
+	if (!mRect.isEmpty())
+		emit enterPressedSignal(mRect, cropToolbar->getColor());
 
 	setVisible(false);
 	setWindowOpacity(0);

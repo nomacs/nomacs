@@ -496,7 +496,7 @@ public:
 	};
 
 signals:
-	void ctrlMovedSignal(int, QPointF, Qt::KeyboardModifiers, bool);
+	void ctrlMovedSignal(int, const QPointF&, Qt::KeyboardModifiers, bool);
 	void updateDiagonal(int);
 
 protected:
@@ -536,40 +536,38 @@ public:
 		scaling
 	};
 
-	DkEditableRect(QRectF rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
+	DkEditableRect(const QRectF& rect = QRect(), QWidget* parent = 0, Qt::WindowFlags f = 0);
 	virtual ~DkEditableRect() {};
 
 	void reset();
 
 	void setWorldTransform(QTransform *worldTform) {
-		this->worldTform = worldTform;
+		this->mWorldTform = worldTform;
 	};	
 
 	void setImageTransform(QTransform *imgTform) {
-
-		this->imgTform = imgTform;
+		this->mImgTform = imgTform;
 	};
 
 	void setImageRect(QRectF* imgRect) {
-	
-		this->imgRect = imgRect;
+		this->mImgRect = imgRect;
 	};
 
 	virtual void setVisible(bool visible);
 
 signals:
-	void enterPressedSignal(DkRotatingRect cropArea, const QColor& bgCol = QColor(0,0,0,0));
-	void angleSignal(double angle);
-	void aRatioSignal(const QPointF& aRatio);
-	void statusInfoSignal(QString msg);
+	void enterPressedSignal(const DkRotatingRect& cropArea, const QColor& bgCol = QColor(0,0,0,0)) const;
+	void angleSignal(double angle) const;
+	void aRatioSignal(const QPointF& aRatio) const;
+	void statusInfoSignal(const QString& msg) const;
 
 public slots:
-	void updateCorner(int idx, QPointF point, Qt::KeyboardModifiers modifier, bool changeState = false);
+	void updateCorner(int idx, const QPointF& point, Qt::KeyboardModifiers modifier, bool changeState = false);
 	void updateDiagonal(int idx);
 	void setFixedDiagonal(const DkVector& diag);
 	void setAngle(double angle, bool apply = true);
 	void setPanning(bool panning);
-	void setPaintHint(int paintMode = no_guide);
+	void setPaintHint(int paintMode = rule_of_thirds);
 	void setShadingHint(bool invert);
 	void setShowInfo(bool showInfo);
 
@@ -580,36 +578,33 @@ protected:
 	void wheelEvent(QWheelEvent* event);
 	void keyPressEvent(QKeyEvent *event);
 	void keyReleaseEvent(QKeyEvent *event);
+	void paintEvent(QPaintEvent *event);
+
 	QPointF clipToImage(const QPointF& pos);
 	QPointF clipToImageForce(const QPointF& pos);
 	void applyTransform();
 	void drawGuide(QPainter* painter, const QPolygonF& p, int paintMode);
-	
-	void paintEvent(QPaintEvent *event);
-
 	QPointF map(const QPointF &pos);
 
-	int state;
+	int mState = do_nothing;
+	QTransform *mImgTform = 0;
+	QTransform *mWorldTform = 0;
+	QTransform mTtform;
+	QTransform mRtform;
+	QPointF mPosGrab;
+	QPointF mClickPos;
+	DkVector mOldDiag = DkVector(-1.0f, -1.0f);
+	DkVector mFixedDiag;
 
-	QTransform *imgTform;
-	QTransform *worldTform;
-	QTransform tTform;
-	QTransform rTform;
-	QPointF posGrab;
-	QPointF clickPos;
-	DkVector oldDiag;
-	DkVector fixedDiag;
-
-	QWidget* parent;
-	DkRotatingRect rect;
-	QPen pen;
-	QBrush brush;
-	QVector<DkTransformRect*> ctrlPoints;
-	QCursor rotatingCursor;
-	QRectF* imgRect;
-	bool panning;
-	int paintMode;
-	bool showInfo;
+	DkRotatingRect mRect;
+	QPen mPen;
+	QBrush mBrush;
+	QVector<DkTransformRect*> mCtrlPoints;
+	QCursor mRotatingCursor;
+	QRectF* mImgRect = 0;
+	bool mPanning = false;
+	int mPaintMode = rule_of_thirds;
+	bool mShowInfo = false;
 };
 
 class DkCropWidget : public DkEditableRect {
@@ -943,8 +938,8 @@ class DkDelayedMessage : public DkDelayedInfo {
 	Q_OBJECT
 
 public:
-	DkDelayedMessage(QString msg  = QString(), int time = 0, QObject* parent = 0) : DkDelayedInfo(time, parent) {
-		this->msg = msg;
+	DkDelayedMessage(const QString& msg  = QString(), int time = 0, QObject* parent = 0) : DkDelayedInfo(time, parent) {
+		mMsg = msg;
 	}
 
 	~DkDelayedMessage() {}
@@ -954,26 +949,20 @@ public:
 		if (timer && timer->isActive())
 			timer->stop();
 		else
-			emit infoSignal(msg, 1);
+			emit infoSignal(mMsg, 1);
 	}
 
-	void setInfo(QString& msg, int time = 1000) {
+	void setInfo(const QString& msg, int time = 1000) {
 
 		DkDelayedInfo::setInfo(time);
-		this->msg = msg;
+		mMsg = msg;
 	}
 
 signals:
-	void infoSignal(QString msg, int time);
-
-	protected slots:
-	void sendInfo() {
-
-		emit infoSignal(msg, -1);
-	}
+	void infoSignal(QString msg, int time = -1) const;
 
 protected:
-	QString msg;
+	QString mMsg;
 
 };
 
