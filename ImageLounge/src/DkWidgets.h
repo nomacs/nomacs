@@ -386,7 +386,7 @@ public slots:
 
 signals:
 	void openFile(const QString& filePath) const;
-	void openDir(QDir dir) const;
+	void openDir(const QString& dir) const;
 
 protected:
 	void closeEvent(QCloseEvent *event);
@@ -874,21 +874,22 @@ protected:
 class DkDirectoryEdit : public QLineEdit {
 	Q_OBJECT
 
-	public:	
-		DkDirectoryEdit(QWidget* parent = 0);
-		DkDirectoryEdit(QString content, QWidget* parent = 0);
+public:	
+	DkDirectoryEdit(QWidget* parent = 0);
+	DkDirectoryEdit(const QString& content, QWidget* parent = 0);
 		
-		bool existsDirectory() { return existsDirectory(text());};
+	bool existsDirectory() { return existsDirectory(text());};
 
-	signals:
-		bool directoryChanged(QDir path);
+signals:
+	bool directoryChanged(const QString& path);
 
-	public slots:
-		void lineEditChanged(QString path);
+public slots:
+	void lineEditChanged(const QString& path);
 
-	private:
-		bool existsDirectory(QString path);
-		QString oldPath;
+private:
+	bool existsDirectory(const QString& path);
+
+	QString mOldPath;
 };
 
 class DkDelayedInfo : public QObject {

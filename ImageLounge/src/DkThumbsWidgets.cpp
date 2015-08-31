@@ -1458,7 +1458,7 @@ void DkThumbScene::deleteSelected() const {
 			loader->activate();
 
 		if (loader)
-			loader->directoryChanged(loader->getDir().absolutePath());
+			loader->directoryChanged(loader->getDir());
 	}
 }
 
@@ -1756,7 +1756,7 @@ void DkThumbsView::dropEvent(QDropEvent *event) {
 		url = url.toLocalFile();
 
 		QFileInfo file = QFileInfo(url.toString());
-		QDir newDir = (file.isDir()) ? file.absoluteFilePath() : file.absolutePath();
+		QString newDir = (file.isDir()) ? file.absoluteFilePath() : file.absolutePath();
 
 		emit updateDirSignal(newDir);
 	}
@@ -1817,7 +1817,7 @@ DkThumbScrollWidget::DkThumbScrollWidget(QWidget* parent /* = 0 */, Qt::WindowFl
 
 	view = new DkThumbsView(thumbsScene, this);
 	view->setFocusPolicy(Qt::StrongFocus);
-	connect(view, SIGNAL(updateDirSignal(QDir)), this, SIGNAL(updateDirSignal(QDir)));
+	connect(view, SIGNAL(updateDirSignal(const QString&)), this, SIGNAL(updateDirSignal(const QString&)));
 	connect(thumbsScene, SIGNAL(selectionChanged()), this, SLOT(enableSelectionActions()));
 
 	createActions();
@@ -1992,10 +1992,10 @@ void DkThumbScrollWidget::clear() {
 	thumbsScene->updateThumbs(QVector<QSharedPointer<DkImageContainerT> > ());
 }
 
-void DkThumbScrollWidget::setDir(QDir dir) {
+void DkThumbScrollWidget::setDir(const QString& dirPath) {
 
 	if (isVisible())
-		emit updateDirSignal(dir);
+		emit updateDirSignal(dirPath);
 }
 
 void DkThumbScrollWidget::setVisible(bool visible) {

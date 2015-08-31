@@ -36,7 +36,6 @@
 #include <QPen>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <QDir>
 #pragma warning(pop)		// no warnings from includes - end
 
 #include "DkBaseWidgets.h"
@@ -276,7 +275,7 @@ public:
 	DkThumbsView(DkThumbScene* scene, QWidget* parent = 0);
 
 signals:
-	void updateDirSignal(QDir dir);
+	void updateDirSignal(const QString& dir) const;
 
 public slots:
 	void fetchThumbs();
@@ -329,13 +328,13 @@ public:
 public slots:
 	virtual void setVisible(bool visible);
 	void updateThumbs(QVector<QSharedPointer<DkImageContainerT> > thumbs);
-	void setDir(QDir dir);
+	void setDir(const QString& dirPath);
 	void enableSelectionActions();
 	void setFilterFocus() const;
 	void batchProcessFiles() const;
 
 signals:
-	void updateDirSignal(QDir dir);
+	void updateDirSignal(const QString& dir);
 	void filterChangedSignal(const QString& filters);
 	void batchProcessFilesSignal(const QStringList& fileList) const;
 

@@ -983,7 +983,7 @@ QString DkImageLoader::saveTempFile(const QImage& img, const QString& name, cons
 		if (!tmpPath.isDir()) {
 			// load system default open dialog
 			QString dirName = QFileDialog::getExistingDirectory(DkNoMacs::getDialogParent(), tr("Save Directory"),
-				getDir().absolutePath());
+				getDir());
 
 			tmpPath = dirName + "/";
 
@@ -1574,9 +1574,9 @@ QSharedPointer<DkImageContainerT> DkImageLoader::getLastImage() const {
  * Returns the currently loaded directory.
  * @return QDir the currently loaded directory.
  **/ 
-QDir DkImageLoader::getDir() const {
+QString DkImageLoader::getDir() const {
 
-	return dir;
+	return dir.absolutePath();	// TODO: convert to string
 }
 
 QStringList DkImageLoader::getFoldersRecursive(QDir dir) {

@@ -119,7 +119,7 @@ public:
 	DkViewPort* getViewPort() const;
 	DkThumbScrollWidget* getThumbScrollWidget() const;
 	DkRecentFilesWidget* getRecentFilesWidget() const;
-	QDir getCurrentDir() const;
+	QString getCurrentDir() const;
 
 	void clearAllTabs();
 	void updateTabs();

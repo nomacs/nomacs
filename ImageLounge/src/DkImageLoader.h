@@ -111,7 +111,7 @@ public:
 	void firstFile();
 	void lastFile();
 	void clearPath();
-	QDir getDir() const;
+	QString getDir() const;
 	QDir getSaveDir() const;
 	void loadLastDir();
 	void setDir(QDir& dir);

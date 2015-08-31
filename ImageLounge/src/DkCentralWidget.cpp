@@ -587,12 +587,12 @@ void DkCentralWidget::showThumbView(bool show) {
 
 
 		//mViewport->connectLoader(tabInfo->getImageLoader(), false);
-		connect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), tabInfo->getImageLoader().data(), SLOT(loadDir(QDir)), Qt::UniqueConnection);
+		connect(thumbScrollWidget, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)), Qt::UniqueConnection);
 		connect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)), Qt::UniqueConnection);
 		connect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)), Qt::UniqueConnection);
 	}
 	else {
-		disconnect(thumbScrollWidget, SIGNAL(updateDirSignal(QDir)), tabInfo->getImageLoader().data(), SLOT(loadDir(QDir)));
+		disconnect(thumbScrollWidget, SIGNAL(updateDirSignal(const QString&)), tabInfo->getImageLoader().data(), SLOT(loadDir(const QString&)));
 		disconnect(thumbScrollWidget->getThumbWidget(), SIGNAL(statusInfoSignal(QString, int)), this, SIGNAL(statusInfoSignal(QString, int)));
 		disconnect(thumbScrollWidget, SIGNAL(filterChangedSignal(const QString &)), tabInfo->getImageLoader().data(), SLOT(setFolderFilter(const QString&)));
 		//mViewport->connectLoader(tabInfo->getImageLoader(), true);
@@ -698,7 +698,7 @@ QSharedPointer<DkImageLoader> DkCentralWidget::getCurrentImageLoader() const {
 	return tabInfos[tabbar->currentIndex()]->getImageLoader();
 }
 
-QDir DkCentralWidget::getCurrentDir() const {
+QString DkCentralWidget::getCurrentDir() const {
 
 	return tabInfos[tabbar->currentIndex()]->getImageLoader()->getDir();
 }

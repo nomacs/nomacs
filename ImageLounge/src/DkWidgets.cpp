@@ -468,7 +468,7 @@ void DkExplorer::fileClicked(const QModelIndex &index) const {
 	if (DkUtils::isValid(cFile))
 		emit openFile(cFile.absoluteFilePath());
 	else if (cFile.isDir())
-		emit openDir(QDir(cFile.absoluteFilePath()));
+		emit openDir(cFile.absoluteFilePath());
 }
 
 void DkExplorer::contextMenuEvent(QContextMenuEvent *event) {
@@ -2986,9 +2986,10 @@ DkDirectoryEdit::DkDirectoryEdit(QWidget* parent /* = 0 */) : QLineEdit(parent) 
 	setCompleter(completer);
 }
 
-DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) : QLineEdit(parent) {
+DkDirectoryEdit::DkDirectoryEdit(const QString& content, QWidget* parent /* = 0 */) : QLineEdit(parent) {
+	
 	setObjectName("DkWarningEdit");
-	connect(this, SIGNAL(textChanged(QString)), this, SLOT(lineEditChanged(QString)));
+	connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(lineEditChanged(const QString&)));
 	setText(content);
 
 	QCompleter *completer = new QCompleter(this);
@@ -2998,7 +2999,7 @@ DkDirectoryEdit::DkDirectoryEdit(QString content, QWidget* parent /* = 0 */) : Q
 	setCompleter(completer);
 }
 
-void DkDirectoryEdit::lineEditChanged(QString path) {
+void DkDirectoryEdit::lineEditChanged(const QString& path) {
 	
 	setProperty("error", !existsDirectory(path));
 	style()->unpolish(this);
@@ -3006,13 +3007,13 @@ void DkDirectoryEdit::lineEditChanged(QString path) {
 	update();
 	
 	// converting to QDir since D:/img == D:/img/ then
-	if (QDir(path).absolutePath() != QDir(oldPath).absolutePath() && existsDirectory(path)) {
-		oldPath = path;
-		emit directoryChanged(QDir(path));
+	if (QDir(path).absolutePath() != QDir(mOldPath).absolutePath() && existsDirectory(path)) {
+		mOldPath = path;
+		emit directoryChanged(path);
 	}
 }
 
-bool DkDirectoryEdit::existsDirectory(QString path) {
+bool DkDirectoryEdit::existsDirectory(const QString& path) {
 	
 	return QDir(path).exists();
 }

@@ -2308,7 +2308,7 @@ void DkNoMacs::showExplorer(bool show, bool saveSettings) {
 		addDockWidget(explorer->getDockLocationSettings(Qt::LeftDockWidgetArea), explorer);
 
 		connect(explorer, SIGNAL(openFile(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
-		connect(explorer, SIGNAL(openDir(QDir)), getTabWidget()->getThumbScrollWidget(), SLOT(setDir(QDir)));
+		connect(explorer, SIGNAL(openDir(const QString&)), getTabWidget()->getThumbScrollWidget(), SLOT(setDir(const QString&)));
 		connect(getTabWidget(), SIGNAL(imageUpdatedSignal(QSharedPointer<DkImageContainerT>)), explorer, SLOT(setCurrentImage(QSharedPointer<DkImageContainerT>)));
 	}
 
@@ -2407,7 +2407,7 @@ void DkNoMacs::openDir() {
 
 	// load system default open dialog
 	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		getTabWidget()->getCurrentDir().absolutePath());
+		getTabWidget()->getCurrentDir());
 
 	if (dirName.isEmpty())
 		return;
@@ -2428,7 +2428,7 @@ void DkNoMacs::openFile() {
 
 	// load system default open dialog
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"),
-		getTabWidget()->getCurrentDir().absolutePath(), 
+		getTabWidget()->getCurrentDir(), 
 		openFilters.join(";;"));
 
 	if (fileName.isEmpty())
