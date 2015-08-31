@@ -270,7 +270,7 @@ void DkTrainDialog::createLayout() {
 	mPathEdit = new QLineEdit(this);
 	mPathEdit->setValidator(&mFileValidator);
 	mPathEdit->setObjectName("DkWarningEdit");
-	connect(mPathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(mPathEdit, SIGNAL(textChanged(const QString&)), this, SLOT(textChanged(const QString&)));
 	connect(mPathEdit, SIGNAL(editingFinished()), this, SLOT(loadFile()));
 
 	QPushButton* openButton = new QPushButton(tr("&Browse"), this);
@@ -514,7 +514,7 @@ void DkAppManager::setActions(QVector<QAction* > actions) {
 	saveSettings();
 }
 
-QAction* DkAppManager::createAction(QString filePath) {
+QAction* DkAppManager::createAction(const QString& filePath) {
 
 	QFileInfo file(filePath);
 	if (!file.exists())
@@ -528,7 +528,7 @@ QAction* DkAppManager::createAction(QString filePath) {
 	return newApp;
 }
 
-QAction* DkAppManager::findAction(QString appPath) const {
+QAction* DkAppManager::findAction(const QString& appPath) const {
 
 	for (int idx = 0; idx < mApps.size(); idx++) {
 
@@ -1469,7 +1469,7 @@ void DkResizeDialog::on_lockButton_clicked() {
 	drawPreview();
 }
 
-void DkResizeDialog::on_wPixelEdit_valueChanged(QString text) {
+void DkResizeDialog::on_wPixelEdit_valueChanged(const QString& text) {
 
 	if (!mWPixelEdit->hasFocus())
 		return;
@@ -1487,7 +1487,7 @@ void DkResizeDialog::on_wPixelEdit_valueChanged(QString text) {
 	drawPreview();
 }
 
-void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
+void DkResizeDialog::on_hPixelEdit_valueChanged(const QString& text) {
 
 	if(!mHPixelEdit->hasFocus())
 		return;
@@ -1505,7 +1505,7 @@ void DkResizeDialog::on_hPixelEdit_valueChanged(QString text) {
 	drawPreview();
 }
 
-void DkResizeDialog::on_widthEdit_valueChanged(QString text) {
+void DkResizeDialog::on_widthEdit_valueChanged(const QString& text) {
 
 	if (!mWidthEdit->hasFocus())
 		return;
@@ -1529,7 +1529,7 @@ void DkResizeDialog::on_widthEdit_valueChanged(QString text) {
 	drawPreview();
 }
 
-void DkResizeDialog::on_heightEdit_valueChanged(QString text) {
+void DkResizeDialog::on_heightEdit_valueChanged(const QString& text) {
 
 	if (!mHeightEdit->hasFocus())
 		return;
@@ -1552,7 +1552,7 @@ void DkResizeDialog::on_heightEdit_valueChanged(QString text) {
 	drawPreview();
 }
 
-void DkResizeDialog::on_resolutionEdit_valueChanged(QString text) {
+void DkResizeDialog::on_resolutionEdit_valueChanged(const QString& text) {
 
 	mExifDpi = (float)text.toDouble();
 
@@ -1738,7 +1738,7 @@ QWidget* DkShortcutDelegate::createEditor(QWidget* parent, const QStyleOptionVie
 		return w;
 
 #if QT_VERSION < 0x050000
-	connect(w, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(w, SIGNAL(textChanged(const QString&)), this, SLOT(textChanged(const QString&)));
 	connect(w, SIGNAL(editingFinished()), this, SLOT(textChanged()));
 #else
 	connect(w, SIGNAL(keySequenceChanged(const QKeySequence&)), this, SLOT(keySequenceChanged(const QKeySequence&)));
@@ -1763,14 +1763,14 @@ void DkShortcutDelegate::setEditorData(QWidget* editor, const QModelIndex& index
 }
 
 #if QT_VERSION < 0x050000
-void DkShortcutDelegate::textChanged(QString text) {
+void DkShortcutDelegate::textChanged(const QString& text) {
 	emit checkDuplicateSignal(text, item);
 }
 
 void DkShortcutDelegate::keySequenceChanged(const QKeySequence&) {}
 #else
 
-void DkShortcutDelegate::textChanged(QString) {}	// dummy since the moccer is to dumb to get #if defs
+void DkShortcutDelegate::textChanged(const QString&) {}	// dummy since the moccer is to dumb to get #if defs
 
 void DkShortcutDelegate::keySequenceChanged(const QKeySequence& keySequence) {
 	emit checkDuplicateSignal(keySequence, item);
@@ -1875,10 +1875,6 @@ DkShortcutsModel::DkShortcutsModel(QObject* parent) : QAbstractItemModel(parent)
 DkShortcutsModel::~DkShortcutsModel() {
 	delete mRootItem;
 }
-
-//DkShortcutsModel::DkShortcutsModel(QVector<QPair<QString, QKeySequence> > actions, QObject *parent) : QAbstractTableModel(parent) {
-//	this->actions = actions;
-//}
 
 QModelIndex DkShortcutsModel::index(int row, int column, const QModelIndex &parent) const {
 	
@@ -2203,10 +2199,10 @@ void DkShortcutsDialog::createLayout() {
 	mDefaultButton = new QPushButton(tr("Set to &Default"), this);
 	mDefaultButton->setToolTip(tr("Removes All Custom Shortcuts"));
 	connect(mDefaultButton, SIGNAL(clicked()), this, SLOT(defaultButtonClicked()));
-	connect(mModel, SIGNAL(duplicateSignal(QString)), mNotificationLabel, SLOT(setText(QString)));
+	connect(mModel, SIGNAL(duplicateSignal(const QString&)), mNotificationLabel, SLOT(setText(const QString&)));
 
 #if QT_VERSION < 0x050000
-	connect(scDelegate, SIGNAL(checkDuplicateSignal(QString, void*)), model, SLOT(checkDuplicate(QString, void*)));
+	connect(scDelegate, SIGNAL(checkDuplicateSignal(const QString&, void*)), model, SLOT(checkDuplicate(const QString&, void*)));
 #else
 	connect(scDelegate, SIGNAL(checkDuplicateSignal(const QKeySequence&, void*)), mModel, SLOT(checkDuplicate(const QKeySequence&, void*)));
 	connect(scDelegate, SIGNAL(clearDuplicateSignal()), mModel, SLOT(clearDuplicateInfo()));
@@ -2822,9 +2818,9 @@ DkExportTiffDialog::DkExportTiffDialog(QWidget* parent /* = 0 */, Qt::WindowFlag
 	createLayout();
 	setAcceptDrops(true);
 
-	connect(this, SIGNAL(updateImage(QImage)), mViewport, SLOT(setImage(QImage)));
+	connect(this, SIGNAL(updateImage(const QImage&)), mViewport, SLOT(setImage(const QImage&)));
 	connect(&mWatcher, SIGNAL(finished()), this, SLOT(processingFinished()));
-	connect(this, SIGNAL(infoMessage(QString)), mMsgLabel, SLOT(setText(QString)));
+	connect(this, SIGNAL(infoMessage(const QString&)), mMsgLabel, SLOT(setText(const QString&)));
 	connect(this, SIGNAL(updateProgress(int)), mProgress, SLOT(setValue(int)));
 	QMetaObject::connectSlotsByName(this);
 }
@@ -3303,10 +3299,9 @@ DkTinyPlanetDialog::DkTinyPlanetDialog(QWidget* parent /* = 0 */, Qt::WindowFlag
 
 	setWindowTitle(tr("Tiny Planet"));
 	createLayout();
-	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
 
-	connect(this, SIGNAL(updateImage(QImage)), this, SLOT(updateImageSlot(QImage)));
+	connect(this, SIGNAL(updateImage(const QImage&)), this, SLOT(updateImageSlot(const QImage&)));
 	connect(&mUnsharpWatcher, SIGNAL(finished()), this, SLOT(tinyPlanetFinished()));
 	QMetaObject::connectSlotsByName(this);
 }
@@ -3514,21 +3509,20 @@ void DkTinyPlanetDialog::setFile(const QString& filePath) {
 // DkMosaicDialog --------------------------------------------------------------------
 DkMosaicDialog::DkMosaicDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
-	processing = false;
-	postProcessing = false;
-	updatePostProcessing = false;
+	mProcessing = false;
+	mPostProcessing = false;
+	mUpdatePostProcessing = false;
 
 	setWindowTitle(tr("Create Mosaic Image"));
 	createLayout();
-	//setFixedSize(340, 400);		// due to the baseViewport we need fixed sized dialogs : (
 	setAcceptDrops(true);
 
-	connect(this, SIGNAL(updateImage(QImage)), preview, SLOT(setImage(QImage)));
-	connect(&mosaicWatcher, SIGNAL(finished()), this, SLOT(mosaicFinished()));
-	connect(&postProcessWatcher, SIGNAL(finished()), this, SLOT(postProcessFinished()));
-	connect(&postProcessWatcher, SIGNAL(canceled()), this, SLOT(postProcessFinished()));
-	connect(this, SIGNAL(infoMessage(QString)), msgLabel, SLOT(setText(QString)));
-	connect(this, SIGNAL(updateProgress(int)), progress, SLOT(setValue(int)));
+	connect(this, SIGNAL(updateImage(const QImage&)), mPreview, SLOT(setImage(const QImage&)));
+	connect(&mMosaicWatcher, SIGNAL(finished()), this, SLOT(mosaicFinished()));
+	connect(&mPostProcessWatcher, SIGNAL(finished()), this, SLOT(postProcessFinished()));
+	connect(&mPostProcessWatcher, SIGNAL(canceled()), this, SLOT(postProcessFinished()));
+	connect(this, SIGNAL(infoMessage(const QString&)), mMsgLabel, SLOT(setText(const QString&)));
+	connect(this, SIGNAL(updateProgress(int)), mProgress, SLOT(setValue(int)));
 	QMetaObject::connectSlotsByName(this);
 }
 
@@ -3557,39 +3551,39 @@ void DkMosaicDialog::dragEnterEvent(QDragEnterEvent *event) {
 void DkMosaicDialog::createLayout() {
 
 	// progress bar
-	progress = new QProgressBar(this);
-	progress->hide();
+	mProgress = new QProgressBar(this);
+	mProgress->hide();
 
-	msgLabel = new QLabel(this);
-	msgLabel->setObjectName("DkWarningInfo");
-	msgLabel->hide();
+	mMsgLabel = new QLabel(this);
+	mMsgLabel->setObjectName("DkWarningInfo");
+	mMsgLabel->hide();
 
 	// post processing sliders
-	darkenSlider = new QSlider(Qt::Horizontal, this);
-	darkenSlider->setObjectName("darkenSlider");
-	darkenSlider->setValue(40);
+	mDarkenSlider = new QSlider(Qt::Horizontal, this);
+	mDarkenSlider->setObjectName("darkenSlider");
+	mDarkenSlider->setValue(40);
 	//darkenSlider->hide();
 
-	lightenSlider = new QSlider(Qt::Horizontal, this);
-	lightenSlider->setObjectName("lightenSlider");
-	lightenSlider->setValue(40);
+	mLightenSlider = new QSlider(Qt::Horizontal, this);
+	mLightenSlider->setObjectName("lightenSlider");
+	mLightenSlider->setValue(40);
 	//lightenSlider->hide();
 
-	saturationSlider = new QSlider(Qt::Horizontal, this);
-	saturationSlider->setObjectName("saturationSlider");
-	saturationSlider->setValue(60);
+	mSaturationSlider = new QSlider(Qt::Horizontal, this);
+	mSaturationSlider->setObjectName("saturationSlider");
+	mSaturationSlider->setValue(60);
 	//saturationSlider->hide();
 
-	sliderWidget = new QWidget(this);
-	QGridLayout* sliderLayout = new QGridLayout(sliderWidget);
+	mSliderWidget = new QWidget(this);
+	QGridLayout* sliderLayout = new QGridLayout(mSliderWidget);
 	sliderLayout->addWidget(new QLabel(tr("Darken")), 0, 0);
 	sliderLayout->addWidget(new QLabel(tr("Lighten")), 0, 1);
 	sliderLayout->addWidget(new QLabel(tr("Saturation")), 0, 2);
 
-	sliderLayout->addWidget(darkenSlider, 1, 0);
-	sliderLayout->addWidget(lightenSlider, 1, 1);
-	sliderLayout->addWidget(saturationSlider, 1, 2);
-	sliderWidget->hide();
+	sliderLayout->addWidget(mDarkenSlider, 1, 0);
+	sliderLayout->addWidget(mLightenSlider, 1, 1);
+	sliderLayout->addWidget(mSaturationSlider, 1, 2);
+	mSliderWidget->hide();
 
 	// open handles
 	QLabel* openLabel = new QLabel(tr("Mosaic Image:"), this);
@@ -3599,7 +3593,7 @@ void DkMosaicDialog::createLayout() {
 	openButton->setObjectName("openButton");
 	openButton->setToolTip(tr("Specify the Root Folder of the Image Database Desired."));
 
-	fileLabel = new QLabel(tr("No Image loaded"), this);
+	mFileLabel = new QLabel(tr("No Image loaded"), this);
 
 	// save handles
 	QLabel* saveLabel = new QLabel(tr("Image Database:"), this);
@@ -3608,115 +3602,115 @@ void DkMosaicDialog::createLayout() {
 	QPushButton* dbButton = new QPushButton(tr("&Browse"), this);
 	dbButton->setObjectName("dbButton");
 
-	folderLabel = new QLabel(tr("Specify an Image Database"), this);
+	mFolderLabel = new QLabel(tr("Specify an Image Database"), this);
 
 	// resolution handles
 	QLabel* sizeLabel = new QLabel(tr("Resolution:"));
 	sizeLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	newWidthBox = new QSpinBox();
-	newWidthBox->setObjectName("newWidthBox");
-	newWidthBox->setToolTip(tr("Pixel Width"));
-	newWidthBox->setMinimum(100);
-	newWidthBox->setMaximum(30000);
-	newHeightBox = new QSpinBox();
-	newHeightBox->setObjectName("newHeightBox");
-	newHeightBox->setToolTip(tr("Pixel Height"));
-	newHeightBox->setMinimum(100);
-	newHeightBox->setMaximum(30000);
-	realResLabel = new QLabel("");
+	mNewWidthBox = new QSpinBox();
+	mNewWidthBox->setObjectName("newWidthBox");
+	mNewWidthBox->setToolTip(tr("Pixel Width"));
+	mNewWidthBox->setMinimum(100);
+	mNewWidthBox->setMaximum(30000);
+	mNewHeightBox = new QSpinBox();
+	mNewHeightBox->setObjectName("newHeightBox");
+	mNewHeightBox->setToolTip(tr("Pixel Height"));
+	mNewHeightBox->setMinimum(100);
+	mNewHeightBox->setMaximum(30000);
+	mRealResLabel = new QLabel("");
 	//realResLabel->setToolTip(tr("."));
 
 	// num patch handles
 	QLabel* patchLabel = new QLabel(tr("Patches:"));
 	patchLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	numPatchesH = new QSpinBox(this);
-	numPatchesH->setObjectName("numPatchesH");
-	numPatchesH->setToolTip(tr("Number of Horizontal Patches"));
-	numPatchesH->setMinimum(1);
-	numPatchesH->setMaximum(1000);
-	numPatchesV = new QSpinBox(this);
-	numPatchesV->setObjectName("numPatchesV");
-	numPatchesV->setToolTip(tr("Number of Vertical Patches"));
-	numPatchesV->setMinimum(1);
-	numPatchesV->setMaximum(1000);
-	patchResLabel = new QLabel("", this);
-	patchResLabel->setObjectName("DkDecentInfo");
-	patchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
+	mNumPatchesH = new QSpinBox(this);
+	mNumPatchesH->setObjectName("numPatchesH");
+	mNumPatchesH->setToolTip(tr("Number of Horizontal Patches"));
+	mNumPatchesH->setMinimum(1);
+	mNumPatchesH->setMaximum(1000);
+	mNumPatchesV = new QSpinBox(this);
+	mNumPatchesV->setObjectName("numPatchesV");
+	mNumPatchesV->setToolTip(tr("Number of Vertical Patches"));
+	mNumPatchesV->setMinimum(1);
+	mNumPatchesV->setMaximum(1000);
+	mPatchResLabel = new QLabel("", this);
+	mPatchResLabel->setObjectName("DkDecentInfo");
+	mPatchResLabel->setToolTip(tr("If this label turns red, the computation might be slower."));
 
 	// file filters
 	QLabel* filterLabel = new QLabel(tr("Filters:"), this);
 	filterLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-	filterEdit = new QLineEdit("", this);
-	filterEdit->setObjectName("fileEdit");
-	filterEdit->setToolTip(tr("You can split multiple ignore words with ;"));
+	mFilterEdit = new QLineEdit("", this);
+	mFilterEdit->setObjectName("fileEdit");
+	mFilterEdit->setToolTip(tr("You can split multiple ignore words with ;"));
 
 	QStringList filters = DkSettings::app.openFilters;
 	filters.pop_front();	// replace for better readability
 	filters.push_front(tr("All Images"));
-	suffixBox = new QComboBox(this);
-	suffixBox->addItems(filters);
+	mSuffixBox = new QComboBox(this);
+	mSuffixBox->addItems(filters);
 	//suffixBox->setCurrentIndex(DkImageLoader::saveFilters.indexOf(QRegExp(".*tif.*")));
 
-	controlWidget = new QWidget(this);
-	QGridLayout* controlLayout = new QGridLayout(controlWidget);
+	mControlWidget = new QWidget(this);
+	QGridLayout* controlLayout = new QGridLayout(mControlWidget);
 	controlLayout->addWidget(openLabel, 0, 0);
 	controlLayout->addWidget(openButton, 0, 1, 1, 2);
-	controlLayout->addWidget(fileLabel, 0, 3, 1, 2);
+	controlLayout->addWidget(mFileLabel, 0, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
 	controlLayout->addWidget(saveLabel, 1, 0);
 	controlLayout->addWidget(dbButton, 1, 1, 1, 2);
-	controlLayout->addWidget(folderLabel, 1, 3, 1, 2);
+	controlLayout->addWidget(mFolderLabel, 1, 3, 1, 2);
 	//controlLayout->setColumnStretch(3, 1);
 
 	controlLayout->addWidget(sizeLabel, 2, 0);
-	controlLayout->addWidget(newWidthBox, 2, 1);
-	controlLayout->addWidget(newHeightBox, 2, 2);
-	controlLayout->addWidget(realResLabel, 2, 3);
+	controlLayout->addWidget(mNewWidthBox, 2, 1);
+	controlLayout->addWidget(mNewHeightBox, 2, 2);
+	controlLayout->addWidget(mRealResLabel, 2, 3);
 
 	controlLayout->addWidget(patchLabel, 4, 0);
-	controlLayout->addWidget(numPatchesH, 4, 1);
-	controlLayout->addWidget(numPatchesV, 4, 2);
-	controlLayout->addWidget(patchResLabel, 4, 3);
+	controlLayout->addWidget(mNumPatchesH, 4, 1);
+	controlLayout->addWidget(mNumPatchesV, 4, 2);
+	controlLayout->addWidget(mPatchResLabel, 4, 3);
 
 	controlLayout->addWidget(filterLabel, 5, 0);
-	controlLayout->addWidget(filterEdit, 5, 1, 1, 2);
-	controlLayout->addWidget(suffixBox, 5, 3, 1, 2);
+	controlLayout->addWidget(mFilterEdit, 5, 1, 1, 2);
+	controlLayout->addWidget(mSuffixBox, 5, 3, 1, 2);
 	controlLayout->setColumnStretch(5, 1);
 
 	// shows the image if it could be loaded
-	viewport = new DkBaseViewPort(this);
-	viewport->setForceFastRendering(true);
-	viewport->setPanControl(QPointF(0.0f, 0.0f));
+	mViewport = new DkBaseViewPort(this);
+	mViewport->setForceFastRendering(true);
+	mViewport->setPanControl(QPointF(0.0f, 0.0f));
 
-	preview = new DkBaseViewPort(this);
-	preview->setForceFastRendering(true);
-	preview->setPanControl(QPointF(0.0f, 0.0f));
-	preview->hide();
+	mPreview = new DkBaseViewPort(this);
+	mPreview->setForceFastRendering(true);
+	mPreview->setPanControl(QPointF(0.0f, 0.0f));
+	mPreview->hide();
 
 	QWidget* viewports = new QWidget(this);
 	QHBoxLayout* viewLayout = new QHBoxLayout(viewports);
-	viewLayout->addWidget(viewport);
-	viewLayout->addWidget(preview);
+	viewLayout->addWidget(mViewport);
+	viewLayout->addWidget(mPreview);
 
 	// mButtons
-	buttons = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
-	buttons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	mButtons = new QDialogButtonBox(QDialogButtonBox::Apply | QDialogButtonBox::Save | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	mButtons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
+	mButtons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
+	mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
 	//connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
-	buttons->button(QDialogButtonBox::Save)->setEnabled(false);
+	connect(mButtons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
+	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
+	mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 	
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(viewports);
-	layout->addWidget(progress);
-	layout->addWidget(sliderWidget);
-	layout->addWidget(msgLabel);
-	layout->addWidget(controlWidget);
-	layout->addWidget(buttons);
+	layout->addWidget(mProgress);
+	layout->addWidget(mSliderWidget);
+	layout->addWidget(mMsgLabel);
+	layout->addWidget(mControlWidget);
+	layout->addWidget(mButtons);
 
 	enableMosaicSave(false);
 }
@@ -3734,12 +3728,11 @@ void DkMosaicDialog::on_dbButton_pressed() {
 	qDebug() << "save triggered...";
 
 	// load system default open dialog
-	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"),
-		saveDir.absolutePath());
+	QString dirName = QFileDialog::getExistingDirectory(this, tr("Open an Image Directory"), mSavePath);
 
 	if (QFileInfo(dirName).exists()) {
-		saveDir = dirName;
-		folderLabel->setText(saveDir.absolutePath());
+		mSavePath = dirName;
+		mFolderLabel->setText(mSavePath);
 	}
 }
 
@@ -3750,47 +3743,47 @@ void DkMosaicDialog::on_fileEdit_textChanged(const QString& filename) {
 
 void DkMosaicDialog::on_newWidthBox_valueChanged(int) {
 
-	if (!loader.hasImage())
+	if (!mLoader.hasImage())
 		return;
 
-	newHeightBox->blockSignals(true);
-	newHeightBox->setValue(qRound((float)newWidthBox->value()/loader.image().width()*loader.image().height()));
-	newHeightBox->blockSignals(false);
-	realResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(newWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(newHeightBox->value()/150.0*2.54, 0, 'f', 1));
+	mNewHeightBox->blockSignals(true);
+	mNewHeightBox->setValue(qRound((float)mNewWidthBox->value()/mLoader.image().width()*mLoader.image().height()));
+	mNewHeightBox->blockSignals(false);
+	mRealResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(mNewWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(mNewHeightBox->value()/150.0*2.54, 0, 'f', 1));
 	updatePatchRes();
 }
 
 void DkMosaicDialog::on_newHeightBox_valueChanged(int) {
 
-	if (!loader.hasImage())
+	if (!mLoader.hasImage())
 		return;
 
-	newWidthBox->blockSignals(true);
-	newWidthBox->setValue(qRound((float)newHeightBox->value()/loader.image().height()*loader.image().width()));
-	newWidthBox->blockSignals(false);
-	realResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(newWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(newHeightBox->value()/150.0*2.54, 0, 'f', 1));
+	mNewWidthBox->blockSignals(true);
+	mNewWidthBox->setValue(qRound((float)mNewHeightBox->value()/mLoader.image().height()*mLoader.image().width()));
+	mNewWidthBox->blockSignals(false);
+	mRealResLabel->setText(tr("%1 x %2 cm @150 dpi").arg(mNewWidthBox->value()/150.0*2.54, 0, 'f', 1).arg(mNewHeightBox->value()/150.0*2.54, 0, 'f', 1));
 	updatePatchRes();
 }
 
 void DkMosaicDialog::on_numPatchesH_valueChanged(int) {
 
-	if (!loader.hasImage())
+	if (!mLoader.hasImage())
 		return;
 
-	numPatchesV->blockSignals(true);
-	numPatchesV->setValue(qFloor((float)loader.image().height()/((float)loader.image().width()/numPatchesH->value())));
-	numPatchesV->blockSignals(false);
+	mNumPatchesV->blockSignals(true);
+	mNumPatchesV->setValue(qFloor((float)mLoader.image().height()/((float)mLoader.image().width()/mNumPatchesH->value())));
+	mNumPatchesV->blockSignals(false);
 	updatePatchRes();
 }
 
 void DkMosaicDialog::on_numPatchesV_valueChanged(int) {
 	
-	if (!loader.hasImage())
+	if (!mLoader.hasImage())
 		return;
 
-	numPatchesH->blockSignals(true);
-	numPatchesH->setValue(qFloor((float)loader.image().width()/((float)loader.image().height()/numPatchesV->value())));
-	numPatchesH->blockSignals(false);
+	mNumPatchesH->blockSignals(true);
+	mNumPatchesH->setValue(qFloor((float)mLoader.image().width()/((float)mLoader.image().height()/mNumPatchesV->value())));
+	mNumPatchesH->blockSignals(false);
 	updatePatchRes();
 }
 
@@ -3811,40 +3804,40 @@ void DkMosaicDialog::on_saturationSlider_valueChanged(int) {
 
 void DkMosaicDialog::updatePatchRes() {
 
-	int patchResD = qFloor((float)newWidthBox->value()/numPatchesH->value());
+	int patchResD = qFloor((float)mNewWidthBox->value()/mNumPatchesH->value());
 
-	patchResLabel->setText(tr("Patch Resolution: %1 px").arg(patchResD));
-	patchResLabel->show();
+	mPatchResLabel->setText(tr("Patch Resolution: %1 px").arg(patchResD));
+	mPatchResLabel->show();
 
 	// show the user if we can work with the thumbnails or not
 	if (patchResD > 97)
-		patchResLabel->setProperty("warning", true);
+		mPatchResLabel->setProperty("warning", true);
 	else
-		patchResLabel->setProperty("warning", false);
+		mPatchResLabel->setProperty("warning", false);
 
-	patchResLabel->style()->unpolish(patchResLabel);
-	patchResLabel->style()->polish(patchResLabel);
-	patchResLabel->update();
+	mPatchResLabel->style()->unpolish(mPatchResLabel);
+	mPatchResLabel->style()->polish(mPatchResLabel);
+	mPatchResLabel->update();
 }
 
 QImage DkMosaicDialog::getImage() {
 
-	if (mosaic.isNull() && !mosaicMat.empty())
-		return DkImage::mat2QImage(mosaicMat);
+	if (mMosaic.isNull() && !mMosaicMat.empty())
+		return DkImage::mat2QImage(mMosaicMat);
 
-	return mosaic;
+	return mMosaic;
 }
 
 void DkMosaicDialog::reject() {
 
 	// not sure if this is a nice way to do: but we change cancel behavior while processing
-	if (processing)
-		processing = false;
-	else if (!mosaic.isNull() && !buttons->button(QDialogButtonBox::Apply)->isEnabled()) {
-		buttons->button(QDialogButtonBox::Apply)->setEnabled(true);
+	if (mProcessing)
+		mProcessing = false;
+	else if (!mMosaic.isNull() && !mButtons->button(QDialogButtonBox::Apply)->isEnabled()) {
+		mButtons->button(QDialogButtonBox::Apply)->setEnabled(true);
 		enableAll(true);
-		viewport->show();
-		sliderWidget->hide();
+		mViewport->show();
+		mSliderWidget->hide();
 	}
 	else
 		QDialog::reject();
@@ -3853,50 +3846,50 @@ void DkMosaicDialog::reject() {
 
 void DkMosaicDialog::buttonClicked(QAbstractButton* button) {
 
-	if (button == buttons->button(QDialogButtonBox::Save)) {
+	if (button == mButtons->button(QDialogButtonBox::Save)) {
 
 		// render the full image
-		if (!mosaic.isNull()) {
-			sliderWidget->hide();
-			progress->setValue(progress->minimum());
-			progress->show();
+		if (!mMosaic.isNull()) {
+			mSliderWidget->hide();
+			mProgress->setValue(mProgress->minimum());
+			mProgress->show();
 			enableAll(false);
 			button->setEnabled(false);
 			
 			QFuture<bool> future = QtConcurrent::run(this, 
 				&nmc::DkMosaicDialog::postProcessMosaic,
-				darkenSlider->value()/100.0f,
-				lightenSlider->value()/100.0f, 
-				saturationSlider->value()/100.0f,
+				mDarkenSlider->value()/100.0f,
+				mLightenSlider->value()/100.0f, 
+				mSaturationSlider->value()/100.0f,
 				false);
-			postProcessWatcher.setFuture(future);
+			mPostProcessWatcher.setFuture(future);
 		}
 	}
-	else if (button == buttons->button(QDialogButtonBox::Apply))
+	else if (button == mButtons->button(QDialogButtonBox::Apply))
 		compute();
 }
 
 void DkMosaicDialog::compute() {
 
-	if (postProcessing)
+	if (mPostProcessing)
 		return;
 
-	progress->setValue(progress->minimum());
-	progress->show();
-	msgLabel->setText("");
-	msgLabel->show();
-	mosaicMatSmall.release();
-	mosaicMat.release();
-	origImg.release();
-	mosaic = QImage();
-	sliderWidget->hide();
-	viewport->show();
-	preview->setForceFastRendering(true);
-	preview->show();
+	mProgress->setValue(mProgress->minimum());
+	mProgress->show();
+	mMsgLabel->setText("");
+	mMsgLabel->show();
+	mMosaicMatSmall.release();
+	mMosaicMat.release();
+	mOrigImg.release();
+	mMosaic = QImage();
+	mSliderWidget->hide();
+	mViewport->show();
+	mPreview->setForceFastRendering(true);
+	mPreview->show();
 
 	enableAll(false);
 
-	QString suffixTmp = suffixBox->currentText();
+	QString suffixTmp = mSuffixBox->currentText();
 	QString suffix;
 
 	for (int idx = 0; idx < DkSettings::app.fileFilters.size(); idx++) {
@@ -3906,18 +3899,17 @@ void DkMosaicDialog::compute() {
 		}
 	}
 
-	QString filter = filterEdit->text();
-	filesUsed.clear();
+	QString filter = mFilterEdit->text();
+	mFilesUsed.clear();
 
-	processing = true;
+	mProcessing = true;
 	QFuture<int> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::computeMosaic,
-		mFilePath,
 		filter,
 		suffix, 
-		newWidthBox->value(), 
-		numPatchesH->value());
-	mosaicWatcher.setFuture(future);
+		mNewWidthBox->value(), 
+		mNumPatchesH->value());
+	mMosaicWatcher.setFuture(future);
 
 	//// debug
 	//computeMosaic(
@@ -3932,28 +3924,28 @@ void DkMosaicDialog::compute() {
 
 void DkMosaicDialog::mosaicFinished() {
 
-	progress->hide();
+	mProgress->hide();
 	//msgLabel->hide();
 	
-	if (!mosaicMat.empty()) {
-		sliderWidget->show();
-		msgLabel->hide();
-		viewport->hide();
-		preview->setForceFastRendering(false);
+	if (!mMosaicMat.empty()) {
+		mSliderWidget->show();
+		mMsgLabel->hide();
+		mViewport->hide();
+		mPreview->setForceFastRendering(false);
 
 		updatePostProcess();	// add values
-		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
+		mButtons->button(QDialogButtonBox::Save)->setEnabled(true);
 	}
 	else
 		enableAll(true);
 }
 
-int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter, const QString& suffix, int newWidth, int numPatchesH) {
+int DkMosaicDialog::computeMosaic(const QString& filter, const QString& suffix, int newWidth, int numPatchesH) {
 
 	DkTimer dt;
 
 	// compute new image size
-	cv::Mat mImg = DkImage::qImage2Mat(loader.image());
+	cv::Mat mImg = DkImage::qImage2Mat(mLoader.image());
 
 	QSize numPatches = QSize(numPatchesH, 0);
 
@@ -3979,7 +3971,7 @@ int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter
 	cc.setTo(0);
 	cv::Mat ccD(numPatches.height(), numPatches.width(), CV_8UC1);	// tells us if we have already computed the real patch
 
-	filesUsed.resize(numPatches.height()*numPatches.width());
+	mFilesUsed.resize(numPatches.height()*numPatches.width());
 
 	// destination image
 	cv::Mat dImg(patchResD*numPatches.height(), patchResD*numPatches.width(), CV_8UC1);
@@ -4005,7 +3997,7 @@ int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter
 
 	while (iDidNothing < 10000) {
 
-		if (!processing)
+		if (!mProcessing)
 			return QDialog::Rejected;
 
 		if (iDidNothing > 100) {
@@ -4025,9 +4017,9 @@ int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter
 			return QDialog::Rejected;
 		}
 
-		QString imgPath = getRandomImagePath(saveDir.absolutePath(), filter, suffix);
+		QString imgPath = getRandomImagePath(mSavePath, filter, suffix);
 
-		if (!useTwice && filesUsed.contains(QFileInfo(imgPath))) {
+		if (!useTwice && mFilesUsed.contains(QFileInfo(imgPath))) {
 			iDidNothing++;
 			continue;
 		}
@@ -4109,7 +4101,7 @@ int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter
 				// update cc
 				ccPtr[maxIdx.x] = (float)maxVal;
 
-				filesUsed[maxIdx.y*numPatchesH+maxIdx.x] = thumb.getFilePath();	// replaces additionally the old file
+				mFilesUsed[maxIdx.y*numPatchesH+maxIdx.x] = thumb.getFilePath();	// replaces additionally the old file
 				iDidNothing = 0;
 			}
 			else
@@ -4142,7 +4134,7 @@ int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter
 			if (ccDPtr[cIdx])
 				continue;
 
-			QFileInfo cFile = filesUsed.at(rIdx*ccD.cols+cIdx);
+			QFileInfo cFile = mFilesUsed.at(rIdx*ccD.cols+cIdx);
 
 			if (!cFile.exists()) {
 				emit infoMessage(tr("Something is seriously wrong, I could not load: %1").arg(cFile.absoluteFilePath()));
@@ -4162,11 +4154,11 @@ int DkMosaicDialog::computeMosaic(const QString& filePath, const QString& filter
 	qDebug() << "I fully rendered: " << ccD.rows*ccD.cols-cv::sum(ccD)[0] << " images";
 
 	// create final images
-	origImg = mImgLab;
-	mosaicMat = dImg;
-	mosaicMatSmall = pImg;
+	mOrigImg = mImgLab;
+	mMosaicMat = dImg;
+	mMosaicMatSmall = pImg;
 
-	processing = false;
+	mProcessing = false;
 
 	qDebug() << "mosaic computed in: " << dt.getTotal();
 
@@ -4257,17 +4249,17 @@ QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& 
 
 		for (int idx = 0; idx < entriesTmp.size(); idx++) {
 			
-			bool ignore = false;
+			bool lIgnore = false;
 			QString p = entriesTmp.at(idx).absoluteFilePath();
 
 			for (int iIdx = 0; iIdx < ignoreList.size(); iIdx++) {
 				if (p.contains(ignoreList.at(iIdx))) {
-					ignore = true;
+					lIgnore = true;
 					break;
 				}
 			}
 
-			if (!ignore)
+			if (!lIgnore)
 				entries.append(entriesTmp.at(idx));
 		}
 	}
@@ -4291,44 +4283,44 @@ QString DkMosaicDialog::getRandomImagePath(const QString& cPath, const QString& 
 
 void DkMosaicDialog::updatePostProcess() {
 	
-	if (mosaicMat.empty() || processing)
+	if (mMosaicMat.empty() || mProcessing)
 		return;
 
-	if (postProcessing) {
-		updatePostProcessing = true;
+	if (mPostProcessing) {
+		mUpdatePostProcessing = true;
 		return;
 	}
 
-	buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
-	buttons->button(QDialogButtonBox::Save)->setEnabled(false);
+	mButtons->button(QDialogButtonBox::Apply)->setEnabled(false);
+	mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 
 	QFuture<bool> future = QtConcurrent::run(this, 
 		&nmc::DkMosaicDialog::postProcessMosaic,
-		darkenSlider->value()/100.0f,
-		lightenSlider->value()/100.0f, 
-		saturationSlider->value()/100.0f,
+		mDarkenSlider->value()/100.0f,
+		mLightenSlider->value()/100.0f, 
+		mSaturationSlider->value()/100.0f,
 		true);
-	postProcessWatcher.setFuture(future);
+	mPostProcessWatcher.setFuture(future);
 
-	updatePostProcessing = false;
+	mUpdatePostProcessing = false;
 	//postProcessMosaic(darkenSlider->value()/100.0f, lightenSlider->value()/100.0f, saturationSlider->value()/100.0f);
 }
 
 void DkMosaicDialog::postProcessFinished() {
 
-	if (postProcessWatcher.result()) {
+	if (mPostProcessWatcher.result()) {
 		QDialog::accept();
 	}
-	else if (updatePostProcessing)
+	else if (mUpdatePostProcessing)
 		updatePostProcess();
 	else {
-		buttons->button(QDialogButtonBox::Save)->setEnabled(true);
+		mButtons->button(QDialogButtonBox::Save)->setEnabled(true);
 	}
 }
 
 bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen /* = 0.5 */, float saturation, bool computePreview) {
 
-	postProcessing = true;
+	mPostProcessing = true;
 
 	qDebug() << "darken: " << multiply << " lighten: " << screen;
 
@@ -4337,13 +4329,13 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 
 	try {
 		if (computePreview) {
-			origR = origImg.clone();
-			mosaicR = mosaicMatSmall.clone();
+			origR = mOrigImg.clone();
+			mosaicR = mMosaicMatSmall.clone();
 		}
 		else {
-			cv::resize(origImg, origR, mosaicMat.size(), 0, 0, CV_INTER_LANCZOS4);
-			mosaicR = mosaicMat;
-			origImg.release();
+			cv::resize(mOrigImg, origR, mMosaicMat.size(), 0, 0, CV_INTER_LANCZOS4);
+			mosaicR = mMosaicMat;
+			mOrigImg.release();
 		}
 
 		// multiply the two images
@@ -4386,7 +4378,7 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 		cv::cvtColor(origR, origR, CV_Lab2BGR);
 		qDebug() << "color converted";
 
-		mosaic = DkImage::mat2QImage(origR);
+		mMosaic = DkImage::mat2QImage(origR);
 		qDebug() << "mosaicing computed...";
 
 	}
@@ -4394,13 +4386,13 @@ bool DkMosaicDialog::postProcessMosaic(float multiply /* = 0.3 */, float screen 
 		origR.release();
 		DkNoMacs::dialog("Sorry, I could not mix the image...");
 		qDebug() << "exception caught...";
-		mosaic = DkImage::mat2QImage(mosaicMat);
+		mMosaic = DkImage::mat2QImage(mMosaicMat);
 	}
 	
 	if (computePreview)
-		preview->setImage(mosaic);
+		mPreview->setImage(mMosaic);
 
-	postProcessing = false;
+	mPostProcessing = false;
 
 	return !computePreview;
 
@@ -4413,22 +4405,21 @@ void DkMosaicDialog::setFile(const QString& filePath) {
 		return;
 
 	mFilePath = filePath;
-	saveDir = fInfo.absolutePath();
-	folderLabel->setText(saveDir.absolutePath());
-	fileLabel->setText(filePath);
-	//filterEdit->setText(file.baseName());
+	mSavePath = fInfo.absolutePath();
+	mFolderLabel->setText(mSavePath);
+	mFileLabel->setText(filePath);
 
-	loader.loadGeneral(filePath, true);
-	viewport->setImage(loader.image());
+	mLoader.loadGeneral(filePath, true);
+	mViewport->setImage(mLoader.image());
 
-	enableMosaicSave(loader.hasImage());
+	enableMosaicSave(mLoader.hasImage());
 
 	//newWidthBox->blockSignals(true);
 	//newHeightBox->blockSignals(true);
-	newWidthBox->setValue(loader.image().width());
-	numPatchesH->setValue(qFloor((float)loader.image().width()/90));	// 130 is a pretty good patch resolution
-	numPatchesH->setMaximum(qMin(1000, qFloor(loader.image().width()*0.5f)));
-	numPatchesV->setMaximum(qMin(1000, qFloor(loader.image().height()*0.5f)));
+	mNewWidthBox->setValue(mLoader.image().width());
+	mNumPatchesH->setValue(qFloor((float)mLoader.image().width()/90));	// 130 is a pretty good patch resolution
+	mNumPatchesH->setMaximum(qMin(1000, qFloor(mLoader.image().width()*0.5f)));
+	mNumPatchesV->setMaximum(qMin(1000, qFloor(mLoader.image().height()*0.5f)));
 	//newHeightBox->setValue(loader.image().height());
 	//newWidthBox->blockSignals(false);
 	//newHeightBox->blockSignals(false);
@@ -4443,21 +4434,21 @@ void DkMosaicDialog::setFile(const QString& filePath) {
 void DkMosaicDialog::enableAll(bool enable) {
 
 	enableMosaicSave(enable);
-	controlWidget->setEnabled(enable);
+	mControlWidget->setEnabled(enable);
 }
 
 void DkMosaicDialog::enableMosaicSave(bool enable) {
 
-	filterEdit->setEnabled(enable);
-	suffixBox->setEnabled(enable);
-	newWidthBox->setEnabled(enable);
-	newHeightBox->setEnabled(enable);
-	numPatchesH->setEnabled(enable);
-	numPatchesV->setEnabled(enable);
-	buttons->button(QDialogButtonBox::Apply)->setEnabled(enable);
+	mFilterEdit->setEnabled(enable);
+	mSuffixBox->setEnabled(enable);
+	mNewWidthBox->setEnabled(enable);
+	mNewHeightBox->setEnabled(enable);
+	mNumPatchesH->setEnabled(enable);
+	mNumPatchesV->setEnabled(enable);
+	mButtons->button(QDialogButtonBox::Apply)->setEnabled(enable);
 
 	if (!enable)
-		buttons->button(QDialogButtonBox::Save)->setEnabled(enable);
+		mButtons->button(QDialogButtonBox::Save)->setEnabled(enable);
 }
 #endif
 // DkForceThumbDialog --------------------------------------------------------------------
@@ -4579,7 +4570,7 @@ bool DkWelcomeDialog::isLanguageChanged() {
 #ifdef WITH_QUAZIP
 DkArchiveExtractionDialog::DkArchiveExtractionDialog(QWidget* parent, Qt::WindowFlags flags) : QDialog(parent, flags) {
 	
-	fileList = QStringList();
+	mFileList = QStringList();
 	setWindowTitle(tr("Extract images from an archive"));
 	createLayout();
 	setMinimumSize(340, 400);
@@ -4590,105 +4581,105 @@ void DkArchiveExtractionDialog::createLayout() {
 
 	// archive file path
 	QLabel* archiveLabel = new QLabel(tr("Archive (%1)").arg(DkSettings::app.containerRawFilters.replace(" *", ", *")), this);
-	archivePathEdit = new QLineEdit(this);
-	archivePathEdit->setObjectName("DkWarningEdit");
-	archivePathEdit->setValidator(&fileValidator);
-	connect(archivePathEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
-	connect(archivePathEdit, SIGNAL(editingFinished()), this, SLOT(loadArchive()));
+	mArchivePathEdit = new QLineEdit(this);
+	mArchivePathEdit->setObjectName("DkWarningEdit");
+	mArchivePathEdit->setValidator(&mFileValidator);
+	connect(mArchivePathEdit, SIGNAL(textChanged(const QString&)), this, SLOT(textChanged(const QString&)));
+	connect(mArchivePathEdit, SIGNAL(editingFinished()), this, SLOT(loadArchive()));
 
 	QPushButton* openArchiveButton = new QPushButton(tr("&Browse"));
 	connect(openArchiveButton, SIGNAL(pressed()), this, SLOT(openArchive()));
 
 	// dir file path
 	QLabel* dirLabel = new QLabel(tr("Extract to"));
-	dirPathEdit = new QLineEdit();
-	dirPathEdit->setValidator(&fileValidator);
-	connect(dirPathEdit, SIGNAL(textChanged(QString)), this, SLOT(dirTextChanged(QString)));
+	mDirPathEdit = new QLineEdit();
+	mDirPathEdit->setValidator(&mFileValidator);
+	connect(mDirPathEdit, SIGNAL(textChanged(const QString&)), this, SLOT(dirTextChanged(const QString&)));
 
 	QPushButton* openDirButton = new QPushButton(tr("&Browse"));
 	connect(openDirButton, SIGNAL(pressed()), this, SLOT(openDir()));
 
-	feedbackLabel = new QLabel("", this);
-	feedbackLabel->setObjectName("DkDecentInfo");
+	mFeedbackLabel = new QLabel("", this);
+	mFeedbackLabel->setObjectName("DkDecentInfo");
 
-	fileListDisplay = new QListWidget(this);
+	mFileListDisplay = new QListWidget(this);
 
-	removeSubfolders = new QCheckBox(tr("Remove Subfolders"), this);
-	removeSubfolders->setChecked(false);
-	connect(removeSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
+	mRemoveSubfolders = new QCheckBox(tr("Remove Subfolders"), this);
+	mRemoveSubfolders->setChecked(false);
+	connect(mRemoveSubfolders, SIGNAL(stateChanged(int)), this, SLOT(checkbocChecked(int)));
 
 	// mButtons
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("&Extract"));
-	buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
-	buttons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	mButtons->button(QDialogButtonBox::Ok)->setText(tr("&Extract"));
+	mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
+	mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QWidget* extractWidget = new QWidget(this);
 	QGridLayout* gdLayout = new QGridLayout(extractWidget);
 	gdLayout->addWidget(archiveLabel, 0, 0);
-	gdLayout->addWidget(archivePathEdit, 1, 0);
+	gdLayout->addWidget(mArchivePathEdit, 1, 0);
 	gdLayout->addWidget(openArchiveButton, 1, 1);
 	gdLayout->addWidget(dirLabel, 2, 0);
-	gdLayout->addWidget(dirPathEdit, 3, 0);
+	gdLayout->addWidget(mDirPathEdit, 3, 0);
 	gdLayout->addWidget(openDirButton, 3, 1);
-	gdLayout->addWidget(feedbackLabel, 4, 0, 1, 2);
-	gdLayout->addWidget(fileListDisplay, 5, 0, 1, 2);
-	gdLayout->addWidget(removeSubfolders, 6, 0, 1, 2);
+	gdLayout->addWidget(mFeedbackLabel, 4, 0, 1, 2);
+	gdLayout->addWidget(mFileListDisplay, 5, 0, 1, 2);
+	gdLayout->addWidget(mRemoveSubfolders, 6, 0, 1, 2);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(extractWidget);
-	layout->addWidget(buttons);
+	layout->addWidget(mButtons);
 }
 
-void DkArchiveExtractionDialog::setCurrentFile(const QFileInfo& file, bool isZip) {
+void DkArchiveExtractionDialog::setCurrentFile(const QString& filePath, bool isZip) {
 
 	userFeedback("", false);
-	archivePathEdit->setText("");
-	dirPathEdit->setText("");
-	fileListDisplay->clear();
-	removeSubfolders->setChecked(false);
+	mArchivePathEdit->setText("");
+	mDirPathEdit->setText("");
+	mFileListDisplay->clear();
+	mRemoveSubfolders->setChecked(false);
 
-	cFile = file;
+	mFilePath = filePath;
 	if (isZip) {
-		archivePathEdit->setText(cFile.absoluteFilePath());
+		mArchivePathEdit->setText(mFilePath);
 		loadArchive();
 	}
 };
 
-void DkArchiveExtractionDialog::textChanged(QString text) {
+void DkArchiveExtractionDialog::textChanged(const QString& text) {
 	
-	bool oldStyle = archivePathEdit->property("error").toBool();
+	bool oldStyle = mArchivePathEdit->property("error").toBool();
 	bool newStyle = false;
 
 	if (QFileInfo(text).exists() && DkBasicLoader::isContainer(text)) {
 		newStyle = false;
-		archivePathEdit->setProperty("error", newStyle);
+		mArchivePathEdit->setProperty("error", newStyle);
 		loadArchive(text);
 	}
 	else {
 		newStyle = true;
-		archivePathEdit->setProperty("error", newStyle);
+		mArchivePathEdit->setProperty("error", newStyle);
 		userFeedback("", false);	
-		fileListDisplay->clear();
-		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+		mFileListDisplay->clear();
+		mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	}
 
 	if (oldStyle != newStyle) {
-		archivePathEdit->style()->unpolish(archivePathEdit);
-		archivePathEdit->style()->polish(archivePathEdit);
-		archivePathEdit->update();
+		mArchivePathEdit->style()->unpolish(mArchivePathEdit);
+		mArchivePathEdit->style()->polish(mArchivePathEdit);
+		mArchivePathEdit->update();
 	}
 
 
 }
 
-void DkArchiveExtractionDialog::dirTextChanged(QString text) {
+void DkArchiveExtractionDialog::dirTextChanged(const QString& text) {
 	
 	if (text.isEmpty()) {
 		userFeedback("", false);
-		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
+		mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	}
 }
 
@@ -4701,10 +4692,10 @@ void DkArchiveExtractionDialog::openArchive() {
 
 	// load system default open dialog
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Archive"),
-		(archivePathEdit->text().isEmpty()) ? cFile.absolutePath() : archivePathEdit->text(), tr("Archives (%1)").arg(DkSettings::app.containerRawFilters.remove(",")));
+		(mArchivePathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mArchivePathEdit->text(), tr("Archives (%1)").arg(DkSettings::app.containerRawFilters.remove(",")));
 
 	if (QFileInfo(filePath).exists()) {
-		archivePathEdit->setText(filePath);
+		mArchivePathEdit->setText(filePath);
 		loadArchive(filePath);
 	}
 }
@@ -4713,49 +4704,50 @@ void DkArchiveExtractionDialog::openDir() {
 
 	// load system default open dialog
 	QString filePath = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-		(dirPathEdit->text().isEmpty()) ? cFile.absoluteDir().absolutePath() : dirPathEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+		(mDirPathEdit->text().isEmpty()) ? QFileInfo(mFilePath).absolutePath() : mDirPathEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
 	if (QFileInfo(filePath).exists())
-		dirPathEdit->setText(filePath);
+		mDirPathEdit->setText(filePath);
 }
 
 void DkArchiveExtractionDialog::userFeedback(const QString& msg, bool error) {
 
 	if (!error)
-		feedbackLabel->setProperty("warning", false);
+		mFeedbackLabel->setProperty("warning", false);
 	else
-		feedbackLabel->setProperty("warning", true);
+		mFeedbackLabel->setProperty("warning", true);
 
-	feedbackLabel->setText(msg);
-	feedbackLabel->style()->unpolish(feedbackLabel);
-	feedbackLabel->style()->polish(feedbackLabel);
-	feedbackLabel->update();
+	mFeedbackLabel->setText(msg);
+	mFeedbackLabel->style()->unpolish(mFeedbackLabel);
+	mFeedbackLabel->style()->polish(mFeedbackLabel);
+	mFeedbackLabel->update();
 }
 
-void DkArchiveExtractionDialog::loadArchive(QString filePath) {
+void DkArchiveExtractionDialog::loadArchive(const QString& filePath) {
 
-	fileList = QStringList();
-	fileListDisplay->clear();
+	mFileList = QStringList();
+	mFileListDisplay->clear();
 
-	if(filePath.isEmpty())
-		filePath = archivePathEdit->text();
+	QString lFilePath = filePath;
+	if (lFilePath.isEmpty())
+		lFilePath = mArchivePathEdit->text();
 
-	QFileInfo fileInfo(filePath);
+	QFileInfo fileInfo(lFilePath);
 	if (!fileInfo.exists())
 		return;
 
-	if (!DkBasicLoader::isContainer(filePath)) {
+	if (!DkBasicLoader::isContainer(lFilePath)) {
 		userFeedback(tr("Not a valid archive."), true);
 		return;
 	}
 
-	if (dirPathEdit->text().isEmpty()) {
+	if (mDirPathEdit->text().isEmpty()) {
 
-		dirPathEdit->setText(QFileInfo(filePath).absoluteFilePath().remove("." + QFileInfo(filePath).suffix()));
-		dirPathEdit->setFocus();
+		mDirPathEdit->setText(lFilePath.remove("." + fileInfo.suffix()));
+		mDirPathEdit->setFocus();
 	}
 
-	QStringList fileNameList = JlCompress::getFileList(filePath);
+	QStringList fileNameList = JlCompress::getFileList(lFilePath);
 	
 	// remove the * in fileFilters
 	QStringList fileFiltersClean = DkSettings::app.browseFilters;
@@ -4767,38 +4759,38 @@ void DkArchiveExtractionDialog::loadArchive(QString filePath) {
 		for (int idxFilter = 0; idxFilter < fileFiltersClean.size(); idxFilter++) {
 
 			if (fileNameList.at(idx).contains(fileFiltersClean[idxFilter], Qt::CaseInsensitive)) {
-				fileList.append(fileNameList.at(idx));
+				mFileList.append(fileNameList.at(idx));
 				break;
 			}
 		}
 	}
 
-	if (fileList.size() > 0)
-		userFeedback(tr("Number of images: ") + QString::number(fileList.size()), false);
+	if (mFileList.size() > 0)
+		userFeedback(tr("Number of images: ") + QString::number(mFileList.size()), false);
 	else {
 		userFeedback(tr("The archive does not contain any images."), false);
 		return;
 	}
 
-	fileListDisplay->addItems(fileList);
+	mFileListDisplay->addItems(mFileList);
 
-	if (removeSubfolders->checkState() == Qt::Checked) {
-		for (int i = 0; i < fileListDisplay->count(); i++) {
+	if (mRemoveSubfolders->checkState() == Qt::Checked) {
+		for (int i = 0; i < mFileListDisplay->count(); i++) {
 
-			QFileInfo fi(fileListDisplay->item(i)->text());
-			fileListDisplay->item(i)->setText(fi.fileName());
+			QFileInfo fi(mFileListDisplay->item(i)->text());
+			mFileListDisplay->item(i)->setText(fi.fileName());
 		}
 	}
-	fileListDisplay->update();
+	mFileListDisplay->update();
 
-	buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
+	mButtons->button(QDialogButtonBox::Ok)->setEnabled(true);
 }
 
 void DkArchiveExtractionDialog::accept() {
 
-	QStringList extractedFiles = extractFilesWithProgress(archivePathEdit->text(), fileList, dirPathEdit->text(), removeSubfolders->isChecked());
+	QStringList extractedFiles = extractFilesWithProgress(mArchivePathEdit->text(), mFileList, mDirPathEdit->text(), mRemoveSubfolders->isChecked());
 
-	if ((extractedFiles.isEmpty() || extractedFiles.size() != fileList.size()) && !extractedFiles.contains("userCanceled")) {
+	if ((extractedFiles.isEmpty() || extractedFiles.size() != mFileList.size()) && !extractedFiles.contains("userCanceled")) {
 		
 		QMessageBox msgBox(this);
 		msgBox.setText(tr("The images could not be extracted!"));
@@ -4817,11 +4809,11 @@ void DkArchiveExtractionDialog::dropEvent(QDropEvent *event) {
 		url = url.toLocalFile();
 
 		if (QFileInfo(url.toString()).isFile()) {
-			archivePathEdit->setText(url.toString());
+			mArchivePathEdit->setText(url.toString());
 			loadArchive(url.toString());
 		}
 		else
-			dirPathEdit->setText(url.toString());
+			mDirPathEdit->setText(url.toString());
 	}
 }
 
@@ -4838,7 +4830,7 @@ void DkArchiveExtractionDialog::dragEnterEvent(QDragEnterEvent *event) {
 
 }
 
-QStringList DkArchiveExtractionDialog::extractFilesWithProgress(QString fileCompressed, QStringList files, QString dir, bool removeSubfolders) {
+QStringList DkArchiveExtractionDialog::extractFilesWithProgress(const QString& fileCompressed, const QStringList& files, const QString& dir, bool removeSubfolders) {
 
     QProgressDialog progressDialog(this);
     progressDialog.setCancelButtonText(tr("&Cancel"));
