@@ -749,27 +749,27 @@ public slots:
 	void setImage(const QImage& img);
 	void computePreview();
 	void reject();
-	QImage computeUnsharp(const QImage img, int sigma, int amount);
+	QImage computeUnsharp(const QImage& img, int sigma, int amount);
 	void unsharpFinished();
 
 signals:
-	void updateImage(QImage img);
+	void updateImage(const QImage& img) const;
 
 protected:
 	void createLayout();
 	void dropEvent(QDropEvent *event);
 	void dragEnterEvent(QDragEnterEvent *event);
 
-	DkBaseViewPort* viewport;
-	QLabel* preview;
-	QDialogButtonBox* buttons;
-	QFutureWatcher<QImage> unsharpWatcher;
+	DkBaseViewPort* mViewport;
+	QLabel* mPreview;
+	QDialogButtonBox* mButtons;
+	QFutureWatcher<QImage> mUnsharpWatcher;
 
-	DkSlider* sigmaSlider;
-	DkSlider* amountSlider;
+	DkSlider* mSigmaSlider;
+	DkSlider* mAmountSlider;
 
-	bool processing;
-	QImage img;
+	bool mProcessing = false;
+	QImage mImg;
 };
 
 class DkTinyPlanetDialog : public QDialog {
@@ -787,13 +787,13 @@ public slots:
 	void setFile(const QString& filePath);
 	void setImage(const QImage& img);
 	void computePreview();
-	void updateImageSlot(QImage);
+	void updateImageSlot(const QImage&);
 	void reject();
-	QImage computeTinyPlanet(const QImage img, float scaleLog, float scale, double angle, QSize s);
+	QImage computeTinyPlanet(const QImage& img, float scaleLog, float scale, double angle, QSize s);
 	void tinyPlanetFinished();
 
 signals:
-	void updateImage(QImage img);
+	void updateImage(const QImage& img);
 
 protected:
 	void createLayout();
@@ -801,18 +801,18 @@ protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void resizeEvent(QResizeEvent *event);
 
-	QLabel* imgPreview;
-	QLabel* preview;
-	QDialogButtonBox* buttons;
-	QFutureWatcher<QImage> unsharpWatcher;
+	QLabel* mImgPreview = 0;
+	QLabel* mPreviewLabel = 0;
+	QDialogButtonBox* mButtons = 0;
+	QFutureWatcher<QImage> mUnsharpWatcher;
 
-	DkSlider* scaleSlider;
-	DkSlider* scaleLogSlider;
-	DkSlider* angleSlider;
-	QCheckBox* invertBox;
+	DkSlider* mScaleSlider = 0;
+	DkSlider* mScaleLogSlider = 0;
+	DkSlider* mAngleSlider = 0;
+	QCheckBox* mInvertBox = 0;
 
-	bool processing;
-	QImage img;
+	bool mProcessing = false;
+	QImage mImg;
 };
 
 class DkMosaicDialog : public QDialog {

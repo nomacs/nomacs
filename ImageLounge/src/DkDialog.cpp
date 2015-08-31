@@ -3119,15 +3119,15 @@ void DkExportTiffDialog::enableTIFFSave(bool enable) {
 // DkUnsharpDialog --------------------------------------------------------------------
 DkUnsharpDialog::DkUnsharpDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
-	processing = false;
+	mProcessing = false;
 
 	setWindowTitle(tr("Sharpen Image"));
 	createLayout();
 	setAcceptDrops(true);
 
-	connect(this, SIGNAL(updateImage(const QImage&)), viewport, SLOT(setImage(const QImage&)));
-	connect(&unsharpWatcher, SIGNAL(finished()), this, SLOT(unsharpFinished()));
-	connect(viewport, SIGNAL(imageUpdated()), this, SLOT(computePreview()));
+	connect(this, SIGNAL(updateImage(const QImage&)), mViewport, SLOT(setImage(const QImage&)));
+	connect(&mUnsharpWatcher, SIGNAL(finished()), this, SLOT(unsharpFinished()));
+	connect(mViewport, SIGNAL(imageUpdated()), this, SLOT(computePreview()));
 	QMetaObject::connectSlotsByName(this);
 }
 
@@ -3155,28 +3155,28 @@ void DkUnsharpDialog::dragEnterEvent(QDragEnterEvent *event) {
 void DkUnsharpDialog::createLayout() {
 
 	// post processing sliders
-	sigmaSlider = new DkSlider(tr("Sigma"), this);
-	sigmaSlider->setObjectName("sigmaSlider");
-	sigmaSlider->setValue(30);
+	mSigmaSlider = new DkSlider(tr("Sigma"), this);
+	mSigmaSlider->setObjectName("sigmaSlider");
+	mSigmaSlider->setValue(30);
 	//darkenSlider->hide();
 
-	amountSlider = new DkSlider(tr("Amount"), this);
-	amountSlider->setObjectName("amountSlider");
-	amountSlider->setValue(45);
+	mAmountSlider = new DkSlider(tr("Amount"), this);
+	mAmountSlider->setObjectName("amountSlider");
+	mAmountSlider->setValue(45);
 
 	QWidget* sliderWidget = new QWidget(this);
 	QVBoxLayout* sliderLayout = new QVBoxLayout(sliderWidget);
-	sliderLayout->addWidget(sigmaSlider);
-	sliderLayout->addWidget(amountSlider);
+	sliderLayout->addWidget(mSigmaSlider);
+	sliderLayout->addWidget(mAmountSlider);
 
 	// shows the image if it could be loaded
-	viewport = new DkBaseViewPort(this);
-	viewport->setForceFastRendering(true);
-	viewport->setPanControl(QPointF(0.0f, 0.0f));
+	mViewport = new DkBaseViewPort(this);
+	mViewport->setForceFastRendering(true);
+	mViewport->setPanControl(QPointF(0.0f, 0.0f));
 
-	preview = new QLabel(this);
-	preview->setScaledContents(true);
-	preview->setMinimumSize(QSize(200,200));
+	mPreview = new QLabel(this);
+	mPreview->setScaledContents(true);
+	mPreview->setMinimumSize(QSize(200,200));
 	//preview->setForceFastRendering(true);
 	//preview->setPanControl(QPointF(0.0f, 0.0f));
 
@@ -3185,23 +3185,23 @@ void DkUnsharpDialog::createLayout() {
 	viewLayout->setColumnStretch(0,1);
 	viewLayout->setColumnStretch(1,1);
 
-	viewLayout->addWidget(viewport, 0,0);
-	viewLayout->addWidget(preview, 0, 1);
+	viewLayout->addWidget(mViewport, 0,0);
+	viewLayout->addWidget(mPreview, 0, 1);
 
 	// mButtons
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
 	//mButtons->button(QDialogButtonBox::Save)->setText(tr("&Save"));
 	//mButtons->button(QDialogButtonBox::Apply)->setText(tr("&Generate"));
 	//mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
 	//connect(mButtons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
 	//mButtons->button(QDialogButtonBox::Save)->setEnabled(false);
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(viewports);
 	layout->addWidget(sliderWidget);
-	layout->addWidget(buttons);
+	layout->addWidget(mButtons);
 }
 
 void DkUnsharpDialog::on_sigmaSlider_valueChanged(int) {
@@ -3216,7 +3216,7 @@ void DkUnsharpDialog::on_amountSlider_valueChanged(int) {
 
 QImage DkUnsharpDialog::getImage() {
 
-	return computeUnsharp(img, sigmaSlider->value(), amountSlider->value());
+	return computeUnsharp(mImg, mSigmaSlider->value(), mAmountSlider->value());
 }
 
 void DkUnsharpDialog::reject() {
@@ -3252,29 +3252,29 @@ void DkUnsharpDialog::reject() {
 
 void DkUnsharpDialog::computePreview() {
 		
-	if (processing)
+	if (mProcessing)
 		return;
 
 	QFuture<QImage> future = QtConcurrent::run(this, 
 		&nmc::DkUnsharpDialog::computeUnsharp,
-		viewport->getCurrentImageRegion(),
-		sigmaSlider->value(),
-		amountSlider->value()); 
-	unsharpWatcher.setFuture(future);
-	processing = true;
+		mViewport->getCurrentImageRegion(),
+		mSigmaSlider->value(),
+		mAmountSlider->value()); 
+	mUnsharpWatcher.setFuture(future);
+	mProcessing = true;
 }
 
 void DkUnsharpDialog::unsharpFinished() {
 
-	QImage img = unsharpWatcher.result();
-	img = img.scaled(preview->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
-	preview->setPixmap(QPixmap::fromImage(img));
+	QImage img = mUnsharpWatcher.result();
+	img = img.scaled(mPreview->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+	mPreview->setPixmap(QPixmap::fromImage(img));
 
 	//update();
-	processing = false;
+	mProcessing = false;
 }
 
-QImage DkUnsharpDialog::computeUnsharp(const QImage img, int sigma, int amount) {
+QImage DkUnsharpDialog::computeUnsharp(const QImage& img, int sigma, int amount) {
 
 	QImage imgC = img.copy();
 	DkImage::unsharpMask(imgC, (float)sigma, 1.0f+amount/100.0f);
@@ -3282,10 +3282,10 @@ QImage DkUnsharpDialog::computeUnsharp(const QImage img, int sigma, int amount) 
 }
 
 void DkUnsharpDialog::setImage(const QImage& img) {
-	this->img = img;
-	viewport->setImage(img);
-	viewport->fullView();
-	viewport->zoomConstraints(viewport->get100Factor());
+	this->mImg = img;
+	mViewport->setImage(img);
+	mViewport->fullView();
+	mViewport->zoomConstraints(mViewport->get100Factor());
 	computePreview();
 }
 
@@ -3299,7 +3299,7 @@ void DkUnsharpDialog::setFile(const QString& filePath) {
 // DkTinyPlanetDialog --------------------------------------------------------------------
 DkTinyPlanetDialog::DkTinyPlanetDialog(QWidget* parent /* = 0 */, Qt::WindowFlags f /* = 0 */) : QDialog(parent, f) {
 
-	processing = false;
+	mProcessing = false;
 
 	setWindowTitle(tr("Tiny Planet"));
 	createLayout();
@@ -3307,7 +3307,7 @@ DkTinyPlanetDialog::DkTinyPlanetDialog(QWidget* parent /* = 0 */, Qt::WindowFlag
 	setAcceptDrops(true);
 
 	connect(this, SIGNAL(updateImage(QImage)), this, SLOT(updateImageSlot(QImage)));
-	connect(&unsharpWatcher, SIGNAL(finished()), this, SLOT(tinyPlanetFinished()));
+	connect(&mUnsharpWatcher, SIGNAL(finished()), this, SLOT(tinyPlanetFinished()));
 	QMetaObject::connectSlotsByName(this);
 }
 
@@ -3336,44 +3336,44 @@ void DkTinyPlanetDialog::dragEnterEvent(QDragEnterEvent *event) {
 void DkTinyPlanetDialog::createLayout() {
 
 	// post processing sliders
-	scaleLogSlider = new DkSlider(tr("Planet Size"), this);
-	scaleLogSlider->setObjectName("scaleLogSlider");
-	scaleLogSlider->setMinimum(1);
-	scaleLogSlider->setMaximum(1000);
-	scaleLogSlider->setValue(30);
+	mScaleLogSlider = new DkSlider(tr("Planet Size"), this);
+	mScaleLogSlider->setObjectName("scaleLogSlider");
+	mScaleLogSlider->setMinimum(1);
+	mScaleLogSlider->setMaximum(1000);
+	mScaleLogSlider->setValue(30);
 
 	//darkenSlider->hide();
 
-	scaleSlider = new DkSlider(tr("Scale"), this);
-	scaleSlider->setObjectName("scaleSlider");
-	scaleSlider->setMinimum(1);
-	scaleSlider->setMaximum(3000);
-	scaleSlider->setValue(300);
+	mScaleSlider = new DkSlider(tr("Scale"), this);
+	mScaleSlider->setObjectName("scaleSlider");
+	mScaleSlider->setMinimum(1);
+	mScaleSlider->setMaximum(3000);
+	mScaleSlider->setValue(300);
 
-	angleSlider = new DkSlider(tr("Angle"), this);
-	angleSlider->setObjectName("angleSlider");
-	angleSlider->setValue(0);
-	angleSlider->setMinimum(-180);
-	angleSlider->setMaximum(179);
+	mAngleSlider = new DkSlider(tr("Angle"), this);
+	mAngleSlider->setObjectName("angleSlider");
+	mAngleSlider->setValue(0);
+	mAngleSlider->setMinimum(-180);
+	mAngleSlider->setMaximum(179);
 
-	invertBox = new QCheckBox(tr("Invert Planet"), this);
-	invertBox->setObjectName("invertBox");
+	mInvertBox = new QCheckBox(tr("Invert Planet"), this);
+	mInvertBox->setObjectName("invertBox");
 
 	QWidget* sliderWidget = new QWidget(this);
 	QVBoxLayout* sliderLayout = new QVBoxLayout(sliderWidget);
-	sliderLayout->addWidget(scaleLogSlider);
-	sliderLayout->addWidget(scaleSlider);
-	sliderLayout->addWidget(angleSlider);
-	sliderLayout->addWidget(invertBox);
+	sliderLayout->addWidget(mScaleLogSlider);
+	sliderLayout->addWidget(mScaleSlider);
+	sliderLayout->addWidget(mAngleSlider);
+	sliderLayout->addWidget(mInvertBox);
 
 	// shows the image if it could be loaded
-	imgPreview = new QLabel(this);
+	mImgPreview = new QLabel(this);
 	//imgPreview->setScaledContents(true);
-	imgPreview->setMinimumSize(QSize(200, 200));
+	mImgPreview->setMinimumSize(QSize(200, 200));
 
-	preview = new QLabel(this);
+	mPreviewLabel = new QLabel(this);
 	//preview->setScaledContents(true);
-	preview->setMinimumSize(QSize(200, 200));
+	mPreviewLabel->setMinimumSize(QSize(200, 200));
 	//preview->setForceFastRendering(true);
 	//preview->setPanControl(QPointF(0.0f, 0.0f));
 
@@ -3382,19 +3382,19 @@ void DkTinyPlanetDialog::createLayout() {
 	//viewLayout->setColumnStretch(0,1);
 	//viewLayout->setColumnStretch(1,1);
 	viewLayout->addStretch();
-	viewLayout->addWidget(imgPreview);
-	viewLayout->addWidget(preview);
+	viewLayout->addWidget(mImgPreview);
+	viewLayout->addWidget(mPreviewLabel);
 	viewLayout->addStretch();
 
 	// mButtons
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
+	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->addWidget(viewports);
 	layout->addWidget(sliderWidget);
-	layout->addWidget(buttons);
+	layout->addWidget(mButtons);
 }
 
 void DkTinyPlanetDialog::on_scaleSlider_valueChanged(int) {
@@ -3404,7 +3404,7 @@ void DkTinyPlanetDialog::on_scaleSlider_valueChanged(int) {
 
 void DkTinyPlanetDialog::on_scaleLogSlider_valueChanged(int) {
 
-	scaleSlider->setValue(std::max(scaleLogSlider->value()*10, 200));
+	mScaleSlider->setValue(std::max(mScaleLogSlider->value()*10, 200));
 	//computePreview();
 }
 
@@ -3420,23 +3420,23 @@ void DkTinyPlanetDialog::on_invertBox_toggled(bool) {
 
 void DkTinyPlanetDialog::resizeEvent(QResizeEvent *event) {
 
-	updateImageSlot(img);
+	updateImageSlot(mImg);
 	QDialog::resizeEvent(event);
 }
 
 QImage DkTinyPlanetDialog::getImage() {
 	
-	int mSize = std::max(img.width(), img.height());
+	int mSize = std::max(mImg.width(), mImg.height());
 	if (mSize > 7000)
 		mSize = 7000;	// currently max supported size (x86)
 	float f = (mSize > 1000) ? mSize/1000 : 1.0f;
 	QSize s(mSize, mSize);
 
-	float slInv = scaleLogSlider->value()*f;
-	if (invertBox->isChecked())
+	float slInv = mScaleLogSlider->value()*f;
+	if (mInvertBox->isChecked())
 		slInv *= -1.0f;
 
-	return computeTinyPlanet(img, slInv, scaleSlider->value()*f, angleSlider->value()*DK_DEG2RAD, s);
+	return computeTinyPlanet(mImg, slInv, mScaleSlider->value()*f, mAngleSlider->value()*DK_DEG2RAD, s);
 }
 
 void DkTinyPlanetDialog::reject() {
@@ -3445,48 +3445,48 @@ void DkTinyPlanetDialog::reject() {
 
 }
 
-void DkTinyPlanetDialog::updateImageSlot(QImage img) {
+void DkTinyPlanetDialog::updateImageSlot(const QImage& img) {
 
-	imgPreview->setPixmap(QPixmap::fromImage(img.scaled(imgPreview->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation)));
+	mImgPreview->setPixmap(QPixmap::fromImage(img.scaled(mImgPreview->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation)));
 	computePreview();
 }
 
 void DkTinyPlanetDialog::computePreview() {
 
-	if (processing)
+	if (mProcessing)
 		return;
 
-	QImage rImg = img;
-	int mSide = qMax(img.width(), img.height()) > 1000 ? 1000 : qMax(img.width(), img.height());
+	QImage rImg = mImg;
+	int mSide = qMax(mImg.width(), mImg.height()) > 1000 ? 1000 : qMax(mImg.width(), mImg.height());
 	rImg = rImg.scaled(QSize(mSide, mSide), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-	int slVal = scaleLogSlider->value();
+	int slVal = mScaleLogSlider->value();
 	
 	// encode invert bool into sign
-	if (invertBox->isChecked())
+	if (mInvertBox->isChecked())
 		slVal *= -1;
 
 	QFuture<QImage> future = QtConcurrent::run(this, 
 		&nmc::DkTinyPlanetDialog::computeTinyPlanet,
 		rImg,
 		slVal,
-		scaleSlider->value(),
-		angleSlider->value()*DK_DEG2RAD,
+		mScaleSlider->value(),
+		mAngleSlider->value()*DK_DEG2RAD,
 		QSize(mSide, mSide)); 
-	unsharpWatcher.setFuture(future);
-	processing = true;
+	mUnsharpWatcher.setFuture(future);
+	mProcessing = true;
 }
 
 void DkTinyPlanetDialog::tinyPlanetFinished() {
 
-	QImage img = unsharpWatcher.result();
-	img = img.scaled(preview->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-	preview->setPixmap(QPixmap::fromImage(img));
+	QImage img = mUnsharpWatcher.result();
+	img = img.scaled(mPreviewLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	mPreviewLabel->setPixmap(QPixmap::fromImage(img));
 
 	//update();
-	processing = false;
+	mProcessing = false;
 }
 
-QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage img, float scaleLog, float scale, double angle, QSize s) {
+QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage& img, float scaleLog, float scale, double angle, QSize s) {
 
 	bool inverted = scaleLog < 0;
 	scaleLog = fabs(scaleLog);
@@ -3497,7 +3497,7 @@ QImage DkTinyPlanetDialog::computeTinyPlanet(const QImage img, float scaleLog, f
 }
 
 void DkTinyPlanetDialog::setImage(const QImage& img) {
-	this->img = img;
+	this->mImg = img;
 	updateImageSlot(img);
 	//mViewport->fullView();
 	//mViewport->zoomConstraints(mViewport->get100Factor());
