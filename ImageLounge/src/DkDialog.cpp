@@ -436,22 +436,20 @@ void DkTrainDialog::dragEnterEvent(QDragEnterEvent *event) {
 // DkAppManager --------------------------------------------------------------------
 DkAppManager::DkAppManager(QWidget* parent) : QObject(parent) {
 	
-	firstTime = true;	// is false if settings contain paths
-	defaultNames.resize(app_idx_end);
-	defaultNames[app_photohsop]		= "PhotoshopAction";
-	defaultNames[app_picasa]		= "PicasaAction";
-	defaultNames[app_picasa_viewer] = "PicasaViewerAction";
-	defaultNames[app_irfan_view]	= "IrfanViewAction";
-	defaultNames[app_explorer]		= "ExplorerAction";
+	mDefaultNames.resize(app_idx_end);
+	mDefaultNames[app_photohsop]		= "PhotoshopAction";
+	mDefaultNames[app_picasa]		= "PicasaAction";
+	mDefaultNames[app_picasa_viewer] = "PicasaViewerAction";
+	mDefaultNames[app_irfan_view]	= "IrfanViewAction";
+	mDefaultNames[app_explorer]		= "ExplorerAction";
 
-	this->parent = parent;
 	loadSettings();
-	if (firstTime)
+	if (mFirstTime)
 		findDefaultSoftware();
 
-	for (int idx = 0; idx < apps.size(); idx++) {
-		assignIcon(apps.at(idx));
-		connect(apps.at(idx), SIGNAL(triggered()), this, SLOT(openTriggered()));
+	for (int idx = 0; idx < mApps.size(); idx++) {
+		assignIcon(mApps.at(idx));
+		connect(mApps.at(idx), SIGNAL(triggered()), this, SLOT(openTriggered()));
 	}
 }
 
@@ -460,7 +458,7 @@ DkAppManager::~DkAppManager() {
 	saveSettings();
 }
 
-void DkAppManager::saveSettings() {
+void DkAppManager::saveSettings() const {
 
 	QSettings& settings = Settings::instance().getSettings();
 	settings.beginGroup("DkAppManager");
@@ -469,11 +467,11 @@ void DkAppManager::saveSettings() {
 	
 	settings.beginWriteArray("Apps");
 
-	for (int idx = 0; idx < apps.size(); idx++) {
+	for (int idx = 0; idx < mApps.size(); idx++) {
 		settings.setArrayIndex(idx);
-		settings.setValue("appName", apps.at(idx)->text());
-		settings.setValue("appPath", apps.at(idx)->toolTip());
-		settings.setValue("objectName", apps.at(idx)->objectName());
+		settings.setValue("appName", mApps.at(idx)->text());
+		settings.setValue("appPath", mApps.at(idx)->toolTip());
+		settings.setValue("objectName", mApps.at(idx)->objectName());
 	}
 	settings.endArray();
 	settings.endGroup();
@@ -486,17 +484,17 @@ void DkAppManager::loadSettings() {
 	
 	int size = settings.beginReadArray("Apps");
 	if (size > 0)
-		firstTime = false;
+		mFirstTime = false;
 
 	for (int idx = 0; idx < size; idx++) {
 		settings.setArrayIndex(idx);
-		QAction* action = new QAction(parent);
+		QAction* action = new QAction(parent());
 		action->setText(settings.value("appName", "").toString());
 		action->setToolTip(settings.value("appPath", "").toString());
 		action->setObjectName(settings.value("objectName", "").toString());
 
 		if (QFileInfo(action->toolTip()).exists() && !action->text().isEmpty())
-			apps.append(action);
+			mApps.append(action);
 		else
 			qDebug() << "could not locate: " << action->toolTip();
 
@@ -505,17 +503,14 @@ void DkAppManager::loadSettings() {
 	settings.endGroup();
 }
 
-QVector<QAction* >& DkAppManager::getActions() {
+QVector<QAction* > DkAppManager::getActions() const {
 
-	//for (int idx = 0; idx < apps.size(); idx++)
-	//	qDebug() << "returning action: " << apps[idx]->text();
-
-	return apps;
+	return mApps;
 }
 
 void DkAppManager::setActions(QVector<QAction* > actions) {
 	
-	apps = actions;
+	mApps = actions;
 	saveSettings();
 }
 
@@ -525,7 +520,7 @@ QAction* DkAppManager::createAction(QString filePath) {
 	if (!file.exists())
 		return 0;
 
-	QAction* newApp = new QAction(file.baseName(), parent);
+	QAction* newApp = new QAction(file.baseName(), parent());
 	newApp->setToolTip(QDir::fromNativeSeparators(file.filePath()));
 	assignIcon(newApp);
 	connect(newApp, SIGNAL(triggered()), this, SLOT(openTriggered()));
@@ -533,12 +528,12 @@ QAction* DkAppManager::createAction(QString filePath) {
 	return newApp;
 }
 
-QAction* DkAppManager::findAction(QString appPath) {
+QAction* DkAppManager::findAction(QString appPath) const {
 
-	for (int idx = 0; idx < apps.size(); idx++) {
+	for (int idx = 0; idx < mApps.size(); idx++) {
 
-		if (apps.at(idx)->toolTip() == appPath)
-			return apps.at(idx);
+		if (mApps.at(idx)->toolTip() == appPath)
+			return mApps.at(idx);
 	}
 
 	return 0;
@@ -549,61 +544,61 @@ void DkAppManager::findDefaultSoftware() {
 	QString appPath;
 
 	// Photoshop
-	if (!containsApp(apps, defaultNames[app_photohsop])) {
+	if (!containsApp(mApps, mDefaultNames[app_photohsop])) {
 		appPath = searchForSoftware("Adobe", "Photoshop", "ApplicationPath");
 		if (!appPath.isEmpty()) {
-			QAction* a = new QAction(QObject::tr("&Photoshop"), parent);
+			QAction* a = new QAction(QObject::tr("&Photoshop"), parent());
 			a->setToolTip(QDir::fromNativeSeparators(appPath));
-			a->setObjectName(defaultNames[app_photohsop]);
-			apps.append(a);
+			a->setObjectName(mDefaultNames[app_photohsop]);
+			mApps.append(a);
 		}
 	}
 
-	if (!containsApp(apps, defaultNames[app_picasa])) {
+	if (!containsApp(mApps, mDefaultNames[app_picasa])) {
 		// Picasa
 		appPath = searchForSoftware("Google", "Picasa", "Directory");
 		if (!appPath.isEmpty()) {
-			QAction* a = new QAction(QObject::tr("Pic&asa"), parent);
+			QAction* a = new QAction(QObject::tr("Pic&asa"), parent());
 			a->setToolTip(QDir::fromNativeSeparators(appPath));
-			a->setObjectName(defaultNames[app_picasa]);
-			apps.append(a);
+			a->setObjectName(mDefaultNames[app_picasa]);
+			mApps.append(a);
 		}
 	}
 
-	if (!containsApp(apps, defaultNames[app_picasa_viewer])) {
+	if (!containsApp(mApps, mDefaultNames[app_picasa_viewer])) {
 		// Picasa Photo Viewer
 		appPath = searchForSoftware("Google", "Picasa", "Directory", "PicasaPhotoViewer.exe");
 		if (!appPath.isEmpty()) {
-			QAction* a = new QAction(QObject::tr("Picasa Ph&oto Viewer"), parent);
+			QAction* a = new QAction(QObject::tr("Picasa Ph&oto Viewer"), parent());
 			a->setToolTip(QDir::fromNativeSeparators(appPath));
-			a->setObjectName(defaultNames[app_picasa_viewer]);
-			apps.append(a);
+			a->setObjectName(mDefaultNames[app_picasa_viewer]);
+			mApps.append(a);
 		}
 	}
 
-	if (!containsApp(apps, defaultNames[app_irfan_view])) {
+	if (!containsApp(mApps, mDefaultNames[app_irfan_view])) {
 		// IrfanView
 		appPath = searchForSoftware("IrfanView", "shell");
 		if (!appPath.isEmpty()) {
-			QAction* a = new QAction(QObject::tr("&IrfanView"), parent);
+			QAction* a = new QAction(QObject::tr("&IrfanView"), parent());
 			a->setToolTip(QDir::fromNativeSeparators(appPath));
-			a->setObjectName(defaultNames[app_irfan_view]);
-			apps.append(a);
+			a->setObjectName(mDefaultNames[app_irfan_view]);
+			mApps.append(a);
 		}
 	}
 
-	if (!containsApp(apps, defaultNames[app_explorer])) {
+	if (!containsApp(mApps, mDefaultNames[app_explorer])) {
 		appPath = "C:/Windows/explorer.exe";
 		if (QFileInfo(appPath).exists()) {
-			QAction* a = new QAction(QObject::tr("&Explorer"), parent);
+			QAction* a = new QAction(QObject::tr("&Explorer"), parent());
 			a->setToolTip(QDir::fromNativeSeparators(appPath));
-			a->setObjectName(defaultNames[app_explorer]);
-			apps.append(a);
+			a->setObjectName(mDefaultNames[app_explorer]);
+			mApps.append(a);
 		}
 	}
 }
 
-bool DkAppManager::containsApp(QVector<QAction* > apps, QString appName) {
+bool DkAppManager::containsApp(QVector<QAction* > apps, const QString& appName) const {
 
 	for (int idx = 0; idx < apps.size(); idx++)
 		if (apps.at(idx)->objectName() == appName)
@@ -612,7 +607,7 @@ bool DkAppManager::containsApp(QVector<QAction* > apps, QString appName) {
 	return false;
 }
 
-void DkAppManager::assignIcon(QAction* app) {
+void DkAppManager::assignIcon(QAction* app) const {
 
 #ifdef WIN32
 
@@ -661,7 +656,7 @@ void DkAppManager::assignIcon(QAction* app) {
 
 }
 
-QString DkAppManager::searchForSoftware(QString organization, QString application, QString pathKey, QString exeName) {
+QString DkAppManager::searchForSoftware(const QString& organization, const QString& application, const QString& pathKey, const QString& exeName) const {
 
 	qDebug() << "searching for: " << organization;
 
@@ -704,7 +699,7 @@ QString DkAppManager::searchForSoftware(QString organization, QString applicatio
 	return appPath;
 }
 
-void DkAppManager::openTriggered() {
+void DkAppManager::openTriggered() const {
 
 	QAction* a = static_cast<QAction*>(QObject::sender());
 
@@ -876,121 +871,116 @@ void DkSearchDialog::init() {
 	setObjectName("DkSearchDialog");
 	setWindowTitle(tr("Find & Filter"));
 
-	endMessage = tr("Load All");
-	allDisplayed = true;
-	isFilterPressed = false;
+	mEndMessage = tr("Load All");
 
 	QVBoxLayout* layout = new QVBoxLayout(this);
 
 	QCompleter* history = new QCompleter(DkSettings::global.searchHistory, this);
 	history->setCompletionMode(QCompleter::InlineCompletion);
-	searchBar = new QLineEdit();
-	searchBar->setObjectName("searchBar");
-	searchBar->setToolTip(tr("Type a search word or a regular expression"));
-	searchBar->setCompleter(history);
+	mSearchBar = new QLineEdit();
+	mSearchBar->setObjectName("searchBar");
+	mSearchBar->setToolTip(tr("Type a search word or a regular expression"));
+	mSearchBar->setCompleter(history);
 
-	stringModel = new QStringListModel(this);
+	mStringModel = new QStringListModel(this);
 
-	resultListView = new QListView(this);
-	resultListView->setObjectName("resultListView");
-	resultListView->setModel(stringModel);
-	resultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	resultListView->setSelectionMode(QAbstractItemView::SingleSelection);
+	mResultListView = new QListView(this);
+	mResultListView->setObjectName("resultListView");
+	mResultListView->setModel(mStringModel);
+	mResultListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	mResultListView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	//// TODO: add cursor down - cursor up action
 	//QAction* focusAction = new QAction(tr("Focus Action"), searchBar);
 	//focusAction->setShortcut(Qt::Key_Down);
 	//connect(focusAction, SIGNAL(triggered()), resultListView, SLOT(/*createSLOT*/));
 
-	filterButton = new QPushButton(tr("&Filter"), this);
-	filterButton->setObjectName("filterButton");
+	mFilterButton = new QPushButton(tr("&Filter"), this);
+	mFilterButton->setObjectName("filterButton");
 
-	buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	buttons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
-	buttons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
+	mButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	mButtons->button(QDialogButtonBox::Ok)->setDefault(true);	// ok is auto-default
+	mButtons->button(QDialogButtonBox::Ok)->setText(tr("F&ind"));
 	//mButtons->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
-	buttons->addButton(filterButton, QDialogButtonBox::ActionRole);
+	mButtons->addButton(mFilterButton, QDialogButtonBox::ActionRole);
 
-	connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(mButtons, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(mButtons, SIGNAL(rejected()), this, SLOT(reject()));
 
-	layout->addWidget(searchBar);
-	layout->addWidget(resultListView);
-	layout->addWidget(buttons);
+	layout->addWidget(mSearchBar);
+	layout->addWidget(mResultListView);
+	layout->addWidget(mButtons);
 
-	searchBar->setFocus(Qt::MouseFocusReason);
+	mSearchBar->setFocus(Qt::MouseFocusReason);
 
 	QMetaObject::connectSlotsByName(this);
 }
 
-void DkSearchDialog::setFiles(QStringList fileList) {
-	this->fileList = fileList;
-	this->resultList = fileList;
-	stringModel->setStringList(makeViewable(fileList));
+void DkSearchDialog::setFiles(const QStringList& fileList) {
+	mFileList = fileList;
+	mResultList = fileList;
+	mStringModel->setStringList(makeViewable(fileList));
 }
 
-void DkSearchDialog::setPath(QDir path) {
-	this->path = path;
+void DkSearchDialog::setPath(const QString& dirPath) {
+	mPath = dirPath;
 }
 
-bool DkSearchDialog::filterPressed() {
-	return isFilterPressed;
+bool DkSearchDialog::filterPressed() const {
+	return mIsFilterPressed;
 }
 
 void DkSearchDialog::on_searchBar_textChanged(const QString& text) {
 
-	qDebug() << " you wrote: " << text;
-
 	DkTimer dt;
 
-	if (text == currentSearch)
+	if (text == mCurrentSearch)
 		return;
 	
-	resultList = DkUtils::filterStringList(text, fileList);
+	mResultList = DkUtils::filterStringList(text, mFileList);
 	qDebug() << "searching takes: " << dt.getTotal();
-	currentSearch = text;
+	mCurrentSearch = text;
 
-	if (resultList.empty()) {
+	if (mResultList.empty()) {
 		QStringList answerList;
 		answerList.append(tr("No Matching Items"));
-		stringModel->setStringList(answerList);
+		mStringModel->setStringList(answerList);
 
-		resultListView->setProperty("empty", true);
+		mResultListView->setProperty("empty", true);
 		
-		filterButton->setEnabled(false);
-		buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
-		//cancelButton->setFocus();
+		mFilterButton->setEnabled(false);
+		mButtons->button(QDialogButtonBox::Ok)->setEnabled(false);
 	}
 	else {
-		filterButton->setEnabled(true);
-		buttons->button(QDialogButtonBox::Ok)->setEnabled(true);
-		stringModel->setStringList(makeViewable(resultList));
-		resultListView->selectionModel()->setCurrentIndex(stringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
-		resultListView->setProperty("empty", false);
+		mFilterButton->setEnabled(true);
+		mButtons->button(QDialogButtonBox::Ok)->setEnabled(true);
+		mStringModel->setStringList(makeViewable(mResultList));
+		mResultListView->selectionModel()->setCurrentIndex(mStringModel->index(0, 0), QItemSelectionModel::SelectCurrent);
+		mResultListView->setProperty("empty", false);
 	}
 
-	resultListView->style()->unpolish(resultListView);
-	resultListView->style()->polish(resultListView);
-	resultListView->update();
+	mResultListView->style()->unpolish(mResultListView);
+	mResultListView->style()->polish(mResultListView);
+	mResultListView->update();
 
 	qDebug() << "searching takes (total): " << dt.getTotal();
 }
 
 void DkSearchDialog::on_resultListView_doubleClicked(const QModelIndex& modelIndex) {
 
-	if (modelIndex.data().toString() == endMessage) {
-		stringModel->setStringList(makeViewable(resultList, true));
+	if (modelIndex.data().toString() == mEndMessage) {
+		mStringModel->setStringList(makeViewable(mResultList, true));
 		return;
 	}
 
-	emit loadFileSignal(QFileInfo(path, modelIndex.data().toString()).absoluteFilePath());
+	emit loadFileSignal(QFileInfo(mPath, modelIndex.data().toString()).absoluteFilePath());
 	close();
 }
 
 void DkSearchDialog::on_resultListView_clicked(const QModelIndex& modelIndex) {
 
-	if (modelIndex.data().toString() == endMessage)
-		stringModel->setStringList(makeViewable(resultList, true));
+	if (modelIndex.data().toString() == mEndMessage)
+		mStringModel->setStringList(makeViewable(mResultList, true));
 }
 
 void DkSearchDialog::accept() {
@@ -1001,42 +991,42 @@ void DkSearchDialog::accept() {
 
 void DkSearchDialog::on_okButton_pressed() {
 
-	if (resultListView->selectionModel()->currentIndex().data().toString() == endMessage) {
-		stringModel->setStringList(makeViewable(resultList, true));
+	if (mResultListView->selectionModel()->currentIndex().data().toString() == mEndMessage) {
+		mStringModel->setStringList(makeViewable(mResultList, true));
 		return;
 	}
 
 	updateHistory();
 
 	// ok load the selected file
-	QString fileName = resultListView->selectionModel()->currentIndex().data().toString();
+	QString fileName = mResultListView->selectionModel()->currentIndex().data().toString();
 	qDebug() << "opening filename: " << fileName;
 
 	if (!fileName.isEmpty())
-		emit loadFileSignal(QFileInfo(path, fileName).absoluteFilePath());
+		emit loadFileSignal(QFileInfo(mPath, fileName).absoluteFilePath());
 }
 
 void DkSearchDialog::on_filterButton_pressed() {
-	filterSignal(currentSearch.split(" "));
-	isFilterPressed = true;
+	filterSignal(mCurrentSearch.split(" "));
+	mIsFilterPressed = true;
 	done(filter_button);
 }
 
 void DkSearchDialog::setDefaultButton(int defaultButton /* = find_button */) {
 
 	if (defaultButton == find_button) {
-		buttons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
-		filterButton->setAutoDefault(false);
+		mButtons->button(QDialogButtonBox::Ok)->setAutoDefault(true);
+		mFilterButton->setAutoDefault(false);
 	}
 	else if (defaultButton == filter_button) {
-		buttons->button(QDialogButtonBox::Ok)->setAutoDefault(false);
-		filterButton->setAutoDefault(true);
+		mButtons->button(QDialogButtonBox::Ok)->setAutoDefault(false);
+		mFilterButton->setAutoDefault(true);
 	}
 }
 
 void DkSearchDialog::updateHistory() {
 	
-	DkSettings::global.searchHistory.append(currentSearch);
+	DkSettings::global.searchHistory.append(mCurrentSearch);
 
 	// keep the history small
 	if (DkSettings::global.searchHistory.size() > 50)
@@ -1055,12 +1045,12 @@ QStringList DkSearchDialog::makeViewable(const QStringList& resultList, bool for
 
 		for (int idx = 0; idx < 1000; idx++)
 			answerList.append(resultList[idx]);
-		answerList.append(endMessage);
+		answerList.append(mEndMessage);
 
-		allDisplayed = false;
+		mAllDisplayed = false;
 	}
 	else {
-		allDisplayed = true;
+		mAllDisplayed = true;
 		answerList = resultList;
 	}
 

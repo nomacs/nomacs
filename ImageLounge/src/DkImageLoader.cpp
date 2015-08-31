@@ -1979,7 +1979,7 @@ void DkImageLoader::setFolderFilter(const QString& filter) {
 	setFolderFilters(filter.split(" "));
 }
 
-void DkImageLoader::setFolderFilters(QStringList filters) {
+void DkImageLoader::setFolderFilters(const QStringList& filters) {
 
 	folderKeywords = filters;
 	folderUpdated = true;

@@ -2548,7 +2548,7 @@ void DkNoMacs::find(bool filterAction) {
 		searchDialog->setFiles(getTabWidget()->getCurrentImageLoader()->getFileNames());
 		searchDialog->setPath(getTabWidget()->getCurrentImageLoader()->getDir());
 
-		connect(searchDialog, SIGNAL(filterSignal(QStringList)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilters(QStringList)));
+		connect(searchDialog, SIGNAL(filterSignal(const QStringList&)), getTabWidget()->getCurrentImageLoader().data(), SLOT(setFolderFilters(const QStringList&)));
 		connect(searchDialog, SIGNAL(loadFileSignal(const QString&)), getTabWidget(), SLOT(loadFile(const QString&)));
 		int answer = searchDialog->exec();
 

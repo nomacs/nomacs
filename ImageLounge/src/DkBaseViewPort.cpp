@@ -484,6 +484,8 @@ bool DkBaseViewPort::nativeGestureEvent(QNativeGestureEvent* event) {
 	default:
 		return false;	// ignored type
 	}
+#else
+	Q_UNUSED(event);
 #endif
 
 	return true;
@@ -509,7 +511,7 @@ bool DkBaseViewPort::gestureEvent(QGestureEvent* event) {
 	else if (QPinchGesture *pinch = static_cast<QPinchGesture*>(event->gesture(Qt::PinchGesture))) {
 
 #if QT_VERSION >= 0x050000
-		float scale = pinch->lastScaleFactor();
+		float scale = (float)pinch->lastScaleFactor();
 
 		if (fabs(scale-1.0f) > FLT_EPSILON) {
 			zoom(scale, mapFromGlobal(pinch->centerPoint().toPoint()));

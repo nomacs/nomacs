@@ -171,7 +171,7 @@ public slots:
 	bool deleteFile();
 	QString saveTempFile(const QImage& img, const QString& name = "img", const QString& fileExt = ".png", bool force = false, bool threaded = true);
 	void setFolderFilter(const QString& filter);
-	void setFolderFilters(QStringList filters);
+	void setFolderFilters(const QStringList& filters);
 	QStringList getFolderFilters();
 	bool loadDir(const QString& newFilePath, bool scanRecursive = true);
 	bool loadDir(QDir newDir, bool scanRecursive = true);

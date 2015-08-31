@@ -183,9 +183,9 @@ public:
 	~DkAppManager();
 
 	void setActions(QVector<QAction* > actions);
-	QVector<QAction* >& getActions();
+	QVector<QAction* > getActions() const;
 	QAction* createAction(QString filePath);
-	QAction* findAction(QString appPath);
+	QAction* findAction(QString appPath) const;
 
 	enum defaultAppIdx {
 
@@ -199,24 +199,23 @@ public:
 	};
 
 public slots:
-	void openTriggered();
+	void openTriggered() const;
 
 signals:
-	void openFileSignal(QAction* action);
+	void openFileSignal(QAction* action) const;
 
 protected:
-	void saveSettings();
+	void saveSettings() const;
 	void loadSettings();
-	void assignIcon(QAction* app);
-	bool containsApp(QVector<QAction* > apps, QString appName);
+	void assignIcon(QAction* app) const;
+	bool containsApp(QVector<QAction* > apps, const QString& appName) const;
 
-	QString searchForSoftware(QString organization, QString application, QString pathKey = "", QString exeName = "");
+	QString searchForSoftware(const QString& organization, const QString& application, const QString& pathKey = "", const QString& exeName = "") const;
 	void findDefaultSoftware();
 
-	QVector<QString> defaultNames;
-	QVector<QAction* > apps;
-	QWidget* parent;
-	bool firstTime;
+	QVector<QString> mDefaultNames;
+	QVector<QAction* > mApps;
+	bool mFirstTime = true;
 };
 
 class DkAppManagerDialog : public QDialog {
@@ -258,9 +257,9 @@ public:
 
 	DkSearchDialog(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-	void setFiles(QStringList fileList);
-	void setPath(QDir path);
-	bool filterPressed();
+	void setFiles(const QStringList& fileList);
+	void setPath(const QString& dirPath);
+	bool filterPressed() const;
 	void setDefaultButton(int defaultButton = find_button);
 
 public slots:
@@ -273,7 +272,7 @@ public slots:
 
 signals:
 	void loadFileSignal(const QString& filePath) const;
-	void filterSignal(QStringList) const;
+	void filterSignal(const QStringList&) const;
 
 protected:
 
@@ -281,24 +280,23 @@ protected:
 	void init();
 	QStringList makeViewable(const QStringList& resultList, bool forceAll = false);
 
-	QStringListModel* stringModel;
-	QListView* resultListView;
-	QLineEdit* searchBar;
-	QDialogButtonBox* buttons;
+	QStringListModel* mStringModel = 0;
+	QListView* mResultListView = 0;
+	QLineEdit* mSearchBar = 0;
+	QDialogButtonBox* mButtons = 0;
 
-	QPushButton* filterButton;
-	//QVector<QPushButton*> mButtons;
+	QPushButton* mFilterButton = 0;
 
-	QString currentSearch;
+	QString mCurrentSearch;
 
-	QDir path;
-	QStringList fileList;
-	QStringList resultList;
+	QString mPath;
+	QStringList mFileList;
+	QStringList mResultList;
 
-	QString endMessage;
+	QString mEndMessage;
 
-	bool allDisplayed;
-	bool isFilterPressed;
+	bool mAllDisplayed = true;
+	bool mIsFilterPressed = false;
 };
 
 class DkResizeDialog : public QDialog {
