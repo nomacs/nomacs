@@ -1,0 +1,244 @@
+/*******************************************************************************************************
+ DkViewPort.h
+ Created on:	05.05.2011
+ 
+ nomacs is a fast and small image viewer with the capability of synchronizing multiple instances
+ 
+ Copyright (C) 2011-2013 Markus Diem <markus@nomacs.org>
+ Copyright (C) 2011-2013 Stefan Fiel <stefan@nomacs.org>
+ Copyright (C) 2011-2013 Florian Kleber <florian@nomacs.org>
+
+ This file is part of nomacs.
+
+ nomacs is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ nomacs is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ *******************************************************************************************************/
+
+#pragma once
+
+#pragma warning(push, 0)	// no warnings from includes - begin
+// Qt
+#include <QDesktopWidget>
+#include <QGraphicsView>
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#include <QMessageBox>
+#include <QWidget>
+#include <QLabel>
+#include <QInputDialog>
+#include <QPainterPathStroker>
+#include <QBitmap>
+#include <QApplication>
+#include <QUrl>
+#include <QPrinter>
+#include <QGradientStops>
+#include <QSwipeGesture>
+#include <QStackedLayout>
+
+#if QT_VERSION < 0x050000
+#ifndef QT_NO_GESTURES
+#include "extern/qevent_p.h"
+#endif
+#endif
+
+#pragma warning(pop)		// no warnings from includes - end
+
+// OpenCV
+#ifdef WITH_OPENCV
+#ifdef WIN32
+#pragma warning(disable: 4996)
+#endif
+#endif
+
+// my stuff
+#include "DkImage.h"
+#include "DkWidgets.h"
+#include "DkNetwork.h"
+#include "DkSettings.h"
+#include "DkToolbars.h"
+#include "DkBaseViewPort.h"
+#include "DkPluginInterface.h"
+#include "DkTimer.h"
+
+#include "DkMath.h"
+
+namespace nmc {
+
+// some dummies
+class DkFilePreview;
+class DkThumbScrollWidget;
+class DkMetaDataHUD;
+class DkCommentWidget;
+class DkViewPort;
+
+class DllExport DkControlWidget : public QWidget {
+	Q_OBJECT
+
+public:
+	
+	enum VerPos {top_scroll = 0, top_thumbs, top_metadata, top_info, ver_center, bottom_info, bottom, bottom_metadata, bottom_thumbs, ver_pos_end};
+	enum HorPos {left_thumbs = 0, left_metadata, left, hor_center, right, right_metadata, right_thumbs, hor_pos_end};
+
+	enum InfoPos {
+		center_label,
+		bottom_left_label,
+		bottom_right_label,
+		top_left_label
+	};
+
+	enum Widgets {
+		last_widget = -1,
+		hud_widget,
+		crop_widget,
+
+		widget_end
+	};
+
+	DkControlWidget(DkViewPort *parent = 0, Qt::WindowFlags flags = 0);
+	virtual ~DkControlWidget() {};
+
+	void setFullScreen(bool fullscreen);
+
+	//DkThumbPool* getThumbPool() {
+	//	return thumbPool;
+	//}
+
+	DkFilePreview* getFilePreview() {
+		return filePreview;
+	}
+
+	DkFolderScrollBar* getScroller() {
+		return folderScroll;
+	}
+
+	DkMetaDataHUD* getMetaDataWidget() {
+		return metaDataInfo;
+	}
+
+	DkCommentWidget* getCommentWidget() {
+		return commentWidget;
+	}
+
+	DkOverview* getOverview() {
+		return zoomWidget->getOverview();
+	}
+
+	DkZoomWidget* getZoomWidget() const {
+		return zoomWidget;
+	}
+
+	DkPlayer* getPlayer() {
+		return player;
+	}
+
+	DkFileInfoLabel* getFileInfoLabel() {
+		return fileInfoLabel;
+	}
+
+	DkHistogram* getHistogram() {
+		return histogram;
+	}
+
+	DkCropWidget* getCropWidget() {
+		return cropWidget;
+	}
+
+	void setPluginWidget(DkViewPortInterface* pluginWidget, bool removeWidget);
+
+	void stopLabels();
+	void showWidgetsSettings();
+
+	void settingsChanged();
+
+public slots:
+	void showPreview(bool visible);
+	void showMetaData(bool visible);
+	void showFileInfo(bool visible);
+	void showPlayer(bool visible);
+	void hideCrop(bool hide = true);
+	void showCrop(bool visible);
+	void showOverview(bool visible);
+	void showHistogram(bool visible);
+	void showCommentWidget(bool visible);
+	void switchWidget(QWidget* widget = 0);
+	void changeMetaDataPosition(int pos);
+	void changeThumbNailPosition(int pos);
+	void showScroller(bool visible);
+
+	void setFileInfo(QSharedPointer<DkImageContainerT> imgC);
+	void setInfo(QString msg, int time = 3000, int location = center_label);
+	virtual void setInfoDelayed(QString msg, bool start = false, int delayTime = 1000);
+	virtual void setSpinner(int time = 3000);
+	virtual void setSpinnerDelayed(bool start = false, int time = 3000);
+	void updateRating(int rating);
+
+	void imageLoaded(bool loaded);
+
+	void update();
+
+protected:
+
+	// events
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
+	void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent *event);
+
+	//void resizeEvent(QResizeEvent *event);
+
+	// functions
+	void init();
+	void connectWidgets();
+	
+	QVector<QWidget*> widgets;
+	QStackedLayout* layout;
+	QWidget* lastActiveWidget;
+	QGridLayout* hudLayout;
+
+	DkViewPort* viewport;
+	DkCropWidget* cropWidget;
+
+	DkFilePreview* filePreview;
+	DkMetaDataHUD* metaDataInfo;
+	DkCommentWidget* commentWidget;
+	DkZoomWidget* zoomWidget;
+	DkPlayer* player;
+	DkHistogram* histogram;
+	
+	DkFolderScrollBar* folderScroll;
+	DkFileInfoLabel* fileInfoLabel;
+	DkRatingLabelBg* ratingLabel;
+
+	DkDelayedMessage* delayedInfo;
+	DkDelayedInfo* delayedSpinner;
+
+	DkAnimationLabel* spinnerLabel;
+	DkLabelBg* centerLabel;
+	DkLabelBg* bottomLabel;
+	DkLabelBg* bottomLeftLabel;
+
+//	DkThumbPool* thumbPool;
+
+	QSharedPointer<DkImageContainerT> imgC;
+
+	QLabel* wheelButton;
+
+	QPointF enterPos;
+	int rating;
+
+};
+
+};

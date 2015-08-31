@@ -891,4 +891,97 @@ class DkDirectoryEdit : public QLineEdit {
 		QString oldPath;
 };
 
+class DkDelayedInfo : public QObject {
+	Q_OBJECT
+
+public:
+	DkDelayedInfo(int time = 0, QObject* parent = 0) : QObject(parent) {
+		timer = new QTimer();
+		timer->setSingleShot(true);
+
+		if (time)
+			timer->start(time);
+
+		connect(timer, SIGNAL(timeout()), this, SLOT(sendInfo()));
+	}
+
+	virtual ~DkDelayedInfo() {
+
+		if (timer && timer->isActive())
+			timer->stop();
+
+		if (timer)
+			delete timer;
+
+		timer = 0;
+	}
+
+	void stop() {
+
+		if (timer && timer->isActive())
+			timer->stop();
+		else
+			emit infoSignal(1);
+	}
+
+	void setInfo(int time = 1000) {
+
+		if (!timer)
+			return;
+
+		timer->start(time);
+	}
+
+signals:
+	void infoSignal(int time);
+
+	protected slots:
+	virtual void sendInfo() {
+		emit infoSignal(-1);
+	}
+
+protected:
+	QTimer* timer;
+
+};
+
+
+class DkDelayedMessage : public DkDelayedInfo {
+	Q_OBJECT
+
+public:
+	DkDelayedMessage(QString msg  = QString(), int time = 0, QObject* parent = 0) : DkDelayedInfo(time, parent) {
+		this->msg = msg;
+	}
+
+	~DkDelayedMessage() {}
+
+	void stop() {
+
+		if (timer && timer->isActive())
+			timer->stop();
+		else
+			emit infoSignal(msg, 1);
+	}
+
+	void setInfo(QString& msg, int time = 1000) {
+
+		DkDelayedInfo::setInfo(time);
+		this->msg = msg;
+	}
+
+signals:
+	void infoSignal(QString msg, int time);
+
+	protected slots:
+	void sendInfo() {
+
+		emit infoSignal(msg, -1);
+	}
+
+protected:
+	QString msg;
+
+};
+
 };

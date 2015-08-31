@@ -26,6 +26,8 @@
  *******************************************************************************************************/
 
 #include "DkCentralWidget.h"
+
+#include "DkControlWidget.h"
 #include "DkViewPort.h"
 #include "DkMessageBox.h"
 #include "DkThumbsWidgets.h"

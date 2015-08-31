@@ -28,6 +28,7 @@
 #include "DkNetwork.h"
 #include "DkSettings.h"
 #include "DkTimer.h"
+#include "DkControlWidget.h"	// needed for a connection
 
 #pragma warning(push, 0)	// no warnings from includes - begin
 #include <QTcpSocket>

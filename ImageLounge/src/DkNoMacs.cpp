@@ -48,6 +48,7 @@
 #include "DkQuickAccess.h"
 #include "DkError.h"
 #include "DkUtils.h"
+#include "DkControlWidget.h"
 
 #ifdef  WITH_PLUGINS
 #include "DkPluginInterface.h"
